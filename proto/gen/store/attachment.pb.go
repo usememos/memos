@@ -210,7 +210,7 @@ var File_store_attachment_proto protoreflect.FileDescriptor
 
 const file_store_attachment_proto_rawDesc = "" +
 	"\n" +
-	"\x16store/attachment.proto\x12\vmemos.store\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1dstore/workspace_setting.proto\"\x8c\x02\n" +
+	"\x16store/attachment.proto\x12\vmemos.store\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cstore/instance_setting.proto\"\x8c\x02\n" +
 	"\x11AttachmentPayload\x12F\n" +
 	"\ts3_object\x18\x01 \x01(\v2'.memos.store.AttachmentPayload.S3ObjectH\x00R\bs3Object\x1a\xa3\x01\n" +
 	"\bS3Object\x129\n" +
@@ -262,7 +262,7 @@ func file_store_attachment_proto_init() {
 	if File_store_attachment_proto != nil {
 		return
 	}
-	file_store_workspace_setting_proto_init()
+	file_store_instance_setting_proto_init()
 	file_store_attachment_proto_msgTypes[0].OneofWrappers = []any{
 		(*AttachmentPayload_S3Object_)(nil),
 	}

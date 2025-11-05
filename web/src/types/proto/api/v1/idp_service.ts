@@ -14,7 +14,7 @@ export const protobufPackage = "memos.api.v1";
 export interface IdentityProvider {
   /**
    * The resource name of the identity provider.
-   * Format: identityProviders/{idp}
+   * Format: identity-providers/{idp}
    */
   name: string;
   /** Required. The type of the identity provider. */
@@ -93,7 +93,7 @@ export interface ListIdentityProvidersResponse {
 export interface GetIdentityProviderRequest {
   /**
    * Required. The resource name of the identity provider to get.
-   * Format: identityProviders/{idp}
+   * Format: identity-providers/{idp}
    */
   name: string;
 }
@@ -125,7 +125,7 @@ export interface UpdateIdentityProviderRequest {
 export interface DeleteIdentityProviderRequest {
   /**
    * Required. The resource name of the identity provider to delete.
-   * Format: identityProviders/{idp}
+   * Format: identity-providers/{idp}
    */
   name: string;
 }
@@ -792,9 +792,9 @@ export const IdentityProviderServiceDefinition = {
         _unknownFields: {
           578365826: [
             new Uint8Array([
-              27,
+              28,
               18,
-              25,
+              26,
               47,
               97,
               112,
@@ -811,7 +811,8 @@ export const IdentityProviderServiceDefinition = {
               105,
               116,
               121,
-              80,
+              45,
+              112,
               114,
               111,
               118,
@@ -837,9 +838,9 @@ export const IdentityProviderServiceDefinition = {
           8410: [new Uint8Array([4, 110, 97, 109, 101])],
           578365826: [
             new Uint8Array([
-              36,
+              37,
               18,
-              34,
+              35,
               47,
               97,
               112,
@@ -862,7 +863,8 @@ export const IdentityProviderServiceDefinition = {
               105,
               116,
               121,
-              80,
+              45,
+              112,
               114,
               111,
               118,
@@ -893,7 +895,7 @@ export const IdentityProviderServiceDefinition = {
           ],
           578365826: [
             new Uint8Array([
-              46,
+              47,
               58,
               17,
               105,
@@ -914,7 +916,7 @@ export const IdentityProviderServiceDefinition = {
               101,
               114,
               34,
-              25,
+              26,
               47,
               97,
               112,
@@ -931,7 +933,8 @@ export const IdentityProviderServiceDefinition = {
               105,
               116,
               121,
-              80,
+              45,
+              112,
               114,
               111,
               118,
@@ -990,7 +993,7 @@ export const IdentityProviderServiceDefinition = {
           ],
           578365826: [
             new Uint8Array([
-              73,
+              74,
               58,
               17,
               105,
@@ -1011,7 +1014,7 @@ export const IdentityProviderServiceDefinition = {
               101,
               114,
               50,
-              52,
+              53,
               47,
               97,
               112,
@@ -1052,7 +1055,8 @@ export const IdentityProviderServiceDefinition = {
               105,
               116,
               121,
-              80,
+              45,
+              112,
               114,
               111,
               118,
@@ -1081,9 +1085,9 @@ export const IdentityProviderServiceDefinition = {
           8410: [new Uint8Array([4, 110, 97, 109, 101])],
           578365826: [
             new Uint8Array([
-              36,
+              37,
               42,
-              34,
+              35,
               47,
               97,
               112,
@@ -1106,7 +1110,8 @@ export const IdentityProviderServiceDefinition = {
               105,
               116,
               121,
-              80,
+              45,
+              112,
               114,
               111,
               118,

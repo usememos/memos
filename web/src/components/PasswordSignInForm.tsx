@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { authServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { workspaceStore } from "@/store";
+import { instanceStore } from "@/store";
 import { initialUserStore } from "@/store/user";
 import { useTranslate } from "@/utils/i18n";
 
@@ -16,8 +16,8 @@ const PasswordSignInForm = observer(() => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const actionBtnLoadingState = useLoading(false);
-  const [username, setUsername] = useState(workspaceStore.state.profile.mode === "demo" ? "demo" : "");
-  const [password, setPassword] = useState(workspaceStore.state.profile.mode === "demo" ? "secret" : "");
+  const [username, setUsername] = useState(instanceStore.state.profile.mode === "demo" ? "demo" : "");
+  const [password, setPassword] = useState(instanceStore.state.profile.mode === "demo" ? "secret" : "");
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;

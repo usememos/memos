@@ -7,7 +7,7 @@ import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { cn } from "@/lib/utils";
-import { memoStore, userStore, workspaceStore } from "@/store";
+import { memoStore, userStore, instanceStore } from "@/store";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo, MemoRelation_Type, Visibility } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -52,7 +52,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
     urls: [],
     index: 0,
   });
-  const workspaceMemoRelatedSetting = workspaceStore.state.memoRelatedSetting;
+  const instanceMemoRelatedSetting = instanceStore.state.memoRelatedSetting;
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   const commentAmount = memo.relations.filter(
     (relation) => relation.type === MemoRelation_Type.COMMENT && relation.relatedMemo?.name === memo.name,
@@ -63,8 +63,8 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
   const isInMemoDetailPage = location.pathname.startsWith(`/${memo.name}`);
   const parentPage = props.parentPage || location.pathname;
   const nsfw =
-    workspaceMemoRelatedSetting.enableBlurNsfwContent &&
-    memo.tags?.some((tag) => workspaceMemoRelatedSetting.nsfwTags.some((nsfwTag) => tag === nsfwTag || tag.startsWith(`${nsfwTag}/`)));
+    instanceMemoRelatedSetting.enableBlurNsfwContent &&
+    memo.tags?.some((tag) => instanceMemoRelatedSetting.nsfwTags.some((nsfwTag) => tag === nsfwTag || tag.startsWith(`${nsfwTag}/`)));
 
   // Initial related data: creator.
   useAsyncEffect(async () => {
@@ -103,7 +103,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
       return;
     }
 
-    if (workspaceMemoRelatedSetting.enableDoubleClickEdit) {
+    if (instanceMemoRelatedSetting.enableDoubleClickEdit) {
       e.preventDefault();
       setShowEditor(true);
     }

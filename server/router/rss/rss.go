@@ -161,7 +161,7 @@ func (s *RSSService) getRSSItemDescription(content string) (string, error) {
 }
 
 func getRSSHeading(ctx context.Context, stores *store.Store) (RSSHeading, error) {
-	settings, err := stores.GetWorkspaceGeneralSetting(ctx)
+	settings, err := stores.GetInstanceGeneralSetting(ctx)
 	if err != nil {
 		return RSSHeading{}, err
 	}

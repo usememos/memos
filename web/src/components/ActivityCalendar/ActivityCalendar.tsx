@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import { memo, useMemo } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { workspaceStore } from "@/store";
+import { instanceStore } from "@/store";
 import type { ActivityCalendarProps } from "@/types/statistics";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarCell } from "./CalendarCell";
@@ -12,7 +12,7 @@ export const ActivityCalendar = memo(
   observer((props: ActivityCalendarProps) => {
     const t = useTranslate();
     const { month, selectedDate, data, onClick } = props;
-    const weekStartDayOffset = workspaceStore.state.generalSetting.weekStartDayOffset;
+    const weekStartDayOffset = instanceStore.state.generalSetting.weekStartDayOffset;
 
     const today = useMemo(() => dayjs().format("YYYY-MM-DD"), []);
     const selectedDateFormatted = useMemo(() => dayjs(selectedDate).format("YYYY-MM-DD"), [selectedDate]);

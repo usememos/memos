@@ -385,7 +385,7 @@
       "title": "وب‌هوک‌ها",
       "url": "آدرس"
     },
-    "workspace-section": {
+    "instance-section": {
       "disallow-change-nickname": "غیرفعال‌سازی تغییر نام مستعار",
       "disallow-change-username": "غیرفعال‌سازی تغییر نام کاربری",
       "disallow-password-auth": "غیرفعال‌سازی احراز هویت با گذرواژه",

@@ -410,7 +410,7 @@
       "title": "Webhooks",
       "url": "URL"
     },
-    "workspace-section": {
+    "instance-section": {
       "disallow-change-nickname": "Desativar alteração de apelido",
       "disallow-change-username": "Desativar alteração de nome de utilizador",
       "disallow-password-auth": "Desativar autenticação por palavra-passe",

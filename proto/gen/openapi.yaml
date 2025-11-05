@@ -304,7 +304,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/identityProviders:
+    /api/v1/identity-providers:
         get:
             tags:
                 - IdentityProviderService
@@ -355,16 +355,16 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/identityProviders/{identityProvider}:
+    /api/v1/identity-providers/{identity-provider}:
         get:
             tags:
                 - IdentityProviderService
             description: GetIdentityProvider gets an identity provider.
             operationId: IdentityProviderService_GetIdentityProvider
             parameters:
-                - name: identityProvider
+                - name: identity-provider
                   in: path
-                  description: The identityProvider id.
+                  description: The identity-provider id.
                   required: true
                   schema:
                     type: string
@@ -387,9 +387,9 @@ paths:
             description: DeleteIdentityProvider deletes an identity provider.
             operationId: IdentityProviderService_DeleteIdentityProvider
             parameters:
-                - name: identityProvider
+                - name: identity-provider
                   in: path
-                  description: The identityProvider id.
+                  description: The identity-provider id.
                   required: true
                   schema:
                     type: string
@@ -409,9 +409,9 @@ paths:
             description: UpdateIdentityProvider updates an identity provider.
             operationId: IdentityProviderService_UpdateIdentityProvider
             parameters:
-                - name: identityProvider
+                - name: identity-provider
                   in: path
-                  description: The identityProvider id.
+                  description: The identity-provider id.
                   required: true
                   schema:
                     type: string
@@ -436,6 +436,88 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/IdentityProvider'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/instance/profile:
+        get:
+            tags:
+                - InstanceService
+            description: Gets the instance profile.
+            operationId: InstanceService_GetInstanceProfile
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/InstanceProfile'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/instance/{instance}/*:
+        get:
+            tags:
+                - InstanceService
+            description: Gets an instance setting.
+            operationId: InstanceService_GetInstanceSetting
+            parameters:
+                - name: instance
+                  in: path
+                  description: The instance id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/InstanceSetting'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - InstanceService
+            description: Updates an instance setting.
+            operationId: InstanceService_UpdateInstanceSetting
+            parameters:
+                - name: instance
+                  in: path
+                  description: The instance id.
+                  required: true
+                  schema:
+                    type: string
+                - name: updateMask
+                  in: query
+                  description: The list of fields to update.
+                  schema:
+                    type: string
+                    format: field-mask
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/InstanceSetting'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/InstanceSetting'
                 default:
                     description: Default error response
                     content:
@@ -1886,88 +1968,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/workspace/profile:
-        get:
-            tags:
-                - WorkspaceService
-            description: Gets the workspace profile.
-            operationId: WorkspaceService_GetWorkspaceProfile
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/WorkspaceProfile'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/workspace/{workspace}/*:
-        get:
-            tags:
-                - WorkspaceService
-            description: Gets a workspace setting.
-            operationId: WorkspaceService_GetWorkspaceSetting
-            parameters:
-                - name: workspace
-                  in: path
-                  description: The workspace id.
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/WorkspaceSetting'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        patch:
-            tags:
-                - WorkspaceService
-            description: Updates a workspace setting.
-            operationId: WorkspaceService_UpdateWorkspaceSetting
-            parameters:
-                - name: workspace
-                  in: path
-                  description: The workspace id.
-                  required: true
-                  schema:
-                    type: string
-                - name: updateMask
-                  in: query
-                  description: The list of fields to update.
-                  schema:
-                    type: string
-                    format: field-mask
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/WorkspaceSetting'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/WorkspaceSetting'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /file/attachments/{attachment}/{filename:
         get:
             tags:
@@ -2195,7 +2195,7 @@ components:
                     type: string
                 locale:
                     type: string
-            description: Custom profile configuration for workspace branding.
+            description: Custom profile configuration for instance branding.
         GetCurrentSessionResponse:
             type: object
             properties:
@@ -2226,7 +2226,7 @@ components:
                     type: string
                     description: |-
                         The resource name of the identity provider.
-                         Format: identityProviders/{idp}
+                         Format: identity-providers/{idp}
                 type:
                     enum:
                         - TYPE_UNSPECIFIED
@@ -2249,6 +2249,138 @@ components:
             properties:
                 oauth2Config:
                     $ref: '#/components/schemas/OAuth2Config'
+        InstanceProfile:
+            type: object
+            properties:
+                owner:
+                    type: string
+                    description: |-
+                        The name of instance owner.
+                         Format: users/{user}
+                version:
+                    type: string
+                    description: Version is the current version of instance.
+                mode:
+                    type: string
+                    description: Mode is the instance mode (e.g. "prod", "dev" or "demo").
+                instanceUrl:
+                    type: string
+                    description: Instance URL is the URL of the instance.
+            description: Instance profile message containing basic instance information.
+        InstanceSetting:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        The name of the instance setting.
+                         Format: instance/settings/{setting}
+                generalSetting:
+                    $ref: '#/components/schemas/InstanceSetting_GeneralSetting'
+                storageSetting:
+                    $ref: '#/components/schemas/InstanceSetting_StorageSetting'
+                memoRelatedSetting:
+                    $ref: '#/components/schemas/InstanceSetting_MemoRelatedSetting'
+            description: An instance setting resource.
+        InstanceSetting_GeneralSetting:
+            type: object
+            properties:
+                theme:
+                    type: string
+                    description: |-
+                        theme is the name of the selected theme.
+                         This references a CSS file in the web/public/themes/ directory.
+                disallowUserRegistration:
+                    type: boolean
+                    description: disallow_user_registration disallows user registration.
+                disallowPasswordAuth:
+                    type: boolean
+                    description: disallow_password_auth disallows password authentication.
+                additionalScript:
+                    type: string
+                    description: additional_script is the additional script.
+                additionalStyle:
+                    type: string
+                    description: additional_style is the additional style.
+                customProfile:
+                    allOf:
+                        - $ref: '#/components/schemas/GeneralSetting_CustomProfile'
+                    description: custom_profile is the custom profile.
+                weekStartDayOffset:
+                    type: integer
+                    description: |-
+                        week_start_day_offset is the week start day offset from Sunday.
+                         0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
+                         Default is Sunday.
+                    format: int32
+                disallowChangeUsername:
+                    type: boolean
+                    description: disallow_change_username disallows changing username.
+                disallowChangeNickname:
+                    type: boolean
+                    description: disallow_change_nickname disallows changing nickname.
+            description: General instance settings configuration.
+        InstanceSetting_MemoRelatedSetting:
+            type: object
+            properties:
+                disallowPublicVisibility:
+                    type: boolean
+                    description: disallow_public_visibility disallows set memo as public visibility.
+                displayWithUpdateTime:
+                    type: boolean
+                    description: display_with_update_time orders and displays memo with update time.
+                contentLengthLimit:
+                    type: integer
+                    description: content_length_limit is the limit of content length. Unit is byte.
+                    format: int32
+                enableDoubleClickEdit:
+                    type: boolean
+                    description: enable_double_click_edit enables editing on double click.
+                enableLinkPreview:
+                    type: boolean
+                    description: enable_link_preview enables links preview.
+                reactions:
+                    type: array
+                    items:
+                        type: string
+                    description: reactions is the list of reactions.
+                disableMarkdownShortcuts:
+                    type: boolean
+                    description: disable_markdown_shortcuts disallow the registration of markdown shortcuts.
+                enableBlurNsfwContent:
+                    type: boolean
+                    description: enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
+                nsfwTags:
+                    type: array
+                    items:
+                        type: string
+                    description: nsfw_tags is the list of tags that mark content as NSFW for blurring.
+            description: Memo-related instance settings and policies.
+        InstanceSetting_StorageSetting:
+            type: object
+            properties:
+                storageType:
+                    enum:
+                        - STORAGE_TYPE_UNSPECIFIED
+                        - DATABASE
+                        - LOCAL
+                        - S3
+                    type: string
+                    description: storage_type is the storage type.
+                    format: enum
+                filepathTemplate:
+                    type: string
+                    description: |-
+                        The template of file path.
+                         e.g. assets/{timestamp}_{filename}
+                uploadSizeLimitMb:
+                    type: string
+                    description: The max upload size in megabytes.
+                s3Config:
+                    allOf:
+                        - $ref: '#/components/schemas/StorageSetting_S3Config'
+                    description: The S3 config.
+            description: Storage configuration settings for instance attachments.
         ListActivitiesResponse:
             type: object
             properties:
@@ -3057,144 +3189,12 @@ components:
                     description: The last update time of the webhook.
                     format: date-time
             description: UserWebhook represents a webhook owned by a user.
-        WorkspaceProfile:
-            type: object
-            properties:
-                owner:
-                    type: string
-                    description: |-
-                        The name of instance owner.
-                         Format: users/{user}
-                version:
-                    type: string
-                    description: Version is the current version of instance.
-                mode:
-                    type: string
-                    description: Mode is the instance mode (e.g. "prod", "dev" or "demo").
-                instanceUrl:
-                    type: string
-                    description: Instance URL is the URL of the instance.
-            description: Workspace profile message containing basic workspace information.
-        WorkspaceSetting:
-            type: object
-            properties:
-                name:
-                    type: string
-                    description: |-
-                        The name of the workspace setting.
-                         Format: workspace/settings/{setting}
-                generalSetting:
-                    $ref: '#/components/schemas/WorkspaceSetting_GeneralSetting'
-                storageSetting:
-                    $ref: '#/components/schemas/WorkspaceSetting_StorageSetting'
-                memoRelatedSetting:
-                    $ref: '#/components/schemas/WorkspaceSetting_MemoRelatedSetting'
-            description: A workspace setting resource.
-        WorkspaceSetting_GeneralSetting:
-            type: object
-            properties:
-                theme:
-                    type: string
-                    description: |-
-                        theme is the name of the selected theme.
-                         This references a CSS file in the web/public/themes/ directory.
-                disallowUserRegistration:
-                    type: boolean
-                    description: disallow_user_registration disallows user registration.
-                disallowPasswordAuth:
-                    type: boolean
-                    description: disallow_password_auth disallows password authentication.
-                additionalScript:
-                    type: string
-                    description: additional_script is the additional script.
-                additionalStyle:
-                    type: string
-                    description: additional_style is the additional style.
-                customProfile:
-                    allOf:
-                        - $ref: '#/components/schemas/GeneralSetting_CustomProfile'
-                    description: custom_profile is the custom profile.
-                weekStartDayOffset:
-                    type: integer
-                    description: |-
-                        week_start_day_offset is the week start day offset from Sunday.
-                         0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
-                         Default is Sunday.
-                    format: int32
-                disallowChangeUsername:
-                    type: boolean
-                    description: disallow_change_username disallows changing username.
-                disallowChangeNickname:
-                    type: boolean
-                    description: disallow_change_nickname disallows changing nickname.
-            description: General workspace settings configuration.
-        WorkspaceSetting_MemoRelatedSetting:
-            type: object
-            properties:
-                disallowPublicVisibility:
-                    type: boolean
-                    description: disallow_public_visibility disallows set memo as public visibility.
-                displayWithUpdateTime:
-                    type: boolean
-                    description: display_with_update_time orders and displays memo with update time.
-                contentLengthLimit:
-                    type: integer
-                    description: content_length_limit is the limit of content length. Unit is byte.
-                    format: int32
-                enableDoubleClickEdit:
-                    type: boolean
-                    description: enable_double_click_edit enables editing on double click.
-                enableLinkPreview:
-                    type: boolean
-                    description: enable_link_preview enables links preview.
-                reactions:
-                    type: array
-                    items:
-                        type: string
-                    description: reactions is the list of reactions.
-                disableMarkdownShortcuts:
-                    type: boolean
-                    description: disable_markdown_shortcuts disallow the registration of markdown shortcuts.
-                enableBlurNsfwContent:
-                    type: boolean
-                    description: enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
-                nsfwTags:
-                    type: array
-                    items:
-                        type: string
-                    description: nsfw_tags is the list of tags that mark content as NSFW for blurring.
-            description: Memo-related workspace settings and policies.
-        WorkspaceSetting_StorageSetting:
-            type: object
-            properties:
-                storageType:
-                    enum:
-                        - STORAGE_TYPE_UNSPECIFIED
-                        - DATABASE
-                        - LOCAL
-                        - S3
-                    type: string
-                    description: storage_type is the storage type.
-                    format: enum
-                filepathTemplate:
-                    type: string
-                    description: |-
-                        The template of file path.
-                         e.g. assets/{timestamp}_{filename}
-                uploadSizeLimitMb:
-                    type: string
-                    description: The max upload size in megabytes.
-                s3Config:
-                    allOf:
-                        - $ref: '#/components/schemas/StorageSetting_S3Config'
-                    description: The S3 config.
-            description: Storage configuration settings for workspace attachments.
 tags:
     - name: ActivityService
     - name: AttachmentService
     - name: AuthService
     - name: IdentityProviderService
+    - name: InstanceService
     - name: MemoService
     - name: ShortcutService
     - name: UserService
-    - name: WorkspaceService

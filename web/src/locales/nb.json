@@ -410,7 +410,7 @@
       "title": "Webhooks",
       "url": "URL"
     },
-    "workspace-section": {
+    "instance-section": {
       "disallow-change-nickname": "Ikke tillat endring av kallenavn",
       "disallow-change-username": "Ikke tillat endring av brukernavn",
       "disallow-password-auth": "Ikke tillat autentisering med passord",

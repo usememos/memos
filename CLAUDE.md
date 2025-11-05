@@ -122,7 +122,7 @@ The server uses `cmux` (connection multiplexer) to serve both gRPC and HTTP on t
 - **HTTP/1.1** → Echo server (REST API via gRPC-Gateway, static files, RSS)
 
 **API Services** (defined in `proto/api/v1/*.proto`):
-- `WorkspaceService` - Workspace settings and profiles
+- `InstanceService` - Instance settings and profiles
 - `AuthService` - Authentication and session management
 - `UserService` - User management
 - `MemoService` - Core memo CRUD operations
@@ -147,7 +147,7 @@ The `store.Driver` interface (`store/driver.go`) defines all data access methods
 - `store/db/postgres/` - PostgreSQL driver
 
 **Migrations:**
-Each driver contains its own migration files in subdirectories. Schema version tracking is stored in `workspace_setting` (key: `bb.general.version`). The `store/migrator.go` orchestrates migrations across all drivers.
+Each driver contains its own migration files in subdirectories. Schema version tracking is stored in `instance_setting` (key: `bb.general.version`). The `store/migrator.go` orchestrates migrations across all drivers.
 
 **Key Models:**
 - `Memo` - Core note/memo entity
@@ -157,7 +157,7 @@ Each driver contains its own migration files in subdirectories. Schema version t
 - `Activity` - Activity log entries
 - `Inbox` - Inbox items
 - `Reaction` - Emoji reactions
-- `WorkspaceSetting` - Workspace-level configuration
+- `InstanceSetting` - Instance-level configuration
 - `UserSetting` - User preferences
 - `IdentityProvider` - OAuth/SSO provider configs
 

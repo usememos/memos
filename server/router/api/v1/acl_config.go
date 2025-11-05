@@ -1,8 +1,8 @@
 package v1
 
 var authenticationAllowlistMethods = map[string]bool{
-	"/memos.api.v1.WorkspaceService/GetWorkspaceProfile":          true,
-	"/memos.api.v1.WorkspaceService/GetWorkspaceSetting":          true,
+	"/memos.api.v1.InstanceService/GetInstanceProfile":            true,
+	"/memos.api.v1.InstanceService/GetInstanceSetting":            true,
 	"/memos.api.v1.IdentityProviderService/ListIdentityProviders": true,
 	"/memos.api.v1.AuthService/CreateSession":                     true,
 	"/memos.api.v1.AuthService/GetCurrentSession":                 true,
@@ -23,8 +23,8 @@ func isUnauthorizeAllowedMethod(fullMethodName string) bool {
 }
 
 var allowedMethodsOnlyForAdmin = map[string]bool{
-	"/memos.api.v1.UserService/CreateUser":                  true,
-	"/memos.api.v1.WorkspaceService/UpdateWorkspaceSetting": true,
+	"/memos.api.v1.UserService/CreateUser":                 true,
+	"/memos.api.v1.InstanceService/UpdateInstanceSetting": true,
 }
 
 // isOnlyForAdminAllowedMethod returns true if the method is allowed to be called only by admin.

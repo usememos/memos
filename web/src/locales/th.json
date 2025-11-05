@@ -410,7 +410,7 @@
       "title": "Webhooks",
       "url": "URL"
     },
-    "workspace-section": {
+    "instance-section": {
       "disallow-change-nickname": "ไม่อนุญาตให้เปลี่ยนชื่อเล่น",
       "disallow-change-username": "ไม่อนุญาตให้เปลี่ยนชื่อผู้ใช้",
       "disallow-password-auth": "ไม่อนุญาตให้ยืนยันตัวตนด้วยรหัสผ่าน",

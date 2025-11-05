@@ -5,9 +5,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { workspaceStore } from "@/store";
-import { workspaceSettingNamePrefix } from "@/store/common";
-import { WorkspaceSetting_GeneralSetting_CustomProfile, WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
+import { instanceStore } from "@/store";
+import { instanceSettingNamePrefix } from "@/store/common";
+import { InstanceSetting_GeneralSetting_CustomProfile, InstanceSetting_Key } from "@/types/proto/api/v1/instance_service";
 import { useTranslate } from "@/utils/i18n";
 import LocaleSelect from "./LocaleSelect";
 import ThemeSelect from "./ThemeSelect";
@@ -20,14 +20,14 @@ interface Props {
 
 function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props) {
   const t = useTranslate();
-  const workspaceGeneralSetting = workspaceStore.state.generalSetting;
-  const [customProfile, setCustomProfile] = useState<WorkspaceSetting_GeneralSetting_CustomProfile>(
-    WorkspaceSetting_GeneralSetting_CustomProfile.fromPartial(workspaceGeneralSetting.customProfile || {}),
+  const instanceGeneralSetting = instanceStore.state.generalSetting;
+  const [customProfile, setCustomProfile] = useState<InstanceSetting_GeneralSetting_CustomProfile>(
+    InstanceSetting_GeneralSetting_CustomProfile.fromPartial(instanceGeneralSetting.customProfile || {}),
   );
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const setPartialState = (partialState: Partial<WorkspaceSetting_GeneralSetting_CustomProfile>) => {
+  const setPartialState = (partialState: Partial<InstanceSetting_GeneralSetting_CustomProfile>) => {
     setCustomProfile((state) => ({
       ...state,
       ...partialState,
@@ -79,10 +79,10 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
 
     setIsLoading(true);
     try {
-      await workspaceStore.upsertWorkspaceSetting({
-        name: `${workspaceSettingNamePrefix}${WorkspaceSetting_Key.GENERAL}`,
+      await instanceStore.upsertInstanceSetting({
+        name: `${instanceSettingNamePrefix}${InstanceSetting_Key.GENERAL}`,
         generalSetting: {
-          ...workspaceGeneralSetting,
+          ...instanceGeneralSetting,
           customProfile: customProfile,
         },
       });
@@ -102,7 +102,7 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>{t("setting.system-section.customize-server.title")}</DialogTitle>
-          <DialogDescription>Customize your workspace appearance and settings.</DialogDescription>
+          <DialogDescription>Customize your instance appearance and settings.</DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4">

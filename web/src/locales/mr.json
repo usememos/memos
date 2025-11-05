@@ -410,7 +410,7 @@
       "title": "Webhooks",
       "url": "URL"
     },
-    "workspace-section": {
+    "instance-section": {
       "disallow-change-nickname": "टोपणनाव बदलण्यास मनाई करा",
       "disallow-change-username": "वापरकर्तानाव बदलण्यास मनाई करा",
       "disallow-password-auth": "पासवर्ड प्रमाणीकरणास मनाई करा",

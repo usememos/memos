@@ -84,12 +84,12 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 		Type:      request.Attachment.Type,
 	}
 
-	workspaceStorageSetting, err := s.Store.GetWorkspaceStorageSetting(ctx)
+	instanceStorageSetting, err := s.Store.GetInstanceStorageSetting(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get workspace storage setting: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to get instance storage setting: %v", err)
 	}
 	size := binary.Size(request.Attachment.Content)
-	uploadSizeLimit := int(workspaceStorageSetting.UploadSizeLimitMb) * MebiByte
+	uploadSizeLimit := int(instanceStorageSetting.UploadSizeLimitMb) * MebiByte
 	if uploadSizeLimit == 0 {
 		uploadSizeLimit = MaxUploadBufferSizeBytes
 	}
@@ -395,15 +395,15 @@ func convertAttachmentFromStore(attachment *store.Attachment) *v1pb.Attachment {
 
 // SaveAttachmentBlob save the blob of attachment based on the storage config.
 func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *store.Store, create *store.Attachment) error {
-	workspaceStorageSetting, err := stores.GetWorkspaceStorageSetting(ctx)
+	instanceStorageSetting, err := stores.GetInstanceStorageSetting(ctx)
 	if err != nil {
-		return errors.Wrap(err, "Failed to find workspace storage setting")
+		return errors.Wrap(err, "Failed to find instance storage setting")
 	}
 
-	if workspaceStorageSetting.StorageType == storepb.WorkspaceStorageSetting_LOCAL {
+	if instanceStorageSetting.StorageType == storepb.InstanceStorageSetting_LOCAL {
 		filepathTemplate := "assets/{timestamp}_{filename}"
-		if workspaceStorageSetting.FilepathTemplate != "" {
-			filepathTemplate = workspaceStorageSetting.FilepathTemplate
+		if instanceStorageSetting.FilepathTemplate != "" {
+			filepathTemplate = instanceStorageSetting.FilepathTemplate
 		}
 
 		internalPath := filepathTemplate
@@ -435,8 +435,8 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 		create.Reference = internalPath
 		create.Blob = nil
 		create.StorageType = storepb.AttachmentStorageType_LOCAL
-	} else if workspaceStorageSetting.StorageType == storepb.WorkspaceStorageSetting_S3 {
-		s3Config := workspaceStorageSetting.S3Config
+	} else if instanceStorageSetting.StorageType == storepb.InstanceStorageSetting_S3 {
+		s3Config := instanceStorageSetting.S3Config
 		if s3Config == nil {
 			return errors.Errorf("No actived external storage found")
 		}
@@ -445,7 +445,7 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 			return errors.Wrap(err, "Failed to create s3 client")
 		}
 
-		filepathTemplate := workspaceStorageSetting.FilepathTemplate
+		filepathTemplate := instanceStorageSetting.FilepathTemplate
 		if !strings.Contains(filepathTemplate, "{filename}") {
 			filepathTemplate = filepath.Join(filepathTemplate, "{filename}")
 		}

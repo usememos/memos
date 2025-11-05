@@ -23,7 +23,7 @@ import (
 type APIV1Service struct {
 	grpc_health_v1.UnimplementedHealthServer
 
-	v1pb.UnimplementedWorkspaceServiceServer
+	v1pb.UnimplementedInstanceServiceServer
 	v1pb.UnimplementedAuthServiceServer
 	v1pb.UnimplementedUserServiceServer
 	v1pb.UnimplementedMemoServiceServer
@@ -53,7 +53,7 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 		grpcServer:      grpcServer,
 	}
 	grpc_health_v1.RegisterHealthServer(grpcServer, apiv1Service)
-	v1pb.RegisterWorkspaceServiceServer(grpcServer, apiv1Service)
+	v1pb.RegisterInstanceServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterAuthServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterUserServiceServer(grpcServer, apiv1Service)
 	v1pb.RegisterMemoServiceServer(grpcServer, apiv1Service)
@@ -87,7 +87,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	}
 
 	gwMux := runtime.NewServeMux()
-	if err := v1pb.RegisterWorkspaceServiceHandler(ctx, gwMux, conn); err != nil {
+	if err := v1pb.RegisterInstanceServiceHandler(ctx, gwMux, conn); err != nil {
 		return err
 	}
 	if err := v1pb.RegisterAuthServiceHandler(ctx, gwMux, conn); err != nil {

@@ -406,7 +406,7 @@
       },
       "no-webhooks-found": "没有 webhooks。"
     },
-    "workspace-section": {
+    "instance-section": {
       "disallow-change-nickname": "禁止修改用户昵称",
       "disallow-change-username": "禁止修改用户名",
       "disallow-password-auth": "禁用密码登录",

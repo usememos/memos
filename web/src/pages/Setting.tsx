@@ -3,6 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import MobileHeader from "@/components/MobileHeader";
+import InstanceSection from "@/components/Settings/InstanceSection";
 import MemberSection from "@/components/Settings/MemberSection";
 import MemoRelatedSettings from "@/components/Settings/MemoRelatedSettings";
 import MyAccountSection from "@/components/Settings/MyAccountSection";
@@ -10,13 +11,12 @@ import PreferencesSection from "@/components/Settings/PreferencesSection";
 import SSOSection from "@/components/Settings/SSOSection";
 import SectionMenuItem from "@/components/Settings/SectionMenuItem";
 import StorageSection from "@/components/Settings/StorageSection";
-import WorkspaceSection from "@/components/Settings/WorkspaceSection";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
-import { workspaceStore } from "@/store";
+import { instanceStore } from "@/store";
+import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service";
 import { User_Role } from "@/types/proto/api/v1/user_service";
-import { WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
 import { useTranslate } from "@/utils/i18n";
 
 type SettingSection = "my-account" | "preference" | "member" | "system" | "memo-related" | "storage" | "sso";
@@ -71,10 +71,10 @@ const Setting = observer(() => {
       return;
     }
 
-    // Initial fetch for workspace settings.
+    // Initial fetch for instance settings.
     (async () => {
-      [WorkspaceSetting_Key.MEMO_RELATED, WorkspaceSetting_Key.STORAGE].forEach(async (key) => {
-        await workspaceStore.fetchWorkspaceSetting(key);
+      [InstanceSetting_Key.MEMO_RELATED, InstanceSetting_Key.STORAGE].forEach(async (key) => {
+        await instanceStore.fetchInstanceSetting(key);
       });
     })();
   }, [isHost]);
@@ -115,7 +115,7 @@ const Setting = observer(() => {
                     />
                   ))}
                   <span className="px-3 mt-2 opacity-70 text-sm">
-                    {t("setting.version")}: v{workspaceStore.state.profile.version}
+                    {t("setting.version")}: v{instanceStore.state.profile.version}
                   </span>
                 </div>
               </>
@@ -143,7 +143,7 @@ const Setting = observer(() => {
             ) : state.selectedSection === "member" ? (
               <MemberSection />
             ) : state.selectedSection === "system" ? (
-              <WorkspaceSection />
+              <InstanceSection />
             ) : state.selectedSection === "memo-related" ? (
               <MemoRelatedSettings />
             ) : state.selectedSection === "storage" ? (

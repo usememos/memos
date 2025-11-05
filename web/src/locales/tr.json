@@ -410,7 +410,7 @@
       "title": "Webhook'lar",
       "url": "URL"
     },
-    "workspace-section": {
+    "instance-section": {
       "disallow-change-nickname": "Takma ad değiştirmeyi yasakla",
       "disallow-change-username": "Kullanıcı adı değiştirmeyi yasakla",
       "disallow-password-auth": "Şifre ile kimlik doğrulamayı yasakla",

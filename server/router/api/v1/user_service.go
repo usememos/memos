@@ -241,14 +241,14 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 		ID:        user.ID,
 		UpdatedTs: &currentTs,
 	}
-	workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
+	instanceGeneralSetting, err := s.Store.GetInstanceGeneralSetting(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get workspace general setting: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to get instance general setting: %v", err)
 	}
 	for _, field := range request.UpdateMask.Paths {
 		switch field {
 		case "username":
-			if workspaceGeneralSetting.DisallowChangeUsername {
+			if instanceGeneralSetting.DisallowChangeUsername {
 				return nil, status.Errorf(codes.PermissionDenied, "permission denied: disallow change username")
 			}
 			if !base.UIDMatcher.MatchString(strings.ToLower(request.User.Username)) {
@@ -256,7 +256,7 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 			}
 			update.Username = &request.User.Username
 		case "display_name":
-			if workspaceGeneralSetting.DisallowChangeNickname {
+			if instanceGeneralSetting.DisallowChangeNickname {
 				return nil, status.Errorf(codes.PermissionDenied, "permission denied: disallow change nickname")
 			}
 			update.Nickname = &request.User.DisplayName

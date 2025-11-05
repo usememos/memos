@@ -3,7 +3,7 @@ syntax = "proto3";
 package memos.store;
 
 import "google/protobuf/timestamp.proto";
-import "store/workspace_setting.proto";
+import "store/instance_setting.proto";
 
 option go_package = "gen/store";
 

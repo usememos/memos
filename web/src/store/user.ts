@@ -14,8 +14,8 @@ import {
   UserStats,
 } from "@/types/proto/api/v1/user_service";
 import { findNearestMatchedLanguage } from "@/utils/i18n";
+import instanceStore from "./instance";
 import { RequestDeduplicator, createRequestKey, StoreError } from "./store-utils";
-import workspaceStore from "./workspace";
 
 class LocalState {
   currentUser?: string;
@@ -311,7 +311,7 @@ const userStore = (() => {
  * 1. Fetch current authenticated user session
  * 2. Set current user in store (required for subsequent calls)
  * 3. Fetch user settings (depends on currentUser being set)
- * 4. Apply user preferences to workspace store
+ * 4. Apply user preferences to instance store
  *
  * @throws Never - errors are handled internally with fallback behavior
  */
@@ -329,7 +329,7 @@ export const initialUserStore = async () => {
       });
 
       const locale = findNearestMatchedLanguage(navigator.language);
-      workspaceStore.state.setPartial({ locale });
+      instanceStore.state.setPartial({ locale });
       return;
     }
 
@@ -348,26 +348,26 @@ export const initialUserStore = async () => {
     // The fetchUserSettings() method checks state.currentUser internally
     await userStore.fetchUserSettings();
 
-    // Step 4: Apply user preferences to workspace
+    // Step 4: Apply user preferences to instance
     // CRITICAL: This must happen after fetchUserSettings() completes
     // We need userGeneralSetting to be populated before accessing it
     const generalSetting = userStore.state.userGeneralSetting;
     if (generalSetting) {
       // Note: setPartial will validate theme automatically
-      workspaceStore.state.setPartial({
+      instanceStore.state.setPartial({
         locale: generalSetting.locale,
         theme: generalSetting.theme || "default", // Validation handled by setPartial
       });
     } else {
       // Fallback if settings weren't loaded
       const locale = findNearestMatchedLanguage(navigator.language);
-      workspaceStore.state.setPartial({ locale });
+      instanceStore.state.setPartial({ locale });
     }
   } catch (error) {
     // On any error, fall back to browser language detection
     console.error("Failed to initialize user store:", error);
     const locale = findNearestMatchedLanguage(navigator.language);
-    workspaceStore.state.setPartial({ locale });
+    instanceStore.state.setPartial({ locale });
   }
 };
 

@@ -17,7 +17,7 @@ The store architecture follows a clear separation of concerns:
 |-------|------|---------|
 | `memoStore` | `memo.ts` | Memo CRUD operations, optimistic updates |
 | `userStore` | `user.ts` | User authentication, settings, stats |
-| `workspaceStore` | `workspace.ts` | Workspace profile and settings |
+| `instanceStore` | `instance.ts` | Instance profile and settings |
 | `attachmentStore` | `attachment.ts` | File attachment management |
 
 **Features:**

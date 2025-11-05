@@ -3,16 +3,16 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { workspaceStore } from "@/store";
+import { instanceStore } from "@/store";
 import Navigation from "./Navigation";
 import UserAvatar from "./UserAvatar";
 
 const NavigationDrawer = observer(() => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
-  const workspaceGeneralSetting = workspaceStore.state.generalSetting;
-  const title = workspaceGeneralSetting.customProfile?.title || "Memos";
-  const avatarUrl = workspaceGeneralSetting.customProfile?.logoUrl || "/full-logo.webp";
+  const instanceGeneralSetting = instanceStore.state.generalSetting;
+  const title = instanceGeneralSetting.customProfile?.title || "Memos";
+  const avatarUrl = instanceGeneralSetting.customProfile?.logoUrl || "/full-logo.webp";
 
   useEffect(() => {
     setOpen(false);

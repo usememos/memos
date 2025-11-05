@@ -1,6 +1,6 @@
 import { Moon, Palette, Sun, Wallpaper } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { workspaceStore } from "@/store";
+import { instanceStore } from "@/store";
 import { THEME_OPTIONS } from "@/utils/theme";
 
 interface ThemeSelectProps {
@@ -17,13 +17,13 @@ const THEME_ICONS: Record<string, JSX.Element> = {
 };
 
 const ThemeSelect = ({ value, onValueChange, className }: ThemeSelectProps = {}) => {
-  const currentTheme = value || workspaceStore.state.theme || "default";
+  const currentTheme = value || instanceStore.state.theme || "default";
 
   const handleThemeChange = (newTheme: Theme) => {
     if (onValueChange) {
       onValueChange(newTheme);
     } else {
-      workspaceStore.setTheme(newTheme);
+      instanceStore.setTheme(newTheme);
     }
   };
 

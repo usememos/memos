@@ -2,7 +2,7 @@
 // versions:
 //   protoc-gen-ts_proto  v2.6.1
 //   protoc               unknown
-// source: api/v1/workspace_service.proto
+// source: api/v1/instance_service.proto
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
@@ -10,8 +10,8 @@ import { FieldMask } from "../../google/protobuf/field_mask";
 
 export const protobufPackage = "memos.api.v1";
 
-/** Workspace profile message containing basic workspace information. */
-export interface WorkspaceProfile {
+/** Instance profile message containing basic instance information. */
+export interface InstanceProfile {
   /**
    * The name of instance owner.
    * Format: users/{user}
@@ -25,24 +25,24 @@ export interface WorkspaceProfile {
   instanceUrl: string;
 }
 
-/** Request for workspace profile. */
-export interface GetWorkspaceProfileRequest {
+/** Request for instance profile. */
+export interface GetInstanceProfileRequest {
 }
 
-/** A workspace setting resource. */
-export interface WorkspaceSetting {
+/** An instance setting resource. */
+export interface InstanceSetting {
   /**
-   * The name of the workspace setting.
-   * Format: workspace/settings/{setting}
+   * The name of the instance setting.
+   * Format: instance/settings/{setting}
    */
   name: string;
-  generalSetting?: WorkspaceSetting_GeneralSetting | undefined;
-  storageSetting?: WorkspaceSetting_StorageSetting | undefined;
-  memoRelatedSetting?: WorkspaceSetting_MemoRelatedSetting | undefined;
+  generalSetting?: InstanceSetting_GeneralSetting | undefined;
+  storageSetting?: InstanceSetting_StorageSetting | undefined;
+  memoRelatedSetting?: InstanceSetting_MemoRelatedSetting | undefined;
 }
 
-/** Enumeration of workspace setting keys. */
-export enum WorkspaceSetting_Key {
+/** Enumeration of instance setting keys. */
+export enum InstanceSetting_Key {
   KEY_UNSPECIFIED = "KEY_UNSPECIFIED",
   /** GENERAL - GENERAL is the key for general settings. */
   GENERAL = "GENERAL",
@@ -53,45 +53,45 @@ export enum WorkspaceSetting_Key {
   UNRECOGNIZED = "UNRECOGNIZED",
 }
 
-export function workspaceSetting_KeyFromJSON(object: any): WorkspaceSetting_Key {
+export function instanceSetting_KeyFromJSON(object: any): InstanceSetting_Key {
   switch (object) {
     case 0:
     case "KEY_UNSPECIFIED":
-      return WorkspaceSetting_Key.KEY_UNSPECIFIED;
+      return InstanceSetting_Key.KEY_UNSPECIFIED;
     case 1:
     case "GENERAL":
-      return WorkspaceSetting_Key.GENERAL;
+      return InstanceSetting_Key.GENERAL;
     case 2:
     case "STORAGE":
-      return WorkspaceSetting_Key.STORAGE;
+      return InstanceSetting_Key.STORAGE;
     case 3:
     case "MEMO_RELATED":
-      return WorkspaceSetting_Key.MEMO_RELATED;
+      return InstanceSetting_Key.MEMO_RELATED;
     case -1:
     case "UNRECOGNIZED":
     default:
-      return WorkspaceSetting_Key.UNRECOGNIZED;
+      return InstanceSetting_Key.UNRECOGNIZED;
   }
 }
 
-export function workspaceSetting_KeyToNumber(object: WorkspaceSetting_Key): number {
+export function instanceSetting_KeyToNumber(object: InstanceSetting_Key): number {
   switch (object) {
-    case WorkspaceSetting_Key.KEY_UNSPECIFIED:
+    case InstanceSetting_Key.KEY_UNSPECIFIED:
       return 0;
-    case WorkspaceSetting_Key.GENERAL:
+    case InstanceSetting_Key.GENERAL:
       return 1;
-    case WorkspaceSetting_Key.STORAGE:
+    case InstanceSetting_Key.STORAGE:
       return 2;
-    case WorkspaceSetting_Key.MEMO_RELATED:
+    case InstanceSetting_Key.MEMO_RELATED:
       return 3;
-    case WorkspaceSetting_Key.UNRECOGNIZED:
+    case InstanceSetting_Key.UNRECOGNIZED:
     default:
       return -1;
   }
 }
 
-/** General workspace settings configuration. */
-export interface WorkspaceSetting_GeneralSetting {
+/** General instance settings configuration. */
+export interface InstanceSetting_GeneralSetting {
   /**
    * theme is the name of the selected theme.
    * This references a CSS file in the web/public/themes/ directory.
@@ -107,7 +107,7 @@ export interface WorkspaceSetting_GeneralSetting {
   additionalStyle: string;
   /** custom_profile is the custom profile. */
   customProfile?:
-    | WorkspaceSetting_GeneralSetting_CustomProfile
+    | InstanceSetting_GeneralSetting_CustomProfile
     | undefined;
   /**
    * week_start_day_offset is the week start day offset from Sunday.
@@ -121,18 +121,18 @@ export interface WorkspaceSetting_GeneralSetting {
   disallowChangeNickname: boolean;
 }
 
-/** Custom profile configuration for workspace branding. */
-export interface WorkspaceSetting_GeneralSetting_CustomProfile {
+/** Custom profile configuration for instance branding. */
+export interface InstanceSetting_GeneralSetting_CustomProfile {
   title: string;
   description: string;
   logoUrl: string;
   locale: string;
 }
 
-/** Storage configuration settings for workspace attachments. */
-export interface WorkspaceSetting_StorageSetting {
+/** Storage configuration settings for instance attachments. */
+export interface InstanceSetting_StorageSetting {
   /** storage_type is the storage type. */
-  storageType: WorkspaceSetting_StorageSetting_StorageType;
+  storageType: InstanceSetting_StorageSetting_StorageType;
   /**
    * The template of file path.
    * e.g. assets/{timestamp}_{filename}
@@ -141,11 +141,11 @@ export interface WorkspaceSetting_StorageSetting {
   /** The max upload size in megabytes. */
   uploadSizeLimitMb: number;
   /** The S3 config. */
-  s3Config?: WorkspaceSetting_StorageSetting_S3Config | undefined;
+  s3Config?: InstanceSetting_StorageSetting_S3Config | undefined;
 }
 
 /** Storage type enumeration for different storage backends. */
-export enum WorkspaceSetting_StorageSetting_StorageType {
+export enum InstanceSetting_StorageSetting_StorageType {
   STORAGE_TYPE_UNSPECIFIED = "STORAGE_TYPE_UNSPECIFIED",
   /** DATABASE - DATABASE is the database storage type. */
   DATABASE = "DATABASE",
@@ -156,42 +156,42 @@ export enum WorkspaceSetting_StorageSetting_StorageType {
   UNRECOGNIZED = "UNRECOGNIZED",
 }
 
-export function workspaceSetting_StorageSetting_StorageTypeFromJSON(
+export function instanceSetting_StorageSetting_StorageTypeFromJSON(
   object: any,
-): WorkspaceSetting_StorageSetting_StorageType {
+): InstanceSetting_StorageSetting_StorageType {
   switch (object) {
     case 0:
     case "STORAGE_TYPE_UNSPECIFIED":
-      return WorkspaceSetting_StorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED;
+      return InstanceSetting_StorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED;
     case 1:
     case "DATABASE":
-      return WorkspaceSetting_StorageSetting_StorageType.DATABASE;
+      return InstanceSetting_StorageSetting_StorageType.DATABASE;
     case 2:
     case "LOCAL":
-      return WorkspaceSetting_StorageSetting_StorageType.LOCAL;
+      return InstanceSetting_StorageSetting_StorageType.LOCAL;
     case 3:
     case "S3":
-      return WorkspaceSetting_StorageSetting_StorageType.S3;
+      return InstanceSetting_StorageSetting_StorageType.S3;
     case -1:
     case "UNRECOGNIZED":
     default:
-      return WorkspaceSetting_StorageSetting_StorageType.UNRECOGNIZED;
+      return InstanceSetting_StorageSetting_StorageType.UNRECOGNIZED;
   }
 }
 
-export function workspaceSetting_StorageSetting_StorageTypeToNumber(
-  object: WorkspaceSetting_StorageSetting_StorageType,
+export function instanceSetting_StorageSetting_StorageTypeToNumber(
+  object: InstanceSetting_StorageSetting_StorageType,
 ): number {
   switch (object) {
-    case WorkspaceSetting_StorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED:
+    case InstanceSetting_StorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED:
       return 0;
-    case WorkspaceSetting_StorageSetting_StorageType.DATABASE:
+    case InstanceSetting_StorageSetting_StorageType.DATABASE:
       return 1;
-    case WorkspaceSetting_StorageSetting_StorageType.LOCAL:
+    case InstanceSetting_StorageSetting_StorageType.LOCAL:
       return 2;
-    case WorkspaceSetting_StorageSetting_StorageType.S3:
+    case InstanceSetting_StorageSetting_StorageType.S3:
       return 3;
-    case WorkspaceSetting_StorageSetting_StorageType.UNRECOGNIZED:
+    case InstanceSetting_StorageSetting_StorageType.UNRECOGNIZED:
     default:
       return -1;
   }
@@ -201,7 +201,7 @@ export function workspaceSetting_StorageSetting_StorageTypeToNumber(
  * S3 configuration for cloud storage backend.
  * Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
  */
-export interface WorkspaceSetting_StorageSetting_S3Config {
+export interface InstanceSetting_StorageSetting_S3Config {
   accessKeyId: string;
   accessKeySecret: string;
   endpoint: string;
@@ -210,8 +210,8 @@ export interface WorkspaceSetting_StorageSetting_S3Config {
   usePathStyle: boolean;
 }
 
-/** Memo-related workspace settings and policies. */
-export interface WorkspaceSetting_MemoRelatedSetting {
+/** Memo-related instance settings and policies. */
+export interface InstanceSetting_MemoRelatedSetting {
   /** disallow_public_visibility disallows set memo as public visibility. */
   disallowPublicVisibility: boolean;
   /** display_with_update_time orders and displays memo with update time. */
@@ -232,31 +232,31 @@ export interface WorkspaceSetting_MemoRelatedSetting {
   nsfwTags: string[];
 }
 
-/** Request message for GetWorkspaceSetting method. */
-export interface GetWorkspaceSettingRequest {
+/** Request message for GetInstanceSetting method. */
+export interface GetInstanceSettingRequest {
   /**
-   * The resource name of the workspace setting.
-   * Format: workspace/settings/{setting}
+   * The resource name of the instance setting.
+   * Format: instance/settings/{setting}
    */
   name: string;
 }
 
-/** Request message for UpdateWorkspaceSetting method. */
-export interface UpdateWorkspaceSettingRequest {
-  /** The workspace setting resource which replaces the resource on the server. */
+/** Request message for UpdateInstanceSetting method. */
+export interface UpdateInstanceSettingRequest {
+  /** The instance setting resource which replaces the resource on the server. */
   setting?:
-    | WorkspaceSetting
+    | InstanceSetting
     | undefined;
   /** The list of fields to update. */
   updateMask?: string[] | undefined;
 }
 
-function createBaseWorkspaceProfile(): WorkspaceProfile {
+function createBaseInstanceProfile(): InstanceProfile {
   return { owner: "", version: "", mode: "", instanceUrl: "" };
 }
 
-export const WorkspaceProfile: MessageFns<WorkspaceProfile> = {
-  encode(message: WorkspaceProfile, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const InstanceProfile: MessageFns<InstanceProfile> = {
+  encode(message: InstanceProfile, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
@@ -272,10 +272,10 @@ export const WorkspaceProfile: MessageFns<WorkspaceProfile> = {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceProfile {
+  decode(input: BinaryReader | Uint8Array, length?: number): InstanceProfile {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseWorkspaceProfile();
+    const message = createBaseInstanceProfile();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -320,11 +320,11 @@ export const WorkspaceProfile: MessageFns<WorkspaceProfile> = {
     return message;
   },
 
-  create(base?: DeepPartial<WorkspaceProfile>): WorkspaceProfile {
-    return WorkspaceProfile.fromPartial(base ?? {});
+  create(base?: DeepPartial<InstanceProfile>): InstanceProfile {
+    return InstanceProfile.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<WorkspaceProfile>): WorkspaceProfile {
-    const message = createBaseWorkspaceProfile();
+  fromPartial(object: DeepPartial<InstanceProfile>): InstanceProfile {
+    const message = createBaseInstanceProfile();
     message.owner = object.owner ?? "";
     message.version = object.version ?? "";
     message.mode = object.mode ?? "";
@@ -333,19 +333,19 @@ export const WorkspaceProfile: MessageFns<WorkspaceProfile> = {
   },
 };
 
-function createBaseGetWorkspaceProfileRequest(): GetWorkspaceProfileRequest {
+function createBaseGetInstanceProfileRequest(): GetInstanceProfileRequest {
   return {};
 }
 
-export const GetWorkspaceProfileRequest: MessageFns<GetWorkspaceProfileRequest> = {
-  encode(_: GetWorkspaceProfileRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const GetInstanceProfileRequest: MessageFns<GetInstanceProfileRequest> = {
+  encode(_: GetInstanceProfileRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): GetWorkspaceProfileRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number): GetInstanceProfileRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetWorkspaceProfileRequest();
+    const message = createBaseGetInstanceProfileRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -358,40 +358,40 @@ export const GetWorkspaceProfileRequest: MessageFns<GetWorkspaceProfileRequest> 
     return message;
   },
 
-  create(base?: DeepPartial<GetWorkspaceProfileRequest>): GetWorkspaceProfileRequest {
-    return GetWorkspaceProfileRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<GetInstanceProfileRequest>): GetInstanceProfileRequest {
+    return GetInstanceProfileRequest.fromPartial(base ?? {});
   },
-  fromPartial(_: DeepPartial<GetWorkspaceProfileRequest>): GetWorkspaceProfileRequest {
-    const message = createBaseGetWorkspaceProfileRequest();
+  fromPartial(_: DeepPartial<GetInstanceProfileRequest>): GetInstanceProfileRequest {
+    const message = createBaseGetInstanceProfileRequest();
     return message;
   },
 };
 
-function createBaseWorkspaceSetting(): WorkspaceSetting {
+function createBaseInstanceSetting(): InstanceSetting {
   return { name: "", generalSetting: undefined, storageSetting: undefined, memoRelatedSetting: undefined };
 }
 
-export const WorkspaceSetting: MessageFns<WorkspaceSetting> = {
-  encode(message: WorkspaceSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const InstanceSetting: MessageFns<InstanceSetting> = {
+  encode(message: InstanceSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
     if (message.generalSetting !== undefined) {
-      WorkspaceSetting_GeneralSetting.encode(message.generalSetting, writer.uint32(18).fork()).join();
+      InstanceSetting_GeneralSetting.encode(message.generalSetting, writer.uint32(18).fork()).join();
     }
     if (message.storageSetting !== undefined) {
-      WorkspaceSetting_StorageSetting.encode(message.storageSetting, writer.uint32(26).fork()).join();
+      InstanceSetting_StorageSetting.encode(message.storageSetting, writer.uint32(26).fork()).join();
     }
     if (message.memoRelatedSetting !== undefined) {
-      WorkspaceSetting_MemoRelatedSetting.encode(message.memoRelatedSetting, writer.uint32(34).fork()).join();
+      InstanceSetting_MemoRelatedSetting.encode(message.memoRelatedSetting, writer.uint32(34).fork()).join();
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceSetting {
+  decode(input: BinaryReader | Uint8Array, length?: number): InstanceSetting {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseWorkspaceSetting();
+    const message = createBaseInstanceSetting();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -408,7 +408,7 @@ export const WorkspaceSetting: MessageFns<WorkspaceSetting> = {
             break;
           }
 
-          message.generalSetting = WorkspaceSetting_GeneralSetting.decode(reader, reader.uint32());
+          message.generalSetting = InstanceSetting_GeneralSetting.decode(reader, reader.uint32());
           continue;
         }
         case 3: {
@@ -416,7 +416,7 @@ export const WorkspaceSetting: MessageFns<WorkspaceSetting> = {
             break;
           }
 
-          message.storageSetting = WorkspaceSetting_StorageSetting.decode(reader, reader.uint32());
+          message.storageSetting = InstanceSetting_StorageSetting.decode(reader, reader.uint32());
           continue;
         }
         case 4: {
@@ -424,7 +424,7 @@ export const WorkspaceSetting: MessageFns<WorkspaceSetting> = {
             break;
           }
 
-          message.memoRelatedSetting = WorkspaceSetting_MemoRelatedSetting.decode(reader, reader.uint32());
+          message.memoRelatedSetting = InstanceSetting_MemoRelatedSetting.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -436,26 +436,26 @@ export const WorkspaceSetting: MessageFns<WorkspaceSetting> = {
     return message;
   },
 
-  create(base?: DeepPartial<WorkspaceSetting>): WorkspaceSetting {
-    return WorkspaceSetting.fromPartial(base ?? {});
+  create(base?: DeepPartial<InstanceSetting>): InstanceSetting {
+    return InstanceSetting.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<WorkspaceSetting>): WorkspaceSetting {
-    const message = createBaseWorkspaceSetting();
+  fromPartial(object: DeepPartial<InstanceSetting>): InstanceSetting {
+    const message = createBaseInstanceSetting();
     message.name = object.name ?? "";
     message.generalSetting = (object.generalSetting !== undefined && object.generalSetting !== null)
-      ? WorkspaceSetting_GeneralSetting.fromPartial(object.generalSetting)
+      ? InstanceSetting_GeneralSetting.fromPartial(object.generalSetting)
       : undefined;
     message.storageSetting = (object.storageSetting !== undefined && object.storageSetting !== null)
-      ? WorkspaceSetting_StorageSetting.fromPartial(object.storageSetting)
+      ? InstanceSetting_StorageSetting.fromPartial(object.storageSetting)
       : undefined;
     message.memoRelatedSetting = (object.memoRelatedSetting !== undefined && object.memoRelatedSetting !== null)
-      ? WorkspaceSetting_MemoRelatedSetting.fromPartial(object.memoRelatedSetting)
+      ? InstanceSetting_MemoRelatedSetting.fromPartial(object.memoRelatedSetting)
       : undefined;
     return message;
   },
 };
 
-function createBaseWorkspaceSetting_GeneralSetting(): WorkspaceSetting_GeneralSetting {
+function createBaseInstanceSetting_GeneralSetting(): InstanceSetting_GeneralSetting {
   return {
     theme: "",
     disallowUserRegistration: false,
@@ -469,8 +469,8 @@ function createBaseWorkspaceSetting_GeneralSetting(): WorkspaceSetting_GeneralSe
   };
 }
 
-export const WorkspaceSetting_GeneralSetting: MessageFns<WorkspaceSetting_GeneralSetting> = {
-  encode(message: WorkspaceSetting_GeneralSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const InstanceSetting_GeneralSetting: MessageFns<InstanceSetting_GeneralSetting> = {
+  encode(message: InstanceSetting_GeneralSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.theme !== "") {
       writer.uint32(10).string(message.theme);
     }
@@ -487,7 +487,7 @@ export const WorkspaceSetting_GeneralSetting: MessageFns<WorkspaceSetting_Genera
       writer.uint32(42).string(message.additionalStyle);
     }
     if (message.customProfile !== undefined) {
-      WorkspaceSetting_GeneralSetting_CustomProfile.encode(message.customProfile, writer.uint32(50).fork()).join();
+      InstanceSetting_GeneralSetting_CustomProfile.encode(message.customProfile, writer.uint32(50).fork()).join();
     }
     if (message.weekStartDayOffset !== 0) {
       writer.uint32(56).int32(message.weekStartDayOffset);
@@ -501,10 +501,10 @@ export const WorkspaceSetting_GeneralSetting: MessageFns<WorkspaceSetting_Genera
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceSetting_GeneralSetting {
+  decode(input: BinaryReader | Uint8Array, length?: number): InstanceSetting_GeneralSetting {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseWorkspaceSetting_GeneralSetting();
+    const message = createBaseInstanceSetting_GeneralSetting();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -553,7 +553,7 @@ export const WorkspaceSetting_GeneralSetting: MessageFns<WorkspaceSetting_Genera
             break;
           }
 
-          message.customProfile = WorkspaceSetting_GeneralSetting_CustomProfile.decode(reader, reader.uint32());
+          message.customProfile = InstanceSetting_GeneralSetting_CustomProfile.decode(reader, reader.uint32());
           continue;
         }
         case 7: {
@@ -589,18 +589,18 @@ export const WorkspaceSetting_GeneralSetting: MessageFns<WorkspaceSetting_Genera
     return message;
   },
 
-  create(base?: DeepPartial<WorkspaceSetting_GeneralSetting>): WorkspaceSetting_GeneralSetting {
-    return WorkspaceSetting_GeneralSetting.fromPartial(base ?? {});
+  create(base?: DeepPartial<InstanceSetting_GeneralSetting>): InstanceSetting_GeneralSetting {
+    return InstanceSetting_GeneralSetting.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<WorkspaceSetting_GeneralSetting>): WorkspaceSetting_GeneralSetting {
-    const message = createBaseWorkspaceSetting_GeneralSetting();
+  fromPartial(object: DeepPartial<InstanceSetting_GeneralSetting>): InstanceSetting_GeneralSetting {
+    const message = createBaseInstanceSetting_GeneralSetting();
     message.theme = object.theme ?? "";
     message.disallowUserRegistration = object.disallowUserRegistration ?? false;
     message.disallowPasswordAuth = object.disallowPasswordAuth ?? false;
     message.additionalScript = object.additionalScript ?? "";
     message.additionalStyle = object.additionalStyle ?? "";
     message.customProfile = (object.customProfile !== undefined && object.customProfile !== null)
-      ? WorkspaceSetting_GeneralSetting_CustomProfile.fromPartial(object.customProfile)
+      ? InstanceSetting_GeneralSetting_CustomProfile.fromPartial(object.customProfile)
       : undefined;
     message.weekStartDayOffset = object.weekStartDayOffset ?? 0;
     message.disallowChangeUsername = object.disallowChangeUsername ?? false;
@@ -609,109 +609,108 @@ export const WorkspaceSetting_GeneralSetting: MessageFns<WorkspaceSetting_Genera
   },
 };
 
-function createBaseWorkspaceSetting_GeneralSetting_CustomProfile(): WorkspaceSetting_GeneralSetting_CustomProfile {
+function createBaseInstanceSetting_GeneralSetting_CustomProfile(): InstanceSetting_GeneralSetting_CustomProfile {
   return { title: "", description: "", logoUrl: "", locale: "" };
 }
 
-export const WorkspaceSetting_GeneralSetting_CustomProfile: MessageFns<WorkspaceSetting_GeneralSetting_CustomProfile> =
-  {
-    encode(
-      message: WorkspaceSetting_GeneralSetting_CustomProfile,
-      writer: BinaryWriter = new BinaryWriter(),
-    ): BinaryWriter {
-      if (message.title !== "") {
-        writer.uint32(10).string(message.title);
-      }
-      if (message.description !== "") {
-        writer.uint32(18).string(message.description);
-      }
-      if (message.logoUrl !== "") {
-        writer.uint32(26).string(message.logoUrl);
-      }
-      if (message.locale !== "") {
-        writer.uint32(34).string(message.locale);
-      }
-      return writer;
-    },
+export const InstanceSetting_GeneralSetting_CustomProfile: MessageFns<InstanceSetting_GeneralSetting_CustomProfile> = {
+  encode(
+    message: InstanceSetting_GeneralSetting_CustomProfile,
+    writer: BinaryWriter = new BinaryWriter(),
+  ): BinaryWriter {
+    if (message.title !== "") {
+      writer.uint32(10).string(message.title);
+    }
+    if (message.description !== "") {
+      writer.uint32(18).string(message.description);
+    }
+    if (message.logoUrl !== "") {
+      writer.uint32(26).string(message.logoUrl);
+    }
+    if (message.locale !== "") {
+      writer.uint32(34).string(message.locale);
+    }
+    return writer;
+  },
 
-    decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceSetting_GeneralSetting_CustomProfile {
-      const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-      let end = length === undefined ? reader.len : reader.pos + length;
-      const message = createBaseWorkspaceSetting_GeneralSetting_CustomProfile();
-      while (reader.pos < end) {
-        const tag = reader.uint32();
-        switch (tag >>> 3) {
-          case 1: {
-            if (tag !== 10) {
-              break;
-            }
-
-            message.title = reader.string();
-            continue;
+  decode(input: BinaryReader | Uint8Array, length?: number): InstanceSetting_GeneralSetting_CustomProfile {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseInstanceSetting_GeneralSetting_CustomProfile();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1: {
+          if (tag !== 10) {
+            break;
           }
-          case 2: {
-            if (tag !== 18) {
-              break;
-            }
 
-            message.description = reader.string();
-            continue;
-          }
-          case 3: {
-            if (tag !== 26) {
-              break;
-            }
-
-            message.logoUrl = reader.string();
-            continue;
-          }
-          case 4: {
-            if (tag !== 34) {
-              break;
-            }
-
-            message.locale = reader.string();
-            continue;
-          }
+          message.title = reader.string();
+          continue;
         }
-        if ((tag & 7) === 4 || tag === 0) {
-          break;
+        case 2: {
+          if (tag !== 18) {
+            break;
+          }
+
+          message.description = reader.string();
+          continue;
         }
-        reader.skip(tag & 7);
+        case 3: {
+          if (tag !== 26) {
+            break;
+          }
+
+          message.logoUrl = reader.string();
+          continue;
+        }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.locale = reader.string();
+          continue;
+        }
       }
-      return message;
-    },
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skip(tag & 7);
+    }
+    return message;
+  },
 
-    create(
-      base?: DeepPartial<WorkspaceSetting_GeneralSetting_CustomProfile>,
-    ): WorkspaceSetting_GeneralSetting_CustomProfile {
-      return WorkspaceSetting_GeneralSetting_CustomProfile.fromPartial(base ?? {});
-    },
-    fromPartial(
-      object: DeepPartial<WorkspaceSetting_GeneralSetting_CustomProfile>,
-    ): WorkspaceSetting_GeneralSetting_CustomProfile {
-      const message = createBaseWorkspaceSetting_GeneralSetting_CustomProfile();
-      message.title = object.title ?? "";
-      message.description = object.description ?? "";
-      message.logoUrl = object.logoUrl ?? "";
-      message.locale = object.locale ?? "";
-      return message;
-    },
-  };
+  create(
+    base?: DeepPartial<InstanceSetting_GeneralSetting_CustomProfile>,
+  ): InstanceSetting_GeneralSetting_CustomProfile {
+    return InstanceSetting_GeneralSetting_CustomProfile.fromPartial(base ?? {});
+  },
+  fromPartial(
+    object: DeepPartial<InstanceSetting_GeneralSetting_CustomProfile>,
+  ): InstanceSetting_GeneralSetting_CustomProfile {
+    const message = createBaseInstanceSetting_GeneralSetting_CustomProfile();
+    message.title = object.title ?? "";
+    message.description = object.description ?? "";
+    message.logoUrl = object.logoUrl ?? "";
+    message.locale = object.locale ?? "";
+    return message;
+  },
+};
 
-function createBaseWorkspaceSetting_StorageSetting(): WorkspaceSetting_StorageSetting {
+function createBaseInstanceSetting_StorageSetting(): InstanceSetting_StorageSetting {
   return {
-    storageType: WorkspaceSetting_StorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED,
+    storageType: InstanceSetting_StorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED,
     filepathTemplate: "",
     uploadSizeLimitMb: 0,
     s3Config: undefined,
   };
 }
 
-export const WorkspaceSetting_StorageSetting: MessageFns<WorkspaceSetting_StorageSetting> = {
-  encode(message: WorkspaceSetting_StorageSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.storageType !== WorkspaceSetting_StorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED) {
-      writer.uint32(8).int32(workspaceSetting_StorageSetting_StorageTypeToNumber(message.storageType));
+export const InstanceSetting_StorageSetting: MessageFns<InstanceSetting_StorageSetting> = {
+  encode(message: InstanceSetting_StorageSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+    if (message.storageType !== InstanceSetting_StorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED) {
+      writer.uint32(8).int32(instanceSetting_StorageSetting_StorageTypeToNumber(message.storageType));
     }
     if (message.filepathTemplate !== "") {
       writer.uint32(18).string(message.filepathTemplate);
@@ -720,15 +719,15 @@ export const WorkspaceSetting_StorageSetting: MessageFns<WorkspaceSetting_Storag
       writer.uint32(24).int64(message.uploadSizeLimitMb);
     }
     if (message.s3Config !== undefined) {
-      WorkspaceSetting_StorageSetting_S3Config.encode(message.s3Config, writer.uint32(34).fork()).join();
+      InstanceSetting_StorageSetting_S3Config.encode(message.s3Config, writer.uint32(34).fork()).join();
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceSetting_StorageSetting {
+  decode(input: BinaryReader | Uint8Array, length?: number): InstanceSetting_StorageSetting {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseWorkspaceSetting_StorageSetting();
+    const message = createBaseInstanceSetting_StorageSetting();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -737,7 +736,7 @@ export const WorkspaceSetting_StorageSetting: MessageFns<WorkspaceSetting_Storag
             break;
           }
 
-          message.storageType = workspaceSetting_StorageSetting_StorageTypeFromJSON(reader.int32());
+          message.storageType = instanceSetting_StorageSetting_StorageTypeFromJSON(reader.int32());
           continue;
         }
         case 2: {
@@ -761,7 +760,7 @@ export const WorkspaceSetting_StorageSetting: MessageFns<WorkspaceSetting_Storag
             break;
           }
 
-          message.s3Config = WorkspaceSetting_StorageSetting_S3Config.decode(reader, reader.uint32());
+          message.s3Config = InstanceSetting_StorageSetting_S3Config.decode(reader, reader.uint32());
           continue;
         }
       }
@@ -773,27 +772,27 @@ export const WorkspaceSetting_StorageSetting: MessageFns<WorkspaceSetting_Storag
     return message;
   },
 
-  create(base?: DeepPartial<WorkspaceSetting_StorageSetting>): WorkspaceSetting_StorageSetting {
-    return WorkspaceSetting_StorageSetting.fromPartial(base ?? {});
+  create(base?: DeepPartial<InstanceSetting_StorageSetting>): InstanceSetting_StorageSetting {
+    return InstanceSetting_StorageSetting.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<WorkspaceSetting_StorageSetting>): WorkspaceSetting_StorageSetting {
-    const message = createBaseWorkspaceSetting_StorageSetting();
-    message.storageType = object.storageType ?? WorkspaceSetting_StorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED;
+  fromPartial(object: DeepPartial<InstanceSetting_StorageSetting>): InstanceSetting_StorageSetting {
+    const message = createBaseInstanceSetting_StorageSetting();
+    message.storageType = object.storageType ?? InstanceSetting_StorageSetting_StorageType.STORAGE_TYPE_UNSPECIFIED;
     message.filepathTemplate = object.filepathTemplate ?? "";
     message.uploadSizeLimitMb = object.uploadSizeLimitMb ?? 0;
     message.s3Config = (object.s3Config !== undefined && object.s3Config !== null)
-      ? WorkspaceSetting_StorageSetting_S3Config.fromPartial(object.s3Config)
+      ? InstanceSetting_StorageSetting_S3Config.fromPartial(object.s3Config)
       : undefined;
     return message;
   },
 };
 
-function createBaseWorkspaceSetting_StorageSetting_S3Config(): WorkspaceSetting_StorageSetting_S3Config {
+function createBaseInstanceSetting_StorageSetting_S3Config(): InstanceSetting_StorageSetting_S3Config {
   return { accessKeyId: "", accessKeySecret: "", endpoint: "", region: "", bucket: "", usePathStyle: false };
 }
 
-export const WorkspaceSetting_StorageSetting_S3Config: MessageFns<WorkspaceSetting_StorageSetting_S3Config> = {
-  encode(message: WorkspaceSetting_StorageSetting_S3Config, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const InstanceSetting_StorageSetting_S3Config: MessageFns<InstanceSetting_StorageSetting_S3Config> = {
+  encode(message: InstanceSetting_StorageSetting_S3Config, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.accessKeyId !== "") {
       writer.uint32(10).string(message.accessKeyId);
     }
@@ -815,10 +814,10 @@ export const WorkspaceSetting_StorageSetting_S3Config: MessageFns<WorkspaceSetti
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceSetting_StorageSetting_S3Config {
+  decode(input: BinaryReader | Uint8Array, length?: number): InstanceSetting_StorageSetting_S3Config {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseWorkspaceSetting_StorageSetting_S3Config();
+    const message = createBaseInstanceSetting_StorageSetting_S3Config();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -879,11 +878,11 @@ export const WorkspaceSetting_StorageSetting_S3Config: MessageFns<WorkspaceSetti
     return message;
   },
 
-  create(base?: DeepPartial<WorkspaceSetting_StorageSetting_S3Config>): WorkspaceSetting_StorageSetting_S3Config {
-    return WorkspaceSetting_StorageSetting_S3Config.fromPartial(base ?? {});
+  create(base?: DeepPartial<InstanceSetting_StorageSetting_S3Config>): InstanceSetting_StorageSetting_S3Config {
+    return InstanceSetting_StorageSetting_S3Config.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<WorkspaceSetting_StorageSetting_S3Config>): WorkspaceSetting_StorageSetting_S3Config {
-    const message = createBaseWorkspaceSetting_StorageSetting_S3Config();
+  fromPartial(object: DeepPartial<InstanceSetting_StorageSetting_S3Config>): InstanceSetting_StorageSetting_S3Config {
+    const message = createBaseInstanceSetting_StorageSetting_S3Config();
     message.accessKeyId = object.accessKeyId ?? "";
     message.accessKeySecret = object.accessKeySecret ?? "";
     message.endpoint = object.endpoint ?? "";
@@ -894,7 +893,7 @@ export const WorkspaceSetting_StorageSetting_S3Config: MessageFns<WorkspaceSetti
   },
 };
 
-function createBaseWorkspaceSetting_MemoRelatedSetting(): WorkspaceSetting_MemoRelatedSetting {
+function createBaseInstanceSetting_MemoRelatedSetting(): InstanceSetting_MemoRelatedSetting {
   return {
     disallowPublicVisibility: false,
     displayWithUpdateTime: false,
@@ -908,8 +907,8 @@ function createBaseWorkspaceSetting_MemoRelatedSetting(): WorkspaceSetting_MemoR
   };
 }
 
-export const WorkspaceSetting_MemoRelatedSetting: MessageFns<WorkspaceSetting_MemoRelatedSetting> = {
-  encode(message: WorkspaceSetting_MemoRelatedSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const InstanceSetting_MemoRelatedSetting: MessageFns<InstanceSetting_MemoRelatedSetting> = {
+  encode(message: InstanceSetting_MemoRelatedSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.disallowPublicVisibility !== false) {
       writer.uint32(8).bool(message.disallowPublicVisibility);
     }
@@ -940,10 +939,10 @@ export const WorkspaceSetting_MemoRelatedSetting: MessageFns<WorkspaceSetting_Me
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): WorkspaceSetting_MemoRelatedSetting {
+  decode(input: BinaryReader | Uint8Array, length?: number): InstanceSetting_MemoRelatedSetting {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseWorkspaceSetting_MemoRelatedSetting();
+    const message = createBaseInstanceSetting_MemoRelatedSetting();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1028,11 +1027,11 @@ export const WorkspaceSetting_MemoRelatedSetting: MessageFns<WorkspaceSetting_Me
     return message;
   },
 
-  create(base?: DeepPartial<WorkspaceSetting_MemoRelatedSetting>): WorkspaceSetting_MemoRelatedSetting {
-    return WorkspaceSetting_MemoRelatedSetting.fromPartial(base ?? {});
+  create(base?: DeepPartial<InstanceSetting_MemoRelatedSetting>): InstanceSetting_MemoRelatedSetting {
+    return InstanceSetting_MemoRelatedSetting.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<WorkspaceSetting_MemoRelatedSetting>): WorkspaceSetting_MemoRelatedSetting {
-    const message = createBaseWorkspaceSetting_MemoRelatedSetting();
+  fromPartial(object: DeepPartial<InstanceSetting_MemoRelatedSetting>): InstanceSetting_MemoRelatedSetting {
+    const message = createBaseInstanceSetting_MemoRelatedSetting();
     message.disallowPublicVisibility = object.disallowPublicVisibility ?? false;
     message.displayWithUpdateTime = object.displayWithUpdateTime ?? false;
     message.contentLengthLimit = object.contentLengthLimit ?? 0;
@@ -1046,22 +1045,22 @@ export const WorkspaceSetting_MemoRelatedSetting: MessageFns<WorkspaceSetting_Me
   },
 };
 
-function createBaseGetWorkspaceSettingRequest(): GetWorkspaceSettingRequest {
+function createBaseGetInstanceSettingRequest(): GetInstanceSettingRequest {
   return { name: "" };
 }
 
-export const GetWorkspaceSettingRequest: MessageFns<GetWorkspaceSettingRequest> = {
-  encode(message: GetWorkspaceSettingRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const GetInstanceSettingRequest: MessageFns<GetInstanceSettingRequest> = {
+  encode(message: GetInstanceSettingRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): GetWorkspaceSettingRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number): GetInstanceSettingRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetWorkspaceSettingRequest();
+    const message = createBaseGetInstanceSettingRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1082,24 +1081,24 @@ export const GetWorkspaceSettingRequest: MessageFns<GetWorkspaceSettingRequest> 
     return message;
   },
 
-  create(base?: DeepPartial<GetWorkspaceSettingRequest>): GetWorkspaceSettingRequest {
-    return GetWorkspaceSettingRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<GetInstanceSettingRequest>): GetInstanceSettingRequest {
+    return GetInstanceSettingRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<GetWorkspaceSettingRequest>): GetWorkspaceSettingRequest {
-    const message = createBaseGetWorkspaceSettingRequest();
+  fromPartial(object: DeepPartial<GetInstanceSettingRequest>): GetInstanceSettingRequest {
+    const message = createBaseGetInstanceSettingRequest();
     message.name = object.name ?? "";
     return message;
   },
 };
 
-function createBaseUpdateWorkspaceSettingRequest(): UpdateWorkspaceSettingRequest {
+function createBaseUpdateInstanceSettingRequest(): UpdateInstanceSettingRequest {
   return { setting: undefined, updateMask: undefined };
 }
 
-export const UpdateWorkspaceSettingRequest: MessageFns<UpdateWorkspaceSettingRequest> = {
-  encode(message: UpdateWorkspaceSettingRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
+export const UpdateInstanceSettingRequest: MessageFns<UpdateInstanceSettingRequest> = {
+  encode(message: UpdateInstanceSettingRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
     if (message.setting !== undefined) {
-      WorkspaceSetting.encode(message.setting, writer.uint32(10).fork()).join();
+      InstanceSetting.encode(message.setting, writer.uint32(10).fork()).join();
     }
     if (message.updateMask !== undefined) {
       FieldMask.encode(FieldMask.wrap(message.updateMask), writer.uint32(18).fork()).join();
@@ -1107,10 +1106,10 @@ export const UpdateWorkspaceSettingRequest: MessageFns<UpdateWorkspaceSettingReq
     return writer;
   },
 
-  decode(input: BinaryReader | Uint8Array, length?: number): UpdateWorkspaceSettingRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number): UpdateInstanceSettingRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUpdateWorkspaceSettingRequest();
+    const message = createBaseUpdateInstanceSettingRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1119,7 +1118,7 @@ export const UpdateWorkspaceSettingRequest: MessageFns<UpdateWorkspaceSettingReq
             break;
           }
 
-          message.setting = WorkspaceSetting.decode(reader, reader.uint32());
+          message.setting = InstanceSetting.decode(reader, reader.uint32());
           continue;
         }
         case 2: {
@@ -1139,38 +1138,38 @@ export const UpdateWorkspaceSettingRequest: MessageFns<UpdateWorkspaceSettingReq
     return message;
   },
 
-  create(base?: DeepPartial<UpdateWorkspaceSettingRequest>): UpdateWorkspaceSettingRequest {
-    return UpdateWorkspaceSettingRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<UpdateInstanceSettingRequest>): UpdateInstanceSettingRequest {
+    return UpdateInstanceSettingRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<UpdateWorkspaceSettingRequest>): UpdateWorkspaceSettingRequest {
-    const message = createBaseUpdateWorkspaceSettingRequest();
+  fromPartial(object: DeepPartial<UpdateInstanceSettingRequest>): UpdateInstanceSettingRequest {
+    const message = createBaseUpdateInstanceSettingRequest();
     message.setting = (object.setting !== undefined && object.setting !== null)
-      ? WorkspaceSetting.fromPartial(object.setting)
+      ? InstanceSetting.fromPartial(object.setting)
       : undefined;
     message.updateMask = object.updateMask ?? undefined;
     return message;
   },
 };
 
-export type WorkspaceServiceDefinition = typeof WorkspaceServiceDefinition;
-export const WorkspaceServiceDefinition = {
-  name: "WorkspaceService",
-  fullName: "memos.api.v1.WorkspaceService",
+export type InstanceServiceDefinition = typeof InstanceServiceDefinition;
+export const InstanceServiceDefinition = {
+  name: "InstanceService",
+  fullName: "memos.api.v1.InstanceService",
   methods: {
-    /** Gets the workspace profile. */
-    getWorkspaceProfile: {
-      name: "GetWorkspaceProfile",
-      requestType: GetWorkspaceProfileRequest,
+    /** Gets the instance profile. */
+    getInstanceProfile: {
+      name: "GetInstanceProfile",
+      requestType: GetInstanceProfileRequest,
       requestStream: false,
-      responseType: WorkspaceProfile,
+      responseType: InstanceProfile,
       responseStream: false,
       options: {
         _unknownFields: {
           578365826: [
             new Uint8Array([
-              27,
+              26,
               18,
-              25,
+              24,
               47,
               97,
               112,
@@ -1179,13 +1178,12 @@ export const WorkspaceServiceDefinition = {
               118,
               49,
               47,
-              119,
-              111,
-              114,
-              107,
+              105,
+              110,
               115,
-              112,
+              116,
               97,
+              110,
               99,
               101,
               47,
@@ -1201,21 +1199,21 @@ export const WorkspaceServiceDefinition = {
         },
       },
     },
-    /** Gets a workspace setting. */
-    getWorkspaceSetting: {
-      name: "GetWorkspaceSetting",
-      requestType: GetWorkspaceSettingRequest,
+    /** Gets an instance setting. */
+    getInstanceSetting: {
+      name: "GetInstanceSetting",
+      requestType: GetInstanceSettingRequest,
       requestStream: false,
-      responseType: WorkspaceSetting,
+      responseType: InstanceSetting,
       responseStream: false,
       options: {
         _unknownFields: {
           8410: [new Uint8Array([4, 110, 97, 109, 101])],
           578365826: [
             new Uint8Array([
-              37,
+              36,
               18,
-              35,
+              34,
               47,
               97,
               112,
@@ -1230,13 +1228,12 @@ export const WorkspaceServiceDefinition = {
               109,
               101,
               61,
-              119,
-              111,
-              114,
-              107,
+              105,
+              110,
               115,
-              112,
+              116,
               97,
+              110,
               99,
               101,
               47,
@@ -1256,12 +1253,12 @@ export const WorkspaceServiceDefinition = {
         },
       },
     },
-    /** Updates a workspace setting. */
-    updateWorkspaceSetting: {
-      name: "UpdateWorkspaceSetting",
-      requestType: UpdateWorkspaceSettingRequest,
+    /** Updates an instance setting. */
+    updateInstanceSetting: {
+      name: "UpdateInstanceSetting",
+      requestType: UpdateInstanceSettingRequest,
       requestStream: false,
-      responseType: WorkspaceSetting,
+      responseType: InstanceSetting,
       responseStream: false,
       options: {
         _unknownFields: {
@@ -1291,7 +1288,7 @@ export const WorkspaceServiceDefinition = {
           ],
           578365826: [
             new Uint8Array([
-              54,
+              53,
               58,
               7,
               115,
@@ -1302,7 +1299,7 @@ export const WorkspaceServiceDefinition = {
               110,
               103,
               50,
-              43,
+              42,
               47,
               97,
               112,
@@ -1325,13 +1322,12 @@ export const WorkspaceServiceDefinition = {
               109,
               101,
               61,
-              119,
-              111,
-              114,
-              107,
+              105,
+              110,
               115,
-              112,
+              116,
               97,
+              110,
               99,
               101,
               47,

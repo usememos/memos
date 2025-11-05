@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { convertFileToBase64 } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { userStore, workspaceStore } from "@/store";
+import { userStore, instanceStore } from "@/store";
 import { User as UserPb } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import UserAvatar from "./UserAvatar";
@@ -38,7 +38,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
     email: currentUser.email,
     description: currentUser.description,
   });
-  const workspaceGeneralSetting = workspaceStore.state.generalSetting;
+  const instanceGeneralSetting = instanceStore.state.generalSetting;
 
   const handleCloseBtnClick = () => {
     onOpenChange(false);
@@ -179,7 +179,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
               id="username"
               value={state.username}
               onChange={handleUsernameChanged}
-              disabled={workspaceGeneralSetting.disallowChangeUsername}
+              disabled={instanceGeneralSetting.disallowChangeUsername}
             />
           </div>
           <div className="grid gap-2">
@@ -191,7 +191,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
               id="displayName"
               value={state.displayName}
               onChange={handleDisplayNameChanged}
-              disabled={workspaceGeneralSetting.disallowChangeNickname}
+              disabled={instanceGeneralSetting.disallowChangeNickname}
             />
           </div>
           <div className="grid gap-2">

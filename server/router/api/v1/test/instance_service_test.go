@@ -10,17 +10,17 @@ import (
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 )
 
-func TestGetWorkspaceProfile(t *testing.T) {
+func TestGetInstanceProfile(t *testing.T) {
 	ctx := context.Background()
 
-	t.Run("GetWorkspaceProfile returns workspace profile", func(t *testing.T) {
+	t.Run("GetInstanceProfile returns instance profile", func(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
-		// Call GetWorkspaceProfile directly
-		req := &v1pb.GetWorkspaceProfileRequest{}
-		resp, err := ts.Service.GetWorkspaceProfile(ctx, req)
+		// Call GetInstanceProfile directly
+		req := &v1pb.GetInstanceProfileRequest{}
+		resp, err := ts.Service.GetInstanceProfile(ctx, req)
 
 		// Verify response
 		require.NoError(t, err)
@@ -35,7 +35,7 @@ func TestGetWorkspaceProfile(t *testing.T) {
 		require.Empty(t, resp.Owner)
 	})
 
-	t.Run("GetWorkspaceProfile with owner", func(t *testing.T) {
+	t.Run("GetInstanceProfile with owner", func(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
 		defer ts.Cleanup()
@@ -45,9 +45,9 @@ func TestGetWorkspaceProfile(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, hostUser)
 
-		// Call GetWorkspaceProfile directly
-		req := &v1pb.GetWorkspaceProfileRequest{}
-		resp, err := ts.Service.GetWorkspaceProfile(ctx, req)
+		// Call GetInstanceProfile directly
+		req := &v1pb.GetInstanceProfileRequest{}
+		resp, err := ts.Service.GetInstanceProfile(ctx, req)
 
 		// Verify response
 		require.NoError(t, err)
@@ -64,7 +64,7 @@ func TestGetWorkspaceProfile(t *testing.T) {
 	})
 }
 
-func TestGetWorkspaceProfile_Concurrency(t *testing.T) {
+func TestGetInstanceProfile_Concurrency(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Concurrent access to service", func(t *testing.T) {
@@ -79,13 +79,13 @@ func TestGetWorkspaceProfile_Concurrency(t *testing.T) {
 
 		// Make concurrent requests
 		numGoroutines := 10
-		results := make(chan *v1pb.WorkspaceProfile, numGoroutines)
+		results := make(chan *v1pb.InstanceProfile, numGoroutines)
 		errors := make(chan error, numGoroutines)
 
 		for i := 0; i < numGoroutines; i++ {
 			go func() {
-				req := &v1pb.GetWorkspaceProfileRequest{}
-				resp, err := ts.Service.GetWorkspaceProfile(ctx, req)
+				req := &v1pb.GetInstanceProfileRequest{}
+				resp, err := ts.Service.GetInstanceProfile(ctx, req)
 				if err != nil {
 					errors <- err
 					return
@@ -110,24 +110,24 @@ func TestGetWorkspaceProfile_Concurrency(t *testing.T) {
 	})
 }
 
-func TestGetWorkspaceSetting(t *testing.T) {
+func TestGetInstanceSetting(t *testing.T) {
 	ctx := context.Background()
 
-	t.Run("GetWorkspaceSetting - general setting", func(t *testing.T) {
+	t.Run("GetInstanceSetting - general setting", func(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
-		// Call GetWorkspaceSetting for general setting
-		req := &v1pb.GetWorkspaceSettingRequest{
-			Name: "workspace/settings/GENERAL",
+		// Call GetInstanceSetting for general setting
+		req := &v1pb.GetInstanceSettingRequest{
+			Name: "instance/settings/GENERAL",
 		}
-		resp, err := ts.Service.GetWorkspaceSetting(ctx, req)
+		resp, err := ts.Service.GetInstanceSetting(ctx, req)
 
 		// Verify response
 		require.NoError(t, err)
 		require.NotNil(t, resp)
-		require.Equal(t, "workspace/settings/GENERAL", resp.Name)
+		require.Equal(t, "instance/settings/GENERAL", resp.Name)
 
 		// The general setting should have a general_setting field
 		generalSetting := resp.GetGeneralSetting()
@@ -139,7 +139,7 @@ func TestGetWorkspaceSetting(t *testing.T) {
 		require.Empty(t, generalSetting.AdditionalScript)
 	})
 
-	t.Run("GetWorkspaceSetting - storage setting", func(t *testing.T) {
+	t.Run("GetInstanceSetting - storage setting", func(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
 		defer ts.Cleanup()
@@ -151,56 +151,56 @@ func TestGetWorkspaceSetting(t *testing.T) {
 		// Add user to context
 		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
-		// Call GetWorkspaceSetting for storage setting
-		req := &v1pb.GetWorkspaceSettingRequest{
-			Name: "workspace/settings/STORAGE",
+		// Call GetInstanceSetting for storage setting
+		req := &v1pb.GetInstanceSettingRequest{
+			Name: "instance/settings/STORAGE",
 		}
-		resp, err := ts.Service.GetWorkspaceSetting(userCtx, req)
+		resp, err := ts.Service.GetInstanceSetting(userCtx, req)
 
 		// Verify response
 		require.NoError(t, err)
 		require.NotNil(t, resp)
-		require.Equal(t, "workspace/settings/STORAGE", resp.Name)
+		require.Equal(t, "instance/settings/STORAGE", resp.Name)
 
 		// The storage setting should have a storage_setting field
 		storageSetting := resp.GetStorageSetting()
 		require.NotNil(t, storageSetting)
 	})
 
-	t.Run("GetWorkspaceSetting - memo related setting", func(t *testing.T) {
+	t.Run("GetInstanceSetting - memo related setting", func(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
-		// Call GetWorkspaceSetting for memo related setting
-		req := &v1pb.GetWorkspaceSettingRequest{
-			Name: "workspace/settings/MEMO_RELATED",
+		// Call GetInstanceSetting for memo related setting
+		req := &v1pb.GetInstanceSettingRequest{
+			Name: "instance/settings/MEMO_RELATED",
 		}
-		resp, err := ts.Service.GetWorkspaceSetting(ctx, req)
+		resp, err := ts.Service.GetInstanceSetting(ctx, req)
 
 		// Verify response
 		require.NoError(t, err)
 		require.NotNil(t, resp)
-		require.Equal(t, "workspace/settings/MEMO_RELATED", resp.Name)
+		require.Equal(t, "instance/settings/MEMO_RELATED", resp.Name)
 
 		// The memo related setting should have a memo_related_setting field
 		memoRelatedSetting := resp.GetMemoRelatedSetting()
 		require.NotNil(t, memoRelatedSetting)
 	})
 
-	t.Run("GetWorkspaceSetting - invalid setting name", func(t *testing.T) {
+	t.Run("GetInstanceSetting - invalid setting name", func(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
-		// Call GetWorkspaceSetting with invalid name
-		req := &v1pb.GetWorkspaceSettingRequest{
+		// Call GetInstanceSetting with invalid name
+		req := &v1pb.GetInstanceSettingRequest{
 			Name: "invalid/setting/name",
 		}
-		_, err := ts.Service.GetWorkspaceSetting(ctx, req)
+		_, err := ts.Service.GetInstanceSetting(ctx, req)
 
 		// Should return an error
 		require.Error(t, err)
-		require.Contains(t, err.Error(), "invalid workspace setting name")
+		require.Contains(t, err.Error(), "invalid instance setting name")
 	})
 }

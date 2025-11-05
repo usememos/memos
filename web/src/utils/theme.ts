@@ -69,14 +69,14 @@ export const loadTheme = (themeName: string): void => {
   const validTheme = validateTheme(themeName);
 
   // Remove existing theme
-  document.getElementById("workspace-theme")?.remove();
+  document.getElementById("instance-theme")?.remove();
 
   // Apply theme (skip for default)
   if (validTheme !== "default") {
     const css = THEME_CONTENT[validTheme];
     if (css) {
       const style = document.createElement("style");
-      style.id = "workspace-theme";
+      style.id = "instance-theme";
       style.textContent = css;
       document.head.appendChild(style);
     }

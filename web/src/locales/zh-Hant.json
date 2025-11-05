@@ -435,7 +435,7 @@
       "title": "Webhook",
       "url": "網址"
     },
-    "workspace-section": {
+    "instance-section": {
       "disallow-change-nickname": "禁止變更暱稱",
       "disallow-change-username": "禁止變更使用者名稱",
       "disallow-password-auth": "禁止使用密碼登入",

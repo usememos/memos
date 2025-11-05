@@ -376,7 +376,7 @@
       "title": "Вебхуки",
       "url": "Ссылка"
     },
-    "workspace-section": {
+    "instance-section": {
         "disallow-change-nickname": "Запретить смену псевдонима",
         "disallow-change-username": "Запретить смену имени пользователя",
         "disallow-password-auth": "Запретить вход по паролю",

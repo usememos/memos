@@ -9,35 +9,35 @@ import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { identityProviderServiceClient } from "@/grpcweb";
 import useDialog from "@/hooks/useDialog";
-import { workspaceStore } from "@/store";
-import { workspaceSettingNamePrefix } from "@/store/common";
+import { instanceStore } from "@/store";
+import { instanceSettingNamePrefix } from "@/store/common";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service";
-import { WorkspaceSetting_GeneralSetting, WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
+import { InstanceSetting_GeneralSetting, InstanceSetting_Key } from "@/types/proto/api/v1/instance_service";
 import { useTranslate } from "@/utils/i18n";
 import ThemeSelect from "../ThemeSelect";
 import UpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
 
-const WorkspaceSection = observer(() => {
+const InstanceSection = observer(() => {
   const t = useTranslate();
   const customizeDialog = useDialog();
-  const originalSetting = WorkspaceSetting_GeneralSetting.fromPartial(
-    workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.GENERAL)?.generalSetting || {},
+  const originalSetting = InstanceSetting_GeneralSetting.fromPartial(
+    instanceStore.getInstanceSettingByKey(InstanceSetting_Key.GENERAL)?.generalSetting || {},
   );
-  const [workspaceGeneralSetting, setWorkspaceGeneralSetting] = useState<WorkspaceSetting_GeneralSetting>(originalSetting);
+  const [instanceGeneralSetting, setInstanceGeneralSetting] = useState<InstanceSetting_GeneralSetting>(originalSetting);
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
 
   useEffect(() => {
-    setWorkspaceGeneralSetting({ ...workspaceGeneralSetting, customProfile: originalSetting.customProfile });
-  }, [workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.GENERAL)]);
+    setInstanceGeneralSetting({ ...instanceGeneralSetting, customProfile: originalSetting.customProfile });
+  }, [instanceStore.getInstanceSettingByKey(InstanceSetting_Key.GENERAL)]);
 
   const handleUpdateCustomizedProfileButtonClick = () => {
     customizeDialog.open();
   };
 
-  const updatePartialSetting = (partial: Partial<WorkspaceSetting_GeneralSetting>) => {
-    setWorkspaceGeneralSetting(
-      WorkspaceSetting_GeneralSetting.fromPartial({
-        ...workspaceGeneralSetting,
+  const updatePartialSetting = (partial: Partial<InstanceSetting_GeneralSetting>) => {
+    setInstanceGeneralSetting(
+      InstanceSetting_GeneralSetting.fromPartial({
+        ...instanceGeneralSetting,
         ...partial,
       }),
     );
@@ -45,9 +45,9 @@ const WorkspaceSection = observer(() => {
 
   const handleSaveGeneralSetting = async () => {
     try {
-      await workspaceStore.upsertWorkspaceSetting({
-        name: `${workspaceSettingNamePrefix}${WorkspaceSetting_Key.GENERAL}`,
-        generalSetting: workspaceGeneralSetting,
+      await instanceStore.upsertInstanceSetting({
+        name: `${instanceSettingNamePrefix}${InstanceSetting_Key.GENERAL}`,
+        generalSetting: instanceGeneralSetting,
       });
     } catch (error: any) {
       toast.error(error.details);
@@ -72,7 +72,7 @@ const WorkspaceSection = observer(() => {
       <div className="w-full flex flex-row justify-between items-center">
         <div>
           {t("setting.system-section.server-name")}:{" "}
-          <span className="font-mono font-bold">{workspaceGeneralSetting.customProfile?.title || "Memos"}</span>
+          <span className="font-mono font-bold">{instanceGeneralSetting.customProfile?.title || "Memos"}</span>
         </div>
         <Button variant="outline" onClick={handleUpdateCustomizedProfileButtonClick}>
           {t("common.edit")}
@@ -83,7 +83,7 @@ const WorkspaceSection = observer(() => {
       <div className="w-full flex flex-row justify-between items-center">
         <span>Theme</span>
         <ThemeSelect
-          value={workspaceGeneralSetting.theme || "default"}
+          value={instanceGeneralSetting.theme || "default"}
           onValueChange={(value: string) => updatePartialSetting({ theme: value })}
           className="min-w-fit"
         />
@@ -95,7 +95,7 @@ const WorkspaceSection = observer(() => {
         className="font-mono w-full"
         rows={3}
         placeholder={t("setting.system-section.additional-style-placeholder")}
-        value={workspaceGeneralSetting.additionalStyle}
+        value={instanceGeneralSetting.additionalStyle}
         onChange={(event) => updatePartialSetting({ additionalStyle: event.target.value })}
       />
       <div className="w-full flex flex-row justify-between items-center">
@@ -105,46 +105,46 @@ const WorkspaceSection = observer(() => {
         className="font-mono w-full"
         rows={3}
         placeholder={t("setting.system-section.additional-script-placeholder")}
-        value={workspaceGeneralSetting.additionalScript}
+        value={instanceGeneralSetting.additionalScript}
         onChange={(event) => updatePartialSetting({ additionalScript: event.target.value })}
       />
       <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.workspace-section.disallow-user-registration")}</span>
+        <span>{t("setting.instance-section.disallow-user-registration")}</span>
         <Switch
-          disabled={workspaceStore.state.profile.mode === "demo"}
-          checked={workspaceGeneralSetting.disallowUserRegistration}
+          disabled={instanceStore.state.profile.mode === "demo"}
+          checked={instanceGeneralSetting.disallowUserRegistration}
           onCheckedChange={(checked) => updatePartialSetting({ disallowUserRegistration: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.workspace-section.disallow-password-auth")}</span>
+        <span>{t("setting.instance-section.disallow-password-auth")}</span>
         <Switch
           disabled={
-            workspaceStore.state.profile.mode === "demo" ||
-            (identityProviderList.length === 0 && !workspaceGeneralSetting.disallowPasswordAuth)
+            instanceStore.state.profile.mode === "demo" ||
+            (identityProviderList.length === 0 && !instanceGeneralSetting.disallowPasswordAuth)
           }
-          checked={workspaceGeneralSetting.disallowPasswordAuth}
+          checked={instanceGeneralSetting.disallowPasswordAuth}
           onCheckedChange={(checked) => updatePartialSetting({ disallowPasswordAuth: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.workspace-section.disallow-change-username")}</span>
+        <span>{t("setting.instance-section.disallow-change-username")}</span>
         <Switch
-          checked={workspaceGeneralSetting.disallowChangeUsername}
+          checked={instanceGeneralSetting.disallowChangeUsername}
           onCheckedChange={(checked) => updatePartialSetting({ disallowChangeUsername: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span>{t("setting.workspace-section.disallow-change-nickname")}</span>
+        <span>{t("setting.instance-section.disallow-change-nickname")}</span>
         <Switch
-          checked={workspaceGeneralSetting.disallowChangeNickname}
+          checked={instanceGeneralSetting.disallowChangeNickname}
           onCheckedChange={(checked) => updatePartialSetting({ disallowChangeNickname: checked })}
         />
       </div>
       <div className="w-full flex flex-row justify-between items-center">
-        <span className="truncate">{t("setting.workspace-section.week-start-day")}</span>
+        <span className="truncate">{t("setting.instance-section.week-start-day")}</span>
         <Select
-          value={workspaceGeneralSetting.weekStartDayOffset.toString()}
+          value={instanceGeneralSetting.weekStartDayOffset.toString()}
           onValueChange={(value) => {
             updatePartialSetting({ weekStartDayOffset: parseInt(value) || 0 });
           }}
@@ -153,14 +153,14 @@ const WorkspaceSection = observer(() => {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="-1">{t("setting.workspace-section.saturday")}</SelectItem>
-            <SelectItem value="0">{t("setting.workspace-section.sunday")}</SelectItem>
-            <SelectItem value="1">{t("setting.workspace-section.monday")}</SelectItem>
+            <SelectItem value="-1">{t("setting.instance-section.saturday")}</SelectItem>
+            <SelectItem value="0">{t("setting.instance-section.sunday")}</SelectItem>
+            <SelectItem value="1">{t("setting.instance-section.monday")}</SelectItem>
           </SelectContent>
         </Select>
       </div>
       <div className="mt-2 w-full flex justify-end">
-        <Button disabled={isEqual(workspaceGeneralSetting, originalSetting)} onClick={handleSaveGeneralSetting}>
+        <Button disabled={isEqual(instanceGeneralSetting, originalSetting)} onClick={handleSaveGeneralSetting}>
           {t("common.save")}
         </Button>
       </div>
@@ -169,7 +169,7 @@ const WorkspaceSection = observer(() => {
         open={customizeDialog.isOpen}
         onOpenChange={customizeDialog.setOpen}
         onSuccess={() => {
-          // Refresh workspace settings if needed
+          // Refresh instance settings if needed
           toast.success("Profile updated successfully!");
         }}
       />
@@ -177,4 +177,4 @@ const WorkspaceSection = observer(() => {
   );
 });
 
-export default WorkspaceSection;
+export default InstanceSection;

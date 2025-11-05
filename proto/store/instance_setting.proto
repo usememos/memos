@@ -4,8 +4,8 @@ package memos.store;
 
 option go_package = "gen/store";
 
-enum WorkspaceSettingKey {
-  WORKSPACE_SETTING_KEY_UNSPECIFIED = 0;
+enum InstanceSettingKey {
+  INSTANCE_SETTING_KEY_UNSPECIFIED = 0;
   // BASIC is the key for basic settings.
   BASIC = 1;
   // GENERAL is the key for general settings.
@@ -16,24 +16,24 @@ enum WorkspaceSettingKey {
   MEMO_RELATED = 4;
 }
 
-message WorkspaceSetting {
-  WorkspaceSettingKey key = 1;
+message InstanceSetting {
+  InstanceSettingKey key = 1;
   oneof value {
-    WorkspaceBasicSetting basic_setting = 2;
-    WorkspaceGeneralSetting general_setting = 3;
-    WorkspaceStorageSetting storage_setting = 4;
-    WorkspaceMemoRelatedSetting memo_related_setting = 5;
+    InstanceBasicSetting basic_setting = 2;
+    InstanceGeneralSetting general_setting = 3;
+    InstanceStorageSetting storage_setting = 4;
+    InstanceMemoRelatedSetting memo_related_setting = 5;
   }
 }
 
-message WorkspaceBasicSetting {
-  // The secret key for workspace. Mainly used for session management.
+message InstanceBasicSetting {
+  // The secret key for instance. Mainly used for session management.
   string secret_key = 1;
   // The current schema version of database.
   string schema_version = 2;
 }
 
-message WorkspaceGeneralSetting {
+message InstanceGeneralSetting {
   // theme is the name of the selected theme.
   // This references a CSS file in the web/public/themes/ directory.
   string theme = 1;
@@ -46,7 +46,7 @@ message WorkspaceGeneralSetting {
   // additional_style is the additional style.
   string additional_style = 5;
   // custom_profile is the custom profile.
-  WorkspaceCustomProfile custom_profile = 6;
+  InstanceCustomProfile custom_profile = 6;
   // week_start_day_offset is the week start day offset from Sunday.
   // 0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
   // Default is Sunday.
@@ -57,14 +57,14 @@ message WorkspaceGeneralSetting {
   bool disallow_change_nickname = 9;
 }
 
-message WorkspaceCustomProfile {
+message InstanceCustomProfile {
   string title = 1;
   string description = 2;
   string logo_url = 3;
   string locale = 4;
 }
 
-message WorkspaceStorageSetting {
+message InstanceStorageSetting {
   enum StorageType {
     STORAGE_TYPE_UNSPECIFIED = 0;
     // STORAGE_TYPE_DATABASE is the database storage type.
@@ -95,7 +95,7 @@ message StorageS3Config {
   bool use_path_style = 6;
 }
 
-message WorkspaceMemoRelatedSetting {
+message InstanceMemoRelatedSetting {
   // disallow_public_visibility disallows set memo as public visibility.
   bool disallow_public_visibility = 1;
   // display_with_update_time orders and displays memo with update time.

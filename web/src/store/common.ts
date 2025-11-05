@@ -1,4 +1,4 @@
-export const workspaceSettingNamePrefix = "workspace/settings/";
+export const instanceSettingNamePrefix = "instance/settings/";
 export const userNamePrefix = "users/";
 export const memoNamePrefix = "memos/";
 export const identityProviderNamePrefix = "identity-providers/";

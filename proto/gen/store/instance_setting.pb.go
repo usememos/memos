@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.10
 // 	protoc        (unknown)
-// source: store/workspace_setting.proto
+// source: store/instance_setting.proto
 
 package store
 
@@ -21,86 +21,86 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type WorkspaceSettingKey int32
+type InstanceSettingKey int32
 
 const (
-	WorkspaceSettingKey_WORKSPACE_SETTING_KEY_UNSPECIFIED WorkspaceSettingKey = 0
+	InstanceSettingKey_INSTANCE_SETTING_KEY_UNSPECIFIED InstanceSettingKey = 0
 	// BASIC is the key for basic settings.
-	WorkspaceSettingKey_BASIC WorkspaceSettingKey = 1
+	InstanceSettingKey_BASIC InstanceSettingKey = 1
 	// GENERAL is the key for general settings.
-	WorkspaceSettingKey_GENERAL WorkspaceSettingKey = 2
+	InstanceSettingKey_GENERAL InstanceSettingKey = 2
 	// STORAGE is the key for storage settings.
-	WorkspaceSettingKey_STORAGE WorkspaceSettingKey = 3
+	InstanceSettingKey_STORAGE InstanceSettingKey = 3
 	// MEMO_RELATED is the key for memo related settings.
-	WorkspaceSettingKey_MEMO_RELATED WorkspaceSettingKey = 4
+	InstanceSettingKey_MEMO_RELATED InstanceSettingKey = 4
 )
 
-// Enum value maps for WorkspaceSettingKey.
+// Enum value maps for InstanceSettingKey.
 var (
-	WorkspaceSettingKey_name = map[int32]string{
-		0: "WORKSPACE_SETTING_KEY_UNSPECIFIED",
+	InstanceSettingKey_name = map[int32]string{
+		0: "INSTANCE_SETTING_KEY_UNSPECIFIED",
 		1: "BASIC",
 		2: "GENERAL",
 		3: "STORAGE",
 		4: "MEMO_RELATED",
 	}
-	WorkspaceSettingKey_value = map[string]int32{
-		"WORKSPACE_SETTING_KEY_UNSPECIFIED": 0,
-		"BASIC":                             1,
-		"GENERAL":                           2,
-		"STORAGE":                           3,
-		"MEMO_RELATED":                      4,
+	InstanceSettingKey_value = map[string]int32{
+		"INSTANCE_SETTING_KEY_UNSPECIFIED": 0,
+		"BASIC":                            1,
+		"GENERAL":                          2,
+		"STORAGE":                          3,
+		"MEMO_RELATED":                     4,
 	}
 )
 
-func (x WorkspaceSettingKey) Enum() *WorkspaceSettingKey {
-	p := new(WorkspaceSettingKey)
+func (x InstanceSettingKey) Enum() *InstanceSettingKey {
+	p := new(InstanceSettingKey)
 	*p = x
 	return p
 }
 
-func (x WorkspaceSettingKey) String() string {
+func (x InstanceSettingKey) String() string {
 	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (WorkspaceSettingKey) Descriptor() protoreflect.EnumDescriptor {
-	return file_store_workspace_setting_proto_enumTypes[0].Descriptor()
+func (InstanceSettingKey) Descriptor() protoreflect.EnumDescriptor {
+	return file_store_instance_setting_proto_enumTypes[0].Descriptor()
 }
 
-func (WorkspaceSettingKey) Type() protoreflect.EnumType {
-	return &file_store_workspace_setting_proto_enumTypes[0]
+func (InstanceSettingKey) Type() protoreflect.EnumType {
+	return &file_store_instance_setting_proto_enumTypes[0]
 }
 
-func (x WorkspaceSettingKey) Number() protoreflect.EnumNumber {
+func (x InstanceSettingKey) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use WorkspaceSettingKey.Descriptor instead.
-func (WorkspaceSettingKey) EnumDescriptor() ([]byte, []int) {
-	return file_store_workspace_setting_proto_rawDescGZIP(), []int{0}
+// Deprecated: Use InstanceSettingKey.Descriptor instead.
+func (InstanceSettingKey) EnumDescriptor() ([]byte, []int) {
+	return file_store_instance_setting_proto_rawDescGZIP(), []int{0}
 }
 
-type WorkspaceStorageSetting_StorageType int32
+type InstanceStorageSetting_StorageType int32
 
 const (
-	WorkspaceStorageSetting_STORAGE_TYPE_UNSPECIFIED WorkspaceStorageSetting_StorageType = 0
+	InstanceStorageSetting_STORAGE_TYPE_UNSPECIFIED InstanceStorageSetting_StorageType = 0
 	// STORAGE_TYPE_DATABASE is the database storage type.
-	WorkspaceStorageSetting_DATABASE WorkspaceStorageSetting_StorageType = 1
+	InstanceStorageSetting_DATABASE InstanceStorageSetting_StorageType = 1
 	// STORAGE_TYPE_LOCAL is the local storage type.
-	WorkspaceStorageSetting_LOCAL WorkspaceStorageSetting_StorageType = 2
+	InstanceStorageSetting_LOCAL InstanceStorageSetting_StorageType = 2
 	// STORAGE_TYPE_S3 is the S3 storage type.
-	WorkspaceStorageSetting_S3 WorkspaceStorageSetting_StorageType = 3
+	InstanceStorageSetting_S3 InstanceStorageSetting_StorageType = 3
 )
 
-// Enum value maps for WorkspaceStorageSetting_StorageType.
+// Enum value maps for InstanceStorageSetting_StorageType.
 var (
-	WorkspaceStorageSetting_StorageType_name = map[int32]string{
+	InstanceStorageSetting_StorageType_name = map[int32]string{
 		0: "STORAGE_TYPE_UNSPECIFIED",
 		1: "DATABASE",
 		2: "LOCAL",
 		3: "S3",
 	}
-	WorkspaceStorageSetting_StorageType_value = map[string]int32{
+	InstanceStorageSetting_StorageType_value = map[string]int32{
 		"STORAGE_TYPE_UNSPECIFIED": 0,
 		"DATABASE":                 1,
 		"LOCAL":                    2,
@@ -108,62 +108,62 @@ var (
 	}
 )
 
-func (x WorkspaceStorageSetting_StorageType) Enum() *WorkspaceStorageSetting_StorageType {
-	p := new(WorkspaceStorageSetting_StorageType)
+func (x InstanceStorageSetting_StorageType) Enum() *InstanceStorageSetting_StorageType {
+	p := new(InstanceStorageSetting_StorageType)
 	*p = x
 	return p
 }
 
-func (x WorkspaceStorageSetting_StorageType) String() string {
+func (x InstanceStorageSetting_StorageType) String() string {
 	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (WorkspaceStorageSetting_StorageType) Descriptor() protoreflect.EnumDescriptor {
-	return file_store_workspace_setting_proto_enumTypes[1].Descriptor()
+func (InstanceStorageSetting_StorageType) Descriptor() protoreflect.EnumDescriptor {
+	return file_store_instance_setting_proto_enumTypes[1].Descriptor()
 }
 
-func (WorkspaceStorageSetting_StorageType) Type() protoreflect.EnumType {
-	return &file_store_workspace_setting_proto_enumTypes[1]
+func (InstanceStorageSetting_StorageType) Type() protoreflect.EnumType {
+	return &file_store_instance_setting_proto_enumTypes[1]
 }
 
-func (x WorkspaceStorageSetting_StorageType) Number() protoreflect.EnumNumber {
+func (x InstanceStorageSetting_StorageType) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use WorkspaceStorageSetting_StorageType.Descriptor instead.
-func (WorkspaceStorageSetting_StorageType) EnumDescriptor() ([]byte, []int) {
-	return file_store_workspace_setting_proto_rawDescGZIP(), []int{4, 0}
+// Deprecated: Use InstanceStorageSetting_StorageType.Descriptor instead.
+func (InstanceStorageSetting_StorageType) EnumDescriptor() ([]byte, []int) {
+	return file_store_instance_setting_proto_rawDescGZIP(), []int{4, 0}
 }
 
-type WorkspaceSetting struct {
+type InstanceSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	Key   WorkspaceSettingKey    `protobuf:"varint,1,opt,name=key,proto3,enum=memos.store.WorkspaceSettingKey" json:"key,omitempty"`
+	Key   InstanceSettingKey     `protobuf:"varint,1,opt,name=key,proto3,enum=memos.store.InstanceSettingKey" json:"key,omitempty"`
 	// Types that are valid to be assigned to Value:
 	//
-	//	*WorkspaceSetting_BasicSetting
-	//	*WorkspaceSetting_GeneralSetting
-	//	*WorkspaceSetting_StorageSetting
-	//	*WorkspaceSetting_MemoRelatedSetting
-	Value         isWorkspaceSetting_Value `protobuf_oneof:"value"`
+	//	*InstanceSetting_BasicSetting
+	//	*InstanceSetting_GeneralSetting
+	//	*InstanceSetting_StorageSetting
+	//	*InstanceSetting_MemoRelatedSetting
+	Value         isInstanceSetting_Value `protobuf_oneof:"value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *WorkspaceSetting) Reset() {
-	*x = WorkspaceSetting{}
-	mi := &file_store_workspace_setting_proto_msgTypes[0]
+func (x *InstanceSetting) Reset() {
+	*x = InstanceSetting{}
+	mi := &file_store_instance_setting_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *WorkspaceSetting) String() string {
+func (x *InstanceSetting) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*WorkspaceSetting) ProtoMessage() {}
+func (*InstanceSetting) ProtoMessage() {}
 
-func (x *WorkspaceSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_store_workspace_setting_proto_msgTypes[0]
+func (x *InstanceSetting) ProtoReflect() protoreflect.Message {
+	mi := &file_store_instance_setting_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -174,92 +174,92 @@ func (x *WorkspaceSetting) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use WorkspaceSetting.ProtoReflect.Descriptor instead.
-func (*WorkspaceSetting) Descriptor() ([]byte, []int) {
-	return file_store_workspace_setting_proto_rawDescGZIP(), []int{0}
+// Deprecated: Use InstanceSetting.ProtoReflect.Descriptor instead.
+func (*InstanceSetting) Descriptor() ([]byte, []int) {
+	return file_store_instance_setting_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *WorkspaceSetting) GetKey() WorkspaceSettingKey {
+func (x *InstanceSetting) GetKey() InstanceSettingKey {
 	if x != nil {
 		return x.Key
 	}
-	return WorkspaceSettingKey_WORKSPACE_SETTING_KEY_UNSPECIFIED
+	return InstanceSettingKey_INSTANCE_SETTING_KEY_UNSPECIFIED
 }
 
-func (x *WorkspaceSetting) GetValue() isWorkspaceSetting_Value {
+func (x *InstanceSetting) GetValue() isInstanceSetting_Value {
 	if x != nil {
 		return x.Value
 	}
 	return nil
 }
 
-func (x *WorkspaceSetting) GetBasicSetting() *WorkspaceBasicSetting {
+func (x *InstanceSetting) GetBasicSetting() *InstanceBasicSetting {
 	if x != nil {
-		if x, ok := x.Value.(*WorkspaceSetting_BasicSetting); ok {
+		if x, ok := x.Value.(*InstanceSetting_BasicSetting); ok {
 			return x.BasicSetting
 		}
 	}
 	return nil
 }
 
-func (x *WorkspaceSetting) GetGeneralSetting() *WorkspaceGeneralSetting {
+func (x *InstanceSetting) GetGeneralSetting() *InstanceGeneralSetting {
 	if x != nil {
-		if x, ok := x.Value.(*WorkspaceSetting_GeneralSetting); ok {
+		if x, ok := x.Value.(*InstanceSetting_GeneralSetting); ok {
 			return x.GeneralSetting
 		}
 	}
 	return nil
 }
 
-func (x *WorkspaceSetting) GetStorageSetting() *WorkspaceStorageSetting {
+func (x *InstanceSetting) GetStorageSetting() *InstanceStorageSetting {
 	if x != nil {
-		if x, ok := x.Value.(*WorkspaceSetting_StorageSetting); ok {
+		if x, ok := x.Value.(*InstanceSetting_StorageSetting); ok {
 			return x.StorageSetting
 		}
 	}
 	return nil
 }
 
-func (x *WorkspaceSetting) GetMemoRelatedSetting() *WorkspaceMemoRelatedSetting {
+func (x *InstanceSetting) GetMemoRelatedSetting() *InstanceMemoRelatedSetting {
 	if x != nil {
-		if x, ok := x.Value.(*WorkspaceSetting_MemoRelatedSetting); ok {
+		if x, ok := x.Value.(*InstanceSetting_MemoRelatedSetting); ok {
 			return x.MemoRelatedSetting
 		}
 	}
 	return nil
 }
 
-type isWorkspaceSetting_Value interface {
-	isWorkspaceSetting_Value()
+type isInstanceSetting_Value interface {
+	isInstanceSetting_Value()
 }
 
-type WorkspaceSetting_BasicSetting struct {
-	BasicSetting *WorkspaceBasicSetting `protobuf:"bytes,2,opt,name=basic_setting,json=basicSetting,proto3,oneof"`
+type InstanceSetting_BasicSetting struct {
+	BasicSetting *InstanceBasicSetting `protobuf:"bytes,2,opt,name=basic_setting,json=basicSetting,proto3,oneof"`
 }
 
-type WorkspaceSetting_GeneralSetting struct {
-	GeneralSetting *WorkspaceGeneralSetting `protobuf:"bytes,3,opt,name=general_setting,json=generalSetting,proto3,oneof"`
+type InstanceSetting_GeneralSetting struct {
+	GeneralSetting *InstanceGeneralSetting `protobuf:"bytes,3,opt,name=general_setting,json=generalSetting,proto3,oneof"`
 }
 
-type WorkspaceSetting_StorageSetting struct {
-	StorageSetting *WorkspaceStorageSetting `protobuf:"bytes,4,opt,name=storage_setting,json=storageSetting,proto3,oneof"`
+type InstanceSetting_StorageSetting struct {
+	StorageSetting *InstanceStorageSetting `protobuf:"bytes,4,opt,name=storage_setting,json=storageSetting,proto3,oneof"`
 }
 
-type WorkspaceSetting_MemoRelatedSetting struct {
-	MemoRelatedSetting *WorkspaceMemoRelatedSetting `protobuf:"bytes,5,opt,name=memo_related_setting,json=memoRelatedSetting,proto3,oneof"`
+type InstanceSetting_MemoRelatedSetting struct {
+	MemoRelatedSetting *InstanceMemoRelatedSetting `protobuf:"bytes,5,opt,name=memo_related_setting,json=memoRelatedSetting,proto3,oneof"`
 }
 
-func (*WorkspaceSetting_BasicSetting) isWorkspaceSetting_Value() {}
+func (*InstanceSetting_BasicSetting) isInstanceSetting_Value() {}
 
-func (*WorkspaceSetting_GeneralSetting) isWorkspaceSetting_Value() {}
+func (*InstanceSetting_GeneralSetting) isInstanceSetting_Value() {}
 
-func (*WorkspaceSetting_StorageSetting) isWorkspaceSetting_Value() {}
+func (*InstanceSetting_StorageSetting) isInstanceSetting_Value() {}
 
-func (*WorkspaceSetting_MemoRelatedSetting) isWorkspaceSetting_Value() {}
+func (*InstanceSetting_MemoRelatedSetting) isInstanceSetting_Value() {}
 
-type WorkspaceBasicSetting struct {
+type InstanceBasicSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The secret key for workspace. Mainly used for session management.
+	// The secret key for instance. Mainly used for session management.
 	SecretKey string `protobuf:"bytes,1,opt,name=secret_key,json=secretKey,proto3" json:"secret_key,omitempty"`
 	// The current schema version of database.
 	SchemaVersion string `protobuf:"bytes,2,opt,name=schema_version,json=schemaVersion,proto3" json:"schema_version,omitempty"`
@@ -267,21 +267,21 @@ type WorkspaceBasicSetting struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *WorkspaceBasicSetting) Reset() {
-	*x = WorkspaceBasicSetting{}
-	mi := &file_store_workspace_setting_proto_msgTypes[1]
+func (x *InstanceBasicSetting) Reset() {
+	*x = InstanceBasicSetting{}
+	mi := &file_store_instance_setting_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *WorkspaceBasicSetting) String() string {
+func (x *InstanceBasicSetting) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*WorkspaceBasicSetting) ProtoMessage() {}
+func (*InstanceBasicSetting) ProtoMessage() {}
 
-func (x *WorkspaceBasicSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_store_workspace_setting_proto_msgTypes[1]
+func (x *InstanceBasicSetting) ProtoReflect() protoreflect.Message {
+	mi := &file_store_instance_setting_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -292,26 +292,26 @@ func (x *WorkspaceBasicSetting) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use WorkspaceBasicSetting.ProtoReflect.Descriptor instead.
-func (*WorkspaceBasicSetting) Descriptor() ([]byte, []int) {
-	return file_store_workspace_setting_proto_rawDescGZIP(), []int{1}
+// Deprecated: Use InstanceBasicSetting.ProtoReflect.Descriptor instead.
+func (*InstanceBasicSetting) Descriptor() ([]byte, []int) {
+	return file_store_instance_setting_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *WorkspaceBasicSetting) GetSecretKey() string {
+func (x *InstanceBasicSetting) GetSecretKey() string {
 	if x != nil {
 		return x.SecretKey
 	}
 	return ""
 }
 
-func (x *WorkspaceBasicSetting) GetSchemaVersion() string {
+func (x *InstanceBasicSetting) GetSchemaVersion() string {
 	if x != nil {
 		return x.SchemaVersion
 	}
 	return ""
 }
 
-type WorkspaceGeneralSetting struct {
+type InstanceGeneralSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// theme is the name of the selected theme.
 	// This references a CSS file in the web/public/themes/ directory.
@@ -325,7 +325,7 @@ type WorkspaceGeneralSetting struct {
 	// additional_style is the additional style.
 	AdditionalStyle string `protobuf:"bytes,5,opt,name=additional_style,json=additionalStyle,proto3" json:"additional_style,omitempty"`
 	// custom_profile is the custom profile.
-	CustomProfile *WorkspaceCustomProfile `protobuf:"bytes,6,opt,name=custom_profile,json=customProfile,proto3" json:"custom_profile,omitempty"`
+	CustomProfile *InstanceCustomProfile `protobuf:"bytes,6,opt,name=custom_profile,json=customProfile,proto3" json:"custom_profile,omitempty"`
 	// week_start_day_offset is the week start day offset from Sunday.
 	// 0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
 	// Default is Sunday.
@@ -338,21 +338,21 @@ type WorkspaceGeneralSetting struct {
 	sizeCache              protoimpl.SizeCache
 }
 
-func (x *WorkspaceGeneralSetting) Reset() {
-	*x = WorkspaceGeneralSetting{}
-	mi := &file_store_workspace_setting_proto_msgTypes[2]
+func (x *InstanceGeneralSetting) Reset() {
+	*x = InstanceGeneralSetting{}
+	mi := &file_store_instance_setting_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *WorkspaceGeneralSetting) String() string {
+func (x *InstanceGeneralSetting) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*WorkspaceGeneralSetting) ProtoMessage() {}
+func (*InstanceGeneralSetting) ProtoMessage() {}
 
-func (x *WorkspaceGeneralSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_store_workspace_setting_proto_msgTypes[2]
+func (x *InstanceGeneralSetting) ProtoReflect() protoreflect.Message {
+	mi := &file_store_instance_setting_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -363,75 +363,75 @@ func (x *WorkspaceGeneralSetting) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use WorkspaceGeneralSetting.ProtoReflect.Descriptor instead.
-func (*WorkspaceGeneralSetting) Descriptor() ([]byte, []int) {
-	return file_store_workspace_setting_proto_rawDescGZIP(), []int{2}
+// Deprecated: Use InstanceGeneralSetting.ProtoReflect.Descriptor instead.
+func (*InstanceGeneralSetting) Descriptor() ([]byte, []int) {
+	return file_store_instance_setting_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *WorkspaceGeneralSetting) GetTheme() string {
+func (x *InstanceGeneralSetting) GetTheme() string {
 	if x != nil {
 		return x.Theme
 	}
 	return ""
 }
 
-func (x *WorkspaceGeneralSetting) GetDisallowUserRegistration() bool {
+func (x *InstanceGeneralSetting) GetDisallowUserRegistration() bool {
 	if x != nil {
 		return x.DisallowUserRegistration
 	}
 	return false
 }
 
-func (x *WorkspaceGeneralSetting) GetDisallowPasswordAuth() bool {
+func (x *InstanceGeneralSetting) GetDisallowPasswordAuth() bool {
 	if x != nil {
 		return x.DisallowPasswordAuth
 	}
 	return false
 }
 
-func (x *WorkspaceGeneralSetting) GetAdditionalScript() string {
+func (x *InstanceGeneralSetting) GetAdditionalScript() string {
 	if x != nil {
 		return x.AdditionalScript
 	}
 	return ""
 }
 
-func (x *WorkspaceGeneralSetting) GetAdditionalStyle() string {
+func (x *InstanceGeneralSetting) GetAdditionalStyle() string {
 	if x != nil {
 		return x.AdditionalStyle
 	}
 	return ""
 }
 
-func (x *WorkspaceGeneralSetting) GetCustomProfile() *WorkspaceCustomProfile {
+func (x *InstanceGeneralSetting) GetCustomProfile() *InstanceCustomProfile {
 	if x != nil {
 		return x.CustomProfile
 	}
 	return nil
 }
 
-func (x *WorkspaceGeneralSetting) GetWeekStartDayOffset() int32 {
+func (x *InstanceGeneralSetting) GetWeekStartDayOffset() int32 {
 	if x != nil {
 		return x.WeekStartDayOffset
 	}
 	return 0
 }
 
-func (x *WorkspaceGeneralSetting) GetDisallowChangeUsername() bool {
+func (x *InstanceGeneralSetting) GetDisallowChangeUsername() bool {
 	if x != nil {
 		return x.DisallowChangeUsername
 	}
 	return false
 }
 
-func (x *WorkspaceGeneralSetting) GetDisallowChangeNickname() bool {
+func (x *InstanceGeneralSetting) GetDisallowChangeNickname() bool {
 	if x != nil {
 		return x.DisallowChangeNickname
 	}
 	return false
 }
 
-type WorkspaceCustomProfile struct {
+type InstanceCustomProfile struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
 	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
@@ -441,21 +441,21 @@ type WorkspaceCustomProfile struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *WorkspaceCustomProfile) Reset() {
-	*x = WorkspaceCustomProfile{}
-	mi := &file_store_workspace_setting_proto_msgTypes[3]
+func (x *InstanceCustomProfile) Reset() {
+	*x = InstanceCustomProfile{}
+	mi := &file_store_instance_setting_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *WorkspaceCustomProfile) String() string {
+func (x *InstanceCustomProfile) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*WorkspaceCustomProfile) ProtoMessage() {}
+func (*InstanceCustomProfile) ProtoMessage() {}
 
-func (x *WorkspaceCustomProfile) ProtoReflect() protoreflect.Message {
-	mi := &file_store_workspace_setting_proto_msgTypes[3]
+func (x *InstanceCustomProfile) ProtoReflect() protoreflect.Message {
+	mi := &file_store_instance_setting_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -466,43 +466,43 @@ func (x *WorkspaceCustomProfile) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use WorkspaceCustomProfile.ProtoReflect.Descriptor instead.
-func (*WorkspaceCustomProfile) Descriptor() ([]byte, []int) {
-	return file_store_workspace_setting_proto_rawDescGZIP(), []int{3}
+// Deprecated: Use InstanceCustomProfile.ProtoReflect.Descriptor instead.
+func (*InstanceCustomProfile) Descriptor() ([]byte, []int) {
+	return file_store_instance_setting_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *WorkspaceCustomProfile) GetTitle() string {
+func (x *InstanceCustomProfile) GetTitle() string {
 	if x != nil {
 		return x.Title
 	}
 	return ""
 }
 
-func (x *WorkspaceCustomProfile) GetDescription() string {
+func (x *InstanceCustomProfile) GetDescription() string {
 	if x != nil {
 		return x.Description
 	}
 	return ""
 }
 
-func (x *WorkspaceCustomProfile) GetLogoUrl() string {
+func (x *InstanceCustomProfile) GetLogoUrl() string {
 	if x != nil {
 		return x.LogoUrl
 	}
 	return ""
 }
 
-func (x *WorkspaceCustomProfile) GetLocale() string {
+func (x *InstanceCustomProfile) GetLocale() string {
 	if x != nil {
 		return x.Locale
 	}
 	return ""
 }
 
-type WorkspaceStorageSetting struct {
+type InstanceStorageSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// storage_type is the storage type.
-	StorageType WorkspaceStorageSetting_StorageType `protobuf:"varint,1,opt,name=storage_type,json=storageType,proto3,enum=memos.store.WorkspaceStorageSetting_StorageType" json:"storage_type,omitempty"`
+	StorageType InstanceStorageSetting_StorageType `protobuf:"varint,1,opt,name=storage_type,json=storageType,proto3,enum=memos.store.InstanceStorageSetting_StorageType" json:"storage_type,omitempty"`
 	// The template of file path.
 	// e.g. assets/{timestamp}_{filename}
 	FilepathTemplate string `protobuf:"bytes,2,opt,name=filepath_template,json=filepathTemplate,proto3" json:"filepath_template,omitempty"`
@@ -514,21 +514,21 @@ type WorkspaceStorageSetting struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *WorkspaceStorageSetting) Reset() {
-	*x = WorkspaceStorageSetting{}
-	mi := &file_store_workspace_setting_proto_msgTypes[4]
+func (x *InstanceStorageSetting) Reset() {
+	*x = InstanceStorageSetting{}
+	mi := &file_store_instance_setting_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *WorkspaceStorageSetting) String() string {
+func (x *InstanceStorageSetting) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*WorkspaceStorageSetting) ProtoMessage() {}
+func (*InstanceStorageSetting) ProtoMessage() {}
 
-func (x *WorkspaceStorageSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_store_workspace_setting_proto_msgTypes[4]
+func (x *InstanceStorageSetting) ProtoReflect() protoreflect.Message {
+	mi := &file_store_instance_setting_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -539,33 +539,33 @@ func (x *WorkspaceStorageSetting) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use WorkspaceStorageSetting.ProtoReflect.Descriptor instead.
-func (*WorkspaceStorageSetting) Descriptor() ([]byte, []int) {
-	return file_store_workspace_setting_proto_rawDescGZIP(), []int{4}
+// Deprecated: Use InstanceStorageSetting.ProtoReflect.Descriptor instead.
+func (*InstanceStorageSetting) Descriptor() ([]byte, []int) {
+	return file_store_instance_setting_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *WorkspaceStorageSetting) GetStorageType() WorkspaceStorageSetting_StorageType {
+func (x *InstanceStorageSetting) GetStorageType() InstanceStorageSetting_StorageType {
 	if x != nil {
 		return x.StorageType
 	}
-	return WorkspaceStorageSetting_STORAGE_TYPE_UNSPECIFIED
+	return InstanceStorageSetting_STORAGE_TYPE_UNSPECIFIED
 }
 
-func (x *WorkspaceStorageSetting) GetFilepathTemplate() string {
+func (x *InstanceStorageSetting) GetFilepathTemplate() string {
 	if x != nil {
 		return x.FilepathTemplate
 	}
 	return ""
 }
 
-func (x *WorkspaceStorageSetting) GetUploadSizeLimitMb() int64 {
+func (x *InstanceStorageSetting) GetUploadSizeLimitMb() int64 {
 	if x != nil {
 		return x.UploadSizeLimitMb
 	}
 	return 0
 }
 
-func (x *WorkspaceStorageSetting) GetS3Config() *StorageS3Config {
+func (x *InstanceStorageSetting) GetS3Config() *StorageS3Config {
 	if x != nil {
 		return x.S3Config
 	}
@@ -587,7 +587,7 @@ type StorageS3Config struct {
 
 func (x *StorageS3Config) Reset() {
 	*x = StorageS3Config{}
-	mi := &file_store_workspace_setting_proto_msgTypes[5]
+	mi := &file_store_instance_setting_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -599,7 +599,7 @@ func (x *StorageS3Config) String() string {
 func (*StorageS3Config) ProtoMessage() {}
 
 func (x *StorageS3Config) ProtoReflect() protoreflect.Message {
-	mi := &file_store_workspace_setting_proto_msgTypes[5]
+	mi := &file_store_instance_setting_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -612,7 +612,7 @@ func (x *StorageS3Config) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StorageS3Config.ProtoReflect.Descriptor instead.
 func (*StorageS3Config) Descriptor() ([]byte, []int) {
-	return file_store_workspace_setting_proto_rawDescGZIP(), []int{5}
+	return file_store_instance_setting_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *StorageS3Config) GetAccessKeyId() string {
@@ -657,7 +657,7 @@ func (x *StorageS3Config) GetUsePathStyle() bool {
 	return false
 }
 
-type WorkspaceMemoRelatedSetting struct {
+type InstanceMemoRelatedSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// disallow_public_visibility disallows set memo as public visibility.
 	DisallowPublicVisibility bool `protobuf:"varint,1,opt,name=disallow_public_visibility,json=disallowPublicVisibility,proto3" json:"disallow_public_visibility,omitempty"`
@@ -681,21 +681,21 @@ type WorkspaceMemoRelatedSetting struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *WorkspaceMemoRelatedSetting) Reset() {
-	*x = WorkspaceMemoRelatedSetting{}
-	mi := &file_store_workspace_setting_proto_msgTypes[6]
+func (x *InstanceMemoRelatedSetting) Reset() {
+	*x = InstanceMemoRelatedSetting{}
+	mi := &file_store_instance_setting_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *WorkspaceMemoRelatedSetting) String() string {
+func (x *InstanceMemoRelatedSetting) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*WorkspaceMemoRelatedSetting) ProtoMessage() {}
+func (*InstanceMemoRelatedSetting) ProtoMessage() {}
 
-func (x *WorkspaceMemoRelatedSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_store_workspace_setting_proto_msgTypes[6]
+func (x *InstanceMemoRelatedSetting) ProtoReflect() protoreflect.Message {
+	mi := &file_store_instance_setting_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -706,107 +706,107 @@ func (x *WorkspaceMemoRelatedSetting) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use WorkspaceMemoRelatedSetting.ProtoReflect.Descriptor instead.
-func (*WorkspaceMemoRelatedSetting) Descriptor() ([]byte, []int) {
-	return file_store_workspace_setting_proto_rawDescGZIP(), []int{6}
+// Deprecated: Use InstanceMemoRelatedSetting.ProtoReflect.Descriptor instead.
+func (*InstanceMemoRelatedSetting) Descriptor() ([]byte, []int) {
+	return file_store_instance_setting_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *WorkspaceMemoRelatedSetting) GetDisallowPublicVisibility() bool {
+func (x *InstanceMemoRelatedSetting) GetDisallowPublicVisibility() bool {
 	if x != nil {
 		return x.DisallowPublicVisibility
 	}
 	return false
 }
 
-func (x *WorkspaceMemoRelatedSetting) GetDisplayWithUpdateTime() bool {
+func (x *InstanceMemoRelatedSetting) GetDisplayWithUpdateTime() bool {
 	if x != nil {
 		return x.DisplayWithUpdateTime
 	}
 	return false
 }
 
-func (x *WorkspaceMemoRelatedSetting) GetContentLengthLimit() int32 {
+func (x *InstanceMemoRelatedSetting) GetContentLengthLimit() int32 {
 	if x != nil {
 		return x.ContentLengthLimit
 	}
 	return 0
 }
 
-func (x *WorkspaceMemoRelatedSetting) GetEnableDoubleClickEdit() bool {
+func (x *InstanceMemoRelatedSetting) GetEnableDoubleClickEdit() bool {
 	if x != nil {
 		return x.EnableDoubleClickEdit
 	}
 	return false
 }
 
-func (x *WorkspaceMemoRelatedSetting) GetEnableLinkPreview() bool {
+func (x *InstanceMemoRelatedSetting) GetEnableLinkPreview() bool {
 	if x != nil {
 		return x.EnableLinkPreview
 	}
 	return false
 }
 
-func (x *WorkspaceMemoRelatedSetting) GetReactions() []string {
+func (x *InstanceMemoRelatedSetting) GetReactions() []string {
 	if x != nil {
 		return x.Reactions
 	}
 	return nil
 }
 
-func (x *WorkspaceMemoRelatedSetting) GetDisableMarkdownShortcuts() bool {
+func (x *InstanceMemoRelatedSetting) GetDisableMarkdownShortcuts() bool {
 	if x != nil {
 		return x.DisableMarkdownShortcuts
 	}
 	return false
 }
 
-func (x *WorkspaceMemoRelatedSetting) GetEnableBlurNsfwContent() bool {
+func (x *InstanceMemoRelatedSetting) GetEnableBlurNsfwContent() bool {
 	if x != nil {
 		return x.EnableBlurNsfwContent
 	}
 	return false
 }
 
-func (x *WorkspaceMemoRelatedSetting) GetNsfwTags() []string {
+func (x *InstanceMemoRelatedSetting) GetNsfwTags() []string {
 	if x != nil {
 		return x.NsfwTags
 	}
 	return nil
 }
 
-var File_store_workspace_setting_proto protoreflect.FileDescriptor
+var File_store_instance_setting_proto protoreflect.FileDescriptor
 
-const file_store_workspace_setting_proto_rawDesc = "" +
+const file_store_instance_setting_proto_rawDesc = "" +
 	"\n" +
-	"\x1dstore/workspace_setting.proto\x12\vmemos.store\"\x9a\x03\n" +
-	"\x10WorkspaceSetting\x122\n" +
-	"\x03key\x18\x01 \x01(\x0e2 .memos.store.WorkspaceSettingKeyR\x03key\x12I\n" +
-	"\rbasic_setting\x18\x02 \x01(\v2\".memos.store.WorkspaceBasicSettingH\x00R\fbasicSetting\x12O\n" +
-	"\x0fgeneral_setting\x18\x03 \x01(\v2$.memos.store.WorkspaceGeneralSettingH\x00R\x0egeneralSetting\x12O\n" +
-	"\x0fstorage_setting\x18\x04 \x01(\v2$.memos.store.WorkspaceStorageSettingH\x00R\x0estorageSetting\x12\\\n" +
-	"\x14memo_related_setting\x18\x05 \x01(\v2(.memos.store.WorkspaceMemoRelatedSettingH\x00R\x12memoRelatedSettingB\a\n" +
-	"\x05value\"]\n" +
-	"\x15WorkspaceBasicSetting\x12\x1d\n" +
+	"\x1cstore/instance_setting.proto\x12\vmemos.store\"\x94\x03\n" +
+	"\x0fInstanceSetting\x121\n" +
+	"\x03key\x18\x01 \x01(\x0e2\x1f.memos.store.InstanceSettingKeyR\x03key\x12H\n" +
+	"\rbasic_setting\x18\x02 \x01(\v2!.memos.store.InstanceBasicSettingH\x00R\fbasicSetting\x12N\n" +
+	"\x0fgeneral_setting\x18\x03 \x01(\v2#.memos.store.InstanceGeneralSettingH\x00R\x0egeneralSetting\x12N\n" +
+	"\x0fstorage_setting\x18\x04 \x01(\v2#.memos.store.InstanceStorageSettingH\x00R\x0estorageSetting\x12[\n" +
+	"\x14memo_related_setting\x18\x05 \x01(\v2'.memos.store.InstanceMemoRelatedSettingH\x00R\x12memoRelatedSettingB\a\n" +
+	"\x05value\"\\\n" +
+	"\x14InstanceBasicSetting\x12\x1d\n" +
 	"\n" +
 	"secret_key\x18\x01 \x01(\tR\tsecretKey\x12%\n" +
-	"\x0eschema_version\x18\x02 \x01(\tR\rschemaVersion\"\xee\x03\n" +
-	"\x17WorkspaceGeneralSetting\x12\x14\n" +
+	"\x0eschema_version\x18\x02 \x01(\tR\rschemaVersion\"\xec\x03\n" +
+	"\x16InstanceGeneralSetting\x12\x14\n" +
 	"\x05theme\x18\x01 \x01(\tR\x05theme\x12<\n" +
 	"\x1adisallow_user_registration\x18\x02 \x01(\bR\x18disallowUserRegistration\x124\n" +
 	"\x16disallow_password_auth\x18\x03 \x01(\bR\x14disallowPasswordAuth\x12+\n" +
 	"\x11additional_script\x18\x04 \x01(\tR\x10additionalScript\x12)\n" +
-	"\x10additional_style\x18\x05 \x01(\tR\x0fadditionalStyle\x12J\n" +
-	"\x0ecustom_profile\x18\x06 \x01(\v2#.memos.store.WorkspaceCustomProfileR\rcustomProfile\x121\n" +
+	"\x10additional_style\x18\x05 \x01(\tR\x0fadditionalStyle\x12I\n" +
+	"\x0ecustom_profile\x18\x06 \x01(\v2\".memos.store.InstanceCustomProfileR\rcustomProfile\x121\n" +
 	"\x15week_start_day_offset\x18\a \x01(\x05R\x12weekStartDayOffset\x128\n" +
 	"\x18disallow_change_username\x18\b \x01(\bR\x16disallowChangeUsername\x128\n" +
-	"\x18disallow_change_nickname\x18\t \x01(\bR\x16disallowChangeNickname\"\x83\x01\n" +
-	"\x16WorkspaceCustomProfile\x12\x14\n" +
+	"\x18disallow_change_nickname\x18\t \x01(\bR\x16disallowChangeNickname\"\x82\x01\n" +
+	"\x15InstanceCustomProfile\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +
 	"\blogo_url\x18\x03 \x01(\tR\alogoUrl\x12\x16\n" +
-	"\x06locale\x18\x04 \x01(\tR\x06locale\"\xd5\x02\n" +
-	"\x17WorkspaceStorageSetting\x12S\n" +
-	"\fstorage_type\x18\x01 \x01(\x0e20.memos.store.WorkspaceStorageSetting.StorageTypeR\vstorageType\x12+\n" +
+	"\x06locale\x18\x04 \x01(\tR\x06locale\"\xd3\x02\n" +
+	"\x16InstanceStorageSetting\x12R\n" +
+	"\fstorage_type\x18\x01 \x01(\x0e2/.memos.store.InstanceStorageSetting.StorageTypeR\vstorageType\x12+\n" +
 	"\x11filepath_template\x18\x02 \x01(\tR\x10filepathTemplate\x12/\n" +
 	"\x14upload_size_limit_mb\x18\x03 \x01(\x03R\x11uploadSizeLimitMb\x129\n" +
 	"\ts3_config\x18\x04 \x01(\v2\x1c.memos.store.StorageS3ConfigR\bs3Config\"L\n" +
@@ -821,8 +821,8 @@ const file_store_workspace_setting_proto_rawDesc = "" +
 	"\bendpoint\x18\x03 \x01(\tR\bendpoint\x12\x16\n" +
 	"\x06region\x18\x04 \x01(\tR\x06region\x12\x16\n" +
 	"\x06bucket\x18\x05 \x01(\tR\x06bucket\x12$\n" +
-	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\"\xe1\x03\n" +
-	"\x1bWorkspaceMemoRelatedSetting\x12<\n" +
+	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\"\xe0\x03\n" +
+	"\x1aInstanceMemoRelatedSetting\x12<\n" +
 	"\x1adisallow_public_visibility\x18\x01 \x01(\bR\x18disallowPublicVisibility\x127\n" +
 	"\x18display_with_update_time\x18\x02 \x01(\bR\x15displayWithUpdateTime\x120\n" +
 	"\x14content_length_limit\x18\x03 \x01(\x05R\x12contentLengthLimit\x127\n" +
@@ -832,49 +832,49 @@ const file_store_workspace_setting_proto_rawDesc = "" +
 	"\x1adisable_markdown_shortcuts\x18\b \x01(\bR\x18disableMarkdownShortcuts\x127\n" +
 	"\x18enable_blur_nsfw_content\x18\t \x01(\bR\x15enableBlurNsfwContent\x12\x1b\n" +
 	"\tnsfw_tags\x18\n" +
-	" \x03(\tR\bnsfwTags*s\n" +
-	"\x13WorkspaceSettingKey\x12%\n" +
-	"!WORKSPACE_SETTING_KEY_UNSPECIFIED\x10\x00\x12\t\n" +
+	" \x03(\tR\bnsfwTags*q\n" +
+	"\x12InstanceSettingKey\x12$\n" +
+	" INSTANCE_SETTING_KEY_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\v\n" +
 	"\aGENERAL\x10\x02\x12\v\n" +
 	"\aSTORAGE\x10\x03\x12\x10\n" +
-	"\fMEMO_RELATED\x10\x04B\xa0\x01\n" +
-	"\x0fcom.memos.storeB\x15WorkspaceSettingProtoP\x01Z)github.com/usememos/memos/proto/gen/store\xa2\x02\x03MSX\xaa\x02\vMemos.Store\xca\x02\vMemos\\Store\xe2\x02\x17Memos\\Store\\GPBMetadata\xea\x02\fMemos::Storeb\x06proto3"
+	"\fMEMO_RELATED\x10\x04B\x9f\x01\n" +
+	"\x0fcom.memos.storeB\x14InstanceSettingProtoP\x01Z)github.com/usememos/memos/proto/gen/store\xa2\x02\x03MSX\xaa\x02\vMemos.Store\xca\x02\vMemos\\Store\xe2\x02\x17Memos\\Store\\GPBMetadata\xea\x02\fMemos::Storeb\x06proto3"
 
 var (
-	file_store_workspace_setting_proto_rawDescOnce sync.Once
-	file_store_workspace_setting_proto_rawDescData []byte
+	file_store_instance_setting_proto_rawDescOnce sync.Once
+	file_store_instance_setting_proto_rawDescData []byte
 )
 
-func file_store_workspace_setting_proto_rawDescGZIP() []byte {
-	file_store_workspace_setting_proto_rawDescOnce.Do(func() {
-		file_store_workspace_setting_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_store_workspace_setting_proto_rawDesc), len(file_store_workspace_setting_proto_rawDesc)))
+func file_store_instance_setting_proto_rawDescGZIP() []byte {
+	file_store_instance_setting_proto_rawDescOnce.Do(func() {
+		file_store_instance_setting_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_store_instance_setting_proto_rawDesc), len(file_store_instance_setting_proto_rawDesc)))
 	})
-	return file_store_workspace_setting_proto_rawDescData
+	return file_store_instance_setting_proto_rawDescData
 }
 
-var file_store_workspace_setting_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_store_workspace_setting_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
-var file_store_workspace_setting_proto_goTypes = []any{
-	(WorkspaceSettingKey)(0),                 // 0: memos.store.WorkspaceSettingKey
-	(WorkspaceStorageSetting_StorageType)(0), // 1: memos.store.WorkspaceStorageSetting.StorageType
-	(*WorkspaceSetting)(nil),                 // 2: memos.store.WorkspaceSetting
-	(*WorkspaceBasicSetting)(nil),            // 3: memos.store.WorkspaceBasicSetting
-	(*WorkspaceGeneralSetting)(nil),          // 4: memos.store.WorkspaceGeneralSetting
-	(*WorkspaceCustomProfile)(nil),           // 5: memos.store.WorkspaceCustomProfile
-	(*WorkspaceStorageSetting)(nil),          // 6: memos.store.WorkspaceStorageSetting
-	(*StorageS3Config)(nil),                  // 7: memos.store.StorageS3Config
-	(*WorkspaceMemoRelatedSetting)(nil),      // 8: memos.store.WorkspaceMemoRelatedSetting
+var file_store_instance_setting_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_store_instance_setting_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_store_instance_setting_proto_goTypes = []any{
+	(InstanceSettingKey)(0),                 // 0: memos.store.InstanceSettingKey
+	(InstanceStorageSetting_StorageType)(0), // 1: memos.store.InstanceStorageSetting.StorageType
+	(*InstanceSetting)(nil),                 // 2: memos.store.InstanceSetting
+	(*InstanceBasicSetting)(nil),            // 3: memos.store.InstanceBasicSetting
+	(*InstanceGeneralSetting)(nil),          // 4: memos.store.InstanceGeneralSetting
+	(*InstanceCustomProfile)(nil),           // 5: memos.store.InstanceCustomProfile
+	(*InstanceStorageSetting)(nil),          // 6: memos.store.InstanceStorageSetting
+	(*StorageS3Config)(nil),                 // 7: memos.store.StorageS3Config
+	(*InstanceMemoRelatedSetting)(nil),      // 8: memos.store.InstanceMemoRelatedSetting
 }
-var file_store_workspace_setting_proto_depIdxs = []int32{
-	0, // 0: memos.store.WorkspaceSetting.key:type_name -> memos.store.WorkspaceSettingKey
-	3, // 1: memos.store.WorkspaceSetting.basic_setting:type_name -> memos.store.WorkspaceBasicSetting
-	4, // 2: memos.store.WorkspaceSetting.general_setting:type_name -> memos.store.WorkspaceGeneralSetting
-	6, // 3: memos.store.WorkspaceSetting.storage_setting:type_name -> memos.store.WorkspaceStorageSetting
-	8, // 4: memos.store.WorkspaceSetting.memo_related_setting:type_name -> memos.store.WorkspaceMemoRelatedSetting
-	5, // 5: memos.store.WorkspaceGeneralSetting.custom_profile:type_name -> memos.store.WorkspaceCustomProfile
-	1, // 6: memos.store.WorkspaceStorageSetting.storage_type:type_name -> memos.store.WorkspaceStorageSetting.StorageType
-	7, // 7: memos.store.WorkspaceStorageSetting.s3_config:type_name -> memos.store.StorageS3Config
+var file_store_instance_setting_proto_depIdxs = []int32{
+	0, // 0: memos.store.InstanceSetting.key:type_name -> memos.store.InstanceSettingKey
+	3, // 1: memos.store.InstanceSetting.basic_setting:type_name -> memos.store.InstanceBasicSetting
+	4, // 2: memos.store.InstanceSetting.general_setting:type_name -> memos.store.InstanceGeneralSetting
+	6, // 3: memos.store.InstanceSetting.storage_setting:type_name -> memos.store.InstanceStorageSetting
+	8, // 4: memos.store.InstanceSetting.memo_related_setting:type_name -> memos.store.InstanceMemoRelatedSetting
+	5, // 5: memos.store.InstanceGeneralSetting.custom_profile:type_name -> memos.store.InstanceCustomProfile
+	1, // 6: memos.store.InstanceStorageSetting.storage_type:type_name -> memos.store.InstanceStorageSetting.StorageType
+	7, // 7: memos.store.InstanceStorageSetting.s3_config:type_name -> memos.store.StorageS3Config
 	8, // [8:8] is the sub-list for method output_type
 	8, // [8:8] is the sub-list for method input_type
 	8, // [8:8] is the sub-list for extension type_name
@@ -882,33 +882,33 @@ var file_store_workspace_setting_proto_depIdxs = []int32{
 	0, // [0:8] is the sub-list for field type_name
 }
 
-func init() { file_store_workspace_setting_proto_init() }
-func file_store_workspace_setting_proto_init() {
-	if File_store_workspace_setting_proto != nil {
+func init() { file_store_instance_setting_proto_init() }
+func file_store_instance_setting_proto_init() {
+	if File_store_instance_setting_proto != nil {
 		return
 	}
-	file_store_workspace_setting_proto_msgTypes[0].OneofWrappers = []any{
-		(*WorkspaceSetting_BasicSetting)(nil),
-		(*WorkspaceSetting_GeneralSetting)(nil),
-		(*WorkspaceSetting_StorageSetting)(nil),
-		(*WorkspaceSetting_MemoRelatedSetting)(nil),
+	file_store_instance_setting_proto_msgTypes[0].OneofWrappers = []any{
+		(*InstanceSetting_BasicSetting)(nil),
+		(*InstanceSetting_GeneralSetting)(nil),
+		(*InstanceSetting_StorageSetting)(nil),
+		(*InstanceSetting_MemoRelatedSetting)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_store_workspace_setting_proto_rawDesc), len(file_store_workspace_setting_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_store_instance_setting_proto_rawDesc), len(file_store_instance_setting_proto_rawDesc)),
 			NumEnums:      2,
 			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_store_workspace_setting_proto_goTypes,
-		DependencyIndexes: file_store_workspace_setting_proto_depIdxs,
-		EnumInfos:         file_store_workspace_setting_proto_enumTypes,
-		MessageInfos:      file_store_workspace_setting_proto_msgTypes,
+		GoTypes:           file_store_instance_setting_proto_goTypes,
+		DependencyIndexes: file_store_instance_setting_proto_depIdxs,
+		EnumInfos:         file_store_instance_setting_proto_enumTypes,
+		MessageInfos:      file_store_instance_setting_proto_msgTypes,
 	}.Build()
-	File_store_workspace_setting_proto = out.File
-	file_store_workspace_setting_proto_goTypes = nil
-	file_store_workspace_setting_proto_depIdxs = nil
+	File_store_instance_setting_proto = out.File
+	file_store_instance_setting_proto_goTypes = nil
+	file_store_instance_setting_proto_depIdxs = nil
 }

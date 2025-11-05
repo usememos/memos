@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { authServiceClient, userServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { workspaceStore } from "@/store";
+import { instanceStore } from "@/store";
 import { initialUserStore } from "@/store/user";
 import { User, User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
@@ -21,7 +21,7 @@ const SignUp = observer(() => {
   const actionBtnLoadingState = useLoading(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const workspaceGeneralSetting = workspaceStore.state.generalSetting;
+  const instanceGeneralSetting = instanceStore.state.generalSetting;
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
@@ -71,10 +71,10 @@ const SignUp = observer(() => {
     <div className="py-4 sm:py-8 w-80 max-w-full min-h-svh mx-auto flex flex-col justify-start items-center">
       <div className="w-full py-4 grow flex flex-col justify-center items-center">
         <div className="w-full flex flex-row justify-center items-center mb-6">
-          <img className="h-14 w-auto rounded-full shadow" src={workspaceGeneralSetting.customProfile?.logoUrl || "/logo.webp"} alt="" />
-          <p className="ml-2 text-5xl text-foreground opacity-80">{workspaceGeneralSetting.customProfile?.title || "Memos"}</p>
+          <img className="h-14 w-auto rounded-full shadow" src={instanceGeneralSetting.customProfile?.logoUrl || "/logo.webp"} alt="" />
+          <p className="ml-2 text-5xl text-foreground opacity-80">{instanceGeneralSetting.customProfile?.title || "Memos"}</p>
         </div>
-        {!workspaceGeneralSetting.disallowUserRegistration ? (
+        {!instanceGeneralSetting.disallowUserRegistration ? (
           <>
             <p className="w-full text-2xl mt-2 text-muted-foreground">{t("auth.create-your-account")}</p>
             <form className="w-full mt-2" onSubmit={handleFormSubmit}>
@@ -121,7 +121,7 @@ const SignUp = observer(() => {
         ) : (
           <p className="w-full text-2xl mt-2 text-muted-foreground">Sign up is not allowed.</p>
         )}
-        {!workspaceStore.state.profile.owner ? (
+        {!instanceStore.state.profile.owner ? (
           <p className="w-full mt-4 text-sm font-medium text-muted-foreground">{t("auth.host-tip")}</p>
         ) : (
           <p className="w-full mt-4 text-sm">

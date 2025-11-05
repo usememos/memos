@@ -395,7 +395,7 @@
       "title": "Webhooks",
       "url": "URL"
     },
-    "workspace-section": {
+    "instance-section": {
       "disallow-change-nickname": "Ändern des Spitznamens verbieten",
       "disallow-change-username": "Ändern des Benutzernamens verbieten",
       "disallow-password-auth": "Passwort-Authentifizierung verbieten",

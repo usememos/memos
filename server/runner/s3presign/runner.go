@@ -44,7 +44,7 @@ func (r *Runner) RunOnce(ctx context.Context) {
 }
 
 func (r *Runner) CheckAndPresign(ctx context.Context) {
-	workspaceStorageSetting, err := r.Store.GetWorkspaceStorageSetting(ctx)
+	instanceStorageSetting, err := r.Store.GetInstanceStorageSetting(ctx)
 	if err != nil {
 		return
 	}
@@ -88,7 +88,7 @@ func (r *Runner) CheckAndPresign(ctx context.Context) {
 				}
 			}
 
-			s3Config := workspaceStorageSetting.GetS3Config()
+			s3Config := instanceStorageSetting.GetS3Config()
 			if s3ObjectPayload.S3Config != nil {
 				s3Config = s3ObjectPayload.S3Config
 			}

@@ -74,7 +74,7 @@ func (IdentityProvider_Type) EnumDescriptor() ([]byte, []int) {
 type IdentityProvider struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The resource name of the identity provider.
-	// Format: identityProviders/{idp}
+	// Format: identity-providers/{idp}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The type of the identity provider.
 	Type IdentityProvider_Type `protobuf:"varint,2,opt,name=type,proto3,enum=memos.api.v1.IdentityProvider_Type" json:"type,omitempty"`
@@ -463,7 +463,7 @@ func (x *ListIdentityProvidersResponse) GetIdentityProviders() []*IdentityProvid
 type GetIdentityProviderRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The resource name of the identity provider to get.
-	// Format: identityProviders/{idp}
+	// Format: identity-providers/{idp}
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -619,7 +619,7 @@ func (x *UpdateIdentityProviderRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 type DeleteIdentityProviderRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The resource name of the identity provider to delete.
-	// Format: identityProviders/{idp}
+	// Format: identity-providers/{idp}
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -666,7 +666,7 @@ var File_api_v1_idp_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_idp_service_proto_rawDesc = "" +
 	"\n" +
-	"\x18api/v1/idp_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x8b\x03\n" +
+	"\x18api/v1/idp_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\x8c\x03\n" +
 	"\x10IdentityProvider\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12<\n" +
 	"\x04type\x18\x02 \x01(\x0e2#.memos.api.v1.IdentityProvider.TypeB\x03\xe0A\x02R\x04type\x12\x19\n" +
@@ -676,8 +676,8 @@ const file_api_v1_idp_service_proto_rawDesc = "" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
-	"\x06OAUTH2\x10\x01:f\xeaAc\n" +
-	"\x1dmemos.api.v1/IdentityProvider\x12\x17identityProviders/{idp}\x1a\x04name*\x11identityProviders2\x10identityProvider\"e\n" +
+	"\x06OAUTH2\x10\x01:g\xeaAd\n" +
+	"\x1dmemos.api.v1/IdentityProvider\x12\x18identity-providers/{idp}\x1a\x04name*\x11identityProviders2\x10identityProvider\"e\n" +
 	"\x16IdentityProviderConfig\x12A\n" +
 	"\roauth2_config\x18\x01 \x01(\v2\x1a.memos.api.v1.OAuth2ConfigH\x00R\foauth2ConfigB\b\n" +
 	"\x06config\"\x86\x01\n" +
@@ -712,13 +712,13 @@ const file_api_v1_idp_service_proto_rawDesc = "" +
 	"updateMask\"Z\n" +
 	"\x1dDeleteIdentityProviderRequest\x129\n" +
 	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dmemos.api.v1/IdentityProviderR\x04name2\xe2\x06\n" +
-	"\x17IdentityProviderService\x12\x93\x01\n" +
-	"\x15ListIdentityProviders\x12*.memos.api.v1.ListIdentityProvidersRequest\x1a+.memos.api.v1.ListIdentityProvidersResponse\"!\x82\xd3\xe4\x93\x02\x1b\x12\x19/api/v1/identityProviders\x12\x92\x01\n" +
-	"\x13GetIdentityProvider\x12(.memos.api.v1.GetIdentityProviderRequest\x1a\x1e.memos.api.v1.IdentityProvider\"1\xdaA\x04name\x82\xd3\xe4\x93\x02$\x12\"/api/v1/{name=identityProviders/*}\x12\xaf\x01\n" +
-	"\x16CreateIdentityProvider\x12+.memos.api.v1.CreateIdentityProviderRequest\x1a\x1e.memos.api.v1.IdentityProvider\"H\xdaA\x11identity_provider\x82\xd3\xe4\x93\x02.:\x11identity_provider\"\x19/api/v1/identityProviders\x12\xd6\x01\n" +
-	"\x16UpdateIdentityProvider\x12+.memos.api.v1.UpdateIdentityProviderRequest\x1a\x1e.memos.api.v1.IdentityProvider\"o\xdaA\x1didentity_provider,update_mask\x82\xd3\xe4\x93\x02I:\x11identity_provider24/api/v1/{identity_provider.name=identityProviders/*}\x12\x90\x01\n" +
-	"\x16DeleteIdentityProvider\x12+.memos.api.v1.DeleteIdentityProviderRequest\x1a\x16.google.protobuf.Empty\"1\xdaA\x04name\x82\xd3\xe4\x93\x02$*\"/api/v1/{name=identityProviders/*}B\xa7\x01\n" +
+	"\x1dmemos.api.v1/IdentityProviderR\x04name2\xe7\x06\n" +
+	"\x17IdentityProviderService\x12\x94\x01\n" +
+	"\x15ListIdentityProviders\x12*.memos.api.v1.ListIdentityProvidersRequest\x1a+.memos.api.v1.ListIdentityProvidersResponse\"\"\x82\xd3\xe4\x93\x02\x1c\x12\x1a/api/v1/identity-providers\x12\x93\x01\n" +
+	"\x13GetIdentityProvider\x12(.memos.api.v1.GetIdentityProviderRequest\x1a\x1e.memos.api.v1.IdentityProvider\"2\xdaA\x04name\x82\xd3\xe4\x93\x02%\x12#/api/v1/{name=identity-providers/*}\x12\xb0\x01\n" +
+	"\x16CreateIdentityProvider\x12+.memos.api.v1.CreateIdentityProviderRequest\x1a\x1e.memos.api.v1.IdentityProvider\"I\xdaA\x11identity_provider\x82\xd3\xe4\x93\x02/:\x11identity_provider\"\x1a/api/v1/identity-providers\x12\xd7\x01\n" +
+	"\x16UpdateIdentityProvider\x12+.memos.api.v1.UpdateIdentityProviderRequest\x1a\x1e.memos.api.v1.IdentityProvider\"p\xdaA\x1didentity_provider,update_mask\x82\xd3\xe4\x93\x02J:\x11identity_provider25/api/v1/{identity_provider.name=identity-providers/*}\x12\x91\x01\n" +
+	"\x16DeleteIdentityProvider\x12+.memos.api.v1.DeleteIdentityProviderRequest\x1a\x16.google.protobuf.Empty\"2\xdaA\x04name\x82\xd3\xe4\x93\x02%*#/api/v1/{name=identity-providers/*}B\xa7\x01\n" +
 	"\x10com.memos.api.v1B\x0fIdpServiceProtoP\x01Z0github.com/usememos/memos/proto/gen/api/v1;apiv1\xa2\x02\x03MAX\xaa\x02\fMemos.Api.V1\xca\x02\fMemos\\Api\\V1\xe2\x02\x18Memos\\Api\\V1\\GPBMetadata\xea\x02\x0eMemos::Api::V1b\x06proto3"
 
 var (

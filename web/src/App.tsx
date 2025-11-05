@@ -3,16 +3,16 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
 import useNavigateTo from "./hooks/useNavigateTo";
-import { userStore, workspaceStore } from "./store";
+import { userStore, instanceStore } from "./store";
 import { cleanupExpiredOAuthState } from "./utils/oauth";
 import { loadTheme } from "./utils/theme";
 
 const App = observer(() => {
   const { i18n } = useTranslation();
   const navigateTo = useNavigateTo();
-  const workspaceProfile = workspaceStore.state.profile;
+  const instanceProfile = instanceStore.state.profile;
   const userGeneralSetting = userStore.state.userGeneralSetting;
-  const workspaceGeneralSetting = workspaceStore.state.generalSetting;
+  const instanceGeneralSetting = instanceStore.state.generalSetting;
 
   // Clean up expired OAuth states on app initialization
   useEffect(() => {
@@ -21,41 +21,41 @@ const App = observer(() => {
 
   // Redirect to sign up page if no instance owner.
   useEffect(() => {
-    if (!workspaceProfile.owner) {
+    if (!instanceProfile.owner) {
       navigateTo("/auth/signup");
     }
-  }, [workspaceProfile.owner]);
+  }, [instanceProfile.owner]);
 
   useEffect(() => {
-    if (workspaceGeneralSetting.additionalStyle) {
+    if (instanceGeneralSetting.additionalStyle) {
       const styleEl = document.createElement("style");
-      styleEl.innerHTML = workspaceGeneralSetting.additionalStyle;
+      styleEl.innerHTML = instanceGeneralSetting.additionalStyle;
       styleEl.setAttribute("type", "text/css");
       document.body.insertAdjacentElement("beforeend", styleEl);
     }
-  }, [workspaceGeneralSetting.additionalStyle]);
+  }, [instanceGeneralSetting.additionalStyle]);
 
   useEffect(() => {
-    if (workspaceGeneralSetting.additionalScript) {
+    if (instanceGeneralSetting.additionalScript) {
       const scriptEl = document.createElement("script");
-      scriptEl.innerHTML = workspaceGeneralSetting.additionalScript;
+      scriptEl.innerHTML = instanceGeneralSetting.additionalScript;
       document.head.appendChild(scriptEl);
     }
-  }, [workspaceGeneralSetting.additionalScript]);
+  }, [instanceGeneralSetting.additionalScript]);
 
   // Dynamic update metadata with customized profile.
   useEffect(() => {
-    if (!workspaceGeneralSetting.customProfile) {
+    if (!instanceGeneralSetting.customProfile) {
       return;
     }
 
-    document.title = workspaceGeneralSetting.customProfile.title;
+    document.title = instanceGeneralSetting.customProfile.title;
     const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-    link.href = workspaceGeneralSetting.customProfile.logoUrl || "/logo.webp";
-  }, [workspaceGeneralSetting.customProfile]);
+    link.href = instanceGeneralSetting.customProfile.logoUrl || "/logo.webp";
+  }, [instanceGeneralSetting.customProfile]);
 
   useEffect(() => {
-    const currentLocale = workspaceStore.state.locale;
+    const currentLocale = instanceStore.state.locale;
     // This will trigger re-rendering of the whole app.
     i18n.changeLanguage(currentLocale);
     document.documentElement.setAttribute("lang", currentLocale);
@@ -64,26 +64,26 @@ const App = observer(() => {
     } else {
       document.documentElement.setAttribute("dir", "ltr");
     }
-  }, [workspaceStore.state.locale]);
+  }, [instanceStore.state.locale]);
 
   useEffect(() => {
     if (!userGeneralSetting) {
       return;
     }
 
-    workspaceStore.state.setPartial({
-      locale: userGeneralSetting.locale || workspaceStore.state.locale,
-      theme: userGeneralSetting.theme || workspaceStore.state.theme,
+    instanceStore.state.setPartial({
+      locale: userGeneralSetting.locale || instanceStore.state.locale,
+      theme: userGeneralSetting.theme || instanceStore.state.theme,
     });
   }, [userGeneralSetting?.locale, userGeneralSetting?.theme]);
 
-  // Load theme when workspace theme changes or user setting changes
+  // Load theme when instance theme changes or user setting changes
   useEffect(() => {
-    const currentTheme = userGeneralSetting?.theme || workspaceStore.state.theme;
+    const currentTheme = userGeneralSetting?.theme || instanceStore.state.theme;
     if (currentTheme) {
       loadTheme(currentTheme);
     }
-  }, [userGeneralSetting?.theme, workspaceStore.state.theme]);
+  }, [userGeneralSetting?.theme, instanceStore.state.theme]);
 
   return <Outlet />;
 });

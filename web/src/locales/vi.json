@@ -324,7 +324,7 @@
       "title": "Webhook",
       "url": "Url"
     },
-    "workspace-section": {
+    "instance-section": {
       "disallow-change-nickname": "Không cho phép đổi biệt danh",
       "disallow-change-username": "Không cho phép đổi tên người dùng",
       "disallow-password-auth": "Không cho phép xác thực bằng mật khẩu",

@@ -410,7 +410,7 @@
       "title": "Webhooks",
       "url": "URL"
     },
-    "workspace-section": {
+    "instance-section": {
       "disallow-change-nickname": "Onemogući promjenu nadimka",
       "disallow-change-username": "Onemogući promjenu korisničkog imena",
       "disallow-password-auth": "Onemogući autentikaciju lozinkom",

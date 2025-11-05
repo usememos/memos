@@ -13,7 +13,7 @@ import { isValidUrl } from "@/helpers/utils";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
-import { memoStore, attachmentStore, userStore, workspaceStore } from "@/store";
+import { memoStore, attachmentStore, userStore, instanceStore } from "@/store";
 import { extractMemoIdFromName } from "@/store/common";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { Location, Memo, MemoRelation, MemoRelation_Type, Visibility } from "@/types/proto/api/v1/memo_service";
@@ -81,7 +81,7 @@ const MemoEditor = observer((props: Props) => {
           relation.memo?.name === memoName && relation.relatedMemo?.name !== memoName && relation.type === MemoRelation_Type.REFERENCE,
       )
     : state.relationList.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
-  const workspaceMemoRelatedSetting = workspaceStore.state.memoRelatedSetting;
+  const instanceMemoRelatedSetting = instanceStore.state.memoRelatedSetting;
 
   useEffect(() => {
     editorRef.current?.setContent(contentCache || "");
@@ -95,7 +95,7 @@ const MemoEditor = observer((props: Props) => {
 
   useAsyncEffect(async () => {
     let visibility = convertVisibilityFromString(userGeneralSetting?.memoVisibility || "PRIVATE");
-    if (workspaceMemoRelatedSetting.disallowPublicVisibility && visibility === Visibility.PUBLIC) {
+    if (instanceMemoRelatedSetting.disallowPublicVisibility && visibility === Visibility.PUBLIC) {
       visibility = Visibility.PROTECTED;
     }
     if (parentMemoName) {
@@ -106,7 +106,7 @@ const MemoEditor = observer((props: Props) => {
       ...prevState,
       memoVisibility: convertVisibilityFromString(visibility),
     }));
-  }, [parentMemoName, userGeneralSetting?.memoVisibility, workspaceMemoRelatedSetting.disallowPublicVisibility]);
+  }, [parentMemoName, userGeneralSetting?.memoVisibility, instanceMemoRelatedSetting.disallowPublicVisibility]);
 
   useAsyncEffect(async () => {
     if (!memoName) {
@@ -156,7 +156,7 @@ const MemoEditor = observer((props: Props) => {
         handleSaveBtnClick();
         return;
       }
-      if (!workspaceMemoRelatedSetting.disableMarkdownShortcuts) {
+      if (!instanceMemoRelatedSetting.disableMarkdownShortcuts) {
         handleEditorKeydownWithMarkdownShortcuts(event, editorRef.current);
       }
     }

@@ -393,7 +393,7 @@
       "title": "Webhooky",
       "url": "URL"
     },
-    "workspace-section": {
+    "instance-section": {
       "disallow-change-nickname": "Zakázat změnu přezdívky",
       "disallow-change-username": "Zakázat změnu uživatelského jména",
       "disallow-password-auth": "Zakázat ověřování heslem",

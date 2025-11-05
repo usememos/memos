@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	WorkspaceSettingNamePrefix = "workspace/settings/"
+	InstanceSettingNamePrefix  = "instance/settings/"
 	UserNamePrefix             = "users/"
 	MemoNamePrefix             = "memos/"
 	AttachmentNamePrefix       = "attachments/"
@@ -41,20 +41,20 @@ func GetNameParentTokens(name string, tokenPrefixes ...string) ([]string, error)
 	return tokens, nil
 }
 
-func ExtractWorkspaceSettingKeyFromName(name string) (string, error) {
-	const prefix = "workspace/settings/"
+func ExtractInstanceSettingKeyFromName(name string) (string, error) {
+	const prefix = "instance/settings/"
 	if !strings.HasPrefix(name, prefix) {
-		return "", errors.Errorf("invalid workspace setting name: expected prefix %q, got %q", prefix, name)
+		return "", errors.Errorf("invalid instance setting name: expected prefix %q, got %q", prefix, name)
 	}
 
 	settingKey := strings.TrimPrefix(name, prefix)
 	if settingKey == "" {
-		return "", errors.Errorf("invalid workspace setting name: empty setting key in %q", name)
+		return "", errors.Errorf("invalid instance setting name: empty setting key in %q", name)
 	}
 
 	// Ensure there are no additional path segments
 	if strings.Contains(settingKey, "/") {
-		return "", errors.Errorf("invalid workspace setting name: setting key cannot contain '/' in %q", name)
+		return "", errors.Errorf("invalid instance setting name: setting key cannot contain '/' in %q", name)
 	}
 
 	return settingKey, nil

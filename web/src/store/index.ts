@@ -11,7 +11,7 @@
  * These stores fetch and cache data from the backend API:
  * - **memoStore**: Memo CRUD operations
  * - **userStore**: User authentication and settings
- * - **workspaceStore**: Workspace configuration
+ * - **instanceStore**: Instance configuration
  * - **attachmentStore**: File attachment management
  *
  * Features:
@@ -46,12 +46,12 @@
  */
 // Server State Stores
 import attachmentStore from "./attachment";
+import instanceStore from "./instance";
 import memoStore from "./memo";
 // Client State Stores
 import memoFilterStore from "./memoFilter";
 import userStore from "./user";
 import viewStore from "./view";
-import workspaceStore from "./workspace";
 
 // Utilities and Types
 export { StoreError, RequestDeduplicator, createRequestKey } from "./store-utils";
@@ -65,13 +65,13 @@ export { getMemoFilterKey, parseFilterQuery, stringifyFilters } from "./memoFilt
 // Re-export view types
 export type { LayoutMode } from "./view";
 
-// Re-export workspace types
-export type { Theme } from "./workspace";
-export { isValidTheme } from "./workspace";
+// Re-export instance types
+export type { Theme } from "./instance";
+export { isValidTheme } from "./instance";
 
 // Re-export common utilities
 export {
-  workspaceSettingNamePrefix,
+  instanceSettingNamePrefix,
   userNamePrefix,
   memoNamePrefix,
   identityProviderNamePrefix,
@@ -86,7 +86,7 @@ export {
   // Server state stores
   memoStore,
   userStore,
-  workspaceStore,
+  instanceStore,
   attachmentStore,
 
   // Client state stores
@@ -102,7 +102,7 @@ export const stores = {
   server: {
     memo: memoStore,
     user: userStore,
-    workspace: workspaceStore,
+    instance: instanceStore,
     attachment: attachmentStore,
   },
 

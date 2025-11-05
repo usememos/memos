@@ -7,24 +7,24 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { workspaceStore } from "@/store";
-import { workspaceSettingNamePrefix } from "@/store/common";
-import { WorkspaceSetting_MemoRelatedSetting, WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
+import { instanceStore } from "@/store";
+import { instanceSettingNamePrefix } from "@/store/common";
+import { InstanceSetting_MemoRelatedSetting, InstanceSetting_Key } from "@/types/proto/api/v1/instance_service";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoRelatedSettings = observer(() => {
   const t = useTranslate();
-  const [originalSetting, setOriginalSetting] = useState<WorkspaceSetting_MemoRelatedSetting>(workspaceStore.state.memoRelatedSetting);
-  const [memoRelatedSetting, setMemoRelatedSetting] = useState<WorkspaceSetting_MemoRelatedSetting>(originalSetting);
+  const [originalSetting, setOriginalSetting] = useState<InstanceSetting_MemoRelatedSetting>(instanceStore.state.memoRelatedSetting);
+  const [memoRelatedSetting, setMemoRelatedSetting] = useState<InstanceSetting_MemoRelatedSetting>(originalSetting);
   const [editingReaction, setEditingReaction] = useState<string>("");
   const [editingNsfwTag, setEditingNsfwTag] = useState<string>("");
 
-  const updatePartialSetting = (partial: Partial<WorkspaceSetting_MemoRelatedSetting>) => {
-    const newWorkspaceMemoRelatedSetting = WorkspaceSetting_MemoRelatedSetting.fromPartial({
+  const updatePartialSetting = (partial: Partial<InstanceSetting_MemoRelatedSetting>) => {
+    const newInstanceMemoRelatedSetting = InstanceSetting_MemoRelatedSetting.fromPartial({
       ...memoRelatedSetting,
       ...partial,
     });
-    setMemoRelatedSetting(newWorkspaceMemoRelatedSetting);
+    setMemoRelatedSetting(newInstanceMemoRelatedSetting);
   };
 
   const upsertReaction = () => {
@@ -52,8 +52,8 @@ const MemoRelatedSettings = observer(() => {
     }
 
     try {
-      await workspaceStore.upsertWorkspaceSetting({
-        name: `${workspaceSettingNamePrefix}${WorkspaceSetting_Key.MEMO_RELATED}`,
+      await instanceStore.upsertInstanceSetting({
+        name: `${instanceSettingNamePrefix}${InstanceSetting_Key.MEMO_RELATED}`,
         memoRelatedSetting,
       });
       setOriginalSetting(memoRelatedSetting);

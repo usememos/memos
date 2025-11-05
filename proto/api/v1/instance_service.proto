@@ -10,30 +10,30 @@ import "google/protobuf/field_mask.proto";
 
 option go_package = "gen/api/v1";
 
-service WorkspaceService {
-  // Gets the workspace profile.
-  rpc GetWorkspaceProfile(GetWorkspaceProfileRequest) returns (WorkspaceProfile) {
-    option (google.api.http) = {get: "/api/v1/workspace/profile"};
+service InstanceService {
+  // Gets the instance profile.
+  rpc GetInstanceProfile(GetInstanceProfileRequest) returns (InstanceProfile) {
+    option (google.api.http) = {get: "/api/v1/instance/profile"};
   }
 
-  // Gets a workspace setting.
-  rpc GetWorkspaceSetting(GetWorkspaceSettingRequest) returns (WorkspaceSetting) {
-    option (google.api.http) = {get: "/api/v1/{name=workspace/settings/*}"};
+  // Gets an instance setting.
+  rpc GetInstanceSetting(GetInstanceSettingRequest) returns (InstanceSetting) {
+    option (google.api.http) = {get: "/api/v1/{name=instance/settings/*}"};
     option (google.api.method_signature) = "name";
   }
 
-  // Updates a workspace setting.
-  rpc UpdateWorkspaceSetting(UpdateWorkspaceSettingRequest) returns (WorkspaceSetting) {
+  // Updates an instance setting.
+  rpc UpdateInstanceSetting(UpdateInstanceSettingRequest) returns (InstanceSetting) {
     option (google.api.http) = {
-      patch: "/api/v1/{setting.name=workspace/settings/*}"
+      patch: "/api/v1/{setting.name=instance/settings/*}"
       body: "setting"
     };
     option (google.api.method_signature) = "setting,update_mask";
   }
 }
 
-// Workspace profile message containing basic workspace information.
-message WorkspaceProfile {
+// Instance profile message containing basic instance information.
+message InstanceProfile {
   // The name of instance owner.
   // Format: users/{user}
   string owner = 1;
@@ -48,20 +48,20 @@ message WorkspaceProfile {
   string instance_url = 6;
 }
 
-// Request for workspace profile.
-message GetWorkspaceProfileRequest {}
+// Request for instance profile.
+message GetInstanceProfileRequest {}
 
-// A workspace setting resource.
-message WorkspaceSetting {
+// An instance setting resource.
+message InstanceSetting {
   option (google.api.resource) = {
-    type: "memos.api.v1/WorkspaceSetting"
-    pattern: "workspace/settings/{setting}"
-    singular: "workspaceSetting"
-    plural: "workspaceSettings"
+    type: "memos.api.v1/InstanceSetting"
+    pattern: "instance/settings/{setting}"
+    singular: "instanceSetting"
+    plural: "instanceSettings"
   };
 
-  // The name of the workspace setting.
-  // Format: workspace/settings/{setting}
+  // The name of the instance setting.
+  // Format: instance/settings/{setting}
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
   oneof value {
@@ -70,7 +70,7 @@ message WorkspaceSetting {
     MemoRelatedSetting memo_related_setting = 4;
   }
 
-  // Enumeration of workspace setting keys.
+  // Enumeration of instance setting keys.
   enum Key {
     KEY_UNSPECIFIED = 0;
     // GENERAL is the key for general settings.
@@ -81,7 +81,7 @@ message WorkspaceSetting {
     MEMO_RELATED = 3;
   }
 
-  // General workspace settings configuration.
+  // General instance settings configuration.
   message GeneralSetting {
     // theme is the name of the selected theme.
     // This references a CSS file in the web/public/themes/ directory.
@@ -106,7 +106,7 @@ message WorkspaceSetting {
     // disallow_change_nickname disallows changing nickname.
     bool disallow_change_nickname = 9;
 
-    // Custom profile configuration for workspace branding.
+    // Custom profile configuration for instance branding.
     message CustomProfile {
       string title = 1;
       string description = 2;
@@ -115,7 +115,7 @@ message WorkspaceSetting {
     }
   }
 
-  // Storage configuration settings for workspace attachments.
+  // Storage configuration settings for instance attachments.
   message StorageSetting {
     // Storage type enumeration for different storage backends.
     enum StorageType {
@@ -149,7 +149,7 @@ message WorkspaceSetting {
     S3Config s3_config = 4;
   }
 
-  // Memo-related workspace settings and policies.
+  // Memo-related instance settings and policies.
   message MemoRelatedSetting {
     // disallow_public_visibility disallows set memo as public visibility.
     bool disallow_public_visibility = 1;
@@ -172,20 +172,20 @@ message WorkspaceSetting {
   }
 }
 
-// Request message for GetWorkspaceSetting method.
-message GetWorkspaceSettingRequest {
-  // The resource name of the workspace setting.
-  // Format: workspace/settings/{setting}
+// Request message for GetInstanceSetting method.
+message GetInstanceSettingRequest {
+  // The resource name of the instance setting.
+  // Format: instance/settings/{setting}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api.v1/WorkspaceSetting"}
+    (google.api.resource_reference) = {type: "memos.api.v1/InstanceSetting"}
   ];
 }
 
-// Request message for UpdateWorkspaceSetting method.
-message UpdateWorkspaceSettingRequest {
-  // The workspace setting resource which replaces the resource on the server.
-  WorkspaceSetting setting = 1 [(google.api.field_behavior) = REQUIRED];
+// Request message for UpdateInstanceSetting method.
+message UpdateInstanceSettingRequest {
+  // The instance setting resource which replaces the resource on the server.
+  InstanceSetting setting = 1 [(google.api.field_behavior) = REQUIRED];
 
   // The list of fields to update.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = OPTIONAL];

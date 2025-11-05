@@ -21,19 +21,19 @@ import (
 // Migration System Overview:
 //
 // The migration system handles database schema versioning and upgrades.
-// Schema version is stored in workspace_setting (the new system).
+// Schema version is stored in system_setting (the new system).
 // The old migration_history table is deprecated but still supported for backward compatibility.
 //
 // Migration Flow:
 // 1. preMigrate: Check if DB is initialized. If not, apply LATEST.sql
 // 2. normalizeMigrationHistoryList: Normalize old migration_history records (for pre-0.22 installations)
-// 3. migrateSchemaVersionToSetting: Migrate version from migration_history to workspace_setting
+// 3. migrateSchemaVersionToSetting: Migrate version from migration_history to system_setting
 // 4. Migrate (prod mode): Apply incremental migrations from current to target version
 // 5. Migrate (demo mode): Seed database with demo data
 //
 // Version Tracking:
-// - New installations: Schema version set in workspace_setting immediately
-// - Old installations: Version migrated from migration_history to workspace_setting automatically
+// - New installations: Schema version set in system_setting immediately
+// - Old installations: Version migrated from migration_history to system_setting automatically
 // - Empty version: Treated as 0.0.0 and all migrations applied
 //
 // Migration Files:
@@ -118,25 +118,25 @@ func (s *Store) Migrate(ctx context.Context) error {
 
 	switch s.profile.Mode {
 	case modeProd:
-		workspaceBasicSetting, err := s.GetWorkspaceBasicSetting(ctx)
+		instanceBasicSetting, err := s.GetInstanceBasicSetting(ctx)
 		if err != nil {
-			return errors.Wrap(err, "failed to get workspace basic setting")
+			return errors.Wrap(err, "failed to get instance basic setting")
 		}
 		currentSchemaVersion, err := s.GetCurrentSchemaVersion()
 		if err != nil {
 			return errors.Wrap(err, "failed to get current schema version")
 		}
 		// Check for downgrade (but skip if schema version is empty - that means fresh/old installation)
-		if !isVersionEmpty(workspaceBasicSetting.SchemaVersion) && version.IsVersionGreaterThan(workspaceBasicSetting.SchemaVersion, currentSchemaVersion) {
+		if !isVersionEmpty(instanceBasicSetting.SchemaVersion) && version.IsVersionGreaterThan(instanceBasicSetting.SchemaVersion, currentSchemaVersion) {
 			slog.Error("cannot downgrade schema version",
-				slog.String("databaseVersion", workspaceBasicSetting.SchemaVersion),
+				slog.String("databaseVersion", instanceBasicSetting.SchemaVersion),
 				slog.String("currentVersion", currentSchemaVersion),
 			)
-			return errors.Errorf("cannot downgrade schema version from %s to %s", workspaceBasicSetting.SchemaVersion, currentSchemaVersion)
+			return errors.Errorf("cannot downgrade schema version from %s to %s", instanceBasicSetting.SchemaVersion, currentSchemaVersion)
 		}
 		// Apply migrations if needed (including when schema version is empty)
-		if isVersionEmpty(workspaceBasicSetting.SchemaVersion) || version.IsVersionGreaterThan(currentSchemaVersion, workspaceBasicSetting.SchemaVersion) {
-			if err := s.applyMigrations(ctx, workspaceBasicSetting.SchemaVersion, currentSchemaVersion); err != nil {
+		if isVersionEmpty(instanceBasicSetting.SchemaVersion) || version.IsVersionGreaterThan(currentSchemaVersion, instanceBasicSetting.SchemaVersion) {
+			if err := s.applyMigrations(ctx, instanceBasicSetting.SchemaVersion, currentSchemaVersion); err != nil {
 				return errors.Wrap(err, "failed to apply migrations")
 			}
 		}
@@ -363,19 +363,19 @@ func (*Store) execute(ctx context.Context, tx *sql.Tx, stmt string) error {
 	return nil
 }
 
-// updateCurrentSchemaVersion updates the current schema version in the workspace basic setting.
-// It retrieves the workspace basic setting, updates the schema version, and upserts the setting back to the database.
+// updateCurrentSchemaVersion updates the current schema version in the instance basic setting.
+// It retrieves the instance basic setting, updates the schema version, and upserts the setting back to the database.
 func (s *Store) updateCurrentSchemaVersion(ctx context.Context, schemaVersion string) error {
-	workspaceBasicSetting, err := s.GetWorkspaceBasicSetting(ctx)
+	instanceBasicSetting, err := s.GetInstanceBasicSetting(ctx)
 	if err != nil {
-		return errors.Wrap(err, "failed to get workspace basic setting")
+		return errors.Wrap(err, "failed to get instance basic setting")
 	}
-	workspaceBasicSetting.SchemaVersion = schemaVersion
-	if _, err := s.UpsertWorkspaceSetting(ctx, &storepb.WorkspaceSetting{
-		Key:   storepb.WorkspaceSettingKey_BASIC,
-		Value: &storepb.WorkspaceSetting_BasicSetting{BasicSetting: workspaceBasicSetting},
+	instanceBasicSetting.SchemaVersion = schemaVersion
+	if _, err := s.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key:   storepb.InstanceSettingKey_BASIC,
+		Value: &storepb.InstanceSetting_BasicSetting{BasicSetting: instanceBasicSetting},
 	}); err != nil {
-		return errors.Wrap(err, "failed to upsert workspace setting")
+		return errors.Wrap(err, "failed to upsert instance setting")
 	}
 	return nil
 }
@@ -383,7 +383,7 @@ func (s *Store) updateCurrentSchemaVersion(ctx context.Context, schemaVersion st
 // normalizeMigrationHistoryList normalizes the migration history list.
 // It checks the existing migration history and updates it to the latest schema version if necessary.
 // NOTE: This is a transition function for backward compatibility with the deprecated migration_history table.
-// This ensures that old installations (< 0.22) have their migration_history normalized before migrating to workspace_setting.
+// This ensures that old installations (< 0.22) have their migration_history normalized before migrating to system_setting.
 func (s *Store) normalizeMigrationHistoryList(ctx context.Context) error {
 	migrationHistoryList, err := s.driver.FindMigrationHistoryList(ctx, &FindMigrationHistory{})
 	if err != nil {
@@ -435,11 +435,11 @@ func (s *Store) normalizeMigrationHistoryList(ctx context.Context) error {
 	return nil
 }
 
-// migrateSchemaVersionToSetting migrates the schema version from the migration history to the workspace basic setting.
-// It retrieves the migration history, sorts the versions, and updates the workspace basic setting if necessary.
+// migrateSchemaVersionToSetting migrates the schema version from the migration history to the instance basic setting.
+// It retrieves the migration history, sorts the versions, and updates the instance basic setting if necessary.
 // NOTE: This is a transition function for backward compatibility with the deprecated migration_history table.
-// The migration_history table is deprecated in favor of storing schema version in workspace_setting.
-// This handles upgrades from old installations that only have migration_history but no workspace_setting.
+// The migration_history table is deprecated in favor of storing schema version in system_setting.
+// This handles upgrades from old installations that only have migration_history but no system_setting.
 func (s *Store) migrateSchemaVersionToSetting(ctx context.Context) error {
 	migrationHistoryList, err := s.driver.FindMigrationHistoryList(ctx, &FindMigrationHistory{})
 	if err != nil {
@@ -455,16 +455,16 @@ func (s *Store) migrateSchemaVersionToSetting(ctx context.Context) error {
 	sort.Sort(version.SortVersion(versions))
 	latestVersion := versions[len(versions)-1]
 
-	workspaceBasicSetting, err := s.GetWorkspaceBasicSetting(ctx)
+	instanceBasicSetting, err := s.GetInstanceBasicSetting(ctx)
 	if err != nil {
-		return errors.Wrap(err, "failed to get workspace basic setting")
+		return errors.Wrap(err, "failed to get instance basic setting")
 	}
 
-	// If workspace_setting has no schema version (empty), or migration_history has a newer version, update workspace_setting.
+	// If instance_setting has no schema version (empty), or migration_history has a newer version, update instance_setting.
 	// This handles upgrades from old installations where schema version was only tracked in migration_history.
-	if isVersionEmpty(workspaceBasicSetting.SchemaVersion) || version.IsVersionGreaterThan(latestVersion, workspaceBasicSetting.SchemaVersion) {
-		slog.Info("migrating schema version from migration_history to workspace_setting",
-			slog.String("from", workspaceBasicSetting.SchemaVersion),
+	if isVersionEmpty(instanceBasicSetting.SchemaVersion) || version.IsVersionGreaterThan(latestVersion, instanceBasicSetting.SchemaVersion) {
+		slog.Info("migrating schema version from migration_history to instance_setting",
+			slog.String("from", instanceBasicSetting.SchemaVersion),
 			slog.String("to", latestVersion),
 		)
 		if err := s.updateCurrentSchemaVersion(ctx, latestVersion); err != nil {

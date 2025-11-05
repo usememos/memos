@@ -15,9 +15,9 @@ import (
 )
 
 func (s *APIV1Service) ListAllUserStats(ctx context.Context, _ *v1pb.ListAllUserStatsRequest) (*v1pb.ListAllUserStatsResponse, error) {
-	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get workspace memo related setting")
+		return nil, errors.Wrap(err, "failed to get instance memo related setting")
 	}
 
 	normalStatus := store.Normal
@@ -50,7 +50,7 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, _ *v1pb.ListAllUser
 	userMemoStatMap := make(map[int32]*v1pb.UserStats)
 	for _, memo := range memos {
 		displayTs := memo.CreatedTs
-		if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
+		if instanceMemoRelatedSetting.DisplayWithUpdateTime {
 			displayTs = memo.UpdatedTs
 		}
 		userMemoStatMap[memo.CreatorID] = &v1pb.UserStats{
@@ -101,9 +101,9 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 		return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
 	}
 
-	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get workspace memo related setting")
+		return nil, errors.Wrap(err, "failed to get instance memo related setting")
 	}
 
 	displayTimestamps := []*timestamppb.Timestamp{}
@@ -116,7 +116,7 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 
 	for _, memo := range memos {
 		displayTs := memo.CreatedTs
-		if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
+		if instanceMemoRelatedSetting.DisplayWithUpdateTime {
 			displayTs = memo.UpdatedTs
 		}
 		displayTimestamps = append(displayTimestamps, timestamppb.New(time.Unix(displayTs, 0)))

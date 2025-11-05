@@ -1,4 +1,4 @@
-package postgres
+package sqlite
 
 import (
 	"context"
@@ -7,13 +7,13 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func (d *DB) UpsertWorkspaceSetting(ctx context.Context, upsert *store.WorkspaceSetting) (*store.WorkspaceSetting, error) {
+func (d *DB) UpsertInstanceSetting(ctx context.Context, upsert *store.InstanceSetting) (*store.InstanceSetting, error) {
 	stmt := `
 		INSERT INTO system_setting (
 			name, value, description
 		)
-		VALUES ($1, $2, $3)
-		ON CONFLICT(name) DO UPDATE 
+		VALUES (?, ?, ?)
+		ON CONFLICT(name) DO UPDATE
 		SET
 			value = EXCLUDED.value,
 			description = EXCLUDED.description
@@ -25,10 +25,10 @@ func (d *DB) UpsertWorkspaceSetting(ctx context.Context, upsert *store.Workspace
 	return upsert, nil
 }
 
-func (d *DB) ListWorkspaceSettings(ctx context.Context, find *store.FindWorkspaceSetting) ([]*store.WorkspaceSetting, error) {
+func (d *DB) ListInstanceSettings(ctx context.Context, find *store.FindInstanceSetting) ([]*store.InstanceSetting, error) {
 	where, args := []string{"1 = 1"}, []any{}
 	if find.Name != "" {
-		where, args = append(where, "name = "+placeholder(len(args)+1)), append(args, find.Name)
+		where, args = append(where, "name = ?"), append(args, find.Name)
 	}
 
 	query := `
@@ -45,9 +45,9 @@ func (d *DB) ListWorkspaceSettings(ctx context.Context, find *store.FindWorkspac
 	}
 	defer rows.Close()
 
-	list := []*store.WorkspaceSetting{}
+	list := []*store.InstanceSetting{}
 	for rows.Next() {
-		systemSettingMessage := &store.WorkspaceSetting{}
+		systemSettingMessage := &store.InstanceSetting{}
 		if err := rows.Scan(
 			&systemSettingMessage.Name,
 			&systemSettingMessage.Value,
@@ -65,8 +65,8 @@ func (d *DB) ListWorkspaceSettings(ctx context.Context, find *store.FindWorkspac
 	return list, nil
 }
 
-func (d *DB) DeleteWorkspaceSetting(ctx context.Context, delete *store.DeleteWorkspaceSetting) error {
-	stmt := `DELETE FROM system_setting WHERE name = $1`
+func (d *DB) DeleteInstanceSetting(ctx context.Context, delete *store.DeleteInstanceSetting) error {
+	stmt := "DELETE FROM system_setting WHERE name = ?"
 	_, err := d.db.ExecContext(ctx, stmt, delete.Name)
 	return err
 }

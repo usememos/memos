@@ -60,14 +60,14 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		s.profiler.StartMemoryMonitor(ctx)
 	}
 
-	workspaceBasicSetting, err := s.getOrUpsertWorkspaceBasicSetting(ctx)
+	instanceBasicSetting, err := s.getOrUpsertInstanceBasicSetting(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get workspace basic setting")
+		return nil, errors.Wrap(err, "failed to get instance basic setting")
 	}
 
 	secret := "usememos"
 	if profile.Mode == "prod" {
-		secret = workspaceBasicSetting.SecretKey
+		secret = instanceBasicSetting.SecretKey
 	}
 	s.Secret = secret
 
@@ -229,27 +229,27 @@ func (s *Server) StartBackgroundRunners(ctx context.Context) {
 	slog.Info("background runners started", "goroutines", runtime.NumGoroutine())
 }
 
-func (s *Server) getOrUpsertWorkspaceBasicSetting(ctx context.Context) (*storepb.WorkspaceBasicSetting, error) {
-	workspaceBasicSetting, err := s.Store.GetWorkspaceBasicSetting(ctx)
+func (s *Server) getOrUpsertInstanceBasicSetting(ctx context.Context) (*storepb.InstanceBasicSetting, error) {
+	instanceBasicSetting, err := s.Store.GetInstanceBasicSetting(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get workspace basic setting")
+		return nil, errors.Wrap(err, "failed to get instance basic setting")
 	}
 	modified := false
-	if workspaceBasicSetting.SecretKey == "" {
-		workspaceBasicSetting.SecretKey = uuid.NewString()
+	if instanceBasicSetting.SecretKey == "" {
+		instanceBasicSetting.SecretKey = uuid.NewString()
 		modified = true
 	}
 	if modified {
-		workspaceSetting, err := s.Store.UpsertWorkspaceSetting(ctx, &storepb.WorkspaceSetting{
-			Key:   storepb.WorkspaceSettingKey_BASIC,
-			Value: &storepb.WorkspaceSetting_BasicSetting{BasicSetting: workspaceBasicSetting},
+		instanceSetting, err := s.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key:   storepb.InstanceSettingKey_BASIC,
+			Value: &storepb.InstanceSetting_BasicSetting{BasicSetting: instanceBasicSetting},
 		})
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to upsert workspace setting")
+			return nil, errors.Wrap(err, "failed to upsert instance setting")
 		}
-		workspaceBasicSetting = workspaceSetting.GetBasicSetting()
+		instanceBasicSetting = instanceSetting.GetBasicSetting()
 	}
-	return workspaceBasicSetting, nil
+	return instanceBasicSetting, nil
 }
 
 // stacktraceError wraps an underlying error and captures the stacktrace. It

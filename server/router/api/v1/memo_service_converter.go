@@ -15,11 +15,11 @@ import (
 
 func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Memo, reactions []*store.Reaction, attachments []*store.Attachment) (*v1pb.Memo, error) {
 	displayTs := memo.CreatedTs
-	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get workspace memo related setting")
+		return nil, errors.Wrap(err, "failed to get instance memo related setting")
 	}
-	if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
+	if instanceMemoRelatedSetting.DisplayWithUpdateTime {
 		displayTs = memo.UpdatedTs
 	}
 

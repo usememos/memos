@@ -9,87 +9,83 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { workspaceStore } from "@/store";
-import { workspaceSettingNamePrefix } from "@/store/common";
+import { instanceStore } from "@/store";
+import { instanceSettingNamePrefix } from "@/store/common";
 import {
-  WorkspaceSetting_Key,
-  WorkspaceSetting_StorageSetting,
-  WorkspaceSetting_StorageSetting_S3Config,
-  WorkspaceSetting_StorageSetting_StorageType,
-} from "@/types/proto/api/v1/workspace_service";
+  InstanceSetting_Key,
+  InstanceSetting_StorageSetting,
+  InstanceSetting_StorageSetting_S3Config,
+  InstanceSetting_StorageSetting_StorageType,
+} from "@/types/proto/api/v1/instance_service";
 import { useTranslate } from "@/utils/i18n";
 
 const StorageSection = observer(() => {
   const t = useTranslate();
-  const [workspaceStorageSetting, setWorkspaceStorageSetting] = useState<WorkspaceSetting_StorageSetting>(
-    WorkspaceSetting_StorageSetting.fromPartial(
-      workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.STORAGE)?.storageSetting || {},
-    ),
+  const [instanceStorageSetting, setInstanceStorageSetting] = useState<InstanceSetting_StorageSetting>(
+    InstanceSetting_StorageSetting.fromPartial(instanceStore.getInstanceSettingByKey(InstanceSetting_Key.STORAGE)?.storageSetting || {}),
   );
 
   useEffect(() => {
-    setWorkspaceStorageSetting(
-      WorkspaceSetting_StorageSetting.fromPartial(
-        workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.STORAGE)?.storageSetting || {},
-      ),
+    setInstanceStorageSetting(
+      InstanceSetting_StorageSetting.fromPartial(instanceStore.getInstanceSettingByKey(InstanceSetting_Key.STORAGE)?.storageSetting || {}),
     );
-  }, [workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.STORAGE)]);
+  }, [instanceStore.getInstanceSettingByKey(InstanceSetting_Key.STORAGE)]);
 
   const allowSaveStorageSetting = useMemo(() => {
-    if (workspaceStorageSetting.uploadSizeLimitMb <= 0) {
+    if (instanceStorageSetting.uploadSizeLimitMb <= 0) {
       return false;
     }
 
-    const origin = WorkspaceSetting_StorageSetting.fromPartial(
-      workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.STORAGE)?.storageSetting || {},
+    const origin = InstanceSetting_StorageSetting.fromPartial(
+      instanceStore.getInstanceSettingByKey(InstanceSetting_Key.STORAGE)?.storageSetting || {},
     );
-    if (workspaceStorageSetting.storageType === WorkspaceSetting_StorageSetting_StorageType.LOCAL) {
-      if (workspaceStorageSetting.filepathTemplate.length === 0) {
+    if (instanceStorageSetting.storageType === InstanceSetting_StorageSetting_StorageType.LOCAL) {
+      if (instanceStorageSetting.filepathTemplate.length === 0) {
         return false;
       }
-    } else if (workspaceStorageSetting.storageType === WorkspaceSetting_StorageSetting_StorageType.S3) {
+    } else if (instanceStorageSetting.storageType === InstanceSetting_StorageSetting_StorageType.S3) {
       if (
-        workspaceStorageSetting.s3Config?.accessKeyId.length === 0 ||
-        workspaceStorageSetting.s3Config?.accessKeySecret.length === 0 ||
-        workspaceStorageSetting.s3Config?.endpoint.length === 0 ||
-        workspaceStorageSetting.s3Config?.region.length === 0 ||
-        workspaceStorageSetting.s3Config?.bucket.length === 0
+        instanceStorageSetting.s3Config?.accessKeyId.length === 0 ||
+        instanceStorageSetting.s3Config?.accessKeySecret.length === 0 ||
+        instanceStorageSetting.s3Config?.endpoint.length === 0 ||
+        instanceStorageSetting.s3Config?.region.length === 0 ||
+        instanceStorageSetting.s3Config?.bucket.length === 0
       ) {
         return false;
       }
     }
-    return !isEqual(origin, workspaceStorageSetting);
-  }, [workspaceStorageSetting, workspaceStore.state]);
+    return !isEqual(origin, instanceStorageSetting);
+  }, [instanceStorageSetting, instanceStore.state]);
 
   const handleMaxUploadSizeChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
     let num = parseInt(event.target.value);
     if (Number.isNaN(num)) {
       num = 0;
     }
-    const update: WorkspaceSetting_StorageSetting = {
-      ...workspaceStorageSetting,
+    const update: InstanceSetting_StorageSetting = {
+      ...instanceStorageSetting,
       uploadSizeLimitMb: num,
     };
-    setWorkspaceStorageSetting(update);
+    setInstanceStorageSetting(update);
   };
 
   const handleFilepathTemplateChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
-    const update: WorkspaceSetting_StorageSetting = {
-      ...workspaceStorageSetting,
+    const update: InstanceSetting_StorageSetting = {
+      ...instanceStorageSetting,
       filepathTemplate: event.target.value,
     };
-    setWorkspaceStorageSetting(update);
+    setInstanceStorageSetting(update);
   };
 
-  const handlePartialS3ConfigChanged = async (s3Config: Partial<WorkspaceSetting_StorageSetting_S3Config>) => {
-    const update: WorkspaceSetting_StorageSetting = {
-      ...workspaceStorageSetting,
-      s3Config: WorkspaceSetting_StorageSetting_S3Config.fromPartial({
-        ...workspaceStorageSetting.s3Config,
+  const handlePartialS3ConfigChanged = async (s3Config: Partial<InstanceSetting_StorageSetting_S3Config>) => {
+    const update: InstanceSetting_StorageSetting = {
+      ...instanceStorageSetting,
+      s3Config: InstanceSetting_StorageSetting_S3Config.fromPartial({
+        ...instanceStorageSetting.s3Config,
         ...s3Config,
       }),
     };
-    setWorkspaceStorageSetting(update);
+    setInstanceStorageSetting(update);
   };
 
   const handleS3ConfigAccessKeyIdChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
@@ -118,18 +114,18 @@ const StorageSection = observer(() => {
     });
   };
 
-  const handleStorageTypeChanged = async (storageType: WorkspaceSetting_StorageSetting_StorageType) => {
-    const update: WorkspaceSetting_StorageSetting = {
-      ...workspaceStorageSetting,
+  const handleStorageTypeChanged = async (storageType: InstanceSetting_StorageSetting_StorageType) => {
+    const update: InstanceSetting_StorageSetting = {
+      ...instanceStorageSetting,
       storageType: storageType,
     };
-    setWorkspaceStorageSetting(update);
+    setInstanceStorageSetting(update);
   };
 
-  const saveWorkspaceStorageSetting = async () => {
-    await workspaceStore.upsertWorkspaceSetting({
-      name: `${workspaceSettingNamePrefix}${WorkspaceSetting_Key.STORAGE}`,
-      storageSetting: workspaceStorageSetting,
+  const saveInstanceStorageSetting = async () => {
+    await instanceStore.upsertInstanceSetting({
+      name: `${instanceSettingNamePrefix}${InstanceSetting_Key.STORAGE}`,
+      storageSetting: instanceStorageSetting,
     });
     toast.success("Updated");
   };
@@ -138,22 +134,22 @@ const StorageSection = observer(() => {
     <div className="w-full flex flex-col gap-2 pt-2 pb-4">
       <div className="font-medium text-muted-foreground">{t("setting.storage-section.current-storage")}</div>
       <RadioGroup
-        value={workspaceStorageSetting.storageType}
+        value={instanceStorageSetting.storageType}
         onValueChange={(value) => {
-          handleStorageTypeChanged(value as WorkspaceSetting_StorageSetting_StorageType);
+          handleStorageTypeChanged(value as InstanceSetting_StorageSetting_StorageType);
         }}
         className="flex flex-row gap-4"
       >
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value={WorkspaceSetting_StorageSetting_StorageType.DATABASE} id="database" />
+          <RadioGroupItem value={InstanceSetting_StorageSetting_StorageType.DATABASE} id="database" />
           <Label htmlFor="database">{t("setting.storage-section.type-database")}</Label>
         </div>
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value={WorkspaceSetting_StorageSetting_StorageType.LOCAL} id="local" />
+          <RadioGroupItem value={InstanceSetting_StorageSetting_StorageType.LOCAL} id="local" />
           <Label htmlFor="local">{t("setting.storage-section.type-local")}</Label>
         </div>
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value={WorkspaceSetting_StorageSetting_StorageType.S3} id="s3" />
+          <RadioGroupItem value={InstanceSetting_StorageSetting_StorageType.S3} id="s3" />
           <Label htmlFor="s3">S3</Label>
         </div>
       </RadioGroup>
@@ -171,26 +167,26 @@ const StorageSection = observer(() => {
             </Tooltip>
           </TooltipProvider>
         </div>
-        <Input className="w-16 font-mono" value={workspaceStorageSetting.uploadSizeLimitMb} onChange={handleMaxUploadSizeChanged} />
+        <Input className="w-16 font-mono" value={instanceStorageSetting.uploadSizeLimitMb} onChange={handleMaxUploadSizeChanged} />
       </div>
-      {workspaceStorageSetting.storageType !== WorkspaceSetting_StorageSetting_StorageType.DATABASE && (
+      {instanceStorageSetting.storageType !== InstanceSetting_StorageSetting_StorageType.DATABASE && (
         <div className="w-full flex flex-row justify-between items-center">
           <span className="text-muted-foreground mr-1">{t("setting.storage-section.filepath-template")}</span>
           <Input
             className="w-64"
-            value={workspaceStorageSetting.filepathTemplate}
+            value={instanceStorageSetting.filepathTemplate}
             placeholder="assets/{timestamp}_{filename}"
             onChange={handleFilepathTemplateChanged}
           />
         </div>
       )}
-      {workspaceStorageSetting.storageType === WorkspaceSetting_StorageSetting_StorageType.S3 && (
+      {instanceStorageSetting.storageType === InstanceSetting_StorageSetting_StorageType.S3 && (
         <>
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-muted-foreground mr-1">Access key id</span>
             <Input
               className="w-64"
-              value={workspaceStorageSetting.s3Config?.accessKeyId}
+              value={instanceStorageSetting.s3Config?.accessKeyId}
               placeholder=""
               onChange={handleS3ConfigAccessKeyIdChanged}
             />
@@ -199,7 +195,7 @@ const StorageSection = observer(() => {
             <span className="text-muted-foreground mr-1">Access key secret</span>
             <Input
               className="w-64"
-              value={workspaceStorageSetting.s3Config?.accessKeySecret}
+              value={instanceStorageSetting.s3Config?.accessKeySecret}
               placeholder=""
               onChange={handleS3ConfigAccessKeySecretChanged}
             />
@@ -208,40 +204,30 @@ const StorageSection = observer(() => {
             <span className="text-muted-foreground mr-1">Endpoint</span>
             <Input
               className="w-64"
-              value={workspaceStorageSetting.s3Config?.endpoint}
+              value={instanceStorageSetting.s3Config?.endpoint}
               placeholder=""
               onChange={handleS3ConfigEndpointChanged}
             />
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-muted-foreground mr-1">Region</span>
-            <Input
-              className="w-64"
-              value={workspaceStorageSetting.s3Config?.region}
-              placeholder=""
-              onChange={handleS3ConfigRegionChanged}
-            />
+            <Input className="w-64" value={instanceStorageSetting.s3Config?.region} placeholder="" onChange={handleS3ConfigRegionChanged} />
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-muted-foreground mr-1">Bucket</span>
-            <Input
-              className="w-64"
-              value={workspaceStorageSetting.s3Config?.bucket}
-              placeholder=""
-              onChange={handleS3ConfigBucketChanged}
-            />
+            <Input className="w-64" value={instanceStorageSetting.s3Config?.bucket} placeholder="" onChange={handleS3ConfigBucketChanged} />
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-muted-foreground mr-1">Use Path Style</span>
             <Switch
-              checked={workspaceStorageSetting.s3Config?.usePathStyle}
+              checked={instanceStorageSetting.s3Config?.usePathStyle}
               onCheckedChange={(checked) => handleS3ConfigUsePathStyleChanged({ target: { checked } } as any)}
             />
           </div>
         </>
       )}
       <div>
-        <Button disabled={!allowSaveStorageSetting} onClick={saveWorkspaceStorageSetting}>
+        <Button disabled={!allowSaveStorageSetting} onClick={saveInstanceStorageSetting}>
           {t("common.save")}
         </Button>
       </div>

@@ -99,12 +99,12 @@ func (s *APIV1Service) CreateSession(ctx context.Context, request *v1pb.CreateSe
 		if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(passwordCredentials.Password)); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, unmatchedUsernameAndPasswordError)
 		}
-		workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
+		instanceGeneralSetting, err := s.Store.GetInstanceGeneralSetting(ctx)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get workspace general setting, error: %v", err)
+			return nil, status.Errorf(codes.Internal, "failed to get instance general setting, error: %v", err)
 		}
 		// Check if the password auth in is allowed.
-		if workspaceGeneralSetting.DisallowPasswordAuth && user.Role == store.RoleUser {
+		if instanceGeneralSetting.DisallowPasswordAuth && user.Role == store.RoleUser {
 			return nil, status.Errorf(codes.PermissionDenied, "password signin is not allowed")
 		}
 		existingUser = user
@@ -155,11 +155,11 @@ func (s *APIV1Service) CreateSession(ctx context.Context, request *v1pb.CreateSe
 		}
 		if user == nil {
 			// Check if the user is allowed to sign up.
-			workspaceGeneralSetting, err := s.Store.GetWorkspaceGeneralSetting(ctx)
+			instanceGeneralSetting, err := s.Store.GetInstanceGeneralSetting(ctx)
 			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to get workspace general setting, error: %v", err)
+				return nil, status.Errorf(codes.Internal, "failed to get instance general setting, error: %v", err)
 			}
-			if workspaceGeneralSetting.DisallowUserRegistration {
+			if instanceGeneralSetting.DisallowUserRegistration {
 				return nil, status.Errorf(codes.PermissionDenied, "user registration is not allowed")
 			}
 

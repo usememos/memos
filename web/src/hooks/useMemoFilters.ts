@@ -1,9 +1,9 @@
 import { useMemo } from "react";
-import { userStore, workspaceStore } from "@/store";
+import { userStore, instanceStore } from "@/store";
 import { extractUserIdFromName } from "@/store/common";
 import memoFilterStore from "@/store/memoFilter";
+import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service";
 import { Visibility } from "@/types/proto/api/v1/memo_service";
-import { WorkspaceSetting_Key } from "@/types/proto/api/v1/workspace_service";
 
 // Helper function to extract shortcut ID from resource name
 // Format: users/{user}/shortcuts/{shortcut}
@@ -121,8 +121,8 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
       } else if (filter.factor === "property.hasCode") {
         conditions.push(`has_code`);
       } else if (filter.factor === "displayTime") {
-        // Check workspace setting for display time factor
-        const displayWithUpdateTime = workspaceStore.getWorkspaceSettingByKey(WorkspaceSetting_Key.MEMO_RELATED).memoRelatedSetting
+        // Check instance setting for display time factor
+        const displayWithUpdateTime = instanceStore.getInstanceSettingByKey(InstanceSetting_Key.MEMO_RELATED).memoRelatedSetting
           ?.displayWithUpdateTime;
         const factor = displayWithUpdateTime ? "updated_ts" : "created_ts";
 

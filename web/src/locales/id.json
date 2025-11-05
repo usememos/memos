@@ -410,7 +410,7 @@
       "title": "Webhook",
       "url": "URL"
     },
-    "workspace-section": {
+    "instance-section": {
       "disallow-change-nickname": "Larangan mengubah nama panggilan",
       "disallow-change-username": "Larangan mengubah nama pengguna",
       "disallow-password-auth": "Larangan autentikasi kata sandi",

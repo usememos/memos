@@ -410,7 +410,7 @@
       "title": "Вебхуки",
       "url": "URL"
     },
-    "workspace-section": {
+    "instance-section": {
       "disallow-change-nickname": "Заборонити зміну нікнейму",
       "disallow-change-username": "Заборонити зміну імені користувача",
       "disallow-password-auth": "Заборонити авторизацію за паролем",

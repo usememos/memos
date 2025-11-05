@@ -5,7 +5,7 @@ import useClickAway from "react-use/lib/useClickAway";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
-import { memoStore, workspaceStore } from "@/store";
+import { memoStore, instanceStore } from "@/store";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
@@ -20,7 +20,7 @@ const ReactionSelector = observer((props: Props) => {
   const currentUser = useCurrentUser();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const workspaceMemoRelatedSetting = workspaceStore.state.memoRelatedSetting;
+  const instanceMemoRelatedSetting = instanceStore.state.memoRelatedSetting;
 
   useClickAway(containerRef, () => {
     setOpen(false);
@@ -76,7 +76,7 @@ const ReactionSelector = observer((props: Props) => {
       <PopoverContent align="center" className="max-w-[90vw] sm:max-w-md">
         <div ref={containerRef}>
           <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-1 max-h-64 overflow-y-auto">
-            {workspaceMemoRelatedSetting.reactions.map((reactionType) => {
+            {instanceMemoRelatedSetting.reactions.map((reactionType) => {
               return (
                 <span
                   key={reactionType}

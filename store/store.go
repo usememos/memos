@@ -16,9 +16,9 @@ type Store struct {
 	cacheConfig cache.Config
 
 	// Caches
-	workspaceSettingCache *cache.Cache // cache for workspace settings
-	userCache             *cache.Cache // cache for users
-	userSettingCache      *cache.Cache // cache for user settings
+	instanceSettingCache *cache.Cache // cache for instance settings
+	userCache            *cache.Cache // cache for users
+	userSettingCache     *cache.Cache // cache for user settings
 }
 
 // New creates a new instance of Store.
@@ -32,12 +32,12 @@ func New(driver Driver, profile *profile.Profile) *Store {
 	}
 
 	store := &Store{
-		driver:                driver,
-		profile:               profile,
-		cacheConfig:           cacheConfig,
-		workspaceSettingCache: cache.New(cacheConfig),
-		userCache:             cache.New(cacheConfig),
-		userSettingCache:      cache.New(cacheConfig),
+		driver:               driver,
+		profile:              profile,
+		cacheConfig:          cacheConfig,
+		instanceSettingCache: cache.New(cacheConfig),
+		userCache:            cache.New(cacheConfig),
+		userSettingCache:     cache.New(cacheConfig),
 	}
 
 	return store
@@ -49,7 +49,7 @@ func (s *Store) GetDriver() Driver {
 
 func (s *Store) Close() error {
 	// Stop all cache cleanup goroutines
-	s.workspaceSettingCache.Close()
+	s.instanceSettingCache.Close()
 	s.userCache.Close()
 	s.userSettingCache.Close()
 

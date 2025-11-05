@@ -19,7 +19,7 @@ import { useLocation } from "react-router-dom";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { memoStore, userStore } from "@/store";
-import { workspaceStore } from "@/store";
+import { instanceStore } from "@/store";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -119,7 +119,7 @@ const MemoActionMenu = observer((props: Props) => {
   };
 
   const handleCopyLink = () => {
-    let host = workspaceStore.state.profile.instanceUrl;
+    let host = instanceStore.state.profile.instanceUrl;
     if (host === "") {
       host = window.location.origin;
     }

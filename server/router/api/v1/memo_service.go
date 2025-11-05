@@ -35,11 +35,11 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		Content:    request.Memo.Content,
 		Visibility: convertVisibilityToStore(request.Memo.Visibility),
 	}
-	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get workspace memo related setting")
+		return nil, status.Errorf(codes.Internal, "failed to get instance memo related setting")
 	}
-	if workspaceMemoRelatedSetting.DisallowPublicVisibility && create.Visibility == store.Public {
+	if instanceMemoRelatedSetting.DisallowPublicVisibility && create.Visibility == store.Public {
 		return nil, status.Errorf(codes.PermissionDenied, "disable public memos system setting is enabled")
 	}
 	contentLengthLimit, err := s.getContentLengthLimit(ctx)
@@ -147,11 +147,11 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		}
 	}
 
-	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get workspace memo related setting")
+		return nil, status.Errorf(codes.Internal, "failed to get instance memo related setting")
 	}
-	if workspaceMemoRelatedSetting.DisplayWithUpdateTime {
+	if instanceMemoRelatedSetting.DisplayWithUpdateTime {
 		memoFind.OrderByUpdatedTs = true
 	}
 
@@ -340,12 +340,12 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			update.Content = &memo.Content
 			update.Payload = memo.Payload
 		} else if path == "visibility" {
-			workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+			instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
 			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to get workspace memo related setting")
+				return nil, status.Errorf(codes.Internal, "failed to get instance memo related setting")
 			}
 			visibility := convertVisibilityToStore(request.Memo.Visibility)
-			if workspaceMemoRelatedSetting.DisallowPublicVisibility && visibility == store.Public {
+			if instanceMemoRelatedSetting.DisallowPublicVisibility && visibility == store.Public {
 				return nil, status.Errorf(codes.PermissionDenied, "disable public memos system setting is enabled")
 			}
 			update.Visibility = &visibility
@@ -365,9 +365,9 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			update.UpdatedTs = &updatedTs
 		} else if path == "display_time" {
 			displayTs := request.Memo.DisplayTime.AsTime().Unix()
-			memoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+			memoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
 			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to get workspace memo related setting")
+				return nil, status.Errorf(codes.Internal, "failed to get instance memo related setting")
 			}
 			if memoRelatedSetting.DisplayWithUpdateTime {
 				update.UpdatedTs = &displayTs
@@ -680,11 +680,11 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 }
 
 func (s *APIV1Service) getContentLengthLimit(ctx context.Context) (int, error) {
-	workspaceMemoRelatedSetting, err := s.Store.GetWorkspaceMemoRelatedSetting(ctx)
+	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
 	if err != nil {
-		return 0, status.Errorf(codes.Internal, "failed to get workspace memo related setting")
+		return 0, status.Errorf(codes.Internal, "failed to get instance memo related setting")
 	}
-	return int(workspaceMemoRelatedSetting.ContentLengthLimit), nil
+	return int(instanceMemoRelatedSetting.ContentLengthLimit), nil
 }
 
 // DispatchMemoCreatedWebhook dispatches webhook when memo is created.

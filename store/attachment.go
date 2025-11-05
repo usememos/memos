@@ -141,16 +141,16 @@ func (s *Store) DeleteAttachment(ctx context.Context, delete *DeleteAttachment) 
 			if s3ObjectPayload == nil {
 				return errors.Errorf("No s3 object found")
 			}
-			workspaceStorageSetting, err := s.GetWorkspaceStorageSetting(ctx)
+			instanceStorageSetting, err := s.GetInstanceStorageSetting(ctx)
 			if err != nil {
-				return errors.Wrap(err, "failed to get workspace storage setting")
+				return errors.Wrap(err, "failed to get instance storage setting")
 			}
 			s3Config := s3ObjectPayload.S3Config
 			if s3Config == nil {
-				if workspaceStorageSetting.S3Config == nil {
+				if instanceStorageSetting.S3Config == nil {
 					return errors.Errorf("S3 config is not found")
 				}
-				s3Config = workspaceStorageSetting.S3Config
+				s3Config = instanceStorageSetting.S3Config
 			}
 
 			s3Client, err := s3.NewClient(ctx, s3Config)

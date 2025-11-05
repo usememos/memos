@@ -410,7 +410,7 @@
       "title": "Webhooks",
       "url": "URL"
     },
-    "workspace-section": {
+    "instance-section": {
       "disallow-change-nickname": "Wijzigen van bijnaam niet toestaan",
       "disallow-change-username": "Wijzigen van gebruikersnaam niet toestaan",
       "disallow-password-auth": "Wachtwoordauthenticatie niet toestaan",

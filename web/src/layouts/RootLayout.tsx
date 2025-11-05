@@ -8,7 +8,7 @@ import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { cn } from "@/lib/utils";
 import Loading from "@/pages/Loading";
 import { Routes } from "@/router";
-import { workspaceStore } from "@/store";
+import { instanceStore } from "@/store";
 import memoFilterStore from "@/store/memoFilter";
 
 const RootLayout = observer(() => {
@@ -23,7 +23,7 @@ const RootLayout = observer(() => {
   useEffect(() => {
     if (!currentUser) {
       // If disallowPublicVisibility is enabled, redirect to the login page if the user is not logged in.
-      if (workspaceStore.state.memoRelatedSetting.disallowPublicVisibility) {
+      if (instanceStore.state.memoRelatedSetting.disallowPublicVisibility) {
         window.location.href = Routes.AUTH;
         return;
       } else if (

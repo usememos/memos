@@ -15,7 +15,7 @@ type Driver interface {
 
 	// MigrationHistory model related methods.
 	// NOTE: These methods are deprecated. The migration_history table is no longer used
-	// for tracking schema versions. Schema version is now stored in workspace_setting.
+	// for tracking schema versions. Schema version is now stored in instance_setting.
 	// These methods are kept for backward compatibility to migrate existing installations.
 	FindMigrationHistoryList(ctx context.Context, find *FindMigrationHistory) ([]*MigrationHistory, error)
 	UpsertMigrationHistory(ctx context.Context, upsert *UpsertMigrationHistory) (*MigrationHistory, error)
@@ -41,10 +41,10 @@ type Driver interface {
 	ListMemoRelations(ctx context.Context, find *FindMemoRelation) ([]*MemoRelation, error)
 	DeleteMemoRelation(ctx context.Context, delete *DeleteMemoRelation) error
 
-	// WorkspaceSetting model related methods.
-	UpsertWorkspaceSetting(ctx context.Context, upsert *WorkspaceSetting) (*WorkspaceSetting, error)
-	ListWorkspaceSettings(ctx context.Context, find *FindWorkspaceSetting) ([]*WorkspaceSetting, error)
-	DeleteWorkspaceSetting(ctx context.Context, delete *DeleteWorkspaceSetting) error
+	// InstanceSetting model related methods.
+	UpsertInstanceSetting(ctx context.Context, upsert *InstanceSetting) (*InstanceSetting, error)
+	ListInstanceSettings(ctx context.Context, find *FindInstanceSetting) ([]*InstanceSetting, error)
+	DeleteInstanceSetting(ctx context.Context, delete *DeleteInstanceSetting) error
 
 	// User model related methods.
 	CreateUser(ctx context.Context, create *User) (*User, error)
