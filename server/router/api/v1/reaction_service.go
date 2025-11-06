@@ -55,9 +55,33 @@ func (s *APIV1Service) UpsertMemoReaction(ctx context.Context, request *v1pb.Ups
 }
 
 func (s *APIV1Service) DeleteMemoReaction(ctx context.Context, request *v1pb.DeleteMemoReactionRequest) (*emptypb.Empty, error) {
+	user, err := s.GetCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+
 	reactionID, err := ExtractReactionIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid reaction name: %v", err)
+	}
+
+	// Get reaction and check ownership
+	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
+		ID: &reactionID,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list reactions")
+	}
+	if len(reactions) == 0 {
+		return nil, status.Errorf(codes.NotFound, "reaction not found")
+	}
+
+	reaction := reactions[0]
+	if reaction.CreatorID != user.ID && !isSuperUser(user) {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
 	if err := s.Store.DeleteReaction(ctx, &store.DeleteReaction{
