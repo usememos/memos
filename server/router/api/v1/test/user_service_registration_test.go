@@ -34,8 +34,12 @@ func TestCreateUserRegistration(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
+		// Create a host user first so we're not in first-user setup mode
+		_, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+
 		// Disable user registration
-		_, err := ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
 			Key: storepb.InstanceSettingKey_GENERAL,
 			Value: &storepb.InstanceSetting_GeneralSetting{
 				GeneralSetting: &storepb.InstanceGeneralSetting{
@@ -146,6 +150,10 @@ func TestCreateUserRegistration(t *testing.T) {
 	t.Run("CreateUser unauthenticated user can only create regular user", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
+
+		// Create a host user first so we're not in first-user setup mode
+		_, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
 
 		// User registration is enabled by default
 
