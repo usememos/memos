@@ -80,10 +80,13 @@ function parseTagsFromText(text: string): Array<{ type: "text" | "tag"; value: s
  */
 export const remarkTag = () => {
   return (tree: Root) => {
-    visit(tree, "text", (node: Text, index, parent) => {
-      if (!parent || index === null) return;
+    // Process text nodes in all node types (paragraphs, headings, etc.)
+    visit(tree, (node: any, index, parent) => {
+      // Only process text nodes that have a parent and index
+      if (node.type !== "text" || !parent || index === null) return;
 
-      const text = node.value;
+      const textNode = node as Text;
+      const text = textNode.value;
       const segments = parseTagsFromText(text);
 
       // If no tags found, leave node as-is
@@ -118,7 +121,6 @@ export const remarkTag = () => {
       });
 
       // Replace the current node with the new nodes
-      // @ts-expect-error - mdast types are complex, this is safe
       parent.children.splice(index, 1, ...newNodes);
     });
   };
