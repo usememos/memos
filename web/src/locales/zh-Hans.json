@@ -28,6 +28,7 @@
     "change": "修改",
     "clear": "清除",
     "close": "关闭",
+    "copy": "复制",
     "collapse": "收起",
     "confirm": "确定",
     "create": "创建",
@@ -141,6 +142,7 @@
       "write-a-comment": "写评论"
     },
     "copy-link": "复制链接",
+    "copy-content": "复制内容",
     "count-memos-in-date": "{{date}} 有 {{count}} 条备忘录",
     "delete-confirm": "您确定要删除此条备忘录吗？（此操作不可逆）",
     "direction": "排序方式",
@@ -431,5 +433,13 @@
     "rename-success": "重命名成功",
     "rename-tag": "重命名",
     "rename-tip": "您的所有带有此标签的备忘录将被更新。"
+  },
+  "tooltip": {
+    "link-memo": "链接备忘录",
+    "markdown-menu": "Markdown",
+    "select-location": "位置",
+    "select-visibility": "浏览权限",
+    "tags": "标签",
+    "upload-attachment": "上传附件"
   }
 }
