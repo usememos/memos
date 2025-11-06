@@ -68,7 +68,7 @@ func (s *APIV1Service) DeleteMemoReaction(ctx context.Context, request *v1pb.Del
 		return nil, status.Errorf(codes.InvalidArgument, "invalid reaction name: %v", err)
 	}
 
-	// Get reaction and check ownership
+	// Get reaction and check ownership.
 	reaction, err := s.Store.GetReaction(ctx, &store.FindReaction{
 		ID: &reactionID,
 	})
@@ -76,7 +76,7 @@ func (s *APIV1Service) DeleteMemoReaction(ctx context.Context, request *v1pb.Del
 		return nil, status.Errorf(codes.Internal, "failed to get reaction")
 	}
 	if reaction == nil {
-		// Return permission denied to avoid revealing if reaction exists
+		// Return permission denied to avoid revealing if reaction exists.
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
