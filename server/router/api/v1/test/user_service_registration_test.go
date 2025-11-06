@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
-	"github.com/usememos/memos/store"
+	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
 func TestCreateUserRegistration(t *testing.T) {
@@ -17,15 +17,10 @@ func TestCreateUserRegistration(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
-		// Enable user registration (default)
-		workspaceSetting := &store.WorkspaceGeneralSetting{
-			DisallowUserRegistration: false,
-		}
-		err := ts.Store.UpsertWorkspaceGeneralSetting(ctx, workspaceSetting)
-		require.NoError(t, err)
+		// User registration is enabled by default, no need to set it explicitly
 
 		// Create user without authentication - should succeed
-		_, err = ts.Service.CreateUser(ctx, &apiv1.CreateUserRequest{
+		_, err := ts.Service.CreateUser(ctx, &apiv1.CreateUserRequest{
 			User: &apiv1.User{
 				Username: "newuser",
 				Email:    "newuser@example.com",
@@ -40,10 +35,14 @@ func TestCreateUserRegistration(t *testing.T) {
 		defer ts.Cleanup()
 
 		// Disable user registration
-		workspaceSetting := &store.WorkspaceGeneralSetting{
-			DisallowUserRegistration: true,
-		}
-		err := ts.Store.UpsertWorkspaceGeneralSetting(ctx, workspaceSetting)
+		_, err := ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_GENERAL,
+			Value: &storepb.InstanceSetting_GeneralSetting{
+				GeneralSetting: &storepb.InstanceGeneralSetting{
+					DisallowUserRegistration: true,
+				},
+			},
+		})
 		require.NoError(t, err)
 
 		// Try to create user without authentication - should fail
@@ -68,10 +67,14 @@ func TestCreateUserRegistration(t *testing.T) {
 		hostCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
 		// Disable user registration
-		workspaceSetting := &store.WorkspaceGeneralSetting{
-			DisallowUserRegistration: true,
-		}
-		err = ts.Store.UpsertWorkspaceGeneralSetting(ctx, workspaceSetting)
+		_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_GENERAL,
+			Value: &storepb.InstanceSetting_GeneralSetting{
+				GeneralSetting: &storepb.InstanceGeneralSetting{
+					DisallowUserRegistration: true,
+				},
+			},
+		})
 		require.NoError(t, err)
 
 		// Host user can create users even when registration is disabled - should succeed
@@ -95,10 +98,14 @@ func TestCreateUserRegistration(t *testing.T) {
 		regularUserCtx := ts.CreateUserContext(ctx, regularUser.ID)
 
 		// Disable user registration
-		workspaceSetting := &store.WorkspaceGeneralSetting{
-			DisallowUserRegistration: true,
-		}
-		err = ts.Store.UpsertWorkspaceGeneralSetting(ctx, workspaceSetting)
+		_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_GENERAL,
+			Value: &storepb.InstanceSetting_GeneralSetting{
+				GeneralSetting: &storepb.InstanceGeneralSetting{
+					DisallowUserRegistration: true,
+				},
+			},
+		})
 		require.NoError(t, err)
 
 		// Regular user tries to create user when registration is disabled - should fail
@@ -140,12 +147,7 @@ func TestCreateUserRegistration(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
-		// Enable user registration
-		workspaceSetting := &store.WorkspaceGeneralSetting{
-			DisallowUserRegistration: false,
-		}
-		err := ts.Store.UpsertWorkspaceGeneralSetting(ctx, workspaceSetting)
-		require.NoError(t, err)
+		// User registration is enabled by default
 
 		// Unauthenticated user tries to create admin user - role should be ignored
 		createdUser, err := ts.Service.CreateUser(ctx, &apiv1.CreateUserRequest{
