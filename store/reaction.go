@@ -32,6 +32,10 @@ func (s *Store) ListReactions(ctx context.Context, find *FindReaction) ([]*React
 	return s.driver.ListReactions(ctx, find)
 }
 
+func (s *Store) GetReaction(ctx context.Context, find *FindReaction) (*Reaction, error) {
+	return s.driver.GetReaction(ctx, find)
+}
+
 func (s *Store) DeleteReaction(ctx context.Context, delete *DeleteReaction) error {
 	return s.driver.DeleteReaction(ctx, delete)
 }

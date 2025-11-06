@@ -87,6 +87,44 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 	return list, nil
 }
 
+func (d *DB) GetReaction(ctx context.Context, find *store.FindReaction) (*store.Reaction, error) {
+	where, args := []string{"1 = 1"}, []any{}
+
+	if find.ID != nil {
+		where, args = append(where, "id = ?"), append(args, *find.ID)
+	}
+	if find.CreatorID != nil {
+		where, args = append(where, "creator_id = ?"), append(args, *find.CreatorID)
+	}
+	if find.ContentID != nil {
+		where, args = append(where, "content_id = ?"), append(args, *find.ContentID)
+	}
+
+	reaction := &store.Reaction{}
+	if err := d.db.QueryRowContext(ctx, `
+		SELECT
+			id,
+			created_ts,
+			creator_id,
+			content_id,
+			reaction_type
+		FROM reaction
+		WHERE `+strings.Join(where, " AND ")+`
+		LIMIT 1`,
+		args...,
+	).Scan(
+		&reaction.ID,
+		&reaction.CreatedTs,
+		&reaction.CreatorID,
+		&reaction.ContentID,
+		&reaction.ReactionType,
+	); err != nil {
+		return nil, err
+	}
+
+	return reaction, nil
+}
+
 func (d *DB) DeleteReaction(ctx context.Context, delete *store.DeleteReaction) error {
 	_, err := d.db.ExecContext(ctx, "DELETE FROM `reaction` WHERE `id` = ?", delete.ID)
 	return err
