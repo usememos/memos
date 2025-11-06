@@ -82,6 +82,19 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 	return list, nil
 }
 
+func (d *DB) GetReaction(ctx context.Context, find *store.FindReaction) (*store.Reaction, error) {
+	list, err := d.ListReactions(ctx, find)
+	if err != nil {
+		return nil, err
+	}
+	if len(list) == 0 {
+		return nil, nil
+	}
+
+	reaction := list[0]
+	return reaction, nil
+}
+
 func (d *DB) DeleteReaction(ctx context.Context, delete *store.DeleteReaction) error {
 	_, err := d.db.ExecContext(ctx, "DELETE FROM reaction WHERE id = $1", delete.ID)
 	return err
