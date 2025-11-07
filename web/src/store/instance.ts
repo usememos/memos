@@ -17,7 +17,7 @@ import { createRequestKey } from "./store-utils";
 /**
  * Valid theme options
  */
-const VALID_THEMES = ["default", "default-dark", "paper", "whitewall"] as const;
+const VALID_THEMES = ["system", "default", "default-dark", "paper", "whitewall"] as const;
 export type Theme = (typeof VALID_THEMES)[number];
 
 /**
@@ -40,7 +40,7 @@ class InstanceState extends StandardState {
    * Current theme
    * Note: Accepts string for flexibility, but validates to Theme
    */
-  theme: Theme | string = "default";
+  theme: Theme | string = "system";
 
   /**
    * Instance profile containing owner and metadata
@@ -249,7 +249,7 @@ export const initialInstanceStore = async (): Promise<void> => {
     const instanceGeneralSetting = instanceStore.state.generalSetting;
     instanceStore.state.setPartial({
       locale: instanceGeneralSetting.customProfile?.locale || "en",
-      theme: "default",
+      theme: instanceGeneralSetting.theme || "system",
       profile: instanceProfile,
     });
   } catch (error) {
@@ -257,7 +257,7 @@ export const initialInstanceStore = async (): Promise<void> => {
     // Set default fallback values
     instanceStore.state.setPartial({
       locale: "en",
-      theme: "default",
+      theme: "system",
     });
   }
 };
