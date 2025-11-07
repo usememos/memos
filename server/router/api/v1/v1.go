@@ -9,6 +9,7 @@ import (
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"golang.org/x/sync/semaphore"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/health/grpc_health_v1"
@@ -38,6 +39,9 @@ type APIV1Service struct {
 	MarkdownService markdown.Service
 
 	grpcServer *grpc.Server
+
+	// thumbnailSemaphore limits concurrent thumbnail generation to prevent memory exhaustion
+	thumbnailSemaphore *semaphore.Weighted
 }
 
 func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store, grpcServer *grpc.Server) *APIV1Service {
@@ -46,11 +50,12 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 		markdown.WithTagExtension(),
 	)
 	apiv1Service := &APIV1Service{
-		Secret:          secret,
-		Profile:         profile,
-		Store:           store,
-		MarkdownService: markdownService,
-		grpcServer:      grpcServer,
+		Secret:             secret,
+		Profile:            profile,
+		Store:              store,
+		MarkdownService:    markdownService,
+		grpcServer:         grpcServer,
+		thumbnailSemaphore: semaphore.NewWeighted(3), // Limit to 3 concurrent thumbnail generations
 	}
 	grpc_health_v1.RegisterHealthServer(grpcServer, apiv1Service)
 	v1pb.RegisterInstanceServiceServer(grpcServer, apiv1Service)

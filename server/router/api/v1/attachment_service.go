@@ -235,16 +235,28 @@ func (s *APIV1Service) GetAttachmentBinary(ctx context.Context, request *v1pb.Ge
 	}
 
 	if request.Thumbnail && util.HasPrefixes(attachment.Type, SupportedThumbnailMimeTypes...) {
-		thumbnailBlob, err := s.getOrGenerateThumbnail(attachment)
-		if err != nil {
-			// thumbnail failures are logged as warnings and not cosidered critical failures as
-			// a attachment image can be used in its place.
-			slog.Warn("failed to get attachment thumbnail image", slog.Any("error", err))
+		// Skip server-side thumbnail generation for S3 storage to reduce memory usage.
+		// S3 images use external links (presigned URLs) directly, which avoids:
+		// 1. Downloading large images from S3 into server memory
+		// 2. Decoding and resizing images on the server
+		// 3. High memory consumption when many thumbnails are requested at once
+		// The client will use the external link and can implement client-side thumbnail logic if needed.
+		if attachment.StorageType == storepb.AttachmentStorageType_S3 {
+			slog.Debug("skipping server-side thumbnail for S3-stored image to reduce memory usage")
+			// Fall through to return the full image via external link
 		} else {
-			return &httpbody.HttpBody{
-				ContentType: attachment.Type,
-				Data:        thumbnailBlob,
-			}, nil
+			// Generate thumbnails for local and database storage
+			thumbnailBlob, err := s.getOrGenerateThumbnail(ctx, attachment)
+			if err != nil {
+				// thumbnail failures are logged as warnings and not cosidered critical failures as
+				// a attachment image can be used in its place.
+				slog.Warn("failed to get attachment thumbnail image", slog.Any("error", err))
+			} else {
+				return &httpbody.HttpBody{
+					ContentType: attachment.Type,
+					Data:        thumbnailBlob,
+				}, nil
+			}
 		}
 	}
 
@@ -535,67 +547,105 @@ const (
 )
 
 // getOrGenerateThumbnail returns the thumbnail image of the attachment.
-func (s *APIV1Service) getOrGenerateThumbnail(attachment *store.Attachment) ([]byte, error) {
+// Uses semaphore to limit concurrent thumbnail generation and prevent memory exhaustion.
+func (s *APIV1Service) getOrGenerateThumbnail(ctx context.Context, attachment *store.Attachment) ([]byte, error) {
 	thumbnailCacheFolder := filepath.Join(s.Profile.Data, ThumbnailCacheFolder)
 	if err := os.MkdirAll(thumbnailCacheFolder, os.ModePerm); err != nil {
 		return nil, errors.Wrap(err, "failed to create thumbnail cache folder")
 	}
 	filePath := filepath.Join(thumbnailCacheFolder, fmt.Sprintf("%d%s", attachment.ID, filepath.Ext(attachment.Filename)))
-	if _, err := os.Stat(filePath); err != nil {
-		if !os.IsNotExist(err) {
-			return nil, errors.Wrap(err, "failed to check thumbnail image stat")
-		}
 
-		// If thumbnail image does not exist, generate and save the thumbnail image.
-		blob, err := s.GetAttachmentBlob(attachment)
+	// Check if thumbnail already exists
+	if _, err := os.Stat(filePath); err == nil {
+		// Thumbnail exists, read and return it
+		thumbnailFile, err := os.Open(filePath)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to get attachment blob")
+			return nil, errors.Wrap(err, "failed to open thumbnail file")
 		}
-		img, err := imaging.Decode(bytes.NewReader(blob), imaging.AutoOrientation(true))
+		defer thumbnailFile.Close()
+		blob, err := io.ReadAll(thumbnailFile)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to decode thumbnail image")
+			return nil, errors.Wrap(err, "failed to read thumbnail file")
 		}
-
-		// The largest dimension is set to thumbnailMaxSize and the smaller dimension is scaled proportionally.
-		// Small images are not enlarged.
-		width := img.Bounds().Dx()
-		height := img.Bounds().Dy()
-		var thumbnailWidth, thumbnailHeight int
-
-		// Only resize if the image is larger than thumbnailMaxSize
-		if max(width, height) > thumbnailMaxSize {
-			if width >= height {
-				// Landscape or square - constrain width, maintain aspect ratio for height
-				thumbnailWidth = thumbnailMaxSize
-				thumbnailHeight = 0
-			} else {
-				// Portrait - constrain height, maintain aspect ratio for width
-				thumbnailWidth = 0
-				thumbnailHeight = thumbnailMaxSize
-			}
-		} else {
-			// Keep original dimensions for small images
-			thumbnailWidth = width
-			thumbnailHeight = height
-		}
-
-		// Resize the image to the calculated dimensions.
-		thumbnailImage := imaging.Resize(img, thumbnailWidth, thumbnailHeight, imaging.Lanczos)
-		if err := imaging.Save(thumbnailImage, filePath); err != nil {
-			return nil, errors.Wrap(err, "failed to save thumbnail file")
-		}
+		return blob, nil
+	} else if !os.IsNotExist(err) {
+		return nil, errors.Wrap(err, "failed to check thumbnail image stat")
 	}
 
+	// Thumbnail doesn't exist, acquire semaphore to limit concurrent generation
+	if err := s.thumbnailSemaphore.Acquire(ctx, 1); err != nil {
+		return nil, errors.Wrap(err, "failed to acquire thumbnail generation semaphore")
+	}
+	defer s.thumbnailSemaphore.Release(1)
+
+	// Double-check if thumbnail was created while waiting for semaphore
+	if _, err := os.Stat(filePath); err == nil {
+		thumbnailFile, err := os.Open(filePath)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to open thumbnail file")
+		}
+		defer thumbnailFile.Close()
+		blob, err := io.ReadAll(thumbnailFile)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to read thumbnail file")
+		}
+		return blob, nil
+	}
+
+	// Generate the thumbnail
+	blob, err := s.GetAttachmentBlob(attachment)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get attachment blob")
+	}
+
+	// Decode image - this is memory intensive
+	img, err := imaging.Decode(bytes.NewReader(blob), imaging.AutoOrientation(true))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to decode thumbnail image")
+	}
+
+	// The largest dimension is set to thumbnailMaxSize and the smaller dimension is scaled proportionally.
+	// Small images are not enlarged.
+	width := img.Bounds().Dx()
+	height := img.Bounds().Dy()
+	var thumbnailWidth, thumbnailHeight int
+
+	// Only resize if the image is larger than thumbnailMaxSize
+	if max(width, height) > thumbnailMaxSize {
+		if width >= height {
+			// Landscape or square - constrain width, maintain aspect ratio for height
+			thumbnailWidth = thumbnailMaxSize
+			thumbnailHeight = 0
+		} else {
+			// Portrait - constrain height, maintain aspect ratio for width
+			thumbnailWidth = 0
+			thumbnailHeight = thumbnailMaxSize
+		}
+	} else {
+		// Keep original dimensions for small images
+		thumbnailWidth = width
+		thumbnailHeight = height
+	}
+
+	// Resize the image to the calculated dimensions.
+	thumbnailImage := imaging.Resize(img, thumbnailWidth, thumbnailHeight, imaging.Lanczos)
+
+	// Save thumbnail to disk
+	if err := imaging.Save(thumbnailImage, filePath); err != nil {
+		return nil, errors.Wrap(err, "failed to save thumbnail file")
+	}
+
+	// Read the saved thumbnail and return it
 	thumbnailFile, err := os.Open(filePath)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to open thumbnail file")
 	}
 	defer thumbnailFile.Close()
-	blob, err := io.ReadAll(thumbnailFile)
+	thumbnailBlob, err := io.ReadAll(thumbnailFile)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to read thumbnail file")
 	}
-	return blob, nil
+	return thumbnailBlob, nil
 }
 
 var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)
