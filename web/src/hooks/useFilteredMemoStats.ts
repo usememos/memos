@@ -3,7 +3,6 @@ import { countBy } from "lodash-es";
 import { useEffect, useState } from "react";
 import { memoServiceClient } from "@/grpcweb";
 import { State } from "@/types/proto/api/v1/common";
-import { UserStats_MemoTypeStats } from "@/types/proto/api/v1/user_service";
 import type { StatisticsData } from "@/types/statistics";
 
 export interface FilteredMemoStats {
@@ -47,7 +46,6 @@ export interface FilteredMemoStats {
 export const useFilteredMemoStats = (filter?: string, state: State = State.NORMAL, orderBy?: string): FilteredMemoStats => {
   const [data, setData] = useState<FilteredMemoStats>({
     statistics: {
-      memoTypeStats: UserStats_MemoTypeStats.fromPartial({}),
       activityStats: {},
     },
     tags: {},
@@ -69,7 +67,6 @@ export const useFilteredMemoStats = (filter?: string, state: State = State.NORMA
         });
 
         // Compute statistics and tags from fetched memos
-        const memoTypeStats = UserStats_MemoTypeStats.fromPartial({});
         const displayTimeList: Date[] = [];
         const tagCount: Record<string, number> = {};
 
@@ -86,24 +83,6 @@ export const useFilteredMemoStats = (filter?: string, state: State = State.NORMA
                 tagCount[tag] = (tagCount[tag] || 0) + 1;
               }
             }
-
-            // Count memo properties
-            if (memo.property) {
-              if (memo.property.hasLink) {
-                memoTypeStats.linkCount += 1;
-              }
-              if (memo.property.hasTaskList) {
-                memoTypeStats.todoCount += 1;
-                // Check if there are undone tasks
-                const undoneMatches = memo.content.match(/- \[ \]/g);
-                if (undoneMatches && undoneMatches.length > 0) {
-                  memoTypeStats.undoCount += 1;
-                }
-              }
-              if (memo.property.hasCode) {
-                memoTypeStats.codeCount += 1;
-              }
-            }
           }
         }
 
@@ -111,7 +90,7 @@ export const useFilteredMemoStats = (filter?: string, state: State = State.NORMA
         const activityStats = countBy(displayTimeList.map((date) => dayjs(date).format("YYYY-MM-DD")));
 
         setData({
-          statistics: { memoTypeStats, activityStats },
+          statistics: { activityStats },
           tags: tagCount,
           loading: false,
         });
@@ -119,7 +98,6 @@ export const useFilteredMemoStats = (filter?: string, state: State = State.NORMA
         console.error("Failed to fetch memos for statistics:", error);
         setData({
           statistics: {
-            memoTypeStats: UserStats_MemoTypeStats.fromPartial({}),
             activityStats: {},
           },
           tags: {},

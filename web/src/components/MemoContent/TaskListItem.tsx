@@ -1,4 +1,5 @@
-import { useContext } from "react";
+import { useContext, useRef } from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { memoStore } from "@/store";
 import { toggleTaskAtIndex } from "@/utils/markdown-manipulation";
 import { MemoContentContext } from "./MemoContentContext";
@@ -20,19 +21,16 @@ interface TaskListItemProps extends React.InputHTMLAttributes<HTMLInputElement> 
 
 export const TaskListItem: React.FC<TaskListItemProps> = ({ checked, ...props }) => {
   const context = useContext(MemoContentContext);
+  const checkboxRef = useRef<HTMLButtonElement>(null);
 
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.stopPropagation();
-
+  const handleChange = async (newChecked: boolean) => {
     // Don't update if readonly or no memo context
     if (context.readonly || !context.memoName) {
       return;
     }
 
-    const newChecked = e.target.checked;
-
     // Find the task index by walking up the DOM
-    const listItem = e.target.closest("li.task-list-item");
+    const listItem = checkboxRef.current?.closest("li.task-list-item");
     if (!listItem) {
       return;
     }
@@ -78,5 +76,7 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({ checked, ...props })
 
   // Override the disabled prop from remark-gfm (which defaults to true)
   // We want interactive checkboxes, only disabled when readonly
-  return <input {...props} type="checkbox" checked={checked} disabled={context.readonly} onChange={handleChange} />;
+  return (
+    <Checkbox ref={checkboxRef} checked={checked} disabled={context.readonly} onCheckedChange={handleChange} className={props.className} />
+  );
 };
