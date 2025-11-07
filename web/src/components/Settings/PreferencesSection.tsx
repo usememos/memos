@@ -27,6 +27,9 @@ const PreferencesSection = observer(() => {
   };
 
   const handleThemeChange = async (theme: string) => {
+    // Update instance store immediately for instant UI feedback
+    instanceStore.state.setPartial({ theme });
+    // Persist to user settings
     await userStore.updateUserGeneralSetting({ theme }, ["theme"]);
   };
 
@@ -34,7 +37,7 @@ const PreferencesSection = observer(() => {
   const setting: UserSetting_GeneralSetting = generalSetting || {
     locale: "en",
     memoVisibility: "PRIVATE",
-    theme: "default",
+    theme: "system",
   };
 
   return (

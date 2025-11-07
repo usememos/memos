@@ -5,7 +5,7 @@ import { Outlet } from "react-router-dom";
 import useNavigateTo from "./hooks/useNavigateTo";
 import { userStore, instanceStore } from "./store";
 import { cleanupExpiredOAuthState } from "./utils/oauth";
-import { loadTheme } from "./utils/theme";
+import { loadTheme, setupSystemThemeListener } from "./utils/theme";
 
 const App = observer(() => {
   const { i18n } = useTranslation();
@@ -83,6 +83,25 @@ const App = observer(() => {
     if (currentTheme) {
       loadTheme(currentTheme);
     }
+  }, [userGeneralSetting?.theme, instanceStore.state.theme]);
+
+  // Listen for system theme changes when using "system" theme
+  useEffect(() => {
+    const currentTheme = userGeneralSetting?.theme || instanceStore.state.theme;
+
+    // Only set up listener if theme is "system"
+    if (currentTheme !== "system") {
+      return;
+    }
+
+    // Set up listener for OS theme preference changes
+    const cleanup = setupSystemThemeListener(() => {
+      // Reload theme when system preference changes
+      loadTheme(currentTheme);
+    });
+
+    // Cleanup listener on unmount or when theme changes
+    return cleanup;
   }, [userGeneralSetting?.theme, instanceStore.state.theme]);
 
   return <Outlet />;
