@@ -325,7 +325,7 @@ func (*APIV1Service) buildSessionCookie(ctx context.Context, sessionCookieValue 
 }
 
 func (s *APIV1Service) GetCurrentUser(ctx context.Context) (*store.User, error) {
-	userID, ok := ctx.Value(userIDContextKey).(int32)
+	userID, ok := ctx.Value(UserIDContextKey).(int32)
 	if !ok {
 		return nil, nil
 	}

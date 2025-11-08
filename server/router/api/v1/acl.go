@@ -23,9 +23,9 @@ import (
 type ContextKey int
 
 const (
-	// userIDContextKey stores the authenticated user's ID in the context.
+	// UserIDContextKey stores the authenticated user's ID in the context.
 	// Set for both session-based and token-based authentication.
-	userIDContextKey ContextKey = iota
+	UserIDContextKey ContextKey = iota
 
 	// sessionIDContextKey stores the session ID in the context.
 	// Only set for session-based authentication (cookie auth).
@@ -59,7 +59,7 @@ func NewGRPCAuthInterceptor(store *store.Store, secret string) *GRPCAuthIntercep
 // 4. Reject: Return 401 Unauthenticated if none of the above succeed
 //
 // On successful authentication, sets context values:
-// - userIDContextKey: The authenticated user's ID (always set)
+// - UserIDContextKey: The authenticated user's ID (always set)
 // - sessionIDContextKey: Session ID (only for cookie auth)
 // - accessTokenContextKey: JWT token (only for Bearer token auth).
 func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, request any, serverInfo *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
@@ -115,7 +115,7 @@ func (in *GRPCAuthInterceptor) handleAuthenticatedRequest(ctx context.Context, r
 	}
 
 	// Set context values
-	ctx = context.WithValue(ctx, userIDContextKey, user.ID)
+	ctx = context.WithValue(ctx, UserIDContextKey, user.ID)
 
 	if sessionID != "" {
 		// Session-based authentication
