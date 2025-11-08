@@ -70,6 +70,13 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 
 	memo, err := s.Store.CreateMemo(ctx, create)
 	if err != nil {
+		// Check for unique constraint violation (AIP-133 compliance)
+		errMsg := err.Error()
+		if strings.Contains(errMsg, "UNIQUE constraint failed") ||
+		   strings.Contains(errMsg, "duplicate key") ||
+		   strings.Contains(errMsg, "Duplicate entry") {
+			return nil, status.Errorf(codes.AlreadyExists, "memo with ID %q already exists", memoUID)
+		}
 		return nil, err
 	}
 
