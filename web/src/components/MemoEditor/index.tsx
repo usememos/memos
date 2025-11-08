@@ -20,12 +20,10 @@ import { Location, Memo, MemoRelation, MemoRelation_Type, Visibility } from "@/t
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
 import DateTimeInput from "../DateTimeInput";
+import { LocationDisplay, AttachmentList, RelationList } from "../memo-metadata";
 import InsertMenu from "./ActionButton/InsertMenu";
 import VisibilitySelector from "./ActionButton/VisibilitySelector";
-import AttachmentListView from "./AttachmentListView";
 import Editor, { EditorRefActions } from "./Editor";
-import LocationView from "./LocationView";
-import RelationListView from "./RelationListView";
 import { handleEditorKeydownWithMarkdownShortcuts, hyperlinkHighlightedText } from "./handlers";
 import { MemoEditorContext } from "./types";
 
@@ -490,7 +488,8 @@ const MemoEditor = observer((props: Props) => {
         onCompositionEnd={handleCompositionEnd}
       >
         <Editor ref={editorRef} {...editorConfig} />
-        <LocationView
+        <LocationDisplay
+          mode="edit"
           location={state.location}
           onRemove={() =>
             setState((prevState) => ({
@@ -499,8 +498,8 @@ const MemoEditor = observer((props: Props) => {
             }))
           }
         />
-        <AttachmentListView attachmentList={state.attachmentList} setAttachmentList={handleSetAttachmentList} />
-        <RelationListView relationList={referenceRelations} setRelationList={handleSetRelationList} />
+        <AttachmentList mode="edit" attachments={state.attachmentList} onAttachmentsChange={handleSetAttachmentList} />
+        <RelationList mode="edit" relations={referenceRelations} onRelationsChange={handleSetRelationList} />
         <div className="relative w-full flex flex-row justify-between items-center pt-2 gap-2" onFocus={(e) => e.stopPropagation()}>
           <div className="flex flex-row justify-start items-center gap-1">
             <InsertMenu

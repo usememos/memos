@@ -14,16 +14,14 @@ import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityToString } from "@/utils/memo";
 import { isSuperUser } from "@/utils/user";
 import MemoActionMenu from "./MemoActionMenu";
-import MemoAttachmentListView from "./MemoAttachmentListView";
 import MemoContent from "./MemoContent";
 import MemoEditor from "./MemoEditor";
-import MemoLocationView from "./MemoLocationView";
 import MemoReactionistView from "./MemoReactionListView";
-import MemoRelationListView from "./MemoRelationListView";
 import PreviewImageDialog from "./PreviewImageDialog";
 import ReactionSelector from "./ReactionSelector";
 import UserAvatar from "./UserAvatar";
 import VisibilityIcon from "./VisibilityIcon";
+import { LocationDisplay, AttachmentList, RelationList } from "./memo-metadata";
 
 interface Props {
   memo: Memo;
@@ -256,9 +254,9 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
           compact={memo.pinned ? false : props.compact} // Always show full content when pinned.
           parentPage={parentPage}
         />
-        {memo.location && <MemoLocationView location={memo.location} />}
-        <MemoAttachmentListView attachments={memo.attachments} />
-        <MemoRelationListView memo={memo} relations={referencedMemos} parentPage={parentPage} />
+        {memo.location && <LocationDisplay mode="view" location={memo.location} />}
+        <AttachmentList mode="view" attachments={memo.attachments} />
+        <RelationList mode="view" relations={referencedMemos} currentMemoName={memo.name} parentPage={parentPage} />
         <MemoReactionistView memo={memo} reactions={memo.reactions} />
       </div>
       {nsfw && !showNSFWContent && (
