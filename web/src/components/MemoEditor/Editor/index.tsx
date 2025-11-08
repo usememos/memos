@@ -1,10 +1,10 @@
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { detectLastListItem, generateListContinuation } from "@/utils/markdown-list-detection";
 import { Command } from "../types/command";
 import CommandSuggestions from "./CommandSuggestions";
 import TagSuggestions from "./TagSuggestions";
 import { editorCommands } from "./commands";
+import { useListAutoCompletion } from "./useListAutoCompletion";
 
 export interface EditorRefActions {
   getEditor: () => HTMLTextAreaElement | null;
@@ -152,22 +152,14 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
     updateEditorHeight();
   }, []);
 
-  const handleEditorKeyDown = async (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === "Enter" && !isInIME) {
-      if (event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) {
-        return;
-      }
+  const { handleEnterKey } = useListAutoCompletion({
+    editorActions,
+    isInIME,
+  });
 
-      const cursorPosition = editorActions.getCursorPosition();
-      const prevContent = editorActions.getContent().substring(0, cursorPosition);
-
-      // Detect list item using regex-based detection
-      const listInfo = detectLastListItem(prevContent);
-      if (listInfo.type) {
-        event.preventDefault();
-        const insertText = "\n" + generateListContinuation(listInfo);
-        editorActions.insertText(insertText);
-      }
+  const handleEditorKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter") {
+      handleEnterKey(event);
     }
   };
 
