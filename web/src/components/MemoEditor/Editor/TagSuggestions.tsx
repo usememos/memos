@@ -43,9 +43,9 @@ const TagSuggestions = observer(({ editorRef, editorActions }: TagSuggestionsPro
       return items.filter((tag) => tag.toLowerCase().includes(searchQuery));
     },
     onAutocomplete: (tag, word, index, actions) => {
-      // Replace the trigger word with the complete tag
+      // Replace the trigger word with the complete tag and add a trailing space
       actions.removeText(index, word.length);
-      actions.insertText(`#${tag}`);
+      actions.insertText(`#${tag} `);
     },
   });
 

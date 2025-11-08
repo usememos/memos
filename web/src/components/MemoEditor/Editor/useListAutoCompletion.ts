@@ -52,8 +52,28 @@ export function useListAutoCompletion({ editorRef, editorActions, isInIME }: Use
 
       if (listInfo.type) {
         event.preventDefault();
-        const continuation = generateListContinuation(listInfo);
-        actions.insertText("\n" + continuation);
+
+        // Check if current list item is empty (GitHub-style behavior)
+        // Extract the current line
+        const lines = contentBeforeCursor.split("\n");
+        const currentLine = lines[lines.length - 1];
+
+        // Check if line only contains list marker (no content after it)
+        const isEmptyListItem =
+          /^(\s*)([-*+])\s*$/.test(currentLine) || // Empty unordered list
+          /^(\s*)([-*+])\s+\[([ xX])\]\s*$/.test(currentLine) || // Empty task list
+          /^(\s*)(\d+)[.)]\s*$/.test(currentLine); // Empty ordered list
+
+        if (isEmptyListItem) {
+          // Remove the empty list marker and exit list mode
+          const lineStartPos = cursorPosition - currentLine.length;
+          actions.removeText(lineStartPos, currentLine.length);
+          actions.insertText("\n");
+        } else {
+          // Continue the list with the next item
+          const continuation = generateListContinuation(listInfo);
+          actions.insertText("\n" + continuation);
+        }
       }
     };
 
