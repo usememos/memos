@@ -34,11 +34,9 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	memoUID := strings.TrimSpace(request.MemoId)
 	if memoUID == "" {
 		memoUID = shortuuid.New()
-	} else {
+	} else if !base.UIDMatcher.MatchString(memoUID) {
 		// Validate custom memo ID format
-		if !base.UIDMatcher.MatchString(memoUID) {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid memo_id format: must be 1-32 characters, alphanumeric and hyphens only, cannot start or end with hyphen")
-		}
+		return nil, status.Errorf(codes.InvalidArgument, "invalid memo_id format: must be 1-32 characters, alphanumeric and hyphens only, cannot start or end with hyphen")
 	}
 
 	create := &store.Memo{
@@ -73,8 +71,8 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		// Check for unique constraint violation (AIP-133 compliance)
 		errMsg := err.Error()
 		if strings.Contains(errMsg, "UNIQUE constraint failed") ||
-		   strings.Contains(errMsg, "duplicate key") ||
-		   strings.Contains(errMsg, "Duplicate entry") {
+			strings.Contains(errMsg, "duplicate key") ||
+			strings.Contains(errMsg, "Duplicate entry") {
 			return nil, status.Errorf(codes.AlreadyExists, "memo with ID %q already exists", memoUID)
 		}
 		return nil, err
