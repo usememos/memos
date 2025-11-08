@@ -33,15 +33,6 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	memoUID := strings.TrimSpace(request.MemoId)
 	if memoUID == "" {
 		memoUID = shortuuid.New()
-	} else {
-		// Check if a memo with this UID already exists
-		existingMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to check memo existence")
-		}
-		if existingMemo != nil {
-			return nil, status.Errorf(codes.AlreadyExists, "memo with ID %q already exists", memoUID)
-		}
 	}
 
 	create := &store.Memo{
