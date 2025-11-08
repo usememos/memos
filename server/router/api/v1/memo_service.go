@@ -29,8 +29,23 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 
+	// Use custom memo_id if provided, otherwise generate a new UUID
+	memoUID := strings.TrimSpace(request.MemoId)
+	if memoUID == "" {
+		memoUID = shortuuid.New()
+	} else {
+		// Check if a memo with this UID already exists
+		existingMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to check memo existence")
+		}
+		if existingMemo != nil {
+			return nil, status.Errorf(codes.AlreadyExists, "memo with ID %q already exists", memoUID)
+		}
+	}
+
 	create := &store.Memo{
-		UID:        shortuuid.New(),
+		UID:        memoUID,
 		CreatorID:  user.ID,
 		Content:    request.Memo.Content,
 		Visibility: convertVisibilityToStore(request.Memo.Visibility),
@@ -528,7 +543,10 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 	}
 
 	// Create the memo comment first.
-	memoComment, err := s.CreateMemo(ctx, &v1pb.CreateMemoRequest{Memo: request.Comment})
+	memoComment, err := s.CreateMemo(ctx, &v1pb.CreateMemoRequest{
+		Memo:   request.Comment,
+		MemoId: request.CommentId,
+	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create memo")
 	}
