@@ -38,6 +38,9 @@ const TagSuggestions = observer(({ editorRef, editorActions }: Props) => {
   const suggestionsRef = useRef<string[]>([]);
   suggestionsRef.current = (() => {
     const search = getCurrentWord()[0].slice(1).toLowerCase();
+    if (search === "") {
+      return tags; // Show all tags when no search term
+    }
     const fuse = new Fuse(tags);
     return fuse.search(search).map((result) => result.item);
   })();

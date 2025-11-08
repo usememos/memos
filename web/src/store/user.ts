@@ -343,10 +343,10 @@ export const initialUserStore = async () => {
       },
     });
 
-    // Step 3: Fetch user settings
+    // Step 3: Fetch user settings and stats
     // CRITICAL: This must happen after currentUser is set in step 2
-    // The fetchUserSettings() method checks state.currentUser internally
-    await userStore.fetchUserSettings();
+    // The fetchUserSettings() and fetchUserStats() methods check state.currentUser internally
+    await Promise.all([userStore.fetchUserSettings(), userStore.fetchUserStats()]);
 
     // Step 4: Apply user preferences to instance
     // CRITICAL: This must happen after fetchUserSettings() completes

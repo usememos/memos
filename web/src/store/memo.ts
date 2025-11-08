@@ -3,6 +3,7 @@ import { makeAutoObservable } from "mobx";
 import { memoServiceClient } from "@/grpcweb";
 import { CreateMemoRequest, ListMemosRequest, Memo } from "@/types/proto/api/v1/memo_service";
 import { RequestDeduplicator, createRequestKey, StoreError } from "./store-utils";
+import userStore from "./user";
 
 class LocalState {
   stateId: string = uniqueId();
@@ -112,6 +113,8 @@ const memoStore = (() => {
       stateId: uniqueId(),
       memoMapByName: memoMap,
     });
+    // Refresh user stats to update tag counts
+    userStore.fetchUserStats().catch(console.error);
     return memo;
   };
 
@@ -142,6 +145,8 @@ const memoStore = (() => {
         stateId: uniqueId(),
         memoMapByName: confirmedMemoMap,
       });
+      // Refresh user stats to update tag counts
+      userStore.fetchUserStats().catch(console.error);
       return memo;
     } catch (error) {
       // Rollback on error
@@ -166,6 +171,8 @@ const memoStore = (() => {
       stateId: uniqueId(),
       memoMapByName: memoMap,
     });
+    // Refresh user stats to update tag counts
+    userStore.fetchUserStats().catch(console.error);
   };
 
   return {
