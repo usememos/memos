@@ -13,6 +13,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/usememos/memos/internal/base"
 	"github.com/usememos/memos/plugin/webhook"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -29,8 +30,17 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 
+	// Use custom memo_id if provided, otherwise generate a new UUID
+	memoUID := strings.TrimSpace(request.MemoId)
+	if memoUID == "" {
+		memoUID = shortuuid.New()
+	} else if !base.UIDMatcher.MatchString(memoUID) {
+		// Validate custom memo ID format
+		return nil, status.Errorf(codes.InvalidArgument, "invalid memo_id format: must be 1-32 characters, alphanumeric and hyphens only, cannot start or end with hyphen")
+	}
+
 	create := &store.Memo{
-		UID:        shortuuid.New(),
+		UID:        memoUID,
 		CreatorID:  user.ID,
 		Content:    request.Memo.Content,
 		Visibility: convertVisibilityToStore(request.Memo.Visibility),
@@ -58,6 +68,13 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 
 	memo, err := s.Store.CreateMemo(ctx, create)
 	if err != nil {
+		// Check for unique constraint violation (AIP-133 compliance)
+		errMsg := err.Error()
+		if strings.Contains(errMsg, "UNIQUE constraint failed") ||
+			strings.Contains(errMsg, "duplicate key") ||
+			strings.Contains(errMsg, "Duplicate entry") {
+			return nil, status.Errorf(codes.AlreadyExists, "memo with ID %q already exists", memoUID)
+		}
 		return nil, err
 	}
 
@@ -528,7 +545,10 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 	}
 
 	// Create the memo comment first.
-	memoComment, err := s.CreateMemo(ctx, &v1pb.CreateMemoRequest{Memo: request.Comment})
+	memoComment, err := s.CreateMemo(ctx, &v1pb.CreateMemoRequest{
+		Memo:   request.Comment,
+		MemoId: request.CommentId,
+	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create memo")
 	}
