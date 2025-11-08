@@ -82,5 +82,5 @@ func (ts *TestService) CreateRegularUser(ctx context.Context, username string) (
 // CreateUserContext creates a context with the given user's ID for authentication.
 func (*TestService) CreateUserContext(ctx context.Context, userID int32) context.Context {
 	// Use the real context key from the parent package
-	return apiv1.CreateTestUserContext(ctx, userID)
+	return context.WithValue(ctx, apiv1.UserIDContextKey, userID)
 }
