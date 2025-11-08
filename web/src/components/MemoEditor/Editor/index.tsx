@@ -164,7 +164,8 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
       // Detect list item using regex-based detection
       const listInfo = detectLastListItem(prevContent);
       if (listInfo.type) {
-        const insertText = generateListContinuation(listInfo);
+        event.preventDefault();
+        const insertText = "\n" + generateListContinuation(listInfo);
         editorActions.insertText(insertText);
       }
     }
