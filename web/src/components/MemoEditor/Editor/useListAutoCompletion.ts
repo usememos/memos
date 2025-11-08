@@ -1,8 +1,9 @@
-import { useCallback } from "react";
+import { useEffect, useRef } from "react";
 import { detectLastListItem, generateListContinuation } from "@/utils/markdown-list-detection";
 import { EditorRefActions } from ".";
 
 interface UseListAutoCompletionOptions {
+  editorRef: React.RefObject<HTMLTextAreaElement>;
   editorActions: EditorRefActions;
   isInIME: boolean;
 }
@@ -17,26 +18,34 @@ interface UseListAutoCompletionOptions {
  * - Unordered lists (- item, * item, + item)
  * - Task lists (- [ ] task, - [x] task)
  * - Nested lists with proper indentation
+ *
+ * This hook manages its own event listeners and cleanup.
  */
-export function useListAutoCompletion({ editorActions, isInIME }: UseListAutoCompletionOptions) {
-  /**
-   * Handles the Enter key press to auto-complete list items.
-   * Returns true if the event was handled, false otherwise.
-   */
-  const handleEnterKey = useCallback(
-    (event: React.KeyboardEvent<HTMLTextAreaElement>): boolean => {
+export function useListAutoCompletion({ editorRef, editorActions, isInIME }: UseListAutoCompletionOptions) {
+  // Use refs to avoid stale closures in event handlers
+  const isInIMERef = useRef(isInIME);
+  isInIMERef.current = isInIME;
+
+  const editorActionsRef = useRef(editorActions);
+  editorActionsRef.current = editorActions;
+
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Only handle Enter key
+      if (event.key !== "Enter") return;
+
       // Don't handle if in IME composition (for Asian languages)
-      if (isInIME) {
-        return false;
-      }
+      if (isInIMERef.current) return;
 
       // Don't handle if modifier keys are pressed (user wants manual control)
-      if (event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) {
-        return false;
-      }
+      if (event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) return;
 
-      const cursorPosition = editorActions.getCursorPosition();
-      const contentBeforeCursor = editorActions.getContent().substring(0, cursorPosition);
+      const actions = editorActionsRef.current;
+      const cursorPosition = actions.getCursorPosition();
+      const contentBeforeCursor = actions.getContent().substring(0, cursorPosition);
 
       // Detect if we're on a list item
       const listInfo = detectLastListItem(contentBeforeCursor);
@@ -44,14 +53,14 @@ export function useListAutoCompletion({ editorActions, isInIME }: UseListAutoCom
       if (listInfo.type) {
         event.preventDefault();
         const continuation = generateListContinuation(listInfo);
-        editorActions.insertText("\n" + continuation);
-        return true;
+        actions.insertText("\n" + continuation);
       }
+    };
 
-      return false;
-    },
-    [editorActions, isInIME],
-  );
+    editor.addEventListener("keydown", handleKeyDown);
 
-  return { handleEnterKey };
+    return () => {
+      editor.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [editorRef.current]);
 }

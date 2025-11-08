@@ -152,16 +152,12 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
     updateEditorHeight();
   }, []);
 
-  const { handleEnterKey } = useListAutoCompletion({
+  // Auto-complete markdown lists when pressing Enter
+  useListAutoCompletion({
+    editorRef,
     editorActions,
     isInIME,
   });
-
-  const handleEditorKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === "Enter") {
-      handleEnterKey(event);
-    }
-  };
 
   return (
     <div className={cn("flex flex-col justify-start items-start relative w-full h-auto max-h-[50vh] bg-inherit", className)}>
@@ -172,7 +168,6 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         ref={editorRef}
         onPaste={onPaste}
         onInput={handleEditorInput}
-        onKeyDown={handleEditorKeyDown}
         onCompositionStart={() => setIsInIME(true)}
         onCompositionEnd={() => setTimeout(() => setIsInIME(false))}
       ></textarea>

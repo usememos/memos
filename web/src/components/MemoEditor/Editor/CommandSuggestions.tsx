@@ -11,6 +11,15 @@ interface CommandSuggestionsProps {
   commands: Command[];
 }
 
+/**
+ * Command suggestions popup that appears when typing "/" in the editor.
+ * Shows available editor commands like formatting options, insertions, etc.
+ *
+ * Usage:
+ * - Type "/" to trigger
+ * - Continue typing to filter commands
+ * - Use Arrow keys to navigate, Enter/Tab to select
+ */
 const CommandSuggestions = observer(({ editorRef, editorActions, commands }: CommandSuggestionsProps) => {
   const { position, suggestions, selectedIndex, isVisible, handleItemSelect } = useSuggestions({
     editorRef,
@@ -18,14 +27,15 @@ const CommandSuggestions = observer(({ editorRef, editorActions, commands }: Com
     triggerChar: "/",
     items: commands,
     filterItems: (items, searchQuery) => {
-      // Show all commands when no search query
       if (!searchQuery) return items;
-      // Filter commands that start with the search query
+      // Filter commands by prefix match for intuitive searching
       return items.filter((cmd) => cmd.name.toLowerCase().startsWith(searchQuery));
     },
     onAutocomplete: (cmd, word, index, actions) => {
+      // Replace the trigger word with the command output
       actions.removeText(index, word.length);
       actions.insertText(cmd.run());
+      // Position cursor if command specifies an offset
       if (cmd.cursorOffset) {
         actions.setCursorPosition(actions.getCursorPosition() + cmd.cursorOffset);
       }

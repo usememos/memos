@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { Position } from "./useSuggestions";
 
@@ -14,6 +14,12 @@ interface SuggestionsPopupProps<T> {
 /**
  * Shared popup component for displaying suggestion items.
  * Provides consistent styling and behavior across different suggestion types.
+ *
+ * Features:
+ * - Automatically scrolls selected item into view
+ * - Handles keyboard navigation highlighting
+ * - Prevents text selection during mouse interaction
+ * - Consistent styling with max height constraints
  */
 export function SuggestionsPopup<T>({
   position,
@@ -23,17 +29,33 @@ export function SuggestionsPopup<T>({
   renderItem,
   getItemKey,
 }: SuggestionsPopupProps<T>) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const selectedItemRef = useRef<HTMLDivElement>(null);
+
+  // Scroll selected item into view when selection changes
+  useEffect(() => {
+    if (selectedItemRef.current && containerRef.current) {
+      selectedItemRef.current.scrollIntoView({
+        block: "nearest",
+        behavior: "smooth",
+      });
+    }
+  }, [selectedIndex]);
+
   return (
     <div
-      className="z-20 p-1 mt-1 -ml-2 absolute max-w-48 gap-px rounded font-mono flex flex-col justify-start items-start overflow-auto shadow bg-popover"
+      ref={containerRef}
+      className="z-20 p-1 mt-1 -ml-2 absolute max-w-48 max-h-60 gap-px rounded font-mono flex flex-col overflow-y-auto overflow-x-hidden shadow-lg border bg-popover text-popover-foreground"
       style={{ left: position.left, top: position.top + position.height }}
     >
       {suggestions.map((item, i) => (
         <div
           key={getItemKey(item, i)}
+          ref={i === selectedIndex ? selectedItemRef : null}
           onMouseDown={() => onItemSelect(item)}
           className={cn(
-            "rounded p-1 px-2 w-full truncate text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground",
+            "rounded p-1 px-2 w-full text-sm cursor-pointer transition-colors select-none",
+            "hover:bg-accent hover:text-accent-foreground",
             i === selectedIndex ? "bg-accent text-accent-foreground" : "",
           )}
         >

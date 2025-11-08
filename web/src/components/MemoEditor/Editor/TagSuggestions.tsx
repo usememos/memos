@@ -11,8 +11,18 @@ interface TagSuggestionsProps {
   editorActions: React.ForwardedRef<EditorRefActions>;
 }
 
+/**
+ * Tag suggestions popup that appears when typing "#" in the editor.
+ * Shows previously used tags sorted by frequency.
+ *
+ * Usage:
+ * - Type "#" to trigger
+ * - Continue typing to filter tags
+ * - Use Arrow keys to navigate, Enter/Tab to select
+ * - Tags are sorted by usage count (most used first)
+ */
 const TagSuggestions = observer(({ editorRef, editorActions }: TagSuggestionsProps) => {
-  // Sort tags by usage count (descending), then alphabetically
+  // Sort tags by usage count (descending), then alphabetically for ties
   const sortedTags = useMemo(
     () =>
       Object.entries(userStore.state.tagCount)
@@ -28,12 +38,12 @@ const TagSuggestions = observer(({ editorRef, editorActions }: TagSuggestionsPro
     triggerChar: "#",
     items: sortedTags,
     filterItems: (items, searchQuery) => {
-      // Show all tags when no search query
       if (!searchQuery) return items;
-      // Filter tags that contain the search query
+      // Filter tags by substring match for flexible searching
       return items.filter((tag) => tag.toLowerCase().includes(searchQuery));
     },
     onAutocomplete: (tag, word, index, actions) => {
+      // Replace the trigger word with the complete tag
       actions.removeText(index, word.length);
       actions.insertText(`#${tag}`);
     },
