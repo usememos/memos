@@ -5,35 +5,78 @@ body:
   - type: markdown
     attributes:
       value: |
-        Before submitting a bug report, please check if the issue is already present in the issues. If it is, please add a reaction to the issue. If it isn't, please fill out the form below.
-  - type: textarea
+        Thank you for taking the time to report a bug! Please complete the form below to help us understand and fix the issue.
+
+  - type: checkboxes
+    id: pre-check
     attributes:
-      label: Describe the bug
-      description: |
-        Briefly describe the problem you are having in a few paragraphs.
+      label: Pre-submission Checklist
+      description: Please confirm you have completed the following steps before submitting
+      options:
+        - label: I have searched the existing issues and this bug has not been reported yet
+          required: true
+        - label: I have tested this issue on the [demo site](https://demo.usememos.com) or the latest version
+          required: true
+
+  - type: dropdown
+    id: issue-location
+    attributes:
+      label: Where did you encounter this bug?
+      description: Select where you tested and confirmed this issue
+      options:
+        - Latest stable version (self-hosted)
+        - Latest development version (self-hosted)
+        - Demo site (demo.usememos.com)
+        - Older version (please specify below)
+      default: 0
     validations:
       required: true
-  - type: textarea
+
+  - type: input
+    id: version
     attributes:
-      label: Steps to reproduce
-      description: |
-        Provide the steps to reproduce the issue.
+      label: Memos Version
+      description: Provide the exact version (e.g., `v0.25.2`). Find this in Settings → About or via `--version` flag
+      placeholder: v0.25.2
+    validations:
+      required: true
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is
+      placeholder: When I try to..., the application...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Steps to Reproduce
+      description: Detailed steps to reproduce the behavior
       placeholder: |
         1. Go to '...'
-        2. Click on '....'
-        3. See error
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
     validations:
       required: true
-  - type: input
-    attributes:
-      label: |
-        The version of Memos you're using
-      description: |
-        Provide the version of Memos you're using. Please use the following format: `v0.22.0` instead of `stable` or `latest`.
-    validations:
-      required: true
+
   - type: textarea
+    id: expected-behavior
     attributes:
-      label: Screenshots or additional context
-      description: |
-        If applicable, add screenshots to help explain your problem. And add any other context about the problem here. Such as the device you're using, etc.
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: I expected...
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Screenshots & Additional Context
+      description: Add screenshots, browser/OS info, deployment method (Docker/binary), or any other relevant details
+      placeholder: |
+        - Browser: Chrome 120
+        - OS: macOS 14
+        - Deployment: Docker
+        - Database: SQLite

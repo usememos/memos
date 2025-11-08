@@ -5,32 +5,72 @@ body:
   - type: markdown
     attributes:
       value: |
-        Before submitting a feature request, please check if the issue is already present in the issues. If it is, please add a reaction to the issue. If it isn't, please fill out the form below.
-  - type: textarea
+        Thank you for suggesting a new feature! Please complete the form below to help us understand your idea.
+
+  - type: checkboxes
+    id: pre-check
     attributes:
-      label: Describe the solution you'd like
-      description: |
-        A clear and concise description of what you want to happen.
-      placeholder: |
-        It would be great if [...]
-    validations:
-      required: true
+      label: Pre-submission Checklist
+      description: Please confirm you have completed the following steps before submitting
+      options:
+        - label: I have searched the existing issues and this feature has not been requested yet
+          required: true
+
   - type: dropdown
+    id: feature-type
     attributes:
-      label: Type of feature
+      label: Type of Feature
       description: What type of feature is this?
       options:
         - User Interface (UI)
         - User Experience (UX)
-        - API
+        - API / Backend
         - Documentation
-        - Integrations
+        - Integrations / Plugins
+        - Security / Privacy
+        - Performance
         - Other
       default: 0
     validations:
       required: true
+
   - type: textarea
+    id: problem-statement
     attributes:
-      label: Additional context
-      description: |
-        What are you trying to do? Why is this important to you?
+      label: Problem or Use Case
+      description: What problem does this feature solve? What are you trying to accomplish?
+      placeholder: |
+        I often need to... but currently there's no way to...
+        This would help me/users to...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: A clear and concise description of what you want to happen
+      placeholder: |
+        It would be great if Memos could...
+        For example, a button/feature that...
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative solutions or workarounds?
+      placeholder: |
+        I've tried... but it doesn't work well because...
+        An alternative could be...
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context, mockups, screenshots, or examples about the feature request
+      placeholder: |
+        - Similar feature in other apps: ...
+        - Mockups or screenshots: ...
+        - Related discussions: ...
