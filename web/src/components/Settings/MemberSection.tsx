@@ -14,6 +14,8 @@ import { User, User_Role } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import CreateUserDialog from "../CreateUserDialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import SettingSection from "./SettingSection";
+import SettingTable from "./SettingTable";
 
 const MemberSection = observer(() => {
   const t = useTranslate();
@@ -101,84 +103,79 @@ const MemberSection = observer(() => {
   };
 
   return (
-    <div className="w-full flex flex-col gap-2 pt-2 pb-4">
-      <div className="w-full flex flex-row justify-between items-center">
-        <p className="font-medium text-muted-foreground">{t("setting.member-section.create-a-member")}</p>
+    <SettingSection
+      title={t("setting.member-list")}
+      actions={
         <Button onClick={handleCreateUser}>
           <PlusIcon className="w-4 h-4 mr-2" />
           {t("common.create")}
         </Button>
-      </div>
-      <div className="w-full flex flex-row justify-between items-center mt-6">
-        <div className="title-text">{t("setting.member-list")}</div>
-      </div>
-      <div className="w-full overflow-x-auto">
-        <div className="inline-block min-w-full align-middle border border-border rounded-lg">
-          <table className="min-w-full divide-y divide-border">
-            <thead>
-              <tr className="text-sm font-semibold text-left text-foreground">
-                <th scope="col" className="px-3 py-2">
-                  {t("common.username")}
-                </th>
-                <th scope="col" className="px-3 py-2">
-                  {t("common.role")}
-                </th>
-                <th scope="col" className="px-3 py-2">
-                  {t("common.nickname")}
-                </th>
-                <th scope="col" className="px-3 py-2">
-                  {t("common.email")}
-                </th>
-                <th scope="col" className="relative py-2 pl-3 pr-4"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {sortedUsers.map((user) => (
-                <tr key={user.name}>
-                  <td className="whitespace-nowrap px-3 py-2 text-sm text-muted-foreground">
-                    {user.username}
-                    <span className="ml-1 italic">{user.state === State.ARCHIVED && "(Archived)"}</span>
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-2 text-sm text-muted-foreground">{stringifyUserRole(user.role)}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-sm text-muted-foreground">{user.displayName}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-sm text-muted-foreground">{user.email}</td>
-                  <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium flex justify-end">
-                    {currentUser?.name === user.name ? (
-                      <span>{t("common.yourself")}</span>
+      }
+    >
+      <SettingTable
+        columns={[
+          {
+            key: "username",
+            header: t("common.username"),
+            render: (_, user: User) => (
+              <span className="text-foreground">
+                {user.username}
+                {user.state === State.ARCHIVED && <span className="ml-2 italic text-muted-foreground">(Archived)</span>}
+              </span>
+            ),
+          },
+          {
+            key: "role",
+            header: t("common.role"),
+            render: (_, user: User) => stringifyUserRole(user.role),
+          },
+          {
+            key: "displayName",
+            header: t("common.nickname"),
+            render: (_, user: User) => user.displayName,
+          },
+          {
+            key: "email",
+            header: t("common.email"),
+            render: (_, user: User) => user.email,
+          },
+          {
+            key: "actions",
+            header: "",
+            className: "text-right",
+            render: (_, user: User) =>
+              currentUser?.name === user.name ? (
+                <span className="text-muted-foreground">{t("common.yourself")}</span>
+              ) : (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <MoreVerticalIcon className="w-4 h-auto" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" sideOffset={2}>
+                    <DropdownMenuItem onClick={() => handleEditUser(user)}>{t("common.update")}</DropdownMenuItem>
+                    {user.state === State.NORMAL ? (
+                      <DropdownMenuItem onClick={() => handleArchiveUserClick(user)}>
+                        {t("setting.member-section.archive-member")}
+                      </DropdownMenuItem>
                     ) : (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="outline">
-                            <MoreVerticalIcon className="w-4 h-auto" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" sideOffset={2}>
-                          <DropdownMenuItem onClick={() => handleEditUser(user)}>{t("common.update")}</DropdownMenuItem>
-                          {user.state === State.NORMAL ? (
-                            <DropdownMenuItem onClick={() => handleArchiveUserClick(user)}>
-                              {t("setting.member-section.archive-member")}
-                            </DropdownMenuItem>
-                          ) : (
-                            <>
-                              <DropdownMenuItem onClick={() => handleRestoreUserClick(user)}>{t("common.restore")}</DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => handleDeleteUserClick(user)}
-                                className="text-destructive focus:text-destructive"
-                              >
-                                {t("setting.member-section.delete-member")}
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <>
+                        <DropdownMenuItem onClick={() => handleRestoreUserClick(user)}>{t("common.restore")}</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDeleteUserClick(user)} className="text-destructive focus:text-destructive">
+                          {t("setting.member-section.delete-member")}
+                        </DropdownMenuItem>
+                      </>
                     )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ),
+          },
+        ]}
+        data={sortedUsers}
+        emptyMessage="No members found"
+        getRowKey={(user) => user.name}
+      />
 
       {/* Create User Dialog */}
       <CreateUserDialog open={createDialog.isOpen} onOpenChange={createDialog.setOpen} onSuccess={fetchUsers} />
@@ -207,7 +204,7 @@ const MemberSection = observer(() => {
         onConfirm={confirmDeleteUser}
         confirmVariant="destructive"
       />
-    </div>
+    </SettingSection>
   );
 });
 

@@ -7,6 +7,7 @@ import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { UserSession } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
+import SettingTable from "./SettingTable";
 
 const listUserSessions = async (parent: string) => {
   const { sessions } = await userServiceClient.listUserSessions({ parent });
@@ -71,104 +72,87 @@ const UserSessionsSection = () => {
   };
 
   return (
-    <div className="mt-6 w-full flex flex-col justify-start items-start space-y-4">
-      <div className="w-full">
-        <div className="sm:flex sm:items-center sm:justify-between">
-          <div className="sm:flex-auto space-y-1">
-            <p className="flex flex-row justify-start items-center font-medium text-muted-foreground">
-              {t("setting.user-sessions-section.title")}
-            </p>
-            <p className="text-sm text-muted-foreground">{t("setting.user-sessions-section.description")}</p>
-          </div>
-        </div>
-        <div className="w-full mt-2 flow-root">
-          <div className="overflow-x-auto">
-            <div className="inline-block min-w-full border border-border rounded-lg align-middle">
-              <table className="min-w-full divide-y divide-border">
-                <thead>
-                  <tr>
-                    <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-foreground">
-                      {t("setting.user-sessions-section.device")}
-                    </th>
-                    <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-foreground">
-                      {t("setting.user-sessions-section.last-active")}
-                    </th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-4">
-                      <span className="sr-only">{t("common.delete")}</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {userSessions.map((userSession) => (
-                    <tr key={userSession.sessionId}>
-                      <td className="whitespace-nowrap px-3 py-2 text-sm text-foreground">
-                        <div className="flex items-center space-x-3">
-                          {getDeviceIcon(userSession.clientInfo?.deviceType || "")}
-                          <div className="flex flex-col">
-                            <span className="font-medium">
-                              {formatDeviceInfo(userSession.clientInfo)}
-                              {isCurrentSession(userSession) && (
-                                <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/20 text-primary">
-                                  <WifiIcon className="w-3 h-3 mr-1" />
-                                  {t("setting.user-sessions-section.current")}
-                                </span>
-                              )}
-                            </span>
-                            <span className="text-xs text-muted-foreground font-mono">{getFormattedSessionId(userSession.sessionId)}</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-2 text-sm text-muted-foreground">
-                        <div className="flex items-center space-x-1">
-                          <ClockIcon className="w-4 h-4" />
-                          <span>{userSession.lastAccessedTime?.toLocaleString()}</span>
-                        </div>
-                      </td>
-                      <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm">
-                        <Button
-                          variant="ghost"
-                          disabled={isCurrentSession(userSession)}
-                          onClick={() => {
-                            handleRevokeSession(userSession);
-                          }}
-                          title={
-                            isCurrentSession(userSession)
-                              ? t("setting.user-sessions-section.cannot-revoke-current")
-                              : t("setting.user-sessions-section.revoke-session")
-                          }
-                        >
-                          <TrashIcon
-                            className={`w-4 h-auto ${isCurrentSession(userSession) ? "text-muted-foreground" : "text-destructive"}`}
-                          />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {userSessions.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">{t("setting.user-sessions-section.no-sessions")}</div>
-              )}
-            </div>
-          </div>
-        </div>
-        <ConfirmDialog
-          open={!!revokeTarget}
-          onOpenChange={(open) => !open && setRevokeTarget(undefined)}
-          title={
-            revokeTarget
-              ? t("setting.user-sessions-section.session-revocation", {
-                  sessionId: getFormattedSessionId(revokeTarget.sessionId),
-                })
-              : ""
-          }
-          description={revokeTarget ? t("setting.user-sessions-section.session-revocation-description") : ""}
-          confirmLabel={t("setting.user-sessions-section.revoke-session-button")}
-          cancelLabel={t("common.cancel")}
-          onConfirm={confirmRevokeSession}
-          confirmVariant="destructive"
-        />
+    <div className="w-full flex flex-col gap-2">
+      <div className="flex flex-col gap-1">
+        <h4 className="text-sm font-medium text-muted-foreground">{t("setting.user-sessions-section.title")}</h4>
+        <p className="text-xs text-muted-foreground">{t("setting.user-sessions-section.description")}</p>
       </div>
+
+      <SettingTable
+        columns={[
+          {
+            key: "device",
+            header: t("setting.user-sessions-section.device"),
+            render: (_, session: UserSession) => (
+              <div className="flex items-center space-x-3">
+                {getDeviceIcon(session.clientInfo?.deviceType || "")}
+                <div className="flex flex-col">
+                  <span className="font-medium text-foreground">
+                    {formatDeviceInfo(session.clientInfo)}
+                    {isCurrentSession(session) && (
+                      <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-primary/20 text-primary">
+                        <WifiIcon className="w-3 h-3 mr-1" />
+                        {t("setting.user-sessions-section.current")}
+                      </span>
+                    )}
+                  </span>
+                  <span className="text-xs text-muted-foreground font-mono">{getFormattedSessionId(session.sessionId)}</span>
+                </div>
+              </div>
+            ),
+          },
+          {
+            key: "lastAccessedTime",
+            header: t("setting.user-sessions-section.last-active"),
+            render: (_, session: UserSession) => (
+              <div className="flex items-center space-x-1">
+                <ClockIcon className="w-4 h-4" />
+                <span>{session.lastAccessedTime?.toLocaleString()}</span>
+              </div>
+            ),
+          },
+          {
+            key: "actions",
+            header: "",
+            className: "text-right",
+            render: (_, session: UserSession) => (
+              <Button
+                variant="ghost"
+                size="sm"
+                disabled={isCurrentSession(session)}
+                onClick={() => handleRevokeSession(session)}
+                title={
+                  isCurrentSession(session)
+                    ? t("setting.user-sessions-section.cannot-revoke-current")
+                    : t("setting.user-sessions-section.revoke-session")
+                }
+              >
+                <TrashIcon className={`w-4 h-auto ${isCurrentSession(session) ? "text-muted-foreground" : "text-destructive"}`} />
+              </Button>
+            ),
+          },
+        ]}
+        data={userSessions}
+        emptyMessage={t("setting.user-sessions-section.no-sessions")}
+        getRowKey={(session) => session.sessionId}
+      />
+
+      <ConfirmDialog
+        open={!!revokeTarget}
+        onOpenChange={(open) => !open && setRevokeTarget(undefined)}
+        title={
+          revokeTarget
+            ? t("setting.user-sessions-section.session-revocation", {
+                sessionId: getFormattedSessionId(revokeTarget.sessionId),
+              })
+            : ""
+        }
+        description={revokeTarget ? t("setting.user-sessions-section.session-revocation-description") : ""}
+        confirmLabel={t("setting.user-sessions-section.revoke-session-button")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={confirmRevokeSession}
+        confirmVariant="destructive"
+      />
     </div>
   );
 };
