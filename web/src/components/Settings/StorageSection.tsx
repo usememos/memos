@@ -1,5 +1,4 @@
 import { isEqual } from "lodash-es";
-import { HelpCircleIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -8,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { instanceStore } from "@/store";
 import { instanceSettingNamePrefix } from "@/store/common";
 import {
@@ -18,6 +16,9 @@ import {
   InstanceSetting_StorageSetting_StorageType,
 } from "@/types/proto/api/v1/instance_service";
 import { useTranslate } from "@/utils/i18n";
+import SettingGroup from "./SettingGroup";
+import SettingRow from "./SettingRow";
+import SettingSection from "./SettingSection";
 
 const StorageSection = observer(() => {
   const t = useTranslate();
@@ -131,107 +132,89 @@ const StorageSection = observer(() => {
   };
 
   return (
-    <div className="w-full flex flex-col gap-2 pt-2 pb-4">
-      <div className="font-medium text-muted-foreground">{t("setting.storage-section.current-storage")}</div>
-      <RadioGroup
-        value={instanceStorageSetting.storageType}
-        onValueChange={(value) => {
-          handleStorageTypeChanged(value as InstanceSetting_StorageSetting_StorageType);
-        }}
-        className="flex flex-row gap-4"
-      >
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value={InstanceSetting_StorageSetting_StorageType.DATABASE} id="database" />
-          <Label htmlFor="database">{t("setting.storage-section.type-database")}</Label>
+    <SettingSection>
+      <SettingGroup title={t("setting.storage-section.current-storage")}>
+        <div className="w-full">
+          <RadioGroup
+            value={instanceStorageSetting.storageType}
+            onValueChange={(value) => {
+              handleStorageTypeChanged(value as InstanceSetting_StorageSetting_StorageType);
+            }}
+            className="flex flex-row gap-4"
+          >
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value={InstanceSetting_StorageSetting_StorageType.DATABASE} id="database" />
+              <Label htmlFor="database">{t("setting.storage-section.type-database")}</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value={InstanceSetting_StorageSetting_StorageType.LOCAL} id="local" />
+              <Label htmlFor="local">{t("setting.storage-section.type-local")}</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value={InstanceSetting_StorageSetting_StorageType.S3} id="s3" />
+              <Label htmlFor="s3">S3</Label>
+            </div>
+          </RadioGroup>
         </div>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value={InstanceSetting_StorageSetting_StorageType.LOCAL} id="local" />
-          <Label htmlFor="local">{t("setting.storage-section.type-local")}</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <RadioGroupItem value={InstanceSetting_StorageSetting_StorageType.S3} id="s3" />
-          <Label htmlFor="s3">S3</Label>
-        </div>
-      </RadioGroup>
-      <div className="w-full flex flex-row justify-between items-center">
-        <div className="flex flex-row items-center">
-          <span className="text-muted-foreground mr-1">{t("setting.system-section.max-upload-size")}</span>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <HelpCircleIcon className="w-4 h-auto" />
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{t("setting.system-section.max-upload-size-hint")}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        <Input className="w-16 font-mono" value={instanceStorageSetting.uploadSizeLimitMb} onChange={handleMaxUploadSizeChanged} />
-      </div>
-      {instanceStorageSetting.storageType !== InstanceSetting_StorageSetting_StorageType.DATABASE && (
-        <div className="w-full flex flex-row justify-between items-center">
-          <span className="text-muted-foreground mr-1">{t("setting.storage-section.filepath-template")}</span>
-          <Input
-            className="w-64"
-            value={instanceStorageSetting.filepathTemplate}
-            placeholder="assets/{timestamp}_{filename}"
-            onChange={handleFilepathTemplateChanged}
-          />
-        </div>
-      )}
-      {instanceStorageSetting.storageType === InstanceSetting_StorageSetting_StorageType.S3 && (
-        <>
-          <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-muted-foreground mr-1">Access key id</span>
+
+        <SettingRow label={t("setting.system-section.max-upload-size")} tooltip={t("setting.system-section.max-upload-size-hint")}>
+          <Input className="w-24 font-mono" value={instanceStorageSetting.uploadSizeLimitMb} onChange={handleMaxUploadSizeChanged} />
+        </SettingRow>
+
+        {instanceStorageSetting.storageType !== InstanceSetting_StorageSetting_StorageType.DATABASE && (
+          <SettingRow label={t("setting.storage-section.filepath-template")}>
             <Input
               className="w-64"
-              value={instanceStorageSetting.s3Config?.accessKeyId}
-              placeholder=""
-              onChange={handleS3ConfigAccessKeyIdChanged}
+              value={instanceStorageSetting.filepathTemplate}
+              placeholder="assets/{timestamp}_{filename}"
+              onChange={handleFilepathTemplateChanged}
             />
-          </div>
-          <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-muted-foreground mr-1">Access key secret</span>
+          </SettingRow>
+        )}
+      </SettingGroup>
+
+      {instanceStorageSetting.storageType === InstanceSetting_StorageSetting_StorageType.S3 && (
+        <SettingGroup title="S3 Configuration" showSeparator>
+          <SettingRow label="Access key id">
+            <Input className="w-64" value={instanceStorageSetting.s3Config?.accessKeyId} onChange={handleS3ConfigAccessKeyIdChanged} />
+          </SettingRow>
+
+          <SettingRow label="Access key secret">
             <Input
               className="w-64"
+              type="password"
               value={instanceStorageSetting.s3Config?.accessKeySecret}
-              placeholder=""
               onChange={handleS3ConfigAccessKeySecretChanged}
             />
-          </div>
-          <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-muted-foreground mr-1">Endpoint</span>
-            <Input
-              className="w-64"
-              value={instanceStorageSetting.s3Config?.endpoint}
-              placeholder=""
-              onChange={handleS3ConfigEndpointChanged}
-            />
-          </div>
-          <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-muted-foreground mr-1">Region</span>
-            <Input className="w-64" value={instanceStorageSetting.s3Config?.region} placeholder="" onChange={handleS3ConfigRegionChanged} />
-          </div>
-          <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-muted-foreground mr-1">Bucket</span>
-            <Input className="w-64" value={instanceStorageSetting.s3Config?.bucket} placeholder="" onChange={handleS3ConfigBucketChanged} />
-          </div>
-          <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-muted-foreground mr-1">Use Path Style</span>
+          </SettingRow>
+
+          <SettingRow label="Endpoint">
+            <Input className="w-64" value={instanceStorageSetting.s3Config?.endpoint} onChange={handleS3ConfigEndpointChanged} />
+          </SettingRow>
+
+          <SettingRow label="Region">
+            <Input className="w-64" value={instanceStorageSetting.s3Config?.region} onChange={handleS3ConfigRegionChanged} />
+          </SettingRow>
+
+          <SettingRow label="Bucket">
+            <Input className="w-64" value={instanceStorageSetting.s3Config?.bucket} onChange={handleS3ConfigBucketChanged} />
+          </SettingRow>
+
+          <SettingRow label="Use Path Style">
             <Switch
               checked={instanceStorageSetting.s3Config?.usePathStyle}
               onCheckedChange={(checked) => handleS3ConfigUsePathStyleChanged({ target: { checked } } as any)}
             />
-          </div>
-        </>
+          </SettingRow>
+        </SettingGroup>
       )}
-      <div>
+
+      <div className="w-full flex justify-end">
         <Button disabled={!allowSaveStorageSetting} onClick={saveInstanceStorageSetting}>
           {t("common.save")}
         </Button>
       </div>
-    </div>
+    </SettingSection>
   );
 });
 

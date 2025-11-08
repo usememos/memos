@@ -1,15 +1,16 @@
-import { MoreVerticalIcon } from "lucide-react";
+import { MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
 import { identityProviderServiceClient } from "@/grpcweb";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service";
 import { useTranslate } from "@/utils/i18n";
 import CreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
 import LearnMore from "../LearnMore";
+import SettingSection from "./SettingSection";
+import SettingTable from "./SettingTable";
 
 const SSOSection = () => {
   const t = useTranslate();
@@ -68,48 +69,60 @@ const SSOSection = () => {
   };
 
   return (
-    <div className="w-full flex flex-col gap-2 pt-2 pb-4">
-      <div className="w-full flex flex-row justify-between items-center gap-1">
-        <div className="flex flex-row items-center gap-1">
-          <span className="font-mono text-muted-foreground">{t("setting.sso-section.sso-list")}</span>
+    <SettingSection
+      title={
+        <div className="flex items-center gap-2">
+          <span>{t("setting.sso-section.sso-list")}</span>
           <LearnMore url="https://www.usememos.com/docs/configuration/authentication" />
         </div>
-        <Button color="primary" onClick={handleCreateIdentityProvider}>
+      }
+      actions={
+        <Button onClick={handleCreateIdentityProvider}>
+          <PlusIcon className="w-4 h-4 mr-2" />
           {t("common.create")}
         </Button>
-      </div>
-      <Separator />
-      {identityProviderList.map((identityProvider) => (
-        <div
-          key={identityProvider.name}
-          className="py-2 w-full border-b last:border-b border-border flex flex-row items-center justify-between"
-        >
-          <div className="flex flex-row items-center">
-            <p className="ml-2">
-              {identityProvider.title}
-              <span className="text-sm ml-1 text-muted-foreground">({identityProvider.type})</span>
-            </p>
-          </div>
-          <div className="flex flex-row items-center">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline">
-                  <MoreVerticalIcon className="w-4 h-auto" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" sideOffset={2}>
-                <DropdownMenuItem onClick={() => handleEditIdentityProvider(identityProvider)}>{t("common.edit")}</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleDeleteIdentityProvider(identityProvider)}>{t("common.delete")}</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      ))}
-      {identityProviderList.length === 0 && (
-        <div className="w-full mt-2 text-sm border-border text-muted-foreground flex flex-row items-center justify-between">
-          <p className="">{t("setting.sso-section.no-sso-found")}</p>
-        </div>
-      )}
+      }
+    >
+      <SettingTable
+        columns={[
+          {
+            key: "title",
+            header: t("common.name"),
+            render: (_, provider: IdentityProvider) => (
+              <span className="text-foreground">
+                {provider.title}
+                <span className="ml-2 text-sm text-muted-foreground">({provider.type})</span>
+              </span>
+            ),
+          },
+          {
+            key: "actions",
+            header: "",
+            className: "text-right",
+            render: (_, provider: IdentityProvider) => (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <MoreVerticalIcon className="w-4 h-auto" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" sideOffset={2}>
+                  <DropdownMenuItem onClick={() => handleEditIdentityProvider(provider)}>{t("common.edit")}</DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => handleDeleteIdentityProvider(provider)}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    {t("common.delete")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ),
+          },
+        ]}
+        data={identityProviderList}
+        emptyMessage={t("setting.sso-section.no-sso-found")}
+        getRowKey={(provider) => provider.name}
+      />
 
       <CreateIdentityProviderDialog
         open={isCreateDialogOpen}
@@ -127,7 +140,7 @@ const SSOSection = () => {
         onConfirm={confirmDeleteIdentityProvider}
         confirmVariant="destructive"
       />
-    </div>
+    </SettingSection>
   );
 };
 
