@@ -3,32 +3,27 @@ import { Command } from "@/components/MemoEditor/types/command";
 export const editorCommands: Command[] = [
   {
     name: "todo",
-    description: "Insert a task checkbox",
     run: () => "- [ ] ",
-    cursorOffset: 6,
+    cursorOffset: 6, // Places cursor after "- [ ] " to start typing task
   },
   {
     name: "code",
-    description: "Insert a code block",
     run: () => "```\n\n```",
-    cursorOffset: 4,
+    cursorOffset: 4, // Places cursor on empty line between code fences
   },
   {
     name: "link",
-    description: "Insert a link",
     run: () => "[text](url)",
-    cursorOffset: 1,
+    cursorOffset: 1, // Places cursor after "[" to type link text
   },
   {
     name: "table",
-    description: "Insert a table",
     run: () => "| Header | Header |\n| ------ | ------ |\n| Cell   | Cell |",
-    cursorOffset: 1,
+    cursorOffset: 1, // Places cursor after first "|" to edit first header
   },
   {
     name: "highlight",
-    description: "Insert highlighted text",
     run: () => "==text==",
-    cursorOffset: 2,
+    cursorOffset: 2, // Places cursor between "==" markers to type highlighted text
   },
 ];

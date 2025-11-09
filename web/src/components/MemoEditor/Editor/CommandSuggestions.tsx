@@ -51,12 +51,7 @@ const CommandSuggestions = observer(({ editorRef, editorActions, commands }: Com
       selectedIndex={selectedIndex}
       onItemSelect={handleItemSelect}
       getItemKey={(cmd) => cmd.name}
-      renderItem={(cmd) => (
-        <>
-          <OverflowTip>/{cmd.name}</OverflowTip>
-          {cmd.description && <span className="ml-2 text-xs text-muted-foreground">{cmd.description}</span>}
-        </>
-      )}
+      renderItem={(cmd) => <OverflowTip>/{cmd.name}</OverflowTip>}
     />
   );
 });

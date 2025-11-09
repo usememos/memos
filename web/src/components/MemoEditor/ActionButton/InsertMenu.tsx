@@ -1,6 +1,6 @@
 import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
-import { LinkIcon, LoaderIcon, MapPinIcon, PaperclipIcon, PlusIcon } from "lucide-react";
+import { FileIcon, LinkIcon, LoaderIcon, MapPinIcon, PlusIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useContext, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -113,7 +113,7 @@ const InsertMenu = observer((props: Props) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
           <DropdownMenuItem onClick={handleUploadClick}>
-            <PaperclipIcon className="w-4 h-4" />
+            <FileIcon className="w-4 h-4" />
             {t("common.upload")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setLinkDialogOpen(true)}>

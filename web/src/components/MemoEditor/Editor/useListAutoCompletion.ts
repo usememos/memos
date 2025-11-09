@@ -68,7 +68,6 @@ export function useListAutoCompletion({ editorRef, editorActions, isInIME }: Use
           // Remove the empty list marker and exit list mode
           const lineStartPos = cursorPosition - currentLine.length;
           actions.removeText(lineStartPos, currentLine.length);
-          actions.insertText("\n");
         } else {
           // Continue the list with the next item
           const continuation = generateListContinuation(listInfo);
@@ -82,5 +81,5 @@ export function useListAutoCompletion({ editorRef, editorActions, isInIME }: Use
     return () => {
       editor.removeEventListener("keydown", handleKeyDown);
     };
-  }, [editorRef.current]);
+  }, []); // Editor ref is stable; state accessed via refs to avoid stale closures
 }
