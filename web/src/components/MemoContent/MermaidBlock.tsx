@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { instanceStore, userStore } from "@/store";
-import { resolveTheme } from "@/utils/theme";
+import { resolveTheme, setupSystemThemeListener } from "@/utils/theme";
 
 interface MermaidBlockProps {
   children?: React.ReactNode;
@@ -12,54 +12,49 @@ interface MermaidBlockProps {
 
 /**
  * Maps app theme to Mermaid theme
- * @param appTheme - The resolved app theme
- * @returns Mermaid theme name
  */
 const getMermaidTheme = (appTheme: string): "default" | "dark" => {
-  switch (appTheme) {
-    case "default-dark":
-      return "dark";
-    case "default":
-    case "paper":
-    case "whitewall":
-    default:
-      return "default";
-  }
+  return appTheme === "default-dark" ? "dark" : "default";
 };
 
 export const MermaidBlock = observer(({ children, className }: MermaidBlockProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [svg, setSvg] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [systemThemeChange, setSystemThemeChange] = useState(0);
 
-  // Extract the code element and its content
+  // Extract Mermaid code content from children
   const codeElement = children as React.ReactElement;
   const codeContent = String(codeElement?.props?.children || "").replace(/\n$/, "");
 
-  // Get current theme from store (reactive via MobX observer)
-  // This will automatically trigger re-render when theme changes
-  const currentTheme = useMemo(() => {
-    const userTheme = userStore.state.userGeneralSetting?.theme;
-    const instanceTheme = instanceStore.state.theme;
-    const theme = userTheme || instanceTheme;
-    return resolveTheme(theme);
-  }, [userStore.state.userGeneralSetting?.theme, instanceStore.state.theme]);
+  // Get theme preference (reactive via MobX observer)
+  const themePreference = userStore.state.userGeneralSetting?.theme || instanceStore.state.theme;
 
-  // Render diagram when content or theme changes
+  // Resolve theme to actual value (handles "system" theme + system theme changes)
+  const currentTheme = useMemo(() => resolveTheme(themePreference), [themePreference, systemThemeChange]);
+
+  // Listen for OS theme changes when using "system" theme preference
   useEffect(() => {
+    if (themePreference !== "system") {
+      return;
+    }
+
+    return setupSystemThemeListener(() => {
+      setSystemThemeChange((prev) => prev + 1);
+    });
+  }, [themePreference]);
+
+  // Render Mermaid diagram when content or theme changes
+  useEffect(() => {
+    if (!codeContent || !containerRef.current) {
+      return;
+    }
+
     const renderDiagram = async () => {
-      if (!codeContent || !containerRef.current) {
-        return;
-      }
-
       try {
-        // Generate a unique ID for this diagram
         const id = `mermaid-${Math.random().toString(36).substring(7)}`;
-
-        // Get the appropriate Mermaid theme for current app theme
         const mermaidTheme = getMermaidTheme(currentTheme);
 
-        // Initialize mermaid with current theme
         mermaid.initialize({
           startOnLoad: false,
           theme: mermaidTheme,
@@ -67,7 +62,6 @@ export const MermaidBlock = observer(({ children, className }: MermaidBlockProps
           fontFamily: "inherit",
         });
 
-        // Render the mermaid diagram
         const { svg: renderedSvg } = await mermaid.render(id, codeContent);
         setSvg(renderedSvg);
         setError("");
