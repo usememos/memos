@@ -1,6 +1,9 @@
 import mermaid from "mermaid";
-import { useEffect, useRef, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { instanceStore, userStore } from "@/store";
+import { resolveTheme } from "@/utils/theme";
 
 interface MermaidBlockProps {
   children?: React.ReactNode;
@@ -9,10 +12,10 @@ interface MermaidBlockProps {
 
 /**
  * Maps app theme to Mermaid theme
- * @param appTheme - The app's theme value from data-theme attribute
+ * @param appTheme - The resolved app theme
  * @returns Mermaid theme name
  */
-const getMermaidTheme = (appTheme: string | null): "default" | "dark" => {
+const getMermaidTheme = (appTheme: string): "default" | "dark" => {
   switch (appTheme) {
     case "default-dark":
       return "dark";
@@ -24,41 +27,23 @@ const getMermaidTheme = (appTheme: string | null): "default" | "dark" => {
   }
 };
 
-/**
- * Gets the current theme from the document
- */
-const getCurrentTheme = (): string => {
-  return document.documentElement.getAttribute("data-theme") || "default";
-};
-
-export const MermaidBlock = ({ children, className }: MermaidBlockProps) => {
+export const MermaidBlock = observer(({ children, className }: MermaidBlockProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [svg, setSvg] = useState<string>("");
   const [error, setError] = useState<string>("");
-  const [currentTheme, setCurrentTheme] = useState<string>(getCurrentTheme());
 
   // Extract the code element and its content
   const codeElement = children as React.ReactElement;
   const codeContent = String(codeElement?.props?.children || "").replace(/\n$/, "");
 
-  // Watch for theme changes
-  useEffect(() => {
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.type === "attributes" && mutation.attributeName === "data-theme") {
-          const newTheme = getCurrentTheme();
-          setCurrentTheme(newTheme);
-        }
-      });
-    });
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["data-theme"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
+  // Get current theme from store (reactive via MobX observer)
+  // This will automatically trigger re-render when theme changes
+  const currentTheme = useMemo(() => {
+    const userTheme = userStore.state.userGeneralSetting?.theme;
+    const instanceTheme = instanceStore.state.theme;
+    const theme = userTheme || instanceTheme;
+    return resolveTheme(theme);
+  }, [userStore.state.userGeneralSetting?.theme, instanceStore.state.theme]);
 
   // Render diagram when content or theme changes
   useEffect(() => {
@@ -114,4 +99,4 @@ export const MermaidBlock = ({ children, className }: MermaidBlockProps) => {
       dangerouslySetInnerHTML={{ __html: svg }}
     />
   );
-};
+});
