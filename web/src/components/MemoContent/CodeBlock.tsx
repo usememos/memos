@@ -1,6 +1,7 @@
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { MermaidBlock } from "./MermaidBlock";
 
 interface PreProps {
   children?: React.ReactNode;
@@ -18,6 +19,15 @@ export const CodeBlock = ({ children, className, ...props }: PreProps) => {
   // Extract language from className (format: language-xxx)
   const match = /language-(\w+)/.exec(codeClassName);
   const language = match ? match[1] : "";
+
+  // If it's a mermaid block, render with MermaidBlock component
+  if (language === "mermaid") {
+    return (
+      <MermaidBlock className={className} {...props}>
+        {children}
+      </MermaidBlock>
+    );
+  }
 
   const handleCopy = async () => {
     try {
