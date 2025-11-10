@@ -1,53 +1,60 @@
 import { LatLng } from "leaflet";
-import { ExternalLinkIcon, MapPinIcon } from "lucide-react";
+import { MapPinIcon, XIcon } from "lucide-react";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 import { Location } from "@/types/proto/api/v1/memo_service";
 import LeafletMap from "../LeafletMap";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import MetadataBadge from "./MetadataBadge";
 import { BaseMetadataProps } from "./types";
 
 interface LocationDisplayProps extends BaseMetadataProps {
   location?: Location;
   onRemove?: () => void;
-  onClick?: () => void;
 }
 
-/**
- * Unified Location component for both editor and view modes
- *
- * Editor mode: Shows badge with remove button
- * View mode: Shows badge with popover map on click
- */
-const LocationDisplay = ({ location, mode, onRemove, onClick, className }: LocationDisplayProps) => {
+const LocationDisplay = ({ location, mode, onRemove, className }: LocationDisplayProps) => {
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
 
   if (!location) {
     return null;
   }
 
-  const displayText = location.placeholder || `[${location.latitude}, ${location.longitude}]`;
+  const displayText = location.placeholder || `Position: [${location.latitude}, ${location.longitude}]`;
 
-  // Editor mode: Simple badge with remove button
-  if (mode === "edit") {
-    return (
-      <div className="w-full flex flex-row flex-wrap gap-2 mt-2">
-        <MetadataBadge icon={<MapPinIcon className="w-3.5 h-3.5" />} onRemove={onRemove} onClick={onClick} className={className}>
-          {displayText}
-        </MetadataBadge>
-      </div>
-    );
-  }
-
-  // View mode: Badge with popover map
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger asChild>
-        <div className="w-full flex flex-row flex-wrap gap-2">
-          <MetadataBadge icon={<MapPinIcon className="w-3.5 h-3.5" />} onClick={() => setPopoverOpen(true)} className={className}>
-            <span>{displayText}</span>
-            <ExternalLinkIcon className="w-2.5 h-2.5 ml-1 opacity-50" />
-          </MetadataBadge>
+        <div
+          className={cn(
+            "w-full max-w-full flex flex-row gap-2",
+            "relative inline-flex items-center gap-1.5 px-2 h-7 rounded-md border border-border bg-background hover:bg-accent text-secondary-foreground text-xs transition-colors",
+            mode === "view" && "cursor-pointer",
+            className,
+          )}
+          onClick={mode === "view" ? () => setPopoverOpen(true) : undefined}
+        >
+          <span className="shrink-0 text-muted-foreground">
+            <MapPinIcon className="w-3.5 h-3.5" />
+          </span>
+          <span className="text-nowrap truncate">{displayText}</span>
+          {onRemove && (
+            <button
+              className="shrink-0 rounded hover:bg-accent transition-colors p-0.5"
+              onPointerDown={(e) => {
+                e.stopPropagation();
+              }}
+              onMouseDown={(e) => {
+                e.stopPropagation();
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onRemove();
+              }}
+            >
+              <XIcon className="w-3 h-3 text-muted-foreground hover:text-foreground" />
+            </button>
+          )}
         </div>
       </PopoverTrigger>
       <PopoverContent align="start">

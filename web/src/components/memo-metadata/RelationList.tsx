@@ -52,13 +52,17 @@ const RelationList = observer(({ relations, currentMemoName, mode, onRelationsCh
 
   // Fetch full memo details for editor mode
   useEffect(() => {
-    if (mode === "edit" && referencingRelations.length > 0) {
+    if (mode === "edit") {
       (async () => {
-        const requests = referencingRelations.map(async (relation) => {
-          return await memoStore.getOrFetchMemoByName(relation.relatedMemo!.name, { skipStore: true });
-        });
-        const list = await Promise.all(requests);
-        setReferencingMemos(list);
+        if (referencingRelations.length > 0) {
+          const requests = referencingRelations.map(async (relation) => {
+            return await memoStore.getOrFetchMemoByName(relation.relatedMemo!.name, { skipStore: true });
+          });
+          const list = await Promise.all(requests);
+          setReferencingMemos(list);
+        } else {
+          setReferencingMemos([]);
+        }
       })();
     }
   }, [mode, relations]);

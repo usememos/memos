@@ -27,14 +27,30 @@ const RelationCard = ({ memo, mode, onRemove, parentPage, className }: RelationC
     return (
       <div
         className={cn(
-          "group relative inline-flex items-center gap-1.5 px-2 h-7 rounded-md border border-border bg-background text-secondary-foreground text-xs transition-colors hover:bg-accent cursor-pointer",
+          "relative inline-flex items-center gap-1.5 px-2 h-7 rounded-md border border-border bg-background text-secondary-foreground text-xs transition-colors hover:bg-accent",
           className,
         )}
-        onClick={onRemove}
       >
         <LinkIcon className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
         <span className="truncate max-w-[160px]">{memo.snippet}</span>
-        <XIcon className="w-3 h-3 shrink-0 text-muted-foreground" />
+        {onRemove && (
+          <button
+            className="shrink-0 rounded hover:bg-accent transition-colors p-0.5"
+            onPointerDown={(e) => {
+              e.stopPropagation();
+            }}
+            onMouseDown={(e) => {
+              e.stopPropagation();
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onRemove();
+            }}
+          >
+            <XIcon className="w-3 h-3 text-muted-foreground hover:text-foreground" />
+          </button>
+        )}
       </div>
     );
   }
@@ -43,7 +59,7 @@ const RelationCard = ({ memo, mode, onRemove, parentPage, className }: RelationC
   return (
     <Link
       className={cn(
-        "w-full flex flex-row justify-start items-center text-sm leading-5 text-muted-foreground hover:text-foreground hover:bg-accent rounded px-2 py-1 transition-colors",
+        "w-full flex flex-row justify-start items-center text-sm leading-5 text-muted-foreground hover:text-foreground hover:bg-accent rounded px-1 py-1 transition-colors",
         className,
       )}
       to={`/${memo.name}`}
@@ -52,7 +68,7 @@ const RelationCard = ({ memo, mode, onRemove, parentPage, className }: RelationC
         from: parentPage,
       }}
     >
-      <span className="text-xs opacity-60 leading-4 border border-border font-mono px-1 rounded-full mr-1">{memoId.slice(0, 6)}</span>
+      <span className="text-[10px] opacity-60 leading-4 border border-border font-mono px-1 rounded-full mr-1">{memoId.slice(0, 6)}</span>
       <span className="truncate">{memo.snippet}</span>
     </Link>
   );

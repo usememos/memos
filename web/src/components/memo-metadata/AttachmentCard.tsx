@@ -28,7 +28,7 @@ const AttachmentCard = ({ attachment, mode, onRemove, onClick, className, showTh
     return (
       <div
         className={cn(
-          "group relative inline-flex items-center gap-1.5 px-2 h-7 rounded-md border border-border bg-background text-secondary-foreground text-xs transition-colors hover:bg-accent",
+          "relative inline-flex items-center gap-1.5 px-2 h-7 rounded-md border border-border bg-background text-secondary-foreground text-xs transition-colors hover:bg-accent",
           className,
         )}
       >
@@ -41,6 +41,12 @@ const AttachmentCard = ({ attachment, mode, onRemove, onClick, className, showTh
         {onRemove && (
           <button
             className="shrink-0 rounded hover:bg-accent transition-colors p-0.5"
+            onPointerDown={(e) => {
+              e.stopPropagation();
+            }}
+            onMouseDown={(e) => {
+              e.stopPropagation();
+            }}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();

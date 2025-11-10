@@ -8,7 +8,6 @@ export { default as AttachmentList } from "./AttachmentList";
 export { default as RelationList } from "./RelationList";
 
 // Base components (can be used for other metadata types)
-export { default as MetadataBadge } from "./MetadataBadge";
 export { default as MetadataCard } from "./MetadataCard";
 export { default as AttachmentCard } from "./AttachmentCard";
 export { default as RelationCard } from "./RelationCard";
