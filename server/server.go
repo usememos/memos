@@ -21,7 +21,6 @@ import (
 
 	"github.com/usememos/memos/internal/profile"
 	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/server/profiler"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/server/router/frontend"
 	"github.com/usememos/memos/server/router/rss"
@@ -36,7 +35,6 @@ type Server struct {
 
 	echoServer        *echo.Echo
 	grpcServer        *grpc.Server
-	profiler          *profiler.Profiler
 	runnerCancelFuncs []context.CancelFunc
 }
 
@@ -52,13 +50,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	echoServer.HidePort = true
 	echoServer.Use(middleware.Recover())
 	s.echoServer = echoServer
-
-	if profile.Mode != "prod" {
-		// Initialize profiler
-		s.profiler = profiler.NewProfiler()
-		s.profiler.RegisterRoutes(echoServer)
-		s.profiler.StartMemoryMonitor(ctx)
-	}
 
 	instanceBasicSetting, err := s.getOrUpsertInstanceBasicSetting(ctx)
 	if err != nil {
@@ -184,20 +175,6 @@ func (s *Server) Shutdown(ctx context.Context) {
 
 	// Shutdown gRPC server.
 	s.grpcServer.GracefulStop()
-
-	// Stop the profiler
-	if s.profiler != nil {
-		slog.Info("stopping profiler")
-		// Log final memory stats
-		var m runtime.MemStats
-		runtime.ReadMemStats(&m)
-		slog.Info("final memory stats before exit",
-			"heapAlloc", m.Alloc,
-			"heapSys", m.Sys,
-			"heapObjects", m.HeapObjects,
-			"numGoroutine", runtime.NumGoroutine(),
-		)
-	}
 
 	// Close database connection.
 	if err := s.Store.Close(); err != nil {
