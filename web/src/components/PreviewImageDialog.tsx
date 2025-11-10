@@ -40,9 +40,10 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
     onOpenChange(false);
   };
 
-  // Prevent closing when clicking on the image
-  const handleImageClick = (event: React.MouseEvent) => {
-    event.stopPropagation();
+  const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.target === event.currentTarget) {
+      handleClose();
+    }
   };
 
   // Return early if no images provided
@@ -71,12 +72,11 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
         </div>
 
         {/* Image container */}
-        <div className="w-full h-full flex items-center justify-center p-4 sm:p-8 overflow-auto">
+        <div className="w-full h-full flex items-center justify-center p-4 sm:p-8 overflow-auto" onClick={handleBackdropClick}>
           <img
             src={imgUrls[safeIndex]}
             alt={`Preview image ${safeIndex + 1} of ${imgUrls.length}`}
             className="max-w-full max-h-full object-contain select-none"
-            onClick={handleImageClick}
             draggable={false}
             loading="eager"
             decoding="async"
