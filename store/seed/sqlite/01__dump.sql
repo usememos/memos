@@ -1,6 +1,9 @@
 -- Demo User
 INSERT INTO user (id,username,role,nickname,password_hash) VALUES(1,'demo','HOST','Demo User','$2a$10$c.slEVgf5b/3BnAWlLb/vOu7VVSOKJ4ljwMe9xzlx9IhKnvAsJYM6');
 
+-- Demo User Access Token (never expires, for demo/testing purposes)
+INSERT INTO user_setting (user_id, key, value) VALUES(1, 'ACCESS_TOKENS', '{"accessTokens":[{"accessToken":"eyJhbGciOiJIUzI1NiIsImtpZCI6InYxIiwidHlwIjoiSldUIn0.eyJuYW1lIjoiZGVtbyIsImlzcyI6Im1lbW9zIiwic3ViIjoiMSIsImF1ZCI6WyJ1c2VyLmFjY2Vzcy10b2tlbiJdLCJleHAiOjIwNzgxODEwMDgsImlhdCI6MTc2MjgyMTAwOH0.lVo4Ij_R9wrMrpmSMRUtZBWjzRZqOisHIaWtzVNBl6s","description":"Demo Access Token"}]}');
+
 -- Welcome Memo (Pinned)
 INSERT INTO memo (id,uid,creator_id,content,visibility,pinned,payload) VALUES(1,'welcome2memos001',1,replace('# Welcome to Memos!\n\nA privacy-first, lightweight note-taking service. Easily capture and share your great thoughts.\n\n## Key Features\n\n- **Privacy First**: Your data stays with you\n- **Markdown Support**: Full CommonMark + GFM syntax\n- **Quick Capture**: Jot down thoughts instantly\n- **Organize with Tags**: Use #tags to categorize\n- **Open Source**: Free and open source software\n\n---\n\nStart exploring the demo memos below to see what you can do! #welcome #getting-started','\n',char(10)),'PUBLIC',1,'{"tags":["welcome","getting-started"],"property":{"hasLink":false}}');
 
