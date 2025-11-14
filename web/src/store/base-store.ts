@@ -6,7 +6,7 @@
  * - BaseClientStore: For stores that manage UI/client state
  * - Common patterns for all stores
  */
-import { makeObservable, action } from "mobx";
+import { action, makeObservable } from "mobx";
 import { RequestDeduplicator, StoreError } from "./store-utils";
 
 /**

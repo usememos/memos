@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { instanceStore } from "@/store";
 import { instanceSettingNamePrefix } from "@/store/common";
-import { InstanceSetting_MemoRelatedSetting, InstanceSetting_Key } from "@/types/proto/api/v1/instance_service";
+import { InstanceSetting_Key, InstanceSetting_MemoRelatedSetting } from "@/types/proto/api/v1/instance_service";
 import { useTranslate } from "@/utils/i18n";
 import SettingGroup from "./SettingGroup";
 import SettingRow from "./SettingRow";

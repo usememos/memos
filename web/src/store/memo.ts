@@ -2,7 +2,7 @@ import { uniqueId } from "lodash-es";
 import { makeAutoObservable } from "mobx";
 import { memoServiceClient } from "@/grpcweb";
 import { CreateMemoRequest, ListMemosRequest, Memo } from "@/types/proto/api/v1/memo_service";
-import { RequestDeduplicator, createRequestKey, StoreError } from "./store-utils";
+import { createRequestKey, RequestDeduplicator, StoreError } from "./store-utils";
 import userStore from "./user";
 
 class LocalState {

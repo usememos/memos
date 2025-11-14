@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { userStore, instanceStore } from "@/store";
+import { instanceStore, userStore } from "@/store";
 import { extractUserIdFromName } from "@/store/common";
 import memoFilterStore from "@/store/memoFilter";
 import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service";

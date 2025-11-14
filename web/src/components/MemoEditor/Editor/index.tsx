@@ -2,8 +2,8 @@ import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, use
 import { cn } from "@/lib/utils";
 import { Command } from "../types/command";
 import CommandSuggestions from "./CommandSuggestions";
-import TagSuggestions from "./TagSuggestions";
 import { editorCommands } from "./commands";
+import TagSuggestions from "./TagSuggestions";
 import { useListAutoCompletion } from "./useListAutoCompletion";
 
 export interface EditorRefActions {

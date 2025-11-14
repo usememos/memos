@@ -1,21 +1,21 @@
 import { uniqueId } from "lodash-es";
-import { makeAutoObservable, computed } from "mobx";
-import { authServiceClient, userServiceClient, shortcutServiceClient } from "@/grpcweb";
+import { computed, makeAutoObservable } from "mobx";
+import { authServiceClient, shortcutServiceClient, userServiceClient } from "@/grpcweb";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
 import {
   User,
   UserNotification,
   UserSetting,
-  UserSetting_Key,
-  UserSetting_GeneralSetting,
-  UserSetting_SessionsSetting,
   UserSetting_AccessTokensSetting,
+  UserSetting_GeneralSetting,
+  UserSetting_Key,
+  UserSetting_SessionsSetting,
   UserSetting_WebhooksSetting,
   UserStats,
 } from "@/types/proto/api/v1/user_service";
 import { findNearestMatchedLanguage } from "@/utils/i18n";
 import instanceStore from "./instance";
-import { RequestDeduplicator, createRequestKey, StoreError } from "./store-utils";
+import { createRequestKey, RequestDeduplicator, StoreError } from "./store-utils";
 
 class LocalState {
   currentUser?: string;

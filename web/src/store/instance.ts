@@ -7,10 +7,15 @@
 import { uniqBy } from "lodash-es";
 import { computed } from "mobx";
 import { instanceServiceClient } from "@/grpcweb";
-import { InstanceProfile, InstanceSetting_Key } from "@/types/proto/api/v1/instance_service";
-import { InstanceSetting_GeneralSetting, InstanceSetting_MemoRelatedSetting, InstanceSetting } from "@/types/proto/api/v1/instance_service";
+import {
+  InstanceProfile,
+  InstanceSetting,
+  InstanceSetting_GeneralSetting,
+  InstanceSetting_Key,
+  InstanceSetting_MemoRelatedSetting,
+} from "@/types/proto/api/v1/instance_service";
 import { isValidateLocale } from "@/utils/i18n";
-import { StandardState, createServerStore } from "./base-store";
+import { createServerStore, StandardState } from "./base-store";
 import { instanceSettingNamePrefix } from "./common";
 import { createRequestKey } from "./store-utils";
 

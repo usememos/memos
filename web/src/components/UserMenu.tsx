@@ -1,4 +1,4 @@
-import { ArchiveIcon, LogOutIcon, User2Icon, SquareUserIcon, SettingsIcon, GlobeIcon, PaletteIcon, CheckIcon } from "lucide-react";
+import { ArchiveIcon, CheckIcon, GlobeIcon, LogOutIcon, PaletteIcon, SettingsIcon, SquareUserIcon, User2Icon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { authServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -6,7 +6,7 @@ import useNavigateTo from "@/hooks/useNavigateTo";
 import { locales } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { userStore, instanceStore } from "@/store";
+import { instanceStore, userStore } from "@/store";
 import { getLocaleDisplayName, useTranslate } from "@/utils/i18n";
 import { THEME_OPTIONS } from "@/utils/theme";
 import UserAvatar from "./UserAvatar";

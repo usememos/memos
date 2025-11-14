@@ -13,8 +13,8 @@ import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { getAttachmentThumbnailUrl, getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
-import PreviewImageDialog from "./PreviewImageDialog";
 import SquareDiv from "./kit/SquareDiv";
+import PreviewImageDialog from "./PreviewImageDialog";
 
 interface Props {
   attachment: Attachment;

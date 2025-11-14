@@ -9,8 +9,8 @@ import {
   FileTextIcon,
   LinkIcon,
   MoreVerticalIcon,
-  TrashIcon,
   SquareCheckIcon,
+  TrashIcon,
 } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -18,8 +18,7 @@ import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { memoStore, userStore } from "@/store";
-import { instanceStore } from "@/store";
+import { instanceStore, memoStore, userStore } from "@/store";
 import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
 import useNavigateTo from "./hooks/useNavigateTo";
-import { userStore, instanceStore } from "./store";
+import { instanceStore, userStore } from "./store";
 import { cleanupExpiredOAuthState } from "./utils/oauth";
 import { loadTheme, setupSystemThemeListener } from "./utils/theme";
 

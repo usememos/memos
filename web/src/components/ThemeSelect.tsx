@@ -1,4 +1,4 @@
-import { Moon, Monitor, Palette, Sun, Wallpaper } from "lucide-react";
+import { Monitor, Moon, Palette, Sun, Wallpaper } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { instanceStore } from "@/store";
 import { THEME_OPTIONS } from "@/utils/theme";

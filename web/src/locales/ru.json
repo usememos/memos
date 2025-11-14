@@ -118,9 +118,6 @@
   "memo": {
     "archived-at": "В архиве",
     "click-to-show-nsfw-content": "Нажмите, чтобы посмотреть",
-    "comment": {
-      "self": "Комментарии"
-    },
     "code": "Код",
     "comment": {
       "self": "Комментарии",
@@ -377,14 +374,14 @@
       "url": "Ссылка"
     },
     "instance-section": {
-        "disallow-change-nickname": "Запретить смену псевдонима",
-        "disallow-change-username": "Запретить смену имени пользователя",
-        "disallow-password-auth": "Запретить вход по паролю",
-        "disallow-user-registration": "Запретить регистрацию пользователей",
-        "monday": "Понедельник",
-        "saturday": "Суббота",
-        "sunday": "Воскресенье",
-        "week-start-day": "Начало недели"
+      "disallow-change-nickname": "Запретить смену псевдонима",
+      "disallow-change-username": "Запретить смену имени пользователя",
+      "disallow-password-auth": "Запретить вход по паролю",
+      "disallow-user-registration": "Запретить регистрацию пользователей",
+      "monday": "Понедельник",
+      "saturday": "Суббота",
+      "sunday": "Воскресенье",
+      "week-start-day": "Начало недели"
     }
   },
   "tag": {

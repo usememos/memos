@@ -1,4 +1,4 @@
-import { Edit3Icon, MoreVerticalIcon, TrashIcon, PlusIcon } from "lucide-react";
+import { Edit3Icon, MoreVerticalIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import toast from "react-hot-toast";
