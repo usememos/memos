@@ -16,91 +16,40 @@
 
   /* ========================================
    * Task List Styles
+   * Based on GitHub's implementation for proper nesting
    * ======================================== */
 
-  /* Task list containers */
-  .markdown-content ul.contains-task-list,
-  .prose ul.contains-task-list {
-    padding: 0 !important;
-    margin: 0.25rem 0 !important;
-    list-style: none !important;
-    margin-block-start: 0 !important;
-    margin-block-end: 0 !important;
-    margin-inline-start: 0 !important;
-    margin-inline-end: 0 !important;
-    padding-block-start: 0 !important;
-    padding-block-end: 0 !important;
-    padding-inline-start: 0 !important;
-    padding-inline-end: 0 !important;
+  /* Task list items - remove default list styling */
+  .markdown-content .task-list-item,
+  .prose .task-list-item {
+    list-style-type: none;
   }
 
-  /* Remove pseudo-elements */
-  .markdown-content ul.contains-task-list::before,
-  .markdown-content ul.contains-task-list::after,
-  .prose ul.contains-task-list::before,
-  .prose ul.contains-task-list::after {
-    display: none !important;
-    content: none !important;
+  /* Task list checkboxes - use negative margin for proper alignment */
+  .markdown-content .task-list-item > input[type="checkbox"],
+  .prose .task-list-item > input[type="checkbox"] {
+    margin: 0 0.2em 0.25em -1.4em;
+    vertical-align: middle;
   }
 
-  /* Task list items */
-  .markdown-content ul.contains-task-list li.task-list-item,
-  .prose ul.contains-task-list li.task-list-item {
-    display: flex !important;
-    align-items: center !important;
-    gap: 0.375rem !important;
-    margin: 0.0625rem 0 !important;
-    padding: 0 !important;
-    line-height: 1.5rem !important;
-    list-style: none !important;
-    margin-block-start: 0 !important;
-    margin-block-end: 0 !important;
+  /* Paragraphs inside task items should not have extra margins */
+  .markdown-content .task-list-item > p,
+  .prose .task-list-item > p {
+    display: inline;
+    margin: 0;
   }
 
-  /* Remove list item markers */
-  .markdown-content ul.contains-task-list li.task-list-item::before,
-  .markdown-content ul.contains-task-list li.task-list-item::marker,
-  .prose ul.contains-task-list li.task-list-item::before,
-  .prose ul.contains-task-list li.task-list-item::marker {
-    display: none !important;
-    content: none !important;
+  /* Task list containers maintain standard list spacing */
+  .markdown-content .contains-task-list,
+  .prose .contains-task-list {
+    list-style: none;
+    padding-left: 0;
   }
 
-  /* Task checkboxes */
-  .markdown-content ul.contains-task-list li.task-list-item input[type="checkbox"],
-  .prose ul.contains-task-list li.task-list-item input[type="checkbox"] {
-    margin: 0 !important;
-    padding: 0 !important;
-    flex-shrink: 0 !important;
-    width: 1rem !important;
-    height: 1rem !important;
-    vertical-align: middle !important;
-  }
-
-  /* Task item text */
-  .markdown-content ul.contains-task-list li.task-list-item p,
-  .prose ul.contains-task-list li.task-list-item p {
-    margin: 0 !important;
-    padding: 0 !important;
-    display: inline !important;
-    line-height: inherit !important;
-  }
-
-  /* All children */
-  .markdown-content ul.contains-task-list li.task-list-item > *,
-  .prose ul.contains-task-list li.task-list-item > * {
-    margin: 0 !important;
-  }
-
-  /* Override parent space-y utility for task lists */
-  .markdown-content ul.contains-task-list + *,
-  .prose ul.contains-task-list + * {
-    margin-top: 0.25rem !important;
-  }
-
-  * + .markdown-content ul.contains-task-list,
-  * + .prose ul.contains-task-list {
-    margin-top: 0.25rem !important;
+  /* Nested task lists get proper indentation (standard list padding) */
+  .markdown-content .task-list-item .contains-task-list,
+  .prose .task-list-item .contains-task-list {
+    padding-left: 1.5em;
   }
 
   /* ========================================
