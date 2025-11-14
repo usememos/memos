@@ -151,6 +151,12 @@ const MemoEditor = observer((props: Props) => {
     const isMetaKey = event.ctrlKey || event.metaKey;
     if (isMetaKey) {
       if (event.key === "Enter") {
+        event.preventDefault();
+        handleSaveBtnClick();
+        return;
+      }
+      if (event.key.toLowerCase() === "s") {
+        event.preventDefault();
         handleSaveBtnClick();
         return;
       }

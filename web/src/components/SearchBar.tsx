@@ -1,6 +1,6 @@
 import { SearchIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { memoFilterStore } from "@/store";
 import { useTranslate } from "@/utils/i18n";
@@ -9,6 +9,19 @@ import MemoDisplaySettingMenu from "./MemoDisplaySettingMenu";
 const SearchBar = observer(() => {
   const t = useTranslate();
   const [queryText, setQueryText] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleGlobalShortcut = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalShortcut);
+    return () => window.removeEventListener("keydown", handleGlobalShortcut);
+  }, []);
 
   const onTextChange = (event: React.FormEvent<HTMLInputElement>) => {
     setQueryText(event.currentTarget.value);
@@ -40,6 +53,7 @@ const SearchBar = observer(() => {
         value={queryText}
         onChange={onTextChange}
         onKeyDown={onKeyDown}
+        ref={inputRef}
       />
       <MemoDisplaySettingMenu className="absolute right-2 top-2 text-sidebar-foreground" />
     </div>
