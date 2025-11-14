@@ -229,6 +229,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
     <div
       className={cn(
         "relative group flex flex-col justify-start items-start bg-card w-full px-4 py-3 mb-2 gap-2 text-card-foreground rounded-lg border border-border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        shortcutActive && !showEditor && "border-ring ring-2 ring-ring bg-accent/10",
         className,
       )}
       ref={cardRef}
