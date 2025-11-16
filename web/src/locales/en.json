@@ -117,7 +117,9 @@
     "add-your-comment-here": "Add your comment here...",
     "any-thoughts": "Any thoughts...",
     "save": "Save",
-    "no-changes-detected": "No changes detected"
+    "no-changes-detected": "No changes detected",
+    "focus-mode": "Focus Mode",
+    "exit-focus-mode": "Exit Focus Mode"
   },
   "filters": {
     "has-code": "hasCode",

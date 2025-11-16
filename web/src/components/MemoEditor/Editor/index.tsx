@@ -6,6 +6,19 @@ import { editorCommands } from "./commands";
 import TagSuggestions from "./TagSuggestions";
 import { useListAutoCompletion } from "./useListAutoCompletion";
 
+/**
+ * Editor height constraints
+ * - Normal mode: Limited to 50% viewport height to avoid excessive scrolling
+ * - Focus mode: Minimum 50vh on mobile, 60vh on desktop for immersive writing
+ */
+const EDITOR_HEIGHT = {
+  normal: "max-h-[50vh]",
+  focusMode: {
+    mobile: "min-h-[50vh]",
+    desktop: "md:min-h-[60vh]",
+  },
+} as const;
+
 export interface EditorRefActions {
   getEditor: () => HTMLTextAreaElement | null;
   focus: FunctionType;
@@ -30,10 +43,12 @@ interface Props {
   commands?: Command[];
   onContentChange: (content: string) => void;
   onPaste: (event: React.ClipboardEvent) => void;
+  /** Whether Focus Mode is active - adjusts height constraints for immersive writing */
+  isFocusMode?: boolean;
 }
 
 const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<EditorRefActions>) {
-  const { className, initialContent, placeholder, onPaste, onContentChange: handleContentChangeCallback } = props;
+  const { className, initialContent, placeholder, onPaste, onContentChange: handleContentChangeCallback, isFocusMode } = props;
   const [isInIME, setIsInIME] = useState(false);
   const editorRef = useRef<HTMLTextAreaElement>(null);
 
@@ -160,9 +175,18 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
   });
 
   return (
-    <div className={cn("flex flex-col justify-start items-start relative w-full h-auto max-h-[50vh] bg-inherit", className)}>
+    <div
+      className={cn(
+        "flex flex-col justify-start items-start relative w-full h-auto bg-inherit",
+        isFocusMode ? "flex-1" : EDITOR_HEIGHT.normal,
+        className,
+      )}
+    >
       <textarea
-        className="w-full h-full my-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none placeholder:opacity-70 whitespace-pre-wrap break-words"
+        className={cn(
+          "w-full my-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none placeholder:opacity-70 whitespace-pre-wrap break-words",
+          isFocusMode ? `h-auto ${EDITOR_HEIGHT.focusMode.mobile} ${EDITOR_HEIGHT.focusMode.desktop}` : "h-full",
+        )}
         rows={1}
         placeholder={placeholder}
         ref={editorRef}
