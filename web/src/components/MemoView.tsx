@@ -146,7 +146,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
       console.error(error);
       toast.error(error?.details);
     }
-  }, [isArchived, memo.name, t]);
+  }, [isArchived, memo.name, t, memoStore, userStore]);
 
   useEffect(() => {
     if (!shortcutActive || readonly || showEditor || !cardRef.current) {
