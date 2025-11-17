@@ -1,6 +1,7 @@
 import { BookmarkIcon, EyeOffIcon, MessageCircleMoreIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { Link, useLocation } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
@@ -50,6 +51,8 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
     urls: [],
     index: 0,
   });
+  const [shortcutActive, setShortcutActive] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
   const instanceMemoRelatedSetting = instanceStore.state.memoRelatedSetting;
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   const commentAmount = memo.relations.filter(
@@ -124,6 +127,89 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
     }
   };
 
+  const archiveMemo = useCallback(async () => {
+    if (isArchived) {
+      return;
+    }
+
+    try {
+      await memoStore.updateMemo(
+        {
+          name: memo.name,
+          state: State.ARCHIVED,
+        },
+        ["state"],
+      );
+      toast.success(t("message.archived-successfully"));
+      userStore.setStatsStateId();
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error?.details);
+    }
+  }, [isArchived, memo.name, t, memoStore, userStore]);
+
+  useEffect(() => {
+    if (!shortcutActive || readonly || showEditor || !cardRef.current) {
+      return;
+    }
+
+    const cardEl = cardRef.current;
+    const isTextInputElement = (element: HTMLElement | null) => {
+      if (!element) {
+        return false;
+      }
+      if (element.isContentEditable) {
+        return true;
+      }
+      if (element instanceof HTMLTextAreaElement) {
+        return true;
+      }
+
+      if (element instanceof HTMLInputElement) {
+        const textTypes = ["text", "search", "email", "password", "url", "tel", "number"];
+        return textTypes.includes(element.type || "text");
+      }
+
+      return false;
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      if (!cardEl.contains(target) || isTextInputElement(target)) {
+        return;
+      }
+
+      if (event.metaKey || event.ctrlKey || event.altKey) {
+        return;
+      }
+
+      const key = event.key.toLowerCase();
+      if (key === "e") {
+        event.preventDefault();
+        setShowEditor(true);
+      } else if (key === "a" && !isArchived) {
+        event.preventDefault();
+        archiveMemo();
+      }
+    };
+
+    cardEl.addEventListener("keydown", handleKeyDown);
+    return () => cardEl.removeEventListener("keydown", handleKeyDown);
+  }, [shortcutActive, readonly, showEditor, isArchived, archiveMemo]);
+
+  useEffect(() => {
+    if (showEditor || readonly) {
+      setShortcutActive(false);
+    }
+  }, [showEditor, readonly]);
+
+  const handleShortcutActivation = (active: boolean) => {
+    if (readonly) {
+      return;
+    }
+    setShortcutActive(active);
+  };
+
   const displayTime = isArchived ? (
     memo.displayTime?.toLocaleString()
   ) : (
@@ -142,9 +228,14 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
   ) : (
     <div
       className={cn(
-        "relative group flex flex-col justify-start items-start bg-card w-full px-4 py-3 mb-2 gap-2 text-card-foreground rounded-lg border border-border transition-colors",
+        "relative group flex flex-col justify-start items-start bg-card w-full px-4 py-3 mb-2 gap-2 text-card-foreground rounded-lg border border-border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        shortcutActive && !showEditor && "border-ring ring-2 ring-ring bg-accent/10",
         className,
       )}
+      ref={cardRef}
+      tabIndex={readonly ? -1 : 0}
+      onFocus={() => handleShortcutActivation(true)}
+      onBlur={() => handleShortcutActivation(false)}
     >
       <div className="w-full flex flex-row justify-between items-center gap-2">
         <div className="w-auto max-w-[calc(100%-8rem)] grow flex flex-row justify-start items-center">
