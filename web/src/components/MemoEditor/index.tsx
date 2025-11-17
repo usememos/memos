@@ -591,6 +591,7 @@ const MemoEditor = observer((props: Props) => {
                   location,
                 }))
               }
+              onToggleFocusMode={toggleFocusMode}
             />
           </div>
           <div className="shrink-0 flex flex-row justify-end items-center">

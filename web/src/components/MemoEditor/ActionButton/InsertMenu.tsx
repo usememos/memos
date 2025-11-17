@@ -1,10 +1,18 @@
 import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
-import { FileIcon, LinkIcon, LoaderIcon, MapPinIcon, PlusIcon } from "lucide-react";
+import { FileIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useContext, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { Location, MemoRelation } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -19,6 +27,7 @@ interface Props {
   isUploading?: boolean;
   location?: Location;
   onLocationChange: (location?: Location) => void;
+  onToggleFocusMode?: () => void;
 }
 
 const InsertMenu = observer((props: Props) => {
@@ -124,6 +133,20 @@ const InsertMenu = observer((props: Props) => {
             <MapPinIcon className="w-4 h-4" />
             {t("tooltip.select-location")}
           </DropdownMenuItem>
+          {/* View submenu with Focus Mode */}
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <MoreHorizontalIcon className="w-4 h-4" />
+              {t("common.more")}
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem onClick={props.onToggleFocusMode}>
+                <Maximize2Icon className="w-4 h-4" />
+                {t("editor.focus-mode")}
+                <span className="ml-auto text-xs text-muted-foreground opacity-60">⌘⇧F</span>
+              </DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
         </DropdownMenuContent>
       </DropdownMenu>
 
