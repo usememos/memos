@@ -187,7 +187,7 @@ func TestChainSkipIfStillRunning(t *testing.T) {
 		}()
 
 		// After 5ms, the first job is still in progress, and the second job was
-		// aleady skipped.
+		// already skipped.
 		time.Sleep(5 * time.Millisecond)
 		started, done := j.Started(), j.Done()
 		if started != 1 || done != 0 {
