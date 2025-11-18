@@ -3,6 +3,7 @@ import { includes } from "lodash-es";
 import { PaperclipIcon, SearchIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import AttachmentIcon from "@/components/AttachmentIcon";
 import Empty from "@/components/Empty";
 import MobileHeader from "@/components/MobileHeader";
@@ -13,7 +14,6 @@ import { attachmentServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import i18n from "@/i18n";
-import { memoStore } from "@/store";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { useTranslate } from "@/utils/i18n";
 
@@ -57,9 +57,9 @@ const Attachments = observer(() => {
         });
         setAttachments(fetchedAttachments);
         setNextPageToken(nextPageToken ?? "");
-        await Promise.all(
-          fetchedAttachments.map((attachment) => (attachment.memo ? memoStore.getOrFetchMemoByName(attachment.memo) : null)),
-        );
+      } catch (error) {
+        console.error("Failed to fetch attachments:", error);
+        toast.error("Failed to load attachments. Please try again.");
       } finally {
         loadingState.setFinish();
       }
@@ -80,7 +80,9 @@ const Attachments = observer(() => {
       });
       setAttachments((prevAttachments) => [...prevAttachments, ...fetchedAttachments]);
       setNextPageToken(newPageToken ?? "");
-      await Promise.all(fetchedAttachments.map((attachment) => (attachment.memo ? memoStore.getOrFetchMemoByName(attachment.memo) : null)));
+    } catch (error) {
+      console.error("Failed to load more attachments:", error);
+      toast.error("Failed to load more attachments. Please try again.");
     } finally {
       setIsLoadingMore(false);
     }
