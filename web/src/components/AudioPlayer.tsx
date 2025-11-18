@@ -1,5 +1,6 @@
 import { PauseIcon, PlayIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface Props {
     src: string;
@@ -18,12 +19,17 @@ const AudioPlayer = ({ src, className = "" }: Props) => {
         if (!audio) return;
 
         const handleLoadedMetadata = () => {
-            setDuration(audio.duration);
+            if (audio.duration && !isNaN(audio.duration) && isFinite(audio.duration)) {
+                setDuration(audio.duration);
+            }
             setIsLoading(false);
         };
 
         const handleTimeUpdate = () => {
             setCurrentTime(audio.currentTime);
+            if (duration === 0 && audio.duration && !isNaN(audio.duration) && isFinite(audio.duration)) {
+                setDuration(audio.duration);
+            }
         };
 
         const handleEnded = () => {
@@ -32,9 +38,9 @@ const AudioPlayer = ({ src, className = "" }: Props) => {
         };
 
         const handleLoadedData = () => {
-            // For files without proper duration in metadata, 
+            // For files without proper duration in metadata,
             // try to get it after some data is loaded
-            if (audio.duration && !isNaN(audio.duration) && audio.duration !== Infinity) {
+            if (audio.duration && !isNaN(audio.duration) && isFinite(audio.duration)) {
                 setDuration(audio.duration);
                 setIsLoading(false);
             }
@@ -86,34 +92,31 @@ const AudioPlayer = ({ src, className = "" }: Props) => {
         <div className={`flex items-center gap-2 ${className}`}>
             <audio ref={audioRef} src={src} preload="metadata" />
 
-            <button
-                onClick={togglePlayPause}
-                disabled={isLoading}
-                className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-full hover:bg-accent transition-colors disabled:opacity-50"
-                aria-label={isPlaying ? "Pause" : "Play"}
-            >
-                {isPlaying ? (
-                    <PauseIcon className="w-4 h-4" />
-                ) : (
-                    <PlayIcon className="w-4 h-4 ml-0.5" />
-                )}
-            </button>
-
-            <div className="flex-1 flex items-center gap-2 min-w-0">
-                <input
-                    type="range"
-                    min="0"
-                    max={duration || 0}
-                    value={currentTime}
-                    onChange={handleSeek}
-                    disabled={isLoading || !duration}
-                    className="flex-1 h-1 bg-muted rounded-lg appearance-none cursor-pointer disabled:opacity-50 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-0"
-                />
-
-                <span className="text-xs text-muted-foreground whitespace-nowrap tabular-nums">
+            <div className="flex flex-row items-center px-2 py-1 rounded-md bg-secondary text-secondary-foreground border border-border">
+                <span className="font-mono text-sm">
                     {formatTime(currentTime)} / {formatTime(duration)}
                 </span>
             </div>
+
+            <Button
+                variant="outline"
+                size="icon"
+                onClick={togglePlayPause}
+                disabled={isLoading}
+                className="shrink-0"
+            >
+                {isPlaying ? <PauseIcon className="w-4 h-4" /> : <PlayIcon className="w-4 h-4" />}
+            </Button>
+
+            <input
+                type="range"
+                min="0"
+                max={duration || 0}
+                value={currentTime}
+                onChange={handleSeek}
+                disabled={isLoading || !duration}
+                className="flex-1 h-1 bg-muted rounded-lg appearance-none cursor-pointer disabled:opacity-50 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-0"
+            />
         </div>
     );
 };
