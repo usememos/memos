@@ -1,6 +1,7 @@
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { getAttachmentUrl, isMidiFile } from "@/utils/attachment";
 import AttachmentIcon from "./AttachmentIcon";
+import AudioPlayer from "./AudioPlayer";
 
 interface Props {
   attachment: Attachment;
@@ -20,7 +21,7 @@ const MemoAttachment: React.FC<Props> = (props: Props) => {
       className={`w-auto flex flex-row justify-start items-center text-muted-foreground hover:text-foreground hover:bg-accent rounded px-2 py-1 transition-colors ${className}`}
     >
       {attachment.type.startsWith("audio") && !isMidiFile(attachment.type) ? (
-        <audio src={attachmentUrl} controls></audio>
+        <AudioPlayer src={attachmentUrl} />
       ) : (
         <>
           <AttachmentIcon className="w-4! h-4! mr-1" attachment={attachment} />
