@@ -1,8 +1,9 @@
 import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
-import { FileIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
+import { FileIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MicIcon, MoreHorizontalIcon, PlusIcon, XIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useContext, useState } from "react";
+import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,12 +14,14 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { attachmentStore } from "@/store";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { Location, MemoRelation } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { MemoEditorContext } from "../types";
 import { LinkMemoDialog } from "./InsertMenu/LinkMemoDialog";
 import { LocationDialog } from "./InsertMenu/LocationDialog";
+import { useAudioRecorder } from "./InsertMenu/useAudioRecorder";
 import { useFileUpload } from "./InsertMenu/useFileUpload";
 import { useLinkMemo } from "./InsertMenu/useLinkMemo";
 import { useLocation } from "./InsertMenu/useLocation";
@@ -52,6 +55,7 @@ const InsertMenu = observer((props: Props) => {
   });
 
   const location = useLocation(props.location);
+  const audioRecorder = useAudioRecorder();
 
   const isUploading = uploadingFlag || props.isUploading;
 
@@ -112,41 +116,91 @@ const InsertMenu = observer((props: Props) => {
       });
   };
 
+  const handleStopRecording = async () => {
+    try {
+      const blob = await audioRecorder.stopRecording();
+      const filename = `recording-${Date.now()}.webm`;
+      const file = new File([blob], filename, { type: "audio/webm" });
+      const { name, size, type } = file;
+      const buffer = new Uint8Array(await file.arrayBuffer());
+
+      const attachment = await attachmentStore.createAttachment({
+        attachment: Attachment.fromPartial({
+          filename: name,
+          size,
+          type,
+          content: buffer,
+        }),
+        attachmentId: "",
+      });
+      context.setAttachmentList([...context.attachmentList, attachment]);
+    } catch (error: any) {
+      console.error("Failed to upload audio recording:", error);
+      toast.error(error.details || "Failed to upload audio recording");
+    }
+  };
+
   return (
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" className="shadow-none" disabled={isUploading}>
-            {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <PlusIcon className="size-4" />}
-          </Button>
+          {audioRecorder.isRecording ? (
+            <Button variant="outline" className="text-red-500 border-red-500 hover:text-red-600 hover:bg-red-50">
+              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse mr-2" />
+              {new Date(audioRecorder.recordingTime * 1000).toISOString().substr(14, 5)}
+            </Button>
+          ) : (
+            <Button variant="outline" size="icon" className="shadow-none" disabled={isUploading}>
+              {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <PlusIcon className="size-4" />}
+            </Button>
+          )}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={handleUploadClick}>
-            <FileIcon className="w-4 h-4" />
-            {t("common.upload")}
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setLinkDialogOpen(true)}>
-            <LinkIcon className="w-4 h-4" />
-            {t("tooltip.link-memo")}
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleLocationClick}>
-            <MapPinIcon className="w-4 h-4" />
-            {t("tooltip.select-location")}
-          </DropdownMenuItem>
-          {/* View submenu with Focus Mode */}
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              <MoreHorizontalIcon className="w-4 h-4" />
-              {t("common.more")}
-            </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent>
-              <DropdownMenuItem onClick={props.onToggleFocusMode}>
-                <Maximize2Icon className="w-4 h-4" />
-                {t("editor.focus-mode")}
-                <span className="ml-auto text-xs text-muted-foreground opacity-60">⌘⇧F</span>
+          {audioRecorder.isRecording ? (
+            <>
+              <DropdownMenuItem onClick={handleStopRecording} className="text-red-500 focus:text-red-600 focus:bg-red-50">
+                <div className="w-2 h-2 rounded-full bg-red-500 mr-2" />
+                Stop Recording
               </DropdownMenuItem>
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
+              <DropdownMenuItem onClick={audioRecorder.cancelRecording}>
+                <XIcon className="w-4 h-4 mr-2" />
+                Cancel Recording
+              </DropdownMenuItem>
+            </>
+          ) : (
+            <>
+              <DropdownMenuItem onClick={handleUploadClick}>
+                <FileIcon className="w-4 h-4" />
+                {t("common.upload")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLinkDialogOpen(true)}>
+                <LinkIcon className="w-4 h-4" />
+                {t("tooltip.link-memo")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLocationClick}>
+                <MapPinIcon className="w-4 h-4" />
+                {t("tooltip.select-location")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={audioRecorder.startRecording}>
+                <MicIcon className="w-4 h-4" />
+                Record Audio
+              </DropdownMenuItem>
+              {/* View submenu with Focus Mode */}
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  <MoreHorizontalIcon className="w-4 h-4" />
+                  {t("common.more")}
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem onClick={props.onToggleFocusMode}>
+                    <Maximize2Icon className="w-4 h-4" />
+                    {t("editor.focus-mode")}
+                    <span className="ml-auto text-xs text-muted-foreground opacity-60">⌘⇧F</span>
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
