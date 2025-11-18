@@ -6,9 +6,9 @@ import { useEffect, useState } from "react";
 import AttachmentIcon from "@/components/AttachmentIcon";
 import Empty from "@/components/Empty";
 import MobileHeader from "@/components/MobileHeader";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
 import { attachmentServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
@@ -80,9 +80,7 @@ const Attachments = observer(() => {
       });
       setAttachments((prevAttachments) => [...prevAttachments, ...fetchedAttachments]);
       setNextPageToken(newPageToken ?? "");
-      await Promise.all(
-        fetchedAttachments.map((attachment) => (attachment.memo ? memoStore.getOrFetchMemoByName(attachment.memo) : null)),
-      );
+      await Promise.all(fetchedAttachments.map((attachment) => (attachment.memo ? memoStore.getOrFetchMemoByName(attachment.memo) : null)));
     } finally {
       setIsLoadingMore(false);
     }
