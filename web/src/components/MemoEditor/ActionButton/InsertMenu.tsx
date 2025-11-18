@@ -142,67 +142,63 @@ const InsertMenu = observer((props: Props) => {
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          {audioRecorder.isRecording ? (
-            <Button variant="outline" className="text-red-500 border-red-500 hover:text-red-600 hover:bg-red-50">
-              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse mr-2" />
-              {new Date(audioRecorder.recordingTime * 1000).toISOString().substr(14, 5)}
-            </Button>
-          ) : (
+      {audioRecorder.isRecording ? (
+        <div className="flex flex-row items-center gap-2 mr-2">
+          <div className="flex flex-row items-center px-2 py-1 rounded-md bg-red-50 text-red-600 border border-red-200">
+            <div className={`w-2 h-2 rounded-full bg-red-500 mr-2 ${!audioRecorder.isPaused ? "animate-pulse" : ""}`} />
+            <span className="font-mono text-sm">{new Date(audioRecorder.recordingTime * 1000).toISOString().substr(14, 5)}</span>
+          </div>
+          <Button variant="outline" size="icon" onClick={audioRecorder.togglePause} className="shrink-0">
+            {audioRecorder.isPaused ? <MicIcon className="w-4 h-4" /> : <span className="font-bold text-xs">||</span>}
+          </Button>
+          <Button variant="outline" size="icon" onClick={handleStopRecording} className="shrink-0 text-red-600 hover:text-red-700">
+            <div className="w-3 h-3 bg-current rounded-sm" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={audioRecorder.cancelRecording} className="shrink-0">
+            <XIcon className="w-4 h-4" />
+          </Button>
+        </div>
+      ) : (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon" className="shadow-none" disabled={isUploading}>
               {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <PlusIcon className="size-4" />}
             </Button>
-          )}
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          {audioRecorder.isRecording ? (
-            <>
-              <DropdownMenuItem onClick={handleStopRecording} className="text-red-500 focus:text-red-600 focus:bg-red-50">
-                <div className="w-2 h-2 rounded-full bg-red-500 mr-2" />
-                Stop Recording
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={audioRecorder.cancelRecording}>
-                <XIcon className="w-4 h-4 mr-2" />
-                Cancel Recording
-              </DropdownMenuItem>
-            </>
-          ) : (
-            <>
-              <DropdownMenuItem onClick={handleUploadClick}>
-                <FileIcon className="w-4 h-4" />
-                {t("common.upload")}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setLinkDialogOpen(true)}>
-                <LinkIcon className="w-4 h-4" />
-                {t("tooltip.link-memo")}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleLocationClick}>
-                <MapPinIcon className="w-4 h-4" />
-                {t("tooltip.select-location")}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={audioRecorder.startRecording}>
-                <MicIcon className="w-4 h-4" />
-                Record Audio
-              </DropdownMenuItem>
-              {/* View submenu with Focus Mode */}
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>
-                  <MoreHorizontalIcon className="w-4 h-4" />
-                  {t("common.more")}
-                </DropdownMenuSubTrigger>
-                <DropdownMenuSubContent>
-                  <DropdownMenuItem onClick={props.onToggleFocusMode}>
-                    <Maximize2Icon className="w-4 h-4" />
-                    {t("editor.focus-mode")}
-                    <span className="ml-auto text-xs text-muted-foreground opacity-60">⌘⇧F</span>
-                  </DropdownMenuItem>
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-            </>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem onClick={handleUploadClick}>
+              <FileIcon className="w-4 h-4" />
+              {t("common.upload")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setLinkDialogOpen(true)}>
+              <LinkIcon className="w-4 h-4" />
+              {t("tooltip.link-memo")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLocationClick}>
+              <MapPinIcon className="w-4 h-4" />
+              {t("tooltip.select-location")}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={audioRecorder.startRecording}>
+              <MicIcon className="w-4 h-4" />
+              Record Audio
+            </DropdownMenuItem>
+            {/* View submenu with Focus Mode */}
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <MoreHorizontalIcon className="w-4 h-4" />
+                {t("common.more")}
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem onClick={props.onToggleFocusMode}>
+                  <Maximize2Icon className="w-4 h-4" />
+                  {t("editor.focus-mode")}
+                  <span className="ml-auto text-xs text-muted-foreground opacity-60">⌘⇧F</span>
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
 
       {/* Hidden file input */}
       <input

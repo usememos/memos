@@ -33,7 +33,12 @@ export const useAudioRecorder = () => {
             setState((prev: AudioRecorderState) => ({ ...prev, isRecording: true, mediaRecorder }));
 
             timerRef.current = window.setInterval(() => {
-                setState((prev: AudioRecorderState) => ({ ...prev, recordingTime: prev.recordingTime + 1 }));
+                setState((prev) => {
+                    if (prev.isPaused) {
+                        return prev;
+                    }
+                    return { ...prev, recordingTime: prev.recordingTime + 1 };
+                });
             }, 1000);
         } catch (error) {
             console.error("Error accessing microphone:", error);
@@ -93,11 +98,26 @@ export const useAudioRecorder = () => {
         });
     };
 
+    const togglePause = () => {
+        const { mediaRecorder, isPaused } = state;
+        if (!mediaRecorder) return;
+
+        if (isPaused) {
+            mediaRecorder.resume();
+        } else {
+            mediaRecorder.pause();
+        }
+
+        setState((prev) => ({ ...prev, isPaused: !prev.isPaused }));
+    };
+
     return {
         isRecording: state.isRecording,
+        isPaused: state.isPaused,
         recordingTime: state.recordingTime,
         startRecording,
         stopRecording,
         cancelRecording,
+        togglePause,
     };
 };
