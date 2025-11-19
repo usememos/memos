@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { identityProviderServiceClient } from "@/grpcweb";
 import { absolutifyLink } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { useOfflineDetection } from "@/hooks/useOfflineDetection";
 import { Routes } from "@/router";
 import { instanceStore } from "@/store";
 import { extractIdentityProviderIdFromName } from "@/store/common";
@@ -19,6 +20,7 @@ import { storeOAuthState } from "@/utils/oauth";
 const SignIn = observer(() => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
+  const isOffline = useOfflineDetection();
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
   const instanceGeneralSetting = instanceStore.state.generalSetting;
 
@@ -87,7 +89,7 @@ const SignIn = observer(() => {
             </Link>
           </p>
         )}
-        {identityProviderList.length > 0 && (
+        {identityProviderList.length > 0 && !isOffline && (
           <>
             {!instanceGeneralSetting.disallowPasswordAuth && (
               <div className="relative my-4 w-full">

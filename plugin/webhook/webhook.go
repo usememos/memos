@@ -47,6 +47,11 @@ func Post(requestPayload *WebhookRequestPayload) error {
 	}
 	resp, err := client.Do(req)
 	if err != nil {
+		// Log network errors but don't fail the operation - webhooks are optional
+		slog.Warn("Failed to post webhook (network may be offline)",
+			slog.String("url", requestPayload.URL),
+			slog.String("activityType", requestPayload.ActivityType),
+			slog.Any("err", err))
 		return errors.Wrapf(err, "failed to post webhook to %s", requestPayload.URL)
 	}
 
