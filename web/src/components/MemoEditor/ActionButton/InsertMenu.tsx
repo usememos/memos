@@ -146,7 +146,7 @@ const InsertMenu = observer((props: Props) => {
         <div className="flex flex-row items-center gap-2 mr-2">
           <div className="flex flex-row items-center px-2 py-1 rounded-md bg-red-50 text-red-600 border border-red-200">
             <div className={`w-2 h-2 rounded-full bg-red-500 mr-2 ${!audioRecorder.isPaused ? "animate-pulse" : ""}`} />
-            <span className="font-mono text-sm">{new Date(audioRecorder.recordingTime * 1000).toISOString().substr(14, 5)}</span>
+            <span className="font-mono text-sm">{new Date(audioRecorder.recordingTime * 1000).toISOString().substring(14, 19)}</span>
           </div>
           <Button variant="outline" size="icon" onClick={audioRecorder.togglePause} className="shrink-0">
             {audioRecorder.isPaused ? <MicIcon className="w-4 h-4" /> : <span className="font-bold text-xs">||</span>}
@@ -180,7 +180,7 @@ const InsertMenu = observer((props: Props) => {
             </DropdownMenuItem>
             <DropdownMenuItem onClick={audioRecorder.startRecording}>
               <MicIcon className="w-4 h-4" />
-              Record Audio
+              {t("tooltip.record-audio")}
             </DropdownMenuItem>
             {/* View submenu with Focus Mode */}
             <DropdownMenuSub>

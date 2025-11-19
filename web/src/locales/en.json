@@ -477,6 +477,7 @@
     "select-location": "Location",
     "select-visibility": "Visibility",
     "tags": "Tags",
-    "upload-attachment": "Upload Attachment(s)"
+    "upload-attachment": "Upload Attachment(s)",
+    "record-audio": "Record Audio"
   }
 }
