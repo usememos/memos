@@ -51,7 +51,7 @@ export const LocationDialog = ({
         </VisuallyHidden>
         <div className="flex flex-col">
           <div className="w-full h-64 overflow-hidden rounded-t-md bg-muted/30">
-            <LeafletMap key={JSON.stringify(locationInitialized)} latlng={position} onChange={onPositionChange} />
+            <LeafletMap latlng={position} onChange={onPositionChange} />
           </div>
           <div className="w-full flex flex-col p-3 gap-3">
             <div className="grid grid-cols-2 gap-3">
