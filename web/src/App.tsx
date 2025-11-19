@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
+import OfflineIndicator from "./components/OfflineIndicator";
 import useNavigateTo from "./hooks/useNavigateTo";
 import { instanceStore, userStore } from "./store";
 import { cleanupExpiredOAuthState } from "./utils/oauth";
@@ -104,7 +105,12 @@ const App = observer(() => {
     return cleanup;
   }, [userGeneralSetting?.theme, instanceStore.state.theme]);
 
-  return <Outlet />;
+  return (
+    <>
+      <OfflineIndicator />
+      <Outlet />
+    </>
+  );
 });
 
 export default App;
