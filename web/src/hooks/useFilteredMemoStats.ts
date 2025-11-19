@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { countBy } from "lodash-es";
 import { useEffect, useState } from "react";
 import { memoServiceClient } from "@/grpcweb";
+import { memoStore } from "@/store";
 import { State } from "@/types/proto/api/v1/common";
 import type { StatisticsData } from "@/types/statistics";
 
@@ -51,6 +52,8 @@ export const useFilteredMemoStats = (filter?: string, state: State = State.NORMA
     tags: {},
     loading: true,
   });
+  // React to memo store changes (create, update, delete)
+  const memoStoreStateId = memoStore.state.stateId;
 
   useEffect(() => {
     const fetchMemosAndComputeStats = async () => {
@@ -107,7 +110,7 @@ export const useFilteredMemoStats = (filter?: string, state: State = State.NORMA
     };
 
     fetchMemosAndComputeStats();
-  }, [filter, state, orderBy]);
+  }, [filter, state, orderBy, memoStoreStateId]);
 
   return data;
 };
