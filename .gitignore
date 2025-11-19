@@ -20,3 +20,9 @@ dist
 
 # VSCode settings
 .vscode
+
+# iOS
+ios/Frameworks/
+ios/xcuserdata/
+ios/DerivedData/
+*.xcframework
