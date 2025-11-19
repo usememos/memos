@@ -81,17 +81,17 @@ func (*tagParser) Parse(_ gast.Node, block text.Reader, _ parser.Context) gast.N
 		// U+FF00-U+FFEF - Fullwidth punctuation
 		if c >= 0x80 && tagEnd+2 < len(line) {
 			b1, b2, b3 := line[tagEnd], line[tagEnd+1], line[tagEnd+2]
-			
+
 			// U+3000 IDEOGRAPHIC SPACE (E3 80 80)
 			if b1 == 0xE3 && b2 == 0x80 && b3 == 0x80 {
 				break
 			}
-			
+
 			// U+3001-U+303F CJK punctuation (E3 80 81 to E3 80 BF)
 			if b1 == 0xE3 && b2 == 0x80 && b3 >= 0x81 && b3 <= 0xBF {
 				break
 			}
-			
+
 			// Common fullwidth punctuation: ！？，。；：（）
 			// U+FF01 ！ (EF BC 81), U+FF1F ？ (EF BC 9F)
 			// U+FF0C ， (EF BC 8C), U+FF0E 。 (EF BC 8E)
