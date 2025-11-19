@@ -87,6 +87,12 @@ const InsertMenu = observer((props: Props) => {
   const handlePositionChange = (position: LatLng) => {
     location.handlePositionChange(position);
 
+    // Skip geocoding if offline
+    if (!navigator.onLine) {
+      location.setPlaceholder(`${position.lat.toFixed(6)}, ${position.lng.toFixed(6)}`);
+      return;
+    }
+
     fetch(`https://nominatim.openstreetmap.org/reverse?lat=${position.lat}&lon=${position.lng}&format=json`, {
       headers: {
         "User-Agent": "Memos/1.0 (https://github.com/usememos/memos)",
