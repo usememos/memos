@@ -21,9 +21,28 @@ import { visit } from "unist-util-visit";
 
 /**
  * Check if character is valid for tag content
+ * Follows Twitter/social media standard: Unicode letters/digits, underscore, hyphen, slash
+ * Stops at whitespace and punctuation
  */
 function isTagChar(char: string): boolean {
-  return /[a-zA-Z0-9_\-/]/.test(char);
+  // Allow: letters (Unicode), digits (Unicode), underscore, hyphen, forward slash
+  // Stop at: whitespace, punctuation
+
+  // Stop at whitespace
+  if (/\s/.test(char)) {
+    return false;
+  }
+
+  // Stop at common punctuation (ASCII and Unicode)
+  // U+3000-U+303F: CJK punctuation
+  // U+FF00-U+FF65: Fullwidth punctuation subset
+  const punctuation = /[.,;:!?()[\]{}<>"'`|\\@&*+=^%$~#\u3000-\u303F\uFF00-\uFF0F\uFF1A-\uFF20\uFF3B-\uFF40\uFF5B-\uFF65]/;
+  if (punctuation.test(char)) {
+    return false;
+  }
+
+  // Allow everything else (Unicode letters, digits, and allowed symbols like - _ /)
+  return true;
 }
 
 /**

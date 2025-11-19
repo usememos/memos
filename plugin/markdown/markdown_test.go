@@ -261,6 +261,42 @@ func TestExtractTags(t *testing.T) {
 			withExt:  false,
 			expected: []string{},
 		},
+		{
+			name:     "Chinese tag",
+			content:  "Text with #测试",
+			withExt:  true,
+			expected: []string{"测试"},
+		},
+		{
+			name:     "Chinese tag followed by punctuation",
+			content:  "Text #测试。 More text",
+			withExt:  true,
+			expected: []string{"测试"},
+		},
+		{
+			name:     "mixed Chinese and ASCII tag",
+			content:  "#测试test123 content",
+			withExt:  true,
+			expected: []string{"测试test123"},
+		},
+		{
+			name:     "Japanese tag",
+			content:  "#日本語 content",
+			withExt:  true,
+			expected: []string{"日本語"},
+		},
+		{
+			name:     "Korean tag",
+			content:  "#한국어 content",
+			withExt:  true,
+			expected: []string{"한국어"},
+		},
+		{
+			name:     "hierarchical tag with Chinese",
+			content:  "#work/测试/项目",
+			withExt:  true,
+			expected: []string{"work/测试/项目"},
+		},
 	}
 
 	for _, tt := range tests {

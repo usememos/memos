@@ -88,7 +88,7 @@ func TestTagParser(t *testing.T) {
 			name:        "special characters",
 			input:       "#tag@special",
 			expectedTag: "tag",
-			shouldParse: true, // Stops at @
+			shouldParse: true,
 		},
 		{
 			name:        "mixed case",
@@ -124,6 +124,48 @@ func TestTagParser(t *testing.T) {
 			name:        "hierarchical tag with numbers and dashes",
 			input:       "#work-log/2024/q1",
 			expectedTag: "work-log/2024/q1",
+			shouldParse: true,
+		},
+		{
+			name:        "Chinese characters",
+			input:       "#测试",
+			expectedTag: "测试",
+			shouldParse: true,
+		},
+		{
+			name:        "Chinese tag followed by space",
+			input:       "#测试 some text",
+			expectedTag: "测试",
+			shouldParse: true,
+		},
+		{
+			name:        "Chinese tag followed by punctuation",
+			input:       "#测试。",
+			expectedTag: "测试",
+			shouldParse: true,
+		},
+		{
+			name:        "mixed Chinese and ASCII",
+			input:       "#测试test123",
+			expectedTag: "测试test123",
+			shouldParse: true,
+		},
+		{
+			name:        "Japanese characters",
+			input:       "#テスト",
+			expectedTag: "テスト",
+			shouldParse: true,
+		},
+		{
+			name:        "Korean characters",
+			input:       "#테스트",
+			expectedTag: "테스트",
+			shouldParse: true,
+		},
+		{
+			name:        "emoji",
+			input:       "#test🚀",
+			expectedTag: "test🚀",
 			shouldParse: true,
 		},
 	}
