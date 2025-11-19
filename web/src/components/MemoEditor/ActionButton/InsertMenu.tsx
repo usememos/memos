@@ -1,6 +1,18 @@
 import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
-import { FileIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MicIcon, MoreHorizontalIcon, PlusIcon, XIcon } from "lucide-react";
+import {
+  FileIcon,
+  LinkIcon,
+  LoaderIcon,
+  MapPinIcon,
+  Maximize2Icon,
+  MicIcon,
+  MoreHorizontalIcon,
+  PauseIcon,
+  PlayIcon,
+  PlusIcon,
+  XIcon,
+} from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useContext, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -136,7 +148,7 @@ const InsertMenu = observer((props: Props) => {
       context.setAttachmentList([...context.attachmentList, attachment]);
     } catch (error: any) {
       console.error("Failed to upload audio recording:", error);
-      toast.error(error.details || "Failed to upload audio recording");
+      toast.error(error.message || "Failed to upload audio recording");
     }
   };
 
@@ -148,13 +160,31 @@ const InsertMenu = observer((props: Props) => {
             <div className={`w-2 h-2 rounded-full bg-red-500 mr-2 ${!audioRecorder.isPaused ? "animate-pulse" : ""}`} />
             <span className="font-mono text-sm">{new Date(audioRecorder.recordingTime * 1000).toISOString().substring(14, 19)}</span>
           </div>
-          <Button variant="outline" size="icon" onClick={audioRecorder.togglePause} className="shrink-0">
-            {audioRecorder.isPaused ? <MicIcon className="w-4 h-4" /> : <span className="font-bold text-xs">||</span>}
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={audioRecorder.togglePause}
+            className="shrink-0"
+            aria-label={audioRecorder.isPaused ? "Resume recording" : "Pause recording"}
+          >
+            {audioRecorder.isPaused ? <PlayIcon className="w-4 h-4" /> : <PauseIcon className="w-4 h-4" />}
           </Button>
-          <Button variant="outline" size="icon" onClick={handleStopRecording} className="shrink-0 text-red-600 hover:text-red-700">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleStopRecording}
+            className="shrink-0 text-red-600 hover:text-red-700"
+            aria-label="Stop and save recording"
+          >
             <div className="w-3 h-3 bg-current rounded-sm" />
           </Button>
-          <Button variant="ghost" size="icon" onClick={audioRecorder.cancelRecording} className="shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={audioRecorder.cancelRecording}
+            className="shrink-0 text-red-600 hover:text-red-700"
+            aria-label="Cancel recording"
+          >
             <XIcon className="w-4 h-4" />
           </Button>
         </div>

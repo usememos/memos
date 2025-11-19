@@ -18,6 +18,12 @@ const AudioPlayer = ({ src, className = "" }: Props) => {
     const audio = audioRef.current;
     if (!audio) return;
 
+    // Reset state when src changes
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+    setIsLoading(true);
+
     const handleLoadedMetadata = () => {
       if (audio.duration && !isNaN(audio.duration) && isFinite(audio.duration)) {
         setDuration(audio.duration);
@@ -57,7 +63,22 @@ const AudioPlayer = ({ src, className = "" }: Props) => {
       audio.removeEventListener("timeupdate", handleTimeUpdate);
       audio.removeEventListener("ended", handleEnded);
     };
-  }, []);
+  }, [src]);
+
+  useEffect(() => {
+    const handlePlayAudio = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail !== audioRef.current && isPlaying) {
+        audioRef.current?.pause();
+        setIsPlaying(false);
+      }
+    };
+
+    document.addEventListener("play-audio", handlePlayAudio);
+    return () => {
+      document.removeEventListener("play-audio", handlePlayAudio);
+    };
+  }, [isPlaying]);
 
   const togglePlayPause = async () => {
     const audio = audioRef.current;
@@ -68,6 +89,10 @@ const AudioPlayer = ({ src, className = "" }: Props) => {
       setIsPlaying(false);
     } else {
       try {
+        // Stop other audio players
+        const event = new CustomEvent("play-audio", { detail: audio });
+        document.dispatchEvent(event);
+
         await audio.play();
         setIsPlaying(true);
       } catch (error) {
@@ -97,30 +122,29 @@ const AudioPlayer = ({ src, className = "" }: Props) => {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       <audio ref={audioRef} src={src} preload="metadata" />
-
-      <div className="flex flex-row items-center px-2 py-1 rounded-md text-secondary-foreground gap-2">
-        <span className="font-mono text-sm">
-          {formatTime(currentTime)} / {formatTime(duration)}
-        </span>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={togglePlayPause}
-          disabled={isLoading}
-          className="shrink-0 h-auto w-auto p-0.5 hover:bg-background/50"
-        >
-          {isPlaying ? <PauseIcon className="w-4 h-4" /> : <PlayIcon className="w-4 h-4" />}
-        </Button>
-        <input
-          type="range"
-          min="0"
-          max={duration || 0}
-          value={currentTime}
-          onChange={handleSeek}
-          disabled={isLoading || !duration}
-          className="flex-1 h-1 bg-muted hover:bg-background/50 rounded-lg appearance-none cursor-pointer disabled:opacity-50 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-0"
-        />
-      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={togglePlayPause}
+        disabled={isLoading}
+        className="shrink-0 p-0 h-5 w-5 hover:bg-transparent text-muted-foreground hover:text-foreground"
+        aria-label={isPlaying ? "Pause audio" : "Play audio"}
+      >
+        {isPlaying ? <PauseIcon className="w-5 h-5" /> : <PlayIcon className="w-5 h-5" />}
+      </Button>
+      <input
+        type="range"
+        min="0"
+        max={duration || 0}
+        value={currentTime}
+        onChange={handleSeek}
+        disabled={isLoading || !duration}
+        className="w-full min-w-[128px] h-1 rounded-md bg-secondary cursor-pointer appearance-none [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:rounded-full [&::-moz-range-thumb]:w-3 [&::-moz-range-thumb]:h-3 [&::-moz-range-thumb]:bg-primary [&::-moz-range-thumb]:border-none [&::-moz-range-thumb]:rounded-full"
+        aria-label="Seek audio position"
+      />
+      <span className="text-sm text-muted-foreground whitespace-nowrap">
+        {formatTime(currentTime)} / {formatTime(duration)}
+      </span>
     </div>
   );
 };

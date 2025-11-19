@@ -1,46 +1,60 @@
-import { useRef, useState } from "react";
-
-interface AudioRecorderState {
-  isRecording: boolean;
-  isPaused: boolean;
-  recordingTime: number;
-  mediaRecorder: MediaRecorder | null;
-}
+import { useEffect, useRef, useState } from "react";
 
 export const useAudioRecorder = () => {
-  const [state, setState] = useState<AudioRecorderState>({
-    isRecording: false,
-    isPaused: false,
-    recordingTime: 0,
-    mediaRecorder: null,
-  });
+  const [isRecording, setIsRecording] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<number | null>(null);
+  const durationRef = useRef<number>(0);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
+        mediaRecorderRef.current = null;
+      }
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, []);
 
   const startRecording = async () => {
+    let stream: MediaStream | null = null;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
       chunksRef.current = [];
+      durationRef.current = 0;
+      setRecordingTime(0);
 
-      mediaRecorder.ondataavailable = (e: BlobEvent) => {
+      recorder.ondataavailable = (e: BlobEvent) => {
         if (e.data.size > 0) {
           chunksRef.current.push(e.data);
         }
       };
 
-      mediaRecorder.start();
-      setState((prev: AudioRecorderState) => ({ ...prev, isRecording: true, mediaRecorder }));
+      recorder.start();
+      mediaRecorderRef.current = recorder;
+
+      setIsRecording(true);
+      setIsPaused(false);
 
       timerRef.current = window.setInterval(() => {
-        setState((prev) => {
-          if (prev.isPaused) {
-            return prev;
-          }
-          return { ...prev, recordingTime: prev.recordingTime + 1 };
-        });
+        if (!mediaRecorderRef.current || mediaRecorderRef.current.state === "paused") {
+          return;
+        }
+        durationRef.current += 1;
+        setRecordingTime(durationRef.current);
       }, 1000);
     } catch (error) {
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
       console.error("Error accessing microphone:", error);
       throw error;
     }
@@ -48,73 +62,92 @@ export const useAudioRecorder = () => {
 
   const stopRecording = (): Promise<Blob> => {
     return new Promise((resolve, reject) => {
-      const { mediaRecorder } = state;
-      if (!mediaRecorder) {
-        reject(new Error("No active recording"));
-        return;
-      }
-
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
-        chunksRef.current = [];
-        resolve(blob);
-      };
-
-      mediaRecorder.stop();
-      mediaRecorder.stream.getTracks().forEach((track: MediaStreamTrack) => track.stop());
-
+      // Cleanup timer immediately to prevent further updates
       if (timerRef.current) {
         clearInterval(timerRef.current);
         timerRef.current = null;
       }
 
-      setState({
-        isRecording: false,
-        isPaused: false,
-        recordingTime: 0,
-        mediaRecorder: null,
-      });
+      const recorder = mediaRecorderRef.current;
+      if (!recorder) {
+        reject(new Error("No active recording"));
+        return;
+      }
+
+      let isResolved = false;
+
+      const finalize = () => {
+        if (isResolved) return;
+        isResolved = true;
+
+        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        chunksRef.current = [];
+        durationRef.current = 0;
+
+        setIsRecording(false);
+        setIsPaused(false);
+        setRecordingTime(0);
+
+        mediaRecorderRef.current = null;
+
+        resolve(blob);
+      };
+
+      recorder.onstop = finalize;
+
+      try {
+        recorder.stop();
+        recorder.stream.getTracks().forEach((track: MediaStreamTrack) => track.stop());
+      } catch (error) {
+        // Ignore errors during stop, as we'll finalize anyway
+        console.warn("Error stopping media recorder:", error);
+      }
+
+      // Safety timeout in case onstop never fires
+      setTimeout(finalize, 1000);
     });
   };
 
   const cancelRecording = () => {
-    const { mediaRecorder } = state;
-    if (mediaRecorder) {
-      mediaRecorder.stop();
-      mediaRecorder.stream.getTracks().forEach((track: MediaStreamTrack) => track.stop());
-    }
-
+    // Cleanup timer immediately
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
 
+    const recorder = mediaRecorderRef.current;
+    if (recorder) {
+      recorder.stop();
+      recorder.stream.getTracks().forEach((track: MediaStreamTrack) => track.stop());
+    }
+
     chunksRef.current = [];
-    setState({
-      isRecording: false,
-      isPaused: false,
-      recordingTime: 0,
-      mediaRecorder: null,
-    });
+    durationRef.current = 0;
+
+    setIsRecording(false);
+    setIsPaused(false);
+    setRecordingTime(0);
+
+    mediaRecorderRef.current = null;
   };
 
   const togglePause = () => {
-    const { mediaRecorder, isPaused } = state;
-    if (!mediaRecorder) return;
+    const recorder = mediaRecorderRef.current;
+    if (!recorder) return;
 
     if (isPaused) {
-      mediaRecorder.resume();
+      recorder.resume();
+      setIsPaused(false);
     } else {
-      mediaRecorder.pause();
+      recorder.pause();
+      setIsPaused(true);
     }
-
-    setState((prev) => ({ ...prev, isPaused: !prev.isPaused }));
   };
 
   return {
-    isRecording: state.isRecording,
-    isPaused: state.isPaused,
-    recordingTime: state.recordingTime,
+    isRecording,
+    isPaused,
+    recordingTime,
     startRecording,
     stopRecording,
     cancelRecording,
