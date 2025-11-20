@@ -69,7 +69,7 @@ const Attachments = observer(() => {
   }, []);
 
   const handleLoadMore = async () => {
-    if (!nextPageToken) {
+    if (!nextPageToken || isLoadingMore) {
       return;
     }
     setIsLoadingMore(true);
