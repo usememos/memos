@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { includes } from "lodash-es";
-import { PaperclipIcon, SearchIcon, Trash } from "lucide-react";
+import { PaperclipIcon, SearchIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -155,26 +155,13 @@ const Attachments = observer(() => {
                       {unusedAttachments.length > 0 && (
                         <>
                           <Separator />
-                          <div className="w-full">
-                            <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                              <div className="flex flex-row items-center gap-2">
+                          <div className="w-full flex flex-row justify-start items-start">
+                            <div className="w-16 sm:w-24 sm:pl-4 flex flex-col justify-start items-start"></div>
+                            <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
+                              <div className="w-full flex flex-row justify-start items-center gap-2">
                                 <span className="text-muted-foreground">{t("resource.unused-resources")}</span>
                                 <span className="text-muted-foreground opacity-80">({unusedAttachments.length})</span>
                               </div>
-                              <div>
-                                <Button
-                                  variant="destructive"
-                                  onClick={() => {
-                                    alert("TODO: implement dialog confirmation");
-                                  }}
-                                  size="sm"
-                                >
-                                  <Trash />
-                                  {t("resource.delete-all-unused")}
-                                </Button>
-                              </div>
-                            </div>
-                            <div className="mt-6 flex flex-row flex-wrap gap-4">
                               {unusedAttachments.map((attachment) => {
                                 return (
                                   <div key={attachment.name} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
