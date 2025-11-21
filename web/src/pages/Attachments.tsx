@@ -3,16 +3,17 @@ import { includes } from "lodash-es";
 import { PaperclipIcon, SearchIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import AttachmentIcon from "@/components/AttachmentIcon";
 import Empty from "@/components/Empty";
 import MobileHeader from "@/components/MobileHeader";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { attachmentServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import i18n from "@/i18n";
-import { memoStore } from "@/store";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { useTranslate } from "@/utils/i18n";
 
@@ -42,17 +43,50 @@ const Attachments = observer(() => {
     searchQuery: "",
   });
   const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [nextPageToken, setNextPageToken] = useState("");
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const filteredAttachments = attachments.filter((attachment) => includes(attachment.filename, state.searchQuery));
   const groupedAttachments = groupAttachmentsByDate(filteredAttachments.filter((attachment) => attachment.memo));
   const unusedAttachments = filteredAttachments.filter((attachment) => !attachment.memo);
 
   useEffect(() => {
-    attachmentServiceClient.listAttachments({}).then(({ attachments }) => {
-      setAttachments(attachments);
-      loadingState.setFinish();
-      Promise.all(attachments.map((attachment) => (attachment.memo ? memoStore.getOrFetchMemoByName(attachment.memo) : null)));
-    });
+    const fetchInitialAttachments = async () => {
+      try {
+        const { attachments: fetchedAttachments, nextPageToken } = await attachmentServiceClient.listAttachments({
+          pageSize: 50,
+        });
+        setAttachments(fetchedAttachments);
+        setNextPageToken(nextPageToken ?? "");
+      } catch (error) {
+        console.error("Failed to fetch attachments:", error);
+        toast.error("Failed to load attachments. Please try again.");
+      } finally {
+        loadingState.setFinish();
+      }
+    };
+
+    fetchInitialAttachments();
   }, []);
+
+  const handleLoadMore = async () => {
+    if (!nextPageToken || isLoadingMore) {
+      return;
+    }
+    setIsLoadingMore(true);
+    try {
+      const { attachments: fetchedAttachments, nextPageToken: newPageToken } = await attachmentServiceClient.listAttachments({
+        pageSize: 50,
+        pageToken: nextPageToken,
+      });
+      setAttachments((prevAttachments) => [...prevAttachments, ...fetchedAttachments]);
+      setNextPageToken(newPageToken ?? "");
+    } catch (error) {
+      console.error("Failed to load more attachments:", error);
+      toast.error("Failed to load more attachments. Please try again.");
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
 
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
@@ -89,61 +123,70 @@ const Attachments = observer(() => {
                     <p className="mt-4 text-muted-foreground">{t("message.no-data")}</p>
                   </div>
                 ) : (
-                  <div className={"w-full h-auto px-2 flex flex-col justify-start items-start gap-y-8"}>
-                    {Array.from(groupedAttachments.entries()).map(([monthStr, attachments]) => {
-                      return (
-                        <div key={monthStr} className="w-full flex flex-row justify-start items-start">
-                          <div className="w-16 sm:w-24 pt-4 sm:pl-4 flex flex-col justify-start items-start">
-                            <span className="text-sm opacity-60">{dayjs(monthStr).year()}</span>
-                            <span className="font-medium text-xl">
-                              {dayjs(monthStr).toDate().toLocaleString(i18n.language, { month: "short" })}
-                            </span>
-                          </div>
-                          <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
-                            {attachments.map((attachment) => {
-                              return (
-                                <div key={attachment.name} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
-                                  <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border border-border overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
-                                    <AttachmentIcon attachment={attachment} strokeWidth={0.5} />
-                                  </div>
-                                  <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">
-                                    <p className="text-xs shrink text-muted-foreground truncate">{attachment.filename}</p>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      );
-                    })}
-
-                    {unusedAttachments.length > 0 && (
-                      <>
-                        <Separator />
-                        <div className="w-full flex flex-row justify-start items-start">
-                          <div className="w-16 sm:w-24 sm:pl-4 flex flex-col justify-start items-start"></div>
-                          <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
-                            <div className="w-full flex flex-row justify-start items-center gap-2">
-                              <span className="text-muted-foreground">{t("resource.unused-resources")}</span>
-                              <span className="text-muted-foreground opacity-80">({unusedAttachments.length})</span>
+                  <>
+                    <div className={"w-full h-auto px-2 flex flex-col justify-start items-start gap-y-8"}>
+                      {Array.from(groupedAttachments.entries()).map(([monthStr, attachments]) => {
+                        return (
+                          <div key={monthStr} className="w-full flex flex-row justify-start items-start">
+                            <div className="w-16 sm:w-24 pt-4 sm:pl-4 flex flex-col justify-start items-start">
+                              <span className="text-sm opacity-60">{dayjs(monthStr).year()}</span>
+                              <span className="font-medium text-xl">
+                                {dayjs(monthStr).toDate().toLocaleString(i18n.language, { month: "short" })}
+                              </span>
                             </div>
-                            {unusedAttachments.map((attachment) => {
-                              return (
-                                <div key={attachment.name} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
-                                  <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border border-border overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
-                                    <AttachmentIcon attachment={attachment} strokeWidth={0.5} />
+                            <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
+                              {attachments.map((attachment) => {
+                                return (
+                                  <div key={attachment.name} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
+                                    <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border border-border overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
+                                      <AttachmentIcon attachment={attachment} strokeWidth={0.5} />
+                                    </div>
+                                    <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">
+                                      <p className="text-xs shrink text-muted-foreground truncate">{attachment.filename}</p>
+                                    </div>
                                   </div>
-                                  <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">
-                                    <p className="text-xs shrink text-muted-foreground truncate">{attachment.filename}</p>
-                                  </div>
-                                </div>
-                              );
-                            })}
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      </>
+                        );
+                      })}
+
+                      {unusedAttachments.length > 0 && (
+                        <>
+                          <Separator />
+                          <div className="w-full flex flex-row justify-start items-start">
+                            <div className="w-16 sm:w-24 sm:pl-4 flex flex-col justify-start items-start"></div>
+                            <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
+                              <div className="w-full flex flex-row justify-start items-center gap-2">
+                                <span className="text-muted-foreground">{t("resource.unused-resources")}</span>
+                                <span className="text-muted-foreground opacity-80">({unusedAttachments.length})</span>
+                              </div>
+                              {unusedAttachments.map((attachment) => {
+                                return (
+                                  <div key={attachment.name} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
+                                    <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border border-border overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
+                                      <AttachmentIcon attachment={attachment} strokeWidth={0.5} />
+                                    </div>
+                                    <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">
+                                      <p className="text-xs shrink text-muted-foreground truncate">{attachment.filename}</p>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    {nextPageToken && (
+                      <div className="w-full flex flex-row justify-center items-center mt-4">
+                        <Button variant="outline" size="sm" onClick={handleLoadMore} disabled={isLoadingMore}>
+                          {isLoadingMore ? t("resource.fetching-data") : t("memo.load-more")}
+                        </Button>
+                      </div>
                     )}
-                  </div>
+                  </>
                 )}
               </>
             )}
