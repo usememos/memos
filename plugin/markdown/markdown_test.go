@@ -382,14 +382,71 @@ func TestTruncateAtWord(t *testing.T) {
 			maxLength: 10,
 			expected:  "supercalif ...",
 		},
+		{
+			name:      "Chinese characters - no truncation",
+			input:     "这是一段中文测试文本",
+			maxLength: 50,
+			expected:  "这是一段中文测试文本",
+		},
+		{
+			name:      "Chinese characters - truncate at word boundary",
+			input:     "这是一段比较长的中文测试文本，用来验证截断功能是否正常工作",
+			maxLength: 20,
+			expected:  "这是一段比较长的中文测试文本，用来验证截 ...",
+		},
+		{
+			name:      "Chinese characters - truncate mid-sentence",
+			input:     "这是一段比较长的中文测试文本，用来验证截断功能是否正常工作",
+			maxLength: 15,
+			expected:  "这是一段比较长的中文测试文本， ...",
+		},
+		{
+			name:      "Mixed English and Chinese",
+			input:     "This is a test 这是一个测试 with mixed content",
+			maxLength: 20,
+			expected:  "This is a test ...",
+		},
+		{
+			name:      "Japanese characters",
+			input:     "日本語のテキストを切り詰めるテスト",
+			maxLength: 10,
+			expected:  "日本語のテキストを切 ...",
+		},
+		{
+			name:      "Korean characters",
+			input:     "한국어 텍스트 잘라내기 테스트입니다",
+			maxLength: 10,
+			expected:  "한국어 텍스트 ...",
+		},
+		{
+			name:      "Emoji characters",
+			input:     "Hello 👋 World 🌍 with emoji 😊",
+			maxLength: 15,
+			expected:  "Hello 👋 World ...",
+		},
+		{
+			name:      "UTF-8 boundary test - exactly at character",
+			input:     "测试",
+			maxLength: 2,
+			expected:  "测试",
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := truncateAtWord(tt.input, tt.maxLength)
 			assert.Equal(t, tt.expected, result)
+			// Verify result is always valid UTF-8
+			assert.True(t, isValidUTF8(result), "Result should be valid UTF-8: %q", result)
 		})
 	}
+}
+
+// isValidUTF8 checks if a string contains valid UTF-8 encoding.
+func isValidUTF8(s string) bool {
+	// Try to convert to runes and back - invalid UTF-8 will cause issues
+	runes := []rune(s)
+	return string(runes) == s
 }
 
 // Benchmark tests.
