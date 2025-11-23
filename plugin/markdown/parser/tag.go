@@ -1,11 +1,19 @@
 package parser
 
 import (
+	"unicode"
+	"unicode/utf8"
+
 	gast "github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/text"
 
 	mast "github.com/usememos/memos/plugin/markdown/ast"
+)
+
+const (
+	// MaxTagLength defines the maximum number of runes allowed in a tag
+	MaxTagLength = 100
 )
 
 type tagParser struct{}
@@ -20,7 +28,42 @@ func (*tagParser) Trigger() []byte {
 	return []byte{'#'}
 }
 
-// Parse parses #tag syntax.
+// isValidTagRune checks if a Unicode rune is valid in a tag.
+// Uses Unicode categories for proper international character support.
+func isValidTagRune(r rune) bool {
+	// Allow Unicode letters (any script: Latin, CJK, Arabic, Cyrillic, etc.)
+	if unicode.IsLetter(r) {
+		return true
+	}
+
+	// Allow Unicode digits
+	if unicode.IsNumber(r) {
+		return true
+	}
+
+	// Allow emoji and symbols (So category: Symbol, Other)
+	// This includes emoji, which are essential for social media-style tagging
+	if unicode.IsSymbol(r) {
+		return true
+	}
+
+	// Allow specific ASCII symbols for tag structure
+	// Underscore: word separation (snake_case)
+	// Hyphen: word separation (kebab-case)
+	// Forward slash: hierarchical tags (category/subcategory)
+	if r == '_' || r == '-' || r == '/' {
+		return true
+	}
+
+	return false
+}
+
+// Parse parses #tag syntax using Unicode-aware validation.
+// Tags support international characters and follow these rules:
+//   - Must start with # followed by valid tag characters
+//   - Valid characters: Unicode letters, Unicode digits, underscore (_), hyphen (-), forward slash (/)
+//   - Maximum length: 100 runes (Unicode characters)
+//   - Stops at: whitespace, punctuation, or other invalid characters
 func (*tagParser) Parse(_ gast.Node, block text.Reader, _ parser.Context) gast.Node {
 	line, _ := block.PeekLine()
 
@@ -44,86 +87,47 @@ func (*tagParser) Parse(_ gast.Node, block text.Reader, _ parser.Context) gast.N
 		return nil
 	}
 
-	// Scan tag characters
-	// Tags include Unicode letters, digits, underscore, hyphen, forward slash
-	// Stop at: whitespace, punctuation (except - _ /)
-	// This follows the Twitter/social media standard for hashtag parsing
-	tagEnd := 1 // Start after #
-	for tagEnd < len(line) {
-		c := line[tagEnd]
+	// Parse tag using UTF-8 aware rune iteration
+	tagStart := 1
+	pos := tagStart
+	runeCount := 0
 
-		// ASCII fast path for common characters
-		if (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
-			(c >= '0' && c <= '9') || c == '_' || c == '-' || c == '/' {
-			tagEnd++
-			continue
-		}
+	for pos < len(line) {
+		r, size := utf8.DecodeRune(line[pos:])
 
-		// Stop at whitespace
-		if c == ' ' || c == '\t' || c == '\n' || c == '\r' {
+		// Stop at invalid UTF-8
+		if r == utf8.RuneError && size == 1 {
 			break
 		}
 
-		// Stop at common ASCII punctuation
-		if c == '.' || c == ',' || c == ';' || c == ':' ||
-			c == '!' || c == '?' || c == '(' || c == ')' ||
-			c == '[' || c == ']' || c == '{' || c == '}' ||
-			c == '<' || c == '>' || c == '"' || c == '\'' ||
-			c == '`' || c == '|' || c == '\\' || c == '@' ||
-			c == '&' || c == '*' || c == '+' || c == '=' ||
-			c == '^' || c == '%' || c == '$' || c == '~' || c == '#' {
+		// Validate character using Unicode categories
+		if !isValidTagRune(r) {
 			break
 		}
 
-		// For UTF-8 multibyte sequences, check for Unicode punctuation
-		// U+3000 (IDEOGRAPHIC SPACE) - treat as space
-		// U+3001-U+303F - CJK punctuation
-		// U+FF00-U+FFEF - Fullwidth punctuation
-		if c >= 0x80 && tagEnd+2 < len(line) {
-			b1, b2, b3 := line[tagEnd], line[tagEnd+1], line[tagEnd+2]
-
-			// U+3000 IDEOGRAPHIC SPACE (E3 80 80)
-			if b1 == 0xE3 && b2 == 0x80 && b3 == 0x80 {
-				break
-			}
-
-			// U+3001-U+303F CJK punctuation (E3 80 81 to E3 80 BF)
-			if b1 == 0xE3 && b2 == 0x80 && b3 >= 0x81 && b3 <= 0xBF {
-				break
-			}
-
-			// Common fullwidth punctuation: ！？，。；：（）
-			// U+FF01 ！ (EF BC 81), U+FF1F ？ (EF BC 9F)
-			// U+FF0C ， (EF BC 8C), U+FF0E 。 (EF BC 8E)
-			// U+FF1A ： (EF BC 9A), U+FF1B ； (EF BC 9B)
-			// U+FF08 （ (EF BC 88), U+FF09 ） (EF BC 89)
-			if b1 == 0xEF && b2 == 0xBC {
-				if b3 == 0x81 || b3 == 0x88 || b3 == 0x89 ||
-					b3 == 0x8C || b3 == 0x8E ||
-					b3 == 0x9A || b3 == 0x9B || b3 == 0x9F {
-					break
-				}
-			}
+		// Enforce max length (by rune count, not byte count)
+		runeCount++
+		if runeCount > MaxTagLength {
+			break
 		}
 
-		// Allow Unicode letters and other characters
-		tagEnd++
+		pos += size
 	}
 
 	// Must have at least one character after #
-	if tagEnd == 1 {
+	if pos <= tagStart {
 		return nil
 	}
 
 	// Extract tag (without #)
-	tagName := line[1:tagEnd]
+	tagName := line[tagStart:pos]
 
 	// Make a copy of the tag name
 	tagCopy := make([]byte, len(tagName))
 	copy(tagCopy, tagName)
 
 	// Advance reader
-	block.Advance(tagEnd)
+	block.Advance(pos)
 
 	// Create node
 	node := &mast.TagNode{
