@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	// MaxTagLength defines the maximum number of runes allowed in a tag
+	// MaxTagLength defines the maximum number of runes allowed in a tag.
 	MaxTagLength = 100
 )
 
