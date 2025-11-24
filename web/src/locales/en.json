@@ -231,6 +231,8 @@
     "delete-selected-resources": "Delete Selected Resources",
     "delete-all-unused": "Delete all unused",
     "delete-all-unused-confirm": "Are you sure you want to delete all unused resources? THIS ACTION IS IRREVERSIBLE",
+    "delete-all-unused-success": "Resources deleted successfully",
+    "delete-all-unused-error": "Failed to delete unused resources",
     "fetching-data": "Fetching data…",
     "file-drag-drop-prompt": "Drag and drop your file here to upload file",
     "linked-amount": "Linked amount",

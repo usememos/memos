@@ -1,19 +1,22 @@
 import dayjs from "dayjs";
 import { includes } from "lodash-es";
-import { PaperclipIcon, SearchIcon } from "lucide-react";
+import { PaperclipIcon, SearchIcon, Trash } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import AttachmentIcon from "@/components/AttachmentIcon";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import Empty from "@/components/Empty";
 import MobileHeader from "@/components/MobileHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { attachmentServiceClient } from "@/grpcweb";
+import useDialog from "@/hooks/useDialog";
 import useLoading from "@/hooks/useLoading";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import i18n from "@/i18n";
+import { attachmentStore } from "@/store";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { useTranslate } from "@/utils/i18n";
 
@@ -39,6 +42,7 @@ const Attachments = observer(() => {
   const t = useTranslate();
   const { md } = useResponsiveWidth();
   const loadingState = useLoading();
+  const deleteUnusedAttachmentsDialog = useDialog();
   const [state, setState] = useState<State>({
     searchQuery: "",
   });
@@ -85,6 +89,37 @@ const Attachments = observer(() => {
       toast.error("Failed to load more attachments. Please try again.");
     } finally {
       setIsLoadingMore(false);
+    }
+  };
+
+  const handleRefetch = async () => {
+    try {
+      loadingState.setLoading();
+      const { attachments: fetchedAttachments, nextPageToken } = await attachmentServiceClient.listAttachments({
+        pageSize: 50,
+      });
+      setAttachments(fetchedAttachments);
+      setNextPageToken(nextPageToken ?? "");
+      loadingState.setFinish();
+    } catch (error) {
+      console.error(error);
+      loadingState.setError();
+    }
+  };
+
+  const handleDeleteUnusedAttachments = async () => {
+    try {
+      await Promise.all(
+        unusedAttachments.map((attachment) => {
+          return attachmentStore.deleteAttachment(attachment.name);
+        }),
+      );
+      toast.success(t("resource.delete-all-unused-success"));
+    } catch (error) {
+      console.error(error);
+      toast.error(t("resource.delete-all-unused-error"));
+    } finally {
+      void handleRefetch();
     }
   };
 
@@ -158,9 +193,17 @@ const Attachments = observer(() => {
                           <div className="w-full flex flex-row justify-start items-start">
                             <div className="w-16 sm:w-24 sm:pl-4 flex flex-col justify-start items-start"></div>
                             <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
-                              <div className="w-full flex flex-row justify-start items-center gap-2">
-                                <span className="text-muted-foreground">{t("resource.unused-resources")}</span>
-                                <span className="text-muted-foreground opacity-80">({unusedAttachments.length})</span>
+                              <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                <div className="flex flex-row items-center gap-2">
+                                  <span className="text-muted-foreground">{t("resource.unused-resources")}</span>
+                                  <span className="text-muted-foreground opacity-80">({unusedAttachments.length})</span>
+                                </div>
+                                <div>
+                                  <Button variant="destructive" onClick={() => deleteUnusedAttachmentsDialog.open()} size="sm">
+                                    <Trash />
+                                    {t("resource.delete-all-unused")}
+                                  </Button>
+                                </div>
                               </div>
                               {unusedAttachments.map((attachment) => {
                                 return (
@@ -193,6 +236,16 @@ const Attachments = observer(() => {
           </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={deleteUnusedAttachmentsDialog.isOpen}
+        onOpenChange={deleteUnusedAttachmentsDialog.setOpen}
+        title={t("resource.delete-all-unused-confirm")}
+        confirmLabel={t("common.delete")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={handleDeleteUnusedAttachments}
+        confirmVariant="destructive"
+      />
     </section>
   );
 });
