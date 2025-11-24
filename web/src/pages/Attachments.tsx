@@ -1,9 +1,9 @@
 import dayjs from "dayjs";
-import { includes } from "lodash-es";
-import { PaperclipIcon, SearchIcon, Trash } from "lucide-react";
+import { ExternalLinkIcon, PaperclipIcon, SearchIcon, Trash } from "lucide-react";
 import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
+import { Link } from "react-router-dom";
 import AttachmentIcon from "@/components/AttachmentIcon";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Empty from "@/components/Empty";
@@ -17,47 +17,86 @@ import useLoading from "@/hooks/useLoading";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import i18n from "@/i18n";
 import { attachmentStore } from "@/store";
-import { Attachment } from "@/types/proto/api/v1/attachment_service";
+import type { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { useTranslate } from "@/utils/i18n";
 
-function groupAttachmentsByDate(attachments: Attachment[]) {
+const PAGE_SIZE = 50;
+
+/**
+ * Groups attachments by month for organized display
+ */
+const groupAttachmentsByDate = (attachments: Attachment[]): Map<string, Attachment[]> => {
   const grouped = new Map<string, Attachment[]>();
-  attachments
-    .sort((a, b) => dayjs(b.createTime).unix() - dayjs(a.createTime).unix())
-    .forEach((item) => {
-      const monthStr = dayjs(item.createTime).format("YYYY-MM");
-      if (!grouped.has(monthStr)) {
-        grouped.set(monthStr, []);
-      }
-      grouped.get(monthStr)?.push(item);
-    });
+  const sorted = [...attachments].sort((a, b) => dayjs(b.createTime).unix() - dayjs(a.createTime).unix());
+
+  for (const attachment of sorted) {
+    const monthKey = dayjs(attachment.createTime).format("YYYY-MM");
+    const group = grouped.get(monthKey) ?? [];
+    group.push(attachment);
+    grouped.set(monthKey, group);
+  }
+
   return grouped;
+};
+
+/**
+ * Filters attachments based on search query
+ */
+const filterAttachments = (attachments: Attachment[], searchQuery: string): Attachment[] => {
+  if (!searchQuery.trim()) return attachments;
+  const query = searchQuery.toLowerCase();
+  return attachments.filter((attachment) => attachment.filename.toLowerCase().includes(query));
+};
+
+/**
+ * Individual attachment item component
+ */
+interface AttachmentItemProps {
+  attachment: Attachment;
 }
 
-interface State {
-  searchQuery: string;
-}
+const AttachmentItem = ({ attachment }: AttachmentItemProps) => (
+  <div className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
+    <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border border-border overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
+      <AttachmentIcon attachment={attachment} strokeWidth={0.5} />
+    </div>
+    <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">
+      <p className="text-xs shrink text-muted-foreground truncate">{attachment.filename}</p>
+      {attachment.memo && (
+        <Link to={`/${attachment.memo}`} className="text-primary hover:opacity-80 transition-opacity shrink-0 ml-1" aria-label="View memo">
+          <ExternalLinkIcon className="w-3 h-3" />
+        </Link>
+      )}
+    </div>
+  </div>
+);
 
 const Attachments = observer(() => {
   const t = useTranslate();
   const { md } = useResponsiveWidth();
   const loadingState = useLoading();
   const deleteUnusedAttachmentsDialog = useDialog();
-  const [state, setState] = useState<State>({
-    searchQuery: "",
-  });
+
+  const [searchQuery, setSearchQuery] = useState("");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [nextPageToken, setNextPageToken] = useState("");
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const filteredAttachments = attachments.filter((attachment) => includes(attachment.filename, state.searchQuery));
-  const groupedAttachments = groupAttachmentsByDate(filteredAttachments.filter((attachment) => attachment.memo));
-  const unusedAttachments = filteredAttachments.filter((attachment) => !attachment.memo);
 
+  // Memoized computed values
+  const filteredAttachments = useMemo(() => filterAttachments(attachments, searchQuery), [attachments, searchQuery]);
+
+  const usedAttachments = useMemo(() => filteredAttachments.filter((attachment) => attachment.memo), [filteredAttachments]);
+
+  const unusedAttachments = useMemo(() => filteredAttachments.filter((attachment) => !attachment.memo), [filteredAttachments]);
+
+  const groupedAttachments = useMemo(() => groupAttachmentsByDate(usedAttachments), [usedAttachments]);
+
+  // Fetch initial attachments
   useEffect(() => {
     const fetchInitialAttachments = async () => {
       try {
         const { attachments: fetchedAttachments, nextPageToken } = await attachmentServiceClient.listAttachments({
-          pageSize: 50,
+          pageSize: PAGE_SIZE,
         });
         setAttachments(fetchedAttachments);
         setNextPageToken(nextPageToken ?? "");
@@ -70,19 +109,20 @@ const Attachments = observer(() => {
     };
 
     fetchInitialAttachments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleLoadMore = async () => {
-    if (!nextPageToken || isLoadingMore) {
-      return;
-    }
+  // Load more attachments with pagination
+  const handleLoadMore = useCallback(async () => {
+    if (!nextPageToken || isLoadingMore) return;
+
     setIsLoadingMore(true);
     try {
       const { attachments: fetchedAttachments, nextPageToken: newPageToken } = await attachmentServiceClient.listAttachments({
-        pageSize: 50,
+        pageSize: PAGE_SIZE,
         pageToken: nextPageToken,
       });
-      setAttachments((prevAttachments) => [...prevAttachments, ...fetchedAttachments]);
+      setAttachments((prev) => [...prev, ...fetchedAttachments]);
       setNextPageToken(newPageToken ?? "");
     } catch (error) {
       console.error("Failed to load more attachments:", error);
@@ -90,38 +130,42 @@ const Attachments = observer(() => {
     } finally {
       setIsLoadingMore(false);
     }
-  };
+  }, [nextPageToken, isLoadingMore]);
 
-  const handleRefetch = async () => {
+  // Refetch all attachments from the beginning
+  const handleRefetch = useCallback(async () => {
     try {
       loadingState.setLoading();
       const { attachments: fetchedAttachments, nextPageToken } = await attachmentServiceClient.listAttachments({
-        pageSize: 50,
+        pageSize: PAGE_SIZE,
       });
       setAttachments(fetchedAttachments);
       setNextPageToken(nextPageToken ?? "");
       loadingState.setFinish();
     } catch (error) {
-      console.error(error);
+      console.error("Failed to refetch attachments:", error);
       loadingState.setError();
+      toast.error("Failed to refresh attachments. Please try again.");
     }
-  };
+  }, [loadingState]);
 
-  const handleDeleteUnusedAttachments = async () => {
+  // Delete all unused attachments
+  const handleDeleteUnusedAttachments = useCallback(async () => {
     try {
-      await Promise.all(
-        unusedAttachments.map((attachment) => {
-          return attachmentStore.deleteAttachment(attachment.name);
-        }),
-      );
+      await Promise.all(unusedAttachments.map((attachment) => attachmentStore.deleteAttachment(attachment.name)));
       toast.success(t("resource.delete-all-unused-success"));
     } catch (error) {
-      console.error(error);
+      console.error("Failed to delete unused attachments:", error);
       toast.error(t("resource.delete-all-unused-error"));
     } finally {
-      void handleRefetch();
+      await handleRefetch();
     }
-  };
+  }, [unusedAttachments, t, handleRefetch]);
+
+  // Handle search input change
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  }, []);
 
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
@@ -136,12 +180,7 @@ const Attachments = observer(() => {
             <div>
               <div className="relative max-w-32">
                 <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  className="pl-9"
-                  placeholder={t("common.search")}
-                  value={state.searchQuery}
-                  onChange={(e) => setState({ ...state, searchQuery: e.target.value })}
-                />
+                <Input className="pl-9" placeholder={t("common.search")} value={searchQuery} onChange={handleSearchChange} />
               </div>
             </div>
           </div>
@@ -170,18 +209,9 @@ const Attachments = observer(() => {
                               </span>
                             </div>
                             <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
-                              {attachments.map((attachment) => {
-                                return (
-                                  <div key={attachment.name} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
-                                    <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border border-border overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
-                                      <AttachmentIcon attachment={attachment} strokeWidth={0.5} />
-                                    </div>
-                                    <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">
-                                      <p className="text-xs shrink text-muted-foreground truncate">{attachment.filename}</p>
-                                    </div>
-                                  </div>
-                                );
-                              })}
+                              {attachments.map((attachment) => (
+                                <AttachmentItem key={attachment.name} attachment={attachment} />
+                              ))}
                             </div>
                           </div>
                         );
@@ -205,18 +235,9 @@ const Attachments = observer(() => {
                                   </Button>
                                 </div>
                               </div>
-                              {unusedAttachments.map((attachment) => {
-                                return (
-                                  <div key={attachment.name} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
-                                    <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border border-border overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
-                                      <AttachmentIcon attachment={attachment} strokeWidth={0.5} />
-                                    </div>
-                                    <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">
-                                      <p className="text-xs shrink text-muted-foreground truncate">{attachment.filename}</p>
-                                    </div>
-                                  </div>
-                                );
-                              })}
+                              {unusedAttachments.map((attachment) => (
+                                <AttachmentItem key={attachment.name} attachment={attachment} />
+                              ))}
                             </div>
                           </div>
                         </>
