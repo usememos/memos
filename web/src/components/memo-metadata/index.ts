@@ -13,4 +13,5 @@ export { default as RelationCard } from "./RelationCard";
 export { default as RelationList } from "./RelationList";
 
 // Types
-export type { BaseMetadataProps, DisplayMode } from "./types";
+export type { AttachmentItem, BaseMetadataProps, DisplayMode, FileCategory, LocalFile } from "./types";
+export { attachmentToItem, fileToItem, filterByCategory, separateMediaAndDocs, toAttachmentItems } from "./types";

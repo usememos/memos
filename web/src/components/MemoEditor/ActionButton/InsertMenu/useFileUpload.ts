@@ -1,43 +1,24 @@
-import mime from "mime";
 import { useRef, useState } from "react";
-import { toast } from "react-hot-toast";
-import { attachmentStore } from "@/store";
-import { Attachment } from "@/types/proto/api/v1/attachment_service";
+import type { LocalFile } from "@/components/memo-metadata";
 
-export const useFileUpload = (onUploadComplete: (attachments: Attachment[]) => void) => {
+export const useFileUpload = (onFilesSelected: (localFiles: LocalFile[]) => void) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploadingFlag, setUploadingFlag] = useState(false);
+  const [selectingFlag, setSelectingFlag] = useState(false);
 
-  const handleFileInputChange = async () => {
-    if (!fileInputRef.current?.files || fileInputRef.current.files.length === 0 || uploadingFlag) {
+  const handleFileInputChange = (event?: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(fileInputRef.current?.files || event?.target.files || []);
+    if (files.length === 0 || selectingFlag) {
       return;
     }
-
-    setUploadingFlag(true);
-    const createdAttachmentList: Attachment[] = [];
-
-    try {
-      for (const file of fileInputRef.current.files) {
-        const { name: filename, size, type } = file;
-        const buffer = new Uint8Array(await file.arrayBuffer());
-        const attachment = await attachmentStore.createAttachment({
-          attachment: Attachment.fromPartial({
-            filename,
-            size,
-            type: type || mime.getType(filename) || "text/plain",
-            content: buffer,
-          }),
-          attachmentId: "",
-        });
-        createdAttachmentList.push(attachment);
-      }
-      onUploadComplete(createdAttachmentList);
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.details);
-    } finally {
-      setUploadingFlag(false);
-    }
+    setSelectingFlag(true);
+    const localFiles: LocalFile[] = files.map((file) => ({
+      file,
+      previewUrl: URL.createObjectURL(file),
+    }));
+    onFilesSelected(localFiles);
+    setSelectingFlag(false);
+    // Optionally clear input value to allow re-selecting the same file
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleUploadClick = () => {
@@ -46,7 +27,7 @@ export const useFileUpload = (onUploadComplete: (attachments: Attachment[]) => v
 
   return {
     fileInputRef,
-    uploadingFlag,
+    selectingFlag,
     handleFileInputChange,
     handleUploadClick,
   };

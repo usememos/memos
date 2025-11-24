@@ -3,6 +3,7 @@ import { uniqBy } from "lodash-es";
 import { FileIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useContext, useState } from "react";
+import type { LocalFile } from "@/components/memo-metadata";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,8 +14,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Attachment } from "@/types/proto/api/v1/attachment_service";
-import { Location, MemoRelation } from "@/types/proto/api/v1/memo_service";
+import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { MemoEditorContext } from "../types";
 import { LinkMemoDialog } from "./InsertMenu/LinkMemoDialog";
@@ -37,8 +37,10 @@ const InsertMenu = observer((props: Props) => {
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
 
-  const { fileInputRef, uploadingFlag, handleFileInputChange, handleUploadClick } = useFileUpload((attachments: Attachment[]) => {
-    context.setAttachmentList([...context.attachmentList, ...attachments]);
+  const { fileInputRef, selectingFlag, handleFileInputChange, handleUploadClick } = useFileUpload((newFiles: LocalFile[]) => {
+    if (context.addLocalFiles) {
+      context.addLocalFiles(newFiles);
+    }
   });
 
   const linkMemo = useLinkMemo({
@@ -53,7 +55,7 @@ const InsertMenu = observer((props: Props) => {
 
   const location = useLocation(props.location);
 
-  const isUploading = uploadingFlag || props.isUploading;
+  const isUploading = selectingFlag || props.isUploading;
 
   const handleLocationClick = () => {
     setLocationDialogOpen(true);

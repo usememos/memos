@@ -20,6 +20,7 @@ import { Location, Memo, MemoRelation, MemoRelation_Type, Visibility } from "@/t
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
 import DateTimeInput from "../DateTimeInput";
+import type { LocalFile } from "../memo-metadata";
 import { AttachmentList, LocationDisplay, RelationList } from "../memo-metadata";
 import InsertMenu from "./ActionButton/InsertMenu";
 import VisibilitySelector from "./ActionButton/VisibilitySelector";
@@ -82,6 +83,14 @@ interface State {
 }
 
 const MemoEditor = observer((props: Props) => {
+  // Local files for preview and upload
+  const [localFiles, setLocalFiles] = useState<LocalFile[]>([]);
+  // Clean up blob URLs on unmount
+  useEffect(() => {
+    return () => {
+      localFiles.forEach(({ previewUrl }) => URL.revokeObjectURL(previewUrl));
+    };
+  }, [localFiles]);
   const { className, cacheKey, memoName, parentMemoName, autoFocus, onConfirm, onCancel } = props;
   const t = useTranslate();
   const { i18n } = useTranslation();
@@ -252,6 +261,20 @@ const MemoEditor = observer((props: Props) => {
     }));
   };
 
+  // Add local files from InsertMenu
+  const handleAddLocalFiles = (newFiles: LocalFile[]) => {
+    setLocalFiles((prev) => [...prev, ...newFiles]);
+  };
+
+  // Remove a local file (e.g. on user remove)
+  const handleRemoveLocalFile = (previewUrl: string) => {
+    setLocalFiles((prev) => {
+      const toRemove = prev.find((f) => f.previewUrl === previewUrl);
+      if (toRemove) URL.revokeObjectURL(toRemove.previewUrl);
+      return prev.filter((f) => f.previewUrl !== previewUrl);
+    });
+  };
+
   const handleSetRelationList = (relationList: MemoRelation[]) => {
     setState((prevState) => ({
       ...prevState,
@@ -259,69 +282,14 @@ const MemoEditor = observer((props: Props) => {
     }));
   };
 
-  const handleUploadResource = async (file: File) => {
-    setState((state) => {
-      return {
-        ...state,
-        isUploadingAttachment: true,
-      };
-    });
-
-    const { name: filename, size, type } = file;
-    const buffer = new Uint8Array(await file.arrayBuffer());
-
-    try {
-      const attachment = await attachmentStore.createAttachment({
-        attachment: Attachment.fromPartial({
-          filename,
-          size,
-          type,
-          content: buffer,
-        }),
-        attachmentId: "",
-      });
-      setState((state) => {
-        return {
-          ...state,
-          isUploadingAttachment: false,
-        };
-      });
-      return attachment;
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.details);
-      setState((state) => {
-        return {
-          ...state,
-          isUploadingAttachment: false,
-        };
-      });
-    }
-  };
-
-  const uploadMultiFiles = async (files: FileList) => {
-    const uploadedAttachmentList: Attachment[] = [];
-    for (const file of files) {
-      const attachment = await handleUploadResource(file);
-      if (attachment) {
-        uploadedAttachmentList.push(attachment);
-        if (memoName) {
-          await attachmentStore.updateAttachment({
-            attachment: Attachment.fromPartial({
-              name: attachment.name,
-              memo: memoName,
-            }),
-            updateMask: ["memo"],
-          });
-        }
-      }
-    }
-    if (uploadedAttachmentList.length > 0) {
-      setState((prevState) => ({
-        ...prevState,
-        attachmentList: [...prevState.attachmentList, ...uploadedAttachmentList],
-      }));
-    }
+  // Add files to local state for preview (no upload yet)
+  const addFilesToLocal = (files: FileList | File[]) => {
+    const fileArray = Array.from(files);
+    const newLocalFiles: LocalFile[] = fileArray.map((file) => ({
+      file,
+      previewUrl: URL.createObjectURL(file),
+    }));
+    setLocalFiles((prev) => [...prev, ...newLocalFiles]);
   };
 
   const handleDropEvent = async (event: React.DragEvent) => {
@@ -332,7 +300,7 @@ const MemoEditor = observer((props: Props) => {
         isDraggingFile: false,
       }));
 
-      await uploadMultiFiles(event.dataTransfer.files);
+      addFilesToLocal(event.dataTransfer.files);
     }
   };
 
@@ -360,7 +328,7 @@ const MemoEditor = observer((props: Props) => {
   const handlePasteEvent = async (event: React.ClipboardEvent) => {
     if (event.clipboardData && event.clipboardData.files.length > 0) {
       event.preventDefault();
-      await uploadMultiFiles(event.clipboardData.files);
+      addFilesToLocal(event.clipboardData.files);
     } else if (
       editorRef.current != null &&
       editorRef.current.getSelectedContent().length != 0 &&
@@ -385,15 +353,35 @@ const MemoEditor = observer((props: Props) => {
       return;
     }
 
-    setState((state) => {
-      return {
-        ...state,
-        isRequesting: true,
-      };
-    });
+    setState((state) => ({ ...state, isRequesting: true }));
     const content = editorRef.current?.getContent() ?? "";
     try {
-      // Update memo.
+      // 1. Upload all local files and create attachments
+      const newAttachments: Attachment[] = [];
+      if (localFiles.length > 0) {
+        setState((state) => ({ ...state, isUploadingAttachment: true }));
+        try {
+          for (const { file } of localFiles) {
+            const buffer = new Uint8Array(await file.arrayBuffer());
+            const attachment = await attachmentStore.createAttachment({
+              attachment: Attachment.fromPartial({
+                filename: file.name,
+                size: file.size,
+                type: file.type,
+                content: buffer,
+              }),
+              attachmentId: "",
+            });
+            newAttachments.push(attachment);
+          }
+        } finally {
+          // Always reset upload state, even on error
+          setState((state) => ({ ...state, isUploadingAttachment: false }));
+        }
+      }
+      // 2. Update attachmentList with new attachments
+      const allAttachments = [...state.attachmentList, ...newAttachments];
+      // 3. Save memo (create or update)
       if (memoName) {
         const prevMemo = await memoStore.getOrFetchMemoByName(memoName);
         if (prevMemo) {
@@ -410,9 +398,9 @@ const MemoEditor = observer((props: Props) => {
             updateMask.add("visibility");
             memoPatch.visibility = state.memoVisibility;
           }
-          if (!isEqual(state.attachmentList, prevMemo.attachments)) {
+          if (!isEqual(allAttachments, prevMemo.attachments)) {
             updateMask.add("attachments");
-            memoPatch.attachments = state.attachmentList;
+            memoPatch.attachments = allAttachments;
           }
           if (!isEqual(state.relationList, prevMemo.relations)) {
             updateMask.add("relations");
@@ -452,7 +440,7 @@ const MemoEditor = observer((props: Props) => {
               memo: Memo.fromPartial({
                 content,
                 visibility: state.memoVisibility,
-                attachments: state.attachmentList,
+                attachments: allAttachments,
                 relations: state.relationList,
                 location: state.location,
               }),
@@ -476,6 +464,9 @@ const MemoEditor = observer((props: Props) => {
         }
       }
       editorRef.current?.setContent("");
+      // Clean up local files after successful save
+      localFiles.forEach(({ previewUrl }) => URL.revokeObjectURL(previewUrl));
+      setLocalFiles([]);
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);
@@ -494,14 +485,6 @@ const MemoEditor = observer((props: Props) => {
     });
   };
 
-  const handleCancelBtnClick = () => {
-    localStorage.removeItem(contentCacheKey);
-
-    if (onCancel) {
-      onCancel();
-    }
-  };
-
   const handleEditorFocus = () => {
     editorRef.current?.focus();
   };
@@ -518,19 +501,18 @@ const MemoEditor = observer((props: Props) => {
     [i18n.language, state.isFocusMode],
   );
 
-  const allowSave = (hasContent || state.attachmentList.length > 0) && !state.isUploadingAttachment && !state.isRequesting;
+  const allowSave =
+    (hasContent || state.attachmentList.length > 0 || localFiles.length > 0) && !state.isUploadingAttachment && !state.isRequesting;
 
   return (
     <MemoEditorContext.Provider
       value={{
         attachmentList: state.attachmentList,
         relationList: state.relationList,
-        setAttachmentList: (attachmentList: Attachment[]) => {
-          setState((prevState) => ({
-            ...prevState,
-            attachmentList,
-          }));
-        },
+        setAttachmentList: handleSetAttachmentList,
+        addLocalFiles: handleAddLocalFiles,
+        removeLocalFile: handleRemoveLocalFile,
+        localFiles,
         setRelationList: (relationList: MemoRelation[]) => {
           setState((prevState) => ({
             ...prevState,
@@ -584,7 +566,14 @@ const MemoEditor = observer((props: Props) => {
             }))
           }
         />
-        <AttachmentList mode="edit" attachments={state.attachmentList} onAttachmentsChange={handleSetAttachmentList} />
+        {/* Show attachments and pending files together */}
+        <AttachmentList
+          mode="edit"
+          attachments={state.attachmentList}
+          onAttachmentsChange={handleSetAttachmentList}
+          localFiles={localFiles}
+          onRemoveLocalFile={handleRemoveLocalFile}
+        />
         <RelationList mode="edit" relations={referenceRelations} onRelationsChange={handleSetRelationList} />
         <div className="relative w-full flex flex-row justify-between items-center pt-2 gap-2" onFocus={(e) => e.stopPropagation()}>
           <div className="flex flex-row justify-start items-center gap-1">
@@ -604,7 +593,15 @@ const MemoEditor = observer((props: Props) => {
             <VisibilitySelector value={state.memoVisibility} onChange={(visibility) => handleMemoVisibilityChange(visibility)} />
             <div className="flex flex-row justify-end gap-1">
               {props.onCancel && (
-                <Button variant="ghost" disabled={state.isRequesting} onClick={handleCancelBtnClick}>
+                <Button
+                  variant="ghost"
+                  disabled={state.isRequesting}
+                  onClick={() => {
+                    localFiles.forEach(({ previewUrl }) => URL.revokeObjectURL(previewUrl));
+                    setLocalFiles([]);
+                    if (props.onCancel) props.onCancel();
+                  }}
+                >
                   {t("common.cancel")}
                 </Button>
               )}

@@ -1,17 +1,20 @@
-import { closestCenter, DndContext, DragEndEvent, MouseSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { closestCenter, DndContext, type DragEndEvent, MouseSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useState } from "react";
-import { Attachment } from "@/types/proto/api/v1/attachment_service";
+import type { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import MemoAttachment from "../MemoAttachment";
 import SortableItem from "../MemoEditor/SortableItem";
 import PreviewImageDialog from "../PreviewImageDialog";
 import AttachmentCard from "./AttachmentCard";
-import { BaseMetadataProps } from "./types";
+import type { AttachmentItem, BaseMetadataProps, LocalFile } from "./types";
+import { separateMediaAndDocs, toAttachmentItems } from "./types";
 
 interface AttachmentListProps extends BaseMetadataProps {
   attachments: Attachment[];
   onAttachmentsChange?: (attachments: Attachment[]) => void;
+  localFiles?: LocalFile[];
+  onRemoveLocalFile?: (previewUrl: string) => void;
 }
 
 /**
@@ -21,13 +24,14 @@ interface AttachmentListProps extends BaseMetadataProps {
  * - Shows all attachments as sortable badges with thumbnails
  * - Supports drag-and-drop reordering
  * - Shows remove buttons
+ * - Shows pending files (not yet uploaded) with preview
  *
  * View mode:
  * - Separates media (images/videos) from other files
  * - Shows media in gallery layout with preview
  * - Shows other files as clickable cards
  */
-const AttachmentList = ({ attachments, mode, onAttachmentsChange }: AttachmentListProps) => {
+const AttachmentList = ({ attachments, mode, onAttachmentsChange, localFiles = [], onRemoveLocalFile }: AttachmentListProps) => {
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
   const [previewImage, setPreviewImage] = useState<{ open: boolean; urls: string[]; index: number }>({
     open: false,
@@ -59,26 +63,41 @@ const AttachmentList = ({ attachments, mode, onAttachmentsChange }: AttachmentLi
     setPreviewImage({ open: true, urls: imgUrls, index });
   };
 
-  // Editor mode: Show all attachments as sortable badges
+  // Editor mode: Display all items as compact badges with drag-and-drop
   if (mode === "edit") {
-    if (attachments.length === 0) {
+    if (attachments.length === 0 && localFiles.length === 0) {
       return null;
     }
 
+    const items = toAttachmentItems(attachments, localFiles);
+    // Only uploaded attachments support reordering (stable server IDs)
+    const sortableIds = attachments.map((a) => a.name);
+
+    const handleRemoveItem = (item: AttachmentItem) => {
+      if (item.isLocal) {
+        onRemoveLocalFile?.(item.id);
+      } else {
+        handleDeleteAttachment(item.id);
+      }
+    };
+
     return (
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={attachments.map((attachment) => attachment.name)} strategy={verticalListSortingStrategy}>
+        <SortableContext items={sortableIds} strategy={verticalListSortingStrategy}>
           <div className="w-full flex flex-row justify-start flex-wrap gap-2 mt-2 max-h-[50vh] overflow-y-auto">
-            {attachments.map((attachment) => (
-              <div key={attachment.name}>
-                <SortableItem id={attachment.name} className="flex items-center gap-1.5 min-w-0">
-                  <AttachmentCard
-                    attachment={attachment}
-                    mode="edit"
-                    onRemove={() => handleDeleteAttachment(attachment.name)}
-                    showThumbnail={true}
-                  />
-                </SortableItem>
+            {items.map((item) => (
+              <div key={item.id}>
+                {/* Uploaded items are wrapped in SortableItem for drag-and-drop */}
+                {!item.isLocal ? (
+                  <SortableItem id={item.id} className="flex items-center gap-1.5 min-w-0">
+                    <AttachmentCard item={item} mode="edit" onRemove={() => handleRemoveItem(item)} showThumbnail />
+                  </SortableItem>
+                ) : (
+                  /* Local items render directly without sorting capability */
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <AttachmentCard item={item} mode="edit" onRemove={() => handleRemoveItem(item)} showThumbnail />
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -87,32 +106,22 @@ const AttachmentList = ({ attachments, mode, onAttachmentsChange }: AttachmentLi
     );
   }
 
-  // View mode: Separate media from other files
-  const mediaAttachments: Attachment[] = [];
-  const otherAttachments: Attachment[] = [];
-
-  attachments.forEach((attachment) => {
-    const type = getAttachmentType(attachment);
-    if (type === "image/*" || type === "video/*") {
-      mediaAttachments.push(attachment);
-    } else {
-      otherAttachments.push(attachment);
-    }
-  });
+  // View mode: Split items into media gallery and document list
+  const items = toAttachmentItems(attachments, []);
+  const { media: mediaItems, docs: docItems } = separateMediaAndDocs(items);
 
   return (
     <>
       {/* Media Gallery */}
-      {mediaAttachments.length > 0 && (
+      {mediaItems.length > 0 && (
         <div className="w-full flex flex-row justify-start overflow-auto gap-2">
-          {mediaAttachments.map((attachment) => (
-            <div key={attachment.name} className="max-w-[60%] w-fit flex flex-col justify-start items-start shrink-0">
+          {mediaItems.map((item) => (
+            <div key={item.id} className="max-w-[60%] w-fit flex flex-col justify-start items-start shrink-0">
               <AttachmentCard
-                attachment={attachment}
+                item={item}
                 mode="view"
                 onClick={() => {
-                  const attachmentUrl = getAttachmentUrl(attachment);
-                  handleImageClick(attachmentUrl, mediaAttachments);
+                  handleImageClick(item.sourceUrl, attachments);
                 }}
                 className="max-h-64 grow"
               />
@@ -121,12 +130,14 @@ const AttachmentList = ({ attachments, mode, onAttachmentsChange }: AttachmentLi
         </div>
       )}
 
-      {/* Other Files */}
-      {otherAttachments.length > 0 && (
+      {/* Document Files */}
+      {docItems.length > 0 && (
         <div className="w-full flex flex-row justify-start overflow-auto gap-2">
-          {otherAttachments.map((attachment) => (
-            <MemoAttachment key={attachment.name} attachment={attachment} />
-          ))}
+          {docItems.map((item) => {
+            // Find original attachment for MemoAttachment component
+            const attachment = attachments.find((a) => a.name === item.id);
+            return attachment ? <MemoAttachment key={item.id} attachment={attachment} /> : null;
+          })}
         </div>
       )}
 

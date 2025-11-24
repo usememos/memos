@@ -1,11 +1,10 @@
 import { FileIcon, XIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Attachment } from "@/types/proto/api/v1/attachment_service";
-import { getAttachmentThumbnailUrl, getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
-import { DisplayMode } from "./types";
+import type { AttachmentItem, DisplayMode } from "./types";
 
 interface AttachmentCardProps {
-  attachment: Attachment;
+  /** Unified attachment item (uploaded or local file) */
+  item: AttachmentItem;
   mode: DisplayMode;
   onRemove?: () => void;
   onClick?: () => void;
@@ -14,32 +13,32 @@ interface AttachmentCardProps {
 }
 
 /**
- * Shared attachment card component
- * Displays thumbnails for images in both modes, with size variations
+ * Unified attachment card component for all file types
+ * Renders differently based on mode (edit/view) and file category
  */
-const AttachmentCard = ({ attachment, mode, onRemove, onClick, className, showThumbnail = true }: AttachmentCardProps) => {
-  const type = getAttachmentType(attachment);
-  const attachmentUrl = getAttachmentUrl(attachment);
-  const attachmentThumbnailUrl = getAttachmentThumbnailUrl(attachment);
-  const isMedia = type === "image/*" || type === "video/*";
+const AttachmentCard = ({ item, mode, onRemove, onClick, className, showThumbnail = true }: AttachmentCardProps) => {
+  const { category, filename, thumbnailUrl, sourceUrl } = item;
+  const isMedia = category === "image" || category === "video";
 
-  // Editor mode - compact badge style with thumbnail
+  // Editor mode - compact badge style with optional thumbnail
   if (mode === "edit") {
     return (
       <div
         className={cn(
-          "relative inline-flex items-center gap-1.5 px-2 h-7 rounded-md border border-border bg-background text-secondary-foreground text-xs transition-colors hover:bg-accent",
+          "relative inline-flex items-center gap-1.5 px-2 h-7 rounded-md border text-secondary-foreground text-xs transition-colors",
+          "border-border bg-background hover:bg-accent",
           className,
         )}
       >
-        {showThumbnail && type === "image/*" ? (
-          <img src={attachmentThumbnailUrl} alt={attachment.filename} className="w-5 h-5 shrink-0 object-cover rounded" />
+        {showThumbnail && category === "image" && thumbnailUrl ? (
+          <img src={thumbnailUrl} alt={filename} className="w-5 h-5 shrink-0 object-cover rounded" />
         ) : (
           <FileIcon className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
         )}
-        <span className="truncate max-w-[160px]">{attachment.filename}</span>
+        <span className="truncate max-w-40">{filename}</span>
         {onRemove && (
           <button
+            type="button"
             className="shrink-0 rounded hover:bg-accent transition-colors p-0.5"
             onPointerDown={(e) => {
               e.stopPropagation();
@@ -60,26 +59,27 @@ const AttachmentCard = ({ attachment, mode, onRemove, onClick, className, showTh
     );
   }
 
-  // View mode - media gets special treatment
+  // View mode - specialized rendering for media
   if (isMedia) {
-    if (type === "image/*") {
+    if (category === "image") {
       return (
         <img
           className={cn("cursor-pointer h-full w-auto rounded-lg border border-border/60 object-contain transition-colors", className)}
-          src={attachmentThumbnailUrl}
+          src={thumbnailUrl}
           onError={(e) => {
             const target = e.target as HTMLImageElement;
+            // Fallback to source URL if thumbnail fails
             if (target.src.includes("?thumbnail=true")) {
-              target.src = attachmentUrl;
+              target.src = sourceUrl;
             }
           }}
           onClick={onClick}
           decoding="async"
           loading="lazy"
-          alt={attachment.filename}
+          alt={filename}
         />
       );
-    } else if (type === "video/*") {
+    } else if (category === "video") {
       return (
         <video
           className={cn(
@@ -88,7 +88,7 @@ const AttachmentCard = ({ attachment, mode, onRemove, onClick, className, showTh
           )}
           preload="metadata"
           crossOrigin="anonymous"
-          src={attachmentUrl}
+          src={sourceUrl}
           controls
         />
       );
