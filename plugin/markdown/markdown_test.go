@@ -382,6 +382,18 @@ func TestTruncateAtWord(t *testing.T) {
 			maxLength: 10,
 			expected:  "supercalif ...",
 		},
+		{
+			name:      "CJK characters without spaces",
+			input:     "这是一个很长的中文句子没有空格的情况下也要正确处理",
+			maxLength: 15,
+			expected:  "这是一个很长的中文句子没有空格 ...",
+		},
+		{
+			name:      "mixed CJK and Latin",
+			input:     "这是中文mixed with English文字",
+			maxLength: 10,
+			expected:  "这是中文mixed ...",
+		},
 	}
 
 	for _, tt := range tests {
