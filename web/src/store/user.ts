@@ -52,7 +52,8 @@ class LocalState {
     if (!this.currentUser) {
       return undefined;
     }
-    return this.userStatsByName[this.currentUser];
+    // Backend returns stats with key "users/{id}/stats"
+    return this.userStatsByName[`${this.currentUser}/stats`];
   }
 
   constructor() {
@@ -267,13 +268,14 @@ const userStore = (() => {
           }
         } else {
           const userStats = await userServiceClient.getUserStats({ name: user });
-          userStatsByName[user] = userStats;
+          userStatsByName[userStats.name] = userStats; // Use userStats.name as key for consistency
         }
         state.setPartial({
           userStatsByName: {
             ...state.userStatsByName,
             ...userStatsByName,
           },
+          statsStateId: uniqueId(), // Update state ID to trigger reactivity
         });
       } catch (error) {
         throw StoreError.wrap("FETCH_USER_STATS_FAILED", error);

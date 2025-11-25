@@ -1,17 +1,21 @@
 import { observer } from "mobx-react-lite";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { matchPath, Outlet, useLocation } from "react-router-dom";
 import type { MemoExplorerContext } from "@/components/MemoExplorer";
 import { MemoExplorer, MemoExplorerDrawer } from "@/components/MemoExplorer";
 import MobileHeader from "@/components/MobileHeader";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
+import { userStore } from "@/store";
 
 const MainLayout = observer(() => {
   const { md, lg } = useResponsiveWidth();
   const location = useLocation();
+  const currentUser = useCurrentUser();
+  const [profileUserName, setProfileUserName] = useState<string | undefined>();
 
   // Determine context based on current route
   const context: MemoExplorerContext = useMemo(() => {
@@ -22,8 +26,46 @@ const MainLayout = observer(() => {
     return "home"; // fallback
   }, [location.pathname]);
 
+  // Extract username from URL for profile context
+  useEffect(() => {
+    const match = matchPath("/u/:username", location.pathname);
+    if (match && context === "profile") {
+      const username = match.params.username;
+      if (username) {
+        // Fetch or get user to obtain user name (e.g., "users/123")
+        // Note: User stats will be fetched by useFilteredMemoStats
+        userStore
+          .getOrFetchUserByUsername(username)
+          .then((user) => {
+            setProfileUserName(user.name);
+          })
+          .catch((error) => {
+            console.error("Failed to fetch profile user:", error);
+            setProfileUserName(undefined);
+          });
+      }
+    } else {
+      setProfileUserName(undefined);
+    }
+  }, [location.pathname, context]);
+
+  // Determine which user name to use for stats
+  // - home: current user (uses backend user stats for normal memos)
+  // - profile: viewed user (uses backend user stats for normal memos)
+  // - archived: undefined (compute from cached archived memos, since user stats only includes normal memos)
+  // - explore: undefined (compute from cached memos)
+  const statsUserName = useMemo(() => {
+    if (context === "home") {
+      return currentUser?.name;
+    } else if (context === "profile") {
+      return profileUserName;
+    }
+    return undefined; // archived and explore contexts compute from cache
+  }, [context, currentUser, profileUserName]);
+
   // Fetch stats from memo store cache (populated by PagedMemoList)
-  const { statistics, tags } = useFilteredMemoStats();
+  // For user-scoped contexts, use backend user stats for tags (unaffected by filters)
+  const { statistics, tags } = useFilteredMemoStats({ userName: statsUserName });
 
   return (
     <section className="@container w-full min-h-full flex flex-col justify-start items-center">
