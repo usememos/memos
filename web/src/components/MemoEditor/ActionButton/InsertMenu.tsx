@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
+import { GEOCODING } from "../constants";
+import { useAbortController } from "../hooks/useAbortController";
 import { MemoEditorContext } from "../types";
 import { LinkMemoDialog } from "./InsertMenu/LinkMemoDialog";
 import { LocationDialog } from "./InsertMenu/LocationDialog";
@@ -36,6 +38,9 @@ const InsertMenu = observer((props: Props) => {
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
+
+  // Abort controller for canceling geocoding requests
+  const { abort: abortGeocoding, abortAndCreate: createGeocodingSignal } = useAbortController();
 
   const { fileInputRef, selectingFlag, handleFileInputChange, handleUploadClick } = useFileUpload((newFiles: LocalFile[]) => {
     if (context.addLocalFiles) {
@@ -82,35 +87,59 @@ const InsertMenu = observer((props: Props) => {
   };
 
   const handleLocationCancel = () => {
+    abortGeocoding(); // Cancel any pending geocoding request
     location.reset();
     setLocationDialogOpen(false);
+  };
+
+  /**
+   * Fetches human-readable address from coordinates using reverse geocoding
+   * Falls back to coordinate string if geocoding fails
+   */
+  const fetchReverseGeocode = async (position: LatLng, signal: AbortSignal): Promise<string> => {
+    const coordString = `${position.lat.toFixed(6)}, ${position.lng.toFixed(6)}`;
+    try {
+      const url = `${GEOCODING.endpoint}?lat=${position.lat}&lon=${position.lng}&format=${GEOCODING.format}`;
+      const response = await fetch(url, {
+        headers: {
+          "User-Agent": GEOCODING.userAgent,
+          Accept: "application/json",
+        },
+        signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data?.display_name || coordString;
+    } catch (error) {
+      // Silently return coordinates for abort errors
+      if (error instanceof Error && error.name === "AbortError") {
+        throw error; // Re-throw to handle in caller
+      }
+      console.error("Failed to fetch reverse geocoding data:", error);
+      return coordString;
+    }
   };
 
   const handlePositionChange = (position: LatLng) => {
     location.handlePositionChange(position);
 
-    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${position.lat}&lon=${position.lng}&format=json`, {
-      headers: {
-        "User-Agent": "Memos/1.0 (https://github.com/usememos/memos)",
-        Accept: "application/json",
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        if (data?.display_name) {
-          location.setPlaceholder(data.display_name);
-        } else {
-          location.setPlaceholder(`${position.lat.toFixed(6)}, ${position.lng.toFixed(6)}`);
-        }
+    // Abort previous and create new signal for this request
+    const signal = createGeocodingSignal();
+
+    fetchReverseGeocode(position, signal)
+      .then((displayName) => {
+        location.setPlaceholder(displayName);
       })
       .catch((error) => {
-        console.error("Failed to fetch reverse geocoding data:", error);
-        location.setPlaceholder(`${position.lat.toFixed(6)}, ${position.lng.toFixed(6)}`);
+        // Ignore abort errors (user canceled the request)
+        if (error.name !== "AbortError") {
+          // Set coordinate fallback for other errors
+          location.setPlaceholder(`${position.lat.toFixed(6)}, ${position.lng.toFixed(6)}`);
+        }
       });
   };
 

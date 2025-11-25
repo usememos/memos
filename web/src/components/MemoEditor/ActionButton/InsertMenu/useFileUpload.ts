@@ -1,22 +1,22 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import type { LocalFile } from "@/components/memo-metadata";
 
 export const useFileUpload = (onFilesSelected: (localFiles: LocalFile[]) => void) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectingFlag, setSelectingFlag] = useState(false);
+  const selectingFlagRef = useRef(false);
 
   const handleFileInputChange = (event?: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(fileInputRef.current?.files || event?.target.files || []);
-    if (files.length === 0 || selectingFlag) {
+    if (files.length === 0 || selectingFlagRef.current) {
       return;
     }
-    setSelectingFlag(true);
+    selectingFlagRef.current = true;
     const localFiles: LocalFile[] = files.map((file) => ({
       file,
       previewUrl: URL.createObjectURL(file),
     }));
     onFilesSelected(localFiles);
-    setSelectingFlag(false);
+    selectingFlagRef.current = false;
     // Optionally clear input value to allow re-selecting the same file
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
@@ -27,7 +27,7 @@ export const useFileUpload = (onFilesSelected: (localFiles: LocalFile[]) => void
 
   return {
     fileInputRef,
-    selectingFlag,
+    selectingFlag: selectingFlagRef.current,
     handleFileInputChange,
     handleUploadClick,
   };

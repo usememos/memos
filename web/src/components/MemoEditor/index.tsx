@@ -2,7 +2,7 @@ import copy from "copy-to-clipboard";
 import { isEqual } from "lodash-es";
 import { LoaderIcon, Minimize2Icon } from "lucide-react";
 import { observer } from "mobx-react-lite";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLocalStorage from "react-use/lib/useLocalStorage";
@@ -24,78 +24,30 @@ import type { LocalFile } from "../memo-metadata";
 import { AttachmentList, LocationDisplay, RelationList } from "../memo-metadata";
 import InsertMenu from "./ActionButton/InsertMenu";
 import VisibilitySelector from "./ActionButton/VisibilitySelector";
+import { FOCUS_MODE_EXIT_KEY, FOCUS_MODE_STYLES, FOCUS_MODE_TOGGLE_KEY, LOCALSTORAGE_DEBOUNCE_DELAY } from "./constants";
 import Editor, { EditorRefActions } from "./Editor";
+import ErrorBoundary from "./ErrorBoundary";
 import { handleEditorKeydownWithMarkdownShortcuts, hyperlinkHighlightedText } from "./handlers";
+import { useDebounce } from "./hooks/useDebounce";
+import { useDragAndDrop } from "./hooks/useDragAndDrop";
+import { useLocalFileManager } from "./hooks/useLocalFileManager";
 import { MemoEditorContext } from "./types";
+import type { MemoEditorProps, MemoEditorState } from "./types/memo-editor";
 
-/**
- * Focus Mode keyboard shortcuts
- * - Toggle: Cmd/Ctrl + Shift + F (matches GitHub, Google Docs convention)
- * - Exit: Escape key
- */
-const FOCUS_MODE_TOGGLE_KEY = "f";
-const FOCUS_MODE_EXIT_KEY = "Escape";
+// Re-export for backward compatibility
+export type { MemoEditorProps as Props };
 
-/**
- * Focus Mode styling constants
- * Centralized to make it easy to adjust the appearance and maintain consistency
- */
-const FOCUS_MODE_STYLES = {
-  backdrop: "fixed inset-0 bg-black/20 backdrop-blur-sm z-40",
-  container: {
-    base: "fixed z-50 w-auto max-w-5xl mx-auto shadow-2xl border-border h-auto overflow-y-auto",
-    /**
-     * Responsive spacing using explicit positioning to avoid width conflicts:
-     * - Mobile (< 640px): 8px margin (0.5rem)
-     * - Tablet (640-768px): 16px margin (1rem)
-     * - Desktop (> 768px): 32px margin (2rem)
-     */
-    spacing: "top-2 left-2 right-2 bottom-2 sm:top-4 sm:left-4 sm:right-4 sm:bottom-4 md:top-8 md:left-8 md:right-8 md:bottom-8",
-  },
-  transition: "transition-all duration-300 ease-in-out",
-  exitButton: "absolute top-2 right-2 z-10 opacity-60 hover:opacity-100",
-} as const;
-
-export interface Props {
-  className?: string;
-  cacheKey?: string;
-  placeholder?: string;
-  // The name of the memo to be edited.
-  memoName?: string;
-  // The name of the parent memo if the memo is a comment.
-  parentMemoName?: string;
-  autoFocus?: boolean;
-  onConfirm?: (memoName: string) => void;
-  onCancel?: () => void;
-}
-
-interface State {
-  memoVisibility: Visibility;
-  attachmentList: Attachment[];
-  relationList: MemoRelation[];
-  location: Location | undefined;
-  isUploadingAttachment: boolean;
-  isRequesting: boolean;
-  isComposing: boolean;
-  isDraggingFile: boolean;
-  /** Whether Focus Mode (distraction-free writing) is enabled */
-  isFocusMode: boolean;
-}
-
-const MemoEditor = observer((props: Props) => {
-  // Local files for preview and upload
-  const [localFiles, setLocalFiles] = useState<LocalFile[]>([]);
-  // Clean up blob URLs on unmount
-  useEffect(() => {
-    return () => {
-      localFiles.forEach(({ previewUrl }) => URL.revokeObjectURL(previewUrl));
-    };
-  }, [localFiles]);
+const MemoEditor = observer((props: MemoEditorProps) => {
   const { className, cacheKey, memoName, parentMemoName, autoFocus, onConfirm, onCancel } = props;
   const t = useTranslate();
   const { i18n } = useTranslation();
   const currentUser = useCurrentUser();
-  const [state, setState] = useState<State>({
+
+  // Custom hooks for file management
+  const { localFiles, addFiles, removeFile, clearFiles } = useLocalFileManager();
+
+  // Internal component state
+  const [state, setState] = useState<MemoEditorState>({
     memoVisibility: Visibility.PRIVATE,
     isFocusMode: false,
     attachmentList: [],
@@ -262,18 +214,18 @@ const MemoEditor = observer((props: Props) => {
   };
 
   // Add local files from InsertMenu
-  const handleAddLocalFiles = (newFiles: LocalFile[]) => {
-    setLocalFiles((prev) => [...prev, ...newFiles]);
-  };
+  // Drag-and-drop for file uploads
+  const { isDragging, dragHandlers } = useDragAndDrop({
+    onDrop: (files) => addFiles(files),
+  });
 
-  // Remove a local file (e.g. on user remove)
-  const handleRemoveLocalFile = (previewUrl: string) => {
-    setLocalFiles((prev) => {
-      const toRemove = prev.find((f) => f.previewUrl === previewUrl);
-      if (toRemove) URL.revokeObjectURL(toRemove.previewUrl);
-      return prev.filter((f) => f.previewUrl !== previewUrl);
-    });
-  };
+  // Sync drag state with component state
+  useEffect(() => {
+    setState((prevState) => ({
+      ...prevState,
+      isDraggingFile: isDragging,
+    }));
+  }, [isDragging]);
 
   const handleSetRelationList = (relationList: MemoRelation[]) => {
     setState((prevState) => ({
@@ -282,53 +234,10 @@ const MemoEditor = observer((props: Props) => {
     }));
   };
 
-  // Add files to local state for preview (no upload yet)
-  const addFilesToLocal = (files: FileList | File[]) => {
-    const fileArray = Array.from(files);
-    const newLocalFiles: LocalFile[] = fileArray.map((file) => ({
-      file,
-      previewUrl: URL.createObjectURL(file),
-    }));
-    setLocalFiles((prev) => [...prev, ...newLocalFiles]);
-  };
-
-  const handleDropEvent = async (event: React.DragEvent) => {
-    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
-      event.preventDefault();
-      setState((prevState) => ({
-        ...prevState,
-        isDraggingFile: false,
-      }));
-
-      addFilesToLocal(event.dataTransfer.files);
-    }
-  };
-
-  const handleDragOver = (event: React.DragEvent) => {
-    if (event.dataTransfer && event.dataTransfer.types.includes("Files")) {
-      event.preventDefault();
-      event.dataTransfer.dropEffect = "copy";
-      if (!state.isDraggingFile) {
-        setState((prevState) => ({
-          ...prevState,
-          isDraggingFile: true,
-        }));
-      }
-    }
-  };
-
-  const handleDragLeave = (event: React.DragEvent) => {
-    event.preventDefault();
-    setState((prevState) => ({
-      ...prevState,
-      isDraggingFile: false,
-    }));
-  };
-
   const handlePasteEvent = async (event: React.ClipboardEvent) => {
     if (event.clipboardData && event.clipboardData.files.length > 0) {
       event.preventDefault();
-      addFilesToLocal(event.clipboardData.files);
+      addFiles(event.clipboardData.files);
     } else if (
       editorRef.current != null &&
       editorRef.current.getSelectedContent().length != 0 &&
@@ -339,13 +248,18 @@ const MemoEditor = observer((props: Props) => {
     }
   };
 
-  const handleContentChange = (content: string) => {
-    setHasContent(content !== "");
+  // Debounced cache setter to avoid writing to localStorage on every keystroke
+  const saveContentToCache = useDebounce((content: string) => {
     if (content !== "") {
       setContentCache(content);
     } else {
       localStorage.removeItem(contentCacheKey);
     }
+  }, LOCALSTORAGE_DEBOUNCE_DELAY);
+
+  const handleContentChange = (content: string) => {
+    setHasContent(content !== "");
+    saveContentToCache(content);
   };
 
   const handleSaveBtnClick = async () => {
@@ -465,8 +379,7 @@ const MemoEditor = observer((props: Props) => {
       }
       editorRef.current?.setContent("");
       // Clean up local files after successful save
-      localFiles.forEach(({ previewUrl }) => URL.revokeObjectURL(previewUrl));
-      setLocalFiles([]);
+      clearFiles();
     } catch (error: any) {
       console.error(error);
       toast.error(error.details);
@@ -497,152 +410,152 @@ const MemoEditor = observer((props: Props) => {
       onContentChange: handleContentChange,
       onPaste: handlePasteEvent,
       isFocusMode: state.isFocusMode,
+      isInIME: state.isComposing,
+      onCompositionStart: handleCompositionStart,
+      onCompositionEnd: handleCompositionEnd,
     }),
-    [i18n.language, state.isFocusMode],
+    [i18n.language, state.isFocusMode, state.isComposing],
   );
 
   const allowSave =
     (hasContent || state.attachmentList.length > 0 || localFiles.length > 0) && !state.isUploadingAttachment && !state.isRequesting;
 
   return (
-    <MemoEditorContext.Provider
-      value={{
-        attachmentList: state.attachmentList,
-        relationList: state.relationList,
-        setAttachmentList: handleSetAttachmentList,
-        addLocalFiles: handleAddLocalFiles,
-        removeLocalFile: handleRemoveLocalFile,
-        localFiles,
-        setRelationList: (relationList: MemoRelation[]) => {
-          setState((prevState) => ({
-            ...prevState,
-            relationList,
-          }));
-        },
-        memoName,
-      }}
-    >
-      {/* Focus Mode Backdrop */}
-      {state.isFocusMode && <div className={FOCUS_MODE_STYLES.backdrop} onClick={toggleFocusMode} />}
-
-      <div
-        className={cn(
-          "group relative w-full flex flex-col justify-start items-start bg-card px-4 pt-3 pb-2 rounded-lg border",
-          FOCUS_MODE_STYLES.transition,
-          state.isDraggingFile ? "border-dashed border-muted-foreground cursor-copy" : "border-border cursor-auto",
-          state.isFocusMode && cn(FOCUS_MODE_STYLES.container.base, FOCUS_MODE_STYLES.container.spacing),
-          className,
-        )}
-        tabIndex={0}
-        onKeyDown={handleKeyDown}
-        onDrop={handleDropEvent}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onFocus={handleEditorFocus}
-        onCompositionStart={handleCompositionStart}
-        onCompositionEnd={handleCompositionEnd}
-      >
-        {/* Focus Mode Exit Button */}
-        {state.isFocusMode && (
-          <Button
-            variant="ghost"
-            size="icon"
-            className={FOCUS_MODE_STYLES.exitButton}
-            onClick={toggleFocusMode}
-            title={t("editor.exit-focus-mode")}
-          >
-            <Minimize2Icon className="w-4 h-4" />
-          </Button>
-        )}
-
-        <Editor ref={editorRef} {...editorConfig} />
-        <LocationDisplay
-          mode="edit"
-          location={state.location}
-          onRemove={() =>
+    <ErrorBoundary>
+      <MemoEditorContext.Provider
+        value={{
+          attachmentList: state.attachmentList,
+          relationList: state.relationList,
+          setAttachmentList: handleSetAttachmentList,
+          addLocalFiles: (files) => addFiles(Array.from(files.map((f) => f.file))),
+          removeLocalFile: removeFile,
+          localFiles,
+          setRelationList: (relationList: MemoRelation[]) => {
             setState((prevState) => ({
               ...prevState,
-              location: undefined,
-            }))
-          }
-        />
-        {/* Show attachments and pending files together */}
-        <AttachmentList
-          mode="edit"
-          attachments={state.attachmentList}
-          onAttachmentsChange={handleSetAttachmentList}
-          localFiles={localFiles}
-          onRemoveLocalFile={handleRemoveLocalFile}
-        />
-        <RelationList mode="edit" relations={referenceRelations} onRelationsChange={handleSetRelationList} />
-        <div className="relative w-full flex flex-row justify-between items-center pt-2 gap-2" onFocus={(e) => e.stopPropagation()}>
-          <div className="flex flex-row justify-start items-center gap-1">
-            <InsertMenu
-              isUploading={state.isUploadingAttachment}
-              location={state.location}
-              onLocationChange={(location) =>
-                setState((prevState) => ({
-                  ...prevState,
-                  location,
-                }))
-              }
-              onToggleFocusMode={toggleFocusMode}
-            />
-          </div>
-          <div className="shrink-0 flex flex-row justify-end items-center">
-            <VisibilitySelector value={state.memoVisibility} onChange={(visibility) => handleMemoVisibilityChange(visibility)} />
-            <div className="flex flex-row justify-end gap-1">
-              {props.onCancel && (
-                <Button
-                  variant="ghost"
-                  disabled={state.isRequesting}
-                  onClick={() => {
-                    localFiles.forEach(({ previewUrl }) => URL.revokeObjectURL(previewUrl));
-                    setLocalFiles([]);
-                    if (props.onCancel) props.onCancel();
-                  }}
-                >
-                  {t("common.cancel")}
+              relationList,
+            }));
+          },
+          memoName,
+        }}
+      >
+        {/* Focus Mode Backdrop */}
+        {state.isFocusMode && <div className={FOCUS_MODE_STYLES.backdrop} onClick={toggleFocusMode} />}
+
+        <div
+          className={cn(
+            "group relative w-full flex flex-col justify-start items-start bg-card px-4 pt-3 pb-2 rounded-lg border",
+            FOCUS_MODE_STYLES.transition,
+            state.isDraggingFile ? "border-dashed border-muted-foreground cursor-copy" : "border-border cursor-auto",
+            state.isFocusMode && cn(FOCUS_MODE_STYLES.container.base, FOCUS_MODE_STYLES.container.spacing),
+            className,
+          )}
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
+          {...dragHandlers}
+          onFocus={handleEditorFocus}
+        >
+          {/* Focus Mode Exit Button */}
+          {state.isFocusMode && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className={FOCUS_MODE_STYLES.exitButton}
+              onClick={toggleFocusMode}
+              title={t("editor.exit-focus-mode")}
+            >
+              <Minimize2Icon className="w-4 h-4" />
+            </Button>
+          )}
+
+          <Editor ref={editorRef} {...editorConfig} />
+          <LocationDisplay
+            mode="edit"
+            location={state.location}
+            onRemove={() =>
+              setState((prevState) => ({
+                ...prevState,
+                location: undefined,
+              }))
+            }
+          />
+          {/* Show attachments and pending files together */}
+          <AttachmentList
+            mode="edit"
+            attachments={state.attachmentList}
+            onAttachmentsChange={handleSetAttachmentList}
+            localFiles={localFiles}
+            onRemoveLocalFile={removeFile}
+          />
+          <RelationList mode="edit" relations={referenceRelations} onRelationsChange={handleSetRelationList} />
+          <div className="relative w-full flex flex-row justify-between items-center pt-2 gap-2" onFocus={(e) => e.stopPropagation()}>
+            <div className="flex flex-row justify-start items-center gap-1">
+              <InsertMenu
+                isUploading={state.isUploadingAttachment}
+                location={state.location}
+                onLocationChange={(location) =>
+                  setState((prevState) => ({
+                    ...prevState,
+                    location,
+                  }))
+                }
+                onToggleFocusMode={toggleFocusMode}
+              />
+            </div>
+            <div className="shrink-0 flex flex-row justify-end items-center">
+              <VisibilitySelector value={state.memoVisibility} onChange={(visibility) => handleMemoVisibilityChange(visibility)} />
+              <div className="flex flex-row justify-end gap-1">
+                {props.onCancel && (
+                  <Button
+                    variant="ghost"
+                    disabled={state.isRequesting}
+                    onClick={() => {
+                      clearFiles();
+                      if (props.onCancel) props.onCancel();
+                    }}
+                  >
+                    {t("common.cancel")}
+                  </Button>
+                )}
+                <Button disabled={!allowSave || state.isRequesting} onClick={handleSaveBtnClick}>
+                  {state.isRequesting ? <LoaderIcon className="w-4 h-4 animate-spin" /> : t("editor.save")}
                 </Button>
-              )}
-              <Button disabled={!allowSave || state.isRequesting} onClick={handleSaveBtnClick}>
-                {state.isRequesting ? <LoaderIcon className="w-4 h-4 animate-spin" /> : t("editor.save")}
-              </Button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Show memo metadata if memoName is provided */}
-      {memoName && (
-        <div className="w-full -mt-1 mb-4 text-xs leading-5 px-4 opacity-60 font-mono text-muted-foreground">
-          <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-0.5 items-center">
-            {!isEqual(createTime, updateTime) && updateTime && (
-              <>
-                <span className="text-left">Updated</span>
-                <DateTimeInput value={updateTime} onChange={setUpdateTime} />
-              </>
-            )}
-            {createTime && (
-              <>
-                <span className="text-left">Created</span>
-                <DateTimeInput value={createTime} onChange={setCreateTime} />
-              </>
-            )}
-            <span className="text-left">ID</span>
-            <span
-              className="px-1 border border-transparent cursor-default"
-              onClick={() => {
-                copy(extractMemoIdFromName(memoName));
-                toast.success(t("message.copied"));
-              }}
-            >
-              {extractMemoIdFromName(memoName)}
-            </span>
+        {/* Show memo metadata if memoName is provided */}
+        {memoName && (
+          <div className="w-full -mt-1 mb-4 text-xs leading-5 px-4 opacity-60 font-mono text-muted-foreground">
+            <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-0.5 items-center">
+              {!isEqual(createTime, updateTime) && updateTime && (
+                <>
+                  <span className="text-left">Updated</span>
+                  <DateTimeInput value={updateTime} onChange={setUpdateTime} />
+                </>
+              )}
+              {createTime && (
+                <>
+                  <span className="text-left">Created</span>
+                  <DateTimeInput value={createTime} onChange={setCreateTime} />
+                </>
+              )}
+              <span className="text-left">ID</span>
+              <span
+                className="px-1 border border-transparent cursor-default"
+                onClick={() => {
+                  copy(extractMemoIdFromName(memoName));
+                  toast.success(t("message.copied"));
+                }}
+              >
+                {extractMemoIdFromName(memoName)}
+              </span>
+            </div>
           </div>
-        </div>
-      )}
-    </MemoEditorContext.Provider>
+        )}
+      </MemoEditorContext.Provider>
+    </ErrorBoundary>
   );
 });
 

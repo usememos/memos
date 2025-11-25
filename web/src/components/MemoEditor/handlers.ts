@@ -25,16 +25,21 @@ export const hyperlinkHighlightedText = (editor: EditorRefActions, url?: string)
   const urlRegex = /^(https?:\/\/[^\s]+)$/;
   if (!url && urlRegex.test(selectedContent.trim())) {
     editor.insertText(`[](${selectedContent})`);
-    editor.setCursorPosition(cursorPosition + 1, cursorPosition + 1);
+    // insertText places cursor at end, move it between the brackets
+    const linkTextPosition = cursorPosition + 1; // After the opening bracket
+    editor.setCursorPosition(linkTextPosition, linkTextPosition);
   } else {
     url = url ?? blankURL;
 
     editor.insertText(`[${selectedContent}](${url})`);
 
     if (url === blankURL) {
-      const newCursorStart = cursorPosition + selectedContent.length + 3;
-      editor.setCursorPosition(newCursorStart, newCursorStart + url.length);
+      // insertText places cursor at end, select the placeholder URL
+      const urlStart = cursorPosition + selectedContent.length + 3; // After "]("
+      const urlEnd = urlStart + url.length;
+      editor.setCursorPosition(urlStart, urlEnd);
     }
+    // If url is provided, cursor stays at end (default insertText behavior)
   }
 };
 

@@ -164,25 +164,22 @@ export function useSuggestions<T>({
   };
 
   // Register event listeners
-  const listenersRegisteredRef = useRef(false);
   useEffect(() => {
     const editor = editorRef.current;
-    if (!editor || listenersRegisteredRef.current) return;
+    if (!editor) return;
 
     editor.addEventListener("click", hide);
     editor.addEventListener("blur", hide);
     editor.addEventListener("keydown", handleKeyDown);
     editor.addEventListener("input", handleInput);
-    listenersRegisteredRef.current = true;
 
     return () => {
       editor.removeEventListener("click", hide);
       editor.removeEventListener("blur", hide);
       editor.removeEventListener("keydown", handleKeyDown);
       editor.removeEventListener("input", handleInput);
-      listenersRegisteredRef.current = false;
     };
-  }, [editorRef.current]);
+  }, []); // Empty deps - editor ref is stable, handlers use refs for fresh values
 
   return {
     position,

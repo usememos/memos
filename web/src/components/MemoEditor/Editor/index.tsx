@@ -1,23 +1,11 @@
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { EDITOR_HEIGHT } from "../constants";
 import { Command } from "../types/command";
 import CommandSuggestions from "./CommandSuggestions";
 import { editorCommands } from "./commands";
 import TagSuggestions from "./TagSuggestions";
 import { useListAutoCompletion } from "./useListAutoCompletion";
-
-/**
- * Editor height constraints
- * - Normal mode: Limited to 50% viewport height to avoid excessive scrolling
- * - Focus mode: Minimum 50vh on mobile, 60vh on desktop for immersive writing
- */
-const EDITOR_HEIGHT = {
-  normal: "max-h-[50vh]",
-  focusMode: {
-    mobile: "min-h-[50vh]",
-    desktop: "md:min-h-[60vh]",
-  },
-} as const;
 
 export interface EditorRefActions {
   getEditor: () => HTMLTextAreaElement | null;
@@ -45,25 +33,35 @@ interface Props {
   onPaste: (event: React.ClipboardEvent) => void;
   /** Whether Focus Mode is active - adjusts height constraints for immersive writing */
   isFocusMode?: boolean;
+  /** Whether IME composition is in progress (for Asian language input) */
+  isInIME?: boolean;
+  /** Called when IME composition starts */
+  onCompositionStart?: () => void;
+  /** Called when IME composition ends */
+  onCompositionEnd?: () => void;
 }
 
 const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<EditorRefActions>) {
-  const { className, initialContent, placeholder, onPaste, onContentChange: handleContentChangeCallback, isFocusMode } = props;
-  const [isInIME, setIsInIME] = useState(false);
+  const {
+    className,
+    initialContent,
+    placeholder,
+    onPaste,
+    onContentChange: handleContentChangeCallback,
+    isFocusMode,
+    isInIME = false,
+    onCompositionStart,
+    onCompositionEnd,
+  } = props;
   const editorRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (editorRef.current && initialContent) {
       editorRef.current.value = initialContent;
       handleContentChangeCallback(initialContent);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (editorRef.current) {
       updateEditorHeight();
     }
-  }, [editorRef.current?.value]);
+  }, []);
 
   const editorActions = {
     getEditor: () => {
@@ -85,16 +83,14 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
       const cursorPosition = editorRef.current.selectionStart;
       const endPosition = editorRef.current.selectionEnd;
       const prevValue = editorRef.current.value;
-      const value =
-        prevValue.slice(0, cursorPosition) +
-        prefix +
-        (content || prevValue.slice(cursorPosition, endPosition)) +
-        suffix +
-        prevValue.slice(endPosition);
+      const actualContent = content || prevValue.slice(cursorPosition, endPosition);
+      const value = prevValue.slice(0, cursorPosition) + prefix + actualContent + suffix + prevValue.slice(endPosition);
 
       editorRef.current.value = value;
       editorRef.current.focus();
-      editorRef.current.selectionEnd = endPosition + prefix.length + content.length;
+      // Place cursor at the end of inserted content
+      const newCursorPosition = cursorPosition + prefix.length + actualContent.length + suffix.length;
+      editorRef.current.setSelectionRange(newCursorPosition, newCursorPosition);
       handleContentChangeCallback(editorRef.current.value);
       updateEditorHeight();
     },
@@ -192,8 +188,8 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         ref={editorRef}
         onPaste={onPaste}
         onInput={handleEditorInput}
-        onCompositionStart={() => setIsInIME(true)}
-        onCompositionEnd={() => setTimeout(() => setIsInIME(false))}
+        onCompositionStart={onCompositionStart}
+        onCompositionEnd={onCompositionEnd}
       ></textarea>
       <TagSuggestions editorRef={editorRef} editorActions={ref} />
       <CommandSuggestions editorRef={editorRef} editorActions={ref} commands={editorCommands} />
