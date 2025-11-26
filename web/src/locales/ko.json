@@ -21,6 +21,7 @@
     "archive": "보관 처리",
     "archived": "보관 목록",
     "attachments": "첨부파일",
+    "auto-expand": "자동 펼치기",
     "avatar": "아바타",
     "basic": "기본",
     "beta": "베타",
@@ -100,7 +101,8 @@
     "username": "유저네임",
     "version": "버전",
     "visibility": "공개 범위",
-    "yourself": "자기 자신"
+    "yourself": "자기 자신",
+    "more": "더보기"
   },
   "days": {
     "fri": "금",
@@ -115,7 +117,9 @@
     "add-your-comment-here": "여기에 댓글을 추가하세요...",
     "any-thoughts": "떠오르는 게 있나요...",
     "save": "저장",
-    "no-changes-detected": "변경사항이 없습니다"
+    "no-changes-detected": "변경사항이 없습니다",
+    "focus-mode": "집중 모드",
+    "exit-focus-mode": "집중 모드 종료"
   },
   "filters": {
     "has-code": "코드있음",
@@ -439,5 +443,9 @@
     "rename-success": "태그 이름이 성공적으로 변경되었습니다",
     "rename-tag": "태그 이름 변경",
     "rename-tip": "이 태그가 포함된 모든 메모가 업데이트됩니다."
+  },
+  "tooltip": {
+    "link-memo": "메모 링크",
+    "select-location": "위치"
   }
 }
