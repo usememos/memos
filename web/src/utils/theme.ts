@@ -1,8 +1,9 @@
 import defaultDarkThemeContent from "../themes/default-dark.css?raw";
 import paperThemeContent from "../themes/paper.css?raw";
 import whitewallThemeContent from "../themes/whitewall.css?raw";
+import midnightThemeContent from "../themes/midnight.css?raw";
 
-const VALID_THEMES = ["system", "default", "default-dark", "paper", "whitewall"] as const;
+const VALID_THEMES = ["system", "default", "default-dark", "paper", "whitewall", "midnight"] as const;
 type ValidTheme = (typeof VALID_THEMES)[number];
 
 const THEME_CONTENT: Record<ValidTheme, string | null> = {
@@ -11,6 +12,7 @@ const THEME_CONTENT: Record<ValidTheme, string | null> = {
   "default-dark": defaultDarkThemeContent,
   paper: paperThemeContent,
   whitewall: whitewallThemeContent,
+  midnight: midnightThemeContent,
 };
 
 export interface ThemeOption {
@@ -24,6 +26,7 @@ export const THEME_OPTIONS: ThemeOption[] = [
   { value: "default-dark", label: "Dark" },
   { value: "paper", label: "Paper" },
   { value: "whitewall", label: "Whitewall" },
+  { value: "midnight", label: "Midnight"},
 ];
 
 const validateTheme = (theme: string): ValidTheme => {
@@ -44,7 +47,7 @@ export const getSystemTheme = (): "default" | "default-dark" => {
  * Resolves the actual theme to apply based on user preference
  * If theme is "system", returns the system preference, otherwise returns the theme as-is
  */
-export const resolveTheme = (theme: string): "default" | "default-dark" | "paper" | "whitewall" => {
+export const resolveTheme = (theme: string): "default" | "default-dark" | "paper" | "whitewall" | "midnight" => {
   if (theme === "system") {
     return getSystemTheme();
   }
