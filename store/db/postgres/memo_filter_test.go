@@ -18,12 +18,12 @@ func TestConvertExprToSQL(t *testing.T) {
 	}{
 		{
 			filter: `tag in ["tag1", "tag2"]`,
-			want:   "((memo.payload->'tags' @> jsonb_build_array($1::json) OR memo.payload->'tags'::text LIKE $2::text) OR (memo.payload->'tags' @> jsonb_build_array($3::json) OR memo.payload->'tags'::text LIKE $4::text))",
+			want:   "((memo.payload->'tags' @> jsonb_build_array($1::json) OR (memo.payload->'tags')::text LIKE $2) OR (memo.payload->'tags' @> jsonb_build_array($3::json) OR (memo.payload->'tags')::text LIKE $4))",
 			args:   []any{`"tag1"`, `%"tag1/%`, `"tag2"`, `%"tag2/%`},
 		},
 		{
 			filter: `!(tag in ["tag1", "tag2"])`,
-			want:   "NOT (((memo.payload->'tags' @> jsonb_build_array($1::json) OR memo.payload->'tags'::text LIKE $2::text) OR (memo.payload->'tags' @> jsonb_build_array($3::json) OR memo.payload->'tags'::text LIKE $4::text)))",
+			want:   "NOT (((memo.payload->'tags' @> jsonb_build_array($1::json) OR (memo.payload->'tags')::text LIKE $2) OR (memo.payload->'tags' @> jsonb_build_array($3::json) OR (memo.payload->'tags')::text LIKE $4)))",
 			args:   []any{`"tag1"`, `%"tag1/%`, `"tag2"`, `%"tag2/%`},
 		},
 		{
@@ -43,7 +43,7 @@ func TestConvertExprToSQL(t *testing.T) {
 		},
 		{
 			filter: `tag in ['tag1'] || content.contains('hello')`,
-			want:   "((memo.payload->'tags' @> jsonb_build_array($1::json) OR memo.payload->'tags'::text LIKE $2::text) OR memo.content ILIKE $3)",
+			want:   "((memo.payload->'tags' @> jsonb_build_array($1::json) OR (memo.payload->'tags')::text LIKE $2) OR memo.content ILIKE $3)",
 			args:   []any{`"tag1"`, `%"tag1/%`, "%hello%"},
 		},
 		{
