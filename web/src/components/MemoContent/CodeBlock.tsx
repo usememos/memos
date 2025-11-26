@@ -1,6 +1,10 @@
+import DOMPurify from "dompurify";
+import hljs from "highlight.js";
 import { CheckIcon, CopyIcon } from "lucide-react";
-import { useState } from "react";
+import { observer } from "mobx-react-lite";
+import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
+import { instanceStore } from "@/store";
 import { MermaidBlock } from "./MermaidBlock";
 
 interface PreProps {
@@ -8,7 +12,7 @@ interface PreProps {
   className?: string;
 }
 
-export const CodeBlock = ({ children, className, ...props }: PreProps) => {
+export const CodeBlock = observer(({ children, className, ...props }: PreProps) => {
   const [copied, setCopied] = useState(false);
 
   // Extract the code element and its props
@@ -29,6 +33,115 @@ export const CodeBlock = ({ children, className, ...props }: PreProps) => {
     );
   }
 
+  // If it's __html special language, render sanitized HTML
+  if (language === "__html") {
+    const sanitizedHTML = DOMPurify.sanitize(codeContent, {
+      ALLOWED_TAGS: [
+        "div",
+        "span",
+        "p",
+        "br",
+        "strong",
+        "b",
+        "em",
+        "i",
+        "u",
+        "s",
+        "strike",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "blockquote",
+        "code",
+        "pre",
+        "ul",
+        "ol",
+        "li",
+        "dl",
+        "dt",
+        "dd",
+        "table",
+        "thead",
+        "tbody",
+        "tr",
+        "th",
+        "td",
+        "a",
+        "img",
+        "figure",
+        "figcaption",
+        "hr",
+        "small",
+        "sup",
+        "sub",
+      ],
+      ALLOWED_ATTR: "href title alt src width height class id style target rel colspan rowspan".split(" "),
+      FORBID_ATTR: "onerror onload onclick onmouseover onfocus onblur onchange".split(" "),
+      FORBID_TAGS: "script iframe object embed form input button".split(" "),
+    });
+
+    return (
+      <div
+        className="w-full overflow-auto my-2!"
+        dangerouslySetInnerHTML={{
+          __html: sanitizedHTML,
+        }}
+      />
+    );
+  }
+
+  const appTheme = instanceStore.state.theme;
+  const isDarkTheme = appTheme.includes("dark");
+
+  // Dynamically load highlight.js theme based on app theme
+  useEffect(() => {
+    const dynamicImportStyle = async () => {
+      // Remove any existing highlight.js style
+      const existingStyle = document.querySelector("style[data-hljs-theme]");
+      if (existingStyle) {
+        existingStyle.remove();
+      }
+
+      try {
+        const cssModule = isDarkTheme
+          ? await import("highlight.js/styles/github-dark-dimmed.css?inline")
+          : await import("highlight.js/styles/github.css?inline");
+
+        // Create and inject the style
+        const style = document.createElement("style");
+        style.textContent = cssModule.default;
+        style.setAttribute("data-hljs-theme", isDarkTheme ? "dark" : "light");
+        document.head.appendChild(style);
+      } catch (error) {
+        console.warn("Failed to load highlight.js theme:", error);
+      }
+    };
+
+    dynamicImportStyle();
+  }, [appTheme, isDarkTheme]);
+
+  // Highlight code using highlight.js
+  const highlightedCode = useMemo(() => {
+    try {
+      const lang = hljs.getLanguage(language);
+      if (lang) {
+        return hljs.highlight(codeContent, {
+          language: language,
+        }).value;
+      }
+    } catch {
+      // Skip error and use default highlighted code.
+    }
+
+    // Escape any HTML entities when rendering original content.
+    return Object.assign(document.createElement("span"), {
+      textContent: codeContent,
+    }).innerHTML;
+  }, [language, codeContent]);
+
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(codeContent);
@@ -45,12 +158,7 @@ export const CodeBlock = ({ children, className, ...props }: PreProps) => {
         <span className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider select-none">{language}</span>
         <button
           onClick={handleCopy}
-          className={cn(
-            "p-1.5 rounded-md transition-all",
-            "hover:bg-accent/50",
-            "focus:outline-none focus:ring-1 focus:ring-ring",
-            copied ? "text-primary" : "text-muted-foreground",
-          )}
+          className={cn("p-1.5 rounded-md transition-all", "hover:bg-accent/50", copied ? "text-primary" : "text-muted-foreground")}
           aria-label={copied ? "Copied" : "Copy code"}
           title={copied ? "Copied!" : "Copy code"}
         >
@@ -58,8 +166,8 @@ export const CodeBlock = ({ children, className, ...props }: PreProps) => {
         </button>
       </div>
       <div className={className} {...props}>
-        {children}
+        <code className={`language-${language}`} dangerouslySetInnerHTML={{ __html: highlightedCode }} />
       </div>
     </pre>
   );
-};
+});
