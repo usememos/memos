@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { memo, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import MemoEditor from "../MemoEditor";
@@ -33,6 +33,7 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
   const { memo: memoData, className } = props;
   const cardRef = useRef<HTMLDivElement>(null);
   const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
+  const [shortcutActive, setShortcutActive] = useState(false);
 
   const creator = useMemoCreator(memoData.creator);
   const { commentAmount, relativeTimeFormat, isArchived, readonly, isInMemoDetailPage, parentPage } = useMemoViewDerivedState(
@@ -58,6 +59,17 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
     onEdit: openEditor,
     onArchive: archiveMemo,
   });
+
+  useEffect(() => {
+    if (showEditor || readonly) {
+      setShortcutActive(false);
+    }
+  }, [showEditor, readonly]);
+
+  const handleShortcutActivation = (active: boolean) => {
+    if (readonly) return;
+    setShortcutActive(active);
+  };
 
   const contextValue = useMemo(
     () => ({
@@ -90,7 +102,13 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
 
   return (
     <MemoViewContext.Provider value={contextValue}>
-      <article className={cn(MEMO_CARD_BASE_CLASSES, className)} ref={cardRef} tabIndex={readonly ? -1 : 0}>
+      <article
+        className={cn(MEMO_CARD_BASE_CLASSES, shortcutActive && !showEditor && "border-ring ring-2 ring-ring bg-accent/10", className)}
+        ref={cardRef}
+        tabIndex={readonly ? -1 : 0}
+        onFocus={() => handleShortcutActivation(true)}
+        onBlur={() => handleShortcutActivation(false)}
+      >
         <MemoHeader
           showCreator={props.showCreator}
           showVisibility={props.showVisibility}
