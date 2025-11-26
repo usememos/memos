@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import { memo, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
@@ -98,7 +99,7 @@ const MemoContent = observer((props: Props) => {
           onDoubleClick={onMemoContentDoubleClick}
         >
           <ReactMarkdown
-            remarkPlugins={[remarkGfm, remarkTag, remarkPreserveType]}
+            remarkPlugins={[remarkGfm, remarkBreaks, remarkTag, remarkPreserveType]}
             rehypePlugins={[rehypeRaw]}
             components={{
               // Conditionally render custom components based on AST node type
