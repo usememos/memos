@@ -1,1 +1,1 @@
-type Theme = "system" | "default" | "default-dark" | "paper" | "whitewall";
+type Theme = "system" | "default" | "default-dark" | "midnight" | "paper" | "whitewall";
