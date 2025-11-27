@@ -22,7 +22,7 @@ import { createRequestKey } from "./store-utils";
 /**
  * Valid theme options
  */
-const VALID_THEMES = ["system", "default", "default-dark", "paper", "whitewall", "midnight"] as const;
+const VALID_THEMES = ["system", "default", "default-dark", "midnight", "paper", "whitewall"] as const;
 export type Theme = (typeof VALID_THEMES)[number];
 
 /**
