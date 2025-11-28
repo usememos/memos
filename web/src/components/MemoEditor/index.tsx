@@ -1,36 +1,34 @@
 import copy from "copy-to-clipboard";
 import { isEqual } from "lodash-es";
-import { LoaderIcon, Minimize2Icon } from "lucide-react";
+import { LoaderIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type React from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { Button } from "@/components/ui/button";
-import { memoServiceClient } from "@/grpcweb";
 import { TAB_SPACE_WIDTH } from "@/helpers/consts";
 import { isValidUrl } from "@/helpers/utils";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
-import { attachmentStore, instanceStore, memoStore, userStore } from "@/store";
+import { instanceStore, memoStore, userStore } from "@/store";
 import { extractMemoIdFromName } from "@/store/common";
-import { Attachment } from "@/types/proto/api/v1/attachment_service";
-import { Location, Memo, MemoRelation, MemoRelation_Type, Visibility } from "@/types/proto/api/v1/memo_service";
+import type { Attachment } from "@/types/proto/api/v1/attachment_service";
+import { type Location, type MemoRelation, MemoRelation_Type, Visibility } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
 import DateTimeInput from "../DateTimeInput";
-import type { LocalFile } from "../memo-metadata";
 import { AttachmentList, LocationDisplay, RelationList } from "../memo-metadata";
-import InsertMenu from "./ActionButton/InsertMenu";
-import VisibilitySelector from "./ActionButton/VisibilitySelector";
+import { FocusModeExitButton, FocusModeOverlay } from "./components";
 import { FOCUS_MODE_EXIT_KEY, FOCUS_MODE_STYLES, FOCUS_MODE_TOGGLE_KEY, LOCALSTORAGE_DEBOUNCE_DELAY } from "./constants";
-import Editor, { EditorRefActions } from "./Editor";
+import Editor, { type EditorRefActions } from "./Editor";
+import { handleEditorKeydownWithMarkdownShortcuts, hyperlinkHighlightedText } from "./Editor/markdownShortcuts";
 import ErrorBoundary from "./ErrorBoundary";
-import { handleEditorKeydownWithMarkdownShortcuts, hyperlinkHighlightedText } from "./handlers";
-import { useDebounce } from "./hooks/useDebounce";
-import { useDragAndDrop } from "./hooks/useDragAndDrop";
-import { useLocalFileManager } from "./hooks/useLocalFileManager";
+import { useDebounce, useDragAndDrop, useFocusMode, useLocalFileManager, useMemoSave } from "./hooks";
+import InsertMenu from "./Toolbar/InsertMenu";
+import VisibilitySelector from "./Toolbar/VisibilitySelector";
 import { MemoEditorContext } from "./types";
 import type { MemoEditorProps, MemoEditorState } from "./types/memo-editor";
 
@@ -72,6 +70,39 @@ const MemoEditor = observer((props: MemoEditorProps) => {
       )
     : state.relationList.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   const instanceMemoRelatedSetting = instanceStore.state.memoRelatedSetting;
+
+  // Memo save hook - handles create/update logic
+  const { saveMemo } = useMemoSave({
+    onUploadingChange: useCallback((uploading: boolean) => {
+      setState((s) => ({ ...s, isUploadingAttachment: uploading }));
+    }, []),
+    onRequestingChange: useCallback((requesting: boolean) => {
+      setState((s) => ({ ...s, isRequesting: requesting }));
+    }, []),
+    onSuccess: useCallback(
+      (savedMemoName: string) => {
+        editorRef.current?.setContent("");
+        clearFiles();
+        localStorage.removeItem(contentCacheKey);
+        if (onConfirm) onConfirm(savedMemoName);
+      },
+      [clearFiles, contentCacheKey, onConfirm],
+    ),
+    onCancel: useCallback(() => {
+      if (onCancel) onCancel();
+    }, [onCancel]),
+    onReset: useCallback(() => {
+      setState((s) => ({
+        ...s,
+        isRequesting: false,
+        attachmentList: [],
+        relationList: [],
+        location: undefined,
+        isDraggingFile: false,
+      }));
+    }, []),
+    t,
+  });
 
   useEffect(() => {
     editorRef.current?.setContent(contentCache || "");
@@ -120,6 +151,17 @@ const MemoEditor = observer((props: MemoEditorProps) => {
       }
     }
   }, [memoName]);
+
+  // Focus mode management with body scroll lock
+  const { toggleFocusMode } = useFocusMode({
+    isFocusMode: state.isFocusMode,
+    onToggle: () => {
+      setState((prevState) => ({
+        ...prevState,
+        isFocusMode: !prevState.isFocusMode,
+      }));
+    },
+  });
 
   const handleCompositionStart = () => {
     setState((prevState) => ({
@@ -184,21 +226,6 @@ const MemoEditor = observer((props: MemoEditorProps) => {
     }
   };
 
-  /**
-   * Toggle Focus Mode on/off
-   * Focus Mode provides a distraction-free writing experience with:
-   * - Expanded editor taking ~80-90% of viewport
-   * - Semi-transparent backdrop
-   * - Centered layout with optimal width
-   * - All editor functionality preserved
-   */
-  const toggleFocusMode = () => {
-    setState((prevState) => ({
-      ...prevState,
-      isFocusMode: !prevState.isFocusMode,
-    }));
-  };
-
   const handleMemoVisibilityChange = (visibility: Visibility) => {
     setState((prevState) => ({
       ...prevState,
@@ -240,7 +267,7 @@ const MemoEditor = observer((props: MemoEditorProps) => {
       addFiles(event.clipboardData.files);
     } else if (
       editorRef.current != null &&
-      editorRef.current.getSelectedContent().length != 0 &&
+      editorRef.current.getSelectedContent().length !== 0 &&
       isValidUrl(event.clipboardData.getData("Text"))
     ) {
       event.preventDefault();
@@ -266,135 +293,17 @@ const MemoEditor = observer((props: MemoEditorProps) => {
     if (state.isRequesting) {
       return;
     }
-
-    setState((state) => ({ ...state, isRequesting: true }));
     const content = editorRef.current?.getContent() ?? "";
-    try {
-      // 1. Upload all local files and create attachments
-      const newAttachments: Attachment[] = [];
-      if (localFiles.length > 0) {
-        setState((state) => ({ ...state, isUploadingAttachment: true }));
-        try {
-          for (const { file } of localFiles) {
-            const buffer = new Uint8Array(await file.arrayBuffer());
-            const attachment = await attachmentStore.createAttachment({
-              attachment: Attachment.fromPartial({
-                filename: file.name,
-                size: file.size,
-                type: file.type,
-                content: buffer,
-              }),
-              attachmentId: "",
-            });
-            newAttachments.push(attachment);
-          }
-        } finally {
-          // Always reset upload state, even on error
-          setState((state) => ({ ...state, isUploadingAttachment: false }));
-        }
-      }
-      // 2. Update attachmentList with new attachments
-      const allAttachments = [...state.attachmentList, ...newAttachments];
-      // 3. Save memo (create or update)
-      if (memoName) {
-        const prevMemo = await memoStore.getOrFetchMemoByName(memoName);
-        if (prevMemo) {
-          const updateMask = new Set<string>();
-          const memoPatch: Partial<Memo> = {
-            name: prevMemo.name,
-            content,
-          };
-          if (!isEqual(content, prevMemo.content)) {
-            updateMask.add("content");
-            memoPatch.content = content;
-          }
-          if (!isEqual(state.memoVisibility, prevMemo.visibility)) {
-            updateMask.add("visibility");
-            memoPatch.visibility = state.memoVisibility;
-          }
-          if (!isEqual(allAttachments, prevMemo.attachments)) {
-            updateMask.add("attachments");
-            memoPatch.attachments = allAttachments;
-          }
-          if (!isEqual(state.relationList, prevMemo.relations)) {
-            updateMask.add("relations");
-            memoPatch.relations = state.relationList;
-          }
-          if (!isEqual(state.location, prevMemo.location)) {
-            updateMask.add("location");
-            memoPatch.location = state.location;
-          }
-          if (["content", "attachments", "relations", "location"].some((key) => updateMask.has(key))) {
-            updateMask.add("update_time");
-          }
-          if (createTime && !isEqual(createTime, prevMemo.createTime)) {
-            updateMask.add("create_time");
-            memoPatch.createTime = createTime;
-          }
-          if (updateTime && !isEqual(updateTime, prevMemo.updateTime)) {
-            updateMask.add("update_time");
-            memoPatch.updateTime = updateTime;
-          }
-          if (updateMask.size === 0) {
-            toast.error(t("editor.no-changes-detected"));
-            if (onCancel) {
-              onCancel();
-            }
-            return;
-          }
-          const memo = await memoStore.updateMemo(memoPatch, Array.from(updateMask));
-          if (onConfirm) {
-            onConfirm(memo.name);
-          }
-        }
-      } else {
-        // Create memo or memo comment.
-        const request = !parentMemoName
-          ? memoStore.createMemo({
-              memo: Memo.fromPartial({
-                content,
-                visibility: state.memoVisibility,
-                attachments: allAttachments,
-                relations: state.relationList,
-                location: state.location,
-              }),
-              memoId: "",
-            })
-          : memoServiceClient
-              .createMemoComment({
-                name: parentMemoName,
-                comment: {
-                  content,
-                  visibility: state.memoVisibility,
-                  attachments: state.attachmentList,
-                  relations: state.relationList,
-                  location: state.location,
-                },
-              })
-              .then((memo) => memo);
-        const memo = await request;
-        if (onConfirm) {
-          onConfirm(memo.name);
-        }
-      }
-      editorRef.current?.setContent("");
-      // Clean up local files after successful save
-      clearFiles();
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.details);
-    }
-
-    localStorage.removeItem(contentCacheKey);
-    setState((state) => {
-      return {
-        ...state,
-        isRequesting: false,
-        attachmentList: [],
-        relationList: [],
-        location: undefined,
-        isDraggingFile: false,
-      };
+    await saveMemo(content, {
+      memoName,
+      parentMemoName,
+      visibility: state.memoVisibility,
+      attachmentList: state.attachmentList,
+      relationList: state.relationList,
+      location: state.location,
+      localFiles,
+      createTime,
+      updateTime,
     });
   };
 
@@ -440,7 +349,7 @@ const MemoEditor = observer((props: MemoEditorProps) => {
         }}
       >
         {/* Focus Mode Backdrop */}
-        {state.isFocusMode && <div className={FOCUS_MODE_STYLES.backdrop} onClick={toggleFocusMode} />}
+        <FocusModeOverlay isActive={state.isFocusMode} onToggle={toggleFocusMode} />
 
         <div
           className={cn(
@@ -456,17 +365,7 @@ const MemoEditor = observer((props: MemoEditorProps) => {
           onFocus={handleEditorFocus}
         >
           {/* Focus Mode Exit Button */}
-          {state.isFocusMode && (
-            <Button
-              variant="ghost"
-              size="icon"
-              className={FOCUS_MODE_STYLES.exitButton}
-              onClick={toggleFocusMode}
-              title={t("editor.exit-focus-mode")}
-            >
-              <Minimize2Icon className="w-4 h-4" />
-            </Button>
-          )}
+          <FocusModeExitButton isActive={state.isFocusMode} onToggle={toggleFocusMode} title={t("editor.exit-focus-mode")} />
 
           <Editor ref={editorRef} {...editorConfig} />
           <LocationDisplay
@@ -542,15 +441,16 @@ const MemoEditor = observer((props: MemoEditorProps) => {
                 </>
               )}
               <span className="text-left">ID</span>
-              <span
-                className="px-1 border border-transparent cursor-default"
+              <button
+                type="button"
+                className="px-1 border border-transparent cursor-default text-left"
                 onClick={() => {
                   copy(extractMemoIdFromName(memoName));
                   toast.success(t("message.copied"));
                 }}
               >
                 {extractMemoIdFromName(memoName)}
-              </span>
+              </button>
             </div>
           </div>
         )}
