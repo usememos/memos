@@ -12,20 +12,20 @@ import { ReactionSelector } from "../../reactions";
 import UserAvatar from "../../UserAvatar";
 import VisibilityIcon from "../../VisibilityIcon";
 import { useMemoViewContext } from "../MemoViewContext";
-import type { MemoHeaderProps } from "../types";
 
-/**
- * MemoHeader component displays the top section of a memo card including:
- * - Creator info (avatar, name) when showCreator is true
- * - Display time (relative or absolute)
- * - Reaction selector
- * - Comment count link
- * - Visibility icon
- * - Pin indicator
- * - NSFW hide button
- * - Action menu
- */
-const MemoHeader: React.FC<MemoHeaderProps> = ({
+interface Props {
+  showCreator?: boolean;
+  showVisibility?: boolean;
+  showPinned?: boolean;
+  onEdit: () => void;
+  onGotoDetail: () => void;
+  onUnpin: () => void;
+  onToggleNsfwVisibility?: () => void;
+  reactionSelectorOpen: boolean;
+  onReactionSelectorOpenChange: (open: boolean) => void;
+}
+
+const MemoHeader: React.FC<Props> = ({
   showCreator,
   showVisibility,
   showPinned,
@@ -130,9 +130,6 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({
   );
 };
 
-/**
- * Creator display with avatar and name
- */
 interface CreatorDisplayProps {
   creator: User;
   displayTime: React.ReactNode;
@@ -163,9 +160,6 @@ const CreatorDisplay: React.FC<CreatorDisplayProps> = ({ creator, displayTime, o
   </div>
 );
 
-/**
- * Simple time display without creator info
- */
 interface TimeDisplayProps {
   displayTime: React.ReactNode;
   onGotoDetail: () => void;

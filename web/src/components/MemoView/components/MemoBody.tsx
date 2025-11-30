@@ -5,18 +5,15 @@ import MemoContent from "../../MemoContent";
 import { MemoReactionListView } from "../../MemoReactionListView";
 import { AttachmentList, LocationDisplay, RelationList } from "../../memo-metadata";
 import { useMemoViewContext } from "../MemoViewContext";
-import type { MemoBodyProps } from "../types";
 
-/**
- * MemoBody component displays the main content of a memo including:
- * - Memo content (markdown)
- * - Location display
- * - Attachments
- * - Related memos
- * - Reactions
- * - NSFW content overlay
- */
-const MemoBody: React.FC<MemoBodyProps> = ({ compact, onContentClick, onContentDoubleClick, onToggleNsfwVisibility }) => {
+interface Props {
+  compact?: boolean;
+  onContentClick: (e: React.MouseEvent) => void;
+  onContentDoubleClick: (e: React.MouseEvent) => void;
+  onToggleNsfwVisibility: () => void;
+}
+
+const MemoBody: React.FC<Props> = ({ compact, onContentClick, onContentDoubleClick, onToggleNsfwVisibility }) => {
   const t = useTranslate();
 
   // Get shared state from context
