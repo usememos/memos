@@ -667,8 +667,6 @@ type InstanceMemoRelatedSetting struct {
 	ContentLengthLimit int32 `protobuf:"varint,3,opt,name=content_length_limit,json=contentLengthLimit,proto3" json:"content_length_limit,omitempty"`
 	// enable_double_click_edit enables editing on double click.
 	EnableDoubleClickEdit bool `protobuf:"varint,4,opt,name=enable_double_click_edit,json=enableDoubleClickEdit,proto3" json:"enable_double_click_edit,omitempty"`
-	// enable_link_preview enables links preview.
-	EnableLinkPreview bool `protobuf:"varint,5,opt,name=enable_link_preview,json=enableLinkPreview,proto3" json:"enable_link_preview,omitempty"`
 	// reactions is the list of reactions.
 	Reactions []string `protobuf:"bytes,7,rep,name=reactions,proto3" json:"reactions,omitempty"`
 	// enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
@@ -733,13 +731,6 @@ func (x *InstanceMemoRelatedSetting) GetContentLengthLimit() int32 {
 func (x *InstanceMemoRelatedSetting) GetEnableDoubleClickEdit() bool {
 	if x != nil {
 		return x.EnableDoubleClickEdit
-	}
-	return false
-}
-
-func (x *InstanceMemoRelatedSetting) GetEnableLinkPreview() bool {
-	if x != nil {
-		return x.EnableLinkPreview
 	}
 	return false
 }
@@ -812,13 +803,12 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\bendpoint\x18\x03 \x01(\tR\bendpoint\x12\x16\n" +
 	"\x06region\x18\x04 \x01(\tR\x06region\x12\x16\n" +
 	"\x06bucket\x18\x05 \x01(\tR\x06bucket\x12$\n" +
-	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\"\xa2\x03\n" +
+	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\"\xf2\x02\n" +
 	"\x1aInstanceMemoRelatedSetting\x12<\n" +
 	"\x1adisallow_public_visibility\x18\x01 \x01(\bR\x18disallowPublicVisibility\x127\n" +
 	"\x18display_with_update_time\x18\x02 \x01(\bR\x15displayWithUpdateTime\x120\n" +
 	"\x14content_length_limit\x18\x03 \x01(\x05R\x12contentLengthLimit\x127\n" +
-	"\x18enable_double_click_edit\x18\x04 \x01(\bR\x15enableDoubleClickEdit\x12.\n" +
-	"\x13enable_link_preview\x18\x05 \x01(\bR\x11enableLinkPreview\x12\x1c\n" +
+	"\x18enable_double_click_edit\x18\x04 \x01(\bR\x15enableDoubleClickEdit\x12\x1c\n" +
 	"\treactions\x18\a \x03(\tR\treactions\x127\n" +
 	"\x18enable_blur_nsfw_content\x18\t \x01(\bR\x15enableBlurNsfwContent\x12\x1b\n" +
 	"\tnsfw_tags\x18\n" +

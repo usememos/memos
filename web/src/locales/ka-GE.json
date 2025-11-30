@@ -294,7 +294,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "კონტენტის სიგრძის ლიმიტი (ბაიტი)",
       "enable-blur-nsfw-content": "NSFW კონტენტის დაბუნდოვანების ჩართვა",
-      "enable-link-preview": "ლინკის წინასწარი ნახვის ჩართვა",
       "enable-memo-comments": "მემოზე კომენტარების ჩართვა",
       "enable-memo-location": "მემოს მდებარეობის ჩართვა",
       "reactions": "რეაქციები",

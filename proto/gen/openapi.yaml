@@ -2336,9 +2336,6 @@ components:
                 enableDoubleClickEdit:
                     type: boolean
                     description: enable_double_click_edit enables editing on double click.
-                enableLinkPreview:
-                    type: boolean
-                    description: enable_link_preview enables links preview.
                 reactions:
                     type: array
                     items:

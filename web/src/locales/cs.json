@@ -277,7 +277,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "Omezení velikosti obsahu (bajty)",
       "enable-blur-nsfw-content": "Povolit rozostření citlivého obsahu",
-      "enable-link-preview": "Povolit náhled odkazu",
       "enable-memo-comments": "Povolit komentáře k poznámkám",
       "enable-memo-location": "Povolit umístění poznámek",
       "reactions": "Reakce",

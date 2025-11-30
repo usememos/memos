@@ -104,8 +104,6 @@ message InstanceMemoRelatedSetting {
   int32 content_length_limit = 3;
   // enable_double_click_edit enables editing on double click.
   bool enable_double_click_edit = 4;
-  // enable_link_preview enables links preview.
-  bool enable_link_preview = 5;
   // reactions is the list of reactions.
   repeated string reactions = 7;
   // enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).

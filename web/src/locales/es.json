@@ -290,7 +290,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "Límite de longitud de contenido (Bytes)",
       "enable-blur-nsfw-content": "Habilitar difuminado de contenido sensible (NSFW)",
-      "enable-link-preview": "Habilitar vista previa de enlaces",
       "enable-memo-comments": "Habilitar comentarios en los memos",
       "enable-memo-location": "Habilitar ubicación del memo",
       "reactions": "Reacciones",

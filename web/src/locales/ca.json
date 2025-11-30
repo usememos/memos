@@ -294,7 +294,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "Límit de longitud del contingut (Bytes)",
       "enable-blur-nsfw-content": "Habilita el difuminat de contingut sensible (NSFW)",
-      "enable-link-preview": "Habilita la previsualització d'enllaços",
       "enable-memo-comments": "Habilita els comentaris a les notes",
       "enable-memo-location": "Habilita la ubicació de la nota",
       "reactions": "Reaccions",

@@ -294,7 +294,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "İçerik uzunluğu sınırı (Bayt)",
       "enable-blur-nsfw-content": "NSFW içeriği bulanıklaştırmayı etkinleştir",
-      "enable-link-preview": "Bağlantı önizlemeyi etkinleştir",
       "enable-memo-comments": "Not yorumlarını etkinleştir",
       "enable-memo-location": "Not konumunu etkinleştir",
       "reactions": "Tepkiler",

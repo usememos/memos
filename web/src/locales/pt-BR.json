@@ -294,7 +294,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "Limite de tamanho do conteúdo (Bytes)",
       "enable-blur-nsfw-content": "Desfocar conteúdo impróprio (adicione as tags abaixo)",
-      "enable-link-preview": "Prévias de link",
       "enable-memo-comments": "Comentários nos memos",
       "enable-memo-location": "Marcador de localização",
       "reactions": "Reações",

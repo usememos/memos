@@ -294,7 +294,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "Batas panjang konten (Byte)",
       "enable-blur-nsfw-content": "Aktifkan pengaburan konten sensitif (NSFW)",
-      "enable-link-preview": "Aktifkan pratinjau tautan",
       "enable-memo-comments": "Aktifkan komentar memo",
       "enable-memo-location": "Aktifkan lokasi memo",
       "reactions": "Reaksi",

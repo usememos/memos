@@ -279,7 +279,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "Limitierung der Inhaltslänge (Byte)",
       "enable-blur-nsfw-content": "Unschärfe für sensible Inhalte (NSFW) aktivieren",
-      "enable-link-preview": "Link-Vorschau aktivieren",
       "enable-memo-comments": "Kommentare für Notizen aktivieren",
       "enable-memo-location": "Notiz-Standort aktivieren",
       "reactions": "Reaktionen",

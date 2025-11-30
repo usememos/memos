@@ -293,7 +293,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "Tartalom hosszának korlátja (bájt)",
       "enable-blur-nsfw-content": "Érzékeny (NSFW) tartalom elhomályosításának engedélyezése",
-      "enable-link-preview": "Link előnézet engedélyezése",
       "enable-memo-comments": "Jegyzet hozzászólások engedélyezése",
       "enable-memo-location": "Jegyzet helyének engedélyezése",
       "reactions": "Reakciók",

@@ -294,7 +294,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "Innehållslängdsgräns (Byte)",
       "enable-blur-nsfw-content": "Aktivera suddighet för känsligt innehåll (NSFW)",
-      "enable-link-preview": "Aktivera länkförhandsvisning",
       "enable-memo-comments": "Aktivera kommentarer på anteckningar",
       "enable-memo-location": "Aktivera plats för anteckning",
       "reactions": "Reaktioner",

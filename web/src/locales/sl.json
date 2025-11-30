@@ -294,7 +294,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "Omejitev dolžine vsebine (bajt)",
       "enable-blur-nsfw-content": "Omogoči zameglitev občutljive vsebine (NSFW)",
-      "enable-link-preview": "Omogoči predogled povezave",
       "enable-memo-comments": "Omogoči komentarje na beležkah",
       "enable-memo-location": "Omogoči lokacijo beležk",
       "reactions": "Odzivi",

@@ -272,7 +272,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "Макс. длина заметки (байт)",
       "enable-blur-nsfw-content": "\"Размывать\" заметки с тегами",
-      "enable-link-preview": "Предпросмотр ссылок",
       "enable-memo-comments": "Комментарии",
       "enable-memo-location": "Геометки",
       "reactions": "Реакции",

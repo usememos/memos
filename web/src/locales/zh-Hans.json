@@ -297,7 +297,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "内容长度限制（字节）",
       "enable-blur-nsfw-content": "启用 NSFW 内容模糊处理（在下方添加 NSFW 标签）",
-      "enable-link-preview": "启用链接预览",
       "enable-memo-comments": "启用备忘录评论",
       "enable-memo-location": "启用备忘录定位",
       "reactions": "表态",

@@ -294,7 +294,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "内容の最大長（バイト）",
       "enable-blur-nsfw-content": "センシティブ(NSFW)内容のぼかしを有効化",
-      "enable-link-preview": "リンクプレビューを有効化",
       "enable-memo-comments": "メモコメントを有効化",
       "enable-memo-location": "メモの位置情報を有効化",
       "reactions": "リアクション",

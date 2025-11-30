@@ -269,7 +269,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "محدودیت طول محتوا (بایت)",
       "enable-blur-nsfw-content": "فعال‌سازی تار کردن محتوای حساس (NSFW)",
-      "enable-link-preview": "فعال‌سازی پیش‌نمایش لینک",
       "enable-memo-comments": "فعال‌سازی نظرات یادداشت",
       "enable-memo-location": "فعال‌سازی موقعیت یادداشت",
       "reactions": "واکنش‌ها",

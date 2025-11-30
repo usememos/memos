@@ -294,7 +294,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "Maximale inhoudslengte (Byte)",
       "enable-blur-nsfw-content": "NSFW-inhoud vervagen inschakelen",
-      "enable-link-preview": "Linkvoorbeeld inschakelen",
       "enable-memo-comments": "Memo-opmerkingen inschakelen",
       "enable-memo-location": "Memo-locatie inschakelen",
       "reactions": "Reacties",

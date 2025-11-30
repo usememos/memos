@@ -294,7 +294,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "حد طول المحتوى (بايت)",
       "enable-blur-nsfw-content": "تمكين طمس المحتوى الحساس (NSFW)",
-      "enable-link-preview": "تمكين معاينة الروابط",
       "enable-memo-comments": "تمكين تعليقات المذكرة",
       "enable-memo-location": "تمكين موقع المذكرة",
       "reactions": "تفاعلات",

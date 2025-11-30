@@ -294,7 +294,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "Limit długości treści (Bajty)",
       "enable-blur-nsfw-content": "Włącz rozmycie treści NSFW",
-      "enable-link-preview": "Włącz podgląd linków",
       "enable-memo-comments": "Włącz komentarze do notatek",
       "enable-memo-location": "Włącz lokalizację notatek",
       "reactions": "Reakcje",

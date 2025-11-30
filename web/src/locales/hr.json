@@ -294,7 +294,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "Ograničenje duljine sadržaja (Bajt)",
       "enable-blur-nsfw-content": "Omogući zamućenje osjetljivog sadržaja (NSFW)",
-      "enable-link-preview": "Omogući pregled linka",
       "enable-memo-comments": "Omogući komentare na memoima",
       "enable-memo-location": "Omogući lokaciju memoa",
       "reactions": "Reakcije",

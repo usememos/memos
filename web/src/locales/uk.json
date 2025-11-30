@@ -294,7 +294,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "Обмеження довжини вмісту (байт)",
       "enable-blur-nsfw-content": "Увімкнути розмиття чутливого контенту (NSFW)",
-      "enable-link-preview": "Увімкнути попередній перегляд посилань",
       "enable-memo-comments": "Увімкнути коментарі до нотаток",
       "enable-memo-location": "Увімкнути місцезнаходження нотаток",
       "reactions": "Реакції",

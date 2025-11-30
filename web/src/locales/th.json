@@ -294,7 +294,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "จำกัดความยาวเนื้อหา (ไบต์)",
       "enable-blur-nsfw-content": "เปิดใช้งานการเบลอเนื้อหาไม่เหมาะสม (NSFW)",
-      "enable-link-preview": "เปิดใช้งานตัวอย่างลิงก์",
       "enable-memo-comments": "เปิดใช้งานความคิดเห็นในบันทึก",
       "enable-memo-location": "เปิดใช้งานตำแหน่งในบันทึก",
       "reactions": "ปฏิกิริยา",

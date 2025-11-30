@@ -294,7 +294,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "Limite de longueur du contenu (octets)",
       "enable-blur-nsfw-content": "Activer le flou pour le contenu sensible (NSFW)",
-      "enable-link-preview": "Activer l'aperçu des liens",
       "enable-memo-comments": "Activer les commentaires sur les notes",
       "enable-memo-location": "Activer la localisation des notes",
       "reactions": "Réactions",

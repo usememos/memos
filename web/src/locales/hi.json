@@ -295,7 +295,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "सामग्री की अधिकतम लंबाई (बाइट)",
       "enable-blur-nsfw-content": "संवेदनशील (NSFW) सामग्री धुंधला करें सक्षम करें",
-      "enable-link-preview": "लिंक पूर्वावलोकन सक्षम करें",
       "enable-memo-comments": "मेमो टिप्पणियाँ सक्षम करें",
       "enable-memo-location": "मेमो स्थान सक्षम करें",
       "reactions": "प्रतिक्रियाएँ",

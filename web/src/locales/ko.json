@@ -302,7 +302,6 @@
     "memo-related-settings": {
       "content-lenght-limit": "내용 길이 제한 (바이트)",
       "enable-blur-nsfw-content": "민감한(성인) 콘텐츠 블러 처리 활성화",
-      "enable-link-preview": "링크 미리보기 활성화",
       "enable-memo-comments": "메모 댓글 활성화",
       "enable-memo-location": "메모 위치 활성화",
       "reactions": "반응",
