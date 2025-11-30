@@ -3,8 +3,6 @@ import type { EditorRefActions } from "./index";
 /**
  * Handles keyboard shortcuts for markdown formatting
  * Requires Cmd/Ctrl key to be pressed
- *
- * @alias handleEditorKeydownWithMarkdownShortcuts - for backward compatibility
  */
 export function handleMarkdownShortcuts(event: React.KeyboardEvent, editor: EditorRefActions): void {
   switch (event.key.toLowerCase()) {
@@ -22,9 +20,6 @@ export function handleMarkdownShortcuts(event: React.KeyboardEvent, editor: Edit
       break;
   }
 }
-
-// Backward compatibility alias
-export const handleEditorKeydownWithMarkdownShortcuts = handleMarkdownShortcuts;
 
 /**
  * Inserts a hyperlink for the selected text

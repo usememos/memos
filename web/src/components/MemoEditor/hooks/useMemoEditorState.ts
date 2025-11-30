@@ -1,11 +1,9 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service";
 import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service";
 import { Visibility } from "@/types/proto/api/v1/memo_service";
-import type { MemoEditorState } from "../types/memo-editor";
 
-export interface UseMemoEditorStateReturn {
-  state: MemoEditorState;
+interface MemoEditorState {
   memoVisibility: Visibility;
   attachmentList: Attachment[];
   relationList: MemoRelation[];
@@ -15,25 +13,12 @@ export interface UseMemoEditorStateReturn {
   isRequesting: boolean;
   isComposing: boolean;
   isDraggingFile: boolean;
-
-  setMemoVisibility: (visibility: Visibility) => void;
-  setAttachmentList: (attachments: Attachment[]) => void;
-  setRelationList: (relations: MemoRelation[]) => void;
-  setLocation: (location: Location | undefined) => void;
-  setIsFocusMode: (isFocusMode: boolean) => void;
-  toggleFocusMode: () => void;
-  setUploadingAttachment: (isUploading: boolean) => void;
-  setRequesting: (isRequesting: boolean) => void;
-  setComposing: (isComposing: boolean) => void;
-  setDraggingFile: (isDragging: boolean) => void;
-  resetState: () => void;
 }
 
 /**
  * Hook for managing MemoEditor state
- * Centralizes all state management and provides clean setters
  */
-export const useMemoEditorState = (initialVisibility: Visibility = Visibility.PRIVATE): UseMemoEditorStateReturn => {
+export const useMemoEditorState = (initialVisibility: Visibility = Visibility.PRIVATE) => {
   const [state, setState] = useState<MemoEditorState>({
     memoVisibility: initialVisibility,
     isFocusMode: false,
@@ -46,79 +31,29 @@ export const useMemoEditorState = (initialVisibility: Visibility = Visibility.PR
     isDraggingFile: false,
   });
 
-  const setMemoVisibility = useCallback((visibility: Visibility) => {
-    setState((prev) => ({ ...prev, memoVisibility: visibility }));
-  }, []);
-
-  const setAttachmentList = useCallback((attachments: Attachment[]) => {
-    setState((prev) => ({ ...prev, attachmentList: attachments }));
-  }, []);
-
-  const setRelationList = useCallback((relations: MemoRelation[]) => {
-    setState((prev) => ({ ...prev, relationList: relations }));
-  }, []);
-
-  const setLocation = useCallback((location: Location | undefined) => {
-    setState((prev) => ({ ...prev, location }));
-  }, []);
-
-  const setIsFocusMode = useCallback((isFocusMode: boolean) => {
-    setState((prev) => ({ ...prev, isFocusMode }));
-  }, []);
-
-  const toggleFocusMode = useCallback(() => {
-    setState((prev) => ({ ...prev, isFocusMode: !prev.isFocusMode }));
-  }, []);
-
-  const setUploadingAttachment = useCallback((isUploading: boolean) => {
-    setState((prev) => ({ ...prev, isUploadingAttachment: isUploading }));
-  }, []);
-
-  const setRequesting = useCallback((isRequesting: boolean) => {
-    setState((prev) => ({ ...prev, isRequesting }));
-  }, []);
-
-  const setComposing = useCallback((isComposing: boolean) => {
-    setState((prev) => ({ ...prev, isComposing }));
-  }, []);
-
-  const setDraggingFile = useCallback((isDragging: boolean) => {
-    setState((prev) => ({ ...prev, isDraggingFile: isDragging }));
-  }, []);
-
-  const resetState = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      isRequesting: false,
-      attachmentList: [],
-      relationList: [],
-      location: undefined,
-      isDraggingFile: false,
-    }));
-  }, []);
+  const update = <K extends keyof MemoEditorState>(key: K, value: MemoEditorState[K]) => {
+    setState((prev) => ({ ...prev, [key]: value }));
+  };
 
   return {
-    state,
-    memoVisibility: state.memoVisibility,
-    attachmentList: state.attachmentList,
-    relationList: state.relationList,
-    location: state.location,
-    isFocusMode: state.isFocusMode,
-    isUploadingAttachment: state.isUploadingAttachment,
-    isRequesting: state.isRequesting,
-    isComposing: state.isComposing,
-    isDraggingFile: state.isDraggingFile,
-
-    setMemoVisibility,
-    setAttachmentList,
-    setRelationList,
-    setLocation,
-    setIsFocusMode,
-    toggleFocusMode,
-    setUploadingAttachment,
-    setRequesting,
-    setComposing,
-    setDraggingFile,
-    resetState,
+    ...state,
+    setMemoVisibility: (v: Visibility) => update("memoVisibility", v),
+    setAttachmentList: (v: Attachment[]) => update("attachmentList", v),
+    setRelationList: (v: MemoRelation[]) => update("relationList", v),
+    setLocation: (v: Location | undefined) => update("location", v),
+    toggleFocusMode: () => setState((prev) => ({ ...prev, isFocusMode: !prev.isFocusMode })),
+    setUploadingAttachment: (v: boolean) => update("isUploadingAttachment", v),
+    setRequesting: (v: boolean) => update("isRequesting", v),
+    setComposing: (v: boolean) => update("isComposing", v),
+    setDraggingFile: (v: boolean) => update("isDraggingFile", v),
+    resetState: () =>
+      setState((prev) => ({
+        ...prev,
+        isRequesting: false,
+        attachmentList: [],
+        relationList: [],
+        location: undefined,
+        isDraggingFile: false,
+      })),
   };
 };

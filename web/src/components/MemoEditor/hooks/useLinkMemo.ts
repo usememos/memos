@@ -59,39 +59,11 @@ export const useLinkMemo = ({ isOpen, currentMemoName, existingRelations, onAddR
     onAddRelation(relation);
   };
 
-  const getHighlightedContent = (content: string): React.ReactNode => {
-    if (!searchText) return content;
-
-    const index = content.toLowerCase().indexOf(searchText.toLowerCase());
-    if (index === -1) {
-      return content;
-    }
-
-    let before = content.slice(0, index);
-    if (before.length > 20) {
-      before = "..." + before.slice(before.length - 20);
-    }
-    const highlighted = content.slice(index, index + searchText.length);
-    let after = content.slice(index + searchText.length);
-    if (after.length > 20) {
-      after = after.slice(0, 20) + "...";
-    }
-
-    return (
-      <>
-        {before}
-        <mark className="font-medium">{highlighted}</mark>
-        {after}
-      </>
-    );
-  };
-
   return {
     searchText,
     setSearchText,
     isFetching,
     filteredMemos,
     addMemoRelation,
-    getHighlightedContent,
   };
 };

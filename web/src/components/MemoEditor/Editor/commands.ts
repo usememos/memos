@@ -1,4 +1,11 @@
-import { Command } from "@/components/MemoEditor/types/command";
+/**
+ * Command type for slash commands in the editor
+ */
+export interface Command {
+  name: string;
+  run: () => string;
+  cursorOffset?: number;
+}
 
 export const editorCommands: Command[] = [
   {

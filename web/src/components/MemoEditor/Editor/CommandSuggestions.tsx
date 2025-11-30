@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import OverflowTip from "@/components/kit/OverflowTip";
-import { Command } from "../types/command";
-import { EditorRefActions } from ".";
+import type { EditorRefActions } from ".";
+import type { Command } from "./commands";
 import { SuggestionsPopup } from "./SuggestionsPopup";
 import { useSuggestions } from "./useSuggestions";
 

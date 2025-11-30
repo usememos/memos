@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { TAB_SPACE_WIDTH } from "@/helpers/consts";
 import { FOCUS_MODE_EXIT_KEY, FOCUS_MODE_TOGGLE_KEY } from "../constants";
 import type { EditorRefActions } from "../Editor";
-import { handleEditorKeydownWithMarkdownShortcuts } from "../Editor/markdownShortcuts";
+import { handleMarkdownShortcuts } from "../Editor/markdownShortcuts";
 
 export interface UseMemoEditorKeyboardOptions {
   editorRef: React.RefObject<EditorRefActions>;
@@ -48,7 +48,7 @@ export const useMemoEditorKeyboard = (options: UseMemoEditorKeyboardOptions) => 
           onSave();
           return;
         }
-        handleEditorKeydownWithMarkdownShortcuts(event, editorRef.current);
+        handleMarkdownShortcuts(event, editorRef.current);
       }
 
       // Tab handling

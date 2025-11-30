@@ -18,7 +18,6 @@ import { ErrorBoundary, FocusModeExitButton, FocusModeOverlay } from "./componen
 import { FOCUS_MODE_STYLES, LOCALSTORAGE_DEBOUNCE_DELAY } from "./constants";
 import Editor, { type EditorRefActions } from "./Editor";
 import {
-  useDebounce,
   useDragAndDrop,
   useFocusMode,
   useLocalFileManager,
@@ -31,12 +30,19 @@ import {
 import InsertMenu from "./Toolbar/InsertMenu";
 import VisibilitySelector from "./Toolbar/VisibilitySelector";
 import { MemoEditorContext } from "./types";
-import type { MemoEditorProps } from "./types/memo-editor";
 
-// Re-export for backward compatibility
-export type { MemoEditorProps as Props };
+export interface Props {
+  className?: string;
+  cacheKey?: string;
+  placeholder?: string;
+  memoName?: string;
+  parentMemoName?: string;
+  autoFocus?: boolean;
+  onConfirm?: (memoName: string) => void;
+  onCancel?: () => void;
+}
 
-const MemoEditor = observer((props: MemoEditorProps) => {
+const MemoEditor = observer((props: Props) => {
   const { className, cacheKey, memoName, parentMemoName, autoFocus, onConfirm, onCancel } = props;
   const t = useTranslate();
   const { i18n } = useTranslation();
@@ -160,29 +166,31 @@ const MemoEditor = observer((props: MemoEditorProps) => {
   });
 
   // Focus mode management with body scroll lock
-  useFocusMode({
-    isFocusMode,
-    onToggle: toggleFocusMode,
-  });
+  useFocusMode(isFocusMode);
 
   // Drag-and-drop for file uploads
-  const { isDragging, dragHandlers } = useDragAndDrop({
-    onDrop: addFiles,
-  });
+  const { isDragging, dragHandlers } = useDragAndDrop(addFiles);
 
   // Sync drag state with component state
   useEffect(() => {
     setDraggingFile(isDragging);
   }, [isDragging, setDraggingFile]);
 
-  // Debounced cache setter to avoid writing to localStorage on every keystroke
-  const saveContentToCache = useDebounce((content: string) => {
-    if (content !== "") {
-      setContentCache(content);
-    } else {
-      localStorage.removeItem(contentCacheKey);
-    }
-  }, LOCALSTORAGE_DEBOUNCE_DELAY);
+  // Debounced cache setter
+  const cacheTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const saveContentToCache = useCallback(
+    (content: string) => {
+      clearTimeout(cacheTimeoutRef.current);
+      cacheTimeoutRef.current = setTimeout(() => {
+        if (content !== "") {
+          setContentCache(content);
+        } else {
+          localStorage.removeItem(contentCacheKey);
+        }
+      }, LOCALSTORAGE_DEBOUNCE_DELAY);
+    },
+    [contentCacheKey, setContentCache],
+  );
 
   // Compute reference relations
   const referenceRelations = useMemo(() => {

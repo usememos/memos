@@ -3,6 +3,34 @@ import { Input } from "@/components/ui/input";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 
+/**
+ * Highlights search text within content string
+ */
+function highlightSearchText(content: string, searchText: string): React.ReactNode {
+  if (!searchText) return content;
+
+  const index = content.toLowerCase().indexOf(searchText.toLowerCase());
+  if (index === -1) return content;
+
+  let before = content.slice(0, index);
+  if (before.length > 20) {
+    before = "..." + before.slice(before.length - 20);
+  }
+  const highlighted = content.slice(index, index + searchText.length);
+  let after = content.slice(index + searchText.length);
+  if (after.length > 20) {
+    after = after.slice(0, 20) + "...";
+  }
+
+  return (
+    <>
+      {before}
+      <mark className="font-medium">{highlighted}</mark>
+      {after}
+    </>
+  );
+}
+
 interface LinkMemoDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -11,7 +39,6 @@ interface LinkMemoDialogProps {
   filteredMemos: Memo[];
   isFetching: boolean;
   onSelectMemo: (memo: Memo) => void;
-  getHighlightedContent: (content: string) => React.ReactNode;
 }
 
 export const LinkMemoDialog = ({
@@ -22,7 +49,6 @@ export const LinkMemoDialog = ({
   filteredMemos,
   isFetching,
   onSelectMemo,
-  getHighlightedContent,
 }: LinkMemoDialogProps) => {
   const t = useTranslate();
 
@@ -54,7 +80,7 @@ export const LinkMemoDialog = ({
                   <div className="w-full flex flex-col justify-start items-start">
                     <p className="text-xs text-muted-foreground select-none">{memo.displayTime?.toLocaleString()}</p>
                     <p className="mt-0.5 text-sm leading-5 line-clamp-2">
-                      {searchText ? getHighlightedContent(memo.content) : memo.snippet}
+                      {searchText ? highlightSearchText(memo.content, searchText) : memo.snippet}
                     </p>
                   </div>
                 </div>

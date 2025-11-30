@@ -1,7 +1,6 @@
-import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { EDITOR_HEIGHT } from "../constants";
-import { Command } from "../types/command";
 import CommandSuggestions from "./CommandSuggestions";
 import { editorCommands } from "./commands";
 import TagSuggestions from "./TagSuggestions";
@@ -27,8 +26,6 @@ interface Props {
   className: string;
   initialContent: string;
   placeholder: string;
-  tools?: ReactNode;
-  commands?: Command[];
   onContentChange: (content: string) => void;
   onPaste: (event: React.ClipboardEvent) => void;
   /** Whether Focus Mode is active - adjusts height constraints for immersive writing */

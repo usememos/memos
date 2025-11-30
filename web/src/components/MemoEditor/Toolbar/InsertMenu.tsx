@@ -197,7 +197,6 @@ const InsertMenu = observer((props: Props) => {
         filteredMemos={linkMemo.filteredMemos}
         isFetching={linkMemo.isFetching}
         onSelectMemo={linkMemo.addMemoRelation}
-        getHighlightedContent={linkMemo.getHighlightedContent}
       />
 
       <LocationDialog
