@@ -1,26 +1,26 @@
 import { SmilePlusIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { instanceStore } from "@/store";
+import type { Memo } from "@/types/proto/api/v1/memo_service";
 import { useReactionActions } from "./hooks";
-import type { ReactionSelectorProps } from "./types";
 
-/**
- * ReactionSelector component provides a popover for selecting emoji reactions
- */
-const ReactionSelector = observer((props: ReactionSelectorProps) => {
+interface Props {
+  memo: Memo;
+  className?: string;
+  onOpenChange?: (open: boolean) => void;
+}
+
+const ReactionSelector = observer((props: Props) => {
   const { memo, className, onOpenChange } = props;
   const [open, setOpen] = useState(false);
 
-  const handleOpenChange = useCallback(
-    (newOpen: boolean) => {
-      setOpen(newOpen);
-      onOpenChange?.(newOpen);
-    },
-    [onOpenChange],
-  );
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    onOpenChange?.(newOpen);
+  };
 
   const { hasReacted, handleReactionClick } = useReactionActions({
     memo,

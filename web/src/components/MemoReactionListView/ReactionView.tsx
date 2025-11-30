@@ -3,14 +3,17 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common";
+import type { Memo } from "@/types/proto/api/v1/memo_service";
+import type { User } from "@/types/proto/api/v1/user_service";
 import { formatReactionTooltip, useReactionActions } from "./hooks";
-import type { ReactionViewProps } from "./types";
 
-/**
- * ReactionView component displays a single reaction pill with count
- * Clicking toggles the reaction for the current user
- */
-const ReactionView = observer((props: ReactionViewProps) => {
+interface Props {
+  memo: Memo;
+  reactionType: string;
+  users: User[];
+}
+
+const ReactionView = observer((props: Props) => {
   const { memo, reactionType, users } = props;
   const currentUser = useCurrentUser();
   const hasReaction = users.some((user) => currentUser && user.username === currentUser.username);

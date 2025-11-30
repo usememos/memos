@@ -2,17 +2,17 @@ import { observer } from "mobx-react-lite";
 import { memo } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { State } from "@/types/proto/api/v1/common";
-import { ReactionSelector, ReactionView } from "../reactions";
+import type { Memo, Reaction } from "@/types/proto/api/v1/memo_service";
 import { useReactionGroups } from "./hooks";
-import type { MemoReactionListViewProps } from "./types";
+import ReactionSelector from "./ReactionSelector";
+import ReactionView from "./ReactionView";
 
-/**
- * MemoReactionListView displays the reactions on a memo:
- * - Groups reactions by type
- * - Shows reaction emoji with count
- * - Allows adding new reactions (if not readonly)
- */
-const MemoReactionListView = observer((props: MemoReactionListViewProps) => {
+interface Props {
+  memo: Memo;
+  reactions: Reaction[];
+}
+
+const MemoReactionListView = observer((props: Props) => {
   const { memo: memoData, reactions } = props;
   const currentUser = useCurrentUser();
   const reactionGroup = useReactionGroups(reactions);
