@@ -382,7 +382,6 @@
         "locale": "服务器语言环境",
         "title": "自定义服务器"
       },
-      "disable-markdown-shortcuts-in-editor": "禁用编辑器中的 Markdown 快捷键",
       "disable-password-login": "禁用密码登录",
       "disable-password-login-final-warning": "如果您知道自己在做什么，请输入 \"CONFIRM\"。",
       "disable-password-login-warning": "所有用户将无法使用密码登录。如果配置的身份提供程序失效，不在数据库中恢复此设置将无法登录。删除身份提供程序时也要格外小心",

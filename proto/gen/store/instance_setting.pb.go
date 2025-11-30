@@ -671,8 +671,6 @@ type InstanceMemoRelatedSetting struct {
 	EnableLinkPreview bool `protobuf:"varint,5,opt,name=enable_link_preview,json=enableLinkPreview,proto3" json:"enable_link_preview,omitempty"`
 	// reactions is the list of reactions.
 	Reactions []string `protobuf:"bytes,7,rep,name=reactions,proto3" json:"reactions,omitempty"`
-	// disable markdown shortcuts
-	DisableMarkdownShortcuts bool `protobuf:"varint,8,opt,name=disable_markdown_shortcuts,json=disableMarkdownShortcuts,proto3" json:"disable_markdown_shortcuts,omitempty"`
 	// enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
 	EnableBlurNsfwContent bool `protobuf:"varint,9,opt,name=enable_blur_nsfw_content,json=enableBlurNsfwContent,proto3" json:"enable_blur_nsfw_content,omitempty"`
 	// nsfw_tags is the list of tags that mark content as NSFW for blurring.
@@ -753,13 +751,6 @@ func (x *InstanceMemoRelatedSetting) GetReactions() []string {
 	return nil
 }
 
-func (x *InstanceMemoRelatedSetting) GetDisableMarkdownShortcuts() bool {
-	if x != nil {
-		return x.DisableMarkdownShortcuts
-	}
-	return false
-}
-
 func (x *InstanceMemoRelatedSetting) GetEnableBlurNsfwContent() bool {
 	if x != nil {
 		return x.EnableBlurNsfwContent
@@ -821,15 +812,14 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\bendpoint\x18\x03 \x01(\tR\bendpoint\x12\x16\n" +
 	"\x06region\x18\x04 \x01(\tR\x06region\x12\x16\n" +
 	"\x06bucket\x18\x05 \x01(\tR\x06bucket\x12$\n" +
-	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\"\xe0\x03\n" +
+	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\"\xa2\x03\n" +
 	"\x1aInstanceMemoRelatedSetting\x12<\n" +
 	"\x1adisallow_public_visibility\x18\x01 \x01(\bR\x18disallowPublicVisibility\x127\n" +
 	"\x18display_with_update_time\x18\x02 \x01(\bR\x15displayWithUpdateTime\x120\n" +
 	"\x14content_length_limit\x18\x03 \x01(\x05R\x12contentLengthLimit\x127\n" +
 	"\x18enable_double_click_edit\x18\x04 \x01(\bR\x15enableDoubleClickEdit\x12.\n" +
 	"\x13enable_link_preview\x18\x05 \x01(\bR\x11enableLinkPreview\x12\x1c\n" +
-	"\treactions\x18\a \x03(\tR\treactions\x12<\n" +
-	"\x1adisable_markdown_shortcuts\x18\b \x01(\bR\x18disableMarkdownShortcuts\x127\n" +
+	"\treactions\x18\a \x03(\tR\treactions\x127\n" +
 	"\x18enable_blur_nsfw_content\x18\t \x01(\bR\x15enableBlurNsfwContent\x12\x1b\n" +
 	"\tnsfw_tags\x18\n" +
 	" \x03(\tR\bnsfwTags*q\n" +

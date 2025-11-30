@@ -380,7 +380,6 @@
         "locale": "サーバーのロケール",
         "title": "サーバーをカスタマイズ"
       },
-      "disable-markdown-shortcuts-in-editor": "エディタでMarkdownショートカットを無効化",
       "disable-password-login": "パスワードログインを無効化",
       "disable-password-login-final-warning": "「CONFIRM」と入力してください（自己責任）",
       "disable-password-login-warning": "これにより全ユーザーのパスワードログインが無効になります。IDプロバイダーが失敗した場合、DBでこの設定を戻さないとログインできません。IDプロバイダー削除時はご注意ください。",

@@ -98,13 +98,6 @@ const MemoRelatedSettings = observer(() => {
           />
         </SettingRow>
 
-        <SettingRow label={t("setting.system-section.disable-markdown-shortcuts-in-editor")}>
-          <Switch
-            checked={memoRelatedSetting.disableMarkdownShortcuts}
-            onCheckedChange={(checked) => updatePartialSetting({ disableMarkdownShortcuts: checked })}
-          />
-        </SettingRow>
-
         <SettingRow label={t("setting.memo-related-settings.content-lenght-limit")}>
           <Input
             className="w-24"

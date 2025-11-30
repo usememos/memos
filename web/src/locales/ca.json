@@ -380,7 +380,6 @@
         "locale": "Llengua del servidor",
         "title": "Personalitza el servidor"
       },
-      "disable-markdown-shortcuts-in-editor": "Desactiva dreceres Markdown a l'editor",
       "disable-password-login": "Desactiva l'inici de sessió amb contrasenya",
       "disable-password-login-final-warning": "Escriu \"CONFIRM\" si saps el que estàs fent.",
       "disable-password-login-warning": "Això desactivarà l'inici de sessió amb contrasenya per a tots els usuaris. No serà possible iniciar sessió sense revertir aquesta configuració a la base de dades si els proveïdors d'identitat fallen. Vés amb compte en eliminar un proveïdor d'identitat",

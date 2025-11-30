@@ -380,7 +380,6 @@
         "locale": "Lokalizacija servera",
         "title": "Prilagodi server"
       },
-      "disable-markdown-shortcuts-in-editor": "Onemogući Markdown prečace u uređivaču",
       "disable-password-login": "Onemogući prijavu lozinkom",
       "disable-password-login-final-warning": "Upiši \"CONFIRM\" ako znaš što radiš.",
       "disable-password-login-warning": "Ovo će onemogućiti prijavu lozinkom za sve korisnike. Nije moguće prijaviti se bez vraćanja ove postavke u bazi podataka ako vaši pružatelji identiteta zakažu. Budite posebno oprezni pri uklanjanju pružatelja identiteta.",

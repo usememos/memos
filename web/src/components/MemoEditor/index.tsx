@@ -209,9 +209,7 @@ const MemoEditor = observer((props: MemoEditorProps) => {
         handleSaveBtnClick();
         return;
       }
-      if (!instanceMemoRelatedSetting.disableMarkdownShortcuts) {
-        handleEditorKeydownWithMarkdownShortcuts(event, editorRef.current);
-      }
+      handleEditorKeydownWithMarkdownShortcuts(event, editorRef.current);
     }
     if (event.key === "Tab" && !state.isComposing) {
       event.preventDefault();

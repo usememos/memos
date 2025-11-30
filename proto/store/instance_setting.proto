@@ -108,8 +108,6 @@ message InstanceMemoRelatedSetting {
   bool enable_link_preview = 5;
   // reactions is the list of reactions.
   repeated string reactions = 7;
-  // disable markdown shortcuts
-  bool disable_markdown_shortcuts = 8;
   // enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
   bool enable_blur_nsfw_content = 9;
   // nsfw_tags is the list of tags that mark content as NSFW for blurring.

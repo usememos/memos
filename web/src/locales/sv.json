@@ -380,7 +380,6 @@
         "locale": "Serverns språk",
         "title": "Anpassa server"
       },
-      "disable-markdown-shortcuts-in-editor": "Inaktivera Markdown-genvägar i redigeraren",
       "disable-password-login": "Inaktivera lösenordsinloggning",
       "disable-password-login-final-warning": "Skriv \"CONFIRM\" om du vet vad du gör.",
       "disable-password-login-warning": "Detta inaktiverar lösenordsinloggning för alla användare. Det går inte att logga in utan att återställa denna inställning i databasen om dina identitetsleverantörer misslyckas. Var extra försiktig när du tar bort en identitetsleverantör.",

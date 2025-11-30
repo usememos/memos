@@ -380,7 +380,6 @@
         "locale": "Localização da instância",
         "title": "Personalizar instância"
       },
-      "disable-markdown-shortcuts-in-editor": "Desabilitar atalhos de Markdown no editor",
       "disable-password-login": "Desabilitar login com senha",
       "disable-password-login-final-warning": "Por favor, digite \"CONFIRM\" para prosseguir.",
       "disable-password-login-warning": "Isso desabilitará o login com senha para todos os usuários. Caso seus provedores de identidade (SSO) configurados falhem, não será possível fazer login sem reverter esse ajuste manualmente no banco de dados. Você também deverá tomar precauções adicionais ao remover qualquer provedor de identidade!",

@@ -2344,9 +2344,6 @@ components:
                     items:
                         type: string
                     description: reactions is the list of reactions.
-                disableMarkdownShortcuts:
-                    type: boolean
-                    description: disable_markdown_shortcuts disallow the registration of markdown shortcuts.
                 enableBlurNsfwContent:
                     type: boolean
                     description: enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).

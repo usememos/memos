@@ -261,7 +261,6 @@ func convertInstanceMemoRelatedSettingFromStore(setting *storepb.InstanceMemoRel
 		EnableDoubleClickEdit:    setting.EnableDoubleClickEdit,
 		EnableLinkPreview:        setting.EnableLinkPreview,
 		Reactions:                setting.Reactions,
-		DisableMarkdownShortcuts: setting.DisableMarkdownShortcuts,
 		EnableBlurNsfwContent:    setting.EnableBlurNsfwContent,
 		NsfwTags:                 setting.NsfwTags,
 	}
@@ -278,7 +277,6 @@ func convertInstanceMemoRelatedSettingToStore(setting *v1pb.InstanceSetting_Memo
 		EnableDoubleClickEdit:    setting.EnableDoubleClickEdit,
 		EnableLinkPreview:        setting.EnableLinkPreview,
 		Reactions:                setting.Reactions,
-		DisableMarkdownShortcuts: setting.DisableMarkdownShortcuts,
 		EnableBlurNsfwContent:    setting.EnableBlurNsfwContent,
 		NsfwTags:                 setting.NsfwTags,
 	}

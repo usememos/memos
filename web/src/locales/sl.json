@@ -380,7 +380,6 @@
         "locale": "Jezik strežnika",
         "title": "Prilagodi strežnik"
       },
-      "disable-markdown-shortcuts-in-editor": "Onemogoči bližnjice Markdown v urejevalniku",
       "disable-password-login": "Onemogoči prijavo z geslom",
       "disable-password-login-final-warning": "Prosim vnesite \"POTRDI\", če veste kaj počnete.",
       "disable-password-login-warning": "To bo onemogočilo prijavo z geslom za vse uporabnike. Brez ponovnega vklopa te nastavitve v bazi, prijava ne bo več možna. Enako tudi če identiteta enotne prijave zataji. Bodite tudi zelo previdni pri odstranjevalju identitete enotne prijave",

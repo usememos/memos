@@ -380,7 +380,6 @@
         "locale": "Serverlokalisering",
         "title": "Tilpass server"
       },
-      "disable-markdown-shortcuts-in-editor": "Slå av Markdown-snarveier ved redigering",
       "disable-password-login": "Slå av passordinnlogging",
       "disable-password-login-final-warning": "Skriv \"CONFIRM\" hvis du vet hva du gjør.",
       "disable-password-login-warning": "Dette slår av passordinnlogging for alle brukere. Dersom de konfigurerte identitetsleverandørene mislykkes er det ikke mulig å logge inn uten å tilbakestille denne innstillingen i databasen. Du må også være ekstra forsiktig når du fjerner en identitetsleverandør.",

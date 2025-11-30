@@ -224,8 +224,6 @@ export interface InstanceSetting_MemoRelatedSetting {
   enableLinkPreview: boolean;
   /** reactions is the list of reactions. */
   reactions: string[];
-  /** disable_markdown_shortcuts disallow the registration of markdown shortcuts. */
-  disableMarkdownShortcuts: boolean;
   /** enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW). */
   enableBlurNsfwContent: boolean;
   /** nsfw_tags is the list of tags that mark content as NSFW for blurring. */
@@ -901,7 +899,6 @@ function createBaseInstanceSetting_MemoRelatedSetting(): InstanceSetting_MemoRel
     enableDoubleClickEdit: false,
     enableLinkPreview: false,
     reactions: [],
-    disableMarkdownShortcuts: false,
     enableBlurNsfwContent: false,
     nsfwTags: [],
   };
@@ -926,9 +923,6 @@ export const InstanceSetting_MemoRelatedSetting: MessageFns<InstanceSetting_Memo
     }
     for (const v of message.reactions) {
       writer.uint32(58).string(v!);
-    }
-    if (message.disableMarkdownShortcuts !== false) {
-      writer.uint32(64).bool(message.disableMarkdownShortcuts);
     }
     if (message.enableBlurNsfwContent !== false) {
       writer.uint32(72).bool(message.enableBlurNsfwContent);
@@ -994,14 +988,6 @@ export const InstanceSetting_MemoRelatedSetting: MessageFns<InstanceSetting_Memo
           message.reactions.push(reader.string());
           continue;
         }
-        case 8: {
-          if (tag !== 64) {
-            break;
-          }
-
-          message.disableMarkdownShortcuts = reader.bool();
-          continue;
-        }
         case 9: {
           if (tag !== 72) {
             break;
@@ -1038,7 +1024,6 @@ export const InstanceSetting_MemoRelatedSetting: MessageFns<InstanceSetting_Memo
     message.enableDoubleClickEdit = object.enableDoubleClickEdit ?? false;
     message.enableLinkPreview = object.enableLinkPreview ?? false;
     message.reactions = object.reactions?.map((e) => e) || [];
-    message.disableMarkdownShortcuts = object.disableMarkdownShortcuts ?? false;
     message.enableBlurNsfwContent = object.enableBlurNsfwContent ?? false;
     message.nsfwTags = object.nsfwTags?.map((e) => e) || [];
     return message;

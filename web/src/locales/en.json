@@ -410,7 +410,6 @@
         "locale": "Server Locale",
         "title": "Customize Server"
       },
-      "disable-markdown-shortcuts-in-editor": "Disable Markdown shortcuts in editor",
       "disable-password-login": "Disable password login",
       "disable-password-login-final-warning": "Please type `CONFIRM` if you know what you are doing.",
       "disable-password-login-warning": "This will disable password login for all users. It is not possible to log in without reverting this setting in the database if your configured identity providers fail. You’ll also have to be extra careful when removing an identity provider",

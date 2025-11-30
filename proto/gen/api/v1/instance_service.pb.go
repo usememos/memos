@@ -667,8 +667,6 @@ type InstanceSetting_MemoRelatedSetting struct {
 	EnableLinkPreview bool `protobuf:"varint,5,opt,name=enable_link_preview,json=enableLinkPreview,proto3" json:"enable_link_preview,omitempty"`
 	// reactions is the list of reactions.
 	Reactions []string `protobuf:"bytes,7,rep,name=reactions,proto3" json:"reactions,omitempty"`
-	// disable_markdown_shortcuts disallow the registration of markdown shortcuts.
-	DisableMarkdownShortcuts bool `protobuf:"varint,8,opt,name=disable_markdown_shortcuts,json=disableMarkdownShortcuts,proto3" json:"disable_markdown_shortcuts,omitempty"`
 	// enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
 	EnableBlurNsfwContent bool `protobuf:"varint,9,opt,name=enable_blur_nsfw_content,json=enableBlurNsfwContent,proto3" json:"enable_blur_nsfw_content,omitempty"`
 	// nsfw_tags is the list of tags that mark content as NSFW for blurring.
@@ -747,13 +745,6 @@ func (x *InstanceSetting_MemoRelatedSetting) GetReactions() []string {
 		return x.Reactions
 	}
 	return nil
-}
-
-func (x *InstanceSetting_MemoRelatedSetting) GetDisableMarkdownShortcuts() bool {
-	if x != nil {
-		return x.DisableMarkdownShortcuts
-	}
-	return false
 }
 
 func (x *InstanceSetting_MemoRelatedSetting) GetEnableBlurNsfwContent() bool {
@@ -935,7 +926,7 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04mode\x18\x03 \x01(\tR\x04mode\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\x8b\x11\n" +
+	"\x19GetInstanceProfileRequest\"\xcd\x10\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2,.memos.api.v1.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12W\n" +
@@ -972,15 +963,14 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\t\n" +
 	"\x05LOCAL\x10\x02\x12\x06\n" +
-	"\x02S3\x10\x03\x1a\xd8\x03\n" +
+	"\x02S3\x10\x03\x1a\x9a\x03\n" +
 	"\x12MemoRelatedSetting\x12<\n" +
 	"\x1adisallow_public_visibility\x18\x01 \x01(\bR\x18disallowPublicVisibility\x127\n" +
 	"\x18display_with_update_time\x18\x02 \x01(\bR\x15displayWithUpdateTime\x120\n" +
 	"\x14content_length_limit\x18\x03 \x01(\x05R\x12contentLengthLimit\x127\n" +
 	"\x18enable_double_click_edit\x18\x04 \x01(\bR\x15enableDoubleClickEdit\x12.\n" +
 	"\x13enable_link_preview\x18\x05 \x01(\bR\x11enableLinkPreview\x12\x1c\n" +
-	"\treactions\x18\a \x03(\tR\treactions\x12<\n" +
-	"\x1adisable_markdown_shortcuts\x18\b \x01(\bR\x18disableMarkdownShortcuts\x127\n" +
+	"\treactions\x18\a \x03(\tR\treactions\x127\n" +
 	"\x18enable_blur_nsfw_content\x18\t \x01(\bR\x15enableBlurNsfwContent\x12\x1b\n" +
 	"\tnsfw_tags\x18\n" +
 	" \x03(\tR\bnsfwTags\"F\n" +

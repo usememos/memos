@@ -380,7 +380,6 @@
         "locale": "Locale Server",
         "title": "Sesuaikan Server"
       },
-      "disable-markdown-shortcuts-in-editor": "Nonaktifkan pintasan Markdown di editor",
       "disable-password-login": "Nonaktifkan login kata sandi",
       "disable-password-login-final-warning": "Silakan ketik \"KONFIRMASI\" jika Anda tahu apa yang Anda lakukan.",
       "disable-password-login-warning": "Ini akan menonaktifkan login kata sandi untuk semua pengguna. Tidak mungkin untuk login tanpa mengembalikan pengaturan ini di basis data jika penyedia identitas yang Anda konfigurasikan gagal. Anda juga harus lebih berhati-hati saat menghapus penyedia identitas.",

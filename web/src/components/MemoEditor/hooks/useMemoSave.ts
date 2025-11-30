@@ -6,6 +6,7 @@ import { memoServiceClient } from "@/grpcweb";
 import { attachmentStore, memoStore } from "@/store";
 import { Attachment } from "@/types/proto/api/v1/attachment_service";
 import type { Location, Memo, MemoRelation, Visibility } from "@/types/proto/api/v1/memo_service";
+import type { Translations } from "@/utils/i18n";
 
 interface MemoSaveContext {
   /** Current memo name (for update mode) */
@@ -40,7 +41,7 @@ interface MemoSaveCallbacks {
   /** Called to reset after save */
   onReset: () => void;
   /** Translation function */
-  t: (key: string) => string;
+  t: (key: Translations, params?: Record<string, any>) => string;
 }
 
 /**

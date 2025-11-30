@@ -303,7 +303,6 @@
         "locale": "Ngôn ngữ máy chủ",
         "title": "Tùy chỉnh máy chủ"
       },
-      "disable-markdown-shortcuts-in-editor": "Vô hiệu hóa phím tắt Markdown trong trình soạn thảo",
       "disable-password-login": "Vô hiệu hóa đăng nhập bằng mật khẩu",
       "disable-password-login-final-warning": "Vui lòng nhập \"CONFIRM\" nếu bạn biết mình đang làm gì.",
       "disable-password-login-warning": "Điều này sẽ vô hiệu hóa đăng nhập bằng mật khẩu cho tất cả người dùng. Không thể đăng nhập nếu không hoàn tác cài đặt này trong cơ sở dữ liệu khi nhà cung cấp danh tính đã cấu hình gặp sự cố. Bạn cũng cần phải thật cẩn thận khi xóa nhà cung cấp danh tính",

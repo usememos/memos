@@ -363,7 +363,6 @@
         "locale": "Lokalizace serveru",
         "title": "Přizpůsobení serveru"
       },
-      "disable-markdown-shortcuts-in-editor": "Zakázat klávesové zkratky Markdown v editoru",
       "disable-password-login": "Zakázat přihlašování heslem",
       "disable-password-login-final-warning": "Pokud víte, co děláte, zadejte \"CONFIRM\".",
       "disable-password-login-warning": "Tímto zakážete přihlašování heslem pro všechny uživatele. Bez obnovení tohoto nastavení v databázi není možné se přihlásit, pokud selžou vámi nakonfigurovaní poskytovatelé identit. Při odebírání poskytovatele identit budete muset být také velmi opatrní.",

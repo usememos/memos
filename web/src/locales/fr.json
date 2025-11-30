@@ -380,7 +380,6 @@
         "locale": "Langue du serveur",
         "title": "Personnaliser le serveur"
       },
-      "disable-markdown-shortcuts-in-editor": "Désactiver les raccourcis Markdown dans l'éditeur",
       "disable-password-login": "Désactiver la connexion par mot de passe",
       "disable-password-login-final-warning": "Veuillez taper \"CONFIRM\" si vous savez ce que vous faites.",
       "disable-password-login-warning": "Cela désactivera la connexion par mot de passe pour tous les utilisateurs. Il ne sera pas possible de se connecter sans annuler ce paramètre dans la base de données si vos fournisseurs d'identité échouent. Soyez très prudent lors de la suppression d'un fournisseur d'identité",

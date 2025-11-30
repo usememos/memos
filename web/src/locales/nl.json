@@ -380,7 +380,6 @@
         "locale": "Servertaal",
         "title": "Server aanpassen"
       },
-      "disable-markdown-shortcuts-in-editor": "Markdown-sneltoetsen in editor uitschakelen",
       "disable-password-login": "Wachtwoordlogin uitzetten",
       "disable-password-login-final-warning": "Typ \"CONFIRM\" als je zeker weet wat je doet.",
       "disable-password-login-warning": "Als je dit uitzet, kan je niet meer inloggen met een wachtwoord, zonder de database aan te passen. Als je inlogprovider niet werkt, kan je memos niet in.",

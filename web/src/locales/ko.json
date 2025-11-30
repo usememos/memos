@@ -388,7 +388,6 @@
         "locale": "서버 언어",
         "title": "서버 커스터마이징"
       },
-      "disable-markdown-shortcuts-in-editor": "에디터에서 Markdown 단축키 비활성화",
       "disable-password-login": "비밀번호 로그인 금지",
       "disable-password-login-final-warning": "이로부터 발생할 수 있는 모든 상황을 이해했다면, 아래에 \"CONFIRM\"을 입력해 주세요.",
       "disable-password-login-warning": "모든 사용자가 비밀번호를 사용해서 로그인하지 못하게 합니다. 설정된 SSO에 문제가 생겼을 경우, 데이터베이스를 직접 조작해서 이 설정을 끄지 않는 한 절대로 로그인하지 못하게 됩니다. SSO 설정을 수정/제거할 때에는 특히 조심해 주세요",

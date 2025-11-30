@@ -380,7 +380,6 @@
         "locale": "Sunucu Yerel Ayarı",
         "title": "Sunucuyu Özelleştir"
       },
-      "disable-markdown-shortcuts-in-editor": "Editörde Markdown kısayollarını devre dışı bırak",
       "disable-password-login": "Şifre ile girişi devre dışı bırak",
       "disable-password-login-final-warning": "Ne yaptığınızı biliyorsanız lütfen \"CONFIRM\" yazın.",
       "disable-password-login-warning": "Bu, tüm kullanıcılar için şifre ile girişi devre dışı bırakacaktır. Yapılandırılmış kimlik sağlayıcılarınız başarısız olursa, veritabanında bu ayarı geri almadan giriş yapmak mümkün olmayacaktır. Ayrıca bir kimlik sağlayıcıyı kaldırırken çok dikkatli olmanız gerekecektir",

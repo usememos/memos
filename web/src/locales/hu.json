@@ -379,7 +379,6 @@
         "locale": "Szerver nyelve",
         "title": "Szerver személyre szabása"
       },
-      "disable-markdown-shortcuts-in-editor": "Markdown gyorsbillentyűk letiltása a szerkesztőben",
       "disable-password-login": "Jelszavas bejelentkezés letiltása",
       "disable-password-login-final-warning": "Írd be, hogy \"CONFIRM\" ha tudod mit csinálsz.",
       "disable-password-login-warning": "Ez letiltja a jelszavas bejelentkezést minden felhasználó számára. Ha a konfigurált identitásszolgáltatók nem elérhetőek, a bejelentkezés nem lehetséges, ezen beállítás kikapcsolása nélkül az adatbázisban. Ezen kívül fokozott figyelem szükséges identitásszolgálók eltávolítása során is",
