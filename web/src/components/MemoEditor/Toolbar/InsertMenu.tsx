@@ -16,14 +16,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
+import { LinkMemoDialog, LocationDialog } from "../components";
 import { GEOCODING } from "../constants";
+import { useFileUpload, useLinkMemo, useLocation } from "../hooks";
 import { useAbortController } from "../hooks/useAbortController";
 import { MemoEditorContext } from "../types";
-import { LinkMemoDialog } from "./InsertMenu/LinkMemoDialog";
-import { LocationDialog } from "./InsertMenu/LocationDialog";
-import { useFileUpload } from "./InsertMenu/useFileUpload";
-import { useLinkMemo } from "./InsertMenu/useLinkMemo";
-import { useLocation } from "./InsertMenu/useLocation";
 
 interface Props {
   isUploading?: boolean;

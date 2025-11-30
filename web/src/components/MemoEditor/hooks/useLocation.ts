@@ -1,7 +1,7 @@
 import { LatLng } from "leaflet";
 import { useState } from "react";
 import { Location } from "@/types/proto/api/v1/memo_service";
-import { LocationState } from "./types";
+import { LocationState } from "../types/insert-menu";
 
 export const useLocation = (initialLocation?: Location) => {
   const [locationInitialized, setLocationInitialized] = useState(false);

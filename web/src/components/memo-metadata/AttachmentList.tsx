@@ -4,9 +4,9 @@ import { useState } from "react";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import MemoAttachment from "../MemoAttachment";
-import SortableItem from "../MemoEditor/SortableItem";
 import PreviewImageDialog from "../PreviewImageDialog";
 import AttachmentCard from "./AttachmentCard";
+import SortableItem from "./SortableItem";
 import type { AttachmentItem, BaseMetadataProps, LocalFile } from "./types";
 import { separateMediaAndDocs, toAttachmentItems } from "./types";
 

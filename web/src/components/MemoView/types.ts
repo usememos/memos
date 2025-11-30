@@ -25,39 +25,31 @@ export interface MemoViewProps {
 
 /**
  * Props for the MemoHeader component
+ * Note: Most data props now come from MemoViewContext
  */
 export interface MemoHeaderProps {
-  memo: Memo;
-  creator: User | undefined;
+  // Display options
   showCreator?: boolean;
   showVisibility?: boolean;
   showPinned?: boolean;
-  isArchived: boolean;
-  commentAmount: number;
-  isInMemoDetailPage: boolean;
-  parentPage: string;
-  readonly: boolean;
-  relativeTimeFormat: "datetime" | "auto";
+  // Callbacks
   onEdit: () => void;
   onGotoDetail: () => void;
   onUnpin: () => void;
   onToggleNsfwVisibility?: () => void;
-  nsfw?: boolean;
-  showNSFWContent?: boolean;
+  // Reaction state
   reactionSelectorOpen: boolean;
   onReactionSelectorOpenChange: (open: boolean) => void;
 }
 
 /**
  * Props for the MemoBody component
+ * Note: Most data props now come from MemoViewContext
  */
 export interface MemoBodyProps {
-  memo: Memo;
-  readonly: boolean;
+  // Display options
   compact?: boolean;
-  parentPage: string;
-  nsfw: boolean;
-  showNSFWContent: boolean;
+  // Callbacks
   onContentClick: (e: React.MouseEvent) => void;
   onContentDoubleClick: (e: React.MouseEvent) => void;
   onToggleNsfwVisibility: () => void;

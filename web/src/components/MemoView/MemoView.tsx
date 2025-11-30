@@ -1,18 +1,21 @@
 import { observer } from "mobx-react-lite";
-import { memo, useCallback, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
-import useCurrentUser from "@/hooks/useCurrentUser";
-import useNavigateTo from "@/hooks/useNavigateTo";
+import { memo, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { instanceStore, userStore } from "@/store";
-import { State } from "@/types/proto/api/v1/common";
-import { MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
-import { isSuperUser } from "@/utils/user";
 import MemoEditor from "../MemoEditor";
 import PreviewImageDialog from "../PreviewImageDialog";
 import { MemoBody, MemoHeader } from "./components";
-import { MEMO_CARD_BASE_CLASSES, RELATIVE_TIME_THRESHOLD_MS } from "./constants";
-import { useImagePreview, useKeyboardShortcuts, useMemoActions, useMemoCreator, useNsfwContent } from "./hooks";
+import { MEMO_CARD_BASE_CLASSES } from "./constants";
+import {
+  useImagePreview,
+  useKeyboardShortcuts,
+  useMemoActions,
+  useMemoCreator,
+  useMemoEditor,
+  useMemoHandlers,
+  useMemoViewDerivedState,
+  useNsfwContent,
+} from "./hooks";
+import { MemoViewContext } from "./MemoViewContext";
 import type { MemoViewProps } from "./types";
 
 /**
@@ -27,34 +30,34 @@ import type { MemoViewProps } from "./types";
  */
 const MemoView: React.FC<MemoViewProps> = observer((props: MemoViewProps) => {
   const { memo: memoData, className } = props;
-  const location = useLocation();
-  const navigateTo = useNavigateTo();
-  const user = useCurrentUser();
   const cardRef = useRef<HTMLDivElement>(null);
 
   // State
-  const [showEditor, setShowEditor] = useState(false);
   const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
 
-  // Fetch creator data
+  // Custom hooks for data fetching
   const creator = useMemoCreator(memoData.creator);
 
-  // Custom hooks for state management
+  // Custom hooks for derived state
+  const { commentAmount, relativeTimeFormat, isArchived, readonly, isInMemoDetailPage, parentPage } = useMemoViewDerivedState({
+    memo: memoData,
+    parentPage: props.parentPage,
+  });
+
+  // Custom hooks for UI state management
   const { nsfw, showNSFWContent, toggleNsfwVisibility } = useNsfwContent(memoData, props.showNsfwContent);
   const { previewState, openPreview, setPreviewOpen } = useImagePreview();
-  const { archiveMemo, unpinMemo } = useMemoActions(memoData);
+  const { showEditor, openEditor, handleEditorConfirm, handleEditorCancel } = useMemoEditor();
 
-  // Derived state
-  const instanceMemoRelatedSetting = instanceStore.state.memoRelatedSetting;
-  const commentAmount = memoData.relations.filter(
-    (relation) => relation.type === MemoRelation_Type.COMMENT && relation.relatedMemo?.name === memoData.name,
-  ).length;
-  const relativeTimeFormat =
-    memoData.displayTime && Date.now() - memoData.displayTime.getTime() > RELATIVE_TIME_THRESHOLD_MS ? "datetime" : "auto";
-  const isArchived = memoData.state === State.ARCHIVED;
-  const readonly = memoData.creator !== user?.name && !isSuperUser(user);
-  const isInMemoDetailPage = location.pathname.startsWith(`/${memoData.name}`);
-  const parentPage = props.parentPage || location.pathname;
+  // Custom hooks for actions
+  const { archiveMemo, unpinMemo } = useMemoActions(memoData);
+  const { handleGotoMemoDetailPage, handleMemoContentClick, handleMemoContentDoubleClick } = useMemoHandlers({
+    memoName: memoData.name,
+    parentPage,
+    readonly,
+    openEditor,
+    openPreview,
+  });
 
   // Keyboard shortcuts
   const { handleShortcutActivation } = useKeyboardShortcuts(cardRef, {
@@ -62,58 +65,27 @@ const MemoView: React.FC<MemoViewProps> = observer((props: MemoViewProps) => {
     readonly,
     showEditor,
     isArchived,
-    onEdit: () => setShowEditor(true),
+    onEdit: openEditor,
     onArchive: archiveMemo,
   });
 
-  // Handlers
-  const handleGotoMemoDetailPage = useCallback(() => {
-    navigateTo(`/${memoData.name}`, {
-      state: { from: parentPage },
-    });
-  }, [memoData.name, parentPage, navigateTo]);
-
-  const handleMemoContentClick = useCallback(
-    (e: React.MouseEvent) => {
-      const targetEl = e.target as HTMLElement;
-
-      if (targetEl.tagName === "IMG") {
-        // Check if the image is inside a link
-        const linkElement = targetEl.closest("a");
-        if (linkElement) {
-          // If image is inside a link, only navigate to the link (don't show preview)
-          return;
-        }
-
-        const imgUrl = targetEl.getAttribute("src");
-        if (imgUrl) {
-          openPreview(imgUrl);
-        }
-      }
-    },
-    [openPreview],
+  // Memoize context value to prevent unnecessary re-renders
+  // IMPORTANT: This must be before the early return to satisfy Rules of Hooks
+  const contextValue = useMemo(
+    () => ({
+      memo: memoData,
+      creator,
+      isArchived,
+      readonly,
+      isInMemoDetailPage,
+      parentPage,
+      commentAmount,
+      relativeTimeFormat,
+      nsfw,
+      showNSFWContent,
+    }),
+    [memoData, creator, isArchived, readonly, isInMemoDetailPage, parentPage, commentAmount, relativeTimeFormat, nsfw, showNSFWContent],
   );
-
-  const handleMemoContentDoubleClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (readonly) return;
-
-      if (instanceMemoRelatedSetting.enableDoubleClickEdit) {
-        e.preventDefault();
-        setShowEditor(true);
-      }
-    },
-    [readonly, instanceMemoRelatedSetting.enableDoubleClickEdit],
-  );
-
-  const handleEditorConfirm = useCallback(() => {
-    setShowEditor(false);
-    userStore.setStatsStateId();
-  }, []);
-
-  const handleEditorCancel = useCallback(() => {
-    setShowEditor(false);
-  }, []);
 
   // Render inline editor when editing
   if (showEditor) {
@@ -131,54 +103,41 @@ const MemoView: React.FC<MemoViewProps> = observer((props: MemoViewProps) => {
 
   // Render memo card
   return (
-    <article
-      className={cn(MEMO_CARD_BASE_CLASSES, className)}
-      ref={cardRef}
-      tabIndex={readonly ? -1 : 0}
-      onFocus={() => handleShortcutActivation(true)}
-      onBlur={() => handleShortcutActivation(false)}
-    >
-      <MemoHeader
-        memo={memoData}
-        creator={creator}
-        showCreator={props.showCreator}
-        showVisibility={props.showVisibility}
-        showPinned={props.showPinned}
-        isArchived={isArchived}
-        commentAmount={commentAmount}
-        isInMemoDetailPage={isInMemoDetailPage}
-        parentPage={parentPage}
-        readonly={readonly}
-        relativeTimeFormat={relativeTimeFormat}
-        onEdit={() => setShowEditor(true)}
-        onGotoDetail={handleGotoMemoDetailPage}
-        onUnpin={unpinMemo}
-        onToggleNsfwVisibility={toggleNsfwVisibility}
-        nsfw={nsfw}
-        showNSFWContent={showNSFWContent}
-        reactionSelectorOpen={reactionSelectorOpen}
-        onReactionSelectorOpenChange={setReactionSelectorOpen}
-      />
+    <MemoViewContext.Provider value={contextValue}>
+      <article
+        className={cn(MEMO_CARD_BASE_CLASSES, className)}
+        ref={cardRef}
+        tabIndex={readonly ? -1 : 0}
+        onFocus={() => handleShortcutActivation(true)}
+        onBlur={() => handleShortcutActivation(false)}
+      >
+        <MemoHeader
+          showCreator={props.showCreator}
+          showVisibility={props.showVisibility}
+          showPinned={props.showPinned}
+          onEdit={openEditor}
+          onGotoDetail={handleGotoMemoDetailPage}
+          onUnpin={unpinMemo}
+          onToggleNsfwVisibility={toggleNsfwVisibility}
+          reactionSelectorOpen={reactionSelectorOpen}
+          onReactionSelectorOpenChange={setReactionSelectorOpen}
+        />
 
-      <MemoBody
-        memo={memoData}
-        readonly={readonly}
-        compact={props.compact}
-        parentPage={parentPage}
-        nsfw={nsfw}
-        showNSFWContent={showNSFWContent}
-        onContentClick={handleMemoContentClick}
-        onContentDoubleClick={handleMemoContentDoubleClick}
-        onToggleNsfwVisibility={toggleNsfwVisibility}
-      />
+        <MemoBody
+          compact={props.compact}
+          onContentClick={handleMemoContentClick}
+          onContentDoubleClick={handleMemoContentDoubleClick}
+          onToggleNsfwVisibility={toggleNsfwVisibility}
+        />
 
-      <PreviewImageDialog
-        open={previewState.open}
-        onOpenChange={setPreviewOpen}
-        imgUrls={previewState.urls}
-        initialIndex={previewState.index}
-      />
-    </article>
+        <PreviewImageDialog
+          open={previewState.open}
+          onOpenChange={setPreviewOpen}
+          imgUrls={previewState.urls}
+          initialIndex={previewState.index}
+        />
+      </article>
+    </MemoViewContext.Provider>
   );
 });
 

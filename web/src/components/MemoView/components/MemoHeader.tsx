@@ -4,12 +4,14 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import i18n from "@/i18n";
 import { cn } from "@/lib/utils";
 import { Visibility } from "@/types/proto/api/v1/memo_service";
+import type { User } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityToString } from "@/utils/memo";
 import MemoActionMenu from "../../MemoActionMenu";
 import { ReactionSelector } from "../../reactions";
 import UserAvatar from "../../UserAvatar";
 import VisibilityIcon from "../../VisibilityIcon";
+import { useMemoViewContext } from "../MemoViewContext";
 import type { MemoHeaderProps } from "../types";
 
 /**
@@ -24,27 +26,21 @@ import type { MemoHeaderProps } from "../types";
  * - Action menu
  */
 const MemoHeader: React.FC<MemoHeaderProps> = ({
-  memo,
-  creator,
   showCreator,
   showVisibility,
   showPinned,
-  isArchived,
-  commentAmount,
-  isInMemoDetailPage,
-  parentPage,
-  readonly,
-  relativeTimeFormat,
   onEdit,
   onGotoDetail,
   onUnpin,
   onToggleNsfwVisibility,
-  nsfw,
-  showNSFWContent,
   reactionSelectorOpen,
   onReactionSelectorOpenChange,
 }) => {
   const t = useTranslate();
+
+  // Get shared state from context
+  const { memo, creator, isArchived, commentAmount, isInMemoDetailPage, parentPage, readonly, relativeTimeFormat, nsfw, showNSFWContent } =
+    useMemoViewContext();
 
   const displayTime = isArchived ? (
     memo.displayTime?.toLocaleString(i18n.language)
@@ -138,7 +134,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({
  * Creator display with avatar and name
  */
 interface CreatorDisplayProps {
-  creator: NonNullable<MemoHeaderProps["creator"]>;
+  creator: User;
   displayTime: React.ReactNode;
   onGotoDetail: () => void;
 }

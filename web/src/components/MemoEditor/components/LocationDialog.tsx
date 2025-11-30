@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { useTranslate } from "@/utils/i18n";
-import { LocationState } from "./types";
+import { LocationState } from "../types/insert-menu";
 
 interface LocationDialogProps {
   open: boolean;
