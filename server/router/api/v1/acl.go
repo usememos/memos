@@ -224,7 +224,7 @@ func (in *GRPCAuthInterceptor) authenticateBySession(ctx context.Context, sessio
 	}
 
 	// Get user sessions and validate the sessionID
-	sessions, err := in.Store.GetUserSessions(ctx, userID)
+	sessions, err := in.Store.GetUserSessions(ctx, user.ID)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get user sessions")
 	}
