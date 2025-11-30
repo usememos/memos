@@ -9,58 +9,22 @@ export interface Position {
 }
 
 export interface UseSuggestionsOptions<T> {
-  /** Reference to the textarea element */
   editorRef: React.RefObject<HTMLTextAreaElement>;
-  /** Reference to editor actions for text manipulation */
   editorActions: React.ForwardedRef<EditorRefActions>;
-  /** Character that triggers the suggestions (e.g., '/', '#', '@') */
   triggerChar: string;
-  /** Array of items to show in suggestions */
   items: T[];
-  /** Function to filter items based on search query */
   filterItems: (items: T[], searchQuery: string) => T[];
-  /** Callback when an item is selected for autocomplete */
   onAutocomplete: (item: T, word: string, startIndex: number, actions: EditorRefActions) => void;
 }
 
 export interface UseSuggestionsReturn<T> {
-  /** Current position of the popup, or null if hidden */
   position: Position | null;
-  /** Filtered suggestions based on current search */
   suggestions: T[];
-  /** Index of the currently selected suggestion */
   selectedIndex: number;
-  /** Whether the suggestions popup is visible */
   isVisible: boolean;
-  /** Handler to select a suggestion item */
   handleItemSelect: (item: T) => void;
 }
 
-/**
- * Shared hook for managing suggestion popups in the editor.
- * Handles positioning, keyboard navigation, filtering, and autocomplete logic.
- *
- * Features:
- * - Auto-positioning based on caret location
- * - Keyboard navigation (Arrow Up/Down, Enter, Tab, Escape)
- * - Smart filtering based on trigger character
- * - Proper event cleanup
- *
- * @example
- * ```tsx
- * const { position, suggestions, selectedIndex, isVisible, handleItemSelect } = useSuggestions({
- *   editorRef,
- *   editorActions,
- *   triggerChar: '#',
- *   items: tags,
- *   filterItems: (items, query) => items.filter(tag => tag.includes(query)),
- *   onAutocomplete: (tag, word, index, actions) => {
- *     actions.removeText(index, word.length);
- *     actions.insertText(`#${tag}`);
- *   },
- * });
- * ```
- */
 export function useSuggestions<T>({
   editorRef,
   editorActions,

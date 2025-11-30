@@ -1,9 +1,3 @@
-/**
- * Utilities for detecting list patterns in markdown text
- *
- * Used by the editor for auto-continuation of lists when user presses Enter
- */
-
 export interface ListItemInfo {
   type: "task" | "unordered" | "ordered" | null;
   symbol?: string; // For task/unordered lists: "- ", "* ", "+ "
@@ -11,12 +5,7 @@ export interface ListItemInfo {
   indent?: string; // Leading whitespace
 }
 
-/**
- * Detect the list item type of the last line before cursor
- *
- * @param contentBeforeCursor - Markdown content from start to cursor position
- * @returns List item information, or null if not a list item
- */
+// Detect the list item type of the last line before cursor
 export function detectLastListItem(contentBeforeCursor: string): ListItemInfo {
   const lines = contentBeforeCursor.split("\n");
   const lastLine = lines[lines.length - 1];
@@ -61,12 +50,7 @@ export function detectLastListItem(contentBeforeCursor: string): ListItemInfo {
   };
 }
 
-/**
- * Generate the text to insert when pressing Enter on a list item
- *
- * @param listInfo - Information about the current list item
- * @returns Text to insert at cursor
- */
+// Generate the text to insert when pressing Enter on a list item
 export function generateListContinuation(listInfo: ListItemInfo): string {
   const indent = listInfo.indent || "";
 

@@ -9,10 +9,6 @@ interface SettingSectionProps {
   actions?: React.ReactNode;
 }
 
-/**
- * Wrapper component for consistent section layout in settings pages
- * Provides standardized spacing, titles, and descriptions
- */
 const SettingSection: React.FC<SettingSectionProps> = ({ title, description, children, className, actions }) => {
   return (
     <div className={cn("w-full flex flex-col gap-4 pt-2 pb-4", className)}>

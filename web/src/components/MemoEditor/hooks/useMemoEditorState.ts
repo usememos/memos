@@ -15,9 +15,6 @@ interface MemoEditorState {
   isDraggingFile: boolean;
 }
 
-/**
- * Hook for managing MemoEditor state
- */
 export const useMemoEditorState = (initialVisibility: Visibility = Visibility.PRIVATE) => {
   const [state, setState] = useState<MemoEditorState>({
     memoVisibility: initialVisibility,

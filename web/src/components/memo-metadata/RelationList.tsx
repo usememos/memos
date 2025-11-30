@@ -16,20 +16,6 @@ interface RelationListProps extends BaseMetadataProps {
   parentPage?: string;
 }
 
-/**
- * Unified RelationList component for both editor and view modes
- *
- * Editor mode:
- * - Shows only outgoing relations (referencing)
- * - Badge-style display with remove buttons
- * - Compact inline layout
- *
- * View mode:
- * - Shows bidirectional relations in tabbed card
- * - "Referencing" tab: Memos this memo links to
- * - "Referenced by" tab: Memos that link to this memo
- * - Navigable links with memo IDs
- */
 const RelationList = observer(({ relations, currentMemoName, mode, onRelationsChange, parentPage, className }: RelationListProps) => {
   const t = useTranslate();
   const [referencingMemos, setReferencingMemos] = useState<Memo[]>([]);

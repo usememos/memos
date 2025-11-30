@@ -5,54 +5,15 @@ import { State } from "@/types/proto/api/v1/common";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 
 export interface UseMemoSortingOptions {
-  /**
-   * Whether to sort pinned memos first
-   * Default: false
-   */
   pinnedFirst?: boolean;
-
-  /**
-   * State to filter memos by (NORMAL, ARCHIVED, etc.)
-   * Default: State.NORMAL
-   */
   state?: State;
 }
 
 export interface UseMemoSortingResult {
-  /**
-   * Sort function to pass to PagedMemoList's listSort prop
-   */
   listSort: (memos: Memo[]) => Memo[];
-
-  /**
-   * Order by string to pass to PagedMemoList's orderBy prop
-   */
   orderBy: string;
 }
 
-/**
- * Hook to generate memo sorting logic based on options.
- *
- * This hook consolidates sorting logic that was previously duplicated
- * across Home, Explore, Archived, and UserProfile pages.
- *
- * @param options - Configuration for sorting
- * @returns Object with listSort function and orderBy string
- *
- * @example
- * // Home page - pinned first, then by time
- * const { listSort, orderBy } = useMemoSorting({
- *   pinnedFirst: true,
- *   state: State.NORMAL
- * });
- *
- * @example
- * // Explore page - only by time
- * const { listSort, orderBy } = useMemoSorting({
- *   pinnedFirst: false,
- *   state: State.NORMAL
- * });
- */
 export const useMemoSorting = (options: UseMemoSortingOptions = {}): UseMemoSortingResult => {
   const { pinnedFirst = false, state = State.NORMAL } = options;
 

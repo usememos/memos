@@ -16,9 +16,6 @@ interface UseMemoActionHandlersOptions {
   setRemoveTasksDialogOpen: (open: boolean) => void;
 }
 
-/**
- * Hook for handling memo action menu operations
- */
 export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen, setRemoveTasksDialogOpen }: UseMemoActionHandlersOptions) => {
   const t = useTranslate();
   const location = useLocation();

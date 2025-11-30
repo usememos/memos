@@ -31,11 +31,7 @@ class LocalState {
   // The state id of user stats map.
   statsStateId = uniqueId();
 
-  /**
-   * Computed property that aggregates tag counts across all users.
-   * Uses @computed to memoize the result and only recalculate when userStatsByName changes.
-   * This prevents unnecessary recalculations on every access.
-   */
+  // Computed property that aggregates tag counts across all users (memoized)
   get tagCount() {
     return computed(() => {
       const tagCount: Record<string, number> = {};
@@ -306,17 +302,11 @@ const userStore = (() => {
   };
 })();
 
-/**
- * Initializes the user store with proper sequencing to avoid temporal coupling.
- *
- * Initialization steps (order is critical):
- * 1. Fetch current authenticated user session
- * 2. Set current user in store (required for subsequent calls)
- * 3. Fetch user settings (depends on currentUser being set)
- * 4. Apply user preferences to instance store
- *
- * @throws Never - errors are handled internally with fallback behavior
- */
+// Initializes the user store with proper sequencing:
+// 1. Fetch current authenticated user session
+// 2. Set current user in store (required for subsequent calls)
+// 3. Fetch user settings (depends on currentUser being set)
+// 4. Apply user preferences to instance store
 export const initialUserStore = async () => {
   try {
     // Step 1: Authenticate and get current user

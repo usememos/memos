@@ -3,9 +3,6 @@ import { Input } from "@/components/ui/input";
 import { Memo } from "@/types/proto/api/v1/memo_service";
 import { useTranslate } from "@/utils/i18n";
 
-/**
- * Highlights search text within content string
- */
 function highlightSearchText(content: string, searchText: string): React.ReactNode {
   if (!searchText) return content;
 

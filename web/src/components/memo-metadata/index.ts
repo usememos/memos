@@ -1,8 +1,3 @@
-/**
- * Unified memo metadata components
- * Provides consistent styling and behavior across editor and view modes
- */
-
 export { default as AttachmentCard } from "./AttachmentCard";
 export { default as AttachmentList } from "./AttachmentList";
 export { default as LocationDisplay } from "./LocationDisplay";

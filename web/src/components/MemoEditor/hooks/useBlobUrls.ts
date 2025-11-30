@@ -1,8 +1,5 @@
 import { useEffect, useRef } from "react";
 
-/**
- * Hook for managing blob URLs lifecycle with automatic cleanup
- */
 export function useBlobUrls() {
   const urlsRef = useRef<Set<string>>(new Set());
 

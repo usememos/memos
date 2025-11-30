@@ -11,16 +11,6 @@ interface SuggestionsPopupProps<T> {
   getItemKey: (item: T, index: number) => string;
 }
 
-/**
- * Shared popup component for displaying suggestion items.
- * Provides consistent styling and behavior across different suggestion types.
- *
- * Features:
- * - Automatically scrolls selected item into view
- * - Handles keyboard navigation highlighting
- * - Prevents text selection during mouse interaction
- * - Consistent styling with max height constraints
- */
 export function SuggestionsPopup<T>({
   position,
   suggestions,

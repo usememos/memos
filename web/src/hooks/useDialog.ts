@@ -1,24 +1,5 @@
 import { useCallback, useState } from "react";
 
-/**
- * Hook for managing dialog state with a clean API
- *
- * @returns Object with dialog state and handlers
- *
- * @example
- * const dialog = useDialog();
- *
- * return (
- *   <>
- *     <Button onClick={dialog.open}>Open Dialog</Button>
- *     <SomeDialog
- *       open={dialog.isOpen}
- *       onOpenChange={dialog.setOpen}
- *       onSuccess={dialog.close}
- *     />
- *   </>
- * );
- */
 export function useDialog(defaultOpen = false) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -35,30 +16,6 @@ export function useDialog(defaultOpen = false) {
   };
 }
 
-/**
- * Hook for managing multiple dialogs with named keys
- *
- * @returns Object with dialog management functions
- *
- * @example
- * const dialogs = useDialogs();
- *
- * return (
- *   <>
- *     <Button onClick={() => dialogs.open('create')}>Create User</Button>
- *     <Button onClick={() => dialogs.open('edit')}>Edit User</Button>
- *
- *     <CreateUserDialog
- *       open={dialogs.isOpen('create')}
- *       onOpenChange={(open) => dialogs.setOpen('create', open)}
- *     />
- *     <EditUserDialog
- *       open={dialogs.isOpen('edit')}
- *       onOpenChange={(open) => dialogs.setOpen('edit', open)}
- *     />
- *   </>
- * );
- */
 export function useDialogs() {
   const [openDialogs, setOpenDialogs] = useState<Set<string>>(new Set());
 

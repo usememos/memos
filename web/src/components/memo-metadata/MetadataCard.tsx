@@ -6,10 +6,6 @@ interface MetadataCardProps {
   className?: string;
 }
 
-/**
- * Shared card component for structured metadata (Relations, Comments, etc.)
- * Provides consistent card styling across editor and view modes
- */
 const MetadataCard = ({ children, className }: MetadataCardProps) => {
   return (
     <div

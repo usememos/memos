@@ -5,81 +5,18 @@ import memoFilterStore from "@/store/memoFilter";
 import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service";
 import { Visibility } from "@/types/proto/api/v1/memo_service";
 
-// Helper function to extract shortcut ID from resource name
-// Format: users/{user}/shortcuts/{shortcut}
 const getShortcutId = (name: string): string => {
   const parts = name.split("/");
   return parts.length === 4 ? parts[3] : "";
 };
 
 export interface UseMemoFiltersOptions {
-  /**
-   * User name to scope memos to (e.g., "users/123")
-   * If undefined, no creator filter is applied (useful for Explore page)
-   */
   creatorName?: string;
-
-  /**
-   * Whether to include shortcut filter from memoFilterStore
-   * Default: false
-   */
   includeShortcuts?: boolean;
-
-  /**
-   * Whether to include pinned filter from memoFilterStore
-   * Default: false
-   */
   includePinned?: boolean;
-
-  /**
-   * Visibility levels to filter by (for Explore page)
-   * If provided, adds visibility filter to show only specified visibility levels
-   * Default: undefined (no visibility filter)
-   *
-   * **Security Note**: This filter is enforced at the API level. The backend is responsible
-   * for respecting visibility permissions when:
-   * - Returning memo lists (filtered by this parameter)
-   * - Calculating statistics (should only count visible memos)
-   * - Aggregating tags (should only include tags from visible memos)
-   *
-   * This ensures that private memo data never leaks to unauthorized users through
-   * stats, tags, or direct memo access.
-   *
-   * @example
-   * // For logged-in users on Explore
-   * visibilities: [Visibility.PUBLIC, Visibility.PROTECTED]
-   *
-   * @example
-   * // For visitors on Explore
-   * visibilities: [Visibility.PUBLIC]
-   */
   visibilities?: Visibility[];
 }
 
-/**
- * Hook to build memo filter string based on active filters and options.
- *
- * This hook consolidates filter building logic that was previously duplicated
- * across Home, Explore, Archived, and UserProfile pages.
- *
- * @param options - Configuration for filter building
- * @returns Filter string to pass to API, or undefined if no filters
- *
- * @example
- * // Home page - include everything
- * const filter = useMemoFilters({
- *   creatorName: user.name,
- *   includeShortcuts: true,
- *   includePinned: true
- * });
- *
- * @example
- * // Explore page - no creator scoping
- * const filter = useMemoFilters({
- *   includeShortcuts: false,
- *   includePinned: false
- * });
- */
 export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | undefined => {
   const { creatorName, includeShortcuts = false, includePinned = false, visibilities } = options;
 

@@ -12,10 +12,6 @@ interface SettingRowProps {
   vertical?: boolean;
 }
 
-/**
- * Standardized row component for individual settings
- * Provides consistent label/control layout with optional tooltip
- */
 const SettingRow: React.FC<SettingRowProps> = ({ label, description, tooltip, children, className, vertical = false }) => {
   return (
     <div className={cn("w-full flex gap-3", vertical ? "flex-col" : "flex-row justify-between items-center", className)}>

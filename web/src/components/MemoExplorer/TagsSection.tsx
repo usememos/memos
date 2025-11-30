@@ -10,10 +10,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 interface Props {
   readonly?: boolean;
-  /**
-   * Tag count computed from filtered memos
-   * Should be provided by parent component using useFilteredMemoStats
-   */
   tagCount: Record<string, number>;
 }
 

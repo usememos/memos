@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 import type { AttachmentItem, DisplayMode } from "./types";
 
 interface AttachmentCardProps {
-  /** Unified attachment item (uploaded or local file) */
   item: AttachmentItem;
   mode: DisplayMode;
   onRemove?: () => void;
@@ -12,10 +11,6 @@ interface AttachmentCardProps {
   showThumbnail?: boolean;
 }
 
-/**
- * Unified attachment card component for all file types
- * Renders differently based on mode (edit/view) and file category
- */
 const AttachmentCard = ({ item, mode, onRemove, onClick, className, showThumbnail = true }: AttachmentCardProps) => {
   const { category, filename, thumbnailUrl, sourceUrl } = item;
   const isMedia = category === "image" || category === "video";

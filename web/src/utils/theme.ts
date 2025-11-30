@@ -33,9 +33,6 @@ const validateTheme = (theme: string): ValidTheme => {
   return VALID_THEMES.includes(theme as ValidTheme) ? (theme as ValidTheme) : "default";
 };
 
-/**
- * Detects system theme preference
- */
 export const getSystemTheme = (): "default" | "default-dark" => {
   if (typeof window !== "undefined" && window.matchMedia) {
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "default-dark" : "default";
@@ -43,10 +40,7 @@ export const getSystemTheme = (): "default" | "default-dark" => {
   return "default";
 };
 
-/**
- * Resolves the actual theme to apply based on user preference
- * If theme is "system", returns the system preference, otherwise returns the theme as-is
- */
+// Resolves "system" to actual theme based on OS preference
 export const resolveTheme = (theme: string): "default" | "default-dark" | "midnight" | "paper" | "whitewall" => {
   if (theme === "system") {
     return getSystemTheme();
@@ -55,12 +49,9 @@ export const resolveTheme = (theme: string): "default" | "default-dark" | "midni
   return validTheme === "system" ? getSystemTheme() : validTheme;
 };
 
-/**
- * Gets the theme that should be applied on initial load
- * Priority: stored user preference -> system preference -> default
- */
+// Gets the theme that should be applied on initial load
 export const getInitialTheme = (): ValidTheme => {
-  // Try to get stored theme from localStorage (where user settings might be cached)
+  // Try to get stored theme from localStorage
   try {
     const storedTheme = localStorage.getItem("memos-theme");
     if (storedTheme && VALID_THEMES.includes(storedTheme as ValidTheme)) {
@@ -70,13 +61,10 @@ export const getInitialTheme = (): ValidTheme => {
     // localStorage might not be available
   }
 
-  // Fall back to system preference (return "system" to enable auto-switching)
   return "system";
 };
 
-/**
- * Applies the theme early to prevent flash of wrong theme
- */
+// Applies the theme early to prevent flash of wrong theme
 export const applyThemeEarly = (): void => {
   const theme = getInitialTheme();
   loadTheme(theme);
@@ -113,10 +101,7 @@ export const loadTheme = (themeName: string): void => {
   }
 };
 
-/**
- * Sets up a listener for system theme preference changes
- * Returns a cleanup function to remove the listener
- */
+// Sets up a listener for system theme preference changes
 export const setupSystemThemeListener = (onThemeChange: () => void): (() => void) => {
   if (typeof window === "undefined" || !window.matchMedia) {
     return () => {}; // No-op cleanup

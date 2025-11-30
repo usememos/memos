@@ -1,16 +1,5 @@
 import React from "react";
 
-/**
- * Creates a conditional component wrapper that checks AST node properties
- * before deciding which component to render.
- *
- * This is more efficient than having every component check its own props,
- * and allows us to use specific HTML element types as defaults.
- *
- * @param CustomComponent - Component to render when condition is met
- * @param DefaultComponent - Component/element to render otherwise
- * @param condition - Function to check if node matches custom component criteria
- */
 export const createConditionalComponent = <P extends Record<string, any>>(
   CustomComponent: React.ComponentType<P>,
   DefaultComponent: React.ComponentType<P> | keyof JSX.IntrinsicElements,
@@ -32,13 +21,7 @@ export const createConditionalComponent = <P extends Record<string, any>>(
   };
 };
 
-/**
- * Condition checkers for AST node types
- *
- * These check the original MDAST node type preserved during transformation:
- * - First checks node.data.mdastType (preserved by remarkPreserveType plugin)
- * - Falls back to checking HAST properties/className for compatibility
- */
+// Condition checkers for AST node types
 export const isTagNode = (node: any): boolean => {
   // Check preserved mdast type first
   if (node?.data?.mdastType === "tagNode") {

@@ -8,19 +8,6 @@ interface UseListAutoCompletionOptions {
   isInIME: boolean;
 }
 
-/**
- * Custom hook for handling markdown list auto-completion.
- * When the user presses Enter on a list item, this hook automatically
- * continues the list with the appropriate formatting.
- *
- * Supports:
- * - Ordered lists (1. item, 2. item, etc.)
- * - Unordered lists (- item, * item, + item)
- * - Task lists (- [ ] task, - [x] task)
- * - Nested lists with proper indentation
- *
- * This hook manages its own event listeners and cleanup.
- */
 export function useListAutoCompletion({ editorRef, editorActions, isInIME }: UseListAutoCompletionOptions) {
   // Use refs to avoid stale closures in event handlers
   const isInIMERef = useRef(isInIME);

@@ -16,10 +16,6 @@ interface SettingTableProps {
   getRowKey?: (row: any, index: number) => string;
 }
 
-/**
- * Standardized table component for settings data lists
- * Provides consistent styling for tables in settings pages
- */
 const SettingTable: React.FC<SettingTableProps> = ({ columns, data, emptyMessage = "No data", className, getRowKey }) => {
   return (
     <div className={cn("w-full overflow-x-auto", className)}>

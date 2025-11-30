@@ -28,22 +28,6 @@ const DialogOverlay = React.forwardRef<
 ));
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
-/**
- * Dialog content variants with improved mobile responsiveness.
- *
- * Mobile behavior:
- * - Mobile phones (< 640px): Uses calc(100% - 2rem) width with better 1rem margin on each side
- * - Small tablets (≥ 640px): Uses calc(100% - 3rem) width with 1.5rem margin on each side
- * - Medium screens and up (≥ 768px): Uses fixed max-widths based on size variant
- *
- * Size variants:
- * - sm: max-w-sm (384px) for compact dialogs
- * - default: max-w-md (448px) for standard dialogs
- * - lg: max-w-lg (512px) for larger forms
- * - xl: max-w-xl (576px) for detailed content
- * - 2xl: max-w-2xl (672px) for wide layouts
- * - full: Takes available width with margins
- */
 const dialogContentVariants = cva(
   "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 flex flex-col translate-x-[-50%] translate-y-[-50%] rounded-lg border shadow-lg duration-200 max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-3rem)] md:max-h-[calc(100vh-4rem)]",
   {

@@ -1,23 +1,12 @@
-/**
- * Attachment Store
- *
- * Manages file attachment state including uploads and metadata.
- * This is a server state store that fetches and caches attachment data.
- */
+// Attachment Store - manages file attachment state including uploads and metadata
 import { computed, makeObservable, observable } from "mobx";
 import { attachmentServiceClient } from "@/grpcweb";
 import { Attachment, CreateAttachmentRequest, UpdateAttachmentRequest } from "@/types/proto/api/v1/attachment_service";
 import { createServerStore, StandardState } from "./base-store";
 import { createRequestKey } from "./store-utils";
 
-/**
- * Attachment store state
- * Uses a name-based map for efficient lookups
- */
 class AttachmentState extends StandardState {
-  /**
-   * Map of attachments indexed by resource name (e.g., "attachments/123")
-   */
+  // Map of attachments indexed by resource name (e.g., "attachments/123")
   attachmentMapByName: Record<string, Attachment> = {};
 
   constructor() {
@@ -29,24 +18,15 @@ class AttachmentState extends StandardState {
     });
   }
 
-  /**
-   * Computed getter for all attachments as an array
-   */
   get attachments(): Attachment[] {
     return Object.values(this.attachmentMapByName);
   }
 
-  /**
-   * Get attachment count
-   */
   get size(): number {
     return Object.keys(this.attachmentMapByName).length;
   }
 }
 
-/**
- * Attachment store instance
- */
 const attachmentStore = (() => {
   const base = createServerStore(new AttachmentState(), {
     name: "attachment",
@@ -55,13 +35,6 @@ const attachmentStore = (() => {
 
   const { state, executeRequest } = base;
 
-  /**
-   * Fetch attachment by resource name
-   * Results are cached in the store
-   *
-   * @param name - Resource name (e.g., "attachments/123")
-   * @returns The attachment object
-   */
   const fetchAttachmentByName = async (name: string): Promise<Attachment> => {
     const requestKey = createRequestKey("fetchAttachment", { name });
 
@@ -84,24 +57,10 @@ const attachmentStore = (() => {
     );
   };
 
-  /**
-   * Get attachment from cache by resource name
-   * Does not trigger a fetch if not found
-   *
-   * @param name - Resource name
-   * @returns The cached attachment or undefined
-   */
   const getAttachmentByName = (name: string): Attachment | undefined => {
     return state.attachmentMapByName[name];
   };
 
-  /**
-   * Get or fetch attachment by name
-   * Checks cache first, fetches if not found
-   *
-   * @param name - Resource name
-   * @returns The attachment object
-   */
   const getOrFetchAttachmentByName = async (name: string): Promise<Attachment> => {
     const cached = getAttachmentByName(name);
     if (cached) {
@@ -110,12 +69,6 @@ const attachmentStore = (() => {
     return fetchAttachmentByName(name);
   };
 
-  /**
-   * Create a new attachment
-   *
-   * @param request - Attachment creation request
-   * @returns The created attachment
-   */
   const createAttachment = async (request: CreateAttachmentRequest): Promise<Attachment> => {
     return executeRequest(
       "", // No deduplication for creates
@@ -136,12 +89,6 @@ const attachmentStore = (() => {
     );
   };
 
-  /**
-   * Update an existing attachment
-   *
-   * @param request - Attachment update request
-   * @returns The updated attachment
-   */
   const updateAttachment = async (request: UpdateAttachmentRequest): Promise<Attachment> => {
     return executeRequest(
       "", // No deduplication for updates
@@ -162,11 +109,6 @@ const attachmentStore = (() => {
     );
   };
 
-  /**
-   * Delete an attachment
-   *
-   * @param name - Resource name of the attachment to delete
-   */
   const deleteAttachment = async (name: string): Promise<void> => {
     return executeRequest(
       "", // No deduplication for deletes
@@ -182,9 +124,6 @@ const attachmentStore = (() => {
     );
   };
 
-  /**
-   * Clear all cached attachments
-   */
   const clearCache = (): void => {
     state.setPartial({ attachmentMapByName: {} });
   };

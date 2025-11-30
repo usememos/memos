@@ -10,50 +10,14 @@ export interface FilteredMemoStats {
   loading: boolean;
 }
 
-/**
- * Convert user name to user stats key.
- * Backend returns UserStats with name "users/{id}/stats" but we pass "users/{id}"
- * @param userName - User name in format "users/{id}"
- * @returns Stats key in format "users/{id}/stats"
- */
 const getUserStatsKey = (userName: string): string => {
   return `${userName}/stats`;
 };
 
 export interface UseFilteredMemoStatsOptions {
-  /**
-   * User name to fetch stats for (e.g., "users/123")
-   *
-   * When provided:
-   * - Fetches backend user stats via GetUserStats API
-   * - Returns unfiltered tags and activity (all NORMAL memos for that user)
-   * - Tags remain stable even when memo filters are applied
-   *
-   * When undefined:
-   * - Computes stats from cached memos in the store
-   * - Reflects current filters (useful for Explore/Archived pages)
-   *
-   * IMPORTANT: Backend user stats only include NORMAL (non-archived) memos.
-   * Do NOT use for Archived page context.
-   */
   userName?: string;
 }
 
-/**
- * Hook to compute statistics and tags for the sidebar.
- *
- * Data sources by context:
- * - **Home/Profile**: Uses backend UserStats API (unfiltered, normal memos only)
- * - **Archived/Explore**: Computes from cached memos (filtered by page context)
- *
- * Benefits of using backend stats:
- * - Tag list remains stable when memo filters are applied
- * - Activity calendar shows full history, not just filtered results
- * - Prevents "disappearing tags" issue when filtering by tag
- *
- * @param options - Configuration options
- * @returns Object with statistics data, tag counts, and loading state
- */
 export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}): FilteredMemoStats => {
   const { userName } = options;
   const [data, setData] = useState<FilteredMemoStats>({

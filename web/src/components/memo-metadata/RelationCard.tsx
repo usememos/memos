@@ -13,12 +13,6 @@ interface RelationCardProps {
   className?: string;
 }
 
-/**
- * Shared relation card component for displaying linked memos
- *
- * Editor mode: Badge with remove button, click to remove
- * View mode: Link with memo ID and snippet, click to navigate
- */
 const RelationCard = ({ memo, mode, onRemove, parentPage, className }: RelationCardProps) => {
   const memoId = extractMemoIdFromName(memo.name);
 

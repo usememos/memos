@@ -9,17 +9,9 @@ import { MonthNavigator } from "./MonthNavigator";
 export type StatisticsViewContext = "home" | "explore" | "archived" | "profile";
 
 interface Props {
-  /**
-   * Context for the statistics view
-   * Affects which stat cards are shown
-   * Default: "home"
-   */
+  // Context for the statistics view (affects which stat cards are shown)
   context?: StatisticsViewContext;
-
-  /**
-   * Statistics data computed from filtered memos
-   * Should be provided by parent component using useFilteredMemoStats
-   */
+  // Statistics data computed from filtered memos (use useFilteredMemoStats)
   statisticsData: StatisticsData;
 }
 

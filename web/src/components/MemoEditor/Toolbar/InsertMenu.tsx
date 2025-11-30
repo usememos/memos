@@ -84,15 +84,11 @@ const InsertMenu = observer((props: Props) => {
   };
 
   const handleLocationCancel = () => {
-    abortGeocoding(); // Cancel any pending geocoding request
+    abortGeocoding();
     location.reset();
     setLocationDialogOpen(false);
   };
 
-  /**
-   * Fetches human-readable address from coordinates using reverse geocoding
-   * Falls back to coordinate string if geocoding fails
-   */
   const fetchReverseGeocode = async (position: LatLng, signal: AbortSignal): Promise<string> => {
     const coordString = `${position.lat.toFixed(6)}, ${position.lng.toFixed(6)}`;
     try {

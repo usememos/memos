@@ -22,9 +22,6 @@ import { useTranslate } from "@/utils/i18n";
 
 const PAGE_SIZE = 50;
 
-/**
- * Groups attachments by month for organized display
- */
 const groupAttachmentsByDate = (attachments: Attachment[]): Map<string, Attachment[]> => {
   const grouped = new Map<string, Attachment[]>();
   const sorted = [...attachments].sort((a, b) => dayjs(b.createTime).unix() - dayjs(a.createTime).unix());
@@ -39,18 +36,12 @@ const groupAttachmentsByDate = (attachments: Attachment[]): Map<string, Attachme
   return grouped;
 };
 
-/**
- * Filters attachments based on search query
- */
 const filterAttachments = (attachments: Attachment[], searchQuery: string): Attachment[] => {
   if (!searchQuery.trim()) return attachments;
   const query = searchQuery.toLowerCase();
   return attachments.filter((attachment) => attachment.filename.toLowerCase().includes(query));
 };
 
-/**
- * Individual attachment item component
- */
 interface AttachmentItemProps {
   attachment: Attachment;
 }

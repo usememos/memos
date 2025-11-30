@@ -1,15 +1,6 @@
 import { MasonryItem } from "./MasonryItem";
 import { MasonryColumnProps } from "./types";
 
-/**
- * Column component for masonry layout
- *
- * Responsibilities:
- * - Render a single column in the masonry grid
- * - Display prefix element in the first column (e.g., memo editor)
- * - Render all assigned memo items in order
- * - Pass render context to items (includes compact mode flag)
- */
 export function MasonryColumn({
   memoIndices,
   memoList,

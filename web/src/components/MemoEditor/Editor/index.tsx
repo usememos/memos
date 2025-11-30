@@ -28,13 +28,9 @@ interface Props {
   placeholder: string;
   onContentChange: (content: string) => void;
   onPaste: (event: React.ClipboardEvent) => void;
-  /** Whether Focus Mode is active - adjusts height constraints for immersive writing */
   isFocusMode?: boolean;
-  /** Whether IME composition is in progress (for Asian language input) */
   isInIME?: boolean;
-  /** Called when IME composition starts */
   onCompositionStart?: () => void;
-  /** Called when IME composition ends */
   onCompositionEnd?: () => void;
 }
 

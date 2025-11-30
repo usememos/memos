@@ -1,9 +1,3 @@
-/**
- * OAuth state management utilities
- * Implements secure state parameter handling following Auth0 best practices
- * @see https://auth0.com/docs/secure/attack-protection/state-parameters
- */
-
 const STATE_STORAGE_KEY = "oauth_state";
 const STATE_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes
 
@@ -14,20 +8,14 @@ interface OAuthState {
   returnUrl?: string;
 }
 
-/**
- * Generate a cryptographically secure random state value
- * Uses Web Crypto API for strong randomness
- */
+// Generate a cryptographically secure random state value
 function generateSecureState(): string {
   const array = new Uint8Array(32);
   crypto.getRandomValues(array);
   return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
-/**
- * Store OAuth state in sessionStorage with metadata
- * State is stored temporarily and will be validated on callback
- */
+// Store OAuth state in sessionStorage
 export function storeOAuthState(identityProviderId: number, returnUrl?: string): string {
   const state = generateSecureState();
   const stateData: OAuthState = {
@@ -47,11 +35,7 @@ export function storeOAuthState(identityProviderId: number, returnUrl?: string):
   return state;
 }
 
-/**
- * Validate and retrieve OAuth state from storage
- * Implements CSRF protection by verifying state matches
- * Cleans up expired or used states
- */
+// Validate and retrieve OAuth state from storage (CSRF protection)
 export function validateOAuthState(stateParam: string): { identityProviderId: number; returnUrl?: string } | null {
   try {
     const storedData = sessionStorage.getItem(STATE_STORAGE_KEY);
@@ -89,10 +73,7 @@ export function validateOAuthState(stateParam: string): { identityProviderId: nu
   }
 }
 
-/**
- * Clean up expired OAuth states
- * Should be called on app initialization
- */
+// Clean up expired OAuth states (call on app init)
 export function cleanupExpiredOAuthState(): void {
   try {
     const storedData = sessionStorage.getItem(STATE_STORAGE_KEY);

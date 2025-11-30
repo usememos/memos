@@ -12,10 +12,6 @@ export interface UseMemoEditorKeyboardOptions {
   onToggleFocusMode: () => void;
 }
 
-/**
- * Hook for handling keyboard shortcuts in MemoEditor
- * Centralizes all keyboard event handling logic
- */
 export const useMemoEditorKeyboard = (options: UseMemoEditorKeyboardOptions) => {
   const { editorRef, isFocusMode, isComposing, onSave, onToggleFocusMode } = options;
 

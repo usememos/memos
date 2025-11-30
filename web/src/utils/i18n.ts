@@ -52,11 +52,7 @@ export const isValidateLocale = (locale: string | undefined | null): boolean => 
   return locales.includes(locale);
 };
 
-/**
- * Get the display name for a locale in its native language
- * @param locale - The locale code (e.g., "en", "zh-Hans", "fr")
- * @returns The display name with capitalized first letter, or the locale code if display name is unavailable
- */
+// Get the display name for a locale in its native language
 export const getLocaleDisplayName = (locale: string): string => {
   try {
     const displayName = new Intl.DisplayNames([locale], { type: "language" }).of(locale);

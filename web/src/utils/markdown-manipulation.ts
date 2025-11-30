@@ -1,18 +1,6 @@
-/**
- * Utilities for manipulating markdown strings (GitHub-style approach)
- *
- * These functions modify the raw markdown text directly without parsing to AST.
- * This is the same approach GitHub uses for task list updates.
- */
+// Utilities for manipulating markdown strings (GitHub-style approach)
+// These functions modify the raw markdown text directly without parsing to AST
 
-/**
- * Toggle a task checkbox at a specific line number
- *
- * @param markdown - The full markdown content
- * @param lineNumber - Zero-based line number
- * @param checked - New checked state
- * @returns Updated markdown string
- */
 export function toggleTaskAtLine(markdown: string, lineNumber: number, checked: boolean): string {
   const lines = markdown.split("\n");
 
@@ -27,7 +15,6 @@ export function toggleTaskAtLine(markdown: string, lineNumber: number, checked: 
   const match = line.match(taskPattern);
 
   if (!match) {
-    // Not a task list item
     return markdown;
   }
 
@@ -38,14 +25,6 @@ export function toggleTaskAtLine(markdown: string, lineNumber: number, checked: 
   return lines.join("\n");
 }
 
-/**
- * Toggle a task checkbox by its index (nth task in the document)
- *
- * @param markdown - The full markdown content
- * @param taskIndex - Zero-based index of the task (0 = first task, 1 = second task, etc.)
- * @param checked - New checked state
- * @returns Updated markdown string
- */
 export function toggleTaskAtIndex(markdown: string, taskIndex: number, checked: boolean): string {
   const lines = markdown.split("\n");
   const taskPattern = /^(\s*[-*+]\s+)\[([ xX])\](\s+.*)$/;
@@ -70,12 +49,6 @@ export function toggleTaskAtIndex(markdown: string, taskIndex: number, checked: 
   return lines.join("\n");
 }
 
-/**
- * Remove all completed tasks from markdown
- *
- * @param markdown - The full markdown content
- * @returns Markdown with completed tasks removed
- */
 export function removeCompletedTasks(markdown: string): string {
   const lines = markdown.split("\n");
   const completedTaskPattern = /^(\s*[-*+]\s+)\[([xX])\](\s+.*)$/;
@@ -88,7 +61,7 @@ export function removeCompletedTasks(markdown: string): string {
     if (completedTaskPattern.test(line)) {
       // Also skip the following line if it's empty (preserve spacing)
       if (i + 1 < lines.length && lines[i + 1].trim() === "") {
-        i++; // Skip next line
+        i++;
       }
       continue;
     }
@@ -99,12 +72,6 @@ export function removeCompletedTasks(markdown: string): string {
   return result.join("\n");
 }
 
-/**
- * Count tasks in markdown
- *
- * @param markdown - The full markdown content
- * @returns Object with task counts
- */
 export function countTasks(markdown: string): {
   total: number;
   completed: number;
@@ -134,24 +101,11 @@ export function countTasks(markdown: string): {
   };
 }
 
-/**
- * Check if markdown has any completed tasks
- *
- * @param markdown - The full markdown content
- * @returns True if there are completed tasks
- */
 export function hasCompletedTasks(markdown: string): boolean {
   const completedTaskPattern = /^(\s*[-*+]\s+)\[([xX])\](\s+.*)$/m;
   return completedTaskPattern.test(markdown);
 }
 
-/**
- * Get the line number of the nth task
- *
- * @param markdown - The full markdown content
- * @param taskIndex - Zero-based task index
- * @returns Line number, or -1 if not found
- */
 export function getTaskLineNumber(markdown: string, taskIndex: number): number {
   const lines = markdown.split("\n");
   const taskPattern = /^(\s*[-*+]\s+)\[([ xX])\](\s+.*)$/;
@@ -170,12 +124,6 @@ export function getTaskLineNumber(markdown: string, taskIndex: number): number {
   return -1;
 }
 
-/**
- * Extract all task items with their metadata
- *
- * @param markdown - The full markdown content
- * @returns Array of task metadata
- */
 export interface TaskItem {
   lineNumber: number;
   taskIndex: number;

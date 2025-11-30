@@ -9,44 +9,26 @@ import type { Location, Memo, MemoRelation, Visibility } from "@/types/proto/api
 import type { Translations } from "@/utils/i18n";
 
 interface MemoSaveContext {
-  /** Current memo name (for update mode) */
   memoName?: string;
-  /** Parent memo name (for comment mode) */
   parentMemoName?: string;
-  /** Current visibility setting */
   visibility: Visibility;
-  /** Current attachments */
   attachmentList: Attachment[];
-  /** Current relations */
   relationList: MemoRelation[];
-  /** Current location */
   location?: Location;
-  /** Local files pending upload */
   localFiles: LocalFile[];
-  /** Create time override */
   createTime?: Date;
-  /** Update time override */
   updateTime?: Date;
 }
 
 interface MemoSaveCallbacks {
-  /** Called when upload state changes */
   onUploadingChange: (uploading: boolean) => void;
-  /** Called when request state changes */
   onRequestingChange: (requesting: boolean) => void;
-  /** Called on successful save */
   onSuccess: (memoName: string) => void;
-  /** Called on cancellation (no changes) */
   onCancel: () => void;
-  /** Called to reset after save */
   onReset: () => void;
-  /** Translation function */
   t: (key: Translations, params?: Record<string, any>) => string;
 }
 
-/**
- * Uploads local files and creates attachments
- */
 async function uploadLocalFiles(localFiles: LocalFile[], onUploadingChange: (uploading: boolean) => void): Promise<Attachment[]> {
   if (localFiles.length === 0) return [];
 
@@ -72,9 +54,6 @@ async function uploadLocalFiles(localFiles: LocalFile[], onUploadingChange: (upl
   }
 }
 
-/**
- * Builds an update mask by comparing memo properties
- */
 function buildUpdateMask(
   prevMemo: Memo,
   content: string,
@@ -126,10 +105,6 @@ function buildUpdateMask(
   return { mask, patch };
 }
 
-/**
- * Hook for saving/updating memos
- * Extracts complex save logic from MemoEditor
- */
 export function useMemoSave(callbacks: MemoSaveCallbacks) {
   const { onUploadingChange, onRequestingChange, onSuccess, onCancel, onReset, t } = callbacks;
 

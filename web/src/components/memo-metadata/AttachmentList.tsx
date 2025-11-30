@@ -17,20 +17,6 @@ interface AttachmentListProps extends BaseMetadataProps {
   onRemoveLocalFile?: (previewUrl: string) => void;
 }
 
-/**
- * Unified AttachmentList component for both editor and view modes
- *
- * Editor mode:
- * - Shows all attachments as sortable badges with thumbnails
- * - Supports drag-and-drop reordering
- * - Shows remove buttons
- * - Shows pending files (not yet uploaded) with preview
- *
- * View mode:
- * - Separates media (images/videos) from other files
- * - Shows media in gallery layout with preview
- * - Shows other files as clickable cards
- */
 const AttachmentList = ({ attachments, mode, onAttachmentsChange, localFiles = [], onRemoveLocalFile }: AttachmentListProps) => {
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
   const [previewImage, setPreviewImage] = useState<{ open: boolean; urls: string[]; index: number }>({

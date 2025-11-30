@@ -30,15 +30,6 @@ import { hasCompletedTasks } from "@/utils/markdown-manipulation";
 import { useMemoActionHandlers } from "./hooks";
 import type { MemoActionMenuProps } from "./types";
 
-/**
- * MemoActionMenu component provides a dropdown menu with actions for a memo:
- * - Pin/Unpin
- * - Edit
- * - Copy (link/content)
- * - Remove completed tasks
- * - Archive/Restore
- * - Delete
- */
 const MemoActionMenu = observer((props: MemoActionMenuProps) => {
   const { memo, readonly } = props;
   const t = useTranslate();

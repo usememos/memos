@@ -17,10 +17,6 @@ export interface UseMemoEditorHandlersReturn {
   handleEditorFocus: () => void;
 }
 
-/**
- * Hook for managing MemoEditor event handlers
- * Centralizes composition, paste, and focus handling
- */
 export const useMemoEditorHandlers = (options: UseMemoEditorHandlersOptions): UseMemoEditorHandlersReturn => {
   const { editorRef, onFilesAdded, setComposing } = options;
 

@@ -1,6 +1,3 @@
-/**
- * Command type for slash commands in the editor
- */
 export interface Command {
   name: string;
   run: () => string;

@@ -1,15 +1,7 @@
 import type { Root } from "mdast";
 import { visit } from "unist-util-visit";
 
-/**
- * Remark plugin to preserve original mdast node types in the data field
- *
- * This allows us to check the original node type even after
- * transformation to hast (HTML AST).
- *
- * The original type is stored in data.mdastType and will be available
- * in the hast node as data.mdastType.
- */
+// Remark plugin to preserve original mdast node types in the data field
 export const remarkPreserveType = () => {
   return (tree: Root) => {
     visit(tree, (node: any) => {

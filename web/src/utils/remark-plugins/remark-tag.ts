@@ -1,38 +1,9 @@
 import type { Root, Text } from "mdast";
 import { visit } from "unist-util-visit";
 
-/**
- * Custom remark plugin for #tag syntax
- *
- * Parses #tag patterns in text nodes and converts them to HTML nodes.
- * This matches the goldmark backend TagNode implementation.
- *
- * Examples:
- *   #work → <span class="tag" data-tag="work">#work</span>
- *   #2024_plans → <span class="tag" data-tag="2024_plans">#2024_plans</span>
- *   #work-notes → <span class="tag" data-tag="work-notes">#work-notes</span>
- *   #tag1/subtag/subtag2 → <span class="tag" data-tag="tag1/subtag/subtag2">#tag1/subtag/subtag2</span>
- *
- * Rules:
- * - Tag must start with # followed by valid tag characters
- * - Valid characters: Unicode letters, Unicode digits, underscore (_), hyphen (-), forward slash (/)
- * - Maximum length: 100 characters
- * - Stops at: whitespace, punctuation, or other invalid characters
- * - Tags at start of line after ## are headings, not tags
- */
-
 const MAX_TAG_LENGTH = 100;
 
-/**
- * Check if character is valid for tag content using Unicode categories.
- * Uses Unicode property escapes for proper international character support.
- *
- * Valid characters:
- * - \p{L}: Unicode letters (any script: Latin, CJK, Arabic, Cyrillic, etc.)
- * - \p{N}: Unicode numbers/digits
- * - \p{S}: Unicode symbols (includes emoji)
- * - Special symbols: underscore (_), hyphen (-), forward slash (/)
- */
+// Check if character is valid for tag content (Unicode letters, digits, symbols, _, -, /)
 function isTagChar(char: string): boolean {
   // Allow Unicode letters (any script)
   if (/\p{L}/u.test(char)) {
@@ -62,9 +33,7 @@ function isTagChar(char: string): boolean {
   return false;
 }
 
-/**
- * Parse tags from text and return segments
- */
+// Parse tags from text and return segments
 function parseTagsFromText(text: string): Array<{ type: "text" | "tag"; value: string }> {
   const segments: Array<{ type: "text" | "tag"; value: string }> = [];
   let i = 0;
@@ -111,9 +80,7 @@ function parseTagsFromText(text: string): Array<{ type: "text" | "tag"; value: s
   return segments;
 }
 
-/**
- * Remark plugin to parse #tag syntax
- */
+// Remark plugin to parse #tag syntax
 export const remarkTag = () => {
   return (tree: Root) => {
     // Process text nodes in all node types (paragraphs, headings, etc.)

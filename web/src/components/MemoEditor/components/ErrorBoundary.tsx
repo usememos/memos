@@ -11,11 +11,6 @@ interface State {
   error: Error | null;
 }
 
-/**
- * Error Boundary for MemoEditor
- * Catches JavaScript errors anywhere in the editor component tree,
- * logs the error, and displays a fallback UI instead of crashing the entire app.
- */
 class MemoEditorErrorBoundary extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);

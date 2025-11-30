@@ -1,50 +1,6 @@
-/**
- * Store Module
- *
- * This module exports all application stores and their types.
- *
- * ## Store Architecture
- *
- * Stores are divided into two categories:
- *
- * ### Server State Stores (Data Fetching)
- * These stores fetch and cache data from the backend API:
- * - **memoStore**: Memo CRUD operations
- * - **userStore**: User authentication and settings
- * - **instanceStore**: Instance configuration
- * - **attachmentStore**: File attachment management
- *
- * Features:
- * - Request deduplication
- * - Error handling with StoreError
- * - Optimistic updates (memo updates)
- * - Computed property memoization
- *
- * ### Client State Stores (UI State)
- * These stores manage UI preferences and transient state:
- * - **viewStore**: Display preferences (sort order, layout)
- * - **memoFilterStore**: Active search filters
- *
- * Features:
- * - localStorage persistence (viewStore)
- * - URL synchronization (memoFilterStore)
- * - No API calls
- *
- * ## Usage
- *
- * ```typescript
- * import { memoStore, userStore, viewStore } from "@/store";
- * import { observer } from "mobx-react-lite";
- *
- * const MyComponent = observer(() => {
- *   const memos = memoStore.state.memos;
- *   const user = userStore.state.currentUser;
- *
- *   return <div>...</div>;
- * });
- * ```
- */
-// Server State Stores
+// Store Module - exports all application stores and their types
+// Server State Stores (fetch/cache backend data): memoStore, userStore, instanceStore, attachmentStore
+// Client State Stores (UI preferences): viewStore, memoFilterStore
 import attachmentStore from "./attachment";
 import instanceStore from "./instance";
 import memoStore from "./memo";
@@ -89,9 +45,6 @@ export {
   viewStore,
 };
 
-/**
- * All stores grouped by category for convenience
- */
 export const stores = {
   // Server state
   server: {

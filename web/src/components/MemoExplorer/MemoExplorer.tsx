@@ -10,66 +10,21 @@ import TagsSection from "./TagsSection";
 export type MemoExplorerContext = "home" | "explore" | "archived" | "profile";
 
 export interface MemoExplorerFeatures {
-  /**
-   * Show search bar at the top
-   * Default: true
-   */
   search?: boolean;
-
-  /**
-   * Show statistics section (activity calendar + stat cards)
-   * Default: true
-   */
   statistics?: boolean;
-
-  /**
-   * Show shortcuts section (user-defined filter shortcuts)
-   * Default: true for authenticated users on home/profile, false for explore
-   */
   shortcuts?: boolean;
-
-  /**
-   * Show tags section
-   * Default: true
-   */
   tags?: boolean;
-
-  /**
-   * Context for statistics view (affects which stats to show)
-   * Default: "user"
-   */
   statisticsContext?: MemoExplorerContext;
 }
 
 interface Props {
   className?: string;
-
-  /**
-   * Context for the explorer (determines default features)
-   */
   context?: MemoExplorerContext;
-
-  /**
-   * Feature configuration (overrides context defaults)
-   */
   features?: MemoExplorerFeatures;
-
-  /**
-   * Statistics data computed from filtered memos
-   * Should be computed using useFilteredMemoStats with the same filter as the memo list
-   */
   statisticsData: StatisticsData;
-
-  /**
-   * Tag counts computed from filtered memos
-   * Should be computed using useFilteredMemoStats with the same filter as the memo list
-   */
   tagCount: Record<string, number>;
 }
 
-/**
- * Default features based on context
- */
 const getDefaultFeatures = (context: MemoExplorerContext): MemoExplorerFeatures => {
   switch (context) {
     case "explore":

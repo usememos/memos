@@ -4,16 +4,6 @@ import { memoStore } from "@/store";
 import { toggleTaskAtIndex } from "@/utils/markdown-manipulation";
 import { MemoContentContext } from "./MemoContentContext";
 
-/**
- * Custom checkbox component for react-markdown task lists
- *
- * Handles interactive task checkbox clicks and updates memo content.
- * This component is used via react-markdown's components prop.
- *
- * Note: This component should only be used for task list checkboxes.
- * Regular inputs are handled by the default input element.
- */
-
 interface TaskListItemProps extends React.InputHTMLAttributes<HTMLInputElement> {
   node?: any; // AST node from react-markdown
   checked?: boolean;

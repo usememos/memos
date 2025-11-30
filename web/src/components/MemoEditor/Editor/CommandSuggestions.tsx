@@ -11,15 +11,6 @@ interface CommandSuggestionsProps {
   commands: Command[];
 }
 
-/**
- * Command suggestions popup that appears when typing "/" in the editor.
- * Shows available editor commands like formatting options, insertions, etc.
- *
- * Usage:
- * - Type "/" to trigger
- * - Continue typing to filter commands
- * - Use Arrow keys to navigate, Enter/Tab to select
- */
 const CommandSuggestions = observer(({ editorRef, editorActions, commands }: CommandSuggestionsProps) => {
   const { position, suggestions, selectedIndex, isVisible, handleItemSelect } = useSuggestions({
     editorRef,

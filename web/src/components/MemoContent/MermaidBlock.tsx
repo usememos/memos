@@ -10,9 +10,6 @@ interface MermaidBlockProps {
   className?: string;
 }
 
-/**
- * Maps app theme to Mermaid theme
- */
 const getMermaidTheme = (appTheme: string): "default" | "dark" => {
   return appTheme === "default-dark" ? "dark" : "default";
 };

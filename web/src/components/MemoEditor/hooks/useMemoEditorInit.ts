@@ -27,10 +27,6 @@ export interface UseMemoEditorInitReturn {
   setUpdateTime: (time: Date | undefined) => void;
 }
 
-/**
- * Hook for initializing MemoEditor state
- * Handles loading existing memo data and setting initial visibility
- */
 export const useMemoEditorInit = (options: UseMemoEditorInitOptions): UseMemoEditorInitReturn => {
   const {
     editorRef,

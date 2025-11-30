@@ -1,8 +1,5 @@
 import { useState } from "react";
 
-/**
- * Hook for handling drag-and-drop file uploads
- */
 export function useDragAndDrop(onDrop: (files: FileList) => void) {
   const [isDragging, setIsDragging] = useState(false);
 

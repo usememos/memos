@@ -10,10 +10,6 @@ interface SettingGroupProps {
   showSeparator?: boolean;
 }
 
-/**
- * Groups related settings together with optional title and separator
- * Use this to organize multiple SettingRows under a common category
- */
 const SettingGroup: React.FC<SettingGroupProps> = ({ title, description, children, className, showSeparator = false }) => {
   return (
     <>

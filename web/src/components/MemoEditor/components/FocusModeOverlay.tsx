@@ -7,10 +7,6 @@ interface FocusModeOverlayProps {
   onToggle: () => void;
 }
 
-/**
- * Focus mode overlay with backdrop and exit button
- * Renders the semi-transparent backdrop when focus mode is active
- */
 export function FocusModeOverlay({ isActive, onToggle }: FocusModeOverlayProps) {
   if (!isActive) return null;
 
@@ -31,10 +27,6 @@ interface FocusModeExitButtonProps {
   title: string;
 }
 
-/**
- * Exit button for focus mode
- * Displayed in the top-right corner when focus mode is active
- */
 export function FocusModeExitButton({ isActive, onToggle, title }: FocusModeExitButtonProps) {
   if (!isActive) return null;
 

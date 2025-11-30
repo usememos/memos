@@ -1,19 +1,6 @@
 import { useEffect, useRef } from "react";
 import { MasonryItemProps } from "./types";
 
-/**
- * Individual item wrapper component for masonry layout
- *
- * Responsibilities:
- * - Render the memo using the provided renderer with context
- * - Measure its own height using ResizeObserver
- * - Report height changes to parent for redistribution
- *
- * The ResizeObserver automatically tracks dynamic content changes such as:
- * - Images loading
- * - Expanded/collapsed text
- * - Any other content size changes
- */
 export function MasonryItem({ memo, renderer, renderContext, onHeightChange }: MasonryItemProps) {
   const itemRef = useRef<HTMLDivElement>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);

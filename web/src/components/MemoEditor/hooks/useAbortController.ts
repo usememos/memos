@@ -1,8 +1,5 @@
 import { useEffect, useRef } from "react";
 
-/**
- * Hook for managing AbortController lifecycle
- */
 export function useAbortController() {
   const controllerRef = useRef<AbortController | null>(null);
 
