@@ -41,7 +41,8 @@ func NewIdentityProvider(config *storepb.OAuth2Config) (*IdentityProvider, error
 }
 
 // ExchangeToken returns the exchanged OAuth2 token using the given authorization code.
-func (p *IdentityProvider) ExchangeToken(ctx context.Context, redirectURL, code string) (string, error) {
+// If codeVerifier is provided, it will be used for PKCE (Proof Key for Code Exchange) validation.
+func (p *IdentityProvider) ExchangeToken(ctx context.Context, redirectURL, code, codeVerifier string) (string, error) {
 	conf := &oauth2.Config{
 		ClientID:     p.config.ClientId,
 		ClientSecret: p.config.ClientSecret,
@@ -54,17 +55,26 @@ func (p *IdentityProvider) ExchangeToken(ctx context.Context, redirectURL, code 
 		},
 	}
 
-	token, err := conf.Exchange(ctx, code)
+	// Prepare token exchange options
+	opts := []oauth2.AuthCodeOption{}
+
+	// Add PKCE code_verifier if provided
+	if codeVerifier != "" {
+		opts = append(opts, oauth2.SetAuthURLParam("code_verifier", codeVerifier))
+	}
+
+	token, err := conf.Exchange(ctx, code, opts...)
 	if err != nil {
 		return "", errors.Wrap(err, "failed to exchange access token")
 	}
 
-	accessToken, ok := token.Extra("access_token").(string)
-	if !ok {
-		return "", errors.New(`missing "access_token" from authorization response`)
+	// Use the standard AccessToken field instead of Extra()
+	// This is more reliable across different OAuth providers
+	if token.AccessToken == "" {
+		return "", errors.New("missing access token from authorization response")
 	}
 
-	return accessToken, nil
+	return token.AccessToken, nil
 }
 
 // UserInfo returns the parsed user information using the given OAuth2 token.

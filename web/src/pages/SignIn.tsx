@@ -49,15 +49,17 @@ const SignIn = observer(() => {
 
       try {
         // Generate and store secure state parameter with CSRF protection
+        // Also generate PKCE parameters (code_challenge) for enhanced security
         const identityProviderId = extractIdentityProviderIdFromName(identityProvider.name);
-        const state = storeOAuthState(identityProviderId);
+        const { state, codeChallenge } = await storeOAuthState(identityProviderId);
 
-        // Build OAuth authorization URL with secure state
+        // Build OAuth authorization URL with secure state and PKCE
+        // Using S256 (SHA-256) as the code_challenge_method per RFC 7636
         const authUrl = `${oauth2Config.authUrl}?client_id=${
           oauth2Config.clientId
         }&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&response_type=code&scope=${encodeURIComponent(
           oauth2Config.scopes.join(" "),
-        )}`;
+        )}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
 
         window.location.href = authUrl;
       } catch (error) {

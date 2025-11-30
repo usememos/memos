@@ -68,6 +68,10 @@ message CreateSessionRequest {
     // The redirect URI used in the SSO flow.
     // Required field for security validation.
     string redirect_uri = 3 [(google.api.field_behavior) = REQUIRED];
+
+    // The PKCE code verifier for enhanced security (RFC 7636).
+    // Optional field - if provided, enables PKCE flow protection against authorization code interception.
+    string code_verifier = 4 [(google.api.field_behavior) = OPTIONAL];
   }
 
   // Provide one authentication method (username/password or SSO).

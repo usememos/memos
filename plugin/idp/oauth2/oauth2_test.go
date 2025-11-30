@@ -147,7 +147,8 @@ func TestIdentityProvider(t *testing.T) {
 	require.NoError(t, err)
 
 	redirectURL := "https://example.com/oauth/callback"
-	oauthToken, err := oauth2.ExchangeToken(ctx, redirectURL, testCode)
+	// Test without PKCE (backward compatibility)
+	oauthToken, err := oauth2.ExchangeToken(ctx, redirectURL, testCode, "")
 	require.NoError(t, err)
 	require.Equal(t, testAccessToken, oauthToken)
 

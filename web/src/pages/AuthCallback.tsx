@@ -23,6 +23,28 @@ const AuthCallback = observer(() => {
   });
 
   useEffect(() => {
+    // Check for OAuth error response first (e.g., user denied access)
+    const error = searchParams.get("error");
+    const errorDescription = searchParams.get("error_description");
+    const errorUri = searchParams.get("error_uri");
+
+    if (error) {
+      // OAuth provider returned an error
+      let errorMessage = `OAuth error: ${error}`;
+      if (errorDescription) {
+        errorMessage += `\n${decodeURIComponent(errorDescription)}`;
+      }
+      if (errorUri) {
+        errorMessage += `\nMore info: ${errorUri}`;
+      }
+
+      setState({
+        loading: false,
+        errorMessage,
+      });
+      return;
+    }
+
     const code = searchParams.get("code");
     const state = searchParams.get("state");
 
@@ -34,7 +56,7 @@ const AuthCallback = observer(() => {
       return;
     }
 
-    // Validate OAuth state (CSRF protection)
+    // Validate OAuth state (CSRF protection) and retrieve PKCE code_verifier
     const validatedState = validateOAuthState(state);
     if (!validatedState) {
       setState({
@@ -44,7 +66,7 @@ const AuthCallback = observer(() => {
       return;
     }
 
-    const { identityProviderId, returnUrl } = validatedState;
+    const { identityProviderId, returnUrl, codeVerifier } = validatedState;
     const redirectUri = absolutifyLink("/auth/callback");
 
     (async () => {
@@ -54,6 +76,7 @@ const AuthCallback = observer(() => {
             idpId: identityProviderId,
             code,
             redirectUri,
+            codeVerifier: codeVerifier || "", // Pass PKCE code_verifier for token exchange
           },
         });
         setState({

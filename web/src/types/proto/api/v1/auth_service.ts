@@ -66,6 +66,11 @@ export interface CreateSessionRequest_SSOCredentials {
    * Required field for security validation.
    */
   redirectUri: string;
+  /**
+   * The PKCE code verifier for enhanced security (RFC 7636).
+   * Optional field - if provided, enables PKCE flow protection against authorization code interception.
+   */
+  codeVerifier: string;
 }
 
 export interface CreateSessionResponse {
@@ -296,7 +301,7 @@ export const CreateSessionRequest_PasswordCredentials: MessageFns<CreateSessionR
 };
 
 function createBaseCreateSessionRequest_SSOCredentials(): CreateSessionRequest_SSOCredentials {
-  return { idpId: 0, code: "", redirectUri: "" };
+  return { idpId: 0, code: "", redirectUri: "", codeVerifier: "" };
 }
 
 export const CreateSessionRequest_SSOCredentials: MessageFns<CreateSessionRequest_SSOCredentials> = {
@@ -309,6 +314,9 @@ export const CreateSessionRequest_SSOCredentials: MessageFns<CreateSessionReques
     }
     if (message.redirectUri !== "") {
       writer.uint32(26).string(message.redirectUri);
+    }
+    if (message.codeVerifier !== "") {
+      writer.uint32(34).string(message.codeVerifier);
     }
     return writer;
   },
@@ -344,6 +352,14 @@ export const CreateSessionRequest_SSOCredentials: MessageFns<CreateSessionReques
           message.redirectUri = reader.string();
           continue;
         }
+        case 4: {
+          if (tag !== 34) {
+            break;
+          }
+
+          message.codeVerifier = reader.string();
+          continue;
+        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -361,6 +377,7 @@ export const CreateSessionRequest_SSOCredentials: MessageFns<CreateSessionReques
     message.idpId = object.idpId ?? 0;
     message.code = object.code ?? "";
     message.redirectUri = object.redirectUri ?? "";
+    message.codeVerifier = object.codeVerifier ?? "";
     return message;
   },
 };

@@ -2159,6 +2159,11 @@ components:
                     description: |-
                         The redirect URI used in the SSO flow.
                          Required field for security validation.
+                codeVerifier:
+                    type: string
+                    description: |-
+                        The PKCE code verifier for enhanced security (RFC 7636).
+                         Optional field - if provided, enables PKCE flow protection against authorization code interception.
             description: Nested message for SSO authentication credentials.
         CreateSessionResponse:
             type: object

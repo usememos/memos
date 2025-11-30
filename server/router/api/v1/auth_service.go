@@ -126,7 +126,8 @@ func (s *APIV1Service) CreateSession(ctx context.Context, request *v1pb.CreateSe
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to create oauth2 identity provider, error: %v", err)
 			}
-			token, err := oauth2IdentityProvider.ExchangeToken(ctx, ssoCredentials.RedirectUri, ssoCredentials.Code)
+			// Pass code_verifier for PKCE support (empty string if not provided for backward compatibility)
+			token, err := oauth2IdentityProvider.ExchangeToken(ctx, ssoCredentials.RedirectUri, ssoCredentials.Code, ssoCredentials.CodeVerifier)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to exchange token, error: %v", err)
 			}
