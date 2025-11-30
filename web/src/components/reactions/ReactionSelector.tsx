@@ -42,19 +42,19 @@ const ReactionSelector = observer((props: ReactionSelectorProps) => {
       </PopoverTrigger>
       <PopoverContent align="center" className="max-w-[90vw] sm:max-w-md">
         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-1 max-h-64 overflow-y-auto">
-            {instanceMemoRelatedSetting.reactions.map((reactionType) => (
-              <button
-                type="button"
-                key={reactionType}
-                className={cn(
-                  "inline-flex w-auto text-base cursor-pointer rounded px-1 text-muted-foreground hover:opacity-80 transition-colors",
-                  hasReacted(reactionType) && "bg-secondary text-secondary-foreground",
-                )}
-                onClick={() => handleReactionClick(reactionType)}
-              >
-                {reactionType}
-              </button>
-            ))}
+          {instanceMemoRelatedSetting.reactions.map((reactionType) => (
+            <button
+              type="button"
+              key={reactionType}
+              className={cn(
+                "inline-flex w-auto text-base cursor-pointer rounded px-1 text-muted-foreground hover:opacity-80 transition-colors",
+                hasReacted(reactionType) && "bg-secondary text-secondary-foreground",
+              )}
+              onClick={() => handleReactionClick(reactionType)}
+            >
+              {reactionType}
+            </button>
+          ))}
         </div>
       </PopoverContent>
     </Popover>
