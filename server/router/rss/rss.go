@@ -27,11 +27,11 @@ const (
 )
 
 var (
-	// Regex to match markdown headings at the start of a line
+	// Regex to match markdown headings at the start of a line.
 	markdownHeadingRegex = regexp.MustCompile(`^#{1,6}\s*`)
 )
 
-// cacheEntry represents a cached RSS feed with expiration
+// cacheEntry represents a cached RSS feed with expiration.
 type cacheEntry struct {
 	content      string
 	etag         string
@@ -291,7 +291,7 @@ func (s *RSSService) generateRSSFromMemoList(ctx context.Context, memoList []*st
 	return rss, lastModified, nil
 }
 
-func (s *RSSService) generateItemTitle(content string) string {
+func (*RSSService) generateItemTitle(content string) string {
 	// Extract first line as title
 	lines := strings.Split(content, "\n")
 	title := strings.TrimSpace(lines[0])
@@ -335,7 +335,7 @@ func (s *RSSService) getRSSItemDescription(content string) (string, error) {
 	return html, nil
 }
 
-// getFromCache retrieves a cached feed entry if it exists and is not expired
+// getFromCache retrieves a cached feed entry if it exists and is not expired.
 func (s *RSSService) getFromCache(key string) *cacheEntry {
 	s.cacheMutex.RLock()
 	entry, exists := s.cache[key]
@@ -357,7 +357,7 @@ func (s *RSSService) getFromCache(key string) *cacheEntry {
 	return entry
 }
 
-// putInCache stores a feed in the cache and returns its ETag
+// putInCache stores a feed in the cache and returns its ETag.
 func (s *RSSService) putInCache(key, content string, lastModified time.Time) string {
 	s.cacheMutex.Lock()
 	defer s.cacheMutex.Unlock()
@@ -391,8 +391,8 @@ func (s *RSSService) putInCache(key, content string, lastModified time.Time) str
 	return etag
 }
 
-// setRSSHeaders sets appropriate HTTP headers for RSS responses
-func (s *RSSService) setRSSHeaders(c echo.Context, etag string, lastModified time.Time) {
+// setRSSHeaders sets appropriate HTTP headers for RSS responses.
+func (*RSSService) setRSSHeaders(c echo.Context, etag string, lastModified time.Time) {
 	c.Response().Header().Set(echo.HeaderContentType, "application/rss+xml; charset=utf-8")
 	c.Response().Header().Set(echo.HeaderCacheControl, fmt.Sprintf("public, max-age=%d", int(defaultCacheDuration.Seconds())))
 	c.Response().Header().Set("ETag", etag)
