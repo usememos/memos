@@ -17,11 +17,14 @@ export interface UseMemoSortingResult {
 export const useMemoSorting = (options: UseMemoSortingOptions = {}): UseMemoSortingResult => {
   const { pinnedFirst = false, state = State.NORMAL } = options;
 
+  // Extract MobX observable values to avoid issues with React dependency tracking
+  const orderByTimeAsc = viewStore.state.orderByTimeAsc;
+
   // Generate orderBy string for API
   const orderBy = useMemo(() => {
-    const timeOrder = viewStore.state.orderByTimeAsc ? "display_time asc" : "display_time desc";
+    const timeOrder = orderByTimeAsc ? "display_time asc" : "display_time desc";
     return pinnedFirst ? `pinned desc, ${timeOrder}` : timeOrder;
-  }, [pinnedFirst, viewStore.state.orderByTimeAsc]);
+  }, [pinnedFirst, orderByTimeAsc]);
 
   // Generate listSort function for client-side sorting
   const listSort = useMemo(() => {
@@ -35,12 +38,12 @@ export const useMemoSorting = (options: UseMemoSortingOptions = {}): UseMemoSort
           }
 
           // Then sort by display time
-          return viewStore.state.orderByTimeAsc
+          return orderByTimeAsc
             ? dayjs(a.displayTime).unix() - dayjs(b.displayTime).unix()
             : dayjs(b.displayTime).unix() - dayjs(a.displayTime).unix();
         });
     };
-  }, [pinnedFirst, state, viewStore.state.orderByTimeAsc]);
+  }, [pinnedFirst, state, orderByTimeAsc]);
 
   return { listSort, orderBy };
 };

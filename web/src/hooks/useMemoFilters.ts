@@ -20,11 +20,16 @@ export interface UseMemoFiltersOptions {
 export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | undefined => {
   const { creatorName, includeShortcuts = false, includePinned = false, visibilities } = options;
 
+  // Extract MobX observable values to avoid issues with React dependency tracking
+  const currentShortcut = memoFilterStore.shortcut;
+  const shortcuts = userStore.state.shortcuts;
+  const filters = memoFilterStore.filters;
+
   // Get selected shortcut if needed
   const selectedShortcut = useMemo(() => {
     if (!includeShortcuts) return undefined;
-    return userStore.state.shortcuts.find((shortcut) => getShortcutId(shortcut.name) === memoFilterStore.shortcut);
-  }, [includeShortcuts, memoFilterStore.shortcut, userStore.state.shortcuts]);
+    return shortcuts.find((shortcut) => getShortcutId(shortcut.name) === currentShortcut);
+  }, [includeShortcuts, currentShortcut, shortcuts]);
 
   // Build filter - wrapped in useMemo but also using observer for reactivity
   return useMemo(() => {
@@ -41,7 +46,7 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
     }
 
     // Add active filters from memoFilterStore
-    for (const filter of memoFilterStore.filters) {
+    for (const filter of filters) {
       if (filter.factor === "contentSearch") {
         conditions.push(`content.contains("${filter.value}")`);
       } else if (filter.factor === "tagSearch") {
@@ -81,5 +86,5 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
     }
 
     return conditions.length > 0 ? conditions.join(" && ") : undefined;
-  }, [creatorName, includeShortcuts, includePinned, visibilities, selectedShortcut, memoFilterStore.filters]);
+  }, [creatorName, includeShortcuts, includePinned, visibilities, selectedShortcut, filters]);
 };
