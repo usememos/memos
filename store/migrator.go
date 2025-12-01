@@ -21,20 +21,18 @@ import (
 // Migration System Overview:
 //
 // The migration system handles database schema versioning and upgrades.
-// Schema version is stored in system_setting (the new system).
-// The old migration_history table is deprecated but still supported for backward compatibility.
+// Schema version is stored in instance_setting (formerly system_setting).
 //
 // Migration Flow:
 // 1. preMigrate: Check if DB is initialized. If not, apply LATEST.sql
-// 2. normalizeMigrationHistoryList: Normalize old migration_history records (for pre-0.22 installations)
-// 3. migrateSchemaVersionToSetting: Migrate version from migration_history to system_setting
-// 4. Migrate (prod mode): Apply incremental migrations from current to target version
-// 5. Migrate (demo mode): Seed database with demo data
+// 2. checkMinimumUpgradeVersion: Verify installation can be upgraded (reject pre-0.22 installations)
+// 3. Migrate (prod mode): Apply incremental migrations from current to target version
+// 4. Migrate (demo mode): Seed database with demo data
 //
 // Version Tracking:
-// - New installations: Schema version set in system_setting immediately
-// - Old installations: Version migrated from migration_history to system_setting automatically
-// - Empty version: Treated as 0.0.0 and all migrations applied
+// - New installations: Schema version set in instance_setting immediately
+// - Existing v0.22+ installations: Schema version tracked in instance_setting
+// - Pre-v0.22 installations: Must upgrade to v0.25.x first (migration_history → instance_setting migration)
 //
 // Migration Files:
 // - Location: store/migration/{driver}/{version}/NN__description.sql
@@ -53,16 +51,12 @@ const (
 	// For example, "1__create_table.sql".
 	MigrateFileNameSplit = "__"
 	// LatestSchemaFileName is the name of the latest schema file.
-	// This file is used to apply the latest schema when no migration history is found.
+	// This file is used to initialize fresh installations with the current schema.
 	LatestSchemaFileName = "LATEST.sql"
 
 	// defaultSchemaVersion is used when schema version is empty or not set.
 	// This handles edge cases for old installations without version tracking.
 	defaultSchemaVersion = "0.0.0"
-
-	// migrationHistoryNormalizedVersion is the version where migration_history normalization was completed.
-	// Before 0.22, migration history had inconsistent versioning that needed normalization.
-	migrationHistoryNormalizedVersion = "0.22"
 
 	// Mode constants for profile mode.
 	modeProd = "prod"
@@ -262,11 +256,8 @@ func (s *Store) preMigrate(ctx context.Context) error {
 	}
 
 	if s.profile.Mode == modeProd {
-		if err := s.normalizeMigrationHistoryList(ctx); err != nil {
-			return errors.Wrap(err, "failed to normalize migration history list")
-		}
-		if err := s.migrateSchemaVersionToSetting(ctx); err != nil {
-			return errors.Wrap(err, "failed to migrate schema version to setting")
+		if err := s.checkMinimumUpgradeVersion(ctx); err != nil {
+			return err // Error message is already descriptive, don't wrap it
 		}
 	}
 	return nil
@@ -380,96 +371,44 @@ func (s *Store) updateCurrentSchemaVersion(ctx context.Context, schemaVersion st
 	return nil
 }
 
-// normalizeMigrationHistoryList normalizes the migration history list.
-// It checks the existing migration history and updates it to the latest schema version if necessary.
-// NOTE: This is a transition function for backward compatibility with the deprecated migration_history table.
-// This ensures that old installations (< 0.22) have their migration_history normalized before migrating to system_setting.
-func (s *Store) normalizeMigrationHistoryList(ctx context.Context) error {
-	migrationHistoryList, err := s.driver.FindMigrationHistoryList(ctx, &FindMigrationHistory{})
-	if err != nil {
-		return errors.Wrap(err, "failed to find migration history")
-	}
-	versions := []string{}
-	for _, migrationHistory := range migrationHistoryList {
-		versions = append(versions, migrationHistory.Version)
-	}
-	if len(versions) == 0 {
-		return nil
-	}
-	sort.Sort(version.SortVersion(versions))
-	latestVersion := versions[len(versions)-1]
-	latestMinorVersion := version.GetMinorVersion(latestVersion)
-
-	// If the latest version is greater than migrationHistoryNormalizedVersion, return.
-	// As of that version, the migration history is already normalized.
-	if version.IsVersionGreaterThan(latestMinorVersion, migrationHistoryNormalizedVersion) {
-		return nil
-	}
-
-	schemaVersionMap := map[string]string{}
-	filePaths, err := fs.Glob(migrationFS, fmt.Sprintf("%s*/*.sql", s.getMigrationBasePath()))
-	if err != nil {
-		return errors.Wrap(err, "failed to read migration files")
-	}
-	sort.Strings(filePaths)
-	for _, filePath := range filePaths {
-		fileSchemaVersion, err := s.getSchemaVersionOfMigrateScript(filePath)
-		if err != nil {
-			return errors.Wrap(err, "failed to get schema version of migrate script")
-		}
-		schemaVersionMap[version.GetMinorVersion(fileSchemaVersion)] = fileSchemaVersion
-	}
-
-	latestSchemaVersion := schemaVersionMap[latestMinorVersion]
-	if latestSchemaVersion == "" {
-		return errors.Errorf("latest schema version not found")
-	}
-	if version.IsVersionGreaterOrEqualThan(latestVersion, latestSchemaVersion) {
-		return nil
-	}
-	if _, err := s.driver.UpsertMigrationHistory(ctx, &UpsertMigrationHistory{
-		Version: latestSchemaVersion,
-	}); err != nil {
-		return errors.Wrap(err, "failed to upsert latest migration history")
-	}
-	return nil
-}
-
-// migrateSchemaVersionToSetting migrates the schema version from the migration history to the instance basic setting.
-// It retrieves the migration history, sorts the versions, and updates the instance basic setting if necessary.
-// NOTE: This is a transition function for backward compatibility with the deprecated migration_history table.
-// The migration_history table is deprecated in favor of storing schema version in system_setting.
-// This handles upgrades from old installations that only have migration_history but no system_setting.
-func (s *Store) migrateSchemaVersionToSetting(ctx context.Context) error {
-	migrationHistoryList, err := s.driver.FindMigrationHistoryList(ctx, &FindMigrationHistory{})
-	if err != nil {
-		return errors.Wrap(err, "failed to find migration history")
-	}
-	versions := []string{}
-	for _, migrationHistory := range migrationHistoryList {
-		versions = append(versions, migrationHistory.Version)
-	}
-	if len(versions) == 0 {
-		return nil
-	}
-	sort.Sort(version.SortVersion(versions))
-	latestVersion := versions[len(versions)-1]
-
+// checkMinimumUpgradeVersion verifies the installation meets minimum version requirements for upgrade.
+// For very old installations (< v0.22.0), users must upgrade to v0.25.x first before upgrading to current version.
+// This is necessary because schema version tracking was moved from migration_history to instance_setting in v0.22.0.
+func (s *Store) checkMinimumUpgradeVersion(ctx context.Context) error {
 	instanceBasicSetting, err := s.GetInstanceBasicSetting(ctx)
 	if err != nil {
 		return errors.Wrap(err, "failed to get instance basic setting")
 	}
 
-	// If instance_setting has no schema version (empty), or migration_history has a newer version, update instance_setting.
-	// This handles upgrades from old installations where schema version was only tracked in migration_history.
-	if isVersionEmpty(instanceBasicSetting.SchemaVersion) || version.IsVersionGreaterThan(latestVersion, instanceBasicSetting.SchemaVersion) {
-		slog.Info("migrating schema version from migration_history to instance_setting",
-			slog.String("from", instanceBasicSetting.SchemaVersion),
-			slog.String("to", latestVersion),
-		)
-		if err := s.updateCurrentSchemaVersion(ctx, latestVersion); err != nil {
-			return errors.Wrap(err, "failed to update current schema version")
-		}
+	schemaVersion := instanceBasicSetting.SchemaVersion
+
+	// If schema version is >= 0.22.0, the installation is up-to-date
+	if !isVersionEmpty(schemaVersion) && version.IsVersionGreaterOrEqualThan(schemaVersion, "0.22.0") {
+		return nil
 	}
+
+	// If schema version is set but < 0.22.0, this is an old installation
+	if !isVersionEmpty(schemaVersion) && !version.IsVersionGreaterOrEqualThan(schemaVersion, "0.22.0") {
+		currentVersion, _ := s.GetCurrentSchemaVersion()
+
+		return errors.Errorf(
+			"Your Memos installation is too old to upgrade directly.\n\n"+
+				"Your current version: %s\n"+
+				"Target version: %s\n"+
+				"Minimum required: v0.22.0 (May 2024)\n\n"+
+				"Upgrade path:\n"+
+				"1. First upgrade to v0.25.3: https://github.com/usememos/memos/releases/tag/v0.25.3\n"+
+				"2. Start the server and verify it works\n"+
+				"3. Then upgrade to the latest version\n\n"+
+				"This is required because schema version tracking was moved from migration_history\n"+
+				"to instance_setting in v0.22.0. The intermediate upgrade handles this migration safely.",
+			schemaVersion,
+			currentVersion,
+		)
+	}
+
+	// Schema version is empty - this is either a fresh install or corrupted installation
+	// Fresh installs will have schema version set immediately after LATEST.sql is applied
+	// So this should not be an issue in normal operation
 	return nil
 }

@@ -37,7 +37,6 @@ func NewTestingStore(ctx context.Context, t *testing.T) *store.Store {
 func resetTestingDB(ctx context.Context, profile *profile.Profile, dbDriver store.Driver) {
 	if profile.Driver == "mysql" {
 		_, err := dbDriver.GetDB().ExecContext(ctx, `
-		DROP TABLE IF EXISTS migration_history;
 		DROP TABLE IF EXISTS system_setting;
 		DROP TABLE IF EXISTS user;
 		DROP TABLE IF EXISTS user_setting;
@@ -57,7 +56,6 @@ func resetTestingDB(ctx context.Context, profile *profile.Profile, dbDriver stor
 		}
 	} else if profile.Driver == "postgres" {
 		_, err := dbDriver.GetDB().ExecContext(ctx, `
-		DROP TABLE IF EXISTS migration_history CASCADE;
 		DROP TABLE IF EXISTS system_setting CASCADE;
 		DROP TABLE IF EXISTS "user" CASCADE;
 		DROP TABLE IF EXISTS user_setting CASCADE;

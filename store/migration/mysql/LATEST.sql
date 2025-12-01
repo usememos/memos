@@ -1,9 +1,3 @@
--- migration_history
-CREATE TABLE `migration_history` (
-  `version` VARCHAR(256) NOT NULL PRIMARY KEY,
-  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
 -- system_setting
 CREATE TABLE `system_setting` (
   `name` VARCHAR(256) NOT NULL PRIMARY KEY,
