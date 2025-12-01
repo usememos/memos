@@ -1583,8 +1583,11 @@ func (s *APIV1Service) ListUserNotifications(ctx context.Context, request *v1pb.
 	}
 
 	// Fetch inbox items from storage
+	// Filter at database level to only include MEMO_COMMENT notifications (ignore legacy VERSION_UPDATE entries)
+	memoCommentType := storepb.InboxMessage_MEMO_COMMENT
 	inboxes, err := s.Store.ListInboxes(ctx, &store.FindInbox{
-		ReceiverID: &userID,
+		ReceiverID:  &userID,
+		MessageType: &memoCommentType,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list inboxes: %v", err)

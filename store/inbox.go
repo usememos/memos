@@ -39,10 +39,11 @@ type UpdateInbox struct {
 
 // FindInbox specifies filter criteria for querying inbox items.
 type FindInbox struct {
-	ID         *int32
-	SenderID   *int32
-	ReceiverID *int32
-	Status     *InboxStatus
+	ID          *int32
+	SenderID    *int32
+	ReceiverID  *int32
+	Status      *InboxStatus
+	MessageType *storepb.InboxMessage_Type
 
 	// Pagination
 	Limit  *int
