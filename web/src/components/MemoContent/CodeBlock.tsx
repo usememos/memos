@@ -4,7 +4,8 @@ import { CheckIcon, CopyIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import { instanceStore } from "@/store";
+import { userStore } from "@/store";
+import { getThemeWithFallback, resolveTheme } from "@/utils/theme";
 import { MermaidBlock } from "./MermaidBlock";
 
 interface PreProps {
@@ -93,8 +94,9 @@ export const CodeBlock = observer(({ children, className, ...props }: PreProps) 
     );
   }
 
-  const appTheme = instanceStore.state.theme;
-  const isDarkTheme = appTheme.includes("dark");
+  const theme = getThemeWithFallback(userStore.state.userGeneralSetting?.theme);
+  const resolvedTheme = resolveTheme(theme);
+  const isDarkTheme = resolvedTheme.includes("dark");
 
   // Dynamically load highlight.js theme based on app theme
   useEffect(() => {
@@ -121,7 +123,7 @@ export const CodeBlock = observer(({ children, className, ...props }: PreProps) 
     };
 
     dynamicImportStyle();
-  }, [appTheme, isDarkTheme]);
+  }, [resolvedTheme, isDarkTheme]);
 
   // Highlight code using highlight.js
   const highlightedCode = useMemo(() => {

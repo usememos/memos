@@ -1,10 +1,12 @@
 import { observer } from "mobx-react-lite";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { instanceStore, userStore } from "@/store";
+import i18n from "@/i18n";
+import { userStore } from "@/store";
 import { Visibility } from "@/types/proto/api/v1/memo_service";
 import { UserSetting_GeneralSetting } from "@/types/proto/api/v1/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
+import { loadTheme } from "@/utils/theme";
 import LocaleSelect from "../LocaleSelect";
 import ThemeSelect from "../ThemeSelect";
 import VisibilityIcon from "../VisibilityIcon";
@@ -18,8 +20,8 @@ const PreferencesSection = observer(() => {
   const generalSetting = userStore.state.userGeneralSetting;
 
   const handleLocaleSelectChange = async (locale: Locale) => {
-    // Update instance store immediately for instant UI feedback
-    instanceStore.state.setPartial({ locale });
+    // Apply locale immediately for instant UI feedback
+    i18n.changeLanguage(locale);
     // Persist to user settings
     await userStore.updateUserGeneralSetting({ locale }, ["locale"]);
   };
@@ -29,8 +31,8 @@ const PreferencesSection = observer(() => {
   };
 
   const handleThemeChange = async (theme: string) => {
-    // Update instance store immediately for instant UI feedback
-    instanceStore.state.setPartial({ theme });
+    // Apply theme immediately for instant UI feedback
+    loadTheme(theme);
     // Persist to user settings
     await userStore.updateUserGeneralSetting({ theme }, ["theme"]);
   };

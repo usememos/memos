@@ -92,11 +92,6 @@ export function instanceSetting_KeyToNumber(object: InstanceSetting_Key): number
 
 /** General instance settings configuration. */
 export interface InstanceSetting_GeneralSetting {
-  /**
-   * theme is the name of the selected theme.
-   * This references a CSS file in the web/public/themes/ directory.
-   */
-  theme: string;
   /** disallow_user_registration disallows user registration. */
   disallowUserRegistration: boolean;
   /** disallow_password_auth disallows password authentication. */
@@ -126,7 +121,6 @@ export interface InstanceSetting_GeneralSetting_CustomProfile {
   title: string;
   description: string;
   logoUrl: string;
-  locale: string;
 }
 
 /** Storage configuration settings for instance attachments. */
@@ -453,7 +447,6 @@ export const InstanceSetting: MessageFns<InstanceSetting> = {
 
 function createBaseInstanceSetting_GeneralSetting(): InstanceSetting_GeneralSetting {
   return {
-    theme: "",
     disallowUserRegistration: false,
     disallowPasswordAuth: false,
     additionalScript: "",
@@ -467,9 +460,6 @@ function createBaseInstanceSetting_GeneralSetting(): InstanceSetting_GeneralSett
 
 export const InstanceSetting_GeneralSetting: MessageFns<InstanceSetting_GeneralSetting> = {
   encode(message: InstanceSetting_GeneralSetting, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.theme !== "") {
-      writer.uint32(10).string(message.theme);
-    }
     if (message.disallowUserRegistration !== false) {
       writer.uint32(16).bool(message.disallowUserRegistration);
     }
@@ -504,14 +494,6 @@ export const InstanceSetting_GeneralSetting: MessageFns<InstanceSetting_GeneralS
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.theme = reader.string();
-          continue;
-        }
         case 2: {
           if (tag !== 16) {
             break;
@@ -590,7 +572,6 @@ export const InstanceSetting_GeneralSetting: MessageFns<InstanceSetting_GeneralS
   },
   fromPartial(object: DeepPartial<InstanceSetting_GeneralSetting>): InstanceSetting_GeneralSetting {
     const message = createBaseInstanceSetting_GeneralSetting();
-    message.theme = object.theme ?? "";
     message.disallowUserRegistration = object.disallowUserRegistration ?? false;
     message.disallowPasswordAuth = object.disallowPasswordAuth ?? false;
     message.additionalScript = object.additionalScript ?? "";
@@ -606,7 +587,7 @@ export const InstanceSetting_GeneralSetting: MessageFns<InstanceSetting_GeneralS
 };
 
 function createBaseInstanceSetting_GeneralSetting_CustomProfile(): InstanceSetting_GeneralSetting_CustomProfile {
-  return { title: "", description: "", logoUrl: "", locale: "" };
+  return { title: "", description: "", logoUrl: "" };
 }
 
 export const InstanceSetting_GeneralSetting_CustomProfile: MessageFns<InstanceSetting_GeneralSetting_CustomProfile> = {
@@ -622,9 +603,6 @@ export const InstanceSetting_GeneralSetting_CustomProfile: MessageFns<InstanceSe
     }
     if (message.logoUrl !== "") {
       writer.uint32(26).string(message.logoUrl);
-    }
-    if (message.locale !== "") {
-      writer.uint32(34).string(message.locale);
     }
     return writer;
   },
@@ -660,14 +638,6 @@ export const InstanceSetting_GeneralSetting_CustomProfile: MessageFns<InstanceSe
           message.logoUrl = reader.string();
           continue;
         }
-        case 4: {
-          if (tag !== 34) {
-            break;
-          }
-
-          message.locale = reader.string();
-          continue;
-        }
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -689,7 +659,6 @@ export const InstanceSetting_GeneralSetting_CustomProfile: MessageFns<InstanceSe
     message.title = object.title ?? "";
     message.description = object.description ?? "";
     message.logoUrl = object.logoUrl ?? "";
-    message.locale = object.locale ?? "";
     return message;
   },
 };

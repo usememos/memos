@@ -83,9 +83,6 @@ message InstanceSetting {
 
   // General instance settings configuration.
   message GeneralSetting {
-    // theme is the name of the selected theme.
-    // This references a CSS file in the web/public/themes/ directory.
-    string theme = 1;
     // disallow_user_registration disallows user registration.
     bool disallow_user_registration = 2;
     // disallow_password_auth disallows password authentication.
@@ -111,7 +108,6 @@ message InstanceSetting {
       string title = 1;
       string description = 2;
       string logo_url = 3;
-      string locale = 4;
     }
   }
 

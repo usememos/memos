@@ -9,21 +9,11 @@ import {
   InstanceSetting_Key,
   InstanceSetting_MemoRelatedSetting,
 } from "@/types/proto/api/v1/instance_service";
-import { isValidateLocale } from "@/utils/i18n";
 import { createServerStore, StandardState } from "./base-store";
 import { instanceSettingNamePrefix } from "./common";
 import { createRequestKey } from "./store-utils";
 
-const VALID_THEMES = ["system", "default", "default-dark", "midnight", "paper", "whitewall"] as const;
-export type Theme = (typeof VALID_THEMES)[number];
-
-export function isValidTheme(theme: string): theme is Theme {
-  return VALID_THEMES.includes(theme as Theme);
-}
-
 class InstanceState extends StandardState {
-  locale: string = "en";
-  theme: Theme | string = "system";
   profile: InstanceProfile = InstanceProfile.fromPartial({});
   settings: InstanceSetting[] = [];
 
@@ -41,29 +31,6 @@ class InstanceState extends StandardState {
       const setting = this.settings.find((s) => s.name === `${instanceSettingNamePrefix}${InstanceSetting_Key.MEMO_RELATED}`);
       return setting?.memoRelatedSetting || InstanceSetting_MemoRelatedSetting.fromPartial({});
     }).get();
-  }
-
-  setPartial(partial: Partial<InstanceState>): void {
-    const finalState = { ...this, ...partial };
-
-    // Validate locale
-    if (partial.locale !== undefined && !isValidateLocale(finalState.locale)) {
-      console.warn(`Invalid locale "${finalState.locale}", falling back to "en"`);
-      finalState.locale = "en";
-    }
-
-    // Validate theme - accept string and validate
-    if (partial.theme !== undefined) {
-      const themeStr = String(finalState.theme);
-      if (!isValidTheme(themeStr)) {
-        console.warn(`Invalid theme "${themeStr}", falling back to "default"`);
-        finalState.theme = "default";
-      } else {
-        finalState.theme = themeStr;
-      }
-    }
-
-    Object.assign(this, finalState);
   }
 }
 
@@ -114,33 +81,6 @@ const instanceStore = (() => {
     return setting || InstanceSetting.fromPartial({});
   };
 
-  const setTheme = async (theme: string): Promise<void> => {
-    // Validate theme
-    if (!isValidTheme(theme)) {
-      console.warn(`Invalid theme "${theme}", ignoring`);
-      return;
-    }
-
-    // Update local state immediately
-    state.setPartial({ theme });
-
-    // Persist to server
-    const generalSetting = state.generalSetting;
-    const updatedGeneralSetting = InstanceSetting_GeneralSetting.fromPartial({
-      ...generalSetting,
-      customProfile: {
-        ...generalSetting.customProfile,
-      },
-    });
-
-    await upsertInstanceSetting(
-      InstanceSetting.fromPartial({
-        name: `${instanceSettingNamePrefix}${InstanceSetting_Key.GENERAL}`,
-        generalSetting: updatedGeneralSetting,
-      }),
-    );
-  };
-
   const fetchInstanceProfile = async (): Promise<InstanceProfile> => {
     const requestKey = createRequestKey("fetchInstanceProfile");
 
@@ -161,7 +101,6 @@ const instanceStore = (() => {
     fetchInstanceProfile,
     upsertInstanceSetting,
     getInstanceSettingByKey,
-    setTheme,
   };
 })();
 
@@ -178,19 +117,9 @@ export const initialInstanceStore = async (): Promise<void> => {
     ]);
 
     // Apply settings to state
-    const instanceGeneralSetting = instanceStore.state.generalSetting;
-    instanceStore.state.setPartial({
-      locale: instanceGeneralSetting.customProfile?.locale || "en",
-      theme: instanceGeneralSetting.theme || "system",
-      profile: instanceProfile,
-    });
+    Object.assign(instanceStore.state, { profile: instanceProfile });
   } catch (error) {
     console.error("Failed to initialize instance store:", error);
-    // Set default fallback values
-    instanceStore.state.setPartial({
-      locale: "en",
-      theme: "system",
-    });
   }
 };
 

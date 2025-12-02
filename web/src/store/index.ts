@@ -22,9 +22,6 @@ export {
   memoNamePrefix,
   userNamePrefix,
 } from "./common";
-// Re-export instance types
-export type { Theme } from "./instance";
-export { isValidTheme } from "./instance";
 // Re-export filter types
 export type { FilterFactor, MemoFilter } from "./memoFilter";
 export { getMemoFilterKey, parseFilterQuery, stringifyFilters } from "./memoFilter";

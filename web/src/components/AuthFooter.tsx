@@ -1,6 +1,8 @@
 import { observer } from "mobx-react-lite";
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import { cn } from "@/lib/utils";
-import { instanceStore } from "@/store";
+import { getInitialTheme, loadTheme } from "@/utils/theme";
 import LocaleSelect from "./LocaleSelect";
 import ThemeSelect from "./ThemeSelect";
 
@@ -9,10 +11,22 @@ interface Props {
 }
 
 const AuthFooter = observer(({ className }: Props) => {
+  const { i18n: i18nInstance } = useTranslation();
+  const currentLocale = i18nInstance.language as Locale;
+  const currentTheme = getInitialTheme();
+
+  const handleLocaleChange = (locale: Locale) => {
+    i18n.changeLanguage(locale);
+  };
+
+  const handleThemeChange = (theme: string) => {
+    loadTheme(theme);
+  };
+
   return (
     <div className={cn("mt-4 flex flex-row items-center justify-center w-full gap-2", className)}>
-      <LocaleSelect value={instanceStore.state.locale} onChange={(locale) => instanceStore.state.setPartial({ locale })} />
-      <ThemeSelect value={instanceStore.state.theme} onValueChange={(theme) => instanceStore.state.setPartial({ theme })} />
+      <LocaleSelect value={currentLocale} onChange={handleLocaleChange} />
+      <ThemeSelect value={currentTheme} onValueChange={handleThemeChange} />
     </div>
   );
 });

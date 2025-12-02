@@ -2,8 +2,8 @@ import mermaid from "mermaid";
 import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { instanceStore, userStore } from "@/store";
-import { resolveTheme, setupSystemThemeListener } from "@/utils/theme";
+import { userStore } from "@/store";
+import { getThemeWithFallback, resolveTheme, setupSystemThemeListener } from "@/utils/theme";
 
 interface MermaidBlockProps {
   children?: React.ReactNode;
@@ -25,7 +25,8 @@ export const MermaidBlock = observer(({ children, className }: MermaidBlockProps
   const codeContent = String(codeElement?.props?.children || "").replace(/\n$/, "");
 
   // Get theme preference (reactive via MobX observer)
-  const themePreference = userStore.state.userGeneralSetting?.theme || instanceStore.state.theme;
+  // Falls back to localStorage or system preference if no user setting
+  const themePreference = getThemeWithFallback(userStore.state.userGeneralSetting?.theme);
 
   // Resolve theme to actual value (handles "system" theme + system theme changes)
   const currentTheme = useMemo(() => resolveTheme(themePreference), [themePreference, systemThemeChange]);

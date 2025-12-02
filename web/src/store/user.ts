@@ -1,6 +1,7 @@
 import { uniqueId } from "lodash-es";
 import { computed, makeAutoObservable } from "mobx";
 import { authServiceClient, shortcutServiceClient, userServiceClient } from "@/grpcweb";
+import i18n from "@/i18n";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
 import {
   User,
@@ -13,8 +14,8 @@ import {
   UserSetting_WebhooksSetting,
   UserStats,
 } from "@/types/proto/api/v1/user_service";
-import { findNearestMatchedLanguage } from "@/utils/i18n";
-import instanceStore from "./instance";
+import { getLocaleWithFallback } from "@/utils/i18n";
+import { getThemeWithFallback, loadTheme } from "@/utils/theme";
 import { createRequestKey, RequestDeduplicator, StoreError } from "./store-utils";
 
 class LocalState {
@@ -283,6 +284,20 @@ const userStore = (() => {
     state.statsStateId = id;
   };
 
+  // Applies user preferences (theme and locale) with proper fallbacks
+  // This should be called after user settings are loaded
+  const applyUserPreferences = () => {
+    const generalSetting = state.userGeneralSetting;
+
+    // Apply theme with fallback: user setting -> localStorage -> system
+    const theme = getThemeWithFallback(generalSetting?.theme);
+    loadTheme(theme);
+
+    // Apply locale with fallback: user setting -> browser language
+    const locale = getLocaleWithFallback(generalSetting?.locale);
+    i18n.changeLanguage(locale);
+  };
+
   return {
     state,
     getOrFetchUserByName,
@@ -299,6 +314,7 @@ const userStore = (() => {
     deleteNotification,
     fetchUserStats,
     setStatsStateId,
+    applyUserPreferences,
   };
 })();
 
@@ -306,22 +322,18 @@ const userStore = (() => {
 // 1. Fetch current authenticated user session
 // 2. Set current user in store (required for subsequent calls)
 // 3. Fetch user settings (depends on currentUser being set)
-// 4. Apply user preferences to instance store
 export const initialUserStore = async () => {
   try {
     // Step 1: Authenticate and get current user
     const { user: currentUser } = await authServiceClient.getCurrentSession({});
 
     if (!currentUser) {
-      // No authenticated user - clear state and use default locale
+      // No authenticated user - clear state
       userStore.state.setPartial({
         currentUser: undefined,
         userGeneralSetting: undefined,
         userMapByName: {},
       });
-
-      const locale = findNearestMatchedLanguage(navigator.language);
-      instanceStore.state.setPartial({ locale });
       return;
     }
 
@@ -339,27 +351,8 @@ export const initialUserStore = async () => {
     // CRITICAL: This must happen after currentUser is set in step 2
     // The fetchUserSettings() and fetchUserStats() methods check state.currentUser internally
     await Promise.all([userStore.fetchUserSettings(), userStore.fetchUserStats()]);
-
-    // Step 4: Apply user preferences to instance
-    // CRITICAL: This must happen after fetchUserSettings() completes
-    // We need userGeneralSetting to be populated before accessing it
-    const generalSetting = userStore.state.userGeneralSetting;
-    if (generalSetting) {
-      // Note: setPartial will validate theme automatically
-      instanceStore.state.setPartial({
-        locale: generalSetting.locale,
-        theme: generalSetting.theme || "default", // Validation handled by setPartial
-      });
-    } else {
-      // Fallback if settings weren't loaded
-      const locale = findNearestMatchedLanguage(navigator.language);
-      instanceStore.state.setPartial({ locale });
-    }
   } catch (error) {
-    // On any error, fall back to browser language detection
     console.error("Failed to initialize user store:", error);
-    const locale = findNearestMatchedLanguage(navigator.language);
-    instanceStore.state.setPartial({ locale });
   }
 };
 

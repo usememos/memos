@@ -9,8 +9,6 @@ import { instanceStore } from "@/store";
 import { instanceSettingNamePrefix } from "@/store/common";
 import { InstanceSetting_GeneralSetting_CustomProfile, InstanceSetting_Key } from "@/types/proto/api/v1/instance_service";
 import { useTranslate } from "@/utils/i18n";
-import LocaleSelect from "./LocaleSelect";
-import ThemeSelect from "./ThemeSelect";
 
 interface Props {
   open: boolean;
@@ -52,18 +50,11 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
     });
   };
 
-  const handleLocaleSelectChange = (locale: Locale) => {
-    setPartialState({
-      locale: locale,
-    });
-  };
-
   const handleRestoreButtonClick = () => {
     setPartialState({
       title: "Memos",
       logoUrl: "/logo.webp",
       description: "",
-      locale: "en",
     });
   };
 
@@ -125,16 +116,6 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
               onChange={handleDescriptionChanged}
               placeholder="Enter description"
             />
-          </div>
-
-          <div className="grid gap-2">
-            <Label>{t("setting.system-section.customize-server.locale")}</Label>
-            <LocaleSelect value={customProfile.locale} onChange={handleLocaleSelectChange} />
-          </div>
-
-          <div className="grid gap-2">
-            <Label>Theme</Label>
-            <ThemeSelect />
           </div>
         </div>
 

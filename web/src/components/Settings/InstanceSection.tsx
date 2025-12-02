@@ -13,7 +13,6 @@ import { instanceSettingNamePrefix } from "@/store/common";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service";
 import { InstanceSetting_GeneralSetting, InstanceSetting_Key } from "@/types/proto/api/v1/instance_service";
 import { useTranslate } from "@/utils/i18n";
-import ThemeSelect from "../ThemeSelect";
 import UpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
 import SettingGroup from "./SettingGroup";
 import SettingRow from "./SettingRow";
@@ -79,14 +78,6 @@ const InstanceSection = observer(() => {
       </SettingGroup>
 
       <SettingGroup title={t("setting.system-section.title")} showSeparator>
-        <SettingRow label="Theme">
-          <ThemeSelect
-            value={instanceGeneralSetting.theme || "default"}
-            onValueChange={(value: string) => updatePartialSetting({ theme: value })}
-            className="min-w-fit"
-          />
-        </SettingRow>
-
         <SettingRow label={t("setting.system-section.additional-style")} vertical>
           <Textarea
             className="font-mono w-full"

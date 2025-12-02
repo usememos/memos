@@ -154,14 +154,8 @@ func convertInstanceGeneralSettingFromStore(setting *storepb.InstanceGeneralSett
 	if setting == nil {
 		return nil
 	}
-	// Backfill theme if empty
-	theme := setting.Theme
-	if theme == "" {
-		theme = "default"
-	}
 
 	generalSetting := &v1pb.InstanceSetting_GeneralSetting{
-		Theme:                    theme,
 		DisallowUserRegistration: setting.DisallowUserRegistration,
 		DisallowPasswordAuth:     setting.DisallowPasswordAuth,
 		AdditionalScript:         setting.AdditionalScript,
@@ -175,7 +169,6 @@ func convertInstanceGeneralSettingFromStore(setting *storepb.InstanceGeneralSett
 			Title:       setting.CustomProfile.Title,
 			Description: setting.CustomProfile.Description,
 			LogoUrl:     setting.CustomProfile.LogoUrl,
-			Locale:      setting.CustomProfile.Locale,
 		}
 	}
 	return generalSetting
@@ -186,7 +179,6 @@ func convertInstanceGeneralSettingToStore(setting *v1pb.InstanceSetting_GeneralS
 		return nil
 	}
 	generalSetting := &storepb.InstanceGeneralSetting{
-		Theme:                    setting.Theme,
 		DisallowUserRegistration: setting.DisallowUserRegistration,
 		DisallowPasswordAuth:     setting.DisallowPasswordAuth,
 		AdditionalScript:         setting.AdditionalScript,
@@ -200,7 +192,6 @@ func convertInstanceGeneralSettingToStore(setting *v1pb.InstanceSetting_GeneralS
 			Title:       setting.CustomProfile.Title,
 			Description: setting.CustomProfile.Description,
 			LogoUrl:     setting.CustomProfile.LogoUrl,
-			Locale:      setting.CustomProfile.Locale,
 		}
 	}
 	return generalSetting

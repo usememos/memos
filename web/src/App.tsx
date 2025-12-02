@@ -5,7 +5,7 @@ import { Outlet } from "react-router-dom";
 import useNavigateTo from "./hooks/useNavigateTo";
 import { instanceStore, userStore } from "./store";
 import { cleanupExpiredOAuthState } from "./utils/oauth";
-import { loadTheme, setupSystemThemeListener } from "./utils/theme";
+import { getThemeWithFallback, loadTheme, setupSystemThemeListener } from "./utils/theme";
 
 const App = observer(() => {
   const { i18n } = useTranslation();
@@ -54,55 +54,44 @@ const App = observer(() => {
     link.href = instanceGeneralSetting.customProfile.logoUrl || "/logo.webp";
   }, [instanceGeneralSetting.customProfile]);
 
+  // Update HTML lang and dir attributes based on current locale
   useEffect(() => {
-    const currentLocale = instanceStore.state.locale;
-    // This will trigger re-rendering of the whole app.
-    i18n.changeLanguage(currentLocale);
+    const currentLocale = i18n.language;
     document.documentElement.setAttribute("lang", currentLocale);
     if (["ar", "fa"].includes(currentLocale)) {
       document.documentElement.setAttribute("dir", "rtl");
     } else {
       document.documentElement.setAttribute("dir", "ltr");
     }
-  }, [instanceStore.state.locale]);
+  }, [i18n.language]);
 
+  // Apply theme when user setting changes
   useEffect(() => {
     if (!userGeneralSetting) {
       return;
     }
-
-    instanceStore.state.setPartial({
-      locale: userGeneralSetting.locale || instanceStore.state.locale,
-      theme: userGeneralSetting.theme || instanceStore.state.theme,
-    });
-  }, [userGeneralSetting?.locale, userGeneralSetting?.theme]);
-
-  // Load theme when instance theme changes or user setting changes
-  useEffect(() => {
-    const currentTheme = userGeneralSetting?.theme || instanceStore.state.theme;
-    if (currentTheme) {
-      loadTheme(currentTheme);
-    }
-  }, [userGeneralSetting?.theme, instanceStore.state.theme]);
+    const theme = getThemeWithFallback(userGeneralSetting.theme);
+    loadTheme(theme);
+  }, [userGeneralSetting?.theme]);
 
   // Listen for system theme changes when using "system" theme
   useEffect(() => {
-    const currentTheme = userGeneralSetting?.theme || instanceStore.state.theme;
+    const theme = getThemeWithFallback(userGeneralSetting?.theme);
 
     // Only set up listener if theme is "system"
-    if (currentTheme !== "system") {
+    if (theme !== "system") {
       return;
     }
 
     // Set up listener for OS theme preference changes
     const cleanup = setupSystemThemeListener(() => {
       // Reload theme when system preference changes
-      loadTheme(currentTheme);
+      loadTheme(theme);
     });
 
     // Cleanup listener on unmount or when theme changes
     return cleanup;
-  }, [userGeneralSetting?.theme, instanceStore.state.theme]);
+  }, [userGeneralSetting?.theme]);
 
   return <Outlet />;
 });

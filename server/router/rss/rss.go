@@ -415,15 +415,9 @@ func getRSSHeading(ctx context.Context, stores *store.Store) (RSSHeading, error)
 	}
 	customProfile := settings.CustomProfile
 
-	// Use locale as language if available, default to en-us
-	language := "en-us"
-	if customProfile.Locale != "" {
-		language = customProfile.Locale
-	}
-
 	return RSSHeading{
 		Title:       customProfile.Title,
 		Description: customProfile.Description,
-		Language:    language,
+		Language:    "en-us",
 	}, nil
 }

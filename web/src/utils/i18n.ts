@@ -52,6 +52,19 @@ export const isValidateLocale = (locale: string | undefined | null): boolean => 
   return locales.includes(locale);
 };
 
+// Gets the locale to use with proper priority:
+// 1. User setting (if logged in and has preference)
+// 2. Browser language preference
+export const getLocaleWithFallback = (userLocale?: string): Locale => {
+  // Priority 1: User setting (if logged in and valid)
+  if (userLocale && isValidateLocale(userLocale)) {
+    return userLocale as Locale;
+  }
+
+  // Priority 2: Browser language
+  return findNearestMatchedLanguage(navigator.language);
+};
+
 // Get the display name for a locale in its native language
 export const getLocaleDisplayName = (locale: string): string => {
   try {

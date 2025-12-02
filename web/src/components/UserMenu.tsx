@@ -3,12 +3,12 @@ import { observer } from "mobx-react-lite";
 import { authServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { locales } from "@/i18n";
+import i18n, { locales } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { instanceStore, userStore } from "@/store";
+import { userStore } from "@/store";
 import { getLocaleDisplayName, useTranslate } from "@/utils/i18n";
-import { THEME_OPTIONS } from "@/utils/theme";
+import { loadTheme, THEME_OPTIONS } from "@/utils/theme";
 import UserAvatar from "./UserAvatar";
 import {
   DropdownMenu,
@@ -34,13 +34,16 @@ const UserMenu = observer((props: Props) => {
   const currentTheme = generalSetting?.theme || "default";
 
   const handleLocaleChange = async (locale: Locale) => {
-    // Update instance store immediately for instant UI feedback
-    instanceStore.state.setPartial({ locale });
+    // Apply locale immediately for instant UI feedback
+    i18n.changeLanguage(locale);
     // Persist to user settings
     await userStore.updateUserGeneralSetting({ locale }, ["locale"]);
   };
 
   const handleThemeChange = async (theme: string) => {
+    // Apply theme immediately for instant UI feedback
+    loadTheme(theme);
+    // Persist to user settings
     await userStore.updateUserGeneralSetting({ theme }, ["theme"]);
   };
 
