@@ -3,6 +3,7 @@ import { memo } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
+import rehypeSanitize from "rehype-sanitize";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
@@ -15,12 +16,12 @@ import { remarkTag } from "@/utils/remark-plugins/remark-tag";
 import { isSuperUser } from "@/utils/user";
 import { CodeBlock } from "./CodeBlock";
 import { createConditionalComponent, isTagNode, isTaskListItemNode } from "./ConditionalComponent";
+import { SANITIZE_SCHEMA } from "./constants";
 import { useCompactLabel, useCompactMode } from "./hooks";
 import { MemoContentContext } from "./MemoContentContext";
 import { Tag } from "./Tag";
 import { TaskListItem } from "./TaskListItem";
 import type { MemoContentProps } from "./types";
-import "katex/dist/katex.min.css";
 
 const MemoContent = observer((props: MemoContentProps) => {
   const { className, contentClassName, content, memoName, onClick, onDoubleClick } = props;
@@ -34,7 +35,6 @@ const MemoContent = observer((props: MemoContentProps) => {
   const memo = memoName ? memoStore.getMemoByName(memoName) : null;
   const allowEdit = !props.readonly && memo && (currentUser?.name === memo.creator || isSuperUser(currentUser));
 
-  // Context for custom components
   const contextValue = {
     memoName,
     readonly: !allowEdit,
@@ -60,7 +60,7 @@ const MemoContent = observer((props: MemoContentProps) => {
         >
           <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkBreaks, remarkMath, remarkTag, remarkPreserveType]}
-            rehypePlugins={[rehypeRaw, rehypeKatex]}
+            rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, SANITIZE_SCHEMA]]}
             components={{
               // Conditionally render custom components based on AST node type
               input: createConditionalComponent(TaskListItem, "input", isTaskListItemNode),

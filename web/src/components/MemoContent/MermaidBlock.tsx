@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { userStore } from "@/store";
 import { getThemeWithFallback, resolveTheme, setupSystemThemeListener } from "@/utils/theme";
+import { extractCodeContent } from "./utils";
 
 interface MermaidBlockProps {
   children?: React.ReactNode;
@@ -20,9 +21,7 @@ export const MermaidBlock = observer(({ children, className }: MermaidBlockProps
   const [error, setError] = useState<string>("");
   const [systemThemeChange, setSystemThemeChange] = useState(0);
 
-  // Extract Mermaid code content from children
-  const codeElement = children as React.ReactElement;
-  const codeContent = String(codeElement?.props?.children || "").replace(/\n$/, "");
+  const codeContent = extractCodeContent(children);
 
   // Get theme preference (reactive via MobX observer)
   // Falls back to localStorage or system preference if no user setting

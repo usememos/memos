@@ -1,4 +1,3 @@
-import DOMPurify from "dompurify";
 import hljs from "highlight.js";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
@@ -7,23 +6,20 @@ import { cn } from "@/lib/utils";
 import { userStore } from "@/store";
 import { getThemeWithFallback, resolveTheme } from "@/utils/theme";
 import { MermaidBlock } from "./MermaidBlock";
+import { extractCodeContent, extractLanguage } from "./utils";
 
-interface PreProps {
+interface CodeBlockProps {
   children?: React.ReactNode;
   className?: string;
 }
 
-export const CodeBlock = observer(({ children, className, ...props }: PreProps) => {
+export const CodeBlock = observer(({ children, className, ...props }: CodeBlockProps) => {
   const [copied, setCopied] = useState(false);
 
-  // Extract the code element and its props
   const codeElement = children as React.ReactElement;
   const codeClassName = codeElement?.props?.className || "";
-  const codeContent = String(codeElement?.props?.children || "").replace(/\n$/, "");
-
-  // Extract language from className (format: language-xxx)
-  const match = /language-(\w+)/.exec(codeClassName);
-  const language = match ? match[1] : "";
+  const codeContent = extractCodeContent(children);
+  const language = extractLanguage(codeClassName);
 
   // If it's a mermaid block, render with MermaidBlock component
   if (language === "mermaid") {
@@ -31,66 +27,6 @@ export const CodeBlock = observer(({ children, className, ...props }: PreProps) 
       <MermaidBlock className={className} {...props}>
         {children}
       </MermaidBlock>
-    );
-  }
-
-  // If it's __html special language, render sanitized HTML
-  if (language === "__html") {
-    const sanitizedHTML = DOMPurify.sanitize(codeContent, {
-      ALLOWED_TAGS: [
-        "div",
-        "span",
-        "p",
-        "br",
-        "strong",
-        "b",
-        "em",
-        "i",
-        "u",
-        "s",
-        "strike",
-        "h1",
-        "h2",
-        "h3",
-        "h4",
-        "h5",
-        "h6",
-        "blockquote",
-        "code",
-        "pre",
-        "ul",
-        "ol",
-        "li",
-        "dl",
-        "dt",
-        "dd",
-        "table",
-        "thead",
-        "tbody",
-        "tr",
-        "th",
-        "td",
-        "a",
-        "img",
-        "figure",
-        "figcaption",
-        "hr",
-        "small",
-        "sup",
-        "sub",
-      ],
-      ALLOWED_ATTR: "href title alt src width height class id style target rel colspan rowspan".split(" "),
-      FORBID_ATTR: "onerror onload onclick onmouseover onfocus onblur onchange".split(" "),
-      FORBID_TAGS: "script iframe object embed form input button".split(" "),
-    });
-
-    return (
-      <div
-        className="w-full overflow-auto my-2!"
-        dangerouslySetInnerHTML={{
-          __html: sanitizedHTML,
-        }}
-      />
     );
   }
 

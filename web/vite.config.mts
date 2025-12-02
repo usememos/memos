@@ -40,7 +40,6 @@ export default defineConfig({
       output: {
         manualChunks: {
           "utils-vendor": ["dayjs", "lodash-es"],
-          "katex-vendor": ["katex"],
           "mermaid-vendor": ["mermaid"],
           "leaflet-vendor": ["leaflet", "react-leaflet"],
         },
