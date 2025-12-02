@@ -1,9 +1,11 @@
 import { observer } from "mobx-react-lite";
 import { memo } from "react";
 import ReactMarkdown from "react-markdown";
+import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
 import { memoStore } from "@/store";
@@ -18,6 +20,7 @@ import { MemoContentContext } from "./MemoContentContext";
 import { Tag } from "./Tag";
 import { TaskListItem } from "./TaskListItem";
 import type { MemoContentProps } from "./types";
+import "katex/dist/katex.min.css";
 
 const MemoContent = observer((props: MemoContentProps) => {
   const { className, contentClassName, content, memoName, onClick, onDoubleClick } = props;
@@ -56,8 +59,8 @@ const MemoContent = observer((props: MemoContentProps) => {
           onDoubleClick={onDoubleClick}
         >
           <ReactMarkdown
-            remarkPlugins={[remarkGfm, remarkBreaks, remarkTag, remarkPreserveType]}
-            rehypePlugins={[rehypeRaw]}
+            remarkPlugins={[remarkGfm, remarkBreaks, remarkMath, remarkTag, remarkPreserveType]}
+            rehypePlugins={[rehypeRaw, rehypeKatex]}
             components={{
               // Conditionally render custom components based on AST node type
               input: createConditionalComponent(TaskListItem, "input", isTaskListItemNode),
