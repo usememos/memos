@@ -27,6 +27,8 @@ const TagsSection = observer((props: Props) => {
     if (isActive) {
       memoFilterStore.removeFilter((f: MemoFilter) => f.factor === "tagSearch" && f.value === tag);
     } else {
+      // Remove all existing tag filters first, then add the new one
+      memoFilterStore.removeFilter((f: MemoFilter) => f.factor === "tagSearch");
       memoFilterStore.addFilter({
         factor: "tagSearch",
         value: tag,
