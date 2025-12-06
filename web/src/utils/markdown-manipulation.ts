@@ -25,30 +25,6 @@ export function toggleTaskAtLine(markdown: string, lineNumber: number, checked: 
   return lines.join("\n");
 }
 
-export function toggleTaskAtIndex(markdown: string, taskIndex: number, checked: boolean): string {
-  const lines = markdown.split("\n");
-  const taskPattern = /^(\s*[-*+]\s+)\[([ xX])\](\s+.*)$/;
-
-  let currentTaskIndex = 0;
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const match = line.match(taskPattern);
-
-    if (match) {
-      if (currentTaskIndex === taskIndex) {
-        const [, prefix, , suffix] = match;
-        const newCheckmark = checked ? "x" : " ";
-        lines[i] = `${prefix}[${newCheckmark}]${suffix}`;
-        break;
-      }
-      currentTaskIndex++;
-    }
-  }
-
-  return lines.join("\n");
-}
-
 export function removeCompletedTasks(markdown: string): string {
   const lines = markdown.split("\n");
   const completedTaskPattern = /^(\s*[-*+]\s+)\[([xX])\](\s+.*)$/;
