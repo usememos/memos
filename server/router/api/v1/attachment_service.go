@@ -159,6 +159,11 @@ func (s *APIV1Service) ListAttachments(ctx context.Context, request *v1pb.ListAt
 		Offset:    &offset,
 	}
 
+	if request.Filter != "" {
+		filter := strings.TrimSpace(request.Filter)
+		findAttachment.FilenameSearch = &filter
+	}
+
 	attachments, err := s.Store.ListAttachments(ctx, findAttachment)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list attachments: %v", err)
