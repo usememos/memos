@@ -36,12 +36,6 @@ const groupAttachmentsByDate = (attachments: Attachment[]): Map<string, Attachme
   return grouped;
 };
 
-const filterAttachments = (attachments: Attachment[], searchQuery: string): Attachment[] => {
-  if (!searchQuery.trim()) return attachments;
-  const query = searchQuery.toLowerCase();
-  return attachments.filter((attachment) => attachment.filename.toLowerCase().includes(query));
-};
-
 interface AttachmentItemProps {
   attachment: Attachment;
 }
@@ -74,20 +68,18 @@ const Attachments = observer(() => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
   // Memoized computed values
-  const filteredAttachments = useMemo(() => filterAttachments(attachments, searchQuery), [attachments, searchQuery]);
-
-  const usedAttachments = useMemo(() => filteredAttachments.filter((attachment) => attachment.memo), [filteredAttachments]);
-
-  const unusedAttachments = useMemo(() => filteredAttachments.filter((attachment) => !attachment.memo), [filteredAttachments]);
-
+  const usedAttachments = useMemo(() => attachments.filter((attachment) => attachment.memo), [attachments]);
+  const unusedAttachments = useMemo(() => attachments.filter((attachment) => !attachment.memo), [attachments]);
   const groupedAttachments = useMemo(() => groupAttachmentsByDate(usedAttachments), [usedAttachments]);
 
-  // Fetch initial attachments
+  // Fetch attachments with search filter
   useEffect(() => {
-    const fetchInitialAttachments = async () => {
+    const fetchAttachments = async () => {
+      loadingState.setLoading();
       try {
         const { attachments: fetchedAttachments, nextPageToken } = await attachmentServiceClient.listAttachments({
           pageSize: PAGE_SIZE,
+          filter: searchQuery.trim(),
         });
         setAttachments(fetchedAttachments);
         setNextPageToken(nextPageToken ?? "");
@@ -99,9 +91,8 @@ const Attachments = observer(() => {
       }
     };
 
-    fetchInitialAttachments();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    fetchAttachments();
+  }, [searchQuery]);
 
   // Load more attachments with pagination
   const handleLoadMore = useCallback(async () => {
@@ -112,6 +103,7 @@ const Attachments = observer(() => {
       const { attachments: fetchedAttachments, nextPageToken: newPageToken } = await attachmentServiceClient.listAttachments({
         pageSize: PAGE_SIZE,
         pageToken: nextPageToken,
+        filter: searchQuery.trim(),
       });
       setAttachments((prev) => [...prev, ...fetchedAttachments]);
       setNextPageToken(newPageToken ?? "");
@@ -121,7 +113,7 @@ const Attachments = observer(() => {
     } finally {
       setIsLoadingMore(false);
     }
-  }, [nextPageToken, isLoadingMore]);
+  }, [searchQuery, nextPageToken, isLoadingMore]);
 
   // Refetch all attachments from the beginning
   const handleRefetch = useCallback(async () => {
@@ -129,6 +121,7 @@ const Attachments = observer(() => {
       loadingState.setLoading();
       const { attachments: fetchedAttachments, nextPageToken } = await attachmentServiceClient.listAttachments({
         pageSize: PAGE_SIZE,
+        filter: searchQuery.trim(),
       });
       setAttachments(fetchedAttachments);
       setNextPageToken(nextPageToken ?? "");
@@ -138,7 +131,7 @@ const Attachments = observer(() => {
       loadingState.setError();
       toast.error("Failed to refresh attachments. Please try again.");
     }
-  }, [loadingState]);
+  }, [searchQuery, loadingState]);
 
   // Delete all unused attachments
   const handleDeleteUnusedAttachments = useCallback(async () => {
@@ -182,7 +175,7 @@ const Attachments = observer(() => {
               </div>
             ) : (
               <>
-                {filteredAttachments.length === 0 ? (
+                {attachments.length === 0 ? (
                   <div className="w-full mt-8 mb-8 flex flex-col justify-center items-center italic">
                     <Empty />
                     <p className="mt-4 text-muted-foreground">{t("message.no-data")}</p>
