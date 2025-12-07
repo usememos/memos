@@ -25,9 +25,4 @@ export const editorCommands: Command[] = [
     run: () => "| Header | Header |\n| ------ | ------ |\n| Cell   | Cell |",
     cursorOffset: 1, // Places cursor after first "|" to edit first header
   },
-  {
-    name: "highlight",
-    run: () => "==text==",
-    cursorOffset: 2, // Places cursor between "==" markers to type highlighted text
-  },
 ];
