@@ -105,7 +105,8 @@ export function useSuggestions<T>({
     if (["Enter", "Tab"].includes(e.code)) {
       handleAutocomplete(suggestions[selected]);
       e.preventDefault();
-      e.stopPropagation();
+      // Prevent other listeners to be executed
+      e.stopImmediatePropagation();
     }
   };
 
