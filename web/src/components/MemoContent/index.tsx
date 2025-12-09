@@ -11,6 +11,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
 import { memoStore } from "@/store";
 import { useTranslate } from "@/utils/i18n";
+import { remarkDisableSetext } from "@/utils/remark-plugins/remark-disable-setext";
 import { remarkPreserveType } from "@/utils/remark-plugins/remark-preserve-type";
 import { remarkTag } from "@/utils/remark-plugins/remark-tag";
 import { isSuperUser } from "@/utils/user";
@@ -59,7 +60,7 @@ const MemoContent = observer((props: MemoContentProps) => {
           onDoubleClick={onDoubleClick}
         >
           <ReactMarkdown
-            remarkPlugins={[remarkGfm, remarkBreaks, remarkMath, remarkTag, remarkPreserveType]}
+            remarkPlugins={[remarkDisableSetext, remarkGfm, remarkBreaks, remarkMath, remarkTag, remarkPreserveType]}
             rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, SANITIZE_SCHEMA]]}
             components={{
               // Conditionally render custom components based on AST node type
