@@ -6,7 +6,6 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { HttpBody } from "../../google/api/httpbody";
 import { Empty } from "../../google/protobuf/empty";
 import { FieldMask } from "../../google/protobuf/field_mask";
 import { Timestamp } from "../../google/protobuf/timestamp";
@@ -97,18 +96,6 @@ export interface GetAttachmentRequest {
    * Format: attachments/{attachment}
    */
   name: string;
-}
-
-export interface GetAttachmentBinaryRequest {
-  /**
-   * Required. The attachment name of the attachment.
-   * Format: attachments/{attachment}
-   */
-  name: string;
-  /** The filename of the attachment. Mainly used for downloading. */
-  filename: string;
-  /** Optional. A flag indicating if the thumbnail version of the attachment should be returned. */
-  thumbnail: boolean;
 }
 
 export interface UpdateAttachmentRequest {
@@ -525,76 +512,6 @@ export const GetAttachmentRequest: MessageFns<GetAttachmentRequest> = {
   },
 };
 
-function createBaseGetAttachmentBinaryRequest(): GetAttachmentBinaryRequest {
-  return { name: "", filename: "", thumbnail: false };
-}
-
-export const GetAttachmentBinaryRequest: MessageFns<GetAttachmentBinaryRequest> = {
-  encode(message: GetAttachmentBinaryRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.name !== "") {
-      writer.uint32(10).string(message.name);
-    }
-    if (message.filename !== "") {
-      writer.uint32(18).string(message.filename);
-    }
-    if (message.thumbnail !== false) {
-      writer.uint32(24).bool(message.thumbnail);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): GetAttachmentBinaryRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetAttachmentBinaryRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.name = reader.string();
-          continue;
-        }
-        case 2: {
-          if (tag !== 18) {
-            break;
-          }
-
-          message.filename = reader.string();
-          continue;
-        }
-        case 3: {
-          if (tag !== 24) {
-            break;
-          }
-
-          message.thumbnail = reader.bool();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<GetAttachmentBinaryRequest>): GetAttachmentBinaryRequest {
-    return GetAttachmentBinaryRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<GetAttachmentBinaryRequest>): GetAttachmentBinaryRequest {
-    const message = createBaseGetAttachmentBinaryRequest();
-    message.name = object.name ?? "";
-    message.filename = object.filename ?? "";
-    message.thumbnail = object.thumbnail ?? false;
-    return message;
-  },
-};
-
 function createBaseUpdateAttachmentRequest(): UpdateAttachmentRequest {
   return { attachment: undefined, updateMask: undefined };
 }
@@ -837,90 +754,6 @@ export const AttachmentServiceDefinition = {
               115,
               47,
               42,
-              125,
-            ]),
-          ],
-        },
-      },
-    },
-    /** GetAttachmentBinary returns a attachment binary by name. */
-    getAttachmentBinary: {
-      name: "GetAttachmentBinary",
-      requestType: GetAttachmentBinaryRequest,
-      requestStream: false,
-      responseType: HttpBody,
-      responseStream: false,
-      options: {
-        _unknownFields: {
-          8410: [
-            new Uint8Array([
-              23,
-              110,
-              97,
-              109,
-              101,
-              44,
-              102,
-              105,
-              108,
-              101,
-              110,
-              97,
-              109,
-              101,
-              44,
-              116,
-              104,
-              117,
-              109,
-              98,
-              110,
-              97,
-              105,
-              108,
-            ]),
-          ],
-          578365826: [
-            new Uint8Array([
-              39,
-              18,
-              37,
-              47,
-              102,
-              105,
-              108,
-              101,
-              47,
-              123,
-              110,
-              97,
-              109,
-              101,
-              61,
-              97,
-              116,
-              116,
-              97,
-              99,
-              104,
-              109,
-              101,
-              110,
-              116,
-              115,
-              47,
-              42,
-              125,
-              47,
-              123,
-              102,
-              105,
-              108,
-              101,
-              110,
-              97,
-              109,
-              101,
               125,
             ]),
           ],

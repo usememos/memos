@@ -22,6 +22,7 @@ import (
 	"github.com/usememos/memos/internal/profile"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
+	"github.com/usememos/memos/server/router/fileserver"
 	"github.com/usememos/memos/server/router/frontend"
 	"github.com/usememos/memos/server/router/rss"
 	"github.com/usememos/memos/server/runner/s3presign"
@@ -86,6 +87,11 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	s.grpcServer = grpcServer
 
 	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store, grpcServer)
+
+	// Register HTTP file server routes BEFORE gRPC-Gateway to ensure proper range request handling for Safari.
+	// This uses native HTTP serving (http.ServeContent) instead of gRPC for video/audio files.
+	fileServerService := fileserver.NewFileServerService(s.Profile, s.Store, s.Secret)
+	fileServerService.RegisterRoutes(echoServer)
 
 	// Create and register RSS routes (needs markdown service from apiV1Service).
 	rss.NewRSSService(s.Profile, s.Store, apiV1Service.MarkdownService).RegisterRoutes(rootGroup)

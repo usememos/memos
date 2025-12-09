@@ -6,7 +6,6 @@
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
-import { HttpBody } from "../../google/api/httpbody";
 import { Empty } from "../../google/protobuf/empty";
 import { FieldMask } from "../../google/protobuf/field_mask";
 import { Timestamp } from "../../google/protobuf/timestamp";
@@ -187,14 +186,6 @@ export interface DeleteUserRequest {
   name: string;
   /** Optional. If set to true, the user will be deleted even if they have associated data. */
   force: boolean;
-}
-
-export interface GetUserAvatarRequest {
-  /**
-   * Required. The resource name of the user.
-   * Format: users/{user}
-   */
-  name: string;
 }
 
 /** User statistics messages */
@@ -1294,52 +1285,6 @@ export const DeleteUserRequest: MessageFns<DeleteUserRequest> = {
     const message = createBaseDeleteUserRequest();
     message.name = object.name ?? "";
     message.force = object.force ?? false;
-    return message;
-  },
-};
-
-function createBaseGetUserAvatarRequest(): GetUserAvatarRequest {
-  return { name: "" };
-}
-
-export const GetUserAvatarRequest: MessageFns<GetUserAvatarRequest> = {
-  encode(message: GetUserAvatarRequest, writer: BinaryWriter = new BinaryWriter()): BinaryWriter {
-    if (message.name !== "") {
-      writer.uint32(10).string(message.name);
-    }
-    return writer;
-  },
-
-  decode(input: BinaryReader | Uint8Array, length?: number): GetUserAvatarRequest {
-    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGetUserAvatarRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1: {
-          if (tag !== 10) {
-            break;
-          }
-
-          message.name = reader.string();
-          continue;
-        }
-      }
-      if ((tag & 7) === 4 || tag === 0) {
-        break;
-      }
-      reader.skip(tag & 7);
-    }
-    return message;
-  },
-
-  create(base?: DeepPartial<GetUserAvatarRequest>): GetUserAvatarRequest {
-    return GetUserAvatarRequest.fromPartial(base ?? {});
-  },
-  fromPartial(object: DeepPartial<GetUserAvatarRequest>): GetUserAvatarRequest {
-    const message = createBaseGetUserAvatarRequest();
-    message.name = object.name ?? "";
     return message;
   },
 };
@@ -3880,55 +3825,6 @@ export const UserServiceDefinition = {
               47,
               42,
               125,
-            ]),
-          ],
-        },
-      },
-    },
-    /** GetUserAvatar gets the avatar of a user. */
-    getUserAvatar: {
-      name: "GetUserAvatar",
-      requestType: GetUserAvatarRequest,
-      requestStream: false,
-      responseType: HttpBody,
-      responseStream: false,
-      options: {
-        _unknownFields: {
-          8410: [new Uint8Array([4, 110, 97, 109, 101])],
-          578365826: [
-            new Uint8Array([
-              31,
-              18,
-              29,
-              47,
-              97,
-              112,
-              105,
-              47,
-              118,
-              49,
-              47,
-              123,
-              110,
-              97,
-              109,
-              101,
-              61,
-              117,
-              115,
-              101,
-              114,
-              115,
-              47,
-              42,
-              125,
-              47,
-              97,
-              118,
-              97,
-              116,
-              97,
-              114,
             ]),
           ],
         },

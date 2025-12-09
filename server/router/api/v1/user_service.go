@@ -3,7 +3,6 @@ package v1
 import (
 	"context"
 	"crypto/rand"
-	"encoding/base64"
 	"encoding/hex"
 	"fmt"
 	"net/http"
@@ -19,7 +18,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
-	"google.golang.org/genproto/googleapis/api/httpbody"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -104,39 +102,6 @@ func (s *APIV1Service) GetUser(ctx context.Context, request *v1pb.GetUserRequest
 		return nil, status.Errorf(codes.NotFound, "user not found")
 	}
 	return convertUserFromStore(user), nil
-}
-
-func (s *APIV1Service) GetUserAvatar(ctx context.Context, request *v1pb.GetUserAvatarRequest) (*httpbody.HttpBody, error) {
-	userID, err := ExtractUserIDFromName(request.Name)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
-	}
-	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		ID: &userID,
-	})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
-	}
-	if user == nil {
-		return nil, status.Errorf(codes.NotFound, "user not found")
-	}
-	if user.AvatarURL == "" {
-		return nil, status.Errorf(codes.NotFound, "avatar not found")
-	}
-
-	imageType, base64Data, err := extractImageInfo(user.AvatarURL)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to extract image info: %v", err)
-	}
-	imageData, err := base64.StdEncoding.DecodeString(base64Data)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to decode string: %v", err)
-	}
-	httpBody := &httpbody.HttpBody{
-		ContentType: imageType,
-		Data:        imageData,
-	}
-	return httpBody, nil
 }
 
 func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserRequest) (*v1pb.User, error) {
@@ -1151,7 +1116,7 @@ func convertUserFromStore(user *store.User) *v1pb.User {
 		// Check if avatar url is base64 format.
 		_, _, err := extractImageInfo(user.AvatarURL)
 		if err == nil {
-			userpb.AvatarUrl = fmt.Sprintf("/api/v1/%s/avatar", userpb.Name)
+			userpb.AvatarUrl = fmt.Sprintf("/file/%s/avatar", userpb.Name)
 		} else {
 			userpb.AvatarUrl = user.AvatarURL
 		}
@@ -1183,11 +1148,13 @@ func convertUserRoleToStore(role v1pb.User_Role) store.Role {
 	}
 }
 
+// extractImageInfo extracts image type and base64 data from a data URI.
+// Data URI format: data:image/png;base64,iVBORw0KGgo...
 func extractImageInfo(dataURI string) (string, string, error) {
 	dataURIRegex := regexp.MustCompile(`^data:(?P<type>.+);base64,(?P<base64>.+)`)
 	matches := dataURIRegex.FindStringSubmatch(dataURI)
 	if len(matches) != 3 {
-		return "", "", errors.New("Invalid data URI format")
+		return "", "", errors.New("invalid data URI format")
 	}
 	imageType := matches[1]
 	base64Data := matches[2]

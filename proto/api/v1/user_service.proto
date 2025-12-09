@@ -6,7 +6,6 @@ import "api/v1/common.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
-import "google/api/httpbody.proto";
 import "google/api/resource.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
@@ -50,12 +49,6 @@ service UserService {
   // DeleteUser deletes a user.
   rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/v1/{name=users/*}"};
-    option (google.api.method_signature) = "name";
-  }
-
-  // GetUserAvatar gets the avatar of a user.
-  rpc GetUserAvatar(GetUserAvatarRequest) returns (google.api.HttpBody) {
-    option (google.api.http) = {get: "/api/v1/{name=users/*}/avatar"};
     option (google.api.method_signature) = "name";
   }
 
@@ -322,15 +315,6 @@ message DeleteUserRequest {
 
   // Optional. If set to true, the user will be deleted even if they have associated data.
   bool force = 2 [(google.api.field_behavior) = OPTIONAL];
-}
-
-message GetUserAvatarRequest {
-  // Required. The resource name of the user.
-  // Format: users/{user}
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api.v1/User"}
-  ];
 }
 
 // User statistics messages

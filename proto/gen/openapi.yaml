@@ -1322,30 +1322,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/users/{user}/avatar:
-        get:
-            tags:
-                - UserService
-            description: GetUserAvatar gets the avatar of a user.
-            operationId: UserService_GetUserAvatar
-            parameters:
-                - name: user
-                  in: path
-                  description: The user id.
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        '*/*': {}
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /api/v1/users/{user}/notifications:
         get:
             tags:
@@ -1962,41 +1938,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/ListAllUserStatsResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /file/attachments/{attachment}/{filename:
-        get:
-            tags:
-                - AttachmentService
-            description: GetAttachmentBinary returns a attachment binary by name.
-            operationId: AttachmentService_GetAttachmentBinary
-            parameters:
-                - name: filename
-                  in: path
-                  description: The filename of the attachment. Mainly used for downloading.
-                  required: true
-                  schema:
-                    type: string
-                - name: attachment
-                  in: path
-                  description: The attachment id.
-                  required: true
-                  schema:
-                    type: string
-                - name: thumbnail
-                  in: query
-                  description: Optional. A flag indicating if the thumbnail version of the attachment should be returned.
-                  schema:
-                    type: boolean
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        '*/*': {}
                 default:
                     description: Default error response
                     content:

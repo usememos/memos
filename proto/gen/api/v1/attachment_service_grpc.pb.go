@@ -8,7 +8,6 @@ package apiv1
 
 import (
 	context "context"
-	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -21,12 +20,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AttachmentService_CreateAttachment_FullMethodName    = "/memos.api.v1.AttachmentService/CreateAttachment"
-	AttachmentService_ListAttachments_FullMethodName     = "/memos.api.v1.AttachmentService/ListAttachments"
-	AttachmentService_GetAttachment_FullMethodName       = "/memos.api.v1.AttachmentService/GetAttachment"
-	AttachmentService_GetAttachmentBinary_FullMethodName = "/memos.api.v1.AttachmentService/GetAttachmentBinary"
-	AttachmentService_UpdateAttachment_FullMethodName    = "/memos.api.v1.AttachmentService/UpdateAttachment"
-	AttachmentService_DeleteAttachment_FullMethodName    = "/memos.api.v1.AttachmentService/DeleteAttachment"
+	AttachmentService_CreateAttachment_FullMethodName = "/memos.api.v1.AttachmentService/CreateAttachment"
+	AttachmentService_ListAttachments_FullMethodName  = "/memos.api.v1.AttachmentService/ListAttachments"
+	AttachmentService_GetAttachment_FullMethodName    = "/memos.api.v1.AttachmentService/GetAttachment"
+	AttachmentService_UpdateAttachment_FullMethodName = "/memos.api.v1.AttachmentService/UpdateAttachment"
+	AttachmentService_DeleteAttachment_FullMethodName = "/memos.api.v1.AttachmentService/DeleteAttachment"
 )
 
 // AttachmentServiceClient is the client API for AttachmentService service.
@@ -39,8 +37,6 @@ type AttachmentServiceClient interface {
 	ListAttachments(ctx context.Context, in *ListAttachmentsRequest, opts ...grpc.CallOption) (*ListAttachmentsResponse, error)
 	// GetAttachment returns a attachment by name.
 	GetAttachment(ctx context.Context, in *GetAttachmentRequest, opts ...grpc.CallOption) (*Attachment, error)
-	// GetAttachmentBinary returns a attachment binary by name.
-	GetAttachmentBinary(ctx context.Context, in *GetAttachmentBinaryRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error)
 	// UpdateAttachment updates a attachment.
 	UpdateAttachment(ctx context.Context, in *UpdateAttachmentRequest, opts ...grpc.CallOption) (*Attachment, error)
 	// DeleteAttachment deletes a attachment by name.
@@ -85,16 +81,6 @@ func (c *attachmentServiceClient) GetAttachment(ctx context.Context, in *GetAtta
 	return out, nil
 }
 
-func (c *attachmentServiceClient) GetAttachmentBinary(ctx context.Context, in *GetAttachmentBinaryRequest, opts ...grpc.CallOption) (*httpbody.HttpBody, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(httpbody.HttpBody)
-	err := c.cc.Invoke(ctx, AttachmentService_GetAttachmentBinary_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *attachmentServiceClient) UpdateAttachment(ctx context.Context, in *UpdateAttachmentRequest, opts ...grpc.CallOption) (*Attachment, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Attachment)
@@ -125,8 +111,6 @@ type AttachmentServiceServer interface {
 	ListAttachments(context.Context, *ListAttachmentsRequest) (*ListAttachmentsResponse, error)
 	// GetAttachment returns a attachment by name.
 	GetAttachment(context.Context, *GetAttachmentRequest) (*Attachment, error)
-	// GetAttachmentBinary returns a attachment binary by name.
-	GetAttachmentBinary(context.Context, *GetAttachmentBinaryRequest) (*httpbody.HttpBody, error)
 	// UpdateAttachment updates a attachment.
 	UpdateAttachment(context.Context, *UpdateAttachmentRequest) (*Attachment, error)
 	// DeleteAttachment deletes a attachment by name.
@@ -149,9 +133,6 @@ func (UnimplementedAttachmentServiceServer) ListAttachments(context.Context, *Li
 }
 func (UnimplementedAttachmentServiceServer) GetAttachment(context.Context, *GetAttachmentRequest) (*Attachment, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetAttachment not implemented")
-}
-func (UnimplementedAttachmentServiceServer) GetAttachmentBinary(context.Context, *GetAttachmentBinaryRequest) (*httpbody.HttpBody, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetAttachmentBinary not implemented")
 }
 func (UnimplementedAttachmentServiceServer) UpdateAttachment(context.Context, *UpdateAttachmentRequest) (*Attachment, error) {
 	return nil, status.Error(codes.Unimplemented, "method UpdateAttachment not implemented")
@@ -234,24 +215,6 @@ func _AttachmentService_GetAttachment_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AttachmentService_GetAttachmentBinary_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAttachmentBinaryRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AttachmentServiceServer).GetAttachmentBinary(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AttachmentService_GetAttachmentBinary_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AttachmentServiceServer).GetAttachmentBinary(ctx, req.(*GetAttachmentBinaryRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _AttachmentService_UpdateAttachment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateAttachmentRequest)
 	if err := dec(in); err != nil {
@@ -306,10 +269,6 @@ var AttachmentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAttachment",
 			Handler:    _AttachmentService_GetAttachment_Handler,
-		},
-		{
-			MethodName: "GetAttachmentBinary",
-			Handler:    _AttachmentService_GetAttachmentBinary_Handler,
 		},
 		{
 			MethodName: "UpdateAttachment",

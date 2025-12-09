@@ -5,7 +5,6 @@ package memos.api.v1;
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
-import "google/api/httpbody.proto";
 import "google/api/resource.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
@@ -30,11 +29,6 @@ service AttachmentService {
   rpc GetAttachment(GetAttachmentRequest) returns (Attachment) {
     option (google.api.http) = {get: "/api/v1/{name=attachments/*}"};
     option (google.api.method_signature) = "name";
-  }
-  // GetAttachmentBinary returns a attachment binary by name.
-  rpc GetAttachmentBinary(GetAttachmentBinaryRequest) returns (google.api.HttpBody) {
-    option (google.api.http) = {get: "/file/{name=attachments/*}/{filename}"};
-    option (google.api.method_signature) = "name,filename,thumbnail";
   }
   // UpdateAttachment updates a attachment.
   rpc UpdateAttachment(UpdateAttachmentRequest) returns (Attachment) {
@@ -136,21 +130,6 @@ message GetAttachmentRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/Attachment"}
   ];
-}
-
-message GetAttachmentBinaryRequest {
-  // Required. The attachment name of the attachment.
-  // Format: attachments/{attachment}
-  string name = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api.v1/Attachment"}
-  ];
-
-  // The filename of the attachment. Mainly used for downloading.
-  string filename = 2 [(google.api.field_behavior) = REQUIRED];
-
-  // Optional. A flag indicating if the thumbnail version of the attachment should be returned.
-  bool thumbnail = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message UpdateAttachmentRequest {
