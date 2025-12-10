@@ -13,7 +13,7 @@ const SearchBar = observer(() => {
 
   useEffect(() => {
     const handleGlobalShortcut = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      if ((event.metaKey || event.ctrlKey) && event.key === "/") {
         event.preventDefault();
         inputRef.current?.focus();
       }
