@@ -24,15 +24,7 @@ export function toggleTaskAtLine(markdown: string, lineNumber: number, checked: 
 
   return lines.join("\n");
 }
-export function isInsideCodeBlock(lines :string [] , index : number):boolean{
-  let inside = false;
-  for(let i = 0 ; i <= index ; i++){
-    if(lines[i].startsWith("```")){
-      inside = !inside;
-    }
-  }
-   return inside;
-}
+
 export function toggleTaskAtIndex(markdown: string, taskIndex: number, checked: boolean): string {
   const lines = markdown.split("\n");
   const taskPattern = /^(\s*[-*+]\s+)\[([ xX])\](\s+.*)$/;
@@ -40,7 +32,6 @@ export function toggleTaskAtIndex(markdown: string, taskIndex: number, checked: 
   let currentTaskIndex = 0;
 
   for (let i = 0; i < lines.length; i++) {
-    if (isInsideCodeBlock(lines, i)) continue;
     const line = lines[i];
     const match = line.match(taskPattern);
 
