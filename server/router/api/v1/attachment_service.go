@@ -321,7 +321,7 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 	} else if instanceStorageSetting.StorageType == storepb.InstanceStorageSetting_S3 {
 		s3Config := instanceStorageSetting.S3Config
 		if s3Config == nil {
-			return errors.Errorf("No actived external storage found")
+			return errors.Errorf("No activated external storage found")
 		}
 		s3Client, err := s3.NewClient(ctx, s3Config)
 		if err != nil {
