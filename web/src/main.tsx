@@ -9,13 +9,15 @@ import router from "./router";
 // Configure MobX before importing any stores
 import "./store/config";
 import { initialInstanceStore } from "./store/instance";
-import userStore, { initialUserStore } from "./store/user";
+import { initialUserStore } from "./store/user";
+import { applyLocaleEarly } from "./utils/i18n";
 import { applyThemeEarly } from "./utils/theme";
 import "leaflet/dist/leaflet.css";
 
-// Apply theme early to prevent flash of wrong theme
+// Apply theme and locale early to prevent flash of wrong theme/language
 // This uses localStorage as the source before user settings are loaded
 applyThemeEarly();
+applyLocaleEarly();
 
 const Main = observer(() => (
   <>
@@ -28,10 +30,6 @@ const Main = observer(() => (
   // Initialize stores
   await initialInstanceStore();
   await initialUserStore();
-
-  // Apply user preferences (theme & locale) after user settings are loaded
-  // This will override the early theme with user's actual preference
-  userStore.applyUserPreferences();
 
   const container = document.getElementById("root");
   const root = createRoot(container as HTMLElement);

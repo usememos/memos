@@ -3,6 +3,25 @@ import { useTranslation } from "react-i18next";
 import i18n, { locales, TLocale } from "@/i18n";
 import enTranslation from "@/locales/en.json";
 
+const LOCALE_STORAGE_KEY = "memos-locale";
+
+const getStoredLocale = (): Locale | null => {
+  try {
+    const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
+    return stored && locales.includes(stored) ? (stored as Locale) : null;
+  } catch {
+    return null;
+  }
+};
+
+const setStoredLocale = (locale: Locale): void => {
+  try {
+    localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+  } catch {
+    // localStorage might not be available
+  }
+};
+
 export const findNearestMatchedLanguage = (language: string): Locale => {
   if (locales.includes(language as TLocale)) {
     return language as Locale;
@@ -54,15 +73,40 @@ export const isValidateLocale = (locale: string | undefined | null): boolean => 
 
 // Gets the locale to use with proper priority:
 // 1. User setting (if logged in and has preference)
-// 2. Browser language preference
+// 2. localStorage (from previous session)
+// 3. Browser language preference
 export const getLocaleWithFallback = (userLocale?: string): Locale => {
   // Priority 1: User setting (if logged in and valid)
   if (userLocale && isValidateLocale(userLocale)) {
     return userLocale as Locale;
   }
 
-  // Priority 2: Browser language
+  // Priority 2: localStorage
+  const stored = getStoredLocale();
+  if (stored) {
+    return stored;
+  }
+
+  // Priority 3: Browser language
   return findNearestMatchedLanguage(navigator.language);
+};
+
+// Applies and persists a locale setting
+export const loadLocale = (locale: string): Locale => {
+  const validLocale = isValidateLocale(locale) ? (locale as Locale) : findNearestMatchedLanguage(navigator.language);
+  setStoredLocale(validLocale);
+  i18n.changeLanguage(validLocale);
+  return validLocale;
+};
+
+/**
+ * Applies locale early during initial page load to prevent language flash.
+ * Uses only localStorage and browser language (no user settings yet).
+ */
+export const applyLocaleEarly = (): void => {
+  const stored = getStoredLocale();
+  const locale = stored ?? findNearestMatchedLanguage(navigator.language);
+  loadLocale(locale);
 };
 
 // Get the display name for a locale in its native language

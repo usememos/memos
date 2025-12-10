@@ -6,3 +6,5 @@ export * from "./useMemoFilters";
 export * from "./useMemoSorting";
 export * from "./useNavigateTo";
 export * from "./useResponsiveWidth";
+export * from "./useUserLocale";
+export * from "./useUserTheme";

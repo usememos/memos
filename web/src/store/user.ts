@@ -1,7 +1,6 @@
 import { uniqueId } from "lodash-es";
 import { computed, makeAutoObservable } from "mobx";
 import { authServiceClient, shortcutServiceClient, userServiceClient } from "@/grpcweb";
-import i18n from "@/i18n";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
 import {
   User,
@@ -14,8 +13,6 @@ import {
   UserSetting_WebhooksSetting,
   UserStats,
 } from "@/types/proto/api/v1/user_service";
-import { getLocaleWithFallback } from "@/utils/i18n";
-import { getThemeWithFallback, loadTheme } from "@/utils/theme";
 import { createRequestKey, RequestDeduplicator, StoreError } from "./store-utils";
 
 class LocalState {
@@ -284,20 +281,6 @@ const userStore = (() => {
     state.statsStateId = id;
   };
 
-  // Applies user preferences (theme and locale) with proper fallbacks
-  // This should be called after user settings are loaded
-  const applyUserPreferences = () => {
-    const generalSetting = state.userGeneralSetting;
-
-    // Apply theme with fallback: user setting -> localStorage -> system
-    const theme = getThemeWithFallback(generalSetting?.theme);
-    loadTheme(theme);
-
-    // Apply locale with fallback: user setting -> browser language
-    const locale = getLocaleWithFallback(generalSetting?.locale);
-    i18n.changeLanguage(locale);
-  };
-
   return {
     state,
     getOrFetchUserByName,
@@ -314,7 +297,6 @@ const userStore = (() => {
     deleteNotification,
     fetchUserStats,
     setStatsStateId,
-    applyUserPreferences,
   };
 })();
 
