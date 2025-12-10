@@ -1,16 +1,16 @@
 :root {
   --background: oklch(0.2 0.003 270);
-  --foreground: oklch(0.8 0.003 270);
+  --foreground: oklch(0.92 0.005 270);
   --card: oklch(0.23 0.003 270);
-  --card-foreground: oklch(0.8 0.003 270);
+  --card-foreground: oklch(0.92 0.005 270);
   --popover: oklch(0.23 0.003 270);
-  --popover-foreground: oklch(0.77 0.003 270);
+  --popover-foreground: oklch(0.9 0.005 270);
   --primary: oklch(0.6 0.08 250);
   --primary-foreground: oklch(0.2 0.003 270);
   --secondary: oklch(0.27 0.005 270);
-  --secondary-foreground: oklch(0.75 0.003 270);
+  --secondary-foreground: oklch(0.88 0.004 270);
   --muted: oklch(0.25 0.005 270);
-  --muted-foreground: oklch(0.58 0.003 270);
+  --muted-foreground: oklch(0.75 0.004 270);
   --accent: oklch(0.3 0.008 270);
   --accent-foreground: oklch(0.8 0.003 270);
   --destructive: oklch(0.55 0.1 25);
