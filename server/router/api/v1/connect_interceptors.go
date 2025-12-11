@@ -78,10 +78,10 @@ func (*LoggingInterceptor) classifyError(err error) (slog.Level, string) {
 		connect.CodeAborted,
 		connect.CodeOutOfRange:
 		return slog.LevelInfo, "client error"
+	default:
+		// Server errors
+		return slog.LevelError, "server error"
 	}
-
-	// Server errors
-	return slog.LevelError, "server error"
 }
 
 // RecoveryInterceptor recovers from panics in Connect handlers and returns an internal error.
