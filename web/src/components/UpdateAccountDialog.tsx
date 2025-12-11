@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import { isEqual } from "lodash-es";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
@@ -10,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { convertFileToBase64 } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { instanceStore, userStore } from "@/store";
-import { User as UserPb } from "@/types/proto/api/v1/user_service";
+import { User as UserPb, UserSchema } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import UserAvatar from "./UserAvatar";
 
@@ -127,7 +128,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
         updateMask.push("description");
       }
       await userStore.updateUser(
-        UserPb.fromPartial({
+        create(UserSchema, {
           name: currentUser.name,
           username: state.username,
           displayName: state.displayName,
@@ -142,7 +143,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
       onOpenChange(false);
     } catch (error: any) {
       console.error(error);
-      toast.error(error.details);
+      toast.error(error.message);
     }
   };
 

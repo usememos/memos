@@ -1,34 +1,32 @@
-import { createChannel, createClientFactory, FetchTransport } from "nice-grpc-web";
-import { ActivityServiceDefinition } from "./types/proto/api/v1/activity_service";
-import { AttachmentServiceDefinition } from "./types/proto/api/v1/attachment_service";
-import { AuthServiceDefinition } from "./types/proto/api/v1/auth_service";
-import { IdentityProviderServiceDefinition } from "./types/proto/api/v1/idp_service";
-import { InstanceServiceDefinition } from "./types/proto/api/v1/instance_service";
-import { MemoServiceDefinition } from "./types/proto/api/v1/memo_service";
-import { ShortcutServiceDefinition } from "./types/proto/api/v1/shortcut_service";
-import { UserServiceDefinition } from "./types/proto/api/v1/user_service";
+import { createClient } from "@connectrpc/connect";
+import { createConnectTransport } from "@connectrpc/connect-web";
+import { ActivityService } from "./types/proto/api/v1/activity_service_pb";
+import { AttachmentService } from "./types/proto/api/v1/attachment_service_pb";
+import { AuthService } from "./types/proto/api/v1/auth_service_pb";
+import { IdentityProviderService } from "./types/proto/api/v1/idp_service_pb";
+import { InstanceService } from "./types/proto/api/v1/instance_service_pb";
+import { MemoService } from "./types/proto/api/v1/memo_service_pb";
+import { ShortcutService } from "./types/proto/api/v1/shortcut_service_pb";
+import { UserService } from "./types/proto/api/v1/user_service_pb";
 
-const channel = createChannel(
-  window.location.origin,
-  FetchTransport({
-    credentials: "include",
-  }),
-);
+const transport = createConnectTransport({
+  baseUrl: window.location.origin,
+  // Include cookies in requests for session auth
+  fetch: (input, init) => fetch(input, { ...init, credentials: "include" }),
+});
 
-const clientFactory = createClientFactory();
+export const instanceServiceClient = createClient(InstanceService, transport);
 
-export const instanceServiceClient = clientFactory.create(InstanceServiceDefinition, channel);
+export const authServiceClient = createClient(AuthService, transport);
 
-export const authServiceClient = clientFactory.create(AuthServiceDefinition, channel);
+export const userServiceClient = createClient(UserService, transport);
 
-export const userServiceClient = clientFactory.create(UserServiceDefinition, channel);
+export const memoServiceClient = createClient(MemoService, transport);
 
-export const memoServiceClient = clientFactory.create(MemoServiceDefinition, channel);
+export const attachmentServiceClient = createClient(AttachmentService, transport);
 
-export const attachmentServiceClient = clientFactory.create(AttachmentServiceDefinition, channel);
+export const shortcutServiceClient = createClient(ShortcutService, transport);
 
-export const shortcutServiceClient = clientFactory.create(ShortcutServiceDefinition, channel);
+export const activityServiceClient = createClient(ActivityService, transport);
 
-export const activityServiceClient = clientFactory.create(ActivityServiceDefinition, channel);
-
-export const identityProviderServiceClient = clientFactory.create(IdentityProviderServiceDefinition, channel);
+export const identityProviderServiceClient = createClient(IdentityProviderService, transport);

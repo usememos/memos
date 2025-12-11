@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { userStore } from "@/store";
-import { User } from "@/types/proto/api/v1/user_service";
+import { User } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
@@ -61,7 +61,7 @@ function ChangeMemberPasswordDialog({ open, onOpenChange, user, onSuccess }: Pro
       onOpenChange(false);
     } catch (error: any) {
       console.error(error);
-      toast.error(error.details);
+      toast.error(error.message);
     }
   };
 

@@ -1,11 +1,14 @@
+import { create } from "@bufbuild/protobuf";
+import { timestampDate, timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { isEqual } from "lodash-es";
 import { useCallback } from "react";
 import { toast } from "react-hot-toast";
 import type { LocalFile } from "@/components/memo-metadata";
 import { memoServiceClient } from "@/grpcweb";
 import { attachmentStore, memoStore } from "@/store";
-import { Attachment } from "@/types/proto/api/v1/attachment_service";
-import type { Location, Memo, MemoRelation, Visibility } from "@/types/proto/api/v1/memo_service";
+import { Attachment, AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import type { Location, Memo, MemoRelation, Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 import type { Translations } from "@/utils/i18n";
 
 interface MemoSaveContext {
@@ -37,15 +40,14 @@ async function uploadLocalFiles(localFiles: LocalFile[], onUploadingChange: (upl
     const attachments: Attachment[] = [];
     for (const { file } of localFiles) {
       const buffer = new Uint8Array(await file.arrayBuffer());
-      const attachment = await attachmentStore.createAttachment({
-        attachment: Attachment.fromPartial({
+      const attachment = await attachmentStore.createAttachment(
+        create(AttachmentSchema, {
           filename: file.name,
-          size: file.size,
+          size: BigInt(file.size),
           type: file.type,
           content: buffer,
         }),
-        attachmentId: "",
-      });
+      );
       attachments.push(attachment);
     }
     return attachments;
@@ -93,13 +95,13 @@ function buildUpdateMask(
   }
 
   // Handle custom timestamps
-  if (context.createTime && !isEqual(context.createTime, prevMemo.createTime)) {
+  if (context.createTime && !isEqual(context.createTime, prevMemo.createTime ? timestampDate(prevMemo.createTime) : undefined)) {
     mask.add("create_time");
-    patch.createTime = context.createTime;
+    patch.createTime = timestampFromDate(context.createTime);
   }
-  if (context.updateTime && !isEqual(context.updateTime, prevMemo.updateTime)) {
+  if (context.updateTime && !isEqual(context.updateTime, prevMemo.updateTime ? timestampDate(prevMemo.updateTime) : undefined)) {
     mask.add("update_time");
-    patch.updateTime = context.updateTime;
+    patch.updateTime = timestampFromDate(context.updateTime);
   }
 
   return { mask, patch };
@@ -137,24 +139,23 @@ export function useMemoSave(callbacks: MemoSaveCallbacks) {
           const memo = context.parentMemoName
             ? await memoServiceClient.createMemoComment({
                 name: context.parentMemoName,
-                comment: {
+                comment: create(MemoSchema, {
                   content,
                   visibility: context.visibility,
                   attachments: context.attachmentList,
                   relations: context.relationList,
                   location: context.location,
-                },
+                }),
               })
-            : await memoStore.createMemo({
-                memo: {
+            : await memoStore.createMemo(
+                create(MemoSchema, {
                   content,
                   visibility: context.visibility,
                   attachments: allAttachments,
                   relations: context.relationList,
                   location: context.location,
-                } as Memo,
-                memoId: "",
-              });
+                }),
+              );
 
           onSuccess(memo.name);
         }

@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"net/http"
 
+	"connectrpc.com/connect"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"golang.org/x/sync/semaphore"
@@ -123,15 +124,28 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	gwGroup.Any("/api/v1/*", handler)
 	gwGroup.Any("/file/*", handler)
 
-	// GRPC web proxy.
-	options := []grpcweb.Option{
-		grpcweb.WithCorsForRegisteredEndpointsOnly(false),
-		grpcweb.WithOriginFunc(func(_ string) bool {
-			return true
-		}),
-	}
-	wrappedGrpc := grpcweb.WrapServer(s.grpcServer, options...)
-	echoServer.Any("/memos.api.v1.*", echo.WrapHandler(wrappedGrpc))
+	// Connect handlers for browser clients (replaces grpc-web).
+	logStacktraces := s.Profile.IsDev()
+	connectInterceptors := connect.WithInterceptors(
+		NewLoggingInterceptor(logStacktraces),
+		NewRecoveryInterceptor(logStacktraces),
+		NewAuthInterceptor(s.Store, s.Secret),
+	)
+	connectMux := http.NewServeMux()
+	connectHandler := NewConnectServiceHandler(s)
+	connectHandler.RegisterConnectHandlers(connectMux, connectInterceptors)
+
+	// Wrap with CORS for browser access
+	corsHandler := middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOriginFunc: func(_ string) (bool, error) {
+			return true, nil
+		},
+		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodOptions},
+		AllowHeaders:     []string{"*"},
+		AllowCredentials: true,
+	})
+	connectGroup := echoServer.Group("", corsHandler)
+	connectGroup.Any("/memos.api.v1.*", echo.WrapHandler(connectMux))
 
 	return nil
 }

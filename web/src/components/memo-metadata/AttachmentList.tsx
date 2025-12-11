@@ -1,7 +1,7 @@
 import { closestCenter, DndContext, type DragEndEvent, MouseSensor, TouchSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useState } from "react";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service";
+import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import MemoAttachment from "../MemoAttachment";
 import PreviewImageDialog from "../PreviewImageDialog";

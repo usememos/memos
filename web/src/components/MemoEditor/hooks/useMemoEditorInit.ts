@@ -1,9 +1,10 @@
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { useEffect, useState } from "react";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import { instanceStore, memoStore, userStore } from "@/store";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service";
-import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service";
-import { Visibility } from "@/types/proto/api/v1/memo_service";
+import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
+import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { convertVisibilityFromString } from "@/utils/memo";
 import type { EditorRefActions } from "../Editor";
 
@@ -68,7 +69,7 @@ export const useMemoEditorInit = (options: UseMemoEditorInitOptions): UseMemoEdi
       const parentMemo = await memoStore.getOrFetchMemoByName(parentMemoName);
       visibility = parentMemo.visibility;
     }
-    onVisibilityChange(convertVisibilityFromString(visibility));
+    onVisibilityChange(visibility);
   }, [parentMemoName, userGeneralSetting?.memoVisibility, instanceMemoRelatedSetting.disallowPublicVisibility]);
 
   // Load existing memo if editing
@@ -80,8 +81,8 @@ export const useMemoEditorInit = (options: UseMemoEditorInitOptions): UseMemoEdi
     const memo = await memoStore.getOrFetchMemoByName(memoName);
     if (memo) {
       onEditorFocus();
-      setCreateTime(memo.createTime);
-      setUpdateTime(memo.updateTime);
+      setCreateTime(memo.createTime ? timestampDate(memo.createTime) : undefined);
+      setUpdateTime(memo.updateTime ? timestampDate(memo.updateTime) : undefined);
       onVisibilityChange(memo.visibility);
       onAttachmentsChange(memo.attachments);
       onRelationsChange(memo.relations);

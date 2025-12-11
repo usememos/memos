@@ -12,7 +12,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { Routes } from "@/router";
 import { instanceStore } from "@/store";
 import { extractIdentityProviderIdFromName } from "@/store/common";
-import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service";
+import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { storeOAuthState } from "@/utils/oauth";
 
@@ -41,7 +41,7 @@ const SignIn = observer(() => {
   const handleSignInWithIdentityProvider = async (identityProvider: IdentityProvider) => {
     if (identityProvider.type === IdentityProvider_Type.OAUTH2) {
       const redirectUri = absolutifyLink("/auth/callback");
-      const oauth2Config = identityProvider.config?.oauth2Config;
+      const oauth2Config = identityProvider.config?.config?.case === "oauth2Config" ? identityProvider.config.config.value : undefined;
       if (!oauth2Config) {
         toast.error("Identity provider configuration is invalid.");
         return;

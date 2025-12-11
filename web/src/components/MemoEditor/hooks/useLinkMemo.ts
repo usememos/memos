@@ -1,10 +1,18 @@
+import { create } from "@bufbuild/protobuf";
 import { useState } from "react";
 import useDebounce from "react-use/lib/useDebounce";
 import { memoServiceClient } from "@/grpcweb";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { extractUserIdFromName } from "@/store/common";
-import { Memo, MemoRelation, MemoRelation_Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
+import {
+  Memo,
+  MemoRelation,
+  MemoRelation_Memo,
+  MemoRelation_MemoSchema,
+  MemoRelation_Type,
+  MemoRelationSchema,
+} from "@/types/proto/api/v1/memo_service_pb";
 
 interface UseLinkMemoParams {
   isOpen: boolean;
@@ -49,9 +57,9 @@ export const useLinkMemo = ({ isOpen, currentMemoName, existingRelations, onAddR
   );
 
   const addMemoRelation = (memo: Memo) => {
-    const relation = MemoRelation.fromPartial({
+    const relation = create(MemoRelationSchema, {
       type: MemoRelation_Type.REFERENCE,
-      relatedMemo: MemoRelation_Memo.fromPartial({
+      relatedMemo: create(MemoRelation_MemoSchema, {
         name: memo.name,
         snippet: memo.snippet,
       }),

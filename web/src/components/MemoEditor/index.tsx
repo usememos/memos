@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
 import { extractMemoIdFromName } from "@/store/common";
-import { MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
+import { MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import DateTimeInput from "../DateTimeInput";
 import { AttachmentList, LocationDisplay, RelationList } from "../memo-metadata";

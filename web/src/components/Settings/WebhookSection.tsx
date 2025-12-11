@@ -6,7 +6,7 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { UserWebhook } from "@/types/proto/api/v1/user_service";
+import { UserWebhook } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateWebhookDialog from "../CreateWebhookDialog";
 import SettingTable from "./SettingTable";

@@ -1,4 +1,4 @@
-import type { Attachment } from "@/types/proto/api/v1/attachment_service";
+import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentThumbnailUrl, getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 
 export type DisplayMode = "edit" | "view";
@@ -39,7 +39,7 @@ export function attachmentToItem(attachment: Attachment): AttachmentItem {
     mimeType: attachment.type,
     thumbnailUrl: attachmentType === "image/*" ? getAttachmentThumbnailUrl(attachment) : sourceUrl,
     sourceUrl,
-    size: attachment.size,
+    size: Number(attachment.size),
     isLocal: false,
   };
 }

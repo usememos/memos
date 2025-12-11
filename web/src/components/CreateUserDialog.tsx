@@ -1,3 +1,5 @@
+import { create } from "@bufbuild/protobuf";
+import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
@@ -7,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { userServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
-import { User, User_Role } from "@/types/proto/api/v1/user_service";
+import { User, User_Role, UserSchema } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
@@ -19,15 +21,15 @@ interface Props {
 
 function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: Props) {
   const t = useTranslate();
-  const [user, setUser] = useState(User.fromPartial({ ...initialUser }));
+  const [user, setUser] = useState(create(UserSchema, initialUser ? { username: initialUser.username, role: initialUser.role } : {}));
   const requestState = useLoading(false);
   const isCreating = !initialUser;
 
   useEffect(() => {
     if (initialUser) {
-      setUser(User.fromPartial(initialUser));
+      setUser(create(UserSchema, { username: initialUser.username, role: initialUser.role }));
     } else {
-      setUser(User.fromPartial({}));
+      setUser(create(UserSchema, {}));
     }
   }, [initialUser]);
 
@@ -60,7 +62,7 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
         if (user.role !== initialUser?.role) {
           updateMask.push("role");
         }
-        await userServiceClient.updateUser({ user, updateMask });
+        await userServiceClient.updateUser({ user, updateMask: create(FieldMaskSchema, { paths: updateMask }) });
         toast.success("Update user successfully");
       }
       requestState.setFinish();
@@ -68,7 +70,7 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
       onOpenChange(false);
     } catch (error: any) {
       console.error(error);
-      toast.error(error.details);
+      toast.error(error.message);
       requestState.setError();
     }
   };
@@ -112,16 +114,16 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
           <div className="grid gap-2">
             <Label>{t("common.role")}</Label>
             <RadioGroup
-              value={user.role}
-              onValueChange={(value) => setPartialUser({ role: value as User_Role })}
+              value={String(user.role)}
+              onValueChange={(value) => setPartialUser({ role: Number(value) as User_Role })}
               className="flex flex-row gap-4"
             >
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value={User_Role.USER} id="user" />
+                <RadioGroupItem value={String(User_Role.USER)} id="user" />
                 <Label htmlFor="user">{t("setting.member-section.user")}</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value={User_Role.ADMIN} id="admin" />
+                <RadioGroupItem value={String(User_Role.ADMIN)} id="admin" />
                 <Label htmlFor="admin">{t("setting.member-section.admin")}</Label>
               </div>
             </RadioGroup>

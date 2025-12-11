@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { memoServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { memoStore, userStore } from "@/store";
-import type { Memo, Reaction } from "@/types/proto/api/v1/memo_service";
-import type { User } from "@/types/proto/api/v1/user_service";
+import type { Memo, Reaction } from "@/types/proto/api/v1/memo_service_pb";
+import type { User } from "@/types/proto/api/v1/user_service_pb";
 
 export type ReactionGroup = Map<string, User[]>;
 

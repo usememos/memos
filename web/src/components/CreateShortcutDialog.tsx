@@ -1,3 +1,5 @@
+import { create } from "@bufbuild/protobuf";
+import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
@@ -9,7 +11,7 @@ import { shortcutServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import { userStore } from "@/store";
-import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
+import { Shortcut, ShortcutSchema } from "@/types/proto/api/v1/shortcut_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
@@ -22,23 +24,27 @@ interface Props {
 function CreateShortcutDialog({ open, onOpenChange, shortcut: initialShortcut, onSuccess }: Props) {
   const t = useTranslate();
   const user = useCurrentUser();
-  const [shortcut, setShortcut] = useState<Shortcut>({
-    name: initialShortcut?.name || "",
-    title: initialShortcut?.title || "",
-    filter: initialShortcut?.filter || "",
-  });
+  const [shortcut, setShortcut] = useState<Shortcut>(
+    create(ShortcutSchema, {
+      name: initialShortcut?.name || "",
+      title: initialShortcut?.title || "",
+      filter: initialShortcut?.filter || "",
+    }),
+  );
   const requestState = useLoading(false);
   const isCreating = !initialShortcut;
 
   useEffect(() => {
     if (initialShortcut) {
-      setShortcut({
-        name: initialShortcut.name,
-        title: initialShortcut.title,
-        filter: initialShortcut.filter,
-      });
+      setShortcut(
+        create(ShortcutSchema, {
+          name: initialShortcut.name,
+          title: initialShortcut.title,
+          filter: initialShortcut.filter,
+        }),
+      );
     } else {
-      setShortcut({ name: "", title: "", filter: "" });
+      setShortcut(create(ShortcutSchema, { name: "", title: "", filter: "" }));
     }
   }, [initialShortcut]);
 
@@ -74,7 +80,7 @@ function CreateShortcutDialog({ open, onOpenChange, shortcut: initialShortcut, o
             ...shortcut,
             name: initialShortcut!.name, // Keep the original resource name
           },
-          updateMask: ["title", "filter"],
+          updateMask: create(FieldMaskSchema, { paths: ["title", "filter"] }),
         });
         toast.success("Update shortcut successfully");
       }
@@ -85,7 +91,7 @@ function CreateShortcutDialog({ open, onOpenChange, shortcut: initialShortcut, o
       onOpenChange(false);
     } catch (error: any) {
       console.error(error);
-      toast.error(error.details);
+      toast.error(error.message);
       requestState.setError();
     }
   };

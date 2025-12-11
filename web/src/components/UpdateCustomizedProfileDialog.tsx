@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { instanceStore } from "@/store";
 import { instanceSettingNamePrefix } from "@/store/common";
-import { InstanceSetting_GeneralSetting_CustomProfile, InstanceSetting_Key } from "@/types/proto/api/v1/instance_service";
+import {
+  InstanceSetting_GeneralSetting_CustomProfile,
+  InstanceSetting_GeneralSetting_CustomProfileSchema,
+  InstanceSetting_Key,
+  InstanceSettingSchema,
+} from "@/types/proto/api/v1/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
@@ -20,7 +26,7 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
   const t = useTranslate();
   const instanceGeneralSetting = instanceStore.state.generalSetting;
   const [customProfile, setCustomProfile] = useState<InstanceSetting_GeneralSetting_CustomProfile>(
-    InstanceSetting_GeneralSetting_CustomProfile.fromPartial(instanceGeneralSetting.customProfile || {}),
+    create(InstanceSetting_GeneralSetting_CustomProfileSchema, instanceGeneralSetting.customProfile || {}),
   );
 
   const [isLoading, setIsLoading] = useState(false);
@@ -70,13 +76,18 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
 
     setIsLoading(true);
     try {
-      await instanceStore.upsertInstanceSetting({
-        name: `${instanceSettingNamePrefix}${InstanceSetting_Key.GENERAL}`,
-        generalSetting: {
-          ...instanceGeneralSetting,
-          customProfile: customProfile,
-        },
-      });
+      await instanceStore.upsertInstanceSetting(
+        create(InstanceSettingSchema, {
+          name: `${instanceSettingNamePrefix}${InstanceSetting_Key.GENERAL}`,
+          value: {
+            case: "generalSetting",
+            value: {
+              ...instanceGeneralSetting,
+              customProfile: customProfile,
+            },
+          },
+        }),
+      );
       toast.success(t("message.update-succeed"));
       onSuccess?.();
       onOpenChange(false);

@@ -1,4 +1,4 @@
-import { Attachment } from "@/types/proto/api/v1/attachment_service";
+import { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentUrl, isMidiFile } from "@/utils/attachment";
 import AttachmentIcon from "./AttachmentIcon";
 

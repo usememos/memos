@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
-import type { Memo } from "@/types/proto/api/v1/memo_service";
-import type { User } from "@/types/proto/api/v1/user_service";
+import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import type { User } from "@/types/proto/api/v1/user_service_pb";
 
 export interface MemoViewContextValue {
   memo: Memo;

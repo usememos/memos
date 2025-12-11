@@ -9,7 +9,7 @@ import useAsyncEffect from "@/hooks/useAsyncEffect";
 import { cn } from "@/lib/utils";
 import { userStore } from "@/store";
 import memoFilterStore from "@/store/memoFilter";
-import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
+import { Shortcut } from "@/types/proto/api/v1/shortcut_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateShortcutDialog from "../CreateShortcutDialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";

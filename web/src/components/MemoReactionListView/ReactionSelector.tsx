@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { instanceStore } from "@/store";
-import type { Memo } from "@/types/proto/api/v1/memo_service";
+import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useReactionActions } from "./hooks";
 
 interface Props {

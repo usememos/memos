@@ -1,6 +1,6 @@
+import { ConnectError } from "@connectrpc/connect";
 import { LoaderIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
-import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { authServiceClient } from "@/grpcweb";
@@ -72,11 +72,14 @@ const AuthCallback = observer(() => {
     (async () => {
       try {
         await authServiceClient.createSession({
-          ssoCredentials: {
-            idpId: identityProviderId,
-            code,
-            redirectUri,
-            codeVerifier: codeVerifier || "", // Pass PKCE code_verifier for token exchange
+          credentials: {
+            case: "ssoCredentials",
+            value: {
+              idpId: identityProviderId,
+              code,
+              redirectUri,
+              codeVerifier: codeVerifier || "", // Pass PKCE code_verifier for token exchange
+            },
           },
         });
         setState({
@@ -90,7 +93,7 @@ const AuthCallback = observer(() => {
         console.error(error);
         setState({
           loading: false,
-          errorMessage: (error as ClientError).details,
+          errorMessage: (error as ConnectError).message,
         });
       }
     })();

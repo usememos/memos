@@ -1,7 +1,7 @@
 // Attachment Store - manages file attachment state including uploads and metadata
 import { computed, makeObservable, observable } from "mobx";
 import { attachmentServiceClient } from "@/grpcweb";
-import { Attachment, CreateAttachmentRequest, UpdateAttachmentRequest } from "@/types/proto/api/v1/attachment_service";
+import { Attachment, CreateAttachmentRequest, UpdateAttachmentRequest } from "@/types/proto/api/v1/attachment_service_pb";
 import { createServerStore, StandardState } from "./base-store";
 import { createRequestKey } from "./store-utils";
 
@@ -69,21 +69,21 @@ const attachmentStore = (() => {
     return fetchAttachmentByName(name);
   };
 
-  const createAttachment = async (request: CreateAttachmentRequest): Promise<Attachment> => {
+  const createAttachment = async (attachment: Attachment): Promise<Attachment> => {
     return executeRequest(
       "", // No deduplication for creates
       async () => {
-        const attachment = await attachmentServiceClient.createAttachment(request);
+        const result = await attachmentServiceClient.createAttachment({ attachment });
 
         // Add to cache
         state.setPartial({
           attachmentMapByName: {
             ...state.attachmentMapByName,
-            [attachment.name]: attachment,
+            [result.name]: result,
           },
         });
 
-        return attachment;
+        return result;
       },
       "CREATE_ATTACHMENT_FAILED",
     );

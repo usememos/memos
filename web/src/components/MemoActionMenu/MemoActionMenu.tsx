@@ -24,7 +24,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { State } from "@/types/proto/api/v1/common";
+import { State } from "@/types/proto/api/v1/common_pb";
 import { useTranslate } from "@/utils/i18n";
 import { hasCompletedTasks } from "@/utils/markdown-manipulation";
 import { useMemoActionHandlers } from "./hooks";

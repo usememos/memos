@@ -1,9 +1,10 @@
+import { create } from "@bufbuild/protobuf";
 import { LinkIcon, MilestoneIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { memoStore } from "@/store";
-import { Memo, MemoRelation, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
+import { Memo, MemoRelation, MemoRelation_MemoSchema, MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import MetadataCard from "./MetadataCard";
 import RelationCard from "./RelationCard";
@@ -70,7 +71,7 @@ const RelationList = observer(({ relations, currentMemoName, mode, onRelationsCh
         {referencingMemos.map((memo) => (
           <RelationCard
             key={memo.name}
-            memo={{ name: memo.name, snippet: memo.snippet }}
+            memo={create(MemoRelation_MemoSchema, { name: memo.name, snippet: memo.snippet })}
             mode="edit"
             onRemove={() => handleDeleteRelation(memo.name)}
           />

@@ -2,7 +2,7 @@ import { LatLng } from "leaflet";
 import { MapPinIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Location } from "@/types/proto/api/v1/memo_service";
+import { Location } from "@/types/proto/api/v1/memo_service_pb";
 import LeafletMap from "../LeafletMap";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { BaseMetadataProps } from "./types";

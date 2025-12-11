@@ -1,6 +1,6 @@
+import { ConnectError } from "@connectrpc/connect";
 import { LoaderIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
-import { ClientError } from "nice-grpc-web";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
@@ -46,13 +46,16 @@ const PasswordSignInForm = observer(() => {
     try {
       actionBtnLoadingState.setLoading();
       await authServiceClient.createSession({
-        passwordCredentials: { username, password },
+        credentials: {
+          case: "passwordCredentials",
+          value: { username, password },
+        },
       });
       await initialUserStore();
       navigateTo("/");
     } catch (error: any) {
       console.error(error);
-      toast.error((error as ClientError).details || "Failed to sign in.");
+      toast.error((error as ConnectError).message || "Failed to sign in.");
     }
     actionBtnLoadingState.setFinish();
   };

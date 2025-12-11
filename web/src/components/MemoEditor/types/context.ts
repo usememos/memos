@@ -1,6 +1,6 @@
 import { createContext } from "react";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service";
-import type { MemoRelation } from "@/types/proto/api/v1/memo_service";
+import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import type { LocalFile } from "../../memo-metadata";
 
 export interface MemoEditorContextValue {

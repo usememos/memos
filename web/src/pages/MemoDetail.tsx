@@ -1,6 +1,6 @@
+import { ConnectError } from "@connectrpc/connect";
 import { ArrowUpLeftFromCircleIcon, MessageCircleIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
-import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useLocation, useParams } from "react-router-dom";
@@ -15,7 +15,7 @@ import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { cn } from "@/lib/utils";
 import { memoStore } from "@/store";
 import { memoNamePrefix } from "@/store/common";
-import { Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
+import { Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoDetail = observer(() => {
@@ -38,8 +38,8 @@ const MemoDetail = observer(() => {
   // Prepare memo.
   useEffect(() => {
     if (memoName) {
-      memoStore.getOrFetchMemoByName(memoName).catch((error: ClientError) => {
-        toast.error(error.details);
+      memoStore.getOrFetchMemoByName(memoName).catch((error: ConnectError) => {
+        toast.error(error.message);
         navigateTo("/403");
       });
     } else {

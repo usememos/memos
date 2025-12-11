@@ -1,27 +1,35 @@
 // Instance Store - manages instance-level configuration and settings
+import { create } from "@bufbuild/protobuf";
 import { uniqBy } from "lodash-es";
 import { computed } from "mobx";
 import { instanceServiceClient } from "@/grpcweb";
 import {
   InstanceProfile,
+  InstanceProfileSchema,
   InstanceSetting,
   InstanceSetting_GeneralSetting,
+  InstanceSetting_GeneralSettingSchema,
   InstanceSetting_Key,
   InstanceSetting_MemoRelatedSetting,
-} from "@/types/proto/api/v1/instance_service";
+  InstanceSetting_MemoRelatedSettingSchema,
+  InstanceSettingSchema,
+} from "@/types/proto/api/v1/instance_service_pb";
 import { createServerStore, StandardState } from "./base-store";
 import { instanceSettingNamePrefix } from "./common";
 import { createRequestKey } from "./store-utils";
 
 class InstanceState extends StandardState {
-  profile: InstanceProfile = InstanceProfile.fromPartial({});
+  profile: InstanceProfile = create(InstanceProfileSchema, {});
   settings: InstanceSetting[] = [];
 
   // Computed property for general settings (memoized)
   get generalSetting(): InstanceSetting_GeneralSetting {
     return computed(() => {
       const setting = this.settings.find((s) => s.name === `${instanceSettingNamePrefix}${InstanceSetting_Key.GENERAL}`);
-      return setting?.generalSetting || InstanceSetting_GeneralSetting.fromPartial({});
+      if (setting?.value.case === "generalSetting") {
+        return setting.value.value;
+      }
+      return create(InstanceSetting_GeneralSettingSchema, {});
     }).get();
   }
 
@@ -29,7 +37,10 @@ class InstanceState extends StandardState {
   get memoRelatedSetting(): InstanceSetting_MemoRelatedSetting {
     return computed(() => {
       const setting = this.settings.find((s) => s.name === `${instanceSettingNamePrefix}${InstanceSetting_Key.MEMO_RELATED}`);
-      return setting?.memoRelatedSetting || InstanceSetting_MemoRelatedSetting.fromPartial({});
+      if (setting?.value.case === "memoRelatedSetting") {
+        return setting.value.value;
+      }
+      return create(InstanceSetting_MemoRelatedSettingSchema, {});
     }).get();
   }
 }
@@ -78,7 +89,7 @@ const instanceStore = (() => {
 
   const getInstanceSettingByKey = (settingKey: InstanceSetting_Key): InstanceSetting => {
     const setting = state.settings.find((s) => s.name === `${instanceSettingNamePrefix}${settingKey}`);
-    return setting || InstanceSetting.fromPartial({});
+    return setting || create(InstanceSettingSchema, {});
   };
 
   const fetchInstanceProfile = async (): Promise<InstanceProfile> => {

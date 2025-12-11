@@ -3,7 +3,7 @@ import ForceGraph2D, { ForceGraphMethods, LinkObject, NodeObject } from "react-f
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { cn } from "@/lib/utils";
 import { extractMemoIdFromName } from "@/store/common";
-import { Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_service";
+import { Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { LinkType, NodeType } from "./types";
 import { convertMemoRelationsToGraphData } from "./utils";
 

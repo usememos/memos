@@ -1,3 +1,4 @@
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { ClockIcon, MonitorIcon, SmartphoneIcon, TabletIcon, TrashIcon, WifiIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -5,13 +6,17 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { UserSession } from "@/types/proto/api/v1/user_service";
+import { UserSession } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import SettingTable from "./SettingTable";
 
 const listUserSessions = async (parent: string) => {
   const { sessions } = await userServiceClient.listUserSessions({ parent });
-  return sessions.sort((a, b) => (b.lastAccessedTime?.getTime() ?? 0) - (a.lastAccessedTime?.getTime() ?? 0));
+  return sessions.sort(
+    (a, b) =>
+      ((b.lastAccessedTime ? timestampDate(b.lastAccessedTime) : undefined)?.getTime() ?? 0) -
+      ((a.lastAccessedTime ? timestampDate(a.lastAccessedTime) : undefined)?.getTime() ?? 0),
+  );
 };
 
 const UserSessionsSection = () => {
@@ -107,7 +112,7 @@ const UserSessionsSection = () => {
             render: (_, session: UserSession) => (
               <div className="flex items-center space-x-1">
                 <ClockIcon className="w-4 h-4" />
-                <span>{session.lastAccessedTime?.toLocaleString()}</span>
+                <span>{(session.lastAccessedTime ? timestampDate(session.lastAccessedTime) : undefined)?.toLocaleString()}</span>
               </div>
             ),
           },

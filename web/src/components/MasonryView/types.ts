@@ -1,4 +1,4 @@
-import { Memo } from "@/types/proto/api/v1/memo_service";
+import { Memo } from "@/types/proto/api/v1/memo_service_pb";
 
 export interface MemoRenderContext {
   compact: boolean;

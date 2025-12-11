@@ -1,6 +1,7 @@
+import { create } from "@bufbuild/protobuf";
+import { ConnectError } from "@connectrpc/connect";
 import { LoaderIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
-import { ClientError } from "nice-grpc-web";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -12,7 +13,7 @@ import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { instanceStore } from "@/store";
 import { initialUserStore } from "@/store/user";
-import { User, User_Role } from "@/types/proto/api/v1/user_service";
+import { User, User_Role, UserSchema } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const SignUp = observer(() => {
@@ -49,20 +50,23 @@ const SignUp = observer(() => {
 
     try {
       actionBtnLoadingState.setLoading();
-      const user = User.fromPartial({
+      const user = create(UserSchema, {
         username,
         password,
         role: User_Role.USER,
       });
       await userServiceClient.createUser({ user });
       await authServiceClient.createSession({
-        passwordCredentials: { username, password },
+        credentials: {
+          case: "passwordCredentials",
+          value: { username, password },
+        },
       });
       await initialUserStore();
       navigateTo("/");
     } catch (error: any) {
       console.error(error);
-      toast.error((error as ClientError).details || "Sign up failed");
+      toast.error((error as ConnectError).message || "Sign up failed");
     }
     actionBtnLoadingState.setFinish();
   };

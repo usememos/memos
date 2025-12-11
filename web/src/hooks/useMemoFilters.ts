@@ -2,8 +2,8 @@ import { useMemo } from "react";
 import { instanceStore, userStore } from "@/store";
 import { extractUserIdFromName } from "@/store/common";
 import memoFilterStore from "@/store/memoFilter";
-import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service";
-import { Visibility } from "@/types/proto/api/v1/memo_service";
+import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
+import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 
 const getShortcutId = (name: string): string => {
   const parts = name.split("/");
@@ -64,8 +64,8 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
         conditions.push(`has_code`);
       } else if (filter.factor === "displayTime") {
         // Check instance setting for display time factor
-        const displayWithUpdateTime = instanceStore.getInstanceSettingByKey(InstanceSetting_Key.MEMO_RELATED).memoRelatedSetting
-          ?.displayWithUpdateTime;
+        const setting = instanceStore.getInstanceSettingByKey(InstanceSetting_Key.MEMO_RELATED);
+        const displayWithUpdateTime = setting?.value.case === "memoRelatedSetting" ? setting.value.value.displayWithUpdateTime : false;
         const factor = displayWithUpdateTime ? "updated_ts" : "created_ts";
 
         // Convert date to UTC timestamp range

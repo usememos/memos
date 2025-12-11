@@ -1,3 +1,4 @@
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import copy from "copy-to-clipboard";
 import { ClipboardIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -7,14 +8,18 @@ import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
-import { UserAccessToken } from "@/types/proto/api/v1/user_service";
+import { UserAccessToken } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateAccessTokenDialog from "../CreateAccessTokenDialog";
 import SettingTable from "./SettingTable";
 
 const listAccessTokens = async (parent: string) => {
   const { accessTokens } = await userServiceClient.listUserAccessTokens({ parent });
-  return accessTokens.sort((a, b) => (b.issuedAt?.getTime() ?? 0) - (a.issuedAt?.getTime() ?? 0));
+  return accessTokens.sort(
+    (a, b) =>
+      ((b.issuedAt ? timestampDate(b.issuedAt) : undefined)?.getTime() ?? 0) -
+      ((a.issuedAt ? timestampDate(a.issuedAt) : undefined)?.getTime() ?? 0),
+  );
 };
 
 const AccessTokenSection = () => {
@@ -98,13 +103,14 @@ const AccessTokenSection = () => {
           {
             key: "issuedAt",
             header: t("setting.access-token-section.create-dialog.created-at"),
-            render: (_, token: UserAccessToken) => token.issuedAt?.toLocaleString(),
+            render: (_, token: UserAccessToken) => (token.issuedAt ? timestampDate(token.issuedAt) : undefined)?.toLocaleString(),
           },
           {
             key: "expiresAt",
             header: t("setting.access-token-section.create-dialog.expires-at"),
             render: (_, token: UserAccessToken) =>
-              token.expiresAt?.toLocaleString() ?? t("setting.access-token-section.create-dialog.duration-never"),
+              (token.expiresAt ? timestampDate(token.expiresAt) : undefined)?.toLocaleString() ??
+              t("setting.access-token-section.create-dialog.duration-never"),
           },
           {
             key: "actions",

@@ -27,6 +27,7 @@ import (
 	"github.com/usememos/memos/internal/util"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
 )
 
@@ -536,7 +537,7 @@ func (s *APIV1Service) ListUserAccessTokens(ctx context.Context, request *v1pb.L
 
 	accessTokens := []*v1pb.UserAccessToken{}
 	for _, userAccessToken := range userAccessTokens {
-		claims := &ClaimsMessage{}
+		claims := &auth.ClaimsMessage{}
 		_, err := jwt.ParseWithClaims(userAccessToken.AccessToken, claims, func(t *jwt.Token) (any, error) {
 			if t.Method.Alg() != jwt.SigningMethodHS256.Name {
 				return nil, errors.Errorf("unexpected access token signing method=%v, expect %v", t.Header["alg"], jwt.SigningMethodHS256)
@@ -616,12 +617,12 @@ func (s *APIV1Service) CreateUserAccessToken(ctx context.Context, request *v1pb.
 		expiresAt = request.AccessToken.ExpiresAt.AsTime()
 	}
 
-	accessToken, err := GenerateAccessToken(currentUser.Username, currentUser.ID, expiresAt, []byte(s.Secret))
+	accessToken, err := auth.GenerateAccessToken(currentUser.Username, currentUser.ID, expiresAt, []byte(s.Secret))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to generate access token: %v", err)
 	}
 
-	claims := &ClaimsMessage{}
+	claims := &auth.ClaimsMessage{}
 	_, err = jwt.ParseWithClaims(accessToken, claims, func(t *jwt.Token) (any, error) {
 		if t.Method.Alg() != jwt.SigningMethodHS256.Name {
 			return nil, errors.Errorf("unexpected access token signing method=%v, expect %v", t.Header["alg"], jwt.SigningMethodHS256)

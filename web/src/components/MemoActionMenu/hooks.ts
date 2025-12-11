@@ -4,8 +4,8 @@ import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { instanceStore, memoStore, userStore } from "@/store";
-import { State } from "@/types/proto/api/v1/common";
-import type { Memo } from "@/types/proto/api/v1/memo_service";
+import { State } from "@/types/proto/api/v1/common_pb";
+import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { removeCompletedTasks } from "@/utils/markdown-manipulation";
 
