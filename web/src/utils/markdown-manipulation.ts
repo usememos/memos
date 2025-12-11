@@ -1,5 +1,39 @@
-// Utilities for manipulating markdown strings (GitHub-style approach)
-// These functions modify the raw markdown text directly without parsing to AST
+// Utilities for manipulating markdown strings using AST parsing
+// Uses mdast for accurate task detection that properly handles code blocks
+
+import type { ListItem } from "mdast";
+import { fromMarkdown } from "mdast-util-from-markdown";
+import { gfmFromMarkdown } from "mdast-util-gfm";
+import { gfm } from "micromark-extension-gfm";
+import { visit } from "unist-util-visit";
+
+interface TaskInfo {
+  lineNumber: number;
+  checked: boolean;
+}
+
+// Extract all task list items from markdown using AST parsing
+// This correctly ignores task-like patterns inside code blocks
+function extractTasksFromAst(markdown: string): TaskInfo[] {
+  const tree = fromMarkdown(markdown, {
+    extensions: [gfm()],
+    mdastExtensions: [gfmFromMarkdown()],
+  });
+
+  const tasks: TaskInfo[] = [];
+
+  visit(tree, "listItem", (node: ListItem) => {
+    // Only process actual task list items (those with a checkbox)
+    if (typeof node.checked === "boolean" && node.position?.start.line) {
+      tasks.push({
+        lineNumber: node.position.start.line - 1, // Convert to 0-based
+        checked: node.checked,
+      });
+    }
+  });
+
+  return tasks;
+}
 
 export function toggleTaskAtLine(markdown: string, lineNumber: number, checked: boolean): string {
   const lines = markdown.split("\n");
@@ -26,47 +60,36 @@ export function toggleTaskAtLine(markdown: string, lineNumber: number, checked: 
 }
 
 export function toggleTaskAtIndex(markdown: string, taskIndex: number, checked: boolean): string {
-  const lines = markdown.split("\n");
-  const taskPattern = /^(\s*[-*+]\s+)\[([ xX])\](\s+.*)$/;
+  const tasks = extractTasksFromAst(markdown);
 
-  let currentTaskIndex = 0;
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const match = line.match(taskPattern);
-
-    if (match) {
-      if (currentTaskIndex === taskIndex) {
-        const [, prefix, , suffix] = match;
-        const newCheckmark = checked ? "x" : " ";
-        lines[i] = `${prefix}[${newCheckmark}]${suffix}`;
-        break;
-      }
-      currentTaskIndex++;
-    }
+  if (taskIndex < 0 || taskIndex >= tasks.length) {
+    return markdown;
   }
 
-  return lines.join("\n");
+  const task = tasks[taskIndex];
+  return toggleTaskAtLine(markdown, task.lineNumber, checked);
 }
 
 export function removeCompletedTasks(markdown: string): string {
+  const tasks = extractTasksFromAst(markdown);
+  const completedLineNumbers = new Set(tasks.filter((t) => t.checked).map((t) => t.lineNumber));
+
+  if (completedLineNumbers.size === 0) {
+    return markdown;
+  }
+
   const lines = markdown.split("\n");
-  const completedTaskPattern = /^(\s*[-*+]\s+)\[([xX])\](\s+.*)$/;
   const result: string[] = [];
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-
-    // Skip completed tasks
-    if (completedTaskPattern.test(line)) {
+    if (completedLineNumbers.has(i)) {
       // Also skip the following line if it's empty (preserve spacing)
       if (i + 1 < lines.length && lines[i + 1].trim() === "") {
         i++;
       }
       continue;
     }
-
-    result.push(line);
+    result.push(lines[i]);
   }
 
   return result.join("\n");
@@ -77,22 +100,10 @@ export function countTasks(markdown: string): {
   completed: number;
   incomplete: number;
 } {
-  const lines = markdown.split("\n");
-  const taskPattern = /^(\s*[-*+]\s+)\[([ xX])\](\s+.*)$/;
+  const tasks = extractTasksFromAst(markdown);
 
-  let total = 0;
-  let completed = 0;
-
-  for (const line of lines) {
-    const match = line.match(taskPattern);
-    if (match) {
-      total++;
-      const checkmark = match[2];
-      if (checkmark.toLowerCase() === "x") {
-        completed++;
-      }
-    }
-  }
+  const total = tasks.length;
+  const completed = tasks.filter((t) => t.checked).length;
 
   return {
     total,
@@ -102,26 +113,18 @@ export function countTasks(markdown: string): {
 }
 
 export function hasCompletedTasks(markdown: string): boolean {
-  const completedTaskPattern = /^(\s*[-*+]\s+)\[([xX])\](\s+.*)$/m;
-  return completedTaskPattern.test(markdown);
+  const tasks = extractTasksFromAst(markdown);
+  return tasks.some((t) => t.checked);
 }
 
 export function getTaskLineNumber(markdown: string, taskIndex: number): number {
-  const lines = markdown.split("\n");
-  const taskPattern = /^(\s*[-*+]\s+)\[([ xX])\](\s+.*)$/;
+  const tasks = extractTasksFromAst(markdown);
 
-  let currentTaskIndex = 0;
-
-  for (let i = 0; i < lines.length; i++) {
-    if (taskPattern.test(lines[i])) {
-      if (currentTaskIndex === taskIndex) {
-        return i;
-      }
-      currentTaskIndex++;
-    }
+  if (taskIndex < 0 || taskIndex >= tasks.length) {
+    return -1;
   }
 
-  return -1;
+  return tasks[taskIndex].lineNumber;
 }
 
 export interface TaskItem {
@@ -133,27 +136,37 @@ export interface TaskItem {
 }
 
 export function extractTasks(markdown: string): TaskItem[] {
-  const lines = markdown.split("\n");
-  const taskPattern = /^(\s*)([-*+]\s+)\[([ xX])\](\s+.*)$/;
-  const tasks: TaskItem[] = [];
+  const tree = fromMarkdown(markdown, {
+    extensions: [gfm()],
+    mdastExtensions: [gfmFromMarkdown()],
+  });
 
+  const lines = markdown.split("\n");
+  const tasks: TaskItem[] = [];
   let taskIndex = 0;
 
-  for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
-    const line = lines[lineNumber];
-    const match = line.match(taskPattern);
+  visit(tree, "listItem", (node: ListItem) => {
+    if (typeof node.checked === "boolean" && node.position?.start.line) {
+      const lineNumber = node.position.start.line - 1;
+      const line = lines[lineNumber];
 
-    if (match) {
-      const [, indentStr, , checkmark, content] = match;
+      // Extract indentation
+      const indentMatch = line.match(/^(\s*)/);
+      const indentation = indentMatch ? indentMatch[1].length : 0;
+
+      // Extract content (text after the checkbox)
+      const contentMatch = line.match(/^\s*[-*+]\s+\[[ xX]\]\s+(.*)/);
+      const content = contentMatch ? contentMatch[1] : "";
+
       tasks.push({
         lineNumber,
         taskIndex: taskIndex++,
-        checked: checkmark.toLowerCase() === "x",
-        content: content.trim(),
-        indentation: indentStr.length,
+        checked: node.checked,
+        content,
+        indentation,
       });
     }
-  }
+  });
 
   return tasks;
 }
