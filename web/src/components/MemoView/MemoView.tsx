@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { memo, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import type { Memo } from "@/types/proto/api/v1/memo_service";
+import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import MemoEditor from "../MemoEditor";
 import PreviewImageDialog from "../PreviewImageDialog";
 import { MemoBody, MemoHeader } from "./components";

@@ -12,9 +12,9 @@ import { Button } from "@/components/ui/button";
 import { useMemoFilters, useMemoSorting } from "@/hooks";
 import useLoading from "@/hooks/useLoading";
 import { userStore } from "@/store";
-import { State } from "@/types/proto/api/v1/common";
-import { Memo } from "@/types/proto/api/v1/memo_service";
-import { User } from "@/types/proto/api/v1/user_service";
+import { State } from "@/types/proto/api/v1/common_pb";
+import { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import { User } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const UserProfile = observer(() => {

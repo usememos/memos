@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/disintegration/imaging"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"golang.org/x/sync/semaphore"
@@ -23,7 +22,7 @@ import (
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/plugin/storage/s3"
 	storepb "github.com/usememos/memos/proto/gen/store"
-	apiv1 "github.com/usememos/memos/server/router/api/v1"
+	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
 )
 
@@ -43,9 +42,9 @@ var SupportedThumbnailMimeTypes = []string{
 // This service bypasses gRPC-Gateway to use native HTTP serving via http.ServeContent(),
 // which is required for Safari video/audio playback.
 type FileServerService struct {
-	Profile *profile.Profile
-	Store   *store.Store
-	Secret  string
+	Profile       *profile.Profile
+	Store         *store.Store
+	authenticator *auth.Authenticator
 
 	// thumbnailSemaphore limits concurrent thumbnail generation to prevent memory exhaustion
 	thumbnailSemaphore *semaphore.Weighted
@@ -56,7 +55,7 @@ func NewFileServerService(profile *profile.Profile, store *store.Store, secret s
 	return &FileServerService{
 		Profile:            profile,
 		Store:              store,
-		Secret:             secret,
+		authenticator:      auth.NewAuthenticator(store, secret),
 		thumbnailSemaphore: semaphore.NewWeighted(3), // Limit to 3 concurrent thumbnail generations
 	}
 }
@@ -249,10 +248,11 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c ech
 
 // getCurrentUser retrieves the current authenticated user from the Echo context.
 // It checks both session cookies and Bearer tokens for authentication.
+// Uses the shared Authenticator for consistent authentication logic.
 func (s *FileServerService) getCurrentUser(ctx context.Context, c echo.Context) (*store.User, error) {
 	// Try session cookie authentication first
-	if cookie, err := c.Cookie(apiv1.SessionCookieName); err == nil && cookie.Value != "" {
-		user, err := s.authenticateBySession(ctx, cookie.Value)
+	if cookie, err := c.Cookie(auth.SessionCookieName); err == nil && cookie.Value != "" {
+		user, err := s.authenticator.AuthenticateBySession(ctx, cookie.Value)
 		if err == nil && user != nil {
 			return user, nil
 		}
@@ -262,8 +262,8 @@ func (s *FileServerService) getCurrentUser(ctx context.Context, c echo.Context) 
 	authHeader := c.Request().Header.Get("Authorization")
 	if authHeader != "" {
 		parts := strings.Fields(authHeader)
-		if len(parts) == 2 && strings.ToLower(parts[0]) == "bearer" {
-			user, err := s.authenticateByJWT(ctx, parts[1])
+		if len(parts) == 2 && strings.EqualFold(parts[0], "bearer") {
+			user, err := s.authenticator.AuthenticateByJWT(ctx, parts[1])
 			if err == nil && user != nil {
 				return user, nil
 			}
@@ -272,139 +272,6 @@ func (s *FileServerService) getCurrentUser(ctx context.Context, c echo.Context) 
 
 	// No valid authentication found
 	return nil, nil
-}
-
-// authenticateBySession authenticates a user using session ID from cookie.
-func (s *FileServerService) authenticateBySession(ctx context.Context, sessionCookieValue string) (*store.User, error) {
-	if sessionCookieValue == "" {
-		return nil, errors.New("session cookie value not found")
-	}
-
-	// Parse the cookie value to extract userID and sessionID
-	userID, sessionID, err := s.parseSessionCookieValue(sessionCookieValue)
-	if err != nil {
-		return nil, errors.Wrap(err, "invalid session cookie format")
-	}
-
-	// Get the user
-	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		ID: &userID,
-	})
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get user")
-	}
-	if user == nil {
-		return nil, errors.New("user not found")
-	}
-	if user.RowStatus == store.Archived {
-		return nil, errors.New("user is archived")
-	}
-
-	// Get user sessions and validate the sessionID
-	sessions, err := s.Store.GetUserSessions(ctx, user.ID)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get user sessions")
-	}
-
-	if !s.validateUserSession(sessionID, sessions) {
-		return nil, errors.New("invalid or expired session")
-	}
-
-	return user, nil
-}
-
-// authenticateByJWT authenticates a user using JWT access token from Authorization header.
-func (s *FileServerService) authenticateByJWT(ctx context.Context, accessToken string) (*store.User, error) {
-	if accessToken == "" {
-		return nil, errors.New("access token not found")
-	}
-
-	claims := &apiv1.ClaimsMessage{}
-	_, err := jwt.ParseWithClaims(accessToken, claims, func(t *jwt.Token) (any, error) {
-		if t.Method.Alg() != jwt.SigningMethodHS256.Name {
-			return nil, errors.Errorf("unexpected access token signing method=%v, expect %v", t.Header["alg"], jwt.SigningMethodHS256)
-		}
-		if kid, ok := t.Header["kid"].(string); ok {
-			if kid == apiv1.KeyID {
-				return []byte(s.Secret), nil
-			}
-		}
-		return nil, errors.Errorf("unexpected access token kid=%v", t.Header["kid"])
-	})
-	if err != nil {
-		return nil, errors.Wrap(err, "Invalid or expired access token")
-	}
-
-	// Get user from JWT claims
-	userID, err := util.ConvertStringToInt32(claims.Subject)
-	if err != nil {
-		return nil, errors.Wrap(err, "malformed ID in the token")
-	}
-	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		ID: &userID,
-	})
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get user")
-	}
-	if user == nil {
-		return nil, errors.Errorf("user %q not exists", userID)
-	}
-	if user.RowStatus == store.Archived {
-		return nil, errors.Errorf("user %q is archived", userID)
-	}
-
-	// Validate that this access token exists in the user's access tokens
-	accessTokens, err := s.Store.GetUserAccessTokens(ctx, user.ID)
-	if err != nil {
-		return nil, errors.Wrapf(err, "failed to get user access tokens")
-	}
-	if !s.validateAccessToken(accessToken, accessTokens) {
-		return nil, errors.New("invalid access token")
-	}
-
-	return user, nil
-}
-
-// parseSessionCookieValue parses the session cookie value to extract userID and sessionID.
-func (*FileServerService) parseSessionCookieValue(cookieValue string) (int32, string, error) {
-	parts := strings.SplitN(cookieValue, "-", 2)
-	if len(parts) != 2 {
-		return 0, "", errors.New("invalid session cookie format")
-	}
-
-	userID, err := util.ConvertStringToInt32(parts[0])
-	if err != nil {
-		return 0, "", errors.Errorf("invalid user ID in session cookie: %v", err)
-	}
-
-	return userID, parts[1], nil
-}
-
-// validateUserSession checks if a session exists and is still valid using sliding expiration.
-func (*FileServerService) validateUserSession(sessionID string, userSessions []*storepb.SessionsUserSetting_Session) bool {
-	for _, session := range userSessions {
-		if sessionID == session.SessionId {
-			// Use sliding expiration: check if last_accessed_time + 14 days > current_time
-			if session.LastAccessedTime != nil {
-				expirationTime := session.LastAccessedTime.AsTime().Add(apiv1.SessionSlidingDuration)
-				if expirationTime.Before(time.Now()) {
-					return false
-				}
-			}
-			return true
-		}
-	}
-	return false
-}
-
-// validateAccessToken checks if the provided JWT token exists in the user's access tokens list.
-func (*FileServerService) validateAccessToken(accessTokenString string, userAccessTokens []*storepb.AccessTokensUserSetting_AccessToken) bool {
-	for _, userAccessToken := range userAccessTokens {
-		if accessTokenString == userAccessToken.AccessToken {
-			return true
-		}
-	}
-	return false
 }
 
 // isImageType checks if the mime type is an image that supports thumbnails.

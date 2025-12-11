@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import { isEqual } from "lodash-es";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -10,19 +11,33 @@ import { identityProviderServiceClient } from "@/grpcweb";
 import useDialog from "@/hooks/useDialog";
 import { instanceStore } from "@/store";
 import { instanceSettingNamePrefix } from "@/store/common";
-import { IdentityProvider } from "@/types/proto/api/v1/idp_service";
-import { InstanceSetting_GeneralSetting, InstanceSetting_Key } from "@/types/proto/api/v1/instance_service";
+import { IdentityProvider } from "@/types/proto/api/v1/idp_service_pb";
+import {
+  InstanceSetting_GeneralSetting,
+  InstanceSetting_GeneralSettingSchema,
+  InstanceSetting_Key,
+  InstanceSettingSchema,
+} from "@/types/proto/api/v1/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import UpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
 import SettingGroup from "./SettingGroup";
 import SettingRow from "./SettingRow";
 import SettingSection from "./SettingSection";
 
+// Helper to extract general setting value from InstanceSetting oneof
+function getGeneralSetting(setting: any): InstanceSetting_GeneralSetting | undefined {
+  if (setting?.value?.case === "generalSetting") {
+    return setting.value.value;
+  }
+  return undefined;
+}
+
 const InstanceSection = observer(() => {
   const t = useTranslate();
   const customizeDialog = useDialog();
-  const originalSetting = InstanceSetting_GeneralSetting.fromPartial(
-    instanceStore.getInstanceSettingByKey(InstanceSetting_Key.GENERAL)?.generalSetting || {},
+  const originalSetting = create(
+    InstanceSetting_GeneralSettingSchema,
+    getGeneralSetting(instanceStore.getInstanceSettingByKey(InstanceSetting_Key.GENERAL)) || {},
   );
   const [instanceGeneralSetting, setInstanceGeneralSetting] = useState<InstanceSetting_GeneralSetting>(originalSetting);
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
@@ -37,7 +52,7 @@ const InstanceSection = observer(() => {
 
   const updatePartialSetting = (partial: Partial<InstanceSetting_GeneralSetting>) => {
     setInstanceGeneralSetting(
-      InstanceSetting_GeneralSetting.fromPartial({
+      create(InstanceSetting_GeneralSettingSchema, {
         ...instanceGeneralSetting,
         ...partial,
       }),
@@ -46,12 +61,17 @@ const InstanceSection = observer(() => {
 
   const handleSaveGeneralSetting = async () => {
     try {
-      await instanceStore.upsertInstanceSetting({
-        name: `${instanceSettingNamePrefix}${InstanceSetting_Key.GENERAL}`,
-        generalSetting: instanceGeneralSetting,
-      });
+      await instanceStore.upsertInstanceSetting(
+        create(InstanceSettingSchema, {
+          name: `${instanceSettingNamePrefix}${InstanceSetting_Key.GENERAL}`,
+          value: {
+            case: "generalSetting",
+            value: instanceGeneralSetting,
+          },
+        }),
+      );
     } catch (error: any) {
-      toast.error(error.details);
+      toast.error(error.message);
       console.error(error);
       return;
     }

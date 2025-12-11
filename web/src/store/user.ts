@@ -1,7 +1,9 @@
+import { create } from "@bufbuild/protobuf";
+import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { uniqueId } from "lodash-es";
 import { computed, makeAutoObservable } from "mobx";
 import { authServiceClient, shortcutServiceClient, userServiceClient } from "@/grpcweb";
-import { Shortcut } from "@/types/proto/api/v1/shortcut_service";
+import { Shortcut } from "@/types/proto/api/v1/shortcut_service_pb";
 import {
   User,
   UserNotification,
@@ -11,9 +13,18 @@ import {
   UserSetting_Key,
   UserSetting_SessionsSetting,
   UserSetting_WebhooksSetting,
+  UserSettingSchema,
   UserStats,
-} from "@/types/proto/api/v1/user_service";
+} from "@/types/proto/api/v1/user_service_pb";
 import { createRequestKey, RequestDeduplicator, StoreError } from "./store-utils";
+
+// Helper to extract setting value from UserSetting oneof
+function getSettingValue<T>(setting: UserSetting, caseType: string): T | undefined {
+  if (setting.value.case === caseType) {
+    return setting.value.value as T;
+  }
+  return undefined;
+}
 
 class LocalState {
   currentUser?: string;
@@ -126,10 +137,10 @@ const userStore = (() => {
     });
   };
 
-  const updateUser = async (user: Partial<User>, updateMask: string[]) => {
+  const updateUser = async (user: Partial<User>, updateMaskPaths: string[]) => {
     const updatedUser = await userServiceClient.updateUser({
-      user,
-      updateMask,
+      user: user as User,
+      updateMask: create(FieldMaskSchema, { paths: updateMaskPaths }),
     });
     state.setPartial({
       userMapByName: {
@@ -148,24 +159,27 @@ const userStore = (() => {
     });
   };
 
-  const updateUserGeneralSetting = async (generalSetting: Partial<UserSetting_GeneralSetting>, updateMask: string[]) => {
+  const updateUserGeneralSetting = async (generalSetting: Partial<UserSetting_GeneralSetting>, updateMaskPaths: string[]) => {
     if (!state.currentUser) {
       throw new Error("No current user");
     }
 
     const settingName = `${state.currentUser}/settings/${UserSetting_Key.GENERAL}`;
-    const userSetting: UserSetting = {
+    const userSetting = create(UserSettingSchema, {
       name: settingName,
-      generalSetting: generalSetting as UserSetting_GeneralSetting,
-    };
+      value: {
+        case: "generalSetting",
+        value: generalSetting as UserSetting_GeneralSetting,
+      },
+    });
 
     const updatedUserSetting = await userServiceClient.updateUserSetting({
       setting: userSetting,
-      updateMask: updateMask,
+      updateMask: create(FieldMaskSchema, { paths: updateMaskPaths }),
     });
 
     state.setPartial({
-      userGeneralSetting: updatedUserSetting.generalSetting,
+      userGeneralSetting: getSettingValue<UserSetting_GeneralSetting>(updatedUserSetting, "generalSetting"),
     });
   };
 
@@ -176,12 +190,13 @@ const userStore = (() => {
 
     const settingName = `${state.currentUser}/settings/${UserSetting_Key.GENERAL}`;
     const userSetting = await userServiceClient.getUserSetting({ name: settingName });
+    const generalSetting = getSettingValue<UserSetting_GeneralSetting>(userSetting, "generalSetting");
 
     state.setPartial({
-      userGeneralSetting: userSetting.generalSetting,
+      userGeneralSetting: generalSetting,
     });
 
-    return userSetting.generalSetting;
+    return generalSetting;
   };
 
   const fetchUserSettings = async () => {
@@ -195,17 +210,19 @@ const userStore = (() => {
       shortcutServiceClient.listShortcuts({ parent: state.currentUser }),
     ]);
 
-    // Extract and store each setting type
-    const generalSetting = settings.find((s) => s.generalSetting)?.generalSetting;
-    const sessionsSetting = settings.find((s) => s.sessionsSetting)?.sessionsSetting;
-    const accessTokensSetting = settings.find((s) => s.accessTokensSetting)?.accessTokensSetting;
-    const webhooksSetting = settings.find((s) => s.webhooksSetting)?.webhooksSetting;
+    // Extract and store each setting type using the oneof pattern
+    const generalSetting = settings.find((s) => s.value.case === "generalSetting");
+    const sessionsSetting = settings.find((s) => s.value.case === "sessionsSetting");
+    const accessTokensSetting = settings.find((s) => s.value.case === "accessTokensSetting");
+    const webhooksSetting = settings.find((s) => s.value.case === "webhooksSetting");
 
     state.setPartial({
-      userGeneralSetting: generalSetting,
-      userSessionsSetting: sessionsSetting,
-      userAccessTokensSetting: accessTokensSetting,
-      userWebhooksSetting: webhooksSetting,
+      userGeneralSetting: generalSetting ? getSettingValue<UserSetting_GeneralSetting>(generalSetting, "generalSetting") : undefined,
+      userSessionsSetting: sessionsSetting ? getSettingValue<UserSetting_SessionsSetting>(sessionsSetting, "sessionsSetting") : undefined,
+      userAccessTokensSetting: accessTokensSetting
+        ? getSettingValue<UserSetting_AccessTokensSetting>(accessTokensSetting, "accessTokensSetting")
+        : undefined,
+      userWebhooksSetting: webhooksSetting ? getSettingValue<UserSetting_WebhooksSetting>(webhooksSetting, "webhooksSetting") : undefined,
       shortcuts: shortcuts,
     });
   };
@@ -227,10 +244,10 @@ const userStore = (() => {
     });
   };
 
-  const updateNotification = async (notification: Partial<UserNotification>, updateMask: string[]) => {
+  const updateNotification = async (notification: Partial<UserNotification>, updateMaskPaths: string[]) => {
     const updatedNotification = await userServiceClient.updateUserNotification({
-      notification,
-      updateMask,
+      notification: notification as UserNotification,
+      updateMask: create(FieldMaskSchema, { paths: updateMaskPaths }),
     });
     state.setPartial({
       notifications: state.notifications.map((n) => {

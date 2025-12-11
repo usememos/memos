@@ -1,4 +1,13 @@
-package v1
+// Package auth provides authentication and authorization for the Memos server.
+//
+// This package is used by:
+// - server/router/api/v1: gRPC and Connect API interceptors
+// - server/router/fileserver: HTTP file server authentication
+//
+// Authentication methods supported:
+// - Session cookie: Browser-based authentication with sliding expiration
+// - JWT token: API token authentication for programmatic access
+package auth
 
 import (
 	"fmt"
@@ -99,8 +108,8 @@ func generateToken(username string, userID int32, audience string, expirationTim
 //
 // Uses UUID v4 (random) for high entropy and uniqueness.
 // Session IDs are stored in user settings and used to identify browser sessions.
-func GenerateSessionID() (string, error) {
-	return util.GenUUID(), nil
+func GenerateSessionID() string {
+	return util.GenUUID()
 }
 
 // BuildSessionCookieValue creates the session cookie value.

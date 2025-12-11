@@ -1,3 +1,5 @@
+import { create } from "@bufbuild/protobuf";
+import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { sortBy } from "lodash-es";
 import { MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
@@ -9,8 +11,8 @@ import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
 import { userStore } from "@/store";
-import { State } from "@/types/proto/api/v1/common";
-import { User, User_Role } from "@/types/proto/api/v1/user_service";
+import { State } from "@/types/proto/api/v1/common_pb";
+import { User, User_Role } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateUserDialog from "../CreateUserDialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
@@ -69,7 +71,7 @@ const MemberSection = observer(() => {
         name: archiveTarget.name,
         state: State.ARCHIVED,
       },
-      updateMask: ["state"],
+      updateMask: create(FieldMaskSchema, { paths: ["state"] }),
     });
     setArchiveTarget(undefined);
     toast.success(t("setting.member-section.archive-success", { username }));
@@ -83,7 +85,7 @@ const MemberSection = observer(() => {
         name: user.name,
         state: State.NORMAL,
       },
-      updateMask: ["state"],
+      updateMask: create(FieldMaskSchema, { paths: ["state"] }),
     });
     toast.success(t("setting.member-section.restore-success", { username }));
     await fetchUsers();

@@ -1,3 +1,4 @@
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { sortBy } from "lodash-es";
 import { ArchiveIcon, BellIcon, InboxIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
@@ -8,7 +9,7 @@ import MobileHeader from "@/components/MobileHeader";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { cn } from "@/lib/utils";
 import { userStore } from "@/store";
-import { UserNotification, UserNotification_Status, UserNotification_Type } from "@/types/proto/api/v1/user_service";
+import { UserNotification, UserNotification_Status, UserNotification_Type } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const Inboxes = observer(() => {
@@ -17,7 +18,7 @@ const Inboxes = observer(() => {
   const [filter, setFilter] = useState<"all" | "unread" | "archived">("all");
 
   const allNotifications = sortBy(userStore.state.notifications, (notification: UserNotification) => {
-    return -(notification.createTime?.getTime() || 0);
+    return -((notification.createTime ? timestampDate(notification.createTime) : undefined)?.getTime() || 0);
   });
 
   const notifications = allNotifications.filter((notification) => {

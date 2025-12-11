@@ -15,8 +15,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { instanceStore } from "@/store";
-import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service";
-import { User_Role } from "@/types/proto/api/v1/user_service";
+import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
+import { User_Role } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 type SettingSection = "my-account" | "preference" | "member" | "system" | "memo-related" | "storage" | "sso";

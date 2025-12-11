@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service";
-import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service";
-import { Visibility } from "@/types/proto/api/v1/memo_service";
+import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
+import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 
 interface MemoEditorState {
   memoVisibility: Visibility;

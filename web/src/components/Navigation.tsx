@@ -7,6 +7,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
 import { userStore } from "@/store";
+import { UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import MemosLogo from "./MemosLogo";
 import UserMenu from "./UserMenu";
@@ -54,7 +55,7 @@ const Navigation = observer((props: Props) => {
     title: t("common.attachments"),
     icon: <PaperclipIcon className="w-6 h-auto shrink-0" />,
   };
-  const unreadCount = userStore.state.notifications.filter((n) => n.status === "UNREAD").length;
+  const unreadCount = userStore.state.notifications.filter((n) => n.status === UserNotification_Status.UNREAD).length;
   const inboxNavLink: NavLinkItem = {
     id: "header-inbox",
     path: Routes.INBOX,

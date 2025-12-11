@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Memo } from "@/types/proto/api/v1/memo_service";
+import { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { MINIMUM_MEMO_VIEWPORT_WIDTH, REDISTRIBUTION_DEBOUNCE_MS } from "./constants";
 import { distributeItemsToColumns } from "./distributeItems";
 

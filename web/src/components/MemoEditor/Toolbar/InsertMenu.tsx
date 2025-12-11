@@ -14,7 +14,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service";
+import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { LinkMemoDialog, LocationDialog } from "../components";
 import { GEOCODING } from "../constants";

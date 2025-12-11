@@ -1,6 +1,7 @@
+import { create } from "@bufbuild/protobuf";
 import { LatLng } from "leaflet";
 import { useState } from "react";
-import { Location } from "@/types/proto/api/v1/memo_service";
+import { Location, LocationSchema } from "@/types/proto/api/v1/memo_service_pb";
 import { LocationState } from "../types/insert-menu";
 
 export const useLocation = (initialLocation?: Location) => {
@@ -62,7 +63,7 @@ export const useLocation = (initialLocation?: Location) => {
     if (!state.position || !state.placeholder.trim()) {
       return undefined;
     }
-    return Location.fromPartial({
+    return create(LocationSchema, {
       latitude: state.position.lat,
       longitude: state.position.lng,
       placeholder: state.placeholder,

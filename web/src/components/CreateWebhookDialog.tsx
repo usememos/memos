@@ -1,3 +1,5 @@
+import { create } from "@bufbuild/protobuf";
+import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
@@ -98,7 +100,7 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
             displayName: state.displayName,
             url: state.url,
           },
-          updateMask: ["display_name", "url"],
+          updateMask: create(FieldMaskSchema, { paths: ["display_name", "url"] }),
         });
       }
 
@@ -107,7 +109,7 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
       requestState.setFinish();
     } catch (error: any) {
       console.error(error);
-      toast.error(error.details);
+      toast.error(error.message);
       requestState.setError();
     }
   };

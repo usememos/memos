@@ -1,10 +1,11 @@
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { BookmarkIcon, EyeOffIcon, MessageCircleMoreIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import i18n from "@/i18n";
 import { cn } from "@/lib/utils";
-import { Visibility } from "@/types/proto/api/v1/memo_service";
-import type { User } from "@/types/proto/api/v1/user_service";
+import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import type { User } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityToString } from "@/utils/memo";
 import MemoActionMenu from "../../MemoActionMenu";
@@ -43,9 +44,13 @@ const MemoHeader: React.FC<Props> = ({
     useMemoViewContext();
 
   const displayTime = isArchived ? (
-    memo.displayTime?.toLocaleString(i18n.language)
+    (memo.displayTime ? timestampDate(memo.displayTime) : undefined)?.toLocaleString(i18n.language)
   ) : (
-    <relative-time datetime={memo.displayTime?.toISOString()} lang={i18n.language} format={relativeTimeFormat}></relative-time>
+    <relative-time
+      datetime={(memo.displayTime ? timestampDate(memo.displayTime) : undefined)?.toISOString()}
+      lang={i18n.language}
+      format={relativeTimeFormat}
+    ></relative-time>
   );
 
   return (

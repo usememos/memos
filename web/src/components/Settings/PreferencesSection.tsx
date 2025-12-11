@@ -1,8 +1,9 @@
+import { create } from "@bufbuild/protobuf";
 import { observer } from "mobx-react-lite";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { userStore } from "@/store";
-import { Visibility } from "@/types/proto/api/v1/memo_service";
-import { UserSetting_GeneralSetting } from "@/types/proto/api/v1/user_service";
+import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import { UserSetting_GeneralSetting, UserSetting_GeneralSettingSchema } from "@/types/proto/api/v1/user_service_pb";
 import { loadLocale, useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
 import { loadTheme } from "@/utils/theme";
@@ -37,11 +38,13 @@ const PreferencesSection = observer(() => {
   };
 
   // Provide default values if setting is not loaded yet
-  const setting: UserSetting_GeneralSetting = generalSetting || {
-    locale: "en",
-    memoVisibility: "PRIVATE",
-    theme: "system",
-  };
+  const setting: UserSetting_GeneralSetting =
+    generalSetting ||
+    create(UserSetting_GeneralSettingSchema, {
+      locale: "en",
+      memoVisibility: "PRIVATE",
+      theme: "system",
+    });
 
   return (
     <SettingSection>

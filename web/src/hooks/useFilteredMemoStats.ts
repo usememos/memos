@@ -1,3 +1,4 @@
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import dayjs from "dayjs";
 import { countBy } from "lodash-es";
 import { useEffect, useState } from "react";
@@ -57,7 +58,12 @@ export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}):
         if (userStats) {
           // Use activity timestamps from user stats
           if (userStats.memoDisplayTimestamps && userStats.memoDisplayTimestamps.length > 0) {
-            activityStats = countBy(userStats.memoDisplayTimestamps.map((date) => dayjs(date).format("YYYY-MM-DD")));
+            activityStats = countBy(
+              userStats.memoDisplayTimestamps
+                .map((ts) => (ts ? timestampDate(ts) : undefined))
+                .filter((date): date is Date => date !== undefined)
+                .map((date) => dayjs(date).format("YYYY-MM-DD")),
+            );
           }
           // Use tag counts from user stats
           if (userStats.tagCount) {
@@ -75,8 +81,9 @@ export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}):
 
         for (const memo of memos) {
           // Collect display timestamps for activity calendar
-          if (memo.displayTime) {
-            displayTimeList.push(memo.displayTime);
+          const displayTime = memo.displayTime ? timestampDate(memo.displayTime) : undefined;
+          if (displayTime) {
+            displayTimeList.push(displayTime);
           }
           // Count tags
           if (memo.tags && memo.tags.length > 0) {

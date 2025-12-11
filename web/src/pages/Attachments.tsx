@@ -1,3 +1,4 @@
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import dayjs from "dayjs";
 import { ExternalLinkIcon, PaperclipIcon, SearchIcon, Trash } from "lucide-react";
 import { observer } from "mobx-react-lite";
@@ -17,17 +18,22 @@ import useLoading from "@/hooks/useLoading";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import i18n from "@/i18n";
 import { attachmentStore } from "@/store";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service";
+import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const PAGE_SIZE = 50;
 
 const groupAttachmentsByDate = (attachments: Attachment[]): Map<string, Attachment[]> => {
   const grouped = new Map<string, Attachment[]>();
-  const sorted = [...attachments].sort((a, b) => dayjs(b.createTime).unix() - dayjs(a.createTime).unix());
+  const sorted = [...attachments].sort((a, b) => {
+    const aTime = a.createTime ? timestampDate(a.createTime) : undefined;
+    const bTime = b.createTime ? timestampDate(b.createTime) : undefined;
+    return dayjs(bTime).unix() - dayjs(aTime).unix();
+  });
 
   for (const attachment of sorted) {
-    const monthKey = dayjs(attachment.createTime).format("YYYY-MM");
+    const createTime = attachment.createTime ? timestampDate(attachment.createTime) : undefined;
+    const monthKey = dayjs(createTime).format("YYYY-MM");
     const group = grouped.get(monthKey) ?? [];
     group.push(attachment);
     grouped.set(monthKey, group);

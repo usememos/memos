@@ -1,3 +1,4 @@
+import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
-import { UserAccessToken } from "@/types/proto/api/v1/user_service";
+import { UserAccessToken } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
@@ -77,7 +78,7 @@ function CreateAccessTokenDialog({ open, onOpenChange, onSuccess }: Props) {
         parent: currentUser.name,
         accessToken: {
           description: state.description,
-          expiresAt: state.expiration ? new Date(Date.now() + state.expiration * 1000) : undefined,
+          expiresAt: state.expiration ? timestampFromDate(new Date(Date.now() + state.expiration * 1000)) : undefined,
         },
       });
 
@@ -85,7 +86,7 @@ function CreateAccessTokenDialog({ open, onOpenChange, onSuccess }: Props) {
       onSuccess(created);
       onOpenChange(false);
     } catch (error: any) {
-      toast.error(error.details);
+      toast.error(error.message);
       console.error(error);
       requestState.setError();
     }

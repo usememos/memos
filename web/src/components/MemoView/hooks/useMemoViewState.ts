@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { instanceStore, memoStore, userStore } from "@/store";
-import { State } from "@/types/proto/api/v1/common";
-import type { Memo } from "@/types/proto/api/v1/memo_service";
+import { State } from "@/types/proto/api/v1/common_pb";
+import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { KEYBOARD_SHORTCUTS, TEXT_INPUT_TYPES } from "../constants";
 

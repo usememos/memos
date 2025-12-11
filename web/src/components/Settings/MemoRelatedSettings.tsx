@@ -1,3 +1,4 @@
+import { create } from "@bufbuild/protobuf";
 import { isEqual, uniq } from "lodash-es";
 import { CheckIcon, X } from "lucide-react";
 import { observer } from "mobx-react-lite";
@@ -9,7 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { instanceStore } from "@/store";
 import { instanceSettingNamePrefix } from "@/store/common";
-import { InstanceSetting_Key, InstanceSetting_MemoRelatedSetting } from "@/types/proto/api/v1/instance_service";
+import {
+  InstanceSetting_Key,
+  InstanceSetting_MemoRelatedSetting,
+  InstanceSetting_MemoRelatedSettingSchema,
+  InstanceSettingSchema,
+} from "@/types/proto/api/v1/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import SettingGroup from "./SettingGroup";
 import SettingRow from "./SettingRow";
@@ -23,7 +29,7 @@ const MemoRelatedSettings = observer(() => {
   const [editingNsfwTag, setEditingNsfwTag] = useState<string>("");
 
   const updatePartialSetting = (partial: Partial<InstanceSetting_MemoRelatedSetting>) => {
-    const newInstanceMemoRelatedSetting = InstanceSetting_MemoRelatedSetting.fromPartial({
+    const newInstanceMemoRelatedSetting = create(InstanceSetting_MemoRelatedSettingSchema, {
       ...memoRelatedSetting,
       ...partial,
     });
@@ -55,14 +61,19 @@ const MemoRelatedSettings = observer(() => {
     }
 
     try {
-      await instanceStore.upsertInstanceSetting({
-        name: `${instanceSettingNamePrefix}${InstanceSetting_Key.MEMO_RELATED}`,
-        memoRelatedSetting,
-      });
+      await instanceStore.upsertInstanceSetting(
+        create(InstanceSettingSchema, {
+          name: `${instanceSettingNamePrefix}${InstanceSetting_Key.MEMO_RELATED}`,
+          value: {
+            case: "memoRelatedSetting",
+            value: memoRelatedSetting,
+          },
+        }),
+      );
       setOriginalSetting(memoRelatedSetting);
       toast.success(t("message.update-succeed"));
     } catch (error: any) {
-      toast.error(error.details);
+      toast.error(error.message);
       console.error(error);
     }
   };

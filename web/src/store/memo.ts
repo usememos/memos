@@ -1,7 +1,9 @@
+import { create } from "@bufbuild/protobuf";
+import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { uniqueId } from "lodash-es";
 import { makeAutoObservable } from "mobx";
 import { memoServiceClient } from "@/grpcweb";
-import { CreateMemoRequest, ListMemosRequest, Memo } from "@/types/proto/api/v1/memo_service";
+import { CreateMemoRequest, ListMemosRequest, ListMemosRequestSchema, Memo, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 import { createRequestKey, RequestDeduplicator, StoreError } from "./store-utils";
 import userStore from "./user";
 
@@ -49,9 +51,7 @@ const memoStore = (() => {
 
       try {
         const { memos, nextPageToken } = await memoServiceClient.listMemos(
-          {
-            ...request,
-          },
+          create(ListMemosRequestSchema, request as Record<string, unknown>),
           { signal: controller.signal },
         );
 
@@ -105,8 +105,8 @@ const memoStore = (() => {
     return state.memoMapByName[name];
   };
 
-  const createMemo = async (request: CreateMemoRequest) => {
-    const memo = await memoServiceClient.createMemo(request);
+  const createMemo = async (memoToCreate: Memo) => {
+    const memo = await memoServiceClient.createMemo({ memo: memoToCreate });
     const memoMap = { ...state.memoMapByName };
     memoMap[memo.name] = memo;
     state.setPartial({
@@ -134,8 +134,8 @@ const memoStore = (() => {
     try {
       // Perform actual server update
       const memo = await memoServiceClient.updateMemo({
-        memo: update,
-        updateMask,
+        memo: create(MemoSchema, update as Record<string, unknown>),
+        updateMask: create(FieldMaskSchema, { paths: updateMask }),
       });
 
       // Confirm with server response

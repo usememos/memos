@@ -6,6 +6,7 @@ import (
 
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/plugin/markdown"
+	"github.com/usememos/memos/server/auth"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/store"
 	teststore "github.com/usememos/memos/store/test"
@@ -81,6 +82,6 @@ func (ts *TestService) CreateRegularUser(ctx context.Context, username string) (
 
 // CreateUserContext creates a context with the given user's ID for authentication.
 func (*TestService) CreateUserContext(ctx context.Context, userID int32) context.Context {
-	// Use the real context key from the parent package
-	return context.WithValue(ctx, apiv1.UserIDContextKey, userID)
+	// Use the context key from the auth package
+	return context.WithValue(ctx, auth.UserIDContextKey, userID)
 }
