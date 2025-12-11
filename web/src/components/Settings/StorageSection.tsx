@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { instanceStore } from "@/store";
-import { instanceSettingNamePrefix } from "@/store/common";
+import { buildInstanceSettingName } from "@/store/common";
 import {
   InstanceSetting_Key,
   InstanceSetting_StorageSetting,
@@ -154,7 +154,7 @@ const StorageSection = observer(() => {
   const saveInstanceStorageSetting = async () => {
     await instanceStore.upsertInstanceSetting(
       create(InstanceSettingSchema, {
-        name: `${instanceSettingNamePrefix}${InstanceSetting_Key.STORAGE}`,
+        name: buildInstanceSettingName(InstanceSetting_Key.STORAGE),
         value: {
           case: "storageSetting",
           value: instanceStorageSetting,

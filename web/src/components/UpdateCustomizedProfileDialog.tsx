@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { instanceStore } from "@/store";
-import { instanceSettingNamePrefix } from "@/store/common";
+import { buildInstanceSettingName } from "@/store/common";
 import {
   InstanceSetting_GeneralSetting_CustomProfile,
   InstanceSetting_GeneralSetting_CustomProfileSchema,
@@ -78,7 +78,7 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
     try {
       await instanceStore.upsertInstanceSetting(
         create(InstanceSettingSchema, {
-          name: `${instanceSettingNamePrefix}${InstanceSetting_Key.GENERAL}`,
+          name: buildInstanceSettingName(InstanceSetting_Key.GENERAL),
           value: {
             case: "generalSetting",
             value: {

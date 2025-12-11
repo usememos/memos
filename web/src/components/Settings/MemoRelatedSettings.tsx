@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { instanceStore } from "@/store";
-import { instanceSettingNamePrefix } from "@/store/common";
+import { buildInstanceSettingName } from "@/store/common";
 import {
   InstanceSetting_Key,
   InstanceSetting_MemoRelatedSetting,
@@ -63,7 +63,7 @@ const MemoRelatedSettings = observer(() => {
     try {
       await instanceStore.upsertInstanceSetting(
         create(InstanceSettingSchema, {
-          name: `${instanceSettingNamePrefix}${InstanceSetting_Key.MEMO_RELATED}`,
+          name: buildInstanceSettingName(InstanceSetting_Key.MEMO_RELATED),
           value: {
             case: "memoRelatedSetting",
             value: memoRelatedSetting,

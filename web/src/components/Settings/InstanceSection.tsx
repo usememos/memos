@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { identityProviderServiceClient } from "@/grpcweb";
 import useDialog from "@/hooks/useDialog";
 import { instanceStore } from "@/store";
-import { instanceSettingNamePrefix } from "@/store/common";
+import { buildInstanceSettingName } from "@/store/common";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service_pb";
 import {
   InstanceSetting_GeneralSetting,
@@ -63,7 +63,7 @@ const InstanceSection = observer(() => {
     try {
       await instanceStore.upsertInstanceSetting(
         create(InstanceSettingSchema, {
-          name: `${instanceSettingNamePrefix}${InstanceSetting_Key.GENERAL}`,
+          name: buildInstanceSettingName(InstanceSetting_Key.GENERAL),
           value: {
             case: "generalSetting",
             value: instanceGeneralSetting,

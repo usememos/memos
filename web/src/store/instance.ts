@@ -15,7 +15,7 @@ import {
   InstanceSettingSchema,
 } from "@/types/proto/api/v1/instance_service_pb";
 import { createServerStore, StandardState } from "./base-store";
-import { instanceSettingNamePrefix } from "./common";
+import { buildInstanceSettingName, getInstanceSettingKeyName, instanceSettingNamePrefix } from "./common";
 import { createRequestKey } from "./store-utils";
 
 class InstanceState extends StandardState {
@@ -25,7 +25,7 @@ class InstanceState extends StandardState {
   // Computed property for general settings (memoized)
   get generalSetting(): InstanceSetting_GeneralSetting {
     return computed(() => {
-      const setting = this.settings.find((s) => s.name === `${instanceSettingNamePrefix}${InstanceSetting_Key.GENERAL}`);
+      const setting = this.settings.find((s) => s.name === `${instanceSettingNamePrefix}GENERAL`);
       if (setting?.value.case === "generalSetting") {
         return setting.value.value;
       }
@@ -36,7 +36,7 @@ class InstanceState extends StandardState {
   // Computed property for memo-related settings (memoized)
   get memoRelatedSetting(): InstanceSetting_MemoRelatedSetting {
     return computed(() => {
-      const setting = this.settings.find((s) => s.name === `${instanceSettingNamePrefix}${InstanceSetting_Key.MEMO_RELATED}`);
+      const setting = this.settings.find((s) => s.name === `${instanceSettingNamePrefix}MEMO_RELATED`);
       if (setting?.value.case === "memoRelatedSetting") {
         return setting.value.value;
       }
@@ -60,7 +60,7 @@ const instanceStore = (() => {
       requestKey,
       async () => {
         const setting = await instanceServiceClient.getInstanceSetting({
-          name: `${instanceSettingNamePrefix}${settingKey}`,
+          name: buildInstanceSettingName(settingKey),
         });
 
         // Merge into settings array, avoiding duplicates
@@ -88,7 +88,7 @@ const instanceStore = (() => {
   };
 
   const getInstanceSettingByKey = (settingKey: InstanceSetting_Key): InstanceSetting => {
-    const setting = state.settings.find((s) => s.name === `${instanceSettingNamePrefix}${settingKey}`);
+    const setting = state.settings.find((s) => s.name === buildInstanceSettingName(settingKey));
     return setting || create(InstanceSettingSchema, {});
   };
 

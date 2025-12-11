@@ -16,6 +16,7 @@ import {
   UserSettingSchema,
   UserStats,
 } from "@/types/proto/api/v1/user_service_pb";
+import { buildUserSettingName } from "./common";
 import { createRequestKey, RequestDeduplicator, StoreError } from "./store-utils";
 
 // Helper to extract setting value from UserSetting oneof
@@ -164,7 +165,7 @@ const userStore = (() => {
       throw new Error("No current user");
     }
 
-    const settingName = `${state.currentUser}/settings/${UserSetting_Key.GENERAL}`;
+    const settingName = buildUserSettingName(state.currentUser, UserSetting_Key.GENERAL);
     const userSetting = create(UserSettingSchema, {
       name: settingName,
       value: {
@@ -188,7 +189,7 @@ const userStore = (() => {
       throw new Error("No current user");
     }
 
-    const settingName = `${state.currentUser}/settings/${UserSetting_Key.GENERAL}`;
+    const settingName = buildUserSettingName(state.currentUser, UserSetting_Key.GENERAL);
     const userSetting = await userServiceClient.getUserSetting({ name: settingName });
     const generalSetting = getSettingValue<UserSetting_GeneralSetting>(userSetting, "generalSetting");
 
