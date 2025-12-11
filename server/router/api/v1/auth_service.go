@@ -10,7 +10,6 @@ import (
 
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -237,10 +236,8 @@ func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTim
 	if err != nil {
 		return status.Errorf(codes.Internal, "failed to build session cookie, error: %v", err)
 	}
-	if err := grpc.SetHeader(ctx, metadata.New(map[string]string{
-		"Set-Cookie": sessionCookie,
-	})); err != nil {
-		return status.Errorf(codes.Internal, "failed to set grpc header, error: %v", err)
+	if err := SetResponseHeader(ctx, "Set-Cookie", sessionCookie); err != nil {
+		return status.Errorf(codes.Internal, "failed to set response header, error: %v", err)
 	}
 
 	return nil
@@ -284,11 +281,9 @@ func (s *APIV1Service) clearAuthCookies(ctx context.Context) error {
 		return errors.Wrap(err, "failed to build session cookie")
 	}
 
-	// Set both cookies in the response
-	if err := grpc.SetHeader(ctx, metadata.New(map[string]string{
-		"Set-Cookie": sessionCookie,
-	})); err != nil {
-		return errors.Wrap(err, "failed to set grpc header")
+	// Set cookie in the response
+	if err := SetResponseHeader(ctx, "Set-Cookie", sessionCookie); err != nil {
+		return errors.Wrap(err, "failed to set response header")
 	}
 	return nil
 }
@@ -305,15 +300,18 @@ func (*APIV1Service) buildSessionCookie(ctx context.Context, sessionCookieValue 
 		attrs = append(attrs, "Expires="+expireTime.Format(time.RFC1123))
 	}
 
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return "", errors.New("failed to get metadata from context")
+	// Try to determine if the request is HTTPS by checking the origin header
+	// Default to non-HTTPS (Strict SameSite) if metadata is not available
+	isHTTPS := false
+	if md, ok := metadata.FromIncomingContext(ctx); ok {
+		for _, v := range md.Get("origin") {
+			if strings.HasPrefix(v, "https://") {
+				isHTTPS = true
+				break
+			}
+		}
 	}
-	var origin string
-	for _, v := range md.Get("origin") {
-		origin = v
-	}
-	isHTTPS := strings.HasPrefix(origin, "https://")
+
 	if isHTTPS {
 		attrs = append(attrs, "SameSite=None")
 		attrs = append(attrs, "Secure")

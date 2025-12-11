@@ -53,6 +53,10 @@ func NewGRPCAuthInterceptor(store *store.Store, secret string) *GRPCAuthIntercep
 func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, request any, serverInfo *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
+		// If metadata is missing, only allow public methods
+		if IsPublicMethod(serverInfo.FullMethod) {
+			return handler(ctx, request)
+		}
 		return nil, status.Errorf(codes.Unauthenticated, "failed to parse metadata from incoming context")
 	}
 
@@ -60,7 +64,12 @@ func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, re
 	if sessionCookie := extractSessionCookieFromMetadata(md); sessionCookie != "" {
 		user, err := in.authenticator.AuthenticateBySession(ctx, sessionCookie)
 		if err == nil && user != nil {
-			_, sessionID, _ := auth.ParseSessionCookieValue(sessionCookie)
+			_, sessionID, err := auth.ParseSessionCookieValue(sessionCookie)
+			if err != nil {
+				// This should not happen since AuthenticateBySession already validated the cookie
+				// but handle it gracefully anyway
+				sessionID = ""
+			}
 			ctx, err = in.authenticator.AuthorizeAndSetContext(ctx, serverInfo.FullMethod, user, sessionID, "", IsAdminOnlyMethod)
 			if err != nil {
 				return nil, toGRPCError(err, codes.PermissionDenied)

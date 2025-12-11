@@ -40,29 +40,27 @@ func (s *ConnectServiceHandler) UpdateInstanceSetting(ctx context.Context, req *
 }
 
 // AuthService
+//
+// Auth service methods need special handling for response headers (cookies).
+// We use withHeaderCarrier helper to inject a header carrier into the context,
+// which allows the service to set headers in a protocol-agnostic way.
 
 func (s *ConnectServiceHandler) GetCurrentSession(ctx context.Context, req *connect.Request[v1pb.GetCurrentSessionRequest]) (*connect.Response[v1pb.GetCurrentSessionResponse], error) {
-	resp, err := s.APIV1Service.GetCurrentSession(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
+	return withHeaderCarrier(ctx, func(ctx context.Context) (*v1pb.GetCurrentSessionResponse, error) {
+		return s.APIV1Service.GetCurrentSession(ctx, req.Msg)
+	})
 }
 
 func (s *ConnectServiceHandler) CreateSession(ctx context.Context, req *connect.Request[v1pb.CreateSessionRequest]) (*connect.Response[v1pb.CreateSessionResponse], error) {
-	resp, err := s.APIV1Service.CreateSession(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
+	return withHeaderCarrier(ctx, func(ctx context.Context) (*v1pb.CreateSessionResponse, error) {
+		return s.APIV1Service.CreateSession(ctx, req.Msg)
+	})
 }
 
 func (s *ConnectServiceHandler) DeleteSession(ctx context.Context, req *connect.Request[v1pb.DeleteSessionRequest]) (*connect.Response[emptypb.Empty], error) {
-	resp, err := s.APIV1Service.DeleteSession(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
+	return withHeaderCarrier(ctx, func(ctx context.Context) (*emptypb.Empty, error) {
+		return s.APIV1Service.DeleteSession(ctx, req.Msg)
+	})
 }
 
 // UserService

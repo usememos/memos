@@ -150,7 +150,12 @@ func (in *AuthInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 		if sessionCookie := auth.ExtractSessionCookieFromHeader(header.Get("Cookie")); sessionCookie != "" {
 			user, err := in.authenticator.AuthenticateBySession(ctx, sessionCookie)
 			if err == nil && user != nil {
-				_, sessionID, _ := auth.ParseSessionCookieValue(sessionCookie)
+				_, sessionID, err := auth.ParseSessionCookieValue(sessionCookie)
+				if err != nil {
+					// This should not happen since AuthenticateBySession already validated the cookie
+					// but handle it gracefully anyway
+					sessionID = ""
+				}
 				ctx, err = in.authenticator.AuthorizeAndSetContext(ctx, procedure, user, sessionID, "", IsAdminOnlyMethod)
 				if err != nil {
 					return nil, convertAuthError(err)
