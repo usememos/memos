@@ -17,7 +17,7 @@ import (
 // This wrapper pattern allows us to:
 // - Reuse existing gRPC service implementations
 // - Support both native gRPC and Connect protocols
-// - Maintain a single source of truth for business logic
+// - Maintain a single source of truth for business logic.
 type ConnectServiceHandler struct {
 	*APIV1Service
 }

@@ -35,11 +35,11 @@ func (in *LoggingInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFun
 	}
 }
 
-func (in *LoggingInterceptor) WrapStreamingClient(next connect.StreamingClientFunc) connect.StreamingClientFunc {
+func (*LoggingInterceptor) WrapStreamingClient(next connect.StreamingClientFunc) connect.StreamingClientFunc {
 	return next // No-op for server-side interceptor
 }
 
-func (in *LoggingInterceptor) WrapStreamingHandler(next connect.StreamingHandlerFunc) connect.StreamingHandlerFunc {
+func (*LoggingInterceptor) WrapStreamingHandler(next connect.StreamingHandlerFunc) connect.StreamingHandlerFunc {
 	return next // Streaming not used in this service
 }
 
@@ -55,7 +55,7 @@ func (in *LoggingInterceptor) log(procedure string, err error) {
 	slog.LogAttrs(context.Background(), level, msg, attrs...)
 }
 
-func (in *LoggingInterceptor) classifyError(err error) (slog.Level, string) {
+func (*LoggingInterceptor) classifyError(err error) (slog.Level, string) {
 	if err == nil {
 		return slog.LevelInfo, "OK"
 	}
@@ -106,11 +106,11 @@ func (in *RecoveryInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFu
 	}
 }
 
-func (in *RecoveryInterceptor) WrapStreamingClient(next connect.StreamingClientFunc) connect.StreamingClientFunc {
+func (*RecoveryInterceptor) WrapStreamingClient(next connect.StreamingClientFunc) connect.StreamingClientFunc {
 	return next
 }
 
-func (in *RecoveryInterceptor) WrapStreamingHandler(next connect.StreamingHandlerFunc) connect.StreamingHandlerFunc {
+func (*RecoveryInterceptor) WrapStreamingHandler(next connect.StreamingHandlerFunc) connect.StreamingHandlerFunc {
 	return next
 }
 
@@ -180,11 +180,11 @@ func (in *AuthInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 	}
 }
 
-func (in *AuthInterceptor) WrapStreamingClient(next connect.StreamingClientFunc) connect.StreamingClientFunc {
+func (*AuthInterceptor) WrapStreamingClient(next connect.StreamingClientFunc) connect.StreamingClientFunc {
 	return next
 }
 
-func (in *AuthInterceptor) WrapStreamingHandler(next connect.StreamingHandlerFunc) connect.StreamingHandlerFunc {
+func (*AuthInterceptor) WrapStreamingHandler(next connect.StreamingHandlerFunc) connect.StreamingHandlerFunc {
 	return next
 }
 

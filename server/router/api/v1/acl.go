@@ -49,7 +49,7 @@ func NewGRPCAuthInterceptor(store *store.Store, secret string) *GRPCAuthIntercep
 // On successful authentication, context values are set:
 // - auth.UserIDContextKey: The authenticated user's ID
 // - auth.SessionIDContextKey: Session ID (cookie auth only)
-// - auth.AccessTokenContextKey: JWT token (bearer auth only)
+// - auth.AccessTokenContextKey: JWT token (bearer auth only).
 func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, request any, serverInfo *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
