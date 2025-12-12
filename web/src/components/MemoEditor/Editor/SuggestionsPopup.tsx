@@ -42,7 +42,10 @@ export function SuggestionsPopup<T>({
         <div
           key={getItemKey(item, i)}
           ref={i === selectedIndex ? selectedItemRef : null}
-          onMouseDown={() => onItemSelect(item)}
+          onMouseDown={(e) => {
+            onItemSelect(item);
+            e.preventDefault();
+          }}
           className={cn(
             "rounded p-1 px-2 w-full text-sm cursor-pointer transition-colors select-none",
             "hover:bg-accent hover:text-accent-foreground",
