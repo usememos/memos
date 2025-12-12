@@ -6,7 +6,6 @@ import (
 	"connectrpc.com/connect"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/protobuf/proto"
 )
 
 // headerCarrierKey is the context key for storing headers to be set in the response.
@@ -86,19 +85,22 @@ func SetResponseHeader(ctx context.Context, key, value string) error {
 	}))
 }
 
-// withHeaderCarrier is a helper for Connect service wrappers that need to set response headers.
+// connectWithHeaderCarrier is a helper for Connect service wrappers that need to set response headers.
 //
 // It injects a HeaderCarrier into the context, calls the service method,
 // and applies any headers from the carrier to the Connect response.
 //
+// The generic parameter T is the non-pointer protobuf message type (e.g., v1pb.CreateSessionResponse),
+// while fn returns *T (the pointer type) as is standard for protobuf messages.
+//
 // Usage in Connect wrappers:
 //
-//	func (s *ConnectServiceHandler) CreateSession(ctx context.Context, req *connect.Request[...]) (*connect.Response[...], error) {
-//	    return withHeaderCarrier(ctx, func(ctx context.Context) (*v1pb.CreateSessionResponse, error) {
+//	func (s *ConnectServiceHandler) CreateSession(ctx context.Context, req *connect.Request[v1pb.CreateSessionRequest]) (*connect.Response[v1pb.CreateSessionResponse], error) {
+//	    return connectWithHeaderCarrier(ctx, func(ctx context.Context) (*v1pb.CreateSessionResponse, error) {
 //	        return s.APIV1Service.CreateSession(ctx, req.Msg)
 //	    })
 //	}
-func withHeaderCarrier[T proto.Message](ctx context.Context, fn func(context.Context) (T, error)) (*connect.Response[T], error) {
+func connectWithHeaderCarrier[T any](ctx context.Context, fn func(context.Context) (*T, error)) (*connect.Response[T], error) {
 	// Inject header carrier for Connect protocol
 	ctx = WithHeaderCarrier(ctx)
 
