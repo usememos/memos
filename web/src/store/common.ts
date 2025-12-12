@@ -1,4 +1,5 @@
 import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
+import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { UserSetting_Key } from "@/types/proto/api/v1/user_service_pb";
 
 export const instanceSettingNamePrefix = "instance/settings/";
@@ -39,4 +40,18 @@ export const getUserSettingKeyName = (key: UserSetting_Key): string => {
 // Helper function to build user setting name from username and key
 export const buildUserSettingName = (username: string, key: UserSetting_Key): string => {
   return `${username}/settings/${getUserSettingKeyName(key)}`;
+};
+
+// Helper function to convert Visibility enum value to string name
+// Used when building filter expressions that require string enum names instead of numeric values
+// Example: visibility in ["PUBLIC", "PROTECTED"] instead of visibility in ["3", "2"]
+export const getVisibilityName = (visibility: Visibility): string => {
+  // TypeScript enum reverse mapping: converts numeric value to string name
+  // e.g., Visibility.PUBLIC (3) -> "PUBLIC"
+  const name = Visibility[visibility];
+  if (!name) {
+    console.warn(`Invalid visibility value: ${visibility}, defaulting to PUBLIC`);
+    return "PUBLIC";
+  }
+  return name;
 };
