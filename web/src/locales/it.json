@@ -18,9 +18,11 @@
     "about": "Informazioni",
     "add": "Aggiungi",
     "admin": "Admin",
+    "all": "Tutti",
     "archive": "Archivia",
     "archived": "Archiviati",
     "attachments": "Allegati",
+    "auto-expand": "Espandi automaticamente",
     "avatar": "Avatar",
     "basic": "Base",
     "beta": "Beta",
@@ -30,6 +32,7 @@
     "close": "Chiudi",
     "collapse": "Comprimi",
     "confirm": "Conferma",
+    "copy": "Copia",
     "create": "Crea",
     "created-at": "Creato il",
     "database": "Database",
@@ -99,7 +102,8 @@
     "username": "Nome utente",
     "version": "Versione",
     "visibility": "Visibilità",
-    "yourself": "Te stesso"
+    "yourself": "Te stesso",
+    "more": "Altro"
   },
   "days": {
     "fri": "Ven",
@@ -114,7 +118,9 @@
     "add-your-comment-here": "Aggiungi qui il tuo commento...",
     "any-thoughts": "Qualsiasi cosa pensi...",
     "save": "Salva",
-    "no-changes-detected": "Nessuna modifica rilevata"
+    "no-changes-detected": "Nessuna modifica rilevata",
+    "focus-mode": "Modalità Focus",
+    "exit-focus-mode": "Esci Modalità Focus"
   },
   "filters": {
     "has-code": "haCodice",
@@ -123,7 +129,10 @@
   },
   "inbox": {
     "memo-comment": "{{user}} ha commentato il tuo {{memo}}.",
-    "version-update": "La nuova versione {{version}} è ora disponibile!"
+    "failed-to-load": "Impossibile caricare l'elemento della posta in arrivo",
+    "unread": "Non letta",
+    "no-unread": "Nessuna notifica non letta",
+    "no-archived": "Nessuna notifica archiviata"
   },
   "markdown": {
     "checkbox": "Casella di controllo",
@@ -139,18 +148,18 @@
       "self": "Commenti",
       "write-a-comment": "Scrivi un commento"
     },
+    "copy-content": "Copia contenuto",
     "copy-link": "Copia link",
     "count-memos-in-date": "{{count}} {{memos}} in data {{date}}",
-    "delete-confirm": "Sei sicuro di voler eliminare questo memo? QUESTA AZIONE È IRREVERSIBILE",
+    "delete-confirm": "Sei sicuro di voler eliminare questo memo?",
+    "delete-confirm-description": "Questa azione è irreversibile. Allegati, link e riferimenti saranno rimossi.",
     "direction": "Direzione",
     "direction-asc": "Crescente",
     "direction-desc": "Decrescente",
     "display-time": "Orario di visualizzazione",
     "filters": "Filtri",
     "links": "Link",
-    "list": "Lista",
     "load-more": "Carica altro",
-    "masonry": "Masonry",
     "no-archived-memos": "Nessun memo archiviato.",
     "no-memos": "Nessun memo.",
     "order-by": "Ordina per",
@@ -166,7 +175,9 @@
       "private": "Privato",
       "protected": "Protetto",
       "public": "Pubblico"
-    }
+    },
+    "list": "Lista",
+    "masonry": "Masonry"
   },
   "message": {
     "archived-successfully": "Archiviato con successo",
@@ -185,6 +196,7 @@
     "password-not-match": "Le password non corrispondono",
     "remove-completed-task-list-items-successfully": "Rimosso con successo!",
     "restored-successfully": "Ripristinato con successo",
+    "succeed-copy-content": "Contenuto copiato con successo.",
     "succeed-copy-link": "Link copiato.",
     "update-succeed": "Aggiornato con successo",
     "user-not-found": "Utente non trovato"
@@ -217,8 +229,12 @@
     },
     "delete-resource": "Elimina risorsa",
     "delete-selected-resources": "Elimina risorse selezionate",
-    "fetching-data": "Caricamento...",
-    "file-drag-drop-prompt": "Trascina un file qua per caricarlo",
+    "delete-all-unused": "Elimina tutte le risorse inutilizzate",
+    "delete-all-unused-confirm": "Sei sicuro di voler eliminare tutte le risorse inutilizzate? QUESTA AZIONE È IRREVERSIBILE",
+    "delete-all-unused-success": "Risorse eliminate con successo",
+    "delete-all-unused-error": "Impossibile eliminare le risorse inutilizzate",
+    "fetching-data": "Recupero dati...",
+    "file-drag-drop-prompt": "Trascina qui il file per caricarlo",
     "linked-amount": "Quantità collegata",
     "no-files-selected": "Nessun file selezionato",
     "no-resources": "Nessuna risorsa.",
@@ -235,8 +251,11 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "Token di accesso copiato negli appunti",
-      "access-token-deletion": "Sei sicuro di voler eliminare il token di accesso {{accessToken}}? QUESTA AZIONE È IRREVERSIBILE.",
+      "access-token-deletion": "Sei sicuro di voler eliminare il token di accesso `{{description}}`?",
+      "access-token-deletion-description": "Questa azione è irreversibile. Dovrai aggiornare tutti i servizi che utilizzano questo token per usare un nuovo token.",
+      "access-token-deleted": "Token di accesso `{{description}}` eliminato",
       "create-dialog": {
+        "access-token-created": "Token di accesso `{{description}}` creato",
         "create-access-token": "Crea token di accesso",
         "created-at": "Creato il",
         "description": "Descrizione",
@@ -260,9 +279,11 @@
       "expires": "Scade",
       "current": "Attuale",
       "never": "Mai",
-      "session-revocation": "Sei sicuro di voler revocare la sessione {{sessionId}}? Dovrai accedere di nuovo su quel dispositivo.",
+      "session-revocation": "Sei sicuro di voler revocare la sessione `{{sessionId}}`?",
+      "session-revocation-description": "Dovrai accedere di nuovo su quel dispositivo.",
       "session-revoked": "Sessione revocata con successo",
       "revoke-session": "Revoca sessione",
+      "revoke-session-button": "Revoca",
       "cannot-revoke-current": "Impossibile revocare la sessione attuale",
       "no-sessions": "Nessuna sessione attiva trovata"
     },
@@ -285,9 +306,14 @@
       "admin": "Admin",
       "archive-member": "Archivia membro",
       "archive-warning": "Sei sicuro di voler archiviare {{username}}?",
+      "archive-warning-description": "Archiviare disabilita l'account. Puoi ripristinarlo o eliminarlo in seguito.",
+      "archive-success": "{{username}} archiviato con successo",
+      "restore-success": "{{username}} ripristinato con successo",
       "create-a-member": "Crea un membro",
       "delete-member": "Elimina membro",
-      "delete-warning": "Sei sicuro di voler eliminare {{username}}? QUESTA AZIONE È IRREVERSIBILE",
+      "delete-warning": "Sei sicuro di voler eliminare {{username}}?",
+      "delete-warning-description": "QUESTA AZIONE È IRREVERSIBILE",
+      "delete-success": "{{username}} eliminato con successo",
       "user": "Utente"
     },
     "memo-related": "Memo",
@@ -306,16 +332,20 @@
       "default-memo-visibility": "Visibilità memo predefinita",
       "theme": "Tema"
     },
+    "shortcut": {
+      "delete-confirm": "Sei sicuro di voler eliminare la scorciatoia `{{title}}`?",
+      "delete-success": "Scorciatoia `{{title}}` eliminata con successo"
+    },
     "sso": "SSO",
     "sso-section": {
       "authorization-endpoint": "Endpoint autorizzazione",
       "client-id": "Client ID",
       "client-secret": "Client secret",
-      "confirm-delete": "Sei sicuro di voler eliminare la configurazione SSO di \"{{name}}\"? QUESTA AZIONE È IRREVERSIBILE",
+      "confirm-delete": "Sei sicuro di voler eliminare la configurazione SSO di `{{name}}`? QUESTA AZIONE È IRREVERSIBILE",
       "create-sso": "Crea SSO",
       "custom": "Custom",
       "delete-sso": "Elimina SSO",
-      "disabled-password-login-warning": "Il login con la password è disattivato, sii extra-attento quando elimini provider di identità",
+      "disabled-password-login-warning": "Login con password disabilitato. Fai molta attenzione quando rimuovi un provider di identità.",
       "display-name": "Nome visualizzato",
       "identifier": "Identificatore",
       "identifier-filter": "Filtro identificatore",
@@ -381,16 +411,16 @@
       },
       "disable-password-login": "Disabilita login password",
       "disable-password-login-final-warning": "Digita \"CONFIRM\" se sai cosa stai facendo.",
-      "disable-password-login-warning": "Ciò disabiliterà l'accesso tramite password per tutti gli utenti. Non è possibile accedere senza ripristinare questa impostazione nel database se i provider di identità configurati falliscono. Dovrai anche prestare molta attenzione quando rimuovi un provider di identità",
+      "disable-password-login-warning": "Questo disattiverà il login con password per tutti gli utenti. Se i provider di identità smettono di funzionare, non potrai accedere senza ripristinare manualmente l'impostazione nel database. Fai molta attenzione quando rimuovi un provider di identità.",
       "disable-public-memos": "Disabilita memo pubblici",
-      "display-with-updated-time": "Mostra con tempo aggiornato",
+      "display-with-updated-time": "Mostra data/ora ultimo aggiornamento",
       "enable-auto-compact": "Abilita auto-compatto",
       "enable-double-click-to-edit": "Abilita doppio click per modificare",
       "enable-password-login": "Abilita login password",
       "enable-password-login-warning": "Ciò consentirà l'accesso tramite password per tutti gli utenti. Continua solo se desideri che gli utenti possano accedere utilizzando sia SSO che password",
       "max-upload-size": "Dimensione massima caricamento (MiB)",
       "max-upload-size-hint": "Valore consigliato di 32 MiB.",
-      "removed-completed-task-list-items": "Abilita rimozione compiti completati",
+      "removed-completed-task-list-items": "Abilita rimozione dei compiti completati",
       "server-name": "Nome server",
       "title": "Generale"
     },
@@ -399,20 +429,26 @@
       "create-dialog": {
         "an-easy-to-remember-name": "Nome facile da ricordare",
         "create-webhook": "Crea webhook",
+        "create-webhook-success": "Webhook `{{name}}` creato",
         "edit-webhook": "Modifica webhook",
         "payload-url": "URL payload",
         "title": "Titolo",
         "url-example-post-receive": "https://example.com/postreceive"
+      },
+      "delete-dialog": {
+        "delete-webhook-description": "Questa azione è irreversibile.",
+        "delete-webhook-title": "Sei sicuro di voler eliminare il webhook `{{name}}`?",
+        "delete-webhook-success": "Webhook `{{name}}` eliminato con successo"
       },
       "no-webhooks-found": "Nessun webhook trovato.",
       "title": "Webhooks",
       "url": "URL"
     },
     "instance-section": {
-      "disallow-change-nickname": "Non consentire cambio nickname",
-      "disallow-change-username": "Non consentire cambio nome utente",
-      "disallow-password-auth": "Non consentire autenticazione password",
-      "disallow-user-registration": "Non consentire registrazione utente",
+      "disallow-change-nickname": "Impedisci cambio nickname",
+      "disallow-change-username": "Impedisci cambio nome utente",
+      "disallow-password-auth": "Impedisci autenticazione password",
+      "disallow-user-registration": "Impedisci registrazione utente",
       "monday": "Lunedì",
       "saturday": "Sabato",
       "sunday": "Domenica",
@@ -425,6 +461,7 @@
     "create-tags-guide": "Puoi creare tag inserendo `#tag`.",
     "delete-confirm": "Sei sicuro di voler eliminare questo tag? Tutti i memo collegati saranno archiviati.",
     "delete-tag": "Elimina Tag",
+    "delete-success": "Tag eliminato con successo",
     "new-name": "Nuovo nome",
     "no-tag-found": "Nessun tag trovato",
     "old-name": "Vecchio nome",
@@ -433,5 +470,13 @@
     "rename-success": "Tag rinominato con successo",
     "rename-tag": "Rinomina tag",
     "rename-tip": "Tutti i tuoi memo con questo tag saranno aggiornati."
+  },
+  "tooltip": {
+    "link-memo": "Link Memo",
+    "markdown-menu": "Markdown",
+    "select-location": "Posizione",
+    "select-visibility": "Visibilità",
+    "tags": "Tag",
+    "upload-attachment": "Carica allegato(i)"
   }
 }
