@@ -20,7 +20,7 @@ export const SANITIZE_SCHEMA = {
   ...defaultSchema,
   attributes: {
     ...defaultSchema.attributes,
-    div: [...(defaultSchema.attributes?.div || []), "className"],
+    div: [...(defaultSchema.attributes?.div || []), "className", ["data*"]],
     span: [...(defaultSchema.attributes?.span || []), "className", "style", ["aria*"], ["data*"]],
     // MathML attributes for KaTeX rendering
     annotation: ["encoding"],

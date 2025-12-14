@@ -120,7 +120,14 @@
     "save": "Save",
     "no-changes-detected": "No changes detected",
     "focus-mode": "Focus Mode",
-    "exit-focus-mode": "Exit Focus Mode"
+    "exit-focus-mode": "Exit Focus Mode",
+    "link-preview": "Link preview",
+    "scrape-link": "Scrape link preview",
+    "scrape-link-description": "Paste a URL to fetch its title, description, and cover image.",
+    "link-preview-empty": "Paste a link to generate a preview card.",
+    "link-preview-invalid": "Please enter a valid URL.",
+    "link-preview-fetch-error": "Failed to fetch preview. Please try again.",
+    "link-preview-timeout": "Request timed out. Please retry."
   },
   "filters": {
     "has-code": "hasCode",

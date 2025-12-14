@@ -1,5 +1,6 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { useEffect, useState } from "react";
+import type { LinkPreview } from "@/components/memo-metadata";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import { instanceStore, memoStore, userStore } from "@/store";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
@@ -7,6 +8,7 @@ import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service_p
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { convertVisibilityFromString } from "@/utils/memo";
 import type { EditorRefActions } from "../Editor";
+import { extractLinkPreviewsFromContent } from "../utils/linkPreviewSerializer";
 
 export interface UseMemoEditorInitOptions {
   editorRef: React.RefObject<EditorRefActions>;
@@ -19,6 +21,7 @@ export interface UseMemoEditorInitOptions {
   onAttachmentsChange: (attachments: Attachment[]) => void;
   onRelationsChange: (relations: MemoRelation[]) => void;
   onLocationChange: (location: Location | undefined) => void;
+  onLinkPreviewsChange?: (previews: LinkPreview[]) => void;
 }
 
 export interface UseMemoEditorInitReturn {
@@ -49,7 +52,11 @@ export const useMemoEditorInit = (options: UseMemoEditorInitOptions): UseMemoEdi
 
   // Initialize content cache
   useEffect(() => {
-    editorRef.current?.setContent(contentCache || "");
+    const { cleanedContent, previews } = extractLinkPreviewsFromContent(contentCache || "");
+    if (previews.length > 0) {
+      options.onLinkPreviewsChange?.(previews);
+    }
+    editorRef.current?.setContent(cleanedContent || "");
   }, []);
 
   // Auto-focus if requested
@@ -88,7 +95,11 @@ export const useMemoEditorInit = (options: UseMemoEditorInitOptions): UseMemoEdi
       onRelationsChange(memo.relations);
       onLocationChange(memo.location);
       if (!contentCache) {
-        editorRef.current?.setContent(memo.content ?? "");
+        const { cleanedContent, previews } = extractLinkPreviewsFromContent(memo.content ?? "");
+        if (previews.length > 0) {
+          options.onLinkPreviewsChange?.(previews);
+        }
+        editorRef.current?.setContent(cleanedContent);
       }
     }
   }, [memoName]);

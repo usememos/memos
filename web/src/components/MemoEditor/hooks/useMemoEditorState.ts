@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import type { LinkPreview } from "@/components/memo-metadata";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
@@ -7,6 +8,7 @@ interface MemoEditorState {
   memoVisibility: Visibility;
   attachmentList: Attachment[];
   relationList: MemoRelation[];
+  linkPreviews: LinkPreview[];
   location: Location | undefined;
   isFocusMode: boolean;
   isUploadingAttachment: boolean;
@@ -28,6 +30,7 @@ export const useMemoEditorState = (initialVisibility: Visibility = Visibility.PR
     isFocusMode: false,
     attachmentList: [],
     relationList: [],
+    linkPreviews: [],
     location: undefined,
     isUploadingAttachment: false,
     isRequesting: false,
@@ -47,6 +50,10 @@ export const useMemoEditorState = (initialVisibility: Visibility = Visibility.PR
 
   const setRelationList = useCallback((v: MemoRelation[]) => {
     setState((prev) => ({ ...prev, relationList: v }));
+  }, []);
+
+  const setLinkPreviews = useCallback((v: LinkPreview[]) => {
+    setState((prev) => ({ ...prev, linkPreviews: v }));
   }, []);
 
   const setLocation = useCallback((v: Location | undefined) => {
@@ -79,6 +86,7 @@ export const useMemoEditorState = (initialVisibility: Visibility = Visibility.PR
       isRequesting: false,
       attachmentList: [],
       relationList: [],
+      linkPreviews: [],
       location: undefined,
       isDraggingFile: false,
     }));
@@ -89,6 +97,7 @@ export const useMemoEditorState = (initialVisibility: Visibility = Visibility.PR
     setMemoVisibility,
     setAttachmentList,
     setRelationList,
+    setLinkPreviews,
     setLocation,
     toggleFocusMode,
     setUploadingAttachment,

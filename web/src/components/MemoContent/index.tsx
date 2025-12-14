@@ -19,6 +19,7 @@ import { CodeBlock } from "./CodeBlock";
 import { createConditionalComponent, isTagNode, isTaskListItemNode } from "./ConditionalComponent";
 import { SANITIZE_SCHEMA } from "./constants";
 import { useCompactLabel, useCompactMode } from "./hooks";
+import LinkPreviewBlock, { isLinkPreviewNode } from "./LinkPreviewBlock";
 import { MemoContentContext } from "./MemoContentContext";
 import { Tag } from "./Tag";
 import { TaskListItem } from "./TaskListItem";
@@ -65,6 +66,7 @@ const MemoContent = observer((props: MemoContentProps) => {
             components={{
               // Conditionally render custom components based on AST node type
               input: createConditionalComponent(TaskListItem, "input", isTaskListItemNode),
+              div: createConditionalComponent(LinkPreviewBlock, "div", isLinkPreviewNode),
               span: createConditionalComponent(Tag, "span", isTagNode),
               pre: CodeBlock,
               a: ({ href, children, ...props }) => (
