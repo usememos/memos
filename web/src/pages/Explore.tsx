@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import { MemoRenderContext } from "@/components/MasonryView";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
-import { useMemoFilters, useMemoSorting } from "@/hooks";
+import { useMemoFilters, useMemoSorting, isExploreAutoRefreshEnabled } from "@/hooks";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
@@ -29,6 +29,8 @@ const Explore = observer(() => {
     state: State.NORMAL,
   });
 
+  const enableAutoRefresh = isExploreAutoRefreshEnabled();
+
   return (
     <PagedMemoList
       renderer={(memo: Memo, context?: MemoRenderContext) => (
@@ -38,8 +40,10 @@ const Explore = observer(() => {
       orderBy={orderBy}
       filter={memoFilter}
       showCreator
+      autoRefresh={enableAutoRefresh}
     />
   );
 });
 
 export default Explore;
+

@@ -4,10 +4,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { matchPath } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import { Button } from "@/components/ui/button";
-import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
+import { DEFAULT_AUTO_REFRESH_INTERVAL, DEFAULT_LIST_MEMOS_PAGE_SIZE, DEFAULT_MIN_AUTO_REFRESH_INTERVAL } from "@/helpers/consts";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
+import useAutoRefresh from "@/hooks/useAutoRefresh";
 import { Routes } from "@/router";
-import { memoStore, userStore, viewStore } from "@/store";
+import { instanceStore, memoStore, userStore, viewStore } from "@/store";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -26,6 +27,7 @@ interface Props {
   filter?: string;
   pageSize?: number;
   showCreator?: boolean;
+  autoRefresh?: boolean;
 }
 
 const PagedMemoList = observer((props: Props) => {
@@ -161,9 +163,24 @@ const PagedMemoList = observer((props: Props) => {
       }
     };
 
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [nextPageToken, isRequesting, fetchMoreMemos]);
+
+  const userInterval = userStore.state.userGeneralSetting?.autoRefreshInterval ?? DEFAULT_AUTO_REFRESH_INTERVAL;
+  const minInterval = instanceStore.state.generalSetting?.minAutoRefreshInterval ?? DEFAULT_MIN_AUTO_REFRESH_INTERVAL;
+  const effectiveInterval = userInterval === 0 ? 0 : Math.max(userInterval, minInterval);
+
+  // Auto-refresh: periodically check for new memos and refresh the list
+  useAutoRefresh({
+    state: props.state || State.NORMAL,
+    orderBy: props.orderBy || "display_time desc",
+    filter: props.filter,
+    enabled: props.autoRefresh ?? false,
+    intervalSeconds: effectiveInterval,
+    onRefresh: refreshList,
+  });
 
   const children = (
     <div className="flex flex-col justify-start items-start w-full max-w-full">

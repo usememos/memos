@@ -156,13 +156,15 @@ func convertInstanceGeneralSettingFromStore(setting *storepb.InstanceGeneralSett
 	}
 
 	generalSetting := &v1pb.InstanceSetting_GeneralSetting{
-		DisallowUserRegistration: setting.DisallowUserRegistration,
-		DisallowPasswordAuth:     setting.DisallowPasswordAuth,
-		AdditionalScript:         setting.AdditionalScript,
-		AdditionalStyle:          setting.AdditionalStyle,
-		WeekStartDayOffset:       setting.WeekStartDayOffset,
-		DisallowChangeUsername:   setting.DisallowChangeUsername,
-		DisallowChangeNickname:   setting.DisallowChangeNickname,
+		DisallowUserRegistration:   setting.DisallowUserRegistration,
+		DisallowPasswordAuth:       setting.DisallowPasswordAuth,
+		AdditionalScript:           setting.AdditionalScript,
+		AdditionalStyle:            setting.AdditionalStyle,
+		WeekStartDayOffset:         setting.WeekStartDayOffset,
+		DisallowChangeUsername:     setting.DisallowChangeUsername,
+		DisallowChangeNickname:     setting.DisallowChangeNickname,
+		EnableExploreAutoRefresh:   setting.EnableExploreAutoRefresh,
+		MinAutoRefreshInterval:     setting.MinAutoRefreshInterval,
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &v1pb.InstanceSetting_GeneralSetting_CustomProfile{
@@ -179,13 +181,15 @@ func convertInstanceGeneralSettingToStore(setting *v1pb.InstanceSetting_GeneralS
 		return nil
 	}
 	generalSetting := &storepb.InstanceGeneralSetting{
-		DisallowUserRegistration: setting.DisallowUserRegistration,
-		DisallowPasswordAuth:     setting.DisallowPasswordAuth,
-		AdditionalScript:         setting.AdditionalScript,
-		AdditionalStyle:          setting.AdditionalStyle,
-		WeekStartDayOffset:       setting.WeekStartDayOffset,
-		DisallowChangeUsername:   setting.DisallowChangeUsername,
-		DisallowChangeNickname:   setting.DisallowChangeNickname,
+		DisallowUserRegistration:   setting.DisallowUserRegistration,
+		DisallowPasswordAuth:       setting.DisallowPasswordAuth,
+		AdditionalScript:           setting.AdditionalScript,
+		AdditionalStyle:            setting.AdditionalStyle,
+		WeekStartDayOffset:         setting.WeekStartDayOffset,
+		DisallowChangeUsername:     setting.DisallowChangeUsername,
+		DisallowChangeNickname:     setting.DisallowChangeNickname,
+		EnableExploreAutoRefresh:   setting.EnableExploreAutoRefresh,
+		MinAutoRefreshInterval:     setting.MinAutoRefreshInterval,
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &storepb.InstanceCustomProfile{

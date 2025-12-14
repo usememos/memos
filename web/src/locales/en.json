@@ -330,7 +330,9 @@
     "preference-section": {
       "default-memo-sort-option": "Memo display time",
       "default-memo-visibility": "Default memo visibility",
-      "theme": "Theme"
+      "theme": "Theme",
+      "auto-refresh-interval": "Auto-refresh interval",
+      "seconds": "seconds"
     },
     "shortcut": {
       "delete-confirm": "Are you sure you want to delete shortcut `{{title}}`?",
@@ -452,7 +454,9 @@
       "monday": "Monday",
       "saturday": "Saturday",
       "sunday": "Sunday",
-      "week-start-day": "Week start day"
+      "week-start-day": "Week start day",
+      "enable-explore-auto-refresh": "Enable Explore page auto-refresh",
+      "min-auto-refresh-interval": "Minimum auto-refresh interval"
     }
   },
   "tag": {

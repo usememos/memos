@@ -18,7 +18,7 @@
     "about": "Memos について",
     "add": "追加",
     "admin": "管理者設定",
-    "archive": "アーカイブにする",
+    "archive": "アーカイブする",
     "archived": "ゴミ箱",
     "attachments": "添付ファイル",
     "avatar": "アイコン",
@@ -30,6 +30,7 @@
     "close": "閉じる",
     "collapse": "折りたたむ",
     "confirm": "確認する",
+    "copy": "コピー",
     "create": "作成する",
     "created-at": "作成日時",
     "database": "データベース",
@@ -99,7 +100,7 @@
     "username": "ユーザーネーム",
     "version": "バージョン",
     "visibility": "公開範囲",
-    "yourself": "あなた自身の"
+    "yourself": "あなた自身"
   },
   "days": {
     "fri": "金",
@@ -132,14 +133,15 @@
   },
   "memo": {
     "archived-at": "アーカイブ:",
-    "click-to-hide-nsfw-content": "クリックしてセンシティブ内容を隠す",
-    "click-to-show-nsfw-content": "クリックしてセンシティブ内容を表示",
+    "click-to-hide-nsfw-content": "クリックしてセンシティブな内容を隠す",
+    "click-to-show-nsfw-content": "クリックしてセンシティブな内容を表示",
     "code": "コード",
     "comment": {
       "self": "コメント",
       "write-a-comment": "コメントを書く"
     },
     "copy-link": "リンクをコピー",
+    "copy-content": "内容をコピー",
     "count-memos-in-date": "{{date}} 日に {{count}} 件のメモ",
     "delete-confirm": "本当に削除しますか? この操作は元に戻せません。",
     "direction": "並び順",
@@ -293,7 +295,7 @@
     "memo-related": "Memo",
     "memo-related-settings": {
       "content-lenght-limit": "内容の最大長（バイト）",
-      "enable-blur-nsfw-content": "センシティブ(NSFW)内容のぼかしを有効化",
+      "enable-blur-nsfw-content": "センシティブ(NSFW)な内容のぼかしを有効化",
       "enable-memo-comments": "メモコメントを有効化",
       "enable-memo-location": "メモの位置情報を有効化",
       "reactions": "リアクション",
@@ -304,7 +306,9 @@
     "preference-section": {
       "default-memo-sort-option": "メモの表示時間",
       "default-memo-visibility": "公開範囲の初期設定",
-      "theme": "テーマ"
+      "theme": "テーマ",
+      "auto-refresh-interval": "更新の間隔",
+      "seconds": "秒"
     },
     "sso": "SSO",
     "sso-section": {
@@ -416,7 +420,9 @@
       "monday": "月曜日",
       "saturday": "土曜日",
       "sunday": "日曜日",
-      "week-start-day": "週の開始日"
+      "week-start-day": "週の開始日",
+      "enable-explore-auto-refresh": "共有メモページのオートリロードを有効化",
+      "min-auto-refresh-interval": "オートリロード間隔の最小値を設定"
     }
   },
   "tag": {
