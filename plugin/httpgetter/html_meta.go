@@ -43,6 +43,10 @@ func GetHTMLMeta(urlStr string) (*HTMLMeta, error) {
 	}
 	defer response.Body.Close()
 
+	if response.StatusCode >= 400 {
+		return nil, errors.Errorf("failed to fetch page: status %d", response.StatusCode)
+	}
+
 	mediatype, err := getMediatype(response)
 	if err != nil {
 		return nil, err

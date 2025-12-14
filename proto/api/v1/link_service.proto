@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+
+option go_package = "gen/api/v1";
+
+service LinkService {
+  // GetLinkPreview fetches preview metadata for a URL (title, description, image).
+  rpc GetLinkPreview(GetLinkPreviewRequest) returns (GetLinkPreviewResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/link:preview"
+    };
+    option (google.api.method_signature) = "url";
+  }
+}
+
+message LinkPreview {
+  option (google.api.resource) = {
+    type: "memos.api.v1/LinkPreview"
+    pattern: "linkPreviews/{link_preview}"
+    name_field: "name"
+    singular: "linkPreview"
+    plural: "linkPreviews"
+  };
+
+  // Resource name of the preview (server generated).
+  // Format: linkPreviews/{link_preview}
+  string name = 1 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.field_behavior) = IDENTIFIER
+  ];
+
+  // The original URL that was fetched.
+  string url = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Extracted title of the page.
+  string title = 3;
+
+  // Extracted description of the page.
+  string description = 4;
+
+  // Resolved image URL for preview.
+  string image_url = 5;
+
+  // Human readable site/host name.
+  string site_name = 6;
+}
+
+message GetLinkPreviewRequest {
+  // URL to fetch metadata from.
+  string url = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetLinkPreviewResponse {
+  LinkPreview preview = 1 [(google.api.field_behavior) = REQUIRED];
+}

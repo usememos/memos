@@ -95,6 +95,8 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 	// Create and register RSS routes (needs markdown service from apiV1Service).
 	rss.NewRSSService(s.Profile, s.Store, apiV1Service.MarkdownService).RegisterRoutes(rootGroup)
+	// Link preview helper route (REST).
+	apiV1Service.RegisterLinkRoutes(rootGroup)
 	// Register gRPC gateway as api v1.
 	if err := apiV1Service.RegisterGateway(ctx, echoServer); err != nil {
 		return nil, errors.Wrap(err, "failed to register gRPC gateway")
