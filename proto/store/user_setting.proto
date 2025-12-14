@@ -41,6 +41,8 @@ message GeneralUserSetting {
   // The user's theme preference.
   // This references a CSS file in the web/public/themes/ directory.
   string theme = 3;
+  // Auto-refresh interval in seconds. 0 = disabled, default = 30.
+  int32 auto_refresh_interval = 4;
 }
 
 message SessionsUserSetting {
