@@ -4,20 +4,15 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"math"
 	"net"
 	"net/http"
 	"runtime"
-	"runtime/debug"
 	"time"
 
 	"github.com/google/uuid"
-	grpcrecovery "github.com/grpc-ecosystem/go-grpc-middleware/recovery"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/pkg/errors"
-	"github.com/soheilhy/cmux"
-	"google.golang.org/grpc"
 
 	"github.com/usememos/memos/internal/profile"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -35,7 +30,6 @@ type Server struct {
 	Store   *store.Store
 
 	echoServer        *echo.Echo
-	grpcServer        *grpc.Server
 	runnerCancelFuncs []context.CancelFunc
 }
 
@@ -73,20 +67,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 	rootGroup := echoServer.Group("")
 
-	// Log full stacktraces if we're in dev
-	logStacktraces := profile.IsDev()
-
-	grpcServer := grpc.NewServer(
-		// Override the maximum receiving message size to math.MaxInt32 for uploading large attachments.
-		grpc.MaxRecvMsgSize(math.MaxInt32),
-		grpc.ChainUnaryInterceptor(
-			apiv1.NewLoggerInterceptor(logStacktraces).LoggerInterceptor,
-			newRecoveryInterceptor(logStacktraces),
-			apiv1.NewGRPCAuthInterceptor(store, secret).AuthenticationInterceptor,
-		))
-	s.grpcServer = grpcServer
-
-	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store, grpcServer)
+	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store)
 
 	// Register HTTP file server routes BEFORE gRPC-Gateway to ensure proper range request handling for Safari.
 	// This uses native HTTP serving (http.ServeContent) instead of gRPC for video/audio files.
@@ -103,26 +84,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	return s, nil
 }
 
-func newRecoveryInterceptor(logStacktraces bool) grpc.UnaryServerInterceptor {
-	var recoveryOptions []grpcrecovery.Option
-	if logStacktraces {
-		recoveryOptions = append(recoveryOptions, grpcrecovery.WithRecoveryHandler(func(p any) error {
-			if p == nil {
-				return nil
-			}
-
-			switch val := p.(type) {
-			case runtime.Error:
-				return &stacktraceError{err: val, stacktrace: debug.Stack()}
-			default:
-				return nil
-			}
-		}))
-	}
-
-	return grpcrecovery.UnaryServerInterceptor(recoveryOptions...)
-}
-
 func (s *Server) Start(ctx context.Context) error {
 	var address, network string
 	if len(s.Profile.UNIXSock) == 0 {
@@ -137,23 +98,11 @@ func (s *Server) Start(ctx context.Context) error {
 		return errors.Wrap(err, "failed to listen")
 	}
 
-	muxServer := cmux.New(listener)
+	// Start Echo server directly (no cmux needed - all traffic is HTTP).
+	s.echoServer.Listener = listener
 	go func() {
-		grpcListener := muxServer.MatchWithWriters(cmux.HTTP2MatchHeaderFieldSendSettings("content-type", "application/grpc"))
-		if err := s.grpcServer.Serve(grpcListener); err != nil {
-			slog.Error("failed to serve gRPC", "error", err)
-		}
-	}()
-	go func() {
-		httpListener := muxServer.Match(cmux.HTTP1Fast(http.MethodPatch))
-		s.echoServer.Listener = httpListener
-		if err := s.echoServer.Start(address); err != nil {
+		if err := s.echoServer.Start(address); err != nil && err != http.ErrServerClosed {
 			slog.Error("failed to start echo server", "error", err)
-		}
-	}()
-	go func() {
-		if err := muxServer.Serve(); err != nil {
-			slog.Error("mux server listen error", "error", err)
 		}
 	}()
 	s.StartBackgroundRunners(ctx)
@@ -178,9 +127,6 @@ func (s *Server) Shutdown(ctx context.Context) {
 	if err := s.echoServer.Shutdown(ctx); err != nil {
 		slog.Error("failed to shutdown server", slog.String("error", err.Error()))
 	}
-
-	// Shutdown gRPC server.
-	s.grpcServer.GracefulStop()
 
 	// Close database connection.
 	if err := s.Store.Close(); err != nil {
@@ -233,24 +179,4 @@ func (s *Server) getOrUpsertInstanceBasicSetting(ctx context.Context) (*storepb.
 		instanceBasicSetting = instanceSetting.GetBasicSetting()
 	}
 	return instanceBasicSetting, nil
-}
-
-// stacktraceError wraps an underlying error and captures the stacktrace. It
-// implements fmt.Formatter, so it'll be rendered when invoked by something like
-// `fmt.Sprint("%v", err)`.
-type stacktraceError struct {
-	err        error
-	stacktrace []byte
-}
-
-func (e *stacktraceError) Error() string {
-	return e.err.Error()
-}
-
-func (e *stacktraceError) Unwrap() error {
-	return e.err
-}
-
-func (e *stacktraceError) Format(f fmt.State, _ rune) {
-	f.Write(e.stacktrace)
 }

@@ -7,15 +7,6 @@ managed:
   override:
     - file_option: go_package_prefix
       value: github.com/usememos/memos/proto/gen
-inputs:
-  - directory: .
-  - module: buf.build/googleapis/googleapis
-    paths:
-      - google/api/annotations.proto
-      - google/api/client.proto
-      - google/api/field_behavior.proto
-      - google/api/http.proto
-      - google/api/resource.proto
 plugins:
   - remote: buf.build/protocolbuffers/go
     out: gen
@@ -31,7 +22,7 @@ plugins:
     opt: paths=source_relative
   - remote: buf.build/community/google-gnostic-openapi
     out: gen
-    opt: paths=source_relative,enum_type=string
+    opt: enum_type=string
   - remote: buf.build/bufbuild/es
     out: ../web/src/types/proto
     opt:

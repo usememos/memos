@@ -9,6 +9,7 @@ import Loading from "@/pages/Loading";
 const AdminSignIn = lazy(() => import("@/pages/AdminSignIn"));
 const Archived = lazy(() => import("@/pages/Archived"));
 const AuthCallback = lazy(() => import("@/pages/AuthCallback"));
+const Calendar = lazy(() => import("@/pages/Calendar"));
 const Explore = lazy(() => import("@/pages/Explore"));
 const Inboxes = lazy(() => import("@/pages/Inboxes"));
 const MemoDetail = lazy(() => import("@/pages/MemoDetail"));
@@ -24,6 +25,7 @@ const MemoDetailRedirect = lazy(() => import("./MemoDetailRedirect"));
 export enum Routes {
   ROOT = "/",
   ATTACHMENTS = "/attachments",
+  CALENDAR = "/calendar",
   INBOX = "/inbox",
   ARCHIVED = "/archived",
   SETTING = "/setting",
@@ -115,6 +117,14 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<Loading />}>
                 <Attachments />
+              </Suspense>
+            ),
+          },
+          {
+            path: Routes.CALENDAR,
+            element: (
+              <Suspense fallback={<Loading />}>
+                <Calendar />
               </Suspense>
             ),
           },

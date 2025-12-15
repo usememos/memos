@@ -1,56 +1,40 @@
 package v1
 
-// Access Control List (ACL) Configuration
+// PublicMethods defines API endpoints that don't require authentication.
+// All other endpoints require a valid session or access token.
 //
-// This file defines which API methods require authentication and which require admin privileges.
-// Used by both gRPC and Connect interceptors to enforce access control.
+// This is the SINGLE SOURCE OF TRUTH for public endpoints.
+// Both Connect interceptor and gRPC-Gateway interceptor use this map.
 //
-// Method names follow the gRPC full method format: "/{package}.{service}/{method}"
-// Example: "/memos.api.v1.MemoService/CreateMemo"
+// Format: Full gRPC procedure path as returned by req.Spec().Procedure (Connect)
+// or info.FullMethod (gRPC interceptor).
+var PublicMethods = map[string]struct{}{
+	// Auth Service - login flow must be accessible without auth
+	"/memos.api.v1.AuthService/CreateSession":     {},
+	"/memos.api.v1.AuthService/GetCurrentSession": {},
 
-// publicMethods lists methods that can be called without authentication.
-// These are typically read-only endpoints for public content or login-related endpoints.
-var publicMethods = map[string]bool{
-	// Instance info - needed before login
-	"/memos.api.v1.InstanceService/GetInstanceProfile": true,
-	"/memos.api.v1.InstanceService/GetInstanceSetting": true,
+	// Instance Service - needed before login to show instance info
+	"/memos.api.v1.InstanceService/GetInstanceProfile": {},
+	"/memos.api.v1.InstanceService/GetInstanceSetting": {},
 
-	// Auth - login/session endpoints
-	"/memos.api.v1.AuthService/CreateSession":     true,
-	"/memos.api.v1.AuthService/GetCurrentSession": true,
+	// User Service - public user profiles and stats
+	"/memos.api.v1.UserService/GetUser":          {},
+	"/memos.api.v1.UserService/GetUserAvatar":    {},
+	"/memos.api.v1.UserService/GetUserStats":     {},
+	"/memos.api.v1.UserService/ListAllUserStats": {},
+	"/memos.api.v1.UserService/SearchUsers":      {},
 
-	// User - public user info and registration
-	"/memos.api.v1.UserService/CreateUser":       true, // Registration (also admin-only when not first user)
-	"/memos.api.v1.UserService/GetUser":          true,
-	"/memos.api.v1.UserService/GetUserAvatar":    true,
-	"/memos.api.v1.UserService/GetUserStats":     true,
-	"/memos.api.v1.UserService/ListAllUserStats": true,
-	"/memos.api.v1.UserService/SearchUsers":      true,
+	// Identity Provider Service - SSO buttons on login page
+	"/memos.api.v1.IdentityProviderService/ListIdentityProviders": {},
 
-	// Identity providers - needed for SSO login
-	"/memos.api.v1.IdentityProviderService/ListIdentityProviders": true,
-
-	// Memo - public memo access
-	"/memos.api.v1.MemoService/GetMemo":   true,
-	"/memos.api.v1.MemoService/ListMemos": true,
-
-	// Attachment - public attachment access
-	"/memos.api.v1.AttachmentService/GetAttachmentBinary": true,
+	// Memo Service - public memos (visibility filtering done in service layer)
+	"/memos.api.v1.MemoService/GetMemo":   {},
+	"/memos.api.v1.MemoService/ListMemos": {},
 }
 
-// adminOnlyMethods lists methods that require admin (Host or Admin role) privileges.
-// Regular users cannot call these methods even if authenticated.
-var adminOnlyMethods = map[string]bool{
-	"/memos.api.v1.UserService/CreateUser":                true, // Admin creates users (except first user registration)
-	"/memos.api.v1.InstanceService/UpdateInstanceSetting": true,
-}
-
-// IsPublicMethod returns true if the method can be called without authentication.
-func IsPublicMethod(fullMethodName string) bool {
-	return publicMethods[fullMethodName]
-}
-
-// IsAdminOnlyMethod returns true if the method requires admin privileges.
-func IsAdminOnlyMethod(fullMethodName string) bool {
-	return adminOnlyMethods[fullMethodName]
+// IsPublicMethod checks if a procedure path is public (no authentication required).
+// Returns true for public methods, false for protected methods.
+func IsPublicMethod(procedure string) bool {
+	_, ok := PublicMethods[procedure]
+	return ok
 }

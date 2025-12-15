@@ -1,3 +1,5 @@
+export type CalendarSize = "default" | "small";
+
 export interface CalendarDayCell {
   date: string;
   label: number;
@@ -16,4 +18,12 @@ export interface CalendarMatrixResult {
   weeks: CalendarDayRow[];
   weekDays: string[];
   maxCount: number;
+}
+
+export interface CompactMonthCalendarProps {
+  month: string;
+  data: Record<string, number>;
+  maxCount: number;
+  size?: CalendarSize;
+  onClick?: (date: string) => void;
 }

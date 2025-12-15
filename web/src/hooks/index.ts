@@ -1,5 +1,6 @@
 export * from "./useAsyncEffect";
 export * from "./useCurrentUser";
+export * from "./useDateFilterNavigation";
 export * from "./useFilteredMemoStats";
 export * from "./useLoading";
 export * from "./useMemoFilters";

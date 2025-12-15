@@ -195,3 +195,46 @@ func validateAccessToken(token string, tokens []*storepb.AccessTokensUserSetting
 	}
 	return false
 }
+
+// UpdateSessionLastAccessed updates the last accessed time for a session.
+// This implements sliding expiration - sessions remain valid as long as they're used.
+// Should be called after successful session-based authentication.
+func (a *Authenticator) UpdateSessionLastAccessed(ctx context.Context, userID int32, sessionID string) {
+	// Fire-and-forget update; failures are logged but don't block the request
+	_ = a.store.UpdateUserSessionLastAccessed(ctx, userID, sessionID, timestamppb.Now())
+}
+
+// AuthResult contains the result of an authentication attempt.
+type AuthResult struct {
+	User        *store.User
+	SessionID   string // Non-empty if authenticated via session cookie
+	AccessToken string // Non-empty if authenticated via JWT
+}
+
+// Authenticate tries to authenticate using the provided credentials.
+// It tries session cookie first, then JWT token.
+// Returns nil if no valid credentials are provided.
+// On successful session auth, it also updates the session sliding expiration.
+func (a *Authenticator) Authenticate(ctx context.Context, sessionCookie, authHeader string) *AuthResult {
+	// Try session cookie authentication first
+	if sessionCookie != "" {
+		user, err := a.AuthenticateBySession(ctx, sessionCookie)
+		if err == nil && user != nil {
+			_, sessionID, parseErr := ParseSessionCookieValue(sessionCookie)
+			if parseErr == nil && sessionID != "" {
+				a.UpdateSessionLastAccessed(ctx, user.ID, sessionID)
+			}
+			return &AuthResult{User: user, SessionID: sessionID}
+		}
+	}
+
+	// Try JWT token authentication
+	if token := ExtractBearerToken(authHeader); token != "" {
+		user, err := a.AuthenticateByJWT(ctx, token)
+		if err == nil && user != nil {
+			return &AuthResult{User: user, AccessToken: token}
+		}
+	}
+
+	return nil
+}

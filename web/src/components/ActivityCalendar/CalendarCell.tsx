@@ -1,18 +1,20 @@
 import { memo } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import type { CalendarDayCell } from "./types";
+import { DEFAULT_CELL_SIZE, SMALL_CELL_SIZE } from "./constants";
+import type { CalendarDayCell, CalendarSize } from "./types";
 import { getCellIntensityClass } from "./utils";
 
-interface CalendarCellProps {
+export interface CalendarCellProps {
   day: CalendarDayCell;
   maxCount: number;
   tooltipText: string;
   onClick?: (date: string) => void;
+  size?: CalendarSize;
 }
 
 export const CalendarCell = memo((props: CalendarCellProps) => {
-  const { day, maxCount, tooltipText, onClick } = props;
+  const { day, maxCount, tooltipText, onClick, size = "default" } = props;
 
   const handleClick = () => {
     if (day.count > 0 && onClick) {
@@ -20,8 +22,15 @@ export const CalendarCell = memo((props: CalendarCellProps) => {
     }
   };
 
-  const baseClasses =
-    "w-full h-7 rounded-md border text-xs flex items-center justify-center text-center transition-transform duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-1 focus-visible:ring-offset-background select-none";
+  const sizeConfig = size === "small" ? SMALL_CELL_SIZE : DEFAULT_CELL_SIZE;
+  const smallExtraClasses = size === "small" ? `${SMALL_CELL_SIZE.dimensions} min-h-0` : "";
+
+  const baseClasses = cn(
+    "aspect-square w-full border flex items-center justify-center text-center transition-transform duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-1 focus-visible:ring-offset-background select-none",
+    sizeConfig.font,
+    sizeConfig.borderRadius,
+    smallExtraClasses,
+  );
   const isInteractive = Boolean(onClick && day.count > 0);
   const ariaLabel = day.isSelected ? `${tooltipText} (selected)` : tooltipText;
 
@@ -38,8 +47,8 @@ export const CalendarCell = memo((props: CalendarCellProps) => {
   const buttonClasses = cn(
     baseClasses,
     "border-transparent text-muted-foreground",
-    day.isToday && "border-border",
-    day.isSelected && "border-border font-medium",
+    (day.isToday || day.isSelected) && "border-border",
+    day.isSelected && "font-medium",
     day.isWeekend && "text-muted-foreground/80",
     intensityClass,
     isInteractive ? "cursor-pointer hover:scale-105" : "cursor-default",
@@ -59,7 +68,9 @@ export const CalendarCell = memo((props: CalendarCellProps) => {
     </button>
   );
 
-  if (!tooltipText) {
+  const shouldShowTooltip = tooltipText && day.count > 0;
+
+  if (!shouldShowTooltip) {
     return button;
   }
 

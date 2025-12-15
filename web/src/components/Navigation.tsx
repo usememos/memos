@@ -1,4 +1,4 @@
-import { BellIcon, EarthIcon, LibraryIcon, PaperclipIcon, UserCircleIcon } from "lucide-react";
+import { BellIcon, CalendarIcon, EarthIcon, LibraryIcon, PaperclipIcon, UserCircleIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
@@ -43,6 +43,12 @@ const Navigation = observer((props: Props) => {
     title: t("common.memos"),
     icon: <LibraryIcon className="w-6 h-auto shrink-0" />,
   };
+  const calendarNavLink: NavLinkItem = {
+    id: "header-calendar",
+    path: Routes.CALENDAR,
+    title: t("common.calendar"),
+    icon: <CalendarIcon className="w-6 h-auto shrink-0" />,
+  };
   const exploreNavLink: NavLinkItem = {
     id: "header-explore",
     path: Routes.EXPLORE,
@@ -79,7 +85,7 @@ const Navigation = observer((props: Props) => {
   };
 
   const navLinks: NavLinkItem[] = currentUser
-    ? [homeNavLink, exploreNavLink, attachmentsNavLink, inboxNavLink]
+    ? [homeNavLink, calendarNavLink, exploreNavLink, attachmentsNavLink, inboxNavLink]
     : [exploreNavLink, signInNavLink];
 
   return (

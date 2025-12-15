@@ -1,42 +1,35 @@
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
-import { useCallback, useState } from "react";
-import memoFilterStore from "@/store/memoFilter";
+import { useMemo, useState } from "react";
+import { CompactMonthCalendar } from "@/components/ActivityCalendar";
+import { useDateFilterNavigation } from "@/hooks";
 import type { StatisticsData } from "@/types/statistics";
-import ActivityCalendar from "../ActivityCalendar";
 import { MonthNavigator } from "./MonthNavigator";
 
 export type StatisticsViewContext = "home" | "explore" | "archived" | "profile";
 
 interface Props {
-  // Context for the statistics view (affects which stat cards are shown)
   context?: StatisticsViewContext;
-  // Statistics data computed from filtered memos (use useFilteredMemoStats)
   statisticsData: StatisticsData;
 }
 
 const StatisticsView = observer((props: Props) => {
   const { statisticsData } = props;
   const { activityStats } = statisticsData;
-  const [selectedDate] = useState(new Date());
+  const navigateToDateFilter = useDateFilterNavigation();
   const [visibleMonthString, setVisibleMonthString] = useState(dayjs().format("YYYY-MM"));
 
-  const handleCalendarClick = useCallback((date: string) => {
-    memoFilterStore.removeFilter((f) => f.factor === "displayTime");
-    memoFilterStore.addFilter({ factor: "displayTime", value: date });
-  }, []);
+  const maxCount = useMemo(() => {
+    const counts = Object.values(activityStats);
+    return Math.max(...counts, 1);
+  }, [activityStats]);
 
   return (
     <div className="group w-full mt-2 space-y-1 text-muted-foreground animate-fade-in">
       <MonthNavigator visibleMonth={visibleMonthString} onMonthChange={setVisibleMonthString} />
 
       <div className="w-full animate-scale-in">
-        <ActivityCalendar
-          month={visibleMonthString}
-          selectedDate={selectedDate.toDateString()}
-          data={activityStats}
-          onClick={handleCalendarClick}
-        />
+        <CompactMonthCalendar month={visibleMonthString} data={activityStats} maxCount={maxCount} onClick={navigateToDateFilter} />
       </div>
     </div>
   );

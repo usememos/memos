@@ -2,16 +2,61 @@ package v1
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"runtime/debug"
 
 	"connectrpc.com/connect"
-	"github.com/pkg/errors"
+	pkgerrors "github.com/pkg/errors"
+	"google.golang.org/grpc/metadata"
 
 	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
 )
+
+// MetadataInterceptor converts Connect HTTP headers to gRPC metadata.
+//
+// This ensures service methods can use metadata.FromIncomingContext() to access
+// headers like User-Agent, X-Forwarded-For, etc., regardless of whether the
+// request came via Connect RPC or gRPC-Gateway.
+type MetadataInterceptor struct{}
+
+// NewMetadataInterceptor creates a new metadata interceptor.
+func NewMetadataInterceptor() *MetadataInterceptor {
+	return &MetadataInterceptor{}
+}
+
+func (*MetadataInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
+	return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
+		// Convert HTTP headers to gRPC metadata
+		header := req.Header()
+		md := metadata.MD{}
+
+		// Copy important headers for client info extraction
+		if ua := header.Get("User-Agent"); ua != "" {
+			md.Set("user-agent", ua)
+		}
+		if xff := header.Get("X-Forwarded-For"); xff != "" {
+			md.Set("x-forwarded-for", xff)
+		}
+		if xri := header.Get("X-Real-Ip"); xri != "" {
+			md.Set("x-real-ip", xri)
+		}
+
+		// Set metadata in context so services can use metadata.FromIncomingContext()
+		ctx = metadata.NewIncomingContext(ctx, md)
+		return next(ctx, req)
+	}
+}
+
+func (*MetadataInterceptor) WrapStreamingClient(next connect.StreamingClientFunc) connect.StreamingClientFunc {
+	return next
+}
+
+func (*MetadataInterceptor) WrapStreamingHandler(next connect.StreamingHandlerFunc) connect.StreamingHandlerFunc {
+	return next
+}
 
 // LoggingInterceptor logs Connect RPC requests with appropriate log levels.
 //
@@ -61,7 +106,7 @@ func (*LoggingInterceptor) classifyError(err error) (slog.Level, string) {
 	}
 
 	var connectErr *connect.Error
-	if !errors.As(err, &connectErr) {
+	if !pkgerrors.As(err, &connectErr) {
 		return slog.LevelError, "unknown error"
 	}
 
@@ -99,7 +144,7 @@ func (in *RecoveryInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFu
 		defer func() {
 			if r := recover(); r != nil {
 				in.logPanic(req.Spec().Procedure, r)
-				err = connect.NewError(connect.CodeInternal, errors.New("internal server error"))
+				err = connect.NewError(connect.CodeInternal, pkgerrors.New("internal server error"))
 			}
 		}()
 		return next(ctx, req)
@@ -127,9 +172,8 @@ func (in *RecoveryInterceptor) logPanic(procedure string, panicValue any) {
 
 // AuthInterceptor handles authentication for Connect handlers.
 //
-// It reuses the same authentication logic as GRPCAuthInterceptor by delegating
-// to a shared Authenticator instance. This ensures consistent authentication
-// behavior across both gRPC and Connect protocols.
+// It enforces authentication for all endpoints except those listed in PublicMethods.
+// Role-based authorization (admin checks) remains in the service layer.
 type AuthInterceptor struct {
 	authenticator *auth.Authenticator
 }
@@ -143,45 +187,23 @@ func NewAuthInterceptor(store *store.Store, secret string) *AuthInterceptor {
 
 func (in *AuthInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 	return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
-		procedure := req.Spec().Procedure
 		header := req.Header()
+		sessionCookie := auth.ExtractSessionCookieFromHeader(header.Get("Cookie"))
+		authHeader := header.Get("Authorization")
 
-		// Try session cookie authentication first
-		if sessionCookie := auth.ExtractSessionCookieFromHeader(header.Get("Cookie")); sessionCookie != "" {
-			user, err := in.authenticator.AuthenticateBySession(ctx, sessionCookie)
-			if err == nil && user != nil {
-				_, sessionID, err := auth.ParseSessionCookieValue(sessionCookie)
-				if err != nil {
-					// This should not happen since AuthenticateBySession already validated the cookie
-					// but handle it gracefully anyway
-					sessionID = ""
-				}
-				ctx, err = in.authenticator.AuthorizeAndSetContext(ctx, procedure, user, sessionID, "", IsAdminOnlyMethod)
-				if err != nil {
-					return nil, convertAuthError(err)
-				}
-				return next(ctx, req)
-			}
+		result := in.authenticator.Authenticate(ctx, sessionCookie, authHeader)
+
+		// Enforce authentication for non-public methods
+		if result == nil && !IsPublicMethod(req.Spec().Procedure) {
+			return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("authentication required"))
 		}
 
-		// Try JWT token authentication
-		if accessToken := auth.ExtractBearerToken(header.Get("Authorization")); accessToken != "" {
-			user, err := in.authenticator.AuthenticateByJWT(ctx, accessToken)
-			if err == nil && user != nil {
-				ctx, err = in.authenticator.AuthorizeAndSetContext(ctx, procedure, user, "", accessToken, IsAdminOnlyMethod)
-				if err != nil {
-					return nil, convertAuthError(err)
-				}
-				return next(ctx, req)
-			}
+		// Set user in context (may be nil for public endpoints)
+		if result != nil {
+			ctx = auth.SetUserInContext(ctx, result.User, result.SessionID, result.AccessToken)
 		}
 
-		// Allow public methods without authentication
-		if IsPublicMethod(procedure) {
-			return next(ctx, req)
-		}
-
-		return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("authentication required"))
+		return next(ctx, req)
 	}
 }
 
@@ -191,18 +213,4 @@ func (*AuthInterceptor) WrapStreamingClient(next connect.StreamingClientFunc) co
 
 func (*AuthInterceptor) WrapStreamingHandler(next connect.StreamingHandlerFunc) connect.StreamingHandlerFunc {
 	return next
-}
-
-// convertAuthError converts authentication/authorization errors to Connect errors.
-func convertAuthError(err error) error {
-	if err == nil {
-		return nil
-	}
-	// Check if it's already a Connect error
-	var connectErr *connect.Error
-	if errors.As(err, &connectErr) {
-		return err
-	}
-	// Default to permission denied for auth errors
-	return connect.NewError(connect.CodePermissionDenied, err)
 }
