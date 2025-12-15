@@ -1,5 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { observer } from "mobx-react-lite";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { userStore } from "@/store";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
@@ -77,6 +78,20 @@ const PreferencesSection = observer(() => {
                 ))}
             </SelectContent>
           </Select>
+        </SettingRow>
+
+        <SettingRow label={t("setting.preference-section.auto-refresh-interval")}>
+          <div className="flex items-center gap-2">
+            <Input
+              className="w-20 font-mono"
+              value={setting.autoRefreshInterval ?? 10}
+              onChange={async (e) => {
+                const value = parseInt(e.target.value) || 0;
+                await userStore.updateUserGeneralSetting({ autoRefreshInterval: value }, ["auto_refresh_interval"]);
+              }}
+            />
+            <span className="text-sm text-muted-foreground">{t("setting.preference-section.seconds")}</span>
+          </div>
         </SettingRow>
       </SettingGroup>
 

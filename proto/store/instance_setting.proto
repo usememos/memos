@@ -52,6 +52,10 @@ message InstanceGeneralSetting {
   bool disallow_change_username = 8;
   // disallow_change_nickname disallows changing nickname.
   bool disallow_change_nickname = 9;
+  // enable_explore_auto_refresh enables auto-refresh on Explore page. Default: true.
+  bool enable_explore_auto_refresh = 10;
+  // min_auto_refresh_interval is the minimum auto-refresh interval in seconds. Default: 1.
+  int32 min_auto_refresh_interval = 11;
 }
 
 message InstanceCustomProfile {

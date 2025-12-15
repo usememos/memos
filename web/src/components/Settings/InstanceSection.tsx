@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -169,6 +170,27 @@ const InstanceSection = observer(() => {
               <SelectItem value="1">{t("setting.instance-section.monday")}</SelectItem>
             </SelectContent>
           </Select>
+        </SettingRow>
+
+        <SettingRow label={t("setting.instance-section.enable-explore-auto-refresh")}>
+          <Switch
+            checked={instanceGeneralSetting.enableExploreAutoRefresh !== false}
+            onCheckedChange={(checked) => updatePartialSetting({ enableExploreAutoRefresh: checked })}
+          />
+        </SettingRow>
+
+        <SettingRow label={t("setting.instance-section.min-auto-refresh-interval")}>
+          <div className="flex items-center gap-2">
+            <Input
+              className="w-20 font-mono"
+              value={instanceGeneralSetting.minAutoRefreshInterval || 1}
+              onChange={(e) => {
+                const value = parseInt(e.target.value) || 1;
+                updatePartialSetting({ minAutoRefreshInterval: value });
+              }}
+            />
+            <span className="text-sm text-muted-foreground">{t("setting.preference-section.seconds")}</span>
+          </div>
         </SettingRow>
       </SettingGroup>
 

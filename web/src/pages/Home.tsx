@@ -32,9 +32,11 @@ const Home = observer(() => {
         listSort={listSort}
         orderBy={orderBy}
         filter={memoFilter}
+        autoRefresh
       />
     </div>
   );
 });
 
 export default Home;
+

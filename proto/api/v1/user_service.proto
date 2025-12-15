@@ -416,6 +416,8 @@ message UserSetting {
     // This references a CSS file in the web/public/themes/ directory.
     // If not set, the default theme will be used.
     string theme = 4 [(google.api.field_behavior) = OPTIONAL];
+    // Auto-refresh interval in seconds. 0 = disabled, default = 30.
+    int32 auto_refresh_interval = 5 [(google.api.field_behavior) = OPTIONAL];
   }
 
   // User authentication sessions configuration.
