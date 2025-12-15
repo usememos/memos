@@ -1,3 +1,4 @@
+import copy from "copy-to-clipboard";
 import hljs from "highlight.js";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
@@ -82,11 +83,31 @@ export const CodeBlock = observer(({ children, className, ...props }: CodeBlockP
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(codeContent);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      // Try native clipboard API first (requires HTTPS or localhost)
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(codeContent);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } else {
+        // Fallback to copy-to-clipboard library for non-secure contexts
+        const success = copy(codeContent);
+        if (success) {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        } else {
+          console.error("Failed to copy code");
+        }
+      }
     } catch (err) {
-      console.error("Failed to copy code:", err);
+      // If native API fails, try fallback
+      console.warn("Native clipboard failed, using fallback:", err);
+      const success = copy(codeContent);
+      if (success) {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } else {
+        console.error("Failed to copy code:", err);
+      }
     }
   };
 
