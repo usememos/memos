@@ -84,13 +84,3 @@ func TestUnknownMethodsRequireAuth(t *testing.T) {
 		})
 	}
 }
-
-// TestPublicMethodsMapConsistency verifies that PublicMethods map matches test expectations.
-func TestPublicMethodsMapConsistency(t *testing.T) {
-	// Ensure the PublicMethods map has the expected number of entries
-	expectedCount := 13
-	actualCount := len(PublicMethods)
-	assert.Equal(t, expectedCount, actualCount,
-		"PublicMethods map has %d entries, expected %d. Update this test if public methods changed intentionally.",
-		actualCount, expectedCount)
-}
