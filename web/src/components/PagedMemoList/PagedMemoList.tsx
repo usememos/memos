@@ -166,7 +166,7 @@ const PagedMemoList = observer((props: Props) => {
   }, [nextPageToken, isRequesting, fetchMoreMemos]);
 
   const children = (
-    <div className="flex flex-col justify-start items-start w-full max-w-full">
+    <div className={`flex flex-col justify-start items-start w-full max-w-full ${showMemoEditor ? "pb-32" : ""}`}>
       {/* Show skeleton loader during initial load */}
       {isRequesting && sortedMemoList.length === 0 ? (
         <div className="w-full flex flex-col justify-start items-center">
@@ -179,7 +179,6 @@ const PagedMemoList = observer((props: Props) => {
             renderer={props.renderer}
             prefixElement={
               <>
-                {showMemoEditor ? <MemoEditor className="mb-2" cacheKey="home-memo-editor" /> : undefined}
                 <MemoFilters />
               </>
             }
@@ -208,13 +207,28 @@ const PagedMemoList = observer((props: Props) => {
               )}
             </>
           )}
-        </>
-      )}
-    </div>
-  );
+
+          {showMemoEditor && (
+            <div className="w-[78%] mx-auto sticky bottom-0 left-0 right-0 z-20 px-4 pb-4 pt-3">
+              <div className="w-full mx-auto max-w-5xl">
+                <div className="bg-background/95 border border-border rounded-xl shadow-md p-3">
+                  <MemoEditor className="mb-0" cacheKey="home-memo-editor" />
+                </div>
+              </div>
+            </div>
+            )}
+          </>
+        )}
+      </div>
+    );
+
 
   if (md) {
-    return children;
+    return (
+      <>
+        {children}
+      </>
+    )
   }
 
   return (
@@ -231,7 +245,9 @@ const PagedMemoList = observer((props: Props) => {
         </div>
       }
     >
-      {children}
+      <div className="w-full">
+        {children}
+      </div>
     </PullToRefresh>
   );
 });
