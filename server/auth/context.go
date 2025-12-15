@@ -1,6 +1,10 @@
 package auth
 
-import "context"
+import (
+	"context"
+
+	"github.com/usememos/memos/store"
+)
 
 // ContextKey is the key type for context values.
 // Using a custom type prevents collisions with other packages.
@@ -46,4 +50,23 @@ func GetAccessToken(ctx context.Context) string {
 		return v
 	}
 	return ""
+}
+
+// SetUserInContext sets the authenticated user's information in the context.
+// This is a simpler alternative to AuthorizeAndSetContext for cases where
+// authorization is handled separately (e.g., HTTP middleware).
+//
+// Parameters:
+//   - user: The authenticated user
+//   - sessionID: Set if authenticated via session cookie (empty string otherwise)
+//   - accessToken: Set if authenticated via JWT token (empty string otherwise)
+func SetUserInContext(ctx context.Context, user *store.User, sessionID, accessToken string) context.Context {
+	ctx = context.WithValue(ctx, UserIDContextKey, user.ID)
+	if sessionID != "" {
+		ctx = context.WithValue(ctx, SessionIDContextKey, sessionID)
+	}
+	if accessToken != "" {
+		ctx = context.WithValue(ctx, AccessTokenContextKey, accessToken)
+	}
+	return ctx
 }

@@ -13,7 +13,6 @@ require (
 	github.com/google/cel-go v0.26.1
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/feeds v1.2.0
-	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2
 	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.13.4
@@ -85,7 +84,6 @@ require (
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/soheilhy/cmux v0.1.5
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	golang.org/x/sys v0.36.0 // indirect
