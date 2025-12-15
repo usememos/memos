@@ -18,6 +18,7 @@ var PublicMethods = map[string]struct{}{
 	"/memos.api.v1.InstanceService/GetInstanceSetting": {},
 
 	// User Service - public user profiles and stats
+	"/memos.api.v1.UserService/CreateUser":       {}, // Allow first user registration
 	"/memos.api.v1.UserService/GetUser":          {},
 	"/memos.api.v1.UserService/GetUserAvatar":    {},
 	"/memos.api.v1.UserService/GetUserStats":     {},

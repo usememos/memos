@@ -16,6 +16,7 @@ func TestPublicMethodsArePublic(t *testing.T) {
 		"/memos.api.v1.InstanceService/GetInstanceProfile",
 		"/memos.api.v1.InstanceService/GetInstanceSetting",
 		// User Service
+		"/memos.api.v1.UserService/CreateUser",
 		"/memos.api.v1.UserService/GetUser",
 		"/memos.api.v1.UserService/GetUserAvatar",
 		"/memos.api.v1.UserService/GetUserStats",
