@@ -12,10 +12,10 @@ import {
   XIcon,
 } from "lucide-react";
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { memoFilterStore } from "@/store";
-import { FilterFactor, getMemoFilterKey, MemoFilter, stringifyFilters } from "@/store/memoFilter";
+import { FilterFactor, getMemoFilterKey, MemoFilter, parseFilterQuery, stringifyFilters } from "@/store/memoFilter";
 import { useTranslate } from "@/utils/i18n";
 
 interface FilterConfig {
@@ -60,15 +60,32 @@ const FILTER_CONFIGS: Record<FilterFactor, FilterConfig> = {
 
 const MemoFilters = observer(() => {
   const t = useTranslate();
-  const [, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const filters = memoFilterStore.filters;
+  const lastSyncedUrlRef = useRef("");
+  const lastSyncedStoreRef = useRef("");
 
   useEffect(() => {
-    const searchParams = new URLSearchParams();
-    if (filters.length > 0) {
-      searchParams.set("filter", stringifyFilters(filters));
+    const filterParam = searchParams.get("filter") || "";
+    if (filterParam !== lastSyncedUrlRef.current) {
+      lastSyncedUrlRef.current = filterParam;
+      const newFilters = parseFilterQuery(filterParam);
+      memoFilterStore.setFilters(newFilters);
+      lastSyncedStoreRef.current = stringifyFilters(newFilters);
     }
-    setSearchParams(searchParams);
+  }, [searchParams]);
+
+  useEffect(() => {
+    const storeString = stringifyFilters(filters);
+    if (storeString !== lastSyncedStoreRef.current && storeString !== lastSyncedUrlRef.current) {
+      lastSyncedStoreRef.current = storeString;
+      const newParams = new URLSearchParams();
+      if (filters.length > 0) {
+        newParams.set("filter", storeString);
+      }
+      setSearchParams(newParams, { replace: true });
+      lastSyncedUrlRef.current = filters.length > 0 ? storeString : "";
+    }
   }, [filters, setSearchParams]);
 
   const handleRemoveFilter = (filter: MemoFilter) => {

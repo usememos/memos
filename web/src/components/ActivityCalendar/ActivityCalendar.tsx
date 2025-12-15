@@ -6,6 +6,7 @@ import { instanceStore } from "@/store";
 import type { ActivityCalendarProps } from "@/types/statistics";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarCell } from "./CalendarCell";
+import { getTooltipText, useTodayDate, useWeekdayLabels } from "./shared";
 import { useCalendarMatrix } from "./useCalendarMatrix";
 
 export const ActivityCalendar = memo(
@@ -14,13 +15,9 @@ export const ActivityCalendar = memo(
     const { month, selectedDate, data, onClick } = props;
     const weekStartDayOffset = instanceStore.state.generalSetting.weekStartDayOffset;
 
-    const today = useMemo(() => dayjs().format("YYYY-MM-DD"), []);
+    const today = useTodayDate();
+    const weekDaysRaw = useWeekdayLabels();
     const selectedDateFormatted = useMemo(() => dayjs(selectedDate).format("YYYY-MM-DD"), [selectedDate]);
-
-    const weekDaysRaw = useMemo(
-      () => [t("days.sun"), t("days.mon"), t("days.tue"), t("days.wed"), t("days.thu"), t("days.fri"), t("days.sat")],
-      [t],
-    );
 
     const { weeks, weekDays, maxCount } = useCalendarMatrix({
       month,
@@ -33,26 +30,19 @@ export const ActivityCalendar = memo(
 
     return (
       <TooltipProvider>
-        <div className="w-full flex flex-col gap-1">
-          <div className="grid grid-cols-7 gap-1 text-xs text-muted-foreground">
+        <div className="w-full flex flex-col gap-0.5">
+          <div className="grid grid-cols-7 gap-0.5 text-xs text-muted-foreground">
             {weekDays.map((label, index) => (
-              <div key={index} className="flex h-5 items-center justify-center text-muted-foreground/80">
+              <div key={index} className="flex h-4 items-center justify-center text-muted-foreground/80">
                 {label}
               </div>
             ))}
           </div>
 
-          <div className="grid grid-cols-7 gap-1">
+          <div className="grid grid-cols-7 gap-0.5">
             {weeks.map((week, weekIndex) =>
               week.days.map((day, dayIndex) => {
-                const tooltipText =
-                  day.count === 0
-                    ? day.date
-                    : t("memo.count-memos-in-date", {
-                        count: day.count,
-                        memos: day.count === 1 ? t("common.memo") : t("common.memos"),
-                        date: day.date,
-                      }).toLowerCase();
+                const tooltipText = getTooltipText(day.count, day.date, t);
 
                 return (
                   <CalendarCell

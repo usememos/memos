@@ -52,6 +52,7 @@ class MemoFilterState extends StandardState {
       filters: observable,
       shortcut: observable,
       hasActiveFilters: computed,
+      setFilters: action,
       addFilter: action,
       removeFilter: action,
       removeFiltersByFactor: action,
@@ -73,6 +74,10 @@ class MemoFilterState extends StandardState {
 
   getFiltersByFactor(factor: FilterFactor): MemoFilter[] {
     return this.filters.filter((f) => f.factor === factor);
+  }
+
+  setFilters(filters: MemoFilter[]): void {
+    this.filters = filters;
   }
 
   addFilter(filter: MemoFilter): void {
@@ -120,6 +125,7 @@ const memoFilterStore = (() => {
       return state.hasActiveFilters;
     },
     getFiltersByFactor: (factor: FilterFactor): MemoFilter[] => state.getFiltersByFactor(factor),
+    setFilters: (filters: MemoFilter[]): void => state.setFilters(filters),
     addFilter: (filter: MemoFilter): void => state.addFilter(filter),
     removeFilter: (predicate: (f: MemoFilter) => boolean): void => state.removeFilter(predicate),
     removeFiltersByFactor: (factor: FilterFactor): void => state.removeFiltersByFactor(factor),
