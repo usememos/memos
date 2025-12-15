@@ -30,7 +30,7 @@ const createCalendarDayCell = (
     isCurrentMonth,
     isToday: isoDate === today,
     isSelected: isoDate === selectedDate,
-    isWeekend: WEEKEND_DAYS.includes(current.day()),
+    isWeekend: WEEKEND_DAYS.includes(current.day() as 0 | 6),
   };
 };
 
