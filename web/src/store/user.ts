@@ -2,7 +2,7 @@ import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { uniqueId } from "lodash-es";
 import { computed, makeAutoObservable } from "mobx";
-import { authServiceClient, shortcutServiceClient, userServiceClient } from "@/grpcweb";
+import { authServiceClient, shortcutServiceClient, userServiceClient } from "@/connect";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service_pb";
 import {
   User,

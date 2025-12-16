@@ -3,7 +3,7 @@ import { LoaderIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { authServiceClient } from "@/grpcweb";
+import { authServiceClient } from "@/connect";
 import { absolutifyLink } from "@/helpers/utils";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { initialUserStore } from "@/store/user";

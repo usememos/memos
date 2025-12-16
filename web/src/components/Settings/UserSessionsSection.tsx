@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
-import { userServiceClient } from "@/grpcweb";
+import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { UserSession } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";

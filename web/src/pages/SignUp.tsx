@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import AuthFooter from "@/components/AuthFooter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { authServiceClient, userServiceClient } from "@/grpcweb";
+import { authServiceClient, userServiceClient } from "@/connect";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { instanceStore } from "@/store";

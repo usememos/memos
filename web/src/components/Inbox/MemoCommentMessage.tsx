@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import UserAvatar from "@/components/UserAvatar";
-import { activityServiceClient } from "@/grpcweb";
+import { activityServiceClient } from "@/connect";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { cn } from "@/lib/utils";

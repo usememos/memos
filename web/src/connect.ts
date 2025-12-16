@@ -11,22 +11,20 @@ import { UserService } from "./types/proto/api/v1/user_service_pb";
 
 const transport = createConnectTransport({
   baseUrl: window.location.origin,
-  // Include cookies in requests for session auth
-  fetch: (input, init) => fetch(input, { ...init, credentials: "include" }),
+  // Use binary protobuf format for better performance (smaller payloads, faster serialization)
+  useBinaryFormat: true,
 });
 
+// Core service clients
 export const instanceServiceClient = createClient(InstanceService, transport);
-
 export const authServiceClient = createClient(AuthService, transport);
-
 export const userServiceClient = createClient(UserService, transport);
 
+// Content service clients
 export const memoServiceClient = createClient(MemoService, transport);
-
 export const attachmentServiceClient = createClient(AttachmentService, transport);
-
 export const shortcutServiceClient = createClient(ShortcutService, transport);
-
 export const activityServiceClient = createClient(ActivityService, transport);
 
+// Configuration service clients
 export const identityProviderServiceClient = createClient(IdentityProviderService, transport);

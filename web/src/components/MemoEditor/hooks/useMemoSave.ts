@@ -4,7 +4,7 @@ import { isEqual } from "lodash-es";
 import { useCallback } from "react";
 import { toast } from "react-hot-toast";
 import type { LocalFile } from "@/components/memo-metadata";
-import { memoServiceClient } from "@/grpcweb";
+import { memoServiceClient } from "@/connect";
 import { attachmentStore, memoStore } from "@/store";
 import { Attachment, AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
 import type { Location, Memo, MemoRelation, Visibility } from "@/types/proto/api/v1/memo_service_pb";

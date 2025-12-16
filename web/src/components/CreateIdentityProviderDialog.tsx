@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { identityProviderServiceClient } from "@/grpcweb";
+import { identityProviderServiceClient } from "@/connect";
 import { absolutifyLink } from "@/helpers/utils";
 import {
   FieldMapping,

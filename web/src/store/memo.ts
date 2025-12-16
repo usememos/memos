@@ -2,7 +2,7 @@ import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { uniqueId } from "lodash-es";
 import { makeAutoObservable } from "mobx";
-import { memoServiceClient } from "@/grpcweb";
+import { memoServiceClient } from "@/connect";
 import { CreateMemoRequest, ListMemosRequest, ListMemosRequestSchema, Memo, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 import { createRequestKey, RequestDeduplicator, StoreError } from "./store-utils";
 import userStore from "./user";

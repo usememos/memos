@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { identityProviderServiceClient } from "@/grpcweb";
+import { identityProviderServiceClient } from "@/connect";
 import useDialog from "@/hooks/useDialog";
 import { instanceStore } from "@/store";
 import { buildInstanceSettingName } from "@/store/common";
