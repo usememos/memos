@@ -38,23 +38,23 @@ func NewAuthenticator(store *store.Store, secret string) *Authenticator {
 // AuthenticateBySession validates a session cookie and returns the authenticated user.
 //
 // Validation steps:
-// 1. Parse cookie value to extract userID and sessionID
+// 1. Use session ID to find the user and session details (single DB query)
 // 2. Verify user exists and is not archived
-// 3. Verify session exists in user's sessions list
-// 4. Check session hasn't expired (sliding expiration: 14 days from last access)
+// 3. Check session hasn't expired (sliding expiration: 14 days from last access)
 //
 // Returns the user if authentication succeeds, or an error describing the failure.
-func (a *Authenticator) AuthenticateBySession(ctx context.Context, sessionCookieValue string) (*store.User, error) {
-	if sessionCookieValue == "" {
-		return nil, errors.New("session cookie value not found")
+func (a *Authenticator) AuthenticateBySession(ctx context.Context, sessionID string) (*store.User, error) {
+	if sessionID == "" {
+		return nil, errors.New("session ID not found")
 	}
 
-	userID, sessionID, err := ParseSessionCookieValue(sessionCookieValue)
+	// Find the session and user in a single database query
+	result, err := a.store.GetUserSessionByID(ctx, sessionID)
 	if err != nil {
-		return nil, errors.Wrap(err, "invalid session cookie format")
+		return nil, errors.Wrap(err, "session not found")
 	}
 
-	user, err := a.store.GetUser(ctx, &store.FindUser{ID: &userID})
+	user, err := a.store.GetUser(ctx, &store.FindUser{ID: &result.UserID})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get user")
 	}
@@ -65,13 +65,12 @@ func (a *Authenticator) AuthenticateBySession(ctx context.Context, sessionCookie
 		return nil, errors.New("user is archived")
 	}
 
-	sessions, err := a.store.GetUserSessions(ctx, user.ID)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get user sessions")
-	}
-
-	if !validateSession(sessionID, sessions) {
-		return nil, errors.New("invalid or expired session")
+	// Validate session expiration
+	if result.Session.LastAccessedTime != nil {
+		expiration := result.Session.LastAccessedTime.AsTime().Add(SessionSlidingDuration)
+		if expiration.Before(time.Now()) {
+			return nil, errors.New("session expired")
+		}
 	}
 
 	return user, nil
@@ -168,23 +167,6 @@ func (a *Authenticator) AuthorizeAndSetContext(ctx context.Context, procedure st
 	return ctx, nil
 }
 
-// validateSession checks if a session exists and is still valid.
-// Uses sliding expiration: session is valid if last accessed within SessionSlidingDuration.
-func validateSession(sessionID string, sessions []*storepb.SessionsUserSetting_Session) bool {
-	for _, session := range sessions {
-		if sessionID == session.SessionId {
-			if session.LastAccessedTime != nil {
-				expiration := session.LastAccessedTime.AsTime().Add(SessionSlidingDuration)
-				if expiration.Before(time.Now()) {
-					return false // Session expired
-				}
-			}
-			return true
-		}
-	}
-	return false // Session not found
-}
-
 // validateAccessToken checks if the token exists in the user's access tokens list.
 // This enables token revocation: deleted tokens are removed from the list.
 func validateAccessToken(token string, tokens []*storepb.AccessTokensUserSetting_AccessToken) bool {
@@ -215,15 +197,12 @@ type AuthResult struct {
 // It tries session cookie first, then JWT token.
 // Returns nil if no valid credentials are provided.
 // On successful session auth, it also updates the session sliding expiration.
-func (a *Authenticator) Authenticate(ctx context.Context, sessionCookie, authHeader string) *AuthResult {
+func (a *Authenticator) Authenticate(ctx context.Context, sessionID, authHeader string) *AuthResult {
 	// Try session cookie authentication first
-	if sessionCookie != "" {
-		user, err := a.AuthenticateBySession(ctx, sessionCookie)
+	if sessionID != "" {
+		user, err := a.AuthenticateBySession(ctx, sessionID)
 		if err == nil && user != nil {
-			_, sessionID, parseErr := ParseSessionCookieValue(sessionCookie)
-			if parseErr == nil && sessionID != "" {
-				a.UpdateSessionLastAccessed(ctx, user.ID, sessionID)
-			}
+			a.UpdateSessionLastAccessed(ctx, user.ID, sessionID)
 			return &AuthResult{User: user, SessionID: sessionID}
 		}
 	}

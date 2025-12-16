@@ -11,11 +11,9 @@ package auth
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/internal/util"
 )
@@ -40,7 +38,7 @@ const (
 	SessionSlidingDuration = 14 * 24 * time.Hour
 
 	// SessionCookieName is the HTTP cookie name used to store session information.
-	// Cookie value format: {userID}-{sessionID}.
+	// Cookie value is the session ID (UUID).
 	SessionCookieName = "user_session"
 )
 
@@ -108,37 +106,7 @@ func generateToken(username string, userID int32, audience string, expirationTim
 //
 // Uses UUID v4 (random) for high entropy and uniqueness.
 // Session IDs are stored in user settings and used to identify browser sessions.
+// The session ID is stored directly in the cookie as the cookie value.
 func GenerateSessionID() string {
 	return util.GenUUID()
-}
-
-// BuildSessionCookieValue creates the session cookie value.
-//
-// Format: {userID}-{sessionID}
-// Example: "123-550e8400-e29b-41d4-a716-446655440000"
-//
-// This format allows quick extraction of both user ID and session ID
-// from the cookie without database lookup during authentication.
-func BuildSessionCookieValue(userID int32, sessionID string) string {
-	return fmt.Sprintf("%d-%s", userID, sessionID)
-}
-
-// ParseSessionCookieValue extracts user ID and session ID from cookie value.
-//
-// Input format: "{userID}-{sessionID}"
-// Returns: (userID, sessionID, error)
-//
-// Example: "123-550e8400-..." → (123, "550e8400-...", nil).
-func ParseSessionCookieValue(cookieValue string) (int32, string, error) {
-	parts := strings.SplitN(cookieValue, "-", 2)
-	if len(parts) != 2 {
-		return 0, "", errors.New("invalid session cookie format")
-	}
-
-	userID, err := util.ConvertStringToInt32(parts[0])
-	if err != nil {
-		return 0, "", errors.Errorf("invalid user ID in session cookie: %v", err)
-	}
-
-	return userID, parts[1], nil
 }

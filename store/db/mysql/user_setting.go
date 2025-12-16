@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/pkg/errors"
+
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -53,4 +55,43 @@ func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) 
 	}
 
 	return userSettingList, nil
+}
+
+func (d *DB) GetUserSessionByID(ctx context.Context, sessionID string) (*store.UserSessionQueryResult, error) {
+	// Query user_setting that contains this sessionID in the sessions array
+	// Use JSON_SEARCH to check if sessionID exists in the array
+	query := `
+		SELECT 
+			user_id,
+			value
+		FROM user_setting
+		WHERE ` + "`key`" + ` = 'SESSIONS'
+		  AND JSON_SEARCH(value, 'one', ?, NULL, '$.sessions[*].sessionId') IS NOT NULL
+	`
+	
+	var userID int32
+	var sessionsJSON string
+	
+	err := d.db.QueryRowContext(ctx, query, sessionID).Scan(&userID, &sessionsJSON)
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse the entire sessions list using protobuf unmarshaler
+	sessionsUserSetting := &storepb.SessionsUserSetting{}
+	if err := protojsonUnmarshaler.Unmarshal([]byte(sessionsJSON), sessionsUserSetting); err != nil {
+		return nil, err
+	}
+
+	// Find the specific session by ID
+	for _, session := range sessionsUserSetting.Sessions {
+		if session.SessionId == sessionID {
+			return &store.UserSessionQueryResult{
+				UserID:  userID,
+				Session: session,
+			}, nil
+		}
+	}
+
+	return nil, errors.New("session not found")
 }

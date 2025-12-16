@@ -21,6 +21,12 @@ type FindUserSetting struct {
 	Key    storepb.UserSetting_Key
 }
 
+// UserSessionQueryResult contains the result of querying a single session by ID.
+type UserSessionQueryResult struct {
+	UserID  int32
+	Session *storepb.SessionsUserSetting_Session
+}
+
 func (s *Store) UpsertUserSetting(ctx context.Context, upsert *storepb.UserSetting) (*storepb.UserSetting, error) {
 	userSettingRaw, err := convertUserSettingToRaw(upsert)
 	if err != nil {
@@ -239,6 +245,12 @@ func (s *Store) UpdateUserSessionLastAccessed(ctx context.Context, userID int32,
 	})
 
 	return err
+}
+
+// GetUserSessionByID returns the session details for the given session ID.
+// Uses database-specific JSON queries for efficient lookup without loading all sessions.
+func (s *Store) GetUserSessionByID(ctx context.Context, sessionID string) (*UserSessionQueryResult, error) {
+	return s.driver.GetUserSessionByID(ctx, sessionID)
 }
 
 // GetUserWebhooks returns the webhooks of the user.

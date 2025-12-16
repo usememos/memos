@@ -230,9 +230,8 @@ func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTim
 		slog.Error("failed to track user session", "error", err)
 	}
 
-	// Set session cookie for web use (format: userID-sessionID)
-	sessionCookieValue := auth.BuildSessionCookieValue(user.ID, sessionID)
-	sessionCookie, err := s.buildSessionCookie(ctx, sessionCookieValue, expireTime)
+	// Set session cookie for web use
+	sessionCookie, err := s.buildSessionCookie(ctx, sessionID, expireTime)
 	if err != nil {
 		return status.Errorf(codes.Internal, "failed to build session cookie, error: %v", err)
 	}
