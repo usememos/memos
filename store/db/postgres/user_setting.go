@@ -85,10 +85,10 @@ func (d *DB) GetUserSessionByID(ctx context.Context, sessionID string) (*store.U
 		      WHERE session->>'sessionId' = $1
 		  )
 	`
-	
+
 	var userID int32
 	var sessionsJSON string
-	
+
 	err := d.db.QueryRowContext(ctx, query, sessionID).Scan(&userID, &sessionsJSON)
 	if err != nil {
 		return nil, err
