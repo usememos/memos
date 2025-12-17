@@ -24,17 +24,7 @@ export const SANITIZE_SCHEMA = {
     div: [...(defaultSchema.attributes?.div || []), "className"],
     span: [...(defaultSchema.attributes?.span || []), "className", "style", ["aria*"], ["data*"]],
     // iframe attributes for video embeds
-    iframe: [
-      "src",
-      "width",
-      "height",
-      "frameborder",
-      "allowfullscreen",
-      "allow",
-      "title",
-      "referrerpolicy",
-      "loading",
-    ],
+    iframe: ["src", "width", "height", "frameborder", "allowfullscreen", "allow", "title", "referrerpolicy", "loading"],
     // MathML attributes for KaTeX rendering
     annotation: ["encoding"],
     math: ["xmlns"],
