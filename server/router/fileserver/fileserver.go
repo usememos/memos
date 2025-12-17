@@ -118,15 +118,39 @@ func (s *FileServerService) serveAttachmentFile(c echo.Context) error {
 		contentType += "; charset=utf-8"
 	}
 	// Prevent XSS attacks by serving potentially unsafe files as octet-stream
-	if strings.EqualFold(contentType, "image/svg+xml") ||
-		strings.EqualFold(contentType, "text/html") ||
-		strings.EqualFold(contentType, "application/xhtml+xml") {
-		contentType = "application/octet-stream"
+	unsafeTypes := []string{
+		"text/html",
+		"text/javascript",
+		"application/javascript",
+		"application/x-javascript",
+		"text/xml",
+		"application/xml",
+		"application/xhtml+xml",
+		"image/svg+xml",
+	}
+	for _, unsafeType := range unsafeTypes {
+		if strings.EqualFold(contentType, unsafeType) {
+			contentType = "application/octet-stream"
+			break
+		}
 	}
 
 	// Set common headers
 	c.Response().Header().Set("Content-Type", contentType)
 	c.Response().Header().Set("Cache-Control", "public, max-age=3600")
+	// Prevent MIME-type sniffing which could lead to XSS
+	c.Response().Header().Set("X-Content-Type-Options", "nosniff")
+	// Defense-in-depth: prevent embedding in frames and restrict content loading
+	c.Response().Header().Set("X-Frame-Options", "DENY")
+	c.Response().Header().Set("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline';")
+
+	// Force download for non-media files to prevent XSS execution
+	if !strings.HasPrefix(contentType, "image/") &&
+		!strings.HasPrefix(contentType, "video/") &&
+		!strings.HasPrefix(contentType, "audio/") &&
+		contentType != "application/pdf" {
+		c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%q", attachment.Filename))
+	}
 
 	// For video/audio: Use http.ServeContent for automatic range request support
 	// This is critical for Safari which REQUIRES range request support
@@ -169,6 +193,18 @@ func (s *FileServerService) serveUserAvatar(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to extract image info").SetInternal(err)
 	}
 
+	// Validate avatar MIME type to prevent XSS
+	allowedAvatarTypes := map[string]bool{
+		"image/png":  true,
+		"image/jpeg": true,
+		"image/jpg":  true,
+		"image/gif":  true,
+		"image/webp": true,
+	}
+	if !allowedAvatarTypes[imageType] {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid avatar image type")
+	}
+
 	// Decode base64 data
 	imageData, err := base64.StdEncoding.DecodeString(base64Data)
 	if err != nil {
@@ -178,6 +214,10 @@ func (s *FileServerService) serveUserAvatar(c echo.Context) error {
 	// Set cache headers for avatars
 	c.Response().Header().Set("Content-Type", imageType)
 	c.Response().Header().Set("Cache-Control", "public, max-age=3600")
+	c.Response().Header().Set("X-Content-Type-Options", "nosniff")
+	// Defense-in-depth: prevent embedding in frames
+	c.Response().Header().Set("X-Frame-Options", "DENY")
+	c.Response().Header().Set("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline';")
 
 	return c.Blob(http.StatusOK, imageType, imageData)
 }
