@@ -2,6 +2,7 @@ import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { uniqueId } from "lodash-es";
 import { computed, makeAutoObservable } from "mobx";
+import { clearAccessToken, setAccessToken } from "@/auth-state";
 import { authServiceClient, shortcutServiceClient, userServiceClient } from "@/connect";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service_pb";
 import {
@@ -322,6 +323,8 @@ const userStore = (() => {
 // 1. Fetch current authenticated user session
 // 2. Set current user in store (required for subsequent calls)
 // 3. Fetch user settings (depends on currentUser being set)
+// Note: GetCurrentSession doesn't return access token - that's only provided during login (CreateSession)
+// The auth interceptor will automatically refresh the token when needed
 export const initialUserStore = async () => {
   try {
     // Step 1: Authenticate and get current user
@@ -329,6 +332,7 @@ export const initialUserStore = async () => {
 
     if (!currentUser) {
       // No authenticated user - clear state
+      clearAccessToken();
       userStore.state.setPartial({
         currentUser: undefined,
         userGeneralSetting: undefined,
@@ -353,6 +357,21 @@ export const initialUserStore = async () => {
     await Promise.all([userStore.fetchUserSettings(), userStore.fetchUserStats()]);
   } catch (error) {
     console.error("Failed to initialize user store:", error);
+    clearAccessToken();
+  }
+};
+
+// Logout function that clears tokens and state
+export const logout = async () => {
+  try {
+    await authServiceClient.deleteSession({});
+  } finally {
+    clearAccessToken();
+    userStore.state.setPartial({
+      currentUser: undefined,
+      userGeneralSetting: undefined,
+      userMapByName: {},
+    });
   }
 };
 

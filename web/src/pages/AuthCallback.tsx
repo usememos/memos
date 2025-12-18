@@ -1,8 +1,10 @@
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { ConnectError } from "@connectrpc/connect";
 import { LoaderIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { setAccessToken } from "@/auth-state";
 import { authServiceClient } from "@/connect";
 import { absolutifyLink } from "@/helpers/utils";
 import useNavigateTo from "@/hooks/useNavigateTo";
@@ -71,7 +73,7 @@ const AuthCallback = observer(() => {
 
     (async () => {
       try {
-        await authServiceClient.createSession({
+        const response = await authServiceClient.createSession({
           credentials: {
             case: "ssoCredentials",
             value: {
@@ -82,6 +84,13 @@ const AuthCallback = observer(() => {
             },
           },
         });
+        // Store access token from login response
+        if (response.accessToken) {
+          setAccessToken(
+            response.accessToken,
+            response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined,
+          );
+        }
         setState({
           loading: false,
           errorMessage: "",

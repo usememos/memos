@@ -1,8 +1,10 @@
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { ConnectError } from "@connectrpc/connect";
 import { LoaderIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { setAccessToken } from "@/auth-state";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authServiceClient } from "@/connect";
@@ -45,12 +47,19 @@ const PasswordSignInForm = observer(() => {
 
     try {
       actionBtnLoadingState.setLoading();
-      await authServiceClient.createSession({
+      const response = await authServiceClient.createSession({
         credentials: {
           case: "passwordCredentials",
           value: { username, password },
         },
       });
+      // Store access token from login response
+      if (response.accessToken) {
+        setAccessToken(
+          response.accessToken,
+          response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined,
+        );
+      }
       await initialUserStore();
       navigateTo("/");
     } catch (error: any) {
