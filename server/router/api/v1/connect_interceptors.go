@@ -43,6 +43,10 @@ func (*MetadataInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc 
 		if xri := header.Get("X-Real-Ip"); xri != "" {
 			md.Set("x-real-ip", xri)
 		}
+		// Forward Cookie header for authentication methods that need it (e.g., RefreshToken)
+		if cookie := header.Get("Cookie"); cookie != "" {
+			md.Set("cookie", cookie)
+		}
 
 		// Set metadata in context so services can use metadata.FromIncomingContext()
 		ctx = metadata.NewIncomingContext(ctx, md)

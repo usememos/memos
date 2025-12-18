@@ -12,6 +12,7 @@ var PublicMethods = map[string]struct{}{
 	// Auth Service - login flow must be accessible without auth
 	"/memos.api.v1.AuthService/CreateSession":     {},
 	"/memos.api.v1.AuthService/GetCurrentSession": {},
+	"/memos.api.v1.AuthService/RefreshToken":      {}, // Token refresh must be accessible when access token expired
 
 	// Instance Service - needed before login to show instance info
 	"/memos.api.v1.InstanceService/GetInstanceProfile": {},
