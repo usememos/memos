@@ -19,6 +19,10 @@ message UserSetting {
     SHORTCUTS = 4;
     // The webhooks of the user.
     WEBHOOKS = 5;
+    // Refresh tokens for the user.
+    REFRESH_TOKENS = 6;
+    // Personal access tokens for the user.
+    PERSONAL_ACCESS_TOKENS = 7;
   }
 
   int32 user_id = 1;
@@ -30,6 +34,8 @@ message UserSetting {
     AccessTokensUserSetting access_tokens = 5;
     ShortcutsUserSetting shortcuts = 6;
     WebhooksUserSetting webhooks = 7;
+    RefreshTokensUserSetting refresh_tokens = 8;
+    PersonalAccessTokensUserSetting personal_access_tokens = 9;
   }
 }
 
@@ -81,6 +87,40 @@ message AccessTokensUserSetting {
     string description = 2;
   }
   repeated AccessToken access_tokens = 1;
+}
+
+message RefreshTokensUserSetting {
+  message RefreshToken {
+    // Unique identifier (matches 'tid' claim in JWT)
+    string token_id = 1;
+    // When the token expires
+    google.protobuf.Timestamp expires_at = 2;
+    // When the token was created
+    google.protobuf.Timestamp created_at = 3;
+    // Client information for session management UI
+    SessionsUserSetting.ClientInfo client_info = 4;
+    // Optional description
+    string description = 5;
+  }
+  repeated RefreshToken refresh_tokens = 1;
+}
+
+message PersonalAccessTokensUserSetting {
+  message PersonalAccessToken {
+    // Unique identifier for this token
+    string token_id = 1;
+    // SHA-256 hash of the actual token
+    string token_hash = 2;
+    // User-provided description
+    string description = 3;
+    // When the token expires (null = never)
+    google.protobuf.Timestamp expires_at = 4;
+    // When the token was created
+    google.protobuf.Timestamp created_at = 5;
+    // When the token was last used
+    google.protobuf.Timestamp last_used_at = 6;
+  }
+  repeated PersonalAccessToken tokens = 1;
 }
 
 message ShortcutsUserSetting {
