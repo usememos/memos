@@ -33,7 +33,7 @@ func (s *APIV1Service) ListMemoReactions(ctx context.Context, request *v1pb.List
 }
 
 func (s *APIV1Service) UpsertMemoReaction(ctx context.Context, request *v1pb.UpsertMemoReactionRequest) (*v1pb.Reaction, error) {
-	user, err := s.GetCurrentUser(ctx)
+	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
 	}
@@ -55,7 +55,7 @@ func (s *APIV1Service) UpsertMemoReaction(ctx context.Context, request *v1pb.Ups
 }
 
 func (s *APIV1Service) DeleteMemoReaction(ctx context.Context, request *v1pb.DeleteMemoReactionRequest) (*emptypb.Empty, error) {
-	user, err := s.GetCurrentUser(ctx)
+	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}

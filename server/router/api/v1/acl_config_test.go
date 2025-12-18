@@ -10,8 +10,8 @@ import (
 func TestPublicMethodsArePublic(t *testing.T) {
 	publicMethods := []string{
 		// Auth Service
-		"/memos.api.v1.AuthService/CreateSession",
-		"/memos.api.v1.AuthService/GetCurrentSession",
+		"/memos.api.v1.AuthService/SignIn",
+		"/memos.api.v1.AuthService/RefreshToken",
 		// Instance Service
 		"/memos.api.v1.InstanceService/GetInstanceProfile",
 		"/memos.api.v1.InstanceService/GetInstanceSetting",
@@ -39,8 +39,9 @@ func TestPublicMethodsArePublic(t *testing.T) {
 // TestProtectedMethodsRequireAuth verifies that non-public methods are recognized as protected.
 func TestProtectedMethodsRequireAuth(t *testing.T) {
 	protectedMethods := []string{
-		// Auth Service - logout requires auth
-		"/memos.api.v1.AuthService/DeleteSession",
+		// Auth Service - logout and get current user require auth
+		"/memos.api.v1.AuthService/SignOut",
+		"/memos.api.v1.AuthService/GetCurrentUser",
 		// Instance Service - admin operations
 		"/memos.api.v1.InstanceService/UpdateInstanceSetting",
 		// User Service - modification operations

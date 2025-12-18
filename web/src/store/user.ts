@@ -2,6 +2,7 @@ import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { uniqueId } from "lodash-es";
 import { computed, makeAutoObservable } from "mobx";
+import { clearAccessToken, setAccessToken } from "@/auth-state";
 import { authServiceClient, shortcutServiceClient, userServiceClient } from "@/connect";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service_pb";
 import {
@@ -322,13 +323,21 @@ const userStore = (() => {
 // 1. Fetch current authenticated user session
 // 2. Set current user in store (required for subsequent calls)
 // 3. Fetch user settings (depends on currentUser being set)
+//
+// Auth flow:
+// - On first call, GetCurrentSession has no access token
+// - The interceptor will automatically call RefreshToken using the HttpOnly refresh cookie
+// - If refresh succeeds, GetCurrentSession is retried with the new access token
+// - If refresh fails (no cookie or expired), user needs to login
 export const initialUserStore = async () => {
   try {
     // Step 1: Authenticate and get current user
-    const { user: currentUser } = await authServiceClient.getCurrentSession({});
+    // The interceptor will handle token refresh if needed
+    const { user: currentUser } = await authServiceClient.getCurrentUser({});
 
     if (!currentUser) {
       // No authenticated user - clear state
+      clearAccessToken();
       userStore.state.setPartial({
         currentUser: undefined,
         userGeneralSetting: undefined,
@@ -351,8 +360,44 @@ export const initialUserStore = async () => {
     // CRITICAL: This must happen after currentUser is set in step 2
     // The fetchUserSettings() and fetchUserStats() methods check state.currentUser internally
     await Promise.all([userStore.fetchUserSettings(), userStore.fetchUserStats()]);
-  } catch (error) {
+  } catch (error: any) {
+    // Auth failed (no refresh token, expired, or other error)
+    // Clear state and let user login again
     console.error("Failed to initialize user store:", error);
+    clearAccessToken();
+    userStore.state.setPartial({
+      currentUser: undefined,
+      userGeneralSetting: undefined,
+      userMapByName: {},
+    });
+  }
+};
+
+// Logout function that clears tokens and state
+// This calls DeleteSession which:
+// 1. Revokes the refresh token in the database
+// 2. Clears both session and refresh token cookies
+// We then clear the in-memory access token and reset the store state
+export const logout = async () => {
+  try {
+    await authServiceClient.signOut({});
+  } catch (error) {
+    // Log error but continue with local cleanup
+    console.error("Failed to delete session on server:", error);
+  } finally {
+    // Always clear local state, even if server call fails
+    clearAccessToken();
+    userStore.state.setPartial({
+      currentUser: undefined,
+      userGeneralSetting: undefined,
+      userSessionsSetting: undefined,
+      userAccessTokensSetting: undefined,
+      userWebhooksSetting: undefined,
+      shortcuts: [],
+      notifications: [],
+      userMapByName: {},
+      userStatsByName: {},
+    });
   }
 };
 

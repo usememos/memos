@@ -57,41 +57,37 @@ func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) 
 	return userSettingList, nil
 }
 
-func (d *DB) GetUserSessionByID(ctx context.Context, sessionID string) (*store.UserSessionQueryResult, error) {
-	// Query user_setting that contains this sessionID in the sessions array
-	// Use JSON_SEARCH to check if sessionID exists in the array
+func (d *DB) GetUserByPATHash(ctx context.Context, tokenHash string) (*store.PATQueryResult, error) {
 	query := `
-		SELECT 
+		SELECT
 			user_id,
 			value
 		FROM user_setting
-		WHERE ` + "`key`" + ` = 'SESSIONS'
-		  AND JSON_SEARCH(value, 'one', ?, NULL, '$.sessions[*].sessionId') IS NOT NULL
+		WHERE ` + "`key`" + ` = 'PERSONAL_ACCESS_TOKENS'
+		  AND JSON_SEARCH(value, 'one', ?, NULL, '$.tokens[*].tokenHash') IS NOT NULL
 	`
 
 	var userID int32
-	var sessionsJSON string
+	var tokensJSON string
 
-	err := d.db.QueryRowContext(ctx, query, sessionID).Scan(&userID, &sessionsJSON)
+	err := d.db.QueryRowContext(ctx, query, tokenHash).Scan(&userID, &tokensJSON)
 	if err != nil {
 		return nil, err
 	}
 
-	// Parse the entire sessions list using protobuf unmarshaler
-	sessionsUserSetting := &storepb.SessionsUserSetting{}
-	if err := protojsonUnmarshaler.Unmarshal([]byte(sessionsJSON), sessionsUserSetting); err != nil {
+	patsUserSetting := &storepb.PersonalAccessTokensUserSetting{}
+	if err := protojsonUnmarshaler.Unmarshal([]byte(tokensJSON), patsUserSetting); err != nil {
 		return nil, err
 	}
 
-	// Find the specific session by ID
-	for _, session := range sessionsUserSetting.Sessions {
-		if session.SessionId == sessionID {
-			return &store.UserSessionQueryResult{
-				UserID:  userID,
-				Session: session,
+	for _, pat := range patsUserSetting.Tokens {
+		if pat.TokenHash == tokenHash {
+			return &store.PATQueryResult{
+				UserID: userID,
+				PAT:    pat,
 			}, nil
 		}
 	}
 
-	return nil, errors.New("session not found")
+	return nil, errors.New("PAT not found")
 }

@@ -22,7 +22,7 @@ import (
 )
 
 func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoRequest) (*v1pb.Memo, error) {
-	user, err := s.GetCurrentUser(ctx)
+	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user")
 	}
@@ -149,7 +149,7 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		memoFind.Filters = append(memoFind.Filters, request.Filter)
 	}
 
-	currentUser, err := s.GetCurrentUser(ctx)
+	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user")
 	}
@@ -276,7 +276,7 @@ func (s *APIV1Service) GetMemo(ctx context.Context, request *v1pb.GetMemoRequest
 		return nil, status.Errorf(codes.NotFound, "memo not found")
 	}
 	if memo.Visibility != store.Public {
-		user, err := s.GetCurrentUser(ctx)
+		user, err := s.fetchCurrentUser(ctx)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get user")
 		}
@@ -326,7 +326,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 		return nil, status.Errorf(codes.NotFound, "memo not found")
 	}
 
-	user, err := s.GetCurrentUser(ctx)
+	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
 	}
@@ -464,7 +464,7 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 		return nil, status.Errorf(codes.NotFound, "memo not found")
 	}
 
-	user, err := s.GetCurrentUser(ctx)
+	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
 	}
@@ -615,7 +615,7 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 		return nil, status.Errorf(codes.Internal, "failed to get memo")
 	}
 
-	currentUser, err := s.GetCurrentUser(ctx)
+	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user")
 	}

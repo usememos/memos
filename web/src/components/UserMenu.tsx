@@ -48,7 +48,7 @@ const UserMenu = observer((props: Props) => {
   };
 
   const handleSignOut = async () => {
-    await authServiceClient.deleteSession({});
+    await authServiceClient.signOut({});
 
     // Clear user-specific localStorage items (e.g., drafts)
     // Preserve app-wide settings like theme
