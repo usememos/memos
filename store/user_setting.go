@@ -266,6 +266,23 @@ func (s *Store) GetUserSessionByID(ctx context.Context, sessionID string) (*User
 	return s.driver.GetUserSessionByID(ctx, sessionID)
 }
 
+// GetUserByPATHash finds a user by PAT hash.
+func (s *Store) GetUserByPATHash(ctx context.Context, tokenHash string) (*PATQueryResult, error) {
+	result, err := s.driver.GetUserByPATHash(ctx, tokenHash)
+	if err != nil {
+		return nil, err
+	}
+
+	// Fetch user info
+	user, err := s.GetUser(ctx, &FindUser{ID: &result.UserID})
+	if err != nil {
+		return nil, err
+	}
+	result.User = user
+
+	return result, nil
+}
+
 // GetUserRefreshTokens returns the refresh tokens of the user.
 func (s *Store) GetUserRefreshTokens(ctx context.Context, userID int32) ([]*storepb.RefreshTokensUserSetting_RefreshToken, error) {
 	userSetting, err := s.GetUserSetting(ctx, &FindUserSetting{
