@@ -185,9 +185,7 @@ func (s *APIV1Service) CreateSession(ctx context.Context, request *v1pb.CreateSe
 		return nil, status.Errorf(codes.PermissionDenied, "user has been archived with username %s", existingUser.Username)
 	}
 
-	// Default session expiration time is 100 year
-	expireTime := time.Now().Add(100 * 365 * 24 * time.Hour)
-	accessToken, accessExpiresAt, err := s.doSignIn(ctx, existingUser, expireTime)
+	accessToken, accessExpiresAt, err := s.doSignIn(ctx, existingUser)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to sign in: %v", err)
 	}
@@ -203,11 +201,11 @@ func (s *APIV1Service) CreateSession(ctx context.Context, request *v1pb.CreateSe
 // doSignIn performs the actual sign-in operation by creating a session and setting the cookie.
 //
 // This function:
-// 1. Generates refresh token and access token
-// 2. Stores refresh token metadata in user_setting
-// 3. Sets refresh token as HttpOnly cookie
-// 4. Returns access token and its expiry time
-func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTime time.Time) (string, time.Time, error) {
+// 1. Generates refresh token and access token.
+// 2. Stores refresh token metadata in user_setting.
+// 3. Sets refresh token as HttpOnly cookie.
+// 4. Returns access token and its expiry time.
+func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User) (string, time.Time, error) {
 	// Generate refresh token
 	tokenID := util.GenUUID()
 	refreshToken, refreshExpiresAt, err := auth.GenerateRefreshToken(user.ID, tokenID, []byte(s.Secret))

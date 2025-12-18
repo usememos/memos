@@ -114,6 +114,9 @@ func (s *Store) GetUserByPATHash(ctx context.Context, tokenHash string) (*PATQue
 	if err != nil {
 		return nil, err
 	}
+	if user == nil {
+		return nil, errors.New("user not found for PAT")
+	}
 	result.User = user
 
 	return result, nil
@@ -136,12 +139,12 @@ func (s *Store) GetUserRefreshTokens(ctx context.Context, userID int32) ([]*stor
 
 // AddUserRefreshToken adds a new refresh token for the user.
 func (s *Store) AddUserRefreshToken(ctx context.Context, userID int32, token *storepb.RefreshTokensUserSetting_RefreshToken) error {
-	existingTokens, err := s.GetUserRefreshTokens(ctx, userID)
+	tokens, err := s.GetUserRefreshTokens(ctx, userID)
 	if err != nil {
 		return err
 	}
 
-	tokens := append(existingTokens, token)
+	tokens = append(tokens, token)
 
 	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: userID,
@@ -212,12 +215,12 @@ func (s *Store) GetUserPersonalAccessTokens(ctx context.Context, userID int32) (
 
 // AddUserPersonalAccessToken adds a new PAT for the user.
 func (s *Store) AddUserPersonalAccessToken(ctx context.Context, userID int32, token *storepb.PersonalAccessTokensUserSetting_PersonalAccessToken) error {
-	existingTokens, err := s.GetUserPersonalAccessTokens(ctx, userID)
+	tokens, err := s.GetUserPersonalAccessTokens(ctx, userID)
 	if err != nil {
 		return err
 	}
 
-	tokens := append(existingTokens, token)
+	tokens = append(tokens, token)
 
 	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: userID,

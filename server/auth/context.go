@@ -24,10 +24,10 @@ const (
 	// Only set when authenticated via Bearer token.
 	AccessTokenContextKey
 
-	// UserClaimsContextKey stores the claims from access token
+	// UserClaimsContextKey stores the claims from access token.
 	UserClaimsContextKey
 
-	// RefreshTokenIDContextKey stores the refresh token ID
+	// RefreshTokenIDContextKey stores the refresh token ID.
 	RefreshTokenIDContextKey
 )
 

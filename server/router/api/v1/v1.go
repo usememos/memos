@@ -76,9 +76,16 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 				return
 			}
 
-			// Set user in context (may be nil for public endpoints)
+			// Set context based on auth result (may be nil for public endpoints)
 			if result != nil {
-				ctx = auth.SetUserInContext(ctx, result.User, result.SessionID, result.AccessToken)
+				if result.Claims != nil {
+					// Access Token V2 - stateless, use claims
+					ctx = auth.SetUserClaimsInContext(ctx, result.Claims)
+					ctx = context.WithValue(ctx, auth.UserIDContextKey, result.Claims.UserID)
+				} else if result.User != nil {
+					// PAT - have full user
+					ctx = auth.SetUserInContext(ctx, result.User, result.SessionID, result.AccessToken)
+				}
 				r = r.WithContext(ctx)
 			}
 

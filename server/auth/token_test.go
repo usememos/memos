@@ -64,12 +64,13 @@ func TestParseAccessTokenV2(t *testing.T) {
 
 	t.Run("fails with refresh token", func(t *testing.T) {
 		// Generate a refresh token and try to parse it as access token
+		// Should fail because audience mismatch is caught before type check
 		refreshToken, _, err := GenerateRefreshToken(1, "token-id", secret)
 		require.NoError(t, err)
 
 		_, err = ParseAccessTokenV2(refreshToken, secret)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid token type")
+		assert.Contains(t, err.Error(), "invalid audience")
 	})
 
 	t.Run("parses token with different roles", func(t *testing.T) {
@@ -136,12 +137,13 @@ func TestParseRefreshToken(t *testing.T) {
 
 	t.Run("fails with access token", func(t *testing.T) {
 		// Generate an access token and try to parse it as refresh token
+		// Should fail because audience mismatch is caught before type check
 		accessToken, _, err := GenerateAccessTokenV2(1, "testuser", "USER", "ACTIVE", secret)
 		require.NoError(t, err)
 
 		_, err = ParseRefreshToken(accessToken, secret)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "invalid token type")
+		assert.Contains(t, err.Error(), "invalid audience")
 	})
 }
 
@@ -226,7 +228,7 @@ func TestAccessTokenV2Integration(t *testing.T) {
 		assert.NotNil(t, claims.ExpiresAt)
 
 		// Validate expiration
-		assert.True(t, claims.ExpiresAt.Time.Equal(expiresAt) || claims.ExpiresAt.Time.Before(expiresAt))
+		assert.True(t, claims.ExpiresAt.Equal(expiresAt) || claims.ExpiresAt.Before(expiresAt))
 	})
 }
 
@@ -255,7 +257,7 @@ func TestRefreshTokenIntegration(t *testing.T) {
 		assert.NotNil(t, claims.ExpiresAt)
 
 		// Validate expiration
-		assert.True(t, claims.ExpiresAt.Time.Equal(expiresAt) || claims.ExpiresAt.Time.Before(expiresAt))
+		assert.True(t, claims.ExpiresAt.Equal(expiresAt) || claims.ExpiresAt.Before(expiresAt))
 	})
 }
 

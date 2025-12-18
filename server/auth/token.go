@@ -12,11 +12,11 @@ package auth
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/internal/util"
 )
@@ -44,19 +44,19 @@ const (
 	// Cookie value is the session ID (UUID).
 	SessionCookieName = "user_session"
 
-	// AccessTokenDuration is the lifetime of access tokens (15 minutes)
+	// AccessTokenDuration is the lifetime of access tokens (15 minutes).
 	AccessTokenDuration = 15 * time.Minute
 
-	// RefreshTokenDuration is the lifetime of refresh tokens (30 days)
+	// RefreshTokenDuration is the lifetime of refresh tokens (30 days).
 	RefreshTokenDuration = 30 * 24 * time.Hour
 
-	// RefreshTokenAudienceName is the audience claim for refresh tokens
+	// RefreshTokenAudienceName is the audience claim for refresh tokens.
 	RefreshTokenAudienceName = "user.refresh-token"
 
-	// RefreshTokenCookieName is the cookie name for refresh tokens
+	// RefreshTokenCookieName is the cookie name for refresh tokens.
 	RefreshTokenCookieName = "memos_refresh"
 
-	// PersonalAccessTokenPrefix is the prefix for PAT tokens
+	// PersonalAccessTokenPrefix is the prefix for PAT tokens.
 	PersonalAccessTokenPrefix = "memos_pat_"
 )
 
@@ -158,6 +158,7 @@ func GenerateAccessTokenV2(userID int32, username, role, status string, secret [
 		Username: username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    Issuer,
+			Audience:  jwt.ClaimStrings{AccessTokenAudienceName},
 			Subject:   fmt.Sprint(userID),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			ExpiresAt: jwt.NewNumericDate(expiresAt),
@@ -184,6 +185,7 @@ func GenerateRefreshToken(userID int32, tokenID string, secret []byte) (string, 
 		TokenID: tokenID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    Issuer,
+			Audience:  jwt.ClaimStrings{RefreshTokenAudienceName},
 			Subject:   fmt.Sprint(userID),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			ExpiresAt: jwt.NewNumericDate(expiresAt),
@@ -217,24 +219,32 @@ func HashPersonalAccessToken(token string) string {
 	return hex.EncodeToString(hash[:])
 }
 
-// ParseAccessTokenV2 parses and validates a short-lived access token.
-func ParseAccessTokenV2(tokenString string, secret []byte) (*AccessTokenClaims, error) {
-	claims := &AccessTokenClaims{}
-	_, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (any, error) {
+// verifyJWTKeyFunc returns a jwt.Keyfunc that validates the signing method and key ID.
+func verifyJWTKeyFunc(secret []byte) jwt.Keyfunc {
+	return func(t *jwt.Token) (any, error) {
 		if t.Method.Alg() != jwt.SigningMethodHS256.Name {
-			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+			return nil, errors.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
 		kid, ok := t.Header["kid"].(string)
 		if !ok || kid != KeyID {
-			return nil, fmt.Errorf("unexpected kid: %v", t.Header["kid"])
+			return nil, errors.Errorf("unexpected kid: %v", t.Header["kid"])
 		}
 		return secret, nil
-	})
+	}
+}
+
+// ParseAccessTokenV2 parses and validates a short-lived access token.
+func ParseAccessTokenV2(tokenString string, secret []byte) (*AccessTokenClaims, error) {
+	claims := &AccessTokenClaims{}
+	_, err := jwt.ParseWithClaims(tokenString, claims, verifyJWTKeyFunc(secret),
+		jwt.WithIssuer(Issuer),
+		jwt.WithAudience(AccessTokenAudienceName),
+	)
 	if err != nil {
 		return nil, err
 	}
 	if claims.Type != "access" {
-		return nil, errors.New("invalid token type")
+		return nil, errors.New("invalid token type: expected access token")
 	}
 	return claims, nil
 }
@@ -242,21 +252,15 @@ func ParseAccessTokenV2(tokenString string, secret []byte) (*AccessTokenClaims, 
 // ParseRefreshToken parses and validates a refresh token.
 func ParseRefreshToken(tokenString string, secret []byte) (*RefreshTokenClaims, error) {
 	claims := &RefreshTokenClaims{}
-	_, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (any, error) {
-		if t.Method.Alg() != jwt.SigningMethodHS256.Name {
-			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
-		}
-		kid, ok := t.Header["kid"].(string)
-		if !ok || kid != KeyID {
-			return nil, fmt.Errorf("unexpected kid: %v", t.Header["kid"])
-		}
-		return secret, nil
-	})
+	_, err := jwt.ParseWithClaims(tokenString, claims, verifyJWTKeyFunc(secret),
+		jwt.WithIssuer(Issuer),
+		jwt.WithAudience(RefreshTokenAudienceName),
+	)
 	if err != nil {
 		return nil, err
 	}
 	if claims.Type != "refresh" {
-		return nil, errors.New("invalid token type")
+		return nil, errors.New("invalid token type: expected refresh token")
 	}
 	return claims, nil
 }

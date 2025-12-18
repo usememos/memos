@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"log/slog"
 	"strings"
 	"time"
 
@@ -34,8 +35,6 @@ func NewAuthenticator(store *store.Store, secret string) *Authenticator {
 		secret: secret,
 	}
 }
-
-
 
 // AuthenticateByAccessTokenV2 validates a short-lived access token.
 // Returns claims without database query (stateless validation).
@@ -135,7 +134,7 @@ type AuthResult struct {
 // Authenticate tries to authenticate using the provided credentials.
 // Priority: 1. Access Token V2, 2. PAT
 // Returns nil if no valid credentials are provided.
-func (a *Authenticator) Authenticate(ctx context.Context, sessionID, authHeader string) *AuthResult {
+func (a *Authenticator) Authenticate(ctx context.Context, _, authHeader string) *AuthResult {
 	token := ExtractBearerToken(authHeader)
 
 	// Try Access Token V2 (stateless)
@@ -153,9 +152,11 @@ func (a *Authenticator) Authenticate(ctx context.Context, sessionID, authHeader 
 	if token != "" && strings.HasPrefix(token, PersonalAccessTokenPrefix) {
 		user, pat, err := a.AuthenticateByPAT(ctx, token)
 		if err == nil && user != nil {
-			// Update last used (fire-and-forget)
+			// Update last used (fire-and-forget with logging)
 			go func() {
-				_ = a.store.UpdatePATLastUsed(context.Background(), user.ID, pat.TokenId, timestamppb.Now())
+				if err := a.store.UpdatePATLastUsed(context.Background(), user.ID, pat.TokenId, timestamppb.Now()); err != nil {
+					slog.Warn("failed to update PAT last used time", "error", err, "userID", user.ID)
+				}
 			}()
 			return &AuthResult{User: user, AccessToken: token}
 		}
