@@ -339,7 +339,9 @@ func (*APIV1Service) buildRefreshTokenCookie(ctx context.Context, refreshToken s
 	if expireTime.IsZero() {
 		attrs = append(attrs, "Expires=Thu, 01 Jan 1970 00:00:00 GMT")
 	} else {
-		attrs = append(attrs, "Expires="+expireTime.Format(time.RFC1123))
+		// RFC 6265 requires cookie expiration dates to use GMT timezone
+		// Convert to UTC and format with explicit "GMT" to ensure browser compatibility
+		attrs = append(attrs, "Expires="+expireTime.UTC().Format("Mon, 02 Jan 2006 15:04:05 GMT"))
 	}
 
 	// Try to determine if the request is HTTPS by checking the origin header

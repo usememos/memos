@@ -1,5 +1,4 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import { ConnectError } from "@connectrpc/connect";
 import { LoaderIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -59,9 +58,10 @@ const PasswordSignInForm = observer(() => {
       }
       await initialUserStore();
       navigateTo("/");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      toast.error((error as ConnectError).message || "Failed to sign in.");
+      const message = error instanceof Error ? error.message : "Failed to sign in.";
+      toast.error(message);
     }
     actionBtnLoadingState.setFinish();
   };
@@ -92,7 +92,7 @@ const PasswordSignInForm = observer(() => {
             readOnly={actionBtnLoadingState.isLoading}
             placeholder={t("common.password")}
             value={password}
-            autoComplete="password"
+            autoComplete="current-password"
             autoCapitalize="off"
             spellCheck={false}
             onChange={handlePasswordInputChanged}

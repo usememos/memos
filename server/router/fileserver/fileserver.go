@@ -287,10 +287,10 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c ech
 }
 
 // getCurrentUser retrieves the current authenticated user from the Echo context.
-// It checks Bearer tokens for authentication (Access Token V2 or PAT).
+// Authentication priority: Bearer token (Access Token V2 or PAT) > Refresh token cookie.
 // Uses the shared Authenticator for consistent authentication logic.
 func (s *FileServerService) getCurrentUser(ctx context.Context, c echo.Context) (*store.User, error) {
-	// Try Bearer token authentication
+	// Try Bearer token authentication first
 	authHeader := c.Request().Header.Get("Authorization")
 	if authHeader != "" {
 		token := auth.ExtractBearerToken(authHeader)
@@ -313,6 +313,20 @@ func (s *FileServerService) getCurrentUser(ctx context.Context, c echo.Context) 
 				if err == nil && user != nil {
 					return user, nil
 				}
+			}
+		}
+	}
+
+	// Fallback: Try refresh token cookie authentication
+	// This allows protected attachments to load even when access token has expired,
+	// as long as the user has a valid refresh token cookie.
+	cookieHeader := c.Request().Header.Get("Cookie")
+	if cookieHeader != "" {
+		refreshToken := auth.ExtractRefreshTokenFromCookie(cookieHeader)
+		if refreshToken != "" {
+			user, _, err := s.authenticator.AuthenticateByRefreshToken(ctx, refreshToken)
+			if err == nil && user != nil {
+				return user, nil
 			}
 		}
 	}

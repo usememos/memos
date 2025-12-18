@@ -1,4 +1,5 @@
-import { createClient, Interceptor } from "@connectrpc/connect";
+import { timestampDate } from "@bufbuild/protobuf/wkt";
+import { Code, ConnectError, createClient, type Interceptor } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { getAccessToken, setAccessToken } from "./auth-state";
 import { ActivityService } from "./types/proto/api/v1/activity_service_pb";
@@ -13,7 +14,13 @@ import { UserService } from "./types/proto/api/v1/user_service_pb";
 let isRefreshing = false;
 let refreshPromise: Promise<void> | null = null;
 
-// Auth interceptor that attaches access token and handles 401 errors by refreshing
+/**
+ * Authentication interceptor that:
+ * 1. Attaches access token to outgoing requests
+ * 2. Handles 401 Unauthenticated errors by refreshing the token
+ * 3. Retries the original request with the new token
+ * 4. Redirects to login if refresh fails
+ */
 const authInterceptor: Interceptor = (next) => async (req) => {
   // Add access token to request if available
   const token = getAccessToken();
@@ -23,9 +30,9 @@ const authInterceptor: Interceptor = (next) => async (req) => {
 
   try {
     return await next(req);
-  } catch (error: any) {
-    // Handle unauthenticated error - try to refresh token
-    if (error.code === "unauthenticated" && !req.header.get("X-Retry")) {
+  } catch (error) {
+    // Only handle ConnectError with Unauthenticated code
+    if (error instanceof ConnectError && error.code === Code.Unauthenticated && !req.header.get("X-Retry")) {
       // Prevent concurrent refresh attempts
       if (!isRefreshing) {
         isRefreshing = true;
@@ -47,8 +54,10 @@ const authInterceptor: Interceptor = (next) => async (req) => {
       } catch (refreshError) {
         isRefreshing = false;
         refreshPromise = null;
-        // Refresh failed - redirect to login
-        window.location.href = "/auth";
+        // Refresh failed - redirect to login (only if not already there)
+        if (!window.location.pathname.startsWith("/auth")) {
+          window.location.href = "/auth";
+        }
         throw refreshError;
       }
     }
@@ -56,24 +65,48 @@ const authInterceptor: Interceptor = (next) => async (req) => {
   }
 };
 
-async function refreshAccessToken(): Promise<void> {
-  const response = await fetch("/api/v1/auth/refresh", {
-    method: "POST",
-    credentials: "include", // Include HttpOnly cookies with refresh token
+/**
+ * Custom fetch that includes credentials for cookie handling.
+ * Required for HttpOnly refresh token cookie to be sent/received.
+ */
+const fetchWithCredentials: typeof globalThis.fetch = (input, init) => {
+  return globalThis.fetch(input, {
+    ...init,
+    credentials: "include",
   });
+};
 
-  if (!response.ok) {
-    throw new Error("Failed to refresh token");
-  }
+/**
+ * Separate transport for refresh token operations.
+ * Uses no auth interceptor to avoid circular dependency when the main
+ * interceptor triggers a refresh.
+ */
+const refreshTransport = createConnectTransport({
+  baseUrl: window.location.origin,
+  useBinaryFormat: true,
+  fetch: fetchWithCredentials,
+  interceptors: [], // No interceptors to avoid recursion
+});
 
-  const data = await response.json();
-  setAccessToken(data.accessToken, new Date(data.expiresAt));
+// Dedicated auth client for refresh operations only
+const refreshAuthClient = createClient(AuthService, refreshTransport);
+
+/**
+ * Refreshes the access token using the HttpOnly refresh token cookie.
+ * Called automatically by the auth interceptor when requests fail with 401.
+ */
+async function refreshAccessToken(): Promise<void> {
+  const response = await refreshAuthClient.refreshToken({});
+  setAccessToken(response.accessToken, response.expiresAt ? timestampDate(response.expiresAt) : undefined);
 }
 
+/**
+ * Main transport for all API requests.
+ */
 const transport = createConnectTransport({
   baseUrl: window.location.origin,
-  // Use binary protobuf format for better performance (smaller payloads, faster serialization)
   useBinaryFormat: true,
+  fetch: fetchWithCredentials,
   interceptors: [authInterceptor],
 });
 
