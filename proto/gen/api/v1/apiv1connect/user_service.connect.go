@@ -125,7 +125,7 @@ type UserServiceClient interface {
 	// ListUserAccessTokens returns a list of access tokens for a user.
 	ListUserAccessTokens(context.Context, *connect.Request[v1.ListUserAccessTokensRequest]) (*connect.Response[v1.ListUserAccessTokensResponse], error)
 	// CreateUserAccessToken creates a new access token for a user.
-	CreateUserAccessToken(context.Context, *connect.Request[v1.CreateUserAccessTokenRequest]) (*connect.Response[v1.UserAccessToken], error)
+	CreateUserAccessToken(context.Context, *connect.Request[v1.CreateUserAccessTokenRequest]) (*connect.Response[v1.CreateUserAccessTokenResponse], error)
 	// DeleteUserAccessToken deletes an access token.
 	DeleteUserAccessToken(context.Context, *connect.Request[v1.DeleteUserAccessTokenRequest]) (*connect.Response[emptypb.Empty], error)
 	// ListUserSessions returns a list of active sessions for a user.
@@ -225,7 +225,7 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceMethods.ByName("ListUserAccessTokens")),
 			connect.WithClientOptions(opts...),
 		),
-		createUserAccessToken: connect.NewClient[v1.CreateUserAccessTokenRequest, v1.UserAccessToken](
+		createUserAccessToken: connect.NewClient[v1.CreateUserAccessTokenRequest, v1.CreateUserAccessTokenResponse](
 			httpClient,
 			baseURL+UserServiceCreateUserAccessTokenProcedure,
 			connect.WithSchema(userServiceMethods.ByName("CreateUserAccessToken")),
@@ -307,7 +307,7 @@ type userServiceClient struct {
 	updateUserSetting      *connect.Client[v1.UpdateUserSettingRequest, v1.UserSetting]
 	listUserSettings       *connect.Client[v1.ListUserSettingsRequest, v1.ListUserSettingsResponse]
 	listUserAccessTokens   *connect.Client[v1.ListUserAccessTokensRequest, v1.ListUserAccessTokensResponse]
-	createUserAccessToken  *connect.Client[v1.CreateUserAccessTokenRequest, v1.UserAccessToken]
+	createUserAccessToken  *connect.Client[v1.CreateUserAccessTokenRequest, v1.CreateUserAccessTokenResponse]
 	deleteUserAccessToken  *connect.Client[v1.DeleteUserAccessTokenRequest, emptypb.Empty]
 	listUserSessions       *connect.Client[v1.ListUserSessionsRequest, v1.ListUserSessionsResponse]
 	revokeUserSession      *connect.Client[v1.RevokeUserSessionRequest, emptypb.Empty]
@@ -376,7 +376,7 @@ func (c *userServiceClient) ListUserAccessTokens(ctx context.Context, req *conne
 }
 
 // CreateUserAccessToken calls memos.api.v1.UserService.CreateUserAccessToken.
-func (c *userServiceClient) CreateUserAccessToken(ctx context.Context, req *connect.Request[v1.CreateUserAccessTokenRequest]) (*connect.Response[v1.UserAccessToken], error) {
+func (c *userServiceClient) CreateUserAccessToken(ctx context.Context, req *connect.Request[v1.CreateUserAccessTokenRequest]) (*connect.Response[v1.CreateUserAccessTokenResponse], error) {
 	return c.createUserAccessToken.CallUnary(ctx, req)
 }
 
@@ -458,7 +458,7 @@ type UserServiceHandler interface {
 	// ListUserAccessTokens returns a list of access tokens for a user.
 	ListUserAccessTokens(context.Context, *connect.Request[v1.ListUserAccessTokensRequest]) (*connect.Response[v1.ListUserAccessTokensResponse], error)
 	// CreateUserAccessToken creates a new access token for a user.
-	CreateUserAccessToken(context.Context, *connect.Request[v1.CreateUserAccessTokenRequest]) (*connect.Response[v1.UserAccessToken], error)
+	CreateUserAccessToken(context.Context, *connect.Request[v1.CreateUserAccessTokenRequest]) (*connect.Response[v1.CreateUserAccessTokenResponse], error)
 	// DeleteUserAccessToken deletes an access token.
 	DeleteUserAccessToken(context.Context, *connect.Request[v1.DeleteUserAccessTokenRequest]) (*connect.Response[emptypb.Empty], error)
 	// ListUserSessions returns a list of active sessions for a user.
@@ -719,7 +719,7 @@ func (UnimplementedUserServiceHandler) ListUserAccessTokens(context.Context, *co
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.ListUserAccessTokens is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) CreateUserAccessToken(context.Context, *connect.Request[v1.CreateUserAccessTokenRequest]) (*connect.Response[v1.UserAccessToken], error) {
+func (UnimplementedUserServiceHandler) CreateUserAccessToken(context.Context, *connect.Request[v1.CreateUserAccessTokenRequest]) (*connect.Response[v1.CreateUserAccessTokenResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.CreateUserAccessToken is not implemented"))
 }
 

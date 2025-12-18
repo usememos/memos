@@ -1296,16 +1296,11 @@ paths:
                   required: true
                   schema:
                     type: string
-                - name: accessTokenId
-                  in: query
-                  description: Optional. The access token ID to use.
-                  schema:
-                    type: string
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/UserAccessToken'
+                            $ref: '#/components/schemas/CreateUserAccessTokenRequest'
                 required: true
             responses:
                 "200":
@@ -1313,7 +1308,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/UserAccessToken'
+                                $ref: '#/components/schemas/CreateUserAccessTokenResponse'
                 default:
                     description: Default error response
                     content:
@@ -2153,6 +2148,35 @@ components:
                     type: string
                     description: When the access token expires
                     format: date-time
+        CreateUserAccessTokenRequest:
+            required:
+                - parent
+            type: object
+            properties:
+                parent:
+                    type: string
+                    description: |-
+                        Required. The parent resource where this access token will be created.
+                         Format: users/{user}
+                description:
+                    type: string
+                    description: Optional. Description of the access token.
+                expiresInDays:
+                    type: integer
+                    description: Optional. Expiration duration in days (0 = never expires).
+                    format: int32
+        CreateUserAccessTokenResponse:
+            type: object
+            properties:
+                accessToken:
+                    allOf:
+                        - $ref: '#/components/schemas/UserAccessToken'
+                    description: The access token metadata.
+                token:
+                    type: string
+                    description: |-
+                        The actual token value - only returned on creation.
+                         This is the only time the token value will be visible.
         FieldMapping:
             type: object
             properties:
@@ -2929,23 +2953,24 @@ components:
                     description: |-
                         The resource name of the access token.
                          Format: users/{user}/accessTokens/{access_token}
-                accessToken:
-                    readOnly: true
-                    type: string
-                    description: Output only. The access token value.
                 description:
                     type: string
                     description: The description of the access token.
-                issuedAt:
+                createdAt:
                     readOnly: true
                     type: string
-                    description: Output only. The issued timestamp.
+                    description: Output only. The creation timestamp.
                     format: date-time
                 expiresAt:
                     type: string
                     description: Optional. The expiration timestamp.
                     format: date-time
-            description: User access token message
+                lastUsedAt:
+                    readOnly: true
+                    type: string
+                    description: Output only. The last used timestamp.
+                    format: date-time
+            description: User access token message (metadata only - no token value)
         UserNotification:
             type: object
             properties:

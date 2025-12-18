@@ -74,7 +74,7 @@ type UserServiceClient interface {
 	// ListUserAccessTokens returns a list of access tokens for a user.
 	ListUserAccessTokens(ctx context.Context, in *ListUserAccessTokensRequest, opts ...grpc.CallOption) (*ListUserAccessTokensResponse, error)
 	// CreateUserAccessToken creates a new access token for a user.
-	CreateUserAccessToken(ctx context.Context, in *CreateUserAccessTokenRequest, opts ...grpc.CallOption) (*UserAccessToken, error)
+	CreateUserAccessToken(ctx context.Context, in *CreateUserAccessTokenRequest, opts ...grpc.CallOption) (*CreateUserAccessTokenResponse, error)
 	// DeleteUserAccessToken deletes an access token.
 	DeleteUserAccessToken(ctx context.Context, in *DeleteUserAccessTokenRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ListUserSessions returns a list of active sessions for a user.
@@ -215,9 +215,9 @@ func (c *userServiceClient) ListUserAccessTokens(ctx context.Context, in *ListUs
 	return out, nil
 }
 
-func (c *userServiceClient) CreateUserAccessToken(ctx context.Context, in *CreateUserAccessTokenRequest, opts ...grpc.CallOption) (*UserAccessToken, error) {
+func (c *userServiceClient) CreateUserAccessToken(ctx context.Context, in *CreateUserAccessTokenRequest, opts ...grpc.CallOption) (*CreateUserAccessTokenResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UserAccessToken)
+	out := new(CreateUserAccessTokenResponse)
 	err := c.cc.Invoke(ctx, UserService_CreateUserAccessToken_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -355,7 +355,7 @@ type UserServiceServer interface {
 	// ListUserAccessTokens returns a list of access tokens for a user.
 	ListUserAccessTokens(context.Context, *ListUserAccessTokensRequest) (*ListUserAccessTokensResponse, error)
 	// CreateUserAccessToken creates a new access token for a user.
-	CreateUserAccessToken(context.Context, *CreateUserAccessTokenRequest) (*UserAccessToken, error)
+	CreateUserAccessToken(context.Context, *CreateUserAccessTokenRequest) (*CreateUserAccessTokenResponse, error)
 	// DeleteUserAccessToken deletes an access token.
 	DeleteUserAccessToken(context.Context, *DeleteUserAccessTokenRequest) (*emptypb.Empty, error)
 	// ListUserSessions returns a list of active sessions for a user.
@@ -419,7 +419,7 @@ func (UnimplementedUserServiceServer) ListUserSettings(context.Context, *ListUse
 func (UnimplementedUserServiceServer) ListUserAccessTokens(context.Context, *ListUserAccessTokensRequest) (*ListUserAccessTokensResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListUserAccessTokens not implemented")
 }
-func (UnimplementedUserServiceServer) CreateUserAccessToken(context.Context, *CreateUserAccessTokenRequest) (*UserAccessToken, error) {
+func (UnimplementedUserServiceServer) CreateUserAccessToken(context.Context, *CreateUserAccessTokenRequest) (*CreateUserAccessTokenResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CreateUserAccessToken not implemented")
 }
 func (UnimplementedUserServiceServer) DeleteUserAccessToken(context.Context, *DeleteUserAccessTokenRequest) (*emptypb.Empty, error) {

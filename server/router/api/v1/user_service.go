@@ -556,9 +556,8 @@ func (s *APIV1Service) ListUserAccessTokens(ctx context.Context, request *v1pb.L
 
 		accessTokenResponse := &v1pb.UserAccessToken{
 			Name:        fmt.Sprintf("users/%d/accessTokens/%s", userID, userAccessToken.AccessToken),
-			AccessToken: userAccessToken.AccessToken,
 			Description: userAccessToken.Description,
-			IssuedAt:    timestamppb.New(claims.IssuedAt.Time),
+			CreatedAt:   timestamppb.New(claims.IssuedAt.Time),
 		}
 		if claims.ExpiresAt != nil {
 			accessTokenResponse.ExpiresAt = timestamppb.New(claims.ExpiresAt.Time)
@@ -566,9 +565,9 @@ func (s *APIV1Service) ListUserAccessTokens(ctx context.Context, request *v1pb.L
 		accessTokens = append(accessTokens, accessTokenResponse)
 	}
 
-	// Sort by issued time in descending order.
+	// Sort by created time in descending order.
 	slices.SortFunc(accessTokens, func(i, j *v1pb.UserAccessToken) int {
-		return int(i.IssuedAt.Seconds - j.IssuedAt.Seconds)
+		return int(i.CreatedAt.Seconds - j.CreatedAt.Seconds)
 	})
 	response := &v1pb.ListUserAccessTokensResponse{
 		AccessTokens: accessTokens,
@@ -596,7 +595,7 @@ func (s *APIV1Service) ListUserAccessTokens(ctx context.Context, request *v1pb.L
 //
 // Authentication: Required (session cookie or access token)
 // Authorization: User can only create tokens for themselves.
-func (s *APIV1Service) CreateUserAccessToken(ctx context.Context, request *v1pb.CreateUserAccessTokenRequest) (*v1pb.UserAccessToken, error) {
+func (s *APIV1Service) CreateUserAccessToken(ctx context.Context, request *v1pb.CreateUserAccessTokenRequest) (*v1pb.CreateUserAccessTokenResponse, error) {
 	userID, err := ExtractUserIDFromName(request.Parent)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
@@ -613,8 +612,8 @@ func (s *APIV1Service) CreateUserAccessToken(ctx context.Context, request *v1pb.
 	}
 
 	expiresAt := time.Time{}
-	if request.AccessToken.ExpiresAt != nil {
-		expiresAt = request.AccessToken.ExpiresAt.AsTime()
+	if request.ExpiresInDays > 0 {
+		expiresAt = time.Now().AddDate(0, 0, int(request.ExpiresInDays))
 	}
 
 	accessToken, err := auth.GenerateAccessToken(currentUser.Username, currentUser.ID, expiresAt, []byte(s.Secret))
@@ -639,20 +638,23 @@ func (s *APIV1Service) CreateUserAccessToken(ctx context.Context, request *v1pb.
 	}
 
 	// Upsert the access token to user setting store.
-	if err := s.UpsertAccessTokenToStore(ctx, currentUser, accessToken, request.AccessToken.Description); err != nil {
+	if err := s.UpsertAccessTokenToStore(ctx, currentUser, accessToken, request.Description); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to upsert access token to store: %v", err)
 	}
 
 	userAccessToken := &v1pb.UserAccessToken{
 		Name:        fmt.Sprintf("users/%d/accessTokens/%s", userID, accessToken),
-		AccessToken: accessToken,
-		Description: request.AccessToken.Description,
-		IssuedAt:    timestamppb.New(claims.IssuedAt.Time),
+		Description: request.Description,
+		CreatedAt:   timestamppb.New(claims.IssuedAt.Time),
 	}
 	if claims.ExpiresAt != nil {
 		userAccessToken.ExpiresAt = timestamppb.New(claims.ExpiresAt.Time)
 	}
-	return userAccessToken, nil
+
+	return &v1pb.CreateUserAccessTokenResponse{
+		AccessToken: userAccessToken,
+		Token:       accessToken,
+	}, nil
 }
 
 // DeleteUserAccessToken revokes a Personal Access Token.
@@ -1303,7 +1305,6 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32
 		for _, token := range accessTokens.AccessTokens {
 			apiToken := &v1pb.UserAccessToken{
 				Name:        fmt.Sprintf("users/%d/accessTokens/%s", userID, token.AccessToken),
-				AccessToken: token.AccessToken,
 				Description: token.Description,
 			}
 			apiTokens = append(apiTokens, apiToken)
@@ -1386,23 +1387,9 @@ func convertUserSettingToStore(apiSetting *v1pb.UserSetting, userID int32, key s
 			return nil, errors.Errorf("sessions setting is required")
 		}
 	case storepb.UserSetting_ACCESS_TOKENS:
-		if accessTokens := apiSetting.GetAccessTokensSetting(); accessTokens != nil {
-			storeTokens := make([]*storepb.AccessTokensUserSetting_AccessToken, 0, len(accessTokens.AccessTokens))
-			for _, token := range accessTokens.AccessTokens {
-				storeToken := &storepb.AccessTokensUserSetting_AccessToken{
-					AccessToken: token.AccessToken,
-					Description: token.Description,
-				}
-				storeTokens = append(storeTokens, storeToken)
-			}
-			storeSetting.Value = &storepb.UserSetting_AccessTokens{
-				AccessTokens: &storepb.AccessTokensUserSetting{
-					AccessTokens: storeTokens,
-				},
-			}
-		} else {
-			return nil, errors.Errorf("access tokens setting is required")
-		}
+		// Access tokens should be managed via CreateUserAccessToken/DeleteUserAccessToken endpoints,
+		// not via UpdateUserSetting. This prevents accidental token disclosure.
+		return nil, errors.Errorf("access tokens cannot be updated via UpdateUserSetting, use CreateUserAccessToken/DeleteUserAccessToken endpoints")
 	case storepb.UserSetting_WEBHOOKS:
 		if webhooks := apiSetting.GetWebhooksSetting(); webhooks != nil {
 			storeWebhooks := make([]*storepb.WebhooksUserSetting_Webhook, 0, len(webhooks.Webhooks))

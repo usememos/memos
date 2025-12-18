@@ -91,12 +91,11 @@ service UserService {
   }
 
   // CreateUserAccessToken creates a new access token for a user.
-  rpc CreateUserAccessToken(CreateUserAccessTokenRequest) returns (UserAccessToken) {
+  rpc CreateUserAccessToken(CreateUserAccessTokenRequest) returns (CreateUserAccessTokenResponse) {
     option (google.api.http) = {
       post: "/api/v1/{parent=users/*}/accessTokens"
-      body: "access_token"
+      body: "*"
     };
-    option (google.api.method_signature) = "parent,access_token";
   }
 
   // DeleteUserAccessToken deletes an access token.
@@ -487,7 +486,7 @@ message ListUserSettingsResponse {
   int32 total_size = 3;
 }
 
-// User access token message
+// User access token message (metadata only - no token value)
 message UserAccessToken {
   option (google.api.resource) = {
     type: "memos.api.v1/UserAccessToken"
@@ -500,17 +499,17 @@ message UserAccessToken {
   // Format: users/{user}/accessTokens/{access_token}
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
-  // Output only. The access token value.
-  string access_token = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-
   // The description of the access token.
-  string description = 3 [(google.api.field_behavior) = OPTIONAL];
+  string description = 2 [(google.api.field_behavior) = OPTIONAL];
 
-  // Output only. The issued timestamp.
-  google.protobuf.Timestamp issued_at = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Output only. The creation timestamp.
+  google.protobuf.Timestamp created_at = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
 
   // Optional. The expiration timestamp.
-  google.protobuf.Timestamp expires_at = 5 [(google.api.field_behavior) = OPTIONAL];
+  google.protobuf.Timestamp expires_at = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // Output only. The last used timestamp.
+  google.protobuf.Timestamp last_used_at = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message ListUserAccessTokensRequest {
@@ -547,11 +546,20 @@ message CreateUserAccessTokenRequest {
     (google.api.resource_reference) = {type: "memos.api.v1/User"}
   ];
 
-  // Required. The access token to create.
-  UserAccessToken access_token = 2 [(google.api.field_behavior) = REQUIRED];
+  // Optional. Description of the access token.
+  string description = 2 [(google.api.field_behavior) = OPTIONAL];
 
-  // Optional. The access token ID to use.
-  string access_token_id = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Optional. Expiration duration in days (0 = never expires).
+  int32 expires_in_days = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message CreateUserAccessTokenResponse {
+  // The access token metadata.
+  UserAccessToken access_token = 1;
+
+  // The actual token value - only returned on creation.
+  // This is the only time the token value will be visible.
+  string token = 2;
 }
 
 message DeleteUserAccessTokenRequest {

@@ -159,7 +159,7 @@ func (s *ConnectServiceHandler) ListUserAccessTokens(ctx context.Context, req *c
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) CreateUserAccessToken(ctx context.Context, req *connect.Request[v1pb.CreateUserAccessTokenRequest]) (*connect.Response[v1pb.UserAccessToken], error) {
+func (s *ConnectServiceHandler) CreateUserAccessToken(ctx context.Context, req *connect.Request[v1pb.CreateUserAccessTokenRequest]) (*connect.Response[v1pb.CreateUserAccessTokenResponse], error) {
 	resp, err := s.APIV1Service.CreateUserAccessToken(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
