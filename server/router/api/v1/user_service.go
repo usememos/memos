@@ -12,7 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/common/ast"
 	"github.com/labstack/echo/v4"
@@ -508,7 +507,7 @@ func (s *APIV1Service) ListUserSettings(ctx context.Context, request *v1pb.ListU
 //
 // Security:
 // - Only the token owner can list their tokens
-// - Returns full token strings (so users can manage/revoke them)
+// - Returns token metadata only (not the actual token value)
 // - Invalid or expired tokens are filtered out
 //
 // Authentication: Required (session cookie or access token)
@@ -519,60 +518,32 @@ func (s *APIV1Service) ListUserAccessTokens(ctx context.Context, request *v1pb.L
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
 
-	currentUser, err := s.GetCurrentUser(ctx)
+	// Verify permission
+	claims := auth.GetUserClaims(ctx)
+	if claims == nil || claims.UserID != userID {
+		currentUser, _ := s.GetCurrentUser(ctx)
+		if currentUser == nil || (currentUser.ID != userID && currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin) {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+	}
+
+	tokens, err := s.Store.GetUserPersonalAccessTokens(ctx, userID)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
-	}
-	if currentUser == nil {
-		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
-	}
-	if currentUser.ID != userID {
-		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		return nil, status.Errorf(codes.Internal, "failed to get access tokens: %v", err)
 	}
 
-	userAccessTokens, err := s.Store.GetUserAccessTokens(ctx, userID)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list access tokens: %v", err)
-	}
-
-	accessTokens := []*v1pb.UserAccessToken{}
-	for _, userAccessToken := range userAccessTokens {
-		claims := &auth.ClaimsMessage{}
-		_, err := jwt.ParseWithClaims(userAccessToken.AccessToken, claims, func(t *jwt.Token) (any, error) {
-			if t.Method.Alg() != jwt.SigningMethodHS256.Name {
-				return nil, errors.Errorf("unexpected access token signing method=%v, expect %v", t.Header["alg"], jwt.SigningMethodHS256)
-			}
-			if kid, ok := t.Header["kid"].(string); ok {
-				if kid == "v1" {
-					return []byte(s.Secret), nil
-				}
-			}
-			return nil, errors.Errorf("unexpected access token kid=%v", t.Header["kid"])
-		})
-		if err != nil {
-			// If the access token is invalid or expired, just ignore it.
-			continue
+	accessTokens := make([]*v1pb.UserAccessToken, len(tokens))
+	for i, token := range tokens {
+		accessTokens[i] = &v1pb.UserAccessToken{
+			Name:        fmt.Sprintf("%s/accessTokens/%s", request.Parent, token.TokenId),
+			Description: token.Description,
+			ExpiresAt:   token.ExpiresAt,
+			CreatedAt:   token.CreatedAt,
+			LastUsedAt:  token.LastUsedAt,
 		}
-
-		accessTokenResponse := &v1pb.UserAccessToken{
-			Name:        fmt.Sprintf("users/%d/accessTokens/%s", userID, userAccessToken.AccessToken),
-			Description: userAccessToken.Description,
-			CreatedAt:   timestamppb.New(claims.IssuedAt.Time),
-		}
-		if claims.ExpiresAt != nil {
-			accessTokenResponse.ExpiresAt = timestamppb.New(claims.ExpiresAt.Time)
-		}
-		accessTokens = append(accessTokens, accessTokenResponse)
 	}
 
-	// Sort by created time in descending order.
-	slices.SortFunc(accessTokens, func(i, j *v1pb.UserAccessToken) int {
-		return int(i.CreatedAt.Seconds - j.CreatedAt.Seconds)
-	})
-	response := &v1pb.ListUserAccessTokensResponse{
-		AccessTokens: accessTokens,
-	}
-	return response, nil
+	return &v1pb.ListUserAccessTokensResponse{AccessTokens: accessTokens}, nil
 }
 
 // CreateUserAccessToken creates a new Personal Access Token (PAT) for a user.
@@ -583,8 +554,8 @@ func (s *APIV1Service) ListUserAccessTokens(ctx context.Context, request *v1pb.L
 // - User creates token for third-party integration
 //
 // Token properties:
-// - JWT format signed with server secret
-// - Contains user ID and username in claims
+// - Random string with memos_pat_ prefix
+// - SHA-256 hash stored in database
 // - Optional expiration time (can be never-expiring)
 // - User-provided description for identification
 //
@@ -600,60 +571,46 @@ func (s *APIV1Service) CreateUserAccessToken(ctx context.Context, request *v1pb.
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
-	currentUser, err := s.GetCurrentUser(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
-	}
-	if currentUser == nil {
-		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
-	}
-	if currentUser.ID != userID {
-		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+
+	// Verify permission
+	claims := auth.GetUserClaims(ctx)
+	if claims == nil || claims.UserID != userID {
+		currentUser, _ := s.GetCurrentUser(ctx)
+		if currentUser == nil || currentUser.ID != userID {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
 	}
 
-	expiresAt := time.Time{}
+	// Generate PAT
+	tokenID := util.GenUUID()
+	token := auth.GeneratePersonalAccessToken()
+	tokenHash := auth.HashPersonalAccessToken(token)
+
+	var expiresAt *timestamppb.Timestamp
 	if request.ExpiresInDays > 0 {
-		expiresAt = time.Now().AddDate(0, 0, int(request.ExpiresInDays))
+		expiresAt = timestamppb.New(time.Now().AddDate(0, 0, int(request.ExpiresInDays)))
 	}
 
-	accessToken, err := auth.GenerateAccessToken(currentUser.Username, currentUser.ID, expiresAt, []byte(s.Secret))
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to generate access token: %v", err)
-	}
-
-	claims := &auth.ClaimsMessage{}
-	_, err = jwt.ParseWithClaims(accessToken, claims, func(t *jwt.Token) (any, error) {
-		if t.Method.Alg() != jwt.SigningMethodHS256.Name {
-			return nil, errors.Errorf("unexpected access token signing method=%v, expect %v", t.Header["alg"], jwt.SigningMethodHS256)
-		}
-		if kid, ok := t.Header["kid"].(string); ok {
-			if kid == "v1" {
-				return []byte(s.Secret), nil
-			}
-		}
-		return nil, errors.Errorf("unexpected access token kid=%v", t.Header["kid"])
-	})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to parse access token: %v", err)
-	}
-
-	// Upsert the access token to user setting store.
-	if err := s.UpsertAccessTokenToStore(ctx, currentUser, accessToken, request.Description); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to upsert access token to store: %v", err)
-	}
-
-	userAccessToken := &v1pb.UserAccessToken{
-		Name:        fmt.Sprintf("users/%d/accessTokens/%s", userID, accessToken),
+	patRecord := &storepb.PersonalAccessTokensUserSetting_PersonalAccessToken{
+		TokenId:     tokenID,
+		TokenHash:   tokenHash,
 		Description: request.Description,
-		CreatedAt:   timestamppb.New(claims.IssuedAt.Time),
+		ExpiresAt:   expiresAt,
+		CreatedAt:   timestamppb.Now(),
 	}
-	if claims.ExpiresAt != nil {
-		userAccessToken.ExpiresAt = timestamppb.New(claims.ExpiresAt.Time)
+
+	if err := s.Store.AddUserPersonalAccessToken(ctx, userID, patRecord); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create access token: %v", err)
 	}
 
 	return &v1pb.CreateUserAccessTokenResponse{
-		AccessToken: userAccessToken,
-		Token:       accessToken,
+		AccessToken: &v1pb.UserAccessToken{
+			Name:        fmt.Sprintf("%s/accessTokens/%s", request.Parent, tokenID),
+			Description: request.Description,
+			ExpiresAt:   expiresAt,
+			CreatedAt:   patRecord.CreatedAt,
+		},
+		Token: token, // Only returned on creation
 	}, nil
 }
 
@@ -671,51 +628,29 @@ func (s *APIV1Service) CreateUserAccessToken(ctx context.Context, request *v1pb.
 // Authentication: Required (session cookie or access token)
 // Authorization: User can only delete their own tokens.
 func (s *APIV1Service) DeleteUserAccessToken(ctx context.Context, request *v1pb.DeleteUserAccessTokenRequest) (*emptypb.Empty, error) {
-	// Extract user ID from the access token resource name
-	// Format: users/{user}/accessTokens/{access_token}
+	// Parse name: users/{user_id}/accessTokens/{token_id}
 	parts := strings.Split(request.Name, "/")
 	if len(parts) != 4 || parts[0] != "users" || parts[2] != "accessTokens" {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid access token name format: %s", request.Name)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid access token name")
 	}
 
-	userID, err := ExtractUserIDFromName(fmt.Sprintf("users/%s", parts[1]))
+	userID, err := util.ConvertStringToInt32(parts[1])
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user ID: %v", err)
 	}
-	accessTokenToDelete := parts[3]
+	tokenID := parts[3]
 
-	currentUser, err := s.GetCurrentUser(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
-	}
-	if currentUser == nil {
-		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
-	}
-	if currentUser.ID != userID {
-		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
-	}
-
-	userAccessTokens, err := s.Store.GetUserAccessTokens(ctx, currentUser.ID)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list access tokens: %v", err)
-	}
-	updatedUserAccessTokens := []*storepb.AccessTokensUserSetting_AccessToken{}
-	for _, userAccessToken := range userAccessTokens {
-		if userAccessToken.AccessToken == accessTokenToDelete {
-			continue
+	// Verify permission
+	claims := auth.GetUserClaims(ctx)
+	if claims == nil || claims.UserID != userID {
+		currentUser, _ := s.GetCurrentUser(ctx)
+		if currentUser == nil || currentUser.ID != userID {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 		}
-		updatedUserAccessTokens = append(updatedUserAccessTokens, userAccessToken)
 	}
-	if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
-		UserId: currentUser.ID,
-		Key:    storepb.UserSetting_ACCESS_TOKENS,
-		Value: &storepb.UserSetting_AccessTokens{
-			AccessTokens: &storepb.AccessTokensUserSetting{
-				AccessTokens: updatedUserAccessTokens,
-			},
-		},
-	}); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
+
+	if err := s.Store.RemoveUserPersonalAccessToken(ctx, userID, tokenID); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to delete access token: %v", err)
 	}
 
 	return &emptypb.Empty{}, nil
@@ -850,31 +785,6 @@ func (s *APIV1Service) UpsertUserSession(ctx context.Context, userID int32, sess
 	}
 
 	return s.Store.AddUserSession(ctx, userID, session)
-}
-
-func (s *APIV1Service) UpsertAccessTokenToStore(ctx context.Context, user *store.User, accessToken, description string) error {
-	userAccessTokens, err := s.Store.GetUserAccessTokens(ctx, user.ID)
-	if err != nil {
-		return errors.Wrap(err, "failed to get user access tokens")
-	}
-	userAccessToken := storepb.AccessTokensUserSetting_AccessToken{
-		AccessToken: accessToken,
-		Description: description,
-	}
-	userAccessTokens = append(userAccessTokens, &userAccessToken)
-
-	if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
-		UserId: user.ID,
-		Key:    storepb.UserSetting_ACCESS_TOKENS,
-		Value: &storepb.UserSetting_AccessTokens{
-			AccessTokens: &storepb.AccessTokensUserSetting{
-				AccessTokens: userAccessTokens,
-			},
-		},
-	}); err != nil {
-		return errors.Wrap(err, "failed to upsert user setting")
-	}
-	return nil
 }
 
 func (s *APIV1Service) ListUserWebhooks(ctx context.Context, request *v1pb.ListUserWebhooksRequest) (*v1pb.ListUserWebhooksResponse, error) {
