@@ -33,6 +33,13 @@ type RefreshTokenQueryResult struct {
 	RefreshToken *storepb.RefreshTokensUserSetting_RefreshToken
 }
 
+// PATQueryResult contains the result of querying a PAT by hash.
+type PATQueryResult struct {
+	UserID int32
+	User   *User
+	PAT    *storepb.PersonalAccessTokensUserSetting_PersonalAccessToken
+}
+
 func (s *Store) UpsertUserSetting(ctx context.Context, upsert *storepb.UserSetting) (*storepb.UserSetting, error) {
 	userSettingRaw, err := convertUserSettingToRaw(upsert)
 	if err != nil {
@@ -335,6 +342,94 @@ func (s *Store) GetUserRefreshTokenByID(ctx context.Context, userID int32, token
 	return nil, nil
 }
 
+// GetUserPersonalAccessTokens returns the PATs of the user.
+func (s *Store) GetUserPersonalAccessTokens(ctx context.Context, userID int32) ([]*storepb.PersonalAccessTokensUserSetting_PersonalAccessToken, error) {
+	userSetting, err := s.GetUserSetting(ctx, &FindUserSetting{
+		UserID: &userID,
+		Key:    storepb.UserSetting_PERSONAL_ACCESS_TOKENS,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if userSetting == nil {
+		return []*storepb.PersonalAccessTokensUserSetting_PersonalAccessToken{}, nil
+	}
+	return userSetting.GetPersonalAccessTokens().Tokens, nil
+}
+
+// AddUserPersonalAccessToken adds a new PAT for the user.
+func (s *Store) AddUserPersonalAccessToken(ctx context.Context, userID int32, token *storepb.PersonalAccessTokensUserSetting_PersonalAccessToken) error {
+	existingTokens, err := s.GetUserPersonalAccessTokens(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	tokens := append(existingTokens, token)
+
+	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
+		UserId: userID,
+		Key:    storepb.UserSetting_PERSONAL_ACCESS_TOKENS,
+		Value: &storepb.UserSetting_PersonalAccessTokens{
+			PersonalAccessTokens: &storepb.PersonalAccessTokensUserSetting{
+				Tokens: tokens,
+			},
+		},
+	})
+	return err
+}
+
+// RemoveUserPersonalAccessToken removes a PAT from the user.
+func (s *Store) RemoveUserPersonalAccessToken(ctx context.Context, userID int32, tokenID string) error {
+	existingTokens, err := s.GetUserPersonalAccessTokens(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	newTokens := make([]*storepb.PersonalAccessTokensUserSetting_PersonalAccessToken, 0, len(existingTokens))
+	for _, token := range existingTokens {
+		if token.TokenId != tokenID {
+			newTokens = append(newTokens, token)
+		}
+	}
+
+	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
+		UserId: userID,
+		Key:    storepb.UserSetting_PERSONAL_ACCESS_TOKENS,
+		Value: &storepb.UserSetting_PersonalAccessTokens{
+			PersonalAccessTokens: &storepb.PersonalAccessTokensUserSetting{
+				Tokens: newTokens,
+			},
+		},
+	})
+	return err
+}
+
+// UpdatePATLastUsed updates the last_used_at timestamp of a PAT.
+func (s *Store) UpdatePATLastUsed(ctx context.Context, userID int32, tokenID string, lastUsed *timestamppb.Timestamp) error {
+	tokens, err := s.GetUserPersonalAccessTokens(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	for _, token := range tokens {
+		if token.TokenId == tokenID {
+			token.LastUsedAt = lastUsed
+			break
+		}
+	}
+
+	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
+		UserId: userID,
+		Key:    storepb.UserSetting_PERSONAL_ACCESS_TOKENS,
+		Value: &storepb.UserSetting_PersonalAccessTokens{
+			PersonalAccessTokens: &storepb.PersonalAccessTokensUserSetting{
+				Tokens: tokens,
+			},
+		},
+	})
+	return err
+}
+
 // GetUserWebhooks returns the webhooks of the user.
 func (s *Store) GetUserWebhooks(ctx context.Context, userID int32) ([]*storepb.WebhooksUserSetting_Webhook, error) {
 	userSetting, err := s.GetUserSetting(ctx, &FindUserSetting{
@@ -480,6 +575,12 @@ func convertUserSettingFromRaw(raw *UserSetting) (*storepb.UserSetting, error) {
 			return nil, err
 		}
 		userSetting.Value = &storepb.UserSetting_RefreshTokens{RefreshTokens: refreshTokensUserSetting}
+	case storepb.UserSetting_PERSONAL_ACCESS_TOKENS:
+		patsUserSetting := &storepb.PersonalAccessTokensUserSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), patsUserSetting); err != nil {
+			return nil, err
+		}
+		userSetting.Value = &storepb.UserSetting_PersonalAccessTokens{PersonalAccessTokens: patsUserSetting}
 	case storepb.UserSetting_WEBHOOKS:
 		webhooksUserSetting := &storepb.WebhooksUserSetting{}
 		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), webhooksUserSetting); err != nil {
@@ -530,6 +631,13 @@ func convertUserSettingToRaw(userSetting *storepb.UserSetting) (*UserSetting, er
 	case storepb.UserSetting_REFRESH_TOKENS:
 		refreshTokensUserSetting := userSetting.GetRefreshTokens()
 		value, err := protojson.Marshal(refreshTokensUserSetting)
+		if err != nil {
+			return nil, err
+		}
+		raw.Value = string(value)
+	case storepb.UserSetting_PERSONAL_ACCESS_TOKENS:
+		patsUserSetting := userSetting.GetPersonalAccessTokens()
+		value, err := protojson.Marshal(patsUserSetting)
 		if err != nil {
 			return nil, err
 		}
