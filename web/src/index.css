@@ -318,6 +318,16 @@
   }
 
   /* ========================================
+   * Embedded Content (iframes, videos)
+   * ======================================== */
+
+  .markdown-content iframe {
+    max-width: 100%;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border);
+  }
+
+  /* ========================================
    * Inline Elements
    * No vertical spacing
    * ======================================== */

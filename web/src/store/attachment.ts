@@ -1,6 +1,6 @@
 // Attachment Store - manages file attachment state including uploads and metadata
 import { computed, makeObservable, observable } from "mobx";
-import { attachmentServiceClient } from "@/grpcweb";
+import { attachmentServiceClient } from "@/connect";
 import { Attachment, CreateAttachmentRequest, UpdateAttachmentRequest } from "@/types/proto/api/v1/attachment_service_pb";
 import { createServerStore, StandardState } from "./base-store";
 import { createRequestKey } from "./store-utils";

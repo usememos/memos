@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { useState } from "react";
 import useDebounce from "react-use/lib/useDebounce";
-import { memoServiceClient } from "@/grpcweb";
+import { memoServiceClient } from "@/connect";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { extractUserIdFromName } from "@/store/common";

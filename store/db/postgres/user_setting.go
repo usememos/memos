@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"github.com/pkg/errors"
+
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -66,4 +68,43 @@ func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) 
 	}
 
 	return userSettingList, nil
+}
+
+func (d *DB) GetUserByPATHash(ctx context.Context, tokenHash string) (*store.PATQueryResult, error) {
+	query := `
+		SELECT
+			user_setting.user_id,
+			user_setting.value
+		FROM user_setting
+		WHERE user_setting.key = 'PERSONAL_ACCESS_TOKENS'
+		  AND EXISTS (
+		      SELECT 1
+		      FROM jsonb_array_elements(user_setting.value::jsonb->'tokens') AS token
+		      WHERE token->>'tokenHash' = $1
+		  )
+	`
+
+	var userID int32
+	var tokensJSON string
+
+	err := d.db.QueryRowContext(ctx, query, tokenHash).Scan(&userID, &tokensJSON)
+	if err != nil {
+		return nil, err
+	}
+
+	patsUserSetting := &storepb.PersonalAccessTokensUserSetting{}
+	if err := protojsonUnmarshaler.Unmarshal([]byte(tokensJSON), patsUserSetting); err != nil {
+		return nil, err
+	}
+
+	for _, pat := range patsUserSetting.Tokens {
+		if pat.TokenHash == tokenHash {
+			return &store.PATQueryResult{
+				UserID: userID,
+				PAT:    pat,
+			}, nil
+		}
+	}
+
+	return nil, errors.New("PAT not found")
 }

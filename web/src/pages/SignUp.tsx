@@ -1,14 +1,16 @@
 import { create } from "@bufbuild/protobuf";
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { ConnectError } from "@connectrpc/connect";
 import { LoaderIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
+import { setAccessToken } from "@/auth-state";
 import AuthFooter from "@/components/AuthFooter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { authServiceClient, userServiceClient } from "@/grpcweb";
+import { authServiceClient, userServiceClient } from "@/connect";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { instanceStore } from "@/store";
@@ -56,12 +58,16 @@ const SignUp = observer(() => {
         role: User_Role.USER,
       });
       await userServiceClient.createUser({ user });
-      await authServiceClient.createSession({
+      const response = await authServiceClient.signIn({
         credentials: {
           case: "passwordCredentials",
           value: { username, password },
         },
       });
+      // Store access token from login response
+      if (response.accessToken) {
+        setAccessToken(response.accessToken, response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined);
+      }
       await initialUserStore();
       navigateTo("/");
     } catch (error: any) {

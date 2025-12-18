@@ -2,7 +2,7 @@
 import { create } from "@bufbuild/protobuf";
 import { uniqBy } from "lodash-es";
 import { computed } from "mobx";
-import { instanceServiceClient } from "@/grpcweb";
+import { instanceServiceClient } from "@/connect";
 import {
   InstanceProfile,
   InstanceProfileSchema,

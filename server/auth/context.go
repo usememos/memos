@@ -23,6 +23,12 @@ const (
 	// AccessTokenContextKey stores the JWT token for token-based auth.
 	// Only set when authenticated via Bearer token.
 	AccessTokenContextKey
+
+	// UserClaimsContextKey stores the claims from access token.
+	UserClaimsContextKey
+
+	// RefreshTokenIDContextKey stores the refresh token ID.
+	RefreshTokenIDContextKey
 )
 
 // GetUserID retrieves the authenticated user's ID from the context.
@@ -69,4 +75,26 @@ func SetUserInContext(ctx context.Context, user *store.User, sessionID, accessTo
 		ctx = context.WithValue(ctx, AccessTokenContextKey, accessToken)
 	}
 	return ctx
+}
+
+// UserClaims represents authenticated user info from access token.
+type UserClaims struct {
+	UserID   int32
+	Username string
+	Role     string
+	Status   string
+}
+
+// GetUserClaims retrieves the user claims from context.
+// Returns nil if not authenticated via access token.
+func GetUserClaims(ctx context.Context) *UserClaims {
+	if v, ok := ctx.Value(UserClaimsContextKey).(*UserClaims); ok {
+		return v
+	}
+	return nil
+}
+
+// SetUserClaimsInContext sets the user claims in context.
+func SetUserClaimsInContext(ctx context.Context, claims *UserClaims) context.Context {
+	return context.WithValue(ctx, UserClaimsContextKey, claims)
 }

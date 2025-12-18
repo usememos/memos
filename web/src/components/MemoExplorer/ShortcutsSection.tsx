@@ -4,7 +4,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { shortcutServiceClient } from "@/grpcweb";
+import { shortcutServiceClient } from "@/connect";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import { cn } from "@/lib/utils";
 import { userStore } from "@/store";

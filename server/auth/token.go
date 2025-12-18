@@ -10,8 +10,9 @@
 package auth
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
-	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -40,8 +41,23 @@ const (
 	SessionSlidingDuration = 14 * 24 * time.Hour
 
 	// SessionCookieName is the HTTP cookie name used to store session information.
-	// Cookie value format: {userID}-{sessionID}.
+	// Cookie value is the session ID (UUID).
 	SessionCookieName = "user_session"
+
+	// AccessTokenDuration is the lifetime of access tokens (15 minutes).
+	AccessTokenDuration = 15 * time.Minute
+
+	// RefreshTokenDuration is the lifetime of refresh tokens (30 days).
+	RefreshTokenDuration = 30 * 24 * time.Hour
+
+	// RefreshTokenAudienceName is the audience claim for refresh tokens.
+	RefreshTokenAudienceName = "user.refresh-token"
+
+	// RefreshTokenCookieName is the cookie name for refresh tokens.
+	RefreshTokenCookieName = "memos_refresh"
+
+	// PersonalAccessTokenPrefix is the prefix for PAT tokens.
+	PersonalAccessTokenPrefix = "memos_pat_"
 )
 
 // ClaimsMessage represents the claims structure in a JWT token.
@@ -55,6 +71,24 @@ const (
 // - exp: Expiration time (optional, may be empty for never-expiring tokens).
 type ClaimsMessage struct {
 	Name string `json:"name"` // Username
+	jwt.RegisteredClaims
+}
+
+// AccessTokenClaims contains claims for short-lived access tokens.
+// These tokens are validated by signature only (stateless).
+type AccessTokenClaims struct {
+	Type     string `json:"type"`     // "access"
+	Role     string `json:"role"`     // User role
+	Status   string `json:"status"`   // User status
+	Username string `json:"username"` // Username for display
+	jwt.RegisteredClaims
+}
+
+// RefreshTokenClaims contains claims for long-lived refresh tokens.
+// These tokens are validated against the database for revocation.
+type RefreshTokenClaims struct {
+	Type    string `json:"type"` // "refresh"
+	TokenID string `json:"tid"`  // Token ID for revocation lookup
 	jwt.RegisteredClaims
 }
 
@@ -108,37 +142,125 @@ func generateToken(username string, userID int32, audience string, expirationTim
 //
 // Uses UUID v4 (random) for high entropy and uniqueness.
 // Session IDs are stored in user settings and used to identify browser sessions.
+// The session ID is stored directly in the cookie as the cookie value.
 func GenerateSessionID() string {
 	return util.GenUUID()
 }
 
-// BuildSessionCookieValue creates the session cookie value.
-//
-// Format: {userID}-{sessionID}
-// Example: "123-550e8400-e29b-41d4-a716-446655440000"
-//
-// This format allows quick extraction of both user ID and session ID
-// from the cookie without database lookup during authentication.
-func BuildSessionCookieValue(userID int32, sessionID string) string {
-	return fmt.Sprintf("%d-%s", userID, sessionID)
+// GenerateAccessTokenV2 generates a short-lived access token with user claims.
+func GenerateAccessTokenV2(userID int32, username, role, status string, secret []byte) (string, time.Time, error) {
+	expiresAt := time.Now().Add(AccessTokenDuration)
+
+	claims := &AccessTokenClaims{
+		Type:     "access",
+		Role:     role,
+		Status:   status,
+		Username: username,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    Issuer,
+			Audience:  jwt.ClaimStrings{AccessTokenAudienceName},
+			Subject:   fmt.Sprint(userID),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(expiresAt),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token.Header["kid"] = KeyID
+
+	tokenString, err := token.SignedString(secret)
+	if err != nil {
+		return "", time.Time{}, err
+	}
+
+	return tokenString, expiresAt, nil
 }
 
-// ParseSessionCookieValue extracts user ID and session ID from cookie value.
-//
-// Input format: "{userID}-{sessionID}"
-// Returns: (userID, sessionID, error)
-//
-// Example: "123-550e8400-..." → (123, "550e8400-...", nil).
-func ParseSessionCookieValue(cookieValue string) (int32, string, error) {
-	parts := strings.SplitN(cookieValue, "-", 2)
-	if len(parts) != 2 {
-		return 0, "", errors.New("invalid session cookie format")
+// GenerateRefreshToken generates a long-lived refresh token.
+func GenerateRefreshToken(userID int32, tokenID string, secret []byte) (string, time.Time, error) {
+	expiresAt := time.Now().Add(RefreshTokenDuration)
+
+	claims := &RefreshTokenClaims{
+		Type:    "refresh",
+		TokenID: tokenID,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    Issuer,
+			Audience:  jwt.ClaimStrings{RefreshTokenAudienceName},
+			Subject:   fmt.Sprint(userID),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(expiresAt),
+		},
 	}
 
-	userID, err := util.ConvertStringToInt32(parts[0])
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token.Header["kid"] = KeyID
+
+	tokenString, err := token.SignedString(secret)
 	if err != nil {
-		return 0, "", errors.Errorf("invalid user ID in session cookie: %v", err)
+		return "", time.Time{}, err
 	}
 
-	return userID, parts[1], nil
+	return tokenString, expiresAt, nil
+}
+
+// GeneratePersonalAccessToken generates a random PAT string.
+func GeneratePersonalAccessToken() string {
+	randomStr, err := util.RandomString(32)
+	if err != nil {
+		// Fallback to UUID if RandomString fails
+		return PersonalAccessTokenPrefix + util.GenUUID()
+	}
+	return PersonalAccessTokenPrefix + randomStr
+}
+
+// HashPersonalAccessToken returns SHA-256 hash of a PAT.
+func HashPersonalAccessToken(token string) string {
+	hash := sha256.Sum256([]byte(token))
+	return hex.EncodeToString(hash[:])
+}
+
+// verifyJWTKeyFunc returns a jwt.Keyfunc that validates the signing method and key ID.
+func verifyJWTKeyFunc(secret []byte) jwt.Keyfunc {
+	return func(t *jwt.Token) (any, error) {
+		if t.Method.Alg() != jwt.SigningMethodHS256.Name {
+			return nil, errors.Errorf("unexpected signing method: %v", t.Header["alg"])
+		}
+		kid, ok := t.Header["kid"].(string)
+		if !ok || kid != KeyID {
+			return nil, errors.Errorf("unexpected kid: %v", t.Header["kid"])
+		}
+		return secret, nil
+	}
+}
+
+// ParseAccessTokenV2 parses and validates a short-lived access token.
+func ParseAccessTokenV2(tokenString string, secret []byte) (*AccessTokenClaims, error) {
+	claims := &AccessTokenClaims{}
+	_, err := jwt.ParseWithClaims(tokenString, claims, verifyJWTKeyFunc(secret),
+		jwt.WithIssuer(Issuer),
+		jwt.WithAudience(AccessTokenAudienceName),
+	)
+	if err != nil {
+		return nil, err
+	}
+	if claims.Type != "access" {
+		return nil, errors.New("invalid token type: expected access token")
+	}
+	return claims, nil
+}
+
+// ParseRefreshToken parses and validates a refresh token.
+func ParseRefreshToken(tokenString string, secret []byte) (*RefreshTokenClaims, error) {
+	claims := &RefreshTokenClaims{}
+	_, err := jwt.ParseWithClaims(tokenString, claims, verifyJWTKeyFunc(secret),
+		jwt.WithIssuer(Issuer),
+		jwt.WithAudience(RefreshTokenAudienceName),
+	)
+	if err != nil {
+		return nil, err
+	}
+	if claims.Type != "refresh" {
+		return nil, errors.New("invalid token type: expected refresh token")
+	}
+	return claims, nil
 }

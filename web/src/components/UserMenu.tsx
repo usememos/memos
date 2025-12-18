@@ -1,6 +1,6 @@
 import { ArchiveIcon, CheckIcon, GlobeIcon, LogOutIcon, PaletteIcon, SettingsIcon, SquareUserIcon, User2Icon } from "lucide-react";
 import { observer } from "mobx-react-lite";
-import { authServiceClient } from "@/grpcweb";
+import { authServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import i18n, { locales } from "@/i18n";
@@ -48,7 +48,7 @@ const UserMenu = observer((props: Props) => {
   };
 
   const handleSignOut = async () => {
-    await authServiceClient.deleteSession({});
+    await authServiceClient.signOut({});
 
     // Clear user-specific localStorage items (e.g., drafts)
     // Preserve app-wide settings like theme

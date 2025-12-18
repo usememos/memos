@@ -9,15 +9,16 @@ package v1
 // Format: Full gRPC procedure path as returned by req.Spec().Procedure (Connect)
 // or info.FullMethod (gRPC interceptor).
 var PublicMethods = map[string]struct{}{
-	// Auth Service - login flow must be accessible without auth
-	"/memos.api.v1.AuthService/CreateSession":     {},
-	"/memos.api.v1.AuthService/GetCurrentSession": {},
+	// Auth Service - login/token endpoints must be accessible without auth
+	"/memos.api.v1.AuthService/SignIn":       {},
+	"/memos.api.v1.AuthService/RefreshToken": {}, // Token refresh uses cookie, must be accessible when access token expired
 
 	// Instance Service - needed before login to show instance info
 	"/memos.api.v1.InstanceService/GetInstanceProfile": {},
 	"/memos.api.v1.InstanceService/GetInstanceSetting": {},
 
 	// User Service - public user profiles and stats
+	"/memos.api.v1.UserService/CreateUser":       {}, // Allow first user registration
 	"/memos.api.v1.UserService/GetUser":          {},
 	"/memos.api.v1.UserService/GetUserAvatar":    {},
 	"/memos.api.v1.UserService/GetUserStats":     {},

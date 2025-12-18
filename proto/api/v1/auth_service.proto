@@ -11,87 +11,104 @@ import "google/protobuf/timestamp.proto";
 option go_package = "gen/api/v1";
 
 service AuthService {
-  // GetCurrentSession returns the current active session information.
-  // This method is idempotent and safe, suitable for checking current session state.
-  rpc GetCurrentSession(GetCurrentSessionRequest) returns (GetCurrentSessionResponse) {
-    option (google.api.http) = {get: "/api/v1/auth/sessions/current"};
+  // GetCurrentUser returns the authenticated user's information.
+  // Validates the access token and returns user details.
+  // Similar to OIDC's /userinfo endpoint.
+  rpc GetCurrentUser(GetCurrentUserRequest) returns (GetCurrentUserResponse) {
+    option (google.api.http) = {get: "/api/v1/auth/me"};
   }
 
-  // CreateSession authenticates a user and creates a new session.
-  // Returns the authenticated user information upon successful authentication.
-  rpc CreateSession(CreateSessionRequest) returns (CreateSessionResponse) {
+  // SignIn authenticates a user with credentials and returns tokens.
+  // On success, returns an access token and sets a refresh token cookie.
+  // Supports password-based and SSO authentication methods.
+  rpc SignIn(SignInRequest) returns (SignInResponse) {
     option (google.api.http) = {
-      post: "/api/v1/auth/sessions"
+      post: "/api/v1/auth/signin"
       body: "*"
     };
   }
 
-  // DeleteSession terminates the current user session.
-  // This is an idempotent operation that invalidates the user's authentication.
-  rpc DeleteSession(DeleteSessionRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {delete: "/api/v1/auth/sessions/current"};
+  // SignOut terminates the user's authentication.
+  // Revokes the refresh token and clears the authentication cookie.
+  rpc SignOut(SignOutRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {post: "/api/v1/auth/signout"};
+  }
+
+  // RefreshToken exchanges a valid refresh token for a new access token.
+  // The refresh token is read from the HttpOnly cookie.
+  // Returns a new short-lived access token.
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/auth/refresh"
+      body: "*"
+    };
   }
 }
 
-message GetCurrentSessionRequest {}
+message GetCurrentUserRequest {}
 
-message GetCurrentSessionResponse {
+message GetCurrentUserResponse {
+  // The authenticated user's information.
   User user = 1;
-
-  // Last time the session was accessed.
-  // Used for sliding expiration calculation (last_accessed_time + 2 weeks).
-  google.protobuf.Timestamp last_accessed_at = 2;
 }
 
-message CreateSessionRequest {
+message SignInRequest {
   // Nested message for password-based authentication credentials.
   message PasswordCredentials {
     // The username to sign in with.
-    // Required field for password-based authentication.
     string username = 1 [(google.api.field_behavior) = REQUIRED];
 
     // The password to sign in with.
-    // Required field for password-based authentication.
     string password = 2 [(google.api.field_behavior) = REQUIRED];
   }
 
   // Nested message for SSO authentication credentials.
   message SSOCredentials {
     // The ID of the SSO provider.
-    // Required field to identify the SSO provider.
     int32 idp_id = 1 [(google.api.field_behavior) = REQUIRED];
 
     // The authorization code from the SSO provider.
-    // Required field for completing the SSO flow.
     string code = 2 [(google.api.field_behavior) = REQUIRED];
 
     // The redirect URI used in the SSO flow.
-    // Required field for security validation.
     string redirect_uri = 3 [(google.api.field_behavior) = REQUIRED];
 
     // The PKCE code verifier for enhanced security (RFC 7636).
-    // Optional field - if provided, enables PKCE flow protection against authorization code interception.
+    // Optional - enables PKCE flow protection against authorization code interception.
     string code_verifier = 4 [(google.api.field_behavior) = OPTIONAL];
   }
 
-  // Provide one authentication method (username/password or SSO).
-  // Required field to specify the authentication method.
+  // Authentication credentials. Provide one method.
   oneof credentials {
-    // Username and password authentication method.
+    // Username and password authentication.
     PasswordCredentials password_credentials = 1;
 
-    // SSO provider authentication method.
+    // SSO provider authentication.
     SSOCredentials sso_credentials = 2;
   }
 }
 
-message CreateSessionResponse {
-  // The authenticated user information.
+message SignInResponse {
+  // The authenticated user's information.
   User user = 1;
 
-  // Last time the session was accessed.
-  // Used for sliding expiration calculation (last_accessed_time + 2 weeks).
-  google.protobuf.Timestamp last_accessed_at = 2;
+  // The short-lived access token for API requests.
+  // Store in memory only, not in localStorage.
+  string access_token = 2;
+
+  // When the access token expires.
+  // Client should call RefreshToken before this time.
+  google.protobuf.Timestamp access_token_expires_at = 3;
 }
 
-message DeleteSessionRequest {}
+message SignOutRequest {}
+
+message RefreshTokenRequest {}
+
+message RefreshTokenResponse {
+  // The new short-lived access token.
+  string access_token = 1;
+
+  // When the access token expires.
+  google.protobuf.Timestamp expires_at = 2;
+}

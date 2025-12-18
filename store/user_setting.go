@@ -21,6 +21,19 @@ type FindUserSetting struct {
 	Key    storepb.UserSetting_Key
 }
 
+// RefreshTokenQueryResult contains the result of querying a refresh token.
+type RefreshTokenQueryResult struct {
+	UserID       int32
+	RefreshToken *storepb.RefreshTokensUserSetting_RefreshToken
+}
+
+// PATQueryResult contains the result of querying a PAT by hash.
+type PATQueryResult struct {
+	UserID int32
+	User   *User
+	PAT    *storepb.PersonalAccessTokensUserSetting_PersonalAccessToken
+}
+
 func (s *Store) UpsertUserSetting(ctx context.Context, upsert *storepb.UserSetting) (*storepb.UserSetting, error) {
 	userSettingRaw, err := convertUserSettingToRaw(upsert)
 	if err != nil {
@@ -89,155 +102,187 @@ func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSetting) (*sto
 	return userSetting, nil
 }
 
-// GetUserAccessTokens returns the access tokens of the user.
-func (s *Store) GetUserAccessTokens(ctx context.Context, userID int32) ([]*storepb.AccessTokensUserSetting_AccessToken, error) {
+// GetUserByPATHash finds a user by PAT hash.
+func (s *Store) GetUserByPATHash(ctx context.Context, tokenHash string) (*PATQueryResult, error) {
+	result, err := s.driver.GetUserByPATHash(ctx, tokenHash)
+	if err != nil {
+		return nil, err
+	}
+
+	// Fetch user info
+	user, err := s.GetUser(ctx, &FindUser{ID: &result.UserID})
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, errors.New("user not found for PAT")
+	}
+	result.User = user
+
+	return result, nil
+}
+
+// GetUserRefreshTokens returns the refresh tokens of the user.
+func (s *Store) GetUserRefreshTokens(ctx context.Context, userID int32) ([]*storepb.RefreshTokensUserSetting_RefreshToken, error) {
 	userSetting, err := s.GetUserSetting(ctx, &FindUserSetting{
 		UserID: &userID,
-		Key:    storepb.UserSetting_ACCESS_TOKENS,
+		Key:    storepb.UserSetting_REFRESH_TOKENS,
 	})
 	if err != nil {
 		return nil, err
 	}
 	if userSetting == nil {
-		return []*storepb.AccessTokensUserSetting_AccessToken{}, nil
+		return []*storepb.RefreshTokensUserSetting_RefreshToken{}, nil
 	}
-
-	accessTokensUserSetting := userSetting.GetAccessTokens()
-	return accessTokensUserSetting.AccessTokens, nil
+	return userSetting.GetRefreshTokens().RefreshTokens, nil
 }
 
-// RemoveUserAccessToken remove the access token of the user.
-func (s *Store) RemoveUserAccessToken(ctx context.Context, userID int32, token string) error {
-	oldAccessTokens, err := s.GetUserAccessTokens(ctx, userID)
+// AddUserRefreshToken adds a new refresh token for the user.
+func (s *Store) AddUserRefreshToken(ctx context.Context, userID int32, token *storepb.RefreshTokensUserSetting_RefreshToken) error {
+	tokens, err := s.GetUserRefreshTokens(ctx, userID)
 	if err != nil {
 		return err
 	}
 
-	newAccessTokens := make([]*storepb.AccessTokensUserSetting_AccessToken, 0, len(oldAccessTokens))
-	for _, t := range oldAccessTokens {
-		if token != t.AccessToken {
-			newAccessTokens = append(newAccessTokens, t)
+	tokens = append(tokens, token)
+
+	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
+		UserId: userID,
+		Key:    storepb.UserSetting_REFRESH_TOKENS,
+		Value: &storepb.UserSetting_RefreshTokens{
+			RefreshTokens: &storepb.RefreshTokensUserSetting{
+				RefreshTokens: tokens,
+			},
+		},
+	})
+	return err
+}
+
+// RemoveUserRefreshToken removes a refresh token from the user.
+func (s *Store) RemoveUserRefreshToken(ctx context.Context, userID int32, tokenID string) error {
+	existingTokens, err := s.GetUserRefreshTokens(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	newTokens := make([]*storepb.RefreshTokensUserSetting_RefreshToken, 0, len(existingTokens))
+	for _, token := range existingTokens {
+		if token.TokenId != tokenID {
+			newTokens = append(newTokens, token)
 		}
 	}
 
 	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: userID,
-		Key:    storepb.UserSetting_ACCESS_TOKENS,
-		Value: &storepb.UserSetting_AccessTokens{
-			AccessTokens: &storepb.AccessTokensUserSetting{
-				AccessTokens: newAccessTokens,
+		Key:    storepb.UserSetting_REFRESH_TOKENS,
+		Value: &storepb.UserSetting_RefreshTokens{
+			RefreshTokens: &storepb.RefreshTokensUserSetting{
+				RefreshTokens: newTokens,
 			},
 		},
 	})
-
 	return err
 }
 
-// GetUserSessions returns the sessions of the user.
-func (s *Store) GetUserSessions(ctx context.Context, userID int32) ([]*storepb.SessionsUserSetting_Session, error) {
+// GetUserRefreshTokenByID returns a specific refresh token.
+func (s *Store) GetUserRefreshTokenByID(ctx context.Context, userID int32, tokenID string) (*storepb.RefreshTokensUserSetting_RefreshToken, error) {
+	tokens, err := s.GetUserRefreshTokens(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	for _, token := range tokens {
+		if token.TokenId == tokenID {
+			return token, nil
+		}
+	}
+	return nil, nil
+}
+
+// GetUserPersonalAccessTokens returns the PATs of the user.
+func (s *Store) GetUserPersonalAccessTokens(ctx context.Context, userID int32) ([]*storepb.PersonalAccessTokensUserSetting_PersonalAccessToken, error) {
 	userSetting, err := s.GetUserSetting(ctx, &FindUserSetting{
 		UserID: &userID,
-		Key:    storepb.UserSetting_SESSIONS,
+		Key:    storepb.UserSetting_PERSONAL_ACCESS_TOKENS,
 	})
 	if err != nil {
 		return nil, err
 	}
 	if userSetting == nil {
-		return []*storepb.SessionsUserSetting_Session{}, nil
+		return []*storepb.PersonalAccessTokensUserSetting_PersonalAccessToken{}, nil
 	}
-
-	sessionsUserSetting := userSetting.GetSessions()
-	return sessionsUserSetting.Sessions, nil
+	return userSetting.GetPersonalAccessTokens().Tokens, nil
 }
 
-// RemoveUserSession removes the session of the user.
-func (s *Store) RemoveUserSession(ctx context.Context, userID int32, sessionID string) error {
-	oldSessions, err := s.GetUserSessions(ctx, userID)
+// AddUserPersonalAccessToken adds a new PAT for the user.
+func (s *Store) AddUserPersonalAccessToken(ctx context.Context, userID int32, token *storepb.PersonalAccessTokensUserSetting_PersonalAccessToken) error {
+	tokens, err := s.GetUserPersonalAccessTokens(ctx, userID)
 	if err != nil {
 		return err
 	}
 
-	newSessions := make([]*storepb.SessionsUserSetting_Session, 0, len(oldSessions))
-	for _, session := range oldSessions {
-		if sessionID != session.SessionId {
-			newSessions = append(newSessions, session)
+	tokens = append(tokens, token)
+
+	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
+		UserId: userID,
+		Key:    storepb.UserSetting_PERSONAL_ACCESS_TOKENS,
+		Value: &storepb.UserSetting_PersonalAccessTokens{
+			PersonalAccessTokens: &storepb.PersonalAccessTokensUserSetting{
+				Tokens: tokens,
+			},
+		},
+	})
+	return err
+}
+
+// RemoveUserPersonalAccessToken removes a PAT from the user.
+func (s *Store) RemoveUserPersonalAccessToken(ctx context.Context, userID int32, tokenID string) error {
+	existingTokens, err := s.GetUserPersonalAccessTokens(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	newTokens := make([]*storepb.PersonalAccessTokensUserSetting_PersonalAccessToken, 0, len(existingTokens))
+	for _, token := range existingTokens {
+		if token.TokenId != tokenID {
+			newTokens = append(newTokens, token)
 		}
 	}
 
 	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: userID,
-		Key:    storepb.UserSetting_SESSIONS,
-		Value: &storepb.UserSetting_Sessions{
-			Sessions: &storepb.SessionsUserSetting{
-				Sessions: newSessions,
+		Key:    storepb.UserSetting_PERSONAL_ACCESS_TOKENS,
+		Value: &storepb.UserSetting_PersonalAccessTokens{
+			PersonalAccessTokens: &storepb.PersonalAccessTokensUserSetting{
+				Tokens: newTokens,
 			},
 		},
 	})
-
 	return err
 }
 
-// AddUserSession adds a new session for the user.
-func (s *Store) AddUserSession(ctx context.Context, userID int32, session *storepb.SessionsUserSetting_Session) error {
-	existingSessions, err := s.GetUserSessions(ctx, userID)
+// UpdatePATLastUsed updates the last_used_at timestamp of a PAT.
+func (s *Store) UpdatePATLastUsed(ctx context.Context, userID int32, tokenID string, lastUsed *timestamppb.Timestamp) error {
+	tokens, err := s.GetUserPersonalAccessTokens(ctx, userID)
 	if err != nil {
 		return err
 	}
 
-	// Check if session already exists, update if it does
-	var updatedSessions []*storepb.SessionsUserSetting_Session
-	sessionExists := false
-	for _, existing := range existingSessions {
-		if existing.SessionId == session.SessionId {
-			updatedSessions = append(updatedSessions, session)
-			sessionExists = true
-		} else {
-			updatedSessions = append(updatedSessions, existing)
-		}
-	}
-
-	// If session doesn't exist, add it
-	if !sessionExists {
-		updatedSessions = append(updatedSessions, session)
-	}
-
-	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
-		UserId: userID,
-		Key:    storepb.UserSetting_SESSIONS,
-		Value: &storepb.UserSetting_Sessions{
-			Sessions: &storepb.SessionsUserSetting{
-				Sessions: updatedSessions,
-			},
-		},
-	})
-
-	return err
-}
-
-// UpdateUserSessionLastAccessed updates the last accessed time of a session.
-func (s *Store) UpdateUserSessionLastAccessed(ctx context.Context, userID int32, sessionID string, lastAccessedTime *timestamppb.Timestamp) error {
-	sessions, err := s.GetUserSessions(ctx, userID)
-	if err != nil {
-		return err
-	}
-
-	for _, session := range sessions {
-		if session.SessionId == sessionID {
-			session.LastAccessedTime = lastAccessedTime
+	for _, token := range tokens {
+		if token.TokenId == tokenID {
+			token.LastUsedAt = lastUsed
 			break
 		}
 	}
 
 	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: userID,
-		Key:    storepb.UserSetting_SESSIONS,
-		Value: &storepb.UserSetting_Sessions{
-			Sessions: &storepb.SessionsUserSetting{
-				Sessions: sessions,
+		Key:    storepb.UserSetting_PERSONAL_ACCESS_TOKENS,
+		Value: &storepb.UserSetting_PersonalAccessTokens{
+			PersonalAccessTokens: &storepb.PersonalAccessTokensUserSetting{
+				Tokens: tokens,
 			},
 		},
 	})
-
 	return err
 }
 
@@ -380,6 +425,18 @@ func convertUserSettingFromRaw(raw *UserSetting) (*storepb.UserSetting, error) {
 			return nil, err
 		}
 		userSetting.Value = &storepb.UserSetting_General{General: generalUserSetting}
+	case storepb.UserSetting_REFRESH_TOKENS:
+		refreshTokensUserSetting := &storepb.RefreshTokensUserSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), refreshTokensUserSetting); err != nil {
+			return nil, err
+		}
+		userSetting.Value = &storepb.UserSetting_RefreshTokens{RefreshTokens: refreshTokensUserSetting}
+	case storepb.UserSetting_PERSONAL_ACCESS_TOKENS:
+		patsUserSetting := &storepb.PersonalAccessTokensUserSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), patsUserSetting); err != nil {
+			return nil, err
+		}
+		userSetting.Value = &storepb.UserSetting_PersonalAccessTokens{PersonalAccessTokens: patsUserSetting}
 	case storepb.UserSetting_WEBHOOKS:
 		webhooksUserSetting := &storepb.WebhooksUserSetting{}
 		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), webhooksUserSetting); err != nil {
@@ -423,6 +480,20 @@ func convertUserSettingToRaw(userSetting *storepb.UserSetting) (*UserSetting, er
 	case storepb.UserSetting_GENERAL:
 		generalUserSetting := userSetting.GetGeneral()
 		value, err := protojson.Marshal(generalUserSetting)
+		if err != nil {
+			return nil, err
+		}
+		raw.Value = string(value)
+	case storepb.UserSetting_REFRESH_TOKENS:
+		refreshTokensUserSetting := userSetting.GetRefreshTokens()
+		value, err := protojson.Marshal(refreshTokensUserSetting)
+		if err != nil {
+			return nil, err
+		}
+		raw.Value = string(value)
+	case storepb.UserSetting_PERSONAL_ACCESS_TOKENS:
+		patsUserSetting := userSetting.GetPersonalAccessTokens()
+		value, err := protojson.Marshal(patsUserSetting)
 		if err != nil {
 			return nil, err
 		}

@@ -43,7 +43,7 @@ var SupportedThumbnailMimeTypes = []string{
 }
 
 func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.CreateAttachmentRequest) (*v1pb.Attachment, error) {
-	user, err := s.GetCurrentUser(ctx)
+	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
@@ -63,6 +63,9 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 	}
 	if request.Attachment.Type == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "type is required")
+	}
+	if !isValidMimeType(request.Attachment.Type) {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid MIME type format")
 	}
 
 	// Use provided attachment_id or generate a new one
@@ -120,7 +123,7 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 }
 
 func (s *APIV1Service) ListAttachments(ctx context.Context, request *v1pb.ListAttachmentsRequest) (*v1pb.ListAttachmentsResponse, error) {
-	user, err := s.GetCurrentUser(ctx)
+	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
@@ -231,7 +234,7 @@ func (s *APIV1Service) DeleteAttachment(ctx context.Context, request *v1pb.Delet
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid attachment id: %v", err)
 	}
-	user, err := s.GetCurrentUser(ctx)
+	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
@@ -456,4 +459,16 @@ func validateFilename(filename string) bool {
 	}
 
 	return true
+}
+
+func isValidMimeType(mimeType string) bool {
+	// Reject empty or excessively long MIME types
+	if mimeType == "" || len(mimeType) > 255 {
+		return false
+	}
+
+	// MIME type must match the pattern: type/subtype
+	// Allow common characters in MIME types per RFC 2045
+	matched, _ := regexp.MatchString(`^[a-zA-Z0-9][a-zA-Z0-9!#$&^_.+-]{0,126}/[a-zA-Z0-9][a-zA-Z0-9!#$&^_.+-]{0,126}$`, mimeType)
+	return matched
 }

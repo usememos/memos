@@ -12,7 +12,7 @@ import MobileHeader from "@/components/MobileHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { attachmentServiceClient } from "@/grpcweb";
+import { attachmentServiceClient } from "@/connect";
 import useDialog from "@/hooks/useDialog";
 import useLoading from "@/hooks/useLoading";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
