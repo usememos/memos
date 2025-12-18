@@ -16,7 +16,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file api/v1/auth_service.proto.
  */
 export const file_api_v1_auth_service: GenFile = /*@__PURE__*/
-  fileDesc("ChlhcGkvdjEvYXV0aF9zZXJ2aWNlLnByb3RvEgxtZW1vcy5hcGkudjEiGgoYR2V0Q3VycmVudFNlc3Npb25SZXF1ZXN0InMKGUdldEN1cnJlbnRTZXNzaW9uUmVzcG9uc2USIAoEdXNlchgBIAEoCzISLm1lbW9zLmFwaS52MS5Vc2VyEjQKEGxhc3RfYWNjZXNzZWRfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIoEDChRDcmVhdGVTZXNzaW9uUmVxdWVzdBJWChRwYXNzd29yZF9jcmVkZW50aWFscxgBIAEoCzI2Lm1lbW9zLmFwaS52MS5DcmVhdGVTZXNzaW9uUmVxdWVzdC5QYXNzd29yZENyZWRlbnRpYWxzSAASTAoPc3NvX2NyZWRlbnRpYWxzGAIgASgLMjEubWVtb3MuYXBpLnYxLkNyZWF0ZVNlc3Npb25SZXF1ZXN0LlNTT0NyZWRlbnRpYWxzSAAaQwoTUGFzc3dvcmRDcmVkZW50aWFscxIVCgh1c2VybmFtZRgBIAEoCUID4EECEhUKCHBhc3N3b3JkGAIgASgJQgPgQQIabwoOU1NPQ3JlZGVudGlhbHMSEwoGaWRwX2lkGAEgASgFQgPgQQISEQoEY29kZRgCIAEoCUID4EECEhkKDHJlZGlyZWN0X3VyaRgDIAEoCUID4EECEhoKDWNvZGVfdmVyaWZpZXIYBCABKAlCA+BBAUINCgtjcmVkZW50aWFscyJvChVDcmVhdGVTZXNzaW9uUmVzcG9uc2USIAoEdXNlchgBIAEoCzISLm1lbW9zLmFwaS52MS5Vc2VyEjQKEGxhc3RfYWNjZXNzZWRfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIhYKFERlbGV0ZVNlc3Npb25SZXF1ZXN0MosDCgtBdXRoU2VydmljZRKLAQoRR2V0Q3VycmVudFNlc3Npb24SJi5tZW1vcy5hcGkudjEuR2V0Q3VycmVudFNlc3Npb25SZXF1ZXN0GicubWVtb3MuYXBpLnYxLkdldEN1cnJlbnRTZXNzaW9uUmVzcG9uc2UiJYLT5JMCHxIdL2FwaS92MS9hdXRoL3Nlc3Npb25zL2N1cnJlbnQSegoNQ3JlYXRlU2Vzc2lvbhIiLm1lbW9zLmFwaS52MS5DcmVhdGVTZXNzaW9uUmVxdWVzdBojLm1lbW9zLmFwaS52MS5DcmVhdGVTZXNzaW9uUmVzcG9uc2UiIILT5JMCGjoBKiIVL2FwaS92MS9hdXRoL3Nlc3Npb25zEnIKDURlbGV0ZVNlc3Npb24SIi5tZW1vcy5hcGkudjEuRGVsZXRlU2Vzc2lvblJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiJYLT5JMCHyodL2FwaS92MS9hdXRoL3Nlc3Npb25zL2N1cnJlbnRCqAEKEGNvbS5tZW1vcy5hcGkudjFCEEF1dGhTZXJ2aWNlUHJvdG9QAVowZ2l0aHViLmNvbS91c2VtZW1vcy9tZW1vcy9wcm90by9nZW4vYXBpL3YxO2FwaXYxogIDTUFYqgIMTWVtb3MuQXBpLlYxygIMTWVtb3NcQXBpXFYx4gIYTWVtb3NcQXBpXFYxXEdQQk1ldGFkYXRh6gIOTWVtb3M6OkFwaTo6VjFiBnByb3RvMw", [file_api_v1_user_service, file_google_api_annotations, file_google_api_field_behavior, file_google_protobuf_empty, file_google_protobuf_timestamp]);
+  fileDesc("ChlhcGkvdjEvYXV0aF9zZXJ2aWNlLnByb3RvEgxtZW1vcy5hcGkudjEiGgoYR2V0Q3VycmVudFNlc3Npb25SZXF1ZXN0InMKGUdldEN1cnJlbnRTZXNzaW9uUmVzcG9uc2USIAoEdXNlchgBIAEoCzISLm1lbW9zLmFwaS52MS5Vc2VyEjQKEGxhc3RfYWNjZXNzZWRfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIoEDChRDcmVhdGVTZXNzaW9uUmVxdWVzdBJWChRwYXNzd29yZF9jcmVkZW50aWFscxgBIAEoCzI2Lm1lbW9zLmFwaS52MS5DcmVhdGVTZXNzaW9uUmVxdWVzdC5QYXNzd29yZENyZWRlbnRpYWxzSAASTAoPc3NvX2NyZWRlbnRpYWxzGAIgASgLMjEubWVtb3MuYXBpLnYxLkNyZWF0ZVNlc3Npb25SZXF1ZXN0LlNTT0NyZWRlbnRpYWxzSAAaQwoTUGFzc3dvcmRDcmVkZW50aWFscxIVCgh1c2VybmFtZRgBIAEoCUID4EECEhUKCHBhc3N3b3JkGAIgASgJQgPgQQIabwoOU1NPQ3JlZGVudGlhbHMSEwoGaWRwX2lkGAEgASgFQgPgQQISEQoEY29kZRgCIAEoCUID4EECEhkKDHJlZGlyZWN0X3VyaRgDIAEoCUID4EECEhoKDWNvZGVfdmVyaWZpZXIYBCABKAlCA+BBAUINCgtjcmVkZW50aWFscyLCAQoVQ3JlYXRlU2Vzc2lvblJlc3BvbnNlEiAKBHVzZXIYASABKAsyEi5tZW1vcy5hcGkudjEuVXNlchI0ChBsYXN0X2FjY2Vzc2VkX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIUCgxhY2Nlc3NfdG9rZW4YAyABKAkSOwoXYWNjZXNzX3Rva2VuX2V4cGlyZXNfYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIhYKFERlbGV0ZVNlc3Npb25SZXF1ZXN0IhUKE1JlZnJlc2hUb2tlblJlcXVlc3QiXAoUUmVmcmVzaFRva2VuUmVzcG9uc2USFAoMYWNjZXNzX3Rva2VuGAEgASgJEi4KCmV4cGlyZXNfYXQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wMoMECgtBdXRoU2VydmljZRKLAQoRR2V0Q3VycmVudFNlc3Npb24SJi5tZW1vcy5hcGkudjEuR2V0Q3VycmVudFNlc3Npb25SZXF1ZXN0GicubWVtb3MuYXBpLnYxLkdldEN1cnJlbnRTZXNzaW9uUmVzcG9uc2UiJYLT5JMCHxIdL2FwaS92MS9hdXRoL3Nlc3Npb25zL2N1cnJlbnQSegoNQ3JlYXRlU2Vzc2lvbhIiLm1lbW9zLmFwaS52MS5DcmVhdGVTZXNzaW9uUmVxdWVzdBojLm1lbW9zLmFwaS52MS5DcmVhdGVTZXNzaW9uUmVzcG9uc2UiIILT5JMCGjoBKiIVL2FwaS92MS9hdXRoL3Nlc3Npb25zEnIKDURlbGV0ZVNlc3Npb24SIi5tZW1vcy5hcGkudjEuRGVsZXRlU2Vzc2lvblJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiJYLT5JMCHyodL2FwaS92MS9hdXRoL3Nlc3Npb25zL2N1cnJlbnQSdgoMUmVmcmVzaFRva2VuEiEubWVtb3MuYXBpLnYxLlJlZnJlc2hUb2tlblJlcXVlc3QaIi5tZW1vcy5hcGkudjEuUmVmcmVzaFRva2VuUmVzcG9uc2UiH4LT5JMCGToBKiIUL2FwaS92MS9hdXRoL3JlZnJlc2hCqAEKEGNvbS5tZW1vcy5hcGkudjFCEEF1dGhTZXJ2aWNlUHJvdG9QAVowZ2l0aHViLmNvbS91c2VtZW1vcy9tZW1vcy9wcm90by9nZW4vYXBpL3YxO2FwaXYxogIDTUFYqgIMTWVtb3MuQXBpLlYxygIMTWVtb3NcQXBpXFYx4gIYTWVtb3NcQXBpXFYxXEdQQk1ldGFkYXRh6gIOTWVtb3M6OkFwaTo6VjFiBnByb3RvMw", [file_api_v1_user_service, file_google_api_annotations, file_google_api_field_behavior, file_google_protobuf_empty, file_google_protobuf_timestamp]);
 
 /**
  * @generated from message memos.api.v1.GetCurrentSessionRequest
@@ -186,6 +186,20 @@ export type CreateSessionResponse = Message<"memos.api.v1.CreateSessionResponse"
    * @generated from field: google.protobuf.Timestamp last_accessed_at = 2;
    */
   lastAccessedAt?: Timestamp;
+
+  /**
+   * The short-lived access token for API requests
+   *
+   * @generated from field: string access_token = 3;
+   */
+  accessToken: string;
+
+  /**
+   * When the access token expires
+   *
+   * @generated from field: google.protobuf.Timestamp access_token_expires_at = 4;
+   */
+  accessTokenExpiresAt?: Timestamp;
 };
 
 /**
@@ -207,6 +221,45 @@ export type DeleteSessionRequest = Message<"memos.api.v1.DeleteSessionRequest"> 
  */
 export const DeleteSessionRequestSchema: GenMessage<DeleteSessionRequest> = /*@__PURE__*/
   messageDesc(file_api_v1_auth_service, 4);
+
+/**
+ * @generated from message memos.api.v1.RefreshTokenRequest
+ */
+export type RefreshTokenRequest = Message<"memos.api.v1.RefreshTokenRequest"> & {
+};
+
+/**
+ * Describes the message memos.api.v1.RefreshTokenRequest.
+ * Use `create(RefreshTokenRequestSchema)` to create a new message.
+ */
+export const RefreshTokenRequestSchema: GenMessage<RefreshTokenRequest> = /*@__PURE__*/
+  messageDesc(file_api_v1_auth_service, 5);
+
+/**
+ * @generated from message memos.api.v1.RefreshTokenResponse
+ */
+export type RefreshTokenResponse = Message<"memos.api.v1.RefreshTokenResponse"> & {
+  /**
+   * The new short-lived access token
+   *
+   * @generated from field: string access_token = 1;
+   */
+  accessToken: string;
+
+  /**
+   * When the access token expires
+   *
+   * @generated from field: google.protobuf.Timestamp expires_at = 2;
+   */
+  expiresAt?: Timestamp;
+};
+
+/**
+ * Describes the message memos.api.v1.RefreshTokenResponse.
+ * Use `create(RefreshTokenResponseSchema)` to create a new message.
+ */
+export const RefreshTokenResponseSchema: GenMessage<RefreshTokenResponse> = /*@__PURE__*/
+  messageDesc(file_api_v1_auth_service, 6);
 
 /**
  * @generated from service memos.api.v1.AuthService
@@ -244,6 +297,17 @@ export const AuthService: GenService<{
     methodKind: "unary";
     input: typeof DeleteSessionRequestSchema;
     output: typeof EmptySchema;
+  },
+  /**
+   * RefreshToken exchanges a valid refresh token for a new access token.
+   * The refresh token is sent via HttpOnly cookie.
+   *
+   * @generated from rpc memos.api.v1.AuthService.RefreshToken
+   */
+  refreshToken: {
+    methodKind: "unary";
+    input: typeof RefreshTokenRequestSchema;
+    output: typeof RefreshTokenResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_api_v1_auth_service, 0);

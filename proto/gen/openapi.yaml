@@ -239,6 +239,33 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/auth/refresh:
+        post:
+            tags:
+                - AuthService
+            description: |-
+                RefreshToken exchanges a valid refresh token for a new access token.
+                 The refresh token is sent via HttpOnly cookie.
+            operationId: AuthService_RefreshToken
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RefreshTokenRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RefreshTokenResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/auth/sessions:
         post:
             tags:
@@ -2119,6 +2146,13 @@ components:
                         Last time the session was accessed.
                          Used for sliding expiration calculation (last_accessed_time + 2 weeks).
                     format: date-time
+                accessToken:
+                    type: string
+                    description: The short-lived access token for API requests
+                accessTokenExpiresAt:
+                    type: string
+                    description: When the access token expires
+                    format: date-time
         FieldMapping:
             type: object
             properties:
@@ -2718,6 +2752,19 @@ components:
                     readOnly: true
                     type: string
                     description: Output only. The creation timestamp.
+                    format: date-time
+        RefreshTokenRequest:
+            type: object
+            properties: {}
+        RefreshTokenResponse:
+            type: object
+            properties:
+                accessToken:
+                    type: string
+                    description: The new short-lived access token
+                expiresAt:
+                    type: string
+                    description: When the access token expires
                     format: date-time
         SetMemoAttachmentsRequest:
             required:

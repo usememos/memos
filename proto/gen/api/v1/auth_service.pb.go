@@ -208,8 +208,12 @@ type CreateSessionResponse struct {
 	// Last time the session was accessed.
 	// Used for sliding expiration calculation (last_accessed_time + 2 weeks).
 	LastAccessedAt *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_accessed_at,json=lastAccessedAt,proto3" json:"last_accessed_at,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// The short-lived access token for API requests
+	AccessToken string `protobuf:"bytes,3,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	// When the access token expires
+	AccessTokenExpiresAt *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=access_token_expires_at,json=accessTokenExpiresAt,proto3" json:"access_token_expires_at,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *CreateSessionResponse) Reset() {
@@ -256,6 +260,20 @@ func (x *CreateSessionResponse) GetLastAccessedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *CreateSessionResponse) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+func (x *CreateSessionResponse) GetAccessTokenExpiresAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.AccessTokenExpiresAt
+	}
+	return nil
+}
+
 type DeleteSessionRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -292,6 +310,96 @@ func (*DeleteSessionRequest) Descriptor() ([]byte, []int) {
 	return file_api_v1_auth_service_proto_rawDescGZIP(), []int{4}
 }
 
+type RefreshTokenRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RefreshTokenRequest) Reset() {
+	*x = RefreshTokenRequest{}
+	mi := &file_api_v1_auth_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RefreshTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RefreshTokenRequest) ProtoMessage() {}
+
+func (x *RefreshTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_auth_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RefreshTokenRequest.ProtoReflect.Descriptor instead.
+func (*RefreshTokenRequest) Descriptor() ([]byte, []int) {
+	return file_api_v1_auth_service_proto_rawDescGZIP(), []int{5}
+}
+
+type RefreshTokenResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The new short-lived access token
+	AccessToken string `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	// When the access token expires
+	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=expires_at,json=expiresAt,proto3" json:"expires_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RefreshTokenResponse) Reset() {
+	*x = RefreshTokenResponse{}
+	mi := &file_api_v1_auth_service_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RefreshTokenResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RefreshTokenResponse) ProtoMessage() {}
+
+func (x *RefreshTokenResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_v1_auth_service_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RefreshTokenResponse.ProtoReflect.Descriptor instead.
+func (*RefreshTokenResponse) Descriptor() ([]byte, []int) {
+	return file_api_v1_auth_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *RefreshTokenResponse) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
+func (x *RefreshTokenResponse) GetExpiresAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpiresAt
+	}
+	return nil
+}
+
 // Nested message for password-based authentication credentials.
 type CreateSessionRequest_PasswordCredentials struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -307,7 +415,7 @@ type CreateSessionRequest_PasswordCredentials struct {
 
 func (x *CreateSessionRequest_PasswordCredentials) Reset() {
 	*x = CreateSessionRequest_PasswordCredentials{}
-	mi := &file_api_v1_auth_service_proto_msgTypes[5]
+	mi := &file_api_v1_auth_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -319,7 +427,7 @@ func (x *CreateSessionRequest_PasswordCredentials) String() string {
 func (*CreateSessionRequest_PasswordCredentials) ProtoMessage() {}
 
 func (x *CreateSessionRequest_PasswordCredentials) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_auth_service_proto_msgTypes[5]
+	mi := &file_api_v1_auth_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -370,7 +478,7 @@ type CreateSessionRequest_SSOCredentials struct {
 
 func (x *CreateSessionRequest_SSOCredentials) Reset() {
 	*x = CreateSessionRequest_SSOCredentials{}
-	mi := &file_api_v1_auth_service_proto_msgTypes[6]
+	mi := &file_api_v1_auth_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -382,7 +490,7 @@ func (x *CreateSessionRequest_SSOCredentials) String() string {
 func (*CreateSessionRequest_SSOCredentials) ProtoMessage() {}
 
 func (x *CreateSessionRequest_SSOCredentials) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_auth_service_proto_msgTypes[6]
+	mi := &file_api_v1_auth_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -446,15 +554,23 @@ const file_api_v1_auth_service_proto_rawDesc = "" +
 	"\x04code\x18\x02 \x01(\tB\x03\xe0A\x02R\x04code\x12&\n" +
 	"\fredirect_uri\x18\x03 \x01(\tB\x03\xe0A\x02R\vredirectUri\x12(\n" +
 	"\rcode_verifier\x18\x04 \x01(\tB\x03\xe0A\x01R\fcodeVerifierB\r\n" +
-	"\vcredentials\"\x85\x01\n" +
+	"\vcredentials\"\xfb\x01\n" +
 	"\x15CreateSessionResponse\x12&\n" +
 	"\x04user\x18\x01 \x01(\v2\x12.memos.api.v1.UserR\x04user\x12D\n" +
-	"\x10last_accessed_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x0elastAccessedAt\"\x16\n" +
-	"\x14DeleteSessionRequest2\x8b\x03\n" +
+	"\x10last_accessed_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x0elastAccessedAt\x12!\n" +
+	"\faccess_token\x18\x03 \x01(\tR\vaccessToken\x12Q\n" +
+	"\x17access_token_expires_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x14accessTokenExpiresAt\"\x16\n" +
+	"\x14DeleteSessionRequest\"\x15\n" +
+	"\x13RefreshTokenRequest\"t\n" +
+	"\x14RefreshTokenResponse\x12!\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x129\n" +
+	"\n" +
+	"expires_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\texpiresAt2\x83\x04\n" +
 	"\vAuthService\x12\x8b\x01\n" +
 	"\x11GetCurrentSession\x12&.memos.api.v1.GetCurrentSessionRequest\x1a'.memos.api.v1.GetCurrentSessionResponse\"%\x82\xd3\xe4\x93\x02\x1f\x12\x1d/api/v1/auth/sessions/current\x12z\n" +
 	"\rCreateSession\x12\".memos.api.v1.CreateSessionRequest\x1a#.memos.api.v1.CreateSessionResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/api/v1/auth/sessions\x12r\n" +
-	"\rDeleteSession\x12\".memos.api.v1.DeleteSessionRequest\x1a\x16.google.protobuf.Empty\"%\x82\xd3\xe4\x93\x02\x1f*\x1d/api/v1/auth/sessions/currentB\xa8\x01\n" +
+	"\rDeleteSession\x12\".memos.api.v1.DeleteSessionRequest\x1a\x16.google.protobuf.Empty\"%\x82\xd3\xe4\x93\x02\x1f*\x1d/api/v1/auth/sessions/current\x12v\n" +
+	"\fRefreshToken\x12!.memos.api.v1.RefreshTokenRequest\x1a\".memos.api.v1.RefreshTokenResponse\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/api/v1/auth/refreshB\xa8\x01\n" +
 	"\x10com.memos.api.v1B\x10AuthServiceProtoP\x01Z0github.com/usememos/memos/proto/gen/api/v1;apiv1\xa2\x02\x03MAX\xaa\x02\fMemos.Api.V1\xca\x02\fMemos\\Api\\V1\xe2\x02\x18Memos\\Api\\V1\\GPBMetadata\xea\x02\x0eMemos::Api::V1b\x06proto3"
 
 var (
@@ -469,37 +585,43 @@ func file_api_v1_auth_service_proto_rawDescGZIP() []byte {
 	return file_api_v1_auth_service_proto_rawDescData
 }
 
-var file_api_v1_auth_service_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_api_v1_auth_service_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_api_v1_auth_service_proto_goTypes = []any{
 	(*GetCurrentSessionRequest)(nil),                 // 0: memos.api.v1.GetCurrentSessionRequest
 	(*GetCurrentSessionResponse)(nil),                // 1: memos.api.v1.GetCurrentSessionResponse
 	(*CreateSessionRequest)(nil),                     // 2: memos.api.v1.CreateSessionRequest
 	(*CreateSessionResponse)(nil),                    // 3: memos.api.v1.CreateSessionResponse
 	(*DeleteSessionRequest)(nil),                     // 4: memos.api.v1.DeleteSessionRequest
-	(*CreateSessionRequest_PasswordCredentials)(nil), // 5: memos.api.v1.CreateSessionRequest.PasswordCredentials
-	(*CreateSessionRequest_SSOCredentials)(nil),      // 6: memos.api.v1.CreateSessionRequest.SSOCredentials
-	(*User)(nil),                  // 7: memos.api.v1.User
-	(*timestamppb.Timestamp)(nil), // 8: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),         // 9: google.protobuf.Empty
+	(*RefreshTokenRequest)(nil),                      // 5: memos.api.v1.RefreshTokenRequest
+	(*RefreshTokenResponse)(nil),                     // 6: memos.api.v1.RefreshTokenResponse
+	(*CreateSessionRequest_PasswordCredentials)(nil), // 7: memos.api.v1.CreateSessionRequest.PasswordCredentials
+	(*CreateSessionRequest_SSOCredentials)(nil),      // 8: memos.api.v1.CreateSessionRequest.SSOCredentials
+	(*User)(nil),                  // 9: memos.api.v1.User
+	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),         // 11: google.protobuf.Empty
 }
 var file_api_v1_auth_service_proto_depIdxs = []int32{
-	7, // 0: memos.api.v1.GetCurrentSessionResponse.user:type_name -> memos.api.v1.User
-	8, // 1: memos.api.v1.GetCurrentSessionResponse.last_accessed_at:type_name -> google.protobuf.Timestamp
-	5, // 2: memos.api.v1.CreateSessionRequest.password_credentials:type_name -> memos.api.v1.CreateSessionRequest.PasswordCredentials
-	6, // 3: memos.api.v1.CreateSessionRequest.sso_credentials:type_name -> memos.api.v1.CreateSessionRequest.SSOCredentials
-	7, // 4: memos.api.v1.CreateSessionResponse.user:type_name -> memos.api.v1.User
-	8, // 5: memos.api.v1.CreateSessionResponse.last_accessed_at:type_name -> google.protobuf.Timestamp
-	0, // 6: memos.api.v1.AuthService.GetCurrentSession:input_type -> memos.api.v1.GetCurrentSessionRequest
-	2, // 7: memos.api.v1.AuthService.CreateSession:input_type -> memos.api.v1.CreateSessionRequest
-	4, // 8: memos.api.v1.AuthService.DeleteSession:input_type -> memos.api.v1.DeleteSessionRequest
-	1, // 9: memos.api.v1.AuthService.GetCurrentSession:output_type -> memos.api.v1.GetCurrentSessionResponse
-	3, // 10: memos.api.v1.AuthService.CreateSession:output_type -> memos.api.v1.CreateSessionResponse
-	9, // 11: memos.api.v1.AuthService.DeleteSession:output_type -> google.protobuf.Empty
-	9, // [9:12] is the sub-list for method output_type
-	6, // [6:9] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	9,  // 0: memos.api.v1.GetCurrentSessionResponse.user:type_name -> memos.api.v1.User
+	10, // 1: memos.api.v1.GetCurrentSessionResponse.last_accessed_at:type_name -> google.protobuf.Timestamp
+	7,  // 2: memos.api.v1.CreateSessionRequest.password_credentials:type_name -> memos.api.v1.CreateSessionRequest.PasswordCredentials
+	8,  // 3: memos.api.v1.CreateSessionRequest.sso_credentials:type_name -> memos.api.v1.CreateSessionRequest.SSOCredentials
+	9,  // 4: memos.api.v1.CreateSessionResponse.user:type_name -> memos.api.v1.User
+	10, // 5: memos.api.v1.CreateSessionResponse.last_accessed_at:type_name -> google.protobuf.Timestamp
+	10, // 6: memos.api.v1.CreateSessionResponse.access_token_expires_at:type_name -> google.protobuf.Timestamp
+	10, // 7: memos.api.v1.RefreshTokenResponse.expires_at:type_name -> google.protobuf.Timestamp
+	0,  // 8: memos.api.v1.AuthService.GetCurrentSession:input_type -> memos.api.v1.GetCurrentSessionRequest
+	2,  // 9: memos.api.v1.AuthService.CreateSession:input_type -> memos.api.v1.CreateSessionRequest
+	4,  // 10: memos.api.v1.AuthService.DeleteSession:input_type -> memos.api.v1.DeleteSessionRequest
+	5,  // 11: memos.api.v1.AuthService.RefreshToken:input_type -> memos.api.v1.RefreshTokenRequest
+	1,  // 12: memos.api.v1.AuthService.GetCurrentSession:output_type -> memos.api.v1.GetCurrentSessionResponse
+	3,  // 13: memos.api.v1.AuthService.CreateSession:output_type -> memos.api.v1.CreateSessionResponse
+	11, // 14: memos.api.v1.AuthService.DeleteSession:output_type -> google.protobuf.Empty
+	6,  // 15: memos.api.v1.AuthService.RefreshToken:output_type -> memos.api.v1.RefreshTokenResponse
+	12, // [12:16] is the sub-list for method output_type
+	8,  // [8:12] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_api_v1_auth_service_proto_init() }
@@ -518,7 +640,7 @@ func file_api_v1_auth_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_v1_auth_service_proto_rawDesc), len(file_api_v1_auth_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

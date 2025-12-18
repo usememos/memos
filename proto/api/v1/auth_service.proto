@@ -31,6 +31,15 @@ service AuthService {
   rpc DeleteSession(DeleteSessionRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/v1/auth/sessions/current"};
   }
+
+  // RefreshToken exchanges a valid refresh token for a new access token.
+  // The refresh token is sent via HttpOnly cookie.
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/auth/refresh"
+      body: "*"
+    };
+  }
 }
 
 message GetCurrentSessionRequest {}
@@ -92,6 +101,21 @@ message CreateSessionResponse {
   // Last time the session was accessed.
   // Used for sliding expiration calculation (last_accessed_time + 2 weeks).
   google.protobuf.Timestamp last_accessed_at = 2;
+
+  // The short-lived access token for API requests
+  string access_token = 3;
+
+  // When the access token expires
+  google.protobuf.Timestamp access_token_expires_at = 4;
 }
 
 message DeleteSessionRequest {}
+
+message RefreshTokenRequest {}
+
+message RefreshTokenResponse {
+  // The new short-lived access token
+  string access_token = 1;
+  // When the access token expires
+  google.protobuf.Timestamp expires_at = 2;
+}

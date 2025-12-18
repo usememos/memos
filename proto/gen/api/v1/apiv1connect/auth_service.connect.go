@@ -43,6 +43,9 @@ const (
 	// AuthServiceDeleteSessionProcedure is the fully-qualified name of the AuthService's DeleteSession
 	// RPC.
 	AuthServiceDeleteSessionProcedure = "/memos.api.v1.AuthService/DeleteSession"
+	// AuthServiceRefreshTokenProcedure is the fully-qualified name of the AuthService's RefreshToken
+	// RPC.
+	AuthServiceRefreshTokenProcedure = "/memos.api.v1.AuthService/RefreshToken"
 )
 
 // AuthServiceClient is a client for the memos.api.v1.AuthService service.
@@ -56,6 +59,9 @@ type AuthServiceClient interface {
 	// DeleteSession terminates the current user session.
 	// This is an idempotent operation that invalidates the user's authentication.
 	DeleteSession(context.Context, *connect.Request[v1.DeleteSessionRequest]) (*connect.Response[emptypb.Empty], error)
+	// RefreshToken exchanges a valid refresh token for a new access token.
+	// The refresh token is sent via HttpOnly cookie.
+	RefreshToken(context.Context, *connect.Request[v1.RefreshTokenRequest]) (*connect.Response[v1.RefreshTokenResponse], error)
 }
 
 // NewAuthServiceClient constructs a client for the memos.api.v1.AuthService service. By default, it
@@ -87,6 +93,12 @@ func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(authServiceMethods.ByName("DeleteSession")),
 			connect.WithClientOptions(opts...),
 		),
+		refreshToken: connect.NewClient[v1.RefreshTokenRequest, v1.RefreshTokenResponse](
+			httpClient,
+			baseURL+AuthServiceRefreshTokenProcedure,
+			connect.WithSchema(authServiceMethods.ByName("RefreshToken")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -95,6 +107,7 @@ type authServiceClient struct {
 	getCurrentSession *connect.Client[v1.GetCurrentSessionRequest, v1.GetCurrentSessionResponse]
 	createSession     *connect.Client[v1.CreateSessionRequest, v1.CreateSessionResponse]
 	deleteSession     *connect.Client[v1.DeleteSessionRequest, emptypb.Empty]
+	refreshToken      *connect.Client[v1.RefreshTokenRequest, v1.RefreshTokenResponse]
 }
 
 // GetCurrentSession calls memos.api.v1.AuthService.GetCurrentSession.
@@ -112,6 +125,11 @@ func (c *authServiceClient) DeleteSession(ctx context.Context, req *connect.Requ
 	return c.deleteSession.CallUnary(ctx, req)
 }
 
+// RefreshToken calls memos.api.v1.AuthService.RefreshToken.
+func (c *authServiceClient) RefreshToken(ctx context.Context, req *connect.Request[v1.RefreshTokenRequest]) (*connect.Response[v1.RefreshTokenResponse], error) {
+	return c.refreshToken.CallUnary(ctx, req)
+}
+
 // AuthServiceHandler is an implementation of the memos.api.v1.AuthService service.
 type AuthServiceHandler interface {
 	// GetCurrentSession returns the current active session information.
@@ -123,6 +141,9 @@ type AuthServiceHandler interface {
 	// DeleteSession terminates the current user session.
 	// This is an idempotent operation that invalidates the user's authentication.
 	DeleteSession(context.Context, *connect.Request[v1.DeleteSessionRequest]) (*connect.Response[emptypb.Empty], error)
+	// RefreshToken exchanges a valid refresh token for a new access token.
+	// The refresh token is sent via HttpOnly cookie.
+	RefreshToken(context.Context, *connect.Request[v1.RefreshTokenRequest]) (*connect.Response[v1.RefreshTokenResponse], error)
 }
 
 // NewAuthServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -150,6 +171,12 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(authServiceMethods.ByName("DeleteSession")),
 		connect.WithHandlerOptions(opts...),
 	)
+	authServiceRefreshTokenHandler := connect.NewUnaryHandler(
+		AuthServiceRefreshTokenProcedure,
+		svc.RefreshToken,
+		connect.WithSchema(authServiceMethods.ByName("RefreshToken")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/memos.api.v1.AuthService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AuthServiceGetCurrentSessionProcedure:
@@ -158,6 +185,8 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 			authServiceCreateSessionHandler.ServeHTTP(w, r)
 		case AuthServiceDeleteSessionProcedure:
 			authServiceDeleteSessionHandler.ServeHTTP(w, r)
+		case AuthServiceRefreshTokenProcedure:
+			authServiceRefreshTokenHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -177,4 +206,8 @@ func (UnimplementedAuthServiceHandler) CreateSession(context.Context, *connect.R
 
 func (UnimplementedAuthServiceHandler) DeleteSession(context.Context, *connect.Request[v1.DeleteSessionRequest]) (*connect.Response[emptypb.Empty], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.AuthService.DeleteSession is not implemented"))
+}
+
+func (UnimplementedAuthServiceHandler) RefreshToken(context.Context, *connect.Request[v1.RefreshTokenRequest]) (*connect.Response[v1.RefreshTokenResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.AuthService.RefreshToken is not implemented"))
 }
