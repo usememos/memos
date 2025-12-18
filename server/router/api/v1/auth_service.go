@@ -288,28 +288,41 @@ func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTim
 // DeleteSession terminates the current user session (logout).
 //
 // This endpoint:
-// 1. Removes the session from the user's sessions list in the database
-// 2. Clears the session cookie by setting it to expire immediately
+// 1. Revokes the refresh token if authenticated via new token flow
+// 2. Removes the legacy session from the user's sessions list in the database
+// 3. Clears both session and refresh token cookies
 //
 // Authentication: Required (session cookie or access token)
 // Returns: Empty response on success.
 func (s *APIV1Service) DeleteSession(ctx context.Context, _ *v1pb.DeleteSessionRequest) (*emptypb.Empty, error) {
-	user, err := s.GetCurrentUser(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Unauthenticated, "failed to get current user: %v", err)
-	}
-	if user == nil {
-		return nil, status.Errorf(codes.Unauthenticated, "user not found")
-	}
-
-	// Check if we have a session ID (from cookie-based auth)
-	if sessionID := auth.GetSessionID(ctx); sessionID != "" {
-		// Remove session from user settings
-		if err := s.Store.RemoveUserSession(ctx, user.ID, sessionID); err != nil {
-			slog.Error("failed to remove user session", "error", err)
+	// Try to get user from new access token claims
+	claims := auth.GetUserClaims(ctx)
+	if claims != nil {
+		// New token flow: Revoke refresh token if we can identify it
+		refreshToken := ""
+		if md, ok := metadata.FromIncomingContext(ctx); ok {
+			if cookies := md.Get("cookie"); len(cookies) > 0 {
+				refreshToken = auth.ExtractRefreshTokenFromCookie(cookies[0])
+			}
+		}
+		if refreshToken != "" {
+			refreshClaims, err := auth.ParseRefreshToken(refreshToken, []byte(s.Secret))
+			if err == nil {
+				// Remove refresh token from user_setting by token_id
+				_ = s.Store.RemoveUserRefreshToken(ctx, claims.UserID, refreshClaims.TokenID)
+			}
+		}
+	} else {
+		// Legacy: try old session-based logout
+		user, err := s.GetCurrentUser(ctx)
+		if err == nil && user != nil {
+			if sessionID := auth.GetSessionID(ctx); sessionID != "" {
+				_ = s.Store.RemoveUserSession(ctx, user.ID, sessionID)
+			}
 		}
 	}
 
+	// Clear all auth cookies (both session and refresh)
 	if err := s.clearAuthCookies(ctx); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to clear auth cookies, error: %v", err)
 	}
