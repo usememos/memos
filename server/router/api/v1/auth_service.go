@@ -199,47 +199,90 @@ func (s *APIV1Service) CreateSession(ctx context.Context, request *v1pb.CreateSe
 
 	// Default session expiration time is 100 year
 	expireTime := time.Now().Add(100 * 365 * 24 * time.Hour)
-	if err := s.doSignIn(ctx, existingUser, expireTime); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to sign in, error: %v", err)
+	accessToken, accessExpiresAt, err := s.doSignIn(ctx, existingUser, expireTime)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to sign in: %v", err)
 	}
 
 	return &v1pb.CreateSessionResponse{
-		User:           convertUserFromStore(existingUser),
-		LastAccessedAt: timestamppb.Now(),
+		User:                 convertUserFromStore(existingUser),
+		LastAccessedAt:       timestamppb.Now(),
+		AccessToken:          accessToken,
+		AccessTokenExpiresAt: timestamppb.New(accessExpiresAt),
 	}, nil
 }
 
 // doSignIn performs the actual sign-in operation by creating a session and setting the cookie.
 //
 // This function:
-// 1. Generates a unique session ID (UUID)
+// 1. Generates a unique session ID (UUID) for legacy session cookie
 // 2. Tracks the session in user settings with client information
 // 3. Sets a session cookie in the format: {userID}-{sessionID}
-// 4. Configures cookie security settings (HttpOnly, Secure, SameSite)
+// 4. Generates refresh token and access token
+// 5. Stores refresh token metadata in user_setting
+// 6. Sets refresh token as HttpOnly cookie
+// 7. Returns access token and its expiry time
 //
 // Cookie lifetime is 100 years, but actual session validity is controlled by
 // sliding expiration (14 days from last access) checked during authentication.
-func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTime time.Time) error {
-	// Generate unique session ID for web use
+func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTime time.Time) (string, time.Time, error) {
+	// Generate unique session ID for web use (legacy)
 	sessionID := auth.GenerateSessionID()
 
-	// Track session in user settings
+	// Track session in user settings (legacy)
 	if err := s.trackUserSession(ctx, user.ID, sessionID); err != nil {
 		// Log the error but don't fail the login if session tracking fails
 		// This ensures backward compatibility
 		slog.Error("failed to track user session", "error", err)
 	}
 
-	// Set session cookie for web use
+	// Set session cookie for web use (legacy)
 	sessionCookie, err := s.buildSessionCookie(ctx, sessionID, expireTime)
 	if err != nil {
-		return status.Errorf(codes.Internal, "failed to build session cookie, error: %v", err)
+		return "", time.Time{}, status.Errorf(codes.Internal, "failed to build session cookie, error: %v", err)
 	}
 	if err := SetResponseHeader(ctx, "Set-Cookie", sessionCookie); err != nil {
-		return status.Errorf(codes.Internal, "failed to set response header, error: %v", err)
+		return "", time.Time{}, status.Errorf(codes.Internal, "failed to set response header, error: %v", err)
 	}
 
-	return nil
+	// Generate refresh token
+	tokenID := util.GenUUID()
+	refreshToken, refreshExpiresAt, err := auth.GenerateRefreshToken(user.ID, tokenID, []byte(s.Secret))
+	if err != nil {
+		return "", time.Time{}, status.Errorf(codes.Internal, "failed to generate refresh token: %v", err)
+	}
+
+	// Store refresh token metadata
+	clientInfo := s.extractClientInfo(ctx)
+	refreshTokenRecord := &storepb.RefreshTokensUserSetting_RefreshToken{
+		TokenId:    tokenID,
+		ExpiresAt:  timestamppb.New(refreshExpiresAt),
+		CreatedAt:  timestamppb.Now(),
+		ClientInfo: clientInfo,
+	}
+	if err := s.Store.AddUserRefreshToken(ctx, user.ID, refreshTokenRecord); err != nil {
+		slog.Error("failed to store refresh token", "error", err)
+	}
+
+	// Set refresh token cookie
+	refreshCookie := s.buildRefreshTokenCookie(ctx, refreshToken, refreshExpiresAt)
+	if err := SetResponseHeader(ctx, "Set-Cookie", refreshCookie); err != nil {
+		return "", time.Time{}, status.Errorf(codes.Internal, "failed to set refresh token cookie: %v", err)
+	}
+
+	// Generate access token
+	accessToken, accessExpiresAt, err := auth.GenerateAccessTokenV2(
+		user.ID,
+		user.Username,
+		string(user.Role),
+		string(user.RowStatus),
+		[]byte(s.Secret),
+	)
+	if err != nil {
+		return "", time.Time{}, status.Errorf(codes.Internal, "failed to generate access token: %v", err)
+	}
+
+	return accessToken, accessExpiresAt, nil
 }
 
 // DeleteSession terminates the current user session (logout).
@@ -331,10 +374,17 @@ func (s *APIV1Service) clearAuthCookies(ctx context.Context) error {
 		return errors.Wrap(err, "failed to build session cookie")
 	}
 
-	// Set cookie in the response
+	// Set session cookie in the response
 	if err := SetResponseHeader(ctx, "Set-Cookie", sessionCookie); err != nil {
-		return errors.Wrap(err, "failed to set response header")
+		return errors.Wrap(err, "failed to set session cookie")
 	}
+
+	// Clear refresh token cookie
+	refreshCookie := s.buildRefreshTokenCookie(ctx, "", time.Time{})
+	if err := SetResponseHeader(ctx, "Set-Cookie", refreshCookie); err != nil {
+		return errors.Wrap(err, "failed to set refresh cookie")
+	}
+
 	return nil
 }
 
@@ -369,6 +419,38 @@ func (*APIV1Service) buildSessionCookie(ctx context.Context, sessionCookieValue 
 		attrs = append(attrs, "SameSite=Strict")
 	}
 	return strings.Join(attrs, "; "), nil
+}
+
+func (*APIV1Service) buildRefreshTokenCookie(ctx context.Context, refreshToken string, expireTime time.Time) string {
+	attrs := []string{
+		fmt.Sprintf("%s=%s", auth.RefreshTokenCookieName, refreshToken),
+		"Path=/",
+		"HttpOnly",
+	}
+	if expireTime.IsZero() {
+		attrs = append(attrs, "Expires=Thu, 01 Jan 1970 00:00:00 GMT")
+	} else {
+		attrs = append(attrs, "Expires="+expireTime.Format(time.RFC1123))
+	}
+
+	// Try to determine if the request is HTTPS by checking the origin header
+	// Default to non-HTTPS (Lax SameSite) if metadata is not available
+	isHTTPS := false
+	if md, ok := metadata.FromIncomingContext(ctx); ok {
+		for _, v := range md.Get("origin") {
+			if strings.HasPrefix(v, "https://") {
+				isHTTPS = true
+				break
+			}
+		}
+	}
+
+	if isHTTPS {
+		attrs = append(attrs, "SameSite=Lax", "Secure")
+	} else {
+		attrs = append(attrs, "SameSite=Lax")
+	}
+	return strings.Join(attrs, "; ")
 }
 
 func (s *APIV1Service) GetCurrentUser(ctx context.Context) (*store.User, error) {
