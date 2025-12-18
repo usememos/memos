@@ -287,25 +287,32 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c ech
 }
 
 // getCurrentUser retrieves the current authenticated user from the Echo context.
-// It checks both session cookies and Bearer tokens for authentication.
+// It checks Bearer tokens for authentication (Access Token V2 or PAT).
 // Uses the shared Authenticator for consistent authentication logic.
 func (s *FileServerService) getCurrentUser(ctx context.Context, c echo.Context) (*store.User, error) {
-	// Try session cookie authentication first
-	if cookie, err := c.Cookie(auth.SessionCookieName); err == nil && cookie.Value != "" {
-		user, err := s.authenticator.AuthenticateBySession(ctx, cookie.Value)
-		if err == nil && user != nil {
-			return user, nil
-		}
-	}
-
-	// Try JWT Bearer token authentication
+	// Try Bearer token authentication
 	authHeader := c.Request().Header.Get("Authorization")
 	if authHeader != "" {
-		parts := strings.Fields(authHeader)
-		if len(parts) == 2 && strings.EqualFold(parts[0], "bearer") {
-			user, err := s.authenticator.AuthenticateByJWT(ctx, parts[1])
-			if err == nil && user != nil {
-				return user, nil
+		token := auth.ExtractBearerToken(authHeader)
+		if token != "" {
+			// Try Access Token V2 (stateless)
+			if !strings.HasPrefix(token, auth.PersonalAccessTokenPrefix) {
+				claims, err := s.authenticator.AuthenticateByAccessTokenV2(token)
+				if err == nil && claims != nil {
+					// Get user from claims
+					user, err := s.Store.GetUser(ctx, &store.FindUser{ID: &claims.UserID})
+					if err == nil && user != nil {
+						return user, nil
+					}
+				}
+			}
+
+			// Try PAT
+			if strings.HasPrefix(token, auth.PersonalAccessTokenPrefix) {
+				user, _, err := s.authenticator.AuthenticateByPAT(ctx, token)
+				if err == nil && user != nil {
+					return user, nil
+				}
 			}
 		}
 	}

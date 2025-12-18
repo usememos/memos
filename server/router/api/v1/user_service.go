@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
-	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -656,137 +655,6 @@ func (s *APIV1Service) DeleteUserAccessToken(ctx context.Context, request *v1pb.
 	return &emptypb.Empty{}, nil
 }
 
-// ListUserSessions retrieves all active sessions for a user.
-//
-// Sessions represent active browser logins. Each session includes:
-// - session_id: Unique identifier
-// - create_time: When the session was created
-// - last_accessed_time: Last API call time (for sliding expiration)
-// - client_info: Device details (browser, OS, IP address, device type)
-//
-// Use cases:
-// - User reviews where they're logged in
-// - User identifies suspicious login attempts
-// - User prepares to revoke specific sessions
-//
-// Authentication: Required (session cookie or access token)
-// Authorization: User can only list their own sessions.
-func (s *APIV1Service) ListUserSessions(ctx context.Context, request *v1pb.ListUserSessionsRequest) (*v1pb.ListUserSessionsResponse, error) {
-	userID, err := ExtractUserIDFromName(request.Parent)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
-	}
-
-	currentUser, err := s.GetCurrentUser(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
-	}
-	if currentUser == nil {
-		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
-	}
-	if currentUser.ID != userID {
-		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
-	}
-
-	userSessions, err := s.Store.GetUserSessions(ctx, userID)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list sessions: %v", err)
-	}
-
-	sessions := []*v1pb.UserSession{}
-	for _, userSession := range userSessions {
-		sessionResponse := &v1pb.UserSession{
-			Name:             fmt.Sprintf("users/%d/sessions/%s", userID, userSession.SessionId),
-			SessionId:        userSession.SessionId,
-			CreateTime:       userSession.CreateTime,
-			LastAccessedTime: userSession.LastAccessedTime,
-		}
-
-		if userSession.ClientInfo != nil {
-			sessionResponse.ClientInfo = &v1pb.UserSession_ClientInfo{
-				UserAgent:  userSession.ClientInfo.UserAgent,
-				IpAddress:  userSession.ClientInfo.IpAddress,
-				DeviceType: userSession.ClientInfo.DeviceType,
-				Os:         userSession.ClientInfo.Os,
-				Browser:    userSession.ClientInfo.Browser,
-			}
-		}
-
-		sessions = append(sessions, sessionResponse)
-	}
-
-	// Sort by last accessed time in descending order.
-	slices.SortFunc(sessions, func(i, j *v1pb.UserSession) int {
-		return int(j.LastAccessedTime.Seconds - i.LastAccessedTime.Seconds)
-	})
-
-	response := &v1pb.ListUserSessionsResponse{
-		Sessions: sessions,
-	}
-	return response, nil
-}
-
-// RevokeUserSession terminates a specific session for a user.
-//
-// This endpoint:
-// 1. Removes the session from the user's sessions list
-// 2. Immediately invalidates the session
-// 3. Forces the device to re-login on next request
-//
-// Use cases:
-// - User logs out from a specific device (e.g., "Log out my phone")
-// - User removes suspicious/unknown session
-// - User logs out from all devices except current one
-//
-// Note: This is different from DeleteSession (logout current session).
-// This endpoint allows revoking ANY session, not just the current one.
-//
-// Authentication: Required (session cookie or access token)
-// Authorization: User can only revoke their own sessions.
-func (s *APIV1Service) RevokeUserSession(ctx context.Context, request *v1pb.RevokeUserSessionRequest) (*emptypb.Empty, error) {
-	// Extract user ID and session ID from the session resource name
-	// Format: users/{user}/sessions/{session}
-	parts := strings.Split(request.Name, "/")
-	if len(parts) != 4 || parts[0] != "users" || parts[2] != "sessions" {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid session name format: %s", request.Name)
-	}
-
-	userID, err := ExtractUserIDFromName(fmt.Sprintf("users/%s", parts[1]))
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
-	}
-	sessionIDToRevoke := parts[3]
-
-	currentUser, err := s.GetCurrentUser(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
-	}
-	if currentUser == nil {
-		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
-	}
-	if currentUser.ID != userID {
-		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
-	}
-
-	if err := s.Store.RemoveUserSession(ctx, userID, sessionIDToRevoke); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to revoke session: %v", err)
-	}
-
-	return &emptypb.Empty{}, nil
-}
-
-// UpsertUserSession adds or updates a user session.
-func (s *APIV1Service) UpsertUserSession(ctx context.Context, userID int32, sessionID string, clientInfo *storepb.SessionsUserSetting_ClientInfo) error {
-	session := &storepb.SessionsUserSetting_Session{
-		SessionId:        sessionID,
-		CreateTime:       timestamppb.Now(),
-		LastAccessedTime: timestamppb.Now(),
-		ClientInfo:       clientInfo,
-	}
-
-	return s.Store.AddUserSession(ctx, userID, session)
-}
-
 func (s *APIV1Service) ListUserWebhooks(ctx context.Context, request *v1pb.ListUserWebhooksRequest) (*v1pb.ListUserWebhooksResponse, error) {
 	userID, err := ExtractUserIDFromName(request.Parent)
 	if err != nil {
@@ -1099,10 +967,6 @@ func convertSettingKeyToStore(key string) (storepb.UserSetting_Key, error) {
 	switch key {
 	case v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_GENERAL)]:
 		return storepb.UserSetting_GENERAL, nil
-	case v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_SESSIONS)]:
-		return storepb.UserSetting_SESSIONS, nil
-	case v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_ACCESS_TOKENS)]:
-		return storepb.UserSetting_ACCESS_TOKENS, nil
 	case v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_WEBHOOKS)]:
 		return storepb.UserSetting_WEBHOOKS, nil
 	default:
@@ -1115,10 +979,6 @@ func convertSettingKeyFromStore(key storepb.UserSetting_Key) string {
 	switch key {
 	case storepb.UserSetting_GENERAL:
 		return v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_GENERAL)]
-	case storepb.UserSetting_SESSIONS:
-		return v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_SESSIONS)]
-	case storepb.UserSetting_ACCESS_TOKENS:
-		return v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_ACCESS_TOKENS)]
 	case storepb.UserSetting_SHORTCUTS:
 		return "SHORTCUTS" // Not defined in API proto
 	case storepb.UserSetting_WEBHOOKS:
@@ -1138,18 +998,6 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32
 		}
 
 		switch key {
-		case storepb.UserSetting_SESSIONS:
-			setting.Value = &v1pb.UserSetting_SessionsSetting_{
-				SessionsSetting: &v1pb.UserSetting_SessionsSetting{
-					Sessions: []*v1pb.UserSession{},
-				},
-			}
-		case storepb.UserSetting_ACCESS_TOKENS:
-			setting.Value = &v1pb.UserSetting_AccessTokensSetting_{
-				AccessTokensSetting: &v1pb.UserSetting_AccessTokensSetting{
-					AccessTokens: []*v1pb.UserAccessToken{},
-				},
-			}
 		case storepb.UserSetting_WEBHOOKS:
 			setting.Value = &v1pb.UserSetting_WebhooksSetting_{
 				WebhooksSetting: &v1pb.UserSetting_WebhooksSetting{
@@ -1184,45 +1032,6 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32
 			setting.Value = &v1pb.UserSetting_GeneralSetting_{
 				GeneralSetting: getDefaultUserGeneralSetting(),
 			}
-		}
-	case storepb.UserSetting_SESSIONS:
-		sessions := storeSetting.GetSessions()
-		apiSessions := make([]*v1pb.UserSession, 0, len(sessions.Sessions))
-		for _, session := range sessions.Sessions {
-			apiSession := &v1pb.UserSession{
-				Name:             fmt.Sprintf("users/%d/sessions/%s", userID, session.SessionId),
-				SessionId:        session.SessionId,
-				CreateTime:       session.CreateTime,
-				LastAccessedTime: session.LastAccessedTime,
-				ClientInfo: &v1pb.UserSession_ClientInfo{
-					UserAgent:  session.ClientInfo.UserAgent,
-					IpAddress:  session.ClientInfo.IpAddress,
-					DeviceType: session.ClientInfo.DeviceType,
-					Os:         session.ClientInfo.Os,
-					Browser:    session.ClientInfo.Browser,
-				},
-			}
-			apiSessions = append(apiSessions, apiSession)
-		}
-		setting.Value = &v1pb.UserSetting_SessionsSetting_{
-			SessionsSetting: &v1pb.UserSetting_SessionsSetting{
-				Sessions: apiSessions,
-			},
-		}
-	case storepb.UserSetting_ACCESS_TOKENS:
-		accessTokens := storeSetting.GetAccessTokens()
-		apiTokens := make([]*v1pb.UserAccessToken, 0, len(accessTokens.AccessTokens))
-		for _, token := range accessTokens.AccessTokens {
-			apiToken := &v1pb.UserAccessToken{
-				Name:        fmt.Sprintf("users/%d/accessTokens/%s", userID, token.AccessToken),
-				Description: token.Description,
-			}
-			apiTokens = append(apiTokens, apiToken)
-		}
-		setting.Value = &v1pb.UserSetting_AccessTokensSetting_{
-			AccessTokensSetting: &v1pb.UserSetting_AccessTokensSetting{
-				AccessTokens: apiTokens,
-			},
 		}
 	case storepb.UserSetting_WEBHOOKS:
 		webhooks := storeSetting.GetWebhooks()
@@ -1270,36 +1079,6 @@ func convertUserSettingToStore(apiSetting *v1pb.UserSetting, userID int32, key s
 		} else {
 			return nil, errors.Errorf("general setting is required")
 		}
-	case storepb.UserSetting_SESSIONS:
-		if sessions := apiSetting.GetSessionsSetting(); sessions != nil {
-			storeSessions := make([]*storepb.SessionsUserSetting_Session, 0, len(sessions.Sessions))
-			for _, session := range sessions.Sessions {
-				storeSession := &storepb.SessionsUserSetting_Session{
-					SessionId:        session.SessionId,
-					CreateTime:       session.CreateTime,
-					LastAccessedTime: session.LastAccessedTime,
-					ClientInfo: &storepb.SessionsUserSetting_ClientInfo{
-						UserAgent:  session.ClientInfo.UserAgent,
-						IpAddress:  session.ClientInfo.IpAddress,
-						DeviceType: session.ClientInfo.DeviceType,
-						Os:         session.ClientInfo.Os,
-						Browser:    session.ClientInfo.Browser,
-					},
-				}
-				storeSessions = append(storeSessions, storeSession)
-			}
-			storeSetting.Value = &storepb.UserSetting_Sessions{
-				Sessions: &storepb.SessionsUserSetting{
-					Sessions: storeSessions,
-				},
-			}
-		} else {
-			return nil, errors.Errorf("sessions setting is required")
-		}
-	case storepb.UserSetting_ACCESS_TOKENS:
-		// Access tokens should be managed via CreateUserAccessToken/DeleteUserAccessToken endpoints,
-		// not via UpdateUserSetting. This prevents accidental token disclosure.
-		return nil, errors.Errorf("access tokens cannot be updated via UpdateUserSetting, use CreateUserAccessToken/DeleteUserAccessToken endpoints")
 	case storepb.UserSetting_WEBHOOKS:
 		if webhooks := apiSetting.GetWebhooksSetting(); webhooks != nil {
 			storeWebhooks := make([]*storepb.WebhooksUserSetting_Webhook, 0, len(webhooks.Webhooks))

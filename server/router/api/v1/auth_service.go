@@ -34,10 +34,9 @@ const (
 // This endpoint is used to:
 // - Check if a user is currently authenticated
 // - Get the current user's information
-// - Retrieve the last accessed time of the session
 //
-// Authentication: Required (session cookie or access token)
-// Returns: User information and last accessed timestamp.
+// Authentication: Required (access token)
+// Returns: User information.
 func (s *APIV1Service) GetCurrentSession(ctx context.Context, _ *v1pb.GetCurrentSessionRequest) (*v1pb.GetCurrentSessionResponse, error) {
 	user, err := s.GetCurrentUser(ctx)
 	if err != nil {
@@ -51,20 +50,9 @@ func (s *APIV1Service) GetCurrentSession(ctx context.Context, _ *v1pb.GetCurrent
 		return nil, status.Errorf(codes.Unauthenticated, "user not found")
 	}
 
-	var lastAccessedAt *timestamppb.Timestamp
-	// Update session last accessed time if we have a session ID and get the current session info
-	if sessionID := auth.GetSessionID(ctx); sessionID != "" {
-		now := timestamppb.Now()
-		if err := s.Store.UpdateUserSessionLastAccessed(ctx, user.ID, sessionID, now); err != nil {
-			// Log error but don't fail the request
-			slog.Error("failed to update session last accessed time", "error", err)
-		}
-		lastAccessedAt = now
-	}
-
 	return &v1pb.GetCurrentSessionResponse{
 		User:           convertUserFromStore(user),
-		LastAccessedAt: lastAccessedAt,
+		LastAccessedAt: timestamppb.Now(),
 	}, nil
 }
 
@@ -215,36 +203,11 @@ func (s *APIV1Service) CreateSession(ctx context.Context, request *v1pb.CreateSe
 // doSignIn performs the actual sign-in operation by creating a session and setting the cookie.
 //
 // This function:
-// 1. Generates a unique session ID (UUID) for legacy session cookie
-// 2. Tracks the session in user settings with client information
-// 3. Sets a session cookie in the format: {userID}-{sessionID}
-// 4. Generates refresh token and access token
-// 5. Stores refresh token metadata in user_setting
-// 6. Sets refresh token as HttpOnly cookie
-// 7. Returns access token and its expiry time
-//
-// Cookie lifetime is 100 years, but actual session validity is controlled by
-// sliding expiration (14 days from last access) checked during authentication.
+// 1. Generates refresh token and access token
+// 2. Stores refresh token metadata in user_setting
+// 3. Sets refresh token as HttpOnly cookie
+// 4. Returns access token and its expiry time
 func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTime time.Time) (string, time.Time, error) {
-	// Generate unique session ID for web use (legacy)
-	sessionID := auth.GenerateSessionID()
-
-	// Track session in user settings (legacy)
-	if err := s.trackUserSession(ctx, user.ID, sessionID); err != nil {
-		// Log the error but don't fail the login if session tracking fails
-		// This ensures backward compatibility
-		slog.Error("failed to track user session", "error", err)
-	}
-
-	// Set session cookie for web use (legacy)
-	sessionCookie, err := s.buildSessionCookie(ctx, sessionID, expireTime)
-	if err != nil {
-		return "", time.Time{}, status.Errorf(codes.Internal, "failed to build session cookie, error: %v", err)
-	}
-	if err := SetResponseHeader(ctx, "Set-Cookie", sessionCookie); err != nil {
-		return "", time.Time{}, status.Errorf(codes.Internal, "failed to set response header, error: %v", err)
-	}
-
 	// Generate refresh token
 	tokenID := util.GenUUID()
 	refreshToken, refreshExpiresAt, err := auth.GenerateRefreshToken(user.ID, tokenID, []byte(s.Secret))
@@ -289,16 +252,15 @@ func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User, expireTim
 //
 // This endpoint:
 // 1. Revokes the refresh token if authenticated via new token flow
-// 2. Removes the legacy session from the user's sessions list in the database
-// 3. Clears both session and refresh token cookies
+// 2. Clears refresh token cookie
 //
-// Authentication: Required (session cookie or access token)
+// Authentication: Required (access token)
 // Returns: Empty response on success.
 func (s *APIV1Service) DeleteSession(ctx context.Context, _ *v1pb.DeleteSessionRequest) (*emptypb.Empty, error) {
-	// Try to get user from new access token claims
+	// Get user from access token claims
 	claims := auth.GetUserClaims(ctx)
 	if claims != nil {
-		// New token flow: Revoke refresh token if we can identify it
+		// Revoke refresh token if we can identify it
 		refreshToken := ""
 		if md, ok := metadata.FromIncomingContext(ctx); ok {
 			if cookies := md.Get("cookie"); len(cookies) > 0 {
@@ -312,17 +274,9 @@ func (s *APIV1Service) DeleteSession(ctx context.Context, _ *v1pb.DeleteSessionR
 				_ = s.Store.RemoveUserRefreshToken(ctx, claims.UserID, refreshClaims.TokenID)
 			}
 		}
-	} else {
-		// Legacy: try old session-based logout
-		user, err := s.GetCurrentUser(ctx)
-		if err == nil && user != nil {
-			if sessionID := auth.GetSessionID(ctx); sessionID != "" {
-				_ = s.Store.RemoveUserSession(ctx, user.ID, sessionID)
-			}
-		}
 	}
 
-	// Clear all auth cookies (both session and refresh)
+	// Clear refresh token cookie
 	if err := s.clearAuthCookies(ctx); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to clear auth cookies, error: %v", err)
 	}
@@ -381,17 +335,6 @@ func (s *APIV1Service) RefreshToken(ctx context.Context, _ *v1pb.RefreshTokenReq
 }
 
 func (s *APIV1Service) clearAuthCookies(ctx context.Context) error {
-	// Clear session cookie
-	sessionCookie, err := s.buildSessionCookie(ctx, "", time.Time{})
-	if err != nil {
-		return errors.Wrap(err, "failed to build session cookie")
-	}
-
-	// Set session cookie in the response
-	if err := SetResponseHeader(ctx, "Set-Cookie", sessionCookie); err != nil {
-		return errors.Wrap(err, "failed to set session cookie")
-	}
-
 	// Clear refresh token cookie
 	refreshCookie := s.buildRefreshTokenCookie(ctx, "", time.Time{})
 	if err := SetResponseHeader(ctx, "Set-Cookie", refreshCookie); err != nil {
@@ -399,39 +342,6 @@ func (s *APIV1Service) clearAuthCookies(ctx context.Context) error {
 	}
 
 	return nil
-}
-
-func (*APIV1Service) buildSessionCookie(ctx context.Context, sessionCookieValue string, expireTime time.Time) (string, error) {
-	attrs := []string{
-		fmt.Sprintf("%s=%s", auth.SessionCookieName, sessionCookieValue),
-		"Path=/",
-		"HttpOnly",
-	}
-	if expireTime.IsZero() {
-		attrs = append(attrs, "Expires=Thu, 01 Jan 1970 00:00:00 GMT")
-	} else {
-		attrs = append(attrs, "Expires="+expireTime.Format(time.RFC1123))
-	}
-
-	// Try to determine if the request is HTTPS by checking the origin header
-	// Default to non-HTTPS (Strict SameSite) if metadata is not available
-	isHTTPS := false
-	if md, ok := metadata.FromIncomingContext(ctx); ok {
-		for _, v := range md.Get("origin") {
-			if strings.HasPrefix(v, "https://") {
-				isHTTPS = true
-				break
-			}
-		}
-	}
-
-	if isHTTPS {
-		attrs = append(attrs, "SameSite=None")
-		attrs = append(attrs, "Secure")
-	} else {
-		attrs = append(attrs, "SameSite=Strict")
-	}
-	return strings.Join(attrs, "; "), nil
 }
 
 func (*APIV1Service) buildRefreshTokenCookie(ctx context.Context, refreshToken string, expireTime time.Time) string {
@@ -481,27 +391,6 @@ func (s *APIV1Service) GetCurrentUser(ctx context.Context) (*store.User, error) 
 		return nil, errors.Errorf("user %d not found", userID)
 	}
 	return user, nil
-}
-
-// trackUserSession creates a new session record in the user's settings.
-//
-// Session information includes:
-// - session_id: Unique UUID for this session
-// - create_time: When the session was created
-// - last_accessed_time: When the session was last used (for sliding expiration)
-// - client_info: Device details (user agent, IP, device type, OS, browser).
-func (s *APIV1Service) trackUserSession(ctx context.Context, userID int32, sessionID string) error {
-	// Extract client information from the context
-	clientInfo := s.extractClientInfo(ctx)
-
-	session := &storepb.SessionsUserSetting_Session{
-		SessionId:        sessionID,
-		CreateTime:       timestamppb.Now(),
-		LastAccessedTime: timestamppb.Now(),
-		ClientInfo:       clientInfo,
-	}
-
-	return s.Store.AddUserSession(ctx, userID, session)
 }
 
 // extractClientInfo extracts comprehensive client information from the request context.
