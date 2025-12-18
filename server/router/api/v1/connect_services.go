@@ -63,6 +63,12 @@ func (s *ConnectServiceHandler) DeleteSession(ctx context.Context, req *connect.
 	})
 }
 
+func (s *ConnectServiceHandler) RefreshToken(ctx context.Context, req *connect.Request[v1pb.RefreshTokenRequest]) (*connect.Response[v1pb.RefreshTokenResponse], error) {
+	return connectWithHeaderCarrier(ctx, func(ctx context.Context) (*v1pb.RefreshTokenResponse, error) {
+		return s.APIV1Service.RefreshToken(ctx, req.Msg)
+	})
+}
+
 // UserService
 
 func (s *ConnectServiceHandler) ListUsers(ctx context.Context, req *connect.Request[v1pb.ListUsersRequest]) (*connect.Response[v1pb.ListUsersResponse], error) {

@@ -273,6 +273,57 @@ func (s *APIV1Service) DeleteSession(ctx context.Context, _ *v1pb.DeleteSessionR
 	return &emptypb.Empty{}, nil
 }
 
+// RefreshToken exchanges a valid refresh token for a new access token.
+//
+// This endpoint:
+// 1. Extracts the refresh token from the HttpOnly cookie (memos_refresh)
+// 2. Validates the refresh token against the database (checking expiry and revocation)
+// 3. Generates a new short-lived access token (15 minutes)
+// 4. Returns the new access token and its expiry time
+//
+// The refresh token remains valid and is not rotated.
+// Client should store the new access token in memory and use it for API requests.
+//
+// Authentication: Requires valid refresh token in cookie (public endpoint)
+// Returns: New access token and expiry timestamp.
+func (s *APIV1Service) RefreshToken(ctx context.Context, _ *v1pb.RefreshTokenRequest) (*v1pb.RefreshTokenResponse, error) {
+	// Extract refresh token from cookie
+	refreshToken := ""
+	if md, ok := metadata.FromIncomingContext(ctx); ok {
+		if cookies := md.Get("cookie"); len(cookies) > 0 {
+			refreshToken = auth.ExtractRefreshTokenFromCookie(cookies[0])
+		}
+	}
+
+	if refreshToken == "" {
+		return nil, status.Errorf(codes.Unauthenticated, "refresh token not found")
+	}
+
+	// Validate refresh token
+	authenticator := auth.NewAuthenticator(s.Store, s.Secret)
+	user, _, err := authenticator.AuthenticateByRefreshToken(ctx, refreshToken)
+	if err != nil {
+		return nil, status.Errorf(codes.Unauthenticated, "invalid refresh token: %v", err)
+	}
+
+	// Generate new access token
+	accessToken, expiresAt, err := auth.GenerateAccessTokenV2(
+		user.ID,
+		user.Username,
+		string(user.Role),
+		string(user.RowStatus),
+		[]byte(s.Secret),
+	)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to generate access token: %v", err)
+	}
+
+	return &v1pb.RefreshTokenResponse{
+		AccessToken: accessToken,
+		ExpiresAt:   timestamppb.New(expiresAt),
+	}, nil
+}
+
 func (s *APIV1Service) clearAuthCookies(ctx context.Context) error {
 	// Clear session cookie
 	sessionCookie, err := s.buildSessionCookie(ctx, "", time.Time{})
