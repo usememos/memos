@@ -333,7 +333,7 @@ export const initialUserStore = async () => {
   try {
     // Step 1: Authenticate and get current user
     // The interceptor will handle token refresh if needed
-    const { user: currentUser } = await authServiceClient.getCurrentSession({});
+    const { user: currentUser } = await authServiceClient.getCurrentUser({});
 
     if (!currentUser) {
       // No authenticated user - clear state
@@ -380,7 +380,7 @@ export const initialUserStore = async () => {
 // We then clear the in-memory access token and reset the store state
 export const logout = async () => {
   try {
-    await authServiceClient.deleteSession({});
+    await authServiceClient.signOut({});
   } catch (error) {
     // Log error but continue with local cleanup
     console.error("Failed to delete session on server:", error);

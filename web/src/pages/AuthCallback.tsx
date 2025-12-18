@@ -73,7 +73,7 @@ const AuthCallback = observer(() => {
 
     (async () => {
       try {
-        const response = await authServiceClient.createSession({
+        const response = await authServiceClient.signIn({
           credentials: {
             case: "ssoCredentials",
             value: {

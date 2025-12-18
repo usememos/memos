@@ -47,7 +47,7 @@ const PasswordSignInForm = observer(() => {
 
     try {
       actionBtnLoadingState.setLoading();
-      const response = await authServiceClient.createSession({
+      const response = await authServiceClient.signIn({
         credentials: {
           case: "passwordCredentials",
           value: { username, password },

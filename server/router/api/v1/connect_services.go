@@ -45,21 +45,21 @@ func (s *ConnectServiceHandler) UpdateInstanceSetting(ctx context.Context, req *
 // We use connectWithHeaderCarrier helper to inject a header carrier into the context,
 // which allows the service to set headers in a protocol-agnostic way.
 
-func (s *ConnectServiceHandler) GetCurrentSession(ctx context.Context, req *connect.Request[v1pb.GetCurrentSessionRequest]) (*connect.Response[v1pb.GetCurrentSessionResponse], error) {
-	return connectWithHeaderCarrier(ctx, func(ctx context.Context) (*v1pb.GetCurrentSessionResponse, error) {
-		return s.APIV1Service.GetCurrentSession(ctx, req.Msg)
+func (s *ConnectServiceHandler) GetCurrentUser(ctx context.Context, req *connect.Request[v1pb.GetCurrentUserRequest]) (*connect.Response[v1pb.GetCurrentUserResponse], error) {
+	return connectWithHeaderCarrier(ctx, func(ctx context.Context) (*v1pb.GetCurrentUserResponse, error) {
+		return s.APIV1Service.GetCurrentUser(ctx, req.Msg)
 	})
 }
 
-func (s *ConnectServiceHandler) CreateSession(ctx context.Context, req *connect.Request[v1pb.CreateSessionRequest]) (*connect.Response[v1pb.CreateSessionResponse], error) {
-	return connectWithHeaderCarrier(ctx, func(ctx context.Context) (*v1pb.CreateSessionResponse, error) {
-		return s.APIV1Service.CreateSession(ctx, req.Msg)
+func (s *ConnectServiceHandler) SignIn(ctx context.Context, req *connect.Request[v1pb.SignInRequest]) (*connect.Response[v1pb.SignInResponse], error) {
+	return connectWithHeaderCarrier(ctx, func(ctx context.Context) (*v1pb.SignInResponse, error) {
+		return s.APIV1Service.SignIn(ctx, req.Msg)
 	})
 }
 
-func (s *ConnectServiceHandler) DeleteSession(ctx context.Context, req *connect.Request[v1pb.DeleteSessionRequest]) (*connect.Response[emptypb.Empty], error) {
+func (s *ConnectServiceHandler) SignOut(ctx context.Context, req *connect.Request[v1pb.SignOutRequest]) (*connect.Response[emptypb.Empty], error) {
 	return connectWithHeaderCarrier(ctx, func(ctx context.Context) (*emptypb.Empty, error) {
-		return s.APIV1Service.DeleteSession(ctx, req.Msg)
+		return s.APIV1Service.SignOut(ctx, req.Msg)
 	})
 }
 

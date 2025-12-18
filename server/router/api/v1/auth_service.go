@@ -29,16 +29,13 @@ const (
 	unmatchedUsernameAndPasswordError = "unmatched username and password"
 )
 
-// GetCurrentSession retrieves the current authenticated session information.
+// GetCurrentUser returns the authenticated user's information.
+// Validates the access token and returns user details.
 //
-// This endpoint is used to:
-// - Check if a user is currently authenticated
-// - Get the current user's information
-//
-// Authentication: Required (access token)
+// Authentication: Required (access token).
 // Returns: User information.
-func (s *APIV1Service) GetCurrentSession(ctx context.Context, _ *v1pb.GetCurrentSessionRequest) (*v1pb.GetCurrentSessionResponse, error) {
-	user, err := s.GetCurrentUser(ctx)
+func (s *APIV1Service) GetCurrentUser(ctx context.Context, _ *v1pb.GetCurrentUserRequest) (*v1pb.GetCurrentUserResponse, error) {
+	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "failed to get current user: %v", err)
 	}
@@ -50,26 +47,21 @@ func (s *APIV1Service) GetCurrentSession(ctx context.Context, _ *v1pb.GetCurrent
 		return nil, status.Errorf(codes.Unauthenticated, "user not found")
 	}
 
-	return &v1pb.GetCurrentSessionResponse{
-		User:           convertUserFromStore(user),
-		LastAccessedAt: timestamppb.Now(),
+	return &v1pb.GetCurrentUserResponse{
+		User: convertUserFromStore(user),
 	}, nil
 }
 
-// CreateSession authenticates a user and establishes a new session.
+// SignIn authenticates a user with credentials and returns tokens.
+// On success, returns an access token and sets a refresh token cookie.
 //
-// This endpoint supports two authentication methods:
-// 1. Password-based authentication (username + password)
-// 2. SSO authentication (OAuth2 authorization code)
+// Supports two authentication methods:
+// 1. Password-based authentication (username + password).
+// 2. SSO authentication (OAuth2 authorization code).
 //
-// On successful authentication:
-// - A session cookie is set for web browsers (cookie: user_session={userID}-{sessionID})
-// - Session information is stored including client details (IP, user agent, device type)
-// - Sessions use sliding expiration: 14 days from last access
-//
-// Authentication: Not required (public endpoint)
-// Returns: Authenticated user information and last accessed timestamp.
-func (s *APIV1Service) CreateSession(ctx context.Context, request *v1pb.CreateSessionRequest) (*v1pb.CreateSessionResponse, error) {
+// Authentication: Not required (public endpoint).
+// Returns: User info, access token, and token expiry.
+func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) (*v1pb.SignInResponse, error) {
 	var existingUser *store.User
 
 	// Authentication Method 1: Password-based authentication
@@ -190,9 +182,8 @@ func (s *APIV1Service) CreateSession(ctx context.Context, request *v1pb.CreateSe
 		return nil, status.Errorf(codes.Internal, "failed to sign in: %v", err)
 	}
 
-	return &v1pb.CreateSessionResponse{
+	return &v1pb.SignInResponse{
 		User:                 convertUserFromStore(existingUser),
-		LastAccessedAt:       timestamppb.Now(),
 		AccessToken:          accessToken,
 		AccessTokenExpiresAt: timestamppb.New(accessExpiresAt),
 	}, nil
@@ -246,15 +237,12 @@ func (s *APIV1Service) doSignIn(ctx context.Context, user *store.User) (string, 
 	return accessToken, accessExpiresAt, nil
 }
 
-// DeleteSession terminates the current user session (logout).
+// SignOut terminates the user's authentication.
+// Revokes the refresh token and clears the authentication cookie.
 //
-// This endpoint:
-// 1. Revokes the refresh token if authenticated via new token flow
-// 2. Clears refresh token cookie
-//
-// Authentication: Required (access token)
+// Authentication: Required (access token).
 // Returns: Empty response on success.
-func (s *APIV1Service) DeleteSession(ctx context.Context, _ *v1pb.DeleteSessionRequest) (*emptypb.Empty, error) {
+func (s *APIV1Service) SignOut(ctx context.Context, _ *v1pb.SignOutRequest) (*emptypb.Empty, error) {
 	// Get user from access token claims
 	claims := auth.GetUserClaims(ctx)
 	if claims != nil {
@@ -374,7 +362,7 @@ func (*APIV1Service) buildRefreshTokenCookie(ctx context.Context, refreshToken s
 	return strings.Join(attrs, "; ")
 }
 
-func (s *APIV1Service) GetCurrentUser(ctx context.Context) (*store.User, error) {
+func (s *APIV1Service) fetchCurrentUser(ctx context.Context) (*store.User, error) {
 	userID := auth.GetUserID(ctx)
 	if userID == 0 {
 		return nil, nil

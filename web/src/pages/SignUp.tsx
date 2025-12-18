@@ -58,7 +58,7 @@ const SignUp = observer(() => {
         role: User_Role.USER,
       });
       await userServiceClient.createUser({ user });
-      const response = await authServiceClient.createSession({
+      const response = await authServiceClient.signIn({
         credentials: {
           case: "passwordCredentials",
           value: { username, password },

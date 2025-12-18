@@ -239,13 +239,36 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/auth/me:
+        get:
+            tags:
+                - AuthService
+            description: |-
+                GetCurrentUser returns the authenticated user's information.
+                 Validates the access token and returns user details.
+                 Similar to OIDC's /userinfo endpoint.
+            operationId: AuthService_GetCurrentUser
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetCurrentUserResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/auth/refresh:
         post:
             tags:
                 - AuthService
             description: |-
                 RefreshToken exchanges a valid refresh token for a new access token.
-                 The refresh token is sent via HttpOnly cookie.
+                 The refresh token is read from the HttpOnly cookie.
+                 Returns a new short-lived access token.
             operationId: AuthService_RefreshToken
             requestBody:
                 content:
@@ -266,19 +289,20 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/auth/sessions:
+    /api/v1/auth/signin:
         post:
             tags:
                 - AuthService
             description: |-
-                CreateSession authenticates a user and creates a new session.
-                 Returns the authenticated user information upon successful authentication.
-            operationId: AuthService_CreateSession
+                SignIn authenticates a user with credentials and returns tokens.
+                 On success, returns an access token and sets a refresh token cookie.
+                 Supports password-based and SSO authentication methods.
+            operationId: AuthService_SignIn
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/CreateSessionRequest'
+                            $ref: '#/components/schemas/SignInRequest'
                 required: true
             responses:
                 "200":
@@ -286,41 +310,21 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/CreateSessionResponse'
+                                $ref: '#/components/schemas/SignInResponse'
                 default:
                     description: Default error response
                     content:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/auth/sessions/current:
-        get:
+    /api/v1/auth/signout:
+        post:
             tags:
                 - AuthService
             description: |-
-                GetCurrentSession returns the current active session information.
-                 This method is idempotent and safe, suitable for checking current session state.
-            operationId: AuthService_GetCurrentSession
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/GetCurrentSessionResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        delete:
-            tags:
-                - AuthService
-            description: |-
-                DeleteSession terminates the current user session.
-                 This is an idempotent operation that invalidates the user's authentication.
-            operationId: AuthService_DeleteSession
+                SignOut terminates the user's authentication.
+                 Revokes the refresh token and clears the authentication cookie.
+            operationId: AuthService_SignOut
             responses:
                 "200":
                     description: OK
@@ -2071,83 +2075,6 @@ components:
                     description: |-
                         Optional. The related memo. Refer to `Memo.name`.
                          Format: memos/{memo}
-        CreateSessionRequest:
-            type: object
-            properties:
-                passwordCredentials:
-                    allOf:
-                        - $ref: '#/components/schemas/CreateSessionRequest_PasswordCredentials'
-                    description: Username and password authentication method.
-                ssoCredentials:
-                    allOf:
-                        - $ref: '#/components/schemas/CreateSessionRequest_SSOCredentials'
-                    description: SSO provider authentication method.
-        CreateSessionRequest_PasswordCredentials:
-            required:
-                - username
-                - password
-            type: object
-            properties:
-                username:
-                    type: string
-                    description: |-
-                        The username to sign in with.
-                         Required field for password-based authentication.
-                password:
-                    type: string
-                    description: |-
-                        The password to sign in with.
-                         Required field for password-based authentication.
-            description: Nested message for password-based authentication credentials.
-        CreateSessionRequest_SSOCredentials:
-            required:
-                - idpId
-                - code
-                - redirectUri
-            type: object
-            properties:
-                idpId:
-                    type: integer
-                    description: |-
-                        The ID of the SSO provider.
-                         Required field to identify the SSO provider.
-                    format: int32
-                code:
-                    type: string
-                    description: |-
-                        The authorization code from the SSO provider.
-                         Required field for completing the SSO flow.
-                redirectUri:
-                    type: string
-                    description: |-
-                        The redirect URI used in the SSO flow.
-                         Required field for security validation.
-                codeVerifier:
-                    type: string
-                    description: |-
-                        The PKCE code verifier for enhanced security (RFC 7636).
-                         Optional field - if provided, enables PKCE flow protection against authorization code interception.
-            description: Nested message for SSO authentication credentials.
-        CreateSessionResponse:
-            type: object
-            properties:
-                user:
-                    allOf:
-                        - $ref: '#/components/schemas/User'
-                    description: The authenticated user information.
-                lastAccessedAt:
-                    type: string
-                    description: |-
-                        Last time the session was accessed.
-                         Used for sliding expiration calculation (last_accessed_time + 2 weeks).
-                    format: date-time
-                accessToken:
-                    type: string
-                    description: The short-lived access token for API requests
-                accessTokenExpiresAt:
-                    type: string
-                    description: When the access token expires
-                    format: date-time
         CreateUserAccessTokenRequest:
             required:
                 - parent
@@ -2198,17 +2125,13 @@ components:
                 logoUrl:
                     type: string
             description: Custom profile configuration for instance branding.
-        GetCurrentSessionResponse:
+        GetCurrentUserResponse:
             type: object
             properties:
                 user:
-                    $ref: '#/components/schemas/User'
-                lastAccessedAt:
-                    type: string
-                    description: |-
-                        Last time the session was accessed.
-                         Used for sliding expiration calculation (last_accessed_time + 2 weeks).
-                    format: date-time
+                    allOf:
+                        - $ref: '#/components/schemas/User'
+                    description: The authenticated user's information.
         GoogleProtobufAny:
             type: object
             properties:
@@ -2785,10 +2708,10 @@ components:
             properties:
                 accessToken:
                     type: string
-                    description: The new short-lived access token
+                    description: The new short-lived access token.
                 expiresAt:
                     type: string
-                    description: When the access token expires
+                    description: When the access token expires.
                     format: date-time
         SetMemoAttachmentsRequest:
             required:
@@ -2838,6 +2761,71 @@ components:
                 filter:
                     type: string
                     description: The filter expression for the shortcut.
+        SignInRequest:
+            type: object
+            properties:
+                passwordCredentials:
+                    allOf:
+                        - $ref: '#/components/schemas/SignInRequest_PasswordCredentials'
+                    description: Username and password authentication.
+                ssoCredentials:
+                    allOf:
+                        - $ref: '#/components/schemas/SignInRequest_SSOCredentials'
+                    description: SSO provider authentication.
+        SignInRequest_PasswordCredentials:
+            required:
+                - username
+                - password
+            type: object
+            properties:
+                username:
+                    type: string
+                    description: The username to sign in with.
+                password:
+                    type: string
+                    description: The password to sign in with.
+            description: Nested message for password-based authentication credentials.
+        SignInRequest_SSOCredentials:
+            required:
+                - idpId
+                - code
+                - redirectUri
+            type: object
+            properties:
+                idpId:
+                    type: integer
+                    description: The ID of the SSO provider.
+                    format: int32
+                code:
+                    type: string
+                    description: The authorization code from the SSO provider.
+                redirectUri:
+                    type: string
+                    description: The redirect URI used in the SSO flow.
+                codeVerifier:
+                    type: string
+                    description: |-
+                        The PKCE code verifier for enhanced security (RFC 7636).
+                         Optional - enables PKCE flow protection against authorization code interception.
+            description: Nested message for SSO authentication credentials.
+        SignInResponse:
+            type: object
+            properties:
+                user:
+                    allOf:
+                        - $ref: '#/components/schemas/User'
+                    description: The authenticated user's information.
+                accessToken:
+                    type: string
+                    description: |-
+                        The short-lived access token for API requests.
+                         Store in memory only, not in localStorage.
+                accessTokenExpiresAt:
+                    type: string
+                    description: |-
+                        When the access token expires.
+                         Client should call RefreshToken before this time.
+                    format: date-time
         Status:
             type: object
             properties:

@@ -34,15 +34,13 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
-	// AuthServiceGetCurrentSessionProcedure is the fully-qualified name of the AuthService's
-	// GetCurrentSession RPC.
-	AuthServiceGetCurrentSessionProcedure = "/memos.api.v1.AuthService/GetCurrentSession"
-	// AuthServiceCreateSessionProcedure is the fully-qualified name of the AuthService's CreateSession
-	// RPC.
-	AuthServiceCreateSessionProcedure = "/memos.api.v1.AuthService/CreateSession"
-	// AuthServiceDeleteSessionProcedure is the fully-qualified name of the AuthService's DeleteSession
-	// RPC.
-	AuthServiceDeleteSessionProcedure = "/memos.api.v1.AuthService/DeleteSession"
+	// AuthServiceGetCurrentUserProcedure is the fully-qualified name of the AuthService's
+	// GetCurrentUser RPC.
+	AuthServiceGetCurrentUserProcedure = "/memos.api.v1.AuthService/GetCurrentUser"
+	// AuthServiceSignInProcedure is the fully-qualified name of the AuthService's SignIn RPC.
+	AuthServiceSignInProcedure = "/memos.api.v1.AuthService/SignIn"
+	// AuthServiceSignOutProcedure is the fully-qualified name of the AuthService's SignOut RPC.
+	AuthServiceSignOutProcedure = "/memos.api.v1.AuthService/SignOut"
 	// AuthServiceRefreshTokenProcedure is the fully-qualified name of the AuthService's RefreshToken
 	// RPC.
 	AuthServiceRefreshTokenProcedure = "/memos.api.v1.AuthService/RefreshToken"
@@ -50,17 +48,20 @@ const (
 
 // AuthServiceClient is a client for the memos.api.v1.AuthService service.
 type AuthServiceClient interface {
-	// GetCurrentSession returns the current active session information.
-	// This method is idempotent and safe, suitable for checking current session state.
-	GetCurrentSession(context.Context, *connect.Request[v1.GetCurrentSessionRequest]) (*connect.Response[v1.GetCurrentSessionResponse], error)
-	// CreateSession authenticates a user and creates a new session.
-	// Returns the authenticated user information upon successful authentication.
-	CreateSession(context.Context, *connect.Request[v1.CreateSessionRequest]) (*connect.Response[v1.CreateSessionResponse], error)
-	// DeleteSession terminates the current user session.
-	// This is an idempotent operation that invalidates the user's authentication.
-	DeleteSession(context.Context, *connect.Request[v1.DeleteSessionRequest]) (*connect.Response[emptypb.Empty], error)
+	// GetCurrentUser returns the authenticated user's information.
+	// Validates the access token and returns user details.
+	// Similar to OIDC's /userinfo endpoint.
+	GetCurrentUser(context.Context, *connect.Request[v1.GetCurrentUserRequest]) (*connect.Response[v1.GetCurrentUserResponse], error)
+	// SignIn authenticates a user with credentials and returns tokens.
+	// On success, returns an access token and sets a refresh token cookie.
+	// Supports password-based and SSO authentication methods.
+	SignIn(context.Context, *connect.Request[v1.SignInRequest]) (*connect.Response[v1.SignInResponse], error)
+	// SignOut terminates the user's authentication.
+	// Revokes the refresh token and clears the authentication cookie.
+	SignOut(context.Context, *connect.Request[v1.SignOutRequest]) (*connect.Response[emptypb.Empty], error)
 	// RefreshToken exchanges a valid refresh token for a new access token.
-	// The refresh token is sent via HttpOnly cookie.
+	// The refresh token is read from the HttpOnly cookie.
+	// Returns a new short-lived access token.
 	RefreshToken(context.Context, *connect.Request[v1.RefreshTokenRequest]) (*connect.Response[v1.RefreshTokenResponse], error)
 }
 
@@ -75,22 +76,22 @@ func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 	baseURL = strings.TrimRight(baseURL, "/")
 	authServiceMethods := v1.File_api_v1_auth_service_proto.Services().ByName("AuthService").Methods()
 	return &authServiceClient{
-		getCurrentSession: connect.NewClient[v1.GetCurrentSessionRequest, v1.GetCurrentSessionResponse](
+		getCurrentUser: connect.NewClient[v1.GetCurrentUserRequest, v1.GetCurrentUserResponse](
 			httpClient,
-			baseURL+AuthServiceGetCurrentSessionProcedure,
-			connect.WithSchema(authServiceMethods.ByName("GetCurrentSession")),
+			baseURL+AuthServiceGetCurrentUserProcedure,
+			connect.WithSchema(authServiceMethods.ByName("GetCurrentUser")),
 			connect.WithClientOptions(opts...),
 		),
-		createSession: connect.NewClient[v1.CreateSessionRequest, v1.CreateSessionResponse](
+		signIn: connect.NewClient[v1.SignInRequest, v1.SignInResponse](
 			httpClient,
-			baseURL+AuthServiceCreateSessionProcedure,
-			connect.WithSchema(authServiceMethods.ByName("CreateSession")),
+			baseURL+AuthServiceSignInProcedure,
+			connect.WithSchema(authServiceMethods.ByName("SignIn")),
 			connect.WithClientOptions(opts...),
 		),
-		deleteSession: connect.NewClient[v1.DeleteSessionRequest, emptypb.Empty](
+		signOut: connect.NewClient[v1.SignOutRequest, emptypb.Empty](
 			httpClient,
-			baseURL+AuthServiceDeleteSessionProcedure,
-			connect.WithSchema(authServiceMethods.ByName("DeleteSession")),
+			baseURL+AuthServiceSignOutProcedure,
+			connect.WithSchema(authServiceMethods.ByName("SignOut")),
 			connect.WithClientOptions(opts...),
 		),
 		refreshToken: connect.NewClient[v1.RefreshTokenRequest, v1.RefreshTokenResponse](
@@ -104,25 +105,25 @@ func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 
 // authServiceClient implements AuthServiceClient.
 type authServiceClient struct {
-	getCurrentSession *connect.Client[v1.GetCurrentSessionRequest, v1.GetCurrentSessionResponse]
-	createSession     *connect.Client[v1.CreateSessionRequest, v1.CreateSessionResponse]
-	deleteSession     *connect.Client[v1.DeleteSessionRequest, emptypb.Empty]
-	refreshToken      *connect.Client[v1.RefreshTokenRequest, v1.RefreshTokenResponse]
+	getCurrentUser *connect.Client[v1.GetCurrentUserRequest, v1.GetCurrentUserResponse]
+	signIn         *connect.Client[v1.SignInRequest, v1.SignInResponse]
+	signOut        *connect.Client[v1.SignOutRequest, emptypb.Empty]
+	refreshToken   *connect.Client[v1.RefreshTokenRequest, v1.RefreshTokenResponse]
 }
 
-// GetCurrentSession calls memos.api.v1.AuthService.GetCurrentSession.
-func (c *authServiceClient) GetCurrentSession(ctx context.Context, req *connect.Request[v1.GetCurrentSessionRequest]) (*connect.Response[v1.GetCurrentSessionResponse], error) {
-	return c.getCurrentSession.CallUnary(ctx, req)
+// GetCurrentUser calls memos.api.v1.AuthService.GetCurrentUser.
+func (c *authServiceClient) GetCurrentUser(ctx context.Context, req *connect.Request[v1.GetCurrentUserRequest]) (*connect.Response[v1.GetCurrentUserResponse], error) {
+	return c.getCurrentUser.CallUnary(ctx, req)
 }
 
-// CreateSession calls memos.api.v1.AuthService.CreateSession.
-func (c *authServiceClient) CreateSession(ctx context.Context, req *connect.Request[v1.CreateSessionRequest]) (*connect.Response[v1.CreateSessionResponse], error) {
-	return c.createSession.CallUnary(ctx, req)
+// SignIn calls memos.api.v1.AuthService.SignIn.
+func (c *authServiceClient) SignIn(ctx context.Context, req *connect.Request[v1.SignInRequest]) (*connect.Response[v1.SignInResponse], error) {
+	return c.signIn.CallUnary(ctx, req)
 }
 
-// DeleteSession calls memos.api.v1.AuthService.DeleteSession.
-func (c *authServiceClient) DeleteSession(ctx context.Context, req *connect.Request[v1.DeleteSessionRequest]) (*connect.Response[emptypb.Empty], error) {
-	return c.deleteSession.CallUnary(ctx, req)
+// SignOut calls memos.api.v1.AuthService.SignOut.
+func (c *authServiceClient) SignOut(ctx context.Context, req *connect.Request[v1.SignOutRequest]) (*connect.Response[emptypb.Empty], error) {
+	return c.signOut.CallUnary(ctx, req)
 }
 
 // RefreshToken calls memos.api.v1.AuthService.RefreshToken.
@@ -132,17 +133,20 @@ func (c *authServiceClient) RefreshToken(ctx context.Context, req *connect.Reque
 
 // AuthServiceHandler is an implementation of the memos.api.v1.AuthService service.
 type AuthServiceHandler interface {
-	// GetCurrentSession returns the current active session information.
-	// This method is idempotent and safe, suitable for checking current session state.
-	GetCurrentSession(context.Context, *connect.Request[v1.GetCurrentSessionRequest]) (*connect.Response[v1.GetCurrentSessionResponse], error)
-	// CreateSession authenticates a user and creates a new session.
-	// Returns the authenticated user information upon successful authentication.
-	CreateSession(context.Context, *connect.Request[v1.CreateSessionRequest]) (*connect.Response[v1.CreateSessionResponse], error)
-	// DeleteSession terminates the current user session.
-	// This is an idempotent operation that invalidates the user's authentication.
-	DeleteSession(context.Context, *connect.Request[v1.DeleteSessionRequest]) (*connect.Response[emptypb.Empty], error)
+	// GetCurrentUser returns the authenticated user's information.
+	// Validates the access token and returns user details.
+	// Similar to OIDC's /userinfo endpoint.
+	GetCurrentUser(context.Context, *connect.Request[v1.GetCurrentUserRequest]) (*connect.Response[v1.GetCurrentUserResponse], error)
+	// SignIn authenticates a user with credentials and returns tokens.
+	// On success, returns an access token and sets a refresh token cookie.
+	// Supports password-based and SSO authentication methods.
+	SignIn(context.Context, *connect.Request[v1.SignInRequest]) (*connect.Response[v1.SignInResponse], error)
+	// SignOut terminates the user's authentication.
+	// Revokes the refresh token and clears the authentication cookie.
+	SignOut(context.Context, *connect.Request[v1.SignOutRequest]) (*connect.Response[emptypb.Empty], error)
 	// RefreshToken exchanges a valid refresh token for a new access token.
-	// The refresh token is sent via HttpOnly cookie.
+	// The refresh token is read from the HttpOnly cookie.
+	// Returns a new short-lived access token.
 	RefreshToken(context.Context, *connect.Request[v1.RefreshTokenRequest]) (*connect.Response[v1.RefreshTokenResponse], error)
 }
 
@@ -153,22 +157,22 @@ type AuthServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
 	authServiceMethods := v1.File_api_v1_auth_service_proto.Services().ByName("AuthService").Methods()
-	authServiceGetCurrentSessionHandler := connect.NewUnaryHandler(
-		AuthServiceGetCurrentSessionProcedure,
-		svc.GetCurrentSession,
-		connect.WithSchema(authServiceMethods.ByName("GetCurrentSession")),
+	authServiceGetCurrentUserHandler := connect.NewUnaryHandler(
+		AuthServiceGetCurrentUserProcedure,
+		svc.GetCurrentUser,
+		connect.WithSchema(authServiceMethods.ByName("GetCurrentUser")),
 		connect.WithHandlerOptions(opts...),
 	)
-	authServiceCreateSessionHandler := connect.NewUnaryHandler(
-		AuthServiceCreateSessionProcedure,
-		svc.CreateSession,
-		connect.WithSchema(authServiceMethods.ByName("CreateSession")),
+	authServiceSignInHandler := connect.NewUnaryHandler(
+		AuthServiceSignInProcedure,
+		svc.SignIn,
+		connect.WithSchema(authServiceMethods.ByName("SignIn")),
 		connect.WithHandlerOptions(opts...),
 	)
-	authServiceDeleteSessionHandler := connect.NewUnaryHandler(
-		AuthServiceDeleteSessionProcedure,
-		svc.DeleteSession,
-		connect.WithSchema(authServiceMethods.ByName("DeleteSession")),
+	authServiceSignOutHandler := connect.NewUnaryHandler(
+		AuthServiceSignOutProcedure,
+		svc.SignOut,
+		connect.WithSchema(authServiceMethods.ByName("SignOut")),
 		connect.WithHandlerOptions(opts...),
 	)
 	authServiceRefreshTokenHandler := connect.NewUnaryHandler(
@@ -179,12 +183,12 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 	)
 	return "/memos.api.v1.AuthService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case AuthServiceGetCurrentSessionProcedure:
-			authServiceGetCurrentSessionHandler.ServeHTTP(w, r)
-		case AuthServiceCreateSessionProcedure:
-			authServiceCreateSessionHandler.ServeHTTP(w, r)
-		case AuthServiceDeleteSessionProcedure:
-			authServiceDeleteSessionHandler.ServeHTTP(w, r)
+		case AuthServiceGetCurrentUserProcedure:
+			authServiceGetCurrentUserHandler.ServeHTTP(w, r)
+		case AuthServiceSignInProcedure:
+			authServiceSignInHandler.ServeHTTP(w, r)
+		case AuthServiceSignOutProcedure:
+			authServiceSignOutHandler.ServeHTTP(w, r)
 		case AuthServiceRefreshTokenProcedure:
 			authServiceRefreshTokenHandler.ServeHTTP(w, r)
 		default:
@@ -196,16 +200,16 @@ func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption
 // UnimplementedAuthServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedAuthServiceHandler struct{}
 
-func (UnimplementedAuthServiceHandler) GetCurrentSession(context.Context, *connect.Request[v1.GetCurrentSessionRequest]) (*connect.Response[v1.GetCurrentSessionResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.AuthService.GetCurrentSession is not implemented"))
+func (UnimplementedAuthServiceHandler) GetCurrentUser(context.Context, *connect.Request[v1.GetCurrentUserRequest]) (*connect.Response[v1.GetCurrentUserResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.AuthService.GetCurrentUser is not implemented"))
 }
 
-func (UnimplementedAuthServiceHandler) CreateSession(context.Context, *connect.Request[v1.CreateSessionRequest]) (*connect.Response[v1.CreateSessionResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.AuthService.CreateSession is not implemented"))
+func (UnimplementedAuthServiceHandler) SignIn(context.Context, *connect.Request[v1.SignInRequest]) (*connect.Response[v1.SignInResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.AuthService.SignIn is not implemented"))
 }
 
-func (UnimplementedAuthServiceHandler) DeleteSession(context.Context, *connect.Request[v1.DeleteSessionRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.AuthService.DeleteSession is not implemented"))
+func (UnimplementedAuthServiceHandler) SignOut(context.Context, *connect.Request[v1.SignOutRequest]) (*connect.Response[emptypb.Empty], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.AuthService.SignOut is not implemented"))
 }
 
 func (UnimplementedAuthServiceHandler) RefreshToken(context.Context, *connect.Request[v1.RefreshTokenRequest]) (*connect.Response[v1.RefreshTokenResponse], error) {
