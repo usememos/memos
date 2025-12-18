@@ -151,40 +151,40 @@ func (s *ConnectServiceHandler) ListUserSettings(ctx context.Context, req *conne
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) ListUserAccessTokens(ctx context.Context, req *connect.Request[v1pb.ListUserAccessTokensRequest]) (*connect.Response[v1pb.ListUserAccessTokensResponse], error) {
-	resp, err := s.APIV1Service.ListUserAccessTokens(ctx, req.Msg)
+func (s *ConnectServiceHandler) ListPersonalAccessTokens(ctx context.Context, req *connect.Request[v1pb.ListPersonalAccessTokensRequest]) (*connect.Response[v1pb.ListPersonalAccessTokensResponse], error) {
+	resp, err := s.APIV1Service.ListPersonalAccessTokens(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) CreateUserAccessToken(ctx context.Context, req *connect.Request[v1pb.CreateUserAccessTokenRequest]) (*connect.Response[v1pb.CreateUserAccessTokenResponse], error) {
-	resp, err := s.APIV1Service.CreateUserAccessToken(ctx, req.Msg)
+func (s *ConnectServiceHandler) CreatePersonalAccessToken(ctx context.Context, req *connect.Request[v1pb.CreatePersonalAccessTokenRequest]) (*connect.Response[v1pb.CreatePersonalAccessTokenResponse], error) {
+	resp, err := s.APIV1Service.CreatePersonalAccessToken(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) DeleteUserAccessToken(ctx context.Context, req *connect.Request[v1pb.DeleteUserAccessTokenRequest]) (*connect.Response[emptypb.Empty], error) {
-	resp, err := s.APIV1Service.DeleteUserAccessToken(ctx, req.Msg)
+func (s *ConnectServiceHandler) DeletePersonalAccessToken(ctx context.Context, req *connect.Request[v1pb.DeletePersonalAccessTokenRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.DeletePersonalAccessToken(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) ListUserSessions(ctx context.Context, req *connect.Request[v1pb.ListUserSessionsRequest]) (*connect.Response[v1pb.ListUserSessionsResponse], error) {
-	resp, err := s.APIV1Service.ListUserSessions(ctx, req.Msg)
+func (s *ConnectServiceHandler) ListSessions(ctx context.Context, req *connect.Request[v1pb.ListSessionsRequest]) (*connect.Response[v1pb.ListSessionsResponse], error) {
+	resp, err := s.APIV1Service.ListSessions(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) RevokeUserSession(ctx context.Context, req *connect.Request[v1pb.RevokeUserSessionRequest]) (*connect.Response[emptypb.Empty], error) {
-	resp, err := s.APIV1Service.RevokeUserSession(ctx, req.Msg)
+func (s *ConnectServiceHandler) RevokeSession(ctx context.Context, req *connect.Request[v1pb.RevokeSessionRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.RevokeSession(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}

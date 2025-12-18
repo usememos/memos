@@ -59,21 +59,21 @@ const (
 	// UserServiceListUserSettingsProcedure is the fully-qualified name of the UserService's
 	// ListUserSettings RPC.
 	UserServiceListUserSettingsProcedure = "/memos.api.v1.UserService/ListUserSettings"
-	// UserServiceListUserAccessTokensProcedure is the fully-qualified name of the UserService's
-	// ListUserAccessTokens RPC.
-	UserServiceListUserAccessTokensProcedure = "/memos.api.v1.UserService/ListUserAccessTokens"
-	// UserServiceCreateUserAccessTokenProcedure is the fully-qualified name of the UserService's
-	// CreateUserAccessToken RPC.
-	UserServiceCreateUserAccessTokenProcedure = "/memos.api.v1.UserService/CreateUserAccessToken"
-	// UserServiceDeleteUserAccessTokenProcedure is the fully-qualified name of the UserService's
-	// DeleteUserAccessToken RPC.
-	UserServiceDeleteUserAccessTokenProcedure = "/memos.api.v1.UserService/DeleteUserAccessToken"
-	// UserServiceListUserSessionsProcedure is the fully-qualified name of the UserService's
-	// ListUserSessions RPC.
-	UserServiceListUserSessionsProcedure = "/memos.api.v1.UserService/ListUserSessions"
-	// UserServiceRevokeUserSessionProcedure is the fully-qualified name of the UserService's
-	// RevokeUserSession RPC.
-	UserServiceRevokeUserSessionProcedure = "/memos.api.v1.UserService/RevokeUserSession"
+	// UserServiceListPersonalAccessTokensProcedure is the fully-qualified name of the UserService's
+	// ListPersonalAccessTokens RPC.
+	UserServiceListPersonalAccessTokensProcedure = "/memos.api.v1.UserService/ListPersonalAccessTokens"
+	// UserServiceCreatePersonalAccessTokenProcedure is the fully-qualified name of the UserService's
+	// CreatePersonalAccessToken RPC.
+	UserServiceCreatePersonalAccessTokenProcedure = "/memos.api.v1.UserService/CreatePersonalAccessToken"
+	// UserServiceDeletePersonalAccessTokenProcedure is the fully-qualified name of the UserService's
+	// DeletePersonalAccessToken RPC.
+	UserServiceDeletePersonalAccessTokenProcedure = "/memos.api.v1.UserService/DeletePersonalAccessToken"
+	// UserServiceListSessionsProcedure is the fully-qualified name of the UserService's ListSessions
+	// RPC.
+	UserServiceListSessionsProcedure = "/memos.api.v1.UserService/ListSessions"
+	// UserServiceRevokeSessionProcedure is the fully-qualified name of the UserService's RevokeSession
+	// RPC.
+	UserServiceRevokeSessionProcedure = "/memos.api.v1.UserService/RevokeSession"
 	// UserServiceListUserWebhooksProcedure is the fully-qualified name of the UserService's
 	// ListUserWebhooks RPC.
 	UserServiceListUserWebhooksProcedure = "/memos.api.v1.UserService/ListUserWebhooks"
@@ -122,16 +122,21 @@ type UserServiceClient interface {
 	UpdateUserSetting(context.Context, *connect.Request[v1.UpdateUserSettingRequest]) (*connect.Response[v1.UserSetting], error)
 	// ListUserSettings returns a list of user settings.
 	ListUserSettings(context.Context, *connect.Request[v1.ListUserSettingsRequest]) (*connect.Response[v1.ListUserSettingsResponse], error)
-	// ListUserAccessTokens returns a list of access tokens for a user.
-	ListUserAccessTokens(context.Context, *connect.Request[v1.ListUserAccessTokensRequest]) (*connect.Response[v1.ListUserAccessTokensResponse], error)
-	// CreateUserAccessToken creates a new access token for a user.
-	CreateUserAccessToken(context.Context, *connect.Request[v1.CreateUserAccessTokenRequest]) (*connect.Response[v1.CreateUserAccessTokenResponse], error)
-	// DeleteUserAccessToken deletes an access token.
-	DeleteUserAccessToken(context.Context, *connect.Request[v1.DeleteUserAccessTokenRequest]) (*connect.Response[emptypb.Empty], error)
-	// ListUserSessions returns a list of active sessions for a user.
-	ListUserSessions(context.Context, *connect.Request[v1.ListUserSessionsRequest]) (*connect.Response[v1.ListUserSessionsResponse], error)
-	// RevokeUserSession revokes a specific session for a user.
-	RevokeUserSession(context.Context, *connect.Request[v1.RevokeUserSessionRequest]) (*connect.Response[emptypb.Empty], error)
+	// ListPersonalAccessTokens returns a list of Personal Access Tokens (PATs) for a user.
+	// PATs are long-lived tokens for API/script access, distinct from short-lived JWT access tokens.
+	ListPersonalAccessTokens(context.Context, *connect.Request[v1.ListPersonalAccessTokensRequest]) (*connect.Response[v1.ListPersonalAccessTokensResponse], error)
+	// CreatePersonalAccessToken creates a new Personal Access Token for a user.
+	// The token value is only returned once upon creation.
+	CreatePersonalAccessToken(context.Context, *connect.Request[v1.CreatePersonalAccessTokenRequest]) (*connect.Response[v1.CreatePersonalAccessTokenResponse], error)
+	// DeletePersonalAccessToken deletes a Personal Access Token.
+	DeletePersonalAccessToken(context.Context, *connect.Request[v1.DeletePersonalAccessTokenRequest]) (*connect.Response[emptypb.Empty], error)
+	// ListSessions returns a list of active login sessions for a user.
+	// Each session represents a browser/device where the user is logged in.
+	// Sessions are backed by refresh tokens with sliding expiration.
+	ListSessions(context.Context, *connect.Request[v1.ListSessionsRequest]) (*connect.Response[v1.ListSessionsResponse], error)
+	// RevokeSession revokes a specific login session.
+	// This invalidates the refresh token, forcing re-authentication on that device.
+	RevokeSession(context.Context, *connect.Request[v1.RevokeSessionRequest]) (*connect.Response[emptypb.Empty], error)
 	// ListUserWebhooks returns a list of webhooks for a user.
 	ListUserWebhooks(context.Context, *connect.Request[v1.ListUserWebhooksRequest]) (*connect.Response[v1.ListUserWebhooksResponse], error)
 	// CreateUserWebhook creates a new webhook for a user.
@@ -219,34 +224,34 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceMethods.ByName("ListUserSettings")),
 			connect.WithClientOptions(opts...),
 		),
-		listUserAccessTokens: connect.NewClient[v1.ListUserAccessTokensRequest, v1.ListUserAccessTokensResponse](
+		listPersonalAccessTokens: connect.NewClient[v1.ListPersonalAccessTokensRequest, v1.ListPersonalAccessTokensResponse](
 			httpClient,
-			baseURL+UserServiceListUserAccessTokensProcedure,
-			connect.WithSchema(userServiceMethods.ByName("ListUserAccessTokens")),
+			baseURL+UserServiceListPersonalAccessTokensProcedure,
+			connect.WithSchema(userServiceMethods.ByName("ListPersonalAccessTokens")),
 			connect.WithClientOptions(opts...),
 		),
-		createUserAccessToken: connect.NewClient[v1.CreateUserAccessTokenRequest, v1.CreateUserAccessTokenResponse](
+		createPersonalAccessToken: connect.NewClient[v1.CreatePersonalAccessTokenRequest, v1.CreatePersonalAccessTokenResponse](
 			httpClient,
-			baseURL+UserServiceCreateUserAccessTokenProcedure,
-			connect.WithSchema(userServiceMethods.ByName("CreateUserAccessToken")),
+			baseURL+UserServiceCreatePersonalAccessTokenProcedure,
+			connect.WithSchema(userServiceMethods.ByName("CreatePersonalAccessToken")),
 			connect.WithClientOptions(opts...),
 		),
-		deleteUserAccessToken: connect.NewClient[v1.DeleteUserAccessTokenRequest, emptypb.Empty](
+		deletePersonalAccessToken: connect.NewClient[v1.DeletePersonalAccessTokenRequest, emptypb.Empty](
 			httpClient,
-			baseURL+UserServiceDeleteUserAccessTokenProcedure,
-			connect.WithSchema(userServiceMethods.ByName("DeleteUserAccessToken")),
+			baseURL+UserServiceDeletePersonalAccessTokenProcedure,
+			connect.WithSchema(userServiceMethods.ByName("DeletePersonalAccessToken")),
 			connect.WithClientOptions(opts...),
 		),
-		listUserSessions: connect.NewClient[v1.ListUserSessionsRequest, v1.ListUserSessionsResponse](
+		listSessions: connect.NewClient[v1.ListSessionsRequest, v1.ListSessionsResponse](
 			httpClient,
-			baseURL+UserServiceListUserSessionsProcedure,
-			connect.WithSchema(userServiceMethods.ByName("ListUserSessions")),
+			baseURL+UserServiceListSessionsProcedure,
+			connect.WithSchema(userServiceMethods.ByName("ListSessions")),
 			connect.WithClientOptions(opts...),
 		),
-		revokeUserSession: connect.NewClient[v1.RevokeUserSessionRequest, emptypb.Empty](
+		revokeSession: connect.NewClient[v1.RevokeSessionRequest, emptypb.Empty](
 			httpClient,
-			baseURL+UserServiceRevokeUserSessionProcedure,
-			connect.WithSchema(userServiceMethods.ByName("RevokeUserSession")),
+			baseURL+UserServiceRevokeSessionProcedure,
+			connect.WithSchema(userServiceMethods.ByName("RevokeSession")),
 			connect.WithClientOptions(opts...),
 		),
 		listUserWebhooks: connect.NewClient[v1.ListUserWebhooksRequest, v1.ListUserWebhooksResponse](
@@ -296,28 +301,28 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 
 // userServiceClient implements UserServiceClient.
 type userServiceClient struct {
-	listUsers              *connect.Client[v1.ListUsersRequest, v1.ListUsersResponse]
-	getUser                *connect.Client[v1.GetUserRequest, v1.User]
-	createUser             *connect.Client[v1.CreateUserRequest, v1.User]
-	updateUser             *connect.Client[v1.UpdateUserRequest, v1.User]
-	deleteUser             *connect.Client[v1.DeleteUserRequest, emptypb.Empty]
-	listAllUserStats       *connect.Client[v1.ListAllUserStatsRequest, v1.ListAllUserStatsResponse]
-	getUserStats           *connect.Client[v1.GetUserStatsRequest, v1.UserStats]
-	getUserSetting         *connect.Client[v1.GetUserSettingRequest, v1.UserSetting]
-	updateUserSetting      *connect.Client[v1.UpdateUserSettingRequest, v1.UserSetting]
-	listUserSettings       *connect.Client[v1.ListUserSettingsRequest, v1.ListUserSettingsResponse]
-	listUserAccessTokens   *connect.Client[v1.ListUserAccessTokensRequest, v1.ListUserAccessTokensResponse]
-	createUserAccessToken  *connect.Client[v1.CreateUserAccessTokenRequest, v1.CreateUserAccessTokenResponse]
-	deleteUserAccessToken  *connect.Client[v1.DeleteUserAccessTokenRequest, emptypb.Empty]
-	listUserSessions       *connect.Client[v1.ListUserSessionsRequest, v1.ListUserSessionsResponse]
-	revokeUserSession      *connect.Client[v1.RevokeUserSessionRequest, emptypb.Empty]
-	listUserWebhooks       *connect.Client[v1.ListUserWebhooksRequest, v1.ListUserWebhooksResponse]
-	createUserWebhook      *connect.Client[v1.CreateUserWebhookRequest, v1.UserWebhook]
-	updateUserWebhook      *connect.Client[v1.UpdateUserWebhookRequest, v1.UserWebhook]
-	deleteUserWebhook      *connect.Client[v1.DeleteUserWebhookRequest, emptypb.Empty]
-	listUserNotifications  *connect.Client[v1.ListUserNotificationsRequest, v1.ListUserNotificationsResponse]
-	updateUserNotification *connect.Client[v1.UpdateUserNotificationRequest, v1.UserNotification]
-	deleteUserNotification *connect.Client[v1.DeleteUserNotificationRequest, emptypb.Empty]
+	listUsers                 *connect.Client[v1.ListUsersRequest, v1.ListUsersResponse]
+	getUser                   *connect.Client[v1.GetUserRequest, v1.User]
+	createUser                *connect.Client[v1.CreateUserRequest, v1.User]
+	updateUser                *connect.Client[v1.UpdateUserRequest, v1.User]
+	deleteUser                *connect.Client[v1.DeleteUserRequest, emptypb.Empty]
+	listAllUserStats          *connect.Client[v1.ListAllUserStatsRequest, v1.ListAllUserStatsResponse]
+	getUserStats              *connect.Client[v1.GetUserStatsRequest, v1.UserStats]
+	getUserSetting            *connect.Client[v1.GetUserSettingRequest, v1.UserSetting]
+	updateUserSetting         *connect.Client[v1.UpdateUserSettingRequest, v1.UserSetting]
+	listUserSettings          *connect.Client[v1.ListUserSettingsRequest, v1.ListUserSettingsResponse]
+	listPersonalAccessTokens  *connect.Client[v1.ListPersonalAccessTokensRequest, v1.ListPersonalAccessTokensResponse]
+	createPersonalAccessToken *connect.Client[v1.CreatePersonalAccessTokenRequest, v1.CreatePersonalAccessTokenResponse]
+	deletePersonalAccessToken *connect.Client[v1.DeletePersonalAccessTokenRequest, emptypb.Empty]
+	listSessions              *connect.Client[v1.ListSessionsRequest, v1.ListSessionsResponse]
+	revokeSession             *connect.Client[v1.RevokeSessionRequest, emptypb.Empty]
+	listUserWebhooks          *connect.Client[v1.ListUserWebhooksRequest, v1.ListUserWebhooksResponse]
+	createUserWebhook         *connect.Client[v1.CreateUserWebhookRequest, v1.UserWebhook]
+	updateUserWebhook         *connect.Client[v1.UpdateUserWebhookRequest, v1.UserWebhook]
+	deleteUserWebhook         *connect.Client[v1.DeleteUserWebhookRequest, emptypb.Empty]
+	listUserNotifications     *connect.Client[v1.ListUserNotificationsRequest, v1.ListUserNotificationsResponse]
+	updateUserNotification    *connect.Client[v1.UpdateUserNotificationRequest, v1.UserNotification]
+	deleteUserNotification    *connect.Client[v1.DeleteUserNotificationRequest, emptypb.Empty]
 }
 
 // ListUsers calls memos.api.v1.UserService.ListUsers.
@@ -370,29 +375,29 @@ func (c *userServiceClient) ListUserSettings(ctx context.Context, req *connect.R
 	return c.listUserSettings.CallUnary(ctx, req)
 }
 
-// ListUserAccessTokens calls memos.api.v1.UserService.ListUserAccessTokens.
-func (c *userServiceClient) ListUserAccessTokens(ctx context.Context, req *connect.Request[v1.ListUserAccessTokensRequest]) (*connect.Response[v1.ListUserAccessTokensResponse], error) {
-	return c.listUserAccessTokens.CallUnary(ctx, req)
+// ListPersonalAccessTokens calls memos.api.v1.UserService.ListPersonalAccessTokens.
+func (c *userServiceClient) ListPersonalAccessTokens(ctx context.Context, req *connect.Request[v1.ListPersonalAccessTokensRequest]) (*connect.Response[v1.ListPersonalAccessTokensResponse], error) {
+	return c.listPersonalAccessTokens.CallUnary(ctx, req)
 }
 
-// CreateUserAccessToken calls memos.api.v1.UserService.CreateUserAccessToken.
-func (c *userServiceClient) CreateUserAccessToken(ctx context.Context, req *connect.Request[v1.CreateUserAccessTokenRequest]) (*connect.Response[v1.CreateUserAccessTokenResponse], error) {
-	return c.createUserAccessToken.CallUnary(ctx, req)
+// CreatePersonalAccessToken calls memos.api.v1.UserService.CreatePersonalAccessToken.
+func (c *userServiceClient) CreatePersonalAccessToken(ctx context.Context, req *connect.Request[v1.CreatePersonalAccessTokenRequest]) (*connect.Response[v1.CreatePersonalAccessTokenResponse], error) {
+	return c.createPersonalAccessToken.CallUnary(ctx, req)
 }
 
-// DeleteUserAccessToken calls memos.api.v1.UserService.DeleteUserAccessToken.
-func (c *userServiceClient) DeleteUserAccessToken(ctx context.Context, req *connect.Request[v1.DeleteUserAccessTokenRequest]) (*connect.Response[emptypb.Empty], error) {
-	return c.deleteUserAccessToken.CallUnary(ctx, req)
+// DeletePersonalAccessToken calls memos.api.v1.UserService.DeletePersonalAccessToken.
+func (c *userServiceClient) DeletePersonalAccessToken(ctx context.Context, req *connect.Request[v1.DeletePersonalAccessTokenRequest]) (*connect.Response[emptypb.Empty], error) {
+	return c.deletePersonalAccessToken.CallUnary(ctx, req)
 }
 
-// ListUserSessions calls memos.api.v1.UserService.ListUserSessions.
-func (c *userServiceClient) ListUserSessions(ctx context.Context, req *connect.Request[v1.ListUserSessionsRequest]) (*connect.Response[v1.ListUserSessionsResponse], error) {
-	return c.listUserSessions.CallUnary(ctx, req)
+// ListSessions calls memos.api.v1.UserService.ListSessions.
+func (c *userServiceClient) ListSessions(ctx context.Context, req *connect.Request[v1.ListSessionsRequest]) (*connect.Response[v1.ListSessionsResponse], error) {
+	return c.listSessions.CallUnary(ctx, req)
 }
 
-// RevokeUserSession calls memos.api.v1.UserService.RevokeUserSession.
-func (c *userServiceClient) RevokeUserSession(ctx context.Context, req *connect.Request[v1.RevokeUserSessionRequest]) (*connect.Response[emptypb.Empty], error) {
-	return c.revokeUserSession.CallUnary(ctx, req)
+// RevokeSession calls memos.api.v1.UserService.RevokeSession.
+func (c *userServiceClient) RevokeSession(ctx context.Context, req *connect.Request[v1.RevokeSessionRequest]) (*connect.Response[emptypb.Empty], error) {
+	return c.revokeSession.CallUnary(ctx, req)
 }
 
 // ListUserWebhooks calls memos.api.v1.UserService.ListUserWebhooks.
@@ -455,16 +460,21 @@ type UserServiceHandler interface {
 	UpdateUserSetting(context.Context, *connect.Request[v1.UpdateUserSettingRequest]) (*connect.Response[v1.UserSetting], error)
 	// ListUserSettings returns a list of user settings.
 	ListUserSettings(context.Context, *connect.Request[v1.ListUserSettingsRequest]) (*connect.Response[v1.ListUserSettingsResponse], error)
-	// ListUserAccessTokens returns a list of access tokens for a user.
-	ListUserAccessTokens(context.Context, *connect.Request[v1.ListUserAccessTokensRequest]) (*connect.Response[v1.ListUserAccessTokensResponse], error)
-	// CreateUserAccessToken creates a new access token for a user.
-	CreateUserAccessToken(context.Context, *connect.Request[v1.CreateUserAccessTokenRequest]) (*connect.Response[v1.CreateUserAccessTokenResponse], error)
-	// DeleteUserAccessToken deletes an access token.
-	DeleteUserAccessToken(context.Context, *connect.Request[v1.DeleteUserAccessTokenRequest]) (*connect.Response[emptypb.Empty], error)
-	// ListUserSessions returns a list of active sessions for a user.
-	ListUserSessions(context.Context, *connect.Request[v1.ListUserSessionsRequest]) (*connect.Response[v1.ListUserSessionsResponse], error)
-	// RevokeUserSession revokes a specific session for a user.
-	RevokeUserSession(context.Context, *connect.Request[v1.RevokeUserSessionRequest]) (*connect.Response[emptypb.Empty], error)
+	// ListPersonalAccessTokens returns a list of Personal Access Tokens (PATs) for a user.
+	// PATs are long-lived tokens for API/script access, distinct from short-lived JWT access tokens.
+	ListPersonalAccessTokens(context.Context, *connect.Request[v1.ListPersonalAccessTokensRequest]) (*connect.Response[v1.ListPersonalAccessTokensResponse], error)
+	// CreatePersonalAccessToken creates a new Personal Access Token for a user.
+	// The token value is only returned once upon creation.
+	CreatePersonalAccessToken(context.Context, *connect.Request[v1.CreatePersonalAccessTokenRequest]) (*connect.Response[v1.CreatePersonalAccessTokenResponse], error)
+	// DeletePersonalAccessToken deletes a Personal Access Token.
+	DeletePersonalAccessToken(context.Context, *connect.Request[v1.DeletePersonalAccessTokenRequest]) (*connect.Response[emptypb.Empty], error)
+	// ListSessions returns a list of active login sessions for a user.
+	// Each session represents a browser/device where the user is logged in.
+	// Sessions are backed by refresh tokens with sliding expiration.
+	ListSessions(context.Context, *connect.Request[v1.ListSessionsRequest]) (*connect.Response[v1.ListSessionsResponse], error)
+	// RevokeSession revokes a specific login session.
+	// This invalidates the refresh token, forcing re-authentication on that device.
+	RevokeSession(context.Context, *connect.Request[v1.RevokeSessionRequest]) (*connect.Response[emptypb.Empty], error)
 	// ListUserWebhooks returns a list of webhooks for a user.
 	ListUserWebhooks(context.Context, *connect.Request[v1.ListUserWebhooksRequest]) (*connect.Response[v1.ListUserWebhooksResponse], error)
 	// CreateUserWebhook creates a new webhook for a user.
@@ -548,34 +558,34 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(userServiceMethods.ByName("ListUserSettings")),
 		connect.WithHandlerOptions(opts...),
 	)
-	userServiceListUserAccessTokensHandler := connect.NewUnaryHandler(
-		UserServiceListUserAccessTokensProcedure,
-		svc.ListUserAccessTokens,
-		connect.WithSchema(userServiceMethods.ByName("ListUserAccessTokens")),
+	userServiceListPersonalAccessTokensHandler := connect.NewUnaryHandler(
+		UserServiceListPersonalAccessTokensProcedure,
+		svc.ListPersonalAccessTokens,
+		connect.WithSchema(userServiceMethods.ByName("ListPersonalAccessTokens")),
 		connect.WithHandlerOptions(opts...),
 	)
-	userServiceCreateUserAccessTokenHandler := connect.NewUnaryHandler(
-		UserServiceCreateUserAccessTokenProcedure,
-		svc.CreateUserAccessToken,
-		connect.WithSchema(userServiceMethods.ByName("CreateUserAccessToken")),
+	userServiceCreatePersonalAccessTokenHandler := connect.NewUnaryHandler(
+		UserServiceCreatePersonalAccessTokenProcedure,
+		svc.CreatePersonalAccessToken,
+		connect.WithSchema(userServiceMethods.ByName("CreatePersonalAccessToken")),
 		connect.WithHandlerOptions(opts...),
 	)
-	userServiceDeleteUserAccessTokenHandler := connect.NewUnaryHandler(
-		UserServiceDeleteUserAccessTokenProcedure,
-		svc.DeleteUserAccessToken,
-		connect.WithSchema(userServiceMethods.ByName("DeleteUserAccessToken")),
+	userServiceDeletePersonalAccessTokenHandler := connect.NewUnaryHandler(
+		UserServiceDeletePersonalAccessTokenProcedure,
+		svc.DeletePersonalAccessToken,
+		connect.WithSchema(userServiceMethods.ByName("DeletePersonalAccessToken")),
 		connect.WithHandlerOptions(opts...),
 	)
-	userServiceListUserSessionsHandler := connect.NewUnaryHandler(
-		UserServiceListUserSessionsProcedure,
-		svc.ListUserSessions,
-		connect.WithSchema(userServiceMethods.ByName("ListUserSessions")),
+	userServiceListSessionsHandler := connect.NewUnaryHandler(
+		UserServiceListSessionsProcedure,
+		svc.ListSessions,
+		connect.WithSchema(userServiceMethods.ByName("ListSessions")),
 		connect.WithHandlerOptions(opts...),
 	)
-	userServiceRevokeUserSessionHandler := connect.NewUnaryHandler(
-		UserServiceRevokeUserSessionProcedure,
-		svc.RevokeUserSession,
-		connect.WithSchema(userServiceMethods.ByName("RevokeUserSession")),
+	userServiceRevokeSessionHandler := connect.NewUnaryHandler(
+		UserServiceRevokeSessionProcedure,
+		svc.RevokeSession,
+		connect.WithSchema(userServiceMethods.ByName("RevokeSession")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userServiceListUserWebhooksHandler := connect.NewUnaryHandler(
@@ -642,16 +652,16 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 			userServiceUpdateUserSettingHandler.ServeHTTP(w, r)
 		case UserServiceListUserSettingsProcedure:
 			userServiceListUserSettingsHandler.ServeHTTP(w, r)
-		case UserServiceListUserAccessTokensProcedure:
-			userServiceListUserAccessTokensHandler.ServeHTTP(w, r)
-		case UserServiceCreateUserAccessTokenProcedure:
-			userServiceCreateUserAccessTokenHandler.ServeHTTP(w, r)
-		case UserServiceDeleteUserAccessTokenProcedure:
-			userServiceDeleteUserAccessTokenHandler.ServeHTTP(w, r)
-		case UserServiceListUserSessionsProcedure:
-			userServiceListUserSessionsHandler.ServeHTTP(w, r)
-		case UserServiceRevokeUserSessionProcedure:
-			userServiceRevokeUserSessionHandler.ServeHTTP(w, r)
+		case UserServiceListPersonalAccessTokensProcedure:
+			userServiceListPersonalAccessTokensHandler.ServeHTTP(w, r)
+		case UserServiceCreatePersonalAccessTokenProcedure:
+			userServiceCreatePersonalAccessTokenHandler.ServeHTTP(w, r)
+		case UserServiceDeletePersonalAccessTokenProcedure:
+			userServiceDeletePersonalAccessTokenHandler.ServeHTTP(w, r)
+		case UserServiceListSessionsProcedure:
+			userServiceListSessionsHandler.ServeHTTP(w, r)
+		case UserServiceRevokeSessionProcedure:
+			userServiceRevokeSessionHandler.ServeHTTP(w, r)
 		case UserServiceListUserWebhooksProcedure:
 			userServiceListUserWebhooksHandler.ServeHTTP(w, r)
 		case UserServiceCreateUserWebhookProcedure:
@@ -715,24 +725,24 @@ func (UnimplementedUserServiceHandler) ListUserSettings(context.Context, *connec
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.ListUserSettings is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) ListUserAccessTokens(context.Context, *connect.Request[v1.ListUserAccessTokensRequest]) (*connect.Response[v1.ListUserAccessTokensResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.ListUserAccessTokens is not implemented"))
+func (UnimplementedUserServiceHandler) ListPersonalAccessTokens(context.Context, *connect.Request[v1.ListPersonalAccessTokensRequest]) (*connect.Response[v1.ListPersonalAccessTokensResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.ListPersonalAccessTokens is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) CreateUserAccessToken(context.Context, *connect.Request[v1.CreateUserAccessTokenRequest]) (*connect.Response[v1.CreateUserAccessTokenResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.CreateUserAccessToken is not implemented"))
+func (UnimplementedUserServiceHandler) CreatePersonalAccessToken(context.Context, *connect.Request[v1.CreatePersonalAccessTokenRequest]) (*connect.Response[v1.CreatePersonalAccessTokenResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.CreatePersonalAccessToken is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) DeleteUserAccessToken(context.Context, *connect.Request[v1.DeleteUserAccessTokenRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.DeleteUserAccessToken is not implemented"))
+func (UnimplementedUserServiceHandler) DeletePersonalAccessToken(context.Context, *connect.Request[v1.DeletePersonalAccessTokenRequest]) (*connect.Response[emptypb.Empty], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.DeletePersonalAccessToken is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) ListUserSessions(context.Context, *connect.Request[v1.ListUserSessionsRequest]) (*connect.Response[v1.ListUserSessionsResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.ListUserSessions is not implemented"))
+func (UnimplementedUserServiceHandler) ListSessions(context.Context, *connect.Request[v1.ListSessionsRequest]) (*connect.Response[v1.ListSessionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.ListSessions is not implemented"))
 }
 
-func (UnimplementedUserServiceHandler) RevokeUserSession(context.Context, *connect.Request[v1.RevokeUserSessionRequest]) (*connect.Response[emptypb.Empty], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.RevokeUserSession is not implemented"))
+func (UnimplementedUserServiceHandler) RevokeSession(context.Context, *connect.Request[v1.RevokeSessionRequest]) (*connect.Response[emptypb.Empty], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.RevokeSession is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ListUserWebhooks(context.Context, *connect.Request[v1.ListUserWebhooksRequest]) (*connect.Response[v1.ListUserWebhooksResponse], error) {

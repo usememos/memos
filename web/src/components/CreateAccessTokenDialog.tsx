@@ -8,13 +8,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
-import { CreateUserAccessTokenResponse } from "@/types/proto/api/v1/user_service_pb";
+import { CreatePersonalAccessTokenResponse } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess: (response: CreateUserAccessTokenResponse) => void;
+  onSuccess: (response: CreatePersonalAccessTokenResponse) => void;
 }
 
 interface State {
@@ -74,7 +74,7 @@ function CreateAccessTokenDialog({ open, onOpenChange, onSuccess }: Props) {
 
     try {
       requestState.setLoading();
-      const response = await userServiceClient.createUserAccessToken({
+      const response = await userServiceClient.createPersonalAccessToken({
         parent: currentUser.name,
         description: state.description,
         expiresInDays: state.expiration,

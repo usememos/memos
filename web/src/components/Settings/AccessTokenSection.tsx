@@ -8,14 +8,14 @@ import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
-import { CreateUserAccessTokenResponse, UserAccessToken } from "@/types/proto/api/v1/user_service_pb";
+import { CreatePersonalAccessTokenResponse, PersonalAccessToken } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateAccessTokenDialog from "../CreateAccessTokenDialog";
 import SettingTable from "./SettingTable";
 
 const listAccessTokens = async (parent: string) => {
-  const { accessTokens } = await userServiceClient.listUserAccessTokens({ parent });
-  return accessTokens.sort(
+  const { personalAccessTokens } = await userServiceClient.listPersonalAccessTokens({ parent });
+  return personalAccessTokens.sort(
     (a, b) =>
       ((b.createdAt ? timestampDate(b.createdAt) : undefined)?.getTime() ?? 0) -
       ((a.createdAt ? timestampDate(a.createdAt) : undefined)?.getTime() ?? 0),
@@ -25,26 +25,28 @@ const listAccessTokens = async (parent: string) => {
 const AccessTokenSection = () => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const [userAccessTokens, setUserAccessTokens] = useState<UserAccessToken[]>([]);
+  const [personalAccessTokens, setPersonalAccessTokens] = useState<PersonalAccessToken[]>([]);
   const createTokenDialog = useDialog();
-  const [deleteTarget, setDeleteTarget] = useState<UserAccessToken | undefined>(undefined);
+  const [deleteTarget, setDeleteTarget] = useState<PersonalAccessToken | undefined>(undefined);
 
   useEffect(() => {
-    listAccessTokens(currentUser.name).then((accessTokens) => {
-      setUserAccessTokens(accessTokens);
+    listAccessTokens(currentUser.name).then((tokens) => {
+      setPersonalAccessTokens(tokens);
     });
   }, []);
 
-  const handleCreateAccessTokenDialogConfirm = async (response: CreateUserAccessTokenResponse) => {
-    const accessTokens = await listAccessTokens(currentUser.name);
-    setUserAccessTokens(accessTokens);
+  const handleCreateAccessTokenDialogConfirm = async (response: CreatePersonalAccessTokenResponse) => {
+    const tokens = await listAccessTokens(currentUser.name);
+    setPersonalAccessTokens(tokens);
     // Copy the token to clipboard - this is the only time it will be shown
     if (response.token) {
       copy(response.token);
       toast.success(t("setting.access-token-section.access-token-copied-to-clipboard"));
     }
     toast.success(
-      t("setting.access-token-section.create-dialog.access-token-created", { description: response.accessToken?.description ?? "" }),
+      t("setting.access-token-section.create-dialog.access-token-created", {
+        description: response.personalAccessToken?.description ?? "",
+      }),
     );
   };
 
@@ -52,15 +54,15 @@ const AccessTokenSection = () => {
     createTokenDialog.open();
   };
 
-  const handleDeleteAccessToken = async (userAccessToken: UserAccessToken) => {
-    setDeleteTarget(userAccessToken);
+  const handleDeleteAccessToken = async (token: PersonalAccessToken) => {
+    setDeleteTarget(token);
   };
 
   const confirmDeleteAccessToken = async () => {
     if (!deleteTarget) return;
     const { name: tokenName, description } = deleteTarget;
-    await userServiceClient.deleteUserAccessToken({ name: tokenName });
-    setUserAccessTokens((prev) => prev.filter((token) => token.name !== tokenName));
+    await userServiceClient.deletePersonalAccessToken({ name: tokenName });
+    setPersonalAccessTokens((prev) => prev.filter((token) => token.name !== tokenName));
     setDeleteTarget(undefined);
     toast.success(t("setting.access-token-section.access-token-deleted", { description }));
   };
@@ -83,17 +85,17 @@ const AccessTokenSection = () => {
           {
             key: "description",
             header: t("common.description"),
-            render: (_, token: UserAccessToken) => <span className="text-foreground">{token.description}</span>,
+            render: (_, token: PersonalAccessToken) => <span className="text-foreground">{token.description}</span>,
           },
           {
             key: "createdAt",
             header: t("setting.access-token-section.create-dialog.created-at"),
-            render: (_, token: UserAccessToken) => (token.createdAt ? timestampDate(token.createdAt) : undefined)?.toLocaleString(),
+            render: (_, token: PersonalAccessToken) => (token.createdAt ? timestampDate(token.createdAt) : undefined)?.toLocaleString(),
           },
           {
             key: "expiresAt",
             header: t("setting.access-token-section.create-dialog.expires-at"),
-            render: (_, token: UserAccessToken) =>
+            render: (_, token: PersonalAccessToken) =>
               (token.expiresAt ? timestampDate(token.expiresAt) : undefined)?.toLocaleString() ??
               t("setting.access-token-section.create-dialog.duration-never"),
           },
@@ -101,14 +103,14 @@ const AccessTokenSection = () => {
             key: "actions",
             header: "",
             className: "text-right",
-            render: (_, token: UserAccessToken) => (
+            render: (_, token: PersonalAccessToken) => (
               <Button variant="ghost" size="sm" onClick={() => handleDeleteAccessToken(token)}>
                 <TrashIcon className="text-destructive w-4 h-auto" />
               </Button>
             ),
           },
         ]}
-        data={userAccessTokens}
+        data={personalAccessTokens}
         emptyMessage="No access tokens found"
         getRowKey={(token) => token.name}
       />

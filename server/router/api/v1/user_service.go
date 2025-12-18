@@ -496,7 +496,7 @@ func (s *APIV1Service) ListUserSettings(ctx context.Context, request *v1pb.ListU
 	return response, nil
 }
 
-// ListUserAccessTokens retrieves all Personal Access Tokens (PATs) for a user.
+// ListPersonalAccessTokens retrieves all Personal Access Tokens (PATs) for a user.
 //
 // Personal Access Tokens are used for:
 // - Mobile app authentication
@@ -511,7 +511,7 @@ func (s *APIV1Service) ListUserSettings(ctx context.Context, request *v1pb.ListU
 //
 // Authentication: Required (session cookie or access token)
 // Authorization: User can only list their own tokens.
-func (s *APIV1Service) ListUserAccessTokens(ctx context.Context, request *v1pb.ListUserAccessTokensRequest) (*v1pb.ListUserAccessTokensResponse, error) {
+func (s *APIV1Service) ListPersonalAccessTokens(ctx context.Context, request *v1pb.ListPersonalAccessTokensRequest) (*v1pb.ListPersonalAccessTokensResponse, error) {
 	userID, err := ExtractUserIDFromName(request.Parent)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
@@ -531,10 +531,10 @@ func (s *APIV1Service) ListUserAccessTokens(ctx context.Context, request *v1pb.L
 		return nil, status.Errorf(codes.Internal, "failed to get access tokens: %v", err)
 	}
 
-	accessTokens := make([]*v1pb.UserAccessToken, len(tokens))
+	personalAccessTokens := make([]*v1pb.PersonalAccessToken, len(tokens))
 	for i, token := range tokens {
-		accessTokens[i] = &v1pb.UserAccessToken{
-			Name:        fmt.Sprintf("%s/accessTokens/%s", request.Parent, token.TokenId),
+		personalAccessTokens[i] = &v1pb.PersonalAccessToken{
+			Name:        fmt.Sprintf("%s/personalAccessTokens/%s", request.Parent, token.TokenId),
 			Description: token.Description,
 			ExpiresAt:   token.ExpiresAt,
 			CreatedAt:   token.CreatedAt,
@@ -542,10 +542,10 @@ func (s *APIV1Service) ListUserAccessTokens(ctx context.Context, request *v1pb.L
 		}
 	}
 
-	return &v1pb.ListUserAccessTokensResponse{AccessTokens: accessTokens}, nil
+	return &v1pb.ListPersonalAccessTokensResponse{PersonalAccessTokens: personalAccessTokens}, nil
 }
 
-// CreateUserAccessToken creates a new Personal Access Token (PAT) for a user.
+// CreatePersonalAccessToken creates a new Personal Access Token (PAT) for a user.
 //
 // Use cases:
 // - User manually creates token in settings for mobile app
@@ -565,7 +565,7 @@ func (s *APIV1Service) ListUserAccessTokens(ctx context.Context, request *v1pb.L
 //
 // Authentication: Required (session cookie or access token)
 // Authorization: User can only create tokens for themselves.
-func (s *APIV1Service) CreateUserAccessToken(ctx context.Context, request *v1pb.CreateUserAccessTokenRequest) (*v1pb.CreateUserAccessTokenResponse, error) {
+func (s *APIV1Service) CreatePersonalAccessToken(ctx context.Context, request *v1pb.CreatePersonalAccessTokenRequest) (*v1pb.CreatePersonalAccessTokenResponse, error) {
 	userID, err := ExtractUserIDFromName(request.Parent)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
@@ -602,9 +602,9 @@ func (s *APIV1Service) CreateUserAccessToken(ctx context.Context, request *v1pb.
 		return nil, status.Errorf(codes.Internal, "failed to create access token: %v", err)
 	}
 
-	return &v1pb.CreateUserAccessTokenResponse{
-		AccessToken: &v1pb.UserAccessToken{
-			Name:        fmt.Sprintf("%s/accessTokens/%s", request.Parent, tokenID),
+	return &v1pb.CreatePersonalAccessTokenResponse{
+		PersonalAccessToken: &v1pb.PersonalAccessToken{
+			Name:        fmt.Sprintf("%s/personalAccessTokens/%s", request.Parent, tokenID),
 			Description: request.Description,
 			ExpiresAt:   expiresAt,
 			CreatedAt:   patRecord.CreatedAt,
@@ -613,7 +613,7 @@ func (s *APIV1Service) CreateUserAccessToken(ctx context.Context, request *v1pb.
 	}, nil
 }
 
-// DeleteUserAccessToken revokes a Personal Access Token.
+// DeletePersonalAccessToken revokes a Personal Access Token.
 //
 // This endpoint:
 // 1. Removes the token from the user's access tokens list
@@ -626,11 +626,11 @@ func (s *APIV1Service) CreateUserAccessToken(ctx context.Context, request *v1pb.
 //
 // Authentication: Required (session cookie or access token)
 // Authorization: User can only delete their own tokens.
-func (s *APIV1Service) DeleteUserAccessToken(ctx context.Context, request *v1pb.DeleteUserAccessTokenRequest) (*emptypb.Empty, error) {
-	// Parse name: users/{user_id}/accessTokens/{token_id}
+func (s *APIV1Service) DeletePersonalAccessToken(ctx context.Context, request *v1pb.DeletePersonalAccessTokenRequest) (*emptypb.Empty, error) {
+	// Parse name: users/{user_id}/personalAccessTokens/{token_id}
 	parts := strings.Split(request.Name, "/")
-	if len(parts) != 4 || parts[0] != "users" || parts[2] != "accessTokens" {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid access token name")
+	if len(parts) != 4 || parts[0] != "users" || parts[2] != "personalAccessTokens" {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid personal access token name")
 	}
 
 	userID, err := util.ConvertStringToInt32(parts[1])
@@ -650,6 +650,82 @@ func (s *APIV1Service) DeleteUserAccessToken(ctx context.Context, request *v1pb.
 
 	if err := s.Store.RemoveUserPersonalAccessToken(ctx, userID, tokenID); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete access token: %v", err)
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
+// ListSessions returns all active login sessions for a user.
+// Each session represents a device/browser where the user is logged in,
+// backed by refresh tokens with sliding expiration.
+func (s *APIV1Service) ListSessions(ctx context.Context, request *v1pb.ListSessionsRequest) (*v1pb.ListSessionsResponse, error) {
+	userID, err := ExtractUserIDFromName(request.Parent)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
+	}
+
+	// Verify permission.
+	claims := auth.GetUserClaims(ctx)
+	if claims == nil || claims.UserID != userID {
+		currentUser, _ := s.fetchCurrentUser(ctx)
+		if currentUser == nil || (currentUser.ID != userID && currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin) {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+	}
+
+	refreshTokens, err := s.Store.GetUserRefreshTokens(ctx, userID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get sessions: %v", err)
+	}
+
+	sessions := make([]*v1pb.Session, 0, len(refreshTokens))
+	for _, token := range refreshTokens {
+		session := &v1pb.Session{
+			Name:       fmt.Sprintf("%s/sessions/%s", request.Parent, token.TokenId),
+			SessionId:  token.TokenId,
+			CreateTime: token.CreatedAt,
+		}
+		if token.ClientInfo != nil {
+			session.ClientInfo = &v1pb.Session_ClientInfo{
+				UserAgent:  token.ClientInfo.UserAgent,
+				IpAddress:  token.ClientInfo.IpAddress,
+				DeviceType: token.ClientInfo.DeviceType,
+				Os:         token.ClientInfo.Os,
+				Browser:    token.ClientInfo.Browser,
+			}
+		}
+		sessions = append(sessions, session)
+	}
+
+	return &v1pb.ListSessionsResponse{Sessions: sessions}, nil
+}
+
+// RevokeSession revokes a specific login session.
+// This invalidates the refresh token, forcing re-authentication on that device.
+func (s *APIV1Service) RevokeSession(ctx context.Context, request *v1pb.RevokeSessionRequest) (*emptypb.Empty, error) {
+	// Parse name: users/{user_id}/sessions/{session_id}
+	parts := strings.Split(request.Name, "/")
+	if len(parts) != 4 || parts[0] != "users" || parts[2] != "sessions" {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid session name")
+	}
+
+	userID, err := util.ConvertStringToInt32(parts[1])
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user ID: %v", err)
+	}
+	sessionID := parts[3]
+
+	// Verify permission.
+	claims := auth.GetUserClaims(ctx)
+	if claims == nil || claims.UserID != userID {
+		currentUser, _ := s.fetchCurrentUser(ctx)
+		if currentUser == nil || (currentUser.ID != userID && currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin) {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+	}
+
+	if err := s.Store.RemoveUserRefreshToken(ctx, userID, sessionID); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to revoke session: %v", err)
 	}
 
 	return &emptypb.Empty{}, nil

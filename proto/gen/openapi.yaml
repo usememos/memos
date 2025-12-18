@@ -1251,103 +1251,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/users/{user}/accessTokens:
-        get:
-            tags:
-                - UserService
-            description: ListUserAccessTokens returns a list of access tokens for a user.
-            operationId: UserService_ListUserAccessTokens
-            parameters:
-                - name: user
-                  in: path
-                  description: The user id.
-                  required: true
-                  schema:
-                    type: string
-                - name: pageSize
-                  in: query
-                  description: Optional. The maximum number of access tokens to return.
-                  schema:
-                    type: integer
-                    format: int32
-                - name: pageToken
-                  in: query
-                  description: Optional. A page token for pagination.
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListUserAccessTokensResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-        post:
-            tags:
-                - UserService
-            description: CreateUserAccessToken creates a new access token for a user.
-            operationId: UserService_CreateUserAccessToken
-            parameters:
-                - name: user
-                  in: path
-                  description: The user id.
-                  required: true
-                  schema:
-                    type: string
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/CreateUserAccessTokenRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/CreateUserAccessTokenResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/users/{user}/accessTokens/{accessToken}:
-        delete:
-            tags:
-                - UserService
-            description: DeleteUserAccessToken deletes an access token.
-            operationId: UserService_DeleteUserAccessToken
-            parameters:
-                - name: user
-                  in: path
-                  description: The user id.
-                  required: true
-                  schema:
-                    type: string
-                - name: accessToken
-                  in: path
-                  description: The accessToken id.
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content: {}
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /api/v1/users/{user}/notifications:
         get:
             tags:
@@ -1458,12 +1361,116 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/personalAccessTokens:
+        get:
+            tags:
+                - UserService
+            description: |-
+                ListPersonalAccessTokens returns a list of Personal Access Tokens (PATs) for a user.
+                 PATs are long-lived tokens for API/script access, distinct from short-lived JWT access tokens.
+            operationId: UserService_ListPersonalAccessTokens
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: pageSize
+                  in: query
+                  description: Optional. The maximum number of tokens to return.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: Optional. A page token for pagination.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListPersonalAccessTokensResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - UserService
+            description: |-
+                CreatePersonalAccessToken creates a new Personal Access Token for a user.
+                 The token value is only returned once upon creation.
+            operationId: UserService_CreatePersonalAccessToken
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreatePersonalAccessTokenRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreatePersonalAccessTokenResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/personalAccessTokens/{personalAccessToken}:
+        delete:
+            tags:
+                - UserService
+            description: DeletePersonalAccessToken deletes a Personal Access Token.
+            operationId: UserService_DeletePersonalAccessToken
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: personalAccessToken
+                  in: path
+                  description: The personalAccessToken id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/users/{user}/sessions:
         get:
             tags:
                 - UserService
-            description: ListUserSessions returns a list of active sessions for a user.
-            operationId: UserService_ListUserSessions
+            description: |-
+                ListSessions returns a list of active login sessions for a user.
+                 Each session represents a browser/device where the user is logged in.
+                 Sessions are backed by refresh tokens with sliding expiration.
+            operationId: UserService_ListSessions
             parameters:
                 - name: user
                   in: path
@@ -1477,7 +1484,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/ListUserSessionsResponse'
+                                $ref: '#/components/schemas/ListSessionsResponse'
                 default:
                     description: Default error response
                     content:
@@ -1488,8 +1495,10 @@ paths:
         delete:
             tags:
                 - UserService
-            description: RevokeUserSession revokes a specific session for a user.
-            operationId: UserService_RevokeUserSession
+            description: |-
+                RevokeSession revokes a specific login session.
+                 This invalidates the refresh token, forcing re-authentication on that device.
+            operationId: UserService_RevokeSession
             parameters:
                 - name: user
                   in: path
@@ -2075,7 +2084,7 @@ components:
                     description: |-
                         Optional. The related memo. Refer to `Memo.name`.
                          Format: memos/{memo}
-        CreateUserAccessTokenRequest:
+        CreatePersonalAccessTokenRequest:
             required:
                 - parent
             type: object
@@ -2083,22 +2092,22 @@ components:
                 parent:
                     type: string
                     description: |-
-                        Required. The parent resource where this access token will be created.
+                        Required. The parent resource where this token will be created.
                          Format: users/{user}
                 description:
                     type: string
-                    description: Optional. Description of the access token.
+                    description: Optional. Description of the personal access token.
                 expiresInDays:
                     type: integer
                     description: Optional. Expiration duration in days (0 = never expires).
                     format: int32
-        CreateUserAccessTokenResponse:
+        CreatePersonalAccessTokenResponse:
             type: object
             properties:
-                accessToken:
+                personalAccessToken:
                     allOf:
-                        - $ref: '#/components/schemas/UserAccessToken'
-                    description: The access token metadata.
+                        - $ref: '#/components/schemas/PersonalAccessToken'
+                    description: The personal access token metadata.
                 token:
                     type: string
                     description: |-
@@ -2407,6 +2416,29 @@ components:
                     description: |-
                         A token that can be sent as `page_token` to retrieve the next page.
                          If this field is omitted, there are no subsequent pages.
+        ListPersonalAccessTokensResponse:
+            type: object
+            properties:
+                personalAccessTokens:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/PersonalAccessToken'
+                    description: The list of personal access tokens.
+                nextPageToken:
+                    type: string
+                    description: A token for the next page of results.
+                totalSize:
+                    type: integer
+                    description: The total count of personal access tokens.
+                    format: int32
+        ListSessionsResponse:
+            type: object
+            properties:
+                sessions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Session'
+                    description: The list of sessions.
         ListShortcutsResponse:
             type: object
             properties:
@@ -2415,21 +2447,6 @@ components:
                     items:
                         $ref: '#/components/schemas/Shortcut'
                     description: The list of shortcuts.
-        ListUserAccessTokensResponse:
-            type: object
-            properties:
-                accessTokens:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/UserAccessToken'
-                    description: The list of access tokens.
-                nextPageToken:
-                    type: string
-                    description: A token for the next page of results.
-                totalSize:
-                    type: integer
-                    description: The total count of access tokens.
-                    format: int32
         ListUserNotificationsResponse:
             type: object
             properties:
@@ -2439,14 +2456,6 @@ components:
                         $ref: '#/components/schemas/UserNotification'
                 nextPageToken:
                     type: string
-        ListUserSessionsResponse:
-            type: object
-            properties:
-                sessions:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/UserSession'
-                    description: The list of user sessions.
         ListUserSettingsResponse:
             type: object
             properties:
@@ -2668,6 +2677,34 @@ components:
                         type: string
                 fieldMapping:
                     $ref: '#/components/schemas/FieldMapping'
+        PersonalAccessToken:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        The resource name of the personal access token.
+                         Format: users/{user}/personalAccessTokens/{personal_access_token}
+                description:
+                    type: string
+                    description: The description of the token.
+                createdAt:
+                    readOnly: true
+                    type: string
+                    description: Output only. The creation timestamp.
+                    format: date-time
+                expiresAt:
+                    type: string
+                    description: Optional. The expiration timestamp.
+                    format: date-time
+                lastUsedAt:
+                    readOnly: true
+                    type: string
+                    description: Output only. The last used timestamp.
+                    format: date-time
+            description: |-
+                PersonalAccessToken represents a long-lived token for API/script access.
+                 PATs are distinct from short-lived JWT access tokens used for session authentication.
         Reaction:
             required:
                 - contentId
@@ -2713,6 +2750,56 @@ components:
                     type: string
                     description: When the access token expires.
                     format: date-time
+        Session:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        The resource name of the session.
+                         Format: users/{user}/sessions/{session}
+                sessionId:
+                    readOnly: true
+                    type: string
+                    description: The session ID.
+                createTime:
+                    readOnly: true
+                    type: string
+                    description: The timestamp when the session was created.
+                    format: date-time
+                lastAccessedTime:
+                    readOnly: true
+                    type: string
+                    description: |-
+                        The timestamp when the session was last accessed.
+                         Used for sliding expiration calculation (last_accessed_time + 2 weeks).
+                    format: date-time
+                clientInfo:
+                    readOnly: true
+                    allOf:
+                        - $ref: '#/components/schemas/Session_ClientInfo'
+                    description: Client information associated with this session.
+            description: |-
+                Session represents a user's login session on a specific device/browser.
+                 Sessions are backed by refresh tokens with sliding expiration.
+        Session_ClientInfo:
+            type: object
+            properties:
+                userAgent:
+                    type: string
+                    description: User agent string of the client.
+                ipAddress:
+                    type: string
+                    description: IP address of the client.
+                deviceType:
+                    type: string
+                    description: Optional. Device type (e.g., "mobile", "desktop", "tablet").
+                os:
+                    type: string
+                    description: Optional. Operating system (e.g., "iOS 17.0", "Windows 11").
+                browser:
+                    type: string
+                    description: Optional. Browser name and version (e.g., "Chrome 119.0").
         SetMemoAttachmentsRequest:
             required:
                 - name
@@ -2933,32 +3020,6 @@ components:
                     type: string
                     description: Output only. The last update timestamp.
                     format: date-time
-        UserAccessToken:
-            type: object
-            properties:
-                name:
-                    type: string
-                    description: |-
-                        The resource name of the access token.
-                         Format: users/{user}/accessTokens/{access_token}
-                description:
-                    type: string
-                    description: The description of the access token.
-                createdAt:
-                    readOnly: true
-                    type: string
-                    description: Output only. The creation timestamp.
-                    format: date-time
-                expiresAt:
-                    type: string
-                    description: Optional. The expiration timestamp.
-                    format: date-time
-                lastUsedAt:
-                    readOnly: true
-                    type: string
-                    description: Output only. The last used timestamp.
-                    format: date-time
-            description: User access token message (metadata only - no token value)
         UserNotification:
             type: object
             properties:
@@ -2999,53 +3060,6 @@ components:
                     type: integer
                     description: The activity ID associated with this notification.
                     format: int32
-        UserSession:
-            type: object
-            properties:
-                name:
-                    type: string
-                    description: |-
-                        The resource name of the session.
-                         Format: users/{user}/sessions/{session}
-                sessionId:
-                    readOnly: true
-                    type: string
-                    description: The session ID.
-                createTime:
-                    readOnly: true
-                    type: string
-                    description: The timestamp when the session was created.
-                    format: date-time
-                lastAccessedTime:
-                    readOnly: true
-                    type: string
-                    description: |-
-                        The timestamp when the session was last accessed.
-                         Used for sliding expiration calculation (last_accessed_time + 2 weeks).
-                    format: date-time
-                clientInfo:
-                    readOnly: true
-                    allOf:
-                        - $ref: '#/components/schemas/UserSession_ClientInfo'
-                    description: Client information associated with this session.
-        UserSession_ClientInfo:
-            type: object
-            properties:
-                userAgent:
-                    type: string
-                    description: User agent string of the client.
-                ipAddress:
-                    type: string
-                    description: IP address of the client.
-                deviceType:
-                    type: string
-                    description: Optional. Device type (e.g., "mobile", "desktop", "tablet").
-                os:
-                    type: string
-                    description: Optional. Operating system (e.g., "iOS 17.0", "Windows 11").
-                browser:
-                    type: string
-                    description: Optional. Browser name and version (e.g., "Chrome 119.0").
         UserSetting:
             type: object
             properties:
@@ -3067,12 +3081,12 @@ components:
         UserSetting_AccessTokensSetting:
             type: object
             properties:
-                accessTokens:
+                personalAccessTokens:
                     type: array
                     items:
-                        $ref: '#/components/schemas/UserAccessToken'
-                    description: List of user access tokens.
-            description: User access tokens configuration.
+                        $ref: '#/components/schemas/PersonalAccessToken'
+                    description: List of personal access tokens (PATs).
+            description: Personal access tokens configuration.
         UserSetting_GeneralSetting:
             type: object
             properties:
@@ -3095,8 +3109,8 @@ components:
                 sessions:
                     type: array
                     items:
-                        $ref: '#/components/schemas/UserSession'
-                    description: List of active user sessions.
+                        $ref: '#/components/schemas/Session'
+                    description: List of active login sessions.
             description: User authentication sessions configuration.
         UserSetting_WebhooksSetting:
             type: object

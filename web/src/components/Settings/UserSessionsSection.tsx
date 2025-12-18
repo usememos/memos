@@ -6,12 +6,12 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { UserSession } from "@/types/proto/api/v1/user_service_pb";
+import { Session } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import SettingTable from "./SettingTable";
 
-const listUserSessions = async (parent: string) => {
-  const { sessions } = await userServiceClient.listUserSessions({ parent });
+const listSessions = async (parent: string) => {
+  const { sessions } = await userServiceClient.listSessions({ parent });
   return sessions.sort(
     (a, b) =>
       ((b.lastAccessedTime ? timestampDate(b.lastAccessedTime) : undefined)?.getTime() ?? 0) -
@@ -22,23 +22,23 @@ const listUserSessions = async (parent: string) => {
 const UserSessionsSection = () => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const [userSessions, setUserSessions] = useState<UserSession[]>([]);
-  const [revokeTarget, setRevokeTarget] = useState<UserSession | undefined>(undefined);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [revokeTarget, setRevokeTarget] = useState<Session | undefined>(undefined);
 
   useEffect(() => {
-    listUserSessions(currentUser.name).then((sessions) => {
-      setUserSessions(sessions);
+    listSessions(currentUser.name).then((sessions) => {
+      setSessions(sessions);
     });
   }, []);
 
-  const handleRevokeSession = async (userSession: UserSession) => {
-    setRevokeTarget(userSession);
+  const handleRevokeSession = async (session: Session) => {
+    setRevokeTarget(session);
   };
 
   const confirmRevokeSession = async () => {
     if (!revokeTarget) return;
-    await userServiceClient.revokeUserSession({ name: revokeTarget.name });
-    setUserSessions(userSessions.filter((session) => session.sessionId !== revokeTarget.sessionId));
+    await userServiceClient.revokeSession({ name: revokeTarget.name });
+    setSessions(sessions.filter((session) => session.sessionId !== revokeTarget.sessionId));
     toast.success(t("setting.user-sessions-section.session-revoked"));
     setRevokeTarget(undefined);
   };
@@ -59,7 +59,7 @@ const UserSessionsSection = () => {
     }
   };
 
-  const formatDeviceInfo = (clientInfo: UserSession["clientInfo"]) => {
+  const formatDeviceInfo = (clientInfo: Session["clientInfo"]) => {
     if (!clientInfo) return "Unknown Device";
 
     const parts = [];
@@ -69,10 +69,10 @@ const UserSessionsSection = () => {
     return parts.length > 0 ? parts.join(" • ") : "Unknown Device";
   };
 
-  const isCurrentSession = (session: UserSession) => {
+  const isCurrentSession = (session: Session) => {
     // A simple heuristic: the most recently accessed session is likely the current one
-    if (userSessions.length === 0) return false;
-    const mostRecent = userSessions[0];
+    if (sessions.length === 0) return false;
+    const mostRecent = sessions[0];
     return session.sessionId === mostRecent.sessionId;
   };
 
@@ -88,7 +88,7 @@ const UserSessionsSection = () => {
           {
             key: "device",
             header: t("setting.user-sessions-section.device"),
-            render: (_, session: UserSession) => (
+            render: (_, session: Session) => (
               <div className="flex items-center space-x-3">
                 {getDeviceIcon(session.clientInfo?.deviceType || "")}
                 <div className="flex flex-col">
@@ -109,7 +109,7 @@ const UserSessionsSection = () => {
           {
             key: "lastAccessedTime",
             header: t("setting.user-sessions-section.last-active"),
-            render: (_, session: UserSession) => (
+            render: (_, session: Session) => (
               <div className="flex items-center space-x-1">
                 <ClockIcon className="w-4 h-4" />
                 <span>{(session.lastAccessedTime ? timestampDate(session.lastAccessedTime) : undefined)?.toLocaleString()}</span>
@@ -120,7 +120,7 @@ const UserSessionsSection = () => {
             key: "actions",
             header: "",
             className: "text-right",
-            render: (_, session: UserSession) => (
+            render: (_, session: Session) => (
               <Button
                 variant="ghost"
                 size="sm"
@@ -137,7 +137,7 @@ const UserSessionsSection = () => {
             ),
           },
         ]}
-        data={userSessions}
+        data={sessions}
         emptyMessage={t("setting.user-sessions-section.no-sessions")}
         getRowKey={(session) => session.sessionId}
       />
