@@ -276,10 +276,10 @@ func (a *Authenticator) AuthenticateByPAT(ctx context.Context, token string) (*s
 
 // AuthResult contains the result of an authentication attempt.
 type AuthResult struct {
-	User        *store.User   // Set for PAT and legacy auth
-	Claims      *UserClaims   // Set for Access Token V2 (stateless)
-	SessionID   string        // Non-empty if authenticated via session cookie
-	AccessToken string        // Non-empty if authenticated via JWT
+	User        *store.User // Set for PAT and legacy auth
+	Claims      *UserClaims // Set for Access Token V2 (stateless)
+	SessionID   string      // Non-empty if authenticated via session cookie
+	AccessToken string      // Non-empty if authenticated via JWT
 }
 
 // Authenticate tries to authenticate using the provided credentials.
