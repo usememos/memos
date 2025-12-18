@@ -55,10 +55,7 @@ const PasswordSignInForm = observer(() => {
       });
       // Store access token from login response
       if (response.accessToken) {
-        setAccessToken(
-          response.accessToken,
-          response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined,
-        );
+        setAccessToken(response.accessToken, response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined);
       }
       await initialUserStore();
       navigateTo("/");

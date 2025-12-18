@@ -1,6 +1,6 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import copy from "copy-to-clipboard";
-import { ClipboardIcon, PlusIcon, TrashIcon } from "lucide-react";
+import { PlusIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
-import { UserAccessToken } from "@/types/proto/api/v1/user_service_pb";
+import { CreateUserAccessTokenResponse, UserAccessToken } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateAccessTokenDialog from "../CreateAccessTokenDialog";
 import SettingTable from "./SettingTable";
@@ -17,8 +17,8 @@ const listAccessTokens = async (parent: string) => {
   const { accessTokens } = await userServiceClient.listUserAccessTokens({ parent });
   return accessTokens.sort(
     (a, b) =>
-      ((b.issuedAt ? timestampDate(b.issuedAt) : undefined)?.getTime() ?? 0) -
-      ((a.issuedAt ? timestampDate(a.issuedAt) : undefined)?.getTime() ?? 0),
+      ((b.createdAt ? timestampDate(b.createdAt) : undefined)?.getTime() ?? 0) -
+      ((a.createdAt ? timestampDate(a.createdAt) : undefined)?.getTime() ?? 0),
   );
 };
 
@@ -35,19 +35,21 @@ const AccessTokenSection = () => {
     });
   }, []);
 
-  const handleCreateAccessTokenDialogConfirm = async (created: UserAccessToken) => {
+  const handleCreateAccessTokenDialogConfirm = async (response: CreateUserAccessTokenResponse) => {
     const accessTokens = await listAccessTokens(currentUser.name);
     setUserAccessTokens(accessTokens);
-    toast.success(t("setting.access-token-section.create-dialog.access-token-created", { description: created.description }));
+    // Copy the token to clipboard - this is the only time it will be shown
+    if (response.token) {
+      copy(response.token);
+      toast.success(t("setting.access-token-section.access-token-copied-to-clipboard"));
+    }
+    toast.success(
+      t("setting.access-token-section.create-dialog.access-token-created", { description: response.accessToken?.description ?? "" }),
+    );
   };
 
   const handleCreateToken = () => {
     createTokenDialog.open();
-  };
-
-  const copyAccessToken = (accessToken: string) => {
-    copy(accessToken);
-    toast.success(t("setting.access-token-section.access-token-copied-to-clipboard"));
   };
 
   const handleDeleteAccessToken = async (userAccessToken: UserAccessToken) => {
@@ -58,14 +60,9 @@ const AccessTokenSection = () => {
     if (!deleteTarget) return;
     const { name: tokenName, description } = deleteTarget;
     await userServiceClient.deleteUserAccessToken({ name: tokenName });
-    // Filter by stable resource name to avoid ambiguity with duplicate token strings
     setUserAccessTokens((prev) => prev.filter((token) => token.name !== tokenName));
     setDeleteTarget(undefined);
     toast.success(t("setting.access-token-section.access-token-deleted", { description }));
-  };
-
-  const getFormatedAccessToken = (accessToken: string) => {
-    return `${accessToken.slice(0, 4)}****${accessToken.slice(-4)}`;
   };
 
   return (
@@ -84,26 +81,14 @@ const AccessTokenSection = () => {
       <SettingTable
         columns={[
           {
-            key: "accessToken",
-            header: t("setting.access-token-section.token"),
-            render: (_, token: UserAccessToken) => (
-              <div className="flex items-center gap-1">
-                <span className="font-mono text-foreground">{getFormatedAccessToken(token.accessToken)}</span>
-                <Button variant="ghost" size="sm" onClick={() => copyAccessToken(token.accessToken)}>
-                  <ClipboardIcon className="w-4 h-auto text-muted-foreground" />
-                </Button>
-              </div>
-            ),
-          },
-          {
             key: "description",
             header: t("common.description"),
             render: (_, token: UserAccessToken) => <span className="text-foreground">{token.description}</span>,
           },
           {
-            key: "issuedAt",
+            key: "createdAt",
             header: t("setting.access-token-section.create-dialog.created-at"),
-            render: (_, token: UserAccessToken) => (token.issuedAt ? timestampDate(token.issuedAt) : undefined)?.toLocaleString(),
+            render: (_, token: UserAccessToken) => (token.createdAt ? timestampDate(token.createdAt) : undefined)?.toLocaleString(),
           },
           {
             key: "expiresAt",
