@@ -62,13 +62,9 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 			rpcMethod, _ := runtime.RPCMethod(ctx)
 
 			// Extract credentials from HTTP headers
-			var sessionCookie string
-			if cookie, err := r.Cookie("user_session"); err == nil {
-				sessionCookie = cookie.Value
-			}
 			authHeader := r.Header.Get("Authorization")
 
-			result := authenticator.Authenticate(ctx, sessionCookie, authHeader)
+			result := authenticator.Authenticate(ctx, authHeader)
 
 			// Enforce authentication for non-public methods
 			if result == nil && !IsPublicMethod(rpcMethod) {
@@ -84,7 +80,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 					ctx = context.WithValue(ctx, auth.UserIDContextKey, result.Claims.UserID)
 				} else if result.User != nil {
 					// PAT - have full user
-					ctx = auth.SetUserInContext(ctx, result.User, result.SessionID, result.AccessToken)
+					ctx = auth.SetUserInContext(ctx, result.User, result.AccessToken)
 				}
 				r = r.WithContext(ctx)
 			}

@@ -5,8 +5,9 @@
 // - server/router/fileserver: HTTP file server authentication
 //
 // Authentication methods supported:
-// - Session cookie: Browser-based authentication with sliding expiration
-// - JWT token: API token authentication for programmatic access
+// - JWT access tokens: Short-lived tokens (15 minutes) for API access
+// - JWT refresh tokens: Long-lived tokens (30 days) for obtaining new access tokens
+// - Personal Access Tokens (PAT): Long-lived tokens for programmatic access
 package auth
 
 import (
@@ -34,15 +35,6 @@ const (
 	// AccessTokenAudienceName is the audience claim for JWT access tokens.
 	// This ensures tokens are only used for API access, not other purposes.
 	AccessTokenAudienceName = "user.access-token"
-
-	// SessionSlidingDuration is the sliding expiration duration for user sessions.
-	// Sessions remain valid if accessed within the last 14 days.
-	// Each API call extends the session by updating last_accessed_time.
-	SessionSlidingDuration = 14 * 24 * time.Hour
-
-	// SessionCookieName is the HTTP cookie name used to store session information.
-	// Cookie value is the session ID (UUID).
-	SessionCookieName = "user_session"
 
 	// AccessTokenDuration is the lifetime of access tokens (15 minutes).
 	AccessTokenDuration = 15 * time.Minute
@@ -136,15 +128,6 @@ func generateToken(username string, userID int32, audience string, expirationTim
 	}
 
 	return tokenString, nil
-}
-
-// GenerateSessionID generates a unique session ID.
-//
-// Uses UUID v4 (random) for high entropy and uniqueness.
-// Session IDs are stored in user settings and used to identify browser sessions.
-// The session ID is stored directly in the cookie as the cookie value.
-func GenerateSessionID() string {
-	return util.GenUUID()
 }
 
 // GenerateAccessTokenV2 generates a short-lived access token with user claims.

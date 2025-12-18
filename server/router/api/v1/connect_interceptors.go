@@ -192,10 +192,9 @@ func NewAuthInterceptor(store *store.Store, secret string) *AuthInterceptor {
 func (in *AuthInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 	return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
 		header := req.Header()
-		sessionCookie := auth.ExtractSessionCookieFromHeader(header.Get("Cookie"))
 		authHeader := header.Get("Authorization")
 
-		result := in.authenticator.Authenticate(ctx, sessionCookie, authHeader)
+		result := in.authenticator.Authenticate(ctx, authHeader)
 
 		// Enforce authentication for non-public methods
 		if result == nil && !IsPublicMethod(req.Spec().Procedure) {
@@ -209,8 +208,8 @@ func (in *AuthInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 				ctx = auth.SetUserClaimsInContext(ctx, result.Claims)
 				ctx = context.WithValue(ctx, auth.UserIDContextKey, result.Claims.UserID)
 			} else if result.User != nil {
-				// PAT or legacy auth - have full user
-				ctx = auth.SetUserInContext(ctx, result.User, result.SessionID, result.AccessToken)
+				// PAT - have full user
+				ctx = auth.SetUserInContext(ctx, result.User, result.AccessToken)
 			}
 		}
 

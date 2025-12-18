@@ -12,13 +12,9 @@ type ContextKey int
 
 const (
 	// UserIDContextKey stores the authenticated user's ID.
-	// Set for both session-based and token-based authentication.
+	// Set for all authenticated requests.
 	// Use GetUserID(ctx) to retrieve this value.
 	UserIDContextKey ContextKey = iota
-
-	// SessionIDContextKey stores the session ID for session-based auth.
-	// Only set when authenticated via session cookie.
-	SessionIDContextKey
 
 	// AccessTokenContextKey stores the JWT token for token-based auth.
 	// Only set when authenticated via Bearer token.
@@ -40,15 +36,6 @@ func GetUserID(ctx context.Context) int32 {
 	return 0
 }
 
-// GetSessionID retrieves the session ID from the context.
-// Returns empty string if not authenticated via session cookie.
-func GetSessionID(ctx context.Context) string {
-	if v, ok := ctx.Value(SessionIDContextKey).(string); ok {
-		return v
-	}
-	return ""
-}
-
 // GetAccessToken retrieves the JWT access token from the context.
 // Returns empty string if not authenticated via bearer token.
 func GetAccessToken(ctx context.Context) string {
@@ -64,13 +51,9 @@ func GetAccessToken(ctx context.Context) string {
 //
 // Parameters:
 //   - user: The authenticated user
-//   - sessionID: Set if authenticated via session cookie (empty string otherwise)
 //   - accessToken: Set if authenticated via JWT token (empty string otherwise)
-func SetUserInContext(ctx context.Context, user *store.User, sessionID, accessToken string) context.Context {
+func SetUserInContext(ctx context.Context, user *store.User, accessToken string) context.Context {
 	ctx = context.WithValue(ctx, UserIDContextKey, user.ID)
-	if sessionID != "" {
-		ctx = context.WithValue(ctx, SessionIDContextKey, sessionID)
-	}
 	if accessToken != "" {
 		ctx = context.WithValue(ctx, AccessTokenContextKey, accessToken)
 	}
