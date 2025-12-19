@@ -72,7 +72,7 @@ func TestParseUserAgent(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			clientInfo := &storepb.SessionsUserSetting_ClientInfo{}
+			clientInfo := &storepb.RefreshTokensUserSetting_ClientInfo{}
 			service.parseUserAgent(tt.userAgent, clientInfo)
 
 			if clientInfo.DeviceType != tt.expectedDevice {
@@ -155,7 +155,7 @@ func TestClientInfoExamples(t *testing.T) {
 
 	for _, example := range examples {
 		t.Run(example.description, func(t *testing.T) {
-			clientInfo := &storepb.SessionsUserSetting_ClientInfo{}
+			clientInfo := &storepb.RefreshTokensUserSetting_ClientInfo{}
 			service.parseUserAgent(example.userAgent, clientInfo)
 
 			t.Logf("User Agent: %s", example.userAgent)

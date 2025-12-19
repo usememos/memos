@@ -251,21 +251,6 @@
       "title": "アクセストークン",
       "token": "トークン"
     },
-    "user-sessions-section": {
-      "title": "アクティブセッション",
-      "description": "あなたのアカウントのすべてのアクティブなセッション一覧です。セッションは最後の操作から2週間後に自動的に期限切れになります。現在のセッション以外は取り消し可能です。",
-      "device": "デバイス",
-      "location": "場所",
-      "last-active": "最終アクティブ",
-      "expires": "有効期限",
-      "current": "現在",
-      "never": "無期限",
-      "session-revocation": "セッション {{sessionId}} を取り消しますか？そのデバイスで再度サインインが必要です。",
-      "session-revoked": "セッションを取り消しました",
-      "revoke-session": "セッションを取り消す",
-      "cannot-revoke-current": "現在のセッションは取り消せません",
-      "no-sessions": "アクティブなセッションはありません"
-    },
     "account-section": {
       "change-password": "パスワードを変更",
       "email-note": "オプション",

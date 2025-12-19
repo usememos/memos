@@ -247,21 +247,6 @@
       "title": "Tokens de acceso",
       "token": "Token"
     },
-    "user-sessions-section": {
-      "title": "Sesiones activas",
-      "description": "Lista de todas las sesiones activas de tu cuenta. Las sesiones expiran automáticamente 2 semanas después de la última actividad. Puedes revocar cualquier sesión excepto la actual.",
-      "device": "Dispositivo",
-      "location": "Ubicación",
-      "last-active": "Última actividad",
-      "expires": "Expira",
-      "current": "Actual",
-      "never": "Nunca",
-      "session-revocation": "¿Estás seguro de revocar la sesión {{sessionId}}? Deberás iniciar sesión de nuevo en ese dispositivo.",
-      "session-revoked": "Sesión revocada correctamente",
-      "revoke-session": "Revocar sesión",
-      "cannot-revoke-current": "No se puede revocar la sesión actual",
-      "no-sessions": "No se encontraron sesiones activas"
-    },
     "account-section": {
       "change-password": "Cambiar contraseña",
       "email-note": "Opcional",

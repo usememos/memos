@@ -401,18 +401,6 @@ func convertUserSettingFromRaw(raw *UserSetting) (*storepb.UserSetting, error) {
 	}
 
 	switch raw.Key {
-	case storepb.UserSetting_ACCESS_TOKENS:
-		accessTokensUserSetting := &storepb.AccessTokensUserSetting{}
-		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), accessTokensUserSetting); err != nil {
-			return nil, err
-		}
-		userSetting.Value = &storepb.UserSetting_AccessTokens{AccessTokens: accessTokensUserSetting}
-	case storepb.UserSetting_SESSIONS:
-		sessionsUserSetting := &storepb.SessionsUserSetting{}
-		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), sessionsUserSetting); err != nil {
-			return nil, err
-		}
-		userSetting.Value = &storepb.UserSetting_Sessions{Sessions: sessionsUserSetting}
 	case storepb.UserSetting_SHORTCUTS:
 		shortcutsUserSetting := &storepb.ShortcutsUserSetting{}
 		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), shortcutsUserSetting); err != nil {
@@ -456,20 +444,6 @@ func convertUserSettingToRaw(userSetting *storepb.UserSetting) (*UserSetting, er
 	}
 
 	switch userSetting.Key {
-	case storepb.UserSetting_ACCESS_TOKENS:
-		accessTokensUserSetting := userSetting.GetAccessTokens()
-		value, err := protojson.Marshal(accessTokensUserSetting)
-		if err != nil {
-			return nil, err
-		}
-		raw.Value = string(value)
-	case storepb.UserSetting_SESSIONS:
-		sessionsUserSetting := userSetting.GetSessions()
-		value, err := protojson.Marshal(sessionsUserSetting)
-		if err != nil {
-			return nil, err
-		}
-		raw.Value = string(value)
 	case storepb.UserSetting_SHORTCUTS:
 		shortcutsUserSetting := userSetting.GetShortcuts()
 		value, err := protojson.Marshal(shortcutsUserSetting)

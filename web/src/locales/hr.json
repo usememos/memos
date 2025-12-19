@@ -251,21 +251,6 @@
       "title": "Tokeni pristupa",
       "token": "Token"
     },
-    "user-sessions-section": {
-      "title": "Aktivne sesije",
-      "description": "Popis svih aktivnih sesija za tvoj račun. Sesije automatski istječu 2 tjedna nakon zadnje aktivnosti. Možeš opozvati bilo koju sesiju osim trenutne.",
-      "device": "Uređaj",
-      "location": "Lokacija",
-      "last-active": "Zadnja aktivnost",
-      "expires": "Istječe",
-      "current": "Trenutna",
-      "never": "Nikada",
-      "session-revocation": "Jesi li siguran da želiš opozvati sesiju {{sessionId}}? Morat ćeš se ponovno prijaviti na tom uređaju.",
-      "session-revoked": "Sesija uspješno opozvana",
-      "revoke-session": "Opozovi sesiju",
-      "cannot-revoke-current": "Trenutna sesija se ne može opozvati",
-      "no-sessions": "Nema aktivnih sesija"
-    },
     "account-section": {
       "change-password": "Promijeni lozinku",
       "email-note": "Neobavezno",

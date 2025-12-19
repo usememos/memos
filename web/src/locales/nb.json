@@ -251,21 +251,6 @@
       "title": "Access tokens",
       "token": "Token"
     },
-    "user-sessions-section": {
-      "title": "Aktive økter",
-      "description": "En liste over alle aktive økter for din konto. Økter utløper automatisk 2 uker etter siste aktivitet. Du kan tilbakekalle enhver økt bortsett fra den nåværende.",
-      "device": "Enhet",
-      "location": "Plassering",
-      "last-active": "Sist aktiv",
-      "expires": "Utløper",
-      "current": "Nåværende",
-      "never": "Aldri",
-      "session-revocation": "Er du sikker på at du vil tilbakekalle økt {{sessionId}}? Du må logge inn på nytt på den enheten.",
-      "session-revoked": "Økt tilbakekalt",
-      "revoke-session": "Tilbakekall økt",
-      "cannot-revoke-current": "Kan ikke tilbakekalle nåværende økt",
-      "no-sessions": "Ingen aktive økter funnet"
-    },
     "account-section": {
       "change-password": "Endre passord",
       "email-note": "Valgfritt",

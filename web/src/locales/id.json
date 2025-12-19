@@ -251,21 +251,6 @@
       "title": "Token Akses",
       "token": "Token"
     },
-    "user-sessions-section": {
-      "title": "Sesi Aktif",
-      "description": "Daftar semua sesi aktif untuk akun Anda. Sesi akan otomatis berakhir 2 minggu setelah aktivitas terakhir. Anda dapat mencabut sesi mana pun kecuali sesi saat ini.",
-      "device": "Perangkat",
-      "location": "Lokasi",
-      "last-active": "Terakhir Aktif",
-      "expires": "Berakhir",
-      "current": "Saat ini",
-      "never": "Tidak Pernah",
-      "session-revocation": "Apakah Anda yakin ingin mencabut sesi {{sessionId}}? Anda perlu masuk kembali di perangkat tersebut.",
-      "session-revoked": "Sesi berhasil dicabut",
-      "revoke-session": "Cabut sesi",
-      "cannot-revoke-current": "Tidak dapat mencabut sesi saat ini",
-      "no-sessions": "Tidak ada sesi aktif yang ditemukan"
-    },
     "account-section": {
       "change-password": "Ubah kata sandi",
       "email-note": "Opsional",

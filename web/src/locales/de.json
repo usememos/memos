@@ -236,21 +236,6 @@
       "title": "Zugangstoken",
       "token": "Token"
     },
-    "user-sessions-section": {
-      "title": "Aktive Sitzungen",
-      "description": "Liste aller aktiven Sitzungen für deinen Account. Sitzungen laufen automatisch 2 Wochen nach der letzten Aktivität ab. Du kannst jede Sitzung außer der aktuellen widerrufen.",
-      "device": "Gerät",
-      "location": "Standort",
-      "last-active": "Zuletzt aktiv",
-      "expires": "Läuft ab",
-      "current": "Aktuell",
-      "never": "Nie",
-      "session-revocation": "Bist du sicher, dass du die Sitzung {{sessionId}} widerrufen möchtest? Du musst dich auf diesem Gerät erneut anmelden.",
-      "session-revoked": "Sitzung erfolgreich widerrufen",
-      "revoke-session": "Sitzung widerrufen",
-      "cannot-revoke-current": "Aktuelle Sitzung kann nicht widerrufen werden",
-      "no-sessions": "Keine aktiven Sitzungen gefunden"
-    },
     "account-section": {
       "change-password": "Passwort ändern",
       "email-note": "Optional",

@@ -251,21 +251,6 @@
       "title": "Åtkomsttoken",
       "token": "Token"
     },
-    "user-sessions-section": {
-      "title": "Aktiva sessioner",
-      "description": "En lista över alla aktiva sessioner för ditt konto. Sessioner upphör automatiskt 2 veckor efter senaste aktivitet. Du kan återkalla alla sessioner utom den nuvarande.",
-      "device": "Enhet",
-      "location": "Plats",
-      "last-active": "Senast aktiv",
-      "expires": "Går ut",
-      "current": "Nuvarande",
-      "never": "Aldrig",
-      "session-revocation": "Är du säker på att återkalla session {{sessionId}}? Du måste logga in igen på den enheten.",
-      "session-revoked": "Session återkallad",
-      "revoke-session": "Återkalla session",
-      "cannot-revoke-current": "Kan inte återkalla nuvarande session",
-      "no-sessions": "Inga aktiva sessioner hittades"
-    },
     "account-section": {
       "change-password": "Ändra lösenord",
       "email-note": "Valfritt",

@@ -9,10 +9,8 @@ import {
   User,
   UserNotification,
   UserSetting,
-  UserSetting_AccessTokensSetting,
   UserSetting_GeneralSetting,
   UserSetting_Key,
-  UserSetting_SessionsSetting,
   UserSetting_WebhooksSetting,
   UserSettingSchema,
   UserStats,
@@ -31,8 +29,6 @@ function getSettingValue<T>(setting: UserSetting, caseType: string): T | undefin
 class LocalState {
   currentUser?: string;
   userGeneralSetting?: UserSetting_GeneralSetting;
-  userSessionsSetting?: UserSetting_SessionsSetting;
-  userAccessTokensSetting?: UserSetting_AccessTokensSetting;
   userWebhooksSetting?: UserSetting_WebhooksSetting;
   shortcuts: Shortcut[] = [];
   notifications: UserNotification[] = [];
@@ -214,16 +210,10 @@ const userStore = (() => {
 
     // Extract and store each setting type using the oneof pattern
     const generalSetting = settings.find((s) => s.value.case === "generalSetting");
-    const sessionsSetting = settings.find((s) => s.value.case === "sessionsSetting");
-    const accessTokensSetting = settings.find((s) => s.value.case === "accessTokensSetting");
     const webhooksSetting = settings.find((s) => s.value.case === "webhooksSetting");
 
     state.setPartial({
       userGeneralSetting: generalSetting ? getSettingValue<UserSetting_GeneralSetting>(generalSetting, "generalSetting") : undefined,
-      userSessionsSetting: sessionsSetting ? getSettingValue<UserSetting_SessionsSetting>(sessionsSetting, "sessionsSetting") : undefined,
-      userAccessTokensSetting: accessTokensSetting
-        ? getSettingValue<UserSetting_AccessTokensSetting>(accessTokensSetting, "accessTokensSetting")
-        : undefined,
       userWebhooksSetting: webhooksSetting ? getSettingValue<UserSetting_WebhooksSetting>(webhooksSetting, "webhooksSetting") : undefined,
       shortcuts: shortcuts,
     });
@@ -390,8 +380,6 @@ export const logout = async () => {
     userStore.state.setPartial({
       currentUser: undefined,
       userGeneralSetting: undefined,
-      userSessionsSetting: undefined,
-      userAccessTokensSetting: undefined,
       userWebhooksSetting: undefined,
       shortcuts: [],
       notifications: [],

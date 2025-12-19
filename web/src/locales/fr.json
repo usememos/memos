@@ -251,21 +251,6 @@
       "title": "Jetons d'accès",
       "token": "Jeton"
     },
-    "user-sessions-section": {
-      "title": "Sessions actives",
-      "description": "Liste de toutes les sessions actives de votre compte. Les sessions expirent automatiquement 2 semaines après la dernière activité. Vous pouvez révoquer toute session sauf la session actuelle.",
-      "device": "Appareil",
-      "location": "Emplacement",
-      "last-active": "Dernière activité",
-      "expires": "Expire",
-      "current": "Actuelle",
-      "never": "Jamais",
-      "session-revocation": "Êtes-vous sûr de vouloir révoquer la session {{sessionId}} ? Vous devrez vous reconnecter sur cet appareil.",
-      "session-revoked": "Session révoquée avec succès",
-      "revoke-session": "Révoquer la session",
-      "cannot-revoke-current": "Impossible de révoquer la session actuelle",
-      "no-sessions": "Aucune session active trouvée"
-    },
     "account-section": {
       "change-password": "Changer le mot de passe",
       "email-note": "Optionnel",

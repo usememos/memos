@@ -251,21 +251,6 @@
       "title": "Dostopni žetoni",
       "token": "Žeton"
     },
-    "user-sessions-section": {
-      "title": "Aktivne seje",
-      "description": "Seznam vseh aktivnih sej vašega računa. Seje samodejno potečejo 2 tedna po zadnji aktivnosti. Lahko prekličete katerokoli sejo razen trenutne.",
-      "device": "Naprava",
-      "location": "Lokacija",
-      "last-active": "Zadnja aktivnost",
-      "expires": "Poteče",
-      "current": "Trenutna",
-      "never": "Nikoli",
-      "session-revocation": "Ali ste prepričani, da želite preklicati sejo {{sessionId}}? Ponovno se boste morali prijaviti na tej napravi.",
-      "session-revoked": "Seja uspešno preklicana",
-      "revoke-session": "Prekliči sejo",
-      "cannot-revoke-current": "Trenutne seje ni mogoče preklicati",
-      "no-sessions": "Ni aktivnih sej"
-    },
     "account-section": {
       "change-password": "Zamenjaj geslo",
       "email-note": "Opcijsko",

@@ -251,21 +251,6 @@
       "title": "Accesstokens",
       "token": "Token"
     },
-    "user-sessions-section": {
-      "title": "Actieve sessies",
-      "description": "Een lijst van alle actieve sessies voor je account. Sessies verlopen automatisch 2 weken na de laatste activiteit. Je kunt elke sessie intrekken behalve de huidige.",
-      "device": "Apparaat",
-      "location": "Locatie",
-      "last-active": "Laatst actief",
-      "expires": "Verloopt",
-      "current": "Huidig",
-      "never": "Nooit",
-      "session-revocation": "Weet je zeker dat je sessie {{sessionId}} wilt intrekken? Je moet opnieuw inloggen op dat apparaat.",
-      "session-revoked": "Sessie succesvol ingetrokken",
-      "revoke-session": "Sessie intrekken",
-      "cannot-revoke-current": "Kan huidige sessie niet intrekken",
-      "no-sessions": "Geen actieve sessies gevonden"
-    },
     "account-section": {
       "change-password": "Wachtwoord wijzigen",
       "email-note": "Optioneel",

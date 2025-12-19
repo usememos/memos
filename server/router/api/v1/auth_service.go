@@ -394,8 +394,8 @@ func (s *APIV1Service) fetchCurrentUser(ctx context.Context) (*store.User, error
 // - See all active sessions with device details
 // - Identify suspicious login attempts
 // - Revoke specific sessions from unknown devices.
-func (s *APIV1Service) extractClientInfo(ctx context.Context) *storepb.SessionsUserSetting_ClientInfo {
-	clientInfo := &storepb.SessionsUserSetting_ClientInfo{}
+func (s *APIV1Service) extractClientInfo(ctx context.Context) *storepb.RefreshTokensUserSetting_ClientInfo {
+	clientInfo := &storepb.RefreshTokensUserSetting_ClientInfo{}
 
 	// Extract user agent from metadata if available
 	if md, ok := metadata.FromIncomingContext(ctx); ok {
@@ -427,7 +427,7 @@ func (s *APIV1Service) extractClientInfo(ctx context.Context) *storepb.SessionsU
 //
 // Note: This is a simplified parser. For production use with high accuracy requirements,
 // consider using a dedicated user agent parsing library.
-func (*APIV1Service) parseUserAgent(userAgent string, clientInfo *storepb.SessionsUserSetting_ClientInfo) {
+func (*APIV1Service) parseUserAgent(userAgent string, clientInfo *storepb.RefreshTokensUserSetting_ClientInfo) {
 	if userAgent == "" {
 		return
 	}

@@ -270,23 +270,6 @@
       "title": "Token di accesso",
       "token": "Token"
     },
-    "user-sessions-section": {
-      "title": "Sessioni attive",
-      "description": "Elenco di tutte le sessioni attive del tuo account. Le sessioni scadono automaticamente dopo 2 settimane dall'ultima attività. Puoi revocare qualsiasi sessione tranne quella attuale.",
-      "device": "Dispositivo",
-      "location": "Posizione",
-      "last-active": "Ultima attività",
-      "expires": "Scade",
-      "current": "Attuale",
-      "never": "Mai",
-      "session-revocation": "Confermi di voler revocare la sessione `{{sessionId}}`?",
-      "session-revocation-description": "Dovrai accedere di nuovo su quel dispositivo.",
-      "session-revoked": "Sessione revocata con successo",
-      "revoke-session": "Revoca sessione",
-      "revoke-session-button": "Revoca",
-      "cannot-revoke-current": "Impossibile revocare la sessione attuale",
-      "no-sessions": "Nessuna sessione attiva trovata"
-    },
     "account-section": {
       "change-password": "Cambia password",
       "email-note": "Opzionale",

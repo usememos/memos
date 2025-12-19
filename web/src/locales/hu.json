@@ -252,21 +252,6 @@
       "title": "Hozzáférési tokenek",
       "token": "Token"
     },
-    "user-sessions-section": {
-      "title": "Aktív munkamenetek",
-      "description": "A fiókodhoz tartozó összes aktív munkamenet listája. A munkamenetek automatikusan lejárnak az utolsó aktivitástól számított 2 hét után. A jelenlegi kivételével bármelyiket visszavonhatod.",
-      "device": "Eszköz",
-      "location": "Hely",
-      "last-active": "Utoljára aktív",
-      "expires": "Lejár",
-      "current": "Jelenlegi",
-      "never": "Soha",
-      "session-revocation": "Biztosan visszavonod a(z) {{sessionId}} munkamenetet? Újra be kell jelentkezned azon az eszközön.",
-      "session-revoked": "A munkamenet sikeresen visszavonva",
-      "revoke-session": "Munkamenet visszavonása",
-      "cannot-revoke-current": "A jelenlegi munkamenet nem vonható vissza",
-      "no-sessions": "Nincs aktív munkamenet"
-    },
     "account-section": {
       "change-password": "Jelszó megváltoztatása",
       "email-note": "Nem kötelező",

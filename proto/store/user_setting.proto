@@ -11,10 +11,6 @@ message UserSetting {
     KEY_UNSPECIFIED = 0;
     // General user settings.
     GENERAL = 1;
-    // User authentication sessions.
-    SESSIONS = 2;
-    // Access tokens for the user.
-    ACCESS_TOKENS = 3;
     // The shortcuts of the user.
     SHORTCUTS = 4;
     // The webhooks of the user.
@@ -30,8 +26,6 @@ message UserSetting {
   Key key = 2;
   oneof value {
     GeneralUserSetting general = 3;
-    SessionsUserSetting sessions = 4;
-    AccessTokensUserSetting access_tokens = 5;
     ShortcutsUserSetting shortcuts = 6;
     WebhooksUserSetting webhooks = 7;
     RefreshTokensUserSetting refresh_tokens = 8;
@@ -49,17 +43,18 @@ message GeneralUserSetting {
   string theme = 3;
 }
 
-message SessionsUserSetting {
-  message Session {
-    // Unique session identifier.
-    string session_id = 1;
-    // Timestamp when the session was created.
-    google.protobuf.Timestamp create_time = 2;
-    // Timestamp when the session was last accessed.
-    // Used for sliding expiration calculation (last_accessed_time + 2 weeks).
-    google.protobuf.Timestamp last_accessed_time = 3;
-    // Client information associated with this session.
+message RefreshTokensUserSetting {
+  message RefreshToken {
+    // Unique identifier (matches 'tid' claim in JWT)
+    string token_id = 1;
+    // When the token expires
+    google.protobuf.Timestamp expires_at = 2;
+    // When the token was created
+    google.protobuf.Timestamp created_at = 3;
+    // Client information for session management UI
     ClientInfo client_info = 4;
+    // Optional description
+    string description = 5;
   }
 
   message ClientInfo {
@@ -75,33 +70,6 @@ message SessionsUserSetting {
     string browser = 5;
   }
 
-  repeated Session sessions = 1;
-}
-
-message AccessTokensUserSetting {
-  message AccessToken {
-    // The access token is a JWT token.
-    // Including expiration time, issuer, etc.
-    string access_token = 1;
-    // A description for the access token.
-    string description = 2;
-  }
-  repeated AccessToken access_tokens = 1;
-}
-
-message RefreshTokensUserSetting {
-  message RefreshToken {
-    // Unique identifier (matches 'tid' claim in JWT)
-    string token_id = 1;
-    // When the token expires
-    google.protobuf.Timestamp expires_at = 2;
-    // When the token was created
-    google.protobuf.Timestamp created_at = 3;
-    // Client information for session management UI
-    SessionsUserSetting.ClientInfo client_info = 4;
-    // Optional description
-    string description = 5;
-  }
   repeated RefreshToken refresh_tokens = 1;
 }
 

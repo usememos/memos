@@ -251,21 +251,6 @@
       "title": "Erişim Tokenleri",
       "token": "Token"
     },
-    "user-sessions-section": {
-      "title": "Aktif Oturumlar",
-      "description": "Hesabınız için tüm aktif oturumların listesi. Oturumlar, son etkinlikten 2 hafta sonra otomatik olarak sona erer. Mevcut oturum hariç herhangi bir oturumu iptal edebilirsiniz.",
-      "device": "Cihaz",
-      "location": "Konum",
-      "last-active": "Son Etkinlik",
-      "expires": "Sona Erme",
-      "current": "Mevcut",
-      "never": "Asla",
-      "session-revocation": "{{sessionId}} oturumunu iptal etmek istediğinizden emin misiniz? O cihazda tekrar giriş yapmanız gerekecek.",
-      "session-revoked": "Oturum başarıyla iptal edildi",
-      "revoke-session": "Oturumu iptal et",
-      "cannot-revoke-current": "Mevcut oturum iptal edilemez",
-      "no-sessions": "Aktif oturum bulunamadı"
-    },
     "account-section": {
       "change-password": "Şifre değiştir",
       "email-note": "İsteğe bağlı",
