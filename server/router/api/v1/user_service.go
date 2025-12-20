@@ -238,6 +238,24 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 		case "email":
 			update.Email = &request.User.Email
 		case "avatar_url":
+			// Validate avatar MIME type to prevent XSS during upload
+			if request.User.AvatarUrl != "" {
+				imageType, _, err := extractImageInfo(request.User.AvatarUrl)
+				if err != nil {
+					return nil, status.Errorf(codes.InvalidArgument, "invalid avatar format: %v", err)
+				}
+				// Only allow safe image formats for avatars
+				allowedAvatarTypes := map[string]bool{
+					"image/png":  true,
+					"image/jpeg": true,
+					"image/jpg":  true,
+					"image/gif":  true,
+					"image/webp": true,
+				}
+				if !allowedAvatarTypes[imageType] {
+					return nil, status.Errorf(codes.InvalidArgument, "invalid avatar image type: %s. Only PNG, JPEG, GIF, and WebP are allowed", imageType)
+				}
+			}
 			update.AvatarURL = &request.User.AvatarUrl
 		case "description":
 			update.Description = &request.User.Description
@@ -650,82 +668,6 @@ func (s *APIV1Service) DeletePersonalAccessToken(ctx context.Context, request *v
 
 	if err := s.Store.RemoveUserPersonalAccessToken(ctx, userID, tokenID); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete access token: %v", err)
-	}
-
-	return &emptypb.Empty{}, nil
-}
-
-// ListSessions returns all active login sessions for a user.
-// Each session represents a device/browser where the user is logged in,
-// backed by refresh tokens with sliding expiration.
-func (s *APIV1Service) ListSessions(ctx context.Context, request *v1pb.ListSessionsRequest) (*v1pb.ListSessionsResponse, error) {
-	userID, err := ExtractUserIDFromName(request.Parent)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
-	}
-
-	// Verify permission.
-	claims := auth.GetUserClaims(ctx)
-	if claims == nil || claims.UserID != userID {
-		currentUser, _ := s.fetchCurrentUser(ctx)
-		if currentUser == nil || (currentUser.ID != userID && currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin) {
-			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
-		}
-	}
-
-	refreshTokens, err := s.Store.GetUserRefreshTokens(ctx, userID)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get sessions: %v", err)
-	}
-
-	sessions := make([]*v1pb.Session, 0, len(refreshTokens))
-	for _, token := range refreshTokens {
-		session := &v1pb.Session{
-			Name:       fmt.Sprintf("%s/sessions/%s", request.Parent, token.TokenId),
-			SessionId:  token.TokenId,
-			CreateTime: token.CreatedAt,
-		}
-		if token.ClientInfo != nil {
-			session.ClientInfo = &v1pb.Session_ClientInfo{
-				UserAgent:  token.ClientInfo.UserAgent,
-				IpAddress:  token.ClientInfo.IpAddress,
-				DeviceType: token.ClientInfo.DeviceType,
-				Os:         token.ClientInfo.Os,
-				Browser:    token.ClientInfo.Browser,
-			}
-		}
-		sessions = append(sessions, session)
-	}
-
-	return &v1pb.ListSessionsResponse{Sessions: sessions}, nil
-}
-
-// RevokeSession revokes a specific login session.
-// This invalidates the refresh token, forcing re-authentication on that device.
-func (s *APIV1Service) RevokeSession(ctx context.Context, request *v1pb.RevokeSessionRequest) (*emptypb.Empty, error) {
-	// Parse name: users/{user_id}/sessions/{session_id}
-	parts := strings.Split(request.Name, "/")
-	if len(parts) != 4 || parts[0] != "users" || parts[2] != "sessions" {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid session name")
-	}
-
-	userID, err := util.ConvertStringToInt32(parts[1])
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid user ID: %v", err)
-	}
-	sessionID := parts[3]
-
-	// Verify permission.
-	claims := auth.GetUserClaims(ctx)
-	if claims == nil || claims.UserID != userID {
-		currentUser, _ := s.fetchCurrentUser(ctx)
-		if currentUser == nil || (currentUser.ID != userID && currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin) {
-			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
-		}
-	}
-
-	if err := s.Store.RemoveUserRefreshToken(ctx, userID, sessionID); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to revoke session: %v", err)
 	}
 
 	return &emptypb.Empty{}, nil

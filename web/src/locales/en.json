@@ -272,23 +272,6 @@
       "title": "Access Tokens",
       "token": "Token"
     },
-    "user-sessions-section": {
-      "title": "Active Sessions",
-      "description": "A list of all active sessions for your account. Sessions automatically expire 2 weeks after the last activity. You can revoke any session except the current one.",
-      "device": "Device",
-      "location": "Location",
-      "last-active": "Last Active",
-      "expires": "Expires",
-      "current": "Current",
-      "never": "Never",
-      "session-revocation": "Are you sure you want to revoke session `{{sessionId}}`?",
-      "session-revocation-description": "You will need to sign in again on that device.",
-      "session-revoked": "Session revoked successfully",
-      "revoke-session": "Revoke session",
-      "revoke-session-button": "Revoke",
-      "cannot-revoke-current": "Cannot revoke current session",
-      "no-sessions": "No active sessions found"
-    },
     "account-section": {
       "change-password": "Change password",
       "email-note": "Optional",

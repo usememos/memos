@@ -19,8 +19,8 @@ import (
 // consistent authentication behavior across all API endpoints.
 //
 // Authentication methods:
-// - Session cookie: Browser-based authentication with sliding expiration
-// - JWT token: API token authentication for programmatic access
+// - JWT access tokens: Short-lived tokens (15 minutes) for API access
+// - Personal Access Tokens (PAT): Long-lived tokens for programmatic access
 //
 // This struct is safe for concurrent use.
 type Authenticator struct {
@@ -125,16 +125,15 @@ func (a *Authenticator) AuthenticateByPAT(ctx context.Context, token string) (*s
 
 // AuthResult contains the result of an authentication attempt.
 type AuthResult struct {
-	User        *store.User // Set for PAT and legacy auth
+	User        *store.User // Set for PAT authentication
 	Claims      *UserClaims // Set for Access Token V2 (stateless)
-	SessionID   string      // Non-empty if authenticated via session cookie
 	AccessToken string      // Non-empty if authenticated via JWT
 }
 
 // Authenticate tries to authenticate using the provided credentials.
 // Priority: 1. Access Token V2, 2. PAT
 // Returns nil if no valid credentials are provided.
-func (a *Authenticator) Authenticate(ctx context.Context, _, authHeader string) *AuthResult {
+func (a *Authenticator) Authenticate(ctx context.Context, authHeader string) *AuthResult {
 	token := ExtractBearerToken(authHeader)
 
 	// Try Access Token V2 (stateless)

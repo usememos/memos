@@ -251,21 +251,6 @@
       "title": "Tokeny dostępu",
       "token": "Token"
     },
-    "user-sessions-section": {
-      "title": "Aktywne sesje",
-      "description": "Lista wszystkich aktywnych sesji Twojego konta. Sesje wygasają automatycznie po 2 tygodniach od ostatniej aktywności. Możesz cofnąć dowolną sesję oprócz bieżącej.",
-      "device": "Urządzenie",
-      "location": "Lokalizacja",
-      "last-active": "Ostatnia aktywność",
-      "expires": "Wygasa",
-      "current": "Bieżąca",
-      "never": "Nigdy",
-      "session-revocation": "Czy na pewno chcesz cofnąć sesję {{sessionId}}? Będziesz musiał zalogować się ponownie na tym urządzeniu.",
-      "session-revoked": "Sesja cofnięta pomyślnie",
-      "revoke-session": "Cofnij sesję",
-      "cannot-revoke-current": "Nie można cofnąć bieżącej sesji",
-      "no-sessions": "Nie znaleziono aktywnych sesji"
-    },
     "account-section": {
       "change-password": "Zmień hasło",
       "email-note": "Opcjonalne",

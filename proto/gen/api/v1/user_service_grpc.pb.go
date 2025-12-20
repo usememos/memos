@@ -33,8 +33,6 @@ const (
 	UserService_ListPersonalAccessTokens_FullMethodName  = "/memos.api.v1.UserService/ListPersonalAccessTokens"
 	UserService_CreatePersonalAccessToken_FullMethodName = "/memos.api.v1.UserService/CreatePersonalAccessToken"
 	UserService_DeletePersonalAccessToken_FullMethodName = "/memos.api.v1.UserService/DeletePersonalAccessToken"
-	UserService_ListSessions_FullMethodName              = "/memos.api.v1.UserService/ListSessions"
-	UserService_RevokeSession_FullMethodName             = "/memos.api.v1.UserService/RevokeSession"
 	UserService_ListUserWebhooks_FullMethodName          = "/memos.api.v1.UserService/ListUserWebhooks"
 	UserService_CreateUserWebhook_FullMethodName         = "/memos.api.v1.UserService/CreateUserWebhook"
 	UserService_UpdateUserWebhook_FullMethodName         = "/memos.api.v1.UserService/UpdateUserWebhook"
@@ -79,13 +77,6 @@ type UserServiceClient interface {
 	CreatePersonalAccessToken(ctx context.Context, in *CreatePersonalAccessTokenRequest, opts ...grpc.CallOption) (*CreatePersonalAccessTokenResponse, error)
 	// DeletePersonalAccessToken deletes a Personal Access Token.
 	DeletePersonalAccessToken(ctx context.Context, in *DeletePersonalAccessTokenRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// ListSessions returns a list of active login sessions for a user.
-	// Each session represents a browser/device where the user is logged in.
-	// Sessions are backed by refresh tokens with sliding expiration.
-	ListSessions(ctx context.Context, in *ListSessionsRequest, opts ...grpc.CallOption) (*ListSessionsResponse, error)
-	// RevokeSession revokes a specific login session.
-	// This invalidates the refresh token, forcing re-authentication on that device.
-	RevokeSession(ctx context.Context, in *RevokeSessionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ListUserWebhooks returns a list of webhooks for a user.
 	ListUserWebhooks(ctx context.Context, in *ListUserWebhooksRequest, opts ...grpc.CallOption) (*ListUserWebhooksResponse, error)
 	// CreateUserWebhook creates a new webhook for a user.
@@ -240,26 +231,6 @@ func (c *userServiceClient) DeletePersonalAccessToken(ctx context.Context, in *D
 	return out, nil
 }
 
-func (c *userServiceClient) ListSessions(ctx context.Context, in *ListSessionsRequest, opts ...grpc.CallOption) (*ListSessionsResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListSessionsResponse)
-	err := c.cc.Invoke(ctx, UserService_ListSessions_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *userServiceClient) RevokeSession(ctx context.Context, in *RevokeSessionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, UserService_RevokeSession_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *userServiceClient) ListUserWebhooks(ctx context.Context, in *ListUserWebhooksRequest, opts ...grpc.CallOption) (*ListUserWebhooksResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListUserWebhooksResponse)
@@ -365,13 +336,6 @@ type UserServiceServer interface {
 	CreatePersonalAccessToken(context.Context, *CreatePersonalAccessTokenRequest) (*CreatePersonalAccessTokenResponse, error)
 	// DeletePersonalAccessToken deletes a Personal Access Token.
 	DeletePersonalAccessToken(context.Context, *DeletePersonalAccessTokenRequest) (*emptypb.Empty, error)
-	// ListSessions returns a list of active login sessions for a user.
-	// Each session represents a browser/device where the user is logged in.
-	// Sessions are backed by refresh tokens with sliding expiration.
-	ListSessions(context.Context, *ListSessionsRequest) (*ListSessionsResponse, error)
-	// RevokeSession revokes a specific login session.
-	// This invalidates the refresh token, forcing re-authentication on that device.
-	RevokeSession(context.Context, *RevokeSessionRequest) (*emptypb.Empty, error)
 	// ListUserWebhooks returns a list of webhooks for a user.
 	ListUserWebhooks(context.Context, *ListUserWebhooksRequest) (*ListUserWebhooksResponse, error)
 	// CreateUserWebhook creates a new webhook for a user.
@@ -434,12 +398,6 @@ func (UnimplementedUserServiceServer) CreatePersonalAccessToken(context.Context,
 }
 func (UnimplementedUserServiceServer) DeletePersonalAccessToken(context.Context, *DeletePersonalAccessTokenRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeletePersonalAccessToken not implemented")
-}
-func (UnimplementedUserServiceServer) ListSessions(context.Context, *ListSessionsRequest) (*ListSessionsResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListSessions not implemented")
-}
-func (UnimplementedUserServiceServer) RevokeSession(context.Context, *RevokeSessionRequest) (*emptypb.Empty, error) {
-	return nil, status.Error(codes.Unimplemented, "method RevokeSession not implemented")
 }
 func (UnimplementedUserServiceServer) ListUserWebhooks(context.Context, *ListUserWebhooksRequest) (*ListUserWebhooksResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListUserWebhooks not implemented")
@@ -717,42 +675,6 @@ func _UserService_DeletePersonalAccessToken_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_ListSessions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListSessionsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).ListSessions(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserService_ListSessions_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).ListSessions(ctx, req.(*ListSessionsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _UserService_RevokeSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RevokeSessionRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServiceServer).RevokeSession(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: UserService_RevokeSession_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).RevokeSession(ctx, req.(*RevokeSessionRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _UserService_ListUserWebhooks_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListUserWebhooksRequest)
 	if err := dec(in); err != nil {
@@ -937,14 +859,6 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeletePersonalAccessToken",
 			Handler:    _UserService_DeletePersonalAccessToken_Handler,
-		},
-		{
-			MethodName: "ListSessions",
-			Handler:    _UserService_ListSessions_Handler,
-		},
-		{
-			MethodName: "RevokeSession",
-			Handler:    _UserService_RevokeSession_Handler,
 		},
 		{
 			MethodName: "ListUserWebhooks",

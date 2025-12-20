@@ -339,7 +339,9 @@ func (*APIV1Service) buildRefreshTokenCookie(ctx context.Context, refreshToken s
 	if expireTime.IsZero() {
 		attrs = append(attrs, "Expires=Thu, 01 Jan 1970 00:00:00 GMT")
 	} else {
-		attrs = append(attrs, "Expires="+expireTime.Format(time.RFC1123))
+		// RFC 6265 requires cookie expiration dates to use GMT timezone
+		// Convert to UTC and format with explicit "GMT" to ensure browser compatibility
+		attrs = append(attrs, "Expires="+expireTime.UTC().Format("Mon, 02 Jan 2006 15:04:05 GMT"))
 	}
 
 	// Try to determine if the request is HTTPS by checking the origin header
@@ -392,8 +394,8 @@ func (s *APIV1Service) fetchCurrentUser(ctx context.Context) (*store.User, error
 // - See all active sessions with device details
 // - Identify suspicious login attempts
 // - Revoke specific sessions from unknown devices.
-func (s *APIV1Service) extractClientInfo(ctx context.Context) *storepb.SessionsUserSetting_ClientInfo {
-	clientInfo := &storepb.SessionsUserSetting_ClientInfo{}
+func (s *APIV1Service) extractClientInfo(ctx context.Context) *storepb.RefreshTokensUserSetting_ClientInfo {
+	clientInfo := &storepb.RefreshTokensUserSetting_ClientInfo{}
 
 	// Extract user agent from metadata if available
 	if md, ok := metadata.FromIncomingContext(ctx); ok {
@@ -425,7 +427,7 @@ func (s *APIV1Service) extractClientInfo(ctx context.Context) *storepb.SessionsU
 //
 // Note: This is a simplified parser. For production use with high accuracy requirements,
 // consider using a dedicated user agent parsing library.
-func (*APIV1Service) parseUserAgent(userAgent string, clientInfo *storepb.SessionsUserSetting_ClientInfo) {
+func (*APIV1Service) parseUserAgent(userAgent string, clientInfo *storepb.RefreshTokensUserSetting_ClientInfo) {
 	if userAgent == "" {
 		return
 	}

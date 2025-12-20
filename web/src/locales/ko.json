@@ -259,21 +259,6 @@
       "title": "액세스 토큰",
       "token": "토큰"
     },
-    "user-sessions-section": {
-      "title": "활성 세션",
-      "description": "계정의 모든 활성 세션 목록입니다. 세션은 마지막 활동 후 2주 후에 자동으로 만료됩니다. 현재 세션을 제외한 모든 세션을 취소할 수 있습니다.",
-      "device": "기기",
-      "location": "위치",
-      "last-active": "마지막 활동",
-      "expires": "만료",
-      "current": "현재",
-      "never": "영구",
-      "session-revocation": "세션 {{sessionId}}을 취소하시겠습니까? 해당 기기에서 다시 로그인해야 합니다.",
-      "session-revoked": "세션이 성공적으로 취소되었습니다",
-      "revoke-session": "세션 취소",
-      "cannot-revoke-current": "현재 세션은 취소할 수 없습니다",
-      "no-sessions": "활성 세션이 없습니다"
-    },
     "account-section": {
       "change-password": "비밀번호 변경",
       "email-note": "선택 사항",

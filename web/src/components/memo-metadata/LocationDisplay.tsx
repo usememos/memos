@@ -26,7 +26,7 @@ const LocationDisplay = ({ location, mode, onRemove, className }: LocationDispla
       <PopoverTrigger asChild>
         <div
           className={cn(
-            "w-full max-w-full flex flex-row gap-2",
+            "w-auto max-w-full flex flex-row gap-2",
             "relative inline-flex items-center gap-1.5 px-2 h-7 rounded-md border border-border bg-background hover:bg-accent text-secondary-foreground text-xs transition-colors",
             mode === "view" && "cursor-pointer",
             className,
@@ -35,6 +35,9 @@ const LocationDisplay = ({ location, mode, onRemove, className }: LocationDispla
         >
           <span className="shrink-0 text-muted-foreground">
             <MapPinIcon className="w-3.5 h-3.5" />
+          </span>
+          <span className="text-nowrap opacity-80">
+            [{location.latitude.toFixed(2)}°, {location.longitude.toFixed(2)}°]
           </span>
           <span className="text-nowrap truncate">{displayText}</span>
           {onRemove && (

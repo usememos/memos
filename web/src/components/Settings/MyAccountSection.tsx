@@ -10,7 +10,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import AccessTokenSection from "./AccessTokenSection";
 import SettingGroup from "./SettingGroup";
 import SettingSection from "./SettingSection";
-import UserSessionsSection from "./UserSessionsSection";
 
 const MyAccountSection = () => {
   const t = useTranslate();
@@ -55,10 +54,6 @@ const MyAccountSection = () => {
             </DropdownMenu>
           </div>
         </div>
-      </SettingGroup>
-
-      <SettingGroup showSeparator>
-        <UserSessionsSection />
       </SettingGroup>
 
       <SettingGroup showSeparator>

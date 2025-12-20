@@ -261,23 +261,6 @@
       "title": "存取令牌",
       "token": "令牌"
     },
-    "user-sessions-section": {
-      "title": "工作階段",
-      "description": "此處列出您帳號的所有工作階段。工作階段將於最後一次活動的兩週後自動過期。您可以撤銷除了現階段之外的所有工作階段。",
-      "device": "裝置",
-      "location": "位置",
-      "last-active": "最後活躍時間",
-      "expires": "過期時間",
-      "current": "當前裝置",
-      "never": "永不過期",
-      "session-revocation": "您確定要撤銷工作階段 `{{sessionId}}` 嗎？",
-      "session-revocation-description": "您需要在該裝置上重新登入。",
-      "session-revoked": "工作階段撤銷成功",
-      "revoke-session": "撤銷工作階段",
-      "revoke-session-button": "撤銷",
-      "cannot-revoke-current": "無法撤銷當前裝置的工作階段",
-      "no-sessions": "無工作階段"
-    },
     "account-section": {
       "change-password": "變更密碼",
       "email-note": "選填",

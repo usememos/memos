@@ -22,16 +22,11 @@ const SignUp = lazy(() => import("@/pages/SignUp"));
 const UserProfile = lazy(() => import("@/pages/UserProfile"));
 const MemoDetailRedirect = lazy(() => import("./MemoDetailRedirect"));
 
-export enum Routes {
-  ROOT = "/",
-  ATTACHMENTS = "/attachments",
-  CALENDAR = "/calendar",
-  INBOX = "/inbox",
-  ARCHIVED = "/archived",
-  SETTING = "/setting",
-  EXPLORE = "/explore",
-  AUTH = "/auth",
-}
+import { ROUTES } from "./routes";
+
+// Backward compatibility alias
+export const Routes = ROUTES;
+export { ROUTES };
 
 const router = createBrowserRouter([
   {

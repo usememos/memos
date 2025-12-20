@@ -1,6 +1,5 @@
 import { create } from "@bufbuild/protobuf";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import { ConnectError } from "@connectrpc/connect";
 import { LoaderIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -15,7 +14,7 @@ import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { instanceStore } from "@/store";
 import { initialUserStore } from "@/store/user";
-import { User, User_Role, UserSchema } from "@/types/proto/api/v1/user_service_pb";
+import { User_Role, UserSchema } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const SignUp = observer(() => {
@@ -70,9 +69,10 @@ const SignUp = observer(() => {
       }
       await initialUserStore();
       navigateTo("/");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      toast.error((error as ConnectError).message || "Sign up failed");
+      const message = error instanceof Error ? error.message : "Sign up failed";
+      toast.error(message);
     }
     actionBtnLoadingState.setFinish();
   };
@@ -112,7 +112,7 @@ const SignUp = observer(() => {
                     readOnly={actionBtnLoadingState.isLoading}
                     placeholder={t("common.password")}
                     value={password}
-                    autoComplete="password"
+                    autoComplete="new-password"
                     autoCapitalize="off"
                     spellCheck={false}
                     onChange={handlePasswordInputChanged}

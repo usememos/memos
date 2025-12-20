@@ -251,21 +251,6 @@
       "title": "رموز الوصول",
       "token": "رمز"
     },
-    "user-sessions-section": {
-      "title": "الجلسات النشطة",
-      "description": "قائمة بجميع الجلسات النشطة لحسابك. تنتهي الجلسات تلقائيًا بعد أسبوعين من آخر نشاط. يمكنك إلغاء أي جلسة باستثناء الحالية.",
-      "device": "الجهاز",
-      "location": "الموقع",
-      "last-active": "آخر نشاط",
-      "expires": "ينتهي",
-      "current": "الحالية",
-      "never": "أبدًا",
-      "session-revocation": "هل أنت متأكد من إلغاء الجلسة {{sessionId}}؟ ستحتاج إلى تسجيل الدخول مرة أخرى على ذلك الجهاز.",
-      "session-revoked": "تم إلغاء الجلسة بنجاح",
-      "revoke-session": "إلغاء الجلسة",
-      "cannot-revoke-current": "لا يمكن إلغاء الجلسة الحالية",
-      "no-sessions": "لا توجد جلسات نشطة"
-    },
     "account-section": {
       "change-password": "تغيير كلمة المرور",
       "email-note": "اختياري",

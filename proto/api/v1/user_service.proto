@@ -106,21 +106,6 @@ service UserService {
     option (google.api.method_signature) = "name";
   }
 
-  // ListSessions returns a list of active login sessions for a user.
-  // Each session represents a browser/device where the user is logged in.
-  // Sessions are backed by refresh tokens with sliding expiration.
-  rpc ListSessions(ListSessionsRequest) returns (ListSessionsResponse) {
-    option (google.api.http) = {get: "/api/v1/{parent=users/*}/sessions"};
-    option (google.api.method_signature) = "parent";
-  }
-
-  // RevokeSession revokes a specific login session.
-  // This invalidates the refresh token, forcing re-authentication on that device.
-  rpc RevokeSession(RevokeSessionRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {delete: "/api/v1/{name=users/*/sessions/*}"};
-    option (google.api.method_signature) = "name";
-  }
-
   // ListUserWebhooks returns a list of webhooks for a user.
   rpc ListUserWebhooks(ListUserWebhooksRequest) returns (ListUserWebhooksResponse) {
     option (google.api.http) = {get: "/api/v1/{parent=users/*}/webhooks"};
@@ -392,8 +377,6 @@ message UserSetting {
 
   oneof value {
     GeneralSetting general_setting = 2;
-    SessionsSetting sessions_setting = 3;
-    AccessTokensSetting access_tokens_setting = 4;
     WebhooksSetting webhooks_setting = 5;
   }
 
@@ -402,10 +385,6 @@ message UserSetting {
     KEY_UNSPECIFIED = 0;
     // GENERAL is the key for general user settings.
     GENERAL = 1;
-    // SESSIONS is the key for user login sessions (refresh tokens).
-    SESSIONS = 2;
-    // ACCESS_TOKENS is the key for Personal Access Tokens (PATs).
-    ACCESS_TOKENS = 3;
     // WEBHOOKS is the key for user webhooks.
     WEBHOOKS = 4;
   }
@@ -420,18 +399,6 @@ message UserSetting {
     // This references a CSS file in the web/public/themes/ directory.
     // If not set, the default theme will be used.
     string theme = 4 [(google.api.field_behavior) = OPTIONAL];
-  }
-
-  // User authentication sessions configuration.
-  message SessionsSetting {
-    // List of active login sessions.
-    repeated Session sessions = 1;
-  }
-
-  // Personal access tokens configuration.
-  message AccessTokensSetting {
-    // List of personal access tokens (PATs).
-    repeated PersonalAccessToken personal_access_tokens = 1;
   }
 
   // User webhooks configuration.
@@ -575,70 +542,6 @@ message DeletePersonalAccessTokenRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/PersonalAccessToken"}
   ];
-}
-
-// Session represents a user's login session on a specific device/browser.
-// Sessions are backed by refresh tokens with sliding expiration.
-message Session {
-  option (google.api.resource) = {
-    type: "memos.api.v1/Session"
-    pattern: "users/{user}/sessions/{session}"
-    name_field: "name"
-  };
-
-  // The resource name of the session.
-  // Format: users/{user}/sessions/{session}
-  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
-
-  // The session ID.
-  string session_id = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  // The timestamp when the session was created.
-  google.protobuf.Timestamp create_time = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  // The timestamp when the session was last accessed.
-  // Used for sliding expiration calculation (last_accessed_time + 2 weeks).
-  google.protobuf.Timestamp last_accessed_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  // Client information associated with this session.
-  ClientInfo client_info = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
-
-  message ClientInfo {
-    // User agent string of the client.
-    string user_agent = 1;
-
-    // IP address of the client.
-    string ip_address = 2;
-
-    // Optional. Device type (e.g., "mobile", "desktop", "tablet").
-    string device_type = 3 [(google.api.field_behavior) = OPTIONAL];
-
-    // Optional. Operating system (e.g., "iOS 17.0", "Windows 11").
-    string os = 4 [(google.api.field_behavior) = OPTIONAL];
-
-    // Optional. Browser name and version (e.g., "Chrome 119.0").
-    string browser = 5 [(google.api.field_behavior) = OPTIONAL];
-  }
-}
-
-message ListSessionsRequest {
-  // Required. The resource name of the parent.
-  // Format: users/{user}
-  string parent = 1 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api.v1/User"}
-  ];
-}
-
-message ListSessionsResponse {
-  // The list of sessions.
-  repeated Session sessions = 1;
-}
-
-message RevokeSessionRequest {
-  // The name of the session to revoke.
-  // Format: users/{user}/sessions/{session}
-  string name = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 // UserWebhook represents a webhook owned by a user.

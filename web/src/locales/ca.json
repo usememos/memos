@@ -251,21 +251,6 @@
       "title": "Tokens d'accés",
       "token": "Token"
     },
-    "user-sessions-section": {
-      "title": "Sessions actives",
-      "description": "Llista de totes les sessions actives del teu compte. Les sessions caduquen automàticament dues setmanes després de l'última activitat. Pots revocar qualsevol sessió excepte la sessió actual.",
-      "device": "Dispositiu",
-      "location": "Ubicació",
-      "last-active": "Última activitat",
-      "expires": "Caduca",
-      "current": "Actual",
-      "never": "Mai",
-      "session-revocation": "Estàs segur que vols revocar la sessió {{sessionId}}? Hauràs d'iniciar sessió de nou en aquest dispositiu.",
-      "session-revoked": "Sessió revocada correctament",
-      "revoke-session": "Revoca la sessió",
-      "cannot-revoke-current": "No es pot revocar la sessió actual",
-      "no-sessions": "No s'han trobat sessions actives"
-    },
     "account-section": {
       "change-password": "Canvia la contrasenya",
       "email-note": "Opcional",

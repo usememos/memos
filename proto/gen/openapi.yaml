@@ -1462,66 +1462,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/users/{user}/sessions:
-        get:
-            tags:
-                - UserService
-            description: |-
-                ListSessions returns a list of active login sessions for a user.
-                 Each session represents a browser/device where the user is logged in.
-                 Sessions are backed by refresh tokens with sliding expiration.
-            operationId: UserService_ListSessions
-            parameters:
-                - name: user
-                  in: path
-                  description: The user id.
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListSessionsResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/users/{user}/sessions/{session}:
-        delete:
-            tags:
-                - UserService
-            description: |-
-                RevokeSession revokes a specific login session.
-                 This invalidates the refresh token, forcing re-authentication on that device.
-            operationId: UserService_RevokeSession
-            parameters:
-                - name: user
-                  in: path
-                  description: The user id.
-                  required: true
-                  schema:
-                    type: string
-                - name: session
-                  in: path
-                  description: The session id.
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content: {}
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /api/v1/users/{user}/settings:
         get:
             tags:
@@ -2431,14 +2371,6 @@ components:
                     type: integer
                     description: The total count of personal access tokens.
                     format: int32
-        ListSessionsResponse:
-            type: object
-            properties:
-                sessions:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Session'
-                    description: The list of sessions.
         ListShortcutsResponse:
             type: object
             properties:
@@ -2750,56 +2682,6 @@ components:
                     type: string
                     description: When the access token expires.
                     format: date-time
-        Session:
-            type: object
-            properties:
-                name:
-                    type: string
-                    description: |-
-                        The resource name of the session.
-                         Format: users/{user}/sessions/{session}
-                sessionId:
-                    readOnly: true
-                    type: string
-                    description: The session ID.
-                createTime:
-                    readOnly: true
-                    type: string
-                    description: The timestamp when the session was created.
-                    format: date-time
-                lastAccessedTime:
-                    readOnly: true
-                    type: string
-                    description: |-
-                        The timestamp when the session was last accessed.
-                         Used for sliding expiration calculation (last_accessed_time + 2 weeks).
-                    format: date-time
-                clientInfo:
-                    readOnly: true
-                    allOf:
-                        - $ref: '#/components/schemas/Session_ClientInfo'
-                    description: Client information associated with this session.
-            description: |-
-                Session represents a user's login session on a specific device/browser.
-                 Sessions are backed by refresh tokens with sliding expiration.
-        Session_ClientInfo:
-            type: object
-            properties:
-                userAgent:
-                    type: string
-                    description: User agent string of the client.
-                ipAddress:
-                    type: string
-                    description: IP address of the client.
-                deviceType:
-                    type: string
-                    description: Optional. Device type (e.g., "mobile", "desktop", "tablet").
-                os:
-                    type: string
-                    description: Optional. Operating system (e.g., "iOS 17.0", "Windows 11").
-                browser:
-                    type: string
-                    description: Optional. Browser name and version (e.g., "Chrome 119.0").
         SetMemoAttachmentsRequest:
             required:
                 - name
@@ -3071,22 +2953,9 @@ components:
                          For example, "users/123/settings/GENERAL" for general settings.
                 generalSetting:
                     $ref: '#/components/schemas/UserSetting_GeneralSetting'
-                sessionsSetting:
-                    $ref: '#/components/schemas/UserSetting_SessionsSetting'
-                accessTokensSetting:
-                    $ref: '#/components/schemas/UserSetting_AccessTokensSetting'
                 webhooksSetting:
                     $ref: '#/components/schemas/UserSetting_WebhooksSetting'
             description: User settings message
-        UserSetting_AccessTokensSetting:
-            type: object
-            properties:
-                personalAccessTokens:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/PersonalAccessToken'
-                    description: List of personal access tokens (PATs).
-            description: Personal access tokens configuration.
         UserSetting_GeneralSetting:
             type: object
             properties:
@@ -3103,15 +2972,6 @@ components:
                          This references a CSS file in the web/public/themes/ directory.
                          If not set, the default theme will be used.
             description: General user settings configuration.
-        UserSetting_SessionsSetting:
-            type: object
-            properties:
-                sessions:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Session'
-                    description: List of active login sessions.
-            description: User authentication sessions configuration.
         UserSetting_WebhooksSetting:
             type: object
             properties:

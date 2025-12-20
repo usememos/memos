@@ -175,22 +175,6 @@ func (s *ConnectServiceHandler) DeletePersonalAccessToken(ctx context.Context, r
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) ListSessions(ctx context.Context, req *connect.Request[v1pb.ListSessionsRequest]) (*connect.Response[v1pb.ListSessionsResponse], error) {
-	resp, err := s.APIV1Service.ListSessions(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
-}
-
-func (s *ConnectServiceHandler) RevokeSession(ctx context.Context, req *connect.Request[v1pb.RevokeSessionRequest]) (*connect.Response[emptypb.Empty], error) {
-	resp, err := s.APIV1Service.RevokeSession(ctx, req.Msg)
-	if err != nil {
-		return nil, convertGRPCError(err)
-	}
-	return connect.NewResponse(resp), nil
-}
-
 func (s *ConnectServiceHandler) ListUserWebhooks(ctx context.Context, req *connect.Request[v1pb.ListUserWebhooksRequest]) (*connect.Response[v1pb.ListUserWebhooksResponse], error) {
 	resp, err := s.APIV1Service.ListUserWebhooks(ctx, req.Msg)
 	if err != nil {

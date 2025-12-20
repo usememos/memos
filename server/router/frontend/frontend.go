@@ -35,8 +35,12 @@ func (*FrontendService) Serve(_ context.Context, e *echo.Echo) {
 		if util.HasPrefixes(c.Path(), "/api", "/memos.api.v1") {
 			return true
 		}
-		// Skip setting cache headers for index.html
+		// For index.html and root path, set no-cache headers to prevent browser caching
+		// This prevents sensitive data from being accessible via browser back button after logout
 		if c.Path() == "/" || c.Path() == "/index.html" {
+			c.Response().Header().Set(echo.HeaderCacheControl, "no-cache, no-store, must-revalidate")
+			c.Response().Header().Set("Pragma", "no-cache")
+			c.Response().Header().Set("Expires", "0")
 			return false
 		}
 		// Set Cache-Control header for static assets.

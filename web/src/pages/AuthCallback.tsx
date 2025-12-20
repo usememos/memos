@@ -1,5 +1,4 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import { ConnectError } from "@connectrpc/connect";
 import { LoaderIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
@@ -95,15 +94,16 @@ const AuthCallback = observer(() => {
         await initialUserStore();
         // Redirect to return URL if specified, otherwise home
         navigateTo(returnUrl || "/");
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error(error);
+        const message = error instanceof Error ? error.message : "Failed to authenticate.";
         setState({
           loading: false,
-          errorMessage: (error as ConnectError).message,
+          errorMessage: message,
         });
       }
     })();
-  }, [searchParams]);
+  }, [searchParams, navigateTo]);
 
   return (
     <div className="p-4 py-24 w-full h-full flex justify-center items-center">

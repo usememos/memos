@@ -18,7 +18,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file api/v1/user_service.proto.
  */
 export const file_api_v1_user_service: GenFile = /*@__PURE__*/
-  fileDesc("ChlhcGkvdjEvdXNlcl9zZXJ2aWNlLnByb3RvEgxtZW1vcy5hcGkudjEi4AMKBFVzZXISEQoEbmFtZRgBIAEoCUID4EEIEioKBHJvbGUYAiABKA4yFy5tZW1vcy5hcGkudjEuVXNlci5Sb2xlQgPgQQISFQoIdXNlcm5hbWUYAyABKAlCA+BBAhISCgVlbWFpbBgEIAEoCUID4EEBEhkKDGRpc3BsYXlfbmFtZRgFIAEoCUID4EEBEhcKCmF2YXRhcl91cmwYBiABKAlCA+BBARIYCgtkZXNjcmlwdGlvbhgHIAEoCUID4EEBEhUKCHBhc3N3b3JkGAggASgJQgPgQQQSJwoFc3RhdGUYCSABKA4yEy5tZW1vcy5hcGkudjEuU3RhdGVCA+BBAhI0CgtjcmVhdGVfdGltZRgKIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCA+BBAxI0Cgt1cGRhdGVfdGltZRgLIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCA+BBAyI7CgRSb2xlEhQKEFJPTEVfVU5TUEVDSUZJRUQQABIICgRIT1NUEAESCQoFQURNSU4QAhIICgRVU0VSEAM6N+pBNAoRbWVtb3MuYXBpLnYxL1VzZXISDHVzZXJzL3t1c2VyfRoEbmFtZSoFdXNlcnMyBHVzZXIicwoQTGlzdFVzZXJzUmVxdWVzdBIWCglwYWdlX3NpemUYASABKAVCA+BBARIXCgpwYWdlX3Rva2VuGAIgASgJQgPgQQESEwoGZmlsdGVyGAMgASgJQgPgQQESGQoMc2hvd19kZWxldGVkGAQgASgIQgPgQQEiYwoRTGlzdFVzZXJzUmVzcG9uc2USIQoFdXNlcnMYASADKAsyEi5tZW1vcy5hcGkudjEuVXNlchIXCg9uZXh0X3BhZ2VfdG9rZW4YAiABKAkSEgoKdG90YWxfc2l6ZRgDIAEoBSJtCg5HZXRVc2VyUmVxdWVzdBInCgRuYW1lGAEgASgJQhngQQL6QRMKEW1lbW9zLmFwaS52MS9Vc2VyEjIKCXJlYWRfbWFzaxgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5GaWVsZE1hc2tCA+BBASKIAQoRQ3JlYXRlVXNlclJlcXVlc3QSKAoEdXNlchgBIAEoCzISLm1lbW9zLmFwaS52MS5Vc2VyQgbgQQLgQQQSFAoHdXNlcl9pZBgCIAEoCUID4EEBEhoKDXZhbGlkYXRlX29ubHkYAyABKAhCA+BBARIXCgpyZXF1ZXN0X2lkGAQgASgJQgPgQQEijAEKEVVwZGF0ZVVzZXJSZXF1ZXN0EiUKBHVzZXIYASABKAsyEi5tZW1vcy5hcGkudjEuVXNlckID4EECEjQKC3VwZGF0ZV9tYXNrGAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLkZpZWxkTWFza0ID4EECEhoKDWFsbG93X21pc3NpbmcYAyABKAhCA+BBASJQChFEZWxldGVVc2VyUmVxdWVzdBInCgRuYW1lGAEgASgJQhngQQL6QRMKEW1lbW9zLmFwaS52MS9Vc2VyEhIKBWZvcmNlGAIgASgIQgPgQQEi2AMKCVVzZXJTdGF0cxIRCgRuYW1lGAEgASgJQgPgQQgSOwoXbWVtb19kaXNwbGF5X3RpbWVzdGFtcHMYAiADKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEj4KD21lbW9fdHlwZV9zdGF0cxgDIAEoCzIlLm1lbW9zLmFwaS52MS5Vc2VyU3RhdHMuTWVtb1R5cGVTdGF0cxI4Cgl0YWdfY291bnQYBCADKAsyJS5tZW1vcy5hcGkudjEuVXNlclN0YXRzLlRhZ0NvdW50RW50cnkSFAoMcGlubmVkX21lbW9zGAUgAygJEhgKEHRvdGFsX21lbW9fY291bnQYBiABKAUaLwoNVGFnQ291bnRFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAU6AjgBGl8KDU1lbW9UeXBlU3RhdHMSEgoKbGlua19jb3VudBgBIAEoBRISCgpjb2RlX2NvdW50GAIgASgFEhIKCnRvZG9fY291bnQYAyABKAUSEgoKdW5kb19jb3VudBgEIAEoBTo/6kE8ChZtZW1vcy5hcGkudjEvVXNlclN0YXRzEgx1c2Vycy97dXNlcn0qCXVzZXJTdGF0czIJdXNlclN0YXRzIj4KE0dldFVzZXJTdGF0c1JlcXVlc3QSJwoEbmFtZRgBIAEoCUIZ4EEC+kETChFtZW1vcy5hcGkudjEvVXNlciIZChdMaXN0QWxsVXNlclN0YXRzUmVxdWVzdCJCChhMaXN0QWxsVXNlclN0YXRzUmVzcG9uc2USJgoFc3RhdHMYASADKAsyFy5tZW1vcy5hcGkudjEuVXNlclN0YXRzIq4GCgtVc2VyU2V0dGluZxIRCgRuYW1lGAEgASgJQgPgQQgSQwoPZ2VuZXJhbF9zZXR0aW5nGAIgASgLMigubWVtb3MuYXBpLnYxLlVzZXJTZXR0aW5nLkdlbmVyYWxTZXR0aW5nSAASRQoQc2Vzc2lvbnNfc2V0dGluZxgDIAEoCzIpLm1lbW9zLmFwaS52MS5Vc2VyU2V0dGluZy5TZXNzaW9uc1NldHRpbmdIABJOChVhY2Nlc3NfdG9rZW5zX3NldHRpbmcYBCABKAsyLS5tZW1vcy5hcGkudjEuVXNlclNldHRpbmcuQWNjZXNzVG9rZW5zU2V0dGluZ0gAEkUKEHdlYmhvb2tzX3NldHRpbmcYBSABKAsyKS5tZW1vcy5hcGkudjEuVXNlclNldHRpbmcuV2ViaG9va3NTZXR0aW5nSAAaVwoOR2VuZXJhbFNldHRpbmcSEwoGbG9jYWxlGAEgASgJQgPgQQESHAoPbWVtb192aXNpYmlsaXR5GAMgASgJQgPgQQESEgoFdGhlbWUYBCABKAlCA+BBARo6Cg9TZXNzaW9uc1NldHRpbmcSJwoIc2Vzc2lvbnMYASADKAsyFS5tZW1vcy5hcGkudjEuU2Vzc2lvbhpYChNBY2Nlc3NUb2tlbnNTZXR0aW5nEkEKFnBlcnNvbmFsX2FjY2Vzc190b2tlbnMYASADKAsyIS5tZW1vcy5hcGkudjEuUGVyc29uYWxBY2Nlc3NUb2tlbho+Cg9XZWJob29rc1NldHRpbmcSKwoId2ViaG9va3MYASADKAsyGS5tZW1vcy5hcGkudjEuVXNlcldlYmhvb2siVgoDS2V5EhMKD0tFWV9VTlNQRUNJRklFRBAAEgsKB0dFTkVSQUwQARIMCghTRVNTSU9OUxACEhEKDUFDQ0VTU19UT0tFTlMQAxIMCghXRUJIT09LUxAEOlnqQVYKGG1lbW9zLmFwaS52MS9Vc2VyU2V0dGluZxIfdXNlcnMve3VzZXJ9L3NldHRpbmdzL3tzZXR0aW5nfSoMdXNlclNldHRpbmdzMgt1c2VyU2V0dGluZ0IHCgV2YWx1ZSJHChVHZXRVc2VyU2V0dGluZ1JlcXVlc3QSLgoEbmFtZRgBIAEoCUIg4EEC+kEaChhtZW1vcy5hcGkudjEvVXNlclNldHRpbmcigQEKGFVwZGF0ZVVzZXJTZXR0aW5nUmVxdWVzdBIvCgdzZXR0aW5nGAEgASgLMhkubWVtb3MuYXBpLnYxLlVzZXJTZXR0aW5nQgPgQQISNAoLdXBkYXRlX21hc2sYAiABKAsyGi5nb29nbGUucHJvdG9idWYuRmllbGRNYXNrQgPgQQIidQoXTGlzdFVzZXJTZXR0aW5nc1JlcXVlc3QSKQoGcGFyZW50GAEgASgJQhngQQL6QRMKEW1lbW9zLmFwaS52MS9Vc2VyEhYKCXBhZ2Vfc2l6ZRgCIAEoBUID4EEBEhcKCnBhZ2VfdG9rZW4YAyABKAlCA+BBASJ0ChhMaXN0VXNlclNldHRpbmdzUmVzcG9uc2USKwoIc2V0dGluZ3MYASADKAsyGS5tZW1vcy5hcGkudjEuVXNlclNldHRpbmcSFwoPbmV4dF9wYWdlX3Rva2VuGAIgASgJEhIKCnRvdGFsX3NpemUYAyABKAUi8gIKE1BlcnNvbmFsQWNjZXNzVG9rZW4SEQoEbmFtZRgBIAEoCUID4EEIEhgKC2Rlc2NyaXB0aW9uGAIgASgJQgPgQQESMwoKY3JlYXRlZF9hdBgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCA+BBAxIzCgpleHBpcmVzX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEID4EEBEjUKDGxhc3RfdXNlZF9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCA+BBAzqMAepBiAEKIG1lbW9zLmFwaS52MS9QZXJzb25hbEFjY2Vzc1Rva2VuEjl1c2Vycy97dXNlcn0vcGVyc29uYWxBY2Nlc3NUb2tlbnMve3BlcnNvbmFsX2FjY2Vzc190b2tlbn0qFHBlcnNvbmFsQWNjZXNzVG9rZW5zMhNwZXJzb25hbEFjY2Vzc1Rva2VuIn0KH0xpc3RQZXJzb25hbEFjY2Vzc1Rva2Vuc1JlcXVlc3QSKQoGcGFyZW50GAEgASgJQhngQQL6QRMKEW1lbW9zLmFwaS52MS9Vc2VyEhYKCXBhZ2Vfc2l6ZRgCIAEoBUID4EEBEhcKCnBhZ2VfdG9rZW4YAyABKAlCA+BBASKSAQogTGlzdFBlcnNvbmFsQWNjZXNzVG9rZW5zUmVzcG9uc2USQQoWcGVyc29uYWxfYWNjZXNzX3Rva2VucxgBIAMoCzIhLm1lbW9zLmFwaS52MS5QZXJzb25hbEFjY2Vzc1Rva2VuEhcKD25leHRfcGFnZV90b2tlbhgCIAEoCRISCgp0b3RhbF9zaXplGAMgASgFIoUBCiBDcmVhdGVQZXJzb25hbEFjY2Vzc1Rva2VuUmVxdWVzdBIpCgZwYXJlbnQYASABKAlCGeBBAvpBEwoRbWVtb3MuYXBpLnYxL1VzZXISGAoLZGVzY3JpcHRpb24YAiABKAlCA+BBARIcCg9leHBpcmVzX2luX2RheXMYAyABKAVCA+BBASJ0CiFDcmVhdGVQZXJzb25hbEFjY2Vzc1Rva2VuUmVzcG9uc2USQAoVcGVyc29uYWxfYWNjZXNzX3Rva2VuGAEgASgLMiEubWVtb3MuYXBpLnYxLlBlcnNvbmFsQWNjZXNzVG9rZW4SDQoFdG9rZW4YAiABKAkiWgogRGVsZXRlUGVyc29uYWxBY2Nlc3NUb2tlblJlcXVlc3QSNgoEbmFtZRgBIAEoCUIo4EEC+kEiCiBtZW1vcy5hcGkudjEvUGVyc29uYWxBY2Nlc3NUb2tlbiKdAwoHU2Vzc2lvbhIRCgRuYW1lGAEgASgJQgPgQQgSFwoKc2Vzc2lvbl9pZBgCIAEoCUID4EEDEjQKC2NyZWF0ZV90aW1lGAMgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEID4EEDEjsKEmxhc3RfYWNjZXNzZWRfdGltZRgEIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCA+BBAxI6CgtjbGllbnRfaW5mbxgFIAEoCzIgLm1lbW9zLmFwaS52MS5TZXNzaW9uLkNsaWVudEluZm9CA+BBAxp1CgpDbGllbnRJbmZvEhIKCnVzZXJfYWdlbnQYASABKAkSEgoKaXBfYWRkcmVzcxgCIAEoCRIYCgtkZXZpY2VfdHlwZRgDIAEoCUID4EEBEg8KAm9zGAQgASgJQgPgQQESFAoHYnJvd3NlchgFIAEoCUID4EEBOkDqQT0KFG1lbW9zLmFwaS52MS9TZXNzaW9uEh91c2Vycy97dXNlcn0vc2Vzc2lvbnMve3Nlc3Npb259GgRuYW1lIkAKE0xpc3RTZXNzaW9uc1JlcXVlc3QSKQoGcGFyZW50GAEgASgJQhngQQL6QRMKEW1lbW9zLmFwaS52MS9Vc2VyIj8KFExpc3RTZXNzaW9uc1Jlc3BvbnNlEicKCHNlc3Npb25zGAEgAygLMhUubWVtb3MuYXBpLnYxLlNlc3Npb24iKQoUUmV2b2tlU2Vzc2lvblJlcXVlc3QSEQoEbmFtZRgBIAEoCUID4EECIqoBCgtVc2VyV2ViaG9vaxIMCgRuYW1lGAEgASgJEgsKA3VybBgCIAEoCRIUCgxkaXNwbGF5X25hbWUYAyABKAkSNAoLY3JlYXRlX3RpbWUYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQgPgQQMSNAoLdXBkYXRlX3RpbWUYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQgPgQQMiLgoXTGlzdFVzZXJXZWJob29rc1JlcXVlc3QSEwoGcGFyZW50GAEgASgJQgPgQQIiRwoYTGlzdFVzZXJXZWJob29rc1Jlc3BvbnNlEisKCHdlYmhvb2tzGAEgAygLMhkubWVtb3MuYXBpLnYxLlVzZXJXZWJob29rImAKGENyZWF0ZVVzZXJXZWJob29rUmVxdWVzdBITCgZwYXJlbnQYASABKAlCA+BBAhIvCgd3ZWJob29rGAIgASgLMhkubWVtb3MuYXBpLnYxLlVzZXJXZWJob29rQgPgQQIifAoYVXBkYXRlVXNlcldlYmhvb2tSZXF1ZXN0Ei8KB3dlYmhvb2sYASABKAsyGS5tZW1vcy5hcGkudjEuVXNlcldlYmhvb2tCA+BBAhIvCgt1cGRhdGVfbWFzaxgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5GaWVsZE1hc2siLQoYRGVsZXRlVXNlcldlYmhvb2tSZXF1ZXN0EhEKBG5hbWUYASABKAlCA+BBAiKKBAoQVXNlck5vdGlmaWNhdGlvbhIUCgRuYW1lGAEgASgJQgbgQQPgQQgSKQoGc2VuZGVyGAIgASgJQhngQQP6QRMKEW1lbW9zLmFwaS52MS9Vc2VyEjoKBnN0YXR1cxgDIAEoDjIlLm1lbW9zLmFwaS52MS5Vc2VyTm90aWZpY2F0aW9uLlN0YXR1c0ID4EEBEjQKC2NyZWF0ZV90aW1lGAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEID4EEDEjYKBHR5cGUYBSABKA4yIy5tZW1vcy5hcGkudjEuVXNlck5vdGlmaWNhdGlvbi5UeXBlQgPgQQMSHQoLYWN0aXZpdHlfaWQYBiABKAVCA+BBAUgAiAEBIjoKBlN0YXR1cxIWChJTVEFUVVNfVU5TUEVDSUZJRUQQABIKCgZVTlJFQUQQARIMCghBUkNISVZFRBACIi4KBFR5cGUSFAoQVFlQRV9VTlNQRUNJRklFRBAAEhAKDE1FTU9fQ09NTUVOVBABOnDqQW0KHW1lbW9zLmFwaS52MS9Vc2VyTm90aWZpY2F0aW9uEil1c2Vycy97dXNlcn0vbm90aWZpY2F0aW9ucy97bm90aWZpY2F0aW9ufRoEbmFtZSoNbm90aWZpY2F0aW9uczIMbm90aWZpY2F0aW9uQg4KDF9hY3Rpdml0eV9pZCKPAQocTGlzdFVzZXJOb3RpZmljYXRpb25zUmVxdWVzdBIpCgZwYXJlbnQYASABKAlCGeBBAvpBEwoRbWVtb3MuYXBpLnYxL1VzZXISFgoJcGFnZV9zaXplGAIgASgFQgPgQQESFwoKcGFnZV90b2tlbhgDIAEoCUID4EEBEhMKBmZpbHRlchgEIAEoCUID4EEBIm8KHUxpc3RVc2VyTm90aWZpY2F0aW9uc1Jlc3BvbnNlEjUKDW5vdGlmaWNhdGlvbnMYASADKAsyHi5tZW1vcy5hcGkudjEuVXNlck5vdGlmaWNhdGlvbhIXCg9uZXh0X3BhZ2VfdG9rZW4YAiABKAkikAEKHVVwZGF0ZVVzZXJOb3RpZmljYXRpb25SZXF1ZXN0EjkKDG5vdGlmaWNhdGlvbhgBIAEoCzIeLm1lbW9zLmFwaS52MS5Vc2VyTm90aWZpY2F0aW9uQgPgQQISNAoLdXBkYXRlX21hc2sYAiABKAsyGi5nb29nbGUucHJvdG9idWYuRmllbGRNYXNrQgPgQQIiVAodRGVsZXRlVXNlck5vdGlmaWNhdGlvblJlcXVlc3QSMwoEbmFtZRgBIAEoCUIl4EEC+kEfCh1tZW1vcy5hcGkudjEvVXNlck5vdGlmaWNhdGlvbjKOGQoLVXNlclNlcnZpY2USYwoJTGlzdFVzZXJzEh4ubWVtb3MuYXBpLnYxLkxpc3RVc2Vyc1JlcXVlc3QaHy5tZW1vcy5hcGkudjEuTGlzdFVzZXJzUmVzcG9uc2UiFYLT5JMCDxINL2FwaS92MS91c2VycxJiCgdHZXRVc2VyEhwubWVtb3MuYXBpLnYxLkdldFVzZXJSZXF1ZXN0GhIubWVtb3MuYXBpLnYxLlVzZXIiJdpBBG5hbWWC0+STAhgSFi9hcGkvdjEve25hbWU9dXNlcnMvKn0SZQoKQ3JlYXRlVXNlchIfLm1lbW9zLmFwaS52MS5DcmVhdGVVc2VyUmVxdWVzdBoSLm1lbW9zLmFwaS52MS5Vc2VyIiLaQQR1c2VygtPkkwIVOgR1c2VyIg0vYXBpL3YxL3VzZXJzEn8KClVwZGF0ZVVzZXISHy5tZW1vcy5hcGkudjEuVXBkYXRlVXNlclJlcXVlc3QaEi5tZW1vcy5hcGkudjEuVXNlciI82kEQdXNlcix1cGRhdGVfbWFza4LT5JMCIzoEdXNlcjIbL2FwaS92MS97dXNlci5uYW1lPXVzZXJzLyp9EmwKCkRlbGV0ZVVzZXISHy5tZW1vcy5hcGkudjEuRGVsZXRlVXNlclJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiJdpBBG5hbWWC0+STAhgqFi9hcGkvdjEve25hbWU9dXNlcnMvKn0SfgoQTGlzdEFsbFVzZXJTdGF0cxIlLm1lbW9zLmFwaS52MS5MaXN0QWxsVXNlclN0YXRzUmVxdWVzdBomLm1lbW9zLmFwaS52MS5MaXN0QWxsVXNlclN0YXRzUmVzcG9uc2UiG4LT5JMCFRITL2FwaS92MS91c2VyczpzdGF0cxJ6CgxHZXRVc2VyU3RhdHMSIS5tZW1vcy5hcGkudjEuR2V0VXNlclN0YXRzUmVxdWVzdBoXLm1lbW9zLmFwaS52MS5Vc2VyU3RhdHMiLtpBBG5hbWWC0+STAiESHy9hcGkvdjEve25hbWU9dXNlcnMvKn06Z2V0U3RhdHMSggEKDkdldFVzZXJTZXR0aW5nEiMubWVtb3MuYXBpLnYxLkdldFVzZXJTZXR0aW5nUmVxdWVzdBoZLm1lbW9zLmFwaS52MS5Vc2VyU2V0dGluZyIw2kEEbmFtZYLT5JMCIxIhL2FwaS92MS97bmFtZT11c2Vycy8qL3NldHRpbmdzLyp9EqgBChFVcGRhdGVVc2VyU2V0dGluZxImLm1lbW9zLmFwaS52MS5VcGRhdGVVc2VyU2V0dGluZ1JlcXVlc3QaGS5tZW1vcy5hcGkudjEuVXNlclNldHRpbmciUNpBE3NldHRpbmcsdXBkYXRlX21hc2uC0+STAjQ6B3NldHRpbmcyKS9hcGkvdjEve3NldHRpbmcubmFtZT11c2Vycy8qL3NldHRpbmdzLyp9EpUBChBMaXN0VXNlclNldHRpbmdzEiUubWVtb3MuYXBpLnYxLkxpc3RVc2VyU2V0dGluZ3NSZXF1ZXN0GiYubWVtb3MuYXBpLnYxLkxpc3RVc2VyU2V0dGluZ3NSZXNwb25zZSIy2kEGcGFyZW50gtPkkwIjEiEvYXBpL3YxL3twYXJlbnQ9dXNlcnMvKn0vc2V0dGluZ3MSuQEKGExpc3RQZXJzb25hbEFjY2Vzc1Rva2VucxItLm1lbW9zLmFwaS52MS5MaXN0UGVyc29uYWxBY2Nlc3NUb2tlbnNSZXF1ZXN0Gi4ubWVtb3MuYXBpLnYxLkxpc3RQZXJzb25hbEFjY2Vzc1Rva2Vuc1Jlc3BvbnNlIj7aQQZwYXJlbnSC0+STAi8SLS9hcGkvdjEve3BhcmVudD11c2Vycy8qfS9wZXJzb25hbEFjY2Vzc1Rva2VucxK2AQoZQ3JlYXRlUGVyc29uYWxBY2Nlc3NUb2tlbhIuLm1lbW9zLmFwaS52MS5DcmVhdGVQZXJzb25hbEFjY2Vzc1Rva2VuUmVxdWVzdBovLm1lbW9zLmFwaS52MS5DcmVhdGVQZXJzb25hbEFjY2Vzc1Rva2VuUmVzcG9uc2UiOILT5JMCMjoBKiItL2FwaS92MS97cGFyZW50PXVzZXJzLyp9L3BlcnNvbmFsQWNjZXNzVG9rZW5zEqEBChlEZWxldGVQZXJzb25hbEFjY2Vzc1Rva2VuEi4ubWVtb3MuYXBpLnYxLkRlbGV0ZVBlcnNvbmFsQWNjZXNzVG9rZW5SZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IjzaQQRuYW1lgtPkkwIvKi0vYXBpL3YxL3tuYW1lPXVzZXJzLyovcGVyc29uYWxBY2Nlc3NUb2tlbnMvKn0SiQEKDExpc3RTZXNzaW9ucxIhLm1lbW9zLmFwaS52MS5MaXN0U2Vzc2lvbnNSZXF1ZXN0GiIubWVtb3MuYXBpLnYxLkxpc3RTZXNzaW9uc1Jlc3BvbnNlIjLaQQZwYXJlbnSC0+STAiMSIS9hcGkvdjEve3BhcmVudD11c2Vycy8qfS9zZXNzaW9ucxJ9Cg1SZXZva2VTZXNzaW9uEiIubWVtb3MuYXBpLnYxLlJldm9rZVNlc3Npb25SZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IjDaQQRuYW1lgtPkkwIjKiEvYXBpL3YxL3tuYW1lPXVzZXJzLyovc2Vzc2lvbnMvKn0SlQEKEExpc3RVc2VyV2ViaG9va3MSJS5tZW1vcy5hcGkudjEuTGlzdFVzZXJXZWJob29rc1JlcXVlc3QaJi5tZW1vcy5hcGkudjEuTGlzdFVzZXJXZWJob29rc1Jlc3BvbnNlIjLaQQZwYXJlbnSC0+STAiMSIS9hcGkvdjEve3BhcmVudD11c2Vycy8qfS93ZWJob29rcxKbAQoRQ3JlYXRlVXNlcldlYmhvb2sSJi5tZW1vcy5hcGkudjEuQ3JlYXRlVXNlcldlYmhvb2tSZXF1ZXN0GhkubWVtb3MuYXBpLnYxLlVzZXJXZWJob29rIkPaQQ5wYXJlbnQsd2ViaG9va4LT5JMCLDoHd2ViaG9vayIhL2FwaS92MS97cGFyZW50PXVzZXJzLyp9L3dlYmhvb2tzEqgBChFVcGRhdGVVc2VyV2ViaG9vaxImLm1lbW9zLmFwaS52MS5VcGRhdGVVc2VyV2ViaG9va1JlcXVlc3QaGS5tZW1vcy5hcGkudjEuVXNlcldlYmhvb2siUNpBE3dlYmhvb2ssdXBkYXRlX21hc2uC0+STAjQ6B3dlYmhvb2syKS9hcGkvdjEve3dlYmhvb2submFtZT11c2Vycy8qL3dlYmhvb2tzLyp9EoUBChFEZWxldGVVc2VyV2ViaG9vaxImLm1lbW9zLmFwaS52MS5EZWxldGVVc2VyV2ViaG9va1JlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiMNpBBG5hbWWC0+STAiMqIS9hcGkvdjEve25hbWU9dXNlcnMvKi93ZWJob29rcy8qfRKpAQoVTGlzdFVzZXJOb3RpZmljYXRpb25zEioubWVtb3MuYXBpLnYxLkxpc3RVc2VyTm90aWZpY2F0aW9uc1JlcXVlc3QaKy5tZW1vcy5hcGkudjEuTGlzdFVzZXJOb3RpZmljYXRpb25zUmVzcG9uc2UiN9pBBnBhcmVudILT5JMCKBImL2FwaS92MS97cGFyZW50PXVzZXJzLyp9L25vdGlmaWNhdGlvbnMSywEKFlVwZGF0ZVVzZXJOb3RpZmljYXRpb24SKy5tZW1vcy5hcGkudjEuVXBkYXRlVXNlck5vdGlmaWNhdGlvblJlcXVlc3QaHi5tZW1vcy5hcGkudjEuVXNlck5vdGlmaWNhdGlvbiJk2kEYbm90aWZpY2F0aW9uLHVwZGF0ZV9tYXNrgtPkkwJDOgxub3RpZmljYXRpb24yMy9hcGkvdjEve25vdGlmaWNhdGlvbi5uYW1lPXVzZXJzLyovbm90aWZpY2F0aW9ucy8qfRKUAQoWRGVsZXRlVXNlck5vdGlmaWNhdGlvbhIrLm1lbW9zLmFwaS52MS5EZWxldGVVc2VyTm90aWZpY2F0aW9uUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSI12kEEbmFtZYLT5JMCKComL2FwaS92MS97bmFtZT11c2Vycy8qL25vdGlmaWNhdGlvbnMvKn1CqAEKEGNvbS5tZW1vcy5hcGkudjFCEFVzZXJTZXJ2aWNlUHJvdG9QAVowZ2l0aHViLmNvbS91c2VtZW1vcy9tZW1vcy9wcm90by9nZW4vYXBpL3YxO2FwaXYxogIDTUFYqgIMTWVtb3MuQXBpLlYxygIMTWVtb3NcQXBpXFYx4gIYTWVtb3NcQXBpXFYxXEdQQk1ldGFkYXRh6gIOTWVtb3M6OkFwaTo6VjFiBnByb3RvMw", [file_api_v1_common, file_google_api_annotations, file_google_api_client, file_google_api_field_behavior, file_google_api_resource, file_google_protobuf_empty, file_google_protobuf_field_mask, file_google_protobuf_timestamp]);
+  fileDesc("ChlhcGkvdjEvdXNlcl9zZXJ2aWNlLnByb3RvEgxtZW1vcy5hcGkudjEi4AMKBFVzZXISEQoEbmFtZRgBIAEoCUID4EEIEioKBHJvbGUYAiABKA4yFy5tZW1vcy5hcGkudjEuVXNlci5Sb2xlQgPgQQISFQoIdXNlcm5hbWUYAyABKAlCA+BBAhISCgVlbWFpbBgEIAEoCUID4EEBEhkKDGRpc3BsYXlfbmFtZRgFIAEoCUID4EEBEhcKCmF2YXRhcl91cmwYBiABKAlCA+BBARIYCgtkZXNjcmlwdGlvbhgHIAEoCUID4EEBEhUKCHBhc3N3b3JkGAggASgJQgPgQQQSJwoFc3RhdGUYCSABKA4yEy5tZW1vcy5hcGkudjEuU3RhdGVCA+BBAhI0CgtjcmVhdGVfdGltZRgKIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCA+BBAxI0Cgt1cGRhdGVfdGltZRgLIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCA+BBAyI7CgRSb2xlEhQKEFJPTEVfVU5TUEVDSUZJRUQQABIICgRIT1NUEAESCQoFQURNSU4QAhIICgRVU0VSEAM6N+pBNAoRbWVtb3MuYXBpLnYxL1VzZXISDHVzZXJzL3t1c2VyfRoEbmFtZSoFdXNlcnMyBHVzZXIicwoQTGlzdFVzZXJzUmVxdWVzdBIWCglwYWdlX3NpemUYASABKAVCA+BBARIXCgpwYWdlX3Rva2VuGAIgASgJQgPgQQESEwoGZmlsdGVyGAMgASgJQgPgQQESGQoMc2hvd19kZWxldGVkGAQgASgIQgPgQQEiYwoRTGlzdFVzZXJzUmVzcG9uc2USIQoFdXNlcnMYASADKAsyEi5tZW1vcy5hcGkudjEuVXNlchIXCg9uZXh0X3BhZ2VfdG9rZW4YAiABKAkSEgoKdG90YWxfc2l6ZRgDIAEoBSJtCg5HZXRVc2VyUmVxdWVzdBInCgRuYW1lGAEgASgJQhngQQL6QRMKEW1lbW9zLmFwaS52MS9Vc2VyEjIKCXJlYWRfbWFzaxgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5GaWVsZE1hc2tCA+BBASKIAQoRQ3JlYXRlVXNlclJlcXVlc3QSKAoEdXNlchgBIAEoCzISLm1lbW9zLmFwaS52MS5Vc2VyQgbgQQLgQQQSFAoHdXNlcl9pZBgCIAEoCUID4EEBEhoKDXZhbGlkYXRlX29ubHkYAyABKAhCA+BBARIXCgpyZXF1ZXN0X2lkGAQgASgJQgPgQQEijAEKEVVwZGF0ZVVzZXJSZXF1ZXN0EiUKBHVzZXIYASABKAsyEi5tZW1vcy5hcGkudjEuVXNlckID4EECEjQKC3VwZGF0ZV9tYXNrGAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLkZpZWxkTWFza0ID4EECEhoKDWFsbG93X21pc3NpbmcYAyABKAhCA+BBASJQChFEZWxldGVVc2VyUmVxdWVzdBInCgRuYW1lGAEgASgJQhngQQL6QRMKEW1lbW9zLmFwaS52MS9Vc2VyEhIKBWZvcmNlGAIgASgIQgPgQQEi2AMKCVVzZXJTdGF0cxIRCgRuYW1lGAEgASgJQgPgQQgSOwoXbWVtb19kaXNwbGF5X3RpbWVzdGFtcHMYAiADKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEj4KD21lbW9fdHlwZV9zdGF0cxgDIAEoCzIlLm1lbW9zLmFwaS52MS5Vc2VyU3RhdHMuTWVtb1R5cGVTdGF0cxI4Cgl0YWdfY291bnQYBCADKAsyJS5tZW1vcy5hcGkudjEuVXNlclN0YXRzLlRhZ0NvdW50RW50cnkSFAoMcGlubmVkX21lbW9zGAUgAygJEhgKEHRvdGFsX21lbW9fY291bnQYBiABKAUaLwoNVGFnQ291bnRFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAU6AjgBGl8KDU1lbW9UeXBlU3RhdHMSEgoKbGlua19jb3VudBgBIAEoBRISCgpjb2RlX2NvdW50GAIgASgFEhIKCnRvZG9fY291bnQYAyABKAUSEgoKdW5kb19jb3VudBgEIAEoBTo/6kE8ChZtZW1vcy5hcGkudjEvVXNlclN0YXRzEgx1c2Vycy97dXNlcn0qCXVzZXJTdGF0czIJdXNlclN0YXRzIj4KE0dldFVzZXJTdGF0c1JlcXVlc3QSJwoEbmFtZRgBIAEoCUIZ4EEC+kETChFtZW1vcy5hcGkudjEvVXNlciIZChdMaXN0QWxsVXNlclN0YXRzUmVxdWVzdCJCChhMaXN0QWxsVXNlclN0YXRzUmVzcG9uc2USJgoFc3RhdHMYASADKAsyFy5tZW1vcy5hcGkudjEuVXNlclN0YXRzIuADCgtVc2VyU2V0dGluZxIRCgRuYW1lGAEgASgJQgPgQQgSQwoPZ2VuZXJhbF9zZXR0aW5nGAIgASgLMigubWVtb3MuYXBpLnYxLlVzZXJTZXR0aW5nLkdlbmVyYWxTZXR0aW5nSAASRQoQd2ViaG9va3Nfc2V0dGluZxgFIAEoCzIpLm1lbW9zLmFwaS52MS5Vc2VyU2V0dGluZy5XZWJob29rc1NldHRpbmdIABpXCg5HZW5lcmFsU2V0dGluZxITCgZsb2NhbGUYASABKAlCA+BBARIcCg9tZW1vX3Zpc2liaWxpdHkYAyABKAlCA+BBARISCgV0aGVtZRgEIAEoCUID4EEBGj4KD1dlYmhvb2tzU2V0dGluZxIrCgh3ZWJob29rcxgBIAMoCzIZLm1lbW9zLmFwaS52MS5Vc2VyV2ViaG9vayI1CgNLZXkSEwoPS0VZX1VOU1BFQ0lGSUVEEAASCwoHR0VORVJBTBABEgwKCFdFQkhPT0tTEAQ6WepBVgoYbWVtb3MuYXBpLnYxL1VzZXJTZXR0aW5nEh91c2Vycy97dXNlcn0vc2V0dGluZ3Mve3NldHRpbmd9Kgx1c2VyU2V0dGluZ3MyC3VzZXJTZXR0aW5nQgcKBXZhbHVlIkcKFUdldFVzZXJTZXR0aW5nUmVxdWVzdBIuCgRuYW1lGAEgASgJQiDgQQL6QRoKGG1lbW9zLmFwaS52MS9Vc2VyU2V0dGluZyKBAQoYVXBkYXRlVXNlclNldHRpbmdSZXF1ZXN0Ei8KB3NldHRpbmcYASABKAsyGS5tZW1vcy5hcGkudjEuVXNlclNldHRpbmdCA+BBAhI0Cgt1cGRhdGVfbWFzaxgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5GaWVsZE1hc2tCA+BBAiJ1ChdMaXN0VXNlclNldHRpbmdzUmVxdWVzdBIpCgZwYXJlbnQYASABKAlCGeBBAvpBEwoRbWVtb3MuYXBpLnYxL1VzZXISFgoJcGFnZV9zaXplGAIgASgFQgPgQQESFwoKcGFnZV90b2tlbhgDIAEoCUID4EEBInQKGExpc3RVc2VyU2V0dGluZ3NSZXNwb25zZRIrCghzZXR0aW5ncxgBIAMoCzIZLm1lbW9zLmFwaS52MS5Vc2VyU2V0dGluZxIXCg9uZXh0X3BhZ2VfdG9rZW4YAiABKAkSEgoKdG90YWxfc2l6ZRgDIAEoBSLyAgoTUGVyc29uYWxBY2Nlc3NUb2tlbhIRCgRuYW1lGAEgASgJQgPgQQgSGAoLZGVzY3JpcHRpb24YAiABKAlCA+BBARIzCgpjcmVhdGVkX2F0GAMgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEID4EEDEjMKCmV4cGlyZXNfYXQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQgPgQQESNQoMbGFzdF91c2VkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEID4EEDOowB6kGIAQogbWVtb3MuYXBpLnYxL1BlcnNvbmFsQWNjZXNzVG9rZW4SOXVzZXJzL3t1c2VyfS9wZXJzb25hbEFjY2Vzc1Rva2Vucy97cGVyc29uYWxfYWNjZXNzX3Rva2VufSoUcGVyc29uYWxBY2Nlc3NUb2tlbnMyE3BlcnNvbmFsQWNjZXNzVG9rZW4ifQofTGlzdFBlcnNvbmFsQWNjZXNzVG9rZW5zUmVxdWVzdBIpCgZwYXJlbnQYASABKAlCGeBBAvpBEwoRbWVtb3MuYXBpLnYxL1VzZXISFgoJcGFnZV9zaXplGAIgASgFQgPgQQESFwoKcGFnZV90b2tlbhgDIAEoCUID4EEBIpIBCiBMaXN0UGVyc29uYWxBY2Nlc3NUb2tlbnNSZXNwb25zZRJBChZwZXJzb25hbF9hY2Nlc3NfdG9rZW5zGAEgAygLMiEubWVtb3MuYXBpLnYxLlBlcnNvbmFsQWNjZXNzVG9rZW4SFwoPbmV4dF9wYWdlX3Rva2VuGAIgASgJEhIKCnRvdGFsX3NpemUYAyABKAUihQEKIENyZWF0ZVBlcnNvbmFsQWNjZXNzVG9rZW5SZXF1ZXN0EikKBnBhcmVudBgBIAEoCUIZ4EEC+kETChFtZW1vcy5hcGkudjEvVXNlchIYCgtkZXNjcmlwdGlvbhgCIAEoCUID4EEBEhwKD2V4cGlyZXNfaW5fZGF5cxgDIAEoBUID4EEBInQKIUNyZWF0ZVBlcnNvbmFsQWNjZXNzVG9rZW5SZXNwb25zZRJAChVwZXJzb25hbF9hY2Nlc3NfdG9rZW4YASABKAsyIS5tZW1vcy5hcGkudjEuUGVyc29uYWxBY2Nlc3NUb2tlbhINCgV0b2tlbhgCIAEoCSJaCiBEZWxldGVQZXJzb25hbEFjY2Vzc1Rva2VuUmVxdWVzdBI2CgRuYW1lGAEgASgJQijgQQL6QSIKIG1lbW9zLmFwaS52MS9QZXJzb25hbEFjY2Vzc1Rva2VuIqoBCgtVc2VyV2ViaG9vaxIMCgRuYW1lGAEgASgJEgsKA3VybBgCIAEoCRIUCgxkaXNwbGF5X25hbWUYAyABKAkSNAoLY3JlYXRlX3RpbWUYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQgPgQQMSNAoLdXBkYXRlX3RpbWUYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQgPgQQMiLgoXTGlzdFVzZXJXZWJob29rc1JlcXVlc3QSEwoGcGFyZW50GAEgASgJQgPgQQIiRwoYTGlzdFVzZXJXZWJob29rc1Jlc3BvbnNlEisKCHdlYmhvb2tzGAEgAygLMhkubWVtb3MuYXBpLnYxLlVzZXJXZWJob29rImAKGENyZWF0ZVVzZXJXZWJob29rUmVxdWVzdBITCgZwYXJlbnQYASABKAlCA+BBAhIvCgd3ZWJob29rGAIgASgLMhkubWVtb3MuYXBpLnYxLlVzZXJXZWJob29rQgPgQQIifAoYVXBkYXRlVXNlcldlYmhvb2tSZXF1ZXN0Ei8KB3dlYmhvb2sYASABKAsyGS5tZW1vcy5hcGkudjEuVXNlcldlYmhvb2tCA+BBAhIvCgt1cGRhdGVfbWFzaxgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5GaWVsZE1hc2siLQoYRGVsZXRlVXNlcldlYmhvb2tSZXF1ZXN0EhEKBG5hbWUYASABKAlCA+BBAiKKBAoQVXNlck5vdGlmaWNhdGlvbhIUCgRuYW1lGAEgASgJQgbgQQPgQQgSKQoGc2VuZGVyGAIgASgJQhngQQP6QRMKEW1lbW9zLmFwaS52MS9Vc2VyEjoKBnN0YXR1cxgDIAEoDjIlLm1lbW9zLmFwaS52MS5Vc2VyTm90aWZpY2F0aW9uLlN0YXR1c0ID4EEBEjQKC2NyZWF0ZV90aW1lGAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEID4EEDEjYKBHR5cGUYBSABKA4yIy5tZW1vcy5hcGkudjEuVXNlck5vdGlmaWNhdGlvbi5UeXBlQgPgQQMSHQoLYWN0aXZpdHlfaWQYBiABKAVCA+BBAUgAiAEBIjoKBlN0YXR1cxIWChJTVEFUVVNfVU5TUEVDSUZJRUQQABIKCgZVTlJFQUQQARIMCghBUkNISVZFRBACIi4KBFR5cGUSFAoQVFlQRV9VTlNQRUNJRklFRBAAEhAKDE1FTU9fQ09NTUVOVBABOnDqQW0KHW1lbW9zLmFwaS52MS9Vc2VyTm90aWZpY2F0aW9uEil1c2Vycy97dXNlcn0vbm90aWZpY2F0aW9ucy97bm90aWZpY2F0aW9ufRoEbmFtZSoNbm90aWZpY2F0aW9uczIMbm90aWZpY2F0aW9uQg4KDF9hY3Rpdml0eV9pZCKPAQocTGlzdFVzZXJOb3RpZmljYXRpb25zUmVxdWVzdBIpCgZwYXJlbnQYASABKAlCGeBBAvpBEwoRbWVtb3MuYXBpLnYxL1VzZXISFgoJcGFnZV9zaXplGAIgASgFQgPgQQESFwoKcGFnZV90b2tlbhgDIAEoCUID4EEBEhMKBmZpbHRlchgEIAEoCUID4EEBIm8KHUxpc3RVc2VyTm90aWZpY2F0aW9uc1Jlc3BvbnNlEjUKDW5vdGlmaWNhdGlvbnMYASADKAsyHi5tZW1vcy5hcGkudjEuVXNlck5vdGlmaWNhdGlvbhIXCg9uZXh0X3BhZ2VfdG9rZW4YAiABKAkikAEKHVVwZGF0ZVVzZXJOb3RpZmljYXRpb25SZXF1ZXN0EjkKDG5vdGlmaWNhdGlvbhgBIAEoCzIeLm1lbW9zLmFwaS52MS5Vc2VyTm90aWZpY2F0aW9uQgPgQQISNAoLdXBkYXRlX21hc2sYAiABKAsyGi5nb29nbGUucHJvdG9idWYuRmllbGRNYXNrQgPgQQIiVAodRGVsZXRlVXNlck5vdGlmaWNhdGlvblJlcXVlc3QSMwoEbmFtZRgBIAEoCUIl4EEC+kEfCh1tZW1vcy5hcGkudjEvVXNlck5vdGlmaWNhdGlvbjKDFwoLVXNlclNlcnZpY2USYwoJTGlzdFVzZXJzEh4ubWVtb3MuYXBpLnYxLkxpc3RVc2Vyc1JlcXVlc3QaHy5tZW1vcy5hcGkudjEuTGlzdFVzZXJzUmVzcG9uc2UiFYLT5JMCDxINL2FwaS92MS91c2VycxJiCgdHZXRVc2VyEhwubWVtb3MuYXBpLnYxLkdldFVzZXJSZXF1ZXN0GhIubWVtb3MuYXBpLnYxLlVzZXIiJdpBBG5hbWWC0+STAhgSFi9hcGkvdjEve25hbWU9dXNlcnMvKn0SZQoKQ3JlYXRlVXNlchIfLm1lbW9zLmFwaS52MS5DcmVhdGVVc2VyUmVxdWVzdBoSLm1lbW9zLmFwaS52MS5Vc2VyIiLaQQR1c2VygtPkkwIVOgR1c2VyIg0vYXBpL3YxL3VzZXJzEn8KClVwZGF0ZVVzZXISHy5tZW1vcy5hcGkudjEuVXBkYXRlVXNlclJlcXVlc3QaEi5tZW1vcy5hcGkudjEuVXNlciI82kEQdXNlcix1cGRhdGVfbWFza4LT5JMCIzoEdXNlcjIbL2FwaS92MS97dXNlci5uYW1lPXVzZXJzLyp9EmwKCkRlbGV0ZVVzZXISHy5tZW1vcy5hcGkudjEuRGVsZXRlVXNlclJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiJdpBBG5hbWWC0+STAhgqFi9hcGkvdjEve25hbWU9dXNlcnMvKn0SfgoQTGlzdEFsbFVzZXJTdGF0cxIlLm1lbW9zLmFwaS52MS5MaXN0QWxsVXNlclN0YXRzUmVxdWVzdBomLm1lbW9zLmFwaS52MS5MaXN0QWxsVXNlclN0YXRzUmVzcG9uc2UiG4LT5JMCFRITL2FwaS92MS91c2VyczpzdGF0cxJ6CgxHZXRVc2VyU3RhdHMSIS5tZW1vcy5hcGkudjEuR2V0VXNlclN0YXRzUmVxdWVzdBoXLm1lbW9zLmFwaS52MS5Vc2VyU3RhdHMiLtpBBG5hbWWC0+STAiESHy9hcGkvdjEve25hbWU9dXNlcnMvKn06Z2V0U3RhdHMSggEKDkdldFVzZXJTZXR0aW5nEiMubWVtb3MuYXBpLnYxLkdldFVzZXJTZXR0aW5nUmVxdWVzdBoZLm1lbW9zLmFwaS52MS5Vc2VyU2V0dGluZyIw2kEEbmFtZYLT5JMCIxIhL2FwaS92MS97bmFtZT11c2Vycy8qL3NldHRpbmdzLyp9EqgBChFVcGRhdGVVc2VyU2V0dGluZxImLm1lbW9zLmFwaS52MS5VcGRhdGVVc2VyU2V0dGluZ1JlcXVlc3QaGS5tZW1vcy5hcGkudjEuVXNlclNldHRpbmciUNpBE3NldHRpbmcsdXBkYXRlX21hc2uC0+STAjQ6B3NldHRpbmcyKS9hcGkvdjEve3NldHRpbmcubmFtZT11c2Vycy8qL3NldHRpbmdzLyp9EpUBChBMaXN0VXNlclNldHRpbmdzEiUubWVtb3MuYXBpLnYxLkxpc3RVc2VyU2V0dGluZ3NSZXF1ZXN0GiYubWVtb3MuYXBpLnYxLkxpc3RVc2VyU2V0dGluZ3NSZXNwb25zZSIy2kEGcGFyZW50gtPkkwIjEiEvYXBpL3YxL3twYXJlbnQ9dXNlcnMvKn0vc2V0dGluZ3MSuQEKGExpc3RQZXJzb25hbEFjY2Vzc1Rva2VucxItLm1lbW9zLmFwaS52MS5MaXN0UGVyc29uYWxBY2Nlc3NUb2tlbnNSZXF1ZXN0Gi4ubWVtb3MuYXBpLnYxLkxpc3RQZXJzb25hbEFjY2Vzc1Rva2Vuc1Jlc3BvbnNlIj7aQQZwYXJlbnSC0+STAi8SLS9hcGkvdjEve3BhcmVudD11c2Vycy8qfS9wZXJzb25hbEFjY2Vzc1Rva2VucxK2AQoZQ3JlYXRlUGVyc29uYWxBY2Nlc3NUb2tlbhIuLm1lbW9zLmFwaS52MS5DcmVhdGVQZXJzb25hbEFjY2Vzc1Rva2VuUmVxdWVzdBovLm1lbW9zLmFwaS52MS5DcmVhdGVQZXJzb25hbEFjY2Vzc1Rva2VuUmVzcG9uc2UiOILT5JMCMjoBKiItL2FwaS92MS97cGFyZW50PXVzZXJzLyp9L3BlcnNvbmFsQWNjZXNzVG9rZW5zEqEBChlEZWxldGVQZXJzb25hbEFjY2Vzc1Rva2VuEi4ubWVtb3MuYXBpLnYxLkRlbGV0ZVBlcnNvbmFsQWNjZXNzVG9rZW5SZXF1ZXN0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IjzaQQRuYW1lgtPkkwIvKi0vYXBpL3YxL3tuYW1lPXVzZXJzLyovcGVyc29uYWxBY2Nlc3NUb2tlbnMvKn0SlQEKEExpc3RVc2VyV2ViaG9va3MSJS5tZW1vcy5hcGkudjEuTGlzdFVzZXJXZWJob29rc1JlcXVlc3QaJi5tZW1vcy5hcGkudjEuTGlzdFVzZXJXZWJob29rc1Jlc3BvbnNlIjLaQQZwYXJlbnSC0+STAiMSIS9hcGkvdjEve3BhcmVudD11c2Vycy8qfS93ZWJob29rcxKbAQoRQ3JlYXRlVXNlcldlYmhvb2sSJi5tZW1vcy5hcGkudjEuQ3JlYXRlVXNlcldlYmhvb2tSZXF1ZXN0GhkubWVtb3MuYXBpLnYxLlVzZXJXZWJob29rIkPaQQ5wYXJlbnQsd2ViaG9va4LT5JMCLDoHd2ViaG9vayIhL2FwaS92MS97cGFyZW50PXVzZXJzLyp9L3dlYmhvb2tzEqgBChFVcGRhdGVVc2VyV2ViaG9vaxImLm1lbW9zLmFwaS52MS5VcGRhdGVVc2VyV2ViaG9va1JlcXVlc3QaGS5tZW1vcy5hcGkudjEuVXNlcldlYmhvb2siUNpBE3dlYmhvb2ssdXBkYXRlX21hc2uC0+STAjQ6B3dlYmhvb2syKS9hcGkvdjEve3dlYmhvb2submFtZT11c2Vycy8qL3dlYmhvb2tzLyp9EoUBChFEZWxldGVVc2VyV2ViaG9vaxImLm1lbW9zLmFwaS52MS5EZWxldGVVc2VyV2ViaG9va1JlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiMNpBBG5hbWWC0+STAiMqIS9hcGkvdjEve25hbWU9dXNlcnMvKi93ZWJob29rcy8qfRKpAQoVTGlzdFVzZXJOb3RpZmljYXRpb25zEioubWVtb3MuYXBpLnYxLkxpc3RVc2VyTm90aWZpY2F0aW9uc1JlcXVlc3QaKy5tZW1vcy5hcGkudjEuTGlzdFVzZXJOb3RpZmljYXRpb25zUmVzcG9uc2UiN9pBBnBhcmVudILT5JMCKBImL2FwaS92MS97cGFyZW50PXVzZXJzLyp9L25vdGlmaWNhdGlvbnMSywEKFlVwZGF0ZVVzZXJOb3RpZmljYXRpb24SKy5tZW1vcy5hcGkudjEuVXBkYXRlVXNlck5vdGlmaWNhdGlvblJlcXVlc3QaHi5tZW1vcy5hcGkudjEuVXNlck5vdGlmaWNhdGlvbiJk2kEYbm90aWZpY2F0aW9uLHVwZGF0ZV9tYXNrgtPkkwJDOgxub3RpZmljYXRpb24yMy9hcGkvdjEve25vdGlmaWNhdGlvbi5uYW1lPXVzZXJzLyovbm90aWZpY2F0aW9ucy8qfRKUAQoWRGVsZXRlVXNlck5vdGlmaWNhdGlvbhIrLm1lbW9zLmFwaS52MS5EZWxldGVVc2VyTm90aWZpY2F0aW9uUmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSI12kEEbmFtZYLT5JMCKComL2FwaS92MS97bmFtZT11c2Vycy8qL25vdGlmaWNhdGlvbnMvKn1CqAEKEGNvbS5tZW1vcy5hcGkudjFCEFVzZXJTZXJ2aWNlUHJvdG9QAVowZ2l0aHViLmNvbS91c2VtZW1vcy9tZW1vcy9wcm90by9nZW4vYXBpL3YxO2FwaXYxogIDTUFYqgIMTWVtb3MuQXBpLlYxygIMTWVtb3NcQXBpXFYx4gIYTWVtb3NcQXBpXFYxXEdQQk1ldGFkYXRh6gIOTWVtb3M6OkFwaTo6VjFiBnByb3RvMw", [file_api_v1_common, file_google_api_annotations, file_google_api_client, file_google_api_field_behavior, file_google_api_resource, file_google_protobuf_empty, file_google_protobuf_field_mask, file_google_protobuf_timestamp]);
 
 /**
  * @generated from message memos.api.v1.User
@@ -537,18 +537,6 @@ export type UserSetting = Message<"memos.api.v1.UserSetting"> & {
     case: "generalSetting";
   } | {
     /**
-     * @generated from field: memos.api.v1.UserSetting.SessionsSetting sessions_setting = 3;
-     */
-    value: UserSetting_SessionsSetting;
-    case: "sessionsSetting";
-  } | {
-    /**
-     * @generated from field: memos.api.v1.UserSetting.AccessTokensSetting access_tokens_setting = 4;
-     */
-    value: UserSetting_AccessTokensSetting;
-    case: "accessTokensSetting";
-  } | {
-    /**
      * @generated from field: memos.api.v1.UserSetting.WebhooksSetting webhooks_setting = 5;
      */
     value: UserSetting_WebhooksSetting;
@@ -601,48 +589,6 @@ export const UserSetting_GeneralSettingSchema: GenMessage<UserSetting_GeneralSet
   messageDesc(file_api_v1_user_service, 11, 0);
 
 /**
- * User authentication sessions configuration.
- *
- * @generated from message memos.api.v1.UserSetting.SessionsSetting
- */
-export type UserSetting_SessionsSetting = Message<"memos.api.v1.UserSetting.SessionsSetting"> & {
-  /**
-   * List of active login sessions.
-   *
-   * @generated from field: repeated memos.api.v1.Session sessions = 1;
-   */
-  sessions: Session[];
-};
-
-/**
- * Describes the message memos.api.v1.UserSetting.SessionsSetting.
- * Use `create(UserSetting_SessionsSettingSchema)` to create a new message.
- */
-export const UserSetting_SessionsSettingSchema: GenMessage<UserSetting_SessionsSetting> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 11, 1);
-
-/**
- * Personal access tokens configuration.
- *
- * @generated from message memos.api.v1.UserSetting.AccessTokensSetting
- */
-export type UserSetting_AccessTokensSetting = Message<"memos.api.v1.UserSetting.AccessTokensSetting"> & {
-  /**
-   * List of personal access tokens (PATs).
-   *
-   * @generated from field: repeated memos.api.v1.PersonalAccessToken personal_access_tokens = 1;
-   */
-  personalAccessTokens: PersonalAccessToken[];
-};
-
-/**
- * Describes the message memos.api.v1.UserSetting.AccessTokensSetting.
- * Use `create(UserSetting_AccessTokensSettingSchema)` to create a new message.
- */
-export const UserSetting_AccessTokensSettingSchema: GenMessage<UserSetting_AccessTokensSetting> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 11, 2);
-
-/**
  * User webhooks configuration.
  *
  * @generated from message memos.api.v1.UserSetting.WebhooksSetting
@@ -661,7 +607,7 @@ export type UserSetting_WebhooksSetting = Message<"memos.api.v1.UserSetting.Webh
  * Use `create(UserSetting_WebhooksSettingSchema)` to create a new message.
  */
 export const UserSetting_WebhooksSettingSchema: GenMessage<UserSetting_WebhooksSetting> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 11, 3);
+  messageDesc(file_api_v1_user_service, 11, 1);
 
 /**
  * Enumeration of user setting keys.
@@ -680,20 +626,6 @@ export enum UserSetting_Key {
    * @generated from enum value: GENERAL = 1;
    */
   GENERAL = 1,
-
-  /**
-   * SESSIONS is the key for user login sessions (refresh tokens).
-   *
-   * @generated from enum value: SESSIONS = 2;
-   */
-  SESSIONS = 2,
-
-  /**
-   * ACCESS_TOKENS is the key for Personal Access Tokens (PATs).
-   *
-   * @generated from enum value: ACCESS_TOKENS = 3;
-   */
-  ACCESS_TOKENS = 3,
 
   /**
    * WEBHOOKS is the key for user webhooks.
@@ -1031,164 +963,6 @@ export const DeletePersonalAccessTokenRequestSchema: GenMessage<DeletePersonalAc
   messageDesc(file_api_v1_user_service, 21);
 
 /**
- * Session represents a user's login session on a specific device/browser.
- * Sessions are backed by refresh tokens with sliding expiration.
- *
- * @generated from message memos.api.v1.Session
- */
-export type Session = Message<"memos.api.v1.Session"> & {
-  /**
-   * The resource name of the session.
-   * Format: users/{user}/sessions/{session}
-   *
-   * @generated from field: string name = 1;
-   */
-  name: string;
-
-  /**
-   * The session ID.
-   *
-   * @generated from field: string session_id = 2;
-   */
-  sessionId: string;
-
-  /**
-   * The timestamp when the session was created.
-   *
-   * @generated from field: google.protobuf.Timestamp create_time = 3;
-   */
-  createTime?: Timestamp;
-
-  /**
-   * The timestamp when the session was last accessed.
-   * Used for sliding expiration calculation (last_accessed_time + 2 weeks).
-   *
-   * @generated from field: google.protobuf.Timestamp last_accessed_time = 4;
-   */
-  lastAccessedTime?: Timestamp;
-
-  /**
-   * Client information associated with this session.
-   *
-   * @generated from field: memos.api.v1.Session.ClientInfo client_info = 5;
-   */
-  clientInfo?: Session_ClientInfo;
-};
-
-/**
- * Describes the message memos.api.v1.Session.
- * Use `create(SessionSchema)` to create a new message.
- */
-export const SessionSchema: GenMessage<Session> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 22);
-
-/**
- * @generated from message memos.api.v1.Session.ClientInfo
- */
-export type Session_ClientInfo = Message<"memos.api.v1.Session.ClientInfo"> & {
-  /**
-   * User agent string of the client.
-   *
-   * @generated from field: string user_agent = 1;
-   */
-  userAgent: string;
-
-  /**
-   * IP address of the client.
-   *
-   * @generated from field: string ip_address = 2;
-   */
-  ipAddress: string;
-
-  /**
-   * Optional. Device type (e.g., "mobile", "desktop", "tablet").
-   *
-   * @generated from field: string device_type = 3;
-   */
-  deviceType: string;
-
-  /**
-   * Optional. Operating system (e.g., "iOS 17.0", "Windows 11").
-   *
-   * @generated from field: string os = 4;
-   */
-  os: string;
-
-  /**
-   * Optional. Browser name and version (e.g., "Chrome 119.0").
-   *
-   * @generated from field: string browser = 5;
-   */
-  browser: string;
-};
-
-/**
- * Describes the message memos.api.v1.Session.ClientInfo.
- * Use `create(Session_ClientInfoSchema)` to create a new message.
- */
-export const Session_ClientInfoSchema: GenMessage<Session_ClientInfo> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 22, 0);
-
-/**
- * @generated from message memos.api.v1.ListSessionsRequest
- */
-export type ListSessionsRequest = Message<"memos.api.v1.ListSessionsRequest"> & {
-  /**
-   * Required. The resource name of the parent.
-   * Format: users/{user}
-   *
-   * @generated from field: string parent = 1;
-   */
-  parent: string;
-};
-
-/**
- * Describes the message memos.api.v1.ListSessionsRequest.
- * Use `create(ListSessionsRequestSchema)` to create a new message.
- */
-export const ListSessionsRequestSchema: GenMessage<ListSessionsRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 23);
-
-/**
- * @generated from message memos.api.v1.ListSessionsResponse
- */
-export type ListSessionsResponse = Message<"memos.api.v1.ListSessionsResponse"> & {
-  /**
-   * The list of sessions.
-   *
-   * @generated from field: repeated memos.api.v1.Session sessions = 1;
-   */
-  sessions: Session[];
-};
-
-/**
- * Describes the message memos.api.v1.ListSessionsResponse.
- * Use `create(ListSessionsResponseSchema)` to create a new message.
- */
-export const ListSessionsResponseSchema: GenMessage<ListSessionsResponse> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 24);
-
-/**
- * @generated from message memos.api.v1.RevokeSessionRequest
- */
-export type RevokeSessionRequest = Message<"memos.api.v1.RevokeSessionRequest"> & {
-  /**
-   * The name of the session to revoke.
-   * Format: users/{user}/sessions/{session}
-   *
-   * @generated from field: string name = 1;
-   */
-  name: string;
-};
-
-/**
- * Describes the message memos.api.v1.RevokeSessionRequest.
- * Use `create(RevokeSessionRequestSchema)` to create a new message.
- */
-export const RevokeSessionRequestSchema: GenMessage<RevokeSessionRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 25);
-
-/**
  * UserWebhook represents a webhook owned by a user.
  *
  * @generated from message memos.api.v1.UserWebhook
@@ -1236,7 +1010,7 @@ export type UserWebhook = Message<"memos.api.v1.UserWebhook"> & {
  * Use `create(UserWebhookSchema)` to create a new message.
  */
 export const UserWebhookSchema: GenMessage<UserWebhook> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 26);
+  messageDesc(file_api_v1_user_service, 22);
 
 /**
  * @generated from message memos.api.v1.ListUserWebhooksRequest
@@ -1256,7 +1030,7 @@ export type ListUserWebhooksRequest = Message<"memos.api.v1.ListUserWebhooksRequ
  * Use `create(ListUserWebhooksRequestSchema)` to create a new message.
  */
 export const ListUserWebhooksRequestSchema: GenMessage<ListUserWebhooksRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 27);
+  messageDesc(file_api_v1_user_service, 23);
 
 /**
  * @generated from message memos.api.v1.ListUserWebhooksResponse
@@ -1275,7 +1049,7 @@ export type ListUserWebhooksResponse = Message<"memos.api.v1.ListUserWebhooksRes
  * Use `create(ListUserWebhooksResponseSchema)` to create a new message.
  */
 export const ListUserWebhooksResponseSchema: GenMessage<ListUserWebhooksResponse> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 28);
+  messageDesc(file_api_v1_user_service, 24);
 
 /**
  * @generated from message memos.api.v1.CreateUserWebhookRequest
@@ -1302,7 +1076,7 @@ export type CreateUserWebhookRequest = Message<"memos.api.v1.CreateUserWebhookRe
  * Use `create(CreateUserWebhookRequestSchema)` to create a new message.
  */
 export const CreateUserWebhookRequestSchema: GenMessage<CreateUserWebhookRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 29);
+  messageDesc(file_api_v1_user_service, 25);
 
 /**
  * @generated from message memos.api.v1.UpdateUserWebhookRequest
@@ -1328,7 +1102,7 @@ export type UpdateUserWebhookRequest = Message<"memos.api.v1.UpdateUserWebhookRe
  * Use `create(UpdateUserWebhookRequestSchema)` to create a new message.
  */
 export const UpdateUserWebhookRequestSchema: GenMessage<UpdateUserWebhookRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 30);
+  messageDesc(file_api_v1_user_service, 26);
 
 /**
  * @generated from message memos.api.v1.DeleteUserWebhookRequest
@@ -1348,7 +1122,7 @@ export type DeleteUserWebhookRequest = Message<"memos.api.v1.DeleteUserWebhookRe
  * Use `create(DeleteUserWebhookRequestSchema)` to create a new message.
  */
 export const DeleteUserWebhookRequestSchema: GenMessage<DeleteUserWebhookRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 31);
+  messageDesc(file_api_v1_user_service, 27);
 
 /**
  * @generated from message memos.api.v1.UserNotification
@@ -1404,7 +1178,7 @@ export type UserNotification = Message<"memos.api.v1.UserNotification"> & {
  * Use `create(UserNotificationSchema)` to create a new message.
  */
 export const UserNotificationSchema: GenMessage<UserNotification> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 32);
+  messageDesc(file_api_v1_user_service, 28);
 
 /**
  * @generated from enum memos.api.v1.UserNotification.Status
@@ -1430,7 +1204,7 @@ export enum UserNotification_Status {
  * Describes the enum memos.api.v1.UserNotification.Status.
  */
 export const UserNotification_StatusSchema: GenEnum<UserNotification_Status> = /*@__PURE__*/
-  enumDesc(file_api_v1_user_service, 32, 0);
+  enumDesc(file_api_v1_user_service, 28, 0);
 
 /**
  * @generated from enum memos.api.v1.UserNotification.Type
@@ -1451,7 +1225,7 @@ export enum UserNotification_Type {
  * Describes the enum memos.api.v1.UserNotification.Type.
  */
 export const UserNotification_TypeSchema: GenEnum<UserNotification_Type> = /*@__PURE__*/
-  enumDesc(file_api_v1_user_service, 32, 1);
+  enumDesc(file_api_v1_user_service, 28, 1);
 
 /**
  * @generated from message memos.api.v1.ListUserNotificationsRequest
@@ -1486,7 +1260,7 @@ export type ListUserNotificationsRequest = Message<"memos.api.v1.ListUserNotific
  * Use `create(ListUserNotificationsRequestSchema)` to create a new message.
  */
 export const ListUserNotificationsRequestSchema: GenMessage<ListUserNotificationsRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 33);
+  messageDesc(file_api_v1_user_service, 29);
 
 /**
  * @generated from message memos.api.v1.ListUserNotificationsResponse
@@ -1508,7 +1282,7 @@ export type ListUserNotificationsResponse = Message<"memos.api.v1.ListUserNotifi
  * Use `create(ListUserNotificationsResponseSchema)` to create a new message.
  */
 export const ListUserNotificationsResponseSchema: GenMessage<ListUserNotificationsResponse> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 34);
+  messageDesc(file_api_v1_user_service, 30);
 
 /**
  * @generated from message memos.api.v1.UpdateUserNotificationRequest
@@ -1530,7 +1304,7 @@ export type UpdateUserNotificationRequest = Message<"memos.api.v1.UpdateUserNoti
  * Use `create(UpdateUserNotificationRequestSchema)` to create a new message.
  */
 export const UpdateUserNotificationRequestSchema: GenMessage<UpdateUserNotificationRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 35);
+  messageDesc(file_api_v1_user_service, 31);
 
 /**
  * @generated from message memos.api.v1.DeleteUserNotificationRequest
@@ -1549,7 +1323,7 @@ export type DeleteUserNotificationRequest = Message<"memos.api.v1.DeleteUserNoti
  * Use `create(DeleteUserNotificationRequestSchema)` to create a new message.
  */
 export const DeleteUserNotificationRequestSchema: GenMessage<DeleteUserNotificationRequest> = /*@__PURE__*/
-  messageDesc(file_api_v1_user_service, 36);
+  messageDesc(file_api_v1_user_service, 32);
 
 /**
  * @generated from service memos.api.v1.UserService
@@ -1688,29 +1462,6 @@ export const UserService: GenService<{
   deletePersonalAccessToken: {
     methodKind: "unary";
     input: typeof DeletePersonalAccessTokenRequestSchema;
-    output: typeof EmptySchema;
-  },
-  /**
-   * ListSessions returns a list of active login sessions for a user.
-   * Each session represents a browser/device where the user is logged in.
-   * Sessions are backed by refresh tokens with sliding expiration.
-   *
-   * @generated from rpc memos.api.v1.UserService.ListSessions
-   */
-  listSessions: {
-    methodKind: "unary";
-    input: typeof ListSessionsRequestSchema;
-    output: typeof ListSessionsResponseSchema;
-  },
-  /**
-   * RevokeSession revokes a specific login session.
-   * This invalidates the refresh token, forcing re-authentication on that device.
-   *
-   * @generated from rpc memos.api.v1.UserService.RevokeSession
-   */
-  revokeSession: {
-    methodKind: "unary";
-    input: typeof RevokeSessionRequestSchema;
     output: typeof EmptySchema;
   },
   /**

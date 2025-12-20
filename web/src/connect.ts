@@ -1,6 +1,9 @@
-import { createClient, Interceptor } from "@connectrpc/connect";
+import { timestampDate } from "@bufbuild/protobuf/wkt";
+import { Code, ConnectError, createClient, type Interceptor } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { getAccessToken, setAccessToken } from "./auth-state";
+import { ROUTES } from "./router/routes";
+import { instanceStore } from "./store";
 import { ActivityService } from "./types/proto/api/v1/activity_service_pb";
 import { AttachmentService } from "./types/proto/api/v1/attachment_service_pb";
 import { AuthService } from "./types/proto/api/v1/auth_service_pb";
@@ -10,12 +13,128 @@ import { MemoService } from "./types/proto/api/v1/memo_service_pb";
 import { ShortcutService } from "./types/proto/api/v1/shortcut_service_pb";
 import { UserService } from "./types/proto/api/v1/user_service_pb";
 
-let isRefreshing = false;
-let refreshPromise: Promise<void> | null = null;
+// ============================================================================
+// Constants
+// ============================================================================
 
-// Auth interceptor that attaches access token and handles 401 errors by refreshing
+const RETRY_HEADER = "X-Retry";
+const RETRY_HEADER_VALUE = "true";
+
+const ROUTE_CONFIG = {
+  // Routes accessible without authentication (uses prefix matching)
+  public: [
+    ROUTES.AUTH, // Authentication pages
+    ROUTES.EXPLORE, // Explore page
+    "/u/", // User profile pages (dynamic)
+    "/memos/", // Individual memo detail pages (dynamic)
+  ],
+
+  // Routes that require authentication (uses exact matching)
+  private: [ROUTES.ROOT, ROUTES.ATTACHMENTS, ROUTES.INBOX, ROUTES.ARCHIVED, ROUTES.SETTING],
+} as const;
+
+// ============================================================================
+// Token Refresh State Management
+// ============================================================================
+
+class TokenRefreshManager {
+  private isRefreshing = false;
+  private refreshPromise: Promise<void> | null = null;
+
+  async refresh(refreshFn: () => Promise<void>): Promise<void> {
+    if (this.isRefreshing && this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
+    this.isRefreshing = true;
+    this.refreshPromise = refreshFn().finally(() => {
+      this.isRefreshing = false;
+      this.refreshPromise = null;
+    });
+
+    return this.refreshPromise;
+  }
+
+  isCurrentlyRefreshing(): boolean {
+    return this.isRefreshing;
+  }
+}
+
+const tokenRefreshManager = new TokenRefreshManager();
+
+// ============================================================================
+// Route Access Control
+// ============================================================================
+
+function isPublicRoute(path: string): boolean {
+  return ROUTE_CONFIG.public.some((route) => path.startsWith(route));
+}
+
+function isPrivateRoute(path: string): boolean {
+  return (ROUTE_CONFIG.private as readonly string[]).includes(path);
+}
+
+function getAuthFailureRedirect(currentPath: string): string | null {
+  if (isPublicRoute(currentPath)) {
+    return null;
+  }
+
+  if (instanceStore.state.memoRelatedSetting.disallowPublicVisibility) {
+    return ROUTES.AUTH;
+  }
+
+  if (isPrivateRoute(currentPath)) {
+    return ROUTES.EXPLORE;
+  }
+
+  return null;
+}
+
+function performRedirect(redirectUrl: string | null): void {
+  if (redirectUrl) {
+    // Use replace() instead of href to prevent back button from showing cached sensitive data
+    // This removes the current page from browser history after authentication failure
+    window.location.replace(redirectUrl);
+  }
+}
+
+// ============================================================================
+// Token Refresh
+// ============================================================================
+
+const fetchWithCredentials: typeof globalThis.fetch = (input, init) => {
+  return globalThis.fetch(input, {
+    ...init,
+    credentials: "include",
+  });
+};
+
+// Separate transport without auth interceptor to prevent recursion
+const refreshTransport = createConnectTransport({
+  baseUrl: window.location.origin,
+  useBinaryFormat: true,
+  fetch: fetchWithCredentials,
+  interceptors: [],
+});
+
+const refreshAuthClient = createClient(AuthService, refreshTransport);
+
+async function refreshAccessToken(): Promise<void> {
+  const response = await refreshAuthClient.refreshToken({});
+
+  if (!response.accessToken) {
+    throw new ConnectError("Refresh token response missing access token", Code.Internal);
+  }
+
+  const expiresAt = response.expiresAt ? timestampDate(response.expiresAt) : undefined;
+  setAccessToken(response.accessToken, expiresAt);
+}
+
+// ============================================================================
+// Authentication Interceptor
+// ============================================================================
+
 const authInterceptor: Interceptor = (next) => async (req) => {
-  // Add access token to request if available
   const token = getAccessToken();
   if (token) {
     req.header.set("Authorization", `Bearer ${token}`);
@@ -23,57 +142,46 @@ const authInterceptor: Interceptor = (next) => async (req) => {
 
   try {
     return await next(req);
-  } catch (error: any) {
-    // Handle unauthenticated error - try to refresh token
-    if (error.code === "unauthenticated" && !req.header.get("X-Retry")) {
-      // Prevent concurrent refresh attempts
-      if (!isRefreshing) {
-        isRefreshing = true;
-        refreshPromise = refreshAccessToken();
-      }
-
-      try {
-        await refreshPromise;
-        isRefreshing = false;
-        refreshPromise = null;
-
-        // Retry with new token
-        const newToken = getAccessToken();
-        if (newToken) {
-          req.header.set("Authorization", `Bearer ${newToken}`);
-          req.header.set("X-Retry", "true");
-          return await next(req);
-        }
-      } catch (refreshError) {
-        isRefreshing = false;
-        refreshPromise = null;
-        // Refresh failed - redirect to login
-        window.location.href = "/auth";
-        throw refreshError;
-      }
+  } catch (error) {
+    if (!(error instanceof ConnectError)) {
+      throw error;
     }
-    throw error;
+
+    if (error.code !== Code.Unauthenticated) {
+      throw error;
+    }
+
+    if (req.header.get(RETRY_HEADER) === RETRY_HEADER_VALUE) {
+      throw error;
+    }
+
+    try {
+      await tokenRefreshManager.refresh(refreshAccessToken);
+
+      const newToken = getAccessToken();
+      if (!newToken) {
+        throw new ConnectError("Token refresh succeeded but no token available", Code.Internal);
+      }
+
+      req.header.set("Authorization", `Bearer ${newToken}`);
+      req.header.set(RETRY_HEADER, RETRY_HEADER_VALUE);
+      return await next(req);
+    } catch (refreshError) {
+      const redirectUrl = getAuthFailureRedirect(window.location.pathname);
+      performRedirect(redirectUrl);
+      throw refreshError;
+    }
   }
 };
 
-async function refreshAccessToken(): Promise<void> {
-  const response = await fetch("/api/v1/auth/refresh", {
-    method: "POST",
-    credentials: "include", // Include HttpOnly cookies with refresh token
-  });
-
-  if (!response.ok) {
-    throw new Error("Failed to refresh token");
-  }
-
-  const data = await response.json();
-  setAccessToken(data.accessToken, new Date(data.expiresAt));
-}
+// ============================================================================
+// Transport & Service Clients
+// ============================================================================
 
 const transport = createConnectTransport({
   baseUrl: window.location.origin,
-  // Use binary protobuf format for better performance (smaller payloads, faster serialization)
   useBinaryFormat: true,
+  fetch: fetchWithCredentials,
   interceptors: [authInterceptor],
 });
 

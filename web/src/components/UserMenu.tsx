@@ -64,7 +64,9 @@ const UserMenu = observer((props: Props) => {
 
     keysToRemove.forEach((key) => localStorage.removeItem(key));
 
-    window.location.href = Routes.AUTH;
+    // Use replace() instead of href to prevent back button from showing cached sensitive data
+    // This removes the current page from browser history
+    window.location.replace(Routes.AUTH);
   };
 
   return (

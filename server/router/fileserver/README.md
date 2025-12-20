@@ -9,7 +9,7 @@ The `fileserver` package handles all binary file serving for Memos using native 
 - Serve attachment binary files (images, videos, audio, documents)
 - Serve user avatar images
 - Handle HTTP range requests for video/audio streaming
-- Authenticate requests using session cookies or JWT tokens
+- Authenticate requests using JWT tokens or Personal Access Tokens
 - Check permissions for private content
 - Generate and serve image thumbnails
 - Prevent XSS attacks on uploaded content
@@ -82,17 +82,17 @@ GET /file/users/:identifier/avatar
 
 ### Supported Methods
 
-The fileserver supports two authentication methods, checked in order:
+The fileserver supports the following authentication methods:
 
-1. **Session Cookie** (`user_session`)
-   - Cookie format: `{userID}-{sessionID}`
-   - Validates session exists and hasn't expired (14-day sliding window)
-   - Updates last accessed time on success
-
-2. **JWT Bearer Token** (`Authorization: Bearer {token}`)
-   - Validates JWT signature using server secret
-   - Checks token exists in user's access tokens (for revocation)
+1. **JWT Access Token** (`Authorization: Bearer {token}`)
+   - Short-lived tokens (15 minutes) for API access
+   - Stateless validation using JWT signature
    - Extracts user ID from token claims
+
+2. **Personal Access Token (PAT)** (`Authorization: Bearer {pat}`)
+   - Long-lived tokens for programmatic access
+   - Validates against database for revocation
+   - Prefixed with specific identifier
 
 ### Authentication Flow
 
@@ -190,7 +190,7 @@ Parses data URI to extract MIME type and base64 data.
 - `golang.org/x/sync/semaphore` - Concurrency control for thumbnails
 
 ### Internal Packages
-- `server/router/api/v1` - Auth constants (SessionCookieName, ClaimsMessage, etc.)
+- `server/auth` - Authentication utilities
 - `store` - Database operations
 - `internal/profile` - Server configuration
 - `plugin/storage/s3` - S3 storage client
@@ -199,11 +199,9 @@ Parses data URI to extract MIME type and base64 data.
 
 ### Constants
 
-All auth-related constants are imported from `server/router/api/v1/auth.go`:
-- `apiv1.SessionCookieName` - "user_session"
-- `apiv1.SessionSlidingDuration` - 14 days
-- `apiv1.KeyID` - "v1" (JWT key identifier)
-- `apiv1.ClaimsMessage` - JWT claims struct
+Auth-related constants are imported from `server/auth`:
+- `auth.RefreshTokenCookieName` - "memos_refresh"
+- `auth.PersonalAccessTokenPrefix` - PAT identifier prefix
 
 Package-specific constants:
 - `ThumbnailCacheFolder` - ".thumbnail_cache"
@@ -245,7 +243,7 @@ if contentType == "image/svg+xml" ||
 ```
 
 ### 2. Authentication
-Private content requires valid session or JWT token.
+Private content requires valid JWT access token or Personal Access Token.
 
 ### 3. Authorization
 Memo visibility rules enforced before serving attachments.
