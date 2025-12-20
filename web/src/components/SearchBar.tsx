@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { memoFilterStore } from "@/store";
 import { useTranslate } from "@/utils/i18n";
 import MemoDisplaySettingMenu from "./MemoDisplaySettingMenu";
+import MemoFilterMenu from "./MemoFilterMenu";
 
 const SearchBar = observer(() => {
   const t = useTranslate();
@@ -55,6 +56,7 @@ const SearchBar = observer(() => {
         onKeyDown={onKeyDown}
         ref={inputRef}
       />
+      <MemoFilterMenu className="absolute right-8 top-2 text-sidebar-foreground" /> 
       <MemoDisplaySettingMenu className="absolute right-2 top-2 text-sidebar-foreground" />
     </div>
   );
