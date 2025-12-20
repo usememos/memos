@@ -36,32 +36,36 @@ function isTagChar(char: string): boolean {
 // Parse tags from text and return segments
 function parseTagsFromText(text: string): Array<{ type: "text" | "tag"; value: string }> {
   const segments: Array<{ type: "text" | "tag"; value: string }> = [];
+
+  // Convert to array of code points for proper Unicode handling (emojis, etc.)
+  const chars = [...text];
   let i = 0;
 
-  while (i < text.length) {
+  while (i < chars.length) {
     // Check for tag pattern
-    if (text[i] === "#" && i + 1 < text.length && isTagChar(text[i + 1])) {
+    if (chars[i] === "#" && i + 1 < chars.length && isTagChar(chars[i + 1])) {
       // Check if this might be a heading (## at start or after whitespace)
-      const prevChar = i > 0 ? text[i - 1] : "";
-      const nextChar = i + 1 < text.length ? text[i + 1] : "";
+      const prevChar = i > 0 ? chars[i - 1] : "";
+      const nextChar = i + 1 < chars.length ? chars[i + 1] : "";
 
       if (prevChar === "#" || nextChar === "#" || nextChar === " ") {
         // This is a heading, not a tag
-        segments.push({ type: "text", value: text[i] });
+        segments.push({ type: "text", value: chars[i] });
         i++;
         continue;
       }
 
       // Extract tag content
       let j = i + 1;
-      while (j < text.length && isTagChar(text[j])) {
+      while (j < chars.length && isTagChar(chars[j])) {
         j++;
       }
 
-      const tagContent = text.slice(i + 1, j);
+      const tagContent = chars.slice(i + 1, j).join("");
 
-      // Validate tag length (must match backend MAX_TAG_LENGTH)
-      if (tagContent.length > 0 && tagContent.length <= MAX_TAG_LENGTH) {
+      // Validate tag length by rune count (must match backend MAX_TAG_LENGTH)
+      const runeCount = [...tagContent].length;
+      if (runeCount > 0 && runeCount <= MAX_TAG_LENGTH) {
         segments.push({ type: "tag", value: tagContent });
         i = j;
         continue;
@@ -70,10 +74,10 @@ function parseTagsFromText(text: string): Array<{ type: "text" | "tag"; value: s
 
     // Regular text
     let j = i + 1;
-    while (j < text.length && text[j] !== "#") {
+    while (j < chars.length && chars[j] !== "#") {
       j++;
     }
-    segments.push({ type: "text", value: text.slice(i, j) });
+    segments.push({ type: "text", value: chars.slice(i, j).join("") });
     i = j;
   }
 
