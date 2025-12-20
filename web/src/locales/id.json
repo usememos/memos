@@ -114,7 +114,14 @@
     "add-your-comment-here": "Tambahkan komentar Anda di sini...",
     "any-thoughts": "Punya pemikiran...",
     "save": "Simpan",
-    "no-changes-detected": "Tidak ada perubahan yang terdeteksi"
+    "no-changes-detected": "Tidak ada perubahan yang terdeteksi",
+    "link-preview": "Pratinjau tautan",
+    "scrape-link": "Ambil pratinjau tautan",
+    "scrape-link-description": "Tempel URL untuk mengambil judul, deskripsi, dan gambar sampul.",
+    "link-preview-empty": "Tempel tautan untuk membuat kartu pratinjau.",
+    "link-preview-invalid": "Masukkan URL yang valid.",
+    "link-preview-fetch-error": "Gagal mengambil pratinjau. Silakan coba lagi.",
+    "link-preview-timeout": "Permintaan habis waktu. Silakan coba lagi."
   },
   "filters": {
     "has-code": "Memiliki kode",

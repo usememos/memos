@@ -13,7 +13,7 @@ import { extractMemoIdFromName } from "@/store/common";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import DateTimeInput from "../DateTimeInput";
-import { AttachmentList, LocationDisplay, RelationList } from "../memo-metadata";
+import { AttachmentList, type LinkPreview, LinkPreviewList, LocationDisplay, RelationList } from "../memo-metadata";
 import { ErrorBoundary, FocusModeExitButton, FocusModeOverlay } from "./components";
 import { FOCUS_MODE_STYLES, LOCALSTORAGE_DEBOUNCE_DELAY } from "./constants";
 import Editor, { type EditorRefActions } from "./Editor";
@@ -30,6 +30,7 @@ import {
 import InsertMenu from "./Toolbar/InsertMenu";
 import VisibilitySelector from "./Toolbar/VisibilitySelector";
 import { MemoEditorContext } from "./types";
+import { appendLinkPreviewsToContent } from "./utils/linkPreviewSerializer";
 
 export interface Props {
   className?: string;
@@ -62,6 +63,7 @@ const MemoEditor = observer((props: Props) => {
     memoVisibility,
     attachmentList,
     relationList,
+    linkPreviews,
     location,
     isFocusMode,
     isUploadingAttachment,
@@ -71,6 +73,7 @@ const MemoEditor = observer((props: Props) => {
     setMemoVisibility,
     setAttachmentList,
     setRelationList,
+    setLinkPreviews,
     setLocation,
     toggleFocusMode,
     setUploadingAttachment,
@@ -103,6 +106,7 @@ const MemoEditor = observer((props: Props) => {
     onAttachmentsChange: setAttachmentList,
     onRelationsChange: setRelationList,
     onLocationChange: setLocation,
+    onLinkPreviewsChange: setLinkPreviews,
   });
 
   // Memo save hook - handles create/update logic
@@ -131,7 +135,8 @@ const MemoEditor = observer((props: Props) => {
       return;
     }
     const content = editorRef.current?.getContent() ?? "";
-    await saveMemo(content, {
+    const contentWithPreviews = appendLinkPreviewsToContent(content, linkPreviews);
+    await saveMemo(contentWithPreviews, {
       memoName,
       parentMemoName,
       visibility: memoVisibility,
@@ -150,6 +155,7 @@ const MemoEditor = observer((props: Props) => {
     memoVisibility,
     attachmentList,
     relationList,
+    linkPreviews,
     location,
     localFiles,
     createTime,
@@ -203,6 +209,20 @@ const MemoEditor = observer((props: Props) => {
     return relationList.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   }, [memoName, relationList]);
 
+  const handleAddLinkPreview = useCallback(
+    (preview: LinkPreview) => {
+      setLinkPreviews([preview, ...linkPreviews.filter((item) => item.url !== preview.url)]);
+    },
+    [linkPreviews, setLinkPreviews],
+  );
+
+  const handleRemoveLinkPreview = useCallback(
+    (id: string) => {
+      setLinkPreviews(linkPreviews.filter((item) => item.id !== id));
+    },
+    [linkPreviews, setLinkPreviews],
+  );
+
   const editorConfig = useMemo(
     () => ({
       className: "",
@@ -221,7 +241,10 @@ const MemoEditor = observer((props: Props) => {
     [i18n.language, isFocusMode, isComposing, handlePasteEvent, handleCompositionStart, handleCompositionEnd, saveContentToCache],
   );
 
-  const allowSave = (hasContent || attachmentList.length > 0 || localFiles.length > 0) && !isUploadingAttachment && !isRequesting;
+  const allowSave =
+    (hasContent || attachmentList.length > 0 || localFiles.length > 0 || linkPreviews.length > 0) &&
+    !isUploadingAttachment &&
+    !isRequesting;
 
   return (
     <ErrorBoundary>
@@ -266,6 +289,7 @@ const MemoEditor = observer((props: Props) => {
             localFiles={localFiles}
             onRemoveLocalFile={removeFile}
           />
+          <LinkPreviewList mode="edit" previews={linkPreviews} onRemove={handleRemoveLinkPreview} />
           <RelationList mode="edit" relations={referenceRelations} onRelationsChange={setRelationList} />
           <div className="relative w-full flex flex-row justify-between items-center pt-2 gap-2" onFocus={(e) => e.stopPropagation()}>
             <div className="flex flex-row justify-start items-center gap-1">
@@ -273,6 +297,7 @@ const MemoEditor = observer((props: Props) => {
                 isUploading={isUploadingAttachment}
                 location={location}
                 onLocationChange={setLocation}
+                onLinkPreviewAdd={handleAddLinkPreview}
                 onToggleFocusMode={toggleFocusMode}
               />
             </div>

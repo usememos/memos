@@ -21,7 +21,7 @@ export const SANITIZE_SCHEMA = {
   ...defaultSchema,
   attributes: {
     ...defaultSchema.attributes,
-    div: [...(defaultSchema.attributes?.div || []), "className"],
+    div: [...(defaultSchema.attributes?.div || []), "className", ["data*"]],
     span: [...(defaultSchema.attributes?.span || []), "className", "style", ["aria*"], ["data*"]],
     // iframe attributes for video embeds
     iframe: ["src", "width", "height", "frameborder", "allowfullscreen", "allow", "title", "referrerpolicy", "loading"],

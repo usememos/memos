@@ -62,6 +62,15 @@ export interface LocalFile {
   readonly previewUrl: string;
 }
 
+export interface LinkPreview {
+  id: string;
+  url: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  siteName?: string;
+}
+
 export function toAttachmentItems(attachments: Attachment[], localFiles: LocalFile[] = []): AttachmentItem[] {
   return [...attachments.map(attachmentToItem), ...localFiles.map(({ file, previewUrl }) => fileToItem(file, previewUrl))];
 }

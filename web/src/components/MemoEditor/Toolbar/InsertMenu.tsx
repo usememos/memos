@@ -1,9 +1,9 @@
 import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
-import { FileIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
+import { FileIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MoreHorizontalIcon, PlusIcon, SparklesIcon } from "lucide-react";
 import { observer } from "mobx-react-lite";
 import { useContext, useState } from "react";
-import type { LocalFile } from "@/components/memo-metadata";
+import type { LinkPreview, LocalFile } from "@/components/memo-metadata";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { LinkMemoDialog, LocationDialog } from "../components";
+import { LinkMemoDialog, LinkPreviewDialog, LocationDialog } from "../components";
 import { GEOCODING } from "../constants";
 import { useFileUpload, useLinkMemo, useLocation } from "../hooks";
 import { useAbortController } from "../hooks/useAbortController";
@@ -26,6 +26,7 @@ interface Props {
   isUploading?: boolean;
   location?: Location;
   onLocationChange: (location?: Location) => void;
+  onLinkPreviewAdd: (preview: LinkPreview) => void;
   onToggleFocusMode?: () => void;
 }
 
@@ -34,6 +35,7 @@ const InsertMenu = observer((props: Props) => {
   const context = useContext(MemoEditorContext);
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+  const [linkPreviewDialogOpen, setLinkPreviewDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
 
   // Abort controller for canceling geocoding requests
@@ -153,6 +155,10 @@ const InsertMenu = observer((props: Props) => {
             <LinkIcon className="w-4 h-4" />
             {t("tooltip.link-memo")}
           </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setLinkPreviewDialogOpen(true)}>
+            <SparklesIcon className="w-4 h-4" />
+            {t("editor.link-preview")}
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={handleLocationClick}>
             <MapPinIcon className="w-4 h-4" />
             {t("tooltip.select-location")}
@@ -193,6 +199,15 @@ const InsertMenu = observer((props: Props) => {
         filteredMemos={linkMemo.filteredMemos}
         isFetching={linkMemo.isFetching}
         onSelectMemo={linkMemo.addMemoRelation}
+      />
+
+      <LinkPreviewDialog
+        open={linkPreviewDialogOpen}
+        onOpenChange={setLinkPreviewDialogOpen}
+        onAddPreview={(preview) => {
+          props.onLinkPreviewAdd(preview);
+          setLinkPreviewDialogOpen(false);
+        }}
       />
 
       <LocationDialog
