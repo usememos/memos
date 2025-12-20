@@ -24,12 +24,13 @@ const RootLayout = observer(() => {
     if (!currentUser) {
       // If disallowPublicVisibility is enabled, redirect to the login page if the user is not logged in.
       if (instanceStore.state.memoRelatedSetting.disallowPublicVisibility) {
-        window.location.href = Routes.AUTH;
+        // Use replace() to prevent back button from showing cached sensitive data
+        window.location.replace(Routes.AUTH);
         return;
       } else if (
         ([Routes.ROOT, Routes.ATTACHMENTS, Routes.INBOX, Routes.ARCHIVED, Routes.SETTING] as string[]).includes(location.pathname)
       ) {
-        window.location.href = Routes.EXPLORE;
+        window.location.replace(Routes.EXPLORE);
         return;
       }
     }

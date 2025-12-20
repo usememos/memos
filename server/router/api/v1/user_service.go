@@ -238,6 +238,24 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 		case "email":
 			update.Email = &request.User.Email
 		case "avatar_url":
+			// Validate avatar MIME type to prevent XSS during upload
+			if request.User.AvatarUrl != "" {
+				imageType, _, err := extractImageInfo(request.User.AvatarUrl)
+				if err != nil {
+					return nil, status.Errorf(codes.InvalidArgument, "invalid avatar format: %v", err)
+				}
+				// Only allow safe image formats for avatars
+				allowedAvatarTypes := map[string]bool{
+					"image/png":  true,
+					"image/jpeg": true,
+					"image/jpg":  true,
+					"image/gif":  true,
+					"image/webp": true,
+				}
+				if !allowedAvatarTypes[imageType] {
+					return nil, status.Errorf(codes.InvalidArgument, "invalid avatar image type: %s. Only PNG, JPEG, GIF, and WebP are allowed", imageType)
+				}
+			}
 			update.AvatarURL = &request.User.AvatarUrl
 		case "description":
 			update.Description = &request.User.Description

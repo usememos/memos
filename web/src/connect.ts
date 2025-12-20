@@ -92,7 +92,9 @@ function getAuthFailureRedirect(currentPath: string): string | null {
 
 function performRedirect(redirectUrl: string | null): void {
   if (redirectUrl) {
-    window.location.href = redirectUrl;
+    // Use replace() instead of href to prevent back button from showing cached sensitive data
+    // This removes the current page from browser history after authentication failure
+    window.location.replace(redirectUrl);
   }
 }
 
