@@ -111,7 +111,7 @@ const ControlButtons = ({ position, onZoomIn, onZoomOut, onOpenGoogleMaps }: Con
 
 // Custom Leaflet Control class
 class MapControlsContainer extends L.Control {
-  private container: HTMLDivElement | null = null;
+  private container: HTMLDivElement | undefined = undefined;
 
   onAdd() {
     this.container = L.DomUtil.create("div", "");
@@ -125,7 +125,7 @@ class MapControlsContainer extends L.Control {
   }
 
   onRemove() {
-    this.container = null;
+    this.container = undefined;
   }
 
   getContainer() {
