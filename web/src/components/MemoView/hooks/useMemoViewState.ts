@@ -116,7 +116,7 @@ export const useMemoCreator = (creatorName: string) => {
     if (fetchedRef.current) return;
     fetchedRef.current = true;
     (async () => {
-      const user = await userStore.getOrFetchUserByName(creatorName);
+      const user = await userStore.getOrFetchUser(creatorName);
       setCreator(user);
     })();
   }, [creatorName]);

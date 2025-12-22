@@ -67,7 +67,7 @@ const PagedMemoList = observer((props: Props) => {
         // This significantly improves perceived performance by pre-populating the cache
         if (response?.memos && props.showCreator) {
           const uniqueCreators = Array.from(new Set(response.memos.map((memo) => memo.creator)));
-          await Promise.allSettled(uniqueCreators.map((creator) => userStore.getOrFetchUserByName(creator)));
+          await Promise.allSettled(uniqueCreators.map((creator) => userStore.getOrFetchUser(creator)));
         }
       } finally {
         setIsRequesting(false);
