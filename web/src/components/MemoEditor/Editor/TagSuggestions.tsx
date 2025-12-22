@@ -13,11 +13,9 @@ interface TagSuggestionsProps {
 
 const TagSuggestions = observer(({ editorRef, editorActions }: TagSuggestionsProps) => {
   const sortedTags = useMemo(() => {
-    const tags = Object.entries(userStore.state.tagCount)
-      .sort((a, b) => b[1] - a[1]) // Sort by usage count (descending)
+    return Object.entries(userStore.state.tagCount)
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
       .map(([tag]) => tag);
-    // Secondary sort by name for stable ordering
-    return tags.sort((a, b) => (userStore.state.tagCount[a] === userStore.state.tagCount[b] ? a.localeCompare(b) : 0));
   }, [userStore.state.tagCount]);
 
   const { position, suggestions, selectedIndex, isVisible, handleItemSelect } = useSuggestions({

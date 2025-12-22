@@ -214,8 +214,7 @@ const InsertMenu = observer((props: Props) => {
         state={location.state}
         locationInitialized={location.locationInitialized}
         onPositionChange={handlePositionChange}
-        onLatChange={location.handleLatChange}
-        onLngChange={location.handleLngChange}
+        onUpdateCoordinate={location.updateCoordinate}
         onPlaceholderChange={location.setPlaceholder}
         onCancel={handleLocationCancel}
         onConfirm={handleLocationConfirm}

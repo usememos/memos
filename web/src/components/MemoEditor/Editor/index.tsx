@@ -8,8 +8,8 @@ import { useListCompletion } from "./useListCompletion";
 
 export interface EditorRefActions {
   getEditor: () => HTMLTextAreaElement | null;
-  focus: FunctionType;
-  scrollToCursor: FunctionType;
+  focus: () => void;
+  scrollToCursor: () => void;
   insertText: (text: string, prefix?: string, suffix?: string) => void;
   removeText: (start: number, length: number) => void;
   setContent: (text: string) => void;

@@ -15,8 +15,7 @@ interface LocationDialogProps {
   state: LocationState;
   locationInitialized: boolean;
   onPositionChange: (position: LatLng) => void;
-  onLatChange: (value: string) => void;
-  onLngChange: (value: string) => void;
+  onUpdateCoordinate: (type: "lat" | "lng", value: string) => void;
   onPlaceholderChange: (value: string) => void;
   onCancel: () => void;
   onConfirm: () => void;
@@ -28,8 +27,7 @@ export const LocationDialog = ({
   state,
   locationInitialized,
   onPositionChange,
-  onLatChange,
-  onLngChange,
+  onUpdateCoordinate,
   onPlaceholderChange,
   onCancel,
   onConfirm,
@@ -67,7 +65,7 @@ export const LocationDialog = ({
                   min="-90"
                   max="90"
                   value={latInput}
-                  onChange={(e) => onLatChange(e.target.value)}
+                  onChange={(e) => onUpdateCoordinate("lat", e.target.value)}
                   className="h-9"
                 />
               </div>
@@ -83,7 +81,7 @@ export const LocationDialog = ({
                   min="-180"
                   max="180"
                   value={lngInput}
-                  onChange={(e) => onLngChange(e.target.value)}
+                  onChange={(e) => onUpdateCoordinate("lng", e.target.value)}
                   className="h-9"
                 />
               </div>

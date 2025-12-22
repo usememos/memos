@@ -23,25 +23,16 @@ export const useLocation = (initialLocation?: Location) => {
   };
 
   const handlePositionChange = (position: LatLng) => {
-    if (!locationInitialized) {
-      setLocationInitialized(true);
-    }
+    if (!locationInitialized) setLocationInitialized(true);
     updatePosition(position);
   };
 
-  const handleLatChange = (value: string) => {
-    setState((prev) => ({ ...prev, latInput: value }));
-    const lat = parseFloat(value);
-    if (!isNaN(lat) && lat >= -90 && lat <= 90 && state.position) {
-      updatePosition(new LatLng(lat, state.position.lng));
-    }
-  };
-
-  const handleLngChange = (value: string) => {
-    setState((prev) => ({ ...prev, lngInput: value }));
-    const lng = parseFloat(value);
-    if (!isNaN(lng) && lng >= -180 && lng <= 180 && state.position) {
-      updatePosition(new LatLng(state.position.lat, lng));
+  const updateCoordinate = (type: "lat" | "lng", value: string) => {
+    setState((prev) => ({ ...prev, [type === "lat" ? "latInput" : "lngInput"]: value }));
+    const num = parseFloat(value);
+    const isValid = type === "lat" ? !isNaN(num) && num >= -90 && num <= 90 : !isNaN(num) && num >= -180 && num <= 180;
+    if (isValid && state.position) {
+      updatePosition(type === "lat" ? new LatLng(num, state.position.lng) : new LatLng(state.position.lat, num));
     }
   };
 
@@ -74,8 +65,7 @@ export const useLocation = (initialLocation?: Location) => {
     state,
     locationInitialized,
     handlePositionChange,
-    handleLatChange,
-    handleLngChange,
+    updateCoordinate,
     setPlaceholder,
     reset,
     getLocation,
