@@ -41,7 +41,10 @@ const InsertMenu = observer((props: Props) => {
   // Abort controller for canceling geocoding requests
   const { abort: abortGeocoding, abortAndCreate: createGeocodingSignal } = useAbortController();
 
-  const { handleTriggerEnter, handleTriggerLeave, handleContentEnter, handleContentLeave } = useDropdownMenuSubHoverDelay(150, setMoreSubmenuOpen);
+  const { handleTriggerEnter, handleTriggerLeave, handleContentEnter, handleContentLeave } = useDropdownMenuSubHoverDelay(
+    150,
+    setMoreSubmenuOpen,
+  );
 
   const { fileInputRef, selectingFlag, handleFileInputChange, handleUploadClick } = useFileUpload((newFiles: LocalFile[]) => {
     if (context.addLocalFiles) {
