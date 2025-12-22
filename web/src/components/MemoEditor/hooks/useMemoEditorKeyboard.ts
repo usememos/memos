@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { TAB_SPACE_WIDTH } from "@/helpers/consts";
 import { FOCUS_MODE_EXIT_KEY, FOCUS_MODE_TOGGLE_KEY } from "../constants";
 import type { EditorRefActions } from "../Editor";
-import { handleMarkdownShortcuts } from "../Editor/markdownShortcuts";
+import { handleMarkdownShortcuts } from "../Editor/shortcuts";
 
 export interface UseMemoEditorKeyboardOptions {
   editorRef: React.RefObject<EditorRefActions>;

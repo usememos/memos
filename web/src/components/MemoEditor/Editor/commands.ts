@@ -8,21 +8,21 @@ export const editorCommands: Command[] = [
   {
     name: "todo",
     run: () => "- [ ] ",
-    cursorOffset: 6, // Places cursor after "- [ ] " to start typing task
+    cursorOffset: 6,
   },
   {
     name: "code",
     run: () => "```\n\n```",
-    cursorOffset: 4, // Places cursor on empty line between code fences
+    cursorOffset: 4,
   },
   {
     name: "link",
     run: () => "[text](url)",
-    cursorOffset: 1, // Places cursor after "[" to type link text
+    cursorOffset: 1,
   },
   {
     name: "table",
     run: () => "| Header | Header |\n| ------ | ------ |\n| Cell   | Cell |",
-    cursorOffset: 1, // Places cursor after first "|" to edit first header
+    cursorOffset: 1,
   },
 ];

@@ -1,32 +1,25 @@
 import { observer } from "mobx-react-lite";
-import OverflowTip from "@/components/kit/OverflowTip";
 import type { EditorRefActions } from ".";
 import type { Command } from "./commands";
 import { SuggestionsPopup } from "./SuggestionsPopup";
 import { useSuggestions } from "./useSuggestions";
 
-interface CommandSuggestionsProps {
+interface SlashCommandsProps {
   editorRef: React.RefObject<HTMLTextAreaElement>;
   editorActions: React.ForwardedRef<EditorRefActions>;
   commands: Command[];
 }
 
-const CommandSuggestions = observer(({ editorRef, editorActions, commands }: CommandSuggestionsProps) => {
+const SlashCommands = observer(({ editorRef, editorActions, commands }: SlashCommandsProps) => {
   const { position, suggestions, selectedIndex, isVisible, handleItemSelect } = useSuggestions({
     editorRef,
     editorActions,
     triggerChar: "/",
     items: commands,
-    filterItems: (items, searchQuery) => {
-      if (!searchQuery) return items;
-      // Filter commands by prefix match for intuitive searching
-      return items.filter((cmd) => cmd.name.toLowerCase().startsWith(searchQuery));
-    },
+    filterItems: (items, query) => (!query ? items : items.filter((cmd) => cmd.name.toLowerCase().startsWith(query))),
     onAutocomplete: (cmd, word, index, actions) => {
-      // Replace the trigger word with the command output
       actions.removeText(index, word.length);
       actions.insertText(cmd.run());
-      // Position cursor if command specifies an offset
       if (cmd.cursorOffset) {
         actions.setCursorPosition(actions.getCursorPosition() + cmd.cursorOffset);
       }
@@ -42,9 +35,14 @@ const CommandSuggestions = observer(({ editorRef, editorActions, commands }: Com
       selectedIndex={selectedIndex}
       onItemSelect={handleItemSelect}
       getItemKey={(cmd) => cmd.name}
-      renderItem={(cmd) => <OverflowTip>/{cmd.name}</OverflowTip>}
+      renderItem={(cmd) => (
+        <span className="font-medium tracking-wide">
+          <span className="text-muted-foreground">/</span>
+          {cmd.name}
+        </span>
+      )}
     />
   );
 });
 
-export default CommandSuggestions;
+export default SlashCommands;

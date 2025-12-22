@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { isValidUrl } from "@/helpers/utils";
 import type { EditorRefActions } from "../Editor";
-import { hyperlinkHighlightedText } from "../Editor/markdownShortcuts";
+import { hyperlinkHighlightedText } from "../Editor/shortcuts";
 
 export interface UseMemoEditorHandlersOptions {
   editorRef: React.RefObject<EditorRefActions>;
