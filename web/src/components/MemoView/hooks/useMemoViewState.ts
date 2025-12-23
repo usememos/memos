@@ -5,21 +5,7 @@ import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { KEYBOARD_SHORTCUTS, TEXT_INPUT_TYPES } from "../constants";
-
-interface ImagePreviewState {
-  open: boolean;
-  urls: string[];
-  index: number;
-}
-
-interface UseKeyboardShortcutsOptions {
-  enabled: boolean;
-  readonly: boolean;
-  showEditor: boolean;
-  isArchived: boolean;
-  onEdit: () => void;
-  onArchive: () => Promise<void>;
-}
+import type { ImagePreviewState, UseKeyboardShortcutsOptions } from "../types";
 
 export const useMemoActions = (memo: Memo) => {
   const t = useTranslate();
@@ -110,15 +96,9 @@ export const useImagePreview = () => {
 
 export const useMemoCreator = (creatorName: string) => {
   const [creator, setCreator] = useState(userStore.getUserByName(creatorName));
-  const fetchedRef = useRef(false);
 
   useEffect(() => {
-    if (fetchedRef.current) return;
-    fetchedRef.current = true;
-    (async () => {
-      const user = await userStore.getOrFetchUser(creatorName);
-      setCreator(user);
-    })();
+    userStore.getOrFetchUser(creatorName).then(setCreator);
   }, [creatorName]);
 
   return creator;

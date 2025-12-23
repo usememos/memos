@@ -15,8 +15,6 @@ interface Props {
 
 const MemoBody: React.FC<Props> = ({ compact, onContentClick, onContentDoubleClick, onToggleNsfwVisibility }) => {
   const t = useTranslate();
-
-  // Get shared state from context
   const { memo, readonly, parentPage, nsfw, showNSFWContent } = useMemoViewContext();
 
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
@@ -36,7 +34,7 @@ const MemoBody: React.FC<Props> = ({ compact, onContentClick, onContentDoubleCli
           readonly={readonly}
           onClick={onContentClick}
           onDoubleClick={onContentDoubleClick}
-          compact={memo.pinned ? false : compact} // Always show full content when pinned
+          compact={memo.pinned ? false : compact}
           parentPage={parentPage}
         />
         {memo.location && <LocationDisplay mode="view" location={memo.location} />}
@@ -45,7 +43,6 @@ const MemoBody: React.FC<Props> = ({ compact, onContentClick, onContentDoubleCli
         <MemoReactionListView memo={memo} reactions={memo.reactions} />
       </div>
 
-      {/* NSFW content overlay */}
       {nsfw && !showNSFWContent && (
         <>
           <div className="absolute inset-0 bg-transparent" />

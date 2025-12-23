@@ -38,24 +38,18 @@ const MemoHeader: React.FC<Props> = ({
   onReactionSelectorOpenChange,
 }) => {
   const t = useTranslate();
-
-  // Get shared state from context
   const { memo, creator, isArchived, commentAmount, isInMemoDetailPage, parentPage, readonly, relativeTimeFormat, nsfw, showNSFWContent } =
     useMemoViewContext();
 
+  const timestamp = memo.displayTime ? timestampDate(memo.displayTime) : undefined;
   const displayTime = isArchived ? (
-    (memo.displayTime ? timestampDate(memo.displayTime) : undefined)?.toLocaleString(i18n.language)
+    timestamp?.toLocaleString(i18n.language)
   ) : (
-    <relative-time
-      datetime={(memo.displayTime ? timestampDate(memo.displayTime) : undefined)?.toISOString()}
-      lang={i18n.language}
-      format={relativeTimeFormat}
-    ></relative-time>
+    <relative-time datetime={timestamp?.toISOString()} lang={i18n.language} format={relativeTimeFormat} />
   );
 
   return (
     <div className="w-full flex flex-row justify-between items-center gap-2">
-      {/* Left section: Creator info or time */}
       <div className="w-auto max-w-[calc(100%-8rem)] grow flex flex-row justify-start items-center">
         {showCreator && creator ? (
           <CreatorDisplay creator={creator} displayTime={displayTime} onGotoDetail={onGotoDetail} />
@@ -64,9 +58,7 @@ const MemoHeader: React.FC<Props> = ({
         )}
       </div>
 
-      {/* Right section: Actions */}
       <div className="flex flex-row justify-end items-center select-none shrink-0 gap-2">
-        {/* Reaction selector */}
         {!isArchived && (
           <ReactionSelector
             className={cn("border-none w-auto h-auto", reactionSelectorOpen && "block!", "hidden group-hover:block")}
@@ -75,7 +67,6 @@ const MemoHeader: React.FC<Props> = ({
           />
         )}
 
-        {/* Comment count link */}
         {!isInMemoDetailPage && (
           <Link
             className={cn(
@@ -91,7 +82,6 @@ const MemoHeader: React.FC<Props> = ({
           </Link>
         )}
 
-        {/* Visibility icon */}
         {showVisibility && memo.visibility !== Visibility.PRIVATE && (
           <Tooltip>
             <TooltipTrigger>
@@ -105,7 +95,6 @@ const MemoHeader: React.FC<Props> = ({
           </Tooltip>
         )}
 
-        {/* Pinned indicator */}
         {showPinned && memo.pinned && (
           <TooltipProvider>
             <Tooltip>
@@ -121,14 +110,12 @@ const MemoHeader: React.FC<Props> = ({
           </TooltipProvider>
         )}
 
-        {/* NSFW hide button */}
         {nsfw && showNSFWContent && onToggleNsfwVisibility && (
           <span className="cursor-pointer">
             <EyeOffIcon className="w-4 h-auto text-primary" onClick={onToggleNsfwVisibility} />
           </span>
         )}
 
-        {/* Action menu */}
         <MemoActionMenu memo={memo} readonly={readonly} onEdit={onEdit} />
       </div>
     </div>
