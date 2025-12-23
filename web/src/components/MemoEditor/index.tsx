@@ -5,6 +5,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { EditorContent, EditorMetadata, EditorToolbar, FocusModeOverlay } from "./components";
+import { FOCUS_MODE_STYLES } from "./constants";
 import type { EditorRefActions } from "./Editor";
 import { useAutoSave, useKeyboard, useMemoInit } from "./hooks";
 import { cacheService, errorService, memoService, validationService } from "./services";
@@ -125,7 +126,8 @@ const MemoEditorImpl: React.FC<Props> = ({
       <div
         className={cn(
           "group relative w-full flex flex-col justify-start items-start bg-card px-4 pt-3 pb-2 rounded-lg border border-border",
-          state.ui.isFocusMode && "focus-mode",
+          FOCUS_MODE_STYLES.transition,
+          state.ui.isFocusMode && cn(FOCUS_MODE_STYLES.container.base, FOCUS_MODE_STYLES.container.spacing),
           className,
         )}
       >
