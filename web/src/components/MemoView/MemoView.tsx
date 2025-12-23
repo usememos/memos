@@ -29,6 +29,27 @@ interface Props {
   parentPage?: string;
 }
 
+/**
+ * MemoView component displays a memo card with all its content, metadata, and interactive elements.
+ *
+ * Features:
+ * - Displays memo content with markdown rendering
+ * - Shows creator information and timestamps
+ * - Supports inline editing with keyboard shortcuts (e = edit, a = archive)
+ * - Handles NSFW content blurring
+ * - Image preview on click
+ * - Comments, reactions, and relations
+ *
+ * @example
+ * ```tsx
+ * <MemoView
+ *   memo={memoData}
+ *   showCreator
+ *   showVisibility
+ *   compact={false}
+ * />
+ * ```
+ */
 const MemoView: React.FC<Props> = observer((props: Props) => {
   const { memo: memoData, className } = props;
   const cardRef = useRef<HTMLDivElement>(null);
@@ -59,7 +80,8 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
     onArchive: archiveMemo,
   });
 
-  const contextValue = useMemo(
+  // Memoize static values that rarely change
+  const staticContextValue = useMemo(
     () => ({
       memo: memoData,
       creator,
@@ -67,12 +89,28 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
       readonly,
       isInMemoDetailPage,
       parentPage,
+    }),
+    [memoData, creator, isArchived, readonly, isInMemoDetailPage, parentPage],
+  );
+
+  // Memoize dynamic values separately
+  const dynamicContextValue = useMemo(
+    () => ({
       commentAmount,
       relativeTimeFormat,
       nsfw,
       showNSFWContent,
     }),
-    [memoData, creator, isArchived, readonly, isInMemoDetailPage, parentPage, commentAmount, relativeTimeFormat, nsfw, showNSFWContent],
+    [commentAmount, relativeTimeFormat, nsfw, showNSFWContent],
+  );
+
+  // Combine context values
+  const contextValue = useMemo(
+    () => ({
+      ...staticContextValue,
+      ...dynamicContextValue,
+    }),
+    [staticContextValue, dynamicContextValue],
   );
 
   if (showEditor) {
