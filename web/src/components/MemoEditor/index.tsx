@@ -4,10 +4,10 @@ import { toast } from "react-hot-toast";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
-import { EditorContent, EditorMetadata, EditorToolbar, FocusModeOverlay } from "./components";
+import { EditorContent, EditorMetadata, EditorToolbar, FocusModeExitButton, FocusModeOverlay } from "./components";
 import { FOCUS_MODE_STYLES } from "./constants";
 import type { EditorRefActions } from "./Editor";
-import { useAutoSave, useKeyboard, useMemoInit } from "./hooks";
+import { useAutoSave, useFocusMode, useKeyboard, useMemoInit } from "./hooks";
 import { cacheService, errorService, memoService, validationService } from "./services";
 import { EditorProvider, useEditorContext } from "./state";
 import { MemoEditorContext } from "./types";
@@ -80,8 +80,11 @@ const MemoEditorImpl: React.FC<Props> = ({
   // Auto-save content to localStorage
   useAutoSave(state.content, currentUser.name, cacheKey);
 
+  // Focus mode management with body scroll lock
+  useFocusMode(state.ui.isFocusMode);
+
   // Keyboard shortcuts
-  useKeyboard(editorRef, { onSave: handleSave });
+  useKeyboard(editorRef, { onSave: handleSave, onToggleFocusMode: actions.toggleFocusMode });
 
   async function handleSave() {
     const { valid, reason } = validationService.canSave(state);
@@ -131,6 +134,7 @@ const MemoEditorImpl: React.FC<Props> = ({
           className,
         )}
       >
+        <FocusModeExitButton isActive={state.ui.isFocusMode} onToggle={actions.toggleFocusMode} title={t("editor.exit-focus-mode")} />
         <EditorContent ref={editorRef} placeholder={placeholder} autoFocus={autoFocus} />
         <EditorMetadata />
         <EditorToolbar onSave={handleSave} onCancel={onCancel} />
