@@ -122,10 +122,16 @@ const MemoEditorImpl: React.FC<Props> = ({
     <MemoEditorContext.Provider value={legacyContextValue}>
       <FocusModeOverlay isActive={state.ui.isFocusMode} onToggle={actions.toggleFocusMode} />
 
-      <div className={cn("memo-editor-wrapper", state.ui.isFocusMode && "focus-mode", className)}>
-        <EditorToolbar onSave={handleSave} onCancel={onCancel} />
+      <div
+        className={cn(
+          "group relative w-full flex flex-col justify-start items-start bg-card px-4 pt-3 pb-2 rounded-lg border border-border",
+          state.ui.isFocusMode && "focus-mode",
+          className,
+        )}
+      >
         <EditorContent ref={editorRef} placeholder={placeholder} autoFocus={autoFocus} />
         <EditorMetadata />
+        <EditorToolbar onSave={handleSave} onCancel={onCancel} />
       </div>
     </MemoEditorContext.Provider>
   );
