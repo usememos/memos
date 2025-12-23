@@ -84,7 +84,7 @@ const MemoEditorImpl: React.FC<Props> = ({
   useFocusMode(state.ui.isFocusMode);
 
   // Keyboard shortcuts
-  useKeyboard(editorRef, { onSave: handleSave, onToggleFocusMode: actions.toggleFocusMode });
+  useKeyboard(editorRef, { onSave: handleSave, onToggleFocusMode: () => dispatch(actions.toggleFocusMode()) });
 
   async function handleSave() {
     const { valid, reason } = validationService.canSave(state);
@@ -122,9 +122,11 @@ const MemoEditorImpl: React.FC<Props> = ({
     }
   }
 
+  const toggleFocusMode = () => dispatch(actions.toggleFocusMode());
+
   return (
     <MemoEditorContext.Provider value={legacyContextValue}>
-      <FocusModeOverlay isActive={state.ui.isFocusMode} onToggle={actions.toggleFocusMode} />
+      <FocusModeOverlay isActive={state.ui.isFocusMode} onToggle={toggleFocusMode} />
 
       <div
         className={cn(
@@ -134,7 +136,7 @@ const MemoEditorImpl: React.FC<Props> = ({
           className,
         )}
       >
-        <FocusModeExitButton isActive={state.ui.isFocusMode} onToggle={actions.toggleFocusMode} title={t("editor.exit-focus-mode")} />
+        <FocusModeExitButton isActive={state.ui.isFocusMode} onToggle={toggleFocusMode} title={t("editor.exit-focus-mode")} />
         <EditorContent ref={editorRef} placeholder={placeholder} autoFocus={autoFocus} />
         <EditorMetadata />
         <EditorToolbar onSave={handleSave} onCancel={onCancel} />
