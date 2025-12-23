@@ -11,10 +11,22 @@ interface EditorToolbarProps {
 }
 
 export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel }) => {
-  const { state, actions } = useEditorContext();
+  const { state, actions, dispatch } = useEditorContext();
   const { valid } = validationService.canSave(state);
 
   const isSaving = state.ui.isLoading.saving;
+
+  const handleLocationChange = (location: typeof state.metadata.location) => {
+    dispatch(actions.setMetadata({ location }));
+  };
+
+  const handleToggleFocusMode = () => {
+    dispatch(actions.toggleFocusMode());
+  };
+
+  const handleVisibilityChange = (visibility: typeof state.metadata.visibility) => {
+    dispatch(actions.setMetadata({ visibility }));
+  };
 
   return (
     <div className="w-full flex flex-row justify-between items-center mb-2">
@@ -22,13 +34,13 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel }) => {
         <InsertMenu
           isUploading={state.ui.isLoading.uploading}
           location={state.metadata.location}
-          onLocationChange={(location) => actions.setMetadata({ location })}
-          onToggleFocusMode={actions.toggleFocusMode}
+          onLocationChange={handleLocationChange}
+          onToggleFocusMode={handleToggleFocusMode}
         />
       </div>
 
       <div className="flex flex-row justify-end items-center gap-2">
-        <VisibilitySelector value={state.metadata.visibility} onChange={(v) => actions.setMetadata({ visibility: v })} />
+        <VisibilitySelector value={state.metadata.visibility} onChange={handleVisibilityChange} />
 
         {onCancel && (
           <Button variant="ghost" onClick={onCancel} disabled={isSaving}>

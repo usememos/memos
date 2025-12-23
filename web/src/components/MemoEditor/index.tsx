@@ -12,7 +12,7 @@ import { cacheService, errorService, memoService, validationService } from "./se
 import { EditorProvider, useEditorContext } from "./state";
 import { MemoEditorContext } from "./types";
 
-export interface Props {
+export interface MemoEditorProps {
   className?: string;
   cacheKey?: string;
   placeholder?: string;
@@ -23,7 +23,7 @@ export interface Props {
   onCancel?: () => void;
 }
 
-const MemoEditor = observer((props: Props) => {
+const MemoEditor = observer((props: MemoEditorProps) => {
   const { className, cacheKey, memoName, parentMemoName, autoFocus, placeholder, onConfirm, onCancel } = props;
 
   return (
@@ -42,7 +42,7 @@ const MemoEditor = observer((props: Props) => {
   );
 });
 
-const MemoEditorImpl: React.FC<Props> = ({
+const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   className,
   cacheKey,
   memoName,
@@ -83,8 +83,12 @@ const MemoEditorImpl: React.FC<Props> = ({
   // Focus mode management with body scroll lock
   useFocusMode(state.ui.isFocusMode);
 
+  const handleToggleFocusMode = () => {
+    dispatch(actions.toggleFocusMode());
+  };
+
   // Keyboard shortcuts
-  useKeyboard(editorRef, { onSave: handleSave, onToggleFocusMode: () => dispatch(actions.toggleFocusMode()) });
+  useKeyboard(editorRef, { onSave: handleSave, onToggleFocusMode: handleToggleFocusMode });
 
   async function handleSave() {
     const { valid, reason } = validationService.canSave(state);
@@ -93,7 +97,7 @@ const MemoEditorImpl: React.FC<Props> = ({
       return;
     }
 
-    actions.setLoading("saving", true);
+    dispatch(actions.setLoading("saving", true));
 
     try {
       const result = await memoService.save(state, { memoName, parentMemoName });
@@ -108,7 +112,7 @@ const MemoEditorImpl: React.FC<Props> = ({
       cacheService.clear(cacheService.key(currentUser.name, cacheKey));
 
       // Reset editor state
-      actions.reset();
+      dispatch(actions.reset());
 
       // Notify parent
       onConfirm?.(result.memoName);
@@ -118,28 +122,39 @@ const MemoEditorImpl: React.FC<Props> = ({
       const message = errorService.handle(error, t);
       toast.error(message);
     } finally {
-      actions.setLoading("saving", false);
+      dispatch(actions.setLoading("saving", false));
     }
   }
 
-  const toggleFocusMode = () => dispatch(actions.toggleFocusMode());
-
   return (
     <MemoEditorContext.Provider value={legacyContextValue}>
-      <FocusModeOverlay isActive={state.ui.isFocusMode} onToggle={toggleFocusMode} />
+      <FocusModeOverlay isActive={state.ui.isFocusMode} onToggle={handleToggleFocusMode} />
 
+      {/*
+        Layout structure:
+        - Uses justify-between to push content to top and bottom
+        - In focus mode: becomes fixed with specific spacing, editor grows to fill space
+        - In normal mode: stays relative with max-height constraint
+      */}
       <div
         className={cn(
-          "group relative w-full flex flex-col justify-start items-start bg-card px-4 pt-3 pb-2 rounded-lg border border-border",
+          "group relative w-full flex flex-col justify-between items-start bg-card px-4 pt-3 pb-1 rounded-lg border border-border",
           FOCUS_MODE_STYLES.transition,
           state.ui.isFocusMode && cn(FOCUS_MODE_STYLES.container.base, FOCUS_MODE_STYLES.container.spacing),
           className,
         )}
       >
-        <FocusModeExitButton isActive={state.ui.isFocusMode} onToggle={toggleFocusMode} title={t("editor.exit-focus-mode")} />
+        {/* Exit button is absolutely positioned in top-right corner when active */}
+        <FocusModeExitButton isActive={state.ui.isFocusMode} onToggle={handleToggleFocusMode} title={t("editor.exit-focus-mode")} />
+
+        {/* Editor content grows to fill available space in focus mode */}
         <EditorContent ref={editorRef} placeholder={placeholder} autoFocus={autoFocus} />
-        <EditorMetadata />
-        <EditorToolbar onSave={handleSave} onCancel={onCancel} />
+
+        {/* Metadata and toolbar grouped together at bottom */}
+        <div className="w-full flex flex-col gap-2">
+          <EditorMetadata />
+          <EditorToolbar onSave={handleSave} onCancel={onCancel} />
+        </div>
       </div>
     </MemoEditorContext.Provider>
   );

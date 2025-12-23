@@ -179,7 +179,9 @@ const PagedMemoList = observer((props: Props) => {
             renderer={props.renderer}
             prefixElement={
               <>
-                {showMemoEditor ? <MemoEditor className="mb-2" cacheKey="home-memo-editor" /> : undefined}
+                {showMemoEditor ? (
+                  <MemoEditor className="mb-2" cacheKey="home-memo-editor" placeholder={t("editor.any-thoughts")} />
+                ) : undefined}
                 <MemoFilters />
               </>
             }

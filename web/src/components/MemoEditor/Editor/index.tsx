@@ -152,15 +152,17 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
   return (
     <div
       className={cn(
-        "flex flex-col justify-start items-start relative w-full h-auto bg-inherit",
-        isFocusMode ? "flex-1" : EDITOR_HEIGHT.normal,
+        "flex flex-col justify-start items-start relative w-full bg-inherit",
+        // Focus mode: flex-1 to grow and fill space; Normal: h-auto with max-height
+        isFocusMode ? "flex-1" : `h-auto ${EDITOR_HEIGHT.normal}`,
         className,
       )}
     >
       <textarea
         className={cn(
           "w-full my-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none placeholder:opacity-70 whitespace-pre-wrap break-words",
-          isFocusMode ? `h-auto ${EDITOR_HEIGHT.focusMode.mobile} ${EDITOR_HEIGHT.focusMode.desktop}` : "h-full",
+          // Focus mode: flex-1 h-0 to grow within flex container; Normal: h-full to fill wrapper
+          isFocusMode ? "flex-1 h-0" : "h-full",
         )}
         rows={1}
         placeholder={placeholder}

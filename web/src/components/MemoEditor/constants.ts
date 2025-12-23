@@ -14,11 +14,8 @@ export const FOCUS_MODE_TOGGLE_KEY = "f";
 export const FOCUS_MODE_EXIT_KEY = "Escape";
 
 export const EDITOR_HEIGHT = {
+  // Max height for normal mode - focus mode uses flex-1 to grow dynamically
   normal: "max-h-[50vh]",
-  focusMode: {
-    mobile: "min-h-[50vh]",
-    desktop: "md:min-h-[60vh]",
-  },
 } as const;
 
 export const GEOCODING = {

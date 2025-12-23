@@ -67,7 +67,7 @@ const RelationList = observer(({ relations, currentMemoName, mode, onRelationsCh
     }
 
     return (
-      <div className="w-full flex flex-row gap-2 mt-2 flex-wrap">
+      <div className="w-full flex flex-row gap-2 flex-wrap">
         {referencingMemos.map((memo) => (
           <RelationCard
             key={memo.name}

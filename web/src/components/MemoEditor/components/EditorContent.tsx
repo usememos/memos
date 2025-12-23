@@ -29,15 +29,25 @@ export const EditorContent = forwardRef<EditorRefActions, EditorContentProps>(({
     dispatch(actions.setComposing(false));
   };
 
+  const handleContentChange = (content: string) => {
+    dispatch(actions.updateContent(content));
+  };
+
+  const handlePaste = () => {
+    // Paste handling is managed by the Editor component internally
+  };
+
   return (
-    <div {...dragHandlers}>
+    <div className="w-full flex flex-col flex-1" {...dragHandlers}>
       <Editor
         ref={ref}
         className="memo-editor-content"
         initialContent={state.content}
         placeholder={placeholder || ""}
-        onContentChange={actions.updateContent}
-        onPaste={() => {}}
+        isFocusMode={state.ui.isFocusMode}
+        isInIME={state.ui.isComposing}
+        onContentChange={handleContentChange}
+        onPaste={handlePaste}
         onCompositionStart={handleCompositionStart}
         onCompositionEnd={handleCompositionEnd}
       />
