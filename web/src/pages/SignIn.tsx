@@ -1,4 +1,3 @@
-import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -7,20 +6,20 @@ import PasswordSignInForm from "@/components/PasswordSignInForm";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { identityProviderServiceClient } from "@/connect";
+import { useInstance } from "@/contexts/InstanceContext";
+import { extractIdentityProviderIdFromName } from "@/helpers/resource-names";
 import { absolutifyLink } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { Routes } from "@/router";
-import { instanceStore } from "@/store";
-import { extractIdentityProviderIdFromName } from "@/store/common";
 import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { storeOAuthState } from "@/utils/oauth";
 
-const SignIn = observer(() => {
+const SignIn = () => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
-  const instanceGeneralSetting = instanceStore.state.generalSetting;
+  const { generalSetting: instanceGeneralSetting } = useInstance();
 
   // Redirect to root page if already signed in.
   useEffect(() => {
@@ -117,6 +116,6 @@ const SignIn = observer(() => {
       <AuthFooter />
     </div>
   );
-});
+};
 
 export default SignIn;

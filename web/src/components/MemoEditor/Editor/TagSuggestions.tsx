@@ -1,7 +1,6 @@
-import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
 import OverflowTip from "@/components/kit/OverflowTip";
-import { userStore } from "@/store";
+import { useTagCounts } from "@/hooks/useUserQueries";
 import type { EditorRefActions } from ".";
 import { SuggestionsPopup } from "./SuggestionsPopup";
 import { useSuggestions } from "./useSuggestions";
@@ -11,12 +10,14 @@ interface TagSuggestionsProps {
   editorActions: React.ForwardedRef<EditorRefActions>;
 }
 
-const TagSuggestions = observer(({ editorRef, editorActions }: TagSuggestionsProps) => {
+export default function TagSuggestions({ editorRef, editorActions }: TagSuggestionsProps) {
+  const { data: tagCount = {} } = useTagCounts();
+
   const sortedTags = useMemo(() => {
-    return Object.entries(userStore.state.tagCount)
+    return Object.entries(tagCount)
       .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
       .map(([tag]) => tag);
-  }, [userStore.state.tagCount]);
+  }, [tagCount]);
 
   const { position, suggestions, selectedIndex, isVisible, handleItemSelect } = useSuggestions({
     editorRef,
@@ -47,6 +48,4 @@ const TagSuggestions = observer(({ editorRef, editorActions }: TagSuggestionsPro
       )}
     />
   );
-});
-
-export default TagSuggestions;
+}

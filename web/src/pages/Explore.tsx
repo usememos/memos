@@ -1,4 +1,3 @@
-import { observer } from "mobx-react-lite";
 import { MemoRenderContext } from "@/components/MasonryView";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
@@ -7,7 +6,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
 
-const Explore = observer(() => {
+const Explore = () => {
   const currentUser = useCurrentUser();
 
   // Determine visibility filter based on authentication status
@@ -40,6 +39,6 @@ const Explore = observer(() => {
       showCreator
     />
   );
-});
+};
 
 export default Explore;

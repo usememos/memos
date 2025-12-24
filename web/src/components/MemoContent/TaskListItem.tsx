@@ -1,6 +1,8 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useContext, useRef } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { memoStore } from "@/store";
+import { memoKeys, useUpdateMemo } from "@/hooks/useMemoQueries";
+import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { toggleTaskAtIndex } from "@/utils/markdown-manipulation";
 import { MemoContentContext } from "./MemoContentContext";
 
@@ -12,6 +14,8 @@ interface TaskListItemProps extends React.InputHTMLAttributes<HTMLInputElement> 
 export const TaskListItem: React.FC<TaskListItemProps> = ({ checked, ...props }) => {
   const context = useContext(MemoContentContext);
   const checkboxRef = useRef<HTMLButtonElement>(null);
+  const queryClient = useQueryClient();
+  const { mutate: updateMemo } = useUpdateMemo();
 
   const handleChange = async (newChecked: boolean) => {
     // Don't update if readonly or no memo context
@@ -49,19 +53,19 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({ checked, ...props })
     }
 
     // Update memo content using the string manipulation utility
-    const memo = memoStore.getMemoByName(context.memoName);
+    const memo = queryClient.getQueryData<Memo>(memoKeys.detail(context.memoName));
     if (!memo) {
       return;
     }
 
     const newContent = toggleTaskAtIndex(memo.content, taskIndex, newChecked);
-    await memoStore.updateMemo(
-      {
+    updateMemo({
+      update: {
         name: memo.name,
         content: newContent,
       },
-      ["content"],
-    );
+      updateMask: ["content"],
+    });
   };
 
   // Override the disabled prop from remark-gfm (which defaults to true)

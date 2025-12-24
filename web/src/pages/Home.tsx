@@ -11,7 +11,7 @@ const Home = () => {
 
   // Build filter using unified hook
   const memoFilter = useMemoFilters({
-    creatorName: user.name,
+    creatorName: user?.name,
     includeShortcuts: true,
     includePinned: true,
   });

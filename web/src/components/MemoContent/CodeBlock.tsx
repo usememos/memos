@@ -1,10 +1,9 @@
 import copy from "copy-to-clipboard";
 import hljs from "highlight.js";
 import { CheckIcon, CopyIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
-import { userStore } from "@/store";
 import { getThemeWithFallback, resolveTheme } from "@/utils/theme";
 import { MermaidBlock } from "./MermaidBlock";
 import { extractCodeContent, extractLanguage } from "./utils";
@@ -14,7 +13,8 @@ interface CodeBlockProps {
   className?: string;
 }
 
-export const CodeBlock = observer(({ children, className, ...props }: CodeBlockProps) => {
+export const CodeBlock = ({ children, className, ...props }: CodeBlockProps) => {
+  const { userGeneralSetting } = useAuth();
   const [copied, setCopied] = useState(false);
 
   const codeElement = children as React.ReactElement;
@@ -33,7 +33,7 @@ export const CodeBlock = observer(({ children, className, ...props }: CodeBlockP
     );
   }
 
-  const theme = getThemeWithFallback(userStore.state.userGeneralSetting?.theme);
+  const theme = getThemeWithFallback(userGeneralSetting?.theme);
   const resolvedTheme = resolveTheme(theme);
   const isDarkTheme = resolvedTheme.includes("dark");
 
@@ -131,4 +131,4 @@ export const CodeBlock = observer(({ children, className, ...props }: CodeBlockP
       </div>
     </pre>
   );
-});
+};

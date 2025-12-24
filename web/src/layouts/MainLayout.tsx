@@ -1,17 +1,16 @@
-import { observer } from "mobx-react-lite";
 import { useEffect, useMemo, useState } from "react";
 import { matchPath, Outlet, useLocation } from "react-router-dom";
 import type { MemoExplorerContext } from "@/components/MemoExplorer";
 import { MemoExplorer, MemoExplorerDrawer } from "@/components/MemoExplorer";
 import MobileHeader from "@/components/MobileHeader";
+import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { userStore } from "@/store";
 
-const MainLayout = observer(() => {
+const MainLayout = () => {
   const { md, lg } = useResponsiveWidth();
   const location = useLocation();
   const currentUser = useCurrentUser();
@@ -34,8 +33,8 @@ const MainLayout = observer(() => {
       if (username) {
         // Fetch or get user to obtain user name (e.g., "users/123")
         // Note: User stats will be fetched by useFilteredMemoStats
-        userStore
-          .getOrFetchUser(`users/${username}`)
+        userServiceClient
+          .getUser({ name: `users/${username}` })
           .then((user) => {
             setProfileUserName(user.name);
           })
@@ -86,6 +85,6 @@ const MainLayout = observer(() => {
       </div>
     </section>
   );
-});
+};
 
 export default MainLayout;

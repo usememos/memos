@@ -1,4 +1,3 @@
-import { observer } from "mobx-react-lite";
 import type { EditorRefActions } from ".";
 import type { Command } from "./commands";
 import { SuggestionsPopup } from "./SuggestionsPopup";
@@ -10,7 +9,7 @@ interface SlashCommandsProps {
   commands: Command[];
 }
 
-const SlashCommands = observer(({ editorRef, editorActions, commands }: SlashCommandsProps) => {
+const SlashCommands = ({ editorRef, editorActions, commands }: SlashCommandsProps) => {
   const { position, suggestions, selectedIndex, isVisible, handleItemSelect } = useSuggestions({
     editorRef,
     editorActions,
@@ -43,6 +42,6 @@ const SlashCommands = observer(({ editorRef, editorActions, commands }: SlashCom
       )}
     />
   );
-});
+};
 
 export default SlashCommands;

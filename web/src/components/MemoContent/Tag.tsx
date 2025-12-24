@@ -1,10 +1,9 @@
 import { useContext } from "react";
 import { useLocation } from "react-router-dom";
+import { type MemoFilter, stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { memoFilterStore } from "@/store";
-import { MemoFilter, stringifyFilters } from "@/store/memoFilter";
 import { MemoContentContext } from "./MemoContentContext";
 
 interface TagProps extends React.HTMLAttributes<HTMLSpanElement> {
@@ -17,6 +16,7 @@ export const Tag: React.FC<TagProps> = ({ "data-tag": dataTag, children, classNa
   const context = useContext(MemoContentContext);
   const location = useLocation();
   const navigateTo = useNavigateTo();
+  const { getFiltersByFactor, removeFilter, addFilter } = useMemoFilterContext();
 
   const tag = dataTag || "";
 
@@ -37,13 +37,13 @@ export const Tag: React.FC<TagProps> = ({ "data-tag": dataTag, children, classNa
       return;
     }
 
-    const isActive = memoFilterStore.getFiltersByFactor("tagSearch").some((filter: MemoFilter) => filter.value === tag);
+    const isActive = getFiltersByFactor("tagSearch").some((filter: MemoFilter) => filter.value === tag);
     if (isActive) {
-      memoFilterStore.removeFilter((f: MemoFilter) => f.factor === "tagSearch" && f.value === tag);
+      removeFilter((f: MemoFilter) => f.factor === "tagSearch" && f.value === tag);
     } else {
       // Remove all existing tag filters first, then add the new one
-      memoFilterStore.removeFilter((f: MemoFilter) => f.factor === "tagSearch");
-      memoFilterStore.addFilter({
+      removeFilter((f: MemoFilter) => f.factor === "tagSearch");
+      addFilter({
         factor: "tagSearch",
         value: tag,
       });

@@ -1,6 +1,5 @@
-import { observer } from "mobx-react-lite";
+import { useInstance } from "@/contexts/InstanceContext";
 import { cn } from "@/lib/utils";
-import { instanceStore } from "@/store";
 import UserAvatar from "./UserAvatar";
 
 interface Props {
@@ -8,9 +7,9 @@ interface Props {
   collapsed?: boolean;
 }
 
-const MemosLogo = observer((props: Props) => {
+function MemosLogo(props: Props) {
   const { collapsed } = props;
-  const instanceGeneralSetting = instanceStore.state.generalSetting;
+  const { generalSetting: instanceGeneralSetting } = useInstance();
   const title = instanceGeneralSetting.customProfile?.title || "Memos";
   const avatarUrl = instanceGeneralSetting.customProfile?.logoUrl || "/full-logo.webp";
 
@@ -22,6 +21,6 @@ const MemosLogo = observer((props: Props) => {
       </div>
     </div>
   );
-});
+}
 
 export default MemosLogo;

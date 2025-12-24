@@ -1,7 +1,7 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import dayjs from "dayjs";
 import { useMemo } from "react";
-import { viewStore } from "@/store";
+import { useView } from "@/contexts/ViewContext";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { Memo } from "@/types/proto/api/v1/memo_service_pb";
 
@@ -17,9 +17,7 @@ export interface UseMemoSortingResult {
 
 export const useMemoSorting = (options: UseMemoSortingOptions = {}): UseMemoSortingResult => {
   const { pinnedFirst = false, state = State.NORMAL } = options;
-
-  // Extract MobX observable values to avoid issues with React dependency tracking
-  const orderByTimeAsc = viewStore.state.orderByTimeAsc;
+  const { orderByTimeAsc } = useView();
 
   // Generate orderBy string for API
   const orderBy = useMemo(() => {

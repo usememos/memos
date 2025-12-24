@@ -29,13 +29,13 @@ const MyAccountSection = () => {
     <SettingSection>
       <SettingGroup title={t("setting.account-section.title")}>
         <div className="w-full flex flex-row justify-start items-center gap-3">
-          <UserAvatar className="shrink-0 w-12 h-12" avatarUrl={user.avatarUrl} />
+          <UserAvatar className="shrink-0 w-12 h-12" avatarUrl={user?.avatarUrl} />
           <div className="flex-1 min-w-0 flex flex-col justify-center items-start gap-1">
             <div className="w-full">
-              <span className="text-lg font-semibold">{user.displayName}</span>
-              <span className="ml-2 text-sm text-muted-foreground">@{user.username}</span>
+              <span className="text-lg font-semibold">{user?.displayName}</span>
+              <span className="ml-2 text-sm text-muted-foreground">@{user?.username}</span>
             </div>
-            {user.description && <p className="w-full text-sm text-muted-foreground truncate">{user.description}</p>}
+            {user?.description && <p className="w-full text-sm text-muted-foreground truncate">{user?.description}</p>}
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <Button variant="outline" size="sm" onClick={handleEditAccount}>

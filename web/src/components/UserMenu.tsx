@@ -1,12 +1,14 @@
+import { create } from "@bufbuild/protobuf";
+import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { ArchiveIcon, CheckIcon, GlobeIcon, LogOutIcon, PaletteIcon, SettingsIcon, SquareUserIcon, User2Icon } from "lucide-react";
-import { observer } from "mobx-react-lite";
-import { authServiceClient } from "@/connect";
+import { authServiceClient, userServiceClient } from "@/connect";
+import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import i18n, { locales } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { userStore } from "@/store";
+import { UserSetting_GeneralSettingSchema, UserSettingSchema } from "@/types/proto/api/v1/user_service_pb";
 import { getLocaleDisplayName, useTranslate } from "@/utils/i18n";
 import { loadTheme, THEME_OPTIONS } from "@/utils/theme";
 import UserAvatar from "./UserAvatar";
@@ -24,27 +26,61 @@ interface Props {
   collapsed?: boolean;
 }
 
-const UserMenu = observer((props: Props) => {
+const UserMenu = (props: Props) => {
   const { collapsed } = props;
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const currentUser = useCurrentUser();
-  const generalSetting = userStore.state.userGeneralSetting;
-  const currentLocale = generalSetting?.locale || "en";
-  const currentTheme = generalSetting?.theme || "default";
+  const { userGeneralSetting, refetchSettings } = useAuth();
+  const currentLocale = userGeneralSetting?.locale || "en";
+  const currentTheme = userGeneralSetting?.theme || "default";
 
   const handleLocaleChange = async (locale: Locale) => {
+    if (!currentUser) return;
     // Apply locale immediately for instant UI feedback
     i18n.changeLanguage(locale);
     // Persist to user settings
-    await userStore.updateUserGeneralSetting({ locale }, ["locale"]);
+    const settingName = `${currentUser.name}/setting`;
+    const updatedGeneralSetting = create(UserSetting_GeneralSettingSchema, {
+      locale,
+      theme: userGeneralSetting?.theme,
+      memoVisibility: userGeneralSetting?.memoVisibility,
+    });
+    await userServiceClient.updateUserSetting({
+      setting: create(UserSettingSchema, {
+        name: settingName,
+        value: {
+          case: "generalSetting",
+          value: updatedGeneralSetting,
+        },
+      }),
+      updateMask: create(FieldMaskSchema, { paths: ["general_setting.locale"] }),
+    });
+    await refetchSettings();
   };
 
   const handleThemeChange = async (theme: string) => {
+    if (!currentUser) return;
     // Apply theme immediately for instant UI feedback
     loadTheme(theme);
     // Persist to user settings
-    await userStore.updateUserGeneralSetting({ theme }, ["theme"]);
+    const settingName = `${currentUser.name}/setting`;
+    const updatedGeneralSetting = create(UserSetting_GeneralSettingSchema, {
+      locale: userGeneralSetting?.locale,
+      theme,
+      memoVisibility: userGeneralSetting?.memoVisibility,
+    });
+    await userServiceClient.updateUserSetting({
+      setting: create(UserSettingSchema, {
+        name: settingName,
+        value: {
+          case: "generalSetting",
+          value: updatedGeneralSetting,
+        },
+      }),
+      updateMask: create(FieldMaskSchema, { paths: ["general_setting.theme"] }),
+    });
+    await refetchSettings();
   };
 
   const handleSignOut = async () => {
@@ -73,20 +109,20 @@ const UserMenu = observer((props: Props) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild disabled={!currentUser}>
         <div className={cn("w-auto flex flex-row justify-start items-center cursor-pointer text-foreground", collapsed ? "px-1" : "px-3")}>
-          {currentUser.avatarUrl ? (
-            <UserAvatar className="shrink-0" avatarUrl={currentUser.avatarUrl} />
+          {currentUser?.avatarUrl ? (
+            <UserAvatar className="shrink-0" avatarUrl={currentUser?.avatarUrl} />
           ) : (
             <User2Icon className="w-6 mx-auto h-auto text-muted-foreground" />
           )}
           {!collapsed && (
             <span className="ml-2 text-lg font-medium text-foreground grow truncate">
-              {currentUser.displayName || currentUser.username}
+              {currentUser?.displayName || currentUser?.username}
             </span>
           )}
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
-        <DropdownMenuItem onClick={() => navigateTo(`/u/${encodeURIComponent(currentUser.username)}`)}>
+        <DropdownMenuItem onClick={() => navigateTo(`/u/${encodeURIComponent(currentUser?.username ?? "")}`)}>
           <SquareUserIcon className="size-4 text-muted-foreground" />
           {t("common.profile")}
         </DropdownMenuItem>
@@ -135,6 +171,6 @@ const UserMenu = observer((props: Props) => {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-});
+};
 
 export default UserMenu;

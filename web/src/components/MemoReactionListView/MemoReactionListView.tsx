@@ -1,4 +1,3 @@
-import { observer } from "mobx-react-lite";
 import { memo } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { State } from "@/types/proto/api/v1/common_pb";
@@ -12,7 +11,7 @@ interface Props {
   reactions: Reaction[];
 }
 
-const MemoReactionListView = observer((props: Props) => {
+const MemoReactionListView = (props: Props) => {
   const { memo: memoData, reactions } = props;
   const currentUser = useCurrentUser();
   const reactionGroup = useReactionGroups(reactions);
@@ -30,6 +29,6 @@ const MemoReactionListView = observer((props: Props) => {
       {!readonly && currentUser && <ReactionSelector memo={memoData} />}
     </div>
   );
-});
+};
 
 export default memo(MemoReactionListView);

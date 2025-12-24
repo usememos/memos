@@ -1,15 +1,13 @@
 import { create } from "@bufbuild/protobuf";
 import { isEqual, uniq } from "lodash-es";
 import { CheckIcon, X } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { instanceStore } from "@/store";
-import { buildInstanceSettingName } from "@/store/common";
+import { useInstance } from "@/contexts/InstanceContext";
 import {
   InstanceSetting_Key,
   InstanceSetting_MemoRelatedSetting,
@@ -21,9 +19,9 @@ import SettingGroup from "./SettingGroup";
 import SettingRow from "./SettingRow";
 import SettingSection from "./SettingSection";
 
-const MemoRelatedSettings = observer(() => {
+const MemoRelatedSettings = () => {
   const t = useTranslate();
-  const [originalSetting, setOriginalSetting] = useState<InstanceSetting_MemoRelatedSetting>(instanceStore.state.memoRelatedSetting);
+  const { memoRelatedSetting: originalSetting, updateSetting, fetchSetting } = useInstance();
   const [memoRelatedSetting, setMemoRelatedSetting] = useState<InstanceSetting_MemoRelatedSetting>(originalSetting);
   const [editingReaction, setEditingReaction] = useState<string>("");
   const [editingNsfwTag, setEditingNsfwTag] = useState<string>("");
@@ -54,23 +52,23 @@ const MemoRelatedSettings = observer(() => {
     setEditingNsfwTag("");
   };
 
-  const updateSetting = async () => {
+  const handleUpdateSetting = async () => {
     if (memoRelatedSetting.reactions.length === 0) {
       toast.error("Reactions must not be empty.");
       return;
     }
 
     try {
-      await instanceStore.upsertInstanceSetting(
+      await updateSetting(
         create(InstanceSettingSchema, {
-          name: buildInstanceSettingName(InstanceSetting_Key.MEMO_RELATED),
+          name: `instance/settings/${InstanceSetting_Key[InstanceSetting_Key.MEMO_RELATED]}`,
           value: {
             case: "memoRelatedSetting",
             value: memoRelatedSetting,
           },
         }),
       );
-      setOriginalSetting(memoRelatedSetting);
+      await fetchSetting(InstanceSetting_Key.MEMO_RELATED);
       toast.success(t("message.update-succeed"));
     } catch (error: any) {
       toast.error(error.message);
@@ -179,12 +177,12 @@ const MemoRelatedSettings = observer(() => {
       </SettingGroup>
 
       <div className="w-full flex justify-end">
-        <Button disabled={isEqual(memoRelatedSetting, originalSetting)} onClick={updateSetting}>
+        <Button disabled={isEqual(memoRelatedSetting, originalSetting)} onClick={handleUpdateSetting}>
           {t("common.save")}
         </Button>
       </div>
     </SettingSection>
   );
-});
+};
 
 export default MemoRelatedSettings;

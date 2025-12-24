@@ -1,5 +1,4 @@
 import { CogIcon, DatabaseIcon, KeyIcon, LibraryIcon, LucideIcon, Settings2Icon, UserIcon, UsersIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import MobileHeader from "@/components/MobileHeader";
@@ -12,9 +11,9 @@ import SectionMenuItem from "@/components/Settings/SectionMenuItem";
 import SSOSection from "@/components/Settings/SSOSection";
 import StorageSection from "@/components/Settings/StorageSection";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
-import { instanceStore } from "@/store";
 import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 import { User_Role } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -37,15 +36,16 @@ const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   sso: KeyIcon,
 };
 
-const Setting = observer(() => {
+const Setting = () => {
   const t = useTranslate();
   const { md } = useResponsiveWidth();
   const location = useLocation();
   const user = useCurrentUser();
+  const { profile, fetchSetting } = useInstance();
   const [state, setState] = useState<State>({
     selectedSection: "my-account",
   });
-  const isHost = user.role === User_Role.HOST;
+  const isHost = user?.role === User_Role.HOST;
 
   const settingsSectionList = useMemo(() => {
     let settingList = [...BASIC_SECTIONS];
@@ -74,10 +74,10 @@ const Setting = observer(() => {
     // Initial fetch for instance settings.
     (async () => {
       [InstanceSetting_Key.MEMO_RELATED, InstanceSetting_Key.STORAGE].forEach(async (key) => {
-        await instanceStore.fetchInstanceSetting(key);
+        await fetchSetting(key);
       });
     })();
-  }, [isHost]);
+  }, [isHost, fetchSetting]);
 
   const handleSectionSelectorItemClick = useCallback((settingSection: SettingSection) => {
     window.location.hash = settingSection;
@@ -115,7 +115,7 @@ const Setting = observer(() => {
                     />
                   ))}
                   <span className="px-3 mt-2 opacity-70 text-sm">
-                    {t("setting.version")}: v{instanceStore.state.profile.version}
+                    {t("setting.version")}: v{profile.version}
                   </span>
                 </div>
               </>
@@ -156,6 +156,6 @@ const Setting = observer(() => {
       </div>
     </section>
   );
-});
+};
 
 export default Setting;

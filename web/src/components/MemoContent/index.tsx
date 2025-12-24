@@ -1,4 +1,4 @@
-import { observer } from "mobx-react-lite";
+import { useQueryClient } from "@tanstack/react-query";
 import { memo } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
@@ -8,8 +8,9 @@ import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { memoKeys } from "@/hooks/useMemoQueries";
 import { cn } from "@/lib/utils";
-import { memoStore } from "@/store";
+import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { remarkDisableSetext } from "@/utils/remark-plugins/remark-disable-setext";
 import { remarkPreserveType } from "@/utils/remark-plugins/remark-preserve-type";
@@ -24,16 +25,17 @@ import { Tag } from "./Tag";
 import { TaskListItem } from "./TaskListItem";
 import type { MemoContentProps } from "./types";
 
-const MemoContent = observer((props: MemoContentProps) => {
+const MemoContent = (props: MemoContentProps) => {
   const { className, contentClassName, content, memoName, onClick, onDoubleClick } = props;
   const t = useTranslate();
   const currentUser = useCurrentUser();
+  const queryClient = useQueryClient();
   const {
     containerRef: memoContentContainerRef,
     mode: showCompactMode,
     toggle: toggleCompactMode,
   } = useCompactMode(Boolean(props.compact));
-  const memo = memoName ? memoStore.getMemoByName(memoName) : null;
+  const memo = memoName ? queryClient.getQueryData<Memo>(memoKeys.detail(memoName)) : null;
   const allowEdit = !props.readonly && memo && (currentUser?.name === memo.creator || isSuperUser(currentUser));
 
   const contextValue = {
@@ -94,6 +96,6 @@ const MemoContent = observer((props: MemoContentProps) => {
       </div>
     </MemoContentContext.Provider>
   );
-});
+};
 
 export default memo(MemoContent);

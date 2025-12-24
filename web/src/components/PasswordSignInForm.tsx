@@ -1,24 +1,25 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { LoaderIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { setAccessToken } from "@/auth-state";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authServiceClient } from "@/connect";
+import { useAuth } from "@/contexts/AuthContext";
+import { useInstance } from "@/contexts/InstanceContext";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { instanceStore } from "@/store";
-import { initialUserStore } from "@/store/user";
 import { useTranslate } from "@/utils/i18n";
 
-const PasswordSignInForm = observer(() => {
+function PasswordSignInForm() {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
+  const { profile } = useInstance();
+  const { initialize } = useAuth();
   const actionBtnLoadingState = useLoading(false);
-  const [username, setUsername] = useState(instanceStore.state.profile.mode === "demo" ? "demo" : "");
-  const [password, setPassword] = useState(instanceStore.state.profile.mode === "demo" ? "secret" : "");
+  const [username, setUsername] = useState(profile.mode === "demo" ? "demo" : "");
+  const [password, setPassword] = useState(profile.mode === "demo" ? "secret" : "");
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
@@ -56,7 +57,7 @@ const PasswordSignInForm = observer(() => {
       if (response.accessToken) {
         setAccessToken(response.accessToken, response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined);
       }
-      await initialUserStore();
+      await initialize();
       navigateTo("/");
     } catch (error: unknown) {
       console.error(error);
@@ -108,6 +109,6 @@ const PasswordSignInForm = observer(() => {
       </div>
     </form>
   );
-});
+}
 
 export default PasswordSignInForm;

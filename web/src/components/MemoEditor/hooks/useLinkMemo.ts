@@ -3,8 +3,8 @@ import { useState } from "react";
 import useDebounce from "react-use/lib/useDebounce";
 import { memoServiceClient } from "@/connect";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
+import { extractUserIdFromName } from "@/helpers/resource-names";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { extractUserIdFromName } from "@/store/common";
 import {
   Memo,
   MemoRelation,
@@ -37,7 +37,7 @@ export const useLinkMemo = ({ isOpen, currentMemoName, existingRelations, onAddR
 
       setIsFetching(true);
       try {
-        const conditions = [`creator_id == ${extractUserIdFromName(user.name)}`];
+        const conditions = [`creator_id == ${extractUserIdFromName(user?.name ?? "")}`];
         if (searchText) {
           conditions.push(`content.contains("${searchText}")`);
         }

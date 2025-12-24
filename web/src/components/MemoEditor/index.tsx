@@ -1,4 +1,3 @@
-import { observer } from "mobx-react-lite";
 import { useMemo, useRef } from "react";
 import { toast } from "react-hot-toast";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -23,7 +22,7 @@ export interface MemoEditorProps {
   onCancel?: () => void;
 }
 
-const MemoEditor = observer((props: MemoEditorProps) => {
+const MemoEditor = (props: MemoEditorProps) => {
   const { className, cacheKey, memoName, parentMemoName, autoFocus, placeholder, onConfirm, onCancel } = props;
 
   return (
@@ -40,7 +39,7 @@ const MemoEditor = observer((props: MemoEditorProps) => {
       />
     </EditorProvider>
   );
-});
+};
 
 const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   className,
@@ -75,10 +74,10 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   );
 
   // Initialize editor (load memo or cache)
-  useMemoInit(editorRef, memoName, cacheKey, currentUser.name, autoFocus);
+  useMemoInit(editorRef, memoName, cacheKey, currentUser?.name ?? "", autoFocus);
 
   // Auto-save content to localStorage
-  useAutoSave(state.content, currentUser.name, cacheKey);
+  useAutoSave(state.content, currentUser?.name ?? "", cacheKey);
 
   // Focus mode management with body scroll lock
   useFocusMode(state.ui.isFocusMode);
@@ -109,7 +108,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
       }
 
       // Clear cache on successful save
-      cacheService.clear(cacheService.key(currentUser.name, cacheKey));
+      cacheService.clear(cacheService.key(currentUser?.name ?? "", cacheKey));
 
       // Reset editor state
       dispatch(actions.reset());
@@ -119,8 +118,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
       toast.success("Saved successfully");
     } catch (error) {
-      const message = errorService.handle(error, t);
-      toast.error(message);
+      toast.error(errorService.getErrorMessage(error));
     } finally {
       dispatch(actions.setLoading("saving", false));
     }

@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
-import { observer } from "mobx-react-lite";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { userStore } from "@/store";
+import { useAuth } from "@/contexts/AuthContext";
+import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { UserSetting_GeneralSetting, UserSetting_GeneralSettingSchema } from "@/types/proto/api/v1/user_service_pb";
 import { loadLocale, useTranslate } from "@/utils/i18n";
@@ -15,26 +15,48 @@ import SettingRow from "./SettingRow";
 import SettingSection from "./SettingSection";
 import WebhookSection from "./WebhookSection";
 
-const PreferencesSection = observer(() => {
+const PreferencesSection = () => {
   const t = useTranslate();
-  const generalSetting = userStore.state.userGeneralSetting;
+  const { currentUser, userGeneralSetting: generalSetting, refetchSettings } = useAuth();
+  const { mutate: updateUserGeneralSetting } = useUpdateUserGeneralSetting(currentUser?.name);
 
   const handleLocaleSelectChange = async (locale: Locale) => {
     // Apply locale immediately for instant UI feedback and persist to localStorage
     loadLocale(locale);
     // Persist to user settings
-    await userStore.updateUserGeneralSetting({ locale }, ["locale"]);
+    updateUserGeneralSetting(
+      { generalSetting: { locale }, updateMask: ["locale"] },
+      {
+        onSuccess: () => {
+          refetchSettings();
+        },
+      },
+    );
   };
 
   const handleDefaultMemoVisibilityChanged = async (value: string) => {
-    await userStore.updateUserGeneralSetting({ memoVisibility: value }, ["memoVisibility"]);
+    updateUserGeneralSetting(
+      { generalSetting: { memoVisibility: value }, updateMask: ["memoVisibility"] },
+      {
+        onSuccess: () => {
+          refetchSettings();
+        },
+      },
+    );
   };
 
   const handleThemeChange = async (theme: string) => {
     // Apply theme immediately for instant UI feedback
     loadTheme(theme);
     // Persist to user settings
-    await userStore.updateUserGeneralSetting({ theme }, ["theme"]);
+    updateUserGeneralSetting(
+      { generalSetting: { theme }, updateMask: ["theme"] },
+      {
+        onSuccess: () => {
+          refetchSettings();
+        },
+      },
+    );
   };
 
   // Provide default values if setting is not loaded yet
@@ -85,6 +107,6 @@ const PreferencesSection = observer(() => {
       </SettingGroup>
     </SettingSection>
   );
-});
+};
 
 export default PreferencesSection;

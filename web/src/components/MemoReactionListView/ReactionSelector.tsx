@@ -1,9 +1,8 @@
 import { SmilePlusIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { useInstance } from "@/contexts/InstanceContext";
 import { cn } from "@/lib/utils";
-import { instanceStore } from "@/store";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useReactionActions } from "./hooks";
 
@@ -13,9 +12,10 @@ interface Props {
   onOpenChange?: (open: boolean) => void;
 }
 
-const ReactionSelector = observer((props: Props) => {
+const ReactionSelector = (props: Props) => {
   const { memo, className, onOpenChange } = props;
   const [open, setOpen] = useState(false);
+  const { memoRelatedSetting } = useInstance();
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
@@ -26,7 +26,6 @@ const ReactionSelector = observer((props: Props) => {
     memo,
     onComplete: () => handleOpenChange(false),
   });
-  const instanceMemoRelatedSetting = instanceStore.state.memoRelatedSetting;
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
@@ -42,7 +41,7 @@ const ReactionSelector = observer((props: Props) => {
       </PopoverTrigger>
       <PopoverContent align="center" className="max-w-[90vw] sm:max-w-md">
         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-1 max-h-64 overflow-y-auto">
-          {instanceMemoRelatedSetting.reactions.map((reactionType) => (
+          {memoRelatedSetting.reactions.map((reactionType) => (
             <button
               type="button"
               key={reactionType}
@@ -59,6 +58,6 @@ const ReactionSelector = observer((props: Props) => {
       </PopoverContent>
     </Popover>
   );
-});
+};
 
 export default ReactionSelector;

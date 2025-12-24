@@ -1,15 +1,17 @@
+import { create } from "@bufbuild/protobuf";
 import { ArrowUpIcon, LoaderIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { matchPath } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import { Button } from "@/components/ui/button";
+import { memoServiceClient, userServiceClient } from "@/connect";
+import { useView } from "@/contexts/ViewContext";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { Routes } from "@/router";
-import { memoStore, userStore, viewStore } from "@/store";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import { ListMemosRequestSchema } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import Empty from "../Empty";
 import type { MemoRenderContext } from "../MasonryView";
@@ -28,21 +30,23 @@ interface Props {
   showCreator?: boolean;
 }
 
-const PagedMemoList = observer((props: Props) => {
+const PagedMemoList = (props: Props) => {
   const t = useTranslate();
   const { md } = useResponsiveWidth();
+  const { layout } = useView();
 
   // Simplified state management - separate state variables for clarity
   const [isRequesting, setIsRequesting] = useState(true);
   const [nextPageToken, setNextPageToken] = useState("");
+  const [memos, setMemos] = useState<Memo[]>([]);
 
   // Ref to manage auto-fetch timeout to prevent memory leaks
   const autoFetchTimeoutRef = useRef<number | null>(null);
   // Ref to track if initial fetch has been triggered to prevent duplicates
   const initialFetchTriggeredRef = useRef(false);
 
-  // Apply custom sorting if provided, otherwise use store memos directly
-  const sortedMemoList = props.listSort ? props.listSort(memoStore.state.memos) : memoStore.state.memos;
+  // Apply custom sorting if provided, otherwise use memos directly
+  const sortedMemoList = props.listSort ? props.listSort(memos) : memos;
 
   // Show memo editor only on the root route
   const showMemoEditor = Boolean(matchPath(Routes.ROOT, window.location.pathname));
@@ -53,21 +57,31 @@ const PagedMemoList = observer((props: Props) => {
       setIsRequesting(true);
 
       try {
-        const response = await memoStore.fetchMemos({
-          state: props.state || State.NORMAL,
-          orderBy: props.orderBy || "display_time desc",
-          filter: props.filter,
-          pageSize: props.pageSize || DEFAULT_LIST_MEMOS_PAGE_SIZE,
-          pageToken,
-        });
+        const response = await memoServiceClient.listMemos(
+          create(ListMemosRequestSchema, {
+            state: props.state || State.NORMAL,
+            orderBy: props.orderBy || "display_time desc",
+            filter: props.filter,
+            pageSize: props.pageSize || DEFAULT_LIST_MEMOS_PAGE_SIZE,
+            pageToken,
+          }),
+        );
 
+        // Clear memos if this is a new fetch (no page token), otherwise append
+        setMemos((prev) => (pageToken ? [...prev, ...response.memos] : response.memos));
         setNextPageToken(response?.nextPageToken || "");
 
         // Batch-fetch creators in parallel to avoid individual fetches in MemoView
         // This significantly improves perceived performance by pre-populating the cache
         if (response?.memos && props.showCreator) {
           const uniqueCreators = Array.from(new Set(response.memos.map((memo) => memo.creator)));
-          await Promise.allSettled(uniqueCreators.map((creator) => userStore.getOrFetchUser(creator)));
+          await Promise.allSettled(
+            uniqueCreators.map((creator) =>
+              userServiceClient.getUser({ name: creator }).catch(() => {
+                /* ignore errors */
+              }),
+            ),
+          );
         }
       } finally {
         setIsRequesting(false);
@@ -107,7 +121,7 @@ const PagedMemoList = observer((props: Props) => {
 
   // Refresh the entire memo list from the beginning
   const refreshList = useCallback(async () => {
-    memoStore.state.updateStateId();
+    setMemos([]);
     setNextPageToken("");
     await fetchMoreMemos("");
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -185,7 +199,7 @@ const PagedMemoList = observer((props: Props) => {
                 <MemoFilters />
               </>
             }
-            listMode={viewStore.state.layout === "LIST"}
+            listMode={layout === "LIST"}
           />
 
           {/* Loading indicator for pagination */}
@@ -236,7 +250,7 @@ const PagedMemoList = observer((props: Props) => {
       {children}
     </PullToRefresh>
   );
-});
+};
 
 const BackToTop = () => {
   const t = useTranslate();

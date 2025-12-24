@@ -1,6 +1,9 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { create } from "@bufbuild/protobuf";
+import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { authServiceClient, shortcutServiceClient, userServiceClient } from "@/connect";
-import type { User, UserStats } from "@/types/proto/api/v1/user_service_pb";
+import { buildUserSettingName } from "@/helpers/resource-names";
+import { User, UserSetting, UserSetting_GeneralSetting, UserSetting_Key, UserSettingSchema } from "@/types/proto/api/v1/user_service_pb";
 
 // Query keys factory
 export const userKeys = {
@@ -89,6 +92,117 @@ export function useTagCounts() {
         }
       }
       return tagCount;
+    },
+  });
+}
+
+// Hook to update user
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ user, updateMask }: { user: Partial<User>; updateMask: string[] }) => {
+      const updatedUser = await userServiceClient.updateUser({
+        user: user as User,
+        updateMask: create(FieldMaskSchema, { paths: updateMask }),
+      });
+      return updatedUser;
+    },
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(userKeys.detail(updatedUser.name), updatedUser);
+      queryClient.invalidateQueries({ queryKey: userKeys.currentUser() });
+    },
+  });
+}
+
+// Hook to delete user
+export function useDeleteUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (name: string) => {
+      await userServiceClient.deleteUser({ name });
+      return name;
+    },
+    onSuccess: (name) => {
+      queryClient.removeQueries({ queryKey: userKeys.detail(name) });
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+    },
+  });
+}
+
+// Hook to fetch user settings
+export function useUserSettings(parent?: string) {
+  return useQuery({
+    queryKey: [...userKeys.all, "settings", parent],
+    queryFn: async () => {
+      if (!parent) return { settings: [], shortcuts: [] };
+      const [{ settings }, { shortcuts }] = await Promise.all([
+        userServiceClient.listUserSettings({ parent }),
+        shortcutServiceClient.listShortcuts({ parent }),
+      ]);
+      return { settings, shortcuts };
+    },
+    enabled: !!parent,
+  });
+}
+
+// Hook to update user setting
+export function useUpdateUserSetting() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ setting, updateMask }: { setting: UserSetting; updateMask: string[] }) => {
+      const updatedSetting = await userServiceClient.updateUserSetting({
+        setting,
+        updateMask: create(FieldMaskSchema, { paths: updateMask }),
+      });
+      return updatedSetting;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [...userKeys.all, "settings"] });
+    },
+  });
+}
+
+// Hook to list all users
+export function useListUsers() {
+  return useQuery({
+    queryKey: userKeys.all,
+    queryFn: async () => {
+      const { users } = await userServiceClient.listUsers({});
+      return users;
+    },
+  });
+}
+
+// Hook to update user general setting (convenience wrapper)
+export function useUpdateUserGeneralSetting(currentUserName?: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ generalSetting, updateMask }: { generalSetting: Partial<UserSetting_GeneralSetting>; updateMask: string[] }) => {
+      if (!currentUserName) {
+        throw new Error("No current user");
+      }
+
+      const settingName = buildUserSettingName(currentUserName, UserSetting_Key.GENERAL);
+      const userSetting = create(UserSettingSchema, {
+        name: settingName,
+        value: {
+          case: "generalSetting",
+          value: generalSetting as UserSetting_GeneralSetting,
+        },
+      });
+
+      const updatedSetting = await userServiceClient.updateUserSetting({
+        setting: userSetting,
+        updateMask: create(FieldMaskSchema, { paths: updateMask }),
+      });
+      return updatedSetting;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [...userKeys.all, "settings"] });
     },
   });
 }

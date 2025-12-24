@@ -1,8 +1,7 @@
 import { uniq } from "lodash-es";
 import { useEffect, useState } from "react";
-import { memoServiceClient } from "@/connect";
+import { memoServiceClient, userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { memoStore, userStore } from "@/store";
 import type { Memo, Reaction } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
 
@@ -15,7 +14,8 @@ export const useReactionGroups = (reactions: Reaction[]): ReactionGroup => {
     const fetchReactionGroups = async () => {
       const newReactionGroup = new Map<string, User[]>();
       for (const reaction of reactions) {
-        const user = await userStore.getOrFetchUser(reaction.creator);
+        // Fetch user via gRPC directly since we need it within an effect
+        const user = await userServiceClient.getUser({ name: reaction.creator });
         const users = newReactionGroup.get(reaction.reactionType) || [];
         users.push(user);
         newReactionGroup.set(reaction.reactionType, uniq(users));
@@ -57,7 +57,8 @@ export const useReactionActions = ({ memo, onComplete }: UseReactionActionsOptio
           reaction: { contentId: memo.name, reactionType },
         });
       }
-      await memoStore.getOrFetchMemoByName(memo.name, { skipCache: true });
+      // Refetch the memo to get updated reactions
+      await memoServiceClient.getMemo({ name: memo.name });
     } catch {
       // skip error
     }

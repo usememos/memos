@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { userStore } from "@/store";
 
 export const useMemoEditor = () => {
   const [showEditor, setShowEditor] = useState(false);
@@ -9,7 +8,6 @@ export const useMemoEditor = () => {
     openEditor: () => setShowEditor(true),
     handleEditorConfirm: () => {
       setShowEditor(false);
-      userStore.setStatsStateId();
     },
     handleEditorCancel: () => setShowEditor(false),
   };

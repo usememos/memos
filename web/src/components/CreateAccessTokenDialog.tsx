@@ -75,7 +75,7 @@ function CreateAccessTokenDialog({ open, onOpenChange, onSuccess }: Props) {
     try {
       requestState.setLoading();
       const response = await userServiceClient.createPersonalAccessToken({
-        parent: currentUser.name,
+        parent: currentUser?.name,
         description: state.description,
         expiresInDays: state.expiration,
       });

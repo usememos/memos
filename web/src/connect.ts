@@ -2,8 +2,8 @@ import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError, createClient, type Interceptor } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { getAccessToken, setAccessToken } from "./auth-state";
+import { getInstanceConfig } from "./instance-config";
 import { ROUTES } from "./router/routes";
-import { instanceStore } from "./store";
 import { ActivityService } from "./types/proto/api/v1/activity_service_pb";
 import { AttachmentService } from "./types/proto/api/v1/attachment_service_pb";
 import { AuthService } from "./types/proto/api/v1/auth_service_pb";
@@ -37,30 +37,28 @@ const ROUTE_CONFIG = {
 // Token Refresh State Management
 // ============================================================================
 
-class TokenRefreshManager {
-  private isRefreshing = false;
-  private refreshPromise: Promise<void> | null = null;
+const createTokenRefreshManager = () => {
+  let isRefreshing = false;
+  let refreshPromise: Promise<void> | null = null;
 
-  async refresh(refreshFn: () => Promise<void>): Promise<void> {
-    if (this.isRefreshing && this.refreshPromise) {
-      return this.refreshPromise;
-    }
+  return {
+    async refresh(refreshFn: () => Promise<void>): Promise<void> {
+      if (isRefreshing && refreshPromise) {
+        return refreshPromise;
+      }
 
-    this.isRefreshing = true;
-    this.refreshPromise = refreshFn().finally(() => {
-      this.isRefreshing = false;
-      this.refreshPromise = null;
-    });
+      isRefreshing = true;
+      refreshPromise = refreshFn().finally(() => {
+        isRefreshing = false;
+        refreshPromise = null;
+      });
 
-    return this.refreshPromise;
-  }
+      return refreshPromise;
+    },
+  };
+};
 
-  isCurrentlyRefreshing(): boolean {
-    return this.isRefreshing;
-  }
-}
-
-const tokenRefreshManager = new TokenRefreshManager();
+const tokenRefreshManager = createTokenRefreshManager();
 
 // ============================================================================
 // Route Access Control
@@ -79,7 +77,7 @@ function getAuthFailureRedirect(currentPath: string): string | null {
     return null;
   }
 
-  if (instanceStore.state.memoRelatedSetting.disallowPublicVisibility) {
+  if (getInstanceConfig().memoRelatedSetting.disallowPublicVisibility) {
     return ROUTES.AUTH;
   }
 

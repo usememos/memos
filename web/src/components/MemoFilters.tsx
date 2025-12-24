@@ -11,11 +11,7 @@ import {
   SearchIcon,
   XIcon,
 } from "lucide-react";
-import { observer } from "mobx-react-lite";
-import { useEffect, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
-import { memoFilterStore } from "@/store";
-import { FilterFactor, getMemoFilterKey, MemoFilter, parseFilterQuery, stringifyFilters } from "@/store/memoFilter";
+import { FilterFactor, getMemoFilterKey, MemoFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useTranslate } from "@/utils/i18n";
 
 interface FilterConfig {
@@ -58,38 +54,12 @@ const FILTER_CONFIGS: Record<FilterFactor, FilterConfig> = {
   },
 };
 
-const MemoFilters = observer(() => {
+const MemoFilters = () => {
   const t = useTranslate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const filters = memoFilterStore.filters;
-  const lastSyncedUrlRef = useRef("");
-  const lastSyncedStoreRef = useRef("");
-
-  useEffect(() => {
-    const filterParam = searchParams.get("filter") || "";
-    if (filterParam !== lastSyncedUrlRef.current) {
-      lastSyncedUrlRef.current = filterParam;
-      const newFilters = parseFilterQuery(filterParam);
-      memoFilterStore.setFilters(newFilters);
-      lastSyncedStoreRef.current = stringifyFilters(newFilters);
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    const storeString = stringifyFilters(filters);
-    if (storeString !== lastSyncedStoreRef.current && storeString !== lastSyncedUrlRef.current) {
-      lastSyncedStoreRef.current = storeString;
-      const newParams = new URLSearchParams();
-      if (filters.length > 0) {
-        newParams.set("filter", storeString);
-      }
-      setSearchParams(newParams, { replace: true });
-      lastSyncedUrlRef.current = filters.length > 0 ? storeString : "";
-    }
-  }, [filters, setSearchParams]);
+  const { filters, removeFilter } = useMemoFilterContext();
 
   const handleRemoveFilter = (filter: MemoFilter) => {
-    memoFilterStore.removeFilter((f: MemoFilter) => isEqual(f, filter));
+    removeFilter((f: MemoFilter) => isEqual(f, filter));
   };
 
   const getFilterDisplayText = (filter: MemoFilter): string => {
@@ -129,7 +99,7 @@ const MemoFilters = observer(() => {
       })}
     </div>
   );
-});
+};
 
 MemoFilters.displayName = "MemoFilters";
 

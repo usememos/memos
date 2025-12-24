@@ -1,12 +1,10 @@
 import { create } from "@bufbuild/protobuf";
-import { timestampDate, timestampFromDate } from "@bufbuild/protobuf/wkt";
+import { FieldMaskSchema, timestampDate, timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { isEqual } from "lodash-es";
 import { memoServiceClient } from "@/connect";
-import { memoStore } from "@/store";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 import type { EditorState } from "../state";
-import { EditorError } from "./errorService";
 import { uploadService } from "./uploadService";
 
 function buildUpdateMask(
@@ -73,91 +71,73 @@ export const memoService = {
       parentMemoName?: string;
     },
   ): Promise<{ memoName: string; hasChanges: boolean }> {
-    try {
-      // 1. Upload local files first
-      const newAttachments = await uploadService.uploadFiles(state.localFiles);
-      const allAttachments = [...state.metadata.attachments, ...newAttachments];
+    // 1. Upload local files first
+    const newAttachments = await uploadService.uploadFiles(state.localFiles);
+    const allAttachments = [...state.metadata.attachments, ...newAttachments];
 
-      // 2. Update existing memo
-      if (options.memoName) {
-        const prevMemo = await memoStore.getOrFetchMemoByName(options.memoName);
-        if (!prevMemo) {
-          throw new EditorError("SAVE_FAILED", "Memo not found");
-        }
+    // 2. Update existing memo
+    if (options.memoName) {
+      const prevMemo = await memoServiceClient.getMemo({ name: options.memoName });
+      const { mask, patch } = buildUpdateMask(prevMemo, state, allAttachments);
 
-        const { mask, patch } = buildUpdateMask(prevMemo, state, allAttachments);
-
-        if (mask.size === 0) {
-          return { memoName: prevMemo.name, hasChanges: false };
-        }
-
-        const memo = await memoStore.updateMemo(patch, Array.from(mask));
-        return { memoName: memo.name, hasChanges: true };
+      if (mask.size === 0) {
+        return { memoName: prevMemo.name, hasChanges: false };
       }
 
-      // 3. Create new memo or comment
-      const memoData = create(MemoSchema, {
-        content: state.content,
-        visibility: state.metadata.visibility,
-        attachments: allAttachments,
-        relations: state.metadata.relations,
-        location: state.metadata.location,
-        createTime: state.timestamps.createTime ? timestampFromDate(state.timestamps.createTime) : undefined,
-        updateTime: state.timestamps.updateTime ? timestampFromDate(state.timestamps.updateTime) : undefined,
+      const memo = await memoServiceClient.updateMemo({
+        memo: create(MemoSchema, patch as Record<string, unknown>),
+        updateMask: create(FieldMaskSchema, { paths: Array.from(mask) }),
       });
-
-      const memo = options.parentMemoName
-        ? await memoServiceClient.createMemoComment({
-            name: options.parentMemoName,
-            comment: memoData,
-          })
-        : await memoStore.createMemo(memoData);
-
       return { memoName: memo.name, hasChanges: true };
-    } catch (error) {
-      if (error instanceof EditorError) {
-        throw error;
-      }
-      throw new EditorError("SAVE_FAILED", error);
     }
+
+    // 3. Create new memo or comment
+    const memoData = create(MemoSchema, {
+      content: state.content,
+      visibility: state.metadata.visibility,
+      attachments: allAttachments,
+      relations: state.metadata.relations,
+      location: state.metadata.location,
+      createTime: state.timestamps.createTime ? timestampFromDate(state.timestamps.createTime) : undefined,
+      updateTime: state.timestamps.updateTime ? timestampFromDate(state.timestamps.updateTime) : undefined,
+    });
+
+    const memo = options.parentMemoName
+      ? await memoServiceClient.createMemoComment({
+          name: options.parentMemoName,
+          comment: memoData,
+        })
+      : await memoServiceClient.createMemo({ memo: memoData });
+
+    return { memoName: memo.name, hasChanges: true };
   },
 
   async load(memoName: string): Promise<EditorState> {
-    try {
-      const memo = await memoStore.getOrFetchMemoByName(memoName);
-      if (!memo) {
-        throw new EditorError("LOAD_FAILED", "Memo not found");
-      }
+    const memo = await memoServiceClient.getMemo({ name: memoName });
 
-      return {
-        content: memo.content,
-        metadata: {
-          visibility: memo.visibility,
-          attachments: memo.attachments,
-          relations: memo.relations,
-          location: memo.location,
+    return {
+      content: memo.content,
+      metadata: {
+        visibility: memo.visibility,
+        attachments: memo.attachments,
+        relations: memo.relations,
+        location: memo.location,
+      },
+      ui: {
+        isFocusMode: false,
+        isLoading: {
+          saving: false,
+          uploading: false,
+          loading: false,
         },
-        ui: {
-          isFocusMode: false,
-          isLoading: {
-            saving: false,
-            uploading: false,
-            loading: false,
-          },
-          isDragging: false,
-          isComposing: false,
-        },
-        timestamps: {
-          createTime: memo.createTime ? timestampDate(memo.createTime) : undefined,
-          updateTime: memo.updateTime ? timestampDate(memo.updateTime) : undefined,
-        },
-        localFiles: [],
-      };
-    } catch (error) {
-      if (error instanceof EditorError) {
-        throw error;
-      }
-      throw new EditorError("LOAD_FAILED", error);
-    }
+        isDragging: false,
+        isComposing: false,
+      },
+      timestamps: {
+        createTime: memo.createTime ? timestampDate(memo.createTime) : undefined,
+        updateTime: memo.updateTime ? timestampDate(memo.updateTime) : undefined,
+      },
+      localFiles: [],
+    };
   },
 };

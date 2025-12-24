@@ -1,7 +1,8 @@
-import { userStore } from "@/store";
+import { useAuth } from "@/contexts/AuthContext";
 
 const useCurrentUser = () => {
-  return userStore.state.userMapByName[userStore.state.currentUser || ""];
+  const { currentUser } = useAuth();
+  return currentUser;
 };
 
 export default useCurrentUser;

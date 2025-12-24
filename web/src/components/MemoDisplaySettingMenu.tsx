@@ -1,8 +1,7 @@
 import { Settings2Icon } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useView } from "@/contexts/ViewContext";
 import { cn } from "@/lib/utils";
-import { viewStore } from "@/store";
 import { useTranslate } from "@/utils/i18n";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
@@ -10,9 +9,10 @@ interface Props {
   className?: string;
 }
 
-const MemoDisplaySettingMenu = observer(({ className }: Props) => {
+function MemoDisplaySettingMenu({ className }: Props) {
   const t = useTranslate();
-  const isApplying = viewStore.state.orderByTimeAsc !== false || viewStore.state.layout !== "LIST";
+  const { orderByTimeAsc, layout, toggleSortOrder, setLayout } = useView();
+  const isApplying = orderByTimeAsc !== false || layout !== "LIST";
 
   return (
     <Popover>
@@ -24,12 +24,12 @@ const MemoDisplaySettingMenu = observer(({ className }: Props) => {
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.direction")}</span>
             <Select
-              value={viewStore.state.orderByTimeAsc.toString()}
-              onValueChange={(value) =>
-                viewStore.state.setPartial({
-                  orderByTimeAsc: value === "true",
-                })
-              }
+              value={orderByTimeAsc.toString()}
+              onValueChange={(value) => {
+                if ((value === "true") !== orderByTimeAsc) {
+                  toggleSortOrder();
+                }
+              }}
             >
               <SelectTrigger size="sm">
                 <SelectValue />
@@ -42,14 +42,7 @@ const MemoDisplaySettingMenu = observer(({ className }: Props) => {
           </div>
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-sm shrink-0 mr-3 text-foreground">{t("common.layout")}</span>
-            <Select
-              value={viewStore.state.layout}
-              onValueChange={(value) =>
-                viewStore.state.setPartial({
-                  layout: value as "LIST" | "MASONRY",
-                })
-              }
-            >
+            <Select value={layout} onValueChange={(value) => setLayout(value as "LIST" | "MASONRY")}>
               <SelectTrigger size="sm">
                 <SelectValue />
               </SelectTrigger>
@@ -63,6 +56,6 @@ const MemoDisplaySettingMenu = observer(({ className }: Props) => {
       </PopoverContent>
     </Popover>
   );
-});
+}
 
 export default MemoDisplaySettingMenu;
