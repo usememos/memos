@@ -1,8 +1,8 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { memoServiceClient } from "@/connect";
-import type { CreateMemoRequest, ListMemosRequest, Memo } from "@/types/proto/api/v1/memo_service_pb";
+import type { ListMemosRequest, Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { ListMemosRequestSchema, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
 // Query keys factory for consistent cache management
@@ -14,7 +14,10 @@ export const memoKeys = {
   detail: (name: string) => [...memoKeys.details(), name] as const,
 };
 
-// Hook to fetch list of memos
+/**
+ * Hook to fetch a list of memos with filtering and sorting.
+ * @param request - Request parameters (state, orderBy, filter, pageSize)
+ */
 export function useMemos(request: Partial<ListMemosRequest> = {}) {
   return useQuery({
     queryKey: memoKeys.list(request),
@@ -25,7 +28,37 @@ export function useMemos(request: Partial<ListMemosRequest> = {}) {
   });
 }
 
-// Hook to fetch single memo by name
+/**
+ * Hook for infinite scrolling/pagination of memos.
+ * Automatically fetches pages as the user scrolls.
+ * 
+ * @param request - Partial request configuration (state, orderBy, filter, pageSize)
+ * @returns React Query infinite query result with pages of memos
+ */
+export function useInfiniteMemos(request: Partial<ListMemosRequest> = {}) {
+  return useInfiniteQuery({
+    queryKey: memoKeys.list(request),
+    queryFn: async ({ pageParam }) => {
+      const response = await memoServiceClient.listMemos(
+        create(ListMemosRequestSchema, {
+          ...request,
+          pageToken: pageParam || "",
+        } as Record<string, unknown>),
+      );
+      return response;
+    },
+    initialPageParam: "",
+    getNextPageParam: (lastPage) => lastPage.nextPageToken || undefined,
+    staleTime: 1000 * 60, // Consider data fresh for 1 minute
+    gcTime: 1000 * 60 * 5, // Keep unused data in cache for 5 minutes
+  });
+}
+
+/**
+ * Hook to fetch a single memo by its resource name.
+ * @param name - Memo resource name (e.g., "memos/123")
+ * @param options - Query options including enabled flag
+ */
 export function useMemo(name: string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: memoKeys.detail(name),
@@ -34,10 +67,14 @@ export function useMemo(name: string, options?: { enabled?: boolean }) {
       return memo;
     },
     enabled: options?.enabled ?? true,
+    staleTime: 1000 * 60, // 1 minute - memos can be edited frequently
   });
 }
 
-// Hook to create memo
+/**
+ * Hook to create a new memo.
+ * Automatically invalidates memo lists and user stats on success.
+ */
 export function useCreateMemo() {
   const queryClient = useQueryClient();
 
@@ -57,7 +94,10 @@ export function useCreateMemo() {
   });
 }
 
-// Hook to update memo with optimistic updates
+/**
+ * Hook to update an existing memo with optimistic updates.
+ * Implements rollback on error for better UX.
+ */
 export function useUpdateMemo() {
   const queryClient = useQueryClient();
 
@@ -70,23 +110,27 @@ export function useUpdateMemo() {
       return memo;
     },
     onMutate: async ({ update }) => {
-      // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: memoKeys.detail(update.name!) });
+      if (!update.name) {
+        return { previousMemo: undefined };
+      }
 
-      // Snapshot previous value
-      const previousMemo = queryClient.getQueryData<Memo>(memoKeys.detail(update.name!));
+      // Cancel outgoing refetches to prevent race conditions
+      await queryClient.cancelQueries({ queryKey: memoKeys.detail(update.name) });
 
-      // Optimistically update
+      // Snapshot previous value for rollback on error
+      const previousMemo = queryClient.getQueryData<Memo>(memoKeys.detail(update.name));
+
+      // Optimistically update the cache
       if (previousMemo) {
-        queryClient.setQueryData(memoKeys.detail(update.name!), { ...previousMemo, ...update });
+        queryClient.setQueryData(memoKeys.detail(update.name), { ...previousMemo, ...update });
       }
 
       return { previousMemo };
     },
-    onError: (err, { update }, context) => {
+    onError: (_err, { update }, context) => {
       // Rollback on error
-      if (context?.previousMemo) {
-        queryClient.setQueryData(memoKeys.detail(update.name!), context.previousMemo);
+      if (context?.previousMemo && update.name) {
+        queryClient.setQueryData(memoKeys.detail(update.name), context.previousMemo);
       }
     },
     onSuccess: (updatedMemo) => {
@@ -100,7 +144,10 @@ export function useUpdateMemo() {
   });
 }
 
-// Hook to delete memo
+/**
+ * Hook to delete a memo.
+ * Automatically removes memo from cache and invalidates lists on success.
+ */
 export function useDeleteMemo() {
   const queryClient = useQueryClient();
 

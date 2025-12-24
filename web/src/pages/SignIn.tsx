@@ -23,10 +23,10 @@ const SignIn = () => {
 
   // Redirect to root page if already signed in.
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser?.name) {
       window.location.href = Routes.ROOT;
     }
-  }, []);
+  }, [currentUser]);
 
   // Prepare identity provider list.
   useEffect(() => {
@@ -78,7 +78,7 @@ const SignIn = () => {
         {!instanceGeneralSetting.disallowPasswordAuth ? (
           <PasswordSignInForm />
         ) : (
-          identityProviderList.length == 0 && <p className="w-full text-2xl mt-2 text-muted-foreground">Password auth is not allowed.</p>
+          identityProviderList.length === 0 && <p className="w-full text-2xl mt-2 text-muted-foreground">Password auth is not allowed.</p>
         )}
         {!instanceGeneralSetting.disallowUserRegistration && !instanceGeneralSetting.disallowPasswordAuth && (
           <p className="w-full mt-4 text-sm">

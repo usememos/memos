@@ -1,6 +1,8 @@
 import { useMemo } from "react";
+import { matchPath } from "react-router-dom";
 import OverflowTip from "@/components/kit/OverflowTip";
 import { useTagCounts } from "@/hooks/useUserQueries";
+import { Routes } from "@/router";
 import type { EditorRefActions } from ".";
 import { SuggestionsPopup } from "./SuggestionsPopup";
 import { useSuggestions } from "./useSuggestions";
@@ -11,7 +13,9 @@ interface TagSuggestionsProps {
 }
 
 export default function TagSuggestions({ editorRef, editorActions }: TagSuggestionsProps) {
-  const { data: tagCount = {} } = useTagCounts();
+  // On explore page, show all users' tags; otherwise show current user's tags
+  const isExplorePage = Boolean(matchPath(Routes.EXPLORE, window.location.pathname));
+  const { data: tagCount = {} } = useTagCounts(!isExplorePage);
 
   const sortedTags = useMemo(() => {
     return Object.entries(tagCount)

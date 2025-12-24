@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { ArchiveIcon, CheckIcon, GlobeIcon, LogOutIcon, PaletteIcon, SettingsIcon, SquareUserIcon, User2Icon } from "lucide-react";
-import { authServiceClient, userServiceClient } from "@/connect";
+import { userServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
@@ -31,7 +31,7 @@ const UserMenu = (props: Props) => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const currentUser = useCurrentUser();
-  const { userGeneralSetting, refetchSettings } = useAuth();
+  const { userGeneralSetting, refetchSettings, logout } = useAuth();
   const currentLocale = userGeneralSetting?.locale || "en";
   const currentTheme = userGeneralSetting?.theme || "default";
 
@@ -84,25 +84,29 @@ const UserMenu = (props: Props) => {
   };
 
   const handleSignOut = async () => {
-    await authServiceClient.signOut({});
+    // First, clear auth state and cache BEFORE doing anything else
+    await logout();
 
-    // Clear user-specific localStorage items (e.g., drafts)
-    // Preserve app-wide settings like theme
-    const keysToPreserve = ["memos-theme", "tag-view-as-tree", "tag-tree-auto-expand", "viewStore"];
-    const keysToRemove: string[] = [];
+    try {
+      // Then clear user-specific localStorage items
+      // Preserve app-wide settings like theme
+      const keysToPreserve = ["memos-theme", "tag-view-as-tree", "tag-tree-auto-expand", "viewStore"];
+      const keysToRemove: string[] = [];
 
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && !keysToPreserve.includes(key)) {
-        keysToRemove.push(key);
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && !keysToPreserve.includes(key)) {
+          keysToRemove.push(key);
+        }
       }
+
+      keysToRemove.forEach((key) => localStorage.removeItem(key));
+    } catch (error) {
+      // Ignore errors from localStorage operations
     }
 
-    keysToRemove.forEach((key) => localStorage.removeItem(key));
-
-    // Use replace() instead of href to prevent back button from showing cached sensitive data
-    // This removes the current page from browser history
-    window.location.replace(Routes.AUTH);
+    // Always redirect to auth page
+    window.location.href = Routes.AUTH;
   };
 
   return (

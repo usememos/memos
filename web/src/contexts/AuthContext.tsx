@@ -98,7 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await authServiceClient.signOut({});
     } catch (error) {
-      console.error("Failed to sign out:", error);
+      console.error("[AuthContext] Failed to sign out:", error);
     } finally {
       clearAccessToken();
       setState({

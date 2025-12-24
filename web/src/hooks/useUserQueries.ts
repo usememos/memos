@@ -17,7 +17,10 @@ export const userKeys = {
   notifications: () => [...userKeys.all, "notifications"] as const,
 };
 
-// Hook to get current authenticated user
+/**
+ * Hook to get the current authenticated user.
+ * Data is cached for 5 minutes as auth state changes infrequently.
+ */
 export function useCurrentUser() {
   return useQuery({
     queryKey: userKeys.currentUser(),
@@ -29,7 +32,11 @@ export function useCurrentUser() {
   });
 }
 
-// Hook to fetch user by name
+/**
+ * Hook to fetch a specific user by name.
+ * @param name - User resource name (e.g., "users/123")
+ * @param options - Query options including enabled flag
+ */
 export function useUser(name: string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: userKeys.detail(name),
@@ -38,23 +45,31 @@ export function useUser(name: string, options?: { enabled?: boolean }) {
       return user;
     },
     enabled: options?.enabled ?? true,
+    staleTime: 1000 * 60 * 5, // 5 minutes - user profiles don't change often
   });
 }
 
-// Hook to fetch user stats
+/**
+ * Hook to fetch statistics for a specific user.
+ * @param username - User resource name (e.g., "users/123")
+ */
 export function useUserStats(username?: string) {
   return useQuery({
     queryKey: username ? userKeys.userStats(username) : userKeys.stats(),
     queryFn: async () => {
-      const name = username ? `${username}/stats` : undefined;
-      const stats = await userServiceClient.getUserStats({ name });
+      if (!username) {
+        throw new Error("Username is required");
+      }
+      const stats = await userServiceClient.getUserStats({ name: username });
       return stats;
     },
     enabled: !!username,
   });
 }
 
-// Hook to fetch shortcuts
+/**
+ * Hook to fetch shortcuts for the current user.
+ */
 export function useShortcuts() {
   return useQuery({
     queryKey: userKeys.shortcuts(),
@@ -65,38 +80,69 @@ export function useShortcuts() {
   });
 }
 
-// Hook to fetch notifications
+/**
+ * Hook to fetch notifications for the current user.
+ * Only fetches when a user is authenticated.
+ */
 export function useNotifications() {
+  const { data: currentUser } = useCurrentUser();
+
   return useQuery({
     queryKey: userKeys.notifications(),
     queryFn: async () => {
-      const { notifications } = await userServiceClient.listUserNotifications({});
+      if (!currentUser?.name) {
+        return [];
+      }
+      const { notifications } = await userServiceClient.listUserNotifications({ parent: currentUser.name });
       return notifications;
     },
+    enabled: !!currentUser?.name,
+    staleTime: 1000 * 30, // 30 seconds - notifications should update frequently
   });
 }
 
-// Hook to get aggregated tag counts across all users
-export function useTagCounts() {
+/**
+ * Hook to fetch tag counts for autocomplete suggestions.
+ * @param forCurrentUser - If true, fetches only current user's tags; if false, fetches all public tags
+ */
+export function useTagCounts(forCurrentUser = false) {
+  const { data: currentUser } = useCurrentUser();
+
   return useQuery({
-    queryKey: [...userKeys.stats(), "tagCounts"],
+    queryKey: forCurrentUser ? [...userKeys.stats(), "tagCounts", "current"] : [...userKeys.stats(), "tagCounts", "all"],
     queryFn: async () => {
-      // Fetch all user stats
-      const stats = await userServiceClient.getUserStats({});
-
-      // Aggregate tag counts
-      const tagCount: Record<string, number> = {};
-      if (stats.tagCount) {
-        for (const [tag, count] of Object.entries(stats.tagCount)) {
-          tagCount[tag] = (tagCount[tag] || 0) + count;
+      if (forCurrentUser) {
+        // Fetch current user stats only
+        if (!currentUser?.name) {
+          return {};
         }
+        const stats = await userServiceClient.getUserStats({ name: currentUser.name });
+        return stats.tagCount || {};
+      } else {
+        // Fetch all user stats
+        const { stats } = await userServiceClient.listAllUserStats({});
+
+        // Aggregate tag counts from all users
+        const tagCount: Record<string, number> = {};
+        for (const userStats of stats) {
+          if (userStats.tagCount) {
+            for (const [tag, count] of Object.entries(userStats.tagCount)) {
+              tagCount[tag] = (tagCount[tag] || 0) + count;
+            }
+          }
+        }
+        return tagCount;
       }
-      return tagCount;
     },
+    enabled: !forCurrentUser || !!currentUser?.name,
+    staleTime: 1000 * 60 * 2, // 2 minutes - tags don't change frequently
   });
 }
 
-// Hook to update user
+/**
+ * Hook to update a user's profile.
+ * Automatically updates the cache on success.
+ */
 export function useUpdateUser() {
   const queryClient = useQueryClient();
 
@@ -115,7 +161,10 @@ export function useUpdateUser() {
   });
 }
 
-// Hook to delete user
+/**
+ * Hook to delete a user.
+ * Automatically removes the user from cache on success.
+ */
 export function useDeleteUser() {
   const queryClient = useQueryClient();
 
