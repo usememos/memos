@@ -1,5 +1,5 @@
 import { ArrowUpIcon, LoaderIcon } from "lucide-react";
-import { useCallback, useEffect, useRef, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { matchPath } from "react-router-dom";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import { Button } from "@/components/ui/button";
@@ -93,14 +93,7 @@ const PagedMemoList = (props: Props) => {
   const showMemoEditor = Boolean(matchPath(Routes.ROOT, window.location.pathname));
 
   // Use React Query's infinite query for pagination
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-    refetch,
-  } = useInfiniteMemos({
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch } = useInfiniteMemos({
     state: props.state || State.NORMAL,
     orderBy: props.orderBy || "display_time desc",
     filter: props.filter,
@@ -111,10 +104,7 @@ const PagedMemoList = (props: Props) => {
   const memos = useMemo(() => data?.pages.flatMap((page) => page.memos) || [], [data]);
 
   // Apply custom sorting if provided, otherwise use memos directly
-  const sortedMemoList = useMemo(
-    () => (props.listSort ? props.listSort(memos) : memos),
-    [memos, props.listSort],
-  );
+  const sortedMemoList = useMemo(() => (props.listSort ? props.listSort(memos) : memos), [memos, props.listSort]);
 
   // Batch-fetch creators when new data arrives to improve performance
   useEffect(() => {
@@ -140,7 +130,6 @@ const PagedMemoList = (props: Props) => {
     memoCount: sortedMemoList.length,
     onFetchNext: fetchNextPage,
   });
-
 
   // Infinite scroll: fetch more when user scrolls near bottom
   useEffect(() => {

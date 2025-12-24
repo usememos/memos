@@ -31,7 +31,7 @@ export function useMemos(request: Partial<ListMemosRequest> = {}) {
 /**
  * Hook for infinite scrolling/pagination of memos.
  * Automatically fetches pages as the user scrolls.
- * 
+ *
  * @param request - Partial request configuration (state, orderBy, filter, pageSize)
  * @returns React Query infinite query result with pages of memos
  */

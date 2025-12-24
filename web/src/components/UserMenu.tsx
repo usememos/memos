@@ -101,7 +101,7 @@ const UserMenu = (props: Props) => {
       }
 
       keysToRemove.forEach((key) => localStorage.removeItem(key));
-    } catch (error) {
+    } catch {
       // Ignore errors from localStorage operations
     }
 
