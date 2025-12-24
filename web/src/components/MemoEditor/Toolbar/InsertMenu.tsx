@@ -13,6 +13,7 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
+  useDropdownMenuSubHoverDelay,
 } from "@/components/ui/dropdown-menu";
 import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -35,9 +36,15 @@ const InsertMenu = observer((props: Props) => {
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
+  const [moreSubmenuOpen, setMoreSubmenuOpen] = useState(false);
 
   // Abort controller for canceling geocoding requests
   const { abort: abortGeocoding, abortAndCreate: createGeocodingSignal } = useAbortController();
+
+  const { handleTriggerEnter, handleTriggerLeave, handleContentEnter, handleContentLeave } = useDropdownMenuSubHoverDelay(
+    150,
+    setMoreSubmenuOpen,
+  );
 
   const { fileInputRef, selectingFlag, handleFileInputChange, handleUploadClick } = useFileUpload((newFiles: LocalFile[]) => {
     if (context.addLocalFiles) {
@@ -138,7 +145,7 @@ const InsertMenu = observer((props: Props) => {
 
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="icon" className="shadow-none" disabled={isUploading}>
             {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <PlusIcon className="size-4" />}
@@ -158,19 +165,25 @@ const InsertMenu = observer((props: Props) => {
             {t("tooltip.select-location")}
           </DropdownMenuItem>
           {/* View submenu with Focus Mode */}
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
+          <DropdownMenuSub open={moreSubmenuOpen} onOpenChange={setMoreSubmenuOpen}>
+            <DropdownMenuSubTrigger onPointerEnter={handleTriggerEnter} onPointerLeave={handleTriggerLeave}>
               <MoreHorizontalIcon className="w-4 h-4" />
               {t("common.more")}
             </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent>
-              <DropdownMenuItem onClick={props.onToggleFocusMode}>
+            <DropdownMenuSubContent onPointerEnter={handleContentEnter} onPointerLeave={handleContentLeave}>
+              <DropdownMenuItem
+                onClick={() => {
+                  props.onToggleFocusMode?.();
+                  setMoreSubmenuOpen(false);
+                }}
+              >
                 <Maximize2Icon className="w-4 h-4" />
                 {t("editor.focus-mode")}
                 <span className="ml-auto text-xs text-muted-foreground opacity-60">⌘⇧F</span>
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
+          <div className="px-2 py-1 text-xs text-muted-foreground opacity-80">{t("editor.slash-commands")}</div>
         </DropdownMenuContent>
       </DropdownMenu>
 
@@ -201,8 +214,7 @@ const InsertMenu = observer((props: Props) => {
         state={location.state}
         locationInitialized={location.locationInitialized}
         onPositionChange={handlePositionChange}
-        onLatChange={location.handleLatChange}
-        onLngChange={location.handleLngChange}
+        onUpdateCoordinate={location.updateCoordinate}
         onPlaceholderChange={location.setPlaceholder}
         onCancel={handleLocationCancel}
         onConfirm={handleLocationConfirm}

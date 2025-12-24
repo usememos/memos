@@ -122,7 +122,8 @@
     "save": "Save",
     "no-changes-detected": "No changes detected",
     "focus-mode": "Focus Mode",
-    "exit-focus-mode": "Exit Focus Mode"
+    "exit-focus-mode": "Exit Focus Mode",
+    "slash-commands": "Type `/` for commands"
   },
   "filters": {
     "has-code": "hasCode",

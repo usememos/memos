@@ -1,3 +1,4 @@
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Memo } from "@/types/proto/api/v1/memo_service_pb";
@@ -75,7 +76,9 @@ export const LinkMemoDialog = ({
                   onClick={() => onSelectMemo(memo)}
                 >
                   <div className="w-full flex flex-col justify-start items-start">
-                    <p className="text-xs text-muted-foreground select-none">{memo.displayTime?.toLocaleString()}</p>
+                    <p className="text-xs text-muted-foreground select-none">
+                      {memo.displayTime && timestampDate(memo.displayTime).toLocaleString()}
+                    </p>
                     <p className="mt-0.5 text-sm leading-5 line-clamp-2">
                       {searchText ? highlightSearchText(memo.content, searchText) : memo.snippet}
                     </p>

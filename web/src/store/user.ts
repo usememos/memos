@@ -72,44 +72,28 @@ const userStore = (() => {
   const state = new LocalState();
   const deduplicator = new RequestDeduplicator();
 
-  const getOrFetchUserByName = async (name: string) => {
+  const getOrFetchUser = async (name: string) => {
     const userMap = state.userMapByName;
     if (userMap[name]) {
       return userMap[name] as User;
     }
-    const user = await userServiceClient.getUser({
-      name: name,
-    });
-    state.setPartial({
-      userMapByName: {
-        ...userMap,
-        [name]: user,
-      },
-    });
-    return user;
-  };
-
-  const getOrFetchUserByUsername = async (username: string) => {
-    const userMap = state.userMapByName;
-    for (const name in userMap) {
-      if (userMap[name].username === username) {
-        return userMap[name];
+    const requestKey = createRequestKey("getOrFetchUser", { name });
+    return deduplicator.execute(requestKey, async () => {
+      // Double-check cache in case another request finished first
+      if (state.userMapByName[name]) {
+        return state.userMapByName[name] as User;
       }
-    }
-    // Use GetUser with username - supports both "users/{id}" and "users/{username}"
-    const user = await userServiceClient.getUser({
-      name: `users/${username}`,
+      const user = await userServiceClient.getUser({
+        name: name,
+      });
+      state.setPartial({
+        userMapByName: {
+          ...state.userMapByName,
+          [name]: user,
+        },
+      });
+      return user;
     });
-    if (!user) {
-      throw new Error(`User with username ${username} not found`);
-    }
-    state.setPartial({
-      userMapByName: {
-        ...userMap,
-        [user.name]: user,
-      },
-    });
-    return user;
   };
 
   const getUserByName = (name: string) => {
@@ -292,8 +276,7 @@ const userStore = (() => {
 
   return {
     state,
-    getOrFetchUserByName,
-    getOrFetchUserByUsername,
+    getOrFetchUser,
     getUserByName,
     fetchUsers,
     updateUser,

@@ -50,7 +50,7 @@ const MemoCommentMessage = observer(({ notification }: Props) => {
         });
         setCommentMemo(comment);
 
-        const sender = await userStore.getOrFetchUserByName(notification.sender);
+        const sender = await userStore.getOrFetchUser(notification.sender);
         setSender(sender);
         setInitialized(true);
       }

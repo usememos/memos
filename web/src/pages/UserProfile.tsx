@@ -30,7 +30,7 @@ const UserProfile = observer(() => {
     }
 
     userStore
-      .getOrFetchUserByUsername(username)
+      .getOrFetchUser(`users/${username}`)
       .then((user) => {
         setUser(user);
         loadingState.setFinish();

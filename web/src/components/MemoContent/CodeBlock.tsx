@@ -25,9 +25,11 @@ export const CodeBlock = observer(({ children, className, ...props }: CodeBlockP
   // If it's a mermaid block, render with MermaidBlock component
   if (language === "mermaid") {
     return (
-      <MermaidBlock className={className} {...props}>
-        {children}
-      </MermaidBlock>
+      <pre className="relative">
+        <MermaidBlock className={cn(className)} {...props}>
+          {children}
+        </MermaidBlock>
+      </pre>
     );
   }
 
@@ -112,16 +114,16 @@ export const CodeBlock = observer(({ children, className, ...props }: CodeBlockP
   };
 
   return (
-    <pre className="relative group">
-      <div className="w-full flex flex-row justify-between items-center">
+    <pre className="relative">
+      <div className="absolute right-2 leading-3 top-1.5 flex flex-row justify-end items-center gap-1 opacity-60 hover:opacity-80">
         <span className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider select-none">{language}</span>
         <button
           onClick={handleCopy}
-          className={cn("p-1.5 rounded-md transition-all", "hover:bg-accent/50", copied ? "text-primary" : "text-muted-foreground")}
+          className={cn("rounded-md transition-all", "hover:bg-accent/50", copied ? "text-primary" : "text-muted-foreground")}
           aria-label={copied ? "Copied" : "Copy code"}
           title={copied ? "Copied!" : "Copy code"}
         >
-          {copied ? <CheckIcon className="w-3.5 h-3.5" /> : <CopyIcon className="w-3.5 h-3.5" />}
+          {copied ? <CheckIcon className="w-3 h-3" /> : <CopyIcon className="w-3 h-3" />}
         </button>
       </div>
       <div className={className} {...props}>

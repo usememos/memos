@@ -1,4 +1,5 @@
 import { create } from "@bufbuild/protobuf";
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { isEqual } from "lodash-es";
 import { CheckCircleIcon, Code2Icon, HashIcon, LinkIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -36,14 +37,14 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
           <p className="flex flex-row justify-start items-center w-full gap-1 mb-1 text-sm leading-6 text-muted-foreground select-none">
             <span>{t("common.created-at")}</span>
           </p>
-          <p className="text-sm text-muted-foreground">{memo.createTime?.toLocaleString()}</p>
+          <p className="text-sm text-muted-foreground">{memo.createTime && timestampDate(memo.createTime).toLocaleString()}</p>
         </div>
         {!isEqual(memo.createTime, memo.updateTime) && (
           <div className="w-full flex flex-col">
             <p className="flex flex-row justify-start items-center w-full gap-1 mb-1 text-sm leading-6 text-muted-foreground select-none">
               <span>{t("common.last-updated-at")}</span>
             </p>
-            <p className="text-sm text-muted-foreground">{memo.updateTime?.toLocaleString()}</p>
+            <p className="text-sm text-muted-foreground">{memo.updateTime && timestampDate(memo.updateTime).toLocaleString()}</p>
           </div>
         )}
         {hasSpecialProperty && (

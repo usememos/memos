@@ -36,7 +36,6 @@ export function useSuggestions<T>({
   const [position, setPosition] = useState<Position | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  // Use refs to avoid stale closures in event handlers
   const selectedRef = useRef(selectedIndex);
   selectedRef.current = selectedIndex;
 
@@ -51,7 +50,6 @@ export function useSuggestions<T>({
 
   const hide = () => setPosition(null);
 
-  // Filter items based on the current word after the trigger character
   const suggestionsRef = useRef<T[]>([]);
   suggestionsRef.current = (() => {
     const [word] = getCurrentWord();
@@ -65,12 +63,24 @@ export function useSuggestions<T>({
 
   const handleAutocomplete = (item: T) => {
     if (!editorActions || !("current" in editorActions) || !editorActions.current) {
-      console.warn("useSuggestions: editorActions not available for autocomplete");
+      console.warn("useSuggestions: editorActions not available");
       return;
     }
     const [word, index] = getCurrentWord();
     onAutocomplete(item, word, index, editorActions.current);
     hide();
+  };
+
+  const handleNavigation = (e: KeyboardEvent, selected: number, suggestionsCount: number) => {
+    if (e.code === "ArrowDown") {
+      setSelectedIndex((selected + 1) % suggestionsCount);
+      e.preventDefault();
+      e.stopPropagation();
+    } else if (e.code === "ArrowUp") {
+      setSelectedIndex((selected - 1 + suggestionsCount) % suggestionsCount);
+      e.preventDefault();
+      e.stopPropagation();
+    }
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -79,33 +89,19 @@ export function useSuggestions<T>({
     const suggestions = suggestionsRef.current;
     const selected = selectedRef.current;
 
-    // Hide on Escape or horizontal arrows
     if (["Escape", "ArrowLeft", "ArrowRight"].includes(e.code)) {
       hide();
       return;
     }
 
-    // Navigate down
-    if (e.code === "ArrowDown") {
-      setSelectedIndex((selected + 1) % suggestions.length);
-      e.preventDefault();
-      e.stopPropagation();
+    if (["ArrowDown", "ArrowUp"].includes(e.code)) {
+      handleNavigation(e, selected, suggestions.length);
       return;
     }
 
-    // Navigate up
-    if (e.code === "ArrowUp") {
-      setSelectedIndex((selected - 1 + suggestions.length) % suggestions.length);
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
-
-    // Accept suggestion
     if (["Enter", "Tab"].includes(e.code)) {
       handleAutocomplete(suggestions[selected]);
       e.preventDefault();
-      // Prevent other listeners to be executed
       e.stopImmediatePropagation();
     }
   };
@@ -120,31 +116,29 @@ export function useSuggestions<T>({
     const isActive = word.startsWith(triggerChar) && currentChar !== triggerChar;
 
     if (isActive) {
-      const caretCoordinates = getCaretCoordinates(editor, index);
-      caretCoordinates.top -= editor.scrollTop;
-      setPosition(caretCoordinates);
+      const coords = getCaretCoordinates(editor, index);
+      coords.top -= editor.scrollTop;
+      setPosition(coords);
     } else {
       hide();
     }
   };
 
-  // Register event listeners
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
 
-    editor.addEventListener("click", hide);
-    editor.addEventListener("blur", hide);
-    editor.addEventListener("keydown", handleKeyDown);
-    editor.addEventListener("input", handleInput);
+    const handlers = { click: hide, blur: hide, keydown: handleKeyDown, input: handleInput };
+    Object.entries(handlers).forEach(([event, handler]) => {
+      editor.addEventListener(event, handler as EventListener);
+    });
 
     return () => {
-      editor.removeEventListener("click", hide);
-      editor.removeEventListener("blur", hide);
-      editor.removeEventListener("keydown", handleKeyDown);
-      editor.removeEventListener("input", handleInput);
+      Object.entries(handlers).forEach(([event, handler]) => {
+        editor.removeEventListener(event, handler as EventListener);
+      });
     };
-  }, []); // Empty deps - editor ref is stable, handlers use refs for fresh values
+  }, []);
 
   return {
     position,

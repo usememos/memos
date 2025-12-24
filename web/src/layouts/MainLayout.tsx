@@ -35,7 +35,7 @@ const MainLayout = observer(() => {
         // Fetch or get user to obtain user name (e.g., "users/123")
         // Note: User stats will be fetched by useFilteredMemoStats
         userStore
-          .getOrFetchUserByUsername(username)
+          .getOrFetchUser(`users/${username}`)
           .then((user) => {
             setProfileUserName(user.name);
           })

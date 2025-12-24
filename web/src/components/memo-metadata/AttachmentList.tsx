@@ -70,7 +70,7 @@ const AttachmentList = ({ attachments, mode, onAttachmentsChange, localFiles = [
     return (
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={sortableIds} strategy={verticalListSortingStrategy}>
-          <div className="w-full flex flex-row justify-start flex-wrap gap-2 mt-2 max-h-[50vh] overflow-y-auto">
+          <div className="w-full flex flex-row justify-start flex-wrap gap-2 max-h-[50vh] overflow-y-auto">
             {items.map((item) => (
               <div key={item.id}>
                 {/* Uploaded items are wrapped in SortableItem for drag-and-drop */}

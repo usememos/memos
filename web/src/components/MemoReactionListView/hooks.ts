@@ -15,7 +15,7 @@ export const useReactionGroups = (reactions: Reaction[]): ReactionGroup => {
     const fetchReactionGroups = async () => {
       const newReactionGroup = new Map<string, User[]>();
       for (const reaction of reactions) {
-        const user = await userStore.getOrFetchUserByName(reaction.creator);
+        const user = await userStore.getOrFetchUser(reaction.creator);
         const users = newReactionGroup.get(reaction.reactionType) || [];
         users.push(user);
         newReactionGroup.set(reaction.reactionType, uniq(users));

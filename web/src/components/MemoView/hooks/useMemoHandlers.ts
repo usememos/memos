@@ -14,7 +14,6 @@ export const useMemoHandlers = (options: UseMemoHandlersOptions) => {
   const { memoName, parentPage, readonly, openEditor, openPreview } = options;
   const navigateTo = useNavigateTo();
 
-  // These useCallbacks are necessary since they have real dependencies
   const handleGotoMemoDetailPage = useCallback(() => {
     navigateTo(`/${memoName}`, { state: { from: parentPage } });
   }, [memoName, parentPage, navigateTo]);
