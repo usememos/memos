@@ -1,10 +1,15 @@
 import "@github/relative-time-element";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { observer } from "mobx-react-lite";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
 import { RouterProvider } from "react-router-dom";
 import "./i18n";
 import "./index.css";
+import { MemoFilterProvider } from "@/contexts/MemoFilterContext";
+import { ViewProvider } from "@/contexts/ViewContext";
+import { queryClient } from "@/lib/query-client";
 import router from "./router";
 // Configure MobX before importing any stores
 import "./store/config";
@@ -20,10 +25,15 @@ applyThemeEarly();
 applyLocaleEarly();
 
 const Main = observer(() => (
-  <>
-    <RouterProvider router={router} />
-    <Toaster position="top-right" />
-  </>
+  <QueryClientProvider client={queryClient}>
+    <ViewProvider>
+      <MemoFilterProvider>
+        <RouterProvider router={router} />
+        <Toaster position="top-right" />
+      </MemoFilterProvider>
+    </ViewProvider>
+    <ReactQueryDevtools initialIsOpen={false} />
+  </QueryClientProvider>
 ));
 
 (async () => {

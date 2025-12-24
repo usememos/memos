@@ -17,9 +17,16 @@ Memos is a self-hosted knowledge management platform with a Go backend and React
 - Each driver has its own migration files in `store/db/{driver}/migration/`
 - Schema version tracked in `instance_setting` table (key: `bb.general.version`)
 
-**Why MobX for frontend state?**
-- Simpler than Redux for this application's needs
-- Stores in `web/src/store/` handle global state (user, memos, editor, dialogs)
+**Why React Query + Context for frontend state?**
+- **Server state** (memos, users, attachments) managed by React Query (TanStack Query v5)
+  - Automatic caching, deduplication, and background refetching
+  - Hooks in `web/src/hooks/useMemoQueries.ts`, `useUserQueries.ts`, `useAttachmentQueries.ts`
+- **Client state** (UI preferences, filters) managed by React Context
+  - ViewContext (`web/src/contexts/ViewContext.tsx`) - layout, sort order
+  - MemoFilterContext (`web/src/contexts/MemoFilterContext.tsx`) - filter state
+- **Legacy MobX** still present in some components (gradual migration in progress)
+  - Stores in `web/src/store/` used by unmigrated components
+  - Both systems coexist during transition period
 
 ## Critical Development Commands
 
@@ -32,7 +39,7 @@ golangci-lint run                            # Lint
 
 **Frontend:**
 ```bash
-cd web && pnpm dev                           # Start dev server
+cd web && pnpm dev                           # Start dev server (React Query devtools at bottom-left)
 cd web && pnpm lint:fix                      # Lint and fix
 cd web && pnpm release                       # Build and copy to backend
 ```
@@ -41,6 +48,42 @@ cd web && pnpm release                       # Build and copy to backend
 ```bash
 cd proto && buf generate                     # Regenerate Go + TypeScript from .proto
 ```
+
+## Frontend State Management
+
+**Using React Query (Server State):**
+```typescript
+// Fetch memos
+import { useMemos, useMemo } from "@/hooks/useMemoQueries";
+const { data: memos, isLoading } = useMemos({ filter });
+const { data: memo } = useMemo(memoName);
+
+// Mutations
+import { useCreateMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
+const { mutate: createMemo } = useCreateMemo();
+const { mutate: updateMemo } = useUpdateMemo();
+```
+
+**Using Context (Client State):**
+```typescript
+// View preferences
+import { useView } from "@/contexts/ViewContext";
+const { layout, setLayout, orderByTimeAsc, toggleSortOrder } = useView();
+
+// Filters
+import { useMemoFilter } from "@/contexts/MemoFilterContext";
+const { filter, updateFilter } = useMemoFilter();
+```
+
+**React Query DevTools:**
+- Available in dev mode at bottom-left corner
+- Inspect query cache, mutations, and refetch behavior
+- Query keys organized by resource: `memoKeys`, `userKeys`, `attachmentKeys`
+
+**Migration Status:**
+- ✅ Migrated: Home, MemoDetail, UserProfile, Inboxes pages
+- 🔄 In Progress: Remaining pages and components (gradual migration)
+- See `web/scripts/migration-guide.md` for migration patterns
 
 ## Key Workflows
 
@@ -66,7 +109,7 @@ cd proto && buf generate                     # Regenerate Go + TypeScript from .
 **Entry point:** `cmd/memos/` starts the server
 **API layer:** `server/router/api/v1/` implements gRPC services
 **Data layer:** `store/` handles all persistence
-**Frontend:** `web/src/` React app with MobX state management
+**Frontend:** `web/src/` React app with React Query + Context (migrating from MobX)
 
 ## Testing Expectations
 
