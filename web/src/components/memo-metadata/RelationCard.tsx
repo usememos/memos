@@ -1,7 +1,7 @@
 import { LinkIcon, XIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { extractMemoIdFromName } from "@/helpers/resource-names";
 import { cn } from "@/lib/utils";
-import { extractMemoIdFromName } from "@/store/common";
 import { MemoRelation_Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { DisplayMode } from "./types";
 

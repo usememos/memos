@@ -1,30 +1,30 @@
-import { observer } from "mobx-react-lite";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
 import usePrevious from "react-use/lib/usePrevious";
 import Navigation from "@/components/Navigation";
+import { useInstance } from "@/contexts/InstanceContext";
+import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { cn } from "@/lib/utils";
 import Loading from "@/pages/Loading";
 import { Routes } from "@/router";
-import { instanceStore } from "@/store";
-import memoFilterStore from "@/store/memoFilter";
 
-const RootLayout = observer(() => {
+const RootLayout = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { sm } = useResponsiveWidth();
   const currentUser = useCurrentUser();
+  const { memoRelatedSetting } = useInstance();
+  const { removeFilter } = useMemoFilterContext();
   const [initialized, setInitialized] = useState(false);
   const pathname = useMemo(() => location.pathname, [location.pathname]);
   const prevPathname = usePrevious(pathname);
 
   useEffect(() => {
     if (!currentUser) {
-      // If disallowPublicVisibility is enabled, redirect to the login page if the user is not logged in.
-      if (instanceStore.state.memoRelatedSetting.disallowPublicVisibility) {
-        // Use replace() to prevent back button from showing cached sensitive data
+      // If disallowPublicVisibility is enabled, redirect to login
+      if (memoRelatedSetting.disallowPublicVisibility) {
         window.location.replace(Routes.AUTH);
         return;
       } else if (
@@ -35,14 +35,14 @@ const RootLayout = observer(() => {
       }
     }
     setInitialized(true);
-  }, []);
+  }, [currentUser, memoRelatedSetting.disallowPublicVisibility, location.pathname]);
 
   useEffect(() => {
-    // When the route changes and there is no filter in the search params, remove all filters.
+    // When the route changes and there is no filter in the search params, remove all filters
     if (prevPathname !== pathname && !searchParams.has("filter")) {
-      memoFilterStore.removeFilter(() => true);
+      removeFilter(() => true);
     }
-  }, [prevPathname, pathname, searchParams]);
+  }, [prevPathname, pathname, searchParams, removeFilter]);
 
   return !initialized ? (
     <Loading />
@@ -66,6 +66,6 @@ const RootLayout = observer(() => {
       </main>
     </div>
   );
-});
+};
 
 export default RootLayout;

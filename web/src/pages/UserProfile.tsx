@@ -1,7 +1,5 @@
 import copy from "copy-to-clipboard";
 import { ExternalLinkIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { MemoRenderContext } from "@/components/MasonryView";
@@ -10,36 +8,29 @@ import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import { useMemoFilters, useMemoSorting } from "@/hooks";
-import useLoading from "@/hooks/useLoading";
-import { userStore } from "@/store";
+import { useUser } from "@/hooks/useUserQueries";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { Memo } from "@/types/proto/api/v1/memo_service_pb";
-import { User } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
-const UserProfile = observer(() => {
+const UserProfile = () => {
   const t = useTranslate();
   const params = useParams();
-  const loadingState = useLoading();
-  const [user, setUser] = useState<User>();
+  const username = params.username;
 
-  useEffect(() => {
-    const username = params.username;
-    if (!username) {
-      throw new Error("username is required");
-    }
+  // Fetch user with React Query
+  const {
+    data: user,
+    isLoading,
+    error,
+  } = useUser(`users/${username}`, {
+    enabled: !!username,
+  });
 
-    userStore
-      .getOrFetchUser(`users/${username}`)
-      .then((user) => {
-        setUser(user);
-        loadingState.setFinish();
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error(t("message.user-not-found"));
-      });
-  }, [params.username]);
+  // Handle errors
+  if (error && !isLoading) {
+    toast.error(t("message.user-not-found"));
+  }
 
   // Build filter using unified hook (no shortcuts, but includes pinned)
   const memoFilter = useMemoFilters({
@@ -65,7 +56,7 @@ const UserProfile = observer(() => {
 
   return (
     <section className="w-full min-h-full flex flex-col justify-start items-center">
-      {!loadingState.isLoading &&
+      {!isLoading &&
         (user ? (
           <>
             {/* User profile header - centered with max width */}
@@ -107,6 +98,6 @@ const UserProfile = observer(() => {
         ))}
     </section>
   );
-});
+};
 
 export default UserProfile;

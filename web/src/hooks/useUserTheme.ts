@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { userStore } from "@/store";
+import { useAuth } from "@/contexts/AuthContext";
 import { getThemeWithFallback, loadTheme, setupSystemThemeListener } from "@/utils/theme";
 
 /**
@@ -7,7 +7,7 @@ import { getThemeWithFallback, loadTheme, setupSystemThemeListener } from "@/uti
  * Priority: User setting → localStorage → system preference
  */
 export const useUserTheme = () => {
-  const userGeneralSetting = userStore.state.userGeneralSetting;
+  const { userGeneralSetting } = useAuth();
 
   // Apply theme when user setting changes or user logs in
   useEffect(() => {

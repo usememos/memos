@@ -1,5 +1,4 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { useMemo, useState } from "react";
 import {
   CompactMonthCalendar,
@@ -20,7 +19,7 @@ import { useTranslate } from "@/utils/i18n";
 const MIN_YEAR = 2000;
 const MAX_YEAR = new Date().getFullYear() + 1;
 
-const Calendar = observer(() => {
+const Calendar = () => {
   const currentUser = useCurrentUser();
   const t = useTranslate();
   const navigateToDateFilter = useDateFilterNavigation();
@@ -140,6 +139,6 @@ const Calendar = observer(() => {
       </div>
     </section>
   );
-});
+};
 
 export default Calendar;

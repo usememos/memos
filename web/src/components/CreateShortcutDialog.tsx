@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { shortcutServiceClient } from "@/connect";
+import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
-import { userStore } from "@/store";
 import { Shortcut, ShortcutSchema } from "@/types/proto/api/v1/shortcut_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
@@ -24,6 +24,7 @@ interface Props {
 function CreateShortcutDialog({ open, onOpenChange, shortcut: initialShortcut, onSuccess }: Props) {
   const t = useTranslate();
   const user = useCurrentUser();
+  const { refetchSettings } = useAuth();
   const [shortcut, setShortcut] = useState<Shortcut>(
     create(ShortcutSchema, {
       name: initialShortcut?.name || "",
@@ -66,7 +67,7 @@ function CreateShortcutDialog({ open, onOpenChange, shortcut: initialShortcut, o
       requestState.setLoading();
       if (isCreating) {
         await shortcutServiceClient.createShortcut({
-          parent: user.name,
+          parent: user?.name,
           shortcut: {
             name: "", // Will be set by server
             title: shortcut.title,
@@ -85,7 +86,7 @@ function CreateShortcutDialog({ open, onOpenChange, shortcut: initialShortcut, o
         toast.success("Update shortcut successfully");
       }
       // Refresh shortcuts.
-      await userStore.fetchUserSettings();
+      await refetchSettings();
       requestState.setFinish();
       onSuccess?.();
       onOpenChange(false);

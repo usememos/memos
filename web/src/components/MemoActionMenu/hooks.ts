@@ -1,9 +1,12 @@
+import { useQueryClient } from "@tanstack/react-query";
 import copy from "copy-to-clipboard";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
+import { useInstance } from "@/contexts/InstanceContext";
+import { memoKeys, useDeleteMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { instanceStore, memoStore, userStore } from "@/store";
+import { userKeys } from "@/hooks/useUserQueries";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -20,25 +23,30 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen, setRe
   const t = useTranslate();
   const location = useLocation();
   const navigateTo = useNavigateTo();
+  const queryClient = useQueryClient();
+  const { profile } = useInstance();
+  const { mutateAsync: updateMemo } = useUpdateMemo();
+  const { mutateAsync: deleteMemo } = useDeleteMemo();
   const isInMemoDetailPage = location.pathname.startsWith(`/${memo.name}`);
 
   const memoUpdatedCallback = useCallback(() => {
-    userStore.setStatsStateId();
-  }, []);
+    // Invalidate user stats to trigger refetch
+    queryClient.invalidateQueries({ queryKey: userKeys.stats() });
+  }, [queryClient]);
 
   const handleTogglePinMemoBtnClick = useCallback(async () => {
     try {
-      await memoStore.updateMemo(
-        {
+      await updateMemo({
+        update: {
           name: memo.name,
           pinned: !memo.pinned,
         },
-        ["pinned"],
-      );
+        updateMask: ["pinned"],
+      });
     } catch {
       // do nothing
     }
-  }, [memo.name, memo.pinned]);
+  }, [memo.name, memo.pinned, updateMemo]);
 
   const handleEditMemoClick = useCallback(() => {
     onEdit?.();
@@ -49,13 +57,13 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen, setRe
     const message = memo.state === State.ARCHIVED ? t("message.restored-successfully") : t("message.archived-successfully");
 
     try {
-      await memoStore.updateMemo(
-        {
+      await updateMemo({
+        update: {
           name: memo.name,
           state,
         },
-        ["state"],
-      );
+        updateMask: ["state"],
+      });
       toast.success(message);
     } catch (error: unknown) {
       const err = error as { details?: string };
@@ -68,16 +76,16 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen, setRe
       navigateTo(memo.state === State.ARCHIVED ? "/" : "/archived");
     }
     memoUpdatedCallback();
-  }, [memo.name, memo.state, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback]);
+  }, [memo.name, memo.state, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback, updateMemo]);
 
   const handleCopyLink = useCallback(() => {
-    let host = instanceStore.state.profile.instanceUrl;
+    let host = profile.instanceUrl;
     if (host === "") {
       host = window.location.origin;
     }
     copy(`${host}/${memo.name}`);
     toast.success(t("message.succeed-copy-link"));
-  }, [memo.name, t]);
+  }, [memo.name, t, profile.instanceUrl]);
 
   const handleCopyContent = useCallback(() => {
     copy(memo.content);
@@ -89,13 +97,13 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen, setRe
   }, [setDeleteDialogOpen]);
 
   const confirmDeleteMemo = useCallback(async () => {
-    await memoStore.deleteMemo(memo.name);
+    await deleteMemo(memo.name);
     toast.success(t("message.deleted-successfully"));
     if (isInMemoDetailPage) {
       navigateTo("/");
     }
     memoUpdatedCallback();
-  }, [memo.name, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback]);
+  }, [memo.name, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback, deleteMemo]);
 
   const handleRemoveCompletedTaskListItemsClick = useCallback(() => {
     setRemoveTasksDialogOpen(true);
@@ -103,16 +111,16 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen, setRe
 
   const confirmRemoveCompletedTaskListItems = useCallback(async () => {
     const newContent = removeCompletedTasks(memo.content);
-    await memoStore.updateMemo(
-      {
+    await updateMemo({
+      update: {
         name: memo.name,
         content: newContent,
       },
-      ["content"],
-    );
+      updateMask: ["content"],
+    });
     toast.success(t("message.remove-completed-task-list-items-successfully"));
     memoUpdatedCallback();
-  }, [memo.name, memo.content, t, memoUpdatedCallback]);
+  }, [memo.name, memo.content, t, memoUpdatedCallback, updateMemo]);
 
   return {
     handleTogglePinMemoBtnClick,

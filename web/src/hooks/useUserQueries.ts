@@ -1,0 +1,257 @@
+import { create } from "@bufbuild/protobuf";
+import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { authServiceClient, shortcutServiceClient, userServiceClient } from "@/connect";
+import { buildUserSettingName } from "@/helpers/resource-names";
+import { User, UserSetting, UserSetting_GeneralSetting, UserSetting_Key, UserSettingSchema } from "@/types/proto/api/v1/user_service_pb";
+
+// Query keys factory
+export const userKeys = {
+  all: ["users"] as const,
+  details: () => [...userKeys.all, "detail"] as const,
+  detail: (name: string) => [...userKeys.details(), name] as const,
+  stats: () => [...userKeys.all, "stats"] as const,
+  userStats: (name: string) => [...userKeys.stats(), name] as const,
+  currentUser: () => [...userKeys.all, "current"] as const,
+  shortcuts: () => [...userKeys.all, "shortcuts"] as const,
+  notifications: () => [...userKeys.all, "notifications"] as const,
+};
+
+/**
+ * Hook to get the current authenticated user.
+ * Data is cached for 5 minutes as auth state changes infrequently.
+ */
+export function useCurrentUser() {
+  return useQuery({
+    queryKey: userKeys.currentUser(),
+    queryFn: async () => {
+      const { user } = await authServiceClient.getCurrentUser({});
+      return user;
+    },
+    staleTime: 1000 * 60 * 5, // 5 minutes - auth doesn't change often
+  });
+}
+
+/**
+ * Hook to fetch a specific user by name.
+ * @param name - User resource name (e.g., "users/123")
+ * @param options - Query options including enabled flag
+ */
+export function useUser(name: string, options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: userKeys.detail(name),
+    queryFn: async () => {
+      const user = await userServiceClient.getUser({ name });
+      return user;
+    },
+    enabled: options?.enabled ?? true,
+    staleTime: 1000 * 60 * 5, // 5 minutes - user profiles don't change often
+  });
+}
+
+/**
+ * Hook to fetch statistics for a specific user.
+ * @param username - User resource name (e.g., "users/123")
+ */
+export function useUserStats(username?: string) {
+  return useQuery({
+    queryKey: username ? userKeys.userStats(username) : userKeys.stats(),
+    queryFn: async () => {
+      if (!username) {
+        throw new Error("Username is required");
+      }
+      const stats = await userServiceClient.getUserStats({ name: username });
+      return stats;
+    },
+    enabled: !!username,
+  });
+}
+
+/**
+ * Hook to fetch shortcuts for the current user.
+ */
+export function useShortcuts() {
+  return useQuery({
+    queryKey: userKeys.shortcuts(),
+    queryFn: async () => {
+      const { shortcuts } = await shortcutServiceClient.listShortcuts({});
+      return shortcuts;
+    },
+  });
+}
+
+/**
+ * Hook to fetch notifications for the current user.
+ * Only fetches when a user is authenticated.
+ */
+export function useNotifications() {
+  const { data: currentUser } = useCurrentUser();
+
+  return useQuery({
+    queryKey: userKeys.notifications(),
+    queryFn: async () => {
+      if (!currentUser?.name) {
+        return [];
+      }
+      const { notifications } = await userServiceClient.listUserNotifications({ parent: currentUser.name });
+      return notifications;
+    },
+    enabled: !!currentUser?.name,
+    staleTime: 1000 * 30, // 30 seconds - notifications should update frequently
+  });
+}
+
+/**
+ * Hook to fetch tag counts for autocomplete suggestions.
+ * @param forCurrentUser - If true, fetches only current user's tags; if false, fetches all public tags
+ */
+export function useTagCounts(forCurrentUser = false) {
+  const { data: currentUser } = useCurrentUser();
+
+  return useQuery({
+    queryKey: forCurrentUser ? [...userKeys.stats(), "tagCounts", "current"] : [...userKeys.stats(), "tagCounts", "all"],
+    queryFn: async () => {
+      if (forCurrentUser) {
+        // Fetch current user stats only
+        if (!currentUser?.name) {
+          return {};
+        }
+        const stats = await userServiceClient.getUserStats({ name: currentUser.name });
+        return stats.tagCount || {};
+      } else {
+        // Fetch all user stats
+        const { stats } = await userServiceClient.listAllUserStats({});
+
+        // Aggregate tag counts from all users
+        const tagCount: Record<string, number> = {};
+        for (const userStats of stats) {
+          if (userStats.tagCount) {
+            for (const [tag, count] of Object.entries(userStats.tagCount)) {
+              tagCount[tag] = (tagCount[tag] || 0) + count;
+            }
+          }
+        }
+        return tagCount;
+      }
+    },
+    enabled: !forCurrentUser || !!currentUser?.name,
+    staleTime: 1000 * 60 * 2, // 2 minutes - tags don't change frequently
+  });
+}
+
+/**
+ * Hook to update a user's profile.
+ * Automatically updates the cache on success.
+ */
+export function useUpdateUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ user, updateMask }: { user: Partial<User>; updateMask: string[] }) => {
+      const updatedUser = await userServiceClient.updateUser({
+        user: user as User,
+        updateMask: create(FieldMaskSchema, { paths: updateMask }),
+      });
+      return updatedUser;
+    },
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(userKeys.detail(updatedUser.name), updatedUser);
+      queryClient.invalidateQueries({ queryKey: userKeys.currentUser() });
+    },
+  });
+}
+
+/**
+ * Hook to delete a user.
+ * Automatically removes the user from cache on success.
+ */
+export function useDeleteUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (name: string) => {
+      await userServiceClient.deleteUser({ name });
+      return name;
+    },
+    onSuccess: (name) => {
+      queryClient.removeQueries({ queryKey: userKeys.detail(name) });
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+    },
+  });
+}
+
+// Hook to fetch user settings
+export function useUserSettings(parent?: string) {
+  return useQuery({
+    queryKey: [...userKeys.all, "settings", parent],
+    queryFn: async () => {
+      if (!parent) return { settings: [], shortcuts: [] };
+      const [{ settings }, { shortcuts }] = await Promise.all([
+        userServiceClient.listUserSettings({ parent }),
+        shortcutServiceClient.listShortcuts({ parent }),
+      ]);
+      return { settings, shortcuts };
+    },
+    enabled: !!parent,
+  });
+}
+
+// Hook to update user setting
+export function useUpdateUserSetting() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ setting, updateMask }: { setting: UserSetting; updateMask: string[] }) => {
+      const updatedSetting = await userServiceClient.updateUserSetting({
+        setting,
+        updateMask: create(FieldMaskSchema, { paths: updateMask }),
+      });
+      return updatedSetting;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [...userKeys.all, "settings"] });
+    },
+  });
+}
+
+// Hook to list all users
+export function useListUsers() {
+  return useQuery({
+    queryKey: userKeys.all,
+    queryFn: async () => {
+      const { users } = await userServiceClient.listUsers({});
+      return users;
+    },
+  });
+}
+
+// Hook to update user general setting (convenience wrapper)
+export function useUpdateUserGeneralSetting(currentUserName?: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ generalSetting, updateMask }: { generalSetting: Partial<UserSetting_GeneralSetting>; updateMask: string[] }) => {
+      if (!currentUserName) {
+        throw new Error("No current user");
+      }
+
+      const settingName = buildUserSettingName(currentUserName, UserSetting_Key.GENERAL);
+      const userSetting = create(UserSettingSchema, {
+        name: settingName,
+        value: {
+          case: "generalSetting",
+          value: generalSetting as UserSetting_GeneralSetting,
+        },
+      });
+
+      const updatedSetting = await userServiceClient.updateUserSetting({
+        setting: userSetting,
+        updateMask: create(FieldMaskSchema, { paths: updateMask }),
+      });
+      return updatedSetting;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [...userKeys.all, "settings"] });
+    },
+  });
+}

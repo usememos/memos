@@ -1,7 +1,6 @@
 import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
 import { FileIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { useContext, useState } from "react";
 import type { LocalFile } from "@/components/memo-metadata";
 import { Button } from "@/components/ui/button";
@@ -30,7 +29,7 @@ interface Props {
   onToggleFocusMode?: () => void;
 }
 
-const InsertMenu = observer((props: Props) => {
+const InsertMenu = (props: Props) => {
   const t = useTranslate();
   const context = useContext(MemoEditorContext);
 
@@ -221,6 +220,6 @@ const InsertMenu = observer((props: Props) => {
       />
     </>
   );
-});
+};
 
 export default InsertMenu;

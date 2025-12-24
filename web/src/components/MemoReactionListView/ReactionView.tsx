@@ -1,4 +1,3 @@
-import { observer } from "mobx-react-lite";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
@@ -13,7 +12,7 @@ interface Props {
   users: User[];
 }
 
-const ReactionView = observer((props: Props) => {
+const ReactionView = (props: Props) => {
   const { memo, reactionType, users } = props;
   const currentUser = useCurrentUser();
   const hasReaction = users.some((user) => currentUser && user.username === currentUser.username);
@@ -54,6 +53,6 @@ const ReactionView = observer((props: Props) => {
       </Tooltip>
     </TooltipProvider>
   );
-});
+};
 
 export default ReactionView;

@@ -1,14 +1,12 @@
 import { Edit3Icon, MoreVerticalIcon, PlusIcon, TrashIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { shortcutServiceClient } from "@/connect";
-import useAsyncEffect from "@/hooks/useAsyncEffect";
+import { useAuth } from "@/contexts/AuthContext";
+import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { cn } from "@/lib/utils";
-import { userStore } from "@/store";
-import memoFilterStore from "@/store/memoFilter";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateShortcutDialog from "../CreateShortcutDialog";
@@ -23,16 +21,17 @@ const getShortcutId = (name: string): string => {
   return parts.length === 4 ? parts[3] : "";
 };
 
-const ShortcutsSection = observer(() => {
+function ShortcutsSection() {
   const t = useTranslate();
-  const shortcuts = userStore.state.shortcuts;
+  const { shortcuts, refetchSettings } = useAuth();
+  const { shortcut: selectedShortcut, setShortcut } = useMemoFilterContext();
   const [isCreateShortcutDialogOpen, setIsCreateShortcutDialogOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Shortcut | undefined>();
   const [editingShortcut, setEditingShortcut] = useState<Shortcut | undefined>();
 
-  useAsyncEffect(async () => {
-    await userStore.fetchUserSettings();
-  }, []);
+  useEffect(() => {
+    refetchSettings();
+  }, [refetchSettings]);
 
   const handleDeleteShortcut = async (shortcut: Shortcut) => {
     setDeleteTarget(shortcut);
@@ -41,7 +40,7 @@ const ShortcutsSection = observer(() => {
   const confirmDeleteShortcut = async () => {
     if (!deleteTarget) return;
     await shortcutServiceClient.deleteShortcut({ name: deleteTarget.name });
-    await userStore.fetchUserSettings();
+    await refetchSettings();
     toast.success(t("setting.shortcut.delete-success", { title: deleteTarget.title }));
     setDeleteTarget(undefined);
   };
@@ -82,7 +81,7 @@ const ShortcutsSection = observer(() => {
           const maybeEmoji = shortcut.title.split(" ")[0];
           const emoji = emojiRegex.test(maybeEmoji) ? maybeEmoji : undefined;
           const title = emoji ? shortcut.title.replace(emoji, "") : shortcut.title;
-          const selected = memoFilterStore.shortcut === shortcutId;
+          const selected = selectedShortcut === shortcutId;
           return (
             <div
               key={shortcutId}
@@ -90,7 +89,7 @@ const ShortcutsSection = observer(() => {
             >
               <span
                 className={cn("truncate cursor-pointer text-muted-foreground", selected && "text-primary font-medium")}
-                onClick={() => (selected ? memoFilterStore.setShortcut(undefined) : memoFilterStore.setShortcut(shortcutId))}
+                onClick={() => (selected ? setShortcut(undefined) : setShortcut(shortcutId))}
               >
                 {emoji && <span className="text-base mr-1">{emoji}</span>}
                 {title.trim()}
@@ -131,6 +130,6 @@ const ShortcutsSection = observer(() => {
       />
     </div>
   );
-});
+}
 
 export default ShortcutsSection;

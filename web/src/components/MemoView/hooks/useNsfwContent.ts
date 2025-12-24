@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { instanceStore } from "@/store";
+import { useInstance } from "@/contexts/InstanceContext";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 
 export interface UseNsfwContentReturn {
@@ -10,11 +10,11 @@ export interface UseNsfwContentReturn {
 
 export const useNsfwContent = (memo: Memo, initialShowNsfw?: boolean): UseNsfwContentReturn => {
   const [showNSFWContent, setShowNSFWContent] = useState(initialShowNsfw ?? false);
-  const instanceMemoRelatedSetting = instanceStore.state.memoRelatedSetting;
+  const { memoRelatedSetting } = useInstance();
 
   const nsfw =
-    instanceMemoRelatedSetting.enableBlurNsfwContent &&
-    memo.tags?.some((tag) => instanceMemoRelatedSetting.nsfwTags.some((nsfwTag) => tag === nsfwTag || tag.startsWith(`${nsfwTag}/`)));
+    memoRelatedSetting.enableBlurNsfwContent &&
+    memo.tags?.some((tag) => memoRelatedSetting.nsfwTags.some((nsfwTag) => tag === nsfwTag || tag.startsWith(`${nsfwTag}/`)));
 
   return {
     nsfw: nsfw ?? false,

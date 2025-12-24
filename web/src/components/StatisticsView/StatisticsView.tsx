@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import { observer } from "mobx-react-lite";
 import { useMemo, useState } from "react";
 import { CompactMonthCalendar } from "@/components/ActivityCalendar";
 import { useDateFilterNavigation } from "@/hooks";
@@ -13,7 +12,7 @@ interface Props {
   statisticsData: StatisticsData;
 }
 
-const StatisticsView = observer((props: Props) => {
+const StatisticsView = (props: Props) => {
   const { statisticsData } = props;
   const { activityStats } = statisticsData;
   const navigateToDateFilter = useDateFilterNavigation();
@@ -33,6 +32,6 @@ const StatisticsView = observer((props: Props) => {
       </div>
     </div>
   );
-});
+};
 
 export default StatisticsView;

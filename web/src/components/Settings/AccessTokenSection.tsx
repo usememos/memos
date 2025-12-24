@@ -30,13 +30,13 @@ const AccessTokenSection = () => {
   const [deleteTarget, setDeleteTarget] = useState<PersonalAccessToken | undefined>(undefined);
 
   useEffect(() => {
-    listAccessTokens(currentUser.name).then((tokens) => {
+    listAccessTokens(currentUser?.name ?? "").then((tokens) => {
       setPersonalAccessTokens(tokens);
     });
   }, []);
 
   const handleCreateAccessTokenDialogConfirm = async (response: CreatePersonalAccessTokenResponse) => {
-    const tokens = await listAccessTokens(currentUser.name);
+    const tokens = await listAccessTokens(currentUser?.name ?? "");
     setPersonalAccessTokens(tokens);
     // Copy the token to clipboard - this is the only time it will be shown
     if (response.token) {

@@ -1,4 +1,3 @@
-import { observer } from "mobx-react-lite";
 import { memo, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
@@ -50,7 +49,7 @@ interface Props {
  * />
  * ```
  */
-const MemoView: React.FC<Props> = observer((props: Props) => {
+const MemoView: React.FC<Props> = (props: Props) => {
   const { memo: memoData, className } = props;
   const cardRef = useRef<HTMLDivElement>(null);
   const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
@@ -157,6 +156,6 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
       </article>
     </MemoViewContext.Provider>
   );
-});
+};
 
 export default memo(MemoView);

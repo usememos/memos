@@ -1,4 +1,3 @@
-import { observer } from "mobx-react-lite";
 import { MemoRenderContext } from "@/components/MasonryView";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
@@ -7,12 +6,12 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { Memo } from "@/types/proto/api/v1/memo_service_pb";
 
-const Home = observer(() => {
+const Home = () => {
   const user = useCurrentUser();
 
   // Build filter using unified hook
   const memoFilter = useMemoFilters({
-    creatorName: user.name,
+    creatorName: user?.name,
     includeShortcuts: true,
     includePinned: true,
   });
@@ -35,6 +34,6 @@ const Home = observer(() => {
       />
     </div>
   );
-});
+};
 
 export default Home;

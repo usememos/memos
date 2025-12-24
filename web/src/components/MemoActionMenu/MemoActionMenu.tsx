@@ -11,7 +11,6 @@ import {
   SquareCheckIcon,
   TrashIcon,
 } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
@@ -30,7 +29,7 @@ import { hasCompletedTasks } from "@/utils/markdown-manipulation";
 import { useMemoActionHandlers } from "./hooks";
 import type { MemoActionMenuProps } from "./types";
 
-const MemoActionMenu = observer((props: MemoActionMenuProps) => {
+const MemoActionMenu = (props: MemoActionMenuProps) => {
   const { memo, readonly } = props;
   const t = useTranslate();
 
@@ -157,6 +156,6 @@ const MemoActionMenu = observer((props: MemoActionMenuProps) => {
       />
     </DropdownMenu>
   );
-});
+};
 
 export default MemoActionMenu;

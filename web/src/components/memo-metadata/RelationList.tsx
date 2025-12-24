@@ -1,9 +1,8 @@
 import { create } from "@bufbuild/protobuf";
 import { LinkIcon, MilestoneIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
+import { memoServiceClient } from "@/connect";
 import { cn } from "@/lib/utils";
-import { memoStore } from "@/store";
 import { Memo, MemoRelation, MemoRelation_MemoSchema, MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import MetadataCard from "./MetadataCard";
@@ -17,7 +16,7 @@ interface RelationListProps extends BaseMetadataProps {
   parentPage?: string;
 }
 
-const RelationList = observer(({ relations, currentMemoName, mode, onRelationsChange, parentPage, className }: RelationListProps) => {
+function RelationList({ relations, currentMemoName, mode, onRelationsChange, parentPage, className }: RelationListProps) {
   const t = useTranslate();
   const [referencingMemos, setReferencingMemos] = useState<Memo[]>([]);
   const [selectedTab, setSelectedTab] = useState<"referencing" | "referenced">("referencing");
@@ -43,7 +42,7 @@ const RelationList = observer(({ relations, currentMemoName, mode, onRelationsCh
       (async () => {
         if (referencingRelations.length > 0) {
           const requests = referencingRelations.map(async (relation) => {
-            return await memoStore.getOrFetchMemoByName(relation.relatedMemo!.name, { skipStore: true });
+            return await memoServiceClient.getMemo({ name: relation.relatedMemo!.name });
           });
           const list = await Promise.all(requests);
           setReferencingMemos(list);
@@ -139,6 +138,6 @@ const RelationList = observer(({ relations, currentMemoName, mode, onRelationsCh
       )}
     </MetadataCard>
   );
-});
+}
 
 export default RelationList;

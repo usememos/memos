@@ -1,7 +1,8 @@
-import { observer } from "mobx-react-lite";
+import { useQueryClient } from "@tanstack/react-query";
 import { useMemo, useRef } from "react";
 import { toast } from "react-hot-toast";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { memoKeys } from "@/hooks/useMemoQueries";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { EditorContent, EditorMetadata, EditorToolbar, FocusModeExitButton, FocusModeOverlay } from "./components";
@@ -23,7 +24,7 @@ export interface MemoEditorProps {
   onCancel?: () => void;
 }
 
-const MemoEditor = observer((props: MemoEditorProps) => {
+const MemoEditor = (props: MemoEditorProps) => {
   const { className, cacheKey, memoName, parentMemoName, autoFocus, placeholder, onConfirm, onCancel } = props;
 
   return (
@@ -40,7 +41,7 @@ const MemoEditor = observer((props: MemoEditorProps) => {
       />
     </EditorProvider>
   );
-});
+};
 
 const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   className,
@@ -53,6 +54,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   onCancel,
 }) => {
   const t = useTranslate();
+  const queryClient = useQueryClient();
   const currentUser = useCurrentUser();
   const editorRef = useRef<EditorRefActions>(null);
   const { state, actions, dispatch } = useEditorContext();
@@ -66,7 +68,9 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
       setRelationList: (relations: typeof state.metadata.relations) => dispatch(actions.setMetadata({ relations })),
       memoName,
       addLocalFiles: (files: typeof state.localFiles) => {
-        files.forEach((file) => dispatch(actions.addLocalFile(file)));
+        files.forEach((file) => {
+          dispatch(actions.addLocalFile(file));
+        });
       },
       removeLocalFile: (previewUrl: string) => dispatch(actions.removeLocalFile(previewUrl)),
       localFiles: state.localFiles,
@@ -75,10 +79,10 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   );
 
   // Initialize editor (load memo or cache)
-  useMemoInit(editorRef, memoName, cacheKey, currentUser.name, autoFocus);
+  useMemoInit(editorRef, memoName, cacheKey, currentUser?.name ?? "", autoFocus);
 
   // Auto-save content to localStorage
-  useAutoSave(state.content, currentUser.name, cacheKey);
+  useAutoSave(state.content, currentUser?.name ?? "", cacheKey);
 
   // Focus mode management with body scroll lock
   useFocusMode(state.ui.isFocusMode);
@@ -91,6 +95,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   useKeyboard(editorRef, { onSave: handleSave, onToggleFocusMode: handleToggleFocusMode });
 
   async function handleSave() {
+    // Validate before saving
     const { valid, reason } = validationService.canSave(state);
     if (!valid) {
       toast.error(reason || "Cannot save");
@@ -108,19 +113,26 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         return;
       }
 
-      // Clear cache on successful save
-      cacheService.clear(cacheService.key(currentUser.name, cacheKey));
+      // Clear localStorage cache on successful save
+      cacheService.clear(cacheService.key(currentUser?.name ?? "", cacheKey));
 
-      // Reset editor state
+      // Invalidate React Query cache to refresh memo lists across the app
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: memoKeys.lists() }),
+        queryClient.invalidateQueries({ queryKey: ["users", "stats"] }),
+      ]);
+
+      // Reset editor state to initial values
       dispatch(actions.reset());
 
-      // Notify parent
+      // Notify parent component of successful save
       onConfirm?.(result.memoName);
 
       toast.success("Saved successfully");
     } catch (error) {
-      const message = errorService.handle(error, t);
-      toast.error(message);
+      const errorMessage = errorService.getErrorMessage(error);
+      toast.error(errorMessage);
+      console.error("Failed to save memo:", error);
     } finally {
       dispatch(actions.setLoading("saving", false));
     }

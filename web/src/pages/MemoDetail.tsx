@@ -1,7 +1,6 @@
 import { ConnectError } from "@connectrpc/connect";
 import { ArrowUpLeftFromCircleIcon, MessageCircleIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { MemoDetailSidebar, MemoDetailSidebarDrawer } from "@/components/MemoDetailSidebar";
@@ -9,16 +8,16 @@ import MemoEditor from "@/components/MemoEditor";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import { Button } from "@/components/ui/button";
+import { memoNamePrefix } from "@/helpers/resource-names";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { useMemo as useMemoQuery } from "@/hooks/useMemoQueries";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { cn } from "@/lib/utils";
-import { memoStore } from "@/store";
-import { memoNamePrefix } from "@/store/common";
 import { Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
-const MemoDetail = observer(() => {
+const MemoDetail = () => {
   const t = useTranslate();
   const { md } = useResponsiveWidth();
   const params = useParams();
@@ -27,45 +26,34 @@ const MemoDetail = observer(() => {
   const currentUser = useCurrentUser();
   const uid = params.uid;
   const memoName = `${memoNamePrefix}${uid}`;
-  const memo = memoStore.getMemoByName(memoName);
-  const [parentMemo, setParentMemo] = useState<Memo | undefined>(undefined);
   const [showCommentEditor, setShowCommentEditor] = useState(false);
+
+  // Fetch main memo with React Query
+  const { data: memo, error, isLoading } = useMemoQuery(memoName, { enabled: !!memoName });
+
+  // Handle errors
+  if (error) {
+    toast.error((error as ConnectError).message);
+    navigateTo("/403");
+  }
+
+  // Fetch parent memo if exists
+  const { data: parentMemo } = useMemoQuery(memo?.parent || "", {
+    enabled: !!memo?.parent,
+  });
+
+  // Get comment relations and memo names
   const commentRelations =
     memo?.relations.filter((relation) => relation.relatedMemo?.name === memo.name && relation.type === MemoRelation_Type.COMMENT) || [];
-  const comments = commentRelations.map((relation) => memoStore.getMemoByName(relation.memo!.name)).filter((memo) => memo) as any as Memo[];
+  const commentMemoNames = commentRelations.map((relation) => relation.memo!.name);
+
+  // Fetch all comment memos
+  const commentQueries = commentMemoNames.map((name) => useMemoQuery(name));
+  const comments = commentQueries.map((q) => q.data).filter((memo): memo is Memo => !!memo);
+
   const showCreateCommentButton = currentUser && !showCommentEditor;
 
-  // Prepare memo.
-  useEffect(() => {
-    if (memoName) {
-      memoStore.getOrFetchMemoByName(memoName).catch((error: ConnectError) => {
-        toast.error(error.message);
-        navigateTo("/403");
-      });
-    } else {
-      navigateTo("/404");
-    }
-  }, [memoName]);
-
-  // Prepare memo comments.
-  useEffect(() => {
-    if (!memo) {
-      return;
-    }
-
-    (async () => {
-      if (memo.parent) {
-        memoStore.getOrFetchMemoByName(memo.parent).then((memo: Memo) => {
-          setParentMemo(memo);
-        });
-      } else {
-        setParentMemo(undefined);
-      }
-      await Promise.all(commentRelations.map((relation) => memoStore.getOrFetchMemoByName(relation.memo!.name)));
-    })();
-  }, [memo]);
-
-  if (!memo) {
+  if (isLoading || !memo) {
     return null;
   }
 
@@ -74,8 +62,7 @@ const MemoDetail = observer(() => {
   };
 
   const handleCommentCreated = async (memoCommentName: string) => {
-    await memoStore.getOrFetchMemoByName(memoCommentName);
-    await memoStore.getOrFetchMemoByName(memo.name, { skipCache: true });
+    // React Query will auto-refetch due to invalidation in the mutation
     setShowCommentEditor(false);
   };
 
@@ -174,6 +161,6 @@ const MemoDetail = observer(() => {
       </div>
     </section>
   );
-});
+};
 
 export default MemoDetail;

@@ -1,4 +1,3 @@
-import { observer } from "mobx-react-lite";
 import SearchBar from "@/components/SearchBar";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
@@ -63,7 +62,7 @@ const getDefaultFeatures = (context: MemoExplorerContext): MemoExplorerFeatures 
   }
 };
 
-const MemoExplorer = observer((props: Props) => {
+const MemoExplorer = (props: Props) => {
   const { className, context = "home", features: featureOverrides = {}, statisticsData, tagCount } = props;
   const currentUser = useCurrentUser();
 
@@ -88,6 +87,6 @@ const MemoExplorer = observer((props: Props) => {
       </div>
     </aside>
   );
-});
+};
 
 export default MemoExplorer;

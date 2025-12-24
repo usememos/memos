@@ -1,7 +1,6 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import dayjs from "dayjs";
 import { ExternalLinkIcon, PaperclipIcon, SearchIcon, Trash } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -13,11 +12,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { attachmentServiceClient } from "@/connect";
+import { useDeleteAttachment } from "@/hooks/useAttachmentQueries";
 import useDialog from "@/hooks/useDialog";
 import useLoading from "@/hooks/useLoading";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import i18n from "@/i18n";
-import { attachmentStore } from "@/store";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
@@ -68,11 +67,12 @@ const AttachmentItem = ({ attachment }: AttachmentItemProps) => (
   </div>
 );
 
-const Attachments = observer(() => {
+const Attachments = () => {
   const t = useTranslate();
   const { md } = useResponsiveWidth();
   const loadingState = useLoading();
   const deleteUnusedAttachmentsDialog = useDialog();
+  const { mutateAsync: deleteAttachment } = useDeleteAttachment();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
@@ -149,7 +149,7 @@ const Attachments = observer(() => {
   // Delete all unused attachments
   const handleDeleteUnusedAttachments = useCallback(async () => {
     try {
-      await Promise.all(unusedAttachments.map((attachment) => attachmentStore.deleteAttachment(attachment.name)));
+      await Promise.all(unusedAttachments.map((attachment) => deleteAttachment(attachment.name)));
       toast.success(t("resource.delete-all-unused-success"));
     } catch (error) {
       console.error("Failed to delete unused attachments:", error);
@@ -157,7 +157,7 @@ const Attachments = observer(() => {
     } finally {
       await handleRefetch();
     }
-  }, [unusedAttachments, t, handleRefetch]);
+  }, [unusedAttachments, t, handleRefetch, deleteAttachment]);
 
   // Handle search input change
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -266,6 +266,6 @@ const Attachments = observer(() => {
       />
     </section>
   );
-});
+};
 
 export default Attachments;

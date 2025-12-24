@@ -1,6 +1,5 @@
 import { create } from "@bufbuild/protobuf";
 import { isEqual } from "lodash-es";
-import { observer } from "mobx-react-lite";
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
@@ -8,8 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
-import { instanceStore } from "@/store";
-import { buildInstanceSettingName } from "@/store/common";
+import { useInstance } from "@/contexts/InstanceContext";
 import {
   InstanceSetting_Key,
   InstanceSetting_StorageSetting,
@@ -24,41 +22,20 @@ import SettingGroup from "./SettingGroup";
 import SettingRow from "./SettingRow";
 import SettingSection from "./SettingSection";
 
-// Helper to extract storage setting value from InstanceSetting oneof
-function getStorageSetting(setting: any): InstanceSetting_StorageSetting | undefined {
-  if (setting?.value?.case === "storageSetting") {
-    return setting.value.value;
-  }
-  return undefined;
-}
-
-const StorageSection = observer(() => {
+const StorageSection = () => {
   const t = useTranslate();
-  const [instanceStorageSetting, setInstanceStorageSetting] = useState<InstanceSetting_StorageSetting>(
-    create(
-      InstanceSetting_StorageSettingSchema,
-      getStorageSetting(instanceStore.getInstanceSettingByKey(InstanceSetting_Key.STORAGE)) || {},
-    ),
-  );
+  const { storageSetting: originalSetting, updateSetting, fetchSetting } = useInstance();
+  const [instanceStorageSetting, setInstanceStorageSetting] = useState<InstanceSetting_StorageSetting>(originalSetting);
 
   useEffect(() => {
-    setInstanceStorageSetting(
-      create(
-        InstanceSetting_StorageSettingSchema,
-        getStorageSetting(instanceStore.getInstanceSettingByKey(InstanceSetting_Key.STORAGE)) || {},
-      ),
-    );
-  }, [instanceStore.getInstanceSettingByKey(InstanceSetting_Key.STORAGE)]);
+    setInstanceStorageSetting(originalSetting);
+  }, [originalSetting]);
 
   const allowSaveStorageSetting = useMemo(() => {
     if (instanceStorageSetting.uploadSizeLimitMb <= 0) {
       return false;
     }
 
-    const origin = create(
-      InstanceSetting_StorageSettingSchema,
-      getStorageSetting(instanceStore.getInstanceSettingByKey(InstanceSetting_Key.STORAGE)) || {},
-    );
     if (instanceStorageSetting.storageType === InstanceSetting_StorageSetting_StorageType.LOCAL) {
       if (instanceStorageSetting.filepathTemplate.length === 0) {
         return false;
@@ -74,8 +51,8 @@ const StorageSection = observer(() => {
         return false;
       }
     }
-    return !isEqual(origin, instanceStorageSetting);
-  }, [instanceStorageSetting, instanceStore.state]);
+    return !isEqual(originalSetting, instanceStorageSetting);
+  }, [instanceStorageSetting, originalSetting]);
 
   const handleMaxUploadSizeChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
     let num = parseInt(event.target.value);
@@ -152,16 +129,22 @@ const StorageSection = observer(() => {
   };
 
   const saveInstanceStorageSetting = async () => {
-    await instanceStore.upsertInstanceSetting(
-      create(InstanceSettingSchema, {
-        name: buildInstanceSettingName(InstanceSetting_Key.STORAGE),
-        value: {
-          case: "storageSetting",
-          value: instanceStorageSetting,
-        },
-      }),
-    );
-    toast.success("Updated");
+    try {
+      await updateSetting(
+        create(InstanceSettingSchema, {
+          name: `instance/settings/${InstanceSetting_Key[InstanceSetting_Key.STORAGE]}`,
+          value: {
+            case: "storageSetting",
+            value: instanceStorageSetting,
+          },
+        }),
+      );
+      await fetchSetting(InstanceSetting_Key.STORAGE);
+      toast.success("Updated");
+    } catch (error: any) {
+      toast.error(error.message);
+      console.error(error);
+    }
   };
 
   return (
@@ -253,6 +236,6 @@ const StorageSection = observer(() => {
       </div>
     </SettingSection>
   );
-});
+};
 
 export default StorageSection;

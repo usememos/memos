@@ -1,16 +1,15 @@
-import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import { useInstance } from "./contexts/InstanceContext";
+import { MemoFilterProvider } from "./contexts/MemoFilterContext";
 import useNavigateTo from "./hooks/useNavigateTo";
 import { useUserLocale } from "./hooks/useUserLocale";
 import { useUserTheme } from "./hooks/useUserTheme";
-import { instanceStore } from "./store";
 import { cleanupExpiredOAuthState } from "./utils/oauth";
 
-const App = observer(() => {
+const App = () => {
   const navigateTo = useNavigateTo();
-  const instanceProfile = instanceStore.state.profile;
-  const instanceGeneralSetting = instanceStore.state.generalSetting;
+  const { profile: instanceProfile, generalSetting: instanceGeneralSetting } = useInstance();
 
   // Apply user preferences reactively
   useUserLocale();
@@ -21,12 +20,12 @@ const App = observer(() => {
     cleanupExpiredOAuthState();
   }, []);
 
-  // Redirect to sign up page if no instance owner.
+  // Redirect to sign up page if no instance owner
   useEffect(() => {
     if (!instanceProfile.owner) {
       navigateTo("/auth/signup");
     }
-  }, [instanceProfile.owner]);
+  }, [instanceProfile.owner, navigateTo]);
 
   useEffect(() => {
     if (instanceGeneralSetting.additionalStyle) {
@@ -45,7 +44,7 @@ const App = observer(() => {
     }
   }, [instanceGeneralSetting.additionalScript]);
 
-  // Dynamic update metadata with customized profile.
+  // Dynamic update metadata with customized profile
   useEffect(() => {
     if (!instanceGeneralSetting.customProfile) {
       return;
@@ -56,7 +55,11 @@ const App = observer(() => {
     link.href = instanceGeneralSetting.customProfile.logoUrl || "/logo.webp";
   }, [instanceGeneralSetting.customProfile]);
 
-  return <Outlet />;
-});
+  return (
+    <MemoFilterProvider>
+      <Outlet />
+    </MemoFilterProvider>
+  );
+};
 
 export default App;
