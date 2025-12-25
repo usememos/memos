@@ -15,10 +15,6 @@ export const memoKeys = {
   detail: (name: string) => [...memoKeys.details(), name] as const,
 };
 
-/**
- * Hook to fetch a list of memos with filtering and sorting.
- * @param request - Request parameters (state, orderBy, filter, pageSize)
- */
 export function useMemos(request: Partial<ListMemosRequest> = {}) {
   return useQuery({
     queryKey: memoKeys.list(request),
@@ -29,13 +25,6 @@ export function useMemos(request: Partial<ListMemosRequest> = {}) {
   });
 }
 
-/**
- * Hook for infinite scrolling/pagination of memos.
- * Automatically fetches pages as the user scrolls.
- *
- * @param request - Partial request configuration (state, orderBy, filter, pageSize)
- * @returns React Query infinite query result with pages of memos
- */
 export function useInfiniteMemos(request: Partial<ListMemosRequest> = {}) {
   return useInfiniteQuery({
     queryKey: memoKeys.list(request),
@@ -55,11 +44,6 @@ export function useInfiniteMemos(request: Partial<ListMemosRequest> = {}) {
   });
 }
 
-/**
- * Hook to fetch a single memo by its resource name.
- * @param name - Memo resource name (e.g., "memos/123")
- * @param options - Query options including enabled flag
- */
 export function useMemo(name: string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: memoKeys.detail(name),
@@ -72,10 +56,6 @@ export function useMemo(name: string, options?: { enabled?: boolean }) {
   });
 }
 
-/**
- * Hook to create a new memo.
- * Automatically invalidates memo lists and user stats on success.
- */
 export function useCreateMemo() {
   const queryClient = useQueryClient();
 
@@ -95,10 +75,6 @@ export function useCreateMemo() {
   });
 }
 
-/**
- * Hook to update an existing memo with optimistic updates.
- * Implements rollback on error for better UX.
- */
 export function useUpdateMemo() {
   const queryClient = useQueryClient();
 
@@ -145,10 +121,6 @@ export function useUpdateMemo() {
   });
 }
 
-/**
- * Hook to delete a memo.
- * Automatically removes memo from cache and invalidates lists on success.
- */
 export function useDeleteMemo() {
   const queryClient = useQueryClient();
 

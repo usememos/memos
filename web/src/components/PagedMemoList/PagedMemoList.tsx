@@ -29,10 +29,6 @@ interface Props {
   showCreator?: boolean;
 }
 
-/**
- * Custom hook to auto-fetch more content when page isn't scrollable.
- * This ensures users see content without needing to scroll on large screens.
- */
 function useAutoFetchWhenNotScrollable({
   hasNextPage,
   isFetchingNextPage,

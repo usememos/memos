@@ -17,19 +17,9 @@ export const userKeys = {
   notifications: () => [...userKeys.all, "notifications"] as const,
 };
 
-/**
- * Hook to get the current authenticated user via React Query.
- *
- * NOTE: This hook is currently UNUSED in favor of the AuthContext-based
- * useCurrentUser hook (src/hooks/useCurrentUser.ts) which provides the same
- * data from AuthContext. The AuthContext fetches user data on app initialization
- * and stores it in React state, avoiding unnecessary re-fetches.
- *
- * This hook is kept for potential future use if we decide to fully migrate
- * auth state to React Query, but currently all components use the AuthContext version.
- *
- * Data is cached for 5 minutes as auth state changes infrequently.
- */
+// NOTE: This hook is currently UNUSED in favor of the AuthContext-based
+// useCurrentUser hook (src/hooks/useCurrentUser.ts). This is kept for potential
+// future migration to React Query for auth state.
 export function useCurrentUserQuery() {
   return useQuery({
     queryKey: userKeys.currentUser(),
@@ -41,11 +31,6 @@ export function useCurrentUserQuery() {
   });
 }
 
-/**
- * Hook to fetch a specific user by name.
- * @param name - User resource name (e.g., "users/123")
- * @param options - Query options including enabled flag
- */
 export function useUser(name: string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: userKeys.detail(name),
@@ -58,10 +43,6 @@ export function useUser(name: string, options?: { enabled?: boolean }) {
   });
 }
 
-/**
- * Hook to fetch statistics for a specific user.
- * @param username - User resource name (e.g., "users/123")
- */
 export function useUserStats(username?: string) {
   return useQuery({
     queryKey: username ? userKeys.userStats(username) : userKeys.stats(),
@@ -76,9 +57,6 @@ export function useUserStats(username?: string) {
   });
 }
 
-/**
- * Hook to fetch shortcuts for the current user.
- */
 export function useShortcuts() {
   return useQuery({
     queryKey: userKeys.shortcuts(),
@@ -89,10 +67,6 @@ export function useShortcuts() {
   });
 }
 
-/**
- * Hook to fetch notifications for the current user.
- * Only fetches when a user is authenticated.
- */
 export function useNotifications() {
   const { data: currentUser } = useCurrentUserQuery();
 
@@ -110,10 +84,6 @@ export function useNotifications() {
   });
 }
 
-/**
- * Hook to fetch tag counts for autocomplete suggestions.
- * @param forCurrentUser - If true, fetches only current user's tags; if false, fetches all public tags
- */
 export function useTagCounts(forCurrentUser = false) {
   const { data: currentUser } = useCurrentUserQuery();
 
@@ -148,10 +118,6 @@ export function useTagCounts(forCurrentUser = false) {
   });
 }
 
-/**
- * Hook to update a user's profile.
- * Automatically updates the cache on success.
- */
 export function useUpdateUser() {
   const queryClient = useQueryClient();
 
@@ -170,10 +136,6 @@ export function useUpdateUser() {
   });
 }
 
-/**
- * Hook to delete a user.
- * Automatically removes the user from cache on success.
- */
 export function useDeleteUser() {
   const queryClient = useQueryClient();
 

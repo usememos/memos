@@ -7,6 +7,7 @@ import { Toaster } from "react-hot-toast";
 import { RouterProvider } from "react-router-dom";
 import "./i18n";
 import "./index.css";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { InstanceProvider, useInstance } from "@/contexts/InstanceContext";
 import { ViewProvider } from "@/contexts/ViewContext";
@@ -48,19 +49,21 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
 
 function Main() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <InstanceProvider>
-        <AuthProvider>
-          <ViewProvider>
-            <AppInitializer>
-              <RouterProvider router={router} />
-              <Toaster position="top-right" />
-            </AppInitializer>
-          </ViewProvider>
-        </AuthProvider>
-      </InstanceProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <InstanceProvider>
+          <AuthProvider>
+            <ViewProvider>
+              <AppInitializer>
+                <RouterProvider router={router} />
+                <Toaster position="top-right" />
+              </AppInitializer>
+            </ViewProvider>
+          </AuthProvider>
+        </InstanceProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
 
