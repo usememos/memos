@@ -10,7 +10,7 @@ export const useMemoInit = (
   username: string,
   autoFocus?: boolean,
 ) => {
-  const { actions } = useEditorContext();
+  const { actions, dispatch } = useEditorContext();
   const initializedRef = useRef(false);
 
   useEffect(() => {
@@ -18,28 +18,30 @@ export const useMemoInit = (
     initializedRef.current = true;
 
     const init = async () => {
-      actions.setLoading("loading", true);
+      dispatch(actions.setLoading("loading", true));
 
       try {
         if (memoName) {
           // Load existing memo
           const loadedState = await memoService.load(memoName);
-          actions.initMemo({
-            content: loadedState.content,
-            metadata: loadedState.metadata,
-            timestamps: loadedState.timestamps,
-          });
+          dispatch(
+            actions.initMemo({
+              content: loadedState.content,
+              metadata: loadedState.metadata,
+              timestamps: loadedState.timestamps,
+            }),
+          );
         } else {
           // Load from cache for new memo
           const cachedContent = cacheService.load(cacheService.key(username, cacheKey));
           if (cachedContent) {
-            actions.updateContent(cachedContent);
+            dispatch(actions.updateContent(cachedContent));
           }
         }
       } catch (error) {
         console.error("Failed to initialize editor:", error);
       } finally {
-        actions.setLoading("loading", false);
+        dispatch(actions.setLoading("loading", false));
 
         if (autoFocus) {
           setTimeout(() => {
@@ -50,5 +52,5 @@ export const useMemoInit = (
     };
 
     init();
-  }, [memoName, cacheKey, username, autoFocus, actions, editorRef]);
+  }, [memoName, cacheKey, username, autoFocus, actions, dispatch, editorRef]);
 };
