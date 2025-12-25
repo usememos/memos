@@ -63,7 +63,9 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	})
 
 	// Serve frontend static files.
-	frontend.NewFrontendService(profile, store).Serve(ctx, echoServer)
+	if err := frontend.NewFrontendService(profile, store).Serve(ctx, echoServer); err != nil {
+		return nil, errors.Wrap(err, "unable to set up frontend service")
+	}
 
 	rootGroup := echoServer.Group("")
 

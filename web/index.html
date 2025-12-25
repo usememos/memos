@@ -8,9 +8,16 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/webp" href="/logo.webp" />
     <link rel="manifest" href="/site.webmanifest" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-    <!-- memos.metadata.head -->
-    <title>Memos</title>
+    <!-- {{ printf "memos.metadata.head %s>" "--" }}
+    {{- with .FeedURL }}
+    <link rel="alternate" type="application/rss+xml" href="{{ . }}" title="{{ $.FeedTitle | default $.Title | html }}" />
+    {{ end }}
+
+    {{- range $name, $content := .MetaData }}
+    <meta name="{{ $name | html }}" content="{{ $content | html }}" />
+    {{ end }}
+    {{ printf "<%s" "!--" }} -->
+    <title>{{ .Title | html }}</title>
   </head>
   <body class="text-base w-full min-h-svh">
     <div id="root" class="relative w-full min-h-full"></div>
