@@ -1,7 +1,9 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { uniq } from "lodash-es";
 import { useEffect, useState } from "react";
 import { memoServiceClient, userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { memoKeys } from "@/hooks/useMemoQueries";
 import type { Memo, Reaction } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
 
@@ -35,6 +37,7 @@ interface UseReactionActionsOptions {
 
 export const useReactionActions = ({ memo, onComplete }: UseReactionActionsOptions) => {
   const currentUser = useCurrentUser();
+  const queryClient = useQueryClient();
 
   const hasReacted = (reactionType: string) => {
     return memo.reactions.some((r) => r.reactionType === reactionType && r.creator === currentUser?.name);
@@ -57,8 +60,10 @@ export const useReactionActions = ({ memo, onComplete }: UseReactionActionsOptio
           reaction: { contentId: memo.name, reactionType },
         });
       }
-      // Refetch the memo to get updated reactions
-      await memoServiceClient.getMemo({ name: memo.name });
+      // Refetch the memo to get updated reactions and invalidate cache
+      const updatedMemo = await memoServiceClient.getMemo({ name: memo.name });
+      queryClient.setQueryData(memoKeys.detail(memo.name), updatedMemo);
+      queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
     } catch {
       // skip error
     }
