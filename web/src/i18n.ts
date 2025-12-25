@@ -5,6 +5,7 @@ import { findNearestMatchedLanguage } from "./utils/i18n";
 
 export const locales = orderBy([
   "ar",
+  "ca",
   "cs",
   "de",
   "en",
@@ -12,6 +13,7 @@ export const locales = orderBy([
   "es",
   "fa",
   "fr",
+  "gl",
   "hi",
   "hr",
   "hu",
