@@ -18,10 +18,19 @@ export const userKeys = {
 };
 
 /**
- * Hook to get the current authenticated user.
+ * Hook to get the current authenticated user via React Query.
+ *
+ * NOTE: This hook is currently UNUSED in favor of the AuthContext-based
+ * useCurrentUser hook (src/hooks/useCurrentUser.ts) which provides the same
+ * data from AuthContext. The AuthContext fetches user data on app initialization
+ * and stores it in React state, avoiding unnecessary re-fetches.
+ *
+ * This hook is kept for potential future use if we decide to fully migrate
+ * auth state to React Query, but currently all components use the AuthContext version.
+ *
  * Data is cached for 5 minutes as auth state changes infrequently.
  */
-export function useCurrentUser() {
+export function useCurrentUserQuery() {
   return useQuery({
     queryKey: userKeys.currentUser(),
     queryFn: async () => {
@@ -85,7 +94,7 @@ export function useShortcuts() {
  * Only fetches when a user is authenticated.
  */
 export function useNotifications() {
-  const { data: currentUser } = useCurrentUser();
+  const { data: currentUser } = useCurrentUserQuery();
 
   return useQuery({
     queryKey: userKeys.notifications(),
@@ -106,7 +115,7 @@ export function useNotifications() {
  * @param forCurrentUser - If true, fetches only current user's tags; if false, fetches all public tags
  */
 export function useTagCounts(forCurrentUser = false) {
-  const { data: currentUser } = useCurrentUser();
+  const { data: currentUser } = useCurrentUserQuery();
 
   return useQuery({
     queryKey: forCurrentUser ? [...userKeys.stats(), "tagCounts", "current"] : [...userKeys.stats(), "tagCounts", "all"],

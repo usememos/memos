@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { createContext, type ReactNode, useCallback, useContext, useState } from "react";
+import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from "react";
 import { clearAccessToken } from "@/auth-state";
 import { authServiceClient, shortcutServiceClient, userServiceClient } from "@/connect";
 import { userKeys } from "@/hooks/useUserQueries";
@@ -114,23 +114,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [queryClient]);
 
   const refetchSettings = useCallback(async () => {
-    if (!state.currentUser) return;
-    const settings = await fetchUserSettings(state.currentUser.name);
-    setState((prev) => ({ ...prev, ...settings }));
-  }, [state.currentUser, fetchUserSettings]);
+    // Use functional setState to get current user without including state in dependencies
+    setState((prev) => {
+      if (!prev.currentUser) return prev;
 
-  return (
-    <AuthContext.Provider
-      value={{
-        ...state,
-        initialize,
-        logout,
-        refetchSettings,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+      // Fetch settings asynchronously
+      fetchUserSettings(prev.currentUser.name).then((settings) => {
+        setState((current) => ({ ...current, ...settings }));
+      });
+
+      return prev;
+    });
+  }, [fetchUserSettings]);
+
+  // Memoize context value to prevent unnecessary re-renders of consumers
+  const value = useMemo(
+    () => ({
+      ...state,
+      initialize,
+      logout,
+      refetchSettings,
+    }),
+    [state, initialize, logout, refetchSettings],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

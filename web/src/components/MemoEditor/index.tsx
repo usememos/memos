@@ -3,6 +3,7 @@ import { useMemo, useRef } from "react";
 import { toast } from "react-hot-toast";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { memoKeys } from "@/hooks/useMemoQueries";
+import { userKeys } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { EditorContent, EditorMetadata, EditorToolbar, FocusModeExitButton, FocusModeOverlay } from "./components";
@@ -119,7 +120,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
       // Invalidate React Query cache to refresh memo lists across the app
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: memoKeys.lists() }),
-        queryClient.invalidateQueries({ queryKey: ["users", "stats"] }),
+        queryClient.invalidateQueries({ queryKey: userKeys.stats() }),
       ]);
 
       // Reset editor state to initial values

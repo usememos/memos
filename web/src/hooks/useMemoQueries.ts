@@ -2,6 +2,7 @@ import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { memoServiceClient } from "@/connect";
+import { userKeys } from "@/hooks/useUserQueries";
 import type { ListMemosRequest, Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { ListMemosRequestSchema, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
@@ -89,7 +90,7 @@ export function useCreateMemo() {
       // Add new memo to cache
       queryClient.setQueryData(memoKeys.detail(newMemo.name), newMemo);
       // Invalidate user stats
-      queryClient.invalidateQueries({ queryKey: ["users", "stats"] });
+      queryClient.invalidateQueries({ queryKey: userKeys.stats() });
     },
   });
 }
@@ -139,7 +140,7 @@ export function useUpdateMemo() {
       // Invalidate lists to refresh
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
       // Invalidate user stats
-      queryClient.invalidateQueries({ queryKey: ["users", "stats"] });
+      queryClient.invalidateQueries({ queryKey: userKeys.stats() });
     },
   });
 }
@@ -162,7 +163,7 @@ export function useDeleteMemo() {
       // Invalidate lists
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
       // Invalidate user stats
-      queryClient.invalidateQueries({ queryKey: ["users", "stats"] });
+      queryClient.invalidateQueries({ queryKey: userKeys.stats() });
     },
   });
 }

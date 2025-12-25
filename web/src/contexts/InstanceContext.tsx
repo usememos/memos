@@ -1,5 +1,5 @@
 import { create } from "@bufbuild/protobuf";
-import { createContext, type ReactNode, useCallback, useContext, useState } from "react";
+import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from "react";
 import { instanceServiceClient } from "@/connect";
 import { updateInstanceConfig } from "@/instance-config";
 import {
@@ -48,29 +48,30 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
     isLoading: true,
   });
 
-  const getGeneralSetting = (): InstanceSetting_GeneralSetting => {
+  // Memoize derived settings to prevent unnecessary recalculations
+  const generalSetting = useMemo((): InstanceSetting_GeneralSetting => {
     const setting = state.settings.find((s) => s.name === `${instanceSettingNamePrefix}GENERAL`);
     if (setting?.value.case === "generalSetting") {
       return setting.value.value;
     }
     return create(InstanceSetting_GeneralSettingSchema, {});
-  };
+  }, [state.settings]);
 
-  const getMemoRelatedSetting = (): InstanceSetting_MemoRelatedSetting => {
+  const memoRelatedSetting = useMemo((): InstanceSetting_MemoRelatedSetting => {
     const setting = state.settings.find((s) => s.name === `${instanceSettingNamePrefix}MEMO_RELATED`);
     if (setting?.value.case === "memoRelatedSetting") {
       return setting.value.value;
     }
     return create(InstanceSetting_MemoRelatedSettingSchema, {});
-  };
+  }, [state.settings]);
 
-  const getStorageSetting = (): InstanceSetting_StorageSetting => {
+  const storageSetting = useMemo((): InstanceSetting_StorageSetting => {
     const setting = state.settings.find((s) => s.name === `${instanceSettingNamePrefix}STORAGE`);
     if (setting?.value.case === "storageSetting") {
       return setting.value.value;
     }
     return create(InstanceSetting_StorageSettingSchema, {});
-  };
+  }, [state.settings]);
 
   const initialize = useCallback(async () => {
     setState((prev) => ({ ...prev, isLoading: true }));
@@ -125,21 +126,21 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
-  return (
-    <InstanceContext.Provider
-      value={{
-        ...state,
-        generalSetting: getGeneralSetting(),
-        memoRelatedSetting: getMemoRelatedSetting(),
-        storageSetting: getStorageSetting(),
-        initialize,
-        fetchSetting,
-        updateSetting,
-      }}
-    >
-      {children}
-    </InstanceContext.Provider>
+  // Memoize context value to prevent unnecessary re-renders of consumers
+  const value = useMemo(
+    () => ({
+      ...state,
+      generalSetting,
+      memoRelatedSetting,
+      storageSetting,
+      initialize,
+      fetchSetting,
+      updateSetting,
+    }),
+    [state, generalSetting, memoRelatedSetting, storageSetting, initialize, fetchSetting, updateSetting],
   );
+
+  return <InstanceContext.Provider value={value}>{children}</InstanceContext.Provider>;
 }
 
 export function useInstance() {

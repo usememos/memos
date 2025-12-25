@@ -1,11 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { attachmentServiceClient } from "@/connect";
+import type { Attachment, ListAttachmentsRequest } from "@/types/proto/api/v1/attachment_service_pb";
 
 // Query keys factory
 export const attachmentKeys = {
   all: ["attachments"] as const,
   lists: () => [...attachmentKeys.all, "list"] as const,
-  list: (filters?: any) => [...attachmentKeys.lists(), filters] as const,
+  list: (filters?: Partial<ListAttachmentsRequest>) => [...attachmentKeys.lists(), filters] as const,
   details: () => [...attachmentKeys.all, "detail"] as const,
   detail: (name: string) => [...attachmentKeys.details(), name] as const,
 };
@@ -26,7 +27,7 @@ export function useCreateAttachment() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (attachment: any) => {
+    mutationFn: async (attachment: Attachment) => {
       const result = await attachmentServiceClient.createAttachment({ attachment });
       return result;
     },
