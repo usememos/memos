@@ -13,6 +13,7 @@ export const memoKeys = {
   list: (filters: Partial<ListMemosRequest>) => [...memoKeys.lists(), filters] as const,
   details: () => [...memoKeys.all, "detail"] as const,
   detail: (name: string) => [...memoKeys.details(), name] as const,
+  comments: (name: string) => [...memoKeys.all, "comments", name] as const,
 };
 
 export function useMemos(request: Partial<ListMemosRequest> = {}) {
@@ -137,5 +138,17 @@ export function useDeleteMemo() {
       // Invalidate user stats
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
     },
+  });
+}
+
+export function useMemoComments(name: string, options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: memoKeys.comments(name),
+    queryFn: async () => {
+      const response = await memoServiceClient.listMemoComments({ name });
+      return response;
+    },
+    enabled: options?.enabled ?? true,
+    staleTime: 1000 * 60, // 1 minute
   });
 }

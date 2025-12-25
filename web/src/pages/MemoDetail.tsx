@@ -10,11 +10,10 @@ import MobileHeader from "@/components/MobileHeader";
 import { Button } from "@/components/ui/button";
 import { memoNamePrefix } from "@/helpers/resource-names";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemo as useMemoQuery } from "@/hooks/useMemoQueries";
+import { useMemo, useMemoComments } from "@/hooks/useMemoQueries";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { cn } from "@/lib/utils";
-import { Memo, MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoDetail = () => {
@@ -29,7 +28,7 @@ const MemoDetail = () => {
   const [showCommentEditor, setShowCommentEditor] = useState(false);
 
   // Fetch main memo with React Query
-  const { data: memo, error, isLoading } = useMemoQuery(memoName, { enabled: !!memoName });
+  const { data: memo, error, isLoading } = useMemo(memoName, { enabled: !!memoName });
 
   // Handle errors
   if (error) {
@@ -38,18 +37,15 @@ const MemoDetail = () => {
   }
 
   // Fetch parent memo if exists
-  const { data: parentMemo } = useMemoQuery(memo?.parent || "", {
+  const { data: parentMemo } = useMemo(memo?.parent || "", {
     enabled: !!memo?.parent,
   });
 
-  // Get comment relations and memo names
-  const commentRelations =
-    memo?.relations.filter((relation) => relation.relatedMemo?.name === memo.name && relation.type === MemoRelation_Type.COMMENT) || [];
-  const commentMemoNames = commentRelations.map((relation) => relation.memo!.name);
-
-  // Fetch all comment memos
-  const commentQueries = commentMemoNames.map((name) => useMemoQuery(name));
-  const comments = commentQueries.map((q) => q.data).filter((memo): memo is Memo => !!memo);
+  // Fetch all comments for this memo in a single query
+  const { data: commentsResponse } = useMemoComments(memoName, {
+    enabled: !!memo,
+  });
+  const comments = commentsResponse?.memos || [];
 
   const showCreateCommentButton = currentUser && !showCommentEditor;
 

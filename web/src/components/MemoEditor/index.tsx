@@ -118,10 +118,17 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
       cacheService.clear(cacheService.key(currentUser?.name ?? "", cacheKey));
 
       // Invalidate React Query cache to refresh memo lists across the app
-      await Promise.all([
+      const invalidationPromises = [
         queryClient.invalidateQueries({ queryKey: memoKeys.lists() }),
         queryClient.invalidateQueries({ queryKey: userKeys.stats() }),
-      ]);
+      ];
+
+      // If this was a comment, also invalidate the comments query for the parent memo
+      if (parentMemoName) {
+        invalidationPromises.push(queryClient.invalidateQueries({ queryKey: memoKeys.comments(parentMemoName) }));
+      }
+
+      await Promise.all(invalidationPromises);
 
       // Reset editor state to initial values
       dispatch(actions.reset());
