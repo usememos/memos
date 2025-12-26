@@ -5,7 +5,7 @@ import { useState } from "react";
 import Empty from "@/components/Empty";
 import MemoCommentMessage from "@/components/Inbox/MemoCommentMessage";
 import MobileHeader from "@/components/MobileHeader";
-import useResponsiveWidth from "@/hooks/useResponsiveWidth";
+import useMediaQuery from "@/hooks/useMediaQuery";
 import { useNotifications } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
 import { UserNotification, UserNotification_Status, UserNotification_Type } from "@/types/proto/api/v1/user_service_pb";
@@ -13,7 +13,7 @@ import { useTranslate } from "@/utils/i18n";
 
 const Inboxes = () => {
   const t = useTranslate();
-  const { md } = useResponsiveWidth();
+  const md = useMediaQuery("md");
   const [filter, setFilter] = useState<"all" | "unread" | "archived">("all");
 
   // Fetch notifications with React Query

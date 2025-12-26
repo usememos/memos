@@ -1,13 +1,11 @@
 import { ArrowUpIcon, LoaderIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { matchPath } from "react-router-dom";
-import PullToRefresh from "react-simple-pull-to-refresh";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
 import { useView } from "@/contexts/ViewContext";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
-import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { Routes } from "@/router";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
@@ -82,14 +80,13 @@ function useAutoFetchWhenNotScrollable({
 
 const PagedMemoList = (props: Props) => {
   const t = useTranslate();
-  const { md } = useResponsiveWidth();
   const { layout } = useView();
 
   // Show memo editor only on the root route
   const showMemoEditor = Boolean(matchPath(Routes.ROOT, window.location.pathname));
 
   // Use React Query's infinite query for pagination
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, refetch } = useInfiniteMemos({
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteMemos({
     state: props.state || State.NORMAL,
     orderBy: props.orderBy || "display_time desc",
     filter: props.filter,
@@ -192,29 +189,7 @@ const PagedMemoList = (props: Props) => {
     </div>
   );
 
-  if (md) {
-    return children;
-  }
-
-  return (
-    <PullToRefresh
-      onRefresh={async () => {
-        await refetch();
-      }}
-      pullingContent={
-        <div className="w-full flex flex-row justify-center items-center my-4">
-          <LoaderIcon className="opacity-60" />
-        </div>
-      }
-      refreshingContent={
-        <div className="w-full flex flex-row justify-center items-center my-4">
-          <LoaderIcon className="animate-spin" />
-        </div>
-      }
-    >
-      {children}
-    </PullToRefresh>
-  );
+  return children;
 };
 
 const BackToTop = () => {

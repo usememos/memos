@@ -10,15 +10,15 @@ import MobileHeader from "@/components/MobileHeader";
 import { Button } from "@/components/ui/button";
 import { memoNamePrefix } from "@/helpers/resource-names";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import useMediaQuery from "@/hooks/useMediaQuery";
 import { useMemo, useMemoComments } from "@/hooks/useMemoQueries";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoDetail = () => {
   const t = useTranslate();
-  const { md } = useResponsiveWidth();
+  const md = useMediaQuery("md");
   const params = useParams();
   const navigateTo = useNavigateTo();
   const { state: locationState } = useLocation();
@@ -70,7 +70,7 @@ const MemoDetail = () => {
         </MobileHeader>
       )}
       <div className={cn("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
-        <div className={cn(md ? "w-[calc(100%-15rem)]" : "w-full")}>
+        <div className={cn("w-full md:w-[calc(100%-15rem)]")}>
           {parentMemo && (
             <div className="w-auto inline-block mb-2">
               <Link

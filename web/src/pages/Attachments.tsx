@@ -15,7 +15,7 @@ import { attachmentServiceClient } from "@/connect";
 import { useDeleteAttachment } from "@/hooks/useAttachmentQueries";
 import useDialog from "@/hooks/useDialog";
 import useLoading from "@/hooks/useLoading";
-import useResponsiveWidth from "@/hooks/useResponsiveWidth";
+import useMediaQuery from "@/hooks/useMediaQuery";
 import i18n from "@/i18n";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -69,7 +69,7 @@ const AttachmentItem = ({ attachment }: AttachmentItemProps) => (
 
 const Attachments = () => {
   const t = useTranslate();
-  const { md } = useResponsiveWidth();
+  const md = useMediaQuery("md");
   const loadingState = useLoading();
   const deleteUnusedAttachmentsDialog = useDialog();
   const { mutateAsync: deleteAttachment } = useDeleteAttachment();

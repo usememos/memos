@@ -6,12 +6,13 @@ import MobileHeader from "@/components/MobileHeader";
 import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
-import useResponsiveWidth from "@/hooks/useResponsiveWidth";
+import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
 
 const MainLayout = () => {
-  const { md, lg } = useResponsiveWidth();
+  const md = useMediaQuery("md");
+  const lg = useMediaQuery("lg");
   const location = useLocation();
   const currentUser = useCurrentUser();
   const [profileUserName, setProfileUserName] = useState<string | undefined>();

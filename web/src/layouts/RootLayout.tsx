@@ -5,7 +5,7 @@ import Navigation from "@/components/Navigation";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import useResponsiveWidth from "@/hooks/useResponsiveWidth";
+import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import Loading from "@/pages/Loading";
 import { Routes } from "@/router";
@@ -13,7 +13,7 @@ import { Routes } from "@/router";
 const RootLayout = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const { sm } = useResponsiveWidth();
+  const sm = useMediaQuery("sm");
   const currentUser = useCurrentUser();
   const { memoRelatedSetting } = useInstance();
   const { removeFilter } = useMemoFilterContext();
