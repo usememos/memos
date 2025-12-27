@@ -1,4 +1,3 @@
-import { create } from "@bufbuild/protobuf";
 import { isEqual } from "lodash-es";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
@@ -12,7 +11,6 @@ import { useInstance } from "@/contexts/InstanceContext";
 import { convertFileToBase64 } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useUpdateUser } from "@/hooks/useUserQueries";
-import { User as UserPb, UserSchema } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import UserAvatar from "./UserAvatar";
 

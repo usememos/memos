@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo } from "react";
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
 import usePrevious from "react-use/lib/usePrevious";
 import Navigation from "@/components/Navigation";
@@ -8,7 +8,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import Loading from "@/pages/Loading";
-import { Routes } from "@/router";
+import { redirectOnAuthFailure } from "@/utils/auth-redirect";
 
 const RootLayout = () => {
   const location = useLocation();
@@ -17,25 +17,14 @@ const RootLayout = () => {
   const currentUser = useCurrentUser();
   const { memoRelatedSetting } = useInstance();
   const { removeFilter } = useMemoFilterContext();
-  const [initialized, setInitialized] = useState(false);
   const pathname = useMemo(() => location.pathname, [location.pathname]);
   const prevPathname = usePrevious(pathname);
 
   useEffect(() => {
-    if (!currentUser) {
-      // If disallowPublicVisibility is enabled, redirect to login
-      if (memoRelatedSetting.disallowPublicVisibility) {
-        window.location.replace(Routes.AUTH);
-        return;
-      } else if (
-        ([Routes.ROOT, Routes.ATTACHMENTS, Routes.INBOX, Routes.ARCHIVED, Routes.SETTING] as string[]).includes(location.pathname)
-      ) {
-        window.location.replace(Routes.EXPLORE);
-        return;
-      }
+    if (!currentUser && memoRelatedSetting.disallowPublicVisibility) {
+      redirectOnAuthFailure();
     }
-    setInitialized(true);
-  }, [currentUser, memoRelatedSetting.disallowPublicVisibility, location.pathname]);
+  }, [currentUser, memoRelatedSetting.disallowPublicVisibility]);
 
   useEffect(() => {
     // When the route changes and there is no filter in the search params, remove all filters
@@ -44,9 +33,7 @@ const RootLayout = () => {
     }
   }, [prevPathname, pathname, searchParams, removeFilter]);
 
-  return !initialized ? (
-    <Loading />
-  ) : (
+  return (
     <div className="w-full min-h-full flex flex-row justify-center items-start sm:pl-16">
       {sm && (
         <div

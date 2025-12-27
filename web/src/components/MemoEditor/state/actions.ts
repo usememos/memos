@@ -1,6 +1,6 @@
 import type { LocalFile } from "@/components/memo-metadata";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
+import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import type { EditorAction, EditorState, LoadingKey } from "./types";
 
 export const editorActions = {

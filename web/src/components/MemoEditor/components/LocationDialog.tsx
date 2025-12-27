@@ -25,7 +25,7 @@ export const LocationDialog = ({
   open,
   onOpenChange,
   state,
-  locationInitialized,
+  locationInitialized: _locationInitialized,
   onPositionChange,
   onUpdateCoordinate,
   onPlaceholderChange,

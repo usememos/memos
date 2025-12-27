@@ -5,14 +5,7 @@ import { memoServiceClient } from "@/connect";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import { extractUserIdFromName } from "@/helpers/resource-names";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import {
-  Memo,
-  MemoRelation,
-  MemoRelation_Memo,
-  MemoRelation_MemoSchema,
-  MemoRelation_Type,
-  MemoRelationSchema,
-} from "@/types/proto/api/v1/memo_service_pb";
+import { Memo, MemoRelation, MemoRelation_MemoSchema, MemoRelation_Type, MemoRelationSchema } from "@/types/proto/api/v1/memo_service_pb";
 
 interface UseLinkMemoParams {
   isOpen: boolean;

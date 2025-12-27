@@ -3,7 +3,7 @@ import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { isEqual } from "lodash-es";
 import { CheckCircleIcon, Code2Icon, HashIcon, LinkIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Memo, Memo_Property, Memo_PropertySchema, MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
+import { Memo, Memo_PropertySchema, MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import MemoRelationForceGraph from "../MemoRelationForceGraph";
 

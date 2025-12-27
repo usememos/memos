@@ -89,8 +89,8 @@ const UserMenu = (props: Props) => {
 
     try {
       // Then clear user-specific localStorage items
-      // Preserve app-wide settings like theme
-      const keysToPreserve = ["memos-theme", "tag-view-as-tree", "tag-tree-auto-expand", "viewStore"];
+      // Preserve app-wide settings (theme, locale, view preferences, tag view settings)
+      const keysToPreserve = ["memos-theme", "memos-locale", "memos-view-setting", "tag-view-as-tree", "tag-tree-auto-expand"];
       const keysToRemove: string[] = [];
 
       for (let i = 0; i < localStorage.length; i++) {
@@ -105,8 +105,8 @@ const UserMenu = (props: Props) => {
       // Ignore errors from localStorage operations
     }
 
-    // Always redirect to auth page
-    window.location.href = Routes.AUTH;
+    // Always redirect to auth page (use replace to prevent back navigation)
+    window.location.replace(Routes.AUTH);
   };
 
   return (

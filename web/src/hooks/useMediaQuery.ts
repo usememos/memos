@@ -32,4 +32,3 @@ const useMediaQuery = (breakpoint: Breakpoint): boolean => {
 };
 
 export default useMediaQuery;
-

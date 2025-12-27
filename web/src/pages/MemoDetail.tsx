@@ -57,7 +57,7 @@ const MemoDetail = () => {
     setShowCommentEditor(true);
   };
 
-  const handleCommentCreated = async (memoCommentName: string) => {
+  const handleCommentCreated = async (_memoCommentName: string) => {
     // React Query will auto-refetch due to invalidation in the mutation
     setShowCommentEditor(false);
   };

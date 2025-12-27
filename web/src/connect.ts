@@ -2,8 +2,6 @@ import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError, createClient, type Interceptor } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { getAccessToken, setAccessToken } from "./auth-state";
-import { getInstanceConfig } from "./instance-config";
-import { ROUTES } from "./router/routes";
 import { ActivityService } from "./types/proto/api/v1/activity_service_pb";
 import { AttachmentService } from "./types/proto/api/v1/attachment_service_pb";
 import { AuthService } from "./types/proto/api/v1/auth_service_pb";
@@ -12,6 +10,7 @@ import { InstanceService } from "./types/proto/api/v1/instance_service_pb";
 import { MemoService } from "./types/proto/api/v1/memo_service_pb";
 import { ShortcutService } from "./types/proto/api/v1/shortcut_service_pb";
 import { UserService } from "./types/proto/api/v1/user_service_pb";
+import { redirectOnAuthFailure } from "./utils/auth-redirect";
 
 // ============================================================================
 // Constants
@@ -19,19 +18,6 @@ import { UserService } from "./types/proto/api/v1/user_service_pb";
 
 const RETRY_HEADER = "X-Retry";
 const RETRY_HEADER_VALUE = "true";
-
-const ROUTE_CONFIG = {
-  // Routes accessible without authentication (uses prefix matching)
-  public: [
-    ROUTES.AUTH, // Authentication pages
-    ROUTES.EXPLORE, // Explore page
-    "/u/", // User profile pages (dynamic)
-    "/memos/", // Individual memo detail pages (dynamic)
-  ],
-
-  // Routes that require authentication (uses exact matching)
-  private: [ROUTES.ROOT, ROUTES.ATTACHMENTS, ROUTES.INBOX, ROUTES.ARCHIVED, ROUTES.SETTING],
-} as const;
 
 // ============================================================================
 // Token Refresh State Management
@@ -59,42 +45,6 @@ const createTokenRefreshManager = () => {
 };
 
 const tokenRefreshManager = createTokenRefreshManager();
-
-// ============================================================================
-// Route Access Control
-// ============================================================================
-
-function isPublicRoute(path: string): boolean {
-  return ROUTE_CONFIG.public.some((route) => path.startsWith(route));
-}
-
-function isPrivateRoute(path: string): boolean {
-  return (ROUTE_CONFIG.private as readonly string[]).includes(path);
-}
-
-function getAuthFailureRedirect(currentPath: string): string | null {
-  if (isPublicRoute(currentPath)) {
-    return null;
-  }
-
-  if (getInstanceConfig().memoRelatedSetting.disallowPublicVisibility) {
-    return ROUTES.AUTH;
-  }
-
-  if (isPrivateRoute(currentPath)) {
-    return ROUTES.EXPLORE;
-  }
-
-  return null;
-}
-
-function performRedirect(redirectUrl: string | null): void {
-  if (redirectUrl) {
-    // Use replace() instead of href to prevent back button from showing cached sensitive data
-    // This removes the current page from browser history after authentication failure
-    window.location.replace(redirectUrl);
-  }
-}
 
 // ============================================================================
 // Token Refresh
@@ -165,8 +115,7 @@ const authInterceptor: Interceptor = (next) => async (req) => {
       req.header.set(RETRY_HEADER, RETRY_HEADER_VALUE);
       return await next(req);
     } catch (refreshError) {
-      const redirectUrl = getAuthFailureRedirect(window.location.pathname);
-      performRedirect(redirectUrl);
+      redirectOnAuthFailure();
       throw refreshError;
     }
   }

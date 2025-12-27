@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { useInstance } from "@/contexts/InstanceContext";
-import { memoKeys, useDeleteMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
+import { useDeleteMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { userKeys } from "@/hooks/useUserQueries";
 import { State } from "@/types/proto/api/v1/common_pb";

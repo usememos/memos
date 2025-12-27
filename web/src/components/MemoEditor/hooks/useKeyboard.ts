@@ -7,7 +7,7 @@ interface UseKeyboardOptions {
   onToggleFocusMode?: () => void;
 }
 
-export const useKeyboard = (editorRef: React.RefObject<EditorRefActions | null>, options: UseKeyboardOptions) => {
+export const useKeyboard = (_editorRef: React.RefObject<EditorRefActions | null>, options: UseKeyboardOptions) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       // Cmd/Ctrl + Enter to save
