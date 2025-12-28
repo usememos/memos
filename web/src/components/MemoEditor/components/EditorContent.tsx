@@ -3,11 +3,7 @@ import type { LocalFile } from "@/components/memo-metadata";
 import Editor, { type EditorRefActions } from "../Editor";
 import { useBlobUrls, useDragAndDrop } from "../hooks";
 import { useEditorContext } from "../state";
-
-interface EditorContentProps {
-  placeholder?: string;
-  autoFocus?: boolean;
-}
+import type { EditorContentProps } from "../types";
 
 export const EditorContent = forwardRef<EditorRefActions, EditorContentProps>(({ placeholder }, ref) => {
   const { state, actions, dispatch } = useEditorContext();

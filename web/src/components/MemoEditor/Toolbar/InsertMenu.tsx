@@ -1,7 +1,7 @@
 import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
 import { FileIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import type { LocalFile } from "@/components/memo-metadata";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,24 +14,17 @@ import {
   DropdownMenuTrigger,
   useDropdownMenuSubHoverDelay,
 } from "@/components/ui/dropdown-menu";
-import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
+import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { LinkMemoDialog, LocationDialog } from "../components";
 import { GEOCODING } from "../constants";
-import { useFileUpload, useLinkMemo, useLocation } from "../hooks";
-import { useAbortController } from "../hooks/useAbortController";
-import { MemoEditorContext } from "../types";
+import { useAbortController, useFileUpload, useLinkMemo, useLocation } from "../hooks";
+import { useEditorContext } from "../state";
+import type { InsertMenuProps } from "../types";
 
-interface Props {
-  isUploading?: boolean;
-  location?: Location;
-  onLocationChange: (location?: Location) => void;
-  onToggleFocusMode?: () => void;
-}
-
-const InsertMenu = (props: Props) => {
+const InsertMenu = (props: InsertMenuProps) => {
   const t = useTranslate();
-  const context = useContext(MemoEditorContext);
+  const { state, actions, dispatch } = useEditorContext();
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
@@ -46,17 +39,15 @@ const InsertMenu = (props: Props) => {
   );
 
   const { fileInputRef, selectingFlag, handleFileInputChange, handleUploadClick } = useFileUpload((newFiles: LocalFile[]) => {
-    if (context.addLocalFiles) {
-      context.addLocalFiles(newFiles);
-    }
+    newFiles.forEach((file) => dispatch(actions.addLocalFile(file)));
   });
 
   const linkMemo = useLinkMemo({
     isOpen: linkDialogOpen,
-    currentMemoName: context.memoName,
-    existingRelations: context.relationList,
+    currentMemoName: props.memoName,
+    existingRelations: state.metadata.relations,
     onAddRelation: (relation: MemoRelation) => {
-      context.setRelationList(uniqBy([...context.relationList, relation], (r) => r.relatedMemo?.name));
+      dispatch(actions.setMetadata({ relations: uniqBy([...state.metadata.relations, relation], (r) => r.relatedMemo?.name) }));
       setLinkDialogOpen(false);
     },
   });

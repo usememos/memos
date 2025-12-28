@@ -1,8 +1,8 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import type { LinkMemoDialogProps } from "../types";
 
 function highlightSearchText(content: string, searchText: string): React.ReactNode {
   if (!searchText) return content;
@@ -27,16 +27,6 @@ function highlightSearchText(content: string, searchText: string): React.ReactNo
       {after}
     </>
   );
-}
-
-interface LinkMemoDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  searchText: string;
-  onSearchChange: (text: string) => void;
-  filteredMemos: Memo[];
-  isFetching: boolean;
-  onSelectMemo: (memo: Memo) => void;
 }
 
 export const LinkMemoDialog = ({

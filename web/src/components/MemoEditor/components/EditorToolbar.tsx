@@ -4,13 +4,9 @@ import { validationService } from "../services";
 import { useEditorContext } from "../state";
 import InsertMenu from "../Toolbar/InsertMenu";
 import VisibilitySelector from "../Toolbar/VisibilitySelector";
+import type { EditorToolbarProps } from "../types";
 
-interface EditorToolbarProps {
-  onSave: () => void;
-  onCancel?: () => void;
-}
-
-export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel }) => {
+export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoName }) => {
   const { state, actions, dispatch } = useEditorContext();
   const { valid } = validationService.canSave(state);
 
@@ -36,6 +32,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel }) => {
           location={state.metadata.location}
           onLocationChange={handleLocationChange}
           onToggleFocusMode={handleToggleFocusMode}
+          memoName={memoName}
         />
       </div>
 

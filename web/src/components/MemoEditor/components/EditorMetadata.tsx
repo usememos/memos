@@ -1,8 +1,9 @@
 import type { FC } from "react";
 import { AttachmentList, LocationDisplay, RelationList } from "@/components/memo-metadata";
 import { useEditorContext } from "../state";
+import type { EditorMetadataProps } from "../types";
 
-export const EditorMetadata: FC = () => {
+export const EditorMetadata: FC<EditorMetadataProps> = () => {
   const { state, actions, dispatch } = useEditorContext();
 
   return (

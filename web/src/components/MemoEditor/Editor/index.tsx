@@ -1,6 +1,7 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { EDITOR_HEIGHT } from "../constants";
+import type { EditorProps } from "../types";
 import { editorCommands } from "./commands";
 import SlashCommands from "./SlashCommands";
 import TagSuggestions from "./TagSuggestions";
@@ -22,19 +23,7 @@ export interface EditorRefActions {
   setLine: (lineNumber: number, text: string) => void;
 }
 
-interface Props {
-  className: string;
-  initialContent: string;
-  placeholder: string;
-  onContentChange: (content: string) => void;
-  onPaste: (event: React.ClipboardEvent) => void;
-  isFocusMode?: boolean;
-  isInIME?: boolean;
-  onCompositionStart?: () => void;
-  onCompositionEnd?: () => void;
-}
-
-const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<EditorRefActions>) {
+const Editor = forwardRef(function Editor(props: EditorProps, ref: React.ForwardedRef<EditorRefActions>) {
   const {
     className,
     initialContent,

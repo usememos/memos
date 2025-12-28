@@ -1,13 +1,6 @@
-import type { EditorRefActions } from ".";
-import type { Command } from "./commands";
+import type { SlashCommandsProps } from "../types";
 import { SuggestionsPopup } from "./SuggestionsPopup";
 import { useSuggestions } from "./useSuggestions";
-
-interface SlashCommandsProps {
-  editorRef: React.RefObject<HTMLTextAreaElement>;
-  editorActions: React.ForwardedRef<EditorRefActions>;
-  commands: Command[];
-}
 
 const SlashCommands = ({ editorRef, editorActions, commands }: SlashCommandsProps) => {
   const { position, suggestions, selectedIndex, isVisible, handleItemSelect } = useSuggestions({

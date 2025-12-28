@@ -3,14 +3,9 @@ import { matchPath } from "react-router-dom";
 import OverflowTip from "@/components/kit/OverflowTip";
 import { useTagCounts } from "@/hooks/useUserQueries";
 import { Routes } from "@/router";
-import type { EditorRefActions } from ".";
+import type { TagSuggestionsProps } from "../types";
 import { SuggestionsPopup } from "./SuggestionsPopup";
 import { useSuggestions } from "./useSuggestions";
-
-interface TagSuggestionsProps {
-  editorRef: React.RefObject<HTMLTextAreaElement>;
-  editorActions: React.ForwardedRef<EditorRefActions>;
-}
 
 export default function TagSuggestions({ editorRef, editorActions }: TagSuggestionsProps) {
   // On explore page, show all users' tags; otherwise show current user's tags

@@ -1,11 +1,7 @@
 import { Minimize2Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FOCUS_MODE_STYLES } from "../constants";
-
-interface FocusModeOverlayProps {
-  isActive: boolean;
-  onToggle: () => void;
-}
+import type { FocusModeExitButtonProps, FocusModeOverlayProps } from "../types";
 
 export function FocusModeOverlay({ isActive, onToggle }: FocusModeOverlayProps) {
   if (!isActive) return null;
@@ -19,12 +15,6 @@ export function FocusModeOverlay({ isActive, onToggle }: FocusModeOverlayProps) 
       aria-label="Exit focus mode"
     />
   );
-}
-
-interface FocusModeExitButtonProps {
-  isActive: boolean;
-  onToggle: () => void;
-  title: string;
 }
 
 export function FocusModeExitButton({ isActive, onToggle, title }: FocusModeExitButtonProps) {

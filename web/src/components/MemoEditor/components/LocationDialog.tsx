@@ -1,4 +1,3 @@
-import { LatLng } from "leaflet";
 import LeafletMap from "@/components/LeafletMap";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
@@ -7,19 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { useTranslate } from "@/utils/i18n";
-import { LocationState } from "../types/insert-menu";
-
-interface LocationDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  state: LocationState;
-  locationInitialized: boolean;
-  onPositionChange: (position: LatLng) => void;
-  onUpdateCoordinate: (type: "lat" | "lng", value: string) => void;
-  onPlaceholderChange: (value: string) => void;
-  onCancel: () => void;
-  onConfirm: () => void;
-}
+import type { LocationDialogProps } from "../types";
 
 export const LocationDialog = ({
   open,
