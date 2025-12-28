@@ -101,9 +101,9 @@ message ListAttachmentsRequest {
   string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. Filter to apply to the list results.
-  // Example: "type=image/png" or "filename:*.jpg"
-  // Supported operators: =, !=, <, <=, >, >=, :
-  // Supported fields: filename, type, size, create_time, memo
+  // Example: "mime_type==\"image/png\"" or "filename.contains(\"test\")"
+  // Supported operators: =, !=, <, <=, >, >=, : (contains), in
+  // Supported fields: filename, mime_type, create_time, memo
   string filter = 3 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. The order to sort results by.

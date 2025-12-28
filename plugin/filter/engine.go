@@ -96,9 +96,12 @@ func (p *Program) Render(opts RenderOptions) (Statement, error) {
 }
 
 var (
-	defaultOnce sync.Once
-	defaultInst *Engine
-	defaultErr  error
+	defaultOnce           sync.Once
+	defaultInst           *Engine
+	defaultErr            error
+	defaultAttachmentOnce sync.Once
+	defaultAttachmentInst *Engine
+	defaultAttachmentErr  error
 )
 
 // DefaultEngine returns the process-wide memo filter engine.
@@ -107,6 +110,14 @@ func DefaultEngine() (*Engine, error) {
 		defaultInst, defaultErr = NewEngine(NewSchema())
 	})
 	return defaultInst, defaultErr
+}
+
+// DefaultAttachmentEngine returns the process-wide attachment filter engine.
+func DefaultAttachmentEngine() (*Engine, error) {
+	defaultAttachmentOnce.Do(func() {
+		defaultAttachmentInst, defaultAttachmentErr = NewEngine(NewAttachmentSchema())
+	})
+	return defaultAttachmentInst, defaultAttachmentErr
 }
 
 func normalizeLegacyFilter(expr string) string {

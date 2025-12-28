@@ -243,6 +243,62 @@ func NewSchema() Schema {
 	}
 }
 
+// NewAttachmentSchema constructs the attachment filter schema and CEL environment.
+func NewAttachmentSchema() Schema {
+	fields := map[string]Field{
+		"filename": {
+			Name:             "filename",
+			Kind:             FieldKindScalar,
+			Type:             FieldTypeString,
+			Column:           Column{Table: "resource", Name: "filename"},
+			SupportsContains: true,
+			Expressions:      map[DialectName]string{},
+		},
+		"mime_type": {
+			Name:        "mime_type",
+			Kind:        FieldKindScalar,
+			Type:        FieldTypeString,
+			Column:      Column{Table: "resource", Name: "type"},
+			Expressions: map[DialectName]string{},
+		},
+		"create_time": {
+			Name:   "create_time",
+			Kind:   FieldKindScalar,
+			Type:   FieldTypeTimestamp,
+			Column: Column{Table: "resource", Name: "created_ts"},
+			Expressions: map[DialectName]string{
+				DialectMySQL:    "UNIX_TIMESTAMP(%s)",
+				DialectPostgres: "EXTRACT(EPOCH FROM TO_TIMESTAMP(%s))",
+			},
+		},
+		"memo": {
+			Name:        "memo",
+			Kind:        FieldKindScalar,
+			Type:        FieldTypeString,
+			Column:      Column{Table: "resource", Name: "memo_uid"},
+			Expressions: map[DialectName]string{},
+			AllowedComparisonOps: map[ComparisonOperator]bool{
+				CompareEq:  true,
+				CompareNeq: true,
+			},
+		},
+	}
+
+	envOptions := []cel.EnvOption{
+		cel.Variable("filename", cel.StringType),
+		cel.Variable("mime_type", cel.StringType),
+		cel.Variable("create_time", cel.IntType),
+		cel.Variable("memo", cel.StringType),
+		nowFunction,
+	}
+
+	return Schema{
+		Name:       "attachment",
+		Fields:     fields,
+		EnvOptions: envOptions,
+	}
+}
+
 // columnExpr returns the field expression for the given dialect, applying
 // any schema-specific overrides (e.g. UNIX timestamp conversions).
 func (f Field) columnExpr(d DialectName) string {

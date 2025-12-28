@@ -139,9 +139,9 @@ export type ListAttachmentsRequest = Message<"memos.api.v1.ListAttachmentsReques
 
   /**
    * Optional. Filter to apply to the list results.
-   * Example: "type=image/png" or "filename:*.jpg"
-   * Supported operators: =, !=, <, <=, >, >=, :
-   * Supported fields: filename, type, size, create_time, memo
+   * Example: "mime_type==\"image/png\"" or "filename.contains(\"test\")"
+   * Supported operators: =, !=, <, <=, >, >=, : (contains), in
+   * Supported fields: filename, mime_type, create_time, memo
    *
    * @generated from field: string filter = 3;
    */
