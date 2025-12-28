@@ -13,20 +13,9 @@ import { ReactionSelector } from "../../MemoReactionListView";
 import UserAvatar from "../../UserAvatar";
 import VisibilityIcon from "../../VisibilityIcon";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
+import type { MemoHeaderProps } from "../types";
 
-interface Props {
-  showCreator?: boolean;
-  showVisibility?: boolean;
-  showPinned?: boolean;
-  onEdit: () => void;
-  onGotoDetail: () => void;
-  onUnpin: () => void;
-  onToggleNsfwVisibility?: () => void;
-  reactionSelectorOpen: boolean;
-  onReactionSelectorOpenChange: (open: boolean) => void;
-}
-
-const MemoHeader: React.FC<Props> = ({
+const MemoHeader: React.FC<MemoHeaderProps> = ({
   showCreator,
   showVisibility,
   showPinned,
@@ -39,9 +28,8 @@ const MemoHeader: React.FC<Props> = ({
 }) => {
   const t = useTranslate();
 
-  // Get essential context and derive other values
-  const { memo, creator, parentPage, showNSFWContent } = useMemoViewContext();
-  const { isArchived, readonly, isInMemoDetailPage, commentAmount, relativeTimeFormat, nsfw } = useMemoViewDerived();
+  const { memo, creator, parentPage, showNSFWContent, nsfw } = useMemoViewContext();
+  const { isArchived, readonly, isInMemoDetailPage, commentAmount, relativeTimeFormat } = useMemoViewDerived();
 
   const displayTime = isArchived ? (
     (memo.displayTime ? timestampDate(memo.displayTime) : undefined)?.toLocaleString(i18n.language)

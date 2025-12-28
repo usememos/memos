@@ -9,12 +9,12 @@ import type { User } from "@/types/proto/api/v1/user_service_pb";
 import { isSuperUser } from "@/utils/user";
 import { RELATIVE_TIME_THRESHOLD_MS } from "./constants";
 
-// Minimal essential context - only data that cannot be easily derived
 export interface MemoViewContextValue {
   memo: Memo;
   creator: User | undefined;
   parentPage: string;
   showNSFWContent: boolean;
+  nsfw: boolean;
 }
 
 export const MemoViewContext = createContext<MemoViewContextValue | null>(null);
@@ -27,7 +27,6 @@ export const useMemoViewContext = (): MemoViewContextValue => {
   return context;
 };
 
-// Utility hooks to derive common values from context
 export const useMemoViewDerived = () => {
   const { memo } = useMemoViewContext();
   const location = useLocation();
@@ -45,14 +44,11 @@ export const useMemoViewDerived = () => {
   const relativeTimeFormat: "datetime" | "auto" =
     displayTime && Date.now() - displayTime.getTime() > RELATIVE_TIME_THRESHOLD_MS ? "datetime" : "auto";
 
-  const nsfw = memo.tags.some((tag) => tag.toLowerCase() === "nsfw");
-
   return {
     isArchived,
     readonly,
     isInMemoDetailPage,
     commentAmount,
     relativeTimeFormat,
-    nsfw,
   };
 };

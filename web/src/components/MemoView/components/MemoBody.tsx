@@ -4,21 +4,13 @@ import { useTranslate } from "@/utils/i18n";
 import MemoContent from "../../MemoContent";
 import { MemoReactionListView } from "../../MemoReactionListView";
 import { AttachmentList, LocationDisplay, RelationList } from "../../memo-metadata";
-import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
+import { useMemoViewContext } from "../MemoViewContext";
+import type { MemoBodyProps } from "../types";
 
-interface Props {
-  compact?: boolean;
-  onContentClick: (e: React.MouseEvent) => void;
-  onContentDoubleClick: (e: React.MouseEvent) => void;
-  onToggleNsfwVisibility: () => void;
-}
-
-const MemoBody: React.FC<Props> = ({ compact, onContentClick, onContentDoubleClick, onToggleNsfwVisibility }) => {
+const MemoBody: React.FC<MemoBodyProps> = ({ compact, onContentClick, onContentDoubleClick, onToggleNsfwVisibility }) => {
   const t = useTranslate();
 
-  // Get essential context and derive other values
-  const { memo, parentPage, showNSFWContent } = useMemoViewContext();
-  const { nsfw } = useMemoViewDerived();
+  const { memo, parentPage, showNSFWContent, nsfw } = useMemoViewContext();
 
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
 
