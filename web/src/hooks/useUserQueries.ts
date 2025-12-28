@@ -15,6 +15,7 @@ export const userKeys = {
   currentUser: () => [...userKeys.all, "current"] as const,
   shortcuts: () => [...userKeys.all, "shortcuts"] as const,
   notifications: () => [...userKeys.all, "notifications"] as const,
+  byNames: (names: string[]) => [...userKeys.all, "byNames", ...names.sort()] as const,
 };
 
 // NOTE: This hook is currently UNUSED in favor of the AuthContext-based
@@ -224,5 +225,35 @@ export function useUpdateUserGeneralSetting(currentUserName?: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [...userKeys.all, "settings"] });
     },
+  });
+}
+
+// Hook to fetch multiple users by names (returns Map<name, User>)
+export function useUsersByNames(names: string[]) {
+  const enabled = names.length > 0;
+  const uniqueNames = Array.from(new Set(names));
+
+  return useQuery({
+    queryKey: userKeys.byNames(uniqueNames),
+    queryFn: async () => {
+      const users = await Promise.all(
+        uniqueNames.map(async (name) => {
+          try {
+            const user = await userServiceClient.getUser({ name });
+            return { name, user };
+          } catch {
+            return { name, user: undefined };
+          }
+        }),
+      );
+
+      const userMap = new Map<string, User | undefined>();
+      for (const { name, user } of users) {
+        userMap.set(name, user);
+      }
+      return userMap;
+    },
+    enabled,
+    staleTime: 1000 * 60 * 5, // 5 minutes - user profiles don't change often
   });
 }

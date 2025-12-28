@@ -1,33 +1,30 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { uniq } from "lodash-es";
-import { useEffect, useState } from "react";
-import { memoServiceClient, userServiceClient } from "@/connect";
+import { useMemo } from "react";
+import { memoServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { memoKeys } from "@/hooks/useMemoQueries";
+import { useUsersByNames } from "@/hooks/useUserQueries";
 import type { Memo, Reaction } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
 
 export type ReactionGroup = Map<string, User[]>;
 
 export const useReactionGroups = (reactions: Reaction[]): ReactionGroup => {
-  const [reactionGroup, setReactionGroup] = useState<ReactionGroup>(new Map());
+  const creatorNames = useMemo(() => reactions.map((r) => r.creator), [reactions]);
+  const { data: userMap } = useUsersByNames(creatorNames);
 
-  useEffect(() => {
-    const fetchReactionGroups = async () => {
-      const newReactionGroup = new Map<string, User[]>();
-      for (const reaction of reactions) {
-        // Fetch user via gRPC directly since we need it within an effect
-        const user = await userServiceClient.getUser({ name: reaction.creator });
-        const users = newReactionGroup.get(reaction.reactionType) || [];
-        users.push(user);
-        newReactionGroup.set(reaction.reactionType, uniq(users));
-      }
-      setReactionGroup(newReactionGroup);
-    };
-    fetchReactionGroups();
-  }, [reactions]);
+  return useMemo(() => {
+    const reactionGroup = new Map<string, User[]>();
+    for (const reaction of reactions) {
+      const user = userMap?.get(reaction.creator);
+      if (!user) continue;
 
-  return reactionGroup;
+      const users = reactionGroup.get(reaction.reactionType) || [];
+      users.push(user);
+      reactionGroup.set(reaction.reactionType, users);
+    }
+    return reactionGroup;
+  }, [reactions, userMap]);
 };
 
 interface UseReactionActionsOptions {

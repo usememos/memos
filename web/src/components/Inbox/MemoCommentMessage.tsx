@@ -8,10 +8,11 @@ import { activityServiceClient, memoServiceClient, userServiceClient } from "@/c
 import { activityNamePrefix } from "@/helpers/resource-names";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useNavigateTo from "@/hooks/useNavigateTo";
+import { useUser } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
 import { Memo } from "@/types/proto/api/v1/memo_service_pb";
-import { User, UserNotification, UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
+import { UserNotification, UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
@@ -23,9 +24,11 @@ function MemoCommentMessage({ notification }: Props) {
   const navigateTo = useNavigateTo();
   const [relatedMemo, setRelatedMemo] = useState<Memo | undefined>(undefined);
   const [commentMemo, setCommentMemo] = useState<Memo | undefined>(undefined);
-  const [sender, setSender] = useState<User | undefined>(undefined);
+  const [senderName, setSenderName] = useState<string | undefined>(undefined);
   const [initialized, setInitialized] = useState<boolean>(false);
   const [hasError, setHasError] = useState<boolean>(false);
+
+  const { data: sender } = useUser(senderName || "", { enabled: !!senderName });
 
   useAsyncEffect(async () => {
     if (!notification.activityId) {
@@ -44,16 +47,12 @@ function MemoCommentMessage({ notification }: Props) {
         });
         setRelatedMemo(memo);
 
-        // Fetch the comment memo
         const comment = await memoServiceClient.getMemo({
           name: memoCommentPayload.memo,
         });
         setCommentMemo(comment);
 
-        const sender = await userServiceClient.getUser({
-          name: notification.sender,
-        });
-        setSender(sender);
+        setSenderName(notification.sender);
         setInitialized(true);
       }
     } catch (error) {
