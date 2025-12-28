@@ -10,6 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
+import { handleError } from "@/lib/error";
 import { useTranslate } from "@/utils/i18n";
 
 function PasswordSignInForm() {
@@ -60,9 +61,9 @@ function PasswordSignInForm() {
       await initialize();
       navigateTo("/");
     } catch (error: unknown) {
-      console.error(error);
-      const message = error instanceof Error ? error.message : "Failed to sign in.";
-      toast.error(message);
+      handleError(error, toast.error, {
+        fallbackMessage: "Failed to sign in.",
+      });
     }
     actionBtnLoadingState.setFinish();
   };

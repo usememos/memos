@@ -8,6 +8,7 @@ import { activityServiceClient, memoServiceClient, userServiceClient } from "@/c
 import { activityNamePrefix } from "@/helpers/resource-names";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useNavigateTo from "@/hooks/useNavigateTo";
+import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
 import { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { User, UserNotification, UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
@@ -56,8 +57,10 @@ function MemoCommentMessage({ notification }: Props) {
         setInitialized(true);
       }
     } catch (error) {
-      console.error("Failed to fetch activity:", error);
-      setHasError(true);
+      handleError(error, () => {}, {
+        context: "Failed to fetch activity",
+        onError: () => setHasError(true),
+      });
       return;
     }
   }, [notification.activityId]);

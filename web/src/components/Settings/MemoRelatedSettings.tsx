@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useInstance } from "@/contexts/InstanceContext";
+import { handleError } from "@/lib/error";
 import {
   InstanceSetting_Key,
   InstanceSetting_MemoRelatedSetting,
@@ -70,9 +71,10 @@ const MemoRelatedSettings = () => {
       );
       await fetchSetting(InstanceSetting_Key.MEMO_RELATED);
       toast.success(t("message.update-succeed"));
-    } catch (error: any) {
-      toast.error(error.message);
-      console.error(error);
+    } catch (error: unknown) {
+      await handleError(error, toast.error, {
+        context: "Update memo-related settings",
+      });
     }
   };
 

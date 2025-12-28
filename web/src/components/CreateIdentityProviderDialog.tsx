@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { identityProviderServiceClient } from "@/connect";
 import { absolutifyLink } from "@/helpers/utils";
+import { handleError } from "@/lib/error";
 import {
   FieldMapping,
   FieldMappingSchema,
@@ -288,9 +289,10 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
         });
         toast.success(t("setting.sso-section.sso-updated", { name: basicInfo.title }));
       }
-    } catch (error: any) {
-      toast.error(error.message);
-      console.error(error);
+    } catch (error: unknown) {
+      await handleError(error, toast.error, {
+        context: isCreating ? "Create identity provider" : "Update identity provider",
+      });
     }
     onSuccess?.();
     onOpenChange(false);

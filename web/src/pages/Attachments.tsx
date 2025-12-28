@@ -17,6 +17,7 @@ import useDialog from "@/hooks/useDialog";
 import useLoading from "@/hooks/useLoading";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import i18n from "@/i18n";
+import { handleError } from "@/lib/error";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
@@ -98,8 +99,10 @@ const Attachments = () => {
         setAttachments(fetchedAttachments);
         setNextPageToken(nextPageToken ?? "");
       } catch (error) {
-        console.error("Failed to fetch attachments:", error);
-        toast.error("Failed to load attachments. Please try again.");
+        handleError(error, toast.error, {
+          context: "Failed to fetch attachments",
+          fallbackMessage: "Failed to load attachments. Please try again.",
+        });
       } finally {
         loadingState.setFinish();
       }
@@ -122,8 +125,10 @@ const Attachments = () => {
       setAttachments((prev) => [...prev, ...fetchedAttachments]);
       setNextPageToken(newPageToken ?? "");
     } catch (error) {
-      console.error("Failed to load more attachments:", error);
-      toast.error("Failed to load more attachments. Please try again.");
+      handleError(error, toast.error, {
+        context: "Failed to load more attachments",
+        fallbackMessage: "Failed to load more attachments. Please try again.",
+      });
     } finally {
       setIsLoadingMore(false);
     }
@@ -140,9 +145,11 @@ const Attachments = () => {
       setNextPageToken(nextPageToken ?? "");
       loadingState.setFinish();
     } catch (error) {
-      console.error("Failed to refetch attachments:", error);
-      loadingState.setError();
-      toast.error("Failed to refresh attachments. Please try again.");
+      handleError(error, toast.error, {
+        context: "Failed to refetch attachments",
+        fallbackMessage: "Failed to refresh attachments. Please try again.",
+        onError: () => loadingState.setError(),
+      });
     }
   }, [loadingState]);
 
@@ -152,8 +159,10 @@ const Attachments = () => {
       await Promise.all(unusedAttachments.map((attachment) => deleteAttachment(attachment.name)));
       toast.success(t("resource.delete-all-unused-success"));
     } catch (error) {
-      console.error("Failed to delete unused attachments:", error);
-      toast.error(t("resource.delete-all-unused-error"));
+      handleError(error, toast.error, {
+        context: "Failed to delete unused attachments",
+        fallbackMessage: t("resource.delete-all-unused-error"),
+      });
     } finally {
       await handleRefetch();
     }

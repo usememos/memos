@@ -5,6 +5,7 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { identityProviderServiceClient } from "@/connect";
+import { handleError } from "@/lib/error";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
@@ -36,9 +37,10 @@ const SSOSection = () => {
     if (!deleteTarget) return;
     try {
       await identityProviderServiceClient.deleteIdentityProvider({ name: deleteTarget.name });
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.message);
+    } catch (error: unknown) {
+      handleError(error, toast.error, {
+        context: "Delete identity provider",
+      });
     }
     await fetchIdentityProviderList();
     setDeleteTarget(undefined);

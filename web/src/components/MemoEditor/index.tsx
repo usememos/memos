@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { memoKeys } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
+import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { EditorContent, EditorMetadata, EditorToolbar, FocusModeExitButton, FocusModeOverlay } from "./components";
@@ -138,9 +139,10 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
       toast.success("Saved successfully");
     } catch (error) {
-      const errorMessage = errorService.getErrorMessage(error);
-      toast.error(errorMessage);
-      console.error("Failed to save memo:", error);
+      handleError(error, toast.error, {
+        context: "Failed to save memo",
+        fallbackMessage: errorService.getErrorMessage(error),
+      });
     } finally {
       dispatch(actions.setLoading("saving", false));
     }

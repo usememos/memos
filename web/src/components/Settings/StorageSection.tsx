@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { useInstance } from "@/contexts/InstanceContext";
+import { handleError } from "@/lib/error";
 import {
   InstanceSetting_Key,
   InstanceSetting_StorageSetting,
@@ -141,9 +142,10 @@ const StorageSection = () => {
       );
       await fetchSetting(InstanceSetting_Key.STORAGE);
       toast.success("Updated");
-    } catch (error: any) {
-      toast.error(error.message);
-      console.error(error);
+    } catch (error: unknown) {
+      handleError(error, toast.error, {
+        context: "Update storage settings",
+      });
     }
   };
 
@@ -223,7 +225,11 @@ const StorageSection = () => {
           <SettingRow label="Use Path Style">
             <Switch
               checked={instanceStorageSetting.s3Config?.usePathStyle}
-              onCheckedChange={(checked) => handleS3ConfigUsePathStyleChanged({ target: { checked } } as any)}
+              onCheckedChange={(checked) =>
+                handleS3ConfigUsePathStyleChanged({ target: { checked } } as React.ChangeEvent<HTMLInputElement> & {
+                  target: { checked: boolean };
+                })
+              }
             />
           </SettingRow>
         </SettingGroup>

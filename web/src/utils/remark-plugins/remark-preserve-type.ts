@@ -1,24 +1,22 @@
 import type { Root } from "mdast";
 import { visit } from "unist-util-visit";
+import type { ExtendedData } from "@/types/markdown";
 
-// Remark plugin to preserve original mdast node types in the data field
+const STANDARD_NODE_TYPES = new Set(["text", "root", "paragraph", "heading", "list", "listItem"]);
+
 export const remarkPreserveType = () => {
   return (tree: Root) => {
-    visit(tree, (node: any) => {
-      // Skip text nodes and standard element types
-      if (node.type === "text" || node.type === "root") {
+    visit(tree, (node) => {
+      if (STANDARD_NODE_TYPES.has(node.type)) {
         return;
       }
 
-      // Preserve the original mdast type in data
       if (!node.data) {
         node.data = {};
       }
 
-      // Store original type for custom node types
-      if (node.type !== "paragraph" && node.type !== "heading" && node.type !== "list" && node.type !== "listItem") {
-        node.data.mdastType = node.type;
-      }
+      const data = node.data as ExtendedData;
+      data.mdastType = node.type;
     });
   };
 };

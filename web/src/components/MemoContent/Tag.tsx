@@ -1,19 +1,19 @@
-import { useContext } from "react";
+import type { Element } from "hast";
 import { useLocation } from "react-router-dom";
 import { type MemoFilter, stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { MemoContentContext } from "./MemoContentContext";
+import { useMemoViewContext } from "../MemoView/MemoViewContext";
 
 interface TagProps extends React.HTMLAttributes<HTMLSpanElement> {
-  node?: any; // AST node from react-markdown
+  node?: Element; // AST node from react-markdown
   "data-tag"?: string;
   children?: React.ReactNode;
 }
 
 export const Tag: React.FC<TagProps> = ({ "data-tag": dataTag, children, className, ...props }) => {
-  const context = useContext(MemoContentContext);
+  const { parentPage } = useMemoViewContext();
   const location = useLocation();
   const navigateTo = useNavigateTo();
   const { getFiltersByFactor, removeFilter, addFilter } = useMemoFilterContext();
@@ -23,13 +23,9 @@ export const Tag: React.FC<TagProps> = ({ "data-tag": dataTag, children, classNa
   const handleTagClick = (e: React.MouseEvent) => {
     e.stopPropagation();
 
-    if (context.disableFilter) {
-      return;
-    }
-
     // If the tag is clicked in a memo detail page, we should navigate to the memo list page.
     if (location.pathname.startsWith("/m")) {
-      const pathname = context.parentPage || Routes.ROOT;
+      const pathname = parentPage || Routes.ROOT;
       const searchParams = new URLSearchParams();
 
       searchParams.set("filter", stringifyFilters([{ factor: "tagSearch", value: tag }]));
@@ -52,13 +48,9 @@ export const Tag: React.FC<TagProps> = ({ "data-tag": dataTag, children, classNa
 
   return (
     <span
-      {...props}
-      className={cn(
-        "inline-block w-auto text-primary",
-        context.disableFilter ? "" : "cursor-pointer hover:opacity-80 transition-colors",
-        className,
-      )}
+      className={cn("inline-block w-auto text-primary cursor-pointer hover:opacity-80 transition-colors", className)}
       data-tag={tag}
+      {...props}
       onClick={handleTagClick}
     >
       {children}

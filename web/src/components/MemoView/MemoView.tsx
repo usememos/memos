@@ -55,11 +55,8 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
 
   const creator = useMemoCreator(memoData.creator);
-  const { commentAmount, relativeTimeFormat, isArchived, readonly, isInMemoDetailPage, parentPage } = useMemoViewDerivedState(
-    memoData,
-    props.parentPage,
-  );
-  const { nsfw, showNSFWContent, toggleNsfwVisibility } = useNsfwContent(memoData, props.showNsfwContent);
+  const { isArchived, readonly, parentPage } = useMemoViewDerivedState(memoData, props.parentPage);
+  const { showNSFWContent, toggleNsfwVisibility } = useNsfwContent(memoData, props.showNsfwContent);
   const { previewState, openPreview, setPreviewOpen } = useImagePreview();
   const { showEditor, openEditor, handleEditorConfirm, handleEditorCancel } = useMemoEditor();
   const { archiveMemo, unpinMemo } = useMemoActions(memoData);
@@ -79,37 +76,15 @@ const MemoView: React.FC<Props> = (props: Props) => {
     onArchive: archiveMemo,
   });
 
-  // Memoize static values that rarely change
-  const staticContextValue = useMemo(
+  // Minimal essential context - only non-derivable data
+  const contextValue = useMemo(
     () => ({
       memo: memoData,
       creator,
-      isArchived,
-      readonly,
-      isInMemoDetailPage,
       parentPage,
-    }),
-    [memoData, creator, isArchived, readonly, isInMemoDetailPage, parentPage],
-  );
-
-  // Memoize dynamic values separately
-  const dynamicContextValue = useMemo(
-    () => ({
-      commentAmount,
-      relativeTimeFormat,
-      nsfw,
       showNSFWContent,
     }),
-    [commentAmount, relativeTimeFormat, nsfw, showNSFWContent],
-  );
-
-  // Combine context values
-  const contextValue = useMemo(
-    () => ({
-      ...staticContextValue,
-      ...dynamicContextValue,
-    }),
-    [staticContextValue, dynamicContextValue],
+    [memoData, creator, parentPage, showNSFWContent],
   );
 
   if (showEditor) {

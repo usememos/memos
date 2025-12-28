@@ -51,7 +51,7 @@ const LazyImportPlugin: BackendModule = {
   read: function (language, _, callback) {
     const matchedLanguage = findNearestMatchedLanguage(language);
     import(`./locales/${matchedLanguage}.json`)
-      .then((translation: any) => {
+      .then((translation: Record<string, unknown>) => {
         callback(null, translation);
       })
       .catch(() => {

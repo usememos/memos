@@ -4,7 +4,7 @@ import { useTranslate } from "@/utils/i18n";
 import MemoContent from "../../MemoContent";
 import { MemoReactionListView } from "../../MemoReactionListView";
 import { AttachmentList, LocationDisplay, RelationList } from "../../memo-metadata";
-import { useMemoViewContext } from "../MemoViewContext";
+import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
 
 interface Props {
   compact?: boolean;
@@ -16,8 +16,9 @@ interface Props {
 const MemoBody: React.FC<Props> = ({ compact, onContentClick, onContentDoubleClick, onToggleNsfwVisibility }) => {
   const t = useTranslate();
 
-  // Get shared state from context
-  const { memo, readonly, parentPage, nsfw, showNSFWContent } = useMemoViewContext();
+  // Get essential context and derive other values
+  const { memo, parentPage, showNSFWContent } = useMemoViewContext();
+  const { nsfw } = useMemoViewDerived();
 
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
 
@@ -31,13 +32,10 @@ const MemoBody: React.FC<Props> = ({ compact, onContentClick, onContentDoubleCli
       >
         <MemoContent
           key={`${memo.name}-${memo.updateTime}`}
-          memoName={memo.name}
           content={memo.content}
-          readonly={readonly}
           onClick={onContentClick}
           onDoubleClick={onContentDoubleClick}
           compact={memo.pinned ? false : compact} // Always show full content when pinned
-          parentPage={parentPage}
         />
         {memo.location && <LocationDisplay mode="view" location={memo.location} />}
         <AttachmentList mode="view" attachments={memo.attachments} />

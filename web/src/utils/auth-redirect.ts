@@ -15,7 +15,7 @@ function isPublicRoute(path: string): boolean {
 }
 
 function isPrivateRoute(path: string): boolean {
-  return PRIVATE_ROUTES.includes(path as any);
+  return PRIVATE_ROUTES.includes(path as (typeof PRIVATE_ROUTES)[number]);
 }
 
 export function redirectOnAuthFailure(): void {

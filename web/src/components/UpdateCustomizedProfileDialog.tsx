@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useInstance } from "@/contexts/InstanceContext";
 import { buildInstanceSettingName } from "@/helpers/resource-names";
+import { handleError } from "@/lib/error";
 import {
   InstanceSetting_GeneralSetting_CustomProfile,
   InstanceSetting_GeneralSetting_CustomProfileSchema,
@@ -92,8 +93,10 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
       onSuccess?.();
       onOpenChange(false);
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to update profile");
+      handleError(error, toast.error, {
+        context: "Update customized profile",
+        fallbackMessage: "Failed to update profile",
+      });
     } finally {
       setIsLoading(false);
     }

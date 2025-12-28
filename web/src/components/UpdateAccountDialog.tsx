@@ -11,6 +11,7 @@ import { useInstance } from "@/contexts/InstanceContext";
 import { convertFileToBase64 } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useUpdateUser } from "@/hooks/useUserQueries";
+import { handleError } from "@/lib/error";
 import { useTranslate } from "@/utils/i18n";
 import UserAvatar from "./UserAvatar";
 
@@ -141,9 +142,10 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
       toast.success(t("message.update-succeed"));
       onSuccess?.();
       onOpenChange(false);
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.message);
+    } catch (error: unknown) {
+      await handleError(error, toast.error, {
+        context: "Update account",
+      });
     }
   };
 

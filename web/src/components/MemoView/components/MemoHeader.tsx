@@ -12,7 +12,7 @@ import MemoActionMenu from "../../MemoActionMenu";
 import { ReactionSelector } from "../../MemoReactionListView";
 import UserAvatar from "../../UserAvatar";
 import VisibilityIcon from "../../VisibilityIcon";
-import { useMemoViewContext } from "../MemoViewContext";
+import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
 
 interface Props {
   showCreator?: boolean;
@@ -39,9 +39,9 @@ const MemoHeader: React.FC<Props> = ({
 }) => {
   const t = useTranslate();
 
-  // Get shared state from context
-  const { memo, creator, isArchived, commentAmount, isInMemoDetailPage, parentPage, readonly, relativeTimeFormat, nsfw, showNSFWContent } =
-    useMemoViewContext();
+  // Get essential context and derive other values
+  const { memo, creator, parentPage, showNSFWContent } = useMemoViewContext();
+  const { isArchived, readonly, isInMemoDetailPage, commentAmount, relativeTimeFormat, nsfw } = useMemoViewDerived();
 
   const displayTime = isArchived ? (
     (memo.displayTime ? timestampDate(memo.displayTime) : undefined)?.toLocaleString(i18n.language)

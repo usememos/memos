@@ -7,6 +7,7 @@ import { useInstance } from "@/contexts/InstanceContext";
 import { useDeleteMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { userKeys } from "@/hooks/useUserQueries";
+import { handleError } from "@/lib/error";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -53,6 +54,7 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen, setRe
   }, [onEdit]);
 
   const handleToggleMemoStatusClick = useCallback(async () => {
+    const isArchiving = memo.state !== State.ARCHIVED;
     const state = memo.state === State.ARCHIVED ? State.NORMAL : State.ARCHIVED;
     const message = memo.state === State.ARCHIVED ? t("message.restored-successfully") : t("message.archived-successfully");
 
@@ -66,9 +68,10 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen, setRe
       });
       toast.success(message);
     } catch (error: unknown) {
-      const err = error as { details?: string };
-      toast.error(err.details || "An error occurred");
-      console.error(error);
+      handleError(error, toast.error, {
+        context: `${isArchiving ? "Archive" : "Restore"} memo`,
+        fallbackMessage: "An error occurred",
+      });
       return;
     }
 

@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { identityProviderServiceClient } from "@/connect";
 import { useInstance } from "@/contexts/InstanceContext";
 import useDialog from "@/hooks/useDialog";
+import { handleError } from "@/lib/error";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service_pb";
 import {
   InstanceSetting_GeneralSetting,
@@ -58,9 +59,10 @@ const InstanceSection = () => {
         }),
       );
       await fetchSetting(InstanceSetting_Key.GENERAL);
-    } catch (error: any) {
-      toast.error(error.message);
-      console.error(error);
+    } catch (error: unknown) {
+      await handleError(error, toast.error, {
+        context: "Update general settings",
+      });
       return;
     }
     toast.success(t("message.update-succeed"));
@@ -107,7 +109,7 @@ const InstanceSection = () => {
         </SettingRow>
       </SettingGroup>
 
-      <SettingGroup title={t("setting.instance-section.disallow-user-registration")} showSeparator>
+      <SettingGroup>
         <SettingRow label={t("setting.instance-section.disallow-user-registration")}>
           <Switch
             disabled={profile.mode === "demo"}

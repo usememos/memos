@@ -10,6 +10,7 @@ import { useInstance } from "@/contexts/InstanceContext";
 import { extractIdentityProviderIdFromName } from "@/helpers/resource-names";
 import { absolutifyLink } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { handleError } from "@/lib/error";
 import { Routes } from "@/router";
 import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -62,8 +63,10 @@ const SignIn = () => {
 
         window.location.href = authUrl;
       } catch (error) {
-        console.error("Failed to initiate OAuth flow:", error);
-        toast.error("Failed to initiate sign-in. Please try again.");
+        handleError(error, toast.error, {
+          context: "Failed to initiate OAuth flow",
+          fallbackMessage: "Failed to initiate sign-in. Please try again.",
+        });
       }
     }
   };

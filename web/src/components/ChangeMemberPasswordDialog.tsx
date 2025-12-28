@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useUpdateUser } from "@/hooks/useUserQueries";
+import { handleError } from "@/lib/error";
 import { User } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
@@ -60,9 +61,10 @@ function ChangeMemberPasswordDialog({ open, onOpenChange, user, onSuccess }: Pro
       toast(t("message.password-changed"));
       onSuccess?.();
       onOpenChange(false);
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.message);
+    } catch (error: unknown) {
+      await handleError(error, toast.error, {
+        context: "Change member password",
+      });
     }
   };
 

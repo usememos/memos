@@ -13,6 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
+import { handleError } from "@/lib/error";
 import { User_Role, UserSchema } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
@@ -70,9 +71,9 @@ const SignUp = () => {
       await initialize();
       navigateTo("/");
     } catch (error: unknown) {
-      console.error(error);
-      const message = error instanceof Error ? error.message : "Sign up failed";
-      toast.error(message);
+      handleError(error, toast.error, {
+        fallbackMessage: "Sign up failed",
+      });
     }
     actionBtnLoadingState.setFinish();
   };

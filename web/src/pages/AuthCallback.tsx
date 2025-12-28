@@ -7,6 +7,7 @@ import { authServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
 import { absolutifyLink } from "@/helpers/utils";
 import useNavigateTo from "@/hooks/useNavigateTo";
+import { handleError } from "@/lib/error";
 import { validateOAuthState } from "@/utils/oauth";
 
 interface State {
@@ -95,11 +96,15 @@ const AuthCallback = () => {
         // Redirect to return URL if specified, otherwise home
         navigateTo(returnUrl || "/");
       } catch (error: unknown) {
-        console.error(error);
-        const message = error instanceof Error ? error.message : "Failed to authenticate.";
-        setState({
-          loading: false,
-          errorMessage: message,
+        handleError(error, () => {}, {
+          fallbackMessage: "Failed to authenticate.",
+          onError: (err) => {
+            const message = err instanceof Error ? err.message : "Failed to authenticate.";
+            setState({
+              loading: false,
+              errorMessage: message,
+            });
+          },
         });
       }
     })();
