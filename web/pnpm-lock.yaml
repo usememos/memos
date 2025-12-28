@@ -189,6 +189,9 @@ importers:
       '@types/d3':
         specifier: ^7.4.3
         version: 7.4.3
+      '@types/hast':
+        specifier: ^3.0.4
+        version: 3.0.4
       '@types/katex':
         specifier: ^0.16.7
         version: 0.16.7

@@ -72,6 +72,7 @@
     "@biomejs/biome": "^2.3.7",
     "@bufbuild/protobuf": "^2.10.1",
     "@types/d3": "^7.4.3",
+    "@types/hast": "^3.0.4",
     "@types/katex": "^0.16.7",
     "@types/leaflet": "^1.9.21",
     "@types/lodash-es": "^4.17.12",
