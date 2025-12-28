@@ -2,12 +2,12 @@ import { Suspense, useEffect, useMemo } from "react";
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
 import usePrevious from "react-use/lib/usePrevious";
 import Navigation from "@/components/Navigation";
+import Skeleton from "@/components/Skeleton";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
-import Loading from "@/pages/Loading";
 import { redirectOnAuthFailure } from "@/utils/auth-redirect";
 
 const RootLayout = () => {
@@ -47,7 +47,7 @@ const RootLayout = () => {
         </div>
       )}
       <main className="w-full h-auto grow shrink flex flex-col justify-start items-center">
-        <Suspense fallback={<Loading />}>
+        <Suspense fallback={<Skeleton type="route" />}>
           <Outlet />
         </Suspense>
       </main>

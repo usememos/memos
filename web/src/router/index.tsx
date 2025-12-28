@@ -1,10 +1,10 @@
 import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import App from "@/App";
+import Skeleton from "@/components/Skeleton";
 import MainLayout from "@/layouts/MainLayout";
 import RootLayout from "@/layouts/RootLayout";
 import Home from "@/pages/Home";
-import Loading from "@/pages/Loading";
 
 const AdminSignIn = lazy(() => import("@/pages/AdminSignIn"));
 const Archived = lazy(() => import("@/pages/Archived"));
@@ -39,7 +39,7 @@ const router = createBrowserRouter([
           {
             path: "",
             element: (
-              <Suspense fallback={<Loading />}>
+              <Suspense fallback={<Skeleton type="route" showEditor={false} />}>
                 <SignIn />
               </Suspense>
             ),
@@ -47,7 +47,7 @@ const router = createBrowserRouter([
           {
             path: "admin",
             element: (
-              <Suspense fallback={<Loading />}>
+              <Suspense fallback={<Skeleton type="route" showEditor={false} />}>
                 <AdminSignIn />
               </Suspense>
             ),
@@ -55,7 +55,7 @@ const router = createBrowserRouter([
           {
             path: "signup",
             element: (
-              <Suspense fallback={<Loading />}>
+              <Suspense fallback={<Skeleton type="route" showEditor={false} />}>
                 <SignUp />
               </Suspense>
             ),
@@ -63,7 +63,7 @@ const router = createBrowserRouter([
           {
             path: "callback",
             element: (
-              <Suspense fallback={<Loading />}>
+              <Suspense fallback={<Skeleton type="route" showEditor={false} />}>
                 <AuthCallback />
               </Suspense>
             ),
@@ -84,7 +84,7 @@ const router = createBrowserRouter([
               {
                 path: Routes.EXPLORE,
                 element: (
-                  <Suspense fallback={<Loading />}>
+                  <Suspense fallback={<Skeleton type="route" showEditor={false} />}>
                     <Explore />
                   </Suspense>
                 ),
@@ -92,7 +92,7 @@ const router = createBrowserRouter([
               {
                 path: Routes.ARCHIVED,
                 element: (
-                  <Suspense fallback={<Loading />}>
+                  <Suspense fallback={<Skeleton type="route" showEditor={false} />}>
                     <Archived />
                   </Suspense>
                 ),
@@ -100,7 +100,7 @@ const router = createBrowserRouter([
               {
                 path: "u/:username",
                 element: (
-                  <Suspense fallback={<Loading />}>
+                  <Suspense fallback={<Skeleton type="route" showEditor={false} />}>
                     <UserProfile />
                   </Suspense>
                 ),
@@ -110,7 +110,7 @@ const router = createBrowserRouter([
           {
             path: Routes.ATTACHMENTS,
             element: (
-              <Suspense fallback={<Loading />}>
+              <Suspense fallback={<Skeleton type="route" showEditor={false} />}>
                 <Attachments />
               </Suspense>
             ),
@@ -118,7 +118,7 @@ const router = createBrowserRouter([
           {
             path: Routes.CALENDAR,
             element: (
-              <Suspense fallback={<Loading />}>
+              <Suspense fallback={<Skeleton type="route" showEditor={false} />}>
                 <Calendar />
               </Suspense>
             ),
@@ -126,7 +126,7 @@ const router = createBrowserRouter([
           {
             path: Routes.INBOX,
             element: (
-              <Suspense fallback={<Loading />}>
+              <Suspense fallback={<Skeleton type="route" showEditor={false} />}>
                 <Inboxes />
               </Suspense>
             ),
@@ -134,7 +134,7 @@ const router = createBrowserRouter([
           {
             path: Routes.SETTING,
             element: (
-              <Suspense fallback={<Loading />}>
+              <Suspense fallback={<Skeleton type="route" showEditor={false} />}>
                 <Setting />
               </Suspense>
             ),
@@ -142,7 +142,7 @@ const router = createBrowserRouter([
           {
             path: "memos/:uid",
             element: (
-              <Suspense fallback={<Loading />}>
+              <Suspense fallback={<Skeleton type="route" showEditor={false} />}>
                 <MemoDetail />
               </Suspense>
             ),
@@ -151,7 +151,7 @@ const router = createBrowserRouter([
           {
             path: "m/:uid",
             element: (
-              <Suspense fallback={<Loading />}>
+              <Suspense fallback={<Skeleton type="route" showEditor={false} />}>
                 <MemoDetailRedirect />
               </Suspense>
             ),
@@ -159,7 +159,7 @@ const router = createBrowserRouter([
           {
             path: "403",
             element: (
-              <Suspense fallback={<Loading />}>
+              <Suspense fallback={<Skeleton type="route" showEditor={false} />}>
                 <PermissionDenied />
               </Suspense>
             ),
@@ -167,7 +167,7 @@ const router = createBrowserRouter([
           {
             path: "404",
             element: (
-              <Suspense fallback={<Loading />}>
+              <Suspense fallback={<Skeleton type="route" showEditor={false} />}>
                 <NotFound />
               </Suspense>
             ),
@@ -175,7 +175,7 @@ const router = createBrowserRouter([
           {
             path: "*",
             element: (
-              <Suspense fallback={<Loading />}>
+              <Suspense fallback={<Skeleton type="route" showEditor={false} />}>
                 <NotFound />
               </Suspense>
             ),

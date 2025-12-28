@@ -15,7 +15,7 @@ import type { MemoRenderContext } from "../MasonryView";
 import MasonryView from "../MasonryView";
 import MemoEditor from "../MemoEditor";
 import MemoFilters from "../MemoFilters";
-import MemoSkeleton from "../MemoSkeleton";
+import Skeleton from "../Skeleton";
 
 interface Props {
   renderer: (memo: Memo, context?: MemoRenderContext) => JSX.Element;
@@ -143,9 +143,7 @@ const PagedMemoList = (props: Props) => {
     <div className="flex flex-col justify-start items-start w-full max-w-full">
       {/* Show skeleton loader during initial load */}
       {isLoading ? (
-        <div className="w-full flex flex-col justify-start items-center">
-          <MemoSkeleton showCreator={props.showCreator} count={4} />
-        </div>
+        <Skeleton type="memo" showCreator={props.showCreator} count={4} />
       ) : (
         <>
           <MasonryView
@@ -162,12 +160,8 @@ const PagedMemoList = (props: Props) => {
             listMode={layout === "LIST"}
           />
 
-          {/* Loading indicator for pagination */}
-          {isFetchingNextPage && (
-            <div className="w-full flex flex-row justify-center items-center my-4">
-              <LoaderIcon className="animate-spin text-muted-foreground" />
-            </div>
-          )}
+          {/* Loading indicator for pagination - use skeleton for content consistency */}
+          {isFetchingNextPage && <Skeleton type="pagination" showCreator={props.showCreator} count={2} />}
 
           {/* Empty state or back-to-top button */}
           {!isFetchingNextPage && (

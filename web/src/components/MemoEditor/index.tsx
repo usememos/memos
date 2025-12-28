@@ -105,8 +105,6 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
       // Notify parent component of successful save
       onConfirm?.(result.memoName);
-
-      toast.success("Saved successfully");
     } catch (error) {
       handleError(error, toast.error, {
         context: "Failed to save memo",

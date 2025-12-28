@@ -1,7 +1,7 @@
 import "@github/relative-time-element";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
 import { RouterProvider } from "react-router-dom";
@@ -12,7 +12,6 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { InstanceProvider, useInstance } from "@/contexts/InstanceContext";
 import { ViewProvider } from "@/contexts/ViewContext";
 import { queryClient } from "@/lib/query-client";
-import Loading from "@/pages/Loading";
 import router from "./router";
 import { applyLocaleEarly } from "./utils/i18n";
 import { applyThemeEarly } from "./utils/theme";
@@ -26,22 +25,21 @@ applyLocaleEarly();
 function AppInitializer({ children }: { children: React.ReactNode }) {
   const { isInitialized: authInitialized, initialize: initAuth } = useAuth();
   const { isInitialized: instanceInitialized, initialize: initInstance } = useInstance();
-  const [initStarted, setInitStarted] = useState(false);
+  const initStartedRef = useRef(false);
 
-  // Initialize on mount
+  // Initialize on mount - run in parallel for better performance
   useEffect(() => {
-    if (initStarted) return;
-    setInitStarted(true);
+    if (initStartedRef.current) return;
+    initStartedRef.current = true;
 
     const init = async () => {
-      await initInstance();
-      await initAuth();
+      await Promise.all([initInstance(), initAuth()]);
     };
     init();
-  }, [initAuth, initInstance, initStarted]);
+  }, [initAuth, initInstance]);
 
   if (!authInitialized || !instanceInitialized) {
-    return <Loading />;
+    return undefined;
   }
 
   return <>{children}</>;

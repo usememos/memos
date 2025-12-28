@@ -1,8 +1,8 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import { LoaderIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { setAccessToken } from "@/auth-state";
+import Spinner from "@/components/Spinner";
 import { authServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
 import { absolutifyLink } from "@/helpers/utils";
@@ -113,7 +113,7 @@ const AuthCallback = () => {
   return (
     <div className="p-4 py-24 w-full h-full flex justify-center items-center">
       {state.loading ? (
-        <LoaderIcon className="animate-spin text-foreground" />
+        <Spinner size="lg" />
       ) : (
         <div className="max-w-lg font-mono whitespace-pre-wrap opacity-80">{state.errorMessage}</div>
       )}
