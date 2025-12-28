@@ -1,4 +1,4 @@
-import { BellIcon, CalendarIcon, EarthIcon, LibraryIcon, PaperclipIcon, UserCircleIcon } from "lucide-react";
+import { BellIcon, EarthIcon, LibraryIcon, PaperclipIcon, UserCircleIcon } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -33,12 +33,6 @@ const Navigation = (props: Props) => {
     path: Routes.ROOT,
     title: t("common.memos"),
     icon: <LibraryIcon className="w-6 h-auto shrink-0" />,
-  };
-  const calendarNavLink: NavLinkItem = {
-    id: "header-calendar",
-    path: Routes.CALENDAR,
-    title: t("common.calendar"),
-    icon: <CalendarIcon className="w-6 h-auto shrink-0" />,
   };
   const exploreNavLink: NavLinkItem = {
     id: "header-explore",
@@ -76,7 +70,7 @@ const Navigation = (props: Props) => {
   };
 
   const navLinks: NavLinkItem[] = currentUser
-    ? [homeNavLink, calendarNavLink, exploreNavLink, attachmentsNavLink, inboxNavLink]
+    ? [homeNavLink, exploreNavLink, attachmentsNavLink, inboxNavLink]
     : [exploreNavLink, signInNavLink];
 
   return (

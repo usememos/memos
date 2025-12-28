@@ -27,3 +27,19 @@ export interface CompactMonthCalendarProps {
   size?: CalendarSize;
   onClick?: (date: string) => void;
 }
+
+export interface MonthCardProps {
+  month: string;
+  data: Record<string, number>;
+  maxCount: number;
+  onClick?: (date: string) => void;
+  className?: string;
+}
+
+export interface CalendarPopoverProps {
+  selectedYear: number;
+  data: Record<string, number>;
+  onYearChange: (year: number) => void;
+  onDateClick: (date: string) => void;
+  className?: string;
+}

@@ -9,7 +9,6 @@ import Home from "@/pages/Home";
 const AdminSignIn = lazy(() => import("@/pages/AdminSignIn"));
 const Archived = lazy(() => import("@/pages/Archived"));
 const AuthCallback = lazy(() => import("@/pages/AuthCallback"));
-const Calendar = lazy(() => import("@/pages/Calendar"));
 const Explore = lazy(() => import("@/pages/Explore"));
 const Inboxes = lazy(() => import("@/pages/Inboxes"));
 const MemoDetail = lazy(() => import("@/pages/MemoDetail"));
@@ -112,14 +111,6 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<Skeleton type="route" showEditor={false} />}>
                 <Attachments />
-              </Suspense>
-            ),
-          },
-          {
-            path: Routes.CALENDAR,
-            element: (
-              <Suspense fallback={<Skeleton type="route" showEditor={false} />}>
-                <Calendar />
               </Suspense>
             ),
           },
