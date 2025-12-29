@@ -18,7 +18,7 @@ export const CompactMonthCalendar = memo((props: CompactMonthCalendarProps) => {
   const today = useTodayDate();
   const weekDays = useWeekdayLabels();
 
-  const { weeks } = useCalendarMatrix({
+  const { weeks, weekDays: rotatedWeekDays } = useCalendarMatrix({
     month,
     data,
     weekDays,
@@ -30,23 +30,33 @@ export const CompactMonthCalendar = memo((props: CompactMonthCalendarProps) => {
   const sizeConfig = size === "small" ? SMALL_CELL_SIZE : DEFAULT_CELL_SIZE;
 
   return (
-    <div className={cn("grid grid-cols-7", sizeConfig.gap)}>
-      {weeks.map((week, weekIndex) =>
-        week.days.map((day, dayIndex) => {
-          const tooltipText = getTooltipText(day.count, day.date, t);
+    <div className="flex flex-col gap-1">
+      <div className={cn("grid grid-cols-7 gap-0.5 text-muted-foreground", size === "small" ? "text-[10px]" : "text-xs")}>
+        {rotatedWeekDays.map((label, index) => (
+          <div key={index} className="flex h-4 items-center justify-center text-muted-foreground/50">
+            {label}
+          </div>
+        ))}
+      </div>
 
-          return (
-            <CalendarCell
-              key={`${weekIndex}-${dayIndex}-${day.date}`}
-              day={day}
-              maxCount={maxCount}
-              tooltipText={tooltipText}
-              onClick={onClick}
-              size={size}
-            />
-          );
-        }),
-      )}
+      <div className={cn("grid grid-cols-7", sizeConfig.gap)}>
+        {weeks.map((week, weekIndex) =>
+          week.days.map((day, dayIndex) => {
+            const tooltipText = getTooltipText(day.count, day.date, t);
+
+            return (
+              <CalendarCell
+                key={`${weekIndex}-${dayIndex}-${day.date}`}
+                day={day}
+                maxCount={maxCount}
+                tooltipText={tooltipText}
+                onClick={onClick}
+                size={size}
+              />
+            );
+          }),
+        )}
+      </div>
     </div>
   );
 });
