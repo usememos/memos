@@ -340,6 +340,55 @@ func (*FileServerService) isImageType(mimeType string) bool {
 	return mimeType == "image/png" || mimeType == "image/jpeg"
 }
 
+// getAttachmentReader returns a reader for the attachment content.
+func (s *FileServerService) getAttachmentReader(attachment *store.Attachment) (io.ReadCloser, error) {
+	// For local storage, read the file from the local disk.
+	if attachment.StorageType == storepb.AttachmentStorageType_LOCAL {
+		attachmentPath := filepath.FromSlash(attachment.Reference)
+		if !filepath.IsAbs(attachmentPath) {
+			attachmentPath = filepath.Join(s.Profile.Data, attachmentPath)
+		}
+
+		file, err := os.Open(attachmentPath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				return nil, errors.Wrap(err, "file not found")
+			}
+			return nil, errors.Wrap(err, "failed to open the file")
+		}
+		return file, nil
+	}
+	// For S3 storage, download the file from S3.
+	if attachment.StorageType == storepb.AttachmentStorageType_S3 {
+		if attachment.Payload == nil {
+			return nil, errors.New("attachment payload is missing")
+		}
+		s3Object := attachment.Payload.GetS3Object()
+		if s3Object == nil {
+			return nil, errors.New("S3 object payload is missing")
+		}
+		if s3Object.S3Config == nil {
+			return nil, errors.New("S3 config is missing")
+		}
+		if s3Object.Key == "" {
+			return nil, errors.New("S3 object key is missing")
+		}
+
+		s3Client, err := s3.NewClient(context.Background(), s3Object.S3Config)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to create S3 client")
+		}
+
+		reader, err := s3Client.GetObjectStream(context.Background(), s3Object.Key)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get object from S3")
+		}
+		return reader, nil
+	}
+	// For database storage, return the blob from the database.
+	return io.NopCloser(bytes.NewReader(attachment.Blob)), nil
+}
+
 // getAttachmentBlob retrieves the binary content of an attachment from storage.
 func (s *FileServerService) getAttachmentBlob(attachment *store.Attachment) ([]byte, error) {
 	// For local storage, read the file from the local disk.
@@ -441,13 +490,14 @@ func (s *FileServerService) getOrGenerateThumbnail(ctx context.Context, attachme
 	}
 
 	// Generate the thumbnail
-	blob, err := s.getAttachmentBlob(attachment)
+	reader, err := s.getAttachmentReader(attachment)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get attachment blob")
+		return nil, errors.Wrap(err, "failed to get attachment reader")
 	}
+	defer reader.Close()
 
 	// Decode image - this is memory intensive
-	img, err := imaging.Decode(bytes.NewReader(blob), imaging.AutoOrientation(true))
+	img, err := imaging.Decode(reader, imaging.AutoOrientation(true))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to decode thumbnail image")
 	}

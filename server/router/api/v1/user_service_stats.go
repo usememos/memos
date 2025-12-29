@@ -42,66 +42,79 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, _ *v1pb.ListAllUser
 			memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
 		}
 	}
-	memos, err := s.Store.ListMemos(ctx, memoFind)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
-	}
 
 	userMemoStatMap := make(map[int32]*v1pb.UserStats)
-	for _, memo := range memos {
-		// Initialize user stats if not exists
-		if _, exists := userMemoStatMap[memo.CreatorID]; !exists {
-			userMemoStatMap[memo.CreatorID] = &v1pb.UserStats{
-				Name:                  fmt.Sprintf("users/%d/stats", memo.CreatorID),
-				TagCount:              make(map[string]int32),
-				MemoDisplayTimestamps: []*timestamppb.Timestamp{},
-				PinnedMemos:           []string{},
-				MemoTypeStats: &v1pb.UserStats_MemoTypeStats{
-					LinkCount: 0,
-					CodeCount: 0,
-					TodoCount: 0,
-					UndoCount: 0,
-				},
+	limit := 1000
+	offset := 0
+	memoFind.Limit = &limit
+	memoFind.Offset = &offset
+
+	for {
+		memos, err := s.Store.ListMemos(ctx, memoFind)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
+		}
+		if len(memos) == 0 {
+			break
+		}
+
+		for _, memo := range memos {
+			// Initialize user stats if not exists
+			if _, exists := userMemoStatMap[memo.CreatorID]; !exists {
+				userMemoStatMap[memo.CreatorID] = &v1pb.UserStats{
+					Name:                  fmt.Sprintf("users/%d/stats", memo.CreatorID),
+					TagCount:              make(map[string]int32),
+					MemoDisplayTimestamps: []*timestamppb.Timestamp{},
+					PinnedMemos:           []string{},
+					MemoTypeStats: &v1pb.UserStats_MemoTypeStats{
+						LinkCount: 0,
+						CodeCount: 0,
+						TodoCount: 0,
+						UndoCount: 0,
+					},
+				}
+			}
+
+			stats := userMemoStatMap[memo.CreatorID]
+
+			// Add display timestamp
+			displayTs := memo.CreatedTs
+			if instanceMemoRelatedSetting.DisplayWithUpdateTime {
+				displayTs = memo.UpdatedTs
+			}
+			stats.MemoDisplayTimestamps = append(stats.MemoDisplayTimestamps, timestamppb.New(time.Unix(displayTs, 0)))
+
+			// Count memo stats
+			stats.TotalMemoCount++
+
+			// Count tags and other properties
+			if memo.Payload != nil {
+				for _, tag := range memo.Payload.Tags {
+					stats.TagCount[tag]++
+				}
+				if memo.Payload.Property != nil {
+					if memo.Payload.Property.HasLink {
+						stats.MemoTypeStats.LinkCount++
+					}
+					if memo.Payload.Property.HasCode {
+						stats.MemoTypeStats.CodeCount++
+					}
+					if memo.Payload.Property.HasTaskList {
+						stats.MemoTypeStats.TodoCount++
+					}
+					if memo.Payload.Property.HasIncompleteTasks {
+						stats.MemoTypeStats.UndoCount++
+					}
+				}
+			}
+
+			// Track pinned memos
+			if memo.Pinned {
+				stats.PinnedMemos = append(stats.PinnedMemos, fmt.Sprintf("users/%d/memos/%d", memo.CreatorID, memo.ID))
 			}
 		}
 
-		stats := userMemoStatMap[memo.CreatorID]
-
-		// Add display timestamp
-		displayTs := memo.CreatedTs
-		if instanceMemoRelatedSetting.DisplayWithUpdateTime {
-			displayTs = memo.UpdatedTs
-		}
-		stats.MemoDisplayTimestamps = append(stats.MemoDisplayTimestamps, timestamppb.New(time.Unix(displayTs, 0)))
-
-		// Count memo stats
-		stats.TotalMemoCount++
-
-		// Count tags and other properties
-		if memo.Payload != nil {
-			for _, tag := range memo.Payload.Tags {
-				stats.TagCount[tag]++
-			}
-			if memo.Payload.Property != nil {
-				if memo.Payload.Property.HasLink {
-					stats.MemoTypeStats.LinkCount++
-				}
-				if memo.Payload.Property.HasCode {
-					stats.MemoTypeStats.CodeCount++
-				}
-				if memo.Payload.Property.HasTaskList {
-					stats.MemoTypeStats.TodoCount++
-				}
-				if memo.Payload.Property.HasIncompleteTasks {
-					stats.MemoTypeStats.UndoCount++
-				}
-			}
-		}
-
-		// Track pinned memos
-		if memo.Pinned {
-			stats.PinnedMemos = append(stats.PinnedMemos, fmt.Sprintf("users/%d/memos/%d", memo.CreatorID, memo.ID))
-		}
+		offset += limit
 	}
 
 	userMemoStats := []*v1pb.UserStats{}
@@ -141,11 +154,6 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 		memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
 	}
 
-	memos, err := s.Store.ListMemos(ctx, memoFind)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
-	}
-
 	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get instance memo related setting")
@@ -158,36 +166,56 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 	todoCount := int32(0)
 	undoCount := int32(0)
 	pinnedMemos := []string{}
+	totalMemoCount := int32(0)
 
-	for _, memo := range memos {
-		displayTs := memo.CreatedTs
-		if instanceMemoRelatedSetting.DisplayWithUpdateTime {
-			displayTs = memo.UpdatedTs
+	limit := 1000
+	offset := 0
+	memoFind.Limit = &limit
+	memoFind.Offset = &offset
+
+	for {
+		memos, err := s.Store.ListMemos(ctx, memoFind)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
 		}
-		displayTimestamps = append(displayTimestamps, timestamppb.New(time.Unix(displayTs, 0)))
-		// Count different memo types based on content.
-		if memo.Payload != nil {
-			for _, tag := range memo.Payload.Tags {
-				tagCount[tag]++
+		if len(memos) == 0 {
+			break
+		}
+
+		totalMemoCount += int32(len(memos))
+
+		for _, memo := range memos {
+			displayTs := memo.CreatedTs
+			if instanceMemoRelatedSetting.DisplayWithUpdateTime {
+				displayTs = memo.UpdatedTs
 			}
-			if memo.Payload.Property != nil {
-				if memo.Payload.Property.HasLink {
-					linkCount++
+			displayTimestamps = append(displayTimestamps, timestamppb.New(time.Unix(displayTs, 0)))
+			// Count different memo types based on content.
+			if memo.Payload != nil {
+				for _, tag := range memo.Payload.Tags {
+					tagCount[tag]++
 				}
-				if memo.Payload.Property.HasCode {
-					codeCount++
-				}
-				if memo.Payload.Property.HasTaskList {
-					todoCount++
-				}
-				if memo.Payload.Property.HasIncompleteTasks {
-					undoCount++
+				if memo.Payload.Property != nil {
+					if memo.Payload.Property.HasLink {
+						linkCount++
+					}
+					if memo.Payload.Property.HasCode {
+						codeCount++
+					}
+					if memo.Payload.Property.HasTaskList {
+						todoCount++
+					}
+					if memo.Payload.Property.HasIncompleteTasks {
+						undoCount++
+					}
 				}
 			}
+			if memo.Pinned {
+				pinnedMemos = append(pinnedMemos, fmt.Sprintf("users/%d/memos/%d", userID, memo.ID))
+			}
 		}
-		if memo.Pinned {
-			pinnedMemos = append(pinnedMemos, fmt.Sprintf("users/%d/memos/%d", userID, memo.ID))
-		}
+
+		offset += limit
 	}
 
 	userStats := &v1pb.UserStats{
@@ -195,7 +223,7 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 		MemoDisplayTimestamps: displayTimestamps,
 		TagCount:              tagCount,
 		PinnedMemos:           pinnedMemos,
-		TotalMemoCount:        int32(len(memos)),
+		TotalMemoCount:        totalMemoCount,
 		MemoTypeStats: &v1pb.UserStats_MemoTypeStats{
 			LinkCount: linkCount,
 			CodeCount: codeCount,
