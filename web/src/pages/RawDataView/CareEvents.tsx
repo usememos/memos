@@ -42,7 +42,15 @@ const CareEvents = ({ petMemosWithData }: CareEventsProps) => {
     dayjs().format("YYYY-MM"),
   );
   const [selectedNicknames, setSelectedNicknames] = useState<string[]>([]);
-  const [selectedEventTypes = [], setSelectedEventTypes] = useLocalStorage<string[]>("care-events-selected-event-types", []);
+  const [selectedEventTypes = [], setSelectedEventTypesBase] = useLocalStorage<string[]>("care-events-selected-event-types", []);
+  const setSelectedEventTypes = (value: string[] | ((prev: string[]) => string[])) => {
+    if (typeof value === "function") {
+      const current = selectedEventTypes ?? [];
+      setSelectedEventTypesBase(value(current));
+    } else {
+      setSelectedEventTypesBase(value);
+    }
+  };
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<{ start: string; end: string } | null>(null);
   const [activeQuickFilter = null, setActiveQuickFilter] = useLocalStorage<number | "this-month" | "last-month" | null>(
@@ -204,9 +212,10 @@ const CareEvents = ({ petMemosWithData }: CareEventsProps) => {
   };
 
   const handleEventTypeToggle = (eventType: string) => {
-    setSelectedEventTypes((prev) =>
-      prev && prev.includes(eventType) ? prev.filter((t) => t !== eventType) : [...(prev || []), eventType],
-    );
+    setSelectedEventTypes((prev) => {
+      const current = prev || [];
+      return current.includes(eventType) ? current.filter((t) => t !== eventType) : [...current, eventType];
+    });
   };
 
   const handleDateClick = (date: string) => {
