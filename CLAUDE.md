@@ -1,0 +1,1 @@
+1. 这个项目不需要进行 typecheck 和 prettier 操作

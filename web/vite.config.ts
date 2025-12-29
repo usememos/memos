@@ -3,7 +3,7 @@ import { codeInspectorPlugin } from "code-inspector-plugin";
 import { resolve } from "path";
 import { defineConfig } from "vite";
 
-let devProxyServer = "http://localhost:8081";
+let devProxyServer = "https://memo.chriscurry.cc";
 if (process.env.DEV_PROXY_SERVER && process.env.DEV_PROXY_SERVER.length > 0) {
   console.log("Use devProxyServer from environment: ", process.env.DEV_PROXY_SERVER);
   devProxyServer = process.env.DEV_PROXY_SERVER;
@@ -24,14 +24,20 @@ export default defineConfig({
       "^/api": {
         target: devProxyServer,
         xfwd: true,
+        changeOrigin: true,
+        cookieDomainRewrite: "localhost",
       },
       "^/memos.api.v1": {
         target: devProxyServer,
         xfwd: true,
+        changeOrigin: true,
+        cookieDomainRewrite: "localhost",
       },
       "^/file": {
         target: devProxyServer,
         xfwd: true,
+        changeOrigin: true,
+        cookieDomainRewrite: "localhost",
       },
     },
   },

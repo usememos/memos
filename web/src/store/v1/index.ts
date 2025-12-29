@@ -7,3 +7,4 @@ export * from "./tag";
 export * from "./workspaceSetting";
 export * from "./memoFilter";
 export * from "./memoMetadata";
+export * from "./rawData";

@@ -12,6 +12,7 @@ interface Props {
   selectedDate: string;
   data: Record<string, number>;
   onClick?: (date: string) => void;
+  getTooltipText?: (date: string, count: number) => string;
 }
 
 const getCellAdditionalStyles = (count: number, maxCount: number) => {
@@ -30,7 +31,7 @@ const getCellAdditionalStyles = (count: number, maxCount: number) => {
 
 const ActivityCalendar = (props: Props) => {
   const t = useTranslate();
-  const { month: monthStr, data, onClick } = props;
+  const { month: monthStr, data, onClick, getTooltipText } = props;
   const workspaceSettingStore = useWorkspaceSettingStore();
   const weekStartDayOffset = (
     workspaceSettingStore.getWorkspaceSettingByKey(WorkspaceSettingKey.GENERAL).generalSetting || WorkspaceGeneralSetting.fromPartial({})
@@ -74,7 +75,11 @@ const ActivityCalendar = (props: Props) => {
         const date = dayjs(`${year}-${month + 1}-${item.day}`).format("YYYY-MM-DD");
         const count = item.isCurrentMonth ? data[date] || 0 : 0;
         const isToday = dayjs().format("YYYY-MM-DD") === date;
-        const tooltipText = count ? t("memo.count-memos-in-date", { count: count, date: date }) : date;
+        const tooltipText = getTooltipText
+          ? getTooltipText(date, count)
+          : count
+            ? t("memo.count-memos-in-date", { count: count, date: date })
+            : date;
         const isSelected = dayjs(props.selectedDate).format("YYYY-MM-DD") === date;
 
         return (
