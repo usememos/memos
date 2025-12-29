@@ -4,12 +4,13 @@ import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarCell } from "./CalendarCell";
 import { DEFAULT_CELL_SIZE, SMALL_CELL_SIZE } from "./constants";
-import { getTooltipText, useTodayDate, useWeekdayLabels } from "./shared";
-import type { CompactMonthCalendarProps } from "./types";
-import { useCalendarMatrix } from "./useCalendarMatrix";
+import { useTodayDate, useWeekdayLabels } from "./hooks";
+import type { MonthCalendarProps } from "./types";
+import { useCalendarMatrix } from "./useCalendar";
+import { getTooltipText } from "./utils";
 
-export const CompactMonthCalendar = memo((props: CompactMonthCalendarProps) => {
-  const { month, data, maxCount, size = "default", onClick } = props;
+export const MonthCalendar = memo((props: MonthCalendarProps) => {
+  const { month, data, maxCount, size = "default", onClick, className } = props;
   const t = useTranslate();
   const { generalSetting } = useInstance();
 
@@ -30,10 +31,10 @@ export const CompactMonthCalendar = memo((props: CompactMonthCalendarProps) => {
   const sizeConfig = size === "small" ? SMALL_CELL_SIZE : DEFAULT_CELL_SIZE;
 
   return (
-    <div className="flex flex-col gap-1">
-      <div className={cn("grid grid-cols-7 gap-0.5 text-muted-foreground", size === "small" ? "text-[10px]" : "text-xs")}>
+    <div className={cn("flex flex-col gap-2", className)}>
+      <div className={cn("grid grid-cols-7", sizeConfig.gap, "text-muted-foreground mb-1", size === "small" ? "text-[10px]" : "text-xs")}>
         {rotatedWeekDays.map((label, index) => (
-          <div key={index} className="flex h-4 items-center justify-center text-muted-foreground/50">
+          <div key={index} className="flex h-4 items-center justify-center text-muted-foreground/60 font-medium">
             {label}
           </div>
         ))}
@@ -61,4 +62,4 @@ export const CompactMonthCalendar = memo((props: CompactMonthCalendarProps) => {
   );
 });
 
-CompactMonthCalendar.displayName = "CompactMonthCalendar";
+MonthCalendar.displayName = "MonthCalendar";

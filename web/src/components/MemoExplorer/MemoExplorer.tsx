@@ -13,7 +13,6 @@ export interface MemoExplorerFeatures {
   statistics?: boolean;
   shortcuts?: boolean;
   tags?: boolean;
-  statisticsContext?: MemoExplorerContext;
 }
 
 interface Props {
@@ -32,7 +31,6 @@ const getDefaultFeatures = (context: MemoExplorerContext): MemoExplorerFeatures 
         statistics: true,
         shortcuts: false, // Global explore doesn't use shortcuts
         tags: true,
-        statisticsContext: "explore",
       };
     case "archived":
       return {
@@ -40,7 +38,6 @@ const getDefaultFeatures = (context: MemoExplorerContext): MemoExplorerFeatures 
         statistics: true,
         shortcuts: false, // Archived doesn't typically use shortcuts
         tags: true,
-        statisticsContext: "archived",
       };
     case "profile":
       return {
@@ -48,7 +45,6 @@ const getDefaultFeatures = (context: MemoExplorerContext): MemoExplorerFeatures 
         statistics: true,
         shortcuts: false, // Profile view doesn't use shortcuts
         tags: true,
-        statisticsContext: "profile",
       };
     case "home":
     default:
@@ -57,7 +53,6 @@ const getDefaultFeatures = (context: MemoExplorerContext): MemoExplorerFeatures 
         statistics: true,
         shortcuts: true,
         tags: true,
-        statisticsContext: "home",
       };
   }
 };
@@ -81,7 +76,7 @@ const MemoExplorer = (props: Props) => {
     >
       {features.search && <SearchBar />}
       <div className="mt-1 px-1 w-full">
-        {features.statistics && <StatisticsView context={features.statisticsContext} statisticsData={statisticsData} />}
+        {features.statistics && <StatisticsView statisticsData={statisticsData} />}
         {features.shortcuts && currentUser && <ShortcutsSection />}
         {features.tags && <TagsSection readonly={context === "explore"} tagCount={tagCount} />}
       </div>

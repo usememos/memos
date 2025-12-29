@@ -1,22 +1,25 @@
 import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import { INTENSITY_THRESHOLDS, MIN_COUNT, MONTHS_IN_YEAR } from "./constants";
+import { useTranslate } from "@/utils/i18n";
+import { CELL_STYLES, INTENSITY_THRESHOLDS, MIN_COUNT, MONTHS_IN_YEAR } from "./constants";
 import type { CalendarDayCell } from "./types";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(isSameOrBefore);
 
+export type TranslateFunction = ReturnType<typeof useTranslate>;
+
 export const getCellIntensityClass = (day: CalendarDayCell, maxCount: number): string => {
   if (!day.isCurrentMonth || day.count === 0) {
-    return "bg-transparent";
+    return CELL_STYLES.EMPTY;
   }
 
   const ratio = day.count / maxCount;
-  if (ratio > INTENSITY_THRESHOLDS.HIGH) return "bg-primary text-primary-foreground border-primary";
-  if (ratio > INTENSITY_THRESHOLDS.MEDIUM) return "bg-primary/80 text-primary-foreground border-primary/90";
-  if (ratio > INTENSITY_THRESHOLDS.LOW) return "bg-primary/60 text-primary-foreground border-primary/70";
-  return "bg-primary/40 text-primary";
+  if (ratio > INTENSITY_THRESHOLDS.HIGH) return CELL_STYLES.HIGH;
+  if (ratio > INTENSITY_THRESHOLDS.MEDIUM) return CELL_STYLES.MEDIUM;
+  if (ratio > INTENSITY_THRESHOLDS.LOW) return CELL_STYLES.LOW;
+  return CELL_STYLES.MINIMAL;
 };
 
 export const generateMonthsForYear = (year: number): string[] => {
@@ -32,7 +35,7 @@ export const calculateYearMaxCount = (data: Record<string, number>): number => {
 };
 
 export const getMonthLabel = (month: string): string => {
-  return dayjs(month).format("MMM YYYY");
+  return dayjs(month).format("MMM");
 };
 
 export const filterDataByYear = (data: Record<string, number>, year: number): Record<string, number> => {
@@ -54,4 +57,16 @@ export const filterDataByYear = (data: Record<string, number>, year: number): Re
 
 export const hasActivityData = (data: Record<string, number>): boolean => {
   return Object.values(data).some((count) => count > 0);
+};
+
+export const getTooltipText = (count: number, date: string, t: TranslateFunction): string => {
+  if (count === 0) {
+    return date;
+  }
+
+  return t("memo.count-memos-in-date", {
+    count,
+    memos: count === 1 ? t("common.memo") : t("common.memos"),
+    date,
+  }).toLowerCase();
 };

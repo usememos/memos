@@ -45,6 +45,9 @@ const calculateCalendarBoundaries = (monthStart: dayjs.Dayjs, weekStartDayOffset
   return { calendarStart, dayCount };
 };
 
+/**
+ * Generates a matrix of calendar days for a given month, handling week alignment and data mapping.
+ */
 export const useCalendarMatrix = ({
   month,
   data,
@@ -54,16 +57,20 @@ export const useCalendarMatrix = ({
   selectedDate,
 }: UseCalendarMatrixParams): CalendarMatrixResult => {
   return useMemo(() => {
+    // Determine the start of the month and its formatted key (YYYY-MM)
     const monthStart = dayjs(month).startOf("month");
     const monthKey = monthStart.format("YYYY-MM");
 
+    // Rotate week labels based on the user's preferred start of the week
     const rotatedWeekDays = weekDays.slice(weekStartDayOffset).concat(weekDays.slice(0, weekStartDayOffset));
 
+    // Calculate the start and end dates for the calendar grid to ensure full weeks
     const { calendarStart, dayCount } = calculateCalendarBoundaries(monthStart, weekStartDayOffset);
 
     const weeks: CalendarMatrixResult["weeks"] = [];
     let maxCount = 0;
 
+    // Iterate through each day in the calendar grid
     for (let index = 0; index < dayCount; index += 1) {
       const current = calendarStart.add(index, "day");
       const weekIndex = Math.floor(index / DAYS_IN_WEEK);
@@ -72,6 +79,7 @@ export const useCalendarMatrix = ({
         weeks[weekIndex] = { days: [] };
       }
 
+      // Create the day cell object with data and status flags
       const dayCell = createCalendarDayCell(current, monthKey, data, today, selectedDate);
       weeks[weekIndex].days.push(dayCell);
       maxCount = Math.max(maxCount, dayCell.count);

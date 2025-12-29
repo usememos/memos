@@ -13,15 +13,23 @@ export const INTENSITY_THRESHOLDS = {
   MINIMAL: 0,
 } as const;
 
+export const CELL_STYLES = {
+  HIGH: "bg-primary text-primary-foreground shadow-sm",
+  MEDIUM: "bg-primary/80 text-primary-foreground shadow-sm",
+  LOW: "bg-primary/60 text-primary-foreground shadow-sm",
+  MINIMAL: "bg-primary/40 text-foreground",
+  EMPTY: "bg-secondary/30 text-muted-foreground hover:bg-secondary/50",
+} as const;
+
 export const SMALL_CELL_SIZE = {
-  font: "text-[10px]",
-  dimensions: "max-w-6 max-h-6",
-  borderRadius: "rounded-sm",
-  gap: "gap-px",
+  font: "text-xs",
+  dimensions: "w-8 h-8 mx-auto",
+  borderRadius: "rounded-md",
+  gap: "gap-1",
 } as const;
 
 export const DEFAULT_CELL_SIZE = {
   font: "text-xs",
-  borderRadius: "rounded",
-  gap: "gap-0.5",
+  borderRadius: "rounded-md",
+  gap: "gap-1.5",
 } as const;
