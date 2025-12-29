@@ -25,7 +25,6 @@ const MemoRelatedSettings = () => {
   const { memoRelatedSetting: originalSetting, updateSetting, fetchSetting } = useInstance();
   const [memoRelatedSetting, setMemoRelatedSetting] = useState<InstanceSetting_MemoRelatedSetting>(originalSetting);
   const [editingReaction, setEditingReaction] = useState<string>("");
-  const [editingNsfwTag, setEditingNsfwTag] = useState<string>("");
 
   const updatePartialSetting = (partial: Partial<InstanceSetting_MemoRelatedSetting>) => {
     const newInstanceMemoRelatedSetting = create(InstanceSetting_MemoRelatedSettingSchema, {
@@ -42,15 +41,6 @@ const MemoRelatedSettings = () => {
 
     updatePartialSetting({ reactions: uniq([...memoRelatedSetting.reactions, editingReaction.trim()]) });
     setEditingReaction("");
-  };
-
-  const upsertNsfwTags = () => {
-    if (!editingNsfwTag) {
-      return;
-    }
-
-    updatePartialSetting({ nsfwTags: uniq([...memoRelatedSetting.nsfwTags, editingNsfwTag.trim()]) });
-    setEditingNsfwTag("");
   };
 
   const handleUpdateSetting = async () => {
@@ -136,44 +126,6 @@ const MemoRelatedSettings = () => {
             <Button variant="ghost" size="sm" onClick={upsertReaction} className="h-8 w-8 p-0">
               <CheckIcon className="w-4 h-4" />
             </Button>
-          </div>
-        </div>
-      </SettingGroup>
-
-      <SettingGroup showSeparator>
-        <SettingRow label={t("setting.memo-related-settings.enable-blur-nsfw-content")}>
-          <Switch
-            checked={memoRelatedSetting.enableBlurNsfwContent}
-            onCheckedChange={(checked) => updatePartialSetting({ enableBlurNsfwContent: checked })}
-          />
-        </SettingRow>
-
-        <div className="w-full flex flex-col gap-2">
-          <span className="text-sm text-muted-foreground">NSFW Tags</span>
-          <div className="w-full flex flex-row flex-wrap gap-2">
-            {memoRelatedSetting.nsfwTags.map((nsfwTag) => (
-              <Badge key={nsfwTag} variant="outline" className="flex items-center gap-1.5 h-8 px-3">
-                {nsfwTag}
-                <span
-                  className="cursor-pointer text-muted-foreground hover:text-destructive"
-                  onClick={() => updatePartialSetting({ nsfwTags: memoRelatedSetting.nsfwTags.filter((r) => r !== nsfwTag) })}
-                >
-                  <X className="w-3.5 h-3.5" />
-                </span>
-              </Badge>
-            ))}
-            <div className="flex items-center gap-1.5">
-              <Input
-                className="w-32 h-8"
-                placeholder={t("common.input")}
-                value={editingNsfwTag}
-                onChange={(event) => setEditingNsfwTag(event.target.value.trim())}
-                onKeyDown={(e) => e.key === "Enter" && upsertNsfwTags()}
-              />
-              <Button variant="ghost" size="sm" onClick={upsertNsfwTags} className="h-8 w-8 p-0">
-                <CheckIcon className="w-4 h-4" />
-              </Button>
-            </div>
           </div>
         </div>
       </SettingGroup>

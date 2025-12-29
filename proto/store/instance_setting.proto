@@ -102,8 +102,4 @@ message InstanceMemoRelatedSetting {
   bool enable_double_click_edit = 4;
   // reactions is the list of reactions.
   repeated string reactions = 7;
-  // enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
-  bool enable_blur_nsfw_content = 9;
-  // nsfw_tags is the list of tags that mark content as NSFW for blurring.
-  repeated string nsfw_tags = 10;
 }

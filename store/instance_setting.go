@@ -143,9 +143,6 @@ const DefaultContentLengthLimit = 8 * 1024
 // DefaultReactions is the default reactions for memo related setting.
 var DefaultReactions = []string{"👍", "👎", "❤️", "🎉", "😄", "😕", "😢", "😡"}
 
-// DefaultNsfwTags is the default tags that mark content as NSFW for blurring.
-var DefaultNsfwTags = []string{"nsfw"}
-
 func (s *Store) GetInstanceMemoRelatedSetting(ctx context.Context) (*storepb.InstanceMemoRelatedSetting, error) {
 	instanceSetting, err := s.GetInstanceSetting(ctx, &FindInstanceSetting{
 		Name: storepb.InstanceSettingKey_MEMO_RELATED.String(),
@@ -163,9 +160,6 @@ func (s *Store) GetInstanceMemoRelatedSetting(ctx context.Context) (*storepb.Ins
 	}
 	if len(instanceMemoRelatedSetting.Reactions) == 0 {
 		instanceMemoRelatedSetting.Reactions = append(instanceMemoRelatedSetting.Reactions, DefaultReactions...)
-	}
-	if len(instanceMemoRelatedSetting.NsfwTags) == 0 {
-		instanceMemoRelatedSetting.NsfwTags = append(instanceMemoRelatedSetting.NsfwTags, DefaultNsfwTags...)
 	}
 	s.instanceSettingCache.Set(ctx, storepb.InstanceSettingKey_MEMO_RELATED.String(), &storepb.InstanceSetting{
 		Key:   storepb.InstanceSettingKey_MEMO_RELATED,

@@ -654,11 +654,7 @@ type InstanceSetting_MemoRelatedSetting struct {
 	// enable_double_click_edit enables editing on double click.
 	EnableDoubleClickEdit bool `protobuf:"varint,4,opt,name=enable_double_click_edit,json=enableDoubleClickEdit,proto3" json:"enable_double_click_edit,omitempty"`
 	// reactions is the list of reactions.
-	Reactions []string `protobuf:"bytes,7,rep,name=reactions,proto3" json:"reactions,omitempty"`
-	// enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
-	EnableBlurNsfwContent bool `protobuf:"varint,9,opt,name=enable_blur_nsfw_content,json=enableBlurNsfwContent,proto3" json:"enable_blur_nsfw_content,omitempty"`
-	// nsfw_tags is the list of tags that mark content as NSFW for blurring.
-	NsfwTags      []string `protobuf:"bytes,10,rep,name=nsfw_tags,json=nsfwTags,proto3" json:"nsfw_tags,omitempty"`
+	Reactions     []string `protobuf:"bytes,7,rep,name=reactions,proto3" json:"reactions,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -724,20 +720,6 @@ func (x *InstanceSetting_MemoRelatedSetting) GetEnableDoubleClickEdit() bool {
 func (x *InstanceSetting_MemoRelatedSetting) GetReactions() []string {
 	if x != nil {
 		return x.Reactions
-	}
-	return nil
-}
-
-func (x *InstanceSetting_MemoRelatedSetting) GetEnableBlurNsfwContent() bool {
-	if x != nil {
-		return x.EnableBlurNsfwContent
-	}
-	return false
-}
-
-func (x *InstanceSetting_MemoRelatedSetting) GetNsfwTags() []string {
-	if x != nil {
-		return x.NsfwTags
 	}
 	return nil
 }
@@ -899,7 +881,7 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04mode\x18\x03 \x01(\tR\x04mode\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\xef\x0f\n" +
+	"\x19GetInstanceProfileRequest\"\x99\x0f\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2,.memos.api.v1.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12W\n" +
@@ -934,16 +916,13 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\t\n" +
 	"\x05LOCAL\x10\x02\x12\x06\n" +
-	"\x02S3\x10\x03\x1a\xea\x02\n" +
+	"\x02S3\x10\x03\x1a\x94\x02\n" +
 	"\x12MemoRelatedSetting\x12<\n" +
 	"\x1adisallow_public_visibility\x18\x01 \x01(\bR\x18disallowPublicVisibility\x127\n" +
 	"\x18display_with_update_time\x18\x02 \x01(\bR\x15displayWithUpdateTime\x120\n" +
 	"\x14content_length_limit\x18\x03 \x01(\x05R\x12contentLengthLimit\x127\n" +
 	"\x18enable_double_click_edit\x18\x04 \x01(\bR\x15enableDoubleClickEdit\x12\x1c\n" +
-	"\treactions\x18\a \x03(\tR\treactions\x127\n" +
-	"\x18enable_blur_nsfw_content\x18\t \x01(\bR\x15enableBlurNsfwContent\x12\x1b\n" +
-	"\tnsfw_tags\x18\n" +
-	" \x03(\tR\bnsfwTags\"F\n" +
+	"\treactions\x18\a \x03(\tR\treactions\"F\n" +
 	"\x03Key\x12\x13\n" +
 	"\x0fKEY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERAL\x10\x01\x12\v\n" +

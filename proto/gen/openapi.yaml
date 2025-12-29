@@ -2210,14 +2210,6 @@ components:
                     items:
                         type: string
                     description: reactions is the list of reactions.
-                enableBlurNsfwContent:
-                    type: boolean
-                    description: enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
-                nsfwTags:
-                    type: array
-                    items:
-                        type: string
-                    description: nsfw_tags is the list of tags that mark content as NSFW for blurring.
             description: Memo-related instance settings and policies.
         InstanceSetting_StorageSetting:
             type: object
