@@ -1,16 +1,13 @@
-import { create } from "@bufbuild/protobuf";
-import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { ArchiveIcon, CheckIcon, GlobeIcon, LogOutIcon, PaletteIcon, SettingsIcon, SquareUserIcon, User2Icon } from "lucide-react";
-import { userServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import i18n, { locales } from "@/i18n";
+import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
+import { locales } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { UserSetting_GeneralSettingSchema, UserSettingSchema } from "@/types/proto/api/v1/user_service_pb";
-import { getLocaleDisplayName, useTranslate } from "@/utils/i18n";
-import { loadTheme, THEME_OPTIONS } from "@/utils/theme";
+import { getLocaleDisplayName, getLocaleWithFallback, loadLocale, useTranslate } from "@/utils/i18n";
+import { getThemeWithFallback, loadTheme, THEME_OPTIONS } from "@/utils/theme";
 import UserAvatar from "./UserAvatar";
 import {
   DropdownMenu,
@@ -32,31 +29,23 @@ const UserMenu = (props: Props) => {
   const navigateTo = useNavigateTo();
   const currentUser = useCurrentUser();
   const { userGeneralSetting, refetchSettings, logout } = useAuth();
-  const currentLocale = userGeneralSetting?.locale || "en";
-  const currentTheme = userGeneralSetting?.theme || "default";
+  const { mutate: updateUserGeneralSetting } = useUpdateUserGeneralSetting(currentUser?.name);
+  const currentLocale = getLocaleWithFallback(userGeneralSetting?.locale);
+  const currentTheme = getThemeWithFallback(userGeneralSetting?.theme);
 
   const handleLocaleChange = async (locale: Locale) => {
     if (!currentUser) return;
-    // Apply locale immediately for instant UI feedback
-    i18n.changeLanguage(locale);
+    // Apply locale immediately for instant UI feedback and persist to localStorage
+    loadLocale(locale);
     // Persist to user settings
-    const settingName = `${currentUser.name}/setting`;
-    const updatedGeneralSetting = create(UserSetting_GeneralSettingSchema, {
-      locale,
-      theme: userGeneralSetting?.theme,
-      memoVisibility: userGeneralSetting?.memoVisibility,
-    });
-    await userServiceClient.updateUserSetting({
-      setting: create(UserSettingSchema, {
-        name: settingName,
-        value: {
-          case: "generalSetting",
-          value: updatedGeneralSetting,
+    updateUserGeneralSetting(
+      { generalSetting: { locale }, updateMask: ["locale"] },
+      {
+        onSuccess: () => {
+          refetchSettings();
         },
-      }),
-      updateMask: create(FieldMaskSchema, { paths: ["general_setting.locale"] }),
-    });
-    await refetchSettings();
+      },
+    );
   };
 
   const handleThemeChange = async (theme: string) => {
@@ -64,23 +53,14 @@ const UserMenu = (props: Props) => {
     // Apply theme immediately for instant UI feedback
     loadTheme(theme);
     // Persist to user settings
-    const settingName = `${currentUser.name}/setting`;
-    const updatedGeneralSetting = create(UserSetting_GeneralSettingSchema, {
-      locale: userGeneralSetting?.locale,
-      theme,
-      memoVisibility: userGeneralSetting?.memoVisibility,
-    });
-    await userServiceClient.updateUserSetting({
-      setting: create(UserSettingSchema, {
-        name: settingName,
-        value: {
-          case: "generalSetting",
-          value: updatedGeneralSetting,
+    updateUserGeneralSetting(
+      { generalSetting: { theme }, updateMask: ["theme"] },
+      {
+        onSuccess: () => {
+          refetchSettings();
         },
-      }),
-      updateMask: create(FieldMaskSchema, { paths: ["general_setting.theme"] }),
-    });
-    await refetchSettings();
+      },
+    );
   };
 
   const handleSignOut = async () => {
