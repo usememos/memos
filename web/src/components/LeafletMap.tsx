@@ -1,10 +1,12 @@
 import L, { DivIcon, LatLng } from "leaflet";
 import { ExternalLinkIcon, MapPinIcon, MinusIcon, PlusIcon } from "lucide-react";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import ReactDOMServer from "react-dom/server";
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
+import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
+import { resolveTheme } from "@/utils/theme";
 
 const markerIcon = new DivIcon({
   className: "relative border-none",
@@ -72,10 +74,11 @@ const GlassButton = ({ icon, onClick, ariaLabel, title }: GlassButtonProps) => {
       aria-label={ariaLabel}
       title={title}
       className={cn(
-        "w-8 h-8 flex items-center justify-center rounded-lg",
-        "transition-all duration-200 cursor-pointer",
+        "h-8 w-8 flex items-center justify-center rounded-lg",
+        "cursor-pointer transition-all duration-200",
         "bg-white/80 backdrop-blur-md border border-white/30 shadow-lg",
         "hover:bg-white/90 hover:scale-105 active:scale-95",
+        "dark:bg-black/80 dark:border-white/10 dark:hover:bg-black/90",
         "focus:outline-none focus:ring-2 focus:ring-blue-500",
       )}
     >
@@ -226,10 +229,24 @@ interface MapProps {
 const DEFAULT_CENTER_LAT_LNG = new LatLng(48.8584, 2.2945);
 
 const LeafletMap = (props: MapProps) => {
+  const { userGeneralSetting } = useAuth();
   const position = props.latlng || DEFAULT_CENTER_LAT_LNG;
+  const isDark = useMemo(() => resolveTheme(userGeneralSetting?.theme || "system").includes("dark"), [userGeneralSetting?.theme]);
+
   return (
-    <MapContainer className="w-full h-72" center={position} zoom={13} scrollWheelZoom={false} zoomControl={false}>
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+    <MapContainer
+      className="w-full h-72"
+      center={position}
+      zoom={13}
+      scrollWheelZoom={false}
+      zoomControl={false}
+      attributionControl={false}
+    >
+      <TileLayer
+        url={
+          isDark ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        }
+      />
       <LocationMarker position={position} readonly={props.readonly} onChange={props.onChange ? props.onChange : () => {}} />
       <MapControls position={props.latlng} />
       <MapCleanup />

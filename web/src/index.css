@@ -347,11 +347,26 @@
     vertical-align: baseline;
   }
 
-  /* ========================================
-   * Strikethrough (GFM)
-   * ======================================== */
-
+  /* Strikethrough (GFM) */
   .markdown-content del {
     text-decoration: line-through;
+  }
+
+  /* Leaflet Popup Overrides */
+  .leaflet-popup-content-wrapper {
+    border-radius: 0.5rem !important;
+    border: 1px solid var(--border) !important;
+    background-color: var(--background) !important;
+    box-shadow: var(--shadow-lg) !important;
+  }
+
+  .leaflet-popup-content {
+    margin: 4px !important;
+    line-height: inherit !important;
+    font-size: inherit !important;
+  }
+
+  .leaflet-popup-tip {
+    background-color: var(--background) !important;
   }
 }
