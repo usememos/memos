@@ -63,7 +63,7 @@ func (s *APIV1Service) DeleteMemoReaction(ctx context.Context, request *v1pb.Del
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 
-	reactionID, err := ExtractReactionIDFromName(request.Name)
+	_, reactionID, err := ExtractMemoReactionIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid reaction name: %v", err)
 	}
@@ -95,8 +95,10 @@ func (s *APIV1Service) DeleteMemoReaction(ctx context.Context, request *v1pb.Del
 
 func convertReactionFromStore(reaction *store.Reaction) *v1pb.Reaction {
 	reactionUID := fmt.Sprintf("%d", reaction.ID)
+	// Generate nested resource name: memos/{memo}/reactions/{reaction}
+	// reaction.ContentID already contains "memos/{memo}"
 	return &v1pb.Reaction{
-		Name:         fmt.Sprintf("%s%s", ReactionNamePrefix, reactionUID),
+		Name:         fmt.Sprintf("%s/%s%s", reaction.ContentID, ReactionNamePrefix, reactionUID),
 		Creator:      fmt.Sprintf("%s%d", UserNamePrefix, reaction.CreatorID),
 		ContentId:    reaction.ContentID,
 		ReactionType: reaction.ReactionType,

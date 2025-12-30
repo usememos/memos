@@ -130,7 +130,7 @@ func (MemoRelation_Type) EnumDescriptor() ([]byte, []int) {
 type Reaction struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The resource name of the reaction.
-	// Format: reactions/{reaction}
+	// Format: memos/{memo}/reactions/{reaction}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The resource name of the creator.
 	// Format: users/{user}
@@ -1627,7 +1627,7 @@ func (x *UpsertMemoReactionRequest) GetReaction() *Reaction {
 type DeleteMemoReactionRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The resource name of the reaction to delete.
-	// Format: reactions/{reaction}
+	// Format: memos/{memo}/reactions/{reaction}
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1799,7 +1799,7 @@ var File_api_v1_memo_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\n" +
-	"\x19api/v1/memo_service.proto\x12\fmemos.api.v1\x1a\x1fapi/v1/attachment_service.proto\x1a\x13api/v1/common.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xce\x02\n" +
+	"\x19api/v1/memo_service.proto\x12\fmemos.api.v1\x1a\x1fapi/v1/attachment_service.proto\x1a\x13api/v1/common.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xdb\x02\n" +
 	"\bReaction\x12\x1a\n" +
 	"\x04name\x18\x01 \x01(\tB\x06\xe0A\x03\xe0A\bR\x04name\x123\n" +
 	"\acreator\x18\x02 \x01(\tB\x19\xe0A\x03\xfaA\x13\n" +
@@ -1809,8 +1809,8 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\x11memos.api.v1/MemoR\tcontentId\x12(\n" +
 	"\rreaction_type\x18\x04 \x01(\tB\x03\xe0A\x02R\freactionType\x12@\n" +
 	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"createTime:K\xeaAH\n" +
-	"\x15memos.api.v1/Reaction\x12\x14reactions/{reaction}\x1a\x04name*\treactions2\breaction\"\xd8\b\n" +
+	"createTime:X\xeaAU\n" +
+	"\x15memos.api.v1/Reaction\x12!memos/{memo}/reactions/{reaction}\x1a\x04name*\treactions2\breaction\"\xd8\b\n" +
 	"\x04Memo\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12.\n" +
 	"\x05state\x18\x02 \x01(\x0e2\x13.memos.api.v1.StateB\x03\xe0A\x02R\x05state\x123\n" +
@@ -1953,7 +1953,7 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\aPRIVATE\x10\x01\x12\r\n" +
 	"\tPROTECTED\x10\x02\x12\n" +
 	"\n" +
-	"\x06PUBLIC\x10\x032\xcb\x0e\n" +
+	"\x06PUBLIC\x10\x032\xd3\x0e\n" +
 	"\vMemoService\x12e\n" +
 	"\n" +
 	"CreateMemo\x12\x1f.memos.api.v1.CreateMemoRequest\x1a\x12.memos.api.v1.Memo\"\"\xdaA\x04memo\x82\xd3\xe4\x93\x02\x15:\x04memo\"\r/api/v1/memos\x12f\n" +
@@ -1970,8 +1970,8 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\x11CreateMemoComment\x12&.memos.api.v1.CreateMemoCommentRequest\x1a\x12.memos.api.v1.Memo\"?\xdaA\fname,comment\x82\xd3\xe4\x93\x02*:\acomment\"\x1f/api/v1/{name=memos/*}/comments\x12\x91\x01\n" +
 	"\x10ListMemoComments\x12%.memos.api.v1.ListMemoCommentsRequest\x1a&.memos.api.v1.ListMemoCommentsResponse\".\xdaA\x04name\x82\xd3\xe4\x93\x02!\x12\x1f/api/v1/{name=memos/*}/comments\x12\x95\x01\n" +
 	"\x11ListMemoReactions\x12&.memos.api.v1.ListMemoReactionsRequest\x1a'.memos.api.v1.ListMemoReactionsResponse\"/\xdaA\x04name\x82\xd3\xe4\x93\x02\"\x12 /api/v1/{name=memos/*}/reactions\x12\x89\x01\n" +
-	"\x12UpsertMemoReaction\x12'.memos.api.v1.UpsertMemoReactionRequest\x1a\x16.memos.api.v1.Reaction\"2\xdaA\x04name\x82\xd3\xe4\x93\x02%:\x01*\" /api/v1/{name=memos/*}/reactions\x12\x80\x01\n" +
-	"\x12DeleteMemoReaction\x12'.memos.api.v1.DeleteMemoReactionRequest\x1a\x16.google.protobuf.Empty\")\xdaA\x04name\x82\xd3\xe4\x93\x02\x1c*\x1a/api/v1/{name=reactions/*}B\xa8\x01\n" +
+	"\x12UpsertMemoReaction\x12'.memos.api.v1.UpsertMemoReactionRequest\x1a\x16.memos.api.v1.Reaction\"2\xdaA\x04name\x82\xd3\xe4\x93\x02%:\x01*\" /api/v1/{name=memos/*}/reactions\x12\x88\x01\n" +
+	"\x12DeleteMemoReaction\x12'.memos.api.v1.DeleteMemoReactionRequest\x1a\x16.google.protobuf.Empty\"1\xdaA\x04name\x82\xd3\xe4\x93\x02$*\"/api/v1/{name=memos/*/reactions/*}B\xa8\x01\n" +
 	"\x10com.memos.api.v1B\x10MemoServiceProtoP\x01Z0github.com/usememos/memos/proto/gen/api/v1;apiv1\xa2\x02\x03MAX\xaa\x02\fMemos.Api.V1\xca\x02\fMemos\\Api\\V1\xe2\x02\x18Memos\\Api\\V1\\GPBMetadata\xea\x02\x0eMemos::Api::V1b\x06proto3"
 
 var (

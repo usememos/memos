@@ -105,18 +105,19 @@ func ExtractAttachmentUIDFromName(name string) (string, error) {
 	return id, nil
 }
 
-// ExtractReactionIDFromName returns the reaction ID from a resource name.
-// e.g., "reactions/123" -> 123.
-func ExtractReactionIDFromName(name string) (int32, error) {
-	tokens, err := GetNameParentTokens(name, ReactionNamePrefix)
+// ExtractMemoReactionIDFromName returns the memo UID and reaction ID from a resource name.
+// e.g., "memos/abc/reactions/123" -> ("abc", 123).
+func ExtractMemoReactionIDFromName(name string) (string, int32, error) {
+	tokens, err := GetNameParentTokens(name, MemoNamePrefix, ReactionNamePrefix)
 	if err != nil {
-		return 0, err
+		return "", 0, err
 	}
-	id, err := util.ConvertStringToInt32(tokens[0])
+	memoUID := tokens[0]
+	reactionID, err := util.ConvertStringToInt32(tokens[1])
 	if err != nil {
-		return 0, errors.Errorf("invalid reaction ID %q", tokens[0])
+		return "", 0, errors.Errorf("invalid reaction ID %q", tokens[1])
 	}
-	return id, nil
+	return memoUID, reactionID, nil
 }
 
 // ExtractInboxIDFromName returns the inbox ID from a resource name.
