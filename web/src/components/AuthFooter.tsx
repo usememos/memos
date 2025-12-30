@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { getInitialTheme, loadTheme } from "@/utils/theme";
 import { loadLocale } from "@/utils/i18n";
+import { getInitialTheme, loadTheme } from "@/utils/theme";
 import LocaleSelect from "./LocaleSelect";
 import ThemeSelect from "./ThemeSelect";
 

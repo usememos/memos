@@ -149,7 +149,7 @@ const PagedMemoList = (props: Props) => {
     <div className="flex flex-col justify-start items-start w-full max-w-full">
       {/* Show skeleton loader during initial load */}
       {isLoading ? (
-        <Skeleton type="memo" showCreator={props.showCreator} count={4} />
+        <Skeleton showCreator={props.showCreator} count={4} />
       ) : (
         <>
           <MasonryView
@@ -166,8 +166,8 @@ const PagedMemoList = (props: Props) => {
             listMode={layout === "LIST"}
           />
 
-          {/* Loading indicator for pagination - use skeleton for content consistency */}
-          {isFetchingNextPage && <Skeleton type="pagination" showCreator={props.showCreator} count={2} />}
+          {/* Loading indicator for pagination */}
+          {isFetchingNextPage && <Skeleton showCreator={props.showCreator} count={2} />}
 
           {/* Empty state or back-to-top button */}
           {!isFetchingNextPage && (

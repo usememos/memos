@@ -1,13 +1,11 @@
 import { cn } from "@/lib/utils";
 
 interface Props {
-  type?: "route" | "memo" | "pagination";
   showCreator?: boolean;
   count?: number;
-  showEditor?: boolean;
 }
 
-// Memo card skeleton component
+// Memo card skeleton component for list loading states
 const MemoCardSkeleton = ({ showCreator = false, index = 0 }: { showCreator?: boolean; index?: number }) => (
   <div className="relative flex flex-col justify-start items-start bg-card w-full px-4 py-3 mb-2 gap-2 rounded-lg border border-border animate-pulse">
     {/* Header section */}
@@ -43,36 +41,17 @@ const MemoCardSkeleton = ({ showCreator = false, index = 0 }: { showCreator?: bo
   </div>
 );
 
-const Skeleton = ({ type = "route", showCreator = false, count = 4, showEditor = true }: Props) => {
-  // Pagination type: simpler, just memos
-  if (type === "pagination") {
-    return (
-      <div className="w-full flex flex-col justify-center items-center my-4">
-        <div className="w-full max-w-2xl mx-auto">
-          {Array.from({ length: count }).map((_, index) => (
-            <MemoCardSkeleton key={index} showCreator={showCreator} index={index} />
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  // Route or memo type: with optional wrapper
-  return (
-    <div className="w-full max-w-2xl mx-auto">
-      {/* Editor skeleton - only for route type */}
-      {type === "route" && showEditor && (
-        <div className="relative flex flex-col justify-start items-start bg-card w-full px-4 py-3 mb-4 gap-2 rounded-lg border border-border animate-pulse">
-          <div className="w-full h-12 bg-muted rounded" />
-        </div>
-      )}
-
-      {/* Memo skeletons */}
-      {Array.from({ length: count }).map((_, index) => (
-        <MemoCardSkeleton key={index} showCreator={showCreator} index={index} />
-      ))}
-    </div>
-  );
-};
+/**
+ * Skeleton loading state for memo lists.
+ * Use this for initial memo list loading and pagination.
+ * For generic page/route loading, use Spinner instead.
+ */
+const Skeleton = ({ showCreator = false, count = 4 }: Props) => (
+  <div className="w-full max-w-2xl mx-auto">
+    {Array.from({ length: count }).map((_, index) => (
+      <MemoCardSkeleton key={index} showCreator={showCreator} index={index} />
+    ))}
+  </div>
+);
 
 export default Skeleton;

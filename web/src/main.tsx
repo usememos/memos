@@ -8,6 +8,7 @@ import { RouterProvider } from "react-router-dom";
 import "./i18n";
 import "./index.css";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import Spinner from "@/components/Spinner";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { InstanceProvider, useInstance } from "@/contexts/InstanceContext";
 import { ViewProvider } from "@/contexts/ViewContext";
@@ -39,7 +40,11 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
   }, [initAuth, initInstance]);
 
   if (!authInitialized || !instanceInitialized) {
-    return undefined;
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
   }
 
   return <>{children}</>;
