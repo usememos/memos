@@ -59,20 +59,18 @@ const Skeleton = ({ type = "route", showCreator = false, count = 4, showEditor =
 
   // Route or memo type: with optional wrapper
   return (
-    <div className="w-full max-w-full px-4 py-6">
-      <div className="w-full max-w-2xl mx-auto">
-        {/* Editor skeleton - only for route type */}
-        {type === "route" && showEditor && (
-          <div className="relative flex flex-col justify-start items-start bg-card w-full px-4 py-3 mb-4 gap-2 rounded-lg border border-border animate-pulse">
-            <div className="w-full h-12 bg-muted rounded" />
-          </div>
-        )}
+    <div className="w-full max-w-2xl mx-auto">
+      {/* Editor skeleton - only for route type */}
+      {type === "route" && showEditor && (
+        <div className="relative flex flex-col justify-start items-start bg-card w-full px-4 py-3 mb-4 gap-2 rounded-lg border border-border animate-pulse">
+          <div className="w-full h-12 bg-muted rounded" />
+        </div>
+      )}
 
-        {/* Memo skeletons */}
-        {Array.from({ length: count }).map((_, index) => (
-          <MemoCardSkeleton key={index} showCreator={showCreator} index={index} />
-        ))}
-      </div>
+      {/* Memo skeletons */}
+      {Array.from({ length: count }).map((_, index) => (
+        <MemoCardSkeleton key={index} showCreator={showCreator} index={index} />
+      ))}
     </div>
   );
 };
