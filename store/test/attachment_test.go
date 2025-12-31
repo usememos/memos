@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/lithammer/shortuuid/v4"
@@ -190,7 +191,7 @@ func TestAttachmentListWithPagination(t *testing.T) {
 		_, err := ts.CreateAttachment(ctx, &store.Attachment{
 			UID:       shortuuid.New(),
 			CreatorID: 101,
-			Filename:  "test" + string(rune('a'+i)) + ".png",
+			Filename:  fmt.Sprintf("test%d.png", i),
 			Blob:      []byte("test"),
 			Type:      "image/png",
 			Size:      int64(1000 + i),

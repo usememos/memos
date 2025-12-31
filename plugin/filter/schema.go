@@ -128,6 +128,8 @@ func NewSchema() Schema {
 				// MySQL stores created_ts as TIMESTAMP, needs conversion to epoch
 				DialectMySQL: "UNIX_TIMESTAMP(%s)",
 				// PostgreSQL and SQLite store created_ts as BIGINT (epoch), no conversion needed
+				DialectPostgres: "%s",
+				DialectSQLite:   "%s",
 			},
 		},
 		"updated_ts": {
@@ -139,6 +141,8 @@ func NewSchema() Schema {
 				// MySQL stores updated_ts as TIMESTAMP, needs conversion to epoch
 				DialectMySQL: "UNIX_TIMESTAMP(%s)",
 				// PostgreSQL and SQLite store updated_ts as BIGINT (epoch), no conversion needed
+				DialectPostgres: "%s",
+				DialectSQLite:   "%s",
 			},
 		},
 		"pinned": {
@@ -272,6 +276,8 @@ func NewAttachmentSchema() Schema {
 				// MySQL stores created_ts as TIMESTAMP, needs conversion to epoch
 				DialectMySQL: "UNIX_TIMESTAMP(%s)",
 				// PostgreSQL and SQLite store created_ts as BIGINT (epoch), no conversion needed
+				DialectPostgres: "%s",
+				DialectSQLite:   "%s",
 			},
 		},
 		"memo_id": {

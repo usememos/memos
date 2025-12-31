@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -246,9 +247,9 @@ func TestMemoListWithPagination(t *testing.T) {
 	// Create 10 memos
 	for i := 0; i < 10; i++ {
 		_, err := ts.CreateMemo(ctx, &store.Memo{
-			UID:        "memo-" + string(rune('a'+i)),
+			UID:        fmt.Sprintf("memo-%d", i),
 			CreatorID:  user.ID,
-			Content:    "content " + string(rune('a'+i)),
+			Content:    fmt.Sprintf("content %d", i),
 			Visibility: store.Public,
 		})
 		require.NoError(t, err)

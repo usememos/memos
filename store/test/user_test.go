@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -221,7 +222,7 @@ func TestUserListWithLimit(t *testing.T) {
 		if i == 0 {
 			role = store.RoleHost
 		}
-		_, err := createTestingUserWithRole(ctx, ts, "user"+string(rune('a'+i)), role)
+		_, err := createTestingUserWithRole(ctx, ts, fmt.Sprintf("user%d", i), role)
 		require.NoError(t, err)
 	}
 
