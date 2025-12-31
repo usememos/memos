@@ -317,11 +317,6 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 		if err = os.MkdirAll(dir, os.ModePerm); err != nil {
 			return errors.Wrap(err, "Failed to create directory")
 		}
-		dst, err := os.Create(osPath)
-		if err != nil {
-			return errors.Wrap(err, "Failed to create file")
-		}
-		defer dst.Close()
 
 		// Write the blob to the file.
 		if err := os.WriteFile(osPath, create.Blob, 0644); err != nil {

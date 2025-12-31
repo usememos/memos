@@ -49,12 +49,12 @@ func Post(requestPayload *WebhookRequestPayload) error {
 	if err != nil {
 		return errors.Wrapf(err, "failed to post webhook to %s", requestPayload.URL)
 	}
+	defer resp.Body.Close()
 
 	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return errors.Wrapf(err, "failed to read webhook response from %s", requestPayload.URL)
 	}
-	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		return errors.Errorf("failed to post webhook %s, status code: %d, response body: %s", requestPayload.URL, resp.StatusCode, b)

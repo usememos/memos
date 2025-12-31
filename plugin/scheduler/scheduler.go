@@ -153,9 +153,11 @@ func (s *Scheduler) runJobWithSchedule(ctx context.Context, rj *registeredJob, s
 				_ = err
 			}
 		case <-ctx.Done():
+			// Stop the timer to prevent it from firing. The timer will be garbage collected.
 			timer.Stop()
 			return
 		case <-s.stopCh:
+			// Stop the timer to prevent it from firing. The timer will be garbage collected.
 			timer.Stop()
 			return
 		}
