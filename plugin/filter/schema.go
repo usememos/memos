@@ -125,8 +125,9 @@ func NewSchema() Schema {
 			Type:   FieldTypeTimestamp,
 			Column: Column{Table: "memo", Name: "created_ts"},
 			Expressions: map[DialectName]string{
-				DialectMySQL:    "UNIX_TIMESTAMP(%s)",
-				DialectPostgres: "EXTRACT(EPOCH FROM TO_TIMESTAMP(%s))",
+				// MySQL stores created_ts as TIMESTAMP, needs conversion to epoch
+				DialectMySQL: "UNIX_TIMESTAMP(%s)",
+				// PostgreSQL and SQLite store created_ts as BIGINT (epoch), no conversion needed
 			},
 		},
 		"updated_ts": {
@@ -135,8 +136,9 @@ func NewSchema() Schema {
 			Type:   FieldTypeTimestamp,
 			Column: Column{Table: "memo", Name: "updated_ts"},
 			Expressions: map[DialectName]string{
-				DialectMySQL:    "UNIX_TIMESTAMP(%s)",
-				DialectPostgres: "EXTRACT(EPOCH FROM TO_TIMESTAMP(%s))",
+				// MySQL stores updated_ts as TIMESTAMP, needs conversion to epoch
+				DialectMySQL: "UNIX_TIMESTAMP(%s)",
+				// PostgreSQL and SQLite store updated_ts as BIGINT (epoch), no conversion needed
 			},
 		},
 		"pinned": {
@@ -267,15 +269,16 @@ func NewAttachmentSchema() Schema {
 			Type:   FieldTypeTimestamp,
 			Column: Column{Table: "resource", Name: "created_ts"},
 			Expressions: map[DialectName]string{
-				DialectMySQL:    "UNIX_TIMESTAMP(%s)",
-				DialectPostgres: "EXTRACT(EPOCH FROM TO_TIMESTAMP(%s))",
+				// MySQL stores created_ts as TIMESTAMP, needs conversion to epoch
+				DialectMySQL: "UNIX_TIMESTAMP(%s)",
+				// PostgreSQL and SQLite store created_ts as BIGINT (epoch), no conversion needed
 			},
 		},
-		"memo": {
-			Name:        "memo",
+		"memo_id": {
+			Name:        "memo_id",
 			Kind:        FieldKindScalar,
-			Type:        FieldTypeString,
-			Column:      Column{Table: "resource", Name: "memo_uid"},
+			Type:        FieldTypeInt,
+			Column:      Column{Table: "resource", Name: "memo_id"},
 			Expressions: map[DialectName]string{},
 			AllowedComparisonOps: map[ComparisonOperator]bool{
 				CompareEq:  true,
@@ -288,7 +291,7 @@ func NewAttachmentSchema() Schema {
 		cel.Variable("filename", cel.StringType),
 		cel.Variable("mime_type", cel.StringType),
 		cel.Variable("create_time", cel.IntType),
-		cel.Variable("memo", cel.StringType),
+		cel.Variable("memo_id", cel.IntType),
 		nowFunction,
 	}
 

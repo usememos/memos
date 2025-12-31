@@ -50,7 +50,7 @@ func (d *DB) Close() error {
 
 func (d *DB) IsInitialized(ctx context.Context) (bool, error) {
 	var exists bool
-	err := d.db.QueryRowContext(ctx, "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE TABLE_NAME = 'memo' AND TABLE_TYPE = 'BASE TABLE')").Scan(&exists)
+	err := d.db.QueryRowContext(ctx, "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'memo' AND TABLE_TYPE = 'BASE TABLE')").Scan(&exists)
 	if err != nil {
 		return false, errors.Wrap(err, "failed to check if database is initialized")
 	}
