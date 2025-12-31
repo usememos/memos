@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/mysql"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
@@ -104,7 +105,10 @@ func waitForDB(driver, dsn string, timeout time.Duration) error {
 	for {
 		select {
 		case <-ctx.Done():
-			return lastErr
+			if lastErr != nil {
+				return errors.Errorf("timeout waiting for %s database: %v", driver, lastErr)
+			}
+			return errors.Errorf("timeout waiting for %s database to be ready", driver)
 		case <-ticker.C:
 			db, err := sql.Open(driver, dsn)
 			if err != nil {
