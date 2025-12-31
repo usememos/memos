@@ -3,7 +3,6 @@ package test
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"net"
 	"os"
 	"testing"
@@ -19,61 +18,23 @@ import (
 	"github.com/usememos/memos/store/db"
 )
 
+// NewTestingStore creates a new testing store with a fresh database.
+// Each test gets its own isolated database:
+//   - SQLite: new temp file per test
+//   - MySQL/PostgreSQL: new database per test in shared container
 func NewTestingStore(ctx context.Context, t *testing.T) *store.Store {
-	profile := getTestingProfile(t)
+	driver := getDriverFromEnv()
+	profile := getTestingProfileForDriver(t, driver)
 	dbDriver, err := db.NewDBDriver(profile)
 	if err != nil {
-		slog.Error("failed to create db driver", slog.String("error", err.Error()))
+		t.Fatalf("failed to create db driver: %v", err)
 	}
-	resetTestingDB(ctx, profile, dbDriver)
 
 	store := store.New(dbDriver, profile)
 	if err := store.Migrate(ctx); err != nil {
-		slog.Error("failed to migrate db", slog.String("error", err.Error()))
+		t.Fatalf("failed to migrate db: %v", err)
 	}
 	return store
-}
-
-func resetTestingDB(ctx context.Context, profile *profile.Profile, dbDriver store.Driver) {
-	if profile.Driver == "mysql" {
-		_, err := dbDriver.GetDB().ExecContext(ctx, `
-		DROP TABLE IF EXISTS system_setting;
-		DROP TABLE IF EXISTS user;
-		DROP TABLE IF EXISTS user_setting;
-		DROP TABLE IF EXISTS memo;
-		DROP TABLE IF EXISTS memo_organizer;
-		DROP TABLE IF EXISTS memo_relation;
-		DROP TABLE IF EXISTS resource;
-		DROP TABLE IF EXISTS tag;
-		DROP TABLE IF EXISTS activity;
-		DROP TABLE IF EXISTS storage;
-		DROP TABLE IF EXISTS idp;
-		DROP TABLE IF EXISTS inbox;
-		DROP TABLE IF EXISTS reaction;`)
-		if err != nil {
-			slog.Error("failed to reset testing db", slog.String("error", err.Error()))
-			panic(err)
-		}
-	} else if profile.Driver == "postgres" {
-		_, err := dbDriver.GetDB().ExecContext(ctx, `
-		DROP TABLE IF EXISTS system_setting CASCADE;
-		DROP TABLE IF EXISTS "user" CASCADE;
-		DROP TABLE IF EXISTS user_setting CASCADE;
-		DROP TABLE IF EXISTS memo CASCADE;
-		DROP TABLE IF EXISTS memo_organizer CASCADE;
-		DROP TABLE IF EXISTS memo_relation CASCADE;
-		DROP TABLE IF EXISTS resource CASCADE;
-		DROP TABLE IF EXISTS tag CASCADE;
-		DROP TABLE IF EXISTS activity CASCADE;
-		DROP TABLE IF EXISTS storage CASCADE;
-		DROP TABLE IF EXISTS idp CASCADE;
-		DROP TABLE IF EXISTS inbox CASCADE;
-		DROP TABLE IF EXISTS reaction CASCADE;`)
-		if err != nil {
-			slog.Error("failed to reset testing db", slog.String("error", err.Error()))
-			panic(err)
-		}
-	}
 }
 
 func getUnusedPort() int {
@@ -89,20 +50,28 @@ func getUnusedPort() int {
 	return port
 }
 
-func getTestingProfile(t *testing.T) *profile.Profile {
-	if err := godotenv.Load(".env"); err != nil {
-		t.Log("failed to load .env file, but it's ok")
-	}
+// getTestingProfileForDriver creates a testing profile for a specific driver.
+func getTestingProfileForDriver(t *testing.T, driver string) *profile.Profile {
+	// Attempt to load .env file if present (optional, for local development)
+	_ = godotenv.Load(".env")
 
 	// Get a temporary directory for the test data.
 	dir := t.TempDir()
 	mode := "prod"
 	port := getUnusedPort()
-	driver := getDriverFromEnv()
-	dsn := os.Getenv("DSN")
-	if driver == "sqlite" {
+
+	var dsn string
+	switch driver {
+	case "sqlite":
 		dsn = fmt.Sprintf("%s/memos_%s.db", dir, mode)
+	case "mysql":
+		dsn = GetMySQLDSN(t)
+	case "postgres":
+		dsn = GetPostgresDSN(t)
+	default:
+		t.Fatalf("unsupported driver: %s", driver)
 	}
+
 	return &profile.Profile{
 		Mode:    mode,
 		Port:    port,
