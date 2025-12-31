@@ -12,9 +12,9 @@ import (
 func TestMain(m *testing.M) {
 	// If DRIVER is set, run tests for that driver only
 	if os.Getenv("DRIVER") != "" {
-		code := m.Run()
-		TerminateContainers()
-		os.Exit(code)
+		defer TerminateContainers()
+		m.Run()
+		return
 	}
 
 	// No DRIVER set - run tests for all drivers sequentially
@@ -44,8 +44,7 @@ func runAllDrivers() {
 	fmt.Println()
 	if len(failed) > 0 {
 		fmt.Printf("FAIL: %v\n", failed)
-		os.Exit(1)
+		panic("some drivers failed")
 	}
 	fmt.Println("PASS: all drivers")
-	os.Exit(0)
 }

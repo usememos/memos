@@ -52,9 +52,8 @@ func getUnusedPort() int {
 
 // getTestingProfileForDriver creates a testing profile for a specific driver.
 func getTestingProfileForDriver(t *testing.T, driver string) *profile.Profile {
-	if err := godotenv.Load(".env"); err != nil {
-		t.Log("failed to load .env file, but it's ok")
-	}
+	// Attempt to load .env file if present (optional, for local development)
+	_ = godotenv.Load(".env")
 
 	// Get a temporary directory for the test data.
 	dir := t.TempDir()

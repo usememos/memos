@@ -52,7 +52,7 @@ func GetMySQLDSN(t *testing.T) string {
 				wait.ForAll(
 					wait.ForLog("ready for connections").WithOccurrence(2),
 					wait.ForListeningPort("3306/tcp"),
-				).WithStartupTimeout(120*time.Second),
+				).WithDeadline(120*time.Second),
 			),
 		)
 		if err != nil {
@@ -135,7 +135,7 @@ func GetPostgresDSN(t *testing.T) string {
 				wait.ForAll(
 					wait.ForLog("database system is ready to accept connections").WithOccurrence(2),
 					wait.ForListeningPort("5432/tcp"),
-				).WithStartupTimeout(120*time.Second),
+				).WithDeadline(120*time.Second),
 			),
 		)
 		if err != nil {
