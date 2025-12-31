@@ -1,18 +1,17 @@
 import { LatLng } from "leaflet";
-import { MapPinIcon, XIcon } from "lucide-react";
+import { MapPinIcon } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Location } from "@/types/proto/api/v1/memo_service_pb";
+import type { Location } from "@/types/proto/api/v1/memo_service_pb";
 import LeafletMap from "../LeafletMap";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { BaseMetadataProps } from "./types";
 
-interface LocationDisplayProps extends BaseMetadataProps {
+interface LocationDisplayProps {
   location?: Location;
-  onRemove?: () => void;
+  className?: string;
 }
 
-const LocationDisplay = ({ location, mode, onRemove, className }: LocationDisplayProps) => {
+const LocationDisplay = ({ location, className }: LocationDisplayProps) => {
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
 
   if (!location) {
@@ -26,12 +25,11 @@ const LocationDisplay = ({ location, mode, onRemove, className }: LocationDispla
       <PopoverTrigger asChild>
         <div
           className={cn(
-            "w-auto max-w-full flex flex-row gap-2",
+            "w-auto max-w-full flex flex-row gap-2 cursor-pointer",
             "relative inline-flex items-center gap-1.5 px-2 h-7 rounded-md border border-border bg-background hover:bg-accent text-secondary-foreground text-xs transition-colors",
-            mode === "view" && "cursor-pointer",
             className,
           )}
-          onClick={mode === "view" ? () => setPopoverOpen(true) : undefined}
+          onClick={() => setPopoverOpen(true)}
         >
           <span className="shrink-0 text-muted-foreground">
             <MapPinIcon className="w-3.5 h-3.5" />
@@ -40,24 +38,6 @@ const LocationDisplay = ({ location, mode, onRemove, className }: LocationDispla
             [{location.latitude.toFixed(2)}°, {location.longitude.toFixed(2)}°]
           </span>
           <span className="text-nowrap truncate">{displayText}</span>
-          {onRemove && (
-            <button
-              className="shrink-0 rounded hover:bg-accent transition-colors p-0.5"
-              onPointerDown={(e) => {
-                e.stopPropagation();
-              }}
-              onMouseDown={(e) => {
-                e.stopPropagation();
-              }}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onRemove();
-              }}
-            >
-              <XIcon className="w-3 h-3 text-muted-foreground hover:text-foreground" />
-            </button>
-          )}
         </div>
       </PopoverTrigger>
       <PopoverContent align="start">

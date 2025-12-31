@@ -34,12 +34,11 @@ const LocationMarker = (props: MarkerProps) => {
       // Call the parent onChange function.
       props.onChange(e.latlng);
     },
-    locationfound() {},
+    locationfound() { },
   });
 
   useEffect(() => {
     if (!initializedRef.current) {
-      map.attributionControl.setPrefix("");
       map.locate();
       initializedRef.current = true;
     }
@@ -247,7 +246,7 @@ const LeafletMap = (props: MapProps) => {
           isDark ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         }
       />
-      <LocationMarker position={position} readonly={props.readonly} onChange={props.onChange ? props.onChange : () => {}} />
+      <LocationMarker position={position} readonly={props.readonly} onChange={props.onChange ? props.onChange : () => { }} />
       <MapControls position={props.latlng} />
       <MapCleanup />
     </MapContainer>

@@ -1,4 +1,3 @@
-export { default as AttachmentCard } from "./AttachmentCard";
 export { default as AttachmentList } from "./AttachmentList";
 export { default as LocationDisplay } from "./LocationDisplay";
 
@@ -8,5 +7,5 @@ export { default as RelationCard } from "./RelationCard";
 export { default as RelationList } from "./RelationList";
 
 // Types
-export type { AttachmentItem, BaseMetadataProps, DisplayMode, FileCategory, LocalFile } from "./types";
+export type { AttachmentItem, FileCategory, LocalFile } from "./types";
 export { attachmentToItem, fileToItem, filterByCategory, separateMediaAndDocs, toAttachmentItems } from "./types";

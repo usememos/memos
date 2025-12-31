@@ -29,9 +29,9 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact, onContentClick, onContentD
           onDoubleClick={onContentDoubleClick}
           compact={memo.pinned ? false : compact} // Always show full content when pinned
         />
-        {memo.location && <LocationDisplay mode="view" location={memo.location} />}
-        <AttachmentList mode="view" attachments={memo.attachments} />
-        <RelationList mode="view" relations={referencedMemos} currentMemoName={memo.name} parentPage={parentPage} />
+        <AttachmentList attachments={memo.attachments} />
+        <RelationList relations={referencedMemos} currentMemoName={memo.name} parentPage={parentPage} />
+        {memo.location && <LocationDisplay location={memo.location} />}
         <MemoReactionListView memo={memo} reactions={memo.reactions} />
       </div>
 

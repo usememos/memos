@@ -1,31 +1,27 @@
-import { create } from "@bufbuild/protobuf";
 import { LinkIcon, MilestoneIcon } from "lucide-react";
-import { useEffect, useState } from "react";
-import { memoServiceClient } from "@/connect";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Memo, MemoRelation, MemoRelation_MemoSchema, MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
+import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
+import { MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import MetadataCard from "./MetadataCard";
 import RelationCard from "./RelationCard";
-import { BaseMetadataProps } from "./types";
 
-interface RelationListProps extends BaseMetadataProps {
+interface RelationListProps {
   relations: MemoRelation[];
   currentMemoName?: string;
-  onRelationsChange?: (relations: MemoRelation[]) => void;
   parentPage?: string;
+  className?: string;
 }
 
-function RelationList({ relations, currentMemoName, mode, onRelationsChange, parentPage, className }: RelationListProps) {
+function RelationList({ relations, currentMemoName, parentPage, className }: RelationListProps) {
   const t = useTranslate();
-  const [referencingMemos, setReferencingMemos] = useState<Memo[]>([]);
   const [selectedTab, setSelectedTab] = useState<"referencing" | "referenced">("referencing");
 
-  // Get referencing and referenced relations
   const referencingRelations = relations.filter(
     (relation) =>
       relation.type === MemoRelation_Type.REFERENCE &&
-      (mode === "edit" || relation.memo?.name === currentMemoName) &&
+      relation.memo?.name === currentMemoName &&
       relation.relatedMemo?.name !== currentMemoName,
   );
 
@@ -36,60 +32,14 @@ function RelationList({ relations, currentMemoName, mode, onRelationsChange, par
       relation.relatedMemo?.name === currentMemoName,
   );
 
-  // Fetch full memo details for editor mode
-  useEffect(() => {
-    if (mode === "edit") {
-      (async () => {
-        if (referencingRelations.length > 0) {
-          const requests = referencingRelations.map(async (relation) => {
-            return await memoServiceClient.getMemo({ name: relation.relatedMemo!.name });
-          });
-          const list = await Promise.all(requests);
-          setReferencingMemos(list);
-        } else {
-          setReferencingMemos([]);
-        }
-      })();
-    }
-  }, [mode, relations]);
-
-  const handleDeleteRelation = (memoName: string) => {
-    if (onRelationsChange) {
-      onRelationsChange(relations.filter((relation) => relation.relatedMemo?.name !== memoName));
-    }
-  };
-
-  // Editor mode: Simple badge list
-  if (mode === "edit") {
-    if (referencingMemos.length === 0) {
-      return null;
-    }
-
-    return (
-      <div className="w-full flex flex-row gap-2 flex-wrap">
-        {referencingMemos.map((memo) => (
-          <RelationCard
-            key={memo.name}
-            memo={create(MemoRelation_MemoSchema, { name: memo.name, snippet: memo.snippet })}
-            mode="edit"
-            onRemove={() => handleDeleteRelation(memo.name)}
-          />
-        ))}
-      </div>
-    );
-  }
-
-  // View mode: Tabbed card with bidirectional relations
   if (referencingRelations.length === 0 && referencedRelations.length === 0) {
     return null;
   }
 
-  // Auto-select tab based on which has content
   const activeTab = referencingRelations.length === 0 ? "referenced" : selectedTab;
 
   return (
     <MetadataCard className={className}>
-      {/* Tabs */}
       <div className="w-full flex flex-row justify-start items-center mb-1 gap-3 opacity-60">
         {referencingRelations.length > 0 && (
           <button
@@ -119,20 +69,18 @@ function RelationList({ relations, currentMemoName, mode, onRelationsChange, par
         )}
       </div>
 
-      {/* Referencing List */}
       {activeTab === "referencing" && referencingRelations.length > 0 && (
         <div className="w-full flex flex-col justify-start items-start">
           {referencingRelations.map((relation) => (
-            <RelationCard key={relation.relatedMemo!.name} memo={relation.relatedMemo!} mode="view" parentPage={parentPage} />
+            <RelationCard key={relation.relatedMemo!.name} memo={relation.relatedMemo!} parentPage={parentPage} />
           ))}
         </div>
       )}
 
-      {/* Referenced List */}
       {activeTab === "referenced" && referencedRelations.length > 0 && (
         <div className="w-full flex flex-col justify-start items-start">
           {referencedRelations.map((relation) => (
-            <RelationCard key={relation.memo!.name} memo={relation.memo!} mode="view" parentPage={parentPage} />
+            <RelationCard key={relation.memo!.name} memo={relation.memo!} parentPage={parentPage} />
           ))}
         </div>
       )}
