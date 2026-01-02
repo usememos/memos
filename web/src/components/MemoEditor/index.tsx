@@ -62,8 +62,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     dispatch(actions.toggleFocusMode());
   };
 
-  // Keyboard shortcuts
-  useKeyboard(editorRef, { onSave: handleSave, onToggleFocusMode: handleToggleFocusMode });
+  useKeyboard(editorRef, { onSave: handleSave });
 
   async function handleSave() {
     // Validate before saving

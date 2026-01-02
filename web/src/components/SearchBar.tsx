@@ -1,5 +1,5 @@
 import { SearchIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -10,18 +10,6 @@ const SearchBar = () => {
   const { addFilter } = useMemoFilterContext();
   const [queryText, setQueryText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const handleGlobalShortcut = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key === "/") {
-        event.preventDefault();
-        inputRef.current?.focus();
-      }
-    };
-
-    window.addEventListener("keydown", handleGlobalShortcut);
-    return () => window.removeEventListener("keydown", handleGlobalShortcut);
-  }, []);
 
   const onTextChange = (event: React.FormEvent<HTMLInputElement>) => {
     setQueryText(event.currentTarget.value);

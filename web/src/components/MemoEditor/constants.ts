@@ -10,9 +10,6 @@ export const FOCUS_MODE_STYLES = {
   exitButton: "absolute top-2 right-2 z-10 opacity-60 hover:opacity-100",
 } as const;
 
-export const FOCUS_MODE_TOGGLE_KEY = "f";
-export const FOCUS_MODE_EXIT_KEY = "Escape";
-
 export const EDITOR_HEIGHT = {
   // Max height for normal mode - focus mode uses flex-1 to grow dynamically
   normal: "max-h-[50vh]",

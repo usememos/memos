@@ -27,7 +27,7 @@ const LocationMarker = (props: MarkerProps) => {
       // Call the parent onChange function.
       props.onChange(e.latlng);
     },
-    locationfound() { },
+    locationfound() {},
   });
 
   useEffect(() => {
@@ -224,12 +224,19 @@ const LeafletMap = (props: MapProps) => {
   const position = props.latlng || DEFAULT_CENTER_LAT_LNG;
 
   return (
-    <MapContainer className="w-full h-72" center={position} zoom={13} scrollWheelZoom={false} zoomControl={false} attributionControl={false}>
+    <MapContainer
+      className="w-full h-72"
+      center={position}
+      zoom={13}
+      scrollWheelZoom={false}
+      zoomControl={false}
+      attributionControl={false}
+    >
       <ThemedTileLayer />
-      <LocationMarker position={position} readonly={props.readonly} onChange={props.onChange ? props.onChange : () => { }} />
+      <LocationMarker position={position} readonly={props.readonly} onChange={props.onChange ? props.onChange : () => {}} />
       <MapControls position={props.latlng} />
       <MapCleanup />
-    </MapContainer >
+    </MapContainer>
   );
 };
 

@@ -5,31 +5,10 @@ import MemoEditor from "../MemoEditor";
 import PreviewImageDialog from "../PreviewImageDialog";
 import { MemoBody, MemoHeader } from "./components";
 import { MEMO_CARD_BASE_CLASSES } from "./constants";
-import { useImagePreview, useKeyboardShortcuts, useMemoActions, useMemoHandlers, useMemoViewDerivedState, useNsfwContent } from "./hooks";
+import { useImagePreview, useMemoActions, useMemoHandlers, useMemoViewDerivedState, useNsfwContent } from "./hooks";
 import { MemoViewContext } from "./MemoViewContext";
 import type { MemoViewProps } from "./types";
 
-/**
- * MemoView component displays a memo card with all its content, metadata, and interactive elements.
- *
- * Features:
- * - Displays memo content with markdown rendering
- * - Shows creator information and timestamps
- * - Supports inline editing with keyboard shortcuts (e = edit, a = archive)
- * - Handles NSFW content blurring
- * - Image preview on click
- * - Comments, reactions, and relations
- *
- * @example
- * ```tsx
- * <MemoView
- *   memo={memoData}
- *   showCreator
- *   showVisibility
- *   compact={false}
- * />
- * ```
- */
 const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const { memo: memoData, className } = props;
   const cardRef = useRef<HTMLDivElement>(null);
@@ -40,7 +19,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const { isArchived, readonly, parentPage } = useMemoViewDerivedState(memoData, props.parentPage);
   const { nsfw, showNSFWContent, toggleNsfwVisibility } = useNsfwContent(memoData, props.showNsfwContent);
   const { previewState, openPreview, setPreviewOpen } = useImagePreview();
-  const { archiveMemo, unpinMemo } = useMemoActions(memoData, isArchived);
+  const { unpinMemo } = useMemoActions(memoData, isArchived);
 
   const handleEditorConfirm = () => setShowEditor(false);
   const handleEditorCancel = () => setShowEditor(false);
@@ -52,14 +31,6 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
     readonly,
     openEditor,
     openPreview,
-  });
-  useKeyboardShortcuts(cardRef, {
-    enabled: true,
-    readonly,
-    showEditor,
-    isArchived,
-    onEdit: openEditor,
-    onArchive: archiveMemo,
   });
 
   const contextValue = useMemo(
