@@ -214,7 +214,7 @@
         "type-placeholder": "文件类型"
       },
       "local-file": {
-        "choose": "选择文件…",
+        "choose": "选择文件...",
         "option": "本地文件"
       },
       "title": "创建资源",
@@ -222,7 +222,7 @@
     },
     "delete-resource": "删除资源",
     "delete-selected-resources": "删除选中资源",
-    "fetching-data": "正在获取数据…",
+    "fetching-data": "正在获取数据...",
     "file-drag-drop-prompt": "将您的文件拖放到此处以上传文件",
     "linked-amount": "链接的备忘录数量",
     "no-files-selected": "没有文件被选中",
