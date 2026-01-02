@@ -4,29 +4,20 @@ import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import { ArrowUpRightIcon, MapPinIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";
-import ReactDOMServer from "react-dom/server";
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
+import { MapContainer, Marker, Popup, useMap } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { Link } from "react-router-dom";
+import { defaultMarkerIcon, ThemedTileLayer } from "@/components/map/map-utils";
 import Spinner from "@/components/Spinner";
-import { useAuth } from "@/contexts/AuthContext";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { Memo } from "@/types/proto/api/v1/memo_service_pb";
-import { resolveTheme } from "@/utils/theme";
 
 interface Props {
   creator: string;
   className?: string;
 }
-
-const markerIcon = new DivIcon({
-  className: "relative border-none",
-  html: ReactDOMServer.renderToString(
-    <MapPinIcon className="absolute bottom-1/2 -left-1/2 text-red-500 drop-shadow-md" fill="currentColor" size={32} />,
-  ),
-});
 
 interface ClusterGroup {
   getChildCount(): number;
@@ -62,9 +53,7 @@ const MapFitBounds = ({ memos }: { memos: Memo[] }) => {
 };
 
 const UserMemoMap = ({ creator, className }: Props) => {
-  const { userGeneralSetting } = useAuth();
   const creatorId = useMemo(() => extractUserIdFromName(creator), [creator]);
-  const isDark = useMemo(() => resolveTheme(userGeneralSetting?.theme || "system").includes("dark"), [userGeneralSetting?.theme]);
 
   const { data, isLoading } = useInfiniteMemos({
     state: State.NORMAL,
@@ -97,11 +86,7 @@ const UserMemoMap = ({ creator, className }: Props) => {
       )}
 
       <MapContainer center={defaultCenter} zoom={2} className="h-full w-full z-0" scrollWheelZoom attributionControl={false}>
-        <TileLayer
-          url={
-            isDark ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          }
-        />
+        <ThemedTileLayer />
         <MarkerClusterGroup
           chunkedLoading
           iconCreateFunction={createClusterCustomIcon}
@@ -110,7 +95,7 @@ const UserMemoMap = ({ creator, className }: Props) => {
           showCoverageOnHover={false}
         >
           {memosWithLocation.map((memo) => (
-            <Marker key={memo.name} position={[memo.location!.latitude, memo.location!.longitude]} icon={markerIcon}>
+            <Marker key={memo.name} position={[memo.location!.latitude, memo.location!.longitude]} icon={defaultMarkerIcon}>
               <Popup closeButton={false} className="w-48!">
                 <div className="flex flex-col p-0.5">
                   <div className="flex items-center justify-between border-b border-border pb-1 mb-1">

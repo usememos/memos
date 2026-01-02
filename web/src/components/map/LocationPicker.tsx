@@ -1,17 +1,10 @@
-import L, { DivIcon, LatLng } from "leaflet";
-import { ExternalLinkIcon, MapPinIcon, MinusIcon, PlusIcon } from "lucide-react";
-import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import L, { LatLng } from "leaflet";
+import { ExternalLinkIcon, MinusIcon, PlusIcon } from "lucide-react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import ReactDOMServer from "react-dom/server";
-import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from "react-leaflet";
-import { useAuth } from "@/contexts/AuthContext";
+import { MapContainer, Marker, useMap, useMapEvents } from "react-leaflet";
 import { cn } from "@/lib/utils";
-import { resolveTheme } from "@/utils/theme";
-
-const markerIcon = new DivIcon({
-  className: "relative border-none",
-  html: ReactDOMServer.renderToString(<MapPinIcon className="absolute bottom-1/2 -left-1/2" fill="pink" size={24} />),
-});
+import { defaultMarkerIcon, ThemedTileLayer } from "./map-utils";
 
 interface MarkerProps {
   position: LatLng | undefined;
@@ -34,7 +27,7 @@ const LocationMarker = (props: MarkerProps) => {
       // Call the parent onChange function.
       props.onChange(e.latlng);
     },
-    locationfound() {},
+    locationfound() { },
   });
 
   useEffect(() => {
@@ -54,7 +47,7 @@ const LocationMarker = (props: MarkerProps) => {
     }
   }, [props.position, map]);
 
-  return position === undefined ? null : <Marker position={position} icon={markerIcon}></Marker>;
+  return position === undefined ? null : <Marker position={position} icon={defaultMarkerIcon}></Marker>;
 };
 
 // Reusable glass-style button component
@@ -228,28 +221,15 @@ interface MapProps {
 const DEFAULT_CENTER_LAT_LNG = new LatLng(48.8584, 2.2945);
 
 const LeafletMap = (props: MapProps) => {
-  const { userGeneralSetting } = useAuth();
   const position = props.latlng || DEFAULT_CENTER_LAT_LNG;
-  const isDark = useMemo(() => resolveTheme(userGeneralSetting?.theme || "system").includes("dark"), [userGeneralSetting?.theme]);
 
   return (
-    <MapContainer
-      className="w-full h-72"
-      center={position}
-      zoom={13}
-      scrollWheelZoom={false}
-      zoomControl={false}
-      attributionControl={false}
-    >
-      <TileLayer
-        url={
-          isDark ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        }
-      />
-      <LocationMarker position={position} readonly={props.readonly} onChange={props.onChange ? props.onChange : () => {}} />
+    <MapContainer className="w-full h-72" center={position} zoom={13} scrollWheelZoom={false} zoomControl={false} attributionControl={false}>
+      <ThemedTileLayer />
+      <LocationMarker position={position} readonly={props.readonly} onChange={props.onChange ? props.onChange : () => { }} />
       <MapControls position={props.latlng} />
       <MapCleanup />
-    </MapContainer>
+    </MapContainer >
   );
 };
 

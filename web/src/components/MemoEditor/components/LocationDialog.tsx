@@ -1,4 +1,4 @@
-import LeafletMap from "@/components/LeafletMap";
+import { LocationPicker } from "@/components/map";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -36,7 +36,7 @@ export const LocationDialog = ({
         </VisuallyHidden>
         <div className="flex flex-col">
           <div className="w-full h-64 overflow-hidden rounded-t-md bg-muted/30">
-            <LeafletMap latlng={position} onChange={onPositionChange} />
+            <LocationPicker latlng={position} onChange={onPositionChange} />
           </div>
           <div className="w-full flex flex-col p-3 gap-3">
             <div className="grid grid-cols-2 gap-3">

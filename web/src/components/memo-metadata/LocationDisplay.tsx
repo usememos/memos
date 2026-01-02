@@ -1,9 +1,9 @@
 import { LatLng } from "leaflet";
 import { MapPinIcon } from "lucide-react";
 import { useState } from "react";
+import { LocationPicker } from "@/components/map";
 import { cn } from "@/lib/utils";
 import type { Location } from "@/types/proto/api/v1/memo_service_pb";
-import LeafletMap from "../LeafletMap";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 interface LocationDisplayProps {
@@ -42,7 +42,7 @@ const LocationDisplay = ({ location, className }: LocationDisplayProps) => {
       </PopoverTrigger>
       <PopoverContent align="start">
         <div className="min-w-80 sm:w-lg flex flex-col justify-start items-start">
-          <LeafletMap latlng={new LatLng(location.latitude, location.longitude)} readonly={true} />
+          <LocationPicker latlng={new LatLng(location.latitude, location.longitude)} readonly={true} />
         </div>
       </PopoverContent>
     </Popover>

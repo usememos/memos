@@ -17,9 +17,3 @@ export const EDITOR_HEIGHT = {
   // Max height for normal mode - focus mode uses flex-1 to grow dynamically
   normal: "max-h-[50vh]",
 } as const;
-
-export const GEOCODING = {
-  endpoint: "https://nominatim.openstreetmap.org/reverse",
-  userAgent: "Memos/1.0 (https://github.com/usememos/memos)",
-  format: "json",
-} as const;
