@@ -95,23 +95,6 @@ func (s *FileServerService) serveAttachmentFile(c echo.Context) error {
 		return err
 	}
 
-	// Get the binary content
-	blob, err := s.getAttachmentBlob(attachment)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get attachment blob").SetInternal(err)
-	}
-
-	// Handle thumbnail requests for images
-	if thumbnail && s.isImageType(attachment.Type) {
-		thumbnailBlob, err := s.getOrGenerateThumbnail(ctx, attachment)
-		if err != nil {
-			// Log warning but fall back to original image
-			c.Logger().Warnf("failed to get thumbnail: %v", err)
-		} else {
-			blob = thumbnailBlob
-		}
-	}
-
 	// Determine content type
 	contentType := attachment.Type
 	if strings.HasPrefix(contentType, "text/") {
@@ -154,18 +137,47 @@ func (s *FileServerService) serveAttachmentFile(c echo.Context) error {
 
 	// For video/audio: Use http.ServeContent for automatic range request support
 	// This is critical for Safari which REQUIRES range request support
+	// Use streaming to avoid loading large files entirely into memory
 	if strings.HasPrefix(contentType, "video/") || strings.HasPrefix(contentType, "audio/") {
+		// Get content as ReadSeeker for efficient streaming
+		content, err := s.getAttachmentReadSeeker(attachment)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get attachment content").SetInternal(err)
+		}
+		defer func() {
+			if closer, ok := content.(io.Closer); ok {
+				closer.Close()
+			}
+		}()
+
 		// ServeContent automatically handles:
 		// - Range request parsing
 		// - HTTP 206 Partial Content responses
 		// - Content-Range headers
 		// - Accept-Ranges: bytes header
 		modTime := time.Unix(attachment.UpdatedTs, 0)
-		http.ServeContent(c.Response(), c.Request(), attachment.Filename, modTime, bytes.NewReader(blob))
+		http.ServeContent(c.Response(), c.Request(), attachment.Filename, modTime, content)
 		return nil
 	}
 
-	// For other files: Simple blob response
+	// For other files: Get the binary content
+	blob, err := s.getAttachmentBlob(attachment)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get attachment blob").SetInternal(err)
+	}
+
+	// Handle thumbnail requests for images
+	if thumbnail && s.isImageType(attachment.Type) {
+		thumbnailBlob, err := s.getOrGenerateThumbnail(ctx, attachment)
+		if err != nil {
+			// Log warning but fall back to original image
+			c.Logger().Warnf("failed to get thumbnail: %v", err)
+		} else {
+			blob = thumbnailBlob
+		}
+	}
+
+	// Simple blob response
 	return c.Blob(http.StatusOK, contentType, blob)
 }
 
@@ -387,6 +399,36 @@ func (s *FileServerService) getAttachmentReader(attachment *store.Attachment) (i
 	}
 	// For database storage, return the blob from the database.
 	return io.NopCloser(bytes.NewReader(attachment.Blob)), nil
+}
+
+// getAttachmentReadSeeker returns an io.ReadSeeker for the attachment content.
+// This is more efficient than getAttachmentBlob for large files as it streams
+// content without loading everything into memory.
+func (s *FileServerService) getAttachmentReadSeeker(attachment *store.Attachment) (io.ReadSeeker, error) {
+	// For local storage, open the file and return it (files are ReadSeekers)
+	if attachment.StorageType == storepb.AttachmentStorageType_LOCAL {
+		attachmentPath := filepath.FromSlash(attachment.Reference)
+		if !filepath.IsAbs(attachmentPath) {
+			attachmentPath = filepath.Join(s.Profile.Data, attachmentPath)
+		}
+
+		file, err := os.Open(attachmentPath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				return nil, errors.Wrap(err, "file not found")
+			}
+			return nil, errors.Wrap(err, "failed to open the file")
+		}
+		return file, nil
+	}
+
+	// For S3 storage and database storage, we need to load into memory
+	// since we don't have seekable streams from these sources
+	blob, err := s.getAttachmentBlob(attachment)
+	if err != nil {
+		return nil, err
+	}
+	return bytes.NewReader(blob), nil
 }
 
 // getAttachmentBlob retrieves the binary content of an attachment from storage.
