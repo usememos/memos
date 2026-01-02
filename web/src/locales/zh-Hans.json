@@ -214,7 +214,7 @@
         "type-placeholder": "文件类型"
       },
       "local-file": {
-        "choose": "选择文件…",
+        "choose": "选择文件...",
         "option": "本地文件"
       },
       "title": "创建资源",
