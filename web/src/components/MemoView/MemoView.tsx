@@ -1,22 +1,28 @@
 import { memo, useMemo, useRef, useState } from "react";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { useUser } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
+import { State } from "@/types/proto/api/v1/common_pb";
+import { isSuperUser } from "@/utils/user";
 import MemoEditor from "../MemoEditor";
 import PreviewImageDialog from "../PreviewImageDialog";
 import { MemoBody, MemoHeader } from "./components";
 import { MEMO_CARD_BASE_CLASSES } from "./constants";
-import { useImagePreview, useMemoActions, useMemoHandlers, useMemoViewDerivedState, useNsfwContent } from "./hooks";
+import { useImagePreview, useMemoActions, useMemoHandlers, useNsfwContent } from "./hooks";
 import { MemoViewContext } from "./MemoViewContext";
 import type { MemoViewProps } from "./types";
 
 const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
-  const { memo: memoData, className } = props;
+  const { memo: memoData, className, parentPage: parentPageProp } = props;
   const cardRef = useRef<HTMLDivElement>(null);
-  const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
 
+  const currentUser = useCurrentUser();
   const creator = useUser(memoData.creator).data;
-  const { isArchived, readonly, parentPage } = useMemoViewDerivedState(memoData, props.parentPage);
+  const isArchived = memoData.state === State.ARCHIVED;
+  const readonly = memoData.creator !== currentUser?.name && !isSuperUser(currentUser);
+  const parentPage = parentPageProp || "/";
+
   const { nsfw, showNSFWContent, toggleNsfwVisibility } = useNsfwContent(memoData, props.showNsfwContent);
   const { previewState, openPreview, setPreviewOpen } = useImagePreview();
   const { unpinMemo } = useMemoActions(memoData, isArchived);
@@ -37,11 +43,14 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
     () => ({
       memo: memoData,
       creator,
+      currentUser,
       parentPage,
+      isArchived,
+      readonly,
       showNSFWContent,
       nsfw,
     }),
-    [memoData, creator, parentPage, showNSFWContent, nsfw],
+    [memoData, creator, currentUser, parentPage, isArchived, readonly, showNSFWContent, nsfw],
   );
 
   if (showEditor) {
@@ -68,8 +77,6 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
           onGotoDetail={handleGotoMemoDetailPage}
           onUnpin={unpinMemo}
           onToggleNsfwVisibility={toggleNsfwVisibility}
-          reactionSelectorOpen={reactionSelectorOpen}
-          onReactionSelectorOpenChange={setReactionSelectorOpen}
         />
 
         <MemoBody
