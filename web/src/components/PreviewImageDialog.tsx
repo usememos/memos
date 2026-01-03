@@ -2,16 +2,19 @@ import { X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { getColorspace } from "@/utils/attachment";
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   imgUrls: string[];
   initialIndex?: number;
+  mimeType?: string; // MIME type for HDR detection
 }
 
-function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: Props) {
+function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0, mimeType }: Props) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const colorspace = mimeType ? getColorspace(mimeType) : undefined;
 
   // Update current index when initialIndex prop changes
   useEffect(() => {
@@ -80,6 +83,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
             draggable={false}
             loading="eager"
             decoding="async"
+            {...(colorspace && { colorSpace: colorspace as unknown as string })}
           />
         </div>
 

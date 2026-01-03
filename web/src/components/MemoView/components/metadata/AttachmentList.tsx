@@ -26,18 +26,19 @@ function separateMediaAndDocs(attachments: Attachment[]): { media: Attachment[];
 }
 
 const AttachmentList = ({ attachments }: AttachmentListProps) => {
-  const [previewImage, setPreviewImage] = useState<{ open: boolean; urls: string[]; index: number }>({
+  const [previewImage, setPreviewImage] = useState<{ open: boolean; urls: string[]; index: number; mimeType?: string }>({
     open: false,
     urls: [],
     index: 0,
+    mimeType: undefined,
   });
 
   const handleImageClick = (imgUrl: string, mediaAttachments: Attachment[]) => {
-    const imgUrls = mediaAttachments
-      .filter((attachment) => getAttachmentType(attachment) === "image/*")
-      .map((attachment) => getAttachmentUrl(attachment));
+    const imageAttachments = mediaAttachments.filter((attachment) => getAttachmentType(attachment) === "image/*");
+    const imgUrls = imageAttachments.map((attachment) => getAttachmentUrl(attachment));
     const index = imgUrls.findIndex((url) => url === imgUrl);
-    setPreviewImage({ open: true, urls: imgUrls, index });
+    const mimeType = imageAttachments[index]?.type;
+    setPreviewImage({ open: true, urls: imgUrls, index, mimeType });
   };
 
   const { media: mediaItems, docs: docItems } = separateMediaAndDocs(attachments);
@@ -77,6 +78,7 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
         onOpenChange={(open: boolean) => setPreviewImage((prev) => ({ ...prev, open }))}
         imgUrls={previewImage.urls}
         initialIndex={previewImage.index}
+        mimeType={previewImage.mimeType}
       />
     </>
   );

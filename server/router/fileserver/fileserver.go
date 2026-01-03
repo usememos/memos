@@ -36,6 +36,9 @@ const (
 var SupportedThumbnailMimeTypes = []string{
 	"image/png",
 	"image/jpeg",
+	"image/heic",
+	"image/heif",
+	"image/webp",
 }
 
 // FileServerService handles HTTP file serving with proper range request support.
@@ -143,6 +146,10 @@ func (s *FileServerService) serveAttachmentFile(c echo.Context) error {
 	// Defense-in-depth: prevent embedding in frames and restrict content loading
 	c.Response().Header().Set("X-Frame-Options", "DENY")
 	c.Response().Header().Set("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline';")
+	// Support HDR/wide color gamut display for capable browsers
+	if strings.HasPrefix(contentType, "image/") || strings.HasPrefix(contentType, "video/") {
+		c.Response().Header().Set("Color-Gamut", "srgb, p3, rec2020")
+	}
 
 	// Force download for non-media files to prevent XSS execution
 	if !strings.HasPrefix(contentType, "image/") &&
@@ -194,12 +201,15 @@ func (s *FileServerService) serveUserAvatar(c echo.Context) error {
 	}
 
 	// Validate avatar MIME type to prevent XSS
+	// Supports standard formats and HDR-capable formats
 	allowedAvatarTypes := map[string]bool{
 		"image/png":  true,
 		"image/jpeg": true,
 		"image/jpg":  true,
 		"image/gif":  true,
 		"image/webp": true,
+		"image/heic": true,
+		"image/heif": true,
 	}
 	if !allowedAvatarTypes[imageType] {
 		return echo.NewHTTPError(http.StatusBadRequest, "invalid avatar image type")
@@ -336,8 +346,16 @@ func (s *FileServerService) getCurrentUser(ctx context.Context, c echo.Context) 
 }
 
 // isImageType checks if the mime type is an image that supports thumbnails.
+// Supports standard formats (PNG, JPEG) and HDR-capable formats (HEIC, HEIF, WebP).
 func (*FileServerService) isImageType(mimeType string) bool {
-	return mimeType == "image/png" || mimeType == "image/jpeg"
+	supportedTypes := map[string]bool{
+		"image/png":  true,
+		"image/jpeg": true,
+		"image/heic": true,
+		"image/heif": true,
+		"image/webp": true,
+	}
+	return supportedTypes[mimeType]
 }
 
 // getAttachmentReader returns a reader for the attachment content.
