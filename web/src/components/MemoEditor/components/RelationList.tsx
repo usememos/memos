@@ -2,12 +2,10 @@ import { create } from "@bufbuild/protobuf";
 import { LinkIcon, XIcon } from "lucide-react";
 import type { FC } from "react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import RelationCard from "@/components/MemoView/components/metadata/RelationCard";
 import { memoServiceClient } from "@/connect";
-import { extractMemoIdFromName } from "@/helpers/resource-names";
-import { cn } from "@/lib/utils";
-import type { Memo, MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
-import { MemoRelation_MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
+import { MemoRelation_Memo, MemoRelation_MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
 interface RelationListProps {
   relations: MemoRelation[];
@@ -20,65 +18,44 @@ const RelationItemCard: FC<{
   onRemove?: () => void;
   parentPage?: string;
 }> = ({ memo, onRemove, parentPage }) => {
-  const memoId = extractMemoIdFromName(memo!.name);
-
-  if (onRemove) {
-    return (
-      <div
-        className={cn(
-          "relative flex items-center gap-1.5 px-1.5 py-1 rounded border border-transparent hover:border-border hover:bg-accent/20 transition-all",
-        )}
-      >
-        <LinkIcon className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
-        <span className="text-xs font-medium truncate flex-1" title={memo!.snippet}>
-          {memo!.snippet}
-        </span>
-
-        <div className="flex-shrink-0 flex items-center gap-0.5">
-          <button
-            type="button"
-            onClick={onRemove}
-            className="p-0.5 rounded hover:bg-destructive/10 active:bg-destructive/10 transition-colors touch-manipulation"
-            title="Remove"
-            aria-label="Remove relation"
-          >
-            <XIcon className="w-3 h-3 text-muted-foreground hover:text-destructive" />
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <Link
-      className={cn(
-        "relative flex items-center gap-1.5 px-1.5 py-1 rounded border border-transparent hover:border-border hover:bg-accent/20 transition-all",
+    <div className="group relative flex items-center justify-between w-full rounded hover:bg-accent/20 transition-colors">
+      <RelationCard memo={memo!} parentPage={parentPage} className="flex-1 hover:bg-transparent" />
+
+      {onRemove && (
+        <button
+          type="button"
+          onClick={onRemove}
+          className="p-1 mr-0.5 rounded opacity-0 group-hover:opacity-100 hover:bg-destructive/10 active:bg-destructive/10 transition-all touch-manipulation"
+          title="Remove"
+          aria-label="Remove relation"
+        >
+          <XIcon className="w-3 h-3 text-muted-foreground hover:text-destructive" />
+        </button>
       )}
-      to={`/${memo!.name}`}
-      viewTransition
-      state={{ from: parentPage }}
-    >
-      <span className="text-[10px] font-mono px-1 py-0.5 rounded bg-muted/50 text-muted-foreground shrink-0">{memoId.slice(0, 6)}</span>
-      <span className="text-xs truncate flex-1" title={memo!.snippet}>
-        {memo!.snippet}
-      </span>
-    </Link>
+    </div>
   );
 };
 
 const RelationList: FC<RelationListProps> = ({ relations, onRelationsChange, parentPage }) => {
-  const [referencingMemos, setReferencingMemos] = useState<Memo[]>([]);
+  const [fetchedMemos, setFetchedMemos] = useState<Record<string, MemoRelation_Memo>>({});
 
   useEffect(() => {
     (async () => {
-      if (relations.length > 0) {
-        const requests = relations.map(async (relation) => {
-          return await memoServiceClient.getMemo({ name: relation.relatedMemo!.name });
+      const missingSnippetRelations = relations.filter((relation) => !relation.relatedMemo?.snippet && relation.relatedMemo?.name);
+      if (missingSnippetRelations.length > 0) {
+        const requests = missingSnippetRelations.map(async (relation) => {
+          const memo = await memoServiceClient.getMemo({ name: relation.relatedMemo!.name });
+          return create(MemoRelation_MemoSchema, { name: memo.name, snippet: memo.snippet });
         });
         const list = await Promise.all(requests);
-        setReferencingMemos(list);
-      } else {
-        setReferencingMemos([]);
+        setFetchedMemos((prev) => {
+          const next = { ...prev };
+          for (const memo of list) {
+            next[memo.name] = memo;
+          }
+          return next;
+        });
       }
     })();
   }, [relations]);
@@ -89,7 +66,7 @@ const RelationList: FC<RelationListProps> = ({ relations, onRelationsChange, par
     }
   };
 
-  if (referencingMemos.length === 0) {
+  if (relations.length === 0) {
     return null;
   }
 
@@ -97,18 +74,15 @@ const RelationList: FC<RelationListProps> = ({ relations, onRelationsChange, par
     <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
       <div className="flex items-center gap-1.5 px-2 py-1.5 border-b border-border bg-muted/30">
         <LinkIcon className="w-3.5 h-3.5 text-muted-foreground" />
-        <span className="text-xs font-medium text-muted-foreground">Relations ({referencingMemos.length})</span>
+        <span className="text-xs font-medium text-muted-foreground">Relations ({relations.length})</span>
       </div>
 
       <div className="p-1 sm:p-1.5 flex flex-col gap-0.5">
-        {referencingMemos.map((memo) => (
-          <RelationItemCard
-            key={memo.name}
-            memo={create(MemoRelation_MemoSchema, { name: memo.name, snippet: memo.snippet })}
-            onRemove={() => handleDeleteRelation(memo.name)}
-            parentPage={parentPage}
-          />
-        ))}
+        {relations.map((relation) => {
+          const relatedMemo = relation.relatedMemo!;
+          const memo = relatedMemo.snippet ? relatedMemo : fetchedMemos[relatedMemo.name] || relatedMemo;
+          return <RelationItemCard key={memo.name} memo={memo} onRemove={() => handleDeleteRelation(memo.name)} parentPage={parentPage} />;
+        })}
       </div>
     </div>
   );

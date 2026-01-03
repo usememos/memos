@@ -30,9 +30,9 @@ const SectionHeader = ({ icon: Icon, title, count, tabs }: SectionHeaderProps) =
                   tab.active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
                 )}
               >
-                {tab.label}({tab.count})
+                {tab.label} ({tab.count})
               </button>
-              {idx < tabs.length - 1 && <span className="text-muted-foreground/50">/</span>}
+              {idx < tabs.length - 1 && <span className="text-muted-foreground/40 font-mono text-xs">/</span>}
             </div>
           ))}
         </div>
