@@ -75,7 +75,7 @@ const SSOSection = () => {
       title={
         <div className="flex items-center gap-2">
           <span>{t("setting.sso-section.sso-list")}</span>
-          <LearnMore url="https://www.usememos.com/docs/configuration/authentication" />
+          <LearnMore url="https://usememos.com/docs/configuration/authentication" />
         </div>
       }
       actions={
