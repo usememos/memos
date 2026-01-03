@@ -1,21 +1,22 @@
 import { cn } from "@/lib/utils";
-import type { AttachmentItem } from "./types";
+import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 
 interface AttachmentCardProps {
-  item: AttachmentItem;
-  mode: "view";
+  attachment: Attachment;
   onClick?: () => void;
   className?: string;
 }
 
-const AttachmentCard = ({ item, onClick, className }: AttachmentCardProps) => {
-  const { category, filename, sourceUrl } = item;
+const AttachmentCard = ({ attachment, onClick, className }: AttachmentCardProps) => {
+  const attachmentType = getAttachmentType(attachment);
+  const sourceUrl = getAttachmentUrl(attachment);
 
-  if (category === "image") {
+  if (attachmentType === "image/*") {
     return (
       <img
         src={sourceUrl}
-        alt={filename}
+        alt={attachment.filename}
         className={cn("w-full h-full object-cover rounded-lg cursor-pointer", className)}
         onClick={onClick}
         loading="lazy"
@@ -23,7 +24,7 @@ const AttachmentCard = ({ item, onClick, className }: AttachmentCardProps) => {
     );
   }
 
-  if (category === "video") {
+  if (attachmentType === "video/*") {
     return <video src={sourceUrl} className={cn("w-full h-full object-cover rounded-lg", className)} controls preload="metadata" />;
   }
 

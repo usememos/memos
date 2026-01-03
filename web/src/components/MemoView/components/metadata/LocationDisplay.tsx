@@ -4,7 +4,7 @@ import { useState } from "react";
 import { LocationPicker } from "@/components/map";
 import { cn } from "@/lib/utils";
 import type { Location } from "@/types/proto/api/v1/memo_service_pb";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../ui/popover";
 
 interface LocationDisplayProps {
   location?: Location;

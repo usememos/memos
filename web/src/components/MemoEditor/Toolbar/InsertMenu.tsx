@@ -4,7 +4,6 @@ import { FileIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MoreHorizont
 import { useEffect, useState } from "react";
 import { useDebounce } from "react-use";
 import { useReverseGeocoding } from "@/components/map";
-import type { LocalFile } from "@/components/memo-metadata";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -22,6 +21,7 @@ import { LinkMemoDialog, LocationDialog } from "../components";
 import { useFileUpload, useLinkMemo, useLocation } from "../hooks";
 import { useEditorContext } from "../state";
 import type { InsertMenuProps } from "../types";
+import type { LocalFile } from "../types/attachment";
 
 const InsertMenu = (props: InsertMenuProps) => {
   const t = useTranslate();

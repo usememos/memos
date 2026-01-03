@@ -1,13 +1,28 @@
 import { useState } from "react";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
-import MemoAttachment from "../MemoAttachment";
-import PreviewImageDialog from "../PreviewImageDialog";
+import MemoAttachment from "../../../MemoAttachment";
+import PreviewImageDialog from "../../../PreviewImageDialog";
 import AttachmentCard from "./AttachmentCard";
-import { separateMediaAndDocs, toAttachmentItems } from "./types";
 
 interface AttachmentListProps {
   attachments: Attachment[];
+}
+
+function separateMediaAndDocs(attachments: Attachment[]): { media: Attachment[]; docs: Attachment[] } {
+  const media: Attachment[] = [];
+  const docs: Attachment[] = [];
+
+  for (const attachment of attachments) {
+    const attachmentType = getAttachmentType(attachment);
+    if (attachmentType === "image/*" || attachmentType === "video/*") {
+      media.push(attachment);
+    } else {
+      docs.push(attachment);
+    }
+  }
+
+  return { media, docs };
 }
 
 const AttachmentList = ({ attachments }: AttachmentListProps) => {
@@ -25,8 +40,7 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
     setPreviewImage({ open: true, urls: imgUrls, index });
   };
 
-  const items = toAttachmentItems(attachments, []);
-  const { media: mediaItems, docs: docItems } = separateMediaAndDocs(items);
+  const { media: mediaItems, docs: docItems } = separateMediaAndDocs(attachments);
 
   if (attachments.length === 0) {
     return null;
@@ -36,13 +50,12 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
     <>
       {mediaItems.length > 0 && (
         <div className="w-full flex flex-row justify-start overflow-auto gap-2">
-          {mediaItems.map((item) => (
-            <div key={item.id} className="max-w-[60%] w-fit flex flex-col justify-start items-start shrink-0">
+          {mediaItems.map((attachment) => (
+            <div key={attachment.name} className="max-w-[60%] w-fit flex flex-col justify-start items-start shrink-0">
               <AttachmentCard
-                item={item}
-                mode="view"
+                attachment={attachment}
                 onClick={() => {
-                  handleImageClick(item.sourceUrl, attachments);
+                  handleImageClick(getAttachmentUrl(attachment), mediaItems);
                 }}
                 className="max-h-64 grow"
               />
@@ -53,16 +66,15 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
 
       {docItems.length > 0 && (
         <div className="w-full flex flex-row justify-start overflow-auto gap-2">
-          {docItems.map((item) => {
-            const attachment = attachments.find((a) => a.name === item.id);
-            return attachment ? <MemoAttachment key={item.id} attachment={attachment} /> : null;
-          })}
+          {docItems.map((attachment) => (
+            <MemoAttachment key={attachment.name} attachment={attachment} />
+          ))}
         </div>
       )}
 
       <PreviewImageDialog
         open={previewImage.open}
-        onOpenChange={(open) => setPreviewImage((prev) => ({ ...prev, open }))}
+        onOpenChange={(open: boolean) => setPreviewImage((prev) => ({ ...prev, open }))}
         imgUrls={previewImage.urls}
         initialIndex={previewImage.index}
       />

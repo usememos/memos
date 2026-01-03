@@ -1,16 +1,9 @@
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentThumbnailUrl, getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 
-export type DisplayMode = "edit" | "view";
-
-export interface BaseMetadataProps {
-  mode: DisplayMode;
-  className?: string;
-}
-
 export type FileCategory = "image" | "video" | "document";
 
-// Pure view model for rendering attachments and local files
+// Unified view model for rendering attachments and local files
 export interface AttachmentItem {
   readonly id: string;
   readonly filename: string;
@@ -20,6 +13,12 @@ export interface AttachmentItem {
   readonly sourceUrl: string;
   readonly size?: number;
   readonly isLocal: boolean;
+}
+
+// For MemoEditor: local files being uploaded
+export interface LocalFile {
+  readonly file: File;
+  readonly previewUrl: string;
 }
 
 function categorizeFile(mimeType: string): FileCategory {
@@ -46,7 +45,7 @@ export function attachmentToItem(attachment: Attachment): AttachmentItem {
 
 export function fileToItem(file: File, blobUrl: string): AttachmentItem {
   return {
-    id: blobUrl, // Use blob URL as unique ID since we don't have a server ID yet
+    id: blobUrl,
     filename: file.name,
     category: categorizeFile(file.type),
     mimeType: file.type,
@@ -55,11 +54,6 @@ export function fileToItem(file: File, blobUrl: string): AttachmentItem {
     size: file.size,
     isLocal: true,
   };
-}
-
-export interface LocalFile {
-  readonly file: File;
-  readonly previewUrl: string;
 }
 
 export function toAttachmentItems(attachments: Attachment[], localFiles: LocalFile[] = []): AttachmentItem[] {

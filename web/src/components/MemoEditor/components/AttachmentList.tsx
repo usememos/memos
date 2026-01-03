@@ -1,10 +1,10 @@
 import { ChevronDownIcon, ChevronUpIcon, FileIcon, Loader2Icon, PaperclipIcon, XIcon } from "lucide-react";
 import type { FC } from "react";
-import type { LocalFile } from "@/components/memo-metadata/types";
-import { toAttachmentItems } from "@/components/memo-metadata/types";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
+import type { LocalFile } from "../types/attachment";
+import { toAttachmentItems } from "../types/attachment";
 
 interface AttachmentListProps {
   attachments: Attachment[];

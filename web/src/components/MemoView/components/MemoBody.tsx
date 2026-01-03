@@ -3,9 +3,9 @@ import { MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import MemoContent from "../../MemoContent";
 import { MemoReactionListView } from "../../MemoReactionListView";
-import { AttachmentList, LocationDisplay, RelationList } from "../../memo-metadata";
 import { useMemoViewContext } from "../MemoViewContext";
 import type { MemoBodyProps } from "../types";
+import { AttachmentList, LocationDisplay, RelationList } from "./metadata";
 
 const MemoBody: React.FC<MemoBodyProps> = ({ compact, onContentClick, onContentDoubleClick, onToggleNsfwVisibility }) => {
   const t = useTranslate();

@@ -1,8 +1,8 @@
 import { create } from "@bufbuild/protobuf";
-import type { LocalFile } from "@/components/memo-metadata";
 import { attachmentServiceClient } from "@/connect";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import type { LocalFile } from "../types/attachment";
 
 export const uploadService = {
   async uploadFiles(localFiles: LocalFile[]): Promise<Attachment[]> {

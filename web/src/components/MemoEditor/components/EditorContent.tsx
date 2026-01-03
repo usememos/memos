@@ -1,9 +1,9 @@
 import { forwardRef } from "react";
-import type { LocalFile } from "@/components/memo-metadata";
 import Editor, { type EditorRefActions } from "../Editor";
 import { useBlobUrls, useDragAndDrop } from "../hooks";
 import { useEditorContext } from "../state";
 import type { EditorContentProps } from "../types";
+import type { LocalFile } from "../types/attachment";
 
 export const EditorContent = forwardRef<EditorRefActions, EditorContentProps>(({ placeholder }, ref) => {
   const { state, actions, dispatch } = useEditorContext();
