@@ -563,6 +563,7 @@ type StorageS3Config struct {
 	Region          string                 `protobuf:"bytes,4,opt,name=region,proto3" json:"region,omitempty"`
 	Bucket          string                 `protobuf:"bytes,5,opt,name=bucket,proto3" json:"bucket,omitempty"`
 	UsePathStyle    bool                   `protobuf:"varint,6,opt,name=use_path_style,json=usePathStyle,proto3" json:"use_path_style,omitempty"`
+	CustomDomain    string                 `protobuf:"bytes,7,opt,name=custom_domain,json=customDomain,proto3" json:"custom_domain,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -637,6 +638,13 @@ func (x *StorageS3Config) GetUsePathStyle() bool {
 		return x.UsePathStyle
 	}
 	return false
+}
+
+func (x *StorageS3Config) GetCustomDomain() string {
+	if x != nil {
+		return x.CustomDomain
+	}
+	return ""
 }
 
 type InstanceMemoRelatedSetting struct {
@@ -758,14 +766,15 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\t\n" +
 	"\x05LOCAL\x10\x02\x12\x06\n" +
-	"\x02S3\x10\x03\"\xd3\x01\n" +
+	"\x02S3\x10\x03\"\xf8\x01\n" +
 	"\x0fStorageS3Config\x12\"\n" +
 	"\raccess_key_id\x18\x01 \x01(\tR\vaccessKeyId\x12*\n" +
 	"\x11access_key_secret\x18\x02 \x01(\tR\x0faccessKeySecret\x12\x1a\n" +
 	"\bendpoint\x18\x03 \x01(\tR\bendpoint\x12\x16\n" +
 	"\x06region\x18\x04 \x01(\tR\x06region\x12\x16\n" +
 	"\x06bucket\x18\x05 \x01(\tR\x06bucket\x12$\n" +
-	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\"\x9c\x02\n" +
+	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\x12#\n" +
+	"\rcustom_domain\x18\a \x01(\tR\fcustomDomain\"\x9c\x02\n" +
 	"\x1aInstanceMemoRelatedSetting\x12<\n" +
 	"\x1adisallow_public_visibility\x18\x01 \x01(\bR\x18disallowPublicVisibility\x127\n" +
 	"\x18display_with_update_time\x18\x02 \x01(\bR\x15displayWithUpdateTime\x120\n" +

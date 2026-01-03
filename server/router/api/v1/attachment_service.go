@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -344,12 +345,24 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 		if err != nil {
 			return errors.Wrap(err, "Failed to upload via s3 client")
 		}
-		presignURL, err := s3Client.PresignGetObject(ctx, key)
-		if err != nil {
-			return errors.Wrap(err, "Failed to presign via s3 client")
+		var referenceURL string
+		if s3Config.CustomDomain != "" {
+			domain := s3Config.CustomDomain
+			if !strings.HasPrefix(domain, "http://") && !strings.HasPrefix(domain, "https://") {
+				domain = "https://" + domain
+			}
+			referenceURL, err = url.JoinPath(domain, key)
+			if err != nil {
+				return errors.Wrap(err, "Failed to join custom domain path")
+			}
+		} else {
+			referenceURL, err = s3Client.PresignGetObject(ctx, key)
+			if err != nil {
+				return errors.Wrap(err, "Failed to presign via s3 client")
+			}
 		}
 
-		create.Reference = presignURL
+		create.Reference = referenceURL
 		create.Blob = nil
 		create.StorageType = storepb.AttachmentStorageType_S3
 		create.Payload = &storepb.AttachmentPayload{

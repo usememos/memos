@@ -795,6 +795,7 @@ type InstanceSetting_StorageSetting_S3Config struct {
 	Region          string                 `protobuf:"bytes,4,opt,name=region,proto3" json:"region,omitempty"`
 	Bucket          string                 `protobuf:"bytes,5,opt,name=bucket,proto3" json:"bucket,omitempty"`
 	UsePathStyle    bool                   `protobuf:"varint,6,opt,name=use_path_style,json=usePathStyle,proto3" json:"use_path_style,omitempty"`
+	CustomDomain    string                 `protobuf:"bytes,7,opt,name=custom_domain,json=customDomain,proto3" json:"custom_domain,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -871,6 +872,13 @@ func (x *InstanceSetting_StorageSetting_S3Config) GetUsePathStyle() bool {
 	return false
 }
 
+func (x *InstanceSetting_StorageSetting_S3Config) GetCustomDomain() string {
+	if x != nil {
+		return x.CustomDomain
+	}
+	return ""
+}
+
 var File_api_v1_instance_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_instance_service_proto_rawDesc = "" +
@@ -881,7 +889,7 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04mode\x18\x03 \x01(\tR\x04mode\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\x99\x0f\n" +
+	"\x19GetInstanceProfileRequest\"\xbe\x0f\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2,.memos.api.v1.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12W\n" +
@@ -899,19 +907,20 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\rCustomProfile\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +
-	"\blogo_url\x18\x03 \x01(\tR\alogoUrl\x1a\xbc\x04\n" +
+	"\blogo_url\x18\x03 \x01(\tR\alogoUrl\x1a\xe1\x04\n" +
 	"\x0eStorageSetting\x12[\n" +
 	"\fstorage_type\x18\x01 \x01(\x0e28.memos.api.v1.InstanceSetting.StorageSetting.StorageTypeR\vstorageType\x12+\n" +
 	"\x11filepath_template\x18\x02 \x01(\tR\x10filepathTemplate\x12/\n" +
 	"\x14upload_size_limit_mb\x18\x03 \x01(\x03R\x11uploadSizeLimitMb\x12R\n" +
-	"\ts3_config\x18\x04 \x01(\v25.memos.api.v1.InstanceSetting.StorageSetting.S3ConfigR\bs3Config\x1a\xcc\x01\n" +
+	"\ts3_config\x18\x04 \x01(\v25.memos.api.v1.InstanceSetting.StorageSetting.S3ConfigR\bs3Config\x1a\xf1\x01\n" +
 	"\bS3Config\x12\"\n" +
 	"\raccess_key_id\x18\x01 \x01(\tR\vaccessKeyId\x12*\n" +
 	"\x11access_key_secret\x18\x02 \x01(\tR\x0faccessKeySecret\x12\x1a\n" +
 	"\bendpoint\x18\x03 \x01(\tR\bendpoint\x12\x16\n" +
 	"\x06region\x18\x04 \x01(\tR\x06region\x12\x16\n" +
 	"\x06bucket\x18\x05 \x01(\tR\x06bucket\x12$\n" +
-	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\"L\n" +
+	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\x12#\n" +
+	"\rcustom_domain\x18\a \x01(\tR\fcustomDomain\"L\n" +
 	"\vStorageType\x12\x1c\n" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\t\n" +

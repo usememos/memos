@@ -84,6 +84,7 @@ const StorageSection = () => {
       region: existingS3Config?.region ?? "",
       bucket: existingS3Config?.bucket ?? "",
       usePathStyle: existingS3Config?.usePathStyle ?? false,
+      customDomain: existingS3Config?.customDomain ?? "",
       ...s3Config,
     };
     const update = create(InstanceSetting_StorageSettingSchema, {
@@ -113,6 +114,10 @@ const StorageSection = () => {
 
   const handleS3ConfigBucketChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
     handlePartialS3ConfigChanged({ bucket: event.target.value });
+  };
+
+  const handleS3ConfigCustomDomainChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
+    handlePartialS3ConfigChanged({ customDomain: event.target.value });
   };
 
   const handleS3ConfigUsePathStyleChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -220,6 +225,10 @@ const StorageSection = () => {
 
           <SettingRow label="Bucket">
             <Input className="w-64" value={instanceStorageSetting.s3Config?.bucket} onChange={handleS3ConfigBucketChanged} />
+          </SettingRow>
+
+          <SettingRow label="Custom Domain">
+            <Input className="w-64" value={instanceStorageSetting.s3Config?.customDomain} onChange={handleS3ConfigCustomDomainChanged} />
           </SettingRow>
 
           <SettingRow label="Use Path Style">
