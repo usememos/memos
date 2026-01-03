@@ -169,6 +169,7 @@ func printGreetings(profile *profile.Profile) {
 }
 
 func main() {
+	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelDebug})))
 	if err := rootCmd.Execute(); err != nil {
 		panic(err)
 	}

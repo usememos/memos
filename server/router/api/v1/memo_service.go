@@ -45,15 +45,19 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		Content:    request.Memo.Content,
 		Visibility: convertVisibilityToStore(request.Memo.Visibility),
 	}
+	slog.Debug("CreateMemo: request.Memo.CreateTime", "value", request.Memo.CreateTime)
 	if request.Memo.CreateTime != nil {
 		create.CreatedTs = request.Memo.CreateTime.AsTime().Unix()
 	}
+	slog.Debug("CreateMemo: request.Memo.UpdateTime", "value", request.Memo.UpdateTime)
 	// If UpdateTime is provided, use it. Otherwise, if CreateTime is provided, use it for UpdatedTs as well.
 	if request.Memo.UpdateTime != nil {
 		create.UpdatedTs = request.Memo.UpdateTime.AsTime().Unix()
 	} else if request.Memo.CreateTime != nil {
 		create.UpdatedTs = request.Memo.CreateTime.AsTime().Unix()
 	}
+	slog.Debug("CreateMemo: store.Memo timestamps before calling s.Store.CreateMemo",
+		"createdTs", create.CreatedTs, "updatedTs", create.UpdatedTs)
 	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get instance memo related setting")

@@ -7,7 +7,7 @@ web/dist
 # Build artifacts
 build/
 bin/
-memos
+
 
 # Plan/design documents
 docs/plans/
