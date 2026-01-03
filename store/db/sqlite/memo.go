@@ -16,6 +16,15 @@ import (
 func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, error) {
 	fields := []string{"`uid`", "`creator_id`", "`content`", "`visibility`", "`payload`"}
 	placeholder := []string{"?", "?", "?", "?", "?"}
+	if create.CreatedTs != 0 {
+		fields = append(fields, "`created_ts`")
+		placeholder = append(placeholder, "?")
+	}
+	if create.UpdatedTs != 0 {
+		fields = append(fields, "`updated_ts`")
+		placeholder = append(placeholder, "?")
+	}
+
 	payload := "{}"
 	if create.Payload != nil {
 		payloadBytes, err := protojson.Marshal(create.Payload)
@@ -25,12 +34,16 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 		payload = string(payloadBytes)
 	}
 	args := []any{create.UID, create.CreatorID, create.Content, create.Visibility, payload}
+	if create.CreatedTs != 0 {
+		args = append(args, create.CreatedTs)
+	}
+	if create.UpdatedTs != 0 {
+		args = append(args, create.UpdatedTs)
+	}
 
-	stmt := "INSERT INTO `memo` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING `id`, `created_ts`, `updated_ts`, `row_status`"
+	stmt := "INSERT INTO `memo` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING `id`, `row_status`"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
 		&create.ID,
-		&create.CreatedTs,
-		&create.UpdatedTs,
 		&create.RowStatus,
 	); err != nil {
 		return nil, err
