@@ -19,6 +19,11 @@ export const editorActions = {
     payload: metadata,
   }),
 
+  setTimestamps: (timestamps: Partial<EditorState["timestamps"]>): EditorAction => ({
+    type: "SET_TIMESTAMPS",
+    payload: timestamps,
+  }),
+
   addAttachment: (attachment: Attachment): EditorAction => ({
     type: "ADD_ATTACHMENT",
     payload: attachment,
