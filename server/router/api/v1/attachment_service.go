@@ -260,6 +260,12 @@ func (s *APIV1Service) DeleteAttachment(ctx context.Context, request *v1pb.Delet
 	if attachment == nil {
 		return nil, status.Errorf(codes.NotFound, "attachment not found")
 	}
+
+	// Delete the attachment blob before deleting the database record.
+	if err := s.deleteAttachmentBlob(ctx, attachment); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to delete attachment blob: %v", err)
+	}
+
 	// Delete the attachment from the database.
 	if err := s.Store.DeleteAttachment(ctx, &store.DeleteAttachment{
 		ID: attachment.ID,
@@ -417,6 +423,65 @@ func (s *APIV1Service) GetAttachmentBlob(attachment *store.Attachment) ([]byte, 
 	}
 	// For database storage, return the blob from the database.
 	return attachment.Blob, nil
+}
+
+func (s *APIV1Service) deleteAttachmentBlob(ctx context.Context, attachment *store.Attachment) error {
+	// For local storage, delete the file from the local disk.
+	if attachment.StorageType == storepb.AttachmentStorageType_LOCAL {
+		attachmentPath := filepath.FromSlash(attachment.Reference)
+		if !filepath.IsAbs(attachmentPath) {
+			attachmentPath = filepath.Join(s.Profile.Data, attachmentPath)
+		}
+
+		if err := os.Remove(attachmentPath); err != nil {
+			// Ignore if file doesn't exist
+			if !os.IsNotExist(err) {
+				return errors.Wrap(err, "failed to delete local file")
+			}
+		}
+
+		// Also try to delete the thumbnail if it exists
+		thumbnailPath := filepath.Join(filepath.Dir(attachmentPath), ThumbnailCacheFolder, filepath.Base(attachmentPath))
+		if err := os.Remove(thumbnailPath); err != nil {
+			// Ignore errors for thumbnail deletion
+			if !os.IsNotExist(err) {
+				// Log but don't fail the operation
+			}
+		}
+
+		return nil
+	}
+
+	// For S3 storage, delete the file from S3.
+	if attachment.StorageType == storepb.AttachmentStorageType_S3 {
+		if attachment.Payload == nil {
+			return errors.New("attachment payload is missing")
+		}
+		s3Object := attachment.Payload.GetS3Object()
+		if s3Object == nil {
+			return errors.New("S3 object payload is missing")
+		}
+		if s3Object.S3Config == nil {
+			return errors.New("S3 config is missing")
+		}
+		if s3Object.Key == "" {
+			return errors.New("S3 object key is missing")
+		}
+
+		s3Client, err := s3.NewClient(ctx, s3Object.S3Config)
+		if err != nil {
+			return errors.Wrap(err, "failed to create S3 client")
+		}
+
+		if err := s3Client.DeleteObject(ctx, s3Object.Key); err != nil {
+			return errors.Wrap(err, "failed to delete object from S3")
+		}
+
+		return nil
+	}
+
+	// For database storage, no blob to delete (it's in the DB record itself)
+	return nil
 }
 
 var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)

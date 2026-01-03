@@ -158,6 +158,7 @@ const Attachments = () => {
     try {
       await Promise.all(unusedAttachments.map((attachment) => deleteAttachment(attachment.name)));
       toast.success(t("resource.delete-all-unused-success"));
+      deleteUnusedAttachmentsDialog.setOpen(false);
     } catch (error) {
       handleError(error, toast.error, {
         context: "Failed to delete unused attachments",
@@ -166,7 +167,7 @@ const Attachments = () => {
     } finally {
       await handleRefetch();
     }
-  }, [unusedAttachments, t, handleRefetch, deleteAttachment]);
+  }, [unusedAttachments, t, handleRefetch, deleteAttachment, deleteUnusedAttachmentsDialog]);
 
   // Handle search input change
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
