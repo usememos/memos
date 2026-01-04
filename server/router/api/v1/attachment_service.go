@@ -341,10 +341,11 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 			filepathTemplate = filepath.Join(filepathTemplate, "{filename}")
 		}
 		filepathTemplate = replaceFilenameWithPathTemplate(filepathTemplate, create.Filename)
-		key, err := s3Client.UploadObject(ctx, filepathTemplate, create.Type, bytes.NewReader(create.Blob))
+		_, err = s3Client.UploadObject(ctx, filepathTemplate, create.Type, bytes.NewReader(create.Blob))
 		if err != nil {
 			return errors.Wrap(err, "Failed to upload via s3 client")
 		}
+		key := filepathTemplate
 		var referenceURL string
 		if s3Config.CustomDomain != "" {
 			domain := s3Config.CustomDomain
