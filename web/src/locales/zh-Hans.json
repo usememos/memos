@@ -1,7 +1,7 @@
 {
   "about": {
     "blogs": "博客",
-    "description": "Memos 是一个隐私优先、轻量级的笔记解决方案，可以轻松捕捉和分享你的想法。",
+    "description": "Memos 是一个隐私优先、轻量级的笔记解决方案，可以轻松捕捉和分享您的想法。",
     "documents": "文档",
     "github-repository": "GitHub 仓库",
     "official-website": "官网"
@@ -26,13 +26,14 @@
     "avatar": "头像",
     "basic": "基础",
     "beta": "测试",
+    "calendar": "日历",
     "cancel": "取消",
     "change": "修改",
     "clear": "清除",
     "close": "关闭",
-    "copy": "复制",
     "collapse": "收起",
     "confirm": "确定",
+    "copy": "复制",
     "create": "创建",
     "created-at": "创建时间",
     "database": "数据库",
@@ -56,6 +57,7 @@
     "layout": "布局",
     "learn-more": "了解更多",
     "link": "链接",
+    "map": "地图",
     "mark": "引用",
     "memo": "备忘录",
     "memos": "备忘录",
@@ -93,6 +95,7 @@
     "statistics": "统计",
     "tags": "标签",
     "title": "标题",
+    "today": "今天",
     "tree-mode": "树模式",
     "type": "类型",
     "unpin": "取消置顶",
@@ -102,7 +105,8 @@
     "username": "用户名",
     "version": "版本",
     "visibility": "可见性",
-    "yourself": "您自己"
+    "yourself": "您自己",
+    "more": "更多"
   },
   "days": {
     "fri": "五",
@@ -117,7 +121,10 @@
     "add-your-comment-here": "请输入您的评论...",
     "any-thoughts": "此刻的想法...",
     "save": "保存",
-    "no-changes-detected": "未检测到更改"
+    "no-changes-detected": "未检测到更改",
+    "focus-mode": "聚焦模式",
+    "exit-focus-mode": "退出聚焦模式",
+    "slash-commands": "按下 `/` 输入命令"
   },
   "filters": {
     "has-code": "有代码",
@@ -126,8 +133,10 @@
   },
   "inbox": {
     "memo-comment": "{{user}} 评论了您的“{{memo}}”。",
-    "version-update": "新版本 {{version}} 现已推出！",
-    "failed-to-load": "加载失败"
+    "failed-to-load": "加载失败",
+    "unread": "未读",
+    "no-unread": "无未读通知",
+    "no-archived": "无已归档通知"
   },
   "markdown": {
     "checkbox": "复选框",
@@ -146,7 +155,8 @@
     "copy-link": "复制链接",
     "copy-content": "复制内容",
     "count-memos-in-date": "{{date}} 有 {{count}} 条备忘录",
-    "delete-confirm": "您确定要删除此条备忘录吗？（此操作不可逆）",
+    "delete-confirm": "您确定要删除此条备忘录吗？",
+    "delete-confirm-description": "此操作是不可逆的，附件、链接和引用也会被删除。",
     "direction": "排序方式",
     "direction-asc": "正序",
     "direction-desc": "倒序",
@@ -190,6 +200,7 @@
     "password-not-match": "密码不一致。",
     "remove-completed-task-list-items-successfully": "移除成功！",
     "restored-successfully": "恢复成功",
+    "succeed-copy-content": "复制内容到剪贴板成功。",
     "succeed-copy-link": "复制链接到剪贴板成功。",
     "update-succeed": "更新成功",
     "user-not-found": "未找到该用户"
@@ -222,6 +233,10 @@
     },
     "delete-resource": "删除资源",
     "delete-selected-resources": "删除选中资源",
+    "delete-all-unused": "删除所有未使用资源",
+    "delete-all-unused-confirm": "您确定要删除所有未使用资源吗？（此操作不可逆）",
+    "delete-all-unused-success": "删除资源成功",
+    "delete-all-unused-error": "删除未使用的资源失败",
     "fetching-data": "正在获取数据...",
     "file-drag-drop-prompt": "将您的文件拖放到此处以上传文件",
     "linked-amount": "链接的备忘录数量",
@@ -231,7 +246,7 @@
     "reset-link": "重置链接",
     "reset-link-prompt": "您确定要重置链接吗？这将导致当前使用的链接失效。（此操作不可逆）",
     "reset-resource-link": "重置资源链接",
-    "unused-resources": "未使用到的资源"
+    "unused-resources": "未使用资源"
   },
   "router": {
     "back-to-top": "回到顶部",
@@ -240,8 +255,11 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "访问令牌已复制到剪贴板",
-      "access-token-deletion": "你确定要删除访问令牌{{accessToken}}吗？此操作不可逆。",
+      "access-token-deletion": "您确定要删除访问令牌 {{accessToken}} 吗？",
+      "access-token-deletion-description": "此操作是不可逆的。您需要将所有正在使用该令牌的服务更新为新的访问令牌。",
+      "access-token-deleted": "访问令牌 `{{description}}` 已删除",
       "create-dialog": {
+        "access-token-created": "访问令牌 `{{description}}` 已创建",
         "create-access-token": "创建令牌",
         "created-at": "创建时间",
         "description": "描述",
@@ -275,9 +293,14 @@
       "admin": "管理员",
       "archive-member": "归档成员",
       "archive-warning": "您确定要归档 {{username}} 吗？",
+      "archive-warning-description": "归档会禁用用户。您可以稍后恢复或删除它。",
+      "archive-success": "{{username}} 归档成功",
+      "restore-success": "{{username}} 恢复成功",
       "create-a-member": "创建成员",
       "delete-member": "删除成员",
-      "delete-warning": "您确定要删除 {{username}} 吗？（此操作不可逆）",
+      "delete-warning": "您确定要删除 {{username}} 吗？",
+      "delete-warning-description": "此操作不可逆",
+      "delete-success": "{{username}} 删除成功",
       "user": "普通用户"
     },
     "memo-related": "备忘录",
@@ -296,6 +319,10 @@
       "default-memo-visibility": "默认备忘录可见性",
       "theme": "主题"
     },
+    "shortcut": {
+      "delete-confirm": "您确定要删除捷径 `{{title}}` 吗？",
+      "delete-success": "捷径 `{{title}}` 删除成功"
+    },
     "sso": "单点登录",
     "sso-section": {
       "authorization-endpoint": "授权端点（Authorization Endpoint）",
@@ -312,6 +339,7 @@
       "no-sso-found": "没有 SSO 配置",
       "redirect-url": "重定向链接",
       "scopes": "范围",
+      "single-sign-on": "配置单点登录（SSO）进行身份验证",
       "sso-created": "单点登录 {{name}} 已创建",
       "sso-list": "单点登录列表",
       "sso-updated": "单点登录 {{name}} 已更新",
@@ -383,15 +411,25 @@
       "server-name": "服务器名称",
       "title": "一般设置"
     },
+    "version": "版本",
     "webhook-section": {
       "create-dialog": {
         "an-easy-to-remember-name": "请输入一个容易记住的标题",
         "create-webhook": "创建 Webhook",
-        "edit-webhook": "编辑 webhook",
+        "create-webhook-success": "Webhook `{{name}}` 已创建",
+        "edit-webhook": "编辑 Webhook",
         "payload-url": "请输入有效的 URL",
-        "title": "标题"
+        "title": "标题",
+        "url-example-post-receive": "https://example.com/postreceive"
       },
-      "no-webhooks-found": "没有 webhooks。"
+      "delete-dialog": {
+        "delete-webhook-description": "此操作是不可逆的。",
+        "delete-webhook-title": "您确定要删除 Webhook `{{name}}` 吗？",
+        "delete-webhook-success": "Webhook `{{name}}` 删除成功"
+      },
+      "no-webhooks-found": "没有 Webhook。",
+      "title": "Webhook",
+      "url": "URL"
     },
     "instance-section": {
       "disallow-change-nickname": "禁止修改用户昵称",
@@ -410,6 +448,7 @@
     "create-tags-guide": "您可以通过输入 “#标签” 创建标签。",
     "delete-confirm": "您确定要删除此标签吗?所有相关的备忘录将会被归档。",
     "delete-tag": "删除标签",
+    "delete-success": "标签删除成功",
     "new-name": "新名称",
     "no-tag-found": "没找到此标签",
     "old-name": "旧名称",
