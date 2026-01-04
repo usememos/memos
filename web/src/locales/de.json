@@ -18,19 +18,26 @@
     "about": "Über",
     "add": "Hinzufügen",
     "admin": "Administration",
+    "all": "Alle",
     "archive": "Archivieren",
     "archived": "Archiviert",
+    "attachments": "Anhänge",
+    "auto-expand": "Automatisch erweitern",
     "avatar": "Avatar",
     "basic": "Allgemeines",
     "beta": "Beta",
+    "calendar": "Kalender",
     "cancel": "Abbrechen",
     "change": "Ändern",
     "clear": "Leeren",
     "close": "Schließen",
     "collapse": "Einklappen",
     "confirm": "Bestätigen",
+    "copy": "Kopieren",
     "create": "Erstellen",
+    "created-at": "Erstellt am",
     "database": "Datenbank",
+    "day": "Tag",
     "days": "Tage",
     "delete": "Löschen",
     "description": "Beschreibung",
@@ -42,13 +49,19 @@
     "filter": "Filter",
     "home": "Startseite",
     "image": "Bild",
+    "in": "In",
     "inbox": "Eingang",
+    "input": "Eingabe",
     "language": "Sprache",
+    "last-updated-at": "Zuletzt aktualisiert am",
+    "layout": "Layout",
     "learn-more": "Mehr erfahren",
     "link": "Link",
+    "map": "Karte",
     "mark": "Markieren",
     "memo": "Notiz",
     "memos": "Notizen",
+    "name": "Name",
     "new": "Neu",
     "nickname": "Spitzname",
     "null": "Null",
@@ -58,7 +71,11 @@
     "pinned": "Angeheftet",
     "preview": "Vorschau",
     "profile": "Profil",
-    "remember-me": "Erinnern Dich an mich",
+    "properties": "Eigenschaften",
+    "referenced-by": "Verknüpft mit",
+    "referencing": "Verknüpft",
+    "relations": "Beziehungen",
+    "remember-me": "Erinnere mich",
     "rename": "Umbenennen",
     "reset": "Zurücksetzen",
     "resources": "Ressourcen",
@@ -69,6 +86,8 @@
     "select": "Auswählen",
     "settings": "Einstellungen",
     "share": "Teilen",
+    "shortcut-filter": "Verknüpfung filtern",
+    "shortcuts": "Verknüpfungen",
     "sign-in": "Anmelden",
     "sign-in-with": "Anmelden mit {{provider}}",
     "sign-out": "Abmelden",
@@ -76,14 +95,18 @@
     "statistics": "Statistiken",
     "tags": "Tags",
     "title": "Titel",
+    "today": "Heute",
+    "tree-mode": "Baumansicht",
     "type": "Typ",
     "unpin": "Pin lösen",
     "update": "Update",
     "upload": "Hochladen",
+    "user": "Benutzer",
     "username": "Nutzername",
     "version": "Version",
     "visibility": "Sichtbarkeit",
-    "yourself": "Du selbst"
+    "yourself": "Du selbst",
+    "more": "Mehr"
   },
   "days": {
     "fri": "Fr",
@@ -97,8 +120,11 @@
   "editor": {
     "add-your-comment-here": "Füge deinen Kommentar hinzu...",
     "any-thoughts": "Ein Gedanke...",
+    "save": "Speichern",
     "no-changes-detected": "Keine Änderungen erkannt",
-    "save": "Speichern"
+    "focus-mode": "Fokus Modus",
+    "exit-focus-mode": "Fokus Modus verlassen",
+    "slash-commands": "Nutze `/` für Befehle"
   },
   "filters": {
     "has-code": "hatCode",
@@ -107,8 +133,10 @@
   },
   "inbox": {
     "memo-comment": "{{user}} hat einen Kommentar zu {{memo}} hinterlassen.",
-    "version-update": "Die neue Version {{version}} ist jetzt verfügbar!",
-    "failed-to-load": "Fehler beim Laden des Eintrags"
+    "failed-to-load": "Fehler beim Laden des Eintrags",
+    "unread": "Ungelesen",
+    "no-unread": "Keine ungelesenen Benachrichtigungen",
+    "no-archived": "Keine archivierten Benachrichtigungen"
   },
   "markdown": {
     "checkbox": "Checkbox",
@@ -124,9 +152,11 @@
       "self": "Kommentare",
       "write-a-comment": "Schreibe einen Kommentar"
     },
+    "copy-content": "Inhalt kopieren",
     "copy-link": "Link kopieren",
     "count-memos-in-date": "{{count}} Notizen in {{date}}",
     "delete-confirm": "Bist du sicher, dass du diese Notiz löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
+    "delete-confirm-description": "Dieser Vorgang ist nicht rückgängig zu machen. Anhänge, Links und Verknüpfungen werden ebenfalls gelöscht.",
     "direction": "Richtung",
     "direction-asc": "Aufsteigend",
     "direction-desc": "Absteigend",
@@ -170,6 +200,7 @@
     "password-not-match": "Passwörter stimmen nicht überein.",
     "remove-completed-task-list-items-successfully": "Erfolgreich entfernt!",
     "restored-successfully": "Erfolgreich wiederhergestellt",
+    "succeed-copy-content": "Inhalt erfolgreich kopiert.",
     "succeed-copy-link": "Link erfolgreich kopiert",
     "update-succeed": "Update erfolgreich",
     "user-not-found": "Benutzer nicht gefunden"
@@ -202,6 +233,10 @@
     },
     "delete-resource": "Ressource löschen",
     "delete-selected-resources": "Ausgewählte Ressourcen löschen",
+    "delete-all-unused": "Lösche alle ungenutzten",
+    "delete-all-unused-confirm": "Bist du sicher, dass du alle ungenutzten Elemente löschen willst? DIESER VORGANG KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
+    "delete-all-unused-success": "Elemente erfolgreich gelöscht",
+    "delete-all-unused-error": "Das Löschen ungenutzter Elemente ist fehlgeschlagen",
     "fetching-data": "Lade Daten…",
     "file-drag-drop-prompt": "Datei hierher ziehen und ablegen, um sie hochzuladen",
     "linked-amount": "Anzahl verlinkter Memos",
@@ -221,7 +256,10 @@
     "access-token-section": {
       "access-token-copied-to-clipboard": "Zugangstoken in die Zwischenablage kopiert",
       "access-token-deletion": "Bist du sicher, dass du das Zugangstoken {{accessToken}} löschen möchtest? DIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN.",
+      "access-token-deletion-description": "Diese Aktion kann nicht rückgängig gemacht werden. Du musst alle Dienste, die diesen Token verwenden, mit einem neuen Token nutzen.",
+      "access-token-deleted": "Zugangstoken `{{description}}` gelöscht",
       "create-dialog": {
+        "access-token-created": "Zugangstoken `{{description}}` erstellt",
         "create-access-token": "Zugangstoken erstellen",
         "created-at": "Erstellt am",
         "description": "Beschreibung",
@@ -255,9 +293,14 @@
       "admin": "Admin",
       "archive-member": "Mitglied archivieren",
       "archive-warning": "Bist du sicher, dass du {{username}} archivieren möchtest?",
+      "archive-warning-description": "Die Archivierung deaktiviert den Account. Du kannst ihn später Wiederherstellen oder löschen.",
+      "archive-success": "{{username}} erfolgreich archiviert",
+      "restore-success": "{{username}} erfolgreich wiederhergestellt",
       "create-a-member": "Mitglied hinzufügen",
       "delete-member": "Mitglied löschen",
       "delete-warning": "Bist du sicher, dass du {{username}} löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
+      "delete-warning-description": "DIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
+      "delete-success": "{{username}} erfolgreich gelöscht",
       "user": "Benutzer"
     },
     "memo-related": "Notiz",
@@ -275,6 +318,10 @@
       "default-memo-sort-option": "Anzeigedatum der Notiz",
       "default-memo-visibility": "Standard-Notizsichtbarkeit",
       "theme": "Design"
+    },
+    "shortcut": {
+      "delete-confirm": "Bist du dir sicher, dass du die Verknüpfung `{{title}}` löschen möchtest?",
+      "delete-success": "Verknüpfung `{{title}}` erfolgreich gelöscht"
     },
     "sso": "SSO",
     "sso-section": {
@@ -369,10 +416,16 @@
       "create-dialog": {
         "an-easy-to-remember-name": "Einfach zu merkender Name",
         "create-webhook": "Webhook erstellen",
+        "create-webhook-success": "Webhook `{{name}}` erstellt",
         "edit-webhook": "Webhook bearbeiten",
         "payload-url": "Payload-URL",
         "title": "Titel",
         "url-example-post-receive": "https://example.com/postreceive"
+      },
+      "delete-dialog": {
+        "delete-webhook-description": "Diese Aktion kann nicht rückgängig gemacht werden",
+        "delete-webhook-title": "Bist du dir sicher, dass du den Webhook `{{name}}` löschen möchtest?",
+        "delete-webhook-success": "Webhook `{{name}}` erfolgreich gelöscht"
       },
       "no-webhooks-found": "Keine Webhooks gefunden.",
       "title": "Webhooks",
@@ -395,6 +448,7 @@
     "create-tags-guide": "Du kannst Tags erstellen, indem du `#tag` eingibst.",
     "delete-confirm": "Bist du sicher, dass du diesen Tag löschen möchtest? Alle zugehörigen Notizen werden archiviert.",
     "delete-tag": "Tag löschen",
+    "delete-success": "Tag erfolgreich gelöscht",
     "new-name": "Neuer Name",
     "no-tag-found": "Kein Tag gefunden",
     "old-name": "Alter Name",
@@ -403,5 +457,13 @@
     "rename-success": "Tag erfolgreich umbenannt",
     "rename-tag": "Tag umbenennen",
     "rename-tip": "Alle deine Notizen mit diesem Tag werden aktualisiert."
+  },
+  "tooltip": {
+    "link-memo": "Link Memo",
+    "markdown-menu": "Markdown",
+    "select-location": "Ort",
+    "select-visibility": "Sichtbarkeit",
+    "tags": "Tags",
+    "upload-attachment": "Anhang hochladen"
   }
 }
