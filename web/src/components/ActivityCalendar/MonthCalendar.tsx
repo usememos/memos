@@ -1,5 +1,6 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { useInstance } from "@/contexts/InstanceContext";
+import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarCell } from "./CalendarCell";
@@ -13,11 +14,13 @@ export const MonthCalendar = memo((props: MonthCalendarProps) => {
   const { month, data, maxCount, size = "default", onClick, className } = props;
   const t = useTranslate();
   const { generalSetting } = useInstance();
+  const { getFiltersByFactor } = useMemoFilterContext();
 
   const weekStartDayOffset = generalSetting.weekStartDayOffset;
 
   const today = useTodayDate();
   const weekDays = useWeekdayLabels();
+  const selectedDate = useMemo(() => getFiltersByFactor("displayTime")?.[0]?.value || "", [getFiltersByFactor]);
 
   const { weeks, weekDays: rotatedWeekDays } = useCalendarMatrix({
     month,
@@ -25,7 +28,7 @@ export const MonthCalendar = memo((props: MonthCalendarProps) => {
     weekDays,
     weekStartDayOffset,
     today,
-    selectedDate: "",
+    selectedDate: selectedDate,
   });
 
   const sizeConfig = size === "small" ? SMALL_CELL_SIZE : DEFAULT_CELL_SIZE;

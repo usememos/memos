@@ -1,4 +1,6 @@
+import dayjs from "dayjs";
 import { useEffect, useRef } from "react";
+import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import type { EditorRefActions } from "../Editor";
 import { cacheService, memoService } from "../services";
 import { useEditorContext } from "../state";
@@ -10,7 +12,8 @@ export const useMemoInit = (
   username: string,
   autoFocus?: boolean,
 ) => {
-  const { actions, dispatch } = useEditorContext();
+  const { state, actions, dispatch } = useEditorContext();
+  const { getFiltersByFactor } = useMemoFilterContext();
   const initializedRef = useRef(false);
 
   useEffect(() => {
@@ -32,7 +35,14 @@ export const useMemoInit = (
             }),
           );
         } else {
-          // Load from cache for new memo
+          // New memo: first apply date filter if not already set, then load from cache
+          if (!state.timestamps.createTime) {
+            const displayTimeFilter = getFiltersByFactor("displayTime")?.[0]?.value;
+            if (displayTimeFilter) {
+              dispatch(actions.setTimestamps({ createTime: dayjs(displayTimeFilter).toDate() }));
+            }
+          }
+
           const cachedContent = cacheService.load(cacheService.key(username, cacheKey));
           if (cachedContent) {
             dispatch(actions.updateContent(cachedContent));
@@ -52,5 +62,5 @@ export const useMemoInit = (
     };
 
     init();
-  }, [memoName, cacheKey, username, autoFocus, actions, dispatch, editorRef]);
+  }, [memoName, cacheKey, username, autoFocus, actions, dispatch, editorRef, getFiltersByFactor, state.timestamps.createTime]);
 };
