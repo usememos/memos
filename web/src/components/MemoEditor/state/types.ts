@@ -15,6 +15,7 @@ export interface EditorState {
   };
   ui: {
     isFocusMode: boolean;
+    isPreviewMode: boolean;
     isLoading: {
       saving: boolean;
       uploading: boolean;
@@ -42,6 +43,7 @@ export type EditorAction =
   | { type: "REMOVE_LOCAL_FILE"; payload: string }
   | { type: "CLEAR_LOCAL_FILES" }
   | { type: "TOGGLE_FOCUS_MODE" }
+  | { type: "TOGGLE_PREVIEW_MODE" }
   | { type: "SET_LOADING"; payload: { key: LoadingKey; value: boolean } }
   | { type: "SET_DRAGGING"; payload: boolean }
   | { type: "SET_COMPOSING"; payload: boolean }
@@ -57,6 +59,7 @@ export const initialState: EditorState = {
   },
   ui: {
     isFocusMode: false,
+    isPreviewMode: false,
     isLoading: {
       saving: false,
       uploading: false,

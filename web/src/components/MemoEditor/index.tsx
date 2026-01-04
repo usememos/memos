@@ -1,6 +1,8 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
 import { toast } from "react-hot-toast";
+import MemoContent from "@/components/MemoContent";
+import { MemoViewContext } from "@/components/MemoView/MemoViewContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { memoKeys } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
@@ -62,7 +64,11 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     dispatch(actions.toggleFocusMode());
   };
 
-  useKeyboard(editorRef, { onSave: handleSave });
+  const handleTogglePreviewMode = () => {
+    dispatch(actions.togglePreviewMode());
+  };
+
+  useKeyboard(editorRef, { onSave: handleSave, onTogglePreview: handleTogglePreviewMode });
 
   async function handleSave() {
     // Validate before saving
@@ -136,7 +142,26 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         <FocusModeExitButton isActive={state.ui.isFocusMode} onToggle={handleToggleFocusMode} title={t("editor.exit-focus-mode")} />
 
         {/* Editor content grows to fill available space in focus mode */}
-        <EditorContent ref={editorRef} placeholder={placeholder} autoFocus={autoFocus} />
+        {state.ui.isPreviewMode ? (
+          <div className="w-full flex-1 overflow-auto py-2">
+            <MemoViewContext.Provider
+              value={{
+                memo: { relations: [] } as never,
+                creator: undefined,
+                currentUser: undefined,
+                parentPage: "",
+                isArchived: false,
+                readonly: true,
+                showNSFWContent: false,
+                nsfw: false,
+              }}
+            >
+              <MemoContent content={state.content} />
+            </MemoViewContext.Provider>
+          </div>
+        ) : (
+          <EditorContent ref={editorRef} placeholder={placeholder} autoFocus={autoFocus} />
+        )}
 
         {/* Metadata and toolbar grouped together at bottom */}
         <div className="w-full flex flex-col gap-2">
