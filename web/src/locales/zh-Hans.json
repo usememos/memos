@@ -320,8 +320,8 @@
       "theme": "主题"
     },
     "shortcut": {
-      "delete-confirm": "您确定要删除快捷方式 `{{title}}` 吗？",
-      "delete-success": "快捷方式 `{{title}}` 删除成功"
+      "delete-confirm": "您确定要删除捷径 `{{title}}` 吗？",
+      "delete-success": "捷径 `{{title}}` 删除成功"
     },
     "sso": "单点登录",
     "sso-section": {
