@@ -2,10 +2,20 @@ import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema, timestampDate, timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { isEqual } from "lodash-es";
 import { memoServiceClient } from "@/connect";
+import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 import type { EditorState } from "../state";
 import { uploadService } from "./uploadService";
+
+/**
+ * Converts attachments to reference format for API requests.
+ * The backend only needs the attachment name to link it to a memo.
+ */
+function toAttachmentReferences(attachments: Attachment[]): Attachment[] {
+  return attachments.map((a) => create(AttachmentSchema, { name: a.name }));
+}
 
 function buildUpdateMask(
   prevMemo: Memo,
@@ -28,7 +38,7 @@ function buildUpdateMask(
   }
   if (!isEqual(allAttachments, prevMemo.attachments)) {
     mask.add("attachments");
-    patch.attachments = allAttachments;
+    patch.attachments = toAttachmentReferences(allAttachments);
   }
   if (!isEqual(state.metadata.relations, prevMemo.relations)) {
     mask.add("relations");
@@ -95,7 +105,7 @@ export const memoService = {
     const memoData = create(MemoSchema, {
       content: state.content,
       visibility: state.metadata.visibility,
-      attachments: allAttachments,
+      attachments: toAttachmentReferences(allAttachments),
       relations: state.metadata.relations,
       location: state.metadata.location,
       createTime: state.timestamps.createTime ? timestampFromDate(state.timestamps.createTime) : undefined,
