@@ -57,6 +57,10 @@ export const editorActions = {
     type: "TOGGLE_FOCUS_MODE",
   }),
 
+  togglePreviewMode: (): EditorAction => ({
+    type: "TOGGLE_PREVIEW_MODE",
+  }),
+
   setLoading: (key: LoadingKey, value: boolean): EditorAction => ({
     type: "SET_LOADING",
     payload: { key, value },

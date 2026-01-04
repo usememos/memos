@@ -89,6 +89,15 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         },
       };
 
+    case "TOGGLE_PREVIEW_MODE":
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          isPreviewMode: !state.ui.isPreviewMode,
+        },
+      };
+
     case "SET_LOADING":
       return {
         ...state,
