@@ -328,9 +328,18 @@ func TestAttachmentFilterNullMemoId(t *testing.T) {
 	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("with_memo.png").MimeType("image/png").MemoID(&memo.ID))
 	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("no_memo.png").MimeType("image/png"))
 
-	attachments := tc.ListWithFilter(`memo_id == ` + formatInt32(memo.ID))
+	// Test: memo_id == null
+	attachments := tc.ListWithFilter(`memo_id == null`)
+	require.Len(t, attachments, 1)
+	require.Equal(t, "no_memo.png", attachments[0].Filename)
+	require.Nil(t, attachments[0].MemoID)
+
+	// Test: memo_id != null
+	attachments = tc.ListWithFilter(`memo_id != null`)
 	require.Len(t, attachments, 1)
 	require.Equal(t, "with_memo.png", attachments[0].Filename)
+	require.NotNil(t, attachments[0].MemoID)
+	require.Equal(t, memo.ID, *attachments[0].MemoID)
 }
 
 func TestAttachmentFilterEmptyFilename(t *testing.T) {

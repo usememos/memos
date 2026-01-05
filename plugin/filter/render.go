@@ -207,6 +207,17 @@ func (r *renderer) renderScalarComparison(field Field, op ComparisonOperator, ri
 	}
 
 	columnExpr := field.columnExpr(r.dialect)
+	if lit == nil {
+		switch op {
+		case CompareEq:
+			return renderResult{sql: fmt.Sprintf("%s IS NULL", columnExpr)}, nil
+		case CompareNeq:
+			return renderResult{sql: fmt.Sprintf("%s IS NOT NULL", columnExpr)}, nil
+		default:
+			return renderResult{}, errors.Errorf("operator %s not supported for null comparison", op)
+		}
+	}
+
 	placeholder := ""
 	switch field.Type {
 	case FieldTypeString:

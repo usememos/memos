@@ -156,7 +156,19 @@ const Attachments = () => {
   // Delete all unused attachments
   const handleDeleteUnusedAttachments = useCallback(async () => {
     try {
-      await Promise.all(unusedAttachments.map((attachment) => deleteAttachment(attachment.name)));
+      let allUnusedAttachments: Attachment[] = [];
+      let nextPageToken = "";
+      do {
+        const response = await attachmentServiceClient.listAttachments({
+          pageSize: 1000,
+          pageToken: nextPageToken,
+          filter: "memo_id == null",
+        });
+        allUnusedAttachments = [...allUnusedAttachments, ...response.attachments];
+        nextPageToken = response.nextPageToken;
+      } while (nextPageToken);
+
+      await Promise.all(allUnusedAttachments.map((attachment) => deleteAttachment(attachment.name)));
       toast.success(t("resource.delete-all-unused-success"));
     } catch (error) {
       handleError(error, toast.error, {
@@ -166,7 +178,7 @@ const Attachments = () => {
     } finally {
       await handleRefetch();
     }
-  }, [unusedAttachments, t, handleRefetch, deleteAttachment]);
+  }, [t, handleRefetch, deleteAttachment]);
 
   // Handle search input change
   const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {

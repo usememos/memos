@@ -297,7 +297,7 @@ func NewAttachmentSchema() Schema {
 		cel.Variable("filename", cel.StringType),
 		cel.Variable("mime_type", cel.StringType),
 		cel.Variable("create_time", cel.IntType),
-		cel.Variable("memo_id", cel.IntType),
+		cel.Variable("memo_id", cel.AnyType),
 		nowFunction,
 	}
 
