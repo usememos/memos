@@ -82,10 +82,7 @@ const PreferencesSection = () => {
 
       <SettingGroup title={t("setting.preference")} showSeparator>
         <SettingRow label={t("setting.preference-section.default-memo-visibility")}>
-          <Select
-            value={setting.memoVisibility || "PRIVATE"}
-            onValueChange={handleDefaultMemoVisibilityChanged}
-          >
+          <Select value={setting.memoVisibility || "PRIVATE"} onValueChange={handleDefaultMemoVisibilityChanged}>
             <SelectTrigger className="min-w-fit">
               <div className="flex items-center gap-2">
                 <VisibilityIcon visibility={convertVisibilityFromString(setting.memoVisibility)} />

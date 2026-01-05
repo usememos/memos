@@ -52,34 +52,3 @@ export const isMidiFile = (mimeType: string): boolean => {
 const isPSD = (t: string) => {
   return t === "image/vnd.adobe.photoshop" || t === "image/x-photoshop" || t === "image/photoshop";
 };
-
-// HDR-capable MIME types that support wide color gamut
-export const HDR_CAPABLE_FORMATS = [
-  "image/heic",
-  "image/heif",
-  "image/webp",
-  "image/png", // PNG can contain ICC profiles for wide gamut
-  "image/jpeg", // JPEG can support extended color via profiles
-  "video/mp4", // Can contain HDR tracks
-  "video/quicktime", // Can contain HDR tracks
-  "video/x-matroska", // Can contain HDR tracks
-  "video/webm", // VP9 Profile 2 for HDR
-];
-
-// isHDRCapable returns true if the MIME type supports HDR/wide color gamut.
-export const isHDRCapable = (mimeType: string): boolean => {
-  return HDR_CAPABLE_FORMATS.some((format) => mimeType.startsWith(format));
-};
-
-// getColorspace returns the appropriate colorspace attribute for wide gamut images.
-// Returns "display-p3" for HDR-capable formats, undefined for standard images.
-export const getColorspace = (mimeType: string): string | undefined => {
-  return isHDRCapable(mimeType) ? "display-p3" : undefined;
-};
-
-// supportsHDR checks if the browser supports wide color gamut display.
-// Uses CSS.supports() to detect color-gamut capability.
-export const supportsHDR = (): boolean => {
-  if (typeof CSS === "undefined") return false;
-  return CSS.supports("(color-gamut: srgb)") && CSS.supports("(color-gamut: p3)");
-};

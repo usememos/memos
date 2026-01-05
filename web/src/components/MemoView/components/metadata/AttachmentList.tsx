@@ -131,7 +131,6 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
         onOpenChange={(open: boolean) => setPreviewImage((prev) => ({ ...prev, open }))}
         imgUrls={previewImage.urls}
         initialIndex={previewImage.index}
-        mimeType={previewImage.mimeType}
       />
     </>
   );
