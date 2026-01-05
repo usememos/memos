@@ -120,7 +120,7 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
         <div className="p-2 flex flex-col gap-1">
           {mediaItems.length > 0 && <MediaGrid attachments={mediaItems} onImageClick={handleImageClick} />}
 
-          {mediaItems.length > 0 && docItems.length > 0 && <div className="border-t border-border opacity-60" />}
+          {mediaItems.length > 0 && docItems.length > 0 && <div className="border-t mt-1 border-border opacity-60" />}
 
           {docItems.length > 0 && <DocsList attachments={docItems} />}
         </div>

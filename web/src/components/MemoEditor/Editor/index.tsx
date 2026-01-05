@@ -98,7 +98,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
 
         editor.value = editor.value.slice(0, start) + editor.value.slice(start + length);
         editor.focus();
-        editor.selectionEnd = start;
+        editor.setSelectionRange(start, start);
         updateContent();
       },
       setContent: (text: string) => {
@@ -116,8 +116,11 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
         return editor.value.slice(editor.selectionStart, editor.selectionEnd);
       },
       setCursorPosition: (startPos: number, endPos?: number) => {
-        const endPosition = Number.isNaN(endPos) ? startPos : (endPos as number);
-        editorRef.current?.setSelectionRange(startPos, endPosition);
+        const editor = editorRef.current;
+        if (!editor) return;
+        // setSelectionRange requires valid arguments; default to startPos if endPos is undefined
+        const endPosition = endPos !== undefined && !Number.isNaN(endPos) ? endPos : startPos;
+        editor.setSelectionRange(startPos, endPosition);
       },
       getCursorLineNumber: () => {
         const editor = editorRef.current;

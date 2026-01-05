@@ -35,6 +35,7 @@ export function useSuggestions<T>({
 }: UseSuggestionsOptions<T>): UseSuggestionsReturn<T> {
   const [position, setPosition] = useState<Position | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const isProcessingRef = useRef(false);
 
   const selectedRef = useRef(selectedIndex);
   selectedRef.current = selectedIndex;
@@ -66,9 +67,14 @@ export function useSuggestions<T>({
       console.warn("useSuggestions: editorActions not available");
       return;
     }
+    isProcessingRef.current = true;
     const [word, index] = getCurrentWord();
     onAutocomplete(item, word, index, editorActions.current);
     hide();
+    // Re-enable input handling after all DOM operations complete
+    queueMicrotask(() => {
+      isProcessingRef.current = false;
+    });
   };
 
   const handleNavigation = (e: KeyboardEvent, selected: number, suggestionsCount: number) => {
@@ -107,6 +113,8 @@ export function useSuggestions<T>({
   };
 
   const handleInput = () => {
+    if (isProcessingRef.current) return;
+
     const editor = editorRef.current;
     if (!editor) return;
 
