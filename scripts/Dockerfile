@@ -30,17 +30,17 @@ FROM alpine:3.21 AS monolithic
 
 # Install runtime dependencies and create non-root user in single layer
 RUN apk add --no-cache tzdata ca-certificates && \
-    addgroup -g 10001 -S nonroot && \
-    adduser -u 10001 -S -G nonroot -h /var/opt/memos nonroot && \
+    addgroup -g 10001 -S memos && \
+    adduser -u 10001 -S -G memos -h /var/opt/memos memos && \
     mkdir -p /var/opt/memos /usr/local/memos && \
-    chown -R nonroot:nonroot /var/opt/memos
+    chown -R memos:memos /var/opt/memos /usr/local/memos
 
 # Copy binary and entrypoint to /usr/local/memos
 COPY --from=backend /backend-build/memos /usr/local/memos/memos
 COPY --from=backend --chmod=755 /backend-build/scripts/entrypoint.sh /usr/local/memos/entrypoint.sh
 
 # Switch to non-root user
-USER nonroot:nonroot
+USER memos:memos
 
 # Set working directory to the writable volume
 WORKDIR /var/opt/memos
@@ -49,7 +49,8 @@ WORKDIR /var/opt/memos
 VOLUME /var/opt/memos
 
 ENV TZ="UTC" \
-    MEMOS_PORT="5230"
+    MEMOS_PORT="5230" \
+    MEMOS_MODE="prod"
 
 EXPOSE 5230
 
