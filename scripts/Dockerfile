@@ -22,7 +22,8 @@ EXPOSE 5230
 
 # Directory to store the data, which can be referenced as the mounting point.
 RUN mkdir -p /var/opt/memos && \
-    addgroup -S memos && adduser -S memos -G memos && \
+    addgroup -S -g 10001 memos && \
+    adduser -S -u 10001 -G memos memos && \
     chown -R memos:memos /usr/local/memos /var/opt/memos
 
 VOLUME /var/opt/memos
