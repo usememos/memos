@@ -6,8 +6,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { instanceStore } from "@/store";
-import { buildInstanceSettingName } from "@/store/common";
+import { useInstance } from "@/contexts/InstanceContext";
+import { buildInstanceSettingName } from "@/helpers/resource-names";
+import { handleError } from "@/lib/error";
 import {
   InstanceSetting_GeneralSetting_CustomProfile,
   InstanceSetting_GeneralSetting_CustomProfileSchema,
@@ -24,7 +25,7 @@ interface Props {
 
 function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props) {
   const t = useTranslate();
-  const instanceGeneralSetting = instanceStore.state.generalSetting;
+  const { generalSetting: instanceGeneralSetting, updateSetting } = useInstance();
   const [customProfile, setCustomProfile] = useState<InstanceSetting_GeneralSetting_CustomProfile>(
     create(InstanceSetting_GeneralSetting_CustomProfileSchema, instanceGeneralSetting.customProfile || {}),
   );
@@ -76,7 +77,7 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
 
     setIsLoading(true);
     try {
-      await instanceStore.upsertInstanceSetting(
+      await updateSetting(
         create(InstanceSettingSchema, {
           name: buildInstanceSettingName(InstanceSetting_Key.GENERAL),
           value: {
@@ -92,8 +93,10 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
       onSuccess?.();
       onOpenChange(false);
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to update profile");
+      handleError(error, toast.error, {
+        context: "Update customized profile",
+        fallbackMessage: "Failed to update profile",
+      });
     } finally {
       setIsLoading(false);
     }

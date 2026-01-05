@@ -8,6 +8,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
+import { handleError } from "@/lib/error";
 import { CreatePersonalAccessTokenResponse } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
@@ -75,7 +76,7 @@ function CreateAccessTokenDialog({ open, onOpenChange, onSuccess }: Props) {
     try {
       requestState.setLoading();
       const response = await userServiceClient.createPersonalAccessToken({
-        parent: currentUser.name,
+        parent: currentUser?.name,
         description: state.description,
         expiresInDays: state.expiration,
       });
@@ -83,10 +84,11 @@ function CreateAccessTokenDialog({ open, onOpenChange, onSuccess }: Props) {
       requestState.setFinish();
       onSuccess(response);
       onOpenChange(false);
-    } catch (error: any) {
-      toast.error(error.message);
-      console.error(error);
-      requestState.setError();
+    } catch (error: unknown) {
+      handleError(error, toast.error, {
+        context: "Create access token",
+        onError: () => requestState.setError(),
+      });
     }
   };
 

@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { userStore } from "@/store";
+import { useUpdateUser } from "@/hooks/useUserQueries";
+import { handleError } from "@/lib/error";
 import { User } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
@@ -17,6 +18,7 @@ interface Props {
 
 function ChangeMemberPasswordDialog({ open, onOpenChange, user, onSuccess }: Props) {
   const t = useTranslate();
+  const { mutateAsync: updateUser } = useUpdateUser();
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");
 
@@ -49,19 +51,20 @@ function ChangeMemberPasswordDialog({ open, onOpenChange, user, onSuccess }: Pro
     }
 
     try {
-      await userStore.updateUser(
-        {
+      await updateUser({
+        user: {
           name: user.name,
           password: newPassword,
         },
-        ["password"],
-      );
+        updateMask: ["password"],
+      });
       toast(t("message.password-changed"));
       onSuccess?.();
       onOpenChange(false);
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.message);
+    } catch (error: unknown) {
+      await handleError(error, toast.error, {
+        context: "Change member password",
+      });
     }
   };
 

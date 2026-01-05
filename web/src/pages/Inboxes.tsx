@@ -1,23 +1,25 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { sortBy } from "lodash-es";
 import { ArchiveIcon, BellIcon, InboxIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Empty from "@/components/Empty";
 import MemoCommentMessage from "@/components/Inbox/MemoCommentMessage";
 import MobileHeader from "@/components/MobileHeader";
-import useResponsiveWidth from "@/hooks/useResponsiveWidth";
+import useMediaQuery from "@/hooks/useMediaQuery";
+import { useNotifications } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
-import { userStore } from "@/store";
 import { UserNotification, UserNotification_Status, UserNotification_Type } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
-const Inboxes = observer(() => {
+const Inboxes = () => {
   const t = useTranslate();
-  const { md } = useResponsiveWidth();
+  const md = useMediaQuery("md");
   const [filter, setFilter] = useState<"all" | "unread" | "archived">("all");
 
-  const allNotifications = sortBy(userStore.state.notifications, (notification: UserNotification) => {
+  // Fetch notifications with React Query
+  const { data: fetchedNotifications = [] } = useNotifications();
+
+  const allNotifications = sortBy(fetchedNotifications, (notification: UserNotification) => {
     return -((notification.createTime ? timestampDate(notification.createTime) : undefined)?.getTime() || 0);
   });
 
@@ -29,18 +31,6 @@ const Inboxes = observer(() => {
 
   const unreadCount = allNotifications.filter((n) => n.status === UserNotification_Status.UNREAD).length;
   const archivedCount = allNotifications.filter((n) => n.status === UserNotification_Status.ARCHIVED).length;
-
-  const fetchNotifications = async () => {
-    try {
-      await userStore.fetchNotifications();
-    } catch (error) {
-      console.error("Failed to fetch notifications:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
 
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
@@ -127,6 +117,6 @@ const Inboxes = observer(() => {
       </div>
     </section>
   );
-});
+};
 
 export default Inboxes;

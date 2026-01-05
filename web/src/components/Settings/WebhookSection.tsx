@@ -97,7 +97,7 @@ const WebhookSection = () => {
       <div className="w-full">
         <Link
           className="text-muted-foreground text-sm inline-flex items-center hover:underline hover:text-primary"
-          to="https://www.usememos.com/docs/integrations/webhooks"
+          to="https://usememos.com/docs/integrations/webhooks"
           target="_blank"
         >
           {t("common.learn-more")}

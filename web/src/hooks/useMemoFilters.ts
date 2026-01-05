@@ -1,9 +1,26 @@
 import { useMemo } from "react";
-import { instanceStore, userStore } from "@/store";
-import { extractUserIdFromName, getVisibilityName } from "@/store/common";
-import memoFilterStore from "@/store/memoFilter";
-import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
+import { useAuth } from "@/contexts/AuthContext";
+import { useInstance } from "@/contexts/InstanceContext";
+import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
+
+const extractUserIdFromName = (name: string): string => {
+  const match = name.match(/users\/(\d+)/);
+  return match ? match[1] : "";
+};
+
+const getVisibilityName = (visibility: Visibility): string => {
+  switch (visibility) {
+    case Visibility.PUBLIC:
+      return "PUBLIC";
+    case Visibility.PROTECTED:
+      return "PROTECTED";
+    case Visibility.PRIVATE:
+      return "PRIVATE";
+    default:
+      return "PRIVATE";
+  }
+};
 
 const getShortcutId = (name: string): string => {
   const parts = name.split("/");
@@ -20,10 +37,9 @@ export interface UseMemoFiltersOptions {
 export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | undefined => {
   const { creatorName, includeShortcuts = false, includePinned = false, visibilities } = options;
 
-  // Extract MobX observable values to avoid issues with React dependency tracking
-  const currentShortcut = memoFilterStore.shortcut;
-  const shortcuts = userStore.state.shortcuts;
-  const filters = memoFilterStore.filters;
+  const { shortcuts } = useAuth();
+  const { filters, shortcut: currentShortcut } = useMemoFilterContext();
+  const { memoRelatedSetting } = useInstance();
 
   // Get selected shortcut if needed
   const selectedShortcut = useMemo(() => {
@@ -31,7 +47,7 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
     return shortcuts.find((shortcut) => getShortcutId(shortcut.name) === currentShortcut);
   }, [includeShortcuts, currentShortcut, shortcuts]);
 
-  // Build filter - wrapped in useMemo but also using observer for reactivity
+  // Build filter
   return useMemo(() => {
     const conditions: string[] = [];
 
@@ -45,7 +61,7 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
       conditions.push(selectedShortcut.filter);
     }
 
-    // Add active filters from memoFilterStore
+    // Add active filters from context
     for (const filter of filters) {
       if (filter.factor === "contentSearch") {
         conditions.push(`content.contains("${filter.value}")`);
@@ -55,7 +71,6 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
         if (includePinned) {
           conditions.push(`pinned`);
         }
-        // Skip pinned filter if not enabled
       } else if (filter.factor === "property.hasLink") {
         conditions.push(`has_link`);
       } else if (filter.factor === "property.hasTaskList") {
@@ -63,12 +78,9 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
       } else if (filter.factor === "property.hasCode") {
         conditions.push(`has_code`);
       } else if (filter.factor === "displayTime") {
-        // Check instance setting for display time factor
-        const setting = instanceStore.getInstanceSettingByKey(InstanceSetting_Key.MEMO_RELATED);
-        const displayWithUpdateTime = setting?.value.case === "memoRelatedSetting" ? setting.value.value.displayWithUpdateTime : false;
+        const displayWithUpdateTime = memoRelatedSetting?.displayWithUpdateTime ?? false;
         const factor = displayWithUpdateTime ? "updated_ts" : "created_ts";
 
-        // Convert date to UTC timestamp range
         const filterDate = new Date(filter.value);
         const filterUtcTimestamp = filterDate.getTime() + filterDate.getTimezoneOffset() * 60 * 1000;
         const timestampAfter = filterUtcTimestamp / 1000;
@@ -77,15 +89,12 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
       }
     }
 
-    // Add visibility filter if specified (for Explore page)
+    // Add visibility filter if specified
     if (visibilities && visibilities.length > 0) {
-      // Build visibility filter based on allowed visibility levels
-      // Format: visibility in ["PUBLIC", "PROTECTED"]
-      // Convert enum values to string names (e.g., 3 -> "PUBLIC", 2 -> "PROTECTED")
       const visibilityValues = visibilities.map((v) => `"${getVisibilityName(v)}"`).join(", ");
       conditions.push(`visibility in [${visibilityValues}]`);
     }
 
     return conditions.length > 0 ? conditions.join(" && ") : undefined;
-  }, [creatorName, includeShortcuts, includePinned, visibilities, selectedShortcut, filters]);
+  }, [creatorName, includeShortcuts, includePinned, visibilities, selectedShortcut, filters, memoRelatedSetting]);
 };

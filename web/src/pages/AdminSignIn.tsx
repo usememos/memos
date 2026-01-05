@@ -1,10 +1,9 @@
-import { observer } from "mobx-react-lite";
 import AuthFooter from "@/components/AuthFooter";
 import PasswordSignInForm from "@/components/PasswordSignInForm";
-import { instanceStore } from "@/store";
+import { useInstance } from "@/contexts/InstanceContext";
 
-const AdminSignIn = observer(() => {
-  const instanceGeneralSetting = instanceStore.state.generalSetting;
+const AdminSignIn = () => {
+  const { generalSetting: instanceGeneralSetting } = useInstance();
 
   return (
     <div className="py-4 sm:py-8 w-80 max-w-full min-h-svh mx-auto flex flex-col justify-start items-center">
@@ -19,6 +18,6 @@ const AdminSignIn = observer(() => {
       <AuthFooter />
     </div>
   );
-});
+};
 
 export default AdminSignIn;

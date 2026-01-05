@@ -1,6 +1,5 @@
 import { create } from "@bufbuild/protobuf";
 import { isEqual } from "lodash-es";
-import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
@@ -8,9 +7,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { identityProviderServiceClient } from "@/connect";
+import { useInstance } from "@/contexts/InstanceContext";
 import useDialog from "@/hooks/useDialog";
-import { instanceStore } from "@/store";
-import { buildInstanceSettingName } from "@/store/common";
+import { handleError } from "@/lib/error";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service_pb";
 import {
   InstanceSetting_GeneralSetting,
@@ -24,27 +23,16 @@ import SettingGroup from "./SettingGroup";
 import SettingRow from "./SettingRow";
 import SettingSection from "./SettingSection";
 
-// Helper to extract general setting value from InstanceSetting oneof
-function getGeneralSetting(setting: any): InstanceSetting_GeneralSetting | undefined {
-  if (setting?.value?.case === "generalSetting") {
-    return setting.value.value;
-  }
-  return undefined;
-}
-
-const InstanceSection = observer(() => {
+const InstanceSection = () => {
   const t = useTranslate();
   const customizeDialog = useDialog();
-  const originalSetting = create(
-    InstanceSetting_GeneralSettingSchema,
-    getGeneralSetting(instanceStore.getInstanceSettingByKey(InstanceSetting_Key.GENERAL)) || {},
-  );
+  const { generalSetting: originalSetting, profile, updateSetting, fetchSetting } = useInstance();
   const [instanceGeneralSetting, setInstanceGeneralSetting] = useState<InstanceSetting_GeneralSetting>(originalSetting);
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
 
   useEffect(() => {
     setInstanceGeneralSetting({ ...instanceGeneralSetting, customProfile: originalSetting.customProfile });
-  }, [instanceStore.getInstanceSettingByKey(InstanceSetting_Key.GENERAL)]);
+  }, [originalSetting]);
 
   const handleUpdateCustomizedProfileButtonClick = () => {
     customizeDialog.open();
@@ -61,18 +49,20 @@ const InstanceSection = observer(() => {
 
   const handleSaveGeneralSetting = async () => {
     try {
-      await instanceStore.upsertInstanceSetting(
+      await updateSetting(
         create(InstanceSettingSchema, {
-          name: buildInstanceSettingName(InstanceSetting_Key.GENERAL),
+          name: `instance/settings/${InstanceSetting_Key[InstanceSetting_Key.GENERAL]}`,
           value: {
             case: "generalSetting",
             value: instanceGeneralSetting,
           },
         }),
       );
-    } catch (error: any) {
-      toast.error(error.message);
-      console.error(error);
+      await fetchSetting(InstanceSetting_Key.GENERAL);
+    } catch (error: unknown) {
+      await handleError(error, toast.error, {
+        context: "Update general settings",
+      });
       return;
     }
     toast.success(t("message.update-succeed"));
@@ -119,10 +109,10 @@ const InstanceSection = observer(() => {
         </SettingRow>
       </SettingGroup>
 
-      <SettingGroup title={t("setting.instance-section.disallow-user-registration")} showSeparator>
+      <SettingGroup>
         <SettingRow label={t("setting.instance-section.disallow-user-registration")}>
           <Switch
-            disabled={instanceStore.state.profile.mode === "demo"}
+            disabled={profile.mode === "demo"}
             checked={instanceGeneralSetting.disallowUserRegistration}
             onCheckedChange={(checked) => updatePartialSetting({ disallowUserRegistration: checked })}
           />
@@ -130,10 +120,7 @@ const InstanceSection = observer(() => {
 
         <SettingRow label={t("setting.instance-section.disallow-password-auth")}>
           <Switch
-            disabled={
-              instanceStore.state.profile.mode === "demo" ||
-              (identityProviderList.length === 0 && !instanceGeneralSetting.disallowPasswordAuth)
-            }
+            disabled={profile.mode === "demo" || (identityProviderList.length === 0 && !instanceGeneralSetting.disallowPasswordAuth)}
             checked={instanceGeneralSetting.disallowPasswordAuth}
             onCheckedChange={(checked) => updatePartialSetting({ disallowPasswordAuth: checked })}
           />
@@ -188,6 +175,6 @@ const InstanceSection = observer(() => {
       />
     </SettingSection>
   );
-});
+};
 
 export default InstanceSection;

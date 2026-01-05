@@ -650,11 +650,7 @@ type InstanceMemoRelatedSetting struct {
 	// enable_double_click_edit enables editing on double click.
 	EnableDoubleClickEdit bool `protobuf:"varint,4,opt,name=enable_double_click_edit,json=enableDoubleClickEdit,proto3" json:"enable_double_click_edit,omitempty"`
 	// reactions is the list of reactions.
-	Reactions []string `protobuf:"bytes,7,rep,name=reactions,proto3" json:"reactions,omitempty"`
-	// enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
-	EnableBlurNsfwContent bool `protobuf:"varint,9,opt,name=enable_blur_nsfw_content,json=enableBlurNsfwContent,proto3" json:"enable_blur_nsfw_content,omitempty"`
-	// nsfw_tags is the list of tags that mark content as NSFW for blurring.
-	NsfwTags      []string `protobuf:"bytes,10,rep,name=nsfw_tags,json=nsfwTags,proto3" json:"nsfw_tags,omitempty"`
+	Reactions     []string `protobuf:"bytes,7,rep,name=reactions,proto3" json:"reactions,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -724,20 +720,6 @@ func (x *InstanceMemoRelatedSetting) GetReactions() []string {
 	return nil
 }
 
-func (x *InstanceMemoRelatedSetting) GetEnableBlurNsfwContent() bool {
-	if x != nil {
-		return x.EnableBlurNsfwContent
-	}
-	return false
-}
-
-func (x *InstanceMemoRelatedSetting) GetNsfwTags() []string {
-	if x != nil {
-		return x.NsfwTags
-	}
-	return nil
-}
-
 var File_store_instance_setting_proto protoreflect.FileDescriptor
 
 const file_store_instance_setting_proto_rawDesc = "" +
@@ -783,16 +765,13 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\bendpoint\x18\x03 \x01(\tR\bendpoint\x12\x16\n" +
 	"\x06region\x18\x04 \x01(\tR\x06region\x12\x16\n" +
 	"\x06bucket\x18\x05 \x01(\tR\x06bucket\x12$\n" +
-	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\"\xf2\x02\n" +
+	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\"\x9c\x02\n" +
 	"\x1aInstanceMemoRelatedSetting\x12<\n" +
 	"\x1adisallow_public_visibility\x18\x01 \x01(\bR\x18disallowPublicVisibility\x127\n" +
 	"\x18display_with_update_time\x18\x02 \x01(\bR\x15displayWithUpdateTime\x120\n" +
 	"\x14content_length_limit\x18\x03 \x01(\x05R\x12contentLengthLimit\x127\n" +
 	"\x18enable_double_click_edit\x18\x04 \x01(\bR\x15enableDoubleClickEdit\x12\x1c\n" +
-	"\treactions\x18\a \x03(\tR\treactions\x127\n" +
-	"\x18enable_blur_nsfw_content\x18\t \x01(\bR\x15enableBlurNsfwContent\x12\x1b\n" +
-	"\tnsfw_tags\x18\n" +
-	" \x03(\tR\bnsfwTags*q\n" +
+	"\treactions\x18\a \x03(\tR\treactions*q\n" +
 	"\x12InstanceSettingKey\x12$\n" +
 	" INSTANCE_SETTING_KEY_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\v\n" +

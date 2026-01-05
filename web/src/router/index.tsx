@@ -1,15 +1,15 @@
+import type { ComponentType } from "react";
 import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import App from "@/App";
+import Spinner from "@/components/Spinner";
 import MainLayout from "@/layouts/MainLayout";
 import RootLayout from "@/layouts/RootLayout";
 import Home from "@/pages/Home";
-import Loading from "@/pages/Loading";
 
 const AdminSignIn = lazy(() => import("@/pages/AdminSignIn"));
 const Archived = lazy(() => import("@/pages/Archived"));
 const AuthCallback = lazy(() => import("@/pages/AuthCallback"));
-const Calendar = lazy(() => import("@/pages/Calendar"));
 const Explore = lazy(() => import("@/pages/Explore"));
 const Inboxes = lazy(() => import("@/pages/Inboxes"));
 const MemoDetail = lazy(() => import("@/pages/MemoDetail"));
@@ -28,6 +28,19 @@ import { ROUTES } from "./routes";
 export const Routes = ROUTES;
 export { ROUTES };
 
+// Helper component to reduce Suspense boilerplate for lazy routes
+const LazyRoute = ({ component: Component }: { component: ComponentType }) => (
+  <Suspense
+    fallback={
+      <div className="w-full h-64 flex items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    }
+  >
+    <Component />
+  </Suspense>
+);
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -36,38 +49,10 @@ const router = createBrowserRouter([
       {
         path: Routes.AUTH,
         children: [
-          {
-            path: "",
-            element: (
-              <Suspense fallback={<Loading />}>
-                <SignIn />
-              </Suspense>
-            ),
-          },
-          {
-            path: "admin",
-            element: (
-              <Suspense fallback={<Loading />}>
-                <AdminSignIn />
-              </Suspense>
-            ),
-          },
-          {
-            path: "signup",
-            element: (
-              <Suspense fallback={<Loading />}>
-                <SignUp />
-              </Suspense>
-            ),
-          },
-          {
-            path: "callback",
-            element: (
-              <Suspense fallback={<Loading />}>
-                <AuthCallback />
-              </Suspense>
-            ),
-          },
+          { path: "", element: <LazyRoute component={SignIn} /> },
+          { path: "admin", element: <LazyRoute component={AdminSignIn} /> },
+          { path: "signup", element: <LazyRoute component={SignUp} /> },
+          { path: "callback", element: <LazyRoute component={AuthCallback} /> },
         ],
       },
       {
@@ -77,109 +62,21 @@ const router = createBrowserRouter([
           {
             element: <MainLayout />,
             children: [
-              {
-                path: "",
-                element: <Home />,
-              },
-              {
-                path: Routes.EXPLORE,
-                element: (
-                  <Suspense fallback={<Loading />}>
-                    <Explore />
-                  </Suspense>
-                ),
-              },
-              {
-                path: Routes.ARCHIVED,
-                element: (
-                  <Suspense fallback={<Loading />}>
-                    <Archived />
-                  </Suspense>
-                ),
-              },
-              {
-                path: "u/:username",
-                element: (
-                  <Suspense fallback={<Loading />}>
-                    <UserProfile />
-                  </Suspense>
-                ),
-              },
+              { path: "", element: <Home /> },
+              { path: Routes.EXPLORE, element: <LazyRoute component={Explore} /> },
+              { path: Routes.ARCHIVED, element: <LazyRoute component={Archived} /> },
+              { path: "u/:username", element: <LazyRoute component={UserProfile} /> },
             ],
           },
-          {
-            path: Routes.ATTACHMENTS,
-            element: (
-              <Suspense fallback={<Loading />}>
-                <Attachments />
-              </Suspense>
-            ),
-          },
-          {
-            path: Routes.CALENDAR,
-            element: (
-              <Suspense fallback={<Loading />}>
-                <Calendar />
-              </Suspense>
-            ),
-          },
-          {
-            path: Routes.INBOX,
-            element: (
-              <Suspense fallback={<Loading />}>
-                <Inboxes />
-              </Suspense>
-            ),
-          },
-          {
-            path: Routes.SETTING,
-            element: (
-              <Suspense fallback={<Loading />}>
-                <Setting />
-              </Suspense>
-            ),
-          },
-          {
-            path: "memos/:uid",
-            element: (
-              <Suspense fallback={<Loading />}>
-                <MemoDetail />
-              </Suspense>
-            ),
-          },
-          // Redirect old path to new path.
-          {
-            path: "m/:uid",
-            element: (
-              <Suspense fallback={<Loading />}>
-                <MemoDetailRedirect />
-              </Suspense>
-            ),
-          },
-          {
-            path: "403",
-            element: (
-              <Suspense fallback={<Loading />}>
-                <PermissionDenied />
-              </Suspense>
-            ),
-          },
-          {
-            path: "404",
-            element: (
-              <Suspense fallback={<Loading />}>
-                <NotFound />
-              </Suspense>
-            ),
-          },
-          {
-            path: "*",
-            element: (
-              <Suspense fallback={<Loading />}>
-                <NotFound />
-              </Suspense>
-            ),
-          },
+          { path: Routes.ATTACHMENTS, element: <LazyRoute component={Attachments} /> },
+          { path: Routes.INBOX, element: <LazyRoute component={Inboxes} /> },
+          { path: Routes.SETTING, element: <LazyRoute component={Setting} /> },
+          { path: "memos/:uid", element: <LazyRoute component={MemoDetail} /> },
+          // Redirect old path to new path
+          { path: "m/:uid", element: <LazyRoute component={MemoDetailRedirect} /> },
+          { path: "403", element: <LazyRoute component={PermissionDenied} /> },
+          { path: "404", element: <LazyRoute component={NotFound} /> },
+          { path: "*", element: <LazyRoute component={NotFound} /> },
         ],
       },
     ],

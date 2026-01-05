@@ -51,6 +51,7 @@ type FindAttachment struct {
 	MemoIDList     []int32
 	HasRelatedMemo bool
 	StorageType    *storepb.AttachmentStorageType
+	Filters        []string
 	Limit          *int
 	Offset         *int
 }

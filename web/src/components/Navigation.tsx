@@ -1,12 +1,10 @@
-import { BellIcon, CalendarIcon, EarthIcon, LibraryIcon, PaperclipIcon, UserCircleIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
+import { BellIcon, EarthIcon, LibraryIcon, PaperclipIcon, UserCircleIcon } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { useNotifications } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { userStore } from "@/store";
 import { UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import MemosLogo from "./MemosLogo";
@@ -24,30 +22,17 @@ interface Props {
   className?: string;
 }
 
-const Navigation = observer((props: Props) => {
+const Navigation = (props: Props) => {
   const { collapsed, className } = props;
   const t = useTranslate();
   const currentUser = useCurrentUser();
-
-  useEffect(() => {
-    if (!currentUser) {
-      return;
-    }
-
-    userStore.fetchNotifications();
-  }, []);
+  const { data: notifications = [] } = useNotifications();
 
   const homeNavLink: NavLinkItem = {
     id: "header-memos",
     path: Routes.ROOT,
     title: t("common.memos"),
     icon: <LibraryIcon className="w-6 h-auto shrink-0" />,
-  };
-  const calendarNavLink: NavLinkItem = {
-    id: "header-calendar",
-    path: Routes.CALENDAR,
-    title: t("common.calendar"),
-    icon: <CalendarIcon className="w-6 h-auto shrink-0" />,
   };
   const exploreNavLink: NavLinkItem = {
     id: "header-explore",
@@ -61,7 +46,7 @@ const Navigation = observer((props: Props) => {
     title: t("common.attachments"),
     icon: <PaperclipIcon className="w-6 h-auto shrink-0" />,
   };
-  const unreadCount = userStore.state.notifications.filter((n) => n.status === UserNotification_Status.UNREAD).length;
+  const unreadCount = notifications.filter((n) => n.status === UserNotification_Status.UNREAD).length;
   const inboxNavLink: NavLinkItem = {
     id: "header-inbox",
     path: Routes.INBOX,
@@ -85,7 +70,7 @@ const Navigation = observer((props: Props) => {
   };
 
   const navLinks: NavLinkItem[] = currentUser
-    ? [homeNavLink, calendarNavLink, exploreNavLink, attachmentsNavLink, inboxNavLink]
+    ? [homeNavLink, exploreNavLink, attachmentsNavLink, inboxNavLink]
     : [exploreNavLink, signInNavLink];
 
   return (
@@ -135,6 +120,6 @@ const Navigation = observer((props: Props) => {
       )}
     </header>
   );
-});
+};
 
 export default Navigation;

@@ -1,5 +1,4 @@
 import { CogIcon, DatabaseIcon, KeyIcon, LibraryIcon, LucideIcon, Settings2Icon, UserIcon, UsersIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import MobileHeader from "@/components/MobileHeader";
@@ -12,9 +11,9 @@ import SectionMenuItem from "@/components/Settings/SectionMenuItem";
 import SSOSection from "@/components/Settings/SSOSection";
 import StorageSection from "@/components/Settings/StorageSection";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import useResponsiveWidth from "@/hooks/useResponsiveWidth";
-import { instanceStore } from "@/store";
+import useMediaQuery from "@/hooks/useMediaQuery";
 import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 import { User_Role } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -37,15 +36,16 @@ const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   sso: KeyIcon,
 };
 
-const Setting = observer(() => {
+const Setting = () => {
   const t = useTranslate();
-  const { md } = useResponsiveWidth();
+  const sm = useMediaQuery("sm");
   const location = useLocation();
   const user = useCurrentUser();
+  const { profile, fetchSetting } = useInstance();
   const [state, setState] = useState<State>({
     selectedSection: "my-account",
   });
-  const isHost = user.role === User_Role.HOST;
+  const isHost = user?.role === User_Role.HOST;
 
   const settingsSectionList = useMemo(() => {
     let settingList = [...BASIC_SECTIONS];
@@ -74,10 +74,10 @@ const Setting = observer(() => {
     // Initial fetch for instance settings.
     (async () => {
       [InstanceSetting_Key.MEMO_RELATED, InstanceSetting_Key.STORAGE].forEach(async (key) => {
-        await instanceStore.fetchInstanceSetting(key);
+        await fetchSetting(key);
       });
     })();
-  }, [isHost]);
+  }, [isHost, fetchSetting]);
 
   const handleSectionSelectorItemClick = useCallback((settingSection: SettingSection) => {
     window.location.hash = settingSection;
@@ -85,57 +85,61 @@ const Setting = observer(() => {
 
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-start sm:pt-3 md:pt-6 pb-8">
-      {!md && <MobileHeader />}
+      {!sm && <MobileHeader />}
       <div className="w-full px-4 sm:px-6">
         <div className="w-full border border-border flex flex-row justify-start items-start px-4 py-3 rounded-xl bg-background text-muted-foreground">
-          <div className="hidden sm:flex flex-col justify-start items-start w-40 h-auto shrink-0 py-2">
-            <span className="text-sm mt-0.5 pl-3 font-mono select-none text-muted-foreground">{t("common.basic")}</span>
-            <div className="w-full flex flex-col justify-start items-start mt-1">
-              {BASIC_SECTIONS.map((item) => (
-                <SectionMenuItem
-                  key={item}
-                  text={t(`setting.${item}`)}
-                  icon={SECTION_ICON_MAP[item]}
-                  isSelected={state.selectedSection === item}
-                  onClick={() => handleSectionSelectorItemClick(item)}
-                />
-              ))}
+          {sm && (
+            <div className="flex flex-col justify-start items-start w-40 h-auto shrink-0 py-2">
+              <span className="text-sm mt-0.5 pl-3 font-mono select-none text-muted-foreground">{t("common.basic")}</span>
+              <div className="w-full flex flex-col justify-start items-start mt-1">
+                {BASIC_SECTIONS.map((item) => (
+                  <SectionMenuItem
+                    key={item}
+                    text={t(`setting.${item}`)}
+                    icon={SECTION_ICON_MAP[item]}
+                    isSelected={state.selectedSection === item}
+                    onClick={() => handleSectionSelectorItemClick(item)}
+                  />
+                ))}
+              </div>
+              {isHost ? (
+                <>
+                  <span className="text-sm mt-4 pl-3 font-mono select-none text-muted-foreground">{t("common.admin")}</span>
+                  <div className="w-full flex flex-col justify-start items-start mt-1">
+                    {ADMIN_SECTIONS.map((item) => (
+                      <SectionMenuItem
+                        key={item}
+                        text={t(`setting.${item}`)}
+                        icon={SECTION_ICON_MAP[item]}
+                        isSelected={state.selectedSection === item}
+                        onClick={() => handleSectionSelectorItemClick(item)}
+                      />
+                    ))}
+                    <span className="px-3 mt-2 opacity-70 text-sm">
+                      {t("setting.version")}: v{profile.version}
+                    </span>
+                  </div>
+                </>
+              ) : null}
             </div>
-            {isHost ? (
-              <>
-                <span className="text-sm mt-4 pl-3 font-mono select-none text-muted-foreground">{t("common.admin")}</span>
-                <div className="w-full flex flex-col justify-start items-start mt-1">
-                  {ADMIN_SECTIONS.map((item) => (
-                    <SectionMenuItem
-                      key={item}
-                      text={t(`setting.${item}`)}
-                      icon={SECTION_ICON_MAP[item]}
-                      isSelected={state.selectedSection === item}
-                      onClick={() => handleSectionSelectorItemClick(item)}
-                    />
-                  ))}
-                  <span className="px-3 mt-2 opacity-70 text-sm">
-                    {t("setting.version")}: v{instanceStore.state.profile.version}
-                  </span>
-                </div>
-              </>
-            ) : null}
-          </div>
+          )}
           <div className="w-full grow sm:pl-4 overflow-x-auto">
-            <div className="w-auto inline-block my-2 sm:hidden">
-              <Select value={state.selectedSection} onValueChange={(value) => handleSectionSelectorItemClick(value as SettingSection)}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select section" />
-                </SelectTrigger>
-                <SelectContent>
-                  {settingsSectionList.map((settingSection) => (
-                    <SelectItem key={settingSection} value={settingSection}>
-                      {t(`setting.${settingSection}`)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {!sm && (
+              <div className="w-auto inline-block my-2">
+                <Select value={state.selectedSection} onValueChange={(value) => handleSectionSelectorItemClick(value as SettingSection)}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select section" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {settingsSectionList.map((settingSection) => (
+                      <SelectItem key={settingSection} value={settingSection}>
+                        {t(`setting.${settingSection}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             {state.selectedSection === "my-account" ? (
               <MyAccountSection />
             ) : state.selectedSection === "preference" ? (
@@ -156,6 +160,6 @@ const Setting = observer(() => {
       </div>
     </section>
   );
-});
+};
 
 export default Setting;

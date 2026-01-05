@@ -3,14 +3,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import VisibilityIcon from "@/components/VisibilityIcon";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import type { VisibilitySelectorProps } from "../types";
 
-interface Props {
-  value: Visibility;
-  onChange: (visibility: Visibility) => void;
-  onOpenChange?: (open: boolean) => void;
-}
-
-const VisibilitySelector = (props: Props) => {
+const VisibilitySelector = (props: VisibilitySelectorProps) => {
   const { value, onChange } = props;
   const t = useTranslate();
 
@@ -18,7 +13,7 @@ const VisibilitySelector = (props: Props) => {
     { value: Visibility.PRIVATE, label: t("memo.visibility.private") },
     { value: Visibility.PROTECTED, label: t("memo.visibility.protected") },
     { value: Visibility.PUBLIC, label: t("memo.visibility.public") },
-  ];
+  ] as const;
 
   const currentLabel = visibilityOptions.find((option) => option.value === value)?.label || "";
 

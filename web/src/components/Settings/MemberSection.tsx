@@ -2,15 +2,14 @@ import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { sortBy } from "lodash-es";
 import { MoreVerticalIcon, PlusIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
-import { userStore } from "@/store";
+import { useDeleteUser, useListUsers } from "@/hooks/useUserQueries";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { User, User_Role } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -19,25 +18,17 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import SettingSection from "./SettingSection";
 import SettingTable from "./SettingTable";
 
-const MemberSection = observer(() => {
+const MemberSection = () => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const [users, setUsers] = useState<User[]>([]);
+  const { data: users = [], refetch: refetchUsers } = useListUsers();
+  const deleteUserMutation = useDeleteUser();
   const createDialog = useDialog();
   const editDialog = useDialog();
   const [editingUser, setEditingUser] = useState<User | undefined>();
   const sortedUsers = sortBy(users, "id");
   const [archiveTarget, setArchiveTarget] = useState<User | undefined>(undefined);
   const [deleteTarget, setDeleteTarget] = useState<User | undefined>(undefined);
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    const users = await userStore.fetchUsers();
-    setUsers(users);
-  };
 
   const stringifyUserRole = (role: User_Role) => {
     if (role === User_Role.HOST) {
@@ -75,7 +66,7 @@ const MemberSection = observer(() => {
     });
     setArchiveTarget(undefined);
     toast.success(t("setting.member-section.archive-success", { username }));
-    await fetchUsers();
+    await refetchUsers();
   };
 
   const handleRestoreUserClick = async (user: User) => {
@@ -88,7 +79,7 @@ const MemberSection = observer(() => {
       updateMask: create(FieldMaskSchema, { paths: ["state"] }),
     });
     toast.success(t("setting.member-section.restore-success", { username }));
-    await fetchUsers();
+    await refetchUsers();
   };
 
   const handleDeleteUserClick = async (user: User) => {
@@ -98,10 +89,9 @@ const MemberSection = observer(() => {
   const confirmDeleteUser = async () => {
     if (!deleteTarget) return;
     const { username, name } = deleteTarget;
-    await userStore.deleteUser(name);
+    deleteUserMutation.mutate(name);
     setDeleteTarget(undefined);
     toast.success(t("setting.member-section.delete-success", { username }));
-    await fetchUsers();
   };
 
   return (
@@ -180,10 +170,10 @@ const MemberSection = observer(() => {
       />
 
       {/* Create User Dialog */}
-      <CreateUserDialog open={createDialog.isOpen} onOpenChange={createDialog.setOpen} onSuccess={fetchUsers} />
+      <CreateUserDialog open={createDialog.isOpen} onOpenChange={createDialog.setOpen} onSuccess={refetchUsers} />
 
       {/* Edit User Dialog */}
-      <CreateUserDialog open={editDialog.isOpen} onOpenChange={editDialog.setOpen} user={editingUser} onSuccess={fetchUsers} />
+      <CreateUserDialog open={editDialog.isOpen} onOpenChange={editDialog.setOpen} user={editingUser} onSuccess={refetchUsers} />
 
       <ConfirmDialog
         open={!!archiveTarget}
@@ -208,6 +198,6 @@ const MemberSection = observer(() => {
       />
     </SettingSection>
   );
-});
+};
 
 export default MemberSection;

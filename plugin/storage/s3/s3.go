@@ -93,6 +93,18 @@ func (c *Client) GetObject(ctx context.Context, key string) ([]byte, error) {
 	return buffer.Bytes(), nil
 }
 
+// GetObjectStream retrieves an object from S3 as a stream.
+func (c *Client) GetObjectStream(ctx context.Context, key string) (io.ReadCloser, error) {
+	output, err := c.Client.GetObject(ctx, &s3.GetObjectInput{
+		Bucket: c.Bucket,
+		Key:    aws.String(key),
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get object")
+	}
+	return output.Body, nil
+}
+
 // DeleteObject deletes an object in S3.
 func (c *Client) DeleteObject(ctx context.Context, key string) error {
 	_, err := c.Client.DeleteObject(ctx, &s3.DeleteObjectInput{

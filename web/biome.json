@@ -84,7 +84,7 @@
 				"noDuplicateObjectKeys": "error",
 				"noDuplicateParameters": "error",
 				"noEmptyBlockStatements": "off",
-				"noExplicitAny": "off",
+				"noExplicitAny": "error",
 				"noExtraNonNullAssertion": "error",
 				"noFallthroughSwitchClause": "error",
 				"noFunctionAssign": "error",

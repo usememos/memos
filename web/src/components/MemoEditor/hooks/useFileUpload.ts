@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import type { LocalFile } from "@/components/memo-metadata";
+import type { LocalFile } from "../types/attachment";
 
 export const useFileUpload = (onFilesSelected: (localFiles: LocalFile[]) => void) => {
   const fileInputRef = useRef<HTMLInputElement>(null);

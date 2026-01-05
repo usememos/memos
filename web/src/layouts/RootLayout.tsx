@@ -1,51 +1,39 @@
-import { observer } from "mobx-react-lite";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo } from "react";
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
 import usePrevious from "react-use/lib/usePrevious";
 import Navigation from "@/components/Navigation";
+import Spinner from "@/components/Spinner";
+import { useInstance } from "@/contexts/InstanceContext";
+import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import useResponsiveWidth from "@/hooks/useResponsiveWidth";
+import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
-import Loading from "@/pages/Loading";
-import { Routes } from "@/router";
-import { instanceStore } from "@/store";
-import memoFilterStore from "@/store/memoFilter";
+import { redirectOnAuthFailure } from "@/utils/auth-redirect";
 
-const RootLayout = observer(() => {
+const RootLayout = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const { sm } = useResponsiveWidth();
+  const sm = useMediaQuery("sm");
   const currentUser = useCurrentUser();
-  const [initialized, setInitialized] = useState(false);
+  const { memoRelatedSetting } = useInstance();
+  const { removeFilter } = useMemoFilterContext();
   const pathname = useMemo(() => location.pathname, [location.pathname]);
   const prevPathname = usePrevious(pathname);
 
   useEffect(() => {
-    if (!currentUser) {
-      // If disallowPublicVisibility is enabled, redirect to the login page if the user is not logged in.
-      if (instanceStore.state.memoRelatedSetting.disallowPublicVisibility) {
-        window.location.href = Routes.AUTH;
-        return;
-      } else if (
-        ([Routes.ROOT, Routes.ATTACHMENTS, Routes.INBOX, Routes.ARCHIVED, Routes.SETTING] as string[]).includes(location.pathname)
-      ) {
-        window.location.href = Routes.EXPLORE;
-        return;
-      }
+    if (!currentUser && memoRelatedSetting.disallowPublicVisibility) {
+      redirectOnAuthFailure();
     }
-    setInitialized(true);
-  }, []);
+  }, [currentUser, memoRelatedSetting.disallowPublicVisibility]);
 
   useEffect(() => {
-    // When the route changes and there is no filter in the search params, remove all filters.
+    // When the route changes and there is no filter in the search params, remove all filters
     if (prevPathname !== pathname && !searchParams.has("filter")) {
-      memoFilterStore.removeFilter(() => true);
+      removeFilter(() => true);
     }
-  }, [prevPathname, pathname, searchParams]);
+  }, [prevPathname, pathname, searchParams, removeFilter]);
 
-  return !initialized ? (
-    <Loading />
-  ) : (
+  return (
     <div className="w-full min-h-full flex flex-row justify-center items-start sm:pl-16">
       {sm && (
         <div
@@ -59,12 +47,18 @@ const RootLayout = observer(() => {
         </div>
       )}
       <main className="w-full h-auto grow shrink flex flex-col justify-start items-center">
-        <Suspense fallback={<Loading />}>
+        <Suspense
+          fallback={
+            <div className="w-full h-64 flex items-center justify-center">
+              <Spinner size="lg" />
+            </div>
+          }
+        >
           <Outlet />
         </Suspense>
       </main>
     </div>
   );
-});
+};
 
 export default RootLayout;

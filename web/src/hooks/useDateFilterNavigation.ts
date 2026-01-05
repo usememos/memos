@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { stringifyFilters } from "@/store/memoFilter";
+import { stringifyFilters } from "@/contexts/MemoFilterContext";
 
 export const useDateFilterNavigation = () => {
   const navigate = useNavigate();

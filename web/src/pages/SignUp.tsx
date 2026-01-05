@@ -1,7 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { LoaderIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -10,20 +9,22 @@ import AuthFooter from "@/components/AuthFooter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authServiceClient, userServiceClient } from "@/connect";
+import { useAuth } from "@/contexts/AuthContext";
+import { useInstance } from "@/contexts/InstanceContext";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { instanceStore } from "@/store";
-import { initialUserStore } from "@/store/user";
+import { handleError } from "@/lib/error";
 import { User_Role, UserSchema } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
-const SignUp = observer(() => {
+const SignUp = () => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const actionBtnLoadingState = useLoading(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const instanceGeneralSetting = instanceStore.state.generalSetting;
+  const { generalSetting: instanceGeneralSetting, profile } = useInstance();
+  const { initialize } = useAuth();
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
@@ -67,12 +68,12 @@ const SignUp = observer(() => {
       if (response.accessToken) {
         setAccessToken(response.accessToken, response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined);
       }
-      await initialUserStore();
+      await initialize();
       navigateTo("/");
     } catch (error: unknown) {
-      console.error(error);
-      const message = error instanceof Error ? error.message : "Sign up failed";
-      toast.error(message);
+      handleError(error, toast.error, {
+        fallbackMessage: "Sign up failed",
+      });
     }
     actionBtnLoadingState.setFinish();
   };
@@ -131,7 +132,7 @@ const SignUp = observer(() => {
         ) : (
           <p className="w-full text-2xl mt-2 text-muted-foreground">Sign up is not allowed.</p>
         )}
-        {!instanceStore.state.profile.owner ? (
+        {!profile.owner ? (
           <p className="w-full mt-4 text-sm font-medium text-muted-foreground">{t("auth.host-tip")}</p>
         ) : (
           <p className="w-full mt-4 text-sm">
@@ -145,6 +146,6 @@ const SignUp = observer(() => {
       <AuthFooter />
     </div>
   );
-});
+};
 
 export default SignUp;

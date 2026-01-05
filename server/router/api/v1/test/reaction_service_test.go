@@ -183,8 +183,9 @@ func TestDeleteMemoReaction(t *testing.T) {
 
 		// Try to delete non-existent reaction - should fail with permission denied
 		// (not "not found" to avoid information disclosure)
+		// Use new nested resource format: memos/{memo}/reactions/{reaction}
 		_, err = ts.Service.DeleteMemoReaction(userCtx, &apiv1.DeleteMemoReactionRequest{
-			Name: "reactions/99999",
+			Name: "memos/nonexistent/reactions/99999",
 		})
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "permission denied")

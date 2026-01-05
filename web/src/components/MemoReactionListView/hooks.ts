@@ -1,31 +1,30 @@
-import { uniq } from "lodash-es";
-import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { memoServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { memoStore, userStore } from "@/store";
+import { memoKeys } from "@/hooks/useMemoQueries";
+import { useUsersByNames } from "@/hooks/useUserQueries";
 import type { Memo, Reaction } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
 
 export type ReactionGroup = Map<string, User[]>;
 
 export const useReactionGroups = (reactions: Reaction[]): ReactionGroup => {
-  const [reactionGroup, setReactionGroup] = useState<ReactionGroup>(new Map());
+  const creatorNames = useMemo(() => reactions.map((r) => r.creator), [reactions]);
+  const { data: userMap } = useUsersByNames(creatorNames);
 
-  useEffect(() => {
-    const fetchReactionGroups = async () => {
-      const newReactionGroup = new Map<string, User[]>();
-      for (const reaction of reactions) {
-        const user = await userStore.getOrFetchUserByName(reaction.creator);
-        const users = newReactionGroup.get(reaction.reactionType) || [];
-        users.push(user);
-        newReactionGroup.set(reaction.reactionType, uniq(users));
-      }
-      setReactionGroup(newReactionGroup);
-    };
-    fetchReactionGroups();
-  }, [reactions]);
+  return useMemo(() => {
+    const reactionGroup = new Map<string, User[]>();
+    for (const reaction of reactions) {
+      const user = userMap?.get(reaction.creator);
+      if (!user) continue;
 
-  return reactionGroup;
+      const users = reactionGroup.get(reaction.reactionType) || [];
+      users.push(user);
+      reactionGroup.set(reaction.reactionType, users);
+    }
+    return reactionGroup;
+  }, [reactions, userMap]);
 };
 
 interface UseReactionActionsOptions {
@@ -35,6 +34,7 @@ interface UseReactionActionsOptions {
 
 export const useReactionActions = ({ memo, onComplete }: UseReactionActionsOptions) => {
   const currentUser = useCurrentUser();
+  const queryClient = useQueryClient();
 
   const hasReacted = (reactionType: string) => {
     return memo.reactions.some((r) => r.reactionType === reactionType && r.creator === currentUser?.name);
@@ -57,7 +57,10 @@ export const useReactionActions = ({ memo, onComplete }: UseReactionActionsOptio
           reaction: { contentId: memo.name, reactionType },
         });
       }
-      await memoStore.getOrFetchMemoByName(memo.name, { skipCache: true });
+      // Refetch the memo to get updated reactions and invalidate cache
+      const updatedMemo = await memoServiceClient.getMemo({ name: memo.name });
+      queryClient.setQueryData(memoKeys.detail(memo.name), updatedMemo);
+      queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
     } catch {
       // skip error
     }

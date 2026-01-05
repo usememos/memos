@@ -1,37 +1,75 @@
 import "@github/relative-time-element";
-import { observer } from "mobx-react-lite";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import React, { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
 import { RouterProvider } from "react-router-dom";
 import "./i18n";
 import "./index.css";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import Spinner from "@/components/Spinner";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { InstanceProvider, useInstance } from "@/contexts/InstanceContext";
+import { ViewProvider } from "@/contexts/ViewContext";
+import { queryClient } from "@/lib/query-client";
 import router from "./router";
-// Configure MobX before importing any stores
-import "./store/config";
-import { initialInstanceStore } from "./store/instance";
-import { initialUserStore } from "./store/user";
 import { applyLocaleEarly } from "./utils/i18n";
 import { applyThemeEarly } from "./utils/theme";
 import "leaflet/dist/leaflet.css";
 
-// Apply theme and locale early to prevent flash of wrong theme/language
-// This uses localStorage as the source before user settings are loaded
+// Apply theme and locale early to prevent flash
 applyThemeEarly();
 applyLocaleEarly();
 
-const Main = observer(() => (
-  <>
-    <RouterProvider router={router} />
-    <Toaster position="top-right" />
-  </>
-));
+// Inner component that initializes contexts
+function AppInitializer({ children }: { children: React.ReactNode }) {
+  const { isInitialized: authInitialized, initialize: initAuth } = useAuth();
+  const { isInitialized: instanceInitialized, initialize: initInstance } = useInstance();
+  const initStartedRef = useRef(false);
 
-(async () => {
-  // Initialize stores
-  await initialInstanceStore();
-  await initialUserStore();
+  // Initialize on mount - run in parallel for better performance
+  useEffect(() => {
+    if (initStartedRef.current) return;
+    initStartedRef.current = true;
 
-  const container = document.getElementById("root");
-  const root = createRoot(container as HTMLElement);
-  root.render(<Main />);
-})();
+    const init = async () => {
+      await Promise.all([initInstance(), initAuth()]);
+    };
+    init();
+  }, [initAuth, initInstance]);
+
+  if (!authInitialized || !instanceInitialized) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+}
+
+function Main() {
+  return (
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <InstanceProvider>
+          <AuthProvider>
+            <ViewProvider>
+              <AppInitializer>
+                <RouterProvider router={router} />
+                <Toaster position="top-right" />
+              </AppInitializer>
+            </ViewProvider>
+          </AuthProvider>
+        </InstanceProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </ErrorBoundary>
+  );
+}
+
+const container = document.getElementById("root");
+const root = createRoot(container as HTMLElement);
+root.render(<Main />);

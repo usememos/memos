@@ -251,8 +251,6 @@ func convertInstanceMemoRelatedSettingFromStore(setting *storepb.InstanceMemoRel
 		ContentLengthLimit:       setting.ContentLengthLimit,
 		EnableDoubleClickEdit:    setting.EnableDoubleClickEdit,
 		Reactions:                setting.Reactions,
-		EnableBlurNsfwContent:    setting.EnableBlurNsfwContent,
-		NsfwTags:                 setting.NsfwTags,
 	}
 }
 
@@ -266,8 +264,6 @@ func convertInstanceMemoRelatedSettingToStore(setting *v1pb.InstanceSetting_Memo
 		ContentLengthLimit:       setting.ContentLengthLimit,
 		EnableDoubleClickEdit:    setting.EnableDoubleClickEdit,
 		Reactions:                setting.Reactions,
-		EnableBlurNsfwContent:    setting.EnableBlurNsfwContent,
-		NsfwTags:                 setting.NsfwTags,
 	}
 }
 

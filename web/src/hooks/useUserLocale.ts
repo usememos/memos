@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { userStore } from "@/store";
+import { useAuth } from "@/contexts/AuthContext";
 import { getLocaleWithFallback, loadLocale } from "@/utils/i18n";
 
 /**
@@ -9,7 +9,7 @@ import { getLocaleWithFallback, loadLocale } from "@/utils/i18n";
  */
 export const useUserLocale = () => {
   const { i18n } = useTranslation();
-  const userGeneralSetting = userStore.state.userGeneralSetting;
+  const { userGeneralSetting } = useAuth();
 
   // Apply locale when user setting changes or user logs in
   useEffect(() => {

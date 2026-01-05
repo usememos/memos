@@ -18,18 +18,22 @@
     "about": "O nas",
     "add": "Dodaj",
     "admin": "Administrator",
+    "all": "Wszystkie",
     "archive": "Archiwum",
     "archived": "Zarchiwizowane",
     "attachments": "Załączniki",
+    "auto-expand": "Rozwiń automatycznie",
     "avatar": "Awatar",
     "basic": "Podstawowy",
     "beta": "Beta",
+    "calendar": "Kalendarz",
     "cancel": "Anuluj",
     "change": "Zmień",
     "clear": "Wyczyść",
     "close": "Zamknij",
     "collapse": "Zwiń",
     "confirm": "Potwierdź",
+    "copy": "Kopiuj",
     "create": "Utwórz",
     "created-at": "Utworzono",
     "database": "Baza danych",
@@ -90,6 +94,7 @@
     "statistics": "Statystyki",
     "tags": "Tagi",
     "title": "Tytuł",
+    "today": "Dziś",
     "tree-mode": "Tryb drzewa",
     "type": "Typ",
     "unpin": "Odepnij",
@@ -99,7 +104,8 @@
     "username": "Nazwa użytkownika",
     "version": "Wersja",
     "visibility": "Widoczność",
-    "yourself": "Ty sam"
+    "yourself": "Ty sam",
+    "more": "Więcej"
   },
   "days": {
     "fri": "Pt",
@@ -114,7 +120,10 @@
     "add-your-comment-here": "Dodaj swój komentarz tutaj...",
     "any-thoughts": "Jakieś przemyślenia...",
     "save": "Zapisz",
-    "no-changes-detected": "Brak wykrytych zmian"
+    "no-changes-detected": "Brak wykrytych zmian",
+    "focus-mode": "Tryb Skupienia",
+    "exit-focus-mode": "Wyjdź z Trybu Skupienia",
+    "slash-commands": "Wciśnij `/` by wydawać komendy"
   },
   "filters": {
     "has-code": "maKod",
@@ -123,7 +132,11 @@
   },
   "inbox": {
     "memo-comment": "{{user}} dodał komentarz do Twojego {{memo}}.",
-    "version-update": "Nowa wersja {{version}} jest już dostępna!"
+    "version-update": "Nowa wersja {{version}} jest już dostępna!",
+    "failed-to-load": "Nie udało się załadować elementu skrzynki odbiorczej",
+    "unread": "Nieprzeczytane",
+    "no-unread": "Brak nieprzeczytanych powiadomień",
+    "no-archived": "Brak zarchiwizowanych powiadomień"
   },
   "markdown": {
     "checkbox": "Pole wyboru",
@@ -139,9 +152,11 @@
       "self": "Komentarze",
       "write-a-comment": "Napisz komentarz"
     },
+    "copy-content": "Kopiuj treść",
     "copy-link": "Kopiuj link",
     "count-memos-in-date": "{{count}} notatek w dniu {{date}}",
-    "delete-confirm": "Czy na pewno chcesz usunąć tę notatkę? TA AKCJA JEST NIEODWRACALNA",
+    "delete-confirm": "Czy na pewno chcesz usunąć tę notatkę?",
+    "delete-confirm-description": "Czy na pewno chcesz usunąć tę notatkę? Załączniki, linki i odnośniki także będą usunięte. TA AKCJA JEST NIEODWRACALNA",
     "direction": "Kierunek",
     "direction-asc": "Rosnąco",
     "direction-desc": "Malejąco",
@@ -185,6 +200,7 @@
     "password-not-match": "Hasła nie pasują do siebie.",
     "remove-completed-task-list-items-successfully": "Pomyślnie usunięto!",
     "restored-successfully": "Przywrócono pomyślnie",
+    "succeed-copy-content": "Treść została pomyślnie skopiowana.",
     "succeed-copy-link": "Link skopiowany pomyślnie.",
     "update-succeed": "Aktualizacja zakończona sukcesem",
     "user-not-found": "Użytkownik nie został znaleziony"
@@ -217,6 +233,10 @@
     },
     "delete-resource": "Usuń zasób",
     "delete-selected-resources": "Usuń wybrane zasoby",
+    "delete-all-unused": "Usuń wszystkie nieużywane",
+    "delete-all-unused-confirm": "Na pewno chcesz usunąć wszystkie nieużywane zasoby?? TA AKCJA JEST NIEODWRACALNA",
+    "delete-all-unused-success": "Zasoby zostały pomyślnie usunięte",
+    "delete-all-unused-error": "Nie udało się usunąć nieużywanych zasobów",
     "fetching-data": "Pobieranie danych…",
     "file-drag-drop-prompt": "Przeciągnij i upuść plik tutaj, aby go przesłać",
     "linked-amount": "Ilość powiązań",
@@ -235,8 +255,11 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "Token dostępu skopiowany do schowka",
-      "access-token-deletion": "Czy na pewno chcesz usunąć token dostępu {{accessToken}}? TA AKCJA JEST NIEODWRACALNA.",
+      "access-token-deletion": "Czy na pewno chcesz usunąć token dostępu {{accessToken}}?",
+      "access-token-deletion-description": "TA AKCJA JEST NIEODWRACALNA. Będziesz musiał zaktualizować wszystkie serwisy korzystające z tego tokena aby używały nowego tokena.",
+      "access-token-deleted": "Token dostępu `{{description}}` został usunięty",
       "create-dialog": {
+        "access-token-created": "Utworzono token dostępu `{{description}}`",
         "create-access-token": "Utwórz token dostępu",
         "created-at": "Utworzono",
         "description": "Opis",
@@ -270,9 +293,14 @@
       "admin": "Administrator",
       "archive-member": "Archiwizuj członka",
       "archive-warning": "Czy na pewno chcesz zarchiwizować {{username}}?",
+      "archive-warning-description": "Archiwizacja zablokuje to konto. Możesz je odblokować lub usunąć później.",
+      "archive-success": "{{username}} pomyślnie zarchiwizowany",
+      "restore-success": "{{username}} pomyślnie odtworzony",
       "create-a-member": "Utwórz członka",
       "delete-member": "Usuń członka",
-      "delete-warning": "Czy na pewno chcesz usunąć {{username}}? TA AKCJA JEST NIEODWRACALNA",
+      "delete-warning": "Czy na pewno chcesz usunąć {{username}}?",
+      "delete-warning-description": "TA AKCJA JEST NIEODWRACALNA",
+      "delete-success": "{{username}} pomyślnie usunięty",
       "user": "Użytkownik"
     },
     "memo-related": "Notatki",
@@ -290,6 +318,10 @@
       "default-memo-sort-option": "Domyślny czas wyświetlania notatek",
       "default-memo-visibility": "Domyślna widoczność notatek",
       "theme": "Motyw"
+    },
+    "shortcut": {
+      "delete-confirm": "Czy na pewno chcesz usunąć skrót `{{title}}`?",
+      "delete-success": "Skróß `{{title}}` usunięty pomyślnie"
     },
     "sso": "SSO",
     "sso-section": {
@@ -384,10 +416,16 @@
       "create-dialog": {
         "an-easy-to-remember-name": "Łatwa do zapamiętania nazwa",
         "create-webhook": "Utwórz webhook",
+        "create-webhook-success": "Webhook `{{name}}` utworzony",
         "edit-webhook": "Edytuj webhook",
         "payload-url": "URL payload",
         "title": "Tytuł",
         "url-example-post-receive": "https://przyklad.com/postreceive"
+      },
+      "delete-dialog": {
+        "delete-webhook-description": "Ta akcja jest nieodwracalna",
+        "delete-webhook-title": "Czy na pewno chcesz usunąć webhook `{{name}}`?",
+        "delete-webhook-success": "Webhook `{{name}}` pomyślnie usunięty"
       },
       "no-webhooks-found": "Nie znaleziono webhooków.",
       "title": "Webhooki",
@@ -410,6 +448,7 @@
     "create-tags-guide": "Możesz tworzyć tagi, wpisując `#tag`.",
     "delete-confirm": "Czy na pewno chcesz usunąć ten tag? Wszystkie powiązane notatki zostaną zarchiwizowane.",
     "delete-tag": "Usuń tag",
+    "delete-success": "Tag został pomyślnie usunięty",
     "new-name": "Nowa nazwa",
     "no-tag-found": "Nie znaleziono tagu",
     "old-name": "Stara nazwa",
@@ -418,5 +457,13 @@
     "rename-success": "Tag został pomyślnie zmieniony",
     "rename-tag": "Zmień nazwę tagu",
     "rename-tip": "Wszystkie Twoje notatki z tym tagiem zostaną zaktualizowane."
+  },
+  "tooltip": {
+    "link-memo": "Podlinkuj Notatkę",
+    "markdown-menu": "Markdown",
+    "select-location": "Lokalizacja",
+    "select-visibility": "Widoczność",
+    "tags": "Tagi",
+    "upload-attachment": "Prześlij Załącznik(i)"
   }
 }

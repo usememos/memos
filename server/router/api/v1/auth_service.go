@@ -271,14 +271,17 @@ func (s *APIV1Service) SignOut(ctx context.Context, _ *v1pb.SignOutRequest) (*em
 
 // RefreshToken exchanges a valid refresh token for a new access token.
 //
-// This endpoint:
+// This endpoint implements refresh token rotation with sliding window sessions:
 // 1. Extracts the refresh token from the HttpOnly cookie (memos_refresh)
 // 2. Validates the refresh token against the database (checking expiry and revocation)
-// 3. Generates a new short-lived access token (15 minutes)
-// 4. Returns the new access token and its expiry time
+// 3. Rotates the refresh token: generates a new one with fresh 30-day expiry
+// 4. Generates a new short-lived access token (15 minutes)
+// 5. Sets the new refresh token as HttpOnly cookie
+// 6. Returns the new access token and its expiry time
 //
-// The refresh token remains valid and is not rotated.
-// Client should store the new access token in memory and use it for API requests.
+// Token rotation provides:
+// - Sliding window sessions: active users stay logged in indefinitely
+// - Better security: stolen refresh tokens become invalid after legitimate refresh
 //
 // Authentication: Requires valid refresh token in cookie (public endpoint)
 // Returns: New access token and expiry timestamp.
@@ -295,12 +298,45 @@ func (s *APIV1Service) RefreshToken(ctx context.Context, _ *v1pb.RefreshTokenReq
 		return nil, status.Errorf(codes.Unauthenticated, "refresh token not found")
 	}
 
-	// Validate refresh token
+	// Validate refresh token and get old token ID for rotation
 	authenticator := auth.NewAuthenticator(s.Store, s.Secret)
-	user, _, err := authenticator.AuthenticateByRefreshToken(ctx, refreshToken)
+	user, oldTokenID, err := authenticator.AuthenticateByRefreshToken(ctx, refreshToken)
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "invalid refresh token: %v", err)
 	}
+
+	// --- Refresh Token Rotation ---
+	// Generate new refresh token with fresh 30-day expiry (sliding window)
+	newTokenID := util.GenUUID()
+	newRefreshToken, newRefreshExpiresAt, err := auth.GenerateRefreshToken(user.ID, newTokenID, []byte(s.Secret))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to generate refresh token: %v", err)
+	}
+
+	// Store new refresh token (add before remove to handle race conditions)
+	clientInfo := s.extractClientInfo(ctx)
+	newRefreshTokenRecord := &storepb.RefreshTokensUserSetting_RefreshToken{
+		TokenId:    newTokenID,
+		ExpiresAt:  timestamppb.New(newRefreshExpiresAt),
+		CreatedAt:  timestamppb.Now(),
+		ClientInfo: clientInfo,
+	}
+	if err := s.Store.AddUserRefreshToken(ctx, user.ID, newRefreshTokenRecord); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to store refresh token: %v", err)
+	}
+
+	// Remove old refresh token
+	if err := s.Store.RemoveUserRefreshToken(ctx, user.ID, oldTokenID); err != nil {
+		// Log but don't fail - old token will expire naturally
+		slog.Warn("failed to remove old refresh token", "error", err, "userID", user.ID, "tokenID", oldTokenID)
+	}
+
+	// Set new refresh token cookie
+	newRefreshCookie := s.buildRefreshTokenCookie(ctx, newRefreshToken, newRefreshExpiresAt)
+	if err := SetResponseHeader(ctx, "Set-Cookie", newRefreshCookie); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to set refresh token cookie: %v", err)
+	}
+	// --- End Rotation ---
 
 	// Generate new access token
 	accessToken, expiresAt, err := auth.GenerateAccessTokenV2(

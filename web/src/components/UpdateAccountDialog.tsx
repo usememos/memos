@@ -1,4 +1,3 @@
-import { create } from "@bufbuild/protobuf";
 import { isEqual } from "lodash-es";
 import { XIcon } from "lucide-react";
 import { useState } from "react";
@@ -8,10 +7,11 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useInstance } from "@/contexts/InstanceContext";
 import { convertFileToBase64 } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { instanceStore, userStore } from "@/store";
-import { User as UserPb, UserSchema } from "@/types/proto/api/v1/user_service_pb";
+import { useUpdateUser } from "@/hooks/useUserQueries";
+import { handleError } from "@/lib/error";
 import { useTranslate } from "@/utils/i18n";
 import UserAvatar from "./UserAvatar";
 
@@ -32,14 +32,15 @@ interface State {
 function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
   const t = useTranslate();
   const currentUser = useCurrentUser();
+  const { generalSetting: instanceGeneralSetting } = useInstance();
+  const { mutateAsync: updateUser } = useUpdateUser();
   const [state, setState] = useState<State>({
-    avatarUrl: currentUser.avatarUrl,
-    username: currentUser.username,
-    displayName: currentUser.displayName,
-    email: currentUser.email,
-    description: currentUser.description,
+    avatarUrl: currentUser?.avatarUrl ?? "",
+    username: currentUser?.username ?? "",
+    displayName: currentUser?.displayName ?? "",
+    email: currentUser?.email ?? "",
+    description: currentUser?.description ?? "",
   });
-  const instanceGeneralSetting = instanceStore.state.generalSetting;
 
   const handleCloseBtnClick = () => {
     onOpenChange(false);
@@ -112,38 +113,39 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
 
     try {
       const updateMask = [];
-      if (!isEqual(currentUser.username, state.username)) {
+      if (!isEqual(currentUser?.username, state.username)) {
         updateMask.push("username");
       }
-      if (!isEqual(currentUser.displayName, state.displayName)) {
+      if (!isEqual(currentUser?.displayName, state.displayName)) {
         updateMask.push("display_name");
       }
-      if (!isEqual(currentUser.email, state.email)) {
+      if (!isEqual(currentUser?.email, state.email)) {
         updateMask.push("email");
       }
-      if (!isEqual(currentUser.avatarUrl, state.avatarUrl)) {
+      if (!isEqual(currentUser?.avatarUrl, state.avatarUrl)) {
         updateMask.push("avatar_url");
       }
-      if (!isEqual(currentUser.description, state.description)) {
+      if (!isEqual(currentUser?.description, state.description)) {
         updateMask.push("description");
       }
-      await userStore.updateUser(
-        create(UserSchema, {
-          name: currentUser.name,
+      await updateUser({
+        user: {
+          name: currentUser?.name,
           username: state.username,
           displayName: state.displayName,
           email: state.email,
           avatarUrl: state.avatarUrl,
           description: state.description,
-        }),
+        },
         updateMask,
-      );
+      });
       toast.success(t("message.update-succeed"));
       onSuccess?.();
       onOpenChange(false);
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.message);
+    } catch (error: unknown) {
+      await handleError(error, toast.error, {
+        context: "Update account",
+      });
     }
   };
 

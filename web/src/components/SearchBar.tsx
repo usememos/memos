@@ -1,27 +1,15 @@
 import { SearchIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { cn } from "@/lib/utils";
-import { memoFilterStore } from "@/store";
 import { useTranslate } from "@/utils/i18n";
 import MemoDisplaySettingMenu from "./MemoDisplaySettingMenu";
 
-const SearchBar = observer(() => {
+const SearchBar = () => {
   const t = useTranslate();
+  const { addFilter } = useMemoFilterContext();
   const [queryText, setQueryText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const handleGlobalShortcut = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key === "/") {
-        event.preventDefault();
-        inputRef.current?.focus();
-      }
-    };
-
-    window.addEventListener("keydown", handleGlobalShortcut);
-    return () => window.removeEventListener("keydown", handleGlobalShortcut);
-  }, []);
 
   const onTextChange = (event: React.FormEvent<HTMLInputElement>) => {
     setQueryText(event.currentTarget.value);
@@ -34,7 +22,7 @@ const SearchBar = observer(() => {
       if (trimmedText !== "") {
         const words = trimmedText.split(/\s+/);
         words.forEach((word) => {
-          memoFilterStore.addFilter({
+          addFilter({
             factor: "contentSearch",
             value: word,
           });
@@ -58,6 +46,6 @@ const SearchBar = observer(() => {
       <MemoDisplaySettingMenu className="absolute right-2 top-2 text-sidebar-foreground" />
     </div>
   );
-});
+};
 
 export default SearchBar;

@@ -125,8 +125,11 @@ func NewSchema() Schema {
 			Type:   FieldTypeTimestamp,
 			Column: Column{Table: "memo", Name: "created_ts"},
 			Expressions: map[DialectName]string{
-				DialectMySQL:    "UNIX_TIMESTAMP(%s)",
-				DialectPostgres: "EXTRACT(EPOCH FROM TO_TIMESTAMP(%s))",
+				// MySQL stores created_ts as TIMESTAMP, needs conversion to epoch
+				DialectMySQL: "UNIX_TIMESTAMP(%s)",
+				// PostgreSQL and SQLite store created_ts as BIGINT (epoch), no conversion needed
+				DialectPostgres: "%s",
+				DialectSQLite:   "%s",
 			},
 		},
 		"updated_ts": {
@@ -135,8 +138,11 @@ func NewSchema() Schema {
 			Type:   FieldTypeTimestamp,
 			Column: Column{Table: "memo", Name: "updated_ts"},
 			Expressions: map[DialectName]string{
-				DialectMySQL:    "UNIX_TIMESTAMP(%s)",
-				DialectPostgres: "EXTRACT(EPOCH FROM TO_TIMESTAMP(%s))",
+				// MySQL stores updated_ts as TIMESTAMP, needs conversion to epoch
+				DialectMySQL: "UNIX_TIMESTAMP(%s)",
+				// PostgreSQL and SQLite store updated_ts as BIGINT (epoch), no conversion needed
+				DialectPostgres: "%s",
+				DialectSQLite:   "%s",
 			},
 		},
 		"pinned": {
@@ -238,6 +244,65 @@ func NewSchema() Schema {
 
 	return Schema{
 		Name:       "memo",
+		Fields:     fields,
+		EnvOptions: envOptions,
+	}
+}
+
+// NewAttachmentSchema constructs the attachment filter schema and CEL environment.
+func NewAttachmentSchema() Schema {
+	fields := map[string]Field{
+		"filename": {
+			Name:             "filename",
+			Kind:             FieldKindScalar,
+			Type:             FieldTypeString,
+			Column:           Column{Table: "resource", Name: "filename"},
+			SupportsContains: true,
+			Expressions:      map[DialectName]string{},
+		},
+		"mime_type": {
+			Name:        "mime_type",
+			Kind:        FieldKindScalar,
+			Type:        FieldTypeString,
+			Column:      Column{Table: "resource", Name: "type"},
+			Expressions: map[DialectName]string{},
+		},
+		"create_time": {
+			Name:   "create_time",
+			Kind:   FieldKindScalar,
+			Type:   FieldTypeTimestamp,
+			Column: Column{Table: "resource", Name: "created_ts"},
+			Expressions: map[DialectName]string{
+				// MySQL stores created_ts as TIMESTAMP, needs conversion to epoch
+				DialectMySQL: "UNIX_TIMESTAMP(%s)",
+				// PostgreSQL and SQLite store created_ts as BIGINT (epoch), no conversion needed
+				DialectPostgres: "%s",
+				DialectSQLite:   "%s",
+			},
+		},
+		"memo_id": {
+			Name:        "memo_id",
+			Kind:        FieldKindScalar,
+			Type:        FieldTypeInt,
+			Column:      Column{Table: "resource", Name: "memo_id"},
+			Expressions: map[DialectName]string{},
+			AllowedComparisonOps: map[ComparisonOperator]bool{
+				CompareEq:  true,
+				CompareNeq: true,
+			},
+		},
+	}
+
+	envOptions := []cel.EnvOption{
+		cel.Variable("filename", cel.StringType),
+		cel.Variable("mime_type", cel.StringType),
+		cel.Variable("create_time", cel.IntType),
+		cel.Variable("memo_id", cel.IntType),
+		nowFunction,
+	}
+
+	return Schema{
+		Name:       "attachment",
 		Fields:     fields,
 		EnvOptions: envOptions,
 	}

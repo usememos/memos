@@ -90,11 +90,12 @@ func (p *IdentityProvider) UserInfo(token string) (*idp.IdentityProviderUserInfo
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get user information")
 	}
+	defer resp.Body.Close()
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to read response body")
 	}
-	defer resp.Body.Close()
 
 	var claims map[string]any
 	if err := json.Unmarshal(body, &claims); err != nil {

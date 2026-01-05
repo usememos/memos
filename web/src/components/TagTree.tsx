@@ -1,8 +1,7 @@
 import { ChevronRightIcon, HashIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import useToggle from "react-use/lib/useToggle";
-import memoFilterStore, { MemoFilter } from "@/store/memoFilter";
+import { type MemoFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 
 interface Tag {
   key: string;
@@ -86,9 +85,10 @@ interface TagItemContainerProps {
   expandSubTags: boolean;
 }
 
-const TagItemContainer = observer((props: TagItemContainerProps) => {
+const TagItemContainer = (props: TagItemContainerProps) => {
   const { tag, expandSubTags } = props;
-  const tagFilters = memoFilterStore.getFiltersByFactor("tagSearch");
+  const { getFiltersByFactor, addFilter, removeFilter } = useMemoFilterContext();
+  const tagFilters = getFiltersByFactor("tagSearch");
   const isActive = tagFilters.some((f: MemoFilter) => f.value === tag.text);
   const hasSubTags = tag.subTags.length > 0;
   const [showSubTags, toggleSubTags] = useToggle(false);
@@ -99,11 +99,11 @@ const TagItemContainer = observer((props: TagItemContainerProps) => {
 
   const handleTagClick = () => {
     if (isActive) {
-      memoFilterStore.removeFilter((f: MemoFilter) => f.factor === "tagSearch" && f.value === tag.text);
+      removeFilter((f: MemoFilter) => f.factor === "tagSearch" && f.value === tag.text);
     } else {
       // Remove all existing tag filters first, then add the new one
-      memoFilterStore.removeFilter((f: MemoFilter) => f.factor === "tagSearch");
-      memoFilterStore.addFilter({
+      removeFilter((f: MemoFilter) => f.factor === "tagSearch");
+      addFilter({
         factor: "tagSearch",
         value: tag.text,
       });
@@ -155,6 +155,6 @@ const TagItemContainer = observer((props: TagItemContainerProps) => {
       ) : null}
     </>
   );
-});
+};
 
 export default TagTree;

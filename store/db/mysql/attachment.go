@@ -9,6 +9,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"github.com/usememos/memos/plugin/filter"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -81,6 +82,16 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 	}
 	if find.StorageType != nil {
 		where, args = append(where, "`resource`.`storage_type` = ?"), append(args, find.StorageType.String())
+	}
+
+	if len(find.Filters) > 0 {
+		engine, err := filter.DefaultAttachmentEngine()
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get filter engine")
+		}
+		if err := filter.AppendConditions(ctx, engine, find.Filters, filter.DialectMySQL, &where, &args); err != nil {
+			return nil, errors.Wrap(err, "failed to append filter conditions")
+		}
 	}
 
 	fields := []string{

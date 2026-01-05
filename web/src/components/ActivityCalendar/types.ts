@@ -20,10 +20,19 @@ export interface CalendarMatrixResult {
   maxCount: number;
 }
 
-export interface CompactMonthCalendarProps {
+export interface MonthCalendarProps {
   month: string;
   data: Record<string, number>;
   maxCount: number;
   size?: CalendarSize;
   onClick?: (date: string) => void;
+  className?: string;
+}
+
+export interface YearCalendarProps {
+  selectedYear: number;
+  data: Record<string, number>;
+  onYearChange: (year: number) => void;
+  onDateClick: (date: string) => void;
+  className?: string;
 }

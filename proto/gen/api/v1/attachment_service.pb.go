@@ -201,9 +201,9 @@ type ListAttachmentsRequest struct {
 	// Provide this to retrieve the subsequent page.
 	PageToken string `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Optional. Filter to apply to the list results.
-	// Example: "type=image/png" or "filename:*.jpg"
-	// Supported operators: =, !=, <, <=, >, >=, :
-	// Supported fields: filename, type, size, create_time, memo
+	// Example: "mime_type==\"image/png\"" or "filename.contains(\"test\")"
+	// Supported operators: =, !=, <, <=, >, >=, : (contains), in
+	// Supported fields: filename, mime_type, create_time, memo
 	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. The order to sort results by.
 	// Example: "create_time desc" or "filename asc"

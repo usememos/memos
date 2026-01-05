@@ -1,6 +1,7 @@
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
 import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react";
 import * as React from "react";
+import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 const DropdownMenu = React.forwardRef<
@@ -200,6 +201,58 @@ function DropdownMenuSubContent({ className, ...props }: React.ComponentProps<ty
   );
 }
 
+/**
+ * Hook for managing submenu hover behavior with delayed close.
+ * Prevents accidental submenu closure on quick mouse movements.
+ *
+ * @param closeDelay - Delay in ms before closing submenu when leaving trigger/content
+ * @param onOpenChange - Callback to update submenu open state
+ * @returns Object with event handlers and state management utilities
+ */
+function useDropdownMenuSubHoverDelay(closeDelay = 150, onOpenChange?: (open: boolean) => void) {
+  const closeTimeoutRef = useRef<number | null>(null);
+
+  const clearCloseTimeout = () => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+  };
+
+  const scheduleClose = (delay = 0) => {
+    clearCloseTimeout();
+    closeTimeoutRef.current = window.setTimeout(() => onOpenChange?.(false), delay);
+  };
+
+  const handleTriggerEnter = () => {
+    clearCloseTimeout();
+    onOpenChange?.(true);
+  };
+
+  const handleTriggerLeave = () => {
+    scheduleClose(closeDelay);
+  };
+
+  const handleContentEnter = () => {
+    clearCloseTimeout();
+  };
+
+  const handleContentLeave = () => {
+    scheduleClose();
+  };
+
+  useEffect(() => {
+    return () => clearCloseTimeout();
+  }, []);
+
+  return {
+    handleTriggerEnter,
+    handleTriggerLeave,
+    handleContentEnter,
+    handleContentLeave,
+  };
+}
+
 export {
   DropdownMenu,
   DropdownMenuPortal,
@@ -216,4 +269,5 @@ export {
   DropdownMenuSub,
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
+  useDropdownMenuSubHoverDelay,
 };

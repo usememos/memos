@@ -1,11 +1,22 @@
+import type { Element } from "hast";
 import React from "react";
+import { isTagElement, isTaskListItemElement } from "@/types/markdown";
 
-export const createConditionalComponent = <P extends Record<string, any>>(
+/**
+ * Creates a conditional component that renders different components
+ * based on AST node type detection
+ *
+ * @param CustomComponent - Custom component to render when condition matches
+ * @param DefaultComponent - Default component/element to render otherwise
+ * @param condition - Function to test AST node
+ * @returns Conditional wrapper component
+ */
+export const createConditionalComponent = <P extends Record<string, unknown>>(
   CustomComponent: React.ComponentType<P>,
   DefaultComponent: React.ComponentType<P> | keyof JSX.IntrinsicElements,
-  condition: (node: any) => boolean,
+  condition: (node: Element) => boolean,
 ) => {
-  return (props: P & { node?: any }) => {
+  return (props: P & { node?: Element }) => {
     const { node, ...restProps } = props;
 
     // Check AST node to determine which component to use
@@ -21,17 +32,5 @@ export const createConditionalComponent = <P extends Record<string, any>>(
   };
 };
 
-// Condition checkers for AST node types
-export const isTagNode = (node: any): boolean => {
-  // Check preserved mdast type first
-  if (node?.data?.mdastType === "tagNode") {
-    return true;
-  }
-  // Fallback: check hast properties
-  return node?.properties?.className?.includes?.("tag") || false;
-};
-
-export const isTaskListItemNode = (node: any): boolean => {
-  // Task list checkboxes are standard GFM - check element type
-  return node?.properties?.type === "checkbox" || false;
-};
+// Re-export type guards for convenience
+export { isTagElement as isTagNode, isTaskListItemElement as isTaskListItemNode };

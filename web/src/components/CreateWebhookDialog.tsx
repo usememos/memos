@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
+import { handleError } from "@/lib/error";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
@@ -107,10 +108,11 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
       onSuccess?.();
       onOpenChange(false);
       requestState.setFinish();
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.message);
-      requestState.setError();
+    } catch (error: unknown) {
+      handleError(error, toast.error, {
+        context: webhookName ? "Update webhook" : "Create webhook",
+        onError: () => requestState.setError(),
+      });
     }
   };
 

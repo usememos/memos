@@ -1,13 +1,13 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import { LoaderIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { setAccessToken } from "@/auth-state";
+import Spinner from "@/components/Spinner";
 import { authServiceClient } from "@/connect";
+import { useAuth } from "@/contexts/AuthContext";
 import { absolutifyLink } from "@/helpers/utils";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { initialUserStore } from "@/store/user";
+import { handleError } from "@/lib/error";
 import { validateOAuthState } from "@/utils/oauth";
 
 interface State {
@@ -15,8 +15,9 @@ interface State {
   errorMessage: string;
 }
 
-const AuthCallback = observer(() => {
+const AuthCallback = () => {
   const navigateTo = useNavigateTo();
+  const { initialize } = useAuth();
   const [searchParams] = useSearchParams();
   const [state, setState] = useState<State>({
     loading: true,
@@ -91,15 +92,19 @@ const AuthCallback = observer(() => {
           loading: false,
           errorMessage: "",
         });
-        await initialUserStore();
+        await initialize();
         // Redirect to return URL if specified, otherwise home
         navigateTo(returnUrl || "/");
       } catch (error: unknown) {
-        console.error(error);
-        const message = error instanceof Error ? error.message : "Failed to authenticate.";
-        setState({
-          loading: false,
-          errorMessage: message,
+        handleError(error, () => {}, {
+          fallbackMessage: "Failed to authenticate.",
+          onError: (err) => {
+            const message = err instanceof Error ? err.message : "Failed to authenticate.";
+            setState({
+              loading: false,
+              errorMessage: message,
+            });
+          },
         });
       }
     })();
@@ -108,12 +113,12 @@ const AuthCallback = observer(() => {
   return (
     <div className="p-4 py-24 w-full h-full flex justify-center items-center">
       {state.loading ? (
-        <LoaderIcon className="animate-spin text-foreground" />
+        <Spinner size="lg" />
       ) : (
         <div className="max-w-lg font-mono whitespace-pre-wrap opacity-80">{state.errorMessage}</div>
       )}
     </div>
   );
-});
+};
 
 export default AuthCallback;

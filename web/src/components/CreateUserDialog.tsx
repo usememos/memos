@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { userServiceClient } from "@/connect";
 import useLoading from "@/hooks/useLoading";
+import { handleError } from "@/lib/error";
 import { User, User_Role, UserSchema } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
@@ -68,10 +69,11 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
       requestState.setFinish();
       onSuccess?.();
       onOpenChange(false);
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.message);
-      requestState.setError();
+    } catch (error: unknown) {
+      handleError(error, toast.error, {
+        context: user ? "Update user" : "Create user",
+        onError: () => requestState.setError(),
+      });
     }
   };
 

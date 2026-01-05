@@ -1,48 +1,36 @@
-import { observer } from "mobx-react-lite";
 import { memo, useMemo, useRef, useState } from "react";
+import useCurrentUser from "@/hooks/useCurrentUser";
+import { useUser } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
-import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import { State } from "@/types/proto/api/v1/common_pb";
+import { isSuperUser } from "@/utils/user";
 import MemoEditor from "../MemoEditor";
 import PreviewImageDialog from "../PreviewImageDialog";
 import { MemoBody, MemoHeader } from "./components";
 import { MEMO_CARD_BASE_CLASSES } from "./constants";
-import {
-  useImagePreview,
-  useKeyboardShortcuts,
-  useMemoActions,
-  useMemoCreator,
-  useMemoEditor,
-  useMemoHandlers,
-  useMemoViewDerivedState,
-  useNsfwContent,
-} from "./hooks";
+import { useImagePreview, useMemoActions, useMemoHandlers, useNsfwContent } from "./hooks";
 import { MemoViewContext } from "./MemoViewContext";
+import type { MemoViewProps } from "./types";
 
-interface Props {
-  memo: Memo;
-  compact?: boolean;
-  showCreator?: boolean;
-  showVisibility?: boolean;
-  showPinned?: boolean;
-  showNsfwContent?: boolean;
-  className?: string;
-  parentPage?: string;
-}
-
-const MemoView: React.FC<Props> = observer((props: Props) => {
-  const { memo: memoData, className } = props;
+const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
+  const { memo: memoData, className, parentPage: parentPageProp } = props;
   const cardRef = useRef<HTMLDivElement>(null);
-  const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
 
-  const creator = useMemoCreator(memoData.creator);
-  const { commentAmount, relativeTimeFormat, isArchived, readonly, isInMemoDetailPage, parentPage } = useMemoViewDerivedState(
-    memoData,
-    props.parentPage,
-  );
+  const currentUser = useCurrentUser();
+  const creator = useUser(memoData.creator).data;
+  const isArchived = memoData.state === State.ARCHIVED;
+  const readonly = memoData.creator !== currentUser?.name && !isSuperUser(currentUser);
+  const parentPage = parentPageProp || "/";
+
   const { nsfw, showNSFWContent, toggleNsfwVisibility } = useNsfwContent(memoData, props.showNsfwContent);
   const { previewState, openPreview, setPreviewOpen } = useImagePreview();
-  const { showEditor, openEditor, handleEditorConfirm, handleEditorCancel } = useMemoEditor();
-  const { archiveMemo, unpinMemo } = useMemoActions(memoData);
+  const { unpinMemo } = useMemoActions(memoData, isArchived);
+
+  const handleEditorConfirm = () => setShowEditor(false);
+  const handleEditorCancel = () => setShowEditor(false);
+  const openEditor = () => setShowEditor(true);
+
   const { handleGotoMemoDetailPage, handleMemoContentClick, handleMemoContentDoubleClick } = useMemoHandlers({
     memoName: memoData.name,
     parentPage,
@@ -50,29 +38,19 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
     openEditor,
     openPreview,
   });
-  useKeyboardShortcuts(cardRef, {
-    enabled: true,
-    readonly,
-    showEditor,
-    isArchived,
-    onEdit: openEditor,
-    onArchive: archiveMemo,
-  });
 
   const contextValue = useMemo(
     () => ({
       memo: memoData,
       creator,
+      currentUser,
+      parentPage,
       isArchived,
       readonly,
-      isInMemoDetailPage,
-      parentPage,
-      commentAmount,
-      relativeTimeFormat,
-      nsfw,
       showNSFWContent,
+      nsfw,
     }),
-    [memoData, creator, isArchived, readonly, isInMemoDetailPage, parentPage, commentAmount, relativeTimeFormat, nsfw, showNSFWContent],
+    [memoData, creator, currentUser, parentPage, isArchived, readonly, showNSFWContent, nsfw],
   );
 
   if (showEditor) {
@@ -99,8 +77,6 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
           onGotoDetail={handleGotoMemoDetailPage}
           onUnpin={unpinMemo}
           onToggleNsfwVisibility={toggleNsfwVisibility}
-          reactionSelectorOpen={reactionSelectorOpen}
-          onReactionSelectorOpenChange={setReactionSelectorOpen}
         />
 
         <MemoBody
@@ -119,6 +95,6 @@ const MemoView: React.FC<Props> = observer((props: Props) => {
       </article>
     </MemoViewContext.Provider>
   );
-});
+};
 
 export default memo(MemoView);

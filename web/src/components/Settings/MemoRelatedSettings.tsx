@@ -1,15 +1,14 @@
 import { create } from "@bufbuild/protobuf";
 import { isEqual, uniq } from "lodash-es";
 import { CheckIcon, X } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { instanceStore } from "@/store";
-import { buildInstanceSettingName } from "@/store/common";
+import { useInstance } from "@/contexts/InstanceContext";
+import { handleError } from "@/lib/error";
 import {
   InstanceSetting_Key,
   InstanceSetting_MemoRelatedSetting,
@@ -21,12 +20,11 @@ import SettingGroup from "./SettingGroup";
 import SettingRow from "./SettingRow";
 import SettingSection from "./SettingSection";
 
-const MemoRelatedSettings = observer(() => {
+const MemoRelatedSettings = () => {
   const t = useTranslate();
-  const [originalSetting, setOriginalSetting] = useState<InstanceSetting_MemoRelatedSetting>(instanceStore.state.memoRelatedSetting);
+  const { memoRelatedSetting: originalSetting, updateSetting, fetchSetting } = useInstance();
   const [memoRelatedSetting, setMemoRelatedSetting] = useState<InstanceSetting_MemoRelatedSetting>(originalSetting);
   const [editingReaction, setEditingReaction] = useState<string>("");
-  const [editingNsfwTag, setEditingNsfwTag] = useState<string>("");
 
   const updatePartialSetting = (partial: Partial<InstanceSetting_MemoRelatedSetting>) => {
     const newInstanceMemoRelatedSetting = create(InstanceSetting_MemoRelatedSettingSchema, {
@@ -45,36 +43,28 @@ const MemoRelatedSettings = observer(() => {
     setEditingReaction("");
   };
 
-  const upsertNsfwTags = () => {
-    if (!editingNsfwTag) {
-      return;
-    }
-
-    updatePartialSetting({ nsfwTags: uniq([...memoRelatedSetting.nsfwTags, editingNsfwTag.trim()]) });
-    setEditingNsfwTag("");
-  };
-
-  const updateSetting = async () => {
+  const handleUpdateSetting = async () => {
     if (memoRelatedSetting.reactions.length === 0) {
       toast.error("Reactions must not be empty.");
       return;
     }
 
     try {
-      await instanceStore.upsertInstanceSetting(
+      await updateSetting(
         create(InstanceSettingSchema, {
-          name: buildInstanceSettingName(InstanceSetting_Key.MEMO_RELATED),
+          name: `instance/settings/${InstanceSetting_Key[InstanceSetting_Key.MEMO_RELATED]}`,
           value: {
             case: "memoRelatedSetting",
             value: memoRelatedSetting,
           },
         }),
       );
-      setOriginalSetting(memoRelatedSetting);
+      await fetchSetting(InstanceSetting_Key.MEMO_RELATED);
       toast.success(t("message.update-succeed"));
-    } catch (error: any) {
-      toast.error(error.message);
-      console.error(error);
+    } catch (error: unknown) {
+      await handleError(error, toast.error, {
+        context: "Update memo-related settings",
+      });
     }
   };
 
@@ -140,51 +130,13 @@ const MemoRelatedSettings = observer(() => {
         </div>
       </SettingGroup>
 
-      <SettingGroup showSeparator>
-        <SettingRow label={t("setting.memo-related-settings.enable-blur-nsfw-content")}>
-          <Switch
-            checked={memoRelatedSetting.enableBlurNsfwContent}
-            onCheckedChange={(checked) => updatePartialSetting({ enableBlurNsfwContent: checked })}
-          />
-        </SettingRow>
-
-        <div className="w-full flex flex-col gap-2">
-          <span className="text-sm text-muted-foreground">NSFW Tags</span>
-          <div className="w-full flex flex-row flex-wrap gap-2">
-            {memoRelatedSetting.nsfwTags.map((nsfwTag) => (
-              <Badge key={nsfwTag} variant="outline" className="flex items-center gap-1.5 h-8 px-3">
-                {nsfwTag}
-                <span
-                  className="cursor-pointer text-muted-foreground hover:text-destructive"
-                  onClick={() => updatePartialSetting({ nsfwTags: memoRelatedSetting.nsfwTags.filter((r) => r !== nsfwTag) })}
-                >
-                  <X className="w-3.5 h-3.5" />
-                </span>
-              </Badge>
-            ))}
-            <div className="flex items-center gap-1.5">
-              <Input
-                className="w-32 h-8"
-                placeholder={t("common.input")}
-                value={editingNsfwTag}
-                onChange={(event) => setEditingNsfwTag(event.target.value.trim())}
-                onKeyDown={(e) => e.key === "Enter" && upsertNsfwTags()}
-              />
-              <Button variant="ghost" size="sm" onClick={upsertNsfwTags} className="h-8 w-8 p-0">
-                <CheckIcon className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </SettingGroup>
-
       <div className="w-full flex justify-end">
-        <Button disabled={isEqual(memoRelatedSetting, originalSetting)} onClick={updateSetting}>
+        <Button disabled={isEqual(memoRelatedSetting, originalSetting)} onClick={handleUpdateSetting}>
           {t("common.save")}
         </Button>
       </div>
     </SettingSection>
   );
-});
+};
 
 export default MemoRelatedSettings;

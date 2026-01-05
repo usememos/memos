@@ -1,31 +1,34 @@
-import { timestampDate } from "@bufbuild/protobuf/wkt";
+import { create } from "@bufbuild/protobuf";
+import { FieldMaskSchema, timestampDate } from "@bufbuild/protobuf/wkt";
 import { CheckIcon, MessageCircleIcon, TrashIcon, XIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import UserAvatar from "@/components/UserAvatar";
-import { activityServiceClient } from "@/connect";
+import { activityServiceClient, memoServiceClient, userServiceClient } from "@/connect";
+import { activityNamePrefix } from "@/helpers/resource-names";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useNavigateTo from "@/hooks/useNavigateTo";
+import { useUser } from "@/hooks/useUserQueries";
+import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
-import { memoStore, userStore } from "@/store";
-import { activityNamePrefix } from "@/store/common";
 import { Memo } from "@/types/proto/api/v1/memo_service_pb";
-import { User, UserNotification, UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
+import { UserNotification, UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
   notification: UserNotification;
 }
 
-const MemoCommentMessage = observer(({ notification }: Props) => {
+function MemoCommentMessage({ notification }: Props) {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const [relatedMemo, setRelatedMemo] = useState<Memo | undefined>(undefined);
   const [commentMemo, setCommentMemo] = useState<Memo | undefined>(undefined);
-  const [sender, setSender] = useState<User | undefined>(undefined);
+  const [senderName, setSenderName] = useState<string | undefined>(undefined);
   const [initialized, setInitialized] = useState<boolean>(false);
   const [hasError, setHasError] = useState<boolean>(false);
+
+  const { data: sender } = useUser(senderName || "", { enabled: !!senderName });
 
   useAsyncEffect(async () => {
     if (!notification.activityId) {
@@ -39,24 +42,24 @@ const MemoCommentMessage = observer(({ notification }: Props) => {
 
       if (activity.payload?.payload?.case === "memoComment") {
         const memoCommentPayload = activity.payload.payload.value;
-        const memo = await memoStore.getOrFetchMemoByName(memoCommentPayload.relatedMemo, {
-          skipStore: true,
+        const memo = await memoServiceClient.getMemo({
+          name: memoCommentPayload.relatedMemo,
         });
         setRelatedMemo(memo);
 
-        // Fetch the comment memo
-        const comment = await memoStore.getOrFetchMemoByName(memoCommentPayload.memo, {
-          skipStore: true,
+        const comment = await memoServiceClient.getMemo({
+          name: memoCommentPayload.memo,
         });
         setCommentMemo(comment);
 
-        const sender = await userStore.getOrFetchUserByName(notification.sender);
-        setSender(sender);
+        setSenderName(notification.sender);
         setInitialized(true);
       }
     } catch (error) {
-      console.error("Failed to fetch activity:", error);
-      setHasError(true);
+      handleError(error, () => {}, {
+        context: "Failed to fetch activity",
+        onError: () => setHasError(true),
+      });
       return;
     }
   }, [notification.activityId]);
@@ -73,20 +76,22 @@ const MemoCommentMessage = observer(({ notification }: Props) => {
   };
 
   const handleArchiveMessage = async (silence = false) => {
-    await userStore.updateNotification(
-      {
+    await userServiceClient.updateUserNotification({
+      notification: {
         name: notification.name,
         status: UserNotification_Status.ARCHIVED,
       },
-      ["status"],
-    );
+      updateMask: create(FieldMaskSchema, { paths: ["status"] }),
+    });
     if (!silence) {
       toast.success(t("message.archived-successfully"));
     }
   };
 
   const handleDeleteMessage = async () => {
-    await userStore.deleteNotification(notification.name);
+    await userServiceClient.deleteUserNotification({
+      name: notification.name,
+    });
     toast.success(t("message.deleted-successfully"));
   };
 
@@ -222,6 +227,6 @@ const MemoCommentMessage = observer(({ notification }: Props) => {
       </div>
     </div>
   );
-});
+}
 
 export default MemoCommentMessage;

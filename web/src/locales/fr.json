@@ -18,18 +18,22 @@
     "about": "À propos",
     "add": "Ajouter",
     "admin": "Admin",
+    "all": "Tout",
     "archive": "Archiver",
     "archived": "Archivé",
     "attachments": "Pièces jointes",
+    "auto-expand": "Déplier automatiquement",
     "avatar": "Avatar",
     "basic": "Basique",
     "beta": "Bêta",
+    "calendar": "Calendrier",
     "cancel": "Annuler",
     "change": "Changer",
     "clear": "Effacer",
     "close": "Fermer",
     "collapse": "Réduire",
     "confirm": "Confirmer",
+    "copy": "Copier",
     "create": "Créer",
     "created-at": "Créé le",
     "database": "Base de données",
@@ -53,9 +57,11 @@
     "layout": "Disposition",
     "learn-more": "En savoir plus",
     "link": "Lien",
+    "map": "Carte",
     "mark": "Marquer",
     "memo": "Memo",
     "memos": "Memos",
+    "more": "Plus",
     "name": "Nom",
     "new": "Nouveau",
     "nickname": "Surnom",
@@ -90,6 +96,7 @@
     "statistics": "Statistiques",
     "tags": "Tags",
     "title": "Titre",
+    "today": "Aujourd'hui",
     "tree-mode": "Mode arborescence",
     "type": "Type",
     "unpin": "Désépingler",
@@ -113,8 +120,11 @@
   "editor": {
     "add-your-comment-here": "Ajoutez votre commentaire ici...",
     "any-thoughts": "Des idées...",
+    "exit-focus-mode": "Quitter le mode concentration",
+    "focus-mode": "Mode concentration",
+    "no-changes-detected": "Aucun changement détecté",
     "save": "Enregistrer",
-    "no-changes-detected": "Aucun changement détecté"
+    "slash-commands": "Tapez `/` pour les commandes"
   },
   "filters": {
     "has-code": "aCode",
@@ -122,7 +132,11 @@
     "has-task-list": "aListeTâches"
   },
   "inbox": {
+    "failed-to-load": "Échec du chargement de l'élément",
     "memo-comment": "{{user}} a commenté votre {{memo}}.",
+    "no-archived": "Aucune notification archivée",
+    "no-unread": "Aucune notification non lue",
+    "unread": "Non lu",
     "version-update": "La nouvelle version {{version}} est disponible !"
   },
   "markdown": {
@@ -139,9 +153,11 @@
       "self": "Commentaires",
       "write-a-comment": "Écrire un commentaire"
     },
+    "copy-content": "Copier le contenu",
     "copy-link": "Copier le lien",
     "count-memos-in-date": "{{count}} {{memos}} le {{date}}",
     "delete-confirm": "Êtes-vous sûr de vouloir supprimer cette note ? CETTE ACTION EST IRRÉVERSIBLE",
+    "delete-confirm-description": "Cette action est irréversible. Les pièces jointes, liens et références seront également supprimés.",
     "direction": "Direction",
     "direction-asc": "Ascendant",
     "direction-desc": "Descendant",
@@ -185,6 +201,7 @@
     "password-not-match": "Les mots de passe ne correspondent pas.",
     "remove-completed-task-list-items-successfully": "Suppression réussie",
     "restored-successfully": "Restauré avec succès",
+    "succeed-copy-content": "Contenu copié avec succès.",
     "succeed-copy-link": "Lien copié avec succès.",
     "update-succeed": "Mise à jour réussie",
     "user-not-found": "Utilisateur non trouvé"
@@ -215,6 +232,10 @@
       "title": "Créer une ressource",
       "upload-method": "Méthode de téléversement"
     },
+    "delete-all-unused": "Supprimer toutes les ressources inutilisées",
+    "delete-all-unused-confirm": "Êtes-vous sûr de vouloir supprimer toutes les ressources inutilisées ? CETTE ACTION EST IRRÉVERSIBLE",
+    "delete-all-unused-error": "Échec de la suppression des ressources inutilisées",
+    "delete-all-unused-success": "Ressources supprimées avec succès",
     "delete-resource": "Supprimer la ressource",
     "delete-selected-resources": "Supprimer les ressources sélectionnées",
     "fetching-data": "Récupération des données…",
@@ -235,8 +256,11 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "Jeton d'accès copié dans le presse-papiers",
+      "access-token-deleted": "Jeton d'accès `{{description}}` supprimé",
       "access-token-deletion": "Êtes-vous sûr de vouloir supprimer le jeton d'accès {{accessToken}} ? CETTE ACTION EST IRRÉVERSIBLE.",
+      "access-token-deletion-description": "Cette action est irréversible. Vous devrez mettre à jour tous les services utilisant ce jeton.",
       "create-dialog": {
+        "access-token-created": "Jeton d'accès `{{description}}` créé",
         "create-access-token": "Créer un jeton d'accès",
         "created-at": "Créé le",
         "description": "Description",
@@ -269,10 +293,15 @@
     "member-section": {
       "admin": "Admin",
       "archive-member": "Archiver le membre",
+      "archive-success": "{{username}} archivé avec succès",
       "archive-warning": "Êtes-vous sûr de vouloir archiver {{username}} ?",
+      "archive-warning-description": "L'archivage désactive le compte. Vous pourrez le restaurer ou le supprimer plus tard.",
       "create-a-member": "Créer un membre",
       "delete-member": "Supprimer le membre",
+      "delete-success": "{{username}} supprimé avec succès",
       "delete-warning": "Êtes-vous sûr de vouloir supprimer {{username}} ? CETTE ACTION EST IRRÉVERSIBLE",
+      "delete-warning-description": "CETTE ACTION EST IRRÉVERSIBLE",
+      "restore-success": "{{username}} restauré avec succès",
       "user": "Utilisateur"
     },
     "memo-related": "Note",
@@ -290,6 +319,10 @@
       "default-memo-sort-option": "Heure d'affichage de la note",
       "default-memo-visibility": "Visibilité par défaut de la note",
       "theme": "Thème"
+    },
+    "shortcut": {
+      "delete-confirm": "Êtes-vous sûr de vouloir supprimer le raccourci `{{title}}` ?",
+      "delete-success": "Raccourci `{{title}}` supprimé avec succès"
     },
     "sso": "SSO",
     "sso-section": {
@@ -384,10 +417,16 @@
       "create-dialog": {
         "an-easy-to-remember-name": "Un nom facile à retenir",
         "create-webhook": "Créer un webhook",
+        "create-webhook-success": "Webhook `{{name}}` créé",
         "edit-webhook": "Éditer le webhook",
         "payload-url": "URL de la charge utile",
         "title": "Titre",
         "url-example-post-receive": "https://example.com/postreceive"
+      },
+      "delete-dialog": {
+        "delete-webhook-description": "Cette action est irréversible.",
+        "delete-webhook-success": "Webhook `{{name}}` supprimé avec succès",
+        "delete-webhook-title": "Êtes-vous sûr de vouloir supprimer le webhook `{{name}}` ?"
       },
       "no-webhooks-found": "Aucun webhook trouvé.",
       "title": "Webhooks",
@@ -409,6 +448,7 @@
     "create-tag": "Créer un tag",
     "create-tags-guide": "Vous pouvez créer des tags en saisissant `#tag`.",
     "delete-confirm": "Êtes-vous sûr de vouloir supprimer ce tag ? Toutes les notes associées seront archivées.",
+    "delete-success": "Tag supprimé avec succès",
     "delete-tag": "Supprimer le tag",
     "new-name": "Nouveau nom",
     "no-tag-found": "Aucun tag trouvé",
@@ -418,5 +458,13 @@
     "rename-success": "Tag renommé avec succès",
     "rename-tag": "Renommer le tag",
     "rename-tip": "Toutes vos notes avec ce tag seront mises à jour."
+  },
+  "tooltip": {
+    "link-memo": "Lier une note",
+    "markdown-menu": "Markdown",
+    "select-location": "Localisation",
+    "select-visibility": "Visibilité",
+    "tags": "Tags",
+    "upload-attachment": "Téléverser des pièces jointes"
   }
 }

@@ -97,9 +97,9 @@ paths:
                   in: query
                   description: |-
                     Optional. Filter to apply to the list results.
-                     Example: "type=image/png" or "filename:*.jpg"
-                     Supported operators: =, !=, <, <=, >, >=, :
-                     Supported fields: filename, type, size, create_time, memo
+                     Example: "mime_type==\"image/png\"" or "filename.contains(\"test\")"
+                     Supported operators: =, !=, <, <=, >, >=, : (contains), in
+                     Supported fields: filename, mime_type, create_time, memo
                   schema:
                     type: string
                 - name: orderBy
@@ -960,6 +960,35 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/memos/{memo}/reactions/{reaction}:
+        delete:
+            tags:
+                - MemoService
+            description: DeleteMemoReaction deletes a reaction for a memo.
+            operationId: MemoService_DeleteMemoReaction
+            parameters:
+                - name: memo
+                  in: path
+                  description: The memo id.
+                  required: true
+                  schema:
+                    type: string
+                - name: reaction
+                  in: path
+                  description: The reaction id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/memos/{memo}/relations:
         get:
             tags:
@@ -1015,29 +1044,6 @@ paths:
                         schema:
                             $ref: '#/components/schemas/SetMemoRelationsRequest'
                 required: true
-            responses:
-                "200":
-                    description: OK
-                    content: {}
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/reactions/{reaction}:
-        delete:
-            tags:
-                - MemoService
-            description: DeleteMemoReaction deletes a reaction for a memo.
-            operationId: MemoService_DeleteMemoReaction
-            parameters:
-                - name: reaction
-                  in: path
-                  description: The reaction id.
-                  required: true
-                  schema:
-                    type: string
             responses:
                 "200":
                     description: OK
@@ -2210,14 +2216,6 @@ components:
                     items:
                         type: string
                     description: reactions is the list of reactions.
-                enableBlurNsfwContent:
-                    type: boolean
-                    description: enable_blur_nsfw_content enables blurring of content marked as not safe for work (NSFW).
-                nsfwTags:
-                    type: array
-                    items:
-                        type: string
-                    description: nsfw_tags is the list of tags that mark content as NSFW for blurring.
             description: Memo-related instance settings and policies.
         InstanceSetting_StorageSetting:
             type: object
@@ -2648,7 +2646,7 @@ components:
                     type: string
                     description: |-
                         The resource name of the reaction.
-                         Format: reactions/{reaction}
+                         Format: memos/{memo}/reactions/{reaction}
                 creator:
                     readOnly: true
                     type: string

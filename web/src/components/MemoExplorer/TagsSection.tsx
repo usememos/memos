@@ -1,9 +1,8 @@
 import { HashIcon, MoreVerticalIcon, TagsIcon } from "lucide-react";
-import { observer } from "mobx-react-lite";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { Switch } from "@/components/ui/switch";
+import { type MemoFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { cn } from "@/lib/utils";
-import memoFilterStore, { MemoFilter } from "@/store/memoFilter";
 import { useTranslate } from "@/utils/i18n";
 import TagTree from "../TagTree";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -13,8 +12,9 @@ interface Props {
   tagCount: Record<string, number>;
 }
 
-const TagsSection = observer((props: Props) => {
+const TagsSection = (props: Props) => {
   const t = useTranslate();
+  const { getFiltersByFactor, addFilter, removeFilter } = useMemoFilterContext();
   const [treeMode, setTreeMode] = useLocalStorage<boolean>("tag-view-as-tree", false);
   const [treeAutoExpand, setTreeAutoExpand] = useLocalStorage<boolean>("tag-tree-auto-expand", false);
 
@@ -23,13 +23,13 @@ const TagsSection = observer((props: Props) => {
     .sort((a, b) => b[1] - a[1]);
 
   const handleTagClick = (tag: string) => {
-    const isActive = memoFilterStore.getFiltersByFactor("tagSearch").some((filter: MemoFilter) => filter.value === tag);
+    const isActive = getFiltersByFactor("tagSearch").some((filter: MemoFilter) => filter.value === tag);
     if (isActive) {
-      memoFilterStore.removeFilter((f: MemoFilter) => f.factor === "tagSearch" && f.value === tag);
+      removeFilter((f: MemoFilter) => f.factor === "tagSearch" && f.value === tag);
     } else {
       // Remove all existing tag filters first, then add the new one
-      memoFilterStore.removeFilter((f: MemoFilter) => f.factor === "tagSearch");
-      memoFilterStore.addFilter({
+      removeFilter((f: MemoFilter) => f.factor === "tagSearch");
+      addFilter({
         factor: "tagSearch",
         value: tag,
       });
@@ -64,7 +64,7 @@ const TagsSection = observer((props: Props) => {
         ) : (
           <div className="w-full flex flex-row justify-start items-center relative flex-wrap gap-x-2 gap-y-1.5">
             {tags.map(([tag, amount]) => {
-              const isActive = memoFilterStore.getFiltersByFactor("tagSearch").some((filter: MemoFilter) => filter.value === tag);
+              const isActive = getFiltersByFactor("tagSearch").some((filter: MemoFilter) => filter.value === tag);
               return (
                 <div
                   key={tag}
@@ -95,6 +95,6 @@ const TagsSection = observer((props: Props) => {
       )}
     </div>
   );
-});
+};
 
 export default TagsSection;
