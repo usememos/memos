@@ -55,10 +55,11 @@ const MemoContent = (props: MemoContentProps) => {
               return <input {...inputProps} />;
             }) as React.ComponentType<React.ComponentProps<"input">>,
             span: ((spanProps: React.ComponentProps<"span"> & { node?: Element }) => {
-              if (spanProps.node && isTagNode(spanProps.node)) {
+              const { node, ...rest } = spanProps;
+              if (node && isTagNode(node)) {
                 return <Tag {...spanProps} />;
               }
-              return <span {...spanProps} />;
+              return <span {...rest} />;
             }) as React.ComponentType<React.ComponentProps<"span">>,
             pre: CodeBlock,
             a: ({ href, children, ...aProps }) => (

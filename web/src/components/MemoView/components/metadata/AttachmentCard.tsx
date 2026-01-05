@@ -11,7 +11,6 @@ interface AttachmentCardProps {
 const AttachmentCard = ({ attachment, onClick, className }: AttachmentCardProps) => {
   const attachmentType = getAttachmentType(attachment);
   const sourceUrl = getAttachmentUrl(attachment);
-  const colorspace = getColorspace(attachment.type);
 
   if (attachmentType === "image/*") {
     return (
@@ -21,7 +20,6 @@ const AttachmentCard = ({ attachment, onClick, className }: AttachmentCardProps)
         className={cn("w-full h-full object-cover rounded-lg cursor-pointer", className)}
         onClick={onClick}
         loading="lazy"
-        {...(colorspace && { colorSpace: colorspace as unknown as string })}
       />
     );
   }
@@ -33,7 +31,6 @@ const AttachmentCard = ({ attachment, onClick, className }: AttachmentCardProps)
         className={cn("w-full h-full object-cover rounded-lg", className)}
         controls
         preload="metadata"
-        {...(colorspace && { colorSpace: colorspace as unknown as string })}
       />
     );
   }
