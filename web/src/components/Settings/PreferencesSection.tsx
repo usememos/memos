@@ -34,9 +34,9 @@ const PreferencesSection = () => {
     );
   };
 
-  const handleDefaultMemoVisibilityChanged = async (value: string) => {
+  const handleDefaultMemoVisibilityChanged = (value: string) => {
     updateUserGeneralSetting(
-      { generalSetting: { memoVisibility: value }, updateMask: ["memoVisibility"] },
+      { generalSetting: { memoVisibility: value }, updateMask: ["memo_visibility"] },
       {
         onSuccess: () => {
           refetchSettings();
@@ -82,7 +82,10 @@ const PreferencesSection = () => {
 
       <SettingGroup title={t("setting.preference")} showSeparator>
         <SettingRow label={t("setting.preference-section.default-memo-visibility")}>
-          <Select value={setting.memoVisibility} onValueChange={handleDefaultMemoVisibilityChanged}>
+          <Select
+            value={setting.memoVisibility || "PRIVATE"}
+            onValueChange={handleDefaultMemoVisibilityChanged}
+          >
             <SelectTrigger className="min-w-fit">
               <div className="flex items-center gap-2">
                 <VisibilityIcon visibility={convertVisibilityFromString(setting.memoVisibility)} />

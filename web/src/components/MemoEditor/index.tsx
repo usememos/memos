@@ -1,12 +1,14 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
 import { toast } from "react-hot-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { memoKeys } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
+import { convertVisibilityFromString } from "@/utils/memo";
 import { EditorContent, EditorMetadata, EditorToolbar, FocusModeExitButton, FocusModeOverlay } from "./components";
 import { FOCUS_MODE_STYLES } from "./constants";
 import type { EditorRefActions } from "./Editor";
@@ -49,8 +51,14 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const currentUser = useCurrentUser();
   const editorRef = useRef<EditorRefActions>(null);
   const { state, actions, dispatch } = useEditorContext();
+  const { userGeneralSetting } = useAuth();
 
-  useMemoInit(editorRef, memoName, cacheKey, currentUser?.name ?? "", autoFocus);
+  // Get default visibility from user settings
+  const defaultVisibility = userGeneralSetting?.memoVisibility
+    ? convertVisibilityFromString(userGeneralSetting.memoVisibility)
+    : undefined;
+
+  useMemoInit(editorRef, memoName, cacheKey, currentUser?.name ?? "", autoFocus, defaultVisibility);
 
   // Auto-save content to localStorage
   useAutoSave(state.content, currentUser?.name ?? "", cacheKey);

@@ -421,7 +421,7 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 	incomingGeneral := request.Setting.GetGeneralSetting()
 	for _, field := range request.UpdateMask.Paths {
 		switch field {
-		case "memoVisibility":
+		case "memo_visibility":
 			updatedGeneral.MemoVisibility = incomingGeneral.MemoVisibility
 		case "theme":
 			updatedGeneral.Theme = incomingGeneral.Theme

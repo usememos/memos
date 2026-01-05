@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import type { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { EditorRefActions } from "../Editor";
 import { cacheService, memoService } from "../services";
 import { useEditorContext } from "../state";
@@ -9,6 +10,7 @@ export const useMemoInit = (
   cacheKey: string | undefined,
   username: string,
   autoFocus?: boolean,
+  defaultVisibility?: Visibility,
 ) => {
   const { actions, dispatch } = useEditorContext();
   const initializedRef = useRef(false);
@@ -37,6 +39,10 @@ export const useMemoInit = (
           if (cachedContent) {
             dispatch(actions.updateContent(cachedContent));
           }
+          // Apply default visibility for new memos
+          if (defaultVisibility !== undefined) {
+            dispatch(actions.setMetadata({ visibility: defaultVisibility }));
+          }
         }
       } catch (error) {
         console.error("Failed to initialize editor:", error);
@@ -52,5 +58,5 @@ export const useMemoInit = (
     };
 
     init();
-  }, [memoName, cacheKey, username, autoFocus, actions, dispatch, editorRef]);
+  }, [memoName, cacheKey, username, autoFocus, defaultVisibility, actions, dispatch, editorRef]);
 };
