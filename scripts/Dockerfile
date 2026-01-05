@@ -21,8 +21,13 @@ COPY ./scripts/entrypoint.sh /usr/local/memos/
 EXPOSE 5230
 
 # Directory to store the data, which can be referenced as the mounting point.
-RUN mkdir -p /var/opt/memos
+RUN mkdir -p /var/opt/memos && \
+    addgroup -S memos && adduser -S memos -G memos && \
+    chown -R memos:memos /usr/local/memos /var/opt/memos
+
 VOLUME /var/opt/memos
+
+USER memos
 
 ENV MEMOS_MODE="prod"
 ENV MEMOS_PORT="5230"
