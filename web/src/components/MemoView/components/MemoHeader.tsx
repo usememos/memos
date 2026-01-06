@@ -54,11 +54,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({
       <div className="flex flex-row justify-end items-center select-none shrink-0 gap-2">
         {currentUser && !isArchived && (
           <ReactionSelector
-            className={cn(
-              "border-none w-auto h-auto",
-              reactionSelectorOpen && "block!",
-              "block sm:hidden sm:group-hover:block",
-            )}
+            className={cn("border-none w-auto h-auto", reactionSelectorOpen && "block!", "block sm:hidden sm:group-hover:block")}
             memo={memo}
             onOpenChange={setReactionSelectorOpen}
           />
