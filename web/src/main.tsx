@@ -52,6 +52,13 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
 }
 
 function Main() {
+  useEffect(() => {
+    // Add has-icon-divider class to buttons with dropdown triggers for styling
+    document
+      .querySelectorAll('button[data-slot="button"]')
+      .forEach((btn) => btn.classList.add('has-icon-divider'));
+  }, []);
+
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>

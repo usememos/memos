@@ -369,4 +369,37 @@
   .leaflet-popup-tip {
     background-color: var(--background) !important;
   }
+
+  /* ========================================
+   * Button Icon Divider Styles
+   * Adds vertical divider to buttons with dropdown triggers
+   * ======================================== */
+
+  /* Scope to buttons with dropdown menu triggers */
+  button[data-slot="button"] [data-slot="dropdown-menu-trigger"] {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-left: 6px;      /* space before divider */
+    padding-left: 8px;     /* space after divider */
+  }
+
+  /* Vertical divider */
+  button[data-slot="button"] [data-slot="dropdown-menu-trigger"]::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 1.25em;        /* tweak to taste */
+    background-color: currentColor; /* matches text color */
+    opacity: 0.4;          /* subtle */
+    pointer-events: none;
+  }
+
+  /* Ensure scrollbar space is always reserved */
+  html {
+    overflow-y: scroll;
+  }
 }
