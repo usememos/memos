@@ -2824,6 +2824,8 @@ components:
                     type: string
                 usePathStyle:
                     type: boolean
+                customDomain:
+                    type: string
             description: |-
                 S3 configuration for cloud storage backend.
                  Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/

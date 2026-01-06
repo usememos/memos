@@ -10,6 +10,7 @@ import (
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/server/runner/s3presign"
 	"github.com/usememos/memos/store"
 )
 
@@ -97,6 +98,10 @@ func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.
 	instanceSetting, err := s.Store.UpsertInstanceSetting(ctx, updateSetting)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to upsert instance setting: %v", err)
+	}
+
+	if instanceSetting.Key == storepb.InstanceSettingKey_STORAGE {
+		go s3presign.NewRunner(s.Store).CheckAndPresign(context.Background())
 	}
 
 	return convertInstanceSettingFromStore(instanceSetting), nil
@@ -214,6 +219,7 @@ func convertInstanceStorageSettingFromStore(settingpb *storepb.InstanceStorageSe
 			Region:          settingpb.S3Config.Region,
 			Bucket:          settingpb.S3Config.Bucket,
 			UsePathStyle:    settingpb.S3Config.UsePathStyle,
+			CustomDomain:    settingpb.S3Config.CustomDomain,
 		}
 	}
 	return setting
@@ -236,6 +242,7 @@ func convertInstanceStorageSettingToStore(setting *v1pb.InstanceSetting_StorageS
 			Region:          setting.S3Config.Region,
 			Bucket:          setting.S3Config.Bucket,
 			UsePathStyle:    setting.S3Config.UsePathStyle,
+			CustomDomain:    setting.S3Config.CustomDomain,
 		}
 	}
 	return settingpb

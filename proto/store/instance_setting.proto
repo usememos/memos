@@ -89,6 +89,7 @@ message StorageS3Config {
   string region = 4;
   string bucket = 5;
   bool use_path_style = 6;
+  string custom_domain = 7;
 }
 
 message InstanceMemoRelatedSetting {
