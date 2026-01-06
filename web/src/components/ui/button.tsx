@@ -34,11 +34,19 @@ const Button = React.forwardRef<
   React.ComponentProps<"button"> &
     VariantProps<typeof buttonVariants> & {
       asChild?: boolean;
+      hasIconDivider?: boolean;
     }
->(({ className, variant, size, asChild = false, ...props }, ref) => {
+>(({ className, variant, size, asChild = false, hasIconDivider = false, ...props }, ref) => {
   const Comp = asChild ? Slot : "button";
 
-  return <Comp ref={ref} data-slot="button" className={cn(buttonVariants({ variant, size, className }))} {...props} />;
+  return (
+    <Comp
+      ref={ref}
+      data-slot="button"
+      className={cn(buttonVariants({ variant, size, className }), hasIconDivider && "has-icon-divider")}
+      {...props}
+    />
+  );
 });
 Button.displayName = "Button";
 
