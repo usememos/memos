@@ -75,6 +75,8 @@ linters:
           disabled: true
         - name: package-comments
           disabled: true
+        - name: use-waitgroup-go
+          disabled: true
     gocritic:
       disabled-checks:
         - ifElseChain
