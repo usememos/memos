@@ -44,7 +44,7 @@ const MemoContent = (props: MemoContentProps) => {
         onDoubleClick={onDoubleClick}
       >
         <ReactMarkdown
-          remarkPlugins={[remarkDisableSetext, remarkGfm, remarkBreaks, remarkMath, remarkTag, remarkPreserveType]}
+          remarkPlugins={[remarkDisableSetext, remarkMath, remarkGfm, remarkBreaks, remarkTag, remarkPreserveType]}
           rehypePlugins={[rehypeRaw, rehypeKatex, [rehypeSanitize, SANITIZE_SCHEMA]]}
           components={{
             // Child components consume from MemoViewContext directly
