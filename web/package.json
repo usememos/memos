@@ -36,6 +36,7 @@
     "fuse.js": "^7.1.0",
     "highlight.js": "^11.11.1",
     "i18next": "^25.6.3",
+    "katex": "^0.16.27",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
     "lodash-es": "^4.17.21",
