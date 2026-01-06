@@ -54,7 +54,11 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({
       <div className="flex flex-row justify-end items-center select-none shrink-0 gap-2">
         {currentUser && !isArchived && (
           <ReactionSelector
-            className={cn("border-none w-auto h-auto", reactionSelectorOpen && "block!", "hidden group-hover:block")}
+            className={cn(
+              "border-none w-auto h-auto",
+              reactionSelectorOpen && "block!",
+              "block sm:hidden sm:group-hover:block",
+            )}
             memo={memo}
             onOpenChange={setReactionSelectorOpen}
           />
@@ -63,8 +67,8 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({
         {!isInMemoDetailPage && (
           <Link
             className={cn(
-              "flex flex-row justify-start items-center rounded-md p-1 hover:opacity-80",
-              commentAmount === 0 && "invisible group-hover:visible",
+              "flex flex-row justify-start items-center rounded-md px-1 hover:opacity-80 gap-0.5",
+              commentAmount === 0 && "hidden sm:group-hover:flex",
             )}
             to={`/${memo.name}#comments`}
             viewTransition
