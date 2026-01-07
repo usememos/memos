@@ -97,7 +97,7 @@ func TestCreateIdentityProvider(t *testing.T) {
 
 		_, err := ts.Service.CreateIdentityProvider(ctx, req)
 		require.Error(t, err)
-		require.Contains(t, err.Error(), "permission denied")
+		require.Contains(t, err.Error(), "user not authenticated")
 	})
 }
 
@@ -547,6 +547,6 @@ func TestIdentityProviderPermissions(t *testing.T) {
 
 		_, err := ts.Service.CreateIdentityProvider(ctx, req)
 		require.Error(t, err)
-		require.Contains(t, err.Error(), "permission denied")
+		require.Contains(t, err.Error(), "user not authenticated")
 	})
 }
