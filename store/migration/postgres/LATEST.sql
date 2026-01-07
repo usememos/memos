@@ -58,8 +58,8 @@ CREATE TABLE memo_relation (
   UNIQUE(memo_id, related_memo_id, type)
 );
 
--- resource
-CREATE TABLE resource (
+-- attachment
+CREATE TABLE attachment (
   id SERIAL PRIMARY KEY,
   uid TEXT NOT NULL UNIQUE,
   creator_id INTEGER NOT NULL,

@@ -58,8 +58,8 @@ CREATE TABLE `memo_relation` (
   UNIQUE(`memo_id`,`related_memo_id`,`type`)
 );
 
--- resource
-CREATE TABLE `resource` (
+-- attachment
+CREATE TABLE `attachment` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `uid` VARCHAR(256) NOT NULL UNIQUE,
   `creator_id` INT NOT NULL,
