@@ -1,6 +1,6 @@
 import { Monitor, Moon, MoonStar, Palette, Sun, Wallpaper } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { THEME_OPTIONS } from "@/utils/theme";
+import { loadTheme, THEME_OPTIONS } from "@/utils/theme";
 
 interface ThemeSelectProps {
   value?: string;
@@ -21,6 +21,9 @@ const ThemeSelect = ({ value, onValueChange, className }: ThemeSelectProps = {})
   const currentTheme = value || "system";
 
   const handleThemeChange = (newTheme: string) => {
+    // Apply theme globally immediately
+    loadTheme(newTheme);
+    // Also notify parent component if callback is provided
     if (onValueChange) {
       onValueChange(newTheme);
     }
