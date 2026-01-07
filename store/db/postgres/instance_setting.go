@@ -9,7 +9,7 @@ import (
 
 func (d *DB) UpsertInstanceSetting(ctx context.Context, upsert *store.InstanceSetting) (*store.InstanceSetting, error) {
 	stmt := `
-		INSERT INTO instance_setting (
+		INSERT INTO system_setting (
 			name, value, description
 		)
 		VALUES ($1, $2, $3)
@@ -36,7 +36,7 @@ func (d *DB) ListInstanceSettings(ctx context.Context, find *store.FindInstanceS
 			name,
 			value,
 			description
-		FROM instance_setting
+		FROM system_setting
 		WHERE ` + strings.Join(where, " AND ")
 
 	rows, err := d.db.QueryContext(ctx, query, args...)
@@ -66,7 +66,7 @@ func (d *DB) ListInstanceSettings(ctx context.Context, find *store.FindInstanceS
 }
 
 func (d *DB) DeleteInstanceSetting(ctx context.Context, delete *store.DeleteInstanceSetting) error {
-	stmt := `DELETE FROM instance_setting WHERE name = $1`
+	stmt := `DELETE FROM system_setting WHERE name = $1`
 	_, err := d.db.ExecContext(ctx, stmt, delete.Name)
 	return err
 }

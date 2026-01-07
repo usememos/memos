@@ -1,5 +1,5 @@
--- instance_setting
-CREATE TABLE instance_setting (
+-- system_setting
+CREATE TABLE system_setting (
   name TEXT NOT NULL PRIMARY KEY,
   value TEXT NOT NULL,
   description TEXT NOT NULL
@@ -58,8 +58,8 @@ CREATE TABLE memo_relation (
   UNIQUE(memo_id, related_memo_id, type)
 );
 
--- attachment
-CREATE TABLE attachment (
+-- resource
+CREATE TABLE resource (
   id SERIAL PRIMARY KEY,
   uid TEXT NOT NULL UNIQUE,
   creator_id INTEGER NOT NULL,

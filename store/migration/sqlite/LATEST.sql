@@ -1,5 +1,5 @@
--- instance_setting
-CREATE TABLE instance_setting (
+-- system_setting
+CREATE TABLE system_setting (
   name TEXT NOT NULL,
   value TEXT NOT NULL,
   description TEXT NOT NULL DEFAULT '',
@@ -63,8 +63,8 @@ CREATE TABLE memo_relation (
   UNIQUE(memo_id, related_memo_id, type)
 );
 
--- attachment
-CREATE TABLE attachment (
+-- resource
+CREATE TABLE resource (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   uid TEXT NOT NULL UNIQUE,
   creator_id INTEGER NOT NULL,
@@ -80,9 +80,9 @@ CREATE TABLE attachment (
   payload TEXT NOT NULL DEFAULT '{}'
 );
 
-CREATE INDEX idx_attachment_creator_id ON attachment (creator_id);
+CREATE INDEX idx_resource_creator_id ON resource (creator_id);
 
-CREATE INDEX idx_attachment_memo_id ON attachment (memo_id);
+CREATE INDEX idx_resource_memo_id ON resource (memo_id);
 
 -- activity
 CREATE TABLE activity (

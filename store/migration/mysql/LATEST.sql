@@ -1,5 +1,5 @@
--- instance_setting
-CREATE TABLE `instance_setting` (
+-- system_setting
+CREATE TABLE `system_setting` (
   `name` VARCHAR(256) NOT NULL PRIMARY KEY,
   `value` LONGTEXT NOT NULL,
   `description` TEXT NOT NULL
@@ -58,8 +58,8 @@ CREATE TABLE `memo_relation` (
   UNIQUE(`memo_id`,`related_memo_id`,`type`)
 );
 
--- attachment
-CREATE TABLE `attachment` (
+-- resource
+CREATE TABLE `resource` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `uid` VARCHAR(256) NOT NULL UNIQUE,
   `creator_id` INT NOT NULL,
