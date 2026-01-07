@@ -36,4 +36,4 @@ INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(4,1,'memos/
 INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(5,1,'memos/sponsor0000001','👍');
 
 -- System Settings
-INSERT INTO system_setting VALUES ('MEMO_RELATED', '{"contentLengthLimit":8192,"enableAutoCompact":true,"enableComment":true,"enableLocation":true,"defaultVisibility":"PUBLIC","reactions":["👍","💛","🔥","👏","😂","👌","🚀","👀","🤔","🤡","❓","+1","🎉","💡","✅"]}', '');
+INSERT INTO instance_setting VALUES ('MEMO_RELATED', '{"contentLengthLimit":8192,"enableAutoCompact":true,"enableComment":true,"enableLocation":true,"defaultVisibility":"PUBLIC","reactions":["👍","💛","🔥","👏","😂","👌","🚀","👀","🤔","🤡","❓","+1","🎉","💡","✅"]}', '');

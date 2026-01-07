@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { loadLocale } from "@/utils/i18n";
-import { getInitialTheme, loadTheme } from "@/utils/theme";
+import { getInitialTheme, loadTheme, Theme } from "@/utils/theme";
 import LocaleSelect from "./LocaleSelect";
 import ThemeSelect from "./ThemeSelect";
 
@@ -12,7 +13,7 @@ interface Props {
 const AuthFooter = ({ className }: Props) => {
   const { i18n: i18nInstance } = useTranslation();
   const currentLocale = i18nInstance.language as Locale;
-  const currentTheme = getInitialTheme();
+  const [currentTheme, setCurrentTheme] = useState(getInitialTheme());
 
   const handleLocaleChange = (locale: Locale) => {
     loadLocale(locale);
@@ -20,6 +21,7 @@ const AuthFooter = ({ className }: Props) => {
 
   const handleThemeChange = (theme: string) => {
     loadTheme(theme);
+    setCurrentTheme(theme as Theme);
   };
 
   return (

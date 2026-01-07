@@ -6,6 +6,8 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"mime"
+	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -63,7 +65,19 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 		return nil, status.Errorf(codes.InvalidArgument, "filename contains invalid characters or format")
 	}
 	if request.Attachment.Type == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "type is required")
+		ext := filepath.Ext(request.Attachment.Filename)
+		mimeType := mime.TypeByExtension(ext)
+		if mimeType == "" {
+			mimeType = http.DetectContentType(request.Attachment.Content)
+		}
+		// ParseMediaType to strip parameters
+		mediaType, _, err := mime.ParseMediaType(mimeType)
+		if err == nil {
+			request.Attachment.Type = mediaType
+		}
+	}
+	if request.Attachment.Type == "" {
+		request.Attachment.Type = "application/octet-stream"
 	}
 	if !isValidMimeType(request.Attachment.Type) {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid MIME type format")
