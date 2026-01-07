@@ -9,22 +9,18 @@ import AuthFooter from "@/components/AuthFooter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authServiceClient, userServiceClient } from "@/connect";
-import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import useLoading from "@/hooks/useLoading";
-import useNavigateTo from "@/hooks/useNavigateTo";
 import { handleError } from "@/lib/error";
 import { User_Role, UserSchema } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const SignUp = () => {
   const t = useTranslate();
-  const navigateTo = useNavigateTo();
   const actionBtnLoadingState = useLoading(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { generalSetting: instanceGeneralSetting, profile } = useInstance();
-  const { initialize } = useAuth();
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
@@ -68,8 +64,7 @@ const SignUp = () => {
       if (response.accessToken) {
         setAccessToken(response.accessToken, response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined);
       }
-      await initialize();
-      navigateTo("/");
+      window.location.href = "/";
     } catch (error: unknown) {
       handleError(error, toast.error, {
         fallbackMessage: "Sign up failed",
