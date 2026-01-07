@@ -1,5 +1,5 @@
--- instance_setting
-CREATE TABLE `instance_setting` (
+-- system_setting
+CREATE TABLE `system_setting` (
   `name` VARCHAR(256) NOT NULL PRIMARY KEY,
   `value` LONGTEXT NOT NULL,
   `description` TEXT NOT NULL

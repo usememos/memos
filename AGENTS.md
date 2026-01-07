@@ -165,7 +165,7 @@ type Driver interface {
 4. Demo mode: Seed with demo data
 
 **Schema Versioning:**
-- Stored in `instance_setting` table (key: `bb.general.version`)
+- Stored in `system_setting` table
 - Format: `major.minor.patch`
 - Migration files: `store/migration/{driver}/{version}/NN__description.sql`
 - See: `store/migrator.go:21-414`
@@ -502,13 +502,6 @@ cd web && pnpm lint
 - Semicolons: always
 
 ## Common Tasks
-
-### Debugging Database Issues
-
-1. Check connection string in logs
-2. Verify `store/db/{driver}/migration/` files exist
-3. Check schema version: `SELECT * FROM instance_setting WHERE key = 'bb.general.version'`
-4. Test migration: `go test ./store/test/... -v`
 
 ### Debugging API Issues
 

@@ -21,7 +21,7 @@ import (
 // Migration System Overview:
 //
 // The migration system handles database schema versioning and upgrades.
-// Schema version is stored in instance_setting (formerly system_setting).
+// Schema version is stored in system_setting.
 //
 // Migration Flow:
 // 1. preMigrate: Check if DB is initialized. If not, apply LATEST.sql
@@ -30,9 +30,9 @@ import (
 // 4. Migrate (demo mode): Seed database with demo data
 //
 // Version Tracking:
-// - New installations: Schema version set in instance_setting immediately
-// - Existing v0.22+ installations: Schema version tracked in instance_setting
-// - Pre-v0.22 installations: Must upgrade to v0.25.x first (migration_history → instance_setting migration)
+// - New installations: Schema version set in system_setting immediately
+// - Existing v0.22+ installations: Schema version tracked in system_setting
+// - Pre-v0.22 installations: Must upgrade to v0.25.x first (migration_history → system_setting migration)
 //
 // Migration Files:
 // - Location: store/migration/{driver}/{version}/NN__description.sql
@@ -373,7 +373,7 @@ func (s *Store) updateCurrentSchemaVersion(ctx context.Context, schemaVersion st
 
 // checkMinimumUpgradeVersion verifies the installation meets minimum version requirements for upgrade.
 // For very old installations (< v0.22.0), users must upgrade to v0.25.x first before upgrading to current version.
-// This is necessary because schema version tracking was moved from migration_history to instance_setting in v0.22.0.
+// This is necessary because schema version tracking was moved from migration_history to system_setting in v0.22.0.
 func (s *Store) checkMinimumUpgradeVersion(ctx context.Context) error {
 	instanceBasicSetting, err := s.GetInstanceBasicSetting(ctx)
 	if err != nil {
@@ -401,7 +401,7 @@ func (s *Store) checkMinimumUpgradeVersion(ctx context.Context) error {
 				"2. Start the server and verify it works\n"+
 				"3. Then upgrade to the latest version\n\n"+
 				"This is required because schema version tracking was moved from migration_history\n"+
-				"to instance_setting in v0.22.0. The intermediate upgrade handles this migration safely.",
+				"to system_setting in v0.22.0. The intermediate upgrade handles this migration safely.",
 			schemaVersion,
 			currentVersion,
 		)

@@ -1,5 +1,5 @@
--- instance_setting
-CREATE TABLE instance_setting (
+-- system_setting
+CREATE TABLE system_setting (
   name TEXT NOT NULL PRIMARY KEY,
   value TEXT NOT NULL,
   description TEXT NOT NULL
