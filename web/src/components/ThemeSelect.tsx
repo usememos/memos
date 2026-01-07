@@ -1,6 +1,6 @@
 import { Monitor, Moon, MoonStar, Palette, Sun, Wallpaper } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { THEME_OPTIONS, loadTheme } from "@/utils/theme";
+import { loadTheme, THEME_OPTIONS } from "@/utils/theme";
 
 interface ThemeSelectProps {
   value?: string;
