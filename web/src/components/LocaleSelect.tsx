@@ -1,8 +1,8 @@
 import { GlobeIcon } from "lucide-react";
 import { FC } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { locales, loadLocale } from "@/i18n";
-import { getLocaleDisplayName } from "@/utils/i18n";
+import { locales } from "@/i18n";
+import { getLocaleDisplayName, loadLocale } from "@/utils/i18n";
 
 interface Props {
   value: Locale;
