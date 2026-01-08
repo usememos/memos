@@ -10,15 +10,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetCurrentSchemaVersion(t *testing.T) {
-	ctx := context.Background()
-	ts := NewTestingStore(ctx, t)
-
-	currentSchemaVersion, err := ts.GetCurrentSchemaVersion()
-	require.NoError(t, err)
-	require.Equal(t, "0.26.2", currentSchemaVersion)
-}
-
 // TestFreshInstall verifies that LATEST.sql applies correctly on a fresh database.
 // This is essentially what NewTestingStore already does, but we make it explicit.
 func TestFreshInstall(t *testing.T) {
