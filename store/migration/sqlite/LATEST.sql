@@ -21,8 +21,6 @@ CREATE TABLE user (
   description TEXT NOT NULL DEFAULT ''
 );
 
-CREATE INDEX idx_user_username ON user (username);
-
 -- user_setting
 CREATE TABLE user_setting (
   user_id INTEGER NOT NULL,
@@ -44,8 +42,6 @@ CREATE TABLE memo (
   pinned INTEGER NOT NULL CHECK (pinned IN (0, 1)) DEFAULT 0,
   payload TEXT NOT NULL DEFAULT '{}'
 );
-
-CREATE INDEX idx_memo_creator_id ON memo (creator_id);
 
 -- memo_relation
 CREATE TABLE memo_relation (
@@ -71,10 +67,6 @@ CREATE TABLE attachment (
   reference TEXT NOT NULL DEFAULT '',
   payload TEXT NOT NULL DEFAULT '{}'
 );
-
-CREATE INDEX idx_attachment_creator_id ON attachment (creator_id);
-
-CREATE INDEX idx_attachment_memo_id ON attachment (memo_id);
 
 -- activity
 CREATE TABLE activity (
