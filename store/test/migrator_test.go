@@ -16,7 +16,7 @@ func TestGetCurrentSchemaVersion(t *testing.T) {
 
 	currentSchemaVersion, err := ts.GetCurrentSchemaVersion()
 	require.NoError(t, err)
-	require.Equal(t, "0.26.1", currentSchemaVersion)
+	require.Equal(t, "0.26.2", currentSchemaVersion)
 }
 
 // TestFreshInstall verifies that LATEST.sql applies correctly on a fresh database.

@@ -42,14 +42,6 @@ CREATE TABLE `memo` (
   `payload` JSON NOT NULL
 );
 
--- memo_organizer
-CREATE TABLE `memo_organizer` (
-  `memo_id` INT NOT NULL,
-  `user_id` INT NOT NULL,
-  `pinned` INT NOT NULL DEFAULT '0',
-  UNIQUE(`memo_id`,`user_id`)
-);
-
 -- memo_relation
 CREATE TABLE `memo_relation` (
   `memo_id` INT NOT NULL,
