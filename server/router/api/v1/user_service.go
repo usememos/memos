@@ -192,6 +192,9 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
 	// Check permission.
 	// Only allow admin or self to update user.
 	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin && currentUser.Role != store.RoleHost {
@@ -1240,6 +1243,9 @@ func (s *APIV1Service) ListUserNotifications(ctx context.Context, request *v1pb.
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
 	if currentUser.ID != userID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
@@ -1287,6 +1293,9 @@ func (s *APIV1Service) UpdateUserNotification(ctx context.Context, request *v1pb
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
 	// Verify ownership before updating
 	inboxes, err := s.Store.ListInboxes(ctx, &store.FindInbox{
 		ID: &notificationID,
@@ -1352,6 +1361,9 @@ func (s *APIV1Service) DeleteUserNotification(ctx context.Context, request *v1pb
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
 	// Verify ownership before deletion
 	inboxes, err := s.Store.ListInboxes(ctx, &store.FindInbox{
 		ID: &notificationID,
