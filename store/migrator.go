@@ -18,6 +18,11 @@ import (
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
+const (
+	// tagNormalizationSettingName is the setting name to track tag normalization status.
+	tagNormalizationSettingName = "tag_normalization_done"
+)
+
 // Migration System Overview:
 //
 // The migration system handles database schema versioning and upgrades.
@@ -133,6 +138,10 @@ func (s *Store) Migrate(ctx context.Context) error {
 			if err := s.applyMigrations(ctx, instanceBasicSetting.SchemaVersion, currentSchemaVersion); err != nil {
 				return errors.Wrap(err, "failed to apply migrations")
 			}
+		}
+		// Run data migrations after schema migrations.
+		if err := s.normalizeTagsToLowercase(ctx); err != nil {
+			return errors.Wrap(err, "failed to normalize tags")
 		}
 	case modeDemo:
 		// In demo mode, we should seed the database.
@@ -410,5 +419,95 @@ func (s *Store) checkMinimumUpgradeVersion(ctx context.Context) error {
 	// Schema version is empty - this is either a fresh install or corrupted installation
 	// Fresh installs will have schema version set immediately after LATEST.sql is applied
 	// So this should not be an issue in normal operation
+	return nil
+}
+
+// normalizeTagsToLowercase normalizes all memo tags to lowercase.
+// This is a one-time data migration to fix the issue where old memos have mixed-case tags
+// while new memos have lowercase tags, causing duplicate tags in the UI.
+func (s *Store) normalizeTagsToLowercase(ctx context.Context) error {
+	// Check if normalization has already been done.
+	settings, err := s.driver.ListInstanceSettings(ctx, &FindInstanceSetting{
+		Name: tagNormalizationSettingName,
+	})
+	if err != nil {
+		return errors.Wrap(err, "failed to check tag normalization status")
+	}
+	for _, setting := range settings {
+		if setting.Name == tagNormalizationSettingName && setting.Value == "true" {
+			slog.Info("tag normalization already completed, skipping")
+			return nil
+		}
+	}
+
+	slog.Info("starting tag normalization migration")
+
+	// Process memos in batches.
+	const batchSize = 100
+	offset := 0
+	normalized := 0
+
+	for {
+		limit := batchSize
+		memos, err := s.ListMemos(ctx, &FindMemo{
+			Limit:  &limit,
+			Offset: &offset,
+		})
+		if err != nil {
+			return errors.Wrap(err, "failed to list memos")
+		}
+
+		if len(memos) == 0 {
+			break
+		}
+
+		for _, memo := range memos {
+			if memo.Payload == nil || len(memo.Payload.Tags) == 0 {
+				continue
+			}
+
+			// Check if any tags need normalization.
+			needsUpdate := false
+			normalizedTags := make([]string, 0, len(memo.Payload.Tags))
+			seen := make(map[string]bool)
+
+			for _, tag := range memo.Payload.Tags {
+				lower := strings.ToLower(tag)
+				if lower != tag {
+					needsUpdate = true
+				}
+				if !seen[lower] {
+					seen[lower] = true
+					normalizedTags = append(normalizedTags, lower)
+				}
+			}
+
+			if needsUpdate || len(normalizedTags) != len(memo.Payload.Tags) {
+				memo.Payload.Tags = normalizedTags
+				if err := s.UpdateMemo(ctx, &UpdateMemo{
+					ID:      memo.ID,
+					Payload: memo.Payload,
+				}); err != nil {
+					slog.Error("failed to update memo tags", "memoID", memo.ID, "err", err)
+					continue
+				}
+				normalized++
+			}
+		}
+
+		offset += len(memos)
+	}
+
+	slog.Info("tag normalization completed", "normalizedMemos", normalized)
+
+	// Mark normalization as done.
+	if _, err := s.driver.UpsertInstanceSetting(ctx, &InstanceSetting{
+		Name:        tagNormalizationSettingName,
+		Value:       "true",
+		Description: "Tag normalization migration completed",
+	}); err != nil {
+		return errors.Wrap(err, "failed to mark tag normalization as done")
+	}
+
 	return nil
 }
