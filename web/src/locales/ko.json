@@ -234,7 +234,7 @@
     "delete-resource": "리소스 삭제",
     "delete-selected-resources": "선택된 리소스 삭제",
     "delete-all-unused": "사용하지 않는 항목 모두 삭제",
-    "delete-all-unused-confirm": "사용하지 않는 모든 리소스를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다",
+    "delete-all-unused-confirm": "사용하지 않는 모든 리소스를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
     "delete-all-unused-success": "리소스가 성공적으로 삭제되었습니다",
     "delete-all-unused-error": "사용하지 않는 리소스 삭제에 실패했습니다",
     "fetching-data": "불러오는 중…",
