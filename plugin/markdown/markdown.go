@@ -2,6 +2,7 @@ package markdown
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 
 	"github.com/yuin/goldmark"
@@ -21,6 +22,10 @@ import (
 type ExtractedData struct {
 	Tags     []string
 	Property *storepb.MemoPayload_Property
+
+	// MemoRefNames contains related memo resource names in the form `memos/<id>` extracted
+	// from markdown links.
+	MemoRefNames []string
 }
 
 // Service handles markdown metadata extraction.
@@ -62,13 +67,21 @@ type service struct {
 type Option func(*config)
 
 type config struct {
-	enableTags bool
+	enableTags     bool
+	enableMemosRef bool
 }
 
 // WithTagExtension enables #tag parsing.
 func WithTagExtension() Option {
 	return func(c *config) {
 		c.enableTags = true
+	}
+}
+
+// WithMemosRefExtension enables memos/<id> reference parsing.
+func WithMemosRefExtension() Option {
+	return func(c *config) {
+		c.enableMemosRef = true
 	}
 }
 
@@ -86,6 +99,10 @@ func NewService(opts ...Option) Service {
 	// Add custom extensions based on config
 	if cfg.enableTags {
 		exts = append(exts, extensions.TagExtension)
+	}
+
+	if cfg.enableMemosRef {
+		exts = append(exts, extensions.MemosRefExtension)
 	}
 
 	md := goldmark.New(
@@ -293,9 +310,12 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 	}
 
 	data := &ExtractedData{
-		Tags:     []string{},
-		Property: &storepb.MemoPayload_Property{},
+		Tags:         []string{},
+		Property:     &storepb.MemoPayload_Property{},
+		MemoRefNames: []string{},
 	}
+
+	memoRefSeen := map[string]bool{}
 
 	// Single walk to collect all data
 	err = gast.Walk(root, func(n gast.Node, entering bool) (gast.WalkStatus, error) {
@@ -312,6 +332,20 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 		switch n.Kind() {
 		case gast.KindLink:
 			data.Property.HasLink = true
+
+			// If this link is an internal memos reference, the memos ref extension will
+			// have annotated it with an attribute.
+			if link, ok := n.(*gast.Link); ok {
+				if v, found := link.AttributeString(extensions.AttrMemosRefID); found {
+					if id, ok := v.(string); ok && id != "" {
+						name := fmt.Sprintf("memos/%s", id)
+						if !memoRefSeen[name] {
+							memoRefSeen[name] = true
+							data.MemoRefNames = append(data.MemoRefNames, name)
+						}
+					}
+				}
+			}
 
 		case gast.KindCodeBlock, gast.KindFencedCodeBlock, gast.KindCodeSpan:
 			data.Property.HasCode = true
