@@ -404,6 +404,51 @@ func TestTruncateAtWord(t *testing.T) {
 	}
 }
 
+func TestExtractAllExtractsMemoRefNames(t *testing.T) {
+	svc := NewService()
+
+	tests := []struct {
+		content  string
+		expected []string
+	}{
+		{
+			content:  "See [a](memos/abc)",
+			expected: []string{"memos/abc"},
+		},
+		{
+			content:  "See [a](memos/abc) and [b](memos/xyz)",
+			expected: []string{"memos/abc", "memos/xyz"},
+		},
+		{
+			content:  "See [a](https://example.com/memos/abc)",
+			expected: []string{"memos/abc"},
+		},
+		{
+			content:  "See [a](https://example.com/memos/abc) and [b](https://example.com/memos/xyz)",
+			expected: []string{"memos/abc", "memos/xyz"},
+		},
+		{
+			content:  "See \n [a](memos/abc) and \n [b](https://example.com/memos/123) and \n [c](memos/abc) and \n [d](memos/xyz)",
+			expected: []string{"memos/abc", "memos/xyz", "memos/123"},
+		},
+		{
+			content:  "See [a](https://example.com/no-memos-link) and [b](https://another.com/memos/456)",
+			expected: []string{"memos/456"},
+		},
+		{
+			content:  "See [a](memos/123) and also [b](memos/123)",
+			expected: []string{"memos/123"},
+		},
+	}
+
+	for _, tt := range tests {
+		data, err := svc.ExtractAll([]byte(tt.content))
+		require.NoError(t, err)
+		require.NotNil(t, data)
+		assert.ElementsMatch(t, tt.expected, data.MemoRefNames)
+	}
+}
+
 // Benchmark tests.
 func BenchmarkGenerateSnippet(b *testing.B) {
 	svc := NewService()
