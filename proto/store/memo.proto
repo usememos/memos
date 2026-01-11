@@ -11,6 +11,10 @@ message MemoPayload {
 
   repeated string tags = 3;
 
+  // Related memo resource names extracted from markdown links.
+  // Format: memos/{memo}
+  repeated string memo_ref_names = 4;
+
   // The calculated properties from the memo content.
   message Property {
     bool has_link = 1;
