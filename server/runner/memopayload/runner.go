@@ -84,5 +84,6 @@ func RebuildMemoPayload(memo *store.Memo, markdownService markdown.Service) erro
 
 	memo.Payload.Tags = data.Tags
 	memo.Payload.Property = data.Property
+	memo.Payload.MemoRefNames = data.MemoRefNames
 	return nil
 }
