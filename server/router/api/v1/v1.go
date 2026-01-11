@@ -39,6 +39,7 @@ type APIV1Service struct {
 func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store) *APIV1Service {
 	markdownService := markdown.NewService(
 		markdown.WithTagExtension(),
+		markdown.WithMemosRefExtension(),
 	)
 	return &APIV1Service{
 		Secret:             secret,
