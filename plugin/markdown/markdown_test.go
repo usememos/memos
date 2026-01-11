@@ -405,7 +405,7 @@ func TestTruncateAtWord(t *testing.T) {
 }
 
 func TestExtractAllExtractsMemoRefNames(t *testing.T) {
-	svc := NewService()
+	svc := NewService(WithMemosRefExtension())
 
 	tests := []struct {
 		content  string
