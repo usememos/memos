@@ -281,7 +281,7 @@ func (s *APIV1Service) GetMemo(ctx context.Context, request *v1pb.GetMemoRequest
 			return nil, status.Errorf(codes.Internal, "failed to get user")
 		}
 		if user == nil {
-			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+			return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 		}
 		if memo.Visibility == store.Private && memo.CreatorID != user.ID {
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")

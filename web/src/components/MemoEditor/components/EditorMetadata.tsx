@@ -5,7 +5,7 @@ import AttachmentList from "./AttachmentList";
 import LocationDisplay from "./LocationDisplay";
 import RelationList from "./RelationList";
 
-export const EditorMetadata: FC<EditorMetadataProps> = () => {
+export const EditorMetadata: FC<EditorMetadataProps> = ({ memoName }) => {
   const { state, actions, dispatch } = useEditorContext();
 
   return (
@@ -17,7 +17,11 @@ export const EditorMetadata: FC<EditorMetadataProps> = () => {
         onRemoveLocalFile={(previewUrl) => dispatch(actions.removeLocalFile(previewUrl))}
       />
 
-      <RelationList relations={state.metadata.relations} onRelationsChange={(relations) => dispatch(actions.setMetadata({ relations }))} />
+      <RelationList
+        relations={state.metadata.relations}
+        onRelationsChange={(relations) => dispatch(actions.setMetadata({ relations }))}
+        memoName={memoName}
+      />
 
       {state.metadata.location && (
         <LocationDisplay location={state.metadata.location} onRemove={() => dispatch(actions.setMetadata({ location: undefined }))} />
