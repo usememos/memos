@@ -62,6 +62,23 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	if err := memopayload.RebuildMemoPayload(create, s.MarkdownService); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to rebuild memo payload: %v", err)
 	}
+
+	// If markdown extraction found memo references, convert them into relations.
+	if create.Payload != nil {
+		if refs := create.Payload.GetMemoRefNames(); len(refs) > 0 {
+			relations := make([]*v1pb.MemoRelation, 0, len(refs))
+			for _, name := range refs {
+				if name == "" {
+					continue
+				}
+				relations = append(relations, &v1pb.MemoRelation{
+					RelatedMemo: &v1pb.MemoRelation_Memo{Name: name},
+					Type:        v1pb.MemoRelation_REFERENCE,
+				})
+			}
+			request.Memo.Relations = relations
+		}
+	}
 	if request.Memo.Location != nil {
 		create.Payload.Location = convertLocationToStore(request.Memo.Location)
 	}
