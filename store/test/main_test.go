@@ -26,13 +26,28 @@ func runAllDrivers() {
 	_, currentFile, _, _ := runtime.Caller(0)
 	projectRoot := filepath.Dir(filepath.Dir(filepath.Dir(currentFile)))
 
+	// Build the docker image once for all tests to use
+	fmt.Println("Building memos docker image for tests (memos-test:local)...")
+	buildCmd := exec.Command("docker", "build", "-f", "store/test/Dockerfile", "-t", "memos-test:local", ".")
+	buildCmd.Dir = projectRoot
+	buildCmd.Stdout = os.Stdout
+	buildCmd.Stderr = os.Stderr
+	if err := buildCmd.Run(); err != nil {
+		fmt.Printf("Failed to build docker image: %v\n", err)
+		// We don't exit here, we let the tests try to run (and maybe fail or rebuild)
+		// strictly speaking we should probably fail, but let's be robust.
+		// Actually, if build fails, tests relying on it will fail or try to rebuild.
+		// Let's exit to be clear.
+		os.Exit(1)
+	}
+
 	var failed []string
 	for _, driver := range drivers {
 		fmt.Printf("\n==================== %s ====================\n\n", driver)
 
 		cmd := exec.Command("go", "test", "-v", "-count=1", "./store/test/...")
 		cmd.Dir = projectRoot
-		cmd.Env = append(os.Environ(), "DRIVER="+driver)
+		cmd.Env = append(os.Environ(), "DRIVER="+driver, "MEMOS_TEST_IMAGE_BUILT=1")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 
