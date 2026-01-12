@@ -1,5 +1,5 @@
 import type { Element } from "hast";
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
@@ -7,6 +7,7 @@ import rehypeSanitize from "rehype-sanitize";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
+import { useInstance } from "@/contexts/InstanceContext";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { remarkDisableSetext } from "@/utils/remark-plugins/remark-disable-setext";
@@ -16,13 +17,16 @@ import { CodeBlock } from "./CodeBlock";
 import { isTagNode, isTaskListItemNode } from "./ConditionalComponent";
 import { SANITIZE_SCHEMA } from "./constants";
 import { useCompactLabel, useCompactMode } from "./hooks";
+import LinkPreview from "./LinkPreview";
 import { Tag } from "./Tag";
 import { TaskListItem } from "./TaskListItem";
 import type { MemoContentProps } from "./types";
+import { extractLinks } from "./utils/extractLinks";
 
 const MemoContent = (props: MemoContentProps) => {
   const { className, contentClassName, content, onClick, onDoubleClick } = props;
   const t = useTranslate();
+  const { memoRelatedSetting } = useInstance();
   const {
     containerRef: memoContentContainerRef,
     mode: showCompactMode,
@@ -30,6 +34,14 @@ const MemoContent = (props: MemoContentProps) => {
   } = useCompactMode(Boolean(props.compact));
 
   const compactLabel = useCompactLabel(showCompactMode, t as (key: string) => string);
+
+  // Extract links from content for preview rendering
+  const links = useMemo(() => {
+    if (!memoRelatedSetting.enableOpengraphLinkPreviews) {
+      return [];
+    }
+    return extractLinks(content);
+  }, [content, memoRelatedSetting.enableOpengraphLinkPreviews]);
 
   return (
     <div className={`w-full flex flex-col justify-start items-start text-foreground ${className || ""}`}>
@@ -72,6 +84,14 @@ const MemoContent = (props: MemoContentProps) => {
           {content}
         </ReactMarkdown>
       </div>
+      {/* Link Previews */}
+      {links.length > 0 && (
+        <div className="w-full flex flex-col gap-2 mt-2">
+          {links.map((url) => (
+            <LinkPreview key={url} url={url} />
+          ))}
+        </div>
+      )}
       {showCompactMode === "ALL" && (
         <div className="absolute bottom-0 left-0 w-full h-12 bg-linear-to-b from-transparent to-background pointer-events-none"></div>
       )}

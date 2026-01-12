@@ -555,6 +555,31 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/links/metadata:
+        get:
+            tags:
+                - LinkService
+            description: GetLinkMetadata fetches OpenGraph metadata for a given URL.
+            operationId: LinkService_GetLinkMetadata
+            parameters:
+                - name: url
+                  in: query
+                  description: The URL to fetch metadata for.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/LinkMetadata'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/memos:
         get:
             tags:
@@ -2211,6 +2236,9 @@ components:
                 enableDoubleClickEdit:
                     type: boolean
                     description: enable_double_click_edit enables editing on double click.
+                enableOpengraphLinkPreviews:
+                    type: boolean
+                    description: enable_opengraph_link_previews enables OpenGraph link previews for links in memos.
                 reactions:
                     type: array
                     items:
@@ -2242,6 +2270,19 @@ components:
                         - $ref: '#/components/schemas/StorageSetting_S3Config'
                     description: The S3 config.
             description: Storage configuration settings for instance attachments.
+        LinkMetadata:
+            type: object
+            properties:
+                title:
+                    type: string
+                    description: The title of the link (from og:title or <title> tag).
+                description:
+                    type: string
+                    description: The description of the link (from og:description or <meta name="description">).
+                image:
+                    type: string
+                    description: The preview image URL (from og:image).
+            description: LinkMetadata contains OpenGraph metadata for a link.
         ListActivitiesResponse:
             type: object
             properties:
@@ -3060,6 +3101,7 @@ tags:
     - name: AuthService
     - name: IdentityProviderService
     - name: InstanceService
+    - name: LinkService
     - name: MemoService
     - name: ShortcutService
     - name: UserService
