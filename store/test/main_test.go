@@ -38,7 +38,7 @@ func runAllDrivers() {
 		// strictly speaking we should probably fail, but let's be robust.
 		// Actually, if build fails, tests relying on it will fail or try to rebuild.
 		// Let's exit to be clear.
-		os.Exit(1)
+		panic(fmt.Sprintf("failed to build docker image: %v", err))
 	}
 
 	var failed []string
