@@ -1,4 +1,4 @@
-import { ChevronDownIcon, ChevronUpIcon, FileIcon, Loader2Icon, PaperclipIcon, XIcon } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, FileIcon, PaperclipIcon, XIcon } from "lucide-react";
 import type { FC } from "react";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
@@ -21,7 +21,7 @@ const AttachmentItemCard: FC<{
   canMoveUp?: boolean;
   canMoveDown?: boolean;
 }> = ({ item, onRemove, onMoveUp, onMoveDown, canMoveUp = true, canMoveDown = true }) => {
-  const { category, filename, thumbnailUrl, mimeType, size, isLocal } = item;
+  const { category, filename, thumbnailUrl, mimeType, size } = item;
   const fileTypeLabel = getFileTypeLabel(mimeType);
   const fileSizeLabel = size ? formatFileSize(size) : undefined;
 
@@ -41,12 +41,6 @@ const AttachmentItemCard: FC<{
         </span>
 
         <div className="flex items-center gap-1 text-[11px] text-muted-foreground shrink-0">
-          {isLocal && (
-            <>
-              <Loader2Icon className="w-2.5 h-2.5 animate-spin" />
-              <span className="text-muted-foreground/50">•</span>
-            </>
-          )}
           <span>{fileTypeLabel}</span>
           {fileSizeLabel && (
             <>
