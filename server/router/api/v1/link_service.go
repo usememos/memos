@@ -26,16 +26,30 @@ func (s *APIV1Service) GetLinkMetadata(ctx context.Context, request *v1pb.GetLin
 		return nil, status.Errorf(codes.InvalidArgument, "url is required")
 	}
 
+	// Normalize URL for cache key (remove fragments, trailing slashes)
+	normalizedURL := httpgetter.NormalizeURLForCache(request.Url)
+
+	// Check cache first
+	if cached, ok := s.Store.GetLinkMetadataFromCache(ctx, normalizedURL); ok {
+		if metadata, ok := cached.(*v1pb.LinkMetadata); ok {
+			return metadata, nil
+		}
+	}
+
 	// Fetch metadata using httpgetter
 	htmlMeta, err := httpgetter.GetHTMLMeta(request.Url)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to fetch link metadata: %v", err)
 	}
 
-	return &v1pb.LinkMetadata{
+	// Convert to protobuf message
+	metadata := &v1pb.LinkMetadata{
 		Title:       htmlMeta.Title,
 		Description: htmlMeta.Description,
 		Image:       htmlMeta.Image,
-	}, nil
-}
+	}
 
+	s.Store.SetLinkMetadataInCache(ctx, normalizedURL, metadata)
+
+	return metadata, nil
+}
