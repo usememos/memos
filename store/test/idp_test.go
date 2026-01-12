@@ -414,7 +414,7 @@ func TestIdentityProviderIdentifierFilterPatterns(t *testing.T) {
 	ts.Close()
 }
 
-// Helper function to create a test OAuth2 IDP
+// Helper function to create a test OAuth2 IDP.
 func createTestOAuth2IDP(name string) *storepb.IdentityProvider {
 	return &storepb.IdentityProvider{
 		Name:             name,
