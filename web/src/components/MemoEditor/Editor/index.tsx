@@ -1,4 +1,5 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from "react";
+import getCaretCoordinates from "textarea-caret";
 import { cn } from "@/lib/utils";
 import { EDITOR_HEIGHT } from "../constants";
 import type { EditorProps } from "../types";
@@ -74,9 +75,12 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
       getEditor: () => editorRef.current,
       focus: () => editorRef.current?.focus(),
       scrollToCursor: () => {
-        if (editorRef.current) {
-          editorRef.current.scrollTop = editorRef.current.scrollHeight;
-        }
+        const editor = editorRef.current;
+        if (!editor) return;
+
+        const caret = getCaretCoordinates(editor, editor.selectionEnd);
+        // Scroll to center cursor vertically
+        editor.scrollTop = Math.max(0, caret.top - editor.clientHeight / 2);
       },
       insertText: (content = "", prefix = "", suffix = "") => {
         const editor = editorRef.current;
@@ -148,6 +152,19 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
     if (editorRef.current) {
       handleContentChangeCallback(editorRef.current.value);
       updateEditorHeight();
+
+      // Auto-scroll to keep cursor visible when typing
+      // See: https://github.com/usememos/memos/issues/5469
+      const editor = editorRef.current;
+      const caret = getCaretCoordinates(editor, editor.selectionEnd);
+      const lineHeight = parseFloat(getComputedStyle(editor).lineHeight) || 24;
+
+      // Scroll if cursor is near or beyond bottom edge (within 2 lines)
+      const viewportBottom = editor.scrollTop + editor.clientHeight;
+      if (caret.top + lineHeight * 2 > viewportBottom) {
+        // Scroll to center cursor vertically
+        editor.scrollTop = Math.max(0, caret.top - editor.clientHeight / 2);
+      }
     }
   }, [handleContentChangeCallback, updateEditorHeight]);
 
