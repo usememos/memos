@@ -1,8 +1,25 @@
+# docker-compose up -d
+# https://hub.docker.com/r/neosmemo/memos
+
 services:
   memos:
-    image: neosmemo/memos:latest
+    image: neosmemo/memos:0.25.3
     container_name: memos
-    volumes:
-      - ~/.memos/:/var/opt/memos
+    restart: always
+    environment:
+      - MEMOS_MODE=prod
+      - MEMOS_DRIVER=postgres
+      - MEMOS_DSN=postgresql://${DB_USERNAME}:${DB_PASSWORD}@host.docker.internal:5432/memos?sslmode=disable
     ports:
-      - 5230:5230
+      - "5230:5230"
+    volumes:
+      - memos-data:/var/opt/memos
+    networks:
+      - shared-network
+
+volumes:
+  memos-data:
+
+networks:
+  shared-network:
+    external: true
