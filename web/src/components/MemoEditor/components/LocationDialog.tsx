@@ -24,7 +24,7 @@ export const LocationDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[min(28rem,calc(100vw-2rem))] !p-0">
+      <DialogContent className="max-w-[min(28rem,calc(100vw-2rem))] p-0!">
         <VisuallyHidden>
           <DialogClose />
         </VisuallyHidden>
@@ -41,7 +41,7 @@ export const LocationDialog = ({
           <div className="w-full flex flex-col p-3 gap-3">
             <div className="grid grid-cols-2 gap-3">
               <div className="grid gap-1">
-                <Label htmlFor="memo-location-lat" className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <Label htmlFor="memo-location-lat" className="text-xs uppercase tracking-wide text-muted-foreground">
                   Lat
                 </Label>
                 <Input
@@ -57,7 +57,7 @@ export const LocationDialog = ({
                 />
               </div>
               <div className="grid gap-1">
-                <Label htmlFor="memo-location-lng" className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                <Label htmlFor="memo-location-lng" className="text-xs uppercase tracking-wide text-muted-foreground">
                   Lng
                 </Label>
                 <Input
@@ -74,7 +74,7 @@ export const LocationDialog = ({
               </div>
             </div>
             <div className="grid gap-1">
-              <Label htmlFor="memo-location-placeholder" className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              <Label htmlFor="memo-location-placeholder" className="text-xs uppercase tracking-wide text-muted-foreground">
                 {t("tooltip.select-location")}
               </Label>
               <Textarea

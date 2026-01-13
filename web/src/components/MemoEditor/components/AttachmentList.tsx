@@ -27,7 +27,7 @@ const AttachmentItemCard: FC<{
 
   return (
     <div className="relative flex items-center gap-1.5 px-1.5 py-1 rounded border border-transparent hover:border-border hover:bg-accent/20 transition-all">
-      <div className="flex-shrink-0 w-6 h-6 rounded overflow-hidden bg-muted/40 flex items-center justify-center">
+      <div className="shrink-0 w-6 h-6 rounded overflow-hidden bg-muted/40 flex items-center justify-center">
         {category === "image" && thumbnailUrl ? (
           <img src={thumbnailUrl} alt="" className="w-full h-full object-cover" />
         ) : (
@@ -36,7 +36,7 @@ const AttachmentItemCard: FC<{
       </div>
 
       <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-baseline gap-0.5 sm:gap-1.5">
-        <span className="text-xs font-medium truncate" title={filename}>
+        <span className="text-xs truncate" title={filename}>
           {filename}
         </span>
 
@@ -51,7 +51,7 @@ const AttachmentItemCard: FC<{
         </div>
       </div>
 
-      <div className="flex-shrink-0 flex items-center gap-0.5">
+      <div className="shrink-0 flex items-center gap-0.5">
         {onMoveUp && (
           <button
             type="button"
@@ -141,7 +141,7 @@ const AttachmentList: FC<AttachmentListProps> = ({ attachments, localFiles = [],
     <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
       <div className="flex items-center gap-1.5 px-2 py-1.5 border-b border-border bg-muted/30">
         <PaperclipIcon className="w-3.5 h-3.5 text-muted-foreground" />
-        <span className="text-xs font-medium text-muted-foreground">Attachments ({items.length})</span>
+        <span className="text-xs text-muted-foreground">Attachments ({items.length})</span>
       </div>
 
       <div className="p-1 sm:p-1.5 flex flex-col gap-0.5">
