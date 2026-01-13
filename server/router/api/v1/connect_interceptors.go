@@ -50,7 +50,19 @@ func (*MetadataInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc 
 
 		// Set metadata in context so services can use metadata.FromIncomingContext()
 		ctx = metadata.NewIncomingContext(ctx, md)
-		return next(ctx, req)
+
+		// Execute the request
+		resp, err := next(ctx, req)
+
+		// Prevent browser caching of API responses to avoid stale data issues
+		// See: https://github.com/usememos/memos/issues/5470
+		if resp != nil {
+			resp.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+			resp.Header().Set("Pragma", "no-cache")
+			resp.Header().Set("Expires", "0")
+		}
+
+		return resp, err
 	}
 }
 
