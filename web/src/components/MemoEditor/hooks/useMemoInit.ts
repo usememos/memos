@@ -1,4 +1,6 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
+import { memoKeys } from "@/hooks/useMemoQueries";
 import type { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { EditorRefActions } from "../Editor";
 import { cacheService, memoService } from "../services";
@@ -13,6 +15,7 @@ export const useMemoInit = (
   defaultVisibility?: Visibility,
 ) => {
   const { actions, dispatch } = useEditorContext();
+  const queryClient = useQueryClient();
   const initializedRef = useRef(false);
 
   useEffect(() => {
@@ -24,6 +27,10 @@ export const useMemoInit = (
 
       try {
         if (memoName) {
+          // Force refetch from server to prevent stale data issues
+          // See: https://github.com/usememos/memos/issues/5470
+          await queryClient.invalidateQueries({ queryKey: memoKeys.detail(memoName) });
+
           // Load existing memo
           const loadedState = await memoService.load(memoName);
           dispatch(
@@ -58,5 +65,5 @@ export const useMemoInit = (
     };
 
     init();
-  }, [memoName, cacheKey, username, autoFocus, defaultVisibility, actions, dispatch, editorRef]);
+  }, [memoName, cacheKey, username, autoFocus, defaultVisibility, actions, dispatch, editorRef, queryClient]);
 };

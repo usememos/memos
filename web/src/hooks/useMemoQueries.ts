@@ -53,7 +53,7 @@ export function useMemo(name: string, options?: { enabled?: boolean }) {
       return memo;
     },
     enabled: options?.enabled ?? true,
-    staleTime: 1000 * 60, // 1 minute - memos can be edited frequently
+    staleTime: 1000 * 10, // 10 seconds - reduced to prevent stale data in collaborative editing
   });
 }
 

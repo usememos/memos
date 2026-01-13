@@ -24,12 +24,27 @@ export function useListCompletion({ editorRef, editorActions, isInIME }: UseList
   const editorActionsRef = useRef(editorActions);
   editorActionsRef.current = editorActions;
 
+  // Track when composition ends to handle Safari race condition
+  // Safari fires keydown(Enter) immediately after compositionend, while Chrome doesn't
+  // See: https://github.com/usememos/memos/issues/5469
+  const lastCompositionEndRef = useRef(0);
+
   useEffect(() => {
     const editor = editorRef.current;
     if (!editor) return;
 
+    const handleCompositionEnd = () => {
+      lastCompositionEndRef.current = Date.now();
+    };
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key !== "Enter" || isInIMERef.current || event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) {
+        return;
+      }
+
+      // Safari fix: Ignore Enter key within 100ms of composition end
+      // This prevents double-enter behavior when confirming IME input in lists
+      if (Date.now() - lastCompositionEndRef.current < 100) {
         return;
       }
 
@@ -51,10 +66,17 @@ export function useListCompletion({ editorRef, editorActions, isInIME }: UseList
       } else {
         const continuation = generateListContinuation(listInfo);
         actions.insertText("\n" + continuation);
+
+        // Auto-scroll to keep cursor visible after inserting list item
+        setTimeout(() => actions.scrollToCursor(), 0);
       }
     };
 
+    editor.addEventListener("compositionend", handleCompositionEnd);
     editor.addEventListener("keydown", handleKeyDown);
-    return () => editor.removeEventListener("keydown", handleKeyDown);
+    return () => {
+      editor.removeEventListener("compositionend", handleCompositionEnd);
+      editor.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 }
