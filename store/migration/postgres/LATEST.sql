@@ -105,3 +105,33 @@ CREATE TABLE reaction (
   reaction_type TEXT NOT NULL,
   UNIQUE(creator_id, content_id, reaction_type)
 );
+
+-- ai_conversation: stores AI chat conversations
+CREATE TABLE ai_conversation (
+  id SERIAL PRIMARY KEY,
+  uid TEXT NOT NULL UNIQUE,
+  user_id INTEGER NOT NULL,
+  title TEXT NOT NULL DEFAULT 'New Chat',
+  created_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+  updated_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+  row_status TEXT NOT NULL DEFAULT 'NORMAL',
+  model TEXT NOT NULL DEFAULT '',
+  provider TEXT NOT NULL DEFAULT ''
+);
+
+CREATE INDEX idx_ai_conversation_user_id ON ai_conversation(user_id);
+CREATE INDEX idx_ai_conversation_created_ts ON ai_conversation(created_ts);
+
+-- ai_message: stores individual messages in AI conversations
+CREATE TABLE ai_message (
+  id SERIAL PRIMARY KEY,
+  uid TEXT NOT NULL UNIQUE,
+  conversation_id INTEGER NOT NULL REFERENCES ai_conversation(id) ON DELETE CASCADE,
+  role TEXT NOT NULL,
+  content TEXT NOT NULL DEFAULT '',
+  created_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+  token_count INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX idx_ai_message_conversation_id ON ai_message(conversation_id);
+CREATE INDEX idx_ai_message_created_ts ON ai_message(created_ts);

@@ -11,6 +11,7 @@ import (
 	"golang.org/x/sync/semaphore"
 
 	"github.com/usememos/memos/internal/profile"
+	"github.com/usememos/memos/plugin/llm"
 	"github.com/usememos/memos/plugin/markdown"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/server/auth"
@@ -26,17 +27,19 @@ type APIV1Service struct {
 	v1pb.UnimplementedShortcutServiceServer
 	v1pb.UnimplementedActivityServiceServer
 	v1pb.UnimplementedIdentityProviderServiceServer
+	v1pb.UnimplementedAIServiceServer
 
 	Secret          string
 	Profile         *profile.Profile
 	Store           *store.Store
 	MarkdownService markdown.Service
+	LLMManager      *llm.Manager
 
 	// thumbnailSemaphore limits concurrent thumbnail generation to prevent memory exhaustion
 	thumbnailSemaphore *semaphore.Weighted
 }
 
-func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store) *APIV1Service {
+func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store, llmManager *llm.Manager) *APIV1Service {
 	markdownService := markdown.NewService(
 		markdown.WithTagExtension(),
 	)
@@ -45,6 +48,7 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 		Profile:            profile,
 		Store:              store,
 		MarkdownService:    markdownService,
+		LLMManager:         llmManager,
 		thumbnailSemaphore: semaphore.NewWeighted(3), // Limit to 3 concurrent thumbnail generations
 	}
 }
@@ -116,6 +120,9 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 		return err
 	}
 	if err := v1pb.RegisterIdentityProviderServiceHandlerServer(ctx, gwMux, s); err != nil {
+		return err
+	}
+	if err := v1pb.RegisterAIServiceHandlerServer(ctx, gwMux, s); err != nil {
 		return err
 	}
 	gwGroup := echoServer.Group("")

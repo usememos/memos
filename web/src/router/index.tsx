@@ -8,6 +8,7 @@ import RootLayout from "@/layouts/RootLayout";
 import Home from "@/pages/Home";
 
 const AdminSignIn = lazy(() => import("@/pages/AdminSignIn"));
+const AIChat = lazy(() => import("@/pages/AIChat"));
 const Archived = lazy(() => import("@/pages/Archived"));
 const AuthCallback = lazy(() => import("@/pages/AuthCallback"));
 const Explore = lazy(() => import("@/pages/Explore"));
@@ -71,6 +72,8 @@ const router = createBrowserRouter([
           { path: Routes.ATTACHMENTS, element: <LazyRoute component={Attachments} /> },
           { path: Routes.INBOX, element: <LazyRoute component={Inboxes} /> },
           { path: Routes.SETTING, element: <LazyRoute component={Setting} /> },
+          { path: "ai", element: <LazyRoute component={AIChat} /> },
+          { path: "ai/:conversationId", element: <LazyRoute component={AIChat} /> },
           { path: "memos/:uid", element: <LazyRoute component={MemoDetail} /> },
           // Redirect old path to new path
           { path: "m/:uid", element: <LazyRoute component={MemoDetailRedirect} /> },

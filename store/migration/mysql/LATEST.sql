@@ -105,3 +105,32 @@ CREATE TABLE `reaction` (
   `reaction_type` VARCHAR(256) NOT NULL,
   UNIQUE(`creator_id`,`content_id`,`reaction_type`)  
 );
+
+-- ai_conversation: stores AI chat conversations
+CREATE TABLE `ai_conversation` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `uid` VARCHAR(256) NOT NULL UNIQUE,
+  `user_id` INT NOT NULL,
+  `title` VARCHAR(512) NOT NULL DEFAULT 'New Chat',
+  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `row_status` VARCHAR(16) NOT NULL DEFAULT 'NORMAL',
+  `model` VARCHAR(128) NOT NULL DEFAULT '',
+  `provider` VARCHAR(64) NOT NULL DEFAULT '',
+  INDEX `idx_ai_conversation_user_id` (`user_id`),
+  INDEX `idx_ai_conversation_created_ts` (`created_ts`)
+);
+
+-- ai_message: stores individual messages in AI conversations
+CREATE TABLE `ai_message` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `uid` VARCHAR(256) NOT NULL UNIQUE,
+  `conversation_id` INT NOT NULL,
+  `role` VARCHAR(16) NOT NULL,
+  `content` TEXT NOT NULL,
+  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `token_count` INT NOT NULL DEFAULT 0,
+  INDEX `idx_ai_message_conversation_id` (`conversation_id`),
+  INDEX `idx_ai_message_created_ts` (`created_ts`),
+  FOREIGN KEY (`conversation_id`) REFERENCES `ai_conversation`(`id`) ON DELETE CASCADE
+);

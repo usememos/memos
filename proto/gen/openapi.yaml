@@ -69,6 +69,220 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/ai/config:
+        get:
+            tags:
+                - AIService
+            description: GetAIConfig returns available AI providers and models.
+            operationId: AIService_GetAIConfig
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetAIConfigResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/ai/conversations:
+        get:
+            tags:
+                - AIService
+            description: ListConversations lists all conversations for the current user.
+            operationId: AIService_ListConversations
+            parameters:
+                - name: pageSize
+                  in: query
+                  description: Maximum number of conversations to return.
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  description: Page token for pagination.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListConversationsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - AIService
+            description: CreateConversation creates a new AI conversation.
+            operationId: AIService_CreateConversation
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateConversationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Conversation'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/ai/conversations/{conversationId}:
+        get:
+            tags:
+                - AIService
+            description: GetConversation gets a specific conversation with messages.
+            operationId: AIService_GetConversation
+            parameters:
+                - name: conversationId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Conversation'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        delete:
+            tags:
+                - AIService
+            description: DeleteConversation deletes a conversation and all its messages.
+            operationId: AIService_DeleteConversation
+            parameters:
+                - name: conversationId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        patch:
+            tags:
+                - AIService
+            description: UpdateConversation updates conversation metadata (e.g., title).
+            operationId: AIService_UpdateConversation
+            parameters:
+                - name: conversationId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateConversationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Conversation'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/ai/conversations/{conversationId}/messages:
+        get:
+            tags:
+                - AIService
+            description: ListMessages lists all messages in a conversation.
+            operationId: AIService_ListMessages
+            parameters:
+                - name: conversationId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageToken
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListMessagesResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+        post:
+            tags:
+                - AIService
+            description: SendMessage sends a message and gets AI response.
+            operationId: AIService_SendMessage
+            parameters:
+                - name: conversationId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SendMessageRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SendMessageResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/attachments:
         get:
             tags:
@@ -1927,6 +2141,17 @@ paths:
                                 $ref: '#/components/schemas/Status'
 components:
     schemas:
+        AIProvider:
+            type: object
+            properties:
+                name:
+                    type: string
+                displayName:
+                    type: string
+                models:
+                    type: array
+                    items:
+                        type: string
         Activity:
             type: object
             properties:
@@ -2030,6 +2255,55 @@ components:
                     description: |-
                         Optional. The related memo. Refer to `Memo.name`.
                          Format: memos/{memo}
+        Conversation:
+            type: object
+            properties:
+                id:
+                    readOnly: true
+                    type: string
+                    description: Unique identifier for the conversation.
+                user:
+                    readOnly: true
+                    type: string
+                    description: The user who owns this conversation.
+                title:
+                    type: string
+                    description: Title of the conversation.
+                createTime:
+                    readOnly: true
+                    type: string
+                    description: Creation timestamp.
+                    format: date-time
+                updateTime:
+                    readOnly: true
+                    type: string
+                    description: Last update timestamp.
+                    format: date-time
+                model:
+                    type: string
+                    description: The AI model used for this conversation.
+                provider:
+                    type: string
+                    description: The AI provider (openai, deepseek, etc.).
+                messages:
+                    readOnly: true
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Message'
+                    description: Messages in this conversation (populated on GetConversation).
+            description: Conversation represents an AI chat conversation.
+        CreateConversationRequest:
+            type: object
+            properties:
+                title:
+                    type: string
+                    description: Optional title for the conversation.
+                model:
+                    type: string
+                    description: Optional model to use.
+                provider:
+                    type: string
+                    description: Optional provider to use.
         CreatePersonalAccessTokenRequest:
             required:
                 - parent
@@ -2080,6 +2354,23 @@ components:
                 logoUrl:
                     type: string
             description: Custom profile configuration for instance branding.
+        GetAIConfigResponse:
+            type: object
+            properties:
+                enabled:
+                    type: boolean
+                    description: Whether AI is enabled on this instance.
+                providers:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/AIProvider'
+                    description: Available providers.
+                defaultProvider:
+                    type: string
+                    description: Default provider.
+                defaultModel:
+                    type: string
+                    description: Default model.
         GetCurrentUserResponse:
             type: object
             properties:
@@ -2281,6 +2572,15 @@ components:
                     type: integer
                     description: The total count of attachments (may be approximate).
                     format: int32
+        ListConversationsResponse:
+            type: object
+            properties:
+                conversations:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Conversation'
+                nextPageToken:
+                    type: string
         ListIdentityProvidersResponse:
             type: object
             properties:
@@ -2354,6 +2654,15 @@ components:
                     description: |-
                         A token that can be sent as `page_token` to retrieve the next page.
                          If this field is omitted, there are no subsequent pages.
+        ListMessagesResponse:
+            type: object
+            properties:
+                messages:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Message'
+                nextPageToken:
+                    type: string
         ListPersonalAccessTokensResponse:
             type: object
             properties:
@@ -2588,6 +2897,36 @@ components:
                 hasIncompleteTasks:
                     type: boolean
             description: Computed properties of a memo.
+        Message:
+            type: object
+            properties:
+                id:
+                    readOnly: true
+                    type: string
+                    description: Unique identifier for the message.
+                role:
+                    enum:
+                        - MESSAGE_ROLE_UNSPECIFIED
+                        - USER
+                        - ASSISTANT
+                        - SYSTEM
+                    type: string
+                    description: Role of the message sender (user, assistant, system).
+                    format: enum
+                content:
+                    type: string
+                    description: Content of the message.
+                createTime:
+                    readOnly: true
+                    type: string
+                    description: Creation timestamp.
+                    format: date-time
+                tokenCount:
+                    readOnly: true
+                    type: integer
+                    description: Token count for this message.
+                    format: int32
+            description: Message represents a single message in a conversation.
         OAuth2Config:
             type: object
             properties:
@@ -2680,6 +3019,23 @@ components:
                     type: string
                     description: When the access token expires.
                     format: date-time
+        SendMessageRequest:
+            required:
+                - conversationId
+                - content
+            type: object
+            properties:
+                conversationId:
+                    type: string
+                content:
+                    type: string
+        SendMessageResponse:
+            type: object
+            properties:
+                userMessage:
+                    $ref: '#/components/schemas/Message'
+                assistantMessage:
+                    $ref: '#/components/schemas/Message'
         SetMemoAttachmentsRequest:
             required:
                 - name
@@ -2827,6 +3183,19 @@ components:
             description: |-
                 S3 configuration for cloud storage backend.
                  Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
+        UpdateConversationRequest:
+            required:
+                - conversationId
+            type: object
+            properties:
+                conversationId:
+                    type: string
+                title:
+                    type: string
+                model:
+                    type: string
+                provider:
+                    type: string
         UpsertMemoReactionRequest:
             required:
                 - name
@@ -3055,6 +3424,8 @@ components:
                     format: date-time
             description: UserWebhook represents a webhook owned by a user.
 tags:
+    - name: AIService
+      description: AIService provides AI chat functionality.
     - name: ActivityService
     - name: AttachmentService
     - name: AuthService
