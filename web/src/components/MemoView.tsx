@@ -162,7 +162,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   return (
     <div
       className={clsx(
-        "group relative flex flex-col justify-start items-start w-full px-4 py-3 mb-2 gap-2 bg-white dark:bg-zinc-800 rounded-lg border border-white dark:border-zinc-800 hover:border-gray-200 dark:hover:border-zinc-700",
+        "group relative flex flex-col justify-start items-start w-full p-3 pb-2 mb-2 gap-2 bg-white dark:bg-zinc-800 rounded-lg border border-white dark:border-zinc-800 hover:border-gray-200 dark:hover:border-zinc-700",
         props.showPinned && memo.pinned && "border-gray-200 border dark:border-zinc-700",
         className,
       )}
@@ -171,7 +171,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
       {showEditor ? (
         <MemoEditor
           autoFocus
-          className="border-none !p-0 -mb-2"
+          className="border-none !p-0"
           cacheKey={`inline-memo-editor-${memo.name}`}
           memoName={memo.name}
           onConfirm={() => setShowEditor(false)}

@@ -43,18 +43,18 @@ const TagSelector = (props: Props) => {
     <Dropdown open={open} onOpenChange={(_, isOpen) => setOpen(isOpen)}>
       <MenuButton slots={{ root: "div" }}>
         <Button size="sm" variant="plain">
-          <HashIcon className="w-5 h-5 mx-auto" />
+          <HashIcon className="w-4 h-4 mx-auto" />
         </Button>
       </MenuButton>
       <Menu className="relative" component="div" size="sm" placement="bottom-start">
         <div ref={containerRef}>
           {tags.length > 0 ? (
-            <div className="flex flex-row justify-start items-start flex-wrap px-3 py-1 max-w-[12rem] h-auto max-h-48 overflow-y-auto gap-x-2 gap-y-1">
+            <div className="flex flex-row justify-start items-start flex-wrap px-2 py-1 max-w-[12rem] h-auto max-h-48 overflow-y-auto gap-x-2 gap-y-0.5">
               {tags.map((tag) => {
                 return (
                   <div
                     key={tag}
-                    className="inline-flex w-auto max-w-full cursor-pointer text-base leading-6 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary-dark"
+                    className="inline-flex w-auto max-w-full cursor-pointer text-sm leading-5 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary-dark"
                     onClick={() => handleTagClick(tag)}
                   >
                     <OverflowTip>#{tag}</OverflowTip>
@@ -63,7 +63,7 @@ const TagSelector = (props: Props) => {
               })}
             </div>
           ) : (
-            <p className="italic mx-2" onClick={(e) => e.stopPropagation()}>
+            <p className="italic text-sm mx-2" onClick={(e) => e.stopPropagation()}>
               {t("tag.no-tag-found")}
             </p>
           )}

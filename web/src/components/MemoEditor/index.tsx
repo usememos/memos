@@ -1,7 +1,7 @@
-import { Select, Option, Divider } from "@mui/joy";
+import { Select, Option } from "@mui/joy";
 import { Button } from "@usememos/mui";
 import { isEqual } from "lodash-es";
-import { LoaderIcon, SendIcon } from "lucide-react";
+import { LoaderIcon, SendIcon, XIcon } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -422,7 +422,7 @@ const MemoEditor = (props: Props) => {
       <div
         className={`${
           className ?? ""
-        } relative w-full flex flex-col justify-start items-start bg-white dark:bg-zinc-800 px-4 pt-4 rounded-lg border border-gray-200 dark:border-zinc-700`}
+        } relative w-full flex flex-col justify-start items-start bg-white dark:bg-zinc-800 p-3 pb-2 rounded-lg border border-gray-200 dark:border-zinc-700`}
         tabIndex={0}
         onKeyDown={handleKeyDown}
         onDrop={handleDropEvent}
@@ -442,10 +442,10 @@ const MemoEditor = (props: Props) => {
         <Editor ref={editorRef} {...editorConfig} />
         <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />
         <RelationListView relationList={referenceRelations} setRelationList={handleSetRelationList} />
-        <div className="relative w-full flex flex-row justify-between items-center pt-2" onFocus={(e) => e.stopPropagation()}>
-          <div className="flex flex-row justify-start items-center opacity-80 dark:opacity-60 -space-x-1">
+        <div className="w-full mt-2 flex flex-row justify-between items-center" onFocus={(e) => e.stopPropagation()}>
+          <div className="flex flex-row justify-start items-center gap-0.5 opacity-80 dark:opacity-60">
             <TagSelector editorRef={editorRef} />
-            <MarkdownMenu editorRef={editorRef} />
+            {/* <MarkdownMenu editorRef={editorRef} /> */}
             <UploadResourceButton />
             <AddMemoRelationPopover editorRef={editorRef} />
             {workspaceMemoRelatedSetting.enableLocation && (
@@ -460,16 +460,13 @@ const MemoEditor = (props: Props) => {
               />
             )}
           </div>
-        </div>
-        <Divider className="!mt-2 opacity-40" />
-        <div className="w-full flex flex-row justify-between items-center py-3 gap-2 overflow-auto dark:border-t-zinc-500">
-          <div className="relative flex flex-row justify-start items-center" onFocus={(e) => e.stopPropagation()}>
+          <div className="shrink-0 flex flex-row justify-end items-center gap-0.5">
             <Select
-              className="!text-sm"
+              className="!min-w-0"
               variant="plain"
-              size="md"
+              size="sm"
               value={state.memoVisibility}
-              startDecorator={<VisibilityIcon visibility={state.memoVisibility} />}
+              renderValue={() => <VisibilityIcon visibility={state.memoVisibility} />}
               onChange={(_, visibility) => {
                 if (visibility) {
                   handleMemoVisibilityChange(visibility);
@@ -477,21 +474,22 @@ const MemoEditor = (props: Props) => {
               }}
             >
               {[Visibility.PRIVATE, Visibility.PROTECTED, Visibility.PUBLIC].map((item) => (
-                <Option key={item} value={item} className="whitespace-nowrap !text-sm">
+                <Option key={item} value={item} className="whitespace-nowrap text-sm">
                   {t(`memo.visibility.${convertVisibilityToString(item).toLowerCase()}` as any)}
                 </Option>
               ))}
             </Select>
-          </div>
-          <div className="shrink-0 flex flex-row justify-end items-center gap-2">
             {props.onCancel && (
-              <Button variant="plain" disabled={state.isRequesting} onClick={handleCancelBtnClick}>
-                {t("common.cancel")}
+              <Button variant="plain" size="sm" disabled={state.isRequesting} onClick={handleCancelBtnClick}>
+                <XIcon className="w-4 h-4 mx-auto text-gray-500 dark:text-gray-400" />
               </Button>
             )}
-            <Button color="primary" disabled={!allowSave || state.isRequesting} onClick={handleSaveBtnClick}>
-              {t("editor.save")}
-              {!state.isRequesting ? <SendIcon className="w-4 h-auto ml-1" /> : <LoaderIcon className="w-4 h-auto ml-1 animate-spin" />}
+            <Button variant="plain" size="sm" disabled={!allowSave || state.isRequesting} onClick={handleSaveBtnClick} className="group">
+              {!state.isRequesting ? (
+                <SendIcon className="w-4 h-4 mx-auto text-primary" />
+              ) : (
+                <LoaderIcon className="w-4 h-4 mx-auto animate-spin text-primary" />
+              )}
             </Button>
           </div>
         </div>

@@ -64,20 +64,20 @@ const MarkdownMenu = (props: Props) => {
     <Dropdown>
       <MenuButton slots={{ root: "div" }}>
         <Button size="sm" variant="plain">
-          <SquareSlashIcon className="w-5 h-5 mx-auto" />
+          <SquareSlashIcon className="w-4 h-4 mx-auto" />
         </Button>
       </MenuButton>
-      <Menu className="text-sm" size="sm" placement="bottom-start">
-        <MenuItem onClick={handleCodeBlockClick}>
-          <Code2Icon className="w-4 h-auto" />
+      <Menu className="text-sm" size="sm" sx={{ py: 0.5, minWidth: "auto" }} placement="bottom-start">
+        <MenuItem sx={{ py: 0.5, minHeight: "auto", gap: 0.75 }} onClick={handleCodeBlockClick}>
+          <Code2Icon className="w-3.5 h-auto" />
           <span>{t("markdown.code-block")}</span>
         </MenuItem>
-        <MenuItem onClick={handleCheckboxClick}>
-          <CheckSquareIcon className="w-4 h-auto" />
+        <MenuItem sx={{ py: 0.5, minHeight: "auto", gap: 0.75 }} onClick={handleCheckboxClick}>
+          <CheckSquareIcon className="w-3.5 h-auto" />
           <span>{t("markdown.checkbox")}</span>
         </MenuItem>
-        <div className="-mt-0.5 pl-2">
-          <Link fontSize={12} href="https://www.usememos.com/docs/getting-started/content-syntax" target="_blank">
+        <div className="py-0.5 pl-2">
+          <Link fontSize={11} href="https://www.usememos.com/docs/getting-started/content-syntax" target="_blank">
             {t("markdown.content-syntax")}
           </Link>
         </div>
