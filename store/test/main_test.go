@@ -13,8 +13,7 @@ func TestMain(m *testing.M) {
 	// If DRIVER is set, run tests for that driver only
 	if os.Getenv("DRIVER") != "" {
 		defer TerminateContainers()
-		m.Run()
-		return
+		os.Exit(m.Run())
 	}
 
 	// No DRIVER set - run tests for all drivers sequentially
