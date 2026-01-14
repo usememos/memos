@@ -1,8 +1,235 @@
-# Feature: Inline Attachment Preview Modal
+# Feature: Inline Attachment Preview
 
 ## Overview
 
-Implement a feature that allows users to directly view attachments inside the memo detail page using a modal/lightbox overlay. When a user clicks an attachment icon, a modal opens to display the attachment content based on its MIME type.
+Implement a feature that allows users to directly view attachments inside the memo detail page. When a user clicks an attachment, a preview panel opens **inline within the memo container** to display the attachment content based on its MIME type.
+
+## Status: ✅ IMPLEMENTED (January 2026)
+
+### Implementation Summary
+
+The inline attachment preview feature has been fully implemented with the following capabilities:
+
+- **Inline Preview**: Attachments are previewed directly within the memo detail page container (no modal overlay)
+- **Multi-format Support**: Images, PDFs, videos, audio, text/code files
+- **PDF Viewer**: Full PDF rendering using `react-pdf` with page navigation and zoom controls
+- **Navigation**: Previous/next buttons for navigating between multiple attachments
+- **Download**: Quick download button in the preview header
+
+---
+
+## Implementation Details
+
+### Architecture
+
+```
+web/src/components/
+├── attachment/
+│   ├── index.ts                      # Exports
+│   ├── AttachmentPreviewModal.tsx    # Global modal (for Attachments page)
+│   ├── AttachmentPreviewContent.tsx  # Preview content resolver
+│   ├── InlineAttachmentPreview.tsx   # Inline preview container (for memo detail)
+│   ├── hooks/
+│   │   └── useAttachmentPreview.tsx  # React Context for preview state
+│   ├── previews/
+│   │   ├── ImagePreview.tsx          # Image viewer with zoom/pan/rotate
+│   │   ├── PDFPreview.tsx            # PDF.js viewer with page navigation
+│   │   ├── VideoPreview.tsx          # HTML5 video player
+│   │   ├── AudioPreview.tsx          # Audio player with visual placeholder
+│   │   ├── TextPreview.tsx           # Code/text viewer with copy
+│   │   └── FallbackPreview.tsx       # Download prompt for unsupported types
+│   └── utils/
+│       └── mimeTypeResolver.ts       # MIME type detection & language mapping
+```
+
+### Files Created
+
+| File                                                           | Purpose                                    |
+| -------------------------------------------------------------- | ------------------------------------------ |
+| `web/src/components/attachment/index.ts`                       | Module exports                             |
+| `web/src/components/attachment/hooks/useAttachmentPreview.tsx` | React Context for preview state management |
+| `web/src/components/attachment/utils/mimeTypeResolver.ts`      | MIME type to preview type resolver         |
+| `web/src/components/attachment/AttachmentPreviewModal.tsx`     | Modal overlay (used on Attachments page)   |
+| `web/src/components/attachment/AttachmentPreviewContent.tsx`   | Dynamic preview component resolver         |
+| `web/src/components/attachment/InlineAttachmentPreview.tsx`    | Inline preview container for memo detail   |
+| `web/src/components/attachment/previews/ImagePreview.tsx`      | Image viewer with zoom/pan/rotate          |
+| `web/src/components/attachment/previews/PDFPreview.tsx`        | PDF viewer using react-pdf                 |
+| `web/src/components/attachment/previews/VideoPreview.tsx`      | HTML5 video player                         |
+| `web/src/components/attachment/previews/AudioPreview.tsx`      | Audio player                               |
+| `web/src/components/attachment/previews/TextPreview.tsx`       | Text/code viewer with syntax detection     |
+| `web/src/components/attachment/previews/FallbackPreview.tsx`   | Fallback for unsupported types             |
+
+### Files Modified
+
+| File                                                                 | Changes                                                         |
+| -------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `web/src/App.tsx`                                                    | Added `AttachmentPreviewProvider` and `AttachmentPreviewModal`  |
+| `web/src/lib/utils.ts`                                               | Added `formatFileSize()` utility function                       |
+| `web/src/components/AttachmentIcon.tsx`                              | Updated to use preview system                                   |
+| `web/src/components/MemoAttachment.tsx`                              | Updated to use preview system                                   |
+| `web/src/components/MemoView/components/metadata/AttachmentList.tsx` | Integrated inline preview - shows preview below attachment list |
+| `web/src/pages/Attachments.tsx`                                      | Uses modal preview for attachment gallery                       |
+
+### Dependencies Added
+
+| Package     | Version | Purpose                                     |
+| ----------- | ------- | ------------------------------------------- |
+| `react-pdf` | 10.3.0  | PDF rendering with page navigation and zoom |
+
+---
+
+## Features Implemented
+
+### 1. Inline Preview (Memo Detail Page)
+
+When viewing a memo at `/memos/{id}`, clicking an attachment shows the preview **directly below the attachment list** within the memo container:
+
+- Click attachment → Preview appears inline
+- Click again → Preview closes (toggle behavior)
+- Selected attachment is highlighted with a ring
+- Navigation controls for multiple attachments
+- Fixed height container (400px mobile, 500px desktop)
+
+### 2. PDF Viewer
+
+Full-featured PDF viewer using `react-pdf`:
+
+- **Page Navigation**: Previous/Next buttons with page counter (e.g., "1 / 10")
+- **Zoom Controls**: Zoom in/out (50% - 300%) with percentage display
+- **Download Button**: Quick download access
+- **Loading States**: Spinner while PDF loads
+- **Error Fallback**: Options to open in new tab or download if rendering fails
+
+### 3. Image Viewer
+
+- **Zoom**: Scroll wheel or buttons (25% - 500%)
+- **Pan**: Drag to move when zoomed in
+- **Rotate**: 90° rotation button
+- **Reset**: Return to original view
+
+### 4. Video/Audio Players
+
+- Native HTML5 players with controls
+- Visual placeholder for audio files
+
+### 5. Text/Code Viewer
+
+- Language detection from file extension
+- Copy to clipboard button
+- Monospace font rendering
+
+### 6. Fallback Handler
+
+- File icon and metadata display
+- Download button for unsupported types
+
+---
+
+## Usage
+
+### In Memo Detail Page
+
+Attachments are displayed in the `AttachmentList` component. Click any attachment to see its preview inline:
+
+```tsx
+// AttachmentList manages its own selection state
+const [selectedAttachment, setSelectedAttachment] = useState<Attachment | null>(
+  null
+);
+
+// Preview appears below the attachment grid
+{
+  selectedAttachment && (
+    <InlineAttachmentPreview
+      attachment={selectedAttachment}
+      attachments={attachments}
+      onClose={handleClose}
+      onNavigate={handleNavigate}
+    />
+  );
+}
+```
+
+### In Attachments Gallery Page
+
+Uses the modal overlay approach for full-screen preview:
+
+```tsx
+const { openPreview } = useAttachmentPreview();
+
+// Opens modal overlay
+openPreview(attachment, allAttachments);
+```
+
+---
+
+## Component API
+
+### InlineAttachmentPreview
+
+```tsx
+interface InlineAttachmentPreviewProps {
+  attachment: Attachment; // Current attachment to preview
+  attachments: Attachment[]; // All attachments for navigation
+  onClose: () => void; // Close callback
+  onNavigate: (attachment: Attachment) => void; // Navigate callback
+}
+```
+
+### PDFPreview
+
+```tsx
+interface PDFPreviewProps {
+  src: string; // PDF URL
+  filename: string; // Filename for download
+  isLoading?: boolean;
+}
+```
+
+Features:
+
+- Page navigation (prev/next)
+- Zoom controls (50% - 300%)
+- Download button
+- Error fallback with alternative options
+
+---
+
+## Testing
+
+### Manual Testing Checklist
+
+- [x] Click attachment opens inline preview
+- [x] Click again closes preview (toggle)
+- [x] PDF renders with page navigation
+- [x] PDF zoom in/out works
+- [x] Image zoom/pan/rotate works
+- [x] Video plays with controls
+- [x] Audio plays with controls
+- [x] Text files display with copy button
+- [x] Unsupported files show download option
+- [x] Navigation between attachments works
+- [x] Download button works
+
+---
+
+## Future Enhancements
+
+1. **Keyboard Navigation**: Arrow keys for prev/next in inline view
+2. **Lazy Loading**: Load previews only when selected
+3. **Preloading**: Preload adjacent attachments
+4. **Full-screen Mode**: Expand inline preview to full screen
+5. **Syntax Highlighting**: Integrate highlight.js for code files
+6. **PDF Text Selection**: Enable text selection in PDF viewer
+7. **PDF Search**: Add text search within PDF documents
+
+---
+
+## Original Design Document
+
+The sections below contain the original design document for reference.
+
+---
 
 ## Goals
 
@@ -13,12 +240,12 @@ Implement a feature that allows users to directly view attachments inside the me
 
 ## User Stories
 
-- As a user, I want to click on an attachment in a memo and see its content in a modal
-- As a user, I want to navigate between multiple attachments using arrow keys or buttons
-- As a user, I want to download the attachment from the preview modal
-- As a user, I want to close the modal by pressing Escape or clicking outside
+- As a user, I want to click on an attachment in a memo and see its content inline
+- As a user, I want to navigate between multiple attachments using buttons
+- As a user, I want to download the attachment from the preview
+- As a user, I want to close the preview by clicking a close button or clicking the attachment again
 - As a user, I want to see a loading indicator while the attachment is being fetched
-- As a user, I want to zoom/pan images for better viewing
+- As a user, I want to zoom/pan images and navigate PDF pages
 
 ---
 

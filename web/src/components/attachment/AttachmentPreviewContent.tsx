@@ -4,6 +4,7 @@ import { getAttachmentUrl } from "@/utils/attachment";
 import { AudioPreview } from "./previews/AudioPreview";
 import { FallbackPreview } from "./previews/FallbackPreview";
 import { ImagePreview } from "./previews/ImagePreview";
+import { OfficePreview } from "./previews/OfficePreview";
 import { PDFPreview } from "./previews/PDFPreview";
 import { TextPreview } from "./previews/TextPreview";
 import { VideoPreview } from "./previews/VideoPreview";
@@ -32,6 +33,9 @@ export function AttachmentPreviewContent({ attachment }: AttachmentPreviewConten
 
     case "pdf":
       return <PDFPreview src={src} filename={attachment.filename} />;
+
+    case "office":
+      return <OfficePreview src={src} filename={attachment.filename} />;
 
     case "text":
     case "code":

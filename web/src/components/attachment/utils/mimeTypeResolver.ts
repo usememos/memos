@@ -1,4 +1,4 @@
-export type PreviewType = "image" | "pdf" | "video" | "audio" | "text" | "code" | "fallback";
+export type PreviewType = "image" | "pdf" | "video" | "audio" | "text" | "code" | "office" | "fallback";
 
 const CODE_EXTENSIONS = [
   ".js",
@@ -54,6 +54,23 @@ const CODE_MIME_TYPES = [
   "application/toml",
 ];
 
+// Microsoft Office MIME types
+const OFFICE_MIME_TYPES = [
+  // PowerPoint
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
+  // Word
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  // Excel
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+];
+
+// Office file extensions
+const OFFICE_EXTENSIONS = [".ppt", ".pptx", ".doc", ".docx", ".xls", ".xlsx"];
+
 export function getPreviewType(mimeType: string, filename: string): PreviewType {
   // Images
   if (mimeType.startsWith("image/")) {
@@ -75,13 +92,26 @@ export function getPreviewType(mimeType: string, filename: string): PreviewType 
     return "audio";
   }
 
+  // Office files (by MIME type)
+  if (OFFICE_MIME_TYPES.includes(mimeType)) {
+    return "office";
+  }
+
+  // Office files (by extension)
+  const lastDotIndex = filename.lastIndexOf(".");
+  if (lastDotIndex !== -1) {
+    const ext = filename.substring(lastDotIndex).toLowerCase();
+    if (OFFICE_EXTENSIONS.includes(ext)) {
+      return "office";
+    }
+  }
+
   // Code files (by MIME type)
   if (CODE_MIME_TYPES.includes(mimeType)) {
     return "code";
   }
 
   // Code files (by extension)
-  const lastDotIndex = filename.lastIndexOf(".");
   if (lastDotIndex !== -1) {
     const ext = filename.substring(lastDotIndex).toLowerCase();
     if (CODE_EXTENSIONS.includes(ext)) {
