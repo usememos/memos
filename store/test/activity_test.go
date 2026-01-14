@@ -11,6 +11,7 @@ import (
 )
 
 func TestActivityStore(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -34,6 +35,7 @@ func TestActivityStore(t *testing.T) {
 }
 
 func TestActivityGetByID(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -63,6 +65,7 @@ func TestActivityGetByID(t *testing.T) {
 }
 
 func TestActivityListMultiple(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -101,6 +104,7 @@ func TestActivityListMultiple(t *testing.T) {
 }
 
 func TestActivityListByType(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -136,6 +140,7 @@ func TestActivityListByType(t *testing.T) {
 }
 
 func TestActivityPayloadMemoComment(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -172,6 +177,7 @@ func TestActivityPayloadMemoComment(t *testing.T) {
 }
 
 func TestActivityEmptyPayload(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -197,6 +203,7 @@ func TestActivityEmptyPayload(t *testing.T) {
 }
 
 func TestActivityLevel(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -221,6 +228,7 @@ func TestActivityLevel(t *testing.T) {
 }
 
 func TestActivityCreatorID(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user1, err := createTestingHostUser(ctx, ts)
@@ -257,6 +265,7 @@ func TestActivityCreatorID(t *testing.T) {
 }
 
 func TestActivityCreatedTs(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -280,6 +289,7 @@ func TestActivityCreatedTs(t *testing.T) {
 }
 
 func TestActivityListEmpty(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -292,6 +302,7 @@ func TestActivityListEmpty(t *testing.T) {
 }
 
 func TestActivityListWithIDAndType(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -319,6 +330,7 @@ func TestActivityListWithIDAndType(t *testing.T) {
 }
 
 func TestActivityPayloadComplexMemoComment(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)

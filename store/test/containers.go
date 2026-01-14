@@ -49,6 +49,7 @@ var (
 	mysqlBaseDSN      string
 	postgresBaseDSN   string
 	dbCounter         atomic.Int64
+	dbCreationMutex   sync.Mutex // Protects database creation operations
 
 	// Network for container communication.
 	testDockerNetwork *testcontainers.DockerNetwork
@@ -115,6 +116,10 @@ func GetMySQLDSN(t *testing.T) string {
 	if mysqlBaseDSN == "" {
 		t.Fatal("MySQL container failed to start in a previous test")
 	}
+
+	// Serialize database creation to avoid "table already exists" race conditions
+	dbCreationMutex.Lock()
+	defer dbCreationMutex.Unlock()
 
 	// Create a fresh database for this test
 	dbName := fmt.Sprintf("memos_test_%d", dbCounter.Add(1))
@@ -207,6 +212,10 @@ func GetPostgresDSN(t *testing.T) string {
 	if postgresBaseDSN == "" {
 		t.Fatal("PostgreSQL container failed to start in a previous test")
 	}
+
+	// Serialize database creation to avoid "table already exists" race conditions
+	dbCreationMutex.Lock()
+	defer dbCreationMutex.Unlock()
 
 	// Create a fresh database for this test
 	dbName := fmt.Sprintf("memos_test_%d", dbCounter.Add(1))

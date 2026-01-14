@@ -11,6 +11,7 @@ import (
 )
 
 func TestInstanceSettingV1Store(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	instanceSetting, err := ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
@@ -31,6 +32,7 @@ func TestInstanceSettingV1Store(t *testing.T) {
 }
 
 func TestInstanceSettingGetNonExistent(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -45,6 +47,7 @@ func TestInstanceSettingGetNonExistent(t *testing.T) {
 }
 
 func TestInstanceSettingUpsertUpdate(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -88,6 +91,7 @@ func TestInstanceSettingUpsertUpdate(t *testing.T) {
 }
 
 func TestInstanceSettingBasicSetting(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -116,6 +120,7 @@ func TestInstanceSettingBasicSetting(t *testing.T) {
 }
 
 func TestInstanceSettingGeneralSetting(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -146,6 +151,7 @@ func TestInstanceSettingGeneralSetting(t *testing.T) {
 }
 
 func TestInstanceSettingMemoRelatedSetting(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -179,6 +185,7 @@ func TestInstanceSettingMemoRelatedSetting(t *testing.T) {
 }
 
 func TestInstanceSettingStorageSetting(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -214,6 +221,7 @@ func TestInstanceSettingStorageSetting(t *testing.T) {
 }
 
 func TestInstanceSettingListAll(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
