@@ -1,4 +1,4 @@
-FROM golang:1.25-alpine AS backend
+FROM --platform=$BUILDPLATFORM golang:1.25-alpine AS backend
 WORKDIR /backend-build
 
 # Install build dependencies
@@ -9,32 +9,47 @@ COPY go.mod go.sum ./
 RUN --mount=type=cache,target=/go/pkg/mod \
     go mod download
 
-# Copy source code
+# Copy source code (use .dockerignore to exclude unnecessary files)
 COPY . .
 
 # Please build frontend first, so that the static files are available.
 # Refer to `pnpm release` in package.json for the build command.
+ARG TARGETOS TARGETARCH VERSION COMMIT
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
-    CGO_ENABLED=0 go build -trimpath -ldflags="-s -w -extldflags '-static'" -o memos ./cmd/memos
+    CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH \
+    go build \
+      -trimpath \
+      -ldflags="-s -w -extldflags '-static'" \
+      -tags netgo,osusergo \
+      -o memos \
+      ./cmd/memos
 
-FROM alpine:latest AS monolithic
+# Use minimal Alpine with security updates
+FROM alpine:3.21 AS monolithic
 WORKDIR /usr/local/memos
 
-# Install runtime dependencies in single layer
+# Install runtime dependencies and create non-root user in single layer
 RUN apk add --no-cache tzdata ca-certificates && \
-    mkdir -p /var/opt/memos
+    addgroup -g 10001 -S nonroot && \
+    adduser -u 10001 -S -G nonroot -h /var/opt/memos nonroot && \
+    mkdir -p /var/opt/memos && \
+    chown -R nonroot:nonroot /var/opt/memos
+
+# Copy binary and entrypoint
+COPY --from=backend /backend-build/memos /usr/local/memos/memos
+COPY --from=backend --chmod=755 /backend-build/scripts/entrypoint.sh /usr/local/memos/entrypoint.sh
+
+# Switch to non-root user
+USER nonroot:nonroot
+
+# Data directory
+VOLUME /var/opt/memos
 
 ENV TZ="UTC" \
     MEMOS_MODE="prod" \
     MEMOS_PORT="5230"
 
-COPY --from=backend /backend-build/memos /usr/local/memos/
-COPY ./scripts/entrypoint.sh /usr/local/memos/
-
 EXPOSE 5230
 
-# Directory to store the data, which can be referenced as the mounting point.
-VOLUME /var/opt/memos
-
-ENTRYPOINT ["./entrypoint.sh", "./memos"]
+ENTRYPOINT ["/usr/local/memos/entrypoint.sh", "/usr/local/memos/memos"]
