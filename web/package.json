@@ -55,6 +55,7 @@
     "react-leaflet": "^4.2.1",
     "react-leaflet-cluster": "^2.1.0",
     "react-markdown": "^10.1.0",
+    "react-pdf": "^10.3.0",
     "react-router-dom": "^7.9.6",
     "react-use": "^17.6.0",
     "rehype-katex": "^7.0.1",

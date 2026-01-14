@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import { AttachmentPreviewModal, AttachmentPreviewProvider } from "./components/attachment";
 import { AISidebarProvider } from "./contexts/AISidebarContext";
 import { useInstance } from "./contexts/InstanceContext";
 import { MemoFilterProvider } from "./contexts/MemoFilterContext";
@@ -59,7 +60,10 @@ const App = () => {
   return (
     <MemoFilterProvider>
       <AISidebarProvider>
-        <Outlet />
+        <AttachmentPreviewProvider>
+          <Outlet />
+          <AttachmentPreviewModal />
+        </AttachmentPreviewProvider>
       </AISidebarProvider>
     </MemoFilterProvider>
   );
