@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import copy from "copy-to-clipboard";
 import hljs from "highlight.js";
-import { CopyIcon } from "lucide-react";
-import { useCallback, useMemo } from "react";
+import { ChevronDown, ChevronUp, CopyIcon } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import MermaidBlock from "./MermaidBlock";
 import { BaseProps } from "./types";
@@ -20,6 +20,7 @@ interface Props extends BaseProps {
 
 const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
   const formatedLanguage = useMemo(() => (language || "").toLowerCase() || "text", [language]);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   // Users can set Markdown code blocks as `__html` to render HTML directly.
   if (formatedLanguage === SpecialLanguage.HTML) {
@@ -58,21 +59,34 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
     toast.success("Copied to clipboard!");
   }, [content]);
 
+  const toggleCollapse = useCallback(() => {
+    setIsCollapsed(!isCollapsed);
+  }, [isCollapsed]);
+
   return (
     <div className="w-full my-1 bg-amber-100 border-l-4 border-amber-400 rounded hover:shadow dark:bg-zinc-600 dark:border-zinc-400 relative">
       <div className="w-full px-2 py-1 flex flex-row justify-between items-center text-amber-500 dark:text-zinc-400">
         <span className="text-sm font-mono">{formatedLanguage}</span>
-        <CopyIcon className="w-4 h-auto cursor-pointer hover:opacity-80" onClick={handleCopyButtonClick} />
+        <div className="flex items-center gap-2">
+          {isCollapsed ? (
+            <ChevronDown className="w-4 h-auto cursor-pointer hover:opacity-80" onClick={toggleCollapse} />
+          ) : (
+            <ChevronUp className="w-4 h-auto cursor-pointer hover:opacity-80" onClick={toggleCollapse} />
+          )}
+          <CopyIcon className="w-4 h-auto cursor-pointer hover:opacity-80" onClick={handleCopyButtonClick} />
+        </div>
       </div>
 
-      <div className="overflow-auto">
-        <pre className={clsx("no-wrap overflow-auto", "w-full p-2 bg-amber-50 dark:bg-zinc-700 relative")}>
-          <code
-            className={clsx(`language-${formatedLanguage}`, "block text-sm leading-5")}
-            dangerouslySetInnerHTML={{ __html: highlightedCode }}
-          ></code>
-        </pre>
-      </div>
+      {!isCollapsed && (
+        <div className="overflow-auto">
+          <pre className={clsx("no-wrap overflow-auto", "w-full p-2 bg-amber-50 dark:bg-zinc-700 relative")}>
+            <code
+              className={clsx(`language-${formatedLanguage}`, "block text-sm leading-5")}
+              dangerouslySetInnerHTML={{ __html: highlightedCode }}
+            ></code>
+          </pre>
+        </div>
+      )}
     </div>
   );
 };
