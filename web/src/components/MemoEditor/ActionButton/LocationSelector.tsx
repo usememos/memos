@@ -95,11 +95,11 @@ const LocationSelector = (props: Props) => {
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger asChild>
         <Button className="flex items-center justify-center" size="sm" variant="plain">
-          <MapPinIcon className="w-5 h-5 mx-auto shrink-0" />
+          <MapPinIcon className="w-4 h-4 mx-auto shrink-0" />
           {props.location && (
             <>
               <span className="ml-0.5 text-sm text-ellipsis whitespace-nowrap overflow-hidden max-w-32">{props.location.placeholder}</span>
-              <XIcon className="w-5 h-5 mx-auto shrink-0 hidden group-hover:block opacity-60 hover:opacity-80" onClick={removeLocation} />
+              <XIcon className="w-4 h-4 mx-auto shrink-0 hidden group-hover:block opacity-60 hover:opacity-80" onClick={removeLocation} />
             </>
           )}
         </Button>

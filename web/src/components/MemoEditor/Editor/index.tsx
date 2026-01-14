@@ -193,8 +193,8 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
       )}
     >
       <textarea
-        className="w-full h-full my-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none whitespace-pre-wrap word-break"
-        rows={1}
+        className="w-full h-full text-sm resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none whitespace-pre-wrap word-break"
+        rows={2}
         placeholder={placeholder}
         ref={editorRef}
         onPaste={onPaste}

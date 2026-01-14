@@ -129,16 +129,16 @@ const AddMemoRelationPopover = (props: Props) => {
 
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-      <PopoverTrigger className="w-9 relative">
-        <Button className="flex items-center justify-center" size="sm" variant="plain" asChild>
-          <LinkIcon className="w-5 h-5 mx-auto p-0" />
+      <PopoverTrigger asChild>
+        <Button className="flex items-center justify-center" size="sm" variant="plain">
+          <LinkIcon className="w-4 h-4 mx-auto" />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="center">
-        <div className="w-[16rem] flex flex-col justify-start items-start">
+        <div className="w-[14rem] flex flex-col justify-start items-start">
           <Autocomplete
             className="w-full"
-            size="md"
+            size="sm"
             clearOnBlur
             disableClearable
             placeholder={t("reference.search-placeholder")}
@@ -153,26 +153,26 @@ const AddMemoRelationPopover = (props: Props) => {
             getOptionLabel={(memo) => memo.content}
             isOptionEqualToValue={(memo, value) => memo.name === value.name}
             renderOption={(props, memo) => (
-              <AutocompleteOption {...props} key={memo.name}>
+              <AutocompleteOption {...props} key={memo.name} sx={{ py: 0.5 }}>
                 <div className="w-full flex flex-col justify-start items-start">
                   <p className="text-xs text-gray-400 select-none">{memo.displayTime?.toLocaleString()}</p>
-                  <p className="mt-0.5 text-sm leading-5 line-clamp-2">{searchText ? getHighlightedContent(memo.content) : memo.snippet}</p>
+                  <p className="text-sm leading-4 line-clamp-2">{searchText ? getHighlightedContent(memo.content) : memo.snippet}</p>
                 </div>
               </AutocompleteOption>
             )}
             renderTags={(memos) =>
               memos.map((memo) => (
-                <Chip key={memo.name} className="!max-w-full !rounded" variant="outlined" color="neutral">
+                <Chip key={memo.name} className="max-w-full rounded" size="sm" variant="outlined" color="neutral">
                   <div className="w-full flex flex-col justify-start items-start">
                     <p className="text-xs text-gray-400 select-none">{memo.displayTime?.toLocaleString()}</p>
-                    <span className="w-full text-sm leading-5 truncate">{memo.content}</span>
+                    <span className="w-full text-xs leading-4 truncate">{memo.content}</span>
                   </div>
                 </Chip>
               ))
             }
             onChange={(_, value) => setSelectedMemos(value)}
           />
-          <div className="mt-2 w-full flex flex-row justify-end items-center gap-2">
+          <div className="mt-1.5 w-full flex flex-row justify-end items-center gap-1.5">
             <Checkbox size="sm" label={"Embed"} checked={embedded} onChange={(e) => setEmbedded(e.target.checked)} />
             <Button size="sm" color="primary" onClick={addMemoRelations} disabled={selectedMemos.length === 0}>
               {t("common.add")}
