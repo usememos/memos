@@ -74,6 +74,8 @@ jobs:
                 ./cmd/... ./internal/... ./proto/...
               ;;
           esac
+        env:
+          DRIVER: sqlite  # Use SQLite for fastest test execution
 
       - name: Upload coverage
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
