@@ -99,3 +99,270 @@ func TestActivityListMultiple(t *testing.T) {
 
 	ts.Close()
 }
+
+func TestActivityListByType(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	// Create activities with MEMO_COMMENT type
+	_, err = ts.CreateActivity(ctx, &store.Activity{
+		CreatorID: user.ID,
+		Type:      store.ActivityTypeMemoComment,
+		Level:     store.ActivityLevelInfo,
+		Payload:   &storepb.ActivityPayload{},
+	})
+	require.NoError(t, err)
+
+	_, err = ts.CreateActivity(ctx, &store.Activity{
+		CreatorID: user.ID,
+		Type:      store.ActivityTypeMemoComment,
+		Level:     store.ActivityLevelInfo,
+		Payload:   &storepb.ActivityPayload{},
+	})
+	require.NoError(t, err)
+
+	// List by type
+	activityType := store.ActivityTypeMemoComment
+	activities, err := ts.ListActivities(ctx, &store.FindActivity{Type: &activityType})
+	require.NoError(t, err)
+	require.Len(t, activities, 2)
+	for _, activity := range activities {
+		require.Equal(t, store.ActivityTypeMemoComment, activity.Type)
+	}
+
+	ts.Close()
+}
+
+func TestActivityPayloadMemoComment(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	// Create activity with MemoComment payload
+	memoID := int32(123)
+	relatedMemoID := int32(456)
+	activity, err := ts.CreateActivity(ctx, &store.Activity{
+		CreatorID: user.ID,
+		Type:      store.ActivityTypeMemoComment,
+		Level:     store.ActivityLevelInfo,
+		Payload: &storepb.ActivityPayload{
+			MemoComment: &storepb.ActivityMemoCommentPayload{
+				MemoId:        memoID,
+				RelatedMemoId: relatedMemoID,
+			},
+		},
+	})
+	require.NoError(t, err)
+	require.NotNil(t, activity.Payload)
+	require.NotNil(t, activity.Payload.MemoComment)
+	require.Equal(t, memoID, activity.Payload.MemoComment.MemoId)
+	require.Equal(t, relatedMemoID, activity.Payload.MemoComment.RelatedMemoId)
+
+	// Verify payload is preserved when listing
+	found, err := ts.GetActivity(ctx, &store.FindActivity{ID: &activity.ID})
+	require.NoError(t, err)
+	require.NotNil(t, found.Payload.MemoComment)
+	require.Equal(t, memoID, found.Payload.MemoComment.MemoId)
+	require.Equal(t, relatedMemoID, found.Payload.MemoComment.RelatedMemoId)
+
+	ts.Close()
+}
+
+func TestActivityEmptyPayload(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	// Create activity with empty payload
+	activity, err := ts.CreateActivity(ctx, &store.Activity{
+		CreatorID: user.ID,
+		Type:      store.ActivityTypeMemoComment,
+		Level:     store.ActivityLevelInfo,
+		Payload:   &storepb.ActivityPayload{},
+	})
+	require.NoError(t, err)
+	require.NotNil(t, activity.Payload)
+
+	// Verify empty payload is handled correctly
+	found, err := ts.GetActivity(ctx, &store.FindActivity{ID: &activity.ID})
+	require.NoError(t, err)
+	require.NotNil(t, found.Payload)
+	require.Nil(t, found.Payload.MemoComment)
+
+	ts.Close()
+}
+
+func TestActivityLevel(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	// Create activity with INFO level
+	activity, err := ts.CreateActivity(ctx, &store.Activity{
+		CreatorID: user.ID,
+		Type:      store.ActivityTypeMemoComment,
+		Level:     store.ActivityLevelInfo,
+		Payload:   &storepb.ActivityPayload{},
+	})
+	require.NoError(t, err)
+	require.Equal(t, store.ActivityLevelInfo, activity.Level)
+
+	// Verify level is preserved when listing
+	found, err := ts.GetActivity(ctx, &store.FindActivity{ID: &activity.ID})
+	require.NoError(t, err)
+	require.Equal(t, store.ActivityLevelInfo, found.Level)
+
+	ts.Close()
+}
+
+func TestActivityCreatorID(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	user1, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+	user2, err := createTestingUserWithRole(ctx, ts, "user2", store.RoleUser)
+	require.NoError(t, err)
+
+	// Create activity for user1
+	activity1, err := ts.CreateActivity(ctx, &store.Activity{
+		CreatorID: user1.ID,
+		Type:      store.ActivityTypeMemoComment,
+		Level:     store.ActivityLevelInfo,
+		Payload:   &storepb.ActivityPayload{},
+	})
+	require.NoError(t, err)
+	require.Equal(t, user1.ID, activity1.CreatorID)
+
+	// Create activity for user2
+	activity2, err := ts.CreateActivity(ctx, &store.Activity{
+		CreatorID: user2.ID,
+		Type:      store.ActivityTypeMemoComment,
+		Level:     store.ActivityLevelInfo,
+		Payload:   &storepb.ActivityPayload{},
+	})
+	require.NoError(t, err)
+	require.Equal(t, user2.ID, activity2.CreatorID)
+
+	// List all and verify creator IDs
+	activities, err := ts.ListActivities(ctx, &store.FindActivity{})
+	require.NoError(t, err)
+	require.Len(t, activities, 2)
+
+	ts.Close()
+}
+
+func TestActivityCreatedTs(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	activity, err := ts.CreateActivity(ctx, &store.Activity{
+		CreatorID: user.ID,
+		Type:      store.ActivityTypeMemoComment,
+		Level:     store.ActivityLevelInfo,
+		Payload:   &storepb.ActivityPayload{},
+	})
+	require.NoError(t, err)
+	require.NotZero(t, activity.CreatedTs)
+
+	// Verify timestamp is preserved when listing
+	found, err := ts.GetActivity(ctx, &store.FindActivity{ID: &activity.ID})
+	require.NoError(t, err)
+	require.Equal(t, activity.CreatedTs, found.CreatedTs)
+
+	ts.Close()
+}
+
+func TestActivityListEmpty(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+
+	// List activities when none exist
+	activities, err := ts.ListActivities(ctx, &store.FindActivity{})
+	require.NoError(t, err)
+	require.Len(t, activities, 0)
+
+	ts.Close()
+}
+
+func TestActivityListWithIDAndType(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	activity, err := ts.CreateActivity(ctx, &store.Activity{
+		CreatorID: user.ID,
+		Type:      store.ActivityTypeMemoComment,
+		Level:     store.ActivityLevelInfo,
+		Payload:   &storepb.ActivityPayload{},
+	})
+	require.NoError(t, err)
+
+	// List with both ID and Type filters
+	activityType := store.ActivityTypeMemoComment
+	activities, err := ts.ListActivities(ctx, &store.FindActivity{
+		ID:   &activity.ID,
+		Type: &activityType,
+	})
+	require.NoError(t, err)
+	require.Len(t, activities, 1)
+	require.Equal(t, activity.ID, activities[0].ID)
+
+	ts.Close()
+}
+
+func TestActivityPayloadComplexMemoComment(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	// Create a memo first to use its ID
+	memo, err := ts.CreateMemo(ctx, &store.Memo{
+		UID:        "test-memo-for-activity",
+		CreatorID:  user.ID,
+		Content:    "Test memo content",
+		Visibility: store.Public,
+	})
+	require.NoError(t, err)
+
+	// Create comment memo
+	commentMemo, err := ts.CreateMemo(ctx, &store.Memo{
+		UID:        "comment-memo",
+		CreatorID:  user.ID,
+		Content:    "This is a comment",
+		Visibility: store.Public,
+	})
+	require.NoError(t, err)
+
+	// Create activity with real memo IDs
+	activity, err := ts.CreateActivity(ctx, &store.Activity{
+		CreatorID: user.ID,
+		Type:      store.ActivityTypeMemoComment,
+		Level:     store.ActivityLevelInfo,
+		Payload: &storepb.ActivityPayload{
+			MemoComment: &storepb.ActivityMemoCommentPayload{
+				MemoId:        memo.ID,
+				RelatedMemoId: commentMemo.ID,
+			},
+		},
+	})
+	require.NoError(t, err)
+	require.Equal(t, memo.ID, activity.Payload.MemoComment.MemoId)
+	require.Equal(t, commentMemo.ID, activity.Payload.MemoComment.RelatedMemoId)
+
+	// Verify payload is preserved
+	found, err := ts.GetActivity(ctx, &store.FindActivity{ID: &activity.ID})
+	require.NoError(t, err)
+	require.Equal(t, memo.ID, found.Payload.MemoComment.MemoId)
+	require.Equal(t, commentMemo.ID, found.Payload.MemoComment.RelatedMemoId)
+
+	ts.Close()
+}

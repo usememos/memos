@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"os"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -403,9 +404,13 @@ func StartMemosContainer(ctx context.Context, cfg MemosContainerConfig) (testcon
 
 	// Use local Dockerfile build or remote image
 	if cfg.Version == "local" {
-		req.FromDockerfile = testcontainers.FromDockerfile{
-			Context:    "../../",
-			Dockerfile: "store/test/Dockerfile", // Simple Dockerfile without BuildKit requirements
+		if os.Getenv("MEMOS_TEST_IMAGE_BUILT") == "1" {
+			req.Image = "memos-test:local"
+		} else {
+			req.FromDockerfile = testcontainers.FromDockerfile{
+				Context:    "../../",
+				Dockerfile: "store/test/Dockerfile", // Simple Dockerfile without BuildKit requirements
+			}
 		}
 	} else {
 		req.Image = fmt.Sprintf("%s:%s", MemosDockerImage, cfg.Version)

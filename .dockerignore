@@ -1,1 +1,5 @@
 web/node_modules
+.git
+build/
+tmp/
+memos

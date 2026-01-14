@@ -497,23 +497,7 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 		}
 	}
 
-	if err = s.Store.DeleteMemo(ctx, &store.DeleteMemo{ID: memo.ID}); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to delete memo")
-	}
-
-	// Delete memo relation
-	if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelation{MemoID: &memo.ID}); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to delete memo relations")
-	}
-
-	// Delete related attachments.
-	for _, attachment := range attachments {
-		if err := s.Store.DeleteAttachment(ctx, &store.DeleteAttachment{ID: attachment.ID}); err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to delete attachment")
-		}
-	}
-
-	// Delete memo comments
+	// Delete memo comments first (store.DeleteMemo handles their relations and attachments)
 	commentType := store.MemoRelationComment
 	relations, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{RelatedMemoID: &memo.ID, Type: &commentType})
 	if err != nil {
@@ -525,10 +509,9 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 		}
 	}
 
-	// Delete memo references
-	referenceType := store.MemoRelationReference
-	if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelation{RelatedMemoID: &memo.ID, Type: &referenceType}); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to delete memo references")
+	// Delete the memo (store.DeleteMemo handles relation and attachment cleanup)
+	if err = s.Store.DeleteMemo(ctx, &store.DeleteMemo{ID: memo.ID}); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to delete memo")
 	}
 
 	return &emptypb.Empty{}, nil
