@@ -1,0 +1,198 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/api/v1";
+
+// AIService provides AI chat functionality.
+service AIService {
+  // CreateConversation creates a new AI conversation.
+  rpc CreateConversation(CreateConversationRequest) returns (Conversation) {
+    option (google.api.http) = {
+      post: "/api/v1/ai/conversations"
+      body: "*"
+    };
+  }
+
+  // ListConversations lists all conversations for the current user.
+  rpc ListConversations(ListConversationsRequest) returns (ListConversationsResponse) {
+    option (google.api.http) = {get: "/api/v1/ai/conversations"};
+  }
+
+  // GetConversation gets a specific conversation with messages.
+  rpc GetConversation(GetConversationRequest) returns (Conversation) {
+    option (google.api.http) = {get: "/api/v1/ai/conversations/{conversation_id}"};
+  }
+
+  // DeleteConversation deletes a conversation and all its messages.
+  rpc DeleteConversation(DeleteConversationRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/ai/conversations/{conversation_id}"};
+  }
+
+  // UpdateConversation updates conversation metadata (e.g., title).
+  rpc UpdateConversation(UpdateConversationRequest) returns (Conversation) {
+    option (google.api.http) = {
+      patch: "/api/v1/ai/conversations/{conversation_id}"
+      body: "*"
+    };
+  }
+
+  // SendMessage sends a message and gets AI response.
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/ai/conversations/{conversation_id}/messages"
+      body: "*"
+    };
+  }
+
+  // ListMessages lists all messages in a conversation.
+  rpc ListMessages(ListMessagesRequest) returns (ListMessagesResponse) {
+    option (google.api.http) = {get: "/api/v1/ai/conversations/{conversation_id}/messages"};
+  }
+
+  // GetAIConfig returns available AI providers and models.
+  rpc GetAIConfig(GetAIConfigRequest) returns (GetAIConfigResponse) {
+    option (google.api.http) = {get: "/api/v1/ai/config"};
+  }
+}
+
+// Conversation represents an AI chat conversation.
+message Conversation {
+  // Unique identifier for the conversation.
+  string id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The user who owns this conversation.
+  string user = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Title of the conversation.
+  string title = 3;
+
+  // Creation timestamp.
+  google.protobuf.Timestamp create_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Last update timestamp.
+  google.protobuf.Timestamp update_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The AI model used for this conversation.
+  string model = 6;
+
+  // The AI provider (openai, deepseek, etc.).
+  string provider = 7;
+
+  // Messages in this conversation (populated on GetConversation).
+  repeated Message messages = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// Message represents a single message in a conversation.
+message Message {
+  // Unique identifier for the message.
+  string id = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Role of the message sender (user, assistant, system).
+  MessageRole role = 2;
+
+  // Content of the message.
+  string content = 3;
+
+  // Creation timestamp.
+  google.protobuf.Timestamp create_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Token count for this message.
+  int32 token_count = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+enum MessageRole {
+  MESSAGE_ROLE_UNSPECIFIED = 0;
+  USER = 1;
+  ASSISTANT = 2;
+  SYSTEM = 3;
+}
+
+// Request/Response messages
+
+message CreateConversationRequest {
+  // Optional title for the conversation.
+  string title = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional model to use.
+  string model = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional provider to use.
+  string provider = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message ListConversationsRequest {
+  // Maximum number of conversations to return.
+  int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Page token for pagination.
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message ListConversationsResponse {
+  repeated Conversation conversations = 1;
+  string next_page_token = 2;
+}
+
+message GetConversationRequest {
+  string conversation_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message DeleteConversationRequest {
+  string conversation_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message UpdateConversationRequest {
+  string conversation_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string title = 2 [(google.api.field_behavior) = OPTIONAL];
+  string model = 3 [(google.api.field_behavior) = OPTIONAL];
+  string provider = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message SendMessageRequest {
+  string conversation_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string content = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message SendMessageResponse {
+  Message user_message = 1;
+  Message assistant_message = 2;
+}
+
+message ListMessagesRequest {
+  string conversation_id = 1 [(google.api.field_behavior) = REQUIRED];
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+  string page_token = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message ListMessagesResponse {
+  repeated Message messages = 1;
+  string next_page_token = 2;
+}
+
+message GetAIConfigRequest {}
+
+message GetAIConfigResponse {
+  // Whether AI is enabled on this instance.
+  bool enabled = 1;
+
+  // Available providers.
+  repeated AIProvider providers = 2;
+
+  // Default provider.
+  string default_provider = 3;
+
+  // Default model.
+  string default_model = 4;
+}
+
+message AIProvider {
+  string name = 1;
+  string display_name = 2;
+  repeated string models = 3;
+}

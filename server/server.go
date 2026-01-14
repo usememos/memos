@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"os"
 	"runtime"
 	"time"
 
@@ -15,6 +16,9 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/internal/profile"
+	"github.com/usememos/memos/plugin/llm"
+	"github.com/usememos/memos/plugin/llm/deepseek"
+	"github.com/usememos/memos/plugin/llm/openai"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/server/router/fileserver"
@@ -67,7 +71,10 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 	rootGroup := echoServer.Group("")
 
-	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store)
+	// Initialize LLM manager
+	llmManager := initLLMManager()
+
+	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store, llmManager)
 
 	// Register HTTP file server routes BEFORE gRPC-Gateway to ensure proper range request handling for Safari.
 	// This uses native HTTP serving (http.ServeContent) instead of gRPC for video/audio files.
@@ -179,4 +186,53 @@ func (s *Server) getOrUpsertInstanceBasicSetting(ctx context.Context) (*storepb.
 		instanceBasicSetting = instanceSetting.GetBasicSetting()
 	}
 	return instanceBasicSetting, nil
+}
+
+// initLLMManager initializes the LLM manager with configured providers.
+func initLLMManager() *llm.Manager {
+	manager := llm.NewManager()
+
+	// Check for OpenAI API key
+	openaiAPIKey := os.Getenv("OPENAI_API_KEY")
+	if openaiAPIKey != "" {
+		openaiClient := openai.NewClient(openaiAPIKey)
+		manager.Register(openaiClient)
+		slog.Info("registered LLM provider", "provider", "openai")
+	}
+
+	// Check for DeepSeek API key
+	deepseekAPIKey := os.Getenv("DEEPSEEK_API_KEY")
+	if deepseekAPIKey != "" {
+		deepseekClient := deepseek.NewClient(deepseekAPIKey)
+		manager.Register(deepseekClient)
+		slog.Info("registered LLM provider", "provider", "deepseek")
+	}
+
+	// Set defaults based on available providers
+	defaultProvider := os.Getenv("MEMOS_AI_PROVIDER")
+	defaultModel := os.Getenv("MEMOS_AI_MODEL")
+
+	if defaultProvider == "" {
+		if openaiAPIKey != "" {
+			defaultProvider = "openai"
+			if defaultModel == "" {
+				defaultModel = "gpt-4o-mini"
+			}
+		} else if deepseekAPIKey != "" {
+			defaultProvider = "deepseek"
+			if defaultModel == "" {
+				defaultModel = "deepseek-chat"
+			}
+		}
+	}
+
+	manager.SetDefaults(defaultProvider, defaultModel)
+
+	// Enable AI if any provider is configured
+	if openaiAPIKey != "" || deepseekAPIKey != "" {
+		manager.SetEnabled(true)
+		slog.Info("AI feature enabled", "defaultProvider", defaultProvider, "defaultModel", defaultModel)
+	}
+
+	return manager
 }

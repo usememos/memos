@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useMemo } from "react";
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
 import usePrevious from "react-use/lib/usePrevious";
+import AIChatSidebar from "@/components/AIChatSidebar";
 import Navigation from "@/components/Navigation";
 import Spinner from "@/components/Spinner";
 import { useInstance } from "@/contexts/InstanceContext";
@@ -9,6 +10,10 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import { redirectOnAuthFailure } from "@/utils/auth-redirect";
+
+// Pages where AI sidebar should be visible
+const AI_SIDEBAR_ALLOWED_PATHS = ["/", "/explore"];
+const AI_SIDEBAR_ALLOWED_PREFIXES = ["/memos/"];
 
 const RootLayout = () => {
   const location = useLocation();
@@ -19,6 +24,16 @@ const RootLayout = () => {
   const { removeFilter } = useMemoFilterContext();
   const pathname = useMemo(() => location.pathname, [location.pathname]);
   const prevPathname = usePrevious(pathname);
+
+  // Check if AI sidebar should be shown on current page
+  const showAISidebar = useMemo(() => {
+    // Exact match for specific paths
+    if (AI_SIDEBAR_ALLOWED_PATHS.includes(pathname)) {
+      return true;
+    }
+    // Prefix match for paths like /memos/:uid
+    return AI_SIDEBAR_ALLOWED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+  }, [pathname]);
 
   useEffect(() => {
     if (!currentUser && memoRelatedSetting.disallowPublicVisibility) {
@@ -57,6 +72,9 @@ const RootLayout = () => {
           <Outlet />
         </Suspense>
       </main>
+
+      {/* AI Chat Sidebar - only on allowed pages */}
+      {showAISidebar && <AIChatSidebar />}
     </div>
   );
 };

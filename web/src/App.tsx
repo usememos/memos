@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import { AISidebarProvider } from "./contexts/AISidebarContext";
 import { useInstance } from "./contexts/InstanceContext";
 import { MemoFilterProvider } from "./contexts/MemoFilterContext";
 import useNavigateTo from "./hooks/useNavigateTo";
@@ -57,7 +58,9 @@ const App = () => {
 
   return (
     <MemoFilterProvider>
-      <Outlet />
+      <AISidebarProvider>
+        <Outlet />
+      </AISidebarProvider>
     </MemoFilterProvider>
   );
 };

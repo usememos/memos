@@ -1,0 +1,32 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  bin = "./tmp/memos"
+  cmd = "go build -o ./tmp/memos ./cmd/memos"
+  delay = 1000
+  exclude_dir = ["assets", "tmp", "vendor", "web", "node_modules", "proto"]
+  exclude_file = []
+  exclude_regex = ["_test.go"]
+  exclude_unchanged = false
+  follow_symlink = false
+  full_bin = "DEEPSEEK_API_KEY='sk-a36c5decc0eb4f1fac59c81dcc94be07' ./tmp/memos --mode dev --port 8081"
+  include_dir = []
+  include_ext = ["go", "tpl", "tmpl", "html"]
+  kill_delay = "0s"
+  log = "build-errors.log"
+  send_interrupt = false
+  stop_on_error = true
+
+[color]
+  app = ""
+  build = "yellow"
+  main = "magenta"
+  runner = "green"
+  watcher = "cyan"
+
+[log]
+  time = false
+
+[misc]
+  clean_on_exit = false

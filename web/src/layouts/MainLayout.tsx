@@ -4,6 +4,7 @@ import type { MemoExplorerContext } from "@/components/MemoExplorer";
 import { MemoExplorer, MemoExplorerDrawer } from "@/components/MemoExplorer";
 import MobileHeader from "@/components/MobileHeader";
 import { userServiceClient } from "@/connect";
+import { useAISidebar } from "@/contexts/AISidebarContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
 import useMediaQuery from "@/hooks/useMediaQuery";
@@ -16,6 +17,7 @@ const MainLayout = () => {
   const location = useLocation();
   const currentUser = useCurrentUser();
   const [profileUserName, setProfileUserName] = useState<string | undefined>();
+  const { isOpen: isAISidebarOpen, width: aiSidebarWidth } = useAISidebar();
 
   // Determine context based on current route
   const context: MemoExplorerContext = useMemo(() => {
@@ -32,8 +34,6 @@ const MainLayout = () => {
     if (match && context === "profile") {
       const username = match.params.username;
       if (username) {
-        // Fetch or get user to obtain user name (e.g., "users/123")
-        // Note: User stats will be fetched by useFilteredMemoStats
         userServiceClient
           .getUser({ name: `users/${username}` })
           .then((user) => {
@@ -50,22 +50,25 @@ const MainLayout = () => {
   }, [location.pathname, context]);
 
   // Determine which user name to use for stats
-  // - home: current user (uses backend user stats for normal memos)
-  // - profile: viewed user (uses backend user stats for normal memos)
-  // - archived: undefined (compute from cached archived memos, since user stats only includes normal memos)
-  // - explore: undefined (compute from cached memos)
   const statsUserName = useMemo(() => {
     if (context === "home") {
       return currentUser?.name;
     } else if (context === "profile") {
       return profileUserName;
     }
-    return undefined; // archived and explore contexts compute from cache
+    return undefined;
   }, [context, currentUser, profileUserName]);
 
-  // Fetch stats from memo store cache (populated by PagedMemoList)
-  // For user-scoped contexts, use backend user stats for tags (unaffected by filters)
+  // Fetch stats from memo store cache
   const { statistics, tags } = useFilteredMemoStats({ userName: statsUserName });
+
+  // Calculate dynamic padding-right based on AI sidebar width
+  const contentStyle = useMemo(() => {
+    if (isAISidebarOpen && md) {
+      return { paddingRight: `${aiSidebarWidth}px` };
+    }
+    return {};
+  }, [isAISidebarOpen, md, aiSidebarWidth]);
 
   return (
     <section className="@container w-full min-h-full flex flex-col justify-start items-center">
@@ -79,7 +82,13 @@ const MainLayout = () => {
           <MemoExplorer className={cn("px-3 py-6")} context={context} statisticsData={statistics} tagCount={tags} />
         </div>
       )}
-      <div className={cn("w-full min-h-full", lg ? "pl-72" : md ? "pl-56" : "")}>
+      <div 
+        className={cn(
+          "w-full min-h-full transition-all duration-300",
+          lg ? "pl-72" : md ? "pl-56" : ""
+        )}
+        style={contentStyle}
+      >
         <div className={cn("w-full mx-auto px-4 sm:px-6 md:pt-6 pb-8")}>
           <Outlet />
         </div>
