@@ -5,7 +5,6 @@ import { countBy } from "lodash-es";
 import { CalendarDaysIcon, CheckCircleIcon, ChevronLeftIcon, ChevronRightIcon, Code2Icon, LinkIcon, ListTodoIcon } from "lucide-react";
 import { useState } from "react";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
-import useCurrentUser from "@/hooks/useCurrentUser";
 import i18n from "@/i18n";
 import { useMemoFilterStore, useMemoMetadataStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
@@ -20,7 +19,6 @@ interface UserMemoStats {
 
 const UserStatisticsView = () => {
   const t = useTranslate();
-  const currentUser = useCurrentUser();
   const memoFilterStore = useMemoFilterStore();
   const memoMetadataStore = useMemoMetadataStore();
   const metadataList = Object.values(memoMetadataStore.getState().dataMapByName);
@@ -29,12 +27,16 @@ const UserStatisticsView = () => {
   const [activityStats, setActivityStats] = useState<Record<string, number>>({});
   const [selectedDate] = useState(new Date());
   const [visibleMonthString, setVisibleMonthString] = useState(dayjs(selectedDate.toDateString()).format("YYYY-MM"));
-  const days = Math.ceil((Date.now() - currentUser.createTime!.getTime()) / 86400000);
+  const [days, setDays] = useState(0);
 
   useAsyncEffect(async () => {
     const memoStats: UserMemoStats = { link: 0, taskList: 0, code: 0, incompleteTasks: 0 };
+    let earliestTime = Date.now();
     metadataList.forEach((memo) => {
-      const { property } = memo;
+      const { property, createTime } = memo;
+      if (createTime && createTime.getTime() < earliestTime) {
+        earliestTime = createTime.getTime();
+      }
       if (property?.hasLink) {
         memoStats.link += 1;
       }
@@ -50,6 +52,7 @@ const UserStatisticsView = () => {
     });
     setMemoStats(memoStats);
     setMemoAmount(metadataList.length);
+    setDays(metadataList.length > 0 ? Math.ceil((Date.now() - earliestTime) / 86400000) : 0);
     setActivityStats(countBy(metadataList.map((memo) => dayjs(memo.displayTime).format("YYYY-MM-DD"))));
   }, [memoMetadataStore.stateId]);
 
