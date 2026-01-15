@@ -1,4 +1,4 @@
-import { EmojiPicker, EmojiPickerListCategoryHeaderProps } from "frimousse";
+import { EmojiPicker, EmojiPickerListCategoryHeaderProps, EmojiPickerListEmojiProps } from "frimousse";
 import { HashIcon, XIcon } from "lucide-react";
 import * as React from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/Popover";
@@ -90,19 +90,48 @@ export const EmojiPickerPopover: React.FC<EmojiPickerPopoverProps> = ({ emoji, o
                     {children}
                   </div>
                 ),
-                Emoji: ({ emoji, ...props }) => (
-                  <div
-                    onMouseEnter={() => setHoveredEmoji({ emoji: emoji.emoji, name: emoji.label })}
-                    onMouseLeave={() => setHoveredEmoji(null)}
-                  >
-                    <button
-                      {...props}
-                      className="flex size-8 items-center justify-center rounded-md text-lg data-[active]:bg-neutral-100 dark:data-[active]:bg-neutral-800"
+                Emoji: ({ emoji, ...props }: EmojiPickerListEmojiProps) => {
+                  const { className, onPointerDown, onPointerUp, onClick, ...rest } = props;
+                  const skipClickRef = React.useRef(false);
+                  const handlePointerDown: React.PointerEventHandler<HTMLButtonElement> = (event) => {
+                    skipClickRef.current = false;
+                    if (event.pointerType !== "mouse") {
+                      onPointerDown?.(event);
+                    }
+                  };
+                  const handlePointerUp: React.PointerEventHandler<HTMLButtonElement> = (event) => {
+                    onPointerUp?.(event);
+                    if (event.pointerType === "mouse") {
+                      skipClickRef.current = true;
+                      onClick?.(event as unknown as React.MouseEvent<HTMLButtonElement>);
+                    }
+                  };
+                  const handleClick: React.MouseEventHandler<HTMLButtonElement> = (event) => {
+                    if (skipClickRef.current) {
+                      skipClickRef.current = false;
+                      return;
+                    }
+                    onClick?.(event);
+                  };
+
+                  return (
+                    <div
+                      onMouseEnter={() => setHoveredEmoji({ emoji: emoji.emoji, name: emoji.label })}
+                      onMouseLeave={() => setHoveredEmoji(null)}
                     >
-                      {emoji.emoji}
-                    </button>
-                  </div>
-                ),
+                      <button
+                        {...rest}
+                        onPointerDown={handlePointerDown}
+                        onPointerUp={handlePointerUp}
+                        onClick={handleClick}
+                        type="button"
+                        className={`flex size-8 items-center justify-center rounded-md text-lg data-[active]:bg-neutral-100 dark:data-[active]:bg-neutral-800 ${className ?? ""}`}
+                      >
+                        {emoji.emoji}
+                      </button>
+                    </div>
+                  );
+                },
               }}
             />
           </EmojiPicker.Viewport>
