@@ -109,16 +109,29 @@ export const useMemoStore = create(
 
       const memoMap = get().memoMapByName;
       const pinnedMemoMap = get().pinnedMemoMapByName;
+      // Used to decide between replace-in-place vs prepend for pinned ordering.
+      const hasPinnedMemo = Boolean(pinnedMemoMap[memo.name]);
 
       memoMap[memo.name] = memo;
 
-      // Update pinnedMemoMapByName based on the memo's pinned status
+      // Update pinnedMemoMapByName based on the memo's pinned status.
       if (memo.pinned) {
-        // Add the memo to the front of pinnedMemoMap
-        const newPinnedMemoMap = { [memo.name]: memo, ...pinnedMemoMap };
+        if (hasPinnedMemo) {
+          // Replace value without reordering for existing pinned memos.
+          const newPinnedMemoMap = { ...pinnedMemoMap };
+          newPinnedMemoMap[memo.name] = memo;
+          set({ stateId: uniqueId(), memoMapByName: memoMap, pinnedMemoMapByName: newPinnedMemoMap });
+        } else {
+          // New pinned memos go to the front to preserve pin order.
+          const newPinnedMemoMap = { [memo.name]: memo, ...pinnedMemoMap };
+          set({ stateId: uniqueId(), memoMapByName: memoMap, pinnedMemoMapByName: newPinnedMemoMap });
+        }
+      } else if (hasPinnedMemo) {
+        // Remove from pinned list when unpinned.
+        const newPinnedMemoMap = { ...pinnedMemoMap };
+        delete newPinnedMemoMap[memo.name];
         set({ stateId: uniqueId(), memoMapByName: memoMap, pinnedMemoMapByName: newPinnedMemoMap });
       } else {
-        delete pinnedMemoMap[memo.name];
         set({ stateId: uniqueId(), memoMapByName: memoMap, pinnedMemoMapByName: pinnedMemoMap });
       }
       return memo;
