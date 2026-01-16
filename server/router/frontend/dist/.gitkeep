@@ -1,0 +1,2 @@
+# This file ensures the dist directory exists for Go embed.
+# Run `cd web && pnpm release` to build the frontend assets here.
