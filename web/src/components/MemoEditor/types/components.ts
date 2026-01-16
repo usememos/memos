@@ -1,5 +1,6 @@
 import type { LatLng } from "leaflet";
 import type { Location, Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
+import type { VideoLinkInfo } from "@/components/attachment/utils/videoLinkResolver";
 import type { EditorRefActions } from "../Editor";
 import type { Command } from "../Editor/commands";
 import type { LocationState } from "./insert-menu";
@@ -68,6 +69,7 @@ export interface InsertMenuProps {
   location?: Location;
   onLocationChange: (location?: Location) => void;
   onToggleFocusMode?: () => void;
+  onAddVideoLink?: (info: VideoLinkInfo) => void;
   memoName?: string;
 }
 

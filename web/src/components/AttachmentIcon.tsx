@@ -7,10 +7,12 @@ import {
   FileIcon,
   FileTextIcon,
   FileVideo2Icon,
+  PlayCircleIcon,
   SheetIcon,
 } from "lucide-react";
 import React from "react";
 import { useAttachmentPreview } from "@/components/attachment";
+import { VIDEO_LINK_MIME_TYPE } from "@/components/attachment/utils/videoLinkResolver";
 import { cn } from "@/lib/utils";
 import { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentThumbnailUrl, getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
@@ -61,6 +63,11 @@ const AttachmentIcon = (props: Props) => {
   }
 
   const getAttachmentIcon = () => {
+    // Check for video link type first
+    if (attachment.type === VIDEO_LINK_MIME_TYPE) {
+      return <PlayCircleIcon strokeWidth={strokeWidth} className="w-full h-auto text-red-500" />;
+    }
+
     switch (resourceType) {
       case "video/*":
         return <FileVideo2Icon strokeWidth={strokeWidth} className="w-full h-auto" />;

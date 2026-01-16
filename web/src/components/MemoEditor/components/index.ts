@@ -1,5 +1,6 @@
 // UI components for MemoEditor
 
+export { AddVideoLinkDialog } from "./AddVideoLinkDialog";
 export { default as AttachmentList } from "./AttachmentList";
 export * from "./EditorContent";
 export * from "./EditorMetadata";

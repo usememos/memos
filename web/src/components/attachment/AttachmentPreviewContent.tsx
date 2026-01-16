@@ -8,7 +8,9 @@ import { OfficePreview } from "./previews/OfficePreview";
 import { PDFPreview } from "./previews/PDFPreview";
 import { TextPreview } from "./previews/TextPreview";
 import { VideoPreview } from "./previews/VideoPreview";
+import { VideoLinkPreview } from "./previews/VideoLinkPreview";
 import { getPreviewType } from "./utils/mimeTypeResolver";
+import { parseVideoUrl } from "./utils/videoLinkResolver";
 
 interface AttachmentPreviewContentProps {
   attachment: Attachment;
@@ -40,6 +42,15 @@ export function AttachmentPreviewContent({ attachment }: AttachmentPreviewConten
     case "text":
     case "code":
       return <TextPreview src={src} filename={attachment.filename} />;
+
+    case "video_link": {
+      // For video links, externalLink contains the original URL
+      // Parse it to get the embed URL
+      const originalUrl = attachment.externalLink || "";
+      const videoInfo = parseVideoUrl(originalUrl);
+      const embedUrl = videoInfo?.embedUrl || originalUrl;
+      return <VideoLinkPreview src={embedUrl} originalUrl={originalUrl} />;
+    }
 
     case "fallback":
     default:

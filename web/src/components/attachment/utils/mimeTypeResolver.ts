@@ -1,4 +1,6 @@
-export type PreviewType = "image" | "pdf" | "video" | "audio" | "text" | "code" | "office" | "fallback";
+import { VIDEO_LINK_MIME_TYPE } from "./videoLinkResolver";
+
+export type PreviewType = "image" | "pdf" | "video" | "audio" | "text" | "code" | "office" | "video_link" | "fallback";
 
 const CODE_EXTENSIONS = [
   ".js",
@@ -72,6 +74,11 @@ const OFFICE_MIME_TYPES = [
 const OFFICE_EXTENSIONS = [".ppt", ".pptx", ".doc", ".docx", ".xls", ".xlsx"];
 
 export function getPreviewType(mimeType: string, filename: string): PreviewType {
+  // Video link type (virtual attachment with embed URL)
+  if (mimeType === VIDEO_LINK_MIME_TYPE) {
+    return "video_link";
+  }
+
   // Images
   if (mimeType.startsWith("image/")) {
     return "image";
