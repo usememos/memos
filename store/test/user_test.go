@@ -12,6 +12,7 @@ import (
 )
 
 func TestUserStore(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -40,6 +41,7 @@ func TestUserStore(t *testing.T) {
 }
 
 func TestUserGetByID(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -71,6 +73,7 @@ func TestUserGetByID(t *testing.T) {
 }
 
 func TestUserGetByUsername(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -93,6 +96,7 @@ func TestUserGetByUsername(t *testing.T) {
 }
 
 func TestUserListByRole(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -136,6 +140,7 @@ func TestUserListByRole(t *testing.T) {
 }
 
 func TestUserUpdateRowStatus(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -170,6 +175,7 @@ func TestUserUpdateRowStatus(t *testing.T) {
 }
 
 func TestUserUpdateAllFields(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -213,6 +219,7 @@ func TestUserUpdateAllFields(t *testing.T) {
 }
 
 func TestUserListWithLimit(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 

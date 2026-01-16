@@ -12,6 +12,7 @@ import (
 )
 
 func TestAttachmentStore(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	_, err := ts.CreateAttachment(ctx, &store.Attachment{
@@ -64,6 +65,7 @@ func TestAttachmentStore(t *testing.T) {
 }
 
 func TestAttachmentStoreWithFilter(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -123,6 +125,7 @@ func TestAttachmentStoreWithFilter(t *testing.T) {
 }
 
 func TestAttachmentUpdate(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -153,6 +156,7 @@ func TestAttachmentUpdate(t *testing.T) {
 }
 
 func TestAttachmentGetByUID(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -183,6 +187,7 @@ func TestAttachmentGetByUID(t *testing.T) {
 }
 
 func TestAttachmentListWithPagination(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -222,6 +227,7 @@ func TestAttachmentListWithPagination(t *testing.T) {
 }
 
 func TestAttachmentInvalidUID(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 

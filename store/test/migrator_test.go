@@ -13,6 +13,7 @@ import (
 // TestFreshInstall verifies that LATEST.sql applies correctly on a fresh database.
 // This is essentially what NewTestingStore already does, but we make it explicit.
 func TestFreshInstall(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	// NewTestingStore creates a fresh database and runs Migrate()
@@ -72,6 +73,7 @@ func testMigration(t *testing.T, driver string, prepareFunc func() (MemosContain
 // TestMigrationFromPreviousVersion_SQLite verifies that migrating from the previous
 // Memos version to the current version works correctly for SQLite.
 func TestMigrationFromPreviousVersion_SQLite(t *testing.T) {
+	t.Parallel()
 	testMigration(t, "sqlite", func() (MemosContainerConfig, func()) {
 		// Create a temp directory for SQLite data that persists across container restarts
 		dataDir := t.TempDir()
@@ -85,6 +87,7 @@ func TestMigrationFromPreviousVersion_SQLite(t *testing.T) {
 // TestMigrationFromPreviousVersion_MySQL verifies that migrating from the previous
 // Memos version to the current version works correctly for MySQL.
 func TestMigrationFromPreviousVersion_MySQL(t *testing.T) {
+	t.Parallel()
 	testMigration(t, "mysql", func() (MemosContainerConfig, func()) {
 		// For migration testing, we need a dedicated MySQL container
 		dsn, containerHost, cleanup := GetDedicatedMySQLDSN(t)
@@ -107,6 +110,7 @@ func TestMigrationFromPreviousVersion_MySQL(t *testing.T) {
 // TestMigrationFromPreviousVersion_Postgres verifies that migrating from the previous
 // Memos version to the current version works correctly for PostgreSQL.
 func TestMigrationFromPreviousVersion_Postgres(t *testing.T) {
+	t.Parallel()
 	testMigration(t, "postgres", func() (MemosContainerConfig, func()) {
 		// For migration testing, we need a dedicated PostgreSQL container
 		dsn, containerHost, cleanup := GetDedicatedPostgresDSN(t)

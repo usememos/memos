@@ -11,6 +11,7 @@ import (
 )
 
 func TestInboxStore(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -54,6 +55,7 @@ func TestInboxStore(t *testing.T) {
 }
 
 func TestInboxListByID(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -83,6 +85,7 @@ func TestInboxListByID(t *testing.T) {
 }
 
 func TestInboxListBySenderID(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user1, err := createTestingHostUser(ctx, ts)
@@ -125,6 +128,7 @@ func TestInboxListBySenderID(t *testing.T) {
 }
 
 func TestInboxListByStatus(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -168,6 +172,7 @@ func TestInboxListByStatus(t *testing.T) {
 }
 
 func TestInboxListByMessageType(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -203,6 +208,7 @@ func TestInboxListByMessageType(t *testing.T) {
 }
 
 func TestInboxListPagination(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -254,6 +260,7 @@ func TestInboxListPagination(t *testing.T) {
 }
 
 func TestInboxListCombinedFilters(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user1, err := createTestingHostUser(ctx, ts)
@@ -316,6 +323,7 @@ func TestInboxListCombinedFilters(t *testing.T) {
 }
 
 func TestInboxMessagePayload(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -347,6 +355,7 @@ func TestInboxMessagePayload(t *testing.T) {
 }
 
 func TestInboxUpdateStatus(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -380,6 +389,7 @@ func TestInboxUpdateStatus(t *testing.T) {
 }
 
 func TestInboxListByMessageTypeMultipleTypes(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -436,6 +446,7 @@ func TestInboxListByMessageTypeMultipleTypes(t *testing.T) {
 }
 
 func TestInboxMessageTypeFilterWithPayload(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -481,6 +492,7 @@ func TestInboxMessageTypeFilterWithPayload(t *testing.T) {
 }
 
 func TestInboxMessageTypeFilterWithStatusAndPagination(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -538,6 +550,7 @@ func TestInboxMessageTypeFilterWithStatusAndPagination(t *testing.T) {
 }
 
 func TestInboxMultipleReceivers(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user1, err := createTestingHostUser(ctx, ts)

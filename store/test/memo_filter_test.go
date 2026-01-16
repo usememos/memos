@@ -16,6 +16,7 @@ import (
 // =============================================================================
 
 func TestMemoFilterContentContains(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -39,6 +40,7 @@ func TestMemoFilterContentContains(t *testing.T) {
 }
 
 func TestMemoFilterContentSpecialCharacters(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -49,6 +51,7 @@ func TestMemoFilterContentSpecialCharacters(t *testing.T) {
 }
 
 func TestMemoFilterContentUnicode(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -64,6 +67,7 @@ func TestMemoFilterContentUnicode(t *testing.T) {
 // =============================================================================
 
 func TestMemoFilterVisibilityEquals(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -83,6 +87,7 @@ func TestMemoFilterVisibilityEquals(t *testing.T) {
 }
 
 func TestMemoFilterVisibilityNotEquals(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -95,6 +100,7 @@ func TestMemoFilterVisibilityNotEquals(t *testing.T) {
 }
 
 func TestMemoFilterVisibilityInList(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -112,6 +118,7 @@ func TestMemoFilterVisibilityInList(t *testing.T) {
 // =============================================================================
 
 func TestMemoFilterPinnedEquals(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -131,6 +138,7 @@ func TestMemoFilterPinnedEquals(t *testing.T) {
 }
 
 func TestMemoFilterPinnedPredicate(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -149,6 +157,7 @@ func TestMemoFilterPinnedPredicate(t *testing.T) {
 // =============================================================================
 
 func TestMemoFilterCreatorIdEquals(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -169,6 +178,7 @@ func TestMemoFilterCreatorIdEquals(t *testing.T) {
 }
 
 func TestMemoFilterCreatorIdNotEquals(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -195,6 +205,7 @@ func TestMemoFilterCreatorIdNotEquals(t *testing.T) {
 // =============================================================================
 
 func TestMemoFilterTagInList(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -213,6 +224,7 @@ func TestMemoFilterTagInList(t *testing.T) {
 }
 
 func TestMemoFilterElementInTags(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -229,6 +241,7 @@ func TestMemoFilterElementInTags(t *testing.T) {
 }
 
 func TestMemoFilterHierarchicalTags(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -241,6 +254,7 @@ func TestMemoFilterHierarchicalTags(t *testing.T) {
 }
 
 func TestMemoFilterEmptyTags(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -257,6 +271,7 @@ func TestMemoFilterEmptyTags(t *testing.T) {
 // =============================================================================
 
 func TestMemoFilterHasTaskList(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -279,6 +294,7 @@ func TestMemoFilterHasTaskList(t *testing.T) {
 }
 
 func TestMemoFilterHasLink(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -293,6 +309,7 @@ func TestMemoFilterHasLink(t *testing.T) {
 }
 
 func TestMemoFilterHasCode(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -307,6 +324,7 @@ func TestMemoFilterHasCode(t *testing.T) {
 }
 
 func TestMemoFilterHasIncompleteTasks(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -329,6 +347,7 @@ func TestMemoFilterHasIncompleteTasks(t *testing.T) {
 }
 
 func TestMemoFilterCombinedJSONBool(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -367,6 +386,7 @@ func TestMemoFilterCombinedJSONBool(t *testing.T) {
 // =============================================================================
 
 func TestMemoFilterCreatedTsComparison(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -387,6 +407,7 @@ func TestMemoFilterCreatedTsComparison(t *testing.T) {
 }
 
 func TestMemoFilterCreatedTsWithNow(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -402,6 +423,7 @@ func TestMemoFilterCreatedTsWithNow(t *testing.T) {
 }
 
 func TestMemoFilterCreatedTsArithmetic(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -421,6 +443,7 @@ func TestMemoFilterCreatedTsArithmetic(t *testing.T) {
 }
 
 func TestMemoFilterUpdatedTs(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -444,6 +467,7 @@ func TestMemoFilterUpdatedTs(t *testing.T) {
 }
 
 func TestMemoFilterAllComparisonOperators(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -472,6 +496,7 @@ func TestMemoFilterAllComparisonOperators(t *testing.T) {
 // =============================================================================
 
 func TestMemoFilterLogicalAnd(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -485,6 +510,7 @@ func TestMemoFilterLogicalAnd(t *testing.T) {
 }
 
 func TestMemoFilterLogicalOr(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -497,6 +523,7 @@ func TestMemoFilterLogicalOr(t *testing.T) {
 }
 
 func TestMemoFilterLogicalNot(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -510,6 +537,7 @@ func TestMemoFilterLogicalNot(t *testing.T) {
 }
 
 func TestMemoFilterNegatedComparison(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -522,6 +550,7 @@ func TestMemoFilterNegatedComparison(t *testing.T) {
 }
 
 func TestMemoFilterComplexLogical(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -552,6 +581,7 @@ func TestMemoFilterComplexLogical(t *testing.T) {
 // =============================================================================
 
 func TestMemoFilterMultipleFilters(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -570,6 +600,7 @@ func TestMemoFilterMultipleFilters(t *testing.T) {
 // =============================================================================
 
 func TestMemoFilterNullPayload(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -581,6 +612,7 @@ func TestMemoFilterNullPayload(t *testing.T) {
 }
 
 func TestMemoFilterNoMatches(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 

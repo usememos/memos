@@ -11,6 +11,7 @@ import (
 )
 
 func TestIdentityProviderStore(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	createdIDP, err := ts.CreateIdentityProvider(ctx, &storepb.IdentityProvider{
@@ -60,6 +61,7 @@ func TestIdentityProviderStore(t *testing.T) {
 }
 
 func TestIdentityProviderGetByID(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -84,6 +86,7 @@ func TestIdentityProviderGetByID(t *testing.T) {
 }
 
 func TestIdentityProviderListMultiple(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -104,6 +107,7 @@ func TestIdentityProviderListMultiple(t *testing.T) {
 }
 
 func TestIdentityProviderListByID(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -123,6 +127,7 @@ func TestIdentityProviderListByID(t *testing.T) {
 }
 
 func TestIdentityProviderUpdateName(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -149,6 +154,7 @@ func TestIdentityProviderUpdateName(t *testing.T) {
 }
 
 func TestIdentityProviderUpdateIdentifierFilter(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -175,6 +181,7 @@ func TestIdentityProviderUpdateIdentifierFilter(t *testing.T) {
 }
 
 func TestIdentityProviderUpdateConfig(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -218,6 +225,7 @@ func TestIdentityProviderUpdateConfig(t *testing.T) {
 }
 
 func TestIdentityProviderUpdateMultipleFields(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -241,6 +249,7 @@ func TestIdentityProviderUpdateMultipleFields(t *testing.T) {
 }
 
 func TestIdentityProviderDelete(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -260,6 +269,7 @@ func TestIdentityProviderDelete(t *testing.T) {
 }
 
 func TestIdentityProviderDeleteNotAffectOthers(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -288,6 +298,7 @@ func TestIdentityProviderDeleteNotAffectOthers(t *testing.T) {
 }
 
 func TestIdentityProviderOAuth2ConfigScopes(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -326,6 +337,7 @@ func TestIdentityProviderOAuth2ConfigScopes(t *testing.T) {
 }
 
 func TestIdentityProviderFieldMapping(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -364,6 +376,7 @@ func TestIdentityProviderFieldMapping(t *testing.T) {
 }
 
 func TestIdentityProviderIdentifierFilterPatterns(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 

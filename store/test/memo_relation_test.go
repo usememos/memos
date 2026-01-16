@@ -10,6 +10,7 @@ import (
 )
 
 func TestMemoRelationStore(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -62,6 +63,7 @@ func TestMemoRelationStore(t *testing.T) {
 }
 
 func TestMemoRelationListByMemoID(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -136,6 +138,7 @@ func TestMemoRelationListByMemoID(t *testing.T) {
 }
 
 func TestMemoRelationDelete(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -193,6 +196,7 @@ func TestMemoRelationDelete(t *testing.T) {
 }
 
 func TestMemoRelationDifferentTypes(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -241,6 +245,7 @@ func TestMemoRelationDifferentTypes(t *testing.T) {
 }
 
 func TestMemoRelationUpsertSameRelation(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -289,6 +294,7 @@ func TestMemoRelationUpsertSameRelation(t *testing.T) {
 }
 
 func TestMemoRelationDeleteByType(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -354,6 +360,7 @@ func TestMemoRelationDeleteByType(t *testing.T) {
 }
 
 func TestMemoRelationDeleteByMemoID(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -422,6 +429,7 @@ func TestMemoRelationDeleteByMemoID(t *testing.T) {
 }
 
 func TestMemoRelationListByRelatedMemoID(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -479,6 +487,7 @@ func TestMemoRelationListByRelatedMemoID(t *testing.T) {
 }
 
 func TestMemoRelationListCombinedFilters(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -547,6 +556,7 @@ func TestMemoRelationListCombinedFilters(t *testing.T) {
 }
 
 func TestMemoRelationListEmpty(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -571,6 +581,7 @@ func TestMemoRelationListEmpty(t *testing.T) {
 }
 
 func TestMemoRelationBidirectional(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -628,6 +639,7 @@ func TestMemoRelationBidirectional(t *testing.T) {
 }
 
 func TestMemoRelationMultipleRelationsToSameMemo(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
