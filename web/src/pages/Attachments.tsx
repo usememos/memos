@@ -4,6 +4,7 @@ import { ExternalLinkIcon, PaperclipIcon, SearchIcon, Trash } from "lucide-react
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
+import { useAttachmentPreview } from "@/components/attachment";
 import AttachmentIcon from "@/components/AttachmentIcon";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import Empty from "@/components/Empty";
@@ -50,23 +51,35 @@ const filterAttachments = (attachments: Attachment[], searchQuery: string): Atta
 
 interface AttachmentItemProps {
   attachment: Attachment;
+  allAttachments: Attachment[];
 }
 
-const AttachmentItem = ({ attachment }: AttachmentItemProps) => (
-  <div className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
-    <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border border-border overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
-      <AttachmentIcon attachment={attachment} strokeWidth={0.5} />
+const AttachmentItem = ({ attachment, allAttachments }: AttachmentItemProps) => {
+  const { openPreview } = useAttachmentPreview();
+
+  const handleClick = () => {
+    openPreview(attachment, allAttachments);
+  };
+
+  return (
+    <div className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
+      <div
+        className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border border-border overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80"
+        onClick={handleClick}
+      >
+        <AttachmentIcon attachment={attachment} allAttachments={allAttachments} strokeWidth={0.5} />
+      </div>
+      <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">
+        <p className="text-xs shrink text-muted-foreground truncate">{attachment.filename}</p>
+        {attachment.memo && (
+          <Link to={`/${attachment.memo}`} className="text-primary hover:opacity-80 transition-opacity shrink-0 ml-1" aria-label="View memo">
+            <ExternalLinkIcon className="w-3 h-3" />
+          </Link>
+        )}
+      </div>
     </div>
-    <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">
-      <p className="text-xs shrink text-muted-foreground truncate">{attachment.filename}</p>
-      {attachment.memo && (
-        <Link to={`/${attachment.memo}`} className="text-primary hover:opacity-80 transition-opacity shrink-0 ml-1" aria-label="View memo">
-          <ExternalLinkIcon className="w-3 h-3" />
-        </Link>
-      )}
-    </div>
-  </div>
-);
+  );
+};
 
 const Attachments = () => {
   const t = useTranslate();
@@ -228,7 +241,7 @@ const Attachments = () => {
                             </div>
                             <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
                               {attachments.map((attachment) => (
-                                <AttachmentItem key={attachment.name} attachment={attachment} />
+                                <AttachmentItem key={attachment.name} attachment={attachment} allAttachments={attachments} />
                               ))}
                             </div>
                           </div>
@@ -254,7 +267,7 @@ const Attachments = () => {
                                 </div>
                               </div>
                               {unusedAttachments.map((attachment) => (
-                                <AttachmentItem key={attachment.name} attachment={attachment} />
+                                <AttachmentItem key={attachment.name} attachment={attachment} allAttachments={unusedAttachments} />
                               ))}
                             </div>
                           </div>

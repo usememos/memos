@@ -1,6 +1,6 @@
 import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
-import { FileIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
+import { FileIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MoreHorizontalIcon, PlusIcon, VideoIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDebounce } from "react-use";
 import { useReverseGeocoding } from "@/components/map";
@@ -17,11 +17,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { LinkMemoDialog, LocationDialog } from "../components";
+import { AddVideoLinkDialog, LinkMemoDialog, LocationDialog } from "../components";
 import { useFileUpload, useLinkMemo, useLocation } from "../hooks";
 import { useEditorContext } from "../state";
 import type { InsertMenuProps } from "../types";
 import type { LocalFile } from "../types/attachment";
+import type { VideoLinkInfo } from "@/components/attachment/utils/videoLinkResolver";
 
 const InsertMenu = (props: InsertMenuProps) => {
   const t = useTranslate();
@@ -29,6 +30,7 @@ const InsertMenu = (props: InsertMenuProps) => {
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
+  const [videoLinkDialogOpen, setVideoLinkDialogOpen] = useState(false);
   const [moreSubmenuOpen, setMoreSubmenuOpen] = useState(false);
 
   const { handleTriggerEnter, handleTriggerLeave, handleContentEnter, handleContentLeave } = useDropdownMenuSubHoverDelay(
@@ -105,6 +107,11 @@ const InsertMenu = (props: InsertMenuProps) => {
     location.handlePositionChange(position);
   };
 
+  const handleAddVideoLink = (info: VideoLinkInfo) => {
+    // Notify parent to create a video link attachment
+    props.onAddVideoLink?.(info);
+  };
+
   return (
     <>
       <DropdownMenu modal={false}>
@@ -117,6 +124,10 @@ const InsertMenu = (props: InsertMenuProps) => {
           <DropdownMenuItem onClick={handleUploadClick}>
             <FileIcon className="w-4 h-4" />
             {t("common.upload")}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setVideoLinkDialogOpen(true)}>
+            <VideoIcon className="w-4 h-4" />
+            Add Video Link
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setLinkDialogOpen(true)}>
             <LinkIcon className="w-4 h-4" />
@@ -180,6 +191,12 @@ const InsertMenu = (props: InsertMenuProps) => {
         onPlaceholderChange={location.setPlaceholder}
         onCancel={handleLocationCancel}
         onConfirm={handleLocationConfirm}
+      />
+
+      <AddVideoLinkDialog
+        open={videoLinkDialogOpen}
+        onOpenChange={setVideoLinkDialogOpen}
+        onConfirm={handleAddVideoLink}
       />
     </>
   );

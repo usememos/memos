@@ -96,23 +96,33 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 		Type:      request.Attachment.Type,
 	}
 
-	instanceStorageSetting, err := s.Store.GetInstanceStorageSetting(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get instance storage setting: %v", err)
-	}
-	size := binary.Size(request.Attachment.Content)
-	uploadSizeLimit := int(instanceStorageSetting.UploadSizeLimitMb) * MebiByte
-	if uploadSizeLimit == 0 {
-		uploadSizeLimit = MaxUploadBufferSizeBytes
-	}
-	if size > uploadSizeLimit {
-		return nil, status.Errorf(codes.InvalidArgument, "file size exceeds the limit")
-	}
-	create.Size = int64(size)
-	create.Blob = request.Attachment.Content
+	// Check if this is an external link attachment (e.g., video link)
+	if request.Attachment.ExternalLink != "" {
+		// For external links, store the URL as reference with EXTERNAL storage type
+		create.Reference = request.Attachment.ExternalLink
+		create.StorageType = storepb.AttachmentStorageType_EXTERNAL
+		create.Size = 0
+		// Skip blob storage for external links
+	} else {
+		// Handle regular file uploads
+		instanceStorageSetting, err := s.Store.GetInstanceStorageSetting(ctx)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get instance storage setting: %v", err)
+		}
+		size := binary.Size(request.Attachment.Content)
+		uploadSizeLimit := int(instanceStorageSetting.UploadSizeLimitMb) * MebiByte
+		if uploadSizeLimit == 0 {
+			uploadSizeLimit = MaxUploadBufferSizeBytes
+		}
+		if size > uploadSizeLimit {
+			return nil, status.Errorf(codes.InvalidArgument, "file size exceeds the limit")
+		}
+		create.Size = int64(size)
+		create.Blob = request.Attachment.Content
 
-	if err := SaveAttachmentBlob(ctx, s.Profile, s.Store, create); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to save attachment blob: %v", err)
+		if err := SaveAttachmentBlob(ctx, s.Profile, s.Store, create); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to save attachment blob: %v", err)
+		}
 	}
 
 	if request.Attachment.Memo != nil {

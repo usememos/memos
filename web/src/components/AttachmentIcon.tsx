@@ -7,49 +7,45 @@ import {
   FileIcon,
   FileTextIcon,
   FileVideo2Icon,
+  PlayCircleIcon,
   SheetIcon,
 } from "lucide-react";
-import React, { useState } from "react";
+import React from "react";
+import { useAttachmentPreview } from "@/components/attachment";
+import { VIDEO_LINK_MIME_TYPE } from "@/components/attachment/utils/videoLinkResolver";
 import { cn } from "@/lib/utils";
 import { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentThumbnailUrl, getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import SquareDiv from "./kit/SquareDiv";
-import PreviewImageDialog from "./PreviewImageDialog";
 
 interface Props {
   attachment: Attachment;
+  allAttachments?: Attachment[];
   className?: string;
   strokeWidth?: number;
 }
 
 const AttachmentIcon = (props: Props) => {
-  const { attachment } = props;
-  const [previewImage, setPreviewImage] = useState<{ open: boolean; urls: string[]; index: number }>({
-    open: false,
-    urls: [],
-    index: 0,
-  });
+  const { attachment, allAttachments = [] } = props;
+  const { openPreview } = useAttachmentPreview();
   const resourceType = getAttachmentType(attachment);
   const attachmentUrl = getAttachmentUrl(attachment);
   const className = cn("w-full h-auto", props.className);
   const strokeWidth = props.strokeWidth;
 
-  const previewResource = () => {
-    window.open(attachmentUrl);
-  };
-
-  const handleImageClick = () => {
-    setPreviewImage({ open: true, urls: [attachmentUrl], index: 0 });
+  const handleClick = () => {
+    // Use the new preview modal for all file types
+    const attachmentsToUse = allAttachments.length > 0 ? allAttachments : [attachment];
+    openPreview(attachment, attachmentsToUse);
   };
 
   if (resourceType === "image/*") {
     return (
-      <>
+      <div onClick={handleClick} className="cursor-pointer">
         <SquareDiv className={cn(className, "flex items-center justify-center overflow-clip")}>
           <img
             className="min-w-full min-h-full object-cover"
             src={getAttachmentThumbnailUrl(attachment)}
-            onClick={handleImageClick}
             onError={(e) => {
               // Fallback to original image if thumbnail fails
               const target = e.target as HTMLImageElement;
@@ -62,18 +58,16 @@ const AttachmentIcon = (props: Props) => {
             loading="lazy"
           />
         </SquareDiv>
-
-        <PreviewImageDialog
-          open={previewImage.open}
-          onOpenChange={(open) => setPreviewImage((prev) => ({ ...prev, open }))}
-          imgUrls={previewImage.urls}
-          initialIndex={previewImage.index}
-        />
-      </>
+      </div>
     );
   }
 
   const getAttachmentIcon = () => {
+    // Check for video link type first
+    if (attachment.type === VIDEO_LINK_MIME_TYPE) {
+      return <PlayCircleIcon strokeWidth={strokeWidth} className="w-full h-auto text-red-500" />;
+    }
+
     switch (resourceType) {
       case "video/*":
         return <FileVideo2Icon strokeWidth={strokeWidth} className="w-full h-auto" />;
@@ -90,7 +84,7 @@ const AttachmentIcon = (props: Props) => {
       case "application/msexcel":
         return <SheetIcon strokeWidth={strokeWidth} className="w-full h-auto" />;
       case "application/zip":
-        return <FileArchiveIcon onClick={previewResource} strokeWidth={strokeWidth} className="w-full h-auto" />;
+        return <FileArchiveIcon strokeWidth={strokeWidth} className="w-full h-auto" />;
       case "application/x-java-archive":
         return <BinaryIcon strokeWidth={strokeWidth} className="w-full h-auto" />;
       default:
@@ -99,7 +93,7 @@ const AttachmentIcon = (props: Props) => {
   };
 
   return (
-    <div onClick={previewResource} className={cn(className, "max-w-16 opacity-50")}>
+    <div onClick={handleClick} className={cn(className, "max-w-16 opacity-50 cursor-pointer hover:opacity-75 transition-opacity")}>
       {getAttachmentIcon()}
     </div>
   );

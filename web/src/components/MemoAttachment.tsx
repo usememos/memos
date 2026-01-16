@@ -1,18 +1,22 @@
+import { useAttachmentPreview } from "@/components/attachment";
 import { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentUrl, isMidiFile } from "@/utils/attachment";
 import AttachmentIcon from "./AttachmentIcon";
 
 interface Props {
   attachment: Attachment;
+  allAttachments?: Attachment[];
   className?: string;
 }
 
 const MemoAttachment: React.FC<Props> = (props: Props) => {
-  const { className, attachment } = props;
+  const { className, attachment, allAttachments = [] } = props;
   const attachmentUrl = getAttachmentUrl(attachment);
+  const { openPreview } = useAttachmentPreview();
 
-  const handlePreviewBtnClick = () => {
-    window.open(attachmentUrl);
+  const handleClick = () => {
+    const attachmentsToUse = allAttachments.length > 0 ? allAttachments : [attachment];
+    openPreview(attachment, attachmentsToUse);
   };
 
   return (
@@ -23,8 +27,8 @@ const MemoAttachment: React.FC<Props> = (props: Props) => {
         <audio src={attachmentUrl} controls></audio>
       ) : (
         <>
-          <AttachmentIcon className="w-4! h-4! mr-1" attachment={attachment} />
-          <span className="text-sm max-w-[256px] truncate cursor-pointer" onClick={handlePreviewBtnClick}>
+          <AttachmentIcon className="w-4! h-4! mr-1" attachment={attachment} allAttachments={allAttachments} />
+          <span className="text-sm max-w-[256px] truncate cursor-pointer" onClick={handleClick}>
             {attachment.filename}
           </span>
         </>
