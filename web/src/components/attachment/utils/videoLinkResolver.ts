@@ -40,12 +40,13 @@ const PROVIDERS: ProviderConfig[] = [
       /b23\.tv\/([a-zA-Z0-9]+)/,
     ],
     getEmbedUrl: (id: string) => {
+      // Official Bilibili embed format requires isOutside=true for external sites
       // BV format (newer)
       if (id.toUpperCase().startsWith("BV")) {
-        return `https://player.bilibili.com/player.html?bvid=${id}&autoplay=0&high_quality=1`;
+        return `https://player.bilibili.com/player.html?isOutside=true&bvid=${id}&autoplay=0&p=1`;
       }
       // AV format (legacy)
-      return `https://player.bilibili.com/player.html?aid=${id}&autoplay=0&high_quality=1`;
+      return `https://player.bilibili.com/player.html?isOutside=true&aid=${id}&autoplay=0&p=1`;
     },
     // Bilibili doesn't have a simple public thumbnail URL format
     getThumbnail: undefined,
