@@ -114,3 +114,46 @@ type FunctionValue struct {
 }
 
 func (*FunctionValue) isValueExpr() {}
+
+// ListComprehensionCondition represents CEL macros like exists(), all(), filter().
+type ListComprehensionCondition struct {
+	Kind      ComprehensionKind
+	Field     string        // The list field to iterate over (e.g., "tags")
+	IterVar   string        // The iteration variable name (e.g., "t")
+	Predicate PredicateExpr // The predicate to evaluate for each element
+}
+
+func (*ListComprehensionCondition) isCondition() {}
+
+// ComprehensionKind enumerates the types of list comprehensions.
+type ComprehensionKind string
+
+const (
+	ComprehensionExists ComprehensionKind = "exists"
+)
+
+// PredicateExpr represents predicates used in comprehensions.
+type PredicateExpr interface {
+	isPredicateExpr()
+}
+
+// StartsWithPredicate represents t.startsWith("prefix").
+type StartsWithPredicate struct {
+	Prefix string
+}
+
+func (*StartsWithPredicate) isPredicateExpr() {}
+
+// EndsWithPredicate represents t.endsWith("suffix").
+type EndsWithPredicate struct {
+	Suffix string
+}
+
+func (*EndsWithPredicate) isPredicateExpr() {}
+
+// ContainsPredicate represents t.contains("substring").
+type ContainsPredicate struct {
+	Substring string
+}
+
+func (*ContainsPredicate) isPredicateExpr() {}

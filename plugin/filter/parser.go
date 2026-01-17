@@ -36,6 +36,8 @@ func buildCondition(expr *exprv1.Expr, schema Schema) (Condition, error) {
 			return nil, errors.Errorf("identifier %q is not boolean", name)
 		}
 		return &FieldPredicateCondition{Field: name}, nil
+	case *exprv1.Expr_ComprehensionExpr:
+		return buildComprehensionCondition(v.ComprehensionExpr, schema)
 	default:
 		return nil, errors.New("unsupported top-level expression")
 	}
@@ -414,4 +416,171 @@ func evaluateNumeric(expr *exprv1.Expr) (int64, bool, error) {
 
 func timeNowUnix() int64 {
 	return time.Now().Unix()
+}
+
+// buildComprehensionCondition handles CEL comprehension expressions (exists, all, etc.).
+func buildComprehensionCondition(comp *exprv1.Expr_Comprehension, schema Schema) (Condition, error) {
+	// Determine the comprehension kind by examining the loop initialization and step
+	kind, err := detectComprehensionKind(comp)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get the field being iterated over
+	iterRangeIdent := comp.IterRange.GetIdentExpr()
+	if iterRangeIdent == nil {
+		return nil, errors.New("comprehension range must be a field identifier")
+	}
+	fieldName := iterRangeIdent.GetName()
+
+	// Validate the field
+	field, ok := schema.Field(fieldName)
+	if !ok {
+		return nil, errors.Errorf("unknown field %q in comprehension", fieldName)
+	}
+	if field.Kind != FieldKindJSONList {
+		return nil, errors.Errorf("field %q does not support comprehension (must be a list)", fieldName)
+	}
+
+	// Extract the predicate from the loop step
+	predicate, err := extractPredicate(comp, schema)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ListComprehensionCondition{
+		Kind:      kind,
+		Field:     fieldName,
+		IterVar:   comp.IterVar,
+		Predicate: predicate,
+	}, nil
+}
+
+// detectComprehensionKind determines if this is an exists() macro.
+// Only exists() is currently supported.
+func detectComprehensionKind(comp *exprv1.Expr_Comprehension) (ComprehensionKind, error) {
+	// Check the accumulator initialization
+	accuInit := comp.AccuInit.GetConstExpr()
+	if accuInit == nil {
+		return "", errors.New("comprehension accumulator must be initialized with a constant")
+	}
+
+	// exists() starts with false and uses OR (||) in loop step
+	if accuInit.GetBoolValue() == false {
+		if step := comp.LoopStep.GetCallExpr(); step != nil && step.Function == "_||_" {
+			return ComprehensionExists, nil
+		}
+	}
+
+	// all() starts with true and uses AND (&&) - not supported
+	if accuInit.GetBoolValue() == true {
+		if step := comp.LoopStep.GetCallExpr(); step != nil && step.Function == "_&&_" {
+			return "", errors.New("all() comprehension is not supported; use exists() instead")
+		}
+	}
+
+	return "", errors.New("unsupported comprehension type; only exists() is supported")
+}
+
+// extractPredicate extracts the predicate expression from the comprehension loop step.
+func extractPredicate(comp *exprv1.Expr_Comprehension, schema Schema) (PredicateExpr, error) {
+	// The loop step is: @result || predicate(t) for exists
+	//                or: @result && predicate(t) for all
+	step := comp.LoopStep.GetCallExpr()
+	if step == nil {
+		return nil, errors.New("comprehension loop step must be a call expression")
+	}
+
+	if len(step.Args) != 2 {
+		return nil, errors.New("comprehension loop step must have two arguments")
+	}
+
+	// The predicate is the second argument
+	predicateExpr := step.Args[1]
+	predicateCall := predicateExpr.GetCallExpr()
+	if predicateCall == nil {
+		return nil, errors.New("comprehension predicate must be a function call")
+	}
+
+	// Handle different predicate functions
+	switch predicateCall.Function {
+	case "startsWith":
+		return buildStartsWithPredicate(predicateCall, comp.IterVar)
+	case "endsWith":
+		return buildEndsWithPredicate(predicateCall, comp.IterVar)
+	case "contains":
+		return buildContainsPredicate(predicateCall, comp.IterVar)
+	default:
+		return nil, errors.Errorf("unsupported predicate function %q in comprehension (supported: startsWith, endsWith, contains)", predicateCall.Function)
+	}
+}
+
+// buildStartsWithPredicate extracts the pattern from t.startsWith("prefix").
+func buildStartsWithPredicate(call *exprv1.Expr_Call, iterVar string) (PredicateExpr, error) {
+	// Verify the target is the iteration variable
+	if target := call.Target.GetIdentExpr(); target == nil || target.GetName() != iterVar {
+		return nil, errors.Errorf("startsWith target must be the iteration variable %q", iterVar)
+	}
+
+	if len(call.Args) != 1 {
+		return nil, errors.New("startsWith expects exactly one argument")
+	}
+
+	prefix, err := getConstValue(call.Args[0])
+	if err != nil {
+		return nil, errors.Wrap(err, "startsWith argument must be a constant string")
+	}
+
+	prefixStr, ok := prefix.(string)
+	if !ok {
+		return nil, errors.New("startsWith argument must be a string")
+	}
+
+	return &StartsWithPredicate{Prefix: prefixStr}, nil
+}
+
+// buildEndsWithPredicate extracts the pattern from t.endsWith("suffix").
+func buildEndsWithPredicate(call *exprv1.Expr_Call, iterVar string) (PredicateExpr, error) {
+	if target := call.Target.GetIdentExpr(); target == nil || target.GetName() != iterVar {
+		return nil, errors.Errorf("endsWith target must be the iteration variable %q", iterVar)
+	}
+
+	if len(call.Args) != 1 {
+		return nil, errors.New("endsWith expects exactly one argument")
+	}
+
+	suffix, err := getConstValue(call.Args[0])
+	if err != nil {
+		return nil, errors.Wrap(err, "endsWith argument must be a constant string")
+	}
+
+	suffixStr, ok := suffix.(string)
+	if !ok {
+		return nil, errors.New("endsWith argument must be a string")
+	}
+
+	return &EndsWithPredicate{Suffix: suffixStr}, nil
+}
+
+// buildContainsPredicate extracts the pattern from t.contains("substring").
+func buildContainsPredicate(call *exprv1.Expr_Call, iterVar string) (PredicateExpr, error) {
+	if target := call.Target.GetIdentExpr(); target == nil || target.GetName() != iterVar {
+		return nil, errors.Errorf("contains target must be the iteration variable %q", iterVar)
+	}
+
+	if len(call.Args) != 1 {
+		return nil, errors.New("contains expects exactly one argument")
+	}
+
+	substring, err := getConstValue(call.Args[0])
+	if err != nil {
+		return nil, errors.Wrap(err, "contains argument must be a constant string")
+	}
+
+	substringStr, ok := substring.(string)
+	if !ok {
+		return nil, errors.New("contains argument must be a string")
+	}
+
+	return &ContainsPredicate{Substring: substringStr}, nil
 }
