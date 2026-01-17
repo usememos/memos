@@ -486,7 +486,7 @@ func (r *renderer) renderListComprehension(cond *ListComprehensionCondition) (re
 	}
 }
 
-// renderTagStartsWith generates SQL for tags.exists(t, t.startsWith("prefix"))
+// renderTagStartsWith generates SQL for tags.exists(t, t.startsWith("prefix")).
 func (r *renderer) renderTagStartsWith(field Field, prefix string, _ ComprehensionKind) (renderResult, error) {
 	arrayExpr := jsonArrayExpr(r.dialect, field)
 
@@ -510,7 +510,7 @@ func (r *renderer) renderTagStartsWith(field Field, prefix string, _ Comprehensi
 	}
 }
 
-// renderTagEndsWith generates SQL for tags.exists(t, t.endsWith("suffix"))
+// renderTagEndsWith generates SQL for tags.exists(t, t.endsWith("suffix")).
 func (r *renderer) renderTagEndsWith(field Field, suffix string, _ ComprehensionKind) (renderResult, error) {
 	arrayExpr := jsonArrayExpr(r.dialect, field)
 	pattern := fmt.Sprintf(`%%%s"%%`, suffix)
@@ -519,7 +519,7 @@ func (r *renderer) renderTagEndsWith(field Field, suffix string, _ Comprehension
 	return renderResult{sql: r.wrapWithNullCheck(arrayExpr, likeExpr)}, nil
 }
 
-// renderTagContains generates SQL for tags.exists(t, t.contains("substring"))
+// renderTagContains generates SQL for tags.exists(t, t.contains("substring")).
 func (r *renderer) renderTagContains(field Field, substring string, _ ComprehensionKind) (renderResult, error) {
 	arrayExpr := jsonArrayExpr(r.dialect, field)
 	pattern := fmt.Sprintf(`%%%s%%`, substring)

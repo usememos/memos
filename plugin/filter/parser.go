@@ -466,14 +466,14 @@ func detectComprehensionKind(comp *exprv1.Expr_Comprehension) (ComprehensionKind
 	}
 
 	// exists() starts with false and uses OR (||) in loop step
-	if accuInit.GetBoolValue() == false {
+	if !accuInit.GetBoolValue() {
 		if step := comp.LoopStep.GetCallExpr(); step != nil && step.Function == "_||_" {
 			return ComprehensionExists, nil
 		}
 	}
 
 	// all() starts with true and uses AND (&&) - not supported
-	if accuInit.GetBoolValue() == true {
+	if accuInit.GetBoolValue() {
 		if step := comp.LoopStep.GetCallExpr(); step != nil && step.Function == "_&&_" {
 			return "", errors.New("all() comprehension is not supported; use exists() instead")
 		}
@@ -483,7 +483,7 @@ func detectComprehensionKind(comp *exprv1.Expr_Comprehension) (ComprehensionKind
 }
 
 // extractPredicate extracts the predicate expression from the comprehension loop step.
-func extractPredicate(comp *exprv1.Expr_Comprehension, schema Schema) (PredicateExpr, error) {
+func extractPredicate(comp *exprv1.Expr_Comprehension, _ Schema) (PredicateExpr, error) {
 	// The loop step is: @result || predicate(t) for exists
 	//                or: @result && predicate(t) for all
 	step := comp.LoopStep.GetCallExpr()

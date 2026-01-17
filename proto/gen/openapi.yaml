@@ -2470,14 +2470,16 @@ components:
                         The name of the creator.
                          Format: users/{user}
                 createTime:
-                    readOnly: true
                     type: string
-                    description: Output only. The creation timestamp.
+                    description: |-
+                        The creation timestamp.
+                         If not set on creation, the server will set it to the current time.
                     format: date-time
                 updateTime:
-                    readOnly: true
                     type: string
-                    description: Output only. The last update timestamp.
+                    description: |-
+                        The last update timestamp.
+                         If not set on creation, the server will set it to the current time.
                     format: date-time
                 displayTime:
                     type: string
