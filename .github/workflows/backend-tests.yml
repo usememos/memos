@@ -11,37 +11,76 @@ on:
       - "go.sum"
       - "**.go"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   go-static-checks:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+      
       - uses: actions/setup-go@v6
         with:
           go-version: 1.25
-          check-latest: true
           cache: true
+          cache-dependency-path: go.sum
+
       - name: Verify go.mod is tidy
         run: |
           go mod tidy -go=1.25
           git diff --exit-code
+
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v8
         with:
           version: v2.4.0
-          args: --verbose --timeout=3m
-          skip-cache: true
+          args: --timeout=3m
 
   go-tests:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        test-group:
+          - store
+          - server
+          - plugin
+          - other
     steps:
       - uses: actions/checkout@v5
+      
       - uses: actions/setup-go@v6
         with:
           go-version: 1.25
-          check-latest: true
           cache: true
-      - name: Run all tests
-        run: go test -v ./... | tee test.log; exit ${PIPESTATUS[0]}
-      - name: Pretty print tests running time
-        run: grep --color=never -e '--- PASS:' -e '--- FAIL:' test.log | sed 's/[:()]//g' | awk '{print $2,$3,$4}' | sort -t' ' -nk3 -r | awk '{sum += $3; print $1,$2,$3,sum"s"}'
+          cache-dependency-path: go.sum
+
+      - name: Run tests - ${{ matrix.test-group }}
+        run: |
+          case "${{ matrix.test-group }}" in
+            store)
+              go test -v -race -coverprofile=coverage.out -covermode=atomic ./store/...
+              ;;
+            server)
+              go test -v -race -coverprofile=coverage.out -covermode=atomic ./server/...
+              ;;
+            plugin)
+              go test -v -race -coverprofile=coverage.out -covermode=atomic ./plugin/...
+              ;;
+            other)
+              go test -v -race -coverprofile=coverage.out -covermode=atomic \
+                ./cmd/... ./internal/... ./proto/...
+              ;;
+          esac
+        env:
+          DRIVER: sqlite  # Use SQLite for fastest test execution
+
+      - name: Upload coverage
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./coverage.out
+          flags: ${{ matrix.test-group }}
+          fail_ci_if_error: false
