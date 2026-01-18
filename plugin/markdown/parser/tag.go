@@ -47,6 +47,17 @@ func isValidTagRune(r rune) bool {
 		return true
 	}
 
+	// Allow marks (non-spacing, spacing combining, enclosing)
+	// This covers variation selectors (e.g. VS16 \uFE0F) and combining marks (e.g. Keycap \u20E3, accents)
+	if unicode.IsMark(r) {
+		return true
+	}
+
+	// Allow Zero Width Joiner (ZWJ) for emoji sequences
+	if r == '\u200D' {
+		return true
+	}
+
 	// Allow specific ASCII symbols for tag structure
 	// Underscore: word separation (snake_case)
 	// Hyphen: word separation (kebab-case)
