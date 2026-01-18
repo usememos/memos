@@ -45,10 +45,35 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		Content:    request.Memo.Content,
 		Visibility: convertVisibilityToStore(request.Memo.Visibility),
 	}
+
 	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get instance memo related setting")
 	}
+
+	// Handle display_time first: if provided, use it to set the appropriate timestamp
+	// based on the instance setting (similar to UpdateMemo logic)
+	// Note: explicit create_time/update_time below will override this if provided
+	if request.Memo.DisplayTime != nil && request.Memo.DisplayTime.IsValid() {
+		displayTs := request.Memo.DisplayTime.AsTime().Unix()
+		if instanceMemoRelatedSetting.DisplayWithUpdateTime {
+			create.UpdatedTs = displayTs
+		} else {
+			create.CreatedTs = displayTs
+		}
+	}
+
+	// Set custom timestamps if provided in the request
+	// These take precedence over display_time
+	if request.Memo.CreateTime != nil && request.Memo.CreateTime.IsValid() {
+		createdTs := request.Memo.CreateTime.AsTime().Unix()
+		create.CreatedTs = createdTs
+	}
+	if request.Memo.UpdateTime != nil && request.Memo.UpdateTime.IsValid() {
+		updatedTs := request.Memo.UpdateTime.AsTime().Unix()
+		create.UpdatedTs = updatedTs
+	}
+
 	if instanceMemoRelatedSetting.DisallowPublicVisibility && create.Visibility == store.Public {
 		return nil, status.Errorf(codes.PermissionDenied, "disable public memos system setting is enabled")
 	}

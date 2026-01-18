@@ -13,6 +13,7 @@ import (
 )
 
 func TestMemoStore(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -64,6 +65,7 @@ func TestMemoStore(t *testing.T) {
 }
 
 func TestMemoListByTags(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -96,6 +98,7 @@ func TestMemoListByTags(t *testing.T) {
 }
 
 func TestDeleteMemoStore(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -117,6 +120,7 @@ func TestDeleteMemoStore(t *testing.T) {
 }
 
 func TestMemoGetByID(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -147,6 +151,7 @@ func TestMemoGetByID(t *testing.T) {
 }
 
 func TestMemoGetByUID(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -177,6 +182,7 @@ func TestMemoGetByUID(t *testing.T) {
 }
 
 func TestMemoListByVisibility(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -239,6 +245,7 @@ func TestMemoListByVisibility(t *testing.T) {
 }
 
 func TestMemoListWithPagination(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -274,6 +281,7 @@ func TestMemoListWithPagination(t *testing.T) {
 }
 
 func TestMemoUpdatePinned(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -317,6 +325,7 @@ func TestMemoUpdatePinned(t *testing.T) {
 }
 
 func TestMemoUpdateVisibility(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -359,6 +368,7 @@ func TestMemoUpdateVisibility(t *testing.T) {
 }
 
 func TestMemoInvalidUID(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -378,6 +388,7 @@ func TestMemoInvalidUID(t *testing.T) {
 }
 
 func TestMemoWithPayload(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)

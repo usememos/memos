@@ -10,6 +10,7 @@ import (
 )
 
 func TestReactionStore(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -67,6 +68,7 @@ func TestReactionStore(t *testing.T) {
 }
 
 func TestReactionListByCreatorID(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -113,6 +115,7 @@ func TestReactionListByCreatorID(t *testing.T) {
 }
 
 func TestReactionMultipleContentIDs(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
@@ -148,6 +151,7 @@ func TestReactionMultipleContentIDs(t *testing.T) {
 }
 
 func TestReactionUpsertDifferentTypes(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 

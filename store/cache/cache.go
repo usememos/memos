@@ -161,20 +161,20 @@ func (c *Cache) Delete(_ context.Context, key string) {
 
 // Clear removes all values from the cache.
 func (c *Cache) Clear(_ context.Context) {
-	if c.config.OnEviction != nil {
-		c.data.Range(func(key, value any) bool {
+	count := 0
+	c.data.Range(func(key, value any) bool {
+		if c.config.OnEviction != nil {
 			itm, ok := value.(item)
-			if !ok {
-				return true
+			if ok {
+				if keyStr, ok := key.(string); ok {
+					c.config.OnEviction(keyStr, itm.value)
+				}
 			}
-			if keyStr, ok := key.(string); ok {
-				c.config.OnEviction(keyStr, itm.value)
-			}
-			return true
-		})
-	}
-
-	c.data = sync.Map{}
+		}
+		c.data.Delete(key)
+		count++
+		return true
+	})
 	(&c.itemCount).Store(0)
 }
 

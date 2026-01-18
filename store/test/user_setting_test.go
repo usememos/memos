@@ -12,6 +12,7 @@ import (
 )
 
 func TestUserSettingStore(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -29,6 +30,7 @@ func TestUserSettingStore(t *testing.T) {
 }
 
 func TestUserSettingGetByUserID(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -63,6 +65,7 @@ func TestUserSettingGetByUserID(t *testing.T) {
 }
 
 func TestUserSettingUpsertUpdate(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -101,6 +104,7 @@ func TestUserSettingUpsertUpdate(t *testing.T) {
 }
 
 func TestUserSettingRefreshTokens(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -161,6 +165,7 @@ func TestUserSettingRefreshTokens(t *testing.T) {
 }
 
 func TestUserSettingPersonalAccessTokens(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -212,6 +217,7 @@ func TestUserSettingPersonalAccessTokens(t *testing.T) {
 }
 
 func TestUserSettingWebhooks(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -278,6 +284,7 @@ func TestUserSettingWebhooks(t *testing.T) {
 }
 
 func TestUserSettingShortcuts(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -311,6 +318,7 @@ func TestUserSettingShortcuts(t *testing.T) {
 }
 
 func TestUserSettingGetUserByPATHash(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -341,6 +349,7 @@ func TestUserSettingGetUserByPATHash(t *testing.T) {
 }
 
 func TestUserSettingGetUserByPATHashNotFound(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	_, err := createTestingHostUser(ctx, ts)
@@ -355,6 +364,7 @@ func TestUserSettingGetUserByPATHashNotFound(t *testing.T) {
 }
 
 func TestUserSettingGetUserByPATHashMultipleUsers(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user1, err := createTestingHostUser(ctx, ts)
@@ -395,6 +405,7 @@ func TestUserSettingGetUserByPATHashMultipleUsers(t *testing.T) {
 }
 
 func TestUserSettingGetUserByPATHashMultiplePATsSameUser(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -432,6 +443,7 @@ func TestUserSettingGetUserByPATHashMultiplePATsSameUser(t *testing.T) {
 }
 
 func TestUserSettingUpdatePATLastUsed(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -461,6 +473,7 @@ func TestUserSettingUpdatePATLastUsed(t *testing.T) {
 }
 
 func TestUserSettingGetUserByPATHashWithExpiredToken(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -489,6 +502,7 @@ func TestUserSettingGetUserByPATHashWithExpiredToken(t *testing.T) {
 }
 
 func TestUserSettingGetUserByPATHashAfterRemoval(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -521,6 +535,7 @@ func TestUserSettingGetUserByPATHashAfterRemoval(t *testing.T) {
 }
 
 func TestUserSettingGetUserByPATHashSpecialCharacters(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -555,6 +570,7 @@ func TestUserSettingGetUserByPATHashSpecialCharacters(t *testing.T) {
 }
 
 func TestUserSettingGetUserByPATHashLargeTokenCount(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
@@ -586,6 +602,7 @@ func TestUserSettingGetUserByPATHashLargeTokenCount(t *testing.T) {
 }
 
 func TestUserSettingMultipleSettingTypes(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)

@@ -222,9 +222,11 @@ type Memo struct {
 	// The name of the creator.
 	// Format: users/{user}
 	Creator string `protobuf:"bytes,3,opt,name=creator,proto3" json:"creator,omitempty"`
-	// Output only. The creation timestamp.
+	// The creation timestamp.
+	// If not set on creation, the server will set it to the current time.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	// Output only. The last update timestamp.
+	// The last update timestamp.
+	// If not set on creation, the server will set it to the current time.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	// The display timestamp of the memo.
 	DisplayTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=display_time,json=displayTime,proto3" json:"display_time,omitempty"`
@@ -1816,9 +1818,9 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\x05state\x18\x02 \x01(\x0e2\x13.memos.api.v1.StateB\x03\xe0A\x02R\x05state\x123\n" +
 	"\acreator\x18\x03 \x01(\tB\x19\xe0A\x03\xfaA\x13\n" +
 	"\x11memos.api.v1/UserR\acreator\x12@\n" +
-	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
 	"createTime\x12@\n" +
-	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
 	"updateTime\x12B\n" +
 	"\fdisplay_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\vdisplayTime\x12\x1d\n" +
 	"\acontent\x18\a \x01(\tB\x03\xe0A\x02R\acontent\x12=\n" +
