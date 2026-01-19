@@ -254,3 +254,49 @@ func TestInstanceSettingListAll(t *testing.T) {
 
 	ts.Close()
 }
+	
+	func TestInstanceSettingEdgeCases(t *testing.T) {
+		t.Parallel()
+		ctx := context.Background()
+		ts := NewTestingStore(ctx, t)
+	
+		// Case 1: General Setting with special characters and Unicode
+		specialScript := `<script>alert("你好"); var x = 'test\'s';</script>`
+		specialStyle := `body { font-family: "Noto Sans SC", sans-serif; content: "\u2764"; }`
+		_, err := ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_GENERAL,
+			Value: &storepb.InstanceSetting_GeneralSetting{
+				GeneralSetting: &storepb.InstanceGeneralSetting{
+					AdditionalScript: specialScript,
+					AdditionalStyle:  specialStyle,
+				},
+			},
+		})
+		require.NoError(t, err)
+	
+		generalSetting, err := ts.GetInstanceGeneralSetting(ctx)
+		require.NoError(t, err)
+		require.Equal(t, specialScript, generalSetting.AdditionalScript)
+		require.Equal(t, specialStyle, generalSetting.AdditionalStyle)
+	
+		// Case 2: Memo Related Setting with Unicode reactions
+		unicodeReactions := []string{"🐱", "🐶", "🦊", "🦄"}
+		_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_MEMO_RELATED,
+			Value: &storepb.InstanceSetting_MemoRelatedSetting{
+				MemoRelatedSetting: &storepb.InstanceMemoRelatedSetting{
+					ContentLengthLimit: 1000,
+					Reactions:          unicodeReactions,
+				},
+			},
+		})
+		require.NoError(t, err)
+	
+		memoSetting, err := ts.GetInstanceMemoRelatedSetting(ctx)
+		require.NoError(t, err)
+		require.Equal(t, unicodeReactions, memoSetting.Reactions)
+	
+		ts.Close()
+	}
+	
+	

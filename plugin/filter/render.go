@@ -564,7 +564,7 @@ func (r *renderer) jsonBoolPredicate(field Field) (string, error) {
 	case DialectSQLite:
 		return fmt.Sprintf("%s IS TRUE", expr), nil
 	case DialectMySQL:
-		return fmt.Sprintf("%s = CAST('true' AS JSON)", expr), nil
+		return fmt.Sprintf("COALESCE(%s, CAST('false' AS JSON)) = CAST('true' AS JSON)", expr), nil
 	case DialectPostgres:
 		return fmt.Sprintf("(%s)::boolean IS TRUE", expr), nil
 	default:
