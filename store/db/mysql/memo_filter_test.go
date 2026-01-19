@@ -58,37 +58,37 @@ func TestConvertExprToSQL(t *testing.T) {
 		},
 		{
 			filter: `has_task_list`,
-			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON)",
+			want:   "COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList'), CAST('false' AS JSON)) = CAST('true' AS JSON)",
 			args:   []any{},
 		},
 		{
 			filter: `has_task_list == true`,
-			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON)",
+			want:   "COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList'), CAST('false' AS JSON)) = CAST('true' AS JSON)",
 			args:   []any{},
 		},
 		{
 			filter: `has_task_list != false`,
-			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') != CAST('false' AS JSON)",
+			want:   "COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList'), CAST('false' AS JSON)) != CAST('false' AS JSON)",
 			args:   []any{},
 		},
 		{
 			filter: `has_task_list == false`,
-			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('false' AS JSON)",
+			want:   "COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList'), CAST('false' AS JSON)) = CAST('false' AS JSON)",
 			args:   []any{},
 		},
 		{
 			filter: `!has_task_list`,
-			want:   "NOT (JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON))",
+			want:   "NOT (COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList'), CAST('false' AS JSON)) = CAST('true' AS JSON))",
 			args:   []any{},
 		},
 		{
 			filter: `has_task_list && pinned`,
-			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON) AND `memo`.`pinned` IS TRUE)",
+			want:   "(COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList'), CAST('false' AS JSON)) = CAST('true' AS JSON) AND `memo`.`pinned` IS TRUE)",
 			args:   []any{},
 		},
 		{
 			filter: `has_task_list && content.contains("todo")`,
-			want:   "(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList') = CAST('true' AS JSON) AND `memo`.`content` LIKE ?)",
+			want:   "(COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasTaskList'), CAST('false' AS JSON)) = CAST('true' AS JSON) AND `memo`.`content` LIKE ?)",
 			args:   []any{"%todo%"},
 		},
 		{
@@ -118,32 +118,32 @@ func TestConvertExprToSQL(t *testing.T) {
 		},
 		{
 			filter: `has_link == true`,
-			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink') = CAST('true' AS JSON)",
+			want:   "COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink'), CAST('false' AS JSON)) = CAST('true' AS JSON)",
 			args:   []any{},
 		},
 		{
 			filter: `has_code == false`,
-			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode') = CAST('false' AS JSON)",
+			want:   "COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode'), CAST('false' AS JSON)) = CAST('false' AS JSON)",
 			args:   []any{},
 		},
 		{
 			filter: `has_incomplete_tasks != false`,
-			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') != CAST('false' AS JSON)",
+			want:   "COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks'), CAST('false' AS JSON)) != CAST('false' AS JSON)",
 			args:   []any{},
 		},
 		{
 			filter: `has_link`,
-			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink') = CAST('true' AS JSON)",
+			want:   "COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasLink'), CAST('false' AS JSON)) = CAST('true' AS JSON)",
 			args:   []any{},
 		},
 		{
 			filter: `has_code`,
-			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode') = CAST('true' AS JSON)",
+			want:   "COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasCode'), CAST('false' AS JSON)) = CAST('true' AS JSON)",
 			args:   []any{},
 		},
 		{
 			filter: `has_incomplete_tasks`,
-			want:   "JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks') = CAST('true' AS JSON)",
+			want:   "COALESCE(JSON_EXTRACT(`memo`.`payload`, '$.property.hasIncompleteTasks'), CAST('false' AS JSON)) = CAST('true' AS JSON)",
 			args:   []any{},
 		},
 	}
