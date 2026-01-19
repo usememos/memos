@@ -5,6 +5,7 @@ import { useEditorContext } from "../state";
 import InsertMenu from "../Toolbar/InsertMenu";
 import VisibilitySelector from "../Toolbar/VisibilitySelector";
 import type { EditorToolbarProps } from "../types";
+import FormatButtons from "../Toolbar/formatButtons";
 
 export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoName }) => {
   const { state, actions, dispatch } = useEditorContext();
@@ -34,6 +35,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
           onToggleFocusMode={handleToggleFocusMode}
           memoName={memoName}
         />
+        <FormatButtons />
       </div>
 
       <div className="flex flex-row justify-end items-center gap-2">
