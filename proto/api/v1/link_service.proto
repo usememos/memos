@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+
+option go_package = "gen/api/v1";
+
+service LinkService {
+  // GetLinkMetadata fetches OpenGraph metadata for a given URL.
+  rpc GetLinkMetadata(GetLinkMetadataRequest) returns (LinkMetadata) {
+    option (google.api.http) = {get: "/api/v1/links/metadata"};
+    option (google.api.method_signature) = "url";
+  }
+}
+
+// Request message for GetLinkMetadata method.
+message GetLinkMetadataRequest {
+  // The URL to fetch metadata for.
+  string url = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// LinkMetadata contains OpenGraph metadata for a link.
+message LinkMetadata {
+  // The title of the link (from og:title or <title> tag).
+  string title = 1;
+  // The description of the link (from og:description or <meta name="description">).
+  string description = 2;
+  // The preview image URL (from og:image).
+  string image = 3;
+}
+

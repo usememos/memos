@@ -653,6 +653,8 @@ type InstanceSetting_MemoRelatedSetting struct {
 	ContentLengthLimit int32 `protobuf:"varint,3,opt,name=content_length_limit,json=contentLengthLimit,proto3" json:"content_length_limit,omitempty"`
 	// enable_double_click_edit enables editing on double click.
 	EnableDoubleClickEdit bool `protobuf:"varint,4,opt,name=enable_double_click_edit,json=enableDoubleClickEdit,proto3" json:"enable_double_click_edit,omitempty"`
+	// enable_opengraph_link_previews enables OpenGraph link previews for links in memos.
+	EnableOpengraphLinkPreviews bool `protobuf:"varint,5,opt,name=enable_opengraph_link_previews,json=enableOpengraphLinkPreviews,proto3" json:"enable_opengraph_link_previews,omitempty"`
 	// reactions is the list of reactions.
 	Reactions     []string `protobuf:"bytes,7,rep,name=reactions,proto3" json:"reactions,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -713,6 +715,13 @@ func (x *InstanceSetting_MemoRelatedSetting) GetContentLengthLimit() int32 {
 func (x *InstanceSetting_MemoRelatedSetting) GetEnableDoubleClickEdit() bool {
 	if x != nil {
 		return x.EnableDoubleClickEdit
+	}
+	return false
+}
+
+func (x *InstanceSetting_MemoRelatedSetting) GetEnableOpengraphLinkPreviews() bool {
+	if x != nil {
+		return x.EnableOpengraphLinkPreviews
 	}
 	return false
 }
@@ -881,7 +890,7 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04mode\x18\x03 \x01(\tR\x04mode\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\x99\x0f\n" +
+	"\x19GetInstanceProfileRequest\"\xde\x0f\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2,.memos.api.v1.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12W\n" +
@@ -916,12 +925,13 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\t\n" +
 	"\x05LOCAL\x10\x02\x12\x06\n" +
-	"\x02S3\x10\x03\x1a\x94\x02\n" +
+	"\x02S3\x10\x03\x1a\xd9\x02\n" +
 	"\x12MemoRelatedSetting\x12<\n" +
 	"\x1adisallow_public_visibility\x18\x01 \x01(\bR\x18disallowPublicVisibility\x127\n" +
 	"\x18display_with_update_time\x18\x02 \x01(\bR\x15displayWithUpdateTime\x120\n" +
 	"\x14content_length_limit\x18\x03 \x01(\x05R\x12contentLengthLimit\x127\n" +
-	"\x18enable_double_click_edit\x18\x04 \x01(\bR\x15enableDoubleClickEdit\x12\x1c\n" +
+	"\x18enable_double_click_edit\x18\x04 \x01(\bR\x15enableDoubleClickEdit\x12C\n" +
+	"\x1eenable_opengraph_link_previews\x18\x05 \x01(\bR\x1benableOpengraphLinkPreviews\x12\x1c\n" +
 	"\treactions\x18\a \x03(\tR\treactions\"F\n" +
 	"\x03Key\x12\x13\n" +
 	"\x0fKEY_UNSPECIFIED\x10\x00\x12\v\n" +

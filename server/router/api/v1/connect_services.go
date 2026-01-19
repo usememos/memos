@@ -488,3 +488,13 @@ func (s *ConnectServiceHandler) DeleteIdentityProvider(ctx context.Context, req 
 	}
 	return connect.NewResponse(resp), nil
 }
+
+// LinkService
+
+func (s *ConnectServiceHandler) GetLinkMetadata(ctx context.Context, req *connect.Request[v1pb.GetLinkMetadataRequest]) (*connect.Response[v1pb.LinkMetadata], error) {
+	resp, err := s.APIV1Service.GetLinkMetadata(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}

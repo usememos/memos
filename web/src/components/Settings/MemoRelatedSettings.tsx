@@ -92,6 +92,13 @@ const MemoRelatedSettings = () => {
           />
         </SettingRow>
 
+        <SettingRow label={t("setting.system-section.enable-opengraph-link-previews")}>
+          <Switch
+            checked={memoRelatedSetting.enableOpengraphLinkPreviews}
+            onCheckedChange={(checked) => updatePartialSetting({ enableOpengraphLinkPreviews: checked })}
+          />
+        </SettingRow>
+
         <SettingRow label={t("setting.memo-related-settings.content-lenght-limit")}>
           <Input
             className="w-24"

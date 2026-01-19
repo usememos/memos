@@ -155,6 +155,8 @@ message InstanceSetting {
     int32 content_length_limit = 3;
     // enable_double_click_edit enables editing on double click.
     bool enable_double_click_edit = 4;
+    // enable_opengraph_link_previews enables OpenGraph link previews for links in memos.
+    bool enable_opengraph_link_previews = 5;
     // reactions is the list of reactions.
     repeated string reactions = 7;
   }

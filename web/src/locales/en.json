@@ -403,6 +403,7 @@
       "display-with-updated-time": "Display with updated time",
       "enable-auto-compact": "Enable auto compact",
       "enable-double-click-to-edit": "Enable double click to edit",
+      "enable-opengraph-link-previews": "Enable OpenGraph link previews",
       "enable-password-login": "Enable password login",
       "enable-password-login-warning": "This will enable password login for all users. Continue only if you want to users to be able to log in using both SSO and password",
       "max-upload-size": "Maximum upload size (MiB)",
