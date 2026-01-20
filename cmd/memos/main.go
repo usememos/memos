@@ -132,9 +132,6 @@ func init() {
 
 	viper.SetEnvPrefix("memos")
 	viper.AutomaticEnv()
-	if err := viper.BindEnv("instance-url", "MEMOS_INSTANCE_URL"); err != nil {
-		panic(err)
-	}
 }
 
 func printGreetings(profile *profile.Profile) {
