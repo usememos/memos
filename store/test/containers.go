@@ -281,6 +281,7 @@ func StartMemosContainer(ctx context.Context, cfg MemosContainerConfig) (testcon
 		Env:          env,
 		ExposedPorts: []string{"5230/tcp"},
 		WaitingFor:   MemosStartupWaitStrategy,
+		User:         fmt.Sprintf("%d:%d", os.Getuid(), os.Getgid()),
 	}
 
 	// Use local image if specified
