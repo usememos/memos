@@ -37,6 +37,28 @@ func NewTestingStore(ctx context.Context, t *testing.T) *store.Store {
 	return store
 }
 
+// NewTestingStoreWithDSN creates a testing store connected to a specific DSN.
+// This is useful for testing migrations on existing data.
+func NewTestingStoreWithDSN(_ context.Context, t *testing.T, driver, dsn string) *store.Store {
+	profile := &profile.Profile{
+		Mode:    "prod",
+		Port:    getUnusedPort(),
+		Data:    t.TempDir(), // Dummy dir, DSN matters
+		DSN:     dsn,
+		Driver:  driver,
+		Version: version.GetCurrentVersion("prod"),
+	}
+	dbDriver, err := db.NewDBDriver(profile)
+	if err != nil {
+		t.Fatalf("failed to create db driver: %v", err)
+	}
+
+	store := store.New(dbDriver, profile)
+	// Do not run Migrate() automatically, as we might be testing pre-migration state
+	// or want to run it manually.
+	return store
+}
+
 func getUnusedPort() int {
 	// Get a random unused port
 	listener, err := net.Listen("tcp", "localhost:0")

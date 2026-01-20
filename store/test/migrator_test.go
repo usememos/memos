@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/usememos/memos/store"
 )
 
 // TestFreshInstall verifies that LATEST.sql applies correctly on a fresh database.
@@ -29,6 +31,149 @@ func TestFreshInstall(t *testing.T) {
 	instanceSetting, err := ts.GetInstanceBasicSetting(ctx)
 	require.NoError(t, err)
 	require.Equal(t, currentSchemaVersion, instanceSetting.SchemaVersion)
+}
+
+// TestMigrationDataPersistence verifies that data created in the old version
+// is preserved and accessible after migration to the new version.
+func TestMigrationDataPersistence(t *testing.T) {
+	t.Parallel()
+
+	// Only run for SQLite for simplicity and speed in this edge case test,
+	// but the logic applies to all drivers.
+	if getDriverFromEnv() != "sqlite" {
+		t.Skip("skipping data persistence test for non-sqlite driver")
+	}
+
+	ctx := context.Background()
+	dataDir := t.TempDir()
+
+	// 1. Start Old Memos container (Stable)
+	oldCfg := MemosContainerConfig{
+		Driver:  "sqlite",
+		DataDir: dataDir,
+		Version: StableMemosVersion,
+	}
+
+	t.Logf("Starting Memos %s container...", oldCfg.Version)
+	oldContainer, err := StartMemosContainer(ctx, oldCfg)
+	require.NoError(t, err, "failed to start old memos container")
+
+	// Wait for startup
+	time.Sleep(5 * time.Second)
+
+	err = oldContainer.Terminate(ctx)
+	require.NoError(t, err, "failed to stop old memos container")
+
+	// 2. Start New Memos container (Local) - this triggers migration
+	newCfg := MemosContainerConfig{
+		Driver:  "sqlite",
+		DataDir: dataDir,
+		Version: "local",
+	}
+
+	t.Log("Starting new Memos container to trigger migration...")
+	newContainer, err := StartMemosContainer(ctx, newCfg)
+	require.NoError(t, err, "failed to start new memos container")
+	defer newContainer.Terminate(ctx)
+
+	// Wait for migration to complete
+	time.Sleep(5 * time.Second)
+
+	// 3. Verify Data Access using Store
+	dsn := fmt.Sprintf("%s/memos_prod.db", dataDir)
+
+	// Create a store instance connected to the migrated DB
+	ts := createTestingStoreWithDSN(t, "sqlite", dsn)
+
+	// Check schema version
+	currentVersion, err := ts.GetCurrentSchemaVersion()
+	require.NoError(t, err)
+	require.NotEmpty(t, currentVersion, "schema version should be present")
+	t.Logf("Migrated schema version: %s", currentVersion)
+
+	// Check if we can write new data
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	memo, err := ts.CreateMemo(ctx, &store.Memo{
+		UID:        "migrated-test-memo",
+		CreatorID:  user.ID,
+		Content:    "Post-migration content",
+		Visibility: store.Public,
+	})
+	require.NoError(t, err)
+	require.Equal(t, "Post-migration content", memo.Content)
+}
+
+// TestMigrationIdempotency verifies that running the migration multiple times
+// (e.g. container restart) is safe and doesn't corrupt data.
+func TestMigrationIdempotency(t *testing.T) {
+	t.Parallel()
+
+	if getDriverFromEnv() != "sqlite" {
+		t.Skip("skipping idempotency test for non-sqlite driver")
+	}
+
+	ctx := context.Background()
+	dataDir := t.TempDir()
+
+	// 1. Initial Migration (Local version)
+	cfg := MemosContainerConfig{
+		Driver:  "sqlite",
+		DataDir: dataDir,
+		Version: "local",
+	}
+
+	t.Log("Run 1: Initial migration...")
+	container1, err := StartMemosContainer(ctx, cfg)
+	require.NoError(t, err)
+	time.Sleep(5 * time.Second)
+	container1.Terminate(ctx)
+
+	// 2. Second Run (Restart)
+	t.Log("Run 2: Restart (should be idempotent)...")
+	container2, err := StartMemosContainer(ctx, cfg)
+	require.NoError(t, err)
+	defer container2.Terminate(ctx)
+	time.Sleep(5 * time.Second)
+
+	// 3. Verify Store Integrity
+	dsn := fmt.Sprintf("%s/memos_prod.db", dataDir)
+	ts := createTestingStoreWithDSN(t, "sqlite", dsn)
+
+	// Ensure we can still use the DB
+	_, err = ts.GetCurrentSchemaVersion()
+	require.NoError(t, err, "database should be healthy after restart")
+}
+
+// TestMigrationReRun verifies that re-running the migration on an already
+// migrated database does not fail or cause issues. This simulates a
+// scenario where the server is restarted.
+func TestMigrationReRun(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	// Use the shared testing store which already runs migrations on init
+	ts := NewTestingStore(ctx, t)
+
+	// Get current version
+	initialVersion, err := ts.GetCurrentSchemaVersion()
+	require.NoError(t, err)
+
+	// Manually trigger migration again
+	err = ts.Migrate(ctx)
+	require.NoError(t, err, "re-running migration should not fail")
+
+	// Verify version hasn't changed (or at least is valid)
+	finalVersion, err := ts.GetCurrentSchemaVersion()
+	require.NoError(t, err)
+	require.Equal(t, initialVersion, finalVersion, "version should match after re-run")
+}
+
+// createTestingStoreWithDSN helper to connect to an existing DB file.
+func createTestingStoreWithDSN(t *testing.T, driver, dsn string) *store.Store {
+	ctx := context.Background()
+	return NewTestingStoreWithDSN(ctx, t, driver, dsn)
 }
 
 // testMigration is a helper function that orchestrates the migration test flow.

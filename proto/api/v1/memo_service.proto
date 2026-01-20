@@ -173,11 +173,13 @@ message Memo {
     (google.api.resource_reference) = {type: "memos.api.v1/User"}
   ];
 
-  // Output only. The creation timestamp.
-  google.protobuf.Timestamp create_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The creation timestamp.
+  // If not set on creation, the server will set it to the current time.
+  google.protobuf.Timestamp create_time = 4 [(google.api.field_behavior) = OPTIONAL];
 
-  // Output only. The last update timestamp.
-  google.protobuf.Timestamp update_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // The last update timestamp.
+  // If not set on creation, the server will set it to the current time.
+  google.protobuf.Timestamp update_time = 5 [(google.api.field_behavior) = OPTIONAL];
 
   // The display timestamp of the memo.
   google.protobuf.Timestamp display_time = 6 [(google.api.field_behavior) = OPTIONAL];
