@@ -54,17 +54,26 @@ func checkDataDir(dataDir string) (string, error) {
 }
 
 func (p *Profile) Validate() error {
-	if !p.Demo && p.Data == "" {
-		if runtime.GOOS == "windows" {
-			p.Data = filepath.Join(os.Getenv("ProgramData"), "memos")
-			if _, err := os.Stat(p.Data); os.IsNotExist(err) {
-				if err := os.MkdirAll(p.Data, 0770); err != nil {
-					slog.Error("failed to create data directory", slog.String("data", p.Data), slog.String("error", err.Error()))
-					return err
-				}
-			}
+	// Set default data directory if not specified
+	if p.Data == "" {
+		if p.Demo {
+			// In demo mode, use a temporary directory or current directory
+			p.Data = "."
 		} else {
-			p.Data = "/var/opt/memos"
+			// In production mode, use system directory
+			if runtime.GOOS == "windows" {
+				p.Data = filepath.Join(os.Getenv("ProgramData"), "memos")
+			} else {
+				p.Data = "/var/opt/memos"
+			}
+		}
+	}
+
+	// Create data directory if it doesn't exist
+	if _, err := os.Stat(p.Data); os.IsNotExist(err) {
+		if err := os.MkdirAll(p.Data, 0770); err != nil {
+			slog.Error("failed to create data directory", slog.String("data", p.Data), slog.String("error", err.Error()))
+			return err
 		}
 	}
 
