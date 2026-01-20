@@ -61,7 +61,10 @@ jobs:
         run: |
           case "${{ matrix.test-group }}" in
             store)
-              go test -v -race -coverprofile=coverage.out -covermode=atomic ./store/...
+              # Run store tests for all drivers (sqlite, mysql, postgres)
+              # The TestMain in store/test runs all drivers when DRIVER is not set
+              # Note: We run without -race for container tests due to testcontainers race issues
+              go test -v -coverprofile=coverage.out -covermode=atomic ./store/...
               ;;
             server)
               go test -v -race -coverprofile=coverage.out -covermode=atomic ./server/...
@@ -75,7 +78,7 @@ jobs:
               ;;
           esac
         env:
-          DRIVER: sqlite  # Use SQLite for fastest test execution
+          DRIVER: ${{ matrix.test-group == 'store' && '' || 'sqlite' }}
 
       - name: Upload coverage
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
