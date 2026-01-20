@@ -214,6 +214,19 @@ func (s *APIV1Service) GetAttachment(ctx context.Context, request *v1pb.GetAttac
 	if attachment == nil {
 		return nil, status.Errorf(codes.NotFound, "attachment not found")
 	}
+	
+	// Verify authorization - user must be the owner of the attachment or an admin
+	user, err := s.fetchCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+	if user.ID != attachment.CreatorID && user.Role != store.RoleHost && user.Role != store.RoleAdmin {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied: you do not have access to this attachment")
+	}
+	
 	return convertAttachmentFromStore(attachment), nil
 }
 
