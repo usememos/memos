@@ -1965,6 +1965,32 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/subscriptions:
+        get:
+            tags:
+                - UserService
+            description: ListUserSubscriptions lists the followers or following users of a user.
+            operationId: UserService_ListUserSubscriptions
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListUserSubscriptionsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/users/{user}/webhooks:
         get:
             tags:
@@ -2114,6 +2140,90 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/UserStats'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}:getSubscriptionCounts:
+        get:
+            tags:
+                - UserService
+            description: GetUserSubscriptionCounts returns the follower and following counts for a user.
+            operationId: UserService_GetUserSubscriptionCounts
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserSubscriptionCounts'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}:subscribe:
+        post:
+            tags:
+                - UserService
+            description: SubscribeUser creates a subscription (follow) relationship.
+            operationId: UserService_SubscribeUser
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SubscribeUserRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}:unsubscribe:
+        post:
+            tags:
+                - UserService
+            description: UnsubscribeUser removes a subscription (unfollow) relationship.
+            operationId: UserService_UnsubscribeUser
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UnsubscribeUserRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
                 default:
                     description: Default error response
                     content:
@@ -2713,6 +2823,14 @@ components:
                     description: The total count of settings (may be approximate).
                     format: int32
             description: Response message for ListUserSettings method.
+        ListUserSubscriptionsResponse:
+            type: object
+            properties:
+                subscriptions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/UserSubscription'
+                    description: The list of subscriptions.
         ListUserWebhooksResponse:
             type: object
             properties:
@@ -3183,6 +3301,26 @@ components:
             description: |-
                 S3 configuration for cloud storage backend.
                  Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
+        SubscribeUserRequest:
+            required:
+                - name
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        Required. The resource name of the user to subscribe to.
+                         Format: users/{user}
+        UnsubscribeUserRequest:
+            required:
+                - name
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        Required. The resource name of the user to unsubscribe from.
+                         Format: users/{user}
         UpdateConversationRequest:
             required:
                 - conversationId
@@ -3398,6 +3536,40 @@ components:
                     type: integer
                     format: int32
             description: Memo type statistics.
+        UserSubscription:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        The resource name of the subscription.
+                         Format: users/{user}/subscriptions/{subscription}
+                followedUser:
+                    type: string
+                    description: |-
+                        The resource name of the user being followed.
+                         Format: users/{user}
+                followingUser:
+                    type: string
+                    description: |-
+                        The resource name of the user following.
+                         Format: users/{user}
+                createTime:
+                    readOnly: true
+                    type: string
+                    description: The creation timestamp.
+                    format: date-time
+        UserSubscriptionCounts:
+            type: object
+            properties:
+                followerCount:
+                    type: integer
+                    description: The number of followers.
+                    format: int32
+                followingCount:
+                    type: integer
+                    description: The number of users the user is following.
+                    format: int32
         UserWebhook:
             type: object
             properties:

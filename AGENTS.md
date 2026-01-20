@@ -85,7 +85,7 @@ plugin/                 # Backend plugins
 ├── httpgetter/        # HTTP fetching (metadata, images)
 └── storage/s3/       # S3 storage backend
 ```
-
+ 
 ## Key Architectural Patterns
 
 ### 1. API Layer: Dual Protocol

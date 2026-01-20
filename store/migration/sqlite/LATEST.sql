@@ -137,3 +137,17 @@ CREATE TABLE ai_message (
 
 CREATE INDEX idx_ai_message_conversation_id ON ai_message(conversation_id);
 CREATE INDEX idx_ai_message_created_ts ON ai_message(created_ts);
+
+-- subscription: stores follow relationships between users
+CREATE TABLE subscription (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  follower_id INTEGER NOT NULL,
+  following_id INTEGER NOT NULL,
+  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+  UNIQUE(follower_id, following_id),
+  FOREIGN KEY (follower_id) REFERENCES user(id) ON DELETE CASCADE,
+  FOREIGN KEY (following_id) REFERENCES user(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_subscription_follower ON subscription(follower_id);
+CREATE INDEX idx_subscription_following ON subscription(following_id);

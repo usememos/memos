@@ -156,6 +156,36 @@ service UserService {
     option (google.api.http) = {delete: "/api/v1/{name=users/*/notifications/*}"};
     option (google.api.method_signature) = "name";
   }
+
+  // SubscribeUser creates a subscription (follow) relationship.
+  rpc SubscribeUser(SubscribeUserRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/{name=users/*}:subscribe"
+      body: "*"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // UnsubscribeUser removes a subscription (unfollow) relationship.
+  rpc UnsubscribeUser(UnsubscribeUserRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/{name=users/*}:unsubscribe"
+      body: "*"
+    };
+    option (google.api.method_signature) = "name";
+  }
+
+  // ListUserSubscriptions lists the followers or following users of a user.
+  rpc ListUserSubscriptions(ListUserSubscriptionsRequest) returns (ListUserSubscriptionsResponse) {
+    option (google.api.http) = {get: "/api/v1/{parent=users/*}/subscriptions"};
+    option (google.api.method_signature) = "parent";
+  }
+
+  // GetUserSubscriptionCounts returns the follower and following counts for a user.
+  rpc GetUserSubscriptionCounts(GetUserSubscriptionCountsRequest) returns (UserSubscriptionCounts) {
+    option (google.api.http) = {get: "/api/v1/{name=users/*}:getSubscriptionCounts"};
+    option (google.api.method_signature) = "name";
+  }
 }
 
 message User {
@@ -673,4 +703,70 @@ message DeleteUserNotificationRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/UserNotification"}
   ];
+}
+
+message SubscribeUserRequest {
+  // Required. The resource name of the user to subscribe to.
+  // Format: users/{user}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
+}
+
+message UnsubscribeUserRequest {
+  // Required. The resource name of the user to unsubscribe from.
+  // Format: users/{user}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
+}
+
+message ListUserSubscriptionsRequest {
+  // Required. The parent resource whose subscriptions will be listed.
+  // Format: users/{user}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
+}
+
+message ListUserSubscriptionsResponse {
+  // The list of subscriptions.
+  repeated UserSubscription subscriptions = 1;
+}
+
+message GetUserSubscriptionCountsRequest {
+  // Required. The resource name of the user.
+  // Format: users/{user}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
+}
+
+message UserSubscriptionCounts {
+  // The number of followers.
+  int32 follower_count = 1;
+
+  // The number of users the user is following.
+  int32 following_count = 2;
+}
+
+message UserSubscription {
+  // The resource name of the subscription.
+  // Format: users/{user}/subscriptions/{subscription}
+  string name = 1;
+
+  // The resource name of the user being followed.
+  // Format: users/{user}
+  string followed_user = 2;
+
+  // The resource name of the user following.
+  // Format: users/{user}
+  string following_user = 3;
+
+  // The creation timestamp.
+  google.protobuf.Timestamp create_time = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
 }

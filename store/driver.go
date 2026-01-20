@@ -78,4 +78,11 @@ type Driver interface {
 	CreateAIMessage(ctx context.Context, create *AIMessage) (*AIMessage, error)
 	ListAIMessages(ctx context.Context, find *FindAIMessage) ([]*AIMessage, error)
 	DeleteAIMessage(ctx context.Context, delete *DeleteAIMessage) error
+
+	// UserSubscription model related methods.
+	CreateUserSubscription(ctx context.Context, create *UserSubscription) (*UserSubscription, error)
+	ListUserSubscriptions(ctx context.Context, find *FindUserSubscription) ([]*UserSubscription, error)
+	DeleteUserSubscription(ctx context.Context, delete *DeleteUserSubscription) error
+	GetUserSubscriptionCounts(ctx context.Context, userID int32) (*UserSubscriptionCounts, error)
+	IsUserFollowing(ctx context.Context, followerID, followingID int32) (bool, error)
 }

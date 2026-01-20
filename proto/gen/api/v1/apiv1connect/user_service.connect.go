@@ -89,6 +89,18 @@ const (
 	// UserServiceDeleteUserNotificationProcedure is the fully-qualified name of the UserService's
 	// DeleteUserNotification RPC.
 	UserServiceDeleteUserNotificationProcedure = "/memos.api.v1.UserService/DeleteUserNotification"
+	// UserServiceSubscribeUserProcedure is the fully-qualified name of the UserService's SubscribeUser
+	// RPC.
+	UserServiceSubscribeUserProcedure = "/memos.api.v1.UserService/SubscribeUser"
+	// UserServiceUnsubscribeUserProcedure is the fully-qualified name of the UserService's
+	// UnsubscribeUser RPC.
+	UserServiceUnsubscribeUserProcedure = "/memos.api.v1.UserService/UnsubscribeUser"
+	// UserServiceListUserSubscriptionsProcedure is the fully-qualified name of the UserService's
+	// ListUserSubscriptions RPC.
+	UserServiceListUserSubscriptionsProcedure = "/memos.api.v1.UserService/ListUserSubscriptions"
+	// UserServiceGetUserSubscriptionCountsProcedure is the fully-qualified name of the UserService's
+	// GetUserSubscriptionCounts RPC.
+	UserServiceGetUserSubscriptionCountsProcedure = "/memos.api.v1.UserService/GetUserSubscriptionCounts"
 )
 
 // UserServiceClient is a client for the memos.api.v1.UserService service.
@@ -138,6 +150,14 @@ type UserServiceClient interface {
 	UpdateUserNotification(context.Context, *connect.Request[v1.UpdateUserNotificationRequest]) (*connect.Response[v1.UserNotification], error)
 	// DeleteUserNotification deletes a notification.
 	DeleteUserNotification(context.Context, *connect.Request[v1.DeleteUserNotificationRequest]) (*connect.Response[emptypb.Empty], error)
+	// SubscribeUser creates a subscription (follow) relationship.
+	SubscribeUser(context.Context, *connect.Request[v1.SubscribeUserRequest]) (*connect.Response[emptypb.Empty], error)
+	// UnsubscribeUser removes a subscription (unfollow) relationship.
+	UnsubscribeUser(context.Context, *connect.Request[v1.UnsubscribeUserRequest]) (*connect.Response[emptypb.Empty], error)
+	// ListUserSubscriptions lists the followers or following users of a user.
+	ListUserSubscriptions(context.Context, *connect.Request[v1.ListUserSubscriptionsRequest]) (*connect.Response[v1.ListUserSubscriptionsResponse], error)
+	// GetUserSubscriptionCounts returns the follower and following counts for a user.
+	GetUserSubscriptionCounts(context.Context, *connect.Request[v1.GetUserSubscriptionCountsRequest]) (*connect.Response[v1.UserSubscriptionCounts], error)
 }
 
 // NewUserServiceClient constructs a client for the memos.api.v1.UserService service. By default, it
@@ -271,6 +291,30 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceMethods.ByName("DeleteUserNotification")),
 			connect.WithClientOptions(opts...),
 		),
+		subscribeUser: connect.NewClient[v1.SubscribeUserRequest, emptypb.Empty](
+			httpClient,
+			baseURL+UserServiceSubscribeUserProcedure,
+			connect.WithSchema(userServiceMethods.ByName("SubscribeUser")),
+			connect.WithClientOptions(opts...),
+		),
+		unsubscribeUser: connect.NewClient[v1.UnsubscribeUserRequest, emptypb.Empty](
+			httpClient,
+			baseURL+UserServiceUnsubscribeUserProcedure,
+			connect.WithSchema(userServiceMethods.ByName("UnsubscribeUser")),
+			connect.WithClientOptions(opts...),
+		),
+		listUserSubscriptions: connect.NewClient[v1.ListUserSubscriptionsRequest, v1.ListUserSubscriptionsResponse](
+			httpClient,
+			baseURL+UserServiceListUserSubscriptionsProcedure,
+			connect.WithSchema(userServiceMethods.ByName("ListUserSubscriptions")),
+			connect.WithClientOptions(opts...),
+		),
+		getUserSubscriptionCounts: connect.NewClient[v1.GetUserSubscriptionCountsRequest, v1.UserSubscriptionCounts](
+			httpClient,
+			baseURL+UserServiceGetUserSubscriptionCountsProcedure,
+			connect.WithSchema(userServiceMethods.ByName("GetUserSubscriptionCounts")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -296,6 +340,10 @@ type userServiceClient struct {
 	listUserNotifications     *connect.Client[v1.ListUserNotificationsRequest, v1.ListUserNotificationsResponse]
 	updateUserNotification    *connect.Client[v1.UpdateUserNotificationRequest, v1.UserNotification]
 	deleteUserNotification    *connect.Client[v1.DeleteUserNotificationRequest, emptypb.Empty]
+	subscribeUser             *connect.Client[v1.SubscribeUserRequest, emptypb.Empty]
+	unsubscribeUser           *connect.Client[v1.UnsubscribeUserRequest, emptypb.Empty]
+	listUserSubscriptions     *connect.Client[v1.ListUserSubscriptionsRequest, v1.ListUserSubscriptionsResponse]
+	getUserSubscriptionCounts *connect.Client[v1.GetUserSubscriptionCountsRequest, v1.UserSubscriptionCounts]
 }
 
 // ListUsers calls memos.api.v1.UserService.ListUsers.
@@ -398,6 +446,26 @@ func (c *userServiceClient) DeleteUserNotification(ctx context.Context, req *con
 	return c.deleteUserNotification.CallUnary(ctx, req)
 }
 
+// SubscribeUser calls memos.api.v1.UserService.SubscribeUser.
+func (c *userServiceClient) SubscribeUser(ctx context.Context, req *connect.Request[v1.SubscribeUserRequest]) (*connect.Response[emptypb.Empty], error) {
+	return c.subscribeUser.CallUnary(ctx, req)
+}
+
+// UnsubscribeUser calls memos.api.v1.UserService.UnsubscribeUser.
+func (c *userServiceClient) UnsubscribeUser(ctx context.Context, req *connect.Request[v1.UnsubscribeUserRequest]) (*connect.Response[emptypb.Empty], error) {
+	return c.unsubscribeUser.CallUnary(ctx, req)
+}
+
+// ListUserSubscriptions calls memos.api.v1.UserService.ListUserSubscriptions.
+func (c *userServiceClient) ListUserSubscriptions(ctx context.Context, req *connect.Request[v1.ListUserSubscriptionsRequest]) (*connect.Response[v1.ListUserSubscriptionsResponse], error) {
+	return c.listUserSubscriptions.CallUnary(ctx, req)
+}
+
+// GetUserSubscriptionCounts calls memos.api.v1.UserService.GetUserSubscriptionCounts.
+func (c *userServiceClient) GetUserSubscriptionCounts(ctx context.Context, req *connect.Request[v1.GetUserSubscriptionCountsRequest]) (*connect.Response[v1.UserSubscriptionCounts], error) {
+	return c.getUserSubscriptionCounts.CallUnary(ctx, req)
+}
+
 // UserServiceHandler is an implementation of the memos.api.v1.UserService service.
 type UserServiceHandler interface {
 	// ListUsers returns a list of users.
@@ -445,6 +513,14 @@ type UserServiceHandler interface {
 	UpdateUserNotification(context.Context, *connect.Request[v1.UpdateUserNotificationRequest]) (*connect.Response[v1.UserNotification], error)
 	// DeleteUserNotification deletes a notification.
 	DeleteUserNotification(context.Context, *connect.Request[v1.DeleteUserNotificationRequest]) (*connect.Response[emptypb.Empty], error)
+	// SubscribeUser creates a subscription (follow) relationship.
+	SubscribeUser(context.Context, *connect.Request[v1.SubscribeUserRequest]) (*connect.Response[emptypb.Empty], error)
+	// UnsubscribeUser removes a subscription (unfollow) relationship.
+	UnsubscribeUser(context.Context, *connect.Request[v1.UnsubscribeUserRequest]) (*connect.Response[emptypb.Empty], error)
+	// ListUserSubscriptions lists the followers or following users of a user.
+	ListUserSubscriptions(context.Context, *connect.Request[v1.ListUserSubscriptionsRequest]) (*connect.Response[v1.ListUserSubscriptionsResponse], error)
+	// GetUserSubscriptionCounts returns the follower and following counts for a user.
+	GetUserSubscriptionCounts(context.Context, *connect.Request[v1.GetUserSubscriptionCountsRequest]) (*connect.Response[v1.UserSubscriptionCounts], error)
 }
 
 // NewUserServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -574,6 +650,30 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(userServiceMethods.ByName("DeleteUserNotification")),
 		connect.WithHandlerOptions(opts...),
 	)
+	userServiceSubscribeUserHandler := connect.NewUnaryHandler(
+		UserServiceSubscribeUserProcedure,
+		svc.SubscribeUser,
+		connect.WithSchema(userServiceMethods.ByName("SubscribeUser")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceUnsubscribeUserHandler := connect.NewUnaryHandler(
+		UserServiceUnsubscribeUserProcedure,
+		svc.UnsubscribeUser,
+		connect.WithSchema(userServiceMethods.ByName("UnsubscribeUser")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceListUserSubscriptionsHandler := connect.NewUnaryHandler(
+		UserServiceListUserSubscriptionsProcedure,
+		svc.ListUserSubscriptions,
+		connect.WithSchema(userServiceMethods.ByName("ListUserSubscriptions")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceGetUserSubscriptionCountsHandler := connect.NewUnaryHandler(
+		UserServiceGetUserSubscriptionCountsProcedure,
+		svc.GetUserSubscriptionCounts,
+		connect.WithSchema(userServiceMethods.ByName("GetUserSubscriptionCounts")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/memos.api.v1.UserService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case UserServiceListUsersProcedure:
@@ -616,6 +716,14 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 			userServiceUpdateUserNotificationHandler.ServeHTTP(w, r)
 		case UserServiceDeleteUserNotificationProcedure:
 			userServiceDeleteUserNotificationHandler.ServeHTTP(w, r)
+		case UserServiceSubscribeUserProcedure:
+			userServiceSubscribeUserHandler.ServeHTTP(w, r)
+		case UserServiceUnsubscribeUserProcedure:
+			userServiceUnsubscribeUserHandler.ServeHTTP(w, r)
+		case UserServiceListUserSubscriptionsProcedure:
+			userServiceListUserSubscriptionsHandler.ServeHTTP(w, r)
+		case UserServiceGetUserSubscriptionCountsProcedure:
+			userServiceGetUserSubscriptionCountsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -703,4 +811,20 @@ func (UnimplementedUserServiceHandler) UpdateUserNotification(context.Context, *
 
 func (UnimplementedUserServiceHandler) DeleteUserNotification(context.Context, *connect.Request[v1.DeleteUserNotificationRequest]) (*connect.Response[emptypb.Empty], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.DeleteUserNotification is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) SubscribeUser(context.Context, *connect.Request[v1.SubscribeUserRequest]) (*connect.Response[emptypb.Empty], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.SubscribeUser is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) UnsubscribeUser(context.Context, *connect.Request[v1.UnsubscribeUserRequest]) (*connect.Response[emptypb.Empty], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.UnsubscribeUser is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) ListUserSubscriptions(context.Context, *connect.Request[v1.ListUserSubscriptionsRequest]) (*connect.Response[v1.ListUserSubscriptionsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.ListUserSubscriptions is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) GetUserSubscriptionCounts(context.Context, *connect.Request[v1.GetUserSubscriptionCountsRequest]) (*connect.Response[v1.UserSubscriptionCounts], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.GetUserSubscriptionCounts is not implemented"))
 }
