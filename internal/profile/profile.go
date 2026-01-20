@@ -57,14 +57,22 @@ func (p *Profile) Validate() error {
 	// Set default data directory if not specified
 	if p.Data == "" {
 		if p.Demo {
-			// In demo mode, use a temporary directory or current directory
+			// In demo mode, use current directory
 			p.Data = "."
 		} else {
 			// In production mode, use system directory
 			if runtime.GOOS == "windows" {
 				p.Data = filepath.Join(os.Getenv("ProgramData"), "memos")
 			} else {
-				p.Data = "/var/opt/memos"
+				// On Linux/macOS, check if /var/opt/memos exists (Docker scenario)
+				// If not, fall back to current directory to avoid permission issues
+				if _, err := os.Stat("/var/opt/memos"); err == nil {
+					p.Data = "/var/opt/memos"
+				} else {
+					slog.Warn("default production data directory /var/opt/memos not accessible, using current directory. " +
+						"Consider using --data flag to specify a data directory.")
+					p.Data = "."
+				}
 			}
 		}
 	}

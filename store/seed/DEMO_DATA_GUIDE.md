@@ -174,10 +174,10 @@ To run with demo data:
 
 ```bash
 # Start in demo mode
-go run ./cmd/memos --mode demo --port 8081
+go run ./cmd/memos --demo --port 8081
 
 # Or use the binary
-./memos --mode demo
+./memos --demo
 
 # Demo database location
 ./build/memos_demo.db

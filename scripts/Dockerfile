@@ -47,7 +47,6 @@ USER nonroot:nonroot
 VOLUME /var/opt/memos
 
 ENV TZ="UTC" \
-    MEMOS_MODE="prod" \
     MEMOS_PORT="5230"
 
 EXPOSE 5230
