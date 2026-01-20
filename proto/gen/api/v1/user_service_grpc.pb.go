@@ -40,6 +40,10 @@ const (
 	UserService_ListUserNotifications_FullMethodName     = "/memos.api.v1.UserService/ListUserNotifications"
 	UserService_UpdateUserNotification_FullMethodName    = "/memos.api.v1.UserService/UpdateUserNotification"
 	UserService_DeleteUserNotification_FullMethodName    = "/memos.api.v1.UserService/DeleteUserNotification"
+	UserService_SubscribeUser_FullMethodName             = "/memos.api.v1.UserService/SubscribeUser"
+	UserService_UnsubscribeUser_FullMethodName           = "/memos.api.v1.UserService/UnsubscribeUser"
+	UserService_ListUserSubscriptions_FullMethodName     = "/memos.api.v1.UserService/ListUserSubscriptions"
+	UserService_GetUserSubscriptionCounts_FullMethodName = "/memos.api.v1.UserService/GetUserSubscriptionCounts"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -91,6 +95,14 @@ type UserServiceClient interface {
 	UpdateUserNotification(ctx context.Context, in *UpdateUserNotificationRequest, opts ...grpc.CallOption) (*UserNotification, error)
 	// DeleteUserNotification deletes a notification.
 	DeleteUserNotification(ctx context.Context, in *DeleteUserNotificationRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// SubscribeUser creates a subscription (follow) relationship.
+	SubscribeUser(ctx context.Context, in *SubscribeUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// UnsubscribeUser removes a subscription (unfollow) relationship.
+	UnsubscribeUser(ctx context.Context, in *UnsubscribeUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// ListUserSubscriptions lists the followers or following users of a user.
+	ListUserSubscriptions(ctx context.Context, in *ListUserSubscriptionsRequest, opts ...grpc.CallOption) (*ListUserSubscriptionsResponse, error)
+	// GetUserSubscriptionCounts returns the follower and following counts for a user.
+	GetUserSubscriptionCounts(ctx context.Context, in *GetUserSubscriptionCountsRequest, opts ...grpc.CallOption) (*UserSubscriptionCounts, error)
 }
 
 type userServiceClient struct {
@@ -301,6 +313,46 @@ func (c *userServiceClient) DeleteUserNotification(ctx context.Context, in *Dele
 	return out, nil
 }
 
+func (c *userServiceClient) SubscribeUser(ctx context.Context, in *SubscribeUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, UserService_SubscribeUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) UnsubscribeUser(ctx context.Context, in *UnsubscribeUserRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, UserService_UnsubscribeUser_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) ListUserSubscriptions(ctx context.Context, in *ListUserSubscriptionsRequest, opts ...grpc.CallOption) (*ListUserSubscriptionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListUserSubscriptionsResponse)
+	err := c.cc.Invoke(ctx, UserService_ListUserSubscriptions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetUserSubscriptionCounts(ctx context.Context, in *GetUserSubscriptionCountsRequest, opts ...grpc.CallOption) (*UserSubscriptionCounts, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserSubscriptionCounts)
+	err := c.cc.Invoke(ctx, UserService_GetUserSubscriptionCounts_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -350,6 +402,14 @@ type UserServiceServer interface {
 	UpdateUserNotification(context.Context, *UpdateUserNotificationRequest) (*UserNotification, error)
 	// DeleteUserNotification deletes a notification.
 	DeleteUserNotification(context.Context, *DeleteUserNotificationRequest) (*emptypb.Empty, error)
+	// SubscribeUser creates a subscription (follow) relationship.
+	SubscribeUser(context.Context, *SubscribeUserRequest) (*emptypb.Empty, error)
+	// UnsubscribeUser removes a subscription (unfollow) relationship.
+	UnsubscribeUser(context.Context, *UnsubscribeUserRequest) (*emptypb.Empty, error)
+	// ListUserSubscriptions lists the followers or following users of a user.
+	ListUserSubscriptions(context.Context, *ListUserSubscriptionsRequest) (*ListUserSubscriptionsResponse, error)
+	// GetUserSubscriptionCounts returns the follower and following counts for a user.
+	GetUserSubscriptionCounts(context.Context, *GetUserSubscriptionCountsRequest) (*UserSubscriptionCounts, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -419,6 +479,18 @@ func (UnimplementedUserServiceServer) UpdateUserNotification(context.Context, *U
 }
 func (UnimplementedUserServiceServer) DeleteUserNotification(context.Context, *DeleteUserNotificationRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteUserNotification not implemented")
+}
+func (UnimplementedUserServiceServer) SubscribeUser(context.Context, *SubscribeUserRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method SubscribeUser not implemented")
+}
+func (UnimplementedUserServiceServer) UnsubscribeUser(context.Context, *UnsubscribeUserRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method UnsubscribeUser not implemented")
+}
+func (UnimplementedUserServiceServer) ListUserSubscriptions(context.Context, *ListUserSubscriptionsRequest) (*ListUserSubscriptionsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListUserSubscriptions not implemented")
+}
+func (UnimplementedUserServiceServer) GetUserSubscriptionCounts(context.Context, *GetUserSubscriptionCountsRequest) (*UserSubscriptionCounts, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetUserSubscriptionCounts not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -801,6 +873,78 @@ func _UserService_DeleteUserNotification_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_SubscribeUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SubscribeUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).SubscribeUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_SubscribeUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).SubscribeUser(ctx, req.(*SubscribeUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_UnsubscribeUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnsubscribeUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UnsubscribeUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UnsubscribeUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UnsubscribeUser(ctx, req.(*UnsubscribeUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_ListUserSubscriptions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListUserSubscriptionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ListUserSubscriptions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ListUserSubscriptions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ListUserSubscriptions(ctx, req.(*ListUserSubscriptionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetUserSubscriptionCounts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserSubscriptionCountsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUserSubscriptionCounts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetUserSubscriptionCounts_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUserSubscriptionCounts(ctx, req.(*GetUserSubscriptionCountsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -887,6 +1031,22 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteUserNotification",
 			Handler:    _UserService_DeleteUserNotification_Handler,
+		},
+		{
+			MethodName: "SubscribeUser",
+			Handler:    _UserService_SubscribeUser_Handler,
+		},
+		{
+			MethodName: "UnsubscribeUser",
+			Handler:    _UserService_UnsubscribeUser_Handler,
+		},
+		{
+			MethodName: "ListUserSubscriptions",
+			Handler:    _UserService_ListUserSubscriptions_Handler,
+		},
+		{
+			MethodName: "GetUserSubscriptionCounts",
+			Handler:    _UserService_GetUserSubscriptionCounts_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

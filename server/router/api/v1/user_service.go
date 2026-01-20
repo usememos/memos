@@ -1440,3 +1440,145 @@ func ExtractNotificationIDFromName(name string) (int32, error) {
 
 	return int32(id), nil
 }
+
+// SubscribeUser creates a subscription (follow) relationship between the current user and the target user.
+func (s *APIV1Service) SubscribeUser(ctx context.Context, request *v1pb.SubscribeUserRequest) (*emptypb.Empty, error) {
+	currentUser, err := s.fetchCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+
+	targetUserID, err := ExtractUserIDFromName(request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
+	}
+
+	// Prevent self-follow
+	if currentUser.ID == targetUserID {
+		return nil, status.Errorf(codes.InvalidArgument, "cannot follow yourself")
+	}
+
+	// Check target user exists
+	targetUser, err := s.Store.GetUser(ctx, &store.FindUser{ID: &targetUserID})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+	if targetUser == nil {
+		return nil, status.Errorf(codes.NotFound, "user not found")
+	}
+
+	_, err = s.Store.CreateUserSubscription(ctx, &store.UserSubscription{
+		FollowerID:  currentUser.ID,
+		FollowingID: targetUserID,
+	})
+	if err != nil {
+		// Handle duplicate subscription gracefully
+		errMsg := err.Error()
+		if strings.Contains(errMsg, "UNIQUE constraint") ||
+			strings.Contains(errMsg, "duplicate key") ||
+			strings.Contains(errMsg, "Duplicate entry") {
+			return &emptypb.Empty{}, nil // Already following, return success
+		}
+		return nil, status.Errorf(codes.Internal, "failed to subscribe: %v", err)
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
+// UnsubscribeUser removes a subscription (unfollow) relationship between the current user and the target user.
+func (s *APIV1Service) UnsubscribeUser(ctx context.Context, request *v1pb.UnsubscribeUserRequest) (*emptypb.Empty, error) {
+	currentUser, err := s.fetchCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+
+	targetUserID, err := ExtractUserIDFromName(request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
+	}
+
+	err = s.Store.DeleteUserSubscription(ctx, &store.DeleteUserSubscription{
+		FollowerID:  currentUser.ID,
+		FollowingID: targetUserID,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to unsubscribe: %v", err)
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
+// ListUserSubscriptions lists the followers and following users of a user.
+// Returns all subscription relationships for the specified user.
+func (s *APIV1Service) ListUserSubscriptions(ctx context.Context, request *v1pb.ListUserSubscriptionsRequest) (*v1pb.ListUserSubscriptionsResponse, error) {
+	userID, err := ExtractUserIDFromName(request.Parent)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
+	}
+
+	// Get followers (users who follow this user)
+	followers, err := s.Store.ListUserSubscriptions(ctx, &store.FindUserSubscription{
+		FollowingID: &userID,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list followers: %v", err)
+	}
+
+	// Get following (users this user follows)
+	following, err := s.Store.ListUserSubscriptions(ctx, &store.FindUserSubscription{
+		FollowerID: &userID,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list following: %v", err)
+	}
+
+	subscriptions := make([]*v1pb.UserSubscription, 0, len(followers)+len(following))
+
+	// Add followers
+	for _, sub := range followers {
+		subscriptions = append(subscriptions, &v1pb.UserSubscription{
+			Name:          fmt.Sprintf("users/%d/subscriptions/%d", userID, sub.ID),
+			FollowedUser:  fmt.Sprintf("%s%d", UserNamePrefix, sub.FollowingID),
+			FollowingUser: fmt.Sprintf("%s%d", UserNamePrefix, sub.FollowerID),
+			CreateTime:    timestamppb.New(time.Unix(sub.CreatedTs, 0)),
+		})
+	}
+
+	// Add following
+	for _, sub := range following {
+		subscriptions = append(subscriptions, &v1pb.UserSubscription{
+			Name:          fmt.Sprintf("users/%d/subscriptions/%d", userID, sub.ID),
+			FollowedUser:  fmt.Sprintf("%s%d", UserNamePrefix, sub.FollowingID),
+			FollowingUser: fmt.Sprintf("%s%d", UserNamePrefix, sub.FollowerID),
+			CreateTime:    timestamppb.New(time.Unix(sub.CreatedTs, 0)),
+		})
+	}
+
+	return &v1pb.ListUserSubscriptionsResponse{
+		Subscriptions: subscriptions,
+	}, nil
+}
+
+// GetUserSubscriptionCounts returns the follower and following counts for a user.
+func (s *APIV1Service) GetUserSubscriptionCounts(ctx context.Context, request *v1pb.GetUserSubscriptionCountsRequest) (*v1pb.UserSubscriptionCounts, error) {
+	userID, err := ExtractUserIDFromName(request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
+	}
+
+	counts, err := s.Store.GetUserSubscriptionCounts(ctx, userID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get subscription counts: %v", err)
+	}
+
+	return &v1pb.UserSubscriptionCounts{
+		FollowerCount:  counts.FollowerCount,
+		FollowingCount: counts.FollowingCount,
+	}, nil
+}

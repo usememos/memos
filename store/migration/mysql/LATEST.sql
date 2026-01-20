@@ -134,3 +134,16 @@ CREATE TABLE `ai_message` (
   INDEX `idx_ai_message_created_ts` (`created_ts`),
   FOREIGN KEY (`conversation_id`) REFERENCES `ai_conversation`(`id`) ON DELETE CASCADE
 );
+
+-- subscription: stores follow relationships between users
+CREATE TABLE `subscription` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `follower_id` INT NOT NULL,
+  `following_id` INT NOT NULL,
+  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(`follower_id`, `following_id`),
+  FOREIGN KEY (`follower_id`) REFERENCES `user`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`following_id`) REFERENCES `user`(`id`) ON DELETE CASCADE,
+  INDEX `idx_subscription_follower_id` (`follower_id`),
+  INDEX `idx_subscription_following_id` (`following_id`)
+);

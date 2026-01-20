@@ -231,6 +231,40 @@ func (s *ConnectServiceHandler) DeleteUserNotification(ctx context.Context, req 
 	return connect.NewResponse(resp), nil
 }
 
+// UserService - Subscription methods
+
+func (s *ConnectServiceHandler) SubscribeUser(ctx context.Context, req *connect.Request[v1pb.SubscribeUserRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.SubscribeUser(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) UnsubscribeUser(ctx context.Context, req *connect.Request[v1pb.UnsubscribeUserRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.UnsubscribeUser(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) ListUserSubscriptions(ctx context.Context, req *connect.Request[v1pb.ListUserSubscriptionsRequest]) (*connect.Response[v1pb.ListUserSubscriptionsResponse], error) {
+	resp, err := s.APIV1Service.ListUserSubscriptions(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) GetUserSubscriptionCounts(ctx context.Context, req *connect.Request[v1pb.GetUserSubscriptionCountsRequest]) (*connect.Response[v1pb.UserSubscriptionCounts], error) {
+	resp, err := s.APIV1Service.GetUserSubscriptionCounts(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 // MemoService
 
 func (s *ConnectServiceHandler) CreateMemo(ctx context.Context, req *connect.Request[v1pb.CreateMemoRequest]) (*connect.Response[v1pb.Memo], error) {

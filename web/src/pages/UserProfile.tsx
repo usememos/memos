@@ -2,9 +2,11 @@ import copy from "copy-to-clipboard";
 import { ExternalLinkIcon, LayoutListIcon, type LucideIcon, MapIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
 import { useParams, useSearchParams } from "react-router-dom";
+import FollowButton from "@/components/FollowButton";
 import { MemoRenderContext } from "@/components/MasonryView";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
+import SubscriptionStats from "@/components/SubscriptionStats";
 import UserAvatar from "@/components/UserAvatar";
 import UserMemoMap from "@/components/UserMemoMap";
 import { Button } from "@/components/ui/button";
@@ -51,20 +53,34 @@ interface User {
   description?: string;
 }
 
-const ProfileHeader = ({ user, onCopyProfileLink, shareLabel }: { user: User; onCopyProfileLink: () => void; shareLabel: string }) => (
+const ProfileHeader = ({
+  user,
+  onCopyProfileLink,
+  shareLabel,
+}: {
+  user: User;
+  onCopyProfileLink: () => void;
+  shareLabel: string;
+}) => (
   <div className="border-b border-border/10 px-4 py-8 sm:px-6">
     <div className="mx-auto flex max-w-2xl gap-4 sm:gap-6">
       <UserAvatar className="h-20 w-20 shrink-0 rounded-2xl shadow-sm sm:h-24 sm:w-24" avatarUrl={user.avatarUrl} />
       <div className="flex flex-1 flex-col gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground sm:text-3xl">{user.displayName || user.username}</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-foreground sm:text-3xl">{user.displayName || user.username}</h1>
+            <FollowButton targetUserName={user.name} />
+          </div>
           {user.displayName && <p className="text-sm text-muted-foreground">@{user.username}</p>}
         </div>
         {user.description && <p className="text-sm text-foreground/70">{user.description}</p>}
-        <Button variant="outline" size="sm" onClick={onCopyProfileLink} className="w-fit gap-2">
-          <ExternalLinkIcon className="h-4 w-4" />
-          {shareLabel}
-        </Button>
+        <div className="flex flex-wrap items-center gap-4">
+          <SubscriptionStats userName={user.name} />
+          <Button variant="outline" size="sm" onClick={onCopyProfileLink} className="gap-2">
+            <ExternalLinkIcon className="h-4 w-4" />
+            {shareLabel}
+          </Button>
+        </div>
       </div>
     </div>
   </div>

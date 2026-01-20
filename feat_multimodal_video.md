@@ -738,11 +738,11 @@ The inline video link preview feature has been fully implemented with the follow
 
 ## Supported Video Platforms
 
-| Platform | URL Patterns | Embed Format |
-|----------|--------------|--------------|
-| **YouTube** | `youtube.com/watch?v=`, `youtu.be/`, `youtube.com/shorts/`, `youtube.com/embed/` | `https://www.youtube.com/embed/{id}` |
-| **Bilibili** | `bilibili.com/video/BV...`, `bilibili.com/video/av...`, `b23.tv/` | `https://player.bilibili.com/player.html?isOutside=true&bvid={id}` |
-| **Vimeo** | `vimeo.com/{id}`, `player.vimeo.com/video/{id}` | `https://player.vimeo.com/video/{id}` |
+| Platform     | URL Patterns                                                                     | Embed Format                                                       |
+| ------------ | -------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| **YouTube**  | `youtube.com/watch?v=`, `youtu.be/`, `youtube.com/shorts/`, `youtube.com/embed/` | `https://www.youtube.com/embed/{id}`                               |
+| **Bilibili** | `bilibili.com/video/BV...`, `bilibili.com/video/av...`, `b23.tv/`                | `https://player.bilibili.com/player.html?isOutside=true&bvid={id}` |
+| **Vimeo**    | `vimeo.com/{id}`, `player.vimeo.com/video/{id}`                                  | `https://player.vimeo.com/video/{id}`                              |
 
 ---
 
@@ -777,24 +777,24 @@ server/router/api/v1/
 
 ### Files Created
 
-| File | Purpose |
-|------|---------|
-| `web/src/components/attachment/utils/videoLinkResolver.ts` | Parses video URLs, extracts video IDs, generates embed URLs |
-| `web/src/components/attachment/previews/VideoLinkPreview.tsx` | Renders video embeds using iframe with loading states |
-| `web/src/components/MemoEditor/components/AddVideoLinkDialog.tsx` | Modal dialog for inputting and validating video URLs |
+| File                                                              | Purpose                                                     |
+| ----------------------------------------------------------------- | ----------------------------------------------------------- |
+| `web/src/components/attachment/utils/videoLinkResolver.ts`        | Parses video URLs, extracts video IDs, generates embed URLs |
+| `web/src/components/attachment/previews/VideoLinkPreview.tsx`     | Renders video embeds using iframe with loading states       |
+| `web/src/components/MemoEditor/components/AddVideoLinkDialog.tsx` | Modal dialog for inputting and validating video URLs        |
 
 ### Files Modified
 
-| File | Changes |
-|------|---------|
-| `web/src/components/attachment/utils/mimeTypeResolver.ts` | Added `video_link` to `PreviewType`, imports `VIDEO_LINK_MIME_TYPE` |
-| `web/src/components/attachment/AttachmentPreviewContent.tsx` | Added `video_link` case to render `VideoLinkPreview` |
-| `web/src/components/MemoEditor/components/index.ts` | Exported `AddVideoLinkDialog` |
-| `web/src/components/MemoEditor/types/components.ts` | Added `onAddVideoLink` callback to `InsertMenuProps` |
-| `web/src/components/MemoEditor/Toolbar/InsertMenu.tsx` | Added "Add Video Link" menu item and dialog integration |
-| `web/src/components/MemoEditor/components/EditorToolbar.tsx` | Handles video link creation via attachment API |
-| `web/src/components/AttachmentIcon.tsx` | Shows `PlayCircleIcon` for video link attachments |
-| `server/router/api/v1/attachment_service.go` | Backend support for external link attachments |
+| File                                                         | Changes                                                             |
+| ------------------------------------------------------------ | ------------------------------------------------------------------- |
+| `web/src/components/attachment/utils/mimeTypeResolver.ts`    | Added `video_link` to `PreviewType`, imports `VIDEO_LINK_MIME_TYPE` |
+| `web/src/components/attachment/AttachmentPreviewContent.tsx` | Added `video_link` case to render `VideoLinkPreview`                |
+| `web/src/components/MemoEditor/components/index.ts`          | Exported `AddVideoLinkDialog`                                       |
+| `web/src/components/MemoEditor/types/components.ts`          | Added `onAddVideoLink` callback to `InsertMenuProps`                |
+| `web/src/components/MemoEditor/Toolbar/InsertMenu.tsx`       | Added "Add Video Link" menu item and dialog integration             |
+| `web/src/components/MemoEditor/components/EditorToolbar.tsx` | Handles video link creation via attachment API                      |
+| `web/src/components/AttachmentIcon.tsx`                      | Shows `PlayCircleIcon` for video link attachments                   |
+| `server/router/api/v1/attachment_service.go`                 | Backend support for external link attachments                       |
 
 ---
 
@@ -810,7 +810,7 @@ interface VideoLinkInfo {
   provider: VideoProvider;
   videoId: string;
   embedUrl: string;
-  thumbnailUrl?: string;  // Available for YouTube
+  thumbnailUrl?: string; // Available for YouTube
   originalUrl: string;
 }
 
@@ -829,13 +829,14 @@ const VIDEO_LINK_MIME_TYPE = "application/x-video-link";
 
 ```tsx
 interface VideoLinkPreviewProps {
-  src: string;          // The embed URL (iframe src)
+  src: string; // The embed URL (iframe src)
   originalUrl?: string; // Original video page URL for fallback
-  isLoading?: boolean;  // Loading state
+  isLoading?: boolean; // Loading state
 }
 ```
 
 Features:
+
 - Loading overlay with provider-specific messaging
 - Timeout-based loading state (cross-origin iframes don't fire onLoad reliably)
 - Error fallback with retry and "Open in new tab" options
@@ -852,6 +853,7 @@ interface AddVideoLinkDialogProps {
 ```
 
 Features:
+
 - URL input with auto-validation
 - Real-time provider detection feedback
 - YouTube thumbnail preview
@@ -886,6 +888,7 @@ Features:
 ### Storage Model
 
 Video links are stored as attachments with:
+
 - **StorageType**: `EXTERNAL`
 - **Reference**: Original video URL (e.g., `https://www.bilibili.com/video/BV1oDrZBZEhU`)
 - **Type**: `application/x-video-link`
@@ -930,13 +933,9 @@ Frontend                          Backend
 
 ```typescript
 // Input patterns
-/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/
-
-// Output
-`https://www.youtube.com/embed/${videoId}`
-
-// Thumbnail
-`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`
+/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/// Output
+`https://www.youtube.com/embed/${videoId}`// Thumbnail
+`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
 ```
 
 ### Bilibili
@@ -989,13 +988,13 @@ The video embed iframe uses specific attributes for compatibility:
 
 ### Key Attributes
 
-| Attribute | Purpose |
-|-----------|---------|
-| `allow` | Permissions for embedded content (fullscreen, autoplay, etc.) |
-| `allowFullScreen` | Enable fullscreen mode |
-| `scrolling="no"` | Prevent scrollbars in iframe |
-| `sandbox` | Security restrictions while allowing necessary features |
-| `loading="eager"` | Load immediately (not lazy) |
+| Attribute         | Purpose                                                       |
+| ----------------- | ------------------------------------------------------------- |
+| `allow`           | Permissions for embedded content (fullscreen, autoplay, etc.) |
+| `allowFullScreen` | Enable fullscreen mode                                        |
+| `scrolling="no"`  | Prevent scrollbars in iframe                                  |
+| `sandbox`         | Security restrictions while allowing necessary features       |
+| `loading="eager"` | Load immediately (not lazy)                                   |
 
 ---
 
