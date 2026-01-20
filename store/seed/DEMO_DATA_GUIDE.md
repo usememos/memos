@@ -10,7 +10,7 @@ The demo data includes **6 carefully selected memos** that showcase the key feat
 
 - **Username**: `demo`
 - **Password**: `secret` (default password)
-- **Role**: HOST
+- **Role**: ADMIN
 - **Nickname**: Demo User
 
 ## Demo Memos (6 total)
@@ -198,7 +198,7 @@ Login with:
 
 - All memos are set to PUBLIC visibility
 - **Two memos are pinned**: Welcome (#1) and Sponsor (#6)
-- User has HOST role to showcase all features
+- User has ADMIN role to showcase all features
 - Reactions are distributed across memos
 - One memo relation demonstrates linking
 - Content is optimized for the compact markdown styles

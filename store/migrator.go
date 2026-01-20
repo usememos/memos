@@ -244,16 +244,16 @@ func (s *Store) preMigrate(ctx context.Context) error {
 			return errors.Wrap(err, "failed to get current schema version")
 		}
 		slog.Info("database initialized successfully", slog.String("schemaVersion", schemaVersion))
-		        if err := s.updateCurrentSchemaVersion(ctx, schemaVersion); err != nil {
-		            return errors.Wrap(err, "failed to update current schema version")
-		        }
-		    }
-		
-		    if err := s.checkMinimumUpgradeVersion(ctx); err != nil {
-		        return err // Error message is already descriptive, don't wrap it
-		    }
-		    return nil
+		if err := s.updateCurrentSchemaVersion(ctx, schemaVersion); err != nil {
+			return errors.Wrap(err, "failed to update current schema version")
 		}
+	}
+
+	if err := s.checkMinimumUpgradeVersion(ctx); err != nil {
+		return err // Error message is already descriptive, don't wrap it
+	}
+	return nil
+}
 func (s *Store) getMigrationBasePath() string {
 	return fmt.Sprintf("migration/%s/", s.profile.Driver)
 }

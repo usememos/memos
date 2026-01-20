@@ -38,7 +38,7 @@ var (
 
 			if err := instanceProfile.Validate(); err != nil {
 				slog.Error("failed to validate profile", "error", err)
-				os.Exit(1)
+				return
 			}
 
 			ctx, cancel := context.WithCancel(context.Background())
@@ -46,21 +46,21 @@ var (
 			if err != nil {
 				cancel()
 				slog.Error("failed to create db driver", "error", err)
-				os.Exit(1)
+				return
 			}
 
 			storeInstance := store.New(dbDriver, instanceProfile)
 			if err := storeInstance.Migrate(ctx); err != nil {
 				cancel()
 				slog.Error("failed to migrate", "error", err)
-				os.Exit(1)
+				return
 			}
 
 			s, err := server.NewServer(ctx, instanceProfile, storeInstance)
 			if err != nil {
 				cancel()
 				slog.Error("failed to create server", "error", err)
-				os.Exit(1)
+				return
 			}
 
 			c := make(chan os.Signal, 1)
@@ -73,7 +73,7 @@ var (
 				if err != http.ErrServerClosed {
 					slog.Error("failed to start server", "error", err)
 					cancel()
-					os.Exit(1)
+					return
 				}
 			}
 

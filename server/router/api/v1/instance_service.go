@@ -64,7 +64,7 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 		return nil, status.Errorf(codes.NotFound, "instance setting not found")
 	}
 
-	// For storage setting, only host can get it.
+	// For storage setting, only admin can get it.
 	if instanceSetting.Key == storepb.InstanceSettingKey_STORAGE {
 		user, err := s.fetchCurrentUser(ctx)
 		if err != nil {
@@ -73,7 +73,7 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 		if user == nil {
 			return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 		}
-		if user.Role != store.RoleHost {
+		if user.Role != store.RoleAdmin {
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 		}
 	}
@@ -89,7 +89,7 @@ func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	if user.Role != store.RoleHost {
+	if user.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -277,9 +277,9 @@ func (s *APIV1Service) GetInstanceOwner(ctx context.Context) (*v1pb.User, error)
 		return ownerCache, nil
 	}
 
-	hostUserType := store.RoleHost
+	adminUserType := store.RoleAdmin
 	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		Role: &hostUserType,
+		Role: &adminUserType,
 	})
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to find owner")

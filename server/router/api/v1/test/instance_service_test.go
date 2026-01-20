@@ -28,7 +28,7 @@ func TestGetInstanceProfile(t *testing.T) {
 
 		// Verify the response contains expected data
 		require.Equal(t, "test-1.0.0", resp.Version)
-		require.Equal(t, "dev", resp.Mode)
+		require.True(t, resp.Demo)
 		require.Equal(t, "http://localhost:8080", resp.InstanceUrl)
 
 		// Owner should be empty since no users are created
@@ -55,7 +55,7 @@ func TestGetInstanceProfile(t *testing.T) {
 
 		// Verify the response contains expected data including owner
 		require.Equal(t, "test-1.0.0", resp.Version)
-		require.Equal(t, "dev", resp.Mode)
+		require.True(t, resp.Demo)
 		require.Equal(t, "http://localhost:8080", resp.InstanceUrl)
 
 		// User name should be "users/{id}" format where id is the user's ID
@@ -102,7 +102,7 @@ func TestGetInstanceProfile_Concurrency(t *testing.T) {
 			case resp := <-results:
 				require.NotNil(t, resp)
 				require.Equal(t, "test-1.0.0", resp.Version)
-				require.Equal(t, "dev", resp.Mode)
+				require.True(t, resp.Demo)
 				require.Equal(t, "http://localhost:8080", resp.InstanceUrl)
 				require.Equal(t, expectedOwnerName, resp.Owner)
 			}
