@@ -112,7 +112,7 @@ const InstanceSection = () => {
       <SettingGroup>
         <SettingRow label={t("setting.instance-section.disallow-user-registration")}>
           <Switch
-            disabled={profile.mode === "demo"}
+            disabled={profile.demo}
             checked={instanceGeneralSetting.disallowUserRegistration}
             onCheckedChange={(checked) => updatePartialSetting({ disallowUserRegistration: checked })}
           />
@@ -120,7 +120,7 @@ const InstanceSection = () => {
 
         <SettingRow label={t("setting.instance-section.disallow-password-auth")}>
           <Switch
-            disabled={profile.mode === "demo" || (identityProviderList.length === 0 && !instanceGeneralSetting.disallowPasswordAuth)}
+            disabled={profile.demo || (identityProviderList.length === 0 && !instanceGeneralSetting.disallowPasswordAuth)}
             checked={instanceGeneralSetting.disallowPasswordAuth}
             onCheckedChange={(checked) => updatePartialSetting({ disallowPasswordAuth: checked })}
           />

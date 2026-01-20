@@ -126,7 +126,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	gwGroup.Any("/file/*", handler)
 
 	// Connect handlers for browser clients (replaces grpc-web).
-	logStacktraces := s.Profile.IsDev()
+	logStacktraces := s.Profile.Demo
 	connectInterceptors := connect.WithInterceptors(
 		NewMetadataInterceptor(), // Convert HTTP headers to gRPC metadata first
 		NewLoggingInterceptor(logStacktraces),

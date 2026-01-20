@@ -57,10 +57,6 @@ const (
 	// defaultSchemaVersion is used when schema version is empty or not set.
 	// This handles edge cases for old installations without version tracking.
 	defaultSchemaVersion = "0.0.0"
-
-	// Mode constants for profile mode.
-	modeProd = "prod"
-	modeDemo = "demo"
 )
 
 // getSchemaVersionOrDefault returns the schema version or default if empty.
@@ -110,38 +106,36 @@ func (s *Store) Migrate(ctx context.Context) error {
 		return errors.Wrap(err, "failed to pre-migrate")
 	}
 
-	switch s.profile.Mode {
-	case modeProd:
-		instanceBasicSetting, err := s.GetInstanceBasicSetting(ctx)
-		if err != nil {
-			return errors.Wrap(err, "failed to get instance basic setting")
+	instanceBasicSetting, err := s.GetInstanceBasicSetting(ctx)
+	if err != nil {
+		return errors.Wrap(err, "failed to get instance basic setting")
+	}
+	currentSchemaVersion, err := s.GetCurrentSchemaVersion()
+	if err != nil {
+		return errors.Wrap(err, "failed to get current schema version")
+	}
+	// Check for downgrade (but skip if schema version is empty - that means fresh/old installation)
+	if !isVersionEmpty(instanceBasicSetting.SchemaVersion) && version.IsVersionGreaterThan(instanceBasicSetting.SchemaVersion, currentSchemaVersion) {
+		slog.Error("cannot downgrade schema version",
+			slog.String("databaseVersion", instanceBasicSetting.SchemaVersion),
+			slog.String("currentVersion", currentSchemaVersion),
+		)
+		return errors.Errorf("cannot downgrade schema version from %s to %s", instanceBasicSetting.SchemaVersion, currentSchemaVersion)
+	}
+	// Apply migrations if needed (including when schema version is empty)
+	if isVersionEmpty(instanceBasicSetting.SchemaVersion) || version.IsVersionGreaterThan(currentSchemaVersion, instanceBasicSetting.SchemaVersion) {
+		if err := s.applyMigrations(ctx, instanceBasicSetting.SchemaVersion, currentSchemaVersion); err != nil {
+			return errors.Wrap(err, "failed to apply migrations")
 		}
-		currentSchemaVersion, err := s.GetCurrentSchemaVersion()
-		if err != nil {
-			return errors.Wrap(err, "failed to get current schema version")
-		}
-		// Check for downgrade (but skip if schema version is empty - that means fresh/old installation)
-		if !isVersionEmpty(instanceBasicSetting.SchemaVersion) && version.IsVersionGreaterThan(instanceBasicSetting.SchemaVersion, currentSchemaVersion) {
-			slog.Error("cannot downgrade schema version",
-				slog.String("databaseVersion", instanceBasicSetting.SchemaVersion),
-				slog.String("currentVersion", currentSchemaVersion),
-			)
-			return errors.Errorf("cannot downgrade schema version from %s to %s", instanceBasicSetting.SchemaVersion, currentSchemaVersion)
-		}
-		// Apply migrations if needed (including when schema version is empty)
-		if isVersionEmpty(instanceBasicSetting.SchemaVersion) || version.IsVersionGreaterThan(currentSchemaVersion, instanceBasicSetting.SchemaVersion) {
-			if err := s.applyMigrations(ctx, instanceBasicSetting.SchemaVersion, currentSchemaVersion); err != nil {
-				return errors.Wrap(err, "failed to apply migrations")
-			}
-		}
-	case modeDemo:
+	}
+
+	if s.profile.Demo {
 		// In demo mode, we should seed the database.
 		if err := s.seed(ctx); err != nil {
 			return errors.Wrap(err, "failed to seed")
 		}
-	default:
-		// For other modes (like dev), no special migration handling needed
 	}
+
 	return nil
 }
 
@@ -250,19 +244,16 @@ func (s *Store) preMigrate(ctx context.Context) error {
 			return errors.Wrap(err, "failed to get current schema version")
 		}
 		slog.Info("database initialized successfully", slog.String("schemaVersion", schemaVersion))
-		if err := s.updateCurrentSchemaVersion(ctx, schemaVersion); err != nil {
-			return errors.Wrap(err, "failed to update current schema version")
+		        if err := s.updateCurrentSchemaVersion(ctx, schemaVersion); err != nil {
+		            return errors.Wrap(err, "failed to update current schema version")
+		        }
+		    }
+		
+		    if err := s.checkMinimumUpgradeVersion(ctx); err != nil {
+		        return err // Error message is already descriptive, don't wrap it
+		    }
+		    return nil
 		}
-	}
-
-	if s.profile.Mode == modeProd {
-		if err := s.checkMinimumUpgradeVersion(ctx); err != nil {
-			return err // Error message is already descriptive, don't wrap it
-		}
-	}
-	return nil
-}
-
 func (s *Store) getMigrationBasePath() string {
 	return fmt.Sprintf("migration/%s/", s.profile.Driver)
 }
@@ -308,7 +299,7 @@ func (s *Store) seed(ctx context.Context) error {
 }
 
 func (s *Store) GetCurrentSchemaVersion() (string, error) {
-	currentVersion := version.GetCurrentVersion(s.profile.Mode)
+	currentVersion := version.GetCurrentVersion()
 	minorVersion := version.GetMinorVersion(currentVersion)
 	filePaths, err := fs.Glob(migrationFS, fmt.Sprintf("%s%s/*.sql", s.getMigrationBasePath(), minorVersion))
 	if err != nil {

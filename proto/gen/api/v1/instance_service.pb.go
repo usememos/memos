@@ -143,8 +143,8 @@ type InstanceProfile struct {
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
 	// Version is the current version of instance.
 	Version string `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
-	// Mode is the instance mode (e.g. "prod", "dev" or "demo").
-	Mode string `protobuf:"bytes,3,opt,name=mode,proto3" json:"mode,omitempty"`
+	// Demo indicates if the instance is in demo mode.
+	Demo bool `protobuf:"varint,3,opt,name=demo,proto3" json:"demo,omitempty"`
 	// Instance URL is the URL of the instance.
 	InstanceUrl   string `protobuf:"bytes,6,opt,name=instance_url,json=instanceUrl,proto3" json:"instance_url,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -195,11 +195,11 @@ func (x *InstanceProfile) GetVersion() string {
 	return ""
 }
 
-func (x *InstanceProfile) GetMode() string {
+func (x *InstanceProfile) GetDemo() bool {
 	if x != nil {
-		return x.Mode
+		return x.Demo
 	}
-	return ""
+	return false
 }
 
 func (x *InstanceProfile) GetInstanceUrl() string {
@@ -879,7 +879,7 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\x0fInstanceProfile\x12\x14\n" +
 	"\x05owner\x18\x01 \x01(\tR\x05owner\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
-	"\x04mode\x18\x03 \x01(\tR\x04mode\x12!\n" +
+	"\x04demo\x18\x03 \x01(\bR\x04demo\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\"\x1b\n" +
 	"\x19GetInstanceProfileRequest\"\x99\x0f\n" +
 	"\x0fInstanceSetting\x12\x17\n" +

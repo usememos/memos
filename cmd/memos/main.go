@@ -25,7 +25,7 @@ var (
 		Short: `An open source, lightweight note-taking service. Easily capture and share your great thoughts.`,
 		Run: func(_ *cobra.Command, _ []string) {
 			instanceProfile := &profile.Profile{
-				Mode:        viper.GetString("mode"),
+				Demo:        viper.GetBool("demo"),
 				Addr:        viper.GetString("addr"),
 				Port:        viper.GetInt("port"),
 				UNIXSock:    viper.GetString("unix-sock"),
@@ -33,10 +33,12 @@ var (
 				Driver:      viper.GetString("driver"),
 				DSN:         viper.GetString("dsn"),
 				InstanceURL: viper.GetString("instance-url"),
-				Version:     version.GetCurrentVersion(viper.GetString("mode")),
 			}
+			instanceProfile.Version = version.GetCurrentVersion()
+
 			if err := instanceProfile.Validate(); err != nil {
-				panic(err)
+				slog.Error("failed to validate profile", "error", err)
+				os.Exit(1)
 			}
 
 			ctx, cancel := context.WithCancel(context.Background())
@@ -44,21 +46,21 @@ var (
 			if err != nil {
 				cancel()
 				slog.Error("failed to create db driver", "error", err)
-				return
+				os.Exit(1)
 			}
 
 			storeInstance := store.New(dbDriver, instanceProfile)
 			if err := storeInstance.Migrate(ctx); err != nil {
 				cancel()
 				slog.Error("failed to migrate", "error", err)
-				return
+				os.Exit(1)
 			}
 
 			s, err := server.NewServer(ctx, instanceProfile, storeInstance)
 			if err != nil {
 				cancel()
 				slog.Error("failed to create server", "error", err)
-				return
+				os.Exit(1)
 			}
 
 			c := make(chan os.Signal, 1)
@@ -71,6 +73,7 @@ var (
 				if err != http.ErrServerClosed {
 					slog.Error("failed to start server", "error", err)
 					cancel()
+					os.Exit(1)
 				}
 			}
 
@@ -89,11 +92,11 @@ var (
 )
 
 func init() {
-	viper.SetDefault("mode", "dev")
+	viper.SetDefault("demo", false)
 	viper.SetDefault("driver", "sqlite")
 	viper.SetDefault("port", 8081)
 
-	rootCmd.PersistentFlags().String("mode", "dev", `mode of server, can be "prod" or "dev" or "demo"`)
+	rootCmd.PersistentFlags().Bool("demo", false, "enable demo mode")
 	rootCmd.PersistentFlags().String("addr", "", "address of server")
 	rootCmd.PersistentFlags().Int("port", 8081, "port of server")
 	rootCmd.PersistentFlags().String("unix-sock", "", "path to the unix socket, overrides --addr and --port")
@@ -102,7 +105,7 @@ func init() {
 	rootCmd.PersistentFlags().String("dsn", "", "database source name(aka. DSN)")
 	rootCmd.PersistentFlags().String("instance-url", "", "the url of your memos instance")
 
-	if err := viper.BindPFlag("mode", rootCmd.PersistentFlags().Lookup("mode")); err != nil {
+	if err := viper.BindPFlag("demo", rootCmd.PersistentFlags().Lookup("demo")); err != nil {
 		panic(err)
 	}
 	if err := viper.BindPFlag("addr", rootCmd.PersistentFlags().Lookup("addr")); err != nil {
@@ -137,7 +140,7 @@ func init() {
 func printGreetings(profile *profile.Profile) {
 	fmt.Printf("Memos %s started successfully!\n", profile.Version)
 
-	if profile.IsDev() {
+	if profile.Demo {
 		fmt.Fprint(os.Stderr, "Development mode is enabled\n")
 		if profile.DSN != "" {
 			fmt.Fprintf(os.Stderr, "Database: %s\n", profile.DSN)
@@ -147,7 +150,6 @@ func printGreetings(profile *profile.Profile) {
 	// Server information
 	fmt.Printf("Data directory: %s\n", profile.Data)
 	fmt.Printf("Database driver: %s\n", profile.Driver)
-	fmt.Printf("Mode: %s\n", profile.Mode)
 
 	// Connection information
 	if len(profile.UNIXSock) == 0 {
@@ -170,6 +172,6 @@ func printGreetings(profile *profile.Profile) {
 
 func main() {
 	if err := rootCmd.Execute(); err != nil {
-		panic(err)
+		os.Exit(1)
 	}
 }

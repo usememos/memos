@@ -17,7 +17,7 @@ import (
 func (s *APIV1Service) GetInstanceProfile(ctx context.Context, _ *v1pb.GetInstanceProfileRequest) (*v1pb.InstanceProfile, error) {
 	instanceProfile := &v1pb.InstanceProfile{
 		Version:     s.Profile.Version,
-		Mode:        s.Profile.Mode,
+		Demo:        s.Profile.Demo,
 		InstanceUrl: s.Profile.InstanceURL,
 	}
 	owner, err := s.GetInstanceOwner(ctx)

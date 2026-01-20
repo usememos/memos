@@ -13,8 +13,8 @@ import (
 
 // Profile is the configuration to start main server.
 type Profile struct {
-	// Mode can be "prod" or "dev" or "demo"
-	Mode string
+	// Demo indicates if the server is in demo mode
+	Demo bool
 	// Addr is the binding address for server
 	Addr string
 	// Port is the binding port for server
@@ -32,10 +32,6 @@ type Profile struct {
 	Version string
 	// InstanceURL is the url of your memos instance.
 	InstanceURL string
-}
-
-func (p *Profile) IsDev() bool {
-	return p.Mode != "prod"
 }
 
 func checkDataDir(dataDir string) (string, error) {
@@ -58,11 +54,7 @@ func checkDataDir(dataDir string) (string, error) {
 }
 
 func (p *Profile) Validate() error {
-	if p.Mode != "demo" && p.Mode != "dev" && p.Mode != "prod" {
-		p.Mode = "demo"
-	}
-
-	if p.Mode == "prod" && p.Data == "" {
+	if !p.Demo && p.Data == "" {
 		if runtime.GOOS == "windows" {
 			p.Data = filepath.Join(os.Getenv("ProgramData"), "memos")
 			if _, err := os.Stat(p.Data); os.IsNotExist(err) {
@@ -84,7 +76,11 @@ func (p *Profile) Validate() error {
 
 	p.Data = dataDir
 	if p.Driver == "sqlite" && p.DSN == "" {
-		dbFile := fmt.Sprintf("memos_%s.db", p.Mode)
+		mode := "prod"
+		if p.Demo {
+			mode = "demo"
+		}
+		dbFile := fmt.Sprintf("memos_%s.db", mode)
 		p.DSN = filepath.Join(dataDir, dbFile)
 	}
 

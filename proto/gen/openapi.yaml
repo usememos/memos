@@ -2140,9 +2140,9 @@ components:
                 version:
                     type: string
                     description: Version is the current version of instance.
-                mode:
-                    type: string
-                    description: Mode is the instance mode (e.g. "prod", "dev" or "demo").
+                demo:
+                    type: boolean
+                    description: Demo indicates if the instance is in demo mode.
                 instanceUrl:
                     type: string
                     description: Instance URL is the URL of the instance.

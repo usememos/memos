@@ -52,7 +52,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	}
 
 	secret := "usememos"
-	if profile.Mode == "prod" {
+	if !profile.Demo {
 		secret = instanceBasicSetting.SecretKey
 	}
 	s.Secret = secret
