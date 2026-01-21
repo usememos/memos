@@ -37,8 +37,9 @@ type Profile struct {
 func checkDataDir(dataDir string) (string, error) {
 	// Convert to absolute path if relative path is supplied.
 	if !filepath.IsAbs(dataDir) {
-		relativeDir := filepath.Join(filepath.Dir(os.Args[0]), dataDir)
-		absDir, err := filepath.Abs(relativeDir)
+		// Use current working directory, not the binary's directory
+		// This ensures we use the actual working directory where the process runs
+		absDir, err := filepath.Abs(dataDir)
 		if err != nil {
 			return "", err
 		}
@@ -56,23 +57,24 @@ func checkDataDir(dataDir string) (string, error) {
 func (p *Profile) Validate() error {
 	// Set default data directory if not specified
 	if p.Data == "" {
-		if p.Demo {
-			// In demo mode, use current directory
-			p.Data = "."
+		if runtime.GOOS == "windows" {
+			p.Data = filepath.Join(os.Getenv("ProgramData"), "memos")
 		} else {
-			// In production mode, use system directory
-			if runtime.GOOS == "windows" {
-				p.Data = filepath.Join(os.Getenv("ProgramData"), "memos")
-			} else {
-				// On Linux/macOS, check if /var/opt/memos exists (Docker scenario)
-				// If not, fall back to current directory to avoid permission issues
-				if _, err := os.Stat("/var/opt/memos"); err == nil {
+			// On Linux/macOS, check if /var/opt/memos exists and is writable (Docker scenario)
+			if info, err := os.Stat("/var/opt/memos"); err == nil && info.IsDir() {
+				// Check if we can write to this directory
+				testFile := filepath.Join("/var/opt/memos", ".write-test")
+				if err := os.WriteFile(testFile, []byte("test"), 0600); err == nil {
+					os.Remove(testFile)
 					p.Data = "/var/opt/memos"
 				} else {
-					slog.Warn("default production data directory /var/opt/memos not accessible, using current directory. " +
-						"Consider using --data flag to specify a data directory.")
+					// /var/opt/memos exists but is not writable, use current directory
+					slog.Warn("/var/opt/memos is not writable, using current directory")
 					p.Data = "."
 				}
+			} else {
+				// /var/opt/memos doesn't exist, use current directory (local development)
+				p.Data = "."
 			}
 		}
 	}
