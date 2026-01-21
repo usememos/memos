@@ -74,7 +74,7 @@ func TestParseAccessTokenV2(t *testing.T) {
 	})
 
 	t.Run("parses token with different roles", func(t *testing.T) {
-		roles := []string{"USER", "ADMIN", "HOST"}
+		roles := []string{"USER", "ADMIN"}
 		for _, role := range roles {
 			token, _, err := GenerateAccessTokenV2(1, "testuser", role, "ACTIVE", secret)
 			require.NoError(t, err)

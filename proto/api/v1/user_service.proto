@@ -233,13 +233,10 @@ message User {
 
   // User role enumeration.
   enum Role {
-    // Unspecified role.
     ROLE_UNSPECIFIED = 0;
-    // Host role with full system access.
-    HOST = 1;
-    // Admin role with administrative privileges.
+    // Admin role with system access.
     ADMIN = 2;
-    // Regular user role.
+    // User role with limited access.
     USER = 3;
   }
 }

@@ -29,7 +29,7 @@ func NewTestService(t *testing.T) *TestService {
 
 	// Create a test profile
 	testProfile := &profile.Profile{
-		Mode:        "dev",
+		Demo:        true,
 		Version:     "test-1.0.0",
 		InstanceURL: "http://localhost:8080",
 		Driver:      "sqlite",
@@ -62,11 +62,11 @@ func (ts *TestService) Cleanup() {
 	// Note: Owner cache is package-level in parent package, cannot clear from test package
 }
 
-// CreateHostUser creates a host user for testing.
+// CreateHostUser creates an admin user for testing.
 func (ts *TestService) CreateHostUser(ctx context.Context, username string) (*store.User, error) {
 	return ts.Store.CreateUser(ctx, &store.User{
 		Username: username,
-		Role:     store.RoleHost,
+		Role:     store.RoleAdmin,
 		Email:    username + "@example.com",
 	})
 }

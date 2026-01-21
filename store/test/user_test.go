@@ -20,7 +20,7 @@ func TestUserStore(t *testing.T) {
 	users, err := ts.ListUsers(ctx, &store.FindUser{})
 	require.NoError(t, err)
 	require.Equal(t, 1, len(users))
-	require.Equal(t, store.RoleHost, users[0].Role)
+	require.Equal(t, store.RoleAdmin, users[0].Role)
 	require.Equal(t, user, users[0])
 	userPatchNickname := "test_nickname_2"
 	userPatch := &store.UpdateUser{
@@ -104,7 +104,7 @@ func TestUserListByRole(t *testing.T) {
 	_, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
 
-	adminUser, err := createTestingUserWithRole(ctx, ts, "admin_user", store.RoleAdmin)
+	_, err = createTestingUserWithRole(ctx, ts, "admin_user", store.RoleAdmin)
 	require.NoError(t, err)
 
 	regularUser, err := createTestingUserWithRole(ctx, ts, "regular_user", store.RoleUser)
@@ -115,19 +115,11 @@ func TestUserListByRole(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, 3, len(allUsers))
 
-	// List only HOST users
-	hostRole := store.RoleHost
-	hostUsers, err := ts.ListUsers(ctx, &store.FindUser{Role: &hostRole})
-	require.NoError(t, err)
-	require.Equal(t, 1, len(hostUsers))
-	require.Equal(t, store.RoleHost, hostUsers[0].Role)
-
 	// List only ADMIN users
 	adminRole := store.RoleAdmin
-	adminUsers, err := ts.ListUsers(ctx, &store.FindUser{Role: &adminRole})
+	adminOnlyUsers, err := ts.ListUsers(ctx, &store.FindUser{Role: &adminRole})
 	require.NoError(t, err)
-	require.Equal(t, 1, len(adminUsers))
-	require.Equal(t, adminUser.ID, adminUsers[0].ID)
+	require.Equal(t, 2, len(adminOnlyUsers))
 
 	// List only USER role users
 	userRole := store.RoleUser
@@ -227,7 +219,7 @@ func TestUserListWithLimit(t *testing.T) {
 	for i := 0; i < 5; i++ {
 		role := store.RoleUser
 		if i == 0 {
-			role = store.RoleHost
+			role = store.RoleAdmin
 		}
 		_, err := createTestingUserWithRole(ctx, ts, fmt.Sprintf("user%d", i), role)
 		require.NoError(t, err)
@@ -243,7 +235,7 @@ func TestUserListWithLimit(t *testing.T) {
 }
 
 func createTestingHostUser(ctx context.Context, ts *store.Store) (*store.User, error) {
-	return createTestingUserWithRole(ctx, ts, "test", store.RoleHost)
+	return createTestingUserWithRole(ctx, ts, "test", store.RoleAdmin)
 }
 
 func createTestingUserWithRole(ctx context.Context, ts *store.Store, username string, role store.Role) (*store.User, error) {

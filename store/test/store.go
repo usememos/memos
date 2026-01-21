@@ -41,12 +41,11 @@ func NewTestingStore(ctx context.Context, t *testing.T) *store.Store {
 // This is useful for testing migrations on existing data.
 func NewTestingStoreWithDSN(_ context.Context, t *testing.T, driver, dsn string) *store.Store {
 	profile := &profile.Profile{
-		Mode:    "prod",
 		Port:    getUnusedPort(),
 		Data:    t.TempDir(), // Dummy dir, DSN matters
 		DSN:     dsn,
 		Driver:  driver,
-		Version: version.GetCurrentVersion("prod"),
+		Version: version.GetCurrentVersion(),
 	}
 	dbDriver, err := db.NewDBDriver(profile)
 	if err != nil {
@@ -95,12 +94,11 @@ func getTestingProfileForDriver(t *testing.T, driver string) *profile.Profile {
 	}
 
 	return &profile.Profile{
-		Mode:    mode,
 		Port:    port,
 		Data:    dir,
 		DSN:     dsn,
 		Driver:  driver,
-		Version: version.GetCurrentVersion(mode),
+		Version: version.GetCurrentVersion(),
 	}
 }
 

@@ -29,13 +29,10 @@ const (
 type User_Role int32
 
 const (
-	// Unspecified role.
 	User_ROLE_UNSPECIFIED User_Role = 0
-	// Host role with full system access.
-	User_HOST User_Role = 1
-	// Admin role with administrative privileges.
+	// Admin role with system access.
 	User_ADMIN User_Role = 2
-	// Regular user role.
+	// User role with limited access.
 	User_USER User_Role = 3
 )
 
@@ -43,13 +40,11 @@ const (
 var (
 	User_Role_name = map[int32]string{
 		0: "ROLE_UNSPECIFIED",
-		1: "HOST",
 		2: "ADMIN",
 		3: "USER",
 	}
 	User_Role_value = map[string]int32{
 		"ROLE_UNSPECIFIED": 0,
-		"HOST":             1,
 		"ADMIN":            2,
 		"USER":             3,
 	}
@@ -2867,7 +2862,7 @@ var File_api_v1_user_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_user_service_proto_rawDesc = "" +
 	"\n" +
-	"\x19api/v1/user_service.proto\x12\fmemos.api.v1\x1a\x13api/v1/common.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcb\x04\n" +
+	"\x19api/v1/user_service.proto\x12\fmemos.api.v1\x1a\x13api/v1/common.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xc1\x04\n" +
 	"\x04User\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x120\n" +
 	"\x04role\x18\x02 \x01(\x0e2\x17.memos.api.v1.User.RoleB\x03\xe0A\x02R\x04role\x12\x1f\n" +
@@ -2883,10 +2878,9 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12@\n" +
 	"\vupdate_time\x18\v \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\";\n" +
+	"updateTime\"1\n" +
 	"\x04Role\x12\x14\n" +
-	"\x10ROLE_UNSPECIFIED\x10\x00\x12\b\n" +
-	"\x04HOST\x10\x01\x12\t\n" +
+	"\x10ROLE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05ADMIN\x10\x02\x12\b\n" +
 	"\x04USER\x10\x03:7\xeaA4\n" +
 	"\x11memos.api.v1/User\x12\fusers/{user}\x1a\x04name*\x05users2\x04user\"\x9d\x01\n" +

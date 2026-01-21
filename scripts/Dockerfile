@@ -27,27 +27,28 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 
 # Use minimal Alpine with security updates
 FROM alpine:3.21 AS monolithic
-WORKDIR /usr/local/memos
 
 # Install runtime dependencies and create non-root user in single layer
 RUN apk add --no-cache tzdata ca-certificates && \
     addgroup -g 10001 -S nonroot && \
     adduser -u 10001 -S -G nonroot -h /var/opt/memos nonroot && \
-    mkdir -p /var/opt/memos && \
+    mkdir -p /var/opt/memos /usr/local/memos && \
     chown -R nonroot:nonroot /var/opt/memos
 
-# Copy binary and entrypoint
+# Copy binary and entrypoint to /usr/local/memos
 COPY --from=backend /backend-build/memos /usr/local/memos/memos
 COPY --from=backend --chmod=755 /backend-build/scripts/entrypoint.sh /usr/local/memos/entrypoint.sh
 
 # Switch to non-root user
 USER nonroot:nonroot
 
+# Set working directory to the writable volume
+WORKDIR /var/opt/memos
+
 # Data directory
 VOLUME /var/opt/memos
 
 ENV TZ="UTC" \
-    MEMOS_MODE="prod" \
     MEMOS_PORT="5230"
 
 EXPOSE 5230

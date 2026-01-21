@@ -41,8 +41,8 @@ message InstanceProfile {
   // Version is the current version of instance.
   string version = 2;
 
-  // Mode is the instance mode (e.g. "prod", "dev" or "demo").
-  string mode = 3;
+  // Demo indicates if the instance is in demo mode.
+  bool demo = 3;
 
   // Instance URL is the URL of the instance.
   string instance_url = 6;

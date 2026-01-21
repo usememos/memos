@@ -19,8 +19,8 @@ function PasswordSignInForm() {
   const { profile } = useInstance();
   const { initialize } = useAuth();
   const actionBtnLoadingState = useLoading(false);
-  const [username, setUsername] = useState(profile.mode === "demo" ? "demo" : "");
-  const [password, setPassword] = useState(profile.mode === "demo" ? "secret" : "");
+  const [username, setUsername] = useState(profile.demo ? "demo" : "");
+  const [password, setPassword] = useState(profile.demo ? "secret" : "");
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
