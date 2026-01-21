@@ -184,7 +184,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
   // focus mode scroll height is handled by flex layout
   useEffect(() => {
     updateEditorHeight();
-  }, [isFocusMode])
+  }, [isFocusMode]);
 
   return (
     <div
