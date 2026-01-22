@@ -27,6 +27,7 @@ interface Props {
   filter?: string;
   pageSize?: number;
   showCreator?: boolean;
+  enabled?: boolean;
 }
 
 function useAutoFetchWhenNotScrollable({
@@ -88,13 +89,15 @@ const PagedMemoList = (props: Props) => {
   // Show memo editor only on the root route
   const showMemoEditor = Boolean(matchPath(Routes.ROOT, window.location.pathname));
 
-  // Use React Query's infinite query for pagination
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteMemos({
-    state: props.state || State.NORMAL,
-    orderBy: props.orderBy || "display_time desc",
-    filter: props.filter,
-    pageSize: props.pageSize || DEFAULT_LIST_MEMOS_PAGE_SIZE,
-  });
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteMemos(
+    {
+      state: props.state || State.NORMAL,
+      orderBy: props.orderBy || "display_time desc",
+      filter: props.filter,
+      pageSize: props.pageSize || DEFAULT_LIST_MEMOS_PAGE_SIZE,
+    },
+    { enabled: props.enabled ?? true },
+  );
 
   // Flatten pages into a single array of memos
   const memos = useMemo(() => data?.pages.flatMap((page) => page.memos) || [], [data]);

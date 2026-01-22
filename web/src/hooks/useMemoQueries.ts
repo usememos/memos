@@ -26,7 +26,7 @@ export function useMemos(request: Partial<ListMemosRequest> = {}) {
   });
 }
 
-export function useInfiniteMemos(request: Partial<ListMemosRequest> = {}) {
+export function useInfiniteMemos(request: Partial<ListMemosRequest> = {}, options?: { enabled?: boolean }) {
   return useInfiniteQuery({
     queryKey: memoKeys.list(request),
     queryFn: async ({ pageParam }) => {
@@ -40,8 +40,9 @@ export function useInfiniteMemos(request: Partial<ListMemosRequest> = {}) {
     },
     initialPageParam: "",
     getNextPageParam: (lastPage) => lastPage.nextPageToken || undefined,
-    staleTime: 1000 * 60, // Consider data fresh for 1 minute
-    gcTime: 1000 * 60 * 5, // Keep unused data in cache for 5 minutes
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 60 * 5,
+    enabled: options?.enabled ?? true,
   });
 }
 
