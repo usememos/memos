@@ -181,7 +181,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
     isInIME,
   });
 
-  // focus mode scroll height is handled by flex layout
+  // Recalculate editor height when focus mode changes
   useEffect(() => {
     updateEditorHeight();
   }, [isFocusMode, updateEditorHeight]);
