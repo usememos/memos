@@ -293,6 +293,6 @@ func (s *APIV1Service) GetInstanceOwner(ctx context.Context) (*v1pb.User, error)
 
 // ClearInstanceOwnerCache clears the cached instance owner.
 // This should be called when an admin user is created or when the owner changes.
-func (s *APIV1Service) ClearInstanceOwnerCache() {
+func (*APIV1Service) ClearInstanceOwnerCache() {
 	ownerCache = nil
 }
