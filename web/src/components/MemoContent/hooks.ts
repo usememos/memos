@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { COMPACT_STATES, MAX_DISPLAY_HEIGHT } from "./constants";
+import { COMPACT_STATES, getMaxDisplayHeight } from "./constants";
 import type { ContentCompactView } from "./types";
 
 export const useCompactMode = (enabled: boolean) => {
@@ -8,7 +8,8 @@ export const useCompactMode = (enabled: boolean) => {
 
   useEffect(() => {
     if (!enabled || !containerRef.current) return;
-    if (containerRef.current.getBoundingClientRect().height > MAX_DISPLAY_HEIGHT) {
+    const maxHeight = getMaxDisplayHeight();
+    if (containerRef.current.getBoundingClientRect().height > maxHeight) {
       setMode("ALL");
     }
   }, [enabled]);

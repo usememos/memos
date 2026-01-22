@@ -1,6 +1,12 @@
 import { defaultSchema } from "rehype-sanitize";
 
-export const MAX_DISPLAY_HEIGHT = 256;
+// Compact mode display settings
+export const COMPACT_MODE_CONFIG = {
+  maxHeightVh: 60, // 60% of viewport height
+  gradientHeight: "h-24", // Tailwind class for gradient overlay
+} as const;
+
+export const getMaxDisplayHeight = () => window.innerHeight * (COMPACT_MODE_CONFIG.maxHeightVh / 100);
 
 export const COMPACT_STATES: Record<"ALL" | "SNIPPET", { textKey: string; next: "ALL" | "SNIPPET" }> = {
   ALL: { textKey: "memo.show-more", next: "SNIPPET" },

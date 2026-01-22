@@ -1,4 +1,5 @@
 import type { Element } from "hast";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { memo } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
@@ -14,7 +15,7 @@ import { remarkPreserveType } from "@/utils/remark-plugins/remark-preserve-type"
 import { remarkTag } from "@/utils/remark-plugins/remark-tag";
 import { CodeBlock } from "./CodeBlock";
 import { isTagNode, isTaskListItemNode } from "./ConditionalComponent";
-import { SANITIZE_SCHEMA } from "./constants";
+import { COMPACT_MODE_CONFIG, SANITIZE_SCHEMA } from "./constants";
 import { useCompactLabel, useCompactMode } from "./hooks";
 import { Tag } from "./Tag";
 import { TaskListItem } from "./TaskListItem";
@@ -37,7 +38,7 @@ const MemoContent = (props: MemoContentProps) => {
         ref={memoContentContainerRef}
         className={cn(
           "markdown-content relative w-full max-w-full wrap-break-word text-base leading-6",
-          showCompactMode === "ALL" && "line-clamp-6 max-h-60",
+          showCompactMode === "ALL" && `max-h-[${COMPACT_MODE_CONFIG.maxHeightVh}vh] overflow-hidden`,
           contentClassName,
         )}
         onMouseUp={onClick}
@@ -71,18 +72,25 @@ const MemoContent = (props: MemoContentProps) => {
         >
           {content}
         </ReactMarkdown>
+        {showCompactMode === "ALL" && (
+          <div
+            className={cn(
+              "absolute inset-x-0 bottom-0 pointer-events-none",
+              COMPACT_MODE_CONFIG.gradientHeight,
+              "bg-linear-to-t from-background from-0% via-background/60 via-40% to-transparent to-100%",
+            )}
+          />
+        )}
       </div>
-      {showCompactMode === "ALL" && (
-        <div className="absolute bottom-0 left-0 w-full h-12 bg-linear-to-b from-transparent to-background pointer-events-none"></div>
-      )}
       {showCompactMode !== undefined && (
-        <div className="w-full mt-1">
+        <div className="relative w-full mt-2">
           <button
             type="button"
-            className="w-auto flex flex-row justify-start items-center cursor-pointer text-sm text-primary hover:opacity-80 text-left"
+            className="group inline-flex items-center gap-1 px-2 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
             onClick={toggleCompactMode}
           >
-            {compactLabel}
+            <span>{compactLabel}</span>
+            {showCompactMode === "ALL" ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />}
           </button>
         </div>
       )}
