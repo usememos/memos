@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
@@ -269,9 +270,25 @@ func convertInstanceMemoRelatedSettingToStore(setting *v1pb.InstanceSetting_Memo
 	}
 }
 
-var ownerCache *v1pb.User
+var (
+	ownerCache      *v1pb.User
+	ownerCacheMutex sync.RWMutex
+)
 
 func (s *APIV1Service) GetInstanceOwner(ctx context.Context) (*v1pb.User, error) {
+	// Try read lock first for cache hit
+	ownerCacheMutex.RLock()
+	if ownerCache != nil {
+		defer ownerCacheMutex.RUnlock()
+		return ownerCache, nil
+	}
+	ownerCacheMutex.RUnlock()
+
+	// Upgrade to write lock to populate cache
+	ownerCacheMutex.Lock()
+	defer ownerCacheMutex.Unlock()
+
+	// Double-check after acquiring write lock
 	if ownerCache != nil {
 		return ownerCache, nil
 	}
@@ -294,5 +311,7 @@ func (s *APIV1Service) GetInstanceOwner(ctx context.Context) (*v1pb.User, error)
 // ClearInstanceOwnerCache clears the cached instance owner.
 // This should be called when an admin user is created or when the owner changes.
 func (*APIV1Service) ClearInstanceOwnerCache() {
+	ownerCacheMutex.Lock()
+	defer ownerCacheMutex.Unlock()
 	ownerCache = nil
 }
