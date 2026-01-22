@@ -136,7 +136,8 @@
     "failed-to-load": "加载失败",
     "unread": "未读",
     "no-unread": "无未读通知",
-    "no-archived": "无已归档通知"
+    "no-archived": "无已归档通知",
+    "version-update": "新版本 {{version}} 现已推出！"
   },
   "markdown": {
     "checkbox": "复选框",
