@@ -2132,11 +2132,6 @@ components:
         InstanceProfile:
             type: object
             properties:
-                owner:
-                    type: string
-                    description: |-
-                        The name of instance owner.
-                         Format: users/{user}
                 version:
                     type: string
                     description: Version is the current version of instance.
@@ -2146,6 +2141,12 @@ components:
                 instanceUrl:
                     type: string
                     description: Instance URL is the URL of the instance.
+                initialized:
+                    type: boolean
+                    description: |-
+                        Indicates if the instance has completed first-time setup.
+                         When false, the instance requires initialization (creating the first admin account).
+                         This follows the pattern used by other self-hosted platforms for setup workflows.
             description: Instance profile message containing basic instance information.
         InstanceSetting:
             type: object

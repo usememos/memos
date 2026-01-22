@@ -9,18 +9,22 @@ import AuthFooter from "@/components/AuthFooter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authServiceClient, userServiceClient } from "@/connect";
+import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import useLoading from "@/hooks/useLoading";
+import useNavigateTo from "@/hooks/useNavigateTo";
 import { handleError } from "@/lib/error";
 import { User_Role, UserSchema } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const SignUp = () => {
   const t = useTranslate();
+  const navigateTo = useNavigateTo();
   const actionBtnLoadingState = useLoading(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { generalSetting: instanceGeneralSetting, profile } = useInstance();
+  const { initialize: initAuth } = useAuth();
+  const { generalSetting: instanceGeneralSetting, profile, initialize: initInstance } = useInstance();
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
@@ -64,7 +68,11 @@ const SignUp = () => {
       if (response.accessToken) {
         setAccessToken(response.accessToken, response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined);
       }
-      window.location.href = "/";
+      // Refresh auth context to load the current user
+      await initAuth();
+      // Refetch instance profile to update the initialized status
+      await initInstance();
+      navigateTo("/");
     } catch (error: unknown) {
       handleError(error, toast.error, {
         fallbackMessage: "Sign up failed",
@@ -127,7 +135,7 @@ const SignUp = () => {
         ) : (
           <p className="w-full text-2xl mt-2 text-muted-foreground">Sign up is not allowed.</p>
         )}
-        {!profile.owner ? (
+        {!profile.initialized ? (
           <p className="w-full mt-4 text-sm font-medium text-muted-foreground">{t("auth.host-tip")}</p>
         ) : (
           <p className="w-full mt-4 text-sm">

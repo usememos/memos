@@ -20,12 +20,12 @@ const App = () => {
     cleanupExpiredOAuthState();
   }, []);
 
-  // Redirect to sign up page if no instance owner
+  // Redirect to sign up page if instance not initialized (no admin account exists yet)
   useEffect(() => {
-    if (!instanceProfile.owner) {
+    if (!instanceProfile.initialized) {
       navigateTo("/auth/signup");
     }
-  }, [instanceProfile.owner, navigateTo]);
+  }, [instanceProfile.initialized, navigateTo]);
 
   useEffect(() => {
     if (instanceGeneralSetting.additionalStyle) {

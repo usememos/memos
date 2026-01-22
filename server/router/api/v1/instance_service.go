@@ -15,17 +15,16 @@ import (
 
 // GetInstanceProfile returns the instance profile.
 func (s *APIV1Service) GetInstanceProfile(ctx context.Context, _ *v1pb.GetInstanceProfileRequest) (*v1pb.InstanceProfile, error) {
-	instanceProfile := &v1pb.InstanceProfile{
-		Version:     s.Profile.Version,
-		Demo:        s.Profile.Demo,
-		InstanceUrl: s.Profile.InstanceURL,
-	}
 	owner, err := s.GetInstanceOwner(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get instance owner: %v", err)
 	}
-	if owner != nil {
-		instanceProfile.Owner = owner.Name
+
+	instanceProfile := &v1pb.InstanceProfile{
+		Version:     s.Profile.Version,
+		Demo:        s.Profile.Demo,
+		InstanceUrl: s.Profile.InstanceURL,
+		Initialized: owner != nil,
 	}
 	return instanceProfile, nil
 }
@@ -290,4 +289,10 @@ func (s *APIV1Service) GetInstanceOwner(ctx context.Context) (*v1pb.User, error)
 
 	ownerCache = convertUserFromStore(user)
 	return ownerCache, nil
+}
+
+// ClearInstanceOwnerCache clears the cached instance owner.
+// This should be called when an admin user is created or when the owner changes.
+func (s *APIV1Service) ClearInstanceOwnerCache() {
+	ownerCache = nil
 }

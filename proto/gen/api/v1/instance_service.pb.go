@@ -138,15 +138,16 @@ func (InstanceSetting_StorageSetting_StorageType) EnumDescriptor() ([]byte, []in
 // Instance profile message containing basic instance information.
 type InstanceProfile struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The name of instance owner.
-	// Format: users/{user}
-	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
 	// Version is the current version of instance.
 	Version string `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`
 	// Demo indicates if the instance is in demo mode.
 	Demo bool `protobuf:"varint,3,opt,name=demo,proto3" json:"demo,omitempty"`
 	// Instance URL is the URL of the instance.
-	InstanceUrl   string `protobuf:"bytes,6,opt,name=instance_url,json=instanceUrl,proto3" json:"instance_url,omitempty"`
+	InstanceUrl string `protobuf:"bytes,6,opt,name=instance_url,json=instanceUrl,proto3" json:"instance_url,omitempty"`
+	// Indicates if the instance has completed first-time setup.
+	// When false, the instance requires initialization (creating the first admin account).
+	// This follows the pattern used by other self-hosted platforms for setup workflows.
+	Initialized   bool `protobuf:"varint,7,opt,name=initialized,proto3" json:"initialized,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -181,13 +182,6 @@ func (*InstanceProfile) Descriptor() ([]byte, []int) {
 	return file_api_v1_instance_service_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *InstanceProfile) GetOwner() string {
-	if x != nil {
-		return x.Owner
-	}
-	return ""
-}
-
 func (x *InstanceProfile) GetVersion() string {
 	if x != nil {
 		return x.Version
@@ -207,6 +201,13 @@ func (x *InstanceProfile) GetInstanceUrl() string {
 		return x.InstanceUrl
 	}
 	return ""
+}
+
+func (x *InstanceProfile) GetInitialized() bool {
+	if x != nil {
+		return x.Initialized
+	}
+	return false
 }
 
 // Request for instance profile.
@@ -875,12 +876,12 @@ var File_api_v1_instance_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1dapi/v1/instance_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"x\n" +
-	"\x0fInstanceProfile\x12\x14\n" +
-	"\x05owner\x18\x01 \x01(\tR\x05owner\x12\x18\n" +
+	"\x1dapi/v1/instance_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\"\x84\x01\n" +
+	"\x0fInstanceProfile\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04demo\x18\x03 \x01(\bR\x04demo\x12!\n" +
-	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\"\x1b\n" +
+	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\x12 \n" +
+	"\vinitialized\x18\a \x01(\bR\vinitialized\"\x1b\n" +
 	"\x19GetInstanceProfileRequest\"\x99\x0f\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +

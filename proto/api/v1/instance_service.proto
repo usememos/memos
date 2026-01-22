@@ -34,10 +34,6 @@ service InstanceService {
 
 // Instance profile message containing basic instance information.
 message InstanceProfile {
-  // The name of instance owner.
-  // Format: users/{user}
-  string owner = 1;
-
   // Version is the current version of instance.
   string version = 2;
 
@@ -46,6 +42,11 @@ message InstanceProfile {
 
   // Instance URL is the URL of the instance.
   string instance_url = 6;
+
+  // Indicates if the instance has completed first-time setup.
+  // When false, the instance requires initialization (creating the first admin account).
+  // This follows the pattern used by other self-hosted platforms for setup workflows.
+  bool initialized = 7;
 }
 
 // Request for instance profile.

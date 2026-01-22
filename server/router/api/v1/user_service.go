@@ -177,6 +177,12 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 		return nil, status.Errorf(codes.Internal, "failed to create user: %v", err)
 	}
 
+	// If this is the first admin user being created, clear the owner cache
+	// so that GetInstanceProfile will return initialized=true
+	if roleToAssign == store.RoleAdmin {
+		s.ClearInstanceOwnerCache()
+	}
+
 	return convertUserFromStore(user), nil
 }
 
