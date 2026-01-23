@@ -17,6 +17,8 @@ import { CodeBlock } from "./CodeBlock";
 import { isTagNode, isTaskListItemNode } from "./ConditionalComponent";
 import { COMPACT_MODE_CONFIG, SANITIZE_SCHEMA } from "./constants";
 import { useCompactLabel, useCompactMode } from "./hooks";
+import { Blockquote, Heading, HorizontalRule, Image, InlineCode, Link, List, ListItem, Paragraph } from "./markdown";
+import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "./Table";
 import { Tag } from "./Tag";
 import { TaskListItem } from "./TaskListItem";
 import type { MemoContentProps } from "./types";
@@ -37,7 +39,7 @@ const MemoContent = (props: MemoContentProps) => {
       <div
         ref={memoContentContainerRef}
         className={cn(
-          "markdown-content relative w-full max-w-full wrap-break-word text-base leading-6",
+          "relative w-full max-w-full wrap-break-word text-base leading-6",
           showCompactMode === "ALL" && `max-h-[${COMPACT_MODE_CONFIG.maxHeightVh}vh] overflow-hidden`,
           contentClassName,
         )}
@@ -62,12 +64,38 @@ const MemoContent = (props: MemoContentProps) => {
               }
               return <span {...rest} />;
             }) as React.ComponentType<React.ComponentProps<"span">>,
-            pre: CodeBlock,
-            a: ({ href, children, ...aProps }) => (
-              <a href={href} target="_blank" rel="noopener noreferrer" {...aProps}>
+            // Headings
+            h1: ({ children }) => <Heading level={1}>{children}</Heading>,
+            h2: ({ children }) => <Heading level={2}>{children}</Heading>,
+            h3: ({ children }) => <Heading level={3}>{children}</Heading>,
+            h4: ({ children }) => <Heading level={4}>{children}</Heading>,
+            h5: ({ children }) => <Heading level={5}>{children}</Heading>,
+            h6: ({ children }) => <Heading level={6}>{children}</Heading>,
+            // Block elements
+            p: ({ children }) => <Paragraph>{children}</Paragraph>,
+            blockquote: ({ children }) => <Blockquote>{children}</Blockquote>,
+            hr: () => <HorizontalRule />,
+            // Lists
+            ul: ({ children, ...props }) => <List {...props}>{children}</List>,
+            ol: ({ children, ...props }) => (
+              <List ordered {...props}>
                 {children}
-              </a>
+              </List>
             ),
+            li: ({ children, ...props }) => <ListItem {...props}>{children}</ListItem>,
+            // Inline elements
+            a: ({ children, ...props }) => <Link {...props}>{children}</Link>,
+            code: ({ children }) => <InlineCode>{children}</InlineCode>,
+            img: ({ ...props }) => <Image {...props} />,
+            // Code blocks
+            pre: CodeBlock,
+            // Tables
+            table: ({ children }) => <Table>{children}</Table>,
+            thead: ({ children }) => <TableHead>{children}</TableHead>,
+            tbody: ({ children }) => <TableBody>{children}</TableBody>,
+            tr: ({ children }) => <TableRow>{children}</TableRow>,
+            th: ({ children, ...props }) => <TableHeaderCell {...props}>{children}</TableHeaderCell>,
+            td: ({ children, ...props }) => <TableCell {...props}>{children}</TableCell>,
           }}
         >
           {content}

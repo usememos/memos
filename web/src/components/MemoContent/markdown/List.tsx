@@ -1,0 +1,66 @@
+import { cn } from "@/lib/utils";
+import type { ReactMarkdownProps } from "./types";
+
+interface ListProps extends React.HTMLAttributes<HTMLUListElement | HTMLOListElement>, ReactMarkdownProps {
+  ordered?: boolean;
+  children: React.ReactNode;
+}
+
+/**
+ * List component for both regular and task lists (GFM)
+ * Detects task lists via the "contains-task-list" class added by remark-gfm
+ */
+export const List = ({ ordered, children, className, node: _node, ...domProps }: ListProps) => {
+  const Component = ordered ? "ol" : "ul";
+  const isTaskList = className?.includes("contains-task-list");
+
+  return (
+    <Component
+      className={cn(
+        "my-0 mb-2 list-outside",
+        isTaskList ? "pl-0 list-none" : cn("pl-6", ordered ? "list-decimal" : "list-disc"),
+        className,
+      )}
+      {...domProps}
+    >
+      {children}
+    </Component>
+  );
+};
+
+interface ListItemProps extends React.LiHTMLAttributes<HTMLLIElement>, ReactMarkdownProps {
+  children: React.ReactNode;
+}
+
+/**
+ * List item component for both regular and task list items
+ * Detects task items via the "task-list-item" class added by remark-gfm
+ * Applies specialized styling for task checkboxes
+ */
+export const ListItem = ({ children, className, node: _node, ...domProps }: ListItemProps) => {
+  const isTaskListItem = className?.includes("task-list-item");
+
+  if (isTaskListItem) {
+    return (
+      <li
+        className={cn(
+          "mt-0.5 leading-6 list-none",
+          // Task item styles: checkbox margins, inline paragraph, nested list indent
+          "[&>button]:mr-2 [&>button]:align-middle",
+          "[&>p]:inline [&>p]:m-0",
+          "[&>.contains-task-list]:pl-6",
+          className,
+        )}
+        {...domProps}
+      >
+        {children}
+      </li>
+    );
+  }
+
+  return (
+    <li className={cn("mt-0.5 leading-6", className)} {...domProps}>
+      {children}
+    </li>
+  );
+};

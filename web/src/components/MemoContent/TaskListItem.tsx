@@ -1,16 +1,15 @@
-import type { Element } from "hast";
 import { useRef } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useUpdateMemo } from "@/hooks/useMemoQueries";
 import { toggleTaskAtIndex } from "@/utils/markdown-manipulation";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoView/MemoViewContext";
+import type { ReactMarkdownProps } from "./markdown/types";
 
-interface TaskListItemProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  node?: Element; // AST node from react-markdown
+interface TaskListItemProps extends React.InputHTMLAttributes<HTMLInputElement>, ReactMarkdownProps {
   checked?: boolean;
 }
 
-export const TaskListItem: React.FC<TaskListItemProps> = ({ checked, ...props }) => {
+export const TaskListItem: React.FC<TaskListItemProps> = ({ checked, node: _node, ...props }) => {
   const { memo } = useMemoViewContext();
   const { readonly } = useMemoViewDerived();
   const checkboxRef = useRef<HTMLButtonElement>(null);
@@ -35,14 +34,19 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({ checked, ...props })
     if (taskIndexStr !== null) {
       taskIndex = parseInt(taskIndexStr);
     } else {
-      // Fallback: Calculate index by counting ALL task list items in the memo
-      // Find the markdown-content container by traversing up from the list item
-      const container = listItem.closest(".markdown-content");
-      if (!container) {
-        return;
+      // Fallback: Calculate index by counting task list items
+      // Walk up to find the parent element with all task items
+      let searchRoot = listItem.parentElement;
+      while (searchRoot && !searchRoot.classList.contains("contains-task-list")) {
+        searchRoot = searchRoot.parentElement;
       }
 
-      const allTaskItems = container.querySelectorAll("li.task-list-item");
+      // If not found, search from the document root
+      if (!searchRoot) {
+        searchRoot = document.body;
+      }
+
+      const allTaskItems = searchRoot.querySelectorAll("li.task-list-item");
       for (let i = 0; i < allTaskItems.length; i++) {
         if (allTaskItems[i] === listItem) {
           taskIndex = i;
