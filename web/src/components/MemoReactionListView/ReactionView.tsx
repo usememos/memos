@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
+import { useTranslate } from "@/utils/i18n";
 import { formatReactionTooltip, useReactionActions } from "./hooks";
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
 
 const ReactionView = (props: Props) => {
   const { memo, reactionType, users } = props;
+  const t = useTranslate();
   const currentUser = useCurrentUser();
   const hasReaction = users.some((user) => currentUser && user.username === currentUser.username);
   const readonly = memo.state === State.ARCHIVED;
@@ -48,7 +50,7 @@ const ReactionView = (props: Props) => {
           </button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>{formatReactionTooltip(users, reactionType)}</p>
+          <p>{formatReactionTooltip(users, reactionType, t)}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

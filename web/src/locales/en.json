@@ -53,6 +53,7 @@
     "inbox": "Inbox",
     "input": "Input",
     "language": "Language",
+    "list-separator": ", ",
     "last-updated-at": "Last updated at",
     "layout": "Layout",
     "learn-more": "Learn more",
@@ -211,6 +212,10 @@
     "embedded-usage": "Use as Embedded Content",
     "no-memos-found": "No memos found",
     "search-placeholder": "Search content"
+  },
+  "reaction": {
+    "reacted-with": "{{userList}} reacted with {{reactionType}}",
+    "more-reacted-with": "{{userList}} and {{count}} more reacted with {{reactionType}}"
   },
   "resource": {
     "clear": "Clear",
