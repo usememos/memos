@@ -40,9 +40,10 @@ const MemoContent = (props: MemoContentProps) => {
         ref={memoContentContainerRef}
         className={cn(
           "relative w-full max-w-full wrap-break-word text-base leading-6",
-          showCompactMode === "ALL" && `max-h-[${COMPACT_MODE_CONFIG.maxHeightVh}vh] overflow-hidden`,
+          showCompactMode === "ALL" && "overflow-hidden",
           contentClassName,
         )}
+        style={showCompactMode === "ALL" ? { maxHeight: `${COMPACT_MODE_CONFIG.maxHeightVh}vh` } : undefined}
         onMouseUp={onClick}
         onDoubleClick={onDoubleClick}
       >
