@@ -26,12 +26,14 @@
     "avatar": "頭像",
     "basic": "基礎",
     "beta": "測試版",
+    "calendar": "日曆",
     "cancel": "取消",
     "change": "變更",
     "clear": "清除",
     "close": "關閉",
     "collapse": "摺疊",
     "confirm": "確認",
+    "copy": "複製",
     "create": "建立",
     "created-at": "建立於",
     "database": "資料庫",
@@ -55,6 +57,7 @@
     "layout": "排版",
     "learn-more": "了解更多",
     "link": "連結",
+    "map": "地圖",
     "mark": "標記",
     "memo": "備忘錄",
     "memos": "備忘錄",
@@ -92,6 +95,7 @@
     "statistics": "統計",
     "tags": "標籤",
     "title": "標題",
+    "today": "今天",
     "tree-mode": "樹狀顯示",
     "type": "類型",
     "unpin": "取消置頂",
@@ -101,7 +105,8 @@
     "username": "帳號",
     "version": "版本",
     "visibility": "瀏覽權限",
-    "yourself": "您自己"
+    "yourself": "您自己",
+    "more": "更多"
   },
   "days": {
     "fri": "五",
@@ -116,7 +121,11 @@
     "add-your-comment-here": "在這裡添加您的評論...",
     "any-thoughts": "任何想法...",
     "save": "儲存",
-    "no-changes-detected": "未發現變更"
+    "saving": "儲存中...",
+    "no-changes-detected": "未發現變更",
+    "focus-mode": "專注模式",
+    "exit-focus-mode": "退出專注模式",
+    "slash-commands": "輸入 `/` 以使用指令"
   },
   "filters": {
     "has-code": "有程式碼",
@@ -126,7 +135,10 @@
   "inbox": {
     "memo-comment": "{{user}} 對您的 {{memo}} 發表了評論。",
     "version-update": "新版本 {{version}} 現已推出！",
-    "failed-to-load": "載入失敗"
+    "failed-to-load": "載入失敗",
+    "unread": "未讀",
+    "no-unread": "無未讀通知",
+    "no-archived": "無已封存通知"
   },
   "markdown": {
     "checkbox": "核取方塊",
@@ -142,6 +154,7 @@
       "self": "評論",
       "write-a-comment": "寫下評論"
     },
+    "copy-content": "複製內容",
     "copy-link": "複製連結",
     "count-memos-in-date": "{{date}} 的 {{count}} 條備忘錄",
     "delete-confirm": "您確定要刪除此備忘錄嗎？",
@@ -189,6 +202,7 @@
     "password-not-match": "密碼不一致。",
     "remove-completed-task-list-items-successfully": "移除成功",
     "restored-successfully": "還原成功",
+    "succeed-copy-content": "內容複製到剪貼簿成功。",
     "succeed-copy-link": "複製連結到剪貼簿成功。",
     "update-succeed": "更新成功",
     "user-not-found": "未找到該使用者"
@@ -223,6 +237,8 @@
     "delete-selected-resources": "刪除所選的檔案",
     "delete-all-unused": "刪除所有未使用的檔案",
     "delete-all-unused-confirm": "您確定要刪除所有未使用的檔案嗎？此操作無法恢復。",
+    "delete-all-unused-success": "檔案刪除成功",
+    "delete-all-unused-error": "刪除未使用的檔案失敗",
     "fetching-data": "抓取資料...",
     "file-drag-drop-prompt": "將您的檔案拖曳到此處以上傳",
     "linked-amount": "連結數量",

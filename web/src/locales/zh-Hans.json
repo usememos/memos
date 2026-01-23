@@ -121,6 +121,7 @@
     "add-your-comment-here": "请输入您的评论...",
     "any-thoughts": "此刻的想法...",
     "save": "保存",
+    "saving": "保存中...",
     "no-changes-detected": "未检测到更改",
     "focus-mode": "聚焦模式",
     "exit-focus-mode": "退出聚焦模式",
@@ -136,7 +137,8 @@
     "failed-to-load": "加载失败",
     "unread": "未读",
     "no-unread": "无未读通知",
-    "no-archived": "无已归档通知"
+    "no-archived": "无已归档通知",
+    "version-update": "新版本 {{version}} 现已推出！"
   },
   "markdown": {
     "checkbox": "复选框",
