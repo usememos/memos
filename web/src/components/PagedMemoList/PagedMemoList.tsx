@@ -182,18 +182,21 @@ const PagedMemoList = (props: Props) => {
           {(() => {
             const hasPinned = pinnedMemos.length > 0;
             const pinnedToggle = enablePinnedSection && hasPinned && (
-              <button
-                type="button"
-                onClick={() => setIsPinnedCollapsed((prev) => !prev)}
-                className="w-full mt-1 mb-2 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                aria-expanded={!isPinnedCollapsed}
-              >
-                {isPinnedCollapsed ? <ChevronRightIcon className="w-4 h-4" /> : <ChevronDownIcon className="w-4 h-4" />}
-                <span className="font-medium">
-                  {t("common.pinned")} ({pinnedMemos.length})
-                </span>
-                <span className="text-xs opacity-70">{isPinnedCollapsed ? t("common.expand") : t("common.collapse")}</span>
-              </button>
+              <div className="w-full mt-1 mb-2 flex items-center gap-3 text-sm text-muted-foreground">
+                <button
+                  type="button"
+                  onClick={() => setIsPinnedCollapsed((prev) => !prev)}
+                  className="flex items-center gap-2 hover:text-foreground transition-colors"
+                  aria-expanded={!isPinnedCollapsed}
+                >
+                  {isPinnedCollapsed ? <ChevronRightIcon className="w-4 h-4" /> : <ChevronDownIcon className="w-4 h-4" />}
+                  <span className="font-medium">
+                    {t("common.pinned")} ({pinnedMemos.length})
+                  </span>
+                  <span className="text-xs opacity-70">{isPinnedCollapsed ? t("common.expand") : t("common.collapse")}</span>
+                </button>
+                <div className="h-px flex-1 bg-border/60" aria-hidden="true" />
+              </div>
             );
 
             const prefixElement = (
@@ -210,6 +213,22 @@ const PagedMemoList = (props: Props) => {
               return <MasonryView memoList={sortedMemoList} renderer={props.renderer} prefixElement={prefixElement} listMode={layout === "LIST"} />;
             }
 
+            if (layout === "LIST") {
+              const listMemoList = isPinnedCollapsed ? unpinnedMemos : sortedMemoList;
+              const lastPinnedName = !isPinnedCollapsed && hasPinned ? pinnedMemos[pinnedMemos.length - 1]?.name : undefined;
+              const listRenderer = lastPinnedName
+                ? (memo: Memo, context?: MemoRenderContext) => (
+                    <>
+                      {props.renderer(memo, context)}
+                      {memo.name === lastPinnedName && (
+                        <div className="w-full max-w-2xl mx-auto my-2 h-px bg-border/60" aria-hidden="true" />
+                      )}
+                    </>
+                  )
+                : props.renderer;
+
+              return <MasonryView memoList={listMemoList} renderer={listRenderer} prefixElement={prefixElement} listMode />;
+            }
             return (
               <>
                 <MasonryView
@@ -218,6 +237,7 @@ const PagedMemoList = (props: Props) => {
                   prefixElement={prefixElement}
                   listMode={layout === "LIST"}
                 />
+                {hasPinned && !isPinnedCollapsed && <div className="w-full max-w-2xl mx-auto my-2 h-px bg-border/60" aria-hidden="true" />}
                 <div className={hasPinned ? "mt-2" : ""}>
                   <MasonryView memoList={unpinnedMemos} renderer={props.renderer} listMode={layout === "LIST"} />
                 </div>
