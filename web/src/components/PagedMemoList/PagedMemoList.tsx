@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { ArrowUpIcon } from "lucide-react";
+import { ArrowUpIcon, ChevronDownIcon, ChevronRightIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { matchPath } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,7 @@ interface Props {
   pageSize?: number;
   showCreator?: boolean;
   enabled?: boolean;
+  collapsiblePinned?: boolean;
 }
 
 function useAutoFetchWhenNotScrollable({
@@ -104,6 +105,29 @@ const PagedMemoList = (props: Props) => {
 
   // Apply custom sorting if provided, otherwise use memos directly
   const sortedMemoList = useMemo(() => (props.listSort ? props.listSort(memos) : memos), [memos, props.listSort]);
+  const enablePinnedSection = props.collapsiblePinned === true;
+  const pinnedStorageKey = "memos.ui.pinsCollapsed";
+
+  const [isPinnedCollapsed, setIsPinnedCollapsed] = useState(() => {
+    if (!enablePinnedSection) return false;
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem(pinnedStorageKey) === "true";
+  });
+
+  const pinnedMemos = useMemo(() => {
+    if (!enablePinnedSection) return [];
+    return sortedMemoList.filter((memo) => memo.pinned);
+  }, [enablePinnedSection, sortedMemoList]);
+
+  const unpinnedMemos = useMemo(() => {
+    if (!enablePinnedSection) return sortedMemoList;
+    return sortedMemoList.filter((memo) => !memo.pinned);
+  }, [enablePinnedSection, sortedMemoList]);
+
+  useEffect(() => {
+    if (!enablePinnedSection || typeof window === "undefined") return;
+    window.localStorage.setItem(pinnedStorageKey, String(isPinnedCollapsed));
+  }, [enablePinnedSection, isPinnedCollapsed]);
 
   // Prefetch creators when new data arrives to improve performance
   useEffect(() => {
@@ -155,19 +179,51 @@ const PagedMemoList = (props: Props) => {
         <Skeleton showCreator={props.showCreator} count={4} />
       ) : (
         <>
-          <MasonryView
-            memoList={sortedMemoList}
-            renderer={props.renderer}
-            prefixElement={
+          {(() => {
+            const hasPinned = pinnedMemos.length > 0;
+            const pinnedToggle = enablePinnedSection && hasPinned && (
+              <button
+                type="button"
+                onClick={() => setIsPinnedCollapsed((prev) => !prev)}
+                className="w-full mt-1 mb-2 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                aria-expanded={!isPinnedCollapsed}
+              >
+                {isPinnedCollapsed ? <ChevronRightIcon className="w-4 h-4" /> : <ChevronDownIcon className="w-4 h-4" />}
+                <span className="font-medium">
+                  {t("common.pinned")} ({pinnedMemos.length})
+                </span>
+                <span className="text-xs opacity-70">{isPinnedCollapsed ? t("common.expand") : t("common.collapse")}</span>
+              </button>
+            );
+
+            const prefixElement = (
               <>
                 {showMemoEditor ? (
                   <MemoEditor className="mb-2" cacheKey="home-memo-editor" placeholder={t("editor.any-thoughts")} />
                 ) : undefined}
                 <MemoFilters />
+                {pinnedToggle}
               </>
+            );
+
+            if (!enablePinnedSection) {
+              return <MasonryView memoList={sortedMemoList} renderer={props.renderer} prefixElement={prefixElement} listMode={layout === "LIST"} />;
             }
-            listMode={layout === "LIST"}
-          />
+
+            return (
+              <>
+                <MasonryView
+                  memoList={isPinnedCollapsed ? [] : pinnedMemos}
+                  renderer={props.renderer}
+                  prefixElement={prefixElement}
+                  listMode={layout === "LIST"}
+                />
+                <div className={hasPinned ? "mt-2" : ""}>
+                  <MasonryView memoList={unpinnedMemos} renderer={props.renderer} listMode={layout === "LIST"} />
+                </div>
+              </>
+            );
+          })()}
 
           {/* Loading indicator for pagination */}
           {isFetchingNextPage && <Skeleton showCreator={props.showCreator} count={2} />}
