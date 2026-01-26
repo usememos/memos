@@ -235,11 +235,11 @@ const PagedMemoList = (props: Props) => {
                   memoList={isPinnedCollapsed ? [] : pinnedMemos}
                   renderer={props.renderer}
                   prefixElement={prefixElement}
-                  listMode={layout === "LIST"}
+                  listMode={false}
                 />
                 {hasPinned && !isPinnedCollapsed && <div className="w-full max-w-2xl mx-auto my-2 h-px bg-border/60" aria-hidden="true" />}
                 <div className={hasPinned ? "mt-2" : ""}>
-                  <MasonryView memoList={unpinnedMemos} renderer={props.renderer} listMode={layout === "LIST"} />
+                  <MasonryView memoList={unpinnedMemos} renderer={props.renderer} listMode={false} />
                 </div>
               </>
             );
