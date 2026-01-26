@@ -2212,6 +2212,9 @@ components:
                 enableDoubleClickEdit:
                     type: boolean
                     description: enable_double_click_edit enables editing on double click.
+                disableReactions:
+                    type: boolean
+                    description: disable_reactions disables memo reactions across the UI and API.
                 reactions:
                     type: array
                     items:

@@ -249,12 +249,14 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 	}
 
 	// REACTIONS
-	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{ContentIDList: contentIDs})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list reactions")
-	}
-	for _, reaction := range reactions {
-		reactionMap[reaction.ContentID] = append(reactionMap[reaction.ContentID], reaction)
+	if !instanceMemoRelatedSetting.DisableReactions {
+		reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{ContentIDList: contentIDs})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to list reactions")
+		}
+		for _, reaction := range reactions {
+			reactionMap[reaction.ContentID] = append(reactionMap[reaction.ContentID], reaction)
+		}
 	}
 
 	// ATTACHMENTS
@@ -313,11 +315,18 @@ func (s *APIV1Service) GetMemo(ctx context.Context, request *v1pb.GetMemoRequest
 		}
 	}
 
-	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
-		ContentID: &request.Name,
-	})
+	var reactions []*store.Reaction
+	reactionsEnabled, err := s.reactionsEnabled(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list reactions")
+		return nil, err
+	}
+	if reactionsEnabled {
+		reactions, err = s.Store.ListReactions(ctx, &store.FindReaction{
+			ContentID: &request.Name,
+		})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to list reactions")
+		}
 	}
 
 	attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{
@@ -449,11 +458,18 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get memo")
 	}
-	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
-		ContentID: &request.Memo.Name,
-	})
+	var reactions []*store.Reaction
+	reactionsEnabled, err := s.reactionsEnabled(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list reactions")
+		return nil, err
+	}
+	if reactionsEnabled {
+		reactions, err = s.Store.ListReactions(ctx, &store.FindReaction{
+			ContentID: &request.Memo.Name,
+		})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to list reactions")
+		}
 	}
 	attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{
 		MemoID: &memo.ID,
@@ -501,11 +517,18 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
-		ContentID: &request.Name,
-	})
+	var reactions []*store.Reaction
+	reactionsEnabled, err := s.reactionsEnabled(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list reactions")
+		return nil, err
+	}
+	if reactionsEnabled {
+		reactions, err = s.Store.ListReactions(ctx, &store.FindReaction{
+			ContentID: &request.Name,
+		})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to list reactions")
+		}
 	}
 
 	attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{
@@ -669,14 +692,19 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 		contentIDs = append(contentIDs, memoName)
 		memoIDsForAttachments = append(memoIDsForAttachments, memo.ID)
 	}
-	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{ContentIDList: contentIDs})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list reactions")
-	}
-
 	memoReactionsMap := make(map[string][]*store.Reaction)
-	for _, reaction := range reactions {
-		memoReactionsMap[reaction.ContentID] = append(memoReactionsMap[reaction.ContentID], reaction)
+	reactionsEnabled, err := s.reactionsEnabled(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if reactionsEnabled {
+		reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{ContentIDList: contentIDs})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to list reactions")
+		}
+		for _, reaction := range reactions {
+			memoReactionsMap[reaction.ContentID] = append(memoReactionsMap[reaction.ContentID], reaction)
+		}
 	}
 
 	attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{MemoIDList: memoIDsForAttachments})
@@ -713,6 +741,14 @@ func (s *APIV1Service) getContentLengthLimit(ctx context.Context) (int, error) {
 		return 0, status.Errorf(codes.Internal, "failed to get instance memo related setting")
 	}
 	return int(instanceMemoRelatedSetting.ContentLengthLimit), nil
+}
+
+func (s *APIV1Service) reactionsEnabled(ctx context.Context) (bool, error) {
+	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
+	if err != nil {
+		return false, status.Errorf(codes.Internal, "failed to get instance memo related setting")
+	}
+	return !instanceMemoRelatedSetting.DisableReactions, nil
 }
 
 // DispatchMemoCreatedWebhook dispatches webhook when memo is created.
