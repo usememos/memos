@@ -15,6 +15,8 @@ const THEME_ICONS: Record<string, JSX.Element> = {
   midnight: <MoonStar className="w-4 h-4" />,
   paper: <Palette className="w-4 h-4" />,
   whitewall: <Wallpaper className="w-4 h-4" />,
+  "solarized-light": <Sun className="w-4 h-4" />,
+  "solarized-dark": <Moon className="w-4 h-4" />,
 };
 
 const ThemeSelect = ({ value, onValueChange, className }: ThemeSelectProps = {}) => {
