@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useState } from "react";
 import { YearCalendar } from "@/components/ActivityCalendar";
@@ -8,7 +9,7 @@ import type { MonthNavigatorProps } from "@/types/statistics";
 
 export const MonthNavigator = ({ visibleMonth, onMonthChange, activityStats }: MonthNavigatorProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const currentMonth = new Date(visibleMonth);
+  const currentMonth = dayjs(visibleMonth).toDate();
   const currentYear = getYearFromDate(visibleMonth);
   const currentMonthNum = getMonthFromDate(visibleMonth);
 
