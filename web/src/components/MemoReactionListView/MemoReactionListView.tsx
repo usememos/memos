@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo, Reaction } from "@/types/proto/api/v1/memo_service_pb";
@@ -13,9 +14,14 @@ interface Props {
 
 const MemoReactionListView = (props: Props) => {
   const { memo: memoData, reactions } = props;
+  const { memoRelatedSetting } = useInstance();
   const currentUser = useCurrentUser();
   const reactionGroup = useReactionGroups(reactions);
   const readonly = memoData.state === State.ARCHIVED;
+
+  if (memoRelatedSetting.disableReactions) {
+    return null;
+  }
 
   if (reactions.length === 0) {
     return null;

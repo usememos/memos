@@ -156,6 +156,8 @@ message InstanceSetting {
     int32 content_length_limit = 3;
     // enable_double_click_edit enables editing on double click.
     bool enable_double_click_edit = 4;
+    // disable_reactions disables memo reactions across the UI and API.
+    bool disable_reactions = 8;
     // reactions is the list of reactions.
     repeated string reactions = 7;
   }
