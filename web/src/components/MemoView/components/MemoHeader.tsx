@@ -2,7 +2,9 @@ import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { BookmarkIcon, EyeOffIcon, MessageCircleMoreIcon } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useMemoSelection } from "@/contexts/MemoSelectionContext";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Checkbox } from "@/components/ui/checkbox";
 import i18n from "@/i18n";
 import { cn } from "@/lib/utils";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
@@ -30,6 +32,8 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({
 
   const { memo, creator, currentUser, parentPage, isArchived, readonly, showNSFWContent, nsfw } = useMemoViewContext();
   const { isInMemoDetailPage, commentAmount, relativeTimeFormat } = useMemoViewDerived();
+  const selection = useMemoSelection();
+  const isSelected = selection?.isSelected(memo.name) ?? false;
 
   const displayTime = isArchived ? (
     (memo.displayTime ? timestampDate(memo.displayTime) : undefined)?.toLocaleString(i18n.language)
@@ -52,6 +56,14 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({
       </div>
 
       <div className="flex flex-row justify-end items-center select-none shrink-0 gap-2">
+        {selection && selection.isSelectionMode && !readonly && (
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={() => selection.toggleMemoSelection(memo.name)}
+            onClick={(event) => event.stopPropagation()}
+            aria-label={t("common.select")}
+          />
+        )}
         {currentUser && !isArchived && (
           <ReactionSelector
             className={cn("border-none w-auto h-auto", reactionSelectorOpen && "block!", "block sm:hidden sm:group-hover:block")}
@@ -106,7 +118,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({
           </span>
         )}
 
-        <MemoActionMenu memo={memo} readonly={readonly} onEdit={onEdit} />
+        <MemoActionMenu memo={memo} readonly={readonly} onEdit={onEdit} onSelect={selection ? () => selection.enterSelectionMode(memo.name) : undefined} />
       </div>
     </div>
   );
