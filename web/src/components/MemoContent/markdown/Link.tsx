@@ -15,7 +15,10 @@ export const Link = ({ children, className, href, node: _node, ...props }: LinkP
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={cn("text-primary underline decoration-primary/50 underline-offset-2 transition-colors hover:decoration-primary", className)}
+      className={cn(
+        "text-primary underline decoration-primary/50 underline-offset-2 transition-colors hover:decoration-primary",
+        className,
+      )}
       {...props}
     >
       {children}
