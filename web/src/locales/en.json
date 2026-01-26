@@ -307,6 +307,8 @@
     "memo-related": "Memo",
     "memo-related-settings": {
       "content-lenght-limit": "Content length limit (Byte)",
+      "disable-reactions": "Disable reactions",
+      "reactions-disabled": "Reactions are disabled for this instance.",
       "enable-blur-nsfw-content": "Enable sensitive content (NSFW) blurring",
       "enable-memo-comments": "Enable memo comments",
       "enable-memo-location": "Enable memo location",

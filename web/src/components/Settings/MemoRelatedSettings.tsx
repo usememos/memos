@@ -44,7 +44,7 @@ const MemoRelatedSettings = () => {
   };
 
   const handleUpdateSetting = async () => {
-    if (memoRelatedSetting.reactions.length === 0) {
+    if (!memoRelatedSetting.disableReactions && memoRelatedSetting.reactions.length === 0) {
       toast.error("Reactions must not be empty.");
       return;
     }
@@ -103,31 +103,42 @@ const MemoRelatedSettings = () => {
       </SettingGroup>
 
       <SettingGroup title={t("setting.memo-related-settings.reactions")} showSeparator>
-        <div className="w-full flex flex-row flex-wrap gap-2">
-          {memoRelatedSetting.reactions.map((reactionType) => (
-            <Badge key={reactionType} variant="outline" className="flex items-center gap-1.5 h-8 px-3">
-              {reactionType}
-              <span
-                className="cursor-pointer text-muted-foreground hover:text-destructive"
-                onClick={() => updatePartialSetting({ reactions: memoRelatedSetting.reactions.filter((r) => r !== reactionType) })}
-              >
-                <X className="w-3.5 h-3.5" />
-              </span>
-            </Badge>
-          ))}
-          <div className="flex items-center gap-1.5">
-            <Input
-              className="w-32 h-8"
-              placeholder={t("common.input")}
-              value={editingReaction}
-              onChange={(event) => setEditingReaction(event.target.value.trim())}
-              onKeyDown={(e) => e.key === "Enter" && upsertReaction()}
-            />
-            <Button variant="ghost" size="sm" onClick={upsertReaction} className="h-8 w-8 p-0">
-              <CheckIcon className="w-4 h-4" />
-            </Button>
+        <SettingRow label={t("setting.memo-related-settings.disable-reactions")}>
+          <Switch
+            checked={memoRelatedSetting.disableReactions}
+            onCheckedChange={(checked) => updatePartialSetting({ disableReactions: checked })}
+          />
+        </SettingRow>
+
+        {!memoRelatedSetting.disableReactions ? (
+          <div className="w-full flex flex-row flex-wrap gap-2">
+            {memoRelatedSetting.reactions.map((reactionType) => (
+              <Badge key={reactionType} variant="outline" className="flex items-center gap-1.5 h-8 px-3">
+                {reactionType}
+                <span
+                  className="cursor-pointer text-muted-foreground hover:text-destructive"
+                  onClick={() => updatePartialSetting({ reactions: memoRelatedSetting.reactions.filter((r) => r !== reactionType) })}
+                >
+                  <X className="w-3.5 h-3.5" />
+                </span>
+              </Badge>
+            ))}
+            <div className="flex items-center gap-1.5">
+              <Input
+                className="w-32 h-8"
+                placeholder={t("common.input")}
+                value={editingReaction}
+                onChange={(event) => setEditingReaction(event.target.value.trim())}
+                onKeyDown={(e) => e.key === "Enter" && upsertReaction()}
+              />
+              <Button variant="ghost" size="sm" onClick={upsertReaction} className="h-8 w-8 p-0">
+                <CheckIcon className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
-        </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">{t("setting.memo-related-settings.reactions-disabled")}</p>
+        )}
       </SettingGroup>
 
       <div className="w-full flex justify-end">

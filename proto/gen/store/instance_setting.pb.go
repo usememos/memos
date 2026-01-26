@@ -649,6 +649,8 @@ type InstanceMemoRelatedSetting struct {
 	ContentLengthLimit int32 `protobuf:"varint,3,opt,name=content_length_limit,json=contentLengthLimit,proto3" json:"content_length_limit,omitempty"`
 	// enable_double_click_edit enables editing on double click.
 	EnableDoubleClickEdit bool `protobuf:"varint,4,opt,name=enable_double_click_edit,json=enableDoubleClickEdit,proto3" json:"enable_double_click_edit,omitempty"`
+	// disable_reactions disables memo reactions across the UI and API.
+	DisableReactions bool `protobuf:"varint,8,opt,name=disable_reactions,json=disableReactions,proto3" json:"disable_reactions,omitempty"`
 	// reactions is the list of reactions.
 	Reactions     []string `protobuf:"bytes,7,rep,name=reactions,proto3" json:"reactions,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -713,6 +715,13 @@ func (x *InstanceMemoRelatedSetting) GetEnableDoubleClickEdit() bool {
 	return false
 }
 
+func (x *InstanceMemoRelatedSetting) GetDisableReactions() bool {
+	if x != nil {
+		return x.DisableReactions
+	}
+	return false
+}
+
 func (x *InstanceMemoRelatedSetting) GetReactions() []string {
 	if x != nil {
 		return x.Reactions
@@ -765,12 +774,13 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\bendpoint\x18\x03 \x01(\tR\bendpoint\x12\x16\n" +
 	"\x06region\x18\x04 \x01(\tR\x06region\x12\x16\n" +
 	"\x06bucket\x18\x05 \x01(\tR\x06bucket\x12$\n" +
-	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\"\x9c\x02\n" +
+	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\"\xc9\x02\n" +
 	"\x1aInstanceMemoRelatedSetting\x12<\n" +
 	"\x1adisallow_public_visibility\x18\x01 \x01(\bR\x18disallowPublicVisibility\x127\n" +
 	"\x18display_with_update_time\x18\x02 \x01(\bR\x15displayWithUpdateTime\x120\n" +
 	"\x14content_length_limit\x18\x03 \x01(\x05R\x12contentLengthLimit\x127\n" +
-	"\x18enable_double_click_edit\x18\x04 \x01(\bR\x15enableDoubleClickEdit\x12\x1c\n" +
+	"\x18enable_double_click_edit\x18\x04 \x01(\bR\x15enableDoubleClickEdit\x12+\n" +
+	"\x11disable_reactions\x18\b \x01(\bR\x10disableReactions\x12\x1c\n" +
 	"\treactions\x18\a \x03(\tR\treactions*q\n" +
 	"\x12InstanceSettingKey\x12$\n" +
 	" INSTANCE_SETTING_KEY_UNSPECIFIED\x10\x00\x12\t\n" +
