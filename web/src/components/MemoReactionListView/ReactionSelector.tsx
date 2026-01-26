@@ -17,6 +17,10 @@ const ReactionSelector = (props: Props) => {
   const [open, setOpen] = useState(false);
   const { memoRelatedSetting } = useInstance();
 
+  if (memoRelatedSetting.disableReactions) {
+    return null;
+  }
+
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
     onOpenChange?.(newOpen);
