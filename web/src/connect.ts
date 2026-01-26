@@ -127,7 +127,7 @@ const authInterceptor: Interceptor = (next) => async (req) => {
 
 const transport = createConnectTransport({
   baseUrl: window.location.origin,
-  useBinaryFormat: false,
+  useBinaryFormat: true,
   fetch: fetchWithCredentials,
   interceptors: [authInterceptor],
 });
