@@ -40,6 +40,7 @@ const MemoContent = (props: MemoContentProps) => {
         ref={memoContentContainerRef}
         className={cn(
           "relative w-full max-w-full wrap-break-word text-base leading-6",
+          "[&>*:last-child]:mb-0",
           showCompactMode === "ALL" && "overflow-hidden",
           contentClassName,
         )}

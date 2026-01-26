@@ -115,17 +115,17 @@ export const CodeBlock = ({ children, className, node: _node, ...props }: CodeBl
   };
 
   return (
-    <pre className="relative my-3 rounded-lg border border-border bg-muted/30 overflow-hidden">
+    <pre className="relative my-2 rounded-lg border border-border bg-muted/30 overflow-hidden">
       {/* Header with language label and copy button */}
-      <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-accent/30">
+      <div className="flex items-center justify-between px-3 py-1.5 border-b border-border bg-accent/50">
         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide select-none">{language || "text"}</span>
         <button
           onClick={handleCopy}
           className={cn(
             "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-medium",
             "transition-all duration-200",
-            "hover:bg-accent/80 active:scale-95",
-            copied ? "text-primary bg-primary/10" : "text-muted-foreground bg-transparent",
+            "hover:bg-accent active:scale-95",
+            copied ? "text-primary bg-primary/10" : "text-muted-foreground",
           )}
           aria-label={copied ? "Copied" : "Copy code"}
           title={copied ? "Copied!" : "Copy code"}

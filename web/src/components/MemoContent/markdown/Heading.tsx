@@ -14,16 +14,16 @@ export const Heading = ({ level, children, className, node: _node, ...props }: H
   const Component = `h${level}` as const;
 
   const levelClasses = {
-    1: "text-3xl font-bold border-b border-border pb-1",
-    2: "text-2xl border-b border-border pb-1",
-    3: "text-xl",
-    4: "text-base",
-    5: "text-sm",
-    6: "text-sm text-muted-foreground",
+    1: "text-3xl font-bold border-b border-border pb-2",
+    2: "text-2xl font-semibold border-b border-border pb-1.5",
+    3: "text-xl font-semibold",
+    4: "text-lg font-semibold",
+    5: "text-base font-semibold",
+    6: "text-base font-medium text-muted-foreground",
   };
 
   return (
-    <Component className={cn("mt-3 mb-2 font-semibold leading-tight", levelClasses[level], className)} {...props}>
+    <Component className={cn("mt-3 mb-2 leading-tight", levelClasses[level], className)} {...props}>
       {children}
     </Component>
   );
