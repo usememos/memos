@@ -11,7 +11,7 @@ interface MermaidBlockProps {
 }
 
 const getMermaidTheme = (appTheme: string): "default" | "dark" => {
-  return appTheme === "default-dark" ? "dark" : "default";
+  return appTheme.includes("dark") ? "dark" : "default";
 };
 
 export const MermaidBlock = ({ children, className }: MermaidBlockProps) => {

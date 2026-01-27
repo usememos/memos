@@ -26,6 +26,7 @@ export interface MasonryColumnProps {
   renderContext: MemoRenderContext;
   onHeightChange: (memoName: string, height: number) => void;
   isFirstColumn: boolean;
+  listMode?: boolean;
   prefixElement?: JSX.Element;
   prefixElementRef?: React.RefObject<HTMLDivElement>;
 }

@@ -36,6 +36,7 @@ const MasonryView = ({ memoList, renderer, prefixElement, listMode = false }: Ma
           renderContext={renderContext}
           onHeightChange={handleHeightChange}
           isFirstColumn={columnIndex === 0}
+          listMode={listMode}
           prefixElement={prefixElement}
           prefixElementRef={prefixElementRef}
         />
