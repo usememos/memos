@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { matchPath, Outlet, useLocation } from "react-router-dom";
 import type { MemoExplorerContext } from "@/components/MemoExplorer";
 import { MemoExplorer, MemoExplorerDrawer } from "@/components/MemoExplorer";
+import DesktopHeader from "@/components/DesktopHeader";
 import MobileHeader from "@/components/MobileHeader";
 import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -80,7 +81,12 @@ const MainLayout = () => {
         </div>
       )}
       <div className={cn("w-full min-h-full", lg ? "pl-72" : md ? "pl-56" : "")}>
-        <div className={cn("w-full mx-auto px-4 sm:px-6 md:pt-6 pb-8")}>
+        {md && (
+          <div className="sticky top-0 z-1 bg-background/80 backdrop-blur-lg border-b border-border/60 px-4 sm:px-6 py-3">
+            <DesktopHeader />
+          </div>
+        )}
+        <div className={cn("w-full mx-auto px-4 sm:px-6 md:pt-4 pb-8")}>
           <Outlet />
         </div>
       </div>
