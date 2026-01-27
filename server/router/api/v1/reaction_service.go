@@ -15,6 +15,14 @@ import (
 )
 
 func (s *APIV1Service) ListMemoReactions(ctx context.Context, request *v1pb.ListMemoReactionsRequest) (*v1pb.ListMemoReactionsResponse, error) {
+	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get instance memo related setting")
+	}
+	if instanceMemoRelatedSetting.DisableReactions {
+		return nil, status.Errorf(codes.PermissionDenied, "reactions are disabled")
+	}
+
 	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
 		ContentID: &request.Name,
 	})
@@ -33,6 +41,14 @@ func (s *APIV1Service) ListMemoReactions(ctx context.Context, request *v1pb.List
 }
 
 func (s *APIV1Service) UpsertMemoReaction(ctx context.Context, request *v1pb.UpsertMemoReactionRequest) (*v1pb.Reaction, error) {
+	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get instance memo related setting")
+	}
+	if instanceMemoRelatedSetting.DisableReactions {
+		return nil, status.Errorf(codes.PermissionDenied, "reactions are disabled")
+	}
+
 	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user")
@@ -55,6 +71,14 @@ func (s *APIV1Service) UpsertMemoReaction(ctx context.Context, request *v1pb.Ups
 }
 
 func (s *APIV1Service) DeleteMemoReaction(ctx context.Context, request *v1pb.DeleteMemoReactionRequest) (*emptypb.Empty, error) {
+	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get instance memo related setting")
+	}
+	if instanceMemoRelatedSetting.DisableReactions {
+		return nil, status.Errorf(codes.PermissionDenied, "reactions are disabled")
+	}
+
 	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)

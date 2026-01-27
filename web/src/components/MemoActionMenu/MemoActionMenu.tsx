@@ -81,6 +81,12 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
               <Edit3Icon className="w-4 h-auto" />
               {t("common.edit")}
             </DropdownMenuItem>
+            {props.onSelect && (
+              <DropdownMenuItem onClick={props.onSelect}>
+                <SquareCheckIcon className="w-4 h-auto" />
+                {t("common.select")}
+              </DropdownMenuItem>
+            )}
           </>
         )}
 

@@ -4,6 +4,7 @@ import { useUser } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { isSuperUser } from "@/utils/user";
+import { useMemoSelection } from "@/contexts/MemoSelectionContext";
 import MemoEditor from "../MemoEditor";
 import PreviewImageDialog from "../PreviewImageDialog";
 import { MemoBody, MemoHeader } from "./components";
@@ -26,6 +27,8 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const { nsfw, showNSFWContent, toggleNsfwVisibility } = useNsfwContent(memoData, props.showNsfwContent);
   const { previewState, openPreview, setPreviewOpen } = useImagePreview();
   const { unpinMemo } = useMemoActions(memoData, isArchived);
+  const selection = useMemoSelection();
+  const isSelected = selection?.isSelected(memoData.name) ?? false;
 
   const handleEditorConfirm = () => setShowEditor(false);
   const handleEditorCancel = () => setShowEditor(false);
@@ -68,7 +71,16 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
 
   return (
     <MemoViewContext.Provider value={contextValue}>
-      <article className={cn(MEMO_CARD_BASE_CLASSES, className)} ref={cardRef} tabIndex={readonly ? -1 : 0}>
+      <article
+        className={cn(
+          MEMO_CARD_BASE_CLASSES,
+          className,
+          selection?.isSelectionMode && "ring-1 ring-border/60",
+          isSelected && "ring-2 ring-primary/50 bg-accent/20",
+        )}
+        ref={cardRef}
+        tabIndex={readonly ? -1 : 0}
+      >
         <MemoHeader
           showCreator={props.showCreator}
           showVisibility={props.showVisibility}

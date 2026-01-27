@@ -1,13 +1,18 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { ArrowUpIcon } from "lucide-react";
+import toast from "react-hot-toast";
+import { ArchiveIcon, ArrowUpIcon, BookmarkPlusIcon, TrashIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { matchPath } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { userServiceClient } from "@/connect";
+import { MemoSelectionContext, useMemoSelection } from "@/contexts/MemoSelectionContext";
 import { useView } from "@/contexts/ViewContext";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
-import { useInfiniteMemos } from "@/hooks/useMemoQueries";
+import { useDeleteMemo, useInfiniteMemos, useUpdateMemo } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
+import { handleError } from "@/lib/error";
 import { Routes } from "@/router";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
@@ -85,6 +90,9 @@ const PagedMemoList = (props: Props) => {
   const t = useTranslate();
   const { layout } = useView();
   const queryClient = useQueryClient();
+  const [isSelectionMode, setIsSelectionMode] = useState(false);
+  const [selectedMemoNames, setSelectedMemoNames] = useState<Set<string>>(() => new Set());
+  const [selectionBarContainer, setSelectionBarContainer] = useState<HTMLElement | null>(null);
 
   // Show memo editor only on the root route
   const showMemoEditor = Boolean(matchPath(Routes.ROOT, window.location.pathname));
@@ -104,6 +112,42 @@ const PagedMemoList = (props: Props) => {
 
   // Apply custom sorting if provided, otherwise use memos directly
   const sortedMemoList = useMemo(() => (props.listSort ? props.listSort(memos) : memos), [memos, props.listSort]);
+
+  const selectionContextValue = useMemo(() => {
+    const selectedCount = selectedMemoNames.size;
+    return {
+      isSelectionMode,
+      selectedMemoNames,
+      selectedCount,
+      isSelected: (name: string) => selectedMemoNames.has(name),
+      toggleMemoSelection: (name: string) => {
+        setSelectedMemoNames((prev) => {
+          const next = new Set(prev);
+          if (next.has(name)) {
+            next.delete(name);
+          } else {
+            next.add(name);
+          }
+          return next;
+        });
+      },
+      enterSelectionMode: (name?: string) => {
+        setIsSelectionMode(true);
+        if (name) {
+          setSelectedMemoNames((prev) => {
+            if (prev.has(name)) return prev;
+            const next = new Set(prev);
+            next.add(name);
+            return next;
+          });
+        }
+      },
+      exitSelectionMode: () => {
+        setIsSelectionMode(false);
+        setSelectedMemoNames(new Set());
+      },
+    };
+  }, [isSelectionMode, selectedMemoNames]);
 
   // Prefetch creators when new data arrives to improve performance
   useEffect(() => {
@@ -133,6 +177,27 @@ const PagedMemoList = (props: Props) => {
     onFetchNext: fetchNextPage,
   });
 
+  useEffect(() => {
+    setSelectionBarContainer(document.getElementById("memo-selection-actions"));
+  }, []);
+
+  useEffect(() => {
+    if (!isSelectionMode || selectedMemoNames.size === 0) return;
+    const memoNameSet = new Set(sortedMemoList.map((memo) => memo.name));
+    setSelectedMemoNames((prev) => {
+      let changed = false;
+      const next = new Set<string>();
+      for (const name of prev) {
+        if (memoNameSet.has(name)) {
+          next.add(name);
+        } else {
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [isSelectionMode, selectedMemoNames, sortedMemoList]);
+
   // Infinite scroll: fetch more when user scrolls near bottom
   useEffect(() => {
     if (!hasNextPage) return;
@@ -150,6 +215,7 @@ const PagedMemoList = (props: Props) => {
 
   const children = (
     <div className="flex flex-col justify-start items-start w-full max-w-full">
+      <MemoSelectionBar memoList={sortedMemoList} container={selectionBarContainer} />
       {/* Show skeleton loader during initial load */}
       {isLoading ? (
         <Skeleton showCreator={props.showCreator} count={4} />
@@ -192,7 +258,7 @@ const PagedMemoList = (props: Props) => {
     </div>
   );
 
-  return children;
+  return <MemoSelectionContext.Provider value={selectionContextValue}>{children}</MemoSelectionContext.Provider>;
 };
 
 const BackToTop = () => {
@@ -230,3 +296,116 @@ const BackToTop = () => {
 };
 
 export default PagedMemoList;
+
+const MemoSelectionBar = ({ memoList, container }: { memoList: Memo[]; container: HTMLElement | null }) => {
+  const t = useTranslate();
+  const selection = useMemoSelection();
+  const { mutateAsync: updateMemo } = useUpdateMemo();
+  const { mutateAsync: deleteMemo } = useDeleteMemo();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  if (!selection || !selection.isSelectionMode || !container) {
+    return null;
+  }
+
+  const selectedMemos = memoList.filter((memo) => selection.selectedMemoNames.has(memo.name));
+  const selectedCount = selection.selectedCount;
+
+  const handleBulkPin = async () => {
+    if (selectedCount === 0) return;
+    const targets = selectedMemos.filter((memo) => !memo.pinned);
+    if (targets.length === 0) return;
+    try {
+      await Promise.all(
+        targets.map((memo) => updateMemo({ update: { name: memo.name, pinned: true }, updateMask: ["pinned"] })),
+      );
+      toast.success(t("message.pinned-selected-memos"));
+    } catch (error: unknown) {
+      handleError(error, toast.error, {
+        context: "Bulk pin memos",
+        fallbackMessage: "Failed to pin selected memos",
+      });
+    }
+  };
+
+  const handleBulkArchive = async () => {
+    if (selectedCount === 0) return;
+    const targets = selectedMemos.filter((memo) => memo.state !== State.ARCHIVED);
+    if (targets.length === 0) return;
+    try {
+      await Promise.all(
+        targets.map((memo) => updateMemo({ update: { name: memo.name, state: State.ARCHIVED }, updateMask: ["state"] })),
+      );
+      toast.success(t("message.archived-selected-memos"));
+    } catch (error: unknown) {
+      handleError(error, toast.error, {
+        context: "Bulk archive memos",
+        fallbackMessage: "Failed to archive selected memos",
+      });
+    }
+  };
+
+  const confirmBulkDelete = async () => {
+    if (selectedCount === 0) return;
+    try {
+      await Promise.all(selectedMemos.map((memo) => deleteMemo(memo.name)));
+      toast.success(t("message.deleted-selected-memos"));
+      selection.exitSelectionMode();
+    } catch (error: unknown) {
+      handleError(error, toast.error, {
+        context: "Bulk delete memos",
+        fallbackMessage: "Failed to delete selected memos",
+      });
+    }
+  };
+
+  return createPortal(
+    <div className="flex flex-row justify-end items-center gap-2 rounded-md border border-border/60 bg-accent/40 px-2 py-1">
+      <span className="text-xs text-muted-foreground">{t("memo.selected-count", { count: selectedCount })}</span>
+      <div className="flex flex-row justify-end items-center gap-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          disabled={selectedCount === 0}
+          onClick={handleBulkPin}
+          aria-label={t("common.pin")}
+        >
+          <BookmarkPlusIcon className="w-4 h-auto" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          disabled={selectedCount === 0}
+          onClick={handleBulkArchive}
+          aria-label={t("common.archive")}
+        >
+          <ArchiveIcon className="w-4 h-auto" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          disabled={selectedCount === 0}
+          onClick={() => setDeleteDialogOpen(true)}
+          aria-label={t("common.delete")}
+        >
+          <TrashIcon className="w-4 h-auto" />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={selection.exitSelectionMode} aria-label={t("common.cancel")}>
+          <XIcon className="w-4 h-auto" />
+        </Button>
+      </div>
+
+      <ConfirmDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        title={t("memo.delete-selected-confirm")}
+        confirmLabel={t("common.delete")}
+        description={t("memo.delete-selected-confirm-description")}
+        cancelLabel={t("common.cancel")}
+        onConfirm={confirmBulkDelete}
+        confirmVariant="destructive"
+      />
+    </div>,
+    container,
+  );
+};
