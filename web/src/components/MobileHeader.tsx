@@ -25,7 +25,10 @@ const MobileHeader = (props: Props) => {
       )}
     >
       {!sm && <NavigationDrawer />}
-      <div className="w-full flex flex-row justify-end items-center">{children}</div>
+      <div className="w-full flex flex-row justify-end items-center gap-2">
+        <div id="memo-selection-actions" className="flex flex-row justify-end items-center gap-1" />
+        {children}
+      </div>
     </div>
   );
 };

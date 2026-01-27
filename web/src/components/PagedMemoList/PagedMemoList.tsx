@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { ArchiveIcon, ArrowUpIcon, BookmarkPlusIcon, TrashIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { matchPath } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -91,6 +92,7 @@ const PagedMemoList = (props: Props) => {
   const queryClient = useQueryClient();
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedMemoNames, setSelectedMemoNames] = useState<Set<string>>(() => new Set());
+  const [selectionBarContainer, setSelectionBarContainer] = useState<HTMLElement | null>(null);
 
   // Show memo editor only on the root route
   const showMemoEditor = Boolean(matchPath(Routes.ROOT, window.location.pathname));
@@ -176,6 +178,10 @@ const PagedMemoList = (props: Props) => {
   });
 
   useEffect(() => {
+    setSelectionBarContainer(document.getElementById("memo-selection-actions"));
+  }, []);
+
+  useEffect(() => {
     if (!isSelectionMode || selectedMemoNames.size === 0) return;
     const memoNameSet = new Set(sortedMemoList.map((memo) => memo.name));
     setSelectedMemoNames((prev) => {
@@ -209,6 +215,7 @@ const PagedMemoList = (props: Props) => {
 
   const children = (
     <div className="flex flex-col justify-start items-start w-full max-w-full">
+      <MemoSelectionBar memoList={sortedMemoList} container={selectionBarContainer} />
       {/* Show skeleton loader during initial load */}
       {isLoading ? (
         <Skeleton showCreator={props.showCreator} count={4} />
@@ -219,7 +226,6 @@ const PagedMemoList = (props: Props) => {
             renderer={props.renderer}
             prefixElement={
               <>
-                <MemoSelectionBar memoList={sortedMemoList} />
                 {showMemoEditor ? (
                   <MemoEditor className="mb-2" cacheKey="home-memo-editor" placeholder={t("editor.any-thoughts")} />
                 ) : undefined}
@@ -291,14 +297,14 @@ const BackToTop = () => {
 
 export default PagedMemoList;
 
-const MemoSelectionBar = ({ memoList }: { memoList: Memo[] }) => {
+const MemoSelectionBar = ({ memoList, container }: { memoList: Memo[]; container: HTMLElement | null }) => {
   const t = useTranslate();
   const selection = useMemoSelection();
   const { mutateAsync: updateMemo } = useUpdateMemo();
   const { mutateAsync: deleteMemo } = useDeleteMemo();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  if (!selection || !selection.isSelectionMode) {
+  if (!selection || !selection.isSelectionMode || !container) {
     return null;
   }
 
@@ -353,9 +359,9 @@ const MemoSelectionBar = ({ memoList }: { memoList: Memo[] }) => {
     }
   };
 
-  return (
-    <div className="w-full mb-2 flex flex-row justify-between items-center gap-3 rounded-lg border border-border/60 bg-accent/30 px-3 py-2">
-      <span className="text-sm text-muted-foreground">{t("memo.selected-count", { count: selectedCount })}</span>
+  return createPortal(
+    <div className="flex flex-row justify-end items-center gap-2 rounded-md border border-border/60 bg-accent/40 px-2 py-1">
+      <span className="text-xs text-muted-foreground">{t("memo.selected-count", { count: selectedCount })}</span>
       <div className="flex flex-row justify-end items-center gap-1">
         <Button
           variant="ghost"
@@ -399,6 +405,7 @@ const MemoSelectionBar = ({ memoList }: { memoList: Memo[] }) => {
         onConfirm={confirmBulkDelete}
         confirmVariant="destructive"
       />
-    </div>
+    </div>,
+    container,
   );
 };
