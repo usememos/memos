@@ -277,7 +277,7 @@
     },
     "memo-related": "Not",
     "memo-related-settings": {
-      "content-lenght-limit": "İçerik uzunluğu sınırı (Bayt)",
+      "content-length-limit": "İçerik uzunluğu sınırı (Bayt)",
       "enable-blur-nsfw-content": "NSFW içeriği bulanıklaştırmayı etkinleştir",
       "enable-memo-comments": "Not yorumlarını etkinleştir",
       "enable-memo-location": "Not konumunu etkinleştir",

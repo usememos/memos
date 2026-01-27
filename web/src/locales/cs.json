@@ -275,7 +275,7 @@
     },
     "memo-related": "Poznámky",
     "memo-related-settings": {
-      "content-lenght-limit": "Omezení velikosti obsahu (bajty)",
+      "content-length-limit": "Omezení velikosti obsahu (bajty)",
       "enable-blur-nsfw-content": "Povolit rozostření citlivého obsahu",
       "enable-memo-comments": "Povolit komentáře k poznámkám",
       "enable-memo-location": "Povolit umístění poznámek",

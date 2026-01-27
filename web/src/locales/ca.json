@@ -277,7 +277,7 @@
     },
     "memo-related": "Nota",
     "memo-related-settings": {
-      "content-lenght-limit": "Límit de longitud del contingut (Bytes)",
+      "content-length-limit": "Límit de longitud del contingut (Bytes)",
       "enable-blur-nsfw-content": "Habilita el difuminat de contingut sensible (NSFW)",
       "enable-memo-comments": "Habilita els comentaris a les notes",
       "enable-memo-location": "Habilita la ubicació de la nota",

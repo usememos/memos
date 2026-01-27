@@ -277,7 +277,7 @@
     },
     "memo-related": "Нотатка",
     "memo-related-settings": {
-      "content-lenght-limit": "Обмеження довжини вмісту (байт)",
+      "content-length-limit": "Обмеження довжини вмісту (байт)",
       "enable-blur-nsfw-content": "Увімкнути розмиття чутливого контенту (NSFW)",
       "enable-memo-comments": "Увімкнути коментарі до нотаток",
       "enable-memo-location": "Увімкнути місцезнаходження нотаток",

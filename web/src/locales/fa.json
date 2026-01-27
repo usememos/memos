@@ -252,7 +252,7 @@
     },
     "memo-related": "یادداشت",
     "memo-related-settings": {
-      "content-lenght-limit": "محدودیت طول محتوا (بایت)",
+      "content-length-limit": "محدودیت طول محتوا (بایت)",
       "enable-blur-nsfw-content": "فعال‌سازی تار کردن محتوای حساس (NSFW)",
       "enable-memo-comments": "فعال‌سازی نظرات یادداشت",
       "enable-memo-location": "فعال‌سازی موقعیت یادداشت",

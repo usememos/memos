@@ -304,7 +304,7 @@
     },
     "memo-related": "Memo",
     "memo-related-settings": {
-      "content-lenght-limit": "Límite de lonxitude do contido (Byte)",
+      "content-length-limit": "Límite de lonxitude do contido (Byte)",
       "enable-blur-nsfw-content": "Activar esvaecemento do contido sensible (NSFW)",
       "enable-memo-comments": "Activar comentarios nas notas",
       "enable-memo-location": "Activar localización nas notas",

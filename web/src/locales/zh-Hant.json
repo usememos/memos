@@ -307,7 +307,7 @@
     },
     "memo-related": "備忘錄",
     "memo-related-settings": {
-      "content-lenght-limit": "內容長度限制（位元組）",
+      "content-length-limit": "內容長度限制（位元組）",
       "enable-blur-nsfw-content": "啟用 NSFW 內容模糊化（在下方添加 NSFW 標籤）",
       "enable-memo-comments": "啟用備忘錄評論",
       "enable-memo-location": "啟用備忘錄定位",

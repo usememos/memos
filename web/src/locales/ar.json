@@ -277,7 +277,7 @@
     },
     "memo-related": "مذكرة",
     "memo-related-settings": {
-      "content-lenght-limit": "حد طول المحتوى (بايت)",
+      "content-length-limit": "حد طول المحتوى (بايت)",
       "enable-blur-nsfw-content": "تمكين طمس المحتوى الحساس (NSFW)",
       "enable-memo-comments": "تمكين تعليقات المذكرة",
       "enable-memo-location": "تمكين موقع المذكرة",

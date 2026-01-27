@@ -306,7 +306,7 @@
     },
     "memo-related": "Note",
     "memo-related-settings": {
-      "content-lenght-limit": "Limite de longueur du contenu (octets)",
+      "content-length-limit": "Limite de longueur du contenu (octets)",
       "enable-blur-nsfw-content": "Activer le flou pour le contenu sensible (NSFW)",
       "enable-memo-comments": "Activer les commentaires sur les notes",
       "enable-memo-location": "Activer la localisation des notes",
