@@ -276,7 +276,7 @@
     },
     "memo-related": "Jegyzet",
     "memo-related-settings": {
-      "content-lenght-limit": "Tartalom hosszának korlátja (bájt)",
+      "content-length-limit": "Tartalom hosszának korlátja (bájt)",
       "enable-blur-nsfw-content": "Érzékeny (NSFW) tartalom elhomályosításának engedélyezése",
       "enable-memo-comments": "Jegyzet hozzászólások engedélyezése",
       "enable-memo-location": "Jegyzet helyének engedélyezése",

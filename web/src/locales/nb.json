@@ -277,7 +277,7 @@
     },
     "memo-related": "Memo",
     "memo-related-settings": {
-      "content-lenght-limit": "Maksimal innholdslengde (Byte)",
+      "content-length-limit": "Maksimal innholdslengde (Byte)",
       "enable-blur-nsfw-content": "Slå på sløring av NSFW-innhold (legg til NSFW-tagger nedenfor)",
       "enable-memo-comments": "Slå på kommentarer for memoer",
       "enable-memo-location": "Slå på lokasjon for memoer",

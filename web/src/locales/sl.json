@@ -277,7 +277,7 @@
     },
     "memo-related": "Beležka",
     "memo-related-settings": {
-      "content-lenght-limit": "Omejitev dolžine vsebine (bajt)",
+      "content-length-limit": "Omejitev dolžine vsebine (bajt)",
       "enable-blur-nsfw-content": "Omogoči zameglitev občutljive vsebine (NSFW)",
       "enable-memo-comments": "Omogoči komentarje na beležkah",
       "enable-memo-location": "Omogoči lokacijo beležk",

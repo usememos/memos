@@ -305,7 +305,7 @@
     },
     "memo-related": "Notatki",
     "memo-related-settings": {
-      "content-lenght-limit": "Limit długości treści (Bajty)",
+      "content-length-limit": "Limit długości treści (Bajty)",
       "enable-blur-nsfw-content": "Włącz rozmycie treści NSFW",
       "enable-memo-comments": "Włącz komentarze do notatek",
       "enable-memo-location": "Włącz lokalizację notatek",

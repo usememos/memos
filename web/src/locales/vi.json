@@ -217,7 +217,7 @@
     },
     "memo-related": "Ghi chú",
     "memo-related-settings": {
-      "content-lenght-limit": "Giới hạn độ dài nội dung (Byte)",
+      "content-length-limit": "Giới hạn độ dài nội dung (Byte)",
       "enable-memo-comments": "Bật bình luận ghi chú",
       "enable-memo-location": "Bật vị trí ghi chú",
       "reactions": "Phản ứng",
