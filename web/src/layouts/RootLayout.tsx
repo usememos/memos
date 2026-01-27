@@ -1,8 +1,7 @@
-import { Suspense, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
 import usePrevious from "react-use/lib/usePrevious";
 import Navigation from "@/components/Navigation";
-import Spinner from "@/components/Spinner";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -47,15 +46,7 @@ const RootLayout = () => {
         </div>
       )}
       <main className="w-full h-auto grow shrink flex flex-col justify-start items-center">
-        <Suspense
-          fallback={
-            <div className="w-full h-64 flex items-center justify-center">
-              <Spinner size="lg" />
-            </div>
-          }
-        >
-          <Outlet />
-        </Suspense>
+        <Outlet />
       </main>
     </div>
   );
