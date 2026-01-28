@@ -3,7 +3,6 @@ package v1
 import (
 	"context"
 	"fmt"
-	"sync"
 
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
@@ -16,16 +15,16 @@ import (
 
 // GetInstanceProfile returns the instance profile.
 func (s *APIV1Service) GetInstanceProfile(ctx context.Context, _ *v1pb.GetInstanceProfileRequest) (*v1pb.InstanceProfile, error) {
-	owner, err := s.GetInstanceOwner(ctx)
+	admin, err := s.GetInstanceAdmin(ctx)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get instance owner: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to get instance admin: %v", err)
 	}
 
 	instanceProfile := &v1pb.InstanceProfile{
 		Version:     s.Profile.Version,
 		Demo:        s.Profile.Demo,
 		InstanceUrl: s.Profile.InstanceURL,
-		Initialized: owner != nil,
+		Admin:       admin, // nil when not initialized
 	}
 	return instanceProfile, nil
 }
@@ -270,48 +269,17 @@ func convertInstanceMemoRelatedSettingToStore(setting *v1pb.InstanceSetting_Memo
 	}
 }
 
-var (
-	ownerCache      *v1pb.User
-	ownerCacheMutex sync.RWMutex
-)
-
-func (s *APIV1Service) GetInstanceOwner(ctx context.Context) (*v1pb.User, error) {
-	// Try read lock first for cache hit
-	ownerCacheMutex.RLock()
-	if ownerCache != nil {
-		defer ownerCacheMutex.RUnlock()
-		return ownerCache, nil
-	}
-	ownerCacheMutex.RUnlock()
-
-	// Upgrade to write lock to populate cache
-	ownerCacheMutex.Lock()
-	defer ownerCacheMutex.Unlock()
-
-	// Double-check after acquiring write lock
-	if ownerCache != nil {
-		return ownerCache, nil
-	}
-
+func (s *APIV1Service) GetInstanceAdmin(ctx context.Context) (*v1pb.User, error) {
 	adminUserType := store.RoleAdmin
 	user, err := s.Store.GetUser(ctx, &store.FindUser{
 		Role: &adminUserType,
 	})
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to find owner")
+		return nil, errors.Wrapf(err, "failed to find admin")
 	}
 	if user == nil {
 		return nil, nil
 	}
 
-	ownerCache = convertUserFromStore(user)
-	return ownerCache, nil
-}
-
-// ClearInstanceOwnerCache clears the cached instance owner.
-// This should be called when an admin user is created or when the owner changes.
-func (*APIV1Service) ClearInstanceOwnerCache() {
-	ownerCacheMutex.Lock()
-	defer ownerCacheMutex.Unlock()
-	ownerCache = nil
+	return convertUserFromStore(user), nil
 }

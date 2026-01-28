@@ -48,9 +48,6 @@ func NewTestService(t *testing.T) *TestService {
 		MarkdownService: markdownService,
 	}
 
-	// Clear any cached state from previous tests
-	service.ClearInstanceOwnerCache()
-
 	return &TestService{
 		Service: service,
 		Store:   testStore,
@@ -59,9 +56,8 @@ func NewTestService(t *testing.T) *TestService {
 	}
 }
 
-// Cleanup clears caches and closes resources after test.
+// Cleanup closes resources after test.
 func (ts *TestService) Cleanup() {
-	ts.Service.ClearInstanceOwnerCache()
 	ts.Store.Close()
 }
 

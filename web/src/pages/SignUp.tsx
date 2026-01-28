@@ -135,7 +135,7 @@ const SignUp = () => {
         ) : (
           <p className="w-full text-2xl mt-2 text-muted-foreground">Sign up is not allowed.</p>
         )}
-        {!profile.initialized ? (
+        {!profile.admin ? (
           <p className="w-full mt-4 text-sm font-medium text-muted-foreground">{t("auth.host-tip")}</p>
         ) : (
           <p className="w-full mt-4 text-sm">

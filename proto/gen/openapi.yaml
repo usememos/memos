@@ -2141,12 +2141,12 @@ components:
                 instanceUrl:
                     type: string
                     description: Instance URL is the URL of the instance.
-                initialized:
-                    type: boolean
+                admin:
+                    allOf:
+                        - $ref: '#/components/schemas/User'
                     description: |-
-                        Indicates if the instance has completed first-time setup.
-                         When false, the instance requires initialization (creating the first admin account).
-                         This follows the pattern used by other self-hosted platforms for setup workflows.
+                        The first administrator who set up this instance.
+                         When null, instance requires initial setup (creating the first admin account).
             description: Instance profile message containing basic instance information.
         InstanceSetting:
             type: object

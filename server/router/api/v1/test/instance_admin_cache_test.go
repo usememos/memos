@@ -9,7 +9,7 @@ import (
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 )
 
-func TestInstanceOwnerCache(t *testing.T) {
+func TestInstanceAdminRetrieval(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Instance becomes initialized after first admin user is created", func(t *testing.T) {
@@ -20,7 +20,7 @@ func TestInstanceOwnerCache(t *testing.T) {
 		// Verify instance is not initialized initially
 		profile1, err := ts.Service.GetInstanceProfile(ctx, &v1pb.GetInstanceProfileRequest{})
 		require.NoError(t, err)
-		require.False(t, profile1.Initialized, "Instance should not be initialized before first admin user")
+		require.Nil(t, profile1.Admin, "Instance should not be initialized before first admin user")
 
 		// Create the first admin user
 		user, err := ts.CreateHostUser(ctx, "admin")
@@ -30,29 +30,25 @@ func TestInstanceOwnerCache(t *testing.T) {
 		// Verify instance is now initialized
 		profile2, err := ts.Service.GetInstanceProfile(ctx, &v1pb.GetInstanceProfileRequest{})
 		require.NoError(t, err)
-		require.True(t, profile2.Initialized, "Instance should be initialized after first admin user is created")
+		require.NotNil(t, profile2.Admin, "Instance should be initialized after first admin user is created")
+		require.Equal(t, user.Username, profile2.Admin.Username)
 	})
 
-	t.Run("ClearInstanceOwnerCache works correctly", func(t *testing.T) {
+	t.Run("Admin retrieval is cached by Store layer", func(t *testing.T) {
 		// Create test service
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
 		// Create admin user
-		_, err := ts.CreateHostUser(ctx, "admin")
+		user, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
 
-		// Verify initialized
-		profile1, err := ts.Service.GetInstanceProfile(ctx, &v1pb.GetInstanceProfileRequest{})
-		require.NoError(t, err)
-		require.True(t, profile1.Initialized)
-
-		// Clear cache
-		ts.Service.ClearInstanceOwnerCache()
-
-		// Should still be initialized (cache is refilled from DB)
-		profile2, err := ts.Service.GetInstanceProfile(ctx, &v1pb.GetInstanceProfileRequest{})
-		require.NoError(t, err)
-		require.True(t, profile2.Initialized)
+		// Multiple calls should return consistent admin user (from cache)
+		for i := 0; i < 5; i++ {
+			profile, err := ts.Service.GetInstanceProfile(ctx, &v1pb.GetInstanceProfileRequest{})
+			require.NoError(t, err)
+			require.NotNil(t, profile.Admin)
+			require.Equal(t, user.Username, profile.Admin.Username)
+		}
 	})
 }

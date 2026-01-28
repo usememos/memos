@@ -31,7 +31,7 @@ func TestGetInstanceProfile(t *testing.T) {
 		require.Equal(t, "http://localhost:8080", resp.InstanceUrl)
 
 		// Instance should not be initialized since no admin users are created
-		require.False(t, resp.Initialized)
+		require.Nil(t, resp.Admin)
 	})
 
 	t.Run("GetInstanceProfile with initialized instance", func(t *testing.T) {
@@ -58,7 +58,8 @@ func TestGetInstanceProfile(t *testing.T) {
 		require.Equal(t, "http://localhost:8080", resp.InstanceUrl)
 
 		// Instance should be initialized since an admin user exists
-		require.True(t, resp.Initialized)
+		require.NotNil(t, resp.Admin)
+		require.Equal(t, hostUser.Username, resp.Admin.Username)
 	})
 }
 
@@ -101,7 +102,7 @@ func TestGetInstanceProfile_Concurrency(t *testing.T) {
 				require.Equal(t, "test-1.0.0", resp.Version)
 				require.True(t, resp.Demo)
 				require.Equal(t, "http://localhost:8080", resp.InstanceUrl)
-				require.True(t, resp.Initialized)
+				require.NotNil(t, resp.Admin)
 			}
 		}
 	})

@@ -22,10 +22,10 @@ const App = () => {
 
   // Redirect to sign up page if instance not initialized (no admin account exists yet)
   useEffect(() => {
-    if (!instanceProfile.initialized) {
+    if (!instanceProfile.admin) {
       navigateTo("/auth/signup");
     }
-  }, [instanceProfile.initialized, navigateTo]);
+  }, [instanceProfile.admin, navigateTo]);
 
   useEffect(() => {
     if (instanceGeneralSetting.additionalStyle) {
