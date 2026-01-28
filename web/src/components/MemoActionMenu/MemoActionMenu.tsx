@@ -4,6 +4,7 @@ import {
   BookmarkMinusIcon,
   BookmarkPlusIcon,
   CopyIcon,
+  DownloadIcon,
   Edit3Icon,
   FileTextIcon,
   LinkIcon,
@@ -49,6 +50,7 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
     handleToggleMemoStatusClick,
     handleCopyLink,
     handleCopyContent,
+    handleDownloadContent,
     handleDeleteMemoClick,
     confirmDeleteMemo,
     handleRemoveCompletedTaskListItemsClick,
@@ -73,7 +75,11 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
           <>
             {!isComment && (
               <DropdownMenuItem onClick={handleTogglePinMemoBtnClick}>
-                {memo.pinned ? <BookmarkMinusIcon className="w-4 h-auto" /> : <BookmarkPlusIcon className="w-4 h-auto" />}
+                {memo.pinned ? (
+                  <BookmarkMinusIcon className="w-4 h-auto" />
+                ) : (
+                  <BookmarkPlusIcon className="w-4 h-auto" />
+                )}
                 {memo.pinned ? t("common.unpin") : t("common.pin")}
               </DropdownMenuItem>
             )}
@@ -91,6 +97,10 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
               <CopyIcon className="w-4 h-auto" />
               {t("common.copy")}
             </DropdownMenuSubTrigger>
+            <DropdownMenuItem onClick={handleDownloadContent}>
+              <DownloadIcon className="w-4 h-auto" />
+              {t("memo.download")}
+            </DropdownMenuItem>
             <DropdownMenuSubContent>
               <DropdownMenuItem onClick={handleCopyLink}>
                 <LinkIcon className="w-4 h-auto" />
@@ -109,7 +119,9 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
           <>
             {/* Remove completed tasks (non-archived, non-comment, has completed tasks) */}
             {!isArchived && !isComment && hasCompletedTaskList && (
-              <DropdownMenuItem onClick={handleRemoveCompletedTaskListItemsClick}>
+              <DropdownMenuItem
+                onClick={handleRemoveCompletedTaskListItemsClick}
+              >
                 <SquareCheckIcon className="w-4 h-auto" />
                 {t("memo.remove-completed-task-list-items")}
               </DropdownMenuItem>
@@ -118,7 +130,11 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
             {/* Archive/Restore (non-comment) */}
             {!isComment && (
               <DropdownMenuItem onClick={handleToggleMemoStatusClick}>
-                {isArchived ? <ArchiveRestoreIcon className="w-4 h-auto" /> : <ArchiveIcon className="w-4 h-auto" />}
+                {isArchived ? (
+                  <ArchiveRestoreIcon className="w-4 h-auto" />
+                ) : (
+                  <ArchiveIcon className="w-4 h-auto" />
+                )}
                 {isArchived ? t("common.restore") : t("common.archive")}
               </DropdownMenuItem>
             )}

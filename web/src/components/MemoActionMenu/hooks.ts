@@ -10,8 +10,10 @@ import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import { toAttachmentItems } from "@/components/memo-metadata";
 import { useTranslate } from "@/utils/i18n";
 import { removeCompletedTasks } from "@/utils/markdown-manipulation";
+import { downloadMemoContentAndAttachments } from "@/utils/content";
 
 interface UseMemoActionHandlersOptions {
   memo: Memo;
@@ -20,7 +22,12 @@ interface UseMemoActionHandlersOptions {
   setRemoveTasksDialogOpen: (open: boolean) => void;
 }
 
-export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen, setRemoveTasksDialogOpen }: UseMemoActionHandlersOptions) => {
+export const useMemoActionHandlers = ({
+  memo,
+  onEdit,
+  setDeleteDialogOpen,
+  setRemoveTasksDialogOpen,
+}: UseMemoActionHandlersOptions) => {
   const t = useTranslate();
   const location = useLocation();
   const navigateTo = useNavigateTo();
@@ -56,7 +63,10 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen, setRe
   const handleToggleMemoStatusClick = useCallback(async () => {
     const isArchiving = memo.state !== State.ARCHIVED;
     const state = memo.state === State.ARCHIVED ? State.NORMAL : State.ARCHIVED;
-    const message = memo.state === State.ARCHIVED ? t("message.restored-successfully") : t("message.archived-successfully");
+    const message =
+      memo.state === State.ARCHIVED
+        ? t("message.restored-successfully")
+        : t("message.archived-successfully");
 
     try {
       await updateMemo({
@@ -99,6 +109,11 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen, setRe
     setDeleteDialogOpen(true);
   }, [setDeleteDialogOpen]);
 
+  const handleDownloadContent = useCallback(() => {
+    const attachmentItems = toAttachmentItems(memo.attachments, []);
+    downloadMemoContentAndAttachments(memo, attachmentItems);
+  }, [memo, memo.attachments]);
+
   const confirmDeleteMemo = useCallback(async () => {
     await deleteMemo(memo.name);
     toast.success(t("message.deleted-successfully"));
@@ -132,6 +147,7 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen, setRe
     handleCopyLink,
     handleCopyContent,
     handleDeleteMemoClick,
+    handleDownloadContent,
     confirmDeleteMemo,
     handleRemoveCompletedTaskListItemsClick,
     confirmRemoveCompletedTaskListItems,
