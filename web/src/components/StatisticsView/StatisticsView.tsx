@@ -12,6 +12,7 @@ interface Props {
 const StatisticsView = (props: Props) => {
   const { statisticsData } = props;
   const { activityStats } = statisticsData;
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [visibleMonthString, setVisibleMonthString] = useState(dayjs().format("YYYY-MM"));
   const { getFiltersByFactor, addFilter, removeFilter } = useMemoFilterContext();
 
@@ -26,6 +27,7 @@ const StatisticsView = (props: Props) => {
 
     if (isActive) {
       removeFilter((f: MemoFilter) => f.factor === "displayTime" && f.value === date);
+      setSelectedDate(null);
     } else {
       // Remove all existing tag filters first, then add the new one
       removeFilter((f: MemoFilter) => f.factor === "displayTime");
@@ -33,15 +35,16 @@ const StatisticsView = (props: Props) => {
         factor: "displayTime",
         value: date,
       });
+      setSelectedDate(new Date(date));
     }
-  } 
+  }; 
 
   return (
     <div className="group w-full mt-2 flex flex-col text-muted-foreground animate-fade-in">
       <MonthNavigator visibleMonth={visibleMonthString} onMonthChange={setVisibleMonthString} activityStats={activityStats} />
 
       <div className="w-full animate-scale-in">
-        <MonthCalendar month={visibleMonthString} data={activityStats} maxCount={maxCount} onClick={handleClick} />
+        <MonthCalendar month={visibleMonthString} selectedDate={selectedDate?.toDateString()} data={activityStats} maxCount={maxCount} onClick={handleClick} />
       </div>
     </div>
   );

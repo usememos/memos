@@ -7,6 +7,7 @@ import { useTodayDate, useWeekdayLabels } from "./hooks";
 import type { CalendarSize, MonthCalendarProps } from "./types";
 import { useCalendarMatrix } from "./useCalendar";
 import { getTooltipText } from "./utils";
+import dayjs from "dayjs";
 
 const GRID_STYLES: Record<CalendarSize, { gap: string; headerText: string }> = {
   small: { gap: "gap-1.5", headerText: "text-[10px]" },
@@ -35,11 +36,15 @@ const WeekdayHeader = memo(({ weekDays, size }: WeekdayHeaderProps) => (
 WeekdayHeader.displayName = "WeekdayHeader";
 
 export const MonthCalendar = memo((props: MonthCalendarProps) => {
-  const { month, data, maxCount, size = "default", onClick, className, disableTooltips = false } = props;
+  const { month, selectedDate, data, maxCount, size = "default", onClick, className, disableTooltips = false } = props;
   const t = useTranslate();
   const { generalSetting } = useInstance();
   const today = useTodayDate();
   const weekDays = useWeekdayLabels();
+  const selectedDateFormatted = useMemo(() => {
+  if (!selectedDate) return null;
+  return dayjs(selectedDate).format("YYYY-MM-DD");
+}, [selectedDate]);
 
   const { weeks, weekDays: rotatedWeekDays } = useCalendarMatrix({
     month,
@@ -47,7 +52,7 @@ export const MonthCalendar = memo((props: MonthCalendarProps) => {
     weekDays,
     weekStartDayOffset: generalSetting.weekStartDayOffset,
     today,
-    selectedDate: "",
+    selectedDate: selectedDateFormatted,
   });
 
   const flatDays = useMemo(() => weeks.flatMap((week) => week.days), [weeks]);
