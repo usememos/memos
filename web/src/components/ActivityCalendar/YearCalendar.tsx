@@ -30,18 +30,20 @@ export const YearCalendar = ({ selectedYear, data, onYearChange, onDateClick, cl
   const handleToday = () => onYearChange(currentYear);
 
   return (
-    <div className={cn("w-full flex flex-col gap-6 p-2 md:p-0 select-none", className)}>
-      <div className="flex items-center justify-between pb-4 px-2 pt-2">
-        <h2 className="text-3xl font-bold text-foreground tracking-tight leading-none">{selectedYear}</h2>
+    <div className={cn("w-full flex flex-col gap-6 px-4 sm:px-0 py-4 select-none", className)}>
+      <div className="flex items-center justify-between px-1">
+        <div className="flex items-baseline gap-3">
+          <h2 className="text-2xl md:text-3xl font-semibold text-foreground tracking-tight leading-none">{selectedYear}</h2>
+        </div>
 
-        <div className="inline-flex items-center gap-1 shrink-0">
+        <div className="inline-flex items-center gap-1 shrink-0 rounded-lg border border-border/20 bg-muted/20 p-1">
           <Button
             variant="ghost"
             size="sm"
             onClick={handlePrevYear}
             disabled={!canGoPrev}
             aria-label="Previous year"
-            className="h-9 w-9 p-0 rounded-md hover:bg-secondary/80 text-muted-foreground hover:text-foreground"
+            className="h-8 w-8 p-0 rounded-md hover:bg-muted/30 text-muted-foreground hover:text-foreground"
           >
             <ChevronLeftIcon className="w-5 h-5" />
           </Button>
@@ -53,8 +55,8 @@ export const YearCalendar = ({ selectedYear, data, onYearChange, onDateClick, cl
             disabled={isCurrentYear}
             aria-label={t("common.today")}
             className={cn(
-              "h-9 px-4 rounded-md text-sm font-medium transition-colors",
-              isCurrentYear ? "bg-secondary/50 text-muted-foreground cursor-default" : "hover:bg-secondary/80 text-foreground",
+              "h-8 px-3 rounded-md text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors",
+              isCurrentYear ? "bg-muted/30 text-muted-foreground cursor-default" : "hover:bg-muted/30 text-foreground",
             )}
           >
             {t("common.today")}
@@ -66,7 +68,7 @@ export const YearCalendar = ({ selectedYear, data, onYearChange, onDateClick, cl
             onClick={handleNextYear}
             disabled={!canGoNext}
             aria-label="Next year"
-            className="h-9 w-9 p-0 rounded-md hover:bg-secondary/80 text-muted-foreground hover:text-foreground"
+            className="h-8 w-8 p-0 rounded-md hover:bg-muted/30 text-muted-foreground hover:text-foreground"
           >
             <ChevronRightIcon className="w-5 h-5" />
           </Button>
@@ -75,13 +77,15 @@ export const YearCalendar = ({ selectedYear, data, onYearChange, onDateClick, cl
 
       <TooltipProvider>
         <div className="w-full animate-fade-in">
-          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+          <div className="grid gap-6 md:gap-7 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {months.map((month) => (
               <div
                 key={month}
-                className="flex flex-col gap-3 rounded-lg p-3 hover:bg-secondary/40 transition-colors cursor-default border border-transparent hover:border-border/50"
+                className="flex flex-col gap-3 rounded-2xl border border-border/20 bg-muted/10 p-4 shadow-sm hover:shadow-md transition-shadow cursor-default"
               >
-                <div className="text-xs font-bold text-foreground/80 uppercase tracking-widest pl-1">{getMonthLabel(month)}</div>
+                <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.22em] pl-1">
+                  {getMonthLabel(month)}
+                </div>
                 <MonthCalendar month={month} data={yearData} maxCount={yearMaxCount} size="small" onClick={onDateClick} />
               </div>
             ))}

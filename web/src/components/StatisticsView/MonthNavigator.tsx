@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useState } from "react";
 import { YearCalendar } from "@/components/ActivityCalendar";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -31,33 +31,36 @@ export const MonthNavigator = ({ visibleMonth, onMonthChange, activityStats }: M
   };
 
   return (
-    <div className="w-full mb-2 flex flex-row justify-between items-center gap-1">
+    <div className="w-full mb-2 flex flex-row justify-between items-center gap-2">
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <button className="px-2 py-1 -ml-2 rounded-md hover:bg-secondary/50 text-sm text-foreground font-semibold transition-colors flex items-center gap-1 select-none group">
+          <button className="py-1 text-sm text-foreground font-medium transition-colors flex items-center select-none">
             {currentMonth.toLocaleString(i18n.language, { year: "numeric", month: "long" })}
-            <ChevronDownIcon className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground transition-colors" />
           </button>
         </DialogTrigger>
-        <DialogContent className="p-0 border-none bg-background md:max-w-4xl" size="2xl" showCloseButton={false}>
+        <DialogContent
+          className="p-0 border border-border/20 bg-background md:max-w-6xl w-[min(100vw-24px,1200px)] max-h-[85vh] overflow-auto rounded-2xl shadow-2xl"
+          size="2xl"
+          showCloseButton={false}
+        >
           <DialogTitle className="sr-only">Select Month</DialogTitle>
           <YearCalendar selectedYear={currentYear} data={activityStats} onYearChange={handleYearChange} onDateClick={handleDateClick} />
         </DialogContent>
       </Dialog>
-      <div className="flex justify-end items-center shrink-0 gap-0.5">
+      <div className="flex justify-end items-center shrink-0">
         <button
-          className="p-1 rounded-md hover:bg-secondary/50 text-muted-foreground hover:text-foreground transition-all"
+          className="h-8 w-8 rounded-lg hover:border-border/40 hover:bg-muted/30 text-muted-foreground hover:text-foreground transition-all"
           onClick={handlePrevMonth}
           aria-label="Previous month"
         >
-          <ChevronLeftIcon className="w-4 h-4" />
+          <ChevronLeftIcon className="w-4 h-4 mx-auto" />
         </button>
         <button
-          className="p-1 rounded-md hover:bg-secondary/50 text-muted-foreground hover:text-foreground transition-all"
+          className="h-8 w-8 rounded-lg hover:border-border/40 hover:bg-muted/30 text-muted-foreground hover:text-foreground transition-all"
           onClick={handleNextMonth}
           aria-label="Next month"
         >
-          <ChevronRightIcon className="w-4 h-4" />
+          <ChevronRightIcon className="w-4 h-4 mx-auto" />
         </button>
       </div>
     </div>

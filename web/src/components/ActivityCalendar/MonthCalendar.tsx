@@ -3,7 +3,6 @@ import { useInstance } from "@/contexts/InstanceContext";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarCell } from "./CalendarCell";
-import { DEFAULT_CELL_SIZE, SMALL_CELL_SIZE } from "./constants";
 import { useTodayDate, useWeekdayLabels } from "./hooks";
 import type { MonthCalendarProps } from "./types";
 import { useCalendarMatrix } from "./useCalendar";
@@ -28,19 +27,19 @@ export const MonthCalendar = memo((props: MonthCalendarProps) => {
     selectedDate: "",
   });
 
-  const sizeConfig = size === "small" ? SMALL_CELL_SIZE : DEFAULT_CELL_SIZE;
+  const gridGap = size === "small" ? "gap-x-3 gap-y-3" : "gap-x-3.5 gap-y-3.5";
 
   return (
     <div className={cn("flex flex-col gap-2", className)}>
-      <div className={cn("grid grid-cols-7", sizeConfig.gap, "text-muted-foreground mb-1", size === "small" ? "text-[10px]" : "text-xs")}>
+      <div className={cn("grid grid-cols-7", gridGap, "text-muted-foreground mb-1", size === "small" ? "text-[10px]" : "text-xs")}>
         {rotatedWeekDays.map((label, index) => (
-          <div key={index} className="flex h-4 items-center justify-center text-muted-foreground/60 font-medium">
+          <div key={index} className="flex h-4 items-center justify-center text-muted-foreground/70 font-medium uppercase tracking-wide">
             {label}
           </div>
         ))}
       </div>
 
-      <div className={cn("grid grid-cols-7", sizeConfig.gap)}>
+      <div className={cn("grid grid-cols-7 px-2", gridGap)}>
         {weeks.map((week, weekIndex) =>
           week.days.map((day, dayIndex) => {
             const tooltipText = getTooltipText(day.count, day.date, t);

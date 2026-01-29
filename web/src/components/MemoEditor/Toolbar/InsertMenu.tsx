@@ -1,6 +1,6 @@
 import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
-import { FileIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MoreHorizontalIcon, PlusIcon, type LucideIcon } from "lucide-react";
+import { FileIcon, LinkIcon, LoaderIcon, type LucideIcon, MapPinIcon, Maximize2Icon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce } from "react-use";
 import { useReverseGeocoding } from "@/components/map";
@@ -106,9 +106,12 @@ const InsertMenu = (props: InsertMenuProps) => {
     setLocationDialogOpen(false);
   }, [location]);
 
-  const handlePositionChange = useCallback((position: LatLng) => {
-    location.handlePositionChange(position);
-  }, [location]);
+  const handlePositionChange = useCallback(
+    (position: LatLng) => {
+      location.handlePositionChange(position);
+    },
+    [location],
+  );
 
   const handleToggleFocusMode = useCallback(() => {
     onToggleFocusMode?.();
