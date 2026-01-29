@@ -42,4 +42,207 @@
   .leaflet-popup-tip {
     background-color: var(--background) !important;
   }
+
+  /* ========================================
+   * Print Styles for PDF Export
+   * Optimized for clean, readable PDF output
+   * ======================================== */
+
+  @media print {
+    /* Hide UI elements that shouldn't be in PDF */
+    nav,
+    header,
+    footer,
+    aside,
+    .no-print,
+    button,
+    .memo-action-menu,
+    [role="menu"],
+    [role="menubar"],
+    [role="navigation"],
+    .memo-header-actions {
+      display: none !important;
+    }
+
+    /* Page setup */
+    @page {
+      margin: 1.5cm 2cm;
+      size: A4;
+    }
+
+    body {
+      background: white !important;
+      color: black !important;
+      font-size: 12pt;
+      line-height: 1.6;
+    }
+
+    /* Ensure content flows properly */
+    * {
+      background: transparent !important;
+      color: black !important;
+      text-shadow: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Links */
+    a {
+      text-decoration: underline;
+      color: black !important;
+    }
+
+    a[href]:after {
+      content: " (" attr(href) ")";
+      font-size: 0.85em;
+      color: #666;
+    }
+
+    a[href^="#"]:after,
+    a[href^="javascript:"]:after {
+      content: "";
+    }
+
+    /* Headings */
+    h1, h2, h3, h4, h5, h6 {
+      page-break-after: avoid;
+      page-break-inside: avoid;
+      font-weight: bold;
+      color: black !important;
+    }
+
+    h1 {
+      font-size: 24pt;
+      margin-top: 0;
+      margin-bottom: 12pt;
+    }
+
+    h2 {
+      font-size: 18pt;
+      margin-top: 16pt;
+      margin-bottom: 10pt;
+    }
+
+    h3 {
+      font-size: 14pt;
+      margin-top: 12pt;
+      margin-bottom: 8pt;
+    }
+
+    /* Paragraphs */
+    p {
+      margin-bottom: 12pt;
+      orphans: 3;
+      widows: 3;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin-bottom: 12pt;
+    }
+
+    li {
+      page-break-inside: avoid;
+    }
+
+    /* Code blocks */
+    pre, code {
+      border: 1px solid #ccc !important;
+      page-break-inside: avoid;
+      font-family: "Courier New", Courier, monospace;
+    }
+
+    pre {
+      padding: 10pt;
+      margin-bottom: 12pt;
+      background: #f5f5f5 !important;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    code {
+      padding: 2pt 4pt;
+      background: #f0f0f0 !important;
+    }
+
+    /* Blockquotes */
+    blockquote {
+      margin: 12pt 0;
+      padding: 8pt 12pt;
+      border-left: 3px solid #ccc !important;
+      background: #f9f9f9 !important;
+      page-break-inside: avoid;
+    }
+
+    /* Tables */
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 12pt;
+      page-break-inside: avoid;
+    }
+
+    table, th, td {
+      border: 1px solid #333 !important;
+    }
+
+    th, td {
+      padding: 6pt;
+      text-align: left;
+    }
+
+    th {
+      background: #f0f0f0 !important;
+      font-weight: bold;
+    }
+
+    /* Images */
+    img {
+      max-width: 100% !important;
+      page-break-inside: avoid;
+      page-break-after: avoid;
+    }
+
+    /* Horizontal rules */
+    hr {
+      border: none !important;
+      border-top: 1px solid #ccc !important;
+      margin: 12pt 0;
+    }
+
+    /* Task lists */
+    .task-list-item {
+      list-style: none;
+    }
+
+    .task-list-item input[type="checkbox"] {
+      margin-right: 0.5em;
+    }
+
+    /* Memo container for single memo print */
+    .memo-print-container {
+      padding: 0;
+    }
+
+    /* Memo metadata */
+    .memo-metadata {
+      margin-bottom: 16pt;
+      padding-bottom: 8pt;
+      border-bottom: 1px solid #ccc !important;
+      font-size: 10pt;
+      color: #666 !important;
+    }
+
+    /* Avoid breaking important elements */
+    .markdown-content,
+    .memo-content {
+      page-break-inside: auto;
+    }
+
+    /* Display: Hide markers for interactive elements */
+    [data-interactive]:after {
+      content: " [interactive]";
+      font-size: 0.8em;
+      color: #999 !important;
+    }
+  }
 }
