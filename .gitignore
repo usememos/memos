@@ -20,7 +20,10 @@ docs/plans/
 # Docker Compose Environment File
 .env
 
-dist
+# Embedded frontend dist (except placeholder files)
+server/router/frontend/dist/*
+!server/router/frontend/dist/.gitkeep
+!server/router/frontend/dist/index.html
 
 # VSCode settings
 .vscode

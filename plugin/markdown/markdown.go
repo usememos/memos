@@ -153,7 +153,7 @@ func (s *service) ExtractProperties(content []byte) (*storepb.MemoPayload_Proper
 		}
 
 		switch n.Kind() {
-		case gast.KindLink:
+		case gast.KindLink, gast.KindAutoLink:
 			prop.HasLink = true
 
 		case gast.KindCodeBlock, gast.KindFencedCodeBlock, gast.KindCodeSpan:
@@ -310,7 +310,7 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 
 		// Extract properties based on node kind
 		switch n.Kind() {
-		case gast.KindLink:
+		case gast.KindLink, gast.KindAutoLink:
 			data.Property.HasLink = true
 
 		case gast.KindCodeBlock, gast.KindFencedCodeBlock, gast.KindCodeSpan:
