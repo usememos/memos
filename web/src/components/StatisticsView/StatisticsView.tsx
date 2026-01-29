@@ -1,7 +1,6 @@
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import { MonthCalendar } from "@/components/ActivityCalendar";
-import { useDateFilterNavigation } from "@/hooks";
 import type { StatisticsData } from "@/types/statistics";
 import { MonthNavigator } from "./MonthNavigator";
 import { type MemoFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
