@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { useInstance } from "@/contexts/InstanceContext";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -7,9 +7,10 @@ import { useTodayDate, useWeekdayLabels } from "./hooks";
 import type { MonthCalendarProps } from "./types";
 import { useCalendarMatrix } from "./useCalendar";
 import { getTooltipText } from "./utils";
+import dayjs from "dayjs";
 
 export const MonthCalendar = memo((props: MonthCalendarProps) => {
-  const { month, data, maxCount, size = "default", onClick, className } = props;
+  const { month, selectedDate, data, maxCount, size = "default", onClick, className } = props;
   const t = useTranslate();
   const { generalSetting } = useInstance();
 
@@ -17,6 +18,10 @@ export const MonthCalendar = memo((props: MonthCalendarProps) => {
 
   const today = useTodayDate();
   const weekDays = useWeekdayLabels();
+  const selectedDateFormatted = useMemo(() => {
+  if (!selectedDate) return undefined;
+  return dayjs(selectedDate).format("YYYY-MM-DD");
+}, [selectedDate]);
 
   const { weeks, weekDays: rotatedWeekDays } = useCalendarMatrix({
     month,
@@ -24,7 +29,7 @@ export const MonthCalendar = memo((props: MonthCalendarProps) => {
     weekDays,
     weekStartDayOffset,
     today,
-    selectedDate: "",
+    selectedDate: selectedDateFormatted,
   });
 
   const gridGap = size === "small" ? "gap-x-3 gap-y-3" : "gap-x-3.5 gap-y-3.5";
