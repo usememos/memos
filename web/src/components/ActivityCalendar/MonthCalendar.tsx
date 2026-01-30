@@ -19,9 +19,9 @@ export const MonthCalendar = memo((props: MonthCalendarProps) => {
   const today = useTodayDate();
   const weekDays = useWeekdayLabels();
   const selectedDateFormatted = useMemo(() => {
-  if (!selectedDate) return undefined;
-  return dayjs(selectedDate).format("YYYY-MM-DD");
-}, [selectedDate]);
+    if (!selectedDate) return null;
+    return dayjs(selectedDate).format("YYYY-MM-DD");
+  }, [selectedDate]);
 
   const { weeks, weekDays: rotatedWeekDays } = useCalendarMatrix({
     month,
