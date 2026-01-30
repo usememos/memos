@@ -86,7 +86,9 @@ export const YearCalendar = ({ selectedYear, data, onYearChange, onDateClick, cl
                 <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-[0.22em] pl-1">
                   {getMonthLabel(month)}
                 </div>
-                <MonthCalendar month={month} data={yearData} maxCount={yearMaxCount} size="small" onClick={onDateClick} />
+                <MonthCalendar month={month} data={yearData} maxCount={yearMaxCount} size="small" onClick={onDateClick} selectedDate={null} />
+
+
               </div>
             ))}
           </div>
