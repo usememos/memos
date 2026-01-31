@@ -28,6 +28,7 @@ const Home = () => {
         listSort={listSort}
         orderBy={orderBy}
         filter={memoFilter}
+        collapsiblePinned
         enabled={isInitialized && !!user} // Wait for contexts to stabilize before fetching
       />
     </div>
