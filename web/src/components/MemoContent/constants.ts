@@ -1,5 +1,9 @@
 import { defaultSchema } from "rehype-sanitize";
 
+// Class names added by remark-gfm for task lists
+export const TASK_LIST_CLASS = "contains-task-list";
+export const TASK_LIST_ITEM_CLASS = "task-list-item";
+
 // Compact mode display settings
 export const COMPACT_MODE_CONFIG = {
   maxHeightVh: 60, // 60% of viewport height
