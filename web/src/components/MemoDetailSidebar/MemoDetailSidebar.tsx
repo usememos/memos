@@ -18,28 +18,25 @@ interface Props {
 
 const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
   const t = useTranslate();
-  const property = create(Memo_PropertySchema, memo.property || {});
-  const hasSpecialProperty = property.hasLink || property.hasTaskList || property.hasCode || property.hasIncompleteTasks;
-  const shouldShowRelationGraph = memo.relations.filter((r) => r.type === MemoRelation_Type.REFERENCE).length > 0;
   const { mutate: updateMemo } = useUpdateMemo();
+  const property = create(Memo_PropertySchema, memo.property || {});
+  const hasSpecialProperty = property.hasLink || property.hasTaskList || property.hasCode;
+  const hasReferenceRelations = memo.relations.some((r) => r.type === MemoRelation_Type.REFERENCE);
 
   const handleUpdateTimestamp = (field: "createTime" | "updateTime", date: Date) => {
-    const timestamp = timestampFromDate(date);
+    const currentTimestamp = memo[field];
+    const newTimestamp = timestampFromDate(date);
+    if (isEqual(currentTimestamp, newTimestamp)) {
+      return;
+    }
     updateMemo(
       {
-        update: {
-          name: memo.name,
-          [field]: timestamp,
-        },
+        update: { name: memo.name, [field]: newTimestamp },
         updateMask: [field === "createTime" ? "create_time" : "update_time"],
       },
       {
-        onSuccess: () => {
-          toast.success("Updated successfully");
-        },
-        onError: (error) => {
-          toast.error(error.message);
-        },
+        onSuccess: () => toast.success("Updated successfully"),
+        onError: (error) => toast.error(error.message),
       },
     );
   };
@@ -49,7 +46,7 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
       className={cn("relative w-full h-auto max-h-screen overflow-auto hide-scrollbar flex flex-col justify-start items-start", className)}
     >
       <div className="flex flex-col justify-start items-start w-full gap-4 h-auto shrink-0 flex-nowrap hide-scrollbar">
-        {shouldShowRelationGraph && (
+        {hasReferenceRelations && (
           <div className="relative w-full h-36 border border-border rounded-lg bg-muted overflow-hidden">
             <MemoRelationForceGraph className="w-full h-full" memo={memo} parentPage={parentPage} />
             <div className="absolute top-2 left-2 text-xs text-muted-foreground/60 font-medium gap-1 flex flex-row items-center">
@@ -58,16 +55,19 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
             </div>
           </div>
         )}
+
         <div className="w-full space-y-1">
           <p className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wide px-1">{t("common.created-at")}</p>
           <EditableTimestamp timestamp={memo.createTime} onChange={(date) => handleUpdateTimestamp("createTime", date)} />
         </div>
+
         {!isEqual(memo.createTime, memo.updateTime) && (
           <div className="w-full space-y-1">
             <p className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wide px-1">{t("common.last-updated-at")}</p>
             <EditableTimestamp timestamp={memo.updateTime} onChange={(date) => handleUpdateTimestamp("updateTime", date)} />
           </div>
         )}
+
         {hasSpecialProperty && (
           <div className="w-full space-y-2">
             <p className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wide px-1">{t("common.properties")}</p>
@@ -93,6 +93,7 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
             </div>
           </div>
         )}
+
         {memo.tags.length > 0 && (
           <div className="w-full space-y-2">
             <div className="flex flex-row justify-start items-center gap-1.5 px-1">
