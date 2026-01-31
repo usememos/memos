@@ -138,8 +138,6 @@
     "no-archived-memos": "یادداشت آرشیو شده‌ای وجود ندارد.",
     "no-memos": "یادداشتی یافت نشد.",
     "order-by": "مرتب‌سازی بر اساس",
-    "remove-completed-task-list-items": "حذف کارهای انجام شده",
-    "remove-completed-task-list-items-confirm": "آیا از حذف همه کارهای انجام شده اطمینان دارید؟ این عمل غیرقابل بازگشت است",
     "search-placeholder": "جستجوی یادداشت‌ها...",
     "show-less": "نمایش کمتر",
     "show-more": "نمایش بیشتر",
@@ -160,7 +158,6 @@
     "description-is-required": "توضیحات اجباری است",
     "failed-to-embed-memo": "درج یادداشت ناموفق بود",
     "fill-all-required-fields": "لطفا همه فیلدهای ضروری را پر کنید",
-    "remove-completed-task-list-items-successfully": "حذف با موفقیت انجام شد",
     "update-succeed": "بروزرسانی موفق بود",
     "restored-successfully": "با موفقیت بازیابی شد"
   },
