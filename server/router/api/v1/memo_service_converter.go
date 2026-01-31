@@ -4,9 +4,12 @@ import (
 	"context"
 	"fmt"
 	"time"
+	"unicode/utf8"
 
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/types/known/timestamppb"
+	"google.golang.org/grpc/codes"
+    "google.golang.org/grpc/status"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -25,6 +28,13 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 
 	name := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
 	memoMessage := &v1pb.Memo{
+		if !utf8.ValidString(memo.Content) {
+    return nil, status.Errorf(
+        codes.Internal,
+        "memo %s contains invalid UTF-8 content",
+        memo.UID,
+         )
+     }
 		Name:        name,
 		State:       convertStateFromStore(memo.RowStatus),
 		Creator:     fmt.Sprintf("%s%d", UserNamePrefix, memo.CreatorID),
@@ -67,6 +77,13 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 	}
 
 	snippet, err := s.getMemoContentSnippet(memo.Content)
+	if !utf8.ValidString(snippet) {
+    return nil, status.Errorf(
+        codes.Internal,
+        "memo %s contains invalid UTF-8 snippet",
+        memo.UID,
+       )
+    }
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get memo content snippet")
 	}
