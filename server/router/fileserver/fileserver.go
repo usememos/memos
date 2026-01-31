@@ -469,8 +469,19 @@ func calculateThumbnailDimensions(width, height int) (int, int) {
 
 // checkAttachmentPermission verifies the user has permission to access the attachment.
 func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c echo.Context, attachment *store.Attachment) error {
+	// For unlinked attachments, only the creator can access.
 	if attachment.MemoID == nil {
-		return nil // Unlinked attachments are accessible.
+		user, err := s.getCurrentUser(ctx, c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").SetInternal(err)
+		}
+		if user == nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized access")
+		}
+		if user.ID != attachment.CreatorID && user.Role != store.RoleAdmin {
+			return echo.NewHTTPError(http.StatusForbidden, "forbidden access")
+		}
+		return nil
 	}
 
 	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{ID: attachment.MemoID})
@@ -493,7 +504,7 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c ech
 		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized access")
 	}
 
-	if memo.Visibility == store.Private && user.ID != attachment.CreatorID {
+	if memo.Visibility == store.Private && user.ID != memo.CreatorID && user.Role != store.RoleAdmin {
 		return echo.NewHTTPError(http.StatusForbidden, "forbidden access")
 	}
 

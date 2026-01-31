@@ -246,6 +246,12 @@ func (s *APIV1Service) GetAttachment(ctx context.Context, request *v1pb.GetAttac
 	if attachment == nil {
 		return nil, status.Errorf(codes.NotFound, "attachment not found")
 	}
+
+	// Check access permission based on linked memo visibility.
+	if err := s.checkAttachmentAccess(ctx, attachment); err != nil {
+		return nil, err
+	}
+
 	return convertAttachmentFromStore(attachment), nil
 }
 
@@ -257,9 +263,23 @@ func (s *APIV1Service) UpdateAttachment(ctx context.Context, request *v1pb.Updat
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is required")
 	}
+	user, err := s.fetchCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
 	attachment, err := s.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachmentUID})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get attachment: %v", err)
+	}
+	if attachment == nil {
+		return nil, status.Errorf(codes.NotFound, "attachment not found")
+	}
+	// Only the creator or admin can update the attachment.
+	if attachment.CreatorID != user.ID && !isSuperUser(user) {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
 	currentTs := time.Now().Unix()
@@ -545,6 +565,44 @@ func (s *APIV1Service) validateAttachmentFilter(ctx context.Context, filterStr s
 
 	if _, err := engine.CompileToStatement(ctx, filterStr, filter.RenderOptions{Dialect: dialect}); err != nil {
 		return errors.Wrap(err, "failed to compile filter")
+	}
+	return nil
+}
+
+// checkAttachmentAccess verifies the user has permission to access the attachment.
+// For unlinked attachments (no memo), only the creator can access.
+// For linked attachments, access follows the memo's visibility rules.
+func (s *APIV1Service) checkAttachmentAccess(ctx context.Context, attachment *store.Attachment) error {
+	user, _ := s.fetchCurrentUser(ctx)
+
+	// For unlinked attachments, only the creator can access.
+	if attachment.MemoID == nil {
+		if user == nil {
+			return status.Errorf(codes.Unauthenticated, "user not authenticated")
+		}
+		if attachment.CreatorID != user.ID && !isSuperUser(user) {
+			return status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+		return nil
+	}
+
+	// For linked attachments, check memo visibility.
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{ID: attachment.MemoID})
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to get memo: %v", err)
+	}
+	if memo == nil {
+		return status.Errorf(codes.NotFound, "memo not found")
+	}
+
+	if memo.Visibility == store.Public {
+		return nil
+	}
+	if user == nil {
+		return status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+	if memo.Visibility == store.Private && memo.CreatorID != user.ID && !isSuperUser(user) {
+		return status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 	return nil
 }
