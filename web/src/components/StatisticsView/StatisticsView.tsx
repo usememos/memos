@@ -12,22 +12,22 @@ interface Props {
 const StatisticsView = (props: Props) => {
   const { statisticsData } = props;
   const { activityStats } = statisticsData;
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [visibleMonthString, setVisibleMonthString] = useState(dayjs().format("YYYY-MM"));
   const { getFiltersByFactor, addFilter, removeFilter } = useMemoFilterContext();
+  const displayTimeFilter = getFiltersByFactor("displayTime").length > 0 ? getFiltersByFactor("displayTime") : [];
+  const selectedDate = useMemo(() => {
+    if (!displayTimeFilter.length) return null;
+    return new Date(displayTimeFilter[0].value);
+  }, [displayTimeFilter]);
 
   const maxCount = useMemo(() => {
     const counts = Object.values(activityStats);
     return Math.max(...counts, 1);
   }, [activityStats]);
 
-  const handleClick = (date: string) =>{
-    const displayTimeFilters = getFiltersByFactor("displayTime");
-    const isActive = displayTimeFilters.some((f: MemoFilter) => f.value === date);
-
-    if (isActive) {
+  const handleDateCellClick = (date: string) => {
+    if (displayTimeFilter.length > 0 && displayTimeFilter[0].value === date) {
       removeFilter((f: MemoFilter) => f.factor === "displayTime" && f.value === date);
-      setSelectedDate(null);
     } else {
       // Remove all existing tag filters first, then add the new one
       removeFilter((f: MemoFilter) => f.factor === "displayTime");
@@ -35,16 +35,15 @@ const StatisticsView = (props: Props) => {
         factor: "displayTime",
         value: date,
       });
-      setSelectedDate(new Date(date));
     }
-  }; 
+  };
 
   return (
     <div className="group w-full mt-2 flex flex-col text-muted-foreground animate-fade-in">
       <MonthNavigator visibleMonth={visibleMonthString} onMonthChange={setVisibleMonthString} activityStats={activityStats} />
 
       <div className="w-full animate-scale-in">
-        <MonthCalendar month={visibleMonthString} selectedDate={selectedDate?.toDateString()} data={activityStats} maxCount={maxCount} onClick={handleClick} />
+        <MonthCalendar month={visibleMonthString} selectedDate={selectedDate ? selectedDate.toDateString() : null} data={activityStats} maxCount={maxCount} onClick={handleDateCellClick} />
       </div>
     </div>
   );
