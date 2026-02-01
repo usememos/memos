@@ -62,7 +62,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   // Handle for menuitems(Pin, Edit, Copy, Archive, Delete), dialog and buttons types
   let role = target?.getAttribute("role");
   let type = target?.getAttribute("type");
-  if (role === "menuitem"|| role==="dialog" || type === "button") {
+  if (role === "menuitem"|| type==="dialog" || type === "button") {
     return;
   }
    handleGotoMemoDetailPage();
