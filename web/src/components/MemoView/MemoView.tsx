@@ -38,6 +38,35 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
     openEditor,
     openPreview,
   });
+  // handle onClick to go to details page
+  const handleArticleClick = (e: React.MouseEvent) => {
+    if (e.defaultPrevented) {return}; // prevent if other onClick events are triggered first
+   let target = e.target as HTMLElement | null;
+   // Handle for interactive elements
+   if (target && target.closest && target.closest("a, th, td, span, .no-goto")) {
+     return;
+   }
+   let el = target;
+  while (el) {
+    const cls = el.classList;
+     //Handle for img class items inside memo content
+    if (cls && cls.contains("grid")&& cls.contains("grid-cols-2")) {
+      return;
+    }
+     // Handle map inside memo content
+    if (cls && cls.contains("leaflet-container")) {
+      return;
+    }
+    el = el.parentElement;
+  }
+  // Handle for menuitems(Pin, Edit, Copy, Archive, Delete), dialog and buttons types
+  let role = target?.getAttribute("role");
+  let type = target?.getAttribute("type");
+  if (role === "menuitem"|| role==="dialog" || type === "button") {
+    return;
+  }
+   handleGotoMemoDetailPage();
+ };
 
   const contextValue = useMemo(
     () => ({
@@ -68,7 +97,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
 
   return (
     <MemoViewContext.Provider value={contextValue}>
-      <article className={cn(MEMO_CARD_BASE_CLASSES, className)} ref={cardRef} tabIndex={readonly ? -1 : 0}>
+      <article onClick={handleArticleClick} className={cn(MEMO_CARD_BASE_CLASSES, className)} ref={cardRef} tabIndex={readonly ? -1 : 0}>
         <MemoHeader
           showCreator={props.showCreator}
           showVisibility={props.showVisibility}
