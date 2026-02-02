@@ -223,7 +223,7 @@ func TestExtractTags(t *testing.T) {
 			name:     "duplicate tags",
 			content:  "#work is important. #Work #WORK",
 			withExt:  true,
-			expected: []string{"work"}, // Deduplicated and lowercased
+			expected: []string{"work", "Work", "WORK"},
 		},
 		{
 			name:     "tags with hyphens and underscores",
@@ -315,7 +315,7 @@ func TestExtractTags(t *testing.T) {
 	}
 }
 
-func TestUniqueLowercase(t *testing.T) {
+func TestUniquePreserveCase(t *testing.T) {
 	tests := []struct {
 		name     string
 		input    []string
@@ -334,18 +334,18 @@ func TestUniqueLowercase(t *testing.T) {
 		{
 			name:     "duplicates",
 			input:    []string{"tag", "TAG", "Tag"},
-			expected: []string{"tag"},
+			expected: []string{"tag", "TAG", "Tag"},
 		},
 		{
 			name:     "mixed",
 			input:    []string{"Work", "work", "Important", "work"},
-			expected: []string{"work", "important"},
+			expected: []string{"Work", "work", "Important"},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := uniqueLowercase(tt.input)
+			result := uniquePreserveCase(tt.input)
 			assert.ElementsMatch(t, tt.expected, result)
 		})
 	}

@@ -134,8 +134,8 @@ func (s *service) ExtractTags(content []byte) ([]string, error) {
 		return nil, err
 	}
 
-	// Deduplicate and normalize tags
-	return uniqueLowercase(tags), nil
+	// Deduplicate tags while preserving original case
+	return uniquePreserveCase(tags), nil
 }
 
 // ExtractProperties computes boolean properties about the content.
@@ -334,8 +334,8 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 		return nil, err
 	}
 
-	// Deduplicate and normalize tags
-	data.Tags = uniqueLowercase(data.Tags)
+	// Deduplicate tags while preserving original case
+	data.Tags = uniquePreserveCase(data.Tags)
 
 	return data, nil
 }
@@ -372,16 +372,15 @@ func (s *service) RenameTag(content []byte, oldTag, newTag string) (string, erro
 	return mdRenderer.Render(root, content), nil
 }
 
-// uniqueLowercase returns unique lowercase strings from input.
-func uniqueLowercase(strs []string) []string {
-	seen := make(map[string]bool)
+// uniquePreserveCase returns unique strings from input while preserving case.
+func uniquePreserveCase(strs []string) []string {
+	seen := make(map[string]struct{})
 	var result []string
 
 	for _, s := range strs {
-		lower := strings.ToLower(s)
-		if !seen[lower] {
-			seen[lower] = true
-			result = append(result, lower)
+		if _, exists := seen[s]; !exists {
+			seen[s] = struct{}{}
+			result = append(result, s)
 		}
 	}
 
