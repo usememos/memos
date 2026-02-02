@@ -101,7 +101,7 @@ const UserMemoMap = ({ creator, className }: Props) => {
                         })}
                     </span>
                     <Link
-                      to={`/m/${memo.name.split("/").pop()}`}
+                      to={`/memos/${memo.name.split("/").pop()}`}
                       className="flex items-center gap-0.5 text-[10px] text-primary hover:opacity-80"
                     >
                       View
