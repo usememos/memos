@@ -49,17 +49,23 @@ const SignIn = () => {
 
       try {
         // Generate and store secure state parameter with CSRF protection
-        // Also generate PKCE parameters (code_challenge) for enhanced security
+        // Also generate PKCE parameters (code_challenge) for enhanced security if available
         const identityProviderId = extractIdentityProviderIdFromName(identityProvider.name);
         const { state, codeChallenge } = await storeOAuthState(identityProviderId);
 
-        // Build OAuth authorization URL with secure state and PKCE
+        // Build OAuth authorization URL with secure state
+        // Include PKCE if available (requires HTTPS/localhost for crypto.subtle)
         // Using S256 (SHA-256) as the code_challenge_method per RFC 7636
-        const authUrl = `${oauth2Config.authUrl}?client_id=${
+        let authUrl = `${oauth2Config.authUrl}?client_id=${
           oauth2Config.clientId
         }&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}&response_type=code&scope=${encodeURIComponent(
           oauth2Config.scopes.join(" "),
-        )}&code_challenge=${codeChallenge}&code_challenge_method=S256`;
+        )}`;
+
+        // Add PKCE parameters if available
+        if (codeChallenge) {
+          authUrl += `&code_challenge=${codeChallenge}&code_challenge_method=S256`;
+        }
 
         window.location.href = authUrl;
       } catch (error) {
