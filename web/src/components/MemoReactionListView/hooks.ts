@@ -6,8 +6,10 @@ import { memoKeys } from "@/hooks/useMemoQueries";
 import { useUsersByNames } from "@/hooks/useUserQueries";
 import type { Memo, Reaction } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
+import { useTranslate } from "@/utils/i18n";
 
 export type ReactionGroup = Map<string, User[]>;
+export type TranslateFunction = ReturnType<typeof useTranslate>;
 
 export const useReactionGroups = (reactions: Reaction[]): ReactionGroup => {
   const creatorNames = useMemo(() => reactions.map((r) => r.creator), [reactions]);
@@ -70,11 +72,18 @@ export const useReactionActions = ({ memo, onComplete }: UseReactionActionsOptio
   return { hasReacted, handleReactionClick };
 };
 
-export const formatReactionTooltip = (users: User[], reactionType: string): string => {
+export const formatReactionTooltip = (users: User[], reactionType: string, t: TranslateFunction): string => {
   if (users.length === 0) return "";
   const formatUserName = (user: User) => user.displayName || user.username;
+  const separator = t("common.list-separator");
   if (users.length < 5) {
-    return `${users.map(formatUserName).join(", ")} reacted with ${reactionType.toLowerCase()}`;
+    const userList = users.map(formatUserName).join(separator);
+    return t("reaction.reacted-with", { userList: userList, reactionType: reactionType.toLowerCase() });
   }
-  return `${users.slice(0, 4).map(formatUserName).join(", ")} and ${users.length - 4} more reacted with ${reactionType.toLowerCase()}`;
+  const userList = users.slice(0, 4).map(formatUserName).join(separator);
+  return t("reaction.more-reacted-with", {
+    userList: userList,
+    count: users.length - 4,
+    reactionType: reactionType.toLowerCase(),
+  });
 };
