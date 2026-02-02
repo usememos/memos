@@ -1,5 +1,5 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { setAccessToken } from "@/auth-state";
 import { authServiceClient } from "@/connect";
@@ -18,12 +18,17 @@ const AuthCallback = () => {
   const navigateTo = useNavigateTo();
   const { initialize } = useAuth();
   const [searchParams] = useSearchParams();
+  const handledRef = useRef(false);
   const [state, setState] = useState<State>({
     loading: true,
     errorMessage: "",
   });
 
   useEffect(() => {
+    if (handledRef.current) {
+      return;
+    }
+    handledRef.current = true;
     // Check for OAuth error response first (e.g., user denied access)
     const error = searchParams.get("error");
     const errorDescription = searchParams.get("error_description");
