@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { memo, useMemo } from "react";
 import { useInstance } from "@/contexts/InstanceContext";
 import { cn } from "@/lib/utils";
@@ -7,7 +8,6 @@ import { useTodayDate, useWeekdayLabels } from "./hooks";
 import type { CalendarSize, MonthCalendarProps } from "./types";
 import { useCalendarMatrix } from "./useCalendar";
 import { getTooltipText } from "./utils";
-import dayjs from "dayjs";
 
 const GRID_STYLES: Record<CalendarSize, { gap: string; headerText: string }> = {
   small: { gap: "gap-1.5", headerText: "text-[10px]" },
@@ -42,10 +42,9 @@ export const MonthCalendar = memo((props: MonthCalendarProps) => {
   const today = useTodayDate();
   const weekDays = useWeekdayLabels();
   const selectedDateFormatted = useMemo(() => {
-  if (!selectedDate) return null;
-  return dayjs(selectedDate).format("YYYY-MM-DD");
-}, [selectedDate]);
-
+    if (!selectedDate) return null;
+    return dayjs(selectedDate).format("YYYY-MM-DD");
+  }, [selectedDate]);
 
   const { weeks, weekDays: rotatedWeekDays } = useCalendarMatrix({
     month,

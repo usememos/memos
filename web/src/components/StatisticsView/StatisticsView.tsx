@@ -1,9 +1,9 @@
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import { MonthCalendar } from "@/components/ActivityCalendar";
+import { type MemoFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import type { StatisticsData } from "@/types/statistics";
 import { MonthNavigator } from "./MonthNavigator";
-import { type MemoFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 
 interface Props {
   statisticsData: StatisticsData;
@@ -43,7 +43,13 @@ const StatisticsView = (props: Props) => {
       <MonthNavigator visibleMonth={visibleMonthString} onMonthChange={setVisibleMonthString} activityStats={activityStats} />
 
       <div className="w-full animate-scale-in">
-        <MonthCalendar month={visibleMonthString} selectedDate={selectedDate ? selectedDate.toDateString() : null} data={activityStats} maxCount={maxCount} onClick={handleDateCellClick} />
+        <MonthCalendar
+          month={visibleMonthString}
+          selectedDate={selectedDate ? selectedDate.toDateString() : null}
+          data={activityStats}
+          maxCount={maxCount}
+          onClick={handleDateCellClick}
+        />
       </div>
     </div>
   );
