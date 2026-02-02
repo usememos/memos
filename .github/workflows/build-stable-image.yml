@@ -1,4 +1,4 @@
-name: Build and Push Stable Image
+name: Build Stable Image
 
 on:
   push:

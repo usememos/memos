@@ -1,17 +1,18 @@
-name: Stale
+name: Stale Issues
 
 on:
   schedule:
-    - cron: "0 */8 * * *"
+    - cron: "0 */8 * * *"  # Every 8 hours
 
 jobs:
-  stale:
+  close-stale:
+    name: Close Stale Issues
     runs-on: ubuntu-latest
     permissions:
       issues: write
-
     steps:
-      - uses: actions/stale@v10.1.1
+      - name: Close stale issues
+        uses: actions/stale@v10.1.1
         with:
           days-before-issue-stale: 14
           days-before-issue-close: 7

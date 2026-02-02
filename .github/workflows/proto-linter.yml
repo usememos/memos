@@ -4,30 +4,37 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
     paths:
       - "proto/**"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  lint-protos:
+  lint:
+    name: Lint Protos
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+
       - name: Setup buf
         uses: bufbuild/buf-setup-action@v1
         with:
           github_token: ${{ github.token }}
-      - name: buf lint
+
+      - name: Run buf lint
         uses: bufbuild/buf-lint-action@v1
         with:
-          input: "proto"
-      - name: buf format
+          input: proto
+
+      - name: Check buf format
         run: |
           if [[ $(buf format -d) ]]; then
-            echo "Run 'buf format -d'"
+            echo "❌ Proto files are not formatted. Run 'buf format -w' to fix."
             exit 1
           fi

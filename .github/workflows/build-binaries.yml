@@ -1,76 +1,137 @@
 name: Build Binaries
 
+# Manually triggered workflow to build multi-platform binaries
+# Produces distributable packages for Linux, macOS, and Windows
 on:
   workflow_dispatch:
 
+# Environment variables for build configuration
+env:
+  GO_VERSION: "1.25"
+  NODE_VERSION: "22"
+  PNPM_VERSION: "10"
+  ARTIFACT_RETENTION_DAYS: 60
+
 jobs:
+  # Job 1: Extract version information
+  # - For git tags: use tag version (e.g., v0.28.1 -> 0.28.1)
+  # - For branches: use branch-name-shortSHA format
+  prepare:
+    name: Extract Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0  # Full history for git describe
+
+      - name: Extract version
+        id: version
+        run: |
+          # Try to get version from git tag
+          TAG=$(git describe --tags --exact-match 2>/dev/null || echo "")
+          if [ -n "$TAG" ]; then
+            echo "version=${TAG#v}" >> $GITHUB_OUTPUT
+            echo "Version from tag: ${TAG#v}"
+          else
+            # Use branch name + short SHA
+            BRANCH="${GITHUB_REF_NAME//\//-}"
+            SHORT_SHA="${GITHUB_SHA:0:7}"
+            echo "version=${BRANCH}-${SHORT_SHA}" >> $GITHUB_OUTPUT
+            echo "Version from branch: ${BRANCH}-${SHORT_SHA}"
+          fi
+
+  # Job 2: Build frontend assets
+  # - Builds React frontend with Vite
+  # - Produces static files that will be embedded in Go binary
+  # - Shared across all platform builds
   build-frontend:
+    name: Build Frontend
+    needs: prepare
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout code
+        uses: actions/checkout@v6
 
-      - uses: pnpm/action-setup@v4.2.0
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4.2.0
         with:
-          version: 10
-      - uses: actions/setup-node@v6
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
-          node-version: "22"
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-          cache-dependency-path: "web/pnpm-lock.yaml"
+          cache-dependency-path: web/pnpm-lock.yaml
+
       - name: Get pnpm store directory
         id: pnpm-cache
         shell: bash
         run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
       - name: Setup pnpm cache
         uses: actions/cache@v5
         with:
           path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('web/pnpm-lock.yaml') }}
           restore-keys: ${{ runner.os }}-pnpm-store-
-      - run: pnpm install --frozen-lockfile
+
+      - name: Install dependencies
         working-directory: web
-      - name: Run frontend build
+        run: pnpm install --frozen-lockfile
+
+      - name: Build frontend
+        working-directory: web
         run: pnpm release
-        working-directory: web
 
       - name: Upload frontend artifacts
         uses: actions/upload-artifact@v6
         with:
           name: frontend-dist
           path: server/router/frontend/dist
-          retention-days: 7
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
+  # Job 3: Build Go binaries for multiple platforms
+  # - Cross-compiles using native Go toolchain
+  # - Embeds frontend assets built in previous job
+  # - Produces static binaries with no external dependencies
+  # - Packages as tar.gz (Unix) or zip (Windows)
   build-binaries:
-    needs: build-frontend
+    name: Build ${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.goarm && format('v{0}', matrix.goarm) || '' }}
+    needs: [prepare, build-frontend]
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include:
+          # Linux targets
           - goos: linux
             goarch: amd64
-            platform: linux/amd64
           - goos: linux
             goarch: arm64
-            platform: linux/arm64
           - goos: linux
             goarch: arm
             goarm: "7"
-            platform: linux/arm/v7
+          # macOS targets
           - goos: darwin
-            goarch: amd64
-            platform: darwin/amd64
+            goarch: amd64  # Intel Macs
           - goos: darwin
-            goarch: arm64
-            platform: darwin/arm64
+            goarch: arm64  # Apple Silicon
+          # Windows targets
           - goos: windows
             goarch: amd64
-            platform: windows/amd64
-    steps:
-      - uses: actions/checkout@v6
 
-      - uses: actions/setup-go@v6
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
         with:
-          go-version: "1.25"
+          go-version: ${{ env.GO_VERSION }}
           cache: true
 
       - name: Download frontend artifacts
@@ -86,13 +147,15 @@ jobs:
           GOARM: ${{ matrix.goarm }}
           CGO_ENABLED: "0"
         run: |
-          # Determine output file name
+          # Determine output binary name
           OUTPUT_NAME="memos"
-          if [ "${{ matrix.goos }}" = "windows" ]; then
+          if [ "$GOOS" = "windows" ]; then
             OUTPUT_NAME="memos.exe"
           fi
           
-          # Build with optimizations
+          mkdir -p build
+          
+          # Build static binary with optimizations
           go build \
             -trimpath \
             -ldflags="-s -w -extldflags '-static'" \
@@ -100,69 +163,99 @@ jobs:
             -o "build/${OUTPUT_NAME}" \
             ./cmd/memos
           
-          echo "Built: build/${OUTPUT_NAME}"
+          echo "✓ Built: build/${OUTPUT_NAME}"
           ls -lh build/
 
       - name: Package binary
+        id: package
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          GOARM: ${{ matrix.goarm }}
         run: |
           cd build
           
-          # Create package name
-          PACKAGE_NAME="memos-${{ matrix.goos }}-${{ matrix.goarch }}"
-          if [ -n "${{ matrix.goarm }}" ]; then
-            PACKAGE_NAME="memos-${{ matrix.goos }}-${{ matrix.goarch }}v${{ matrix.goarm }}"
+          # Construct package name: memos-{version}-{os}-{arch}[v{arm_version}]
+          PACKAGE_NAME="memos-${VERSION}-${GOOS}-${GOARCH}"
+          if [ -n "$GOARM" ]; then
+            PACKAGE_NAME="${PACKAGE_NAME}v${GOARM}"
           fi
           
-          # Package based on OS
-          if [ "${{ matrix.goos }}" = "windows" ]; then
-            zip "${PACKAGE_NAME}.zip" memos.exe
-            echo "ARTIFACT_NAME=${PACKAGE_NAME}.zip" >> $GITHUB_ENV
+          # Package based on platform
+          if [ "$GOOS" = "windows" ]; then
+            ARTIFACT_NAME="${PACKAGE_NAME}.zip"
+            zip -q "${ARTIFACT_NAME}" memos.exe
           else
-            tar czf "${PACKAGE_NAME}.tar.gz" memos
-            echo "ARTIFACT_NAME=${PACKAGE_NAME}.tar.gz" >> $GITHUB_ENV
+            ARTIFACT_NAME="${PACKAGE_NAME}.tar.gz"
+            tar czf "${ARTIFACT_NAME}" memos
           fi
           
-          ls -lh
-          echo "Package created: ${ARTIFACT_NAME}"
+          # Output for next step
+          echo "ARTIFACT_NAME=${ARTIFACT_NAME}" >> $GITHUB_ENV
+          echo "✓ Package created: ${ARTIFACT_NAME} ($(du -h "${ARTIFACT_NAME}" | cut -f1))"
 
       - name: Upload binary artifact
         uses: actions/upload-artifact@v6
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: build/${{ env.ARTIFACT_NAME }}
-          retention-days: 7
+          retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
+  # Job 4: Generate build summary
+  # - Downloads all built artifacts
+  # - Creates formatted summary table with sizes
+  # - Displayed in GitHub Actions UI
   summary:
-    needs: build-binaries
+    name: Generate Summary
+    needs: [prepare, build-binaries]
     runs-on: ubuntu-latest
+    if: always()
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v7
         with:
           path: artifacts
           pattern: memos-*
+          merge-multiple: false
 
       - name: Generate build summary
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
         run: |
-          echo "## Build Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Branch:** \`${{ github.ref_name }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Commit:** \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Built Artifacts" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Platform | Artifact | Size |" >> $GITHUB_STEP_SUMMARY
-          echo "|----------|----------|------|" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "## 🎉 Build Complete"
+            echo ""
+            echo "### Build Information"
+            echo "| Key | Value |"
+            echo "|-----|-------|"
+            echo "| **Version** | \`${VERSION}\` |"
+            echo "| **Branch** | \`${{ github.ref_name }}\` |"
+            echo "| **Commit** | \`${{ github.sha }}\` |"
+            echo "| **Triggered by** | @${{ github.actor }} |"
+            echo ""
+            echo "### 📦 Built Artifacts"
+            echo ""
+            echo "| Platform | Artifact | Size |"
+            echo "|----------|----------|------|"
+          } >> $GITHUB_STEP_SUMMARY
           
+          # List all artifacts with sizes
           cd artifacts
           for dir in */; do
-            artifact=$(ls "$dir" 2>/dev/null | head -1)
-            if [ -n "$artifact" ]; then
-              size=$(du -h "$dir/$artifact" | cut -f1)
-              platform=$(echo "$artifact" | sed 's/memos-//;s/\.(tar\.gz|zip)$//')
-              echo "| \`$platform\` | \`$artifact\` | $size |" >> $GITHUB_STEP_SUMMARY
+            if [ -d "$dir" ]; then
+              artifact=$(ls "$dir" 2>/dev/null | head -1)
+              if [ -n "$artifact" ]; then
+                size=$(du -h "$dir/$artifact" | cut -f1)
+                # Extract platform from filename (remove memos-version- prefix and extension)
+                platform=$(echo "$artifact" | sed "s/memos-${VERSION}-//;s/\.(tar\.gz|zip)$//")
+                echo "| \`$platform\` | \`$artifact\` | **$size** |" >> $GITHUB_STEP_SUMMARY
+              fi
             fi
           done
           
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Download:** Go to the workflow run summary to download artifacts." >> $GITHUB_STEP_SUMMARY
+          {
+            echo ""
+            echo "### 📥 Download"
+            echo "Artifacts are available in the **Artifacts** section above (retention: ${{ env.ARTIFACT_RETENTION_DAYS }} days)."
+          } >> $GITHUB_STEP_SUMMARY

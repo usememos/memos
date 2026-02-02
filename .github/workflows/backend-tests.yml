@@ -4,8 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
     paths:
       - "go.mod"
       - "go.sum"
@@ -15,55 +14,58 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  GO_VERSION: "1.25"
+
 jobs:
-  go-static-checks:
+  static-checks:
+    name: Static Checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout code
+        uses: actions/checkout@v6
       
-      - uses: actions/setup-go@v6
+      - name: Setup Go
+        uses: actions/setup-go@v6
         with:
-          go-version: 1.25
+          go-version: ${{ env.GO_VERSION }}
           cache: true
           cache-dependency-path: go.sum
 
       - name: Verify go.mod is tidy
         run: |
-          go mod tidy -go=1.25
+          go mod tidy -go=${{ env.GO_VERSION }}
           git diff --exit-code
 
-      - name: golangci-lint
+      - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v9
         with:
           version: v2.4.0
           args: --timeout=3m
 
-  go-tests:
+  tests:
+    name: Tests (${{ matrix.test-group }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        test-group:
-          - store
-          - server
-          - plugin
-          - other
+        test-group: [store, server, plugin, other]
     steps:
-      - uses: actions/checkout@v6
+      - name: Checkout code
+        uses: actions/checkout@v6
       
-      - uses: actions/setup-go@v6
+      - name: Setup Go
+        uses: actions/setup-go@v6
         with:
-          go-version: 1.25
+          go-version: ${{ env.GO_VERSION }}
           cache: true
           cache-dependency-path: go.sum
 
-      - name: Run tests - ${{ matrix.test-group }}
+      - name: Run tests
         run: |
           case "${{ matrix.test-group }}" in
             store)
               # Run store tests for all drivers (sqlite, mysql, postgres)
-              # The TestMain in store/test runs all drivers when DRIVER is not set
-              # Note: We run without -race for container tests due to testcontainers race issues
               go test -v -coverprofile=coverage.out -covermode=atomic ./store/...
               ;;
             server)
