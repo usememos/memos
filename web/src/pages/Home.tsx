@@ -28,7 +28,7 @@ const Home = () => {
         listSort={listSort}
         orderBy={orderBy}
         filter={memoFilter}
-        enabled={isInitialized && !!user} // Wait for contexts to stabilize before fetching
+        enabled={isInitialized}
       />
     </div>
   );
