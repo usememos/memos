@@ -6,8 +6,8 @@ import (
 
 	"github.com/pkg/errors"
 
-	// Import the SQLite driver.
-	_ "modernc.org/sqlite"
+	// Note: modernc.org/sqlite driver is imported in functions.go where
+	// RegisterScalarFunction is used. No blank import needed here.
 
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/store"
@@ -25,6 +25,10 @@ func NewDB(profile *profile.Profile) (store.Driver, error) {
 	// Ensure a DSN is set before attempting to open the database.
 	if profile.DSN == "" {
 		return nil, errors.New("dsn required")
+	}
+
+	if err := ensureUnicodeLowerRegistered(); err != nil {
+		return nil, errors.Wrap(err, "failed to register sqlite unicode lower function")
 	}
 
 	// Connect to the database with some sane settings:

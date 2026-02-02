@@ -61,6 +61,17 @@ func TestMemoFilterContentUnicode(t *testing.T) {
 	require.Len(t, memos, 1)
 }
 
+func TestMemoFilterContentUnicodeCaseFold(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateMemo(NewMemoBuilder("memo-unicode-case", tc.User.ID).Content("Привет Мир"))
+
+	memos := tc.ListWithFilter(`content.contains("привет")`)
+	require.Len(t, memos, 1)
+}
+
 func TestMemoFilterContentCaseSensitivity(t *testing.T) {
 	t.Parallel()
 	tc := NewMemoFilterTestContext(t)

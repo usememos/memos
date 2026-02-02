@@ -454,6 +454,11 @@ func (r *renderer) renderContainsCondition(cond *ContainsCondition) (renderResul
 	column := field.columnExpr(r.dialect)
 	arg := fmt.Sprintf("%%%s%%", cond.Value)
 	switch r.dialect {
+	case DialectSQLite:
+		// Use custom Unicode-aware case folding function for case-insensitive comparison.
+		// This overcomes SQLite's ASCII-only LOWER() limitation.
+		sql := fmt.Sprintf("memos_unicode_lower(%s) LIKE memos_unicode_lower(%s)", column, r.addArg(arg))
+		return renderResult{sql: sql}, nil
 	case DialectPostgres:
 		sql := fmt.Sprintf("%s ILIKE %s", column, r.addArg(arg))
 		return renderResult{sql: sql}, nil
