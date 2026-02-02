@@ -15,17 +15,16 @@ import (
 
 // GetInstanceProfile returns the instance profile.
 func (s *APIV1Service) GetInstanceProfile(ctx context.Context, _ *v1pb.GetInstanceProfileRequest) (*v1pb.InstanceProfile, error) {
+	admin, err := s.GetInstanceAdmin(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get instance admin: %v", err)
+	}
+
 	instanceProfile := &v1pb.InstanceProfile{
 		Version:     s.Profile.Version,
-		Mode:        s.Profile.Mode,
+		Demo:        s.Profile.Demo,
 		InstanceUrl: s.Profile.InstanceURL,
-	}
-	owner, err := s.GetInstanceOwner(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get instance owner: %v", err)
-	}
-	if owner != nil {
-		instanceProfile.Owner = owner.Name
+		Admin:       admin, // nil when not initialized
 	}
 	return instanceProfile, nil
 }
@@ -64,13 +63,16 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 		return nil, status.Errorf(codes.NotFound, "instance setting not found")
 	}
 
-	// For storage setting, only host can get it.
+	// For storage setting, only admin can get it.
 	if instanceSetting.Key == storepb.InstanceSettingKey_STORAGE {
 		user, err := s.fetchCurrentUser(ctx)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 		}
-		if user == nil || user.Role != store.RoleHost {
+		if user == nil {
+			return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+		}
+		if user.Role != store.RoleAdmin {
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 		}
 	}
@@ -86,7 +88,7 @@ func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	if user.Role != store.RoleHost {
+	if user.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -267,24 +269,17 @@ func convertInstanceMemoRelatedSettingToStore(setting *v1pb.InstanceSetting_Memo
 	}
 }
 
-var ownerCache *v1pb.User
-
-func (s *APIV1Service) GetInstanceOwner(ctx context.Context) (*v1pb.User, error) {
-	if ownerCache != nil {
-		return ownerCache, nil
-	}
-
-	hostUserType := store.RoleHost
+func (s *APIV1Service) GetInstanceAdmin(ctx context.Context) (*v1pb.User, error) {
+	adminUserType := store.RoleAdmin
 	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		Role: &hostUserType,
+		Role: &adminUserType,
 	})
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to find owner")
+		return nil, errors.Wrapf(err, "failed to find admin")
 	}
 	if user == nil {
 		return nil, nil
 	}
 
-	ownerCache = convertUserFromStore(user)
-	return ownerCache, nil
+	return convertUserFromStore(user), nil
 }

@@ -13,6 +13,7 @@ import (
 // =============================================================================
 
 func TestAttachmentFilterFilenameContains(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContext(t)
 	defer tc.Close()
 
@@ -35,6 +36,7 @@ func TestAttachmentFilterFilenameContains(t *testing.T) {
 }
 
 func TestAttachmentFilterFilenameSpecialCharacters(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContext(t)
 	defer tc.Close()
 
@@ -51,6 +53,7 @@ func TestAttachmentFilterFilenameSpecialCharacters(t *testing.T) {
 }
 
 func TestAttachmentFilterFilenameUnicode(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContext(t)
 	defer tc.Close()
 
@@ -67,6 +70,7 @@ func TestAttachmentFilterFilenameUnicode(t *testing.T) {
 // =============================================================================
 
 func TestAttachmentFilterMimeTypeEquals(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContext(t)
 	defer tc.Close()
 
@@ -86,6 +90,7 @@ func TestAttachmentFilterMimeTypeEquals(t *testing.T) {
 }
 
 func TestAttachmentFilterMimeTypeNotEquals(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContext(t)
 	defer tc.Close()
 
@@ -98,6 +103,7 @@ func TestAttachmentFilterMimeTypeNotEquals(t *testing.T) {
 }
 
 func TestAttachmentFilterMimeTypeInList(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContext(t)
 	defer tc.Close()
 
@@ -121,6 +127,7 @@ func TestAttachmentFilterMimeTypeInList(t *testing.T) {
 // =============================================================================
 
 func TestAttachmentFilterCreateTimeComparison(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContext(t)
 	defer tc.Close()
 
@@ -141,6 +148,7 @@ func TestAttachmentFilterCreateTimeComparison(t *testing.T) {
 }
 
 func TestAttachmentFilterCreateTimeWithNow(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContext(t)
 	defer tc.Close()
 
@@ -156,6 +164,7 @@ func TestAttachmentFilterCreateTimeWithNow(t *testing.T) {
 }
 
 func TestAttachmentFilterCreateTimeArithmetic(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContext(t)
 	defer tc.Close()
 
@@ -175,6 +184,7 @@ func TestAttachmentFilterCreateTimeArithmetic(t *testing.T) {
 }
 
 func TestAttachmentFilterAllComparisonOperators(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContext(t)
 	defer tc.Close()
 
@@ -203,6 +213,7 @@ func TestAttachmentFilterAllComparisonOperators(t *testing.T) {
 // =============================================================================
 
 func TestAttachmentFilterMemoIdEquals(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContextWithUser(t)
 	defer tc.Close()
 
@@ -218,6 +229,7 @@ func TestAttachmentFilterMemoIdEquals(t *testing.T) {
 }
 
 func TestAttachmentFilterMemoIdNotEquals(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContextWithUser(t)
 	defer tc.Close()
 
@@ -238,6 +250,7 @@ func TestAttachmentFilterMemoIdNotEquals(t *testing.T) {
 // =============================================================================
 
 func TestAttachmentFilterLogicalAnd(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContext(t)
 	defer tc.Close()
 
@@ -251,6 +264,7 @@ func TestAttachmentFilterLogicalAnd(t *testing.T) {
 }
 
 func TestAttachmentFilterLogicalOr(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContext(t)
 	defer tc.Close()
 
@@ -263,6 +277,7 @@ func TestAttachmentFilterLogicalOr(t *testing.T) {
 }
 
 func TestAttachmentFilterLogicalNot(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContext(t)
 	defer tc.Close()
 
@@ -275,6 +290,7 @@ func TestAttachmentFilterLogicalNot(t *testing.T) {
 }
 
 func TestAttachmentFilterComplexLogical(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContext(t)
 	defer tc.Close()
 
@@ -291,6 +307,7 @@ func TestAttachmentFilterComplexLogical(t *testing.T) {
 // =============================================================================
 
 func TestAttachmentFilterMultipleFilters(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContext(t)
 	defer tc.Close()
 
@@ -310,6 +327,7 @@ func TestAttachmentFilterMultipleFilters(t *testing.T) {
 // =============================================================================
 
 func TestAttachmentFilterNoMatches(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContext(t)
 	defer tc.Close()
 
@@ -320,6 +338,7 @@ func TestAttachmentFilterNoMatches(t *testing.T) {
 }
 
 func TestAttachmentFilterNullMemoId(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContextWithUser(t)
 	defer tc.Close()
 
@@ -343,6 +362,7 @@ func TestAttachmentFilterNullMemoId(t *testing.T) {
 }
 
 func TestAttachmentFilterEmptyFilename(t *testing.T) {
+	t.Parallel()
 	tc := NewAttachmentFilterTestContext(t)
 	defer tc.Close()
 

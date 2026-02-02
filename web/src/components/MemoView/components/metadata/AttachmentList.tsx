@@ -37,7 +37,7 @@ const DocumentItem = ({ attachment }: { attachment: Attachment }) => {
         <FileIcon className="w-3 h-3 text-muted-foreground" />
       </div>
       <div className="flex items-center gap-1 min-w-0">
-        <span className="text-xs font-medium truncate" title={attachment.filename}>
+        <span className="text-xs truncate" title={attachment.filename}>
           {attachment.filename}
         </span>
         <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0">

@@ -11,16 +11,14 @@ import { handleError } from "@/lib/error";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { removeCompletedTasks } from "@/utils/markdown-manipulation";
 
 interface UseMemoActionHandlersOptions {
   memo: Memo;
   onEdit?: () => void;
   setDeleteDialogOpen: (open: boolean) => void;
-  setRemoveTasksDialogOpen: (open: boolean) => void;
 }
 
-export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen, setRemoveTasksDialogOpen }: UseMemoActionHandlersOptions) => {
+export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: UseMemoActionHandlersOptions) => {
   const t = useTranslate();
   const location = useLocation();
   const navigateTo = useNavigateTo();
@@ -108,23 +106,6 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen, setRe
     memoUpdatedCallback();
   }, [memo.name, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback, deleteMemo]);
 
-  const handleRemoveCompletedTaskListItemsClick = useCallback(() => {
-    setRemoveTasksDialogOpen(true);
-  }, [setRemoveTasksDialogOpen]);
-
-  const confirmRemoveCompletedTaskListItems = useCallback(async () => {
-    const newContent = removeCompletedTasks(memo.content);
-    await updateMemo({
-      update: {
-        name: memo.name,
-        content: newContent,
-      },
-      updateMask: ["content"],
-    });
-    toast.success(t("message.remove-completed-task-list-items-successfully"));
-    memoUpdatedCallback();
-  }, [memo.name, memo.content, t, memoUpdatedCallback, updateMemo]);
-
   return {
     handleTogglePinMemoBtnClick,
     handleEditMemoClick,
@@ -133,7 +114,5 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen, setRe
     handleCopyContent,
     handleDeleteMemoClick,
     confirmDeleteMemo,
-    handleRemoveCompletedTaskListItemsClick,
-    confirmRemoveCompletedTaskListItems,
   };
 };

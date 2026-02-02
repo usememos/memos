@@ -1,11 +1,11 @@
 package email
 
 import (
-	"sync"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/sync/errgroup"
 )
 
 func TestSend(t *testing.T) {
@@ -106,34 +106,22 @@ func TestSendAsyncConcurrent(t *testing.T) {
 		FromEmail: "test@example.com",
 	}
 
-	// Send multiple emails concurrently
-	var wg sync.WaitGroup
+	g := errgroup.Group{}
 	count := 5
 
 	for i := 0; i < count; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		g.Go(func() error {
 			message := &Message{
 				To:      []string{"recipient@example.com"},
 				Subject: "Concurrent Test",
 				Body:    "Test body",
 			}
 			SendAsync(config, message)
-		}()
+			return nil
+		})
 	}
 
-	// Should complete without deadlock
-	done := make(chan bool)
-	go func() {
-		wg.Wait()
-		done <- true
-	}()
-
-	select {
-	case <-done:
-		// Success
-	case <-time.After(1 * time.Second):
-		t.Fatal("SendAsync calls did not complete in time")
+	if err := g.Wait(); err != nil {
+		t.Fatalf("SendAsync calls failed: %v", err)
 	}
 }

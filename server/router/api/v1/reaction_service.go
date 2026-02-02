@@ -15,6 +15,33 @@ import (
 )
 
 func (s *APIV1Service) ListMemoReactions(ctx context.Context, request *v1pb.ListMemoReactionsRequest) (*v1pb.ListMemoReactionsResponse, error) {
+	// Extract memo UID and check visibility.
+	memoUID, err := ExtractMemoUIDFromName(request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
+	}
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get memo: %v", err)
+	}
+	if memo == nil {
+		return nil, status.Errorf(codes.NotFound, "memo not found")
+	}
+
+	// Check memo visibility.
+	if memo.Visibility != store.Public {
+		user, err := s.fetchCurrentUser(ctx)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get user")
+		}
+		if user == nil {
+			return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+		}
+		if memo.Visibility == store.Private && memo.CreatorID != user.ID && !isSuperUser(user) {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+	}
+
 	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
 		ContentID: &request.Name,
 	})
@@ -40,6 +67,25 @@ func (s *APIV1Service) UpsertMemoReaction(ctx context.Context, request *v1pb.Ups
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
+
+	// Extract memo UID and check visibility before allowing reaction.
+	memoUID, err := ExtractMemoUIDFromName(request.Reaction.ContentId)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
+	}
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get memo: %v", err)
+	}
+	if memo == nil {
+		return nil, status.Errorf(codes.NotFound, "memo not found")
+	}
+
+	// Check memo visibility.
+	if memo.Visibility == store.Private && memo.CreatorID != user.ID && !isSuperUser(user) {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
 	reaction, err := s.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
 		ContentID:    request.Reaction.ContentId,

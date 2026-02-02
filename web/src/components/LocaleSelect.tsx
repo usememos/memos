@@ -2,7 +2,7 @@ import { GlobeIcon } from "lucide-react";
 import { FC } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { locales } from "@/i18n";
-import { getLocaleDisplayName } from "@/utils/i18n";
+import { getLocaleDisplayName, loadLocale } from "@/utils/i18n";
 
 interface Props {
   value: Locale;
@@ -13,6 +13,9 @@ const LocaleSelect: FC<Props> = (props: Props) => {
   const { onChange, value } = props;
 
   const handleSelectChange = async (locale: Locale) => {
+    // Apply locale globally immediately
+    loadLocale(locale);
+    // Also notify parent component
     onChange(locale);
   };
 

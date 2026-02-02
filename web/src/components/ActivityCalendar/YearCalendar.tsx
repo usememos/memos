@@ -1,21 +1,90 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { useMemo } from "react";
-import {
-  calculateYearMaxCount,
-  filterDataByYear,
-  generateMonthsForYear,
-  getMonthLabel,
-  MonthCalendar,
-} from "@/components/ActivityCalendar";
+import { memo, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { getMaxYear, MIN_YEAR } from "./constants";
+import { MonthCalendar } from "./MonthCalendar";
 import type { YearCalendarProps } from "./types";
+import { calculateYearMaxCount, filterDataByYear, generateMonthsForYear, getMonthLabel } from "./utils";
 
-export const YearCalendar = ({ selectedYear, data, onYearChange, onDateClick, className }: YearCalendarProps) => {
+interface YearNavigationProps {
+  selectedYear: number;
+  currentYear: number;
+  onPrev: () => void;
+  onNext: () => void;
+  onToday: () => void;
+  canGoPrev: boolean;
+  canGoNext: boolean;
+}
+
+const YearNavigation = memo(({ selectedYear, currentYear, onPrev, onNext, onToday, canGoPrev, canGoNext }: YearNavigationProps) => {
   const t = useTranslate();
+  const isCurrentYear = selectedYear === currentYear;
+
+  return (
+    <div className="flex items-center justify-between px-1">
+      <h2 className="text-2xl font-semibold text-foreground tracking-tight">{selectedYear}</h2>
+
+      <nav className="inline-flex items-center gap-0.5 rounded-lg border border-border/30 bg-muted/10 p-0.5" aria-label="Year navigation">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onPrev}
+          disabled={!canGoPrev}
+          aria-label="Previous year"
+          className="h-7 w-7 p-0 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/40"
+        >
+          <ChevronLeftIcon className="w-4 h-4" />
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onToday}
+          disabled={isCurrentYear}
+          aria-label={t("common.today")}
+          className={cn(
+            "h-7 px-2.5 rounded-md text-[10px] font-medium uppercase tracking-wider",
+            isCurrentYear ? "text-muted-foreground/50 cursor-default" : "text-muted-foreground hover:text-foreground hover:bg-muted/40",
+          )}
+        >
+          {t("common.today")}
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onNext}
+          disabled={!canGoNext}
+          aria-label="Next year"
+          className="h-7 w-7 p-0 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/40"
+        >
+          <ChevronRightIcon className="w-4 h-4" />
+        </Button>
+      </nav>
+    </div>
+  );
+});
+YearNavigation.displayName = "YearNavigation";
+
+interface MonthCardProps {
+  month: string;
+  data: Record<string, number>;
+  maxCount: number;
+  onDateClick: (date: string) => void;
+}
+
+const MonthCard = memo(({ month, data, maxCount, onDateClick }: MonthCardProps) => (
+  <article className="flex flex-col gap-2 rounded-xl border border-border/20 bg-muted/5 p-3 transition-colors hover:bg-muted/10">
+    <header className="text-[10px] font-medium text-muted-foreground/80 uppercase tracking-widest">{getMonthLabel(month)}</header>
+    <MonthCalendar month={month} data={data} maxCount={maxCount} size="small" onClick={onDateClick} />
+  </article>
+));
+MonthCard.displayName = "MonthCard";
+
+export const YearCalendar = memo(({ selectedYear, data, onYearChange, onDateClick, className }: YearCalendarProps) => {
   const currentYear = useMemo(() => new Date().getFullYear(), []);
   const yearData = useMemo(() => filterDataByYear(data, selectedYear), [data, selectedYear]);
   const months = useMemo(() => generateMonthsForYear(selectedYear), [selectedYear]);
@@ -23,71 +92,28 @@ export const YearCalendar = ({ selectedYear, data, onYearChange, onDateClick, cl
 
   const canGoPrev = selectedYear > MIN_YEAR;
   const canGoNext = selectedYear < getMaxYear();
-  const isCurrentYear = selectedYear === currentYear;
-
-  const handlePrevYear = () => canGoPrev && onYearChange(selectedYear - 1);
-  const handleNextYear = () => canGoNext && onYearChange(selectedYear + 1);
-  const handleToday = () => onYearChange(currentYear);
 
   return (
-    <div className={cn("w-full flex flex-col gap-6 p-2 md:p-0 select-none", className)}>
-      <div className="flex items-center justify-between pb-4 px-2 pt-2">
-        <h2 className="text-3xl font-bold text-foreground tracking-tight leading-none">{selectedYear}</h2>
-
-        <div className="inline-flex items-center gap-1 shrink-0">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handlePrevYear}
-            disabled={!canGoPrev}
-            aria-label="Previous year"
-            className="h-9 w-9 p-0 rounded-md hover:bg-secondary/80 text-muted-foreground hover:text-foreground"
-          >
-            <ChevronLeftIcon className="w-5 h-5" />
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleToday}
-            disabled={isCurrentYear}
-            aria-label={t("common.today")}
-            className={cn(
-              "h-9 px-4 rounded-md text-sm font-medium transition-colors",
-              isCurrentYear ? "bg-secondary/50 text-muted-foreground cursor-default" : "hover:bg-secondary/80 text-foreground",
-            )}
-          >
-            {t("common.today")}
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleNextYear}
-            disabled={!canGoNext}
-            aria-label="Next year"
-            className="h-9 w-9 p-0 rounded-md hover:bg-secondary/80 text-muted-foreground hover:text-foreground"
-          >
-            <ChevronRightIcon className="w-5 h-5" />
-          </Button>
-        </div>
-      </div>
+    <section className={cn("w-full flex flex-col gap-5 px-4 py-4 select-none", className)} aria-label={`Year ${selectedYear} calendar`}>
+      <YearNavigation
+        selectedYear={selectedYear}
+        currentYear={currentYear}
+        onPrev={() => canGoPrev && onYearChange(selectedYear - 1)}
+        onNext={() => canGoNext && onYearChange(selectedYear + 1)}
+        onToday={() => onYearChange(currentYear)}
+        canGoPrev={canGoPrev}
+        canGoNext={canGoNext}
+      />
 
       <TooltipProvider>
-        <div className="w-full animate-fade-in">
-          <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-            {months.map((month) => (
-              <div
-                key={month}
-                className="flex flex-col gap-3 rounded-lg p-3 hover:bg-secondary/40 transition-colors cursor-default border border-transparent hover:border-border/50"
-              >
-                <div className="text-xs font-bold text-foreground/80 uppercase tracking-widest pl-1">{getMonthLabel(month)}</div>
-                <MonthCalendar month={month} data={yearData} maxCount={yearMaxCount} size="small" onClick={onDateClick} />
-              </div>
-            ))}
-          </div>
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 animate-fade-in">
+          {months.map((month) => (
+            <MonthCard key={month} month={month} data={yearData} maxCount={yearMaxCount} onDateClick={onDateClick} />
+          ))}
         </div>
       </TooltipProvider>
-    </div>
+    </section>
   );
-};
+});
+
+YearCalendar.displayName = "YearCalendar";

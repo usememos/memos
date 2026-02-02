@@ -1,1 +1,13 @@
 web/node_modules
+web/dist
+.git
+.github
+build/
+tmp/
+memos
+*.md
+.gitignore
+.golangci.yaml
+.dockerignore
+docs/
+.DS_Store

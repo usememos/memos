@@ -23,8 +23,8 @@ const SignUp = () => {
   const actionBtnLoadingState = useLoading(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { generalSetting: instanceGeneralSetting, profile } = useInstance();
-  const { initialize } = useAuth();
+  const { initialize: initAuth } = useAuth();
+  const { generalSetting: instanceGeneralSetting, profile, initialize: initInstance } = useInstance();
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
@@ -68,7 +68,10 @@ const SignUp = () => {
       if (response.accessToken) {
         setAccessToken(response.accessToken, response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined);
       }
-      await initialize();
+      // Refresh auth context to load the current user
+      await initAuth();
+      // Refetch instance profile to update the initialized status
+      await initInstance();
       navigateTo("/");
     } catch (error: unknown) {
       handleError(error, toast.error, {
@@ -132,7 +135,7 @@ const SignUp = () => {
         ) : (
           <p className="w-full text-2xl mt-2 text-muted-foreground">Sign up is not allowed.</p>
         )}
-        {!profile.owner ? (
+        {!profile.admin ? (
           <p className="w-full mt-4 text-sm font-medium text-muted-foreground">{t("auth.host-tip")}</p>
         ) : (
           <p className="w-full mt-4 text-sm">

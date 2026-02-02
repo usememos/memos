@@ -13,15 +13,13 @@ CREATE TABLE user (
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   row_status TEXT NOT NULL CHECK (row_status IN ('NORMAL', 'ARCHIVED')) DEFAULT 'NORMAL',
   username TEXT NOT NULL UNIQUE,
-  role TEXT NOT NULL CHECK (role IN ('HOST', 'ADMIN', 'USER')) DEFAULT 'USER',
+  role TEXT NOT NULL DEFAULT 'USER',
   email TEXT NOT NULL DEFAULT '',
   nickname TEXT NOT NULL DEFAULT '',
   password_hash TEXT NOT NULL,
   avatar_url TEXT NOT NULL DEFAULT '',
   description TEXT NOT NULL DEFAULT ''
 );
-
-CREATE INDEX idx_user_username ON user (username);
 
 -- user_setting
 CREATE TABLE user_setting (
@@ -45,16 +43,6 @@ CREATE TABLE memo (
   payload TEXT NOT NULL DEFAULT '{}'
 );
 
-CREATE INDEX idx_memo_creator_id ON memo (creator_id);
-
--- memo_organizer
-CREATE TABLE memo_organizer (
-  memo_id INTEGER NOT NULL,
-  user_id INTEGER NOT NULL,
-  pinned INTEGER NOT NULL CHECK (pinned IN (0, 1)) DEFAULT 0,
-  UNIQUE(memo_id, user_id)
-);
-
 -- memo_relation
 CREATE TABLE memo_relation (
   memo_id INTEGER NOT NULL,
@@ -63,8 +51,8 @@ CREATE TABLE memo_relation (
   UNIQUE(memo_id, related_memo_id, type)
 );
 
--- resource
-CREATE TABLE resource (
+-- attachment
+CREATE TABLE attachment (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   uid TEXT NOT NULL UNIQUE,
   creator_id INTEGER NOT NULL,
@@ -79,10 +67,6 @@ CREATE TABLE resource (
   reference TEXT NOT NULL DEFAULT '',
   payload TEXT NOT NULL DEFAULT '{}'
 );
-
-CREATE INDEX idx_resource_creator_id ON resource (creator_id);
-
-CREATE INDEX idx_resource_memo_id ON resource (memo_id);
 
 -- activity
 CREATE TABLE activity (

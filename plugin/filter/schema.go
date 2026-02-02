@@ -256,7 +256,7 @@ func NewAttachmentSchema() Schema {
 			Name:             "filename",
 			Kind:             FieldKindScalar,
 			Type:             FieldTypeString,
-			Column:           Column{Table: "resource", Name: "filename"},
+			Column:           Column{Table: "attachment", Name: "filename"},
 			SupportsContains: true,
 			Expressions:      map[DialectName]string{},
 		},
@@ -264,14 +264,14 @@ func NewAttachmentSchema() Schema {
 			Name:        "mime_type",
 			Kind:        FieldKindScalar,
 			Type:        FieldTypeString,
-			Column:      Column{Table: "resource", Name: "type"},
+			Column:      Column{Table: "attachment", Name: "type"},
 			Expressions: map[DialectName]string{},
 		},
 		"create_time": {
 			Name:   "create_time",
 			Kind:   FieldKindScalar,
 			Type:   FieldTypeTimestamp,
-			Column: Column{Table: "resource", Name: "created_ts"},
+			Column: Column{Table: "attachment", Name: "created_ts"},
 			Expressions: map[DialectName]string{
 				// MySQL stores created_ts as TIMESTAMP, needs conversion to epoch
 				DialectMySQL: "UNIX_TIMESTAMP(%s)",
@@ -284,7 +284,7 @@ func NewAttachmentSchema() Schema {
 			Name:        "memo_id",
 			Kind:        FieldKindScalar,
 			Type:        FieldTypeInt,
-			Column:      Column{Table: "resource", Name: "memo_id"},
+			Column:      Column{Table: "attachment", Name: "memo_id"},
 			Expressions: map[DialectName]string{},
 			AllowedComparisonOps: map[ComparisonOperator]bool{
 				CompareEq:  true,

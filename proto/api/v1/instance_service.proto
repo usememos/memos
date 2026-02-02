@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package memos.api.v1;
 
+import "api/v1/user_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
@@ -34,18 +35,18 @@ service InstanceService {
 
 // Instance profile message containing basic instance information.
 message InstanceProfile {
-  // The name of instance owner.
-  // Format: users/{user}
-  string owner = 1;
-
   // Version is the current version of instance.
   string version = 2;
 
-  // Mode is the instance mode (e.g. "prod", "dev" or "demo").
-  string mode = 3;
+  // Demo indicates if the instance is in demo mode.
+  bool demo = 3;
 
   // Instance URL is the URL of the instance.
   string instance_url = 6;
+
+  // The first administrator who set up this instance.
+  // When null, instance requires initial setup (creating the first admin account).
+  User admin = 7;
 }
 
 // Request for instance profile.

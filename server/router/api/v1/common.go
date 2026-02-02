@@ -64,5 +64,5 @@ func unmarshalPageToken(s string, pageToken *v1pb.PageToken) error {
 }
 
 func isSuperUser(user *store.User) bool {
-	return user.Role == store.RoleAdmin || user.Role == store.RoleHost
+	return user.Role == store.RoleAdmin
 }

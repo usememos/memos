@@ -26,7 +26,9 @@ export interface EditorToolbarProps {
   memoName?: string;
 }
 
-export interface EditorMetadataProps {}
+export interface EditorMetadataProps {
+  memoName?: string;
+}
 
 export interface FocusModeOverlayProps {
   isActive: boolean;

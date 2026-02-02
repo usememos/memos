@@ -2132,20 +2132,21 @@ components:
         InstanceProfile:
             type: object
             properties:
-                owner:
-                    type: string
-                    description: |-
-                        The name of instance owner.
-                         Format: users/{user}
                 version:
                     type: string
                     description: Version is the current version of instance.
-                mode:
-                    type: string
-                    description: Mode is the instance mode (e.g. "prod", "dev" or "demo").
+                demo:
+                    type: boolean
+                    description: Demo indicates if the instance is in demo mode.
                 instanceUrl:
                     type: string
                     description: Instance URL is the URL of the instance.
+                admin:
+                    allOf:
+                        - $ref: '#/components/schemas/User'
+                    description: |-
+                        The first administrator who set up this instance.
+                         When null, instance requires initial setup (creating the first admin account).
             description: Instance profile message containing basic instance information.
         InstanceSetting:
             type: object
@@ -2470,14 +2471,16 @@ components:
                         The name of the creator.
                          Format: users/{user}
                 createTime:
-                    readOnly: true
                     type: string
-                    description: Output only. The creation timestamp.
+                    description: |-
+                        The creation timestamp.
+                         If not set on creation, the server will set it to the current time.
                     format: date-time
                 updateTime:
-                    readOnly: true
                     type: string
-                    description: Output only. The last update timestamp.
+                    description: |-
+                        The last update timestamp.
+                         If not set on creation, the server will set it to the current time.
                     format: date-time
                 displayTime:
                     type: string
@@ -2857,7 +2860,6 @@ components:
                 role:
                     enum:
                         - ROLE_UNSPECIFIED
-                        - HOST
                         - ADMIN
                         - USER
                     type: string

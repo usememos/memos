@@ -165,7 +165,7 @@ type Driver interface {
 4. Demo mode: Seed with demo data
 
 **Schema Versioning:**
-- Stored in `instance_setting` table (key: `bb.general.version`)
+- Stored in `system_setting` table
 - Format: `major.minor.patch`
 - Migration files: `store/migration/{driver}/{version}/NN__description.sql`
 - See: `store/migrator.go:21-414`
@@ -191,7 +191,7 @@ cd proto && buf generate
 
 ```bash
 # Start dev server
-go run ./cmd/memos --mode dev --port 8081
+go run ./cmd/memos --port 8081
 
 # Run all tests
 go test ./...
@@ -458,7 +458,7 @@ cd web && pnpm lint
 
 | Variable | Default | Description |
 |----------|----------|-------------|
-| `MEMOS_MODE` | `dev` | Mode: `dev`, `prod`, `demo` |
+| `MEMOS_DEMO` | `false` | Enable demo mode |
 | `MEMOS_PORT` | `8081` | HTTP port |
 | `MEMOS_ADDR` | `` | Bind address (empty = all) |
 | `MEMOS_DATA` | `~/.memos` | Data directory |
@@ -502,13 +502,6 @@ cd web && pnpm lint
 - Semicolons: always
 
 ## Common Tasks
-
-### Debugging Database Issues
-
-1. Check connection string in logs
-2. Verify `store/db/{driver}/migration/` files exist
-3. Check schema version: `SELECT * FROM instance_setting WHERE key = 'bb.general.version'`
-4. Test migration: `go test ./store/test/... -v`
 
 ### Debugging API Issues
 
@@ -571,7 +564,7 @@ Each plugin has its own README with usage examples.
 
 ## Security Notes
 
-- JWT secrets must be kept secret (`MEMOS_MODE=prod` generates random secret)
+- JWT secrets must be kept secret (generated on first run in production mode)
 - Personal Access Tokens stored as SHA-256 hashes in database
 - CSRF protection via SameSite cookies
 - CORS enabled for all origins (configure for production)

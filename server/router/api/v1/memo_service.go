@@ -45,10 +45,35 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		Content:    request.Memo.Content,
 		Visibility: convertVisibilityToStore(request.Memo.Visibility),
 	}
+
 	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get instance memo related setting")
 	}
+
+	// Handle display_time first: if provided, use it to set the appropriate timestamp
+	// based on the instance setting (similar to UpdateMemo logic)
+	// Note: explicit create_time/update_time below will override this if provided
+	if request.Memo.DisplayTime != nil && request.Memo.DisplayTime.IsValid() {
+		displayTs := request.Memo.DisplayTime.AsTime().Unix()
+		if instanceMemoRelatedSetting.DisplayWithUpdateTime {
+			create.UpdatedTs = displayTs
+		} else {
+			create.CreatedTs = displayTs
+		}
+	}
+
+	// Set custom timestamps if provided in the request
+	// These take precedence over display_time
+	if request.Memo.CreateTime != nil && request.Memo.CreateTime.IsValid() {
+		createdTs := request.Memo.CreateTime.AsTime().Unix()
+		create.CreatedTs = createdTs
+	}
+	if request.Memo.UpdateTime != nil && request.Memo.UpdateTime.IsValid() {
+		updatedTs := request.Memo.UpdateTime.AsTime().Unix()
+		create.UpdatedTs = updatedTs
+	}
+
 	if instanceMemoRelatedSetting.DisallowPublicVisibility && create.Visibility == store.Public {
 		return nil, status.Errorf(codes.PermissionDenied, "disable public memos system setting is enabled")
 	}
@@ -281,7 +306,7 @@ func (s *APIV1Service) GetMemo(ctx context.Context, request *v1pb.GetMemoRequest
 			return nil, status.Errorf(codes.Internal, "failed to get user")
 		}
 		if user == nil {
-			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+			return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 		}
 		if memo.Visibility == store.Private && memo.CreatorID != user.ID {
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
@@ -497,23 +522,7 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 		}
 	}
 
-	if err = s.Store.DeleteMemo(ctx, &store.DeleteMemo{ID: memo.ID}); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to delete memo")
-	}
-
-	// Delete memo relation
-	if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelation{MemoID: &memo.ID}); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to delete memo relations")
-	}
-
-	// Delete related attachments.
-	for _, attachment := range attachments {
-		if err := s.Store.DeleteAttachment(ctx, &store.DeleteAttachment{ID: attachment.ID}); err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to delete attachment")
-		}
-	}
-
-	// Delete memo comments
+	// Delete memo comments first (store.DeleteMemo handles their relations and attachments)
 	commentType := store.MemoRelationComment
 	relations, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{RelatedMemoID: &memo.ID, Type: &commentType})
 	if err != nil {
@@ -525,10 +534,9 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 		}
 	}
 
-	// Delete memo references
-	referenceType := store.MemoRelationReference
-	if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelation{RelatedMemoID: &memo.ID, Type: &referenceType}); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to delete memo references")
+	// Delete the memo (store.DeleteMemo handles relation and attachment cleanup)
+	if err = s.Store.DeleteMemo(ctx, &store.DeleteMemo{ID: memo.ID}); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to delete memo")
 	}
 
 	return &emptypb.Empty{}, nil
@@ -542,6 +550,21 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 	relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get memo")
+	}
+	if relatedMemo == nil {
+		return nil, status.Errorf(codes.NotFound, "memo not found")
+	}
+
+	// Check memo visibility before allowing comment.
+	user, err := s.fetchCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user")
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+	if relatedMemo.Visibility == store.Private && relatedMemo.CreatorID != user.ID && !isSuperUser(user) {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
 	// Create the memo comment first.

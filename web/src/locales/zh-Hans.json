@@ -121,6 +121,7 @@
     "add-your-comment-here": "请输入您的评论...",
     "any-thoughts": "此刻的想法...",
     "save": "保存",
+    "saving": "保存中...",
     "no-changes-detected": "未检测到更改",
     "focus-mode": "聚焦模式",
     "exit-focus-mode": "退出聚焦模式",
@@ -136,7 +137,8 @@
     "failed-to-load": "加载失败",
     "unread": "未读",
     "no-unread": "无未读通知",
-    "no-archived": "无已归档通知"
+    "no-archived": "无已归档通知",
+    "version-update": "新版本 {{version}} 现已推出！"
   },
   "markdown": {
     "checkbox": "复选框",
@@ -167,8 +169,6 @@
     "no-archived-memos": "没有已归档备忘录。",
     "no-memos": "无备忘录",
     "order-by": "排序",
-    "remove-completed-task-list-items": "移除已办",
-    "remove-completed-task-list-items-confirm": "您确定要移除所有完成的待办吗？（此操作不可逆）",
     "search-placeholder": "搜索备忘录",
     "show-less": "显示较少",
     "show-more": "查看更多",
@@ -198,7 +198,6 @@
     "no-data": "未找到任何数据。",
     "password-changed": "密码已修改",
     "password-not-match": "密码不一致。",
-    "remove-completed-task-list-items-successfully": "移除成功！",
     "restored-successfully": "恢复成功",
     "succeed-copy-content": "复制内容到剪贴板成功。",
     "succeed-copy-link": "复制链接到剪贴板成功。",
@@ -305,7 +304,7 @@
     },
     "memo-related": "备忘录",
     "memo-related-settings": {
-      "content-lenght-limit": "内容长度限制（字节）",
+      "content-length-limit": "内容长度限制（字节）",
       "enable-blur-nsfw-content": "启用 NSFW 内容模糊处理（在下方添加 NSFW 标签）",
       "enable-memo-comments": "启用备忘录评论",
       "enable-memo-location": "启用备忘录定位",

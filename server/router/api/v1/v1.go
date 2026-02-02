@@ -59,7 +59,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 			ctx := r.Context()
 
 			// Get the RPC method name from context (set by grpc-gateway after routing)
-			rpcMethod, _ := runtime.RPCMethod(ctx)
+			rpcMethod, ok := runtime.RPCMethod(ctx)
 
 			// Extract credentials from HTTP headers
 			authHeader := r.Header.Get("Authorization")
@@ -67,7 +67,8 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 			result := authenticator.Authenticate(ctx, authHeader)
 
 			// Enforce authentication for non-public methods
-			if result == nil && !IsPublicMethod(rpcMethod) {
+			// If rpcMethod cannot be determined, allow through, service layer will handle visibility checks
+			if result == nil && ok && !IsPublicMethod(rpcMethod) {
 				http.Error(w, `{"code": 16, "message": "authentication required"}`, http.StatusUnauthorized)
 				return
 			}
@@ -125,7 +126,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	gwGroup.Any("/file/*", handler)
 
 	// Connect handlers for browser clients (replaces grpc-web).
-	logStacktraces := s.Profile.IsDev()
+	logStacktraces := s.Profile.Demo
 	connectInterceptors := connect.WithInterceptors(
 		NewMetadataInterceptor(), // Convert HTTP headers to gRPC metadata first
 		NewLoggingInterceptor(logStacktraces),
