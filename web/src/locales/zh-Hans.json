@@ -254,7 +254,7 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "访问令牌已复制到剪贴板",
-      "access-token-deletion": "您确定要删除访问令牌 {{description}} 吗？",
+      "access-token-deletion": "您确定要删除访问令牌 `{{description}}` 吗？",
       "access-token-deletion-description": "此操作是不可逆的。您需要将所有正在使用该令牌的服务更新为新的访问令牌。",
       "access-token-deleted": "访问令牌 `{{description}}` 已删除",
       "create-dialog": {
