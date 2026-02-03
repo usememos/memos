@@ -19,7 +19,11 @@ export const List = ({ ordered, children, className, node: _node, ...domProps }:
     <Component
       className={cn(
         "my-0 mb-2 list-outside",
-        isTaskList ? "pl-0 list-none" : cn("pl-6", ordered ? "list-decimal" : "list-disc"),
+        isTaskList
+          ? // Task list: no bullets, nested lists get left margin for indentation
+            "list-none [&_ul.contains-task-list]:ml-6"
+          : // Regular list: standard padding and list style
+            cn("pl-6", ordered ? "list-decimal" : "list-disc"),
         className,
       )}
       {...domProps}
@@ -46,10 +50,10 @@ export const ListItem = ({ children, className, node: _node, ...domProps }: List
       <li
         className={cn(
           "mt-0.5 leading-6 list-none",
-          // Task item styles: checkbox margins, inline paragraph, nested list indent
+          // Checkbox styling: margin and alignment
           "[&>button]:mr-2 [&>button]:align-middle",
+          // Inline paragraph for task text
           "[&>p]:inline [&>p]:m-0",
-          `[&>.${TASK_LIST_CLASS}]:pl-6`,
           className,
         )}
         {...domProps}
