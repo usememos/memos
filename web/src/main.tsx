@@ -1,68 +1,30 @@
-import "@github/relative-time-element";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import React, { useEffect, useRef } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "react-hot-toast";
-import { RouterProvider } from "react-router-dom";
-import "./i18n";
+import App from "./github-app/App";
 import "./index.css";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { AuthProvider, useAuth } from "@/contexts/AuthContext";
-import { InstanceProvider, useInstance } from "@/contexts/InstanceContext";
-import { ViewProvider } from "@/contexts/ViewContext";
-import { queryClient } from "@/lib/query-client";
-import router from "./router";
-import { applyLocaleEarly } from "./utils/i18n";
-import { applyThemeEarly } from "./utils/theme";
-import "leaflet/dist/leaflet.css";
-import "katex/dist/katex.min.css";
 
-// Apply theme and locale early to prevent flash
-applyThemeEarly();
-applyLocaleEarly();
-
-// Inner component that initializes contexts
-function AppInitializer({ children }: { children: React.ReactNode }) {
-  const { isInitialized: authInitialized, initialize: initAuth } = useAuth();
-  const { isInitialized: instanceInitialized, initialize: initInstance } = useInstance();
-  const initStartedRef = useRef(false);
-
-  // Initialize on mount - run in parallel for better performance
-  useEffect(() => {
-    if (initStartedRef.current) return;
-    initStartedRef.current = true;
-
-    const init = async () => {
-      await Promise.all([initInstance(), initAuth()]);
-    };
-    init();
-  }, [initAuth, initInstance]);
-
-  if (!authInitialized || !instanceInitialized) {
-    return null;
-  }
-
-  return <>{children}</>;
+// Apply dark mode based on system preference
+const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+if (prefersDark) {
+  document.documentElement.classList.add("dark");
 }
+
+// Listen for system theme changes
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+  if (e.matches) {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+  }
+});
 
 function Main() {
   return (
-    <ErrorBoundary>
-      <QueryClientProvider client={queryClient}>
-        <InstanceProvider>
-          <AuthProvider>
-            <ViewProvider>
-              <AppInitializer>
-                <RouterProvider router={router} />
-                <Toaster position="top-right" />
-              </AppInitializer>
-            </ViewProvider>
-          </AuthProvider>
-        </InstanceProvider>
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </ErrorBoundary>
+    <StrictMode>
+      <App />
+      <Toaster position="top-right" />
+    </StrictMode>
   );
 }
 
