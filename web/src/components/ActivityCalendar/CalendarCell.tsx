@@ -11,10 +11,11 @@ export interface CalendarCellProps {
   tooltipText: string;
   onClick?: (date: string) => void;
   size?: CalendarSize;
+  disableTooltip?: boolean;
 }
 
 export const CalendarCell = memo((props: CalendarCellProps) => {
-  const { day, maxCount, tooltipText, onClick, size = "default" } = props;
+  const { day, maxCount, tooltipText, onClick, size = "default", disableTooltip = false } = props;
 
   const handleClick = () => {
     if (day.count > 0 && onClick) {
@@ -62,7 +63,7 @@ export const CalendarCell = memo((props: CalendarCellProps) => {
     </button>
   );
 
-  const shouldShowTooltip = tooltipText && day.count > 0;
+  const shouldShowTooltip = tooltipText && day.count > 0 && !disableTooltip;
 
   if (!shouldShowTooltip) {
     return button;

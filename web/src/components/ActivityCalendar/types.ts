@@ -27,6 +27,7 @@ export interface MonthCalendarProps {
   size?: CalendarSize;
   onClick?: (date: string) => void;
   className?: string;
+  disableTooltips?: boolean;
 }
 
 export interface YearCalendarProps {
