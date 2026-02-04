@@ -42,10 +42,8 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
   };
 
   return (
-    <aside
-      className={cn("relative w-full h-auto max-h-screen overflow-auto hide-scrollbar flex flex-col justify-start items-start", className)}
-    >
-      <div className="flex flex-col justify-start items-start w-full gap-4 h-auto shrink-0 flex-nowrap hide-scrollbar">
+    <aside className={cn("relative w-full h-auto max-h-screen overflow-auto flex flex-col justify-start items-start", className)}>
+      <div className="flex flex-col justify-start items-start w-full gap-4 h-auto shrink-0 flex-nowrap">
         {hasReferenceRelations && (
           <div className="relative w-full h-36 border border-border rounded-lg bg-muted overflow-hidden">
             <MemoRelationForceGraph className="w-full h-full" memo={memo} parentPage={parentPage} />

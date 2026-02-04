@@ -50,7 +50,7 @@ export const MonthNavigator = memo(({ visibleMonth, onMonthChange, activityStats
           </button>
         </DialogTrigger>
         <DialogContent
-          className="p-0 border border-border/20 bg-background md:max-w-6xl w-[min(100vw-24px,1200px)] max-h-[85vh] overflow-auto rounded-xl shadow-xl"
+          className="p-0 border border-border/20 bg-background md:max-w-6xl w-[min(100vw-24px,1200px)] max-h-[85vh] overflow-y-auto rounded-xl shadow-xl"
           size="2xl"
           showCloseButton={false}
         >
