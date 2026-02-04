@@ -37,10 +37,14 @@ function CreateShortcutDialog({ open, onOpenChange, shortcut: initialShortcut, o
   const isCreating = shortcut.name === "";
 
   useEffect(() => {
-    if (shortcut.name) {
-      setShortcut(shortcut);
-    }
-  }, [shortcut.name, shortcut.title, shortcut.filter]);
+    setShortcut(
+      create(ShortcutSchema, {
+        name: initialShortcut?.name || "",
+        title: initialShortcut?.title || "",
+        filter: initialShortcut?.filter || "",
+      }),
+    );
+  }, [initialShortcut]);
 
   const onShortcutTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPartialState({
