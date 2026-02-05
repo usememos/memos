@@ -67,7 +67,7 @@ const refreshTransport = createConnectTransport({
 
 const refreshAuthClient = createClient(AuthService, refreshTransport);
 
-async function refreshAccessToken(): Promise<void> {
+export async function refreshAccessToken(): Promise<void> {
   const response = await refreshAuthClient.refreshToken({});
 
   if (!response.accessToken) {
