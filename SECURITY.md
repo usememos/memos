@@ -7,7 +7,7 @@ Memos is currently in beta (v0.x). While we take security seriously, we are not 
 ## Reporting Security Issues
 
 ### For All Security Concerns:
-Please report via **email only**: usememos@gmail.com
+Please report via **email only**: dev@usememos.com
 
 **DO NOT open public GitHub issues for security vulnerabilities.**
 
