@@ -97,6 +97,12 @@ func (s *APIV1Service) UpsertMemoReaction(ctx context.Context, request *v1pb.Ups
 
 	reactionMessage := convertReactionFromStore(reaction)
 
+	// Broadcast live refresh event (reaction belongs to a memo).
+	s.SSEHub.Broadcast(&SSEEvent{
+		Type: SSEEventReactionUpserted,
+		Name: request.Reaction.ContentId,
+	})
+
 	return reactionMessage, nil
 }
 
@@ -135,6 +141,12 @@ func (s *APIV1Service) DeleteMemoReaction(ctx context.Context, request *v1pb.Del
 	}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete reaction")
 	}
+
+	// Broadcast live refresh event (reaction belongs to a memo).
+	s.SSEHub.Broadcast(&SSEEvent{
+		Type: SSEEventReactionDeleted,
+		Name: reaction.ContentID,
+	})
 
 	return &emptypb.Empty{}, nil
 }

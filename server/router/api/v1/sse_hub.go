@@ -5,24 +5,27 @@ import (
 	"sync"
 )
 
-// MemoEventType represents the type of memo change event.
-type MemoEventType string
+// SSEEventType represents the type of change event.
+type SSEEventType string
 
 const (
-	MemoEventCreated MemoEventType = "memo.created"
-	MemoEventUpdated MemoEventType = "memo.updated"
-	MemoEventDeleted MemoEventType = "memo.deleted"
+	SSEEventMemoCreated     SSEEventType = "memo.created"
+	SSEEventMemoUpdated     SSEEventType = "memo.updated"
+	SSEEventMemoDeleted     SSEEventType = "memo.deleted"
+	SSEEventReactionUpserted SSEEventType = "reaction.upserted"
+	SSEEventReactionDeleted  SSEEventType = "reaction.deleted"
 )
 
-// MemoEvent represents a memo change event sent to SSE clients.
-type MemoEvent struct {
-	Type MemoEventType `json:"type"`
-	// Name is the memo resource name (e.g., "memos/xxxx").
+// SSEEvent represents a change event sent to SSE clients.
+type SSEEvent struct {
+	Type SSEEventType `json:"type"`
+	// Name is the affected resource name (e.g., "memos/xxxx").
+	// For reaction events, this is the memo resource name that the reaction belongs to.
 	Name string `json:"name"`
 }
 
 // JSON returns the JSON representation of the event.
-func (e *MemoEvent) JSON() []byte {
+func (e *SSEEvent) JSON() []byte {
 	data, _ := json.Marshal(e)
 	return data
 }
@@ -72,7 +75,7 @@ func (h *SSEHub) Unsubscribe(c *sseClient) {
 // Broadcast sends an event to all connected clients.
 // Slow clients that have a full buffer will have the event dropped
 // to avoid blocking the broadcaster.
-func (h *SSEHub) Broadcast(event *MemoEvent) {
+func (h *SSEHub) Broadcast(event *SSEEvent) {
 	data := event.JSON()
 	h.mu.RLock()
 	defer h.mu.RUnlock()
