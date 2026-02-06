@@ -54,10 +54,12 @@ export const setAccessToken = (token: string | null, expiresAt?: Date): void => 
   }
 };
 
-export const isTokenExpired = (): boolean => {
+export const isTokenExpired = (bufferMs: number = 30000): boolean => {
   if (!tokenExpiresAt) return true;
-  // Consider expired 30 seconds before actual expiry for safety
-  return new Date() >= new Date(tokenExpiresAt.getTime() - 30000);
+  // Consider expired with a safety buffer before actual expiry
+  // Default: 30 seconds for regular requests
+  // Can use longer buffer (e.g., 2 minutes) for proactive refresh
+  return new Date() >= new Date(tokenExpiresAt.getTime() - bufferMs);
 };
 
 export const clearAccessToken = (): void => {
