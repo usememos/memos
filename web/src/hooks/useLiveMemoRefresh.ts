@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
 import { getAccessToken } from "@/auth-state";
 import { memoKeys } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
@@ -11,10 +11,49 @@ const INITIAL_RETRY_DELAY_MS = 1000;
 const MAX_RETRY_DELAY_MS = 30000;
 const RETRY_BACKOFF_MULTIPLIER = 2;
 
+// ---------------------------------------------------------------------------
+// Shared connection status store (singleton)
+// ---------------------------------------------------------------------------
+
+export type SSEConnectionStatus = "connected" | "disconnected" | "connecting";
+
+type Listener = () => void;
+
+let _status: SSEConnectionStatus = "disconnected";
+const _listeners = new Set<Listener>();
+
+function getSSEStatus(): SSEConnectionStatus {
+  return _status;
+}
+
+function setSSEStatus(s: SSEConnectionStatus) {
+  if (_status !== s) {
+    _status = s;
+    _listeners.forEach((l) => l());
+  }
+}
+
+function subscribeSSEStatus(listener: Listener): () => void {
+  _listeners.add(listener);
+  return () => _listeners.delete(listener);
+}
+
+/**
+ * React hook that returns the current SSE connection status.
+ * Re-renders the component whenever the status changes.
+ */
+export function useSSEConnectionStatus(): SSEConnectionStatus {
+  return useSyncExternalStore(subscribeSSEStatus, getSSEStatus, getSSEStatus);
+}
+
+// ---------------------------------------------------------------------------
+// Main hook
+// ---------------------------------------------------------------------------
+
 /**
  * useLiveMemoRefresh connects to the server's SSE endpoint and
- * invalidates relevant React Query caches when memo change events
- * (created, updated, deleted) are received.
+ * invalidates relevant React Query caches when change events
+ * (memos, reactions) are received.
  *
  * This enables real-time updates across all open instances of the app.
  */
@@ -22,6 +61,8 @@ export function useLiveMemoRefresh() {
   const queryClient = useQueryClient();
   const retryDelayRef = useRef(INITIAL_RETRY_DELAY_MS);
   const abortControllerRef = useRef<AbortController | null>(null);
+
+  const handleEvent = useCallback((event: SSEChangeEvent) => handleSSEEvent(event, queryClient), [queryClient]);
 
   useEffect(() => {
     let mounted = true;
@@ -32,11 +73,13 @@ export function useLiveMemoRefresh() {
 
       const token = getAccessToken();
       if (!token) {
+        setSSEStatus("disconnected");
         // Not logged in; retry after a delay in case the user logs in.
         retryTimeout = setTimeout(connect, 5000);
         return;
       }
 
+      setSSEStatus("connecting");
       const abortController = new AbortController();
       abortControllerRef.current = abortController;
 
@@ -55,6 +98,7 @@ export function useLiveMemoRefresh() {
 
         // Successfully connected - reset retry delay.
         retryDelayRef.current = INITIAL_RETRY_DELAY_MS;
+        setSSEStatus("connected");
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
@@ -80,8 +124,8 @@ export function useLiveMemoRefresh() {
               if (line.startsWith("data: ")) {
                 const jsonStr = line.slice(6);
                 try {
-                  const event = JSON.parse(jsonStr) as { type: string; name: string };
-                  handleSSEEvent(event, queryClient);
+                  const event = JSON.parse(jsonStr) as SSEChangeEvent;
+                  handleEvent(event);
                 } catch {
                   // Ignore malformed JSON.
                 }
@@ -92,10 +136,13 @@ export function useLiveMemoRefresh() {
       } catch (err: unknown) {
         if (err instanceof DOMException && err.name === "AbortError") {
           // Intentional abort, don't reconnect.
+          setSSEStatus("disconnected");
           return;
         }
         // Connection lost or failed - reconnect with backoff.
       }
+
+      setSSEStatus("disconnected");
 
       // Reconnect with exponential backoff.
       if (mounted) {
@@ -109,6 +156,7 @@ export function useLiveMemoRefresh() {
 
     return () => {
       mounted = false;
+      setSSEStatus("disconnected");
       if (retryTimeout) {
         clearTimeout(retryTimeout);
       }
@@ -116,8 +164,12 @@ export function useLiveMemoRefresh() {
         abortControllerRef.current.abort();
       }
     };
-  }, [queryClient]);
+  }, [handleEvent]);
 }
+
+// ---------------------------------------------------------------------------
+// Event handling
+// ---------------------------------------------------------------------------
 
 interface SSEChangeEvent {
   type: string;
@@ -127,32 +179,23 @@ interface SSEChangeEvent {
 function handleSSEEvent(event: SSEChangeEvent, queryClient: ReturnType<typeof useQueryClient>) {
   switch (event.type) {
     case "memo.created":
-      // Invalidate memo lists so new memos appear.
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
-      // Invalidate user stats (memo count changed).
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
       break;
 
     case "memo.updated":
-      // Invalidate the specific memo detail cache.
       queryClient.invalidateQueries({ queryKey: memoKeys.detail(event.name) });
-      // Invalidate memo lists to reflect updated content/ordering.
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
       break;
 
     case "memo.deleted":
-      // Remove the specific memo from cache.
       queryClient.removeQueries({ queryKey: memoKeys.detail(event.name) });
-      // Invalidate memo lists.
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
-      // Invalidate user stats (memo count changed).
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
       break;
 
     case "reaction.upserted":
     case "reaction.deleted":
-      // Reactions are embedded in the memo object, so invalidate the memo detail
-      // and lists to reflect the updated reaction state.
       queryClient.invalidateQueries({ queryKey: memoKeys.detail(event.name) });
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
       break;

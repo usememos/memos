@@ -9,6 +9,13 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { VisuallyHidden } from "./ui/visually-hidden";
 
 // ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+/** Monospace font stack for the cell inputs. */
+const MONO_FONT = "'Fira Code', 'Fira Mono', 'JetBrains Mono', 'Cascadia Code', 'Consolas', ui-monospace, monospace";
+
+// ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
@@ -121,7 +128,6 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
       const sorted = [...prev].sort((a, b) => {
         const va = (a[col] || "").toLowerCase();
         const vb = (b[col] || "").toLowerCase();
-        // Try numeric comparison first.
         const na = Number(va);
         const nb = Number(vb);
         if (!Number.isNaN(na) && !Number.isNaN(nb)) {
@@ -143,23 +149,18 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
       let nextRow = row;
 
       if (nextCol >= colCount) {
-        // Move to first cell of next row.
         if (row < rowCount - 1) {
           nextRow = row + 1;
           focusCell(nextRow, 0);
         } else {
-          // At last cell – add a new row and focus it.
           addRow();
-          // Need to wait for state update; use setTimeout.
           setTimeout(() => focusCell(rowCount, 0), 0);
         }
       } else if (nextCol < 0) {
-        // Move to last cell of previous row.
         if (row > 0) {
           nextRow = row - 1;
           focusCell(nextRow, colCount - 1);
         } else {
-          // Move to header row.
           focusCell(-1, colCount - 1);
         }
       } else {
@@ -189,12 +190,12 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
     if (sortState?.col === col) {
       return sortState.dir === "asc" ? <ArrowUpIcon className="size-3 text-primary" /> : <ArrowDownIcon className="size-3 text-primary" />;
     }
-    return <ArrowUpDownIcon className="size-3 opacity-0 group-hover/sort:opacity-60" />;
+    return <ArrowUpDownIcon className="size-3 opacity-40" />;
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent size="2xl" className="p-0!" showCloseButton={false}>
+      <DialogContent size="full" className="p-0! w-[min(56rem,calc(100vw-2rem))] h-[min(44rem,calc(100vh-4rem))]" showCloseButton={false}>
         <VisuallyHidden>
           <DialogClose />
         </VisuallyHidden>
@@ -204,54 +205,53 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
         <VisuallyHidden>
           <DialogDescription>Edit table headers, rows, columns and sort data</DialogDescription>
         </VisuallyHidden>
-        <div className="flex flex-col gap-0">
-          {/* Scrollable table area */}
-          <div className="overflow-auto max-h-[60vh] p-4 pb-2">
+        <div className="flex flex-col h-full">
+          {/* Scrollable table area — grows to fill */}
+          <div className="flex-1 overflow-auto p-4 pb-2">
             <table className="w-full border-collapse text-sm">
               {/* Header row */}
               <thead>
                 <tr>
                   {/* Row number column */}
-                  <th className="w-8 min-w-8" />
+                  <th className="w-10 min-w-10" />
                   {headers.map((header, col) => (
-                    <th key={col} className="p-0 min-w-[120px]">
-                      <div className="flex flex-col">
-                        <div className="flex items-center gap-0.5">
-                          <input
-                            ref={(el) => setInputRef(`-1:${col}`, el)}
-                            className="flex-1 min-w-0 px-2 py-1.5 font-semibold text-xs uppercase tracking-wide bg-accent/50 border border-border rounded-tl-md focus:outline-none focus:ring-1 focus:ring-primary/40"
-                            value={header}
-                            onChange={(e) => updateHeader(col, e.target.value)}
-                            onKeyDown={(e) => handleKeyDown(e, -1, col)}
-                            placeholder={`Col ${col + 1}`}
-                          />
+                    <th key={col} className="p-0 min-w-[140px]">
+                      <div className="flex items-center gap-0.5">
+                        <input
+                          ref={(el) => setInputRef(`-1:${col}`, el)}
+                          style={{ fontFamily: MONO_FONT }}
+                          className="flex-1 min-w-0 px-2 py-1.5 font-semibold text-xs uppercase tracking-wide bg-accent/50 border border-border rounded-tl-md focus:outline-none focus:ring-1 focus:ring-primary/40"
+                          value={header}
+                          onChange={(e) => updateHeader(col, e.target.value)}
+                          onKeyDown={(e) => handleKeyDown(e, -1, col)}
+                          placeholder={`Col ${col + 1}`}
+                        />
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              className="flex items-center justify-center size-7 rounded hover:bg-accent transition-colors"
+                              onClick={() => sortByColumn(col)}
+                            >
+                              <SortIndicator col={col} />
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent>Sort column</TooltipContent>
+                        </Tooltip>
+                        {colCount > 1 && (
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <button
                                 type="button"
-                                className="group/sort flex items-center justify-center size-7 rounded hover:bg-accent transition-colors"
-                                onClick={() => sortByColumn(col)}
+                                className="flex items-center justify-center size-7 rounded opacity-40 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all"
+                                onClick={() => removeColumn(col)}
                               >
-                                <SortIndicator col={col} />
+                                <TrashIcon className="size-3" />
                               </button>
                             </TooltipTrigger>
-                            <TooltipContent>Sort column</TooltipContent>
+                            <TooltipContent>Remove column</TooltipContent>
                           </Tooltip>
-                          {colCount > 1 && (
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <button
-                                  type="button"
-                                  className="flex items-center justify-center size-7 rounded opacity-0 hover:opacity-100 focus:opacity-100 group-hover:opacity-60 hover:bg-destructive/10 hover:text-destructive transition-all"
-                                  onClick={() => removeColumn(col)}
-                                >
-                                  <TrashIcon className="size-3" />
-                                </button>
-                              </TooltipTrigger>
-                              <TooltipContent>Remove column</TooltipContent>
-                            </Tooltip>
-                          )}
-                        </div>
+                        )}
                       </div>
                     </th>
                   ))}
@@ -277,15 +277,15 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                 {rows.map((row, rowIdx) => (
                   <tr key={rowIdx} className="group">
                     {/* Row number + remove */}
-                    <td className="w-8 min-w-8 text-center align-middle">
-                      <div className="flex items-center justify-center">
-                        <span className="text-xs text-muted-foreground group-hover:hidden">{rowIdx + 1}</span>
+                    <td className="w-10 min-w-10 text-center align-middle">
+                      <div className="flex items-center justify-center gap-0.5">
+                        <span className="text-xs text-muted-foreground w-4 text-right">{rowIdx + 1}</span>
                         {rowCount > 1 && (
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <button
                                 type="button"
-                                className="hidden group-hover:flex items-center justify-center size-6 rounded hover:bg-destructive/10 hover:text-destructive text-muted-foreground transition-all"
+                                className="flex items-center justify-center size-5 rounded opacity-40 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive text-muted-foreground transition-all"
                                 onClick={() => removeRow(rowIdx)}
                               >
                                 <TrashIcon className="size-3" />
@@ -300,6 +300,7 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                       <td key={col} className="p-0">
                         <input
                           ref={(el) => setInputRef(`${rowIdx}:${col}`, el)}
+                          style={{ fontFamily: MONO_FONT }}
                           className={cn(
                             "w-full px-2 py-1.5 text-sm bg-transparent border border-border focus:outline-none focus:ring-1 focus:ring-primary/40",
                             rowIdx === rowCount - 1 && "rounded-bl-md",

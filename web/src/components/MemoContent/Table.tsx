@@ -1,6 +1,8 @@
-import { PencilIcon } from "lucide-react";
+import { PencilIcon, TrashIcon } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import TableEditorDialog from "@/components/TableEditorDialog";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useUpdateMemo } from "@/hooks/useMemoQueries";
 import { cn } from "@/lib/utils";
 import type { TableData } from "@/utils/markdown-table";
@@ -9,7 +11,7 @@ import { useMemoViewContext, useMemoViewDerived } from "../MemoView/MemoViewCont
 import type { ReactMarkdownProps } from "./markdown/types";
 
 // ---------------------------------------------------------------------------
-// Table (root wrapper with edit button)
+// Table (root wrapper with edit + delete buttons)
 // ---------------------------------------------------------------------------
 
 interface TableProps extends React.HTMLAttributes<HTMLTableElement>, ReactMarkdownProps {
@@ -19,6 +21,7 @@ interface TableProps extends React.HTMLAttributes<HTMLTableElement>, ReactMarkdo
 export const Table = ({ children, className, node: _node, ...props }: TableProps) => {
   const tableRef = useRef<HTMLDivElement>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [tableData, setTableData] = useState<TableData | null>(null);
   const [tableIndex, setTableIndex] = useState(-1);
 
@@ -26,27 +29,26 @@ export const Table = ({ children, className, node: _node, ...props }: TableProps
   const { readonly } = useMemoViewDerived();
   const { mutate: updateMemo } = useUpdateMemo();
 
+  /** Resolve which markdown table index this rendered table corresponds to. */
+  const resolveTableIndex = useCallback(() => {
+    const container = tableRef.current?.closest('[class*="wrap-break-word"]');
+    if (!container) return -1;
+
+    const allTables = container.querySelectorAll("table");
+    for (let i = 0; i < allTables.length; i++) {
+      if (tableRef.current?.contains(allTables[i])) return i;
+    }
+    return -1;
+  }, []);
+
   const handleEditClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
       e.preventDefault();
 
-      // Determine which table this is in the memo content by walking the DOM.
-      const container = tableRef.current?.closest('[class*="wrap-break-word"]');
-      if (!container) return;
-
-      const allTables = container.querySelectorAll("table");
-      let idx = 0;
-      for (let i = 0; i < allTables.length; i++) {
-        if (tableRef.current?.contains(allTables[i])) {
-          idx = i;
-          break;
-        }
-      }
-
-      // Find and parse the corresponding markdown table.
+      const idx = resolveTableIndex();
       const tables = findAllTables(memo.content);
-      if (idx >= tables.length) return;
+      if (idx < 0 || idx >= tables.length) return;
 
       const parsed = parseMarkdownTable(tables[idx].text);
       if (!parsed) return;
@@ -55,10 +57,24 @@ export const Table = ({ children, className, node: _node, ...props }: TableProps
       setTableIndex(idx);
       setDialogOpen(true);
     },
-    [memo.content],
+    [memo.content, resolveTableIndex],
   );
 
-  const handleConfirm = useCallback(
+  const handleDeleteClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+
+      const idx = resolveTableIndex();
+      if (idx < 0) return;
+
+      setTableIndex(idx);
+      setDeleteDialogOpen(true);
+    },
+    [resolveTableIndex],
+  );
+
+  const handleConfirmEdit = useCallback(
     (markdown: string) => {
       if (tableIndex < 0) return;
       const newContent = replaceNthTable(memo.content, tableIndex, markdown);
@@ -70,6 +86,17 @@ export const Table = ({ children, className, node: _node, ...props }: TableProps
     [memo.content, memo.name, tableIndex, updateMemo],
   );
 
+  const handleConfirmDelete = useCallback(() => {
+    if (tableIndex < 0) return;
+    // Replace the table with an empty string to delete it.
+    const newContent = replaceNthTable(memo.content, tableIndex, "");
+    updateMemo({
+      update: { name: memo.name, content: newContent },
+      updateMask: ["content"],
+    });
+    setDeleteDialogOpen(false);
+  }, [memo.content, memo.name, tableIndex, updateMemo]);
+
   return (
     <>
       <div ref={tableRef} className="group/table relative w-full overflow-x-auto rounded-lg border border-border my-2">
@@ -77,17 +104,46 @@ export const Table = ({ children, className, node: _node, ...props }: TableProps
           {children}
         </table>
         {!readonly && (
-          <button
-            type="button"
-            className="absolute top-1.5 right-1.5 p-1 rounded bg-accent/80 text-muted-foreground opacity-0 group-hover/table:opacity-100 hover:bg-accent hover:text-foreground transition-all"
-            onClick={handleEditClick}
-            title="Edit table"
-          >
-            <PencilIcon className="size-3.5" />
-          </button>
+          <div className="absolute top-1.5 right-1.5 flex items-center gap-1 opacity-0 group-hover/table:opacity-100 transition-all">
+            <button
+              type="button"
+              className="p-1 rounded bg-accent/80 text-muted-foreground hover:bg-destructive/20 hover:text-destructive transition-colors"
+              onClick={handleDeleteClick}
+              title="Delete table"
+            >
+              <TrashIcon className="size-3.5" />
+            </button>
+            <button
+              type="button"
+              className="p-1 rounded bg-accent/80 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+              onClick={handleEditClick}
+              title="Edit table"
+            >
+              <PencilIcon className="size-3.5" />
+            </button>
+          </div>
         )}
       </div>
-      <TableEditorDialog open={dialogOpen} onOpenChange={setDialogOpen} initialData={tableData} onConfirm={handleConfirm} />
+
+      <TableEditorDialog open={dialogOpen} onOpenChange={setDialogOpen} initialData={tableData} onConfirm={handleConfirmEdit} />
+
+      {/* Delete confirmation dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent size="sm">
+          <DialogHeader>
+            <DialogTitle>Delete table</DialogTitle>
+            <DialogDescription>Are you sure you want to delete this table? This action cannot be undone.</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="ghost">Cancel</Button>
+            </DialogClose>
+            <Button variant="destructive" onClick={handleConfirmDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
