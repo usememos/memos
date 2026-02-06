@@ -12,6 +12,7 @@ import { refreshAccessToken } from "@/connect";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { InstanceProvider, useInstance } from "@/contexts/InstanceContext";
 import { ViewProvider } from "@/contexts/ViewContext";
+import { useLiveMemoRefresh } from "@/hooks/useLiveMemoRefresh";
 import { useTokenRefreshOnFocus } from "@/hooks/useTokenRefreshOnFocus";
 import { queryClient } from "@/lib/query-client";
 import router from "./router";
@@ -45,6 +46,9 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
   // Only enabled when user is authenticated
   // Related: https://github.com/usememos/memos/issues/5589
   useTokenRefreshOnFocus(refreshAccessToken, !!currentUser);
+
+  // Live refresh: listen for memo changes via SSE and invalidate caches.
+  useLiveMemoRefresh();
 
   if (!authInitialized || !instanceInitialized) {
     return null;
