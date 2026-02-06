@@ -1,6 +1,5 @@
 import { ArrowDownIcon, ArrowUpDownIcon, ArrowUpIcon, PlusIcon, TrashIcon } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { cn } from "@/lib/utils";
 import type { ColumnAlignment, TableData } from "@/utils/markdown-table";
 import { createEmptyTable, serializeMarkdownTable } from "@/utils/markdown-table";
 import { Button } from "./ui/button";
@@ -122,9 +121,7 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
 
   const sortByColumn = (col: number) => {
     let newDir: "asc" | "desc" = "asc";
-    if (sortState && sortState.col === col && sortState.dir === "asc") {
-      newDir = "desc";
-    }
+    if (sortState && sortState.col === col && sortState.dir === "asc") newDir = "desc";
     setSortState({ col, dir: newDir });
     setRows((prev) => {
       const sorted = [...prev].sort((a, b) => {
@@ -171,15 +168,11 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
     inputRefs.current.get(`${row}:${col}`)?.focus();
   };
 
-  // ---- Confirm ----
-
   const handleConfirm = () => {
     const md = serializeMarkdownTable({ headers, rows, alignments });
     onConfirm(md);
     onOpenChange(false);
   };
-
-  // ---- Sort indicator ----
 
   const SortIndicator = ({ col }: { col: number }) => {
     if (sortState?.col === col) {
@@ -188,7 +181,6 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
     return <ArrowUpDownIcon className="size-3 opacity-40" />;
   };
 
-  // Total colSpan: row-number col + data cols + action col
   const totalColSpan = colCount + 2;
 
   return (
@@ -210,12 +202,12 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
             <table className="w-full border-collapse text-sm">
               {/* ============ STICKY HEADER ============ */}
               <thead className="sticky top-0 z-20">
-                {/* Mask row: solid background strip that hides content scrolling behind the header */}
+                {/* Mask row: solid background that hides content scrolling behind the header */}
                 <tr>
                   <th colSpan={totalColSpan} className="h-4 bg-background p-0 border-0" />
                 </tr>
 
-                {/* Actual header row */}
+                {/* Header row */}
                 <tr>
                   {/* Row-number spacer */}
                   <th className="w-7 min-w-7 bg-background" />
@@ -228,14 +220,17 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                           className="group/cins absolute -left-4 top-0 bottom-0 w-8 z-30 flex items-center justify-center cursor-pointer"
                           onClick={() => insertColumnAt(col)}
                         >
-                          {/* Blue vertical highlight line */}
-                          <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-0 group-hover/cins:w-[3px] bg-blue-500/70 transition-all rounded-full" />
+                          {/* Blue vertical line through the entire table */}
+                          <div
+                            className="absolute left-1/2 -translate-x-1/2 top-0 w-0 group-hover/cins:w-[3px] bg-blue-500/70 transition-all pointer-events-none"
+                            style={{ bottom: "-200rem" }}
+                          />
                           {/* + button */}
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <button
                                 type="button"
-                                className="relative z-10 flex items-center justify-center size-5 rounded-full bg-background border border-border text-muted-foreground opacity-0 group-hover/cins:opacity-100 hover:text-primary hover:border-primary transition-all shadow-sm"
+                                className="relative z-10 flex items-center justify-center size-5 rounded-full bg-background border border-border text-muted-foreground cursor-pointer opacity-0 group-hover/cins:opacity-100 hover:text-primary hover:border-primary transition-all shadow-sm"
                               >
                                 <PlusIcon className="size-3" />
                               </button>
@@ -245,8 +240,8 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                         </div>
                       )}
 
-                      {/* Header cell content — bg extends across input + action buttons */}
-                      <div className="flex items-center gap-0.5 bg-accent/50 border border-border rounded-tl-md">
+                      {/* Header cell — bg covers input + sort + delete */}
+                      <div className="flex items-center gap-0.5 bg-accent/50 border border-border">
                         <input
                           ref={(el) => setInputRef(`-1:${col}`, el)}
                           style={{ fontFamily: MONO_FONT }}
@@ -260,7 +255,7 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                           <TooltipTrigger asChild>
                             <button
                               type="button"
-                              className="flex items-center justify-center size-7 rounded hover:bg-accent transition-colors"
+                              className="flex items-center justify-center size-7 rounded cursor-pointer hover:bg-accent transition-colors"
                               onClick={() => sortByColumn(col)}
                             >
                               <SortIndicator col={col} />
@@ -273,7 +268,7 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                             <TooltipTrigger asChild>
                               <button
                                 type="button"
-                                className="flex items-center justify-center size-7 rounded opacity-40 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all"
+                                className="flex items-center justify-center size-7 rounded cursor-pointer opacity-40 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive transition-all"
                                 onClick={() => removeColumn(col)}
                               >
                                 <TrashIcon className="size-3" />
@@ -292,7 +287,7 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                       <TooltipTrigger asChild>
                         <button
                           type="button"
-                          className="flex items-center justify-center size-7 rounded hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
+                          className="flex items-center justify-center size-7 rounded cursor-pointer hover:bg-accent transition-colors text-muted-foreground hover:text-foreground"
                           onClick={addColumn}
                         >
                           <PlusIcon className="size-3.5" />
@@ -308,22 +303,25 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
               <tbody>
                 {rows.map((row, rowIdx) => (
                   <React.Fragment key={rowIdx}>
-                    {/* ---- Insert-row zone (between row rowIdx-1 and rowIdx) ---- */}
-                    {rowIdx > 0 && (
-                      <tr className="h-0">
-                        <td colSpan={totalColSpan} className="p-0 h-0 relative border-0">
+                    <tr>
+                      {/* Row number — with insert-row zone on top border */}
+                      <td className="w-7 min-w-7 text-center align-middle relative">
+                        {rowIdx > 0 && (
                           <div
-                            className="group/rins absolute -top-[10px] left-0 right-0 h-5 z-10 flex items-center justify-center cursor-pointer"
+                            className="group/rins absolute -top-[10px] -left-1 right-0 h-5 z-10 flex items-center justify-end cursor-pointer"
                             onClick={() => insertRowAt(rowIdx)}
                           >
-                            {/* Blue horizontal highlight line */}
-                            <div className="absolute top-1/2 -translate-y-1/2 left-7 right-8 h-0 group-hover/rins:h-[3px] bg-blue-500/70 transition-all rounded-full" />
-                            {/* + button */}
+                            {/* Blue horizontal line extending across the full table */}
+                            <div
+                              className="absolute top-1/2 -translate-y-1/2 left-0 h-0 group-hover/rins:h-[3px] bg-blue-500/70 transition-all pointer-events-none"
+                              style={{ width: "200rem" }}
+                            />
+                            {/* + button at intersection of row border and first-column border */}
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <button
                                   type="button"
-                                  className="relative z-10 flex items-center justify-center size-5 rounded-full bg-background border border-border text-muted-foreground opacity-0 group-hover/rins:opacity-100 hover:text-primary hover:border-primary transition-all shadow-sm"
+                                  className="relative z-10 flex items-center justify-center size-5 rounded-full bg-background border border-border text-muted-foreground cursor-pointer opacity-0 group-hover/rins:opacity-100 hover:text-primary hover:border-primary transition-all shadow-sm translate-x-1/2"
                                 >
                                   <PlusIcon className="size-3" />
                                 </button>
@@ -331,14 +329,7 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                               <TooltipContent>Insert row</TooltipContent>
                             </Tooltip>
                           </div>
-                        </td>
-                      </tr>
-                    )}
-
-                    {/* ---- Actual data row ---- */}
-                    <tr>
-                      {/* Row number */}
-                      <td className="w-7 min-w-7 text-center align-middle">
+                        )}
                         <span className="text-xs text-muted-foreground">{rowIdx + 1}</span>
                       </td>
 
@@ -348,10 +339,7 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                           <input
                             ref={(el) => setInputRef(`${rowIdx}:${col}`, el)}
                             style={{ fontFamily: MONO_FONT }}
-                            className={cn(
-                              "w-full px-2 py-1.5 text-sm bg-transparent border border-border focus:outline-none focus:ring-1 focus:ring-primary/40",
-                              rowIdx === rowCount - 1 && "rounded-bl-md",
-                            )}
+                            className="w-full px-2 py-1.5 text-sm bg-transparent border border-border focus:outline-none focus:ring-1 focus:ring-primary/40"
                             value={cell}
                             onChange={(e) => updateCell(rowIdx, col, e.target.value)}
                             onKeyDown={(e) => handleKeyDown(e, rowIdx, col)}
@@ -359,14 +347,14 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                         </td>
                       ))}
 
-                      {/* Row delete button (end of row) */}
+                      {/* Row delete button */}
                       <td className="w-8 min-w-8 align-middle">
                         {rowCount > 1 && (
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <button
                                 type="button"
-                                className="flex items-center justify-center size-7 rounded opacity-40 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive text-muted-foreground transition-all"
+                                className="flex items-center justify-center size-7 rounded cursor-pointer opacity-40 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive text-muted-foreground transition-all"
                                 onClick={() => removeRow(rowIdx)}
                               >
                                 <TrashIcon className="size-3" />
@@ -389,16 +377,18 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
               <span className="text-xs text-muted-foreground">
                 {colCount} {colCount === 1 ? "column" : "columns"} · {rowCount} {rowCount === 1 ? "row" : "rows"}
               </span>
-              <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" onClick={addRow}>
+              <Button variant="ghost" size="sm" className="text-xs text-muted-foreground cursor-pointer" onClick={addRow}>
                 <PlusIcon className="size-3.5" />
                 Add row
               </Button>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" onClick={() => onOpenChange(false)}>
+              <Button variant="ghost" className="cursor-pointer" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleConfirm}>Confirm</Button>
+              <Button className="cursor-pointer" onClick={handleConfirm}>
+                Confirm
+              </Button>
             </div>
           </div>
         </div>
