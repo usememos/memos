@@ -1,5 +1,5 @@
 import { ArrowDownIcon, ArrowUpDownIcon, ArrowUpIcon, PlusIcon, TrashIcon } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { ColumnAlignment, TableData } from "@/utils/markdown-table";
 import { createEmptyTable, serializeMarkdownTable } from "@/utils/markdown-table";
@@ -40,11 +40,8 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
   const inputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
 
   const setInputRef = useCallback((key: string, el: HTMLInputElement | null) => {
-    if (el) {
-      inputRefs.current.set(key, el);
-    } else {
-      inputRefs.current.delete(key);
-    }
+    if (el) inputRefs.current.set(key, el);
+    else inputRefs.current.delete(key);
   }, []);
 
   useEffect(() => {
@@ -129,16 +126,13 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
       newDir = "desc";
     }
     setSortState({ col, dir: newDir });
-
     setRows((prev) => {
       const sorted = [...prev].sort((a, b) => {
         const va = (a[col] || "").toLowerCase();
         const vb = (b[col] || "").toLowerCase();
         const na = Number(va);
         const nb = Number(vb);
-        if (!Number.isNaN(na) && !Number.isNaN(nb)) {
-          return newDir === "asc" ? na - nb : nb - na;
-        }
+        if (!Number.isNaN(na) && !Number.isNaN(nb)) return newDir === "asc" ? na - nb : nb - na;
         const cmp = va.localeCompare(vb);
         return newDir === "asc" ? cmp : -cmp;
       });
@@ -149,43 +143,38 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
   // ---- Tab / keyboard navigation ----
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, row: number, col: number) => {
-    if (e.key === "Tab") {
-      e.preventDefault();
-      const nextCol = e.shiftKey ? col - 1 : col + 1;
-      let nextRow = row;
-
-      if (nextCol >= colCount) {
-        if (row < rowCount - 1) {
-          nextRow = row + 1;
-          focusCell(nextRow, 0);
-        } else {
-          addRow();
-          setTimeout(() => focusCell(rowCount, 0), 0);
-        }
-      } else if (nextCol < 0) {
-        if (row > 0) {
-          nextRow = row - 1;
-          focusCell(nextRow, colCount - 1);
-        } else {
-          focusCell(-1, colCount - 1);
-        }
+    if (e.key !== "Tab") return;
+    e.preventDefault();
+    const nextCol = e.shiftKey ? col - 1 : col + 1;
+    let nextRow = row;
+    if (nextCol >= colCount) {
+      if (row < rowCount - 1) {
+        nextRow = row + 1;
+        focusCell(nextRow, 0);
       } else {
-        focusCell(nextRow, nextCol);
+        addRow();
+        setTimeout(() => focusCell(rowCount, 0), 0);
       }
+    } else if (nextCol < 0) {
+      if (row > 0) {
+        nextRow = row - 1;
+        focusCell(nextRow, colCount - 1);
+      } else {
+        focusCell(-1, colCount - 1);
+      }
+    } else {
+      focusCell(nextRow, nextCol);
     }
   };
 
   const focusCell = (row: number, col: number) => {
-    const key = `${row}:${col}`;
-    const el = inputRefs.current.get(key);
-    el?.focus();
+    inputRefs.current.get(`${row}:${col}`)?.focus();
   };
 
   // ---- Confirm ----
 
   const handleConfirm = () => {
-    const data: TableData = { headers, rows, alignments };
-    const md = serializeMarkdownTable(data);
+    const md = serializeMarkdownTable({ headers, rows, alignments });
     onConfirm(md);
     onOpenChange(false);
   };
@@ -199,6 +188,9 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
     return <ArrowUpDownIcon className="size-3 opacity-40" />;
   };
 
+  // Total colSpan: row-number col + data cols + action col
+  const totalColSpan = colCount + 2;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent size="full" className="p-0! w-[min(56rem,calc(100vw-2rem))] h-[min(44rem,calc(100vh-4rem))]" showCloseButton={false}>
@@ -211,52 +203,54 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
         <VisuallyHidden>
           <DialogDescription>Edit table headers, rows, columns and sort data</DialogDescription>
         </VisuallyHidden>
+
         <div className="flex flex-col h-full">
           {/* Scrollable table area */}
-          <div className="flex-1 overflow-auto p-4 pb-2">
-            {/* Insert-column buttons row (above the table) */}
-            <div className="relative w-full" style={{ height: 0 }}>
-              {/* We position "+" buttons at each column border using the same grid layout */}
-              <div className="flex items-start">
-                {/* Offset for row-number column */}
-                <div className="w-7 min-w-7 shrink-0" />
-                {headers.map((_, col) => (
-                  <div key={col} className="relative min-w-[140px] flex-1">
-                    {/* "+" button on the left edge of each column (= between col-1 and col) */}
-                    {col > 0 && (
-                      <div className="absolute -left-2.5 -top-1 z-10 flex items-center justify-center">
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button
-                              type="button"
-                              className="flex items-center justify-center size-5 rounded-full bg-background border border-border text-muted-foreground opacity-0 hover:opacity-100 focus:opacity-100 hover:text-primary hover:border-primary transition-all shadow-sm [div:hover>&]:opacity-70"
-                              onClick={() => insertColumnAt(col)}
-                            >
-                              <PlusIcon className="size-3" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent>Insert column</TooltipContent>
-                        </Tooltip>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
+          <div className="flex-1 overflow-auto px-4 pb-2">
             <table className="w-full border-collapse text-sm">
-              {/* Sticky header */}
-              <thead className="sticky top-0 z-20 bg-background">
+              {/* ============ STICKY HEADER ============ */}
+              <thead className="sticky top-0 z-20">
+                {/* Mask row: solid background strip that hides content scrolling behind the header */}
                 <tr>
-                  {/* Row number column */}
-                  <th className="w-7 min-w-7" />
+                  <th colSpan={totalColSpan} className="h-4 bg-background p-0 border-0" />
+                </tr>
+
+                {/* Actual header row */}
+                <tr>
+                  {/* Row-number spacer */}
+                  <th className="w-7 min-w-7 bg-background" />
+
                   {headers.map((header, col) => (
-                    <th key={col} className="p-0 min-w-[140px]">
-                      <div className="flex items-center gap-0.5">
+                    <th key={col} className="p-0 min-w-[140px] relative bg-background">
+                      {/* ---- Insert-column zone (between col-1 and col) ---- */}
+                      {col > 0 && (
+                        <div
+                          className="group/cins absolute -left-4 top-0 bottom-0 w-8 z-30 flex items-center justify-center cursor-pointer"
+                          onClick={() => insertColumnAt(col)}
+                        >
+                          {/* Blue vertical highlight line */}
+                          <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-0 group-hover/cins:w-[3px] bg-blue-500/70 transition-all rounded-full" />
+                          {/* + button */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className="relative z-10 flex items-center justify-center size-5 rounded-full bg-background border border-border text-muted-foreground opacity-0 group-hover/cins:opacity-100 hover:text-primary hover:border-primary transition-all shadow-sm"
+                              >
+                                <PlusIcon className="size-3" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Insert column</TooltipContent>
+                          </Tooltip>
+                        </div>
+                      )}
+
+                      {/* Header cell content — bg extends across input + action buttons */}
+                      <div className="flex items-center gap-0.5 bg-accent/50 border border-border rounded-tl-md">
                         <input
                           ref={(el) => setInputRef(`-1:${col}`, el)}
                           style={{ fontFamily: MONO_FONT }}
-                          className="flex-1 min-w-0 px-2 py-1.5 font-semibold text-xs uppercase tracking-wide bg-accent/50 border border-border rounded-tl-md focus:outline-none focus:ring-1 focus:ring-primary/40"
+                          className="flex-1 min-w-0 px-2 py-1.5 font-semibold text-xs uppercase tracking-wide bg-transparent focus:outline-none focus:ring-1 focus:ring-primary/40"
                           value={header}
                           onChange={(e) => updateHeader(col, e.target.value)}
                           onKeyDown={(e) => handleKeyDown(e, -1, col)}
@@ -291,8 +285,9 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                       </div>
                     </th>
                   ))}
+
                   {/* Add column at end */}
-                  <th className="w-8 min-w-8 align-middle">
+                  <th className="w-8 min-w-8 align-middle bg-background">
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
@@ -309,38 +304,26 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                 </tr>
               </thead>
 
-              {/* Data rows */}
+              {/* ============ DATA ROWS ============ */}
               <tbody>
                 {rows.map((row, rowIdx) => (
-                  <tr key={rowIdx} className="group/row relative">
-                    {/* Row number */}
-                    <td className="w-7 min-w-7 text-center align-middle">
-                      <span className="text-xs text-muted-foreground">{rowIdx + 1}</span>
-                    </td>
-
-                    {/* Data cells */}
-                    {row.map((cell, col) => (
-                      <td key={col} className="p-0 relative">
-                        <input
-                          ref={(el) => setInputRef(`${rowIdx}:${col}`, el)}
-                          style={{ fontFamily: MONO_FONT }}
-                          className={cn(
-                            "w-full px-2 py-1.5 text-sm bg-transparent border border-border focus:outline-none focus:ring-1 focus:ring-primary/40",
-                            rowIdx === rowCount - 1 && "rounded-bl-md",
-                          )}
-                          value={cell}
-                          onChange={(e) => updateCell(rowIdx, col, e.target.value)}
-                          onKeyDown={(e) => handleKeyDown(e, rowIdx, col)}
-                        />
-                        {/* Insert-row button: shown on the top border between rows */}
-                        {rowIdx > 0 && col === 0 && (
-                          <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 z-10">
+                  <React.Fragment key={rowIdx}>
+                    {/* ---- Insert-row zone (between row rowIdx-1 and rowIdx) ---- */}
+                    {rowIdx > 0 && (
+                      <tr className="h-0">
+                        <td colSpan={totalColSpan} className="p-0 h-0 relative border-0">
+                          <div
+                            className="group/rins absolute -top-[10px] left-0 right-0 h-5 z-10 flex items-center justify-center cursor-pointer"
+                            onClick={() => insertRowAt(rowIdx)}
+                          >
+                            {/* Blue horizontal highlight line */}
+                            <div className="absolute top-1/2 -translate-y-1/2 left-7 right-8 h-0 group-hover/rins:h-[3px] bg-blue-500/70 transition-all rounded-full" />
+                            {/* + button */}
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <button
                                   type="button"
-                                  className="flex items-center justify-center size-5 rounded-full bg-background border border-border text-muted-foreground opacity-0 hover:opacity-100 focus:opacity-100 hover:text-primary hover:border-primary transition-all shadow-sm [tr:hover>&]:opacity-70"
-                                  onClick={() => insertRowAt(rowIdx)}
+                                  className="relative z-10 flex items-center justify-center size-5 rounded-full bg-background border border-border text-muted-foreground opacity-0 group-hover/rins:opacity-100 hover:text-primary hover:border-primary transition-all shadow-sm"
                                 >
                                   <PlusIcon className="size-3" />
                                 </button>
@@ -348,34 +331,59 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                               <TooltipContent>Insert row</TooltipContent>
                             </Tooltip>
                           </div>
+                        </td>
+                      </tr>
+                    )}
+
+                    {/* ---- Actual data row ---- */}
+                    <tr>
+                      {/* Row number */}
+                      <td className="w-7 min-w-7 text-center align-middle">
+                        <span className="text-xs text-muted-foreground">{rowIdx + 1}</span>
+                      </td>
+
+                      {/* Data cells */}
+                      {row.map((cell, col) => (
+                        <td key={col} className="p-0">
+                          <input
+                            ref={(el) => setInputRef(`${rowIdx}:${col}`, el)}
+                            style={{ fontFamily: MONO_FONT }}
+                            className={cn(
+                              "w-full px-2 py-1.5 text-sm bg-transparent border border-border focus:outline-none focus:ring-1 focus:ring-primary/40",
+                              rowIdx === rowCount - 1 && "rounded-bl-md",
+                            )}
+                            value={cell}
+                            onChange={(e) => updateCell(rowIdx, col, e.target.value)}
+                            onKeyDown={(e) => handleKeyDown(e, rowIdx, col)}
+                          />
+                        </td>
+                      ))}
+
+                      {/* Row delete button (end of row) */}
+                      <td className="w-8 min-w-8 align-middle">
+                        {rowCount > 1 && (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className="flex items-center justify-center size-7 rounded opacity-40 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive text-muted-foreground transition-all"
+                                onClick={() => removeRow(rowIdx)}
+                              >
+                                <TrashIcon className="size-3" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Remove row</TooltipContent>
+                          </Tooltip>
                         )}
                       </td>
-                    ))}
-
-                    {/* Row delete button (end of row) */}
-                    <td className="w-8 min-w-8 align-middle">
-                      {rowCount > 1 && (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <button
-                              type="button"
-                              className="flex items-center justify-center size-7 rounded opacity-40 hover:opacity-100 hover:bg-destructive/10 hover:text-destructive text-muted-foreground transition-all"
-                              onClick={() => removeRow(rowIdx)}
-                            >
-                              <TrashIcon className="size-3" />
-                            </button>
-                          </TooltipTrigger>
-                          <TooltipContent>Remove row</TooltipContent>
-                        </Tooltip>
-                      )}
-                    </td>
-                  </tr>
+                    </tr>
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
           </div>
 
-          {/* Footer */}
+          {/* ============ FOOTER ============ */}
           <div className="flex items-center justify-between px-4 py-3 border-t border-border">
             <div className="flex items-center gap-3">
               <span className="text-xs text-muted-foreground">
