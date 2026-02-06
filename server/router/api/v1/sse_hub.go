@@ -1,0 +1,86 @@
+package v1
+
+import (
+	"encoding/json"
+	"sync"
+)
+
+// MemoEventType represents the type of memo change event.
+type MemoEventType string
+
+const (
+	MemoEventCreated MemoEventType = "memo.created"
+	MemoEventUpdated MemoEventType = "memo.updated"
+	MemoEventDeleted MemoEventType = "memo.deleted"
+)
+
+// MemoEvent represents a memo change event sent to SSE clients.
+type MemoEvent struct {
+	Type MemoEventType `json:"type"`
+	// Name is the memo resource name (e.g., "memos/xxxx").
+	Name string `json:"name"`
+}
+
+// JSON returns the JSON representation of the event.
+func (e *MemoEvent) JSON() []byte {
+	data, _ := json.Marshal(e)
+	return data
+}
+
+// sseClient represents a single SSE connection.
+type sseClient struct {
+	events chan []byte
+}
+
+// SSEHub manages SSE client connections and broadcasts events.
+// It is safe for concurrent use.
+type SSEHub struct {
+	mu      sync.RWMutex
+	clients map[*sseClient]struct{}
+}
+
+// NewSSEHub creates a new SSE hub.
+func NewSSEHub() *SSEHub {
+	return &SSEHub{
+		clients: make(map[*sseClient]struct{}),
+	}
+}
+
+// Subscribe registers a new client and returns it.
+// The caller must call Unsubscribe when done.
+func (h *SSEHub) Subscribe() *sseClient {
+	c := &sseClient{
+		// Buffer a few events so a slow client doesn't block broadcasting.
+		events: make(chan []byte, 32),
+	}
+	h.mu.Lock()
+	h.clients[c] = struct{}{}
+	h.mu.Unlock()
+	return c
+}
+
+// Unsubscribe removes a client and closes its channel.
+func (h *SSEHub) Unsubscribe(c *sseClient) {
+	h.mu.Lock()
+	if _, ok := h.clients[c]; ok {
+		delete(h.clients, c)
+		close(c.events)
+	}
+	h.mu.Unlock()
+}
+
+// Broadcast sends an event to all connected clients.
+// Slow clients that have a full buffer will have the event dropped
+// to avoid blocking the broadcaster.
+func (h *SSEHub) Broadcast(event *MemoEvent) {
+	data := event.JSON()
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+	for c := range h.clients {
+		select {
+		case c.events <- data:
+		default:
+			// Drop event for slow client to avoid blocking.
+		}
+	}
+}

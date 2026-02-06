@@ -31,6 +31,7 @@ type APIV1Service struct {
 	Profile         *profile.Profile
 	Store           *store.Store
 	MarkdownService markdown.Service
+	SSEHub          *SSEHub
 
 	// thumbnailSemaphore limits concurrent thumbnail generation to prevent memory exhaustion
 	thumbnailSemaphore *semaphore.Weighted
@@ -45,6 +46,7 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 		Profile:            profile,
 		Store:              store,
 		MarkdownService:    markdownService,
+		SSEHub:             NewSSEHub(),
 		thumbnailSemaphore: semaphore.NewWeighted(3), // Limit to 3 concurrent thumbnail generations
 	}
 }

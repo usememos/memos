@@ -141,6 +141,12 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		slog.Warn("Failed to dispatch memo created webhook", slog.Any("err", err))
 	}
 
+	// Broadcast live refresh event.
+	s.SSEHub.Broadcast(&MemoEvent{
+		Type: MemoEventCreated,
+		Name: memoMessage.Name,
+	})
+
 	return memoMessage, nil
 }
 
@@ -471,6 +477,12 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 		slog.Warn("Failed to dispatch memo updated webhook", slog.Any("err", err))
 	}
 
+	// Broadcast live refresh event.
+	s.SSEHub.Broadcast(&MemoEvent{
+		Type: MemoEventUpdated,
+		Name: memoMessage.Name,
+	})
+
 	return memoMessage, nil
 }
 
@@ -538,6 +550,12 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 	if err = s.Store.DeleteMemo(ctx, &store.DeleteMemo{ID: memo.ID}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete memo")
 	}
+
+	// Broadcast live refresh event.
+	s.SSEHub.Broadcast(&MemoEvent{
+		Type: MemoEventDeleted,
+		Name: request.Name,
+	})
 
 	return &emptypb.Empty{}, nil
 }
