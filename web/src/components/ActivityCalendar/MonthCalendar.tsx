@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { memo, useMemo } from "react";
 import { useInstance } from "@/contexts/InstanceContext";
 import { cn } from "@/lib/utils";
@@ -35,11 +36,15 @@ const WeekdayHeader = memo(({ weekDays, size }: WeekdayHeaderProps) => (
 WeekdayHeader.displayName = "WeekdayHeader";
 
 export const MonthCalendar = memo((props: MonthCalendarProps) => {
-  const { month, data, maxCount, size = "default", onClick, className, disableTooltips = false } = props;
+  const { month, selectedDate, data, maxCount, size = "default", onClick, className, disableTooltips = false } = props;
   const t = useTranslate();
   const { generalSetting } = useInstance();
   const today = useTodayDate();
   const weekDays = useWeekdayLabels();
+  const selectedDateFormatted = useMemo(() => {
+    if (!selectedDate) return null;
+    return dayjs(selectedDate).format("YYYY-MM-DD");
+  }, [selectedDate]);
 
   const { weeks, weekDays: rotatedWeekDays } = useCalendarMatrix({
     month,
@@ -47,7 +52,7 @@ export const MonthCalendar = memo((props: MonthCalendarProps) => {
     weekDays,
     weekStartDayOffset: generalSetting.weekStartDayOffset,
     today,
-    selectedDate: "",
+    selectedDate: selectedDateFormatted,
   });
 
   const flatDays = useMemo(() => weeks.flatMap((week) => week.days), [weeks]);

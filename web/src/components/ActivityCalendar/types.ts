@@ -22,6 +22,7 @@ export interface CalendarMatrixResult {
 
 export interface MonthCalendarProps {
   month: string;
+  selectedDate: string | null;
   data: Record<string, number>;
   maxCount: number;
   size?: CalendarSize;

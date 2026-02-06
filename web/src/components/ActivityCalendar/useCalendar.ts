@@ -9,7 +9,7 @@ export interface UseCalendarMatrixParams {
   weekDays: string[];
   weekStartDayOffset: number;
   today: string;
-  selectedDate: string;
+  selectedDate: string | null;
 }
 
 const createCalendarDayCell = (
@@ -17,7 +17,7 @@ const createCalendarDayCell = (
   monthKey: string,
   data: Record<string, number>,
   today: string,
-  selectedDate: string,
+  selectedDate: string | null,
 ): CalendarDayCell => {
   const isoDate = current.format("YYYY-MM-DD");
   const isCurrentMonth = current.format("YYYY-MM") === monthKey;

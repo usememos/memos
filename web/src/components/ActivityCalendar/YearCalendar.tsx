@@ -73,12 +73,21 @@ interface MonthCardProps {
   data: Record<string, number>;
   maxCount: number;
   onDateClick: (date: string) => void;
+  selectedDate: string | null;
 }
 
-const MonthCard = memo(({ month, data, maxCount, onDateClick }: MonthCardProps) => (
+const MonthCard = memo(({ month, data, maxCount, onDateClick, selectedDate }: MonthCardProps) => (
   <article className="flex flex-col gap-2 rounded-xl border border-border/20 bg-muted/5 p-3 transition-colors hover:bg-muted/10">
     <header className="text-[10px] font-medium text-muted-foreground/80 uppercase tracking-widest">{getMonthLabel(month)}</header>
-    <MonthCalendar month={month} data={data} maxCount={maxCount} size="small" onClick={onDateClick} disableTooltips />
+    <MonthCalendar
+      month={month}
+      data={data}
+      maxCount={maxCount}
+      size="small"
+      onClick={onDateClick}
+      selectedDate={selectedDate}
+      disableTooltips
+    />
   </article>
 ));
 MonthCard.displayName = "MonthCard";
@@ -106,7 +115,7 @@ export const YearCalendar = memo(({ selectedYear, data, onYearChange, onDateClic
 
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 animate-fade-in">
         {months.map((month) => (
-          <MonthCard key={month} month={month} data={yearData} maxCount={yearMaxCount} onDateClick={onDateClick} />
+          <MonthCard key={month} month={month} data={yearData} maxCount={yearMaxCount} onDateClick={onDateClick} selectedDate={null} />
         ))}
       </div>
     </section>
