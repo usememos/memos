@@ -81,7 +81,7 @@ export function useLiveMemoRefresh() {
                 const jsonStr = line.slice(6);
                 try {
                   const event = JSON.parse(jsonStr) as { type: string; name: string };
-                  handleMemoEvent(event, queryClient);
+                  handleSSEEvent(event, queryClient);
                 } catch {
                   // Ignore malformed JSON.
                 }
@@ -119,12 +119,12 @@ export function useLiveMemoRefresh() {
   }, [queryClient]);
 }
 
-interface MemoChangeEvent {
+interface SSEChangeEvent {
   type: string;
   name: string;
 }
 
-function handleMemoEvent(event: MemoChangeEvent, queryClient: ReturnType<typeof useQueryClient>) {
+function handleSSEEvent(event: SSEChangeEvent, queryClient: ReturnType<typeof useQueryClient>) {
   switch (event.type) {
     case "memo.created":
       // Invalidate memo lists so new memos appear.
@@ -147,6 +147,14 @@ function handleMemoEvent(event: MemoChangeEvent, queryClient: ReturnType<typeof 
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
       // Invalidate user stats (memo count changed).
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
+      break;
+
+    case "reaction.upserted":
+    case "reaction.deleted":
+      // Reactions are embedded in the memo object, so invalidate the memo detail
+      // and lists to reflect the updated reaction state.
+      queryClient.invalidateQueries({ queryKey: memoKeys.detail(event.name) });
+      queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
       break;
   }
 }

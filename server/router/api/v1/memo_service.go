@@ -142,8 +142,8 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	}
 
 	// Broadcast live refresh event.
-	s.SSEHub.Broadcast(&MemoEvent{
-		Type: MemoEventCreated,
+	s.SSEHub.Broadcast(&SSEEvent{
+		Type: SSEEventMemoCreated,
 		Name: memoMessage.Name,
 	})
 
@@ -478,8 +478,8 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	}
 
 	// Broadcast live refresh event.
-	s.SSEHub.Broadcast(&MemoEvent{
-		Type: MemoEventUpdated,
+	s.SSEHub.Broadcast(&SSEEvent{
+		Type: SSEEventMemoUpdated,
 		Name: memoMessage.Name,
 	})
 
@@ -552,8 +552,8 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 	}
 
 	// Broadcast live refresh event.
-	s.SSEHub.Broadcast(&MemoEvent{
-		Type: MemoEventDeleted,
+	s.SSEHub.Broadcast(&SSEEvent{
+		Type: SSEEventMemoDeleted,
 		Name: request.Name,
 	})
 
