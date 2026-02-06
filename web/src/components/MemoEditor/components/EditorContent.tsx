@@ -1,11 +1,12 @@
-import { forwardRef } from "react";
+import { forwardRef, useMemo } from "react";
 import Editor, { type EditorRefActions } from "../Editor";
+import { createEditorCommands } from "../Editor/commands";
 import { useBlobUrls, useDragAndDrop } from "../hooks";
 import { useEditorContext } from "../state";
 import type { EditorContentProps } from "../types";
 import type { LocalFile } from "../types/attachment";
 
-export const EditorContent = forwardRef<EditorRefActions, EditorContentProps>(({ placeholder }, ref) => {
+export const EditorContent = forwardRef<EditorRefActions, EditorContentProps>(({ placeholder, onOpenTableEditor }, ref) => {
   const { state, actions, dispatch } = useEditorContext();
   const { createBlobUrl } = useBlobUrls();
 
@@ -54,6 +55,9 @@ export const EditorContent = forwardRef<EditorRefActions, EditorContentProps>(({
     event.preventDefault();
   };
 
+  // Build commands with the table editor action wired in.
+  const commands = useMemo(() => createEditorCommands(onOpenTableEditor), [onOpenTableEditor]);
+
   return (
     <div className="w-full flex flex-col flex-1" {...dragHandlers}>
       <Editor
@@ -67,6 +71,7 @@ export const EditorContent = forwardRef<EditorRefActions, EditorContentProps>(({
         onPaste={handlePaste}
         onCompositionStart={handleCompositionStart}
         onCompositionEnd={handleCompositionEnd}
+        commands={commands}
       />
     </div>
   );
