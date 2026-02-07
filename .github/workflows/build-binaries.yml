@@ -1,8 +1,10 @@
 name: Build Binaries
 
-# Manually triggered workflow to build multi-platform binaries
+# Build multi-platform binaries on release or manual trigger
 # Produces distributable packages for Linux, macOS, and Windows
 on:
+  release:
+    types: [published]
   workflow_dispatch:
 
 # Environment variables for build configuration
@@ -176,8 +178,8 @@ jobs:
         run: |
           cd build
           
-          # Construct package name: memos-{version}-{os}-{arch}[v{arm_version}]
-          PACKAGE_NAME="memos-${VERSION}-${GOOS}-${GOARCH}"
+          # Construct package name: memos_v{version}_{os}_{arch}[v{arm_version}]
+          PACKAGE_NAME="memos_v${VERSION}_${GOOS}_${GOARCH}"
           if [ -n "$GOARM" ]; then
             PACKAGE_NAME="${PACKAGE_NAME}v${GOARM}"
           fi
@@ -202,6 +204,14 @@ jobs:
           path: build/${{ env.ARTIFACT_NAME }}
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
+      - name: Upload to GitHub Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/${{ env.ARTIFACT_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   # Job 4: Generate build summary
   # - Downloads all built artifacts
   # - Creates formatted summary table with sizes
@@ -216,7 +226,7 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           path: artifacts
-          pattern: memos-*
+          pattern: memos_*
           merge-multiple: false
 
       - name: Generate build summary
@@ -247,8 +257,8 @@ jobs:
               artifact=$(ls "$dir" 2>/dev/null | head -1)
               if [ -n "$artifact" ]; then
                 size=$(du -h "$dir/$artifact" | cut -f1)
-                # Extract platform from filename (remove memos-version- prefix and extension)
-                platform=$(echo "$artifact" | sed "s/memos-${VERSION}-//;s/\.(tar\.gz|zip)$//")
+                # Extract platform from filename (remove memos_v{version}_ prefix and extension)
+                platform=$(echo "$artifact" | sed "s/memos_v${VERSION}_//;s/\.\(tar\.gz\|zip\)$//")
                 echo "| \`$platform\` | \`$artifact\` | **$size** |" >> $GITHUB_STEP_SUMMARY
               fi
             fi
