@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
+import TableEditorDialog from "@/components/TableEditorDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { memoKeys } from "@/hooks/useMemoQueries";
@@ -67,6 +68,17 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const handleToggleFocusMode = () => {
     dispatch(actions.toggleFocusMode());
   };
+
+  // Table editor dialog (shared by slash command and toolbar).
+  const [tableDialogOpen, setTableDialogOpen] = useState(false);
+
+  const handleOpenTableEditor = useCallback(() => {
+    setTableDialogOpen(true);
+  }, []);
+
+  const handleTableConfirm = useCallback((markdown: string) => {
+    editorRef.current?.insertText(markdown);
+  }, []);
 
   useKeyboard(editorRef, { onSave: handleSave });
 
@@ -142,14 +154,21 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         <FocusModeExitButton isActive={state.ui.isFocusMode} onToggle={handleToggleFocusMode} title={t("editor.exit-focus-mode")} />
 
         {/* Editor content grows to fill available space in focus mode */}
-        <EditorContent ref={editorRef} placeholder={placeholder} autoFocus={autoFocus} />
+        <EditorContent ref={editorRef} placeholder={placeholder} autoFocus={autoFocus} onOpenTableEditor={handleOpenTableEditor} />
 
         {/* Metadata and toolbar grouped together at bottom */}
         <div className="w-full flex flex-col gap-2">
           <EditorMetadata memoName={memoName} />
-          <EditorToolbar onSave={handleSave} onCancel={onCancel} memoName={memoName} />
+          <EditorToolbar
+            onSave={handleSave}
+            onCancel={onCancel}
+            memoName={memoName}
+            onInsertText={(text) => editorRef.current?.insertText(text)}
+          />
         </div>
       </div>
+
+      <TableEditorDialog open={tableDialogOpen} onOpenChange={setTableDialogOpen} onConfirm={handleTableConfirm} />
     </>
   );
 };
