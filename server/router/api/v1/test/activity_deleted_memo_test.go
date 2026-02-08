@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
-	v1 "github.com/usememos/memos/server/router/api/v1"
+	v1 "github.com/usememos/memos/server/router/api/v1" //nolint:revive
 	"github.com/usememos/memos/store"
 )
 
