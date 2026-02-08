@@ -126,6 +126,21 @@ function CreateShortcutDialog({ open, onOpenChange, shortcut: initialShortcut, o
               onChange={onShortcutFilterChange}
             />
           </div>
+          <div className="text-sm text-muted-foreground">
+            <p className="mb-2">{t("common.learn-more")}:</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>
+                <a
+                  className="text-primary hover:underline"
+                  href="https://www.usememos.com/docs/usage/shortcuts"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Docs - Shortcuts
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
         <DialogFooter>
           <Button variant="ghost" disabled={requestState.isLoading} onClick={() => onOpenChange(false)}>
