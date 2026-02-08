@@ -345,7 +345,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 
 	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to get memo: %v", err)
 	}
 	if memo == nil {
 		return nil, status.Errorf(codes.NotFound, "memo not found")
