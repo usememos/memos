@@ -100,7 +100,7 @@ Don't want to install yet? Try our [live demo](https://demo.usememos.com/) first
 - **Kubernetes** - Helm charts and manifests available
 - **Build from Source** - For development and customization
 
-See our [installation guide](https://usememos.com/docs/installation) for detailed instructions.
+See our [installation guide](https://usememos.com/docs/deploy) for detailed instructions.
 
 ## Contributing
 

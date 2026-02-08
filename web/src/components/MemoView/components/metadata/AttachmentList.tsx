@@ -1,5 +1,5 @@
 import { FileIcon, PaperclipIcon } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
@@ -11,13 +11,18 @@ interface AttachmentListProps {
   attachments: Attachment[];
 }
 
+// Type guards for attachment types
+const isImageAttachment = (attachment: Attachment): boolean => getAttachmentType(attachment) === "image/*";
+const isVideoAttachment = (attachment: Attachment): boolean => getAttachmentType(attachment) === "video/*";
+const isMediaAttachment = (attachment: Attachment): boolean => isImageAttachment(attachment) || isVideoAttachment(attachment);
+
+// Separate attachments into media (images/videos) and documents
 const separateMediaAndDocs = (attachments: Attachment[]): { media: Attachment[]; docs: Attachment[] } => {
   const media: Attachment[] = [];
   const docs: Attachment[] = [];
 
   for (const attachment of attachments) {
-    const attachmentType = getAttachmentType(attachment);
-    if (attachmentType === "image/*" || attachmentType === "video/*") {
+    if (isMediaAttachment(attachment)) {
       media.push(attachment);
     } else {
       docs.push(attachment);
@@ -55,27 +60,39 @@ const DocumentItem = ({ attachment }: { attachment: Attachment }) => {
   );
 };
 
-const MediaGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; onImageClick: (url: string) => void }) => (
+interface MediaItemProps {
+  attachment: Attachment;
+  onImageClick: (url: string) => void;
+}
+
+const MediaItem = ({ attachment, onImageClick }: MediaItemProps) => {
+  const isImage = isImageAttachment(attachment);
+
+  const handleClick = () => {
+    if (isImage) {
+      onImageClick(getAttachmentUrl(attachment));
+    }
+  };
+
+  return (
+    <div
+      className="aspect-square rounded-lg overflow-hidden bg-muted/40 border border-border hover:border-accent/50 transition-all cursor-pointer group"
+      onClick={handleClick}
+    >
+      <AttachmentCard attachment={attachment} className="rounded-none" />
+    </div>
+  );
+};
+
+interface MediaGridProps {
+  attachments: Attachment[];
+  onImageClick: (url: string) => void;
+}
+
+const MediaGrid = ({ attachments, onImageClick }: MediaGridProps) => (
   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
     {attachments.map((attachment) => (
-      <div
-        key={attachment.name}
-        className="aspect-square rounded-lg overflow-hidden bg-muted/40 border border-border hover:border-accent/50 transition-all cursor-pointer group"
-        onClick={() => onImageClick(getAttachmentUrl(attachment))}
-      >
-        <div className="w-full h-full relative">
-          <AttachmentCard attachment={attachment} className="rounded-none" />
-          {getAttachmentType(attachment) === "video/*" && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
-              <div className="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center">
-                <svg className="w-5 h-5 text-black fill-current ml-0.5" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+      <MediaItem key={attachment.name} attachment={attachment} onImageClick={onImageClick} />
     ))}
   </div>
 );
@@ -98,18 +115,20 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
     mimeType: undefined,
   });
 
-  const { media: mediaItems, docs: docItems } = separateMediaAndDocs(attachments);
+  const { media: mediaItems, docs: docItems } = useMemo(() => separateMediaAndDocs(attachments), [attachments]);
+
+  // Pre-compute image URLs for preview dialog to avoid filtering on every click
+  const imageAttachments = useMemo(() => mediaItems.filter(isImageAttachment), [mediaItems]);
+  const imageUrls = useMemo(() => imageAttachments.map(getAttachmentUrl), [imageAttachments]);
 
   if (attachments.length === 0) {
     return null;
   }
 
   const handleImageClick = (imgUrl: string) => {
-    const imageAttachments = mediaItems.filter((a) => getAttachmentType(a) === "image/*");
-    const imgUrls = imageAttachments.map((a) => getAttachmentUrl(a));
-    const index = imgUrls.findIndex((url) => url === imgUrl);
+    const index = imageUrls.findIndex((url) => url === imgUrl);
     const mimeType = imageAttachments[index]?.type;
-    setPreviewImage({ open: true, urls: imgUrls, index, mimeType });
+    setPreviewImage({ open: true, urls: imageUrls, index, mimeType });
   };
 
   return (
