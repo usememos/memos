@@ -376,7 +376,10 @@ func TestUserSettingGetUserByPATHashNoTokensKey(t *testing.T) {
 	result, err := ts.GetUserByPATHash(ctx, "any-hash")
 	require.Error(t, err)
 	require.Nil(t, result)
-	require.Contains(t, err.Error(), "PAT not found")
+	// Error could be "PAT not found" (Postgres) or "sql: no rows in result set" (SQLite/MySQL)
+	require.True(t,
+		strings.Contains(err.Error(), "PAT not found") || strings.Contains(err.Error(), "no rows"),
+		"expected PAT not found or no rows error, got: %v", err)
 
 	// Now add a PAT for the user
 	pat := &storepb.PersonalAccessTokensUserSetting_PersonalAccessToken{
@@ -419,7 +422,10 @@ func TestUserSettingGetUserByPATHashEmptyTokensArray(t *testing.T) {
 	result, err := ts.GetUserByPATHash(ctx, "any-hash")
 	require.Error(t, err)
 	require.Nil(t, result)
-	require.Contains(t, err.Error(), "PAT not found")
+	// Error could be "PAT not found" (Postgres) or "sql: no rows in result set" (SQLite/MySQL)
+	require.True(t,
+		strings.Contains(err.Error(), "PAT not found") || strings.Contains(err.Error(), "no rows"),
+		"expected PAT not found or no rows error, got: %v", err)
 
 	ts.Close()
 }

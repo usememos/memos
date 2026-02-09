@@ -12,9 +12,9 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-// TestGetUserByPATHashWithMissingData tests the fix for #5611 and #5612
+// TestGetUserByPATHashWithMissingData tests the fix for #5611 and #5612.
 // Verifies that GetUserByPATHash handles missing/malformed data gracefully
-// instead of throwing PostgreSQL JSONB errors
+// instead of throwing PostgreSQL JSONB errors.
 func TestGetUserByPATHashWithMissingData(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping PostgreSQL integration test in short mode")
@@ -175,7 +175,7 @@ func TestGetUserByPATHashWithMissingData(t *testing.T) {
 	})
 }
 
-// TestGetUserByPATHashPerformance ensures the simplified query doesn't cause performance issues
+// TestGetUserByPATHashPerformance ensures the simplified query doesn't cause performance issues.
 func TestGetUserByPATHashPerformance(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping performance test in short mode")
@@ -235,14 +235,14 @@ func TestGetUserByPATHashPerformance(t *testing.T) {
 	assert.Equal(t, int32(2050), result.UserID)
 }
 
-// getTestDSN returns PostgreSQL DSN from environment or returns empty string
+// getTestDSN returns PostgreSQL DSN from environment or returns empty string.
 func getTestDSN() string {
-	// For unit tests, we expect TEST_POSTGRES_DSN to be set
-	// Example: TEST_POSTGRES_DSN="postgresql://user:pass@localhost:5432/memos_test?sslmode=disable"
+	// For unit tests, we expect TEST_POSTGRES_DSN to be set.
+	// Example: TEST_POSTGRES_DSN="postgresql://user:pass@localhost:5432/memos_test?sslmode=disable".
 	return ""
 }
 
-// TestUpsertUserSetting tests basic upsert functionality
+// TestUpsertUserSetting tests basic upsert functionality.
 func TestUpsertUserSetting(t *testing.T) {
 	dsn := getTestDSN()
 	if dsn == "" {
