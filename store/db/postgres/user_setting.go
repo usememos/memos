@@ -71,39 +71,50 @@ func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) 
 }
 
 func (d *DB) GetUserByPATHash(ctx context.Context, tokenHash string) (*store.PATQueryResult, error) {
+	// Simplified query: fetch all PERSONAL_ACCESS_TOKENS rows and search in Go
+	// This matches SQLite/MySQL behavior and avoids PostgreSQL's strict JSONB errors
 	query := `
 		SELECT
-			user_setting.user_id,
-			user_setting.value
+			user_id,
+			value
 		FROM user_setting
-		WHERE user_setting.key = 'PERSONAL_ACCESS_TOKENS'
-		  AND EXISTS (
-		      SELECT 1
-		      FROM jsonb_array_elements(user_setting.value::jsonb->'tokens') AS token
-		      WHERE token->>'tokenHash' = $1
-		  )
+		WHERE key = 'PERSONAL_ACCESS_TOKENS'
 	`
 
-	var userID int32
-	var tokensJSON string
-
-	err := d.db.QueryRowContext(ctx, query, tokenHash).Scan(&userID, &tokensJSON)
+	rows, err := d.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
-	patsUserSetting := &storepb.PersonalAccessTokensUserSetting{}
-	if err := protojsonUnmarshaler.Unmarshal([]byte(tokensJSON), patsUserSetting); err != nil {
-		return nil, err
+	// Iterate through all users with PAT settings
+	for rows.Next() {
+		var userID int32
+		var tokensJSON string
+
+		if err := rows.Scan(&userID, &tokensJSON); err != nil {
+			continue // Skip malformed rows
+		}
+
+		// Try to unmarshal - skip if invalid JSON
+		patsUserSetting := &storepb.PersonalAccessTokensUserSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(tokensJSON), patsUserSetting); err != nil {
+			continue // Skip invalid JSON
+		}
+
+		// Search for matching token hash
+		for _, pat := range patsUserSetting.Tokens {
+			if pat.TokenHash == tokenHash {
+				return &store.PATQueryResult{
+					UserID: userID,
+					PAT:    pat,
+				}, nil
+			}
+		}
 	}
 
-	for _, pat := range patsUserSetting.Tokens {
-		if pat.TokenHash == tokenHash {
-			return &store.PATQueryResult{
-				UserID: userID,
-				PAT:    pat,
-			}, nil
-		}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 
 	return nil, errors.New("PAT not found")

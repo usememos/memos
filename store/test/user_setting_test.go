@@ -364,6 +364,118 @@ func TestUserSettingGetUserByPATHashNotFound(t *testing.T) {
 	ts.Close()
 }
 
+func TestUserSettingGetUserByPATHashNoTokensKey(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	// User exists but has no PERSONAL_ACCESS_TOKENS key at all
+	// This simulates fresh users or users upgraded from v0.25.3
+	result, err := ts.GetUserByPATHash(ctx, "any-hash")
+	require.Error(t, err)
+	require.Nil(t, result)
+	require.Contains(t, err.Error(), "PAT not found")
+
+	// Now add a PAT for the user
+	pat := &storepb.PersonalAccessTokensUserSetting_PersonalAccessToken{
+		TokenId:     "pat-new",
+		TokenHash:   "hash-new",
+		Description: "New PAT",
+	}
+	err = ts.AddUserPersonalAccessToken(ctx, user.ID, pat)
+	require.NoError(t, err)
+
+	// Now the lookup should succeed
+	result, err = ts.GetUserByPATHash(ctx, "hash-new")
+	require.NoError(t, err)
+	require.NotNil(t, result)
+	require.Equal(t, user.ID, result.UserID)
+
+	ts.Close()
+}
+
+func TestUserSettingGetUserByPATHashEmptyTokensArray(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	// Add a PAT setting with empty tokens array
+	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
+		UserId: user.ID,
+		Key:    storepb.UserSetting_PERSONAL_ACCESS_TOKENS,
+		Value: &storepb.UserSetting_PersonalAccessTokens{
+			PersonalAccessTokens: &storepb.PersonalAccessTokensUserSetting{
+				Tokens: []*storepb.PersonalAccessTokensUserSetting_PersonalAccessToken{},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	// Lookup should fail gracefully, not crash
+	result, err := ts.GetUserByPATHash(ctx, "any-hash")
+	require.Error(t, err)
+	require.Nil(t, result)
+	require.Contains(t, err.Error(), "PAT not found")
+
+	ts.Close()
+}
+
+func TestUserSettingGetUserByPATHashWithOtherUsers(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+
+	// Create multiple users - some with PATs, some without
+	user1, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	_, err = createTestingUserWithRole(ctx, ts, "user2", store.RoleUser)
+	require.NoError(t, err)
+
+	user3, err := createTestingUserWithRole(ctx, ts, "user3", store.RoleUser)
+	require.NoError(t, err)
+
+	// User1: Has PAT
+	pat1Hash := "user1-pat-hash-unique"
+	err = ts.AddUserPersonalAccessToken(ctx, user1.ID, &storepb.PersonalAccessTokensUserSetting_PersonalAccessToken{
+		TokenId:     "pat-user1",
+		TokenHash:   pat1Hash,
+		Description: "User 1 PAT",
+	})
+	require.NoError(t, err)
+
+	// User2: Has no PERSONAL_ACCESS_TOKENS key (fresh user)
+	// User3: Has empty tokens array
+	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
+		UserId: user3.ID,
+		Key:    storepb.UserSetting_PERSONAL_ACCESS_TOKENS,
+		Value: &storepb.UserSetting_PersonalAccessTokens{
+			PersonalAccessTokens: &storepb.PersonalAccessTokensUserSetting{
+				Tokens: []*storepb.PersonalAccessTokensUserSetting_PersonalAccessToken{},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	// Should find user1's PAT despite user2 having no key and user3 having empty array
+	result, err := ts.GetUserByPATHash(ctx, pat1Hash)
+	require.NoError(t, err)
+	require.NotNil(t, result)
+	require.Equal(t, user1.ID, result.UserID)
+	require.Equal(t, "pat-user1", result.PAT.TokenId)
+
+	// Should not find non-existent hash even with mixed user states
+	result, err = ts.GetUserByPATHash(ctx, "non-existent")
+	require.Error(t, err)
+	require.Nil(t, result)
+
+	ts.Close()
+}
+
 func TestUserSettingGetUserByPATHashMultipleUsers(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
