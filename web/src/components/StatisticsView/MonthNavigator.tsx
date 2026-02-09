@@ -4,11 +4,10 @@ import { memo, useCallback, useMemo, useState } from "react";
 import { YearCalendar } from "@/components/ActivityCalendar";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import i18n from "@/i18n";
 import { addMonths, formatMonth, getMonthFromDate, getYearFromDate, setYearAndMonth } from "@/lib/calendar-utils";
 import type { MonthNavigatorProps } from "@/types/statistics";
 
-export const MonthNavigator = memo(({ visibleMonth, onMonthChange, activityStats }: MonthNavigatorProps) => {
+export const MonthNavigator = memo(({ visibleMonth, onMonthChange, activityStats, language }: MonthNavigatorProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const { currentMonth, currentYear, currentMonthNum } = useMemo(
@@ -20,7 +19,7 @@ export const MonthNavigator = memo(({ visibleMonth, onMonthChange, activityStats
     [visibleMonth],
   );
 
-  const monthLabel = useMemo(() => currentMonth.toLocaleString(i18n.language, { year: "numeric", month: "long" }), [currentMonth]);
+  const monthLabel = useMemo(() => currentMonth.toLocaleString(language, { year: "numeric", month: "long" }), [currentMonth, language]);
 
   const handlePrevMonth = useCallback(() => onMonthChange(addMonths(visibleMonth, -1)), [visibleMonth, onMonthChange]);
   const handleNextMonth = useCallback(() => onMonthChange(addMonths(visibleMonth, 1)), [visibleMonth, onMonthChange]);
