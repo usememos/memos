@@ -1,8 +1,10 @@
 name: Build Binaries
 
-# Manually triggered workflow to build multi-platform binaries
+# Build multi-platform binaries on release or manual trigger
 # Produces distributable packages for Linux, macOS, and Windows
 on:
+  release:
+    types: [published]
   workflow_dispatch:
 
 # Environment variables for build configuration
@@ -11,6 +13,8 @@ env:
   NODE_VERSION: "22"
   PNPM_VERSION: "10"
   ARTIFACT_RETENTION_DAYS: 60
+  # Artifact naming: {ARTIFACT_PREFIX}_{version}_{os}_{arch}.tar.gz|zip
+  ARTIFACT_PREFIX: memos
 
 jobs:
   # Job 1: Extract version information
@@ -152,9 +156,9 @@ jobs:
           if [ "$GOOS" = "windows" ]; then
             OUTPUT_NAME="memos.exe"
           fi
-          
+
           mkdir -p build
-          
+
           # Build static binary with optimizations
           go build \
             -trimpath \
@@ -162,7 +166,7 @@ jobs:
             -tags netgo,osusergo \
             -o "build/${OUTPUT_NAME}" \
             ./cmd/memos
-          
+
           echo "✓ Built: build/${OUTPUT_NAME}"
           ls -lh build/
 
@@ -175,13 +179,13 @@ jobs:
           GOARM: ${{ matrix.goarm }}
         run: |
           cd build
-          
-          # Construct package name: memos-{version}-{os}-{arch}[v{arm_version}]
-          PACKAGE_NAME="memos-${VERSION}-${GOOS}-${GOARCH}"
+
+          # Construct package name: {prefix}_{version}_{os}_{arch}[v{arm_version}]
+          PACKAGE_NAME="${ARTIFACT_PREFIX}_${VERSION}_${GOOS}_${GOARCH}"
           if [ -n "$GOARM" ]; then
             PACKAGE_NAME="${PACKAGE_NAME}v${GOARM}"
           fi
-          
+
           # Package based on platform
           if [ "$GOOS" = "windows" ]; then
             ARTIFACT_NAME="${PACKAGE_NAME}.zip"
@@ -190,7 +194,7 @@ jobs:
             ARTIFACT_NAME="${PACKAGE_NAME}.tar.gz"
             tar czf "${ARTIFACT_NAME}" memos
           fi
-          
+
           # Output for next step
           echo "ARTIFACT_NAME=${ARTIFACT_NAME}" >> $GITHUB_ENV
           echo "✓ Package created: ${ARTIFACT_NAME} ($(du -h "${ARTIFACT_NAME}" | cut -f1))"
@@ -202,60 +206,26 @@ jobs:
           path: build/${{ env.ARTIFACT_NAME }}
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
-  # Job 4: Generate build summary
-  # - Downloads all built artifacts
-  # - Creates formatted summary table with sizes
-  # - Displayed in GitHub Actions UI
-  summary:
-    name: Generate Summary
-    needs: [prepare, build-binaries]
+  # Job 4: Upload artifacts to GitHub Release
+  # - Only runs when triggered by a release publish event
+  # - Downloads all built artifacts and attaches them to the release
+  release:
+    name: Upload Release Assets
+    needs: build-binaries
+    if: github.event_name == 'release'
     runs-on: ubuntu-latest
-    if: always()
+    permissions:
+      contents: write
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v7
         with:
           path: artifacts
-          pattern: memos-*
-          merge-multiple: false
+          pattern: ${{ env.ARTIFACT_PREFIX }}_*
+          merge-multiple: true
 
-      - name: Generate build summary
-        env:
-          VERSION: ${{ needs.prepare.outputs.version }}
-        run: |
-          {
-            echo "## 🎉 Build Complete"
-            echo ""
-            echo "### Build Information"
-            echo "| Key | Value |"
-            echo "|-----|-------|"
-            echo "| **Version** | \`${VERSION}\` |"
-            echo "| **Branch** | \`${{ github.ref_name }}\` |"
-            echo "| **Commit** | \`${{ github.sha }}\` |"
-            echo "| **Triggered by** | @${{ github.actor }} |"
-            echo ""
-            echo "### 📦 Built Artifacts"
-            echo ""
-            echo "| Platform | Artifact | Size |"
-            echo "|----------|----------|------|"
-          } >> $GITHUB_STEP_SUMMARY
-          
-          # List all artifacts with sizes
-          cd artifacts
-          for dir in */; do
-            if [ -d "$dir" ]; then
-              artifact=$(ls "$dir" 2>/dev/null | head -1)
-              if [ -n "$artifact" ]; then
-                size=$(du -h "$dir/$artifact" | cut -f1)
-                # Extract platform from filename (remove memos-version- prefix and extension)
-                platform=$(echo "$artifact" | sed "s/memos-${VERSION}-//;s/\.(tar\.gz|zip)$//")
-                echo "| \`$platform\` | \`$artifact\` | **$size** |" >> $GITHUB_STEP_SUMMARY
-              fi
-            fi
-          done
-          
-          {
-            echo ""
-            echo "### 📥 Download"
-            echo "Artifacts are available in the **Artifacts** section above (retention: ${{ env.ARTIFACT_RETENTION_DAYS }} days)."
-          } >> $GITHUB_STEP_SUMMARY
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+
