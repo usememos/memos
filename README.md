@@ -28,6 +28,14 @@ An open-source, self-hosted note-taking service. Your thoughts, your data, your 
   <img src="https://usememos.com/sponsors/testmu.svg" alt="TestMu AI" height="36" />
 </a>
 
+<p></p>
+
+[**SSD Nodes** - Affordable VPS hosting for self-hosters](https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor)
+  
+<a href="https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor" target="_blank" rel="noopener">
+  <img src="https://usememos.com/sponsors/ssd-nodes.svg" alt="SSD Nodes" height="64" />
+</a>
+
 ## Overview
 
 Memos is a privacy-first, self-hosted knowledge base that works seamlessly for personal notes, team wikis, and knowledge management. Built with Go and React, it offers lightning-fast performance without compromising on features or usability.
