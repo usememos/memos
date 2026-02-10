@@ -4,10 +4,9 @@ import (
 	"context"
 	"embed"
 	"io/fs"
-	"net/http"
 
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v5/middleware"
 
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/internal/util"
@@ -30,7 +29,7 @@ func NewFrontendService(profile *profile.Profile, store *store.Store) *FrontendS
 }
 
 func (*FrontendService) Serve(_ context.Context, e *echo.Echo) {
-	skipper := func(c echo.Context) bool {
+	skipper := func(c *echo.Context) bool {
 		// Skip API routes.
 		if util.HasPrefixes(c.Path(), "/api", "/memos.api.v1") {
 			return true
@@ -60,10 +59,10 @@ func (*FrontendService) Serve(_ context.Context, e *echo.Echo) {
 	}))
 }
 
-func getFileSystem(path string) http.FileSystem {
-	fs, err := fs.Sub(embeddedFiles, path)
+func getFileSystem(path string) fs.FS {
+	sub, err := fs.Sub(embeddedFiles, path)
 	if err != nil {
 		panic(err)
 	}
-	return http.FS(fs)
+	return sub
 }

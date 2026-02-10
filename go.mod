@@ -1,6 +1,6 @@
 module github.com/usememos/memos
 
-go 1.25
+go 1.25.7
 
 require (
 	connectrpc.com/connect v1.19.1
@@ -16,7 +16,7 @@ require (
 	github.com/gorilla/feeds v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2
 	github.com/joho/godotenv v1.5.1
-	github.com/labstack/echo/v4 v4.13.4
+	github.com/labstack/echo/v5 v5.0.3
 	github.com/lib/pq v1.10.9
 	github.com/lithammer/shortuuid/v4 v4.2.0
 	github.com/pkg/errors v0.9.1
@@ -27,11 +27,11 @@ require (
 	github.com/testcontainers/testcontainers-go/modules/mysql v0.40.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.40.0
 	github.com/yuin/goldmark v1.7.13
-	golang.org/x/crypto v0.43.0
-	golang.org/x/mod v0.28.0
-	golang.org/x/net v0.45.0
+	golang.org/x/crypto v0.47.0
+	golang.org/x/mod v0.31.0
+	golang.org/x/net v0.49.0
 	golang.org/x/oauth2 v0.30.0
-	golang.org/x/sync v0.17.0
+	golang.org/x/sync v0.19.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20250826171959-ef028d996bc1
 	google.golang.org/grpc v1.75.1
 	modernc.org/sqlite v1.38.2
@@ -124,15 +124,11 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/disintegration/imaging v1.6.2
 	github.com/golang-jwt/jwt/v5 v5.3.0
-	github.com/labstack/gommon v0.4.2 // indirect
-	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasttemplate v1.2.2 // indirect
-	golang.org/x/sys v0.37.0 // indirect
-	golang.org/x/text v0.30.0
-	golang.org/x/time v0.12.0 // indirect
+	golang.org/x/sys v0.40.0 // indirect
+	golang.org/x/text v0.33.0
+	golang.org/x/time v0.14.0 // indirect
 	google.golang.org/protobuf v1.36.9
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

@@ -7,7 +7,7 @@ on:
 
 # Environment variables for build configuration
 env:
-  GO_VERSION: "1.25"
+  GO_VERSION: "1.25.7"
   NODE_VERSION: "22"
   PNPM_VERSION: "10"
   ARTIFACT_RETENTION_DAYS: 60

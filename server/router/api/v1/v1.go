@@ -6,8 +6,8 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v5/middleware"
 	"golang.org/x/sync/semaphore"
 
 	"github.com/usememos/memos/internal/profile"
@@ -119,7 +119,9 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 		return err
 	}
 	gwGroup := echoServer.Group("")
-	gwGroup.Use(middleware.CORS())
+	gwGroup.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+	}))
 	handler := echo.WrapHandler(gwMux)
 
 	gwGroup.Any("/api/v1/*", handler)
@@ -139,8 +141,8 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 
 	// Wrap with CORS for browser access
 	corsHandler := middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOriginFunc: func(_ string) (bool, error) {
-			return true, nil
+		UnsafeAllowOriginFunc: func(_ *echo.Context, origin string) (string, bool, error) {
+			return origin, true, nil
 		},
 		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodOptions},
 		AllowHeaders:     []string{"*"},
