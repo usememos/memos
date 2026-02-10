@@ -2,7 +2,6 @@ import { useEffect, useMemo } from "react";
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
 import usePrevious from "react-use/lib/usePrevious";
 import Navigation from "@/components/Navigation";
-import { useInstance } from "@/contexts/InstanceContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
@@ -14,16 +13,15 @@ const RootLayout = () => {
   const [searchParams] = useSearchParams();
   const sm = useMediaQuery("sm");
   const currentUser = useCurrentUser();
-  const { memoRelatedSetting } = useInstance();
   const { removeFilter } = useMemoFilterContext();
   const pathname = useMemo(() => location.pathname, [location.pathname]);
   const prevPathname = usePrevious(pathname);
 
   useEffect(() => {
-    if (!currentUser && memoRelatedSetting.disallowPublicVisibility) {
+    if (!currentUser) {
       redirectOnAuthFailure();
     }
-  }, [currentUser, memoRelatedSetting.disallowPublicVisibility]);
+  }, [currentUser]);
 
   useEffect(() => {
     // When the route changes and there is no filter in the search params, remove all filters

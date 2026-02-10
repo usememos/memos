@@ -67,7 +67,7 @@ const refreshTransport = createConnectTransport({
 
 const refreshAuthClient = createClient(AuthService, refreshTransport);
 
-export async function refreshAccessToken(): Promise<void> {
+async function doRefreshAccessToken(): Promise<void> {
   const response = await refreshAuthClient.refreshToken({});
 
   if (!response.accessToken) {
@@ -76,6 +76,14 @@ export async function refreshAccessToken(): Promise<void> {
 
   const expiresAt = response.expiresAt ? timestampDate(response.expiresAt) : undefined;
   setAccessToken(response.accessToken, expiresAt);
+}
+
+// All callers go through the manager to deduplicate concurrent refresh requests.
+// This prevents race conditions between useTokenRefreshOnFocus (proactive refresh
+// on tab focus) and the auth interceptor (reactive refresh on 401), which could
+// otherwise send duplicate requests that conflict with server-side token rotation.
+export async function refreshAccessToken(): Promise<void> {
+  return tokenRefreshManager.refresh(doRefreshAccessToken);
 }
 
 // ============================================================================
@@ -104,7 +112,7 @@ const authInterceptor: Interceptor = (next) => async (req) => {
     }
 
     try {
-      await tokenRefreshManager.refresh(refreshAccessToken);
+      await refreshAccessToken();
 
       const newToken = getAccessToken();
       if (!newToken) {

@@ -1,5 +1,4 @@
 import { clearAccessToken } from "@/auth-state";
-import { getInstanceConfig } from "@/instance-config";
 import { ROUTES } from "@/router/routes";
 
 const PUBLIC_ROUTES = [
@@ -27,15 +26,10 @@ export function redirectOnAuthFailure(): void {
     return;
   }
 
-  const disallowPublicVisibility = getInstanceConfig().memoRelatedSetting.disallowPublicVisibility;
-  const target = disallowPublicVisibility ? ROUTES.AUTH : ROUTES.EXPLORE;
-
-  // Only redirect if it's a private route or disallowPublicVisibility is enabled
-  if (disallowPublicVisibility || isPrivateRoute(currentPath)) {
-    // Clear access token to ensure user is fully logged out
-    // This prevents the issue where user appears logged in but sees only public memos
-    // See: https://github.com/usememos/memos/issues/5565
+  // Always redirect to auth page on auth failure - the user's session expired
+  // and they should re-authenticate rather than being sent to explore.
+  if (isPrivateRoute(currentPath)) {
     clearAccessToken();
-    window.location.replace(target);
+    window.location.replace(ROUTES.AUTH);
   }
 }
