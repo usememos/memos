@@ -31,6 +31,12 @@ func TestTagParser(t *testing.T) {
 			shouldParse: true,
 		},
 		{
+			name:        "tag with ampersand",
+			input:       "#science&tech",
+			expectedTag: "science&tech",
+			shouldParse: true,
+		},
+		{
 			name:        "tag with underscore",
 			input:       "#2024_plans",
 			expectedTag: "2024_plans",

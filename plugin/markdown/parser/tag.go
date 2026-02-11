@@ -51,7 +51,8 @@ func isValidTagRune(r rune) bool {
 	// Underscore: word separation (snake_case)
 	// Hyphen: word separation (kebab-case)
 	// Forward slash: hierarchical tags (category/subcategory)
-	if r == '_' || r == '-' || r == '/' {
+	// Ampersand: compound tags (science&tech)
+	if r == '_' || r == '-' || r == '/' || r == '&' {
 		return true
 	}
 
