@@ -45,6 +45,7 @@ export type EditorAction =
   | { type: "SET_LOADING"; payload: { key: LoadingKey; value: boolean } }
   | { type: "SET_DRAGGING"; payload: boolean }
   | { type: "SET_COMPOSING"; payload: boolean }
+  | { type: "SET_TIMESTAMPS"; payload: Partial<EditorState["timestamps"]> }
   | { type: "RESET" };
 
 export const initialState: EditorState = {

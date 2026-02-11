@@ -1,10 +1,7 @@
 import { create } from "@bufbuild/protobuf";
-import { timestampFromDate } from "@bufbuild/protobuf/wkt";
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { isEqual } from "lodash-es";
 import { CheckCircleIcon, Code2Icon, HashIcon, LinkIcon } from "lucide-react";
-import toast from "react-hot-toast";
-import EditableTimestamp from "@/components/EditableTimestamp";
-import { useUpdateMemo } from "@/hooks/useMemoQueries";
 import { cn } from "@/lib/utils";
 import { Memo, Memo_PropertySchema, MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -18,28 +15,9 @@ interface Props {
 
 const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
   const t = useTranslate();
-  const { mutate: updateMemo } = useUpdateMemo();
   const property = create(Memo_PropertySchema, memo.property || {});
   const hasSpecialProperty = property.hasLink || property.hasTaskList || property.hasCode;
   const hasReferenceRelations = memo.relations.some((r) => r.type === MemoRelation_Type.REFERENCE);
-
-  const handleUpdateTimestamp = (field: "createTime" | "updateTime", date: Date) => {
-    const currentTimestamp = memo[field];
-    const newTimestamp = timestampFromDate(date);
-    if (isEqual(currentTimestamp, newTimestamp)) {
-      return;
-    }
-    updateMemo(
-      {
-        update: { name: memo.name, [field]: newTimestamp },
-        updateMask: [field === "createTime" ? "create_time" : "update_time"],
-      },
-      {
-        onSuccess: () => toast.success("Updated successfully"),
-        onError: (error) => toast.error(error.message),
-      },
-    );
-  };
 
   return (
     <aside className={cn("relative w-full h-auto max-h-screen overflow-auto flex flex-col justify-start items-start", className)}>
@@ -56,13 +34,13 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
 
         <div className="w-full space-y-1">
           <p className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wide px-1">{t("common.created-at")}</p>
-          <EditableTimestamp timestamp={memo.createTime} onChange={(date) => handleUpdateTimestamp("createTime", date)} />
+          <p className="text-sm text-muted-foreground px-1">{memo.createTime ? timestampDate(memo.createTime).toLocaleString() : "-"}</p>
         </div>
 
         {!isEqual(memo.createTime, memo.updateTime) && (
           <div className="w-full space-y-1">
             <p className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wide px-1">{t("common.last-updated-at")}</p>
-            <EditableTimestamp timestamp={memo.updateTime} onChange={(date) => handleUpdateTimestamp("updateTime", date)} />
+            <p className="text-sm text-muted-foreground px-1">{memo.updateTime ? timestampDate(memo.updateTime).toLocaleString() : "-"}</p>
           </div>
         )}
 

@@ -72,6 +72,11 @@ export const editorActions = {
     payload: value,
   }),
 
+  setTimestamps: (timestamps: Partial<EditorState["timestamps"]>): EditorAction => ({
+    type: "SET_TIMESTAMPS",
+    payload: timestamps,
+  }),
+
   reset: (): EditorAction => ({
     type: "RESET",
   }),
