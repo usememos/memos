@@ -3,7 +3,7 @@ export const MONTHS_IN_YEAR = 12;
 export const WEEKEND_DAYS = [0, 6] as const;
 export const MIN_COUNT = 1;
 
-export const MIN_YEAR = 2000;
+export const MIN_YEAR = 1970;
 export const getMaxYear = () => new Date().getFullYear() + 1;
 
 export const INTENSITY_THRESHOLDS = {
