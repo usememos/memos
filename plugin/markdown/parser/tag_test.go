@@ -174,6 +174,18 @@ func TestTagParser(t *testing.T) {
 			expectedTag: "test🚀",
 			shouldParse: true,
 		},
+		{
+			name:        "emoji with VS16",
+			input:       "#test👁️", // Eye + VS16
+			expectedTag: "test👁️",
+			shouldParse: true,
+		},
+		{
+			name:        "emoji with ZWJ sequence",
+			input:       "#family👨‍👩‍👧‍👦", // Family ZWJ sequence
+			expectedTag: "family👨‍👩‍👧‍👦",
+			shouldParse: true,
+		},
 	}
 
 	for _, tt := range tests {
