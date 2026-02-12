@@ -8,11 +8,12 @@ export function MasonryColumn({
   renderContext,
   onHeightChange,
   isFirstColumn,
+  listMode,
   prefixElement,
   prefixElementRef,
 }: MasonryColumnProps) {
   return (
-    <div className="min-w-0 mx-auto w-full max-w-2xl">
+    <div className={listMode ? "min-w-0 w-full" : "min-w-0 mx-auto w-full max-w-2xl"}>
       {/* Prefix element (like memo editor) goes in first column */}
       {isFirstColumn && prefixElement && <div ref={prefixElementRef}>{prefixElement}</div>}
 
