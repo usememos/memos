@@ -76,7 +76,7 @@ const TagsSection = (props: Props) => {
                   onClick={() => handleTagClick(tag)}
                 >
                   <HashIcon className="w-4 h-auto shrink-0" />
-                  <div className="inline-flex flex-nowrap ml-0.5 gap-0.5 max-w-[calc(100%-16px)]">
+                  <div className="inline-flex flex-nowrap ml-0.5 gap-0.5 max-w-[calc(100%-1em)]">
                     <span className={cn("truncate", isActive ? "font-medium" : "")}>{tag}</span>
                     {amount > 1 && <span className="opacity-60 shrink-0">({amount})</span>}
                   </div>
