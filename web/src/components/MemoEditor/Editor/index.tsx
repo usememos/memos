@@ -181,6 +181,11 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
     isInIME,
   });
 
+  // Recalculate editor height when focus mode changes
+  useEffect(() => {
+    updateEditorHeight();
+  }, [isFocusMode, updateEditorHeight]);
+
   return (
     <div
       className={cn(
