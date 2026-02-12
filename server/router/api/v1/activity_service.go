@@ -15,22 +15,39 @@ import (
 )
 
 func (s *APIV1Service) ListActivities(ctx context.Context, request *v1pb.ListActivitiesRequest) (*v1pb.ListActivitiesResponse, error) {
-	// Set default page size if not specified
-	pageSize := request.PageSize
-	if pageSize <= 0 || pageSize > 1000 {
-		pageSize = 100
+	var limit, offset int
+	if request.PageToken != "" {
+		var pageToken v1pb.PageToken
+		if err := unmarshalPageToken(request.PageToken, &pageToken); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
+		}
+		limit = int(pageToken.Limit)
+		offset = int(pageToken.Offset)
+	} else {
+		limit = int(request.PageSize)
 	}
-
-	// TODO: Implement pagination with page_token and use pageSize for limiting
-	// For now, we'll fetch all activities and the pageSize will be used in future pagination implementation
-	_ = pageSize // Acknowledge pageSize variable to avoid linter warning
-
-	activities, err := s.Store.ListActivities(ctx, &store.FindActivity{})
+	if limit <= 0 {
+		limit = DefaultPageSize
+	}
+	limitPlusOne := limit + 1
+	activities, err := s.Store.ListActivities(ctx, &store.FindActivity{
+		Limit:  &limitPlusOne,
+		Offset: &offset,
+	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list activities: %v", err)
 	}
 
 	var activityMessages []*v1pb.Activity
+	nextPageToken := ""
+	if len(activities) == limitPlusOne {
+		activities = activities[:limit]
+		nextPageToken, err = getPageToken(limit, offset+limit)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get next page token, error: %v", err)
+		}
+	}
+
 	for _, activity := range activities {
 		activityMessage, err := s.convertActivityFromStore(ctx, activity)
 		if err != nil {
@@ -43,8 +60,8 @@ func (s *APIV1Service) ListActivities(ctx context.Context, request *v1pb.ListAct
 	}
 
 	return &v1pb.ListActivitiesResponse{
-		Activities: activityMessages,
-		// TODO: Implement next_page_token for pagination
+		Activities:    activityMessages,
+		NextPageToken: nextPageToken,
 	}, nil
 }
 
