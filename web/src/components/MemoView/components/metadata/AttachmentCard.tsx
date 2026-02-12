@@ -17,7 +17,7 @@ const AttachmentCard = ({ attachment, onClick, className }: AttachmentCardProps)
       <img
         src={sourceUrl}
         alt={attachment.filename}
-        className={cn("w-full h-full object-cover rounded-lg cursor-pointer", className)}
+        className={cn("w-full h-full object-contain rounded-lg cursor-pointer", className)}
         onClick={onClick}
         loading="lazy"
       />
@@ -25,7 +25,7 @@ const AttachmentCard = ({ attachment, onClick, className }: AttachmentCardProps)
   }
 
   if (attachmentType === "video/*") {
-    return <video src={sourceUrl} className={cn("w-full h-full object-cover rounded-lg", className)} controls preload="metadata" />;
+    return <video src={sourceUrl} className={cn("w-full h-full object-contain rounded-lg", className)} controls preload="metadata" />;
   }
 
   return null;
