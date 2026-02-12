@@ -35,6 +35,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
     isInIME = false,
     onCompositionStart,
     onCompositionEnd,
+    commands: customCommands,
   } = props;
   const editorRef = useRef<HTMLTextAreaElement>(null);
 
@@ -205,7 +206,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
         onCompositionEnd={onCompositionEnd}
       ></textarea>
       <TagSuggestions editorRef={editorRef} editorActions={ref} />
-      <SlashCommands editorRef={editorRef} editorActions={ref} commands={editorCommands} />
+      <SlashCommands editorRef={editorRef} editorActions={ref} commands={customCommands || editorCommands} />
     </div>
   );
 });

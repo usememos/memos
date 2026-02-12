@@ -19,12 +19,14 @@ export interface MemoEditorProps {
 export interface EditorContentProps {
   placeholder?: string;
   autoFocus?: boolean;
+  onOpenTableEditor?: () => void;
 }
 
 export interface EditorToolbarProps {
   onSave: () => void;
   onCancel?: () => void;
   memoName?: string;
+  onInsertText?: (text: string) => void;
 }
 
 export interface EditorMetadataProps {
@@ -69,6 +71,7 @@ export interface InsertMenuProps {
   location?: Location;
   onLocationChange: (location?: Location) => void;
   onToggleFocusMode?: () => void;
+  onInsertText?: (text: string) => void;
   memoName?: string;
 }
 
@@ -93,6 +96,8 @@ export interface EditorProps {
   isInIME?: boolean;
   onCompositionStart?: () => void;
   onCompositionEnd?: () => void;
+  /** Custom commands for slash menu. If not provided, defaults are used. */
+  commands?: import("../Editor/commands").Command[];
 }
 
 export interface VisibilitySelectorProps {
