@@ -122,9 +122,8 @@ export const memoService = {
     return { memoName: memo.name, hasChanges: true };
   },
 
-  async load(memoName: string): Promise<EditorState> {
-    const memo = await memoServiceClient.getMemo({ name: memoName });
-
+  /** Build editor state from an already-loaded Memo entity (no network request). */
+  fromMemo(memo: Memo): EditorState {
     return {
       content: memo.content,
       metadata: {
@@ -135,11 +134,7 @@ export const memoService = {
       },
       ui: {
         isFocusMode: false,
-        isLoading: {
-          saving: false,
-          uploading: false,
-          loading: false,
-        },
+        isLoading: { saving: false, uploading: false, loading: false },
         isDragging: false,
         isComposing: false,
       },

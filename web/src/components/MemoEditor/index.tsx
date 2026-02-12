@@ -17,29 +17,16 @@ import { cacheService, errorService, memoService, validationService } from "./se
 import { EditorProvider, useEditorContext } from "./state";
 import type { MemoEditorProps } from "./types";
 
-const MemoEditor = (props: MemoEditorProps) => {
-  const { className, cacheKey, memoName, parentMemoName, autoFocus, placeholder, onConfirm, onCancel } = props;
-
-  return (
-    <EditorProvider>
-      <MemoEditorImpl
-        className={className}
-        cacheKey={cacheKey}
-        memoName={memoName}
-        parentMemoName={parentMemoName}
-        autoFocus={autoFocus}
-        placeholder={placeholder}
-        onConfirm={onConfirm}
-        onCancel={onCancel}
-      />
-    </EditorProvider>
-  );
-};
+const MemoEditor = (props: MemoEditorProps) => (
+  <EditorProvider>
+    <MemoEditorImpl {...props} />
+  </EditorProvider>
+);
 
 const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   className,
   cacheKey,
-  memoName,
+  memo,
   parentMemoName,
   autoFocus,
   placeholder,
@@ -53,10 +40,12 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const { state, actions, dispatch } = useEditorContext();
   const { userGeneralSetting } = useAuth();
 
+  const memoName = memo?.name;
+
   // Get default visibility from user settings
   const defaultVisibility = userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined;
 
-  useMemoInit(editorRef, memoName, cacheKey, currentUser?.name ?? "", autoFocus, defaultVisibility);
+  useMemoInit({ editorRef, memo, cacheKey, username: currentUser?.name ?? "", autoFocus, defaultVisibility });
 
   // Auto-save content to localStorage
   useAutoSave(state.content, currentUser?.name ?? "", cacheKey);

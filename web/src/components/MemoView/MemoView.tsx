@@ -31,8 +31,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const { previewState, openPreview, setPreviewOpen } = useImagePreview();
   const { unpinMemo } = useMemoActions(memoData, isArchived);
 
-  const handleEditorConfirm = () => setShowEditor(false);
-  const handleEditorCancel = () => setShowEditor(false);
+  const closeEditor = () => setShowEditor(false);
   const openEditor = () => setShowEditor(true);
 
   const { handleGotoMemoDetailPage, handleMemoContentClick, handleMemoContentDoubleClick } = useMemoHandlers({
@@ -63,9 +62,9 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
         autoFocus
         className="mb-2"
         cacheKey={`inline-memo-editor-${memoData.name}`}
-        memoName={memoData.name}
-        onConfirm={handleEditorConfirm}
-        onCancel={handleEditorCancel}
+        memo={memoData}
+        onConfirm={closeEditor}
+        onCancel={closeEditor}
       />
     );
   }
