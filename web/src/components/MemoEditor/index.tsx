@@ -96,6 +96,9 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
       // Reset editor state to initial values
       dispatch(actions.reset());
+      if (!memoName && defaultVisibility) {
+        dispatch(actions.setMetadata({ visibility: defaultVisibility }));
+      }
 
       // Notify parent component of successful save
       onConfirm?.(result.memoName);
