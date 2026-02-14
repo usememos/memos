@@ -6,6 +6,7 @@ export interface MonthNavigatorProps {
   visibleMonth: string;
   onMonthChange: (month: string) => void;
   activityStats: Record<string, number>;
+  language: string;
 }
 
 export interface StatisticsData {

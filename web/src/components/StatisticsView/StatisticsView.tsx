@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import { MonthCalendar } from "@/components/ActivityCalendar";
 import { useDateFilterNavigation } from "@/hooks";
+import i18n from "@/i18n";
 import type { StatisticsData } from "@/types/statistics";
 import { MonthNavigator } from "./MonthNavigator";
 
@@ -22,7 +23,12 @@ const StatisticsView = (props: Props) => {
 
   return (
     <div className="group w-full mt-2 flex flex-col text-muted-foreground animate-fade-in">
-      <MonthNavigator visibleMonth={visibleMonthString} onMonthChange={setVisibleMonthString} activityStats={activityStats} />
+      <MonthNavigator
+        visibleMonth={visibleMonthString}
+        onMonthChange={setVisibleMonthString}
+        activityStats={activityStats}
+        language={i18n.language}
+      />
 
       <div className="w-full animate-scale-in">
         <MonthCalendar month={visibleMonthString} data={activityStats} maxCount={maxCount} onClick={navigateToDateFilter} />
