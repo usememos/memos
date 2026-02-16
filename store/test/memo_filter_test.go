@@ -524,6 +524,109 @@ func TestMemoFilterAllComparisonOperators(t *testing.T) {
 }
 
 // =============================================================================
+// ThisDay Function Tests
+// Schema: this_day() - matches memos created on today's month-day in any year
+// =============================================================================
+
+func TestMemoFilterThisDay(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	now := time.Now()
+
+	// Memo created today (default timestamp) - should match
+	tc.CreateMemo(NewMemoBuilder("memo-today", tc.User.ID).Content("Created today"))
+
+	// Memo created on the same month-day last year - should match
+	lastYear := time.Date(now.Year()-1, now.Month(), now.Day(), 12, 0, 0, 0, time.UTC)
+	tc.CreateMemo(NewMemoBuilder("memo-last-year", tc.User.ID).
+		Content("Same day last year").
+		CreatedTs(lastYear.Unix()))
+
+	// Memo created on a different day - should NOT match
+	differentDay := time.Date(now.Year(), now.Month(), now.Day(), 12, 0, 0, 0, time.UTC).AddDate(0, 0, -15)
+	tc.CreateMemo(NewMemoBuilder("memo-different-day", tc.User.ID).
+		Content("Different day").
+		CreatedTs(differentDay.Unix()))
+
+	// Test: this_day() should match memos with today's month-day
+	memos := tc.ListWithFilter(`this_day()`)
+	require.Len(t, memos, 2, "Should match memos created on today's month-day in any year")
+}
+
+func TestMemoFilterThisDayCombinedWithOtherFilters(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	now := time.Now()
+	lastYear := time.Date(now.Year()-1, now.Month(), now.Day(), 12, 0, 0, 0, time.UTC)
+
+	// Memo from today with tag
+	tc.CreateMemo(NewMemoBuilder("memo-today-tagged", tc.User.ID).
+		Content("Today tagged").
+		Tags("journal").
+		CreatedTs(now.Unix()))
+
+	// Memo from same day last year without tag
+	tc.CreateMemo(NewMemoBuilder("memo-lastyear-untagged", tc.User.ID).
+		Content("Last year untagged").
+		CreatedTs(lastYear.Unix()))
+
+	// Memo from different day with tag
+	differentDay := now.AddDate(0, 0, -15)
+	tc.CreateMemo(NewMemoBuilder("memo-diffday-tagged", tc.User.ID).
+		Content("Different day tagged").
+		Tags("journal").
+		CreatedTs(differentDay.Unix()))
+
+	// Test: this_day() && tag in ["journal"]
+	memos := tc.ListWithFilter(`this_day() && tag in ["journal"]`)
+	require.Len(t, memos, 1, "Should match only today's tagged memo")
+	require.Contains(t, memos[0].Payload.Tags, "journal")
+}
+
+func TestMemoFilterThisDayNoMatches(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	now := time.Now()
+
+	// Only create memos on a different day
+	differentDay := time.Date(now.Year(), now.Month(), now.Day(), 12, 0, 0, 0, time.UTC).AddDate(0, 0, -15)
+	tc.CreateMemo(NewMemoBuilder("memo-other-day", tc.User.ID).
+		Content("Other day").
+		CreatedTs(differentDay.Unix()))
+
+	memos := tc.ListWithFilter(`this_day()`)
+	require.Len(t, memos, 0, "Should not match memos created on a different day")
+}
+
+func TestMemoFilterThisDayNegated(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	now := time.Now()
+
+	// Memo created today
+	tc.CreateMemo(NewMemoBuilder("memo-today", tc.User.ID).Content("Created today"))
+
+	// Memo created on a different day
+	differentDay := time.Date(now.Year(), now.Month(), now.Day(), 12, 0, 0, 0, time.UTC).AddDate(0, 0, -15)
+	tc.CreateMemo(NewMemoBuilder("memo-different-day", tc.User.ID).
+		Content("Different day").
+		CreatedTs(differentDay.Unix()))
+
+	// Test: !this_day() should match memos NOT created on today's month-day
+	memos := tc.ListWithFilter(`!this_day()`)
+	require.Len(t, memos, 1, "Should match only the memo from a different day")
+	require.Equal(t, "Different day", memos[0].Content)
+}
+
+// =============================================================================
 // Logical Operator Tests
 // Operators: && (AND), || (OR), ! (NOT)
 // =============================================================================

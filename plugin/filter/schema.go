@@ -97,6 +97,14 @@ var nowFunction = cel.Function("now",
 	),
 )
 
+var thisDayFunction = cel.Function("this_day",
+	cel.Overload("this_day", []*cel.Type{}, cel.BoolType,
+		cel.FunctionBinding(func(_ ...ref.Val) ref.Val {
+			return types.Bool(true)
+		}),
+	),
+)
+
 // NewSchema constructs the memo filter schema and CEL environment.
 func NewSchema() Schema {
 	fields := map[string]Field{
@@ -240,6 +248,7 @@ func NewSchema() Schema {
 		cel.Variable("has_code", cel.BoolType),
 		cel.Variable("has_incomplete_tasks", cel.BoolType),
 		nowFunction,
+		thisDayFunction,
 	}
 
 	return Schema{
