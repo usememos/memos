@@ -9,9 +9,9 @@ import (
 type SSEEventType string
 
 const (
-	SSEEventMemoCreated     SSEEventType = "memo.created"
-	SSEEventMemoUpdated     SSEEventType = "memo.updated"
-	SSEEventMemoDeleted     SSEEventType = "memo.deleted"
+	SSEEventMemoCreated      SSEEventType = "memo.created"
+	SSEEventMemoUpdated      SSEEventType = "memo.updated"
+	SSEEventMemoDeleted      SSEEventType = "memo.deleted"
 	SSEEventReactionUpserted SSEEventType = "reaction.upserted"
 	SSEEventReactionDeleted  SSEEventType = "reaction.deleted"
 )
