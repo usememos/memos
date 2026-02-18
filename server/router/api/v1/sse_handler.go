@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 
 	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
@@ -20,7 +20,7 @@ const (
 // RegisterSSERoutes registers the SSE endpoint on the given Echo instance.
 func RegisterSSERoutes(echoServer *echo.Echo, hub *SSEHub, storeInstance *store.Store, secret string) {
 	authenticator := auth.NewAuthenticator(storeInstance, secret)
-	echoServer.GET("/api/v1/sse", func(c echo.Context) error {
+	echoServer.GET("/api/v1/sse", func(c *echo.Context) error {
 		return handleSSE(c, hub, authenticator)
 	})
 }
@@ -28,7 +28,7 @@ func RegisterSSERoutes(echoServer *echo.Echo, hub *SSEHub, storeInstance *store.
 // handleSSE handles the SSE connection for live memo refresh.
 // Authentication is done via Bearer token in the Authorization header,
 // or via the "token" query parameter (for EventSource which cannot set headers).
-func handleSSE(c echo.Context, hub *SSEHub, authenticator *auth.Authenticator) error {
+func handleSSE(c *echo.Context, hub *SSEHub, authenticator *auth.Authenticator) error {
 	// Authenticate the request.
 	authHeader := c.Request().Header.Get("Authorization")
 	if authHeader == "" {
@@ -52,7 +52,7 @@ func handleSSE(c echo.Context, hub *SSEHub, authenticator *auth.Authenticator) e
 	w.WriteHeader(http.StatusOK)
 
 	// Flush headers immediately.
-	if f, ok := w.Writer.(http.Flusher); ok {
+	if f, ok := w.(http.Flusher); ok {
 		f.Flush()
 	}
 
@@ -84,7 +84,7 @@ func handleSSE(c echo.Context, hub *SSEHub, authenticator *auth.Authenticator) e
 			if _, err := fmt.Fprintf(w, "data: %s\n\n", data); err != nil {
 				return nil
 			}
-			if f, ok := w.Writer.(http.Flusher); ok {
+			if f, ok := w.(http.Flusher); ok {
 				f.Flush()
 			}
 
@@ -93,7 +93,7 @@ func handleSSE(c echo.Context, hub *SSEHub, authenticator *auth.Authenticator) e
 			if _, err := fmt.Fprint(w, ": heartbeat\n\n"); err != nil {
 				return nil
 			}
-			if f, ok := w.Writer.(http.Flusher); ok {
+			if f, ok := w.(http.Flusher); ok {
 				f.Flush()
 			}
 		}
