@@ -76,6 +76,23 @@ Don't want to install yet? Try our [live demo](https://demo.usememos.com/) first
 
 See our [installation guide](https://usememos.com/docs/deploy) for detailed instructions.
 
+## Data Storage
+
+By default, Memos stores all data (database and attachments) in a single directory:
+
+| Platform | Default Data Directory |
+| --- | --- |
+| **Docker** | `/var/opt/memos` (mapped via `-v` flag) |
+| **Windows** | `%ProgramData%\memos` (typically `C:\ProgramData\memos`) |
+| **Linux/macOS** | Current working directory (or `/var/opt/memos` if writable) |
+
+Override with the `--data <dir>` flag when starting the server.
+
+Within the data directory:
+
+- **SQLite database** — `memos_prod.db` (or `memos_demo.db` in demo mode)
+- **Attachments** — `assets/` subfolder (e.g. `assets/{timestamp}_{filename}`)
+
 ## Contributing
 
 Contributions are welcome — bug reports, feature suggestions, pull requests, documentation, and translations.
