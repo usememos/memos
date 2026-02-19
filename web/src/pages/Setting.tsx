@@ -116,7 +116,7 @@ const Setting = () => {
                       />
                     ))}
                     <span className="px-3 mt-2 opacity-70 text-sm">
-                      {t("setting.version")}: v{profile.version}
+                      {t("setting.version")}: v{profile.version} (tmd)
                     </span>
                   </div>
                 </>
