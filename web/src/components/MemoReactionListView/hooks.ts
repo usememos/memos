@@ -61,6 +61,10 @@ export const useReactionActions = ({ memo, onComplete }: UseReactionActionsOptio
       const updatedMemo = await memoServiceClient.getMemo({ name: memo.name });
       queryClient.setQueryData(memoKeys.detail(memo.name), updatedMemo);
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
+      // If this memo is a comment, refresh the parent's comments list so the comment's reactions update in the UI
+      if (memo.parent) {
+        queryClient.invalidateQueries({ queryKey: memoKeys.comments(memo.parent) });
+      }
     } catch {
       // skip error
     }
