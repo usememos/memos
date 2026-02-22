@@ -38,6 +38,7 @@ const MemoContent = (props: MemoContentProps) => {
     <div className={`w-full flex flex-col justify-start items-start text-foreground ${className || ""}`}>
       <div
         ref={memoContentContainerRef}
+        data-memo-content
         className={cn(
           "relative w-full max-w-full wrap-break-word text-base leading-6",
           "[&>*:last-child]:mb-0",

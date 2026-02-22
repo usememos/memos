@@ -38,7 +38,7 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({ checked, node: _node
       // Fallback: Calculate index by counting all task list items in the entire memo
       // We need to search from the root memo content container, not just the nearest list
       // to ensure nested tasks are counted in document order
-      let searchRoot = listItem.closest('[class*="memo-content"], [class*="MemoContent"]');
+      let searchRoot = listItem.closest("[data-memo-content]");
 
       // If memo content container not found, search from document body
       if (!searchRoot) {
