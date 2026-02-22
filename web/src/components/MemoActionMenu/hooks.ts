@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { useInstance } from "@/contexts/InstanceContext";
-import { useDeleteMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
+import { memoKeys, useDeleteMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
@@ -98,13 +98,20 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
   }, [setDeleteDialogOpen]);
 
   const confirmDeleteMemo = useCallback(async () => {
-    await deleteMemo(memo.name);
+    await deleteMemo(memo.name, {
+      onSuccess: () => {
+        // If this was a comment, refresh the parent memo's comments list so it disappears from the UI
+        if (memo.parent) {
+          queryClient.invalidateQueries({ queryKey: memoKeys.comments(memo.parent) });
+        }
+      },
+    });
     toast.success(t("message.deleted-successfully"));
     if (isInMemoDetailPage) {
       navigateTo("/");
     }
     memoUpdatedCallback();
-  }, [memo.name, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback, deleteMemo]);
+  }, [memo.name, memo.parent, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback, deleteMemo, queryClient]);
 
   return {
     handleTogglePinMemoBtnClick,
