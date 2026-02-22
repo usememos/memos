@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from "react";
-import { clearAccessToken } from "@/auth-state";
+import { clearAccessToken, hasStoredToken } from "@/auth-state";
 import { authServiceClient, shortcutServiceClient, userServiceClient } from "@/connect";
 import { userKeys } from "@/hooks/useUserQueries";
 import type { Shortcut } from "@/types/proto/api/v1/shortcut_service_pb";
@@ -52,6 +52,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const initialize = useCallback(async () => {
     setState((prev) => ({ ...prev, isLoading: true }));
+
+    // If there is no stored token at all, the user is not authenticated.
+    // Skip the network call — there is nothing to refresh and no session to restore.
+    if (!hasStoredToken()) {
+      setState({
+        currentUser: undefined,
+        userGeneralSetting: undefined,
+        userWebhooksSetting: undefined,
+        shortcuts: [],
+        isInitialized: true,
+        isLoading: false,
+      });
+      return;
+    }
+
     try {
       const { user: currentUser } = await authServiceClient.getCurrentUser({});
 

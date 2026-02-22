@@ -62,6 +62,19 @@ export const isTokenExpired = (bufferMs: number = 30000): boolean => {
   return new Date() >= new Date(tokenExpiresAt.getTime() - bufferMs);
 };
 
+// Returns true if a token exists in sessionStorage, even if it is expired.
+// Used to decide whether to attempt GetCurrentUser on app init — if no token
+// was ever stored, the user is definitively not logged in and there is nothing
+// to refresh, so we can skip the network round-trip entirely.
+export const hasStoredToken = (): boolean => {
+  if (accessToken) return true;
+  try {
+    return !!sessionStorage.getItem(SESSION_TOKEN_KEY);
+  } catch {
+    return false;
+  }
+};
+
 export const clearAccessToken = (): void => {
   accessToken = null;
   tokenExpiresAt = null;
