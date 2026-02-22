@@ -98,15 +98,16 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
   }, [setDeleteDialogOpen]);
 
   const confirmDeleteMemo = useCallback(async () => {
-    await deleteMemo(memo.name, {
-      onSuccess: () => {
-        // If this was a comment, refresh the parent memo's comments list so it disappears from the UI
-        if (memo.parent) {
-          queryClient.invalidateQueries({ queryKey: memoKeys.comments(memo.parent) });
-        }
-      },
-    });
+    try {
+      await deleteMemo(memo.name);
+    } catch (error: unknown) {
+      handleError(error, toast.error, { context: "Delete memo", fallbackMessage: "An error occurred" });
+      return;
+    }
     toast.success(t("message.deleted-successfully"));
+    if (memo.parent) {
+      queryClient.invalidateQueries({ queryKey: memoKeys.comments(memo.parent) });
+    }
     if (isInMemoDetailPage) {
       navigateTo("/");
     }
