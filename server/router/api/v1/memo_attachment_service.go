@@ -76,6 +76,9 @@ func (s *APIV1Service) SetMemoAttachments(ctx context.Context, request *v1pb.Set
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get attachment: %v", err)
 		}
+		if tempAttachment == nil {
+			return nil, status.Errorf(codes.NotFound, "attachment not found: %s", attachmentUID)
+		}
 		updatedTs := time.Now().Unix() + int64(index)
 		if err := s.Store.UpdateAttachment(ctx, &store.UpdateAttachment{
 			ID:        tempAttachment.ID,

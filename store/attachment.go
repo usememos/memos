@@ -129,7 +129,7 @@ func (s *Store) DeleteAttachment(ctx context.Context, delete *DeleteAttachment) 
 				p = filepath.Join(s.profile.Data, p)
 			}
 			err := os.Remove(p)
-			if err != nil {
+			if err != nil && !os.IsNotExist(err) {
 				return errors.Wrap(err, "failed to delete local file")
 			}
 			return nil
