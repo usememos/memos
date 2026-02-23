@@ -17,11 +17,13 @@ export const getAccessToken = (): string | null => {
         if (expiresAt > new Date()) {
           accessToken = storedToken;
           tokenExpiresAt = expiresAt;
-        } else {
-          // Token expired, clean up
-          localStorage.removeItem(TOKEN_KEY);
-          localStorage.removeItem(EXPIRES_KEY);
         }
+        // Do NOT remove expired tokens here. Callers such as InstanceContext.initialize()
+        // run concurrently with AuthContext.initialize() via Promise.all. If we eagerly
+        // delete the expired token from localStorage, hasStoredToken() (called synchronously
+        // inside AuthContext.initialize()) finds nothing and skips the refresh attempt,
+        // logging the user out even when the refresh-token cookie is still valid.
+        // clearAccessToken() handles proper cleanup after a confirmed auth failure or logout.
       }
     } catch (e) {
       // localStorage might not be available (e.g., in some privacy modes)
