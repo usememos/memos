@@ -67,7 +67,7 @@ export const TimestampPopover: FC = () => {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="w-full text-sm text-muted-foreground -mb-1 text-left hover:text-foreground transition-colors cursor-pointer"
+          className="w-auto text-sm text-muted-foreground text-left hover:text-foreground transition-colors cursor-pointer"
         >
           {formatDate(createTime)}
         </button>
