@@ -21,6 +21,7 @@ import (
 
 	"github.com/usememos/memos/internal/base"
 	"github.com/usememos/memos/internal/util"
+	"github.com/usememos/memos/plugin/webhook"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/auth"
@@ -729,6 +730,9 @@ func (s *APIV1Service) CreateUserWebhook(ctx context.Context, request *v1pb.Crea
 	if request.Webhook.Url == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "webhook URL is required")
 	}
+	if err := webhook.ValidateURL(strings.TrimSpace(request.Webhook.Url)); err != nil {
+		return nil, err
+	}
 
 	webhookID := generateUserWebhookID()
 	webhook := &storepb.WebhooksUserSetting_Webhook{
@@ -797,7 +801,11 @@ func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.Upda
 			switch path {
 			case "url":
 				if request.Webhook.Url != "" {
-					updatedWebhook.Url = strings.TrimSpace(request.Webhook.Url)
+					trimmed := strings.TrimSpace(request.Webhook.Url)
+					if err := webhook.ValidateURL(trimmed); err != nil {
+						return nil, err
+					}
+					updatedWebhook.Url = trimmed
 				}
 			case "display_name":
 				updatedWebhook.Title = request.Webhook.DisplayName
@@ -808,7 +816,11 @@ func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.Upda
 	} else {
 		// If no update mask is provided, update all fields
 		if request.Webhook.Url != "" {
-			updatedWebhook.Url = strings.TrimSpace(request.Webhook.Url)
+			trimmed := strings.TrimSpace(request.Webhook.Url)
+			if err := webhook.ValidateURL(trimmed); err != nil {
+				return nil, err
+			}
+			updatedWebhook.Url = trimmed
 		}
 		updatedWebhook.Title = request.Webhook.DisplayName
 	}
