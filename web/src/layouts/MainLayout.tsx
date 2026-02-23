@@ -49,23 +49,17 @@ const MainLayout = () => {
     }
   }, [location.pathname, context]);
 
-  // Determine which user name to use for stats
-  // - home: current user (uses backend user stats for normal memos)
-  // - profile: viewed user (uses backend user stats for normal memos)
-  // - archived: undefined (compute from cached archived memos, since user stats only includes normal memos)
-  // - explore: undefined (compute from cached memos)
+  // Determine which user name to use for per-user stats.
+  // - home: current user's stats
+  // - profile: viewed user's stats
+  // - archived/explore: no user scope (each handled differently inside the hook)
   const statsUserName = useMemo(() => {
-    if (context === "home") {
-      return currentUser?.name;
-    } else if (context === "profile") {
-      return profileUserName;
-    }
-    return undefined; // archived and explore contexts compute from cache
+    if (context === "home") return currentUser?.name;
+    if (context === "profile") return profileUserName;
+    return undefined;
   }, [context, currentUser, profileUserName]);
 
-  // Fetch stats from memo store cache (populated by PagedMemoList)
-  // For user-scoped contexts, use backend user stats for tags (unaffected by filters)
-  const { statistics, tags } = useFilteredMemoStats({ userName: statsUserName });
+  const { statistics, tags } = useFilteredMemoStats({ userName: statsUserName, context });
 
   return (
     <section className="@container w-full min-h-full flex flex-col justify-start items-center">
