@@ -6,6 +6,43 @@ let tokenExpiresAt: Date | null = null;
 const TOKEN_KEY = "memos_access_token";
 const EXPIRES_KEY = "memos_token_expires_at";
 
+// BroadcastChannel lets tabs share freshly-refreshed tokens so that only one
+// tab needs to hit the refresh endpoint. When another tab successfully refreshes
+// we adopt the new token immediately, avoiding a redundant (and potentially
+// conflicting) refresh request of our own.
+const TOKEN_CHANNEL_NAME = "memos_token_sync";
+
+interface TokenBroadcastMessage {
+  token: string;
+  expiresAt: string; // ISO string
+}
+
+let tokenChannel: BroadcastChannel | null = null;
+
+function getTokenChannel(): BroadcastChannel | null {
+  if (tokenChannel) return tokenChannel;
+  try {
+    tokenChannel = new BroadcastChannel(TOKEN_CHANNEL_NAME);
+    tokenChannel.onmessage = (event: MessageEvent<TokenBroadcastMessage>) => {
+      const { token, expiresAt } = event.data ?? {};
+      if (token && expiresAt) {
+        // Another tab refreshed — adopt the token in-memory so we don't
+        // fire our own refresh request.
+        accessToken = token;
+        tokenExpiresAt = new Date(expiresAt);
+      }
+    };
+  } catch {
+    // BroadcastChannel not available (e.g. some privacy modes)
+    tokenChannel = null;
+  }
+  return tokenChannel;
+}
+
+// Initialize the channel at module load so the listener is registered
+// before any token refresh can occur in any tab.
+getTokenChannel();
+
 export const getAccessToken = (): string | null => {
   if (!accessToken) {
     try {
@@ -41,6 +78,9 @@ export const setAccessToken = (token: string | null, expiresAt?: Date): void => 
     if (token && expiresAt) {
       localStorage.setItem(TOKEN_KEY, token);
       localStorage.setItem(EXPIRES_KEY, expiresAt.toISOString());
+      // Broadcast to other tabs so they adopt the new token without refreshing.
+      const msg: TokenBroadcastMessage = { token, expiresAt: expiresAt.toISOString() };
+      getTokenChannel()?.postMessage(msg);
     } else {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(EXPIRES_KEY);
