@@ -515,58 +515,9 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c *ec
 // getCurrentUser retrieves the current authenticated user from the request.
 // Authentication priority: Bearer token (Access Token V2 or PAT) > Refresh token cookie.
 func (s *FileServerService) getCurrentUser(ctx context.Context, c *echo.Context) (*store.User, error) {
-	// Try Bearer token authentication.
-	if authHeader := c.Request().Header.Get(echo.HeaderAuthorization); authHeader != "" {
-		if user, err := s.authenticateByBearerToken(ctx, authHeader); err == nil && user != nil {
-			return user, nil
-		}
-	}
-
-	// Fallback: Try refresh token cookie.
-	if cookieHeader := c.Request().Header.Get("Cookie"); cookieHeader != "" {
-		if user, err := s.authenticateByRefreshToken(ctx, cookieHeader); err == nil && user != nil {
-			return user, nil
-		}
-	}
-
-	return nil, nil
-}
-
-// authenticateByBearerToken authenticates using Authorization header.
-func (s *FileServerService) authenticateByBearerToken(ctx context.Context, authHeader string) (*store.User, error) {
-	token := auth.ExtractBearerToken(authHeader)
-	if token == "" {
-		return nil, nil
-	}
-
-	// Try Access Token V2 (stateless JWT).
-	if !strings.HasPrefix(token, auth.PersonalAccessTokenPrefix) {
-		claims, err := s.authenticator.AuthenticateByAccessTokenV2(token)
-		if err == nil && claims != nil {
-			return s.Store.GetUser(ctx, &store.FindUser{ID: &claims.UserID})
-		}
-	}
-
-	// Try Personal Access Token (stateful).
-	if strings.HasPrefix(token, auth.PersonalAccessTokenPrefix) {
-		user, _, err := s.authenticator.AuthenticateByPAT(ctx, token)
-		if err == nil {
-			return user, nil
-		}
-	}
-
-	return nil, nil
-}
-
-// authenticateByRefreshToken authenticates using refresh token cookie.
-func (s *FileServerService) authenticateByRefreshToken(ctx context.Context, cookieHeader string) (*store.User, error) {
-	refreshToken := auth.ExtractRefreshTokenFromCookie(cookieHeader)
-	if refreshToken == "" {
-		return nil, nil
-	}
-
-	user, _, err := s.authenticator.AuthenticateByRefreshToken(ctx, refreshToken)
-	return user, err
+	authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
+	cookieHeader := c.Request().Header.Get("Cookie")
+	return s.authenticator.AuthenticateToUser(ctx, authHeader, cookieHeader)
 }
 
 // getUserByIdentifier finds a user by either ID or username.

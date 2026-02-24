@@ -222,17 +222,7 @@ func (in *AuthInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 			return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("authentication required"))
 		}
 
-		// Set context based on auth result
-		if result != nil {
-			if result.Claims != nil {
-				// Access Token V2 - stateless, use claims
-				ctx = auth.SetUserClaimsInContext(ctx, result.Claims)
-				ctx = context.WithValue(ctx, auth.UserIDContextKey, result.Claims.UserID)
-			} else if result.User != nil {
-				// PAT - have full user
-				ctx = auth.SetUserInContext(ctx, result.User, result.AccessToken)
-			}
-		}
+		ctx = auth.ApplyToContext(ctx, result)
 
 		return next(ctx, req)
 	}

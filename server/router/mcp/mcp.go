@@ -9,11 +9,12 @@ import (
 )
 
 type MCPService struct {
-	store *store.Store
+	store  *store.Store
+	secret string
 }
 
-func NewMCPService(store *store.Store) *MCPService {
-	return &MCPService{store: store}
+func NewMCPService(store *store.Store, secret string) *MCPService {
+	return &MCPService{store: store, secret: secret}
 }
 
 func (s *MCPService) RegisterRoutes(echoServer *echo.Echo) {
@@ -26,6 +27,6 @@ func (s *MCPService) RegisterRoutes(echoServer *echo.Echo) {
 	mcpGroup.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
 	}))
-	mcpGroup.Use(newAuthMiddleware(s.store))
+	mcpGroup.Use(newAuthMiddleware(s.store, s.secret))
 	mcpGroup.Any("/mcp", echo.WrapHandler(httpHandler))
 }
