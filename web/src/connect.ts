@@ -1,7 +1,7 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError, createClient, type Interceptor } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
-import { getAccessToken, setAccessToken } from "./auth-state";
+import { getAccessToken, isTokenExpired, REQUEST_TOKEN_EXPIRY_BUFFER_MS, setAccessToken } from "./auth-state";
 import { ActivityService } from "./types/proto/api/v1/activity_service_pb";
 import { AttachmentService } from "./types/proto/api/v1/attachment_service_pb";
 import { AuthService } from "./types/proto/api/v1/auth_service_pb";
@@ -11,6 +11,10 @@ import { MemoService } from "./types/proto/api/v1/memo_service_pb";
 import { ShortcutService } from "./types/proto/api/v1/shortcut_service_pb";
 import { UserService } from "./types/proto/api/v1/user_service_pb";
 import { redirectOnAuthFailure } from "./utils/auth-redirect";
+
+interface RequestWithHeader {
+  header: Headers;
+}
 
 // ============================================================================
 // Constants
@@ -87,39 +91,77 @@ export async function refreshAccessToken(): Promise<void> {
 }
 
 // ============================================================================
+// Authentication Interceptor Helpers
+// ============================================================================
+
+function setAuthorizationHeader(req: RequestWithHeader, token: string | null) {
+  if (!token) return;
+  req.header.set("Authorization", `Bearer ${token}`);
+}
+
+function shouldHandleUnauthenticatedRetry(error: unknown, isRetryAttempt: boolean): boolean {
+  if (!(error instanceof ConnectError)) {
+    return false;
+  }
+  if (error.code !== Code.Unauthenticated) {
+    return false;
+  }
+  if (isRetryAttempt) {
+    return false;
+  }
+  return true;
+}
+
+async function refreshAndGetAccessToken(): Promise<string> {
+  await refreshAccessToken();
+  const token = getAccessToken();
+  if (!token) {
+    throw new ConnectError("Token refresh succeeded but no token available", Code.Internal);
+  }
+  return token;
+}
+
+async function getRequestToken(): Promise<string | null> {
+  let token = getAccessToken();
+  if (!token) {
+    return null;
+  }
+
+  // Preflight refresh: avoid sending requests with expired access tokens.
+  // This is especially important for public endpoints (e.g. ListMemos), where
+  // an expired token could otherwise be treated as anonymous and return
+  // guest-scoped data before the reactive 401 refresh path runs.
+  if (isTokenExpired(REQUEST_TOKEN_EXPIRY_BUFFER_MS)) {
+    try {
+      token = await refreshAndGetAccessToken();
+    } catch {
+      // Keep existing reactive 401 flow as fallback.
+      // Protected methods still trigger refresh/redirect in the catch block below.
+    }
+  }
+
+  return token;
+}
+
+// ============================================================================
 // Authentication Interceptor
 // ============================================================================
 
 const authInterceptor: Interceptor = (next) => async (req) => {
-  const token = getAccessToken();
-  if (token) {
-    req.header.set("Authorization", `Bearer ${token}`);
-  }
+  const isRetryAttempt = req.header.get(RETRY_HEADER) === RETRY_HEADER_VALUE;
+  const token = await getRequestToken();
+  setAuthorizationHeader(req, token);
 
   try {
     return await next(req);
   } catch (error) {
-    if (!(error instanceof ConnectError)) {
-      throw error;
-    }
-
-    if (error.code !== Code.Unauthenticated) {
-      throw error;
-    }
-
-    if (req.header.get(RETRY_HEADER) === RETRY_HEADER_VALUE) {
+    if (!shouldHandleUnauthenticatedRetry(error, isRetryAttempt)) {
       throw error;
     }
 
     try {
-      await refreshAccessToken();
-
-      const newToken = getAccessToken();
-      if (!newToken) {
-        throw new ConnectError("Token refresh succeeded but no token available", Code.Internal);
-      }
-
-      req.header.set("Authorization", `Bearer ${newToken}`);
+      const newToken = await refreshAndGetAccessToken();
+      setAuthorizationHeader(req, newToken);
       req.header.set(RETRY_HEADER, RETRY_HEADER_VALUE);
       return await next(req);
     } catch (refreshError) {

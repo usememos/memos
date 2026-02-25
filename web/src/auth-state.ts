@@ -12,6 +12,12 @@ const EXPIRES_KEY = "memos_token_expires_at";
 // conflicting) refresh request of our own.
 const TOKEN_CHANNEL_NAME = "memos_token_sync";
 
+// Token refresh policy:
+// - REQUEST_TOKEN_EXPIRY_BUFFER_MS: used for normal API requests.
+// - FOCUS_TOKEN_EXPIRY_BUFFER_MS: used on tab visibility restore to refresh earlier.
+export const REQUEST_TOKEN_EXPIRY_BUFFER_MS = 30 * 1000;
+export const FOCUS_TOKEN_EXPIRY_BUFFER_MS = 2 * 60 * 1000;
+
 interface TokenBroadcastMessage {
   token: string;
   expiresAt: string; // ISO string
@@ -91,11 +97,9 @@ export const setAccessToken = (token: string | null, expiresAt?: Date): void => 
   }
 };
 
-export const isTokenExpired = (bufferMs: number = 30000): boolean => {
+export const isTokenExpired = (bufferMs: number = REQUEST_TOKEN_EXPIRY_BUFFER_MS): boolean => {
   if (!tokenExpiresAt) return true;
-  // Consider expired with a safety buffer before actual expiry
-  // Default: 30 seconds for regular requests
-  // Can use longer buffer (e.g., 2 minutes) for proactive refresh
+  // Consider expired with a safety buffer before actual expiry.
   return new Date() >= new Date(tokenExpiresAt.getTime() - bufferMs);
 };
 

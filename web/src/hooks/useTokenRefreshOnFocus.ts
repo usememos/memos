@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getAccessToken, isTokenExpired } from "@/auth-state";
+import { FOCUS_TOKEN_EXPIRY_BUFFER_MS, getAccessToken, isTokenExpired } from "@/auth-state";
 
 /**
  * Hook that proactively refreshes the access token when the tab becomes visible
@@ -28,8 +28,7 @@ export function useTokenRefreshOnFocus(refreshFn: () => Promise<void>, enabled: 
 
       // Check if token is expired or expiring soon (within 2 minutes)
       // Use a longer buffer than normal requests to be proactive
-      const bufferMs = 2 * 60 * 1000; // 2 minutes
-      if (isTokenExpired(bufferMs)) {
+      if (isTokenExpired(FOCUS_TOKEN_EXPIRY_BUFFER_MS)) {
         try {
           console.debug("[useTokenRefreshOnFocus] Token expired/expiring, refreshing before queries refetch");
           await refreshFn();
