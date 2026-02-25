@@ -46,6 +46,8 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 		_, err = s.Store.GetInstanceMemoRelatedSetting(ctx)
 	case storepb.InstanceSettingKey_STORAGE:
 		_, err = s.Store.GetInstanceStorageSetting(ctx)
+	case storepb.InstanceSettingKey_AI_CONFIG:
+		_, err = s.Store.GetInstanceAIConfigSetting(ctx)
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "unsupported instance setting key: %v", instanceSettingKey)
 	}
@@ -63,8 +65,8 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 		return nil, status.Errorf(codes.NotFound, "instance setting not found")
 	}
 
-	// For storage setting, only admin can get it.
-	if instanceSetting.Key == storepb.InstanceSettingKey_STORAGE {
+	// For storage and AI config settings, only admin can get them.
+	if instanceSetting.Key == storepb.InstanceSettingKey_STORAGE || instanceSetting.Key == storepb.InstanceSettingKey_AI_CONFIG {
 		user, err := s.fetchCurrentUser(ctx)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -121,6 +123,10 @@ func convertInstanceSettingFromStore(setting *storepb.InstanceSetting) *v1pb.Ins
 		instanceSetting.Value = &v1pb.InstanceSetting_MemoRelatedSetting_{
 			MemoRelatedSetting: convertInstanceMemoRelatedSettingFromStore(setting.GetMemoRelatedSetting()),
 		}
+	case *storepb.InstanceSetting_AiConfigSetting:
+		instanceSetting.Value = &v1pb.InstanceSetting_AiConfigSetting{
+			AiConfigSetting: convertInstanceAIConfigSettingFromStore(setting.GetAiConfigSetting()),
+		}
 	}
 	return instanceSetting
 }
@@ -145,6 +151,10 @@ func convertInstanceSettingToStore(setting *v1pb.InstanceSetting) *storepb.Insta
 	case storepb.InstanceSettingKey_MEMO_RELATED:
 		instanceSetting.Value = &storepb.InstanceSetting_MemoRelatedSetting{
 			MemoRelatedSetting: convertInstanceMemoRelatedSettingToStore(setting.GetMemoRelatedSetting()),
+		}
+	case storepb.InstanceSettingKey_AI_CONFIG:
+		instanceSetting.Value = &storepb.InstanceSetting_AiConfigSetting{
+			AiConfigSetting: convertInstanceAIConfigSettingToStore(setting.GetAiConfigSetting()),
 		}
 	default:
 		// Keep the default GeneralSetting value
@@ -266,6 +276,30 @@ func convertInstanceMemoRelatedSettingToStore(setting *v1pb.InstanceSetting_Memo
 		ContentLengthLimit:       setting.ContentLengthLimit,
 		EnableDoubleClickEdit:    setting.EnableDoubleClickEdit,
 		Reactions:                setting.Reactions,
+	}
+}
+
+func convertInstanceAIConfigSettingFromStore(setting *storepb.InstanceAIConfigSetting) *v1pb.InstanceSetting_AIConfigSetting {
+	if setting == nil {
+		return nil
+	}
+	return &v1pb.InstanceSetting_AIConfigSetting{
+		Enabled:    setting.Enabled,
+		ApiKey:     setting.ApiKey,
+		ApiBaseUrl: setting.ApiBaseUrl,
+		Model:      setting.Model,
+	}
+}
+
+func convertInstanceAIConfigSettingToStore(setting *v1pb.InstanceSetting_AIConfigSetting) *storepb.InstanceAIConfigSetting {
+	if setting == nil {
+		return nil
+	}
+	return &storepb.InstanceAIConfigSetting{
+		Enabled:    setting.Enabled,
+		ApiKey:     setting.ApiKey,
+		ApiBaseUrl: setting.ApiBaseUrl,
+		Model:      setting.Model,
 	}
 }
 

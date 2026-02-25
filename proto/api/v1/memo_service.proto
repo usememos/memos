@@ -103,6 +103,13 @@ service MemoService {
     option (google.api.http) = {delete: "/api/v1/{name=memos/*/reactions/*}"};
     option (google.api.method_signature) = "name";
   }
+  // GenerateInsight generates AI insight from a set of memos.
+  rpc GenerateInsight(GenerateInsightRequest) returns (GenerateInsightResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/memos:generateInsight"
+      body: "*"
+    };
+  }
 }
 
 enum Visibility {
@@ -508,4 +515,18 @@ message DeleteMemoReactionRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/Reaction"}
   ];
+}
+
+message GenerateInsightRequest {
+  // The memo names to analyze.
+  // Format: memos/{memo}
+  repeated string memo_names = 1;
+
+  // Optional filter string for selecting memos (CEL expression).
+  string filter = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message GenerateInsightResponse {
+  // The generated insight text in markdown format.
+  string insight = 1;
 }

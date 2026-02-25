@@ -1,10 +1,13 @@
 import { create } from "@bufbuild/protobuf";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { isEqual } from "lodash-es";
-import { CheckCircleIcon, Code2Icon, HashIcon, LinkIcon } from "lucide-react";
+import { CheckCircleIcon, Code2Icon, HashIcon, LinkIcon, SparklesIcon } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Memo, Memo_PropertySchema, MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import AIInsightDialog from "../AIInsightDialog";
 import MemoRelationForceGraph from "../MemoRelationForceGraph";
 
 interface Props {
@@ -15,9 +18,20 @@ interface Props {
 
 const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
   const t = useTranslate();
+  const [insightDialogOpen, setInsightDialogOpen] = useState(false);
   const property = create(Memo_PropertySchema, memo.property || {});
   const hasSpecialProperty = property.hasLink || property.hasTaskList || property.hasCode;
   const hasReferenceRelations = memo.relations.some((r) => r.type === MemoRelation_Type.REFERENCE);
+
+  const insightMemoNames = useMemo(() => {
+    const names = [memo.name];
+    for (const relation of memo.relations) {
+      if (relation.type === MemoRelation_Type.REFERENCE && relation.relatedMemo?.name) {
+        names.push(relation.relatedMemo.name);
+      }
+    }
+    return names;
+  }, [memo.name, memo.relations]);
 
   return (
     <aside className={cn("relative w-full h-auto max-h-screen overflow-auto flex flex-col justify-start items-start", className)}>
@@ -89,7 +103,16 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
             </div>
           </div>
         )}
+
+        <div className="w-full pt-2">
+          <Button variant="outline" className="w-full gap-2" onClick={() => setInsightDialogOpen(true)}>
+            <SparklesIcon className="w-4 h-4 text-amber-500" />
+            AI Insight
+          </Button>
+        </div>
       </div>
+
+      <AIInsightDialog open={insightDialogOpen} onOpenChange={setInsightDialogOpen} memoNames={insightMemoNames} />
     </aside>
   );
 };

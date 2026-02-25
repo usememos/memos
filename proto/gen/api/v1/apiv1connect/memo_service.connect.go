@@ -71,6 +71,9 @@ const (
 	// MemoServiceDeleteMemoReactionProcedure is the fully-qualified name of the MemoService's
 	// DeleteMemoReaction RPC.
 	MemoServiceDeleteMemoReactionProcedure = "/memos.api.v1.MemoService/DeleteMemoReaction"
+	// MemoServiceGenerateInsightProcedure is the fully-qualified name of the MemoService's
+	// GenerateInsight RPC.
+	MemoServiceGenerateInsightProcedure = "/memos.api.v1.MemoService/GenerateInsight"
 )
 
 // MemoServiceClient is a client for the memos.api.v1.MemoService service.
@@ -103,6 +106,8 @@ type MemoServiceClient interface {
 	UpsertMemoReaction(context.Context, *connect.Request[v1.UpsertMemoReactionRequest]) (*connect.Response[v1.Reaction], error)
 	// DeleteMemoReaction deletes a reaction for a memo.
 	DeleteMemoReaction(context.Context, *connect.Request[v1.DeleteMemoReactionRequest]) (*connect.Response[emptypb.Empty], error)
+	// GenerateInsight generates AI insight from a set of memos.
+	GenerateInsight(context.Context, *connect.Request[v1.GenerateInsightRequest]) (*connect.Response[v1.GenerateInsightResponse], error)
 }
 
 // NewMemoServiceClient constructs a client for the memos.api.v1.MemoService service. By default, it
@@ -200,6 +205,12 @@ func NewMemoServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(memoServiceMethods.ByName("DeleteMemoReaction")),
 			connect.WithClientOptions(opts...),
 		),
+		generateInsight: connect.NewClient[v1.GenerateInsightRequest, v1.GenerateInsightResponse](
+			httpClient,
+			baseURL+MemoServiceGenerateInsightProcedure,
+			connect.WithSchema(memoServiceMethods.ByName("GenerateInsight")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -219,6 +230,7 @@ type memoServiceClient struct {
 	listMemoReactions   *connect.Client[v1.ListMemoReactionsRequest, v1.ListMemoReactionsResponse]
 	upsertMemoReaction  *connect.Client[v1.UpsertMemoReactionRequest, v1.Reaction]
 	deleteMemoReaction  *connect.Client[v1.DeleteMemoReactionRequest, emptypb.Empty]
+	generateInsight     *connect.Client[v1.GenerateInsightRequest, v1.GenerateInsightResponse]
 }
 
 // CreateMemo calls memos.api.v1.MemoService.CreateMemo.
@@ -291,6 +303,11 @@ func (c *memoServiceClient) DeleteMemoReaction(ctx context.Context, req *connect
 	return c.deleteMemoReaction.CallUnary(ctx, req)
 }
 
+// GenerateInsight calls memos.api.v1.MemoService.GenerateInsight.
+func (c *memoServiceClient) GenerateInsight(ctx context.Context, req *connect.Request[v1.GenerateInsightRequest]) (*connect.Response[v1.GenerateInsightResponse], error) {
+	return c.generateInsight.CallUnary(ctx, req)
+}
+
 // MemoServiceHandler is an implementation of the memos.api.v1.MemoService service.
 type MemoServiceHandler interface {
 	// CreateMemo creates a memo.
@@ -321,6 +338,8 @@ type MemoServiceHandler interface {
 	UpsertMemoReaction(context.Context, *connect.Request[v1.UpsertMemoReactionRequest]) (*connect.Response[v1.Reaction], error)
 	// DeleteMemoReaction deletes a reaction for a memo.
 	DeleteMemoReaction(context.Context, *connect.Request[v1.DeleteMemoReactionRequest]) (*connect.Response[emptypb.Empty], error)
+	// GenerateInsight generates AI insight from a set of memos.
+	GenerateInsight(context.Context, *connect.Request[v1.GenerateInsightRequest]) (*connect.Response[v1.GenerateInsightResponse], error)
 }
 
 // NewMemoServiceHandler builds an HTTP handler from the service implementation. It returns the path
@@ -414,6 +433,12 @@ func NewMemoServiceHandler(svc MemoServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(memoServiceMethods.ByName("DeleteMemoReaction")),
 		connect.WithHandlerOptions(opts...),
 	)
+	memoServiceGenerateInsightHandler := connect.NewUnaryHandler(
+		MemoServiceGenerateInsightProcedure,
+		svc.GenerateInsight,
+		connect.WithSchema(memoServiceMethods.ByName("GenerateInsight")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/memos.api.v1.MemoService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case MemoServiceCreateMemoProcedure:
@@ -444,6 +469,8 @@ func NewMemoServiceHandler(svc MemoServiceHandler, opts ...connect.HandlerOption
 			memoServiceUpsertMemoReactionHandler.ServeHTTP(w, r)
 		case MemoServiceDeleteMemoReactionProcedure:
 			memoServiceDeleteMemoReactionHandler.ServeHTTP(w, r)
+		case MemoServiceGenerateInsightProcedure:
+			memoServiceGenerateInsightHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -507,4 +534,8 @@ func (UnimplementedMemoServiceHandler) UpsertMemoReaction(context.Context, *conn
 
 func (UnimplementedMemoServiceHandler) DeleteMemoReaction(context.Context, *connect.Request[v1.DeleteMemoReactionRequest]) (*connect.Response[emptypb.Empty], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.MemoService.DeleteMemoReaction is not implemented"))
+}
+
+func (UnimplementedMemoServiceHandler) GenerateInsight(context.Context, *connect.Request[v1.GenerateInsightRequest]) (*connect.Response[v1.GenerateInsightResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.MemoService.GenerateInsight is not implemented"))
 }

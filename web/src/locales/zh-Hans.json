@@ -322,6 +322,7 @@
       "delete-confirm": "您确定要删除捷径 `{{title}}` 吗？",
       "delete-success": "捷径 `{{title}}` 删除成功"
     },
+    "ai": "AI",
     "sso": "单点登录",
     "sso-section": {
       "authorization-endpoint": "授权端点（Authorization Endpoint）",

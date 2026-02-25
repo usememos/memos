@@ -14,6 +14,8 @@ enum InstanceSettingKey {
   STORAGE = 3;
   // MEMO_RELATED is the key for memo related settings.
   MEMO_RELATED = 4;
+  // AI_CONFIG is the key for AI configuration settings.
+  AI_CONFIG = 5;
 }
 
 message InstanceSetting {
@@ -23,6 +25,7 @@ message InstanceSetting {
     InstanceGeneralSetting general_setting = 3;
     InstanceStorageSetting storage_setting = 4;
     InstanceMemoRelatedSetting memo_related_setting = 5;
+    InstanceAIConfigSetting ai_config_setting = 6;
   }
 }
 
@@ -102,4 +105,17 @@ message InstanceMemoRelatedSetting {
   bool enable_double_click_edit = 4;
   // reactions is the list of reactions.
   repeated string reactions = 7;
+}
+
+message InstanceAIConfigSetting {
+  // enabled indicates whether AI features are enabled.
+  bool enabled = 1;
+  // api_key is the API key for the LLM provider.
+  string api_key = 2;
+  // api_base_url is the base URL for the LLM API (OpenAI-compatible).
+  // e.g. "https://api.openai.com/v1", "https://api.deepseek.com/v1"
+  string api_base_url = 3;
+  // model is the model name to use.
+  // e.g. "gpt-4o", "deepseek-chat"
+  string model = 4;
 }

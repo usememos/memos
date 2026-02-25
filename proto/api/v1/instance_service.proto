@@ -69,6 +69,7 @@ message InstanceSetting {
     GeneralSetting general_setting = 2;
     StorageSetting storage_setting = 3;
     MemoRelatedSetting memo_related_setting = 4;
+    AIConfigSetting ai_config_setting = 5;
   }
 
   // Enumeration of instance setting keys.
@@ -80,6 +81,8 @@ message InstanceSetting {
     STORAGE = 2;
     // MEMO_RELATED is the key for memo related settings.
     MEMO_RELATED = 3;
+    // AI_CONFIG is the key for AI configuration settings.
+    AI_CONFIG = 4;
   }
 
   // General instance settings configuration.
@@ -158,6 +161,18 @@ message InstanceSetting {
     bool enable_double_click_edit = 4;
     // reactions is the list of reactions.
     repeated string reactions = 7;
+  }
+
+  // AI configuration settings for LLM integration.
+  message AIConfigSetting {
+    // enabled indicates whether AI features are enabled.
+    bool enabled = 1;
+    // api_key is the API key for the LLM provider.
+    string api_key = 2;
+    // api_base_url is the base URL for the LLM API (OpenAI-compatible).
+    string api_base_url = 3;
+    // model is the model name to use.
+    string model = 4;
   }
 }
 

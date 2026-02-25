@@ -1054,6 +1054,31 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/memos:generateInsight:
+        post:
+            tags:
+                - MemoService
+            description: GenerateInsight generates AI insight from a set of memos.
+            operationId: MemoService_GenerateInsight
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GenerateInsightRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GenerateInsightResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/users:
         get:
             tags:
@@ -2080,6 +2105,25 @@ components:
                 logoUrl:
                     type: string
             description: Custom profile configuration for instance branding.
+        GenerateInsightRequest:
+            type: object
+            properties:
+                memoNames:
+                    type: array
+                    items:
+                        type: string
+                    description: |-
+                        The memo names to analyze.
+                         Format: memos/{memo}
+                filter:
+                    type: string
+                    description: Optional filter string for selecting memos (CEL expression).
+        GenerateInsightResponse:
+            type: object
+            properties:
+                insight:
+                    type: string
+                    description: The generated insight text in markdown format.
         GetCurrentUserResponse:
             type: object
             properties:
@@ -2162,7 +2206,25 @@ components:
                     $ref: '#/components/schemas/InstanceSetting_StorageSetting'
                 memoRelatedSetting:
                     $ref: '#/components/schemas/InstanceSetting_MemoRelatedSetting'
+                aiConfigSetting:
+                    $ref: '#/components/schemas/InstanceSetting_AIConfigSetting'
             description: An instance setting resource.
+        InstanceSetting_AIConfigSetting:
+            type: object
+            properties:
+                enabled:
+                    type: boolean
+                    description: enabled indicates whether AI features are enabled.
+                apiKey:
+                    type: string
+                    description: api_key is the API key for the LLM provider.
+                apiBaseUrl:
+                    type: string
+                    description: api_base_url is the base URL for the LLM API (OpenAI-compatible).
+                model:
+                    type: string
+                    description: model is the model name to use.
+            description: AI configuration settings for LLM integration.
         InstanceSetting_GeneralSetting:
             type: object
             properties:

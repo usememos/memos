@@ -345,6 +345,14 @@ func (s *ConnectServiceHandler) DeleteMemoReaction(ctx context.Context, req *con
 	return connect.NewResponse(resp), nil
 }
 
+func (s *ConnectServiceHandler) GenerateInsight(ctx context.Context, req *connect.Request[v1pb.GenerateInsightRequest]) (*connect.Response[v1pb.GenerateInsightResponse], error) {
+	resp, err := s.APIV1Service.GenerateInsight(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 // AttachmentService
 
 func (s *ConnectServiceHandler) CreateAttachment(ctx context.Context, req *connect.Request[v1pb.CreateAttachmentRequest]) (*connect.Response[v1pb.Attachment], error) {

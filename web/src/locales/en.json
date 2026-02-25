@@ -321,6 +321,7 @@
       "delete-confirm": "Are you sure you want to delete shortcut `{{title}}`?",
       "delete-success": "Shortcut `{{title}}` deleted successfully"
     },
+    "ai": "AI",
     "sso": "SSO",
     "sso-section": {
       "authorization-endpoint": "Authorization endpoint",
