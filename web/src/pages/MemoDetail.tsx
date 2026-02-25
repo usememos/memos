@@ -99,6 +99,18 @@ const MemoDetail = () => {
               {t("memo.comment.self")}
             </h2>
             <div className="relative mx-auto grow w-full min-h-full flex flex-col justify-start items-start gap-y-1">
+              {showCommentEditor && (
+                <div className="w-full mb-2">
+                  <MemoEditor
+                    cacheKey={`${memo.name}-${memo.updateTime}-comment`}
+                    placeholder={t("editor.add-your-comment-here")}
+                    parentMemoName={memo.name}
+                    autoFocus
+                    onConfirm={handleCommentCreated}
+                    onCancel={() => setShowCommentEditor(false)}
+                  />
+                </div>
+              )}
               {comments.length === 0 ? (
                 showCreateCommentButton && (
                   <div className="w-full flex flex-row justify-center items-center py-6">
@@ -134,18 +146,6 @@ const MemoDetail = () => {
                 </>
               )}
             </div>
-            {showCommentEditor && (
-              <div className="w-full">
-                <MemoEditor
-                  cacheKey={`${memo.name}-${memo.updateTime}-comment`}
-                  placeholder={t("editor.add-your-comment-here")}
-                  parentMemoName={memo.name}
-                  autoFocus
-                  onConfirm={handleCommentCreated}
-                  onCancel={() => setShowCommentEditor(false)}
-                />
-              </div>
-            )}
           </div>
         </div>
         {md && (
