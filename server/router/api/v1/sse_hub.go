@@ -30,8 +30,8 @@ func (e *SSEEvent) JSON() []byte {
 	return data
 }
 
-// sseClient represents a single SSE connection.
-type sseClient struct {
+// SseClient represents a single SSE connection.
+type SseClient struct {
 	events chan []byte
 }
 
@@ -39,20 +39,20 @@ type sseClient struct {
 // It is safe for concurrent use.
 type SSEHub struct {
 	mu      sync.RWMutex
-	clients map[*sseClient]struct{}
+	clients map[*SseClient]struct{}
 }
 
 // NewSSEHub creates a new SSE hub.
 func NewSSEHub() *SSEHub {
 	return &SSEHub{
-		clients: make(map[*sseClient]struct{}),
+		clients: make(map[*SseClient]struct{}),
 	}
 }
 
 // Subscribe registers a new client and returns it.
 // The caller must call Unsubscribe when done.
-func (h *SSEHub) Subscribe() *sseClient {
-	c := &sseClient{
+func (h *SSEHub) Subscribe() *SseClient {
+	c := &SseClient{
 		// Buffer a few events so a slow client doesn't block broadcasting.
 		events: make(chan []byte, 32),
 	}
@@ -63,7 +63,7 @@ func (h *SSEHub) Subscribe() *sseClient {
 }
 
 // Unsubscribe removes a client and closes its channel.
-func (h *SSEHub) Unsubscribe(c *sseClient) {
+func (h *SSEHub) Unsubscribe(c *SseClient) {
 	h.mu.Lock()
 	if _, ok := h.clients[c]; ok {
 		delete(h.clients, c)
