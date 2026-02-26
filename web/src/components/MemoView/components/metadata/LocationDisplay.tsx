@@ -26,7 +26,7 @@ const LocationDisplay = ({ location, className }: LocationDisplayProps) => {
         <div
           className={cn(
             "w-auto max-w-full flex flex-row gap-2 cursor-pointer",
-            "relative inline-flex items-center gap-1.5 px-2 h-7 rounded-md border border-border bg-background hover:bg-accent text-secondary-foreground text-xs transition-colors",
+            "relative inline-flex items-center gap-1.5 px-2 h-7 rounded-md border border-border bg-muted/20 hover:bg-accent/20 text-muted-foreground hover:text-foreground text-xs transition-colors",
             className,
           )}
           onClick={() => setPopoverOpen(true)}

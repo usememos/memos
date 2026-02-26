@@ -15,7 +15,7 @@ const LocationDisplay: FC<LocationDisplayProps> = ({ location, onRemove, classNa
   return (
     <div
       className={cn(
-        "relative flex items-center gap-1.5 px-1.5 py-1 rounded border border-border bg-background hover:bg-accent/20 transition-all w-full",
+        "relative flex items-center gap-1.5 px-1.5 py-1 rounded border border-border bg-muted/20 hover:bg-accent/20 transition-all w-full",
         className,
       )}
     >
