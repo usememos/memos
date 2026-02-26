@@ -16,6 +16,12 @@ export default defineConfig({
     host: "0.0.0.0",
     port: 3001,
     proxy: {
+      "^/api/v1/sse": {
+        target: devProxyServer,
+        xfwd: true,
+        // SSE requires no response buffering and longer timeout.
+        timeout: 0,
+      },
       "^/api": {
         target: devProxyServer,
         xfwd: true,

@@ -184,7 +184,7 @@ Parses data URI to extract MIME type and base64 data.
 ## Dependencies
 
 ### External Packages
-- `github.com/labstack/echo/v4` - HTTP router and middleware
+- `github.com/labstack/echo/v5` - HTTP router and middleware
 - `github.com/golang-jwt/jwt/v5` - JWT parsing and validation
 - `github.com/disintegration/imaging` - Image thumbnail generation
 - `golang.org/x/sync/semaphore` - Concurrency control for thumbnails
