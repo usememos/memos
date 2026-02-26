@@ -9,6 +9,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
@@ -197,4 +198,66 @@ func TestMigrationFromStableVersion(t *testing.T) {
 	require.Equal(t, "Content after upgrade from stable", memo.Content)
 
 	t.Logf("Migration successful: %s -> %s", oldSetting.SchemaVersion, newVersion)
+}
+
+// TestMigrationFromStableVersionWithEmptySchemaVersion verifies that migration can recover
+// when BASIC.schemaVersion is missing but migration_history is present (legacy Docker upgrades).
+func TestMigrationFromStableVersionWithEmptySchemaVersion(t *testing.T) {
+	// Skip for non-SQLite drivers (simplifies the test)
+	if getDriverFromEnv() != "sqlite" {
+		t.Skip("skipping upgrade test for non-sqlite driver")
+	}
+
+	// Skip if explicitly disabled (e.g., in environments without Docker)
+	if os.Getenv("SKIP_CONTAINER_TESTS") == "1" {
+		t.Skip("skipping container-based test (SKIP_CONTAINER_TESTS=1)")
+	}
+
+	ctx := context.Background()
+	dataDir := t.TempDir()
+
+	cfg := MemosContainerConfig{
+		Driver:  "sqlite",
+		DataDir: dataDir,
+		Version: StableMemosVersion,
+	}
+
+	t.Logf("Starting Memos %s container to create old-schema database...", cfg.Version)
+	container, err := StartMemosContainer(ctx, cfg)
+	require.NoError(t, err, "failed to start stable memos container")
+
+	time.Sleep(10 * time.Second)
+
+	t.Log("Stopping stable Memos container...")
+	err = container.Terminate(ctx)
+	require.NoError(t, err, "failed to stop memos container")
+
+	time.Sleep(2 * time.Second)
+
+	dsn := fmt.Sprintf("%s/memos_prod.db", dataDir)
+	t.Logf("Connecting to database at %s...", dsn)
+	ts := NewTestingStoreWithDSN(ctx, t, "sqlite", dsn)
+
+	oldSetting, err := ts.GetInstanceBasicSetting(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, oldSetting.GetSchemaVersion(), "stable version should have a schema version before clearing it")
+
+	// Simulate legacy metadata bug: schema version missing in BASIC.
+	oldSetting.SchemaVersion = ""
+	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key:   storepb.InstanceSettingKey_BASIC,
+		Value: &storepb.InstanceSetting_BasicSetting{BasicSetting: oldSetting},
+	})
+	require.NoError(t, err, "should clear schema version to simulate legacy state")
+
+	t.Log("Running migration with recovered schema version...")
+	err = ts.Migrate(ctx)
+	require.NoError(t, err, "migration should recover schema version from migration_history and succeed")
+
+	newVersion, err := ts.GetCurrentSchemaVersion()
+	require.NoError(t, err)
+
+	newSetting, err := ts.GetInstanceBasicSetting(ctx)
+	require.NoError(t, err)
+	require.Equal(t, newVersion, newSetting.SchemaVersion, "schema version should be updated to current version")
 }

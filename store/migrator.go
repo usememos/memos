@@ -249,6 +249,10 @@ func (s *Store) preMigrate(ctx context.Context) error {
 		}
 	}
 
+	if err := s.recoverSchemaVersionFromMigrationHistory(ctx); err != nil {
+		return errors.Wrap(err, "failed to recover schema version from migration history")
+	}
+
 	if err := s.checkMinimumUpgradeVersion(ctx); err != nil {
 		return err // Error message is already descriptive, don't wrap it
 	}
@@ -360,6 +364,65 @@ func (s *Store) updateCurrentSchemaVersion(ctx context.Context, schemaVersion st
 		return errors.Wrap(err, "failed to upsert instance setting")
 	}
 	return nil
+}
+
+// recoverSchemaVersionFromMigrationHistory restores schema version metadata for legacy installations.
+// Some old Docker-based upgrades have migration_history populated but BASIC.schemaVersion empty.
+// In that case, infer the latest version from migration_history and persist it to BASIC.
+func (s *Store) recoverSchemaVersionFromMigrationHistory(ctx context.Context) error {
+	instanceBasicSetting, err := s.GetInstanceBasicSetting(ctx)
+	if err != nil {
+		return errors.Wrap(err, "failed to get instance basic setting")
+	}
+	if !isVersionEmpty(instanceBasicSetting.SchemaVersion) {
+		return nil
+	}
+
+	migrationHistoryVersion, err := s.getLatestMigrationHistoryVersion(ctx)
+	if err != nil {
+		return errors.Wrap(err, "failed to get latest migration history version")
+	}
+	if migrationHistoryVersion == "" {
+		return nil
+	}
+
+	slog.Info("recovered schema version from migration history",
+		slog.String("schemaVersion", migrationHistoryVersion))
+	return s.updateCurrentSchemaVersion(ctx, migrationHistoryVersion)
+}
+
+func (s *Store) getLatestMigrationHistoryVersion(ctx context.Context) (string, error) {
+	rows, err := s.driver.GetDB().QueryContext(ctx, "SELECT version FROM migration_history")
+	if err != nil {
+		if isMissingMigrationHistoryTableError(err) {
+			return "", nil
+		}
+		return "", errors.Wrap(err, "failed to query migration history")
+	}
+	defer rows.Close()
+
+	latestVersion := ""
+	for rows.Next() {
+		var versionString string
+		if err := rows.Scan(&versionString); err != nil {
+			return "", errors.Wrap(err, "failed to scan migration history row")
+		}
+		if latestVersion == "" || version.IsVersionGreaterThan(versionString, latestVersion) {
+			latestVersion = versionString
+		}
+	}
+
+	if err := rows.Err(); err != nil {
+		return "", errors.Wrap(err, "failed while reading migration history rows")
+	}
+	return latestVersion, nil
+}
+
+func isMissingMigrationHistoryTableError(err error) bool {
+	errString := strings.ToLower(err.Error())
+	return strings.Contains(errString, "no such table") ||
+		strings.Contains(errString, "doesn't exist") ||
+		strings.Contains(errString, "does not exist")
 }
 
 // checkMinimumUpgradeVersion verifies the installation meets minimum version requirements for upgrade.
