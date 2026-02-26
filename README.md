@@ -83,7 +83,7 @@ Contributions are welcome — bug reports, feature suggestions, pull requests, d
 - [Report bugs](https://github.com/usememos/memos/issues/new?template=bug_report.md)
 - [Suggest features](https://github.com/usememos/memos/issues/new?template=feature_request.md)
 - [Submit pull requests](https://github.com/usememos/memos/pulls)
-- [Improve documentation](https://github.com/usememos/memos/tree/main/docs)
+- [Improve documentation](https://github.com/usememos/dotcom)
 - [Help with translations](https://github.com/usememos/memos/tree/main/web/src/locales)
 
 ## Sponsors
