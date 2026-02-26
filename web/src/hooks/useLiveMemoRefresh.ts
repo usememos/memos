@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
 import { getAccessToken } from "@/auth-state";
+import { useAuth } from "@/contexts/AuthContext";
 import { memoKeys } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 
@@ -59,6 +60,7 @@ export function useSSEConnectionStatus(): SSEConnectionStatus {
  */
 export function useLiveMemoRefresh() {
   const queryClient = useQueryClient();
+  const { currentUser } = useAuth();
   const retryDelayRef = useRef(INITIAL_RETRY_DELAY_MS);
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -74,8 +76,7 @@ export function useLiveMemoRefresh() {
       const token = getAccessToken();
       if (!token) {
         setSSEStatus("disconnected");
-        // Not logged in; retry after a delay in case the user logs in.
-        retryTimeout = setTimeout(connect, 5000);
+        // Not logged in; do not retry. Effect will re-run when currentUser is set (login).
         return;
       }
 
@@ -164,7 +165,7 @@ export function useLiveMemoRefresh() {
         abortControllerRef.current.abort();
       }
     };
-  }, [handleEvent]);
+  }, [handleEvent, currentUser]);
 }
 
 // ---------------------------------------------------------------------------

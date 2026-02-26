@@ -2,6 +2,7 @@ package v1
 
 import (
 	"encoding/json"
+	"log/slog"
 	"sync"
 )
 
@@ -25,13 +26,18 @@ type SSEEvent struct {
 }
 
 // JSON returns the JSON representation of the event.
+// Returns nil if marshaling fails (error is logged).
 func (e *SSEEvent) JSON() []byte {
-	data, _ := json.Marshal(e)
+	data, err := json.Marshal(e)
+	if err != nil {
+		slog.Error("failed to marshal SSE event", "err", err, "event", e)
+		return nil
+	}
 	return data
 }
 
-// SseClient represents a single SSE connection.
-type SseClient struct {
+// SSEClient represents a single SSE connection.
+type SSEClient struct {
 	events chan []byte
 }
 
@@ -39,20 +45,20 @@ type SseClient struct {
 // It is safe for concurrent use.
 type SSEHub struct {
 	mu      sync.RWMutex
-	clients map[*SseClient]struct{}
+	clients map[*SSEClient]struct{}
 }
 
 // NewSSEHub creates a new SSE hub.
 func NewSSEHub() *SSEHub {
 	return &SSEHub{
-		clients: make(map[*SseClient]struct{}),
+		clients: make(map[*SSEClient]struct{}),
 	}
 }
 
 // Subscribe registers a new client and returns it.
 // The caller must call Unsubscribe when done.
-func (h *SSEHub) Subscribe() *SseClient {
-	c := &SseClient{
+func (h *SSEHub) Subscribe() *SSEClient {
+	c := &SSEClient{
 		// Buffer a few events so a slow client doesn't block broadcasting.
 		events: make(chan []byte, 32),
 	}
@@ -63,7 +69,7 @@ func (h *SSEHub) Subscribe() *SseClient {
 }
 
 // Unsubscribe removes a client and closes its channel.
-func (h *SSEHub) Unsubscribe(c *SseClient) {
+func (h *SSEHub) Unsubscribe(c *SSEClient) {
 	h.mu.Lock()
 	if _, ok := h.clients[c]; ok {
 		delete(h.clients, c)
@@ -77,6 +83,9 @@ func (h *SSEHub) Unsubscribe(c *SseClient) {
 // to avoid blocking the broadcaster.
 func (h *SSEHub) Broadcast(event *SSEEvent) {
 	data := event.JSON()
+	if len(data) == 0 {
+		return
+	}
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 	for c := range h.clients {
