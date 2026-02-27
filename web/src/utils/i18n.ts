@@ -1,14 +1,17 @@
+import i18n, { TLocale, locales } from "@/i18n";
+import enTranslation from "@/locales/en.json";
 import { FallbackLngObjList } from "i18next";
 import { useTranslation } from "react-i18next";
-import i18n, { locales, TLocale } from "@/i18n";
-import enTranslation from "@/locales/en.json";
 
 const LOCALE_STORAGE_KEY = "memos-locale";
+const LOCALE_QUERY_PARAM = "locale";
+
+type Locale = TLocale;
 
 const getStoredLocale = (): Locale | null => {
   try {
     const stored = localStorage.getItem(LOCALE_STORAGE_KEY);
-    return stored && locales.includes(stored) ? (stored as Locale) : null;
+    return stored && locales.includes(stored as TLocale) ? (stored as Locale) : null;
   } catch {
     return null;
   }
@@ -18,47 +21,47 @@ const setStoredLocale = (locale: Locale): void => {
   try {
     localStorage.setItem(LOCALE_STORAGE_KEY, locale);
   } catch {
-    // localStorage might not be available
   }
 };
 
-export const findNearestMatchedLanguage = (language: string): Locale => {
-  if (locales.includes(language as TLocale)) {
-    return language as Locale;
+export const normalizeLocale = (tag: string): Locale | null => {
+  if (!tag) return null;
+
+  if (locales.includes(tag as TLocale)) {
+    return tag as Locale;
   }
 
-  const i18nFallbacks = Object.entries(i18n.store.options.fallbackLng as FallbackLngObjList);
-  for (const [main, fallbacks] of i18nFallbacks) {
-    if (language === main) {
-      return fallbacks[0] as Locale;
+  const i18nFallbacks = Object.entries(i18n.store?.options?.fallbackLng as FallbackLngObjList ?? {});
+  for (const [main, mapped] of i18nFallbacks) {
+    if (tag === main && mapped.length > 0) {
+      return mapped[0] as Locale;
     }
   }
 
-  const shortCode = language.substring(0, 2);
+  const shortCode = tag.substring(0, 2);
   if (locales.includes(shortCode as TLocale)) {
     return shortCode as Locale;
   }
 
-  // Try to match "xx-YY" to existing translation for "xx-ZZ" as a last resort
-  // If some match is undesired, it can be overridden in src/i18n.ts `fallbacks` option
   for (const existing of locales) {
-    if (shortCode == existing.substring(0, 2)) {
+    if (shortCode === existing.substring(0, 2)) {
       return existing as Locale;
     }
   }
 
-  // should be "en", so the selector is not empty if there isn't a translation for current user's language
-  return (i18n.store.options.fallbackLng as FallbackLngObjList).default[0] as Locale;
+  return null;
+};
+
+export const findNearestMatchedLanguage = (language: string): Locale => {
+  return normalizeLocale(language) ?? ("en" as Locale);
 };
 
 type NestedKeyOf<T, K = keyof T> = K extends keyof T & (string | number)
   ? `${K}` | (T[K] extends object ? `${K}.${NestedKeyOf<T[K]>}` : never)
   : never;
 
-// Represents the keys of nested translation objects.
 export type Translations = NestedKeyOf<typeof enTranslation>;
 
-// Represents a typed translation function.
 type TypedT = (key: Translations, params?: Record<string, unknown>) => string;
 
 export const useTranslate = (): TypedT => {
@@ -68,48 +71,68 @@ export const useTranslate = (): TypedT => {
 
 export const isValidateLocale = (locale: string | undefined | null): boolean => {
   if (!locale) return false;
-  return locales.includes(locale);
+  return locales.includes(locale as TLocale);
 };
 
-// Gets the locale to use with proper priority:
-// 1. User setting (if logged in and has preference)
-// 2. localStorage (from previous session)
-// 3. Browser language preference
+
+const getQueryParamLocale = (): Locale | null => {
+  try {
+    const param = new URLSearchParams(window.location.search).get(LOCALE_QUERY_PARAM);
+    return param ? normalizeLocale(param) : null;
+  } catch {
+    return null;
+  }
+};
+
+
+const getBrowserLocale = (): Locale => {
+  try {
+    const languages = navigator.languages ?? [navigator.language];
+    for (const lang of languages) {
+      const normalized = normalizeLocale(lang);
+      if (normalized) return normalized;
+    }
+  } catch {
+  }
+  return "en" as Locale;
+};
+
+/**
+ * Gets the locale to use with proper priority:
+ *   1. ?locale= query param
+ *   2. User setting (if logged in and has preference)
+ *   3. localStorage (from previous session)
+ *   4. Browser language preferences (navigator.languages)
+ *   5. Fallback "en"
+ */
 export const getLocaleWithFallback = (userLocale?: string): Locale => {
-  // Priority 1: User setting (if logged in and valid)
+  const queryLocale = getQueryParamLocale();
+  if (queryLocale) return queryLocale;
+
   if (userLocale && isValidateLocale(userLocale)) {
     return userLocale as Locale;
   }
 
-  // Priority 2: localStorage
   const stored = getStoredLocale();
-  if (stored) {
-    return stored;
-  }
+  if (stored) return stored;
 
-  // Priority 3: Browser language
-  return findNearestMatchedLanguage(navigator.language);
+  return getBrowserLocale();
 };
 
-// Applies and persists a locale setting
 export const loadLocale = (locale: string): Locale => {
-  const validLocale = isValidateLocale(locale) ? (locale as Locale) : findNearestMatchedLanguage(navigator.language);
+  const validLocale = isValidateLocale(locale) ? (locale as Locale) : getBrowserLocale();
   setStoredLocale(validLocale);
   i18n.changeLanguage(validLocale);
   return validLocale;
 };
 
-/**
- * Applies locale early during initial page load to prevent language flash.
- * Uses only localStorage and browser language (no user settings yet).
- */
+
 export const applyLocaleEarly = (): void => {
   const stored = getStoredLocale();
-  const locale = stored ?? findNearestMatchedLanguage(navigator.language);
+  const locale = stored ?? getBrowserLocale();
   loadLocale(locale);
 };
 
-// Get the display name for a locale in its native language
 export const getLocaleDisplayName = (locale: string): string => {
   try {
     const displayName = new Intl.DisplayNames([locale], { type: "language" }).of(locale);
@@ -117,7 +140,7 @@ export const getLocaleDisplayName = (locale: string): string => {
       return displayName.charAt(0).toUpperCase() + displayName.slice(1);
     }
   } catch {
-    // Intl.DisplayNames might not be available or might fail for some locales
+    
   }
   return locale;
 };
