@@ -18,6 +18,7 @@ import MasonryView from "../MasonryView";
 import MemoEditor from "../MemoEditor";
 import MemoFilters from "../MemoFilters";
 import Skeleton from "../Skeleton";
+import { cn } from "@/lib/utils";
 
 interface Props {
   renderer: (memo: Memo, context?: MemoRenderContext) => JSX.Element;
@@ -181,7 +182,10 @@ const PagedMemoList = (props: Props) => {
                   <p className="mt-2 text-muted-foreground">{t("message.no-data")}</p>
                 </div>
               ) : (
-                <div className="w-full opacity-70 flex flex-row justify-center items-center my-4">
+                <div className={cn(
+                  "mx-auto w-full h-px sticky bottom-2 flex justify-end -translate-y-8",
+                  layout === "LIST" ? "max-w-2xl xl:translate-x-10" : "opacity-70")
+                }>
                   <BackToTop />
                 </div>
               )}
@@ -201,7 +205,7 @@ const BackToTop = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const shouldShow = window.scrollY > 400;
+      const shouldShow = window.scrollY > 10;
       setIsVisible(shouldShow);
     };
 
@@ -216,15 +220,11 @@ const BackToTop = () => {
     });
   };
 
-  // Don't render if not visible
-  if (!isVisible) {
-    return null;
-  }
-
   return (
-    <Button variant="ghost" onClick={scrollToTop}>
-      {t("router.back-to-top")}
-      <ArrowUpIcon className="ml-1 w-4 h-auto" />
+    <Button variant="secondary" size="icon" onClick={scrollToTop}
+    className={cn("transition-opacity", isVisible ? "opacity-100" : "opacity-0")}>
+      <span className="sr-only">{t("router.back-to-top")}</span>
+      <ArrowUpIcon />
     </Button>
   );
 };
