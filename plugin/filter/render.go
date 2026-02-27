@@ -81,6 +81,8 @@ func (r *renderer) renderCondition(cond Condition) (renderResult, error) {
 			return renderResult{trivial: true}, nil
 		}
 		return renderResult{sql: "1 = 0", unsatisfiable: true}, nil
+	case *ThisDayCondition:
+		return r.renderThisDayCondition()
 	default:
 		return renderResult{}, errors.Errorf("unsupported condition type %T", c)
 	}
@@ -561,6 +563,36 @@ func (r *renderer) wrapWithNullCheck(arrayExpr, condition string) string {
 		return condition
 	}
 	return fmt.Sprintf("(%s AND %s)", condition, nullCheck)
+}
+
+func (r *renderer) renderThisDayCondition() (renderResult, error) {
+	field, ok := r.schema.Field("created_ts")
+	if !ok {
+		return renderResult{}, errors.New("created_ts field not found in schema")
+	}
+	column := qualifyColumn(r.dialect, field.Column)
+
+	var sql string
+	switch r.dialect {
+	case DialectSQLite:
+		sql = fmt.Sprintf(
+			"strftime('%%m-%%d', datetime(%s, 'unixepoch')) = strftime('%%m-%%d', 'now')",
+			column,
+		)
+	case DialectMySQL:
+		sql = fmt.Sprintf(
+			"DATE_FORMAT(FROM_UNIXTIME(%s), '%%m-%%d') = DATE_FORMAT(NOW(), '%%m-%%d')",
+			column,
+		)
+	case DialectPostgres:
+		sql = fmt.Sprintf(
+			"TO_CHAR(TO_TIMESTAMP(%s), 'MM-DD') = TO_CHAR(NOW(), 'MM-DD')",
+			column,
+		)
+	default:
+		return renderResult{}, errors.Errorf("unsupported dialect %s", r.dialect)
+	}
+	return renderResult{sql: sql}, nil
 }
 
 func (r *renderer) jsonBoolPredicate(field Field) (string, error) {
