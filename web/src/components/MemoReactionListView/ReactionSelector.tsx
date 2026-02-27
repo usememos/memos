@@ -40,7 +40,7 @@ const ReactionSelector = (props: Props) => {
         </span>
       </PopoverTrigger>
       <PopoverContent align="center" className="max-w-[90vw] sm:max-w-md">
-        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-1 max-h-64 overflow-y-auto">
+        <div className="no-goto grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-1 max-h-64 overflow-y-auto">
           {memoRelatedSetting.reactions.map((reactionType) => (
             <button
               type="button"

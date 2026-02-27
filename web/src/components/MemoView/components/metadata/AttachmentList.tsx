@@ -133,7 +133,7 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
 
   return (
     <>
-      <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
+      <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden no-goto">
         <SectionHeader icon={PaperclipIcon} title="Attachments" count={attachments.length} />
 
         <div className="p-1.5 flex flex-col gap-1">
