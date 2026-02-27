@@ -52,15 +52,18 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
           />
         )}
 
-        {!isInMemoDetailPage && commentAmount > 0 && (
+        {!isInMemoDetailPage && (
           <Link
-            className={cn("flex flex-row justify-start items-center rounded-md px-1 hover:opacity-80 gap-0.5")}
+            className={cn(
+              "flex flex-row justify-start items-center rounded-md px-1 hover:opacity-80 gap-0.5",
+              commentAmount === 0 && "hidden sm:group-hover:flex",
+            )}
             to={`/${memo.name}#comments`}
             viewTransition
             state={{ from: parentPage }}
           >
             <MessageCircleMoreIcon className="w-4 h-4 mx-auto text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">{commentAmount}</span>
+            {commentAmount > 0 && <span className="text-xs text-muted-foreground">{commentAmount}</span>}
           </Link>
         )}
 

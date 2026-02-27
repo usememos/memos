@@ -27,3 +27,6 @@ dist
 
 # Git worktrees
 .worktrees/
+
+# Claude Code
+CLAUDE.md
