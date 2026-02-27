@@ -27,6 +27,12 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
         case "Escape":
           onOpenChange(false);
           break;
+        case "ArrowRight":
+          setCurrentIndex((prev) => Math.min(prev + 1, imgUrls.length - 1));
+          break;
+        case "ArrowLeft":
+          setCurrentIndex((prev) => Math.max(prev - 1, 0));
+          break;
         default:
           break;
       }
