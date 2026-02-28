@@ -5,6 +5,7 @@ import {
   BookmarkPlusIcon,
   CopyIcon,
   Edit3Icon,
+  FileDownIcon,
   FileTextIcon,
   LinkIcon,
   MoreVerticalIcon,
@@ -45,6 +46,7 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
     handleToggleMemoStatusClick,
     handleCopyLink,
     handleCopyContent,
+    handleExportAsPDF,
     handleDeleteMemoClick,
     confirmDeleteMemo,
   } = useMemoActionHandlers({
@@ -92,6 +94,10 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
               <DropdownMenuItem onClick={handleCopyContent}>
                 <FileTextIcon className="w-4 h-auto" />
                 {t("memo.copy-content")}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportAsPDF}>
+                <FileDownIcon className="w-4 h-auto" />
+                {t("memo.export-as-pdf")}
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>

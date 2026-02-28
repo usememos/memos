@@ -155,6 +155,7 @@
     },
     "copy-content": "Copy Content",
     "copy-link": "Copy Link",
+    "export-as-pdf": "Export as PDF",
     "count-memos-in-date": "{{count}} {{memos}} in {{date}}",
     "delete-confirm": "Are you sure you want to delete this memo?",
     "delete-confirm-description": "This action is irreversible. Attachments, links, and references will also be removed.",

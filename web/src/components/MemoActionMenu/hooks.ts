@@ -11,6 +11,8 @@ import { handleError } from "@/lib/error";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import { removeCompletedTasks } from "@/utils/markdown-manipulation";
+import { printMemoAsPDF } from "@/utils/print";
 
 interface UseMemoActionHandlersOptions {
   memo: Memo;
@@ -93,6 +95,17 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
     toast.success(t("message.succeed-copy-content"));
   }, [memo.content, t]);
 
+  const handleExportAsPDF = useCallback(() => {
+    try {
+      printMemoAsPDF(memo);
+    } catch (error: unknown) {
+      handleError(error, toast.error, {
+        context: "Export memo as PDF",
+        fallbackMessage: "Failed to export PDF. Please allow popups for this site.",
+      });
+    }
+  }, [memo]);
+
   const handleDeleteMemoClick = useCallback(() => {
     setDeleteDialogOpen(true);
   }, [setDeleteDialogOpen]);
@@ -120,6 +133,7 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
     handleToggleMemoStatusClick,
     handleCopyLink,
     handleCopyContent,
+    handleExportAsPDF,
     handleDeleteMemoClick,
     confirmDeleteMemo,
   };
