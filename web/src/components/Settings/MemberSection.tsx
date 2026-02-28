@@ -31,9 +31,7 @@ const MemberSection = () => {
   const [deleteTarget, setDeleteTarget] = useState<User | undefined>(undefined);
 
   const stringifyUserRole = (role: User_Role) => {
-    if (role === User_Role.HOST) {
-      return "Host";
-    } else if (role === User_Role.ADMIN) {
+    if (role === User_Role.ADMIN) {
       return t("setting.member-section.admin");
     } else {
       return t("setting.member-section.user");

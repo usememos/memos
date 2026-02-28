@@ -17,6 +17,7 @@ func (d *DB) UpsertMemoRelation(ctx context.Context, create *store.MemoRelation)
 			type
 		)
 		VALUES (?, ?, ?)
+		ON CONFLICT(memo_id, related_memo_id, type) DO UPDATE SET type = excluded.type
 		RETURNING memo_id, related_memo_id, type
 	`
 	memoRelation := &store.MemoRelation{}

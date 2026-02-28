@@ -6,14 +6,15 @@ import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import { getThemeWithFallback, resolveTheme } from "@/utils/theme";
 import { MermaidBlock } from "./MermaidBlock";
+import type { ReactMarkdownProps } from "./markdown/types";
 import { extractCodeContent, extractLanguage } from "./utils";
 
-interface CodeBlockProps {
+interface CodeBlockProps extends ReactMarkdownProps {
   children?: React.ReactNode;
   className?: string;
 }
 
-export const CodeBlock = ({ children, className, ...props }: CodeBlockProps) => {
+export const CodeBlock = ({ children, className, node: _node, ...props }: CodeBlockProps) => {
   const { userGeneralSetting } = useAuth();
   const [copied, setCopied] = useState(false);
 
@@ -114,20 +115,41 @@ export const CodeBlock = ({ children, className, ...props }: CodeBlockProps) => 
   };
 
   return (
-    <pre className="relative">
-      <div className="absolute right-2 leading-3 top-1.5 flex flex-row justify-end items-center gap-1 opacity-60 hover:opacity-80">
-        <span className="text-[10px] font-medium text-muted-foreground/60 uppercase tracking-wider select-none">{language}</span>
+    <pre className="relative my-2 rounded-lg border border-border bg-muted/20 overflow-hidden">
+      {/* Header with language label and copy button */}
+      <div className="flex items-center justify-between px-2 py-1 border-b border-border bg-muted/30">
+        <span className="text-xs text-foreground select-none">{language || "text"}</span>
         <button
           onClick={handleCopy}
-          className={cn("rounded-md transition-all", "hover:bg-accent/50", copied ? "text-primary" : "text-muted-foreground")}
+          className={cn(
+            "inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs",
+            "transition-colors duration-200",
+            "hover:bg-accent active:scale-95",
+            copied ? "text-primary" : "text-muted-foreground hover:text-foreground",
+          )}
           aria-label={copied ? "Copied" : "Copy code"}
           title={copied ? "Copied!" : "Copy code"}
         >
-          {copied ? <CheckIcon className="w-3 h-3" /> : <CopyIcon className="w-3 h-3" />}
+          {copied ? (
+            <>
+              <CheckIcon className="w-3.5 h-3.5" />
+              <span>Copied</span>
+            </>
+          ) : (
+            <>
+              <CopyIcon className="w-3.5 h-3.5" />
+              <span>Copy</span>
+            </>
+          )}
         </button>
       </div>
-      <div className={className} {...props}>
-        <code className={`language-${language}`} dangerouslySetInnerHTML={{ __html: highlightedCode }} />
+
+      {/* Code content */}
+      <div className="overflow-x-auto">
+        <code
+          className={cn("block px-3 py-2 text-sm leading-relaxed", `language-${language}`)}
+          dangerouslySetInnerHTML={{ __html: highlightedCode }}
+        />
       </div>
     </pre>
   );

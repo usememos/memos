@@ -4,44 +4,69 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
     paths:
       - "web/**"
 
-jobs:
-  static-checks:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4.1.0
-        with:
-          version: 9
-      - uses: actions/setup-node@v5
-        with:
-          node-version: "20"
-          cache: pnpm
-          cache-dependency-path: "web/pnpm-lock.yaml"
-      - run: pnpm install
-        working-directory: web
-      - name: Run check
-        run: pnpm lint
-        working-directory: web
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
-  frontend-build:
+env:
+  NODE_VERSION: "22"
+  PNPM_VERSION: "10"
+
+jobs:
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4.1.0
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4.2.0
         with:
-          version: 9
-      - uses: actions/setup-node@v5
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
-          node-version: "20"
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
-          cache-dependency-path: "web/pnpm-lock.yaml"
-      - run: pnpm install
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - name: Install dependencies
         working-directory: web
-      - name: Run frontend build
+        run: pnpm install --frozen-lockfile
+
+      - name: Run lint
+        working-directory: web
+        run: pnpm lint
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4.2.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: web
+        run: pnpm install --frozen-lockfile
+
+      - name: Build frontend
+        working-directory: web
         run: pnpm build
-        working-directory: web

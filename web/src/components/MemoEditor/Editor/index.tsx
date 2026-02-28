@@ -1,4 +1,5 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from "react";
+import getCaretCoordinates from "textarea-caret";
 import { cn } from "@/lib/utils";
 import { EDITOR_HEIGHT } from "../constants";
 import type { EditorProps } from "../types";
@@ -51,6 +52,26 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
     }
   }, [handleContentChangeCallback, updateEditorHeight]);
 
+  const scrollToCaret = useCallback((options: { force?: boolean } = {}) => {
+    const editor = editorRef.current;
+    if (!editor) return;
+
+    const { force = false } = options;
+    const caret = getCaretCoordinates(editor, editor.selectionEnd);
+
+    if (force) {
+      editor.scrollTop = Math.max(0, caret.top - editor.clientHeight / 2);
+      return;
+    }
+
+    const lineHeight = parseFloat(getComputedStyle(editor).lineHeight) || 24;
+    const viewportBottom = editor.scrollTop + editor.clientHeight;
+    // Scroll if cursor is near or beyond bottom edge (within 2 lines)
+    if (caret.top + lineHeight * 2 > viewportBottom) {
+      editor.scrollTop = Math.max(0, caret.top - editor.clientHeight / 2);
+    }
+  }, []);
+
   useEffect(() => {
     if (editorRef.current && initialContent) {
       editorRef.current.value = initialContent;
@@ -74,9 +95,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
       getEditor: () => editorRef.current,
       focus: () => editorRef.current?.focus(),
       scrollToCursor: () => {
-        if (editorRef.current) {
-          editorRef.current.scrollTop = editorRef.current.scrollHeight;
-        }
+        scrollToCaret({ force: true });
       },
       insertText: (content = "", prefix = "", suffix = "") => {
         const editor = editorRef.current;
@@ -139,7 +158,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
         updateContent();
       },
     }),
-    [updateContent],
+    [updateContent, scrollToCaret],
   );
 
   useImperativeHandle(ref, () => editorActions, [editorActions]);
@@ -148,8 +167,12 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
     if (editorRef.current) {
       handleContentChangeCallback(editorRef.current.value);
       updateEditorHeight();
+
+      // Auto-scroll to keep cursor visible when typing
+      // See: https://github.com/usememos/memos/issues/5469
+      scrollToCaret();
     }
-  }, [handleContentChangeCallback, updateEditorHeight]);
+  }, [handleContentChangeCallback, updateEditorHeight, scrollToCaret]);
 
   // Auto-complete markdown lists when pressing Enter
   useListCompletion({
@@ -169,7 +192,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
     >
       <textarea
         className={cn(
-          "w-full my-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none placeholder:opacity-70 whitespace-pre-wrap break-words",
+          "w-full text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none placeholder:opacity-70 whitespace-pre-wrap wrap-break-word",
           // Focus mode: flex-1 h-0 to grow within flex container; Normal: h-full to fill wrapper
           isFocusMode ? "flex-1 h-0" : "h-full",
         )}

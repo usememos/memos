@@ -1,8 +1,9 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { authServiceClient, shortcutServiceClient, userServiceClient } from "@/connect";
+import { shortcutServiceClient, userServiceClient } from "@/connect";
 import { buildUserSettingName } from "@/helpers/resource-names";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { User, UserSetting, UserSetting_GeneralSetting, UserSetting_Key, UserSettingSchema } from "@/types/proto/api/v1/user_service_pb";
 
 // Query keys factory
@@ -17,20 +18,6 @@ export const userKeys = {
   notifications: () => [...userKeys.all, "notifications"] as const,
   byNames: (names: string[]) => [...userKeys.all, "byNames", ...names.sort()] as const,
 };
-
-// NOTE: This hook is currently UNUSED in favor of the AuthContext-based
-// useCurrentUser hook (src/hooks/useCurrentUser.ts). This is kept for potential
-// future migration to React Query for auth state.
-export function useCurrentUserQuery() {
-  return useQuery({
-    queryKey: userKeys.currentUser(),
-    queryFn: async () => {
-      const { user } = await authServiceClient.getCurrentUser({});
-      return user;
-    },
-    staleTime: 1000 * 60 * 5, // 5 minutes - auth doesn't change often
-  });
-}
 
 export function useUser(name: string, options?: { enabled?: boolean }) {
   return useQuery({
@@ -69,7 +56,7 @@ export function useShortcuts() {
 }
 
 export function useNotifications() {
-  const { data: currentUser } = useCurrentUserQuery();
+  const currentUser = useCurrentUser();
 
   return useQuery({
     queryKey: userKeys.notifications(),
@@ -86,7 +73,7 @@ export function useNotifications() {
 }
 
 export function useTagCounts(forCurrentUser = false) {
-  const { data: currentUser } = useCurrentUserQuery();
+  const currentUser = useCurrentUser();
 
   return useQuery({
     queryKey: forCurrentUser ? [...userKeys.stats(), "tagCounts", "current"] : [...userKeys.stats(), "tagCounts", "all"],

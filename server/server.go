@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v5/middleware"
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/internal/profile"
@@ -19,6 +19,7 @@ import (
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/server/router/fileserver"
 	"github.com/usememos/memos/server/router/frontend"
+	mcprouter "github.com/usememos/memos/server/router/mcp"
 	"github.com/usememos/memos/server/router/rss"
 	"github.com/usememos/memos/server/runner/s3presign"
 	"github.com/usememos/memos/store"
@@ -30,6 +31,7 @@ type Server struct {
 	Store   *store.Store
 
 	echoServer        *echo.Echo
+	httpServer        *http.Server
 	runnerCancelFuncs []context.CancelFunc
 }
 
@@ -40,9 +42,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	}
 
 	echoServer := echo.New()
-	echoServer.Debug = true
-	echoServer.HideBanner = true
-	echoServer.HidePort = true
 	echoServer.Use(middleware.Recover())
 	s.echoServer = echoServer
 
@@ -52,13 +51,13 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	}
 
 	secret := "usememos"
-	if profile.Mode == "prod" {
+	if !profile.Demo {
 		secret = instanceBasicSetting.SecretKey
 	}
 	s.Secret = secret
 
 	// Register healthz endpoint.
-	echoServer.GET("/healthz", func(c echo.Context) error {
+	echoServer.GET("/healthz", func(c *echo.Context) error {
 		return c.String(http.StatusOK, "Service ready.")
 	})
 
@@ -81,6 +80,10 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		return nil, errors.Wrap(err, "failed to register gRPC gateway")
 	}
 
+	// Register MCP server.
+	mcpService := mcprouter.NewMCPService(s.Store, s.Secret)
+	mcpService.RegisterRoutes(echoServer)
+
 	return s, nil
 }
 
@@ -99,9 +102,9 @@ func (s *Server) Start(ctx context.Context) error {
 	}
 
 	// Start Echo server directly (no cmux needed - all traffic is HTTP).
-	s.echoServer.Listener = listener
+	s.httpServer = &http.Server{Handler: s.echoServer}
 	go func() {
-		if err := s.echoServer.Start(address); err != nil && err != http.ErrServerClosed {
+		if err := s.httpServer.Serve(listener); err != nil && err != http.ErrServerClosed {
 			slog.Error("failed to start echo server", "error", err)
 		}
 	}()
@@ -123,9 +126,11 @@ func (s *Server) Shutdown(ctx context.Context) {
 		}
 	}
 
-	// Shutdown echo server.
-	if err := s.echoServer.Shutdown(ctx); err != nil {
-		slog.Error("failed to shutdown server", slog.String("error", err.Error()))
+	// Shutdown HTTP server.
+	if s.httpServer != nil {
+		if err := s.httpServer.Shutdown(ctx); err != nil {
+			slog.Error("failed to shutdown server", slog.String("error", err.Error()))
+		}
 	}
 
 	// Close database connection.

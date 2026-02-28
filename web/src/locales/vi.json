@@ -114,8 +114,6 @@
     "links": "Liên kết",
     "load-more": "Tải thêm",
     "no-archived-memos": "Không có ghi chú nào được lưu trữ.",
-    "remove-completed-task-list-items": "Xóa đã hoàn thành",
-    "remove-completed-task-list-items-confirm": "Bạn có chắc chắn muốn xóa tất cả các mục đã hoàn thành không? (Hành động này không thể đảo ngược)",
     "search-placeholder": "Tìm kiếm ghi chú",
     "show-less": "Hiển thị ít hơn",
     "show-more": "Hiển thị thêm",
@@ -217,7 +215,7 @@
     },
     "memo-related": "Ghi chú",
     "memo-related-settings": {
-      "content-lenght-limit": "Giới hạn độ dài nội dung (Byte)",
+      "content-length-limit": "Giới hạn độ dài nội dung (Byte)",
       "enable-memo-comments": "Bật bình luận ghi chú",
       "enable-memo-location": "Bật vị trí ghi chú",
       "reactions": "Phản ứng",

@@ -15,14 +15,14 @@ const LocationDisplay: FC<LocationDisplayProps> = ({ location, onRemove, classNa
   return (
     <div
       className={cn(
-        "relative flex items-center gap-1.5 px-1.5 py-1 rounded border border-border bg-background hover:bg-accent/20 transition-all w-full",
+        "relative flex items-center gap-1.5 px-1.5 py-1 rounded border border-border bg-muted/20 hover:bg-accent/20 transition-all w-full",
         className,
       )}
     >
       <MapPinIcon className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
 
       <div className="flex items-center gap-1.5 min-w-0 flex-1">
-        <span className="text-xs font-medium truncate" title={displayText}>
+        <span className="text-xs truncate" title={displayText}>
           {displayText}
         </span>
         <span className="text-[11px] text-muted-foreground shrink-0 hidden sm:inline">

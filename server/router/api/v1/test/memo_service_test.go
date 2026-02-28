@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"slices"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
 )
@@ -249,4 +251,119 @@ func TestListMemos(t *testing.T) {
 	userTwoReaction := memoThreeRes.Reactions[userTwoReactionIdx]
 	require.NotNil(t, userTwoReaction)
 	require.Equal(t, "👍", userTwoReaction.ReactionType)
+}
+
+// TestCreateMemoWithCustomTimestamps tests that custom timestamps can be set when creating memos and comments.
+// This addresses issue #5483: https://github.com/usememos/memos/issues/5483
+func TestCreateMemoWithCustomTimestamps(t *testing.T) {
+	ctx := context.Background()
+
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	// Create a test user
+	user, err := ts.CreateRegularUser(ctx, "test-user-timestamps")
+	require.NoError(t, err)
+	require.NotNil(t, user)
+
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	// Define custom timestamps (January 1, 2020)
+	customCreateTime := time.Date(2020, 1, 1, 12, 0, 0, 0, time.UTC)
+	customUpdateTime := time.Date(2020, 1, 2, 12, 0, 0, 0, time.UTC)
+	customDisplayTime := time.Date(2020, 1, 3, 12, 0, 0, 0, time.UTC)
+
+	// Test 1: Create a memo with custom create_time
+	memoWithCreateTime, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "This memo has a custom creation time",
+			Visibility: apiv1.Visibility_PRIVATE,
+			CreateTime: timestamppb.New(customCreateTime),
+		},
+	})
+	require.NoError(t, err)
+	require.NotNil(t, memoWithCreateTime)
+	require.Equal(t, customCreateTime.Unix(), memoWithCreateTime.CreateTime.AsTime().Unix(), "create_time should match the custom timestamp")
+
+	// Test 2: Create a memo with custom update_time
+	memoWithUpdateTime, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "This memo has a custom update time",
+			Visibility: apiv1.Visibility_PRIVATE,
+			UpdateTime: timestamppb.New(customUpdateTime),
+		},
+	})
+	require.NoError(t, err)
+	require.NotNil(t, memoWithUpdateTime)
+	require.Equal(t, customUpdateTime.Unix(), memoWithUpdateTime.UpdateTime.AsTime().Unix(), "update_time should match the custom timestamp")
+
+	// Test 3: Create a memo with custom display_time
+	// Note: display_time is computed from either created_ts or updated_ts based on instance setting
+	// Since DisplayWithUpdateTime defaults to false, display_time maps to created_ts
+	memoWithDisplayTime, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:     "This memo has a custom display time",
+			Visibility:  apiv1.Visibility_PRIVATE,
+			DisplayTime: timestamppb.New(customDisplayTime),
+		},
+	})
+	require.NoError(t, err)
+	require.NotNil(t, memoWithDisplayTime)
+	// Since DisplayWithUpdateTime is false by default, display_time sets created_ts
+	require.Equal(t, customDisplayTime.Unix(), memoWithDisplayTime.DisplayTime.AsTime().Unix(), "display_time should match the custom timestamp")
+	require.Equal(t, customDisplayTime.Unix(), memoWithDisplayTime.CreateTime.AsTime().Unix(), "create_time should also match since display_time maps to created_ts")
+
+	// Test 4: Create a memo with all custom timestamps
+	// When both display_time and create_time are provided, create_time takes precedence
+	memoWithAllTimestamps, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:     "This memo has all custom timestamps",
+			Visibility:  apiv1.Visibility_PRIVATE,
+			CreateTime:  timestamppb.New(customCreateTime),
+			UpdateTime:  timestamppb.New(customUpdateTime),
+			DisplayTime: timestamppb.New(customDisplayTime),
+		},
+	})
+	require.NoError(t, err)
+	require.NotNil(t, memoWithAllTimestamps)
+	require.Equal(t, customCreateTime.Unix(), memoWithAllTimestamps.CreateTime.AsTime().Unix(), "create_time should match the custom timestamp")
+	require.Equal(t, customUpdateTime.Unix(), memoWithAllTimestamps.UpdateTime.AsTime().Unix(), "update_time should match the custom timestamp")
+	// display_time is computed from created_ts when DisplayWithUpdateTime is false
+	require.Equal(t, customCreateTime.Unix(), memoWithAllTimestamps.DisplayTime.AsTime().Unix(), "display_time should be derived from create_time")
+
+	// Test 5: Create a comment (memo relation) with custom timestamps
+	parentMemo, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "This is the parent memo",
+			Visibility: apiv1.Visibility_PRIVATE,
+		},
+	})
+	require.NoError(t, err)
+	require.NotNil(t, parentMemo)
+
+	customCommentCreateTime := time.Date(2021, 6, 15, 10, 30, 0, 0, time.UTC)
+	comment, err := ts.Service.CreateMemoComment(userCtx, &apiv1.CreateMemoCommentRequest{
+		Name: parentMemo.Name,
+		Comment: &apiv1.Memo{
+			Content:    "This is a comment with custom create time",
+			Visibility: apiv1.Visibility_PRIVATE,
+			CreateTime: timestamppb.New(customCommentCreateTime),
+		},
+	})
+	require.NoError(t, err)
+	require.NotNil(t, comment)
+	require.Equal(t, customCommentCreateTime.Unix(), comment.CreateTime.AsTime().Unix(), "comment create_time should match the custom timestamp")
+
+	// Test 6: Verify that memos without custom timestamps still get auto-generated ones
+	memoWithoutTimestamps, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "This memo has auto-generated timestamps",
+			Visibility: apiv1.Visibility_PRIVATE,
+		},
+	})
+	require.NoError(t, err)
+	require.NotNil(t, memoWithoutTimestamps)
+	require.NotNil(t, memoWithoutTimestamps.CreateTime, "create_time should be auto-generated")
+	require.NotNil(t, memoWithoutTimestamps.UpdateTime, "update_time should be auto-generated")
+	require.True(t, time.Now().Unix()-memoWithoutTimestamps.CreateTime.AsTime().Unix() < 5, "create_time should be recent (within 5 seconds)")
 }

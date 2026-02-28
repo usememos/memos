@@ -100,7 +100,7 @@ func (s *APIV1Service) ListMemoRelations(ctx context.Context, request *v1pb.List
 		MemoFilter: &memoFilter,
 	})
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to list memo relations: %v", err)
 	}
 	for _, raw := range tempList {
 		relation, err := s.convertMemoRelationFromStore(ctx, raw)
@@ -114,7 +114,7 @@ func (s *APIV1Service) ListMemoRelations(ctx context.Context, request *v1pb.List
 		MemoFilter:    &memoFilter,
 	})
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to list related memo relations: %v", err)
 	}
 	for _, raw := range tempList {
 		relation, err := s.convertMemoRelationFromStore(ctx, raw)
@@ -133,7 +133,7 @@ func (s *APIV1Service) ListMemoRelations(ctx context.Context, request *v1pb.List
 func (s *APIV1Service) convertMemoRelationFromStore(ctx context.Context, memoRelation *store.MemoRelation) (*v1pb.MemoRelation, error) {
 	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{ID: &memoRelation.MemoID})
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to get memo: %v", err)
 	}
 	memoSnippet, err := s.getMemoContentSnippet(memo.Content)
 	if err != nil {
@@ -141,7 +141,7 @@ func (s *APIV1Service) convertMemoRelationFromStore(ctx context.Context, memoRel
 	}
 	relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{ID: &memoRelation.RelatedMemoID})
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to get related memo: %v", err)
 	}
 	relatedMemoSnippet, err := s.getMemoContentSnippet(relatedMemo.Content)
 	if err != nil {

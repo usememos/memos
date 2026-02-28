@@ -2,7 +2,6 @@ package test
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -28,14 +27,14 @@ func TestGetInstanceProfile(t *testing.T) {
 
 		// Verify the response contains expected data
 		require.Equal(t, "test-1.0.0", resp.Version)
-		require.Equal(t, "dev", resp.Mode)
+		require.True(t, resp.Demo)
 		require.Equal(t, "http://localhost:8080", resp.InstanceUrl)
 
-		// Owner should be empty since no users are created
-		require.Empty(t, resp.Owner)
+		// Instance should not be initialized since no admin users are created
+		require.Nil(t, resp.Admin)
 	})
 
-	t.Run("GetInstanceProfile with owner", func(t *testing.T) {
+	t.Run("GetInstanceProfile with initialized instance", func(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
 		defer ts.Cleanup()
@@ -53,14 +52,14 @@ func TestGetInstanceProfile(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 
-		// Verify the response contains expected data including owner
+		// Verify the response contains expected data with initialized flag
 		require.Equal(t, "test-1.0.0", resp.Version)
-		require.Equal(t, "dev", resp.Mode)
+		require.True(t, resp.Demo)
 		require.Equal(t, "http://localhost:8080", resp.InstanceUrl)
 
-		// User name should be "users/{id}" format where id is the user's ID
-		expectedOwnerName := fmt.Sprintf("users/%d", hostUser.ID)
-		require.Equal(t, expectedOwnerName, resp.Owner)
+		// Instance should be initialized since an admin user exists
+		require.NotNil(t, resp.Admin)
+		require.Equal(t, hostUser.Username, resp.Admin.Username)
 	})
 }
 
@@ -73,9 +72,8 @@ func TestGetInstanceProfile_Concurrency(t *testing.T) {
 		defer ts.Cleanup()
 
 		// Create a host user
-		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		_, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
-		expectedOwnerName := fmt.Sprintf("users/%d", hostUser.ID)
 
 		// Make concurrent requests
 		numGoroutines := 10
@@ -102,9 +100,9 @@ func TestGetInstanceProfile_Concurrency(t *testing.T) {
 			case resp := <-results:
 				require.NotNil(t, resp)
 				require.Equal(t, "test-1.0.0", resp.Version)
-				require.Equal(t, "dev", resp.Mode)
+				require.True(t, resp.Demo)
 				require.Equal(t, "http://localhost:8080", resp.InstanceUrl)
-				require.Equal(t, expectedOwnerName, resp.Owner)
+				require.NotNil(t, resp.Admin)
 			}
 		}
 	})

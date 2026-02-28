@@ -18,7 +18,7 @@ function isTagChar(char: string): boolean {
     return true;
   }
 
-  return char === "_" || char === "-" || char === "/";
+  return char === "_" || char === "-" || char === "/" || char === "&";
 }
 
 function parseTagsFromText(text: string): Array<{ type: "text"; value: string } | { type: "tag"; value: string }> {

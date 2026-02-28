@@ -76,6 +76,9 @@ func (s *APIV1Service) SetMemoAttachments(ctx context.Context, request *v1pb.Set
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get attachment: %v", err)
 		}
+		if tempAttachment == nil {
+			return nil, status.Errorf(codes.NotFound, "attachment not found: %s", attachmentUID)
+		}
 		updatedTs := time.Now().Unix() + int64(index)
 		if err := s.Store.UpdateAttachment(ctx, &store.UpdateAttachment{
 			ID:        tempAttachment.ID,
@@ -98,6 +101,24 @@ func (s *APIV1Service) ListMemoAttachments(ctx context.Context, request *v1pb.Li
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get memo: %v", err)
 	}
+	if memo == nil {
+		return nil, status.Errorf(codes.NotFound, "memo not found")
+	}
+
+	// Check memo visibility.
+	if memo.Visibility != store.Public {
+		user, err := s.fetchCurrentUser(ctx)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+		}
+		if user == nil {
+			return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+		}
+		if memo.Visibility == store.Private && memo.CreatorID != user.ID && !isSuperUser(user) {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+	}
+
 	attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{
 		MemoID: &memo.ID,
 	})

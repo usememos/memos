@@ -8,7 +8,8 @@ export interface MemoEditorProps {
   className?: string;
   cacheKey?: string;
   placeholder?: string;
-  memoName?: string;
+  /** Existing memo to edit. When provided, the editor initializes from it without fetching. */
+  memo?: Memo;
   parentMemoName?: string;
   autoFocus?: boolean;
   onConfirm?: (memoName: string) => void;
@@ -26,7 +27,9 @@ export interface EditorToolbarProps {
   memoName?: string;
 }
 
-export interface EditorMetadataProps {}
+export interface EditorMetadataProps {
+  memoName?: string;
+}
 
 export interface FocusModeOverlayProps {
   isActive: boolean;

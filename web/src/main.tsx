@@ -8,10 +8,11 @@ import { RouterProvider } from "react-router-dom";
 import "./i18n";
 import "./index.css";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import Spinner from "@/components/Spinner";
+import { refreshAccessToken } from "@/connect";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { InstanceProvider, useInstance } from "@/contexts/InstanceContext";
 import { ViewProvider } from "@/contexts/ViewContext";
+import { useTokenRefreshOnFocus } from "@/hooks/useTokenRefreshOnFocus";
 import { queryClient } from "@/lib/query-client";
 import router from "./router";
 import { applyLocaleEarly } from "./utils/i18n";
@@ -25,7 +26,7 @@ applyLocaleEarly();
 
 // Inner component that initializes contexts
 function AppInitializer({ children }: { children: React.ReactNode }) {
-  const { isInitialized: authInitialized, initialize: initAuth } = useAuth();
+  const { isInitialized: authInitialized, initialize: initAuth, currentUser } = useAuth();
   const { isInitialized: instanceInitialized, initialize: initInstance } = useInstance();
   const initStartedRef = useRef(false);
 
@@ -40,12 +41,13 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
     init();
   }, [initAuth, initInstance]);
 
+  // Proactively refresh token on window focus to prevent 401 errors
+  // Only enabled when user is authenticated
+  // Related: https://github.com/usememos/memos/issues/5589
+  useTokenRefreshOnFocus(refreshAccessToken, !!currentUser);
+
   if (!authInitialized || !instanceInitialized) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center">
-        <Spinner size="lg" />
-      </div>
-    );
+    return null;
   }
 
   return <>{children}</>;

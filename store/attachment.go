@@ -80,11 +80,12 @@ func (s *Store) CreateAttachment(ctx context.Context, create *Attachment) (*Atta
 
 func (s *Store) ListAttachments(ctx context.Context, find *FindAttachment) ([]*Attachment, error) {
 	// Set default limits to prevent loading too many attachments at once
-	if find.Limit == nil && find.GetBlob {
+	shouldApplyDefaultLimit := find.Limit == nil && len(find.MemoIDList) == 0
+	if shouldApplyDefaultLimit && find.GetBlob {
 		// When fetching blobs, we should be especially careful with limits
 		defaultLimit := 10
 		find.Limit = &defaultLimit
-	} else if find.Limit == nil {
+	} else if shouldApplyDefaultLimit {
 		// Even without blobs, let's default to a reasonable limit
 		defaultLimit := 100
 		find.Limit = &defaultLimit
@@ -129,7 +130,7 @@ func (s *Store) DeleteAttachment(ctx context.Context, delete *DeleteAttachment) 
 				p = filepath.Join(s.profile.Data, p)
 			}
 			err := os.Remove(p)
-			if err != nil {
+			if err != nil && !os.IsNotExist(err) {
 				return errors.Wrap(err, "failed to delete local file")
 			}
 			return nil

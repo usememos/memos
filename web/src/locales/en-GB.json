@@ -1,1 +1,12 @@
-{}
+{
+  "setting": {
+    "sso-section": {
+      "authorization-endpoint": "Authorisation endpoint"
+    },
+    "system-section": {
+      "customize-server": {
+        "title": "Customise Server"
+      }
+    }
+  }
+}

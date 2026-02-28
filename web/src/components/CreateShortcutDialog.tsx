@@ -37,10 +37,14 @@ function CreateShortcutDialog({ open, onOpenChange, shortcut: initialShortcut, o
   const isCreating = shortcut.name === "";
 
   useEffect(() => {
-    if (shortcut.name) {
-      setShortcut(shortcut);
-    }
-  }, [shortcut.name, shortcut.title, shortcut.filter]);
+    setShortcut(
+      create(ShortcutSchema, {
+        name: initialShortcut?.name || "",
+        title: initialShortcut?.title || "",
+        filter: initialShortcut?.filter || "",
+      }),
+    );
+  }, [initialShortcut]);
 
   const onShortcutTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPartialState({
@@ -121,6 +125,21 @@ function CreateShortcutDialog({ open, onOpenChange, shortcut: initialShortcut, o
               value={shortcut.filter}
               onChange={onShortcutFilterChange}
             />
+          </div>
+          <div className="text-sm text-muted-foreground">
+            <p className="mb-2">{t("common.learn-more")}:</p>
+            <ul className="list-disc list-inside space-y-1">
+              <li>
+                <a
+                  className="text-primary hover:underline"
+                  href="https://www.usememos.com/docs/usage/shortcuts"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Docs - Shortcuts
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
         <DialogFooter>

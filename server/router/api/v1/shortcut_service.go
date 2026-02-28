@@ -62,7 +62,7 @@ func (s *APIV1Service) ListShortcuts(ctx context.Context, request *v1pb.ListShor
 		Key:    storepb.UserSetting_SHORTCUTS,
 	})
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to get user setting: %v", err)
 	}
 	if userSetting == nil {
 		return &v1pb.ListShortcutsResponse{
@@ -186,7 +186,7 @@ func (s *APIV1Service) CreateShortcut(ctx context.Context, request *v1pb.CreateS
 
 	_, err = s.Store.UpsertUserSetting(ctx, userSetting)
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
 	}
 
 	return &v1pb.Shortcut{
@@ -313,7 +313,7 @@ func (s *APIV1Service) DeleteShortcut(ctx context.Context, request *v1pb.DeleteS
 	}
 	_, err = s.Store.UpsertUserSetting(ctx, userSetting)
 	if err != nil {
-		return nil, err
+		return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
 	}
 
 	return &emptypb.Empty{}, nil

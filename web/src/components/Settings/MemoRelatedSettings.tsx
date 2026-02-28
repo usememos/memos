@@ -92,7 +92,7 @@ const MemoRelatedSettings = () => {
           />
         </SettingRow>
 
-        <SettingRow label={t("setting.memo-related-settings.content-lenght-limit")}>
+        <SettingRow label={t("setting.memo-related-settings.content-length-limit")}>
           <Input
             className="w-24"
             type="number"

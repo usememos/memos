@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/gorilla/feeds"
-	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v5"
 
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/plugin/markdown"
@@ -69,7 +69,7 @@ func (s *RSSService) RegisterRoutes(g *echo.Group) {
 	g.GET("/u/:username/rss.xml", s.GetUserRSS)
 }
 
-func (s *RSSService) GetExploreRSS(c echo.Context) error {
+func (s *RSSService) GetExploreRSS(c *echo.Context) error {
 	ctx := c.Request().Context()
 	cacheKey := "explore"
 
@@ -92,13 +92,13 @@ func (s *RSSService) GetExploreRSS(c echo.Context) error {
 	}
 	memoList, err := s.Store.ListMemos(ctx, &memoFind)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").Wrap(err)
 	}
 
 	baseURL := c.Scheme() + "://" + c.Request().Host
 	rss, lastModified, err := s.generateRSSFromMemoList(ctx, memoList, baseURL, nil)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate rss").SetInternal(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate rss").Wrap(err)
 	}
 
 	// Cache the result
@@ -107,7 +107,7 @@ func (s *RSSService) GetExploreRSS(c echo.Context) error {
 	return c.String(http.StatusOK, rss)
 }
 
-func (s *RSSService) GetUserRSS(c echo.Context) error {
+func (s *RSSService) GetUserRSS(c *echo.Context) error {
 	ctx := c.Request().Context()
 	username := c.Param("username")
 	cacheKey := "user:" + username
@@ -126,7 +126,7 @@ func (s *RSSService) GetUserRSS(c echo.Context) error {
 		Username: &username,
 	})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").Wrap(err)
 	}
 	if user == nil {
 		return echo.NewHTTPError(http.StatusNotFound, "User not found")
@@ -142,13 +142,13 @@ func (s *RSSService) GetUserRSS(c echo.Context) error {
 	}
 	memoList, err := s.Store.ListMemos(ctx, &memoFind)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").Wrap(err)
 	}
 
 	baseURL := c.Scheme() + "://" + c.Request().Host
 	rss, lastModified, err := s.generateRSSFromMemoList(ctx, memoList, baseURL, user)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate rss").SetInternal(err)
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate rss").Wrap(err)
 	}
 
 	// Cache the result
@@ -392,7 +392,7 @@ func (s *RSSService) putInCache(key, content string, lastModified time.Time) str
 }
 
 // setRSSHeaders sets appropriate HTTP headers for RSS responses.
-func (*RSSService) setRSSHeaders(c echo.Context, etag string, lastModified time.Time) {
+func (*RSSService) setRSSHeaders(c *echo.Context, etag string, lastModified time.Time) {
 	c.Response().Header().Set(echo.HeaderContentType, "application/rss+xml; charset=utf-8")
 	c.Response().Header().Set(echo.HeaderCacheControl, fmt.Sprintf("public, max-age=%d", int(defaultCacheDuration.Seconds())))
 	c.Response().Header().Set("ETag", etag)

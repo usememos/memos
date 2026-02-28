@@ -9,7 +9,6 @@ import {
   FileTextIcon,
   LinkIcon,
   MoreVerticalIcon,
-  SquareCheckIcon,
   TrashIcon,
 } from "lucide-react";
 import { useState } from "react";
@@ -26,7 +25,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { useTranslate } from "@/utils/i18n";
-import { hasCompletedTasks } from "@/utils/markdown-manipulation";
 import { useMemoActionHandlers } from "./hooks";
 import type { MemoActionMenuProps } from "./types";
 
@@ -36,10 +34,8 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
 
   // Dialog state
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [removeTasksDialogOpen, setRemoveTasksDialogOpen] = useState(false);
 
   // Derived state
-  const hasCompletedTaskList = hasCompletedTasks(memo.content);
   const isComment = Boolean(memo.parent);
   const isArchived = memo.state === State.ARCHIVED;
 
@@ -53,13 +49,10 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
     handleExportAsPDF,
     handleDeleteMemoClick,
     confirmDeleteMemo,
-    handleRemoveCompletedTaskListItemsClick,
-    confirmRemoveCompletedTaskListItems,
   } = useMemoActionHandlers({
     memo,
     onEdit: props.onEdit,
     setDeleteDialogOpen,
-    setRemoveTasksDialogOpen,
   });
 
   return (
@@ -113,14 +106,6 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
         {/* Write actions (non-readonly) */}
         {!readonly && (
           <>
-            {/* Remove completed tasks (non-archived, non-comment, has completed tasks) */}
-            {!isArchived && !isComment && hasCompletedTaskList && (
-              <DropdownMenuItem onClick={handleRemoveCompletedTaskListItemsClick}>
-                <SquareCheckIcon className="w-4 h-auto" />
-                {t("memo.remove-completed-task-list-items")}
-              </DropdownMenuItem>
-            )}
-
             {/* Archive/Restore (non-comment) */}
             {!isComment && (
               <DropdownMenuItem onClick={handleToggleMemoStatusClick}>
@@ -147,17 +132,6 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
         description={t("memo.delete-confirm-description")}
         cancelLabel={t("common.cancel")}
         onConfirm={confirmDeleteMemo}
-        confirmVariant="destructive"
-      />
-
-      {/* Remove completed tasks confirmation */}
-      <ConfirmDialog
-        open={removeTasksDialogOpen}
-        onOpenChange={setRemoveTasksDialogOpen}
-        title={t("memo.remove-completed-task-list-items-confirm")}
-        confirmLabel={t("common.confirm")}
-        cancelLabel={t("common.cancel")}
-        onConfirm={confirmRemoveCompletedTaskListItems}
         confirmVariant="destructive"
       />
     </DropdownMenu>

@@ -1,5 +1,5 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import { BookmarkIcon, EyeOffIcon, MessageCircleMoreIcon } from "lucide-react";
+import { BookmarkIcon, MessageCircleMoreIcon } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -16,19 +16,11 @@ import VisibilityIcon from "../../VisibilityIcon";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
 import type { MemoHeaderProps } from "../types";
 
-const MemoHeader: React.FC<MemoHeaderProps> = ({
-  showCreator,
-  showVisibility,
-  showPinned,
-  onEdit,
-  onGotoDetail,
-  onUnpin,
-  onToggleNsfwVisibility,
-}) => {
+const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, showPinned, onEdit, onGotoDetail, onUnpin }) => {
   const t = useTranslate();
   const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
 
-  const { memo, creator, currentUser, parentPage, isArchived, readonly, showNSFWContent, nsfw } = useMemoViewContext();
+  const { memo, creator, currentUser, parentPage, isArchived, readonly } = useMemoViewContext();
   const { isInMemoDetailPage, commentAmount, relativeTimeFormat } = useMemoViewDerived();
 
   const displayTime = isArchived ? (
@@ -98,12 +90,6 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        )}
-
-        {nsfw && showNSFWContent && onToggleNsfwVisibility && (
-          <span className="cursor-pointer">
-            <EyeOffIcon className="w-4 h-auto text-primary" onClick={onToggleNsfwVisibility} />
-          </span>
         )}
 
         <MemoActionMenu memo={memo} readonly={readonly} onEdit={onEdit} />

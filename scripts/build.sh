@@ -29,4 +29,4 @@ go build -o "$OUTPUT" ./cmd/memos
 
 echo "Build successful!"
 echo "To run the application, execute the following command:"
-echo "$OUTPUT --mode dev"
+echo "$OUTPUT"

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"reflect"
 	"runtime/debug"
 
 	"connectrpc.com/connect"
@@ -50,8 +51,28 @@ func (*MetadataInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc 
 
 		// Set metadata in context so services can use metadata.FromIncomingContext()
 		ctx = metadata.NewIncomingContext(ctx, md)
-		return next(ctx, req)
+
+		// Execute the request
+		resp, err := next(ctx, req)
+
+		// Prevent browser caching of API responses to avoid stale data issues
+		// See: https://github.com/usememos/memos/issues/5470
+		if !isNilAnyResponse(resp) && resp.Header() != nil {
+			resp.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+			resp.Header().Set("Pragma", "no-cache")
+			resp.Header().Set("Expires", "0")
+		}
+
+		return resp, err
 	}
+}
+
+func isNilAnyResponse(resp connect.AnyResponse) bool {
+	if resp == nil {
+		return true
+	}
+	val := reflect.ValueOf(resp)
+	return val.Kind() == reflect.Ptr && val.IsNil()
 }
 
 func (*MetadataInterceptor) WrapStreamingClient(next connect.StreamingClientFunc) connect.StreamingClientFunc {
@@ -201,17 +222,7 @@ func (in *AuthInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 			return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("authentication required"))
 		}
 
-		// Set context based on auth result
-		if result != nil {
-			if result.Claims != nil {
-				// Access Token V2 - stateless, use claims
-				ctx = auth.SetUserClaimsInContext(ctx, result.Claims)
-				ctx = context.WithValue(ctx, auth.UserIDContextKey, result.Claims.UserID)
-			} else if result.User != nil {
-				// PAT - have full user
-				ctx = auth.SetUserInContext(ctx, result.User, result.AccessToken)
-			}
-		}
+		ctx = auth.ApplyToContext(ctx, result)
 
 		return next(ctx, req)
 	}

@@ -81,3 +81,19 @@ func GetUserClaims(ctx context.Context) *UserClaims {
 func SetUserClaimsInContext(ctx context.Context, claims *UserClaims) context.Context {
 	return context.WithValue(ctx, UserClaimsContextKey, claims)
 }
+
+// ApplyToContext sets the authenticated identity from an AuthResult into the context.
+// This is the canonical way to propagate auth state after a successful Authenticate call.
+// Safe to call with a nil result (no-op).
+func ApplyToContext(ctx context.Context, result *AuthResult) context.Context {
+	if result == nil {
+		return ctx
+	}
+	if result.Claims != nil {
+		ctx = SetUserClaimsInContext(ctx, result.Claims)
+		ctx = context.WithValue(ctx, UserIDContextKey, result.Claims.UserID)
+	} else if result.User != nil {
+		ctx = SetUserInContext(ctx, result.User, result.AccessToken)
+	}
+	return ctx
+}

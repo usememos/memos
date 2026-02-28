@@ -119,6 +119,15 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         },
       };
 
+    case "SET_TIMESTAMPS":
+      return {
+        ...state,
+        timestamps: {
+          ...state.timestamps,
+          ...action.payload,
+        },
+      };
+
     case "RESET":
       return {
         ...initialState,

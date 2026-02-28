@@ -22,13 +22,15 @@ interface Props {
 
 function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: Props) {
   const t = useTranslate();
-  const [user, setUser] = useState(create(UserSchema, initialUser ? { username: initialUser.username, role: initialUser.role } : {}));
+  const [user, setUser] = useState(
+    create(UserSchema, initialUser ? { name: initialUser.name, username: initialUser.username, role: initialUser.role } : {}),
+  );
   const requestState = useLoading(false);
   const isCreating = !initialUser;
 
   useEffect(() => {
     if (initialUser) {
-      setUser(create(UserSchema, { username: initialUser.username, role: initialUser.role }));
+      setUser(create(UserSchema, { name: initialUser.name, username: initialUser.username, role: initialUser.role }));
     } else {
       setUser(create(UserSchema, {}));
     }
@@ -63,7 +65,8 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
         if (user.role !== initialUser?.role) {
           updateMask.push("role");
         }
-        await userServiceClient.updateUser({ user, updateMask: create(FieldMaskSchema, { paths: updateMask }) });
+        const userToUpdate = create(UserSchema, { ...user, name: initialUser?.name ?? user.name });
+        await userServiceClient.updateUser({ user: userToUpdate, updateMask: create(FieldMaskSchema, { paths: updateMask }) });
         toast.success("Update user successfully");
       }
       requestState.setFinish();

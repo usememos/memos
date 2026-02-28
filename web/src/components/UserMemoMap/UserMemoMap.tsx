@@ -8,7 +8,6 @@ import { MapContainer, Marker, Popup, useMap } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { Link } from "react-router-dom";
 import { defaultMarkerIcon, ThemedTileLayer } from "@/components/map/map-utils";
-import Spinner from "@/components/Spinner";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
@@ -64,13 +63,7 @@ const UserMemoMap = ({ creator, className }: Props) => {
 
   const memosWithLocation = useMemo(() => data?.pages.flatMap((page) => page.memos).filter((memo) => memo.location) || [], [data]);
 
-  if (isLoading) {
-    return (
-      <div className="w-full h-[380px] flex items-center justify-center rounded-xl border border-border bg-muted/30">
-        <Spinner className="w-8 h-8" />
-      </div>
-    );
-  }
+  if (isLoading) return null;
 
   const defaultCenter = { lat: 48.8566, lng: 2.3522 };
 
@@ -108,7 +101,7 @@ const UserMemoMap = ({ creator, className }: Props) => {
                         })}
                     </span>
                     <Link
-                      to={`/m/${memo.name.split("/").pop()}`}
+                      to={`/memos/${memo.name.split("/").pop()}`}
                       className="flex items-center gap-0.5 text-[10px] text-primary hover:opacity-80"
                     >
                       View

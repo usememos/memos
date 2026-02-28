@@ -1,17 +1,24 @@
-name: Stale
+name: Close Stale
 
 on:
   schedule:
-    - cron: "0 */8 * * *"
+    - cron: "0 */8 * * *" # Every 8 hours
 
 jobs:
-  stale:
+  close-stale:
+    name: Close Stale Issues and PRs
     runs-on: ubuntu-latest
     permissions:
       issues: write
-
+      pull-requests: write
     steps:
-      - uses: actions/stale@v10.0.0
+      - name: Mark and close stale issues and PRs
+        uses: actions/stale@v10.1.1
         with:
+          # Issues: mark stale after 14 days of inactivity, close after 3 more days
           days-before-issue-stale: 14
-          days-before-issue-close: 7
+          days-before-issue-close: 3
+
+          # Pull requests: mark stale after 14 days of inactivity, close after 3 more days
+          days-before-pr-stale: 14
+          days-before-pr-close: 3

@@ -6,7 +6,6 @@ export interface MemoViewProps {
   showCreator?: boolean;
   showVisibility?: boolean;
   showPinned?: boolean;
-  showNsfwContent?: boolean;
   className?: string;
   parentPage?: string;
 }
@@ -18,7 +17,6 @@ export interface MemoHeaderProps {
   onEdit: () => void;
   onGotoDetail: () => void;
   onUnpin: () => void;
-  onToggleNsfwVisibility?: () => void;
 }
 
 export interface MemoBodyProps {

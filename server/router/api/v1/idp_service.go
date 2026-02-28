@@ -21,7 +21,7 @@ func (s *APIV1Service) CreateIdentityProvider(ctx context.Context, request *v1pb
 	if currentUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	if currentUser.Role != store.RoleHost {
+	if currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -90,7 +90,7 @@ func (s *APIV1Service) UpdateIdentityProvider(ctx context.Context, request *v1pb
 	if currentUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	if currentUser.Role != store.RoleHost {
+	if currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -134,7 +134,7 @@ func (s *APIV1Service) DeleteIdentityProvider(ctx context.Context, request *v1pb
 	if currentUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	if currentUser.Role != store.RoleHost {
+	if currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -228,7 +228,7 @@ func convertIdentityProviderConfigToStore(identityProviderType v1pb.IdentityProv
 }
 
 func redactIdentityProviderResponse(identityProvider *v1pb.IdentityProvider, userRole store.Role) *v1pb.IdentityProvider {
-	if userRole != store.RoleHost {
+	if userRole != store.RoleAdmin {
 		if identityProvider.Type == v1pb.IdentityProvider_OAUTH2 {
 			identityProvider.Config.GetOauth2Config().ClientSecret = ""
 		}

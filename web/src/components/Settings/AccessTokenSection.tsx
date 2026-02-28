@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
+import { handleError } from "@/lib/error";
 import { CreatePersonalAccessTokenResponse, PersonalAccessToken } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateAccessTokenDialog from "../CreateAccessTokenDialog";
@@ -30,10 +31,23 @@ const AccessTokenSection = () => {
   const [deleteTarget, setDeleteTarget] = useState<PersonalAccessToken | undefined>(undefined);
 
   useEffect(() => {
-    listAccessTokens(currentUser?.name ?? "").then((tokens) => {
-      setPersonalAccessTokens(tokens);
-    });
-  }, []);
+    if (!currentUser?.name) return;
+    let canceled = false;
+    listAccessTokens(currentUser.name)
+      .then((tokens) => {
+        if (!canceled) {
+          setPersonalAccessTokens(tokens);
+        }
+      })
+      .catch((error: unknown) => {
+        if (!canceled) {
+          handleError(error, toast.error, { context: "List access tokens" });
+        }
+      });
+    return () => {
+      canceled = true;
+    };
+  }, [currentUser?.name]);
 
   const handleCreateAccessTokenDialogConfirm = async (response: CreatePersonalAccessTokenResponse) => {
     const tokens = await listAccessTokens(currentUser?.name ?? "");

@@ -5,12 +5,13 @@ import { useEffect, useState } from "react";
 import RelationCard from "@/components/MemoView/components/metadata/RelationCard";
 import { memoServiceClient } from "@/connect";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
-import { MemoRelation_Memo, MemoRelation_MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { MemoRelation_Memo, MemoRelation_MemoSchema, MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 
 interface RelationListProps {
   relations: MemoRelation[];
   onRelationsChange?: (relations: MemoRelation[]) => void;
   parentPage?: string;
+  memoName?: string;
 }
 
 const RelationItemCard: FC<{
@@ -37,12 +38,13 @@ const RelationItemCard: FC<{
   );
 };
 
-const RelationList: FC<RelationListProps> = ({ relations, onRelationsChange, parentPage }) => {
+const RelationList: FC<RelationListProps> = ({ relations, onRelationsChange, parentPage, memoName }) => {
+  const referenceRelations = relations.filter((r) => r.type === MemoRelation_Type.REFERENCE && (!memoName || r.memo?.name === memoName));
   const [fetchedMemos, setFetchedMemos] = useState<Record<string, MemoRelation_Memo>>({});
 
   useEffect(() => {
     (async () => {
-      const missingSnippetRelations = relations.filter((relation) => !relation.relatedMemo?.snippet && relation.relatedMemo?.name);
+      const missingSnippetRelations = referenceRelations.filter((relation) => !relation.relatedMemo?.snippet && relation.relatedMemo?.name);
       if (missingSnippetRelations.length > 0) {
         const requests = missingSnippetRelations.map(async (relation) => {
           const memo = await memoServiceClient.getMemo({ name: relation.relatedMemo!.name });
@@ -58,7 +60,7 @@ const RelationList: FC<RelationListProps> = ({ relations, onRelationsChange, par
         });
       }
     })();
-  }, [relations]);
+  }, [referenceRelations]);
 
   const handleDeleteRelation = (memoName: string) => {
     if (onRelationsChange) {
@@ -66,19 +68,19 @@ const RelationList: FC<RelationListProps> = ({ relations, onRelationsChange, par
     }
   };
 
-  if (relations.length === 0) {
+  if (referenceRelations.length === 0) {
     return null;
   }
 
   return (
     <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
-      <div className="flex items-center gap-1.5 px-2 py-1.5 border-b border-border bg-muted/30">
+      <div className="flex items-center gap-1.5 px-2 py-1 border-b border-border bg-muted/30">
         <LinkIcon className="w-3.5 h-3.5 text-muted-foreground" />
-        <span className="text-xs font-medium text-muted-foreground">Relations ({relations.length})</span>
+        <span className="text-xs text-foreground">Relations ({referenceRelations.length})</span>
       </div>
 
       <div className="p-1 sm:p-1.5 flex flex-col gap-0.5">
-        {relations.map((relation) => {
+        {referenceRelations.map((relation) => {
           const relatedMemo = relation.relatedMemo!;
           const memo = relatedMemo.snippet ? relatedMemo : fetchedMemos[relatedMemo.name] || relatedMemo;
           return <RelationItemCard key={memo.name} memo={memo} onRemove={() => handleDeleteRelation(memo.name)} parentPage={parentPage} />;

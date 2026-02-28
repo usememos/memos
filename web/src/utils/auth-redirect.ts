@@ -1,4 +1,4 @@
-import { getInstanceConfig } from "@/instance-config";
+import { clearAccessToken } from "@/auth-state";
 import { ROUTES } from "@/router/routes";
 
 const PUBLIC_ROUTES = [
@@ -26,11 +26,10 @@ export function redirectOnAuthFailure(): void {
     return;
   }
 
-  const disallowPublicVisibility = getInstanceConfig().memoRelatedSetting.disallowPublicVisibility;
-  const target = disallowPublicVisibility ? ROUTES.AUTH : ROUTES.EXPLORE;
-
-  // Only redirect if it's a private route or disallowPublicVisibility is enabled
-  if (disallowPublicVisibility || isPrivateRoute(currentPath)) {
-    window.location.replace(target);
+  // Always redirect to auth page on auth failure - the user's session expired
+  // and they should re-authenticate rather than being sent to explore.
+  if (isPrivateRoute(currentPath)) {
+    clearAccessToken();
+    window.location.replace(ROUTES.AUTH);
   }
 }

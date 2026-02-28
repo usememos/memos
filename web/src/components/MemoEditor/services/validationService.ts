@@ -7,6 +7,11 @@ export interface ValidationResult {
 
 export const validationService = {
   canSave(state: EditorState): ValidationResult {
+    // Cannot save while loading initial content
+    if (state.ui.isLoading.loading) {
+      return { valid: false, reason: "Loading memo content" };
+    }
+
     // Must have content, attachment, or local file
     if (!state.content.trim() && state.metadata.attachments.length === 0 && state.localFiles.length === 0) {
       return { valid: false, reason: "Content, attachment, or file required" };

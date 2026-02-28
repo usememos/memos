@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
-	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
@@ -13,7 +12,6 @@ import (
 
 	"github.com/google/cel-go/cel"
 	"github.com/google/cel-go/common/ast"
-	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
@@ -23,6 +21,7 @@ import (
 
 	"github.com/usememos/memos/internal/base"
 	"github.com/usememos/memos/internal/util"
+	"github.com/usememos/memos/plugin/webhook"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/auth"
@@ -37,7 +36,7 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 	if currentUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	if currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin {
+	if currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -132,17 +131,17 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 	// Determine the role to assign
 	var roleToAssign store.Role
 	if isFirstUser {
-		// First-time setup: create the first user as HOST (no authentication required)
-		roleToAssign = store.RoleHost
-	} else if currentUser != nil && currentUser.Role == store.RoleHost {
-		// Authenticated HOST user can create users with any role specified in request
+		// First-time setup: create the first user as ADMIN (no authentication required)
+		roleToAssign = store.RoleAdmin
+	} else if currentUser != nil && currentUser.Role == store.RoleAdmin {
+		// Authenticated ADMIN user can create users with any role specified in request
 		if request.User.Role != v1pb.User_ROLE_UNSPECIFIED {
 			roleToAssign = convertUserRoleToStore(request.User.Role)
 		} else {
 			roleToAssign = store.RoleUser
 		}
 	} else {
-		// Unauthenticated or non-HOST users can only create normal users
+		// Unauthenticated or non-ADMIN users can only create normal users
 		roleToAssign = store.RoleUser
 	}
 
@@ -163,7 +162,7 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.User.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, echo.NewHTTPError(http.StatusInternalServerError, "failed to generate password hash").SetInternal(err)
+		return nil, status.Errorf(codes.Internal, "failed to generate password hash: %v", err)
 	}
 
 	user, err := s.Store.CreateUser(ctx, &store.User{
@@ -197,7 +196,7 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 	}
 	// Check permission.
 	// Only allow admin or self to update user.
-	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin && currentUser.Role != store.RoleHost {
+	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -264,7 +263,7 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 			update.Description = &request.User.Description
 		case "role":
 			// Only allow admin to update role.
-			if currentUser.Role != store.RoleAdmin && currentUser.Role != store.RoleHost {
+			if currentUser.Role != store.RoleAdmin {
 				return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 			}
 			role := convertUserRoleToStore(request.User.Role)
@@ -272,7 +271,7 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 		case "password":
 			passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.User.Password), bcrypt.DefaultCost)
 			if err != nil {
-				return nil, echo.NewHTTPError(http.StatusInternalServerError, "failed to generate password hash").SetInternal(err)
+				return nil, status.Errorf(codes.Internal, "failed to generate password hash: %v", err)
 			}
 			passwordHashStr := string(passwordHash)
 			update.PasswordHash = &passwordHashStr
@@ -301,7 +300,10 @@ func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserR
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
-	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin && currentUser.Role != store.RoleHost {
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -542,7 +544,7 @@ func (s *APIV1Service) ListPersonalAccessTokens(ctx context.Context, request *v1
 	claims := auth.GetUserClaims(ctx)
 	if claims == nil || claims.UserID != userID {
 		currentUser, _ := s.fetchCurrentUser(ctx)
-		if currentUser == nil || (currentUser.ID != userID && currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin) {
+		if currentUser == nil || (currentUser.ID != userID && currentUser.Role != store.RoleAdmin) {
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 		}
 	}
@@ -689,7 +691,7 @@ func (s *APIV1Service) ListUserWebhooks(ctx context.Context, request *v1pb.ListU
 	if currentUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	if currentUser.ID != userID && currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin {
+	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -721,12 +723,15 @@ func (s *APIV1Service) CreateUserWebhook(ctx context.Context, request *v1pb.Crea
 	if currentUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	if currentUser.ID != userID && currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin {
+	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
 	if request.Webhook.Url == "" {
 		return nil, status.Errorf(codes.InvalidArgument, "webhook URL is required")
+	}
+	if err := webhook.ValidateURL(strings.TrimSpace(request.Webhook.Url)); err != nil {
+		return nil, err
 	}
 
 	webhookID := generateUserWebhookID()
@@ -761,7 +766,7 @@ func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.Upda
 	if currentUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	if currentUser.ID != userID && currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin {
+	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -796,7 +801,11 @@ func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.Upda
 			switch path {
 			case "url":
 				if request.Webhook.Url != "" {
-					updatedWebhook.Url = strings.TrimSpace(request.Webhook.Url)
+					trimmed := strings.TrimSpace(request.Webhook.Url)
+					if err := webhook.ValidateURL(trimmed); err != nil {
+						return nil, err
+					}
+					updatedWebhook.Url = trimmed
 				}
 			case "display_name":
 				updatedWebhook.Title = request.Webhook.DisplayName
@@ -807,7 +816,11 @@ func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.Upda
 	} else {
 		// If no update mask is provided, update all fields
 		if request.Webhook.Url != "" {
-			updatedWebhook.Url = strings.TrimSpace(request.Webhook.Url)
+			trimmed := strings.TrimSpace(request.Webhook.Url)
+			if err := webhook.ValidateURL(trimmed); err != nil {
+				return nil, err
+			}
+			updatedWebhook.Url = trimmed
 		}
 		updatedWebhook.Title = request.Webhook.DisplayName
 	}
@@ -833,7 +846,7 @@ func (s *APIV1Service) DeleteUserWebhook(ctx context.Context, request *v1pb.Dele
 	if currentUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	if currentUser.ID != userID && currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin {
+	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -928,8 +941,6 @@ func convertUserFromStore(user *store.User) *v1pb.User {
 
 func convertUserRoleFromStore(role store.Role) v1pb.User_Role {
 	switch role {
-	case store.RoleHost:
-		return v1pb.User_HOST
 	case store.RoleAdmin:
 		return v1pb.User_ADMIN
 	case store.RoleUser:
@@ -941,8 +952,6 @@ func convertUserRoleFromStore(role store.Role) v1pb.User_Role {
 
 func convertUserRoleToStore(role v1pb.User_Role) store.Role {
 	switch role {
-	case v1pb.User_HOST:
-		return store.RoleHost
 	case v1pb.User_ADMIN:
 		return store.RoleAdmin
 	default:

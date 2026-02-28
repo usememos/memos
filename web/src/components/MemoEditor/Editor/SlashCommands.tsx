@@ -33,7 +33,7 @@ const SlashCommands = ({ editorRef, editorActions, commands }: SlashCommandsProp
       onItemSelect={handleItemSelect}
       getItemKey={(cmd) => cmd.name}
       renderItem={(cmd) => (
-        <span className="font-medium tracking-wide">
+        <span className="tracking-wide">
           <span className="text-muted-foreground">/</span>
           {cmd.name}
         </span>

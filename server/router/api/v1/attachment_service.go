@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io"
+	"log/slog"
 	"mime"
 	"net/http"
 	"os"
@@ -14,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/disintegration/imaging"
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
@@ -38,11 +40,26 @@ const (
 	MebiByte                 = 1024 * 1024
 	// ThumbnailCacheFolder is the folder name where the thumbnail images are stored.
 	ThumbnailCacheFolder = ".thumbnail_cache"
+
+	// defaultJPEGQuality is the JPEG quality used when re-encoding images for EXIF stripping.
+	// Quality 95 maintains visual quality while ensuring metadata is removed.
+	defaultJPEGQuality = 95
 )
 
 var SupportedThumbnailMimeTypes = []string{
 	"image/png",
 	"image/jpeg",
+}
+
+// exifCapableImageTypes defines image formats that may contain EXIF metadata.
+// These formats will have their EXIF metadata stripped on upload for privacy.
+var exifCapableImageTypes = map[string]bool{
+	"image/jpeg": true,
+	"image/jpg":  true,
+	"image/tiff": true,
+	"image/webp": true,
+	"image/heic": true,
+	"image/heif": true,
 }
 
 func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.CreateAttachmentRequest) (*v1pb.Attachment, error) {
@@ -110,6 +127,21 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 	}
 	create.Size = int64(size)
 	create.Blob = request.Attachment.Content
+
+	// Strip EXIF metadata from images for privacy protection.
+	// This removes sensitive information like GPS location, device details, etc.
+	if shouldStripExif(create.Type) {
+		if strippedBlob, err := stripImageExif(create.Blob, create.Type); err != nil {
+			// Log warning but continue with original image to ensure uploads don't fail.
+			slog.Warn("failed to strip EXIF metadata from image",
+				slog.String("type", create.Type),
+				slog.String("filename", create.Filename),
+				slog.String("error", err.Error()))
+		} else {
+			create.Blob = strippedBlob
+			create.Size = int64(len(strippedBlob))
+		}
+	}
 
 	if err := SaveAttachmentBlob(ctx, s.Profile, s.Store, create); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to save attachment blob: %v", err)
@@ -214,6 +246,12 @@ func (s *APIV1Service) GetAttachment(ctx context.Context, request *v1pb.GetAttac
 	if attachment == nil {
 		return nil, status.Errorf(codes.NotFound, "attachment not found")
 	}
+
+	// Check access permission based on linked memo visibility.
+	if err := s.checkAttachmentAccess(ctx, attachment); err != nil {
+		return nil, err
+	}
+
 	return convertAttachmentFromStore(attachment), nil
 }
 
@@ -225,9 +263,23 @@ func (s *APIV1Service) UpdateAttachment(ctx context.Context, request *v1pb.Updat
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is required")
 	}
+	user, err := s.fetchCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
 	attachment, err := s.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachmentUID})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get attachment: %v", err)
+	}
+	if attachment == nil {
+		return nil, status.Errorf(codes.NotFound, "attachment not found")
+	}
+	// Only the creator or admin can update the attachment.
+	if attachment.CreatorID != user.ID && !isSuperUser(user) {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
 	currentTs := time.Now().Unix()
@@ -515,4 +567,90 @@ func (s *APIV1Service) validateAttachmentFilter(ctx context.Context, filterStr s
 		return errors.Wrap(err, "failed to compile filter")
 	}
 	return nil
+}
+
+// checkAttachmentAccess verifies the user has permission to access the attachment.
+// For unlinked attachments (no memo), only the creator can access.
+// For linked attachments, access follows the memo's visibility rules.
+func (s *APIV1Service) checkAttachmentAccess(ctx context.Context, attachment *store.Attachment) error {
+	user, _ := s.fetchCurrentUser(ctx)
+
+	// For unlinked attachments, only the creator can access.
+	if attachment.MemoID == nil {
+		if user == nil {
+			return status.Errorf(codes.Unauthenticated, "user not authenticated")
+		}
+		if attachment.CreatorID != user.ID && !isSuperUser(user) {
+			return status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+		return nil
+	}
+
+	// For linked attachments, check memo visibility.
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{ID: attachment.MemoID})
+	if err != nil {
+		return status.Errorf(codes.Internal, "failed to get memo: %v", err)
+	}
+	if memo == nil {
+		return status.Errorf(codes.NotFound, "memo not found")
+	}
+
+	if memo.Visibility == store.Public {
+		return nil
+	}
+	if user == nil {
+		return status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+	if memo.Visibility == store.Private && memo.CreatorID != user.ID && !isSuperUser(user) {
+		return status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+	return nil
+}
+
+// shouldStripExif checks if the MIME type is an image format that may contain EXIF metadata.
+// Returns true for formats like JPEG, TIFF, WebP, HEIC, and HEIF which commonly contain
+// privacy-sensitive metadata such as GPS coordinates, camera settings, and device information.
+func shouldStripExif(mimeType string) bool {
+	return exifCapableImageTypes[mimeType]
+}
+
+// stripImageExif removes EXIF metadata from image files by decoding and re-encoding them.
+// This prevents exposure of sensitive metadata such as GPS location, camera details, and timestamps.
+//
+// The function preserves the correct image orientation by applying EXIF orientation tags
+// during decoding before stripping all metadata. Images are re-encoded with high quality
+// to minimize visual degradation.
+//
+// Supported formats:
+//   - JPEG/JPG: Re-encoded as JPEG with quality 95
+//   - PNG: Re-encoded as PNG (lossless)
+//   - TIFF/WebP/HEIC/HEIF: Re-encoded as JPEG with quality 95
+//
+// Returns the cleaned image data without any EXIF metadata, or an error if processing fails.
+func stripImageExif(imageData []byte, mimeType string) ([]byte, error) {
+	// Decode image with automatic EXIF orientation correction.
+	// This ensures the image displays correctly after metadata removal.
+	img, err := imaging.Decode(bytes.NewReader(imageData), imaging.AutoOrientation(true))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to decode image")
+	}
+
+	// Re-encode the image without EXIF metadata.
+	var buf bytes.Buffer
+	var encodeErr error
+
+	if mimeType == "image/png" {
+		// Preserve PNG format for lossless encoding
+		encodeErr = imaging.Encode(&buf, img, imaging.PNG)
+	} else {
+		// For JPEG, TIFF, WebP, HEIC, HEIF - re-encode as JPEG.
+		// This ensures EXIF is stripped and provides good compression.
+		encodeErr = imaging.Encode(&buf, img, imaging.JPEG, imaging.JPEGQuality(defaultJPEGQuality))
+	}
+
+	if encodeErr != nil {
+		return nil, errors.Wrap(encodeErr, "failed to encode image")
+	}
+
+	return buf.Bytes(), nil
 }

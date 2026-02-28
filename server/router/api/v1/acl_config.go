@@ -29,8 +29,9 @@ var PublicMethods = map[string]struct{}{
 	"/memos.api.v1.IdentityProviderService/ListIdentityProviders": {},
 
 	// Memo Service - public memos (visibility filtering done in service layer)
-	"/memos.api.v1.MemoService/GetMemo":   {},
-	"/memos.api.v1.MemoService/ListMemos": {},
+	"/memos.api.v1.MemoService/GetMemo":          {},
+	"/memos.api.v1.MemoService/ListMemos":        {},
+	"/memos.api.v1.MemoService/ListMemoComments": {},
 }
 
 // IsPublicMethod checks if a procedure path is public (no authentication required).

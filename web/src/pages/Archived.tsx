@@ -1,4 +1,3 @@
-import { MemoRenderContext } from "@/components/MasonryView";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import { useMemoFilters, useMemoSorting } from "@/hooks";
@@ -24,9 +23,7 @@ const Archived = () => {
 
   return (
     <PagedMemoList
-      renderer={(memo: Memo, context?: MemoRenderContext) => (
-        <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showVisibility compact={context?.compact} />
-      )}
+      renderer={(memo: Memo) => <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showVisibility compact />}
       listSort={listSort}
       state={State.ARCHIVED}
       orderBy={orderBy}

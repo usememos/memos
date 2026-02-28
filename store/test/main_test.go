@@ -13,7 +13,7 @@ func TestMain(m *testing.M) {
 	// If DRIVER is set, run tests for that driver only
 	if os.Getenv("DRIVER") != "" {
 		defer TerminateContainers()
-		m.Run()
+		m.Run() //nolint:revive // Exit code is handled by test runner
 		return
 	}
 

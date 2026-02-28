@@ -1,21 +1,43 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { useInstance } from "@/contexts/InstanceContext";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { CalendarCell } from "./CalendarCell";
-import { DEFAULT_CELL_SIZE, SMALL_CELL_SIZE } from "./constants";
 import { useTodayDate, useWeekdayLabels } from "./hooks";
-import type { MonthCalendarProps } from "./types";
+import type { CalendarSize, MonthCalendarProps } from "./types";
 import { useCalendarMatrix } from "./useCalendar";
 import { getTooltipText } from "./utils";
 
+const GRID_STYLES: Record<CalendarSize, { gap: string; headerText: string }> = {
+  small: { gap: "gap-1.5", headerText: "text-[10px]" },
+  default: { gap: "gap-2", headerText: "text-xs" },
+};
+
+interface WeekdayHeaderProps {
+  weekDays: string[];
+  size: CalendarSize;
+}
+
+const WeekdayHeader = memo(({ weekDays, size }: WeekdayHeaderProps) => (
+  <div className={cn("grid grid-cols-7 mb-1", GRID_STYLES[size].gap, GRID_STYLES[size].headerText)} role="row">
+    {weekDays.map((label, index) => (
+      <div
+        key={index}
+        className="flex h-4 items-center justify-center font-medium uppercase tracking-wide text-muted-foreground/60"
+        role="columnheader"
+        aria-label={label}
+      >
+        {label}
+      </div>
+    ))}
+  </div>
+));
+WeekdayHeader.displayName = "WeekdayHeader";
+
 export const MonthCalendar = memo((props: MonthCalendarProps) => {
-  const { month, data, maxCount, size = "default", onClick, className } = props;
+  const { month, data, maxCount, size = "default", onClick, className, disableTooltips = false } = props;
   const t = useTranslate();
   const { generalSetting } = useInstance();
-
-  const weekStartDayOffset = generalSetting.weekStartDayOffset;
-
   const today = useTodayDate();
   const weekDays = useWeekdayLabels();
 
@@ -23,40 +45,29 @@ export const MonthCalendar = memo((props: MonthCalendarProps) => {
     month,
     data,
     weekDays,
-    weekStartDayOffset,
+    weekStartDayOffset: generalSetting.weekStartDayOffset,
     today,
     selectedDate: "",
   });
 
-  const sizeConfig = size === "small" ? SMALL_CELL_SIZE : DEFAULT_CELL_SIZE;
+  const flatDays = useMemo(() => weeks.flatMap((week) => week.days), [weeks]);
 
   return (
-    <div className={cn("flex flex-col gap-2", className)}>
-      <div className={cn("grid grid-cols-7", sizeConfig.gap, "text-muted-foreground mb-1", size === "small" ? "text-[10px]" : "text-xs")}>
-        {rotatedWeekDays.map((label, index) => (
-          <div key={index} className="flex h-4 items-center justify-center text-muted-foreground/60 font-medium">
-            {label}
-          </div>
+    <div className={cn("flex flex-col", className)} role="grid" aria-label={`Calendar for ${month}`}>
+      <WeekdayHeader weekDays={rotatedWeekDays} size={size} />
+
+      <div className={cn("grid grid-cols-7", GRID_STYLES[size].gap)} role="rowgroup">
+        {flatDays.map((day) => (
+          <CalendarCell
+            key={day.date}
+            day={day}
+            maxCount={maxCount}
+            tooltipText={getTooltipText(day.count, day.date, t)}
+            onClick={onClick}
+            size={size}
+            disableTooltip={disableTooltips}
+          />
         ))}
-      </div>
-
-      <div className={cn("grid grid-cols-7", sizeConfig.gap)}>
-        {weeks.map((week, weekIndex) =>
-          week.days.map((day, dayIndex) => {
-            const tooltipText = getTooltipText(day.count, day.date, t);
-
-            return (
-              <CalendarCell
-                key={`${weekIndex}-${dayIndex}-${day.date}`}
-                day={day}
-                maxCount={maxCount}
-                tooltipText={tooltipText}
-                onClick={onClick}
-                size={size}
-              />
-            );
-          }),
-        )}
       </div>
     </div>
   );

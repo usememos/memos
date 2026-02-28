@@ -70,31 +70,6 @@ export function toggleTaskAtIndex(markdown: string, taskIndex: number, checked: 
   return toggleTaskAtLine(markdown, task.lineNumber, checked);
 }
 
-export function removeCompletedTasks(markdown: string): string {
-  const tasks = extractTasksFromAst(markdown);
-  const completedLineNumbers = new Set(tasks.filter((t) => t.checked).map((t) => t.lineNumber));
-
-  if (completedLineNumbers.size === 0) {
-    return markdown;
-  }
-
-  const lines = markdown.split("\n");
-  const result: string[] = [];
-
-  for (let i = 0; i < lines.length; i++) {
-    if (completedLineNumbers.has(i)) {
-      // Also skip the following line if it's empty (preserve spacing)
-      if (i + 1 < lines.length && lines[i + 1].trim() === "") {
-        i++;
-      }
-      continue;
-    }
-    result.push(lines[i]);
-  }
-
-  return result.join("\n");
-}
-
 export function countTasks(markdown: string): {
   total: number;
   completed: number;
@@ -110,11 +85,6 @@ export function countTasks(markdown: string): {
     completed,
     incomplete: total - completed,
   };
-}
-
-export function hasCompletedTasks(markdown: string): boolean {
-  const tasks = extractTasksFromAst(markdown);
-  return tasks.some((t) => t.checked);
 }
 
 export function getTaskLineNumber(markdown: string, taskIndex: number): number {

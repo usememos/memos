@@ -27,6 +27,10 @@ interface InstanceState {
   settings: InstanceSetting[];
   isInitialized: boolean;
   isLoading: boolean;
+  // True only when the profile was successfully fetched from the server.
+  // Remains false if initialization failed, so consumers can distinguish
+  // "no admin exists" from "failed to load profile".
+  profileLoaded: boolean;
 }
 
 interface InstanceContextValue extends InstanceState {
@@ -46,6 +50,7 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
     settings: [],
     isInitialized: false,
     isLoading: true,
+    profileLoaded: false,
   });
 
   // Memoize derived settings to prevent unnecessary recalculations
@@ -97,6 +102,7 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
         settings: [generalSetting, memoRelatedSettingResponse],
         isInitialized: true,
         isLoading: false,
+        profileLoaded: true,
       });
     } catch (error) {
       console.error("Failed to initialize instance:", error);

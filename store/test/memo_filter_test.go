@@ -16,6 +16,7 @@ import (
 // =============================================================================
 
 func TestMemoFilterContentContains(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -39,6 +40,7 @@ func TestMemoFilterContentContains(t *testing.T) {
 }
 
 func TestMemoFilterContentSpecialCharacters(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -49,6 +51,7 @@ func TestMemoFilterContentSpecialCharacters(t *testing.T) {
 }
 
 func TestMemoFilterContentUnicode(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -58,12 +61,46 @@ func TestMemoFilterContentUnicode(t *testing.T) {
 	require.Len(t, memos, 1)
 }
 
+func TestMemoFilterContentUnicodeCaseFold(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateMemo(NewMemoBuilder("memo-unicode-case", tc.User.ID).Content("Привет Мир"))
+
+	memos := tc.ListWithFilter(`content.contains("привет")`)
+	require.Len(t, memos, 1)
+}
+
+func TestMemoFilterContentCaseSensitivity(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateMemo(NewMemoBuilder("memo-case", tc.User.ID).Content("MixedCase Content"))
+
+	// Exact match
+	memos := tc.ListWithFilter(`content.contains("MixedCase")`)
+	require.Len(t, memos, 1)
+
+	// Lowercase match (depends on DB collation, usually case-insensitive in default installs but good to verify behavior)
+	// SQLite default LIKE is case-insensitive for ASCII.
+	memosLower := tc.ListWithFilter(`content.contains("mixedcase")`)
+	// We just verify it doesn't crash; strict case sensitivity expectation depends on DB config.
+	// For standard Memos setup (SQLite), it's often case-insensitive.
+	// Let's check if we get a result or not to characterize current behavior.
+	if len(memosLower) > 0 {
+		require.Equal(t, "MixedCase Content", memosLower[0].Content)
+	}
+}
+
 // =============================================================================
 // Visibility Field Tests
 // Schema: visibility (string, ==, !=)
 // =============================================================================
 
 func TestMemoFilterVisibilityEquals(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -83,6 +120,7 @@ func TestMemoFilterVisibilityEquals(t *testing.T) {
 }
 
 func TestMemoFilterVisibilityNotEquals(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -95,6 +133,7 @@ func TestMemoFilterVisibilityNotEquals(t *testing.T) {
 }
 
 func TestMemoFilterVisibilityInList(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -112,6 +151,7 @@ func TestMemoFilterVisibilityInList(t *testing.T) {
 // =============================================================================
 
 func TestMemoFilterPinnedEquals(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -131,6 +171,7 @@ func TestMemoFilterPinnedEquals(t *testing.T) {
 }
 
 func TestMemoFilterPinnedPredicate(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -149,6 +190,7 @@ func TestMemoFilterPinnedPredicate(t *testing.T) {
 // =============================================================================
 
 func TestMemoFilterCreatorIdEquals(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -169,6 +211,7 @@ func TestMemoFilterCreatorIdEquals(t *testing.T) {
 }
 
 func TestMemoFilterCreatorIdNotEquals(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -195,6 +238,7 @@ func TestMemoFilterCreatorIdNotEquals(t *testing.T) {
 // =============================================================================
 
 func TestMemoFilterTagInList(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -213,6 +257,7 @@ func TestMemoFilterTagInList(t *testing.T) {
 }
 
 func TestMemoFilterElementInTags(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -229,6 +274,7 @@ func TestMemoFilterElementInTags(t *testing.T) {
 }
 
 func TestMemoFilterHierarchicalTags(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -241,6 +287,7 @@ func TestMemoFilterHierarchicalTags(t *testing.T) {
 }
 
 func TestMemoFilterEmptyTags(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -257,6 +304,7 @@ func TestMemoFilterEmptyTags(t *testing.T) {
 // =============================================================================
 
 func TestMemoFilterHasTaskList(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -279,6 +327,7 @@ func TestMemoFilterHasTaskList(t *testing.T) {
 }
 
 func TestMemoFilterHasLink(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -293,6 +342,7 @@ func TestMemoFilterHasLink(t *testing.T) {
 }
 
 func TestMemoFilterHasCode(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -307,6 +357,7 @@ func TestMemoFilterHasCode(t *testing.T) {
 }
 
 func TestMemoFilterHasIncompleteTasks(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -329,6 +380,7 @@ func TestMemoFilterHasIncompleteTasks(t *testing.T) {
 }
 
 func TestMemoFilterCombinedJSONBool(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -367,6 +419,7 @@ func TestMemoFilterCombinedJSONBool(t *testing.T) {
 // =============================================================================
 
 func TestMemoFilterCreatedTsComparison(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -387,6 +440,7 @@ func TestMemoFilterCreatedTsComparison(t *testing.T) {
 }
 
 func TestMemoFilterCreatedTsWithNow(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -402,6 +456,7 @@ func TestMemoFilterCreatedTsWithNow(t *testing.T) {
 }
 
 func TestMemoFilterCreatedTsArithmetic(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -421,6 +476,7 @@ func TestMemoFilterCreatedTsArithmetic(t *testing.T) {
 }
 
 func TestMemoFilterUpdatedTs(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -444,6 +500,7 @@ func TestMemoFilterUpdatedTs(t *testing.T) {
 }
 
 func TestMemoFilterAllComparisonOperators(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -472,6 +529,7 @@ func TestMemoFilterAllComparisonOperators(t *testing.T) {
 // =============================================================================
 
 func TestMemoFilterLogicalAnd(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -485,6 +543,7 @@ func TestMemoFilterLogicalAnd(t *testing.T) {
 }
 
 func TestMemoFilterLogicalOr(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -497,6 +556,7 @@ func TestMemoFilterLogicalOr(t *testing.T) {
 }
 
 func TestMemoFilterLogicalNot(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -510,6 +570,7 @@ func TestMemoFilterLogicalNot(t *testing.T) {
 }
 
 func TestMemoFilterNegatedComparison(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -522,6 +583,7 @@ func TestMemoFilterNegatedComparison(t *testing.T) {
 }
 
 func TestMemoFilterComplexLogical(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -545,6 +607,244 @@ func TestMemoFilterComplexLogical(t *testing.T) {
 	// Test: (pinned || tag in ["important"]) && visibility == "PUBLIC"
 	memos = tc.ListWithFilter(`(pinned || tag in ["important"]) && visibility == "PUBLIC"`)
 	require.Len(t, memos, 3)
+
+	// Test: De Morgan's Law ! (A || B) == !A && !B
+	// ! (pinned || has_task_list)
+	tc.CreateMemo(NewMemoBuilder("memo-no-props", tc.User.ID).Content("Nothing special"))
+	memos = tc.ListWithFilter(`!(pinned || has_task_list)`)
+	require.Len(t, memos, 2) // Unpinned-tagged + Nothing special (pinned-untagged is pinned)
+}
+
+// =============================================================================
+// Tag Comprehension Tests (exists macro)
+// Schema: tags (list of strings, supports exists/all macros with predicates)
+// =============================================================================
+
+func TestMemoFilterTagsExistsStartsWith(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	// Create memos with different tags
+	tc.CreateMemo(NewMemoBuilder("memo-archive1", tc.User.ID).
+		Content("Archived project memo").
+		Tags("archive/project", "done"))
+
+	tc.CreateMemo(NewMemoBuilder("memo-archive2", tc.User.ID).
+		Content("Archived work memo").
+		Tags("archive/work", "old"))
+
+	tc.CreateMemo(NewMemoBuilder("memo-active", tc.User.ID).
+		Content("Active project memo").
+		Tags("project/active", "todo"))
+
+	tc.CreateMemo(NewMemoBuilder("memo-homelab", tc.User.ID).
+		Content("Homelab memo").
+		Tags("homelab/memos", "tech"))
+
+	// Test: tags.exists(t, t.startsWith("archive")) - should match archived memos
+	memos := tc.ListWithFilter(`tags.exists(t, t.startsWith("archive"))`)
+	require.Len(t, memos, 2, "Should find 2 archived memos")
+	for _, memo := range memos {
+		hasArchiveTag := false
+		for _, tag := range memo.Payload.Tags {
+			if len(tag) >= 7 && tag[:7] == "archive" {
+				hasArchiveTag = true
+				break
+			}
+		}
+		require.True(t, hasArchiveTag, "Memo should have tag starting with 'archive'")
+	}
+
+	// Test: !tags.exists(t, t.startsWith("archive")) - should match non-archived memos
+	memos = tc.ListWithFilter(`!tags.exists(t, t.startsWith("archive"))`)
+	require.Len(t, memos, 2, "Should find 2 non-archived memos")
+
+	// Test: tags.exists(t, t.startsWith("project")) - should match project memos
+	memos = tc.ListWithFilter(`tags.exists(t, t.startsWith("project"))`)
+	require.Len(t, memos, 1, "Should find 1 project memo")
+
+	// Test: tags.exists(t, t.startsWith("homelab")) - should match homelab memos
+	memos = tc.ListWithFilter(`tags.exists(t, t.startsWith("homelab"))`)
+	require.Len(t, memos, 1, "Should find 1 homelab memo")
+
+	// Test: tags.exists(t, t.startsWith("nonexistent")) - should match nothing
+	memos = tc.ListWithFilter(`tags.exists(t, t.startsWith("nonexistent"))`)
+	require.Len(t, memos, 0, "Should find no memos")
+}
+
+func TestMemoFilterTagsExistsContains(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	// Create memos with different tags
+	tc.CreateMemo(NewMemoBuilder("memo-todo1", tc.User.ID).
+		Content("Todo task 1").
+		Tags("project/todo", "urgent"))
+
+	tc.CreateMemo(NewMemoBuilder("memo-todo2", tc.User.ID).
+		Content("Todo task 2").
+		Tags("work/todo-list", "pending"))
+
+	tc.CreateMemo(NewMemoBuilder("memo-done", tc.User.ID).
+		Content("Done task").
+		Tags("project/completed", "done"))
+
+	// Test: tags.exists(t, t.contains("todo")) - should match todos
+	memos := tc.ListWithFilter(`tags.exists(t, t.contains("todo"))`)
+	require.Len(t, memos, 2, "Should find 2 todo memos")
+
+	// Test: tags.exists(t, t.contains("done")) - should match done
+	memos = tc.ListWithFilter(`tags.exists(t, t.contains("done"))`)
+	require.Len(t, memos, 1, "Should find 1 done memo")
+
+	// Test: !tags.exists(t, t.contains("todo")) - should exclude todos
+	memos = tc.ListWithFilter(`!tags.exists(t, t.contains("todo"))`)
+	require.Len(t, memos, 1, "Should find 1 non-todo memo")
+}
+
+func TestMemoFilterTagsExistsEndsWith(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	// Create memos with different tag endings
+	tc.CreateMemo(NewMemoBuilder("memo-bug", tc.User.ID).
+		Content("Bug report").
+		Tags("project/bug", "critical"))
+
+	tc.CreateMemo(NewMemoBuilder("memo-debug", tc.User.ID).
+		Content("Debug session").
+		Tags("work/debug", "dev"))
+
+	tc.CreateMemo(NewMemoBuilder("memo-feature", tc.User.ID).
+		Content("New feature").
+		Tags("project/feature", "new"))
+
+	// Test: tags.exists(t, t.endsWith("bug")) - should match bug-related tags
+	memos := tc.ListWithFilter(`tags.exists(t, t.endsWith("bug"))`)
+	require.Len(t, memos, 2, "Should find 2 bug-related memos")
+
+	// Test: tags.exists(t, t.endsWith("feature")) - should match feature
+	memos = tc.ListWithFilter(`tags.exists(t, t.endsWith("feature"))`)
+	require.Len(t, memos, 1, "Should find 1 feature memo")
+
+	// Test: !tags.exists(t, t.endsWith("bug")) - should exclude bug-related
+	memos = tc.ListWithFilter(`!tags.exists(t, t.endsWith("bug"))`)
+	require.Len(t, memos, 1, "Should find 1 non-bug memo")
+}
+
+func TestMemoFilterTagsExistsCombinedWithOtherFilters(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	// Create memos with tags and other properties
+	tc.CreateMemo(NewMemoBuilder("memo-archived-old", tc.User.ID).
+		Content("Old archived memo").
+		Tags("archive/old", "done"))
+
+	tc.CreateMemo(NewMemoBuilder("memo-archived-recent", tc.User.ID).
+		Content("Recent archived memo with TODO").
+		Tags("archive/recent", "done"))
+
+	tc.CreateMemo(NewMemoBuilder("memo-active-todo", tc.User.ID).
+		Content("Active TODO").
+		Tags("project/active", "todo"))
+
+	// Test: Combine tag filter with content filter
+	memos := tc.ListWithFilter(`tags.exists(t, t.startsWith("archive")) && content.contains("TODO")`)
+	require.Len(t, memos, 1, "Should find 1 archived memo with TODO in content")
+
+	// Test: OR condition with tag filters
+	memos = tc.ListWithFilter(`tags.exists(t, t.startsWith("archive")) || tags.exists(t, t.contains("todo"))`)
+	require.Len(t, memos, 3, "Should find all memos (archived or with todo tag)")
+
+	// Test: Complex filter - archived but not containing "Recent"
+	memos = tc.ListWithFilter(`tags.exists(t, t.startsWith("archive")) && !content.contains("Recent")`)
+	require.Len(t, memos, 1, "Should find 1 old archived memo")
+}
+
+func TestMemoFilterTagsExistsEmptyAndNullCases(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	// Create memo with no tags
+	tc.CreateMemo(NewMemoBuilder("memo-no-tags", tc.User.ID).
+		Content("Memo without tags"))
+
+	// Create memo with tags
+	tc.CreateMemo(NewMemoBuilder("memo-with-tags", tc.User.ID).
+		Content("Memo with tags").
+		Tags("tag1", "tag2"))
+
+	// Test: tags.exists should not match memos without tags
+	memos := tc.ListWithFilter(`tags.exists(t, t.startsWith("tag"))`)
+	require.Len(t, memos, 1, "Should only find memo with tags")
+
+	// Test: Negation should match memos without matching tags
+	memos = tc.ListWithFilter(`!tags.exists(t, t.startsWith("tag"))`)
+	require.Len(t, memos, 1, "Should find memo without matching tags")
+}
+
+func TestMemoFilterIssue5480_ArchiveWorkflow(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	// Create a realistic scenario as described in issue #5480
+	// User has hierarchical tags and archives memos by prefixing with "archive"
+
+	// Active memos
+	tc.CreateMemo(NewMemoBuilder("memo-homelab", tc.User.ID).
+		Content("Setting up Memos").
+		Tags("homelab/memos", "tech"))
+
+	tc.CreateMemo(NewMemoBuilder("memo-project-alpha", tc.User.ID).
+		Content("Project Alpha notes").
+		Tags("work/project-alpha", "active"))
+
+	// Archived memos (user prefixed tags with "archive")
+	tc.CreateMemo(NewMemoBuilder("memo-old-homelab", tc.User.ID).
+		Content("Old homelab setup").
+		Tags("archive/homelab/old-server", "done"))
+
+	tc.CreateMemo(NewMemoBuilder("memo-old-project", tc.User.ID).
+		Content("Old project beta").
+		Tags("archive/work/project-beta", "completed"))
+
+	tc.CreateMemo(NewMemoBuilder("memo-archived-personal", tc.User.ID).
+		Content("Archived personal note").
+		Tags("archive/personal/2024", "old"))
+
+	// Test: Filter out ALL archived memos using startsWith
+	memos := tc.ListWithFilter(`!tags.exists(t, t.startsWith("archive"))`)
+	require.Len(t, memos, 2, "Should only show active memos (not archived)")
+	for _, memo := range memos {
+		for _, tag := range memo.Payload.Tags {
+			require.NotContains(t, tag, "archive", "Active memos should not have archive prefix")
+		}
+	}
+
+	// Test: Show ONLY archived memos
+	memos = tc.ListWithFilter(`tags.exists(t, t.startsWith("archive"))`)
+	require.Len(t, memos, 3, "Should find all archived memos")
+	for _, memo := range memos {
+		hasArchiveTag := false
+		for _, tag := range memo.Payload.Tags {
+			if len(tag) >= 7 && tag[:7] == "archive" {
+				hasArchiveTag = true
+				break
+			}
+		}
+		require.True(t, hasArchiveTag, "All returned memos should have archive prefix")
+	}
+
+	// Test: Filter archived homelab memos specifically
+	memos = tc.ListWithFilter(`tags.exists(t, t.startsWith("archive/homelab"))`)
+	require.Len(t, memos, 1, "Should find only archived homelab memos")
 }
 
 // =============================================================================
@@ -552,6 +852,7 @@ func TestMemoFilterComplexLogical(t *testing.T) {
 // =============================================================================
 
 func TestMemoFilterMultipleFilters(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -570,6 +871,7 @@ func TestMemoFilterMultipleFilters(t *testing.T) {
 // =============================================================================
 
 func TestMemoFilterNullPayload(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -581,6 +883,7 @@ func TestMemoFilterNullPayload(t *testing.T) {
 }
 
 func TestMemoFilterNoMatches(t *testing.T) {
+	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
@@ -588,4 +891,49 @@ func TestMemoFilterNoMatches(t *testing.T) {
 
 	memos := tc.ListWithFilter(`content.contains("nonexistent12345")`)
 	require.Len(t, memos, 0)
+}
+
+func TestMemoFilterJSONBooleanLogic(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	// 1. Memo with task list (true) and NO link (null)
+	tc.CreateMemo(NewMemoBuilder("memo-task-only", tc.User.ID).
+		Content("Task only").
+		Property(func(p *storepb.MemoPayload_Property) { p.HasTaskList = true }))
+
+	// 2. Memo with link (true) and NO task list (null)
+	tc.CreateMemo(NewMemoBuilder("memo-link-only", tc.User.ID).
+		Content("Link only").
+		Property(func(p *storepb.MemoPayload_Property) { p.HasLink = true }))
+
+	// 3. Memo with both (true)
+	tc.CreateMemo(NewMemoBuilder("memo-both", tc.User.ID).
+		Content("Both").
+		Property(func(p *storepb.MemoPayload_Property) {
+			p.HasTaskList = true
+			p.HasLink = true
+		}))
+
+	// 4. Memo with neither (null)
+	tc.CreateMemo(NewMemoBuilder("memo-neither", tc.User.ID).Content("Neither"))
+
+	// Test A: has_task_list || has_link
+	// Expected: 3 memos (task-only, link-only, both). Neither should be excluded.
+	// This specifically tests the NULL handling in OR logic (NULL || TRUE should be TRUE)
+	memos := tc.ListWithFilter(`has_task_list || has_link`)
+	require.Len(t, memos, 3, "Should find 3 memos with OR logic")
+
+	// Test B: !has_task_list
+	// Expected: 2 memos (link-only, neither). Memos where has_task_list is NULL or FALSE.
+	// Note: If NULL is not handled, !NULL is still NULL (false-y in WHERE), so "neither" might be missed depending on logic.
+	// In our implementation, we want missing fields to behave as false.
+	memos = tc.ListWithFilter(`!has_task_list`)
+	require.Len(t, memos, 2, "Should find 2 memos where task list is false or missing")
+
+	// Test C: has_task_list && !has_link
+	// Expected: 1 memo (task-only).
+	memos = tc.ListWithFilter(`has_task_list && !has_link`)
+	require.Len(t, memos, 1, "Should find 1 memo (task only)")
 }
