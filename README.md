@@ -17,7 +17,7 @@ An open-source, self-hosted note-taking service. Your thoughts, your data, your 
 [**Warp** — The AI-powered terminal built for speed and collaboration](https://go.warp.dev/memos)
 
 <a href="https://go.warp.dev/memos" target="_blank" rel="noopener">
-  <img src="https://raw.githubusercontent.com/warpdotdev/brand-assets/main/Github/Sponsor/Warp-Github-LG-02.png" alt="Warp - The AI-powered terminal built for speed and collaboration" width="512" />
+  <img src="https://raw.githubusercontent.com/warpdotdev/brand-assets/refs/heads/main/Logos/Warp-Wordmark-Black.png" alt="Warp - The AI-powered terminal built for speed and collaboration" height="44" />
 </a>
 
 <p></p>
