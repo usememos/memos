@@ -3,7 +3,7 @@
     "blogs": "บล็อก",
     "description": "บริการจดโน้ตที่เน้นความเป็นส่วนตัวและน้ำหนักเบา จับและแบ่งปันความคิดดีๆ ของคุณได้อย่างง่ายดาย",
     "documents": "เอกสาร",
-    "github-repository": "GitHub Repo",
+    "github-repository": "ที่เก็บ GitHub",
     "official-website": "เว็บไซต์ทางการ"
   },
   "auth": {
@@ -18,18 +18,22 @@
     "about": "เกี่ยวกับ",
     "add": "เพิ่ม",
     "admin": "ผู้ดูแล",
+    "all": "ทั้งหมด",
     "archive": "เก็บถาวร",
     "archived": "เก็บถาวรแล้ว",
     "attachments": "ไฟล์แนบ",
+    "auto-expand": "ขยายอัตโนมัติ",
     "avatar": "สัญลักษณ์",
     "basic": "ทั่วไป",
     "beta": "รุ่นเบต้า",
+    "calendar": "ปฏิทิน",
     "cancel": "ยกเลิก",
     "change": "เปลี่ยน",
     "clear": "ล้าง",
     "close": "ปิด",
     "collapse": "ย่อ",
     "confirm": "ยืนยัน",
+    "copy": "คัดลอก",
     "create": "สร้าง",
     "created-at": "สร้างเมื่อ",
     "database": "ฐานข้อมูล",
@@ -53,9 +57,11 @@
     "layout": "เลย์เอาต์",
     "learn-more": "เรียนรู้เพิ่มเติม",
     "link": "ลิงก์",
+    "map": "แผนที่",
     "mark": "ทำเครื่องหมาย",
     "memo": "บันทึกช่วยจำ",
     "memos": "บันทึกช่วยจำ",
+    "more": "เพิ่มเติม",
     "name": "ชื่อ",
     "new": "ใหม่",
     "nickname": "ชื่อเล่น",
@@ -90,6 +96,7 @@
     "statistics": "สถิติ",
     "tags": "ป้ายกำกับ",
     "title": "ชื่อเรื่อง",
+    "today": "วันนี้",
     "tree-mode": "โหมดต้นไม้",
     "type": "ประเภท",
     "unpin": "ลบการปักหมุด",
@@ -113,8 +120,12 @@
   "editor": {
     "add-your-comment-here": "เพิ่มความคิดเห็นของคุณที่นี่...",
     "any-thoughts": "ความคิดใดๆ...",
+    "exit-focus-mode": "ออกจากโหมดโฟกัส",
+    "focus-mode": "โหมดโฟกัส",
+    "no-changes-detected": "ไม่มีการเปลี่ยนแปลง",
     "save": "บันทึก",
-    "no-changes-detected": "ไม่มีการเปลี่ยนแปลง"
+    "saving": "กำลังบันทึก...",
+    "slash-commands": "พิมพ์ `/` สำหรับคำสั่ง"
   },
   "filters": {
     "has-code": "มีโค้ด",
@@ -122,8 +133,11 @@
     "has-task-list": "มีรายการที่ต้องทำ"
   },
   "inbox": {
+    "failed-to-load": "ไม่สามารถโหลดรายการกล่องจดหมายได้",
     "memo-comment": "{{user}} มีความคิดเห็นเกี่ยวกับ {{memo}} ของคุณ",
-    "version-update": "เวอร์ชันใหม่ {{version}} พร้อมให้บริการแล้ว!"
+    "no-archived": "ไม่มีการแจ้งเตือนที่เก็บถาวร",
+    "no-unread": "ไม่มีการแจ้งเตือนที่ยังไม่อ่าน",
+    "unread": "ยังไม่อ่าน"
   },
   "markdown": {
     "checkbox": "กล่องกาเครื่องหมาย",
@@ -139,16 +153,20 @@
       "self": "ความคิดเห็น",
       "write-a-comment": "เขียนความคิดเห็น"
     },
+    "copy-content": "คัดลอกเนื้อหา",
     "copy-link": "คัดลอกลิงก์",
-    "count-memos-in-date": "{{count}} บันทึกช่วยจำใน {{date}}",
+    "count-memos-in-date": "{{count}} {{memos}} ใน {{date}}",
     "delete-confirm": "คุณแน่ใจหรือไม่ ว่าต้องการลบบันทึกนี้? การกระทำนี้ไม่สามารถย้อนกลับได้",
+    "delete-confirm-description": "การดำเนินการนี้ไม่สามารถย้อนกลับได้ ไฟล์แนบ ลิงก์ และการอ้างอิงจะถูกลบออกด้วย",
     "direction": "ทิศทาง",
     "direction-asc": "จากน้อยไปมาก",
     "direction-desc": "จากมากไปน้อย",
     "display-time": "แสดงเวลา",
     "filters": "ตัวกรอง",
     "links": "ลิงก์",
+    "list": "รายการ",
     "load-more": "โหลดเพิ่มเติม",
+    "masonry": "มอซอนิก",
     "no-archived-memos": "ไม่มีบันทึกช่วยจำที่ถูกเก็บถาวร",
     "no-memos": "ไม่มีบันทึกช่วยจำ",
     "order-by": "เรียงตาม",
@@ -162,9 +180,7 @@
       "private": "ส่วนตัว",
       "protected": "พื้นที่ทำงาน",
       "public": "สาธารณะ"
-    },
-    "list": "รายการ",
-    "masonry": "Masonry"
+    }
   },
   "message": {
     "archived-successfully": "เก็บถาวรเรียบร้อยแล้ว",
@@ -182,6 +198,7 @@
     "password-changed": "เปลี่ยนรหัสผ่านแล้ว",
     "password-not-match": "รหัสผ่านไม่ตรงกัน",
     "restored-successfully": "กู้คืนเรียบร้อยแล้ว",
+    "succeed-copy-content": "คัดลอกเนื้อหาเรียบร้อยแล้ว",
     "succeed-copy-link": "คัดลอกลิงก์เรียบร้อยแล้ว",
     "update-succeed": "อัปเดตเรียบร้อยแล้ว",
     "user-not-found": "ไม่พบผู้ใช้งาน"
@@ -200,7 +217,7 @@
         "file-name": "ชื่อไฟล์",
         "file-name-placeholder": "ชื่อไฟล์",
         "link": "ลิงก์",
-        "link-placeholder": "https://the.link.to/your/resource",
+        "link-placeholder": "https://ลิงก์.ไปยัง/ทรัพยากร/ของคุณ",
         "option": "ลิงก์ภายนอก",
         "type": "ประเภท",
         "type-placeholder": "ชนิดไฟล์"
@@ -212,6 +229,10 @@
       "title": "สร้างทรัพยากร",
       "upload-method": "วิธีการอัปโหลด"
     },
+    "delete-all-unused": "ลบทรัพยากรที่ไม่ได้ใช้ทั้งหมด",
+    "delete-all-unused-confirm": "คุณแน่ใจหรือไม่ที่จะลบทรัพยากรที่ไม่ได้ใช้ทั้งหมด? การกระทำนี้ไม่สามารถย้อนกลับได้",
+    "delete-all-unused-error": "ไม่สามารถลบทรัพยากรที่ไม่ได้ใช้ได้",
+    "delete-all-unused-success": "ลบทรัพยากรเรียบร้อยแล้ว",
     "delete-resource": "ลบทรัพยากร",
     "delete-selected-resources": "ลบทรัพยากรที่เลือก",
     "fetching-data": "กำลังเรียกข้อมูล…",
@@ -232,8 +253,11 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "คัดลอกโทเค็นการเข้าถึงไปยังคลิปบอร์ดแล้ว",
-      "access-token-deletion": "คุณแน่ใจหรือว่าจะลบโทเค็นการเข้าถึง {{accessToken}}? การกระทำนี้ไม่สามารถย้อนกลับได้",
+      "access-token-deleted": "โทเค็นการเข้าถึง `{{description}}` ถูกลบแล้ว",
+      "access-token-deletion": "คุณแน่ใจหรือว่าจะลบโทเค็นการเข้าถึง {{description}}? การกระทำนี้ไม่สามารถย้อนกลับได้",
+      "access-token-deletion-description": "การกระทำนี้ไม่สามารถย้อนกลับได้ คุณจะต้องอัปเดตบริการใดๆ ที่ใช้โทเค็นนี้เพื่อใช้โทเค็นใหม่",
       "create-dialog": {
+        "access-token-created": "สร้างโทเค็นการเข้าถึง `{{description}}` เรียบร้อยแล้ว",
         "create-access-token": "สร้างโทเค็นการเข้าถึง",
         "created-at": "สร้างเมื่อ",
         "description": "คำอธิบาย",
@@ -261,15 +285,30 @@
       "update-information": "อัปเดทข้อมูล",
       "username-note": "ใช้เพื่อเข้าสู่ระบบ"
     },
+    "instance-section": {
+      "disallow-change-nickname": "ไม่อนุญาตให้เปลี่ยนชื่อเล่น",
+      "disallow-change-username": "ไม่อนุญาตให้เปลี่ยนชื่อผู้ใช้",
+      "disallow-password-auth": "ไม่อนุญาตให้ยืนยันตัวตนด้วยรหัสผ่าน",
+      "disallow-user-registration": "ไม่อนุญาตให้ลงทะเบียนผู้ใช้",
+      "monday": "วันจันทร์",
+      "saturday": "วันเสาร์",
+      "sunday": "วันอาทิตย์",
+      "week-start-day": "วันเริ่มต้นสัปดาห์"
+    },
     "member": "สมาชิก",
     "member-list": "รายชื่อสมาชิก",
     "member-section": {
       "admin": "ผู้ดูแล",
       "archive-member": "เก็บถาวรสมาชิก",
+      "archive-success": "{{username}} เก็บถาวรเรียบร้อยแล้ว",
       "archive-warning": "คุณแน่ใจหรือว่าจะเก็บถาวร {{username}}?",
+      "archive-warning-description": "การเก็บถาวรจะปิดใช้งานบัญชี คุณสามารถกู้คืนหรือลบได้ภายหลัง",
       "create-a-member": "สร้างสมาชิก",
       "delete-member": "ลบสมาชิก",
+      "delete-success": "{{username}} ลบเรียบร้อยแล้ว",
       "delete-warning": "คุณแน่ใจหรือว่าจะลบ {{username}}? การกระทำนี้ไม่สามารถย้อนกลับได้",
+      "delete-warning-description": "การกระทำนี้ไม่สามารถย้อนกลับได้",
+      "restore-success": "{{username}} กู้คืนเรียบร้อยแล้ว",
       "user": "ผู้ใช้"
     },
     "memo-related": "บันทึก",
@@ -288,18 +327,22 @@
       "default-memo-visibility": "การมองเห็นบันทึกเริ่มต้น",
       "theme": "ธีม"
     },
+    "shortcut": {
+      "delete-confirm": "คุณแน่ใจหรือไม่ที่จะลบทางลัด `{{title}}`?",
+      "delete-success": "ทางลัด `{{title}}` ลบเรียบร้อยแล้ว"
+    },
     "sso": "SSO",
     "sso-section": {
-      "authorization-endpoint": "Authorization endpoint",
-      "client-id": "Client ID",
-      "client-secret": "Client secret",
+      "authorization-endpoint": "Endpoint การอนุญาต",
+      "client-id": "รหัสไคลเอ็นต์",
+      "client-secret": "ความลับไคลเอ็นต์",
       "confirm-delete": "คุณแน่ใจหรือไม่ว่าจะลบการกำหนดค่า SSO \"{{name}}\" การกระทำนี้ไม่สามารถย้อนกลับได้",
       "create-sso": "สร้าง SSO",
       "custom": "ปรับแต่ง",
       "delete-sso": "ยืนยันการลบ",
       "disabled-password-login-warning": "การเข้าสู่ระบบด้วยรหัสผ่านถูกปิดใช้งาน โปรดระมัดระวังเป็นพิเศษเมื่อลบผู้ให้บริการข้อมูลประจำตัว",
       "display-name": "ชื่อที่แสดง",
-      "identifier": "Identifier",
+      "identifier": "ตัวระบุ",
       "identifier-filter": "ตัวกรอง Identifier",
       "no-sso-found": "ไม่พบ SSO",
       "redirect-url": "เปลี่ยนเส้นทาง URL",
@@ -309,21 +352,21 @@
       "sso-list": "รายการ SSO",
       "sso-updated": "SSO {{name}} อัปเดตแล้ว",
       "template": "เทมเพลต",
-      "token-endpoint": "Token endpoint",
+      "token-endpoint": "Endpoint โทเค็น",
       "update-sso": "อัปเดต SSO",
-      "user-endpoint": "User endpoint"
+      "user-endpoint": "Endpoint ผู้ใช้"
     },
     "storage": "พื้นที่จัดเก็บ",
     "storage-section": {
-      "accesskey": "Access key",
-      "accesskey-placeholder": "Access key / Access ID",
-      "bucket": "Bucket",
+      "accesskey": "คีย์การเข้าถึง",
+      "accesskey-placeholder": "คีย์การเข้าถึง / รหัสการเข้าถึง",
+      "bucket": "บักเก็ต",
       "bucket-placeholder": "ชื่อ Bucket",
       "create-a-service": "สร้างบริการ",
       "create-storage": "สร้างพื้นที่จัดเก็บข้อมูล",
       "current-storage": "พื้นที่ object storage ปัจจุบัน",
       "delete-storage": "ลบพื้นที่เก็บข้อมูล",
-      "endpoint": "Endpoint",
+      "endpoint": "จุดปลายทาง",
       "filepath-template": "แม่แบบเส้นทางไฟล์",
       "local-storage-path": "เส้นทางการจัดเก็บในเครื่อง",
       "path": "ที่จัดเก็บ",
@@ -332,19 +375,19 @@
       "presign-placeholder": "Pre-sign URL ไม่บังคับ",
       "region": "ภูมิภาค",
       "region-placeholder": "ชื่อภูมิภาค",
-      "s3-compatible-url": "S3 Compatible URL",
-      "secretkey": "Secret key",
-      "secretkey-placeholder": "Secret key / Access Key",
-      "storage-services": "Storage services",
+      "s3-compatible-url": "URL ที่เข้ากันได้กับ S3",
+      "secretkey": "คีย์ลับ",
+      "secretkey-placeholder": "คีย์ลับ / คีย์การเข้าถึง",
+      "storage-services": "บริการจัดเก็บข้อมูล",
       "type-database": "ฐานข้อมูล",
-      "type-local": "Local file system",
+      "type-local": "ระบบไฟล์ในเครื่อง",
       "update-a-service": "อัปเดตบริการ",
       "update-local-path": "อัปเดตเส้นทางการจัดเก็บในเครื่อง",
       "update-local-path-description": "เส้นทางการจัดเก็บข้อมูลในเครื่องเป็นเส้นทางสัมพันธ์กับไฟล์ฐานข้อมูลของคุณ",
       "update-storage": "อัปเดตที่เก็บข้อมูล",
-      "url-prefix": "URL prefix",
+      "url-prefix": "คำนำหน้า URL",
       "url-prefix-placeholder": "URL prefix ที่กำหนดเอง ไม่บังคับ",
-      "url-suffix": "URL suffix",
+      "url-suffix": "คำต่อท้าย URL",
       "url-suffix-placeholder": "URL suffix ที่กำหนดเอง (ไม่บังคับ)",
       "warning-text": "คุณแน่ใจหรือว่าจะลบบริการพื้นที่เก็บข้อมูล \"{{name}}\"? การกระทำนี้ไม่สามารถย้อนกลับได้"
     },
@@ -357,7 +400,7 @@
       "allow-user-signup": "อนุญาตให้ผู้ใช้ลงทะเบียน",
       "customize-server": {
         "description": "คำอธิบาย",
-        "icon-url": "Icon URL",
+        "icon-url": "URL ไอคอน",
         "locale": "ตำแหน่งเซิร์ฟเวอร์",
         "title": "ปรับแต่งเซิร์ฟเวอร์"
       },
@@ -381,24 +424,20 @@
       "create-dialog": {
         "an-easy-to-remember-name": "ชื่อที่จำง่าย",
         "create-webhook": "สร้าง webhook",
+        "create-webhook-success": "สร้าง webhook `{{name}}` เรียบร้อยแล้ว",
         "edit-webhook": "แก้ไข webhook",
-        "payload-url": "Payload URL",
+        "payload-url": "URL ข้อมูล",
         "title": "ชื่อเรื่อง",
         "url-example-post-receive": "https://ตัวอย่าง.com/postreceive"
       },
+      "delete-dialog": {
+        "delete-webhook-description": "การกระทำนี้ไม่สามารถย้อนกลับได้",
+        "delete-webhook-success": "ลบ webhook `{{name}}` เรียบร้อยแล้ว",
+        "delete-webhook-title": "คุณแน่ใจหรือไม่ที่จะลบ webhook `{{name}}`?"
+      },
       "no-webhooks-found": "ไม่พบ webhook",
-      "title": "Webhooks",
+      "title": "Webhook",
       "url": "URL"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "ไม่อนุญาตให้เปลี่ยนชื่อเล่น",
-      "disallow-change-username": "ไม่อนุญาตให้เปลี่ยนชื่อผู้ใช้",
-      "disallow-password-auth": "ไม่อนุญาตให้ยืนยันตัวตนด้วยรหัสผ่าน",
-      "disallow-user-registration": "ไม่อนุญาตให้ลงทะเบียนผู้ใช้",
-      "monday": "วันจันทร์",
-      "saturday": "วันเสาร์",
-      "sunday": "วันอาทิตย์",
-      "week-start-day": "วันเริ่มต้นสัปดาห์"
     }
   },
   "tag": {
@@ -406,6 +445,7 @@
     "create-tag": "สร้างแท็ก",
     "create-tags-guide": "คุณสามารถสร้างแท็กได้โดยป้อน `#tag`",
     "delete-confirm": "คุณแน่ใจหรือว่าจะลบแท็กนี้? บันทึกที่เกี่ยวข้องทั้งหมดจะถูกเก็บถาวร",
+    "delete-success": "ลบแท็กเรียบร้อยแล้ว",
     "delete-tag": "ลบแท็ก",
     "new-name": "ชื่อใหม่",
     "no-tag-found": "ไม่พบแท็ก",
@@ -415,5 +455,13 @@
     "rename-success": "เปลี่ยนชื่อแท็กสำเร็จ",
     "rename-tag": "เปลี่ยนชื่อแท็ก",
     "rename-tip": "บันทึกทั้งหมดที่มีแท็กนี้จะถูกอัปเดต"
+  },
+  "tooltip": {
+    "link-memo": "ลิงก์บันทึกช่วยจำ",
+    "markdown-menu": "เมนูมาร์กดาวน์",
+    "select-location": "เลือกตำแหน่ง",
+    "select-visibility": "เลือกการมองเห็น",
+    "tags": "ป้ายกำกับ",
+    "upload-attachment": "อัปโหลดไฟล์แนบ"
   }
 }
