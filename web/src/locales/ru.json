@@ -1,4 +1,11 @@
 {
+  "about": {
+    "blogs": "Блоги",
+    "description": "Приватный, легкий сервис для заметок. Легко сохраняйте и делитесь вашими мыслями.",
+    "documents": "Документы",
+    "github-repository": "Репозиторий GitHub",
+    "official-website": "Официальный сайт"
+  },
   "auth": {
     "create-your-account": "Создание учетной записи",
     "host-tip": "Вы регистрируете учетную запись владельца сайта",
@@ -11,17 +18,22 @@
     "about": "О Memos",
     "add": "Добавить",
     "admin": "Администратор",
+    "all": "Все",
     "archive": "Архивировать",
     "archived": "Архив",
     "attachments": "Файлы",
+    "auto-expand": "Авто-раскрытие",
     "avatar": "Аватар",
     "basic": "Базовые",
-    "beta": "Beta",
+    "beta": "Бета",
+    "calendar": "Календарь",
     "cancel": "Отменить",
     "change": "Заменить",
     "clear": "Очистить",
     "close": "Закрыть",
+    "collapse": "Свернуть",
     "confirm": "Подтвердить",
+    "copy": "Копировать",
     "create": "Создать",
     "created-at": "Создано",
     "database": "База данных",
@@ -30,12 +42,14 @@
     "delete": "Удалить",
     "description": "Описание",
     "edit": "Редактировать",
-    "email": "Email",
+    "email": "Эл. почта",
+    "expand": "Раскрыть",
     "explore": "Обзор",
     "file": "Файл",
     "filter": "Фильтр",
     "home": "Главная",
     "image": "Изображение",
+    "in": "В",
     "inbox": "Уведомления",
     "input": "Напишите...",
     "language": "Язык",
@@ -43,9 +57,11 @@
     "layout": "Макет",
     "learn-more": "Узнать больше",
     "link": "Ссылка",
+    "map": "Карта",
     "mark": "Связать",
     "memo": "Заметка",
     "memos": "Заметки",
+    "more": "Еще",
     "name": "Название",
     "new": "Новая запись",
     "nickname": "Псевдоним",
@@ -80,6 +96,7 @@
     "statistics": "Статистика",
     "tags": "Теги",
     "title": "Заголовок",
+    "today": "Сегодня",
     "tree-mode": "Иерархический вид",
     "type": "Тип",
     "unpin": "Открепить",
@@ -101,14 +118,26 @@
     "wed": "Ср."
   },
   "editor": {
-    "add-your-comment-here": "Напишите свой комметарий...",
+    "add-your-comment-here": "Напишите свой комментарий...",
     "any-thoughts": "Напишите что-нибудь...",
+    "exit-focus-mode": "Выйти из режима фокуса",
+    "focus-mode": "Режим фокуса",
     "no-changes-detected": "Изменений не обнаружено",
-    "save": "Сохранить"
+    "save": "Сохранить",
+    "saving": "Сохранение...",
+    "slash-commands": "Введите `/` для команд"
+  },
+  "filters": {
+    "has-code": "hasCode",
+    "has-link": "hasLink",
+    "has-task-list": "hasTaskList"
   },
   "inbox": {
+    "failed-to-load": "Не удалось загрузить элемент уведомления",
     "memo-comment": "{{user}} добавил комментарий к вашей заметке {{memo}}.",
-    "version-update": "Новая версия {{version}} уже доступна!"
+    "no-archived": "Нет архивных уведомлений",
+    "no-unread": "Нет непрочитанных уведомлений",
+    "unread": "Непрочитанные"
   },
   "markdown": {
     "checkbox": "Список задач",
@@ -117,20 +146,30 @@
   },
   "memo": {
     "archived-at": "В архиве",
+    "click-to-hide-nsfw-content": "Нажмите, чтобы скрыть контент 18+",
     "click-to-show-nsfw-content": "Нажмите, чтобы посмотреть",
     "code": "Код",
     "comment": {
       "self": "Комментарии",
       "write-a-comment": "Добавить комментарий"
     },
+    "copy-content": "Копировать контент",
     "copy-link": "Скопировать ссылку",
     "count-memos-in-date": "{{count}} {{memos}} за {{date}}",
     "delete-confirm": "Вы уверены, что хотите удалить эту запись?\nЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ!",
+    "delete-confirm-description": "Это действие нельзя отменить. Вложения, ссылки и упоминания также будут удалены.",
     "direction": "Сортировка",
     "direction-asc": "По возрастанию",
     "direction-desc": "По убыванию",
+    "display-time": "Время отображения",
+    "filters": "Фильтры",
     "links": "Ссылки",
+    "list": "Список",
+    "load-more": "Загрузить еще",
+    "masonry": "Плитки",
     "no-archived-memos": "Нет заархивированных записей.",
+    "no-memos": "Нет заметок.",
+    "order-by": "Сортировать по",
     "search-placeholder": "Поиск записей",
     "show-less": "Показать меньше",
     "show-more": "Подробнее",
@@ -139,11 +178,9 @@
     "visibility": {
       "disabled": "Публичные записи отключены",
       "private": "Видно только вам",
-      "protected": "Видно только пользователям",
-      "public": "Публичная заметка"
-    },
-    "list": "Список",
-    "masonry": "Плитки"
+      "protected": "Видно только авторизованным пользователям",
+      "public": "Публичная"
+    }
   },
   "message": {
     "archived-successfully": "Перемещено в архив",
@@ -161,6 +198,7 @@
     "password-changed": "Пароль изменён",
     "password-not-match": "Пароли не совпадают.",
     "restored-successfully": "Успешно восстановлено.",
+    "succeed-copy-content": "Контент успешно скопирован.",
     "succeed-copy-link": "Ссылка скопирована в буфер обмена.",
     "update-succeed": "Успешно обновлено",
     "user-not-found": "Пользователь не найден"
@@ -179,6 +217,7 @@
         "file-name": "Название файла",
         "file-name-placeholder": "Название файла",
         "link": "Ссылка",
+        "link-placeholder": "https://ссылка.на.ваш.ресурс",
         "option": "Внешняя ссылка",
         "type": "Тип",
         "type-placeholder": "Тип файла"
@@ -190,6 +229,10 @@
       "title": "Создать ресурс",
       "upload-method": "Способ загрузки"
     },
+    "delete-all-unused": "Удалить все неиспользуемые",
+    "delete-all-unused-confirm": "Вы уверены, что хотите удалить все неиспользуемые ресурсы? ЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ",
+    "delete-all-unused-error": "Не удалось удалить неиспользуемые ресурсы",
+    "delete-all-unused-success": "Ресурсы успешно удалены",
     "delete-resource": "Удалить ресурс",
     "delete-selected-resources": "Удаление выбранных ресурсов",
     "fetching-data": "загрузка данных...",
@@ -210,13 +253,16 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "Токен скопирован в буфер обмена",
-      "access-token-deletion": "Вы действительно хотите удалить токен {{accessToken}}?\nЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ.",
+      "access-token-deleted": "Токен доступа `{{description}}` удален",
+      "access-token-deletion": "Вы действительно хотите удалить токен доступа `{{description}}`?\nЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ.",
+      "access-token-deletion-description": "Это действие нельзя отменить. Вам нужно будет обновить любые службы, использующие этот токен, чтобы они использовали новый токен.",
       "create-dialog": {
+        "access-token-created": "Токен доступа `{{description}}` создан",
         "create-access-token": "Создание токена доступа",
         "created-at": "Создан",
         "description": "Описание",
-        "duration-1m": "1 Месяц",
-        "duration-8h": "8 Часов",
+        "duration-1m": "1 месяц",
+        "duration-8h": "8 часов",
         "duration-never": "Никогда",
         "expiration": "Срок действия",
         "expires-at": "Истекает",
@@ -239,15 +285,30 @@
       "update-information": "Обновить информацию",
       "username-note": "Используется для входа"
     },
+    "instance-section": {
+      "disallow-change-nickname": "Запретить смену псевдонима",
+      "disallow-change-username": "Запретить смену имени пользователя",
+      "disallow-password-auth": "Запретить вход по паролю",
+      "disallow-user-registration": "Запретить регистрацию пользователей",
+      "monday": "Понедельник",
+      "saturday": "Суббота",
+      "sunday": "Воскресенье",
+      "week-start-day": "Начало недели"
+    },
     "member": "Пользователи",
     "member-list": "Список пользователей",
     "member-section": {
       "admin": "Администратор",
       "archive-member": "Деактивировать",
+      "archive-success": "Пользователь {{username}} успешно деактивирован",
       "archive-warning": "Вы уверены, что хотите деактивировать пользователя {{username}}?",
+      "archive-warning-description": "Деактивация отключает учетную запись. Вы можете восстановить или удалить её позже.",
       "create-a-member": "Создать",
       "delete-member": "Удалить",
+      "delete-success": "Пользователь {{username}} успешно удален",
       "delete-warning": "Вы уверены, что хотите удалить пользователя {{username}}?\nЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ!",
+      "delete-warning-description": "ЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ",
+      "restore-success": "Пользователь {{username}} успешно восстановлен",
       "user": "Пользователь"
     },
     "memo-related": "Заметки",
@@ -266,33 +327,45 @@
       "default-memo-visibility": "Видимость записей по умолчанию",
       "theme": "Тема"
     },
+    "shortcut": {
+      "delete-confirm": "Вы уверены, что хотите удалить ярлык `{{title}}`?",
+      "delete-success": "Ярлык `{{title}}` успешно удален"
+    },
     "sso": "SSO",
     "sso-section": {
+      "authorization-endpoint": "Конечная точка авторизации",
+      "client-id": "ID клиента",
+      "client-secret": "Секретный ключ клиента",
       "confirm-delete": "Вы уверены, что хотите удалить SSO-провайдер \"{{name}}\"?\nЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ!",
       "create-sso": "Подключение SSO-провайдера",
       "custom": "Собственный",
       "delete-sso": "Подтвердите удаление",
+      "disabled-password-login-warning": "Вход по паролю отключен, будьте особенно осторожны при удалении провайдеров идентификации",
       "display-name": "Псевдоним",
       "identifier": "Имя пользователя",
       "identifier-filter": "Фильтр по \"Имя пользователя\" (RegExp)",
       "no-sso-found": "Нет настроенных SSO-провайдеров",
       "redirect-url": "URL-адрес перенаправления",
+      "scopes": "Области",
+      "single-sign-on": "Настройка единого входа (SSO) для аутентификации",
       "sso-created": "SSO-провайдер {{name}} создан",
       "sso-list": "SSO-провайдеры",
       "sso-updated": "SSO-провайдер {{name}} обновлен",
       "template": "Шаблон",
-      "update-sso": "Изменение SSO-провайдера"
+      "token-endpoint": "Конечная точка токена",
+      "update-sso": "Изменение SSO-провайдера",
+      "user-endpoint": "Конечная точка пользователя"
     },
     "storage": "Хранилище",
     "storage-section": {
       "accesskey": "Ключ доступа",
       "accesskey-placeholder": "Ключ доступа / идентификатор доступа",
       "bucket": "Корзина",
-      "bucket-placeholder": "Название корзины",
+      "bucket-placeholder": "Название бакета",
       "create-a-service": "Создать сервис",
       "create-storage": "Создать хранилище",
       "current-storage": "Текущее объектное хранилище",
-      "delete-storage": "Удалить Хранилище",
+      "delete-storage": "Удалить хранилище",
       "endpoint": "Конечная точка",
       "filepath-template": "Шаблон имени файла",
       "local-storage-path": "Путь к локальному хранилищу",
@@ -302,7 +375,7 @@
       "presign-placeholder": "Генерировать временную публичную ссылку, необязательно",
       "region": "Регион",
       "region-placeholder": "Название региона",
-      "s3-compatible-url": "S3 совместимый URL",
+      "s3-compatible-url": "S3-совместимый URL",
       "secretkey": "Секретный ключ",
       "secretkey-placeholder": "Секретный ключ / ключ доступа",
       "storage-services": "Список хранилищ",
@@ -315,14 +388,15 @@
       "url-prefix": "Префикс URL",
       "url-prefix-placeholder": "Пользовательский префикс URL, необязательно",
       "url-suffix": "суффикс URL",
-      "url-suffix-placeholder": "Пользовательский суффикс URL, необязательно"
+      "url-suffix-placeholder": "Пользовательский суффикс URL, необязательно",
+      "warning-text": "Вы уверены, что хотите удалить хранилище `{{name}}`? ЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ"
     },
     "system": "Система",
     "system-section": {
       "additional-script": "Дополнительный скрипт",
-      "additional-script-placeholder": "Напишите сюда ваш JavaScript код",
+      "additional-script-placeholder": "Напишите ваш JavaScript-код здесь",
       "additional-style": "Дополнительный стиль",
-      "additional-style-placeholder": "Напишите сюда ваш CSS код",
+      "additional-style-placeholder": "Напишите ваш CSS-код здесь",
       "allow-user-signup": "Разрешить регистрацию пользователей",
       "customize-server": {
         "description": "Описание",
@@ -330,8 +404,12 @@
         "locale": "Локализация",
         "title": "Настроить сервер"
       },
+      "disable-password-login": "Отключить вход по паролю",
+      "disable-password-login-final-warning": "Пожалуйста, введите `ПОДТВЕРДИТЬ`, если вы знаете, что делаете.",
+      "disable-password-login-warning": "Это отключит вход по паролю для всех пользователей. Невозможно будет войти без изменения этого параметра в базе данных, если настроенные провайдеры идентификации не работают. Также будьте особенно осторожны при удалении провайдера идентификации.",
       "disable-public-memos": "Отключить публичные заметки",
       "display-with-updated-time": "Время изменения - основное",
+      "enable-auto-compact": "Включить автоматическое сжатие",
       "enable-double-click-to-edit": "Редактировать двойным кликом",
       "enable-password-login": "Разрешить вход по паролю",
       "enable-password-login-warning": "Это разрешит вход по паролю для всех пользователей. Продолжайте, только если хотите, чтобы пользователи входили и по SSO и по паролю.",
@@ -346,23 +424,20 @@
       "create-dialog": {
         "an-easy-to-remember-name": "Название, которое легко запомнить",
         "create-webhook": "Создание вебхука",
+        "create-webhook-success": "Вебхук `{{name}}` создан",
         "edit-webhook": "Изменить вебхук",
         "payload-url": "Ссылка",
-        "title": "Название"
+        "title": "Название",
+        "url-example-post-receive": "https://example.com/postreceive"
+      },
+      "delete-dialog": {
+        "delete-webhook-description": "Это действие нельзя отменить.",
+        "delete-webhook-success": "Вебхук `{{name}}` успешно удален",
+        "delete-webhook-title": "Вы уверены, что хотите удалить вебхук `{{name}}`?"
       },
       "no-webhooks-found": "Нет вебхуков",
       "title": "Вебхуки",
       "url": "Ссылка"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Запретить смену псевдонима",
-      "disallow-change-username": "Запретить смену имени пользователя",
-      "disallow-password-auth": "Запретить вход по паролю",
-      "disallow-user-registration": "Запретить регистрацию пользователей",
-      "monday": "Понедельник",
-      "saturday": "Суббота",
-      "sunday": "Воскресенье",
-      "week-start-day": "Начало недели"
     }
   },
   "tag": {
@@ -370,14 +445,23 @@
     "create-tag": "Создать тег",
     "create-tags-guide": "Создавайте теги, используя `#tag` в заметках. Теги `#tag/subtag` можно показывать иерархично.",
     "delete-confirm": "Вы точно хотите удалить этот тег?",
+    "delete-success": "Тег успешно удален",
     "delete-tag": "Удалить тег",
-    "no-tag-found": "Нет тегов",
     "new-name": "Новое имя",
+    "no-tag-found": "Нет тегов",
     "old-name": "Старое имя",
     "rename-error-empty": "Тег не может быть пустым или содержать пробелы",
     "rename-error-repeat": "Новое имя должно отличаться от старого",
     "rename-success": "Тег обновлен",
     "rename-tag": "Переименование тега",
     "rename-tip": "Все ваши заметки с этим тегом будут обновлены"
+  },
+  "tooltip": {
+    "link-memo": "Связать заметку",
+    "markdown-menu": "Markdown",
+    "select-location": "Местоположение",
+    "select-visibility": "Видимость",
+    "tags": "Теги",
+    "upload-attachment": "Загрузить вложения"
   }
 }
