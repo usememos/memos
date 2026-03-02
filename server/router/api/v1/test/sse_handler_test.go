@@ -49,18 +49,38 @@ func TestSSEHandler_Authentication(t *testing.T) {
 	})
 
 	t.Run("valid token returns 200 and stream", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/api/v1/sse", nil)
+		// Use a cancellable context so we can close the SSE connection after
+		// confirming the headers, preventing the handler's event loop from
+		// blocking the test indefinitely.
+		reqCtx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		req := httptest.NewRequest(http.MethodGet, "/api/v1/sse", nil).WithContext(reqCtx)
 		req.Header.Set("Authorization", "Bearer "+token)
 		rec := httptest.NewRecorder()
-		e.ServeHTTP(rec, req)
+		done := make(chan struct{})
+		go func() {
+			defer close(done)
+			e.ServeHTTP(rec, req)
+		}()
+		// Cancel the context to signal client disconnect, which exits the SSE loop.
+		cancel()
+		<-done
 		require.Equal(t, http.StatusOK, rec.Code)
 		require.Equal(t, "text/event-stream", rec.Header().Get("Content-Type"))
 	})
 
 	t.Run("token in query param returns 200", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "/api/v1/sse?token="+token, nil)
+		reqCtx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		req := httptest.NewRequest(http.MethodGet, "/api/v1/sse?token="+token, nil).WithContext(reqCtx)
 		rec := httptest.NewRecorder()
-		e.ServeHTTP(rec, req)
+		done := make(chan struct{})
+		go func() {
+			defer close(done)
+			e.ServeHTTP(rec, req)
+		}()
+		cancel()
+		<-done
 		require.Equal(t, http.StatusOK, rec.Code)
 	})
 }
