@@ -7,7 +7,7 @@ interface TableProps extends React.HTMLAttributes<HTMLTableElement>, ReactMarkdo
 
 export const Table = ({ children, className, node: _node, ...props }: TableProps) => {
   return (
-    <div className="w-full overflow-x-auto rounded-lg border border-border my-2">
+    <div className="my-2 w-full overflow-x-auto rounded-lg border border-border bg-muted/20">
       <table className={cn("w-full border-collapse text-sm", className)} {...props}>
         {children}
       </table>
@@ -21,7 +21,7 @@ interface TableHeadProps extends React.HTMLAttributes<HTMLTableSectionElement>, 
 
 export const TableHead = ({ children, className, node: _node, ...props }: TableHeadProps) => {
   return (
-    <thead className={cn("bg-accent/50", className)} {...props}>
+    <thead className={cn("border-b border-border bg-muted/30", className)} {...props}>
       {children}
     </thead>
   );
@@ -45,7 +45,7 @@ interface TableRowProps extends React.HTMLAttributes<HTMLTableRowElement>, React
 
 export const TableRow = ({ children, className, node: _node, ...props }: TableRowProps) => {
   return (
-    <tr className={cn("transition-colors hover:bg-muted/30", className)} {...props}>
+    <tr className={cn("transition-colors hover:bg-accent/20", className)} {...props}>
       {children}
     </tr>
   );
@@ -57,14 +57,7 @@ interface TableHeaderCellProps extends React.ThHTMLAttributes<HTMLTableCellEleme
 
 export const TableHeaderCell = ({ children, className, node: _node, ...props }: TableHeaderCellProps) => {
   return (
-    <th
-      className={cn(
-        "px-3 py-2 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground",
-        "border-b-2 border-border",
-        className,
-      )}
-      {...props}
-    >
+    <th className={cn("px-2 py-1 text-left align-middle text-sm font-medium text-muted-foreground", className)} {...props}>
       {children}
     </th>
   );
@@ -76,7 +69,7 @@ interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElement>, R
 
 export const TableCell = ({ children, className, node: _node, ...props }: TableCellProps) => {
   return (
-    <td className={cn("px-3 py-2 text-left", className)} {...props}>
+    <td className={cn("px-2 py-1 text-left align-middle text-sm", className)} {...props}>
       {children}
     </td>
   );
