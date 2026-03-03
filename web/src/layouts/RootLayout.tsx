@@ -2,26 +2,35 @@ import { useEffect, useMemo } from "react";
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
 import usePrevious from "react-use/lib/usePrevious";
 import Navigation from "@/components/Navigation";
+import { useInstance } from "@/contexts/InstanceContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import useNavigateTo from "@/hooks/useNavigateTo";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import { redirectOnAuthFailure } from "@/utils/auth-redirect";
+import { ROUTES } from "@/router/routes";
 
 const RootLayout = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const sm = useMediaQuery("sm");
   const currentUser = useCurrentUser();
+  const navigateTo = useNavigateTo();
+  const { memoRelatedSetting } = useInstance();
   const { removeFilter } = useMemoFilterContext();
   const pathname = useMemo(() => location.pathname, [location.pathname]);
   const prevPathname = usePrevious(pathname);
 
   useEffect(() => {
     if (!currentUser) {
-      redirectOnAuthFailure();
+      if (pathname === ROUTES.ROOT && !memoRelatedSetting.disallowPublicVisibility) {
+        navigateTo(ROUTES.EXPLORE);
+      } else {
+        redirectOnAuthFailure();
+      }
     }
-  }, [currentUser]);
+  }, [currentUser, pathname, memoRelatedSetting.disallowPublicVisibility, navigateTo]);
 
   useEffect(() => {
     // When the route changes and there is no filter in the search params, remove all filters
