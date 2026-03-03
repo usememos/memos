@@ -5,10 +5,18 @@ import { useSuggestions } from "./useSuggestions";
 
 const SlashCommands = ({ editorRef, editorActions, commands }: SlashCommandsProps) => {
   const handleCommandAutocomplete = (cmd: (typeof commands)[0], word: string, index: number, actions: EditorRefActions) => {
-    // Remove trigger char + word, then insert command output
+    // Remove trigger char + word.
     actions.removeText(index, word.length);
+
+    // If the command has a dialog action, invoke it instead of inserting text.
+    if (cmd.action) {
+      cmd.action();
+      return;
+    }
+
+    // Otherwise insert the command output text.
     actions.insertText(cmd.run());
-    // Position cursor relative to insertion point, if specified
+    // Position cursor relative to insertion point, if specified.
     if (cmd.cursorOffset) {
       actions.setCursorPosition(index + cmd.cursorOffset);
     }
