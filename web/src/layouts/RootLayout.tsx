@@ -5,11 +5,11 @@ import Navigation from "@/components/Navigation";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import useNavigateTo from "@/hooks/useNavigateTo";
 import useMediaQuery from "@/hooks/useMediaQuery";
+import useNavigateTo from "@/hooks/useNavigateTo";
 import { cn } from "@/lib/utils";
-import { redirectOnAuthFailure } from "@/utils/auth-redirect";
 import { ROUTES } from "@/router/routes";
+import { redirectOnAuthFailure } from "@/utils/auth-redirect";
 
 const RootLayout = () => {
   const location = useLocation();
