@@ -46,6 +46,7 @@ func NewTestService(t *testing.T) *TestService {
 		Profile:         testProfile,
 		Store:           testStore,
 		MarkdownService: markdownService,
+		SSEHub:          apiv1.NewSSEHub(),
 	}
 
 	return &TestService{

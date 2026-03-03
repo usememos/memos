@@ -8,6 +8,7 @@ import { Routes } from "@/router";
 import { UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import MemosLogo from "./MemosLogo";
+import SSEStatusIndicator from "./SSEStatusIndicator";
 import UserMenu from "./UserMenu";
 
 interface NavLinkItem {
@@ -114,7 +115,10 @@ const Navigation = (props: Props) => {
         ))}
       </div>
       {currentUser && (
-        <div className={cn("w-full flex flex-col justify-end", props.collapsed ? "items-center" : "items-start pl-3")}>
+        <div className={cn("w-full flex flex-col justify-end gap-1", props.collapsed ? "items-center" : "items-start pl-3")}>
+          <div className={cn("flex items-center", props.collapsed ? "justify-center" : "pl-1")}>
+            <SSEStatusIndicator />
+          </div>
           <UserMenu collapsed={collapsed} />
         </div>
       )}
