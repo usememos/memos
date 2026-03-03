@@ -18,18 +18,22 @@
     "about": "Névjegy",
     "add": "Hozzáadás",
     "admin": "Admin",
+    "all": "Összes",
     "archive": "Archiválás",
     "archived": "Archívum",
     "attachments": "Mellékletek",
+    "auto-expand": "Automatikus kinyitás",
     "avatar": "Avatar",
     "basic": "Általános",
     "beta": "Béta",
+    "calendar": "Naptár",
     "cancel": "Mégsem",
     "change": "Módosítás",
     "clear": "Törlés",
     "close": "Bezárás",
     "collapse": "Összecsukás",
     "confirm": "Megerősít",
+    "copy": "Másolás",
     "create": "Létrehozás",
     "created-at": "Létrehozva",
     "database": "Adatbázis",
@@ -53,9 +57,11 @@
     "layout": "Elrendezés",
     "learn-more": "További információ",
     "link": "Hivatkozás",
+    "map": "Térkép",
     "mark": "Megjelölés",
     "memo": "Jegyzet",
     "memos": "Jegyzetek",
+    "more": "Több",
     "name": "Név",
     "new": "Új",
     "nickname": "Becenév",
@@ -67,7 +73,7 @@
     "preview": "Előnézet",
     "profile": "Profil",
     "properties": "Tulajdonságok",
-    "referenced-by": "Hivatkozza",
+    "referenced-by": "Hivatkozta",
     "referencing": "Hivatkozik",
     "relations": "Kapcsolatok",
     "remember-me": "Megjegyzés",
@@ -90,6 +96,7 @@
     "statistics": "Statisztikák",
     "tags": "Címkék",
     "title": "Cím",
+    "today": "Ma",
     "tree-mode": "Fa nézet",
     "type": "Típus",
     "unpin": "Feloldás",
@@ -113,8 +120,12 @@
   "editor": {
     "add-your-comment-here": "Írd ide a megjegyzésed...",
     "any-thoughts": "Bármi ami a fejedben jár...",
+    "exit-focus-mode": "Kilépés a fókusz módból",
+    "focus-mode": "Fókusz mód",
+    "no-changes-detected": "Nincs változás",
     "save": "Mentés",
-    "no-changes-detected": "Nincs változás"
+    "saving": "Mentés...",
+    "slash-commands": "Írj `/` parancsokat"
   },
   "filters": {
     "has-code": "vanKód",
@@ -122,8 +133,11 @@
     "has-task-list": "vanFeladatLista"
   },
   "inbox": {
+    "failed-to-load": "Nem sikerült betölteni az értesítést",
     "memo-comment": "{{user}} hozzászólt ehhez: {{memo}}.",
-    "version-update": "Az új {{version}} verzió már elérhető!"
+    "no-archived": "Nincsenek archivált értesítések",
+    "no-unread": "Nincsenek olvasatlan értesítések",
+    "unread": "Olvasatlan"
   },
   "markdown": {
     "checkbox": "Jelölőnégyzet",
@@ -139,9 +153,11 @@
       "self": "Hozzászólások",
       "write-a-comment": "Írj hozzászólást"
     },
+    "copy-content": "Tartalom másolása",
     "copy-link": "Hivatkozás másolása",
-    "count-memos-in-date": "{{count}} jegyzet ezen a napon: {{date}}",
+    "count-memos-in-date": "{{count}} {{memos}} ezen a napon: {{date}}",
     "delete-confirm": "Biztosan törlöd ezt a jegyzetet? EZ A MŰVELET VÉGLEGES",
+    "delete-confirm-description": "Ez a művelet visszafordíthatatlan. A mellékletek, hivatkozások és referenciák is törlődnek.",
     "direction": "Irány",
     "direction-asc": "Növekvő",
     "direction-desc": "Csökkenő",
@@ -150,7 +166,7 @@
     "links": "Hivatkozások",
     "list": "Lista",
     "load-more": "Több betöltése",
-    "masonry": "Masonry",
+    "masonry": "Mozaik elrendezés",
     "no-archived-memos": "Nincsenek archivált jegyzetek.",
     "no-memos": "Nincsenek jegyzetek.",
     "order-by": "Rendezés",
@@ -182,10 +198,10 @@
     "password-changed": "Jelszó megváltoztatva",
     "password-not-match": "A jelszavak nem egyeznek.",
     "restored-successfully": "Sikeres visszaállítás",
+    "succeed-copy-content": "Tartalom sikeresen másolva.",
     "succeed-copy-link": "Hivatkozás sikeresen másolva.",
     "update-succeed": "Sikeres frissítés",
-    "user-not-found": "Felhasználó nem található",
-    "microphone-not-available": "A mikrofon nem elérhető"
+    "user-not-found": "Felhasználó nem található"
   },
   "reference": {
     "add-references": "Referenciák hozzáadása",
@@ -194,7 +210,7 @@
     "search-placeholder": "Tartalom keresése"
   },
   "resource": {
-    "clear": "Töröl",
+    "clear": "Törlés",
     "copy-link": "Hivatkozás másolása",
     "create-dialog": {
       "external-link": {
@@ -213,6 +229,10 @@
       "title": "Állomány létrehozása",
       "upload-method": "Feltöltési mód"
     },
+    "delete-all-unused": "Nem használtak törlése",
+    "delete-all-unused-confirm": "Biztosan törlöd az összes nem használt állományt? EZ A MŰVELET VÉGLEGES",
+    "delete-all-unused-error": "Nem sikerült törölni a nem használt állományokat",
+    "delete-all-unused-success": "Állományok sikeresen törölve",
     "delete-resource": "Állomány törlése",
     "delete-selected-resources": "Kijelölt állományok törlése",
     "fetching-data": "Adatok lekérése…",
@@ -233,8 +253,11 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "Hozzáférési token vágólapra másolva",
-      "access-token-deletion": "Biztosan törlöd a hozzáférési tokent {{accessToken}}? EZ A MŰVELET VÉGLEGES.",
+      "access-token-deleted": "Hozzáférési token `{{description}}` törölve",
+      "access-token-deletion": "Biztosan törlöd a hozzáférési tokent `{{description}}`?",
+      "access-token-deletion-description": "Ez a művelet visszafordíthatatlan. Frissítened kell minden szolgáltatást, amely ezt a tokent használja, hogy új tokent használjanak.",
       "create-dialog": {
+        "access-token-created": "Hozzáférési token `{{description}}` létrehozva",
         "create-access-token": "Hozzáférési token létrehozása",
         "created-at": "Létrehozva",
         "description": "Leírás",
@@ -262,14 +285,31 @@
       "update-information": "Információ frissítése",
       "username-note": "Bejelentkezéshez használt"
     },
+    "instance-section": {
+      "disallow-change-nickname": "Becenév módosításának tiltása",
+      "disallow-change-username": "Felhasználónév módosításának tiltása",
+      "disallow-password-auth": "Jelszavas hitelesítés tiltása",
+      "disallow-user-registration": "Felhasználó regisztráció tiltása",
+      "monday": "Hétfő",
+      "saturday": "Szombat",
+      "sunday": "Vasárnap",
+      "week-start-day": "A hét kezdőnapja"
+    },
     "member": "Tag",
     "member-list": "Taglista",
     "member-section": {
+      "admin": "Admin",
       "archive-member": "Tag archiválása",
+      "archive-success": "{{username}} sikeresen archiválva",
       "archive-warning": "Biztosan archiválod {{username}} tagot?",
+      "archive-warning-description": "Az archiválás letiltja a fiókot. Később visszaállíthatod vagy törölheted.",
       "create-a-member": "Tag létrehozása",
       "delete-member": "Tag törlése",
-      "delete-warning": "Biztosan törlöd {{username}} tagot? EZ A MŰVELET VÉGLEGES"
+      "delete-success": "{{username}} sikeresen törölve",
+      "delete-warning": "Biztosan törlöd {{username}} tagot?",
+      "delete-warning-description": "EZ A MŰVELET VÉGLEGES",
+      "restore-success": "{{username}} sikeresen visszaállítva",
+      "user": "Felhasználó"
     },
     "memo-related": "Jegyzet",
     "memo-related-settings": {
@@ -286,6 +326,10 @@
       "default-memo-sort-option": "Jegyzet megjelenítési ideje",
       "default-memo-visibility": "Jegyzetek alapértelmezett láthatósága",
       "theme": "Téma"
+    },
+    "shortcut": {
+      "delete-confirm": "Biztosan törlöd a `{{title}}` gyorsbillentyűt?",
+      "delete-success": "`{{title}}` gyorsbillentyű sikeresen törölve"
     },
     "sso": "SSO",
     "sso-section": {
@@ -362,7 +406,7 @@
       },
       "disable-password-login": "Jelszavas bejelentkezés letiltása",
       "disable-password-login-final-warning": "Írd be, hogy \"CONFIRM\" ha tudod mit csinálsz.",
-      "disable-password-login-warning": "Ez letiltja a jelszavas bejelentkezést minden felhasználó számára. Ha a konfigurált identitásszolgáltatók nem elérhetőek, a bejelentkezés nem lehetséges, ezen beállítás kikapcsolása nélkül az adatbázisban. Ezen kívül fokozott figyelem szükséges identitásszolgálók eltávolítása során is",
+      "disable-password-login-warning": "Ez letiltja a jelszavas bejelentkezést minden felhasználó számára. Ha a konfigurált identitásszolgáltatók nem érhetők el, a bejelentkezés nem lehetséges ezen beállítás kikapcsolása nélkül az adatbázisban. Ezen kívül fokozott figyelem szükséges az identitásszolgáltatók eltávolítása során is",
       "disable-public-memos": "Nyilvános jegyzetek letiltása",
       "display-with-updated-time": "Megjelenítés frissített idővel",
       "enable-auto-compact": "Automatikus tömörítés engedélyezése",
@@ -380,24 +424,20 @@
       "create-dialog": {
         "an-easy-to-remember-name": "Könnyen megjegyezhető név",
         "create-webhook": "Webhook létrehozása",
+        "create-webhook-success": "`{{name}}` webhook létrehozva",
         "edit-webhook": "Webhook szerkesztése",
         "payload-url": "Payload URL",
         "title": "Cím",
         "url-example-post-receive": "https://example.com/postreceive"
       },
+      "delete-dialog": {
+        "delete-webhook-description": "Ez a művelet visszafordíthatatlan.",
+        "delete-webhook-success": "`{{name}}` webhook sikeresen törölve",
+        "delete-webhook-title": "Biztosan törlöd a `{{name}}` webhookot?"
+      },
       "no-webhooks-found": "Nincs webhook.",
       "title": "Webhooks",
       "url": "URL"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Becenév módosításának tiltása",
-      "disallow-change-username": "Felhasználónév módosításának tiltása",
-      "disallow-password-auth": "Jelszavas hitelesítés tiltása",
-      "disallow-user-registration": "Felhasználó regisztráció tiltása",
-      "monday": "Hétfő",
-      "saturday": "Szombat",
-      "sunday": "Vasárnap",
-      "week-start-day": "A hét kezdőnapja"
     }
   },
   "tag": {
@@ -405,6 +445,7 @@
     "create-tag": "Címke létrehozása",
     "create-tags-guide": "Létrehozhatsz címkéket `#címke` beírásával.",
     "delete-confirm": "Biztosan törlöd ezt a címkét? Minden kapcsolódó jegyzet archiválva lesz.",
+    "delete-success": "Címke sikeresen törölve",
     "delete-tag": "Címke törlése",
     "new-name": "Új név",
     "no-tag-found": "Nem található címke",
@@ -414,5 +455,13 @@
     "rename-success": "Címke sikeresen átnevezve",
     "rename-tag": "Címke átnevezése",
     "rename-tip": "Minden jegyzeted ezzel a címkével frissülni fog."
+  },
+  "tooltip": {
+    "link-memo": "Jegyzet hivatkozása",
+    "markdown-menu": "Markdown",
+    "select-location": "Helyszín",
+    "select-visibility": "Láthatóság",
+    "tags": "Címkék",
+    "upload-attachment": "Melléklet(ek) feltöltése"
   }
 }

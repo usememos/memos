@@ -18,18 +18,22 @@
     "about": "Memos について",
     "add": "追加",
     "admin": "管理者設定",
+    "all": "すべて",
     "archive": "アーカイブにする",
     "archived": "ゴミ箱",
     "attachments": "添付ファイル",
+    "auto-expand": "自動展開",
     "avatar": "アイコン",
     "basic": "基本設定",
     "beta": "ベータ",
+    "calendar": "カレンダー",
     "cancel": "キャンセル",
     "change": "変更",
     "clear": "クリア",
     "close": "閉じる",
     "collapse": "折りたたむ",
     "confirm": "確認する",
+    "copy": "コピー",
     "create": "作成する",
     "created-at": "作成日時",
     "database": "データベース",
@@ -53,9 +57,11 @@
     "layout": "レイアウト",
     "learn-more": "さらに詳しく",
     "link": "リンク",
+    "map": "マップ",
     "mark": "マーク",
     "memo": "メモ",
-    "memos": "Memos",
+    "memos": "メモ",
+    "more": "もっと",
     "name": "名前",
     "new": "新しく追加",
     "nickname": "ニックネーム",
@@ -90,6 +96,7 @@
     "statistics": "統計",
     "tags": "タグ",
     "title": "タイトル",
+    "today": "今日",
     "tree-mode": "ツリーモード",
     "type": "タイプ",
     "unpin": "ピンを外す",
@@ -113,8 +120,12 @@
   "editor": {
     "add-your-comment-here": "ここにコメントを追加...",
     "any-thoughts": "今思ったことは...",
+    "exit-focus-mode": "フォーカスを終了",
+    "focus-mode": "フォーカスモード",
+    "no-changes-detected": "変更はありません",
     "save": "保存",
-    "no-changes-detected": "変更はありません"
+    "saving": "保存中...",
+    "slash-commands": "コマンドを入力するには `/` を入力"
   },
   "filters": {
     "has-code": "コードあり",
@@ -122,8 +133,11 @@
     "has-task-list": "タスクリストあり"
   },
   "inbox": {
+    "failed-to-load": "受信トレイアイテムの読み込みに失敗しました",
     "memo-comment": "{{user}} があなたの {{memo}} にコメントしました。",
-    "version-update": "新しいバージョン {{version}} が利用可能です!"
+    "no-archived": "アーカイブされた通知はありません",
+    "no-unread": "未読の通知はありません",
+    "unread": "未読"
   },
   "markdown": {
     "checkbox": "チェックボックス",
@@ -139,9 +153,11 @@
       "self": "コメント",
       "write-a-comment": "コメントを書く"
     },
+    "copy-content": "コンテンツをコピー",
     "copy-link": "リンクをコピー",
-    "count-memos-in-date": "{{date}} 日に {{count}} 件のメモ",
+    "count-memos-in-date": "{{count}}件の{{memos}}{{date}}",
     "delete-confirm": "本当に削除しますか? この操作は元に戻せません。",
+    "delete-confirm-description": "この操作は元に戻せません。添付ファイル、リンク、参照も削除されます。",
     "direction": "並び順",
     "direction-asc": "昇順",
     "direction-desc": "降順",
@@ -157,7 +173,7 @@
     "search-placeholder": "メモを検索...",
     "show-less": "少なく表示",
     "show-more": "もっと見る",
-    "to-do": "To-do",
+    "to-do": "タスク",
     "view-detail": "詳細を見る",
     "visibility": {
       "disabled": "公開メモは無効化されています。",
@@ -182,6 +198,7 @@
     "password-changed": "パスワードを変更しました",
     "password-not-match": "パスワードが一致しません。",
     "restored-successfully": "リストア成功",
+    "succeed-copy-content": "コンテンツのコピーに成功しました。",
     "succeed-copy-link": "リンクのコピーに成功しました。",
     "update-succeed": "変更は保存されました",
     "user-not-found": "ユーザーが見つかりませんでした"
@@ -212,6 +229,10 @@
       "title": "リソースを作成",
       "upload-method": "アップロード方法"
     },
+    "delete-all-unused": "未使用をすべて削除",
+    "delete-all-unused-confirm": "未使用のリソースをすべて削除してもよろしいですか？この操作は元に戻せません",
+    "delete-all-unused-error": "未使用リソースの削除に失敗しました",
+    "delete-all-unused-success": "リソースを削除しました",
     "delete-resource": "リソースを削除",
     "delete-selected-resources": "選択したリソースを削除",
     "fetching-data": "データを取得中…",
@@ -232,8 +253,11 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "アクセストークンをクリップボードにコピーしました",
-      "access-token-deletion": "アクセストークン {{accessToken}} を削除しますか？この操作は元に戻せません。",
+      "access-token-deleted": "アクセストークン `{{description}}` を削除しました",
+      "access-token-deletion": "アクセストークン `{{description}}` を削除しますか？この操作は元に戻せません。",
+      "access-token-deletion-description": "この操作は元に戻せません。このトークンを使用サービスは新しいトークンを使用するように更新する必要があります。",
       "create-dialog": {
+        "access-token-created": "アクセストークン `{{description}}` を作成しました",
         "create-access-token": "アクセストークンを作成",
         "created-at": "作成日時",
         "description": "説明",
@@ -261,18 +285,33 @@
       "update-information": "プロフィールを編集",
       "username-note": "ログインに使用します"
     },
+    "instance-section": {
+      "disallow-change-nickname": "ニックネーム変更を禁止",
+      "disallow-change-username": "ユーザー名変更を禁止",
+      "disallow-password-auth": "パスワード認証を禁止",
+      "disallow-user-registration": "ユーザー登録を禁止",
+      "monday": "月曜日",
+      "saturday": "土曜日",
+      "sunday": "日曜日",
+      "week-start-day": "週の開始日"
+    },
     "member": "メンバー",
     "member-list": "メンバーリスト",
     "member-section": {
       "admin": "管理者",
       "archive-member": "メンバーをアーカイブ",
+      "archive-success": "{{username}} をアーカイブしました",
       "archive-warning": "{{username}} をアーカイブしますか？",
+      "archive-warning-description": "アーカイブするとアカウントが無効になります。あとで復元または削除できます。",
       "create-a-member": "メンバーを追加する",
       "delete-member": "メンバーを削除",
+      "delete-success": "{{username}} を削除しました",
       "delete-warning": "{{username}} を削除しますか？この操作は元に戻せません。",
+      "delete-warning-description": "この操作は元に戻せません",
+      "restore-success": "{{username}} を復元しました",
       "user": "ユーザー"
     },
-    "memo-related": "Memo",
+    "memo-related": "メモ",
     "memo-related-settings": {
       "content-length-limit": "内容の最大長（バイト）",
       "enable-blur-nsfw-content": "センシティブ(NSFW)内容のぼかしを有効化",
@@ -287,6 +326,10 @@
       "default-memo-sort-option": "メモの表示時間",
       "default-memo-visibility": "公開範囲の初期設定",
       "theme": "テーマ"
+    },
+    "shortcut": {
+      "delete-confirm": "ショートカット `{{title}}` を削除してもよろしいですか？",
+      "delete-success": "ショートカット `{{title}}` を削除しました"
     },
     "sso": "SSO",
     "sso-section": {
@@ -381,24 +424,20 @@
       "create-dialog": {
         "an-easy-to-remember-name": "覚えやすい名前",
         "create-webhook": "Webhookを作成",
+        "create-webhook-success": "Webhook `{{name}}` を作成しました",
         "edit-webhook": "Webhookを編集",
         "payload-url": "ペイロードURL",
         "title": "タイトル",
         "url-example-post-receive": "https://example.com/postreceive"
       },
+      "delete-dialog": {
+        "delete-webhook-description": "この操作は元に戻せません。",
+        "delete-webhook-success": "Webhook `{{name}}` を削除しました",
+        "delete-webhook-title": "Webhook `{{name}}` を削除してもよろしいですか？"
+      },
       "no-webhooks-found": "Webhookが見つかりません。",
-      "title": "Webhooks",
+      "title": "Webhook",
       "url": "URL"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "ニックネーム変更を禁止",
-      "disallow-change-username": "ユーザー名変更を禁止",
-      "disallow-password-auth": "パスワード認証を禁止",
-      "disallow-user-registration": "ユーザー登録を禁止",
-      "monday": "月曜日",
-      "saturday": "土曜日",
-      "sunday": "日曜日",
-      "week-start-day": "週の開始日"
     }
   },
   "tag": {
@@ -406,6 +445,7 @@
     "create-tag": "タグを作成する",
     "create-tags-guide": "`#タグ名`と入力することでタグを作成できます。",
     "delete-confirm": "このタグを削除しますか? 関連するすべてのメモがアーカイブされます。",
+    "delete-success": "タグを削除しました",
     "delete-tag": "タグを削除",
     "new-name": "新しい名前",
     "no-tag-found": "タグが見つかりませんでした",
@@ -415,5 +455,13 @@
     "rename-success": "タグ名を変更しました",
     "rename-tag": "タグ名を変更",
     "rename-tip": "このタグが付いたすべてのメモが更新されます。"
+  },
+  "tooltip": {
+    "link-memo": "メモをリンク",
+    "markdown-menu": "Markdown",
+    "select-location": "場所",
+    "select-visibility": "公開範囲",
+    "tags": "タグ",
+    "upload-attachment": "添付ファイルをアップロード"
   }
 }

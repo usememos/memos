@@ -124,6 +124,7 @@
     "focus-mode": "Mode concentration",
     "no-changes-detected": "Aucun changement détecté",
     "save": "Enregistrer",
+    "saving": "Enregistrement...",
     "slash-commands": "Tapez `/` pour les commandes"
   },
   "filters": {
@@ -136,8 +137,7 @@
     "memo-comment": "{{user}} a commenté votre {{memo}}.",
     "no-archived": "Aucune notification archivée",
     "no-unread": "Aucune notification non lue",
-    "unread": "Non lu",
-    "version-update": "La nouvelle version {{version}} est disponible !"
+    "unread": "Non lu"
   },
   "markdown": {
     "checkbox": "Case à cocher",
@@ -178,7 +178,7 @@
     "visibility": {
       "disabled": "Les notes publiques sont désactivées",
       "private": "Privé",
-      "protected": "Espace de travail",
+      "protected": "Protégé",
       "public": "Public"
     }
   },
@@ -237,7 +237,7 @@
     "delete-selected-resources": "Supprimer les ressources sélectionnées",
     "fetching-data": "Récupération des données…",
     "file-drag-drop-prompt": "Glissez-déposez votre fichier ici pour le téléverser",
-    "linked-amount": "Quantité liée",
+    "linked-amount": "Liens associés",
     "no-files-selected": "Aucun fichier sélectionné",
     "no-resources": "Aucune ressource.",
     "no-unused-resources": "Aucune ressource inutilisée",
@@ -254,7 +254,7 @@
     "access-token-section": {
       "access-token-copied-to-clipboard": "Jeton d'accès copié dans le presse-papiers",
       "access-token-deleted": "Jeton d'accès `{{description}}` supprimé",
-      "access-token-deletion": "Êtes-vous sûr de vouloir supprimer le jeton d'accès {{accessToken}} ? CETTE ACTION EST IRRÉVERSIBLE.",
+      "access-token-deletion": "Êtes-vous sûr de vouloir supprimer le jeton d'accès `{{description}}` ?",
       "access-token-deletion-description": "Cette action est irréversible. Vous devrez mettre à jour tous les services utilisant ce jeton.",
       "create-dialog": {
         "access-token-created": "Jeton d'accès `{{description}}` créé",
@@ -285,6 +285,16 @@
       "update-information": "Mettre à jour les informations",
       "username-note": "Utilisé pour se connecter"
     },
+    "instance-section": {
+      "disallow-change-nickname": "Interdire le changement de surnom",
+      "disallow-change-username": "Interdire le changement de nom d'utilisateur",
+      "disallow-password-auth": "Interdire l'authentification par mot de passe",
+      "disallow-user-registration": "Interdire l'inscription des utilisateurs",
+      "monday": "Lundi",
+      "saturday": "Samedi",
+      "sunday": "Dimanche",
+      "week-start-day": "Jour de début de semaine"
+    },
     "member": "Membre",
     "member-list": "Liste des membres",
     "member-section": {
@@ -313,7 +323,7 @@
     "my-account": "Mon compte",
     "preference": "Préférences",
     "preference-section": {
-      "default-memo-sort-option": "Heure d'affichage de la note",
+      "default-memo-sort-option": "Date d'affichage de la note",
       "default-memo-visibility": "Visibilité par défaut de la note",
       "theme": "Thème"
     },
@@ -360,7 +370,7 @@
       "filepath-template": "Modèle de chemin de fichier",
       "local-storage-path": "Chemin de stockage local",
       "path": "Chemin de stockage",
-      "path-description": "Vous pouvez utiliser les mêmes variables dynamiques que le stockage local, comme {filename}",
+      "path-description": "Vous pouvez utiliser les mêmes variables dynamiques que pour le stockage local, comme {filename}",
       "path-placeholder": "chemin/personnalisé",
       "presign-placeholder": "URL pré-signée, optionnel",
       "region": "Région",
@@ -428,16 +438,6 @@
       "no-webhooks-found": "Aucun webhook trouvé.",
       "title": "Webhooks",
       "url": "URL"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Interdire le changement de surnom",
-      "disallow-change-username": "Interdire le changement de nom d'utilisateur",
-      "disallow-password-auth": "Interdire l'authentification par mot de passe",
-      "disallow-user-registration": "Interdire l'inscription des utilisateurs",
-      "monday": "Lundi",
-      "saturday": "Samedi",
-      "sunday": "Dimanche",
-      "week-start-day": "Jour de début de semaine"
     }
   },
   "tag": {

@@ -18,18 +18,22 @@
     "about": "Om",
     "add": "Legg til",
     "admin": "Administrasjon",
+    "all": "Alle",
     "archive": "Arkiver",
     "archived": "Arkivert",
     "attachments": "Vedlegg",
+    "auto-expand": "Ekspander automatisk",
     "avatar": "Avatar",
     "basic": "Grunnleggende",
     "beta": "Beta",
+    "calendar": "Kalender",
     "cancel": "Avbryt",
     "change": "Bytt",
     "clear": "Tøm",
     "close": "Lukk",
     "collapse": "Kollaps",
     "confirm": "Bekreft",
+    "copy": "Kopier",
     "create": "Opprett",
     "created-at": "Opprettet",
     "database": "Database",
@@ -53,9 +57,11 @@
     "layout": "Layout",
     "learn-more": "Lær mer",
     "link": "Link",
+    "map": "Kart",
     "mark": "Merk",
     "memo": "Memo",
     "memos": "Memoer",
+    "more": "Mer",
     "name": "Navn",
     "new": "Ny",
     "nickname": "Kallenavn",
@@ -90,6 +96,7 @@
     "statistics": "Statistikk",
     "tags": "Tagger",
     "title": "Tittel",
+    "today": "I dag",
     "tree-mode": "Tre-modus",
     "type": "Type",
     "unpin": "Fjern festet",
@@ -113,8 +120,12 @@
   "editor": {
     "add-your-comment-here": "Legg til din kommentar her...",
     "any-thoughts": "Noen tanker...",
+    "exit-focus-mode": "Avslutt fokusmodus",
+    "focus-mode": "Fokusmodus",
+    "no-changes-detected": "Ingen endringer oppdaget",
     "save": "Lagre",
-    "no-changes-detected": "Ingen endringer oppdaget"
+    "saving": "Lagrer...",
+    "slash-commands": "Skriv `/` for kommandoer"
   },
   "filters": {
     "has-code": "harKode",
@@ -122,8 +133,11 @@
     "has-task-list": "harGjøremålsListe"
   },
   "inbox": {
+    "failed-to-load": "Kunne ikke laste innbokselement",
     "memo-comment": "{{user}} har en kommentar til din {{memo}}.",
-    "version-update": "Ny versjon {{version}} er tilgjengelig nå!"
+    "no-archived": "Ingen arkiverte varsler",
+    "no-unread": "Ingen uleste varsler",
+    "unread": "Ulest"
   },
   "markdown": {
     "checkbox": "Avkrysningsboks",
@@ -139,16 +153,20 @@
       "self": "Kommentarer",
       "write-a-comment": "Skriv en kommentar"
     },
+    "copy-content": "Kopier innhold",
     "copy-link": "Kopier link",
     "count-memos-in-date": "{{count}} {{memos}} på {{date}}",
     "delete-confirm": "Er du sikker på at du vil slette denne memoen? DENNE HANDLINGEN KAN IKKE ANGRES",
+    "delete-confirm-description": "Denne handlingen kan ikke angres. Vedlegg, lenker og referanser vil også bli fjernet.",
     "direction": "Retning",
     "direction-asc": "Stigende",
     "direction-desc": "Synkende",
     "display-time": "Vis tid",
     "filters": "Filtre",
     "links": "Linker",
+    "list": "Liste",
     "load-more": "Last inn mer",
+    "masonry": "Masonry",
     "no-archived-memos": "Ingen arkiverte memoer.",
     "no-memos": "Ingen memoer.",
     "order-by": "Sorter etter",
@@ -160,11 +178,9 @@
     "visibility": {
       "disabled": "Offentlige memoer er deaktivert",
       "private": "Privat",
-      "protected": "Arbeidsområde",
+      "protected": "Beskyttet",
       "public": "Offentlig"
-    },
-    "list": "Liste",
-    "masonry": "Masonry"
+    }
   },
   "message": {
     "archived-successfully": "Arkivering vellykket",
@@ -182,6 +198,7 @@
     "password-changed": "Passord endret",
     "password-not-match": "Passordene samsvarer ikke",
     "restored-successfully": "Gjenoppretting vellykket",
+    "succeed-copy-content": "Innhold kopiert vellykket.",
     "succeed-copy-link": "Link kopiert.",
     "update-succeed": "Oppdatering vellykket",
     "user-not-found": "Bruker ikke funnet"
@@ -212,6 +229,10 @@
       "title": "Opprett ressurs",
       "upload-method": "Opplastingsmetode"
     },
+    "delete-all-unused": "Slett alle ubrukte",
+    "delete-all-unused-confirm": "Er du sikker på at du vil slette alle ubrukte ressurser? DENNE HANDLINGEN KAN IKKE ANGRES",
+    "delete-all-unused-error": "Kunne ikke slette ubrukte ressurser",
+    "delete-all-unused-success": "Ressurser slettet vellykket",
     "delete-resource": "Slett ressurs",
     "delete-selected-resources": "Slett valgte ressurser",
     "fetching-data": "Henter data…",
@@ -232,8 +253,11 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "Access token kopiert til utklippstavlen",
-      "access-token-deletion": "Er du sikker på at du vil slette access token {{accessToken}}? DENNE HANDLINGEN KAN IKKE ANGRES.",
+      "access-token-deleted": "Access token `{{description}}` slettet",
+      "access-token-deletion": "Er du sikker på at du vil slette access token {{description}}? DENNE HANDLINGEN KAN IKKE ANGRES.",
+      "access-token-deletion-description": "Denne handlingen kan ikke angres. Du må oppdatere alle tjenester som bruker denne tokenen til å bruke en ny token.",
       "create-dialog": {
+        "access-token-created": "Access token `{{description}}` opprettet",
         "create-access-token": "Opprett access token",
         "created-at": "Opprettet",
         "description": "Beskrivelse",
@@ -261,15 +285,30 @@
       "update-information": "Oppdater informasjon",
       "username-note": "Brukes til innlogging"
     },
+    "instance-section": {
+      "disallow-change-nickname": "Ikke tillat endring av kallenavn",
+      "disallow-change-username": "Ikke tillat endring av brukernavn",
+      "disallow-password-auth": "Ikke tillat autentisering med passord",
+      "disallow-user-registration": "Ikke tillat registrering av brukere",
+      "monday": "Mandag",
+      "saturday": "Lørdag",
+      "sunday": "Søndag",
+      "week-start-day": "Ukestart"
+    },
     "member": "Medlem",
     "member-list": "Medlemsliste",
     "member-section": {
       "admin": "Administrator",
       "archive-member": "Arkiver medlem",
+      "archive-success": "{{username}} arkivert vellykket",
       "archive-warning": "Er du sikker på at du vil arkivere {{username}}?",
+      "archive-warning-description": "Arkivering deaktiverer kontoen. Du kan gjenopprette eller slette den senere.",
       "create-a-member": "Opprett medlem",
       "delete-member": "Slett medlem",
+      "delete-success": "{{username}} slettet vellykket",
       "delete-warning": "Er du sikker på at du vil slette {{username}}? DENNE HANDLINGEN KAN IKKE ANGRES",
+      "delete-warning-description": "DENNE HANDLINGEN KAN IKKE ANGRES",
+      "restore-success": "{{username}} gjenopprettet vellykket",
       "user": "Bruker"
     },
     "memo-related": "Memo",
@@ -287,6 +326,10 @@
       "default-memo-sort-option": "Memo visningstid",
       "default-memo-visibility": "Standard synlighet for memoer",
       "theme": "Tema"
+    },
+    "shortcut": {
+      "delete-confirm": "Er du sikker på at du vil slette snarveien `{{title}}`?",
+      "delete-success": "Snarvei `{{title}}` slettet vellykket"
     },
     "sso": "SSO",
     "sso-section": {
@@ -381,24 +424,20 @@
       "create-dialog": {
         "an-easy-to-remember-name": "Et lett å huske navn",
         "create-webhook": "Opprett webhook",
+        "create-webhook-success": "Webhook `{{name}}` opprettet",
         "edit-webhook": "Rediger webhook",
         "payload-url": "Payload-URL",
         "title": "Tittel",
         "url-example-post-receive": "https://eksempel.no/postreceive"
       },
+      "delete-dialog": {
+        "delete-webhook-description": "Denne handlingen kan ikke angres.",
+        "delete-webhook-success": "Webhook `{{name}}` slettet vellykket",
+        "delete-webhook-title": "Er du sikker på at du vil slette webhooken `{{name}}`?"
+      },
       "no-webhooks-found": "Ingen webhooks funnet.",
       "title": "Webhooks",
       "url": "URL"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Ikke tillat endring av kallenavn",
-      "disallow-change-username": "Ikke tillat endring av brukernavn",
-      "disallow-password-auth": "Ikke tillat autentisering med passord",
-      "disallow-user-registration": "Ikke tillat registrering av brukere",
-      "monday": "Mandag",
-      "saturday": "Lørdag",
-      "sunday": "Søndag",
-      "week-start-day": "Ukestart"
     }
   },
   "tag": {
@@ -406,6 +445,7 @@
     "create-tag": "Opprett tagg",
     "create-tags-guide": "Du kan opprette tagger ved å skrive `#tagg`.",
     "delete-confirm": "Er du sikker på at du vil slette denne taggen? Alle relaterte memoer vil bli arkivert.",
+    "delete-success": "Tagg slettet vellykket",
     "delete-tag": "Slett tagg",
     "new-name": "Nytt navn",
     "no-tag-found": "Ingen tagger funnet",
@@ -415,5 +455,13 @@
     "rename-success": "Taggnavn endret",
     "rename-tag": "Gi nytt navn til tagg",
     "rename-tip": "Alle dine memoer med denne taggen vil bli oppdatert."
+  },
+  "tooltip": {
+    "link-memo": "Lenke til memo",
+    "markdown-menu": "Markdown",
+    "select-location": "Lokasjon",
+    "select-visibility": "Synlighet",
+    "tags": "Tagger",
+    "upload-attachment": "Last opp vedlegg"
   }
 }

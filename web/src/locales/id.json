@@ -18,18 +18,22 @@
     "about": "Tentang",
     "add": "Tambah",
     "admin": "Admin",
+    "all": "Semua",
     "archive": "Arsip",
     "archived": "Diarsipkan",
     "attachments": "Lampiran",
+    "auto-expand": "Perluas otomatis",
     "avatar": "Avatar",
     "basic": "Dasar",
     "beta": "Beta",
+    "calendar": "Kalender",
     "cancel": "Batal",
     "change": "Ubah",
     "clear": "Bersihkan",
     "close": "Tutup",
     "collapse": "Kempiskan",
     "confirm": "Konfirmasi",
+    "copy": "Salin",
     "create": "Buat",
     "created-at": "Dibuat pada",
     "database": "Basis Data",
@@ -53,9 +57,11 @@
     "layout": "Tata letak",
     "learn-more": "Pelajari lebih lanjut",
     "link": "Tautan",
+    "map": "Peta",
     "mark": "Tandai",
     "memo": "Memo",
     "memos": "Memo",
+    "more": "Lainnya",
     "name": "Nama",
     "new": "Baru",
     "nickname": "Nama Panggilan",
@@ -90,6 +96,7 @@
     "statistics": "Statistik",
     "tags": "Tag",
     "title": "Judul",
+    "today": "Hari ini",
     "tree-mode": "Mode pohon",
     "type": "Tipe",
     "unpin": "Lepaskan",
@@ -113,8 +120,12 @@
   "editor": {
     "add-your-comment-here": "Tambahkan komentar Anda di sini...",
     "any-thoughts": "Punya pemikiran...",
+    "exit-focus-mode": "Keluar dari Mode Fokus",
+    "focus-mode": "Mode Fokus",
+    "no-changes-detected": "Tidak ada perubahan yang terdeteksi",
     "save": "Simpan",
-    "no-changes-detected": "Tidak ada perubahan yang terdeteksi"
+    "saving": "Menyimpan...",
+    "slash-commands": "Ketik `/` untuk perintah"
   },
   "filters": {
     "has-code": "Memiliki kode",
@@ -122,8 +133,11 @@
     "has-task-list": "Memiliki daftar tugas"
   },
   "inbox": {
+    "failed-to-load": "Gagal memuat item kotak masuk",
     "memo-comment": "{{user}} memiliki komentar di {{memo}} Anda.",
-    "version-update": "Versi baru {{version}} sekarang tersedia!"
+    "no-archived": "Tidak ada notifikasi yang diarsipkan",
+    "no-unread": "Tidak ada notifikasi yang belum dibaca",
+    "unread": "Belum dibaca"
   },
   "markdown": {
     "checkbox": "Kotak Centang",
@@ -139,16 +153,20 @@
       "self": "Komentar",
       "write-a-comment": "Tulis komentar"
     },
+    "copy-content": "Salin Konten",
     "copy-link": "Salin Tautan",
-    "count-memos-in-date": "{{count}} memo di {{date}}",
+    "count-memos-in-date": "{{count}} {{memos}} di {{date}}",
     "delete-confirm": "Apakah Anda yakin ingin menghapus memo ini? TINDAKAN INI TIDAK DAPAT DIBATALKAN",
+    "delete-confirm-description": "Tindakan ini tidak dapat dibatalkan. Lampiran, tautan, dan referensi juga akan dihapus.",
     "direction": "Arah",
     "direction-asc": "Menaik",
     "direction-desc": "Menurun",
     "display-time": "Waktu Tampil",
     "filters": "Saring",
     "links": "Tautan",
+    "list": "Daftar",
     "load-more": "Muat lebih banyak",
+    "masonry": "Masonry",
     "no-archived-memos": "Tidak ada memo yang diarsipkan.",
     "no-memos": "Tidak ada memo.",
     "order-by": "Urutkan Berdasarkan",
@@ -162,9 +180,7 @@
       "private": "Pribadi",
       "protected": "Terlindungi",
       "public": "Publik"
-    },
-    "list": "Daftar",
-    "masonry": "Masonry"
+    }
   },
   "message": {
     "archived-successfully": "Berhasil diarsipkan",
@@ -174,7 +190,7 @@
     "description-is-required": "Deskripsi wajib diisi",
     "failed-to-embed-memo": "Gagal menyematkan memo",
     "fill-all": "Harap isi semua kolom.",
-    "fill-all-required-fields": "Harap isi semua kolom wajib yang wajib",
+    "fill-all-required-fields": "Harap isi semua kolom wajib",
     "maximum-upload-size-is": "Ukuran unggahan maksimum yang diizinkan adalah {{size}} MiB",
     "memo-not-found": "Memo tidak ditemukan.",
     "new-password-not-match": "Kata sandi baru tidak cocok.",
@@ -182,6 +198,7 @@
     "password-changed": "Kata sandi diubah",
     "password-not-match": "Kata sandi tidak cocok.",
     "restored-successfully": "Berhasil dipulihkan",
+    "succeed-copy-content": "Konten berhasil disalin.",
     "succeed-copy-link": "Tautan berhasil disalin.",
     "update-succeed": "Pembaruan berhasil",
     "user-not-found": "Pengguna tidak ditemukan"
@@ -212,6 +229,10 @@
       "title": "Buat Sumber Daya",
       "upload-method": "Metode unggah"
     },
+    "delete-all-unused": "Hapus semua yang tidak terpakai",
+    "delete-all-unused-confirm": "Apakah Anda yakin ingin menghapus semua sumber daya yang tidak terpakai? TINDAKAN INI TIDAK DAPAT DIBATALKAN",
+    "delete-all-unused-error": "Gagal menghapus sumber daya yang tidak terpakai",
+    "delete-all-unused-success": "Sumber daya berhasil dihapus",
     "delete-resource": "Hapus Sumber Daya",
     "delete-selected-resources": "Hapus Sumber Daya yang Dipilih",
     "fetching-data": "Mengambil data…",
@@ -232,8 +253,11 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "Token akses disalin ke papan klip",
-      "access-token-deletion": "Anda yakin ingin menghapus token akses {{accessToken}}? TINDAKAN INI TIDAK DAPAT DIBATALKAN.",
+      "access-token-deleted": "Token akses `{{description}}` dihapus",
+      "access-token-deletion": "Anda yakin ingin menghapus token akses {{description}}? TINDAKAN INI TIDAK DAPAT DIBATALKAN.",
+      "access-token-deletion-description": "Tindakan ini tidak dapat dibatalkan. Anda perlu memperbarui layanan yang menggunakan token ini untuk menggunakan token baru.",
       "create-dialog": {
+        "access-token-created": "Token akses `{{description}}` dibuat",
         "create-access-token": "Buat Token Akses",
         "created-at": "Dibuat pada",
         "description": "Deskripsi",
@@ -242,7 +266,7 @@
         "duration-never": "Tidak Pernah",
         "expiration": "Kedaluwarsa",
         "expires-at": "Berakhir pada",
-        "some-description": "Beberapa deskirpsi..."
+        "some-description": "Beberapa deskripsi..."
       },
       "description": "Daftar semua token akses untuk akun Anda.",
       "title": "Token Akses",
@@ -261,15 +285,30 @@
       "update-information": "Perbarui Informasi",
       "username-note": "Digunakan untuk masuk"
     },
+    "instance-section": {
+      "disallow-change-nickname": "Larangan mengubah nama panggilan",
+      "disallow-change-username": "Larangan mengubah nama pengguna",
+      "disallow-password-auth": "Larangan autentikasi kata sandi",
+      "disallow-user-registration": "Larangan pendaftaran pengguna",
+      "monday": "Senin",
+      "saturday": "Sabtu",
+      "sunday": "Minggu",
+      "week-start-day": "Hari awal pekan"
+    },
     "member": "Anggota",
     "member-list": "Daftar Anggota",
     "member-section": {
       "admin": "Admin",
       "archive-member": "Arsip anggota",
+      "archive-success": "{{username}} berhasil diarsipkan",
       "archive-warning": "Apakah Anda yakin untuk mengarsipkan {{username}}?",
+      "archive-warning-description": "Mengarsipkan menonaktifkan akun. Anda dapat memulihkan atau menghapusnya nanti.",
       "create-a-member": "Buat anggota",
       "delete-member": "Hapus Anggota",
+      "delete-success": "{{username}} berhasil dihapus",
       "delete-warning": "Apakah Anda yakin untuk menghapus {{username}}? TINDAKAN INI TIDAK DAPAT DIBATALKAN",
+      "delete-warning-description": "TINDAKAN INI TIDAK DAPAT DIBATALKAN",
+      "restore-success": "{{username}} berhasil dipulihkan",
       "user": "Pengguna"
     },
     "memo-related": "Memo",
@@ -288,12 +327,16 @@
       "default-memo-visibility": "Visibilitas memo default",
       "theme": "Tema"
     },
+    "shortcut": {
+      "delete-confirm": "Apakah Anda yakin ingin menghapus pintasan `{{title}}`?",
+      "delete-success": "Pintasan `{{title}}` berhasil dihapus"
+    },
     "sso": "SSO",
     "sso-section": {
       "authorization-endpoint": "Akhir Otorisasi",
       "client-id": "ID Klien",
       "client-secret": "Kunci Rahasia Klien",
-      "confirm-delete": "Apakah Anda yakin ingin menghapus konfigurasi SSO \"{{name}}\"? TINDAKAN INI TIDAK DAPAT DIULANG.",
+      "confirm-delete": "Apakah Anda yakin ingin menghapus konfigurasi SSO \"{{name}}\"? TINDAKAN INI TIDAK DAPAT DIBATALKAN.",
       "create-sso": "Buat SSO",
       "custom": "Kustom",
       "delete-sso": "Konfirmasi penghapusan",
@@ -346,7 +389,7 @@
       "url-prefix-placeholder": "Prefiks URL kustom, opsional",
       "url-suffix": "Sufiks URL",
       "url-suffix-placeholder": "Sufiks URL kustom, opsional",
-      "warning-text": "Apakah Anda yakin ingin menghapus layanan penyimpanan \"{{name}}\"? TINDAKAN INI TIDAK DAPAT DIULANG."
+      "warning-text": "Apakah Anda yakin ingin menghapus layanan penyimpanan \"{{name}}\"? TINDAKAN INI TIDAK DAPAT DIBATALKAN."
     },
     "system": "Sistem",
     "system-section": {
@@ -381,24 +424,20 @@
       "create-dialog": {
         "an-easy-to-remember-name": "Nama yang mudah diingat",
         "create-webhook": "Buat webhook",
+        "create-webhook-success": "Webhook `{{name}}` dibuat",
         "edit-webhook": "Edit webhook",
         "payload-url": "URL Payload",
         "title": "Judul",
         "url-example-post-receive": "https://example.com/postreceive"
       },
+      "delete-dialog": {
+        "delete-webhook-description": "Tindakan ini tidak dapat dibatalkan.",
+        "delete-webhook-success": "Webhook `{{name}}` berhasil dihapus",
+        "delete-webhook-title": "Apakah Anda yakin ingin menghapus webhook `{{name}}`?"
+      },
       "no-webhooks-found": "Tidak ada webhook yang ditemukan.",
       "title": "Webhook",
       "url": "URL"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Larangan mengubah nama panggilan",
-      "disallow-change-username": "Larangan mengubah nama pengguna",
-      "disallow-password-auth": "Larangan autentikasi kata sandi",
-      "disallow-user-registration": "Larangan pendaftaran pengguna",
-      "monday": "Senin",
-      "saturday": "Sabtu",
-      "sunday": "Minggu",
-      "week-start-day": "Hari awal pekan"
     }
   },
   "tag": {
@@ -406,6 +445,7 @@
     "create-tag": "Buat Tag",
     "create-tags-guide": "Anda dapat membuat tag dengan memasukkan `#tag`.",
     "delete-confirm": "Apakah Anda yakin ingin menghapus tag ini? Semua memo terkait akan diarsipkan.",
+    "delete-success": "Tag berhasil dihapus",
     "delete-tag": "Hapus Tag",
     "new-name": "Nama Baru",
     "no-tag-found": "Tidak ada tag yang ditemukan",
@@ -415,5 +455,13 @@
     "rename-success": "Berhasil mengganti nama tag",
     "rename-tag": "Ganti nama tag",
     "rename-tip": "Semua memo Anda dengan tag ini akan diperbarui."
+  },
+  "tooltip": {
+    "link-memo": "Tautkan Memo",
+    "markdown-menu": "Markdown",
+    "select-location": "Pilih Lokasi",
+    "select-visibility": "Pilih Visibilitas",
+    "tags": "Tag",
+    "upload-attachment": "Unggah Lampiran"
   }
 }

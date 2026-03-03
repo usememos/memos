@@ -18,18 +18,22 @@
     "about": "के बारे में",
     "add": "जोड़ें",
     "admin": "एडमिन",
+    "all": "सभी",
     "archive": "संग्रहीत करें",
     "archived": "संग्रहीत",
     "attachments": "संलग्नक",
+    "auto-expand": "स्वतः विस्तार",
     "avatar": "अवतार",
     "basic": "मूल",
     "beta": "बीटा",
+    "calendar": "कैलेंडर",
     "cancel": "रद्द करें",
     "change": "बदलें",
     "clear": "साफ़ करें",
     "close": "बंद करें",
     "collapse": "संकुचित करें",
     "confirm": "पुष्टि करें",
+    "copy": "कॉपी करें",
     "create": "बनाएँ",
     "created-at": "बनाया गया",
     "database": "डेटाबेस",
@@ -53,9 +57,11 @@
     "layout": "लेआउट",
     "learn-more": "अधिक जानें",
     "link": "लिंक",
+    "map": "नक्शा",
     "mark": "चिह्नित",
     "memo": "मेमो",
     "memos": "मेमो",
+    "more": "अधिक",
     "name": "नाम",
     "new": "नया",
     "nickname": "उपनाम",
@@ -90,6 +96,7 @@
     "statistics": "आँकड़े",
     "tags": "टैग",
     "title": "शीर्षक",
+    "today": "आज",
     "tree-mode": "ट्री मोड",
     "type": "प्रकार",
     "unpin": "अनपिन करें",
@@ -113,8 +120,12 @@
   "editor": {
     "add-your-comment-here": "अपनी टिप्पणी यहाँ जोड़ें...",
     "any-thoughts": "कोई विचार...",
+    "exit-focus-mode": "फोकस मोड से बाहर निकलें",
+    "focus-mode": "फोकस मोड",
+    "no-changes-detected": "कोई बदलाव नहीं पाया गया",
     "save": "सहेजें",
-    "no-changes-detected": "कोई बदलाव नहीं पाया गया"
+    "saving": "सहेज रहा है...",
+    "slash-commands": "कमांड के लिए `/` टाइप करें"
   },
   "filters": {
     "has-code": "कोड है",
@@ -122,8 +133,11 @@
     "has-task-list": "टास्क लिस्ट है"
   },
   "inbox": {
+    "failed-to-load": "इनबॉक्स आइटम लोड करने में विफल",
     "memo-comment": "{{user}} ने आपकी {{memo}} पर टिप्पणी की है।",
-    "version-update": "नया संस्करण {{version}} अब उपलब्ध है!"
+    "no-archived": "कोई संग्रहीत सूचनाएँ नहीं",
+    "no-unread": "कोई अपठित सूचनाएँ नहीं",
+    "unread": "अपठित"
   },
   "markdown": {
     "checkbox": "चेकबॉक्स",
@@ -139,16 +153,20 @@
       "self": "टिप्पणियाँ",
       "write-a-comment": "टिप्पणी लिखें"
     },
+    "copy-content": "सामग्री कॉपी करें",
     "copy-link": "लिंक कॉपी करें",
     "count-memos-in-date": "{{count}} {{memos}} {{date}} को",
     "delete-confirm": "क्या आप इस मेमो को हटाने के लिए सुनिश्चित हैं? यह कार्रवाई वापस नहीं की जा सकती।",
+    "delete-confirm-description": "यह कार्रवाई वापस नहीं की जा सकती। संलग्नक, लिंक और संदर्भ भी हटा दिए जाएंगे।",
     "direction": "दिशा",
     "direction-asc": "आरोही",
     "direction-desc": "अवरोही",
     "display-time": "प्रदर्शन समय",
     "filters": "फ़िल्टर",
     "links": "लिंक",
+    "list": "सूची",
     "load-more": "और लोड करें",
+    "masonry": "मेसनरी",
     "no-archived-memos": "कोई संग्रहीत मेमो नहीं।",
     "no-memos": "कोई मेमो नहीं।",
     "order-by": "क्रमबद्ध करें",
@@ -162,9 +180,7 @@
       "private": "निजी",
       "protected": "सदस्य",
       "public": "सार्वजनिक"
-    },
-    "list": "सूची",
-    "masonry": "मेसनरी"
+    }
   },
   "message": {
     "archived-successfully": "सफलतापूर्वक संग्रहीत किया गया",
@@ -182,10 +198,10 @@
     "password-changed": "पासवर्ड बदल दिया गया",
     "password-not-match": "पासवर्ड मेल नहीं खाते।",
     "restored-successfully": "सफलतापूर्वक पुनर्स्थापित किया गया",
+    "succeed-copy-content": "सामग्री सफलतापूर्वक कॉपी की गई।",
     "succeed-copy-link": "लिंक सफलतापूर्वक कॉपी किया गया।",
     "update-succeed": "अपडेट सफल हुआ",
-    "user-not-found": "उपयोगकर्ता नहीं मिला",
-    "microphone-not-available": "माइक्रोफोन उपलब्ध नहीं है"
+    "user-not-found": "उपयोगकर्ता नहीं मिला"
   },
   "reference": {
     "add-references": "संदर्भ जोड़ें",
@@ -213,6 +229,10 @@
       "title": "संसाधन बनाएँ",
       "upload-method": "अपलोड विधि"
     },
+    "delete-all-unused": "सभी अप्रयुक्त हटाएं",
+    "delete-all-unused-confirm": "क्या आप वाकई सभी अप्रयुक्त संसाधन हटाना चाहते हैं? यह कार्रवाई वापस नहीं की जा सकती",
+    "delete-all-unused-error": "अप्रयुक्त संसाधन हटाने में विफल",
+    "delete-all-unused-success": "संसाधन सफलतापूर्वक हटाए गए",
     "delete-resource": "संसाधन हटाएँ",
     "delete-selected-resources": "चयनित संसाधनों को हटाएँ",
     "fetching-data": "डेटा लाया जा रहा है...",
@@ -233,8 +253,11 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "एक्सेस टोकन क्लिपबोर्ड में कॉपी किया गया",
-      "access-token-deletion": "क्या आप वाकई एक्सेस टोकन {{accessToken}} हटाना चाहते हैं? यह कार्रवाई वापस नहीं की जा सकती।",
+      "access-token-deleted": "एक्सेस टोकन `{{description}}` हटाया गया",
+      "access-token-deletion": "क्या आप वाकई एक्सेस टोकन `{{description}}` हटाना चाहते हैं?",
+      "access-token-deletion-description": "यह कार्रवाई वापस नहीं की जा सकती। आपको इस टोकन का उपयोग करने वाली सभी सेवाओं को एक नया टोकन उपयोग करने के लिए अपडेट करना होगा।",
       "create-dialog": {
+        "access-token-created": "एक्सेस टोकन `{{description}}` बनाया गया",
         "create-access-token": "एक्सेस टोकन बनाएँ",
         "created-at": "बनाया गया",
         "description": "विवरण",
@@ -262,15 +285,30 @@
       "update-information": "जानकारी अपडेट करें",
       "username-note": "साइन इन के लिए उपयोग किया जाता है"
     },
+    "instance-section": {
+      "disallow-change-nickname": "उपनाम बदलने की अनुमति न दें",
+      "disallow-change-username": "उपयोगकर्ता नाम बदलने की अनुमति न दें",
+      "disallow-password-auth": "पासवर्ड प्रमाणीकरण की अनुमति न दें",
+      "disallow-user-registration": "यूज़र पंजीकरण की अनुमति न दें",
+      "monday": "सोमवार",
+      "saturday": "शनिवार",
+      "sunday": "रविवार",
+      "week-start-day": "सप्ताह प्रारंभ दिन"
+    },
     "member": "सदस्य",
     "member-list": "सदस्य सूची",
     "member-section": {
       "admin": "एडमिन",
       "archive-member": "सदस्य को संग्रहित करें",
+      "archive-success": "{{username}} सफलतापूर्वक संग्रहित किया गया",
       "archive-warning": "क्या आप वाकई {{username}} को संग्रहित करना चाहते हैं?",
+      "archive-warning-description": "संग्रहण खाते को अक्षम करता है। आप इसे बाद में पुनर्स्थापित या हटा सकते हैं।",
       "create-a-member": "सदस्य बनाएँ",
       "delete-member": "सदस्य हटाएँ",
-      "delete-warning": "क्या आप वाकई {{username}} को हटाना चाहते हैं? यह कार्रवाई वापस नहीं की जा सकती",
+      "delete-success": "{{username}} सफलतापूर्वक हटाया गया",
+      "delete-warning": "क्या आप वाकई {{username}} को हटाना चाहते हैं?",
+      "delete-warning-description": "यह कार्रवाई वापस नहीं की जा सकती",
+      "restore-success": "{{username}} सफलतापूर्वक पुनर्स्थापित किया गया",
       "user": "उपयोगकर्ता"
     },
     "memo-related": "मेमो",
@@ -288,6 +326,10 @@
       "default-memo-sort-option": "मेमो प्रदर्शन समय",
       "default-memo-visibility": "डिफ़ॉल्ट मेमो दृश्यता",
       "theme": "थीम"
+    },
+    "shortcut": {
+      "delete-confirm": "क्या आप वाकई शॉर्टकट `{{title}}` हटाना चाहते हैं?",
+      "delete-success": "शॉर्टकट `{{title}}` सफलतापूर्वक हटाया गया"
     },
     "sso": "एसएसओ",
     "sso-section": {
@@ -382,24 +424,20 @@
       "create-dialog": {
         "an-easy-to-remember-name": "आसान नाम",
         "create-webhook": "Webhook बनाएँ",
+        "create-webhook-success": "Webhook `{{name}}` सफलतापूर्वक बनाया गया",
         "edit-webhook": "Webhook संपादित करें",
         "payload-url": "Payload URL",
         "title": "शीर्षक",
         "url-example-post-receive": "https://example.com/postreceive"
       },
+      "delete-dialog": {
+        "delete-webhook-description": "यह कार्रवाई वापस नहीं की जा सकती।",
+        "delete-webhook-success": "Webhook `{{name}}` सफलतापूर्वक हटाया गया",
+        "delete-webhook-title": "क्या आप वाकई webhook `{{name}}` हटाना चाहते हैं?"
+      },
       "no-webhooks-found": "कोई वेबहुक नहीं मिला।",
       "title": "Webhooks",
       "url": "URL"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "उपनाम बदलने की अनुमति न दें",
-      "disallow-change-username": "उपयोगकर्ता नाम बदलने की अनुमति न दें",
-      "disallow-password-auth": "पासवर्ड प्रमाणीकरण की अनुमति न दें",
-      "disallow-user-registration": "यूज़र पंजीकरण की अनुमति न दें",
-      "monday": "सोमवार",
-      "saturday": "शनिवार",
-      "sunday": "रविवार",
-      "week-start-day": "सप्ताह प्रारंभ दिन"
     }
   },
   "tag": {
@@ -407,6 +445,7 @@
     "create-tag": "टैग बनाएँ",
     "create-tags-guide": "आप `#tag` दर्ज करके टैग बना सकते हैं।",
     "delete-confirm": "क्या आप वाकई इस टैग को हटाना चाहते हैं? सभी संबंधित मेमो संग्रहीत हो जाएंगे।",
+    "delete-success": "टैग सफलतापूर्वक हटाया गया",
     "delete-tag": "टैग हटाएँ",
     "new-name": "नया नाम",
     "no-tag-found": "कोई टैग नहीं मिला",
@@ -416,5 +455,13 @@
     "rename-success": "टैग सफलतापूर्वक नाम बदला गया",
     "rename-tag": "टैग का नाम बदलें",
     "rename-tip": "आपके सभी मेमो इस टैग के साथ अपडेट किए जाएंगे।"
+  },
+  "tooltip": {
+    "link-memo": "मेमो लिंक करें",
+    "markdown-menu": "Markdown",
+    "select-location": "स्थान चुनें",
+    "select-visibility": "दृश्यता चुनें",
+    "tags": "टैग",
+    "upload-attachment": "संलग्नक अपलोड करें"
   }
 }

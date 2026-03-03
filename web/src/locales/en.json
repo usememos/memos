@@ -61,6 +61,7 @@
     "mark": "Mark",
     "memo": "Memo",
     "memos": "Memos",
+    "more": "More",
     "name": "Name",
     "new": "New",
     "nickname": "Nickname",
@@ -105,8 +106,7 @@
     "username": "Username",
     "version": "Version",
     "visibility": "Visibility",
-    "yourself": "Yourself",
-    "more": "More"
+    "yourself": "Yourself"
   },
   "days": {
     "fri": "Fri",
@@ -120,11 +120,11 @@
   "editor": {
     "add-your-comment-here": "Add your comment here...",
     "any-thoughts": "Any thoughts...",
+    "exit-focus-mode": "Exit Focus Mode",
+    "focus-mode": "Focus Mode",
+    "no-changes-detected": "No changes detected",
     "save": "Save",
     "saving": "Saving...",
-    "no-changes-detected": "No changes detected",
-    "focus-mode": "Focus Mode",
-    "exit-focus-mode": "Exit Focus Mode",
     "slash-commands": "Type `/` for commands"
   },
   "filters": {
@@ -133,11 +133,11 @@
     "has-task-list": "hasTaskList"
   },
   "inbox": {
-    "memo-comment": "{{user}} has a comment on your {{memo}}.",
     "failed-to-load": "Failed to load inbox item",
-    "unread": "Unread",
+    "memo-comment": "{{user}} has a comment on your {{memo}}.",
+    "no-archived": "No archived notifications",
     "no-unread": "No unread notifications",
-    "no-archived": "No archived notifications"
+    "unread": "Unread"
   },
   "markdown": {
     "checkbox": "Checkbox",
@@ -164,7 +164,9 @@
     "display-time": "Display Time",
     "filters": "Filters",
     "links": "Links",
+    "list": "List",
     "load-more": "Load more",
+    "masonry": "Masonry",
     "no-archived-memos": "No archived memos.",
     "no-memos": "No memos.",
     "order-by": "Order By",
@@ -178,9 +180,7 @@
       "private": "Private",
       "protected": "Protected",
       "public": "Public"
-    },
-    "list": "List",
-    "masonry": "Masonry"
+    }
   },
   "message": {
     "archived-successfully": "Archived successfully",
@@ -229,12 +229,12 @@
       "title": "Create Resource",
       "upload-method": "Upload method"
     },
-    "delete-resource": "Delete Resource",
-    "delete-selected-resources": "Delete Selected Resources",
     "delete-all-unused": "Delete all unused",
     "delete-all-unused-confirm": "Are you sure you want to delete all unused resources? THIS ACTION IS IRREVERSIBLE",
-    "delete-all-unused-success": "Resources deleted successfully",
     "delete-all-unused-error": "Failed to delete unused resources",
+    "delete-all-unused-success": "Resources deleted successfully",
+    "delete-resource": "Delete Resource",
+    "delete-selected-resources": "Delete Selected Resources",
     "fetching-data": "Fetching data…",
     "file-drag-drop-prompt": "Drag and drop your file here to upload file",
     "linked-amount": "Linked amount",
@@ -253,9 +253,9 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "Access token copied to clipboard",
+      "access-token-deleted": "Access token `{{description}}` deleted",
       "access-token-deletion": "Are you sure you want to delete access token `{{description}}`?",
       "access-token-deletion-description": "This action is irreversible. You will need to update any services using this token to use a new token.",
-      "access-token-deleted": "Access token `{{description}}` deleted",
       "create-dialog": {
         "access-token-created": "Access token `{{description}}` created",
         "create-access-token": "Create Access Token",
@@ -285,20 +285,30 @@
       "update-information": "Update Information",
       "username-note": "Used to sign in"
     },
+    "instance-section": {
+      "disallow-change-nickname": "Disallow changing nickname",
+      "disallow-change-username": "Disallow changing username",
+      "disallow-password-auth": "Disallow password auth",
+      "disallow-user-registration": "Disallow user registration",
+      "monday": "Monday",
+      "saturday": "Saturday",
+      "sunday": "Sunday",
+      "week-start-day": "Week start day"
+    },
     "member": "Member",
     "member-list": "Member list",
     "member-section": {
       "admin": "Admin",
       "archive-member": "Archive member",
+      "archive-success": "{{username}} archived successfully",
       "archive-warning": "Are you sure you want to archive {{username}}?",
       "archive-warning-description": "Archiving disables the account. You can restore or delete it later.",
-      "archive-success": "{{username}} archived successfully",
-      "restore-success": "{{username}} restored successfully",
       "create-a-member": "Create a member",
       "delete-member": "Delete Member",
+      "delete-success": "{{username}} deleted successfully",
       "delete-warning": "Are you sure you want to delete {{username}}?",
       "delete-warning-description": "THIS ACTION IS IRREVERSIBLE",
-      "delete-success": "{{username}} deleted successfully",
+      "restore-success": "{{username}} restored successfully",
       "user": "User"
     },
     "memo-related": "Memo",
@@ -422,22 +432,12 @@
       },
       "delete-dialog": {
         "delete-webhook-description": "This action is irreversible.",
-        "delete-webhook-title": "Are you sure you want to delete webhook `{{name}}`?",
-        "delete-webhook-success": "Webhook `{{name}}` deleted successfully"
+        "delete-webhook-success": "Webhook `{{name}}` deleted successfully",
+        "delete-webhook-title": "Are you sure you want to delete webhook `{{name}}`?"
       },
       "no-webhooks-found": "No webhooks found.",
       "title": "Webhooks",
       "url": "URL"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Disallow changing nickname",
-      "disallow-change-username": "Disallow changing username",
-      "disallow-password-auth": "Disallow password auth",
-      "disallow-user-registration": "Disallow user registration",
-      "monday": "Monday",
-      "saturday": "Saturday",
-      "sunday": "Sunday",
-      "week-start-day": "Week start day"
     }
   },
   "tag": {
@@ -445,8 +445,8 @@
     "create-tag": "Create Tag",
     "create-tags-guide": "You can create tags by inputting `#tag`.",
     "delete-confirm": "Are you sure you want to delete this tag? All related memos will be archived.",
-    "delete-tag": "Delete Tag",
     "delete-success": "Tag deleted successfully",
+    "delete-tag": "Delete Tag",
     "new-name": "New Name",
     "no-tag-found": "No tag found",
     "old-name": "Old Name",

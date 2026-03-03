@@ -17,19 +17,23 @@
   "common": {
     "about": "Over",
     "add": "Toevoegen",
-    "admin": "Admin",
+    "admin": "Beheerder",
+    "all": "Alle",
     "archive": "Archiveren",
     "archived": "Gearchiveerd",
     "attachments": "Bijlagen",
+    "auto-expand": "Auto uitklappen",
     "avatar": "Avatar",
     "basic": "Simpel",
     "beta": "Beta",
+    "calendar": "Kalender",
     "cancel": "Annuleren",
     "change": "Wijzigen",
     "clear": "Leegmaken",
     "close": "Sluiten",
     "collapse": "Samenvouwen",
     "confirm": "Bevestigen",
+    "copy": "Kopiëren",
     "create": "Aanmaken",
     "created-at": "Aangemaakt op",
     "database": "Database",
@@ -46,16 +50,18 @@
     "home": "Thuis",
     "image": "Afbeelding",
     "in": "In",
-    "inbox": "Inbox",
+    "inbox": "Postvak",
     "input": "Invoer",
     "language": "Taal",
     "last-updated-at": "Laatst bijgewerkt op",
     "layout": "Indeling",
     "learn-more": "Meer informatie",
     "link": "Link",
+    "map": "Kaart",
     "mark": "Markeren",
     "memo": "Memo",
     "memos": "Memos",
+    "more": "Meer",
     "name": "Naam",
     "new": "Nieuw",
     "nickname": "Bijnaam",
@@ -90,6 +96,7 @@
     "statistics": "Statistieken",
     "tags": "Labels",
     "title": "Titel",
+    "today": "Vandaag",
     "tree-mode": "Boomstructuur",
     "type": "Type",
     "unpin": "Losmaken",
@@ -113,8 +120,12 @@
   "editor": {
     "add-your-comment-here": "Voeg hier je opmerking toe…",
     "any-thoughts": "Enkele gedachten…",
+    "exit-focus-mode": "Focusmodus afsluiten",
+    "focus-mode": "Focusmodus",
+    "no-changes-detected": "Geen wijzigingen gedetecteerd",
     "save": "Opslaan",
-    "no-changes-detected": "Geen wijzigingen gedetecteerd"
+    "saving": "Opslaan...",
+    "slash-commands": "Typ `/` voor opdrachten"
   },
   "filters": {
     "has-code": "heeftCode",
@@ -122,8 +133,11 @@
     "has-task-list": "heeftTakenlijst"
   },
   "inbox": {
+    "failed-to-load": "Postvak-item laden mislukt",
     "memo-comment": "{{user}} heeft een opmerking bij jouw {{memo}}.",
-    "version-update": "Nieuwe versie {{version}} is nu beschikbaar!"
+    "no-archived": "Geen gearchiveerde meldingen",
+    "no-unread": "Geen ongelezen meldingen",
+    "unread": "Ongelezen"
   },
   "markdown": {
     "checkbox": "Selectievakje",
@@ -139,16 +153,20 @@
       "self": "Opmerkingen",
       "write-a-comment": "Schrijf een opmerking"
     },
+    "copy-content": "Inhoud kopiëren",
     "copy-link": "Kopieer link",
     "count-memos-in-date": "{{count}} {{memos}} op {{date}}",
     "delete-confirm": "Weet je zeker dat je deze memo wilt verwijderen? DEZE ACTIE IS NIET TERUG TE DRAAIEN",
+    "delete-confirm-description": "Deze actie is onomkeerelijk. Bijlagen, links en referenties worden ook verwijderd.",
     "direction": "Richting",
     "direction-asc": "Oplopend",
     "direction-desc": "Aflopend",
     "display-time": "Tijd weergeven",
     "filters": "Filters",
     "links": "Links",
+    "list": "Lijst",
     "load-more": "Meer laden",
+    "masonry": "Tegelruit",
     "no-archived-memos": "Geen gearchiveerde memos.",
     "no-memos": "Geen memos.",
     "order-by": "Sorteren op",
@@ -162,9 +180,7 @@
       "private": "Privé",
       "protected": "Werkruimte",
       "public": "Openbaar"
-    },
-    "list": "Lijst",
-    "masonry": "Masonry"
+    }
   },
   "message": {
     "archived-successfully": "Succesvol gearchiveerd",
@@ -182,7 +198,8 @@
     "password-changed": "Wachtwoord gewijzigd.",
     "password-not-match": "Wachtwoorden komen niet overeen.",
     "restored-successfully": "Succesvol teruggezet",
-    "succeed-copy-link": "Link gekopieërd naar klembord.",
+    "succeed-copy-content": "Inhoud succesvol gekopieerd.",
+    "succeed-copy-link": "Link gekopieerd naar klembord.",
     "update-succeed": "Update voltooid",
     "user-not-found": "Gebruiker niet gevonden"
   },
@@ -212,9 +229,13 @@
       "title": "Bron aanmaken",
       "upload-method": "Uploadmethode"
     },
+    "delete-all-unused": "Alle ongebruikte verwijderen",
+    "delete-all-unused-confirm": "Weet je zeker dat je alle ongebruikte bronnen wilt verwijderen? DEZE ACTIE IS NIET TERUG TE DRAAIEN",
+    "delete-all-unused-error": "Ongebruikte bronnen verwijderen mislukt",
+    "delete-all-unused-success": "Bronnen succesvol verwijderd",
     "delete-resource": "Bron verwijderen",
     "delete-selected-resources": "Geselecteerde bronnen verwijderen",
-    "fetching-data": "gegevens ophalen…",
+    "fetching-data": "Gegevens ophalen…",
     "file-drag-drop-prompt": "Sleep je bestand hierheen om te uploaden",
     "linked-amount": "Aantal gelinkte memo's",
     "no-files-selected": "Geen bestanden geselecteerd",
@@ -232,8 +253,11 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "Accesstoken gekopieerd naar klembord",
-      "access-token-deletion": "Weet je zeker dat je accesstoken {{accessToken}} wilt verwijderen? DEZE ACTIE IS NIET TERUG TE DRAAIEN.",
+      "access-token-deleted": "Accesstoken `{{description}}` verwijderd",
+      "access-token-deletion": "Weet je zeker dat je accesstoken `{{description}}` wilt verwijderen? DEZE ACTIE IS NIET TERUG TE DRAAIEN.",
+      "access-token-deletion-description": "Deze actie is onomkeerelijk. Je moet alle services die deze token gebruiken bijwerken om een nieuwe token te gebruiken.",
       "create-dialog": {
+        "access-token-created": "Accesstoken `{{description}}` aangemaakt",
         "create-access-token": "Accesstoken aanmaken",
         "created-at": "Aangemaakt op",
         "description": "Beschrijving",
@@ -255,21 +279,36 @@
       "nickname-note": "Wordt getoond in de banner",
       "openapi-reset": "OpenAPI-sleutel resetten",
       "openapi-sample-post": "Hallo #memos vanaf {{url}}",
-      "openapi-title": "OpenAPI",
+      "openapi-title": "OpenAPI-sleutel",
       "reset-api": "API resetten",
       "title": "Accountinformatie",
       "update-information": "Informatie wijzigen",
       "username-note": "Gebruikt om in te loggen"
+    },
+    "instance-section": {
+      "disallow-change-nickname": "Wijzigen van bijnaam niet toestaan",
+      "disallow-change-username": "Wijzigen van gebruikersnaam niet toestaan",
+      "disallow-password-auth": "Wachtwoordauthenticatie niet toestaan",
+      "disallow-user-registration": "Registratie van gebruikers niet toestaan",
+      "monday": "Maandag",
+      "saturday": "Zaterdag",
+      "sunday": "Zondag",
+      "week-start-day": "Eerste weekdag"
     },
     "member": "Gebruiker",
     "member-list": "Gebruikers",
     "member-section": {
       "admin": "Beheerder",
       "archive-member": "Gebruiker archiveren",
+      "archive-success": "{{username}} succesvol gearchiveerd",
       "archive-warning": "Weet je zeker dat je {{username}} wilt archiveren?",
+      "archive-warning-description": "Archiveren deactiveert de account. Je kunt deze later terugzetten of verwijderen.",
       "create-a-member": "Lid toevoegen",
       "delete-member": "Gebruiker verwijderen",
+      "delete-success": "{{username}} succesvol verwijderd",
       "delete-warning": "Weet je zeker dat je {{username}} wilt verwijderen? DEZE ACTIE IS NIET TERUG TE DRAAIEN",
+      "delete-warning-description": "DEZE ACTIE IS NIET TERUG TE DRAAIEN",
+      "restore-success": "{{username}} succesvol teruggezet",
       "user": "Gebruiker"
     },
     "memo-related": "Memo",
@@ -288,11 +327,15 @@
       "default-memo-visibility": "Standaard memo zichtbaarheid",
       "theme": "Thema"
     },
+    "shortcut": {
+      "delete-confirm": "Weet je zeker dat je sneltoets `{{title}}` wilt verwijderen?",
+      "delete-success": "Sneltoets `{{title}}` succesvol verwijderd"
+    },
     "sso": "SSO",
     "sso-section": {
-      "authorization-endpoint": "Authorization endpoint",
-      "client-id": "Client ID",
-      "client-secret": "Client secret",
+      "authorization-endpoint": "Autorisatie-eindpunt",
+      "client-id": "Client-ID",
+      "client-secret": "Client-geheim",
       "confirm-delete": "Weet je zeker dat je de \"{{name}}\" SSO configuratie wilt verwijderen? DEZE ACTIE IS NIET TERUG TE DRAAIEN",
       "create-sso": "SSO instellen",
       "custom": "Aangepast",
@@ -300,7 +343,7 @@
       "disabled-password-login-warning": "Wachtwoordlogin is uitgeschakeld. Kijk uit met het verwijderen van inlogproviders",
       "display-name": "Weergavenaam",
       "identifier": "Identifier",
-      "identifier-filter": "Identifier Filter",
+      "identifier-filter": "Identifier filter",
       "no-sso-found": "Geen SSO gevonden.",
       "redirect-url": "Redirect URL",
       "scopes": "Scopes",
@@ -309,9 +352,9 @@
       "sso-list": "SSO lijst",
       "sso-updated": "SSO {{name}} bijgewerkt",
       "template": "Sjabloon",
-      "token-endpoint": "Token endpoint",
+      "token-endpoint": "Token-eindpunt",
       "update-sso": "SSO bijwerken",
-      "user-endpoint": "User endpoint"
+      "user-endpoint": "Gebruikers-eindpunt"
     },
     "storage": "Opslag",
     "storage-section": {
@@ -381,24 +424,20 @@
       "create-dialog": {
         "an-easy-to-remember-name": "Een makkelijk te onthouden naam",
         "create-webhook": "Webhook aanmaken",
+        "create-webhook-success": "Webhook `{{name}}` aangemaakt",
         "edit-webhook": "Webhook bewerken",
         "payload-url": "Payload URL",
         "title": "Titel",
         "url-example-post-receive": "https://voorbeeld.com/postreceive"
       },
+      "delete-dialog": {
+        "delete-webhook-description": "Deze actie is onomkeerelijk.",
+        "delete-webhook-success": "Webhook `{{name}}` succesvol verwijderd",
+        "delete-webhook-title": "Weet je zeker dat je webhook `{{name}}` wilt verwijderen?"
+      },
       "no-webhooks-found": "Geen webhooks gevonden.",
       "title": "Webhooks",
       "url": "URL"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Wijzigen van bijnaam niet toestaan",
-      "disallow-change-username": "Wijzigen van gebruikersnaam niet toestaan",
-      "disallow-password-auth": "Wachtwoordauthenticatie niet toestaan",
-      "disallow-user-registration": "Registratie van gebruikers niet toestaan",
-      "monday": "Maandag",
-      "saturday": "Zaterdag",
-      "sunday": "Zondag",
-      "week-start-day": "Eerste weekdag"
     }
   },
   "tag": {
@@ -406,6 +445,7 @@
     "create-tag": "Label aanmaken",
     "create-tags-guide": "Je kunt labels aanmaken door `#label` in te voeren.",
     "delete-confirm": "Weet je zeker dat je dit label wilt verwijderen? Alle gerelateerde memos worden gearchiveerd.",
+    "delete-success": "Label succesvol verwijderd",
     "delete-tag": "Label verwijderen",
     "new-name": "Nieuwe naam",
     "no-tag-found": "Geen labels gevonden",
@@ -415,5 +455,13 @@
     "rename-success": "Label succesvol hernoemd",
     "rename-tag": "Label hernoemen",
     "rename-tip": "Al je memos met dit label worden automatisch bijgewerkt."
+  },
+  "tooltip": {
+    "link-memo": "Memo linken",
+    "markdown-menu": "Markdown",
+    "select-location": "Locatie",
+    "select-visibility": "Zichtbaarheid",
+    "tags": "Labels",
+    "upload-attachment": "Bijlage(s) uploaden"
   }
 }

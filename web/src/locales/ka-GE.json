@@ -11,25 +11,29 @@
     "host-tip": "თქვენ რეგისტრირდებით როგორც საიტის მასპინძელი.",
     "new-password": "ახალი პაროლი",
     "repeat-new-password": "გაიმეორეთ ახალი პაროლი",
-    "sign-in-tip": "უკვე გაქვთ ანგარიში?",
+    "sign-in-tip": "დაქვემდებარებული გაქვთ ანგარიში?",
     "sign-up-tip": "ჯერ არ გაქვთ ანგარიში?"
   },
   "common": {
     "about": "შესახებ",
     "add": "დამატება",
     "admin": "ადმინი",
+    "all": "ყველა",
     "archive": "არქივი",
     "archived": "დაარქივებული",
     "attachments": "დანართები",
+    "auto-expand": "ავტომატური გაფართოება",
     "avatar": "ავატარი",
     "basic": "ძირითადი",
     "beta": "ბეტა",
+    "calendar": "კალენდარი",
     "cancel": "გაუქმება",
     "change": "ცვლილება",
     "clear": "გასუფთავება",
     "close": "დახურვა",
     "collapse": "შეკუმშვა",
     "confirm": "დადასტურება",
+    "copy": "კოპირება",
     "create": "შექმნა",
     "created-at": "შექმნილია",
     "database": "მონაცემთა ბაზა",
@@ -53,9 +57,11 @@
     "layout": "განლაგება",
     "learn-more": "გაიგეთ მეტი",
     "link": "ლინკი",
+    "map": "რუკა",
     "mark": "მონიშვნა",
     "memo": "მემო",
     "memos": "მემოები",
+    "more": "მეტი",
     "name": "სახელი",
     "new": "ახალი",
     "nickname": "მეტსახელი",
@@ -90,6 +96,7 @@
     "statistics": "სტატისტიკა",
     "tags": "თეგები",
     "title": "სათაური",
+    "today": "დღეს",
     "tree-mode": "ხის რეჟიმი",
     "type": "ტიპი",
     "unpin": "პინიდან ამოღება",
@@ -113,8 +120,12 @@
   "editor": {
     "add-your-comment-here": "დაამატეთ თქვენი კომენტარი აქ...",
     "any-thoughts": "რამე იდეები...",
+    "exit-focus-mode": "ფოკუსის რეჟიმიდან გასვლა",
+    "focus-mode": "ფოკუსის რეჟიმი",
+    "no-changes-detected": "ცვლილებები არ აღმოჩენილა",
     "save": "შენახვა",
-    "no-changes-detected": "ცვლილებები არ აღმოჩენილა"
+    "saving": "შენახვა...",
+    "slash-commands": "შეიყვანეთ `/` ბრძანებებისთვის"
   },
   "filters": {
     "has-code": "კოდიარის",
@@ -122,8 +133,11 @@
     "has-task-list": "სიისამოცანებია"
   },
   "inbox": {
+    "failed-to-load": "ინბოქსის ელემენტის ჩატვირთვა ვერ მოხერხდა",
     "memo-comment": "{{user}}-მა კომენტარი გაუკეთა თქვენს {{memo}}-ს.",
-    "version-update": "ახალი ვერსია {{version}} უკვე ხელმისაწვდომია!"
+    "no-archived": "არ არის დაარქივებული შეტყობინებები",
+    "no-unread": "არ არის წაუკითხავი შეტყობინებები",
+    "unread": "წაუკითხავი"
   },
   "markdown": {
     "checkbox": "ჩასანიშნი ველი",
@@ -139,9 +153,11 @@
       "self": "კომენტარები",
       "write-a-comment": "კომენტარის დაწერა"
     },
+    "copy-content": "კონტენტის კოპირება",
     "copy-link": "ლინკის კოპირება",
-    "count-memos-in-date": "{{count}} მემოები {{date}}-ში",
+    "count-memos-in-date": "{{count}} {{memos}} {{date}}-ში",
     "delete-confirm": "დარწმუნებული ხართ, რომ გინდათ ამ მემოს წაშლა? ეს ქმედება შეუქცევადია",
+    "delete-confirm-description": "ეს ქმედება შეუქცევადია. დანართები, ლინკები და რეფერენციებიც წაიშლება.",
     "direction": "მიმართულება",
     "direction-asc": "ზრდადობით",
     "direction-desc": "კლებადობით",
@@ -182,6 +198,7 @@
     "password-changed": "პაროლი შეიცვალა",
     "password-not-match": "პაროლები არ ემთხვევა.",
     "restored-successfully": "წარმატებით აღდგა",
+    "succeed-copy-content": "კონტენტი წარმატებით კოპირდა.",
     "succeed-copy-link": "ლინკი წარმატებით კოპირდა.",
     "update-succeed": "განახლება წარმატებით დასრულდა",
     "user-not-found": "მომხმარებელი ვერ მოიძებნა"
@@ -212,6 +229,10 @@
       "title": "რესურსის შექმნა",
       "upload-method": "ატვირთვის მეთოდი"
     },
+    "delete-all-unused": "ყველა გამოუყენებელის წაშლა",
+    "delete-all-unused-confirm": "დარწმუნებული ხართ, რომ გინდათ ყველა გამოუყენებელი რესურსის წაშლა? ეს ქმედება შეუქცევადია",
+    "delete-all-unused-error": "გამოუყენებელი რესურსების წაშლა ვერ მოხერხდა",
+    "delete-all-unused-success": "რესურსები წარმატებით წაიშალა",
     "delete-resource": "რესურსის წაშლა",
     "delete-selected-resources": "არჩეული რესურსების წაშლა",
     "fetching-data": "მონაცემების ჩატვირთვა...",
@@ -232,8 +253,11 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "წვდომის ტოკენი დაკოპირდა",
-      "access-token-deletion": "დარწმუნებული ხართ, რომ გსურთ წაშალოთ წვდომის ტოკენი {{accessToken}}? ეს ქმედება შეუქცევადია.",
+      "access-token-deleted": "წვდომის ტოკენი `{{description}}` წაიშალა",
+      "access-token-deletion": "დარწმუნებული ხართ, რომ გსურთ წაშალოთ წვდომის ტოკენი {{description}}? ეს ქმედება შეუქცევადია.",
+      "access-token-deletion-description": "ეს ქმედება შეუქცევადია. თქვენ დაგჭირდებათ განაახლოთ ყველა სერვისი, რომელიც იყენებს ამ ტოკენს, რომ გამოიყენოს ახალი ტოკენი.",
       "create-dialog": {
+        "access-token-created": "წვდომის ტოკენი `{{description}}` შეიქმნა",
         "create-access-token": "წვდომის ტოკენის შექმნა",
         "created-at": "შექმნილია",
         "description": "აღწერა",
@@ -261,15 +285,30 @@
       "update-information": "ინფორმაციის განახლება",
       "username-note": "გამოიყენება შესასვლელად"
     },
+    "instance-section": {
+      "disallow-change-nickname": "მეტსახელის შეცვლის აკრძალვა",
+      "disallow-change-username": "მომხმარებლის სახელის შეცვლის აკრძალვა",
+      "disallow-password-auth": "პაროლით ავთენტიკაციის აკრძალვა",
+      "disallow-user-registration": "მომხმარებლის რეგისტრაციის აკრძალვა",
+      "monday": "ორშაბათი",
+      "saturday": "შაბათი",
+      "sunday": "კვირა",
+      "week-start-day": "კვირის დაწყების დღე"
+    },
     "member": "წევრი",
     "member-list": "წევრების სია",
     "member-section": {
       "admin": "ადმინი",
       "archive-member": "წევრის არქივირება",
+      "archive-success": "{{username}} წარმატებით დაარქივდა",
       "archive-warning": "დარწმუნებული ხართ, რომ გინდათ {{username}}-ის არქივირება?",
+      "archive-warning-description": "არქივირება დეაქტივირებს ანგარიშს. თქვენ შეგიძლიათ აღადგინოთ ან წაშალოთ მოგვიანებით.",
       "create-a-member": "წევრის შექმნა",
       "delete-member": "წევრის წაშლა",
+      "delete-success": "{{username}} წარმატებით წაიშალა",
       "delete-warning": "დარწმუნებული ხართ, რომ გინდათ {{username}}-ის წაშლა? ეს ქმედება შეუქცევადია",
+      "delete-warning-description": "ეს ქმედება შეუქცევადია",
+      "restore-success": "{{username}} წარმატებით აღდგა",
       "user": "მომხმარებელი"
     },
     "memo-related": "მემო",
@@ -287,6 +326,10 @@
       "default-memo-sort-option": "მემოს ჩვენების დრო",
       "default-memo-visibility": "მემოს ნაგულისხმევი ხილვადობა",
       "theme": "თემა"
+    },
+    "shortcut": {
+      "delete-confirm": "დარწმუნებული ხართ, რომ გინდათ მოკლე გზის `{{title}}` წაშლა?",
+      "delete-success": "მოკლე გზა `{{title}}` წარმატებით წაიშალა"
     },
     "sso": "SSO",
     "sso-section": {
@@ -381,24 +424,20 @@
       "create-dialog": {
         "an-easy-to-remember-name": "მარტივად დასამახსოვრებელი სახელი",
         "create-webhook": "Webhook-ის შექმნა",
+        "create-webhook-success": "Webhook `{{name}}` შეიქმნა",
         "edit-webhook": "Webhook-ის რედაქტირება",
         "payload-url": "Payload URL",
         "title": "სათაური",
         "url-example-post-receive": "https://example.com/postreceive"
       },
+      "delete-dialog": {
+        "delete-webhook-description": "ეს ქმედება შეუქცევადია.",
+        "delete-webhook-success": "Webhook `{{name}}` წარმატებით წაიშალა",
+        "delete-webhook-title": "დარწმუნებული ხართ, რომ გინდათ webhook `{{name}}-ის` წაშლა?"
+      },
       "no-webhooks-found": "Webhook-ები ვერ მოიძებნა.",
       "title": "Webhook-ები",
       "url": "URL"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "მეტსახელის შეცვლის აკრძალვა",
-      "disallow-change-username": "მომხმარებლის სახელის შეცვლის აკრძალვა",
-      "disallow-password-auth": "პაროლით ავთენტიკაციის აკრძალვა",
-      "disallow-user-registration": "მომხმარებლის რეგისტრაციის აკრძალვა",
-      "monday": "ორშაბათი",
-      "saturday": "შაბათი",
-      "sunday": "კვირა",
-      "week-start-day": "კვირის დაწყების დღე"
     }
   },
   "tag": {
@@ -406,6 +445,7 @@
     "create-tag": "თეგის შექმნა",
     "create-tags-guide": "თეგების შექმნა შეგიძლიათ `#tag`-ის შეყვანით.",
     "delete-confirm": "დარწმუნებული ხართ, რომ გსურთ ამ თეგის წაშლა? ყველა დაკავშირებული მემო არქივირდება.",
+    "delete-success": "თეგი წარმატებით წაიშალა",
     "delete-tag": "თეგის წაშლა",
     "new-name": "ახალი სახელი",
     "no-tag-found": "თეგი ვერ მოიძებნა",
@@ -415,5 +455,13 @@
     "rename-success": "თეგი წარმატებით გადაერქვა",
     "rename-tag": "თეგის გადარქმევა",
     "rename-tip": "თქვენი ყველა მემო ამ თეგით განახლდება."
+  },
+  "tooltip": {
+    "link-memo": "მემოს დაკავშირება",
+    "markdown-menu": "Markdown",
+    "select-location": "მდებარეობა",
+    "select-visibility": "ხილვადობა",
+    "tags": "თეგები",
+    "upload-attachment": "დანართ(ებ)ის ატვირთვა"
   }
 }

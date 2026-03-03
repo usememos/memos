@@ -57,9 +57,11 @@
     "layout": "Układ",
     "learn-more": "Dowiedz się więcej",
     "link": "Link",
+    "map": "Mapa",
     "mark": "Oznacz",
     "memo": "Notatka",
     "memos": "Notatki",
+    "more": "Więcej",
     "name": "Nazwa",
     "new": "Nowy",
     "nickname": "Pseudonim",
@@ -104,8 +106,7 @@
     "username": "Nazwa użytkownika",
     "version": "Wersja",
     "visibility": "Widoczność",
-    "yourself": "Ty sam",
-    "more": "Więcej"
+    "yourself": "Ty sam"
   },
   "days": {
     "fri": "Pt",
@@ -119,24 +120,25 @@
   "editor": {
     "add-your-comment-here": "Dodaj swój komentarz tutaj...",
     "any-thoughts": "Jakieś przemyślenia...",
-    "save": "Zapisz",
-    "no-changes-detected": "Brak wykrytych zmian",
-    "focus-mode": "Tryb Skupienia",
     "exit-focus-mode": "Wyjdź z Trybu Skupienia",
-    "slash-commands": "Wciśnij `/` by wydawać komendy"
+    "focus-mode": "Tryb Skupienia",
+    "no-changes-detected": "Brak wykrytych zmian",
+    "save": "Zapisz",
+    "saving": "Zapisywanie...",
+    "slash-commands": "Wciśnij `/` aby wydawać komendy"
   },
   "filters": {
-    "has-code": "maKod",
-    "has-link": "maLink",
-    "has-task-list": "maListęZadań"
+    "has-code": "ma kod",
+    "has-link": "ma link",
+    "has-task-list": "ma listę zadań"
   },
   "inbox": {
-    "memo-comment": "{{user}} dodał komentarz do Twojego {{memo}}.",
-    "version-update": "Nowa wersja {{version}} jest już dostępna!",
     "failed-to-load": "Nie udało się załadować elementu skrzynki odbiorczej",
-    "unread": "Nieprzeczytane",
+    "memo-comment": "{{user}} dodał komentarz do Twojego {{memo}}.",
+    "no-archived": "Brak zarchiwizowanych powiadomień",
     "no-unread": "Brak nieprzeczytanych powiadomień",
-    "no-archived": "Brak zarchiwizowanych powiadomień"
+    "unread": "Nieprzeczytane",
+    "version-update": "Nowa wersja {{version}} jest już dostępna!"
   },
   "markdown": {
     "checkbox": "Pole wyboru",
@@ -154,7 +156,7 @@
     },
     "copy-content": "Kopiuj treść",
     "copy-link": "Kopiuj link",
-    "count-memos-in-date": "{{count}} notatek w dniu {{date}}",
+    "count-memos-in-date": "{{count}} {{memos}} w dniu {{date}}",
     "delete-confirm": "Czy na pewno chcesz usunąć tę notatkę?",
     "delete-confirm-description": "Czy na pewno chcesz usunąć tę notatkę? Załączniki, linki i odnośniki także będą usunięte. TA AKCJA JEST NIEODWRACALNA",
     "direction": "Kierunek",
@@ -163,7 +165,9 @@
     "display-time": "Wyświetl czas",
     "filters": "Filtry",
     "links": "Linki",
+    "list": "Lista",
     "load-more": "Załaduj więcej",
+    "masonry": "Masonry",
     "no-archived-memos": "Brak zarchiwizowanych notatek.",
     "no-memos": "Brak notatek.",
     "order-by": "Sortuj według",
@@ -177,9 +181,7 @@
       "private": "Prywatne",
       "protected": "Przestrzeń robocza",
       "public": "Publiczne"
-    },
-    "list": "Lista",
-    "masonry": "Masonry"
+    }
   },
   "message": {
     "archived-successfully": "Zarchiwizowano pomyślnie",
@@ -228,12 +230,12 @@
       "title": "Utwórz Zasób",
       "upload-method": "Metoda przesyłania"
     },
-    "delete-resource": "Usuń zasób",
-    "delete-selected-resources": "Usuń wybrane zasoby",
     "delete-all-unused": "Usuń wszystkie nieużywane",
     "delete-all-unused-confirm": "Na pewno chcesz usunąć wszystkie nieużywane zasoby?? TA AKCJA JEST NIEODWRACALNA",
-    "delete-all-unused-success": "Zasoby zostały pomyślnie usunięte",
     "delete-all-unused-error": "Nie udało się usunąć nieużywanych zasobów",
+    "delete-all-unused-success": "Zasoby zostały pomyślnie usunięte",
+    "delete-resource": "Usuń zasób",
+    "delete-selected-resources": "Usuń wybrane zasoby",
     "fetching-data": "Pobieranie danych…",
     "file-drag-drop-prompt": "Przeciągnij i upuść plik tutaj, aby go przesłać",
     "linked-amount": "Ilość powiązań",
@@ -252,9 +254,9 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "Token dostępu skopiowany do schowka",
-      "access-token-deletion": "Czy na pewno chcesz usunąć token dostępu {{accessToken}}?",
-      "access-token-deletion-description": "TA AKCJA JEST NIEODWRACALNA. Będziesz musiał zaktualizować wszystkie serwisy korzystające z tego tokena aby używały nowego tokena.",
       "access-token-deleted": "Token dostępu `{{description}}` został usunięty",
+      "access-token-deletion": "Czy na pewno chcesz usunąć token dostępu `{{description}}`?",
+      "access-token-deletion-description": "TA AKCJA JEST NIEODWRACALNA. Będziesz musiał zaktualizować wszystkie serwisy korzystające z tego tokena aby używały nowego tokena.",
       "create-dialog": {
         "access-token-created": "Utworzono token dostępu `{{description}}`",
         "create-access-token": "Utwórz token dostępu",
@@ -284,20 +286,30 @@
       "update-information": "Zaktualizuj informacje",
       "username-note": "Używane do logowania"
     },
+    "instance-section": {
+      "disallow-change-nickname": "Zabroń zmiany pseudonimu",
+      "disallow-change-username": "Zabroń zmiany nazwy użytkownika",
+      "disallow-password-auth": "Zabroń uwierzytelniania hasłem",
+      "disallow-user-registration": "Zabroń rejestracji użytkowników",
+      "monday": "Poniedziałek",
+      "saturday": "Sobota",
+      "sunday": "Niedziela",
+      "week-start-day": "Dzień rozpoczęcia tygodnia"
+    },
     "member": "Członek",
     "member-list": "Lista członków",
     "member-section": {
       "admin": "Administrator",
       "archive-member": "Archiwizuj członka",
+      "archive-success": "{{username}} pomyślnie zarchiwizowany",
       "archive-warning": "Czy na pewno chcesz zarchiwizować {{username}}?",
       "archive-warning-description": "Archiwizacja zablokuje to konto. Możesz je odblokować lub usunąć później.",
-      "archive-success": "{{username}} pomyślnie zarchiwizowany",
-      "restore-success": "{{username}} pomyślnie odtworzony",
       "create-a-member": "Utwórz członka",
       "delete-member": "Usuń członka",
+      "delete-success": "{{username}} pomyślnie usunięty",
       "delete-warning": "Czy na pewno chcesz usunąć {{username}}?",
       "delete-warning-description": "TA AKCJA JEST NIEODWRACALNA",
-      "delete-success": "{{username}} pomyślnie usunięty",
+      "restore-success": "{{username}} pomyślnie odtworzony",
       "user": "Użytkownik"
     },
     "memo-related": "Notatki",
@@ -318,7 +330,7 @@
     },
     "shortcut": {
       "delete-confirm": "Czy na pewno chcesz usunąć skrót `{{title}}`?",
-      "delete-success": "Skróß `{{title}}` usunięty pomyślnie"
+      "delete-success": "Skrót `{{title}}` usunięty pomyślnie"
     },
     "sso": "SSO",
     "sso-section": {
@@ -421,22 +433,12 @@
       },
       "delete-dialog": {
         "delete-webhook-description": "Ta akcja jest nieodwracalna",
-        "delete-webhook-title": "Czy na pewno chcesz usunąć webhook `{{name}}`?",
-        "delete-webhook-success": "Webhook `{{name}}` pomyślnie usunięty"
+        "delete-webhook-success": "Webhook `{{name}}` pomyślnie usunięty",
+        "delete-webhook-title": "Czy na pewno chcesz usunąć webhook `{{name}}`?"
       },
       "no-webhooks-found": "Nie znaleziono webhooków.",
       "title": "Webhooki",
       "url": "URL"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Zabroń zmiany pseudonimu",
-      "disallow-change-username": "Zabroń zmiany nazwy użytkownika",
-      "disallow-password-auth": "Zabroń uwierzytelniania hasłem",
-      "disallow-user-registration": "Zabroń rejestracji użytkowników",
-      "monday": "Poniedziałek",
-      "saturday": "Sobota",
-      "sunday": "Niedziela",
-      "week-start-day": "Dzień rozpoczęcia tygodnia"
     }
   },
   "tag": {
@@ -444,8 +446,8 @@
     "create-tag": "Utwórz tag",
     "create-tags-guide": "Możesz tworzyć tagi, wpisując `#tag`.",
     "delete-confirm": "Czy na pewno chcesz usunąć ten tag? Wszystkie powiązane notatki zostaną zarchiwizowane.",
-    "delete-tag": "Usuń tag",
     "delete-success": "Tag został pomyślnie usunięty",
+    "delete-tag": "Usuń tag",
     "new-name": "Nowa nazwa",
     "no-tag-found": "Nie znaleziono tagu",
     "old-name": "Stara nazwa",

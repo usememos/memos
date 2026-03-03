@@ -18,17 +18,22 @@
     "about": "O aplikaci",
     "add": "Přidat",
     "admin": "Admin",
+    "all": "Vše",
     "archive": "Archivovat",
-    "archived": "Archiv",
+    "archived": "Archivované",
+    "attachments": "Přílohy",
+    "auto-expand": "Automaticky rozbalit",
     "avatar": "Avatar",
     "basic": "Základní",
     "beta": "Beta",
+    "calendar": "Kalendář",
     "cancel": "Zrušit",
     "change": "Změnit",
     "clear": "Vymazat",
     "close": "Zavřít",
     "collapse": "Sbalit",
     "confirm": "Potvrdit",
+    "copy": "Kopírovat",
     "create": "Vytvořit",
     "created-at": "Vytvořeno",
     "database": "Databáze",
@@ -52,9 +57,11 @@
     "layout": "Rozložení",
     "learn-more": "Více informací",
     "link": "Odkaz",
+    "map": "Mapa",
     "mark": "Značka",
     "memo": "Poznámka",
     "memos": "Poznámky",
+    "more": "Více",
     "name": "Jméno",
     "new": "Nový",
     "nickname": "Přezdívka",
@@ -89,15 +96,16 @@
     "statistics": "Statistiky",
     "tags": "Štítky",
     "title": "Název",
+    "today": "Dnes",
     "tree-mode": "Stromový pohled",
     "type": "Typ",
     "unpin": "Odepnout",
     "update": "Aktualizovat",
     "upload": "Nahrát",
+    "user": "Uživatel",
     "username": "Uživatelské jméno",
     "version": "Verze",
     "visibility": "Viditelnost",
-    "user": "Uživatel",
     "yourself": "Vy sami"
   },
   "days": {
@@ -112,17 +120,24 @@
   "editor": {
     "add-your-comment-here": "Přidejte sem svůj komentář...",
     "any-thoughts": "Jakékoli myšlenky...",
+    "exit-focus-mode": "Ukončit režim soustředění",
+    "focus-mode": "Režim soustředění",
+    "no-changes-detected": "Nebyly zjištěny žádné změny",
     "save": "Uložit",
-    "no-changes-detected": "Nebyly zjištěny žádné změny"
+    "saving": "Ukládání...",
+    "slash-commands": "Pro příkazy zadejte `/`"
   },
   "filters": {
-    "has-code": "hasCode",
-    "has-link": "hasLink",
-    "has-task-list": "hasTaskList"
+    "has-code": "maKod",
+    "has-link": "maOdkaz",
+    "has-task-list": "maSeznamUkolu"
   },
   "inbox": {
-    "memo-comment": "{{user}} komentoval na vaší {{memo}}.",
-    "version-update": "Nyní je dostupná nová verze {{version}}!"
+    "failed-to-load": "Nepodařilo se načíst položku doručené pošty",
+    "memo-comment": "{{user}} komentoval k vaší {{memo}}.",
+    "no-archived": "Žádná archivovaná oznámení",
+    "no-unread": "Žádná nepřečtená oznámení",
+    "unread": "Nepřečtené"
   },
   "markdown": {
     "checkbox": "Zaškrtávací pole",
@@ -138,9 +153,11 @@
       "self": "Komentáře",
       "write-a-comment": "Napsat komentář"
     },
+    "copy-content": "Kopírovat obsah",
     "copy-link": "Kopírovat odkaz",
     "count-memos-in-date": "{{count}} {{memos}} v {{date}}",
-    "delete-confirm": "Opravdu chcete smazat tuto poznámku? TATO AKCE JE NEVRATNÁ",
+    "delete-confirm": "Opravdu chcete smazat tuto poznámku?",
+    "delete-confirm-description": "Tato akce je nevratná. Přílohy, odkazy a reference budou také odstraněny.",
     "direction": "Směr",
     "direction-asc": "Vzestupně",
     "direction-desc": "Sestupně",
@@ -148,6 +165,7 @@
     "filters": "Filtry",
     "links": "Odkazy",
     "list": "Seznam",
+    "load-more": "Načíst více",
     "masonry": "Zdivo",
     "no-archived-memos": "Žádné archivované poznámky.",
     "no-memos": "Žádné poznámky.",
@@ -160,7 +178,7 @@
     "visibility": {
       "disabled": "Veřejné poznámky nejsou povoleny",
       "private": "Soukromá",
-      "protected": "Pracovní prostor",
+      "protected": "Chráněná",
       "public": "Veřejná"
     }
   },
@@ -180,6 +198,7 @@
     "password-changed": "Heslo změněno",
     "password-not-match": "Hesla nesouhlasí.",
     "restored-successfully": "Úspěšně obnoveno",
+    "succeed-copy-content": "Obsah úspěšně zkopírován.",
     "succeed-copy-link": "Odkaz byl úspěšně zkopírován.",
     "update-succeed": "Aktualizace proběhla úspěšně",
     "user-not-found": "Uživatel nenalezen"
@@ -210,6 +229,10 @@
       "title": "Vytvořit zdroj",
       "upload-method": "Způsob nahrávání"
     },
+    "delete-all-unused": "Odstranit všechny nepoužité",
+    "delete-all-unused-confirm": "Jste si jisti, že chcete odstranit všechny nepoužité zdroje? TATO AKCE JE NEVRATNÁ",
+    "delete-all-unused-error": "Nepodařilo se odstranit nepoužité zdroje",
+    "delete-all-unused-success": "Zdroje úspěšně odstraněny",
     "delete-resource": "Odstranit zdroj",
     "delete-selected-resources": "Odstranit vybraný zdroj",
     "fetching-data": "Načítání dat…",
@@ -230,8 +253,11 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "Přístupový token zkopírován do schránky",
-      "access-token-deletion": "Jste si jistí, že chcete odstranit přístupový token {{accessToken}}? TATO AKCE JE NEVRATNÁ.",
+      "access-token-deleted": "Přístupový token `{{description}}` odstraněn",
+      "access-token-deletion": "Jste si jistí, že chcete odstranit přístupový token `{{description}}`?",
+      "access-token-deletion-description": "Tato akce je nevratná. Budete muset aktualizovat všechny služby používající tento token, aby používaly nový token.",
       "create-dialog": {
+        "access-token-created": "Přístupový token `{{description}}` vytvořen",
         "create-access-token": "Vytvořit přístupový token",
         "created-at": "Vytvořeno",
         "description": "Popis",
@@ -259,15 +285,30 @@
       "update-information": "Aktualizovat informace",
       "username-note": "Slouží k přihlášení"
     },
+    "instance-section": {
+      "disallow-change-nickname": "Zakázat změnu přezdívky",
+      "disallow-change-username": "Zakázat změnu uživatelského jména",
+      "disallow-password-auth": "Zakázat ověřování heslem",
+      "disallow-user-registration": "Zakázat registraci uživatelů",
+      "monday": "Pondělí",
+      "saturday": "Sobota",
+      "sunday": "Neděle",
+      "week-start-day": "Začátek týdne"
+    },
     "member": "Uživatel",
     "member-list": "Seznam uživatelů",
     "member-section": {
       "admin": "Admin",
       "archive-member": "Archivovat uživatele",
+      "archive-success": "{{username}} úspěšně archivován",
       "archive-warning": "Jste si jisti, že chcete archivovat uživatele {{username}}?",
+      "archive-warning-description": "Archivace deaktivuje účet. Můžete jej později obnovit nebo odstranit.",
       "create-a-member": "Založit uživatele",
       "delete-member": "Odstranit uživatele",
-      "delete-warning": "Jste si jisti, že chcete odstranit uživatele {{username}}? TATO AKCE JE NEVRATNÁ",
+      "delete-success": "{{username}} úspěšně odstraněn",
+      "delete-warning": "Jste si jisti, že chcete odstranit uživatele {{username}}?",
+      "delete-warning-description": "TATO AKCE JE NEVRATNÁ",
+      "restore-success": "{{username}} úspěšně obnoven",
       "user": "Uživatel"
     },
     "memo-related": "Poznámky",
@@ -285,6 +326,10 @@
       "default-memo-sort-option": "Čas zobrazení poznámky",
       "default-memo-visibility": "Výchozí viditelnost poznámky",
       "theme": "Motiv"
+    },
+    "shortcut": {
+      "delete-confirm": "Jste si jisti, že chcete odstranit zkratku `{{title}}`?",
+      "delete-success": "Zkratka `{{title}}` úspěšně odstraněna"
     },
     "sso": "SSO",
     "sso-section": {
@@ -313,7 +358,7 @@
     },
     "storage": "Úložiště",
     "storage-section": {
-      "accesskey": "Přístupový kíč",
+      "accesskey": "Přístupový klíč",
       "accesskey-placeholder": "Přístupový klíč / ID",
       "bucket": "Bucket",
       "bucket-placeholder": "Název bucketu",
@@ -330,7 +375,7 @@
       "presign-placeholder": "Předběžná adresa URL, nepovinná",
       "region": "Region",
       "region-placeholder": "Název regionu",
-      "s3-compatible-url": "URL adresa kompatibilní s S3",
+      "s3-compatible-url": "URL adresa kompatibilní se S3",
       "secretkey": "Tajný klíč",
       "secretkey-placeholder": "Tajný klíč / Přístupový klíč",
       "storage-services": "Služby úložiště",
@@ -379,24 +424,20 @@
       "create-dialog": {
         "an-easy-to-remember-name": "Snadno zapamatovatelný název",
         "create-webhook": "Vytvořit webhook",
+        "create-webhook-success": "Webhook `{{name}}` vytvořen",
         "edit-webhook": "Upravit webhook",
         "payload-url": "Adresa Payload URL",
         "title": "Název",
         "url-example-post-receive": "https://example.com/postreceive"
       },
+      "delete-dialog": {
+        "delete-webhook-description": "Tato akce je nevratná.",
+        "delete-webhook-success": "Webhook `{{name}}` úspěšně odstraněn",
+        "delete-webhook-title": "Jste si jisti, že chcete odstranit webhook `{{name}}`?"
+      },
       "no-webhooks-found": "Žádné webhooky nenalezeny.",
       "title": "Webhooky",
       "url": "URL"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Zakázat změnu přezdívky",
-      "disallow-change-username": "Zakázat změnu uživatelského jména",
-      "disallow-password-auth": "Zakázat ověřování heslem",
-      "disallow-user-registration": "Zakázat registraci uživatelů",
-      "monday": "Pondělí",
-      "saturday": "Sobota",
-      "sunday": "Neděle",
-      "week-start-day": "Začátek týdne"
     }
   },
   "tag": {
@@ -404,6 +445,7 @@
     "create-tag": "Vytvořit štítek",
     "create-tags-guide": "Štítky můžete vytvořit zadáním `#tag`.",
     "delete-confirm": "Jste si jisti, že chcete tento štítek odstranit? Všechny související poznámky budou archivovány.",
+    "delete-success": "Štítek úspěšně odstraněn",
     "delete-tag": "Odstranit štítek",
     "new-name": "Nový název",
     "no-tag-found": "Žádný štítek nenalezen",
@@ -413,5 +455,13 @@
     "rename-success": "Štítek úspěšně přejmenován",
     "rename-tag": "Přejmenovat štítek",
     "rename-tip": "Všechny vaše poznámky s tímto štítkem budou aktualizovány."
+  },
+  "tooltip": {
+    "link-memo": "Propojit poznámku",
+    "markdown-menu": "Markdown",
+    "select-location": "Umístění",
+    "select-visibility": "Viditelnost",
+    "tags": "Štítky",
+    "upload-attachment": "Nahrát přílohy"
   }
 }

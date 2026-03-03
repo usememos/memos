@@ -18,18 +18,22 @@
     "about": "Quant a",
     "add": "Afegeix",
     "admin": "Administrador",
+    "all": "Tots",
     "archive": "Arxivar",
     "archived": "Arxivat",
     "attachments": "Adjunts",
+    "auto-expand": "Expansió automàtica",
     "avatar": "Avatar",
     "basic": "Bàsic",
     "beta": "Beta",
+    "calendar": "Calendari",
     "cancel": "Cancel·lar",
     "change": "Canviar",
     "clear": "Netejar",
     "close": "Tanca",
     "collapse": "Redueix",
     "confirm": "Confirmar",
+    "copy": "Copia",
     "create": "Crea",
     "created-at": "Creat el",
     "database": "Base de dades",
@@ -53,9 +57,11 @@
     "layout": "Disseny",
     "learn-more": "Saber-ne més",
     "link": "Enllaç",
+    "map": "Mapa",
     "mark": "Marca",
     "memo": "Memo",
     "memos": "Memos",
+    "more": "Més",
     "name": "Nom",
     "new": "Nou",
     "nickname": "Sobrenom",
@@ -90,6 +96,7 @@
     "statistics": "Estadístiques",
     "tags": "Etiquetes",
     "title": "Títol",
+    "today": "Avui",
     "tree-mode": "Mode arbre",
     "type": "Tipus",
     "unpin": "Desenganxa",
@@ -113,8 +120,12 @@
   "editor": {
     "add-your-comment-here": "Afegeix el teu comentari aquí...",
     "any-thoughts": "Alguna idea...",
+    "exit-focus-mode": "Surt del mode focus",
+    "focus-mode": "Mode focus",
+    "no-changes-detected": "No s'han detectat canvis",
     "save": "Guarda",
-    "no-changes-detected": "No s'han detectat canvis"
+    "saving": "Guardant...",
+    "slash-commands": "Escriu `/` per a comandaments"
   },
   "filters": {
     "has-code": "téCodi",
@@ -122,8 +133,11 @@
     "has-task-list": "téLlistaTasques"
   },
   "inbox": {
+    "failed-to-load": "Error en carregar la bústia",
     "memo-comment": "{{user}} ha comentat la teva {{memo}}.",
-    "version-update": "Nova versió {{version}} disponible ara!"
+    "no-archived": "No hi ha notificacions arxivades",
+    "no-unread": "No hi ha notificacions no llegides",
+    "unread": "No llegit"
   },
   "markdown": {
     "checkbox": "Casella de selecció",
@@ -139,16 +153,20 @@
       "self": "Comentaris",
       "write-a-comment": "Escriu un comentari"
     },
+    "copy-content": "Copia el contingut",
     "copy-link": "Copia l'enllaç",
     "count-memos-in-date": "{{count}} {{memos}} el {{date}}",
     "delete-confirm": "Estàs segur que vols esborrar aquesta nota? AQUESTA ACCIÓ ÉS IRREVERSIBLE",
+    "delete-confirm-description": "Aquesta acció és irreversible. Els adjunts, enllaços i referències també s'eliminaran.",
     "direction": "Direcció",
     "direction-asc": "Ascendent",
     "direction-desc": "Descendent",
     "display-time": "Mostra l'hora",
     "filters": "Filtres",
     "links": "Enllaços",
+    "list": "Llista",
     "load-more": "Carrega més",
+    "masonry": "Mosaic",
     "no-archived-memos": "No hi ha notes arxivades.",
     "no-memos": "No hi ha notes.",
     "order-by": "Ordena per",
@@ -162,9 +180,7 @@
       "private": "Privat",
       "protected": "Espai de treball",
       "public": "Públic"
-    },
-    "list": "Llista",
-    "masonry": "Maçoneria"
+    }
   },
   "message": {
     "archived-successfully": "Arxivat correctament",
@@ -182,6 +198,7 @@
     "password-changed": "Contrasenya canviada",
     "password-not-match": "Les contrasenyes no coincideixen.",
     "restored-successfully": "Restaurat correctament",
+    "succeed-copy-content": "Contingut copiat correctament.",
     "succeed-copy-link": "Enllaç copiat correctament.",
     "update-succeed": "Actualització correcta",
     "user-not-found": "Usuari no trobat"
@@ -212,6 +229,10 @@
       "title": "Crea recurs",
       "upload-method": "Mètode de pujada"
     },
+    "delete-all-unused": "Elimina tots els sense ús",
+    "delete-all-unused-confirm": "Estàs segur que vols eliminar tots els recursos sense ús? AQUESTA ACCIÓ ÉS IRREVERSIBLE",
+    "delete-all-unused-error": "Error en eliminar els recursos sense ús",
+    "delete-all-unused-success": "Recursos eliminats correctament",
     "delete-resource": "Elimina recurs",
     "delete-selected-resources": "Elimina recursos seleccionats",
     "fetching-data": "Carregant dades…",
@@ -232,8 +253,11 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "Token d'accés copiat al porta-retalls",
-      "access-token-deletion": "Estàs segur que vols eliminar el token d'accés {{accessToken}}? AQUESTA ACCIÓ ÉS IRREVERSIBLE.",
+      "access-token-deleted": "Token d'accés `{{description}}` eliminat",
+      "access-token-deletion": "Estàs segur que vols eliminar el token d'accés `{{description}}`?",
+      "access-token-deletion-description": "Aquesta acció és irreversible. Hauràs d'actualitzar qualsevol servei que utilitzi aquest token per utilitzar un de nou.",
       "create-dialog": {
+        "access-token-created": "Token d'accés `{{description}}` creat",
         "create-access-token": "Crea token d'accés",
         "created-at": "Creat el",
         "description": "Descripció",
@@ -261,15 +285,30 @@
       "update-information": "Actualitza la informació",
       "username-note": "Utilitzat per iniciar sessió"
     },
+    "instance-section": {
+      "disallow-change-nickname": "No permetis canviar el sobrenom",
+      "disallow-change-username": "No permetis canviar el nom d'usuari",
+      "disallow-password-auth": "No permetis autenticació per contrasenya",
+      "disallow-user-registration": "No permetis el registre d'usuaris",
+      "monday": "Dilluns",
+      "saturday": "Dissabte",
+      "sunday": "Diumenge",
+      "week-start-day": "Dia d'inici de setmana"
+    },
     "member": "Membre",
     "member-list": "Llista de membres",
     "member-section": {
       "admin": "Administrador",
       "archive-member": "Arxiva el membre",
+      "archive-success": "{{username}} arxivat correctament",
       "archive-warning": "Estàs segur que vols arxivar {{username}}?",
+      "archive-warning-description": "Arxivar desactiva el compte. Pots restaurar-lo o eliminar-lo més tard.",
       "create-a-member": "Crea un membre",
       "delete-member": "Elimina el membre",
-      "delete-warning": "Estàs segur que vols eliminar {{username}}? AQUESTA ACCIÓ ÉS IRREVERSIBLE",
+      "delete-success": "{{username}} eliminat correctament",
+      "delete-warning": "Estàs segur que vols eliminar {{username}}?",
+      "delete-warning-description": "AQUESTA ACció ÉS IRREVERSIBLE",
+      "restore-success": "{{username}} restaurat correctament",
       "user": "Usuari"
     },
     "memo-related": "Nota",
@@ -287,6 +326,10 @@
       "default-memo-sort-option": "Hora de visualització de la nota",
       "default-memo-visibility": "Visibilitat per defecte de la nota",
       "theme": "Tema"
+    },
+    "shortcut": {
+      "delete-confirm": "Estàs segur que vols eliminar la drecera `{{title}}`?",
+      "delete-success": "Drecera `{{title}}` eliminada correctament"
     },
     "sso": "SSO",
     "sso-section": {
@@ -381,24 +424,20 @@
       "create-dialog": {
         "an-easy-to-remember-name": "Un nom fàcil de recordar",
         "create-webhook": "Crea webhook",
+        "create-webhook-success": "Webhook `{{name}}` creat",
         "edit-webhook": "Edita webhook",
         "payload-url": "URL de càrrega",
         "title": "Títol",
         "url-example-post-receive": "https://example.com/postreceive"
       },
+      "delete-dialog": {
+        "delete-webhook-description": "Aquesta acció és irreversible.",
+        "delete-webhook-success": "Webhook `{{name}}` eliminat correctament",
+        "delete-webhook-title": "Estàs segur que vols eliminar el webhook `{{name}}`?"
+      },
       "no-webhooks-found": "No s'han trobat webhooks.",
       "title": "Webhooks",
       "url": "URL"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "No permetis canviar el sobrenom",
-      "disallow-change-username": "No permetis canviar el nom d'usuari",
-      "disallow-password-auth": "No permetis autenticació per contrasenya",
-      "disallow-user-registration": "No permetis el registre d'usuaris",
-      "monday": "Dilluns",
-      "saturday": "Dissabte",
-      "sunday": "Diumenge",
-      "week-start-day": "Dia d'inici de setmana"
     }
   },
   "tag": {
@@ -406,6 +445,7 @@
     "create-tag": "Crea etiqueta",
     "create-tags-guide": "Pots crear etiquetes escrivint `#etiqueta`.",
     "delete-confirm": "Estàs segur que vols eliminar aquesta etiqueta? Totes les notes relacionades s'arxivaran.",
+    "delete-success": "Etiqueta eliminada correctament",
     "delete-tag": "Elimina etiqueta",
     "new-name": "Nom nou",
     "no-tag-found": "No s'ha trobat cap etiqueta",
@@ -415,5 +455,13 @@
     "rename-success": "Etiqueta reanomenada correctament",
     "rename-tag": "Reanomena etiqueta",
     "rename-tip": "Totes les teves notes amb aquesta etiqueta s'actualitzaran."
+  },
+  "tooltip": {
+    "link-memo": "Enllaça nota",
+    "markdown-menu": "Markdown",
+    "select-location": "Ubicació",
+    "select-visibility": "Visibilitat",
+    "tags": "Etiquetes",
+    "upload-attachment": "Puja adjunt(s)"
   }
 }

@@ -57,9 +57,11 @@
     "layout": "Disposición",
     "learn-more": "Saber máis",
     "link": "Ligar",
+    "map": "Map",
     "mark": "Marcar",
     "memo": "Memo",
     "memos": "Memos",
+    "more": "Máis",
     "name": "Nome",
     "new": "Novidade",
     "nickname": "Alcume",
@@ -74,7 +76,7 @@
     "referenced-by": "Referida por",
     "referencing": "Referindo",
     "relations": "Relacións",
-    "remember-me": "Lembrarmo",
+    "remember-me": "Lembrarme",
     "rename": "Cambiar nome",
     "reset": "Restablecer",
     "resources": "Recursos",
@@ -104,8 +106,7 @@
     "username": "Identificador",
     "version": "Versión",
     "visibility": "Visibilidade",
-    "yourself": "Ti",
-    "more": "Máis"
+    "yourself": "Ti"
   },
   "days": {
     "fri": "Ven",
@@ -119,10 +120,11 @@
   "editor": {
     "add-your-comment-here": "Engade aquí o comentario...",
     "any-thoughts": "O que pensas...",
-    "save": "Gardar",
-    "no-changes-detected": "Non se detectaron cambios",
-    "focus-mode": "Modo Sen distraccións",
     "exit-focus-mode": "Saír do modo sen distraccións",
+    "focus-mode": "Modo Sen distraccións",
+    "no-changes-detected": "Non se detectaron cambios",
+    "save": "Gardar",
+    "saving": "Gardando...",
     "slash-commands": "Escribe `/` para ordes"
   },
   "filters": {
@@ -131,11 +133,11 @@
     "has-task-list": "hasTaskList"
   },
   "inbox": {
-    "memo-comment": "{{user}} fixo un comentario en {{memo}}.",
     "failed-to-load": "Fallou a carga do elemento da caixa de entrada",
-    "unread": "Sen ler",
+    "memo-comment": "{{user}} fixo un comentario en {{memo}}.",
+    "no-archived": "Non hai notificacións arquivadas",
     "no-unread": "Non hai notificacións sen ler",
-    "no-archived": "Non hai notificacións arquivadas"
+    "unread": "Sen ler"
   },
   "markdown": {
     "checkbox": "Marca de selección",
@@ -162,7 +164,9 @@
     "display-time": "Mostrar hora",
     "filters": "Filtros",
     "links": "Ligazóns",
+    "list": "Lista",
     "load-more": "Cargar máis",
+    "masonry": "Masonry",
     "no-archived-memos": "Sen memos arquivadas.",
     "no-memos": "Sen memos.",
     "order-by": "Orde por",
@@ -176,9 +180,7 @@
       "private": "Privada",
       "protected": "Protexida",
       "public": "Pública"
-    },
-    "list": "Lista",
-    "masonry": "Masonry"
+    }
   },
   "message": {
     "archived-successfully": "Arquivada correctamente",
@@ -227,12 +229,12 @@
       "title": "Crear recurso",
       "upload-method": "Método de subida"
     },
-    "delete-resource": "Eliminar recurso",
-    "delete-selected-resources": "Eliminar recursos seleccionados",
     "delete-all-unused": "Eliminar todos sen usar",
     "delete-all-unused-confirm": "Tes certeza de querer eliminar todos os recursos que non estás a utilizar? ESTA ACCIÓN NON É REVERSIBLE",
-    "delete-all-unused-success": "Recursos eliminados correctamente",
     "delete-all-unused-error": "Fallou a eliminación dos recursos non utilizados",
+    "delete-all-unused-success": "Recursos eliminados correctamente",
+    "delete-resource": "Eliminar recurso",
+    "delete-selected-resources": "Eliminar recursos seleccionados",
     "fetching-data": "Obtendo datos…",
     "file-drag-drop-prompt": "Arrastra e solta aquí o ficheiro a subir",
     "linked-amount": "Número de ligazóns",
@@ -251,9 +253,9 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "Token de acceso copiado ao portapapeis",
+      "access-token-deleted": "Eliminouse o token de acceso `{{description}}`",
       "access-token-deletion": "Tes certeza de querer eliminar o toke de acceso `{{description}}`?",
       "access-token-deletion-description": "Esta acción non é reversible. Terás que actualizar o token de acceso en todos os servizos que utilicen o actual.",
-      "access-token-deleted": "Eliminouse o token de acceso `{{description}}`",
       "create-dialog": {
         "access-token-created": "Creouse o token de acceso `{{description}}`",
         "create-access-token": "Crear token de acceso",
@@ -283,20 +285,30 @@
       "update-information": "Actualizar información",
       "username-note": "Utilizada para acceder"
     },
+    "instance-section": {
+      "disallow-change-nickname": "Non permitir cambiar o alcume",
+      "disallow-change-username": "Non permitir cambiar o identificador",
+      "disallow-password-auth": "Desactivar acceso con contrasinal",
+      "disallow-user-registration": "Non permitir a creación de contas",
+      "monday": "Luns",
+      "saturday": "Sábado",
+      "sunday": "Domingo",
+      "week-start-day": "Comezo da semana"
+    },
     "member": "Usuaria",
     "member-list": "Lista de usuarias",
     "member-section": {
       "admin": "Admin",
       "archive-member": "Arquivar usuaria",
+      "archive-success": "{{username}} arquivada correctamente",
       "archive-warning": "Tes certeza de querer arquivar a {{username}}?",
       "archive-warning-description": "Ao arquivar desactivas a conta. Podes restablecela ou eliminala máis tarde.",
-      "archive-success": "{{username}} arquivada correctamente",
-      "restore-success": "{{username}} restablecida correctamente",
       "create-a-member": "Crear usuaria",
       "delete-member": "Eliminar usuaria",
+      "delete-success": "Eliminouse a {{username}} correctamente",
       "delete-warning": "Tes certeza de querer eliminar a {{username}}?",
       "delete-warning-description": "ESTA ACCIÓN NON É REVERSIBLE",
-      "delete-success": "Eliminouse a {{username}} correctamente",
+      "restore-success": "{{username}} restablecida correctamente",
       "user": "Usuaria"
     },
     "memo-related": "Memo",
@@ -370,7 +382,7 @@
       "type-database": "Base de datos",
       "type-local": "Sistema local de ficheiros",
       "update-a-service": "Actualizar un servizo",
-      "update-local-path": "Actulizar ruta de almacenaxe local",
+      "update-local-path": "Actualizar ruta de almacenaxe local",
       "update-local-path-description": "A ruta local de almacenaxe é a ruta relativa ao teu ficheiro de base de datos",
       "update-storage": "Actualizar almacenaxe",
       "url-prefix": "Prefixo do URL",
@@ -420,22 +432,12 @@
       },
       "delete-dialog": {
         "delete-webhook-description": "Esta acción non é reversible.",
-        "delete-webhook-title": "Tes certeza de querer eliminar o webhook `{{name}}`?",
-        "delete-webhook-success": "Eliminouse correctamente o webhook `{{name}}`"
+        "delete-webhook-success": "Eliminouse correctamente o webhook `{{name}}`",
+        "delete-webhook-title": "Tes certeza de querer eliminar o webhook `{{name}}`?"
       },
       "no-webhooks-found": "Non hai webhooks.",
       "title": "Webhooks",
       "url": "URL"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Non permitir cambiar o alcume",
-      "disallow-change-username": "Non permitir cambiar o identificador",
-      "disallow-password-auth": "Desactivar acceso con contrasinal",
-      "disallow-user-registration": "Non permitir a creación de contas",
-      "monday": "Luns",
-      "saturday": "Sábado",
-      "sunday": "Domingo",
-      "week-start-day": "Comezo da semana"
     }
   },
   "tag": {
@@ -443,8 +445,8 @@
     "create-tag": "Crear etiqueta",
     "create-tags-guide": "Podes crear etiquetas escribindo `#etiqueta`.",
     "delete-confirm": "Tes certeza de querer eliminar esta etiqueta? Todas as notas afectadas vanse arquivar.",
-    "delete-tag": "Eliminar etiqueta",
     "delete-success": "Etiqueta eliminada corretamente",
+    "delete-tag": "Eliminar etiqueta",
     "new-name": "Novo nome",
     "no-tag-found": "Sen etiquetas",
     "old-name": "Nome antigo",

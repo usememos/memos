@@ -61,6 +61,7 @@
     "mark": "연결",
     "memo": "메모",
     "memos": "메모",
+    "more": "더보기",
     "name": "이름",
     "new": "신규",
     "nickname": "닉네임",
@@ -105,8 +106,7 @@
     "username": "유저네임",
     "version": "버전",
     "visibility": "공개 범위",
-    "yourself": "자기 자신",
-    "more": "더보기"
+    "yourself": "자기 자신"
   },
   "days": {
     "fri": "금",
@@ -120,10 +120,11 @@
   "editor": {
     "add-your-comment-here": "여기에 댓글을 추가하세요...",
     "any-thoughts": "떠오르는 게 있나요...",
-    "save": "저장",
-    "no-changes-detected": "변경사항이 없습니다",
-    "focus-mode": "집중 모드",
     "exit-focus-mode": "집중 모드 종료",
+    "focus-mode": "집중 모드",
+    "no-changes-detected": "변경사항이 없습니다",
+    "save": "저장",
+    "saving": "저장 중...",
     "slash-commands": "명령어를 보시려면 /를 입력하세요."
   },
   "filters": {
@@ -132,11 +133,11 @@
     "has-task-list": "할일목록있음"
   },
   "inbox": {
-    "memo-comment": "{{user}}님이 {{memo}}에 댓글을 남겼습니다.",
     "failed-to-load": "알림함 항목을 불러오지 못했습니다",
-    "unread": "읽지 않음",
+    "memo-comment": "{{user}}님이 {{memo}}에 댓글을 남겼습니다.",
+    "no-archived": "보관된 알림이 없습니다",
     "no-unread": "읽지 않은 알림이 없습니다",
-    "no-archived": "보관된 알림이 없습니다"
+    "unread": "읽지 않음"
   },
   "markdown": {
     "checkbox": "체크박스",
@@ -163,7 +164,9 @@
     "display-time": "표시 시간",
     "filters": "필터",
     "links": "링크",
+    "list": "목록",
     "load-more": "더보기",
+    "masonry": "메이슨리",
     "no-archived-memos": "보관처리된 메모가 없습니다.",
     "no-memos": "메모가 없습니다.",
     "order-by": "정렬 기준",
@@ -177,9 +180,7 @@
       "private": "나만 볼 수 있음",
       "protected": "멤버 전용",
       "public": "공개"
-    },
-    "list": "목록",
-    "masonry": "메이슨리"
+    }
   },
   "message": {
     "archived-successfully": "성공적으로 보관되었습니다",
@@ -228,12 +229,12 @@
       "title": "리소스 생성",
       "upload-method": "업로드 방법"
     },
-    "delete-resource": "리소스 삭제",
-    "delete-selected-resources": "선택된 리소스 삭제",
     "delete-all-unused": "사용하지 않는 항목 모두 삭제",
     "delete-all-unused-confirm": "사용하지 않는 모든 리소스를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
-    "delete-all-unused-success": "리소스가 성공적으로 삭제되었습니다",
     "delete-all-unused-error": "사용하지 않는 리소스 삭제에 실패했습니다",
+    "delete-all-unused-success": "리소스가 성공적으로 삭제되었습니다",
+    "delete-resource": "리소스 삭제",
+    "delete-selected-resources": "선택된 리소스 삭제",
     "fetching-data": "불러오는 중…",
     "file-drag-drop-prompt": "업로드할 파일을 여기에 드래그하세요",
     "linked-amount": "연결된 수",
@@ -252,9 +253,9 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "액세스 토큰이 복사되었습니다",
-      "access-token-deletion": "액세스 토큰 {{accessToken}}을 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다.",
-      "access-token-deletion-description": "이 작업은 되돌릴 수 없습니다. 이 토큰을 사용하는 서비스들은 새 토큰을 사용하도록 업데이트해야 합니다.",
       "access-token-deleted": "액세스 토큰 `{{description}}`이 삭제되었습니다",
+      "access-token-deletion": "액세스 토큰 {{description}}을 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다.",
+      "access-token-deletion-description": "이 작업은 되돌릴 수 없습니다. 이 토큰을 사용하는 서비스들은 새 토큰을 사용하도록 업데이트해야 합니다.",
       "create-dialog": {
         "access-token-created": "액세스 토큰 `{{description}}`이 생성되었습니다",
         "create-access-token": "액세스 토큰 생성",
@@ -284,20 +285,30 @@
       "update-information": "정보 변경",
       "username-note": "로그인하는 데 사용됨"
     },
+    "instance-section": {
+      "disallow-change-nickname": "닉네임 변경 금지",
+      "disallow-change-username": "유저네임 변경 금지",
+      "disallow-password-auth": "비밀번호 인증 금지",
+      "disallow-user-registration": "회원가입 금지",
+      "monday": "월요일",
+      "saturday": "토요일",
+      "sunday": "일요일",
+      "week-start-day": "주 시작 요일"
+    },
     "member": "멤버",
     "member-list": "멤버 목록",
     "member-section": {
       "admin": "관리자",
       "archive-member": "멤버 보관처리",
+      "archive-success": "{{username}}님이 성공적으로 보관처리되었습니다",
       "archive-warning": "멤버 {{username}}의 계정을 보관처리하시겠습니까?",
       "archive-warning-description": "보관처리하면 해당 계정이 비활성화됩니다. 나중에 복구하거나 삭제할 수 있습니다.",
-      "archive-success": "{{username}}님이 성공적으로 보관처리되었습니다",
-      "restore-success": "{{username}}님이 성공적으로 복구되었습니다",
       "create-a-member": "새 멤버 등록",
       "delete-member": "멤버 계정 삭제",
+      "delete-success": "{{username}}님이 성공적으로 삭제되었습니다",
       "delete-warning": "멤버 {{username}}의 계정을 완전히 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다.",
       "delete-warning-description": "이 작업은 되돌릴 수 없습니다.",
-      "delete-success": "{{username}}님이 성공적으로 삭제되었습니다",
+      "restore-success": "{{username}}님이 성공적으로 복구되었습니다",
       "user": "사용자"
     },
     "memo-related": "메모",
@@ -421,22 +432,12 @@
       },
       "delete-dialog": {
         "delete-webhook-description": "이 작업은 되돌릴 수 없습니다.",
-        "delete-webhook-title": "Webhook `{{name}}`을 정말로 삭제하시겠습니까?",
-        "delete-webhook-success": "Webhook `{{name}}`이 성공적으로 삭제되었습니다"
+        "delete-webhook-success": "Webhook `{{name}}`이 성공적으로 삭제되었습니다",
+        "delete-webhook-title": "Webhook `{{name}}`을 정말로 삭제하시겠습니까?"
       },
       "no-webhooks-found": "Webhook이 없습니다.",
       "title": "Webhook",
       "url": "URL"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "닉네임 변경 금지",
-      "disallow-change-username": "유저네임 변경 금지",
-      "disallow-password-auth": "비밀번호 인증 금지",
-      "disallow-user-registration": "회원가입 금지",
-      "monday": "월요일",
-      "saturday": "토요일",
-      "sunday": "일요일",
-      "week-start-day": "주 시작 요일"
     }
   },
   "tag": {
@@ -444,8 +445,8 @@
     "create-tag": "태그 생성",
     "create-tags-guide": "`#태그`를 입력하여 태그를 만들 수 있습니다.",
     "delete-confirm": "이 태그를 삭제하시겠습니까? 관련된 모든 메모가 보관됩니다.",
-    "delete-tag": "태그 삭제",
     "delete-success": "태그가 성공적으로 삭제되었습니다",
+    "delete-tag": "태그 삭제",
     "new-name": "새 이름",
     "no-tag-found": "태그를 찾을 수 없습니다",
     "old-name": "이전 이름",

@@ -7,7 +7,7 @@
     "official-website": "الموقع الرسمي"
   },
   "auth": {
-    "create-your-account": "انشئ حسابك",
+    "create-your-account": "أنشئ حسابك",
     "host-tip": "أنت تسجل في الموقع كمضيف",
     "new-password": "كلمة المرور الجديدة",
     "repeat-new-password": "أعد كلمة المرور الجديدة",
@@ -18,19 +18,23 @@
     "about": "حول",
     "add": "إضافة",
     "admin": "مدير",
+    "all": "الكل",
     "archive": "الأرشيف",
     "archived": "المؤرشفة",
     "attachments": "مرفقات",
+    "auto-expand": "توسيع تلقائي",
     "avatar": "الصورة الشخصية",
     "basic": "بسيط",
     "beta": "تجريبي",
+    "calendar": "التقويم",
     "cancel": "ألغِ",
     "change": "تغيير",
     "clear": "مسح",
-    "close": "اغلق",
+    "close": "أغلق",
     "collapse": "طي",
     "confirm": "تأكيد",
-    "create": "انشاء",
+    "copy": "نسخ",
+    "create": "إنشاء",
     "created-at": "تاريخ الإنشاء",
     "database": "قاعدة البيانات",
     "day": "يوم",
@@ -38,7 +42,7 @@
     "delete": "حذف",
     "description": "الوصف",
     "edit": "تعديل",
-    "email": "الايميل",
+    "email": "البريد الإلكتروني",
     "expand": "توسيع",
     "explore": "استكشف",
     "file": "ملف",
@@ -53,9 +57,11 @@
     "layout": "تخطيط",
     "learn-more": "تعلم المزيد",
     "link": "الرابط",
+    "map": "خريطة",
     "mark": "تعليم",
     "memo": "مذكرة",
     "memos": "مذكرات",
+    "more": "المزيد",
     "name": "الاسم",
     "new": "جديد",
     "nickname": "الاسم المستعار",
@@ -79,7 +85,7 @@
     "save": "احفظ",
     "search": "بحث",
     "select": "تحديد",
-    "settings": "الاعدادات",
+    "settings": "الإعدادات",
     "share": "مشاركة",
     "shortcut-filter": "تصفية الاختصارات",
     "shortcuts": "اختصارات",
@@ -90,6 +96,7 @@
     "statistics": "إحصائيات",
     "tags": "العلامات",
     "title": "العنوان",
+    "today": "اليوم",
     "tree-mode": "وضع الشجرة",
     "type": "النوع",
     "unpin": "إلغِ التثبيت",
@@ -113,8 +120,12 @@
   "editor": {
     "add-your-comment-here": "أضف تعليقك هنا...",
     "any-thoughts": "أية أفكار...",
+    "exit-focus-mode": "الخروج من وضع التركيز",
+    "focus-mode": "وضع التركيز",
+    "no-changes-detected": "لم يتم الكشف عن تغييرات",
     "save": "حفظ",
-    "no-changes-detected": "لم يتم الكشف عن تغييرات"
+    "saving": "جارِ الحفظ...",
+    "slash-commands": "اكتب `/` للأوامر"
   },
   "filters": {
     "has-code": "يحتوي على كود",
@@ -122,8 +133,11 @@
     "has-task-list": "يحتوي على قائمة مهام"
   },
   "inbox": {
+    "failed-to-load": "فشل تحميل عنصر صندوق الوارد",
     "memo-comment": "{{user}} علق على {{memo}} الخاص بك.",
-    "version-update": "الإصدار الجديد {{version}} متوفر الآن!"
+    "no-archived": "لا توجد إشعارات مؤرشفة",
+    "no-unread": "لا توجد إشعارات غير مقروءة",
+    "unread": "غير مقروء"
   },
   "markdown": {
     "checkbox": "مربع اختيار",
@@ -131,7 +145,7 @@
     "content-syntax": "صياغة المحتوى"
   },
   "memo": {
-    "archived-at": "أرشف في",
+    "archived-at": "تاريخ الأرشفة",
     "click-to-hide-nsfw-content": "انقر لإخفاء المحتوى الحساس",
     "click-to-show-nsfw-content": "انقر لإظهار المحتوى الحساس",
     "code": "كود",
@@ -139,16 +153,20 @@
       "self": "التعليقات",
       "write-a-comment": "اكتب تعليقاً"
     },
+    "copy-content": "نسخ المحتوى",
     "copy-link": "نسخ الرابط",
     "count-memos-in-date": "{{count}} {{memos}} في {{date}}",
     "delete-confirm": "هل أنت متأكد أنك تريد حذف هذه المذكرة؟\n\nهذا الإجراء لا رجعة فيه",
+    "delete-confirm-description": "هذا الإجراء لا رجعة فيه. ستتم إزالة المرفقات والروابط والمراجع أيضًا.",
     "direction": "الاتجاه",
     "direction-asc": "تصاعدي",
     "direction-desc": "تنازلي",
     "display-time": "عرض الوقت",
     "filters": "فلاتر",
     "links": "روابط",
+    "list": "قائمة",
     "load-more": "تحميل المزيد",
+    "masonry": "فسيفساء",
     "no-archived-memos": "لا يوجد مذكرات مؤرشفة",
     "no-memos": "لا يوجد مذكرات.",
     "order-by": "ترتيب حسب",
@@ -158,13 +176,11 @@
     "to-do": "مهام",
     "view-detail": "عرض التفاصيل",
     "visibility": {
-      "disabled": "المذكرات العامة ملغية",
+      "disabled": "المذكرات العامة معطلة",
       "private": "خاص",
-      "protected": "مساحة عمل",
+      "protected": "محمي",
       "public": "عام"
-    },
-    "list": "قائمة",
-    "masonry": "فسيفساء"
+    }
   },
   "message": {
     "archived-successfully": "تمت الأرشفة بنجاح",
@@ -182,6 +198,7 @@
     "password-changed": "تم تغيير كلمة المرور",
     "password-not-match": "كلمات المرور غير متطابقة.",
     "restored-successfully": "تمت الاستعادة بنجاح",
+    "succeed-copy-content": "تم نسخ المحتوى بنجاح.",
     "succeed-copy-link": "تم نسخ الرابط بنجاح.",
     "update-succeed": "تم التحديث بنجاح",
     "user-not-found": "المستخدم غير موجود"
@@ -209,9 +226,13 @@
         "choose": "اختر ملف…",
         "option": "ملف محلي"
       },
-      "title": "انشاء مصدر",
+      "title": "إنشاء مصدر",
       "upload-method": "طريقة الرفع"
     },
+    "delete-all-unused": "حذف جميع الموارد غير المستخدمة",
+    "delete-all-unused-confirm": "هل أنت متأكد من حذف جميع الموارد غير المستخدمة؟ هذا الإجراء لا رجعة فيه",
+    "delete-all-unused-error": "فشل حذف الموارد غير المستخدمة",
+    "delete-all-unused-success": "تم حذف الموارد بنجاح",
     "delete-resource": "حذف المصدر",
     "delete-selected-resources": "حذف المصادر المحددة",
     "fetching-data": "جلب البيانات…",
@@ -222,18 +243,21 @@
     "no-unused-resources": "لا يوجد مصادر غير مستخدمة",
     "reset-link": "إعادة تعيين الرابط",
     "reset-link-prompt": "هل أنت متأكد من إعادة ضبط الرابط؟ سيؤدي هذا إلى قطع جميع استخدامات الارتباط الحالية.\n\nهذا الإجراء لا رجعة فيه",
-    "reset-resource-link": "اعادة تعيين رابط المصدر",
+    "reset-resource-link": "إعادة تعيين رابط المصدر",
     "unused-resources": "مصادر غير مستخدمة"
   },
   "router": {
     "back-to-top": "اذهب إلى الأعلى",
-    "go-to-home": "اذهب الى الصفحة الرئيسية"
+    "go-to-home": "اذهب إلى الصفحة الرئيسية"
   },
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "تم نسخ رمز الوصول إلى الحافظة",
-      "access-token-deletion": "هل أنت متأكد من حذف رمز الوصول {{accessToken}}؟ هذا الإجراء لا رجعة فيه.",
+      "access-token-deleted": "تم حذف رمز الوصول `{{description}}`",
+      "access-token-deletion": "هل أنت متأكد من حذف رمز الوصول `{{description}}`؟",
+      "access-token-deletion-description": "هذا الإجراء لا رجعة فيه. ستحتاج إلى تحديث أي خدمات تستخدم هذا الرمز لاستخدام رمز جديد.",
       "create-dialog": {
+        "access-token-created": "تم إنشاء رمز الوصول `{{description}}`",
         "create-access-token": "إنشاء رمز وصول",
         "created-at": "تاريخ الإنشاء",
         "description": "الوصف",
@@ -256,20 +280,35 @@
       "openapi-reset": "إعادة ضبط مفتاح OpenAPI",
       "openapi-sample-post": "مرحبًا #مذكراتي من {{url}}",
       "openapi-title": "OpenAPI",
-      "reset-api": "اعادة ضبط الـ API",
+      "reset-api": "إعادة ضبط الـ API",
       "title": "معلومات الحساب",
       "update-information": "تحديث المعلومات",
       "username-note": "تستخدم لتسجيل الدخول"
+    },
+    "instance-section": {
+      "disallow-change-nickname": "عدم السماح بتغيير الاسم المستعار",
+      "disallow-change-username": "عدم السماح بتغيير اسم المستخدم",
+      "disallow-password-auth": "عدم السماح بالمصادقة بكلمة المرور",
+      "disallow-user-registration": "عدم السماح بتسجيل المستخدمين",
+      "monday": "الإثنين",
+      "saturday": "السبت",
+      "sunday": "الأحد",
+      "week-start-day": "بداية الأسبوع"
     },
     "member": "عضو",
     "member-list": "قائمة الأعضاء",
     "member-section": {
       "admin": "مدير",
       "archive-member": "أرشفة العضو",
+      "archive-success": "تم أرشفة {{username}} بنجاح",
       "archive-warning": "هل أنت متأكد من أرشفة {{username}}؟",
+      "archive-warning-description": "الأرشفة تعطل الحساب. يمكنك استعادته أو حذفه لاحقًا.",
       "create-a-member": "إنشاء عضو",
       "delete-member": "حذف العضو",
+      "delete-success": "تم حذف {{username}} بنجاح",
       "delete-warning": "هل أنت متأكد من حذف {{username}}؟ هذا الإجراء لا رجعة فيه",
+      "delete-warning-description": "هذا الإجراء لا رجعة فيه",
+      "restore-success": "تم استعادة {{username}} بنجاح",
       "user": "مستخدم"
     },
     "memo-related": "مذكرة",
@@ -287,6 +326,10 @@
       "default-memo-sort-option": "وقت عرض المذكرة",
       "default-memo-visibility": "رؤية المذكرة الافتراضية",
       "theme": "السمة"
+    },
+    "shortcut": {
+      "delete-confirm": "هل أنت متأكد من حذف الاختصار `{{title}}`؟",
+      "delete-success": "تم حذف الاختصار `{{title}}` بنجاح"
     },
     "sso": "تسجيل موحد",
     "sso-section": {
@@ -381,31 +424,28 @@
       "create-dialog": {
         "an-easy-to-remember-name": "اسم سهل التذكر",
         "create-webhook": "إنشاء Webhook",
+        "create-webhook-success": "تم إنشاء Webhook `{{name}}`",
         "edit-webhook": "تعديل Webhook",
         "payload-url": "رابط الحمولة",
         "title": "العنوان",
         "url-example-post-receive": "https://example.com/postreceive"
       },
+      "delete-dialog": {
+        "delete-webhook-description": "هذا الإجراء لا رجعة فيه.",
+        "delete-webhook-success": "تم حذف Webhook `{{name}}` بنجاح",
+        "delete-webhook-title": "هل أنت متأكد من حذف Webhook `{{name}}`؟"
+      },
       "no-webhooks-found": "لم يتم العثور على Webhooks.",
       "title": "Webhooks",
       "url": "الرابط"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "عدم السماح بتغيير الاسم المستعار",
-      "disallow-change-username": "عدم السماح بتغيير اسم المستخدم",
-      "disallow-password-auth": "عدم السماح بالمصادقة بكلمة المرور",
-      "disallow-user-registration": "عدم السماح بتسجيل المستخدمين",
-      "monday": "الإثنين",
-      "saturday": "السبت",
-      "sunday": "الأحد",
-      "week-start-day": "بداية الأسبوع"
     }
   },
   "tag": {
     "all-tags": "جميع العلامات",
-    "create-tag": "انشاء علامة",
+    "create-tag": "إنشاء علامة",
     "create-tags-guide": "يمكنك إنشاء علامات بإدخال `#tag`.",
     "delete-confirm": "هل أنت متأكد من حذف هذه العلامة؟ سيتم أرشفة جميع المذكرات المتعلقة.",
+    "delete-success": "تم حذف العلامة بنجاح",
     "delete-tag": "حذف العلامة",
     "new-name": "اسم جديد",
     "no-tag-found": "لم يتم العثور على علامات",
@@ -415,5 +455,13 @@
     "rename-success": "تمت إعادة تسمية العلامة بنجاح",
     "rename-tag": "إعادة تسمية العلامة",
     "rename-tip": "سيتم تحديث جميع مذكراتك بهذه العلامة."
+  },
+  "tooltip": {
+    "link-memo": "ربط مذكرة",
+    "markdown-menu": "Markdown",
+    "select-location": "الموقع",
+    "select-visibility": "الرؤية",
+    "tags": "العلامات",
+    "upload-attachment": "رفع المرفق"
   }
 }

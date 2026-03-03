@@ -18,18 +18,22 @@
     "about": "O aplikaciji",
     "add": "Dodaj",
     "admin": "Admin",
+    "all": "Svi",
     "archive": "Arhiviraj",
     "archived": "Arhivirano",
     "attachments": "Privici",
+    "auto-expand": "Automatski proširi",
     "avatar": "Avatar",
     "basic": "Osnovno",
     "beta": "Beta",
+    "calendar": "Kalendar",
     "cancel": "Otkaži",
     "change": "Promijeni",
     "clear": "Očisti",
     "close": "Zatvori",
     "collapse": "Sažmi",
     "confirm": "Potvrdi",
+    "copy": "Kopiraj",
     "create": "Stvori",
     "created-at": "Stvoreno",
     "database": "Baza podataka",
@@ -53,17 +57,19 @@
     "layout": "Raspored",
     "learn-more": "Nauči više",
     "link": "Link",
+    "map": "Karta",
     "mark": "Označi",
     "memo": "Memo",
-    "memos": "Memoji",
+    "memos": "Memos",
+    "more": "Više",
     "name": "Ime",
     "new": "Novi",
     "nickname": "Nadimak",
     "null": "Ništa",
     "or": "ili",
     "password": "Lozinka",
-    "pin": "Pinaj",
-    "pinned": "Pinano",
+    "pin": "Prikvači",
+    "pinned": "Prikvačeno",
     "preview": "Pregled",
     "profile": "Profil",
     "properties": "Svojstva",
@@ -90,7 +96,8 @@
     "statistics": "Statistika",
     "tags": "Tagovi",
     "title": "Naslov",
-    "tree-mode": "Stablo način",
+    "today": "Danas",
+    "tree-mode": "Način stabla",
     "type": "Tip",
     "unpin": "Makni pin",
     "update": "Ažuriraj",
@@ -113,8 +120,12 @@
   "editor": {
     "add-your-comment-here": "Dodaj svoj komentar ovdje...",
     "any-thoughts": "Imaš li misli...",
+    "exit-focus-mode": "Izlazi iz načina rada za fokus",
+    "focus-mode": "Način rada za fokus",
+    "no-changes-detected": "Nema promjena",
     "save": "Sačuvaj",
-    "no-changes-detected": "Nema promjena"
+    "saving": "Spremanje...",
+    "slash-commands": "Upisi `/` za naredbe"
   },
   "filters": {
     "has-code": "imaKod",
@@ -122,8 +133,11 @@
     "has-task-list": "imaZadatke"
   },
   "inbox": {
+    "failed-to-load": "Neuspjelo učitavanje stavke pristigle pošte",
     "memo-comment": "{{user}} je komentirao tvoj {{memo}}.",
-    "version-update": "Nova verzija {{version}} je dostupna!"
+    "no-archived": "Nema arhiviranih obavijesti",
+    "no-unread": "Nema nepročitanih obavijesti",
+    "unread": "Nepročitano"
   },
   "markdown": {
     "checkbox": "Potvrdni okvir",
@@ -139,9 +153,11 @@
       "self": "Komentari",
       "write-a-comment": "Napiši komentar"
     },
+    "copy-content": "Kopiraj sadržaj",
     "copy-link": "Kopiraj link",
     "count-memos-in-date": "{{count}} {{memos}} na {{date}}",
     "delete-confirm": "Jesi li siguran da želiš obrisati ovaj memo? OVA AKCIJA JE NEPOVRATNA",
+    "delete-confirm-description": "Ova akcija je nepovratna. Privici, linkovi i reference će također biti uklonjeni.",
     "direction": "Smjer",
     "direction-asc": "Uzlazno",
     "direction-desc": "Silazno",
@@ -150,7 +166,7 @@
     "links": "Linkovi",
     "list": "Popis",
     "load-more": "Učitaj više",
-    "masonry": "Masonerija",
+    "masonry": "Zidni raspored",
     "no-archived-memos": "Nema arhiviranih memoa.",
     "no-memos": "Nema memoa.",
     "order-by": "Sortiraj po",
@@ -182,6 +198,7 @@
     "password-changed": "Lozinka je promijenjena",
     "password-not-match": "Lozinke se ne podudaraju.",
     "restored-successfully": "Uspješno vraćeno",
+    "succeed-copy-content": "Sadržaj uspješno kopiran.",
     "succeed-copy-link": "Link je uspješno kopiran.",
     "update-succeed": "Ažuriranje uspješno",
     "user-not-found": "Korisnik nije pronađen"
@@ -212,6 +229,10 @@
       "title": "Stvori resurs",
       "upload-method": "Način prijenosa"
     },
+    "delete-all-unused": "Obriši sve neiskorištene",
+    "delete-all-unused-confirm": "Jesi li siguran da želiš obrisati sve neiskorištene resurse? OVA AKCIJA JE NEPOVRATNA",
+    "delete-all-unused-error": "Neuspjelo brisanje neiskorištenih resursa",
+    "delete-all-unused-success": "Resursi uspješno obrisani",
     "delete-resource": "Obriši resurs",
     "delete-selected-resources": "Obriši odabrane resurse",
     "fetching-data": "Dohvaćanje podataka...",
@@ -232,8 +253,11 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "Token pristupa kopiran u međuspremnik",
-      "access-token-deletion": "Jesi li siguran da želiš obrisati token pristupa {{accessToken}}? OVA AKCIJA JE NEPOVRATNA.",
+      "access-token-deleted": "Token pristupa `{{description}}` obrisan",
+      "access-token-deletion": "Jesi li siguran da želiš obrisati token pristupa `{{description}}`?",
+      "access-token-deletion-description": "Ova akcija je nepovratna. Morat ćeš ažurirati sve usluge koje koriste ovaj token da koriste novi token.",
       "create-dialog": {
+        "access-token-created": "Token pristupa `{{description}}` stvoren",
         "create-access-token": "Stvori token pristupa",
         "created-at": "Stvoreno",
         "description": "Opis",
@@ -261,15 +285,30 @@
       "update-information": "Ažuriraj informacije",
       "username-note": "Koristi se za prijavu"
     },
+    "instance-section": {
+      "disallow-change-nickname": "Onemogući promjenu nadimka",
+      "disallow-change-username": "Onemogući promjenu korisničkog imena",
+      "disallow-password-auth": "Onemogući autentikaciju lozinkom",
+      "disallow-user-registration": "Onemogući registraciju korisnika",
+      "monday": "Ponedjeljak",
+      "saturday": "Subota",
+      "sunday": "Nedjelja",
+      "week-start-day": "Dan početka tjedna"
+    },
     "member": "Član",
     "member-list": "Popis članova",
     "member-section": {
       "admin": "Admin",
       "archive-member": "Arhiviraj člana",
+      "archive-success": "{{username}} uspješno arhiviran",
       "archive-warning": "Jesi li siguran da želiš arhivirati {{username}}?",
+      "archive-warning-description": "Arhiviranje onemogućuje račun. Možeš ga kasnije vratiti ili obrisati.",
       "create-a-member": "Stvori člana",
       "delete-member": "Obriši člana",
-      "delete-warning": "Jesi li siguran da želiš obrisati {{username}}? OVA AKCIJA JE NEPOVRATNA",
+      "delete-success": "{{username}} uspješno obrisan",
+      "delete-warning": "Jesi li siguran da želiš obrisati {{username}}?",
+      "delete-warning-description": "OVA AKCIJA JE NEPOVRATNA",
+      "restore-success": "{{username}} uspješno vraćen",
       "user": "Korisnik"
     },
     "memo-related": "Memo",
@@ -288,6 +327,10 @@
       "default-memo-visibility": "Zadana vidljivost memoa",
       "theme": "Tema"
     },
+    "shortcut": {
+      "delete-confirm": "Jesi li siguran da želiš obrisati prečac `{{title}}`?",
+      "delete-success": "Prečac `{{title}}` uspješno obrisan"
+    },
     "sso": "SSO",
     "sso-section": {
       "authorization-endpoint": "Krajnja točka autorizacije",
@@ -297,7 +340,7 @@
       "create-sso": "Stvori SSO",
       "custom": "Prilagođeno",
       "delete-sso": "Potvrdi brisanje",
-      "disabled-password-login-warning": "Prijava lozinkom je onemogućena, budi pažljiv kad mičeš identity providers",
+      "disabled-password-login-warning": "Prijava lozinkom je onemogućena, budi posebno pažljiv kad uklanjaš pružatelje identiteta",
       "display-name": "Prikazano ime",
       "identifier": "Identifikator",
       "identifier-filter": "Filter identifikatora",
@@ -327,7 +370,7 @@
       "filepath-template": "Predložak putanje datoteke",
       "local-storage-path": "Putanja lokalnog skladišta",
       "path": "Putanja skladišta",
-      "path-description": "Možete koristiti iste dinamičke varijable kao i lokalno skladište, npr. {filename}",
+      "path-description": "Možeš koristiti iste dinamičke varijable kao i lokalno skladište, npr. {filename}",
       "path-placeholder": "prilagođena/putanja",
       "presign-placeholder": "Pre-sign URL, opcionalno",
       "region": "Regija",
@@ -381,24 +424,20 @@
       "create-dialog": {
         "an-easy-to-remember-name": "Jednostavno ime za pamćenje",
         "create-webhook": "Stvori webhook",
+        "create-webhook-success": "Webhook `{{name}}` stvoren",
         "edit-webhook": "Uredi webhook",
         "payload-url": "Payload URL",
         "title": "Naslov",
         "url-example-post-receive": "https://example.com/postreceive"
       },
+      "delete-dialog": {
+        "delete-webhook-description": "Ova akcija je nepovratna.",
+        "delete-webhook-success": "Webhook `{{name}}` uspješno obrisan",
+        "delete-webhook-title": "Jesi li siguran da želiš obrisati webhook `{{name}}`?"
+      },
       "no-webhooks-found": "Nema pronađenih webhooks.",
       "title": "Webhooks",
       "url": "URL"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Onemogući promjenu nadimka",
-      "disallow-change-username": "Onemogući promjenu korisničkog imena",
-      "disallow-password-auth": "Onemogući autentikaciju lozinkom",
-      "disallow-user-registration": "Onemogući registraciju korisnika",
-      "monday": "Ponedjeljak",
-      "saturday": "Subota",
-      "sunday": "Nedjelja",
-      "week-start-day": "Dan početka tjedna"
     }
   },
   "tag": {
@@ -406,6 +445,7 @@
     "create-tag": "Stvori tag",
     "create-tags-guide": "Možete stvoriti tagove unosom `#tag`.",
     "delete-confirm": "Jesi li siguran da želiš obrisati ovaj tag? Svi povezani memoi će biti arhivirani.",
+    "delete-success": "Tag uspješno obrisan",
     "delete-tag": "Obriši tag",
     "new-name": "Novo ime",
     "no-tag-found": "Nema pronađenih tagova",
@@ -415,5 +455,13 @@
     "rename-success": "Tag uspješno preimenovan",
     "rename-tag": "Preimenuj tag",
     "rename-tip": "Svi vaši memoi s ovim tagom će biti ažurirani."
+  },
+  "tooltip": {
+    "link-memo": "Linkaj memo",
+    "markdown-menu": "Markdown",
+    "select-location": "Lokacija",
+    "select-visibility": "Vidljivost",
+    "tags": "Tagovi",
+    "upload-attachment": "Prenesi privitak/e"
   }
 }

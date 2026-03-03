@@ -18,18 +18,22 @@
     "about": "Sobre",
     "add": "Adicionar",
     "admin": "Admin",
+    "all": "Todos",
     "archive": "Arquivar",
     "archived": "Arquivo",
     "attachments": "Anexos",
+    "auto-expand": "Expandir automaticamente",
     "avatar": "Avatar",
     "basic": "Básico",
     "beta": "Beta",
+    "calendar": "Calendário",
     "cancel": "Cancelar",
     "change": "Alterar",
     "clear": "Limpar",
     "close": "Fechar",
     "collapse": "Recolher",
     "confirm": "Confirmar",
+    "copy": "Copiar",
     "create": "Criar",
     "created-at": "Criado em",
     "database": "Banco de dados",
@@ -53,9 +57,11 @@
     "layout": "Layout",
     "learn-more": "Saiba mais",
     "link": "Link",
+    "map": "Mapa",
     "mark": "Vincular",
     "memo": "Memo",
     "memos": "Memos",
+    "more": "Mais",
     "name": "Nome",
     "new": "Novo",
     "nickname": "Apelido",
@@ -90,6 +96,7 @@
     "statistics": "Estatísticas",
     "tags": "Tags",
     "title": "Título",
+    "today": "Hoje",
     "tree-mode": "Modo árvore",
     "type": "Tipo",
     "unpin": "Desafixar",
@@ -113,8 +120,12 @@
   "editor": {
     "add-your-comment-here": "Adicione seu comentário aqui…",
     "any-thoughts": "Alguma ideia…",
+    "exit-focus-mode": "Sair do Modo Foco",
+    "focus-mode": "Modo Foco",
+    "no-changes-detected": "Nenhuma alteração detectada",
     "save": "Salvar",
-    "no-changes-detected": "Nenhuma alteração detectada"
+    "saving": "Salvando…",
+    "slash-commands": "Digite `/` para comandos"
   },
   "filters": {
     "has-code": "temCódigo",
@@ -122,8 +133,11 @@
     "has-task-list": "temListaDeTarefas"
   },
   "inbox": {
+    "failed-to-load": "Falha ao carregar item da caixa de entrada",
     "memo-comment": "{{user}} tem um comentário sobre {{memo}}.",
-    "version-update": "A nova versão {{version}} já está disponível!"
+    "no-archived": "Nenhuma notificação arquivada",
+    "no-unread": "Nenhuma notificação não lida",
+    "unread": "Não lida"
   },
   "markdown": {
     "checkbox": "Caixa de seleção",
@@ -139,16 +153,20 @@
       "self": "Comentários",
       "write-a-comment": "Escreva um comentário"
     },
+    "copy-content": "Copiar conteúdo",
     "copy-link": "Copiar link",
-    "count-memos-in-date": "{{count}} memos em {{date}}",
+    "count-memos-in-date": "{{count}} {{memos}} em {{date}}",
     "delete-confirm": "Tem certeza de que deseja deletar este memo?\n\nESTA AÇÃO É IRREVERSÍVEL",
+    "delete-confirm-description": "Esta ação é irreversível. Anexos, links e referências também serão removidos.",
     "direction": "Sentido",
     "direction-asc": "Crescente",
     "direction-desc": "Decrescente",
     "display-time": "Horário",
     "filters": "Filtros",
     "links": "Links",
+    "list": "Lista",
     "load-more": "Carregar mais",
+    "masonry": "Mosaico",
     "no-archived-memos": "Nenhum memo arquivado.",
     "no-memos": "Nenhum memo.",
     "order-by": "Ordenar por",
@@ -162,9 +180,7 @@
       "private": "Privado",
       "protected": "Protegido",
       "public": "Público"
-    },
-    "list": "Lista",
-    "masonry": "Masonry"
+    }
   },
   "message": {
     "archived-successfully": "Arquivado com êxito",
@@ -182,6 +198,7 @@
     "password-changed": "Senha alterada",
     "password-not-match": "As senhas não coincidem.",
     "restored-successfully": "Restaurado com êxito",
+    "succeed-copy-content": "Conteúdo copiado com êxito.",
     "succeed-copy-link": "Link copiado com êxito.",
     "update-succeed": "Atualizado com êxito",
     "user-not-found": "Usuário não encontrado"
@@ -212,6 +229,10 @@
       "title": "Criar recurso",
       "upload-method": "Método de carregamento"
     },
+    "delete-all-unused": "Deletar todos os não utilizados",
+    "delete-all-unused-confirm": "Tem certeza de que deseja deletar todos os recursos não utilizados? ESTA AÇÃO É IRREVERSÍVEL",
+    "delete-all-unused-error": "Falha ao deletar recursos não utilizados",
+    "delete-all-unused-success": "Recursos deletados com êxito",
     "delete-resource": "Deletar recurso",
     "delete-selected-resources": "Deletar recursos selecionados",
     "fetching-data": "Obtendo dados…",
@@ -232,8 +253,11 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "Token de acesso copiado para a área de transferência",
-      "access-token-deletion": "Tem certeza de que deseja excluir o token de acesso {{accessToken}}? ESSA AÇÃO É IRREVERSÍVEL.",
+      "access-token-deleted": "Token de acesso `{{description}}` deletado",
+      "access-token-deletion": "Tem certeza de que deseja excluir o token de acesso `{{description}}`? ESSA AÇÃO É IRREVERSÍVEL.",
+      "access-token-deletion-description": "Esta ação é irreversível. Você precisará atualizar quaisquer serviços que usam este token para usar um novo token.",
       "create-dialog": {
+        "access-token-created": "Token de acesso `{{description}}` criado",
         "create-access-token": "Criar token de acesso",
         "created-at": "Criado em",
         "description": "Descrição",
@@ -261,15 +285,30 @@
       "update-information": "Atualizar informações",
       "username-note": "Usado para entrar"
     },
+    "instance-section": {
+      "disallow-change-nickname": "Impedir troca de apelido",
+      "disallow-change-username": "Impedir troca de nome de usuário",
+      "disallow-password-auth": "Impedir autenticação por senha",
+      "disallow-user-registration": "Impedir registro de usuário",
+      "monday": "Segunda-feira",
+      "saturday": "Sábado",
+      "sunday": "Domingo",
+      "week-start-day": "Dia de início da semana"
+    },
     "member": "Membro",
     "member-list": "Lista de membros",
     "member-section": {
       "admin": "Admin",
       "archive-member": "Arquivar membro",
+      "archive-success": "{{username}} arquivado com êxito",
       "archive-warning": "Tem certeza de que deseja arquivar {{username}}?",
+      "archive-warning-description": "Arquivar desabilita a conta. Você pode restaurá-la ou deletá-la depois.",
       "create-a-member": "Criar um membro",
       "delete-member": "Deletar membro",
+      "delete-success": "{{username}} deletado com êxito",
       "delete-warning": "Tem certeza de que deseja deletar {{username}}?\n\nESTA AÇÃO É IRREVERSÍVEL",
+      "delete-warning-description": "ESTA AÇÃO É IRREVERSÍVEL.",
+      "restore-success": "{{username}} restaurado com êxito",
       "user": "Usuário"
     },
     "memo-related": "Memo",
@@ -287,6 +326,10 @@
       "default-memo-sort-option": "Exibição de tempo do memo",
       "default-memo-visibility": "Visibilidade padrão do memo",
       "theme": "Tema"
+    },
+    "shortcut": {
+      "delete-confirm": "Tem certeza de que deseja deletar o atalho `{{title}}`?",
+      "delete-success": "Atalho `{{title}}` deletado com êxito"
     },
     "sso": "SSO",
     "sso-section": {
@@ -381,24 +424,20 @@
       "create-dialog": {
         "an-easy-to-remember-name": "Um nome fácil de lembrar",
         "create-webhook": "Criar webhook",
+        "create-webhook-success": "Webhook `{{name}}` criado",
         "edit-webhook": "Editar webhook",
         "payload-url": "URL do payload",
         "title": "Nome",
         "url-example-post-receive": "https://exemplo.com.br/pós-recebimento"
       },
+      "delete-dialog": {
+        "delete-webhook-description": "Esta ação é irreversível.",
+        "delete-webhook-success": "Webhook `{{name}}` deletado com êxito",
+        "delete-webhook-title": "Tem certeza de que deseja deletar o webhook `{{name}}`?"
+      },
       "no-webhooks-found": "Nenhum webhook encontrado.",
       "title": "Webhooks",
       "url": "URL"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Impedir troca de apelido",
-      "disallow-change-username": "Impedir troca de nome de usuário",
-      "disallow-password-auth": "Impedir autenticação por senha",
-      "disallow-user-registration": "Impedir registro de usuário",
-      "monday": "Segunda-feira",
-      "saturday": "Sábado",
-      "sunday": "Domingo",
-      "week-start-day": "Dia de início da semana"
     }
   },
   "tag": {
@@ -406,6 +445,7 @@
     "create-tag": "Criar Tag",
     "create-tags-guide": "Você pode criar tags inserindo `#tag`.",
     "delete-confirm": "Tem certeza de que deseja excluir esta tag?\nTodos os memos relacionados serão arquivados.",
+    "delete-success": "Tag deletada com êxito",
     "delete-tag": "Excluir Tag",
     "new-name": "Novo Nome",
     "no-tag-found": "Nenhuma tag encontrada",
@@ -415,5 +455,13 @@
     "rename-success": "Tag renomeada com êxito",
     "rename-tag": "Renomear tag",
     "rename-tip": "Todos seus memos com essa tag serão atualizados."
+  },
+  "tooltip": {
+    "link-memo": "Vincular Memo",
+    "markdown-menu": "Markdown",
+    "select-location": "Localização",
+    "select-visibility": "Visibilidade",
+    "tags": "Tags",
+    "upload-attachment": "Carregar Anexo(s)"
   }
 }

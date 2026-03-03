@@ -61,6 +61,7 @@
     "mark": "Markieren",
     "memo": "Notiz",
     "memos": "Notizen",
+    "more": "Mehr",
     "name": "Name",
     "new": "Neu",
     "nickname": "Spitzname",
@@ -86,7 +87,7 @@
     "select": "Auswählen",
     "settings": "Einstellungen",
     "share": "Teilen",
-    "shortcut-filter": "Verknüpfung filtern",
+    "shortcut-filter": "Verknüpfungsfilter",
     "shortcuts": "Verknüpfungen",
     "sign-in": "Anmelden",
     "sign-in-with": "Anmelden mit {{provider}}",
@@ -102,11 +103,10 @@
     "update": "Update",
     "upload": "Hochladen",
     "user": "Benutzer",
-    "username": "Nutzername",
+    "username": "Benutzername",
     "version": "Version",
     "visibility": "Sichtbarkeit",
-    "yourself": "Du selbst",
-    "more": "Mehr"
+    "yourself": "Du selbst"
   },
   "days": {
     "fri": "Fr",
@@ -120,10 +120,11 @@
   "editor": {
     "add-your-comment-here": "Füge deinen Kommentar hinzu...",
     "any-thoughts": "Ein Gedanke...",
-    "save": "Speichern",
-    "no-changes-detected": "Keine Änderungen erkannt",
-    "focus-mode": "Fokus Modus",
     "exit-focus-mode": "Fokus Modus verlassen",
+    "focus-mode": "Fokus Modus",
+    "no-changes-detected": "Keine Änderungen erkannt",
+    "save": "Speichern",
+    "saving": "Speichern...",
     "slash-commands": "Nutze `/` für Befehle"
   },
   "filters": {
@@ -132,11 +133,11 @@
     "has-task-list": "hatAufgabenliste"
   },
   "inbox": {
-    "memo-comment": "{{user}} hat einen Kommentar zu {{memo}} hinterlassen.",
     "failed-to-load": "Fehler beim Laden des Eintrags",
-    "unread": "Ungelesen",
+    "memo-comment": "{{user}} hat einen Kommentar zu {{memo}} hinterlassen.",
+    "no-archived": "Keine archivierten Benachrichtigungen",
     "no-unread": "Keine ungelesenen Benachrichtigungen",
-    "no-archived": "Keine archivierten Benachrichtigungen"
+    "unread": "Ungelesen"
   },
   "markdown": {
     "checkbox": "Checkbox",
@@ -154,7 +155,7 @@
     },
     "copy-content": "Inhalt kopieren",
     "copy-link": "Link kopieren",
-    "count-memos-in-date": "{{count}} Notizen in {{date}}",
+    "count-memos-in-date": "{{count}} {{memos}} in {{date}}",
     "delete-confirm": "Bist du sicher, dass du diese Notiz löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
     "delete-confirm-description": "Dieser Vorgang ist nicht rückgängig zu machen. Anhänge, Links und Verknüpfungen werden ebenfalls gelöscht.",
     "direction": "Richtung",
@@ -228,12 +229,12 @@
       "title": "Ressource erstellen",
       "upload-method": "Upload-Methode"
     },
+    "delete-all-unused": "Alle ungenutzten löschen",
+    "delete-all-unused-confirm": "Bist du sicher, dass du alle ungenutzten Elemente löschen willst? DIESER VORGANG KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
+    "delete-all-unused-error": "Das Löschen ungenutzter Elemente ist fehlgeschlagen",
+    "delete-all-unused-success": "Elemente erfolgreich gelöscht",
     "delete-resource": "Ressource löschen",
     "delete-selected-resources": "Ausgewählte Ressourcen löschen",
-    "delete-all-unused": "Lösche alle ungenutzten",
-    "delete-all-unused-confirm": "Bist du sicher, dass du alle ungenutzten Elemente löschen willst? DIESER VORGANG KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
-    "delete-all-unused-success": "Elemente erfolgreich gelöscht",
-    "delete-all-unused-error": "Das Löschen ungenutzter Elemente ist fehlgeschlagen",
     "fetching-data": "Lade Daten…",
     "file-drag-drop-prompt": "Datei hierher ziehen und ablegen, um sie hochzuladen",
     "linked-amount": "Anzahl verlinkter Memos",
@@ -252,9 +253,9 @@
   "setting": {
     "access-token-section": {
       "access-token-copied-to-clipboard": "Zugangstoken in die Zwischenablage kopiert",
-      "access-token-deletion": "Bist du sicher, dass du das Zugangstoken {{accessToken}} löschen möchtest? DIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN.",
-      "access-token-deletion-description": "Diese Aktion kann nicht rückgängig gemacht werden. Du musst alle Dienste, die diesen Token verwenden, mit einem neuen Token nutzen.",
       "access-token-deleted": "Zugangstoken `{{description}}` gelöscht",
+      "access-token-deletion": "Bist du sicher, dass du das Zugangstoken `{{description}}` löschen möchtest? DIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN.",
+      "access-token-deletion-description": "Diese Aktion kann nicht rückgängig gemacht werden. Du musst alle Dienste, die diesen Token verwenden, mit einem neuen Token nutzen.",
       "create-dialog": {
         "access-token-created": "Zugangstoken `{{description}}` erstellt",
         "create-access-token": "Zugangstoken erstellen",
@@ -284,20 +285,30 @@
       "update-information": "Informationen ändern",
       "username-note": "Zum Anmelden verwendet"
     },
+    "instance-section": {
+      "disallow-change-nickname": "Ändern des Spitznamens verbieten",
+      "disallow-change-username": "Ändern des Benutzernamens verbieten",
+      "disallow-password-auth": "Passwort-Authentifizierung verbieten",
+      "disallow-user-registration": "Benutzerregistrierung verbieten",
+      "monday": "Montag",
+      "saturday": "Samstag",
+      "sunday": "Sonntag",
+      "week-start-day": "Wochenstarttag"
+    },
     "member": "Mitglied",
     "member-list": "Mitgliederliste",
     "member-section": {
       "admin": "Admin",
       "archive-member": "Mitglied archivieren",
+      "archive-success": "{{username}} erfolgreich archiviert",
       "archive-warning": "Bist du sicher, dass du {{username}} archivieren möchtest?",
       "archive-warning-description": "Die Archivierung deaktiviert den Account. Du kannst ihn später Wiederherstellen oder löschen.",
-      "archive-success": "{{username}} erfolgreich archiviert",
-      "restore-success": "{{username}} erfolgreich wiederhergestellt",
       "create-a-member": "Mitglied hinzufügen",
       "delete-member": "Mitglied löschen",
+      "delete-success": "{{username}} erfolgreich gelöscht",
       "delete-warning": "Bist du sicher, dass du {{username}} löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
       "delete-warning-description": "DIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
-      "delete-success": "{{username}} erfolgreich gelöscht",
+      "restore-success": "{{username}} erfolgreich wiederhergestellt",
       "user": "Benutzer"
     },
     "memo-related": "Notiz",
@@ -317,7 +328,7 @@
       "theme": "Design"
     },
     "shortcut": {
-      "delete-confirm": "Bist du dir sicher, dass du die Verknüpfung `{{title}}` löschen möchtest?",
+      "delete-confirm": "Bist du sicher, dass du die Verknüpfung `{{title}}` löschen möchtest?",
       "delete-success": "Verknüpfung `{{title}}` erfolgreich gelöscht"
     },
     "sso": "SSO",
@@ -411,7 +422,7 @@
     "version": "Version",
     "webhook-section": {
       "create-dialog": {
-        "an-easy-to-remember-name": "Einfach zu merkender Name",
+        "an-easy-to-remember-name": "Einprägsamer Name",
         "create-webhook": "Webhook erstellen",
         "create-webhook-success": "Webhook `{{name}}` erstellt",
         "edit-webhook": "Webhook bearbeiten",
@@ -421,22 +432,12 @@
       },
       "delete-dialog": {
         "delete-webhook-description": "Diese Aktion kann nicht rückgängig gemacht werden",
-        "delete-webhook-title": "Bist du dir sicher, dass du den Webhook `{{name}}` löschen möchtest?",
-        "delete-webhook-success": "Webhook `{{name}}` erfolgreich gelöscht"
+        "delete-webhook-success": "Webhook `{{name}}` erfolgreich gelöscht",
+        "delete-webhook-title": "Bist du sicher, dass du den Webhook `{{name}}` löschen möchtest?"
       },
       "no-webhooks-found": "Keine Webhooks gefunden.",
       "title": "Webhooks",
       "url": "URL"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Ändern des Spitznamens verbieten",
-      "disallow-change-username": "Ändern des Benutzernamens verbieten",
-      "disallow-password-auth": "Passwort-Authentifizierung verbieten",
-      "disallow-user-registration": "Benutzerregistrierung verbieten",
-      "monday": "Montag",
-      "saturday": "Samstag",
-      "sunday": "Sonntag",
-      "week-start-day": "Wochenstarttag"
     }
   },
   "tag": {
@@ -444,8 +445,8 @@
     "create-tag": "Tag erstellen",
     "create-tags-guide": "Du kannst Tags erstellen, indem du `#tag` eingibst.",
     "delete-confirm": "Bist du sicher, dass du diesen Tag löschen möchtest? Alle zugehörigen Notizen werden archiviert.",
-    "delete-tag": "Tag löschen",
     "delete-success": "Tag erfolgreich gelöscht",
+    "delete-tag": "Tag löschen",
     "new-name": "Neuer Name",
     "no-tag-found": "Kein Tag gefunden",
     "old-name": "Alter Name",
