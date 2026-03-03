@@ -1,6 +1,6 @@
 import { ConnectError } from "@connectrpc/connect";
 import { ArrowUpLeftFromCircleIcon, MessageCircleIcon } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { MemoDetailSidebar, MemoDetailSidebarDrawer } from "@/components/MemoDetailSidebar";
@@ -8,7 +8,7 @@ import MemoEditor from "@/components/MemoEditor";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import { Button } from "@/components/ui/button";
-import { memoNamePrefix } from "@/helpers/resource-names";
+import { extractMemoIdFromName, memoNamePrefix } from "@/helpers/resource-names";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { useMemo, useMemoComments } from "@/hooks/useMemoQueries";
@@ -46,6 +46,13 @@ const MemoDetail = () => {
     enabled: !!memo,
   });
   const comments = commentsResponse?.memos || [];
+
+  const { hash } = useLocation();
+  useEffect(() => {
+    if (!hash || comments.length === 0) return;
+    const el = document.getElementById(hash.slice(1));
+    el?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [hash, comments]);
 
   const showCreateCommentButton = currentUser && !showCommentEditor;
 
@@ -135,13 +142,9 @@ const MemoDetail = () => {
                 </div>
               )}
               {comments.map((comment) => (
-                <MemoView
-                  key={`${comment.name}-${comment.displayTime}`}
-                  memo={comment}
-                  parentPage={locationState?.from}
-                  showCreator
-                  compact
-                />
+                <div key={`${comment.name}-${comment.displayTime}`} id={extractMemoIdFromName(comment.name)}>
+                  <MemoView memo={comment} parentPage={locationState?.from} showCreator compact />
+                </div>
               ))}
             </div>
           </div>

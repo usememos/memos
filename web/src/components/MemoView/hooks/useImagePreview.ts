@@ -9,7 +9,6 @@ export interface ImagePreviewState {
 export interface UseImagePreviewReturn {
   previewState: ImagePreviewState;
   openPreview: (url: string) => void;
-  closePreview: () => void;
   setPreviewOpen: (open: boolean) => void;
 }
 
@@ -19,7 +18,6 @@ export const useImagePreview = (): UseImagePreviewReturn => {
   return {
     previewState,
     openPreview: (url: string) => setPreviewState({ open: true, urls: [url], index: 0 }),
-    closePreview: () => setPreviewState({ open: false, urls: [], index: 0 }),
     setPreviewOpen: (open: boolean) => setPreviewState((prev) => ({ ...prev, open })),
   };
 };

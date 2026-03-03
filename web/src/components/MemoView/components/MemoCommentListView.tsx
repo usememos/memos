@@ -1,5 +1,6 @@
 import { ArrowUpRightIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { extractMemoIdFromName } from "@/helpers/resource-names";
 import { useMemoComments } from "@/hooks/useMemoQueries";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
 
@@ -28,11 +29,18 @@ const MemoCommentListView: React.FC = () => {
           <ArrowUpRightIcon className="w-3 h-3" />
         </Link>
       </div>
-      {displayedComments.map((comment) => (
-        <div key={comment.name} className="bg-muted/60 rounded-md px-2 py-1 text-xs text-muted-foreground truncate leading-relaxed">
-          {comment.content}
-        </div>
-      ))}
+      {displayedComments.map((comment) => {
+        const uid = extractMemoIdFromName(comment.name);
+        return (
+          <Link
+            key={comment.name}
+            to={`/${memo.name}#${uid}`}
+            className="bg-muted/60 rounded-md px-2 py-1 text-xs text-muted-foreground truncate leading-relaxed hover:bg-muted transition-colors block"
+          >
+            {comment.content}
+          </Link>
+        );
+      })}
     </div>
   );
 };
