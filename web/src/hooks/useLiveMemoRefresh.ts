@@ -64,6 +64,7 @@ export function useLiveMemoRefresh() {
   const retryDelayRef = useRef(INITIAL_RETRY_DELAY_MS);
   const abortControllerRef = useRef<AbortController | null>(null);
 
+  const currentUserName = currentUser?.name;
   const handleEvent = useCallback((event: SSEChangeEvent) => handleSSEEvent(event, queryClient), [queryClient]);
 
   useEffect(() => {
@@ -158,6 +159,7 @@ export function useLiveMemoRefresh() {
     return () => {
       mounted = false;
       setSSEStatus("disconnected");
+      retryDelayRef.current = INITIAL_RETRY_DELAY_MS;
       if (retryTimeout) {
         clearTimeout(retryTimeout);
       }
@@ -165,7 +167,7 @@ export function useLiveMemoRefresh() {
         abortControllerRef.current.abort();
       }
     };
-  }, [handleEvent, currentUser]);
+  }, [handleEvent, currentUserName]);
 }
 
 // ---------------------------------------------------------------------------
@@ -193,6 +195,11 @@ function handleSSEEvent(event: SSEChangeEvent, queryClient: ReturnType<typeof us
       queryClient.removeQueries({ queryKey: memoKeys.detail(event.name) });
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
+      break;
+
+    case "memo.comment.created":
+      queryClient.invalidateQueries({ queryKey: memoKeys.comments(event.name) });
+      queryClient.invalidateQueries({ queryKey: memoKeys.detail(event.name) });
       break;
 
     case "reaction.upserted":

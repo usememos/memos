@@ -69,18 +69,10 @@ func TestSSEHandler_Authentication(t *testing.T) {
 		require.Equal(t, "text/event-stream", rec.Header().Get("Content-Type"))
 	})
 
-	t.Run("token in query param returns 200", func(t *testing.T) {
-		reqCtx, cancel := context.WithCancel(context.Background())
-		defer cancel()
-		req := httptest.NewRequest(http.MethodGet, "/api/v1/sse?token="+token, nil).WithContext(reqCtx)
+	t.Run("token in query param returns 401", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodGet, "/api/v1/sse?token="+token, nil)
 		rec := httptest.NewRecorder()
-		done := make(chan struct{})
-		go func() {
-			defer close(done)
-			e.ServeHTTP(rec, req)
-		}()
-		cancel()
-		<-done
-		require.Equal(t, http.StatusOK, rec.Code)
+		e.ServeHTTP(rec, req)
+		require.Equal(t, http.StatusUnauthorized, rec.Code)
 	})
 }

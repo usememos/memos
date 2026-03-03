@@ -647,6 +647,12 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 		slog.Warn("Failed to dispatch memo comment created webhook", slog.Any("err", err))
 	}
 
+	// Broadcast live refresh event for the parent memo so subscribers see the new comment.
+	s.SSEHub.Broadcast(&SSEEvent{
+		Type: SSEEventMemoCommentCreated,
+		Name: request.Name,
+	})
+
 	return memoComment, nil
 }
 

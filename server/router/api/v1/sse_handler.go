@@ -26,18 +26,10 @@ func RegisterSSERoutes(echoServer *echo.Echo, hub *SSEHub, storeInstance *store.
 }
 
 // handleSSE handles the SSE connection for live memo refresh.
-// Authentication is done via Bearer token in the Authorization header,
-// or via the "token" query parameter (for EventSource which cannot set headers).
+// Authentication is done via Bearer token in the Authorization header.
 func handleSSE(c *echo.Context, hub *SSEHub, authenticator *auth.Authenticator) error {
 	// Authenticate the request.
 	authHeader := c.Request().Header.Get("Authorization")
-	if authHeader == "" {
-		// Fall back to query parameter for native EventSource support.
-		if token := c.QueryParam("token"); token != "" {
-			authHeader = "Bearer " + token
-		}
-	}
-
 	result := authenticator.Authenticate(c.Request().Context(), authHeader)
 	if result == nil {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "authentication required"})

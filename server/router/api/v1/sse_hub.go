@@ -10,11 +10,12 @@ import (
 type SSEEventType string
 
 const (
-	SSEEventMemoCreated      SSEEventType = "memo.created"
-	SSEEventMemoUpdated      SSEEventType = "memo.updated"
-	SSEEventMemoDeleted      SSEEventType = "memo.deleted"
-	SSEEventReactionUpserted SSEEventType = "reaction.upserted"
-	SSEEventReactionDeleted  SSEEventType = "reaction.deleted"
+	SSEEventMemoCreated        SSEEventType = "memo.created"
+	SSEEventMemoUpdated        SSEEventType = "memo.updated"
+	SSEEventMemoDeleted        SSEEventType = "memo.deleted"
+	SSEEventMemoCommentCreated SSEEventType = "memo.comment.created"
+	SSEEventReactionUpserted   SSEEventType = "reaction.upserted"
+	SSEEventReactionDeleted    SSEEventType = "reaction.deleted"
 )
 
 // SSEEvent represents a change event sent to SSE clients.

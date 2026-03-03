@@ -463,5 +463,10 @@
     "select-visibility": "Visibility",
     "tags": "Tags",
     "upload-attachment": "Upload Attachment(s)"
+  },
+  "sse": {
+    "connected": "Live updates active",
+    "connecting": "Connecting to live updates...",
+    "disconnected": "Live updates unavailable"
   }
 }
