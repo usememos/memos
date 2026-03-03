@@ -1,12 +1,14 @@
 import { memo, useMemo, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useUser } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
+import { MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { isSuperUser } from "@/utils/user";
 import MemoEditor from "../MemoEditor";
 import PreviewImageDialog from "../PreviewImageDialog";
-import { MemoBody, MemoHeader } from "./components";
+import { MemoBody, MemoCommentListView, MemoHeader } from "./components";
 import { MEMO_CARD_BASE_CLASSES } from "./constants";
 import { useImagePreview, useMemoActions, useMemoHandlers } from "./hooks";
 import { MemoViewContext } from "./MemoViewContext";
@@ -42,6 +44,13 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
     openPreview,
   });
 
+  const location = useLocation();
+  const isInMemoDetailPage = location.pathname.startsWith(`/${memoData.name}`);
+  const commentAmount = memoData.relations.filter(
+    (r) => r.type === MemoRelation_Type.COMMENT && r.relatedMemo?.name === memoData.name,
+  ).length;
+  const showCommentPreview = !isInMemoDetailPage && commentAmount > 0;
+
   const contextValue = useMemo(
     () => ({
       memo: memoData,
@@ -69,32 +78,47 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
     );
   }
 
+  const article = (
+    <article
+      className={cn(MEMO_CARD_BASE_CLASSES, showCommentPreview ? "mb-0 rounded-b-none" : "mb-2", className)}
+      ref={cardRef}
+      tabIndex={readonly ? -1 : 0}
+    >
+      <MemoHeader
+        showCreator={props.showCreator}
+        showVisibility={props.showVisibility}
+        showPinned={props.showPinned}
+        onEdit={openEditor}
+        onGotoDetail={handleGotoMemoDetailPage}
+        onUnpin={unpinMemo}
+      />
+
+      <MemoBody
+        compact={props.compact}
+        onContentClick={handleMemoContentClick}
+        onContentDoubleClick={handleMemoContentDoubleClick}
+        onToggleNsfwVisibility={toggleNsfwVisibility}
+      />
+
+      <PreviewImageDialog
+        open={previewState.open}
+        onOpenChange={setPreviewOpen}
+        imgUrls={previewState.urls}
+        initialIndex={previewState.index}
+      />
+    </article>
+  );
+
   return (
     <MemoViewContext.Provider value={contextValue}>
-      <article className={cn(MEMO_CARD_BASE_CLASSES, className)} ref={cardRef} tabIndex={readonly ? -1 : 0}>
-        <MemoHeader
-          showCreator={props.showCreator}
-          showVisibility={props.showVisibility}
-          showPinned={props.showPinned}
-          onEdit={openEditor}
-          onGotoDetail={handleGotoMemoDetailPage}
-          onUnpin={unpinMemo}
-        />
-
-        <MemoBody
-          compact={props.compact}
-          onContentClick={handleMemoContentClick}
-          onContentDoubleClick={handleMemoContentDoubleClick}
-          onToggleNsfwVisibility={toggleNsfwVisibility}
-        />
-
-        <PreviewImageDialog
-          open={previewState.open}
-          onOpenChange={setPreviewOpen}
-          imgUrls={previewState.urls}
-          initialIndex={previewState.index}
-        />
-      </article>
+      {showCommentPreview ? (
+        <div className="mb-2">
+          {article}
+          <MemoCommentListView />
+        </div>
+      ) : (
+        article
+      )}
     </MemoViewContext.Provider>
   );
 };
