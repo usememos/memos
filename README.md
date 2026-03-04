@@ -1,3 +1,16 @@
+<div align="center">
+  <p>
+    <span>Featured Sponsor:</span>
+    <a href="https://go.warp.dev/memos" target="_blank" rel="noopener">
+      <b>Warp</b>
+      <span>— The AI-powered terminal built for speed and collaboration</span>
+    </a>
+  </p>
+  <a href="https://go.warp.dev/memos" target="_blank" rel="noopener">
+    <img alt="Warp sponsorship" height="196" src="https://raw.githubusercontent.com/warpdotdev/brand-assets/refs/heads/main/Github/Sponsor/Warp-Github-LG-03.png">
+  </a>
+</div>
+
 # Memos
 
 <img align="right" height="96px" src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/logo-rounded.png" alt="Memos" />
