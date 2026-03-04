@@ -45,6 +45,37 @@ const fallbacks = {
   zh: ["zh-Hans", "en"],
 } as FallbackLngObjList;
 
+const resolveInitialLocale = (): string => {
+  // 1) ?locale= query parameter
+  try {
+    const param = new URLSearchParams(window.location.search).get("locale");
+    if (param) {
+      if (locales.includes(param as (typeof locales)[number])) return param;
+      const short = param.substring(0, 2);
+      if (locales.includes(short as (typeof locales)[number])) return short;
+    }
+  } catch {
+  }
+
+  try {
+    const stored = localStorage.getItem("memos-locale");
+    if (stored && locales.includes(stored as (typeof locales)[number])) return stored;
+  } catch {
+  }
+
+  try {
+    const languages = navigator.languages ?? [navigator.language];
+    for (const lang of languages) {
+      if (locales.includes(lang as (typeof locales)[number])) return lang;
+      const short = lang.substring(0, 2);
+      if (locales.includes(short as (typeof locales)[number])) return short;
+    }
+  } catch {
+  }
+
+  return "en";
+};
+
 const LazyImportPlugin: BackendModule = {
   type: "backend",
   init: function () {},
@@ -55,7 +86,6 @@ const LazyImportPlugin: BackendModule = {
         callback(null, translation);
       })
       .catch(() => {
-        // Fallback to English.
       });
   },
 };
@@ -64,9 +94,7 @@ i18n
   .use(LazyImportPlugin)
   .use(initReactI18next)
   .init({
-    detection: {
-      order: ["navigator"],
-    },
+    lng: resolveInitialLocale(),
     fallbackLng: {
       ...fallbacks,
       ...{ default: ["en"] },
