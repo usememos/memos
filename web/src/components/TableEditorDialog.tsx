@@ -217,28 +217,28 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                     {headers.map((header, col) => (
                       <th key={col} className="p-0 min-w-[140px] relative bg-background">
                         {/* ---- Insert-column zone (left edge of this column) ---- */}
+                        <div
+                          className="group/cins absolute -left-4 top-0 bottom-0 w-8 z-30 cursor-pointer"
+                          onClick={() => insertColumnAt(col)}
+                        >
+                          {/* Blue vertical line through the entire table */}
                           <div
-                            className="group/cins absolute -left-4 top-0 bottom-0 w-8 z-30 cursor-pointer"
-                            onClick={() => insertColumnAt(col)}
-                          >
-                            {/* Blue vertical line through the entire table */}
-                            <div
-                              className="absolute left-1/2 -translate-x-1/2 top-0 w-0 group-hover/cins:w-[3px] bg-blue-500/70 transition-all pointer-events-none"
-                              style={{ bottom: "-200rem" }}
-                            />
-                            {/* + button — absolutely centered on the column border */}
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <button
-                                  type="button"
-                                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center size-5 rounded-full bg-background border border-border text-muted-foreground cursor-pointer opacity-0 group-hover/cins:opacity-100 hover:text-primary hover:border-primary transition-all shadow-sm"
-                                >
-                                  <PlusIcon className="size-3" />
-                                </button>
-                              </TooltipTrigger>
-                              <TooltipContent>Insert column</TooltipContent>
-                            </Tooltip>
-                          </div>
+                            className="absolute left-1/2 -translate-x-1/2 top-0 w-0 group-hover/cins:w-[3px] bg-blue-500/70 transition-all pointer-events-none"
+                            style={{ bottom: "-200rem" }}
+                          />
+                          {/* + button — absolutely centered on the column border */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                type="button"
+                                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center size-5 rounded-full bg-background border border-border text-muted-foreground cursor-pointer opacity-0 group-hover/cins:opacity-100 hover:text-primary hover:border-primary transition-all shadow-sm"
+                              >
+                                <PlusIcon className="size-3" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Insert column</TooltipContent>
+                          </Tooltip>
+                        </div>
 
                         {/* Header cell — bg covers input + sort + delete */}
                         <div className="flex items-center bg-accent/50 border border-border">
@@ -306,28 +306,28 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                       <tr>
                         {/* Row number — with insert-row zone on top border */}
                         <td className="w-7 min-w-7 text-center align-middle relative">
+                          <div
+                            className="group/rins absolute -top-[10px] -left-1 right-0 h-5 z-10 cursor-pointer"
+                            onClick={() => insertRowAt(rowIdx)}
+                          >
+                            {/* Blue horizontal line extending across the table */}
                             <div
-                              className="group/rins absolute -top-[10px] -left-1 right-0 h-5 z-10 cursor-pointer"
-                              onClick={() => insertRowAt(rowIdx)}
-                            >
-                              {/* Blue horizontal line extending across the table */}
-                              <div
-                                className="absolute top-1/2 -translate-y-1/2 left-0 h-0 group-hover/rins:h-[3px] bg-blue-500/70 transition-all pointer-events-none"
-                                style={{ width: "200rem" }}
-                              />
-                              {/* + button at intersection of row border and first-column border */}
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <button
-                                    type="button"
-                                    className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 flex items-center justify-center size-5 rounded-full bg-background border border-border text-muted-foreground cursor-pointer opacity-0 group-hover/rins:opacity-100 hover:text-primary hover:border-primary transition-all shadow-sm"
-                                  >
-                                    <PlusIcon className="size-3" />
-                                  </button>
-                                </TooltipTrigger>
-                                <TooltipContent>Insert row</TooltipContent>
-                              </Tooltip>
-                            </div>
+                              className="absolute top-1/2 -translate-y-1/2 left-0 h-0 group-hover/rins:h-[3px] bg-blue-500/70 transition-all pointer-events-none"
+                              style={{ width: "200rem" }}
+                            />
+                            {/* + button at intersection of row border and first-column border */}
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  type="button"
+                                  className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 flex items-center justify-center size-5 rounded-full bg-background border border-border text-muted-foreground cursor-pointer opacity-0 group-hover/rins:opacity-100 hover:text-primary hover:border-primary transition-all shadow-sm"
+                                >
+                                  <PlusIcon className="size-3" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>Insert row</TooltipContent>
+                            </Tooltip>
+                          </div>
                           <span className="text-xs text-muted-foreground">{rowIdx + 1}</span>
                         </td>
 
