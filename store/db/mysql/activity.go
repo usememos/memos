@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 

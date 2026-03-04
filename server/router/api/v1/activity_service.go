@@ -29,6 +29,9 @@ func (s *APIV1Service) ListActivities(ctx context.Context, request *v1pb.ListAct
 	if limit <= 0 {
 		limit = DefaultPageSize
 	}
+	if limit > MaxPageSize {
+		limit = MaxPageSize
+	}
 	limitPlusOne := limit + 1
 	activities, err := s.Store.ListActivities(ctx, &store.FindActivity{
 		Limit:  &limitPlusOne,
