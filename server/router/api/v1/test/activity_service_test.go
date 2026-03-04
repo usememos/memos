@@ -29,7 +29,7 @@ func TestListActivities(t *testing.T) {
 	// UserOne creates a memo
 	memo, err := ts.Service.CreateMemo(userOneCtx, &apiv1.CreateMemoRequest{
 		Memo: &apiv1.Memo{
-			Content: "Base memo",
+			Content:    "Base memo",
 			Visibility: apiv1.Visibility_PUBLIC,
 		},
 	})
@@ -40,7 +40,7 @@ func TestListActivities(t *testing.T) {
 		_, err := ts.Service.CreateMemoComment(userTwoCtx, &apiv1.CreateMemoCommentRequest{
 			Name: memo.Name,
 			Comment: &apiv1.Memo{
-				Content: fmt.Sprintf("Comment %d", i),
+				Content:    fmt.Sprintf("Comment %d", i),
 				Visibility: apiv1.Visibility_PUBLIC,
 			},
 		})
