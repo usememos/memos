@@ -42,6 +42,10 @@ type Activity struct {
 type FindActivity struct {
 	ID   *int32
 	Type *ActivityType
+
+	// Pagination
+	Limit  *int
+	Offset *int
 }
 
 func (s *Store) CreateActivity(ctx context.Context, create *Activity) (*Activity, error) {
