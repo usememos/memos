@@ -16,8 +16,8 @@ export const extractMemoIdFromName = (name: string) => {
   return name.split(memoNamePrefix).pop() || "";
 };
 
-export const extractIdentityProviderIdFromName = (name: string) => {
-  return parseInt(name.split(identityProviderNamePrefix).pop() || "", 10);
+export const extractIdentityProviderUidFromName = (name: string) => {
+  return name.split(identityProviderNamePrefix).pop() || "";
 };
 
 // Helper function to convert InstanceSetting_Key enum value to string name

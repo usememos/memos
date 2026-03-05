@@ -72,7 +72,7 @@ const AuthCallback = () => {
       return;
     }
 
-    const { identityProviderId, returnUrl, codeVerifier } = validatedState;
+    const { identityProviderName, returnUrl, codeVerifier } = validatedState;
     const redirectUri = absolutifyLink("/auth/callback");
 
     (async () => {
@@ -81,7 +81,7 @@ const AuthCallback = () => {
           credentials: {
             case: "ssoCredentials",
             value: {
-              idpId: identityProviderId,
+              idpName: identityProviderName,
               code,
               redirectUri,
               codeVerifier: codeVerifier || "", // Pass PKCE code_verifier for token exchange

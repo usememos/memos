@@ -80,6 +80,7 @@ CREATE TABLE `activity` (
 -- idp
 CREATE TABLE `idp` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `uid` VARCHAR(256) NOT NULL UNIQUE,
   `name` TEXT NOT NULL,
   `type` TEXT NOT NULL,
   `identifier_filter` VARCHAR(256) NOT NULL DEFAULT '',

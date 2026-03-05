@@ -2757,15 +2757,16 @@ components:
             description: Nested message for password-based authentication credentials.
         SignInRequest_SSOCredentials:
             required:
-                - idpId
+                - idpName
                 - code
                 - redirectUri
             type: object
             properties:
-                idpId:
-                    type: integer
-                    description: The ID of the SSO provider.
-                    format: int32
+                idpName:
+                    type: string
+                    description: |-
+                        The resource name of the SSO provider.
+                         Format: identity-providers/{uid}
                 code:
                     type: string
                     description: The authorization code from the SSO provider.

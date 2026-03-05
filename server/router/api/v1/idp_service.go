@@ -25,7 +25,15 @@ func (s *APIV1Service) CreateIdentityProvider(ctx context.Context, request *v1pb
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	identityProvider, err := s.Store.CreateIdentityProvider(ctx, convertIdentityProviderToStore(request.IdentityProvider))
+	idpUID, err := ValidateAndGenerateUID(request.IdentityProviderId)
+	if err != nil {
+		return nil, err
+	}
+
+	storeIdp := convertIdentityProviderToStore(request.IdentityProvider)
+	storeIdp.Uid = idpUID
+
+	identityProvider, err := s.Store.CreateIdentityProvider(ctx, storeIdp)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create identity provider, error: %+v", err)
 	}
@@ -57,12 +65,12 @@ func (s *APIV1Service) ListIdentityProviders(ctx context.Context, _ *v1pb.ListId
 }
 
 func (s *APIV1Service) GetIdentityProvider(ctx context.Context, request *v1pb.GetIdentityProviderRequest) (*v1pb.IdentityProvider, error) {
-	id, err := ExtractIdentityProviderIDFromName(request.Name)
+	uid, err := ExtractIdentityProviderUIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider name: %v", err)
 	}
 	identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{
-		ID: &id,
+		UID: &uid,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get identity provider, error: %+v", err)
@@ -98,12 +106,22 @@ func (s *APIV1Service) UpdateIdentityProvider(ctx context.Context, request *v1pb
 		return nil, status.Errorf(codes.InvalidArgument, "update_mask is required")
 	}
 
-	id, err := ExtractIdentityProviderIDFromName(request.IdentityProvider.Name)
+	uid, err := ExtractIdentityProviderUIDFromName(request.IdentityProvider.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider name: %v", err)
 	}
+
+	// Look up the IdP by UID to get the internal ID for update.
+	existing, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: &uid})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get identity provider, error: %+v", err)
+	}
+	if existing == nil {
+		return nil, status.Errorf(codes.NotFound, "identity provider not found")
+	}
+
 	update := &store.UpdateIdentityProviderV1{
-		ID:   id,
+		ID:   existing.Id,
 		Type: storepb.IdentityProvider_Type(storepb.IdentityProvider_Type_value[request.IdentityProvider.Type.String()]),
 	}
 	for _, field := range request.UpdateMask.Paths {
@@ -138,13 +156,13 @@ func (s *APIV1Service) DeleteIdentityProvider(ctx context.Context, request *v1pb
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	id, err := ExtractIdentityProviderIDFromName(request.Name)
+	uid, err := ExtractIdentityProviderUIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider name: %v", err)
 	}
 
-	// Check if the identity provider exists before trying to delete it
-	identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{ID: &id})
+	// Look up the IdP by UID to get the internal ID for deletion.
+	identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: &uid})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to check identity provider existence: %v", err)
 	}
@@ -152,7 +170,7 @@ func (s *APIV1Service) DeleteIdentityProvider(ctx context.Context, request *v1pb
 		return nil, status.Errorf(codes.NotFound, "identity provider not found")
 	}
 
-	if err := s.Store.DeleteIdentityProvider(ctx, &store.DeleteIdentityProvider{ID: id}); err != nil {
+	if err := s.Store.DeleteIdentityProvider(ctx, &store.DeleteIdentityProvider{ID: identityProvider.Id}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete identity provider, error: %+v", err)
 	}
 	return &emptypb.Empty{}, nil
@@ -160,7 +178,7 @@ func (s *APIV1Service) DeleteIdentityProvider(ctx context.Context, request *v1pb
 
 func convertIdentityProviderFromStore(identityProvider *storepb.IdentityProvider) *v1pb.IdentityProvider {
 	temp := &v1pb.IdentityProvider{
-		Name:             fmt.Sprintf("%s%d", IdentityProviderNamePrefix, identityProvider.Id),
+		Name:             fmt.Sprintf("%s%s", IdentityProviderNamePrefix, identityProvider.Uid),
 		Title:            identityProvider.Name,
 		IdentifierFilter: identityProvider.IdentifierFilter,
 		Type:             v1pb.IdentityProvider_Type(v1pb.IdentityProvider_Type_value[identityProvider.Type.String()]),
@@ -190,10 +208,7 @@ func convertIdentityProviderFromStore(identityProvider *storepb.IdentityProvider
 }
 
 func convertIdentityProviderToStore(identityProvider *v1pb.IdentityProvider) *storepb.IdentityProvider {
-	id, _ := ExtractIdentityProviderIDFromName(identityProvider.Name)
-
 	temp := &storepb.IdentityProvider{
-		Id:               id,
 		Name:             identityProvider.Title,
 		IdentifierFilter: identityProvider.IdentifierFilter,
 		Type:             storepb.IdentityProvider_Type(storepb.IdentityProvider_Type_value[identityProvider.Type.String()]),

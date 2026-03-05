@@ -7,13 +7,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/usememos/memos/internal/base"
 	"github.com/usememos/memos/plugin/webhook"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -30,13 +28,9 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 
-	// Use custom memo_id if provided, otherwise generate a new UUID
-	memoUID := strings.TrimSpace(request.MemoId)
-	if memoUID == "" {
-		memoUID = shortuuid.New()
-	} else if !base.UIDMatcher.MatchString(memoUID) {
-		// Validate custom memo ID format
-		return nil, status.Errorf(codes.InvalidArgument, "invalid memo_id format: must be 1-32 characters, alphanumeric and hyphens only, cannot start or end with hyphen")
+	memoUID, err := ValidateAndGenerateUID(request.MemoId)
+	if err != nil {
+		return nil, err
 	}
 
 	create := &store.Memo{

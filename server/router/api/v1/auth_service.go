@@ -90,8 +90,12 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 		existingUser = user
 	} else if ssoCredentials := request.GetSsoCredentials(); ssoCredentials != nil {
 		// Authentication Method 2: SSO (OAuth2) authentication
+		idpUID, err := ExtractIdentityProviderUIDFromName(ssoCredentials.IdpName)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider name: %v", err)
+		}
 		identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{
-			ID: &ssoCredentials.IdpId,
+			UID: &idpUID,
 		})
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get identity provider, error: %v", err)

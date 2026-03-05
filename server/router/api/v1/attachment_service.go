@@ -16,7 +16,6 @@ import (
 	"time"
 
 	"github.com/disintegration/imaging"
-	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -100,10 +99,9 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 		return nil, status.Errorf(codes.InvalidArgument, "invalid MIME type format")
 	}
 
-	// Use provided attachment_id or generate a new one
-	attachmentUID := request.AttachmentId
-	if attachmentUID == "" {
-		attachmentUID = shortuuid.New()
+	attachmentUID, err := ValidateAndGenerateUID(request.AttachmentId)
+	if err != nil {
+		return nil, err
 	}
 
 	create := &store.Attachment{

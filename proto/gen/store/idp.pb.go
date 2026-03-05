@@ -74,6 +74,7 @@ type IdentityProvider struct {
 	Type             IdentityProvider_Type   `protobuf:"varint,3,opt,name=type,proto3,enum=memos.store.IdentityProvider_Type" json:"type,omitempty"`
 	IdentifierFilter string                  `protobuf:"bytes,4,opt,name=identifier_filter,json=identifierFilter,proto3" json:"identifier_filter,omitempty"`
 	Config           *IdentityProviderConfig `protobuf:"bytes,5,opt,name=config,proto3" json:"config,omitempty"`
+	Uid              string                  `protobuf:"bytes,6,opt,name=uid,proto3" json:"uid,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -141,6 +142,13 @@ func (x *IdentityProvider) GetConfig() *IdentityProviderConfig {
 		return x.Config
 	}
 	return nil
+}
+
+func (x *IdentityProvider) GetUid() string {
+	if x != nil {
+		return x.Uid
+	}
+	return ""
 }
 
 type IdentityProviderConfig struct {
@@ -373,13 +381,14 @@ var File_store_idp_proto protoreflect.FileDescriptor
 
 const file_store_idp_proto_rawDesc = "" +
 	"\n" +
-	"\x0fstore/idp.proto\x12\vmemos.store\"\x82\x02\n" +
+	"\x0fstore/idp.proto\x12\vmemos.store\"\x94\x02\n" +
 	"\x10IdentityProvider\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x126\n" +
 	"\x04type\x18\x03 \x01(\x0e2\".memos.store.IdentityProvider.TypeR\x04type\x12+\n" +
 	"\x11identifier_filter\x18\x04 \x01(\tR\x10identifierFilter\x12;\n" +
-	"\x06config\x18\x05 \x01(\v2#.memos.store.IdentityProviderConfigR\x06config\"(\n" +
+	"\x06config\x18\x05 \x01(\v2#.memos.store.IdentityProviderConfigR\x06config\x12\x10\n" +
+	"\x03uid\x18\x06 \x01(\tR\x03uid\"(\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
