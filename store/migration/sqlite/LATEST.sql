@@ -81,6 +81,7 @@ CREATE TABLE activity (
 -- idp
 CREATE TABLE idp (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
+  uid TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL,
   type TEXT NOT NULL,
   identifier_filter TEXT NOT NULL DEFAULT '',

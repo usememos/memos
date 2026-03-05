@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { identityProviderServiceClient } from "@/connect";
 import { useInstance } from "@/contexts/InstanceContext";
-import { extractIdentityProviderIdFromName } from "@/helpers/resource-names";
 import { absolutifyLink } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { handleError } from "@/lib/error";
@@ -50,8 +49,7 @@ const SignIn = () => {
       try {
         // Generate and store secure state parameter with CSRF protection
         // Also generate PKCE parameters (code_challenge) for enhanced security if available
-        const identityProviderId = extractIdentityProviderIdFromName(identityProvider.name);
-        const { state, codeChallenge } = await storeOAuthState(identityProviderId);
+        const { state, codeChallenge } = await storeOAuthState(identityProvider.name);
 
         // Build OAuth authorization URL with secure state
         // Include PKCE if available (requires HTTPS/localhost for crypto.subtle)

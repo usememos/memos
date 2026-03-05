@@ -133,6 +133,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
   const identityProviderTypes = [...new Set(templateList.map((t) => t.type))];
   const [basicInfo, setBasicInfo] = useState({
     title: "",
+    identifier: "",
     identifierFilter: "",
   });
   const [type, setType] = useState<IdentityProvider_Type>(IdentityProvider_Type.OAUTH2);
@@ -161,6 +162,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
       // Reset to default state when dialog is closed
       setBasicInfo({
         title: "",
+        identifier: "",
         identifierFilter: "",
       });
       setType(IdentityProvider_Type.OAUTH2);
@@ -189,6 +191,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
     if (open && identityProvider) {
       setBasicInfo({
         title: identityProvider.title,
+        identifier: "",
         identifierFilter: identityProvider.identifierFilter,
       });
       setType(identityProvider.type);
@@ -210,6 +213,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
     if (template) {
       setBasicInfo({
         title: template.title,
+        identifier: template.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
         identifierFilter: template.identifierFilter,
       });
       setType(template.type);
@@ -227,6 +231,9 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
 
   const allowConfirmAction = () => {
     if (basicInfo.title === "") {
+      return false;
+    }
+    if (isCreating && basicInfo.identifier === "") {
       return false;
     }
     if (type === IdentityProvider_Type.OAUTH2) {
@@ -254,8 +261,10 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
     try {
       if (isCreating) {
         await identityProviderServiceClient.createIdentityProvider({
+          identityProviderId: basicInfo.identifier,
           identityProvider: create(IdentityProviderSchema, {
-            ...basicInfo,
+            title: basicInfo.title,
+            identifierFilter: basicInfo.identifierFilter,
             type: type,
             config: create(IdentityProviderConfigSchema, {
               config: {
@@ -341,6 +350,32 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
                 </SelectContent>
               </Select>
               <Separator className="my-2" />
+            </>
+          )}
+          {isCreating && (
+            <>
+              <p className="mb-1 text-sm font-medium">
+                ID
+                <span className="text-destructive">*</span>
+              </p>
+              <Input
+                className="mb-2 w-full font-mono"
+                placeholder="e.g. github, okta-corp"
+                maxLength={32}
+                value={basicInfo.identifier}
+                onChange={(e) =>
+                  setBasicInfo({
+                    ...basicInfo,
+                    identifier: e.target.value
+                      .toLowerCase()
+                      .replace(/[^a-z0-9-]/g, "-")
+                      .replace(/--+/g, "-"),
+                  })
+                }
+              />
+              <p className="mb-2 text-xs text-muted-foreground">
+                A unique identifier for this provider. Lowercase letters, numbers, and hyphens only.
+              </p>
             </>
           )}
           <p className="mb-1 text-sm font-medium">

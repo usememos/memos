@@ -11,9 +11,9 @@ import (
 )
 
 func (d *DB) CreateIdentityProvider(ctx context.Context, create *store.IdentityProvider) (*store.IdentityProvider, error) {
-	placeholders := []string{"?", "?", "?", "?"}
-	fields := []string{"`name`", "`type`", "`identifier_filter`", "`config`"}
-	args := []any{create.Name, create.Type.String(), create.IdentifierFilter, create.Config}
+	placeholders := []string{"?", "?", "?", "?", "?"}
+	fields := []string{"`uid`", "`name`", "`type`", "`identifier_filter`", "`config`"}
+	args := []any{create.UID, create.Name, create.Type.String(), create.IdentifierFilter, create.Config}
 
 	stmt := "INSERT INTO `idp` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholders, ", ") + ")"
 	result, err := d.db.ExecContext(ctx, stmt, args...)
@@ -35,8 +35,11 @@ func (d *DB) ListIdentityProviders(ctx context.Context, find *store.FindIdentity
 	if v := find.ID; v != nil {
 		where, args = append(where, "`id` = ?"), append(args, *v)
 	}
+	if v := find.UID; v != nil {
+		where, args = append(where, "`uid` = ?"), append(args, *v)
+	}
 
-	rows, err := d.db.QueryContext(ctx, "SELECT `id`, `name`, `type`, `identifier_filter`, `config` FROM `idp` WHERE "+strings.Join(where, " AND ")+" ORDER BY `id` ASC",
+	rows, err := d.db.QueryContext(ctx, "SELECT `id`, `uid`, `name`, `type`, `identifier_filter`, `config` FROM `idp` WHERE "+strings.Join(where, " AND ")+" ORDER BY `id` ASC",
 		args...,
 	)
 	if err != nil {
@@ -50,6 +53,7 @@ func (d *DB) ListIdentityProviders(ctx context.Context, find *store.FindIdentity
 		var typeString string
 		if err := rows.Scan(
 			&identityProvider.ID,
+			&identityProvider.UID,
 			&identityProvider.Name,
 			&typeString,
 			&identityProvider.IdentifierFilter,

@@ -4,8 +4,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
+	"github.com/usememos/memos/internal/base"
 	"github.com/usememos/memos/internal/util"
 )
 
@@ -133,16 +137,12 @@ func ExtractInboxIDFromName(name string) (int32, error) {
 	return id, nil
 }
 
-func ExtractIdentityProviderIDFromName(name string) (int32, error) {
+func ExtractIdentityProviderUIDFromName(name string) (string, error) {
 	tokens, err := GetNameParentTokens(name, IdentityProviderNamePrefix)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
-	id, err := util.ConvertStringToInt32(tokens[0])
-	if err != nil {
-		return 0, errors.Errorf("invalid identity provider ID %q", tokens[0])
-	}
-	return id, nil
+	return tokens[0], nil
 }
 
 func ExtractActivityIDFromName(name string) (int32, error) {
@@ -155,4 +155,18 @@ func ExtractActivityIDFromName(name string) (int32, error) {
 		return 0, errors.Errorf("invalid activity ID %q", tokens[0])
 	}
 	return id, nil
+}
+
+// ValidateAndGenerateUID validates a user-provided UID or generates a new one.
+// If provided is empty, a new shortuuid is generated.
+// If provided is non-empty, it is validated against base.UIDMatcher.
+func ValidateAndGenerateUID(provided string) (string, error) {
+	uid := strings.TrimSpace(provided)
+	if uid == "" {
+		return shortuuid.New(), nil
+	}
+	if !base.UIDMatcher.MatchString(uid) {
+		return "", status.Errorf(codes.InvalidArgument, "invalid ID format: must be 1-32 characters, alphanumeric and hyphens only, cannot start or end with hyphen")
+	}
+	return uid, nil
 }

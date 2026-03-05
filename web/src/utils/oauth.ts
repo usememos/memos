@@ -3,7 +3,7 @@ const STATE_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes
 
 interface OAuthState {
   state: string;
-  identityProviderId: number;
+  identityProviderName: string;
   timestamp: number;
   returnUrl?: string;
   codeVerifier?: string; // PKCE code_verifier
@@ -42,7 +42,10 @@ function base64UrlEncode(buffer: Uint8Array): string {
 // Store OAuth state and PKCE parameters in sessionStorage
 // Returns state and optional codeChallenge for use in authorization URL
 // PKCE is optional - if crypto APIs are unavailable (HTTP context), falls back to standard OAuth
-export async function storeOAuthState(identityProviderId: number, returnUrl?: string): Promise<{ state: string; codeChallenge?: string }> {
+export async function storeOAuthState(
+  identityProviderName: string,
+  returnUrl?: string,
+): Promise<{ state: string; codeChallenge?: string }> {
   const state = generateSecureState();
 
   // Try to generate PKCE parameters if crypto.subtle is available (HTTPS/localhost)
@@ -70,7 +73,7 @@ export async function storeOAuthState(identityProviderId: number, returnUrl?: st
 
   const stateData: OAuthState = {
     state,
-    identityProviderId,
+    identityProviderName,
     timestamp: Date.now(),
     returnUrl,
     codeVerifier, // Store for later retrieval in callback (undefined if PKCE not available)
@@ -87,8 +90,8 @@ export async function storeOAuthState(identityProviderId: number, returnUrl?: st
 }
 
 // Validate and retrieve OAuth state from storage (CSRF protection)
-// Returns identityProviderId, returnUrl, and codeVerifier for PKCE
-export function validateOAuthState(stateParam: string): { identityProviderId: number; returnUrl?: string; codeVerifier?: string } | null {
+// Returns identityProviderName, returnUrl, and codeVerifier for PKCE
+export function validateOAuthState(stateParam: string): { identityProviderName: string; returnUrl?: string; codeVerifier?: string } | null {
   try {
     const storedData = sessionStorage.getItem(STATE_STORAGE_KEY);
     if (!storedData) {
@@ -115,7 +118,7 @@ export function validateOAuthState(stateParam: string): { identityProviderId: nu
     // State is valid, clean up and return data
     sessionStorage.removeItem(STATE_STORAGE_KEY);
     return {
-      identityProviderId: stateData.identityProviderId,
+      identityProviderName: stateData.identityProviderName,
       returnUrl: stateData.returnUrl,
       codeVerifier: stateData.codeVerifier, // Return PKCE code_verifier
     };
