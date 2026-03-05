@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowUpIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { matchPath } from "react-router-dom";
+import { matchPath, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
 import { useView } from "@/contexts/ViewContext";
@@ -89,6 +89,11 @@ const PagedMemoList = (props: Props) => {
   // Show memo editor only on the root route
   const showMemoEditor = Boolean(matchPath(Routes.ROOT, window.location.pathname));
 
+  const location = useLocation();
+  const followUpContent = (location.state as { followUpContent?: string })?.followUpContent;
+
+  console.log("🟢 PagedMemoList - followUpContent:", followUpContent);
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteMemos(
     {
       state: props.state || State.NORMAL,
@@ -161,7 +166,12 @@ const PagedMemoList = (props: Props) => {
             prefixElement={
               <>
                 {showMemoEditor ? (
-                  <MemoEditor className="mb-2" cacheKey="home-memo-editor" placeholder={t("editor.any-thoughts")} />
+                  <MemoEditor 
+                    className="mb-2" 
+                    cacheKey="home-memo-editor" 
+                    placeholder={t("editor.any-thoughts")}
+                    initialContent={followUpContent}
+                  />
                 ) : undefined}
                 <MemoFilters />
               </>
