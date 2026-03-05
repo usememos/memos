@@ -104,6 +104,8 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
       },
     });
 
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
   }, [memo.name, profile.instanceUrl, navigateTo]);
 
   const handleCopyContent = useCallback(() => {

@@ -18,6 +18,7 @@ import MasonryView from "../MasonryView";
 import MemoEditor from "../MemoEditor";
 import MemoFilters from "../MemoFilters";
 import Skeleton from "../Skeleton";
+import useNavigateTo from "@/hooks/useNavigateTo";
 
 interface Props {
   renderer: (memo: Memo, context?: MemoRenderContext) => JSX.Element;
@@ -82,6 +83,10 @@ function useAutoFetchWhenNotScrollable({
 }
 
 const PagedMemoList = (props: Props) => {
+
+  const navigate = useNavigateTo();
+
+
   const t = useTranslate();
   const { layout } = useView();
   const queryClient = useQueryClient();
@@ -95,6 +100,49 @@ const PagedMemoList = (props: Props) => {
     followUpContent?: string;
     followUpParent?: string;
   } | null;
+
+  // Extract the values we need ONCE and store them in state
+  const [editorState, setEditorState] = useState<{
+    initialContent?: string;
+    parentMemoName?: string;
+  }>({
+    initialContent: undefined,
+    parentMemoName: undefined,
+  });
+
+  // Extract the values we need
+  // const initialContent = followUpState?.followUpContent;
+  // const parentMemoName = followUpState?.followUpParent;
+
+  // Clear the location state immediately after reading it
+  // useEffect(() => {
+  //   if (followUpState?.followUpContent || followUpState?.followUpParent) {
+  //     navigate(location.pathname, { replace: true, state: null });
+  //   }
+  // }, [followUpState, navigate, location.pathname]);
+
+  // Update editor state when location state changes, then clear location state
+  useEffect(() => {
+    if (followUpState?.followUpContent || followUpState?.followUpParent) {
+      // Save the values to component state
+      setEditorState({
+        initialContent: followUpState.followUpContent,
+        parentMemoName: followUpState.followUpParent,
+      });
+      
+      // Clear location state immediately after saving to component state
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [followUpState?.followUpContent, followUpState?.followUpParent, navigate, location.pathname]);
+
+  // Clear editor state after saving (when editor confirms)
+  const handleEditorConfirm = useCallback((memoName?: string) => {
+    // Clear the editor state so next memo doesn't inherit parent
+    setEditorState({
+      initialContent: undefined,
+      parentMemoName: undefined,
+    });
+  }, []);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteMemos(
     {
@@ -172,8 +220,9 @@ const PagedMemoList = (props: Props) => {
                     className="mb-2" 
                     cacheKey="home-memo-editor" 
                     placeholder={t("editor.any-thoughts")}
-                    initialContent={followUpState?.followUpContent}
-                    parentMemoName={followUpState?.followUpParent}
+                    initialContent={editorState.initialContent}
+                    parentMemoName={editorState.parentMemoName}
+                    onConfirm={handleEditorConfirm}
                   />
                 ) : undefined}
                 <MemoFilters />
