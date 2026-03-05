@@ -1,7 +1,7 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError, createClient, type Interceptor } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
-import { getAccessToken, isTokenExpired, REQUEST_TOKEN_EXPIRY_BUFFER_MS, setAccessToken } from "./auth-state";
+import { getAccessToken, hasStoredToken, isTokenExpired, REQUEST_TOKEN_EXPIRY_BUFFER_MS, setAccessToken } from "./auth-state";
 import { ActivityService } from "./types/proto/api/v1/activity_service_pb";
 import { AttachmentService } from "./types/proto/api/v1/attachment_service_pb";
 import { AuthService } from "./types/proto/api/v1/auth_service_pb";
@@ -124,7 +124,13 @@ async function refreshAndGetAccessToken(): Promise<string> {
 async function getRequestToken(): Promise<string | null> {
   let token = getAccessToken();
   if (!token) {
-    return null;
+    if (!hasStoredToken()) return null;
+    try {
+      token = await refreshAndGetAccessToken();
+    } catch {
+      return null;
+    }
+    return token;
   }
 
   // Preflight refresh: avoid sending requests with expired access tokens.

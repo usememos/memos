@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { FOCUS_TOKEN_EXPIRY_BUFFER_MS, getAccessToken, isTokenExpired } from "@/auth-state";
+import { FOCUS_TOKEN_EXPIRY_BUFFER_MS, hasStoredToken, isTokenExpired } from "@/auth-state";
 
 /**
  * Hook that proactively refreshes the access token when the tab becomes visible
@@ -20,9 +20,8 @@ export function useTokenRefreshOnFocus(refreshFn: () => Promise<void>, enabled: 
         return;
       }
 
-      // Only refresh if we have a token
-      const token = getAccessToken();
-      if (!token) {
+      // Only refresh if the user has logged in before (token in localStorage)
+      if (!hasStoredToken()) {
         return;
       }
 
