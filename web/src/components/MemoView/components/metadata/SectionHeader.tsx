@@ -27,7 +27,7 @@ const SectionHeader = ({ icon: Icon, title, count, tabs }: SectionHeaderProps) =
                 onClick={tab.onClick}
                 className={cn(
                   "text-xs px-0 py-0 transition-colors",
-                  tab.active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+                  tab.active ? "text-muted-foreground" : "text-muted-foreground/60 hover:text-muted-foreground",
                 )}
               >
                 {tab.label} ({tab.count})
@@ -37,7 +37,7 @@ const SectionHeader = ({ icon: Icon, title, count, tabs }: SectionHeaderProps) =
           ))}
         </div>
       ) : (
-        <span className="text-xs text-foreground">
+        <span className="text-xs text-muted-foreground">
           {title} ({count})
         </span>
       )}

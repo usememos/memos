@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { extractMemoIdFromName } from "@/helpers/resource-names";
 import { useMemoComments } from "@/hooks/useMemoQueries";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
+import MemoSnippetLink from "./MemoSnippetLink";
 
 const MemoCommentListView: React.FC = () => {
   const { memo } = useMemoViewContext();
@@ -23,7 +24,7 @@ const MemoCommentListView: React.FC = () => {
         <span className="text-xs text-muted-foreground">Comments{commentAmount > 1 ? ` (${commentAmount})` : ""}</span>
         <Link
           to={`/${memo.name}#comments`}
-          className="flex items-center gap-0.5 text-xs text-muted-foreground hover:text-foreground hover:underline underline-offset-2 transition-colors"
+          className="flex items-center gap-0.5 text-xs text-muted-foreground/80 hover:underline underline-offset-2 transition-colors"
         >
           View all
           <ArrowUpRightIcon className="w-3 h-3" />
@@ -32,13 +33,13 @@ const MemoCommentListView: React.FC = () => {
       {displayedComments.map((comment) => {
         const uid = extractMemoIdFromName(comment.name);
         return (
-          <Link
+          <MemoSnippetLink
             key={comment.name}
+            name={comment.name}
+            snippet={comment.snippet || comment.content}
             to={`/${memo.name}#${uid}`}
-            className="bg-muted/60 rounded-md px-2 py-1 text-xs text-muted-foreground truncate leading-relaxed hover:bg-muted transition-colors block"
-          >
-            {comment.content}
-          </Link>
+            className="bg-muted/40 rounded-md"
+          />
         );
       })}
     </div>

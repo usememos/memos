@@ -244,15 +244,20 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 
 		lastNodeWasBlock = false
 
-		// Only extract plain text nodes
-		if textNode, ok := n.(*gast.Text); ok {
-			segment := textNode.Segment
+		// Extract text from various node types
+		switch node := n.(type) {
+		case *gast.Text:
+			segment := node.Segment
 			buf.Write(segment.Value(content))
-
-			// Add space if this is a soft line break
-			if textNode.SoftLineBreak() {
+			if node.SoftLineBreak() {
 				buf.WriteByte(' ')
 			}
+		case *gast.AutoLink:
+			buf.Write(node.URL(content))
+			return gast.WalkSkipChildren, nil
+		case *mast.TagNode:
+			buf.WriteByte('#')
+			buf.Write(node.Tag)
 		}
 
 		// Stop walking if we've exceeded double the max length
