@@ -94,11 +94,52 @@ func TestGenerateSnippet(t *testing.T) {
 			maxLength: 100,
 			expected:  "Item 1 Item 2 Item 3",
 		},
+		{
+			name:      "plain URL autolink",
+			content:   "https://usememos.com",
+			maxLength: 100,
+			expected:  "https://usememos.com",
+		},
+		{
+			name:      "text with plain URL",
+			content:   "Check out https://usememos.com for more info.",
+			maxLength: 100,
+			expected:  "Check out https://usememos.com for more info.",
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			snippet, err := svc.GenerateSnippet([]byte(tt.content), tt.maxLength)
+			require.NoError(t, err)
+			assert.Equal(t, tt.expected, snippet)
+		})
+	}
+
+	// Test with tag extension enabled (matches production config).
+	svcWithTags := NewService(WithTagExtension())
+	tagTests := []struct {
+		name      string
+		content   string
+		maxLength int
+		expected  string
+	}{
+		{
+			name:      "tag only",
+			content:   "#todo",
+			maxLength: 100,
+			expected:  "#todo",
+		},
+		{
+			name:      "text with tags",
+			content:   "Remember to #review the #code",
+			maxLength: 100,
+			expected:  "Remember to #review the #code",
+		},
+	}
+	for _, tt := range tagTests {
+		t.Run(tt.name, func(t *testing.T) {
+			snippet, err := svcWithTags.GenerateSnippet([]byte(tt.content), tt.maxLength)
 			require.NoError(t, err)
 			assert.Equal(t, tt.expected, snippet)
 		})
