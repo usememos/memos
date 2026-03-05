@@ -1,5 +1,5 @@
 import { memo, useMemo, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useUser } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,7 @@ import { useImagePreview, useMemoActions, useMemoHandlers } from "./hooks";
 import { computeCommentAmount, MemoViewContext } from "./MemoViewContext";
 import type { MemoViewProps } from "./types";
 import { getTagColorClasses } from "@/utils/tag-colors"; 
+import { ArrowRight } from "lucide-react";
 
 const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const { memo: memoData, className, parentPage: parentPageProp, compact, showCreator, showVisibility, showPinned } = props;
@@ -48,6 +49,9 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const isInMemoDetailPage = location.pathname.startsWith(`/${memoData.name}`);
   const showCommentPreview = !isInMemoDetailPage && computeCommentAmount(memoData) > 0;
 
+  const isFollowUp = Boolean(memoData.parent);
+  const parentMemoId = memoData.parent ? memoData.parent.split('/').pop() : null;
+
   const tagColors = useMemo(() => {
     return getTagColorClasses(memoData.tags || []);
   }, [memoData.tags]);
@@ -82,7 +86,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const article = (
     <article
       className={cn(MEMO_CARD_BASE_CLASSES, 
-        showCommentPreview ? "mb-0 rounded-b-none" : "mb-2", 
+        showCommentPreview ? "mb-0 rounded-b-none" : "mb-2",
         tagColors.background,
         tagColors.border,
         tagColors.hover,
@@ -91,6 +95,23 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       ref={cardRef}
       tabIndex={readonly ? -1 : 0}
     >
+
+
+      {isFollowUp && (
+        <div className="flex items-center gap-1.5 mb-2 text-xs text-muted-foreground">
+          <span>Following up</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+          <Link 
+            to={`/${memoData.parent}`}
+            className="font-mono text-primary hover:underline inline-flex items-center gap-0.5"
+            onClick={(e) => e.stopPropagation()}
+          >
+            #{parentMemoId}
+          </Link>
+        </div>
+      )}
+
+
       <MemoHeader
         showCreator={showCreator}
         showVisibility={showVisibility}

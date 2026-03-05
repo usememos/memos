@@ -90,9 +90,11 @@ const PagedMemoList = (props: Props) => {
   const showMemoEditor = Boolean(matchPath(Routes.ROOT, window.location.pathname));
 
   const location = useLocation();
-  const followUpContent = (location.state as { followUpContent?: string })?.followUpContent;
-
-  console.log("🟢 PagedMemoList - followUpContent:", followUpContent);
+  // const followUpContent = (location.state as { followUpContent?: string })?.followUpContent;
+  const followUpState = location.state as { 
+    followUpContent?: string;
+    followUpParent?: string;
+  } | null;
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteMemos(
     {
@@ -170,7 +172,8 @@ const PagedMemoList = (props: Props) => {
                     className="mb-2" 
                     cacheKey="home-memo-editor" 
                     placeholder={t("editor.any-thoughts")}
-                    initialContent={followUpContent}
+                    initialContent={followUpState?.followUpContent}
+                    parentMemoName={followUpState?.followUpParent}
                   />
                 ) : undefined}
                 <MemoFilters />

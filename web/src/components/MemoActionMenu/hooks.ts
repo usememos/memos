@@ -95,27 +95,14 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
       host = window.location.origin;
     }
 
-    const memoLink = `${host}/${memo.name}`;
-    const followUpText = `Following up on: ${memoLink}\n\n`;
-
-    console.log("Navigating with state", followUpText);
+    // const memoLink = `${host}/${memo.name}`;
 
     navigateTo("/", {
       state: {
-        followUpContent: `Following up on: ${memoLink}\n\n`,
+        // followUpContent: `Following up on: ${memoLink}\n\n`,
         followUpParent: memo.name,
       },
     });
-
-
-    // const memoLink = `${window.location.origin}/${memo.name}`;
-    // const followUpText = `Following up on: ${memoLink}\n\n`;
-    
-    // navigator.clipboard.writeText(followUpText);
-    // toast.success("Follow-up template copied to clipboard!");
-    
-    // navigateTo("/");
-    // setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 100);
 
   }, [memo.name, profile.instanceUrl, navigateTo]);
 
