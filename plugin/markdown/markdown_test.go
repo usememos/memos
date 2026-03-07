@@ -95,6 +95,42 @@ func TestGenerateSnippet(t *testing.T) {
 			expected:  "Item 1 Item 2 Item 3",
 		},
 		{
+			name:      "inline code preserved",
+			content:   "`console.log('hello')`",
+			maxLength: 100,
+			expected:  "console.log('hello')",
+		},
+		{
+			name:      "text with inline code",
+			content:   "Use `fmt.Println` to print output.",
+			maxLength: 100,
+			expected:  "Use fmt.Println to print output.",
+		},
+		{
+			name:      "image alt text",
+			content:   "![alt text](https://example.com/img.png)",
+			maxLength: 100,
+			expected:  "alt text",
+		},
+		{
+			name:      "strikethrough text",
+			content:   "~~deleted text~~",
+			maxLength: 100,
+			expected:  "deleted text",
+		},
+		{
+			name:      "blockquote",
+			content:   "> quoted text",
+			maxLength: 100,
+			expected:  "quoted text",
+		},
+		{
+			name:      "table cells spaced",
+			content:   "| a | b |\n|---|---|\n| 1 | 2 |",
+			maxLength: 100,
+			expected:  "a b 1 2",
+		},
+		{
 			name:      "plain URL autolink",
 			content:   "https://usememos.com",
 			maxLength: 100,

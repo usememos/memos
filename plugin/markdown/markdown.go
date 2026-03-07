@@ -212,9 +212,9 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 
 	err = gast.Walk(root, func(n gast.Node, entering bool) (gast.WalkStatus, error) {
 		if entering {
-			// Skip code blocks and code spans entirely
+			// Skip code blocks entirely (but keep inline code spans for snippet text)
 			switch n.Kind() {
-			case gast.KindCodeBlock, gast.KindFencedCodeBlock, gast.KindCodeSpan:
+			case gast.KindCodeBlock, gast.KindFencedCodeBlock:
 				return gast.WalkSkipChildren, nil
 			default:
 				// Continue walking for other node types
@@ -222,7 +222,7 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 
 			// Add space before block elements (except first)
 			switch n.Kind() {
-			case gast.KindParagraph, gast.KindHeading, gast.KindListItem:
+			case gast.KindParagraph, gast.KindHeading, gast.KindListItem, east.KindTableCell, east.KindTableRow, east.KindTableHeader:
 				if buf.Len() > 0 && lastNodeWasBlock {
 					buf.WriteByte(' ')
 				}
@@ -234,7 +234,7 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 		if !entering {
 			// Mark that we just exited a block element
 			switch n.Kind() {
-			case gast.KindParagraph, gast.KindHeading, gast.KindListItem:
+			case gast.KindParagraph, gast.KindHeading, gast.KindListItem, east.KindTableCell, east.KindTableRow, east.KindTableHeader:
 				lastNodeWasBlock = true
 			default:
 				// Not a block element

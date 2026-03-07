@@ -50,6 +50,7 @@ export interface LinkMemoDialogProps {
   filteredMemos: Memo[];
   isFetching: boolean;
   onSelectMemo: (memo: Memo) => void;
+  isAlreadyLinked: (memoName: string) => boolean;
 }
 
 export interface LocationDialogProps {

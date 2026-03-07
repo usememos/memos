@@ -194,6 +194,7 @@ const InsertMenu = (props: InsertMenuProps) => {
         filteredMemos={linkMemo.filteredMemos}
         isFetching={linkMemo.isFetching}
         onSelectMemo={linkMemo.addMemoRelation}
+        isAlreadyLinked={linkMemo.isAlreadyLinked}
       />
 
       <LocationDialog
