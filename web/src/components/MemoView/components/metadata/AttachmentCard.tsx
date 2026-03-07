@@ -28,6 +28,10 @@ const AttachmentCard = ({ attachment, onClick, className }: AttachmentCardProps)
     return <video src={sourceUrl} className={cn("w-full h-full object-cover rounded-lg", className)} controls preload="metadata" />;
   }
 
+  if (attachmentType === "audio/*") {
+    return <audio src={sourceUrl} className={cn("w-full rounded-lg", className)} controls preload="metadata" />;
+  }
+
   return null;
 };
 

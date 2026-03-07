@@ -1,4 +1,4 @@
-import { FileIcon, PaperclipIcon } from "lucide-react";
+import { FileAudioIcon, FileIcon, PaperclipIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
@@ -11,25 +11,26 @@ interface AttachmentListProps {
   attachments: Attachment[];
 }
 
-// Type guards for attachment types
 const isImageAttachment = (attachment: Attachment): boolean => getAttachmentType(attachment) === "image/*";
 const isVideoAttachment = (attachment: Attachment): boolean => getAttachmentType(attachment) === "video/*";
-const isMediaAttachment = (attachment: Attachment): boolean => isImageAttachment(attachment) || isVideoAttachment(attachment);
+const isAudioAttachment = (attachment: Attachment): boolean => getAttachmentType(attachment) === "audio/*";
 
-// Separate attachments into media (images/videos) and documents
-const separateMediaAndDocs = (attachments: Attachment[]): { media: Attachment[]; docs: Attachment[] } => {
-  const media: Attachment[] = [];
+const separateAttachments = (attachments: Attachment[]) => {
+  const visual: Attachment[] = [];
+  const audio: Attachment[] = [];
   const docs: Attachment[] = [];
 
   for (const attachment of attachments) {
-    if (isMediaAttachment(attachment)) {
-      media.push(attachment);
+    if (isImageAttachment(attachment) || isVideoAttachment(attachment)) {
+      visual.push(attachment);
+    } else if (isAudioAttachment(attachment)) {
+      audio.push(attachment);
     } else {
       docs.push(attachment);
     }
   }
 
-  return { media, docs };
+  return { visual, audio, docs };
 };
 
 const DocumentItem = ({ attachment }: { attachment: Attachment }) => {
@@ -60,16 +61,30 @@ const DocumentItem = ({ attachment }: { attachment: Attachment }) => {
   );
 };
 
-interface MediaItemProps {
+const AudioItem = ({ attachment }: { attachment: Attachment }) => {
+  const sourceUrl = getAttachmentUrl(attachment);
+
+  return (
+    <div className="flex flex-col gap-1 px-1 py-1">
+      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+        <FileAudioIcon className="w-3 h-3 shrink-0" />
+        <span className="truncate" title={attachment.filename}>
+          {attachment.filename}
+        </span>
+      </div>
+      <audio src={sourceUrl} controls preload="metadata" className="w-full h-8" />
+    </div>
+  );
+};
+
+interface VisualItemProps {
   attachment: Attachment;
   onImageClick: (url: string) => void;
 }
 
-const MediaItem = ({ attachment, onImageClick }: MediaItemProps) => {
-  const isImage = isImageAttachment(attachment);
-
+const VisualItem = ({ attachment, onImageClick }: VisualItemProps) => {
   const handleClick = () => {
-    if (isImage) {
+    if (isImageAttachment(attachment)) {
       onImageClick(getAttachmentUrl(attachment));
     }
   };
@@ -84,15 +99,18 @@ const MediaItem = ({ attachment, onImageClick }: MediaItemProps) => {
   );
 };
 
-interface MediaGridProps {
-  attachments: Attachment[];
-  onImageClick: (url: string) => void;
-}
-
-const MediaGrid = ({ attachments, onImageClick }: MediaGridProps) => (
+const VisualGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; onImageClick: (url: string) => void }) => (
   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
     {attachments.map((attachment) => (
-      <MediaItem key={attachment.name} attachment={attachment} onImageClick={onImageClick} />
+      <VisualItem key={attachment.name} attachment={attachment} onImageClick={onImageClick} />
+    ))}
+  </div>
+);
+
+const AudioList = ({ attachments }: { attachments: Attachment[] }) => (
+  <div className="flex flex-col gap-1">
+    {attachments.map((attachment) => (
+      <AudioItem key={attachment.name} attachment={attachment} />
     ))}
   </div>
 );
@@ -107,6 +125,8 @@ const DocsList = ({ attachments }: { attachments: Attachment[] }) => (
   </div>
 );
 
+const Divider = () => <div className="border-t mt-1 border-border opacity-60" />;
+
 const AttachmentList = ({ attachments }: AttachmentListProps) => {
   const [previewImage, setPreviewImage] = useState<{ open: boolean; urls: string[]; index: number; mimeType?: string }>({
     open: false,
@@ -115,10 +135,9 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
     mimeType: undefined,
   });
 
-  const { media: mediaItems, docs: docItems } = useMemo(() => separateMediaAndDocs(attachments), [attachments]);
+  const { visual, audio, docs } = useMemo(() => separateAttachments(attachments), [attachments]);
 
-  // Pre-compute image URLs for preview dialog to avoid filtering on every click
-  const imageAttachments = useMemo(() => mediaItems.filter(isImageAttachment), [mediaItems]);
+  const imageAttachments = useMemo(() => visual.filter(isImageAttachment), [visual]);
   const imageUrls = useMemo(() => imageAttachments.map(getAttachmentUrl), [imageAttachments]);
 
   if (attachments.length === 0) {
@@ -131,17 +150,24 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
     setPreviewImage({ open: true, urls: imageUrls, index, mimeType });
   };
 
+  const sections = [visual.length > 0, audio.length > 0, docs.length > 0];
+  const sectionCount = sections.filter(Boolean).length;
+
   return (
     <>
       <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
         <SectionHeader icon={PaperclipIcon} title="Attachments" count={attachments.length} />
 
         <div className="p-1.5 flex flex-col gap-1">
-          {mediaItems.length > 0 && <MediaGrid attachments={mediaItems} onImageClick={handleImageClick} />}
+          {visual.length > 0 && <VisualGrid attachments={visual} onImageClick={handleImageClick} />}
 
-          {mediaItems.length > 0 && docItems.length > 0 && <div className="border-t mt-1 border-border opacity-60" />}
+          {visual.length > 0 && sectionCount > 1 && <Divider />}
 
-          {docItems.length > 0 && <DocsList attachments={docItems} />}
+          {audio.length > 0 && <AudioList attachments={audio} />}
+
+          {audio.length > 0 && docs.length > 0 && <Divider />}
+
+          {docs.length > 0 && <DocsList attachments={docs} />}
         </div>
       </div>
 
