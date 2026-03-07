@@ -1,45 +1,65 @@
 name: Bug Report
-description: If something isn't working as expected
+description: Something isn't working as expected
 labels: [bug]
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for taking the time to report a bug! Please complete the form below to help us understand and fix the issue.
+        Thanks for reporting a bug! Please fill out the form below so we can reproduce and fix the issue.
+
+        **Before submitting**, please search [existing issues](https://github.com/usememos/memos/issues) to avoid duplicates.
 
   - type: checkboxes
     id: pre-check
     attributes:
       label: Pre-submission Checklist
-      description: Please confirm you have completed the following steps before submitting
       options:
-        - label: I have searched the existing issues and this bug has not been reported yet
+        - label: I have searched existing issues and confirmed this bug has not been reported
           required: true
-        - label: I have tested this issue on the [demo site](https://demo.usememos.com) or the latest version
+        - label: I can reproduce this bug on the latest version or the [demo site](https://demo.usememos.com)
           required: true
-
-  - type: dropdown
-    id: issue-location
-    attributes:
-      label: Where did you encounter this bug?
-      description: Select where you tested and confirmed this issue
-      options:
-        - Latest stable version (self-hosted)
-        - Latest development version (self-hosted)
-        - Demo site (demo.usememos.com)
-        - Older version (please specify below)
-      default: 0
-    validations:
-      required: true
+        - label: This is a bug, not a question (use [Discussions](https://github.com/usememos/memos/discussions) for questions)
+          required: true
 
   - type: input
     id: version
     attributes:
       label: Memos Version
-      description: Provide the exact version (e.g., `v0.25.2`). Find this in Settings → About or via `--version` flag
-      placeholder: v0.25.2
+      description: Find this in **Settings > System > About** or via the `--version` flag
+      placeholder: "v0.25.2"
     validations:
       required: true
+
+  - type: dropdown
+    id: deployment
+    attributes:
+      label: Deployment Method
+      options:
+        - Docker
+        - Pre-built binary
+        - Built from source
+    validations:
+      required: true
+
+  - type: dropdown
+    id: database
+    attributes:
+      label: Database
+      options:
+        - SQLite
+        - PostgreSQL
+        - MySQL
+    validations:
+      required: true
+
+  - type: input
+    id: browser-os
+    attributes:
+      label: Browser & OS
+      description: e.g. Chrome 120 on macOS 15, Firefox 130 on Ubuntu 24.04
+      placeholder: "Chrome 120 on macOS 15"
+    validations:
+      required: false
 
   - type: textarea
     id: bug-description
@@ -54,12 +74,11 @@ body:
     id: reproduction-steps
     attributes:
       label: Steps to Reproduce
-      description: Detailed steps to reproduce the behavior
+      description: Minimal steps to reliably reproduce the issue
       placeholder: |
         1. Go to '...'
         2. Click on '...'
-        3. Scroll down to '...'
-        4. See error
+        3. See error
     validations:
       required: true
 
@@ -67,16 +86,14 @@ body:
     id: expected-behavior
     attributes:
       label: Expected Behavior
-      description: What did you expect to happen?
+      description: What did you expect to happen instead?
       placeholder: I expected...
+    validations:
+      required: true
 
   - type: textarea
     id: additional-context
     attributes:
-      label: Screenshots & Additional Context
-      description: Add screenshots, browser/OS info, deployment method (Docker/binary), or any other relevant details
-      placeholder: |
-        - Browser: Chrome 120
-        - OS: macOS 14
-        - Deployment: Docker
-        - Database: SQLite
+      label: Screenshots, Logs & Additional Context
+      description: Attach screenshots, browser console errors, or server logs if available
+      placeholder: Drag and drop images here, or paste error logs...

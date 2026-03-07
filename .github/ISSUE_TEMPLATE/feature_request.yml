@@ -1,36 +1,36 @@
 name: Feature Request
-description: If you have a suggestion for a new feature
+description: Suggest a new feature or improvement
 labels: [enhancement]
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for suggesting a new feature! Please complete the form below to help us understand your idea.
+        Thanks for suggesting a feature! Please fill out the form below so we can understand your idea.
+
+        **Before submitting**, please search [existing issues](https://github.com/usememos/memos/issues?q=label%3Aenhancement) to avoid duplicates.
 
   - type: checkboxes
     id: pre-check
     attributes:
       label: Pre-submission Checklist
-      description: Please confirm you have completed the following steps before submitting
       options:
-        - label: I have searched the existing issues and this feature has not been requested yet
+        - label: I have searched existing issues and confirmed this feature has not been requested
+          required: true
+        - label: This is a feature request, not a bug report or question
           required: true
 
   - type: dropdown
     id: feature-type
     attributes:
-      label: Type of Feature
-      description: What type of feature is this?
+      label: Feature Area
       options:
         - User Interface (UI)
         - User Experience (UX)
         - API / Backend
-        - Documentation
         - Integrations / Plugins
         - Security / Privacy
         - Performance
         - Other
-      default: 0
     validations:
       required: true
 
@@ -38,10 +38,9 @@ body:
     id: problem-statement
     attributes:
       label: Problem or Use Case
-      description: What problem does this feature solve? What are you trying to accomplish?
+      description: What problem does this feature solve? Why do you need it?
       placeholder: |
         I often need to... but currently there's no way to...
-        This would help me/users to...
     validations:
       required: true
 
@@ -49,10 +48,9 @@ body:
     id: proposed-solution
     attributes:
       label: Proposed Solution
-      description: A clear and concise description of what you want to happen
+      description: Describe what you'd like to happen
       placeholder: |
         It would be great if Memos could...
-        For example, a button/feature that...
     validations:
       required: true
 
@@ -60,17 +58,21 @@ body:
     id: alternatives
     attributes:
       label: Alternatives Considered
-      description: Have you considered any alternative solutions or workarounds?
+      description: Have you considered any workarounds or alternative approaches?
       placeholder: |
         I've tried... but it doesn't work well because...
-        An alternative could be...
 
   - type: textarea
     id: additional-context
     attributes:
       label: Additional Context
-      description: Add any other context, mockups, screenshots, or examples about the feature request
-      placeholder: |
-        - Similar feature in other apps: ...
-        - Mockups or screenshots: ...
-        - Related discussions: ...
+      description: Mockups, screenshots, examples from other apps, or any other context
+      placeholder: Drag and drop images here...
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Would you be willing to help implement this feature?
+      options:
+        - label: I'm willing to submit a pull request for this feature
