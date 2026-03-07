@@ -15,7 +15,7 @@
 
 <img align="right" height="96px" src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/logo-rounded.png" alt="Memos" />
 
-An open-source, self-hosted note-taking service. Your thoughts, your data, your control — no tracking, no ads, no subscription fees.
+An open-source, self-hosted note-taking tool. Capture thoughts instantly. Own them completely.
 
 [![Home](https://img.shields.io/badge/🏠-usememos.com-blue?style=flat-square)](https://usememos.com)
 [![Live Demo](https://img.shields.io/badge/✨-Try%20Demo-orange?style=flat-square)](https://demo.usememos.com/)
@@ -49,18 +49,12 @@ An open-source, self-hosted note-taking service. Your thoughts, your data, your 
   <img src="https://usememos.com/sponsors/ssd-nodes.svg" alt="SSD Nodes" height="72" />
 </a>
 
-## Overview
-
-Memos is a privacy-first, self-hosted knowledge base for personal notes, team wikis, and knowledge management. Built with Go and React, it runs as a single binary with minimal resource usage.
-
 ## Features
 
-- **Privacy-First** — Self-hosted on your infrastructure with zero telemetry, no tracking, and no ads.
-- **Markdown Native** — Full markdown support with plain text storage. Your data is always portable.
-- **Lightweight** — Single Go binary with a React frontend. Low memory footprint, starts in seconds.
-- **Easy to Deploy** — One-line Docker install. Supports SQLite, MySQL, and PostgreSQL.
-- **Developer-Friendly** — Full REST and gRPC APIs for integration with existing workflows.
-- **Clean Interface** — Minimal design with dark mode and mobile-responsive layout.
+- **Instant Capture** — Timeline-first UI. Open, write, done — no folders to navigate.
+- **Total Data Ownership** — Self-hosted on your infrastructure. Notes stored in Markdown, always portable. Zero telemetry.
+- **Radical Simplicity** — Single Go binary, ~20MB Docker image. One command to deploy with SQLite, MySQL, or PostgreSQL.
+- **Open & Extensible** — MIT-licensed with full REST and gRPC APIs for integration.
 
 ## Quick Start
 
@@ -109,11 +103,7 @@ Love Memos? [Sponsor us on GitHub](https://github.com/sponsors/usememos) to help
 
 ## License
 
-Memos is open-source software licensed under the [MIT License](LICENSE).
-
-## Privacy Policy
-
-Memos is built with privacy as a core principle. As a self-hosted application, all your data stays on your infrastructure. There is no telemetry, no tracking, and no data collection. See our [Privacy Policy](https://usememos.com/privacy) for details.
+Memos is open-source software licensed under the [MIT License](LICENSE). See our [Privacy Policy](https://usememos.com/privacy) for details on data handling.
 
 ---
 
