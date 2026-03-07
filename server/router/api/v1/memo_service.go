@@ -126,7 +126,11 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		}
 	}
 
-	memoMessage, err := s.convertMemoFromStore(ctx, memo, nil, attachments)
+	relations, err := s.loadMemoRelations(ctx, memo)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to load memo relations")
+	}
+	memoMessage, err := s.convertMemoFromStore(ctx, memo, nil, attachments, relations)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
@@ -266,12 +270,19 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		attachmentMap[*attachment.MemoID] = append(attachmentMap[*attachment.MemoID], attachment)
 	}
 
+	// RELATIONS (batch load to avoid N+1)
+	relationMap, err := s.batchConvertMemoRelations(ctx, memos)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to batch load memo relations")
+	}
+
 	for _, memo := range memos {
 		memoName := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
 		reactions := reactionMap[memoName]
 		attachments := attachmentMap[memo.ID]
+		relations := relationMap[memo.ID]
 
-		memoMessage, err := s.convertMemoFromStore(ctx, memo, reactions, attachments)
+		memoMessage, err := s.convertMemoFromStore(ctx, memo, reactions, attachments, relations)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to convert memo")
 		}
@@ -327,7 +338,11 @@ func (s *APIV1Service) GetMemo(ctx context.Context, request *v1pb.GetMemoRequest
 		return nil, status.Errorf(codes.Internal, "failed to list attachments")
 	}
 
-	memoMessage, err := s.convertMemoFromStore(ctx, memo, reactions, attachments)
+	relations, err := s.loadMemoRelations(ctx, memo)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to load memo relations")
+	}
+	memoMessage, err := s.convertMemoFromStore(ctx, memo, reactions, attachments, relations)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
@@ -462,7 +477,11 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 		return nil, status.Errorf(codes.Internal, "failed to list attachments")
 	}
 
-	memoMessage, err := s.convertMemoFromStore(ctx, memo, reactions, attachments)
+	relations, err := s.loadMemoRelations(ctx, memo)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to load memo relations")
+	}
+	memoMessage, err := s.convertMemoFromStore(ctx, memo, reactions, attachments, relations)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
@@ -521,7 +540,8 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 		return nil, status.Errorf(codes.Internal, "failed to list attachments")
 	}
 
-	if memoMessage, err := s.convertMemoFromStore(ctx, memo, reactions, attachments); err == nil {
+	deleteRelations, _ := s.loadMemoRelations(ctx, memo)
+	if memoMessage, err := s.convertMemoFromStore(ctx, memo, reactions, attachments, deleteRelations); err == nil {
 		// Try to dispatch webhook when memo is deleted.
 		if err := s.DispatchMemoDeletedWebhook(ctx, memoMessage); err != nil {
 			slog.Warn("Failed to dispatch memo deleted webhook", slog.Any("err", err))
@@ -725,13 +745,20 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 		attachmentMap[*attachment.MemoID] = append(attachmentMap[*attachment.MemoID], attachment)
 	}
 
+	// RELATIONS (batch load to avoid N+1)
+	relationMap, err := s.batchConvertMemoRelations(ctx, memos)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to batch load memo relations")
+	}
+
 	var memosResponse []*v1pb.Memo
 	for _, m := range memos {
 		memoName := memoIDToNameMap[m.ID]
 		reactions := memoReactionsMap[memoName]
 		attachments := attachmentMap[m.ID]
+		relations := relationMap[m.ID]
 
-		memoMessage, err := s.convertMemoFromStore(ctx, m, reactions, attachments)
+		memoMessage, err := s.convertMemoFromStore(ctx, m, reactions, attachments, relations)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to convert memo")
 		}

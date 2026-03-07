@@ -24,6 +24,8 @@ type FindMemoRelation struct {
 	RelatedMemoID *int32
 	Type          *MemoRelationType
 	MemoFilter    *string
+	// MemoIDList matches relations where memo_id OR related_memo_id is in the list.
+	MemoIDList []int32
 }
 
 type DeleteMemoRelation struct {
