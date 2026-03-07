@@ -35,8 +35,16 @@ func init() {
 	}
 }
 
+// AllowPrivateIPs controls whether webhook URLs may resolve to reserved/private
+// IP addresses. When true, the SSRF protection is disabled. This is useful for
+// self-hosted deployments where webhooks target services on the local network.
+var AllowPrivateIPs bool
+
 // isReservedIP reports whether ip falls within any reserved/private range.
 func isReservedIP(ip net.IP) bool {
+	if AllowPrivateIPs {
+		return false
+	}
 	for _, network := range reservedNetworks {
 		if network.Contains(ip) {
 			return true
