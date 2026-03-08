@@ -24,7 +24,10 @@ const RootLayout = () => {
 
   useEffect(() => {
     if (!currentUser) {
-      if (pathname === ROUTES.ROOT && !memoRelatedSetting.disallowPublicVisibility) {
+      if (memoRelatedSetting.disallowPublicVisibility) {
+        // When public visibility is disallowed, always redirect unauth users to auth.
+        redirectOnAuthFailure(true);
+      } else if (pathname === ROUTES.ROOT) {
         navigateTo(ROUTES.EXPLORE);
       } else {
         redirectOnAuthFailure();
