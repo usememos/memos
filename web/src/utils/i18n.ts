@@ -66,7 +66,7 @@ export const useTranslate = (): TypedT => {
   return t;
 };
 
-export const isValidateLocale = (locale: string | undefined | null): boolean => {
+export const isValidLocale = (locale: string | undefined | null): boolean => {
   if (!locale) return false;
   return locales.includes(locale);
 };
@@ -77,7 +77,7 @@ export const isValidateLocale = (locale: string | undefined | null): boolean => 
 // 3. Browser language preference
 export const getLocaleWithFallback = (userLocale?: string): Locale => {
   // Priority 1: User setting (if logged in and valid)
-  if (userLocale && isValidateLocale(userLocale)) {
+  if (userLocale && isValidLocale(userLocale)) {
     return userLocale as Locale;
   }
 
@@ -93,7 +93,7 @@ export const getLocaleWithFallback = (userLocale?: string): Locale => {
 
 // Applies and persists a locale setting
 export const loadLocale = (locale: string): Locale => {
-  const validLocale = isValidateLocale(locale) ? (locale as Locale) : findNearestMatchedLanguage(navigator.language);
+  const validLocale = isValidLocale(locale) ? (locale as Locale) : findNearestMatchedLanguage(navigator.language);
   setStoredLocale(validLocale);
   i18n.changeLanguage(validLocale);
   return validLocale;

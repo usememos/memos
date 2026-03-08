@@ -35,11 +35,11 @@ type AttachmentServiceClient interface {
 	CreateAttachment(ctx context.Context, in *CreateAttachmentRequest, opts ...grpc.CallOption) (*Attachment, error)
 	// ListAttachments lists all attachments.
 	ListAttachments(ctx context.Context, in *ListAttachmentsRequest, opts ...grpc.CallOption) (*ListAttachmentsResponse, error)
-	// GetAttachment returns a attachment by name.
+	// GetAttachment returns an attachment by name.
 	GetAttachment(ctx context.Context, in *GetAttachmentRequest, opts ...grpc.CallOption) (*Attachment, error)
-	// UpdateAttachment updates a attachment.
+	// UpdateAttachment updates an attachment.
 	UpdateAttachment(ctx context.Context, in *UpdateAttachmentRequest, opts ...grpc.CallOption) (*Attachment, error)
-	// DeleteAttachment deletes a attachment by name.
+	// DeleteAttachment deletes an attachment by name.
 	DeleteAttachment(ctx context.Context, in *DeleteAttachmentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -109,11 +109,11 @@ type AttachmentServiceServer interface {
 	CreateAttachment(context.Context, *CreateAttachmentRequest) (*Attachment, error)
 	// ListAttachments lists all attachments.
 	ListAttachments(context.Context, *ListAttachmentsRequest) (*ListAttachmentsResponse, error)
-	// GetAttachment returns a attachment by name.
+	// GetAttachment returns an attachment by name.
 	GetAttachment(context.Context, *GetAttachmentRequest) (*Attachment, error)
-	// UpdateAttachment updates a attachment.
+	// UpdateAttachment updates an attachment.
 	UpdateAttachment(context.Context, *UpdateAttachmentRequest) (*Attachment, error)
-	// DeleteAttachment deletes a attachment by name.
+	// DeleteAttachment deletes an attachment by name.
 	DeleteAttachment(context.Context, *DeleteAttachmentRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedAttachmentServiceServer()
 }

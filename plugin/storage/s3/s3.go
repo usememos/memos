@@ -74,7 +74,7 @@ func (c *Client) PresignGetObject(ctx context.Context, key string) (string, erro
 		opts.Expires = time.Duration(5 * 24 * time.Hour)
 	})
 	if err != nil {
-		return "", errors.Wrap(err, "failed to presign put object")
+		return "", errors.Wrap(err, "failed to presign get object")
 	}
 	return presignResult.URL, nil
 }
