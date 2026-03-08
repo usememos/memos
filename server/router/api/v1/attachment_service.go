@@ -352,7 +352,7 @@ func convertAttachmentFromStore(attachment *store.Attachment) *v1pb.Attachment {
 	return attachmentMessage
 }
 
-// SaveAttachmentBlob save the blob of attachment based on the storage config.
+// SaveAttachmentBlob saves the blob of attachment based on the storage config.
 func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *store.Store, create *store.Attachment) error {
 	instanceStorageSetting, err := stores.GetInstanceStorageSetting(ctx)
 	if err != nil {

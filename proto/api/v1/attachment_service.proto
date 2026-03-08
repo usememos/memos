@@ -25,12 +25,12 @@ service AttachmentService {
   rpc ListAttachments(ListAttachmentsRequest) returns (ListAttachmentsResponse) {
     option (google.api.http) = {get: "/api/v1/attachments"};
   }
-  // GetAttachment returns a attachment by name.
+  // GetAttachment returns an attachment by name.
   rpc GetAttachment(GetAttachmentRequest) returns (Attachment) {
     option (google.api.http) = {get: "/api/v1/{name=attachments/*}"};
     option (google.api.method_signature) = "name";
   }
-  // UpdateAttachment updates a attachment.
+  // UpdateAttachment updates an attachment.
   rpc UpdateAttachment(UpdateAttachmentRequest) returns (Attachment) {
     option (google.api.http) = {
       patch: "/api/v1/{attachment.name=attachments/*}"
@@ -38,7 +38,7 @@ service AttachmentService {
     };
     option (google.api.method_signature) = "attachment,update_mask";
   }
-  // DeleteAttachment deletes a attachment by name.
+  // DeleteAttachment deletes an attachment by name.
   rpc DeleteAttachment(DeleteAttachmentRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {delete: "/api/v1/{name=attachments/*}"};
     option (google.api.method_signature) = "name";
