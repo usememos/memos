@@ -8,14 +8,8 @@ const PUBLIC_ROUTES = [
   "/memos/", // Individual memo detail pages (dynamic)
 ] as const;
 
-const PRIVATE_ROUTES = [ROUTES.ROOT, ROUTES.ATTACHMENTS, ROUTES.INBOX, ROUTES.ARCHIVED, ROUTES.SETTING] as const;
-
 function isPublicRoute(path: string): boolean {
   return PUBLIC_ROUTES.some((route) => path.startsWith(route));
-}
-
-function isPrivateRoute(path: string): boolean {
-  return PRIVATE_ROUTES.includes(path as (typeof PRIVATE_ROUTES)[number]);
 }
 
 export function redirectOnAuthFailure(forceRedirect = false): void {
