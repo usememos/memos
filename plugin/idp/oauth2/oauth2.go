@@ -82,7 +82,7 @@ func (p *IdentityProvider) UserInfo(token string) (*idp.IdentityProviderUserInfo
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodGet, p.config.UserInfoUrl, nil)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to new http request")
+		return nil, errors.Wrap(err, "failed to create http request")
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))

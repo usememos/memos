@@ -158,7 +158,7 @@ paths:
         get:
             tags:
                 - AttachmentService
-            description: GetAttachment returns a attachment by name.
+            description: GetAttachment returns an attachment by name.
             operationId: AttachmentService_GetAttachment
             parameters:
                 - name: attachment
@@ -183,7 +183,7 @@ paths:
         delete:
             tags:
                 - AttachmentService
-            description: DeleteAttachment deletes a attachment by name.
+            description: DeleteAttachment deletes an attachment by name.
             operationId: AttachmentService_DeleteAttachment
             parameters:
                 - name: attachment
@@ -205,7 +205,7 @@ paths:
         patch:
             tags:
                 - AttachmentService
-            description: UpdateAttachment updates a attachment.
+            description: UpdateAttachment updates an attachment.
             operationId: AttachmentService_UpdateAttachment
             parameters:
                 - name: attachment

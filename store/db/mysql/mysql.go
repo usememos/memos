@@ -29,7 +29,7 @@ func NewDB(profile *profile.Profile) (store.Driver, error) {
 	driver := DB{profile: profile}
 	driver.config, err = mysql.ParseDSN(dsn)
 	if err != nil {
-		return nil, errors.New("Parse DSN eroor")
+		return nil, errors.New("Parse DSN error")
 	}
 
 	driver.db, err = sql.Open("mysql", dsn)

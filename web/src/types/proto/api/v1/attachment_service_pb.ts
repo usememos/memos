@@ -288,7 +288,7 @@ export const AttachmentService: GenService<{
     output: typeof ListAttachmentsResponseSchema;
   },
   /**
-   * GetAttachment returns a attachment by name.
+   * GetAttachment returns an attachment by name.
    *
    * @generated from rpc memos.api.v1.AttachmentService.GetAttachment
    */
@@ -298,7 +298,7 @@ export const AttachmentService: GenService<{
     output: typeof AttachmentSchema;
   },
   /**
-   * UpdateAttachment updates a attachment.
+   * UpdateAttachment updates an attachment.
    *
    * @generated from rpc memos.api.v1.AttachmentService.UpdateAttachment
    */
@@ -308,7 +308,7 @@ export const AttachmentService: GenService<{
     output: typeof AttachmentSchema;
   },
   /**
-   * DeleteAttachment deletes a attachment by name.
+   * DeleteAttachment deletes an attachment by name.
    *
    * @generated from rpc memos.api.v1.AttachmentService.DeleteAttachment
    */

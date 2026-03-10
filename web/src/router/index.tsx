@@ -1,6 +1,7 @@
 import { lazy } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import App from "@/App";
+import { ChunkLoadErrorFallback } from "@/components/ErrorBoundary";
 import MainLayout from "@/layouts/MainLayout";
 import RootLayout from "@/layouts/RootLayout";
 import Home from "@/pages/Home";
@@ -19,6 +20,36 @@ const Setting = lazy(() => import("@/pages/Setting"));
 const SignIn = lazy(() => import("@/pages/SignIn"));
 const SignUp = lazy(() => import("@/pages/SignUp"));
 const UserProfile = lazy(() => import("@/pages/UserProfile"));
+// Wrap lazy imports to auto-reload on chunk load failure (e.g., after redeployment).
+function lazyWithReload<T extends React.ComponentType>(factory: () => Promise<{ default: T }>) {
+  return lazy(() =>
+    factory().catch((error) => {
+      const isChunkError =
+        error?.message?.includes("Failed to fetch dynamically imported module") ||
+        error?.message?.includes("Importing a module script failed");
+      const reloadKey = "chunk-reload";
+      if (isChunkError && !sessionStorage.getItem(reloadKey)) {
+        sessionStorage.setItem(reloadKey, "1");
+        window.location.reload();
+      }
+      throw error;
+    }),
+  );
+}
+
+const AdminSignIn = lazyWithReload(() => import("@/pages/AdminSignIn"));
+const Archived = lazyWithReload(() => import("@/pages/Archived"));
+const AuthCallback = lazyWithReload(() => import("@/pages/AuthCallback"));
+const Explore = lazyWithReload(() => import("@/pages/Explore"));
+const Inboxes = lazyWithReload(() => import("@/pages/Inboxes"));
+const MemoDetail = lazyWithReload(() => import("@/pages/MemoDetail"));
+const NotFound = lazyWithReload(() => import("@/pages/NotFound"));
+const PermissionDenied = lazyWithReload(() => import("@/pages/PermissionDenied"));
+const Attachments = lazyWithReload(() => import("@/pages/Attachments"));
+const Setting = lazyWithReload(() => import("@/pages/Setting"));
+const SignIn = lazyWithReload(() => import("@/pages/SignIn"));
+const SignUp = lazyWithReload(() => import("@/pages/SignUp"));
+const UserProfile = lazyWithReload(() => import("@/pages/UserProfile"));
 
 import { ROUTES } from "./routes";
 
@@ -30,6 +61,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    errorElement: <ChunkLoadErrorFallback />,
     children: [
       {
         path: Routes.AUTH,

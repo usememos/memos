@@ -57,11 +57,11 @@ type AttachmentServiceClient interface {
 	CreateAttachment(context.Context, *connect.Request[v1.CreateAttachmentRequest]) (*connect.Response[v1.Attachment], error)
 	// ListAttachments lists all attachments.
 	ListAttachments(context.Context, *connect.Request[v1.ListAttachmentsRequest]) (*connect.Response[v1.ListAttachmentsResponse], error)
-	// GetAttachment returns a attachment by name.
+	// GetAttachment returns an attachment by name.
 	GetAttachment(context.Context, *connect.Request[v1.GetAttachmentRequest]) (*connect.Response[v1.Attachment], error)
-	// UpdateAttachment updates a attachment.
+	// UpdateAttachment updates an attachment.
 	UpdateAttachment(context.Context, *connect.Request[v1.UpdateAttachmentRequest]) (*connect.Response[v1.Attachment], error)
-	// DeleteAttachment deletes a attachment by name.
+	// DeleteAttachment deletes an attachment by name.
 	DeleteAttachment(context.Context, *connect.Request[v1.DeleteAttachmentRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
@@ -149,11 +149,11 @@ type AttachmentServiceHandler interface {
 	CreateAttachment(context.Context, *connect.Request[v1.CreateAttachmentRequest]) (*connect.Response[v1.Attachment], error)
 	// ListAttachments lists all attachments.
 	ListAttachments(context.Context, *connect.Request[v1.ListAttachmentsRequest]) (*connect.Response[v1.ListAttachmentsResponse], error)
-	// GetAttachment returns a attachment by name.
+	// GetAttachment returns an attachment by name.
 	GetAttachment(context.Context, *connect.Request[v1.GetAttachmentRequest]) (*connect.Response[v1.Attachment], error)
-	// UpdateAttachment updates a attachment.
+	// UpdateAttachment updates an attachment.
 	UpdateAttachment(context.Context, *connect.Request[v1.UpdateAttachmentRequest]) (*connect.Response[v1.Attachment], error)
-	// DeleteAttachment deletes a attachment by name.
+	// DeleteAttachment deletes an attachment by name.
 	DeleteAttachment(context.Context, *connect.Request[v1.DeleteAttachmentRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
