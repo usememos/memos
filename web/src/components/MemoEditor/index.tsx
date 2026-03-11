@@ -162,12 +162,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         {/* Metadata and toolbar grouped together at bottom */}
         <div className="w-full flex flex-col gap-2">
           <EditorMetadata memoName={memoName} />
-          <EditorToolbar
-            onSave={handleSave}
-            onCancel={onCancel}
-            memoName={memoName}
-            onInsertText={(text) => editorRef.current?.insertText(text)}
-          />
+          <EditorToolbar onSave={handleSave} onCancel={onCancel} memoName={memoName} onOpenTableEditor={handleOpenTableEditor} />
         </div>
       </div>
 

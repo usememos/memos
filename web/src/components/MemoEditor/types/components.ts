@@ -26,7 +26,7 @@ export interface EditorToolbarProps {
   onSave: () => void;
   onCancel?: () => void;
   memoName?: string;
-  onInsertText?: (text: string) => void;
+  onOpenTableEditor?: () => void;
 }
 
 export interface EditorMetadataProps {
@@ -72,7 +72,7 @@ export interface InsertMenuProps {
   location?: Location;
   onLocationChange: (location?: Location) => void;
   onToggleFocusMode?: () => void;
-  onInsertText?: (text: string) => void;
+  onOpenTableEditor?: () => void;
   memoName?: string;
 }
 

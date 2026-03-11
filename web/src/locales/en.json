@@ -125,7 +125,25 @@
     "no-changes-detected": "No changes detected",
     "save": "Save",
     "saving": "Saving...",
-    "slash-commands": "Type `/` for commands"
+    "slash-commands": "Type `/` for commands",
+    "table": {
+      "title": "Table",
+      "editor-title": "Table Editor",
+      "editor-description": "Edit table headers, rows, columns and sort data",
+      "add-row": "Add row",
+      "add-column": "Add column",
+      "insert-column": "Insert column",
+      "insert-row": "Insert row",
+      "remove-column": "Remove column",
+      "remove-row": "Remove row",
+      "sort-column": "Sort column",
+      "delete": "Delete table",
+      "delete-confirm": "Are you sure you want to delete this table? This action cannot be undone.",
+      "column": "column",
+      "columns": "columns",
+      "row": "row",
+      "rows": "rows"
+    }
   },
   "filters": {
     "has-code": "hasCode",

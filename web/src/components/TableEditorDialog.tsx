@@ -1,17 +1,12 @@
 import { ArrowDownIcon, ArrowUpDownIcon, ArrowUpIcon, PlusIcon, TrashIcon } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslate } from "@/utils/i18n";
 import type { ColumnAlignment, TableData } from "@/utils/markdown-table";
 import { createEmptyTable, serializeMarkdownTable } from "@/utils/markdown-table";
 import { Button } from "./ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "./ui/dialog";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { VisuallyHidden } from "./ui/visually-hidden";
-
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
-
-const MONO_FONT = "'Fira Code', 'Fira Mono', 'JetBrains Mono', 'Cascadia Code', 'Consolas', ui-monospace, monospace";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -31,12 +26,17 @@ type SortState = { col: number; dir: "asc" | "desc" } | null;
 // ---------------------------------------------------------------------------
 
 const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: TableEditorDialogProps) => {
+  const t = useTranslate();
   const [headers, setHeaders] = useState<string[]>([]);
   const [rows, setRows] = useState<string[][]>([]);
+  const [rowIds, setRowIds] = useState<number[]>([]);
   const [alignments, setAlignments] = useState<ColumnAlignment[]>([]);
   const [sortState, setSortState] = useState<SortState>(null);
 
   const inputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
+  const nextRowId = useRef(0);
+
+  const allocateRowId = useCallback(() => nextRowId.current++, []);
 
   const setInputRef = useCallback((key: string, el: HTMLInputElement | null) => {
     if (el) inputRefs.current.set(key, el);
@@ -45,14 +45,17 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
 
   useEffect(() => {
     if (open) {
+      nextRowId.current = 0;
       if (initialData) {
         setHeaders([...initialData.headers]);
         setRows(initialData.rows.map((r) => [...r]));
+        setRowIds(initialData.rows.map(() => nextRowId.current++));
         setAlignments([...initialData.alignments]);
       } else {
         const empty = createEmptyTable(3, 2);
         setHeaders(empty.headers);
         setRows(empty.rows);
+        setRowIds(empty.rows.map(() => nextRowId.current++));
         setAlignments(empty.alignments);
       }
       setSortState(null);
@@ -105,16 +108,21 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
   };
 
   const addRow = () => {
+    const id = allocateRowId();
     setRows((prev) => [...prev, Array.from({ length: colCount }, () => "")]);
+    setRowIds((prev) => [...prev, id]);
   };
 
   const insertRowAt = (index: number) => {
+    const id = allocateRowId();
     setRows((prev) => [...prev.slice(0, index), Array.from({ length: colCount }, () => ""), ...prev.slice(index)]);
+    setRowIds((prev) => [...prev.slice(0, index), id, ...prev.slice(index)]);
   };
 
   const removeRow = (row: number) => {
     if (rowCount <= 1) return;
     setRows((prev) => prev.filter((_, i) => i !== row));
+    setRowIds((prev) => prev.filter((_, i) => i !== row));
   };
 
   // ---- Sorting ----
@@ -123,18 +131,22 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
     let newDir: "asc" | "desc" = "asc";
     if (sortState && sortState.col === col && sortState.dir === "asc") newDir = "desc";
     setSortState({ col, dir: newDir });
-    setRows((prev) => {
-      const sorted = [...prev].sort((a, b) => {
-        const va = (a[col] || "").toLowerCase();
-        const vb = (b[col] || "").toLowerCase();
-        const na = Number(va);
-        const nb = Number(vb);
-        if (!Number.isNaN(na) && !Number.isNaN(nb)) return newDir === "asc" ? na - nb : nb - na;
-        const cmp = va.localeCompare(vb);
-        return newDir === "asc" ? cmp : -cmp;
-      });
-      return sorted;
-    });
+
+    const compareFn = (a: string[], b: string[]) => {
+      const va = (a[col] || "").toLowerCase();
+      const vb = (b[col] || "").toLowerCase();
+      const na = Number(va);
+      const nb = Number(vb);
+      if (!Number.isNaN(na) && !Number.isNaN(nb)) return newDir === "asc" ? na - nb : nb - na;
+      const cmp = va.localeCompare(vb);
+      return newDir === "asc" ? cmp : -cmp;
+    };
+
+    // Build sorted indices, then apply to both rows and rowIds.
+    const indices = rows.map((_, i) => i);
+    indices.sort((a, b) => compareFn(rows[a], rows[b]));
+    setRows(indices.map((i) => rows[i]));
+    setRowIds(indices.map((i) => rowIds[i]));
   };
 
   // ---- Tab / keyboard navigation ----
@@ -190,10 +202,10 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
           <DialogClose />
         </VisuallyHidden>
         <VisuallyHidden>
-          <DialogTitle>Table Editor</DialogTitle>
+          <DialogTitle>{t("editor.table.editor-title")}</DialogTitle>
         </VisuallyHidden>
         <VisuallyHidden>
-          <DialogDescription>Edit table headers, rows, columns and sort data</DialogDescription>
+          <DialogDescription>{t("editor.table.editor-description")}</DialogDescription>
         </VisuallyHidden>
 
         <div className="flex flex-col h-full">
@@ -236,7 +248,7 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                                 <PlusIcon className="size-3" />
                               </button>
                             </TooltipTrigger>
-                            <TooltipContent>Insert column</TooltipContent>
+                            <TooltipContent>{t("editor.table.insert-column")}</TooltipContent>
                           </Tooltip>
                         </div>
 
@@ -244,8 +256,7 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                         <div className="flex items-center bg-accent/50 border border-border">
                           <input
                             ref={(el) => setInputRef(`-1:${col}`, el)}
-                            style={{ fontFamily: MONO_FONT }}
-                            className="flex-1 min-w-0 px-2 py-1.5 font-semibold text-xs uppercase tracking-wide bg-transparent focus:outline-none focus:ring-1 focus:ring-primary/40"
+                            className="flex-1 min-w-0 px-2 py-1.5 font-semibold text-xs uppercase tracking-wide bg-transparent font-mono focus:outline-none focus:ring-1 focus:ring-primary/40"
                             value={header}
                             onChange={(e) => updateHeader(col, e.target.value)}
                             onKeyDown={(e) => handleKeyDown(e, -1, col)}
@@ -261,7 +272,7 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                                 <SortIndicator col={col} />
                               </button>
                             </TooltipTrigger>
-                            <TooltipContent>Sort column</TooltipContent>
+                            <TooltipContent>{t("editor.table.sort-column")}</TooltipContent>
                           </Tooltip>
                           {colCount > 1 && (
                             <Tooltip>
@@ -274,7 +285,7 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                                   <TrashIcon className="size-3" />
                                 </button>
                               </TooltipTrigger>
-                              <TooltipContent>Remove column</TooltipContent>
+                              <TooltipContent>{t("editor.table.remove-column")}</TooltipContent>
                             </Tooltip>
                           )}
                         </div>
@@ -293,7 +304,7 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                             <PlusIcon className="size-3.5" />
                           </button>
                         </TooltipTrigger>
-                        <TooltipContent>Add column</TooltipContent>
+                        <TooltipContent>{t("editor.table.add-column")}</TooltipContent>
                       </Tooltip>
                     </th>
                   </tr>
@@ -302,7 +313,7 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                 {/* ============ DATA ROWS ============ */}
                 <tbody>
                   {rows.map((row, rowIdx) => (
-                    <React.Fragment key={rowIdx}>
+                    <React.Fragment key={rowIds[rowIdx]}>
                       <tr>
                         {/* Row number — with insert-row zone on top border */}
                         <td className="w-7 min-w-7 text-center align-middle relative">
@@ -325,7 +336,7 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                                   <PlusIcon className="size-3" />
                                 </button>
                               </TooltipTrigger>
-                              <TooltipContent>Insert row</TooltipContent>
+                              <TooltipContent>{t("editor.table.insert-row")}</TooltipContent>
                             </Tooltip>
                           </div>
                           <span className="text-xs text-muted-foreground">{rowIdx + 1}</span>
@@ -336,8 +347,7 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                           <td key={col} className="p-0">
                             <input
                               ref={(el) => setInputRef(`${rowIdx}:${col}`, el)}
-                              style={{ fontFamily: MONO_FONT }}
-                              className="w-full px-2 py-1.5 text-sm bg-transparent border border-border focus:outline-none focus:ring-1 focus:ring-primary/40"
+                              className="w-full px-2 py-1.5 text-sm bg-transparent font-mono border border-border focus:outline-none focus:ring-1 focus:ring-primary/40"
                               value={cell}
                               onChange={(e) => updateCell(rowIdx, col, e.target.value)}
                               onKeyDown={(e) => handleKeyDown(e, rowIdx, col)}
@@ -358,7 +368,7 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
                                   <TrashIcon className="size-3" />
                                 </button>
                               </TooltipTrigger>
-                              <TooltipContent>Remove row</TooltipContent>
+                              <TooltipContent>{t("editor.table.remove-row")}</TooltipContent>
                             </Tooltip>
                           )}
                         </td>
@@ -373,7 +383,7 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
             <div className="flex justify-center mt-2">
               <Button variant="ghost" size="sm" className="text-xs text-muted-foreground cursor-pointer" onClick={addRow}>
                 <PlusIcon className="size-3.5" />
-                Add row
+                {t("editor.table.add-row")}
               </Button>
             </div>
           </div>
@@ -382,23 +392,24 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
           <div className="flex items-center justify-between px-4 py-3 border-t border-border">
             <div className="flex items-center gap-3">
               <span className="text-xs text-muted-foreground">
-                {colCount} {colCount === 1 ? "column" : "columns"} · {rowCount} {rowCount === 1 ? "row" : "rows"}
+                {colCount} {colCount === 1 ? t("editor.table.column") : t("editor.table.columns")} · {rowCount}{" "}
+                {rowCount === 1 ? t("editor.table.row") : t("editor.table.rows")}
               </span>
               <Button variant="ghost" size="sm" className="text-xs text-muted-foreground cursor-pointer" onClick={addRow}>
                 <PlusIcon className="size-3.5" />
-                Add row
+                {t("editor.table.add-row")}
               </Button>
               <Button variant="ghost" size="sm" className="text-xs text-muted-foreground cursor-pointer" onClick={addColumn}>
                 <PlusIcon className="size-3.5" />
-                Add column
+                {t("editor.table.add-column")}
               </Button>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="ghost" className="cursor-pointer" onClick={() => onOpenChange(false)}>
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button className="cursor-pointer" onClick={handleConfirm}>
-                Confirm
+                {t("common.confirm")}
               </Button>
             </div>
           </div>
