@@ -161,11 +161,10 @@ export function findAllTables(content: string): TableMatch[] {
         offset += lines[i].length + 1; // +1 for newline
         i++;
       }
-      const endOffset = offset - 1; // exclude trailing newline
       const text = lines.slice(startLine, i).join("\n");
       // Only count if it has at least a header + separator (2 lines).
       if (i - startLine >= 2) {
-        tables.push({ text, start: startOffset, end: endOffset });
+        tables.push({ text, start: startOffset, end: startOffset + text.length });
       }
     } else {
       offset += lines[i].length + 1;

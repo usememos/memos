@@ -22,6 +22,7 @@ pnpm dev                           # Dev server (:3001, proxies API to :8081)
 pnpm lint                          # Type check + Biome lint
 pnpm lint:fix                      # Auto-fix lint issues
 pnpm format                        # Format code
+pnpm test                          # Run frontend tests
 pnpm build                         # Production build
 pnpm release                       # Build to server/router/frontend/dist
 

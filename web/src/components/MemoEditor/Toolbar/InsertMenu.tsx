@@ -15,7 +15,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce } from "react-use";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
 import { useReverseGeocoding } from "@/components/map";
-import TableEditorDialog from "@/components/TableEditorDialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -37,11 +36,10 @@ import type { LocalFile } from "../types/attachment";
 const InsertMenu = (props: InsertMenuProps) => {
   const t = useTranslate();
   const { state, actions, dispatch } = useEditorContext();
-  const { location: initialLocation, onLocationChange, onToggleFocusMode, isUploading: isUploadingProp } = props;
+  const { location: initialLocation, onLocationChange, onToggleFocusMode, onOpenTableEditor, isUploading: isUploadingProp } = props;
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
-  const [tableDialogOpen, setTableDialogOpen] = useState(false);
   const [moreSubmenuOpen, setMoreSubmenuOpen] = useState(false);
 
   const { handleTriggerEnter, handleTriggerLeave, handleContentEnter, handleContentLeave } = useDropdownMenuSubHoverDelay(
@@ -98,17 +96,6 @@ const InsertMenu = (props: InsertMenuProps) => {
     setLinkDialogOpen(true);
   }, []);
 
-  const handleOpenTableDialog = useCallback(() => {
-    setTableDialogOpen(true);
-  }, []);
-
-  const handleTableConfirm = useCallback(
-    (markdown: string) => {
-      props.onInsertText?.(markdown);
-    },
-    [props],
-  );
-
   const handleLocationClick = useCallback(() => {
     setLocationDialogOpen(true);
     if (!initialLocation && !locationInitialized) {
@@ -154,9 +141,9 @@ const InsertMenu = (props: InsertMenuProps) => {
         },
         {
           key: "table",
-          label: "Table",
+          label: t("editor.table.title"),
           icon: TableIcon,
-          onClick: handleOpenTableDialog,
+          onClick: () => onOpenTableEditor?.(),
         },
         {
           key: "link",
@@ -171,7 +158,7 @@ const InsertMenu = (props: InsertMenuProps) => {
           onClick: handleLocationClick,
         },
       ] satisfies Array<{ key: string; label: string; icon: LucideIcon; onClick: () => void }>,
-    [handleLocationClick, handleOpenLinkDialog, handleOpenTableDialog, handleUploadClick, t],
+    [handleLocationClick, handleOpenLinkDialog, onOpenTableEditor, handleUploadClick, t],
   );
 
   return (
@@ -238,8 +225,6 @@ const InsertMenu = (props: InsertMenuProps) => {
         onCancel={handleLocationCancel}
         onConfirm={handleLocationConfirm}
       />
-
-      <TableEditorDialog open={tableDialogOpen} onOpenChange={setTableDialogOpen} onConfirm={handleTableConfirm} />
     </>
   );
 };

@@ -1,10 +1,11 @@
 import { PencilIcon, TrashIcon } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import TableEditorDialog from "@/components/TableEditorDialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useUpdateMemo } from "@/hooks/useMemoQueries";
 import { cn } from "@/lib/utils";
+import { useTranslate } from "@/utils/i18n";
 import type { TableData } from "@/utils/markdown-table";
 import { findAllTables, parseMarkdownTable, replaceNthTable } from "@/utils/markdown-table";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoView/MemoViewContext";
@@ -18,8 +19,8 @@ interface TableProps extends React.HTMLAttributes<HTMLTableElement>, ReactMarkdo
   children: React.ReactNode;
 }
 
-export const Table = ({ children, className, node: _node, ...props }: TableProps) => {
-  const tableRef = useRef<HTMLDivElement>(null);
+export const Table = ({ children, className, node, ...props }: TableProps) => {
+  const t = useTranslate();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [tableData, setTableData] = useState<TableData | null>(null);
@@ -29,32 +30,31 @@ export const Table = ({ children, className, node: _node, ...props }: TableProps
   const { readonly } = useMemoViewDerived();
   const { mutate: updateMemo } = useUpdateMemo();
 
-  /** Resolve which markdown table index this rendered table corresponds to. */
-  const resolveTableIndex = useCallback(() => {
-    const container = tableRef.current?.closest('[class*="wrap-break-word"]');
-    if (!container) return -1;
+  /** Resolve which markdown table index this rendered table corresponds to using AST source positions. */
+  const resolveTableIndex = useMemo(() => {
+    const nodeStart = node?.position?.start?.offset;
+    if (nodeStart == null) return -1;
 
-    const allTables = container.querySelectorAll("table");
-    for (let i = 0; i < allTables.length; i++) {
-      if (tableRef.current?.contains(allTables[i])) return i;
+    const tables = findAllTables(memo.content);
+    for (let i = 0; i < tables.length; i++) {
+      if (nodeStart >= tables[i].start && nodeStart < tables[i].end) return i;
     }
     return -1;
-  }, []);
+  }, [memo.content, node]);
 
   const handleEditClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
       e.preventDefault();
 
-      const idx = resolveTableIndex();
       const tables = findAllTables(memo.content);
-      if (idx < 0 || idx >= tables.length) return;
+      if (resolveTableIndex < 0 || resolveTableIndex >= tables.length) return;
 
-      const parsed = parseMarkdownTable(tables[idx].text);
+      const parsed = parseMarkdownTable(tables[resolveTableIndex].text);
       if (!parsed) return;
 
       setTableData(parsed);
-      setTableIndex(idx);
+      setTableIndex(resolveTableIndex);
       setDialogOpen(true);
     },
     [memo.content, resolveTableIndex],
@@ -65,10 +65,9 @@ export const Table = ({ children, className, node: _node, ...props }: TableProps
       e.stopPropagation();
       e.preventDefault();
 
-      const idx = resolveTableIndex();
-      if (idx < 0) return;
+      if (resolveTableIndex < 0) return;
 
-      setTableIndex(idx);
+      setTableIndex(resolveTableIndex);
       setDeleteDialogOpen(true);
     },
     [resolveTableIndex],
@@ -99,7 +98,7 @@ export const Table = ({ children, className, node: _node, ...props }: TableProps
 
   return (
     <>
-      <div ref={tableRef} className="group/table relative w-full overflow-x-auto rounded-lg border border-border bg-muted/20">
+      <div className="group/table relative w-full overflow-x-auto rounded-lg border border-border bg-muted/20">
         <table className={cn("w-full border-collapse text-sm", className)} {...props}>
           {children}
         </table>
@@ -109,7 +108,7 @@ export const Table = ({ children, className, node: _node, ...props }: TableProps
               type="button"
               className="p-1 rounded bg-accent/80 text-muted-foreground hover:bg-destructive/20 hover:text-destructive transition-colors"
               onClick={handleDeleteClick}
-              title="Delete table"
+              title={t("common.delete")}
             >
               <TrashIcon className="size-3.5" />
             </button>
@@ -117,7 +116,7 @@ export const Table = ({ children, className, node: _node, ...props }: TableProps
               type="button"
               className="p-1 rounded bg-accent/80 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
               onClick={handleEditClick}
-              title="Edit table"
+              title={t("common.edit")}
             >
               <PencilIcon className="size-3.5" />
             </button>
@@ -131,15 +130,15 @@ export const Table = ({ children, className, node: _node, ...props }: TableProps
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent size="sm">
           <DialogHeader>
-            <DialogTitle>Delete table</DialogTitle>
-            <DialogDescription>Are you sure you want to delete this table? This action cannot be undone.</DialogDescription>
+            <DialogTitle>{t("editor.table.delete")}</DialogTitle>
+            <DialogDescription>{t("editor.table.delete-confirm")}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="ghost">Cancel</Button>
+              <Button variant="ghost">{t("common.cancel")}</Button>
             </DialogClose>
             <Button variant="destructive" onClick={handleConfirmDelete}>
-              Delete
+              {t("common.delete")}
             </Button>
           </DialogFooter>
         </DialogContent>
