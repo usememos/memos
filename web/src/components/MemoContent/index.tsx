@@ -93,7 +93,11 @@ const MemoContent = (props: MemoContentProps) => {
             // Code blocks
             pre: CodeBlock,
             // Tables
-            table: ({ children }) => <Table>{children}</Table>,
+            table: ({ children, node, ...tableProps }) => (
+              <Table node={node} {...tableProps}>
+                {children}
+              </Table>
+            ),
             thead: ({ children }) => <TableHead>{children}</TableHead>,
             tbody: ({ children }) => <TableBody>{children}</TableBody>,
             tr: ({ children }) => <TableRow>{children}</TableRow>,
