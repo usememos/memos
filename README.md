@@ -70,6 +70,21 @@ docker run -d \
 
 Open `http://localhost:5230` and start writing!
 
+### Systemd Service (Linux)
+
+After installing the binary, you can install memos as a systemd service:
+
+```bash
+memos --data ~/.memos --daemon install
+```
+
+This will create and enable the `memos.service` and start it immediately.
+
+Other daemon actions:
+- `memos --daemon start` - start service
+- `memos --daemon stop` - stop service
+- `memos --daemon restart` - restart service
+
 ### Try the Live Demo
 
 Don't want to install yet? Try our [live demo](https://demo.usememos.com/) first!
