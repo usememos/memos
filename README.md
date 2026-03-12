@@ -70,6 +70,16 @@ docker run -d \
 
 Open `http://localhost:5230` and start writing!
 
+### Binary
+
+Download and run the pre-built binary for your platform:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/usememos/memos/main/install.sh | bash
+```
+
+Or manually download from [GitHub Releases](https://github.com/usememos/memos/releases).
+
 ### Try the Live Demo
 
 Don't want to install yet? Try our [live demo](https://demo.usememos.com/) first!
