@@ -85,6 +85,11 @@ func (b *MemoBuilder) Property(fn func(*storepb.MemoPayload_Property)) *MemoBuil
 	return b
 }
 
+func (b *MemoBuilder) CreatedTs(ts int64) *MemoBuilder {
+	b.memo.CreatedTs = ts
+	return b
+}
+
 func (b *MemoBuilder) Build() *store.Memo {
 	return b.memo
 }

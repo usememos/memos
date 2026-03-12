@@ -88,6 +88,11 @@ type ConstantCondition struct {
 
 func (*ConstantCondition) isCondition() {}
 
+// ThisDayCondition matches memos created on today's month-day in any year.
+type ThisDayCondition struct{}
+
+func (*ThisDayCondition) isCondition() {}
+
 // ValueExpr models arithmetic or scalar expressions whose result feeds a comparison.
 type ValueExpr interface {
 	isValueExpr()

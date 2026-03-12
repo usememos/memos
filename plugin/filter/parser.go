@@ -94,6 +94,8 @@ func buildCallCondition(call *exprv1.Expr_Call, schema Schema) (Condition, error
 		return buildInCondition(call, schema)
 	case "contains":
 		return buildContainsCondition(call, schema)
+	case "this_day":
+		return &ThisDayCondition{}, nil
 	default:
 		val, ok, err := evaluateBool(call)
 		if err != nil {
