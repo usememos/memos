@@ -75,7 +75,14 @@ Open `http://localhost:5230` and start writing!
 Download and run the pre-built binary for your platform:
 
 ```bash
+# Quick install
 curl -sSL https://raw.githubusercontent.com/usememos/memos/main/install.sh | bash
+
+# Or download manually for inspection first
+curl -sSL https://raw.githubusercontent.com/usememos/memos/main/install.sh -o install.sh
+less install.sh
+bash install.sh
+rm install.sh
 ```
 
 Or manually download from [GitHub Releases](https://github.com/usememos/memos/releases).
