@@ -6,7 +6,9 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"syscall"
 
@@ -22,10 +24,19 @@ import (
 )
 
 var (
-	rootCmd = &cobra.Command{
+	daemonCmd string
+	rootCmd   = &cobra.Command{
 		Use:   "memos",
 		Short: `An open source, lightweight note-taking service. Easily capture and share your great thoughts.`,
 		Run: func(_ *cobra.Command, _ []string) {
+			if daemonCmd != "" {
+				if err := handleDaemon(daemonCmd); err != nil {
+					slog.Error("failed to handle daemon", "error", err)
+					os.Exit(1)
+				}
+				return
+			}
+
 			instanceProfile := &profile.Profile{
 				Demo:        viper.GetBool("demo"),
 				Addr:        viper.GetString("addr"),
@@ -108,6 +119,7 @@ func init() {
 	rootCmd.PersistentFlags().String("dsn", "", "database source name(aka. DSN)")
 	rootCmd.PersistentFlags().String("instance-url", "", "the url of your memos instance")
 	rootCmd.PersistentFlags().Bool("allow-private-webhooks", false, "allow webhook URLs to resolve to private/reserved IP addresses")
+	rootCmd.PersistentFlags().StringVarP(&daemonCmd, "daemon", "d", "", "systemd service actions: install, start, stop, restart")
 
 	if err := viper.BindPFlag("demo", rootCmd.PersistentFlags().Lookup("demo")); err != nil {
 		panic(err)
@@ -173,6 +185,126 @@ func printGreetings(profile *profile.Profile) {
 	fmt.Printf("Documentation: %s\n", "https://usememos.com")
 	fmt.Printf("Source code: %s\n", "https://github.com/usememos/memos")
 	fmt.Println("\nHappy note-taking!")
+}
+
+func handleDaemon(action string) error {
+	switch action {
+	case "install":
+		return installSystemdService()
+	case "start":
+		cmd := exec.Command("systemctl", "--user", "start", "memos")
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("failed to start service: %w", err)
+		}
+		fmt.Println("Memos service started")
+		return nil
+	case "stop":
+		cmd := exec.Command("systemctl", "--user", "stop", "memos")
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("failed to stop service: %w", err)
+		}
+		fmt.Println("Memos service stopped")
+		return nil
+	case "restart":
+		cmd := exec.Command("systemctl", "--user", "restart", "memos")
+		if err := cmd.Run(); err != nil {
+			return fmt.Errorf("failed to restart service: %w", err)
+		}
+		fmt.Println("Memos service restarted")
+		return nil
+	default:
+		return fmt.Errorf("unknown daemon action: %s (use: install, start, stop, restart)", action)
+	}
+}
+
+func installSystemdService() error {
+	execPath, err := os.Executable()
+	if err != nil {
+		return fmt.Errorf("failed to get executable path: %w", err)
+	}
+
+	var args []string
+	dataDir := viper.GetString("data")
+	if dataDir == "" {
+		dataDir = "~/.memos"
+	}
+	args = append(args, "--data", expandHome(dataDir))
+	if port := viper.GetInt("port"); port != 0 {
+		args = append(args, "--port", fmt.Sprintf("%d", port))
+	}
+	if addr := viper.GetString("addr"); addr != "" {
+		args = append(args, "--addr", addr)
+	}
+	if driver := viper.GetString("driver"); driver != "" && driver != "sqlite" {
+		args = append(args, "--driver", driver)
+	}
+	if dsn := viper.GetString("dsn"); dsn != "" {
+		args = append(args, "--dsn", dsn)
+	}
+	if unixSock := viper.GetString("unix-sock"); unixSock != "" {
+		args = append(args, "--unix-sock", unixSock)
+	}
+	if instanceURL := viper.GetString("instance-url"); instanceURL != "" {
+		args = append(args, "--instance-url", instanceURL)
+	}
+	if viper.GetBool("allow-private-webhooks") {
+		args = append(args, "--allow-private-webhooks")
+	}
+
+	execArgs := append([]string{execPath}, args...)
+
+	serviceContent := fmt.Sprintf(`[Unit]
+Description=Memos - Lightweight note-taking service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=%s
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target
+`, strings.Join(execArgs, " "))
+
+	homeDir := os.Getenv("HOME")
+	servicePath := filepath.Join(homeDir, ".config", "systemd", "user", "memos.service")
+	if err := os.MkdirAll(filepath.Dir(servicePath), 0755); err != nil {
+		return fmt.Errorf("failed to create systemd user directory: %w", err)
+	}
+
+	if err := os.WriteFile(servicePath, []byte(serviceContent), 0644); err != nil {
+		return fmt.Errorf("failed to write service file: %w", err)
+	}
+
+	cmd := exec.Command("systemctl", "--user", "daemon-reload")
+	if err := cmd.Run(); err != nil {
+		slog.Warn("failed to daemon-reload", "error", err)
+	}
+
+	enableCmd := exec.Command("systemctl", "--user", "enable", "memos")
+	restartCmd := exec.Command("systemctl", "--user", "restart", "memos")
+
+	if err := enableCmd.Run(); err != nil {
+		return fmt.Errorf("failed to enable service: %w", err)
+	}
+
+	if err := restartCmd.Run(); err != nil {
+		return fmt.Errorf("failed to start service: %w", err)
+	}
+
+	fmt.Printf("Memos systemd service installed and started at %s\n", servicePath)
+	return nil
+}
+
+func expandHome(path string) string {
+	if strings.HasPrefix(path, "~/") {
+		home := os.Getenv("HOME")
+		if home != "" {
+			return filepath.Join(home, path[2:])
+		}
+	}
+	return path
 }
 
 func main() {
