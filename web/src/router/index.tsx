@@ -6,6 +6,20 @@ import MainLayout from "@/layouts/MainLayout";
 import RootLayout from "@/layouts/RootLayout";
 import Home from "@/pages/Home";
 
+const AdminSignIn = lazy(() => import("@/pages/AdminSignIn"));
+const Archived = lazy(() => import("@/pages/Archived"));
+const AuthCallback = lazy(() => import("@/pages/AuthCallback"));
+const SSORedirect = lazy(() => import("@/pages/SSORedirect"));
+const Explore = lazy(() => import("@/pages/Explore"));
+const Inboxes = lazy(() => import("@/pages/Inboxes"));
+const MemoDetail = lazy(() => import("@/pages/MemoDetail"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
+const PermissionDenied = lazy(() => import("@/pages/PermissionDenied"));
+const Attachments = lazy(() => import("@/pages/Attachments"));
+const Setting = lazy(() => import("@/pages/Setting"));
+const SignIn = lazy(() => import("@/pages/SignIn"));
+const SignUp = lazy(() => import("@/pages/SignUp"));
+const UserProfile = lazy(() => import("@/pages/UserProfile"));
 // Wrap lazy imports to auto-reload on chunk load failure (e.g., after redeployment).
 function lazyWithReload<T extends React.ComponentType>(factory: () => Promise<{ default: T }>) {
   return lazy(() =>
@@ -56,6 +70,7 @@ const router = createBrowserRouter([
           { path: "admin", element: <AdminSignIn /> },
           { path: "signup", element: <SignUp /> },
           { path: "callback", element: <AuthCallback /> },
+          { path: "sso", element: <SSORedirect /> },
         ],
       },
       {
