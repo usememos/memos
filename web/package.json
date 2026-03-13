@@ -7,7 +7,9 @@
     "release": "vite build --mode release --outDir=../server/router/frontend/dist --emptyOutDir",
     "lint": "tsc --noEmit --skipLibCheck && biome check src",
     "lint:fix": "biome check --write src",
-    "format": "biome format --write src"
+    "format": "biome format --write src",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@connectrpc/connect": "^2.1.1",
@@ -89,7 +91,8 @@
     "terser": "^5.44.1",
     "tw-animate-css": "^1.4.0",
     "typescript": "^5.9.3",
-    "vite": "^7.2.4"
+    "vite": "^7.2.4",
+    "vitest": "^4.0.18"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

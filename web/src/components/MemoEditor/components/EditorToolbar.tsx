@@ -7,7 +7,7 @@ import InsertMenu from "../Toolbar/InsertMenu";
 import VisibilitySelector from "../Toolbar/VisibilitySelector";
 import type { EditorToolbarProps } from "../types";
 
-export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoName }) => {
+export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoName, onOpenTableEditor }) => {
   const t = useTranslate();
   const { state, actions, dispatch } = useEditorContext();
   const { valid } = validationService.canSave(state);
@@ -34,6 +34,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
           location={state.metadata.location}
           onLocationChange={handleLocationChange}
           onToggleFocusMode={handleToggleFocusMode}
+          onOpenTableEditor={onOpenTableEditor}
           memoName={memoName}
         />
       </div>
