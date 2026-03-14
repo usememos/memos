@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowUpIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { matchPath } from "react-router-dom";
+import { matchPath, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
 import { useView } from "@/contexts/ViewContext";
@@ -18,6 +18,7 @@ import MasonryView from "../MasonryView";
 import MemoEditor from "../MemoEditor";
 import MemoFilters from "../MemoFilters";
 import Skeleton from "../Skeleton";
+import useNavigateTo from "@/hooks/useNavigateTo";
 
 interface Props {
   renderer: (memo: Memo, context?: MemoRenderContext) => JSX.Element;
@@ -82,12 +83,66 @@ function useAutoFetchWhenNotScrollable({
 }
 
 const PagedMemoList = (props: Props) => {
+
+  const navigate = useNavigateTo();
+
+
   const t = useTranslate();
   const { layout } = useView();
   const queryClient = useQueryClient();
 
   // Show memo editor only on the root route
   const showMemoEditor = Boolean(matchPath(Routes.ROOT, window.location.pathname));
+
+  const location = useLocation();
+  // const followUpContent = (location.state as { followUpContent?: string })?.followUpContent;
+  const followUpState = location.state as { 
+    followUpContent?: string;
+    followUpParent?: string;
+  } | null;
+
+  // Extract the values we need ONCE and store them in state
+  const [editorState, setEditorState] = useState<{
+    initialContent?: string;
+    parentMemoName?: string;
+  }>({
+    initialContent: undefined,
+    parentMemoName: undefined,
+  });
+
+  // Extract the values we need
+  // const initialContent = followUpState?.followUpContent;
+  // const parentMemoName = followUpState?.followUpParent;
+
+  // Clear the location state immediately after reading it
+  // useEffect(() => {
+  //   if (followUpState?.followUpContent || followUpState?.followUpParent) {
+  //     navigate(location.pathname, { replace: true, state: null });
+  //   }
+  // }, [followUpState, navigate, location.pathname]);
+
+  // Update editor state when location state changes, then clear location state
+  useEffect(() => {
+    if (followUpState?.followUpContent || followUpState?.followUpParent) {
+      // Save the values to component state
+      setEditorState({
+        initialContent: followUpState.followUpContent,
+        parentMemoName: followUpState.followUpParent,
+      });
+      
+      // Clear location state immediately after saving to component state
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [followUpState?.followUpContent, followUpState?.followUpParent, navigate, location.pathname]);
+
+  // Clear editor state after saving (when editor confirms)
+  const handleEditorConfirm = useCallback((memoName?: string) => {
+    // Clear the editor state so next memo doesn't inherit parent
+    setEditorState({
+      initialContent: undefined,
+      parentMemoName: undefined,
+    });
+  }, []);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteMemos(
     {
@@ -161,7 +216,14 @@ const PagedMemoList = (props: Props) => {
             prefixElement={
               <>
                 {showMemoEditor ? (
-                  <MemoEditor className="mb-2" cacheKey="home-memo-editor" placeholder={t("editor.any-thoughts")} />
+                  <MemoEditor 
+                    className="mb-2" 
+                    cacheKey="home-memo-editor" 
+                    placeholder={t("editor.any-thoughts")}
+                    initialContent={editorState.initialContent}
+                    parentMemoName={editorState.parentMemoName}
+                    onConfirm={handleEditorConfirm}
+                  />
                 ) : undefined}
                 <MemoFilters />
               </>
