@@ -202,7 +202,7 @@ const PagedMemoList = (props: Props) => {
             prefixElement={
               <>
                 {showMemoEditor ? (
-                  <MemoEditor className="mb-2" cacheKey="home-memo-editor" placeholder={t("editor.any-thoughts")} />
+                  <MemoEditor className="mb-3" cacheKey="home-memo-editor" placeholder={t("editor.any-thoughts")} />
                 ) : undefined}
                 <MemoFilters />
               </>

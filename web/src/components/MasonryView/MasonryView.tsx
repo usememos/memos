@@ -22,7 +22,7 @@ const MasonryView = ({ memoList, renderer, prefixElement, listMode = false }: Ma
   return (
     <div
       ref={containerRef}
-      className={cn("w-full grid gap-2")}
+      className={cn("w-full grid gap-3")}
       style={{
         gridTemplateColumns: `repeat(${columns}, 1fr)`,
       }}

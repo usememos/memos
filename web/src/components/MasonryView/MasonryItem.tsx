@@ -32,7 +32,7 @@ export function MasonryItem({ memo, renderer, renderContext, onHeightChange }: M
   }, [memo.name, onHeightChange]);
 
   return (
-    <div ref={itemRef} data-display-date={displayDate} data-memo-name={memo.name}>
+    <div ref={itemRef} className="mb-3" data-display-date={displayDate} data-memo-name={memo.name}>
       {renderer(memo, renderContext)}
     </div>
   );
