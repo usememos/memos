@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
+import { useTranslate } from "@/utils/i18n";
 import PreviewImageDialog from "../../../PreviewImageDialog";
 import AttachmentCard from "./AttachmentCard";
 import SectionHeader from "./SectionHeader";
@@ -100,7 +101,7 @@ const VisualItem = ({ attachment, onImageClick }: VisualItemProps) => {
 };
 
 const VisualGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; onImageClick: (url: string) => void }) => (
-  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+  <div className="grid grid-cols-3 lg:grid-cols-5 gap-1.5">
     {attachments.map((attachment) => (
       <VisualItem key={attachment.name} attachment={attachment} onImageClick={onImageClick} />
     ))}
@@ -128,6 +129,7 @@ const DocsList = ({ attachments }: { attachments: Attachment[] }) => (
 const Divider = () => <div className="border-t mt-1 border-border opacity-60" />;
 
 const AttachmentList = ({ attachments }: AttachmentListProps) => {
+  const t = useTranslate();
   const [previewImage, setPreviewImage] = useState<{ open: boolean; urls: string[]; index: number; mimeType?: string }>({
     open: false,
     urls: [],
@@ -139,9 +141,34 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
 
   const imageAttachments = useMemo(() => visual.filter(isImageAttachment), [visual]);
   const imageUrls = useMemo(() => imageAttachments.map(getAttachmentUrl), [imageAttachments]);
+  
+  // Count only non-image attachments for "Attachments" label
+  const nonImageAttachmentCount = audio.length + docs.length;
 
-  if (attachments.length === 0) {
-    return null;
+  // If there are no non-image attachments, only show images (or nothing if no images either)
+  if (nonImageAttachmentCount === 0) {
+    if (imageAttachments.length === 0) {
+      return null;
+    }
+    
+    // Only images, no "Attachments" label
+    const handleImageClick = (imgUrl: string) => {
+      const index = imageUrls.findIndex((url) => url === imgUrl);
+      const mimeType = imageAttachments[index]?.type;
+      setPreviewImage({ open: true, urls: imageUrls, index, mimeType });
+    };
+
+    return (
+      <>
+        <VisualGrid attachments={imageAttachments} onImageClick={handleImageClick} />
+        <PreviewImageDialog
+          open={previewImage.open}
+          onOpenChange={(open: boolean) => setPreviewImage((prev) => ({ ...prev, open }))}
+          imgUrls={previewImage.urls}
+          initialIndex={previewImage.index}
+        />
+      </>
+    );
   }
 
   const handleImageClick = (imgUrl: string) => {
@@ -150,19 +177,18 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
     setPreviewImage({ open: true, urls: imageUrls, index, mimeType });
   };
 
-  const sections = [visual.length > 0, audio.length > 0, docs.length > 0];
-  const sectionCount = sections.filter(Boolean).length;
-
   return (
     <>
+      {imageAttachments.length > 0 && (
+        <div className="w-full">
+          <VisualGrid attachments={imageAttachments} onImageClick={handleImageClick} />
+        </div>
+      )}
+
       <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
-        <SectionHeader icon={PaperclipIcon} title="Attachments" count={attachments.length} />
+        <SectionHeader icon={PaperclipIcon} title={t("common.attachments")} count={nonImageAttachmentCount} />
 
         <div className="p-1.5 flex flex-col gap-1">
-          {visual.length > 0 && <VisualGrid attachments={visual} onImageClick={handleImageClick} />}
-
-          {visual.length > 0 && sectionCount > 1 && <Divider />}
-
           {audio.length > 0 && <AudioList attachments={audio} />}
 
           {audio.length > 0 && docs.length > 0 && <Divider />}

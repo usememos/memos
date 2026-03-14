@@ -1,9 +1,12 @@
 import { useEffect, useRef } from "react";
+import { timestampDate } from "@bufbuild/protobuf/wkt";
+import dayjs from "dayjs";
 import { MasonryItemProps } from "./types";
 
 export function MasonryItem({ memo, renderer, renderContext, onHeightChange }: MasonryItemProps) {
   const itemRef = useRef<HTMLDivElement>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
+  const displayDate = memo.displayTime ? dayjs(timestampDate(memo.displayTime)).format("YYYY-MM-DD") : undefined;
 
   useEffect(() => {
     if (!itemRef.current) return;
@@ -28,5 +31,9 @@ export function MasonryItem({ memo, renderer, renderContext, onHeightChange }: M
     };
   }, [memo.name, onHeightChange]);
 
-  return <div ref={itemRef}>{renderer(memo, renderContext)}</div>;
+  return (
+    <div ref={itemRef} data-display-date={displayDate} data-memo-name={memo.name}>
+      {renderer(memo, renderContext)}
+    </div>
+  );
 }

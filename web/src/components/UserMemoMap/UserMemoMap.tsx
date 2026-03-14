@@ -1,4 +1,5 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
+import dayjs from "dayjs";
 import L, { DivIcon } from "leaflet";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
@@ -93,12 +94,7 @@ const UserMemoMap = ({ creator, className }: Props) => {
                 <div className="flex flex-col p-0.5">
                   <div className="flex items-center justify-between border-b border-border pb-1 mb-1">
                     <span className="text-[10px] font-medium text-muted-foreground">
-                      {memo.displayTime &&
-                        timestampDate(memo.displayTime).toLocaleDateString(undefined, {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })}
+                      {memo.displayTime && dayjs(timestampDate(memo.displayTime)).format("YYYY-MM-DD")}
                     </span>
                     <Link
                       to={`/memos/${memo.name.split("/").pop()}`}

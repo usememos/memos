@@ -34,6 +34,7 @@ export interface YearCalendarProps {
   selectedYear: number;
   data: Record<string, number>;
   onYearChange: (year: number) => void;
+  onToday?: () => void;
   onDateClick: (date: string) => void;
   className?: string;
 }

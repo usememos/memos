@@ -1,6 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { isEqual } from "lodash-es";
+import dayjs from "dayjs";
 import { CheckCircleIcon, Code2Icon, HashIcon, LinkIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Memo, Memo_PropertySchema, MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
@@ -39,13 +40,13 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
 
       <div className="w-full space-y-1">
         <SectionLabel>{t("common.created-at")}</SectionLabel>
-        <p className="text-sm text-foreground/70">{memo.createTime ? timestampDate(memo.createTime).toLocaleString() : "—"}</p>
+        <p className="text-sm text-foreground/70">{memo.createTime ? dayjs(timestampDate(memo.createTime)).format("YYYY-MM-DD HH:mm:ss") : "—"}</p>
       </div>
 
       {!isEqual(memo.createTime, memo.updateTime) && (
         <div className="w-full space-y-1">
           <SectionLabel>{t("common.last-updated-at")}</SectionLabel>
-          <p className="text-sm text-foreground/70">{memo.updateTime ? timestampDate(memo.updateTime).toLocaleString() : "—"}</p>
+          <p className="text-sm text-foreground/70">{memo.updateTime ? dayjs(timestampDate(memo.updateTime)).format("YYYY-MM-DD HH:mm:ss") : "—"}</p>
         </div>
       )}
 

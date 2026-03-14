@@ -1,5 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { memo, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -73,17 +74,19 @@ interface MonthCardProps {
   data: Record<string, number>;
   maxCount: number;
   onDateClick: (date: string) => void;
+  locale: string;
 }
 
-const MonthCard = memo(({ month, data, maxCount, onDateClick }: MonthCardProps) => (
+const MonthCard = memo(({ month, data, maxCount, onDateClick, locale }: MonthCardProps) => (
   <article className="flex flex-col gap-2 rounded-xl border border-border/20 bg-muted/5 p-3 transition-colors hover:bg-muted/10">
-    <header className="text-[10px] font-medium text-muted-foreground/80 uppercase tracking-widest">{getMonthLabel(month)}</header>
+    <header className="text-[10px] font-medium text-muted-foreground/80 tracking-wider">{getMonthLabel(month, locale)}</header>
     <MonthCalendar month={month} data={data} maxCount={maxCount} size="small" onClick={onDateClick} disableTooltips />
   </article>
 ));
 MonthCard.displayName = "MonthCard";
 
-export const YearCalendar = memo(({ selectedYear, data, onYearChange, onDateClick, className }: YearCalendarProps) => {
+export const YearCalendar = memo(({ selectedYear, data, onYearChange, onToday, onDateClick, className }: YearCalendarProps) => {
+  const { i18n } = useTranslation();
   const currentYear = useMemo(() => new Date().getFullYear(), []);
   const yearData = useMemo(() => filterDataByYear(data, selectedYear), [data, selectedYear]);
   const months = useMemo(() => generateMonthsForYear(selectedYear), [selectedYear]);
@@ -99,14 +102,14 @@ export const YearCalendar = memo(({ selectedYear, data, onYearChange, onDateClic
         currentYear={currentYear}
         onPrev={() => canGoPrev && onYearChange(selectedYear - 1)}
         onNext={() => canGoNext && onYearChange(selectedYear + 1)}
-        onToday={() => onYearChange(currentYear)}
+        onToday={() => (onToday ? onToday() : onYearChange(currentYear))}
         canGoPrev={canGoPrev}
         canGoNext={canGoNext}
       />
 
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 animate-fade-in">
         {months.map((month) => (
-          <MonthCard key={month} month={month} data={yearData} maxCount={yearMaxCount} onDateClick={onDateClick} />
+          <MonthCard key={month} month={month} data={yearData} maxCount={yearMaxCount} onDateClick={onDateClick} locale={i18n.language} />
         ))}
       </div>
     </section>

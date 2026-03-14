@@ -4,11 +4,31 @@
 
 @theme {
   --default-transition-duration: 150ms;
+  --transition-fast: 100ms;
+  --transition-normal: 150ms;
+  --transition-slow: 200ms;
+  
+  --animation-fade: fade 150ms ease-in-out;
+  --animation-slide-in-up: slide-in-up 200ms ease-out;
+  --animation-slide-in-down: slide-in-down 200ms ease-out;
+  --animation-slide-in-left: slide-in-left 200ms ease-out;
+  --animation-slide-in-right: slide-in-right 200ms ease-out;
+  --animation-scale-in: scale-in 150ms ease-out;
+  --animation-spin: spin 1s linear infinite;
+  --animation-pulse: pulse 2s ease-in-out infinite;
 }
 
 @layer base {
   * {
     @apply border-border outline-none ring-0;
+  }
+  html {
+    font-size: 14px;
+  }
+  @media (min-width: 768px) {
+    html {
+      font-size: 15px;
+    }
   }
   body {
     @apply bg-background text-foreground;
@@ -48,5 +68,138 @@
 
   .leaflet-popup-tip {
     background-color: var(--background) !important;
+  }
+}
+
+@layer components {
+  /* Custom Animations */
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-in-down {
+    from {
+      opacity: 0;
+      transform: translateY(-16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-in-left {
+    from {
+      opacity: 0;
+      transform: translateX(-16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Smooth transitions for interactive elements */
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    @apply transition-all duration-150;
+  }
+
+  /* Keep focus visible but subtle; text fields use their own border focus styles */
+  button:focus-visible,
+  a:focus-visible,
+  [role="button"]:focus-visible,
+  [type="checkbox"]:focus-visible,
+  [type="radio"]:focus-visible {
+    @apply ring-1 ring-ring/35;
+  }
+
+  /* Smooth hover effect for cards */
+  .card-hover {
+    @apply transition-all duration-150 hover:shadow-md hover:-translate-y-0.5;
+  }
+
+  /* Scrollbar Styling */
+  /* Light mode scrollbar */
+  @media (prefers-color-scheme: light) {
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f5f5f5;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cccccc;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #999999;
+    }
+  }
+
+  /* Dark mode scrollbar */
+  @media (prefers-color-scheme: dark) {
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #333333;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #555555;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #777777;
+    }
   }
 }

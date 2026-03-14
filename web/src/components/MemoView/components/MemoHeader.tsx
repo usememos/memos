@@ -1,4 +1,5 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
+import dayjs from "dayjs";
 import { BookmarkIcon } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -13,7 +14,7 @@ import MemoActionMenu from "../../MemoActionMenu";
 import { ReactionSelector } from "../../MemoReactionListView";
 import UserAvatar from "../../UserAvatar";
 import VisibilityIcon from "../../VisibilityIcon";
-import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
+import { useMemoViewContext } from "../MemoViewContext";
 import type { MemoHeaderProps } from "../types";
 
 const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, showPinned, onEdit, onGotoDetail, onUnpin }) => {
@@ -21,17 +22,14 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
   const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
 
   const { memo, creator, currentUser, isArchived, readonly } = useMemoViewContext();
-  const { relativeTimeFormat } = useMemoViewDerived();
 
-  const displayTime = isArchived ? (
-    (memo.displayTime ? timestampDate(memo.displayTime) : undefined)?.toLocaleString(i18n.language)
-  ) : (
-    <relative-time
-      datetime={(memo.displayTime ? timestampDate(memo.displayTime) : undefined)?.toISOString()}
-      lang={i18n.language}
-      format={relativeTimeFormat}
-    ></relative-time>
-  );
+  const rawDisplayTime = memo.displayTime ? timestampDate(memo.displayTime) : undefined;
+  const weekday = rawDisplayTime
+    ? i18n.language.startsWith("zh")
+      ? ["周日", "周一", "周二", "周三", "周四", "周五", "周六"][rawDisplayTime.getDay()]
+      : rawDisplayTime.toLocaleDateString(i18n.language, { weekday: "short" })
+    : "";
+  const displayTime = rawDisplayTime ? `${dayjs(rawDisplayTime).format("YYYY-MM-DD HH:mm:ss")} ${weekday}` : "";
 
   return (
     <div className="w-full flex flex-row justify-between items-center gap-2">

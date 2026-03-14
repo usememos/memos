@@ -32,19 +32,19 @@ const Navigation = (props: Props) => {
     id: "header-memos",
     path: Routes.ROOT,
     title: t("common.memos"),
-    icon: <LibraryIcon className="w-6 h-auto shrink-0" />,
+    icon: <LibraryIcon className="w-5 h-auto shrink-0 md:w-6" />,
   };
   const exploreNavLink: NavLinkItem = {
     id: "header-explore",
     path: Routes.EXPLORE,
     title: t("common.explore"),
-    icon: <EarthIcon className="w-6 h-auto shrink-0" />,
+    icon: <EarthIcon className="w-5 h-auto shrink-0 md:w-6" />,
   };
   const attachmentsNavLink: NavLinkItem = {
     id: "header-attachments",
     path: Routes.ATTACHMENTS,
     title: t("common.attachments"),
-    icon: <PaperclipIcon className="w-6 h-auto shrink-0" />,
+    icon: <PaperclipIcon className="w-5 h-auto shrink-0 md:w-6" />,
   };
   const unreadCount = notifications.filter((n) => n.status === UserNotification_Status.UNREAD).length;
   const inboxNavLink: NavLinkItem = {
@@ -53,7 +53,7 @@ const Navigation = (props: Props) => {
     title: t("common.inbox"),
     icon: (
       <div className="relative">
-        <BellIcon className="w-6 h-auto shrink-0" />
+        <BellIcon className="w-5 h-auto shrink-0 md:w-6" />
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center bg-primary text-primary-foreground text-[10px] font-semibold rounded-full border-2 border-background">
             {unreadCount > 99 ? "99+" : unreadCount}
@@ -66,7 +66,7 @@ const Navigation = (props: Props) => {
     id: "header-auth",
     path: Routes.AUTH,
     title: t("common.sign-in"),
-    icon: <UserCircleIcon className="w-6 h-auto shrink-0" />,
+    icon: <UserCircleIcon className="w-5 h-auto shrink-0 md:w-6" />,
   };
 
   const navLinks: NavLinkItem[] = currentUser
@@ -83,7 +83,7 @@ const Navigation = (props: Props) => {
           <NavLink
             className={({ isActive }) =>
               cn(
-                "px-2 py-2 rounded-2xl border flex flex-row items-center text-lg text-sidebar-foreground transition-colors",
+                "px-1.5 py-1.5 rounded-xl md:rounded-2xl border flex flex-row items-center text-base md:text-lg text-sidebar-foreground transition-colors",
                 collapsed ? "" : "w-full px-4",
                 isActive
                   ? "bg-sidebar-accent text-sidebar-accent-foreground border-sidebar-accent-border drop-shadow"
@@ -109,7 +109,7 @@ const Navigation = (props: Props) => {
             ) : (
               navLink.icon
             )}
-            {!props.collapsed && <span className="ml-3 truncate">{navLink.title}</span>}
+            {!props.collapsed && <span className="ml-2.5 truncate">{navLink.title}</span>}
           </NavLink>
         ))}
       </div>

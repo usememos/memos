@@ -1,43 +1,43 @@
 :root {
-  /* Surfaces — layered from darkest to lightest, consistent cool-slate tint */
-  --background: oklch(0.09 0.006 265);
-  --foreground: oklch(0.82 0.005 265);
+  /* Surfaces — layered from darkest to lightest, neutral gray tones */
+  --background: #171717;
+  --foreground: #e8e8e8;
 
-  --card: oklch(0.13 0.006 265);
-  --card-foreground: oklch(0.82 0.005 265);
+  --card: #202020;
+  --card-foreground: #e8e8e8;
 
   /* Popovers float above cards — slightly lighter to appear elevated */
-  --popover: oklch(0.17 0.006 265);
-  --popover-foreground: oklch(0.82 0.005 265);
+  --popover: #272727;
+  --popover-foreground: #e8e8e8;
 
-  /* Primary — bright blue, clearly interactive in dark context */
-  --primary: oklch(0.65 0.15 250);
-  --primary-foreground: oklch(0.98 0.003 265);
+  /* Primary — bright green, clearly interactive in dark context */
+  --primary: #4ade80;
+  --primary-foreground: #fcfcfc;
 
   /* Secondary — subtle elevated surface for secondary buttons */
-  --secondary: oklch(0.19 0.007 265);
-  --secondary-foreground: oklch(0.82 0.005 265);
+  --secondary: #1c5030;
+  --secondary-foreground: #d4d4d4;
 
   /* Muted — inline backgrounds (code, skeletons, error panels) */
-  --muted: oklch(0.21 0.008 265);
-  --muted-foreground: oklch(0.56 0.005 265);
+  --muted: #272727;
+  --muted-foreground: #999999;
 
   /* Accent — hover states, slightly more chromatic than muted to feel interactive */
-  --accent: oklch(0.22 0.012 265);
-  --accent-foreground: oklch(0.88 0.005 265);
+  --accent: #1c5030;
+  --accent-foreground: #e8e8e8;
 
   /* Destructive — vivid red, clearly visible on dark surfaces */
-  --destructive: oklch(0.62 0.2 22);
-  --destructive-foreground: oklch(0.98 0.003 265);
+  --destructive: #f87171;
+  --destructive-foreground: #fcfcfc;
 
   /* Borders — --border for layout dividers, --input for form field borders */
-  --border: oklch(0.21 0.007 265);
-  --input: oklch(0.25 0.007 265);
-  --ring: oklch(0.65 0.15 250);
+  --border: #252525;
+  --input: #1f1f1f;
+  --ring: #4ade80;
 
   /* Sidebar — darkest surface, distinct from background */
-  --sidebar: oklch(0.07 0.005 265);
-  --sidebar-foreground: oklch(0.68 0.005 265);
-  --sidebar-accent: oklch(0.19 0.01 265);
-  --sidebar-accent-foreground: oklch(0.84 0.005 265);
+  --sidebar: #121212;
+  --sidebar-foreground: #bfbfbf;
+  --sidebar-accent: #1a472e;
+  --sidebar-accent-foreground: #e8e8e8;
 }

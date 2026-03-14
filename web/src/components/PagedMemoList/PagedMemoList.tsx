@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowUpIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { matchPath } from "react-router-dom";
+import { matchPath, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
 import { useView } from "@/contexts/ViewContext";
@@ -85,6 +85,9 @@ const PagedMemoList = (props: Props) => {
   const t = useTranslate();
   const { layout } = useView();
   const queryClient = useQueryClient();
+  const location = useLocation();
+  const [jumpDate, setJumpDate] = useState<string | null>(null);
+  const jumpFetchAttemptsRef = useRef(0);
 
   // Show memo editor only on the root route
   const showMemoEditor = Boolean(matchPath(Routes.ROOT, window.location.pathname));
@@ -147,6 +150,44 @@ const PagedMemoList = (props: Props) => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  useEffect(() => {
+    const hash = location.hash || "";
+    const matched = /^#date=(\d{4}-\d{2}-\d{2})$/.exec(hash);
+    if (matched?.[1]) {
+      setJumpDate(matched[1]);
+      jumpFetchAttemptsRef.current = 0;
+    }
+  }, [location.hash]);
+
+  useEffect(() => {
+    const onJumpDate = (event: Event) => {
+      const custom = event as CustomEvent<{ date?: string }>;
+      if (custom.detail?.date) {
+        setJumpDate(custom.detail.date);
+        jumpFetchAttemptsRef.current = 0;
+      }
+    };
+
+    window.addEventListener("memos:jump-to-date", onJumpDate as EventListener);
+    return () => window.removeEventListener("memos:jump-to-date", onJumpDate as EventListener);
+  }, []);
+
+  useEffect(() => {
+    if (!jumpDate) return;
+
+    const target = document.querySelector(`[data-display-date='${jumpDate}']`) as HTMLElement | null;
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+
+    const canTryMore = Boolean(hasNextPage) && !isFetchingNextPage && jumpFetchAttemptsRef.current < 8;
+    if (canTryMore) {
+      jumpFetchAttemptsRef.current += 1;
+      void fetchNextPage();
+    }
+  }, [jumpDate, sortedMemoList.length, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const children = (
     <div className="flex flex-col justify-start items-start w-full max-w-full">

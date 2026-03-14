@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { stringifyFilters } from "@/contexts/MemoFilterContext";
 
 export const useDateFilterNavigation = (targetPath?: string) => {
   const navigate = useNavigate();
@@ -8,11 +7,17 @@ export const useDateFilterNavigation = (targetPath?: string) => {
 
   const navigateToDateFilter = useCallback(
     (date: string) => {
-      const filterQuery = stringifyFilters([{ factor: "displayTime", value: date }]);
       const basePath = targetPath ?? location.pathname;
-      navigate(`${basePath}?filter=${filterQuery}`);
+
+      if (basePath !== location.pathname) {
+        navigate(`${basePath}${location.search}#date=${date}`);
+        return;
+      }
+
+      window.history.replaceState(null, "", `${basePath}${location.search}#date=${date}`);
+      window.dispatchEvent(new CustomEvent("memos:jump-to-date", { detail: { date } }));
     },
-    [navigate, location.pathname, targetPath],
+    [navigate, location.pathname, location.search, targetPath],
   );
 
   return navigateToDateFilter;

@@ -34,8 +34,8 @@ export const calculateYearMaxCount = (data: Record<string, number>): number => {
   return Math.max(max, MIN_COUNT);
 };
 
-export const getMonthLabel = (month: string): string => {
-  return dayjs(month).format("MMM");
+export const getMonthLabel = (month: string, locale?: string): string => {
+  return dayjs(month).toDate().toLocaleString(locale, { month: "short" });
 };
 
 export const filterDataByYear = (data: Record<string, number>, year: number): Record<string, number> => {

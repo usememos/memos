@@ -2,6 +2,7 @@ import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema, timestampDate } from "@bufbuild/protobuf/wkt";
 import { CheckIcon, MessageCircleIcon, TrashIcon, XIcon } from "lucide-react";
 import { useState } from "react";
+import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import UserAvatar from "@/components/UserAvatar";
 import { activityServiceClient, memoServiceClient, userServiceClient } from "@/connect";
@@ -166,11 +167,7 @@ function MemoCommentMessage({ notification }: Props) {
               <span className="font-semibold text-sm text-foreground/95">{sender?.displayName || sender?.username}</span>
               <span className="text-sm text-muted-foreground/80">commented on your memo</span>
               <span className="text-xs text-muted-foreground/60">
-                {notification.createTime &&
-                  timestampDate(notification.createTime)?.toLocaleDateString([], { month: "short", day: "numeric" })}{" "}
-                at{" "}
-                {notification.createTime &&
-                  timestampDate(notification.createTime)?.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                {notification.createTime && dayjs(timestampDate(notification.createTime)).format("YYYY-MM-DD HH:mm:ss")}
               </span>
             </div>
             <div className="flex items-center gap-1 shrink-0">

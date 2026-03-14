@@ -32,10 +32,14 @@ export const MonthNavigator = memo(({ visibleMonth, onMonthChange, activityStats
   const handleDateClick = useCallback(
     (date: string) => {
       onMonthChange(formatMonth(date));
-      setIsOpen(false);
     },
     [onMonthChange],
   );
+
+  const handleTodayClick = useCallback(() => {
+    onMonthChange(dayjs().format("YYYY-MM"));
+    // Do not close the dialog when clicking "Today" — keep calendar open
+  }, [onMonthChange]);
 
   const handleYearChange = useCallback(
     (year: number) => onMonthChange(setYearAndMonth(year, currentMonthNum)),
@@ -59,7 +63,13 @@ export const MonthNavigator = memo(({ visibleMonth, onMonthChange, activityStats
           showCloseButton={false}
         >
           <DialogTitle className="sr-only">Select Month</DialogTitle>
-          <YearCalendar selectedYear={currentYear} data={activityStats} onYearChange={handleYearChange} onDateClick={handleDateClick} />
+          <YearCalendar
+            selectedYear={currentYear}
+            data={activityStats}
+            onYearChange={handleYearChange}
+            onToday={handleTodayClick}
+            onDateClick={handleDateClick}
+          />
         </DialogContent>
       </Dialog>
 

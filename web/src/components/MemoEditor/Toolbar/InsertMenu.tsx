@@ -1,20 +1,10 @@
 import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
-import { FileIcon, LinkIcon, LoaderIcon, type LucideIcon, MapPinIcon, Maximize2Icon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { FileIcon, ImageIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDebounce } from "react-use";
 import { useReverseGeocoding } from "@/components/map";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-  useDropdownMenuSubHoverDelay,
-} from "@/components/ui/dropdown-menu";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { LinkMemoDialog, LocationDialog } from "../components";
@@ -30,12 +20,7 @@ const InsertMenu = (props: InsertMenuProps) => {
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
-  const [moreSubmenuOpen, setMoreSubmenuOpen] = useState(false);
-
-  const { handleTriggerEnter, handleTriggerLeave, handleContentEnter, handleContentLeave } = useDropdownMenuSubHoverDelay(
-    150,
-    setMoreSubmenuOpen,
-  );
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const { fileInputRef, selectingFlag, handleFileInputChange, handleUploadClick } = useFileUpload((newFiles: LocalFile[]) => {
     newFiles.forEach((file) => dispatch(actions.addLocalFile(file)));
@@ -115,67 +100,85 @@ const InsertMenu = (props: InsertMenuProps) => {
 
   const handleToggleFocusMode = useCallback(() => {
     onToggleFocusMode?.();
-    setMoreSubmenuOpen(false);
   }, [onToggleFocusMode]);
 
-  const menuItems = useMemo(
-    () =>
-      [
-        {
-          key: "upload",
-          label: t("common.upload"),
-          icon: FileIcon,
-          onClick: handleUploadClick,
-        },
-        {
-          key: "link",
-          label: t("tooltip.link-memo"),
-          icon: LinkIcon,
-          onClick: handleOpenLinkDialog,
-        },
-        {
-          key: "location",
-          label: t("tooltip.select-location"),
-          icon: MapPinIcon,
-          onClick: handleLocationClick,
-        },
-      ] satisfies Array<{ key: string; label: string; icon: LucideIcon; onClick: () => void }>,
-    [handleLocationClick, handleOpenLinkDialog, handleUploadClick, t],
-  );
+  const handleImageUploadClick = useCallback(() => {
+    imageInputRef.current?.click();
+  }, []);
 
   return (
     <>
-      <DropdownMenu modal={false}>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" className="shadow-none" disabled={isUploading}>
-            {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <PlusIcon className="size-4" />}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          {menuItems.map((item) => (
-            <DropdownMenuItem key={item.key} onClick={item.onClick}>
-              <item.icon className="w-4 h-4" />
-              {item.label}
-            </DropdownMenuItem>
-          ))}
-          {/* View submenu with Focus Mode */}
-          <DropdownMenuSub open={moreSubmenuOpen} onOpenChange={setMoreSubmenuOpen}>
-            <DropdownMenuSubTrigger onPointerEnter={handleTriggerEnter} onPointerLeave={handleTriggerLeave}>
-              <MoreHorizontalIcon className="w-4 h-4" />
-              {t("common.more")}
-            </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent onPointerEnter={handleContentEnter} onPointerLeave={handleContentLeave}>
-              <DropdownMenuItem onClick={handleToggleFocusMode}>
-                <Maximize2Icon className="w-4 h-4" />
-                {t("editor.focus-mode")}
-              </DropdownMenuItem>
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
-          <div className="px-2 py-1 text-xs text-muted-foreground opacity-80">{t("editor.slash-commands")}</div>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {/* Flat button group for file upload, link memo, and location */}
+      <div className="flex flex-row gap-2">
+        {/* Mobile quick image picker */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleImageUploadClick}
+          disabled={isUploading}
+          title={t("common.image")}
+          className="px-2 md:hidden"
+        >
+          <ImageIcon className="size-4" />
+        </Button>
+
+        {/* Upload button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleUploadClick}
+          disabled={isUploading}
+          title={t("common.upload")}
+          className="px-2"
+        >
+          {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <FileIcon className="size-4" />}
+        </Button>
+
+        {/* Link memo button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleOpenLinkDialog}
+          title={t("tooltip.link-memo")}
+          className="px-2"
+        >
+          <LinkIcon className="size-4" />
+        </Button>
+
+        {/* Location button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleLocationClick}
+          title={t("tooltip.select-location")}
+          className="px-2"
+        >
+          <MapPinIcon className="size-4" />
+        </Button>
+
+        {/* Focus mode button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleToggleFocusMode}
+          title={t("editor.focus-mode")}
+          className="px-2"
+        >
+          <Maximize2Icon className="size-4" />
+        </Button>
+      </div>
 
       {/* Hidden file input */}
+      <input
+        className="hidden"
+        ref={imageInputRef}
+        disabled={isUploading}
+        onChange={handleFileInputChange}
+        type="file"
+        multiple={true}
+        accept="image/*"
+      />
+
       <input
         className="hidden"
         ref={fileInputRef}
