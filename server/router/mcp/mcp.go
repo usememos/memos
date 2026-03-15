@@ -7,17 +7,20 @@ import (
 	"github.com/labstack/echo/v5/middleware"
 	mcpserver "github.com/mark3labs/mcp-go/server"
 
+	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
 )
 
 type MCPService struct {
+	profile       *profile.Profile
 	store         *store.Store
 	authenticator *auth.Authenticator
 }
 
-func NewMCPService(store *store.Store, secret string) *MCPService {
+func NewMCPService(profile *profile.Profile, store *store.Store, secret string) *MCPService {
 	return &MCPService{
+		profile:       profile,
 		store:         store,
 		authenticator: auth.NewAuthenticator(store, secret),
 	}
@@ -25,10 +28,16 @@ func NewMCPService(store *store.Store, secret string) *MCPService {
 
 func (s *MCPService) RegisterRoutes(echoServer *echo.Echo) {
 	mcpSrv := mcpserver.NewMCPServer("Memos", "1.0.0",
-		mcpserver.WithToolCapabilities(false),
+		mcpserver.WithToolCapabilities(true),
+		mcpserver.WithResourceCapabilities(true, true),
+		mcpserver.WithPromptCapabilities(true),
+		mcpserver.WithLogging(),
 	)
 	s.registerMemoTools(mcpSrv)
 	s.registerTagTools(mcpSrv)
+	s.registerAttachmentTools(mcpSrv)
+	s.registerRelationTools(mcpSrv)
+	s.registerReactionTools(mcpSrv)
 	s.registerMemoResources(mcpSrv)
 	s.registerPrompts(mcpSrv)
 
