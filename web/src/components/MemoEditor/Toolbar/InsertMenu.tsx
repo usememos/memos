@@ -1,10 +1,11 @@
 import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
-import { FileIcon, ImageIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { FileIcon, ImageIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MoreHorizontal } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { useDebounce } from "react-use";
 import { useReverseGeocoding } from "@/components/map";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { LinkMemoDialog, LocationDialog } from "../components";
@@ -13,14 +14,13 @@ import { useEditorContext } from "../state";
 import type { InsertMenuProps } from "../types";
 import type { LocalFile } from "../types/attachment";
 
-const InsertMenu = (props: InsertMenuProps) => {
+const InsertMenu = (props: InsertMenuProps & { compact?: boolean }) => {
   const t = useTranslate();
   const { state, actions, dispatch } = useEditorContext();
   const { location: initialLocation, onLocationChange, onToggleFocusMode, isUploading: isUploadingProp } = props;
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
-  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const { fileInputRef, selectingFlag, handleFileInputChange, handleUploadClick } = useFileUpload((newFiles: LocalFile[]) => {
     newFiles.forEach((file) => dispatch(actions.addLocalFile(file)));
@@ -103,81 +103,103 @@ const InsertMenu = (props: InsertMenuProps) => {
   }, [onToggleFocusMode]);
 
   const handleImageUploadClick = useCallback(() => {
-    imageInputRef.current?.click();
-  }, []);
+    handleUploadClick({ imagesOnly: true });
+  }, [handleUploadClick]);
 
   return (
     <>
       {/* Flat button group for file upload, link memo, and location */}
       <div className="flex flex-row gap-2">
-        {/* Mobile quick image picker */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleImageUploadClick}
-          disabled={isUploading}
-          title={t("common.image")}
-          className="px-2 md:hidden"
-        >
-          <ImageIcon className="size-4" />
-        </Button>
+        {/* If compact is true, render a dropdown menu trigger to avoid overflow */}
+        {props.compact ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="px-2" title={t("common.collapse")} aria-label={t("common.collapse")}>
+                <MoreHorizontal className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
 
-        {/* Upload button */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleUploadClick}
-          disabled={isUploading}
-          title={t("common.upload")}
-          className="px-2"
-        >
-          {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <FileIcon className="size-4" />}
-        </Button>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem
+                onClick={() => {
+                  handleImageUploadClick();
+                }}
+              >
+                <ImageIcon className="size-4" /> {t("common.image")}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  handleUploadClick();
+                }}
+              >
+                <FileIcon className="size-4" /> {t("common.upload")}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  handleOpenLinkDialog();
+                }}
+              >
+                <LinkIcon className="size-4" /> {t("tooltip.link-memo")}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  handleLocationClick();
+                }}
+              >
+                <MapPinIcon className="size-4" /> {t("tooltip.select-location")}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  handleToggleFocusMode();
+                }}
+              >
+                <Maximize2Icon className="size-4" /> {t("editor.focus-mode")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <>
+            {/* Mobile quick image picker */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleImageUploadClick}
+              disabled={isUploading}
+              title={t("common.image")}
+              className="px-2 md:hidden"
+            >
+              <ImageIcon className="size-4" />
+            </Button>
 
-        {/* Link memo button */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleOpenLinkDialog}
-          title={t("tooltip.link-memo")}
-          className="px-2"
-        >
-          <LinkIcon className="size-4" />
-        </Button>
+            {/* Upload button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleUploadClick()}
+              disabled={isUploading}
+              title={t("common.upload")}
+              className="px-2"
+            >
+              {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <FileIcon className="size-4" />}
+            </Button>
 
-        {/* Location button */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleLocationClick}
-          title={t("tooltip.select-location")}
-          className="px-2"
-        >
-          <MapPinIcon className="size-4" />
-        </Button>
+            {/* Link memo button */}
+            <Button variant="outline" size="sm" onClick={handleOpenLinkDialog} title={t("tooltip.link-memo")} className="px-2">
+              <LinkIcon className="size-4" />
+            </Button>
 
-        {/* Focus mode button */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleToggleFocusMode}
-          title={t("editor.focus-mode")}
-          className="px-2"
-        >
-          <Maximize2Icon className="size-4" />
-        </Button>
+            {/* Location button */}
+            <Button variant="outline" size="sm" onClick={handleLocationClick} title={t("tooltip.select-location")} className="px-2">
+              <MapPinIcon className="size-4" />
+            </Button>
+
+            {/* Focus mode button */}
+            <Button variant="outline" size="sm" onClick={handleToggleFocusMode} title={t("editor.focus-mode")} className="px-2">
+              <Maximize2Icon className="size-4" />
+            </Button>
+          </>
+        )}
       </div>
-
-      {/* Hidden file input */}
-      <input
-        className="hidden"
-        ref={imageInputRef}
-        disabled={isUploading}
-        onChange={handleFileInputChange}
-        type="file"
-        multiple={true}
-        accept="image/*"
-      />
 
       <input
         className="hidden"

@@ -53,9 +53,11 @@ interface AttachmentItemProps {
 }
 
 const AttachmentItem = ({ attachment }: AttachmentItemProps) => (
-  <div className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
-    <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border border-border overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
-      <AttachmentIcon attachment={attachment} strokeWidth={0.5} />
+  <div className="w-full h-auto flex flex-col justify-start items-start">
+    <div className="w-full h-0 pb-[100%] relative border border-border overflow-hidden rounded-xl cursor-pointer hover:shadow hover:opacity-80">
+      <div className="absolute inset-0 flex items-center justify-center">
+        <AttachmentIcon attachment={attachment} strokeWidth={0.5} />
+      </div>
     </div>
     <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">
       <p className="text-xs shrink text-muted-foreground truncate">{attachment.filename}</p>
@@ -226,7 +228,7 @@ const Attachments = () => {
                                 {dayjs(monthStr).toDate().toLocaleString(i18n.language, { month: "short" })}
                               </span>
                             </div>
-                            <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
+                            <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] grid grid-cols-3 sm:grid-cols-4 gap-4">
                               {attachments.map((attachment) => (
                                 <AttachmentItem key={attachment.name} attachment={attachment} />
                               ))}
@@ -240,8 +242,8 @@ const Attachments = () => {
                           <Separator />
                           <div className="w-full flex flex-row justify-start items-start">
                             <div className="w-16 sm:w-24 sm:pl-4 flex flex-col justify-start items-start"></div>
-                            <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
-                              <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                            <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] grid grid-cols-3 sm:grid-cols-4 gap-4">
+                              <div className="col-span-3 sm:col-span-4 w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                                 <div className="flex flex-row items-center gap-2">
                                   <span className="text-muted-foreground">{t("resource.unused-resources")}</span>
                                   <span className="text-muted-foreground opacity-80">({unusedAttachments.length})</span>

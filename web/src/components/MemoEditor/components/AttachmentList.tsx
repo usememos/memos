@@ -106,6 +106,9 @@ const AttachmentList: FC<AttachmentListProps> = ({ attachments, localFiles = [],
   }
 
   const items = toAttachmentItems(attachments, localFiles);
+  // Editor should not show image/video inline attachments here — render only documents
+  const nonMediaItems = items.filter((it) => it.category !== "image" && it.category !== "video");
+  if (nonMediaItems.length === 0) return null;
 
   const handleMoveUp = (index: number) => {
     if (index === 0 || !onAttachmentsChange) return;
@@ -141,11 +144,11 @@ const AttachmentList: FC<AttachmentListProps> = ({ attachments, localFiles = [],
     <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
       <div className="flex items-center gap-1.5 px-2 py-1 border-b border-border bg-muted/30">
         <PaperclipIcon className="w-3.5 h-3.5 text-muted-foreground" />
-        <span className="text-xs text-muted-foreground">Attachments ({items.length})</span>
+        <span className="text-xs text-muted-foreground">附件 ({nonMediaItems.length})</span>
       </div>
 
       <div className="p-1 sm:p-1.5 flex flex-col gap-0.5">
-        {items.map((item) => {
+        {nonMediaItems.map((item) => {
           const isLocalFile = item.isLocal;
           const attachmentIndex = isLocalFile ? -1 : attachments.findIndex((a) => a.name === item.id);
 

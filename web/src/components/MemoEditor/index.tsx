@@ -138,11 +138,9 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         {/* Exit button is absolutely positioned in top-right corner when active */}
         <FocusModeExitButton isActive={state.ui.isFocusMode} onToggle={handleToggleFocusMode} title={t("editor.exit-focus-mode")} />
 
-        {memoName && (
-          <div className="w-full -mb-1">
-            <TimestampPopover />
-          </div>
-        )}
+        <div className="w-full -mb-1">
+          <TimestampPopover />
+        </div>
 
         {/* Editor content grows to fill available space in focus mode */}
         <EditorContent ref={editorRef} placeholder={placeholder} autoFocus={autoFocus} />

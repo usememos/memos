@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import { LoaderIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useEffect, useRef, useState } from "react";
 import { useTranslate } from "@/utils/i18n";
 import { validationService } from "../services";
 import { useEditorContext } from "../state";
@@ -27,10 +28,71 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
     dispatch(actions.setMetadata({ visibility }));
   };
 
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const [compact, setCompact] = useState(false);
+  // Ref to hold current compact state for hysteresis
+  const compactRef = useRef<boolean>(false);
+  const leftRef = useRef<HTMLDivElement | null>(null);
+  const rightRef = useRef<HTMLDivElement | null>(null);
+  const measureRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+
+    const ENTER_THRESHOLD = 8; // px required to trigger compact (hysteresis)
+    const EXIT_THRESHOLD = -8; // px required to exit compact (hysteresis)
+
+    const check = () => {
+      const available = el.clientWidth - (rightRef.current?.offsetWidth || 0);
+      // measure the full (expanded) left content width using hidden measurer if available
+      const leftNeeded = measureRef.current?.scrollWidth || leftRef.current?.scrollWidth || 0;
+
+      const diff = leftNeeded - available; // positive -> left needs more space than available
+
+      if (!compactRef.current && diff > ENTER_THRESHOLD) {
+        compactRef.current = true;
+        setCompact(true);
+      } else if (compactRef.current && diff <= EXIT_THRESHOLD) {
+        compactRef.current = false;
+        setCompact(false);
+      }
+    };
+
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    window.addEventListener("resize", check);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", check);
+    };
+  }, []);
+
   return (
-    <div className="w-full flex flex-row justify-between items-center mb-2">
-      <div className="flex flex-row justify-start items-center">
+    <div ref={rootRef} className="w-full flex flex-row justify-between items-center mb-2 relative">
+      {/* Hidden measurer for left content (renders expanded InsertMenu offscreen) */}
+      <div
+        ref={measureRef}
+        aria-hidden
+        className="pointer-events-none absolute left-[-9999px] top-0 opacity-0 select-none"
+        style={{ width: "auto", height: 0, overflow: "visible" }}
+      >
+        <div className="flex flex-row justify-start items-center">
+          <InsertMenu
+            compact={false}
+            isUploading={state.ui.isLoading.uploading}
+            location={state.metadata.location}
+            onLocationChange={handleLocationChange}
+            onToggleFocusMode={handleToggleFocusMode}
+            memoName={memoName}
+          />
+        </div>
+      </div>
+
+      <div ref={leftRef} className="flex flex-row justify-start items-center">
         <InsertMenu
+          compact={compact}
           isUploading={state.ui.isLoading.uploading}
           location={state.metadata.location}
           onLocationChange={handleLocationChange}
@@ -39,7 +101,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
         />
       </div>
 
-      <div className="flex flex-row justify-end items-center gap-2">
+      <div ref={rightRef} className="flex flex-row justify-end items-center gap-2">
         <VisibilitySelector value={state.metadata.visibility} onChange={handleVisibilityChange} />
 
         {onCancel && (

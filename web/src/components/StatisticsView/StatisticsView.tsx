@@ -12,7 +12,7 @@ interface Props {
 const StatisticsView = (props: Props) => {
   const { statisticsData } = props;
   const { activityStats } = statisticsData;
-  const navigateToDateFilter = useDateFilterNavigation();
+  const { filterByDate, jumpToDate } = useDateFilterNavigation();
   const [visibleMonthString, setVisibleMonthString] = useState(dayjs().format("YYYY-MM"));
 
   const maxCount = useMemo(() => {
@@ -25,7 +25,13 @@ const StatisticsView = (props: Props) => {
       <MonthNavigator visibleMonth={visibleMonthString} onMonthChange={setVisibleMonthString} activityStats={activityStats} />
 
       <div className="w-full animate-scale-in">
-        <MonthCalendar month={visibleMonthString} data={activityStats} maxCount={maxCount} onClick={navigateToDateFilter} />
+        <MonthCalendar
+          month={visibleMonthString}
+          data={activityStats}
+          maxCount={maxCount}
+          onClick={filterByDate}
+          onDoubleClick={jumpToDate}
+        />
       </div>
     </div>
   );

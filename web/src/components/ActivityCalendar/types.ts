@@ -26,6 +26,7 @@ export interface MonthCalendarProps {
   maxCount: number;
   size?: CalendarSize;
   onClick?: (date: string) => void;
+  onDoubleClick?: (date: string) => void;
   className?: string;
   disableTooltips?: boolean;
 }

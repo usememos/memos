@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useRef } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { DEFAULT_CELL_SIZE, SMALL_CELL_SIZE } from "./constants";
@@ -10,17 +10,42 @@ export interface CalendarCellProps {
   maxCount: number;
   tooltipText: string;
   onClick?: (date: string) => void;
+  onDoubleClick?: (date: string) => void;
   size?: CalendarSize;
   disableTooltip?: boolean;
 }
 
 export const CalendarCell = memo((props: CalendarCellProps) => {
-  const { day, maxCount, tooltipText, onClick, size = "default", disableTooltip = false } = props;
+  const { day, maxCount, tooltipText, onClick, onDoubleClick, size = "default", disableTooltip = false } = props;
+  const clickTimerRef = useRef<number | undefined>(undefined);
 
   const handleClick = () => {
-    if (day.count > 0 && onClick) {
-      onClick(day.date);
+    if (day.count === 0 || !onClick) {
+      return;
     }
+
+    if (onDoubleClick) {
+      if (clickTimerRef.current) {
+        window.clearTimeout(clickTimerRef.current);
+      }
+      clickTimerRef.current = window.setTimeout(() => {
+        onClick(day.date);
+      }, 220);
+      return;
+    }
+
+    onClick(day.date);
+  };
+
+  const handleDoubleClick = () => {
+    if (day.count === 0 || !onDoubleClick) {
+      return;
+    }
+    if (clickTimerRef.current) {
+      window.clearTimeout(clickTimerRef.current);
+      clickTimerRef.current = undefined;
+    }
+    onDoubleClick(day.date);
   };
 
   const sizeConfig = size === "small" ? SMALL_CELL_SIZE : DEFAULT_CELL_SIZE;
@@ -53,6 +78,7 @@ export const CalendarCell = memo((props: CalendarCellProps) => {
     <button
       type="button"
       onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
       tabIndex={isInteractive ? 0 : -1}
       aria-label={ariaLabel}
       aria-current={day.isToday ? "date" : undefined}

@@ -88,6 +88,7 @@ const PagedMemoList = (props: Props) => {
   const location = useLocation();
   const [jumpDate, setJumpDate] = useState<string | null>(null);
   const jumpFetchAttemptsRef = useRef(0);
+  const jumpInstantRef = useRef(false);
 
   // Show memo editor only on the root route
   const showMemoEditor = Boolean(matchPath(Routes.ROOT, window.location.pathname));
@@ -157,15 +158,17 @@ const PagedMemoList = (props: Props) => {
     if (matched?.[1]) {
       setJumpDate(matched[1]);
       jumpFetchAttemptsRef.current = 0;
+      jumpInstantRef.current = false;
     }
   }, [location.hash]);
 
   useEffect(() => {
     const onJumpDate = (event: Event) => {
-      const custom = event as CustomEvent<{ date?: string }>;
+      const custom = event as CustomEvent<{ date?: string; instant?: boolean }>;
       if (custom.detail?.date) {
         setJumpDate(custom.detail.date);
         jumpFetchAttemptsRef.current = 0;
+        jumpInstantRef.current = Boolean(custom.detail.instant);
       }
     };
 
@@ -178,7 +181,8 @@ const PagedMemoList = (props: Props) => {
 
     const target = document.querySelector(`[data-display-date='${jumpDate}']`) as HTMLElement | null;
     if (target) {
-      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      target.scrollIntoView({ behavior: jumpInstantRef.current ? "auto" : "smooth", block: "center" });
+      jumpInstantRef.current = false;
       return;
     }
 
