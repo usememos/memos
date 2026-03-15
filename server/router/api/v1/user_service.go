@@ -160,6 +160,9 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 		}, nil
 	}
 
+	if len(request.User.Password) < 8 {
+		return nil, status.Errorf(codes.InvalidArgument, "password must be at least 8 characters")
+	}
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.User.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to generate password hash: %v", err)
@@ -269,6 +272,9 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 			role := convertUserRoleToStore(request.User.Role)
 			update.Role = &role
 		case "password":
+			if len(request.User.Password) < 8 {
+				return nil, status.Errorf(codes.InvalidArgument, "password must be at least 8 characters")
+			}
 			passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.User.Password), bcrypt.DefaultCost)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to generate password hash: %v", err)

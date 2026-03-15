@@ -50,11 +50,9 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		return nil, errors.Wrap(err, "failed to get instance basic setting")
 	}
 
-	secret := "usememos"
-	if !profile.Demo {
-		secret = instanceBasicSetting.SecretKey
-	}
-	s.Secret = secret
+	// Always use the instance secret key, regardless of mode.
+	// Never fall back to a hardcoded secret, as it allows token forgery.
+	s.Secret = instanceBasicSetting.SecretKey
 
 	// Register healthz endpoint.
 	echoServer.GET("/healthz", func(c *echo.Context) error {

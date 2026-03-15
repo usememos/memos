@@ -115,7 +115,17 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	}
 	gwGroup := echoServer.Group("")
 	gwGroup.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"*"},
+		UnsafeAllowOriginFunc: func(_ *echo.Context, origin string) (string, bool, error) {
+			// In demo mode, allow all origins for development convenience.
+			// In production, deny cross-origin requests (same-origin only).
+			if s.Profile.Demo {
+				return origin, true, nil
+			}
+			return "", false, nil
+		},
+		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete, http.MethodOptions},
+		AllowHeaders:     []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
 	}))
 	// Register SSE endpoint with same CORS as rest of /api/v1.
 	gwGroup.GET("/api/v1/sse", func(c *echo.Context) error {
@@ -141,7 +151,11 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	// Wrap with CORS for browser access
 	corsHandler := middleware.CORSWithConfig(middleware.CORSConfig{
 		UnsafeAllowOriginFunc: func(_ *echo.Context, origin string) (string, bool, error) {
-			return origin, true, nil
+			// In demo mode, allow all origins for development convenience.
+			if s.Profile.Demo {
+				return origin, true, nil
+			}
+			return "", false, nil
 		},
 		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodOptions},
 		AllowHeaders:     []string{"*"},

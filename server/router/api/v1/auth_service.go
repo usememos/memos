@@ -83,8 +83,8 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get instance general setting, error: %v", err)
 		}
-		// Check if the password auth in is allowed.
-		if instanceGeneralSetting.DisallowPasswordAuth && user.Role == store.RoleUser {
+		// Check if password auth is allowed. Enforce for all roles including admins.
+		if instanceGeneralSetting.DisallowPasswordAuth {
 			return nil, status.Errorf(codes.PermissionDenied, "password signin is not allowed")
 		}
 		existingUser = user
