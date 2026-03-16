@@ -97,6 +97,6 @@ web/src/
 ## CI/CD
 
 - **backend-tests.yml:** Go 1.25.7, golangci-lint v2.4.0, tests parallelized by group (store, server, plugin, other)
-- **frontend-tests.yml:** Node 22, pnpm 10, lint + build
+- **frontend-tests.yml:** Node 24, pnpm 10, lint + build
 - **proto-linter.yml:** buf lint + format check
 - **Docker:** Multi-stage (`scripts/Dockerfile`), Alpine 3.21, non-root user, port 5230, multi-arch (amd64/arm64/arm/v7)

@@ -10,7 +10,7 @@ on:
 # Environment variables for build configuration
 env:
   GO_VERSION: "1.25.7"
-  NODE_VERSION: "22"
+  NODE_VERSION: "24"
   PNPM_VERSION: "10"
   ARTIFACT_RETENTION_DAYS: 60
   # Artifact naming: {ARTIFACT_PREFIX}_{version}_{os}_{arch}.tar.gz|zip
@@ -228,4 +228,3 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: artifacts/*
-
