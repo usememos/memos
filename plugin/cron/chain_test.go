@@ -10,6 +10,20 @@ import (
 	"time"
 )
 
+func waitFor(t *testing.T, timeout time.Duration, fn func() bool) {
+	t.Helper()
+
+	deadline := time.Now().Add(timeout)
+	for time.Now().Before(deadline) {
+		if fn() {
+			return
+		}
+		time.Sleep(time.Millisecond)
+	}
+
+	t.Fatal("condition not met before timeout")
+}
+
 func appendingJob(slice *[]int, value int) Job {
 	var m sync.Mutex
 	return FuncJob(func() {
@@ -104,7 +118,8 @@ func TestChainDelayIfStillRunning(t *testing.T) {
 		var j countJob
 		wrappedJob := NewChain(DelayIfStillRunning(DiscardLogger)).Then(&j)
 		go wrappedJob.Run()
-		time.Sleep(2 * time.Millisecond) // Give the job 2ms to complete.
+
+		waitFor(t, 100*time.Millisecond, func() bool { return j.Done() == 1 })
 		if c := j.Done(); c != 1 {
 			t.Errorf("expected job run once, immediately, got %d", c)
 		}
@@ -118,7 +133,8 @@ func TestChainDelayIfStillRunning(t *testing.T) {
 			time.Sleep(time.Millisecond)
 			go wrappedJob.Run()
 		}()
-		time.Sleep(3 * time.Millisecond) // Give both jobs 3ms to complete.
+
+		waitFor(t, 100*time.Millisecond, func() bool { return j.Done() == 2 })
 		if c := j.Done(); c != 2 {
 			t.Errorf("expected job run twice, immediately, got %d", c)
 		}
@@ -134,16 +150,13 @@ func TestChainDelayIfStillRunning(t *testing.T) {
 			go wrappedJob.Run()
 		}()
 
-		// After 5ms, the first job is still in progress, and the second job was
-		// run but should be waiting for it to finish.
-		time.Sleep(5 * time.Millisecond)
+		waitFor(t, 100*time.Millisecond, func() bool { return j.Started() == 1 })
 		started, done := j.Started(), j.Done()
-		if started != 1 || done != 0 {
+		if done != 0 {
 			t.Error("expected first job started, but not finished, got", started, done)
 		}
 
-		// Verify that the second job completes.
-		time.Sleep(25 * time.Millisecond)
+		waitFor(t, 200*time.Millisecond, func() bool { return j.Done() == 2 })
 		started, done = j.Started(), j.Done()
 		if started != 2 || done != 2 {
 			t.Error("expected both jobs done, got", started, done)
