@@ -2590,6 +2590,9 @@ components:
                     type: boolean
                 hasIncompleteTasks:
                     type: boolean
+                title:
+                    type: string
+                    description: The title extracted from the first H1 heading, if present.
             description: Computed properties of a memo.
         OAuth2Config:
             type: object
