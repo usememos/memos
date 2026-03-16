@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Self-hosted note-taking tool. Go 1.25 backend (Echo v5, Connect RPC + gRPC-Gateway), React 18 + TypeScript 5.9 + Vite 7 frontend, Protocol Buffers API, SQLite/MySQL/PostgreSQL.
+Self-hosted note-taking tool. Go 1.26 backend (Echo v5, Connect RPC + gRPC-Gateway), React 18 + TypeScript 5.9 + Vite 7 frontend, Protocol Buffers API, SQLite/MySQL/PostgreSQL.
 
 ## Commands
 
@@ -96,7 +96,7 @@ web/src/
 
 ## CI/CD
 
-- **backend-tests.yml:** Go 1.25.7, golangci-lint v2.4.0, tests parallelized by group (store, server, plugin, other)
+- **backend-tests.yml:** Go 1.26.1, golangci-lint v2.4.0, tests parallelized by group (store, server, plugin, other)
 - **frontend-tests.yml:** Node 24, pnpm 10, lint + build
 - **proto-linter.yml:** buf lint + format check
 - **Docker:** Multi-stage (`scripts/Dockerfile`), Alpine 3.21, non-root user, port 5230, multi-arch (amd64/arm64/arm/v7)
