@@ -121,6 +121,8 @@ func convertInstanceSettingFromStore(setting *storepb.InstanceSetting) *v1pb.Ins
 		instanceSetting.Value = &v1pb.InstanceSetting_MemoRelatedSetting_{
 			MemoRelatedSetting: convertInstanceMemoRelatedSettingFromStore(setting.GetMemoRelatedSetting()),
 		}
+	default:
+		// Leave Value unset for unsupported setting variants.
 	}
 	return instanceSetting
 }

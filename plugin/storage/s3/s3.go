@@ -8,7 +8,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
-	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/pkg/errors"
 
@@ -43,23 +42,16 @@ func NewClient(ctx context.Context, s3Config *storepb.StorageS3Config) (*Client,
 
 // UploadObject uploads an object to S3.
 func (c *Client) UploadObject(ctx context.Context, key string, fileType string, content io.Reader) (string, error) {
-	uploader := manager.NewUploader(c.Client)
 	putInput := s3.PutObjectInput{
 		Bucket:      c.Bucket,
 		Key:         aws.String(key),
 		ContentType: aws.String(fileType),
 		Body:        content,
 	}
-	result, err := uploader.Upload(ctx, &putInput)
-	if err != nil {
+	if _, err := c.Client.PutObject(ctx, &putInput); err != nil {
 		return "", err
 	}
-
-	resultKey := result.Key
-	if resultKey == nil || *resultKey == "" {
-		return "", errors.New("failed to get file key")
-	}
-	return *resultKey, nil
+	return key, nil
 }
 
 // PresignGetObject presigns an object in S3.
@@ -81,16 +73,19 @@ func (c *Client) PresignGetObject(ctx context.Context, key string) (string, erro
 
 // GetObject retrieves an object from S3.
 func (c *Client) GetObject(ctx context.Context, key string) ([]byte, error) {
-	downloader := manager.NewDownloader(c.Client)
-	buffer := manager.NewWriteAtBuffer([]byte{})
-	_, err := downloader.Download(ctx, buffer, &s3.GetObjectInput{
+	output, err := c.Client.GetObject(ctx, &s3.GetObjectInput{
 		Bucket: c.Bucket,
 		Key:    aws.String(key),
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to download object")
 	}
-	return buffer.Bytes(), nil
+	defer output.Body.Close()
+	data, err := io.ReadAll(output.Body)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read object body")
+	}
+	return data, nil
 }
 
 // GetObjectStream retrieves an object from S3 as a stream.

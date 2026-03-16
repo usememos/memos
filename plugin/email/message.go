@@ -38,29 +38,29 @@ func (m *Message) Format(fromEmail, fromName string) string {
 
 	// From header
 	if fromName != "" {
-		sb.WriteString(fmt.Sprintf("From: %s <%s>\r\n", fromName, fromEmail))
+		fmt.Fprintf(&sb, "From: %s <%s>\r\n", fromName, fromEmail)
 	} else {
-		sb.WriteString(fmt.Sprintf("From: %s\r\n", fromEmail))
+		fmt.Fprintf(&sb, "From: %s\r\n", fromEmail)
 	}
 
 	// To header
-	sb.WriteString(fmt.Sprintf("To: %s\r\n", strings.Join(m.To, ", ")))
+	fmt.Fprintf(&sb, "To: %s\r\n", strings.Join(m.To, ", "))
 
 	// Cc header (optional)
 	if len(m.Cc) > 0 {
-		sb.WriteString(fmt.Sprintf("Cc: %s\r\n", strings.Join(m.Cc, ", ")))
+		fmt.Fprintf(&sb, "Cc: %s\r\n", strings.Join(m.Cc, ", "))
 	}
 
 	// Reply-To header (optional)
 	if m.ReplyTo != "" {
-		sb.WriteString(fmt.Sprintf("Reply-To: %s\r\n", m.ReplyTo))
+		fmt.Fprintf(&sb, "Reply-To: %s\r\n", m.ReplyTo)
 	}
 
 	// Subject header
-	sb.WriteString(fmt.Sprintf("Subject: %s\r\n", m.Subject))
+	fmt.Fprintf(&sb, "Subject: %s\r\n", m.Subject)
 
 	// Date header (RFC 5322 format)
-	sb.WriteString(fmt.Sprintf("Date: %s\r\n", time.Now().Format(time.RFC1123Z)))
+	fmt.Fprintf(&sb, "Date: %s\r\n", time.Now().Format(time.RFC1123Z))
 
 	// MIME headers
 	sb.WriteString("MIME-Version: 1.0\r\n")

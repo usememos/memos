@@ -287,6 +287,8 @@ func (s *service) GenerateSnippet(content []byte, maxLength int) (string, error)
 		case *mast.TagNode:
 			buf.WriteByte('#')
 			buf.Write(node.Tag)
+		default:
+			// Ignore other node types.
 		}
 
 		// Stop walking if we've exceeded double the max length

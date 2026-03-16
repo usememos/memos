@@ -85,11 +85,11 @@ func (*MCPService) handleCapturePrompt(_ context.Context, req mcp.GetPromptReque
 
 	var sb strings.Builder
 	sb.WriteString("Save the following as a new memo using the create_memo tool.\n\n")
-	sb.WriteString(fmt.Sprintf("Visibility: %s\n\n", visibility))
+	fmt.Fprintf(&sb, "Visibility: %s\n\n", visibility)
 	sb.WriteString("Content:\n")
 	sb.WriteString(content)
 	if tags != "" {
-		sb.WriteString(fmt.Sprintf("\n\nAppend these tags inline using #tag syntax: %s", tags))
+		fmt.Fprintf(&sb, "\n\nAppend these tags inline using #tag syntax: %s", tags)
 	}
 	sb.WriteString("\n\nAfter creating the memo, confirm by showing the memo resource name (e.g. memo://memos/<uid>) so it can be referenced later.")
 
