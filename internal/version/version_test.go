@@ -1,10 +1,11 @@
 package version
 
 import (
-	"sort"
+	"slices"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/mod/semver"
 )
 
 func TestIsVersionGreaterOrEqualThan(t *testing.T) {
@@ -97,7 +98,9 @@ func TestSortVersion(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		sort.Sort(SortVersion(test.versionList))
+		slices.SortFunc(test.versionList, func(a, b string) int {
+			return semver.Compare("v"+a, "v"+b)
+		})
 		assert.Equal(t, test.versionList, test.want)
 	}
 }

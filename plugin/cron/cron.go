@@ -2,7 +2,7 @@ package cron
 
 import (
 	"context"
-	"sort"
+	"slices"
 	"sync"
 	"time"
 )
@@ -73,25 +73,6 @@ type Entry struct {
 
 // Valid returns true if this is not the zero entry.
 func (e Entry) Valid() bool { return e.ID != 0 }
-
-// byTime is a wrapper for sorting the entry array by time
-// (with zero time at the end).
-type byTime []*Entry
-
-func (s byTime) Len() int      { return len(s) }
-func (s byTime) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
-func (s byTime) Less(i, j int) bool {
-	// Two zero times should return false.
-	// Otherwise, zero is "greater" than any other time.
-	// (To sort it at the end of the list.)
-	if s[i].Next.IsZero() {
-		return false
-	}
-	if s[j].Next.IsZero() {
-		return true
-	}
-	return s[i].Next.Before(s[j].Next)
-}
 
 // New returns a new Cron job runner, modified by the given options.
 //
@@ -248,7 +229,22 @@ func (c *Cron) runScheduler() {
 
 	for {
 		// Determine the next entry to run.
-		sort.Sort(byTime(c.entries))
+		slices.SortFunc(c.entries, func(a, b *Entry) int {
+			switch {
+			case a.Next.IsZero() && b.Next.IsZero():
+				return 0
+			case a.Next.IsZero():
+				return 1
+			case b.Next.IsZero():
+				return -1
+			case a.Next.Before(b.Next):
+				return -1
+			case b.Next.Before(a.Next):
+				return 1
+			default:
+				return 0
+			}
+		})
 
 		var timer *time.Timer
 		if len(c.entries) == 0 || c.entries[0].Next.IsZero() {

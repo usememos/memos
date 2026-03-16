@@ -176,7 +176,7 @@ func rewriteNumericLogicalOperand(expr, op string) string {
 			}
 			if i > signStart {
 				numLiteral := expr[signStart:i]
-				builder.WriteString(fmt.Sprintf("(%s != 0)", numLiteral))
+				fmt.Fprintf(&builder, "(%s != 0)", numLiteral)
 			} else {
 				builder.WriteString(expr[signStart:i])
 			}

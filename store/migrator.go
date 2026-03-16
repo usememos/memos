@@ -8,7 +8,7 @@ import (
 	"io/fs"
 	"log/slog"
 	"path/filepath"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -142,7 +142,7 @@ func (s *Store) applyMigrations(ctx context.Context, currentSchemaVersion, targe
 	if err != nil {
 		return errors.Wrap(err, "failed to read migration files")
 	}
-	sort.Strings(filePaths)
+	slices.Sort(filePaths)
 
 	// Start a transaction to apply migrations atomically
 	tx, err := s.driver.GetDB().Begin()
@@ -275,7 +275,7 @@ func (s *Store) seed(ctx context.Context) error {
 	}
 
 	// Sort seed files by name. This is important to ensure that seed files are applied in order.
-	sort.Strings(filenames)
+	slices.Sort(filenames)
 	// Start a transaction to apply the seed files.
 	tx, err := s.driver.GetDB().Begin()
 	if err != nil {
@@ -303,7 +303,7 @@ func (s *Store) GetCurrentSchemaVersion() (string, error) {
 		return "", errors.Wrap(err, "failed to read migration files")
 	}
 
-	sort.Strings(filePaths)
+	slices.Sort(filePaths)
 	if len(filePaths) == 0 {
 		return fmt.Sprintf("%s.0", minorVersion), nil
 	}
