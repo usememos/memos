@@ -227,6 +227,8 @@ message Memo {
     bool has_task_list = 2;
     bool has_code = 3;
     bool has_incomplete_tasks = 4;
+    // The title extracted from the first H1 heading, if present.
+    string title = 5;
   }
 }
 

@@ -190,6 +190,7 @@ func TestExtractProperties(t *testing.T) {
 		hasCode  bool
 		hasTasks bool
 		hasInc   bool
+		title    string
 	}{
 		{
 			name:     "plain text",
@@ -198,6 +199,7 @@ func TestExtractProperties(t *testing.T) {
 			hasCode:  false,
 			hasTasks: false,
 			hasInc:   false,
+			title:    "",
 		},
 		{
 			name:     "with link",
@@ -206,6 +208,7 @@ func TestExtractProperties(t *testing.T) {
 			hasCode:  false,
 			hasTasks: false,
 			hasInc:   false,
+			title:    "",
 		},
 		{
 			name:     "with inline code",
@@ -214,6 +217,7 @@ func TestExtractProperties(t *testing.T) {
 			hasCode:  true,
 			hasTasks: false,
 			hasInc:   false,
+			title:    "",
 		},
 		{
 			name:     "with code block",
@@ -222,6 +226,7 @@ func TestExtractProperties(t *testing.T) {
 			hasCode:  true,
 			hasTasks: false,
 			hasInc:   false,
+			title:    "",
 		},
 		{
 			name:     "with completed task",
@@ -230,6 +235,7 @@ func TestExtractProperties(t *testing.T) {
 			hasCode:  false,
 			hasTasks: true,
 			hasInc:   false,
+			title:    "",
 		},
 		{
 			name:     "with incomplete task",
@@ -238,6 +244,7 @@ func TestExtractProperties(t *testing.T) {
 			hasCode:  false,
 			hasTasks: true,
 			hasInc:   true,
+			title:    "",
 		},
 		{
 			name:     "mixed tasks",
@@ -246,6 +253,7 @@ func TestExtractProperties(t *testing.T) {
 			hasCode:  false,
 			hasTasks: true,
 			hasInc:   true,
+			title:    "",
 		},
 		{
 			name:     "everything",
@@ -254,6 +262,32 @@ func TestExtractProperties(t *testing.T) {
 			hasCode:  true,
 			hasTasks: true,
 			hasInc:   true,
+			title:    "Title",
+		},
+		{
+			name:    "h1 as first node extracts title",
+			content: "# My Article Title\n\nBody text here.",
+			title:   "My Article Title",
+		},
+		{
+			name:    "h2 as first node does not extract title",
+			content: "## Sub Heading\n\nBody text.",
+			title:   "",
+		},
+		{
+			name:    "h1 not first node does not extract title",
+			content: "Some text\n\n# Heading Later",
+			title:   "",
+		},
+		{
+			name:    "h1 with inline formatting extracts plain text",
+			content: "# Title with **bold** and *italic*\n\nBody.",
+			title:   "Title with bold and italic",
+		},
+		{
+			name:    "empty content has no title",
+			content: "",
+			title:   "",
 		},
 	}
 
@@ -267,6 +301,41 @@ func TestExtractProperties(t *testing.T) {
 			assert.Equal(t, tt.hasCode, props.HasCode, "HasCode")
 			assert.Equal(t, tt.hasTasks, props.HasTaskList, "HasTaskList")
 			assert.Equal(t, tt.hasInc, props.HasIncompleteTasks, "HasIncompleteTasks")
+			assert.Equal(t, tt.title, props.Title, "Title")
+		})
+	}
+}
+
+func TestExtractAllTitle(t *testing.T) {
+	svc := NewService(WithTagExtension())
+
+	tests := []struct {
+		name    string
+		content string
+		title   string
+	}{
+		{
+			name:    "h1 first node",
+			content: "# Article Title\n\nContent with #tag",
+			title:   "Article Title",
+		},
+		{
+			name:    "no h1",
+			content: "Just text with #tag",
+			title:   "",
+		},
+		{
+			name:    "h1 not first",
+			content: "Intro\n\n# Late Heading",
+			title:   "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			data, err := svc.ExtractAll([]byte(tt.content))
+			require.NoError(t, err)
+			assert.Equal(t, tt.title, data.Property.Title, "Title")
 		})
 	}
 }

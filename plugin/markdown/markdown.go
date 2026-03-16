@@ -138,6 +138,26 @@ func (s *service) ExtractTags(content []byte) ([]string, error) {
 	return uniquePreserveCase(tags), nil
 }
 
+// extractHeadingText extracts plain text content from a heading node.
+func extractHeadingText(n gast.Node, source []byte) string {
+	var buf strings.Builder
+	for child := n.FirstChild(); child != nil; child = child.NextSibling() {
+		extractTextFromNode(child, source, &buf)
+	}
+	return buf.String()
+}
+
+// extractTextFromNode recursively extracts plain text from a node and its children.
+func extractTextFromNode(n gast.Node, source []byte, buf *strings.Builder) {
+	if textNode, ok := n.(*gast.Text); ok {
+		buf.Write(textNode.Segment.Value(source))
+		return
+	}
+	for child := n.FirstChild(); child != nil; child = child.NextSibling() {
+		extractTextFromNode(child, source, buf)
+	}
+}
+
 // ExtractProperties computes boolean properties about the content.
 func (s *service) ExtractProperties(content []byte) (*storepb.MemoPayload_Property, error) {
 	root, err := s.parse(content)
@@ -146,10 +166,19 @@ func (s *service) ExtractProperties(content []byte) (*storepb.MemoPayload_Proper
 	}
 
 	prop := &storepb.MemoPayload_Property{}
+	firstBlockChecked := false
 
 	err = gast.Walk(root, func(n gast.Node, entering bool) (gast.WalkStatus, error) {
 		if !entering {
 			return gast.WalkContinue, nil
+		}
+
+		// Check if the first block-level child of the document is an H1 heading.
+		if !firstBlockChecked && n.Parent() != nil && n.Parent().Kind() == gast.KindDocument {
+			firstBlockChecked = true
+			if heading, ok := n.(*gast.Heading); ok && heading.Level == 1 {
+				prop.Title = extractHeadingText(n, content)
+			}
 		}
 
 		switch n.Kind() {
@@ -302,6 +331,8 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 		Property: &storepb.MemoPayload_Property{},
 	}
 
+	firstBlockChecked := false
+
 	// Single walk to collect all data
 	err = gast.Walk(root, func(n gast.Node, entering bool) (gast.WalkStatus, error) {
 		if !entering {
@@ -311,6 +342,14 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 		// Extract tags
 		if tagNode, ok := n.(*mast.TagNode); ok {
 			data.Tags = append(data.Tags, string(tagNode.Tag))
+		}
+
+		// Check if the first block-level child of the document is an H1 heading.
+		if !firstBlockChecked && n.Parent() != nil && n.Parent().Kind() == gast.KindDocument {
+			firstBlockChecked = true
+			if heading, ok := n.(*gast.Heading); ok && heading.Level == 1 {
+				data.Property.Title = extractHeadingText(n, content)
+			}
 		}
 
 		// Extract properties based on node kind
