@@ -7,18 +7,20 @@ BIN_NAME="memos"
 VERSION="${MEMOS_VERSION:-}"
 INSTALL_DIR="${MEMOS_INSTALL_DIR:-}"
 SKIP_CHECKSUM="${MEMOS_SKIP_CHECKSUM:-0}"
+QUIET="${MEMOS_INSTALL_QUIET:-0}"
 
 usage() {
   cat <<'EOF'
 Install Memos from GitHub Releases.
 
 Usage:
-  install.sh [--version <version>] [--install-dir <dir>] [--skip-checksum]
+  install.sh [--version <version>] [--install-dir <dir>] [--repo <owner/name>] [--skip-checksum]
 
 Environment:
-  MEMOS_VERSION         Version to install without the leading "v". Defaults to latest release.
+  MEMOS_VERSION         Version to install. Accepts "0.28.1" or "v0.28.1". Defaults to latest release.
   MEMOS_INSTALL_DIR     Directory to install the binary into.
   MEMOS_SKIP_CHECKSUM   Set to 1 to skip checksum verification.
+  MEMOS_INSTALL_QUIET   Set to 1 to reduce log output.
   REPO                  GitHub repository in owner/name form. Defaults to usememos/memos.
 
 Examples:
@@ -28,6 +30,9 @@ EOF
 }
 
 log() {
+  if [ "$QUIET" = "1" ]; then
+    return
+  fi
   printf '%s\n' "$*"
 }
 
@@ -41,10 +46,20 @@ need_cmd() {
 }
 
 resolve_latest_version() {
-  latest_url="$(curl -fsSL -o /dev/null -w '%{url_effective}' "https://github.com/${REPO}/releases/latest")"
-  latest_tag="${latest_url##*/}"
+  latest_tag="$(
+    curl -fsSL \
+      -H "Accept: application/vnd.github+json" \
+      "https://api.github.com/repos/${REPO}/releases/latest" | awk -F'"' '/"tag_name":/ { print $4; exit }'
+  )"
   [ -n "$latest_tag" ] || fail "failed to resolve latest release tag"
   printf '%s\n' "${latest_tag#v}"
+}
+
+normalize_version() {
+  version="$1"
+  version="${version#v}"
+  [ -n "$version" ] || fail "version cannot be empty"
+  printf '%s\n' "$version"
 }
 
 detect_os() {
@@ -102,7 +117,21 @@ resolve_install_dir() {
 download() {
   src="$1"
   dest="$2"
-  curl -fsSL "$src" -o "$dest"
+  if ! curl -fsSL "$src" -o "$dest"; then
+    fail "failed to download ${src}"
+  fi
+}
+
+download_optional() {
+  src="$1"
+  dest="$2"
+
+  if curl -fsSL "$src" -o "$dest" 2>/dev/null; then
+    return 0
+  fi
+
+  rm -f "$dest"
+  return 1
 }
 
 verify_checksum() {
@@ -111,6 +140,11 @@ verify_checksum() {
 
   if [ "$SKIP_CHECKSUM" = "1" ]; then
     log "Skipping checksum verification"
+    return
+  fi
+
+  if [ ! -f "$checksum_path" ]; then
+    log "Warning: checksum file not found for this release; skipping verification"
     return
   fi
 
@@ -176,8 +210,17 @@ parse_args() {
         INSTALL_DIR="$2"
         shift 2
         ;;
+      --repo)
+        [ "$#" -ge 2 ] || fail "missing value for --repo"
+        REPO="$2"
+        shift 2
+        ;;
       --skip-checksum)
         SKIP_CHECKSUM="1"
+        shift
+        ;;
+      --quiet)
+        QUIET="1"
         shift
         ;;
       -h|--help)
@@ -200,6 +243,7 @@ main() {
   need_cmd uname
   need_cmd grep
   need_cmd awk
+  need_cmd mktemp
 
   os="$(detect_os)"
   arch="$(detect_arch)"
@@ -207,6 +251,7 @@ main() {
   if [ -z "$VERSION" ]; then
     VERSION="$(resolve_latest_version)"
   fi
+  VERSION="$(normalize_version "$VERSION")"
 
   install_dir="$(resolve_install_dir)"
   tag="v${VERSION}"
@@ -230,8 +275,11 @@ main() {
   mkdir -p "$extract_dir"
 
   log "Installing ${BIN_NAME} ${VERSION} for ${os}/${arch}"
+  log "Downloading ${asset_name} from ${REPO}"
   download "${base_url}/${asset_name}" "$archive_path"
-  download "${base_url}/${checksums_name}" "$checksums_path"
+  if ! download_optional "${base_url}/${checksums_name}" "$checksums_path"; then
+    log "Warning: ${checksums_name} is not published for ${tag}"
+  fi
 
   verify_checksum "$archive_path" "$checksums_path"
   extract_archive "$archive_path" "$extract_dir"
@@ -240,7 +288,7 @@ main() {
   install_binary "${extract_dir}/${BIN_NAME}" "$install_dir"
 
   log "Installed ${BIN_NAME} to ${install_dir}/${BIN_NAME}"
-  if ! command -v "${install_dir}/${BIN_NAME}" >/dev/null 2>&1 && ! printf '%s' ":$PATH:" | grep -q ":${install_dir}:"; then
+  if ! printf '%s' ":$PATH:" | grep -q ":${install_dir}:"; then
     log "Add ${install_dir} to your PATH to run ${BIN_NAME} directly"
   fi
 }
