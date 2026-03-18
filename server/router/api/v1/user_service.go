@@ -1399,7 +1399,7 @@ func (s *APIV1Service) DeleteUserNotification(ctx context.Context, request *v1pb
 
 // convertInboxToUserNotification converts a storage-layer inbox to an API notification.
 // This handles the mapping between the internal inbox representation and the public API.
-func (*APIV1Service) convertInboxToUserNotification(_ context.Context, inbox *store.Inbox) (*v1pb.UserNotification, error) {
+func (s *APIV1Service) convertInboxToUserNotification(ctx context.Context, inbox *store.Inbox) (*v1pb.UserNotification, error) {
 	notification := &v1pb.UserNotification{
 		Name:       fmt.Sprintf("users/%d/notifications/%d", inbox.ReceiverID, inbox.ID),
 		Sender:     fmt.Sprintf("%s%d", UserNamePrefix, inbox.SenderID),
@@ -1425,12 +1425,61 @@ func (*APIV1Service) convertInboxToUserNotification(_ context.Context, inbox *st
 			notification.Type = v1pb.UserNotification_TYPE_UNSPECIFIED
 		}
 
-		if inbox.Message.ActivityId != nil {
-			notification.ActivityId = inbox.Message.ActivityId
+		payload, err := s.convertUserNotificationPayload(ctx, inbox.Message)
+		if err != nil {
+			return nil, err
+		}
+		if payload != nil {
+			notification.Payload = &v1pb.UserNotification_MemoComment{
+				MemoComment: payload,
+			}
 		}
 	}
 
 	return notification, nil
+}
+
+func (s *APIV1Service) convertUserNotificationPayload(ctx context.Context, message *storepb.InboxMessage) (*v1pb.UserNotification_MemoCommentPayload, error) {
+	if message == nil || message.Type != storepb.InboxMessage_MEMO_COMMENT || message.ActivityId == nil {
+		return nil, nil
+	}
+
+	activity, err := s.Store.GetActivity(ctx, &store.FindActivity{
+		ID: message.ActivityId,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get activity")
+	}
+	if activity == nil || activity.Payload == nil || activity.Payload.MemoComment == nil {
+		return nil, nil
+	}
+
+	commentMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{
+		ID:             &activity.Payload.MemoComment.MemoId,
+		ExcludeContent: true,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get comment memo")
+	}
+	if commentMemo == nil {
+		return nil, nil
+	}
+
+	relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{
+		ID:             &activity.Payload.MemoComment.RelatedMemoId,
+		ExcludeContent: true,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get related memo")
+	}
+	if relatedMemo == nil {
+		return nil, nil
+	}
+
+	return &v1pb.UserNotification_MemoCommentPayload{
+		Memo:        fmt.Sprintf("%s%s", MemoNamePrefix, commentMemo.UID),
+		RelatedMemo: fmt.Sprintf("%s%s", MemoNamePrefix, relatedMemo.UID),
+	}, nil
 }
 
 // ExtractNotificationIDFromName extracts the notification ID from a resource name.

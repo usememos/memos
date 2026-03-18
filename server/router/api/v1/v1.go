@@ -24,7 +24,6 @@ type APIV1Service struct {
 	v1pb.UnimplementedMemoServiceServer
 	v1pb.UnimplementedAttachmentServiceServer
 	v1pb.UnimplementedShortcutServiceServer
-	v1pb.UnimplementedActivityServiceServer
 	v1pb.UnimplementedIdentityProviderServiceServer
 
 	Secret          string
@@ -105,9 +104,6 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 		return err
 	}
 	if err := v1pb.RegisterShortcutServiceHandlerServer(ctx, gwMux, s); err != nil {
-		return err
-	}
-	if err := v1pb.RegisterActivityServiceHandlerServer(ctx, gwMux, s); err != nil {
 		return err
 	}
 	if err := v1pb.RegisterIdentityProviderServiceHandlerServer(ctx, gwMux, s); err != nil {

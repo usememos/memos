@@ -4,8 +4,7 @@ import { CheckIcon, MessageCircleIcon, TrashIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import UserAvatar from "@/components/UserAvatar";
-import { activityServiceClient, memoServiceClient, userServiceClient } from "@/connect";
-import { activityNamePrefix } from "@/helpers/resource-names";
+import { memoServiceClient, userServiceClient } from "@/connect";
 import useAsyncEffect from "@/hooks/useAsyncEffect";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useUser } from "@/hooks/useUserQueries";
@@ -31,38 +30,33 @@ function MemoCommentMessage({ notification }: Props) {
   const { data: sender } = useUser(senderName || "", { enabled: !!senderName });
 
   useAsyncEffect(async () => {
-    if (!notification.activityId) {
+    if (notification.payload?.case !== "memoComment") {
+      setHasError(true);
       return;
     }
 
     try {
-      const activity = await activityServiceClient.getActivity({
-        name: `${activityNamePrefix}${notification.activityId}`,
+      const memoCommentPayload = notification.payload.value;
+      const memo = await memoServiceClient.getMemo({
+        name: memoCommentPayload.relatedMemo,
       });
+      setRelatedMemo(memo);
 
-      if (activity.payload?.payload?.case === "memoComment") {
-        const memoCommentPayload = activity.payload.payload.value;
-        const memo = await memoServiceClient.getMemo({
-          name: memoCommentPayload.relatedMemo,
-        });
-        setRelatedMemo(memo);
+      const comment = await memoServiceClient.getMemo({
+        name: memoCommentPayload.memo,
+      });
+      setCommentMemo(comment);
 
-        const comment = await memoServiceClient.getMemo({
-          name: memoCommentPayload.memo,
-        });
-        setCommentMemo(comment);
-
-        setSenderName(notification.sender);
-        setInitialized(true);
-      }
+      setSenderName(notification.sender);
+      setInitialized(true);
     } catch (error) {
       handleError(error, () => {}, {
-        context: "Failed to fetch activity",
+        context: "Failed to fetch memo comment notification",
         onError: () => setHasError(true),
       });
       return;
     }
-  }, [notification.activityId]);
+  }, [notification.payload, notification.sender]);
 
   const handleNavigateToMemo = async () => {
     if (!relatedMemo) {
