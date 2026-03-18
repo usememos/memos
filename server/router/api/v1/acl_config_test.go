@@ -60,8 +60,6 @@ func TestProtectedMethodsRequireAuth(t *testing.T) {
 		"/memos.api.v1.ShortcutService/ListShortcuts",
 		"/memos.api.v1.ShortcutService/UpdateShortcut",
 		"/memos.api.v1.ShortcutService/DeleteShortcut",
-		// Activity Service
-		"/memos.api.v1.ActivityService/GetActivity",
 	}
 
 	for _, method := range protectedMethods {

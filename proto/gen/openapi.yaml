@@ -6,69 +6,6 @@ info:
     title: ""
     version: 0.0.1
 paths:
-    /api/v1/activities:
-        get:
-            tags:
-                - ActivityService
-            description: ListActivities returns a list of activities.
-            operationId: ActivityService_ListActivities
-            parameters:
-                - name: pageSize
-                  in: query
-                  description: |-
-                    The maximum number of activities to return.
-                     The service may return fewer than this value.
-                     If unspecified, at most 100 activities will be returned.
-                     The maximum value is 1000; values above 1000 will be coerced to 1000.
-                  schema:
-                    type: integer
-                    format: int32
-                - name: pageToken
-                  in: query
-                  description: |-
-                    A page token, received from a previous `ListActivities` call.
-                     Provide this to retrieve the subsequent page.
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListActivitiesResponse'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /api/v1/activities/{activity}:
-        get:
-            tags:
-                - ActivityService
-            description: GetActivity returns the activity with the given id.
-            operationId: ActivityService_GetActivity
-            parameters:
-                - name: activity
-                  in: path
-                  description: The activity id.
-                  required: true
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Activity'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
     /api/v1/attachments:
         get:
             tags:
@@ -1927,70 +1864,6 @@ paths:
                                 $ref: '#/components/schemas/Status'
 components:
     schemas:
-        Activity:
-            type: object
-            properties:
-                name:
-                    readOnly: true
-                    type: string
-                    description: |-
-                        The name of the activity.
-                         Format: activities/{id}
-                creator:
-                    readOnly: true
-                    type: string
-                    description: |-
-                        The name of the creator.
-                         Format: users/{user}
-                type:
-                    readOnly: true
-                    enum:
-                        - TYPE_UNSPECIFIED
-                        - MEMO_COMMENT
-                    type: string
-                    description: The type of the activity.
-                    format: enum
-                level:
-                    readOnly: true
-                    enum:
-                        - LEVEL_UNSPECIFIED
-                        - INFO
-                        - WARN
-                        - ERROR
-                    type: string
-                    description: The level of the activity.
-                    format: enum
-                createTime:
-                    readOnly: true
-                    type: string
-                    description: The create time of the activity.
-                    format: date-time
-                payload:
-                    readOnly: true
-                    allOf:
-                        - $ref: '#/components/schemas/ActivityPayload'
-                    description: The payload of the activity.
-        ActivityMemoCommentPayload:
-            type: object
-            properties:
-                memo:
-                    type: string
-                    description: |-
-                        The memo name of comment.
-                         Format: memos/{memo}
-                relatedMemo:
-                    type: string
-                    description: |-
-                        The name of related memo.
-                         Format: memos/{memo}
-            description: ActivityMemoCommentPayload represents the payload of a memo comment activity.
-        ActivityPayload:
-            type: object
-            properties:
-                memoComment:
-                    allOf:
-                        - $ref: '#/components/schemas/ActivityMemoCommentPayload'
-                    description: Memo comment activity payload.
         Attachment:
             required:
                 - filename
@@ -2243,20 +2116,6 @@ components:
                         - $ref: '#/components/schemas/StorageSetting_S3Config'
                     description: The S3 config.
             description: Storage configuration settings for instance attachments.
-        ListActivitiesResponse:
-            type: object
-            properties:
-                activities:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Activity'
-                    description: The activities.
-                nextPageToken:
-                    type: string
-                    description: |-
-                        A token to retrieve the next page of results.
-                         Pass this value in the page_token field in the subsequent call to `ListActivities`
-                         method to retrieve the next page of results.
         ListAllUserStatsResponse:
             type: object
             properties:
@@ -2942,10 +2801,23 @@ components:
                     type: string
                     description: The type of the notification.
                     format: enum
-                activityId:
-                    type: integer
-                    description: The activity ID associated with this notification.
-                    format: int32
+                memoComment:
+                    readOnly: true
+                    allOf:
+                        - $ref: '#/components/schemas/UserNotification_MemoCommentPayload'
+        UserNotification_MemoCommentPayload:
+            type: object
+            properties:
+                memo:
+                    type: string
+                    description: |-
+                        The memo name of comment.
+                         Format: memos/{memo}
+                relatedMemo:
+                    type: string
+                    description: |-
+                        The name of related memo.
+                         Format: memos/{memo}
         UserSetting:
             type: object
             properties:
@@ -3061,7 +2933,6 @@ components:
                     format: date-time
             description: UserWebhook represents a webhook owned by a user.
 tags:
-    - name: ActivityService
     - name: AttachmentService
     - name: AuthService
     - name: IdentityProviderService

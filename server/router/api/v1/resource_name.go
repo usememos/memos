@@ -21,7 +21,6 @@ const (
 	ReactionNamePrefix         = "reactions/"
 	InboxNamePrefix            = "inboxes/"
 	IdentityProviderNamePrefix = "identity-providers/"
-	ActivityNamePrefix         = "activities/"
 	WebhookNamePrefix          = "webhooks/"
 )
 
@@ -143,18 +142,6 @@ func ExtractIdentityProviderUIDFromName(name string) (string, error) {
 		return "", err
 	}
 	return tokens[0], nil
-}
-
-func ExtractActivityIDFromName(name string) (int32, error) {
-	tokens, err := GetNameParentTokens(name, ActivityNamePrefix)
-	if err != nil {
-		return 0, err
-	}
-	id, err := util.ConvertStringToInt32(tokens[0])
-	if err != nil {
-		return 0, errors.Errorf("invalid activity ID %q", tokens[0])
-	}
-	return id, nil
 }
 
 // ValidateAndGenerateUID validates a user-provided UID or generates a new one.

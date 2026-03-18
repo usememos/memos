@@ -626,8 +626,19 @@ message UserNotification {
   // The type of the notification.
   Type type = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // The activity ID associated with this notification.
-  optional int32 activity_id = 6 [(google.api.field_behavior) = OPTIONAL];
+  oneof payload {
+    MemoCommentPayload memo_comment = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+  }
+
+  message MemoCommentPayload {
+    // The memo name of comment.
+    // Format: memos/{memo}
+    string memo = 1;
+
+    // The name of related memo.
+    // Format: memos/{memo}
+    string related_memo = 2;
+  }
 
   enum Status {
     STATUS_UNSPECIFIED = 0;
