@@ -92,6 +92,13 @@ var (
 			<-ctx.Done()
 		},
 	}
+	versionCmd = &cobra.Command{
+		Use:   "version",
+		Short: "Print the current Memos version",
+		Run: func(_ *cobra.Command, _ []string) {
+			fmt.Println(version.GetCurrentVersion())
+		},
+	}
 )
 
 func init() {
@@ -140,6 +147,8 @@ func init() {
 	viper.SetEnvPrefix("memos")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
+
+	rootCmd.AddCommand(versionCmd)
 }
 
 func printGreetings(profile *profile.Profile) {
