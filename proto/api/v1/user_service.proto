@@ -7,6 +7,7 @@ import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
+import "google/type/color.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
@@ -375,6 +376,7 @@ message UserSetting {
   oneof value {
     GeneralSetting general_setting = 2;
     WebhooksSetting webhooks_setting = 5;
+    TagsSetting tags_setting = 6;
   }
 
   // Enumeration of user setting keys.
@@ -384,6 +386,8 @@ message UserSetting {
     GENERAL = 1;
     // WEBHOOKS is the key for user webhooks.
     WEBHOOKS = 4;
+    // TAGS is the key for user tag metadata.
+    TAGS = 5;
   }
 
   // General user settings configuration.
@@ -402,6 +406,17 @@ message UserSetting {
   message WebhooksSetting {
     // List of user webhooks.
     repeated UserWebhook webhooks = 1;
+  }
+
+  // Metadata for a tag.
+  message TagMetadata {
+    // Background color for the tag label.
+    google.type.Color background_color = 1;
+  }
+
+  // User tag metadata configuration.
+  message TagsSetting {
+    map<string, TagMetadata> tags = 1;
   }
 }
 

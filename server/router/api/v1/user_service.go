@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -14,6 +15,7 @@ import (
 	"github.com/google/cel-go/common/ast"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
+	colorpb "google.golang.org/genproto/googleapis/type/color"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -332,6 +334,12 @@ func getDefaultUserGeneralSetting() *v1pb.UserSetting_GeneralSetting {
 	}
 }
 
+func getDefaultUserTagsSetting() *v1pb.UserSetting_TagsSetting {
+	return &v1pb.UserSetting_TagsSetting{
+		Tags: map[string]*v1pb.UserSetting_TagMetadata{},
+	}
+}
+
 func (s *APIV1Service) GetUserSetting(ctx context.Context, request *v1pb.GetUserSettingRequest) (*v1pb.UserSetting, error) {
 	// Parse resource name: users/{user}/settings/{setting}
 	userID, settingKey, err := ExtractUserIDAndSettingKeyFromName(request.Name)
@@ -399,50 +407,69 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 		return nil, status.Errorf(codes.InvalidArgument, "invalid setting key: %v", err)
 	}
 
-	// Only GENERAL settings are supported via UpdateUserSetting
-	// Other setting types have dedicated service methods
-	if storeKey != storepb.UserSetting_GENERAL {
-		return nil, status.Errorf(codes.InvalidArgument, "setting type %s should not be updated via UpdateUserSetting", storeKey.String())
-	}
+	var updatedSetting *v1pb.UserSetting
+	switch storeKey {
+	case storepb.UserSetting_GENERAL:
+		existingUserSetting, _ := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
+			UserID: &userID,
+			Key:    storeKey,
+		})
 
-	existingUserSetting, _ := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
-		UserID: &userID,
-		Key:    storeKey,
-	})
-
-	generalSetting := &storepb.GeneralUserSetting{}
-	if existingUserSetting != nil {
-		// Start with existing general setting values
-		generalSetting = existingUserSetting.GetGeneral()
-	}
-
-	updatedGeneral := &v1pb.UserSetting_GeneralSetting{
-		MemoVisibility: generalSetting.GetMemoVisibility(),
-		Locale:         generalSetting.GetLocale(),
-		Theme:          generalSetting.GetTheme(),
-	}
-
-	// Apply updates for fields specified in the update mask
-	incomingGeneral := request.Setting.GetGeneralSetting()
-	for _, field := range request.UpdateMask.Paths {
-		switch field {
-		case "memo_visibility":
-			updatedGeneral.MemoVisibility = incomingGeneral.MemoVisibility
-		case "theme":
-			updatedGeneral.Theme = incomingGeneral.Theme
-		case "locale":
-			updatedGeneral.Locale = incomingGeneral.Locale
-		default:
-			// Ignore unsupported fields
+		generalSetting := &storepb.GeneralUserSetting{}
+		if existingUserSetting != nil {
+			// Start with existing general setting values.
+			generalSetting = existingUserSetting.GetGeneral()
 		}
-	}
 
-	// Create the updated setting
-	updatedSetting := &v1pb.UserSetting{
-		Name: request.Setting.Name,
-		Value: &v1pb.UserSetting_GeneralSetting_{
-			GeneralSetting: updatedGeneral,
-		},
+		updatedGeneral := &v1pb.UserSetting_GeneralSetting{
+			MemoVisibility: generalSetting.GetMemoVisibility(),
+			Locale:         generalSetting.GetLocale(),
+			Theme:          generalSetting.GetTheme(),
+		}
+
+		incomingGeneral := request.Setting.GetGeneralSetting()
+		if incomingGeneral == nil {
+			return nil, status.Errorf(codes.InvalidArgument, "general setting is required")
+		}
+		for _, field := range request.UpdateMask.Paths {
+			switch field {
+			case "memo_visibility":
+				updatedGeneral.MemoVisibility = incomingGeneral.MemoVisibility
+			case "theme":
+				updatedGeneral.Theme = incomingGeneral.Theme
+			case "locale":
+				updatedGeneral.Locale = incomingGeneral.Locale
+			default:
+				// Ignore unsupported fields.
+			}
+		}
+
+		updatedSetting = &v1pb.UserSetting{
+			Name: request.Setting.Name,
+			Value: &v1pb.UserSetting_GeneralSetting_{
+				GeneralSetting: updatedGeneral,
+			},
+		}
+	case storepb.UserSetting_TAGS:
+		if len(request.UpdateMask.Paths) != 1 || request.UpdateMask.Paths[0] != "tags" {
+			return nil, status.Errorf(codes.InvalidArgument, "tags setting only supports update_mask [\"tags\"]")
+		}
+		incomingTags := request.Setting.GetTagsSetting()
+		if incomingTags == nil {
+			return nil, status.Errorf(codes.InvalidArgument, "tags setting is required")
+		}
+		normalizedTags, err := validateAndNormalizeUserTagsSetting(incomingTags)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid tags setting: %v", err)
+		}
+		updatedSetting = &v1pb.UserSetting{
+			Name: request.Setting.Name,
+			Value: &v1pb.UserSetting_TagsSetting_{
+				TagsSetting: normalizedTags,
+			},
+		}
+	default:
+		return nil, status.Errorf(codes.InvalidArgument, "setting type %s should not be updated via UpdateUserSetting", storeKey.String())
 	}
 
 	// Convert API setting to store setting
@@ -493,22 +520,33 @@ func (s *APIV1Service) ListUserSettings(ctx context.Context, request *v1pb.ListU
 		}
 	}
 
-	// If no general setting exists, add a default one
 	hasGeneral := false
+	hasTags := false
 	for _, setting := range settings {
 		if setting.GetGeneralSetting() != nil {
 			hasGeneral = true
-			break
+		}
+		if setting.GetTagsSetting() != nil {
+			hasTags = true
 		}
 	}
 	if !hasGeneral {
 		defaultGeneral := &v1pb.UserSetting{
-			Name: fmt.Sprintf("users/%d/settings/general", userID),
+			Name: fmt.Sprintf("users/%d/settings/%s", userID, convertSettingKeyFromStore(storepb.UserSetting_GENERAL)),
 			Value: &v1pb.UserSetting_GeneralSetting_{
 				GeneralSetting: getDefaultUserGeneralSetting(),
 			},
 		}
 		settings = append([]*v1pb.UserSetting{defaultGeneral}, settings...)
+	}
+	if !hasTags {
+		defaultTags := &v1pb.UserSetting{
+			Name: fmt.Sprintf("users/%d/settings/%s", userID, convertSettingKeyFromStore(storepb.UserSetting_TAGS)),
+			Value: &v1pb.UserSetting_TagsSetting_{
+				TagsSetting: getDefaultUserTagsSetting(),
+			},
+		}
+		settings = append(settings, defaultTags)
 	}
 
 	response := &v1pb.ListUserSettingsResponse{
@@ -999,6 +1037,8 @@ func convertSettingKeyToStore(key string) (storepb.UserSetting_Key, error) {
 		return storepb.UserSetting_GENERAL, nil
 	case v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_WEBHOOKS)]:
 		return storepb.UserSetting_WEBHOOKS, nil
+	case v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_TAGS)]:
+		return storepb.UserSetting_TAGS, nil
 	default:
 		return storepb.UserSetting_KEY_UNSPECIFIED, errors.Errorf("unknown setting key: %s", key)
 	}
@@ -1013,6 +1053,8 @@ func convertSettingKeyFromStore(key storepb.UserSetting_Key) string {
 		return "SHORTCUTS" // Not defined in API proto
 	case storepb.UserSetting_WEBHOOKS:
 		return v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_WEBHOOKS)]
+	case storepb.UserSetting_TAGS:
+		return v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_TAGS)]
 	default:
 		return "unknown"
 	}
@@ -1033,6 +1075,10 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32
 				WebhooksSetting: &v1pb.UserSetting_WebhooksSetting{
 					Webhooks: []*v1pb.UserWebhook{},
 				},
+			}
+		case storepb.UserSetting_TAGS:
+			setting.Value = &v1pb.UserSetting_TagsSetting_{
+				TagsSetting: getDefaultUserTagsSetting(),
 			}
 		default:
 			// Default to general setting
@@ -1077,6 +1123,19 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32
 		setting.Value = &v1pb.UserSetting_WebhooksSetting_{
 			WebhooksSetting: &v1pb.UserSetting_WebhooksSetting{
 				Webhooks: apiWebhooks,
+			},
+		}
+	case storepb.UserSetting_TAGS:
+		tags := storeSetting.GetTags()
+		apiTags := make(map[string]*v1pb.UserSetting_TagMetadata, len(tags.GetTags()))
+		for tag, metadata := range tags.GetTags() {
+			apiTags[tag] = &v1pb.UserSetting_TagMetadata{
+				BackgroundColor: metadata.GetBackgroundColor(),
+			}
+		}
+		setting.Value = &v1pb.UserSetting_TagsSetting_{
+			TagsSetting: &v1pb.UserSetting_TagsSetting{
+				Tags: apiTags,
 			},
 		}
 	default:
@@ -1128,6 +1187,22 @@ func convertUserSettingToStore(apiSetting *v1pb.UserSetting, userID int32, key s
 		} else {
 			return nil, errors.Errorf("webhooks setting is required")
 		}
+	case storepb.UserSetting_TAGS:
+		if tags := apiSetting.GetTagsSetting(); tags != nil {
+			storeTags := make(map[string]*storepb.TagMetadata, len(tags.GetTags()))
+			for tag, metadata := range tags.GetTags() {
+				storeTags[tag] = &storepb.TagMetadata{
+					BackgroundColor: metadata.GetBackgroundColor(),
+				}
+			}
+			storeSetting.Value = &storepb.UserSetting_Tags{
+				Tags: &storepb.TagsUserSetting{
+					Tags: storeTags,
+				},
+			}
+		} else {
+			return nil, errors.Errorf("tags setting is required")
+		}
 	default:
 		return nil, errors.Errorf("unsupported setting key: %v", key)
 	}
@@ -1143,6 +1218,59 @@ func extractWebhookIDFromName(name string) string {
 		return parts[3]
 	}
 	return ""
+}
+
+func validateAndNormalizeUserTagsSetting(tagsSetting *v1pb.UserSetting_TagsSetting) (*v1pb.UserSetting_TagsSetting, error) {
+	normalized := &v1pb.UserSetting_TagsSetting{
+		Tags: make(map[string]*v1pb.UserSetting_TagMetadata, len(tagsSetting.GetTags())),
+	}
+	for tag, metadata := range tagsSetting.GetTags() {
+		if strings.TrimSpace(tag) == "" {
+			return nil, errors.New("tag key cannot be empty")
+		}
+		if metadata == nil {
+			return nil, errors.Errorf("tag metadata is required for %q", tag)
+		}
+		backgroundColor := metadata.GetBackgroundColor()
+		if backgroundColor == nil {
+			return nil, errors.Errorf("background_color is required for %q", tag)
+		}
+		if err := validateColor(backgroundColor); err != nil {
+			return nil, errors.Wrapf(err, "background_color for %q", tag)
+		}
+		normalized.Tags[tag] = &v1pb.UserSetting_TagMetadata{
+			BackgroundColor: backgroundColor,
+		}
+	}
+	return normalized, nil
+}
+
+func validateColor(color *colorpb.Color) error {
+	if err := validateColorComponent("red", color.GetRed()); err != nil {
+		return err
+	}
+	if err := validateColorComponent("green", color.GetGreen()); err != nil {
+		return err
+	}
+	if err := validateColorComponent("blue", color.GetBlue()); err != nil {
+		return err
+	}
+	if alpha := color.GetAlpha(); alpha != nil {
+		if err := validateColorComponent("alpha", alpha.GetValue()); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func validateColorComponent(name string, value float32) error {
+	if math.IsNaN(float64(value)) || math.IsInf(float64(value), 0) {
+		return errors.Errorf("%s must be a finite number", name)
+	}
+	if value < 0 || value > 1 {
+		return errors.Errorf("%s must be between 0 and 1", name)
+	}
+	return nil
 }
 
 // extractUsernameFromFilter extracts username from the filter string using CEL.
