@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	colorpb "google.golang.org/genproto/googleapis/type/color"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -100,6 +101,48 @@ func TestUserSettingUpsertUpdate(t *testing.T) {
 	list, err := ts.ListUserSettings(ctx, &store.FindUserSetting{UserID: &user.ID})
 	require.NoError(t, err)
 	require.Equal(t, 1, len(list))
+
+	ts.Close()
+}
+
+func TestUserSettingTags(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
+		UserId: user.ID,
+		Key:    storepb.UserSetting_TAGS,
+		Value: &storepb.UserSetting_Tags{
+			Tags: &storepb.TagsUserSetting{
+				Tags: map[string]*storepb.TagMetadata{
+					"bug": {
+						BackgroundColor: &colorpb.Color{
+							Red:   0.1,
+							Green: 0.2,
+							Blue:  0.3,
+						},
+					},
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	setting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{
+		UserID: &user.ID,
+		Key:    storepb.UserSetting_TAGS,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, setting)
+	require.Contains(t, setting.GetTags().Tags, "bug")
+	require.InDelta(t, 0.1, setting.GetTags().Tags["bug"].GetBackgroundColor().GetRed(), 0.0001)
+
+	list, err := ts.ListUserSettings(ctx, &store.FindUserSetting{UserID: &user.ID})
+	require.NoError(t, err)
+	require.Len(t, list, 1)
 
 	ts.Close()
 }

@@ -3,6 +3,7 @@ syntax = "proto3";
 package memos.store;
 
 import "google/protobuf/timestamp.proto";
+import "google/type/color.proto";
 
 option go_package = "gen/store";
 
@@ -19,6 +20,8 @@ message UserSetting {
     REFRESH_TOKENS = 6;
     // Personal access tokens for the user.
     PERSONAL_ACCESS_TOKENS = 7;
+    // Tag metadata for the user.
+    TAGS = 8;
   }
 
   int32 user_id = 1;
@@ -30,6 +33,7 @@ message UserSetting {
     WebhooksUserSetting webhooks = 7;
     RefreshTokensUserSetting refresh_tokens = 8;
     PersonalAccessTokensUserSetting personal_access_tokens = 9;
+    TagsUserSetting tags = 10;
   }
 }
 
@@ -110,4 +114,13 @@ message WebhooksUserSetting {
     string url = 3;
   }
   repeated Webhook webhooks = 1;
+}
+
+message TagMetadata {
+  // Background color for the tag label.
+  google.type.Color background_color = 1;
+}
+
+message TagsUserSetting {
+  map<string, TagMetadata> tags = 1;
 }
