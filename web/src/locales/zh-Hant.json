@@ -463,5 +463,10 @@
     "select-visibility": "瀏覽權限",
     "tags": "標籤",
     "upload-attachment": "上傳附件"
+  },
+  "sse": {
+    "connected": "已連接",
+    "connecting": "正在連接",
+    "disconnected": "已斷開"
   }
 }
