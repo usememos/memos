@@ -32,6 +32,7 @@ require (
 	golang.org/x/net v0.52.0
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/sync v0.20.0
+	google.golang.org/genproto v0.0.0-20260316180232-0b37fe3546d5
 	google.golang.org/genproto/googleapis/api v0.0.0-20260316172706-e463d84ca32d
 	google.golang.org/grpc v1.79.2
 	modernc.org/sqlite v1.46.1
@@ -106,7 +107,6 @@ require (
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/exp v0.0.0-20251023183803-a4bb9ffd2546 // indirect
 	golang.org/x/image v0.30.0 // indirect
-	google.golang.org/genproto v0.0.0-20260316180232-0b37fe3546d5 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260311181403-84a4fc48630c // indirect
 	modernc.org/libc v1.67.6 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
