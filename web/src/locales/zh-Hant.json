@@ -465,8 +465,8 @@
     "upload-attachment": "上傳附件"
   },
   "sse": {
-    "connected": "已连接",
-    "connecting": "正在连接",
-    "disconnected": "已断开"
+    "connected": "已連接",
+    "connecting": "正在連接",
+    "disconnected": "已斷開"
   }
 }
