@@ -1,4 +1,4 @@
-import { ConnectError } from "@connectrpc/connect";
+import { Code, ConnectError } from "@connectrpc/connect";
 import { ArrowUpLeftFromCircleIcon, MessageCircleIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -14,6 +14,7 @@ import useMediaQuery from "@/hooks/useMediaQuery";
 import { useMemo, useMemoComments } from "@/hooks/useMemoQueries";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { cn } from "@/lib/utils";
+import { AUTH_REASON_PROTECTED_MEMO, redirectOnAuthFailure } from "@/utils/auth-redirect";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoDetail = () => {
@@ -21,7 +22,8 @@ const MemoDetail = () => {
   const md = useMediaQuery("md");
   const params = useParams();
   const navigateTo = useNavigateTo();
-  const { state: locationState } = useLocation();
+  const location = useLocation();
+  const { state: locationState, hash } = location;
   const currentUser = useCurrentUser();
   const uid = params.uid;
   const memoName = `${memoNamePrefix}${uid}`;
@@ -31,10 +33,38 @@ const MemoDetail = () => {
   const { data: memo, error, isLoading } = useMemo(memoName, { enabled: !!memoName });
 
   // Handle errors
-  if (error) {
-    toast.error((error as ConnectError).message);
-    navigateTo("/403");
-  }
+  useEffect(() => {
+    if (!error) {
+      return;
+    }
+
+    if (error instanceof ConnectError) {
+      if (error.code === Code.Unauthenticated) {
+        redirectOnAuthFailure(true, {
+          redirect: `${location.pathname}${location.search}${location.hash}`,
+          reason: AUTH_REASON_PROTECTED_MEMO,
+        });
+        return;
+      }
+
+      if (error.code === Code.PermissionDenied) {
+        navigateTo("/403", { replace: true });
+        return;
+      }
+
+      if (error.code === Code.NotFound) {
+        navigateTo("/404", { replace: true });
+        return;
+      }
+
+      toast.error(error.message);
+      navigateTo("/404", { replace: true });
+      return;
+    }
+
+    toast.error("Failed to load memo.");
+    navigateTo("/404", { replace: true });
+  }, [error, location.hash, location.pathname, location.search, navigateTo]);
 
   // Fetch parent memo if exists
   const { data: parentMemo } = useMemo(memo?.parent || "", {
@@ -47,7 +77,6 @@ const MemoDetail = () => {
   });
   const comments = commentsResponse?.memos || [];
 
-  const { hash } = useLocation();
   useEffect(() => {
     if (!hash || comments.length === 0) return;
     const el = document.getElementById(hash.slice(1));

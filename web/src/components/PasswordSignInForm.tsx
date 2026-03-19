@@ -11,9 +11,14 @@ import { useInstance } from "@/contexts/InstanceContext";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { handleError } from "@/lib/error";
+import { ROUTES } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
 
-function PasswordSignInForm() {
+interface PasswordSignInFormProps {
+  redirectPath?: string;
+}
+
+function PasswordSignInForm({ redirectPath }: PasswordSignInFormProps) {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const { profile } = useInstance();
@@ -59,7 +64,7 @@ function PasswordSignInForm() {
         setAccessToken(response.accessToken, response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined);
       }
       await initialize();
-      navigateTo("/");
+      navigateTo(redirectPath || ROUTES.ROOT, { replace: true });
     } catch (error: unknown) {
       handleError(error, toast.error, {
         fallbackMessage: "Failed to sign in.",

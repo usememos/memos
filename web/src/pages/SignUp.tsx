@@ -3,7 +3,7 @@ import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { LoaderIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { setAccessToken } from "@/auth-state";
 import AuthFooter from "@/components/AuthFooter";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,9 @@ import { useInstance } from "@/contexts/InstanceContext";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { handleError } from "@/lib/error";
+import { ROUTES } from "@/router/routes";
 import { User_Role, UserSchema } from "@/types/proto/api/v1/user_service_pb";
+import { AUTH_REASON_PARAM, AUTH_REASON_PROTECTED_MEMO, AUTH_REDIRECT_PARAM, getSafeRedirectPath } from "@/utils/auth-redirect";
 import { useTranslate } from "@/utils/i18n";
 
 const SignUp = () => {
@@ -25,6 +27,10 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const { initialize: initAuth } = useAuth();
   const { generalSetting: instanceGeneralSetting, profile, initialize: initInstance } = useInstance();
+  const [searchParams] = useSearchParams();
+  const redirectTarget = getSafeRedirectPath(searchParams.get(AUTH_REDIRECT_PARAM));
+  const authReason = searchParams.get(AUTH_REASON_PARAM);
+  const signInPath = searchParams.toString() ? `${ROUTES.AUTH}?${searchParams.toString()}` : ROUTES.AUTH;
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
@@ -72,7 +78,7 @@ const SignUp = () => {
       await initAuth();
       // Refetch instance profile to update the initialized status
       await initInstance();
-      navigateTo("/");
+      navigateTo(redirectTarget || ROUTES.ROOT, { replace: true });
     } catch (error: unknown) {
       handleError(error, toast.error, {
         fallbackMessage: "Sign up failed",
@@ -88,6 +94,11 @@ const SignUp = () => {
           <img className="h-14 w-auto rounded-full shadow" src={instanceGeneralSetting.customProfile?.logoUrl || "/logo.webp"} alt="" />
           <p className="ml-2 text-5xl text-foreground opacity-80">{instanceGeneralSetting.customProfile?.title || "Memos"}</p>
         </div>
+        {authReason === AUTH_REASON_PROTECTED_MEMO && (
+          <div className="w-full mb-4 rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
+            This memo is not public. Sign in to continue.
+          </div>
+        )}
         {!instanceGeneralSetting.disallowUserRegistration ? (
           <>
             <p className="w-full text-2xl mt-2 text-muted-foreground">{t("auth.create-your-account")}</p>
@@ -140,7 +151,7 @@ const SignUp = () => {
         ) : (
           <p className="w-full mt-4 text-sm">
             <span className="text-muted-foreground">{t("auth.sign-in-tip")}</span>
-            <Link to="/auth" className="cursor-pointer ml-2 text-primary hover:underline" viewTransition>
+            <Link to={signInPath} className="cursor-pointer ml-2 text-primary hover:underline" viewTransition>
               {t("common.sign-in")}
             </Link>
           </p>
