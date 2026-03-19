@@ -38,7 +38,15 @@
     "created-at": "Создано",
     "database": "База данных",
     "day": "День",
-    "days": "Дни",
+    "days": {
+      "fri": "Пт.",
+      "mon": "Пон.",
+      "sat": "Сб.",
+      "sun": "Вс.",
+      "thu": "Чт.",
+      "tue": "Вт.",
+      "wed": "Ср."
+    },
     "delete": "Удалить",
     "description": "Описание",
     "edit": "Редактировать",
@@ -108,15 +116,6 @@
     "visibility": "Видимость",
     "yourself": "Вы"
   },
-  "days": {
-    "fri": "Пт.",
-    "mon": "Пон.",
-    "sat": "Сб.",
-    "sun": "Вс.",
-    "thu": "Чт.",
-    "tue": "Вт.",
-    "wed": "Ср."
-  },
   "editor": {
     "add-your-comment-here": "Напишите свой комментарий...",
     "any-thoughts": "Напишите что-нибудь...",
@@ -126,11 +125,6 @@
     "save": "Сохранить",
     "saving": "Сохранение...",
     "slash-commands": "Введите `/` для команд"
-  },
-  "filters": {
-    "has-code": "hasCode",
-    "has-link": "hasLink",
-    "has-task-list": "hasTaskList"
   },
   "inbox": {
     "failed-to-load": "Не удалось загрузить элемент уведомления",
@@ -162,7 +156,11 @@
     "direction-asc": "По возрастанию",
     "direction-desc": "По убыванию",
     "display-time": "Время отображения",
-    "filters": "Фильтры",
+    "filters": {
+      "has-code": "hasCode",
+      "has-link": "hasLink",
+      "has-task-list": "hasTaskList"
+    },
     "links": "Ссылки",
     "list": "Список",
     "load-more": "Загрузить еще",
@@ -251,53 +249,7 @@
     "go-to-home": "Домой"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "Токен скопирован в буфер обмена",
-      "access-token-deleted": "Токен доступа `{{description}}` удален",
-      "access-token-deletion": "Вы действительно хотите удалить токен доступа `{{description}}`?\nЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ.",
-      "access-token-deletion-description": "Это действие нельзя отменить. Вам нужно будет обновить любые службы, использующие этот токен, чтобы они использовали новый токен.",
-      "create-dialog": {
-        "access-token-created": "Токен доступа `{{description}}` создан",
-        "create-access-token": "Создание токена доступа",
-        "created-at": "Создан",
-        "description": "Описание",
-        "duration-1m": "1 месяц",
-        "duration-8h": "8 часов",
-        "duration-never": "Никогда",
-        "expiration": "Срок действия",
-        "expires-at": "Истекает",
-        "some-description": "Введите описание..."
-      },
-      "description": "Список всех токенов доступа для вашей учетной записи.",
-      "title": "Токены доступа",
-      "token": "Токен"
-    },
-    "account-section": {
-      "change-password": "Изменить пароль",
-      "email-note": "Опционально",
-      "export-memos": "Экспорт заметок",
-      "nickname-note": "Отображается в системе",
-      "openapi-reset": "Очистить ключ OpenAPI",
-      "openapi-sample-post": "Привет #memos от {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "Очистить API",
-      "title": "Информация об аккаунте",
-      "update-information": "Обновить информацию",
-      "username-note": "Используется для входа"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Запретить смену псевдонима",
-      "disallow-change-username": "Запретить смену имени пользователя",
-      "disallow-password-auth": "Запретить вход по паролю",
-      "disallow-user-registration": "Запретить регистрацию пользователей",
-      "monday": "Понедельник",
-      "saturday": "Суббота",
-      "sunday": "Воскресенье",
-      "week-start-day": "Начало недели"
-    },
-    "member": "Пользователи",
-    "member-list": "Список пользователей",
-    "member-section": {
+    "member": {
       "admin": "Администратор",
       "archive-member": "Деактивировать",
       "archive-success": "Пользователь {{username}} успешно деактивирован",
@@ -309,30 +261,24 @@
       "delete-warning": "Вы уверены, что хотите удалить пользователя {{username}}?\nЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ!",
       "delete-warning-description": "ЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ",
       "restore-success": "Пользователь {{username}} успешно восстановлен",
-      "user": "Пользователь"
+      "user": "Пользователь",
+      "label": "Пользователи",
+      "list-title": "Список пользователей"
     },
-    "memo-related": "Заметки",
-    "memo-related-settings": {
-      "content-length-limit": "Макс. длина заметки (байт)",
-      "enable-blur-nsfw-content": "\"Размывать\" заметки с тегами",
-      "enable-memo-comments": "Комментарии",
-      "enable-memo-location": "Геометки",
-      "reactions": "Реакции",
-      "title": "Настройки заметок"
+    "my-account": {
+      "label": "Мой аккаунт"
     },
-    "my-account": "Мой аккаунт",
-    "preference": "Настройки",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "Отображаемое время записи",
       "default-memo-visibility": "Видимость записей по умолчанию",
-      "theme": "Тема"
+      "theme": "Тема",
+      "label": "Настройки"
     },
     "shortcut": {
       "delete-confirm": "Вы уверены, что хотите удалить ярлык `{{title}}`?",
       "delete-success": "Ярлык `{{title}}` успешно удален"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "Конечная точка авторизации",
       "client-id": "ID клиента",
       "client-secret": "Секретный ключ клиента",
@@ -354,10 +300,10 @@
       "template": "Шаблон",
       "token-endpoint": "Конечная точка токена",
       "update-sso": "Изменение SSO-провайдера",
-      "user-endpoint": "Конечная точка пользователя"
+      "user-endpoint": "Конечная точка пользователя",
+      "label": "SSO"
     },
-    "storage": "Хранилище",
-    "storage-section": {
+    "storage": {
       "accesskey": "Ключ доступа",
       "accesskey-placeholder": "Ключ доступа / идентификатор доступа",
       "bucket": "Корзина",
@@ -389,10 +335,10 @@
       "url-prefix-placeholder": "Пользовательский префикс URL, необязательно",
       "url-suffix": "суффикс URL",
       "url-suffix-placeholder": "Пользовательский суффикс URL, необязательно",
-      "warning-text": "Вы уверены, что хотите удалить хранилище `{{name}}`? ЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ"
+      "warning-text": "Вы уверены, что хотите удалить хранилище `{{name}}`? ЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ",
+      "label": "Хранилище"
     },
-    "system": "Система",
-    "system-section": {
+    "system": {
       "additional-script": "Дополнительный скрипт",
       "additional-script-placeholder": "Напишите ваш JavaScript-код здесь",
       "additional-style": "Дополнительный стиль",
@@ -416,10 +362,64 @@
       "max-upload-size-hint": "Рекомендуемое значение 32 MБ",
       "removed-completed-task-list-items": "Включить удаление выполненных",
       "server-name": "Имя сервера",
-      "title": "Общие"
+      "title": "Общие",
+      "label": "Система"
     },
     "version": "Версия",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "Токен скопирован в буфер обмена",
+      "access-token-deleted": "Токен доступа `{{description}}` удален",
+      "access-token-deletion": "Вы действительно хотите удалить токен доступа `{{description}}`?\nЭТО ДЕЙСТВИЕ НЕЛЬЗЯ ОТМЕНИТЬ.",
+      "access-token-deletion-description": "Это действие нельзя отменить. Вам нужно будет обновить любые службы, использующие этот токен, чтобы они использовали новый токен.",
+      "create-dialog": {
+        "access-token-created": "Токен доступа `{{description}}` создан",
+        "create-access-token": "Создание токена доступа",
+        "created-at": "Создан",
+        "description": "Описание",
+        "duration-1m": "1 месяц",
+        "duration-8h": "8 часов",
+        "duration-never": "Никогда",
+        "expiration": "Срок действия",
+        "expires-at": "Истекает",
+        "some-description": "Введите описание..."
+      },
+      "description": "Список всех токенов доступа для вашей учетной записи.",
+      "title": "Токены доступа",
+      "token": "Токен"
+    },
+    "account": {
+      "change-password": "Изменить пароль",
+      "email-note": "Опционально",
+      "export-memos": "Экспорт заметок",
+      "nickname-note": "Отображается в системе",
+      "openapi-reset": "Очистить ключ OpenAPI",
+      "openapi-sample-post": "Привет #memos от {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "Очистить API",
+      "title": "Информация об аккаунте",
+      "update-information": "Обновить информацию",
+      "username-note": "Используется для входа"
+    },
+    "instance": {
+      "disallow-change-nickname": "Запретить смену псевдонима",
+      "disallow-change-username": "Запретить смену имени пользователя",
+      "disallow-password-auth": "Запретить вход по паролю",
+      "disallow-user-registration": "Запретить регистрацию пользователей",
+      "monday": "Понедельник",
+      "saturday": "Суббота",
+      "sunday": "Воскресенье",
+      "week-start-day": "Начало недели"
+    },
+    "memo": {
+      "content-length-limit": "Макс. длина заметки (байт)",
+      "enable-blur-nsfw-content": "\"Размывать\" заметки с тегами",
+      "enable-memo-comments": "Комментарии",
+      "enable-memo-location": "Геометки",
+      "reactions": "Реакции",
+      "title": "Настройки заметок",
+      "label": "Заметки"
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "Название, которое легко запомнить",
         "create-webhook": "Создание вебхука",

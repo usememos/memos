@@ -22,9 +22,9 @@ function getExpireDate(option: ExpiryOption): Date | undefined {
 }
 
 function formatExpiry(share: MemoShare, t: ReturnType<typeof useTranslate>): string {
-  if (!share.expireTime) return t("memo-share.never-expires");
+  if (!share.expireTime) return t("memo.share.never-expires");
   const d = timestampDate(share.expireTime);
-  return t("memo-share.expires-on", { date: d.toLocaleDateString() });
+  return t("memo.share.expires-on", { date: d.toLocaleDateString() });
 }
 
 interface ShareLinkRowProps {
@@ -47,9 +47,9 @@ function ShareLinkRow({ share, memoName }: ShareLinkRowProps) {
   const handleRevoke = async () => {
     try {
       await deleteShare.mutateAsync({ name: share.name, memoName });
-      toast.success(t("memo-share.revoked"));
+      toast.success(t("memo.share.revoked"));
     } catch (e) {
-      toast.error((e as ConnectError).message || t("memo-share.revoke-failed"));
+      toast.error((e as ConnectError).message || t("memo.share.revoke-failed"));
     }
   };
 
@@ -58,7 +58,7 @@ function ShareLinkRow({ share, memoName }: ShareLinkRowProps) {
       <div className="flex items-center justify-between gap-2">
         <span className="truncate font-mono text-xs text-muted-foreground">{url}</span>
         <div className="flex shrink-0 items-center gap-1">
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleCopy} title={t("memo-share.copy")}>
+          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleCopy} title={t("memo.share.copy")}>
             {copied ? <CheckIcon className="h-3.5 w-3.5 text-green-500" /> : <CopyIcon className="h-3.5 w-3.5" />}
           </Button>
           <Button
@@ -67,7 +67,7 @@ function ShareLinkRow({ share, memoName }: ShareLinkRowProps) {
             className="h-7 w-7 text-destructive hover:text-destructive"
             onClick={handleRevoke}
             disabled={deleteShare.isPending}
-            title={t("memo-share.revoke")}
+            title={t("memo.share.revoke")}
           >
             <Trash2Icon className="h-3.5 w-3.5" />
           </Button>
@@ -94,7 +94,7 @@ const MemoSharePanel = ({ open, onClose, memoName }: MemoSharePanelProps) => {
     try {
       await createShare.mutateAsync({ memoName, expireTime: getExpireDate(expiry) });
     } catch (e) {
-      toast.error((e as ConnectError).message || t("memo-share.create-failed"));
+      toast.error((e as ConnectError).message || t("memo.share.create-failed"));
     }
   };
 
@@ -104,18 +104,18 @@ const MemoSharePanel = ({ open, onClose, memoName }: MemoSharePanelProps) => {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <LinkIcon className="h-4 w-4" />
-            {t("memo-share.title")}
+            {t("memo.share.title")}
           </DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col gap-4 py-2">
           {/* Active links */}
           <div className="flex flex-col gap-2">
-            <p className="text-sm font-medium text-muted-foreground">{t("memo-share.active-links")}</p>
+            <p className="text-sm font-medium text-muted-foreground">{t("memo.share.active-links")}</p>
             {isLoading ? (
               <Loader2Icon className="h-4 w-4 animate-spin text-muted-foreground" />
             ) : shares.length === 0 ? (
-              <p className="text-sm text-muted-foreground">{t("memo-share.no-links")}</p>
+              <p className="text-sm text-muted-foreground">{t("memo.share.no-links")}</p>
             ) : (
               <div className="flex flex-col gap-2">
                 {shares.map((share) => (
@@ -132,20 +132,20 @@ const MemoSharePanel = ({ open, onClose, memoName }: MemoSharePanelProps) => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="never">{t("memo-share.expiry-never")}</SelectItem>
-                <SelectItem value="1d">{t("memo-share.expiry-1-day")}</SelectItem>
-                <SelectItem value="7d">{t("memo-share.expiry-7-days")}</SelectItem>
-                <SelectItem value="30d">{t("memo-share.expiry-30-days")}</SelectItem>
+                <SelectItem value="never">{t("memo.share.expiry-never")}</SelectItem>
+                <SelectItem value="1d">{t("memo.share.expiry-1-day")}</SelectItem>
+                <SelectItem value="7d">{t("memo.share.expiry-7-days")}</SelectItem>
+                <SelectItem value="30d">{t("memo.share.expiry-30-days")}</SelectItem>
               </SelectContent>
             </Select>
             <Button onClick={handleCreate} disabled={createShare.isPending} className="flex-1">
               {createShare.isPending ? (
                 <>
                   <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-                  {t("memo-share.creating")}
+                  {t("memo.share.creating")}
                 </>
               ) : (
-                t("memo-share.create-link")
+                t("memo.share.create-link")
               )}
             </Button>
           </div>

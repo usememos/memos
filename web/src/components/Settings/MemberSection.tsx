@@ -32,9 +32,9 @@ const MemberSection = () => {
 
   const stringifyUserRole = (role: User_Role) => {
     if (role === User_Role.ADMIN) {
-      return t("setting.member-section.admin");
+      return t("setting.member.admin");
     } else {
-      return t("setting.member-section.user");
+      return t("setting.member.user");
     }
   };
 
@@ -63,7 +63,7 @@ const MemberSection = () => {
       updateMask: create(FieldMaskSchema, { paths: ["state"] }),
     });
     setArchiveTarget(undefined);
-    toast.success(t("setting.member-section.archive-success", { username }));
+    toast.success(t("setting.member.archive-success", { username }));
     await refetchUsers();
   };
 
@@ -76,7 +76,7 @@ const MemberSection = () => {
       },
       updateMask: create(FieldMaskSchema, { paths: ["state"] }),
     });
-    toast.success(t("setting.member-section.restore-success", { username }));
+    toast.success(t("setting.member.restore-success", { username }));
     await refetchUsers();
   };
 
@@ -89,12 +89,12 @@ const MemberSection = () => {
     const { username, name } = deleteTarget;
     deleteUserMutation.mutate(name);
     setDeleteTarget(undefined);
-    toast.success(t("setting.member-section.delete-success", { username }));
+    toast.success(t("setting.member.delete-success", { username }));
   };
 
   return (
     <SettingSection
-      title={t("setting.member-list")}
+      title={t("setting.member.list-title")}
       actions={
         <Button onClick={handleCreateUser}>
           <PlusIcon className="w-4 h-4 mr-2" />
@@ -146,14 +146,12 @@ const MemberSection = () => {
                   <DropdownMenuContent align="end" sideOffset={2}>
                     <DropdownMenuItem onClick={() => handleEditUser(user)}>{t("common.update")}</DropdownMenuItem>
                     {user.state === State.NORMAL ? (
-                      <DropdownMenuItem onClick={() => handleArchiveUserClick(user)}>
-                        {t("setting.member-section.archive-member")}
-                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleArchiveUserClick(user)}>{t("setting.member.archive-member")}</DropdownMenuItem>
                     ) : (
                       <>
                         <DropdownMenuItem onClick={() => handleRestoreUserClick(user)}>{t("common.restore")}</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleDeleteUserClick(user)} className="text-destructive focus:text-destructive">
-                          {t("setting.member-section.delete-member")}
+                          {t("setting.member.delete-member")}
                         </DropdownMenuItem>
                       </>
                     )}
@@ -176,8 +174,8 @@ const MemberSection = () => {
       <ConfirmDialog
         open={!!archiveTarget}
         onOpenChange={(open) => !open && setArchiveTarget(undefined)}
-        title={archiveTarget ? t("setting.member-section.archive-warning", { username: archiveTarget.username }) : ""}
-        description={archiveTarget ? t("setting.member-section.archive-warning-description") : ""}
+        title={archiveTarget ? t("setting.member.archive-warning", { username: archiveTarget.username }) : ""}
+        description={archiveTarget ? t("setting.member.archive-warning-description") : ""}
         confirmLabel={t("common.confirm")}
         cancelLabel={t("common.cancel")}
         onConfirm={confirmArchiveUser}
@@ -187,8 +185,8 @@ const MemberSection = () => {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(undefined)}
-        title={deleteTarget ? t("setting.member-section.delete-warning", { username: deleteTarget.username }) : ""}
-        description={deleteTarget ? t("setting.member-section.delete-warning-description") : ""}
+        title={deleteTarget ? t("setting.member.delete-warning", { username: deleteTarget.username }) : ""}
+        description={deleteTarget ? t("setting.member.delete-warning-description") : ""}
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={confirmDeleteUser}

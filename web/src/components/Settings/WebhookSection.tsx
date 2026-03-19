@@ -37,7 +37,7 @@ const WebhookSection = () => {
     const name = webhooks[webhooks.length - 1]?.displayName || "";
     setWebhooks(webhooks);
     setIsCreateWebhookDialogOpen(false);
-    toast.success(t("setting.webhook-section.create-dialog.create-webhook-success", { name }));
+    toast.success(t("setting.webhook.create-dialog.create-webhook-success", { name }));
   };
 
   const handleDeleteWebhook = async (webhook: UserWebhook) => {
@@ -49,13 +49,13 @@ const WebhookSection = () => {
     await userServiceClient.deleteUserWebhook({ name: deleteTarget.name });
     setWebhooks(webhooks.filter((item) => item.name !== deleteTarget.name));
     setDeleteTarget(undefined);
-    toast.success(t("setting.webhook-section.delete-dialog.delete-webhook-success", { name: deleteTarget.displayName }));
+    toast.success(t("setting.webhook.delete-dialog.delete-webhook-success", { name: deleteTarget.displayName }));
   };
 
   return (
     <div className="w-full flex flex-col gap-2">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
-        <h4 className="text-sm font-medium text-muted-foreground">{t("setting.webhook-section.title")}</h4>
+        <h4 className="text-sm font-medium text-muted-foreground">{t("setting.webhook.title")}</h4>
         <Button onClick={() => setIsCreateWebhookDialogOpen(true)} size="sm">
           <PlusIcon className="w-4 h-4 mr-1.5" />
           {t("common.create")}
@@ -71,7 +71,7 @@ const WebhookSection = () => {
           },
           {
             key: "url",
-            header: t("setting.webhook-section.url"),
+            header: t("setting.webhook.url"),
             render: (_, webhook: UserWebhook) => (
               <span className="max-w-[300px] inline-block truncate text-foreground" title={webhook.url}>
                 {webhook.url}
@@ -90,7 +90,7 @@ const WebhookSection = () => {
           },
         ]}
         data={webhooks}
-        emptyMessage={t("setting.webhook-section.no-webhooks-found")}
+        emptyMessage={t("setting.webhook.no-webhooks-found")}
         getRowKey={(webhook) => webhook.name}
       />
 
@@ -113,8 +113,8 @@ const WebhookSection = () => {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(undefined)}
-        title={t("setting.webhook-section.delete-dialog.delete-webhook-title", { name: deleteTarget?.displayName || "" })}
-        description={t("setting.webhook-section.delete-dialog.delete-webhook-description")}
+        title={t("setting.webhook.delete-dialog.delete-webhook-title", { name: deleteTarget?.displayName || "" })}
+        description={t("setting.webhook.delete-dialog.delete-webhook-description")}
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={confirmDeleteWebhook}

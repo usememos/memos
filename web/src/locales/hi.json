@@ -38,7 +38,15 @@
     "created-at": "बनाया गया",
     "database": "डेटाबेस",
     "day": "दिन",
-    "days": "दिन",
+    "days": {
+      "fri": "शुक्रवार",
+      "mon": "सोमवार",
+      "sat": "शनिवार",
+      "sun": "रविवार",
+      "thu": "गुरुवार",
+      "tue": "मंगलवार",
+      "wed": "बुधवार"
+    },
     "delete": "हटाएँ",
     "description": "विवरण",
     "edit": "संपादित करें",
@@ -108,15 +116,6 @@
     "visibility": "दृश्यता",
     "yourself": "खुद"
   },
-  "days": {
-    "fri": "शुक्रवार",
-    "mon": "सोमवार",
-    "sat": "शनिवार",
-    "sun": "रविवार",
-    "thu": "गुरुवार",
-    "tue": "मंगलवार",
-    "wed": "बुधवार"
-  },
   "editor": {
     "add-your-comment-here": "अपनी टिप्पणी यहाँ जोड़ें...",
     "any-thoughts": "कोई विचार...",
@@ -126,11 +125,6 @@
     "save": "सहेजें",
     "saving": "सहेज रहा है...",
     "slash-commands": "कमांड के लिए `/` टाइप करें"
-  },
-  "filters": {
-    "has-code": "कोड है",
-    "has-link": "लिंक है",
-    "has-task-list": "टास्क लिस्ट है"
   },
   "inbox": {
     "failed-to-load": "इनबॉक्स आइटम लोड करने में विफल",
@@ -162,7 +156,11 @@
     "direction-asc": "आरोही",
     "direction-desc": "अवरोही",
     "display-time": "प्रदर्शन समय",
-    "filters": "फ़िल्टर",
+    "filters": {
+      "has-code": "कोड है",
+      "has-link": "लिंक है",
+      "has-task-list": "टास्क लिस्ट है"
+    },
     "links": "लिंक",
     "list": "सूची",
     "load-more": "और लोड करें",
@@ -251,53 +249,7 @@
     "go-to-home": "होम पर जाएँ"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "एक्सेस टोकन क्लिपबोर्ड में कॉपी किया गया",
-      "access-token-deleted": "एक्सेस टोकन `{{description}}` हटाया गया",
-      "access-token-deletion": "क्या आप वाकई एक्सेस टोकन `{{description}}` हटाना चाहते हैं?",
-      "access-token-deletion-description": "यह कार्रवाई वापस नहीं की जा सकती। आपको इस टोकन का उपयोग करने वाली सभी सेवाओं को एक नया टोकन उपयोग करने के लिए अपडेट करना होगा।",
-      "create-dialog": {
-        "access-token-created": "एक्सेस टोकन `{{description}}` बनाया गया",
-        "create-access-token": "एक्सेस टोकन बनाएँ",
-        "created-at": "बनाया गया",
-        "description": "विवरण",
-        "duration-1m": "1 महीना",
-        "duration-8h": "8 घंटे",
-        "duration-never": "कभी नहीं",
-        "expiration": "समाप्ति",
-        "expires-at": "समाप्ति तिथि",
-        "some-description": "कुछ विवरण..."
-      },
-      "description": "आपके खाते के सभी एक्सेस टोकन की सूची।",
-      "title": "एक्सेस टोकन",
-      "token": "टोकन"
-    },
-    "account-section": {
-      "change-password": "पासवर्ड बदलें",
-      "email-note": "वैकल्पिक",
-      "export-memos": "मेमो निर्यात करें",
-      "nickname-note": "बैनर में दिखाया गया",
-      "openapi-reset": "OpenAPI कुंजी रीसेट करें",
-      "openapi-sample-post": "नमस्ते #memos से {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "API रीसेट करें",
-      "title": "खाता जानकारी",
-      "update-information": "जानकारी अपडेट करें",
-      "username-note": "साइन इन के लिए उपयोग किया जाता है"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "उपनाम बदलने की अनुमति न दें",
-      "disallow-change-username": "उपयोगकर्ता नाम बदलने की अनुमति न दें",
-      "disallow-password-auth": "पासवर्ड प्रमाणीकरण की अनुमति न दें",
-      "disallow-user-registration": "यूज़र पंजीकरण की अनुमति न दें",
-      "monday": "सोमवार",
-      "saturday": "शनिवार",
-      "sunday": "रविवार",
-      "week-start-day": "सप्ताह प्रारंभ दिन"
-    },
-    "member": "सदस्य",
-    "member-list": "सदस्य सूची",
-    "member-section": {
+    "member": {
       "admin": "एडमिन",
       "archive-member": "सदस्य को संग्रहित करें",
       "archive-success": "{{username}} सफलतापूर्वक संग्रहित किया गया",
@@ -309,30 +261,24 @@
       "delete-warning": "क्या आप वाकई {{username}} को हटाना चाहते हैं?",
       "delete-warning-description": "यह कार्रवाई वापस नहीं की जा सकती",
       "restore-success": "{{username}} सफलतापूर्वक पुनर्स्थापित किया गया",
-      "user": "उपयोगकर्ता"
+      "user": "उपयोगकर्ता",
+      "label": "सदस्य",
+      "list-title": "सदस्य सूची"
     },
-    "memo-related": "मेमो",
-    "memo-related-settings": {
-      "content-length-limit": "सामग्री की अधिकतम लंबाई (बाइट)",
-      "enable-blur-nsfw-content": "संवेदनशील (NSFW) सामग्री धुंधला करें सक्षम करें",
-      "enable-memo-comments": "मेमो टिप्पणियाँ सक्षम करें",
-      "enable-memo-location": "मेमो स्थान सक्षम करें",
-      "reactions": "प्रतिक्रियाएँ",
-      "title": "मेमो संबंधित सेटिंग्स"
+    "my-account": {
+      "label": "मेरा खाता"
     },
-    "my-account": "मेरा खाता",
-    "preference": "प्राथमिकता",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "मेमो प्रदर्शन समय",
       "default-memo-visibility": "डिफ़ॉल्ट मेमो दृश्यता",
-      "theme": "थीम"
+      "theme": "थीम",
+      "label": "प्राथमिकता"
     },
     "shortcut": {
       "delete-confirm": "क्या आप वाकई शॉर्टकट `{{title}}` हटाना चाहते हैं?",
       "delete-success": "शॉर्टकट `{{title}}` सफलतापूर्वक हटाया गया"
     },
-    "sso": "एसएसओ",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "प्राधिकरण एंडपॉइंट",
       "client-id": "क्लाइंट आईडी",
       "client-secret": "क्लाइंट सीक्रेट",
@@ -354,10 +300,10 @@
       "template": "टेम्पलेट",
       "token-endpoint": "टोकन एंडपॉइंट",
       "update-sso": "SSO अपडेट करें",
-      "user-endpoint": "यूज़र एंडपॉइंट"
+      "user-endpoint": "यूज़र एंडपॉइंट",
+      "label": "एसएसओ"
     },
-    "storage": "संग्रहण",
-    "storage-section": {
+    "storage": {
       "accesskey": "एक्सेस कुंजी",
       "accesskey-placeholder": "एक्सेस कुंजी / एक्सेस आईडी",
       "bucket": "बकेट",
@@ -389,10 +335,10 @@
       "url-prefix-placeholder": "कस्टम URL उपसर्ग, वैकल्पिक",
       "url-suffix": "URL प्रत्यय",
       "url-suffix-placeholder": "कस्टम URL प्रत्यय, वैकल्पिक",
-      "warning-text": "क्या आप वाकई संग्रहण सेवा \"{{name}}\" हटाना चाहते हैं? यह कार्रवाई वापस नहीं की जा सकती"
+      "warning-text": "क्या आप वाकई संग्रहण सेवा \"{{name}}\" हटाना चाहते हैं? यह कार्रवाई वापस नहीं की जा सकती",
+      "label": "संग्रहण"
     },
-    "system": "सिस्टम",
-    "system-section": {
+    "system": {
       "additional-script": "अतिरिक्त स्क्रिप्ट",
       "additional-script-placeholder": "अतिरिक्त JavaScript कोड",
       "additional-style": "अतिरिक्त स्टाइल",
@@ -416,10 +362,64 @@
       "max-upload-size-hint": "अनुशंसित मान 32 MiB है।",
       "removed-completed-task-list-items": "पूर्ण कार्य सूची आइटम हटाना सक्षम करें",
       "server-name": "सर्वर नाम",
-      "title": "सामान्य"
+      "title": "सामान्य",
+      "label": "सिस्टम"
     },
     "version": "संस्करण",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "एक्सेस टोकन क्लिपबोर्ड में कॉपी किया गया",
+      "access-token-deleted": "एक्सेस टोकन `{{description}}` हटाया गया",
+      "access-token-deletion": "क्या आप वाकई एक्सेस टोकन `{{description}}` हटाना चाहते हैं?",
+      "access-token-deletion-description": "यह कार्रवाई वापस नहीं की जा सकती। आपको इस टोकन का उपयोग करने वाली सभी सेवाओं को एक नया टोकन उपयोग करने के लिए अपडेट करना होगा।",
+      "create-dialog": {
+        "access-token-created": "एक्सेस टोकन `{{description}}` बनाया गया",
+        "create-access-token": "एक्सेस टोकन बनाएँ",
+        "created-at": "बनाया गया",
+        "description": "विवरण",
+        "duration-1m": "1 महीना",
+        "duration-8h": "8 घंटे",
+        "duration-never": "कभी नहीं",
+        "expiration": "समाप्ति",
+        "expires-at": "समाप्ति तिथि",
+        "some-description": "कुछ विवरण..."
+      },
+      "description": "आपके खाते के सभी एक्सेस टोकन की सूची।",
+      "title": "एक्सेस टोकन",
+      "token": "टोकन"
+    },
+    "account": {
+      "change-password": "पासवर्ड बदलें",
+      "email-note": "वैकल्पिक",
+      "export-memos": "मेमो निर्यात करें",
+      "nickname-note": "बैनर में दिखाया गया",
+      "openapi-reset": "OpenAPI कुंजी रीसेट करें",
+      "openapi-sample-post": "नमस्ते #memos से {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "API रीसेट करें",
+      "title": "खाता जानकारी",
+      "update-information": "जानकारी अपडेट करें",
+      "username-note": "साइन इन के लिए उपयोग किया जाता है"
+    },
+    "instance": {
+      "disallow-change-nickname": "उपनाम बदलने की अनुमति न दें",
+      "disallow-change-username": "उपयोगकर्ता नाम बदलने की अनुमति न दें",
+      "disallow-password-auth": "पासवर्ड प्रमाणीकरण की अनुमति न दें",
+      "disallow-user-registration": "यूज़र पंजीकरण की अनुमति न दें",
+      "monday": "सोमवार",
+      "saturday": "शनिवार",
+      "sunday": "रविवार",
+      "week-start-day": "सप्ताह प्रारंभ दिन"
+    },
+    "memo": {
+      "content-length-limit": "सामग्री की अधिकतम लंबाई (बाइट)",
+      "enable-blur-nsfw-content": "संवेदनशील (NSFW) सामग्री धुंधला करें सक्षम करें",
+      "enable-memo-comments": "मेमो टिप्पणियाँ सक्षम करें",
+      "enable-memo-location": "मेमो स्थान सक्षम करें",
+      "reactions": "प्रतिक्रियाएँ",
+      "title": "मेमो संबंधित सेटिंग्स",
+      "label": "मेमो"
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "आसान नाम",
         "create-webhook": "Webhook बनाएँ",

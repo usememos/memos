@@ -151,7 +151,7 @@ const StorageSection = () => {
 
   return (
     <SettingSection>
-      <SettingGroup title={t("setting.storage-section.current-storage")}>
+      <SettingGroup title={t("setting.storage.current-storage")}>
         <div className="w-full">
           <RadioGroup
             value={String(instanceStorageSetting.storageType)}
@@ -162,11 +162,11 @@ const StorageSection = () => {
           >
             <div className="flex items-center space-x-2">
               <RadioGroupItem value={String(InstanceSetting_StorageSetting_StorageType.DATABASE)} id="database" />
-              <Label htmlFor="database">{t("setting.storage-section.type-database")}</Label>
+              <Label htmlFor="database">{t("setting.storage.type-database")}</Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value={String(InstanceSetting_StorageSetting_StorageType.LOCAL)} id="local" />
-              <Label htmlFor="local">{t("setting.storage-section.type-local")}</Label>
+              <Label htmlFor="local">{t("setting.storage.type-local")}</Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value={String(InstanceSetting_StorageSetting_StorageType.S3)} id="s3" />
@@ -175,7 +175,7 @@ const StorageSection = () => {
           </RadioGroup>
         </div>
 
-        <SettingRow label={t("setting.system-section.max-upload-size")} tooltip={t("setting.system-section.max-upload-size-hint")}>
+        <SettingRow label={t("setting.system.max-upload-size")} tooltip={t("setting.system.max-upload-size-hint")}>
           <Input
             className="w-24 font-mono"
             value={String(instanceStorageSetting.uploadSizeLimitMb)}
@@ -184,7 +184,7 @@ const StorageSection = () => {
         </SettingRow>
 
         {instanceStorageSetting.storageType !== InstanceSetting_StorageSetting_StorageType.DATABASE && (
-          <SettingRow label={t("setting.storage-section.filepath-template")}>
+          <SettingRow label={t("setting.storage.filepath-template")}>
             <Input
               className="w-64"
               value={instanceStorageSetting.filepathTemplate}

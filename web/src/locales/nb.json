@@ -38,7 +38,15 @@
     "created-at": "Opprettet",
     "database": "Database",
     "day": "Dag",
-    "days": "Dager",
+    "days": {
+      "fri": "fr.",
+      "mon": "ma.",
+      "sat": "lø.",
+      "sun": "sø.",
+      "thu": "to.",
+      "tue": "ti.",
+      "wed": "on."
+    },
     "delete": "Slett",
     "description": "Beskrivelse",
     "edit": "Rediger",
@@ -108,15 +116,6 @@
     "visibility": "Synlighet",
     "yourself": "Deg selv"
   },
-  "days": {
-    "fri": "fr.",
-    "mon": "ma.",
-    "sat": "lø.",
-    "sun": "sø.",
-    "thu": "to.",
-    "tue": "ti.",
-    "wed": "on."
-  },
   "editor": {
     "add-your-comment-here": "Legg til din kommentar her...",
     "any-thoughts": "Noen tanker...",
@@ -126,11 +125,6 @@
     "save": "Lagre",
     "saving": "Lagrer...",
     "slash-commands": "Skriv `/` for kommandoer"
-  },
-  "filters": {
-    "has-code": "harKode",
-    "has-link": "harLink",
-    "has-task-list": "harGjøremålsListe"
   },
   "inbox": {
     "failed-to-load": "Kunne ikke laste innbokselement",
@@ -162,7 +156,11 @@
     "direction-asc": "Stigende",
     "direction-desc": "Synkende",
     "display-time": "Vis tid",
-    "filters": "Filtre",
+    "filters": {
+      "has-code": "harKode",
+      "has-link": "harLink",
+      "has-task-list": "harGjøremålsListe"
+    },
     "links": "Linker",
     "list": "Liste",
     "load-more": "Last inn mer",
@@ -251,53 +249,7 @@
     "go-to-home": "Gå til Hjem"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "Access token kopiert til utklippstavlen",
-      "access-token-deleted": "Access token `{{description}}` slettet",
-      "access-token-deletion": "Er du sikker på at du vil slette access token {{description}}? DENNE HANDLINGEN KAN IKKE ANGRES.",
-      "access-token-deletion-description": "Denne handlingen kan ikke angres. Du må oppdatere alle tjenester som bruker denne tokenen til å bruke en ny token.",
-      "create-dialog": {
-        "access-token-created": "Access token `{{description}}` opprettet",
-        "create-access-token": "Opprett access token",
-        "created-at": "Opprettet",
-        "description": "Beskrivelse",
-        "duration-1m": "1 måned",
-        "duration-8h": "8 timer",
-        "duration-never": "Aldri",
-        "expiration": "Utløpsdato",
-        "expires-at": "Utløper",
-        "some-description": "En beskrivelse..."
-      },
-      "description": "Liste over alle access tokens for din konto.",
-      "title": "Access tokens",
-      "token": "Token"
-    },
-    "account-section": {
-      "change-password": "Endre passord",
-      "email-note": "Valgfritt",
-      "export-memos": "Eksporter memoer",
-      "nickname-note": "Vises i banneret",
-      "openapi-reset": "Nullstill OpenAPI-nøkkel",
-      "openapi-sample-post": "Hei #memos fra {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "Nullstill API",
-      "title": "Kontoinformasjon",
-      "update-information": "Oppdater informasjon",
-      "username-note": "Brukes til innlogging"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Ikke tillat endring av kallenavn",
-      "disallow-change-username": "Ikke tillat endring av brukernavn",
-      "disallow-password-auth": "Ikke tillat autentisering med passord",
-      "disallow-user-registration": "Ikke tillat registrering av brukere",
-      "monday": "Mandag",
-      "saturday": "Lørdag",
-      "sunday": "Søndag",
-      "week-start-day": "Ukestart"
-    },
-    "member": "Medlem",
-    "member-list": "Medlemsliste",
-    "member-section": {
+    "member": {
       "admin": "Administrator",
       "archive-member": "Arkiver medlem",
       "archive-success": "{{username}} arkivert vellykket",
@@ -309,30 +261,24 @@
       "delete-warning": "Er du sikker på at du vil slette {{username}}? DENNE HANDLINGEN KAN IKKE ANGRES",
       "delete-warning-description": "DENNE HANDLINGEN KAN IKKE ANGRES",
       "restore-success": "{{username}} gjenopprettet vellykket",
-      "user": "Bruker"
+      "user": "Bruker",
+      "label": "Medlem",
+      "list-title": "Medlemsliste"
     },
-    "memo-related": "Memo",
-    "memo-related-settings": {
-      "content-length-limit": "Maksimal innholdslengde (Byte)",
-      "enable-blur-nsfw-content": "Slå på sløring av NSFW-innhold (legg til NSFW-tagger nedenfor)",
-      "enable-memo-comments": "Slå på kommentarer for memoer",
-      "enable-memo-location": "Slå på lokasjon for memoer",
-      "reactions": "Reaksjoner",
-      "title": "Memo-relaterte innstillinger"
+    "my-account": {
+      "label": "Min konto"
     },
-    "my-account": "Min konto",
-    "preference": "Innstillinger",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "Memo visningstid",
       "default-memo-visibility": "Standard synlighet for memoer",
-      "theme": "Tema"
+      "theme": "Tema",
+      "label": "Innstillinger"
     },
     "shortcut": {
       "delete-confirm": "Er du sikker på at du vil slette snarveien `{{title}}`?",
       "delete-success": "Snarvei `{{title}}` slettet vellykket"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "Autorisasjon endepunkt",
       "client-id": "Klient-ID",
       "client-secret": "Klienthemmelighet",
@@ -354,10 +300,10 @@
       "template": "Mal",
       "token-endpoint": "Token endepunkt",
       "update-sso": "Oppdater SSO",
-      "user-endpoint": "Brukerendepunkt"
+      "user-endpoint": "Brukerendepunkt",
+      "label": "SSO"
     },
-    "storage": "Lagring",
-    "storage-section": {
+    "storage": {
       "accesskey": "Tilgangsnøkkel",
       "accesskey-placeholder": "Tilgangsnøkkel / Access ID",
       "bucket": "Bøtte",
@@ -389,10 +335,10 @@
       "url-prefix-placeholder": "Egendefinert URL-prefiks, valgfritt",
       "url-suffix": "URL-suffiks",
       "url-suffix-placeholder": "Egendefinert URL-suffiks, valgfritt",
-      "warning-text": "Er du sikker på at du vil slette lagringstjenesten \"{{name}}\"? DENNE HANDLINGEN KAN IKKE ANGRES"
+      "warning-text": "Er du sikker på at du vil slette lagringstjenesten \"{{name}}\"? DENNE HANDLINGEN KAN IKKE ANGRES",
+      "label": "Lagring"
     },
-    "system": "System",
-    "system-section": {
+    "system": {
       "additional-script": "Ekstra kode",
       "additional-script-placeholder": "Ekstra Javascript-kode",
       "additional-style": "Ekstra styling",
@@ -416,10 +362,64 @@
       "max-upload-size-hint": "Anbefalt verdi er 32 MiB.",
       "removed-completed-task-list-items": "Slå på fjerning av utførte gjøremål",
       "server-name": "Servernavn",
-      "title": "Generelt"
+      "title": "Generelt",
+      "label": "System"
     },
     "version": "Versjon",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "Access token kopiert til utklippstavlen",
+      "access-token-deleted": "Access token `{{description}}` slettet",
+      "access-token-deletion": "Er du sikker på at du vil slette access token {{description}}? DENNE HANDLINGEN KAN IKKE ANGRES.",
+      "access-token-deletion-description": "Denne handlingen kan ikke angres. Du må oppdatere alle tjenester som bruker denne tokenen til å bruke en ny token.",
+      "create-dialog": {
+        "access-token-created": "Access token `{{description}}` opprettet",
+        "create-access-token": "Opprett access token",
+        "created-at": "Opprettet",
+        "description": "Beskrivelse",
+        "duration-1m": "1 måned",
+        "duration-8h": "8 timer",
+        "duration-never": "Aldri",
+        "expiration": "Utløpsdato",
+        "expires-at": "Utløper",
+        "some-description": "En beskrivelse..."
+      },
+      "description": "Liste over alle access tokens for din konto.",
+      "title": "Access tokens",
+      "token": "Token"
+    },
+    "account": {
+      "change-password": "Endre passord",
+      "email-note": "Valgfritt",
+      "export-memos": "Eksporter memoer",
+      "nickname-note": "Vises i banneret",
+      "openapi-reset": "Nullstill OpenAPI-nøkkel",
+      "openapi-sample-post": "Hei #memos fra {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "Nullstill API",
+      "title": "Kontoinformasjon",
+      "update-information": "Oppdater informasjon",
+      "username-note": "Brukes til innlogging"
+    },
+    "instance": {
+      "disallow-change-nickname": "Ikke tillat endring av kallenavn",
+      "disallow-change-username": "Ikke tillat endring av brukernavn",
+      "disallow-password-auth": "Ikke tillat autentisering med passord",
+      "disallow-user-registration": "Ikke tillat registrering av brukere",
+      "monday": "Mandag",
+      "saturday": "Lørdag",
+      "sunday": "Søndag",
+      "week-start-day": "Ukestart"
+    },
+    "memo": {
+      "content-length-limit": "Maksimal innholdslengde (Byte)",
+      "enable-blur-nsfw-content": "Slå på sløring av NSFW-innhold (legg til NSFW-tagger nedenfor)",
+      "enable-memo-comments": "Slå på kommentarer for memoer",
+      "enable-memo-location": "Slå på lokasjon for memoer",
+      "reactions": "Reaksjoner",
+      "title": "Memo-relaterte innstillinger",
+      "label": "Memo"
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "Et lett å huske navn",
         "create-webhook": "Opprett webhook",

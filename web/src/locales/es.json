@@ -38,7 +38,15 @@
     "created-at": "Creado en",
     "database": "Base de datos",
     "day": "Día",
-    "days": "Días",
+    "days": {
+      "fri": "Vie",
+      "mon": "Lun",
+      "sat": "Sáb",
+      "sun": "Dom",
+      "thu": "Jue",
+      "tue": "Mar",
+      "wed": "Mié"
+    },
     "delete": "Eliminar",
     "description": "Descripción",
     "edit": "Editar",
@@ -108,15 +116,6 @@
     "visibility": "Visibilidad",
     "yourself": "Tú mismo"
   },
-  "days": {
-    "fri": "Vie",
-    "mon": "Lun",
-    "sat": "Sáb",
-    "sun": "Dom",
-    "thu": "Jue",
-    "tue": "Mar",
-    "wed": "Mié"
-  },
   "editor": {
     "add-your-comment-here": "Agrega tu comentario aquí...",
     "any-thoughts": "Alguna idea...",
@@ -126,11 +125,6 @@
     "save": "Guardar",
     "saving": "Guardando...",
     "slash-commands": "Escribe `/` para comandos"
-  },
-  "filters": {
-    "has-code": "tieneCódigo",
-    "has-link": "tieneEnlace",
-    "has-task-list": "tieneListaTareas"
   },
   "inbox": {
     "failed-to-load": "Error al cargar el elemento de bandeja de entrada",
@@ -162,7 +156,11 @@
     "direction-asc": "Ascendente",
     "direction-desc": "Descendente",
     "display-time": "Hora de visualización",
-    "filters": "Filtros",
+    "filters": {
+      "has-code": "tieneCódigo",
+      "has-link": "tieneEnlace",
+      "has-task-list": "tieneListaTareas"
+    },
     "links": "Enlaces",
     "list": "Lista",
     "load-more": "Cargar más",
@@ -251,53 +249,7 @@
     "go-to-home": "Ir al inicio"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "Token de acceso copiado al portapapeles",
-      "access-token-deleted": "Token de acceso `{{description}}` eliminado",
-      "access-token-deletion": "¿Estás seguro de que quieres eliminar el token de acceso `{{description}}`?",
-      "access-token-deletion-description": "Esta acción es irreversible. Necesitarás actualizar cualquier servicio que use este token para usar uno nuevo.",
-      "create-dialog": {
-        "access-token-created": "Token de acceso `{{description}}` creado",
-        "create-access-token": "Crear token de acceso",
-        "created-at": "Creado en",
-        "description": "Descripción",
-        "duration-1m": "1 mes",
-        "duration-8h": "8 horas",
-        "duration-never": "Nunca",
-        "expiration": "Expiración",
-        "expires-at": "Expira en",
-        "some-description": "Alguna descripción..."
-      },
-      "description": "Lista de todos los tokens de acceso de tu cuenta.",
-      "title": "Tokens de acceso",
-      "token": "Token"
-    },
-    "account-section": {
-      "change-password": "Cambiar contraseña",
-      "email-note": "Opcional",
-      "export-memos": "Exportar memos",
-      "nickname-note": "Mostrado en el banner",
-      "openapi-reset": "Restablecer clave OpenAPI",
-      "openapi-sample-post": "Hola #memos desde {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "Restablecer API",
-      "title": "Información de la cuenta",
-      "update-information": "Actualizar información",
-      "username-note": "Usado para iniciar sesión"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "No permitir cambiar apodo",
-      "disallow-change-username": "No permitir cambiar nombre de usuario",
-      "disallow-password-auth": "No permitir autenticación por contraseña",
-      "disallow-user-registration": "No permitir registro de usuarios",
-      "monday": "Lunes",
-      "saturday": "Sábado",
-      "sunday": "Domingo",
-      "week-start-day": "Día de inicio de semana"
-    },
-    "member": "Miembro",
-    "member-list": "Lista de miembros",
-    "member-section": {
+    "member": {
       "admin": "Administrador",
       "archive-member": "Archivar miembro",
       "archive-success": "{{username}} archivado correctamente",
@@ -309,30 +261,24 @@
       "delete-warning": "¿Estás seguro de eliminar a {{username}}? ESTA ACCIÓN ES IRREVERSIBLE",
       "delete-warning-description": "ESTA ACCIÓN ES IRREVERSIBLE",
       "restore-success": "{{username}} restaurado correctamente",
-      "user": "Usuario"
+      "user": "Usuario",
+      "label": "Miembro",
+      "list-title": "Lista de miembros"
     },
-    "memo-related": "Memo",
-    "memo-related-settings": {
-      "content-length-limit": "Límite de longitud de contenido (Bytes)",
-      "enable-blur-nsfw-content": "Habilitar difuminado de contenido sensible (NSFW)",
-      "enable-memo-comments": "Habilitar comentarios en los memos",
-      "enable-memo-location": "Habilitar ubicación del memo",
-      "reactions": "Reacciones",
-      "title": "Configuración de memos"
+    "my-account": {
+      "label": "Mi cuenta"
     },
-    "my-account": "Mi cuenta",
-    "preference": "Preferencias",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "Hora de visualización del memo",
       "default-memo-visibility": "Visibilidad predeterminada del memo",
-      "theme": "Tema"
+      "theme": "Tema",
+      "label": "Preferencias"
     },
     "shortcut": {
       "delete-confirm": "¿Estás seguro de que quieres eliminar el atajo `{{title}}`?",
       "delete-success": "Atajo `{{title}}` eliminado correctamente"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "Punto final de autorización",
       "client-id": "ID del cliente",
       "client-secret": "Secreto del cliente",
@@ -354,10 +300,10 @@
       "template": "Plantilla",
       "token-endpoint": "Punto final de token",
       "update-sso": "Actualizar SSO",
-      "user-endpoint": "Punto final de usuario"
+      "user-endpoint": "Punto final de usuario",
+      "label": "SSO"
     },
-    "storage": "Almacenamiento",
-    "storage-section": {
+    "storage": {
       "accesskey": "Clave de acceso",
       "accesskey-placeholder": "Clave de acceso / ID de acceso",
       "bucket": "Bucket",
@@ -389,10 +335,10 @@
       "url-prefix-placeholder": "Prefijo de URL personalizado, opcional",
       "url-suffix": "Sufijo de URL",
       "url-suffix-placeholder": "Sufijo de URL personalizado, opcional",
-      "warning-text": "¿Estás seguro de eliminar el servicio de almacenamiento \"{{name}}\"? ESTA ACCIÓN ES IRREVERSIBLE"
+      "warning-text": "¿Estás seguro de eliminar el servicio de almacenamiento \"{{name}}\"? ESTA ACCIÓN ES IRREVERSIBLE",
+      "label": "Almacenamiento"
     },
-    "system": "Sistema",
-    "system-section": {
+    "system": {
       "additional-script": "Script adicional",
       "additional-script-placeholder": "Código JavaScript adicional",
       "additional-style": "Estilo adicional",
@@ -416,10 +362,64 @@
       "max-upload-size-hint": "El valor recomendado es 32 MiB.",
       "removed-completed-task-list-items": "Habilitar eliminación de tareas completadas",
       "server-name": "Nombre del servidor",
-      "title": "General"
+      "title": "General",
+      "label": "Sistema"
     },
     "version": "Versión",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "Token de acceso copiado al portapapeles",
+      "access-token-deleted": "Token de acceso `{{description}}` eliminado",
+      "access-token-deletion": "¿Estás seguro de que quieres eliminar el token de acceso `{{description}}`?",
+      "access-token-deletion-description": "Esta acción es irreversible. Necesitarás actualizar cualquier servicio que use este token para usar uno nuevo.",
+      "create-dialog": {
+        "access-token-created": "Token de acceso `{{description}}` creado",
+        "create-access-token": "Crear token de acceso",
+        "created-at": "Creado en",
+        "description": "Descripción",
+        "duration-1m": "1 mes",
+        "duration-8h": "8 horas",
+        "duration-never": "Nunca",
+        "expiration": "Expiración",
+        "expires-at": "Expira en",
+        "some-description": "Alguna descripción..."
+      },
+      "description": "Lista de todos los tokens de acceso de tu cuenta.",
+      "title": "Tokens de acceso",
+      "token": "Token"
+    },
+    "account": {
+      "change-password": "Cambiar contraseña",
+      "email-note": "Opcional",
+      "export-memos": "Exportar memos",
+      "nickname-note": "Mostrado en el banner",
+      "openapi-reset": "Restablecer clave OpenAPI",
+      "openapi-sample-post": "Hola #memos desde {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "Restablecer API",
+      "title": "Información de la cuenta",
+      "update-information": "Actualizar información",
+      "username-note": "Usado para iniciar sesión"
+    },
+    "instance": {
+      "disallow-change-nickname": "No permitir cambiar apodo",
+      "disallow-change-username": "No permitir cambiar nombre de usuario",
+      "disallow-password-auth": "No permitir autenticación por contraseña",
+      "disallow-user-registration": "No permitir registro de usuarios",
+      "monday": "Lunes",
+      "saturday": "Sábado",
+      "sunday": "Domingo",
+      "week-start-day": "Día de inicio de semana"
+    },
+    "memo": {
+      "content-length-limit": "Límite de longitud de contenido (Bytes)",
+      "enable-blur-nsfw-content": "Habilitar difuminado de contenido sensible (NSFW)",
+      "enable-memo-comments": "Habilitar comentarios en los memos",
+      "enable-memo-location": "Habilitar ubicación del memo",
+      "reactions": "Reacciones",
+      "title": "Configuración de memos",
+      "label": "Memo"
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "Un nombre fácil de recordar",
         "create-webhook": "Crear webhook",

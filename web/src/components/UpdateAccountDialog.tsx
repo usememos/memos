@@ -153,7 +153,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>{t("setting.account-section.update-information")}</DialogTitle>
+          <DialogTitle>{t("setting.account.update-information")}</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex flex-row items-center gap-2">
@@ -176,7 +176,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
           <div className="grid gap-2">
             <Label htmlFor="username">
               {t("common.username")}
-              <span className="text-sm text-muted-foreground ml-1">({t("setting.account-section.username-note")})</span>
+              <span className="text-sm text-muted-foreground ml-1">({t("setting.account.username-note")})</span>
             </Label>
             <Input
               id="username"
@@ -188,7 +188,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
           <div className="grid gap-2">
             <Label htmlFor="displayName">
               {t("common.nickname")}
-              <span className="text-sm text-muted-foreground ml-1">({t("setting.account-section.nickname-note")})</span>
+              <span className="text-sm text-muted-foreground ml-1">({t("setting.account.nickname-note")})</span>
             </Label>
             <Input
               id="displayName"
@@ -200,7 +200,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
           <div className="grid gap-2">
             <Label htmlFor="email">
               {t("common.email")}
-              <span className="text-sm text-muted-foreground ml-1">({t("setting.account-section.email-note")})</span>
+              <span className="text-sm text-muted-foreground ml-1">({t("setting.account.email-note")})</span>
             </Label>
             <Input id="email" type="email" value={state.email} onChange={handleEmailChanged} />
           </div>

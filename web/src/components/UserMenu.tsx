@@ -112,7 +112,7 @@ const UserMenu = (props: Props) => {
                     )}
                   />
                 </TooltipTrigger>
-                <TooltipContent side="right">{t(`sse.${sseStatus}` as Parameters<typeof t>[0])}</TooltipContent>
+                <TooltipContent side="right">{t(`live-update.${sseStatus}` as Parameters<typeof t>[0])}</TooltipContent>
               </Tooltip>
             )}
           </div>
@@ -150,7 +150,7 @@ const UserMenu = (props: Props) => {
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <PaletteIcon className="size-4 text-muted-foreground" />
-            {t("setting.preference-section.theme")}
+            {t("setting.preference.theme")}
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
             {THEME_OPTIONS.map((option) => (

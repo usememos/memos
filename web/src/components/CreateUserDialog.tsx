@@ -125,11 +125,11 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
             >
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value={String(User_Role.USER)} id="user" />
-                <Label htmlFor="user">{t("setting.member-section.user")}</Label>
+                <Label htmlFor="user">{t("setting.member.user")}</Label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value={String(User_Role.ADMIN)} id="admin" />
-                <Label htmlFor="admin">{t("setting.member-section.admin")}</Label>
+                <Label htmlFor="admin">{t("setting.member.admin")}</Label>
               </div>
             </RadioGroup>
           </div>

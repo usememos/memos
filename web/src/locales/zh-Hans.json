@@ -38,7 +38,15 @@
     "created-at": "创建时间",
     "database": "数据库",
     "day": "天",
-    "days": "天",
+    "days": {
+      "fri": "五",
+      "mon": "一",
+      "sat": "六",
+      "sun": "日",
+      "thu": "四",
+      "tue": "二",
+      "wed": "三"
+    },
     "delete": "删除",
     "description": "说明",
     "edit": "编辑",
@@ -108,15 +116,6 @@
     "visibility": "可见性",
     "yourself": "您自己"
   },
-  "days": {
-    "fri": "五",
-    "mon": "一",
-    "sat": "六",
-    "sun": "日",
-    "thu": "四",
-    "tue": "二",
-    "wed": "三"
-  },
   "editor": {
     "add-your-comment-here": "请输入您的评论...",
     "any-thoughts": "此刻的想法...",
@@ -126,11 +125,6 @@
     "save": "保存",
     "saving": "保存中...",
     "slash-commands": "按下 `/` 输入命令"
-  },
-  "filters": {
-    "has-code": "有代码",
-    "has-link": "有链接",
-    "has-task-list": "有待办"
   },
   "inbox": {
     "failed-to-load": "加载失败",
@@ -162,7 +156,11 @@
     "direction-asc": "正序",
     "direction-desc": "倒序",
     "display-time": "展示时间",
-    "filters": "过滤器",
+    "filters": {
+      "has-code": "有代码",
+      "has-link": "有链接",
+      "has-task-list": "有待办"
+    },
     "links": "链接",
     "list": "列表模式",
     "load-more": "加载更多",
@@ -251,53 +249,7 @@
     "go-to-home": "回到首页"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "访问令牌已复制到剪贴板",
-      "access-token-deleted": "访问令牌 `{{description}}` 已删除",
-      "access-token-deletion": "您确定要删除访问令牌 `{{description}}` 吗？",
-      "access-token-deletion-description": "此操作是不可逆的。您需要将所有正在使用该令牌的服务更新为新的访问令牌。",
-      "create-dialog": {
-        "access-token-created": "访问令牌 `{{description}}` 已创建",
-        "create-access-token": "创建令牌",
-        "created-at": "创建时间",
-        "description": "描述",
-        "duration-1m": "1 个月",
-        "duration-8h": "8 小时",
-        "duration-never": "从不",
-        "expiration": "过期时间",
-        "expires-at": "过期时间",
-        "some-description": "请输入描述..."
-      },
-      "description": "该账号下全部的访问令牌",
-      "title": "访问令牌",
-      "token": "令牌"
-    },
-    "account-section": {
-      "change-password": "修改密码",
-      "email-note": "可选",
-      "export-memos": "导出备忘录",
-      "nickname-note": "显示在横幅中",
-      "openapi-reset": "重置 OpenAPI 密钥（Key）",
-      "openapi-sample-post": "您好 #memos 来自 {{url}}",
-      "openapi-title": "OpenAPI 接口",
-      "reset-api": "重置 API",
-      "title": "账号信息",
-      "update-information": "更新个人信息",
-      "username-note": "用于登录"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "禁止修改用户昵称",
-      "disallow-change-username": "禁止修改用户名",
-      "disallow-password-auth": "禁用密码登录",
-      "disallow-user-registration": "禁用用户注册",
-      "monday": "周一",
-      "saturday": "周六",
-      "sunday": "周日",
-      "week-start-day": "周开始日"
-    },
-    "member": "成员",
-    "member-list": "成员列表",
-    "member-section": {
+    "member": {
       "admin": "管理员",
       "archive-member": "归档成员",
       "archive-success": "{{username}} 归档成功",
@@ -309,30 +261,24 @@
       "delete-warning": "您确定要删除 {{username}} 吗？",
       "delete-warning-description": "此操作不可逆",
       "restore-success": "{{username}} 恢复成功",
-      "user": "普通用户"
+      "user": "普通用户",
+      "label": "成员",
+      "list-title": "成员列表"
     },
-    "memo-related": "备忘录",
-    "memo-related-settings": {
-      "content-length-limit": "内容长度限制（字节）",
-      "enable-blur-nsfw-content": "启用 NSFW 内容模糊处理（在下方添加 NSFW 标签）",
-      "enable-memo-comments": "启用备忘录评论",
-      "enable-memo-location": "启用备忘录定位",
-      "reactions": "表态",
-      "title": "备忘录相关设置"
+    "my-account": {
+      "label": "我的账号"
     },
-    "my-account": "我的账号",
-    "preference": "偏好设置",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "备忘录显示时间",
       "default-memo-visibility": "默认备忘录可见性",
-      "theme": "主题"
+      "theme": "主题",
+      "label": "偏好设置"
     },
     "shortcut": {
       "delete-confirm": "您确定要删除捷径 `{{title}}` 吗？",
       "delete-success": "捷径 `{{title}}` 删除成功"
     },
-    "sso": "单点登录",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "授权端点（Authorization Endpoint）",
       "client-id": "客户端ID（Client ID）",
       "client-secret": "客户端密钥（Client Secret）",
@@ -354,10 +300,10 @@
       "template": "模板",
       "token-endpoint": "令牌端点（Token Endpoint）",
       "update-sso": "更新单点登录",
-      "user-endpoint": "用户端点（User Endpoint）"
+      "user-endpoint": "用户端点（User Endpoint）",
+      "label": "单点登录"
     },
-    "storage": "存储",
-    "storage-section": {
+    "storage": {
       "accesskey": "访问密钥（Access key）",
       "accesskey-placeholder": "访问密钥 / 访问 ID",
       "bucket": "储存桶（Bucket）",
@@ -389,10 +335,10 @@
       "url-prefix-placeholder": "自定义链接前缀，可选",
       "url-suffix": "链接后缀",
       "url-suffix-placeholder": "自定义链接后缀，可选",
-      "warning-text": "您确定要删除存储服务“{{name}}”吗？（此操作不可逆）"
+      "warning-text": "您确定要删除存储服务“{{name}}”吗？（此操作不可逆）",
+      "label": "存储"
     },
-    "system": "系统",
-    "system-section": {
+    "system": {
       "additional-script": "自定义脚本",
       "additional-script-placeholder": "自定义 JavaScript 代码",
       "additional-style": "自定义样式",
@@ -416,10 +362,64 @@
       "max-upload-size-hint": "建议值为 32 MiB。",
       "removed-completed-task-list-items": "启用移除已办",
       "server-name": "服务器名称",
-      "title": "一般设置"
+      "title": "一般设置",
+      "label": "系统"
     },
     "version": "版本",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "访问令牌已复制到剪贴板",
+      "access-token-deleted": "访问令牌 `{{description}}` 已删除",
+      "access-token-deletion": "您确定要删除访问令牌 `{{description}}` 吗？",
+      "access-token-deletion-description": "此操作是不可逆的。您需要将所有正在使用该令牌的服务更新为新的访问令牌。",
+      "create-dialog": {
+        "access-token-created": "访问令牌 `{{description}}` 已创建",
+        "create-access-token": "创建令牌",
+        "created-at": "创建时间",
+        "description": "描述",
+        "duration-1m": "1 个月",
+        "duration-8h": "8 小时",
+        "duration-never": "从不",
+        "expiration": "过期时间",
+        "expires-at": "过期时间",
+        "some-description": "请输入描述..."
+      },
+      "description": "该账号下全部的访问令牌",
+      "title": "访问令牌",
+      "token": "令牌"
+    },
+    "account": {
+      "change-password": "修改密码",
+      "email-note": "可选",
+      "export-memos": "导出备忘录",
+      "nickname-note": "显示在横幅中",
+      "openapi-reset": "重置 OpenAPI 密钥（Key）",
+      "openapi-sample-post": "您好 #memos 来自 {{url}}",
+      "openapi-title": "OpenAPI 接口",
+      "reset-api": "重置 API",
+      "title": "账号信息",
+      "update-information": "更新个人信息",
+      "username-note": "用于登录"
+    },
+    "instance": {
+      "disallow-change-nickname": "禁止修改用户昵称",
+      "disallow-change-username": "禁止修改用户名",
+      "disallow-password-auth": "禁用密码登录",
+      "disallow-user-registration": "禁用用户注册",
+      "monday": "周一",
+      "saturday": "周六",
+      "sunday": "周日",
+      "week-start-day": "周开始日"
+    },
+    "memo": {
+      "content-length-limit": "内容长度限制（字节）",
+      "enable-blur-nsfw-content": "启用 NSFW 内容模糊处理（在下方添加 NSFW 标签）",
+      "enable-memo-comments": "启用备忘录评论",
+      "enable-memo-location": "启用备忘录定位",
+      "reactions": "表态",
+      "title": "备忘录相关设置",
+      "label": "备忘录"
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "请输入一个容易记住的标题",
         "create-webhook": "创建 Webhook",
@@ -463,7 +463,7 @@
     "tags": "标签",
     "upload-attachment": "上传附件"
   },
-  "sse": {
+  "live-update": {
     "connected": "已连接",
     "connecting": "正在连接",
     "disconnected": "已断开"

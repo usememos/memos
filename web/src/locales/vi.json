@@ -38,7 +38,15 @@
     "created-at": "Ngày tạo",
     "database": "Cơ sở dữ liệu",
     "day": "Ngày",
-    "days": "Ngày",
+    "days": {
+      "fri": "T6",
+      "mon": "T2",
+      "sat": "T7",
+      "sun": "CN",
+      "thu": "T5",
+      "tue": "T3",
+      "wed": "T4"
+    },
     "delete": "Xóa",
     "description": "Mô tả",
     "edit": "Chỉnh sửa",
@@ -108,15 +116,6 @@
     "visibility": "Quyền xem",
     "yourself": "Bản thân"
   },
-  "days": {
-    "fri": "T6",
-    "mon": "T2",
-    "sat": "T7",
-    "sun": "CN",
-    "thu": "T5",
-    "tue": "T3",
-    "wed": "T4"
-  },
   "editor": {
     "add-your-comment-here": "Thêm bình luận của bạn tại đây...",
     "any-thoughts": "Có suy nghĩ gì...",
@@ -126,11 +125,6 @@
     "save": "Lưu",
     "saving": "Đang lưu...",
     "slash-commands": "Nhập `/` để sử dụng lệnh"
-  },
-  "filters": {
-    "has-code": "cóMã",
-    "has-link": "cóLiênKết",
-    "has-task-list": "cóDanhSáchViệc"
   },
   "inbox": {
     "failed-to-load": "Không thể tải mục hộp thư",
@@ -162,7 +156,11 @@
     "direction-asc": "Tăng dần",
     "direction-desc": "Giảm dần",
     "display-time": "Thời gian hiển thị",
-    "filters": "Bộ lọc",
+    "filters": {
+      "has-code": "cóMã",
+      "has-link": "cóLiênKết",
+      "has-task-list": "cóDanhSáchViệc"
+    },
     "links": "Liên kết",
     "list": "Danh sách",
     "load-more": "Tải thêm",
@@ -251,53 +249,7 @@
     "go-to-home": "Về trang chủ"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "Đã sao chép token truy cập vào bộ nhớ tạm",
-      "access-token-deleted": "Đã xóa token truy cập `{{description}}`",
-      "access-token-deletion": "Bạn có chắc chắn muốn xóa token truy cập `{{description}}`?",
-      "access-token-deletion-description": "Hành động này không thể hoàn tác. Bạn cần cập nhật các dịch vụ sử dụng token này để sử dụng token mới.",
-      "create-dialog": {
-        "access-token-created": "Đã tạo token truy cập `{{description}}`",
-        "create-access-token": "Tạo token truy cập",
-        "created-at": "Ngày tạo",
-        "description": "Mô tả",
-        "duration-1m": "1 tháng",
-        "duration-8h": "8 giờ",
-        "duration-never": "Không bao giờ",
-        "expiration": "Hết hạn",
-        "expires-at": "Hết hạn lúc",
-        "some-description": "Một số mô tả..."
-      },
-      "description": "Danh sách tất cả token truy cập cho tài khoản của bạn.",
-      "title": "Token truy cập",
-      "token": "Token"
-    },
-    "account-section": {
-      "change-password": "Đổi mật khẩu",
-      "email-note": "Tùy chọn",
-      "export-memos": "Xuất ghi chú",
-      "nickname-note": "Hiển thị trên banner",
-      "openapi-reset": "Đặt lại khóa OpenAPI",
-      "openapi-sample-post": "Xin chào #memos từ {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "Đặt lại API",
-      "title": "Thông tin tài khoản",
-      "update-information": "Cập nhật thông tin",
-      "username-note": "Dùng để đăng nhập"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Không cho phép đổi biệt danh",
-      "disallow-change-username": "Không cho phép đổi tên người dùng",
-      "disallow-password-auth": "Không cho phép xác thực bằng mật khẩu",
-      "disallow-user-registration": "Không cho phép đăng ký người dùng",
-      "monday": "Thứ hai",
-      "saturday": "Thứ bảy",
-      "sunday": "Chủ nhật",
-      "week-start-day": "Ngày bắt đầu tuần"
-    },
-    "member": "Thành viên",
-    "member-list": "Danh sách thành viên",
-    "member-section": {
+    "member": {
       "admin": "Quản trị viên",
       "archive-member": "Lưu trữ thành viên",
       "archive-success": "{{username}} đã được lưu trữ thành công",
@@ -309,30 +261,24 @@
       "delete-warning": "Bạn có chắc chắn muốn xóa {{username}}? HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC",
       "delete-warning-description": "HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC",
       "restore-success": "{{username}} đã được khôi phục thành công",
-      "user": "Người dùng"
+      "user": "Người dùng",
+      "label": "Thành viên",
+      "list-title": "Danh sách thành viên"
     },
-    "memo-related": "Ghi chú",
-    "memo-related-settings": {
-      "content-length-limit": "Giới hạn độ dài nội dung (Byte)",
-      "enable-blur-nsfw-content": "Bật làm mờ nội dung nhạy cảm (NSFW)",
-      "enable-memo-comments": "Bật bình luận ghi chú",
-      "enable-memo-location": "Bật vị trí ghi chú",
-      "reactions": "Phản ứng",
-      "title": "Cài đặt liên quan đến ghi chú"
+    "my-account": {
+      "label": "Tài khoản của tôi"
     },
-    "my-account": "Tài khoản của tôi",
-    "preference": "Tùy chỉnh",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "Thời gian hiển thị ghi chú",
       "default-memo-visibility": "Quyền xem ghi chú mặc định",
-      "theme": "Giao diện"
+      "theme": "Giao diện",
+      "label": "Tùy chỉnh"
     },
     "shortcut": {
       "delete-confirm": "Bạn có chắc chắn muốn xóa phím tắt `{{title}}`?",
       "delete-success": "Đã xóa phím tắt `{{title}}` thành công"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "Điểm cuối xác thực",
       "client-id": "ID khách hàng",
       "client-secret": "Khóa bí mật",
@@ -354,10 +300,10 @@
       "template": "Mẫu",
       "token-endpoint": "Điểm cuối token",
       "update-sso": "Cập nhật SSO",
-      "user-endpoint": "Điểm cuối người dùng"
+      "user-endpoint": "Điểm cuối người dùng",
+      "label": "SSO"
     },
-    "storage": "Lưu trữ",
-    "storage-section": {
+    "storage": {
       "accesskey": "Khóa truy cập",
       "accesskey-placeholder": "Khóa truy cập / ID truy cập",
       "bucket": "Bucket",
@@ -389,10 +335,10 @@
       "url-prefix-placeholder": "Tiền tố URL tùy chỉnh, tùy chọn",
       "url-suffix": "Hậu tố URL",
       "url-suffix-placeholder": "Hậu tố URL tùy chỉnh, tùy chọn",
-      "warning-text": "Bạn có chắc chắn muốn xóa dịch vụ lưu trữ \"{{name}}\"? HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC"
+      "warning-text": "Bạn có chắc chắn muốn xóa dịch vụ lưu trữ \"{{name}}\"? HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC",
+      "label": "Lưu trữ"
     },
-    "system": "Hệ thống",
-    "system-section": {
+    "system": {
       "additional-script": "Script bổ sung",
       "additional-script-placeholder": "Mã JavaScript bổ sung",
       "additional-style": "Kiểu bổ sung",
@@ -416,10 +362,64 @@
       "max-upload-size-hint": "Giá trị đề xuất là 32 MiB.",
       "removed-completed-task-list-items": "Kích hoạt xóa đã hoàn thành",
       "server-name": "Tên máy chủ",
-      "title": "Chung"
+      "title": "Chung",
+      "label": "Hệ thống"
     },
     "version": "Phiên bản",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "Đã sao chép token truy cập vào bộ nhớ tạm",
+      "access-token-deleted": "Đã xóa token truy cập `{{description}}`",
+      "access-token-deletion": "Bạn có chắc chắn muốn xóa token truy cập `{{description}}`?",
+      "access-token-deletion-description": "Hành động này không thể hoàn tác. Bạn cần cập nhật các dịch vụ sử dụng token này để sử dụng token mới.",
+      "create-dialog": {
+        "access-token-created": "Đã tạo token truy cập `{{description}}`",
+        "create-access-token": "Tạo token truy cập",
+        "created-at": "Ngày tạo",
+        "description": "Mô tả",
+        "duration-1m": "1 tháng",
+        "duration-8h": "8 giờ",
+        "duration-never": "Không bao giờ",
+        "expiration": "Hết hạn",
+        "expires-at": "Hết hạn lúc",
+        "some-description": "Một số mô tả..."
+      },
+      "description": "Danh sách tất cả token truy cập cho tài khoản của bạn.",
+      "title": "Token truy cập",
+      "token": "Token"
+    },
+    "account": {
+      "change-password": "Đổi mật khẩu",
+      "email-note": "Tùy chọn",
+      "export-memos": "Xuất ghi chú",
+      "nickname-note": "Hiển thị trên banner",
+      "openapi-reset": "Đặt lại khóa OpenAPI",
+      "openapi-sample-post": "Xin chào #memos từ {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "Đặt lại API",
+      "title": "Thông tin tài khoản",
+      "update-information": "Cập nhật thông tin",
+      "username-note": "Dùng để đăng nhập"
+    },
+    "instance": {
+      "disallow-change-nickname": "Không cho phép đổi biệt danh",
+      "disallow-change-username": "Không cho phép đổi tên người dùng",
+      "disallow-password-auth": "Không cho phép xác thực bằng mật khẩu",
+      "disallow-user-registration": "Không cho phép đăng ký người dùng",
+      "monday": "Thứ hai",
+      "saturday": "Thứ bảy",
+      "sunday": "Chủ nhật",
+      "week-start-day": "Ngày bắt đầu tuần"
+    },
+    "memo": {
+      "content-length-limit": "Giới hạn độ dài nội dung (Byte)",
+      "enable-blur-nsfw-content": "Bật làm mờ nội dung nhạy cảm (NSFW)",
+      "enable-memo-comments": "Bật bình luận ghi chú",
+      "enable-memo-location": "Bật vị trí ghi chú",
+      "reactions": "Phản ứng",
+      "title": "Cài đặt liên quan đến ghi chú",
+      "label": "Ghi chú"
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "Tên dễ nhớ",
         "create-webhook": "Tạo webhook",

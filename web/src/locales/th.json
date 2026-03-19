@@ -38,7 +38,15 @@
     "created-at": "สร้างเมื่อ",
     "database": "ฐานข้อมูล",
     "day": "วัน",
-    "days": "วัน",
+    "days": {
+      "fri": "ศุกร์",
+      "mon": "จันทร์",
+      "sat": "เสาร์",
+      "sun": "อาทิตย์",
+      "thu": "พฤหัสบดี",
+      "tue": "อังคาร",
+      "wed": "พุธ"
+    },
     "delete": "ลบ",
     "description": "คำอธิบาย",
     "edit": "แก้ไข",
@@ -108,15 +116,6 @@
     "visibility": "การมองเห็น",
     "yourself": "ตัวคุณ"
   },
-  "days": {
-    "fri": "ศุกร์",
-    "mon": "จันทร์",
-    "sat": "เสาร์",
-    "sun": "อาทิตย์",
-    "thu": "พฤหัสบดี",
-    "tue": "อังคาร",
-    "wed": "พุธ"
-  },
   "editor": {
     "add-your-comment-here": "เพิ่มความคิดเห็นของคุณที่นี่...",
     "any-thoughts": "ความคิดใดๆ...",
@@ -126,11 +125,6 @@
     "save": "บันทึก",
     "saving": "กำลังบันทึก...",
     "slash-commands": "พิมพ์ `/` สำหรับคำสั่ง"
-  },
-  "filters": {
-    "has-code": "มีโค้ด",
-    "has-link": "มีลิงก์",
-    "has-task-list": "มีรายการที่ต้องทำ"
   },
   "inbox": {
     "failed-to-load": "ไม่สามารถโหลดรายการกล่องจดหมายได้",
@@ -162,7 +156,11 @@
     "direction-asc": "จากน้อยไปมาก",
     "direction-desc": "จากมากไปน้อย",
     "display-time": "แสดงเวลา",
-    "filters": "ตัวกรอง",
+    "filters": {
+      "has-code": "มีโค้ด",
+      "has-link": "มีลิงก์",
+      "has-task-list": "มีรายการที่ต้องทำ"
+    },
     "links": "ลิงก์",
     "list": "รายการ",
     "load-more": "โหลดเพิ่มเติม",
@@ -251,53 +249,7 @@
     "go-to-home": "ไปที่หน้าหลัก"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "คัดลอกโทเค็นการเข้าถึงไปยังคลิปบอร์ดแล้ว",
-      "access-token-deleted": "โทเค็นการเข้าถึง `{{description}}` ถูกลบแล้ว",
-      "access-token-deletion": "คุณแน่ใจหรือว่าจะลบโทเค็นการเข้าถึง {{description}}? การกระทำนี้ไม่สามารถย้อนกลับได้",
-      "access-token-deletion-description": "การกระทำนี้ไม่สามารถย้อนกลับได้ คุณจะต้องอัปเดตบริการใดๆ ที่ใช้โทเค็นนี้เพื่อใช้โทเค็นใหม่",
-      "create-dialog": {
-        "access-token-created": "สร้างโทเค็นการเข้าถึง `{{description}}` เรียบร้อยแล้ว",
-        "create-access-token": "สร้างโทเค็นการเข้าถึง",
-        "created-at": "สร้างเมื่อ",
-        "description": "คำอธิบาย",
-        "duration-1m": "1 เดือน",
-        "duration-8h": "8 ชั่วโมง",
-        "duration-never": "ไม่หมดอายุ",
-        "expiration": "วันหมดอายุ",
-        "expires-at": "หมดอายุเมื่อ",
-        "some-description": "คำอธิบาย..."
-      },
-      "description": "รายการโทเค็นการเข้าถึงทั้งหมดสำหรับบัญชีของคุณ",
-      "title": "โทเค็นการเข้าถึง",
-      "token": "โทเค็น"
-    },
-    "account-section": {
-      "change-password": "เปลี่ยนรหัสผ่าน",
-      "email-note": "ไม่บังคับ",
-      "export-memos": "ส่งออกบันทึกช่วยจำ",
-      "nickname-note": "แสดงในแบนเนอร์",
-      "openapi-reset": "รีเซ็ตคีย์ OpenAPI",
-      "openapi-sample-post": "สวัสดี #บันทึกจาก {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "รีเซ็ต API",
-      "title": "ข้อมูลเกี่ยวกับบัญชี",
-      "update-information": "อัปเดทข้อมูล",
-      "username-note": "ใช้เพื่อเข้าสู่ระบบ"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "ไม่อนุญาตให้เปลี่ยนชื่อเล่น",
-      "disallow-change-username": "ไม่อนุญาตให้เปลี่ยนชื่อผู้ใช้",
-      "disallow-password-auth": "ไม่อนุญาตให้ยืนยันตัวตนด้วยรหัสผ่าน",
-      "disallow-user-registration": "ไม่อนุญาตให้ลงทะเบียนผู้ใช้",
-      "monday": "วันจันทร์",
-      "saturday": "วันเสาร์",
-      "sunday": "วันอาทิตย์",
-      "week-start-day": "วันเริ่มต้นสัปดาห์"
-    },
-    "member": "สมาชิก",
-    "member-list": "รายชื่อสมาชิก",
-    "member-section": {
+    "member": {
       "admin": "ผู้ดูแล",
       "archive-member": "เก็บถาวรสมาชิก",
       "archive-success": "{{username}} เก็บถาวรเรียบร้อยแล้ว",
@@ -309,30 +261,24 @@
       "delete-warning": "คุณแน่ใจหรือว่าจะลบ {{username}}? การกระทำนี้ไม่สามารถย้อนกลับได้",
       "delete-warning-description": "การกระทำนี้ไม่สามารถย้อนกลับได้",
       "restore-success": "{{username}} กู้คืนเรียบร้อยแล้ว",
-      "user": "ผู้ใช้"
+      "user": "ผู้ใช้",
+      "label": "สมาชิก",
+      "list-title": "รายชื่อสมาชิก"
     },
-    "memo-related": "บันทึก",
-    "memo-related-settings": {
-      "content-length-limit": "จำกัดความยาวเนื้อหา (ไบต์)",
-      "enable-blur-nsfw-content": "เปิดใช้งานการเบลอเนื้อหาไม่เหมาะสม (NSFW)",
-      "enable-memo-comments": "เปิดใช้งานความคิดเห็นในบันทึก",
-      "enable-memo-location": "เปิดใช้งานตำแหน่งในบันทึก",
-      "reactions": "ปฏิกิริยา",
-      "title": "การตั้งค่าที่เกี่ยวข้องกับบันทึก"
+    "my-account": {
+      "label": "บัญชีผู้ใช้ของฉัน"
     },
-    "my-account": "บัญชีผู้ใช้ของฉัน",
-    "preference": "การตั้งค่า",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "เวลาแสดงบันทึกช่วยจำ",
       "default-memo-visibility": "การมองเห็นบันทึกเริ่มต้น",
-      "theme": "ธีม"
+      "theme": "ธีม",
+      "label": "การตั้งค่า"
     },
     "shortcut": {
       "delete-confirm": "คุณแน่ใจหรือไม่ที่จะลบทางลัด `{{title}}`?",
       "delete-success": "ทางลัด `{{title}}` ลบเรียบร้อยแล้ว"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "Endpoint การอนุญาต",
       "client-id": "รหัสไคลเอ็นต์",
       "client-secret": "ความลับไคลเอ็นต์",
@@ -354,10 +300,10 @@
       "template": "เทมเพลต",
       "token-endpoint": "Endpoint โทเค็น",
       "update-sso": "อัปเดต SSO",
-      "user-endpoint": "Endpoint ผู้ใช้"
+      "user-endpoint": "Endpoint ผู้ใช้",
+      "label": "SSO"
     },
-    "storage": "พื้นที่จัดเก็บ",
-    "storage-section": {
+    "storage": {
       "accesskey": "คีย์การเข้าถึง",
       "accesskey-placeholder": "คีย์การเข้าถึง / รหัสการเข้าถึง",
       "bucket": "บักเก็ต",
@@ -389,10 +335,10 @@
       "url-prefix-placeholder": "URL prefix ที่กำหนดเอง ไม่บังคับ",
       "url-suffix": "คำต่อท้าย URL",
       "url-suffix-placeholder": "URL suffix ที่กำหนดเอง (ไม่บังคับ)",
-      "warning-text": "คุณแน่ใจหรือว่าจะลบบริการพื้นที่เก็บข้อมูล \"{{name}}\"? การกระทำนี้ไม่สามารถย้อนกลับได้"
+      "warning-text": "คุณแน่ใจหรือว่าจะลบบริการพื้นที่เก็บข้อมูล \"{{name}}\"? การกระทำนี้ไม่สามารถย้อนกลับได้",
+      "label": "พื้นที่จัดเก็บ"
     },
-    "system": "ระบบ",
-    "system-section": {
+    "system": {
       "additional-script": "สคริปต์เพิ่มเติม",
       "additional-script-placeholder": "โค้ดจาวาสคริปต์เพิ่มเติม",
       "additional-style": "สไตล์เพิ่มเติม",
@@ -416,10 +362,64 @@
       "max-upload-size-hint": "ค่าที่แนะนำคือ 32 MiB",
       "removed-completed-task-list-items": "เปิดใช้งานการลบรายการที่ทำแล้ว",
       "server-name": "ชื่อเซิร์ฟเวอร์",
-      "title": "ทั่วไป"
+      "title": "ทั่วไป",
+      "label": "ระบบ"
     },
     "version": "เวอร์ชั่น",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "คัดลอกโทเค็นการเข้าถึงไปยังคลิปบอร์ดแล้ว",
+      "access-token-deleted": "โทเค็นการเข้าถึง `{{description}}` ถูกลบแล้ว",
+      "access-token-deletion": "คุณแน่ใจหรือว่าจะลบโทเค็นการเข้าถึง {{description}}? การกระทำนี้ไม่สามารถย้อนกลับได้",
+      "access-token-deletion-description": "การกระทำนี้ไม่สามารถย้อนกลับได้ คุณจะต้องอัปเดตบริการใดๆ ที่ใช้โทเค็นนี้เพื่อใช้โทเค็นใหม่",
+      "create-dialog": {
+        "access-token-created": "สร้างโทเค็นการเข้าถึง `{{description}}` เรียบร้อยแล้ว",
+        "create-access-token": "สร้างโทเค็นการเข้าถึง",
+        "created-at": "สร้างเมื่อ",
+        "description": "คำอธิบาย",
+        "duration-1m": "1 เดือน",
+        "duration-8h": "8 ชั่วโมง",
+        "duration-never": "ไม่หมดอายุ",
+        "expiration": "วันหมดอายุ",
+        "expires-at": "หมดอายุเมื่อ",
+        "some-description": "คำอธิบาย..."
+      },
+      "description": "รายการโทเค็นการเข้าถึงทั้งหมดสำหรับบัญชีของคุณ",
+      "title": "โทเค็นการเข้าถึง",
+      "token": "โทเค็น"
+    },
+    "account": {
+      "change-password": "เปลี่ยนรหัสผ่าน",
+      "email-note": "ไม่บังคับ",
+      "export-memos": "ส่งออกบันทึกช่วยจำ",
+      "nickname-note": "แสดงในแบนเนอร์",
+      "openapi-reset": "รีเซ็ตคีย์ OpenAPI",
+      "openapi-sample-post": "สวัสดี #บันทึกจาก {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "รีเซ็ต API",
+      "title": "ข้อมูลเกี่ยวกับบัญชี",
+      "update-information": "อัปเดทข้อมูล",
+      "username-note": "ใช้เพื่อเข้าสู่ระบบ"
+    },
+    "instance": {
+      "disallow-change-nickname": "ไม่อนุญาตให้เปลี่ยนชื่อเล่น",
+      "disallow-change-username": "ไม่อนุญาตให้เปลี่ยนชื่อผู้ใช้",
+      "disallow-password-auth": "ไม่อนุญาตให้ยืนยันตัวตนด้วยรหัสผ่าน",
+      "disallow-user-registration": "ไม่อนุญาตให้ลงทะเบียนผู้ใช้",
+      "monday": "วันจันทร์",
+      "saturday": "วันเสาร์",
+      "sunday": "วันอาทิตย์",
+      "week-start-day": "วันเริ่มต้นสัปดาห์"
+    },
+    "memo": {
+      "content-length-limit": "จำกัดความยาวเนื้อหา (ไบต์)",
+      "enable-blur-nsfw-content": "เปิดใช้งานการเบลอเนื้อหาไม่เหมาะสม (NSFW)",
+      "enable-memo-comments": "เปิดใช้งานความคิดเห็นในบันทึก",
+      "enable-memo-location": "เปิดใช้งานตำแหน่งในบันทึก",
+      "reactions": "ปฏิกิริยา",
+      "title": "การตั้งค่าที่เกี่ยวข้องกับบันทึก",
+      "label": "บันทึก"
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "ชื่อที่จำง่าย",
         "create-webhook": "สร้าง webhook",

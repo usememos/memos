@@ -18,20 +18,20 @@ import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 import { User_Role } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
-type SettingSection = "my-account" | "preference" | "member" | "system" | "memo-related" | "storage" | "sso";
+type SettingSection = "my-account" | "preference" | "member" | "system" | "memo" | "storage" | "sso";
 
 interface State {
   selectedSection: SettingSection;
 }
 
 const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference"];
-const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo-related", "storage", "sso"];
+const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo", "storage", "sso"];
 const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   "my-account": UserIcon,
   preference: CogIcon,
   member: UsersIcon,
   system: Settings2Icon,
-  "memo-related": LibraryIcon,
+  memo: LibraryIcon,
   storage: DatabaseIcon,
   sso: KeyIcon,
 };
@@ -95,7 +95,7 @@ const Setting = () => {
                 {BASIC_SECTIONS.map((item) => (
                   <SectionMenuItem
                     key={item}
-                    text={t(`setting.${item}`)}
+                    text={t(`setting.${item}.label`)}
                     icon={SECTION_ICON_MAP[item]}
                     isSelected={state.selectedSection === item}
                     onClick={() => handleSectionSelectorItemClick(item)}
@@ -109,7 +109,7 @@ const Setting = () => {
                     {ADMIN_SECTIONS.map((item) => (
                       <SectionMenuItem
                         key={item}
-                        text={t(`setting.${item}`)}
+                        text={t(`setting.${item}.label`)}
                         icon={SECTION_ICON_MAP[item]}
                         isSelected={state.selectedSection === item}
                         onClick={() => handleSectionSelectorItemClick(item)}
@@ -133,7 +133,7 @@ const Setting = () => {
                   <SelectContent>
                     {settingsSectionList.map((settingSection) => (
                       <SelectItem key={settingSection} value={settingSection}>
-                        {t(`setting.${settingSection}`)}
+                        {t(`setting.${settingSection}.label`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -148,7 +148,7 @@ const Setting = () => {
               <MemberSection />
             ) : state.selectedSection === "system" ? (
               <InstanceSection />
-            ) : state.selectedSection === "memo-related" ? (
+            ) : state.selectedSection === "memo" ? (
               <MemoRelatedSettings />
             ) : state.selectedSection === "storage" ? (
               <StorageSection />

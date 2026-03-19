@@ -38,7 +38,15 @@
     "created-at": "作成日時",
     "database": "データベース",
     "day": "日",
-    "days": "日",
+    "days": {
+      "fri": "金",
+      "mon": "月",
+      "sat": "土",
+      "sun": "日",
+      "thu": "木",
+      "tue": "火",
+      "wed": "水"
+    },
     "delete": "削除する",
     "description": "説明",
     "edit": "編集する",
@@ -108,15 +116,6 @@
     "visibility": "公開範囲",
     "yourself": "あなた自身の"
   },
-  "days": {
-    "fri": "金",
-    "mon": "月",
-    "sat": "土",
-    "sun": "日",
-    "thu": "木",
-    "tue": "火",
-    "wed": "水"
-  },
   "editor": {
     "add-your-comment-here": "ここにコメントを追加...",
     "any-thoughts": "今思ったことは...",
@@ -126,11 +125,6 @@
     "save": "保存",
     "saving": "保存中...",
     "slash-commands": "コマンドを入力するには `/` を入力"
-  },
-  "filters": {
-    "has-code": "コードあり",
-    "has-link": "リンクあり",
-    "has-task-list": "タスクリストあり"
   },
   "inbox": {
     "failed-to-load": "受信トレイアイテムの読み込みに失敗しました",
@@ -162,7 +156,11 @@
     "direction-asc": "昇順",
     "direction-desc": "降順",
     "display-time": "表示時間",
-    "filters": "フィルター",
+    "filters": {
+      "has-code": "コードあり",
+      "has-link": "リンクあり",
+      "has-task-list": "タスクリストあり"
+    },
     "links": "リンク",
     "list": "リスト",
     "load-more": "さらに読み込む",
@@ -251,53 +249,7 @@
     "go-to-home": "ホームへ戻る"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "アクセストークンをクリップボードにコピーしました",
-      "access-token-deleted": "アクセストークン `{{description}}` を削除しました",
-      "access-token-deletion": "アクセストークン `{{description}}` を削除しますか？この操作は元に戻せません。",
-      "access-token-deletion-description": "この操作は元に戻せません。このトークンを使用サービスは新しいトークンを使用するように更新する必要があります。",
-      "create-dialog": {
-        "access-token-created": "アクセストークン `{{description}}` を作成しました",
-        "create-access-token": "アクセストークンを作成",
-        "created-at": "作成日時",
-        "description": "説明",
-        "duration-1m": "1ヶ月",
-        "duration-8h": "8時間",
-        "duration-never": "無期限",
-        "expiration": "有効期限",
-        "expires-at": "有効期限",
-        "some-description": "説明..."
-      },
-      "description": "あなたのアカウントのすべてのアクセストークン一覧です。",
-      "title": "アクセストークン",
-      "token": "トークン"
-    },
-    "account-section": {
-      "change-password": "パスワードを変更",
-      "email-note": "オプション",
-      "export-memos": "メモをエクスポート",
-      "nickname-note": "バナーに表示されます",
-      "openapi-reset": "OpenAPI Keyをリセットする",
-      "openapi-sample-post": "{{url}}より、こんにちは！#memos",
-      "openapi-title": "OpenAPI",
-      "reset-api": "APIをリセットする",
-      "title": "アカウント情報",
-      "update-information": "プロフィールを編集",
-      "username-note": "ログインに使用します"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "ニックネーム変更を禁止",
-      "disallow-change-username": "ユーザー名変更を禁止",
-      "disallow-password-auth": "パスワード認証を禁止",
-      "disallow-user-registration": "ユーザー登録を禁止",
-      "monday": "月曜日",
-      "saturday": "土曜日",
-      "sunday": "日曜日",
-      "week-start-day": "週の開始日"
-    },
-    "member": "メンバー",
-    "member-list": "メンバーリスト",
-    "member-section": {
+    "member": {
       "admin": "管理者",
       "archive-member": "メンバーをアーカイブ",
       "archive-success": "{{username}} をアーカイブしました",
@@ -309,30 +261,24 @@
       "delete-warning": "{{username}} を削除しますか？この操作は元に戻せません。",
       "delete-warning-description": "この操作は元に戻せません",
       "restore-success": "{{username}} を復元しました",
-      "user": "ユーザー"
+      "user": "ユーザー",
+      "label": "メンバー",
+      "list-title": "メンバーリスト"
     },
-    "memo-related": "メモ",
-    "memo-related-settings": {
-      "content-length-limit": "内容の最大長（バイト）",
-      "enable-blur-nsfw-content": "センシティブ(NSFW)内容のぼかしを有効化",
-      "enable-memo-comments": "メモコメントを有効化",
-      "enable-memo-location": "メモの位置情報を有効化",
-      "reactions": "リアクション",
-      "title": "メモ関連設定"
+    "my-account": {
+      "label": "アカウント設定"
     },
-    "my-account": "アカウント設定",
-    "preference": "設定",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "メモの表示時間",
       "default-memo-visibility": "公開範囲の初期設定",
-      "theme": "テーマ"
+      "theme": "テーマ",
+      "label": "設定"
     },
     "shortcut": {
       "delete-confirm": "ショートカット `{{title}}` を削除してもよろしいですか？",
       "delete-success": "ショートカット `{{title}}` を削除しました"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "認証エンドポイント",
       "client-id": "クライアントID",
       "client-secret": "クライアントシークレット",
@@ -354,10 +300,10 @@
       "template": "テンプレート",
       "token-endpoint": "トークンエンドポイント",
       "update-sso": "SSOを更新する",
-      "user-endpoint": "ユーザーエンドポイント"
+      "user-endpoint": "ユーザーエンドポイント",
+      "label": "SSO"
     },
-    "storage": "ストレージ",
-    "storage-section": {
+    "storage": {
       "accesskey": "アクセスキー",
       "accesskey-placeholder": "アクセスキー / アクセスID",
       "bucket": "バケット",
@@ -389,10 +335,10 @@
       "url-prefix-placeholder": "カスタムURLプレフィックス（オプション）",
       "url-suffix": "URLサフィックス",
       "url-suffix-placeholder": "カスタムURLサフィックス（オプション）",
-      "warning-text": "ストレージサービス \"{{name}}\" を削除しますか？この操作は元に戻せません。"
+      "warning-text": "ストレージサービス \"{{name}}\" を削除しますか？この操作は元に戻せません。",
+      "label": "ストレージ"
     },
-    "system": "システム",
-    "system-section": {
+    "system": {
       "additional-script": "追加スクリプト",
       "additional-script-placeholder": "追加JavaScriptコード",
       "additional-style": "追加CSS",
@@ -416,10 +362,64 @@
       "max-upload-size-hint": "推奨値は32 MiBです。",
       "removed-completed-task-list-items": "完了タスクの削除を有効化",
       "server-name": "サーバー名",
-      "title": "全般"
+      "title": "全般",
+      "label": "システム"
     },
     "version": "バージョン",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "アクセストークンをクリップボードにコピーしました",
+      "access-token-deleted": "アクセストークン `{{description}}` を削除しました",
+      "access-token-deletion": "アクセストークン `{{description}}` を削除しますか？この操作は元に戻せません。",
+      "access-token-deletion-description": "この操作は元に戻せません。このトークンを使用サービスは新しいトークンを使用するように更新する必要があります。",
+      "create-dialog": {
+        "access-token-created": "アクセストークン `{{description}}` を作成しました",
+        "create-access-token": "アクセストークンを作成",
+        "created-at": "作成日時",
+        "description": "説明",
+        "duration-1m": "1ヶ月",
+        "duration-8h": "8時間",
+        "duration-never": "無期限",
+        "expiration": "有効期限",
+        "expires-at": "有効期限",
+        "some-description": "説明..."
+      },
+      "description": "あなたのアカウントのすべてのアクセストークン一覧です。",
+      "title": "アクセストークン",
+      "token": "トークン"
+    },
+    "account": {
+      "change-password": "パスワードを変更",
+      "email-note": "オプション",
+      "export-memos": "メモをエクスポート",
+      "nickname-note": "バナーに表示されます",
+      "openapi-reset": "OpenAPI Keyをリセットする",
+      "openapi-sample-post": "{{url}}より、こんにちは！#memos",
+      "openapi-title": "OpenAPI",
+      "reset-api": "APIをリセットする",
+      "title": "アカウント情報",
+      "update-information": "プロフィールを編集",
+      "username-note": "ログインに使用します"
+    },
+    "instance": {
+      "disallow-change-nickname": "ニックネーム変更を禁止",
+      "disallow-change-username": "ユーザー名変更を禁止",
+      "disallow-password-auth": "パスワード認証を禁止",
+      "disallow-user-registration": "ユーザー登録を禁止",
+      "monday": "月曜日",
+      "saturday": "土曜日",
+      "sunday": "日曜日",
+      "week-start-day": "週の開始日"
+    },
+    "memo": {
+      "content-length-limit": "内容の最大長（バイト）",
+      "enable-blur-nsfw-content": "センシティブ(NSFW)内容のぼかしを有効化",
+      "enable-memo-comments": "メモコメントを有効化",
+      "enable-memo-location": "メモの位置情報を有効化",
+      "reactions": "リアクション",
+      "title": "メモ関連設定",
+      "label": "メモ"
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "覚えやすい名前",
         "create-webhook": "Webhookを作成",
