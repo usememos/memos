@@ -18,6 +18,8 @@ enum InstanceSettingKey {
   MEMO_RELATED = 4;
   // TAGS is the key for tag metadata.
   TAGS = 5;
+  // NOTIFICATION is the key for notification transport settings.
+  NOTIFICATION = 6;
 }
 
 message InstanceSetting {
@@ -28,6 +30,7 @@ message InstanceSetting {
     InstanceStorageSetting storage_setting = 4;
     InstanceMemoRelatedSetting memo_related_setting = 5;
     InstanceTagsSetting tags_setting = 6;
+    InstanceNotificationSetting notification_setting = 7;
   }
 }
 
@@ -116,4 +119,21 @@ message InstanceTagMetadata {
 
 message InstanceTagsSetting {
   map<string, InstanceTagMetadata> tags = 1;
+}
+
+message InstanceNotificationSetting {
+  EmailSetting email = 1;
+
+  message EmailSetting {
+    bool enabled = 1;
+    string smtp_host = 2;
+    int32 smtp_port = 3;
+    string smtp_username = 4;
+    string smtp_password = 5;
+    string from_email = 6;
+    string from_name = 7;
+    string reply_to = 8;
+    bool use_tls = 9;
+    bool use_ssl = 10;
+  }
 }
