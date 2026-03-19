@@ -71,6 +71,7 @@ message InstanceSetting {
     StorageSetting storage_setting = 3;
     MemoRelatedSetting memo_related_setting = 4;
     TagsSetting tags_setting = 5;
+    NotificationSetting notification_setting = 6;
   }
 
   // Enumeration of instance setting keys.
@@ -84,6 +85,8 @@ message InstanceSetting {
     MEMO_RELATED = 3;
     // TAGS is the key for tag metadata.
     TAGS = 4;
+    // NOTIFICATION is the key for notification transport settings.
+    NOTIFICATION = 5;
   }
 
   // General instance settings configuration.
@@ -173,6 +176,25 @@ message InstanceSetting {
   // Tag metadata configuration.
   message TagsSetting {
     map<string, TagMetadata> tags = 1;
+  }
+
+  // Notification transport configuration.
+  message NotificationSetting {
+    EmailSetting email = 1;
+
+    // Email delivery configuration for notifications.
+    message EmailSetting {
+      bool enabled = 1;
+      string smtp_host = 2;
+      int32 smtp_port = 3;
+      string smtp_username = 4;
+      string smtp_password = 5;
+      string from_email = 6;
+      string from_name = 7;
+      string reply_to = 8;
+      bool use_tls = 9;
+      bool use_ssl = 10;
+    }
   }
 }
 

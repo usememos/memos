@@ -39,6 +39,8 @@ func (s *Store) UpsertInstanceSetting(ctx context.Context, upsert *storepb.Insta
 		valueBytes, err = protojson.Marshal(upsert.GetMemoRelatedSetting())
 	} else if upsert.Key == storepb.InstanceSettingKey_TAGS {
 		valueBytes, err = protojson.Marshal(upsert.GetTagsSetting())
+	} else if upsert.Key == storepb.InstanceSettingKey_NOTIFICATION {
+		valueBytes, err = protojson.Marshal(upsert.GetNotificationSetting())
 	} else {
 		return nil, errors.Errorf("unsupported instance setting key: %v", upsert.Key)
 	}
@@ -192,6 +194,28 @@ func (s *Store) GetInstanceTagsSetting(ctx context.Context) (*storepb.InstanceTa
 	return instanceTagsSetting, nil
 }
 
+func (s *Store) GetInstanceNotificationSetting(ctx context.Context) (*storepb.InstanceNotificationSetting, error) {
+	instanceSetting, err := s.GetInstanceSetting(ctx, &FindInstanceSetting{
+		Name: storepb.InstanceSettingKey_NOTIFICATION.String(),
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get instance notification setting")
+	}
+
+	instanceNotificationSetting := &storepb.InstanceNotificationSetting{}
+	if instanceSetting != nil {
+		instanceNotificationSetting = instanceSetting.GetNotificationSetting()
+	}
+	if instanceNotificationSetting.Email == nil {
+		instanceNotificationSetting.Email = &storepb.InstanceNotificationSetting_EmailSetting{}
+	}
+	s.instanceSettingCache.Set(ctx, storepb.InstanceSettingKey_NOTIFICATION.String(), &storepb.InstanceSetting{
+		Key:   storepb.InstanceSettingKey_NOTIFICATION,
+		Value: &storepb.InstanceSetting_NotificationSetting{NotificationSetting: instanceNotificationSetting},
+	})
+	return instanceNotificationSetting, nil
+}
+
 const (
 	defaultInstanceStorageType       = storepb.InstanceStorageSetting_LOCAL
 	defaultInstanceUploadSizeLimitMb = 30
@@ -261,6 +285,12 @@ func convertInstanceSettingFromRaw(instanceSettingRaw *InstanceSetting) (*storep
 			return nil, err
 		}
 		instanceSetting.Value = &storepb.InstanceSetting_TagsSetting{TagsSetting: tagsSetting}
+	case storepb.InstanceSettingKey_NOTIFICATION.String():
+		notificationSetting := &storepb.InstanceNotificationSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(instanceSettingRaw.Value), notificationSetting); err != nil {
+			return nil, err
+		}
+		instanceSetting.Value = &storepb.InstanceSetting_NotificationSetting{NotificationSetting: notificationSetting}
 	default:
 		// Skip unsupported instance setting key.
 		return nil, nil

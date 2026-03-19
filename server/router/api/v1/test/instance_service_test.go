@@ -204,6 +204,23 @@ func TestGetInstanceSetting(t *testing.T) {
 		require.Empty(t, resp.GetTagsSetting().GetTags())
 	})
 
+	t.Run("GetInstanceSetting - notification setting", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		req := &v1pb.GetInstanceSettingRequest{
+			Name: "instance/settings/NOTIFICATION",
+		}
+		resp, err := ts.Service.GetInstanceSetting(ctx, req)
+
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.Equal(t, "instance/settings/NOTIFICATION", resp.Name)
+		require.NotNil(t, resp.GetNotificationSetting())
+		require.NotNil(t, resp.GetNotificationSetting().GetEmail())
+		require.False(t, resp.GetNotificationSetting().GetEmail().GetEnabled())
+	})
+
 	t.Run("GetInstanceSetting - invalid setting name", func(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
@@ -282,5 +299,40 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		})
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "invalid instance setting")
+	})
+
+	t.Run("UpdateInstanceSetting - notification setting", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+
+		resp, err := ts.Service.UpdateInstanceSetting(ts.CreateUserContext(ctx, hostUser.ID), &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/NOTIFICATION",
+				Value: &v1pb.InstanceSetting_NotificationSetting_{
+					NotificationSetting: &v1pb.InstanceSetting_NotificationSetting{
+						Email: &v1pb.InstanceSetting_NotificationSetting_EmailSetting{
+							Enabled:      true,
+							SmtpHost:     "smtp.example.com",
+							SmtpPort:     587,
+							SmtpUsername: "bot@example.com",
+							SmtpPassword: "secret",
+							FromEmail:    "bot@example.com",
+							FromName:     "Memos Bot",
+							ReplyTo:      "support@example.com",
+							UseTls:       true,
+						},
+					},
+				},
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"notification_setting"}},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp.GetNotificationSetting())
+		require.NotNil(t, resp.GetNotificationSetting().GetEmail())
+		require.True(t, resp.GetNotificationSetting().GetEmail().GetEnabled())
+		require.Equal(t, "smtp.example.com", resp.GetNotificationSetting().GetEmail().GetSmtpHost())
 	})
 }

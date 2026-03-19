@@ -2192,6 +2192,8 @@ components:
                     $ref: '#/components/schemas/InstanceSetting_MemoRelatedSetting'
                 tagsSetting:
                     $ref: '#/components/schemas/InstanceSetting_TagsSetting'
+                notificationSetting:
+                    $ref: '#/components/schemas/InstanceSetting_NotificationSetting'
             description: An instance setting resource.
         InstanceSetting_GeneralSetting:
             type: object
@@ -2248,6 +2250,12 @@ components:
                         type: string
                     description: reactions is the list of reactions.
             description: Memo-related instance settings and policies.
+        InstanceSetting_NotificationSetting:
+            type: object
+            properties:
+                email:
+                    $ref: '#/components/schemas/NotificationSetting_EmailSetting'
+            description: Notification transport configuration.
         InstanceSetting_StorageSetting:
             type: object
             properties:
@@ -2626,6 +2634,31 @@ components:
                     type: string
                     description: The title extracted from the first H1 heading, if present.
             description: Computed properties of a memo.
+        NotificationSetting_EmailSetting:
+            type: object
+            properties:
+                enabled:
+                    type: boolean
+                smtpHost:
+                    type: string
+                smtpPort:
+                    type: integer
+                    format: int32
+                smtpUsername:
+                    type: string
+                smtpPassword:
+                    type: string
+                fromEmail:
+                    type: string
+                fromName:
+                    type: string
+                replyTo:
+                    type: string
+                useTls:
+                    type: boolean
+                useSsl:
+                    type: boolean
+            description: Email delivery configuration for notifications.
         OAuth2Config:
             type: object
             properties:

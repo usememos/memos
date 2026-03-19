@@ -10,17 +10,17 @@ import { file_google_api_annotations } from "../../google/api/annotations_pb";
 import { file_google_api_client } from "../../google/api/client_pb";
 import { file_google_api_field_behavior } from "../../google/api/field_behavior_pb";
 import { file_google_api_resource } from "../../google/api/resource_pb";
-import type { Color } from "../../google/type/color_pb";
-import { file_google_type_color } from "../../google/type/color_pb";
 import type { FieldMask } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_field_mask } from "@bufbuild/protobuf/wkt";
+import type { Color } from "../../google/type/color_pb";
+import { file_google_type_color } from "../../google/type/color_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file api/v1/instance_service.proto.
  */
 export const file_api_v1_instance_service: GenFile = /*@__PURE__*/
-  fileDesc("Ch1hcGkvdjEvaW5zdGFuY2Vfc2VydmljZS5wcm90bxIMbWVtb3MuYXBpLnYxImkKD0luc3RhbmNlUHJvZmlsZRIPCgd2ZXJzaW9uGAIgASgJEgwKBGRlbW8YAyABKAgSFAoMaW5zdGFuY2VfdXJsGAYgASgJEiEKBWFkbWluGAcgASgLMhIubWVtb3MuYXBpLnYxLlVzZXIiGwoZR2V0SW5zdGFuY2VQcm9maWxlUmVxdWVzdCLoDQoPSW5zdGFuY2VTZXR0aW5nEhEKBG5hbWUYASABKAlCA+BBCBJHCg9nZW5lcmFsX3NldHRpbmcYAiABKAsyLC5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nLkdlbmVyYWxTZXR0aW5nSAASRwoPc3RvcmFnZV9zZXR0aW5nGAMgASgLMiwubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5TdG9yYWdlU2V0dGluZ0gAElAKFG1lbW9fcmVsYXRlZF9zZXR0aW5nGAQgASgLMjAubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5NZW1vUmVsYXRlZFNldHRpbmdIABJBCgx0YWdzX3NldHRpbmcYBSABKAsyKS5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nLlRhZ3NTZXR0aW5nSAAahwMKDkdlbmVyYWxTZXR0aW5nEiIKGmRpc2FsbG93X3VzZXJfcmVnaXN0cmF0aW9uGAIgASgIEh4KFmRpc2FsbG93X3Bhc3N3b3JkX2F1dGgYAyABKAgSGQoRYWRkaXRpb25hbF9zY3JpcHQYBCABKAkSGAoQYWRkaXRpb25hbF9zdHlsZRgFIAEoCRJSCg5jdXN0b21fcHJvZmlsZRgGIAEoCzI6Lm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmcuR2VuZXJhbFNldHRpbmcuQ3VzdG9tUHJvZmlsZRIdChV3ZWVrX3N0YXJ0X2RheV9vZmZzZXQYByABKAUSIAoYZGlzYWxsb3dfY2hhbmdlX3VzZXJuYW1lGAggASgIEiAKGGRpc2FsbG93X2NoYW5nZV9uaWNrbmFtZRgJIAEoCBpFCg1DdXN0b21Qcm9maWxlEg0KBXRpdGxlGAEgASgJEhMKC2Rlc2NyaXB0aW9uGAIgASgJEhAKCGxvZ29fdXJsGAMgASgJGroDCg5TdG9yYWdlU2V0dGluZxJOCgxzdG9yYWdlX3R5cGUYASABKA4yOC5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nLlN0b3JhZ2VTZXR0aW5nLlN0b3JhZ2VUeXBlEhkKEWZpbGVwYXRoX3RlbXBsYXRlGAIgASgJEhwKFHVwbG9hZF9zaXplX2xpbWl0X21iGAMgASgDEkgKCXMzX2NvbmZpZxgEIAEoCzI1Lm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmcuU3RvcmFnZVNldHRpbmcuUzNDb25maWcahgEKCFMzQ29uZmlnEhUKDWFjY2Vzc19rZXlfaWQYASABKAkSGQoRYWNjZXNzX2tleV9zZWNyZXQYAiABKAkSEAoIZW5kcG9pbnQYAyABKAkSDgoGcmVnaW9uGAQgASgJEg4KBmJ1Y2tldBgFIAEoCRIWCg51c2VfcGF0aF9zdHlsZRgGIAEoCCJMCgtTdG9yYWdlVHlwZRIcChhTVE9SQUdFX1RZUEVfVU5TUEVDSUZJRUQQABIMCghEQVRBQkFTRRABEgkKBUxPQ0FMEAISBgoCUzMQAxqtAQoSTWVtb1JlbGF0ZWRTZXR0aW5nEiIKGmRpc2FsbG93X3B1YmxpY192aXNpYmlsaXR5GAEgASgIEiAKGGRpc3BsYXlfd2l0aF91cGRhdGVfdGltZRgCIAEoCBIcChRjb250ZW50X2xlbmd0aF9saW1pdBgDIAEoBRIgChhlbmFibGVfZG91YmxlX2NsaWNrX2VkaXQYBCABKAgSEQoJcmVhY3Rpb25zGAcgAygJGjsKC1RhZ01ldGFkYXRhEiwKEGJhY2tncm91bmRfY29sb3IYASABKAsyEi5nb29nbGUudHlwZS5Db2xvchqoAQoLVGFnc1NldHRpbmcSQQoEdGFncxgBIAMoCzIzLm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmcuVGFnc1NldHRpbmcuVGFnc0VudHJ5GlYKCVRhZ3NFbnRyeRILCgNrZXkYASABKAkSOAoFdmFsdWUYAiABKAsyKS5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nLlRhZ01ldGFkYXRhOgI4ASJQCgNLZXkSEwoPS0VZX1VOU1BFQ0lGSUVEEAASCwoHR0VORVJBTBABEgsKB1NUT1JBR0UQAhIQCgxNRU1PX1JFTEFURUQQAxIICgRUQUdTEAQ6YepBXgocbWVtb3MuYXBpLnYxL0luc3RhbmNlU2V0dGluZxIbaW5zdGFuY2Uvc2V0dGluZ3Mve3NldHRpbmd9KhBpbnN0YW5jZVNldHRpbmdzMg9pbnN0YW5jZVNldHRpbmdCBwoFdmFsdWUiTwoZR2V0SW5zdGFuY2VTZXR0aW5nUmVxdWVzdBIyCgRuYW1lGAEgASgJQiTgQQL6QR4KHG1lbW9zLmFwaS52MS9JbnN0YW5jZVNldHRpbmciiQEKHFVwZGF0ZUluc3RhbmNlU2V0dGluZ1JlcXVlc3QSMwoHc2V0dGluZxgBIAEoCzIdLm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmdCA+BBAhI0Cgt1cGRhdGVfbWFzaxgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5GaWVsZE1hc2tCA+BBATLbAwoPSW5zdGFuY2VTZXJ2aWNlEn4KEkdldEluc3RhbmNlUHJvZmlsZRInLm1lbW9zLmFwaS52MS5HZXRJbnN0YW5jZVByb2ZpbGVSZXF1ZXN0Gh0ubWVtb3MuYXBpLnYxLkluc3RhbmNlUHJvZmlsZSIggtPkkwIaEhgvYXBpL3YxL2luc3RhbmNlL3Byb2ZpbGUSjwEKEkdldEluc3RhbmNlU2V0dGluZxInLm1lbW9zLmFwaS52MS5HZXRJbnN0YW5jZVNldHRpbmdSZXF1ZXN0Gh0ubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZyIx2kEEbmFtZYLT5JMCJBIiL2FwaS92MS97bmFtZT1pbnN0YW5jZS9zZXR0aW5ncy8qfRK1AQoVVXBkYXRlSW5zdGFuY2VTZXR0aW5nEioubWVtb3MuYXBpLnYxLlVwZGF0ZUluc3RhbmNlU2V0dGluZ1JlcXVlc3QaHS5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nIlHaQRNzZXR0aW5nLHVwZGF0ZV9tYXNrgtPkkwI1OgdzZXR0aW5nMiovYXBpL3YxL3tzZXR0aW5nLm5hbWU9aW5zdGFuY2Uvc2V0dGluZ3MvKn1CrAEKEGNvbS5tZW1vcy5hcGkudjFCFEluc3RhbmNlU2VydmljZVByb3RvUAFaMGdpdGh1Yi5jb20vdXNlbWVtb3MvbWVtb3MvcHJvdG8vZ2VuL2FwaS92MTthcGl2MaICA01BWKoCDE1lbW9zLkFwaS5WMcoCDE1lbW9zXEFwaVxWMeICGE1lbW9zXEFwaVxWMVxHUEJNZXRhZGF0YeoCDk1lbW9zOjpBcGk6OlYxYgZwcm90bzM", [file_api_v1_user_service, file_google_api_annotations, file_google_api_client, file_google_api_field_behavior, file_google_api_resource, file_google_type_color, file_google_protobuf_field_mask]);
+  fileDesc("Ch1hcGkvdjEvaW5zdGFuY2Vfc2VydmljZS5wcm90bxIMbWVtb3MuYXBpLnYxImkKD0luc3RhbmNlUHJvZmlsZRIPCgd2ZXJzaW9uGAIgASgJEgwKBGRlbW8YAyABKAgSFAoMaW5zdGFuY2VfdXJsGAYgASgJEiEKBWFkbWluGAcgASgLMhIubWVtb3MuYXBpLnYxLlVzZXIiGwoZR2V0SW5zdGFuY2VQcm9maWxlUmVxdWVzdCKFEQoPSW5zdGFuY2VTZXR0aW5nEhEKBG5hbWUYASABKAlCA+BBCBJHCg9nZW5lcmFsX3NldHRpbmcYAiABKAsyLC5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nLkdlbmVyYWxTZXR0aW5nSAASRwoPc3RvcmFnZV9zZXR0aW5nGAMgASgLMiwubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5TdG9yYWdlU2V0dGluZ0gAElAKFG1lbW9fcmVsYXRlZF9zZXR0aW5nGAQgASgLMjAubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5NZW1vUmVsYXRlZFNldHRpbmdIABJBCgx0YWdzX3NldHRpbmcYBSABKAsyKS5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nLlRhZ3NTZXR0aW5nSAASUQoUbm90aWZpY2F0aW9uX3NldHRpbmcYBiABKAsyMS5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nLk5vdGlmaWNhdGlvblNldHRpbmdIABqHAwoOR2VuZXJhbFNldHRpbmcSIgoaZGlzYWxsb3dfdXNlcl9yZWdpc3RyYXRpb24YAiABKAgSHgoWZGlzYWxsb3dfcGFzc3dvcmRfYXV0aBgDIAEoCBIZChFhZGRpdGlvbmFsX3NjcmlwdBgEIAEoCRIYChBhZGRpdGlvbmFsX3N0eWxlGAUgASgJElIKDmN1c3RvbV9wcm9maWxlGAYgASgLMjoubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5HZW5lcmFsU2V0dGluZy5DdXN0b21Qcm9maWxlEh0KFXdlZWtfc3RhcnRfZGF5X29mZnNldBgHIAEoBRIgChhkaXNhbGxvd19jaGFuZ2VfdXNlcm5hbWUYCCABKAgSIAoYZGlzYWxsb3dfY2hhbmdlX25pY2tuYW1lGAkgASgIGkUKDUN1c3RvbVByb2ZpbGUSDQoFdGl0bGUYASABKAkSEwoLZGVzY3JpcHRpb24YAiABKAkSEAoIbG9nb191cmwYAyABKAkaugMKDlN0b3JhZ2VTZXR0aW5nEk4KDHN0b3JhZ2VfdHlwZRgBIAEoDjI4Lm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmcuU3RvcmFnZVNldHRpbmcuU3RvcmFnZVR5cGUSGQoRZmlsZXBhdGhfdGVtcGxhdGUYAiABKAkSHAoUdXBsb2FkX3NpemVfbGltaXRfbWIYAyABKAMSSAoJczNfY29uZmlnGAQgASgLMjUubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5TdG9yYWdlU2V0dGluZy5TM0NvbmZpZxqGAQoIUzNDb25maWcSFQoNYWNjZXNzX2tleV9pZBgBIAEoCRIZChFhY2Nlc3Nfa2V5X3NlY3JldBgCIAEoCRIQCghlbmRwb2ludBgDIAEoCRIOCgZyZWdpb24YBCABKAkSDgoGYnVja2V0GAUgASgJEhYKDnVzZV9wYXRoX3N0eWxlGAYgASgIIkwKC1N0b3JhZ2VUeXBlEhwKGFNUT1JBR0VfVFlQRV9VTlNQRUNJRklFRBAAEgwKCERBVEFCQVNFEAESCQoFTE9DQUwQAhIGCgJTMxADGq0BChJNZW1vUmVsYXRlZFNldHRpbmcSIgoaZGlzYWxsb3dfcHVibGljX3Zpc2liaWxpdHkYASABKAgSIAoYZGlzcGxheV93aXRoX3VwZGF0ZV90aW1lGAIgASgIEhwKFGNvbnRlbnRfbGVuZ3RoX2xpbWl0GAMgASgFEiAKGGVuYWJsZV9kb3VibGVfY2xpY2tfZWRpdBgEIAEoCBIRCglyZWFjdGlvbnMYByADKAkaOwoLVGFnTWV0YWRhdGESLAoQYmFja2dyb3VuZF9jb2xvchgBIAEoCzISLmdvb2dsZS50eXBlLkNvbG9yGqgBCgtUYWdzU2V0dGluZxJBCgR0YWdzGAEgAygLMjMubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5UYWdzU2V0dGluZy5UYWdzRW50cnkaVgoJVGFnc0VudHJ5EgsKA2tleRgBIAEoCRI4CgV2YWx1ZRgCIAEoCzIpLm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmcuVGFnTWV0YWRhdGE6AjgBGrUCChNOb3RpZmljYXRpb25TZXR0aW5nEk0KBWVtYWlsGAEgASgLMj4ubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5Ob3RpZmljYXRpb25TZXR0aW5nLkVtYWlsU2V0dGluZxrOAQoMRW1haWxTZXR0aW5nEg8KB2VuYWJsZWQYASABKAgSEQoJc210cF9ob3N0GAIgASgJEhEKCXNtdHBfcG9ydBgDIAEoBRIVCg1zbXRwX3VzZXJuYW1lGAQgASgJEhUKDXNtdHBfcGFzc3dvcmQYBSABKAkSEgoKZnJvbV9lbWFpbBgGIAEoCRIRCglmcm9tX25hbWUYByABKAkSEAoIcmVwbHlfdG8YCCABKAkSDwoHdXNlX3RscxgJIAEoCBIPCgd1c2Vfc3NsGAogASgIImIKA0tleRITCg9LRVlfVU5TUEVDSUZJRUQQABILCgdHRU5FUkFMEAESCwoHU1RPUkFHRRACEhAKDE1FTU9fUkVMQVRFRBADEggKBFRBR1MQBBIQCgxOT1RJRklDQVRJT04QBTph6kFeChxtZW1vcy5hcGkudjEvSW5zdGFuY2VTZXR0aW5nEhtpbnN0YW5jZS9zZXR0aW5ncy97c2V0dGluZ30qEGluc3RhbmNlU2V0dGluZ3MyD2luc3RhbmNlU2V0dGluZ0IHCgV2YWx1ZSJPChlHZXRJbnN0YW5jZVNldHRpbmdSZXF1ZXN0EjIKBG5hbWUYASABKAlCJOBBAvpBHgocbWVtb3MuYXBpLnYxL0luc3RhbmNlU2V0dGluZyKJAQocVXBkYXRlSW5zdGFuY2VTZXR0aW5nUmVxdWVzdBIzCgdzZXR0aW5nGAEgASgLMh0ubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZ0ID4EECEjQKC3VwZGF0ZV9tYXNrGAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLkZpZWxkTWFza0ID4EEBMtsDCg9JbnN0YW5jZVNlcnZpY2USfgoSR2V0SW5zdGFuY2VQcm9maWxlEicubWVtb3MuYXBpLnYxLkdldEluc3RhbmNlUHJvZmlsZVJlcXVlc3QaHS5tZW1vcy5hcGkudjEuSW5zdGFuY2VQcm9maWxlIiCC0+STAhoSGC9hcGkvdjEvaW5zdGFuY2UvcHJvZmlsZRKPAQoSR2V0SW5zdGFuY2VTZXR0aW5nEicubWVtb3MuYXBpLnYxLkdldEluc3RhbmNlU2V0dGluZ1JlcXVlc3QaHS5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nIjHaQQRuYW1lgtPkkwIkEiIvYXBpL3YxL3tuYW1lPWluc3RhbmNlL3NldHRpbmdzLyp9ErUBChVVcGRhdGVJbnN0YW5jZVNldHRpbmcSKi5tZW1vcy5hcGkudjEuVXBkYXRlSW5zdGFuY2VTZXR0aW5nUmVxdWVzdBodLm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmciUdpBE3NldHRpbmcsdXBkYXRlX21hc2uC0+STAjU6B3NldHRpbmcyKi9hcGkvdjEve3NldHRpbmcubmFtZT1pbnN0YW5jZS9zZXR0aW5ncy8qfUKsAQoQY29tLm1lbW9zLmFwaS52MUIUSW5zdGFuY2VTZXJ2aWNlUHJvdG9QAVowZ2l0aHViLmNvbS91c2VtZW1vcy9tZW1vcy9wcm90by9nZW4vYXBpL3YxO2FwaXYxogIDTUFYqgIMTWVtb3MuQXBpLlYxygIMTWVtb3NcQXBpXFYx4gIYTWVtb3NcQXBpXFYxXEdQQk1ldGFkYXRh6gIOTWVtb3M6OkFwaTo6VjFiBnByb3RvMw", [file_api_v1_user_service, file_google_api_annotations, file_google_api_client, file_google_api_field_behavior, file_google_api_resource, file_google_protobuf_field_mask, file_google_type_color]);
 
 /**
  * Instance profile message containing basic instance information.
@@ -121,6 +121,12 @@ export type InstanceSetting = Message<"memos.api.v1.InstanceSetting"> & {
      */
     value: InstanceSetting_TagsSetting;
     case: "tagsSetting";
+  } | {
+    /**
+     * @generated from field: memos.api.v1.InstanceSetting.NotificationSetting notification_setting = 6;
+     */
+    value: InstanceSetting_NotificationSetting;
+    case: "notificationSetting";
   } | { case: undefined; value?: undefined };
 };
 
@@ -449,6 +455,89 @@ export const InstanceSetting_TagsSettingSchema: GenMessage<InstanceSetting_TagsS
   messageDesc(file_api_v1_instance_service, 2, 4);
 
 /**
+ * Notification transport configuration.
+ *
+ * @generated from message memos.api.v1.InstanceSetting.NotificationSetting
+ */
+export type InstanceSetting_NotificationSetting = Message<"memos.api.v1.InstanceSetting.NotificationSetting"> & {
+  /**
+   * @generated from field: memos.api.v1.InstanceSetting.NotificationSetting.EmailSetting email = 1;
+   */
+  email?: InstanceSetting_NotificationSetting_EmailSetting;
+};
+
+/**
+ * Describes the message memos.api.v1.InstanceSetting.NotificationSetting.
+ * Use `create(InstanceSetting_NotificationSettingSchema)` to create a new message.
+ */
+export const InstanceSetting_NotificationSettingSchema: GenMessage<InstanceSetting_NotificationSetting> = /*@__PURE__*/
+  messageDesc(file_api_v1_instance_service, 2, 5);
+
+/**
+ * Email delivery configuration for notifications.
+ *
+ * @generated from message memos.api.v1.InstanceSetting.NotificationSetting.EmailSetting
+ */
+export type InstanceSetting_NotificationSetting_EmailSetting = Message<"memos.api.v1.InstanceSetting.NotificationSetting.EmailSetting"> & {
+  /**
+   * @generated from field: bool enabled = 1;
+   */
+  enabled: boolean;
+
+  /**
+   * @generated from field: string smtp_host = 2;
+   */
+  smtpHost: string;
+
+  /**
+   * @generated from field: int32 smtp_port = 3;
+   */
+  smtpPort: number;
+
+  /**
+   * @generated from field: string smtp_username = 4;
+   */
+  smtpUsername: string;
+
+  /**
+   * @generated from field: string smtp_password = 5;
+   */
+  smtpPassword: string;
+
+  /**
+   * @generated from field: string from_email = 6;
+   */
+  fromEmail: string;
+
+  /**
+   * @generated from field: string from_name = 7;
+   */
+  fromName: string;
+
+  /**
+   * @generated from field: string reply_to = 8;
+   */
+  replyTo: string;
+
+  /**
+   * @generated from field: bool use_tls = 9;
+   */
+  useTls: boolean;
+
+  /**
+   * @generated from field: bool use_ssl = 10;
+   */
+  useSsl: boolean;
+};
+
+/**
+ * Describes the message memos.api.v1.InstanceSetting.NotificationSetting.EmailSetting.
+ * Use `create(InstanceSetting_NotificationSetting_EmailSettingSchema)` to create a new message.
+ */
+export const InstanceSetting_NotificationSetting_EmailSettingSchema: GenMessage<InstanceSetting_NotificationSetting_EmailSetting> = /*@__PURE__*/
+  messageDesc(file_api_v1_instance_service, 2, 5, 0);
+
+/**
  * Enumeration of instance setting keys.
  *
  * @generated from enum memos.api.v1.InstanceSetting.Key
@@ -486,6 +575,13 @@ export enum InstanceSetting_Key {
    * @generated from enum value: TAGS = 4;
    */
   TAGS = 4,
+
+  /**
+   * NOTIFICATION is the key for notification transport settings.
+   *
+   * @generated from enum value: NOTIFICATION = 5;
+   */
+  NOTIFICATION = 5,
 }
 
 /**

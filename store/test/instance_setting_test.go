@@ -257,6 +257,47 @@ func TestInstanceSettingTagsSetting(t *testing.T) {
 	ts.Close()
 }
 
+func TestInstanceSettingNotificationSetting(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+
+	notificationSetting, err := ts.GetInstanceNotificationSetting(ctx)
+	require.NoError(t, err)
+	require.NotNil(t, notificationSetting)
+	require.NotNil(t, notificationSetting.Email)
+	require.False(t, notificationSetting.Email.Enabled)
+
+	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_NOTIFICATION,
+		Value: &storepb.InstanceSetting_NotificationSetting{
+			NotificationSetting: &storepb.InstanceNotificationSetting{
+				Email: &storepb.InstanceNotificationSetting_EmailSetting{
+					Enabled:      true,
+					SmtpHost:     "smtp.example.com",
+					SmtpPort:     587,
+					SmtpUsername: "bot@example.com",
+					SmtpPassword: "secret",
+					FromEmail:    "bot@example.com",
+					FromName:     "Memos Bot",
+					ReplyTo:      "support@example.com",
+					UseTls:       true,
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	notificationSetting, err = ts.GetInstanceNotificationSetting(ctx)
+	require.NoError(t, err)
+	require.True(t, notificationSetting.Email.Enabled)
+	require.Equal(t, "smtp.example.com", notificationSetting.Email.SmtpHost)
+	require.Equal(t, int32(587), notificationSetting.Email.SmtpPort)
+	require.Equal(t, "bot@example.com", notificationSetting.Email.FromEmail)
+
+	ts.Close()
+}
+
 func TestInstanceSettingListAll(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -284,10 +325,18 @@ func TestInstanceSettingListAll(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// List all - should have 2 more than initial
+	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_NOTIFICATION,
+		Value: &storepb.InstanceSetting_NotificationSetting{
+			NotificationSetting: &storepb.InstanceNotificationSetting{},
+		},
+	})
+	require.NoError(t, err)
+
+	// List all - should have 3 more than initial
 	list, err := ts.ListInstanceSettings(ctx, &store.FindInstanceSetting{})
 	require.NoError(t, err)
-	require.Equal(t, initialCount+2, len(list))
+	require.Equal(t, initialCount+3, len(list))
 
 	ts.Close()
 }

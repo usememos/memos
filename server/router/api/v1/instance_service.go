@@ -51,6 +51,8 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 		_, err = s.Store.GetInstanceStorageSetting(ctx)
 	case storepb.InstanceSettingKey_TAGS:
 		_, err = s.Store.GetInstanceTagsSetting(ctx)
+	case storepb.InstanceSettingKey_NOTIFICATION:
+		_, err = s.Store.GetInstanceNotificationSetting(ctx)
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "unsupported instance setting key: %v", instanceSettingKey)
 	}
@@ -134,6 +136,10 @@ func convertInstanceSettingFromStore(setting *storepb.InstanceSetting) *v1pb.Ins
 		instanceSetting.Value = &v1pb.InstanceSetting_TagsSetting_{
 			TagsSetting: convertInstanceTagsSettingFromStore(setting.GetTagsSetting()),
 		}
+	case *storepb.InstanceSetting_NotificationSetting:
+		instanceSetting.Value = &v1pb.InstanceSetting_NotificationSetting_{
+			NotificationSetting: convertInstanceNotificationSettingFromStore(setting.GetNotificationSetting()),
+		}
 	default:
 		// Leave Value unset for unsupported setting variants.
 	}
@@ -164,6 +170,10 @@ func convertInstanceSettingToStore(setting *v1pb.InstanceSetting) *storepb.Insta
 	case storepb.InstanceSettingKey_TAGS:
 		instanceSetting.Value = &storepb.InstanceSetting_TagsSetting{
 			TagsSetting: convertInstanceTagsSettingToStore(setting.GetTagsSetting()),
+		}
+	case storepb.InstanceSettingKey_NOTIFICATION:
+		instanceSetting.Value = &storepb.InstanceSetting_NotificationSetting{
+			NotificationSetting: convertInstanceNotificationSettingToStore(setting.GetNotificationSetting()),
 		}
 	default:
 		// Keep the default GeneralSetting value
@@ -316,6 +326,52 @@ func convertInstanceTagsSettingToStore(setting *v1pb.InstanceSetting_TagsSetting
 	return &storepb.InstanceTagsSetting{
 		Tags: tags,
 	}
+}
+
+func convertInstanceNotificationSettingFromStore(setting *storepb.InstanceNotificationSetting) *v1pb.InstanceSetting_NotificationSetting {
+	if setting == nil {
+		return nil
+	}
+
+	notificationSetting := &v1pb.InstanceSetting_NotificationSetting{}
+	if setting.Email != nil {
+		notificationSetting.Email = &v1pb.InstanceSetting_NotificationSetting_EmailSetting{
+			Enabled:      setting.Email.Enabled,
+			SmtpHost:     setting.Email.SmtpHost,
+			SmtpPort:     setting.Email.SmtpPort,
+			SmtpUsername: setting.Email.SmtpUsername,
+			SmtpPassword: setting.Email.SmtpPassword,
+			FromEmail:    setting.Email.FromEmail,
+			FromName:     setting.Email.FromName,
+			ReplyTo:      setting.Email.ReplyTo,
+			UseTls:       setting.Email.UseTls,
+			UseSsl:       setting.Email.UseSsl,
+		}
+	}
+	return notificationSetting
+}
+
+func convertInstanceNotificationSettingToStore(setting *v1pb.InstanceSetting_NotificationSetting) *storepb.InstanceNotificationSetting {
+	if setting == nil {
+		return nil
+	}
+
+	notificationSetting := &storepb.InstanceNotificationSetting{}
+	if setting.Email != nil {
+		notificationSetting.Email = &storepb.InstanceNotificationSetting_EmailSetting{
+			Enabled:      setting.Email.Enabled,
+			SmtpHost:     setting.Email.SmtpHost,
+			SmtpPort:     setting.Email.SmtpPort,
+			SmtpUsername: setting.Email.SmtpUsername,
+			SmtpPassword: setting.Email.SmtpPassword,
+			FromEmail:    setting.Email.FromEmail,
+			FromName:     setting.Email.FromName,
+			ReplyTo:      setting.Email.ReplyTo,
+			UseTls:       setting.Email.UseTls,
+			UseSsl:       setting.Email.UseSsl,
+		}
+	}
+	return notificationSetting
 }
 
 func validateInstanceSetting(setting *v1pb.InstanceSetting) error {
