@@ -1,4 +1,5 @@
-import { MoreVerticalIcon, PenLineIcon } from "lucide-react";
+import { MoreVerticalIcon, PenLineIcon, UploadIcon } from "lucide-react";
+import ImportDeadlineCsvDialog from "@/components/ImportDeadlineCsvDialog";
 import { Button } from "@/components/ui/button";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
@@ -16,6 +17,7 @@ const MyAccountSection = () => {
   const user = useCurrentUser();
   const accountDialog = useDialog();
   const passwordDialog = useDialog();
+  const importDialog = useDialog();
 
   const handleEditAccount = () => {
     accountDialog.open();
@@ -23,6 +25,10 @@ const MyAccountSection = () => {
 
   const handleChangePassword = () => {
     passwordDialog.open();
+  };
+
+  const handleImportDeadlineCsv = () => {
+    importDialog.open();
   };
 
   return (
@@ -38,6 +44,10 @@ const MyAccountSection = () => {
             {user?.description && <p className="w-full text-sm text-muted-foreground truncate">{user?.description}</p>}
           </div>
           <div className="flex items-center gap-2 shrink-0">
+            <Button variant="outline" size="sm" onClick={handleImportDeadlineCsv}>
+              <UploadIcon className="w-4 h-4 mr-1.5" />
+              {t("setting.account-section.csv-import.button")}
+            </Button>
             <Button variant="outline" size="sm" onClick={handleEditAccount}>
               <PenLineIcon className="w-4 h-4 mr-1.5" />
               {t("common.edit")}
@@ -65,6 +75,9 @@ const MyAccountSection = () => {
 
       {/* Change Password Dialog */}
       <ChangeMemberPasswordDialog open={passwordDialog.isOpen} onOpenChange={passwordDialog.setOpen} user={user} />
+
+      {/* CSV Import Dialog */}
+      <ImportDeadlineCsvDialog open={importDialog.isOpen} onOpenChange={importDialog.setOpen} />
     </SettingSection>
   );
 };
