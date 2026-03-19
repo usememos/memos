@@ -63,4 +63,10 @@ type Driver interface {
 	ListReactions(ctx context.Context, find *FindReaction) ([]*Reaction, error)
 	GetReaction(ctx context.Context, find *FindReaction) (*Reaction, error)
 	DeleteReaction(ctx context.Context, delete *DeleteReaction) error
+
+	// MemoShare model related methods.
+	CreateMemoShare(ctx context.Context, create *MemoShare) (*MemoShare, error)
+	ListMemoShares(ctx context.Context, find *FindMemoShare) ([]*MemoShare, error)
+	GetMemoShare(ctx context.Context, find *FindMemoShare) (*MemoShare, error)
+	DeleteMemoShare(ctx context.Context, delete *DeleteMemoShare) error
 }

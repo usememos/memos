@@ -6,6 +6,7 @@ export const ROUTES = {
   SETTING: "/setting",
   EXPLORE: "/explore",
   AUTH: "/auth",
+  SHARED_MEMO: "/memos/shares",
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;

@@ -345,6 +345,38 @@ func (s *ConnectServiceHandler) DeleteMemoReaction(ctx context.Context, req *con
 	return connect.NewResponse(resp), nil
 }
 
+func (s *ConnectServiceHandler) CreateMemoShare(ctx context.Context, req *connect.Request[v1pb.CreateMemoShareRequest]) (*connect.Response[v1pb.MemoShare], error) {
+	resp, err := s.APIV1Service.CreateMemoShare(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) ListMemoShares(ctx context.Context, req *connect.Request[v1pb.ListMemoSharesRequest]) (*connect.Response[v1pb.ListMemoSharesResponse], error) {
+	resp, err := s.APIV1Service.ListMemoShares(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) DeleteMemoShare(ctx context.Context, req *connect.Request[v1pb.DeleteMemoShareRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.DeleteMemoShare(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) GetMemoByShare(ctx context.Context, req *connect.Request[v1pb.GetMemoByShareRequest]) (*connect.Response[v1pb.Memo], error) {
+	resp, err := s.APIV1Service.GetMemoByShare(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 // AttachmentService
 
 func (s *ConnectServiceHandler) CreateAttachment(ctx context.Context, req *connect.Request[v1pb.CreateAttachmentRequest]) (*connect.Response[v1pb.Attachment], error) {

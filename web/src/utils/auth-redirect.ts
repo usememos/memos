@@ -4,6 +4,7 @@ import { ROUTES } from "@/router/routes";
 const PUBLIC_ROUTES = [
   ROUTES.AUTH, // Authentication pages
   ROUTES.EXPLORE, // Explore page
+  ROUTES.SHARED_MEMO + "/", // Shared memo pages (share-link viewer)
   "/u/", // User profile pages (dynamic)
   "/memos/", // Individual memo detail pages (dynamic)
 ] as const;

@@ -497,6 +497,16 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c *ec
 		return nil
 	}
 
+	// Check share token fallback: allow access if request carries a valid, non-expired share token
+	// that was issued for this specific memo. This covers attachment requests made from the shared
+	// memo page for private or protected memos.
+	if shareToken := (*c).QueryParam("share_token"); shareToken != "" {
+		ms, err := s.Store.GetMemoShare(ctx, &store.FindMemoShare{UID: &shareToken})
+		if err == nil && ms != nil && !isMemoShareExpired(ms) && ms.MemoID == memo.ID {
+			return nil
+		}
+	}
+
 	user, err := s.getCurrentUser(ctx, c)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").Wrap(err)
@@ -584,4 +594,9 @@ func setMediaHeaders(c *echo.Context, contentType, originalType string) {
 	if strings.HasPrefix(originalType, "image/") || strings.HasPrefix(originalType, "video/") {
 		h.Set("Color-Gamut", "srgb, p3, rec2020")
 	}
+}
+
+// isMemoShareExpired returns true if the share has a defined expiry that has already passed.
+func isMemoShareExpired(ms *store.MemoShare) bool {
+	return ms.ExpiresTs != nil && time.Now().Unix() > *ms.ExpiresTs
 }
