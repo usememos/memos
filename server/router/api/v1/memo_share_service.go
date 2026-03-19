@@ -208,7 +208,7 @@ func stringPointer(s string) *string {
 }
 
 // convertMemoShareFromStore converts a store MemoShare to the proto MemoShare message.
-// name format: memos/{memoUID}/shares/{shareToken}
+// name format: memos/{memoUID}/shares/{shareToken}.
 func convertMemoShareFromStore(ms *store.MemoShare, memoUID string) *v1pb.MemoShare {
 	name := fmt.Sprintf("%s%s/%s%s", MemoNamePrefix, memoUID, MemoShareNamePrefix, ms.UID)
 	pb := &v1pb.MemoShare{

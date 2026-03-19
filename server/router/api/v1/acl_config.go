@@ -34,7 +34,7 @@ var PublicMethods = map[string]struct{}{
 	"/memos.api.v1.MemoService/ListMemoComments": {},
 
 	// Memo sharing - share-token endpoints require no authentication
-	"/memos.api.v1.MemoService/GetMemoByShare":            {},
+	"/memos.api.v1.MemoService/GetMemoByShare": {},
 }
 
 // IsPublicMethod checks if a procedure path is public (no authentication required).
