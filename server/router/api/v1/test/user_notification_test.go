@@ -93,9 +93,9 @@ func TestListUserNotificationsStoresMemoCommentPayloadInInbox(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, inboxes, 1)
 	require.NotNil(t, inboxes[0].Message)
-	require.NotNil(t, inboxes[0].Message.MemoComment)
-	require.NotZero(t, inboxes[0].Message.MemoComment.MemoId)
-	require.NotZero(t, inboxes[0].Message.MemoComment.RelatedMemoId)
+	require.NotNil(t, inboxes[0].Message.GetMemoComment())
+	require.NotZero(t, inboxes[0].Message.GetMemoComment().MemoId)
+	require.NotZero(t, inboxes[0].Message.GetMemoComment().RelatedMemoId)
 }
 
 func TestListUserNotificationsOmitsPayloadWhenMemosDeleted(t *testing.T) {

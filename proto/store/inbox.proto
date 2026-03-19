@@ -12,7 +12,9 @@ message InboxMessage {
 
   // The type of the inbox message.
   Type type = 1;
-  MemoCommentPayload memo_comment = 2;
+  oneof payload {
+    MemoCommentPayload memo_comment = 2;
+  }
 
   enum Type {
     TYPE_UNSPECIFIED = 0;

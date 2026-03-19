@@ -1438,12 +1438,13 @@ func (s *APIV1Service) convertInboxToUserNotification(ctx context.Context, inbox
 }
 
 func (s *APIV1Service) convertUserNotificationPayload(ctx context.Context, message *storepb.InboxMessage) (*v1pb.UserNotification_MemoCommentPayload, error) {
-	if message == nil || message.Type != storepb.InboxMessage_MEMO_COMMENT || message.MemoComment == nil {
+	memoComment := message.GetMemoComment()
+	if message == nil || message.Type != storepb.InboxMessage_MEMO_COMMENT || memoComment == nil {
 		return nil, nil
 	}
 
 	commentMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{
-		ID:             &message.MemoComment.MemoId,
+		ID:             &memoComment.MemoId,
 		ExcludeContent: true,
 	})
 	if err != nil {
@@ -1454,7 +1455,7 @@ func (s *APIV1Service) convertUserNotificationPayload(ctx context.Context, messa
 	}
 
 	relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{
-		ID:             &message.MemoComment.RelatedMemoId,
+		ID:             &memoComment.RelatedMemoId,
 		ExcludeContent: true,
 	})
 	if err != nil {

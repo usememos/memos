@@ -136,9 +136,9 @@ func TestMigrationBackfillsInboxMemoCommentPayload(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, inboxes, 1)
 	require.NotNil(t, inboxes[0].Message)
-	require.NotNil(t, inboxes[0].Message.MemoComment)
-	require.Equal(t, commentMemo.ID, inboxes[0].Message.MemoComment.MemoId)
-	require.Equal(t, relatedMemo.ID, inboxes[0].Message.MemoComment.RelatedMemoId)
+	require.NotNil(t, inboxes[0].Message.GetMemoComment())
+	require.Equal(t, commentMemo.ID, inboxes[0].Message.GetMemoComment().MemoId)
+	require.Equal(t, relatedMemo.ID, inboxes[0].Message.GetMemoComment().RelatedMemoId)
 }
 
 // TestMigrationMultipleReRuns verifies that migration is idempotent

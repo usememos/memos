@@ -654,9 +654,11 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 			Status:     store.UNREAD,
 			Message: &storepb.InboxMessage{
 				Type: storepb.InboxMessage_MEMO_COMMENT,
-				MemoComment: &storepb.InboxMessage_MemoCommentPayload{
-					MemoId:        memo.ID,
-					RelatedMemoId: relatedMemo.ID,
+				Payload: &storepb.InboxMessage_MemoComment{
+					MemoComment: &storepb.InboxMessage_MemoCommentPayload{
+						MemoId:        memo.ID,
+						RelatedMemoId: relatedMemo.ID,
+					},
 				},
 			},
 		}); err != nil {

@@ -71,8 +71,11 @@ func (InboxMessage_Type) EnumDescriptor() ([]byte, []int) {
 type InboxMessage struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The type of the inbox message.
-	Type          InboxMessage_Type                `protobuf:"varint,1,opt,name=type,proto3,enum=memos.store.InboxMessage_Type" json:"type,omitempty"`
-	MemoComment   *InboxMessage_MemoCommentPayload `protobuf:"bytes,2,opt,name=memo_comment,json=memoComment,proto3" json:"memo_comment,omitempty"`
+	Type InboxMessage_Type `protobuf:"varint,1,opt,name=type,proto3,enum=memos.store.InboxMessage_Type" json:"type,omitempty"`
+	// Types that are valid to be assigned to Payload:
+	//
+	//	*InboxMessage_MemoComment
+	Payload       isInboxMessage_Payload `protobuf_oneof:"payload"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -114,12 +117,31 @@ func (x *InboxMessage) GetType() InboxMessage_Type {
 	return InboxMessage_TYPE_UNSPECIFIED
 }
 
-func (x *InboxMessage) GetMemoComment() *InboxMessage_MemoCommentPayload {
+func (x *InboxMessage) GetPayload() isInboxMessage_Payload {
 	if x != nil {
-		return x.MemoComment
+		return x.Payload
 	}
 	return nil
 }
+
+func (x *InboxMessage) GetMemoComment() *InboxMessage_MemoCommentPayload {
+	if x != nil {
+		if x, ok := x.Payload.(*InboxMessage_MemoComment); ok {
+			return x.MemoComment
+		}
+	}
+	return nil
+}
+
+type isInboxMessage_Payload interface {
+	isInboxMessage_Payload()
+}
+
+type InboxMessage_MemoComment struct {
+	MemoComment *InboxMessage_MemoCommentPayload `protobuf:"bytes,2,opt,name=memo_comment,json=memoComment,proto3,oneof"`
+}
+
+func (*InboxMessage_MemoComment) isInboxMessage_Payload() {}
 
 type InboxMessage_MemoCommentPayload struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -177,16 +199,17 @@ var File_store_inbox_proto protoreflect.FileDescriptor
 
 const file_store_inbox_proto_rawDesc = "" +
 	"\n" +
-	"\x11store/inbox.proto\x12\vmemos.store\"\x9a\x02\n" +
+	"\x11store/inbox.proto\x12\vmemos.store\"\xa7\x02\n" +
 	"\fInboxMessage\x122\n" +
-	"\x04type\x18\x01 \x01(\x0e2\x1e.memos.store.InboxMessage.TypeR\x04type\x12O\n" +
-	"\fmemo_comment\x18\x02 \x01(\v2,.memos.store.InboxMessage.MemoCommentPayloadR\vmemoComment\x1aU\n" +
+	"\x04type\x18\x01 \x01(\x0e2\x1e.memos.store.InboxMessage.TypeR\x04type\x12Q\n" +
+	"\fmemo_comment\x18\x02 \x01(\v2,.memos.store.InboxMessage.MemoCommentPayloadH\x00R\vmemoComment\x1aU\n" +
 	"\x12MemoCommentPayload\x12\x17\n" +
 	"\amemo_id\x18\x01 \x01(\x05R\x06memoId\x12&\n" +
 	"\x0frelated_memo_id\x18\x02 \x01(\x05R\rrelatedMemoId\".\n" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\x10\n" +
-	"\fMEMO_COMMENT\x10\x01B\x95\x01\n" +
+	"\fMEMO_COMMENT\x10\x01B\t\n" +
+	"\apayloadB\x95\x01\n" +
 	"\x0fcom.memos.storeB\n" +
 	"InboxProtoP\x01Z)github.com/usememos/memos/proto/gen/store\xa2\x02\x03MSX\xaa\x02\vMemos.Store\xca\x02\vMemos\\Store\xe2\x02\x17Memos\\Store\\GPBMetadata\xea\x02\fMemos::Storeb\x06proto3"
 
@@ -223,6 +246,9 @@ func init() { file_store_inbox_proto_init() }
 func file_store_inbox_proto_init() {
 	if File_store_inbox_proto != nil {
 		return
+	}
+	file_store_inbox_proto_msgTypes[0].OneofWrappers = []any{
+		(*InboxMessage_MemoComment)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

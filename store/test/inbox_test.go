@@ -338,26 +338,28 @@ func TestInboxMessagePayload(t *testing.T) {
 		Status:     store.UNREAD,
 		Message: &storepb.InboxMessage{
 			Type: storepb.InboxMessage_MEMO_COMMENT,
-			MemoComment: &storepb.InboxMessage_MemoCommentPayload{
-				MemoId:        memoID,
-				RelatedMemoId: relatedMemoID,
+			Payload: &storepb.InboxMessage_MemoComment{
+				MemoComment: &storepb.InboxMessage_MemoCommentPayload{
+					MemoId:        memoID,
+					RelatedMemoId: relatedMemoID,
+				},
 			},
 		},
 	})
 	require.NoError(t, err)
 	require.NotNil(t, inbox.Message)
 	require.Equal(t, storepb.InboxMessage_MEMO_COMMENT, inbox.Message.Type)
-	require.NotNil(t, inbox.Message.MemoComment)
-	require.Equal(t, memoID, inbox.Message.MemoComment.MemoId)
-	require.Equal(t, relatedMemoID, inbox.Message.MemoComment.RelatedMemoId)
+	require.NotNil(t, inbox.Message.GetMemoComment())
+	require.Equal(t, memoID, inbox.Message.GetMemoComment().MemoId)
+	require.Equal(t, relatedMemoID, inbox.Message.GetMemoComment().RelatedMemoId)
 
 	// List and verify payload is preserved
 	inboxes, err := ts.ListInboxes(ctx, &store.FindInbox{ReceiverID: &user.ID})
 	require.NoError(t, err)
 	require.Len(t, inboxes, 1)
-	require.NotNil(t, inboxes[0].Message.MemoComment)
-	require.Equal(t, memoID, inboxes[0].Message.MemoComment.MemoId)
-	require.Equal(t, relatedMemoID, inboxes[0].Message.MemoComment.RelatedMemoId)
+	require.NotNil(t, inboxes[0].Message.GetMemoComment())
+	require.Equal(t, memoID, inboxes[0].Message.GetMemoComment().MemoId)
+	require.Equal(t, relatedMemoID, inboxes[0].Message.GetMemoComment().RelatedMemoId)
 
 	ts.Close()
 }
@@ -468,9 +470,11 @@ func TestInboxMessageTypeFilterWithPayload(t *testing.T) {
 		Status:     store.UNREAD,
 		Message: &storepb.InboxMessage{
 			Type: storepb.InboxMessage_MEMO_COMMENT,
-			MemoComment: &storepb.InboxMessage_MemoCommentPayload{
-				MemoId:        memoID,
-				RelatedMemoId: 654,
+			Payload: &storepb.InboxMessage_MemoComment{
+				MemoComment: &storepb.InboxMessage_MemoCommentPayload{
+					MemoId:        memoID,
+					RelatedMemoId: 654,
+				},
 			},
 		},
 	})
@@ -484,9 +488,11 @@ func TestInboxMessageTypeFilterWithPayload(t *testing.T) {
 		Status:     store.UNREAD,
 		Message: &storepb.InboxMessage{
 			Type: storepb.InboxMessage_TYPE_UNSPECIFIED,
-			MemoComment: &storepb.InboxMessage_MemoCommentPayload{
-				MemoId:        otherMemoID,
-				RelatedMemoId: 987,
+			Payload: &storepb.InboxMessage_MemoComment{
+				MemoComment: &storepb.InboxMessage_MemoCommentPayload{
+					MemoId:        otherMemoID,
+					RelatedMemoId: 987,
+				},
 			},
 		},
 	})
@@ -500,8 +506,8 @@ func TestInboxMessageTypeFilterWithPayload(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Len(t, inboxes, 1)
-	require.NotNil(t, inboxes[0].Message.MemoComment)
-	require.Equal(t, memoID, inboxes[0].Message.MemoComment.MemoId)
+	require.NotNil(t, inboxes[0].Message.GetMemoComment())
+	require.Equal(t, memoID, inboxes[0].Message.GetMemoComment().MemoId)
 
 	ts.Close()
 }
