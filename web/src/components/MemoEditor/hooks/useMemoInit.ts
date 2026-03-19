@@ -21,10 +21,18 @@ export const useMemoInit = ({ editorRef, memo, cacheKey, username, autoFocus, de
     if (initializedRef.current) return;
     initializedRef.current = true;
 
+    const cacheStorageKey = cacheService.key(username, cacheKey);
+    const cachedContent = cacheService.load(cacheStorageKey);
+
     if (memo) {
-      dispatch(actions.initMemo(memoService.fromMemo(memo)));
+      const initialMemo = memoService.fromMemo(memo);
+      dispatch(
+        actions.initMemo({
+          ...initialMemo,
+          content: cachedContent || initialMemo.content,
+        }),
+      );
     } else {
-      const cachedContent = cacheService.load(cacheService.key(username, cacheKey));
       if (cachedContent) {
         dispatch(actions.updateContent(cachedContent));
       }

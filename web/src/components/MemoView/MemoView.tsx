@@ -31,6 +31,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
 
   const { previewState, openPreview, setPreviewOpen } = useImagePreview();
   const { unpinMemo } = useMemoActions(memoData);
+  const editCacheKey = `inline-memo-editor-${memoData.name}-${memoData.updateTime}`;
 
   const closeEditor = () => setShowEditor(false);
   const openEditor = () => setShowEditor(true);
@@ -62,16 +63,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   );
 
   if (showEditor) {
-    return (
-      <MemoEditor
-        autoFocus
-        className="mb-2"
-        cacheKey={`inline-memo-editor-${memoData.name}`}
-        memo={memoData}
-        onConfirm={closeEditor}
-        onCancel={closeEditor}
-      />
-    );
+    return <MemoEditor autoFocus className="mb-2" cacheKey={editCacheKey} memo={memoData} onConfirm={closeEditor} onCancel={closeEditor} />;
   }
 
   const article = (
