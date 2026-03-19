@@ -2190,6 +2190,8 @@ components:
                     $ref: '#/components/schemas/InstanceSetting_StorageSetting'
                 memoRelatedSetting:
                     $ref: '#/components/schemas/InstanceSetting_MemoRelatedSetting'
+                tagsSetting:
+                    $ref: '#/components/schemas/InstanceSetting_TagsSetting'
             description: An instance setting resource.
         InstanceSetting_GeneralSetting:
             type: object
@@ -2271,6 +2273,22 @@ components:
                         - $ref: '#/components/schemas/StorageSetting_S3Config'
                     description: The S3 config.
             description: Storage configuration settings for instance attachments.
+        InstanceSetting_TagMetadata:
+            type: object
+            properties:
+                backgroundColor:
+                    allOf:
+                        - $ref: '#/components/schemas/Color'
+                    description: Background color for the tag label.
+            description: Metadata for a tag.
+        InstanceSetting_TagsSetting:
+            type: object
+            properties:
+                tags:
+                    type: object
+                    additionalProperties:
+                        $ref: '#/components/schemas/InstanceSetting_TagMetadata'
+            description: Tag metadata configuration.
         ListAllUserStatsResponse:
             type: object
             properties:
@@ -2986,8 +3004,6 @@ components:
                     $ref: '#/components/schemas/UserSetting_GeneralSetting'
                 webhooksSetting:
                     $ref: '#/components/schemas/UserSetting_WebhooksSetting'
-                tagsSetting:
-                    $ref: '#/components/schemas/UserSetting_TagsSetting'
             description: User settings message
         UserSetting_GeneralSetting:
             type: object
@@ -3005,22 +3021,6 @@ components:
                          This references a CSS file in the web/public/themes/ directory.
                          If not set, the default theme will be used.
             description: General user settings configuration.
-        UserSetting_TagMetadata:
-            type: object
-            properties:
-                backgroundColor:
-                    allOf:
-                        - $ref: '#/components/schemas/Color'
-                    description: Background color for the tag label.
-            description: Metadata for a tag.
-        UserSetting_TagsSetting:
-            type: object
-            properties:
-                tags:
-                    type: object
-                    additionalProperties:
-                        $ref: '#/components/schemas/UserSetting_TagMetadata'
-            description: User tag metadata configuration.
         UserSetting_WebhooksSetting:
             type: object
             properties:

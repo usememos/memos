@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	colorpb "google.golang.org/genproto/googleapis/type/color"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 )
@@ -186,6 +188,22 @@ func TestGetInstanceSetting(t *testing.T) {
 		require.NotNil(t, memoRelatedSetting)
 	})
 
+	t.Run("GetInstanceSetting - tags setting", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		req := &v1pb.GetInstanceSettingRequest{
+			Name: "instance/settings/TAGS",
+		}
+		resp, err := ts.Service.GetInstanceSetting(ctx, req)
+
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.Equal(t, "instance/settings/TAGS", resp.Name)
+		require.NotNil(t, resp.GetTagsSetting())
+		require.Empty(t, resp.GetTagsSetting().GetTags())
+	})
+
 	t.Run("GetInstanceSetting - invalid setting name", func(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
@@ -200,5 +218,69 @@ func TestGetInstanceSetting(t *testing.T) {
 		// Should return an error
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "invalid instance setting name")
+	})
+}
+
+func TestUpdateInstanceSetting(t *testing.T) {
+	ctx := context.Background()
+
+	t.Run("UpdateInstanceSetting - tags setting", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+
+		resp, err := ts.Service.UpdateInstanceSetting(ts.CreateUserContext(ctx, hostUser.ID), &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/TAGS",
+				Value: &v1pb.InstanceSetting_TagsSetting_{
+					TagsSetting: &v1pb.InstanceSetting_TagsSetting{
+						Tags: map[string]*v1pb.InstanceSetting_TagMetadata{
+							"bug": {
+								BackgroundColor: &colorpb.Color{
+									Red:   0.9,
+									Green: 0.1,
+									Blue:  0.1,
+								},
+							},
+						},
+					},
+				},
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"tags"}},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp.GetTagsSetting())
+		require.Contains(t, resp.GetTagsSetting().GetTags(), "bug")
+	})
+
+	t.Run("UpdateInstanceSetting - invalid tags color", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+
+		_, err = ts.Service.UpdateInstanceSetting(ts.CreateUserContext(ctx, hostUser.ID), &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/TAGS",
+				Value: &v1pb.InstanceSetting_TagsSetting_{
+					TagsSetting: &v1pb.InstanceSetting_TagsSetting{
+						Tags: map[string]*v1pb.InstanceSetting_TagMetadata{
+							"bug": {
+								BackgroundColor: &colorpb.Color{
+									Red:   1.2,
+									Green: 0.1,
+									Blue:  0.1,
+								},
+							},
+						},
+					},
+				},
+			},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "invalid instance setting")
 	})
 }
