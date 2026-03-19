@@ -7,6 +7,7 @@ import {
   Edit3Icon,
   FileTextIcon,
   LinkIcon,
+  MessageSquarePlusIcon,
   MoreVerticalIcon,
   TrashIcon,
 } from "lucide-react";
@@ -47,6 +48,7 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
     handleCopyContent,
     handleDeleteMemoClick,
     confirmDeleteMemo,
+    handleCreateFollowUp
   } = useMemoActionHandlers({
     memo,
     onEdit: props.onEdit,
@@ -75,6 +77,14 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
               {t("common.edit")}
             </DropdownMenuItem>
           </>
+        )}
+
+        {/* Create Follow-up (non-archived) */}
+        {!isArchived && (
+          <DropdownMenuItem onClick={handleCreateFollowUp}>
+            <MessageSquarePlusIcon className="w-4 h-auto" />
+            {t("memo.create-followup")}
+          </DropdownMenuItem>
         )}
 
         {/* Copy submenu (non-archived) */}

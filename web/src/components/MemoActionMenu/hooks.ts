@@ -88,6 +88,26 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
     toast.success(t("message.succeed-copy-link"));
   }, [memo.name, t, profile.instanceUrl]);
 
+
+  const handleCreateFollowUp = useCallback(() => {
+    let host = profile.instanceUrl;
+    if (host === "") {
+      host = window.location.origin;
+    }
+
+    // const memoLink = `${host}/${memo.name}`;
+
+    navigateTo("/", {
+      state: {
+        // followUpContent: `Following up on: ${memoLink}\n\n`,
+        followUpParent: memo.name,
+      },
+    });
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+  }, [memo.name, profile.instanceUrl, navigateTo]);
+
   const handleCopyContent = useCallback(() => {
     copy(memo.content);
     toast.success(t("message.succeed-copy-content"));
@@ -122,5 +142,6 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
     handleCopyContent,
     handleDeleteMemoClick,
     confirmDeleteMemo,
+    handleCreateFollowUp
   };
 };
