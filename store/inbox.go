@@ -21,7 +21,6 @@ func (s InboxStatus) String() string {
 }
 
 // Inbox represents a notification in a user's inbox.
-// It connects activities to users who should be notified.
 type Inbox struct {
 	ID         int32
 	CreatedTs  int64

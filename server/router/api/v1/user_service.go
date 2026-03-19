@@ -1414,7 +1414,7 @@ func (s *APIV1Service) convertInboxToUserNotification(ctx context.Context, inbox
 		notification.Status = v1pb.UserNotification_STATUS_UNSPECIFIED
 	}
 
-	// Extract notification type and activity ID from inbox message
+	// Extract notification type and payload from the inbox message.
 	if inbox.Message != nil {
 		switch inbox.Message.Type {
 		case storepb.InboxMessage_MEMO_COMMENT:
@@ -1438,22 +1438,13 @@ func (s *APIV1Service) convertInboxToUserNotification(ctx context.Context, inbox
 }
 
 func (s *APIV1Service) convertUserNotificationPayload(ctx context.Context, message *storepb.InboxMessage) (*v1pb.UserNotification_MemoCommentPayload, error) {
-	if message == nil || message.Type != storepb.InboxMessage_MEMO_COMMENT || message.ActivityId == nil {
-		return nil, nil
-	}
-
-	activity, err := s.Store.GetActivity(ctx, &store.FindActivity{
-		ID: message.ActivityId,
-	})
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get activity")
-	}
-	if activity == nil || activity.Payload == nil || activity.Payload.MemoComment == nil {
+	memoComment := message.GetMemoComment()
+	if message == nil || message.Type != storepb.InboxMessage_MEMO_COMMENT || memoComment == nil {
 		return nil, nil
 	}
 
 	commentMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{
-		ID:             &activity.Payload.MemoComment.MemoId,
+		ID:             &memoComment.MemoId,
 		ExcludeContent: true,
 	})
 	if err != nil {
@@ -1464,7 +1455,7 @@ func (s *APIV1Service) convertUserNotificationPayload(ctx context.Context, messa
 	}
 
 	relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{
-		ID:             &activity.Payload.MemoComment.RelatedMemoId,
+		ID:             &memoComment.RelatedMemoId,
 		ExcludeContent: true,
 	})
 	if err != nil {

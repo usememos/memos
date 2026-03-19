@@ -13,10 +13,6 @@ type Driver interface {
 
 	IsInitialized(ctx context.Context) (bool, error)
 
-	// Activity model related methods.
-	CreateActivity(ctx context.Context, create *Activity) (*Activity, error)
-	ListActivities(ctx context.Context, find *FindActivity) ([]*Activity, error)
-
 	// Attachment model related methods.
 	CreateAttachment(ctx context.Context, create *Attachment) (*Attachment, error)
 	ListAttachments(ctx context.Context, find *FindAttachment) ([]*Attachment, error)

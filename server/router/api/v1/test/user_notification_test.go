@@ -55,7 +55,7 @@ func TestListUserNotificationsIncludesMemoCommentPayload(t *testing.T) {
 	require.Equal(t, memo.Name, notification.GetMemoComment().RelatedMemo)
 }
 
-func TestListUserNotificationsOmitsPayloadWhenActivityMissing(t *testing.T) {
+func TestListUserNotificationsStoresMemoCommentPayloadInInbox(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -93,17 +93,9 @@ func TestListUserNotificationsOmitsPayloadWhenActivityMissing(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, inboxes, 1)
 	require.NotNil(t, inboxes[0].Message)
-	require.NotNil(t, inboxes[0].Message.ActivityId)
-
-	_, err = ts.Store.GetDriver().GetDB().ExecContext(ctx, "DELETE FROM activity WHERE id = ?", *inboxes[0].Message.ActivityId)
-	require.NoError(t, err)
-
-	resp, err := ts.Service.ListUserNotifications(ownerCtx, &apiv1.ListUserNotificationsRequest{
-		Parent: fmt.Sprintf("users/%d", owner.ID),
-	})
-	require.NoError(t, err)
-	require.Len(t, resp.Notifications, 1)
-	require.Nil(t, resp.Notifications[0].GetMemoComment())
+	require.NotNil(t, inboxes[0].Message.GetMemoComment())
+	require.NotZero(t, inboxes[0].Message.GetMemoComment().MemoId)
+	require.NotZero(t, inboxes[0].Message.GetMemoComment().RelatedMemoId)
 }
 
 func TestListUserNotificationsOmitsPayloadWhenMemosDeleted(t *testing.T) {

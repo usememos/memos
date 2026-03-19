@@ -67,16 +67,6 @@ CREATE TABLE attachment (
   payload TEXT NOT NULL DEFAULT '{}'
 );
 
--- activity
-CREATE TABLE activity (
-  id SERIAL PRIMARY KEY,
-  creator_id INTEGER NOT NULL,
-  created_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
-  type TEXT NOT NULL DEFAULT '',
-  level TEXT NOT NULL DEFAULT 'INFO',
-  payload JSONB NOT NULL DEFAULT '{}'
-);
-
 -- idp
 CREATE TABLE idp (
   id SERIAL PRIMARY KEY,
