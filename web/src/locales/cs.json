@@ -407,7 +407,6 @@
       "disable-password-login": "Zakázat přihlašování heslem",
       "disable-password-login-final-warning": "Pokud víte, co děláte, zadejte \"CONFIRM\".",
       "disable-password-login-warning": "Tímto zakážete přihlašování heslem pro všechny uživatele. Bez obnovení tohoto nastavení v databázi není možné se přihlásit, pokud selžou vámi nakonfigurovaní poskytovatelé identit. Při odebírání poskytovatele identit budete muset být také velmi opatrní.",
-      "disable-public-memos": "Zakázat veřejné poznámky",
       "display-with-updated-time": "Zobrazení s časem aktualizace",
       "enable-auto-compact": "Povolit automatické kompaktní zobrazení",
       "enable-double-click-to-edit": "Povolit dvojklik pro editaci",

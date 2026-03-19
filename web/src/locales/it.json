@@ -407,7 +407,6 @@
       "disable-password-login": "Disabilita login password",
       "disable-password-login-final-warning": "Digita \"CONFIRM\" se sai cosa stai facendo.",
       "disable-password-login-warning": "Questo disattiverà il login con password per tutti gli utenti. Se i provider di identità smettono di funzionare, non potrai accedere senza ripristinare manualmente l'impostazione nel database. Fai molta attenzione quando rimuovi un provider di identità.",
-      "disable-public-memos": "Disabilita memo pubblici",
       "display-with-updated-time": "Mostra data/ora ultimo aggiornamento",
       "enable-auto-compact": "Abilita auto-compatto",
       "enable-double-click-to-edit": "Abilita doppio click per modificare",

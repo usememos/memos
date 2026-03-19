@@ -407,7 +407,6 @@
       "disable-password-login": "تعطيل تسجيل الدخول بكلمة المرور",
       "disable-password-login-final-warning": "يرجى كتابة \"CONFIRM\" إذا كنت متأكدًا مما تفعله.",
       "disable-password-login-warning": "سيؤدي ذلك إلى تعطيل تسجيل الدخول بكلمة المرور لجميع المستخدمين. لا يمكن تسجيل الدخول بدون التراجع عن هذا الإعداد في قاعدة البيانات إذا فشل مزودو الهوية. يجب أن تكون حذرًا عند إزالة مزود هوية",
-      "disable-public-memos": "تعطيل المذكرات العامة",
       "display-with-updated-time": "العرض مع وقت التحديث",
       "enable-auto-compact": "تمكين الضغط التلقائي",
       "enable-double-click-to-edit": "تمكين النقر المزدوج للتحرير",

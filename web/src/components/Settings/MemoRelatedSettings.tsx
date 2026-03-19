@@ -71,13 +71,6 @@ const MemoRelatedSettings = () => {
   return (
     <SettingSection>
       <SettingGroup title={t("setting.memo-related-settings.title")}>
-        <SettingRow label={t("setting.system-section.disable-public-memos")}>
-          <Switch
-            checked={memoRelatedSetting.disallowPublicVisibility}
-            onCheckedChange={(checked) => updatePartialSetting({ disallowPublicVisibility: checked })}
-          />
-        </SettingRow>
-
         <SettingRow label={t("setting.system-section.display-with-updated-time")}>
           <Switch
             checked={memoRelatedSetting.displayWithUpdateTime}

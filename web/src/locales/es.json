@@ -407,7 +407,6 @@
       "disable-password-login": "Desactivar inicio de sesión con contraseña",
       "disable-password-login-final-warning": "Por favor escribe \"CONFIRM\" si sabes lo que haces.",
       "disable-password-login-warning": "Esto deshabilitará el inicio de sesión con contraseña para todos los usuarios. No será posible iniciar sesión sin revertir esta configuración en la base de datos si tus proveedores de identidad fallan. Debes tener especial cuidado al eliminar un proveedor de identidad",
-      "disable-public-memos": "Desactivar memos públicos",
       "display-with-updated-time": "Mostrar con hora actualizada",
       "enable-auto-compact": "Habilitar auto compactación",
       "enable-double-click-to-edit": "Habilitar doble clic para editar",

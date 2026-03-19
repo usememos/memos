@@ -682,8 +682,6 @@ func (x *StorageS3Config) GetUsePathStyle() bool {
 
 type InstanceMemoRelatedSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// disallow_public_visibility disallows set memo as public visibility.
-	DisallowPublicVisibility bool `protobuf:"varint,1,opt,name=disallow_public_visibility,json=disallowPublicVisibility,proto3" json:"disallow_public_visibility,omitempty"`
 	// display_with_update_time orders and displays memo with update time.
 	DisplayWithUpdateTime bool `protobuf:"varint,2,opt,name=display_with_update_time,json=displayWithUpdateTime,proto3" json:"display_with_update_time,omitempty"`
 	// content_length_limit is the limit of content length. Unit is byte.
@@ -724,13 +722,6 @@ func (x *InstanceMemoRelatedSetting) ProtoReflect() protoreflect.Message {
 // Deprecated: Use InstanceMemoRelatedSetting.ProtoReflect.Descriptor instead.
 func (*InstanceMemoRelatedSetting) Descriptor() ([]byte, []int) {
 	return file_store_instance_setting_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *InstanceMemoRelatedSetting) GetDisallowPublicVisibility() bool {
-	if x != nil {
-		return x.DisallowPublicVisibility
-	}
-	return false
 }
 
 func (x *InstanceMemoRelatedSetting) GetDisplayWithUpdateTime() bool {
@@ -1057,9 +1048,8 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\bendpoint\x18\x03 \x01(\tR\bendpoint\x12\x16\n" +
 	"\x06region\x18\x04 \x01(\tR\x06region\x12\x16\n" +
 	"\x06bucket\x18\x05 \x01(\tR\x06bucket\x12$\n" +
-	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\"\x9c\x02\n" +
-	"\x1aInstanceMemoRelatedSetting\x12<\n" +
-	"\x1adisallow_public_visibility\x18\x01 \x01(\bR\x18disallowPublicVisibility\x127\n" +
+	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\"\xde\x01\n" +
+	"\x1aInstanceMemoRelatedSetting\x127\n" +
 	"\x18display_with_update_time\x18\x02 \x01(\bR\x15displayWithUpdateTime\x120\n" +
 	"\x14content_length_limit\x18\x03 \x01(\x05R\x12contentLengthLimit\x127\n" +
 	"\x18enable_double_click_edit\x18\x04 \x01(\bR\x15enableDoubleClickEdit\x12\x1c\n" +

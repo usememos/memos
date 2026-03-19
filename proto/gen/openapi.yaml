@@ -2345,9 +2345,6 @@ components:
         InstanceSetting_MemoRelatedSetting:
             type: object
             properties:
-                disallowPublicVisibility:
-                    type: boolean
-                    description: disallow_public_visibility disallows set memo as public visibility.
                 displayWithUpdateTime:
                     type: boolean
                     description: display_with_update_time orders and displays memo with update time.

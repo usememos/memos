@@ -407,7 +407,6 @@
       "disable-password-login": "Slå av passordinnlogging",
       "disable-password-login-final-warning": "Skriv \"CONFIRM\" hvis du vet hva du gjør.",
       "disable-password-login-warning": "Dette slår av passordinnlogging for alle brukere. Dersom de konfigurerte identitetsleverandørene mislykkes er det ikke mulig å logge inn uten å tilbakestille denne innstillingen i databasen. Du må også være ekstra forsiktig når du fjerner en identitetsleverandør.",
-      "disable-public-memos": "Slå av offentlige memoer",
       "display-with-updated-time": "Vis med oppdatert tid",
       "enable-auto-compact": "Slå på automatisk kompakt visning",
       "enable-double-click-to-edit": "Slå på dobbeltklikk for å redigere",
