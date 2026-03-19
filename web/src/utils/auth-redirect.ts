@@ -53,6 +53,7 @@ export function redirectOnAuthFailure(
   },
 ): void {
   const currentPath = window.location.pathname;
+  const currentRedirectPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
 
   // Already on auth page, nothing to do.
   if (currentPath.startsWith(ROUTES.AUTH)) {
@@ -65,5 +66,10 @@ export function redirectOnAuthFailure(
   }
 
   clearAccessToken();
-  window.location.replace(buildAuthRoute(options));
+  window.location.replace(
+    buildAuthRoute({
+      ...options,
+      redirect: options?.redirect ?? currentRedirectPath,
+    }),
+  );
 }
