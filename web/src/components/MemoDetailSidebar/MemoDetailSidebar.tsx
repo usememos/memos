@@ -1,10 +1,15 @@
 import { create } from "@bufbuild/protobuf";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { isEqual } from "lodash-es";
-import { CheckCircleIcon, Code2Icon, HashIcon, LinkIcon } from "lucide-react";
+import { CheckCircleIcon, Code2Icon, HashIcon, LinkIcon, Share2Icon } from "lucide-react";
+import { useState } from "react";
+import MemoSharePanel from "@/components/MemoSharePanel";
+import { Button } from "@/components/ui/button";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
 import { Memo, Memo_PropertySchema, MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import { isSuperUser } from "@/utils/user";
 import MemoRelationForceGraph from "../MemoRelationForceGraph";
 
 interface Props {
@@ -19,12 +24,25 @@ const SectionLabel = ({ children }: { children: React.ReactNode }) => (
 
 const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
   const t = useTranslate();
+  const currentUser = useCurrentUser();
+  const [sharePanelOpen, setSharePanelOpen] = useState(false);
   const property = create(Memo_PropertySchema, memo.property || {});
   const hasSpecialProperty = property.hasLink || property.hasTaskList || property.hasCode;
   const hasReferenceRelations = memo.relations.some((r) => r.type === MemoRelation_Type.REFERENCE);
+  const canManageShares = !memo.parent && (memo.creator === currentUser?.name || isSuperUser(currentUser));
 
   return (
     <aside className={cn("relative w-full h-auto max-h-screen overflow-auto flex flex-col gap-5", className)}>
+      {canManageShares && (
+        <div className="w-full space-y-2">
+          <SectionLabel>{t("memo-share.section-label")}</SectionLabel>
+          <Button variant="outline" className="w-full justify-start gap-2" onClick={() => setSharePanelOpen(true)}>
+            <Share2Icon className="w-4 h-4" />
+            {t("memo-share.open-panel")}
+          </Button>
+        </div>
+      )}
+
       {hasReferenceRelations && (
         <div className="w-full space-y-2">
           <div className="flex items-center gap-1.5">
@@ -94,6 +112,8 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
           </div>
         </div>
       )}
+
+      {sharePanelOpen && <MemoSharePanel memoName={memo.name} open={sharePanelOpen} onClose={() => setSharePanelOpen(false)} />}
     </aside>
   );
 };

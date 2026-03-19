@@ -468,5 +468,30 @@
     "connected": "Live updates active",
     "connecting": "Connecting to live updates...",
     "disconnected": "Live updates unavailable"
+  },
+  "memo-share": {
+    "share": "Share",
+    "section-label": "Sharing",
+    "open-panel": "Manage share links",
+    "title": "Share this memo",
+    "active-links": "Active share links",
+    "no-links": "No share links yet. Create one below.",
+    "create-link": "Create new link",
+    "copy": "Copy link",
+    "copied": "Copied!",
+    "revoke": "Revoke",
+    "expiry-label": "Expires",
+    "expiry-never": "Never",
+    "expiry-1-day": "1 day",
+    "expiry-7-days": "7 days",
+    "expiry-30-days": "30 days",
+    "never-expires": "Never expires",
+    "expires-on": "Expires {{date}}",
+    "creating": "Creating…",
+    "revoked": "Share link revoked",
+    "revoke-failed": "Failed to revoke link",
+    "create-failed": "Failed to create share link",
+    "invalid-link": "This link is invalid or has expired.",
+    "shared-by": "Shared by {{creator}}"
   }
 }

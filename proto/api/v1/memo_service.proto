@@ -103,6 +103,29 @@ service MemoService {
     option (google.api.http) = {delete: "/api/v1/{name=memos/*/reactions/*}"};
     option (google.api.method_signature) = "name";
   }
+  // CreateMemoShare creates a share link for a memo. Requires authentication as the memo creator.
+  rpc CreateMemoShare(CreateMemoShareRequest) returns (MemoShare) {
+    option (google.api.http) = {
+      post: "/api/v1/{parent=memos/*}/shares"
+      body: "memo_share"
+    };
+    option (google.api.method_signature) = "parent,memo_share";
+  }
+  // ListMemoShares lists all share links for a memo. Requires authentication as the memo creator.
+  rpc ListMemoShares(ListMemoSharesRequest) returns (ListMemoSharesResponse) {
+    option (google.api.http) = {get: "/api/v1/{parent=memos/*}/shares"};
+    option (google.api.method_signature) = "parent";
+  }
+  // DeleteMemoShare revokes a share link. Requires authentication as the memo creator.
+  rpc DeleteMemoShare(DeleteMemoShareRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{name=memos/*/shares/*}"};
+    option (google.api.method_signature) = "name";
+  }
+  // GetMemoByShare resolves a share token to its memo. No authentication required.
+  // Returns NOT_FOUND if the token is invalid or expired.
+  rpc GetMemoByShare(GetMemoByShareRequest) returns (Memo) {
+    option (google.api.http) = {get: "/api/v1/shares/{share_id}"};
+  }
 }
 
 enum Visibility {
@@ -510,4 +533,65 @@ message DeleteMemoReactionRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/Reaction"}
   ];
+}
+
+// MemoShare is an access grant that permits read-only access to a memo via an opaque bearer token.
+message MemoShare {
+  option (google.api.resource) = {
+    type: "memos.api.v1/MemoShare"
+    pattern: "memos/{memo}/shares/{share}"
+    singular: "share"
+    plural: "shares"
+  };
+
+  // The resource name of the share. Format: memos/{memo}/shares/{share}
+  // The {share} segment is the opaque token used in the share URL.
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // Output only. When this share link was created.
+  google.protobuf.Timestamp create_time = 2 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Optional. When set, the share link stops working after this time.
+  // If unset, the link never expires.
+  optional google.protobuf.Timestamp expire_time = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message CreateMemoShareRequest {
+  // Required. The resource name of the memo to share.
+  // Format: memos/{memo}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
+
+  // Required. The share to create.
+  MemoShare memo_share = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListMemoSharesRequest {
+  // Required. The resource name of the memo.
+  // Format: memos/{memo}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
+}
+
+message ListMemoSharesResponse {
+  // The list of share links.
+  repeated MemoShare memo_shares = 1;
+}
+
+message DeleteMemoShareRequest {
+  // Required. The resource name of the share to delete.
+  // Format: memos/{memo}/shares/{share}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/MemoShare"}
+  ];
+}
+
+message GetMemoByShareRequest {
+  // Required. The share token extracted from the share URL (/s/{share_id}).
+  string share_id = 1 [(google.api.field_behavior) = REQUIRED];
 }

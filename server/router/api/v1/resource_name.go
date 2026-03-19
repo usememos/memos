@@ -17,6 +17,7 @@ const (
 	InstanceSettingNamePrefix  = "instance/settings/"
 	UserNamePrefix             = "users/"
 	MemoNamePrefix             = "memos/"
+	MemoShareNamePrefix        = "shares/"
 	AttachmentNamePrefix       = "attachments/"
 	ReactionNamePrefix         = "reactions/"
 	InboxNamePrefix            = "inboxes/"
