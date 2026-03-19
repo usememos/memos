@@ -289,9 +289,10 @@ func StartMemosContainer(ctx context.Context, cfg MemosContainerConfig) (testcon
 		if os.Getenv("MEMOS_TEST_IMAGE_BUILT") == "1" {
 			req.Image = "memos-test:local"
 		} else {
+			req.Image = ""
 			req.FromDockerfile = testcontainers.FromDockerfile{
 				Context:    "../../",
-				Dockerfile: "Dockerfile",
+				Dockerfile: "scripts/Dockerfile",
 			}
 		}
 	}
