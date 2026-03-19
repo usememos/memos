@@ -407,7 +407,6 @@
       "disable-password-login": "Wachtwoordlogin uitzetten",
       "disable-password-login-final-warning": "Typ \"CONFIRM\" als je zeker weet wat je doet.",
       "disable-password-login-warning": "Als je dit uitzet, kan je niet meer inloggen met een wachtwoord, zonder de database aan te passen. Als je inlogprovider niet werkt, kan je memos niet in.",
-      "disable-public-memos": "Openbare memos uitzetten",
       "display-with-updated-time": "Weergeven met bewerkte tijd",
       "enable-auto-compact": "Automatisch compact inschakelen",
       "enable-double-click-to-edit": "Dubbelklik om te bewerken inschakelen",

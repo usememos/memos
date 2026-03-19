@@ -277,11 +277,10 @@ func convertInstanceMemoRelatedSettingFromStore(setting *storepb.InstanceMemoRel
 		return nil
 	}
 	return &v1pb.InstanceSetting_MemoRelatedSetting{
-		DisallowPublicVisibility: setting.DisallowPublicVisibility,
-		DisplayWithUpdateTime:    setting.DisplayWithUpdateTime,
-		ContentLengthLimit:       setting.ContentLengthLimit,
-		EnableDoubleClickEdit:    setting.EnableDoubleClickEdit,
-		Reactions:                setting.Reactions,
+		DisplayWithUpdateTime: setting.DisplayWithUpdateTime,
+		ContentLengthLimit:    setting.ContentLengthLimit,
+		EnableDoubleClickEdit: setting.EnableDoubleClickEdit,
+		Reactions:             setting.Reactions,
 	}
 }
 
@@ -290,11 +289,10 @@ func convertInstanceMemoRelatedSettingToStore(setting *v1pb.InstanceSetting_Memo
 		return nil
 	}
 	return &storepb.InstanceMemoRelatedSetting{
-		DisallowPublicVisibility: setting.DisallowPublicVisibility,
-		DisplayWithUpdateTime:    setting.DisplayWithUpdateTime,
-		ContentLengthLimit:       setting.ContentLengthLimit,
-		EnableDoubleClickEdit:    setting.EnableDoubleClickEdit,
-		Reactions:                setting.Reactions,
+		DisplayWithUpdateTime: setting.DisplayWithUpdateTime,
+		ContentLengthLimit:    setting.ContentLengthLimit,
+		EnableDoubleClickEdit: setting.EnableDoubleClickEdit,
+		Reactions:             setting.Reactions,
 	}
 }
 

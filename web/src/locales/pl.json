@@ -408,7 +408,6 @@
       "disable-password-login": "Wyłącz logowanie hasłem",
       "disable-password-login-final-warning": "Proszę wpisać \"CONFIRM\", jeśli wiesz, co robisz.",
       "disable-password-login-warning": "To wyłączy logowanie hasłem dla wszystkich użytkowników. Jeśli skonfigurowani dostawcy tożsamości zawiodą, nie będzie możliwe zalogowanie się bez przywrócenia tego ustawienia w bazie danych. Bądź także szczególnie ostrożny przy usuwaniu dostawcy tożsamości",
-      "disable-public-memos": "Wyłącz publiczne notatki",
       "display-with-updated-time": "Wyświetlaj z czasem aktualizacji",
       "enable-auto-compact": "Włącz automatyczne kompresowanie",
       "enable-double-click-to-edit": "Włącz edycję przez podwójne kliknięcie",

@@ -1,7 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from "react";
 import { instanceServiceClient } from "@/connect";
-import { updateInstanceConfig } from "@/instance-config";
 import {
   InstanceProfile,
   InstanceProfileSchema,
@@ -87,15 +86,6 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
         instanceServiceClient.getInstanceSetting({ name: buildInstanceSettingName(InstanceSetting_Key.GENERAL) }),
         instanceServiceClient.getInstanceSetting({ name: buildInstanceSettingName(InstanceSetting_Key.MEMO_RELATED) }),
       ]);
-
-      // Update global config for non-React code (like connect.ts interceptors)
-      if (memoRelatedSettingResponse.value.case === "memoRelatedSetting") {
-        updateInstanceConfig({
-          memoRelatedSetting: {
-            disallowPublicVisibility: memoRelatedSettingResponse.value.value.disallowPublicVisibility,
-          },
-        });
-      }
 
       setState({
         profile,

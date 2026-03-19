@@ -407,7 +407,6 @@
       "disable-password-login": "パスワードログインを無効化",
       "disable-password-login-final-warning": "「CONFIRM」と入力してください（自己責任）",
       "disable-password-login-warning": "これにより全ユーザーのパスワードログインが無効になります。IDプロバイダーが失敗した場合、DBでこの設定を戻さないとログインできません。IDプロバイダー削除時はご注意ください。",
-      "disable-public-memos": "公開メモを無効化",
       "display-with-updated-time": "更新日時で表示",
       "enable-auto-compact": "自動折りたたみを有効化",
       "enable-double-click-to-edit": "ダブルクリック編集を有効化",

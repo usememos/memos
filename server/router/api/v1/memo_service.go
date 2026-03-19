@@ -68,9 +68,6 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		create.UpdatedTs = updatedTs
 	}
 
-	if instanceMemoRelatedSetting.DisallowPublicVisibility && create.Visibility == store.Public {
-		return nil, status.Errorf(codes.PermissionDenied, "disable public memos system setting is enabled")
-	}
 	contentLengthLimit, err := s.getContentLengthLimit(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get content length limit")
@@ -415,14 +412,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			update.Content = &memo.Content
 			update.Payload = memo.Payload
 		} else if path == "visibility" {
-			instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to get instance memo related setting")
-			}
 			visibility := convertVisibilityToStore(request.Memo.Visibility)
-			if instanceMemoRelatedSetting.DisallowPublicVisibility && visibility == store.Public {
-				return nil, status.Errorf(codes.PermissionDenied, "disable public memos system setting is enabled")
-			}
 			update.Visibility = &visibility
 		} else if path == "pinned" {
 			update.Pinned = &request.Memo.Pinned

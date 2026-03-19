@@ -82,7 +82,6 @@ const router = createBrowserRouter([
         ],
       },
       // Public share-link viewer — outside RootLayout to bypass auth-gating
-      // (including when disallowPublicVisibility is enabled on the instance)
       { path: "memos/shares/:token", element: <SharedMemo /> },
     ],
   },

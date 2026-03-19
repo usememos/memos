@@ -407,7 +407,6 @@
       "disable-password-login": "Jelszavas bejelentkezés letiltása",
       "disable-password-login-final-warning": "Írd be, hogy \"CONFIRM\" ha tudod mit csinálsz.",
       "disable-password-login-warning": "Ez letiltja a jelszavas bejelentkezést minden felhasználó számára. Ha a konfigurált identitásszolgáltatók nem érhetők el, a bejelentkezés nem lehetséges ezen beállítás kikapcsolása nélkül az adatbázisban. Ezen kívül fokozott figyelem szükséges az identitásszolgáltatók eltávolítása során is",
-      "disable-public-memos": "Nyilvános jegyzetek letiltása",
       "display-with-updated-time": "Megjelenítés frissített idővel",
       "enable-auto-compact": "Automatikus tömörítés engedélyezése",
       "enable-double-click-to-edit": "Dupla kattintásos szerkesztés engedélyezése",

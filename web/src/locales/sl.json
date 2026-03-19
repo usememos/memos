@@ -398,7 +398,6 @@
       "disable-password-login": "Onemogoči prijavo z geslom",
       "disable-password-login-final-warning": "Prosim vnesite \"POTRDI\", če veste kaj počnete.",
       "disable-password-login-warning": "To bo onemogočilo prijavo z geslom za vse uporabnike. Brez ponovnega vklopa te nastavitve v bazi, prijava ne bo več možna. Enako tudi če identiteta enotne prijave zataji. Bodite tudi zelo previdni pri odstranjevalju identitete enotne prijave",
-      "disable-public-memos": "Onemogočite javne beležke",
       "display-with-updated-time": "Prikaži s časom posodobitve",
       "enable-auto-compact": "Omogoči samodejno zgoščevanje",
       "enable-double-click-to-edit": "Omogoči dvojni klik za urejanje",

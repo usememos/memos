@@ -407,7 +407,6 @@
       "disable-password-login": "Desactivar acceso con contrasinal",
       "disable-password-login-final-warning": "Escribe `CONFIRM` se sabes o que estás a facer.",
       "disable-password-login-warning": "Isto desactiva o acceso con contrasinal para todas as usuarias. Non é posible acceder sen reverter este axuste na base de datos se os provedores de acceso configurados fallan. Pon moito coidado cando elimines un provedor de identidades",
-      "disable-public-memos": "Disactivar notas públicas",
       "display-with-updated-time": "Mostrar coa hora actualizada",
       "enable-auto-compact": "Activar auto compatacta",
       "enable-double-click-to-edit": "Activar dobre pulsación para editar",

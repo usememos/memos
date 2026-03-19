@@ -407,7 +407,6 @@
       "disable-password-login": "Passwort-Login deaktivieren",
       "disable-password-login-final-warning": "Bitte tippe \"CONFIRM\", wenn du weißt, was du tust.",
       "disable-password-login-warning": "Dadurch wird der Passwort-Login für alle Benutzer deaktiviert. Es ist nicht möglich, sich anzumelden, ohne diese Einstellung in der Datenbank rückgängig zu machen, falls deine konfigurierten Identitätsanbieter ausfallen. Sei besonders vorsichtig beim Entfernen eines Identitätsanbieters.",
-      "disable-public-memos": "Öffentliche Notizen deaktivieren",
       "display-with-updated-time": "Mit aktualisierter Zeit anzeigen",
       "enable-auto-compact": "Automatische Komprimierung aktivieren",
       "enable-double-click-to-edit": "Doppelklick zum Bearbeiten aktivieren",
