@@ -3,8 +3,11 @@ package v1
 import (
 	"context"
 	"fmt"
+	"math"
+	"strings"
 
 	"github.com/pkg/errors"
+	colorpb "google.golang.org/genproto/googleapis/type/color"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -46,6 +49,8 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 		_, err = s.Store.GetInstanceMemoRelatedSetting(ctx)
 	case storepb.InstanceSettingKey_STORAGE:
 		_, err = s.Store.GetInstanceStorageSetting(ctx)
+	case storepb.InstanceSettingKey_TAGS:
+		_, err = s.Store.GetInstanceTagsSetting(ctx)
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "unsupported instance setting key: %v", instanceSettingKey)
 	}
@@ -95,6 +100,10 @@ func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.
 	// TODO: Apply update_mask if specified
 	_ = request.UpdateMask
 
+	if err := validateInstanceSetting(request.Setting); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid instance setting: %v", err)
+	}
+
 	updateSetting := convertInstanceSettingToStore(request.Setting)
 	instanceSetting, err := s.Store.UpsertInstanceSetting(ctx, updateSetting)
 	if err != nil {
@@ -120,6 +129,10 @@ func convertInstanceSettingFromStore(setting *storepb.InstanceSetting) *v1pb.Ins
 	case *storepb.InstanceSetting_MemoRelatedSetting:
 		instanceSetting.Value = &v1pb.InstanceSetting_MemoRelatedSetting_{
 			MemoRelatedSetting: convertInstanceMemoRelatedSettingFromStore(setting.GetMemoRelatedSetting()),
+		}
+	case *storepb.InstanceSetting_TagsSetting:
+		instanceSetting.Value = &v1pb.InstanceSetting_TagsSetting_{
+			TagsSetting: convertInstanceTagsSettingFromStore(setting.GetTagsSetting()),
 		}
 	default:
 		// Leave Value unset for unsupported setting variants.
@@ -147,6 +160,10 @@ func convertInstanceSettingToStore(setting *v1pb.InstanceSetting) *storepb.Insta
 	case storepb.InstanceSettingKey_MEMO_RELATED:
 		instanceSetting.Value = &storepb.InstanceSetting_MemoRelatedSetting{
 			MemoRelatedSetting: convertInstanceMemoRelatedSettingToStore(setting.GetMemoRelatedSetting()),
+		}
+	case storepb.InstanceSettingKey_TAGS:
+		instanceSetting.Value = &storepb.InstanceSetting_TagsSetting{
+			TagsSetting: convertInstanceTagsSettingToStore(setting.GetTagsSetting()),
 		}
 	default:
 		// Keep the default GeneralSetting value
@@ -269,6 +286,96 @@ func convertInstanceMemoRelatedSettingToStore(setting *v1pb.InstanceSetting_Memo
 		EnableDoubleClickEdit:    setting.EnableDoubleClickEdit,
 		Reactions:                setting.Reactions,
 	}
+}
+
+func convertInstanceTagsSettingFromStore(setting *storepb.InstanceTagsSetting) *v1pb.InstanceSetting_TagsSetting {
+	if setting == nil {
+		return nil
+	}
+	tags := make(map[string]*v1pb.InstanceSetting_TagMetadata, len(setting.Tags))
+	for tag, metadata := range setting.Tags {
+		tags[tag] = &v1pb.InstanceSetting_TagMetadata{
+			BackgroundColor: metadata.GetBackgroundColor(),
+		}
+	}
+	return &v1pb.InstanceSetting_TagsSetting{
+		Tags: tags,
+	}
+}
+
+func convertInstanceTagsSettingToStore(setting *v1pb.InstanceSetting_TagsSetting) *storepb.InstanceTagsSetting {
+	if setting == nil {
+		return nil
+	}
+	tags := make(map[string]*storepb.InstanceTagMetadata, len(setting.Tags))
+	for tag, metadata := range setting.Tags {
+		tags[tag] = &storepb.InstanceTagMetadata{
+			BackgroundColor: metadata.GetBackgroundColor(),
+		}
+	}
+	return &storepb.InstanceTagsSetting{
+		Tags: tags,
+	}
+}
+
+func validateInstanceSetting(setting *v1pb.InstanceSetting) error {
+	key, err := ExtractInstanceSettingKeyFromName(setting.Name)
+	if err != nil {
+		return err
+	}
+	if key != storepb.InstanceSettingKey_TAGS.String() {
+		return nil
+	}
+	return validateInstanceTagsSetting(setting.GetTagsSetting())
+}
+
+func validateInstanceTagsSetting(setting *v1pb.InstanceSetting_TagsSetting) error {
+	if setting == nil {
+		return errors.New("tags setting is required")
+	}
+	for tag, metadata := range setting.Tags {
+		if strings.TrimSpace(tag) == "" {
+			return errors.New("tag key cannot be empty")
+		}
+		if metadata == nil {
+			return errors.Errorf("tag metadata is required for %q", tag)
+		}
+		if metadata.GetBackgroundColor() == nil {
+			return errors.Errorf("background_color is required for %q", tag)
+		}
+		if err := validateInstanceColor(metadata.GetBackgroundColor()); err != nil {
+			return errors.Wrapf(err, "background_color for %q", tag)
+		}
+	}
+	return nil
+}
+
+func validateInstanceColor(color *colorpb.Color) error {
+	if err := validateInstanceColorComponent("red", color.GetRed()); err != nil {
+		return err
+	}
+	if err := validateInstanceColorComponent("green", color.GetGreen()); err != nil {
+		return err
+	}
+	if err := validateInstanceColorComponent("blue", color.GetBlue()); err != nil {
+		return err
+	}
+	if alpha := color.GetAlpha(); alpha != nil {
+		if err := validateInstanceColorComponent("alpha", alpha.GetValue()); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func validateInstanceColorComponent(name string, value float32) error {
+	if math.IsNaN(float64(value)) || math.IsInf(float64(value), 0) {
+		return errors.Errorf("%s must be a finite number", name)
+	}
+	if value < 0 || value > 1 {
+		return errors.Errorf("%s must be between 0 and 1", name)
+	}
+	return nil
 }
 
 func (s *APIV1Service) GetInstanceAdmin(ctx context.Context) (*v1pb.User, error) {

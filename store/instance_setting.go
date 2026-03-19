@@ -37,6 +37,8 @@ func (s *Store) UpsertInstanceSetting(ctx context.Context, upsert *storepb.Insta
 		valueBytes, err = protojson.Marshal(upsert.GetStorageSetting())
 	} else if upsert.Key == storepb.InstanceSettingKey_MEMO_RELATED {
 		valueBytes, err = protojson.Marshal(upsert.GetMemoRelatedSetting())
+	} else if upsert.Key == storepb.InstanceSettingKey_TAGS {
+		valueBytes, err = protojson.Marshal(upsert.GetTagsSetting())
 	} else {
 		return nil, errors.Errorf("unsupported instance setting key: %v", upsert.Key)
 	}
@@ -168,6 +170,28 @@ func (s *Store) GetInstanceMemoRelatedSetting(ctx context.Context) (*storepb.Ins
 	return instanceMemoRelatedSetting, nil
 }
 
+func (s *Store) GetInstanceTagsSetting(ctx context.Context) (*storepb.InstanceTagsSetting, error) {
+	instanceSetting, err := s.GetInstanceSetting(ctx, &FindInstanceSetting{
+		Name: storepb.InstanceSettingKey_TAGS.String(),
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get instance tags setting")
+	}
+
+	instanceTagsSetting := &storepb.InstanceTagsSetting{}
+	if instanceSetting != nil {
+		instanceTagsSetting = instanceSetting.GetTagsSetting()
+	}
+	if instanceTagsSetting.Tags == nil {
+		instanceTagsSetting.Tags = map[string]*storepb.InstanceTagMetadata{}
+	}
+	s.instanceSettingCache.Set(ctx, storepb.InstanceSettingKey_TAGS.String(), &storepb.InstanceSetting{
+		Key:   storepb.InstanceSettingKey_TAGS,
+		Value: &storepb.InstanceSetting_TagsSetting{TagsSetting: instanceTagsSetting},
+	})
+	return instanceTagsSetting, nil
+}
+
 const (
 	defaultInstanceStorageType       = storepb.InstanceStorageSetting_LOCAL
 	defaultInstanceUploadSizeLimitMb = 30
@@ -231,6 +255,12 @@ func convertInstanceSettingFromRaw(instanceSettingRaw *InstanceSetting) (*storep
 			return nil, err
 		}
 		instanceSetting.Value = &storepb.InstanceSetting_MemoRelatedSetting{MemoRelatedSetting: memoRelatedSetting}
+	case storepb.InstanceSettingKey_TAGS.String():
+		tagsSetting := &storepb.InstanceTagsSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(instanceSettingRaw.Value), tagsSetting); err != nil {
+			return nil, err
+		}
+		instanceSetting.Value = &storepb.InstanceSetting_TagsSetting{TagsSetting: tagsSetting}
 	default:
 		// Skip unsupported instance setting key.
 		return nil, nil

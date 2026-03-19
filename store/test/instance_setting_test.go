@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	colorpb "google.golang.org/genproto/googleapis/type/color"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -216,6 +217,42 @@ func TestInstanceSettingStorageSetting(t *testing.T) {
 	require.Equal(t, storepb.InstanceStorageSetting_LOCAL, storageSetting.StorageType)
 	require.Equal(t, int64(100), storageSetting.UploadSizeLimitMb)
 	require.Equal(t, "uploads/{date}/{filename}", storageSetting.FilepathTemplate)
+
+	ts.Close()
+}
+
+func TestInstanceSettingTagsSetting(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+
+	tagsSetting, err := ts.GetInstanceTagsSetting(ctx)
+	require.NoError(t, err)
+	require.NotNil(t, tagsSetting)
+	require.Empty(t, tagsSetting.Tags)
+
+	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_TAGS,
+		Value: &storepb.InstanceSetting_TagsSetting{
+			TagsSetting: &storepb.InstanceTagsSetting{
+				Tags: map[string]*storepb.InstanceTagMetadata{
+					"bug": {
+						BackgroundColor: &colorpb.Color{
+							Red:   0.9,
+							Green: 0.1,
+							Blue:  0.1,
+						},
+					},
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	tagsSetting, err = ts.GetInstanceTagsSetting(ctx)
+	require.NoError(t, err)
+	require.Contains(t, tagsSetting.Tags, "bug")
+	require.InDelta(t, 0.9, tagsSetting.Tags["bug"].GetBackgroundColor().GetRed(), 0.0001)
 
 	ts.Close()
 }
