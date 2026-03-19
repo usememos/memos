@@ -35,10 +35,10 @@ const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
     <aside className={cn("relative w-full h-auto max-h-screen overflow-auto flex flex-col gap-5", className)}>
       {canManageShares && (
         <div className="w-full space-y-2">
-          <SectionLabel>{t("memo-share.section-label")}</SectionLabel>
+          <SectionLabel>{t("memo.share.section-label")}</SectionLabel>
           <Button variant="outline" className="w-full justify-start gap-2" onClick={() => setSharePanelOpen(true)}>
             <Share2Icon className="w-4 h-4" />
-            {t("memo-share.open-panel")}
+            {t("memo.share.open-panel")}
           </Button>
         </div>
       )}

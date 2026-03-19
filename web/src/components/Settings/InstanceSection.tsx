@@ -80,29 +80,29 @@ const InstanceSection = () => {
   return (
     <SettingSection>
       <SettingGroup title={t("common.basic")}>
-        <SettingRow label={t("setting.system-section.server-name")} description={instanceGeneralSetting.customProfile?.title || "Memos"}>
+        <SettingRow label={t("setting.system.server-name")} description={instanceGeneralSetting.customProfile?.title || "Memos"}>
           <Button variant="outline" onClick={handleUpdateCustomizedProfileButtonClick}>
             {t("common.edit")}
           </Button>
         </SettingRow>
       </SettingGroup>
 
-      <SettingGroup title={t("setting.system-section.title")} showSeparator>
-        <SettingRow label={t("setting.system-section.additional-style")} vertical>
+      <SettingGroup title={t("setting.system.title")} showSeparator>
+        <SettingRow label={t("setting.system.additional-style")} vertical>
           <Textarea
             className="font-mono w-full"
             rows={3}
-            placeholder={t("setting.system-section.additional-style-placeholder")}
+            placeholder={t("setting.system.additional-style-placeholder")}
             value={instanceGeneralSetting.additionalStyle}
             onChange={(event) => updatePartialSetting({ additionalStyle: event.target.value })}
           />
         </SettingRow>
 
-        <SettingRow label={t("setting.system-section.additional-script")} vertical>
+        <SettingRow label={t("setting.system.additional-script")} vertical>
           <Textarea
             className="font-mono w-full"
             rows={3}
-            placeholder={t("setting.system-section.additional-script-placeholder")}
+            placeholder={t("setting.system.additional-script-placeholder")}
             value={instanceGeneralSetting.additionalScript}
             onChange={(event) => updatePartialSetting({ additionalScript: event.target.value })}
           />
@@ -110,7 +110,7 @@ const InstanceSection = () => {
       </SettingGroup>
 
       <SettingGroup>
-        <SettingRow label={t("setting.instance-section.disallow-user-registration")}>
+        <SettingRow label={t("setting.instance.disallow-user-registration")}>
           <Switch
             disabled={profile.demo}
             checked={instanceGeneralSetting.disallowUserRegistration}
@@ -118,7 +118,7 @@ const InstanceSection = () => {
           />
         </SettingRow>
 
-        <SettingRow label={t("setting.instance-section.disallow-password-auth")}>
+        <SettingRow label={t("setting.instance.disallow-password-auth")}>
           <Switch
             disabled={profile.demo || (identityProviderList.length === 0 && !instanceGeneralSetting.disallowPasswordAuth)}
             checked={instanceGeneralSetting.disallowPasswordAuth}
@@ -126,21 +126,21 @@ const InstanceSection = () => {
           />
         </SettingRow>
 
-        <SettingRow label={t("setting.instance-section.disallow-change-username")}>
+        <SettingRow label={t("setting.instance.disallow-change-username")}>
           <Switch
             checked={instanceGeneralSetting.disallowChangeUsername}
             onCheckedChange={(checked) => updatePartialSetting({ disallowChangeUsername: checked })}
           />
         </SettingRow>
 
-        <SettingRow label={t("setting.instance-section.disallow-change-nickname")}>
+        <SettingRow label={t("setting.instance.disallow-change-nickname")}>
           <Switch
             checked={instanceGeneralSetting.disallowChangeNickname}
             onCheckedChange={(checked) => updatePartialSetting({ disallowChangeNickname: checked })}
           />
         </SettingRow>
 
-        <SettingRow label={t("setting.instance-section.week-start-day")}>
+        <SettingRow label={t("setting.instance.week-start-day")}>
           <Select
             value={instanceGeneralSetting.weekStartDayOffset.toString()}
             onValueChange={(value) => {
@@ -151,9 +151,9 @@ const InstanceSection = () => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="-1">{t("setting.instance-section.saturday")}</SelectItem>
-              <SelectItem value="0">{t("setting.instance-section.sunday")}</SelectItem>
-              <SelectItem value="1">{t("setting.instance-section.monday")}</SelectItem>
+              <SelectItem value="-1">{t("setting.instance.saturday")}</SelectItem>
+              <SelectItem value="0">{t("setting.instance.sunday")}</SelectItem>
+              <SelectItem value="1">{t("setting.instance.monday")}</SelectItem>
             </SelectContent>
           </Select>
         </SettingRow>

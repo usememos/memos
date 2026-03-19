@@ -38,7 +38,15 @@
     "created-at": "ایجاد شده در",
     "database": "پایگاه داده",
     "day": "روز",
-    "days": "روزها",
+    "days": {
+      "fri": "ج",
+      "mon": "د",
+      "sat": "ش",
+      "sun": "ی",
+      "thu": "پ",
+      "tue": "س",
+      "wed": "چ"
+    },
     "delete": "حذف",
     "description": "توضیحات",
     "edit": "ویرایش",
@@ -108,15 +116,6 @@
     "visibility": "قابل مشاهده توسط",
     "yourself": "خودتان"
   },
-  "days": {
-    "fri": "ج",
-    "mon": "د",
-    "sat": "ش",
-    "sun": "ی",
-    "thu": "پ",
-    "tue": "س",
-    "wed": "چ"
-  },
   "editor": {
     "add-your-comment-here": "نظر خود را اینجا اضافه کنید...",
     "any-thoughts": "فکر شما...",
@@ -126,11 +125,6 @@
     "save": "ذخیره",
     "saving": "در حال ذخیره...",
     "slash-commands": "برای دستورات '/' را تایپ کنید"
-  },
-  "filters": {
-    "has-code": "دارای کد",
-    "has-link": "دارای پیوند",
-    "has-task-list": "دارای لیست کارها"
   },
   "inbox": {
     "failed-to-load": "بارگذاری آیتم صندوق ورودی ناموفق بود",
@@ -162,7 +156,11 @@
     "direction-asc": "صعودی",
     "direction-desc": "نزولی",
     "display-time": "زمان نمایش",
-    "filters": "فیلترها",
+    "filters": {
+      "has-code": "دارای کد",
+      "has-link": "دارای پیوند",
+      "has-task-list": "دارای لیست کارها"
+    },
     "links": "پیوندها",
     "list": "لیست",
     "load-more": "بارگذاری بیشتر",
@@ -251,53 +249,7 @@
     "go-to-home": "برو به خانه"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "توکن دسترسی کپی شد",
-      "access-token-deleted": "توکن دسترسی «{{description}}» حذف شد",
-      "access-token-deletion": "آیا از حذف توکن دسترسی «{{description}}» اطمینان دارید؟",
-      "access-token-deletion-description": "این عمل غیرقابل بازگشت است. باید هر سرویسی که از این توکن استفاده می‌کند را به‌روزرسانی کنید تا از توکن جدید استفاده کند.",
-      "create-dialog": {
-        "access-token-created": "توکن دسترسی «{{description}}» ایجاد شد",
-        "create-access-token": "ایجاد توکن دسترسی",
-        "created-at": "ایجاد شده در",
-        "description": "توضیحات",
-        "duration-1m": "۱ ماه",
-        "duration-8h": "۸ ساعت",
-        "duration-never": "هرگز",
-        "expiration": "انقضا",
-        "expires-at": "منقضی می‌شود در",
-        "some-description": "توضیحی..."
-      },
-      "description": "لیست تمام توکن‌های دسترسی حساب شما.",
-      "title": "توکن‌های دسترسی",
-      "token": "توکن"
-    },
-    "account-section": {
-      "change-password": "تغییر گذرواژه",
-      "email-note": "اختیاری",
-      "export-memos": "صادرات یادداشت‌ها",
-      "nickname-note": "در بنر نمایش داده می‌شود",
-      "openapi-reset": "بازنشانی کلید OpenAPI",
-      "openapi-sample-post": "Hello #memos from {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "بازنشانی API",
-      "title": "اطلاعات حساب کاربری",
-      "update-information": "بروزرسانی اطلاعات",
-      "username-note": "برای ورود استفاده می‌شود"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "غیرفعال‌سازی تغییر نام مستعار",
-      "disallow-change-username": "غیرفعال‌سازی تغییر نام کاربری",
-      "disallow-password-auth": "غیرفعال‌سازی احراز هویت با گذرواژه",
-      "disallow-user-registration": "غیرفعال‌سازی ثبت‌نام کاربر",
-      "monday": "دوشنبه",
-      "saturday": "شنبه",
-      "sunday": "یکشنبه",
-      "week-start-day": "روز شروع هفته"
-    },
-    "member": "عضو",
-    "member-list": "لیست اعضا",
-    "member-section": {
+    "member": {
       "admin": "مدیر",
       "archive-member": "آرشیو کردن عضو",
       "archive-success": "{{username}} با موفقیت آرشیو شد",
@@ -309,30 +261,24 @@
       "delete-warning": "آیا از حذف {{username}} اطمینان دارید؟",
       "delete-warning-description": "این عمل غیرقابل بازگشت است",
       "restore-success": "{{username}} با موفقیت بازیابی شد",
-      "user": "کاربر"
+      "user": "کاربر",
+      "label": "عضو",
+      "list-title": "لیست اعضا"
     },
-    "memo-related": "یادداشت",
-    "memo-related-settings": {
-      "content-length-limit": "محدودیت طول محتوا (بایت)",
-      "enable-blur-nsfw-content": "فعال‌سازی تار کردن محتوای حساس (NSFW)",
-      "enable-memo-comments": "فعال‌سازی نظرات یادداشت",
-      "enable-memo-location": "فعال‌سازی موقعیت یادداشت",
-      "reactions": "واکنش‌ها",
-      "title": "تنظیمات یادداشت"
+    "my-account": {
+      "label": "حساب من"
     },
-    "my-account": "حساب من",
-    "preference": "ترجیحات",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "زمان نمایش یادداشت",
       "default-memo-visibility": "قابلیت مشاهده پیش‌فرض یادداشت",
-      "theme": "پوسته"
+      "theme": "پوسته",
+      "label": "ترجیحات"
     },
     "shortcut": {
       "delete-confirm": "آیا مطمئن هستید که می‌خواهید میانبر «{{title}}» را حذف کنید؟",
       "delete-success": "میانبر «{{title}}» با موفقیت حذف شد"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "آدرس نقطه مجوز",
       "client-id": "شناسه کلاینت",
       "client-secret": "راز کلاینت",
@@ -354,10 +300,10 @@
       "template": "قالب",
       "token-endpoint": "آدرس نقطه توکن",
       "update-sso": "بروزرسانی SSO",
-      "user-endpoint": "آدرس نقطه کاربر"
+      "user-endpoint": "آدرس نقطه کاربر",
+      "label": "SSO"
     },
-    "storage": "ذخیره‌سازی",
-    "storage-section": {
+    "storage": {
       "accesskey": "کلید دسترسی",
       "accesskey-placeholder": "کلید دسترسی / شناسه دسترسی",
       "bucket": "باکت",
@@ -389,10 +335,10 @@
       "url-prefix-placeholder": "پیشوند سفارشی آدرس، اختیاری",
       "url-suffix": "پسوند آدرس",
       "url-suffix-placeholder": "پسوند سفارشی آدرس، اختیاری",
-      "warning-text": "آیا از حذف سرویس ذخیره‌سازی «{{name}}» اطمینان دارید؟ این عمل غیرقابل بازگشت است"
+      "warning-text": "آیا از حذف سرویس ذخیره‌سازی «{{name}}» اطمینان دارید؟ این عمل غیرقابل بازگشت است",
+      "label": "ذخیره‌سازی"
     },
-    "system": "سیستم",
-    "system-section": {
+    "system": {
       "additional-script": "اسکریپت اضافی",
       "additional-script-placeholder": "کد جاوااسکریپت اضافی",
       "additional-style": "استایل اضافی",
@@ -416,10 +362,64 @@
       "max-upload-size-hint": "مقدار پیشنهادی ۳۲ مگابایت است.",
       "removed-completed-task-list-items": "فعال‌سازی حذف موارد تکمیل‌شده لیست کارها",
       "server-name": "نام سرور",
-      "title": "عمومی"
+      "title": "عمومی",
+      "label": "سیستم"
     },
     "version": "نسخه",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "توکن دسترسی کپی شد",
+      "access-token-deleted": "توکن دسترسی «{{description}}» حذف شد",
+      "access-token-deletion": "آیا از حذف توکن دسترسی «{{description}}» اطمینان دارید؟",
+      "access-token-deletion-description": "این عمل غیرقابل بازگشت است. باید هر سرویسی که از این توکن استفاده می‌کند را به‌روزرسانی کنید تا از توکن جدید استفاده کند.",
+      "create-dialog": {
+        "access-token-created": "توکن دسترسی «{{description}}» ایجاد شد",
+        "create-access-token": "ایجاد توکن دسترسی",
+        "created-at": "ایجاد شده در",
+        "description": "توضیحات",
+        "duration-1m": "۱ ماه",
+        "duration-8h": "۸ ساعت",
+        "duration-never": "هرگز",
+        "expiration": "انقضا",
+        "expires-at": "منقضی می‌شود در",
+        "some-description": "توضیحی..."
+      },
+      "description": "لیست تمام توکن‌های دسترسی حساب شما.",
+      "title": "توکن‌های دسترسی",
+      "token": "توکن"
+    },
+    "account": {
+      "change-password": "تغییر گذرواژه",
+      "email-note": "اختیاری",
+      "export-memos": "صادرات یادداشت‌ها",
+      "nickname-note": "در بنر نمایش داده می‌شود",
+      "openapi-reset": "بازنشانی کلید OpenAPI",
+      "openapi-sample-post": "Hello #memos from {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "بازنشانی API",
+      "title": "اطلاعات حساب کاربری",
+      "update-information": "بروزرسانی اطلاعات",
+      "username-note": "برای ورود استفاده می‌شود"
+    },
+    "instance": {
+      "disallow-change-nickname": "غیرفعال‌سازی تغییر نام مستعار",
+      "disallow-change-username": "غیرفعال‌سازی تغییر نام کاربری",
+      "disallow-password-auth": "غیرفعال‌سازی احراز هویت با گذرواژه",
+      "disallow-user-registration": "غیرفعال‌سازی ثبت‌نام کاربر",
+      "monday": "دوشنبه",
+      "saturday": "شنبه",
+      "sunday": "یکشنبه",
+      "week-start-day": "روز شروع هفته"
+    },
+    "memo": {
+      "content-length-limit": "محدودیت طول محتوا (بایت)",
+      "enable-blur-nsfw-content": "فعال‌سازی تار کردن محتوای حساس (NSFW)",
+      "enable-memo-comments": "فعال‌سازی نظرات یادداشت",
+      "enable-memo-location": "فعال‌سازی موقعیت یادداشت",
+      "reactions": "واکنش‌ها",
+      "title": "تنظیمات یادداشت",
+      "label": "یادداشت"
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "نامی آسان برای به خاطر سپردن",
         "create-webhook": "ایجاد وب‌هوک",

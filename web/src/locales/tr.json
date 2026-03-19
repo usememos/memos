@@ -38,7 +38,15 @@
     "created-at": "Oluşturulma Tarihi",
     "database": "Veritabanı",
     "day": "Gün",
-    "days": "Gün",
+    "days": {
+      "fri": "Cum",
+      "mon": "Pzt",
+      "sat": "Cmt",
+      "sun": "Paz",
+      "thu": "Per",
+      "tue": "Sal",
+      "wed": "Çar"
+    },
     "delete": "Sil",
     "description": "Açıklama",
     "edit": "Düzenle",
@@ -108,15 +116,6 @@
     "visibility": "Görünürlük",
     "yourself": "Kendiniz"
   },
-  "days": {
-    "fri": "Cum",
-    "mon": "Pzt",
-    "sat": "Cmt",
-    "sun": "Paz",
-    "thu": "Per",
-    "tue": "Sal",
-    "wed": "Çar"
-  },
   "editor": {
     "add-your-comment-here": "Yorumunuzu buraya ekleyin...",
     "any-thoughts": "Düşünceleriniz...",
@@ -126,11 +125,6 @@
     "save": "Kaydet",
     "saving": "Kaydediliyor...",
     "slash-commands": "Komutlar için `/` yazın"
-  },
-  "filters": {
-    "has-code": "kodVar",
-    "has-link": "bağlantıVar",
-    "has-task-list": "görevListesiVar"
   },
   "inbox": {
     "failed-to-load": "Gelen kutusu öğesi yüklenemedi",
@@ -162,7 +156,11 @@
     "direction-asc": "Artan",
     "direction-desc": "Azalan",
     "display-time": "Görüntüleme Zamanı",
-    "filters": "Filtreler",
+    "filters": {
+      "has-code": "kodVar",
+      "has-link": "bağlantıVar",
+      "has-task-list": "görevListesiVar"
+    },
     "links": "Bağlantılar",
     "list": "Liste",
     "load-more": "Daha fazla yükle",
@@ -251,53 +249,7 @@
     "go-to-home": "Ana Sayfaya Git"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "Erişim tokeni panoya kopyalandı",
-      "access-token-deleted": "`{{description}}` erişim tokeni silindi",
-      "access-token-deletion": "{{description}} erişim tokenini silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ.",
-      "access-token-deletion-description": "Bu işlem geri alınamaz. Bu tokeni kullanan tüm hizmetleri yeni bir token kullanacak şekilde güncellemeniz gerekecektir.",
-      "create-dialog": {
-        "access-token-created": "`{{description}}` erişim tokeni oluşturuldu",
-        "create-access-token": "Erişim Tokeni Oluştur",
-        "created-at": "Oluşturulma Tarihi",
-        "description": "Açıklama",
-        "duration-1m": "1 Ay",
-        "duration-8h": "8 Saat",
-        "duration-never": "Asla",
-        "expiration": "Son Kullanma Tarihi",
-        "expires-at": "Sona Erme Tarihi",
-        "some-description": "Bir açıklama..."
-      },
-      "description": "Hesabınız için tüm erişim tokenlerinin listesi.",
-      "title": "Erişim Tokenleri",
-      "token": "Token"
-    },
-    "account-section": {
-      "change-password": "Şifre değiştir",
-      "email-note": "İsteğe bağlı",
-      "export-memos": "Notları Dışa Aktar",
-      "nickname-note": "Banner'da görüntülenir",
-      "openapi-reset": "OpenAPI Anahtarını Sıfırla",
-      "openapi-sample-post": "Merhaba #memos, {{url}} adresinden",
-      "openapi-title": "OpenAPI",
-      "reset-api": "API'yi Sıfırla",
-      "title": "Hesap Bilgileri",
-      "update-information": "Bilgileri Güncelle",
-      "username-note": "Giriş yapmak için kullanılır"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Takma ad değiştirmeyi yasakla",
-      "disallow-change-username": "Kullanıcı adı değiştirmeyi yasakla",
-      "disallow-password-auth": "Şifre ile kimlik doğrulamayı yasakla",
-      "disallow-user-registration": "Kullanıcı kaydını yasakla",
-      "monday": "Pazartesi",
-      "saturday": "Cumartesi",
-      "sunday": "Pazar",
-      "week-start-day": "Haftanın başlangıç günü"
-    },
-    "member": "Üye",
-    "member-list": "Üye listesi",
-    "member-section": {
+    "member": {
       "admin": "Yönetici",
       "archive-member": "Üyeyi arşivle",
       "archive-success": "{{username}} başarıyla arşivlendi",
@@ -309,30 +261,24 @@
       "delete-warning": "{{username}} kullanıcısını silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ",
       "delete-warning-description": "BU İŞLEM GERİ ALINAMAZ",
       "restore-success": "{{username}} başarıyla geri yüklendi",
-      "user": "Kullanıcı"
+      "user": "Kullanıcı",
+      "label": "Üye",
+      "list-title": "Üye listesi"
     },
-    "memo-related": "Not",
-    "memo-related-settings": {
-      "content-length-limit": "İçerik uzunluğu sınırı (Bayt)",
-      "enable-blur-nsfw-content": "NSFW içeriği bulanıklaştırmayı etkinleştir",
-      "enable-memo-comments": "Not yorumlarını etkinleştir",
-      "enable-memo-location": "Not konumunu etkinleştir",
-      "reactions": "Tepkiler",
-      "title": "Not ile ilgili ayarlar"
+    "my-account": {
+      "label": "Hesabım"
     },
-    "my-account": "Hesabım",
-    "preference": "Tercihler",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "Not görüntüleme zamanı",
       "default-memo-visibility": "Varsayılan not görünürlüğü",
-      "theme": "Tema"
+      "theme": "Tema",
+      "label": "Tercihler"
     },
     "shortcut": {
       "delete-confirm": "`{{title}}` kısayolunu silmek istediğinizden emin misiniz?",
       "delete-success": "`{{title}}` kısayolu başarıyla silindi"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "Yetkilendirme uç noktası",
       "client-id": "İstemci Kimliği",
       "client-secret": "İstemci Gizli Anahtarı",
@@ -354,10 +300,10 @@
       "template": "Şablon",
       "token-endpoint": "Token uç noktası",
       "update-sso": "SSO'yu Güncelle",
-      "user-endpoint": "Kullanıcı uç noktası"
+      "user-endpoint": "Kullanıcı uç noktası",
+      "label": "SSO"
     },
-    "storage": "Depolama",
-    "storage-section": {
+    "storage": {
       "accesskey": "Erişim anahtarı",
       "accesskey-placeholder": "Erişim anahtarı / Erişim Kimliği",
       "bucket": "Kova",
@@ -389,10 +335,10 @@
       "url-prefix-placeholder": "Özel URL öneki, isteğe bağlı",
       "url-suffix": "URL soneki",
       "url-suffix-placeholder": "Özel URL soneki, isteğe bağlı",
-      "warning-text": "\"{{name}}\" depolama servisini silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ"
+      "warning-text": "\"{{name}}\" depolama servisini silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ",
+      "label": "Depolama"
     },
-    "system": "Sistem",
-    "system-section": {
+    "system": {
       "additional-script": "Ek script",
       "additional-script-placeholder": "Ek JavaScript kodu",
       "additional-style": "Ek stil",
@@ -416,10 +362,64 @@
       "max-upload-size-hint": "Önerilen değer 32 MiB'dir.",
       "removed-completed-task-list-items": "Tamamlanan görev listesi öğelerinin kaldırılmasını etkinleştir",
       "server-name": "Sunucu Adı",
-      "title": "Genel"
+      "title": "Genel",
+      "label": "Sistem"
     },
     "version": "Sürüm",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "Erişim tokeni panoya kopyalandı",
+      "access-token-deleted": "`{{description}}` erişim tokeni silindi",
+      "access-token-deletion": "{{description}} erişim tokenini silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ.",
+      "access-token-deletion-description": "Bu işlem geri alınamaz. Bu tokeni kullanan tüm hizmetleri yeni bir token kullanacak şekilde güncellemeniz gerekecektir.",
+      "create-dialog": {
+        "access-token-created": "`{{description}}` erişim tokeni oluşturuldu",
+        "create-access-token": "Erişim Tokeni Oluştur",
+        "created-at": "Oluşturulma Tarihi",
+        "description": "Açıklama",
+        "duration-1m": "1 Ay",
+        "duration-8h": "8 Saat",
+        "duration-never": "Asla",
+        "expiration": "Son Kullanma Tarihi",
+        "expires-at": "Sona Erme Tarihi",
+        "some-description": "Bir açıklama..."
+      },
+      "description": "Hesabınız için tüm erişim tokenlerinin listesi.",
+      "title": "Erişim Tokenleri",
+      "token": "Token"
+    },
+    "account": {
+      "change-password": "Şifre değiştir",
+      "email-note": "İsteğe bağlı",
+      "export-memos": "Notları Dışa Aktar",
+      "nickname-note": "Banner'da görüntülenir",
+      "openapi-reset": "OpenAPI Anahtarını Sıfırla",
+      "openapi-sample-post": "Merhaba #memos, {{url}} adresinden",
+      "openapi-title": "OpenAPI",
+      "reset-api": "API'yi Sıfırla",
+      "title": "Hesap Bilgileri",
+      "update-information": "Bilgileri Güncelle",
+      "username-note": "Giriş yapmak için kullanılır"
+    },
+    "instance": {
+      "disallow-change-nickname": "Takma ad değiştirmeyi yasakla",
+      "disallow-change-username": "Kullanıcı adı değiştirmeyi yasakla",
+      "disallow-password-auth": "Şifre ile kimlik doğrulamayı yasakla",
+      "disallow-user-registration": "Kullanıcı kaydını yasakla",
+      "monday": "Pazartesi",
+      "saturday": "Cumartesi",
+      "sunday": "Pazar",
+      "week-start-day": "Haftanın başlangıç günü"
+    },
+    "memo": {
+      "content-length-limit": "İçerik uzunluğu sınırı (Bayt)",
+      "enable-blur-nsfw-content": "NSFW içeriği bulanıklaştırmayı etkinleştir",
+      "enable-memo-comments": "Not yorumlarını etkinleştir",
+      "enable-memo-location": "Not konumunu etkinleştir",
+      "reactions": "Tepkiler",
+      "title": "Not ile ilgili ayarlar",
+      "label": "Not"
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "Hatırlaması kolay bir isim",
         "create-webhook": "Webhook oluştur",

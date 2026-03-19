@@ -38,7 +38,15 @@
     "created-at": "Stvoreno",
     "database": "Baza podataka",
     "day": "Dan",
-    "days": "Dani",
+    "days": {
+      "fri": "Pet",
+      "mon": "Pon",
+      "sat": "Sub",
+      "sun": "Ned",
+      "thu": "Čet",
+      "tue": "Uto",
+      "wed": "Sri"
+    },
     "delete": "Obriši",
     "description": "Opis",
     "edit": "Uredi",
@@ -108,15 +116,6 @@
     "visibility": "Vidljivost",
     "yourself": "Ti"
   },
-  "days": {
-    "fri": "Pet",
-    "mon": "Pon",
-    "sat": "Sub",
-    "sun": "Ned",
-    "thu": "Čet",
-    "tue": "Uto",
-    "wed": "Sri"
-  },
   "editor": {
     "add-your-comment-here": "Dodaj svoj komentar ovdje...",
     "any-thoughts": "Imaš li misli...",
@@ -126,11 +125,6 @@
     "save": "Sačuvaj",
     "saving": "Spremanje...",
     "slash-commands": "Upisi `/` za naredbe"
-  },
-  "filters": {
-    "has-code": "imaKod",
-    "has-link": "imaLink",
-    "has-task-list": "imaZadatke"
   },
   "inbox": {
     "failed-to-load": "Neuspjelo učitavanje stavke pristigle pošte",
@@ -162,7 +156,11 @@
     "direction-asc": "Uzlazno",
     "direction-desc": "Silazno",
     "display-time": "Vrijeme prikaza",
-    "filters": "Filteri",
+    "filters": {
+      "has-code": "imaKod",
+      "has-link": "imaLink",
+      "has-task-list": "imaZadatke"
+    },
     "links": "Linkovi",
     "list": "Popis",
     "load-more": "Učitaj više",
@@ -251,53 +249,7 @@
     "go-to-home": "Idi na početnu"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "Token pristupa kopiran u međuspremnik",
-      "access-token-deleted": "Token pristupa `{{description}}` obrisan",
-      "access-token-deletion": "Jesi li siguran da želiš obrisati token pristupa `{{description}}`?",
-      "access-token-deletion-description": "Ova akcija je nepovratna. Morat ćeš ažurirati sve usluge koje koriste ovaj token da koriste novi token.",
-      "create-dialog": {
-        "access-token-created": "Token pristupa `{{description}}` stvoren",
-        "create-access-token": "Stvori token pristupa",
-        "created-at": "Stvoreno",
-        "description": "Opis",
-        "duration-1m": "1 mjesec",
-        "duration-8h": "8 sati",
-        "duration-never": "Nikada",
-        "expiration": "Istječe",
-        "expires-at": "Istječe na",
-        "some-description": "Neki opis..."
-      },
-      "description": "Popis svih tokena pristupa za tvoj račun.",
-      "title": "Tokeni pristupa",
-      "token": "Token"
-    },
-    "account-section": {
-      "change-password": "Promijeni lozinku",
-      "email-note": "Neobavezno",
-      "export-memos": "Izvezi memoe",
-      "nickname-note": "Prikazano u banneru",
-      "openapi-reset": "Resetiraj OpenAPI ključ",
-      "openapi-sample-post": "Pozdrav #memos od {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "Resetiraj API",
-      "title": "Informacije o računu",
-      "update-information": "Ažuriraj informacije",
-      "username-note": "Koristi se za prijavu"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Onemogući promjenu nadimka",
-      "disallow-change-username": "Onemogući promjenu korisničkog imena",
-      "disallow-password-auth": "Onemogući autentikaciju lozinkom",
-      "disallow-user-registration": "Onemogući registraciju korisnika",
-      "monday": "Ponedjeljak",
-      "saturday": "Subota",
-      "sunday": "Nedjelja",
-      "week-start-day": "Dan početka tjedna"
-    },
-    "member": "Član",
-    "member-list": "Popis članova",
-    "member-section": {
+    "member": {
       "admin": "Admin",
       "archive-member": "Arhiviraj člana",
       "archive-success": "{{username}} uspješno arhiviran",
@@ -309,30 +261,24 @@
       "delete-warning": "Jesi li siguran da želiš obrisati {{username}}?",
       "delete-warning-description": "OVA AKCIJA JE NEPOVRATNA",
       "restore-success": "{{username}} uspješno vraćen",
-      "user": "Korisnik"
+      "user": "Korisnik",
+      "label": "Član",
+      "list-title": "Popis članova"
     },
-    "memo-related": "Memo",
-    "memo-related-settings": {
-      "content-length-limit": "Ograničenje duljine sadržaja (Bajt)",
-      "enable-blur-nsfw-content": "Omogući zamućenje osjetljivog sadržaja (NSFW)",
-      "enable-memo-comments": "Omogući komentare na memoima",
-      "enable-memo-location": "Omogući lokaciju memoa",
-      "reactions": "Reakcije",
-      "title": "Postavke vezane uz memo"
+    "my-account": {
+      "label": "Moj račun"
     },
-    "my-account": "Moj račun",
-    "preference": "Postavke",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "Vrijeme prikaza memoa",
       "default-memo-visibility": "Zadana vidljivost memoa",
-      "theme": "Tema"
+      "theme": "Tema",
+      "label": "Postavke"
     },
     "shortcut": {
       "delete-confirm": "Jesi li siguran da želiš obrisati prečac `{{title}}`?",
       "delete-success": "Prečac `{{title}}` uspješno obrisan"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "Krajnja točka autorizacije",
       "client-id": "ID klijenta",
       "client-secret": "Tajna klijenta",
@@ -354,10 +300,10 @@
       "template": "Predložak",
       "token-endpoint": "Krajnja točka tokena",
       "update-sso": "Ažuriraj SSO",
-      "user-endpoint": "Krajnja točka korisnika"
+      "user-endpoint": "Krajnja točka korisnika",
+      "label": "SSO"
     },
-    "storage": "Skladište",
-    "storage-section": {
+    "storage": {
       "accesskey": "Pristupni ključ",
       "accesskey-placeholder": "Pristupni ključ / ID pristupa",
       "bucket": "Bucket",
@@ -389,10 +335,10 @@
       "url-prefix-placeholder": "Prilagođeni URL prefiks, opcionalno",
       "url-suffix": "URL sufiks",
       "url-suffix-placeholder": "Prilagođeni URL sufiks, opcionalno",
-      "warning-text": "Jesi li siguran da želiš obrisati skladišnu uslugu \"{{name}}\"? OVA AKCIJA JE NEPOVRATNA"
+      "warning-text": "Jesi li siguran da želiš obrisati skladišnu uslugu \"{{name}}\"? OVA AKCIJA JE NEPOVRATNA",
+      "label": "Skladište"
     },
-    "system": "Sustav",
-    "system-section": {
+    "system": {
       "additional-script": "Dodatna skripta",
       "additional-script-placeholder": "Dodatni JavaScript kod",
       "additional-style": "Dodatni stil",
@@ -416,10 +362,64 @@
       "max-upload-size-hint": "Preporučena vrijednost je 32 MiB.",
       "removed-completed-task-list-items": "Omogući uklanjanje završenih zadataka",
       "server-name": "Naziv servera",
-      "title": "Općenito"
+      "title": "Općenito",
+      "label": "Sustav"
     },
     "version": "Verzija",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "Token pristupa kopiran u međuspremnik",
+      "access-token-deleted": "Token pristupa `{{description}}` obrisan",
+      "access-token-deletion": "Jesi li siguran da želiš obrisati token pristupa `{{description}}`?",
+      "access-token-deletion-description": "Ova akcija je nepovratna. Morat ćeš ažurirati sve usluge koje koriste ovaj token da koriste novi token.",
+      "create-dialog": {
+        "access-token-created": "Token pristupa `{{description}}` stvoren",
+        "create-access-token": "Stvori token pristupa",
+        "created-at": "Stvoreno",
+        "description": "Opis",
+        "duration-1m": "1 mjesec",
+        "duration-8h": "8 sati",
+        "duration-never": "Nikada",
+        "expiration": "Istječe",
+        "expires-at": "Istječe na",
+        "some-description": "Neki opis..."
+      },
+      "description": "Popis svih tokena pristupa za tvoj račun.",
+      "title": "Tokeni pristupa",
+      "token": "Token"
+    },
+    "account": {
+      "change-password": "Promijeni lozinku",
+      "email-note": "Neobavezno",
+      "export-memos": "Izvezi memoe",
+      "nickname-note": "Prikazano u banneru",
+      "openapi-reset": "Resetiraj OpenAPI ključ",
+      "openapi-sample-post": "Pozdrav #memos od {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "Resetiraj API",
+      "title": "Informacije o računu",
+      "update-information": "Ažuriraj informacije",
+      "username-note": "Koristi se za prijavu"
+    },
+    "instance": {
+      "disallow-change-nickname": "Onemogući promjenu nadimka",
+      "disallow-change-username": "Onemogući promjenu korisničkog imena",
+      "disallow-password-auth": "Onemogući autentikaciju lozinkom",
+      "disallow-user-registration": "Onemogući registraciju korisnika",
+      "monday": "Ponedjeljak",
+      "saturday": "Subota",
+      "sunday": "Nedjelja",
+      "week-start-day": "Dan početka tjedna"
+    },
+    "memo": {
+      "content-length-limit": "Ograničenje duljine sadržaja (Bajt)",
+      "enable-blur-nsfw-content": "Omogući zamućenje osjetljivog sadržaja (NSFW)",
+      "enable-memo-comments": "Omogući komentare na memoima",
+      "enable-memo-location": "Omogući lokaciju memoa",
+      "reactions": "Reakcije",
+      "title": "Postavke vezane uz memo",
+      "label": "Memo"
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "Jednostavno ime za pamćenje",
         "create-webhook": "Stvori webhook",

@@ -70,22 +70,22 @@ const MemoRelatedSettings = () => {
 
   return (
     <SettingSection>
-      <SettingGroup title={t("setting.memo-related-settings.title")}>
-        <SettingRow label={t("setting.system-section.display-with-updated-time")}>
+      <SettingGroup title={t("setting.memo.title")}>
+        <SettingRow label={t("setting.system.display-with-updated-time")}>
           <Switch
             checked={memoRelatedSetting.displayWithUpdateTime}
             onCheckedChange={(checked) => updatePartialSetting({ displayWithUpdateTime: checked })}
           />
         </SettingRow>
 
-        <SettingRow label={t("setting.system-section.enable-double-click-to-edit")}>
+        <SettingRow label={t("setting.system.enable-double-click-to-edit")}>
           <Switch
             checked={memoRelatedSetting.enableDoubleClickEdit}
             onCheckedChange={(checked) => updatePartialSetting({ enableDoubleClickEdit: checked })}
           />
         </SettingRow>
 
-        <SettingRow label={t("setting.memo-related-settings.content-length-limit")}>
+        <SettingRow label={t("setting.memo.content-length-limit")}>
           <Input
             className="w-24"
             type="number"
@@ -95,7 +95,7 @@ const MemoRelatedSettings = () => {
         </SettingRow>
       </SettingGroup>
 
-      <SettingGroup title={t("setting.memo-related-settings.reactions")} showSeparator>
+      <SettingGroup title={t("setting.memo.reactions")} showSeparator>
         <div className="w-full flex flex-row flex-wrap gap-2">
           {memoRelatedSetting.reactions.map((reactionType) => (
             <Badge key={reactionType} variant="outline" className="flex items-center gap-1.5 h-8 px-3">

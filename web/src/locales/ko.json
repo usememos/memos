@@ -38,7 +38,15 @@
     "created-at": "생성일",
     "database": "데이터베이스",
     "day": "일",
-    "days": "일",
+    "days": {
+      "fri": "금",
+      "mon": "월",
+      "sat": "토",
+      "sun": "일",
+      "thu": "목",
+      "tue": "화",
+      "wed": "수"
+    },
     "delete": "삭제",
     "description": "설명",
     "edit": "편집",
@@ -108,15 +116,6 @@
     "visibility": "공개 범위",
     "yourself": "자기 자신"
   },
-  "days": {
-    "fri": "금",
-    "mon": "월",
-    "sat": "토",
-    "sun": "일",
-    "thu": "목",
-    "tue": "화",
-    "wed": "수"
-  },
   "editor": {
     "add-your-comment-here": "여기에 댓글을 추가하세요...",
     "any-thoughts": "떠오르는 게 있나요...",
@@ -126,11 +125,6 @@
     "save": "저장",
     "saving": "저장 중...",
     "slash-commands": "명령어를 보시려면 /를 입력하세요."
-  },
-  "filters": {
-    "has-code": "코드있음",
-    "has-link": "링크있음",
-    "has-task-list": "할일목록있음"
   },
   "inbox": {
     "failed-to-load": "알림함 항목을 불러오지 못했습니다",
@@ -162,7 +156,11 @@
     "direction-asc": "오름차순",
     "direction-desc": "내림차순",
     "display-time": "표시 시간",
-    "filters": "필터",
+    "filters": {
+      "has-code": "코드있음",
+      "has-link": "링크있음",
+      "has-task-list": "할일목록있음"
+    },
     "links": "링크",
     "list": "목록",
     "load-more": "더보기",
@@ -251,53 +249,7 @@
     "go-to-home": "홈으로"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "액세스 토큰이 복사되었습니다",
-      "access-token-deleted": "액세스 토큰 `{{description}}`이 삭제되었습니다",
-      "access-token-deletion": "액세스 토큰 {{description}}을 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다.",
-      "access-token-deletion-description": "이 작업은 되돌릴 수 없습니다. 이 토큰을 사용하는 서비스들은 새 토큰을 사용하도록 업데이트해야 합니다.",
-      "create-dialog": {
-        "access-token-created": "액세스 토큰 `{{description}}`이 생성되었습니다",
-        "create-access-token": "액세스 토큰 생성",
-        "created-at": "생성일",
-        "description": "설명",
-        "duration-1m": "1개월",
-        "duration-8h": "8시간",
-        "duration-never": "영구",
-        "expiration": "만료",
-        "expires-at": "만료일",
-        "some-description": "설명..."
-      },
-      "description": "계정의 모든 액세스 토큰 목록입니다.",
-      "title": "액세스 토큰",
-      "token": "토큰"
-    },
-    "account-section": {
-      "change-password": "비밀번호 변경",
-      "email-note": "선택 사항",
-      "export-memos": "메모 내보내기",
-      "nickname-note": "배너에 표시됨",
-      "openapi-reset": "OpenAPI 키 초기화",
-      "openapi-sample-post": "안녕, {{url}} ! #memo",
-      "openapi-title": "OpenAPI",
-      "reset-api": "API 초기화",
-      "title": "계정 정보",
-      "update-information": "정보 변경",
-      "username-note": "로그인하는 데 사용됨"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "닉네임 변경 금지",
-      "disallow-change-username": "유저네임 변경 금지",
-      "disallow-password-auth": "비밀번호 인증 금지",
-      "disallow-user-registration": "회원가입 금지",
-      "monday": "월요일",
-      "saturday": "토요일",
-      "sunday": "일요일",
-      "week-start-day": "주 시작 요일"
-    },
-    "member": "멤버",
-    "member-list": "멤버 목록",
-    "member-section": {
+    "member": {
       "admin": "관리자",
       "archive-member": "멤버 보관처리",
       "archive-success": "{{username}}님이 성공적으로 보관처리되었습니다",
@@ -309,30 +261,24 @@
       "delete-warning": "멤버 {{username}}의 계정을 완전히 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다.",
       "delete-warning-description": "이 작업은 되돌릴 수 없습니다.",
       "restore-success": "{{username}}님이 성공적으로 복구되었습니다",
-      "user": "사용자"
+      "user": "사용자",
+      "label": "멤버",
+      "list-title": "멤버 목록"
     },
-    "memo-related": "메모",
-    "memo-related-settings": {
-      "content-length-limit": "내용 길이 제한 (바이트)",
-      "enable-blur-nsfw-content": "민감한(성인) 콘텐츠 블러 처리 활성화",
-      "enable-memo-comments": "메모 댓글 활성화",
-      "enable-memo-location": "메모 위치 활성화",
-      "reactions": "반응",
-      "title": "메모 관련 설정"
+    "my-account": {
+      "label": "내 계정"
     },
-    "my-account": "내 계정",
-    "preference": "개인 설정",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "메모에 표시할 시각",
       "default-memo-visibility": "메모 공개 범위 기본값",
-      "theme": "테마"
+      "theme": "테마",
+      "label": "개인 설정"
     },
     "shortcut": {
       "delete-confirm": "바로가기 `{{title}}`를 정말로 삭제하시겠습니까?",
       "delete-success": "바로가기 `{{title}}`가 성공적으로 삭제되었습니다"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "인증 엔드포인트",
       "client-id": "클라이언트 ID",
       "client-secret": "클라이언트 비밀키",
@@ -354,10 +300,10 @@
       "template": "템플릿",
       "token-endpoint": "토큰 엔드포인트",
       "update-sso": "SSO 수정",
-      "user-endpoint": "유저 엔드포인트"
+      "user-endpoint": "유저 엔드포인트",
+      "label": "SSO"
     },
-    "storage": "저장소",
-    "storage-section": {
+    "storage": {
       "accesskey": "액세스 키",
       "accesskey-placeholder": "액세스 키 / 액세스 ID",
       "bucket": "버킷",
@@ -389,10 +335,10 @@
       "url-prefix-placeholder": "URL 앞에 붙을 커스텀 접두사, 선택 사항",
       "url-suffix": "URL 접미사",
       "url-suffix-placeholder": "URL 뒤에 붙을 커스텀 접미사, 선택 사항",
-      "warning-text": "저장소 서비스 \"{{name}}\"을(를) 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다"
+      "warning-text": "저장소 서비스 \"{{name}}\"을(를) 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다",
+      "label": "저장소"
     },
-    "system": "시스템",
-    "system-section": {
+    "system": {
       "additional-script": "추가 스크립트",
       "additional-script-placeholder": "추가 JavaScript 코드",
       "additional-style": "추가 스타일",
@@ -416,10 +362,64 @@
       "max-upload-size-hint": "권장값은 32 MiB입니다.",
       "removed-completed-task-list-items": "완료된 할 일 삭제 활성화",
       "server-name": "서버 이름",
-      "title": "일반"
+      "title": "일반",
+      "label": "시스템"
     },
     "version": "버전",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "액세스 토큰이 복사되었습니다",
+      "access-token-deleted": "액세스 토큰 `{{description}}`이 삭제되었습니다",
+      "access-token-deletion": "액세스 토큰 {{description}}을 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다.",
+      "access-token-deletion-description": "이 작업은 되돌릴 수 없습니다. 이 토큰을 사용하는 서비스들은 새 토큰을 사용하도록 업데이트해야 합니다.",
+      "create-dialog": {
+        "access-token-created": "액세스 토큰 `{{description}}`이 생성되었습니다",
+        "create-access-token": "액세스 토큰 생성",
+        "created-at": "생성일",
+        "description": "설명",
+        "duration-1m": "1개월",
+        "duration-8h": "8시간",
+        "duration-never": "영구",
+        "expiration": "만료",
+        "expires-at": "만료일",
+        "some-description": "설명..."
+      },
+      "description": "계정의 모든 액세스 토큰 목록입니다.",
+      "title": "액세스 토큰",
+      "token": "토큰"
+    },
+    "account": {
+      "change-password": "비밀번호 변경",
+      "email-note": "선택 사항",
+      "export-memos": "메모 내보내기",
+      "nickname-note": "배너에 표시됨",
+      "openapi-reset": "OpenAPI 키 초기화",
+      "openapi-sample-post": "안녕, {{url}} ! #memo",
+      "openapi-title": "OpenAPI",
+      "reset-api": "API 초기화",
+      "title": "계정 정보",
+      "update-information": "정보 변경",
+      "username-note": "로그인하는 데 사용됨"
+    },
+    "instance": {
+      "disallow-change-nickname": "닉네임 변경 금지",
+      "disallow-change-username": "유저네임 변경 금지",
+      "disallow-password-auth": "비밀번호 인증 금지",
+      "disallow-user-registration": "회원가입 금지",
+      "monday": "월요일",
+      "saturday": "토요일",
+      "sunday": "일요일",
+      "week-start-day": "주 시작 요일"
+    },
+    "memo": {
+      "content-length-limit": "내용 길이 제한 (바이트)",
+      "enable-blur-nsfw-content": "민감한(성인) 콘텐츠 블러 처리 활성화",
+      "enable-memo-comments": "메모 댓글 활성화",
+      "enable-memo-location": "메모 위치 활성화",
+      "reactions": "반응",
+      "title": "메모 관련 설정",
+      "label": "메모"
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "기억하기 쉬운 이름",
         "create-webhook": "Webhook 생성",

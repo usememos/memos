@@ -27,7 +27,7 @@ const MyAccountSection = () => {
 
   return (
     <SettingSection>
-      <SettingGroup title={t("setting.account-section.title")}>
+      <SettingGroup title={t("setting.account.title")}>
         <div className="w-full flex flex-row justify-start items-center gap-3">
           <UserAvatar className="shrink-0 w-12 h-12" avatarUrl={user?.avatarUrl} />
           <div className="flex-1 min-w-0 flex flex-col justify-center items-start gap-1">
@@ -49,7 +49,7 @@ const MyAccountSection = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleChangePassword}>{t("setting.account-section.change-password")}</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleChangePassword}>{t("setting.account.change-password")}</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

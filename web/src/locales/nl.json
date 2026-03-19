@@ -38,7 +38,15 @@
     "created-at": "Aangemaakt op",
     "database": "Database",
     "day": "Dag",
-    "days": "Dagen",
+    "days": {
+      "fri": "vr",
+      "mon": "ma",
+      "sat": "za",
+      "sun": "zo",
+      "thu": "do",
+      "tue": "di",
+      "wed": "wo"
+    },
     "delete": "Verwijderen",
     "description": "Beschrijving",
     "edit": "Bewerken",
@@ -108,15 +116,6 @@
     "visibility": "Zichtbaarheid",
     "yourself": "Jijzelf"
   },
-  "days": {
-    "fri": "vr",
-    "mon": "ma",
-    "sat": "za",
-    "sun": "zo",
-    "thu": "do",
-    "tue": "di",
-    "wed": "wo"
-  },
   "editor": {
     "add-your-comment-here": "Voeg hier je opmerking toe…",
     "any-thoughts": "Enkele gedachten…",
@@ -126,11 +125,6 @@
     "save": "Opslaan",
     "saving": "Opslaan...",
     "slash-commands": "Typ `/` voor opdrachten"
-  },
-  "filters": {
-    "has-code": "heeftCode",
-    "has-link": "heeftLink",
-    "has-task-list": "heeftTakenlijst"
   },
   "inbox": {
     "failed-to-load": "Postvak-item laden mislukt",
@@ -162,7 +156,11 @@
     "direction-asc": "Oplopend",
     "direction-desc": "Aflopend",
     "display-time": "Tijd weergeven",
-    "filters": "Filters",
+    "filters": {
+      "has-code": "heeftCode",
+      "has-link": "heeftLink",
+      "has-task-list": "heeftTakenlijst"
+    },
     "links": "Links",
     "list": "Lijst",
     "load-more": "Meer laden",
@@ -251,53 +249,7 @@
     "go-to-home": "Ga naar homepagina"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "Accesstoken gekopieerd naar klembord",
-      "access-token-deleted": "Accesstoken `{{description}}` verwijderd",
-      "access-token-deletion": "Weet je zeker dat je accesstoken `{{description}}` wilt verwijderen? DEZE ACTIE IS NIET TERUG TE DRAAIEN.",
-      "access-token-deletion-description": "Deze actie is onomkeerelijk. Je moet alle services die deze token gebruiken bijwerken om een nieuwe token te gebruiken.",
-      "create-dialog": {
-        "access-token-created": "Accesstoken `{{description}}` aangemaakt",
-        "create-access-token": "Accesstoken aanmaken",
-        "created-at": "Aangemaakt op",
-        "description": "Beschrijving",
-        "duration-1m": "1 maand",
-        "duration-8h": "8 uur",
-        "duration-never": "Nooit",
-        "expiration": "Vervaldatum",
-        "expires-at": "Verloopt op",
-        "some-description": "Een beschrijving…"
-      },
-      "description": "Lijst van alle accesstokens voor je account.",
-      "title": "Accesstokens",
-      "token": "Token"
-    },
-    "account-section": {
-      "change-password": "Wachtwoord wijzigen",
-      "email-note": "Optioneel",
-      "export-memos": "Memo's exporteren",
-      "nickname-note": "Wordt getoond in de banner",
-      "openapi-reset": "OpenAPI-sleutel resetten",
-      "openapi-sample-post": "Hallo #memos vanaf {{url}}",
-      "openapi-title": "OpenAPI-sleutel",
-      "reset-api": "API resetten",
-      "title": "Accountinformatie",
-      "update-information": "Informatie wijzigen",
-      "username-note": "Gebruikt om in te loggen"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Wijzigen van bijnaam niet toestaan",
-      "disallow-change-username": "Wijzigen van gebruikersnaam niet toestaan",
-      "disallow-password-auth": "Wachtwoordauthenticatie niet toestaan",
-      "disallow-user-registration": "Registratie van gebruikers niet toestaan",
-      "monday": "Maandag",
-      "saturday": "Zaterdag",
-      "sunday": "Zondag",
-      "week-start-day": "Eerste weekdag"
-    },
-    "member": "Gebruiker",
-    "member-list": "Gebruikers",
-    "member-section": {
+    "member": {
       "admin": "Beheerder",
       "archive-member": "Gebruiker archiveren",
       "archive-success": "{{username}} succesvol gearchiveerd",
@@ -309,30 +261,24 @@
       "delete-warning": "Weet je zeker dat je {{username}} wilt verwijderen? DEZE ACTIE IS NIET TERUG TE DRAAIEN",
       "delete-warning-description": "DEZE ACTIE IS NIET TERUG TE DRAAIEN",
       "restore-success": "{{username}} succesvol teruggezet",
-      "user": "Gebruiker"
+      "user": "Gebruiker",
+      "label": "Gebruiker",
+      "list-title": "Gebruikers"
     },
-    "memo-related": "Memo",
-    "memo-related-settings": {
-      "content-length-limit": "Maximale inhoudslengte (Byte)",
-      "enable-blur-nsfw-content": "NSFW-inhoud vervagen inschakelen",
-      "enable-memo-comments": "Memo-opmerkingen inschakelen",
-      "enable-memo-location": "Memo-locatie inschakelen",
-      "reactions": "Reacties",
-      "title": "Memo-gerelateerde instellingen"
+    "my-account": {
+      "label": "Mijn account"
     },
-    "my-account": "Mijn account",
-    "preference": "Voorkeuren",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "Memo weergavetijd",
       "default-memo-visibility": "Standaard memo zichtbaarheid",
-      "theme": "Thema"
+      "theme": "Thema",
+      "label": "Voorkeuren"
     },
     "shortcut": {
       "delete-confirm": "Weet je zeker dat je sneltoets `{{title}}` wilt verwijderen?",
       "delete-success": "Sneltoets `{{title}}` succesvol verwijderd"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "Autorisatie-eindpunt",
       "client-id": "Client-ID",
       "client-secret": "Client-geheim",
@@ -354,10 +300,10 @@
       "template": "Sjabloon",
       "token-endpoint": "Token-eindpunt",
       "update-sso": "SSO bijwerken",
-      "user-endpoint": "Gebruikers-eindpunt"
+      "user-endpoint": "Gebruikers-eindpunt",
+      "label": "SSO"
     },
-    "storage": "Opslag",
-    "storage-section": {
+    "storage": {
       "accesskey": "Access key",
       "accesskey-placeholder": "Access key / Access ID",
       "bucket": "Bucket",
@@ -389,10 +335,10 @@
       "url-prefix-placeholder": "Aangepaste URL-prefix, optioneel",
       "url-suffix": "URL-suffix",
       "url-suffix-placeholder": "Aangepaste URL-suffix, optioneel",
-      "warning-text": "Weet je zeker dat je opslagdienst \"{{name}}\" wilt verwijderen? DEZE ACTIE IS NIET TERUG TE DRAAIEN!"
+      "warning-text": "Weet je zeker dat je opslagdienst \"{{name}}\" wilt verwijderen? DEZE ACTIE IS NIET TERUG TE DRAAIEN!",
+      "label": "Opslag"
     },
-    "system": "Systeem",
-    "system-section": {
+    "system": {
       "additional-script": "Optionele scripts",
       "additional-script-placeholder": "Optionele JavaScript code",
       "additional-style": "Optionele stijl",
@@ -416,10 +362,64 @@
       "max-upload-size-hint": "32 MiB wordt aangeraden.",
       "removed-completed-task-list-items": "Verwijder voltooid inschakelen",
       "server-name": "Servernaam",
-      "title": "Algemeen"
+      "title": "Algemeen",
+      "label": "Systeem"
     },
     "version": "Versie",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "Accesstoken gekopieerd naar klembord",
+      "access-token-deleted": "Accesstoken `{{description}}` verwijderd",
+      "access-token-deletion": "Weet je zeker dat je accesstoken `{{description}}` wilt verwijderen? DEZE ACTIE IS NIET TERUG TE DRAAIEN.",
+      "access-token-deletion-description": "Deze actie is onomkeerelijk. Je moet alle services die deze token gebruiken bijwerken om een nieuwe token te gebruiken.",
+      "create-dialog": {
+        "access-token-created": "Accesstoken `{{description}}` aangemaakt",
+        "create-access-token": "Accesstoken aanmaken",
+        "created-at": "Aangemaakt op",
+        "description": "Beschrijving",
+        "duration-1m": "1 maand",
+        "duration-8h": "8 uur",
+        "duration-never": "Nooit",
+        "expiration": "Vervaldatum",
+        "expires-at": "Verloopt op",
+        "some-description": "Een beschrijving…"
+      },
+      "description": "Lijst van alle accesstokens voor je account.",
+      "title": "Accesstokens",
+      "token": "Token"
+    },
+    "account": {
+      "change-password": "Wachtwoord wijzigen",
+      "email-note": "Optioneel",
+      "export-memos": "Memo's exporteren",
+      "nickname-note": "Wordt getoond in de banner",
+      "openapi-reset": "OpenAPI-sleutel resetten",
+      "openapi-sample-post": "Hallo #memos vanaf {{url}}",
+      "openapi-title": "OpenAPI-sleutel",
+      "reset-api": "API resetten",
+      "title": "Accountinformatie",
+      "update-information": "Informatie wijzigen",
+      "username-note": "Gebruikt om in te loggen"
+    },
+    "instance": {
+      "disallow-change-nickname": "Wijzigen van bijnaam niet toestaan",
+      "disallow-change-username": "Wijzigen van gebruikersnaam niet toestaan",
+      "disallow-password-auth": "Wachtwoordauthenticatie niet toestaan",
+      "disallow-user-registration": "Registratie van gebruikers niet toestaan",
+      "monday": "Maandag",
+      "saturday": "Zaterdag",
+      "sunday": "Zondag",
+      "week-start-day": "Eerste weekdag"
+    },
+    "memo": {
+      "content-length-limit": "Maximale inhoudslengte (Byte)",
+      "enable-blur-nsfw-content": "NSFW-inhoud vervagen inschakelen",
+      "enable-memo-comments": "Memo-opmerkingen inschakelen",
+      "enable-memo-location": "Memo-locatie inschakelen",
+      "reactions": "Reacties",
+      "title": "Memo-gerelateerde instellingen",
+      "label": "Memo"
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "Een makkelijk te onthouden naam",
         "create-webhook": "Webhook aanmaken",

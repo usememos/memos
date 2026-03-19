@@ -38,7 +38,15 @@
     "created-at": "Created at",
     "database": "Database",
     "day": "Day",
-    "days": "Days",
+    "days": {
+      "fri": "Fri",
+      "mon": "Mon",
+      "sat": "Sat",
+      "sun": "Sun",
+      "thu": "Thu",
+      "tue": "Tue",
+      "wed": "Wed"
+    },
     "delete": "Delete",
     "description": "Description",
     "edit": "Edit",
@@ -108,15 +116,6 @@
     "visibility": "Visibility",
     "yourself": "Yourself"
   },
-  "days": {
-    "fri": "Fri",
-    "mon": "Mon",
-    "sat": "Sat",
-    "sun": "Sun",
-    "thu": "Thu",
-    "tue": "Tue",
-    "wed": "Wed"
-  },
   "editor": {
     "add-your-comment-here": "Add your comment here...",
     "any-thoughts": "Any thoughts...",
@@ -127,17 +126,17 @@
     "saving": "Saving...",
     "slash-commands": "Type `/` for commands"
   },
-  "filters": {
-    "has-code": "hasCode",
-    "has-link": "hasLink",
-    "has-task-list": "hasTaskList"
-  },
   "inbox": {
     "failed-to-load": "Failed to load inbox item",
     "memo-comment": "{{user}} has a comment on your {{memo}}.",
     "no-archived": "No archived notifications",
     "no-unread": "No unread notifications",
     "unread": "Unread"
+  },
+  "live-update": {
+    "connected": "Live updates active",
+    "connecting": "Connecting to live updates...",
+    "disconnected": "Live updates unavailable"
   },
   "markdown": {
     "checkbox": "Checkbox",
@@ -162,7 +161,12 @@
     "direction-asc": "Ascending",
     "direction-desc": "Descending",
     "display-time": "Display Time",
-    "filters": "Filters",
+    "filters": {
+      "has-code": "hasCode",
+      "has-link": "hasLink",
+      "has-task-list": "hasTaskList",
+      "label": "Filters"
+    },
     "links": "Links",
     "list": "List",
     "load-more": "Load more",
@@ -171,6 +175,31 @@
     "no-memos": "No memos.",
     "order-by": "Order By",
     "search-placeholder": "Search memos...",
+    "share": {
+      "active-links": "Active share links",
+      "copied": "Copied!",
+      "copy": "Copy link",
+      "create-failed": "Failed to create share link",
+      "create-link": "Create new link",
+      "creating": "Creating…",
+      "expiry-1-day": "1 day",
+      "expiry-30-days": "30 days",
+      "expiry-7-days": "7 days",
+      "expiry-label": "Expires",
+      "expiry-never": "Never",
+      "expires-on": "Expires {{date}}",
+      "invalid-link": "This link is invalid or has expired.",
+      "never-expires": "Never expires",
+      "no-links": "No share links yet. Create one below.",
+      "open-panel": "Manage share links",
+      "revoke": "Revoke",
+      "revoke-failed": "Failed to revoke link",
+      "revoked": "Share link revoked",
+      "section-label": "Sharing",
+      "share": "Share",
+      "shared-by": "Shared by {{creator}}",
+      "title": "Share this memo"
+    },
     "show-less": "Show less",
     "show-more": "Show more",
     "to-do": "To-do",
@@ -251,7 +280,7 @@
     "go-to-home": "Go to Home"
   },
   "setting": {
-    "access-token-section": {
+    "access-token": {
       "access-token-copied-to-clipboard": "Access token copied to clipboard",
       "access-token-deleted": "Access token `{{description}}` deleted",
       "access-token-deletion": "Are you sure you want to delete access token `{{description}}`?",
@@ -272,7 +301,7 @@
       "title": "Access Tokens",
       "token": "Token"
     },
-    "account-section": {
+    "account": {
       "change-password": "Change password",
       "email-note": "Optional",
       "export-memos": "Export Memos",
@@ -285,7 +314,7 @@
       "update-information": "Update Information",
       "username-note": "Used to sign in"
     },
-    "instance-section": {
+    "instance": {
       "disallow-change-nickname": "Disallow changing nickname",
       "disallow-change-username": "Disallow changing username",
       "disallow-password-auth": "Disallow password auth",
@@ -295,9 +324,7 @@
       "sunday": "Sunday",
       "week-start-day": "Week start day"
     },
-    "member": "Member",
-    "member-list": "Member list",
-    "member-section": {
+    "member": {
       "admin": "Admin",
       "archive-member": "Archive member",
       "archive-success": "{{username}} archived successfully",
@@ -308,31 +335,34 @@
       "delete-success": "{{username}} deleted successfully",
       "delete-warning": "Are you sure you want to delete {{username}}?",
       "delete-warning-description": "THIS ACTION IS IRREVERSIBLE",
+      "label": "Member",
+      "list-title": "Member list",
       "restore-success": "{{username}} restored successfully",
       "user": "User"
     },
-    "memo-related": "Memo",
-    "memo-related-settings": {
+    "memo": {
       "content-length-limit": "Content length limit (Byte)",
       "enable-blur-nsfw-content": "Enable sensitive content (NSFW) blurring",
       "enable-memo-comments": "Enable memo comments",
       "enable-memo-location": "Enable memo location",
+      "label": "Memo",
       "reactions": "Reactions",
       "title": "Memo related settings"
     },
-    "my-account": "My Account",
-    "preference": "Preferences",
-    "preference-section": {
+    "my-account": {
+      "label": "My Account"
+    },
+    "preference": {
       "default-memo-sort-option": "Memo display time",
       "default-memo-visibility": "Default memo visibility",
+      "label": "Preferences",
       "theme": "Theme"
     },
     "shortcut": {
       "delete-confirm": "Are you sure you want to delete shortcut `{{title}}`?",
       "delete-success": "Shortcut `{{title}}` deleted successfully"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "Authorization endpoint",
       "client-id": "Client ID",
       "client-secret": "Client secret",
@@ -344,6 +374,7 @@
       "display-name": "Display Name",
       "identifier": "Identifier",
       "identifier-filter": "Identifier Filter",
+      "label": "SSO",
       "no-sso-found": "No SSO found.",
       "redirect-url": "Redirect URL",
       "scopes": "Scopes",
@@ -356,8 +387,7 @@
       "update-sso": "Update SSO",
       "user-endpoint": "User endpoint"
     },
-    "storage": "Storage",
-    "storage-section": {
+    "storage": {
       "accesskey": "Access key",
       "accesskey-placeholder": "Access key / Access ID",
       "bucket": "Bucket",
@@ -368,6 +398,7 @@
       "delete-storage": "Delete Storage",
       "endpoint": "Endpoint",
       "filepath-template": "Filepath template",
+      "label": "Storage",
       "local-storage-path": "Local storage path",
       "path": "Storage Path",
       "path-description": "You can use the same dynamic variables from local storage, like {filename}",
@@ -391,8 +422,7 @@
       "url-suffix-placeholder": "Custom URL suffix, optional",
       "warning-text": "Are you sure you want to delete storage service `{{name}}`? THIS ACTION IS IRREVERSIBLE"
     },
-    "system": "System",
-    "system-section": {
+    "system": {
       "additional-script": "Additional script",
       "additional-script-placeholder": "Additional JavaScript code",
       "additional-style": "Additional style",
@@ -406,12 +436,13 @@
       },
       "disable-password-login": "Disable password login",
       "disable-password-login-final-warning": "Please type `CONFIRM` if you know what you are doing.",
-      "disable-password-login-warning": "This will disable password login for all users. It is not possible to log in without reverting this setting in the database if your configured identity providers fail. You’ll also have to be extra careful when removing an identity provider",
+      "disable-password-login-warning": "This will disable password login for all users. It is not possible to log in without reverting this setting in the database if your configured identity providers fail. You'll also have to be extra careful when removing an identity provider",
       "display-with-updated-time": "Display with updated time",
       "enable-auto-compact": "Enable auto compact",
       "enable-double-click-to-edit": "Enable double click to edit",
       "enable-password-login": "Enable password login",
       "enable-password-login-warning": "This will enable password login for all users. Continue only if you want to users to be able to log in using both SSO and password",
+      "label": "System",
       "max-upload-size": "Maximum upload size (MiB)",
       "max-upload-size-hint": "Recommended value is 32 MiB.",
       "removed-completed-task-list-items": "Enable removal of completed task list items",
@@ -419,7 +450,7 @@
       "title": "General"
     },
     "version": "Version",
-    "webhook-section": {
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "An easy-to-remember name",
         "create-webhook": "Create webhook",
@@ -462,35 +493,5 @@
     "select-visibility": "Visibility",
     "tags": "Tags",
     "upload-attachment": "Upload Attachment(s)"
-  },
-  "sse": {
-    "connected": "Live updates active",
-    "connecting": "Connecting to live updates...",
-    "disconnected": "Live updates unavailable"
-  },
-  "memo-share": {
-    "share": "Share",
-    "section-label": "Sharing",
-    "open-panel": "Manage share links",
-    "title": "Share this memo",
-    "active-links": "Active share links",
-    "no-links": "No share links yet. Create one below.",
-    "create-link": "Create new link",
-    "copy": "Copy link",
-    "copied": "Copied!",
-    "revoke": "Revoke",
-    "expiry-label": "Expires",
-    "expiry-never": "Never",
-    "expiry-1-day": "1 day",
-    "expiry-7-days": "7 days",
-    "expiry-30-days": "30 days",
-    "never-expires": "Never expires",
-    "expires-on": "Expires {{date}}",
-    "creating": "Creating…",
-    "revoked": "Share link revoked",
-    "revoke-failed": "Failed to revoke link",
-    "create-failed": "Failed to create share link",
-    "invalid-link": "This link is invalid or has expired.",
-    "shared-by": "Shared by {{creator}}"
   }
 }

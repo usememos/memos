@@ -38,7 +38,15 @@
     "created-at": "Erstellt am",
     "database": "Datenbank",
     "day": "Tag",
-    "days": "Tage",
+    "days": {
+      "fri": "Fr",
+      "mon": "Mo",
+      "sat": "Sa",
+      "sun": "So",
+      "thu": "Do",
+      "tue": "Di",
+      "wed": "Mi"
+    },
     "delete": "Löschen",
     "description": "Beschreibung",
     "edit": "Bearbeiten",
@@ -108,15 +116,6 @@
     "visibility": "Sichtbarkeit",
     "yourself": "Du selbst"
   },
-  "days": {
-    "fri": "Fr",
-    "mon": "Mo",
-    "sat": "Sa",
-    "sun": "So",
-    "thu": "Do",
-    "tue": "Di",
-    "wed": "Mi"
-  },
   "editor": {
     "add-your-comment-here": "Füge deinen Kommentar hinzu...",
     "any-thoughts": "Ein Gedanke...",
@@ -126,11 +125,6 @@
     "save": "Speichern",
     "saving": "Speichern...",
     "slash-commands": "Nutze `/` für Befehle"
-  },
-  "filters": {
-    "has-code": "hatCode",
-    "has-link": "hatLink",
-    "has-task-list": "hatAufgabenliste"
   },
   "inbox": {
     "failed-to-load": "Fehler beim Laden des Eintrags",
@@ -162,7 +156,11 @@
     "direction-asc": "Aufsteigend",
     "direction-desc": "Absteigend",
     "display-time": "Anzeigedatum",
-    "filters": "Filter",
+    "filters": {
+      "has-code": "hatCode",
+      "has-link": "hatLink",
+      "has-task-list": "hatAufgabenliste"
+    },
     "links": "Links",
     "list": "Liste",
     "load-more": "Mehr laden",
@@ -251,53 +249,7 @@
     "go-to-home": "Zurück zur Startseite"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "Zugangstoken in die Zwischenablage kopiert",
-      "access-token-deleted": "Zugangstoken `{{description}}` gelöscht",
-      "access-token-deletion": "Bist du sicher, dass du das Zugangstoken `{{description}}` löschen möchtest? DIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN.",
-      "access-token-deletion-description": "Diese Aktion kann nicht rückgängig gemacht werden. Du musst alle Dienste, die diesen Token verwenden, mit einem neuen Token nutzen.",
-      "create-dialog": {
-        "access-token-created": "Zugangstoken `{{description}}` erstellt",
-        "create-access-token": "Zugangstoken erstellen",
-        "created-at": "Erstellt am",
-        "description": "Beschreibung",
-        "duration-1m": "1 Monat",
-        "duration-8h": "8 Stunden",
-        "duration-never": "Nie",
-        "expiration": "Ablauf",
-        "expires-at": "Läuft ab am",
-        "some-description": "Eine Beschreibung..."
-      },
-      "description": "Liste aller Zugangstoken für deinen Benutzer.",
-      "title": "Zugangstoken",
-      "token": "Token"
-    },
-    "account-section": {
-      "change-password": "Passwort ändern",
-      "email-note": "Optional",
-      "export-memos": "Notizen exportieren",
-      "nickname-note": "Wird im Banner angezeigt",
-      "openapi-reset": "OpenAPI Key zurücksetzen",
-      "openapi-sample-post": "Hallo #memos von {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "API zurücksetzen",
-      "title": "Konto-Informationen",
-      "update-information": "Informationen ändern",
-      "username-note": "Zum Anmelden verwendet"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Ändern des Spitznamens verbieten",
-      "disallow-change-username": "Ändern des Benutzernamens verbieten",
-      "disallow-password-auth": "Passwort-Authentifizierung verbieten",
-      "disallow-user-registration": "Benutzerregistrierung verbieten",
-      "monday": "Montag",
-      "saturday": "Samstag",
-      "sunday": "Sonntag",
-      "week-start-day": "Wochenstarttag"
-    },
-    "member": "Mitglied",
-    "member-list": "Mitgliederliste",
-    "member-section": {
+    "member": {
       "admin": "Admin",
       "archive-member": "Mitglied archivieren",
       "archive-success": "{{username}} erfolgreich archiviert",
@@ -309,30 +261,24 @@
       "delete-warning": "Bist du sicher, dass du {{username}} löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
       "delete-warning-description": "DIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
       "restore-success": "{{username}} erfolgreich wiederhergestellt",
-      "user": "Benutzer"
+      "user": "Benutzer",
+      "label": "Mitglied",
+      "list-title": "Mitgliederliste"
     },
-    "memo-related": "Notiz",
-    "memo-related-settings": {
-      "content-length-limit": "Limitierung der Inhaltslänge (Byte)",
-      "enable-blur-nsfw-content": "Unschärfe für sensible Inhalte (NSFW) aktivieren",
-      "enable-memo-comments": "Kommentare für Notizen aktivieren",
-      "enable-memo-location": "Notiz-Standort aktivieren",
-      "reactions": "Reaktionen",
-      "title": "Notiz-Einstellungen"
+    "my-account": {
+      "label": "Mein Konto"
     },
-    "my-account": "Mein Konto",
-    "preference": "Einstellungen",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "Anzeigedatum der Notiz",
       "default-memo-visibility": "Standard-Notizsichtbarkeit",
-      "theme": "Design"
+      "theme": "Design",
+      "label": "Einstellungen"
     },
     "shortcut": {
       "delete-confirm": "Bist du sicher, dass du die Verknüpfung `{{title}}` löschen möchtest?",
       "delete-success": "Verknüpfung `{{title}}` erfolgreich gelöscht"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "Autorisierungsendpunkt",
       "client-id": "Client ID",
       "client-secret": "Client Secret",
@@ -354,10 +300,10 @@
       "template": "Vorlage",
       "token-endpoint": "Token-Endpunkt",
       "update-sso": "SSO aktualisieren",
-      "user-endpoint": "Benutzer-Endpunkt"
+      "user-endpoint": "Benutzer-Endpunkt",
+      "label": "SSO"
     },
-    "storage": "Speicher",
-    "storage-section": {
+    "storage": {
       "accesskey": "Zugangsschlüssel",
       "accesskey-placeholder": "Zugangsschlüssel / Zugangs-ID",
       "bucket": "Bucket",
@@ -389,10 +335,10 @@
       "url-prefix-placeholder": "Benutzerdefiniertes URL-Präfix, optional",
       "url-suffix": "URL-Suffix",
       "url-suffix-placeholder": "Benutzerdefiniertes URL-Suffix, optional",
-      "warning-text": "Bist du sicher, dass du den Speicherdienst \"{{name}}\" löschen möchtest? DIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN"
+      "warning-text": "Bist du sicher, dass du den Speicherdienst \"{{name}}\" löschen möchtest? DIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
+      "label": "Speicher"
     },
-    "system": "System",
-    "system-section": {
+    "system": {
       "additional-script": "Zusätzliches Skript",
       "additional-script-placeholder": "Zusätzlicher JavaScript-Code",
       "additional-style": "Zusätzlicher Stil",
@@ -416,10 +362,64 @@
       "max-upload-size-hint": "Empfohlener Wert ist 32 MiB.",
       "removed-completed-task-list-items": "Entfernen abgeschlossener Aufgaben aktivieren",
       "server-name": "Servername",
-      "title": "Allgemein"
+      "title": "Allgemein",
+      "label": "System"
     },
     "version": "Version",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "Zugangstoken in die Zwischenablage kopiert",
+      "access-token-deleted": "Zugangstoken `{{description}}` gelöscht",
+      "access-token-deletion": "Bist du sicher, dass du das Zugangstoken `{{description}}` löschen möchtest? DIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN.",
+      "access-token-deletion-description": "Diese Aktion kann nicht rückgängig gemacht werden. Du musst alle Dienste, die diesen Token verwenden, mit einem neuen Token nutzen.",
+      "create-dialog": {
+        "access-token-created": "Zugangstoken `{{description}}` erstellt",
+        "create-access-token": "Zugangstoken erstellen",
+        "created-at": "Erstellt am",
+        "description": "Beschreibung",
+        "duration-1m": "1 Monat",
+        "duration-8h": "8 Stunden",
+        "duration-never": "Nie",
+        "expiration": "Ablauf",
+        "expires-at": "Läuft ab am",
+        "some-description": "Eine Beschreibung..."
+      },
+      "description": "Liste aller Zugangstoken für deinen Benutzer.",
+      "title": "Zugangstoken",
+      "token": "Token"
+    },
+    "account": {
+      "change-password": "Passwort ändern",
+      "email-note": "Optional",
+      "export-memos": "Notizen exportieren",
+      "nickname-note": "Wird im Banner angezeigt",
+      "openapi-reset": "OpenAPI Key zurücksetzen",
+      "openapi-sample-post": "Hallo #memos von {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "API zurücksetzen",
+      "title": "Konto-Informationen",
+      "update-information": "Informationen ändern",
+      "username-note": "Zum Anmelden verwendet"
+    },
+    "instance": {
+      "disallow-change-nickname": "Ändern des Spitznamens verbieten",
+      "disallow-change-username": "Ändern des Benutzernamens verbieten",
+      "disallow-password-auth": "Passwort-Authentifizierung verbieten",
+      "disallow-user-registration": "Benutzerregistrierung verbieten",
+      "monday": "Montag",
+      "saturday": "Samstag",
+      "sunday": "Sonntag",
+      "week-start-day": "Wochenstarttag"
+    },
+    "memo": {
+      "content-length-limit": "Limitierung der Inhaltslänge (Byte)",
+      "enable-blur-nsfw-content": "Unschärfe für sensible Inhalte (NSFW) aktivieren",
+      "enable-memo-comments": "Kommentare für Notizen aktivieren",
+      "enable-memo-location": "Notiz-Standort aktivieren",
+      "reactions": "Reaktionen",
+      "title": "Notiz-Einstellungen",
+      "label": "Notiz"
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "Einprägsamer Name",
         "create-webhook": "Webhook erstellen",

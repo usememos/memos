@@ -40,7 +40,7 @@ const SharedMemo = () => {
     return (
       <div className="flex h-screen flex-col items-center justify-center gap-3 text-center">
         <AlertCircleIcon className="h-8 w-8 text-muted-foreground" />
-        <p className="text-sm text-muted-foreground">{t("memo-share.invalid-link")}</p>
+        <p className="text-sm text-muted-foreground">{t("memo.share.invalid-link")}</p>
       </div>
     );
   }

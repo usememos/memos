@@ -74,7 +74,7 @@ const SSOSection = () => {
     <SettingSection
       title={
         <div className="flex items-center gap-2">
-          <span>{t("setting.sso-section.sso-list")}</span>
+          <span>{t("setting.sso.sso-list")}</span>
           <LearnMore url="https://usememos.com/docs/configuration/authentication" />
         </div>
       }
@@ -122,7 +122,7 @@ const SSOSection = () => {
           },
         ]}
         data={identityProviderList}
-        emptyMessage={t("setting.sso-section.no-sso-found")}
+        emptyMessage={t("setting.sso.no-sso-found")}
         getRowKey={(provider) => provider.name}
       />
 
@@ -136,7 +136,7 @@ const SSOSection = () => {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(undefined)}
-        title={deleteTarget ? t("setting.sso-section.confirm-delete", { name: deleteTarget.title }) : ""}
+        title={deleteTarget ? t("setting.sso.confirm-delete", { name: deleteTarget.title }) : ""}
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={confirmDeleteIdentityProvider}

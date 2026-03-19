@@ -38,7 +38,15 @@
     "created-at": "建立於",
     "database": "資料庫",
     "day": "日",
-    "days": "日",
+    "days": {
+      "fri": "五",
+      "mon": "一",
+      "sat": "六",
+      "sun": "日",
+      "thu": "四",
+      "tue": "二",
+      "wed": "三"
+    },
     "delete": "刪除",
     "description": "說明",
     "edit": "編輯",
@@ -108,15 +116,6 @@
     "visibility": "瀏覽權限",
     "yourself": "您自己"
   },
-  "days": {
-    "fri": "五",
-    "mon": "一",
-    "sat": "六",
-    "sun": "日",
-    "thu": "四",
-    "tue": "二",
-    "wed": "三"
-  },
   "editor": {
     "add-your-comment-here": "在這裡添加您的評論...",
     "any-thoughts": "任何想法...",
@@ -126,11 +125,6 @@
     "save": "儲存",
     "saving": "儲存中...",
     "slash-commands": "輸入 `/` 以使用指令"
-  },
-  "filters": {
-    "has-code": "有程式碼",
-    "has-link": "有連結",
-    "has-task-list": "有待辦事項"
   },
   "inbox": {
     "failed-to-load": "載入失敗",
@@ -162,7 +156,11 @@
     "direction-asc": "升序",
     "direction-desc": "降序",
     "display-time": "顯示時間",
-    "filters": "篩選",
+    "filters": {
+      "has-code": "有程式碼",
+      "has-link": "有連結",
+      "has-task-list": "有待辦事項"
+    },
     "links": "連結",
     "list": "列表",
     "load-more": "載入更多",
@@ -251,53 +249,7 @@
     "go-to-home": "回到首頁"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "存取令牌已複製到剪貼簿",
-      "access-token-deleted": "存取令牌 `{{description}}` 已刪除",
-      "access-token-deletion": "您確定要刪除存取令牌 `{{description}}` 嗎？",
-      "access-token-deletion-description": "此操作無法恢復。您需要更新所有使用此令牌的服務以使用新的令牌。",
-      "create-dialog": {
-        "access-token-created": "存取令牌 `{{description}}` 已建立",
-        "create-access-token": "建立存取令牌",
-        "created-at": "建立於",
-        "description": "說明",
-        "duration-1m": "1 個月",
-        "duration-8h": "8 小時",
-        "duration-never": "永不過期",
-        "expiration": "過期時間",
-        "expires-at": "過期於",
-        "some-description": "請輸入說明..."
-      },
-      "description": "此處列出您帳號的所有存取令牌。",
-      "title": "存取令牌",
-      "token": "令牌"
-    },
-    "account-section": {
-      "change-password": "變更密碼",
-      "email-note": "選填",
-      "export-memos": "導出備忘錄",
-      "nickname-note": "顯示於橫幅",
-      "openapi-reset": "重設 OpenAPI 密鑰（Key）",
-      "openapi-sample-post": "哈囉，來自 {{url}} 的 #memos",
-      "openapi-title": "OpenAPI 介面",
-      "reset-api": "重設 API",
-      "title": "帳號資訊",
-      "update-information": "更新個人資訊",
-      "username-note": "用於登入"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "禁止變更暱稱",
-      "disallow-change-username": "禁止變更使用者名稱",
-      "disallow-password-auth": "禁止使用密碼登入",
-      "disallow-user-registration": "禁止使用者註冊",
-      "monday": "星期一",
-      "saturday": "星期六",
-      "sunday": "星期日",
-      "week-start-day": "每週起始日"
-    },
-    "member": "使用者",
-    "member-list": "使用者列表",
-    "member-section": {
+    "member": {
       "admin": "管理者",
       "archive-member": "封存使用者",
       "archive-success": "{{username}} 封存成功",
@@ -309,30 +261,24 @@
       "delete-warning": "您確定要刪除 {{username}} 嗎？",
       "delete-warning-description": "此操作無法恢復。",
       "restore-success": "{{username}} 恢復成功",
-      "user": "使用者"
+      "user": "使用者",
+      "label": "使用者",
+      "list-title": "使用者列表"
     },
-    "memo-related": "備忘錄",
-    "memo-related-settings": {
-      "content-length-limit": "內容長度限制（位元組）",
-      "enable-blur-nsfw-content": "啟用 NSFW 內容模糊化（在下方添加 NSFW 標籤）",
-      "enable-memo-comments": "啟用備忘錄評論",
-      "enable-memo-location": "啟用備忘錄定位",
-      "reactions": "表情回應",
-      "title": "備忘錄相關設定"
+    "my-account": {
+      "label": "我的帳號"
     },
-    "my-account": "我的帳號",
-    "preference": "偏好設定",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "備忘錄顯示時間",
       "default-memo-visibility": "備忘錄預設瀏覽權限",
-      "theme": "主題"
+      "theme": "主題",
+      "label": "偏好設定"
     },
     "shortcut": {
       "delete-confirm": "您確定要刪除快捷篩選 `{{title}}` 嗎？",
       "delete-success": "快捷篩選 `{{title}}` 刪除成功"
     },
-    "sso": "單一登入",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "驗證端點（Authorization Endpoint）",
       "client-id": "客戶端 ID（Client ID）",
       "client-secret": "客戶端金鑰（Client Secret）",
@@ -354,10 +300,10 @@
       "template": "範本",
       "token-endpoint": "權杖端點（Token Endpoint）",
       "update-sso": "更新 SSO",
-      "user-endpoint": "使用者端點（User Endpoint）"
+      "user-endpoint": "使用者端點（User Endpoint）",
+      "label": "單一登入"
     },
-    "storage": "儲存空間",
-    "storage-section": {
+    "storage": {
       "accesskey": "存取金鑰（Access key）",
       "accesskey-placeholder": "存取金鑰 / 存取 ID",
       "bucket": "儲存桶",
@@ -389,10 +335,10 @@
       "url-prefix-placeholder": "自訂網址前綴（選填）",
       "url-suffix": "網址後綴",
       "url-suffix-placeholder": "自訂網址後綴（選填）",
-      "warning-text": "您確定要刪除存儲服務 `{{name}}` 嗎？此操作無法恢復。"
+      "warning-text": "您確定要刪除存儲服務 `{{name}}` 嗎？此操作無法恢復。",
+      "label": "儲存空間"
     },
-    "system": "系統",
-    "system-section": {
+    "system": {
       "additional-script": "自訂腳本",
       "additional-script-placeholder": "自訂 JavaScript 代碼",
       "additional-style": "自訂樣式",
@@ -416,10 +362,64 @@
       "max-upload-size-hint": "建議值為 32 MiB。",
       "removed-completed-task-list-items": "啟用移除已完成待辦事項",
       "server-name": "伺服器名稱",
-      "title": "系統設定"
+      "title": "系統設定",
+      "label": "系統"
     },
     "version": "版本",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "存取令牌已複製到剪貼簿",
+      "access-token-deleted": "存取令牌 `{{description}}` 已刪除",
+      "access-token-deletion": "您確定要刪除存取令牌 `{{description}}` 嗎？",
+      "access-token-deletion-description": "此操作無法恢復。您需要更新所有使用此令牌的服務以使用新的令牌。",
+      "create-dialog": {
+        "access-token-created": "存取令牌 `{{description}}` 已建立",
+        "create-access-token": "建立存取令牌",
+        "created-at": "建立於",
+        "description": "說明",
+        "duration-1m": "1 個月",
+        "duration-8h": "8 小時",
+        "duration-never": "永不過期",
+        "expiration": "過期時間",
+        "expires-at": "過期於",
+        "some-description": "請輸入說明..."
+      },
+      "description": "此處列出您帳號的所有存取令牌。",
+      "title": "存取令牌",
+      "token": "令牌"
+    },
+    "account": {
+      "change-password": "變更密碼",
+      "email-note": "選填",
+      "export-memos": "導出備忘錄",
+      "nickname-note": "顯示於橫幅",
+      "openapi-reset": "重設 OpenAPI 密鑰（Key）",
+      "openapi-sample-post": "哈囉，來自 {{url}} 的 #memos",
+      "openapi-title": "OpenAPI 介面",
+      "reset-api": "重設 API",
+      "title": "帳號資訊",
+      "update-information": "更新個人資訊",
+      "username-note": "用於登入"
+    },
+    "instance": {
+      "disallow-change-nickname": "禁止變更暱稱",
+      "disallow-change-username": "禁止變更使用者名稱",
+      "disallow-password-auth": "禁止使用密碼登入",
+      "disallow-user-registration": "禁止使用者註冊",
+      "monday": "星期一",
+      "saturday": "星期六",
+      "sunday": "星期日",
+      "week-start-day": "每週起始日"
+    },
+    "memo": {
+      "content-length-limit": "內容長度限制（位元組）",
+      "enable-blur-nsfw-content": "啟用 NSFW 內容模糊化（在下方添加 NSFW 標籤）",
+      "enable-memo-comments": "啟用備忘錄評論",
+      "enable-memo-location": "啟用備忘錄定位",
+      "reactions": "表情回應",
+      "title": "備忘錄相關設定",
+      "label": "備忘錄"
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "一個容易記住的名稱",
         "create-webhook": "建立 Webhook",
@@ -463,7 +463,7 @@
     "tags": "標籤",
     "upload-attachment": "上傳附件"
   },
-  "sse": {
+  "live-update": {
     "connected": "已連接",
     "connecting": "正在連接",
     "disconnected": "已斷開"

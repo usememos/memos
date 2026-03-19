@@ -277,7 +277,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
             }),
           }),
         });
-        toast.success(t("setting.sso-section.sso-created", { name: basicInfo.title }));
+        toast.success(t("setting.sso.sso-created", { name: basicInfo.title }));
       } else {
         await identityProviderServiceClient.updateIdentityProvider({
           identityProvider: create(IdentityProviderSchema, {
@@ -296,7 +296,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
           }),
           updateMask: create(FieldMaskSchema, { paths: ["title", "identifier_filter", "config"] }),
         });
-        toast.success(t("setting.sso-section.sso-updated", { name: basicInfo.title }));
+        toast.success(t("setting.sso.sso-updated", { name: basicInfo.title }));
       }
     } catch (error: unknown) {
       await handleError(error, toast.error, {
@@ -318,7 +318,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t(isCreating ? "setting.sso-section.create-sso" : "setting.sso-section.update-sso")}</DialogTitle>
+          <DialogTitle>{t(isCreating ? "setting.sso.create-sso" : "setting.sso.update-sso")}</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col justify-start items-start w-full space-y-4">
           {isCreating && (
@@ -336,7 +336,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
                   ))}
                 </SelectContent>
               </Select>
-              <p className="mb-2 text-sm font-medium">{t("setting.sso-section.template")}</p>
+              <p className="mb-2 text-sm font-medium">{t("setting.sso.template")}</p>
               <Select value={selectedTemplate} onValueChange={(value) => setSelectedTemplate(value)}>
                 <SelectTrigger className="mb-1 h-auto w-full">
                   <SelectValue />
@@ -393,10 +393,10 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
               })
             }
           />
-          <p className="mb-1 text-sm font-medium">{t("setting.sso-section.identifier-filter")}</p>
+          <p className="mb-1 text-sm font-medium">{t("setting.sso.identifier-filter")}</p>
           <Input
             className="mb-2 w-full"
-            placeholder={t("setting.sso-section.identifier-filter")}
+            placeholder={t("setting.sso.identifier-filter")}
             value={basicInfo.identifierFilter}
             onChange={(e) =>
               setBasicInfo({
@@ -410,86 +410,86 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
             <>
               {isCreating && (
                 <p className="border border-border rounded-md p-2 text-sm w-full mb-2 break-all">
-                  {t("setting.sso-section.redirect-url")}: {absolutifyLink("/auth/callback")}
+                  {t("setting.sso.redirect-url")}: {absolutifyLink("/auth/callback")}
                 </p>
               )}
               <p className="mb-1 text-sm font-medium">
-                {t("setting.sso-section.client-id")}
+                {t("setting.sso.client-id")}
                 <span className="text-destructive">*</span>
               </p>
               <Input
                 className="mb-2 w-full"
-                placeholder={t("setting.sso-section.client-id")}
+                placeholder={t("setting.sso.client-id")}
                 value={oauth2Config.clientId}
                 onChange={(e) => setPartialOAuth2Config({ clientId: e.target.value })}
               />
               <p className="mb-1 text-sm font-medium">
-                {t("setting.sso-section.client-secret")}
+                {t("setting.sso.client-secret")}
                 <span className="text-destructive">*</span>
               </p>
               <Input
                 className="mb-2 w-full"
-                placeholder={t("setting.sso-section.client-secret")}
+                placeholder={t("setting.sso.client-secret")}
                 value={oauth2Config.clientSecret}
                 onChange={(e) => setPartialOAuth2Config({ clientSecret: e.target.value })}
               />
               <p className="mb-1 text-sm font-medium">
-                {t("setting.sso-section.authorization-endpoint")}
+                {t("setting.sso.authorization-endpoint")}
                 <span className="text-destructive">*</span>
               </p>
               <Input
                 className="mb-2 w-full"
-                placeholder={t("setting.sso-section.authorization-endpoint")}
+                placeholder={t("setting.sso.authorization-endpoint")}
                 value={oauth2Config.authUrl}
                 onChange={(e) => setPartialOAuth2Config({ authUrl: e.target.value })}
               />
               <p className="mb-1 text-sm font-medium">
-                {t("setting.sso-section.token-endpoint")}
+                {t("setting.sso.token-endpoint")}
                 <span className="text-destructive">*</span>
               </p>
               <Input
                 className="mb-2 w-full"
-                placeholder={t("setting.sso-section.token-endpoint")}
+                placeholder={t("setting.sso.token-endpoint")}
                 value={oauth2Config.tokenUrl}
                 onChange={(e) => setPartialOAuth2Config({ tokenUrl: e.target.value })}
               />
               <p className="mb-1 text-sm font-medium">
-                {t("setting.sso-section.user-endpoint")}
+                {t("setting.sso.user-endpoint")}
                 <span className="text-destructive">*</span>
               </p>
               <Input
                 className="mb-2 w-full"
-                placeholder={t("setting.sso-section.user-endpoint")}
+                placeholder={t("setting.sso.user-endpoint")}
                 value={oauth2Config.userInfoUrl}
                 onChange={(e) => setPartialOAuth2Config({ userInfoUrl: e.target.value })}
               />
               <p className="mb-1 text-sm font-medium">
-                {t("setting.sso-section.scopes")}
+                {t("setting.sso.scopes")}
                 <span className="text-destructive">*</span>
               </p>
               <Input
                 className="mb-2 w-full"
-                placeholder={t("setting.sso-section.scopes")}
+                placeholder={t("setting.sso.scopes")}
                 value={oauth2Scopes}
                 onChange={(e) => setOAuth2Scopes(e.target.value)}
               />
               <Separator className="my-2" />
               <p className="mb-1 text-sm font-medium">
-                {t("setting.sso-section.identifier")}
+                {t("setting.sso.identifier")}
                 <span className="text-destructive">*</span>
               </p>
               <Input
                 className="mb-2 w-full"
-                placeholder={t("setting.sso-section.identifier")}
+                placeholder={t("setting.sso.identifier")}
                 value={oauth2Config.fieldMapping!.identifier}
                 onChange={(e) =>
                   setPartialOAuth2Config({ fieldMapping: { ...oauth2Config.fieldMapping, identifier: e.target.value } as FieldMapping })
                 }
               />
-              <p className="mb-1 text-sm font-medium">{t("setting.sso-section.display-name")}</p>
+              <p className="mb-1 text-sm font-medium">{t("setting.sso.display-name")}</p>
               <Input
                 className="mb-2 w-full"
-                placeholder={t("setting.sso-section.display-name")}
+                placeholder={t("setting.sso.display-name")}
                 value={oauth2Config.fieldMapping!.displayName}
                 onChange={(e) =>
                   setPartialOAuth2Config({ fieldMapping: { ...oauth2Config.fieldMapping, displayName: e.target.value } as FieldMapping })

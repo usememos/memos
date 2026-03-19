@@ -38,7 +38,15 @@
     "created-at": "Dibuat pada",
     "database": "Basis Data",
     "day": "Hari",
-    "days": "Hari",
+    "days": {
+      "fri": "Jum",
+      "mon": "Sen",
+      "sat": "Sab",
+      "sun": "Min",
+      "thu": "Kam",
+      "tue": "Sel",
+      "wed": "Rab"
+    },
     "delete": "Hapus",
     "description": "Deskripsi",
     "edit": "Edit",
@@ -108,15 +116,6 @@
     "visibility": "Visibilitas",
     "yourself": "Anda sendiri"
   },
-  "days": {
-    "fri": "Jum",
-    "mon": "Sen",
-    "sat": "Sab",
-    "sun": "Min",
-    "thu": "Kam",
-    "tue": "Sel",
-    "wed": "Rab"
-  },
   "editor": {
     "add-your-comment-here": "Tambahkan komentar Anda di sini...",
     "any-thoughts": "Punya pemikiran...",
@@ -126,11 +125,6 @@
     "save": "Simpan",
     "saving": "Menyimpan...",
     "slash-commands": "Ketik `/` untuk perintah"
-  },
-  "filters": {
-    "has-code": "Memiliki kode",
-    "has-link": "Memiliki tautan",
-    "has-task-list": "Memiliki daftar tugas"
   },
   "inbox": {
     "failed-to-load": "Gagal memuat item kotak masuk",
@@ -162,7 +156,11 @@
     "direction-asc": "Menaik",
     "direction-desc": "Menurun",
     "display-time": "Waktu Tampil",
-    "filters": "Saring",
+    "filters": {
+      "has-code": "Memiliki kode",
+      "has-link": "Memiliki tautan",
+      "has-task-list": "Memiliki daftar tugas"
+    },
     "links": "Tautan",
     "list": "Daftar",
     "load-more": "Muat lebih banyak",
@@ -251,53 +249,7 @@
     "go-to-home": "Ke Beranda"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "Token akses disalin ke papan klip",
-      "access-token-deleted": "Token akses `{{description}}` dihapus",
-      "access-token-deletion": "Anda yakin ingin menghapus token akses {{description}}? TINDAKAN INI TIDAK DAPAT DIBATALKAN.",
-      "access-token-deletion-description": "Tindakan ini tidak dapat dibatalkan. Anda perlu memperbarui layanan yang menggunakan token ini untuk menggunakan token baru.",
-      "create-dialog": {
-        "access-token-created": "Token akses `{{description}}` dibuat",
-        "create-access-token": "Buat Token Akses",
-        "created-at": "Dibuat pada",
-        "description": "Deskripsi",
-        "duration-1m": "1 bulan",
-        "duration-8h": "8 jam",
-        "duration-never": "Tidak Pernah",
-        "expiration": "Kedaluwarsa",
-        "expires-at": "Berakhir pada",
-        "some-description": "Beberapa deskripsi..."
-      },
-      "description": "Daftar semua token akses untuk akun Anda.",
-      "title": "Token Akses",
-      "token": "Token"
-    },
-    "account-section": {
-      "change-password": "Ubah kata sandi",
-      "email-note": "Opsional",
-      "export-memos": "Ekspor Memo",
-      "nickname-note": "Ditampilkan di banner",
-      "openapi-reset": "Atur ulang Kunci OpenAPI",
-      "openapi-sample-post": "Halo #memos dari {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "Atur ulang API",
-      "title": "Informasi Akun",
-      "update-information": "Perbarui Informasi",
-      "username-note": "Digunakan untuk masuk"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Larangan mengubah nama panggilan",
-      "disallow-change-username": "Larangan mengubah nama pengguna",
-      "disallow-password-auth": "Larangan autentikasi kata sandi",
-      "disallow-user-registration": "Larangan pendaftaran pengguna",
-      "monday": "Senin",
-      "saturday": "Sabtu",
-      "sunday": "Minggu",
-      "week-start-day": "Hari awal pekan"
-    },
-    "member": "Anggota",
-    "member-list": "Daftar Anggota",
-    "member-section": {
+    "member": {
       "admin": "Admin",
       "archive-member": "Arsip anggota",
       "archive-success": "{{username}} berhasil diarsipkan",
@@ -309,30 +261,24 @@
       "delete-warning": "Apakah Anda yakin untuk menghapus {{username}}? TINDAKAN INI TIDAK DAPAT DIBATALKAN",
       "delete-warning-description": "TINDAKAN INI TIDAK DAPAT DIBATALKAN",
       "restore-success": "{{username}} berhasil dipulihkan",
-      "user": "Pengguna"
+      "user": "Pengguna",
+      "label": "Anggota",
+      "list-title": "Daftar Anggota"
     },
-    "memo-related": "Memo",
-    "memo-related-settings": {
-      "content-length-limit": "Batas panjang konten (Byte)",
-      "enable-blur-nsfw-content": "Aktifkan pengaburan konten sensitif (NSFW)",
-      "enable-memo-comments": "Aktifkan komentar memo",
-      "enable-memo-location": "Aktifkan lokasi memo",
-      "reactions": "Reaksi",
-      "title": "Pengaturan terkait Memo"
+    "my-account": {
+      "label": "Akun Saya"
     },
-    "my-account": "Akun Saya",
-    "preference": "Preferensi",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "Waktu tampil memo",
       "default-memo-visibility": "Visibilitas memo default",
-      "theme": "Tema"
+      "theme": "Tema",
+      "label": "Preferensi"
     },
     "shortcut": {
       "delete-confirm": "Apakah Anda yakin ingin menghapus pintasan `{{title}}`?",
       "delete-success": "Pintasan `{{title}}` berhasil dihapus"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "Akhir Otorisasi",
       "client-id": "ID Klien",
       "client-secret": "Kunci Rahasia Klien",
@@ -354,10 +300,10 @@
       "template": "Templat",
       "token-endpoint": "Akhir Token",
       "update-sso": "Perbarui SSO",
-      "user-endpoint": "Akhir Pengguna"
+      "user-endpoint": "Akhir Pengguna",
+      "label": "SSO"
     },
-    "storage": "Penyimpanan",
-    "storage-section": {
+    "storage": {
       "accesskey": "Kunci Akses",
       "accesskey-placeholder": "Kunci Akses / ID Akses",
       "bucket": "Bucket",
@@ -389,10 +335,10 @@
       "url-prefix-placeholder": "Prefiks URL kustom, opsional",
       "url-suffix": "Sufiks URL",
       "url-suffix-placeholder": "Sufiks URL kustom, opsional",
-      "warning-text": "Apakah Anda yakin ingin menghapus layanan penyimpanan \"{{name}}\"? TINDAKAN INI TIDAK DAPAT DIBATALKAN."
+      "warning-text": "Apakah Anda yakin ingin menghapus layanan penyimpanan \"{{name}}\"? TINDAKAN INI TIDAK DAPAT DIBATALKAN.",
+      "label": "Penyimpanan"
     },
-    "system": "Sistem",
-    "system-section": {
+    "system": {
       "additional-script": "Skrip tambahan",
       "additional-script-placeholder": "Kode JavaScript tambahan",
       "additional-style": "Gaya tambahan",
@@ -416,10 +362,64 @@
       "max-upload-size-hint": "Nilai yang direkomendasikan adalah 32 MiB.",
       "removed-completed-task-list-items": "Aktifkan penghapusan item daftar tugas yang selesai",
       "server-name": "Nama Server",
-      "title": "Umum"
+      "title": "Umum",
+      "label": "Sistem"
     },
     "version": "Versi",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "Token akses disalin ke papan klip",
+      "access-token-deleted": "Token akses `{{description}}` dihapus",
+      "access-token-deletion": "Anda yakin ingin menghapus token akses {{description}}? TINDAKAN INI TIDAK DAPAT DIBATALKAN.",
+      "access-token-deletion-description": "Tindakan ini tidak dapat dibatalkan. Anda perlu memperbarui layanan yang menggunakan token ini untuk menggunakan token baru.",
+      "create-dialog": {
+        "access-token-created": "Token akses `{{description}}` dibuat",
+        "create-access-token": "Buat Token Akses",
+        "created-at": "Dibuat pada",
+        "description": "Deskripsi",
+        "duration-1m": "1 bulan",
+        "duration-8h": "8 jam",
+        "duration-never": "Tidak Pernah",
+        "expiration": "Kedaluwarsa",
+        "expires-at": "Berakhir pada",
+        "some-description": "Beberapa deskripsi..."
+      },
+      "description": "Daftar semua token akses untuk akun Anda.",
+      "title": "Token Akses",
+      "token": "Token"
+    },
+    "account": {
+      "change-password": "Ubah kata sandi",
+      "email-note": "Opsional",
+      "export-memos": "Ekspor Memo",
+      "nickname-note": "Ditampilkan di banner",
+      "openapi-reset": "Atur ulang Kunci OpenAPI",
+      "openapi-sample-post": "Halo #memos dari {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "Atur ulang API",
+      "title": "Informasi Akun",
+      "update-information": "Perbarui Informasi",
+      "username-note": "Digunakan untuk masuk"
+    },
+    "instance": {
+      "disallow-change-nickname": "Larangan mengubah nama panggilan",
+      "disallow-change-username": "Larangan mengubah nama pengguna",
+      "disallow-password-auth": "Larangan autentikasi kata sandi",
+      "disallow-user-registration": "Larangan pendaftaran pengguna",
+      "monday": "Senin",
+      "saturday": "Sabtu",
+      "sunday": "Minggu",
+      "week-start-day": "Hari awal pekan"
+    },
+    "memo": {
+      "content-length-limit": "Batas panjang konten (Byte)",
+      "enable-blur-nsfw-content": "Aktifkan pengaburan konten sensitif (NSFW)",
+      "enable-memo-comments": "Aktifkan komentar memo",
+      "enable-memo-location": "Aktifkan lokasi memo",
+      "reactions": "Reaksi",
+      "title": "Pengaturan terkait Memo",
+      "label": "Memo"
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "Nama yang mudah diingat",
         "create-webhook": "Buat webhook",

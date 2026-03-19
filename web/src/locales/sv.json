@@ -38,7 +38,15 @@
     "created-at": "Skapad",
     "database": "Databas",
     "day": "Dag",
-    "days": "Dagar",
+    "days": {
+      "fri": "Fre",
+      "mon": "Mån",
+      "sat": "Lör",
+      "sun": "Sön",
+      "thu": "Tors",
+      "tue": "Tis",
+      "wed": "Ons"
+    },
     "delete": "Radera",
     "description": "Beskrivning",
     "edit": "Redigera",
@@ -108,15 +116,6 @@
     "visibility": "Synlighet",
     "yourself": "Själv"
   },
-  "days": {
-    "fri": "Fre",
-    "mon": "Mån",
-    "sat": "Lör",
-    "sun": "Sön",
-    "thu": "Tors",
-    "tue": "Tis",
-    "wed": "Ons"
-  },
   "editor": {
     "add-your-comment-here": "Lägg till din kommentar här...",
     "any-thoughts": "Några tankar...",
@@ -126,11 +125,6 @@
     "save": "Spara",
     "saving": "Sparar...",
     "slash-commands": "Skriv `/` för kommandon"
-  },
-  "filters": {
-    "has-code": "harKod",
-    "has-link": "harLänk",
-    "has-task-list": "harAttGöraLista"
   },
   "inbox": {
     "failed-to-load": "Misslyckades att ladda inkorgsobjekt",
@@ -162,7 +156,11 @@
     "direction-asc": "Stigande",
     "direction-desc": "Fallande",
     "display-time": "Visa tid",
-    "filters": "Filter",
+    "filters": {
+      "has-code": "harKod",
+      "has-link": "harLänk",
+      "has-task-list": "harAttGöraLista"
+    },
     "links": "Länkar",
     "list": "Lista",
     "load-more": "Ladda mer",
@@ -251,53 +249,7 @@
     "go-to-home": "Gå till hem"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "Åtkomsttoken kopierad till urklipp",
-      "access-token-deleted": "Åtkomsttoken `{{description}}` raderad",
-      "access-token-deletion": "Är du säker på att ta bort åtkomsttoken {{description}}? DENNA ÅTGÄRD ÄR OÅTERKALLELIG.",
-      "access-token-deletion-description": "Denna åtgärd är oåterkallelig. Du måste uppdatera alla tjänster som använder denna token för att använda en ny token.",
-      "create-dialog": {
-        "access-token-created": "Åtkomsttoken `{{description}}` skapad",
-        "create-access-token": "Skapa åtkomsttoken",
-        "created-at": "Skapad",
-        "description": "Beskrivning",
-        "duration-1m": "1 månad",
-        "duration-8h": "8 timmar",
-        "duration-never": "Aldrig",
-        "expiration": "Utgång",
-        "expires-at": "Går ut",
-        "some-description": "Någon beskrivning..."
-      },
-      "description": "En lista över alla åtkomsttoken för ditt konto.",
-      "title": "Åtkomsttoken",
-      "token": "Token"
-    },
-    "account-section": {
-      "change-password": "Ändra lösenord",
-      "email-note": "Valfritt",
-      "export-memos": "Exportera anteckningar",
-      "nickname-note": "Visas i bannern",
-      "openapi-reset": "Återställ OpenAPI-nyckel",
-      "openapi-sample-post": "Hej #memos från {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "Återställ API",
-      "title": "Kontoinformation",
-      "update-information": "Uppdatera informationen",
-      "username-note": "Används för att logga in"
-    },
-    "instance-section": {
-      "disallow-change-nickname": "Förbjud ändring av smeknamn",
-      "disallow-change-username": "Förbjud ändring av användarnamn",
-      "disallow-password-auth": "Förbjud lösenordsautentisering",
-      "disallow-user-registration": "Förbjud användarregistrering",
-      "monday": "Måndag",
-      "saturday": "Lördag",
-      "sunday": "Söndag",
-      "week-start-day": "Veckans första dag"
-    },
-    "member": "Medlem",
-    "member-list": "Medlemslista",
-    "member-section": {
+    "member": {
       "admin": "Administratör",
       "archive-member": "Arkivera medlem",
       "archive-success": "{{username}} arkiverades framgångsrikt",
@@ -309,30 +261,24 @@
       "delete-warning": "Är du säker på att radera {{username}}? DENNA ÅTGÄRD ÄR OÅTERKALLELIG",
       "delete-warning-description": "DENNA ÅTGÄRD ÄR OÅTERKALLELIG",
       "restore-success": "{{username}} återställdes framgångsrikt",
-      "user": "Användare"
+      "user": "Användare",
+      "label": "Medlem",
+      "list-title": "Medlemslista"
     },
-    "memo-related": "Anteckning",
-    "memo-related-settings": {
-      "content-length-limit": "Innehållslängdsgräns (Byte)",
-      "enable-blur-nsfw-content": "Aktivera suddighet för känsligt innehåll (NSFW)",
-      "enable-memo-comments": "Aktivera kommentarer på anteckningar",
-      "enable-memo-location": "Aktivera plats för anteckning",
-      "reactions": "Reaktioner",
-      "title": "Inställningar för anteckningar"
+    "my-account": {
+      "label": "Mitt konto"
     },
-    "my-account": "Mitt konto",
-    "preference": "Preferenser",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "Anteckning visningstid",
       "default-memo-visibility": "Standard synlighet för anteckningar",
-      "theme": "Tema"
+      "theme": "Tema",
+      "label": "Preferenser"
     },
     "shortcut": {
       "delete-confirm": "Är du säker på att du vill ta bort genvägen `{{title}}`?",
       "delete-success": "Genväg `{{title}}` raderades framgångsrikt"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "Auktoriseringsendpoint",
       "client-id": "Klient-ID",
       "client-secret": "Klienthemlighet",
@@ -354,10 +300,10 @@
       "template": "Mall",
       "token-endpoint": "Token-endpoint",
       "update-sso": "Uppdatera SSO",
-      "user-endpoint": "Användarendpoint"
+      "user-endpoint": "Användarendpoint",
+      "label": "SSO"
     },
-    "storage": "Lagring",
-    "storage-section": {
+    "storage": {
       "accesskey": "Åtkomstnyckel",
       "accesskey-placeholder": "Åtkomstnyckel / Åtkomst-ID",
       "bucket": "Bucket",
@@ -389,10 +335,10 @@
       "url-prefix-placeholder": "Anpassat URL-prefix, valfritt",
       "url-suffix": "URL-suffix",
       "url-suffix-placeholder": "Anpassat URL-suffix, valfritt",
-      "warning-text": "Är du säker på att ta bort lagringstjänsten \"{{name}}\"? DENNA ÅTGÄRD ÄR OÅTERKALLELIG"
+      "warning-text": "Är du säker på att ta bort lagringstjänsten \"{{name}}\"? DENNA ÅTGÄRD ÄR OÅTERKALLELIG",
+      "label": "Lagring"
     },
-    "system": "System",
-    "system-section": {
+    "system": {
       "additional-script": "Ytterligare skript",
       "additional-script-placeholder": "Ytterligare JavaScript kod",
       "additional-style": "Ytterligare stil",
@@ -416,10 +362,64 @@
       "max-upload-size-hint": "Rekommenderat värde är 32 MiB.",
       "removed-completed-task-list-items": "Aktivera borttagning av avklarade att-göra-poster",
       "server-name": "Servernamn",
-      "title": "Allmänt"
+      "title": "Allmänt",
+      "label": "System"
     },
     "version": "Version",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "Åtkomsttoken kopierad till urklipp",
+      "access-token-deleted": "Åtkomsttoken `{{description}}` raderad",
+      "access-token-deletion": "Är du säker på att ta bort åtkomsttoken {{description}}? DENNA ÅTGÄRD ÄR OÅTERKALLELIG.",
+      "access-token-deletion-description": "Denna åtgärd är oåterkallelig. Du måste uppdatera alla tjänster som använder denna token för att använda en ny token.",
+      "create-dialog": {
+        "access-token-created": "Åtkomsttoken `{{description}}` skapad",
+        "create-access-token": "Skapa åtkomsttoken",
+        "created-at": "Skapad",
+        "description": "Beskrivning",
+        "duration-1m": "1 månad",
+        "duration-8h": "8 timmar",
+        "duration-never": "Aldrig",
+        "expiration": "Utgång",
+        "expires-at": "Går ut",
+        "some-description": "Någon beskrivning..."
+      },
+      "description": "En lista över alla åtkomsttoken för ditt konto.",
+      "title": "Åtkomsttoken",
+      "token": "Token"
+    },
+    "account": {
+      "change-password": "Ändra lösenord",
+      "email-note": "Valfritt",
+      "export-memos": "Exportera anteckningar",
+      "nickname-note": "Visas i bannern",
+      "openapi-reset": "Återställ OpenAPI-nyckel",
+      "openapi-sample-post": "Hej #memos från {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "Återställ API",
+      "title": "Kontoinformation",
+      "update-information": "Uppdatera informationen",
+      "username-note": "Används för att logga in"
+    },
+    "instance": {
+      "disallow-change-nickname": "Förbjud ändring av smeknamn",
+      "disallow-change-username": "Förbjud ändring av användarnamn",
+      "disallow-password-auth": "Förbjud lösenordsautentisering",
+      "disallow-user-registration": "Förbjud användarregistrering",
+      "monday": "Måndag",
+      "saturday": "Lördag",
+      "sunday": "Söndag",
+      "week-start-day": "Veckans första dag"
+    },
+    "memo": {
+      "content-length-limit": "Innehållslängdsgräns (Byte)",
+      "enable-blur-nsfw-content": "Aktivera suddighet för känsligt innehåll (NSFW)",
+      "enable-memo-comments": "Aktivera kommentarer på anteckningar",
+      "enable-memo-location": "Aktivera plats för anteckning",
+      "reactions": "Reaktioner",
+      "title": "Inställningar för anteckningar",
+      "label": "Anteckning"
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "Ett lättnamn",
         "create-webhook": "Skapa webhook",

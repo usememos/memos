@@ -75,13 +75,13 @@ const PreferencesSection = () => {
           <LocaleSelect value={setting.locale} onChange={handleLocaleSelectChange} />
         </SettingRow>
 
-        <SettingRow label={t("setting.preference-section.theme")}>
+        <SettingRow label={t("setting.preference.theme")}>
           <ThemeSelect value={setting.theme} onValueChange={handleThemeChange} />
         </SettingRow>
       </SettingGroup>
 
-      <SettingGroup title={t("setting.preference")} showSeparator>
-        <SettingRow label={t("setting.preference-section.default-memo-visibility")}>
+      <SettingGroup title={t("setting.preference.label")} showSeparator>
+        <SettingRow label={t("setting.preference.default-memo-visibility")}>
           <Select value={setting.memoVisibility || "PRIVATE"} onValueChange={handleDefaultMemoVisibilityChanged}>
             <SelectTrigger className="min-w-fit">
               <div className="flex items-center gap-2">
