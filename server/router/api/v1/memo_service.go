@@ -648,27 +648,16 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo creator")
 	}
 	if memoComment.Visibility != v1pb.Visibility_PRIVATE && creatorID != relatedMemo.CreatorID {
-		activity, err := s.Store.CreateActivity(ctx, &store.Activity{
-			CreatorID: creatorID,
-			Type:      store.ActivityTypeMemoComment,
-			Level:     store.ActivityLevelInfo,
-			Payload: &storepb.ActivityPayload{
-				MemoComment: &storepb.ActivityMemoCommentPayload{
-					MemoId:        memo.ID,
-					RelatedMemoId: relatedMemo.ID,
-				},
-			},
-		})
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to create activity")
-		}
 		if _, err := s.Store.CreateInbox(ctx, &store.Inbox{
 			SenderID:   creatorID,
 			ReceiverID: relatedMemo.CreatorID,
 			Status:     store.UNREAD,
 			Message: &storepb.InboxMessage{
-				Type:       storepb.InboxMessage_MEMO_COMMENT,
-				ActivityId: &activity.ID,
+				Type: storepb.InboxMessage_MEMO_COMMENT,
+				MemoComment: &storepb.InboxMessage_MemoCommentPayload{
+					MemoId:        memo.ID,
+					RelatedMemoId: relatedMemo.ID,
+				},
 			},
 		}); err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to create inbox")

@@ -329,27 +329,35 @@ func TestInboxMessagePayload(t *testing.T) {
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
 
-	// Create inbox with message payload containing activity ID
-	activityID := int32(123)
+	// Create inbox with message payload containing memo references.
+	memoID := int32(123)
+	relatedMemoID := int32(456)
 	inbox, err := ts.CreateInbox(ctx, &store.Inbox{
 		SenderID:   0,
 		ReceiverID: user.ID,
 		Status:     store.UNREAD,
 		Message: &storepb.InboxMessage{
-			Type:       storepb.InboxMessage_MEMO_COMMENT,
-			ActivityId: &activityID,
+			Type: storepb.InboxMessage_MEMO_COMMENT,
+			MemoComment: &storepb.InboxMessage_MemoCommentPayload{
+				MemoId:        memoID,
+				RelatedMemoId: relatedMemoID,
+			},
 		},
 	})
 	require.NoError(t, err)
 	require.NotNil(t, inbox.Message)
 	require.Equal(t, storepb.InboxMessage_MEMO_COMMENT, inbox.Message.Type)
-	require.Equal(t, activityID, *inbox.Message.ActivityId)
+	require.NotNil(t, inbox.Message.MemoComment)
+	require.Equal(t, memoID, inbox.Message.MemoComment.MemoId)
+	require.Equal(t, relatedMemoID, inbox.Message.MemoComment.RelatedMemoId)
 
 	// List and verify payload is preserved
 	inboxes, err := ts.ListInboxes(ctx, &store.FindInbox{ReceiverID: &user.ID})
 	require.NoError(t, err)
 	require.Len(t, inboxes, 1)
-	require.Equal(t, activityID, *inboxes[0].Message.ActivityId)
+	require.NotNil(t, inboxes[0].Message.MemoComment)
+	require.Equal(t, memoID, inboxes[0].Message.MemoComment.MemoId)
+	require.Equal(t, relatedMemoID, inboxes[0].Message.MemoComment.RelatedMemoId)
 
 	ts.Close()
 }
@@ -452,33 +460,39 @@ func TestInboxMessageTypeFilterWithPayload(t *testing.T) {
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
 
-	// Create inbox with full payload
-	activityID := int32(456)
+	// Create inbox with full payload.
+	memoID := int32(456)
 	_, err = ts.CreateInbox(ctx, &store.Inbox{
 		SenderID:   0,
 		ReceiverID: user.ID,
 		Status:     store.UNREAD,
 		Message: &storepb.InboxMessage{
-			Type:       storepb.InboxMessage_MEMO_COMMENT,
-			ActivityId: &activityID,
+			Type: storepb.InboxMessage_MEMO_COMMENT,
+			MemoComment: &storepb.InboxMessage_MemoCommentPayload{
+				MemoId:        memoID,
+				RelatedMemoId: 654,
+			},
 		},
 	})
 	require.NoError(t, err)
 
-	// Create inbox with different type but also has payload
-	otherActivityID := int32(789)
+	// Create inbox with different type but also has payload.
+	otherMemoID := int32(789)
 	_, err = ts.CreateInbox(ctx, &store.Inbox{
 		SenderID:   0,
 		ReceiverID: user.ID,
 		Status:     store.UNREAD,
 		Message: &storepb.InboxMessage{
-			Type:       storepb.InboxMessage_TYPE_UNSPECIFIED,
-			ActivityId: &otherActivityID,
+			Type: storepb.InboxMessage_TYPE_UNSPECIFIED,
+			MemoComment: &storepb.InboxMessage_MemoCommentPayload{
+				MemoId:        otherMemoID,
+				RelatedMemoId: 987,
+			},
 		},
 	})
 	require.NoError(t, err)
 
-	// Filter by type should work correctly even with complex JSON payload
+	// Filter by type should work correctly even with complex JSON payload.
 	memoCommentType := storepb.InboxMessage_MEMO_COMMENT
 	inboxes, err := ts.ListInboxes(ctx, &store.FindInbox{
 		ReceiverID:  &user.ID,
@@ -486,7 +500,8 @@ func TestInboxMessageTypeFilterWithPayload(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Len(t, inboxes, 1)
-	require.Equal(t, activityID, *inboxes[0].Message.ActivityId)
+	require.NotNil(t, inboxes[0].Message.MemoComment)
+	require.Equal(t, memoID, inboxes[0].Message.MemoComment.MemoId)
 
 	ts.Close()
 }

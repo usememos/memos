@@ -67,16 +67,6 @@ CREATE TABLE `attachment` (
   `payload` TEXT NOT NULL
 );
 
--- activity
-CREATE TABLE `activity` (
-  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `creator_id` INT NOT NULL,
-  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `type` VARCHAR(256) NOT NULL DEFAULT '',
-  `level` VARCHAR(256) NOT NULL DEFAULT 'INFO',
-  `payload` TEXT NOT NULL
-);
-
 -- idp
 CREATE TABLE `idp` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,

@@ -7,8 +7,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
@@ -87,6 +89,58 @@ func TestMigrationWithData(t *testing.T) {
 	require.Equal(t, "Data before migration re-run", memo.Content, "memo content should be preserved")
 }
 
+func TestMigrationBackfillsInboxMemoCommentPayload(t *testing.T) {
+	t.Parallel()
+
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+	commentMemo, err := ts.CreateMemo(ctx, &store.Memo{
+		UID:        "migration-comment-memo",
+		CreatorID:  user.ID,
+		Content:    "Comment memo",
+		Visibility: store.Public,
+	})
+	require.NoError(t, err)
+	relatedMemo, err := ts.CreateMemo(ctx, &store.Memo{
+		UID:        "migration-related-memo",
+		CreatorID:  user.ID,
+		Content:    "Related memo",
+		Visibility: store.Public,
+	})
+	require.NoError(t, err)
+
+	driver := getDriverFromEnv()
+	require.NoError(t, createLegacyActivityTable(ctx, ts, driver))
+	require.NoError(t, insertLegacyInboxActivity(ctx, ts, driver, user.ID, commentMemo.ID, relatedMemo.ID))
+	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_BASIC,
+		Value: &storepb.InstanceSetting_BasicSetting{
+			BasicSetting: &storepb.InstanceBasicSetting{
+				SchemaVersion: "0.27.2",
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	err = ts.Migrate(ctx)
+	require.NoError(t, err)
+
+	messageType := storepb.InboxMessage_MEMO_COMMENT
+	inboxes, err := ts.ListInboxes(ctx, &store.FindInbox{
+		ReceiverID:  &user.ID,
+		MessageType: &messageType,
+	})
+	require.NoError(t, err)
+	require.Len(t, inboxes, 1)
+	require.NotNil(t, inboxes[0].Message)
+	require.NotNil(t, inboxes[0].Message.MemoComment)
+	require.Equal(t, commentMemo.ID, inboxes[0].Message.MemoComment.MemoId)
+	require.Equal(t, relatedMemo.ID, inboxes[0].Message.MemoComment.RelatedMemoId)
+}
+
 // TestMigrationMultipleReRuns verifies that migration is idempotent
 // even when run multiple times in succession.
 func TestMigrationMultipleReRuns(t *testing.T) {
@@ -109,6 +163,69 @@ func TestMigrationMultipleReRuns(t *testing.T) {
 	finalVersion, err := ts.GetCurrentSchemaVersion()
 	require.NoError(t, err)
 	require.Equal(t, initialVersion, finalVersion, "version should remain unchanged after multiple re-runs")
+}
+
+func createLegacyActivityTable(ctx context.Context, ts *store.Store, driver string) error {
+	var stmt string
+	switch driver {
+	case "sqlite":
+		stmt = `CREATE TABLE activity (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			creator_id INTEGER NOT NULL,
+			created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+			type TEXT NOT NULL DEFAULT '',
+			level TEXT NOT NULL DEFAULT 'INFO',
+			payload TEXT NOT NULL DEFAULT '{}'
+		);`
+	case "mysql":
+		stmt = `CREATE TABLE activity (
+			id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+			creator_id INT NOT NULL,
+			created_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			type VARCHAR(256) NOT NULL DEFAULT '',
+			level VARCHAR(256) NOT NULL DEFAULT 'INFO',
+			payload TEXT NOT NULL
+		);`
+	case "postgres":
+		stmt = `CREATE TABLE activity (
+			id SERIAL PRIMARY KEY,
+			creator_id INTEGER NOT NULL,
+			created_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+			type TEXT NOT NULL DEFAULT '',
+			level TEXT NOT NULL DEFAULT 'INFO',
+			payload JSONB NOT NULL DEFAULT '{}'
+		);`
+	default:
+		return errors.Errorf("unsupported driver: %s", driver)
+	}
+	_, err := ts.GetDriver().GetDB().ExecContext(ctx, stmt)
+	return err
+}
+
+func insertLegacyInboxActivity(ctx context.Context, ts *store.Store, driver string, receiverID, memoID, relatedMemoID int32) error {
+	var insertActivityStmt string
+	var insertInboxStmt string
+	payload := fmt.Sprintf(`{"memoComment":{"memoId":%d,"relatedMemoId":%d}}`, memoID, relatedMemoID)
+	message := `{"type":"MEMO_COMMENT","activityId":1}`
+
+	switch driver {
+	case "sqlite", "mysql":
+		insertActivityStmt = `INSERT INTO activity (id, creator_id, type, level, payload) VALUES (?, ?, ?, ?, ?)`
+		insertInboxStmt = `INSERT INTO inbox (sender_id, receiver_id, status, message) VALUES (?, ?, ?, ?)`
+	case "postgres":
+		insertActivityStmt = `INSERT INTO activity (id, creator_id, type, level, payload) VALUES ($1, $2, $3, $4, $5::jsonb)`
+		insertInboxStmt = `INSERT INTO inbox (sender_id, receiver_id, status, message) VALUES ($1, $2, $3, $4)`
+	default:
+		return errors.Errorf("unsupported driver: %s", driver)
+	}
+
+	if _, err := ts.GetDriver().GetDB().ExecContext(ctx, insertActivityStmt, 1, receiverID, "MEMO_COMMENT", "INFO", payload); err != nil {
+		return err
+	}
+	if _, err := ts.GetDriver().GetDB().ExecContext(ctx, insertInboxStmt, receiverID, receiverID, store.UNREAD, message); err != nil {
+		return err
+	}
+	return nil
 }
 
 // TestMigrationFromStableVersion verifies that upgrading from a stable Memos version
