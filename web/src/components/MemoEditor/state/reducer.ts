@@ -101,15 +101,6 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         },
       };
 
-    case "SET_DRAGGING":
-      return {
-        ...state,
-        ui: {
-          ...state.ui,
-          isDragging: action.payload,
-        },
-      };
-
     case "SET_COMPOSING":
       return {
         ...state,

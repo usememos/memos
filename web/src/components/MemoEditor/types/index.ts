@@ -15,5 +15,4 @@ export type {
   TagSuggestionsProps,
   VisibilitySelectorProps,
 } from "./components";
-export { MemoEditorContext, type MemoEditorContextValue } from "./context";
 export type { LocationState } from "./insert-menu";

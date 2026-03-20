@@ -52,24 +52,33 @@ const InsertMenu = (props: InsertMenuProps) => {
   });
 
   const location = useLocation(props.location);
+  const {
+    state: locationState,
+    locationInitialized,
+    handlePositionChange: handleLocationPositionChange,
+    getLocation,
+    reset: locationReset,
+    updateCoordinate,
+    setPlaceholder,
+  } = location;
 
   const [debouncedPosition, setDebouncedPosition] = useState<LatLng | undefined>(undefined);
 
   useDebounce(
     () => {
-      setDebouncedPosition(location.state.position);
+      setDebouncedPosition(locationState.position);
     },
     1000,
-    [location.state.position],
+    [locationState.position],
   );
 
   const { data: displayName } = useReverseGeocoding(debouncedPosition?.lat, debouncedPosition?.lng);
 
   useEffect(() => {
     if (displayName) {
-      location.setPlaceholder(displayName);
+      setPlaceholder(displayName);
     }
-  }, [displayName]);
+  }, [displayName, setPlaceholder]);
 
   const isUploading = selectingFlag || isUploadingProp;
 
@@ -79,11 +88,11 @@ const InsertMenu = (props: InsertMenuProps) => {
 
   const handleLocationClick = useCallback(() => {
     setLocationDialogOpen(true);
-    if (!initialLocation && !location.locationInitialized) {
+    if (!initialLocation && !locationInitialized) {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            location.handlePositionChange(new LatLng(position.coords.latitude, position.coords.longitude));
+            handleLocationPositionChange(new LatLng(position.coords.latitude, position.coords.longitude));
           },
           (error) => {
             console.error("Geolocation error:", error);
@@ -91,27 +100,20 @@ const InsertMenu = (props: InsertMenuProps) => {
         );
       }
     }
-  }, [initialLocation, location]);
+  }, [initialLocation, locationInitialized, handleLocationPositionChange]);
 
   const handleLocationConfirm = useCallback(() => {
-    const newLocation = location.getLocation();
+    const newLocation = getLocation();
     if (newLocation) {
       onLocationChange(newLocation);
       setLocationDialogOpen(false);
     }
-  }, [location, onLocationChange]);
+  }, [getLocation, onLocationChange]);
 
   const handleLocationCancel = useCallback(() => {
-    location.reset();
+    locationReset();
     setLocationDialogOpen(false);
-  }, [location]);
-
-  const handlePositionChange = useCallback(
-    (position: LatLng) => {
-      location.handlePositionChange(position);
-    },
-    [location],
-  );
+  }, [locationReset]);
 
   const handleToggleFocusMode = useCallback(() => {
     onToggleFocusMode?.();
@@ -200,11 +202,10 @@ const InsertMenu = (props: InsertMenuProps) => {
       <LocationDialog
         open={locationDialogOpen}
         onOpenChange={setLocationDialogOpen}
-        state={location.state}
-        locationInitialized={location.locationInitialized}
-        onPositionChange={handlePositionChange}
-        onUpdateCoordinate={location.updateCoordinate}
-        onPlaceholderChange={location.setPlaceholder}
+        state={locationState}
+        onPositionChange={handleLocationPositionChange}
+        onUpdateCoordinate={updateCoordinate}
+        onPlaceholderChange={setPlaceholder}
         onCancel={handleLocationCancel}
         onConfirm={handleLocationConfirm}
       />

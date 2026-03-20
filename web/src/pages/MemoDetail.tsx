@@ -47,12 +47,7 @@ const MemoDetail = () => {
         return;
       }
 
-      if (error.code === Code.PermissionDenied) {
-        navigateTo("/403", { replace: true });
-        return;
-      }
-
-      if (error.code === Code.NotFound) {
+      if (error.code === Code.PermissionDenied || error.code === Code.NotFound) {
         navigateTo("/404", { replace: true });
         return;
       }

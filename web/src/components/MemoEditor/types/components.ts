@@ -18,7 +18,6 @@ export interface MemoEditorProps {
 
 export interface EditorContentProps {
   placeholder?: string;
-  autoFocus?: boolean;
 }
 
 export interface EditorToolbarProps {
@@ -57,7 +56,6 @@ export interface LocationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   state: LocationState;
-  locationInitialized: boolean;
   onPositionChange: (position: LatLng) => void;
   onUpdateCoordinate: (type: "lat" | "lng", value: string) => void;
   onPlaceholderChange: (placeholder: string) => void;

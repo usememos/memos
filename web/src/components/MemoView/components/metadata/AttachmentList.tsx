@@ -1,9 +1,9 @@
 import { FileAudioIcon, FileIcon, PaperclipIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
-import PreviewImageDialog from "../../../PreviewImageDialog";
+import { useMemoViewContext } from "../../MemoViewContext";
 import AttachmentCard from "./AttachmentCard";
 import SectionHeader from "./SectionHeader";
 
@@ -128,12 +128,7 @@ const DocsList = ({ attachments }: { attachments: Attachment[] }) => (
 const Divider = () => <div className="border-t mt-1 border-border opacity-60" />;
 
 const AttachmentList = ({ attachments }: AttachmentListProps) => {
-  const [previewImage, setPreviewImage] = useState<{ open: boolean; urls: string[]; index: number; mimeType?: string }>({
-    open: false,
-    urls: [],
-    index: 0,
-    mimeType: undefined,
-  });
+  const { openPreview } = useMemoViewContext();
 
   const { visual, audio, docs } = useMemo(() => separateAttachments(attachments), [attachments]);
 
@@ -146,38 +141,28 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
 
   const handleImageClick = (imgUrl: string) => {
     const index = imageUrls.findIndex((url) => url === imgUrl);
-    const mimeType = imageAttachments[index]?.type;
-    setPreviewImage({ open: true, urls: imageUrls, index, mimeType });
+    openPreview(imageUrls, index >= 0 ? index : 0);
   };
 
   const sections = [visual.length > 0, audio.length > 0, docs.length > 0];
   const sectionCount = sections.filter(Boolean).length;
 
   return (
-    <>
-      <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
-        <SectionHeader icon={PaperclipIcon} title="Attachments" count={attachments.length} />
+    <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
+      <SectionHeader icon={PaperclipIcon} title="Attachments" count={attachments.length} />
 
-        <div className="p-1.5 flex flex-col gap-1">
-          {visual.length > 0 && <VisualGrid attachments={visual} onImageClick={handleImageClick} />}
+      <div className="p-1.5 flex flex-col gap-1">
+        {visual.length > 0 && <VisualGrid attachments={visual} onImageClick={handleImageClick} />}
 
-          {visual.length > 0 && sectionCount > 1 && <Divider />}
+        {visual.length > 0 && sectionCount > 1 && <Divider />}
 
-          {audio.length > 0 && <AudioList attachments={audio} />}
+        {audio.length > 0 && <AudioList attachments={audio} />}
 
-          {audio.length > 0 && docs.length > 0 && <Divider />}
+        {audio.length > 0 && docs.length > 0 && <Divider />}
 
-          {docs.length > 0 && <DocsList attachments={docs} />}
-        </div>
+        {docs.length > 0 && <DocsList attachments={docs} />}
       </div>
-
-      <PreviewImageDialog
-        open={previewImage.open}
-        onOpenChange={(open: boolean) => setPreviewImage((prev) => ({ ...prev, open }))}
-        imgUrls={previewImage.urls}
-        initialIndex={previewImage.index}
-      />
-    </>
+    </div>
   );
 };
 

@@ -62,11 +62,6 @@ export const editorActions = {
     payload: { key, value },
   }),
 
-  setDragging: (value: boolean): EditorAction => ({
-    type: "SET_DRAGGING",
-    payload: value,
-  }),
-
   setComposing: (value: boolean): EditorAction => ({
     type: "SET_COMPOSING",
     payload: value,

@@ -1,4 +1,4 @@
-import { memo, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useUser } from "@/hooks/useUserQueries";
@@ -9,7 +9,7 @@ import MemoEditor from "../MemoEditor";
 import PreviewImageDialog from "../PreviewImageDialog";
 import { MemoBody, MemoCommentListView, MemoHeader } from "./components";
 import { MEMO_CARD_BASE_CLASSES } from "./constants";
-import { useImagePreview, useMemoActions, useMemoHandlers } from "./hooks";
+import { useImagePreview } from "./hooks";
 import { computeCommentAmount, MemoViewContext } from "./MemoViewContext";
 import type { MemoViewProps } from "./types";
 
@@ -27,21 +27,12 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   // NSFW content management: always blur content tagged with NSFW (case-insensitive)
   const [showNSFWContent, setShowNSFWContent] = useState(false);
   const nsfw = memoData.tags?.some((tag) => tag.toUpperCase() === "NSFW") ?? false;
-  const toggleNsfwVisibility = () => setShowNSFWContent((prev) => !prev);
+  const toggleNsfwVisibility = useCallback(() => setShowNSFWContent((prev) => !prev), []);
 
   const { previewState, openPreview, setPreviewOpen } = useImagePreview();
-  const { unpinMemo } = useMemoActions(memoData);
 
-  const closeEditor = () => setShowEditor(false);
-  const openEditor = () => setShowEditor(true);
-
-  const { handleGotoMemoDetailPage, handleMemoContentClick, handleMemoContentDoubleClick } = useMemoHandlers({
-    memoName: memoData.name,
-    parentPage,
-    readonly,
-    openEditor,
-    openPreview,
-  });
+  const openEditor = useCallback(() => setShowEditor(true), []);
+  const closeEditor = useCallback(() => setShowEditor(false), []);
 
   const location = useLocation();
   const isInMemoDetailPage = location.pathname.startsWith(`/${memoData.name}`);
@@ -57,8 +48,23 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       readonly,
       showNSFWContent,
       nsfw,
+      openEditor,
+      toggleNsfwVisibility,
+      openPreview,
     }),
-    [memoData, creator, currentUser, parentPage, isArchived, readonly, showNSFWContent, nsfw],
+    [
+      memoData,
+      creator,
+      currentUser,
+      parentPage,
+      isArchived,
+      readonly,
+      showNSFWContent,
+      nsfw,
+      openEditor,
+      toggleNsfwVisibility,
+      openPreview,
+    ],
   );
 
   if (showEditor) {
@@ -80,21 +86,9 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       ref={cardRef}
       tabIndex={readonly ? -1 : 0}
     >
-      <MemoHeader
-        showCreator={showCreator}
-        showVisibility={showVisibility}
-        showPinned={showPinned}
-        onEdit={openEditor}
-        onGotoDetail={handleGotoMemoDetailPage}
-        onUnpin={unpinMemo}
-      />
+      <MemoHeader showCreator={showCreator} showVisibility={showVisibility} showPinned={showPinned} />
 
-      <MemoBody
-        compact={compact}
-        onContentClick={handleMemoContentClick}
-        onContentDoubleClick={handleMemoContentDoubleClick}
-        onToggleNsfwVisibility={toggleNsfwVisibility}
-      />
+      <MemoBody compact={compact} />
 
       <PreviewImageDialog
         open={previewState.open}

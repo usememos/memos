@@ -135,7 +135,6 @@ export const memoService = {
       ui: {
         isFocusMode: false,
         isLoading: { saving: false, uploading: false, loading: false },
-        isDragging: false,
         isComposing: false,
       },
       timestamps: {
