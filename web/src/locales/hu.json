@@ -62,7 +62,6 @@
     "input": "Bemenet",
     "language": "Nyelv",
     "last-updated-at": "Utoljára frissítve",
-    "layout": "Elrendezés",
     "learn-more": "További információ",
     "link": "Hivatkozás",
     "map": "Térkép",
@@ -162,9 +161,7 @@
       "has-task-list": "vanFeladatLista"
     },
     "links": "Hivatkozások",
-    "list": "Lista",
     "load-more": "Több betöltése",
-    "masonry": "Mozaik elrendezés",
     "no-archived-memos": "Nincsenek archivált jegyzetek.",
     "no-memos": "Nincsenek jegyzetek.",
     "order-by": "Rendezés",

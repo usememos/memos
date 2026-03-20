@@ -11,8 +11,8 @@ interface Props {
 
 function MemoDisplaySettingMenu({ className }: Props) {
   const t = useTranslate();
-  const { orderByTimeAsc, layout, toggleSortOrder, setLayout } = useView();
-  const isApplying = orderByTimeAsc !== false || layout !== "LIST";
+  const { orderByTimeAsc, toggleSortOrder } = useView();
+  const isApplying = orderByTimeAsc !== false;
 
   return (
     <Popover>
@@ -37,18 +37,6 @@ function MemoDisplaySettingMenu({ className }: Props) {
               <SelectContent>
                 <SelectItem value="false">{t("memo.direction-desc")}</SelectItem>
                 <SelectItem value="true">{t("memo.direction-asc")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-sm shrink-0 mr-3 text-foreground">{t("common.layout")}</span>
-            <Select value={layout} onValueChange={(value) => setLayout(value as "LIST" | "MASONRY")}>
-              <SelectTrigger size="sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="LIST">{t("memo.list")}</SelectItem>
-                <SelectItem value="MASONRY">{t("memo.masonry")}</SelectItem>
               </SelectContent>
             </Select>
           </div>

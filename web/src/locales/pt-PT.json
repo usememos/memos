@@ -62,7 +62,6 @@
     "input": "Entrada",
     "language": "Idioma",
     "last-updated-at": "Última atualização em",
-    "layout": "Layout",
     "learn-more": "Saiba mais",
     "link": "Link",
     "map": "Mapa",
@@ -162,9 +161,7 @@
       "has-task-list": "temListaDeTarefas"
     },
     "links": "Links",
-    "list": "Lista",
     "load-more": "Carregar mais",
-    "masonry": "Masonry",
     "no-archived-memos": "Não existem memos arquivados.",
     "no-memos": "Não existem memos.",
     "order-by": "Ordenar por",

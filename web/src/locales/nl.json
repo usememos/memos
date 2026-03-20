@@ -62,7 +62,6 @@
     "input": "Invoer",
     "language": "Taal",
     "last-updated-at": "Laatst bijgewerkt op",
-    "layout": "Indeling",
     "learn-more": "Meer informatie",
     "link": "Link",
     "map": "Kaart",
@@ -162,9 +161,7 @@
       "has-task-list": "heeftTakenlijst"
     },
     "links": "Links",
-    "list": "Lijst",
     "load-more": "Meer laden",
-    "masonry": "Tegelruit",
     "no-archived-memos": "Geen gearchiveerde memos.",
     "no-memos": "Geen memos.",
     "order-by": "Sorteren op",

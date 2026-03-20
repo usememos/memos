@@ -108,7 +108,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   return (
     <MemoViewContext.Provider value={contextValue}>
       {showCommentPreview ? (
-        <div className="mb-2">
+        <div className="w-full mb-2">
           {article}
           <MemoCommentListView />
         </div>

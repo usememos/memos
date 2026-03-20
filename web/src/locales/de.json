@@ -62,7 +62,6 @@
     "input": "Eingabe",
     "language": "Sprache",
     "last-updated-at": "Zuletzt aktualisiert am",
-    "layout": "Layout",
     "learn-more": "Mehr erfahren",
     "link": "Link",
     "map": "Karte",
@@ -162,9 +161,7 @@
       "has-task-list": "hatAufgabenliste"
     },
     "links": "Links",
-    "list": "Liste",
     "load-more": "Mehr laden",
-    "masonry": "Masonry",
     "no-archived-memos": "Keine archivierten Notizen.",
     "no-memos": "Keine Notizen.",
     "order-by": "Sortieren nach",

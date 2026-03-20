@@ -62,7 +62,6 @@
     "input": "入力",
     "language": "言語",
     "last-updated-at": "最終更新日時",
-    "layout": "レイアウト",
     "learn-more": "さらに詳しく",
     "link": "リンク",
     "map": "マップ",
@@ -162,9 +161,7 @@
       "has-task-list": "タスクリストあり"
     },
     "links": "リンク",
-    "list": "リスト",
     "load-more": "さらに読み込む",
-    "masonry": "マソンリーレイアウト",
     "no-archived-memos": "アーカイブされたメモはありません。",
     "no-memos": "メモがありません。",
     "order-by": "並び替え",

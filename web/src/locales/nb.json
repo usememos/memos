@@ -62,7 +62,6 @@
     "input": "Input",
     "language": "Språk",
     "last-updated-at": "Sist oppdatert",
-    "layout": "Layout",
     "learn-more": "Lær mer",
     "link": "Link",
     "map": "Kart",
@@ -162,9 +161,7 @@
       "has-task-list": "harGjøremålsListe"
     },
     "links": "Linker",
-    "list": "Liste",
     "load-more": "Last inn mer",
-    "masonry": "Masonry",
     "no-archived-memos": "Ingen arkiverte memoer.",
     "no-memos": "Ingen memoer.",
     "order-by": "Sorter etter",

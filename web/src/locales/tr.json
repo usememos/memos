@@ -62,7 +62,6 @@
     "input": "Girdi",
     "language": "Dil",
     "last-updated-at": "Son güncelleme",
-    "layout": "Yerleşim",
     "learn-more": "Daha fazla bilgi",
     "link": "Bağlantı",
     "map": "Harita",
@@ -162,9 +161,7 @@
       "has-task-list": "görevListesiVar"
     },
     "links": "Bağlantılar",
-    "list": "Liste",
     "load-more": "Daha fazla yükle",
-    "masonry": "Mozaik",
     "no-archived-memos": "Arşivlenmiş not yok.",
     "no-memos": "Not yok.",
     "order-by": "Sıralama Ölçütü",

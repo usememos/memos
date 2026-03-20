@@ -62,7 +62,6 @@
     "input": "इनपुट",
     "language": "भाषा",
     "last-updated-at": "अंतिम अपडेट",
-    "layout": "लेआउट",
     "learn-more": "अधिक जानें",
     "link": "लिंक",
     "map": "नक्शा",
@@ -162,9 +161,7 @@
       "has-task-list": "टास्क लिस्ट है"
     },
     "links": "लिंक",
-    "list": "सूची",
     "load-more": "और लोड करें",
-    "masonry": "मेसनरी",
     "no-archived-memos": "कोई संग्रहीत मेमो नहीं।",
     "no-memos": "कोई मेमो नहीं।",
     "order-by": "क्रमबद्ध करें",

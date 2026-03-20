@@ -62,7 +62,6 @@
     "input": "输入",
     "language": "语言",
     "last-updated-at": "最后更新时间",
-    "layout": "布局",
     "learn-more": "了解更多",
     "link": "链接",
     "map": "地图",
@@ -162,9 +161,7 @@
       "has-task-list": "有待办"
     },
     "links": "链接",
-    "list": "列表模式",
     "load-more": "加载更多",
-    "masonry": "瀑布流模式",
     "no-archived-memos": "没有已归档备忘录。",
     "no-memos": "无备忘录",
     "order-by": "排序",

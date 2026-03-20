@@ -62,7 +62,6 @@
     "input": "Vnos",
     "language": "Jezik",
     "last-updated-at": "Zadnja posodobitev",
-    "layout": "Postavitev",
     "learn-more": "Spoznaj več",
     "link": "Povezava",
     "map": "Zemljevid",
@@ -177,9 +176,7 @@
       "private": "Zasebno",
       "protected": "Za uporabnike",
       "public": "Javno"
-    },
-    "list": "Seznam",
-    "masonry": "Mozaik"
+    }
   },
   "message": {
     "archived-successfully": "Uspešno arhivirano",
