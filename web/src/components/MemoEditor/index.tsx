@@ -57,7 +57,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     dispatch(actions.toggleFocusMode());
   };
 
-  useKeyboard(editorRef, { onSave: handleSave });
+  useKeyboard(editorRef, handleSave);
 
   async function handleSave() {
     // Validate before saving
@@ -145,7 +145,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         )}
 
         {/* Editor content grows to fill available space in focus mode */}
-        <EditorContent ref={editorRef} placeholder={placeholder} autoFocus={autoFocus} />
+        <EditorContent ref={editorRef} placeholder={placeholder} />
 
         {/* Metadata and toolbar grouped together at bottom */}
         <div className="w-full flex flex-col gap-2">

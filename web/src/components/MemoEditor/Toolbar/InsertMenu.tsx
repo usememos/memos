@@ -64,12 +64,13 @@ const InsertMenu = (props: InsertMenuProps) => {
   );
 
   const { data: displayName } = useReverseGeocoding(debouncedPosition?.lat, debouncedPosition?.lng);
+  const { setPlaceholder } = location;
 
   useEffect(() => {
     if (displayName) {
-      location.setPlaceholder(displayName);
+      setPlaceholder(displayName);
     }
-  }, [displayName]);
+  }, [displayName, setPlaceholder]);
 
   const isUploading = selectingFlag || isUploadingProp;
 
@@ -201,7 +202,6 @@ const InsertMenu = (props: InsertMenuProps) => {
         open={locationDialogOpen}
         onOpenChange={setLocationDialogOpen}
         state={location.state}
-        locationInitialized={location.locationInitialized}
         onPositionChange={handlePositionChange}
         onUpdateCoordinate={location.updateCoordinate}
         onPlaceholderChange={location.setPlaceholder}

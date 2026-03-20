@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export interface ImagePreviewState {
   open: boolean;
@@ -8,16 +8,20 @@ export interface ImagePreviewState {
 
 export interface UseImagePreviewReturn {
   previewState: ImagePreviewState;
-  openPreview: (url: string) => void;
+  openPreview: (urls: string | string[], index?: number) => void;
   setPreviewOpen: (open: boolean) => void;
 }
 
 export const useImagePreview = (): UseImagePreviewReturn => {
   const [previewState, setPreviewState] = useState<ImagePreviewState>({ open: false, urls: [], index: 0 });
 
-  return {
-    previewState,
-    openPreview: (url: string) => setPreviewState({ open: true, urls: [url], index: 0 }),
-    setPreviewOpen: (open: boolean) => setPreviewState((prev) => ({ ...prev, open })),
-  };
+  const openPreview = useCallback((urls: string | string[], index = 0) => {
+    setPreviewState({ open: true, urls: Array.isArray(urls) ? urls : [urls], index });
+  }, []);
+
+  const setPreviewOpen = useCallback((open: boolean) => {
+    setPreviewState((prev) => ({ ...prev, open }));
+  }, []);
+
+  return { previewState, openPreview, setPreviewOpen };
 };

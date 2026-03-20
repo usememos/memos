@@ -15,6 +15,9 @@ export interface MemoViewContextValue {
   readonly: boolean;
   showNSFWContent: boolean;
   nsfw: boolean;
+  openEditor: () => void;
+  toggleNsfwVisibility: () => void;
+  openPreview: (urls: string | string[], index?: number) => void;
 }
 
 export const MemoViewContext = createContext<MemoViewContextValue | null>(null);

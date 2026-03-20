@@ -3,6 +3,7 @@ import { MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import MemoContent from "../../MemoContent";
 import { MemoReactionListView } from "../../MemoReactionListView";
+import { useMemoHandlers } from "../hooks";
 import { useMemoViewContext } from "../MemoViewContext";
 import type { MemoBodyProps } from "../types";
 import { AttachmentList, LocationDisplay, RelationList } from "./metadata";
@@ -21,8 +22,10 @@ const NsfwOverlay: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
   );
 };
 
-const MemoBody: React.FC<MemoBodyProps> = ({ compact, onContentClick, onContentDoubleClick, onToggleNsfwVisibility }) => {
-  const { memo, parentPage, showNSFWContent, nsfw } = useMemoViewContext();
+const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
+  const { memo, parentPage, showNSFWContent, nsfw, readonly, openEditor, openPreview, toggleNsfwVisibility } = useMemoViewContext();
+
+  const { handleMemoContentClick, handleMemoContentDoubleClick } = useMemoHandlers({ readonly, openEditor, openPreview });
 
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
 
@@ -37,8 +40,8 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact, onContentClick, onContentD
         <MemoContent
           key={`${memo.name}-${memo.updateTime}`}
           content={memo.content}
-          onClick={onContentClick}
-          onDoubleClick={onContentDoubleClick}
+          onClick={handleMemoContentClick}
+          onDoubleClick={handleMemoContentDoubleClick}
           compact={memo.pinned ? false : compact} // Always show full content when pinned
         />
         <AttachmentList attachments={memo.attachments} />
@@ -47,7 +50,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact, onContentClick, onContentD
         <MemoReactionListView memo={memo} reactions={memo.reactions} />
       </div>
 
-      {nsfw && !showNSFWContent && <NsfwOverlay onClick={onToggleNsfwVisibility} />}
+      {nsfw && !showNSFWContent && <NsfwOverlay onClick={toggleNsfwVisibility} />}
     </>
   );
 };

@@ -23,6 +23,9 @@ const STUB_CONTEXT: MemoViewContextValue = {
   readonly: true,
   showNSFWContent: false,
   nsfw: false,
+  openEditor: () => {},
+  toggleNsfwVisibility: () => {},
+  openPreview: () => {},
 };
 
 const AttachmentThumbnails = ({ attachments }: { attachments: Attachment[] }) => {

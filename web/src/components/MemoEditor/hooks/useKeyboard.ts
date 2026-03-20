@@ -1,11 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import type { EditorRefActions } from "../Editor";
 
-interface UseKeyboardOptions {
-  onSave: () => void;
-}
+export const useKeyboard = (editorRef: React.RefObject<EditorRefActions | null>, onSave: () => void) => {
+  const onSaveRef = useRef(onSave);
+  onSaveRef.current = onSave;
 
-export const useKeyboard = (editorRef: React.RefObject<EditorRefActions | null>, options: UseKeyboardOptions) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!(event.metaKey || event.ctrlKey) || event.key !== "Enter") {
@@ -24,10 +23,10 @@ export const useKeyboard = (editorRef: React.RefObject<EditorRefActions | null>,
       }
 
       event.preventDefault();
-      options.onSave();
+      onSaveRef.current();
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [editorRef, options]);
+  }, [editorRef]);
 };
