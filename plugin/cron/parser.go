@@ -27,6 +27,15 @@ const (
 	Descriptor                             // Allow descriptors such as @monthly, @weekly, etc.
 )
 
+const (
+	secondIndex = iota
+	minuteIndex
+	hourIndex
+	domIndex
+	monthIndex
+	dowIndex
+)
+
 var places = []ParseOption{
 	Second,
 	Minute,
@@ -193,9 +202,9 @@ func normalizeFields(fields []string, options ParseOption) ([]string, error) {
 	if min < max && len(fields) == min {
 		switch {
 		case options&DowOptional > 0:
-			fields = append(fields, defaults[5]) // TODO: improve access to default
+			fields = append(fields, defaults[dowIndex])
 		case options&SecondOptional > 0:
-			fields = append([]string{defaults[0]}, fields...)
+			fields = append([]string{defaults[secondIndex]}, fields...)
 		default:
 			return nil, errors.New("unexpected optional field")
 		}
