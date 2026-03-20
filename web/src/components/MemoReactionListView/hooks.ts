@@ -48,9 +48,7 @@ export const useReactionActions = ({ memo, onComplete }: UseReactionActionsOptio
         const reactions = memo.reactions.filter(
           (reaction) => reaction.reactionType === reactionType && reaction.creator === currentUser.name,
         );
-        for (const reaction of reactions) {
-          await memoServiceClient.deleteMemoReaction({ name: reaction.name });
-        }
+        await Promise.all(reactions.map((reaction) => memoServiceClient.deleteMemoReaction({ name: reaction.name })));
       } else {
         await memoServiceClient.upsertMemoReaction({
           name: memo.name,
