@@ -61,11 +61,10 @@ export const getAccessToken = (): string | null => {
           accessToken = storedToken;
           tokenExpiresAt = expiresAt;
         }
-        // Do NOT remove expired tokens here. Callers such as InstanceContext.initialize()
-        // run concurrently with AuthContext.initialize() via Promise.all. If we eagerly
-        // delete the expired token from localStorage, hasStoredToken() (called synchronously
-        // inside AuthContext.initialize()) finds nothing and skips the refresh attempt,
-        // logging the user out even when the refresh-token cookie is still valid.
+        // Do NOT remove expired tokens here. getRequestToken() in connect.ts calls
+        // hasStoredToken() to decide whether to attempt a refresh — if we eagerly delete
+        // the expired token, it returns null immediately, skipping the refresh and sending
+        // the request without credentials.
         // clearAccessToken() handles proper cleanup after a confirmed auth failure or logout.
       }
     } catch (e) {
