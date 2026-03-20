@@ -627,28 +627,31 @@ func TestStopAndWait(t *testing.T) {
 	t.Run("repeated calls to stop, waiting for completion and after", func(*testing.T) {
 		cron := newWithSeconds()
 		cron.AddFunc("* * * * * *", func() {})
-		cron.AddFunc("* * * * * *", func() { time.Sleep(2 * time.Second) })
+		cron.AddFunc("* * * * * *", func() { time.Sleep(3 * time.Second) })
 		cron.Start()
 		cron.AddFunc("* * * * * *", func() {})
 		time.Sleep(time.Second)
 		ctx := cron.Stop()
 		ctx2 := cron.Stop()
 
-		// Verify that it is not done for at least 1500ms
+		// Verify that it is not done for at least 1500ms.
+		// The 3-second sleep job starts within 1s of cron.Start(), so it always has
+		// at least 2s remaining when Stop() is called, well above this threshold.
 		select {
 		case <-ctx.Done():
 			t.Error("context was done too quickly immediately")
 		case <-ctx2.Done():
 			t.Error("context2 was done too quickly immediately")
 		case <-time.After(1500 * time.Millisecond):
-			// expected, because the job sleeping for 2 seconds is still running
+			// expected, because the job sleeping for 3 seconds is still running
 		}
 
-		// Verify that it IS done in the next 1s (giving 500ms buffer)
+		// Verify that it IS done in the next 2s (giving 500ms buffer).
+		// After the 1500ms wait above, at most 1500ms of the job remain.
 		select {
 		case <-ctx.Done():
 			// expected
-		case <-time.After(time.Second):
+		case <-time.After(2 * time.Second):
 			t.Error("context not done after job should have completed")
 		}
 
