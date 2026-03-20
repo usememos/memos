@@ -10,6 +10,7 @@
     "create-your-account": "Створіть обліковий запис",
     "host-tip": "Ви реєструєтеся як власник сайту.",
     "new-password": "Новий пароль",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Повторіть новий пароль",
     "sign-in-tip": "Вже маєте обліковий запис?",
     "sign-up-tip": "Ще не маєте облікового запису?"
@@ -155,6 +156,7 @@
     "direction-asc": "За зростанням",
     "direction-desc": "За спаданням",
     "display-time": "Час відображення",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "єКод",
       "has-link": "єПосилання",

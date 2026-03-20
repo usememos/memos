@@ -10,6 +10,7 @@
     "create-your-account": "Benutzerkonto anlegen",
     "host-tip": "Du registrierst dich als Host dieser Seite.",
     "new-password": "Neues Passwort",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Neues Passwort wiederholen",
     "sign-in-tip": "Bereits ein Benutzerkonto?",
     "sign-up-tip": "Noch kein Benutzerkonto?"
@@ -155,6 +156,7 @@
     "direction-asc": "Aufsteigend",
     "direction-desc": "Absteigend",
     "display-time": "Anzeigedatum",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "hatCode",
       "has-link": "hatLink",

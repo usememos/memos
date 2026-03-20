@@ -10,6 +10,7 @@
     "create-your-account": "Maak je account",
     "host-tip": "Je registreert je als Site Host.",
     "new-password": "Nieuw wachtwoord",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Nieuw wachtwoord herhalen",
     "sign-in-tip": "Al een account?",
     "sign-up-tip": "Nog geen account?"
@@ -155,6 +156,7 @@
     "direction-asc": "Oplopend",
     "direction-desc": "Aflopend",
     "display-time": "Tijd weergeven",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "heeftCode",
       "has-link": "heeftLink",

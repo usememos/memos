@@ -10,6 +10,7 @@
     "create-your-account": "Crie sua conta",
     "host-tip": "Você está se registrando como Administrador desta instância.",
     "new-password": "Nova senha",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Repita a nova senha",
     "sign-in-tip": "Já tem uma conta?",
     "sign-up-tip": "Ainda não tem uma conta?"
@@ -155,6 +156,7 @@
     "direction-asc": "Crescente",
     "direction-desc": "Decrescente",
     "display-time": "Horário",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "temCódigo",
       "has-link": "temLink",

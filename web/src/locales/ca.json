@@ -10,6 +10,7 @@
     "create-your-account": "Crea el teu compte",
     "host-tip": "T'estàs registrant com a amfitrió.",
     "new-password": "Nova contrasenya",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Repeteix la contrasenya",
     "sign-in-tip": "Ja tens un compte?",
     "sign-up-tip": "Encara no tens un compte?"
@@ -155,6 +156,7 @@
     "direction-asc": "Ascendent",
     "direction-desc": "Descendent",
     "display-time": "Mostra l'hora",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "téCodi",
       "has-link": "téEnllaç",

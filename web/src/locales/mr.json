@@ -10,6 +10,7 @@
     "create-your-account": "तुमचे खाते तयार करा",
     "host-tip": "तुम्ही साइट होस्ट म्हणून नोंदणी करत आहात.",
     "new-password": "नवीन पासवर्ड",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "नवीन पासवर्डची पुनरावृत्ती करा",
     "sign-in-tip": "आधीपासूनच एक खाते आहे?",
     "sign-up-tip": "अजून खाते नाही?"
@@ -155,6 +156,7 @@
     "direction-asc": "आरोही",
     "direction-desc": "अवरोही",
     "display-time": "प्रदर्शन वेळ",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "कोड आहे",
       "has-link": "लिंक आहे",

@@ -8,5 +8,11 @@
         "title": "Customise Server"
       }
     }
+  },
+  "auth": {
+    "protected-memo-notice": "This memo is not public. Sign in to continue."
+  },
+  "memo": {
+    "failed-to-load": "Failed to load memo."
   }
 }

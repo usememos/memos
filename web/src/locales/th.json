@@ -10,6 +10,7 @@
     "create-your-account": "สร้างบัญชีใหม่",
     "host-tip": "คุณกำลังลงทะเบียนเป็นโฮสต์ของไซต์",
     "new-password": "รหัสผ่านใหม่",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "รหัสผ่านใหม่อีกครั้ง",
     "sign-in-tip": "มีบัญชีอยู่แล้ว?",
     "sign-up-tip": "ยังไม่มีบัญชี?"
@@ -155,6 +156,7 @@
     "direction-asc": "จากน้อยไปมาก",
     "direction-desc": "จากมากไปน้อย",
     "display-time": "แสดงเวลา",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "มีโค้ด",
       "has-link": "มีลิงก์",

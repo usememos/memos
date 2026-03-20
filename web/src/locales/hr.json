@@ -10,6 +10,7 @@
     "create-your-account": "Stvori svoj račun",
     "host-tip": "Registriraš se kao Vlasnik sajta.",
     "new-password": "Nova lozinka",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Ponovi novu lozinku",
     "sign-in-tip": "Račun već postoji?",
     "sign-up-tip": "Još nemaš račun?"
@@ -155,6 +156,7 @@
     "direction-asc": "Uzlazno",
     "direction-desc": "Silazno",
     "display-time": "Vrijeme prikaza",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "imaKod",
       "has-link": "imaLink",

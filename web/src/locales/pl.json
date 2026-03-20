@@ -10,6 +10,7 @@
     "create-your-account": "Utwórz swoje konto",
     "host-tip": "Rejestrujesz się jako Gospodarz Strony.",
     "new-password": "Nowe hasło",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Powtórz nowe hasło",
     "sign-in-tip": "Masz już konto?",
     "sign-up-tip": "Nie masz jeszcze konta?"
@@ -156,6 +157,7 @@
     "direction-asc": "Rosnąco",
     "direction-desc": "Malejąco",
     "display-time": "Wyświetl czas",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "ma kod",
       "has-link": "ma link",

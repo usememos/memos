@@ -10,6 +10,7 @@
     "create-your-account": "Tạo tài khoản của bạn",
     "host-tip": "Bạn đang đăng ký với tư cách Quản trị viên Trang.",
     "new-password": "Mật khẩu mới",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Nhập lại mật khẩu mới",
     "sign-in-tip": "Đã có tài khoản?",
     "sign-up-tip": "Chưa có tài khoản?"
@@ -155,6 +156,7 @@
     "direction-asc": "Tăng dần",
     "direction-desc": "Giảm dần",
     "display-time": "Thời gian hiển thị",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "cóMã",
       "has-link": "cóLiênKết",

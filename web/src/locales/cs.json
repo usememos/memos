@@ -10,6 +10,7 @@
     "create-your-account": "Založit nový účet",
     "host-tip": "Registrujete se jako Hostitel stránek.",
     "new-password": "Nové heslo",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Zopakujte nové heslo",
     "sign-in-tip": "Už máte účet?",
     "sign-up-tip": "Ještě nemáte účet?"
@@ -155,6 +156,7 @@
     "direction-asc": "Vzestupně",
     "direction-desc": "Sestupně",
     "display-time": "Doba zobrazení",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "maKod",
       "has-link": "maOdkaz",

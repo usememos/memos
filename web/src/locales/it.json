@@ -10,6 +10,7 @@
     "create-your-account": "Crea il tuo account",
     "host-tip": "Ti stai registrando come proprietario del sito.",
     "new-password": "Nuova password",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Ripeti la nuova password",
     "sign-in-tip": "Hai già un account?",
     "sign-up-tip": "Non hai ancora un account?"
@@ -155,6 +156,7 @@
     "direction-asc": "Crescente",
     "direction-desc": "Decrescente",
     "display-time": "Orario di visualizzazione",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "haCodice",
       "has-link": "haLink",

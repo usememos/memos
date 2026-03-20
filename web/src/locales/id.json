@@ -10,6 +10,7 @@
     "create-your-account": "Buat akun Anda",
     "host-tip": "Anda mendaftar sebagai Host Situs.",
     "new-password": "Kata sandi baru",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Ulangi kata sandi baru",
     "sign-in-tip": "Sudah memiliki akun?",
     "sign-up-tip": "Belum memiliki akun?"
@@ -155,6 +156,7 @@
     "direction-asc": "Menaik",
     "direction-desc": "Menurun",
     "display-time": "Waktu Tampil",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "Memiliki kode",
       "has-link": "Memiliki tautan",

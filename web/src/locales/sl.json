@@ -10,6 +10,7 @@
     "create-your-account": "Ustvari nov račun",
     "host-tip": "Registrirani ste kot gostitelj strani.",
     "new-password": "Novo geslo",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Ponovi novo geslo",
     "sign-in-tip": "Že imaš račun?",
     "sign-up-tip": "Še nimaš računa?"
@@ -156,6 +157,7 @@
     "direction-asc": "Naraščajoče",
     "direction-desc": "Padajoče",
     "display-time": "Prikaži čas",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "imaKodo",
       "has-link": "imaPovezavo",

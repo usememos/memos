@@ -10,6 +10,7 @@
     "create-your-account": "Создание учетной записи",
     "host-tip": "Вы регистрируете учетную запись владельца сайта",
     "new-password": "Новый пароль",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Повторить новый пароль",
     "sign-in-tip": "У вас уже есть учетная запись?",
     "sign-up-tip": "У вас еще нет учетной записи?"
@@ -155,6 +156,7 @@
     "direction-asc": "По возрастанию",
     "direction-desc": "По убыванию",
     "display-time": "Время отображения",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "hasCode",
       "has-link": "hasLink",

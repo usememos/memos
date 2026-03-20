@@ -10,6 +10,7 @@
     "create-your-account": "Crea tu cuenta",
     "host-tip": "Te estás registrando como anfitrión del sitio.",
     "new-password": "Nueva contraseña",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Repite la nueva contraseña",
     "sign-in-tip": "¿Ya tienes una cuenta?",
     "sign-up-tip": "¿Aún no tienes una cuenta?"
@@ -155,6 +156,7 @@
     "direction-asc": "Ascendente",
     "direction-desc": "Descendente",
     "display-time": "Hora de visualización",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "tieneCódigo",
       "has-link": "tieneEnlace",

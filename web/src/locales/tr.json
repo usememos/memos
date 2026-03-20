@@ -10,6 +10,7 @@
     "create-your-account": "Hesabınızı oluşturun",
     "host-tip": "Site Yöneticisi olarak kayıt oluyorsunuz.",
     "new-password": "Yeni şifre",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Yeni şifreyi tekrar girin",
     "sign-in-tip": "Zaten hesabınız var mı?",
     "sign-up-tip": "Henüz hesabınız yok mu?"
@@ -155,6 +156,7 @@
     "direction-asc": "Artan",
     "direction-desc": "Azalan",
     "display-time": "Görüntüleme Zamanı",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "kodVar",
       "has-link": "bağlantıVar",

@@ -10,6 +10,7 @@
     "create-your-account": "アカウントを作成",
     "host-tip": "管理者として登録されます。",
     "new-password": "新しいパスワード",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "新しいパスワードを確認(繰り返し)",
     "sign-in-tip": "すでにアカウントを持っていますか?",
     "sign-up-tip": "アカウントを持っていませんか?"
@@ -155,6 +156,7 @@
     "direction-asc": "昇順",
     "direction-desc": "降順",
     "display-time": "表示時間",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "コードあり",
       "has-link": "リンクあり",

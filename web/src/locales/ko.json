@@ -10,6 +10,7 @@
     "create-your-account": "계정 만들기",
     "host-tip": "사이트 주인으로서의 계정을 등록합니다.",
     "new-password": "새 비밀번호",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "새 비밀번호 재확인",
     "sign-in-tip": "이미 계정이 있으신가요?",
     "sign-up-tip": "아직 계정이 없으신가요?"
@@ -155,6 +156,7 @@
     "direction-asc": "오름차순",
     "direction-desc": "내림차순",
     "display-time": "표시 시간",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "코드있음",
       "has-link": "링크있음",

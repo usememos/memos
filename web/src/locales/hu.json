@@ -10,6 +10,7 @@
     "create-your-account": "Fiók létrehozása",
     "host-tip": "A weboldal rendszergazdájaként regisztrál.",
     "new-password": "Új jelszó",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Jelszó ismét",
     "sign-in-tip": "Már van fiókod?",
     "sign-up-tip": "Még nincs fiókod?"
@@ -155,6 +156,7 @@
     "direction-asc": "Növekvő",
     "direction-desc": "Csökkenő",
     "display-time": "Megjelenítési idő",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "vanKód",
       "has-link": "vanLink",

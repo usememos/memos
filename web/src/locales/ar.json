@@ -10,6 +10,7 @@
     "create-your-account": "أنشئ حسابك",
     "host-tip": "أنت تسجل في الموقع كمضيف",
     "new-password": "كلمة المرور الجديدة",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "أعد كلمة المرور الجديدة",
     "sign-in-tip": "هل لديك حساب بالفعل؟",
     "sign-up-tip": "ليس لديك حساب بعد؟"
@@ -155,6 +156,7 @@
     "direction-asc": "تصاعدي",
     "direction-desc": "تنازلي",
     "display-time": "عرض الوقت",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "يحتوي على كود",
       "has-link": "يحتوي على رابط",

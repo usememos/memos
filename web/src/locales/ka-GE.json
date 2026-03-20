@@ -10,6 +10,7 @@
     "create-your-account": "შექმენით თქვენი ანგარიში",
     "host-tip": "თქვენ რეგისტრირდებით როგორც საიტის მასპინძელი.",
     "new-password": "ახალი პაროლი",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "გაიმეორეთ ახალი პაროლი",
     "sign-in-tip": "დაქვემდებარებული გაქვთ ანგარიში?",
     "sign-up-tip": "ჯერ არ გაქვთ ანგარიში?"
@@ -155,6 +156,7 @@
     "direction-asc": "ზრდადობით",
     "direction-desc": "კლებადობით",
     "display-time": "ჩვენების დრო",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "კოდიარის",
       "has-link": "ლინკიარის",

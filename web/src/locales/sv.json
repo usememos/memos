@@ -10,6 +10,7 @@
     "create-your-account": "Skapa ditt konto",
     "host-tip": "Du registerar dig som webbplatsvärd.",
     "new-password": "Nytt lösenord",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Upprepa det nya lösenordet",
     "sign-in-tip": "Har du redan ett konto?",
     "sign-up-tip": "Har du inget konto än?"
@@ -155,6 +156,7 @@
     "direction-asc": "Stigande",
     "direction-desc": "Fallande",
     "display-time": "Visa tid",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "harKod",
       "has-link": "harLänk",

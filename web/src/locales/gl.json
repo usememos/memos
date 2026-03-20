@@ -10,6 +10,7 @@
     "create-your-account": "Crea a túa conta",
     "host-tip": "Estás creando a conta como Site Host.",
     "new-password": "Novo contrasinal",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Repite o novo contrasinal",
     "sign-in-tip": "Xa tes unha conta?",
     "sign-up-tip": "Aínda non tes unha conta?"
@@ -155,6 +156,7 @@
     "direction-asc": "Ascendente",
     "direction-desc": "Descendente",
     "display-time": "Mostrar hora",
+    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "hasCode",
       "has-link": "hasLink",
