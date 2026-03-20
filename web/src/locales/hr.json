@@ -62,7 +62,6 @@
     "input": "Unos",
     "language": "Jezik",
     "last-updated-at": "Zadnje ažurirano",
-    "layout": "Raspored",
     "learn-more": "Nauči više",
     "link": "Link",
     "map": "Karta",
@@ -162,9 +161,7 @@
       "has-task-list": "imaZadatke"
     },
     "links": "Linkovi",
-    "list": "Popis",
     "load-more": "Učitaj više",
-    "masonry": "Zidni raspored",
     "no-archived-memos": "Nema arhiviranih memoa.",
     "no-memos": "Nema memoa.",
     "order-by": "Sortiraj po",

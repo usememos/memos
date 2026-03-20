@@ -62,7 +62,6 @@
     "input": "Input",
     "language": "Language",
     "last-updated-at": "Last updated at",
-    "layout": "Layout",
     "learn-more": "Learn more",
     "link": "Link",
     "map": "Map",
@@ -168,9 +167,7 @@
       "label": "Filters"
     },
     "links": "Links",
-    "list": "List",
     "load-more": "Load more",
-    "masonry": "Masonry",
     "no-archived-memos": "No archived memos.",
     "no-memos": "No memos.",
     "order-by": "Order By",

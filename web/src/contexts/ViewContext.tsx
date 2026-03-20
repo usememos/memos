@@ -1,12 +1,8 @@
 import { createContext, type ReactNode, useContext, useState } from "react";
 
-export type LayoutMode = "LIST" | "MASONRY";
-
 interface ViewContextValue {
   orderByTimeAsc: boolean;
-  layout: LayoutMode;
   toggleSortOrder: () => void;
-  setLayout: (layout: LayoutMode) => void;
 }
 
 const ViewContext = createContext<ViewContextValue | null>(null);
@@ -14,7 +10,6 @@ const ViewContext = createContext<ViewContextValue | null>(null);
 const LOCAL_STORAGE_KEY = "memos-view-setting";
 
 export function ViewProvider({ children }: { children: ReactNode }) {
-  // Load initial state from localStorage
   const getInitialState = () => {
     try {
       const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -22,13 +17,12 @@ export function ViewProvider({ children }: { children: ReactNode }) {
         const data = JSON.parse(cached);
         return {
           orderByTimeAsc: Boolean(data.orderByTimeAsc ?? false),
-          layout: (["LIST", "MASONRY"].includes(data.layout) ? data.layout : "LIST") as LayoutMode,
         };
       }
     } catch (error) {
       console.warn("Failed to load view settings from localStorage:", error);
     }
-    return { orderByTimeAsc: false, layout: "LIST" as LayoutMode };
+    return { orderByTimeAsc: false };
   };
 
   const [viewState, setViewState] = useState(getInitialState);
@@ -49,20 +43,11 @@ export function ViewProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const setLayout = (layout: LayoutMode) => {
-    setViewState((prev) => {
-      const newState = { ...prev, layout };
-      persistToStorage(newState);
-      return newState;
-    });
-  };
-
   return (
     <ViewContext.Provider
       value={{
         ...viewState,
         toggleSortOrder,
-        setLayout,
       }}
     >
       {children}

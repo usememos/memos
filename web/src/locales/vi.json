@@ -62,7 +62,6 @@
     "input": "Nhập liệu",
     "language": "Ngôn ngữ",
     "last-updated-at": "Cập nhật lần cuối",
-    "layout": "Bố cục",
     "learn-more": "Tìm hiểu thêm",
     "link": "Liên kết",
     "map": "Bản đồ",
@@ -162,9 +161,7 @@
       "has-task-list": "cóDanhSáchViệc"
     },
     "links": "Liên kết",
-    "list": "Danh sách",
     "load-more": "Tải thêm",
-    "masonry": "Xếp ô",
     "no-archived-memos": "Không có ghi chú nào được lưu trữ.",
     "no-memos": "Không có ghi chú nào.",
     "order-by": "Sắp xếp theo",

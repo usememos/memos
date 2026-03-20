@@ -62,7 +62,6 @@
     "input": "Entrada",
     "language": "Llenguatge",
     "last-updated-at": "Darrera actualització el",
-    "layout": "Disseny",
     "learn-more": "Saber-ne més",
     "link": "Enllaç",
     "map": "Mapa",
@@ -162,9 +161,7 @@
       "has-task-list": "téLlistaTasques"
     },
     "links": "Enllaços",
-    "list": "Llista",
     "load-more": "Carrega més",
-    "masonry": "Mosaic",
     "no-archived-memos": "No hi ha notes arxivades.",
     "no-memos": "No hi ha notes.",
     "order-by": "Ordena per",

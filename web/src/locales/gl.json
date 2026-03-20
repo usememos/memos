@@ -62,7 +62,6 @@
     "input": "Entrada",
     "language": "Idioma",
     "last-updated-at": "Última actualización",
-    "layout": "Disposición",
     "learn-more": "Saber máis",
     "link": "Ligar",
     "map": "Map",
@@ -162,9 +161,7 @@
       "has-task-list": "hasTaskList"
     },
     "links": "Ligazóns",
-    "list": "Lista",
     "load-more": "Cargar máis",
-    "masonry": "Masonry",
     "no-archived-memos": "Sen memos arquivadas.",
     "no-memos": "Sen memos.",
     "order-by": "Orde por",

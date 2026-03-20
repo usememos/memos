@@ -62,7 +62,6 @@
     "input": "Inmatning",
     "language": "Språk",
     "last-updated-at": "Senast uppdaterad",
-    "layout": "Layout",
     "learn-more": "Läs mer",
     "link": "Länk",
     "map": "Karta",
@@ -162,9 +161,7 @@
       "has-task-list": "harAttGöraLista"
     },
     "links": "Länkar",
-    "list": "Lista",
     "load-more": "Ladda mer",
-    "masonry": "Mosaik",
     "no-archived-memos": "Inga arkiverade anteckningar.",
     "no-memos": "Inga anteckningar.",
     "order-by": "Sortera efter",

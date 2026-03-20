@@ -62,7 +62,6 @@
     "input": "Masukan",
     "language": "Bahasa",
     "last-updated-at": "Terakhir diperbarui pada",
-    "layout": "Tata letak",
     "learn-more": "Pelajari lebih lanjut",
     "link": "Tautan",
     "map": "Peta",
@@ -162,9 +161,7 @@
       "has-task-list": "Memiliki daftar tugas"
     },
     "links": "Tautan",
-    "list": "Daftar",
     "load-more": "Muat lebih banyak",
-    "masonry": "Masonry",
     "no-archived-memos": "Tidak ada memo yang diarsipkan.",
     "no-memos": "Tidak ada memo.",
     "order-by": "Urutkan Berdasarkan",

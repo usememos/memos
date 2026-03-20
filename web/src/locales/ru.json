@@ -62,7 +62,6 @@
     "input": "Напишите...",
     "language": "Язык",
     "last-updated-at": "Изменено",
-    "layout": "Макет",
     "learn-more": "Узнать больше",
     "link": "Ссылка",
     "map": "Карта",
@@ -162,9 +161,7 @@
       "has-task-list": "hasTaskList"
     },
     "links": "Ссылки",
-    "list": "Список",
     "load-more": "Загрузить еще",
-    "masonry": "Плитки",
     "no-archived-memos": "Нет заархивированных записей.",
     "no-memos": "Нет заметок.",
     "order-by": "Сортировать по",

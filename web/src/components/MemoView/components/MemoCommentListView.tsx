@@ -19,7 +19,7 @@ const MemoCommentListView: React.FC = () => {
   const displayedComments = comments.slice(0, 3);
 
   return (
-    <div className="border border-t-0 border-border rounded-b-xl px-4 pt-2 pb-3 flex flex-col gap-1">
+    <div className="border border-t-0 border-border rounded-b-lg px-4 pt-2 pb-3 flex flex-col gap-1">
       <div className="flex items-center justify-between mb-1">
         <span className="text-xs text-muted-foreground">Comments{commentAmount > 1 ? ` (${commentAmount})` : ""}</span>
         <Link

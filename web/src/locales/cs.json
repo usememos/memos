@@ -62,7 +62,6 @@
     "input": "Vstup",
     "language": "Jazyk",
     "last-updated-at": "Změněno",
-    "layout": "Rozložení",
     "learn-more": "Více informací",
     "link": "Odkaz",
     "map": "Mapa",
@@ -162,9 +161,7 @@
       "has-task-list": "maSeznamUkolu"
     },
     "links": "Odkazy",
-    "list": "Seznam",
     "load-more": "Načíst více",
-    "masonry": "Zdivo",
     "no-archived-memos": "Žádné archivované poznámky.",
     "no-memos": "Žádné poznámky.",
     "order-by": "Řadit dle",

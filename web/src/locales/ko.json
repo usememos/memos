@@ -62,7 +62,6 @@
     "input": "입력",
     "language": "언어",
     "last-updated-at": "마지막 수정일",
-    "layout": "레이아웃",
     "learn-more": "더 보기",
     "link": "링크",
     "map": "지도",
@@ -162,9 +161,7 @@
       "has-task-list": "할일목록있음"
     },
     "links": "링크",
-    "list": "목록",
     "load-more": "더보기",
-    "masonry": "메이슨리",
     "no-archived-memos": "보관처리된 메모가 없습니다.",
     "no-memos": "메모가 없습니다.",
     "order-by": "정렬 기준",

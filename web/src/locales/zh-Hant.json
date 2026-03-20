@@ -62,7 +62,6 @@
     "input": "輸入",
     "language": "語言",
     "last-updated-at": "最後更新於",
-    "layout": "排版",
     "learn-more": "了解更多",
     "link": "連結",
     "map": "地圖",
@@ -162,9 +161,7 @@
       "has-task-list": "有待辦事項"
     },
     "links": "連結",
-    "list": "列表",
     "load-more": "載入更多",
-    "masonry": "瀑布流",
     "no-archived-memos": "無已封存的備忘錄",
     "no-memos": "無備忘錄",
     "order-by": "排序",

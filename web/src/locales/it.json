@@ -62,7 +62,6 @@
     "input": "Input",
     "language": "Lingua",
     "last-updated-at": "Ultimo aggiornamento",
-    "layout": "Layout",
     "learn-more": "Scopri di più",
     "link": "Link",
     "map": "Mappa",
@@ -162,9 +161,7 @@
       "has-task-list": "haListaCompiti"
     },
     "links": "Link",
-    "list": "Lista",
     "load-more": "Carica altro",
-    "masonry": "Masonry",
     "no-archived-memos": "Nessun memo archiviato.",
     "no-memos": "Nessun memo.",
     "order-by": "Ordina per",
