@@ -5,16 +5,29 @@ interface UseKeyboardOptions {
   onSave: () => void;
 }
 
-export const useKeyboard = (_editorRef: React.RefObject<EditorRefActions | null>, options: UseKeyboardOptions) => {
+export const useKeyboard = (editorRef: React.RefObject<EditorRefActions | null>, options: UseKeyboardOptions) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
-        event.preventDefault();
-        options.onSave();
+      if (!(event.metaKey || event.ctrlKey) || event.key !== "Enter") {
+        return;
       }
+
+      const editor = editorRef.current?.getEditor();
+      if (!editor) {
+        return;
+      }
+
+      const activeElement = document.activeElement;
+      const target = event.target;
+      if (activeElement !== editor && target !== editor) {
+        return;
+      }
+
+      event.preventDefault();
+      options.onSave();
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [options]);
+  }, [editorRef, options]);
 };
