@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import AuthFooter from "@/components/AuthFooter";
 import PasswordSignInForm from "@/components/PasswordSignInForm";
 import { Button } from "@/components/ui/button";
@@ -10,8 +10,9 @@ import { useInstance } from "@/contexts/InstanceContext";
 import { absolutifyLink } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { handleError } from "@/lib/error";
-import { Routes } from "@/router";
+import { ROUTES } from "@/router/routes";
 import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service_pb";
+import { AUTH_REASON_PARAM, AUTH_REASON_PROTECTED_MEMO, AUTH_REDIRECT_PARAM, getSafeRedirectPath } from "@/utils/auth-redirect";
 import { useTranslate } from "@/utils/i18n";
 import { storeOAuthState } from "@/utils/oauth";
 
@@ -20,13 +21,17 @@ const SignIn = () => {
   const currentUser = useCurrentUser();
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
   const { generalSetting: instanceGeneralSetting } = useInstance();
+  const [searchParams] = useSearchParams();
+  const redirectTarget = getSafeRedirectPath(searchParams.get(AUTH_REDIRECT_PARAM));
+  const authReason = searchParams.get(AUTH_REASON_PARAM);
+  const signUpPath = searchParams.toString() ? `${ROUTES.AUTH}/signup?${searchParams.toString()}` : `${ROUTES.AUTH}/signup`;
 
   // Redirect to root page if already signed in.
   useEffect(() => {
     if (currentUser?.name) {
-      window.location.href = Routes.ROOT;
+      window.location.href = redirectTarget || ROUTES.ROOT;
     }
-  }, [currentUser]);
+  }, [currentUser, redirectTarget]);
 
   // Prepare identity provider list.
   useEffect(() => {
@@ -49,7 +54,7 @@ const SignIn = () => {
       try {
         // Generate and store secure state parameter with CSRF protection
         // Also generate PKCE parameters (code_challenge) for enhanced security if available
-        const { state, codeChallenge } = await storeOAuthState(identityProvider.name);
+        const { state, codeChallenge } = await storeOAuthState(identityProvider.name, redirectTarget);
 
         // Build OAuth authorization URL with secure state
         // Include PKCE if available (requires HTTPS/localhost for crypto.subtle)
@@ -82,15 +87,20 @@ const SignIn = () => {
           <img className="h-14 w-auto rounded-full shadow" src={instanceGeneralSetting.customProfile?.logoUrl || "/logo.webp"} alt="" />
           <p className="ml-2 text-5xl text-foreground opacity-80">{instanceGeneralSetting.customProfile?.title || "Memos"}</p>
         </div>
+        {authReason === AUTH_REASON_PROTECTED_MEMO && (
+          <div className="w-full mb-4 rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
+            {t("auth.protected-memo-notice")}
+          </div>
+        )}
         {!instanceGeneralSetting.disallowPasswordAuth ? (
-          <PasswordSignInForm />
+          <PasswordSignInForm redirectPath={redirectTarget} />
         ) : (
           identityProviderList.length === 0 && <p className="w-full text-2xl mt-2 text-muted-foreground">Password auth is not allowed.</p>
         )}
         {!instanceGeneralSetting.disallowUserRegistration && !instanceGeneralSetting.disallowPasswordAuth && (
           <p className="w-full mt-4 text-sm">
             <span className="text-muted-foreground">{t("auth.sign-up-tip")}</span>
-            <Link to="/auth/signup" className="cursor-pointer ml-2 text-primary hover:underline" viewTransition>
+            <Link to={signUpPath} className="cursor-pointer ml-2 text-primary hover:underline" viewTransition>
               {t("common.sign-up")}
             </Link>
           </p>
