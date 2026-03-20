@@ -58,13 +58,11 @@ const MemoDetail = () => {
       }
 
       toast.error(error.message);
-      navigateTo("/404", { replace: true });
       return;
     }
 
-    toast.error("Failed to load memo.");
-    navigateTo("/404", { replace: true });
-  }, [error, location.hash, location.pathname, location.search, navigateTo]);
+    toast.error(t("memo.failed-to-load"));
+  }, [error, location.hash, location.pathname, location.search, navigateTo, t]);
 
   // Fetch parent memo if exists
   const { data: parentMemo } = useMemo(memo?.parent || "", {

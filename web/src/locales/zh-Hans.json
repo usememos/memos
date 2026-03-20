@@ -10,6 +10,7 @@
     "create-your-account": "创建您的账户",
     "host-tip": "您正在注册为站点管理员。",
     "new-password": "新密码",
+    "protected-memo-notice": "此备忘录不是公开的。请先登录后继续。",
     "repeat-new-password": "重复新密码",
     "sign-in-tip": "已有账户？",
     "sign-up-tip": "还没有账户？"
@@ -155,6 +156,7 @@
     "direction-asc": "正序",
     "direction-desc": "倒序",
     "display-time": "展示时间",
+    "failed-to-load": "加载备忘录失败。",
     "filters": {
       "has-code": "有代码",
       "has-link": "有链接",

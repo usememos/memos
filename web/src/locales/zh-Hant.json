@@ -10,6 +10,7 @@
     "create-your-account": "建立您的帳號",
     "host-tip": "您即將註冊為網站管理員。",
     "new-password": "新密碼",
+    "protected-memo-notice": "此備忘錄不是公開的。請先登入後再繼續。",
     "repeat-new-password": "再次輸入新密碼",
     "sign-in-tip": "已經有帳戶了嗎？",
     "sign-up-tip": "還沒有帳戶嗎？"
@@ -155,6 +156,7 @@
     "direction-asc": "升序",
     "direction-desc": "降序",
     "display-time": "顯示時間",
+    "failed-to-load": "載入備忘錄失敗。",
     "filters": {
       "has-code": "有程式碼",
       "has-link": "有連結",

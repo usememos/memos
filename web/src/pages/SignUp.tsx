@@ -96,7 +96,7 @@ const SignUp = () => {
         </div>
         {authReason === AUTH_REASON_PROTECTED_MEMO && (
           <div className="w-full mb-4 rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
-            This memo is not public. Sign in to continue.
+            {t("auth.protected-memo-notice")}
           </div>
         )}
         {!instanceGeneralSetting.disallowUserRegistration ? (
