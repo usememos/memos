@@ -40,6 +40,36 @@ func TestUserStore(t *testing.T) {
 	ts.Close()
 }
 
+func TestUserListByIDList(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+
+	// Create 5 users
+	var userIDs []int32
+	for i := 0; i < 5; i++ {
+		user, err := createTestingUserWithRole(ctx, ts, fmt.Sprintf("user_list_%d", i), store.RoleUser)
+		require.NoError(t, err)
+		userIDs = append(userIDs, user.ID)
+	}
+
+	// List users by IDList (3 out of 5)
+	targetIDs := userIDs[1:4]
+	users, err := ts.ListUsers(ctx, &store.FindUser{IDList: targetIDs})
+	require.NoError(t, err)
+	require.Equal(t, 3, len(users))
+
+	foundIDs := make(map[int32]bool)
+	for _, u := range users {
+		foundIDs[u.ID] = true
+	}
+	for _, id := range targetIDs {
+		require.True(t, foundIDs[id])
+	}
+
+	ts.Close()
+}
+
 func TestUserGetByID(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
