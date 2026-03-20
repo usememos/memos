@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { LatLng } from "leaflet";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Location, LocationSchema } from "@/types/proto/api/v1/memo_service_pb";
 import { LocationState } from "../types/insert-menu";
 
@@ -15,6 +15,10 @@ export const useLocation = (initialLocation?: Location) => {
     latInput: initialLocation ? String(initialLocation.latitude) : "",
     lngInput: initialLocation ? String(initialLocation.longitude) : "",
   });
+
+  // Ref to latest state so getLocation can be stable without closing over state.
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   const updatePosition = useCallback((position?: LatLng) => {
     setState((prev) => ({
@@ -63,24 +67,21 @@ export const useLocation = (initialLocation?: Location) => {
     setLocationInitialized(false);
   }, []);
 
+  // Stable — reads latest state via ref, no closure over state.
   const getLocation = useCallback((): Location | undefined => {
-    if (!state.position || !state.placeholder.trim()) {
+    const { position, placeholder } = stateRef.current;
+    if (!position || !placeholder.trim()) {
       return undefined;
     }
     return create(LocationSchema, {
-      latitude: state.position.lat,
-      longitude: state.position.lng,
-      placeholder: state.placeholder,
+      latitude: position.lat,
+      longitude: position.lng,
+      placeholder,
     });
-  }, [state.position, state.placeholder]);
+  }, []);
 
-  return {
-    state,
-    locationInitialized,
-    handlePositionChange,
-    updateCoordinate,
-    setPlaceholder,
-    reset,
-    getLocation,
-  };
+  return useMemo(
+    () => ({ state, locationInitialized, handlePositionChange, updateCoordinate, setPlaceholder, reset, getLocation }),
+    [state, locationInitialized, handlePositionChange, updateCoordinate, setPlaceholder, reset, getLocation],
+  );
 };
