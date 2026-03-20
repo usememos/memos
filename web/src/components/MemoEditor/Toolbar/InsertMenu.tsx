@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { LinkMemoDialog, LocationDialog } from "../components";
+import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
 import { useFileUpload, useLinkMemo, useLocation } from "../hooks";
 import { useEditorContext } from "../state";
 import type { InsertMenuProps } from "../types";
