@@ -71,7 +71,9 @@ type UpdateUser struct {
 }
 
 type FindUser struct {
-	ID        *int32
+	ID     *int32
+	IDList []int32
+
 	RowStatus *RowStatus
 	Username  *string
 	Role      *Role

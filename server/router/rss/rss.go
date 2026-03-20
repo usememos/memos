@@ -211,18 +211,24 @@ func (s *RSSService) generateRSSFromMemoList(ctx context.Context, memoList []*st
 		creatorMap[user.ID] = user
 	} else {
 		// Multi-user feed - batch load all unique creators
-		creatorIDs := make(map[int32]bool)
+		creatorIDList := []int32{}
+		creatorIDMap := make(map[int32]bool)
 		for _, memo := range memoList[:itemCountLimit] {
-			creatorIDs[memo.CreatorID] = true
+			if !creatorIDMap[memo.CreatorID] {
+				creatorIDList = append(creatorIDList, memo.CreatorID)
+				creatorIDMap[memo.CreatorID] = true
+			}
 		}
 
-		// Batch load all users with a single query by getting all users and filtering
-		// Note: This is more efficient than N separate queries
-		for creatorID := range creatorIDs {
-			creator, err := s.Store.GetUser(ctx, &store.FindUser{ID: &creatorID})
-			if err == nil && creator != nil {
-				creatorMap[creatorID] = creator
-			}
+		// Batch load all users with a single query
+		users, err := s.Store.ListUsers(ctx, &store.FindUser{
+			IDList: creatorIDList,
+		})
+		if err != nil {
+			return "", lastModified, err
+		}
+		for _, creator := range users {
+			creatorMap[creator.ID] = creator
 		}
 	}
 

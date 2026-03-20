@@ -94,6 +94,14 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 	if v := find.ID; v != nil {
 		where, args = append(where, "id = "+placeholder(len(args)+1)), append(args, *v)
 	}
+	if len(find.IDList) > 0 {
+		holders := make([]string, 0, len(find.IDList))
+		for range find.IDList {
+			holders = append(holders, placeholder(len(args)+1))
+			args = append(args, find.IDList[len(holders)-1])
+		}
+		where = append(where, fmt.Sprintf("id IN (%s)", strings.Join(holders, ", ")))
+	}
 	if v := find.Username; v != nil {
 		where, args = append(where, "username = "+placeholder(len(args)+1)), append(args, *v)
 	}
