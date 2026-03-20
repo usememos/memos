@@ -156,7 +156,6 @@
     "direction-asc": "오름차순",
     "direction-desc": "내림차순",
     "display-time": "표시 시간",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "코드있음",
       "has-link": "링크있음",

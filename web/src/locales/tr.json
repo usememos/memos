@@ -156,7 +156,6 @@
     "direction-asc": "Artan",
     "direction-desc": "Azalan",
     "display-time": "Görüntüleme Zamanı",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "kodVar",
       "has-link": "bağlantıVar",

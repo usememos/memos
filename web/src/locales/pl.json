@@ -157,7 +157,6 @@
     "direction-asc": "Rosnąco",
     "direction-desc": "Malejąco",
     "display-time": "Wyświetl czas",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "ma kod",
       "has-link": "ma link",

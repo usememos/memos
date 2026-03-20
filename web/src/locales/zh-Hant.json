@@ -156,7 +156,6 @@
     "direction-asc": "升序",
     "direction-desc": "降序",
     "display-time": "顯示時間",
-    "failed-to-load": "載入備忘錄失敗。",
     "filters": {
       "has-code": "有程式碼",
       "has-link": "有連結",

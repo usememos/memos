@@ -156,7 +156,6 @@
     "direction-asc": "Uzlazno",
     "direction-desc": "Silazno",
     "display-time": "Vrijeme prikaza",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "imaKod",
       "has-link": "imaLink",

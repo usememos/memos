@@ -156,7 +156,6 @@
     "direction-asc": "Stigande",
     "direction-desc": "Fallande",
     "display-time": "Visa tid",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "harKod",
       "has-link": "harLänk",

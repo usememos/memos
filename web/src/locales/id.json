@@ -156,7 +156,6 @@
     "direction-asc": "Menaik",
     "direction-desc": "Menurun",
     "display-time": "Waktu Tampil",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "Memiliki kode",
       "has-link": "Memiliki tautan",

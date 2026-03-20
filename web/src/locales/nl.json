@@ -156,7 +156,6 @@
     "direction-asc": "Oplopend",
     "direction-desc": "Aflopend",
     "display-time": "Tijd weergeven",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "heeftCode",
       "has-link": "heeftLink",

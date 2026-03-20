@@ -156,7 +156,6 @@
     "direction-asc": "จากน้อยไปมาก",
     "direction-desc": "จากมากไปน้อย",
     "display-time": "แสดงเวลา",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "มีโค้ด",
       "has-link": "มีลิงก์",

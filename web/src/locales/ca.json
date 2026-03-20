@@ -156,7 +156,6 @@
     "direction-asc": "Ascendent",
     "direction-desc": "Descendent",
     "display-time": "Mostra l'hora",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "téCodi",
       "has-link": "téEnllaç",

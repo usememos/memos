@@ -156,7 +156,6 @@
     "direction-asc": "आरोही",
     "direction-desc": "अवरोही",
     "display-time": "प्रदर्शन वेळ",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "कोड आहे",
       "has-link": "लिंक आहे",

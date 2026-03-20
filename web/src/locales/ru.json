@@ -156,7 +156,6 @@
     "direction-asc": "По возрастанию",
     "direction-desc": "По убыванию",
     "display-time": "Время отображения",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "hasCode",
       "has-link": "hasLink",

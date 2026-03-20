@@ -156,7 +156,6 @@
     "direction-asc": "Crescente",
     "direction-desc": "Decrescente",
     "display-time": "Orario di visualizzazione",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "haCodice",
       "has-link": "haLink",

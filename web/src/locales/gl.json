@@ -156,7 +156,6 @@
     "direction-asc": "Ascendente",
     "direction-desc": "Descendente",
     "display-time": "Mostrar hora",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "hasCode",
       "has-link": "hasLink",

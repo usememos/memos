@@ -156,7 +156,6 @@
     "direction-asc": "За зростанням",
     "direction-desc": "За спаданням",
     "display-time": "Час відображення",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "єКод",
       "has-link": "єПосилання",

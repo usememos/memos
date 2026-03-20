@@ -156,7 +156,6 @@
     "direction-asc": "Növekvő",
     "direction-desc": "Csökkenő",
     "display-time": "Megjelenítési idő",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "vanKód",
       "has-link": "vanLink",

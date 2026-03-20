@@ -156,7 +156,6 @@
     "direction-asc": "Aufsteigend",
     "direction-desc": "Absteigend",
     "display-time": "Anzeigedatum",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "hatCode",
       "has-link": "hatLink",

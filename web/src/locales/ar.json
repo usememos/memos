@@ -156,7 +156,6 @@
     "direction-asc": "تصاعدي",
     "direction-desc": "تنازلي",
     "display-time": "عرض الوقت",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "يحتوي على كود",
       "has-link": "يحتوي على رابط",

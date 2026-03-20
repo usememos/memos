@@ -156,7 +156,6 @@
     "direction-asc": "昇順",
     "direction-desc": "降順",
     "display-time": "表示時間",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "コードあり",
       "has-link": "リンクあり",

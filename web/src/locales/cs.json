@@ -156,7 +156,6 @@
     "direction-asc": "Vzestupně",
     "direction-desc": "Sestupně",
     "display-time": "Doba zobrazení",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "maKod",
       "has-link": "maOdkaz",

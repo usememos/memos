@@ -156,7 +156,6 @@
     "direction-asc": "Stigende",
     "direction-desc": "Synkende",
     "display-time": "Vis tid",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "harKode",
       "has-link": "harLink",

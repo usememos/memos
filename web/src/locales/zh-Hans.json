@@ -156,7 +156,6 @@
     "direction-asc": "正序",
     "direction-desc": "倒序",
     "display-time": "展示时间",
-    "failed-to-load": "加载备忘录失败。",
     "filters": {
       "has-code": "有代码",
       "has-link": "有链接",

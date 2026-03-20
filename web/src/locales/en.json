@@ -161,7 +161,6 @@
     "direction-asc": "Ascending",
     "direction-desc": "Descending",
     "display-time": "Display Time",
-    "failed-to-load": "Failed to load memo.",
     "filters": {
       "has-code": "hasCode",
       "has-link": "hasLink",
