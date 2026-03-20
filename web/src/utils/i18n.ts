@@ -96,6 +96,7 @@ export const loadLocale = (locale: string): Locale => {
   const validLocale = isValidLocale(locale) ? (locale as Locale) : findNearestMatchedLanguage(navigator.language);
   setStoredLocale(validLocale);
   i18n.changeLanguage(validLocale);
+  document.documentElement.lang = validLocale;
   return validLocale;
 };
 
