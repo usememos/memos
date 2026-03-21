@@ -5,6 +5,8 @@ import { AlertCircleIcon } from "lucide-react";
 import { useParams } from "react-router-dom";
 import MemoContent from "@/components/MemoContent";
 import { AttachmentListView } from "@/components/MemoMetadata";
+import { useImagePreview } from "@/components/MemoView/hooks";
+import PreviewImageDialog from "@/components/PreviewImageDialog";
 import UserAvatar from "@/components/UserAvatar";
 import { useSharedMemo } from "@/hooks/useMemoShareQueries";
 import { useUser } from "@/hooks/useUserQueries";
@@ -22,6 +24,7 @@ function withShareAttachmentLinks(attachments: Attachment[], token: string): Att
 const SharedMemo = () => {
   const t = useTranslate();
   const { token = "" } = useParams<{ token: string }>();
+  const { previewState, openPreview, setPreviewOpen } = useImagePreview();
 
   const { data: memo, error, isLoading } = useSharedMemo(token, { enabled: !!token });
   const { data: creator } = useUser(memo?.creator ?? "", { enabled: !!memo?.creator });
@@ -64,8 +67,17 @@ const SharedMemo = () => {
 
       <div className="relative flex flex-col items-start gap-2 rounded-lg border border-border bg-card px-4 py-3 text-card-foreground">
         <MemoContent content={memo.content} />
-        {memo.attachments.length > 0 && <AttachmentListView attachments={withShareAttachmentLinks(memo.attachments, token)} />}
+        {memo.attachments.length > 0 && (
+          <AttachmentListView attachments={withShareAttachmentLinks(memo.attachments, token)} onImagePreview={openPreview} />
+        )}
       </div>
+
+      <PreviewImageDialog
+        open={previewState.open}
+        onOpenChange={setPreviewOpen}
+        imgUrls={previewState.urls}
+        initialIndex={previewState.index}
+      />
     </div>
   );
 };

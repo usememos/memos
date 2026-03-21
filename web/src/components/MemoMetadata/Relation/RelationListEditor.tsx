@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { LinkIcon, XIcon } from "lucide-react";
 import type { FC } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { memoServiceClient } from "@/connect";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { MemoRelation_Memo, MemoRelation_MemoSchema, MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
@@ -40,8 +40,9 @@ const RelationItemCard: FC<{
 };
 
 const RelationListEditor: FC<RelationListEditorProps> = ({ relations, onRelationsChange, parentPage, memoName }) => {
-  const referenceRelations = relations.filter(
-    (r) => r.type === MemoRelation_Type.REFERENCE && (!memoName || !r.memo?.name || r.memo.name === memoName),
+  const referenceRelations = useMemo(
+    () => relations.filter((r) => r.type === MemoRelation_Type.REFERENCE && (!memoName || !r.memo?.name || r.memo.name === memoName)),
+    [relations, memoName],
   );
   const [fetchedMemos, setFetchedMemos] = useState<Record<string, MemoRelation_Memo>>({});
 
