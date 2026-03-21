@@ -3,13 +3,13 @@ import type { FC } from "react";
 import { cn } from "@/lib/utils";
 import type { Location } from "@/types/proto/api/v1/memo_service_pb";
 
-interface LocationDisplayProps {
+interface LocationDisplayEditorProps {
   location: Location;
   onRemove?: () => void;
   className?: string;
 }
 
-const LocationDisplay: FC<LocationDisplayProps> = ({ location, onRemove, className }) => {
+const LocationDisplayEditor: FC<LocationDisplayEditorProps> = ({ location, onRemove, className }) => {
   const displayText = location.placeholder || `${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}`;
 
   return (
@@ -45,4 +45,4 @@ const LocationDisplay: FC<LocationDisplayProps> = ({ location, onRemove, classNa
   );
 };
 
-export default LocationDisplay;
+export default LocationDisplayEditor;

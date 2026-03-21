@@ -1,14 +1,15 @@
 import { FileAudioIcon, FileIcon, PaperclipIcon } from "lucide-react";
 import { useMemo } from "react";
+import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
-import { useMemoViewContext } from "../../MemoViewContext";
+import SectionHeader from "../SectionHeader";
 import AttachmentCard from "./AttachmentCard";
-import SectionHeader from "./SectionHeader";
 
-interface AttachmentListProps {
+interface AttachmentListViewProps {
   attachments: Attachment[];
+  onImagePreview?: (urls: string[], index: number) => void;
 }
 
 const isImageAttachment = (attachment: Attachment): boolean => getAttachmentType(attachment) === "image/*";
@@ -79,19 +80,24 @@ const AudioItem = ({ attachment }: { attachment: Attachment }) => {
 
 interface VisualItemProps {
   attachment: Attachment;
-  onImageClick: (url: string) => void;
+  onImageClick?: (url: string) => void;
 }
 
 const VisualItem = ({ attachment, onImageClick }: VisualItemProps) => {
+  const isInteractive = isImageAttachment(attachment) && Boolean(onImageClick);
+
   const handleClick = () => {
-    if (isImageAttachment(attachment)) {
-      onImageClick(getAttachmentUrl(attachment));
+    if (isInteractive) {
+      onImageClick?.(getAttachmentUrl(attachment));
     }
   };
 
   return (
     <div
-      className="aspect-square rounded-lg overflow-hidden bg-muted/40 border border-border hover:border-accent/50 transition-all cursor-pointer group"
+      className={cn(
+        "aspect-square rounded-lg overflow-hidden bg-muted/40 border border-border hover:border-accent/50 transition-all group",
+        isInteractive && "cursor-pointer",
+      )}
       onClick={handleClick}
     >
       <AttachmentCard attachment={attachment} className="rounded-none" />
@@ -99,7 +105,7 @@ const VisualItem = ({ attachment, onImageClick }: VisualItemProps) => {
   );
 };
 
-const VisualGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; onImageClick: (url: string) => void }) => (
+const VisualGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; onImageClick?: (url: string) => void }) => (
   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
     {attachments.map((attachment) => (
       <VisualItem key={attachment.name} attachment={attachment} onImageClick={onImageClick} />
@@ -127,9 +133,7 @@ const DocsList = ({ attachments }: { attachments: Attachment[] }) => (
 
 const Divider = () => <div className="border-t mt-1 border-border opacity-60" />;
 
-const AttachmentList = ({ attachments }: AttachmentListProps) => {
-  const { openPreview } = useMemoViewContext();
-
+const AttachmentListView = ({ attachments, onImagePreview }: AttachmentListViewProps) => {
   const { visual, audio, docs } = useMemo(() => separateAttachments(attachments), [attachments]);
 
   const imageAttachments = useMemo(() => visual.filter(isImageAttachment), [visual]);
@@ -141,7 +145,7 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
 
   const handleImageClick = (imgUrl: string) => {
     const index = imageUrls.findIndex((url) => url === imgUrl);
-    openPreview(imageUrls, index >= 0 ? index : 0);
+    onImagePreview?.(imageUrls, index >= 0 ? index : 0);
   };
 
   const sections = [visual.length > 0, audio.length > 0, docs.length > 0];
@@ -166,4 +170,4 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
   );
 };
 
-export default AttachmentList;
+export default AttachmentListView;

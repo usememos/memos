@@ -1,13 +1,14 @@
 import { create } from "@bufbuild/protobuf";
 import { LinkIcon, XIcon } from "lucide-react";
 import type { FC } from "react";
-import { useEffect, useState } from "react";
-import RelationCard from "@/components/MemoView/components/metadata/RelationCard";
+import { useEffect, useMemo, useState } from "react";
 import { memoServiceClient } from "@/connect";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { MemoRelation_Memo, MemoRelation_MemoSchema, MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
+import SectionHeader from "../SectionHeader";
+import RelationCard from "./RelationCard";
 
-interface RelationListProps {
+interface RelationListEditorProps {
   relations: MemoRelation[];
   onRelationsChange?: (relations: MemoRelation[]) => void;
   parentPage?: string;
@@ -38,9 +39,10 @@ const RelationItemCard: FC<{
   );
 };
 
-const RelationList: FC<RelationListProps> = ({ relations, onRelationsChange, parentPage, memoName }) => {
-  const referenceRelations = relations.filter(
-    (r) => r.type === MemoRelation_Type.REFERENCE && (!memoName || !r.memo?.name || r.memo.name === memoName),
+const RelationListEditor: FC<RelationListEditorProps> = ({ relations, onRelationsChange, parentPage, memoName }) => {
+  const referenceRelations = useMemo(
+    () => relations.filter((r) => r.type === MemoRelation_Type.REFERENCE && (!memoName || !r.memo?.name || r.memo.name === memoName)),
+    [relations, memoName],
   );
   const [fetchedMemos, setFetchedMemos] = useState<Record<string, MemoRelation_Memo>>({});
 
@@ -76,10 +78,7 @@ const RelationList: FC<RelationListProps> = ({ relations, onRelationsChange, par
 
   return (
     <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
-      <div className="flex items-center gap-1.5 px-2 py-1 border-b border-border bg-muted/30">
-        <LinkIcon className="w-3.5 h-3.5 text-muted-foreground" />
-        <span className="text-xs text-muted-foreground">Relations ({referenceRelations.length})</span>
-      </div>
+      <SectionHeader icon={LinkIcon} title="Relations" count={referenceRelations.length} />
 
       <div className="p-1 sm:p-1.5 flex flex-col gap-0.5">
         {referenceRelations.map((relation) => {
@@ -92,4 +91,4 @@ const RelationList: FC<RelationListProps> = ({ relations, onRelationsChange, par
   );
 };
 
-export default RelationList;
+export default RelationListEditor;

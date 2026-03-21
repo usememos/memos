@@ -4,17 +4,17 @@ import { cn } from "@/lib/utils";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import SectionHeader from "../SectionHeader";
 import RelationCard from "./RelationCard";
-import SectionHeader from "./SectionHeader";
 
-interface RelationListProps {
+interface RelationListViewProps {
   relations: MemoRelation[];
   currentMemoName?: string;
   parentPage?: string;
   className?: string;
 }
 
-function RelationList({ relations, currentMemoName, parentPage, className }: RelationListProps) {
+function RelationListView({ relations, currentMemoName, parentPage, className }: RelationListViewProps) {
   const t = useTranslate();
   const [activeTab, setActiveTab] = useState<"referencing" | "referenced">("referencing");
 
@@ -81,4 +81,4 @@ function RelationList({ relations, currentMemoName, parentPage, className }: Rel
   );
 }
 
-export default RelationList;
+export default RelationListView;

@@ -6,8 +6,19 @@ import { Input } from "@/components/ui/input";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { extractMemoIdFromName } from "@/helpers/resource-names";
 import { cn } from "@/lib/utils";
+import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import type { LinkMemoDialogProps } from "../types";
+
+interface LinkMemoDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  searchText: string;
+  onSearchChange: (text: string) => void;
+  filteredMemos: Memo[];
+  isFetching: boolean;
+  onSelectMemo: (memo: Memo) => void;
+  isAlreadyLinked: (memoName: string) => boolean;
+}
 
 export const LinkMemoDialog = ({
   open,

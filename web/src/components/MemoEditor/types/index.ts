@@ -8,8 +8,6 @@ export type {
   FocusModeExitButtonProps,
   FocusModeOverlayProps,
   InsertMenuProps,
-  LinkMemoDialogProps,
-  LocationDialogProps,
   MemoEditorProps,
   SlashCommandsProps,
   TagSuggestionsProps,

@@ -1,3 +1,4 @@
+import { AttachmentListView, LocationDisplayView, RelationListView } from "@/components/MemoMetadata";
 import { cn } from "@/lib/utils";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -6,7 +7,6 @@ import { MemoReactionListView } from "../../MemoReactionListView";
 import { useMemoHandlers } from "../hooks";
 import { useMemoViewContext } from "../MemoViewContext";
 import type { MemoBodyProps } from "../types";
-import { AttachmentList, LocationDisplay, RelationList } from "./metadata";
 
 const NsfwOverlay: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
   const t = useTranslate();
@@ -44,9 +44,9 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
           onDoubleClick={handleMemoContentDoubleClick}
           compact={memo.pinned ? false : compact} // Always show full content when pinned
         />
-        <AttachmentList attachments={memo.attachments} />
-        <RelationList relations={referencedMemos} currentMemoName={memo.name} parentPage={parentPage} />
-        {memo.location && <LocationDisplay location={memo.location} />}
+        <AttachmentListView attachments={memo.attachments} onImagePreview={openPreview} />
+        <RelationListView relations={referencedMemos} currentMemoName={memo.name} parentPage={parentPage} />
+        {memo.location && <LocationDisplayView location={memo.location} />}
         <MemoReactionListView memo={memo} reactions={memo.reactions} />
       </div>
 
