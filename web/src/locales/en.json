@@ -470,6 +470,16 @@
       "title": "Webhooks",
       "url": "URL",
       "label": "Webhooks"
+    },
+    "tags": {
+      "label": "Tags",
+      "title": "Tag metadata",
+      "description": "Assign display colors to tags instance-wide.",
+      "background-color": "Background color",
+      "no-tags-configured": "No tag metadata configured.",
+      "tag-name": "Tag name",
+      "tag-name-placeholder": "e.g. work",
+      "tag-already-exists": "Tag already exists."
     }
   },
   "tag": {

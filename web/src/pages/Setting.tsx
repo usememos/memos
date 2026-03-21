@@ -1,4 +1,15 @@
-import { CogIcon, DatabaseIcon, KeyIcon, LibraryIcon, LucideIcon, Settings2Icon, UserIcon, UsersIcon, WebhookIcon } from "lucide-react";
+import {
+  CogIcon,
+  DatabaseIcon,
+  KeyIcon,
+  LibraryIcon,
+  LucideIcon,
+  Settings2Icon,
+  TagsIcon,
+  UserIcon,
+  UsersIcon,
+  WebhookIcon,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import MobileHeader from "@/components/MobileHeader";
@@ -10,6 +21,7 @@ import PreferencesSection from "@/components/Settings/PreferencesSection";
 import SectionMenuItem from "@/components/Settings/SectionMenuItem";
 import SSOSection from "@/components/Settings/SSOSection";
 import StorageSection from "@/components/Settings/StorageSection";
+import TagsSection from "@/components/Settings/TagsSection";
 import WebhookSection from "@/components/Settings/WebhookSection";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useInstance } from "@/contexts/InstanceContext";
@@ -19,10 +31,10 @@ import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 import { User_Role } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
-type SettingSection = "my-account" | "preference" | "webhook" | "member" | "system" | "memo" | "storage" | "sso";
+type SettingSection = "my-account" | "preference" | "webhook" | "member" | "system" | "memo" | "storage" | "sso" | "tags";
 
 const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference", "webhook"];
-const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo", "storage", "sso"];
+const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo", "storage", "tags", "sso"];
 const ALL_SECTIONS = [...BASIC_SECTIONS, ...ADMIN_SECTIONS];
 
 const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
@@ -33,6 +45,7 @@ const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   system: Settings2Icon,
   memo: LibraryIcon,
   storage: DatabaseIcon,
+  tags: TagsIcon,
   sso: KeyIcon,
 };
 
@@ -44,6 +57,7 @@ const SECTION_COMPONENT_MAP: Record<SettingSection, React.ComponentType> = {
   system: InstanceSection,
   memo: MemoRelatedSettings,
   storage: StorageSection,
+  tags: TagsSection,
   sso: SSOSection,
 };
 
@@ -74,6 +88,7 @@ const Setting = () => {
     }
     // Fetch admin-only settings that are not eagerly loaded by InstanceContext.
     fetchSetting(InstanceSetting_Key.STORAGE);
+    fetchSetting(InstanceSetting_Key.TAGS);
   }, [isHost, fetchSetting]);
 
   const handleSectionSelectorItemClick = (section: SettingSection) => {
