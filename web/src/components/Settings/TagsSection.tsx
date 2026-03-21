@@ -50,7 +50,7 @@ const TagsSection = () => {
     setLocalTags(
       Object.fromEntries(Object.entries(originalSetting.tags).map(([name, meta]) => [name, tagColorToHex(meta.backgroundColor)])),
     );
-  }, [originalSetting]);
+  }, [originalSetting.tags]);
 
   // All known tag names: union of saved entries and tags used in memos.
   const allKnownTags = useMemo(

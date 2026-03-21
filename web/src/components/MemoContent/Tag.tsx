@@ -25,11 +25,12 @@ export const Tag: React.FC<TagProps> = ({ "data-tag": dataTag, children, classNa
 
   // Custom color from admin tag metadata. Dynamic hex values must use inline styles
   // because Tailwind can't scan dynamically constructed class names.
+  // Text uses a darkened variant (40% color + black) for contrast on light backgrounds.
   const bgHex = colorToHex(tagsSetting.tags[tag]?.backgroundColor);
   const tagStyle: React.CSSProperties | undefined = bgHex
     ? {
         borderColor: bgHex,
-        color: bgHex,
+        color: `color-mix(in srgb, ${bgHex} 60%, black)`,
         backgroundColor: `color-mix(in srgb, ${bgHex} 15%, transparent)`,
         ...style,
       }
