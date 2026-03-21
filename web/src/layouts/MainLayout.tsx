@@ -10,9 +10,17 @@ import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
 
+const ARCHIVED_ROUTE = "/archived";
+const PROFILE_ROUTE = "/u/:username";
+const DESKTOP_EXPLORER_WIDTH_CLASS = "w-64";
+const DESKTOP_EXPLORER_CLASS_NAME = cn(
+  "fixed top-0 left-16 h-svh shrink-0 border-r border-border transition-all",
+  DESKTOP_EXPLORER_WIDTH_CLASS,
+);
+const MAIN_CONTENT_CLASS_NAME = cn("w-full min-h-full", "md:pl-64");
+
 const MainLayout = () => {
   const md = useMediaQuery("md");
-  const lg = useMediaQuery("lg");
   const location = useLocation();
   const currentUser = useCurrentUser();
   const [profileUserName, setProfileUserName] = useState<string | undefined>();
@@ -21,14 +29,14 @@ const MainLayout = () => {
   const context: MemoExplorerContext = useMemo(() => {
     if (location.pathname === Routes.ROOT) return "home";
     if (location.pathname === Routes.EXPLORE) return "explore";
-    if (matchPath("/archived", location.pathname)) return "archived";
-    if (matchPath("/u/:username", location.pathname)) return "profile";
+    if (matchPath(ARCHIVED_ROUTE, location.pathname)) return "archived";
+    if (matchPath(PROFILE_ROUTE, location.pathname)) return "profile";
     return "home"; // fallback
   }, [location.pathname]);
 
   // Extract username from URL for profile context
   useEffect(() => {
-    const match = matchPath("/u/:username", location.pathname);
+    const match = matchPath(PROFILE_ROUTE, location.pathname);
     if (match && context === "profile") {
       const username = match.params.username;
       if (username) {
@@ -60,20 +68,21 @@ const MainLayout = () => {
   }, [context, currentUser, profileUserName]);
 
   const { statistics, tags } = useFilteredMemoStats({ userName: statsUserName, context });
+  const memoExplorerProps = { context, statisticsData: statistics, tagCount: tags };
 
   return (
     <section className="@container w-full min-h-full flex flex-col justify-start items-center">
       {!md && (
         <MobileHeader>
-          <MemoExplorerDrawer context={context} statisticsData={statistics} tagCount={tags} />
+          <MemoExplorerDrawer {...memoExplorerProps} />
         </MobileHeader>
       )}
       {md && (
-        <div className={cn("fixed top-0 left-16 shrink-0 h-svh transition-all", "border-r border-border", lg ? "w-72" : "w-56")}>
-          <MemoExplorer className={cn("px-3 py-6")} context={context} statisticsData={statistics} tagCount={tags} />
+        <div className={DESKTOP_EXPLORER_CLASS_NAME}>
+          <MemoExplorer className="px-3 py-6" {...memoExplorerProps} />
         </div>
       )}
-      <div className={cn("w-full min-h-full", lg ? "pl-72" : md ? "pl-56" : "")}>
+      <div className={MAIN_CONTENT_CLASS_NAME}>
         <div className={cn("w-full mx-auto px-4 sm:px-6 md:pt-6 pb-8")}>
           <Outlet />
         </div>
