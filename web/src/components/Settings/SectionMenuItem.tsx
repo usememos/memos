@@ -1,14 +1,14 @@
 import { LucideIcon } from "lucide-react";
 import React from "react";
 
-interface SettingMenuItemProps {
+interface SectionMenuItemProps {
   text: string;
   icon: LucideIcon;
   isSelected: boolean;
   onClick: () => void;
 }
 
-const SectionMenuItem: React.FC<SettingMenuItemProps> = ({ text, icon: IconComponent, isSelected, onClick }) => {
+const SectionMenuItem: React.FC<SectionMenuItemProps> = ({ text, icon: IconComponent, isSelected, onClick }) => {
   return (
     <div
       onClick={onClick}

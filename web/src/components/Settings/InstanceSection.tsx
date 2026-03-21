@@ -31,12 +31,22 @@ const InstanceSection = () => {
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
 
   useEffect(() => {
-    setInstanceGeneralSetting({ ...instanceGeneralSetting, customProfile: originalSetting.customProfile });
-  }, [originalSetting]);
+    setInstanceGeneralSetting((prev) =>
+      create(InstanceSetting_GeneralSettingSchema, {
+        ...prev,
+        customProfile: originalSetting.customProfile,
+      }),
+    );
+  }, [originalSetting.customProfile]);
 
-  const handleUpdateCustomizedProfileButtonClick = () => {
-    customizeDialog.open();
+  const fetchIdentityProviderList = async () => {
+    const { identityProviders } = await identityProviderServiceClient.listIdentityProviders({});
+    setIdentityProviderList(identityProviders);
   };
+
+  useEffect(() => {
+    fetchIdentityProviderList();
+  }, []);
 
   const updatePartialSetting = (partial: Partial<InstanceSetting_GeneralSetting>) => {
     setInstanceGeneralSetting(
@@ -68,20 +78,11 @@ const InstanceSection = () => {
     toast.success(t("message.update-succeed"));
   };
 
-  useEffect(() => {
-    fetchIdentityProviderList();
-  }, []);
-
-  const fetchIdentityProviderList = async () => {
-    const { identityProviders } = await identityProviderServiceClient.listIdentityProviders({});
-    setIdentityProviderList(identityProviders);
-  };
-
   return (
-    <SettingSection>
+    <SettingSection title={t("setting.system.label")}>
       <SettingGroup title={t("common.basic")}>
         <SettingRow label={t("setting.system.server-name")} description={instanceGeneralSetting.customProfile?.title || "Memos"}>
-          <Button variant="outline" onClick={handleUpdateCustomizedProfileButtonClick}>
+          <Button variant="outline" onClick={customizeDialog.open}>
             {t("common.edit")}
           </Button>
         </SettingRow>
@@ -109,7 +110,7 @@ const InstanceSection = () => {
         </SettingRow>
       </SettingGroup>
 
-      <SettingGroup>
+      <SettingGroup showSeparator>
         <SettingRow label={t("setting.instance.disallow-user-registration")}>
           <Switch
             disabled={profile.demo}
@@ -169,8 +170,7 @@ const InstanceSection = () => {
         open={customizeDialog.isOpen}
         onOpenChange={customizeDialog.setOpen}
         onSuccess={() => {
-          // Refresh instance settings if needed
-          toast.success("Profile updated successfully!");
+          toast.success(t("message.update-succeed"));
         }}
       />
     </SettingSection>

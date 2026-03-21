@@ -35,17 +35,18 @@ const MemoRelatedSettings = () => {
   };
 
   const upsertReaction = () => {
-    if (!editingReaction) {
+    const trimmed = editingReaction.trim();
+    if (!trimmed) {
       return;
     }
 
-    updatePartialSetting({ reactions: uniq([...memoRelatedSetting.reactions, editingReaction.trim()]) });
+    updatePartialSetting({ reactions: uniq([...memoRelatedSetting.reactions, trimmed]) });
     setEditingReaction("");
   };
 
   const handleUpdateSetting = async () => {
     if (memoRelatedSetting.reactions.length === 0) {
-      toast.error("Reactions must not be empty.");
+      toast.error(t("setting.memo.reactions-required"));
       return;
     }
 
@@ -69,8 +70,8 @@ const MemoRelatedSettings = () => {
   };
 
   return (
-    <SettingSection>
-      <SettingGroup title={t("setting.memo.title")}>
+    <SettingSection title={t("setting.memo.label")}>
+      <SettingGroup title={t("common.basic")}>
         <SettingRow label={t("setting.system.display-with-updated-time")}>
           <Switch
             checked={memoRelatedSetting.displayWithUpdateTime}
@@ -89,8 +90,8 @@ const MemoRelatedSettings = () => {
           <Input
             className="w-24"
             type="number"
-            defaultValue={memoRelatedSetting.contentLengthLimit}
-            onBlur={(event) => updatePartialSetting({ contentLengthLimit: Number(event.target.value) })}
+            value={memoRelatedSetting.contentLengthLimit}
+            onChange={(event) => updatePartialSetting({ contentLengthLimit: Number(event.target.value) })}
           />
         </SettingRow>
       </SettingGroup>
@@ -113,7 +114,7 @@ const MemoRelatedSettings = () => {
               className="w-32 h-8"
               placeholder={t("common.input")}
               value={editingReaction}
-              onChange={(event) => setEditingReaction(event.target.value.trim())}
+              onChange={(event) => setEditingReaction(event.target.value)}
               onKeyDown={(e) => e.key === "Enter" && upsertReaction()}
             />
             <Button variant="ghost" size="sm" onClick={upsertReaction} className="h-8 w-8 p-0">

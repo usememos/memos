@@ -1,5 +1,5 @@
-import { CogIcon, DatabaseIcon, KeyIcon, LibraryIcon, LucideIcon, Settings2Icon, UserIcon, UsersIcon } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { CogIcon, DatabaseIcon, KeyIcon, LibraryIcon, LucideIcon, Settings2Icon, UserIcon, UsersIcon, WebhookIcon } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import MobileHeader from "@/components/MobileHeader";
 import InstanceSection from "@/components/Settings/InstanceSection";
@@ -10,6 +10,7 @@ import PreferencesSection from "@/components/Settings/PreferencesSection";
 import SectionMenuItem from "@/components/Settings/SectionMenuItem";
 import SSOSection from "@/components/Settings/SSOSection";
 import StorageSection from "@/components/Settings/StorageSection";
+import WebhookSection from "@/components/Settings/WebhookSection";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -18,22 +19,32 @@ import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 import { User_Role } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
-type SettingSection = "my-account" | "preference" | "member" | "system" | "memo" | "storage" | "sso";
+type SettingSection = "my-account" | "preference" | "webhook" | "member" | "system" | "memo" | "storage" | "sso";
 
-interface State {
-  selectedSection: SettingSection;
-}
-
-const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference"];
+const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference", "webhook"];
 const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo", "storage", "sso"];
+const ALL_SECTIONS = [...BASIC_SECTIONS, ...ADMIN_SECTIONS];
+
 const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   "my-account": UserIcon,
   preference: CogIcon,
+  webhook: WebhookIcon,
   member: UsersIcon,
   system: Settings2Icon,
   memo: LibraryIcon,
   storage: DatabaseIcon,
   sso: KeyIcon,
+};
+
+const SECTION_COMPONENT_MAP: Record<SettingSection, React.ComponentType> = {
+  "my-account": MyAccountSection,
+  preference: PreferencesSection,
+  webhook: WebhookSection,
+  member: MemberSection,
+  system: InstanceSection,
+  memo: MemoRelatedSettings,
+  storage: StorageSection,
+  sso: SSOSection,
 };
 
 const Setting = () => {
@@ -42,46 +53,34 @@ const Setting = () => {
   const location = useLocation();
   const user = useCurrentUser();
   const { profile, fetchSetting } = useInstance();
-  const [state, setState] = useState<State>({
-    selectedSection: "my-account",
-  });
+  const [selectedSection, setSelectedSection] = useState<SettingSection>("my-account");
   const isHost = user?.role === User_Role.ADMIN;
 
   const settingsSectionList = useMemo(() => {
-    let settingList = [...BASIC_SECTIONS];
-    if (isHost) {
-      settingList = settingList.concat(ADMIN_SECTIONS);
-    }
-    return settingList;
+    return isHost ? [...BASIC_SECTIONS, ...ADMIN_SECTIONS] : [...BASIC_SECTIONS];
   }, [isHost]);
 
   useEffect(() => {
     let hash = location.hash.slice(1) as SettingSection;
-    // If the hash is not a valid section, redirect to the default section.
-    if (![...BASIC_SECTIONS, ...ADMIN_SECTIONS].includes(hash)) {
+    if (!ALL_SECTIONS.includes(hash)) {
       hash = "my-account";
     }
-    setState({
-      selectedSection: hash,
-    });
+    setSelectedSection(hash);
   }, [location.hash]);
 
   useEffect(() => {
     if (!isHost) {
       return;
     }
-
-    // Initial fetch for instance settings.
-    (async () => {
-      [InstanceSetting_Key.MEMO_RELATED, InstanceSetting_Key.STORAGE].forEach(async (key) => {
-        await fetchSetting(key);
-      });
-    })();
+    // Fetch admin-only settings that are not eagerly loaded by InstanceContext.
+    fetchSetting(InstanceSetting_Key.STORAGE);
   }, [isHost, fetchSetting]);
 
-  const handleSectionSelectorItemClick = useCallback((settingSection: SettingSection) => {
-    window.location.hash = settingSection;
-  }, []);
+  const handleSectionSelectorItemClick = (section: SettingSection) => {
+    window.location.hash = section;
+  };
+
+  const ActiveSection = SECTION_COMPONENT_MAP[selectedSection];
 
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-start sm:pt-3 md:pt-6 pb-8">
@@ -97,12 +96,12 @@ const Setting = () => {
                     key={item}
                     text={t(`setting.${item}.label`)}
                     icon={SECTION_ICON_MAP[item]}
-                    isSelected={state.selectedSection === item}
+                    isSelected={selectedSection === item}
                     onClick={() => handleSectionSelectorItemClick(item)}
                   />
                 ))}
               </div>
-              {isHost ? (
+              {isHost && (
                 <>
                   <span className="text-sm mt-4 pl-3 font-mono select-none text-muted-foreground">{t("common.admin")}</span>
                   <div className="w-full flex flex-col justify-start items-start mt-1">
@@ -111,7 +110,7 @@ const Setting = () => {
                         key={item}
                         text={t(`setting.${item}.label`)}
                         icon={SECTION_ICON_MAP[item]}
-                        isSelected={state.selectedSection === item}
+                        isSelected={selectedSection === item}
                         onClick={() => handleSectionSelectorItemClick(item)}
                       />
                     ))}
@@ -120,41 +119,27 @@ const Setting = () => {
                     </span>
                   </div>
                 </>
-              ) : null}
+              )}
             </div>
           )}
           <div className="w-full grow sm:pl-4 overflow-x-auto">
             {!sm && (
               <div className="w-auto inline-block my-2">
-                <Select value={state.selectedSection} onValueChange={(value) => handleSectionSelectorItemClick(value as SettingSection)}>
+                <Select value={selectedSection} onValueChange={(value) => handleSectionSelectorItemClick(value as SettingSection)}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Select section" />
                   </SelectTrigger>
                   <SelectContent>
-                    {settingsSectionList.map((settingSection) => (
-                      <SelectItem key={settingSection} value={settingSection}>
-                        {t(`setting.${settingSection}.label`)}
+                    {settingsSectionList.map((section) => (
+                      <SelectItem key={section} value={section}>
+                        {t(`setting.${section}.label`)}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             )}
-            {state.selectedSection === "my-account" ? (
-              <MyAccountSection />
-            ) : state.selectedSection === "preference" ? (
-              <PreferencesSection />
-            ) : state.selectedSection === "member" ? (
-              <MemberSection />
-            ) : state.selectedSection === "system" ? (
-              <InstanceSection />
-            ) : state.selectedSection === "memo" ? (
-              <MemoRelatedSettings />
-            ) : state.selectedSection === "storage" ? (
-              <StorageSection />
-            ) : state.selectedSection === "sso" ? (
-              <SSOSection />
-            ) : null}
+            <ActiveSection />
           </div>
         </div>
       </div>

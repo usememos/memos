@@ -13,14 +13,13 @@ import VisibilityIcon from "../VisibilityIcon";
 import SettingGroup from "./SettingGroup";
 import SettingRow from "./SettingRow";
 import SettingSection from "./SettingSection";
-import WebhookSection from "./WebhookSection";
 
 const PreferencesSection = () => {
   const t = useTranslate();
   const { currentUser, userGeneralSetting: generalSetting, refetchSettings } = useAuth();
   const { mutate: updateUserGeneralSetting } = useUpdateUserGeneralSetting(currentUser?.name);
 
-  const handleLocaleSelectChange = async (locale: Locale) => {
+  const handleLocaleSelectChange = (locale: Locale) => {
     // Apply locale immediately for instant UI feedback and persist to localStorage
     loadLocale(locale);
     // Persist to user settings
@@ -45,7 +44,7 @@ const PreferencesSection = () => {
     );
   };
 
-  const handleThemeChange = async (theme: string) => {
+  const handleThemeChange = (theme: string) => {
     // Apply theme immediately for instant UI feedback
     loadTheme(theme);
     // Persist to user settings
@@ -69,7 +68,7 @@ const PreferencesSection = () => {
     });
 
   return (
-    <SettingSection>
+    <SettingSection title={t("setting.preference.label")}>
       <SettingGroup title={t("common.basic")}>
         <SettingRow label={t("common.language")}>
           <LocaleSelect value={setting.locale} onChange={handleLocaleSelectChange} />
@@ -80,7 +79,7 @@ const PreferencesSection = () => {
         </SettingRow>
       </SettingGroup>
 
-      <SettingGroup title={t("setting.preference.label")} showSeparator>
+      <SettingGroup title={t("common.memo")} showSeparator>
         <SettingRow label={t("setting.preference.default-memo-visibility")}>
           <Select value={setting.memoVisibility || "PRIVATE"} onValueChange={handleDefaultMemoVisibilityChanged}>
             <SelectTrigger className="min-w-fit">
@@ -100,10 +99,6 @@ const PreferencesSection = () => {
             </SelectContent>
           </Select>
         </SettingRow>
-      </SettingGroup>
-
-      <SettingGroup showSeparator>
-        <WebhookSection />
       </SettingGroup>
     </SettingSection>
   );

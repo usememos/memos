@@ -434,7 +434,8 @@
       },
       "no-webhooks-found": "没有 Webhook。",
       "title": "Webhook",
-      "url": "链接"
+      "url": "链接",
+      "label": "Webhook"
     }
   },
   "tag": {

@@ -434,7 +434,8 @@
       },
       "no-webhooks-found": "Webhook이 없습니다.",
       "title": "Webhook",
-      "url": "URL"
+      "url": "URL",
+      "label": "Webhook"
     }
   },
   "tag": {

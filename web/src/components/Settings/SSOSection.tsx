@@ -5,6 +5,7 @@ import ConfirmDialog from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { identityProviderServiceClient } from "@/connect";
+import { useDialog } from "@/hooks/useDialog";
 import { handleError } from "@/lib/error";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -16,20 +17,20 @@ import SettingTable from "./SettingTable";
 const SSOSection = () => {
   const t = useTranslate();
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingIdentityProvider, setEditingIdentityProvider] = useState<IdentityProvider | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<IdentityProvider | undefined>(undefined);
-
-  useEffect(() => {
-    fetchIdentityProviderList();
-  }, []);
+  const idpDialog = useDialog();
 
   const fetchIdentityProviderList = async () => {
     const { identityProviders } = await identityProviderServiceClient.listIdentityProviders({});
     setIdentityProviderList(identityProviders);
   };
 
-  const handleDeleteIdentityProvider = async (identityProvider: IdentityProvider) => {
+  useEffect(() => {
+    fetchIdentityProviderList();
+  }, []);
+
+  const handleDeleteIdentityProvider = (identityProvider: IdentityProvider) => {
     setDeleteTarget(identityProvider);
   };
 
@@ -48,23 +49,22 @@ const SSOSection = () => {
 
   const handleCreateIdentityProvider = () => {
     setEditingIdentityProvider(undefined);
-    setIsCreateDialogOpen(true);
+    idpDialog.open();
   };
 
   const handleEditIdentityProvider = (identityProvider: IdentityProvider) => {
     setEditingIdentityProvider(identityProvider);
-    setIsCreateDialogOpen(true);
+    idpDialog.open();
   };
 
   const handleDialogSuccess = async () => {
     await fetchIdentityProviderList();
-    setIsCreateDialogOpen(false);
+    idpDialog.close();
     setEditingIdentityProvider(undefined);
   };
 
   const handleDialogOpenChange = (open: boolean) => {
-    setIsCreateDialogOpen(open);
-    // Clear editing state when dialog is closed
+    idpDialog.setOpen(open);
     if (!open) {
       setEditingIdentityProvider(undefined);
     }
@@ -127,7 +127,7 @@ const SSOSection = () => {
       />
 
       <CreateIdentityProviderDialog
-        open={isCreateDialogOpen}
+        open={idpDialog.isOpen}
         onOpenChange={handleDialogOpenChange}
         identityProvider={editingIdentityProvider}
         onSuccess={handleDialogSuccess}

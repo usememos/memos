@@ -434,7 +434,8 @@
       },
       "no-webhooks-found": "Webhookが見つかりません。",
       "title": "Webhook",
-      "url": "URL"
+      "url": "URL",
+      "label": "Webhook"
     }
   },
   "tag": {

@@ -434,7 +434,8 @@
       },
       "no-webhooks-found": "Webhook-ები ვერ მოიძებნა.",
       "title": "Webhook-ები",
-      "url": "URL"
+      "url": "URL",
+      "label": "Webhook-ები"
     }
   },
   "tag": {
