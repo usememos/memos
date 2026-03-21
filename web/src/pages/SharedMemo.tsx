@@ -4,7 +4,7 @@ import { Code, ConnectError } from "@connectrpc/connect";
 import { AlertCircleIcon } from "lucide-react";
 import { useParams } from "react-router-dom";
 import MemoContent from "@/components/MemoContent";
-import AttachmentList from "@/components/MemoView/components/metadata/AttachmentList";
+import { AttachmentListView } from "@/components/MemoMetadata";
 import UserAvatar from "@/components/UserAvatar";
 import { useSharedMemo } from "@/hooks/useMemoShareQueries";
 import { useUser } from "@/hooks/useUserQueries";
@@ -64,7 +64,7 @@ const SharedMemo = () => {
 
       <div className="relative flex flex-col items-start gap-2 rounded-lg border border-border bg-card px-4 py-3 text-card-foreground">
         <MemoContent content={memo.content} />
-        {memo.attachments.length > 0 && <AttachmentList attachments={withShareAttachmentLinks(memo.attachments, token)} />}
+        {memo.attachments.length > 0 && <AttachmentListView attachments={withShareAttachmentLinks(memo.attachments, token)} />}
       </div>
     </div>
   );

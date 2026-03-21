@@ -1,3 +1,5 @@
+import type { LatLng } from "leaflet";
+import type { LocationState } from "@/components/MemoEditor/types/insert-menu";
 import { LocationPicker } from "@/components/map";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
@@ -6,7 +8,17 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import { useTranslate } from "@/utils/i18n";
-import type { LocationDialogProps } from "../types";
+
+interface LocationDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  state: LocationState;
+  onPositionChange: (position: LatLng) => void;
+  onUpdateCoordinate: (type: "lat" | "lng", value: string) => void;
+  onPlaceholderChange: (placeholder: string) => void;
+  onCancel: () => void;
+  onConfirm: () => void;
+}
 
 export const LocationDialog = ({
   open,

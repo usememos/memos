@@ -1,12 +1,13 @@
 import { ChevronDownIcon, ChevronUpIcon, FileIcon, PaperclipIcon, XIcon } from "lucide-react";
 import type { FC } from "react";
+import type { LocalFile } from "@/components/MemoEditor/types/attachment";
+import { toAttachmentItems } from "@/components/MemoEditor/types/attachment";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
-import type { LocalFile } from "../types/attachment";
-import { toAttachmentItems } from "../types/attachment";
+import SectionHeader from "../SectionHeader";
 
-interface AttachmentListProps {
+interface AttachmentListEditorProps {
   attachments: Attachment[];
   localFiles?: LocalFile[];
   onAttachmentsChange?: (attachments: Attachment[]) => void;
@@ -100,7 +101,7 @@ const AttachmentItemCard: FC<{
   );
 };
 
-const AttachmentList: FC<AttachmentListProps> = ({ attachments, localFiles = [], onAttachmentsChange, onRemoveLocalFile }) => {
+const AttachmentListEditor: FC<AttachmentListEditorProps> = ({ attachments, localFiles = [], onAttachmentsChange, onRemoveLocalFile }) => {
   if (attachments.length === 0 && localFiles.length === 0) {
     return null;
   }
@@ -139,10 +140,7 @@ const AttachmentList: FC<AttachmentListProps> = ({ attachments, localFiles = [],
 
   return (
     <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
-      <div className="flex items-center gap-1.5 px-2 py-1 border-b border-border bg-muted/30">
-        <PaperclipIcon className="w-3.5 h-3.5 text-muted-foreground" />
-        <span className="text-xs text-muted-foreground">Attachments ({items.length})</span>
-      </div>
+      <SectionHeader icon={PaperclipIcon} title="Attachments" count={items.length} />
 
       <div className="p-1 sm:p-1.5 flex flex-col gap-0.5">
         {items.map((item) => {
@@ -166,4 +164,4 @@ const AttachmentList: FC<AttachmentListProps> = ({ attachments, localFiles = [],
   );
 };
 
-export default AttachmentList;
+export default AttachmentListEditor;

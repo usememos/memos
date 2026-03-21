@@ -1,8 +1,6 @@
-import type { LatLng } from "leaflet";
 import type { Location, Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { EditorRefActions } from "../Editor";
 import type { Command } from "../Editor/commands";
-import type { LocationState } from "./insert-menu";
 
 export interface MemoEditorProps {
   className?: string;
@@ -39,28 +37,6 @@ export interface FocusModeExitButtonProps {
   isActive: boolean;
   onToggle: () => void;
   title: string;
-}
-
-export interface LinkMemoDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  searchText: string;
-  onSearchChange: (text: string) => void;
-  filteredMemos: Memo[];
-  isFetching: boolean;
-  onSelectMemo: (memo: Memo) => void;
-  isAlreadyLinked: (memoName: string) => boolean;
-}
-
-export interface LocationDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  state: LocationState;
-  onPositionChange: (position: LatLng) => void;
-  onUpdateCoordinate: (type: "lat" | "lng", value: string) => void;
-  onPlaceholderChange: (placeholder: string) => void;
-  onCancel: () => void;
-  onConfirm: () => void;
 }
 
 export interface InsertMenuProps {

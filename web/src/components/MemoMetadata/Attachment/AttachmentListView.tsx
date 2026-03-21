@@ -3,12 +3,12 @@ import { useMemo } from "react";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
-import { useMemoViewContext } from "../../MemoViewContext";
+import SectionHeader from "../SectionHeader";
 import AttachmentCard from "./AttachmentCard";
-import SectionHeader from "./SectionHeader";
 
-interface AttachmentListProps {
+interface AttachmentListViewProps {
   attachments: Attachment[];
+  onImagePreview?: (urls: string[], index: number) => void;
 }
 
 const isImageAttachment = (attachment: Attachment): boolean => getAttachmentType(attachment) === "image/*";
@@ -127,9 +127,7 @@ const DocsList = ({ attachments }: { attachments: Attachment[] }) => (
 
 const Divider = () => <div className="border-t mt-1 border-border opacity-60" />;
 
-const AttachmentList = ({ attachments }: AttachmentListProps) => {
-  const { openPreview } = useMemoViewContext();
-
+const AttachmentListView = ({ attachments, onImagePreview }: AttachmentListViewProps) => {
   const { visual, audio, docs } = useMemo(() => separateAttachments(attachments), [attachments]);
 
   const imageAttachments = useMemo(() => visual.filter(isImageAttachment), [visual]);
@@ -140,8 +138,9 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
   }
 
   const handleImageClick = (imgUrl: string) => {
+    if (!onImagePreview) return;
     const index = imageUrls.findIndex((url) => url === imgUrl);
-    openPreview(imageUrls, index >= 0 ? index : 0);
+    onImagePreview(imageUrls, index >= 0 ? index : 0);
   };
 
   const sections = [visual.length > 0, audio.length > 0, docs.length > 0];
@@ -166,4 +165,4 @@ const AttachmentList = ({ attachments }: AttachmentListProps) => {
   );
 };
 
-export default AttachmentList;
+export default AttachmentListView;

@@ -2,16 +2,16 @@ import { LatLng } from "leaflet";
 import { MapPinIcon } from "lucide-react";
 import { useState } from "react";
 import { LocationPicker } from "@/components/map";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import type { Location } from "@/types/proto/api/v1/memo_service_pb";
-import { Popover, PopoverContent, PopoverTrigger } from "../../../ui/popover";
 
-interface LocationDisplayProps {
+interface LocationDisplayViewProps {
   location?: Location;
   className?: string;
 }
 
-const LocationDisplay = ({ location, className }: LocationDisplayProps) => {
+const LocationDisplayView = ({ location, className }: LocationDisplayViewProps) => {
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
 
   if (!location) {
@@ -49,4 +49,4 @@ const LocationDisplay = ({ location, className }: LocationDisplayProps) => {
   );
 };
 
-export default LocationDisplay;
+export default LocationDisplayView;
