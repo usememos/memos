@@ -34,7 +34,7 @@ import { useTranslate } from "@/utils/i18n";
 type SettingSection = "my-account" | "preference" | "webhook" | "member" | "system" | "memo" | "storage" | "sso" | "tags";
 
 const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference", "webhook"];
-const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo", "storage", "tags", "sso"];
+const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo", "tags", "storage", "sso"];
 
 const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   "my-account": UserIcon,

@@ -116,6 +116,10 @@ message InstanceTagMetadata {
 }
 
 message InstanceTagsSetting {
+  // Map of tag name pattern to tag metadata.
+  // Each key is treated as an anchored regular expression (^pattern$),
+  // so a single entry like "project/.*" matches all tags under that prefix.
+  // Exact tag names are also valid (they are trivially valid regex patterns).
   map<string, InstanceTagMetadata> tags = 1;
 }
 

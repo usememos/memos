@@ -9,6 +9,7 @@ import { useInstance } from "@/contexts/InstanceContext";
 import { useTagCounts } from "@/hooks/useUserQueries";
 import { colorToHex } from "@/lib/color";
 import { handleError } from "@/lib/error";
+import { isValidTagPattern } from "@/lib/tag";
 import {
   InstanceSetting_Key,
   InstanceSetting_TagMetadataSchema,
@@ -92,6 +93,10 @@ const TagsSection = () => {
       toast.error(t("setting.tags.tag-already-exists"));
       return;
     }
+    if (!isValidTagPattern(name)) {
+      toast.error(t("setting.tags.invalid-regex"));
+      return;
+    }
     setLocalTags((prev) => ({ ...prev, [name]: newTagColor }));
     setNewTagName("");
     setNewTagColor("#ffffff");
@@ -136,7 +141,6 @@ const TagsSection = () => {
               header: t("setting.tags.background-color"),
               render: (_, row: { name: string }) => (
                 <div className="flex items-center gap-2">
-                  <div className="w-5 h-5 rounded border border-border shrink-0" style={{ backgroundColor: localTags[row.name] }} />
                   <input
                     type="color"
                     className="w-8 h-8 cursor-pointer rounded border border-border bg-transparent p-0.5"
@@ -184,11 +188,12 @@ const TagsSection = () => {
             value={newTagColor}
             onChange={(e) => setNewTagColor(e.target.value)}
           />
-          <Button variant="outline" size="sm" onClick={handleAddTag} disabled={!newTagName.trim()}>
+          <Button variant="outline" onClick={handleAddTag} disabled={!newTagName.trim()}>
             <PlusIcon className="w-4 h-4 mr-1.5" />
             {t("common.add")}
           </Button>
         </div>
+        <p className="text-xs text-muted-foreground mt-1">{t("setting.tags.tag-pattern-hint")}</p>
       </SettingGroup>
 
       <div className="w-full flex justify-end">
