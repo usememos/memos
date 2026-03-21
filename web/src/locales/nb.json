@@ -434,7 +434,8 @@
       },
       "no-webhooks-found": "Ingen webhooks funnet.",
       "title": "Webhooks",
-      "url": "URL"
+      "url": "URL",
+      "label": "Webhooks"
     }
   },
   "tag": {

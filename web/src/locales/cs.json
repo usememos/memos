@@ -434,7 +434,8 @@
       },
       "no-webhooks-found": "Žádné webhooky nenalezeny.",
       "title": "Webhooky",
-      "url": "URL"
+      "url": "URL",
+      "label": "Webhooky"
     }
   },
   "tag": {

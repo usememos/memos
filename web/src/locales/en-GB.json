@@ -7,6 +7,9 @@
       "customize-server": {
         "title": "Customise Server"
       }
+    },
+    "webhook": {
+      "label": "Webhooks"
     }
   },
   "auth": {

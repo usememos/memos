@@ -12,6 +12,7 @@ import { handleError } from "@/lib/error";
 import { CreatePersonalAccessTokenResponse, PersonalAccessToken } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateAccessTokenDialog from "../CreateAccessTokenDialog";
+import SettingGroup from "./SettingGroup";
 import SettingTable from "./SettingTable";
 
 const listAccessTokens = async (parent: string) => {
@@ -64,11 +65,7 @@ const AccessTokenSection = () => {
     );
   };
 
-  const handleCreateToken = () => {
-    createTokenDialog.open();
-  };
-
-  const handleDeleteAccessToken = async (token: PersonalAccessToken) => {
+  const handleDeleteAccessToken = (token: PersonalAccessToken) => {
     setDeleteTarget(token);
   };
 
@@ -82,18 +79,7 @@ const AccessTokenSection = () => {
   };
 
   return (
-    <div className="w-full flex flex-col gap-2">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
-        <div className="flex flex-col gap-1">
-          <h4 className="text-sm font-medium text-muted-foreground">{t("setting.access-token.title")}</h4>
-          <p className="text-xs text-muted-foreground">{t("setting.access-token.description")}</p>
-        </div>
-        <Button onClick={handleCreateToken} size="sm">
-          <PlusIcon className="w-4 h-4 mr-1.5" />
-          {t("common.create")}
-        </Button>
-      </div>
-
+    <SettingGroup title={t("setting.access-token.title")} description={t("setting.access-token.description")}>
       <SettingTable
         columns={[
           {
@@ -125,9 +111,16 @@ const AccessTokenSection = () => {
           },
         ]}
         data={personalAccessTokens}
-        emptyMessage="No access tokens found"
+        emptyMessage={t("setting.access-token.no-tokens-found")}
         getRowKey={(token) => token.name}
       />
+
+      <div className="flex justify-end">
+        <Button onClick={createTokenDialog.open} size="sm">
+          <PlusIcon className="w-4 h-4 mr-1.5" />
+          {t("common.create")}
+        </Button>
+      </div>
 
       {/* Create Access Token Dialog */}
       <CreateAccessTokenDialog
@@ -145,7 +138,7 @@ const AccessTokenSection = () => {
         onConfirm={confirmDeleteAccessToken}
         confirmVariant="destructive"
       />
-    </div>
+    </SettingGroup>
   );
 };
 

@@ -434,7 +434,8 @@
       },
       "no-webhooks-found": "尚未建立任何 Webhook。",
       "title": "Webhook",
-      "url": "網址"
+      "url": "網址",
+      "label": "Webhook"
     }
   },
   "tag": {

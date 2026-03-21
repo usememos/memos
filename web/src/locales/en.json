@@ -297,7 +297,8 @@
       },
       "description": "A list of all access tokens for your account.",
       "title": "Access Tokens",
-      "token": "Token"
+      "token": "Token",
+      "no-tokens-found": "No access tokens found"
     },
     "account": {
       "change-password": "Change password",
@@ -336,7 +337,8 @@
       "label": "Member",
       "list-title": "Member list",
       "restore-success": "{{username}} restored successfully",
-      "user": "User"
+      "user": "User",
+      "no-members-found": "No members found"
     },
     "memo": {
       "content-length-limit": "Content length limit (Byte)",
@@ -345,7 +347,8 @@
       "enable-memo-location": "Enable memo location",
       "label": "Memo",
       "reactions": "Reactions",
-      "title": "Memo related settings"
+      "title": "Memo related settings",
+      "reactions-required": "Reactions list must not be empty"
     },
     "my-account": {
       "label": "My Account"
@@ -465,7 +468,18 @@
       },
       "no-webhooks-found": "No webhooks found.",
       "title": "Webhooks",
-      "url": "URL"
+      "url": "URL",
+      "label": "Webhooks"
+    },
+    "tags": {
+      "label": "Tags",
+      "title": "Tag metadata",
+      "description": "Assign display colors to tags instance-wide.",
+      "background-color": "Background color",
+      "no-tags-configured": "No tag metadata configured.",
+      "tag-name": "Tag name",
+      "tag-name-placeholder": "e.g. work",
+      "tag-already-exists": "Tag already exists."
     }
   },
   "tag": {

@@ -12,6 +12,8 @@ import {
   InstanceSetting_MemoRelatedSettingSchema,
   InstanceSetting_StorageSetting,
   InstanceSetting_StorageSettingSchema,
+  InstanceSetting_TagsSetting,
+  InstanceSetting_TagsSettingSchema,
 } from "@/types/proto/api/v1/instance_service_pb";
 
 const instanceSettingNamePrefix = "instance/settings/";
@@ -36,6 +38,7 @@ interface InstanceContextValue extends InstanceState {
   generalSetting: InstanceSetting_GeneralSetting;
   memoRelatedSetting: InstanceSetting_MemoRelatedSetting;
   storageSetting: InstanceSetting_StorageSetting;
+  tagsSetting: InstanceSetting_TagsSetting;
   initialize: () => Promise<void>;
   fetchSetting: (key: InstanceSetting_Key) => Promise<void>;
   updateSetting: (setting: InstanceSetting) => Promise<void>;
@@ -77,19 +80,28 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
     return create(InstanceSetting_StorageSettingSchema, {});
   }, [state.settings]);
 
+  const tagsSetting = useMemo((): InstanceSetting_TagsSetting => {
+    const setting = state.settings.find((s) => s.name === `${instanceSettingNamePrefix}TAGS`);
+    if (setting?.value.case === "tagsSetting") {
+      return setting.value.value;
+    }
+    return create(InstanceSetting_TagsSettingSchema, {});
+  }, [state.settings]);
+
   const initialize = useCallback(async () => {
     setState((prev) => ({ ...prev, isLoading: true }));
     try {
       const profile = await instanceServiceClient.getInstanceProfile({});
 
-      const [generalSetting, memoRelatedSettingResponse] = await Promise.all([
+      const [generalSetting, memoRelatedSettingResponse, tagsSettingResponse] = await Promise.all([
         instanceServiceClient.getInstanceSetting({ name: buildInstanceSettingName(InstanceSetting_Key.GENERAL) }),
         instanceServiceClient.getInstanceSetting({ name: buildInstanceSettingName(InstanceSetting_Key.MEMO_RELATED) }),
+        instanceServiceClient.getInstanceSetting({ name: buildInstanceSettingName(InstanceSetting_Key.TAGS) }),
       ]);
 
       setState({
         profile,
-        settings: [generalSetting, memoRelatedSettingResponse],
+        settings: [generalSetting, memoRelatedSettingResponse, tagsSettingResponse],
         isInitialized: true,
         isLoading: false,
         profileLoaded: true,
@@ -129,11 +141,12 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
       generalSetting,
       memoRelatedSetting,
       storageSetting,
+      tagsSetting,
       initialize,
       fetchSetting,
       updateSetting,
     }),
-    [state, generalSetting, memoRelatedSetting, storageSetting, initialize, fetchSetting, updateSetting],
+    [state, generalSetting, memoRelatedSetting, storageSetting, tagsSetting, initialize, fetchSetting, updateSetting],
   );
 
   return <InstanceContext.Provider value={value}>{children}</InstanceContext.Provider>;

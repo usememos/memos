@@ -434,7 +434,8 @@
       },
       "no-webhooks-found": "Webhook bulunamadı.",
       "title": "Webhook'lar",
-      "url": "URL"
+      "url": "URL",
+      "label": "Webhook'lar"
     }
   },
   "tag": {
