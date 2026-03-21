@@ -35,7 +35,6 @@ type SettingSection = "my-account" | "preference" | "webhook" | "member" | "syst
 
 const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference", "webhook"];
 const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo", "storage", "tags", "sso"];
-const ALL_SECTIONS = [...BASIC_SECTIONS, ...ADMIN_SECTIONS];
 
 const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   "my-account": UserIcon,
@@ -75,12 +74,10 @@ const Setting = () => {
   }, [isHost]);
 
   useEffect(() => {
-    let hash = location.hash.slice(1) as SettingSection;
-    if (!ALL_SECTIONS.includes(hash)) {
-      hash = "my-account";
-    }
-    setSelectedSection(hash);
-  }, [location.hash]);
+    const hash = location.hash.slice(1) as SettingSection;
+    const nextSection = settingsSectionList.includes(hash) ? hash : "my-account";
+    setSelectedSection(nextSection);
+  }, [location.hash, settingsSectionList]);
 
   useEffect(() => {
     if (!isHost) {

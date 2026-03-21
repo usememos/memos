@@ -1,12 +1,13 @@
 import { create } from "@bufbuild/protobuf";
 import { isEqual } from "lodash-es";
 import { PlusIcon, TrashIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useTagCounts } from "@/hooks/useUserQueries";
+import { colorToHex } from "@/lib/color";
 import { handleError } from "@/lib/error";
 import {
   InstanceSetting_Key,
@@ -20,20 +21,8 @@ import SettingGroup from "./SettingGroup";
 import SettingSection from "./SettingSection";
 import SettingTable from "./SettingTable";
 
-// Converts a google.type.Color (r/g/b as 0–1 floats) to a CSS hex string.
-const colorToHex = (color?: { red?: number; green?: number; blue?: number }): string => {
-  if (!color) return "#ffffff";
-  const r = Math.round((color.red ?? 0) * 255)
-    .toString(16)
-    .padStart(2, "0");
-  const g = Math.round((color.green ?? 0) * 255)
-    .toString(16)
-    .padStart(2, "0");
-  const b = Math.round((color.blue ?? 0) * 255)
-    .toString(16)
-    .padStart(2, "0");
-  return `#${r}${g}${b}`;
-};
+// Fallback to white when no color is stored.
+const tagColorToHex = (color?: { red?: number; green?: number; blue?: number }): string => colorToHex(color) ?? "#ffffff";
 
 // Converts a CSS hex string to a google.type.Color message.
 const hexToColor = (hex: string) =>
@@ -50,10 +39,18 @@ const TagsSection = () => {
 
   // Local state: map of tagName → hex color string for editing.
   const [localTags, setLocalTags] = useState<Record<string, string>>(() =>
-    Object.fromEntries(Object.entries(originalSetting.tags).map(([name, meta]) => [name, colorToHex(meta.backgroundColor)])),
+    Object.fromEntries(Object.entries(originalSetting.tags).map(([name, meta]) => [name, tagColorToHex(meta.backgroundColor)])),
   );
   const [newTagName, setNewTagName] = useState("");
   const [newTagColor, setNewTagColor] = useState("#ffffff");
+
+  // Sync local state when the fetched setting arrives (the fetch is async and
+  // completes after mount, so localTags would be empty without this sync).
+  useEffect(() => {
+    setLocalTags(
+      Object.fromEntries(Object.entries(originalSetting.tags).map(([name, meta]) => [name, tagColorToHex(meta.backgroundColor)])),
+    );
+  }, [originalSetting]);
 
   // All known tag names: union of saved entries and tags used in memos.
   const allKnownTags = useMemo(
@@ -71,7 +68,7 @@ const TagsSection = () => {
   );
 
   const originalHexMap = useMemo(
-    () => Object.fromEntries(Object.entries(originalSetting.tags).map(([name, meta]) => [name, colorToHex(meta.backgroundColor)])),
+    () => Object.fromEntries(Object.entries(originalSetting.tags).map(([name, meta]) => [name, tagColorToHex(meta.backgroundColor)])),
     [originalSetting.tags],
   );
   const hasChanges = !isEqual(localTags, originalHexMap);
@@ -135,7 +132,7 @@ const TagsSection = () => {
               render: (_, row: { name: string }) => <span className="font-mono text-foreground">{row.name}</span>,
             },
             {
-              key: "name",
+              key: "color",
               header: t("setting.tags.background-color"),
               render: (_, row: { name: string }) => (
                 <div className="flex items-center gap-2">
@@ -150,7 +147,7 @@ const TagsSection = () => {
               ),
             },
             {
-              key: "name",
+              key: "actions",
               header: "",
               className: "text-right",
               render: (_, row: { name: string }) => (
