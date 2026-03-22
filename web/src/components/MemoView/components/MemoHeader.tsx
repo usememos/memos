@@ -22,7 +22,6 @@ import MemoCustomizeColor from "./MemoCustomizeColor";
 const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, showPinned }) => {
   const t = useTranslate();
   const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
-  const [customizeColorToggle,setCustomizeColorToggle]= useState(false);
   const { memo, creator, currentUser, parentPage, isArchived, readonly, openEditor } = useMemoViewContext();
   const { relativeTimeFormat } = useMemoViewDerived();
 
@@ -61,10 +60,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
             onOpenChange={setReactionSelectorOpen}
           />
         )}
-        <MemoCustomizeColor             
-          className={cn("border-none w-auto h-auto", customizeColorToggle && "block!", "block sm:hidden sm:group-hover:block")}
-          onOpenChange={setCustomizeColorToggle}
-          />
+        <MemoCustomizeColor className="border-none w-auto h-auto" />
         {showVisibility && memo.visibility !== Visibility.PRIVATE && (
           <Tooltip>
             <TooltipTrigger>
