@@ -122,6 +122,7 @@ const MemoDetail = () => {
             showCreator
             showVisibility
             showPinned
+            colorKey={memo.name}
           />
           <div className="pt-8 pb-16 w-full">
             <h2 id="comments" className="sr-only">
@@ -165,7 +166,7 @@ const MemoDetail = () => {
               )}
               {comments.map((comment) => (
                 <div className="w-full" key={`${comment.name}-${comment.displayTime}`} id={extractMemoIdFromName(comment.name)}>
-                  <MemoView memo={comment} parentPage={locationState?.from} showCreator compact />
+                  <MemoView memo={comment} parentPage={locationState?.from} showCreator compact colorKey={memo.name} />
                 </div>
               ))}
             </div>

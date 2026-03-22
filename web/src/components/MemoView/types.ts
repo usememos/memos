@@ -8,12 +8,16 @@ export interface MemoViewProps {
   showPinned?: boolean;
   className?: string;
   parentPage?: string;
+  colorKey?: string;
 }
 
 export interface MemoHeaderProps {
+  name:string;
   showCreator?: boolean;
   showVisibility?: boolean;
   showPinned?: boolean;
+  onColorPreferencesChange?: (colors: { bgColor: string; textColor: string }) => void;
+  showColorCustomizer?: boolean;
 }
 
 export interface MemoBodyProps {

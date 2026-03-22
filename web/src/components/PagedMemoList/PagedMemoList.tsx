@@ -97,6 +97,7 @@ const PagedMemoList = (props: Props) => {
 
   // Flatten pages into a single array of memos
   const memos = useMemo(() => data?.pages.flatMap((page) => page.memos) || [], [data]);
+  console.log("Memoss: ",memos);
 
   // Apply custom sorting if provided, otherwise use memos directly
   const sortedMemoList = useMemo(() => (props.listSort ? props.listSort(memos) : memos), [memos, props.listSort]);

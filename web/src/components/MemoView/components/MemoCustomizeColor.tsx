@@ -5,12 +5,11 @@ import { useEffect, useState } from "react";
 import { HexColorPicker } from "react-colorful";
 
 interface Props {
+  name:string;
   className?: string;
   onOpenChange?: (open: boolean) => void;
   onSavePreferences?: (colors: { bgColor: string; textColor: string }) => Promise<void> | void;
 }
-
-const STORAGE_KEY = "memo-customize-color";
 const MIN_CONTRAST_RATIO = 4.5;
 
 const parseHexColor = (hex: string) => {
@@ -63,7 +62,7 @@ const getContrastRatio = (foreground: string, background: string) => {
 };
 
 function MemoCustomizeColor(props: Props) {
-  const { className, onOpenChange, onSavePreferences } = props;
+  const { className, onOpenChange, onSavePreferences,name } = props;
   const [open, setOpen] = useState(false);
   const [bgColor, setBgColor] = useState("#121212");
   const [textColor, setTextColor] = useState("#FFFFFF");
@@ -76,7 +75,7 @@ function MemoCustomizeColor(props: Props) {
     }
 
     try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
+      const stored = window.localStorage.getItem(name);
       if (!stored) {
         return;
       }
@@ -96,25 +95,7 @@ function MemoCustomizeColor(props: Props) {
       // eslint-disable-next-line no-console
       console.error("Failed to load memo color preferences", error);
     }
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    try {
-      window.localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({
-          bgColor,
-          textColor,
-        }),
-      );
-    } catch {
-      // Ignore write errors (e.g., private mode)
-    }
-  }, [bgColor, textColor]);
+  }, [name]);
 
   const bgPresets = ["#121212", "#2c2f33", "#1d3557", "#2d6a4f", "#601010", "#000000"];
   const textPresets = ["#FFFFFF", "#E1E8ED", "#89CFF0", "#C7F9CC", "#FEFAE0", "#FAD2E1"];
@@ -130,6 +111,32 @@ function MemoCustomizeColor(props: Props) {
 
   const handleSave = async () => {
     try {
+      if (typeof window !== "undefined") {
+        try {
+          window.localStorage.setItem(
+            name,
+            JSON.stringify({
+              bgColor,
+              textColor,
+            }),
+          );
+
+          window.dispatchEvent(
+            new CustomEvent("memo-colors-changed", {
+              detail: {
+                key: name,
+                colors: {
+                  bgColor,
+                  textColor,
+                },
+              },
+            }),
+          );
+        } catch {
+          // Ignore write errors
+        }
+      }
+
       if (onSavePreferences) {
         await onSavePreferences({
           bgColor,
@@ -152,7 +159,7 @@ function MemoCustomizeColor(props: Props) {
             className,
           )}
         >
-          <Brush className="w-4 h-4 mx-auto text-muted-foreground" />
+          <Brush className="w-4 h-4 mx-auto" />
         </span>
       </PopoverTrigger>
 
