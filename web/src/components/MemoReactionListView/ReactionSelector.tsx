@@ -36,7 +36,11 @@ const ReactionSelector = (props: Props) => {
             className,
           )}
         >
+<<<<<<< HEAD
           <SmilePlusIcon className="w-4 h-4 mx-auto" />
+=======
+          <SmilePlusIcon className="w-4 h-4 mx-auto text-muted-foreground" />
+>>>>>>> 89d43a2e (Developed Color Picker Feature for memos)
         </span>
       </PopoverTrigger>
       <PopoverContent align="center" className="max-w-[90vw] sm:max-w-md">

@@ -22,7 +22,11 @@ const VisibilityIcon = (props: Props) => {
     return null;
   }
 
+<<<<<<< HEAD
   return <VIcon className={cn("w-4 h-auto", className)} />;
+=======
+  return <VIcon className={cn("w-4 h-auto text-muted-foreground", className)} />;
+>>>>>>> 89d43a2e (Developed Color Picker Feature for memos)
 };
 
 export default VisibilityIcon;

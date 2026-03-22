@@ -57,7 +57,11 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="size-4">
+<<<<<<< HEAD
           <MoreVerticalIcon />
+=======
+          <MoreVerticalIcon className="text-muted-foreground" />
+>>>>>>> 89d43a2e (Developed Color Picker Feature for memos)
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={2}>

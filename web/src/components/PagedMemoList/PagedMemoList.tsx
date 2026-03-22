@@ -97,7 +97,10 @@ const PagedMemoList = (props: Props) => {
 
   // Flatten pages into a single array of memos
   const memos = useMemo(() => data?.pages.flatMap((page) => page.memos) || [], [data]);
+<<<<<<< HEAD
   console.log("Memoss: ",memos);
+=======
+>>>>>>> 89d43a2e (Developed Color Picker Feature for memos)
 
   // Apply custom sorting if provided, otherwise use memos directly
   const sortedMemoList = useMemo(() => (props.listSort ? props.listSort(memos) : memos), [memos, props.listSort]);
