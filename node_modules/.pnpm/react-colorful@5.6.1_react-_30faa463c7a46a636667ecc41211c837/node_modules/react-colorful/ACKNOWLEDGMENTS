@@ -1,0 +1,5 @@
+## Acknowledgements
+
+- Special thanks @RyanChristian4427 who has rewritten the library in TypeScript.
+- In order to avoid tree-shaking problems, and provide better TS support, `rgbToHex` and `hexToRgb` methods were copied from [@swiftcarrot/color-fns](https://github.com/swiftcarrot/color-fns) (MIT License).
+- `hsvToRgb` modified from https://axonflux.com/handy-rgb-to-hsl-and-rgb-to-hsv-color-model-c.

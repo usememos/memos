@@ -35,7 +35,7 @@ const ReactionView = (props: Props) => {
             type="button"
             className={cn(
               "h-7 border px-2 py-0.5 rounded-full flex flex-row justify-center items-center gap-1",
-              "text-sm text-muted-foreground",
+              "text-sm",
               isClickable && "cursor-pointer",
               !isClickable && "cursor-default",
               hasReaction && "bg-accent border-border",

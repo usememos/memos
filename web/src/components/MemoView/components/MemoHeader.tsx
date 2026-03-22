@@ -17,11 +17,11 @@ import VisibilityIcon from "../../VisibilityIcon";
 import { useMemoActions } from "../hooks";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
 import type { MemoHeaderProps } from "../types";
+import MemoCustomizeColor from "./MemoCustomizeColor";
 
-const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, showPinned }) => {
+const MemoHeader: React.FC<MemoHeaderProps> = ({ name, showCreator, showVisibility, showPinned, onColorPreferencesChange, showColorCustomizer = true }) => {
   const t = useTranslate();
   const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
-
   const { memo, creator, currentUser, parentPage, isArchived, readonly, openEditor } = useMemoViewContext();
   const { relativeTimeFormat } = useMemoViewDerived();
 
@@ -60,7 +60,13 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
             onOpenChange={setReactionSelectorOpen}
           />
         )}
-
+        {showColorCustomizer && (
+          <MemoCustomizeColor
+            name={name}
+            className="border-none w-auto h-auto"
+            onSavePreferences={onColorPreferencesChange}
+          />
+        )}
         {showVisibility && memo.visibility !== Visibility.PRIVATE && (
           <Tooltip>
             <TooltipTrigger>
@@ -79,7 +85,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="cursor-pointer">
-                  <BookmarkIcon className="w-4 h-auto text-primary" onClick={unpinMemo} />
+                  <BookmarkIcon className="w-4 h-auto" onClick={unpinMemo} />
                 </span>
               </TooltipTrigger>
               <TooltipContent>
@@ -108,7 +114,7 @@ const CreatorDisplay: React.FC<CreatorDisplayProps> = ({ creator, displayTime, o
     </Link>
     <div className="w-full flex flex-col justify-center items-start">
       <Link
-        className="block leading-tight hover:opacity-80 rounded-md transition-colors truncate text-muted-foreground"
+        className="block leading-tight hover:opacity-80 rounded-md transition-colors truncate"
         to={`/u/${encodeURIComponent(creator.username)}`}
         viewTransition
       >
@@ -116,7 +122,7 @@ const CreatorDisplay: React.FC<CreatorDisplayProps> = ({ creator, displayTime, o
       </Link>
       <button
         type="button"
-        className="w-auto -mt-0.5 text-xs leading-tight text-muted-foreground select-none cursor-pointer hover:opacity-80 transition-colors text-left"
+        className="w-auto -mt-0.5 text-xs leading-tight select-none cursor-pointer hover:opacity-80 transition-colors text-left"
         onClick={onGotoDetail}
       >
         {displayTime}
@@ -133,7 +139,7 @@ interface TimeDisplayProps {
 const TimeDisplay: React.FC<TimeDisplayProps> = ({ displayTime, onGotoDetail }) => (
   <button
     type="button"
-    className="w-full text-sm leading-tight text-muted-foreground select-none cursor-pointer hover:text-foreground transition-colors text-left"
+    className="w-full text-sm leading-tight select-none cursor-pointer hover:opacity-80 transition-colors text-left"
     onClick={onGotoDetail}
   >
     {displayTime}

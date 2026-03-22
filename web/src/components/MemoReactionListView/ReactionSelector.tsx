@@ -36,7 +36,7 @@ const ReactionSelector = (props: Props) => {
             className,
           )}
         >
-          <SmilePlusIcon className="w-4 h-4 mx-auto text-muted-foreground" />
+          <SmilePlusIcon className="w-4 h-4 mx-auto" />
         </span>
       </PopoverTrigger>
       <PopoverContent align="center" className="max-w-[90vw] sm:max-w-md">
