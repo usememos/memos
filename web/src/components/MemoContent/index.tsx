@@ -169,7 +169,7 @@ const MemoContent = (props: MemoContentProps) => {
   const compactLabel = useCompactLabel(showCompactMode, t as (key: string) => string);
 
   return (
-    <div className={`w-full flex flex-col justify-start items-start text-foreground ${className || ""}`}>
+    <div className={`w-full flex flex-col justify-start items-start ${className || ""}`}>
       <div
         ref={memoContentContainerRef}
         data-memo-content
