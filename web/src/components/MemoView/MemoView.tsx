@@ -1,9 +1,7 @@
-import { memo, useCallback, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useUser } from "@/hooks/useUserQueries";
-import { findTagMetadata } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { isSuperUser } from "@/utils/user";
@@ -16,21 +14,29 @@ import { computeCommentAmount, MemoViewContext } from "./MemoViewContext";
 import type { MemoViewProps } from "./types";
 
 const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
-  const { memo: memoData, className, parentPage: parentPageProp, compact, showCreator, showVisibility, showPinned } = props;
+  const {
+    memo: memoData,
+    className,
+    parentPage: parentPageProp,
+    compact,
+    showCreator,
+    showVisibility,
+    showPinned,
+    colorKey,
+  } = props;
   const cardRef = useRef<HTMLDivElement>(null);
   const [showEditor, setShowEditor] = useState(false);
 
   const currentUser = useCurrentUser();
-  const { tagsSetting } = useInstance();
   const creator = useUser(memoData.creator).data;
   const isArchived = memoData.state === State.ARCHIVED;
   const readonly = memoData.creator !== currentUser?.name && !isSuperUser(currentUser);
   const parentPage = parentPageProp || "/";
 
-  // Blur content when any tag has blur_content enabled in the instance tag settings.
-  const [showBlurredContent, setShowBlurredContent] = useState(false);
-  const blurred = memoData.tags?.some((tag) => findTagMetadata(tag, tagsSetting)?.blurContent) ?? false;
-  const toggleBlurVisibility = useCallback(() => setShowBlurredContent((prev) => !prev), []);
+  // NSFW content management: always blur content tagged with NSFW (case-insensitive)
+  const [showNSFWContent, setShowNSFWContent] = useState(false);
+  const nsfw = memoData.tags?.some((tag) => tag.toUpperCase() === "NSFW") ?? false;
+  const toggleNsfwVisibility = useCallback(() => setShowNSFWContent((prev) => !prev), []);
 
   const { previewState, openPreview, setPreviewOpen } = useImagePreview();
 
@@ -38,8 +44,63 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const closeEditor = useCallback(() => setShowEditor(false), []);
 
   const location = useLocation();
-  const isInMemoDetailPage = location.pathname.startsWith(`/${memoData.name}`) || location.pathname.startsWith("/memos/shares/");
+  const isInMemoDetailPage = location.pathname.startsWith(`/${memoData.name}`);
   const showCommentPreview = !isInMemoDetailPage && computeCommentAmount(memoData) > 0;
+
+  const [customColors, setCustomColors] = useState<{ bgColor?: string; textColor?: string } | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const storageKey = colorKey || memoData.name;
+
+    try {
+      const stored = window.localStorage.getItem(storageKey);
+      if (!stored) {
+        return;
+      }
+
+      const parsed = JSON.parse(stored) as { bgColor?: string; textColor?: string };
+      setCustomColors({
+        bgColor: parsed.bgColor,
+        textColor: parsed.textColor,
+      });
+    } catch {
+      // Ignore malformed values
+    }
+  }, [colorKey, memoData.name]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const storageKey = colorKey || memoData.name;
+
+    const handleColorChange = (event: Event) => {
+      const customEvent = event as CustomEvent<{
+        key: string;
+        colors: { bgColor?: string; textColor?: string };
+      }>;
+
+      if (!customEvent.detail || customEvent.detail.key !== storageKey) {
+        return;
+      }
+
+      setCustomColors({
+        bgColor: customEvent.detail.colors.bgColor,
+        textColor: customEvent.detail.colors.textColor,
+      });
+    };
+
+    window.addEventListener("memo-colors-changed", handleColorChange as EventListener);
+
+    return () => {
+      window.removeEventListener("memo-colors-changed", handleColorChange as EventListener);
+    };
+  }, [colorKey, memoData.name]);
 
   const contextValue = useMemo(
     () => ({
@@ -49,10 +110,10 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       parentPage,
       isArchived,
       readonly,
-      showBlurredContent,
-      blurred,
+      showNSFWContent,
+      nsfw,
       openEditor,
-      toggleBlurVisibility,
+      toggleNsfwVisibility,
       openPreview,
     }),
     [
@@ -62,10 +123,10 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       parentPage,
       isArchived,
       readonly,
-      showBlurredContent,
-      blurred,
+      showNSFWContent,
+      nsfw,
       openEditor,
-      toggleBlurVisibility,
+      toggleNsfwVisibility,
       openPreview,
     ],
   );
@@ -88,8 +149,20 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       className={cn(MEMO_CARD_BASE_CLASSES, showCommentPreview ? "mb-0 rounded-b-none" : "mb-2", className)}
       ref={cardRef}
       tabIndex={readonly ? -1 : 0}
+      style={
+        customColors?.bgColor || customColors?.textColor
+          ? { backgroundColor: customColors?.bgColor, color: customColors?.textColor }
+          : undefined
+      }
     >
-      <MemoHeader showCreator={showCreator} showVisibility={showVisibility} showPinned={showPinned} />
+      <MemoHeader
+        name={memoData.name}
+        showCreator={showCreator}
+        showVisibility={showVisibility}
+        showPinned={showPinned}
+        showColorCustomizer={!memoData.parent}
+        onColorPreferencesChange={(colors) => setCustomColors(colors)}
+      />
 
       <MemoBody compact={compact} />
 

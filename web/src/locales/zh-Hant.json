@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "封存於",
-    "click-to-hide-sensitive-content": "點擊隱藏 NSFW 內容",
-    "click-to-show-sensitive-content": "點擊顯示 NSFW 內容",
+    "click-to-hide-nsfw-content": "點擊隱藏 NSFW 內容",
+    "click-to-show-nsfw-content": "點擊顯示 NSFW 內容",
     "code": "程式碼",
     "comment": {
       "self": "評論",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "內容長度限制（位元組）",
-      "enable-blur-sensitive-content": "啟用 NSFW 內容模糊化（在下方添加 NSFW 標籤）",
+      "enable-blur-nsfw-content": "啟用 NSFW 內容模糊化（在下方添加 NSFW 標籤）",
       "enable-memo-comments": "啟用備忘錄評論",
       "enable-memo-location": "啟用備忘錄定位",
       "reactions": "表情回應",

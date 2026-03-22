@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "آرشیو شده در",
-    "click-to-hide-sensitive-content": "برای مخفی کردن محتوای حساس کلیک کنید",
-    "click-to-show-sensitive-content": "برای نمایش محتوای حساس کلیک کنید",
+    "click-to-hide-nsfw-content": "برای مخفی کردن محتوای حساس کلیک کنید",
+    "click-to-show-nsfw-content": "برای نمایش محتوای حساس کلیک کنید",
     "code": "کد",
     "comment": {
       "self": "نظرات",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "محدودیت طول محتوا (بایت)",
-      "enable-blur-sensitive-content": "فعال‌سازی تار کردن محتوای حساس (NSFW)",
+      "enable-blur-nsfw-content": "فعال‌سازی تار کردن محتوای حساس (NSFW)",
       "enable-memo-comments": "فعال‌سازی نظرات یادداشت",
       "enable-memo-location": "فعال‌سازی موقعیت یادداشت",
       "reactions": "واکنش‌ها",

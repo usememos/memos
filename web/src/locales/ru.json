@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "В архиве",
-    "click-to-hide-sensitive-content": "Нажмите, чтобы скрыть контент 18+",
-    "click-to-show-sensitive-content": "Нажмите, чтобы посмотреть",
+    "click-to-hide-nsfw-content": "Нажмите, чтобы скрыть контент 18+",
+    "click-to-show-nsfw-content": "Нажмите, чтобы посмотреть",
     "code": "Код",
     "comment": {
       "self": "Комментарии",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "Макс. длина заметки (байт)",
-      "enable-blur-sensitive-content": "\"Размывать\" заметки с тегами",
+      "enable-blur-nsfw-content": "\"Размывать\" заметки с тегами",
       "enable-memo-comments": "Комментарии",
       "enable-memo-location": "Геометки",
       "reactions": "Реакции",

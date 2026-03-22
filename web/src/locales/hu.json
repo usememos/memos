@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "Archiválva:",
-    "click-to-hide-sensitive-content": "Kattints a kényes tartalom elrejtéséhez",
-    "click-to-show-sensitive-content": "Kattints a kényes tartalom megjelenítéséhez",
+    "click-to-hide-nsfw-content": "Kattints a kényes tartalom elrejtéséhez",
+    "click-to-show-nsfw-content": "Kattints a kényes tartalom megjelenítéséhez",
     "code": "Kód",
     "comment": {
       "self": "Hozzászólások",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "Tartalom hosszának korlátja (bájt)",
-      "enable-blur-sensitive-content": "Érzékeny (NSFW) tartalom elhomályosításának engedélyezése",
+      "enable-blur-nsfw-content": "Érzékeny (NSFW) tartalom elhomályosításának engedélyezése",
       "enable-memo-comments": "Jegyzet hozzászólások engedélyezése",
       "enable-memo-location": "Jegyzet helyének engedélyezése",
       "reactions": "Reakciók",

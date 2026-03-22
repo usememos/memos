@@ -13,10 +13,10 @@ export interface MemoViewContextValue {
   parentPage: string;
   isArchived: boolean;
   readonly: boolean;
-  showBlurredContent: boolean;
-  blurred: boolean;
+  showNSFWContent: boolean;
+  nsfw: boolean;
   openEditor: () => void;
-  toggleBlurVisibility: () => void;
+  toggleNsfwVisibility: () => void;
   openPreview: (urls: string | string[], index?: number) => void;
 }
 
@@ -37,7 +37,7 @@ export const useMemoViewDerived = () => {
   const { memo, isArchived, readonly } = useMemoViewContext();
   const location = useLocation();
 
-  const isInMemoDetailPage = location.pathname.startsWith(`/${memo.name}`) || location.pathname.startsWith("/memos/shares/");
+  const isInMemoDetailPage = location.pathname.startsWith(`/${memo.name}`);
   const commentAmount = computeCommentAmount(memo);
 
   const displayTime = memo.displayTime ? timestampDate(memo.displayTime) : undefined;

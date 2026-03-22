@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "Archivováno na",
-    "click-to-hide-sensitive-content": "Klikněte pro skrytí citlivého obsahu",
-    "click-to-show-sensitive-content": "Klikněte pro zobrazení citlivého obsahu",
+    "click-to-hide-nsfw-content": "Klikněte pro skrytí citlivého obsahu",
+    "click-to-show-nsfw-content": "Klikněte pro zobrazení citlivého obsahu",
     "code": "Kód",
     "comment": {
       "self": "Komentáře",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "Omezení velikosti obsahu (bajty)",
-      "enable-blur-sensitive-content": "Povolit rozostření citlivého obsahu",
+      "enable-blur-nsfw-content": "Povolit rozostření citlivého obsahu",
       "enable-memo-comments": "Povolit komentáře k poznámkám",
       "enable-memo-location": "Povolit umístění poznámek",
       "reactions": "Reakce",

@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "アーカイブ:",
-    "click-to-hide-sensitive-content": "クリックしてセンシティブ内容を隠す",
-    "click-to-show-sensitive-content": "クリックしてセンシティブ内容を表示",
+    "click-to-hide-nsfw-content": "クリックしてセンシティブ内容を隠す",
+    "click-to-show-nsfw-content": "クリックしてセンシティブ内容を表示",
     "code": "コード",
     "comment": {
       "self": "コメント",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "内容の最大長（バイト）",
-      "enable-blur-sensitive-content": "センシティブ(NSFW)内容のぼかしを有効化",
+      "enable-blur-nsfw-content": "センシティブ(NSFW)内容のぼかしを有効化",
       "enable-memo-comments": "メモコメントを有効化",
       "enable-memo-location": "メモの位置情報を有効化",
       "reactions": "リアクション",

@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "Arşivlenme tarihi",
-    "click-to-hide-sensitive-content": "NSFW içeriği gizlemek için tıklayın",
-    "click-to-show-sensitive-content": "NSFW içeriği göstermek için tıklayın",
+    "click-to-hide-nsfw-content": "NSFW içeriği gizlemek için tıklayın",
+    "click-to-show-nsfw-content": "NSFW içeriği göstermek için tıklayın",
     "code": "Kod",
     "comment": {
       "self": "Yorumlar",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "İçerik uzunluğu sınırı (Bayt)",
-      "enable-blur-sensitive-content": "NSFW içeriği bulanıklaştırmayı etkinleştir",
+      "enable-blur-nsfw-content": "NSFW içeriği bulanıklaştırmayı etkinleştir",
       "enable-memo-comments": "Not yorumlarını etkinleştir",
       "enable-memo-location": "Not konumunu etkinleştir",
       "reactions": "Tepkiler",

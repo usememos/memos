@@ -16,7 +16,7 @@ import useNavigateTo from "@/hooks/useNavigateTo";
 import { handleError } from "@/lib/error";
 import { ROUTES } from "@/router/routes";
 import { User_Role, UserSchema } from "@/types/proto/api/v1/user_service_pb";
-import { AUTH_REDIRECT_PARAM, getSafeRedirectPath } from "@/utils/auth-redirect";
+import { AUTH_REASON_PARAM, AUTH_REASON_PROTECTED_MEMO, AUTH_REDIRECT_PARAM, getSafeRedirectPath } from "@/utils/auth-redirect";
 import { useTranslate } from "@/utils/i18n";
 
 const SignUp = () => {
@@ -29,6 +29,7 @@ const SignUp = () => {
   const { generalSetting: instanceGeneralSetting, profile, initialize: initInstance } = useInstance();
   const [searchParams] = useSearchParams();
   const redirectTarget = getSafeRedirectPath(searchParams.get(AUTH_REDIRECT_PARAM));
+  const authReason = searchParams.get(AUTH_REASON_PARAM);
   const signInPath = searchParams.toString() ? `${ROUTES.AUTH}?${searchParams.toString()}` : ROUTES.AUTH;
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,6 +94,11 @@ const SignUp = () => {
           <img className="h-14 w-auto rounded-full shadow" src={instanceGeneralSetting.customProfile?.logoUrl || "/logo.webp"} alt="" />
           <p className="ml-2 text-5xl text-foreground opacity-80">{instanceGeneralSetting.customProfile?.title || "Memos"}</p>
         </div>
+        {authReason === AUTH_REASON_PROTECTED_MEMO && (
+          <div className="w-full mb-4 rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
+            {t("auth.protected-memo-notice")}
+          </div>
+        )}
         {!instanceGeneralSetting.disallowUserRegistration ? (
           <>
             <p className="w-full text-2xl mt-2 text-muted-foreground">{t("auth.create-your-account")}</p>

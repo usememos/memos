@@ -145,8 +145,8 @@
   },
   "memo": {
     "archived-at": "Archived at",
-    "click-to-hide-sensitive-content": "Click to hide sensitive content",
-    "click-to-show-sensitive-content": "Click to show sensitive content",
+    "click-to-hide-nsfw-content": "Click to hide NSFW content",
+    "click-to-show-nsfw-content": "Click to show NSFW content",
     "code": "Code",
     "comment": {
       "self": "Comments",
@@ -172,7 +172,6 @@
     "no-archived-memos": "No archived memos.",
     "no-memos": "No memos.",
     "order-by": "Order By",
-    "outline": "Outline",
     "search-placeholder": "Search memos...",
     "share": {
       "active-links": "Active share links",
@@ -343,7 +342,7 @@
     },
     "memo": {
       "content-length-limit": "Content length limit (Byte)",
-      "enable-blur-sensitive-content": "Enable sensitive content blurring",
+      "enable-blur-nsfw-content": "Enable sensitive content (NSFW) blurring",
       "enable-memo-comments": "Enable memo comments",
       "enable-memo-location": "Enable memo location",
       "label": "Memo",
@@ -477,7 +476,6 @@
       "title": "Tag metadata",
       "description": "Assign display colors to tags instance-wide. Tag names are treated as anchored regex patterns.",
       "background-color": "Background color",
-      "blur-content": "Blur content",
       "no-tags-configured": "No tag metadata configured.",
       "tag-name": "Tag name",
       "tag-name-placeholder": "e.g. work or project/.*",

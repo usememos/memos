@@ -15,7 +15,7 @@ interface TagProps extends React.HTMLAttributes<HTMLSpanElement> {
   children?: React.ReactNode;
 }
 
-export const Tag: React.FC<TagProps> = ({ "data-tag": dataTag, children, className, style, node: _node, ...props }) => {
+export const Tag: React.FC<TagProps> = ({ "data-tag": dataTag, children, className, style, ...props }) => {
   const { parentPage } = useMemoViewContext();
   const location = useLocation();
   const navigateTo = useNavigateTo();
@@ -66,7 +66,7 @@ export const Tag: React.FC<TagProps> = ({ "data-tag": dataTag, children, classNa
   return (
     <span
       className={cn(
-        "inline-flex items-center align-baseline px-1.5 py-0.5 text-[0.9em] leading-none font-normal rounded-full border cursor-pointer transition-opacity hover:opacity-75",
+        "inline-flex items-center px-1 text-sm rounded-full border cursor-pointer transition-opacity hover:opacity-75",
         !bgHex && "border-primary text-primary bg-primary/15",
         className,
       )}

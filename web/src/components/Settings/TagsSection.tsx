@@ -33,39 +33,23 @@ const hexToColor = (hex: string) =>
     blue: parseInt(hex.slice(5, 7), 16) / 255,
   });
 
-interface LocalTagMeta {
-  color: string;
-  blur: boolean;
-}
-
 const TagsSection = () => {
   const t = useTranslate();
   const { tagsSetting: originalSetting, updateSetting, fetchSetting } = useInstance();
   const { data: tagCounts = {} } = useTagCounts(false);
 
-  // Local state: map of tagName → { color, blur } for editing.
-  const [localTags, setLocalTags] = useState<Record<string, LocalTagMeta>>(() =>
-    Object.fromEntries(
-      Object.entries(originalSetting.tags).map(([name, meta]) => [
-        name,
-        { color: tagColorToHex(meta.backgroundColor), blur: meta.blurContent },
-      ]),
-    ),
+  // Local state: map of tagName → hex color string for editing.
+  const [localTags, setLocalTags] = useState<Record<string, string>>(() =>
+    Object.fromEntries(Object.entries(originalSetting.tags).map(([name, meta]) => [name, tagColorToHex(meta.backgroundColor)])),
   );
   const [newTagName, setNewTagName] = useState("");
   const [newTagColor, setNewTagColor] = useState("#ffffff");
-  const [newTagBlur, setNewTagBlur] = useState(false);
 
   // Sync local state when the fetched setting arrives (the fetch is async and
   // completes after mount, so localTags would be empty without this sync).
   useEffect(() => {
     setLocalTags(
-      Object.fromEntries(
-        Object.entries(originalSetting.tags).map(([name, meta]) => [
-          name,
-          { color: tagColorToHex(meta.backgroundColor), blur: meta.blurContent },
-        ]),
-      ),
+      Object.fromEntries(Object.entries(originalSetting.tags).map(([name, meta]) => [name, tagColorToHex(meta.backgroundColor)])),
     );
   }, [originalSetting.tags]);
 
@@ -84,24 +68,14 @@ const TagsSection = () => {
     [localTags],
   );
 
-  const originalMetaMap = useMemo(
-    () =>
-      Object.fromEntries(
-        Object.entries(originalSetting.tags).map(([name, meta]) => [
-          name,
-          { color: tagColorToHex(meta.backgroundColor), blur: meta.blurContent },
-        ]),
-      ),
+  const originalHexMap = useMemo(
+    () => Object.fromEntries(Object.entries(originalSetting.tags).map(([name, meta]) => [name, tagColorToHex(meta.backgroundColor)])),
     [originalSetting.tags],
   );
-  const hasChanges = !isEqual(localTags, originalMetaMap);
+  const hasChanges = !isEqual(localTags, originalHexMap);
 
   const handleColorChange = (tagName: string, hex: string) => {
-    setLocalTags((prev) => ({ ...prev, [tagName]: { ...prev[tagName], color: hex } }));
-  };
-
-  const handleBlurChange = (tagName: string, blur: boolean) => {
-    setLocalTags((prev) => ({ ...prev, [tagName]: { ...prev[tagName], blur } }));
+    setLocalTags((prev) => ({ ...prev, [tagName]: hex }));
   };
 
   const handleRemoveTag = (tagName: string) => {
@@ -123,18 +97,17 @@ const TagsSection = () => {
       toast.error(t("setting.tags.invalid-regex"));
       return;
     }
-    setLocalTags((prev) => ({ ...prev, [name]: { color: newTagColor, blur: newTagBlur } }));
+    setLocalTags((prev) => ({ ...prev, [name]: newTagColor }));
     setNewTagName("");
     setNewTagColor("#ffffff");
-    setNewTagBlur(false);
   };
 
   const handleSave = async () => {
     try {
       const tags = Object.fromEntries(
-        Object.entries(localTags).map(([name, meta]) => [
+        Object.entries(localTags).map(([name, hex]) => [
           name,
-          create(InstanceSetting_TagMetadataSchema, { backgroundColor: hexToColor(meta.color), blurContent: meta.blur }),
+          create(InstanceSetting_TagMetadataSchema, { backgroundColor: hexToColor(hex) }),
         ]),
       );
       await updateSetting(
@@ -171,22 +144,10 @@ const TagsSection = () => {
                   <input
                     type="color"
                     className="w-8 h-8 cursor-pointer rounded border border-border bg-transparent p-0.5"
-                    value={localTags[row.name].color}
+                    value={localTags[row.name]}
                     onChange={(e) => handleColorChange(row.name, e.target.value)}
                   />
                 </div>
-              ),
-            },
-            {
-              key: "blur",
-              header: t("setting.tags.blur-content"),
-              render: (_, row: { name: string }) => (
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 cursor-pointer"
-                  checked={localTags[row.name].blur}
-                  onChange={(e) => handleBlurChange(row.name, e.target.checked)}
-                />
               ),
             },
             {
@@ -227,15 +188,6 @@ const TagsSection = () => {
             value={newTagColor}
             onChange={(e) => setNewTagColor(e.target.value)}
           />
-          <label className="flex items-center gap-1.5 text-sm text-muted-foreground">
-            <input
-              type="checkbox"
-              className="w-4 h-4 cursor-pointer"
-              checked={newTagBlur}
-              onChange={(e) => setNewTagBlur(e.target.checked)}
-            />
-            {t("setting.tags.blur-content")}
-          </label>
           <Button variant="outline" onClick={handleAddTag} disabled={!newTagName.trim()}>
             <PlusIcon className="w-4 h-4 mr-1.5" />
             {t("common.add")}
