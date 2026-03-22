@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"regexp"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -390,6 +391,9 @@ func validateInstanceTagsSetting(setting *v1pb.InstanceSetting_TagsSetting) erro
 	for tag, metadata := range setting.Tags {
 		if strings.TrimSpace(tag) == "" {
 			return errors.New("tag key cannot be empty")
+		}
+		if _, err := regexp.Compile(tag); err != nil {
+			return errors.Errorf("tag key %q is not a valid regex pattern: %v", tag, err)
 		}
 		if metadata == nil {
 			return errors.Errorf("tag metadata is required for %q", tag)

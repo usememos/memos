@@ -474,12 +474,14 @@
     "tags": {
       "label": "Tags",
       "title": "Tag metadata",
-      "description": "Assign display colors to tags instance-wide.",
+      "description": "Assign display colors to tags instance-wide. Tag names are treated as anchored regex patterns.",
       "background-color": "Background color",
       "no-tags-configured": "No tag metadata configured.",
       "tag-name": "Tag name",
-      "tag-name-placeholder": "e.g. work",
-      "tag-already-exists": "Tag already exists."
+      "tag-name-placeholder": "e.g. work or project/.*",
+      "tag-already-exists": "Tag already exists.",
+      "tag-pattern-hint": "Tag name or regex pattern (e.g. project/.* matches all project/ tags)",
+      "invalid-regex": "Invalid or unsafe regex pattern."
     }
   },
   "tag": {

@@ -4,6 +4,7 @@ import { useInstance } from "@/contexts/InstanceContext";
 import { type MemoFilter, stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { colorToHex } from "@/lib/color";
+import { findTagMetadata } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
 import { useMemoViewContext } from "../MemoView/MemoViewContext";
@@ -26,7 +27,7 @@ export const Tag: React.FC<TagProps> = ({ "data-tag": dataTag, children, classNa
   // Custom color from admin tag metadata. Dynamic hex values must use inline styles
   // because Tailwind can't scan dynamically constructed class names.
   // Text uses a darkened variant (40% color + black) for contrast on light backgrounds.
-  const bgHex = colorToHex(tagsSetting.tags[tag]?.backgroundColor);
+  const bgHex = colorToHex(findTagMetadata(tag, tagsSetting)?.backgroundColor);
   const tagStyle: React.CSSProperties | undefined = bgHex
     ? {
         borderColor: bgHex,
@@ -65,7 +66,7 @@ export const Tag: React.FC<TagProps> = ({ "data-tag": dataTag, children, classNa
   return (
     <span
       className={cn(
-        "inline-flex items-center align-middle px-1.5 py-px text-sm leading-snug rounded border cursor-pointer transition-opacity hover:opacity-75",
+        "inline-flex items-center px-1 text-sm rounded-full border cursor-pointer transition-opacity hover:opacity-75",
         !bgHex && "border-primary text-primary bg-primary/15",
         className,
       )}
