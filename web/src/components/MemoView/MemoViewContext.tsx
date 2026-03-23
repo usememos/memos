@@ -13,10 +13,10 @@ export interface MemoViewContextValue {
   parentPage: string;
   isArchived: boolean;
   readonly: boolean;
-  showNSFWContent: boolean;
-  nsfw: boolean;
+  showBlurredContent: boolean;
+  blurred: boolean;
   openEditor: () => void;
-  toggleNsfwVisibility: () => void;
+  toggleBlurVisibility: () => void;
   openPreview: (urls: string | string[], index?: number) => void;
 }
 

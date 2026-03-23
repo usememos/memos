@@ -169,6 +169,8 @@ message InstanceSetting {
   message TagMetadata {
     // Background color for the tag label.
     google.type.Color background_color = 1;
+    // Whether memos with this tag should have their content blurred.
+    bool blur_content = 2;
   }
 
   // Tag metadata configuration.

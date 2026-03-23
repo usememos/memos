@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "Архівовано о",
-    "click-to-hide-nsfw-content": "Натисніть, щоб приховати NSFW-контент",
-    "click-to-show-nsfw-content": "Натисніть, щоб показати NSFW-контент",
+    "click-to-hide-sensitive-content": "Натисніть, щоб приховати NSFW-контент",
+    "click-to-show-sensitive-content": "Натисніть, щоб показати NSFW-контент",
     "code": "Код",
     "comment": {
       "self": "Коментарі",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "Обмеження довжини вмісту (байт)",
-      "enable-blur-nsfw-content": "Увімкнути розмиття чутливого контенту (NSFW)",
+      "enable-blur-sensitive-content": "Увімкнути розмиття чутливого контенту (NSFW)",
       "enable-memo-comments": "Увімкнути коментарі до нотаток",
       "enable-memo-location": "Увімкнути місцезнаходження нотаток",
       "reactions": "Реакції",

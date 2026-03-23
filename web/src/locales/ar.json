@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "تاريخ الأرشفة",
-    "click-to-hide-nsfw-content": "انقر لإخفاء المحتوى الحساس",
-    "click-to-show-nsfw-content": "انقر لإظهار المحتوى الحساس",
+    "click-to-hide-sensitive-content": "انقر لإخفاء المحتوى الحساس",
+    "click-to-show-sensitive-content": "انقر لإظهار المحتوى الحساس",
     "code": "كود",
     "comment": {
       "self": "التعليقات",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "حد طول المحتوى (بايت)",
-      "enable-blur-nsfw-content": "تمكين طمس المحتوى الحساس (NSFW)",
+      "enable-blur-sensitive-content": "تمكين طمس المحتوى الحساس (NSFW)",
       "enable-memo-comments": "تمكين تعليقات المذكرة",
       "enable-memo-location": "تمكين موقع المذكرة",
       "reactions": "تفاعلات",

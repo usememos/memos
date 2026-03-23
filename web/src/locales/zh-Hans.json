@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "归档于",
-    "click-to-hide-nsfw-content": "点击隐藏 NSFW 内容",
-    "click-to-show-nsfw-content": "点击显示 NSFW 内容",
+    "click-to-hide-sensitive-content": "点击隐藏 NSFW 内容",
+    "click-to-show-sensitive-content": "点击显示 NSFW 内容",
     "code": "代码",
     "comment": {
       "self": "评论",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "内容长度限制（字节）",
-      "enable-blur-nsfw-content": "启用 NSFW 内容模糊处理（在下方添加 NSFW 标签）",
+      "enable-blur-sensitive-content": "启用 NSFW 内容模糊处理（在下方添加 NSFW 标签）",
       "enable-memo-comments": "启用备忘录评论",
       "enable-memo-location": "启用备忘录定位",
       "reactions": "表态",

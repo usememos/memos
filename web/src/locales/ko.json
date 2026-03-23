@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "보관된 날짜",
-    "click-to-hide-nsfw-content": "민감한(성인) 콘텐츠 숨기기",
-    "click-to-show-nsfw-content": "민감한(성인) 콘텐츠 보기",
+    "click-to-hide-sensitive-content": "민감한(성인) 콘텐츠 숨기기",
+    "click-to-show-sensitive-content": "민감한(성인) 콘텐츠 보기",
     "code": "코드",
     "comment": {
       "self": "댓글",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "내용 길이 제한 (바이트)",
-      "enable-blur-nsfw-content": "민감한(성인) 콘텐츠 블러 처리 활성화",
+      "enable-blur-sensitive-content": "민감한(성인) 콘텐츠 블러 처리 활성화",
       "enable-memo-comments": "메모 댓글 활성화",
       "enable-memo-location": "메모 위치 활성화",
       "reactions": "반응",

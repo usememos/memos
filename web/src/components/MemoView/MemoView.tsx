@@ -1,7 +1,9 @@
 import { memo, useCallback, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useUser } from "@/hooks/useUserQueries";
+import { findTagMetadata } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { isSuperUser } from "@/utils/user";
@@ -19,15 +21,16 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const [showEditor, setShowEditor] = useState(false);
 
   const currentUser = useCurrentUser();
+  const { tagsSetting } = useInstance();
   const creator = useUser(memoData.creator).data;
   const isArchived = memoData.state === State.ARCHIVED;
   const readonly = memoData.creator !== currentUser?.name && !isSuperUser(currentUser);
   const parentPage = parentPageProp || "/";
 
-  // NSFW content management: always blur content tagged with NSFW (case-insensitive)
-  const [showNSFWContent, setShowNSFWContent] = useState(false);
-  const nsfw = memoData.tags?.some((tag) => tag.toUpperCase() === "NSFW") ?? false;
-  const toggleNsfwVisibility = useCallback(() => setShowNSFWContent((prev) => !prev), []);
+  // Blur content when any tag has blur_content enabled in the instance tag settings.
+  const [showBlurredContent, setShowBlurredContent] = useState(false);
+  const blurred = memoData.tags?.some((tag) => findTagMetadata(tag, tagsSetting)?.blurContent) ?? false;
+  const toggleBlurVisibility = useCallback(() => setShowBlurredContent((prev) => !prev), []);
 
   const { previewState, openPreview, setPreviewOpen } = useImagePreview();
 
@@ -46,10 +49,10 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       parentPage,
       isArchived,
       readonly,
-      showNSFWContent,
-      nsfw,
+      showBlurredContent,
+      blurred,
       openEditor,
-      toggleNsfwVisibility,
+      toggleBlurVisibility,
       openPreview,
     }),
     [
@@ -59,10 +62,10 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       parentPage,
       isArchived,
       readonly,
-      showNSFWContent,
-      nsfw,
+      showBlurredContent,
+      blurred,
       openEditor,
-      toggleNsfwVisibility,
+      toggleBlurVisibility,
       openPreview,
     ],
   );

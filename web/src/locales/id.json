@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "Diarsipkan pada",
-    "click-to-hide-nsfw-content": "Klik untuk menyembunyikan konten NSFW",
-    "click-to-show-nsfw-content": "Klik untuk menampilkan konten NSFW",
+    "click-to-hide-sensitive-content": "Klik untuk menyembunyikan konten NSFW",
+    "click-to-show-sensitive-content": "Klik untuk menampilkan konten NSFW",
     "code": "Kode",
     "comment": {
       "self": "Komentar",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "Batas panjang konten (Byte)",
-      "enable-blur-nsfw-content": "Aktifkan pengaburan konten sensitif (NSFW)",
+      "enable-blur-sensitive-content": "Aktifkan pengaburan konten sensitif (NSFW)",
       "enable-memo-comments": "Aktifkan komentar memo",
       "enable-memo-location": "Aktifkan lokasi memo",
       "reactions": "Reaksi",

@@ -305,6 +305,7 @@ func convertInstanceTagsSettingFromStore(setting *storepb.InstanceTagsSetting) *
 	for tag, metadata := range setting.Tags {
 		tags[tag] = &v1pb.InstanceSetting_TagMetadata{
 			BackgroundColor: metadata.GetBackgroundColor(),
+			BlurContent:     metadata.GetBlurContent(),
 		}
 	}
 	return &v1pb.InstanceSetting_TagsSetting{
@@ -320,6 +321,7 @@ func convertInstanceTagsSettingToStore(setting *v1pb.InstanceSetting_TagsSetting
 	for tag, metadata := range setting.Tags {
 		tags[tag] = &storepb.InstanceTagMetadata{
 			BackgroundColor: metadata.GetBackgroundColor(),
+			BlurContent:     metadata.GetBlurContent(),
 		}
 	}
 	return &storepb.InstanceTagsSetting{

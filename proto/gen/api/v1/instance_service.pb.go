@@ -761,8 +761,10 @@ type InstanceSetting_TagMetadata struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Background color for the tag label.
 	BackgroundColor *color.Color `protobuf:"bytes,1,opt,name=background_color,json=backgroundColor,proto3" json:"background_color,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Whether memos with this tag should have their content blurred.
+	BlurContent   bool `protobuf:"varint,2,opt,name=blur_content,json=blurContent,proto3" json:"blur_content,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *InstanceSetting_TagMetadata) Reset() {
@@ -802,9 +804,20 @@ func (x *InstanceSetting_TagMetadata) GetBackgroundColor() *color.Color {
 	return nil
 }
 
+func (x *InstanceSetting_TagMetadata) GetBlurContent() bool {
+	if x != nil {
+		return x.BlurContent
+	}
+	return false
+}
+
 // Tag metadata configuration.
 type InstanceSetting_TagsSetting struct {
-	state         protoimpl.MessageState                  `protogen:"open.v1"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Map of tag name pattern to tag metadata.
+	// Each key is treated as an anchored regular expression (^pattern$),
+	// so a single entry like "project/.*" matches all tags under that prefix.
+	// Exact tag names are also valid (they are trivially valid regex patterns).
 	Tags          map[string]*InstanceSetting_TagMetadata `protobuf:"bytes,1,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1166,7 +1179,7 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\x04demo\x18\x03 \x01(\bR\x04demo\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\x12(\n" +
 	"\x05admin\x18\a \x01(\v2\x12.memos.api.v1.UserR\x05admin\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\xe0\x15\n" +
+	"\x19GetInstanceProfileRequest\"\x83\x16\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2,.memos.api.v1.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12W\n" +
@@ -1208,9 +1221,10 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\x18display_with_update_time\x18\x02 \x01(\bR\x15displayWithUpdateTime\x120\n" +
 	"\x14content_length_limit\x18\x03 \x01(\x05R\x12contentLengthLimit\x127\n" +
 	"\x18enable_double_click_edit\x18\x04 \x01(\bR\x15enableDoubleClickEdit\x12\x1c\n" +
-	"\treactions\x18\a \x03(\tR\treactions\x1aL\n" +
+	"\treactions\x18\a \x03(\tR\treactions\x1ao\n" +
 	"\vTagMetadata\x12=\n" +
-	"\x10background_color\x18\x01 \x01(\v2\x12.google.type.ColorR\x0fbackgroundColor\x1a\xba\x01\n" +
+	"\x10background_color\x18\x01 \x01(\v2\x12.google.type.ColorR\x0fbackgroundColor\x12!\n" +
+	"\fblur_content\x18\x02 \x01(\bR\vblurContent\x1a\xba\x01\n" +
 	"\vTagsSetting\x12G\n" +
 	"\x04tags\x18\x01 \x03(\v23.memos.api.v1.InstanceSetting.TagsSetting.TagsEntryR\x04tags\x1ab\n" +
 	"\tTagsEntry\x12\x10\n" +
