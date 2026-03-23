@@ -41,7 +41,7 @@ export function parseMarkdownTable(md: string): TableData | null {
     let trimmed = line;
     if (trimmed.startsWith("|")) trimmed = trimmed.slice(1);
     if (trimmed.endsWith("|")) trimmed = trimmed.slice(0, -1);
-    return trimmed.split(/(?<!\\)\|/).map((cell) => cell.trim());
+    return trimmed.split(/(?<!\\)\|/).map((cell) => cell.trim().replace(/\\\|/g, "|"));
   };
 
   const headers = parseRow(lines[0]);
@@ -84,12 +84,14 @@ export function serializeMarkdownTable(data: TableData): string {
   const { headers, rows, alignments } = data;
   const colCount = headers.length;
 
+  const escapeCell = (text: string): string => text.replace(/(?<!\\)\|/g, "\\|");
+
   // Calculate maximum width per column (minimum 3 for the separator).
   const widths: number[] = [];
   for (let c = 0; c < colCount; c++) {
-    let max = Math.max(3, headers[c].length);
+    let max = Math.max(3, escapeCell(headers[c]).length);
     for (const row of rows) {
-      max = Math.max(max, (row[c] || "").length);
+      max = Math.max(max, escapeCell(row[c] || "").length);
     }
     widths.push(max);
   }
@@ -110,7 +112,7 @@ export function serializeMarkdownTable(data: TableData): string {
   const formatRow = (cells: string[]): string => {
     const formatted = cells.map((cell, i) => {
       const align = alignments[i] || "none";
-      return padCell(cell, widths[i], align);
+      return padCell(escapeCell(cell), widths[i], align);
     });
     return "| " + formatted.join(" | ") + " |";
   };

@@ -138,6 +138,18 @@ describe("serializeMarkdownTable", () => {
     expect(new Set(lines.map((l) => l.length)).size).toBe(1);
   });
 
+  it("round-trips a cell containing a pipe character", () => {
+    const data: TableData = {
+      headers: ["A", "B"],
+      rows: [["foo|bar", "baz"]],
+      alignments: ["none", "none"],
+    };
+    const md = serializeMarkdownTable(data);
+    const parsed = parseMarkdownTable(md);
+    expect(parsed?.rows[0][0]).toBe("foo|bar");
+    expect(parsed?.rows[0][1]).toBe("baz");
+  });
+
   it("round-trips through parse and serialize", () => {
     const original = `| Name  | Age |
 | ----- | --- |
