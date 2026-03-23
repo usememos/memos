@@ -17,13 +17,7 @@ export const memoKeys = {
 };
 
 export function useMemos(request: Partial<ListMemosRequest> = {}) {
-  console.log(`Memos: `,useQuery({
-    queryKey: memoKeys.list(request),
-    queryFn: async () => {
-      const response = await memoServiceClient.listMemos(create(ListMemosRequestSchema, request as Record<string, unknown>));
-      return response;
-    },
-  }));
+
   return useQuery({
     queryKey: memoKeys.list(request),
     queryFn: async () => {

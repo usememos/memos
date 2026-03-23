@@ -7,7 +7,7 @@ import { gfmFromMarkdown } from "mdast-util-gfm";
 import { gfm } from "micromark-extension-gfm";
 import { visit } from "unist-util-visit";
 
-interface TaskInfo {
+export interface TaskInfo {
   lineNumber: number;
   checked: boolean;
 }
@@ -59,8 +59,44 @@ export function toggleTaskAtLine(markdown: string, lineNumber: number, checked: 
   return lines.join("\n");
 }
 
+export function getTaskLineInfo(markdown: string): TaskInfo[] {
+  const lines = markdown.split("\n");
+  const taskPattern = /^(\s*[-*+]\s+)\[([ xX])\](\s+.*)$/;
+  const tasks: TaskInfo[] = [];
+
+  let inCodeFence = false;
+
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = lines[i];
+    const trimmed = line.trimStart();
+
+    if (trimmed.startsWith("```") || trimmed.startsWith("~~~")) {
+      inCodeFence = !inCodeFence;
+      continue;
+    }
+
+    if (inCodeFence) {
+      continue;
+    }
+
+    const match = line.match(taskPattern);
+    if (!match) {
+      continue;
+    }
+
+    const checked = match[2].toLowerCase() === "x";
+
+    tasks.push({
+      lineNumber: i,
+      checked,
+    });
+  }
+
+  return tasks;
+}
+
 export function toggleTaskAtIndex(markdown: string, taskIndex: number, checked: boolean): string {
-  const tasks = extractTasksFromAst(markdown);
+  const tasks = getTaskLineInfo(markdown);
 
   if (taskIndex < 0 || taskIndex >= tasks.length) {
     return markdown;
@@ -75,7 +111,7 @@ export function countTasks(markdown: string): {
   completed: number;
   incomplete: number;
 } {
-  const tasks = extractTasksFromAst(markdown);
+  const tasks = getTaskLineInfo(markdown);
 
   const total = tasks.length;
   const completed = tasks.filter((t) => t.checked).length;
@@ -139,4 +175,26 @@ export function extractTasks(markdown: string): TaskItem[] {
   });
 
   return tasks;
+}
+
+export function clearCompletedTasks(markdown: string): string {
+  const tasks = extractTasks(markdown);
+  if (tasks.length === 0) {
+    return markdown;
+  }
+
+  const lines = markdown.split("\n");
+
+  const completedLines = tasks
+    .filter((task) => task.checked)
+    .map((task) => task.lineNumber)
+    .sort((a, b) => b - a);
+
+  for (const lineNumber of completedLines) {
+    if (lineNumber >= 0 && lineNumber < lines.length) {
+      lines.splice(lineNumber, 1);
+    }
+  }
+
+  return lines.join("\n");
 }
