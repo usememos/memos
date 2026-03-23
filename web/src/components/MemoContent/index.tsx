@@ -55,10 +55,11 @@ const MemoContent = (props: MemoContentProps) => {
           components={{
             // Child components consume from MemoViewContext directly
             input: ((inputProps: React.ComponentProps<"input"> & { node?: Element }) => {
-              if (inputProps.node && isTaskListItemNode(inputProps.node)) {
+              const { node, ...rest } = inputProps;
+              if (node && isTaskListItemNode(node)) {
                 return <TaskListItem {...inputProps} />;
               }
-              return <input {...inputProps} />;
+              return <input {...rest} />;
             }) as React.ComponentType<React.ComponentProps<"input">>,
             span: ((spanProps: React.ComponentProps<"span"> & { node?: Element }) => {
               const { node, ...rest } = spanProps;
@@ -68,16 +69,40 @@ const MemoContent = (props: MemoContentProps) => {
               return <span {...rest} />;
             }) as React.ComponentType<React.ComponentProps<"span">>,
             // Headings
-            h1: ({ children }) => <Heading level={1}>{children}</Heading>,
-            h2: ({ children }) => <Heading level={2}>{children}</Heading>,
-            h3: ({ children }) => <Heading level={3}>{children}</Heading>,
-            h4: ({ children }) => <Heading level={4}>{children}</Heading>,
-            h5: ({ children }) => <Heading level={5}>{children}</Heading>,
-            h6: ({ children }) => <Heading level={6}>{children}</Heading>,
+            h1: ({ children, ...props }) => (
+              <Heading level={1} {...props}>
+                {children}
+              </Heading>
+            ),
+            h2: ({ children, ...props }) => (
+              <Heading level={2} {...props}>
+                {children}
+              </Heading>
+            ),
+            h3: ({ children, ...props }) => (
+              <Heading level={3} {...props}>
+                {children}
+              </Heading>
+            ),
+            h4: ({ children, ...props }) => (
+              <Heading level={4} {...props}>
+                {children}
+              </Heading>
+            ),
+            h5: ({ children, ...props }) => (
+              <Heading level={5} {...props}>
+                {children}
+              </Heading>
+            ),
+            h6: ({ children, ...props }) => (
+              <Heading level={6} {...props}>
+                {children}
+              </Heading>
+            ),
             // Block elements
-            p: ({ children }) => <Paragraph>{children}</Paragraph>,
-            blockquote: ({ children }) => <Blockquote>{children}</Blockquote>,
-            hr: () => <HorizontalRule />,
+            p: ({ children, ...props }) => <Paragraph {...props}>{children}</Paragraph>,
+            blockquote: ({ children, ...props }) => <Blockquote {...props}>{children}</Blockquote>,
+            hr: (props) => <HorizontalRule {...props} />,
             // Lists
             ul: ({ children, ...props }) => <List {...props}>{children}</List>,
             ol: ({ children, ...props }) => (
@@ -88,15 +113,15 @@ const MemoContent = (props: MemoContentProps) => {
             li: ({ children, ...props }) => <ListItem {...props}>{children}</ListItem>,
             // Inline elements
             a: ({ children, ...props }) => <Link {...props}>{children}</Link>,
-            code: ({ children }) => <InlineCode>{children}</InlineCode>,
+            code: ({ children, ...props }) => <InlineCode {...props}>{children}</InlineCode>,
             img: ({ ...props }) => <Image {...props} />,
             // Code blocks
             pre: CodeBlock,
             // Tables
-            table: ({ children }) => <Table>{children}</Table>,
-            thead: ({ children }) => <TableHead>{children}</TableHead>,
-            tbody: ({ children }) => <TableBody>{children}</TableBody>,
-            tr: ({ children }) => <TableRow>{children}</TableRow>,
+            table: ({ children, ...props }) => <Table {...props}>{children}</Table>,
+            thead: ({ children, ...props }) => <TableHead {...props}>{children}</TableHead>,
+            tbody: ({ children, ...props }) => <TableBody {...props}>{children}</TableBody>,
+            tr: ({ children, ...props }) => <TableRow {...props}>{children}</TableRow>,
             th: ({ children, ...props }) => <TableHeaderCell {...props}>{children}</TableHeaderCell>,
             td: ({ children, ...props }) => <TableCell {...props}>{children}</TableCell>,
           }}
