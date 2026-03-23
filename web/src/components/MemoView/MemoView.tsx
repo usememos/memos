@@ -16,6 +16,7 @@ import { MEMO_CARD_BASE_CLASSES } from "./constants";
 import { useImagePreview } from "./hooks";
 import { computeCommentAmount, MemoViewContext } from "./MemoViewContext";
 import type { MemoViewProps } from "./types";
+import MemoFooter from "./components/MemoFooter";
 
 const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
 <<<<<<< HEAD
@@ -181,7 +182,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
 >>>>>>> 89d43a2e (Developed Color Picker Feature for memos)
 
       <MemoBody compact={compact} />
-
+      <MemoFooter/>
       <PreviewImageDialog
         open={previewState.open}
         onOpenChange={setPreviewOpen}
