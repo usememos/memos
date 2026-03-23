@@ -7,8 +7,9 @@ interface HeadingProps extends React.HTMLAttributes<HTMLHeadingElement>, ReactMa
 }
 
 /**
- * Heading component for h1-h6 elements
- * Renders semantic heading levels with consistent styling
+ * Heading component for h1-h6 elements.
+ * Renders semantic heading levels with consistent styling.
+ * Anchor IDs are assigned by the rehypeHeadingId plugin.
  */
 export const Heading = ({ level, children, className, node: _node, ...props }: HeadingProps) => {
   const Component = `h${level}` as const;
