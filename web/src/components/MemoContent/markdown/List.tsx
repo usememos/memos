@@ -54,6 +54,9 @@ export const ListItem = ({ children, className, node: _node, ...domProps }: List
           "[&>button]:mr-2 [&>button]:align-middle",
           // Inline paragraph for task text
           "[&>p]:inline [&>p]:m-0",
+          // NEW: strike through text when checkbox is checked
+          "[&:has(button[data-state=checked])]:line-through",
+          "[&:has(button[data-state=checked])]:text-gray-400",
           className,
         )}
         {...domProps}
