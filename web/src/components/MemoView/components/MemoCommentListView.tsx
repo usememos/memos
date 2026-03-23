@@ -1,9 +1,10 @@
 import { ArrowUpRightIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { MemoPreview } from "@/components/MemoPreview";
 import { extractMemoIdFromName } from "@/helpers/resource-names";
 import { useMemoComments } from "@/hooks/useMemoQueries";
+import { useUsersByNames } from "@/hooks/useUserQueries";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
-import MemoSnippetLink from "./MemoSnippetLink";
 
 const MemoCommentListView: React.FC = () => {
   const { memo } = useMemoViewContext();
@@ -11,12 +12,12 @@ const MemoCommentListView: React.FC = () => {
 
   const { data } = useMemoComments(memo.name, { enabled: !isInMemoDetailPage && commentAmount > 0 });
   const comments = data?.memos ?? [];
+  const displayedComments = comments.slice(0, 3);
+  const { data: commentCreators } = useUsersByNames(displayedComments.map((comment) => comment.creator));
 
   if (isInMemoDetailPage || commentAmount === 0) {
     return null;
   }
-
-  const displayedComments = comments.slice(0, 3);
 
   return (
     <div className="border border-t-0 border-border rounded-b-lg px-4 pt-2 pb-3 flex flex-col gap-1">
@@ -32,14 +33,22 @@ const MemoCommentListView: React.FC = () => {
       </div>
       {displayedComments.map((comment) => {
         const uid = extractMemoIdFromName(comment.name);
+        const creator = commentCreators?.get(comment.creator);
         return (
-          <MemoSnippetLink
+          <Link
             key={comment.name}
-            name={comment.name}
-            snippet={comment.snippet || comment.content}
             to={`/${memo.name}#${uid}`}
-            className="bg-muted/40 rounded-md"
-          />
+            viewTransition
+            className="rounded-md bg-muted/40 px-2 py-1 transition-colors hover:bg-muted/60"
+          >
+            <MemoPreview
+              content={comment.snippet || comment.content}
+              attachments={comment.attachments}
+              creator={creator}
+              showCreator
+              truncate
+            />
+          </Link>
         );
       })}
     </div>
