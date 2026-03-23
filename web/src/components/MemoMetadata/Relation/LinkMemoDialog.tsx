@@ -4,7 +4,6 @@ import { MemoPreview } from "@/components/MemoPreview";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
-import { extractMemoIdFromName } from "@/helpers/resource-names";
 import { cn } from "@/lib/utils";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -75,12 +74,9 @@ export const LinkMemoDialog = ({
                     <div className="w-full flex flex-col gap-1">
                       <div className="flex items-center gap-1.5 text-sm text-muted-foreground select-none">
                         {alreadyLinked && <LinkIcon className="w-3 h-3 shrink-0" />}
-                        <span className="text-xs font-mono px-1 py-0.5 rounded border border-border bg-muted/40 shrink-0">
-                          {extractMemoIdFromName(memo.name).slice(0, 6)}
-                        </span>
                         <span>{memo.displayTime && timestampDate(memo.displayTime).toLocaleString()}</span>
                       </div>
-                      <MemoPreview content={memo.content} attachments={memo.attachments} />
+                      <MemoPreview name={memo.name} content={memo.content} attachments={memo.attachments} showMemoId />
                     </div>
                   </div>
                 );
