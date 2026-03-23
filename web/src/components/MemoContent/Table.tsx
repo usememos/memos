@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import type { TableData } from "@/utils/markdown-table";
 import { findAllTables, parseMarkdownTable, replaceNthTable } from "@/utils/markdown-table";
-import { useMemoViewContext, useMemoViewDerived } from "../MemoView/MemoViewContext";
+import { useMemoViewContext, useMemoViewDerived } from "@/components/MemoView/MemoViewContext";
 import type { ReactMarkdownProps } from "./markdown/types";
 
 // ---------------------------------------------------------------------------
@@ -32,24 +32,24 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
   const { readonly } = useMemoViewDerived();
   const { mutateAsync: updateMemo } = useUpdateMemo();
 
+  const tables = useMemo(() => findAllTables(memo.content), [memo.content]);
+
   /** Resolve which markdown table index this rendered table corresponds to using AST source positions. */
   const resolveTableIndex = useMemo(() => {
     const nodeStart = node?.position?.start?.offset;
     if (nodeStart == null) return -1;
 
-    const tables = findAllTables(memo.content);
     for (let i = 0; i < tables.length; i++) {
       if (nodeStart >= tables[i].start && nodeStart < tables[i].end) return i;
     }
     return -1;
-  }, [memo.content, node]);
+  }, [tables, node]);
 
   const handleEditClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
       e.preventDefault();
 
-      const tables = findAllTables(memo.content);
       if (resolveTableIndex < 0 || resolveTableIndex >= tables.length) return;
 
       const parsed = parseMarkdownTable(tables[resolveTableIndex].text);
@@ -59,7 +59,7 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
       setTableIndex(resolveTableIndex);
       setDialogOpen(true);
     },
-    [memo.content, resolveTableIndex],
+    [tables, resolveTableIndex],
   );
 
   const handleDeleteClick = useCallback(
