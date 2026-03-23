@@ -1,9 +1,11 @@
 import { PencilIcon, TrashIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import TableEditorDialog from "@/components/TableEditorDialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useUpdateMemo } from "@/hooks/useMemoQueries";
+import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import type { TableData } from "@/utils/markdown-table";
@@ -28,7 +30,7 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
 
   const { memo } = useMemoViewContext();
   const { readonly } = useMemoViewDerived();
-  const { mutate: updateMemo } = useUpdateMemo();
+  const { mutateAsync: updateMemo } = useUpdateMemo();
 
   /** Resolve which markdown table index this rendered table corresponds to using AST source positions. */
   const resolveTableIndex = useMemo(() => {
@@ -74,26 +76,34 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
   );
 
   const handleConfirmEdit = useCallback(
-    (markdown: string) => {
+    async (markdown: string) => {
       if (tableIndex < 0) return;
       const newContent = replaceNthTable(memo.content, tableIndex, markdown);
-      updateMemo({
-        update: { name: memo.name, content: newContent },
-        updateMask: ["content"],
-      });
+      try {
+        await updateMemo({
+          update: { name: memo.name, content: newContent },
+          updateMask: ["content"],
+        });
+      } catch (error: unknown) {
+        handleError(error, toast.error, { context: "Update table", fallbackMessage: "An error occurred" });
+      }
     },
     [memo.content, memo.name, tableIndex, updateMemo],
   );
 
-  const handleConfirmDelete = useCallback(() => {
+  const handleConfirmDelete = useCallback(async () => {
     if (tableIndex < 0) return;
     // Replace the table with an empty string to delete it.
     const newContent = replaceNthTable(memo.content, tableIndex, "");
-    updateMemo({
-      update: { name: memo.name, content: newContent },
-      updateMask: ["content"],
-    });
-    setDeleteDialogOpen(false);
+    try {
+      await updateMemo({
+        update: { name: memo.name, content: newContent },
+        updateMask: ["content"],
+      });
+      setDeleteDialogOpen(false);
+    } catch (error: unknown) {
+      handleError(error, toast.error, { context: "Delete table", fallbackMessage: "An error occurred" });
+    }
   }, [memo.content, memo.name, tableIndex, updateMemo]);
 
   return (

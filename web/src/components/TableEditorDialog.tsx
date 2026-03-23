@@ -132,12 +132,22 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
     if (sortState && sortState.col === col && sortState.dir === "asc") newDir = "desc";
     setSortState({ col, dir: newDir });
 
+    const normalize = (s: string): string =>
+      s
+        .trim()
+        .replace(/[^\d.-]/g, "")
+        .replace(/(?<=.)-/g, "");
     const compareFn = (a: string[], b: string[]) => {
       const va = (a[col] || "").toLowerCase();
       const vb = (b[col] || "").toLowerCase();
-      const na = Number(va);
-      const nb = Number(vb);
-      if (!Number.isNaN(na) && !Number.isNaN(nb)) return newDir === "asc" ? na - nb : nb - na;
+      const ca = normalize(va);
+      const cb = normalize(vb);
+      const na = ca !== "" ? parseFloat(ca) : NaN;
+      const nb = cb !== "" ? parseFloat(cb) : NaN;
+      const aIsNum = Number.isFinite(na);
+      const bIsNum = Number.isFinite(nb);
+      if (aIsNum && bIsNum) return newDir === "asc" ? na - nb : nb - na;
+      if (aIsNum !== bIsNum) return aIsNum ? (newDir === "asc" ? 1 : -1) : newDir === "asc" ? -1 : 1;
       const cmp = va.localeCompare(vb);
       return newDir === "asc" ? cmp : -cmp;
     };
@@ -153,17 +163,17 @@ const TableEditorDialog = ({ open, onOpenChange, initialData, onConfirm }: Table
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, row: number, col: number) => {
     if (e.key !== "Tab") return;
+
+    // At grid boundaries, let the browser move focus naturally out of the grid.
+    if (!e.shiftKey && row === rowCount - 1 && col === colCount - 1) return;
+    if (e.shiftKey && row === 0 && col === 0) return;
+
     e.preventDefault();
     const nextCol = e.shiftKey ? col - 1 : col + 1;
     let nextRow = row;
     if (nextCol >= colCount) {
-      if (row < rowCount - 1) {
-        nextRow = row + 1;
-        focusCell(nextRow, 0);
-      } else {
-        addRow();
-        setTimeout(() => focusCell(rowCount, 0), 0);
-      }
+      nextRow = row + 1;
+      focusCell(nextRow, 0);
     } else if (nextCol < 0) {
       if (row > 0) {
         nextRow = row - 1;

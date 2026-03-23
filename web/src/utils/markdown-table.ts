@@ -1,6 +1,10 @@
 /**
  * Utilities for parsing, serializing, and manipulating markdown tables.
  */
+import { fromMarkdown } from "mdast-util-from-markdown";
+import { gfmFromMarkdown } from "mdast-util-gfm";
+import { gfm } from "micromark-extension-gfm";
+import { visit } from "unist-util-visit";
 
 export interface TableData {
   headers: string[];
@@ -33,11 +37,11 @@ export function parseMarkdownTable(md: string): TableData | null {
   if (lines.length < 2) return null;
 
   const parseRow = (line: string): string[] => {
-    // Strip leading/trailing pipes and split by pipe.
+    // Strip leading/trailing pipes and split by unescaped pipe.
     let trimmed = line;
     if (trimmed.startsWith("|")) trimmed = trimmed.slice(1);
     if (trimmed.endsWith("|")) trimmed = trimmed.slice(0, -1);
-    return trimmed.split("|").map((cell) => cell.trim());
+    return trimmed.split(/(?<!\\)\|/).map((cell) => cell.trim());
   };
 
   const headers = parseRow(lines[0]);
@@ -131,9 +135,6 @@ export function serializeMarkdownTable(data: TableData): string {
 // Find & Replace
 // ---------------------------------------------------------------------------
 
-/** Regex that matches a full markdown table block (one or more table lines). */
-const TABLE_LINE = /^\s*\|.+\|\s*$/;
-
 export interface TableMatch {
   /** The raw markdown of the table. */
   text: string;
@@ -145,33 +146,24 @@ export interface TableMatch {
 
 /**
  * Find all markdown table blocks in a content string.
+ *
+ * Uses a GFM-aware markdown AST parser so that tables without leading/trailing
+ * pipes (e.g. `A | B\n--- | ---\n1 | 2`) are recognised in addition to
+ * fully-fenced `| … |` tables.
  */
 export function findAllTables(content: string): TableMatch[] {
-  const lines = content.split("\n");
+  const tree = fromMarkdown(content, {
+    extensions: [gfm()],
+    mdastExtensions: [gfmFromMarkdown()],
+  });
+
   const tables: TableMatch[] = [];
-  let i = 0;
-  let offset = 0;
-
-  while (i < lines.length) {
-    if (TABLE_LINE.test(lines[i])) {
-      const startLine = i;
-      const startOffset = offset;
-      // Consume all consecutive table lines.
-      while (i < lines.length && TABLE_LINE.test(lines[i])) {
-        offset += lines[i].length + 1; // +1 for newline
-        i++;
-      }
-      const text = lines.slice(startLine, i).join("\n");
-      // Only count if it has at least a header + separator (2 lines).
-      if (i - startLine >= 2) {
-        tables.push({ text, start: startOffset, end: startOffset + text.length });
-      }
-    } else {
-      offset += lines[i].length + 1;
-      i++;
-    }
-  }
-
+  visit(tree, "table", (node) => {
+    if (!node.position) return;
+    const start = node.position.start.offset ?? 0;
+    const end = node.position.end.offset ?? content.length;
+    tables.push({ text: content.slice(start, end), start, end });
+  });
   return tables;
 }
 

@@ -219,6 +219,13 @@ more text`;
     expect(tables[0].start).toBe(0);
     expect(content.slice(tables[0].start, tables[0].end)).toBe(tables[0].text);
   });
+
+  it("finds a pipe-less GFM table", () => {
+    const content = "A | B\n--- | ---\n1 | 2";
+    const tables = findAllTables(content);
+    expect(tables).toHaveLength(1);
+    expect(content.slice(tables[0].start, tables[0].end)).toBe(tables[0].text);
+  });
 });
 
 // ---------------------------------------------------------------------------
