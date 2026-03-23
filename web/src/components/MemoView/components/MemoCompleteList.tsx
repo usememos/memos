@@ -10,12 +10,12 @@ function MemoCompleteList() {
   const { mutate: deleteMemo } = useDeleteMemo();
   const { mutate: createMemo } = useCreateMemo();
 
-  // Parse tasks once per render for both counting and clearing
+  // Parse tasks once per render for both counting and  clearing
   const tasks = extractTasks(memo.content);
   const completedTasks = tasks.filter((task) => task.checked);
   const completedCount = completedTasks.length;
   const hasCompletedTasks = completedCount > 0;
-
+   
   const handleClearCompleted = () => {
     if (!hasCompletedTasks) {
       return;

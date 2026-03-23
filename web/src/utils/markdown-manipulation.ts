@@ -12,6 +12,7 @@ export interface TaskInfo {
   checked: boolean;
 }
 
+
 // Extract all task list items from markdown using AST parsing
 // This correctly ignores task-like patterns inside code blocks
 function extractTasksFromAst(markdown: string): TaskInfo[] {

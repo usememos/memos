@@ -17,7 +17,6 @@ export const memoKeys = {
 };
 
 export function useMemos(request: Partial<ListMemosRequest> = {}) {
-
   return useQuery({
     queryKey: memoKeys.list(request),
     queryFn: async () => {

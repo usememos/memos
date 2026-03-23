@@ -146,6 +146,7 @@ const PagedMemoList = (props: Props) => {
 
   const children = (
     <div className="flex flex-col justify-start w-full max-w-2xl mx-auto">
+
       {/* Show skeleton loader during initial load */}
       {isLoading ? (
         <Skeleton showCreator={props.showCreator} count={4} />
