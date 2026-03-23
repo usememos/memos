@@ -10,23 +10,11 @@ import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
-import {
-  EditorContent,
-  EditorMetadata,
-  EditorToolbar,
-  FocusModeExitButton,
-  FocusModeOverlay,
-  TimestampPopover,
-} from "./components";
+import { EditorContent, EditorMetadata, EditorToolbar, FocusModeExitButton, FocusModeOverlay, TimestampPopover } from "./components";
 import { FOCUS_MODE_STYLES } from "./constants";
 import type { EditorRefActions } from "./Editor";
 import { useAutoSave, useFocusMode, useKeyboard, useMemoInit } from "./hooks";
-import {
-  cacheService,
-  errorService,
-  memoService,
-  validationService,
-} from "./services";
+import { cacheService, errorService, memoService, validationService } from "./services";
 import { EditorProvider, useEditorContext } from "./state";
 import type { MemoEditorProps } from "./types";
 
@@ -56,9 +44,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const memoName = memo?.name;
 
   // Get default visibility from user settings
-  const defaultVisibility = userGeneralSetting?.memoVisibility
-    ? convertVisibilityFromString(userGeneralSetting.memoVisibility)
-    : undefined;
+  const defaultVisibility = userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined;
 
   useMemoInit({
     editorRef,
@@ -163,10 +149,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
   return (
     <>
-      <FocusModeOverlay
-        isActive={state.ui.isFocusMode}
-        onToggle={handleToggleFocusMode}
-      />
+      <FocusModeOverlay isActive={state.ui.isFocusMode} onToggle={handleToggleFocusMode} />
 
       {/*
         Layout structure:
@@ -178,20 +161,12 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         className={cn(
           "group relative w-full flex flex-col justify-between items-start bg-card px-4 pt-3 pb-1 rounded-lg border border-border gap-2",
           FOCUS_MODE_STYLES.transition,
-          state.ui.isFocusMode &&
-            cn(
-              FOCUS_MODE_STYLES.container.base,
-              FOCUS_MODE_STYLES.container.spacing,
-            ),
+          state.ui.isFocusMode && cn(FOCUS_MODE_STYLES.container.base, FOCUS_MODE_STYLES.container.spacing),
           className,
         )}
       >
         {/* Exit button is absolutely positioned in top-right corner when active */}
-        <FocusModeExitButton
-          isActive={state.ui.isFocusMode}
-          onToggle={handleToggleFocusMode}
-          title={t("editor.exit-focus-mode")}
-        />
+        <FocusModeExitButton isActive={state.ui.isFocusMode} onToggle={handleToggleFocusMode} title={t("editor.exit-focus-mode")} />
 
         {memoName && (
           <div className="w-full -mb-1">
@@ -200,11 +175,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         )}
 
         {/* Editor content grows to fill available space in focus mode */}
-        <EditorContent
-          ref={editorRef}
-          placeholder={placeholder}
-          onOpenTableEditor={handleOpenTableEditor}
-        />
+        <EditorContent ref={editorRef} placeholder={placeholder} onOpenTableEditor={handleOpenTableEditor} />
 
         {/* Metadata and toolbar grouped together at bottom */}
         <div className="w-full flex flex-col gap-2">
@@ -213,11 +184,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         </div>
       </div>
 
-      <TableEditorDialog
-        open={tableDialogOpen}
-        onOpenChange={setTableDialogOpen}
-        onConfirm={handleTableConfirm}
-      />
+      <TableEditorDialog open={tableDialogOpen} onOpenChange={setTableDialogOpen} onConfirm={handleTableConfirm} />
     </>
   );
 };
