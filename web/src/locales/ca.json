@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "Arxivat el",
-    "click-to-hide-nsfw-content": "Fes clic per ocultar contingut sensible",
-    "click-to-show-nsfw-content": "Fes clic per mostrar contingut sensible",
+    "click-to-hide-sensitive-content": "Fes clic per ocultar contingut sensible",
+    "click-to-show-sensitive-content": "Fes clic per mostrar contingut sensible",
     "code": "Codi",
     "comment": {
       "self": "Comentaris",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "Límit de longitud del contingut (Bytes)",
-      "enable-blur-nsfw-content": "Habilita el difuminat de contingut sensible (NSFW)",
+      "enable-blur-sensitive-content": "Habilita el difuminat de contingut sensible (NSFW)",
       "enable-memo-comments": "Habilita els comentaris a les notes",
       "enable-memo-location": "Habilita la ubicació de la nota",
       "reactions": "Reaccions",

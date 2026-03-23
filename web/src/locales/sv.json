@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "Arkiverad",
-    "click-to-hide-nsfw-content": "Klicka för att dölja känsligt innehåll (NSFW)",
-    "click-to-show-nsfw-content": "Klicka för att visa känsligt innehåll (NSFW)",
+    "click-to-hide-sensitive-content": "Klicka för att dölja känsligt innehåll (NSFW)",
+    "click-to-show-sensitive-content": "Klicka för att visa känsligt innehåll (NSFW)",
     "code": "Kod",
     "comment": {
       "self": "Kommentarer",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "Innehållslängdsgräns (Byte)",
-      "enable-blur-nsfw-content": "Aktivera suddighet för känsligt innehåll (NSFW)",
+      "enable-blur-sensitive-content": "Aktivera suddighet för känsligt innehåll (NSFW)",
       "enable-memo-comments": "Aktivera kommentarer på anteckningar",
       "enable-memo-location": "Aktivera plats för anteckning",
       "reactions": "Reaktioner",

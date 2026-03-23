@@ -141,8 +141,8 @@
   },
   "memo": {
     "archived-at": "Zarchiwizowano w dniu",
-    "click-to-hide-nsfw-content": "Kliknij, aby ukryć treści NSFW",
-    "click-to-show-nsfw-content": "Kliknij, aby pokazać treści NSFW",
+    "click-to-hide-sensitive-content": "Kliknij, aby ukryć treści NSFW",
+    "click-to-show-sensitive-content": "Kliknij, aby pokazać treści NSFW",
     "code": "Kod",
     "comment": {
       "self": "Komentarze",
@@ -411,7 +411,7 @@
     },
     "memo": {
       "content-length-limit": "Limit długości treści (Bajty)",
-      "enable-blur-nsfw-content": "Włącz rozmycie treści NSFW",
+      "enable-blur-sensitive-content": "Włącz rozmycie treści NSFW",
       "enable-memo-comments": "Włącz komentarze do notatek",
       "enable-memo-location": "Włącz lokalizację notatek",
       "reactions": "Reakcje",

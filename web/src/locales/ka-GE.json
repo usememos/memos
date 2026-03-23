@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "დაარქივებულია",
-    "click-to-hide-nsfw-content": "დააწკაპუნეთ NSFW კონტენტის დასამალად",
-    "click-to-show-nsfw-content": "დააწკაპუნეთ NSFW კონტენტის საჩვენებლად",
+    "click-to-hide-sensitive-content": "დააწკაპუნეთ NSFW კონტენტის დასამალად",
+    "click-to-show-sensitive-content": "დააწკაპუნეთ NSFW კონტენტის საჩვენებლად",
     "code": "კოდი",
     "comment": {
       "self": "კომენტარები",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "კონტენტის სიგრძის ლიმიტი (ბაიტი)",
-      "enable-blur-nsfw-content": "NSFW კონტენტის დაბუნდოვანების ჩართვა",
+      "enable-blur-sensitive-content": "NSFW კონტენტის დაბუნდოვანების ჩართვა",
       "enable-memo-comments": "მემოზე კომენტარების ჩართვა",
       "enable-memo-location": "მემოს მდებარეობის ჩართვა",
       "reactions": "რეაქციები",

@@ -21,10 +21,10 @@ const STUB_CONTEXT: MemoViewContextValue = {
   parentPage: "/",
   isArchived: false,
   readonly: true,
-  showNSFWContent: false,
-  nsfw: false,
+  showBlurredContent: false,
+  blurred: false,
   openEditor: () => {},
-  toggleNsfwVisibility: () => {},
+  toggleBlurVisibility: () => {},
   openPreview: () => {},
 };
 
