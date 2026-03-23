@@ -6,7 +6,7 @@ import {
   replaceNthTable,
   serializeMarkdownTable,
   type TableData,
-} from "./markdown-table";
+} from "@/utils/markdown-table";
 
 // ---------------------------------------------------------------------------
 // parseMarkdownTable

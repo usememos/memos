@@ -37,11 +37,34 @@ export function parseMarkdownTable(md: string): TableData | null {
   if (lines.length < 2) return null;
 
   const parseRow = (line: string): string[] => {
-    // Strip leading/trailing pipes and split by unescaped pipe.
+    // Strip leading/trailing pipes and split by pipes preceded by an even number
+    // of backslashes (0, 2, 4, …).  A pipe preceded by an odd number of
+    // backslashes is an escaped pipe and must not be treated as a column
+    // separator.  The simpler regex (?<!\\)\| fails for "\\|" (escaped
+    // backslash + unescaped pipe) because the lookbehind only checks the single
+    // character immediately before the pipe.
     let trimmed = line;
     if (trimmed.startsWith("|")) trimmed = trimmed.slice(1);
     if (trimmed.endsWith("|")) trimmed = trimmed.slice(0, -1);
-    return trimmed.split(/(?<!\\)\|/).map((cell) => cell.trim().replace(/\\\|/g, "|"));
+
+    const cells: string[] = [];
+    let cellStart = 0;
+    for (let i = 0; i < trimmed.length; i++) {
+      if (trimmed[i] === "|") {
+        let backslashes = 0;
+        let j = i - 1;
+        while (j >= 0 && trimmed[j] === "\\") {
+          backslashes++;
+          j--;
+        }
+        if (backslashes % 2 === 0) {
+          cells.push(trimmed.slice(cellStart, i).trim().replace(/\\\|/g, "|"));
+          cellStart = i + 1;
+        }
+      }
+    }
+    cells.push(trimmed.slice(cellStart).trim().replace(/\\\|/g, "|"));
+    return cells;
   };
 
   const headers = parseRow(lines[0]);
