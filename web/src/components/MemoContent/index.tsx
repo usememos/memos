@@ -10,6 +10,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
+import { rehypeHeadingId } from "@/utils/rehype-plugins/rehype-heading-id";
 import { remarkDisableSetext } from "@/utils/remark-plugins/remark-disable-setext";
 import { remarkPreserveType } from "@/utils/remark-plugins/remark-preserve-type";
 import { remarkTag } from "@/utils/remark-plugins/remark-tag";
@@ -51,7 +52,12 @@ const MemoContent = (props: MemoContentProps) => {
       >
         <ReactMarkdown
           remarkPlugins={[remarkDisableSetext, remarkMath, remarkGfm, remarkBreaks, remarkTag, remarkPreserveType]}
-          rehypePlugins={[rehypeRaw, [rehypeSanitize, SANITIZE_SCHEMA], [rehypeKatex, { throwOnError: false, strict: false }]]}
+          rehypePlugins={[
+            rehypeRaw,
+            [rehypeSanitize, SANITIZE_SCHEMA],
+            rehypeHeadingId,
+            [rehypeKatex, { throwOnError: false, strict: false }],
+          ]}
           components={{
             // Child components consume from MemoViewContext directly
             input: ((inputProps: React.ComponentProps<"input"> & { node?: Element }) => {

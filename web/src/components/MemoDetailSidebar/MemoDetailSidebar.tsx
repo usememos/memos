@@ -8,7 +8,9 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
 import { Memo, Memo_PropertySchema } from "@/types/proto/api/v1/memo_service_pb";
 import { type Translations, useTranslate } from "@/utils/i18n";
+import { extractHeadings } from "@/utils/markdown-manipulation";
 import { isSuperUser } from "@/utils/user";
+import MemoOutline from "./MemoOutline";
 import MemoSharePanel from "./MemoSharePanel";
 
 interface Props {
@@ -44,6 +46,7 @@ const MemoDetailSidebar = ({ memo, className }: Props) => {
   const property = create(Memo_PropertySchema, memo.property || {});
   const canManageShares = !memo.parent && (memo.creator === currentUser?.name || isSuperUser(currentUser));
   const hasUpdated = !isEqual(memo.createTime, memo.updateTime);
+  const headings = useMemo(() => extractHeadings(memo.content), [memo.content]);
 
   const propertyBadges = useMemo(() => {
     const badges: PropertyBadge[] = [];
@@ -55,6 +58,12 @@ const MemoDetailSidebar = ({ memo, className }: Props) => {
 
   return (
     <aside className={cn("relative w-full h-auto max-h-screen overflow-auto flex flex-col gap-5", className)}>
+      {headings.length > 0 && (
+        <SidebarSection label={t("memo.outline")}>
+          <MemoOutline headings={headings} />
+        </SidebarSection>
+      )}
+
       {canManageShares && (
         <SidebarSection label={t("memo.share.section-label")}>
           <Button variant="outline" className="w-full justify-start gap-2" onClick={() => setSharePanelOpen(true)}>
