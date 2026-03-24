@@ -107,7 +107,22 @@ export function serializeMarkdownTable(data: TableData): string {
   const { headers, rows, alignments } = data;
   const colCount = headers.length;
 
-  const escapeCell = (text: string): string => text.replace(/(?<!\\)\|/g, "\\|");
+  const escapeCell = (text: string): string => {
+    let result = "";
+    for (let i = 0; i < text.length; i++) {
+      if (text[i] === "|") {
+        let backslashes = 0;
+        let j = i - 1;
+        while (j >= 0 && text[j] === "\\") {
+          backslashes++;
+          j--;
+        }
+        if (backslashes % 2 === 0) result += "\\";
+      }
+      result += text[i];
+    }
+    return result;
+  };
 
   // Calculate maximum width per column (minimum 3 for the separator).
   const widths: number[] = [];
@@ -214,6 +229,6 @@ export function createEmptyTable(cols = 2, rows = 2): TableData {
   return {
     headers: Array.from({ length: cols }, (_, i) => `Header ${i + 1}`),
     rows: Array.from({ length: rows }, () => Array.from({ length: cols }, () => "")),
-    alignments: Array.from({ length: cols }, () => "none" as ColumnAlignment),
+    alignments: Array.from({ length: cols }, () => "none"),
   };
 }

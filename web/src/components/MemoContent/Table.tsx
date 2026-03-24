@@ -34,8 +34,8 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
 
   const tables = useMemo(() => findAllTables(memo.content), [memo.content]);
 
-  /** Resolve which markdown table index this rendered table corresponds to using AST source positions. */
-  const resolveTableIndex = useMemo(() => {
+  /** The index of the markdown table this rendered table corresponds to (from AST source positions). */
+  const currentTableIndex = useMemo(() => {
     const nodeStart = node?.position?.start?.offset;
     if (nodeStart == null) return -1;
 
@@ -50,16 +50,16 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
       e.stopPropagation();
       e.preventDefault();
 
-      if (resolveTableIndex < 0 || resolveTableIndex >= tables.length) return;
+      if (currentTableIndex < 0 || currentTableIndex >= tables.length) return;
 
-      const parsed = parseMarkdownTable(tables[resolveTableIndex].text);
+      const parsed = parseMarkdownTable(tables[currentTableIndex].text);
       if (!parsed) return;
 
       setTableData(parsed);
-      setTableIndex(resolveTableIndex);
+      setTableIndex(currentTableIndex);
       setDialogOpen(true);
     },
-    [tables, resolveTableIndex],
+    [tables, currentTableIndex],
   );
 
   const handleDeleteClick = useCallback(
@@ -67,12 +67,12 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
       e.stopPropagation();
       e.preventDefault();
 
-      if (resolveTableIndex < 0) return;
+      if (currentTableIndex < 0) return;
 
-      setTableIndex(resolveTableIndex);
+      setTableIndex(currentTableIndex);
       setDeleteDialogOpen(true);
     },
-    [resolveTableIndex],
+    [currentTableIndex],
   );
 
   const handleConfirmEdit = useCallback(

@@ -150,6 +150,24 @@ describe("serializeMarkdownTable", () => {
     expect(parsed?.rows[0][1]).toBe("baz");
   });
 
+  it("round-trips a cell whose value has two backslashes before a pipe (\\\\\\\\|)", () => {
+    // Cell value "foo\\|bar" (two backslashes + pipe) is a valid parsed value
+    // that comes from markdown "foo\\\\\\|bar".  The old escapeCell regex
+    // (?<!\\)\\| would NOT escape the pipe (it sees one \\ before the | and
+    // thinks it is already escaped), causing the parser to split on the pipe.
+    // The fixed escapeCell counts all consecutive backslashes: 2 is even, so
+    // it correctly inserts an escape backslash.
+    const data: TableData = {
+      headers: ["A"],
+      rows: [["foo\\\\|bar"]],
+      alignments: ["none"],
+    };
+    const md = serializeMarkdownTable(data);
+    const parsed = parseMarkdownTable(md);
+    expect(parsed?.headers.length).toBe(1); // pipe must NOT split into extra columns
+    expect(parsed?.rows[0][0]).toBe("foo\\\\|bar");
+  });
+
   it("round-trips through parse and serialize", () => {
     const original = `| Name  | Age |
 | ----- | --- |
