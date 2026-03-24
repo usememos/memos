@@ -132,9 +132,17 @@ const MemoPreview = ({
         )}
       >
         {showMeta && meta}
-        {showMeta && truncate && hasContent && <div className="text-muted-foreground/50 shrink-0">·</div>}
+        {showMeta && truncate && (hasContent || hasAttachments) && <div className="text-muted-foreground/50 shrink-0">·</div>}
         {contentNode}
-        {hasAttachments && <AttachmentThumbnails attachments={attachments} />}
+        {hasAttachments &&
+          (truncate ? (
+            <div className="shrink-0 text-muted-foreground/70 inline-flex justify-center items-center gap-0.5">
+              <FileIcon className="w-3 h-3 inline-block" />
+              <span className="text-xs">{attachments.length}</span>
+            </div>
+          ) : (
+            <AttachmentThumbnails attachments={attachments} />
+          ))}
       </div>
     </MemoViewContext.Provider>
   );
