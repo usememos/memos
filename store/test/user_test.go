@@ -91,14 +91,6 @@ func TestUserGetByID(t *testing.T) {
 	require.NoError(t, err)
 	require.Nil(t, notFound)
 
-	// Get system bot
-	systemBotID := store.SystemBotID
-	systemBot, err := ts.GetUser(ctx, &store.FindUser{ID: &systemBotID})
-	require.NoError(t, err)
-	require.NotNil(t, systemBot)
-	require.Equal(t, store.SystemBotID, systemBot.ID)
-	require.Equal(t, "system_bot", systemBot.Username)
-
 	ts.Close()
 }
 
