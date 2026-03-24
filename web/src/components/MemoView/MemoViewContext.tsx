@@ -37,7 +37,7 @@ export const useMemoViewDerived = () => {
   const { memo, isArchived, readonly } = useMemoViewContext();
   const location = useLocation();
 
-  const isInMemoDetailPage = location.pathname.startsWith(`/${memo.name}`);
+  const isInMemoDetailPage = location.pathname.startsWith(`/${memo.name}`) || location.pathname.startsWith("/memos/shares/");
   const commentAmount = computeCommentAmount(memo);
 
   const displayTime = memo.displayTime ? timestampDate(memo.displayTime) : undefined;

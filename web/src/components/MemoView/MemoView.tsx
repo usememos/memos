@@ -38,7 +38,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const closeEditor = useCallback(() => setShowEditor(false), []);
 
   const location = useLocation();
-  const isInMemoDetailPage = location.pathname.startsWith(`/${memoData.name}`);
+  const isInMemoDetailPage = location.pathname.startsWith(`/${memoData.name}`) || location.pathname.startsWith("/memos/shares/");
   const showCommentPreview = !isInMemoDetailPage && computeCommentAmount(memoData) > 0;
 
   const contextValue = useMemo(
