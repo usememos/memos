@@ -26,10 +26,14 @@ type attachmentJSON struct {
 	Memo         string `json:"memo,omitempty"`
 }
 
-func storeAttachmentToJSON(a *store.Attachment) attachmentJSON {
+func storeAttachmentToJSON(ctx context.Context, stores *store.Store, a *store.Attachment) (attachmentJSON, error) {
+	creator, err := lookupUsername(ctx, stores, a.CreatorID)
+	if err != nil {
+		return attachmentJSON{}, err
+	}
 	j := attachmentJSON{
 		Name:       "attachments/" + a.UID,
-		Creator:    fmt.Sprintf("users/%d", a.CreatorID),
+		Creator:    creator,
 		CreateTime: a.CreatedTs,
 		Filename:   a.Filename,
 		Type:       a.Type,
@@ -50,7 +54,7 @@ func storeAttachmentToJSON(a *store.Attachment) attachmentJSON {
 	if a.MemoUID != nil && *a.MemoUID != "" {
 		j.Memo = "memos/" + *a.MemoUID
 	}
-	return j
+	return j, nil
 }
 
 func parseAttachmentUID(name string) (string, error) {
@@ -139,7 +143,11 @@ func (s *MCPService) handleListAttachments(ctx context.Context, req mcp.CallTool
 
 	results := make([]attachmentJSON, len(attachments))
 	for i, a := range attachments {
-		results[i] = storeAttachmentToJSON(a)
+		result, err := storeAttachmentToJSON(ctx, s.store, a)
+		if err != nil {
+			return mcp.NewToolResultError(fmt.Sprintf("failed to resolve attachment creator: %v", err)), nil
+		}
+		results[i] = result
 	}
 
 	type listResponse struct {
@@ -186,7 +194,11 @@ func (s *MCPService) handleGetAttachment(ctx context.Context, req mcp.CallToolRe
 		}
 	}
 
-	out, err := marshalJSON(storeAttachmentToJSON(attachment))
+	result, err := storeAttachmentToJSON(ctx, s.store, attachment)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve attachment creator: %v", err)), nil
+	}
+	out, err := marshalJSON(result)
 	if err != nil {
 		return nil, err
 	}
@@ -264,7 +276,11 @@ func (s *MCPService) handleLinkAttachmentToMemo(ctx context.Context, req mcp.Cal
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to fetch updated attachment: %v", err)), nil
 	}
-	out, err := marshalJSON(storeAttachmentToJSON(updated))
+	result, err := storeAttachmentToJSON(ctx, s.store, updated)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve attachment creator: %v", err)), nil
+	}
+	out, err := marshalJSON(result)
 	if err != nil {
 		return nil, err
 	}

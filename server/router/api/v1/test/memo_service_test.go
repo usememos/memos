@@ -154,7 +154,7 @@ func TestListMemos(t *testing.T) {
 	memoOneRes := memos.Memos[memoOneResIdx]
 	require.NotNil(t, memoOneRes)
 
-	require.Equal(t, fmt.Sprintf("users/%d", userOne.ID), memoOneRes.GetCreator())
+	require.Equal(t, fmt.Sprintf("users/%s", userOne.Username), memoOneRes.GetCreator())
 	require.Equal(t, apiv1.Visibility_PROTECTED, memoOneRes.GetVisibility())
 	require.Equal(t, memoOne.Content, memoOneRes.GetContent())
 	require.Equal(t, memoOne.Content[:64]+"...", memoOneRes.GetSnippet(), "memoOne's content is snipped past the 64 char limit")
@@ -202,7 +202,7 @@ func TestListMemos(t *testing.T) {
 	memoTwoRes := memos.Memos[memoTwoResIdx]
 	require.NotNil(t, memoTwoRes)
 
-	require.Equal(t, fmt.Sprintf("users/%d", userTwo.ID), memoTwoRes.GetCreator())
+	require.Equal(t, fmt.Sprintf("users/%s", userTwo.Username), memoTwoRes.GetCreator())
 	require.Equal(t, apiv1.Visibility_PROTECTED, memoTwoRes.GetVisibility())
 	require.Equal(t, memoTwo.Content, memoTwoRes.GetContent())
 	require.Empty(t, memoTwoRes.Attachments)
@@ -227,7 +227,7 @@ func TestListMemos(t *testing.T) {
 	memoThreeRes := memos.Memos[memoThreeResIdx]
 	require.NotNil(t, memoThreeRes)
 
-	require.Equal(t, fmt.Sprintf("users/%d", userOne.ID), memoThreeRes.GetCreator())
+	require.Equal(t, fmt.Sprintf("users/%s", userOne.Username), memoThreeRes.GetCreator())
 	require.Equal(t, apiv1.Visibility_PROTECTED, memoThreeRes.GetVisibility())
 	require.Equal(t, memoThree.Content, memoThreeRes.GetContent())
 	require.Empty(t, memoThreeRes.Attachments)
@@ -237,7 +237,7 @@ func TestListMemos(t *testing.T) {
 	// verify memoThree's reactions
 	require.Len(t, memoThreeRes.Reactions, 2)
 	// userOne's reaction
-	userOneReactionIdx := slices.IndexFunc(memoThreeRes.Reactions, func(r *apiv1.Reaction) bool { return r.GetCreator() == fmt.Sprintf("users/%d", userOne.ID) })
+	userOneReactionIdx := slices.IndexFunc(memoThreeRes.Reactions, func(r *apiv1.Reaction) bool { return r.GetCreator() == fmt.Sprintf("users/%s", userOne.Username) })
 	require.NotEqual(t, userOneReactionIdx, -1)
 
 	userOneReaction := memoThreeRes.Reactions[userOneReactionIdx]
@@ -245,7 +245,7 @@ func TestListMemos(t *testing.T) {
 	require.Equal(t, "❤️", userOneReaction.ReactionType)
 
 	// userTwo's reaction
-	userTwoReactionIdx := slices.IndexFunc(memoThreeRes.Reactions, func(r *apiv1.Reaction) bool { return r.GetCreator() == fmt.Sprintf("users/%d", userTwo.ID) })
+	userTwoReactionIdx := slices.IndexFunc(memoThreeRes.Reactions, func(r *apiv1.Reaction) bool { return r.GetCreator() == fmt.Sprintf("users/%s", userTwo.Username) })
 	require.NotEqual(t, userTwoReactionIdx, -1)
 
 	userTwoReaction := memoThreeRes.Reactions[userTwoReactionIdx]

@@ -70,31 +70,9 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 }
 
 func (s *APIV1Service) GetUser(ctx context.Context, request *v1pb.GetUserRequest) (*v1pb.User, error) {
-	// Extract identifier from "users/{id_or_username}"
-	identifier := extractUserIdentifierFromName(request.Name)
-	if identifier == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %s", request.Name)
-	}
-
-	var user *store.User
-	var err error
-
-	// Try to parse as numeric ID first
-	if userID, parseErr := strconv.ParseInt(identifier, 10, 32); parseErr == nil {
-		// It's a numeric ID
-		userID32 := int32(userID)
-		user, err = s.Store.GetUser(ctx, &store.FindUser{
-			ID: &userID32,
-		})
-	} else {
-		// It's a username
-		user, err = s.Store.GetUser(ctx, &store.FindUser{
-			Username: &identifier,
-		})
-	}
-
+	user, err := ResolveUserByName(ctx, s.Store, request.Name)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %s", request.Name)
 	}
 	if user == nil {
 		return nil, status.Errorf(codes.NotFound, "user not found")
@@ -183,10 +161,11 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is empty")
 	}
-	userID, err := ExtractUserIDFromName(request.User.Name)
+	user, err := ResolveUserByName(ctx, s.Store, request.User.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
+	userID := user.ID
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
@@ -200,10 +179,6 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	user, err := s.Store.GetUser(ctx, &store.FindUser{ID: &userID})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
-	}
 	if user == nil {
 		// Handle allow_missing field
 		if request.AllowMissing {
@@ -292,10 +267,11 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 }
 
 func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserRequest) (*emptypb.Empty, error) {
-	userID, err := ExtractUserIDFromName(request.Name)
+	user, err := ResolveUserByName(ctx, s.Store, request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
+	userID := user.ID
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
@@ -307,10 +283,6 @@ func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserR
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	user, err := s.Store.GetUser(ctx, &store.FindUser{ID: &userID})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
-	}
 	if user == nil {
 		return nil, status.Errorf(codes.NotFound, "user not found")
 	}
@@ -332,12 +304,69 @@ func getDefaultUserGeneralSetting() *v1pb.UserSetting_GeneralSetting {
 	}
 }
 
+func (s *APIV1Service) resolveUserFromName(ctx context.Context, name string) (*store.User, error) {
+	user, err := ResolveUserByName(ctx, s.Store, name)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, errors.Errorf("user not found: %s", name)
+	}
+	return user, nil
+}
+
+func (s *APIV1Service) resolveUserAndSettingKeyFromName(ctx context.Context, name string) (*store.User, string, error) {
+	parts := strings.Split(name, "/")
+	if len(parts) != 4 || parts[0] != "users" || parts[2] != "settings" {
+		return nil, "", errors.Errorf("invalid resource name format: %s", name)
+	}
+
+	user, err := s.resolveUserFromName(ctx, BuildUserName(parts[1]))
+	if err != nil {
+		return nil, "", err
+	}
+	return user, parts[3], nil
+}
+
+func (s *APIV1Service) resolveUserAndWebhookIDFromName(ctx context.Context, name string) (*store.User, string, error) {
+	parts := strings.Split(name, "/")
+	if len(parts) != 4 || parts[0] != "users" || parts[2] != "webhooks" {
+		return nil, "", errors.New("invalid webhook name format")
+	}
+
+	user, err := s.resolveUserFromName(ctx, BuildUserName(parts[1]))
+	if err != nil {
+		return nil, "", err
+	}
+	return user, parts[3], nil
+}
+
+func (s *APIV1Service) resolveUserAndNotificationIDFromName(ctx context.Context, name string) (*store.User, int32, error) {
+	parts := strings.Split(name, "/")
+	if len(parts) != 4 || parts[0] != "users" || parts[2] != "notifications" {
+		return nil, 0, errors.Errorf("invalid notification name: %s", name)
+	}
+
+	user, err := s.resolveUserFromName(ctx, BuildUserName(parts[1]))
+	if err != nil {
+		return nil, 0, err
+	}
+
+	id, err := strconv.Atoi(parts[3])
+	if err != nil {
+		return nil, 0, errors.Errorf("invalid notification id: %s", parts[3])
+	}
+
+	return user, int32(id), nil
+}
+
 func (s *APIV1Service) GetUserSetting(ctx context.Context, request *v1pb.GetUserSettingRequest) (*v1pb.UserSetting, error) {
 	// Parse resource name: users/{user}/settings/{setting}
-	userID, settingKey, err := ExtractUserIDAndSettingKeyFromName(request.Name)
+	user, settingKey, err := s.resolveUserAndSettingKeyFromName(ctx, request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid resource name: %v", err)
 	}
+	userID := user.ID
 
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -366,15 +395,16 @@ func (s *APIV1Service) GetUserSetting(ctx context.Context, request *v1pb.GetUser
 		return nil, status.Errorf(codes.Internal, "failed to get user setting: %v", err)
 	}
 
-	return convertUserSettingFromStore(userSetting, userID, storeKey), nil
+	return convertUserSettingFromStore(userSetting, user, storeKey), nil
 }
 
 func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.UpdateUserSettingRequest) (*v1pb.UserSetting, error) {
 	// Parse resource name: users/{user}/settings/{setting}
-	userID, settingKey, err := ExtractUserIDAndSettingKeyFromName(request.Setting.Name)
+	user, settingKey, err := s.resolveUserAndSettingKeyFromName(ctx, request.Setting.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid resource name: %v", err)
 	}
+	userID := user.ID
 
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -461,10 +491,11 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 }
 
 func (s *APIV1Service) ListUserSettings(ctx context.Context, request *v1pb.ListUserSettingsRequest) (*v1pb.ListUserSettingsResponse, error) {
-	userID, err := ExtractUserIDFromName(request.Parent)
+	user, err := s.resolveUserFromName(ctx, request.Parent)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid parent name: %v", err)
 	}
+	userID := user.ID
 
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -488,7 +519,7 @@ func (s *APIV1Service) ListUserSettings(ctx context.Context, request *v1pb.ListU
 
 	settings := make([]*v1pb.UserSetting, 0, len(userSettings))
 	for _, storeSetting := range userSettings {
-		apiSetting := convertUserSettingFromStore(storeSetting, userID, storeSetting.Key)
+		apiSetting := convertUserSettingFromStore(storeSetting, user, storeSetting.Key)
 		if apiSetting != nil {
 			settings = append(settings, apiSetting)
 		}
@@ -502,7 +533,7 @@ func (s *APIV1Service) ListUserSettings(ctx context.Context, request *v1pb.ListU
 	}
 	if !hasGeneral {
 		defaultGeneral := &v1pb.UserSetting{
-			Name: fmt.Sprintf("users/%d/settings/%s", userID, convertSettingKeyFromStore(storepb.UserSetting_GENERAL)),
+			Name: fmt.Sprintf("%s/settings/%s", BuildUserName(user.Username), convertSettingKeyFromStore(storepb.UserSetting_GENERAL)),
 			Value: &v1pb.UserSetting_GeneralSetting_{
 				GeneralSetting: getDefaultUserGeneralSetting(),
 			},
@@ -533,10 +564,11 @@ func (s *APIV1Service) ListUserSettings(ctx context.Context, request *v1pb.ListU
 // Authentication: Required (session cookie or access token)
 // Authorization: User can only list their own tokens.
 func (s *APIV1Service) ListPersonalAccessTokens(ctx context.Context, request *v1pb.ListPersonalAccessTokensRequest) (*v1pb.ListPersonalAccessTokensResponse, error) {
-	userID, err := ExtractUserIDFromName(request.Parent)
+	user, err := s.resolveUserFromName(ctx, request.Parent)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
+	userID := user.ID
 
 	// Verify permission
 	claims := auth.GetUserClaims(ctx)
@@ -555,7 +587,7 @@ func (s *APIV1Service) ListPersonalAccessTokens(ctx context.Context, request *v1
 	personalAccessTokens := make([]*v1pb.PersonalAccessToken, len(tokens))
 	for i, token := range tokens {
 		personalAccessTokens[i] = &v1pb.PersonalAccessToken{
-			Name:        fmt.Sprintf("%s/personalAccessTokens/%s", request.Parent, token.TokenId),
+			Name:        fmt.Sprintf("%s/personalAccessTokens/%s", BuildUserName(user.Username), token.TokenId),
 			Description: token.Description,
 			ExpiresAt:   token.ExpiresAt,
 			CreatedAt:   token.CreatedAt,
@@ -587,10 +619,11 @@ func (s *APIV1Service) ListPersonalAccessTokens(ctx context.Context, request *v1
 // Authentication: Required (session cookie or access token)
 // Authorization: User can only create tokens for themselves.
 func (s *APIV1Service) CreatePersonalAccessToken(ctx context.Context, request *v1pb.CreatePersonalAccessTokenRequest) (*v1pb.CreatePersonalAccessTokenResponse, error) {
-	userID, err := ExtractUserIDFromName(request.Parent)
+	user, err := s.resolveUserFromName(ctx, request.Parent)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
+	userID := user.ID
 
 	// Verify permission
 	claims := auth.GetUserClaims(ctx)
@@ -625,7 +658,7 @@ func (s *APIV1Service) CreatePersonalAccessToken(ctx context.Context, request *v
 
 	return &v1pb.CreatePersonalAccessTokenResponse{
 		PersonalAccessToken: &v1pb.PersonalAccessToken{
-			Name:        fmt.Sprintf("%s/personalAccessTokens/%s", request.Parent, tokenID),
+			Name:        fmt.Sprintf("%s/personalAccessTokens/%s", BuildUserName(user.Username), tokenID),
 			Description: request.Description,
 			ExpiresAt:   expiresAt,
 			CreatedAt:   patRecord.CreatedAt,
@@ -648,16 +681,16 @@ func (s *APIV1Service) CreatePersonalAccessToken(ctx context.Context, request *v
 // Authentication: Required (session cookie or access token)
 // Authorization: User can only delete their own tokens.
 func (s *APIV1Service) DeletePersonalAccessToken(ctx context.Context, request *v1pb.DeletePersonalAccessTokenRequest) (*emptypb.Empty, error) {
-	// Parse name: users/{user_id}/personalAccessTokens/{token_id}
 	parts := strings.Split(request.Name, "/")
 	if len(parts) != 4 || parts[0] != "users" || parts[2] != "personalAccessTokens" {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid personal access token name")
 	}
 
-	userID, err := util.ConvertStringToInt32(parts[1])
+	user, err := s.resolveUserFromName(ctx, BuildUserName(parts[1]))
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid user ID: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
+	userID := user.ID
 	tokenID := parts[3]
 
 	// Verify permission
@@ -677,10 +710,11 @@ func (s *APIV1Service) DeletePersonalAccessToken(ctx context.Context, request *v
 }
 
 func (s *APIV1Service) ListUserWebhooks(ctx context.Context, request *v1pb.ListUserWebhooksRequest) (*v1pb.ListUserWebhooksResponse, error) {
-	userID, err := ExtractUserIDFromName(request.Parent)
+	user, err := s.resolveUserFromName(ctx, request.Parent)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid parent: %v", err)
 	}
+	userID := user.ID
 
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -700,7 +734,7 @@ func (s *APIV1Service) ListUserWebhooks(ctx context.Context, request *v1pb.ListU
 
 	userWebhooks := make([]*v1pb.UserWebhook, 0, len(webhooks))
 	for _, webhook := range webhooks {
-		userWebhooks = append(userWebhooks, convertUserWebhookFromUserSetting(webhook, userID))
+		userWebhooks = append(userWebhooks, convertUserWebhookFromUserSetting(webhook, user))
 	}
 
 	return &v1pb.ListUserWebhooksResponse{
@@ -709,10 +743,11 @@ func (s *APIV1Service) ListUserWebhooks(ctx context.Context, request *v1pb.ListU
 }
 
 func (s *APIV1Service) CreateUserWebhook(ctx context.Context, request *v1pb.CreateUserWebhookRequest) (*v1pb.UserWebhook, error) {
-	userID, err := ExtractUserIDFromName(request.Parent)
+	user, err := s.resolveUserFromName(ctx, request.Parent)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid parent: %v", err)
 	}
+	userID := user.ID
 
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -744,7 +779,7 @@ func (s *APIV1Service) CreateUserWebhook(ctx context.Context, request *v1pb.Crea
 		return nil, status.Errorf(codes.Internal, "failed to create webhook: %v", err)
 	}
 
-	return convertUserWebhookFromUserSetting(webhook, userID), nil
+	return convertUserWebhookFromUserSetting(webhook, user), nil
 }
 
 func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.UpdateUserWebhookRequest) (*v1pb.UserWebhook, error) {
@@ -752,10 +787,11 @@ func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.Upda
 		return nil, status.Errorf(codes.InvalidArgument, "webhook is required")
 	}
 
-	webhookID, userID, err := parseUserWebhookName(request.Webhook.Name)
+	user, webhookID, err := s.resolveUserAndWebhookIDFromName(ctx, request.Webhook.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid webhook name: %v", err)
 	}
+	userID := user.ID
 
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -828,14 +864,15 @@ func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.Upda
 		return nil, status.Errorf(codes.Internal, "failed to update webhook: %v", err)
 	}
 
-	return convertUserWebhookFromUserSetting(updatedWebhook, userID), nil
+	return convertUserWebhookFromUserSetting(updatedWebhook, user), nil
 }
 
 func (s *APIV1Service) DeleteUserWebhook(ctx context.Context, request *v1pb.DeleteUserWebhookRequest) (*emptypb.Empty, error) {
-	webhookID, userID, err := parseUserWebhookName(request.Name)
+	user, webhookID, err := s.resolveUserAndWebhookIDFromName(ctx, request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid webhook name: %v", err)
 	}
+	userID := user.ID
 
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -884,26 +921,10 @@ func generateUserWebhookID() string {
 	return hex.EncodeToString(b)
 }
 
-// parseUserWebhookName parses a webhook name and returns the webhook ID and user ID.
-// Format: users/{user}/webhooks/{webhook}.
-func parseUserWebhookName(name string) (string, int32, error) {
-	parts := strings.Split(name, "/")
-	if len(parts) != 4 || parts[0] != "users" || parts[2] != "webhooks" {
-		return "", 0, errors.New("invalid webhook name format")
-	}
-
-	userID, err := strconv.ParseInt(parts[1], 10, 32)
-	if err != nil {
-		return "", 0, errors.New("invalid user ID in webhook name")
-	}
-
-	return parts[3], int32(userID), nil
-}
-
 // convertUserWebhookFromUserSetting converts a storepb webhook to a v1pb UserWebhook.
-func convertUserWebhookFromUserSetting(webhook *storepb.WebhooksUserSetting_Webhook, userID int32) *v1pb.UserWebhook {
+func convertUserWebhookFromUserSetting(webhook *storepb.WebhooksUserSetting_Webhook, user *store.User) *v1pb.UserWebhook {
 	return &v1pb.UserWebhook{
-		Name:        fmt.Sprintf("users/%d/webhooks/%s", userID, webhook.Id),
+		Name:        fmt.Sprintf("%s/webhooks/%s", BuildUserName(user.Username), webhook.Id),
 		Url:         webhook.Url,
 		DisplayName: webhook.Title,
 		// Note: create_time and update_time are not available in the user setting webhook structure
@@ -913,7 +934,7 @@ func convertUserWebhookFromUserSetting(webhook *storepb.WebhooksUserSetting_Webh
 
 func convertUserFromStore(user *store.User) *v1pb.User {
 	userpb := &v1pb.User{
-		Name:        fmt.Sprintf("%s%d", UserNamePrefix, user.ID),
+		Name:        BuildUserName(user.Username),
 		State:       convertStateFromStore(user.RowStatus),
 		CreateTime:  timestamppb.New(time.Unix(user.CreatedTs, 0)),
 		UpdateTime:  timestamppb.New(time.Unix(user.UpdatedTs, 0)),
@@ -972,7 +993,7 @@ func extractImageInfo(dataURI string) (string, string, error) {
 
 // Helper functions for user settings
 
-// ExtractUserIDAndSettingKeyFromName extracts user ID and setting key from resource name.
+// ExtractUserIDAndSettingKeyFromName extracts user ID and setting key from a legacy numeric resource name.
 // e.g., "users/123/settings/general" -> 123, "general".
 func ExtractUserIDAndSettingKeyFromName(name string) (int32, string, error) {
 	// Expected format: users/{user}/settings/{setting}
@@ -1017,12 +1038,12 @@ func convertSettingKeyFromStore(key storepb.UserSetting_Key) string {
 }
 
 // convertUserSettingFromStore converts store UserSetting to API UserSetting.
-func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32, key storepb.UserSetting_Key) *v1pb.UserSetting {
+func convertUserSettingFromStore(storeSetting *storepb.UserSetting, user *store.User, key storepb.UserSetting_Key) *v1pb.UserSetting {
 	if storeSetting == nil {
 		// Return default setting if none exists
 		settingKey := convertSettingKeyFromStore(key)
 		setting := &v1pb.UserSetting{
-			Name: fmt.Sprintf("users/%d/settings/%s", userID, settingKey),
+			Name: fmt.Sprintf("%s/settings/%s", BuildUserName(user.Username), settingKey),
 		}
 
 		switch key {
@@ -1043,7 +1064,7 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32
 
 	settingKey := convertSettingKeyFromStore(storeSetting.Key)
 	setting := &v1pb.UserSetting{
-		Name: fmt.Sprintf("users/%d/settings/%s", userID, settingKey),
+		Name: fmt.Sprintf("%s/settings/%s", BuildUserName(user.Username), settingKey),
 	}
 
 	switch storeSetting.Key {
@@ -1063,13 +1084,13 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, userID int32
 		}
 	case storepb.UserSetting_WEBHOOKS:
 		webhooks := storeSetting.GetWebhooks()
-		apiWebhooks := make([]*v1pb.UserWebhook, 0, len(webhooks.Webhooks))
-		for _, webhook := range webhooks.Webhooks {
-			apiWebhook := &v1pb.UserWebhook{
-				Name:        fmt.Sprintf("users/%d/webhooks/%s", userID, webhook.Id),
-				Url:         webhook.Url,
-				DisplayName: webhook.Title,
-			}
+			apiWebhooks := make([]*v1pb.UserWebhook, 0, len(webhooks.Webhooks))
+			for _, webhook := range webhooks.Webhooks {
+				apiWebhook := &v1pb.UserWebhook{
+					Name:        fmt.Sprintf("%s/webhooks/%s", BuildUserName(user.Username), webhook.Id),
+					Url:         webhook.Url,
+					DisplayName: webhook.Title,
+				}
 			apiWebhooks = append(apiWebhooks, apiWebhook)
 		}
 		setting.Value = &v1pb.UserSetting_WebhooksSetting_{
@@ -1240,10 +1261,11 @@ func extractUsernameFromComparison(left, right ast.Expr) (string, bool) {
 // Notifications are backed by the inbox storage layer and represent activities
 // that require user attention (e.g., memo comments).
 func (s *APIV1Service) ListUserNotifications(ctx context.Context, request *v1pb.ListUserNotificationsRequest) (*v1pb.ListUserNotificationsResponse, error) {
-	userID, err := ExtractUserIDFromName(request.Parent)
+	user, err := s.resolveUserFromName(ctx, request.Parent)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
+	userID := user.ID
 
 	// Verify the requesting user has permission to view these notifications
 	currentUser, err := s.fetchCurrentUser(ctx)
@@ -1290,7 +1312,7 @@ func (s *APIV1Service) UpdateUserNotification(ctx context.Context, request *v1pb
 		return nil, status.Errorf(codes.InvalidArgument, "notification is required")
 	}
 
-	notificationID, err := ExtractNotificationIDFromName(request.Notification.Name)
+	user, notificationID, err := s.resolveUserAndNotificationIDFromName(ctx, request.Notification.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid notification name: %v", err)
 	}
@@ -1302,6 +1324,9 @@ func (s *APIV1Service) UpdateUserNotification(ctx context.Context, request *v1pb
 
 	if currentUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+	if currentUser.ID != user.ID {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 	// Verify ownership before updating
 	inboxes, err := s.Store.ListInboxes(ctx, &store.FindInbox{
@@ -1358,7 +1383,7 @@ func (s *APIV1Service) UpdateUserNotification(ctx context.Context, request *v1pb
 // DeleteUserNotification permanently deletes a notification.
 // Only the notification owner can delete their notifications.
 func (s *APIV1Service) DeleteUserNotification(ctx context.Context, request *v1pb.DeleteUserNotificationRequest) (*emptypb.Empty, error) {
-	notificationID, err := ExtractNotificationIDFromName(request.Name)
+	user, notificationID, err := s.resolveUserAndNotificationIDFromName(ctx, request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid notification name: %v", err)
 	}
@@ -1370,6 +1395,9 @@ func (s *APIV1Service) DeleteUserNotification(ctx context.Context, request *v1pb
 
 	if currentUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+	if currentUser.ID != user.ID {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 	// Verify ownership before deletion
 	inboxes, err := s.Store.ListInboxes(ctx, &store.FindInbox{
@@ -1398,9 +1426,24 @@ func (s *APIV1Service) DeleteUserNotification(ctx context.Context, request *v1pb
 // convertInboxToUserNotification converts a storage-layer inbox to an API notification.
 // This handles the mapping between the internal inbox representation and the public API.
 func (s *APIV1Service) convertInboxToUserNotification(ctx context.Context, inbox *store.Inbox) (*v1pb.UserNotification, error) {
+	receiver, err := s.Store.GetUser(ctx, &store.FindUser{ID: &inbox.ReceiverID})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get notification receiver: %v", err)
+	}
+	if receiver == nil {
+		return nil, status.Errorf(codes.NotFound, "notification receiver not found")
+	}
+	sender, err := s.Store.GetUser(ctx, &store.FindUser{ID: &inbox.SenderID})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get notification sender: %v", err)
+	}
+	if sender == nil {
+		return nil, status.Errorf(codes.NotFound, "notification sender not found")
+	}
+
 	notification := &v1pb.UserNotification{
-		Name:       fmt.Sprintf("users/%d/notifications/%d", inbox.ReceiverID, inbox.ID),
-		Sender:     fmt.Sprintf("%s%d", UserNamePrefix, inbox.SenderID),
+		Name:       fmt.Sprintf("%s/notifications/%d", BuildUserName(receiver.Username), inbox.ID),
+		Sender:     BuildUserName(sender.Username),
 		CreateTime: timestamppb.New(time.Unix(inbox.CreatedTs, 0)),
 	}
 

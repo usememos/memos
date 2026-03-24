@@ -77,15 +77,13 @@ func ExtractUserIDFromName(name string) (int32, error) {
 	return id, nil
 }
 
-// extractUserIdentifierFromName extracts the identifier (ID or username) from a user resource name.
-// Supports: "users/101" or "users/steven"
-// Returns the identifier string (e.g., "101" or "steven").
+// extractUserIdentifierFromName extracts the username token from a user resource name.
 func extractUserIdentifierFromName(name string) string {
-	tokens, err := GetNameParentTokens(name, UserNamePrefix)
-	if err != nil || len(tokens) == 0 {
+	username, err := ExtractUsernameFromName(name)
+	if err != nil {
 		return ""
 	}
-	return tokens[0]
+	return username
 }
 
 // ExtractMemoUIDFromName returns the memo UID from a resource name.

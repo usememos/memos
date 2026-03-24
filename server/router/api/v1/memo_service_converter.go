@@ -24,10 +24,17 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 	}
 
 	name := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
+	creator, err := s.Store.GetUser(ctx, &store.FindUser{ID: &memo.CreatorID})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get memo creator")
+	}
+	if creator == nil {
+		return nil, errors.New("memo creator not found")
+	}
 	memoMessage := &v1pb.Memo{
 		Name:        name,
 		State:       convertStateFromStore(memo.RowStatus),
-		Creator:     fmt.Sprintf("%s%d", UserNamePrefix, memo.CreatorID),
+		Creator:     BuildUserName(creator.Username),
 		CreateTime:  timestamppb.New(time.Unix(memo.CreatedTs, 0)),
 		UpdateTime:  timestamppb.New(time.Unix(memo.UpdatedTs, 0)),
 		DisplayTime: timestamppb.New(time.Unix(displayTs, 0)),
@@ -48,7 +55,10 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 
 	memoMessage.Reactions = []*v1pb.Reaction{}
 	for _, reaction := range reactions {
-		reactionResponse := convertReactionFromStore(reaction)
+		reactionResponse, err := s.convertReactionFromStore(ctx, reaction)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to convert reaction")
+		}
 		memoMessage.Reactions = append(memoMessage.Reactions, reactionResponse)
 	}
 

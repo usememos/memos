@@ -19,10 +19,8 @@ service UserService {
     option (google.api.http) = {get: "/api/v1/users"};
   }
 
-  // GetUser gets a user by ID or username.
-  // Supports both numeric IDs and username strings:
-  //   - users/{id}       (e.g., users/101)
-  //   - users/{username} (e.g., users/steven)
+  // GetUser gets a user by username.
+  // Format: users/{username} (e.g., users/steven)
   rpc GetUser(GetUserRequest) returns (User) {
     option (google.api.http) = {get: "/api/v1/{name=users/*}"};
     option (google.api.method_signature) = "name";
@@ -246,10 +244,7 @@ message ListUsersResponse {
 
 message GetUserRequest {
   // Required. The resource name of the user.
-  // Supports both numeric IDs and username strings:
-  //   - users/{id}       (e.g., users/101)
-  //   - users/{username} (e.g., users/steven)
-  // Format: users/{id_or_username}
+  // Format: users/{username}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/User"}
@@ -368,8 +363,8 @@ message UserSetting {
   };
 
   // The name of the user setting.
-  // Format: users/{user}/settings/{setting}, {setting} is the key for the setting.
-  // For example, "users/123/settings/GENERAL" for general settings.
+  // Format: users/{username}/settings/{setting}, {setting} is the key for the setting.
+  // For example, "users/steven/settings/GENERAL" for general settings.
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
   oneof value {

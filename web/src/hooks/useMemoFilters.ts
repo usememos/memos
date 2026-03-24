@@ -2,12 +2,8 @@ import { useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { buildMemoCreatorFilter } from "@/helpers/resource-names";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
-
-const extractUserIdFromName = (name: string): string => {
-  const match = name.match(/users\/(\d+)/);
-  return match ? match[1] : "";
-};
 
 const getVisibilityName = (visibility: Visibility): string => {
   switch (visibility) {
@@ -53,7 +49,10 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
 
     // Add creator filter if provided
     if (creatorName) {
-      conditions.push(`creator_id == ${extractUserIdFromName(creatorName)}`);
+      const creatorFilter = buildMemoCreatorFilter(creatorName);
+      if (creatorFilter) {
+        conditions.push(creatorFilter);
+      }
     }
 
     // Add shortcut filter if enabled and selected

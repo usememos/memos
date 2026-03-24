@@ -20,7 +20,6 @@ import (
 	"golang.org/x/sync/semaphore"
 
 	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/plugin/storage/s3"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/auth"
@@ -154,7 +153,7 @@ func (s *FileServerService) serveUserAvatar(c *echo.Context) error {
 	ctx := c.Request().Context()
 	identifier := c.Param("identifier")
 
-	user, err := s.getUserByIdentifier(ctx, identifier)
+	user, err := s.getUserByUsername(ctx, identifier)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get user").Wrap(err)
 	}
@@ -530,11 +529,8 @@ func (s *FileServerService) getCurrentUser(ctx context.Context, c *echo.Context)
 	return s.authenticator.AuthenticateToUser(ctx, authHeader, cookieHeader)
 }
 
-// getUserByIdentifier finds a user by either ID or username.
-func (s *FileServerService) getUserByIdentifier(ctx context.Context, identifier string) (*store.User, error) {
-	if userID, err := util.ConvertStringToInt32(identifier); err == nil {
-		return s.Store.GetUser(ctx, &store.FindUser{ID: &userID})
-	}
+// getUserByUsername finds a user by username only.
+func (s *FileServerService) getUserByUsername(ctx context.Context, identifier string) (*store.User, error) {
 	return s.Store.GetUser(ctx, &store.FindUser{Username: &identifier})
 }
 

@@ -185,6 +185,32 @@ func TestMemoFilterPinnedPredicate(t *testing.T) {
 }
 
 // =============================================================================
+// Creator Field Tests
+// Schema: creator (string resource name), creator_id (int, ==, !=)
+// =============================================================================
+
+func TestMemoFilterCreatorEquals(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	user2, err := tc.Store.CreateUser(tc.Ctx, &store.User{
+		Username: "user2",
+		Role:     store.RoleUser,
+		Email:    "user2@example.com",
+		Nickname: "User 2",
+	})
+	require.NoError(t, err)
+
+	tc.CreateMemo(NewMemoBuilder("memo-user1", tc.User.ID).Content("User 1 memo"))
+	tc.CreateMemo(NewMemoBuilder("memo-user2", user2.ID).Content("User 2 memo"))
+
+	memos := tc.ListWithFilter(`creator == "users/` + tc.User.Username + `"`)
+	require.Len(t, memos, 1)
+	require.Equal(t, tc.User.ID, memos[0].CreatorID)
+}
+
+// =============================================================================
 // Creator ID Field Tests
 // Schema: creator_id (int, ==, !=)
 // =============================================================================

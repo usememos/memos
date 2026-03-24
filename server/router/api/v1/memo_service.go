@@ -633,10 +633,14 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create memo relation")
 	}
-	creatorID, err := ExtractUserIDFromName(memoComment.Creator)
+	creator, err := ResolveUserByName(ctx, s.Store, memoComment.Creator)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid memo creator")
 	}
+	if creator == nil {
+		return nil, status.Errorf(codes.NotFound, "memo creator not found")
+	}
+	creatorID := creator.ID
 	if memoComment.Visibility != v1pb.Visibility_PRIVATE && creatorID != relatedMemo.CreatorID {
 		if _, err := s.Store.CreateInbox(ctx, &store.Inbox{
 			SenderID:   creatorID,
@@ -812,10 +816,14 @@ func (s *APIV1Service) DispatchMemoCommentCreatedWebhook(ctx context.Context, co
 }
 
 func (s *APIV1Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *v1pb.Memo, activityType string) error {
-	creatorID, err := ExtractUserIDFromName(memo.Creator)
+	creator, err := ResolveUserByName(ctx, s.Store, memo.Creator)
 	if err != nil {
 		return status.Errorf(codes.InvalidArgument, "invalid memo creator")
 	}
+	if creator == nil {
+		return status.Errorf(codes.NotFound, "memo creator not found")
+	}
+	creatorID := creator.ID
 	webhooks, err := s.Store.GetUserWebhooks(ctx, creatorID)
 	if err != nil {
 		return err
@@ -835,12 +843,8 @@ func (s *APIV1Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *v1p
 }
 
 func convertMemoToWebhookPayload(memo *v1pb.Memo) (*webhook.WebhookRequestPayload, error) {
-	creatorID, err := ExtractUserIDFromName(memo.Creator)
-	if err != nil {
-		return nil, errors.Wrap(err, "invalid memo creator")
-	}
 	return &webhook.WebhookRequestPayload{
-		Creator: fmt.Sprintf("%s%d", UserNamePrefix, creatorID),
+		Creator: memo.Creator,
 		Memo:    memo,
 	}, nil
 }

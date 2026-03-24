@@ -75,7 +75,6 @@ type memoJSON struct {
 func storeMemoToJSON(m *store.Memo) memoJSON {
 	j := memoJSON{
 		Name:       "memos/" + m.UID,
-		Creator:    fmt.Sprintf("users/%d", m.CreatorID),
 		CreateTime: m.CreatedTs,
 		UpdateTime: m.UpdatedTs,
 		Content:    m.Content,
@@ -101,6 +100,27 @@ func storeMemoToJSON(m *store.Memo) memoJSON {
 		j.Parent = "memos/" + *m.ParentUID
 	}
 	return j
+}
+
+func lookupUsername(ctx context.Context, stores *store.Store, userID int32) (string, error) {
+	user, err := stores.GetUser(ctx, &store.FindUser{ID: &userID})
+	if err != nil {
+		return "", errors.Wrapf(err, "failed to get creator user %d", userID)
+	}
+	if user == nil {
+		return "", errors.Errorf("creator user %d not found", userID)
+	}
+	return "users/" + user.Username, nil
+}
+
+func storeMemoToJSONWithStore(ctx context.Context, stores *store.Store, m *store.Memo) (memoJSON, error) {
+	j := storeMemoToJSON(m)
+	creator, err := lookupUsername(ctx, stores, m.CreatorID)
+	if err != nil {
+		return memoJSON{}, err
+	}
+	j.Creator = creator
+	return j, nil
 }
 
 // checkMemoAccess returns an error if the caller cannot read memo.
@@ -289,7 +309,11 @@ func (s *MCPService) handleListMemos(ctx context.Context, req mcp.CallToolReques
 
 	results := make([]memoJSON, len(memos))
 	for i, m := range memos {
-		results[i] = storeMemoToJSON(m)
+		result, err := storeMemoToJSONWithStore(ctx, s.store, m)
+		if err != nil {
+			return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
+		}
+		results[i] = result
 	}
 
 	type listResponse struct {
@@ -322,7 +346,11 @@ func (s *MCPService) handleGetMemo(ctx context.Context, req mcp.CallToolRequest)
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
-	out, err := marshalJSON(storeMemoToJSON(memo))
+	result, err := storeMemoToJSONWithStore(ctx, s.store, memo)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
+	}
+	out, err := marshalJSON(result)
 	if err != nil {
 		return nil, err
 	}
@@ -355,7 +383,11 @@ func (s *MCPService) handleCreateMemo(ctx context.Context, req mcp.CallToolReque
 		return mcp.NewToolResultError(fmt.Sprintf("failed to create memo: %v", err)), nil
 	}
 
-	out, err := marshalJSON(storeMemoToJSON(memo))
+	result, err := storeMemoToJSONWithStore(ctx, s.store, memo)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
+	}
+	out, err := marshalJSON(result)
 	if err != nil {
 		return nil, err
 	}
@@ -419,7 +451,11 @@ func (s *MCPService) handleUpdateMemo(ctx context.Context, req mcp.CallToolReque
 		return mcp.NewToolResultError(fmt.Sprintf("failed to fetch updated memo: %v", err)), nil
 	}
 
-	out, err := marshalJSON(storeMemoToJSON(updated))
+	result, err := storeMemoToJSONWithStore(ctx, s.store, updated)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
+	}
+	out, err := marshalJSON(result)
 	if err != nil {
 		return nil, err
 	}
@@ -481,7 +517,11 @@ func (s *MCPService) handleSearchMemos(ctx context.Context, req mcp.CallToolRequ
 
 	results := make([]memoJSON, len(memos))
 	for i, m := range memos {
-		results[i] = storeMemoToJSON(m)
+		result, err := storeMemoToJSONWithStore(ctx, s.store, m)
+		if err != nil {
+			return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
+		}
+		results[i] = result
 	}
 	out, err := marshalJSON(results)
 	if err != nil {
@@ -535,7 +575,11 @@ func (s *MCPService) handleListMemoComments(ctx context.Context, req mcp.CallToo
 	results := make([]memoJSON, 0, len(memos))
 	for _, m := range memos {
 		if checkMemoAccess(m, userID) == nil {
-			results = append(results, storeMemoToJSON(m))
+			result, err := storeMemoToJSONWithStore(ctx, s.store, m)
+			if err != nil {
+				return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
+			}
+			results = append(results, result)
 		}
 	}
 	out, err := marshalJSON(results)
@@ -591,7 +635,11 @@ func (s *MCPService) handleCreateMemoComment(ctx context.Context, req mcp.CallTo
 		return mcp.NewToolResultError(fmt.Sprintf("failed to link comment: %v", err)), nil
 	}
 
-	out, err := marshalJSON(storeMemoToJSON(comment))
+	result, err := storeMemoToJSONWithStore(ctx, s.store, comment)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
+	}
+	out, err := marshalJSON(result)
 	if err != nil {
 		return nil, err
 	}

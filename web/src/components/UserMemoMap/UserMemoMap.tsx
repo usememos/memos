@@ -8,6 +8,7 @@ import { MapContainer, Marker, Popup, useMap } from "react-leaflet";
 import MarkerClusterGroup from "react-leaflet-cluster";
 import { Link } from "react-router-dom";
 import { defaultMarkerIcon, ThemedTileLayer } from "@/components/map/map-utils";
+import { buildMemoCreatorFilter } from "@/helpers/resource-names";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
@@ -30,11 +31,6 @@ const createClusterCustomIcon = (cluster: ClusterGroup) => {
   });
 };
 
-const extractUserIdFromName = (name: string): string => {
-  const match = name.match(/users\/(\d+)/);
-  return match ? match[1] : "";
-};
-
 const MapFitBounds = ({ memos }: { memos: Memo[] }) => {
   const map = useMap();
 
@@ -52,14 +48,17 @@ const MapFitBounds = ({ memos }: { memos: Memo[] }) => {
 };
 
 const UserMemoMap = ({ creator, className }: Props) => {
-  const creatorId = useMemo(() => extractUserIdFromName(creator), [creator]);
+  const creatorFilter = useMemo(() => buildMemoCreatorFilter(creator), [creator]);
 
-  const { data, isLoading } = useInfiniteMemos({
-    state: State.NORMAL,
-    orderBy: "display_time desc",
-    pageSize: 1000,
-    filter: `creator_id == ${creatorId}`,
-  });
+  const { data, isLoading } = useInfiniteMemos(
+    {
+      state: State.NORMAL,
+      orderBy: "display_time desc",
+      pageSize: 1000,
+      filter: creatorFilter,
+    },
+    { enabled: Boolean(creatorFilter) },
+  );
 
   const memosWithLocation = useMemo(() => data?.pages.flatMap((page) => page.memos).filter((memo) => memo.location) || [], [data]);
 

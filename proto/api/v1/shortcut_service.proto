@@ -58,7 +58,7 @@ message Shortcut {
   };
 
   // The resource name of the shortcut.
-  // Format: users/{user}/shortcuts/{shortcut}
+  // Format: users/{username}/shortcuts/{shortcut}
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
   // The title of the shortcut.
@@ -70,7 +70,7 @@ message Shortcut {
 
 message ListShortcutsRequest {
   // Required. The parent resource where shortcuts are listed.
-  // Format: users/{user}
+  // Format: users/{username}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {child_type: "memos.api.v1/Shortcut"}
@@ -84,7 +84,7 @@ message ListShortcutsResponse {
 
 message GetShortcutRequest {
   // Required. The resource name of the shortcut to retrieve.
-  // Format: users/{user}/shortcuts/{shortcut}
+  // Format: users/{username}/shortcuts/{shortcut}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/Shortcut"}
@@ -93,7 +93,7 @@ message GetShortcutRequest {
 
 message CreateShortcutRequest {
   // Required. The parent resource where this shortcut will be created.
-  // Format: users/{user}
+  // Format: users/{username}
   string parent = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {child_type: "memos.api.v1/Shortcut"}
@@ -116,7 +116,7 @@ message UpdateShortcutRequest {
 
 message DeleteShortcutRequest {
   // Required. The resource name of the shortcut to delete.
-  // Format: users/{user}/shortcuts/{shortcut}
+  // Format: users/{username}/shortcuts/{shortcut}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/Shortcut"}
