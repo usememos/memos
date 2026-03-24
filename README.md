@@ -49,6 +49,14 @@ Open-source, self-hosted note-taking tool built for quick capture. Markdown-nati
   <img src="https://usememos.com/sponsors/ssd-nodes.svg" alt="SSD Nodes" height="72" />
 </a>
 
+<p></p>
+
+[**InstaPods** - Get your app online in seconds](https://instapods.com/) • 👉 *[Deploy Memos in Seconds](https://instapods.com/apps/memos/)*
+  
+<a href="https://instapods.com/" target="_blank" rel="noopener">
+  <img src="https://instapods.com/logo.svg" alt="InstaPods" height="80" />
+</a>
+
 ## Features
 
 - **Instant Capture** — Timeline-first UI. Open, write, done — no folders to navigate.
