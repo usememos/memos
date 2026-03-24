@@ -74,6 +74,8 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
   const handleTableConfirm = useCallback((markdown: string) => {
     editorRef.current?.insertText(markdown);
+    setTableDialogOpen(false);
+    editorRef.current?.focus();
   }, []);
 
   useKeyboard(editorRef, handleSave);
