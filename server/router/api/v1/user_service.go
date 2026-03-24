@@ -1084,13 +1084,13 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, user *store.
 		}
 	case storepb.UserSetting_WEBHOOKS:
 		webhooks := storeSetting.GetWebhooks()
-			apiWebhooks := make([]*v1pb.UserWebhook, 0, len(webhooks.Webhooks))
-			for _, webhook := range webhooks.Webhooks {
-				apiWebhook := &v1pb.UserWebhook{
-					Name:        fmt.Sprintf("%s/webhooks/%s", BuildUserName(user.Username), webhook.Id),
-					Url:         webhook.Url,
-					DisplayName: webhook.Title,
-				}
+		apiWebhooks := make([]*v1pb.UserWebhook, 0, len(webhooks.Webhooks))
+		for _, webhook := range webhooks.Webhooks {
+			apiWebhook := &v1pb.UserWebhook{
+				Name:        fmt.Sprintf("%s/webhooks/%s", BuildUserName(user.Username), webhook.Id),
+				Url:         webhook.Url,
+				DisplayName: webhook.Title,
+			}
 			apiWebhooks = append(apiWebhooks, apiWebhook)
 		}
 		setting.Value = &v1pb.UserSetting_WebhooksSetting_{
