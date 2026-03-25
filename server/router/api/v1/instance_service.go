@@ -450,5 +450,6 @@ func (s *APIV1Service) GetInstanceAdmin(ctx context.Context) (*v1pb.User, error)
 		return nil, nil
 	}
 
-	return convertUserFromStore(user), nil
+	currentUser, _ := s.fetchCurrentUser(ctx)
+	return convertUserFromStore(user, currentUser), nil
 }
