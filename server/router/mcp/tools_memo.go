@@ -113,9 +113,54 @@ func lookupUsername(ctx context.Context, stores *store.Store, userID int32) (str
 	return "users/" + user.Username, nil
 }
 
+func preloadUsernames(ctx context.Context, stores *store.Store, userIDs []int32) (map[int32]string, error) {
+	if len(userIDs) == 0 {
+		return map[int32]string{}, nil
+	}
+
+	uniqueUserIDs := make([]int32, 0, len(userIDs))
+	seenUserIDs := make(map[int32]struct{}, len(userIDs))
+	for _, userID := range userIDs {
+		if _, seen := seenUserIDs[userID]; seen {
+			continue
+		}
+		seenUserIDs[userID] = struct{}{}
+		uniqueUserIDs = append(uniqueUserIDs, userID)
+	}
+
+	users, err := stores.ListUsers(ctx, &store.FindUser{IDList: uniqueUserIDs})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to list creator users")
+	}
+
+	usernamesByID := make(map[int32]string, len(users))
+	for _, user := range users {
+		usernamesByID[user.ID] = "users/" + user.Username
+	}
+	return usernamesByID, nil
+}
+
+func lookupUsernameFromCache(usernamesByID map[int32]string, userID int32) (string, error) {
+	username, ok := usernamesByID[userID]
+	if !ok {
+		return "", errors.Errorf("creator user %d not found", userID)
+	}
+	return username, nil
+}
+
 func storeMemoToJSONWithStore(ctx context.Context, stores *store.Store, m *store.Memo) (memoJSON, error) {
 	j := storeMemoToJSON(m)
 	creator, err := lookupUsername(ctx, stores, m.CreatorID)
+	if err != nil {
+		return memoJSON{}, err
+	}
+	j.Creator = creator
+	return j, nil
+}
+
+func storeMemoToJSONWithUsernames(m *store.Memo, usernamesByID map[int32]string) (memoJSON, error) {
+	j := storeMemoToJSON(m)
+	creator, err := lookupUsernameFromCache(usernamesByID, m.CreatorID)
 	if err != nil {
 		return memoJSON{}, err
 	}
@@ -306,10 +351,18 @@ func (s *MCPService) handleListMemos(ctx context.Context, req mcp.CallToolReques
 	if hasMore {
 		memos = memos[:pageSize]
 	}
+	creatorIDs := make([]int32, 0, len(memos))
+	for _, memo := range memos {
+		creatorIDs = append(creatorIDs, memo.CreatorID)
+	}
+	usernamesByID, err := preloadUsernames(ctx, s.store, creatorIDs)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to preload memo creators: %v", err)), nil
+	}
 
 	results := make([]memoJSON, len(memos))
 	for i, m := range memos {
-		result, err := storeMemoToJSONWithStore(ctx, s.store, m)
+		result, err := storeMemoToJSONWithUsernames(m, usernamesByID)
 		if err != nil {
 			return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
 		}
@@ -514,10 +567,18 @@ func (s *MCPService) handleSearchMemos(ctx context.Context, req mcp.CallToolRequ
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to search memos: %v", err)), nil
 	}
+	creatorIDs := make([]int32, 0, len(memos))
+	for _, memo := range memos {
+		creatorIDs = append(creatorIDs, memo.CreatorID)
+	}
+	usernamesByID, err := preloadUsernames(ctx, s.store, creatorIDs)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to preload memo creators: %v", err)), nil
+	}
 
 	results := make([]memoJSON, len(memos))
 	for i, m := range memos {
-		result, err := storeMemoToJSONWithStore(ctx, s.store, m)
+		result, err := storeMemoToJSONWithUsernames(m, usernamesByID)
 		if err != nil {
 			return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
 		}
@@ -571,11 +632,21 @@ func (s *MCPService) handleListMemoComments(ctx context.Context, req mcp.CallToo
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to list comments: %v", err)), nil
 	}
+	creatorIDs := make([]int32, 0, len(memos))
+	for _, memo := range memos {
+		if checkMemoAccess(memo, userID) == nil {
+			creatorIDs = append(creatorIDs, memo.CreatorID)
+		}
+	}
+	usernamesByID, err := preloadUsernames(ctx, s.store, creatorIDs)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to preload memo creators: %v", err)), nil
+	}
 
 	results := make([]memoJSON, 0, len(memos))
 	for _, m := range memos {
 		if checkMemoAccess(m, userID) == nil {
-			result, err := storeMemoToJSONWithStore(ctx, s.store, m)
+			result, err := storeMemoToJSONWithUsernames(m, usernamesByID)
 			if err != nil {
 				return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
 			}

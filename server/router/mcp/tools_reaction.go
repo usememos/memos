@@ -60,10 +60,18 @@ func (s *MCPService) handleListReactions(ctx context.Context, req mcp.CallToolRe
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to list reactions: %v", err)), nil
 	}
+	creatorIDs := make([]int32, 0, len(reactions))
+	for _, reaction := range reactions {
+		creatorIDs = append(creatorIDs, reaction.CreatorID)
+	}
+	usernamesByID, err := preloadUsernames(ctx, s.store, creatorIDs)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to preload reaction creators: %v", err)), nil
+	}
 
 	results := make([]reactionJSON, len(reactions))
 	for i, r := range reactions {
-		creator, err := lookupUsername(ctx, s.store, r.CreatorID)
+		creator, err := lookupUsernameFromCache(usernamesByID, r.CreatorID)
 		if err != nil {
 			return mcp.NewToolResultError(fmt.Sprintf("failed to resolve reaction creator: %v", err)), nil
 		}

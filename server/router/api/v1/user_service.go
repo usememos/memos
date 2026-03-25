@@ -165,6 +165,12 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
+	if user == nil {
+		if request.AllowMissing {
+			return nil, status.Errorf(codes.NotFound, "user not found")
+		}
+		return nil, status.Errorf(codes.NotFound, "user not found")
+	}
 	userID := user.ID
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -177,15 +183,6 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 	// Only allow admin or self to update user.
 	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
-	}
-
-	if user == nil {
-		// Handle allow_missing field
-		if request.AllowMissing {
-			// Could create user if missing, but for now return not found
-			return nil, status.Errorf(codes.NotFound, "user not found")
-		}
-		return nil, status.Errorf(codes.NotFound, "user not found")
 	}
 
 	currentTs := time.Now().Unix()
@@ -271,6 +268,9 @@ func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserR
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "user not found")
+	}
 	userID := user.ID
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -281,10 +281,6 @@ func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserR
 	}
 	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
-	}
-
-	if user == nil {
-		return nil, status.Errorf(codes.NotFound, "user not found")
 	}
 
 	if err := s.Store.DeleteUser(ctx, &store.DeleteUser{
@@ -991,26 +987,6 @@ func extractImageInfo(dataURI string) (string, string, error) {
 	return imageType, base64Data, nil
 }
 
-// Helper functions for user settings
-
-// ExtractUserIDAndSettingKeyFromName extracts user ID and setting key from a legacy numeric resource name.
-// e.g., "users/123/settings/general" -> 123, "general".
-func ExtractUserIDAndSettingKeyFromName(name string) (int32, string, error) {
-	// Expected format: users/{user}/settings/{setting}
-	parts := strings.Split(name, "/")
-	if len(parts) != 4 || parts[0] != "users" || parts[2] != "settings" {
-		return 0, "", errors.Errorf("invalid resource name format: %s", name)
-	}
-
-	userID, err := util.ConvertStringToInt32(parts[1])
-	if err != nil {
-		return 0, "", errors.Errorf("invalid user ID: %s", parts[1])
-	}
-
-	settingKey := parts[3]
-	return userID, settingKey, nil
-}
-
 // convertSettingKeyToStore converts API setting key to store enum.
 func convertSettingKeyToStore(key string) (storepb.UserSetting_Key, error) {
 	switch key {
@@ -1084,14 +1060,17 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, user *store.
 		}
 	case storepb.UserSetting_WEBHOOKS:
 		webhooks := storeSetting.GetWebhooks()
-		apiWebhooks := make([]*v1pb.UserWebhook, 0, len(webhooks.Webhooks))
-		for _, webhook := range webhooks.Webhooks {
-			apiWebhook := &v1pb.UserWebhook{
-				Name:        fmt.Sprintf("%s/webhooks/%s", BuildUserName(user.Username), webhook.Id),
-				Url:         webhook.Url,
-				DisplayName: webhook.Title,
+		apiWebhooks := make([]*v1pb.UserWebhook, 0)
+		if webhooks != nil {
+			apiWebhooks = make([]*v1pb.UserWebhook, 0, len(webhooks.Webhooks))
+			for _, webhook := range webhooks.Webhooks {
+				apiWebhook := &v1pb.UserWebhook{
+					Name:        fmt.Sprintf("%s/webhooks/%s", BuildUserName(user.Username), webhook.Id),
+					Url:         webhook.Url,
+					DisplayName: webhook.Title,
+				}
+				apiWebhooks = append(apiWebhooks, apiWebhook)
 			}
-			apiWebhooks = append(apiWebhooks, apiWebhook)
 		}
 		setting.Value = &v1pb.UserSetting_WebhooksSetting_{
 			WebhooksSetting: &v1pb.UserSetting_WebhooksSetting{
@@ -1290,10 +1269,19 @@ func (s *APIV1Service) ListUserNotifications(ctx context.Context, request *v1pb.
 		return nil, status.Errorf(codes.Internal, "failed to list inboxes: %v", err)
 	}
 
-	// Convert storage layer inboxes to API notifications
+	// Convert storage layer inboxes to API notifications.
+	userIDs := make([]int32, 0, len(inboxes)*2)
+	for _, inbox := range inboxes {
+		userIDs = append(userIDs, inbox.ReceiverID, inbox.SenderID)
+	}
+	usersByID, err := s.listUsersByID(ctx, userIDs)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list notification users: %v", err)
+	}
+
 	notifications := []*v1pb.UserNotification{}
 	for _, inbox := range inboxes {
-		notification, err := s.convertInboxToUserNotification(ctx, inbox)
+		notification, err := s.convertInboxToUserNotificationWithUsers(ctx, inbox, usersByID)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to convert inbox: %v", err)
 		}
@@ -1426,17 +1414,19 @@ func (s *APIV1Service) DeleteUserNotification(ctx context.Context, request *v1pb
 // convertInboxToUserNotification converts a storage-layer inbox to an API notification.
 // This handles the mapping between the internal inbox representation and the public API.
 func (s *APIV1Service) convertInboxToUserNotification(ctx context.Context, inbox *store.Inbox) (*v1pb.UserNotification, error) {
-	receiver, err := s.Store.GetUser(ctx, &store.FindUser{ID: &inbox.ReceiverID})
+	usersByID, err := s.listUsersByID(ctx, []int32{inbox.ReceiverID, inbox.SenderID})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get notification receiver: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to list notification users: %v", err)
 	}
+	return s.convertInboxToUserNotificationWithUsers(ctx, inbox, usersByID)
+}
+
+func (s *APIV1Service) convertInboxToUserNotificationWithUsers(ctx context.Context, inbox *store.Inbox, usersByID map[int32]*store.User) (*v1pb.UserNotification, error) {
+	receiver := usersByID[inbox.ReceiverID]
 	if receiver == nil {
 		return nil, status.Errorf(codes.NotFound, "notification receiver not found")
 	}
-	sender, err := s.Store.GetUser(ctx, &store.FindUser{ID: &inbox.SenderID})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get notification sender: %v", err)
-	}
+	sender := usersByID[inbox.SenderID]
 	if sender == nil {
 		return nil, status.Errorf(codes.NotFound, "notification sender not found")
 	}
@@ -1512,21 +1502,4 @@ func (s *APIV1Service) convertUserNotificationPayload(ctx context.Context, messa
 		Memo:        fmt.Sprintf("%s%s", MemoNamePrefix, commentMemo.UID),
 		RelatedMemo: fmt.Sprintf("%s%s", MemoNamePrefix, relatedMemo.UID),
 	}, nil
-}
-
-// ExtractNotificationIDFromName extracts the notification ID from a resource name.
-// Expected format: users/{user_id}/notifications/{notification_id}.
-func ExtractNotificationIDFromName(name string) (int32, error) {
-	pattern := regexp.MustCompile(`^users/(\d+)/notifications/(\d+)$`)
-	matches := pattern.FindStringSubmatch(name)
-	if len(matches) != 3 {
-		return 0, errors.Errorf("invalid notification name: %s", name)
-	}
-
-	id, err := strconv.Atoi(matches[2])
-	if err != nil {
-		return 0, errors.Errorf("invalid notification id: %s", matches[2])
-	}
-
-	return int32(id), nil
 }

@@ -41,5 +41,9 @@ func ResolveUserByName(ctx context.Context, stores *store.Store, name string) (*
 	if err != nil {
 		return nil, err
 	}
-	return stores.GetUser(ctx, &store.FindUser{Username: &username})
+	user, err := stores.GetUser(ctx, &store.FindUser{Username: &username})
+	if err != nil {
+		return nil, errors.Wrap(err, "resolve user by name: GetUser failed")
+	}
+	return user, nil
 }

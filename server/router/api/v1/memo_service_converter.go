@@ -14,6 +14,14 @@ import (
 )
 
 func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Memo, reactions []*store.Reaction, attachments []*store.Attachment, relations []*v1pb.MemoRelation) (*v1pb.Memo, error) {
+	creatorMap, err := s.listUsersByID(ctx, []int32{memo.CreatorID})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to list memo creators")
+	}
+	return s.convertMemoFromStoreWithCreators(ctx, memo, reactions, attachments, relations, creatorMap)
+}
+
+func (s *APIV1Service) convertMemoFromStoreWithCreators(ctx context.Context, memo *store.Memo, reactions []*store.Reaction, attachments []*store.Attachment, relations []*v1pb.MemoRelation, creatorMap map[int32]*store.User) (*v1pb.Memo, error) {
 	displayTs := memo.CreatedTs
 	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
 	if err != nil {
@@ -24,10 +32,7 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 	}
 
 	name := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
-	creator, err := s.Store.GetUser(ctx, &store.FindUser{ID: &memo.CreatorID})
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get memo creator")
-	}
+	creator := creatorMap[memo.CreatorID]
 	if creator == nil {
 		return nil, errors.New("memo creator not found")
 	}

@@ -357,7 +357,7 @@ message ListAllUserStatsResponse {
 message UserSetting {
   option (google.api.resource) = {
     type: "memos.api.v1/UserSetting"
-    pattern: "users/{user}/settings/{setting}"
+    pattern: "users/{username}/settings/{setting}"
     singular: "userSetting"
     plural: "userSettings"
   };

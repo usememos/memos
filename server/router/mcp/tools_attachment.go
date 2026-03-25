@@ -57,6 +57,37 @@ func storeAttachmentToJSON(ctx context.Context, stores *store.Store, a *store.At
 	return j, nil
 }
 
+func storeAttachmentToJSONWithUsernames(a *store.Attachment, usernamesByID map[int32]string) (attachmentJSON, error) {
+	creator, err := lookupUsernameFromCache(usernamesByID, a.CreatorID)
+	if err != nil {
+		return attachmentJSON{}, err
+	}
+	j := attachmentJSON{
+		Name:       "attachments/" + a.UID,
+		Creator:    creator,
+		CreateTime: a.CreatedTs,
+		Filename:   a.Filename,
+		Type:       a.Type,
+		Size:       a.Size,
+	}
+	switch a.StorageType {
+	case storepb.AttachmentStorageType_LOCAL:
+		j.StorageType = "LOCAL"
+	case storepb.AttachmentStorageType_S3:
+		j.StorageType = "S3"
+		j.ExternalLink = a.Reference
+	case storepb.AttachmentStorageType_EXTERNAL:
+		j.StorageType = "EXTERNAL"
+		j.ExternalLink = a.Reference
+	default:
+		j.StorageType = "DATABASE"
+	}
+	if a.MemoUID != nil && *a.MemoUID != "" {
+		j.Memo = "memos/" + *a.MemoUID
+	}
+	return j, nil
+}
+
 func parseAttachmentUID(name string) (string, error) {
 	uid, ok := strings.CutPrefix(name, "attachments/")
 	if !ok || uid == "" {
@@ -140,10 +171,18 @@ func (s *MCPService) handleListAttachments(ctx context.Context, req mcp.CallTool
 	if hasMore {
 		attachments = attachments[:pageSize]
 	}
+	creatorIDs := make([]int32, 0, len(attachments))
+	for _, attachment := range attachments {
+		creatorIDs = append(creatorIDs, attachment.CreatorID)
+	}
+	usernamesByID, err := preloadUsernames(ctx, s.store, creatorIDs)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to preload attachment creators: %v", err)), nil
+	}
 
 	results := make([]attachmentJSON, len(attachments))
 	for i, a := range attachments {
-		result, err := storeAttachmentToJSON(ctx, s.store, a)
+		result, err := storeAttachmentToJSONWithUsernames(a, usernamesByID)
 		if err != nil {
 			return mcp.NewToolResultError(fmt.Sprintf("failed to resolve attachment creator: %v", err)), nil
 		}

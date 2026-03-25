@@ -52,7 +52,7 @@ service ShortcutService {
 message Shortcut {
   option (google.api.resource) = {
     type: "memos.api.v1/Shortcut"
-    pattern: "users/{user}/shortcuts/{shortcut}"
+    pattern: "users/{username}/shortcuts/{shortcut}"
     singular: "shortcut"
     plural: "shortcuts"
   };

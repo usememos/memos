@@ -23,6 +23,8 @@ const getShortcutId = (name: string): string => {
   return parts.length === 4 ? parts[3] : "";
 };
 
+const escapeFilterValue = (value: string): string => JSON.stringify(value);
+
 export interface UseMemoFiltersOptions {
   creatorName?: string;
   includeShortcuts?: boolean;
@@ -63,9 +65,9 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
     // Add active filters from context
     for (const filter of filters) {
       if (filter.factor === "contentSearch") {
-        conditions.push(`content.contains("${filter.value}")`);
+        conditions.push(`content.contains(${escapeFilterValue(filter.value)})`);
       } else if (filter.factor === "tagSearch") {
-        conditions.push(`tag in ["${filter.value}"]`);
+        conditions.push(`tag in [${escapeFilterValue(filter.value)}]`);
       } else if (filter.factor === "pinned") {
         if (includePinned) {
           conditions.push(`pinned`);

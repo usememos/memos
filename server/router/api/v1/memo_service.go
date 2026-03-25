@@ -278,6 +278,14 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to batch load memo relations")
 	}
+	creatorIDs := make([]int32, 0, len(memos))
+	for _, memo := range memos {
+		creatorIDs = append(creatorIDs, memo.CreatorID)
+	}
+	creatorMap, err := s.listUsersByID(ctx, creatorIDs)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list memo creators: %v", err)
+	}
 
 	for _, memo := range memos {
 		memoName := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
@@ -285,7 +293,7 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		attachments := attachmentMap[memo.ID]
 		relations := relationMap[memo.ID]
 
-		memoMessage, err := s.convertMemoFromStore(ctx, memo, reactions, attachments, relations)
+		memoMessage, err := s.convertMemoFromStoreWithCreators(ctx, memo, reactions, attachments, relations, creatorMap)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to convert memo")
 		}
@@ -753,6 +761,14 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to batch load memo relations")
 	}
+	creatorIDs := make([]int32, 0, len(memos))
+	for _, memo := range memos {
+		creatorIDs = append(creatorIDs, memo.CreatorID)
+	}
+	creatorMap, err := s.listUsersByID(ctx, creatorIDs)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list memo creators: %v", err)
+	}
 
 	var memosResponse []*v1pb.Memo
 	for _, m := range memos {
@@ -761,7 +777,7 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 		attachments := attachmentMap[m.ID]
 		relations := relationMap[m.ID]
 
-		memoMessage, err := s.convertMemoFromStore(ctx, m, reactions, attachments, relations)
+		memoMessage, err := s.convertMemoFromStoreWithCreators(ctx, m, reactions, attachments, relations, creatorMap)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to convert memo")
 		}
