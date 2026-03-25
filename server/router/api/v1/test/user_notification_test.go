@@ -43,12 +43,14 @@ func TestListUserNotificationsIncludesMemoCommentPayload(t *testing.T) {
 	require.NoError(t, err)
 
 	resp, err := ts.Service.ListUserNotifications(ownerCtx, &apiv1.ListUserNotificationsRequest{
-		Parent: fmt.Sprintf("users/%d", owner.ID),
+		Parent: fmt.Sprintf("users/%s", owner.Username),
 	})
 	require.NoError(t, err)
 	require.Len(t, resp.Notifications, 1)
 
 	notification := resp.Notifications[0]
+	require.Contains(t, notification.Name, fmt.Sprintf("users/%s/notifications/", owner.Username))
+	require.Equal(t, fmt.Sprintf("users/%s", commenter.Username), notification.Sender)
 	require.Equal(t, apiv1.UserNotification_MEMO_COMMENT, notification.Type)
 	require.NotNil(t, notification.GetMemoComment())
 	require.Equal(t, comment.Name, notification.GetMemoComment().Memo)
@@ -134,10 +136,26 @@ func TestListUserNotificationsOmitsPayloadWhenMemosDeleted(t *testing.T) {
 	require.NoError(t, err)
 
 	resp, err := ts.Service.ListUserNotifications(ownerCtx, &apiv1.ListUserNotificationsRequest{
-		Parent: fmt.Sprintf("users/%d", owner.ID),
+		Parent: fmt.Sprintf("users/%s", owner.Username),
 	})
 	require.NoError(t, err)
 	require.Len(t, resp.Notifications, 1)
 	require.Equal(t, apiv1.UserNotification_MEMO_COMMENT, resp.Notifications[0].Type)
 	require.Nil(t, resp.Notifications[0].GetMemoComment())
+}
+
+func TestListUserNotificationsRejectsNumericParent(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	owner, err := ts.CreateRegularUser(ctx, "notification-owner")
+	require.NoError(t, err)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+
+	_, err = ts.Service.ListUserNotifications(ownerCtx, &apiv1.ListUserNotificationsRequest{
+		Parent: "users/1",
+	})
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "invalid user name")
 }

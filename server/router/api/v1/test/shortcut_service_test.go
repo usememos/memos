@@ -27,7 +27,7 @@ func TestListShortcuts(t *testing.T) {
 
 		// List shortcuts (should be empty initially)
 		req := &v1pb.ListShortcutsRequest{
-			Parent: fmt.Sprintf("users/%d", user.ID),
+			Parent: fmt.Sprintf("users/%s", user.Username),
 		}
 
 		resp, err := ts.Service.ListShortcuts(userCtx, req)
@@ -50,7 +50,7 @@ func TestListShortcuts(t *testing.T) {
 		userCtx := ts.CreateUserContext(ctx, user1.ID)
 
 		req := &v1pb.ListShortcutsRequest{
-			Parent: fmt.Sprintf("users/%d", user2.ID),
+			Parent: fmt.Sprintf("users/%s", user2.Username),
 		}
 
 		_, err = ts.Service.ListShortcuts(userCtx, req)
@@ -82,13 +82,32 @@ func TestListShortcuts(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
+		_, err := ts.CreateRegularUser(ctx, "testuser")
+		require.NoError(t, err)
+
 		req := &v1pb.ListShortcutsRequest{
-			Parent: "users/1",
+			Parent: "users/testuser",
 		}
 
-		_, err := ts.Service.ListShortcuts(ctx, req)
+		_, err = ts.Service.ListShortcuts(ctx, req)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "permission denied")
+	})
+
+	t.Run("ListShortcuts rejects numeric parent", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "testuser")
+		require.NoError(t, err)
+
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+
+		_, err = ts.Service.ListShortcuts(userCtx, &v1pb.ListShortcutsRequest{
+			Parent: "users/1",
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "invalid user name")
 	})
 }
 
@@ -108,7 +127,7 @@ func TestGetShortcut(t *testing.T) {
 
 		// First create a shortcut
 		createReq := &v1pb.CreateShortcutRequest{
-			Parent: fmt.Sprintf("users/%d", user.ID),
+			Parent: fmt.Sprintf("users/%s", user.Username),
 			Shortcut: &v1pb.Shortcut{
 				Title:  "Test Shortcut",
 				Filter: "tag in [\"test\"]",
@@ -144,7 +163,7 @@ func TestGetShortcut(t *testing.T) {
 		// Create shortcut as user1
 		user1Ctx := ts.CreateUserContext(ctx, user1.ID)
 		createReq := &v1pb.CreateShortcutRequest{
-			Parent: fmt.Sprintf("users/%d", user1.ID),
+			Parent: fmt.Sprintf("users/%s", user1.Username),
 			Shortcut: &v1pb.Shortcut{
 				Title:  "User1 Shortcut",
 				Filter: "tag in [\"user1\"]",
@@ -197,7 +216,7 @@ func TestGetShortcut(t *testing.T) {
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.GetShortcutRequest{
-			Name: fmt.Sprintf("users/%d", user.ID) + "/shortcuts/nonexistent",
+			Name: fmt.Sprintf("users/%s", user.Username) + "/shortcuts/nonexistent",
 		}
 
 		_, err = ts.Service.GetShortcut(userCtx, req)
@@ -221,7 +240,7 @@ func TestCreateShortcut(t *testing.T) {
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.CreateShortcutRequest{
-			Parent: fmt.Sprintf("users/%d", user.ID),
+			Parent: fmt.Sprintf("users/%s", user.Username),
 			Shortcut: &v1pb.Shortcut{
 				Title:  "My Shortcut",
 				Filter: "tag in [\"important\"]",
@@ -233,11 +252,11 @@ func TestCreateShortcut(t *testing.T) {
 		require.NotNil(t, resp)
 		require.Equal(t, "My Shortcut", resp.Title)
 		require.Equal(t, "tag in [\"important\"]", resp.Filter)
-		require.Contains(t, resp.Name, fmt.Sprintf("users/%d/shortcuts/", user.ID))
+		require.Contains(t, resp.Name, fmt.Sprintf("users/%s/shortcuts/", user.Username))
 
 		// Verify the shortcut was created by listing
 		listReq := &v1pb.ListShortcutsRequest{
-			Parent: fmt.Sprintf("users/%d", user.ID),
+			Parent: fmt.Sprintf("users/%s", user.Username),
 		}
 
 		listResp, err := ts.Service.ListShortcuts(userCtx, listReq)
@@ -260,7 +279,7 @@ func TestCreateShortcut(t *testing.T) {
 		userCtx := ts.CreateUserContext(ctx, user1.ID)
 
 		req := &v1pb.CreateShortcutRequest{
-			Parent: fmt.Sprintf("users/%d", user2.ID),
+			Parent: fmt.Sprintf("users/%s", user2.Username),
 			Shortcut: &v1pb.Shortcut{
 				Title:  "Forbidden Shortcut",
 				Filter: "tag in [\"forbidden\"]",
@@ -308,7 +327,7 @@ func TestCreateShortcut(t *testing.T) {
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.CreateShortcutRequest{
-			Parent: fmt.Sprintf("users/%d", user.ID),
+			Parent: fmt.Sprintf("users/%s", user.Username),
 			Shortcut: &v1pb.Shortcut{
 				Title:  "Invalid Filter Shortcut",
 				Filter: "invalid||filter))syntax",
@@ -332,7 +351,7 @@ func TestCreateShortcut(t *testing.T) {
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.CreateShortcutRequest{
-			Parent: fmt.Sprintf("users/%d", user.ID),
+			Parent: fmt.Sprintf("users/%s", user.Username),
 			Shortcut: &v1pb.Shortcut{
 				Filter: "tag in [\"test\"]",
 			},
@@ -360,7 +379,7 @@ func TestUpdateShortcut(t *testing.T) {
 
 		// Create a shortcut first
 		createReq := &v1pb.CreateShortcutRequest{
-			Parent: fmt.Sprintf("users/%d", user.ID),
+			Parent: fmt.Sprintf("users/%s", user.Username),
 			Shortcut: &v1pb.Shortcut{
 				Title:  "Original Title",
 				Filter: "tag in [\"original\"]",
@@ -403,7 +422,7 @@ func TestUpdateShortcut(t *testing.T) {
 		// Create shortcut as user1
 		user1Ctx := ts.CreateUserContext(ctx, user1.ID)
 		createReq := &v1pb.CreateShortcutRequest{
-			Parent: fmt.Sprintf("users/%d", user1.ID),
+			Parent: fmt.Sprintf("users/%s", user1.Username),
 			Shortcut: &v1pb.Shortcut{
 				Title:  "User1 Shortcut",
 				Filter: "tag in [\"user1\"]",
@@ -442,7 +461,7 @@ func TestUpdateShortcut(t *testing.T) {
 
 		req := &v1pb.UpdateShortcutRequest{
 			Shortcut: &v1pb.Shortcut{
-				Name:  fmt.Sprintf("users/%d/shortcuts/test", user.ID),
+				Name:  fmt.Sprintf("users/%s/shortcuts/test", user.Username),
 				Title: "Updated Title",
 			},
 		}
@@ -484,7 +503,7 @@ func TestUpdateShortcut(t *testing.T) {
 
 		// Create a shortcut first
 		createReq := &v1pb.CreateShortcutRequest{
-			Parent: fmt.Sprintf("users/%d", user.ID),
+			Parent: fmt.Sprintf("users/%s", user.Username),
 			Shortcut: &v1pb.Shortcut{
 				Title:  "Test Shortcut",
 				Filter: "tag in [\"test\"]",
@@ -527,7 +546,7 @@ func TestDeleteShortcut(t *testing.T) {
 
 		// Create a shortcut first
 		createReq := &v1pb.CreateShortcutRequest{
-			Parent: fmt.Sprintf("users/%d", user.ID),
+			Parent: fmt.Sprintf("users/%s", user.Username),
 			Shortcut: &v1pb.Shortcut{
 				Title:  "Shortcut to Delete",
 				Filter: "tag in [\"delete\"]",
@@ -547,7 +566,7 @@ func TestDeleteShortcut(t *testing.T) {
 
 		// Verify deletion by listing shortcuts
 		listReq := &v1pb.ListShortcutsRequest{
-			Parent: fmt.Sprintf("users/%d", user.ID),
+			Parent: fmt.Sprintf("users/%s", user.Username),
 		}
 
 		listResp, err := ts.Service.ListShortcuts(userCtx, listReq)
@@ -577,7 +596,7 @@ func TestDeleteShortcut(t *testing.T) {
 		// Create shortcut as user1
 		user1Ctx := ts.CreateUserContext(ctx, user1.ID)
 		createReq := &v1pb.CreateShortcutRequest{
-			Parent: fmt.Sprintf("users/%d", user1.ID),
+			Parent: fmt.Sprintf("users/%s", user1.Username),
 			Shortcut: &v1pb.Shortcut{
 				Title:  "User1 Shortcut",
 				Filter: "tag in [\"user1\"]",
@@ -623,7 +642,7 @@ func TestDeleteShortcut(t *testing.T) {
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
 		req := &v1pb.DeleteShortcutRequest{
-			Name: fmt.Sprintf("users/%d", user.ID) + "/shortcuts/nonexistent",
+			Name: fmt.Sprintf("users/%s", user.Username) + "/shortcuts/nonexistent",
 		}
 
 		_, err = ts.Service.DeleteShortcut(userCtx, req)
@@ -660,7 +679,7 @@ func TestShortcutFiltering(t *testing.T) {
 
 		for i, filter := range validFilters {
 			req := &v1pb.CreateShortcutRequest{
-				Parent: fmt.Sprintf("users/%d", user.ID),
+				Parent: fmt.Sprintf("users/%s", user.Username),
 				Shortcut: &v1pb.Shortcut{
 					Title:  "Valid Filter " + string(rune(i)),
 					Filter: filter,
@@ -697,7 +716,7 @@ func TestShortcutFiltering(t *testing.T) {
 
 		for _, filter := range invalidFilters {
 			req := &v1pb.CreateShortcutRequest{
-				Parent: fmt.Sprintf("users/%d", user.ID),
+				Parent: fmt.Sprintf("users/%s", user.Username),
 				Shortcut: &v1pb.Shortcut{
 					Title:  "Invalid Filter Test",
 					Filter: filter,
@@ -727,7 +746,7 @@ func TestShortcutCRUDComplete(t *testing.T) {
 
 		// 1. Create multiple shortcuts
 		shortcut1Req := &v1pb.CreateShortcutRequest{
-			Parent: fmt.Sprintf("users/%d", user.ID),
+			Parent: fmt.Sprintf("users/%s", user.Username),
 			Shortcut: &v1pb.Shortcut{
 				Title:  "Work Notes",
 				Filter: "tag in [\"work\"]",
@@ -735,7 +754,7 @@ func TestShortcutCRUDComplete(t *testing.T) {
 		}
 
 		shortcut2Req := &v1pb.CreateShortcutRequest{
-			Parent: fmt.Sprintf("users/%d", user.ID),
+			Parent: fmt.Sprintf("users/%s", user.Username),
 			Shortcut: &v1pb.Shortcut{
 				Title:  "Personal Notes",
 				Filter: "tag in [\"personal\"]",
@@ -752,7 +771,7 @@ func TestShortcutCRUDComplete(t *testing.T) {
 
 		// 2. List shortcuts and verify both exist
 		listReq := &v1pb.ListShortcutsRequest{
-			Parent: fmt.Sprintf("users/%d", user.ID),
+			Parent: fmt.Sprintf("users/%s", user.Username),
 		}
 
 		listResp, err := ts.Service.ListShortcuts(userCtx, listReq)

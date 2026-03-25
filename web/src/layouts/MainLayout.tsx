@@ -40,7 +40,7 @@ const MainLayout = () => {
     if (match && context === "profile") {
       const username = match.params.username;
       if (username) {
-        // Fetch or get user to obtain user name (e.g., "users/123")
+        // Fetch or get user to obtain the canonical user name (e.g., "users/steven")
         // Note: User stats will be fetched by useFilteredMemoStats
         userServiceClient
           .getUser({ name: `users/${username}` })

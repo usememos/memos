@@ -15,7 +15,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)$/u;
 
 // Helper function to extract shortcut ID from resource name
-// Format: users/{user}/shortcuts/{shortcut}
+// Format: users/{username}/shortcuts/{shortcut}
 const getShortcutId = (name: string): string => {
   const parts = name.split("/");
   return parts.length === 4 ? parts[3] : "";

@@ -17,37 +17,44 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-// Helper function to extract user ID and shortcut ID from shortcut resource name.
+// Helper function to extract user and shortcut ID from shortcut resource name.
 // Format: users/{user}/shortcuts/{shortcut}.
-func extractUserAndShortcutIDFromName(name string) (int32, string, error) {
+func (s *APIV1Service) extractUserAndShortcutIDFromName(ctx context.Context, name string) (*store.User, string, error) {
 	parts := strings.Split(name, "/")
 	if len(parts) != 4 || parts[0] != "users" || parts[2] != "shortcuts" {
-		return 0, "", errors.Errorf("invalid shortcut name format: %s", name)
+		return nil, "", errors.Errorf("invalid shortcut name format: %s", name)
 	}
 
-	userID, err := util.ConvertStringToInt32(parts[1])
+	user, err := ResolveUserByName(ctx, s.Store, BuildUserName(parts[1]))
 	if err != nil {
-		return 0, "", errors.Errorf("invalid user ID %q", parts[1])
+		return nil, "", err
+	}
+	if user == nil {
+		return nil, "", errors.Errorf("user not found: %s", parts[1])
 	}
 
 	shortcutID := parts[3]
 	if shortcutID == "" {
-		return 0, "", errors.Errorf("empty shortcut ID in name: %s", name)
+		return nil, "", errors.Errorf("empty shortcut ID in name: %s", name)
 	}
 
-	return userID, shortcutID, nil
+	return user, shortcutID, nil
 }
 
 // Helper function to construct shortcut resource name.
-func constructShortcutName(userID int32, shortcutID string) string {
-	return fmt.Sprintf("users/%d/shortcuts/%s", userID, shortcutID)
+func constructShortcutName(username string, shortcutID string) string {
+	return fmt.Sprintf("%s/shortcuts/%s", BuildUserName(username), shortcutID)
 }
 
 func (s *APIV1Service) ListShortcuts(ctx context.Context, request *v1pb.ListShortcutsRequest) (*v1pb.ListShortcutsResponse, error) {
-	userID, err := ExtractUserIDFromName(request.Parent)
+	user, err := ResolveUserByName(ctx, s.Store, request.Parent)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "user not found")
+	}
+	userID := user.ID
 
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -74,7 +81,7 @@ func (s *APIV1Service) ListShortcuts(ctx context.Context, request *v1pb.ListShor
 	shortcuts := []*v1pb.Shortcut{}
 	for _, shortcut := range shortcutsUserSetting.GetShortcuts() {
 		shortcuts = append(shortcuts, &v1pb.Shortcut{
-			Name:   constructShortcutName(userID, shortcut.GetId()),
+			Name:   constructShortcutName(user.Username, shortcut.GetId()),
 			Title:  shortcut.GetTitle(),
 			Filter: shortcut.GetFilter(),
 		})
@@ -86,10 +93,11 @@ func (s *APIV1Service) ListShortcuts(ctx context.Context, request *v1pb.ListShor
 }
 
 func (s *APIV1Service) GetShortcut(ctx context.Context, request *v1pb.GetShortcutRequest) (*v1pb.Shortcut, error) {
-	userID, shortcutID, err := extractUserAndShortcutIDFromName(request.Name)
+	user, shortcutID, err := s.extractUserAndShortcutIDFromName(ctx, request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid shortcut name: %v", err)
 	}
+	userID := user.ID
 
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -114,7 +122,7 @@ func (s *APIV1Service) GetShortcut(ctx context.Context, request *v1pb.GetShortcu
 	for _, shortcut := range shortcutsUserSetting.GetShortcuts() {
 		if shortcut.GetId() == shortcutID {
 			return &v1pb.Shortcut{
-				Name:   constructShortcutName(userID, shortcut.GetId()),
+				Name:   constructShortcutName(user.Username, shortcut.GetId()),
 				Title:  shortcut.GetTitle(),
 				Filter: shortcut.GetFilter(),
 			}, nil
@@ -125,10 +133,14 @@ func (s *APIV1Service) GetShortcut(ctx context.Context, request *v1pb.GetShortcu
 }
 
 func (s *APIV1Service) CreateShortcut(ctx context.Context, request *v1pb.CreateShortcutRequest) (*v1pb.Shortcut, error) {
-	userID, err := ExtractUserIDFromName(request.Parent)
+	user, err := ResolveUserByName(ctx, s.Store, request.Parent)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "user not found")
+	}
+	userID := user.ID
 
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -151,7 +163,7 @@ func (s *APIV1Service) CreateShortcut(ctx context.Context, request *v1pb.CreateS
 	}
 	if request.ValidateOnly {
 		return &v1pb.Shortcut{
-			Name:   constructShortcutName(userID, newShortcut.GetId()),
+			Name:   constructShortcutName(user.Username, newShortcut.GetId()),
 			Title:  newShortcut.GetTitle(),
 			Filter: newShortcut.GetFilter(),
 		}, nil
@@ -190,17 +202,18 @@ func (s *APIV1Service) CreateShortcut(ctx context.Context, request *v1pb.CreateS
 	}
 
 	return &v1pb.Shortcut{
-		Name:   constructShortcutName(userID, newShortcut.GetId()),
+		Name:   constructShortcutName(user.Username, newShortcut.GetId()),
 		Title:  newShortcut.GetTitle(),
 		Filter: newShortcut.GetFilter(),
 	}, nil
 }
 
 func (s *APIV1Service) UpdateShortcut(ctx context.Context, request *v1pb.UpdateShortcutRequest) (*v1pb.Shortcut, error) {
-	userID, shortcutID, err := extractUserAndShortcutIDFromName(request.Shortcut.Name)
+	user, shortcutID, err := s.extractUserAndShortcutIDFromName(ctx, request.Shortcut.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid shortcut name: %v", err)
 	}
+	userID := user.ID
 
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -262,17 +275,18 @@ func (s *APIV1Service) UpdateShortcut(ctx context.Context, request *v1pb.UpdateS
 	}
 
 	return &v1pb.Shortcut{
-		Name:   constructShortcutName(userID, foundShortcut.GetId()),
+		Name:   constructShortcutName(user.Username, foundShortcut.GetId()),
 		Title:  foundShortcut.GetTitle(),
 		Filter: foundShortcut.GetFilter(),
 	}, nil
 }
 
 func (s *APIV1Service) DeleteShortcut(ctx context.Context, request *v1pb.DeleteShortcutRequest) (*emptypb.Empty, error) {
-	userID, shortcutID, err := extractUserAndShortcutIDFromName(request.Name)
+	user, shortcutID, err := s.extractUserAndShortcutIDFromName(ctx, request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid shortcut name: %v", err)
 	}
+	userID := user.ID
 
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
