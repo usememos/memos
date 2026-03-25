@@ -64,7 +64,7 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 		TotalSize: int32(len(users)),
 	}
 	for _, user := range users {
-		response.Users = append(response.Users, convertUserFromStore(user))
+		response.Users = append(response.Users, convertUserFromStore(user, currentUser))
 	}
 	return response, nil
 }
@@ -77,7 +77,8 @@ func (s *APIV1Service) GetUser(ctx context.Context, request *v1pb.GetUserRequest
 	if user == nil {
 		return nil, status.Errorf(codes.NotFound, "user not found")
 	}
-	return convertUserFromStore(user), nil
+	currentUser, _ := s.fetchCurrentUser(ctx)
+	return convertUserFromStore(user, currentUser), nil
 }
 
 func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserRequest) (*v1pb.User, error) {
@@ -154,7 +155,7 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 		return nil, status.Errorf(codes.Internal, "failed to create user: %v", err)
 	}
 
-	return convertUserFromStore(user), nil
+	return convertUserFromStore(user, user), nil
 }
 
 func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserRequest) (*v1pb.User, error) {
@@ -260,7 +261,7 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 		return nil, status.Errorf(codes.Internal, "failed to update user: %v", err)
 	}
 
-	return convertUserFromStore(updatedUser), nil
+	return convertUserFromStore(updatedUser, currentUser), nil
 }
 
 func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserRequest) (*emptypb.Empty, error) {
@@ -928,7 +929,7 @@ func convertUserWebhookFromUserSetting(webhook *storepb.WebhooksUserSetting_Webh
 	}
 }
 
-func convertUserFromStore(user *store.User) *v1pb.User {
+func convertUserFromStore(user *store.User, viewer *store.User) *v1pb.User {
 	userpb := &v1pb.User{
 		Name:        BuildUserName(user.Username),
 		State:       convertStateFromStore(user.RowStatus),
@@ -936,10 +937,12 @@ func convertUserFromStore(user *store.User) *v1pb.User {
 		UpdateTime:  timestamppb.New(time.Unix(user.UpdatedTs, 0)),
 		Role:        convertUserRoleFromStore(user.Role),
 		Username:    user.Username,
-		Email:       user.Email,
 		DisplayName: user.Nickname,
 		AvatarUrl:   user.AvatarURL,
 		Description: user.Description,
+	}
+	if canViewerAccessUserEmail(viewer, user) {
+		userpb.Email = user.Email
 	}
 	// Use the avatar URL instead of raw base64 image data to reduce the response size.
 	if user.AvatarURL != "" {
@@ -952,6 +955,13 @@ func convertUserFromStore(user *store.User) *v1pb.User {
 		}
 	}
 	return userpb
+}
+
+func canViewerAccessUserEmail(viewer, user *store.User) bool {
+	if viewer == nil || user == nil {
+		return false
+	}
+	return viewer.Role == store.RoleAdmin || viewer.ID == user.ID
 }
 
 func convertUserRoleFromStore(role store.Role) v1pb.User_Role {
