@@ -29,7 +29,7 @@ type attachmentJSON struct {
 func storeAttachmentToJSON(ctx context.Context, stores *store.Store, a *store.Attachment) (attachmentJSON, error) {
 	creator, err := lookupUsername(ctx, stores, a.CreatorID)
 	if err != nil {
-		return attachmentJSON{}, err
+		return attachmentJSON{}, errors.Wrap(err, "lookup attachment creator username")
 	}
 	j := attachmentJSON{
 		Name:       "attachments/" + a.UID,
@@ -60,7 +60,7 @@ func storeAttachmentToJSON(ctx context.Context, stores *store.Store, a *store.At
 func storeAttachmentToJSONWithUsernames(a *store.Attachment, usernamesByID map[int32]string) (attachmentJSON, error) {
 	creator, err := lookupUsernameFromCache(usernamesByID, a.CreatorID)
 	if err != nil {
-		return attachmentJSON{}, err
+		return attachmentJSON{}, errors.Wrap(err, "lookup attachment creator username from cache")
 	}
 	j := attachmentJSON{
 		Name:       "attachments/" + a.UID,
