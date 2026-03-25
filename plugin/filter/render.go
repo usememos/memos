@@ -316,8 +316,10 @@ func (r *renderer) renderInCondition(cond *InCondition) (renderResult, error) {
 		return renderResult{}, errors.New("IN operator requires a field on the left-hand side")
 	}
 
-	if fieldRef.Name == "tag" {
-		return r.renderTagInList(cond.Values)
+	if def, ok := r.schema.Field(fieldRef.Name); ok && def.Kind == FieldKindVirtualAlias {
+		if target, resolved := r.schema.ResolveAlias(fieldRef.Name); resolved && target.Kind == FieldKindJSONList {
+			return r.renderTagInList(fieldRef.Name, cond.Values)
+		}
 	}
 
 	field, ok := r.schema.Field(fieldRef.Name)
@@ -332,10 +334,10 @@ func (r *renderer) renderInCondition(cond *InCondition) (renderResult, error) {
 	return r.renderScalarInCondition(field, cond.Values)
 }
 
-func (r *renderer) renderTagInList(values []ValueExpr) (renderResult, error) {
-	field, ok := r.schema.ResolveAlias("tag")
+func (r *renderer) renderTagInList(aliasName string, values []ValueExpr) (renderResult, error) {
+	field, ok := r.schema.ResolveAlias(aliasName)
 	if !ok {
-		return renderResult{}, errors.New("tag attribute is not configured")
+		return renderResult{}, errors.Errorf("%s attribute is not configured", aliasName)
 	}
 
 	conditions := make([]string, 0, len(values))

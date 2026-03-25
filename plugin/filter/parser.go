@@ -36,6 +36,20 @@ func buildCondition(expr *exprv1.Expr, schema Schema) (Condition, error) {
 			return nil, errors.Errorf("identifier %q is not boolean", name)
 		}
 		return &FieldPredicateCondition{Field: name}, nil
+	case *exprv1.Expr_SelectExpr:
+		operand := v.SelectExpr.GetOperand()
+		if ident := operand.GetIdentExpr(); ident != nil && ident.GetName() == "property" {
+			fieldName := v.SelectExpr.GetField()
+			field, ok := schema.Field(fieldName)
+			if !ok {
+				return nil, errors.Errorf("unknown property field %q", fieldName)
+			}
+			if field.Type != FieldTypeBool {
+				return nil, errors.Errorf("property field %q is not boolean", fieldName)
+			}
+			return &FieldPredicateCondition{Field: fieldName}, nil
+		}
+		return nil, errors.New("unsupported select expression")
 	case *exprv1.Expr_ComprehensionExpr:
 		return buildComprehensionCondition(v.ComprehensionExpr, schema)
 	default:
@@ -131,10 +145,19 @@ func buildComparisonCondition(call *exprv1.Expr_Call, schema Schema) (Condition,
 			return nil, errors.Errorf("unknown identifier %q", field.Name)
 		}
 		if def.Kind == FieldKindVirtualAlias {
-			def, exists = schema.ResolveAlias(field.Name)
-			if !exists {
+			resolved, ok := schema.ResolveAlias(field.Name)
+			if !ok {
 				return nil, errors.Errorf("invalid alias %q", field.Name)
 			}
+			// Convert alias == value to InCondition for JSONList targets
+			// (e.g., tag_search == "work" behaves like tag in ["work"]).
+			if resolved.Kind == FieldKindJSONList && op == CompareEq {
+				return &InCondition{
+					Left:   left,
+					Values: []ValueExpr{right},
+				}, nil
+			}
+			def = resolved
 		}
 		if def.AllowedComparisonOps != nil {
 			if _, allowed := def.AllowedComparisonOps[op]; !allowed {
@@ -238,6 +261,18 @@ func buildValueExpr(expr *exprv1.Expr, schema Schema) (ValueExpr, error) {
 			return nil, errors.Errorf("unknown identifier %q", identName)
 		}
 		return &FieldRef{Name: identName}, nil
+	}
+
+	// Handle property.X selector expressions (e.g., property.has_incomplete_tasks).
+	if sel, ok := expr.ExprKind.(*exprv1.Expr_SelectExpr); ok {
+		operand := sel.SelectExpr.GetOperand()
+		if ident := operand.GetIdentExpr(); ident != nil && ident.GetName() == "property" {
+			fieldName := sel.SelectExpr.GetField()
+			if _, ok := schema.Field(fieldName); !ok {
+				return nil, errors.Errorf("unknown property field %q", fieldName)
+			}
+			return &FieldRef{Name: fieldName}, nil
+		}
 	}
 
 	if literal, err := getConstValue(expr); err == nil {

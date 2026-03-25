@@ -195,6 +195,12 @@ func NewSchema() Schema {
 			Type:     FieldTypeString,
 			AliasFor: "tags",
 		},
+		"tag_search": {
+			Name:     "tag_search",
+			Kind:     FieldKindVirtualAlias,
+			Type:     FieldTypeString,
+			AliasFor: "tags",
+		},
 		"has_task_list": {
 			Name:     "has_task_list",
 			Kind:     FieldKindJSONBool,
@@ -255,6 +261,8 @@ func NewSchema() Schema {
 		cel.Variable("has_link", cel.BoolType),
 		cel.Variable("has_code", cel.BoolType),
 		cel.Variable("has_incomplete_tasks", cel.BoolType),
+		cel.Variable("tag_search", cel.StringType),
+		cel.Variable("property", cel.DynType),
 		nowFunction,
 	}
 

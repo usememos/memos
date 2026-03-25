@@ -963,3 +963,85 @@ func TestMemoFilterJSONBooleanLogic(t *testing.T) {
 	memos = tc.ListWithFilter(`has_task_list && !has_link`)
 	require.Len(t, memos, 1, "Should find 1 memo (task only)")
 }
+
+// =============================================================================
+// Issue #5761: tag_search and property filter support
+// =============================================================================
+
+func TestMemoFilterTagSearchEquality(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateMemo(NewMemoBuilder("memo-work", tc.User.ID).Content("Work memo").Tags("work", "important"))
+	tc.CreateMemo(NewMemoBuilder("memo-personal", tc.User.ID).Content("Personal memo").Tags("personal"))
+	tc.CreateMemo(NewMemoBuilder("memo-no-tags", tc.User.ID).Content("No tags"))
+
+	// Test: tag_search == "work" should behave like tag in ["work"]
+	memos := tc.ListWithFilter(`tag_search == "work"`)
+	require.Len(t, memos, 1)
+	require.Contains(t, memos[0].Payload.Tags, "work")
+}
+
+func TestMemoFilterPropertyHasIncompleteTasks(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateMemo(NewMemoBuilder("memo-incomplete", tc.User.ID).
+		Content("Has incomplete tasks").
+		Property(func(p *storepb.MemoPayload_Property) {
+			p.HasTaskList = true
+			p.HasIncompleteTasks = true
+		}))
+	tc.CreateMemo(NewMemoBuilder("memo-complete", tc.User.ID).
+		Content("All complete").
+		Property(func(p *storepb.MemoPayload_Property) {
+			p.HasTaskList = true
+			p.HasIncompleteTasks = false
+		}))
+
+	// Test: property.has_incomplete_tasks == true
+	memos := tc.ListWithFilter(`property.has_incomplete_tasks == true`)
+	require.Len(t, memos, 1)
+	require.True(t, memos[0].Payload.Property.HasIncompleteTasks)
+
+	// Test: property.has_incomplete_tasks as standalone predicate
+	memos = tc.ListWithFilter(`property.has_incomplete_tasks`)
+	require.Len(t, memos, 1)
+	require.True(t, memos[0].Payload.Property.HasIncompleteTasks)
+}
+
+func TestMemoFilterTagSearchAndPropertyCombined(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateMemo(NewMemoBuilder("memo-work-incomplete", tc.User.ID).
+		Content("Work with tasks").
+		Tags("work").
+		Property(func(p *storepb.MemoPayload_Property) {
+			p.HasTaskList = true
+			p.HasIncompleteTasks = true
+		}))
+	tc.CreateMemo(NewMemoBuilder("memo-work-complete", tc.User.ID).
+		Content("Work all done").
+		Tags("work").
+		Property(func(p *storepb.MemoPayload_Property) {
+			p.HasTaskList = true
+			p.HasIncompleteTasks = false
+		}))
+	tc.CreateMemo(NewMemoBuilder("memo-personal-incomplete", tc.User.ID).
+		Content("Personal tasks").
+		Tags("personal").
+		Property(func(p *storepb.MemoPayload_Property) {
+			p.HasTaskList = true
+			p.HasIncompleteTasks = true
+		}))
+
+	// Test: exact filter from issue #5761
+	memos := tc.ListWithFilter(`tag_search == "work" && property.has_incomplete_tasks == true`)
+	require.Len(t, memos, 1)
+	require.Contains(t, memos[0].Payload.Tags, "work")
+	require.True(t, memos[0].Payload.Property.HasIncompleteTasks)
+}
