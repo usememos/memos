@@ -974,13 +974,19 @@ func TestMemoFilterTagSearchEquality(t *testing.T) {
 	defer tc.Close()
 
 	tc.CreateMemo(NewMemoBuilder("memo-work", tc.User.ID).Content("Work memo").Tags("work", "important"))
+	tc.CreateMemo(NewMemoBuilder("memo-work-child", tc.User.ID).Content("Nested work memo").Tags("work/project"))
 	tc.CreateMemo(NewMemoBuilder("memo-personal", tc.User.ID).Content("Personal memo").Tags("personal"))
 	tc.CreateMemo(NewMemoBuilder("memo-no-tags", tc.User.ID).Content("No tags"))
 
-	// Test: tag_search == "work" should behave like tag in ["work"]
+	// Test: tag_search == "work" should match both exact "work" and hierarchical "work/project"
 	memos := tc.ListWithFilter(`tag_search == "work"`)
-	require.Len(t, memos, 1)
-	require.Contains(t, memos[0].Payload.Tags, "work")
+	require.Len(t, memos, 2)
+	tags := []string{}
+	for _, m := range memos {
+		tags = append(tags, m.Payload.Tags...)
+	}
+	require.Contains(t, tags, "work")
+	require.Contains(t, tags, "work/project")
 }
 
 func TestMemoFilterPropertyHasIncompleteTasks(t *testing.T) {
