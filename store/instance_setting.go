@@ -219,7 +219,7 @@ func (s *Store) GetInstanceNotificationSetting(ctx context.Context) (*storepb.In
 const (
 	defaultInstanceStorageType       = storepb.InstanceStorageSetting_LOCAL
 	defaultInstanceUploadSizeLimitMb = 30
-	defaultInstanceFilepathTemplate  = "assets/{timestamp}_{filename}"
+	defaultInstanceFilepathTemplate  = "assets/{timestamp}_{uuid}_{filename}"
 )
 
 func (s *Store) GetInstanceStorageSetting(ctx context.Context) (*storepb.InstanceStorageSetting, error) {
