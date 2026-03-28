@@ -114,9 +114,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 		AllowOrigins: []string{"*"},
 	}))
 	// Register SSE endpoint with same CORS as rest of /api/v1.
-	gwGroup.GET("/api/v1/sse", func(c *echo.Context) error {
-		return handleSSE(c, s.SSEHub, auth.NewAuthenticator(s.Store, s.Secret))
-	})
+	RegisterSSERoutes(gwGroup, s.SSEHub, s.Store, s.Secret)
 	handler := echo.WrapHandler(gwMux)
 
 	gwGroup.Any("/api/v1/*", handler)

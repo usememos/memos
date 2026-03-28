@@ -104,10 +104,11 @@ func (s *APIV1Service) UpsertMemoReaction(ctx context.Context, request *v1pb.Ups
 	}
 
 	// Broadcast live refresh event (reaction belongs to a memo).
-	s.SSEHub.Broadcast(&SSEEvent{
-		Type: SSEEventReactionUpserted,
-		Name: request.Reaction.ContentId,
-	})
+	var parentMemo *store.Memo
+	if memo.ParentUID != nil {
+		parentMemo, _ = s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
+	}
+	s.SSEHub.Broadcast(buildMemoReactionSSEEvent(SSEEventReactionUpserted, request.Reaction.ContentId, memo, parentMemo))
 
 	return reactionMessage, nil
 }
@@ -148,11 +149,21 @@ func (s *APIV1Service) DeleteMemoReaction(ctx context.Context, request *v1pb.Del
 		return nil, status.Errorf(codes.Internal, "failed to delete reaction")
 	}
 
+	memoUID, err := ExtractMemoUIDFromName(reaction.ContentID)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
+	}
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get memo")
+	}
+
 	// Broadcast live refresh event (reaction belongs to a memo).
-	s.SSEHub.Broadcast(&SSEEvent{
-		Type: SSEEventReactionDeleted,
-		Name: reaction.ContentID,
-	})
+	var parentMemo *store.Memo
+	if memo != nil && memo.ParentUID != nil {
+		parentMemo, _ = s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
+	}
+	s.SSEHub.Broadcast(buildMemoReactionSSEEvent(SSEEventReactionDeleted, reaction.ContentID, memo, parentMemo))
 
 	return &emptypb.Empty{}, nil
 }

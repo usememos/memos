@@ -19,6 +19,19 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+// suppressSSEKey is a context key used to suppress the SSE broadcast from
+// CreateMemo when it is called internally (e.g., from CreateMemoComment).
+type suppressSSEKey struct{}
+
+func withSuppressSSE(ctx context.Context) context.Context {
+	return context.WithValue(ctx, suppressSSEKey{}, true)
+}
+
+func isSSESuppressed(ctx context.Context) bool {
+	v, _ := ctx.Value(suppressSSEKey{}).(bool)
+	return v
+}
+
 func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoRequest) (*v1pb.Memo, error) {
 	user, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -136,11 +149,15 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		slog.Warn("Failed to dispatch memo created webhook", slog.Any("err", err))
 	}
 
-	// Broadcast live refresh event.
-	s.SSEHub.Broadcast(&SSEEvent{
-		Type: SSEEventMemoCreated,
-		Name: memoMessage.Name,
-	})
+	// Broadcast live refresh event (skipped when called from CreateMemoComment).
+	if !isSSESuppressed(ctx) {
+		s.SSEHub.Broadcast(&SSEEvent{
+			Type:       SSEEventMemoCreated,
+			Name:       memoMessage.Name,
+			Visibility: memo.Visibility,
+			CreatorID:  resolveSSECreatorID(memo, nil),
+		})
+	}
 
 	return memoMessage, nil
 }
@@ -501,6 +518,10 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
+	var parentMemo *store.Memo
+	if memo.ParentUID != nil {
+		parentMemo, _ = s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
+	}
 	// Try to dispatch webhook when memo is updated.
 	if err := s.DispatchMemoUpdatedWebhook(ctx, memoMessage); err != nil {
 		slog.Warn("Failed to dispatch memo updated webhook", slog.Any("err", err))
@@ -508,8 +529,11 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 
 	// Broadcast live refresh event.
 	s.SSEHub.Broadcast(&SSEEvent{
-		Type: SSEEventMemoUpdated,
-		Name: memoMessage.Name,
+		Type:       SSEEventMemoUpdated,
+		Name:       memoMessage.Name,
+		Parent:     memoMessage.GetParent(),
+		Visibility: memo.Visibility,
+		CreatorID:  resolveSSECreatorID(memo, parentMemo),
 	})
 
 	return memoMessage, nil
@@ -583,8 +607,10 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 
 	// Broadcast live refresh event.
 	s.SSEHub.Broadcast(&SSEEvent{
-		Type: SSEEventMemoDeleted,
-		Name: request.Name,
+		Type:       SSEEventMemoDeleted,
+		Name:       request.Name,
+		Visibility: memo.Visibility,
+		CreatorID:  resolveSSECreatorID(memo, nil),
 	})
 
 	return &emptypb.Empty{}, nil
@@ -615,8 +641,9 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	// Create the memo comment first.
-	memoComment, err := s.CreateMemo(ctx, &v1pb.CreateMemoRequest{
+	// Create the memo comment first; suppress the generic memo.created SSE event
+	// since CreateMemoComment broadcasts memo.comment.created for the parent instead.
+	memoComment, err := s.CreateMemo(withSuppressSSE(ctx), &v1pb.CreateMemoRequest{
 		Memo:   request.Comment,
 		MemoId: request.CommentId,
 	})
@@ -674,8 +701,10 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 
 	// Broadcast live refresh event for the parent memo so subscribers see the new comment.
 	s.SSEHub.Broadcast(&SSEEvent{
-		Type: SSEEventMemoCommentCreated,
-		Name: request.Name,
+		Type:       SSEEventMemoCommentCreated,
+		Name:       request.Name,
+		Visibility: relatedMemo.Visibility,
+		CreatorID:  relatedMemo.CreatorID,
 	})
 
 	return memoComment, nil
