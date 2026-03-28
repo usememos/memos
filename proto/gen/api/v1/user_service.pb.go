@@ -506,11 +506,7 @@ func (x *ListUsersResponse) GetTotalSize() int32 {
 type GetUserRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The resource name of the user.
-	// Supports both numeric IDs and username strings:
-	//   - users/{id}       (e.g., users/101)
-	//   - users/{username} (e.g., users/steven)
-	//
-	// Format: users/{id_or_username}
+	// Format: users/{username}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The fields to return in the response.
 	// If not specified, all fields are returned.
@@ -979,8 +975,8 @@ func (x *ListAllUserStatsResponse) GetStats() []*UserStats {
 type UserSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the user setting.
-	// Format: users/{user}/settings/{setting}, {setting} is the key for the setting.
-	// For example, "users/123/settings/GENERAL" for general settings.
+	// Format: users/{username}/settings/{setting}, {setting} is the key for the setting.
+	// For example, "users/steven/settings/GENERAL" for general settings.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Types that are valid to be assigned to Value:
 	//
@@ -2658,7 +2654,7 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\x11memos.api.v1/UserR\x04name\"\x19\n" +
 	"\x17ListAllUserStatsRequest\"I\n" +
 	"\x18ListAllUserStatsResponse\x12-\n" +
-	"\x05stats\x18\x01 \x03(\v2\x17.memos.api.v1.UserStatsR\x05stats\"\xb0\x04\n" +
+	"\x05stats\x18\x01 \x03(\v2\x17.memos.api.v1.UserStatsR\x05stats\"\xb4\x04\n" +
 	"\vUserSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12S\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2(.memos.api.v1.UserSetting.GeneralSettingH\x00R\x0egeneralSetting\x12V\n" +
@@ -2672,8 +2668,8 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\x03Key\x12\x13\n" +
 	"\x0fKEY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERAL\x10\x01\x12\f\n" +
-	"\bWEBHOOKS\x10\x04:Y\xeaAV\n" +
-	"\x18memos.api.v1/UserSetting\x12\x1fusers/{user}/settings/{setting}*\fuserSettings2\vuserSettingB\a\n" +
+	"\bWEBHOOKS\x10\x04:]\xeaAZ\n" +
+	"\x18memos.api.v1/UserSetting\x12#users/{username}/settings/{setting}*\fuserSettings2\vuserSettingB\a\n" +
 	"\x05value\"M\n" +
 	"\x15GetUserSettingRequest\x124\n" +
 	"\x04name\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\n" +

@@ -108,6 +108,21 @@ func NewSchema() Schema {
 			SupportsContains: true,
 			Expressions:      map[DialectName]string{},
 		},
+		"creator": {
+			Name:   "creator",
+			Kind:   FieldKindScalar,
+			Type:   FieldTypeString,
+			Column: Column{Table: "memo_creator", Name: "username"},
+			Expressions: map[DialectName]string{
+				DialectSQLite:   "('users/' || %s)",
+				DialectMySQL:    "CONCAT('users/', %s)",
+				DialectPostgres: "('users/' || %s)",
+			},
+			AllowedComparisonOps: map[ComparisonOperator]bool{
+				CompareEq:  true,
+				CompareNeq: true,
+			},
+		},
 		"creator_id": {
 			Name:        "creator_id",
 			Kind:        FieldKindScalar,
@@ -228,6 +243,7 @@ func NewSchema() Schema {
 
 	envOptions := []cel.EnvOption{
 		cel.Variable("content", cel.StringType),
+		cel.Variable("creator", cel.StringType),
 		cel.Variable("creator_id", cel.IntType),
 		cel.Variable("created_ts", cel.IntType),
 		cel.Variable("updated_ts", cel.IntType),

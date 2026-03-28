@@ -14,6 +14,14 @@ import (
 )
 
 func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Memo, reactions []*store.Reaction, attachments []*store.Attachment, relations []*v1pb.MemoRelation) (*v1pb.Memo, error) {
+	creatorMap, err := s.listUsersByID(ctx, []int32{memo.CreatorID})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to list memo creators")
+	}
+	return s.convertMemoFromStoreWithCreators(ctx, memo, reactions, attachments, relations, creatorMap)
+}
+
+func (s *APIV1Service) convertMemoFromStoreWithCreators(ctx context.Context, memo *store.Memo, reactions []*store.Reaction, attachments []*store.Attachment, relations []*v1pb.MemoRelation, creatorMap map[int32]*store.User) (*v1pb.Memo, error) {
 	displayTs := memo.CreatedTs
 	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
 	if err != nil {
@@ -24,10 +32,14 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 	}
 
 	name := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
+	creator := creatorMap[memo.CreatorID]
+	if creator == nil {
+		return nil, errors.New("memo creator not found")
+	}
 	memoMessage := &v1pb.Memo{
 		Name:        name,
 		State:       convertStateFromStore(memo.RowStatus),
-		Creator:     fmt.Sprintf("%s%d", UserNamePrefix, memo.CreatorID),
+		Creator:     BuildUserName(creator.Username),
 		CreateTime:  timestamppb.New(time.Unix(memo.CreatedTs, 0)),
 		UpdateTime:  timestamppb.New(time.Unix(memo.UpdatedTs, 0)),
 		DisplayTime: timestamppb.New(time.Unix(displayTs, 0)),
@@ -48,7 +60,10 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 
 	memoMessage.Reactions = []*v1pb.Reaction{}
 	for _, reaction := range reactions {
-		reactionResponse := convertReactionFromStore(reaction)
+		reactionResponse, err := s.convertReactionFromStore(ctx, reaction)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to convert reaction")
+		}
 		memoMessage.Reactions = append(memoMessage.Reactions, reactionResponse)
 	}
 

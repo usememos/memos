@@ -7,6 +7,9 @@ import (
 	"github.com/stretchr/testify/require"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
+	storepb "github.com/usememos/memos/proto/gen/store"
+	apiv1 "github.com/usememos/memos/server/router/api/v1"
+	"github.com/usememos/memos/store"
 )
 
 func TestCreateAttachment(t *testing.T) {
@@ -55,5 +58,57 @@ func TestCreateAttachment(t *testing.T) {
 		})
 		require.NoError(t, err)
 		require.Equal(t, "application/octet-stream", attachment.Type)
+	})
+
+	t.Run("LocalStorage_PathCollisionUsesUniqueReference", func(t *testing.T) {
+		_, err := ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_STORAGE,
+			Value: &storepb.InstanceSetting_StorageSetting{
+				StorageSetting: &storepb.InstanceStorageSetting{
+					StorageType:      storepb.InstanceStorageSetting_LOCAL,
+					FilepathTemplate: "assets/{filename}",
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		first, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{
+			Attachment: &v1pb.Attachment{
+				Filename: "screenshot.png",
+				Type:     "image/png",
+				Content:  []byte("first-image"),
+			},
+		})
+		require.NoError(t, err)
+
+		second, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{
+			Attachment: &v1pb.Attachment{
+				Filename: "screenshot.png",
+				Type:     "image/png",
+				Content:  []byte("second-image"),
+			},
+		})
+		require.NoError(t, err)
+
+		firstUID, err := apiv1.ExtractAttachmentUIDFromName(first.Name)
+		require.NoError(t, err)
+		secondUID, err := apiv1.ExtractAttachmentUIDFromName(second.Name)
+		require.NoError(t, err)
+
+		firstStoreAttachment, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &firstUID})
+		require.NoError(t, err)
+		secondStoreAttachment, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &secondUID})
+		require.NoError(t, err)
+		require.NotNil(t, firstStoreAttachment)
+		require.NotNil(t, secondStoreAttachment)
+
+		require.NotEqual(t, firstStoreAttachment.Reference, secondStoreAttachment.Reference)
+
+		firstBlob, err := ts.Service.GetAttachmentBlob(firstStoreAttachment)
+		require.NoError(t, err)
+		secondBlob, err := ts.Service.GetAttachmentBlob(secondStoreAttachment)
+		require.NoError(t, err)
+		require.Equal(t, []byte("first-image"), firstBlob)
+		require.Equal(t, []byte("second-image"), secondBlob)
 	})
 }

@@ -48,7 +48,10 @@ func (s *MCPService) handleReadMemoResource(ctx context.Context, req mcp.ReadRes
 		return nil, err
 	}
 
-	j := storeMemoToJSON(memo)
+	j, err := storeMemoToJSONWithStore(ctx, s.store, memo)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to resolve memo creator")
+	}
 	text := formatMemoMarkdown(j)
 
 	return []mcp.ResourceContents{

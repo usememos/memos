@@ -143,6 +143,7 @@ func TestCreateUserRegistration(t *testing.T) {
 			},
 		})
 		require.NoError(t, err)
+		require.Equal(t, "users/newadmin", createdUser.Name)
 		require.NotNil(t, createdUser)
 		require.Equal(t, apiv1.User_ADMIN, createdUser.Role)
 	})
@@ -168,6 +169,7 @@ func TestCreateUserRegistration(t *testing.T) {
 		})
 		require.NoError(t, err)
 		require.NotNil(t, createdUser)
+		require.Equal(t, "users/wannabeadmin", createdUser.Name)
 		require.Equal(t, apiv1.User_USER, createdUser.Role, "Unauthenticated users can only create USER role")
 	})
 }

@@ -48,7 +48,7 @@ func (s *APIV1Service) GetCurrentUser(ctx context.Context, _ *v1pb.GetCurrentUse
 	}
 
 	return &v1pb.GetCurrentUserResponse{
-		User: convertUserFromStore(user),
+		User: convertUserFromStore(user, user),
 	}, nil
 }
 
@@ -187,7 +187,7 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 	}
 
 	return &v1pb.SignInResponse{
-		User:                 convertUserFromStore(existingUser),
+		User:                 convertUserFromStore(existingUser, existingUser),
 		AccessToken:          accessToken,
 		AccessTokenExpiresAt: timestamppb.New(accessExpiresAt),
 	}, nil
