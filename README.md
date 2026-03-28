@@ -27,50 +27,27 @@ Open-source, self-hosted note-taking tool built for quick capture. Markdown-nati
 
 ### 💎 Featured Sponsors
 
-<table>
-  <tr>
-    <td align="center" width="50%">
-      <a href="https://go.warp.dev/memos" target="_blank" rel="noopener">
-        <img src="https://raw.githubusercontent.com/warpdotdev/brand-assets/refs/heads/main/Logos/Warp-Wordmark-Black.png" alt="Warp" height="44" />
-      </a>
-      <br />
-      <strong><a href="https://go.warp.dev/memos" target="_blank" rel="noopener">Warp</a></strong>
-      <br />
-      The AI-powered terminal built for speed and collaboration
-    </td>
-    <td align="center" width="50%">
-      <a href="https://www.testmuai.com/?utm_medium=sponsor&utm_source=memos" target="_blank" rel="noopener">
-        <img src="https://usememos.com/sponsors/testmu.svg" alt="TestMu AI" height="36" />
-      </a>
-      <br />
-      <strong><a href="https://www.testmuai.com/?utm_medium=sponsor&utm_source=memos" target="_blank" rel="noopener">TestMu AI</a></strong>
-      <br />
-      The world’s first full-stack Agentic AI Quality Engineering platform
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="50%">
-      <a href="https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor" target="_blank" rel="noopener">
-        <img src="https://usememos.com/sponsors/ssd-nodes.svg" alt="SSD Nodes" height="60" />
-      </a>
-      <br />
-      <strong><a href="https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor" target="_blank" rel="noopener">SSD Nodes</a></strong>
-      <br />
-      Affordable VPS hosting for self-hosters
-    </td>
-    <td align="center" width="50%">
-      <a href="https://instapods.com/" target="_blank" rel="noopener">
-        <img src="https://instapods.com/logo.svg" alt="InstaPods" height="60" />
-      </a>
-      <br />
-      <strong><a href="https://instapods.com/" target="_blank" rel="noopener">InstaPods</a></strong>
-      <br />
-      Get your app online in seconds
-      <br />
-      <a href="https://instapods.com/apps/memos/" target="_blank" rel="noopener">Deploy Memos in Seconds</a>
-    </td>
-  </tr>
-</table>
+[**Warp** — The AI-powered terminal built for speed and collaboration](https://go.warp.dev/memos)
+
+<a href="https://go.warp.dev/memos" target="_blank" rel="noopener">
+  <img src="https://raw.githubusercontent.com/warpdotdev/brand-assets/refs/heads/main/Logos/Warp-Wordmark-Black.png" alt="Warp - The AI-powered terminal built for speed and collaboration" height="44" />
+</a>
+
+<p></p>
+
+[**TestMu AI** - The world’s first full-stack Agentic AI Quality Engineering platform](https://www.testmuai.com/?utm_medium=sponsor&utm_source=memos)
+
+<a href="https://www.testmuai.com/?utm_medium=sponsor&utm_source=memos" target="_blank" rel="noopener">
+  <img src="https://usememos.com/sponsors/testmu.svg" alt="TestMu AI" height="36" />
+</a>
+
+<p></p>
+
+[**SSD Nodes** - Affordable VPS hosting for self-hosters](https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor)
+
+<a href="https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor" target="_blank" rel="noopener">
+  <img src="https://usememos.com/sponsors/ssd-nodes.svg" alt="SSD Nodes" height="72" />
+</a>
 
 ## Features
 
