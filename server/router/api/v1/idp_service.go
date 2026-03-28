@@ -49,17 +49,8 @@ func (s *APIV1Service) ListIdentityProviders(ctx context.Context, _ *v1pb.ListId
 	response := &v1pb.ListIdentityProvidersResponse{
 		IdentityProviders: []*v1pb.IdentityProvider{},
 	}
-
-	// Default to lowest-privilege role, update later based on real role
-	currentUserRole := store.RoleUser
-	currentUser, err := s.fetchCurrentUser(ctx)
-	if err == nil && currentUser != nil {
-		currentUserRole = currentUser.Role
-	}
-
 	for _, identityProvider := range identityProviders {
-		identityProviderConverted := convertIdentityProviderFromStore(identityProvider)
-		response.IdentityProviders = append(response.IdentityProviders, redactIdentityProviderResponse(identityProviderConverted, currentUserRole))
+		response.IdentityProviders = append(response.IdentityProviders, convertIdentityProviderFromStore(identityProvider))
 	}
 	return response, nil
 }
@@ -79,15 +70,7 @@ func (s *APIV1Service) GetIdentityProvider(ctx context.Context, request *v1pb.Ge
 		return nil, status.Errorf(codes.NotFound, "identity provider not found")
 	}
 
-	// Default to lowest-privilege role, update later based on real role
-	currentUserRole := store.RoleUser
-	currentUser, err := s.fetchCurrentUser(ctx)
-	if err == nil && currentUser != nil {
-		currentUserRole = currentUser.Role
-	}
-
-	identityProviderConverted := convertIdentityProviderFromStore(identityProvider)
-	return redactIdentityProviderResponse(identityProviderConverted, currentUserRole), nil
+	return convertIdentityProviderFromStore(identityProvider), nil
 }
 
 func (s *APIV1Service) UpdateIdentityProvider(ctx context.Context, request *v1pb.UpdateIdentityProviderRequest) (*v1pb.IdentityProvider, error) {
@@ -134,6 +117,15 @@ func (s *APIV1Service) UpdateIdentityProvider(ctx context.Context, request *v1pb
 			update.Config = convertIdentityProviderConfigToStore(request.IdentityProvider.Type, request.IdentityProvider.Config)
 		default:
 			// Ignore unsupported fields
+		}
+	}
+
+	// Preserve write-only credential when the caller sends an empty value.
+	if update.Config != nil {
+		if oauth2Config := update.Config.GetOauth2Config(); oauth2Config != nil && oauth2Config.ClientSecret == "" {
+			if existingOAuth := existing.Config.GetOauth2Config(); existingOAuth != nil {
+				oauth2Config.ClientSecret = existingOAuth.ClientSecret
+			}
 		}
 	}
 
@@ -188,12 +180,12 @@ func convertIdentityProviderFromStore(identityProvider *storepb.IdentityProvider
 		temp.Config = &v1pb.IdentityProviderConfig{
 			Config: &v1pb.IdentityProviderConfig_Oauth2Config{
 				Oauth2Config: &v1pb.OAuth2Config{
-					ClientId:     oauth2Config.ClientId,
-					ClientSecret: oauth2Config.ClientSecret,
-					AuthUrl:      oauth2Config.AuthUrl,
-					TokenUrl:     oauth2Config.TokenUrl,
-					UserInfoUrl:  oauth2Config.UserInfoUrl,
-					Scopes:       oauth2Config.Scopes,
+					ClientId: oauth2Config.ClientId,
+					// ClientSecret is write-only: never returned in responses.
+					AuthUrl:     oauth2Config.AuthUrl,
+					TokenUrl:    oauth2Config.TokenUrl,
+					UserInfoUrl: oauth2Config.UserInfoUrl,
+					Scopes:     oauth2Config.Scopes,
 					FieldMapping: &v1pb.FieldMapping{
 						Identifier:  oauth2Config.FieldMapping.Identifier,
 						DisplayName: oauth2Config.FieldMapping.DisplayName,
@@ -242,12 +234,3 @@ func convertIdentityProviderConfigToStore(identityProviderType v1pb.IdentityProv
 	return nil
 }
 
-func redactIdentityProviderResponse(identityProvider *v1pb.IdentityProvider, userRole store.Role) *v1pb.IdentityProvider {
-	if userRole != store.RoleAdmin {
-		if identityProvider.Type == v1pb.IdentityProvider_OAUTH2 {
-			identityProvider.Config.GetOauth2Config().ClientSecret = ""
-		}
-	}
-
-	return identityProvider
-}

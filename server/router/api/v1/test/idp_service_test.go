@@ -8,6 +8,8 @@ import (
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
+	apiv1 "github.com/usememos/memos/server/router/api/v1"
+	"github.com/usememos/memos/store"
 )
 
 func TestCreateIdentityProvider(t *testing.T) {
@@ -233,7 +235,7 @@ func TestGetIdentityProvider(t *testing.T) {
 			Name: created.Name,
 		}
 
-		// Test unauthenticated, should not contain client secret
+		// ClientSecret is write-only: never returned in responses, even to admins.
 		resp, err := ts.Service.GetIdentityProvider(ctx, getReq)
 		require.NoError(t, err)
 		require.NotNil(t, resp)
@@ -242,18 +244,16 @@ func TestGetIdentityProvider(t *testing.T) {
 		require.Equal(t, v1pb.IdentityProvider_OAUTH2, resp.Type)
 		require.NotNil(t, resp.Config.GetOauth2Config())
 		require.Equal(t, "test-client", resp.Config.GetOauth2Config().ClientId)
-		require.Equal(t, "", resp.Config.GetOauth2Config().ClientSecret)
+		require.Empty(t, resp.Config.GetOauth2Config().ClientSecret,
+			"ClientSecret must never be returned in responses")
 
-		// Test as host user, should contain client secret
-		respHostUser, err := ts.Service.GetIdentityProvider(userCtx, getReq)
+		// Same for admin: secret is still write-only.
+		respAdmin, err := ts.Service.GetIdentityProvider(userCtx, getReq)
 		require.NoError(t, err)
-		require.NotNil(t, respHostUser)
-		require.Equal(t, created.Name, respHostUser.Name)
-		require.Equal(t, "Test Provider", respHostUser.Title)
-		require.Equal(t, v1pb.IdentityProvider_OAUTH2, respHostUser.Type)
-		require.NotNil(t, respHostUser.Config.GetOauth2Config())
-		require.Equal(t, "test-client", respHostUser.Config.GetOauth2Config().ClientId)
-		require.Equal(t, "test-secret", respHostUser.Config.GetOauth2Config().ClientSecret)
+		require.NotNil(t, respAdmin)
+		require.Equal(t, "test-client", respAdmin.Config.GetOauth2Config().ClientId)
+		require.Empty(t, respAdmin.Config.GetOauth2Config().ClientSecret,
+			"ClientSecret must never be returned in responses, even to admins")
 	})
 
 	t.Run("GetIdentityProvider not found", func(t *testing.T) {
@@ -359,6 +359,67 @@ func TestUpdateIdentityProvider(t *testing.T) {
 		require.Equal(t, "Updated Provider", updated.Title)
 		require.Equal(t, "test@example.com", updated.IdentifierFilter)
 		require.Equal(t, "updated-client", updated.Config.GetOauth2Config().ClientId)
+	})
+
+	t.Run("UpdateIdentityProvider empty ClientSecret preserves existing credential", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		// Create IDP with a real secret.
+		created, err := ts.Service.CreateIdentityProvider(userCtx, &v1pb.CreateIdentityProviderRequest{
+			IdentityProvider: &v1pb.IdentityProvider{
+				Title: "Preserve Secret Test",
+				Type:  v1pb.IdentityProvider_OAUTH2,
+				Config: &v1pb.IdentityProviderConfig{
+					Config: &v1pb.IdentityProviderConfig_Oauth2Config{
+						Oauth2Config: &v1pb.OAuth2Config{
+							ClientId:     "cid",
+							ClientSecret: "original-secret",
+							AuthUrl:      "https://ex.com/auth",
+							TokenUrl:     "https://ex.com/token",
+							UserInfoUrl:  "https://ex.com/user",
+							FieldMapping: &v1pb.FieldMapping{Identifier: "id"},
+						},
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		// Update with empty ClientSecret (simulating UI that doesn't resend the secret).
+		_, err = ts.Service.UpdateIdentityProvider(userCtx, &v1pb.UpdateIdentityProviderRequest{
+			IdentityProvider: &v1pb.IdentityProvider{
+				Name:  created.Name,
+				Title: "Updated Title",
+				Type:  v1pb.IdentityProvider_OAUTH2,
+				Config: &v1pb.IdentityProviderConfig{
+					Config: &v1pb.IdentityProviderConfig_Oauth2Config{
+						Oauth2Config: &v1pb.OAuth2Config{
+							ClientId:     "cid",
+							ClientSecret: "", // empty = preserve existing
+							AuthUrl:      "https://ex.com/auth",
+							TokenUrl:     "https://ex.com/token",
+							UserInfoUrl:  "https://ex.com/user",
+							FieldMapping: &v1pb.FieldMapping{Identifier: "id"},
+						},
+					},
+				},
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"title", "config"}},
+		})
+		require.NoError(t, err)
+
+		// Verify the stored secret was preserved by reading from store directly.
+		uid, _ := apiv1.ExtractIdentityProviderUIDFromName(created.Name)
+		stored, err := ts.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: &uid})
+		require.NoError(t, err)
+		require.Equal(t, "original-secret", stored.Config.GetOauth2Config().ClientSecret,
+			"existing ClientSecret must be preserved when an empty value is sent")
+		require.Equal(t, "Updated Title", stored.Name)
 	})
 
 	t.Run("UpdateIdentityProvider missing update mask", func(t *testing.T) {

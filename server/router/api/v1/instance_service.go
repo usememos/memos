@@ -71,8 +71,9 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 		return nil, status.Errorf(codes.NotFound, "instance setting not found")
 	}
 
-	// For storage setting, only admin can get it.
-	if instanceSetting.Key == storepb.InstanceSettingKey_STORAGE {
+	// Storage and notification settings contain credentials; restrict to admins only.
+	if instanceSetting.Key == storepb.InstanceSettingKey_STORAGE ||
+		instanceSetting.Key == storepb.InstanceSettingKey_NOTIFICATION {
 		user, err := s.fetchCurrentUser(ctx)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -108,6 +109,26 @@ func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.
 	}
 
 	updateSetting := convertInstanceSettingToStore(request.Setting)
+
+	// Preserve write-only credential fields when the caller sends an empty value.
+	// An empty string means "no change", not "clear the credential".
+	switch updateSetting.Key {
+	case storepb.InstanceSettingKey_NOTIFICATION:
+		if notif := updateSetting.GetNotificationSetting(); notif != nil && notif.Email != nil && notif.Email.SmtpPassword == "" {
+			existing, err := s.Store.GetInstanceNotificationSetting(ctx)
+			if err == nil && existing != nil && existing.Email != nil {
+				notif.Email.SmtpPassword = existing.Email.SmtpPassword
+			}
+		}
+	case storepb.InstanceSettingKey_STORAGE:
+		if storage := updateSetting.GetStorageSetting(); storage != nil && storage.S3Config != nil && storage.S3Config.AccessKeySecret == "" {
+			existing, err := s.Store.GetInstanceStorageSetting(ctx)
+			if err == nil && existing != nil && existing.S3Config != nil {
+				storage.S3Config.AccessKeySecret = existing.S3Config.AccessKeySecret
+			}
+		}
+	}
+
 	instanceSetting, err := s.Store.UpsertInstanceSetting(ctx, updateSetting)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to upsert instance setting: %v", err)
@@ -240,12 +261,12 @@ func convertInstanceStorageSettingFromStore(settingpb *storepb.InstanceStorageSe
 	}
 	if settingpb.S3Config != nil {
 		setting.S3Config = &v1pb.InstanceSetting_StorageSetting_S3Config{
-			AccessKeyId:     settingpb.S3Config.AccessKeyId,
-			AccessKeySecret: settingpb.S3Config.AccessKeySecret,
-			Endpoint:        settingpb.S3Config.Endpoint,
-			Region:          settingpb.S3Config.Region,
-			Bucket:          settingpb.S3Config.Bucket,
-			UsePathStyle:    settingpb.S3Config.UsePathStyle,
+			AccessKeyId:  settingpb.S3Config.AccessKeyId,
+			// AccessKeySecret is write-only: never returned in responses.
+			Endpoint:    settingpb.S3Config.Endpoint,
+			Region:      settingpb.S3Config.Region,
+			Bucket:      settingpb.S3Config.Bucket,
+			UsePathStyle: settingpb.S3Config.UsePathStyle,
 		}
 	}
 	return setting
@@ -341,12 +362,12 @@ func convertInstanceNotificationSettingFromStore(setting *storepb.InstanceNotifi
 			SmtpHost:     setting.Email.SmtpHost,
 			SmtpPort:     setting.Email.SmtpPort,
 			SmtpUsername: setting.Email.SmtpUsername,
-			SmtpPassword: setting.Email.SmtpPassword,
-			FromEmail:    setting.Email.FromEmail,
-			FromName:     setting.Email.FromName,
-			ReplyTo:      setting.Email.ReplyTo,
-			UseTls:       setting.Email.UseTls,
-			UseSsl:       setting.Email.UseSsl,
+			// SmtpPassword is write-only: never returned in responses.
+			FromEmail: setting.Email.FromEmail,
+			FromName:  setting.Email.FromName,
+			ReplyTo:   setting.Email.ReplyTo,
+			UseTls:    setting.Email.UseTls,
+			UseSsl:    setting.Email.UseSsl,
 		}
 	}
 	return notificationSetting

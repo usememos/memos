@@ -204,21 +204,38 @@ func TestGetInstanceSetting(t *testing.T) {
 		require.Empty(t, resp.GetTagsSetting().GetTags())
 	})
 
-	t.Run("GetInstanceSetting - notification setting", func(t *testing.T) {
+	t.Run("GetInstanceSetting - notification setting requires admin", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
-		req := &v1pb.GetInstanceSettingRequest{
-			Name: "instance/settings/NOTIFICATION",
-		}
-		resp, err := ts.Service.GetInstanceSetting(ctx, req)
+		admin, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, admin.ID)
 
+		regularUser, err := ts.CreateRegularUser(ctx, "user")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, regularUser.ID)
+
+		req := &v1pb.GetInstanceSettingRequest{Name: "instance/settings/NOTIFICATION"}
+
+		// Unauthenticated request must be rejected.
+		_, err = ts.Service.GetInstanceSetting(ctx, req)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "not authenticated")
+
+		// Non-admin request must be rejected.
+		_, err = ts.Service.GetInstanceSetting(userCtx, req)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "permission denied")
+
+		// Admin request succeeds and does NOT expose SmtpPassword.
+		resp, err := ts.Service.GetInstanceSetting(adminCtx, req)
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 		require.Equal(t, "instance/settings/NOTIFICATION", resp.Name)
 		require.NotNil(t, resp.GetNotificationSetting())
-		require.NotNil(t, resp.GetNotificationSetting().GetEmail())
-		require.False(t, resp.GetNotificationSetting().GetEmail().GetEnabled())
+		require.Empty(t, resp.GetNotificationSetting().GetEmail().GetSmtpPassword(),
+			"SmtpPassword must never be returned in responses")
 	})
 
 	t.Run("GetInstanceSetting - invalid setting name", func(t *testing.T) {
@@ -301,14 +318,16 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		require.Contains(t, err.Error(), "invalid instance setting")
 	})
 
-	t.Run("UpdateInstanceSetting - notification setting", func(t *testing.T) {
+	t.Run("UpdateInstanceSetting - notification setting password is write-only", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
 		hostUser, err := ts.CreateHostUser(ctx, "admin")
 		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
 
-		resp, err := ts.Service.UpdateInstanceSetting(ts.CreateUserContext(ctx, hostUser.ID), &v1pb.UpdateInstanceSettingRequest{
+		// Save notification setting with a password.
+		resp, err := ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
 			Setting: &v1pb.InstanceSetting{
 				Name: "instance/settings/NOTIFICATION",
 				Value: &v1pb.InstanceSetting_NotificationSetting_{
@@ -330,9 +349,117 @@ func TestUpdateInstanceSetting(t *testing.T) {
 			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"notification_setting"}},
 		})
 		require.NoError(t, err)
-		require.NotNil(t, resp.GetNotificationSetting())
-		require.NotNil(t, resp.GetNotificationSetting().GetEmail())
 		require.True(t, resp.GetNotificationSetting().GetEmail().GetEnabled())
 		require.Equal(t, "smtp.example.com", resp.GetNotificationSetting().GetEmail().GetSmtpHost())
+		// Password must not be returned even in the update response.
+		require.Empty(t, resp.GetNotificationSetting().GetEmail().GetSmtpPassword(),
+			"SmtpPassword must never be returned in responses")
+	})
+
+	t.Run("UpdateInstanceSetting - empty password preserves existing credential", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		notificationSetting := &v1pb.InstanceSetting{
+			Name: "instance/settings/NOTIFICATION",
+			Value: &v1pb.InstanceSetting_NotificationSetting_{
+				NotificationSetting: &v1pb.InstanceSetting_NotificationSetting{
+					Email: &v1pb.InstanceSetting_NotificationSetting_EmailSetting{
+						Enabled:      true,
+						SmtpHost:     "smtp.example.com",
+						SmtpPort:     587,
+						SmtpUsername: "bot@example.com",
+						SmtpPassword: "original-password",
+						FromEmail:    "bot@example.com",
+					},
+				},
+			},
+		}
+
+		// First save with a real password.
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
+			Setting: notificationSetting,
+		})
+		require.NoError(t, err)
+
+		// Second update with an empty password (simulating a UI that doesn't re-send the secret).
+		notificationSetting.GetNotificationSetting().GetEmail().SmtpPassword = ""
+		notificationSetting.GetNotificationSetting().GetEmail().SmtpHost = "smtp2.example.com"
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
+			Setting: notificationSetting,
+		})
+		require.NoError(t, err)
+
+		// The stored setting should have preserved the original password.
+		stored, err := ts.Store.GetInstanceNotificationSetting(ctx)
+		require.NoError(t, err)
+		require.Equal(t, "original-password", stored.GetEmail().GetSmtpPassword(),
+			"existing SmtpPassword must be preserved when an empty value is sent")
+		require.Equal(t, "smtp2.example.com", stored.GetEmail().GetSmtpHost())
+	})
+
+	t.Run("UpdateInstanceSetting - S3 secret is write-only and preserved on empty", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		// Save storage setting with a real secret.
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/STORAGE",
+				Value: &v1pb.InstanceSetting_StorageSetting_{
+					StorageSetting: &v1pb.InstanceSetting_StorageSetting{
+						S3Config: &v1pb.InstanceSetting_StorageSetting_S3Config{
+							AccessKeyId:     "AKID",
+							AccessKeySecret: "super-secret",
+							Endpoint:        "s3.example.com",
+							Region:          "us-east-1",
+							Bucket:          "memos",
+						},
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		// Read back: secret must not be returned.
+		resp, err := ts.Service.GetInstanceSetting(adminCtx, &v1pb.GetInstanceSettingRequest{
+			Name: "instance/settings/STORAGE",
+		})
+		require.NoError(t, err)
+		require.Empty(t, resp.GetStorageSetting().GetS3Config().GetAccessKeySecret(),
+			"AccessKeySecret must never be returned in responses")
+
+		// Update with empty secret; original must be preserved in the store.
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/STORAGE",
+				Value: &v1pb.InstanceSetting_StorageSetting_{
+					StorageSetting: &v1pb.InstanceSetting_StorageSetting{
+						S3Config: &v1pb.InstanceSetting_StorageSetting_S3Config{
+							AccessKeyId:     "AKID",
+							AccessKeySecret: "", // omitted / not changed
+							Endpoint:        "s3-v2.example.com",
+							Region:          "us-east-1",
+							Bucket:          "memos",
+						},
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		stored, err := ts.Store.GetInstanceStorageSetting(ctx)
+		require.NoError(t, err)
+		require.Equal(t, "super-secret", stored.GetS3Config().GetAccessKeySecret(),
+			"existing AccessKeySecret must be preserved when an empty value is sent")
+		require.Equal(t, "s3-v2.example.com", stored.GetS3Config().GetEndpoint())
 	})
 }
