@@ -185,7 +185,7 @@ func convertIdentityProviderFromStore(identityProvider *storepb.IdentityProvider
 					AuthUrl:     oauth2Config.AuthUrl,
 					TokenUrl:    oauth2Config.TokenUrl,
 					UserInfoUrl: oauth2Config.UserInfoUrl,
-					Scopes:     oauth2Config.Scopes,
+					Scopes:      oauth2Config.Scopes,
 					FieldMapping: &v1pb.FieldMapping{
 						Identifier:  oauth2Config.FieldMapping.Identifier,
 						DisplayName: oauth2Config.FieldMapping.DisplayName,
@@ -233,4 +233,3 @@ func convertIdentityProviderConfigToStore(identityProviderType v1pb.IdentityProv
 	}
 	return nil
 }
-
