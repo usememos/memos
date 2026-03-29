@@ -28,8 +28,8 @@ func withSuppressSSE(ctx context.Context) context.Context {
 }
 
 func isSSESuppressed(ctx context.Context) bool {
-	v, _ := ctx.Value(suppressSSEKey{}).(bool)
-	return v
+	v, ok := ctx.Value(suppressSSEKey{}).(bool)
+	return ok && v
 }
 
 func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoRequest) (*v1pb.Memo, error) {

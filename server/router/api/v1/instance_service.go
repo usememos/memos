@@ -127,6 +127,8 @@ func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.
 				storage.S3Config.AccessKeySecret = existing.S3Config.AccessKeySecret
 			}
 		}
+	default:
+		// No credential preservation needed for other setting types.
 	}
 
 	instanceSetting, err := s.Store.UpsertInstanceSetting(ctx, updateSetting)

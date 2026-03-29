@@ -32,20 +32,6 @@ func userCtx(ctx context.Context, userID int32) context.Context {
 	return context.WithValue(ctx, auth.UserIDContextKey, userID)
 }
 
-// drainEvents reads all events currently buffered in the channel and returns
-// them as a string slice.  It stops as soon as the channel is empty (non-blocking).
-func drainEvents(ch <-chan []byte) []string {
-	var out []string
-	for {
-		select {
-		case data := <-ch:
-			out = append(out, string(data))
-		default:
-			return out
-		}
-	}
-}
-
 // collectEventsFor reads events from ch for the given duration and returns them.
 func collectEventsFor(ch <-chan []byte, d time.Duration) []string {
 	var out []string
