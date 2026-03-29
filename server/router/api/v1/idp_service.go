@@ -182,10 +182,10 @@ func convertIdentityProviderFromStore(identityProvider *storepb.IdentityProvider
 				Oauth2Config: &v1pb.OAuth2Config{
 					ClientId: oauth2Config.ClientId,
 					// ClientSecret is write-only: never returned in responses.
-					AuthUrl:     oauth2Config.AuthUrl,
-					TokenUrl:    oauth2Config.TokenUrl,
-					UserInfoUrl: oauth2Config.UserInfoUrl,
-					Scopes:     oauth2Config.Scopes,
+					AuthUrl:      oauth2Config.AuthUrl,
+					TokenUrl:     oauth2Config.TokenUrl,
+					UserInfoUrl:  oauth2Config.UserInfoUrl,
+					Scopes:       oauth2Config.Scopes,
 					FieldMapping: &v1pb.FieldMapping{
 						Identifier:  oauth2Config.FieldMapping.Identifier,
 						DisplayName: oauth2Config.FieldMapping.DisplayName,

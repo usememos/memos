@@ -261,11 +261,11 @@ func convertInstanceStorageSettingFromStore(settingpb *storepb.InstanceStorageSe
 	}
 	if settingpb.S3Config != nil {
 		setting.S3Config = &v1pb.InstanceSetting_StorageSetting_S3Config{
-			AccessKeyId:  settingpb.S3Config.AccessKeyId,
+			AccessKeyId: settingpb.S3Config.AccessKeyId,
 			// AccessKeySecret is write-only: never returned in responses.
-			Endpoint:    settingpb.S3Config.Endpoint,
-			Region:      settingpb.S3Config.Region,
-			Bucket:      settingpb.S3Config.Bucket,
+			Endpoint:     settingpb.S3Config.Endpoint,
+			Region:       settingpb.S3Config.Region,
+			Bucket:       settingpb.S3Config.Bucket,
 			UsePathStyle: settingpb.S3Config.UsePathStyle,
 		}
 	}
