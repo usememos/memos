@@ -233,4 +233,3 @@ func convertIdentityProviderConfigToStore(identityProviderType v1pb.IdentityProv
 	}
 	return nil
 }
-
