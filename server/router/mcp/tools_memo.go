@@ -168,33 +168,6 @@ func storeMemoToJSONWithUsernames(m *store.Memo, usernamesByID map[int32]string)
 	return j, nil
 }
 
-// checkMemoAccess returns an error if the caller cannot read memo.
-// userID == 0 means anonymous.
-func checkMemoAccess(memo *store.Memo, userID int32) error {
-	switch memo.Visibility {
-	case store.Protected:
-		if userID == 0 {
-			return errors.New("permission denied")
-		}
-	case store.Private:
-		if memo.CreatorID != userID {
-			return errors.New("permission denied")
-		}
-	default:
-		// store.Public and any unknown visibility: allow
-	}
-	return nil
-}
-
-// applyVisibilityFilter restricts find to memos the caller may see.
-func applyVisibilityFilter(find *store.FindMemo, userID int32) {
-	if userID == 0 {
-		find.VisibilityList = []store.Visibility{store.Public}
-	} else {
-		find.Filters = append(find.Filters, fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "PROTECTED"]`, userID))
-	}
-}
-
 // parseMemoUID extracts the UID from a "memos/<uid>" resource name.
 func parseMemoUID(name string) (string, error) {
 	uid, ok := strings.CutPrefix(name, "memos/")
@@ -337,7 +310,7 @@ func (s *MCPService) handleListMemos(ctx context.Context, req mcp.CallToolReques
 		Offset:          &offset,
 		OrderByPinned:   req.GetBool("order_by_pinned", false),
 	}
-	applyVisibilityFilter(find, userID)
+	applyVisibilityFilter(find, userID, rowStatus)
 	if filter := req.GetString("filter", ""); filter != "" {
 		find.Filters = append(find.Filters, filter)
 	}
@@ -465,8 +438,8 @@ func (s *MCPService) handleUpdateMemo(ctx context.Context, req mcp.CallToolReque
 	if memo == nil {
 		return mcp.NewToolResultError("memo not found"), nil
 	}
-	if memo.CreatorID != userID {
-		return mcp.NewToolResultError("permission denied"), nil
+	if err := checkMemoOwnership(memo, userID); err != nil {
+		return mcp.NewToolResultError(err.Error()), nil
 	}
 
 	update := &store.UpdateMemo{ID: memo.ID}
@@ -533,8 +506,8 @@ func (s *MCPService) handleDeleteMemo(ctx context.Context, req mcp.CallToolReque
 	if memo == nil {
 		return mcp.NewToolResultError("memo not found"), nil
 	}
-	if memo.CreatorID != userID {
-		return mcp.NewToolResultError("permission denied"), nil
+	if err := checkMemoOwnership(memo, userID); err != nil {
+		return mcp.NewToolResultError(err.Error()), nil
 	}
 
 	if err := s.store.DeleteMemo(ctx, &store.DeleteMemo{ID: memo.ID}); err != nil {
@@ -561,7 +534,7 @@ func (s *MCPService) handleSearchMemos(ctx context.Context, req mcp.CallToolRequ
 		Offset:          &zero,
 		Filters:         []string{fmt.Sprintf(`content.contains(%q)`, query)},
 	}
-	applyVisibilityFilter(find, userID)
+	applyVisibilityFilter(find, userID, find.RowStatus)
 
 	memos, err := s.store.ListMemos(ctx, find)
 	if err != nil {

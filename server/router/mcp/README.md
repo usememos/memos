@@ -7,6 +7,7 @@ This package implements a [Model Context Protocol (MCP)](https://modelcontextpro
 ```
 POST /mcp   (tool calls, initialize)
 GET  /mcp   (optional SSE stream for server-to-client messages)
+DELETE /mcp (optional session termination)
 ```
 
 Transport: [Streamable HTTP](https://modelcontextprotocol.io/specification/2025-03-26/basic/transports) (single endpoint, MCP spec 2025-03-26).
@@ -24,13 +25,22 @@ The server advertises the following MCP capabilities:
 
 ## Authentication
 
-Every request must include a Personal Access Token (PAT):
+Public reads can be used without authentication. Personal Access Tokens (PATs) or short-lived JWT session tokens are required for:
+
+- Reading non-public memos or attachments
+- Any tool that mutates data
+
+When authenticating, send a Bearer token:
 
 ```
 Authorization: Bearer <your-PAT>
 ```
 
-PATs are long-lived tokens created in Settings → My Account → Access Tokens. Short-lived JWT session tokens are also accepted. Requests without a valid token receive `HTTP 401`.
+PATs are long-lived tokens created in Settings → My Account → Access Tokens. Short-lived JWT session tokens are also accepted. Requests with an invalid token receive `HTTP 401`.
+
+## Origin Validation
+
+For Streamable HTTP safety, requests with an `Origin` header must be same-origin with the current request host or match the configured `instance-url`. Requests without an `Origin` header, such as desktop MCP clients and CLI tools, are allowed.
 
 ## Tools
 
@@ -60,15 +70,15 @@ PATs are long-lived tokens created in Settings → My Account → Access Tokens.
 | `list_attachments` | List user's attachments | — | `page_size`, `page`, `memo` |
 | `get_attachment` | Get attachment metadata | `name` | — |
 | `delete_attachment` | Delete an attachment | `name` | — |
-| `link_attachment_to_memo` | Link attachment to memo | `name`, `memo` | — |
+| `link_attachment_to_memo` | Link attachment to a memo you own | `name`, `memo` | — |
 
 ### Relation Tools
 
 | Tool | Description | Required params | Optional params |
 |---|---|---|---|
 | `list_memo_relations` | List relations (refs + comments) | `name` | `type` |
-| `create_memo_relation` | Create a reference relation | `name`, `related_memo` | — |
-| `delete_memo_relation` | Delete a reference relation | `name`, `related_memo` | — |
+| `create_memo_relation` | Create a reference relation from a memo you own to a memo you can read | `name`, `related_memo` | — |
+| `delete_memo_relation` | Delete a reference relation from a memo you own | `name`, `related_memo` | — |
 
 ### Reaction Tools
 

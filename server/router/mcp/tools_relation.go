@@ -7,6 +7,7 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 	mcpserver "github.com/mark3labs/mcp-go/server"
 
+	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
 )
 
@@ -40,6 +41,8 @@ func (s *MCPService) registerRelationTools(mcpSrv *mcpserver.MCPServer) {
 }
 
 func (s *MCPService) handleListMemoRelations(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	userID := auth.GetUserID(ctx)
+
 	uid, err := parseMemoUID(req.GetString("name", ""))
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), nil
@@ -51,6 +54,9 @@ func (s *MCPService) handleListMemoRelations(ctx context.Context, req mcp.CallTo
 	}
 	if memo == nil {
 		return mcp.NewToolResultError("memo not found"), nil
+	}
+	if err := checkMemoAccess(memo, userID); err != nil {
+		return mcp.NewToolResultError(err.Error()), nil
 	}
 
 	find := &store.FindMemoRelation{
@@ -85,21 +91,24 @@ func (s *MCPService) handleListMemoRelations(ctx context.Context, req mcp.CallTo
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memos: %v", err)), nil
 	}
-	uidByID := make(map[int32]string, len(memos))
+	memoByID := make(map[int32]*store.Memo, len(memos))
 	for _, m := range memos {
-		uidByID[m.ID] = m.UID
+		memoByID[m.ID] = m
 	}
 
 	results := make([]relationJSON, 0, len(relations))
 	for _, r := range relations {
-		memoUID, ok1 := uidByID[r.MemoID]
-		relatedUID, ok2 := uidByID[r.RelatedMemoID]
+		srcMemo, ok1 := memoByID[r.MemoID]
+		relatedMemo, ok2 := memoByID[r.RelatedMemoID]
 		if !ok1 || !ok2 {
 			continue
 		}
+		if checkMemoAccess(srcMemo, userID) != nil || checkMemoAccess(relatedMemo, userID) != nil {
+			continue
+		}
 		results = append(results, relationJSON{
-			Memo:        "memos/" + memoUID,
-			RelatedMemo: "memos/" + relatedUID,
+			Memo:        "memos/" + srcMemo.UID,
+			RelatedMemo: "memos/" + relatedMemo.UID,
 			Type:        string(r.Type),
 		})
 	}
@@ -133,7 +142,7 @@ func (s *MCPService) handleCreateMemoRelation(ctx context.Context, req mcp.CallT
 	if srcMemo == nil {
 		return mcp.NewToolResultError("source memo not found"), nil
 	}
-	if srcMemo.CreatorID != userID {
+	if err := checkMemoOwnership(srcMemo, userID); err != nil {
 		return mcp.NewToolResultError("permission denied: must own the source memo"), nil
 	}
 
@@ -143,6 +152,9 @@ func (s *MCPService) handleCreateMemoRelation(ctx context.Context, req mcp.CallT
 	}
 	if dstMemo == nil {
 		return mcp.NewToolResultError("related memo not found"), nil
+	}
+	if err := checkMemoAccess(dstMemo, userID); err != nil {
+		return mcp.NewToolResultError(err.Error()), nil
 	}
 
 	relation, err := s.store.UpsertMemoRelation(ctx, &store.MemoRelation{
@@ -187,7 +199,7 @@ func (s *MCPService) handleDeleteMemoRelation(ctx context.Context, req mcp.CallT
 	if srcMemo == nil {
 		return mcp.NewToolResultError("source memo not found"), nil
 	}
-	if srcMemo.CreatorID != userID {
+	if err := checkMemoOwnership(srcMemo, userID); err != nil {
 		return mcp.NewToolResultError("permission denied: must own the source memo"), nil
 	}
 
@@ -197,6 +209,9 @@ func (s *MCPService) handleDeleteMemoRelation(ctx context.Context, req mcp.CallT
 	}
 	if dstMemo == nil {
 		return mcp.NewToolResultError("related memo not found"), nil
+	}
+	if err := checkMemoAccess(dstMemo, userID); err != nil {
+		return mcp.NewToolResultError(err.Error()), nil
 	}
 
 	refType := store.MemoRelationReference

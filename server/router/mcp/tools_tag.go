@@ -32,7 +32,7 @@ func (s *MCPService) handleListTags(ctx context.Context, _ mcp.CallToolRequest) 
 		ExcludeContent:  true,
 		RowStatus:       &rowStatus,
 	}
-	applyVisibilityFilter(find, userID)
+	applyVisibilityFilter(find, userID, find.RowStatus)
 
 	memos, err := s.store.ListMemos(ctx, find)
 	if err != nil {
