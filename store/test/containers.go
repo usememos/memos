@@ -23,7 +23,6 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 
 	// Database drivers for connection verification.
-	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 )
 

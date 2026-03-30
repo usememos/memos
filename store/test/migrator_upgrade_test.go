@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -189,10 +190,10 @@ func legacyInsertUserSQL(driver string, id int, username string) string {
 	switch driver {
 	case "mysql":
 		table = "`user`"
-	case "postgres":
+	case "postgres", "sqlite":
 		table = `"user"`
-	case "sqlite":
-		table = `"user"`
+	default:
+		// Keep the unquoted fallback for unknown test drivers.
 	}
 
 	return fmt.Sprintf(
@@ -262,6 +263,6 @@ func tableExists(ctx context.Context, db *sql.DB, driver, table string) (bool, e
 		err := db.QueryRowContext(ctx, "SELECT to_regclass($1)", "public."+table).Scan(&regclass)
 		return regclass.Valid && strings.EqualFold(regclass.String, table), err
 	default:
-		return false, fmt.Errorf("unsupported driver: %s", driver)
+		return false, errors.Errorf("unsupported driver: %s", driver)
 	}
 }
