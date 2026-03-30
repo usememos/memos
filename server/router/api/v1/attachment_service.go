@@ -360,7 +360,7 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 	}
 
 	if instanceStorageSetting.StorageType == storepb.InstanceStorageSetting_LOCAL {
-		filepathTemplate := "assets/{timestamp}_{filename}"
+		filepathTemplate := "assets/{timestamp}_{uuid}_{filename}"
 		if instanceStorageSetting.FilepathTemplate != "" {
 			filepathTemplate = instanceStorageSetting.FilepathTemplate
 		}
@@ -376,6 +376,15 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 		osPath := filepath.FromSlash(internalPath)
 		if !filepath.IsAbs(osPath) {
 			osPath = filepath.Join(profile.Data, osPath)
+		}
+		osPath = ensureUniqueLocalAttachmentPath(osPath, create.UID)
+		internalPath = filepath.ToSlash(osPath)
+		if !filepath.IsAbs(filepath.FromSlash(internalPath)) {
+			internalPath, err = filepath.Rel(profile.Data, osPath)
+			if err != nil {
+				return errors.Wrap(err, "Failed to get relative path")
+			}
+			internalPath = filepath.ToSlash(internalPath)
 		}
 		dir := filepath.Dir(osPath)
 		if err = os.MkdirAll(dir, os.ModePerm); err != nil {
@@ -512,6 +521,16 @@ func replaceFilenameWithPathTemplate(path, filename string) string {
 		}
 	})
 	return path
+}
+
+func ensureUniqueLocalAttachmentPath(path, uid string) string {
+	if _, err := os.Stat(path); err != nil {
+		return path
+	}
+
+	ext := filepath.Ext(path)
+	base := strings.TrimSuffix(path, ext)
+	return base + "_" + uid + ext
 }
 
 func validateFilename(filename string) bool {

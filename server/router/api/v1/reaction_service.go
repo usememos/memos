@@ -53,7 +53,10 @@ func (s *APIV1Service) ListMemoReactions(ctx context.Context, request *v1pb.List
 		Reactions: []*v1pb.Reaction{},
 	}
 	for _, reaction := range reactions {
-		reactionMessage := convertReactionFromStore(reaction)
+		reactionMessage, err := s.convertReactionFromStore(ctx, reaction)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to convert reaction")
+		}
 		response.Reactions = append(response.Reactions, reactionMessage)
 	}
 	return response, nil
@@ -95,13 +98,17 @@ func (s *APIV1Service) UpsertMemoReaction(ctx context.Context, request *v1pb.Ups
 		return nil, status.Errorf(codes.Internal, "failed to upsert reaction")
 	}
 
-	reactionMessage := convertReactionFromStore(reaction)
+	reactionMessage, err := s.convertReactionFromStore(ctx, reaction)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to convert reaction")
+	}
 
 	// Broadcast live refresh event (reaction belongs to a memo).
-	s.SSEHub.Broadcast(&SSEEvent{
-		Type: SSEEventReactionUpserted,
-		Name: request.Reaction.ContentId,
-	})
+	var parentMemo *store.Memo
+	if memo.ParentUID != nil {
+		parentMemo, _ = s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
+	}
+	s.SSEHub.Broadcast(buildMemoReactionSSEEvent(SSEEventReactionUpserted, request.Reaction.ContentId, memo, parentMemo))
 
 	return reactionMessage, nil
 }
@@ -142,24 +149,41 @@ func (s *APIV1Service) DeleteMemoReaction(ctx context.Context, request *v1pb.Del
 		return nil, status.Errorf(codes.Internal, "failed to delete reaction")
 	}
 
+	memoUID, err := ExtractMemoUIDFromName(reaction.ContentID)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
+	}
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get memo")
+	}
+
 	// Broadcast live refresh event (reaction belongs to a memo).
-	s.SSEHub.Broadcast(&SSEEvent{
-		Type: SSEEventReactionDeleted,
-		Name: reaction.ContentID,
-	})
+	var parentMemo *store.Memo
+	if memo != nil && memo.ParentUID != nil {
+		parentMemo, _ = s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
+	}
+	s.SSEHub.Broadcast(buildMemoReactionSSEEvent(SSEEventReactionDeleted, reaction.ContentID, memo, parentMemo))
 
 	return &emptypb.Empty{}, nil
 }
 
-func convertReactionFromStore(reaction *store.Reaction) *v1pb.Reaction {
+func (s *APIV1Service) convertReactionFromStore(ctx context.Context, reaction *store.Reaction) (*v1pb.Reaction, error) {
 	reactionUID := fmt.Sprintf("%d", reaction.ID)
+	creator, err := s.Store.GetUser(ctx, &store.FindUser{ID: &reaction.CreatorID})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get reaction creator")
+	}
+	if creator == nil {
+		return nil, status.Errorf(codes.NotFound, "reaction creator not found")
+	}
 	// Generate nested resource name: memos/{memo}/reactions/{reaction}
 	// reaction.ContentID already contains "memos/{memo}"
 	return &v1pb.Reaction{
 		Name:         fmt.Sprintf("%s/%s%s", reaction.ContentID, ReactionNamePrefix, reactionUID),
-		Creator:      fmt.Sprintf("%s%d", UserNamePrefix, reaction.CreatorID),
+		Creator:      BuildUserName(creator.Username),
 		ContentId:    reaction.ContentID,
 		ReactionType: reaction.ReactionType,
 		CreateTime:   timestamppb.New(time.Unix(reaction.CreatedTs, 0)),
-	}
+	}, nil
 }

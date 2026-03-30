@@ -60,12 +60,24 @@ func (s *MCPService) handleListReactions(ctx context.Context, req mcp.CallToolRe
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to list reactions: %v", err)), nil
 	}
+	creatorIDs := make([]int32, 0, len(reactions))
+	for _, reaction := range reactions {
+		creatorIDs = append(creatorIDs, reaction.CreatorID)
+	}
+	usernamesByID, err := preloadUsernames(ctx, s.store, creatorIDs)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to preload reaction creators: %v", err)), nil
+	}
 
 	results := make([]reactionJSON, len(reactions))
 	for i, r := range reactions {
+		creator, err := lookupUsernameFromCache(usernamesByID, r.CreatorID)
+		if err != nil {
+			return mcp.NewToolResultError(fmt.Sprintf("failed to resolve reaction creator: %v", err)), nil
+		}
 		results[i] = reactionJSON{
 			ID:           r.ID,
-			Creator:      fmt.Sprintf("users/%d", r.CreatorID),
+			Creator:      creator,
 			ReactionType: r.ReactionType,
 			CreateTime:   r.CreatedTs,
 		}
@@ -130,9 +142,13 @@ func (s *MCPService) handleUpsertReaction(ctx context.Context, req mcp.CallToolR
 		return mcp.NewToolResultError(fmt.Sprintf("failed to upsert reaction: %v", err)), nil
 	}
 
+	creator, err := lookupUsername(ctx, s.store, reaction.CreatorID)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve reaction creator: %v", err)), nil
+	}
 	out, err := marshalJSON(reactionJSON{
 		ID:           reaction.ID,
-		Creator:      fmt.Sprintf("users/%d", reaction.CreatorID),
+		Creator:      creator,
 		ReactionType: reaction.ReactionType,
 		CreateTime:   reaction.CreatedTs,
 	})

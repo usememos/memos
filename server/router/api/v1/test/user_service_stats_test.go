@@ -20,7 +20,7 @@ func TestGetUserStats_TagCount(t *testing.T) {
 	defer ts.Cleanup()
 
 	// Create a test host user
-	user, err := ts.CreateHostUser(ctx, "test_user")
+	user, err := ts.CreateHostUser(ctx, "test-user")
 	require.NoError(t, err)
 
 	// Create user context for authentication
@@ -40,12 +40,13 @@ func TestGetUserStats_TagCount(t *testing.T) {
 	require.NotNil(t, memo)
 
 	// Test GetUserStats
-	userName := fmt.Sprintf("users/%d", user.ID)
+	userName := fmt.Sprintf("users/%s", user.Username)
 	response, err := ts.Service.GetUserStats(userCtx, &v1pb.GetUserStatsRequest{
 		Name: userName,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, response)
+	require.Equal(t, fmt.Sprintf("users/%s/stats", user.Username), response.Name)
 
 	// Check that the tag count is exactly 1, not 2
 	require.Contains(t, response.TagCount, "test")
@@ -102,4 +103,10 @@ func TestGetUserStats_TagCount(t *testing.T) {
 	// The original test tag should still be 2
 	require.Contains(t, response3.TagCount, "test")
 	require.Equal(t, int32(2), response3.TagCount["test"], "Original tag count should remain 2")
+
+	_, err = ts.Service.GetUserStats(userCtx, &v1pb.GetUserStatsRequest{
+		Name: "users/1",
+	})
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "invalid user name")
 }

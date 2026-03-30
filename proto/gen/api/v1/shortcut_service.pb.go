@@ -27,7 +27,7 @@ const (
 type Shortcut struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The resource name of the shortcut.
-	// Format: users/{user}/shortcuts/{shortcut}
+	// Format: users/{username}/shortcuts/{shortcut}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The title of the shortcut.
 	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
@@ -91,7 +91,7 @@ func (x *Shortcut) GetFilter() string {
 type ListShortcutsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The parent resource where shortcuts are listed.
-	// Format: users/{user}
+	// Format: users/{username}
 	Parent        string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -182,7 +182,7 @@ func (x *ListShortcutsResponse) GetShortcuts() []*Shortcut {
 type GetShortcutRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The resource name of the shortcut to retrieve.
-	// Format: users/{user}/shortcuts/{shortcut}
+	// Format: users/{username}/shortcuts/{shortcut}
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -228,7 +228,7 @@ func (x *GetShortcutRequest) GetName() string {
 type CreateShortcutRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The parent resource where this shortcut will be created.
-	// Format: users/{user}
+	// Format: users/{username}
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The shortcut to create.
 	Shortcut *Shortcut `protobuf:"bytes,2,opt,name=shortcut,proto3" json:"shortcut,omitempty"`
@@ -346,7 +346,7 @@ func (x *UpdateShortcutRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 type DeleteShortcutRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The resource name of the shortcut to delete.
-	// Format: users/{user}/shortcuts/{shortcut}
+	// Format: users/{username}/shortcuts/{shortcut}
 	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -393,12 +393,12 @@ var File_api_v1_shortcut_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_shortcut_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1dapi/v1/shortcut_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xaf\x01\n" +
+	"\x1dapi/v1/shortcut_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"\xb3\x01\n" +
 	"\bShortcut\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
 	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x02R\x05title\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter:R\xeaAO\n" +
-	"\x15memos.api.v1/Shortcut\x12!users/{user}/shortcuts/{shortcut}*\tshortcuts2\bshortcut\"M\n" +
+	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter:V\xeaAS\n" +
+	"\x15memos.api.v1/Shortcut\x12%users/{username}/shortcuts/{shortcut}*\tshortcuts2\bshortcut\"M\n" +
 	"\x14ListShortcutsRequest\x125\n" +
 	"\x06parent\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\x12\x15memos.api.v1/ShortcutR\x06parent\"M\n" +
 	"\x15ListShortcutsResponse\x124\n" +

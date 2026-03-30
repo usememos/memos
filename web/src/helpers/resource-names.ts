@@ -7,8 +7,12 @@ export const userNamePrefix = "users/";
 export const memoNamePrefix = "memos/";
 export const identityProviderNamePrefix = "identity-providers/";
 
-export const extractUserIdFromName = (name: string) => {
-  return name.split(userNamePrefix).pop() || "";
+export const buildMemoCreatorFilter = (name: string) => {
+  if (!name) {
+    return undefined;
+  }
+  const normalizedName = name.startsWith(userNamePrefix) ? name : `${userNamePrefix}${name}`;
+  return `creator == ${JSON.stringify(normalizedName)}`;
 };
 
 export const extractMemoIdFromName = (name: string) => {

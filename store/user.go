@@ -23,20 +23,6 @@ func (e Role) String() string {
 	}
 }
 
-const (
-	SystemBotID int32 = 0
-)
-
-var (
-	SystemBot = &User{
-		ID:       SystemBotID,
-		Username: "system_bot",
-		Role:     RoleAdmin,
-		Email:    "",
-		Nickname: "Bot",
-	}
-)
-
 type User struct {
 	ID int32
 
@@ -125,9 +111,6 @@ func (s *Store) ListUsers(ctx context.Context, find *FindUser) ([]*User, error) 
 
 func (s *Store) GetUser(ctx context.Context, find *FindUser) (*User, error) {
 	if find.ID != nil {
-		if *find.ID == SystemBotID {
-			return SystemBot, nil
-		}
 		if cache, ok := s.userCache.Get(ctx, string(*find.ID)); ok {
 			user, ok := cache.(*User)
 			if ok {

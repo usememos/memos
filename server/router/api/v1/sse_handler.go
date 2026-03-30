@@ -17,10 +17,14 @@ const (
 	sseHeartbeatInterval = 30 * time.Second
 )
 
-// RegisterSSERoutes registers the SSE endpoint on the given Echo instance.
-func RegisterSSERoutes(echoServer *echo.Echo, hub *SSEHub, storeInstance *store.Store, secret string) {
+type sseRouteRegistrar interface {
+	GET(path string, h echo.HandlerFunc, m ...echo.MiddlewareFunc) echo.RouteInfo
+}
+
+// RegisterSSERoutes registers the SSE endpoint on the given Echo router.
+func RegisterSSERoutes(router sseRouteRegistrar, hub *SSEHub, storeInstance *store.Store, secret string) {
 	authenticator := auth.NewAuthenticator(storeInstance, secret)
-	echoServer.GET("/api/v1/sse", func(c *echo.Context) error {
+	router.GET("/api/v1/sse", func(c *echo.Context) error {
 		return handleSSE(c, hub, authenticator)
 	})
 }
@@ -32,6 +36,10 @@ func handleSSE(c *echo.Context, hub *SSEHub, authenticator *auth.Authenticator) 
 	authHeader := c.Request().Header.Get("Authorization")
 	result := authenticator.Authenticate(c.Request().Context(), authHeader)
 	if result == nil {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "authentication required"})
+	}
+	userID, role := getSSEClientIdentity(result)
+	if userID == 0 {
 		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "authentication required"})
 	}
 
@@ -49,7 +57,7 @@ func handleSSE(c *echo.Context, hub *SSEHub, authenticator *auth.Authenticator) 
 	}
 
 	// Subscribe to the hub.
-	client := hub.Subscribe()
+	client := hub.Subscribe(userID, role)
 	defer hub.Unsubscribe(client)
 
 	// Create a ticker for heartbeat pings.
@@ -58,13 +66,13 @@ func handleSSE(c *echo.Context, hub *SSEHub, authenticator *auth.Authenticator) 
 
 	ctx := c.Request().Context()
 
-	slog.Debug("SSE client connected")
+	slog.Debug("SSE client connected", "userID", userID)
 
 	for {
 		select {
 		case <-ctx.Done():
 			// Client disconnected.
-			slog.Debug("SSE client disconnected")
+			slog.Debug("SSE client disconnected", "userID", userID)
 			return nil
 
 		case data, ok := <-client.events:
@@ -90,4 +98,17 @@ func handleSSE(c *echo.Context, hub *SSEHub, authenticator *auth.Authenticator) 
 			}
 		}
 	}
+}
+
+func getSSEClientIdentity(result *auth.AuthResult) (int32, store.Role) {
+	if result == nil {
+		return 0, store.RoleUser
+	}
+	if result.Claims != nil {
+		return result.Claims.UserID, store.Role(result.Claims.Role)
+	}
+	if result.User != nil {
+		return result.User.ID, result.User.Role
+	}
+	return 0, store.RoleUser
 }

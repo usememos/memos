@@ -95,10 +95,8 @@ const (
 type UserServiceClient interface {
 	// ListUsers returns a list of users.
 	ListUsers(context.Context, *connect.Request[v1.ListUsersRequest]) (*connect.Response[v1.ListUsersResponse], error)
-	// GetUser gets a user by ID or username.
-	// Supports both numeric IDs and username strings:
-	//   - users/{id}       (e.g., users/101)
-	//   - users/{username} (e.g., users/steven)
+	// GetUser gets a user by username.
+	// Format: users/{username} (e.g., users/steven)
 	GetUser(context.Context, *connect.Request[v1.GetUserRequest]) (*connect.Response[v1.User], error)
 	// CreateUser creates a new user.
 	CreateUser(context.Context, *connect.Request[v1.CreateUserRequest]) (*connect.Response[v1.User], error)
@@ -402,10 +400,8 @@ func (c *userServiceClient) DeleteUserNotification(ctx context.Context, req *con
 type UserServiceHandler interface {
 	// ListUsers returns a list of users.
 	ListUsers(context.Context, *connect.Request[v1.ListUsersRequest]) (*connect.Response[v1.ListUsersResponse], error)
-	// GetUser gets a user by ID or username.
-	// Supports both numeric IDs and username strings:
-	//   - users/{id}       (e.g., users/101)
-	//   - users/{username} (e.g., users/steven)
+	// GetUser gets a user by username.
+	// Format: users/{username} (e.g., users/steven)
 	GetUser(context.Context, *connect.Request[v1.GetUserRequest]) (*connect.Response[v1.User], error)
 	// CreateUser creates a new user.
 	CreateUser(context.Context, *connect.Request[v1.CreateUserRequest]) (*connect.Response[v1.User], error)

@@ -36,7 +36,7 @@ Open-source, self-hosted note-taking tool built for quick capture. Markdown-nati
 <p></p>
 
 [**TestMu AI** - The world’s first full-stack Agentic AI Quality Engineering platform](https://www.testmuai.com/?utm_medium=sponsor&utm_source=memos)
-  
+
 <a href="https://www.testmuai.com/?utm_medium=sponsor&utm_source=memos" target="_blank" rel="noopener">
   <img src="https://usememos.com/sponsors/testmu.svg" alt="TestMu AI" height="36" />
 </a>
@@ -44,7 +44,7 @@ Open-source, self-hosted note-taking tool built for quick capture. Markdown-nati
 <p></p>
 
 [**SSD Nodes** - Affordable VPS hosting for self-hosters](https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor)
-  
+
 <a href="https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor" target="_blank" rel="noopener">
   <img src="https://usememos.com/sponsors/ssd-nodes.svg" alt="SSD Nodes" height="72" />
 </a>
