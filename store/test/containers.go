@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"net"
+	"net/url"
 	"os"
 	"strings"
 	"sync"
@@ -12,6 +14,7 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types/container"
+	mysqldriver "github.com/go-sql-driver/mysql"
 	"github.com/pkg/errors"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/mysql"
@@ -31,6 +34,9 @@ const (
 	// Memos container settings for migration testing.
 	MemosDockerImage   = "neosmemo/memos"
 	StableMemosVersion = "stable" // Always points to the latest stable release
+
+	mysqlNetworkAlias    = "memos-mysql"
+	postgresNetworkAlias = "memos-postgres"
 )
 
 var (
@@ -86,7 +92,7 @@ func GetMySQLDSN(t *testing.T) string {
 					wait.ForListeningPort("3306/tcp"),
 				).WithDeadline(120*time.Second),
 			),
-			network.WithNetwork(nil, nw),
+			network.WithNetwork([]string{mysqlNetworkAlias}, nw),
 		)
 		if err != nil {
 			t.Fatalf("failed to start MySQL container: %v", err)
@@ -183,7 +189,7 @@ func GetPostgresDSN(t *testing.T) string {
 					wait.ForListeningPort("5432/tcp"),
 				).WithDeadline(120*time.Second),
 			),
-			network.WithNetwork(nil, nw),
+			network.WithNetwork([]string{postgresNetworkAlias}, nw),
 		)
 		if err != nil {
 			t.Fatalf("failed to start PostgreSQL container: %v", err)
@@ -264,6 +270,11 @@ func StartMemosContainer(ctx context.Context, cfg MemosContainerConfig) (testcon
 		"MEMOS_MODE": "prod",
 	}
 
+	nw, err := getTestNetwork(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create test network")
+	}
+
 	var opts []testcontainers.ContainerCustomizer
 
 	switch cfg.Driver {
@@ -272,6 +283,12 @@ func StartMemosContainer(ctx context.Context, cfg MemosContainerConfig) (testcon
 		opts = append(opts, testcontainers.WithHostConfigModifier(func(hc *container.HostConfig) {
 			hc.Binds = append(hc.Binds, fmt.Sprintf("%s:%s", cfg.DataDir, "/var/opt/memos"))
 		}))
+	case "mysql", "postgres":
+		if cfg.DSN == "" {
+			return nil, errors.Errorf("dsn is required for %s migration testing", cfg.Driver)
+		}
+		env["MEMOS_DRIVER"] = cfg.Driver
+		env["MEMOS_DSN"] = cfg.DSN
 	default:
 		return nil, errors.Errorf("unsupported driver for migration testing: %s", cfg.Driver)
 	}
@@ -303,6 +320,7 @@ func StartMemosContainer(ctx context.Context, cfg MemosContainerConfig) (testcon
 	}
 
 	// Apply options
+	opts = append(opts, network.WithNetwork(nil, nw))
 	for _, opt := range opts {
 		if err := opt.Customize(&genericReq); err != nil {
 			return nil, errors.Wrap(err, "failed to apply container option")
@@ -315,4 +333,28 @@ func StartMemosContainer(ctx context.Context, cfg MemosContainerConfig) (testcon
 	}
 
 	return ctr, nil
+}
+
+func getContainerDSN(driver, hostDSN string) (string, error) {
+	switch driver {
+	case "mysql":
+		cfg, err := mysqldriver.ParseDSN(hostDSN)
+		if err != nil {
+			return "", errors.Wrap(err, "failed to parse mysql dsn")
+		}
+		cfg.Net = "tcp"
+		cfg.Addr = net.JoinHostPort(mysqlNetworkAlias, "3306")
+		return cfg.FormatDSN(), nil
+	case "postgres":
+		u, err := url.Parse(hostDSN)
+		if err != nil {
+			return "", errors.Wrap(err, "failed to parse postgres dsn")
+		}
+		u.Host = net.JoinHostPort(postgresNetworkAlias, "5432")
+		return u.String(), nil
+	case "sqlite":
+		return hostDSN, nil
+	default:
+		return "", errors.Errorf("unsupported driver for container dsn: %s", driver)
+	}
 }
