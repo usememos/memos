@@ -67,12 +67,23 @@ func getTestNetwork(ctx context.Context) (*testcontainers.DockerNetwork, error) 
 	return testDockerNetwork.Load(), networkErr
 }
 
+func requireTestNetwork(ctx context.Context) (*testcontainers.DockerNetwork, error) {
+	nw, err := getTestNetwork(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create test network")
+	}
+	if nw == nil {
+		return nil, errors.New("test network is unavailable")
+	}
+	return nw, nil
+}
+
 // GetMySQLDSN starts a MySQL container (if not already running) and creates a fresh database for this test.
 func GetMySQLDSN(t *testing.T) string {
 	ctx := context.Background()
 
 	mysqlOnce.Do(func() {
-		nw, err := getTestNetwork(ctx)
+		nw, err := requireTestNetwork(ctx)
 		if err != nil {
 			t.Fatalf("failed to create test network: %v", err)
 		}
@@ -172,7 +183,7 @@ func GetPostgresDSN(t *testing.T) string {
 	ctx := context.Background()
 
 	postgresOnce.Do(func() {
-		nw, err := getTestNetwork(ctx)
+		nw, err := requireTestNetwork(ctx)
 		if err != nil {
 			t.Fatalf("failed to create test network: %v", err)
 		}
@@ -269,9 +280,9 @@ func StartMemosContainer(ctx context.Context, cfg MemosContainerConfig) (testcon
 		"MEMOS_MODE": "prod",
 	}
 
-	nw, err := getTestNetwork(ctx)
+	nw, err := requireTestNetwork(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to create test network")
+		return nil, err
 	}
 
 	var opts []testcontainers.ContainerCustomizer

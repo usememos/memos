@@ -31,6 +31,11 @@ func TestMigrationFromV0262PreservesLegacyData(t *testing.T) {
 	t.Logf("Starting Memos %s container for %s schema bootstrap...", cfg.Version, driver)
 	container, err := StartMemosContainer(ctx, cfg)
 	require.NoError(t, err, "failed to start v0.26.2 memos container")
+	t.Cleanup(func() {
+		if container != nil {
+			_ = container.Terminate(ctx)
+		}
+	})
 
 	legacyStore := NewTestingStoreWithDSN(ctx, t, driver, hostDSN)
 	require.Eventually(t, func() bool {
@@ -44,6 +49,7 @@ func TestMigrationFromV0262PreservesLegacyData(t *testing.T) {
 
 	err = container.Terminate(ctx)
 	require.NoError(t, err, "failed to stop v0.26.2 memos container")
+	container = nil
 
 	db := openMigrationSQLDB(t, driver, hostDSN)
 	defer db.Close()
