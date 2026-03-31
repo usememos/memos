@@ -1,42 +1,20 @@
-import { FileAudioIcon, FileIcon, PaperclipIcon } from "lucide-react";
+import { FileIcon, PaperclipIcon } from "lucide-react";
 import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
-import { formatFileSize, getFileTypeLabel } from "@/utils/format";
+import { getAttachmentUrl } from "@/utils/attachment";
 import SectionHeader from "../SectionHeader";
 import AttachmentCard from "./AttachmentCard";
+import AudioAttachmentItem from "./AudioAttachmentItem";
+import { getAttachmentMetadata, isImageAttachment, separateAttachments } from "./attachmentViewHelpers";
 
 interface AttachmentListViewProps {
   attachments: Attachment[];
   onImagePreview?: (urls: string[], index: number) => void;
 }
 
-const isImageAttachment = (attachment: Attachment): boolean => getAttachmentType(attachment) === "image/*";
-const isVideoAttachment = (attachment: Attachment): boolean => getAttachmentType(attachment) === "video/*";
-const isAudioAttachment = (attachment: Attachment): boolean => getAttachmentType(attachment) === "audio/*";
-
-const separateAttachments = (attachments: Attachment[]) => {
-  const visual: Attachment[] = [];
-  const audio: Attachment[] = [];
-  const docs: Attachment[] = [];
-
-  for (const attachment of attachments) {
-    if (isImageAttachment(attachment) || isVideoAttachment(attachment)) {
-      visual.push(attachment);
-    } else if (isAudioAttachment(attachment)) {
-      audio.push(attachment);
-    } else {
-      docs.push(attachment);
-    }
-  }
-
-  return { visual, audio, docs };
-};
-
 const DocumentItem = ({ attachment }: { attachment: Attachment }) => {
-  const fileTypeLabel = getFileTypeLabel(attachment.type);
-  const fileSizeLabel = attachment.size ? formatFileSize(Number(attachment.size)) : undefined;
+  const { fileTypeLabel, fileSizeLabel } = getAttachmentMetadata(attachment);
 
   return (
     <div className="flex items-center gap-1 px-1 py-1 rounded text-xs text-muted-foreground hover:text-foreground hover:bg-accent/20 transition-colors whitespace-nowrap">
@@ -58,22 +36,6 @@ const DocumentItem = ({ attachment }: { attachment: Attachment }) => {
           )}
         </div>
       </div>
-    </div>
-  );
-};
-
-const AudioItem = ({ attachment }: { attachment: Attachment }) => {
-  const sourceUrl = getAttachmentUrl(attachment);
-
-  return (
-    <div className="flex flex-col gap-1 px-1 py-1">
-      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-        <FileAudioIcon className="w-3 h-3 shrink-0" />
-        <span className="truncate" title={attachment.filename}>
-          {attachment.filename}
-        </span>
-      </div>
-      <audio src={sourceUrl} controls preload="metadata" className="w-full h-8" />
     </div>
   );
 };
@@ -114,9 +76,9 @@ const VisualGrid = ({ attachments, onImageClick }: { attachments: Attachment[]; 
 );
 
 const AudioList = ({ attachments }: { attachments: Attachment[] }) => (
-  <div className="flex flex-col gap-1">
+  <div className="flex flex-col gap-2">
     {attachments.map((attachment) => (
-      <AudioItem key={attachment.name} attachment={attachment} />
+      <AudioAttachmentItem key={attachment.name} attachment={attachment} />
     ))}
   </div>
 );
