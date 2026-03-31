@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
+import TableEditorDialog from "@/components/TableEditorDialog";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { memoKeys } from "@/hooks/useMemoQueries";
@@ -45,7 +46,14 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   // Get default visibility from user settings
   const defaultVisibility = userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined;
 
-  useMemoInit({ editorRef, memo, cacheKey, username: currentUser?.name ?? "", autoFocus, defaultVisibility });
+  useMemoInit({
+    editorRef,
+    memo,
+    cacheKey,
+    username: currentUser?.name ?? "",
+    autoFocus,
+    defaultVisibility,
+  });
 
   // Auto-save content to localStorage
   useAutoSave(state.content, currentUser?.name ?? "", cacheKey);
@@ -56,6 +64,19 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const handleToggleFocusMode = () => {
     dispatch(actions.toggleFocusMode());
   };
+
+  // Table editor dialog (shared by slash command and toolbar).
+  const [tableDialogOpen, setTableDialogOpen] = useState(false);
+
+  const handleOpenTableEditor = useCallback(() => {
+    setTableDialogOpen(true);
+  }, []);
+
+  const handleTableConfirm = useCallback((markdown: string) => {
+    editorRef.current?.insertText(markdown);
+    setTableDialogOpen(false);
+    editorRef.current?.focus();
+  }, []);
 
   useKeyboard(editorRef, handleSave);
 
@@ -70,7 +91,10 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     dispatch(actions.setLoading("saving", true));
 
     try {
-      const result = await memoService.save(state, { memoName, parentMemoName });
+      const result = await memoService.save(state, {
+        memoName,
+        parentMemoName,
+      });
 
       if (!result.hasChanges) {
         toast.error(t("editor.no-changes-detected"));
@@ -89,12 +113,20 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
       // Ensure memo detail pages don't keep stale cached content after edits.
       if (memoName) {
-        invalidationPromises.push(queryClient.invalidateQueries({ queryKey: memoKeys.detail(memoName) }));
+        invalidationPromises.push(
+          queryClient.invalidateQueries({
+            queryKey: memoKeys.detail(memoName),
+          }),
+        );
       }
 
       // If this was a comment, also invalidate the comments query for the parent memo
       if (parentMemoName) {
-        invalidationPromises.push(queryClient.invalidateQueries({ queryKey: memoKeys.comments(parentMemoName) }));
+        invalidationPromises.push(
+          queryClient.invalidateQueries({
+            queryKey: memoKeys.comments(parentMemoName),
+          }),
+        );
       }
 
       await Promise.all(invalidationPromises);
@@ -145,14 +177,16 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         )}
 
         {/* Editor content grows to fill available space in focus mode */}
-        <EditorContent ref={editorRef} placeholder={placeholder} />
+        <EditorContent ref={editorRef} placeholder={placeholder} onOpenTableEditor={handleOpenTableEditor} />
 
         {/* Metadata and toolbar grouped together at bottom */}
         <div className="w-full flex flex-col gap-2">
           <EditorMetadata memoName={memoName} />
-          <EditorToolbar onSave={handleSave} onCancel={onCancel} memoName={memoName} />
+          <EditorToolbar onSave={handleSave} onCancel={onCancel} memoName={memoName} onOpenTableEditor={handleOpenTableEditor} />
         </div>
       </div>
+
+      <TableEditorDialog open={tableDialogOpen} onOpenChange={setTableDialogOpen} onConfirm={handleTableConfirm} />
     </>
   );
 };

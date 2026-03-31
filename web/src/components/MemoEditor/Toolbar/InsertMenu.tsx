@@ -1,6 +1,16 @@
 import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
-import { FileIcon, LinkIcon, LoaderIcon, type LucideIcon, MapPinIcon, Maximize2Icon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
+import {
+  FileIcon,
+  LinkIcon,
+  LoaderIcon,
+  type LucideIcon,
+  MapPinIcon,
+  Maximize2Icon,
+  MoreHorizontalIcon,
+  PlusIcon,
+  TableIcon,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce } from "react-use";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
@@ -26,7 +36,7 @@ import type { LocalFile } from "../types/attachment";
 const InsertMenu = (props: InsertMenuProps) => {
   const t = useTranslate();
   const { state, actions, dispatch } = useEditorContext();
-  const { location: initialLocation, onLocationChange, onToggleFocusMode, isUploading: isUploadingProp } = props;
+  const { location: initialLocation, onLocationChange, onToggleFocusMode, onOpenTableEditor, isUploading: isUploadingProp } = props;
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
@@ -130,6 +140,12 @@ const InsertMenu = (props: InsertMenuProps) => {
           onClick: handleUploadClick,
         },
         {
+          key: "table",
+          label: t("editor.table.title"),
+          icon: TableIcon,
+          onClick: () => onOpenTableEditor?.(),
+        },
+        {
           key: "link",
           label: t("tooltip.link-memo"),
           icon: LinkIcon,
@@ -142,7 +158,7 @@ const InsertMenu = (props: InsertMenuProps) => {
           onClick: handleLocationClick,
         },
       ] satisfies Array<{ key: string; label: string; icon: LucideIcon; onClick: () => void }>,
-    [handleLocationClick, handleOpenLinkDialog, handleUploadClick, t],
+    [handleLocationClick, handleOpenLinkDialog, onOpenTableEditor, handleUploadClick, t],
   );
 
   return (
