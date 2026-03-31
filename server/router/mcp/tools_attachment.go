@@ -216,21 +216,8 @@ func (s *MCPService) handleGetAttachment(ctx context.Context, req mcp.CallToolRe
 		return mcp.NewToolResultError("attachment not found"), nil
 	}
 
-	// Check access: creator can always access; linked memo visibility applies otherwise.
-	if attachment.CreatorID != userID {
-		if attachment.MemoID != nil {
-			memo, err := s.store.GetMemo(ctx, &store.FindMemo{ID: attachment.MemoID})
-			if err != nil {
-				return mcp.NewToolResultError(fmt.Sprintf("failed to get linked memo: %v", err)), nil
-			}
-			if memo != nil {
-				if err := checkMemoAccess(memo, userID); err != nil {
-					return mcp.NewToolResultError(err.Error()), nil
-				}
-			}
-		} else {
-			return mcp.NewToolResultError("permission denied"), nil
-		}
+	if err := s.checkAttachmentAccess(ctx, attachment, userID); err != nil {
+		return mcp.NewToolResultError(err.Error()), nil
 	}
 
 	result, err := storeAttachmentToJSON(ctx, s.store, attachment)
@@ -301,6 +288,9 @@ func (s *MCPService) handleLinkAttachmentToMemo(ctx context.Context, req mcp.Cal
 	}
 	if memo == nil {
 		return mcp.NewToolResultError("memo not found"), nil
+	}
+	if err := checkMemoOwnership(memo, userID); err != nil {
+		return mcp.NewToolResultError(err.Error()), nil
 	}
 
 	if err := s.store.UpdateAttachment(ctx, &store.UpdateAttachment{

@@ -1,12 +1,14 @@
 # Memo Filter Engine
 
-This package houses the memo-only filter engine that turns CEL expressions into
-SQL fragments. The engine follows a three phase pipeline inspired by systems
+This package houses the memo-only filter engine that turns standard CEL syntax
+into SQL fragments for the subset of expressions supported by the memo schema.
+The engine follows a three phase pipeline inspired by systems
 such as Calcite or Prisma:
 
 1. **Parsing** – CEL expressions are parsed with `cel-go` and validated against
    the memo-specific environment declared in `schema.go`. Only fields that
-   exist in the schema can surface in the filter.
+   exist in the schema can surface in the filter, and non-standard legacy
+   coercions are rejected.
 2. **Normalization** – the raw CEL AST is converted into an intermediate
    representation (IR) defined in `ir.go`. The IR is a dialect-agnostic tree of
    conditions (logical operators, comparisons, list membership, etc.). This

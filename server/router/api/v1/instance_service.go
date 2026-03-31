@@ -421,11 +421,10 @@ func validateInstanceTagsSetting(setting *v1pb.InstanceSetting_TagsSetting) erro
 		if metadata == nil {
 			return errors.Errorf("tag metadata is required for %q", tag)
 		}
-		if metadata.GetBackgroundColor() == nil {
-			return errors.Errorf("background_color is required for %q", tag)
-		}
-		if err := validateInstanceColor(metadata.GetBackgroundColor()); err != nil {
-			return errors.Wrapf(err, "background_color for %q", tag)
+		if metadata.GetBackgroundColor() != nil {
+			if err := validateInstanceColor(metadata.GetBackgroundColor()); err != nil {
+				return errors.Wrapf(err, "background_color for %q", tag)
+			}
 		}
 	}
 	return nil

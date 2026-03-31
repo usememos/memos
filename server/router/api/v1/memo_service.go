@@ -469,19 +469,11 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			payload.Location = convertLocationToStore(request.Memo.Location)
 			update.Payload = payload
 		} else if path == "attachments" {
-			_, err := s.SetMemoAttachments(ctx, &v1pb.SetMemoAttachmentsRequest{
-				Name:        request.Memo.Name,
-				Attachments: request.Memo.Attachments,
-			})
-			if err != nil {
+			if err := s.setMemoAttachmentsInternal(ctx, memo, request.Memo.Attachments); err != nil {
 				return nil, errors.Wrap(err, "failed to set memo attachments")
 			}
 		} else if path == "relations" {
-			_, err := s.SetMemoRelations(ctx, &v1pb.SetMemoRelationsRequest{
-				Name:      request.Memo.Name,
-				Relations: request.Memo.Relations,
-			})
-			if err != nil {
+			if err := s.setMemoRelationsInternal(ctx, memo, request.Memo.Relations); err != nil {
 				return nil, errors.Wrap(err, "failed to set memo relations")
 			}
 		}
@@ -497,44 +489,11 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get memo")
 	}
-	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
-		ContentID: &request.Memo.Name,
-	})
+	memo, parentMemo, memoMessage, err := s.buildUpdatedMemoState(ctx, memo.ID)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list reactions")
+		return nil, errors.Wrap(err, "failed to build updated memo state")
 	}
-	attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{
-		MemoID: &memo.ID,
-	})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list attachments")
-	}
-
-	relations, err := s.loadMemoRelations(ctx, memo)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to load memo relations")
-	}
-	memoMessage, err := s.convertMemoFromStore(ctx, memo, reactions, attachments, relations)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to convert memo")
-	}
-	var parentMemo *store.Memo
-	if memo.ParentUID != nil {
-		parentMemo, _ = s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
-	}
-	// Try to dispatch webhook when memo is updated.
-	if err := s.DispatchMemoUpdatedWebhook(ctx, memoMessage); err != nil {
-		slog.Warn("Failed to dispatch memo updated webhook", slog.Any("err", err))
-	}
-
-	// Broadcast live refresh event.
-	s.SSEHub.Broadcast(&SSEEvent{
-		Type:       SSEEventMemoUpdated,
-		Name:       memoMessage.Name,
-		Parent:     memoMessage.GetParent(),
-		Visibility: memo.Visibility,
-		CreatorID:  resolveSSECreatorID(memo, parentMemo),
-	})
+	s.dispatchMemoUpdatedSideEffects(ctx, memo, parentMemo, memoMessage)
 
 	return memoMessage, nil
 }

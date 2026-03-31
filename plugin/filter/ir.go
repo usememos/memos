@@ -157,3 +157,10 @@ type ContainsPredicate struct {
 }
 
 func (*ContainsPredicate) isPredicateExpr() {}
+
+// EqualsPredicate represents t == "value".
+type EqualsPredicate struct {
+	Value string
+}
+
+func (*EqualsPredicate) isPredicateExpr() {}

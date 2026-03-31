@@ -2396,7 +2396,12 @@ components:
                 backgroundColor:
                     allOf:
                         - $ref: '#/components/schemas/Color'
-                    description: Background color for the tag label.
+                    description: |-
+                        Optional background color for the tag label.
+                         When unset, the default tag color is used.
+                blurContent:
+                    type: boolean
+                    description: Whether memos with this tag should have their content blurred.
             description: Metadata for a tag.
         InstanceSetting_TagsSetting:
             type: object

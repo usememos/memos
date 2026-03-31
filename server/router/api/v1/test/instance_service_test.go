@@ -318,6 +318,34 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		require.Contains(t, err.Error(), "invalid instance setting")
 	})
 
+	t.Run("UpdateInstanceSetting - tags setting without color", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+
+		resp, err := ts.Service.UpdateInstanceSetting(ts.CreateUserContext(ctx, hostUser.ID), &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/TAGS",
+				Value: &v1pb.InstanceSetting_TagsSetting_{
+					TagsSetting: &v1pb.InstanceSetting_TagsSetting{
+						Tags: map[string]*v1pb.InstanceSetting_TagMetadata{
+							"spoiler": {
+								BlurContent: true,
+							},
+						},
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp.GetTagsSetting())
+		require.Contains(t, resp.GetTagsSetting().GetTags(), "spoiler")
+		require.Nil(t, resp.GetTagsSetting().GetTags()["spoiler"].GetBackgroundColor())
+		require.True(t, resp.GetTagsSetting().GetTags()["spoiler"].GetBlurContent())
+	})
+
 	t.Run("UpdateInstanceSetting - notification setting password is write-only", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()

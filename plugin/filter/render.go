@@ -480,6 +480,8 @@ func (r *renderer) renderListComprehension(cond *ListComprehensionCondition) (re
 
 	// Render based on predicate type
 	switch pred := cond.Predicate.(type) {
+	case *EqualsPredicate:
+		return r.renderTagEquals(field, pred.Value, cond.Kind)
 	case *StartsWithPredicate:
 		return r.renderTagStartsWith(field, pred.Prefix, cond.Kind)
 	case *EndsWithPredicate:
@@ -488,6 +490,22 @@ func (r *renderer) renderListComprehension(cond *ListComprehensionCondition) (re
 		return r.renderTagContains(field, pred.Substring, cond.Kind)
 	default:
 		return renderResult{}, errors.Errorf("unsupported predicate type %T in comprehension", pred)
+	}
+}
+
+// renderTagEquals generates SQL for tags.exists(t, t == "value").
+func (r *renderer) renderTagEquals(field Field, value string, _ ComprehensionKind) (renderResult, error) {
+	arrayExpr := jsonArrayExpr(r.dialect, field)
+
+	switch r.dialect {
+	case DialectSQLite, DialectMySQL:
+		exactMatch := r.buildJSONArrayLike(arrayExpr, fmt.Sprintf(`%%"%s"%%`, value))
+		return renderResult{sql: r.wrapWithNullCheck(arrayExpr, exactMatch)}, nil
+	case DialectPostgres:
+		exactMatch := fmt.Sprintf("%s @> jsonb_build_array(%s::json)", arrayExpr, r.addArg(fmt.Sprintf(`"%s"`, value)))
+		return renderResult{sql: r.wrapWithNullCheck(arrayExpr, exactMatch)}, nil
+	default:
+		return renderResult{}, errors.Errorf("unsupported dialect %s", r.dialect)
 	}
 }
 

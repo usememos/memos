@@ -22,8 +22,7 @@ import SettingGroup from "./SettingGroup";
 import SettingSection from "./SettingSection";
 import SettingTable from "./SettingTable";
 
-// Fallback to white when no color is stored.
-const tagColorToHex = (color?: { red?: number; green?: number; blue?: number }): string => colorToHex(color) ?? "#ffffff";
+const DEFAULT_TAG_COLOR = "#ffffff";
 
 // Converts a CSS hex string to a google.type.Color message.
 const hexToColor = (hex: string) =>
@@ -33,24 +32,36 @@ const hexToColor = (hex: string) =>
     blue: parseInt(hex.slice(5, 7), 16) / 255,
   });
 
+interface LocalTagMeta {
+  color?: string;
+  blur: boolean;
+}
+
+const toLocalTagMeta = (meta: {
+  backgroundColor?: { red?: number; green?: number; blue?: number };
+  blurContent: boolean;
+}): LocalTagMeta => ({
+  color: colorToHex(meta.backgroundColor),
+  blur: meta.blurContent,
+});
+
 const TagsSection = () => {
   const t = useTranslate();
   const { tagsSetting: originalSetting, updateSetting, fetchSetting } = useInstance();
   const { data: tagCounts = {} } = useTagCounts(false);
 
-  // Local state: map of tagName → hex color string for editing.
-  const [localTags, setLocalTags] = useState<Record<string, string>>(() =>
-    Object.fromEntries(Object.entries(originalSetting.tags).map(([name, meta]) => [name, tagColorToHex(meta.backgroundColor)])),
+  // Local state: map of tagName → { color, blur } for editing.
+  const [localTags, setLocalTags] = useState<Record<string, LocalTagMeta>>(() =>
+    Object.fromEntries(Object.entries(originalSetting.tags).map(([name, meta]) => [name, toLocalTagMeta(meta)])),
   );
   const [newTagName, setNewTagName] = useState("");
-  const [newTagColor, setNewTagColor] = useState("#ffffff");
+  const [newTagColor, setNewTagColor] = useState<string | undefined>(undefined);
+  const [newTagBlur, setNewTagBlur] = useState(false);
 
   // Sync local state when the fetched setting arrives (the fetch is async and
   // completes after mount, so localTags would be empty without this sync).
   useEffect(() => {
-    setLocalTags(
-      Object.fromEntries(Object.entries(originalSetting.tags).map(([name, meta]) => [name, tagColorToHex(meta.backgroundColor)])),
-    );
+    setLocalTags(Object.fromEntries(Object.entries(originalSetting.tags).map(([name, meta]) => [name, toLocalTagMeta(meta)])));
   }, [originalSetting.tags]);
 
   // All known tag names: union of saved entries and tags used in memos.
@@ -68,14 +79,18 @@ const TagsSection = () => {
     [localTags],
   );
 
-  const originalHexMap = useMemo(
-    () => Object.fromEntries(Object.entries(originalSetting.tags).map(([name, meta]) => [name, tagColorToHex(meta.backgroundColor)])),
+  const originalMetaMap = useMemo(
+    () => Object.fromEntries(Object.entries(originalSetting.tags).map(([name, meta]) => [name, toLocalTagMeta(meta)])),
     [originalSetting.tags],
   );
   const hasChanges = !isEqual(localTags, originalHexMap);
 
   const handleColorChange = (tagName: string, hex: string) => {
     setLocalTags((prev) => ({ ...prev, [tagName]: hex }));
+  };
+
+  const handleClearColor = (tagName: string) => {
+    setLocalTags((prev) => ({ ...prev, [tagName]: { ...prev[tagName], color: undefined } }));
   };
 
   const handleRemoveTag = (tagName: string) => {
@@ -99,7 +114,8 @@ const TagsSection = () => {
     }
     setLocalTags((prev) => ({ ...prev, [name]: newTagColor }));
     setNewTagName("");
-    setNewTagColor("#ffffff");
+    setNewTagColor(undefined);
+    setNewTagBlur(false);
   };
 
   const handleSave = async () => {
@@ -107,7 +123,10 @@ const TagsSection = () => {
       const tags = Object.fromEntries(
         Object.entries(localTags).map(([name, hex]) => [
           name,
-          create(InstanceSetting_TagMetadataSchema, { backgroundColor: hexToColor(hex) }),
+          create(InstanceSetting_TagMetadataSchema, {
+            blurContent: meta.blur,
+            ...(meta.color ? { backgroundColor: hexToColor(meta.color) } : {}),
+          }),
         ]),
       );
       await updateSetting(
@@ -144,9 +163,15 @@ const TagsSection = () => {
                   <input
                     type="color"
                     className="w-8 h-8 cursor-pointer rounded border border-border bg-transparent p-0.5"
-                    value={localTags[row.name]}
+                    value={localTags[row.name].color ?? DEFAULT_TAG_COLOR}
                     onChange={(e) => handleColorChange(row.name, e.target.value)}
                   />
+                  <Button variant="ghost" size="sm" onClick={() => handleClearColor(row.name)} disabled={!localTags[row.name].color}>
+                    {t("common.clear")}
+                  </Button>
+                  {!localTags[row.name].color && (
+                    <span className="text-xs text-muted-foreground">{t("setting.tags.using-default-color")}</span>
+                  )}
                 </div>
               ),
             },
@@ -185,15 +210,28 @@ const TagsSection = () => {
           <input
             type="color"
             className="w-8 h-8 cursor-pointer rounded border border-border bg-transparent p-0.5"
-            value={newTagColor}
+            value={newTagColor ?? DEFAULT_TAG_COLOR}
             onChange={(e) => setNewTagColor(e.target.value)}
           />
+          <Button variant="ghost" size="sm" onClick={() => setNewTagColor(undefined)} disabled={!newTagColor}>
+            {t("common.clear")}
+          </Button>
+          <label className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <input
+              type="checkbox"
+              className="w-4 h-4 cursor-pointer"
+              checked={newTagBlur}
+              onChange={(e) => setNewTagBlur(e.target.checked)}
+            />
+            {t("setting.tags.blur-content")}
+          </label>
           <Button variant="outline" onClick={handleAddTag} disabled={!newTagName.trim()}>
             <PlusIcon className="w-4 h-4 mr-1.5" />
             {t("common.add")}
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-1">{t("setting.tags.tag-pattern-hint")}</p>
+        {!newTagColor && <p className="text-xs text-muted-foreground">{t("setting.tags.using-default-color")}</p>}
       </SettingGroup>
 
       <div className="w-full flex justify-end">

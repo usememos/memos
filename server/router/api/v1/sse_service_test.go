@@ -187,3 +187,86 @@ func TestDeleteMemoReaction_SSEEvent(t *testing.T) {
 	assert.Contains(t, payload, memo.Name)
 	mustNotReceive(t, client.events, 100*time.Millisecond)
 }
+
+func TestSetMemoAttachments_EmitsMemoUpdatedSSEEvent(t *testing.T) {
+	ctx := context.Background()
+	svc := newIntegrationService(t)
+
+	user, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "user", Role: store.RoleAdmin, Email: "user@example.com",
+	})
+	require.NoError(t, err)
+	uctx := userCtx(ctx, user.ID)
+
+	memo, err := svc.CreateMemo(uctx, &v1pb.CreateMemoRequest{
+		Memo: &v1pb.Memo{Content: "memo with attachments", Visibility: v1pb.Visibility_PUBLIC},
+	})
+	require.NoError(t, err)
+
+	attachment, err := svc.CreateAttachment(uctx, &v1pb.CreateAttachmentRequest{
+		Attachment: &v1pb.Attachment{
+			Filename: "test.txt",
+			Size:     5,
+			Type:     "text/plain",
+			Content:  []byte("hello"),
+		},
+	})
+	require.NoError(t, err)
+
+	client := svc.SSEHub.Subscribe(user.ID, store.RoleAdmin)
+	defer svc.SSEHub.Unsubscribe(client)
+
+	_, err = svc.SetMemoAttachments(uctx, &v1pb.SetMemoAttachmentsRequest{
+		Name: memo.Name,
+		Attachments: []*v1pb.Attachment{
+			{Name: attachment.Name},
+		},
+	})
+	require.NoError(t, err)
+
+	data := mustReceive(t, client.events, time.Second)
+	payload := string(data)
+	assert.Contains(t, payload, `"memo.updated"`)
+	assert.Contains(t, payload, memo.Name)
+	mustNotReceive(t, client.events, 100*time.Millisecond)
+}
+
+func TestSetMemoRelations_EmitsMemoUpdatedSSEEvent(t *testing.T) {
+	ctx := context.Background()
+	svc := newIntegrationService(t)
+
+	user, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "user", Role: store.RoleAdmin, Email: "user@example.com",
+	})
+	require.NoError(t, err)
+	uctx := userCtx(ctx, user.ID)
+
+	memo1, err := svc.CreateMemo(uctx, &v1pb.CreateMemoRequest{
+		Memo: &v1pb.Memo{Content: "memo one", Visibility: v1pb.Visibility_PUBLIC},
+	})
+	require.NoError(t, err)
+	memo2, err := svc.CreateMemo(uctx, &v1pb.CreateMemoRequest{
+		Memo: &v1pb.Memo{Content: "memo two", Visibility: v1pb.Visibility_PUBLIC},
+	})
+	require.NoError(t, err)
+
+	client := svc.SSEHub.Subscribe(user.ID, store.RoleAdmin)
+	defer svc.SSEHub.Unsubscribe(client)
+
+	_, err = svc.SetMemoRelations(uctx, &v1pb.SetMemoRelationsRequest{
+		Name: memo1.Name,
+		Relations: []*v1pb.MemoRelation{
+			{
+				RelatedMemo: &v1pb.MemoRelation_Memo{Name: memo2.Name},
+				Type:        v1pb.MemoRelation_REFERENCE,
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	data := mustReceive(t, client.events, time.Second)
+	payload := string(data)
+	assert.Contains(t, payload, `"memo.updated"`)
+	assert.Contains(t, payload, memo1.Name)
+	mustNotReceive(t, client.events, 100*time.Millisecond)
+}
