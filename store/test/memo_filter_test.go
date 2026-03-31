@@ -730,6 +730,31 @@ func TestMemoFilterTagsExistsContains(t *testing.T) {
 	require.Len(t, memos, 1, "Should find 1 non-todo memo")
 }
 
+func TestMemoFilterTagsExistsEquals(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateMemo(NewMemoBuilder("memo-1231", tc.User.ID).
+		Content("Memo with exact numeric tag").
+		Tags("1231", "project"))
+
+	tc.CreateMemo(NewMemoBuilder("memo-1231-suffix", tc.User.ID).
+		Content("Memo with related tag").
+		Tags("tag/1231", "other"))
+
+	tc.CreateMemo(NewMemoBuilder("memo-other", tc.User.ID).
+		Content("Memo with different tag").
+		Tags("9999"))
+
+	memos := tc.ListWithFilter(`tags.exists(t, t == "1231")`)
+	require.Len(t, memos, 1, "Should find only the memo with exact matching tag")
+	require.Equal(t, "memo-1231", memos[0].UID)
+
+	memos = tc.ListWithFilter(`!tags.exists(t, t == "1231")`)
+	require.Len(t, memos, 2, "Should exclude only the memo with exact matching tag")
+}
+
 func TestMemoFilterTagsExistsEndsWith(t *testing.T) {
 	t.Parallel()
 	tc := NewMemoFilterTestContext(t)

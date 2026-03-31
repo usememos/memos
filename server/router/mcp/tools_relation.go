@@ -142,7 +142,7 @@ func (s *MCPService) handleCreateMemoRelation(ctx context.Context, req mcp.CallT
 	if srcMemo == nil {
 		return mcp.NewToolResultError("source memo not found"), nil
 	}
-	if err := checkMemoOwnership(srcMemo, userID); err != nil {
+	if !hasMemoOwnership(srcMemo, userID) {
 		return mcp.NewToolResultError("permission denied: must own the source memo"), nil
 	}
 
@@ -199,7 +199,7 @@ func (s *MCPService) handleDeleteMemoRelation(ctx context.Context, req mcp.CallT
 	if srcMemo == nil {
 		return mcp.NewToolResultError("source memo not found"), nil
 	}
-	if err := checkMemoOwnership(srcMemo, userID); err != nil {
+	if !hasMemoOwnership(srcMemo, userID) {
 		return mcp.NewToolResultError("permission denied: must own the source memo"), nil
 	}
 

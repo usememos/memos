@@ -223,7 +223,7 @@ func (s *MCPService) registerMemoTools(mcpSrv *mcpserver.MCPServer) {
 			mcp.Description("Filter by state: NORMAL (default) or ARCHIVED"),
 		),
 		mcp.WithBoolean("order_by_pinned", mcp.Description("When true, pinned memos appear first (default false)")),
-		mcp.WithString("filter", mcp.Description(`Optional CEL filter, e.g. content.contains("keyword") or tags.exists(t, t == "work")`)),
+		mcp.WithString("filter", mcp.Description(`Optional CEL filter (supported subset of standard CEL syntax), e.g. content.contains("keyword") or tags.exists(t, t == "work")`)),
 	), s.handleListMemos)
 
 	mcpSrv.AddTool(mcp.NewTool("get_memo",

@@ -48,7 +48,7 @@ For Streamable HTTP safety, requests with an `Origin` header must be same-origin
 
 | Tool | Description | Required params | Optional params |
 |---|---|---|---|
-| `list_memos` | List memos | — | `page_size`, `page`, `state`, `order_by_pinned`, `filter` (CEL) |
+| `list_memos` | List memos | — | `page_size`, `page`, `state`, `order_by_pinned`, `filter` (supported subset of standard CEL syntax) |
 | `get_memo` | Get a single memo | `name` | — |
 | `search_memos` | Full-text search | `query` | — |
 | `create_memo` | Create a memo | `content` | `visibility` |

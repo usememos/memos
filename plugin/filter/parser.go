@@ -16,16 +16,10 @@ func buildCondition(expr *exprv1.Expr, schema Schema) (Condition, error) {
 		if err != nil {
 			return nil, err
 		}
-		switch v := val.(type) {
-		case bool:
+		if v, ok := val.(bool); ok {
 			return &ConstantCondition{Value: v}, nil
-		case int64:
-			return &ConstantCondition{Value: v != 0}, nil
-		case float64:
-			return &ConstantCondition{Value: v != 0}, nil
-		default:
-			return nil, errors.New("filter must evaluate to a boolean value")
 		}
+		return nil, errors.New("filter must evaluate to a boolean value")
 	case *exprv1.Expr_IdentExpr:
 		name := v.IdentExpr.GetName()
 		field, ok := schema.Field(name)
@@ -504,6 +498,8 @@ func extractPredicate(comp *exprv1.Expr_Comprehension, _ Schema) (PredicateExpr,
 
 	// Handle different predicate functions
 	switch predicateCall.Function {
+	case "_==_":
+		return buildEqualsPredicate(predicateCall, comp.IterVar)
 	case "startsWith":
 		return buildStartsWithPredicate(predicateCall, comp.IterVar)
 	case "endsWith":
@@ -511,8 +507,42 @@ func extractPredicate(comp *exprv1.Expr_Comprehension, _ Schema) (PredicateExpr,
 	case "contains":
 		return buildContainsPredicate(predicateCall, comp.IterVar)
 	default:
-		return nil, errors.Errorf("unsupported predicate function %q in comprehension (supported: startsWith, endsWith, contains)", predicateCall.Function)
+		return nil, errors.Errorf(`unsupported predicate function %q in comprehension (supported: ==, startsWith, endsWith, contains)`, predicateCall.Function)
 	}
+}
+
+// buildEqualsPredicate extracts the value from t == "value".
+func buildEqualsPredicate(call *exprv1.Expr_Call, iterVar string) (PredicateExpr, error) {
+	if len(call.Args) != 2 {
+		return nil, errors.New("equality predicate expects exactly two arguments")
+	}
+
+	var constExpr *exprv1.Expr
+	switch {
+	case isIterVarExpr(call.Args[0], iterVar):
+		constExpr = call.Args[1]
+	case isIterVarExpr(call.Args[1], iterVar):
+		constExpr = call.Args[0]
+	default:
+		return nil, errors.Errorf("equality predicate must compare against the iteration variable %q", iterVar)
+	}
+
+	value, err := getConstValue(constExpr)
+	if err != nil {
+		return nil, errors.Wrap(err, "equality argument must be a constant string")
+	}
+
+	valueStr, ok := value.(string)
+	if !ok {
+		return nil, errors.New("equality argument must be a string")
+	}
+
+	return &EqualsPredicate{Value: valueStr}, nil
+}
+
+func isIterVarExpr(expr *exprv1.Expr, iterVar string) bool {
+	target := expr.GetIdentExpr()
+	return target != nil && target.GetName() == iterVar
 }
 
 // buildStartsWithPredicate extracts the pattern from t.startsWith("prefix").

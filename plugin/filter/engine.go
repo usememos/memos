@@ -2,7 +2,6 @@ package filter
 
 import (
 	"context"
-	"fmt"
 	"strings"
 	"sync"
 
@@ -44,8 +43,6 @@ func (e *Engine) Compile(_ context.Context, filter string) (*Program, error) {
 	if strings.TrimSpace(filter) == "" {
 		return nil, errors.New("filter expression is empty")
 	}
-
-	filter = normalizeLegacyFilter(filter)
 
 	ast, issues := e.env.Compile(filter)
 	if issues != nil && issues.Err() != nil {
@@ -118,74 +115,4 @@ func DefaultAttachmentEngine() (*Engine, error) {
 		defaultAttachmentInst, defaultAttachmentErr = NewEngine(NewAttachmentSchema())
 	})
 	return defaultAttachmentInst, defaultAttachmentErr
-}
-
-func normalizeLegacyFilter(expr string) string {
-	expr = rewriteNumericLogicalOperand(expr, "&&")
-	expr = rewriteNumericLogicalOperand(expr, "||")
-	return expr
-}
-
-func rewriteNumericLogicalOperand(expr, op string) string {
-	var builder strings.Builder
-	n := len(expr)
-	i := 0
-	var inQuote rune
-
-	for i < n {
-		ch := expr[i]
-
-		if inQuote != 0 {
-			builder.WriteByte(ch)
-			if ch == '\\' && i+1 < n {
-				builder.WriteByte(expr[i+1])
-				i += 2
-				continue
-			}
-			if ch == byte(inQuote) {
-				inQuote = 0
-			}
-			i++
-			continue
-		}
-
-		if ch == '\'' || ch == '"' {
-			inQuote = rune(ch)
-			builder.WriteByte(ch)
-			i++
-			continue
-		}
-
-		if strings.HasPrefix(expr[i:], op) {
-			builder.WriteString(op)
-			i += len(op)
-
-			// Preserve whitespace following the operator.
-			wsStart := i
-			for i < n && (expr[i] == ' ' || expr[i] == '\t') {
-				i++
-			}
-			builder.WriteString(expr[wsStart:i])
-
-			signStart := i
-			if i < n && (expr[i] == '+' || expr[i] == '-') {
-				i++
-			}
-			for i < n && expr[i] >= '0' && expr[i] <= '9' {
-				i++
-			}
-			if i > signStart {
-				numLiteral := expr[signStart:i]
-				fmt.Fprintf(&builder, "(%s != 0)", numLiteral)
-			} else {
-				builder.WriteString(expr[signStart:i])
-			}
-			continue
-		}
-
-		builder.WriteByte(ch)
-		i++
-	}
-
-	return builder.String()
 }
