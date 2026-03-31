@@ -37,7 +37,10 @@ interface LocalTagMeta {
   blur: boolean;
 }
 
-const toLocalTagMeta = (meta: { backgroundColor?: { red?: number; green?: number; blue?: number }; blurContent: boolean }): LocalTagMeta => ({
+const toLocalTagMeta = (meta: {
+  backgroundColor?: { red?: number; green?: number; blue?: number };
+  blurContent: boolean;
+}): LocalTagMeta => ({
   color: colorToHex(meta.backgroundColor),
   blur: meta.blurContent,
 });
@@ -170,7 +173,9 @@ const TagsSection = () => {
                   <Button variant="ghost" size="sm" onClick={() => handleClearColor(row.name)} disabled={!localTags[row.name].color}>
                     {t("common.clear")}
                   </Button>
-                  {!localTags[row.name].color && <span className="text-xs text-muted-foreground">{t("setting.tags.using-default-color")}</span>}
+                  {!localTags[row.name].color && (
+                    <span className="text-xs text-muted-foreground">{t("setting.tags.using-default-color")}</span>
+                  )}
                 </div>
               ),
             },
