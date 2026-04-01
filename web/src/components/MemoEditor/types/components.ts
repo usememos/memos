@@ -1,6 +1,7 @@
 import type { Location, Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { EditorRefActions } from "../Editor";
 import type { Command } from "../Editor/commands";
+import type { EditorState } from "../state";
 
 export interface MemoEditorProps {
   className?: string;
@@ -22,10 +23,21 @@ export interface EditorToolbarProps {
   onSave: () => void;
   onCancel?: () => void;
   memoName?: string;
+  onVoiceRecorderClick: () => void;
 }
 
 export interface EditorMetadataProps {
   memoName?: string;
+}
+
+export interface VoiceRecorderPanelProps {
+  voiceRecorder: EditorState["voiceRecorder"];
+  onStart: () => void;
+  onStop: () => void;
+  onKeep: () => void;
+  onDiscard: () => void;
+  onRecordAgain: () => void;
+  onClose: () => void;
 }
 
 export interface FocusModeOverlayProps {
@@ -45,6 +57,7 @@ export interface InsertMenuProps {
   onLocationChange: (location?: Location) => void;
   onToggleFocusMode?: () => void;
   memoName?: string;
+  onVoiceRecorderClick?: () => void;
 }
 
 export interface TagSuggestionsProps {

@@ -119,6 +119,61 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         },
       };
 
+    case "SET_VOICE_RECORDER_SUPPORT":
+      return {
+        ...state,
+        voiceRecorder: {
+          ...state.voiceRecorder,
+          isSupported: action.payload,
+          status: action.payload ? state.voiceRecorder.status : "unsupported",
+        },
+      };
+
+    case "SET_VOICE_RECORDER_PERMISSION":
+      return {
+        ...state,
+        voiceRecorder: {
+          ...state.voiceRecorder,
+          permission: action.payload,
+        },
+      };
+
+    case "SET_VOICE_RECORDER_STATUS":
+      return {
+        ...state,
+        voiceRecorder: {
+          ...state.voiceRecorder,
+          status: action.payload,
+        },
+      };
+
+    case "SET_VOICE_RECORDER_ELAPSED":
+      return {
+        ...state,
+        voiceRecorder: {
+          ...state.voiceRecorder,
+          elapsedSeconds: action.payload,
+        },
+      };
+
+    case "SET_VOICE_RECORDER_ERROR":
+      return {
+        ...state,
+        voiceRecorder: {
+          ...state.voiceRecorder,
+          error: action.payload,
+        },
+      };
+
+    case "SET_VOICE_RECORDING":
+      return {
+        ...state,
+        voiceRecorder: {
+          ...state.voiceRecorder,
+          recording: action.payload,
+        },
+      };
+
     case "RESET":
       return {
         ...initialState,

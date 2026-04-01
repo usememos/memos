@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -9,10 +9,18 @@ import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
-import { EditorContent, EditorMetadata, EditorToolbar, FocusModeExitButton, FocusModeOverlay, TimestampPopover } from "./components";
+import {
+  EditorContent,
+  EditorMetadata,
+  EditorToolbar,
+  FocusModeExitButton,
+  FocusModeOverlay,
+  TimestampPopover,
+  VoiceRecorderPanel,
+} from "./components";
 import { FOCUS_MODE_STYLES } from "./constants";
 import type { EditorRefActions } from "./Editor";
-import { useAutoSave, useFocusMode, useKeyboard, useMemoInit } from "./hooks";
+import { useAutoSave, useFocusMode, useKeyboard, useMemoInit, useVoiceRecorder } from "./hooks";
 import { cacheService, errorService, memoService, validationService } from "./services";
 import { EditorProvider, useEditorContext } from "./state";
 import type { MemoEditorProps } from "./types";
@@ -39,6 +47,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const editorRef = useRef<EditorRefActions>(null);
   const { state, actions, dispatch } = useEditorContext();
   const { userGeneralSetting } = useAuth();
+  const [isVoiceRecorderOpen, setIsVoiceRecorderOpen] = useState(false);
 
   const memoName = memo?.name;
 
@@ -53,8 +62,72 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   // Focus mode management with body scroll lock
   useFocusMode(state.ui.isFocusMode);
 
+  const voiceRecorderActions = useMemo(
+    () => ({
+      setVoiceRecorderSupport: (value: boolean) => dispatch(actions.setVoiceRecorderSupport(value)),
+      setVoiceRecorderPermission: (value: "unknown" | "granted" | "denied") => dispatch(actions.setVoiceRecorderPermission(value)),
+      setVoiceRecorderStatus: (value: "idle" | "requesting_permission" | "recording" | "recorded" | "error" | "unsupported") =>
+        dispatch(actions.setVoiceRecorderStatus(value)),
+      setVoiceRecorderElapsed: (value: number) => dispatch(actions.setVoiceRecorderElapsed(value)),
+      setVoiceRecorderError: (value?: string) => dispatch(actions.setVoiceRecorderError(value)),
+      setVoiceRecording: (value?: typeof state.voiceRecorder.recording) => dispatch(actions.setVoiceRecording(value)),
+    }),
+    [actions, dispatch],
+  );
+
+  const voiceRecorder = useVoiceRecorder(voiceRecorderActions);
+
   const handleToggleFocusMode = () => {
     dispatch(actions.toggleFocusMode());
+  };
+
+  const handleStartVoiceRecording = async () => {
+    setIsVoiceRecorderOpen(true);
+    await voiceRecorder.startRecording();
+  };
+
+  const handleVoiceRecorderClick = () => {
+    setIsVoiceRecorderOpen(true);
+
+    if (
+      state.voiceRecorder.status === "recording" ||
+      state.voiceRecorder.status === "requesting_permission" ||
+      state.voiceRecorder.status === "recorded"
+    ) {
+      return;
+    }
+
+    void handleStartVoiceRecording();
+  };
+
+  const handleKeepVoiceRecording = () => {
+    const recording = state.voiceRecorder.recording;
+    if (!recording) {
+      return;
+    }
+
+    dispatch(actions.addLocalFile(recording.localFile));
+    voiceRecorder.resetRecording();
+    setIsVoiceRecorderOpen(false);
+  };
+
+  const handleDiscardVoiceRecording = () => {
+    voiceRecorder.resetRecording();
+    setIsVoiceRecorderOpen(false);
+  };
+
+  const handleCloseVoiceRecorder = () => {
+    if (state.voiceRecorder.status === "recording" || state.voiceRecorder.status === "requesting_permission") {
+      return;
+    }
+
+    voiceRecorder.resetRecording();
+    setIsVoiceRecorderOpen(false);
+  };
+
+  const handleRecordAgain = async () => {
+    voiceRecorder.resetRecording();
+    await handleStartVoiceRecording();
   };
 
   useKeyboard(editorRef, handleSave);
@@ -147,10 +220,22 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         {/* Editor content grows to fill available space in focus mode */}
         <EditorContent ref={editorRef} placeholder={placeholder} />
 
+        {isVoiceRecorderOpen && (
+          <VoiceRecorderPanel
+            voiceRecorder={state.voiceRecorder}
+            onStart={() => void handleStartVoiceRecording()}
+            onStop={voiceRecorder.stopRecording}
+            onKeep={handleKeepVoiceRecording}
+            onDiscard={handleDiscardVoiceRecording}
+            onRecordAgain={() => void handleRecordAgain()}
+            onClose={handleCloseVoiceRecorder}
+          />
+        )}
+
         {/* Metadata and toolbar grouped together at bottom */}
         <div className="w-full flex flex-col gap-2">
           <EditorMetadata memoName={memoName} />
-          <EditorToolbar onSave={handleSave} onCancel={onCancel} memoName={memoName} />
+          <EditorToolbar onSave={handleSave} onCancel={onCancel} memoName={memoName} onVoiceRecorderClick={handleVoiceRecorderClick} />
         </div>
       </div>
     </>
