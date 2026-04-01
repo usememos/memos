@@ -75,7 +75,6 @@ type memoJSON struct {
 func storeMemoToJSON(m *store.Memo) memoJSON {
 	j := memoJSON{
 		Name:       "memos/" + m.UID,
-		Creator:    fmt.Sprintf("users/%d", m.CreatorID),
 		CreateTime: m.CreatedTs,
 		UpdateTime: m.UpdatedTs,
 		Content:    m.Content,
@@ -103,31 +102,70 @@ func storeMemoToJSON(m *store.Memo) memoJSON {
 	return j
 }
 
-// checkMemoAccess returns an error if the caller cannot read memo.
-// userID == 0 means anonymous.
-func checkMemoAccess(memo *store.Memo, userID int32) error {
-	switch memo.Visibility {
-	case store.Protected:
-		if userID == 0 {
-			return errors.New("permission denied")
-		}
-	case store.Private:
-		if memo.CreatorID != userID {
-			return errors.New("permission denied")
-		}
-	default:
-		// store.Public and any unknown visibility: allow
+func lookupUsername(ctx context.Context, stores *store.Store, userID int32) (string, error) {
+	user, err := stores.GetUser(ctx, &store.FindUser{ID: &userID})
+	if err != nil {
+		return "", errors.Wrapf(err, "failed to get creator user %d", userID)
 	}
-	return nil
+	if user == nil {
+		return "", errors.Errorf("creator user %d not found", userID)
+	}
+	return "users/" + user.Username, nil
 }
 
-// applyVisibilityFilter restricts find to memos the caller may see.
-func applyVisibilityFilter(find *store.FindMemo, userID int32) {
-	if userID == 0 {
-		find.VisibilityList = []store.Visibility{store.Public}
-	} else {
-		find.Filters = append(find.Filters, fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "PROTECTED"]`, userID))
+func preloadUsernames(ctx context.Context, stores *store.Store, userIDs []int32) (map[int32]string, error) {
+	if len(userIDs) == 0 {
+		return map[int32]string{}, nil
 	}
+
+	uniqueUserIDs := make([]int32, 0, len(userIDs))
+	seenUserIDs := make(map[int32]struct{}, len(userIDs))
+	for _, userID := range userIDs {
+		if _, seen := seenUserIDs[userID]; seen {
+			continue
+		}
+		seenUserIDs[userID] = struct{}{}
+		uniqueUserIDs = append(uniqueUserIDs, userID)
+	}
+
+	users, err := stores.ListUsers(ctx, &store.FindUser{IDList: uniqueUserIDs})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to list creator users")
+	}
+
+	usernamesByID := make(map[int32]string, len(users))
+	for _, user := range users {
+		usernamesByID[user.ID] = "users/" + user.Username
+	}
+	return usernamesByID, nil
+}
+
+func lookupUsernameFromCache(usernamesByID map[int32]string, userID int32) (string, error) {
+	username, ok := usernamesByID[userID]
+	if !ok {
+		return "", errors.Errorf("creator user %d not found", userID)
+	}
+	return username, nil
+}
+
+func storeMemoToJSONWithStore(ctx context.Context, stores *store.Store, m *store.Memo) (memoJSON, error) {
+	j := storeMemoToJSON(m)
+	creator, err := lookupUsername(ctx, stores, m.CreatorID)
+	if err != nil {
+		return memoJSON{}, err
+	}
+	j.Creator = creator
+	return j, nil
+}
+
+func storeMemoToJSONWithUsernames(m *store.Memo, usernamesByID map[int32]string) (memoJSON, error) {
+	j := storeMemoToJSON(m)
+	creator, err := lookupUsernameFromCache(usernamesByID, m.CreatorID)
+	if err != nil {
+		return memoJSON{}, err
+	}
+	j.Creator = creator
+	return j, nil
 }
 
 // parseMemoUID extracts the UID from a "memos/<uid>" resource name.
@@ -185,7 +223,7 @@ func (s *MCPService) registerMemoTools(mcpSrv *mcpserver.MCPServer) {
 			mcp.Description("Filter by state: NORMAL (default) or ARCHIVED"),
 		),
 		mcp.WithBoolean("order_by_pinned", mcp.Description("When true, pinned memos appear first (default false)")),
-		mcp.WithString("filter", mcp.Description(`Optional CEL filter, e.g. content.contains("keyword") or tags.exists(t, t == "work")`)),
+		mcp.WithString("filter", mcp.Description(`Optional CEL filter (supported subset of standard CEL syntax), e.g. content.contains("keyword") or tags.exists(t, t == "work")`)),
 	), s.handleListMemos)
 
 	mcpSrv.AddTool(mcp.NewTool("get_memo",
@@ -272,7 +310,7 @@ func (s *MCPService) handleListMemos(ctx context.Context, req mcp.CallToolReques
 		Offset:          &offset,
 		OrderByPinned:   req.GetBool("order_by_pinned", false),
 	}
-	applyVisibilityFilter(find, userID)
+	applyVisibilityFilter(find, userID, rowStatus)
 	if filter := req.GetString("filter", ""); filter != "" {
 		find.Filters = append(find.Filters, filter)
 	}
@@ -286,10 +324,22 @@ func (s *MCPService) handleListMemos(ctx context.Context, req mcp.CallToolReques
 	if hasMore {
 		memos = memos[:pageSize]
 	}
+	creatorIDs := make([]int32, 0, len(memos))
+	for _, memo := range memos {
+		creatorIDs = append(creatorIDs, memo.CreatorID)
+	}
+	usernamesByID, err := preloadUsernames(ctx, s.store, creatorIDs)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to preload memo creators: %v", err)), nil
+	}
 
 	results := make([]memoJSON, len(memos))
 	for i, m := range memos {
-		results[i] = storeMemoToJSON(m)
+		result, err := storeMemoToJSONWithUsernames(m, usernamesByID)
+		if err != nil {
+			return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
+		}
+		results[i] = result
 	}
 
 	type listResponse struct {
@@ -322,7 +372,11 @@ func (s *MCPService) handleGetMemo(ctx context.Context, req mcp.CallToolRequest)
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
-	out, err := marshalJSON(storeMemoToJSON(memo))
+	result, err := storeMemoToJSONWithStore(ctx, s.store, memo)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
+	}
+	out, err := marshalJSON(result)
 	if err != nil {
 		return nil, err
 	}
@@ -355,7 +409,11 @@ func (s *MCPService) handleCreateMemo(ctx context.Context, req mcp.CallToolReque
 		return mcp.NewToolResultError(fmt.Sprintf("failed to create memo: %v", err)), nil
 	}
 
-	out, err := marshalJSON(storeMemoToJSON(memo))
+	result, err := storeMemoToJSONWithStore(ctx, s.store, memo)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
+	}
+	out, err := marshalJSON(result)
 	if err != nil {
 		return nil, err
 	}
@@ -380,8 +438,8 @@ func (s *MCPService) handleUpdateMemo(ctx context.Context, req mcp.CallToolReque
 	if memo == nil {
 		return mcp.NewToolResultError("memo not found"), nil
 	}
-	if memo.CreatorID != userID {
-		return mcp.NewToolResultError("permission denied"), nil
+	if err := checkMemoOwnership(memo, userID); err != nil {
+		return mcp.NewToolResultError(err.Error()), nil
 	}
 
 	update := &store.UpdateMemo{ID: memo.ID}
@@ -419,7 +477,11 @@ func (s *MCPService) handleUpdateMemo(ctx context.Context, req mcp.CallToolReque
 		return mcp.NewToolResultError(fmt.Sprintf("failed to fetch updated memo: %v", err)), nil
 	}
 
-	out, err := marshalJSON(storeMemoToJSON(updated))
+	result, err := storeMemoToJSONWithStore(ctx, s.store, updated)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
+	}
+	out, err := marshalJSON(result)
 	if err != nil {
 		return nil, err
 	}
@@ -444,8 +506,8 @@ func (s *MCPService) handleDeleteMemo(ctx context.Context, req mcp.CallToolReque
 	if memo == nil {
 		return mcp.NewToolResultError("memo not found"), nil
 	}
-	if memo.CreatorID != userID {
-		return mcp.NewToolResultError("permission denied"), nil
+	if err := checkMemoOwnership(memo, userID); err != nil {
+		return mcp.NewToolResultError(err.Error()), nil
 	}
 
 	if err := s.store.DeleteMemo(ctx, &store.DeleteMemo{ID: memo.ID}); err != nil {
@@ -472,16 +534,28 @@ func (s *MCPService) handleSearchMemos(ctx context.Context, req mcp.CallToolRequ
 		Offset:          &zero,
 		Filters:         []string{fmt.Sprintf(`content.contains(%q)`, query)},
 	}
-	applyVisibilityFilter(find, userID)
+	applyVisibilityFilter(find, userID, find.RowStatus)
 
 	memos, err := s.store.ListMemos(ctx, find)
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to search memos: %v", err)), nil
 	}
+	creatorIDs := make([]int32, 0, len(memos))
+	for _, memo := range memos {
+		creatorIDs = append(creatorIDs, memo.CreatorID)
+	}
+	usernamesByID, err := preloadUsernames(ctx, s.store, creatorIDs)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to preload memo creators: %v", err)), nil
+	}
 
 	results := make([]memoJSON, len(memos))
 	for i, m := range memos {
-		results[i] = storeMemoToJSON(m)
+		result, err := storeMemoToJSONWithUsernames(m, usernamesByID)
+		if err != nil {
+			return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
+		}
+		results[i] = result
 	}
 	out, err := marshalJSON(results)
 	if err != nil {
@@ -531,11 +605,25 @@ func (s *MCPService) handleListMemoComments(ctx context.Context, req mcp.CallToo
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to list comments: %v", err)), nil
 	}
+	creatorIDs := make([]int32, 0, len(memos))
+	for _, memo := range memos {
+		if checkMemoAccess(memo, userID) == nil {
+			creatorIDs = append(creatorIDs, memo.CreatorID)
+		}
+	}
+	usernamesByID, err := preloadUsernames(ctx, s.store, creatorIDs)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to preload memo creators: %v", err)), nil
+	}
 
 	results := make([]memoJSON, 0, len(memos))
 	for _, m := range memos {
 		if checkMemoAccess(m, userID) == nil {
-			results = append(results, storeMemoToJSON(m))
+			result, err := storeMemoToJSONWithUsernames(m, usernamesByID)
+			if err != nil {
+				return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
+			}
+			results = append(results, result)
 		}
 	}
 	out, err := marshalJSON(results)
@@ -591,7 +679,11 @@ func (s *MCPService) handleCreateMemoComment(ctx context.Context, req mcp.CallTo
 		return mcp.NewToolResultError(fmt.Sprintf("failed to link comment: %v", err)), nil
 	}
 
-	out, err := marshalJSON(storeMemoToJSON(comment))
+	result, err := storeMemoToJSONWithStore(ctx, s.store, comment)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
+	}
+	out, err := marshalJSON(result)
 	if err != nil {
 		return nil, err
 	}

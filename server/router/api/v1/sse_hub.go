@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"log/slog"
 	"sync"
+
+	"github.com/usememos/memos/store"
 )
 
 // SSEEventType represents the type of change event.
@@ -24,6 +26,11 @@ type SSEEvent struct {
 	// Name is the affected resource name (e.g., "memos/xxxx").
 	// For reaction events, this is the memo resource name that the reaction belongs to.
 	Name string `json:"name"`
+	// Parent is the parent memo resource name when the affected resource is a comment.
+	Parent string `json:"parent,omitempty"`
+	// Visibility and CreatorID are used only for server-side delivery filtering.
+	Visibility store.Visibility `json:"-"`
+	CreatorID  int32            `json:"-"`
 }
 
 // JSON returns the JSON representation of the event.
@@ -40,6 +47,8 @@ func (e *SSEEvent) JSON() []byte {
 // SSEClient represents a single SSE connection.
 type SSEClient struct {
 	events chan []byte
+	userID int32
+	role   store.Role
 }
 
 // SSEHub manages SSE client connections and broadcasts events.
@@ -58,10 +67,12 @@ func NewSSEHub() *SSEHub {
 
 // Subscribe registers a new client and returns it.
 // The caller must call Unsubscribe when done.
-func (h *SSEHub) Subscribe() *SSEClient {
+func (h *SSEHub) Subscribe(userID int32, role store.Role) *SSEClient {
 	c := &SSEClient{
 		// Buffer a few events so a slow client doesn't block broadcasting.
 		events: make(chan []byte, 32),
+		userID: userID,
+		role:   role,
 	}
 	h.mu.Lock()
 	h.clients[c] = struct{}{}
@@ -90,10 +101,25 @@ func (h *SSEHub) Broadcast(event *SSEEvent) {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
 	for c := range h.clients {
+		if !c.canReceive(event) {
+			continue
+		}
 		select {
 		case c.events <- data:
 		default:
 			// Drop event for slow client to avoid blocking.
 		}
+	}
+}
+
+func (c *SSEClient) canReceive(event *SSEEvent) bool {
+	switch event.Visibility {
+	case store.Private:
+		return c.userID == event.CreatorID || c.role == store.RoleAdmin
+	case store.Public, store.Protected, "":
+		return true
+	default:
+		slog.Warn("SSE canReceive: unknown visibility type, denying event", "visibility", event.Visibility)
+		return false
 	}
 }

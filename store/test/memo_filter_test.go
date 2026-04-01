@@ -185,6 +185,32 @@ func TestMemoFilterPinnedPredicate(t *testing.T) {
 }
 
 // =============================================================================
+// Creator Field Tests
+// Schema: creator (string resource name), creator_id (int, ==, !=)
+// =============================================================================
+
+func TestMemoFilterCreatorEquals(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	user2, err := tc.Store.CreateUser(tc.Ctx, &store.User{
+		Username: "user2",
+		Role:     store.RoleUser,
+		Email:    "user2@example.com",
+		Nickname: "User 2",
+	})
+	require.NoError(t, err)
+
+	tc.CreateMemo(NewMemoBuilder("memo-user1", tc.User.ID).Content("User 1 memo"))
+	tc.CreateMemo(NewMemoBuilder("memo-user2", user2.ID).Content("User 2 memo"))
+
+	memos := tc.ListWithFilter(`creator == "users/` + tc.User.Username + `"`)
+	require.Len(t, memos, 1)
+	require.Equal(t, tc.User.ID, memos[0].CreatorID)
+}
+
+// =============================================================================
 // Creator ID Field Tests
 // Schema: creator_id (int, ==, !=)
 // =============================================================================
@@ -702,6 +728,31 @@ func TestMemoFilterTagsExistsContains(t *testing.T) {
 	// Test: !tags.exists(t, t.contains("todo")) - should exclude todos
 	memos = tc.ListWithFilter(`!tags.exists(t, t.contains("todo"))`)
 	require.Len(t, memos, 1, "Should find 1 non-todo memo")
+}
+
+func TestMemoFilterTagsExistsEquals(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateMemo(NewMemoBuilder("memo-1231", tc.User.ID).
+		Content("Memo with exact numeric tag").
+		Tags("1231", "project"))
+
+	tc.CreateMemo(NewMemoBuilder("memo-1231-suffix", tc.User.ID).
+		Content("Memo with related tag").
+		Tags("tag/1231", "other"))
+
+	tc.CreateMemo(NewMemoBuilder("memo-other", tc.User.ID).
+		Content("Memo with different tag").
+		Tags("9999"))
+
+	memos := tc.ListWithFilter(`tags.exists(t, t == "1231")`)
+	require.Len(t, memos, 1, "Should find only the memo with exact matching tag")
+	require.Equal(t, "memo-1231", memos[0].UID)
+
+	memos = tc.ListWithFilter(`!tags.exists(t, t == "1231")`)
+	require.Len(t, memos, 2, "Should exclude only the memo with exact matching tag")
 }
 
 func TestMemoFilterTagsExistsEndsWith(t *testing.T) {

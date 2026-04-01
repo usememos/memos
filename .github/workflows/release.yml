@@ -24,6 +24,8 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
       tag: ${{ steps.version.outputs.tag }}
+      major_minor: ${{ steps.version.outputs.major_minor }}
+      is_prerelease: ${{ steps.version.outputs.is_prerelease }}
     steps:
       - name: Extract version
         id: version
@@ -34,11 +36,27 @@ jobs:
           if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
             echo "tag=" >> "$GITHUB_OUTPUT"
             echo "version=manual-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+            echo "major_minor=" >> "$GITHUB_OUTPUT"
+            echo "is_prerelease=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
+          if [[ ! "$REF_NAME" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)(-rc\.[0-9]+)?$ ]]; then
+            echo "Unsupported release tag format: $REF_NAME" >&2
+            exit 1
+          fi
+
+          version="${BASH_REMATCH[1]}${BASH_REMATCH[2]}"
+          major_minor="${BASH_REMATCH[1]%.*}"
+          is_prerelease=false
+          if [ -n "${BASH_REMATCH[2]}" ]; then
+            is_prerelease=true
+          fi
+
           echo "tag=${REF_NAME}" >> "$GITHUB_OUTPUT"
-          echo "version=${REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "major_minor=${major_minor}" >> "$GITHUB_OUTPUT"
+          echo "is_prerelease=${is_prerelease}" >> "$GITHUB_OUTPUT"
 
   build-frontend:
     name: Build Frontend
@@ -226,6 +244,7 @@ jobs:
           tag_name: ${{ needs.prepare.outputs.tag }}
           name: ${{ needs.prepare.outputs.tag }}
           generate_release_notes: true
+          prerelease: ${{ needs.prepare.outputs.is_prerelease == 'true' }}
           files: artifacts/*
 
   build-push:
@@ -301,7 +320,7 @@ jobs:
           retention-days: 1
 
   merge-images:
-    name: Publish Stable Image Tags
+    name: Publish Release Image Tags
     needs: [prepare, build-push]
     if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
@@ -336,17 +355,28 @@ jobs:
         working-directory: /tmp/digests
         run: |
           version="${{ needs.prepare.outputs.version }}"
-          major_minor=$(echo "$version" | cut -d. -f1,2)
+          if [ "${{ needs.prepare.outputs.is_prerelease }}" = "true" ]; then
+            docker buildx imagetools create \
+              -t "neosmemo/memos:${version}" \
+              -t "ghcr.io/usememos/memos:${version}" \
+              $(printf 'neosmemo/memos@sha256:%s ' *)
+            exit 0
+          fi
+
           docker buildx imagetools create \
             -t "neosmemo/memos:${version}" \
-            -t "neosmemo/memos:${major_minor}" \
+            -t "neosmemo/memos:${{ needs.prepare.outputs.major_minor }}" \
             -t "neosmemo/memos:stable" \
             -t "ghcr.io/usememos/memos:${version}" \
-            -t "ghcr.io/usememos/memos:${major_minor}" \
+            -t "ghcr.io/usememos/memos:${{ needs.prepare.outputs.major_minor }}" \
             -t "ghcr.io/usememos/memos:stable" \
             $(printf 'neosmemo/memos@sha256:%s ' *)
 
       - name: Inspect images
         run: |
           docker buildx imagetools inspect neosmemo/memos:${{ needs.prepare.outputs.version }}
+          if [ "${{ needs.prepare.outputs.is_prerelease }}" = "true" ]; then
+            exit 0
+          fi
+
           docker buildx imagetools inspect neosmemo/memos:stable

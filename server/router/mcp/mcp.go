@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
-	"github.com/labstack/echo/v5/middleware"
 	mcpserver "github.com/mark3labs/mcp-go/server"
 
 	"github.com/usememos/memos/internal/profile"
@@ -44,11 +43,22 @@ func (s *MCPService) RegisterRoutes(echoServer *echo.Echo) {
 	httpHandler := mcpserver.NewStreamableHTTPServer(mcpSrv)
 
 	mcpGroup := echoServer.Group("")
-	mcpGroup.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"*"},
-	}))
 	mcpGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c *echo.Context) error {
+			if !s.isAllowedOrigin(c.Request()) {
+				return c.JSON(http.StatusForbidden, map[string]string{"message": "invalid origin"})
+			}
+			if origin := c.Request().Header.Get("Origin"); origin != "" {
+				headers := c.Response().Header()
+				headers.Set("Vary", "Origin")
+				headers.Set("Access-Control-Allow-Origin", origin)
+				headers.Set("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept, Mcp-Session-Id, MCP-Protocol-Version, Last-Event-ID")
+				headers.Set("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
+				if c.Request().Method == http.MethodOptions {
+					return c.NoContent(http.StatusNoContent)
+				}
+			}
+
 			authHeader := c.Request().Header.Get("Authorization")
 			if authHeader != "" {
 				result := s.authenticator.Authenticate(c.Request().Context(), authHeader)

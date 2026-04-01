@@ -196,7 +196,7 @@ func TestInstanceSettingStorageSetting(t *testing.T) {
 	require.NotNil(t, storageSetting)
 	require.Equal(t, storepb.InstanceStorageSetting_LOCAL, storageSetting.StorageType)
 	require.Equal(t, int64(30), storageSetting.UploadSizeLimitMb)
-	require.Equal(t, "assets/{timestamp}_{filename}", storageSetting.FilepathTemplate)
+	require.Equal(t, "assets/{timestamp}_{uuid}_{filename}", storageSetting.FilepathTemplate)
 
 	// Set custom storage setting
 	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
@@ -253,6 +253,34 @@ func TestInstanceSettingTagsSetting(t *testing.T) {
 	require.NoError(t, err)
 	require.Contains(t, tagsSetting.Tags, "bug")
 	require.InDelta(t, 0.9, tagsSetting.Tags["bug"].GetBackgroundColor().GetRed(), 0.0001)
+
+	ts.Close()
+}
+
+func TestInstanceSettingTagsSettingWithoutColor(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+
+	_, err := ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_TAGS,
+		Value: &storepb.InstanceSetting_TagsSetting{
+			TagsSetting: &storepb.InstanceTagsSetting{
+				Tags: map[string]*storepb.InstanceTagMetadata{
+					"spoiler": {
+						BlurContent: true,
+					},
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	tagsSetting, err := ts.GetInstanceTagsSetting(ctx)
+	require.NoError(t, err)
+	require.Contains(t, tagsSetting.Tags, "spoiler")
+	require.Nil(t, tagsSetting.Tags["spoiler"].GetBackgroundColor())
+	require.True(t, tagsSetting.Tags["spoiler"].GetBlurContent())
 
 	ts.Close()
 }

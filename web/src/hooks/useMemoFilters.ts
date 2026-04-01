@@ -2,12 +2,8 @@ import { useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { buildMemoCreatorFilter } from "@/helpers/resource-names";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
-
-const extractUserIdFromName = (name: string): string => {
-  const match = name.match(/users\/(\d+)/);
-  return match ? match[1] : "";
-};
 
 const getVisibilityName = (visibility: Visibility): string => {
   switch (visibility) {
@@ -26,6 +22,8 @@ const getShortcutId = (name: string): string => {
   const parts = name.split("/");
   return parts.length === 4 ? parts[3] : "";
 };
+
+const escapeFilterValue = (value: string): string => JSON.stringify(value);
 
 export interface UseMemoFiltersOptions {
   creatorName?: string;
@@ -53,7 +51,10 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
 
     // Add creator filter if provided
     if (creatorName) {
-      conditions.push(`creator_id == ${extractUserIdFromName(creatorName)}`);
+      const creatorFilter = buildMemoCreatorFilter(creatorName);
+      if (creatorFilter) {
+        conditions.push(creatorFilter);
+      }
     }
 
     // Add shortcut filter if enabled and selected
@@ -64,9 +65,9 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
     // Add active filters from context
     for (const filter of filters) {
       if (filter.factor === "contentSearch") {
-        conditions.push(`content.contains("${filter.value}")`);
+        conditions.push(`content.contains(${escapeFilterValue(filter.value)})`);
       } else if (filter.factor === "tagSearch") {
-        conditions.push(`tag in ["${filter.value}"]`);
+        conditions.push(`tag in [${escapeFilterValue(filter.value)}]`);
       } else if (filter.factor === "pinned") {
         if (includePinned) {
           conditions.push(`pinned`);

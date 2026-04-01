@@ -41,6 +41,7 @@ func TestDeleteMemoReaction(t *testing.T) {
 		})
 		require.NoError(t, err)
 		require.NotNil(t, reaction)
+		require.Equal(t, "users/user", reaction.Creator)
 
 		// Delete reaction - should succeed
 		_, err = ts.Service.DeleteMemoReaction(userCtx, &apiv1.DeleteMemoReactionRequest{

@@ -16,7 +16,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file api/v1/shortcut_service.proto.
  */
 export const file_api_v1_shortcut_service: GenFile = /*@__PURE__*/
-  fileDesc("Ch1hcGkvdjEvc2hvcnRjdXRfc2VydmljZS5wcm90bxIMbWVtb3MuYXBpLnYxIpoBCghTaG9ydGN1dBIRCgRuYW1lGAEgASgJQgPgQQgSEgoFdGl0bGUYAiABKAlCA+BBAhITCgZmaWx0ZXIYAyABKAlCA+BBATpS6kFPChVtZW1vcy5hcGkudjEvU2hvcnRjdXQSIXVzZXJzL3t1c2VyfS9zaG9ydGN1dHMve3Nob3J0Y3V0fSoJc2hvcnRjdXRzMghzaG9ydGN1dCJFChRMaXN0U2hvcnRjdXRzUmVxdWVzdBItCgZwYXJlbnQYASABKAlCHeBBAvpBFxIVbWVtb3MuYXBpLnYxL1Nob3J0Y3V0IkIKFUxpc3RTaG9ydGN1dHNSZXNwb25zZRIpCglzaG9ydGN1dHMYASADKAsyFi5tZW1vcy5hcGkudjEuU2hvcnRjdXQiQQoSR2V0U2hvcnRjdXRSZXF1ZXN0EisKBG5hbWUYASABKAlCHeBBAvpBFwoVbWVtb3MuYXBpLnYxL1Nob3J0Y3V0IpEBChVDcmVhdGVTaG9ydGN1dFJlcXVlc3QSLQoGcGFyZW50GAEgASgJQh3gQQL6QRcSFW1lbW9zLmFwaS52MS9TaG9ydGN1dBItCghzaG9ydGN1dBgCIAEoCzIWLm1lbW9zLmFwaS52MS5TaG9ydGN1dEID4EECEhoKDXZhbGlkYXRlX29ubHkYAyABKAhCA+BBASJ8ChVVcGRhdGVTaG9ydGN1dFJlcXVlc3QSLQoIc2hvcnRjdXQYASABKAsyFi5tZW1vcy5hcGkudjEuU2hvcnRjdXRCA+BBAhI0Cgt1cGRhdGVfbWFzaxgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5GaWVsZE1hc2tCA+BBASJEChVEZWxldGVTaG9ydGN1dFJlcXVlc3QSKwoEbmFtZRgBIAEoCUId4EEC+kEXChVtZW1vcy5hcGkudjEvU2hvcnRjdXQy3gUKD1Nob3J0Y3V0U2VydmljZRKNAQoNTGlzdFNob3J0Y3V0cxIiLm1lbW9zLmFwaS52MS5MaXN0U2hvcnRjdXRzUmVxdWVzdBojLm1lbW9zLmFwaS52MS5MaXN0U2hvcnRjdXRzUmVzcG9uc2UiM9pBBnBhcmVudILT5JMCJBIiL2FwaS92MS97cGFyZW50PXVzZXJzLyp9L3Nob3J0Y3V0cxJ6CgtHZXRTaG9ydGN1dBIgLm1lbW9zLmFwaS52MS5HZXRTaG9ydGN1dFJlcXVlc3QaFi5tZW1vcy5hcGkudjEuU2hvcnRjdXQiMdpBBG5hbWWC0+STAiQSIi9hcGkvdjEve25hbWU9dXNlcnMvKi9zaG9ydGN1dHMvKn0SlQEKDkNyZWF0ZVNob3J0Y3V0EiMubWVtb3MuYXBpLnYxLkNyZWF0ZVNob3J0Y3V0UmVxdWVzdBoWLm1lbW9zLmFwaS52MS5TaG9ydGN1dCJG2kEPcGFyZW50LHNob3J0Y3V0gtPkkwIuOghzaG9ydGN1dCIiL2FwaS92MS97cGFyZW50PXVzZXJzLyp9L3Nob3J0Y3V0cxKjAQoOVXBkYXRlU2hvcnRjdXQSIy5tZW1vcy5hcGkudjEuVXBkYXRlU2hvcnRjdXRSZXF1ZXN0GhYubWVtb3MuYXBpLnYxLlNob3J0Y3V0IlTaQRRzaG9ydGN1dCx1cGRhdGVfbWFza4LT5JMCNzoIc2hvcnRjdXQyKy9hcGkvdjEve3Nob3J0Y3V0Lm5hbWU9dXNlcnMvKi9zaG9ydGN1dHMvKn0SgAEKDkRlbGV0ZVNob3J0Y3V0EiMubWVtb3MuYXBpLnYxLkRlbGV0ZVNob3J0Y3V0UmVxdWVzdBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIx2kEEbmFtZYLT5JMCJCoiL2FwaS92MS97bmFtZT11c2Vycy8qL3Nob3J0Y3V0cy8qfUKsAQoQY29tLm1lbW9zLmFwaS52MUIUU2hvcnRjdXRTZXJ2aWNlUHJvdG9QAVowZ2l0aHViLmNvbS91c2VtZW1vcy9tZW1vcy9wcm90by9nZW4vYXBpL3YxO2FwaXYxogIDTUFYqgIMTWVtb3MuQXBpLlYxygIMTWVtb3NcQXBpXFYx4gIYTWVtb3NcQXBpXFYxXEdQQk1ldGFkYXRh6gIOTWVtb3M6OkFwaTo6VjFiBnByb3RvMw", [file_google_api_annotations, file_google_api_client, file_google_api_field_behavior, file_google_api_resource, file_google_protobuf_empty, file_google_protobuf_field_mask]);
+  fileDesc("Ch1hcGkvdjEvc2hvcnRjdXRfc2VydmljZS5wcm90bxIMbWVtb3MuYXBpLnYxIp4BCghTaG9ydGN1dBIRCgRuYW1lGAEgASgJQgPgQQgSEgoFdGl0bGUYAiABKAlCA+BBAhITCgZmaWx0ZXIYAyABKAlCA+BBATpW6kFTChVtZW1vcy5hcGkudjEvU2hvcnRjdXQSJXVzZXJzL3t1c2VybmFtZX0vc2hvcnRjdXRzL3tzaG9ydGN1dH0qCXNob3J0Y3V0czIIc2hvcnRjdXQiRQoUTGlzdFNob3J0Y3V0c1JlcXVlc3QSLQoGcGFyZW50GAEgASgJQh3gQQL6QRcSFW1lbW9zLmFwaS52MS9TaG9ydGN1dCJCChVMaXN0U2hvcnRjdXRzUmVzcG9uc2USKQoJc2hvcnRjdXRzGAEgAygLMhYubWVtb3MuYXBpLnYxLlNob3J0Y3V0IkEKEkdldFNob3J0Y3V0UmVxdWVzdBIrCgRuYW1lGAEgASgJQh3gQQL6QRcKFW1lbW9zLmFwaS52MS9TaG9ydGN1dCKRAQoVQ3JlYXRlU2hvcnRjdXRSZXF1ZXN0Ei0KBnBhcmVudBgBIAEoCUId4EEC+kEXEhVtZW1vcy5hcGkudjEvU2hvcnRjdXQSLQoIc2hvcnRjdXQYAiABKAsyFi5tZW1vcy5hcGkudjEuU2hvcnRjdXRCA+BBAhIaCg12YWxpZGF0ZV9vbmx5GAMgASgIQgPgQQEifAoVVXBkYXRlU2hvcnRjdXRSZXF1ZXN0Ei0KCHNob3J0Y3V0GAEgASgLMhYubWVtb3MuYXBpLnYxLlNob3J0Y3V0QgPgQQISNAoLdXBkYXRlX21hc2sYAiABKAsyGi5nb29nbGUucHJvdG9idWYuRmllbGRNYXNrQgPgQQEiRAoVRGVsZXRlU2hvcnRjdXRSZXF1ZXN0EisKBG5hbWUYASABKAlCHeBBAvpBFwoVbWVtb3MuYXBpLnYxL1Nob3J0Y3V0Mt4FCg9TaG9ydGN1dFNlcnZpY2USjQEKDUxpc3RTaG9ydGN1dHMSIi5tZW1vcy5hcGkudjEuTGlzdFNob3J0Y3V0c1JlcXVlc3QaIy5tZW1vcy5hcGkudjEuTGlzdFNob3J0Y3V0c1Jlc3BvbnNlIjPaQQZwYXJlbnSC0+STAiQSIi9hcGkvdjEve3BhcmVudD11c2Vycy8qfS9zaG9ydGN1dHMSegoLR2V0U2hvcnRjdXQSIC5tZW1vcy5hcGkudjEuR2V0U2hvcnRjdXRSZXF1ZXN0GhYubWVtb3MuYXBpLnYxLlNob3J0Y3V0IjHaQQRuYW1lgtPkkwIkEiIvYXBpL3YxL3tuYW1lPXVzZXJzLyovc2hvcnRjdXRzLyp9EpUBCg5DcmVhdGVTaG9ydGN1dBIjLm1lbW9zLmFwaS52MS5DcmVhdGVTaG9ydGN1dFJlcXVlc3QaFi5tZW1vcy5hcGkudjEuU2hvcnRjdXQiRtpBD3BhcmVudCxzaG9ydGN1dILT5JMCLjoIc2hvcnRjdXQiIi9hcGkvdjEve3BhcmVudD11c2Vycy8qfS9zaG9ydGN1dHMSowEKDlVwZGF0ZVNob3J0Y3V0EiMubWVtb3MuYXBpLnYxLlVwZGF0ZVNob3J0Y3V0UmVxdWVzdBoWLm1lbW9zLmFwaS52MS5TaG9ydGN1dCJU2kEUc2hvcnRjdXQsdXBkYXRlX21hc2uC0+STAjc6CHNob3J0Y3V0MisvYXBpL3YxL3tzaG9ydGN1dC5uYW1lPXVzZXJzLyovc2hvcnRjdXRzLyp9EoABCg5EZWxldGVTaG9ydGN1dBIjLm1lbW9zLmFwaS52MS5EZWxldGVTaG9ydGN1dFJlcXVlc3QaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiMdpBBG5hbWWC0+STAiQqIi9hcGkvdjEve25hbWU9dXNlcnMvKi9zaG9ydGN1dHMvKn1CrAEKEGNvbS5tZW1vcy5hcGkudjFCFFNob3J0Y3V0U2VydmljZVByb3RvUAFaMGdpdGh1Yi5jb20vdXNlbWVtb3MvbWVtb3MvcHJvdG8vZ2VuL2FwaS92MTthcGl2MaICA01BWKoCDE1lbW9zLkFwaS5WMcoCDE1lbW9zXEFwaVxWMeICGE1lbW9zXEFwaVxWMVxHUEJNZXRhZGF0YeoCDk1lbW9zOjpBcGk6OlYxYgZwcm90bzM", [file_google_api_annotations, file_google_api_client, file_google_api_field_behavior, file_google_api_resource, file_google_protobuf_empty, file_google_protobuf_field_mask]);
 
 /**
  * @generated from message memos.api.v1.Shortcut
@@ -24,7 +24,7 @@ export const file_api_v1_shortcut_service: GenFile = /*@__PURE__*/
 export type Shortcut = Message<"memos.api.v1.Shortcut"> & {
   /**
    * The resource name of the shortcut.
-   * Format: users/{user}/shortcuts/{shortcut}
+   * Format: users/{username}/shortcuts/{shortcut}
    *
    * @generated from field: string name = 1;
    */
@@ -58,7 +58,7 @@ export const ShortcutSchema: GenMessage<Shortcut> = /*@__PURE__*/
 export type ListShortcutsRequest = Message<"memos.api.v1.ListShortcutsRequest"> & {
   /**
    * Required. The parent resource where shortcuts are listed.
-   * Format: users/{user}
+   * Format: users/{username}
    *
    * @generated from field: string parent = 1;
    */
@@ -97,7 +97,7 @@ export const ListShortcutsResponseSchema: GenMessage<ListShortcutsResponse> = /*
 export type GetShortcutRequest = Message<"memos.api.v1.GetShortcutRequest"> & {
   /**
    * Required. The resource name of the shortcut to retrieve.
-   * Format: users/{user}/shortcuts/{shortcut}
+   * Format: users/{username}/shortcuts/{shortcut}
    *
    * @generated from field: string name = 1;
    */
@@ -117,7 +117,7 @@ export const GetShortcutRequestSchema: GenMessage<GetShortcutRequest> = /*@__PUR
 export type CreateShortcutRequest = Message<"memos.api.v1.CreateShortcutRequest"> & {
   /**
    * Required. The parent resource where this shortcut will be created.
-   * Format: users/{user}
+   * Format: users/{username}
    *
    * @generated from field: string parent = 1;
    */
@@ -177,7 +177,7 @@ export const UpdateShortcutRequestSchema: GenMessage<UpdateShortcutRequest> = /*
 export type DeleteShortcutRequest = Message<"memos.api.v1.DeleteShortcutRequest"> & {
   /**
    * Required. The resource name of the shortcut to delete.
-   * Format: users/{user}/shortcuts/{shortcut}
+   * Format: users/{username}/shortcuts/{shortcut}
    *
    * @generated from field: string name = 1;
    */

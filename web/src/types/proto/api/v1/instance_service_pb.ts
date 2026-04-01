@@ -414,7 +414,8 @@ export const InstanceSetting_MemoRelatedSettingSchema: GenMessage<InstanceSettin
  */
 export type InstanceSetting_TagMetadata = Message<"memos.api.v1.InstanceSetting.TagMetadata"> & {
   /**
-   * Background color for the tag label.
+   * Optional background color for the tag label.
+   * When unset, the default tag color is used.
    *
    * @generated from field: google.type.Color background_color = 1;
    */

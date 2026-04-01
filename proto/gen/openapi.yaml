@@ -1206,10 +1206,8 @@ paths:
             tags:
                 - UserService
             description: |-
-                GetUser gets a user by ID or username.
-                 Supports both numeric IDs and username strings:
-                   - users/{id}       (e.g., users/101)
-                   - users/{username} (e.g., users/steven)
+                GetUser gets a user by username.
+                 Format: users/{username} (e.g., users/steven)
             operationId: UserService_GetUser
             parameters:
                 - name: user
@@ -2398,7 +2396,12 @@ components:
                 backgroundColor:
                     allOf:
                         - $ref: '#/components/schemas/Color'
-                    description: Background color for the tag label.
+                    description: |-
+                        Optional background color for the tag label.
+                         When unset, the default tag color is used.
+                blurContent:
+                    type: boolean
+                    description: Whether memos with this tag should have their content blurred.
             description: Metadata for a tag.
         InstanceSetting_TagsSetting:
             type: object
@@ -2931,7 +2934,7 @@ components:
                     type: string
                     description: |-
                         The resource name of the shortcut.
-                         Format: users/{user}/shortcuts/{shortcut}
+                         Format: users/{username}/shortcuts/{shortcut}
                 title:
                     type: string
                     description: The title of the shortcut.
@@ -3170,8 +3173,8 @@ components:
                     type: string
                     description: |-
                         The name of the user setting.
-                         Format: users/{user}/settings/{setting}, {setting} is the key for the setting.
-                         For example, "users/123/settings/GENERAL" for general settings.
+                         Format: users/{username}/settings/{setting}, {setting} is the key for the setting.
+                         For example, "users/steven/settings/GENERAL" for general settings.
                 generalSetting:
                     $ref: '#/components/schemas/UserSetting_GeneralSetting'
                 webhooksSetting:

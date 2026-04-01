@@ -759,7 +759,8 @@ func (x *InstanceSetting_MemoRelatedSetting) GetReactions() []string {
 // Metadata for a tag.
 type InstanceSetting_TagMetadata struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Background color for the tag label.
+	// Optional background color for the tag label.
+	// When unset, the default tag color is used.
 	BackgroundColor *color.Color `protobuf:"bytes,1,opt,name=background_color,json=backgroundColor,proto3" json:"background_color,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
