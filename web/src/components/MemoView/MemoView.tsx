@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-=======
 import { memo, useCallback, useMemo, useRef, useState } from "react";
->>>>>>> 89d43a2e (Developed Color Picker Feature for memos)
 import { useLocation } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useUser } from "@/hooks/useUserQueries";
@@ -19,20 +15,7 @@ import type { MemoViewProps } from "./types";
 import MemoFooter from "./components/MemoFooter";
 
 const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
-<<<<<<< HEAD
-  const {
-    memo: memoData,
-    className,
-    parentPage: parentPageProp,
-    compact,
-    showCreator,
-    showVisibility,
-    showPinned,
-    colorKey,
-  } = props;
-=======
   const { memo: memoData, className, parentPage: parentPageProp, compact, showCreator, showVisibility, showPinned } = props;
->>>>>>> 89d43a2e (Developed Color Picker Feature for memos)
   const cardRef = useRef<HTMLDivElement>(null);
   const [showEditor, setShowEditor] = useState(false);
 
@@ -56,64 +39,6 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const isInMemoDetailPage = location.pathname.startsWith(`/${memoData.name}`);
   const showCommentPreview = !isInMemoDetailPage && computeCommentAmount(memoData) > 0;
 
-<<<<<<< HEAD
-  const [customColors, setCustomColors] = useState<{ bgColor?: string; textColor?: string } | null>(null);
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const storageKey = colorKey || memoData.name;
-
-    try {
-      const stored = window.localStorage.getItem(storageKey);
-      if (!stored) {
-        return;
-      }
-
-      const parsed = JSON.parse(stored) as { bgColor?: string; textColor?: string };
-      setCustomColors({
-        bgColor: parsed.bgColor,
-        textColor: parsed.textColor,
-      });
-    } catch {
-      // Ignore malformed values
-    }
-  }, [colorKey, memoData.name]);
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const storageKey = colorKey || memoData.name;
-
-    const handleColorChange = (event: Event) => {
-      const customEvent = event as CustomEvent<{
-        key: string;
-        colors: { bgColor?: string; textColor?: string };
-      }>;
-
-      if (!customEvent.detail || customEvent.detail.key !== storageKey) {
-        return;
-      }
-
-      setCustomColors({
-        bgColor: customEvent.detail.colors.bgColor,
-        textColor: customEvent.detail.colors.textColor,
-      });
-    };
-
-    window.addEventListener("memo-colors-changed", handleColorChange as EventListener);
-
-    return () => {
-      window.removeEventListener("memo-colors-changed", handleColorChange as EventListener);
-    };
-  }, [colorKey, memoData.name]);
-
-=======
->>>>>>> 89d43a2e (Developed Color Picker Feature for memos)
   const contextValue = useMemo(
     () => ({
       memo: memoData,
@@ -161,25 +86,8 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       className={cn(MEMO_CARD_BASE_CLASSES, showCommentPreview ? "mb-0 rounded-b-none" : "mb-2", className)}
       ref={cardRef}
       tabIndex={readonly ? -1 : 0}
-<<<<<<< HEAD
-      style={
-        customColors?.bgColor || customColors?.textColor
-          ? { backgroundColor: customColors?.bgColor, color: customColors?.textColor }
-          : undefined
-      }
-    >
-      <MemoHeader
-        name={memoData.name}
-        showCreator={showCreator}
-        showVisibility={showVisibility}
-        showPinned={showPinned}
-        showColorCustomizer={!memoData.parent}
-        onColorPreferencesChange={(colors) => setCustomColors(colors)}
-      />
-=======
     >
       <MemoHeader showCreator={showCreator} showVisibility={showVisibility} showPinned={showPinned} />
->>>>>>> 89d43a2e (Developed Color Picker Feature for memos)
 
       <MemoBody compact={compact} />
       <MemoFooter/>

@@ -17,16 +17,6 @@ export const memoKeys = {
 };
 
 export function useMemos(request: Partial<ListMemosRequest> = {}) {
-<<<<<<< HEAD
-  console.log(`Memos: `,useQuery({
-    queryKey: memoKeys.list(request),
-    queryFn: async () => {
-      const response = await memoServiceClient.listMemos(create(ListMemosRequestSchema, request as Record<string, unknown>));
-      return response;
-    },
-  }));
-=======
->>>>>>> 89d43a2e (Developed Color Picker Feature for memos)
   return useQuery({
     queryKey: memoKeys.list(request),
     queryFn: async () => {

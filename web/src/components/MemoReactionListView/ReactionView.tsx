@@ -35,11 +35,7 @@ const ReactionView = (props: Props) => {
             type="button"
             className={cn(
               "h-7 border px-2 py-0.5 rounded-full flex flex-row justify-center items-center gap-1",
-<<<<<<< HEAD
-              "text-sm",
-=======
               "text-sm text-muted-foreground",
->>>>>>> 89d43a2e (Developed Color Picker Feature for memos)
               isClickable && "cursor-pointer",
               !isClickable && "cursor-default",
               hasReaction && "bg-accent border-border",
