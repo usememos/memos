@@ -22,6 +22,11 @@ export const validationService = {
       return { valid: false, reason: "Wait for upload to complete" };
     }
 
+    // Cannot save while voice recorder is active
+    if (state.voiceRecorder.status === "recording" || state.voiceRecorder.status === "requesting_permission") {
+      return { valid: false, reason: "Finish voice recording before saving" };
+    }
+
     // Cannot save while already saving
     if (state.ui.isLoading.saving) {
       return { valid: false, reason: "Save in progress" };

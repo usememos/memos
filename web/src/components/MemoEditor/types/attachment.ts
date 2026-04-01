@@ -1,7 +1,7 @@
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentThumbnailUrl, getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 
-export type FileCategory = "image" | "video" | "document";
+export type FileCategory = "image" | "video" | "audio" | "document";
 
 // Unified view model for rendering attachments and local files
 export interface AttachmentItem {
@@ -24,6 +24,7 @@ export interface LocalFile {
 function categorizeFile(mimeType: string): FileCategory {
   if (mimeType.startsWith("image/")) return "image";
   if (mimeType.startsWith("video/")) return "video";
+  if (mimeType.startsWith("audio/")) return "audio";
   return "document";
 }
 

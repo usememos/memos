@@ -124,7 +124,28 @@
     "no-changes-detected": "No changes detected",
     "save": "Save",
     "saving": "Saving...",
-    "slash-commands": "Type `/` for commands"
+    "slash-commands": "Type `/` for commands",
+    "voice-recorder": {
+      "discard": "Discard",
+      "error": "Microphone unavailable",
+      "error-description": "Try again after checking microphone access for this site.",
+      "idle-description": "Start recording to add a voice note as an audio attachment.",
+      "keep": "Keep recording",
+      "ready": "Recording ready",
+      "ready-description": "Preview the clip, then keep it as an audio attachment or discard it.",
+      "record-again": "Record again",
+      "recording": "Recording voice note",
+      "recording-description": "Capture a quick audio attachment. Current length: {{duration}}",
+      "requesting": "Requesting access...",
+      "requesting-permission": "Requesting microphone access",
+      "requesting-permission-description": "Allow microphone access in your browser to start recording.",
+      "start": "Start recording",
+      "stop": "Stop recording",
+      "title": "Voice recorder",
+      "trigger": "Voice note",
+      "unsupported": "Voice recording unsupported",
+      "unsupported-description": "This browser cannot record audio from the memo composer."
+    }
   },
   "inbox": {
     "failed-to-load": "Failed to load inbox item",
