@@ -1,46 +1,41 @@
 # Security Policy
 
-## Project Status
+## Supported Versions
 
-Memos is currently in beta (v0.x). While we take security seriously, we are not yet ready for formal CVE assignments or coordinated disclosure programs.
+Memos is currently a `0.x` project. Security fixes are only provided for the latest release. Older releases are not supported for security updates, and fixes are not backported.
 
-## Reporting Security Issues
+If you run Memos in production, keep your instance updated to the latest release.
 
-### For All Security Concerns:
-Please report via **email only**: dev@usememos.com
+## Reporting a Vulnerability
 
-**DO NOT open public GitHub issues for security vulnerabilities.**
+Please report security issues privately by email: `dev@usememos.com`
 
-Include in your report:
-- Description of the issue
+Do not open public GitHub issues, discussions, or pull requests for suspected vulnerabilities.
+
+Please include:
+
+- A clear description of the issue
 - Steps to reproduce
-- Affected versions
-- Your assessment of severity
+- Affected version or commit
+- Deployment details that matter to reproduction
+- Your assessment of impact
 
-### What to Expect:
-- We will acknowledge your report as soon as we can
-- Fixes will be included in regular releases without special security advisories
-- No CVEs will be assigned during the beta phase
-- Credit will be given in release notes if you wish
+We will review reports as time permits and fix valid issues in regular releases.
 
-### For Non-Security Bugs:
-Use GitHub issues for functionality bugs, feature requests, and general questions.
+## Disclosure and CVEs
 
-## Philosophy
+Memos is self-hosted software and is still in the `0.x` stage. At this stage, we do not run a formal disclosure program, publish separate security advisories for every issue, or request CVE IDs.
 
-As a beta project, we prioritize:
-1. **Rapid iteration** over lengthy disclosure timelines
-2. **Quick patches** over formal security processes
-3. **Transparency** about our beta status
+Security fixes may be shipped directly in normal releases or noted briefly in release notes and changelogs.
 
-We plan to implement formal vulnerability disclosure and CVE handling after reaching v1.0 stable.
+## Self-Hosted Deployment Notes
 
-## Self-Hosting Security
+The security posture of a Memos instance depends heavily on how it is deployed and operated. In particular:
 
-Since Memos is self-hosted software:
-- Keep your instance updated to the latest release
-- Don't expose your instance directly to the internet without authentication
-- Use reverse proxies (nginx, Caddy) with rate limiting
-- Review the deployment documentation for security best practices
+- Keep Memos updated
+- Put it behind a properly configured reverse proxy when exposed to the internet
+- Require authentication for any non-public deployment
+- Use TLS in production
+- Limit access to trusted users and administrators
 
-Thank you for helping improve Memos!
+Reports that depend entirely on intentionally unsafe deployment choices, unsupported local patches, or administrator actions may be treated as deployment issues rather than product vulnerabilities.

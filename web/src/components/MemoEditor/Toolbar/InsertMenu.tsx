@@ -1,6 +1,16 @@
 import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
-import { FileIcon, LinkIcon, LoaderIcon, type LucideIcon, MapPinIcon, Maximize2Icon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
+import {
+  FileIcon,
+  LinkIcon,
+  LoaderIcon,
+  type LucideIcon,
+  MapPinIcon,
+  Maximize2Icon,
+  MicIcon,
+  MoreHorizontalIcon,
+  PlusIcon,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce } from "react-use";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
@@ -141,8 +151,14 @@ const InsertMenu = (props: InsertMenuProps) => {
           icon: MapPinIcon,
           onClick: handleLocationClick,
         },
+        {
+          key: "voice-note",
+          label: t("editor.voice-recorder.trigger"),
+          icon: MicIcon,
+          onClick: () => props.onVoiceRecorderClick?.(),
+        },
       ] satisfies Array<{ key: string; label: string; icon: LucideIcon; onClick: () => void }>,
-    [handleLocationClick, handleOpenLinkDialog, handleUploadClick, t],
+    [handleLocationClick, handleOpenLinkDialog, handleUploadClick, props, t],
   );
 
   return (

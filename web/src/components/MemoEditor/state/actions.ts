@@ -1,7 +1,7 @@
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import type { LocalFile } from "../types/attachment";
-import type { EditorAction, EditorState, LoadingKey } from "./types";
+import type { EditorAction, EditorState, LoadingKey, VoiceRecorderPermission, VoiceRecorderStatus, VoiceRecordingPreview } from "./types";
 
 export const editorActions = {
   initMemo: (payload: { content: string; metadata: EditorState["metadata"]; timestamps: EditorState["timestamps"] }): EditorAction => ({
@@ -70,6 +70,36 @@ export const editorActions = {
   setTimestamps: (timestamps: Partial<EditorState["timestamps"]>): EditorAction => ({
     type: "SET_TIMESTAMPS",
     payload: timestamps,
+  }),
+
+  setVoiceRecorderSupport: (value: boolean): EditorAction => ({
+    type: "SET_VOICE_RECORDER_SUPPORT",
+    payload: value,
+  }),
+
+  setVoiceRecorderPermission: (value: VoiceRecorderPermission): EditorAction => ({
+    type: "SET_VOICE_RECORDER_PERMISSION",
+    payload: value,
+  }),
+
+  setVoiceRecorderStatus: (value: VoiceRecorderStatus): EditorAction => ({
+    type: "SET_VOICE_RECORDER_STATUS",
+    payload: value,
+  }),
+
+  setVoiceRecorderElapsed: (value: number): EditorAction => ({
+    type: "SET_VOICE_RECORDER_ELAPSED",
+    payload: value,
+  }),
+
+  setVoiceRecorderError: (value?: string): EditorAction => ({
+    type: "SET_VOICE_RECORDER_ERROR",
+    payload: value,
+  }),
+
+  setVoiceRecording: (value?: VoiceRecordingPreview): EditorAction => ({
+    type: "SET_VOICE_RECORDING",
+    payload: value,
   }),
 
   reset: (): EditorAction => ({
