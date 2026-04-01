@@ -183,9 +183,9 @@
     "direction-desc": "Azalan",
     "display-time": "Görüntüleme Zamanı",
     "filters": {
-      "has-code": "hasCode",
-      "has-link": "hasLink",
-      "has-task-list": "hasTaskList",
+      "has-code": "Kod içerir",
+      "has-link": "Bağlantı içerir",
+      "has-task-list": "Yapılacaklar listesi içerir",
       "label": "Filtreler"
     },
     "links": "Bağlantılar",
