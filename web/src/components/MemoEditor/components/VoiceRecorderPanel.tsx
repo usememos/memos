@@ -1,7 +1,7 @@
 import { AudioLinesIcon, LoaderCircleIcon, MicIcon, RotateCcwIcon, SquareIcon, Trash2Icon } from "lucide-react";
 import type { FC } from "react";
 import { AudioAttachmentItem } from "@/components/MemoMetadata/Attachment";
-import { formatAudioTime } from "@/components/MemoMetadata/Attachment/attachmentViewHelpers";
+import { formatAudioTime } from "@/components/MemoMetadata/Attachment/attachmentHelpers";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";

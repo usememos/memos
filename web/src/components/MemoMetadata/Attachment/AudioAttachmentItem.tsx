@@ -1,7 +1,7 @@
 import { FileAudioIcon, PauseIcon, PlayIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
-import { formatAudioTime } from "./attachmentViewHelpers";
+import { formatAudioTime } from "./attachmentHelpers";
 
 const AUDIO_PLAYBACK_RATES = [1, 1.5, 2] as const;
 

@@ -2,10 +2,10 @@ import { ChevronDownIcon, ChevronUpIcon, FileIcon, PaperclipIcon, XIcon } from "
 import type { FC } from "react";
 import type { AttachmentItem, LocalFile } from "@/components/MemoEditor/types/attachment";
 import { toAttachmentItems } from "@/components/MemoEditor/types/attachment";
+import MetadataSection from "@/components/MemoMetadata/MetadataSection";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
-import SectionHeader from "../SectionHeader";
 
 interface AttachmentListEditorProps {
   attachments: Attachment[];
@@ -142,28 +142,24 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({ attachments, loca
   };
 
   return (
-    <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
-      <SectionHeader icon={PaperclipIcon} title="Attachments" count={items.length} />
+    <MetadataSection icon={PaperclipIcon} title="Attachments" count={items.length} contentClassName="flex flex-col gap-0.5 p-1 sm:p-1.5">
+      {items.map((item) => {
+        const isLocalFile = item.isLocal;
+        const attachmentIndex = isLocalFile ? -1 : attachments.findIndex((a) => a.name === item.id);
 
-      <div className="p-1 sm:p-1.5 flex flex-col gap-0.5">
-        {items.map((item) => {
-          const isLocalFile = item.isLocal;
-          const attachmentIndex = isLocalFile ? -1 : attachments.findIndex((a) => a.name === item.id);
-
-          return (
-            <AttachmentItemCard
-              key={item.id}
-              item={item}
-              onRemove={() => handleRemoveItem(item)}
-              onMoveUp={!isLocalFile ? () => handleMoveUp(attachmentIndex) : undefined}
-              onMoveDown={!isLocalFile ? () => handleMoveDown(attachmentIndex) : undefined}
-              canMoveUp={!isLocalFile && attachmentIndex > 0}
-              canMoveDown={!isLocalFile && attachmentIndex < attachments.length - 1}
-            />
-          );
-        })}
-      </div>
-    </div>
+        return (
+          <AttachmentItemCard
+            key={item.id}
+            item={item}
+            onRemove={() => handleRemoveItem(item)}
+            onMoveUp={!isLocalFile ? () => handleMoveUp(attachmentIndex) : undefined}
+            onMoveDown={!isLocalFile ? () => handleMoveDown(attachmentIndex) : undefined}
+            canMoveUp={!isLocalFile && attachmentIndex > 0}
+            canMoveDown={!isLocalFile && attachmentIndex < attachments.length - 1}
+          />
+        );
+      })}
+    </MetadataSection>
   );
 };
 

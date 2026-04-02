@@ -1,12 +1,12 @@
 import { DownloadIcon, FileIcon, Maximize2Icon, PaperclipIcon, PlayIcon } from "lucide-react";
 import { useMemo } from "react";
+import MetadataSection from "@/components/MemoMetadata/MetadataSection";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentUrl } from "@/utils/attachment";
-import SectionHeader from "../SectionHeader";
 import AttachmentCard from "./AttachmentCard";
 import AudioAttachmentItem from "./AudioAttachmentItem";
-import { getAttachmentMetadata, isImageAttachment, isVideoAttachment, separateAttachments } from "./attachmentViewHelpers";
+import { getAttachmentMetadata, isImageAttachment, isVideoAttachment, separateAttachments } from "./attachmentHelpers";
 
 interface AttachmentListViewProps {
   attachments: Attachment[];
@@ -172,9 +172,12 @@ const Divider = () => <div className="border-t border-border/70 opacity-80" />;
 
 const AttachmentListView = ({ attachments, onImagePreview }: AttachmentListViewProps) => {
   const { visual, audio, docs } = useMemo(() => separateAttachments(attachments), [attachments]);
-
   const imageAttachments = useMemo(() => visual.filter(isImageAttachment), [visual]);
   const imageUrls = useMemo(() => imageAttachments.map(getAttachmentUrl), [imageAttachments]);
+  const hasVisual = visual.length > 0;
+  const hasAudio = audio.length > 0;
+  const hasDocs = docs.length > 0;
+  const sectionCount = [hasVisual, hasAudio, hasDocs].filter(Boolean).length;
 
   if (attachments.length === 0) {
     return null;
@@ -185,25 +188,14 @@ const AttachmentListView = ({ attachments, onImagePreview }: AttachmentListViewP
     onImagePreview?.(imageUrls, index >= 0 ? index : 0);
   };
 
-  const sections = [visual.length > 0, audio.length > 0, docs.length > 0];
-  const sectionCount = sections.filter(Boolean).length;
-
   return (
-    <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
-      <SectionHeader icon={PaperclipIcon} title="Attachments" count={attachments.length} />
-
-      <div className="flex flex-col gap-2 p-2">
-        {visual.length > 0 && <VisualSection attachments={visual} onImageClick={handleImageClick} />}
-
-        {visual.length > 0 && sectionCount > 1 && <Divider />}
-
-        {audio.length > 0 && <AudioList attachments={audio} />}
-
-        {audio.length > 0 && docs.length > 0 && <Divider />}
-
-        {docs.length > 0 && <DocsList attachments={docs} />}
-      </div>
-    </div>
+    <MetadataSection icon={PaperclipIcon} title="Attachments" count={attachments.length} contentClassName="flex flex-col gap-2 p-2">
+      {hasVisual && <VisualSection attachments={visual} onImageClick={handleImageClick} />}
+      {hasVisual && sectionCount > 1 && <Divider />}
+      {hasAudio && <AudioList attachments={audio} />}
+      {hasAudio && hasDocs && <Divider />}
+      {hasDocs && <DocsList attachments={docs} />}
+    </MetadataSection>
   );
 };
 
