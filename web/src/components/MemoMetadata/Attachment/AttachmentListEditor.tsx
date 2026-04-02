@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
 import SectionHeader from "../SectionHeader";
-import AudioAttachmentItem from "./AudioAttachmentItem";
 
 interface AttachmentListEditorProps {
   attachments: Attachment[];
@@ -23,37 +22,10 @@ const AttachmentItemCard: FC<{
   canMoveUp?: boolean;
   canMoveDown?: boolean;
 }> = ({ item, onRemove, onMoveUp, onMoveDown, canMoveUp = true, canMoveDown = true }) => {
-  const { category, filename, thumbnailUrl, mimeType, size, sourceUrl } = item;
+  const { category, filename, thumbnailUrl, mimeType, size } = item;
   const fileTypeLabel = getFileTypeLabel(mimeType);
   const fileSizeLabel = size ? formatFileSize(size) : undefined;
   const displayName = category === "audio" && /^voice-(recording|note)-/i.test(filename) ? "Voice note" : filename;
-
-  if (category === "audio") {
-    return (
-      <div className="rounded border border-transparent transition-all hover:border-border hover:bg-accent/20">
-        <AudioAttachmentItem
-          filename={filename}
-          displayName={displayName}
-          sourceUrl={sourceUrl}
-          mimeType={mimeType}
-          size={size}
-          actionSlot={
-            onRemove ? (
-              <button
-                type="button"
-                onClick={onRemove}
-                className="inline-flex size-6.5 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                title="Remove"
-                aria-label="Remove attachment"
-              >
-                <XIcon className="h-3 w-3" />
-              </button>
-            ) : undefined
-          }
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="relative rounded border border-transparent px-1.5 py-1 transition-all hover:border-border hover:bg-accent/20">

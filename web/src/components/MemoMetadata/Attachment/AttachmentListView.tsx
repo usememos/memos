@@ -147,7 +147,13 @@ const VisualSection = ({ attachments, onImageClick }: { attachments: Attachment[
 const AudioList = ({ attachments }: { attachments: Attachment[] }) => (
   <div className="flex flex-col gap-2">
     {attachments.map((attachment) => (
-      <AudioAttachmentItem key={attachment.name} attachment={attachment} />
+      <AudioAttachmentItem
+        key={attachment.name}
+        filename={attachment.filename}
+        sourceUrl={getAttachmentUrl(attachment)}
+        mimeType={attachment.type}
+        size={Number(attachment.size)}
+      />
     ))}
   </div>
 );

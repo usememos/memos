@@ -87,10 +87,10 @@ export const VoiceRecorderPanel: FC<VoiceRecorderPanelProps> = ({
         <div className="mt-3">
           <AudioAttachmentItem
             filename={recording.localFile.file.name}
-            displayName="Voice note"
             sourceUrl={recording.localFile.previewUrl}
             mimeType={recording.mimeType}
             size={recording.localFile.file.size}
+            title="Voice note"
           />
         </div>
       )}

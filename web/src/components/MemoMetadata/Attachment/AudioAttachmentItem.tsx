@@ -1,9 +1,7 @@
 import { FileAudioIcon, PauseIcon, PlayIcon } from "lucide-react";
-import { type ReactNode, useEffect, useRef, useState } from "react";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import { getAttachmentUrl } from "@/utils/attachment";
+import { useEffect, useRef, useState } from "react";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
-import { formatAudioTime, getAttachmentMetadata } from "./attachmentViewHelpers";
+import { formatAudioTime } from "./attachmentViewHelpers";
 
 const AUDIO_PLAYBACK_RATES = [1, 1.5, 2] as const;
 
@@ -47,30 +45,22 @@ const AudioProgressBar = ({ filename, currentTime, duration, progressPercent, on
 );
 
 interface AudioAttachmentItemProps {
-  attachment?: Attachment;
-  filename?: string;
-  displayName?: string;
-  sourceUrl?: string;
-  mimeType?: string;
+  filename: string;
+  sourceUrl: string;
+  mimeType: string;
   size?: number;
-  actionSlot?: ReactNode;
+  title?: string;
 }
 
-const AudioAttachmentItem = ({ attachment, filename, displayName, sourceUrl, mimeType, size, actionSlot }: AudioAttachmentItemProps) => {
-  const resolvedFilename = attachment?.filename ?? filename ?? "audio";
-  const resolvedDisplayName = displayName ?? resolvedFilename;
-  const resolvedSourceUrl = attachment ? getAttachmentUrl(attachment) : (sourceUrl ?? "");
+const AudioAttachmentItem = ({ filename, sourceUrl, mimeType, size, title }: AudioAttachmentItemProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [playbackRate, setPlaybackRate] = useState<(typeof AUDIO_PLAYBACK_RATES)[number]>(1);
-  const { fileTypeLabel, fileSizeLabel } = attachment
-    ? getAttachmentMetadata(attachment)
-    : {
-        fileTypeLabel: getFileTypeLabel(mimeType ?? ""),
-        fileSizeLabel: size ? formatFileSize(size) : undefined,
-      };
+  const displayTitle = title ?? filename;
+  const fileTypeLabel = getFileTypeLabel(mimeType);
+  const fileSizeLabel = size ? formatFileSize(size) : undefined;
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   useEffect(() => {
@@ -131,8 +121,8 @@ const AudioAttachmentItem = ({ attachment, filename, displayName, sourceUrl, mim
 
         <div className="flex min-w-0 flex-1 items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-medium leading-5 text-foreground" title={resolvedFilename}>
-              {resolvedDisplayName}
+            <div className="truncate text-sm font-medium leading-5 text-foreground" title={filename}>
+              {displayTitle}
             </div>
             <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs leading-4 text-muted-foreground">
               <span>{fileTypeLabel}</span>
@@ -146,12 +136,11 @@ const AudioAttachmentItem = ({ attachment, filename, displayName, sourceUrl, mim
           </div>
 
           <div className="mt-0.5 flex shrink-0 items-center gap-1">
-            {actionSlot}
             <button
               type="button"
               onClick={handlePlaybackRateChange}
               className="inline-flex h-6 items-center justify-center px-1 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
-              aria-label={`Playback speed ${playbackRate}x for ${resolvedDisplayName}`}
+              aria-label={`Playback speed ${playbackRate}x for ${displayTitle}`}
             >
               {playbackRate}x
             </button>
@@ -159,7 +148,7 @@ const AudioAttachmentItem = ({ attachment, filename, displayName, sourceUrl, mim
               type="button"
               onClick={togglePlayback}
               className="inline-flex size-6.5 items-center justify-center rounded-md border border-border/45 bg-background/85 text-foreground transition-colors hover:bg-muted/45"
-              aria-label={isPlaying ? `Pause ${resolvedDisplayName}` : `Play ${resolvedDisplayName}`}
+              aria-label={isPlaying ? `Pause ${displayTitle}` : `Play ${displayTitle}`}
             >
               {isPlaying ? <PauseIcon className="size-3" /> : <PlayIcon className="size-3 translate-x-[0.5px]" />}
             </button>
@@ -168,7 +157,7 @@ const AudioAttachmentItem = ({ attachment, filename, displayName, sourceUrl, mim
       </div>
 
       <AudioProgressBar
-        filename={resolvedFilename}
+        filename={filename}
         currentTime={currentTime}
         duration={duration}
         progressPercent={progressPercent}
@@ -177,7 +166,7 @@ const AudioAttachmentItem = ({ attachment, filename, displayName, sourceUrl, mim
 
       <audio
         ref={audioRef}
-        src={resolvedSourceUrl}
+        src={sourceUrl}
         preload="metadata"
         className="hidden"
         onLoadedMetadata={(e) => handleDuration(e.currentTarget.duration)}
