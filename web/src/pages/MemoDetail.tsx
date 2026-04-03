@@ -1,51 +1,70 @@
 import { Code, ConnectError } from "@connectrpc/connect";
-import { ArrowUpLeftFromCircleIcon } from "lucide-react";
-import { useEffect } from "react";
-import { Link, Navigate, useLocation, useParams } from "react-router-dom";
-import MemoCommentSection from "@/components/MemoCommentSection";
+import { ArrowUpLeftFromCircleIcon, MessageCircleIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { MemoDetailSidebar, MemoDetailSidebarDrawer } from "@/components/MemoDetailSidebar";
+import MemoEditor from "@/components/MemoEditor";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
-import { memoNamePrefix } from "@/helpers/resource-names";
+import { Button } from "@/components/ui/button";
+import { extractMemoIdFromName, memoNamePrefix } from "@/helpers/resource-names";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
-import useMemoDetailError from "@/hooks/useMemoDetailError";
 import { useMemo, useMemoComments } from "@/hooks/useMemoQueries";
-import { useSharedMemo, withShareAttachmentLinks } from "@/hooks/useMemoShareQueries";
+import useNavigateTo from "@/hooks/useNavigateTo";
 import { cn } from "@/lib/utils";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import { AUTH_REASON_PROTECTED_MEMO, redirectOnAuthFailure } from "@/utils/auth-redirect";
+import { useTranslate } from "@/utils/i18n";
 
 const MemoDetail = () => {
+  const t = useTranslate();
   const md = useMediaQuery("md");
   const params = useParams();
+  const navigateTo = useNavigateTo();
   const location = useLocation();
   const { state: locationState, hash } = location;
+  const currentUser = useCurrentUser();
+  const uid = params.uid;
+  const memoName = `${memoNamePrefix}${uid}`;
+  const [showCommentEditor, setShowCommentEditor] = useState(false);
 
-  // Detect share mode from the route parameter.
-  const shareToken = params.token;
-  const isShareMode = !!shareToken;
+  // Fetch main memo with React Query
+  const { data: memo, error, isLoading } = useMemo(memoName, { enabled: !!memoName });
 
-  // Primary memo fetch — share token or direct name.
-  const memoNameFromParams = params.uid ? `${memoNamePrefix}${params.uid}` : "";
-  const {
-    data: memoFromDirect,
-    error: directError,
-    isLoading: directLoading,
-  } = useMemo(memoNameFromParams, { enabled: !isShareMode && !!memoNameFromParams });
-  const { data: memoFromShare, error: shareError, isLoading: shareLoading } = useSharedMemo(shareToken ?? "", { enabled: isShareMode });
+  // Handle errors
+  useEffect(() => {
+    if (!error) {
+      return;
+    }
 
-  const memo = isShareMode ? memoFromShare : memoFromDirect;
-  const error = isShareMode ? shareError : directError;
-  const isLoading = isShareMode ? shareLoading : directLoading;
-  const memoName = memo?.name ?? memoNameFromParams;
+    if (error instanceof ConnectError) {
+      if (error.code === Code.Unauthenticated) {
+        redirectOnAuthFailure(true, {
+          redirect: `${location.pathname}${location.search}${location.hash}`,
+          reason: AUTH_REASON_PROTECTED_MEMO,
+        });
+        return;
+      }
 
-  useMemoDetailError({
-    error: error as Error | null,
-  });
+      if (error.code === Code.PermissionDenied || error.code === Code.NotFound) {
+        navigateTo("/404", { replace: true });
+        return;
+      }
 
+      toast.error(error.message);
+      return;
+    }
+
+    toast.error((error as Error).message);
+  }, [error, location.hash, location.pathname, location.search, navigateTo]);
+
+  // Fetch parent memo if exists
   const { data: parentMemo } = useMemo(memo?.parent || "", {
     enabled: !!memo?.parent,
   });
 
+  // Fetch all comments for this memo in a single query
   const { data: commentsResponse } = useMemoComments(memoName, {
     enabled: !!memo,
   });
@@ -57,27 +76,26 @@ const MemoDetail = () => {
     el?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [hash, comments]);
 
-  if (isShareMode) {
-    const isNotFound = error instanceof ConnectError && (error.code === Code.NotFound || error.code === Code.Unauthenticated);
-    if (isNotFound || (!isLoading && !memo)) {
-      return <Navigate to="/404" replace />;
-    }
-  }
+  const showCreateCommentButton = currentUser && !showCommentEditor;
 
   if (isLoading || !memo) {
     return null;
   }
 
-  // In share mode, rewrite attachment URLs to include the share token for unauthenticated access.
-  const displayMemo = isShareMode
-    ? { ...memo, attachments: withShareAttachmentLinks(memo.attachments as Attachment[], shareToken!) }
-    : memo;
+  const handleShowCommentEditor = () => {
+    setShowCommentEditor(true);
+  };
+
+  const handleCommentCreated = async (_memoCommentName: string) => {
+    // React Query will auto-refetch due to invalidation in the mutation
+    setShowCommentEditor(false);
+  };
 
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       {!md && (
         <MobileHeader>
-          <MemoDetailSidebarDrawer memo={displayMemo} />
+          <MemoDetailSidebarDrawer memo={memo} parentPage={locationState?.from} />
         </MobileHeader>
       )}
       <div className={cn("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
@@ -96,19 +114,74 @@ const MemoDetail = () => {
             </div>
           )}
           <MemoView
-            key={`${displayMemo.name}-${displayMemo.displayTime}`}
-            memo={displayMemo}
+            key={`${memo.name}-${memo.displayTime}`}
+            className="shadow hover:shadow-md transition-all"
+            memo={memo}
             compact={false}
             parentPage={locationState?.from}
             showCreator
             showVisibility
             showPinned
+<<<<<<< HEAD
+            colorKey={memo.name}
+=======
+>>>>>>> 89d43a2e (Developed Color Picker Feature for memos)
           />
-          <MemoCommentSection memo={displayMemo} comments={comments} parentPage={locationState?.from} />
+          <div className="pt-8 pb-16 w-full">
+            <h2 id="comments" className="sr-only">
+              {t("memo.comment.self")}
+            </h2>
+            <div className="relative mx-auto grow w-full min-h-full flex flex-col justify-start items-start gap-y-1">
+              {comments.length === 0 ? (
+                showCreateCommentButton && (
+                  <div className="w-full flex flex-row justify-center items-center py-6">
+                    <Button variant="ghost" onClick={handleShowCommentEditor}>
+                      <span className="text-muted-foreground">{t("memo.comment.write-a-comment")}</span>
+                      <MessageCircleIcon className="ml-2 w-5 h-auto text-muted-foreground" />
+                    </Button>
+                  </div>
+                )
+              ) : (
+                <div className="w-full flex flex-row justify-between items-center h-8 pl-3 mb-2">
+                  <div className="flex flex-row justify-start items-center">
+                    <MessageCircleIcon className="w-5 h-auto text-muted-foreground mr-1" />
+                    <span className="text-muted-foreground text-sm">{t("memo.comment.self")}</span>
+                    <span className="text-muted-foreground text-sm ml-1">({comments.length})</span>
+                  </div>
+                  {showCreateCommentButton && (
+                    <Button variant="ghost" className="text-muted-foreground" onClick={handleShowCommentEditor}>
+                      {t("memo.comment.write-a-comment")}
+                    </Button>
+                  )}
+                </div>
+              )}
+              {showCommentEditor && (
+                <div className="w-full mb-2">
+                  <MemoEditor
+                    cacheKey={`${memo.name}-${memo.updateTime}-comment`}
+                    placeholder={t("editor.add-your-comment-here")}
+                    parentMemoName={memo.name}
+                    autoFocus
+                    onConfirm={handleCommentCreated}
+                    onCancel={() => setShowCommentEditor(false)}
+                  />
+                </div>
+              )}
+              {comments.map((comment) => (
+                <div className="w-full" key={`${comment.name}-${comment.displayTime}`} id={extractMemoIdFromName(comment.name)}>
+<<<<<<< HEAD
+                  <MemoView memo={comment} parentPage={locationState?.from} showCreator compact colorKey={memo.name} />
+=======
+                  <MemoView memo={comment} parentPage={locationState?.from} showCreator compact />
+>>>>>>> 89d43a2e (Developed Color Picker Feature for memos)
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
         {md && (
           <div className="sticky top-0 left-0 shrink-0 -mt-6 w-56 h-full">
-            <MemoDetailSidebar className="py-6" memo={displayMemo} />
+            <MemoDetailSidebar className="py-6" memo={memo} parentPage={locationState?.from} />
           </div>
         )}
       </div>

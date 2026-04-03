@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "Đã lưu trữ lúc",
-    "click-to-hide-sensitive-content": "Nhấp để ẩn nội dung nhạy cảm",
-    "click-to-show-sensitive-content": "Nhấp để hiện nội dung nhạy cảm",
+    "click-to-hide-nsfw-content": "Nhấp để ẩn nội dung nhạy cảm",
+    "click-to-show-nsfw-content": "Nhấp để hiện nội dung nhạy cảm",
     "code": "Mã",
     "comment": {
       "self": "Bình luận",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "Giới hạn độ dài nội dung (Byte)",
-      "enable-blur-sensitive-content": "Bật làm mờ nội dung nhạy cảm (NSFW)",
+      "enable-blur-nsfw-content": "Bật làm mờ nội dung nhạy cảm (NSFW)",
       "enable-memo-comments": "Bật bình luận ghi chú",
       "enable-memo-location": "Bật vị trí ghi chú",
       "reactions": "Phản ứng",

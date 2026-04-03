@@ -83,14 +83,10 @@ const TagsSection = () => {
     () => Object.fromEntries(Object.entries(originalSetting.tags).map(([name, meta]) => [name, toLocalTagMeta(meta)])),
     [originalSetting.tags],
   );
-  const hasChanges = !isEqual(localTags, originalMetaMap);
+  const hasChanges = !isEqual(localTags, originalHexMap);
 
   const handleColorChange = (tagName: string, hex: string) => {
-    setLocalTags((prev) => ({ ...prev, [tagName]: { ...prev[tagName], color: hex } }));
-  };
-
-  const handleBlurChange = (tagName: string, blur: boolean) => {
-    setLocalTags((prev) => ({ ...prev, [tagName]: { ...prev[tagName], blur } }));
+    setLocalTags((prev) => ({ ...prev, [tagName]: hex }));
   };
 
   const handleClearColor = (tagName: string) => {
@@ -116,7 +112,7 @@ const TagsSection = () => {
       toast.error(t("setting.tags.invalid-regex"));
       return;
     }
-    setLocalTags((prev) => ({ ...prev, [name]: { color: newTagColor, blur: newTagBlur } }));
+    setLocalTags((prev) => ({ ...prev, [name]: newTagColor }));
     setNewTagName("");
     setNewTagColor(undefined);
     setNewTagBlur(false);
@@ -125,7 +121,7 @@ const TagsSection = () => {
   const handleSave = async () => {
     try {
       const tags = Object.fromEntries(
-        Object.entries(localTags).map(([name, meta]) => [
+        Object.entries(localTags).map(([name, hex]) => [
           name,
           create(InstanceSetting_TagMetadataSchema, {
             blurContent: meta.blur,
@@ -177,18 +173,6 @@ const TagsSection = () => {
                     <span className="text-xs text-muted-foreground">{t("setting.tags.using-default-color")}</span>
                   )}
                 </div>
-              ),
-            },
-            {
-              key: "blur",
-              header: t("setting.tags.blur-content"),
-              render: (_, row: { name: string }) => (
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 cursor-pointer"
-                  checked={localTags[row.name].blur}
-                  onChange={(e) => handleBlurChange(row.name, e.target.checked)}
-                />
               ),
             },
             {

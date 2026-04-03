@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "Archivado en",
-    "click-to-hide-sensitive-content": "Haz clic para ocultar contenido sensible",
-    "click-to-show-sensitive-content": "Haz clic para mostrar contenido sensible",
+    "click-to-hide-nsfw-content": "Haz clic para ocultar contenido sensible",
+    "click-to-show-nsfw-content": "Haz clic para mostrar contenido sensible",
     "code": "Código",
     "comment": {
       "self": "Comentarios",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "Límite de longitud de contenido (Bytes)",
-      "enable-blur-sensitive-content": "Habilitar difuminado de contenido sensible (NSFW)",
+      "enable-blur-nsfw-content": "Habilitar difuminado de contenido sensible (NSFW)",
       "enable-memo-comments": "Habilitar comentarios en los memos",
       "enable-memo-location": "Habilitar ubicación del memo",
       "reactions": "Reacciones",

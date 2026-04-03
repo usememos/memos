@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "Archivé le",
-    "click-to-hide-sensitive-content": "Cliquez pour masquer le contenu sensible",
-    "click-to-show-sensitive-content": "Cliquez pour afficher le contenu sensible",
+    "click-to-hide-nsfw-content": "Cliquez pour masquer le contenu sensible",
+    "click-to-show-nsfw-content": "Cliquez pour afficher le contenu sensible",
     "code": "Code",
     "comment": {
       "self": "Commentaires",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "Limite de longueur du contenu (octets)",
-      "enable-blur-sensitive-content": "Activer le flou pour le contenu sensible (NSFW)",
+      "enable-blur-nsfw-content": "Activer le flou pour le contenu sensible (NSFW)",
       "enable-memo-comments": "Activer les commentaires sur les notes",
       "enable-memo-location": "Activer la localisation des notes",
       "reactions": "Réactions",

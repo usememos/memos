@@ -757,10 +757,8 @@ type InstanceTagMetadata struct {
 	// Optional background color for the tag label.
 	// When unset, the default tag color is used.
 	BackgroundColor *color.Color `protobuf:"bytes,1,opt,name=background_color,json=backgroundColor,proto3" json:"background_color,omitempty"`
-	// Whether memos with this tag should have their content blurred.
-	BlurContent   bool `protobuf:"varint,2,opt,name=blur_content,json=blurContent,proto3" json:"blur_content,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *InstanceTagMetadata) Reset() {
@@ -800,19 +798,8 @@ func (x *InstanceTagMetadata) GetBackgroundColor() *color.Color {
 	return nil
 }
 
-func (x *InstanceTagMetadata) GetBlurContent() bool {
-	if x != nil {
-		return x.BlurContent
-	}
-	return false
-}
-
 type InstanceTagsSetting struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Map of tag name pattern to tag metadata.
-	// Each key is treated as an anchored regular expression (^pattern$),
-	// so a single entry like "project/.*" matches all tags under that prefix.
-	// Exact tag names are also valid (they are trivially valid regex patterns).
+	state         protoimpl.MessageState          `protogen:"open.v1"`
 	Tags          map[string]*InstanceTagMetadata `protobuf:"bytes,1,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1067,10 +1054,9 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\x18display_with_update_time\x18\x02 \x01(\bR\x15displayWithUpdateTime\x120\n" +
 	"\x14content_length_limit\x18\x03 \x01(\x05R\x12contentLengthLimit\x127\n" +
 	"\x18enable_double_click_edit\x18\x04 \x01(\bR\x15enableDoubleClickEdit\x12\x1c\n" +
-	"\treactions\x18\a \x03(\tR\treactions\"w\n" +
+	"\treactions\x18\a \x03(\tR\treactions\"T\n" +
 	"\x13InstanceTagMetadata\x12=\n" +
-	"\x10background_color\x18\x01 \x01(\v2\x12.google.type.ColorR\x0fbackgroundColor\x12!\n" +
-	"\fblur_content\x18\x02 \x01(\bR\vblurContent\"\xb0\x01\n" +
+	"\x10background_color\x18\x01 \x01(\v2\x12.google.type.ColorR\x0fbackgroundColor\"\xb0\x01\n" +
 	"\x13InstanceTagsSetting\x12>\n" +
 	"\x04tags\x18\x01 \x03(\v2*.memos.store.InstanceTagsSetting.TagsEntryR\x04tags\x1aY\n" +
 	"\tTagsEntry\x12\x10\n" +

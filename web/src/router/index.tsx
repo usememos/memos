@@ -33,6 +33,7 @@ const NotFound = lazyWithReload(() => import("@/pages/NotFound"));
 const PermissionDenied = lazyWithReload(() => import("@/pages/PermissionDenied"));
 const Attachments = lazyWithReload(() => import("@/pages/Attachments"));
 const Setting = lazyWithReload(() => import("@/pages/Setting"));
+const SharedMemo = lazyWithReload(() => import("@/pages/SharedMemo"));
 const SignIn = lazyWithReload(() => import("@/pages/SignIn"));
 const SignUp = lazyWithReload(() => import("@/pages/SignUp"));
 const UserProfile = lazyWithReload(() => import("@/pages/UserProfile"));
@@ -75,12 +76,13 @@ const router = createBrowserRouter([
           { path: Routes.INBOX, element: <Inboxes /> },
           { path: Routes.SETTING, element: <Setting /> },
           { path: "memos/:uid", element: <MemoDetail /> },
-          { path: "memos/shares/:token", element: <MemoDetail /> },
           { path: "403", element: <PermissionDenied /> },
           { path: "404", element: <NotFound /> },
           { path: "*", element: <NotFound /> },
         ],
       },
+      // Public share-link viewer — outside RootLayout to bypass auth-gating
+      { path: "memos/shares/:token", element: <SharedMemo /> },
     ],
   },
 ]);

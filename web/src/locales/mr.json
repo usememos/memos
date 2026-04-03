@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "येथे संग्रहित",
-    "click-to-hide-sensitive-content": "संवेदनशील सामग्री लपवण्यासाठी क्लिक करा",
-    "click-to-show-sensitive-content": "संवेदनशील सामग्री दाखवण्यासाठी क्लिक करा",
+    "click-to-hide-nsfw-content": "संवेदनशील सामग्री लपवण्यासाठी क्लिक करा",
+    "click-to-show-nsfw-content": "संवेदनशील सामग्री दाखवण्यासाठी क्लिक करा",
     "code": "कोड",
     "comment": {
       "self": "टिप्पण्या",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "सामग्रीची कमाल लांबी (बाइट)",
-      "enable-blur-sensitive-content": "संवेदनशील (NSFW) सामग्री ब्लर करा सक्षम करा",
+      "enable-blur-nsfw-content": "संवेदनशील (NSFW) सामग्री ब्लर करा सक्षम करा",
       "enable-memo-comments": "मेमो टिप्पण्या सक्षम करा",
       "enable-memo-location": "मेमो स्थान सक्षम करा",
       "reactions": "प्रतिक्रिया",

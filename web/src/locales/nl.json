@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "Gearchiveerd op",
-    "click-to-hide-sensitive-content": "Klik om NSFW-inhoud te verbergen",
-    "click-to-show-sensitive-content": "Klik om NSFW-inhoud te tonen",
+    "click-to-hide-nsfw-content": "Klik om NSFW-inhoud te verbergen",
+    "click-to-show-nsfw-content": "Klik om NSFW-inhoud te tonen",
     "code": "Code",
     "comment": {
       "self": "Opmerkingen",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "Maximale inhoudslengte (Byte)",
-      "enable-blur-sensitive-content": "NSFW-inhoud vervagen inschakelen",
+      "enable-blur-nsfw-content": "NSFW-inhoud vervagen inschakelen",
       "enable-memo-comments": "Memo-opmerkingen inschakelen",
       "enable-memo-location": "Memo-locatie inschakelen",
       "reactions": "Reacties",

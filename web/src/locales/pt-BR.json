@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "Arquivado em",
-    "click-to-hide-sensitive-content": "Ocultar conteúdo impróprio",
-    "click-to-show-sensitive-content": "Mostrar conteúdo impróprio",
+    "click-to-hide-nsfw-content": "Ocultar conteúdo impróprio",
+    "click-to-show-nsfw-content": "Mostrar conteúdo impróprio",
     "code": "Código",
     "comment": {
       "self": "Comentários",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "Limite de tamanho do conteúdo (Bytes)",
-      "enable-blur-sensitive-content": "Desfocar conteúdo impróprio (adicione as tags abaixo)",
+      "enable-blur-nsfw-content": "Desfocar conteúdo impróprio (adicione as tags abaixo)",
       "enable-memo-comments": "Comentários nos memos",
       "enable-memo-location": "Marcador de localização",
       "reactions": "Reações",

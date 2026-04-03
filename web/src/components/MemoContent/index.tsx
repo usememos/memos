@@ -10,7 +10,6 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
-import { rehypeHeadingId } from "@/utils/rehype-plugins/rehype-heading-id";
 import { remarkDisableSetext } from "@/utils/remark-plugins/remark-disable-setext";
 import { remarkPreserveType } from "@/utils/remark-plugins/remark-preserve-type";
 import { remarkTag } from "@/utils/remark-plugins/remark-tag";
@@ -36,7 +35,7 @@ const MemoContent = (props: MemoContentProps) => {
   const compactLabel = useCompactLabel(showCompactMode, t as (key: string) => string);
 
   return (
-    <div className={`w-full flex flex-col justify-start items-start text-foreground ${className || ""}`}>
+    <div className={`w-full flex flex-col justify-start items-start ${className || ""}`}>
       <div
         ref={memoContentContainerRef}
         data-memo-content
@@ -52,20 +51,14 @@ const MemoContent = (props: MemoContentProps) => {
       >
         <ReactMarkdown
           remarkPlugins={[remarkDisableSetext, remarkMath, remarkGfm, remarkBreaks, remarkTag, remarkPreserveType]}
-          rehypePlugins={[
-            rehypeRaw,
-            [rehypeSanitize, SANITIZE_SCHEMA],
-            rehypeHeadingId,
-            [rehypeKatex, { throwOnError: false, strict: false }],
-          ]}
+          rehypePlugins={[rehypeRaw, [rehypeSanitize, SANITIZE_SCHEMA], [rehypeKatex, { throwOnError: false, strict: false }]]}
           components={{
             // Child components consume from MemoViewContext directly
             input: ((inputProps: React.ComponentProps<"input"> & { node?: Element }) => {
-              const { node, ...rest } = inputProps;
-              if (node && isTaskListItemNode(node)) {
+              if (inputProps.node && isTaskListItemNode(inputProps.node)) {
                 return <TaskListItem {...inputProps} />;
               }
-              return <input {...rest} />;
+              return <input {...inputProps} />;
             }) as React.ComponentType<React.ComponentProps<"input">>,
             span: ((spanProps: React.ComponentProps<"span"> & { node?: Element }) => {
               const { node, ...rest } = spanProps;
@@ -75,40 +68,16 @@ const MemoContent = (props: MemoContentProps) => {
               return <span {...rest} />;
             }) as React.ComponentType<React.ComponentProps<"span">>,
             // Headings
-            h1: ({ children, ...props }) => (
-              <Heading level={1} {...props}>
-                {children}
-              </Heading>
-            ),
-            h2: ({ children, ...props }) => (
-              <Heading level={2} {...props}>
-                {children}
-              </Heading>
-            ),
-            h3: ({ children, ...props }) => (
-              <Heading level={3} {...props}>
-                {children}
-              </Heading>
-            ),
-            h4: ({ children, ...props }) => (
-              <Heading level={4} {...props}>
-                {children}
-              </Heading>
-            ),
-            h5: ({ children, ...props }) => (
-              <Heading level={5} {...props}>
-                {children}
-              </Heading>
-            ),
-            h6: ({ children, ...props }) => (
-              <Heading level={6} {...props}>
-                {children}
-              </Heading>
-            ),
+            h1: ({ children }) => <Heading level={1}>{children}</Heading>,
+            h2: ({ children }) => <Heading level={2}>{children}</Heading>,
+            h3: ({ children }) => <Heading level={3}>{children}</Heading>,
+            h4: ({ children }) => <Heading level={4}>{children}</Heading>,
+            h5: ({ children }) => <Heading level={5}>{children}</Heading>,
+            h6: ({ children }) => <Heading level={6}>{children}</Heading>,
             // Block elements
-            p: ({ children, ...props }) => <Paragraph {...props}>{children}</Paragraph>,
-            blockquote: ({ children, ...props }) => <Blockquote {...props}>{children}</Blockquote>,
-            hr: (props) => <HorizontalRule {...props} />,
+            p: ({ children }) => <Paragraph>{children}</Paragraph>,
+            blockquote: ({ children }) => <Blockquote>{children}</Blockquote>,
+            hr: () => <HorizontalRule />,
             // Lists
             ul: ({ children, ...props }) => <List {...props}>{children}</List>,
             ol: ({ children, ...props }) => (
@@ -119,15 +88,15 @@ const MemoContent = (props: MemoContentProps) => {
             li: ({ children, ...props }) => <ListItem {...props}>{children}</ListItem>,
             // Inline elements
             a: ({ children, ...props }) => <Link {...props}>{children}</Link>,
-            code: ({ children, ...props }) => <InlineCode {...props}>{children}</InlineCode>,
+            code: ({ children }) => <InlineCode>{children}</InlineCode>,
             img: ({ ...props }) => <Image {...props} />,
             // Code blocks
             pre: CodeBlock,
             // Tables
-            table: ({ children, ...props }) => <Table {...props}>{children}</Table>,
-            thead: ({ children, ...props }) => <TableHead {...props}>{children}</TableHead>,
-            tbody: ({ children, ...props }) => <TableBody {...props}>{children}</TableBody>,
-            tr: ({ children, ...props }) => <TableRow {...props}>{children}</TableRow>,
+            table: ({ children }) => <Table>{children}</Table>,
+            thead: ({ children }) => <TableHead>{children}</TableHead>,
+            tbody: ({ children }) => <TableBody>{children}</TableBody>,
+            tr: ({ children }) => <TableRow>{children}</TableRow>,
             th: ({ children, ...props }) => <TableHeaderCell {...props}>{children}</TableHeaderCell>,
             td: ({ children, ...props }) => <TableCell {...props}>{children}</TableCell>,
           }}

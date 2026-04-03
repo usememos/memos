@@ -117,9 +117,6 @@ export function useUpdateMemo() {
       queryClient.setQueryData(memoKeys.detail(updatedMemo.name), updatedMemo);
       // Invalidate lists to refresh
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
-      if (updatedMemo.parent) {
-        queryClient.invalidateQueries({ queryKey: memoKeys.comments(updatedMemo.parent) });
-      }
       // Invalidate user stats
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
     },

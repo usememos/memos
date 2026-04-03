@@ -140,8 +140,8 @@
   },
   "memo": {
     "archived-at": "Arhivirano u",
-    "click-to-hide-sensitive-content": "Klikni za skrivanje osjetljivog sadržaja",
-    "click-to-show-sensitive-content": "Klikni za prikaz osjetljivog sadržaja",
+    "click-to-hide-nsfw-content": "Klikni za skrivanje osjetljivog sadržaja",
+    "click-to-show-nsfw-content": "Klikni za prikaz osjetljivog sadržaja",
     "code": "Kod",
     "comment": {
       "self": "Komentari",
@@ -410,7 +410,7 @@
     },
     "memo": {
       "content-length-limit": "Ograničenje duljine sadržaja (Bajt)",
-      "enable-blur-sensitive-content": "Omogući zamućenje osjetljivog sadržaja (NSFW)",
+      "enable-blur-nsfw-content": "Omogući zamućenje osjetljivog sadržaja (NSFW)",
       "enable-memo-comments": "Omogući komentare na memoima",
       "enable-memo-location": "Omogući lokaciju memoa",
       "reactions": "Reakcije",

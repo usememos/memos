@@ -12,7 +12,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { handleError } from "@/lib/error";
 import { ROUTES } from "@/router/routes";
 import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service_pb";
-import { AUTH_REDIRECT_PARAM, getSafeRedirectPath } from "@/utils/auth-redirect";
+import { AUTH_REASON_PARAM, AUTH_REASON_PROTECTED_MEMO, AUTH_REDIRECT_PARAM, getSafeRedirectPath } from "@/utils/auth-redirect";
 import { useTranslate } from "@/utils/i18n";
 import { storeOAuthState } from "@/utils/oauth";
 
@@ -23,6 +23,7 @@ const SignIn = () => {
   const { generalSetting: instanceGeneralSetting } = useInstance();
   const [searchParams] = useSearchParams();
   const redirectTarget = getSafeRedirectPath(searchParams.get(AUTH_REDIRECT_PARAM));
+  const authReason = searchParams.get(AUTH_REASON_PARAM);
   const signUpPath = searchParams.toString() ? `${ROUTES.AUTH}/signup?${searchParams.toString()}` : `${ROUTES.AUTH}/signup`;
 
   // Redirect to root page if already signed in.
@@ -86,6 +87,11 @@ const SignIn = () => {
           <img className="h-14 w-auto rounded-full shadow" src={instanceGeneralSetting.customProfile?.logoUrl || "/logo.webp"} alt="" />
           <p className="ml-2 text-5xl text-foreground opacity-80">{instanceGeneralSetting.customProfile?.title || "Memos"}</p>
         </div>
+        {authReason === AUTH_REASON_PROTECTED_MEMO && (
+          <div className="w-full mb-4 rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm text-muted-foreground">
+            {t("auth.protected-memo-notice")}
+          </div>
+        )}
         {!instanceGeneralSetting.disallowPasswordAuth ? (
           <PasswordSignInForm redirectPath={redirectTarget} />
         ) : (
