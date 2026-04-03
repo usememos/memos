@@ -38,7 +38,14 @@ export function useListCompletion({ editorRef, editorActions, isInIME }: UseList
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Enter" || isInIMERef.current || event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) {
+      if (
+        (event.key !== "Enter" && event.key !== "Tab") ||
+        isInIMERef.current ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.altKey ||
+        (event.key !== "Tab" && event.shiftKey)
+      ) {
         return;
       }
 
@@ -55,10 +62,34 @@ export function useListCompletion({ editorRef, editorActions, isInIME }: UseList
 
       if (!listInfo.type) return;
 
-      event.preventDefault();
-
       const lines = contentBeforeCursor.split("\n");
       const currentLine = lines[lines.length - 1];
+
+      if (event.key === "Tab") {
+        const currentIndent = listInfo.indent || "";
+        if (event.shiftKey && currentIndent.length === 0) return;
+
+        event.preventDefault();
+
+        const strippedLineContent = currentLine.replace(/^(\s*)([-*+]|\d+[.)])\s*(\[([ xX])\])?\s*/, "");
+        const lineStartPos = cursorPosition - currentLine.length;
+        actions.removeText(lineStartPos, currentLine.length);
+
+        // Reset ordered lists so the regenerated nested item starts at 1.
+        const adjustedListInfo = {
+          ...listInfo,
+          indent: event.shiftKey ? currentIndent.replace(/\t| {1,4}$/, "") : `${currentIndent}\t`,
+          number: listInfo.type === "ordered" ? 0 : listInfo.number,
+        };
+
+        const continuation = generateListContinuation(adjustedListInfo);
+        actions.insertText(continuation + strippedLineContent);
+
+        setTimeout(() => actions.scrollToCursor(), 0);
+        return;
+      }
+
+      event.preventDefault();
 
       if (isEmptyListItem(currentLine)) {
         const lineStartPos = cursorPosition - currentLine.length;
