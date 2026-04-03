@@ -14,6 +14,7 @@ import { MEMO_CARD_BASE_CLASSES } from "./constants";
 import { useImagePreview } from "./hooks";
 import { computeCommentAmount, MemoViewContext } from "./MemoViewContext";
 import type { MemoViewProps } from "./types";
+import { getTagColorClasses } from "@/utils/tag-colors"; 
 
 const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const { memo: memoData, className, parentPage: parentPageProp, compact, showCreator, showVisibility, showPinned } = props;
@@ -40,6 +41,10 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const location = useLocation();
   const isInMemoDetailPage = location.pathname.startsWith(`/${memoData.name}`) || location.pathname.startsWith("/memos/shares/");
   const showCommentPreview = !isInMemoDetailPage && computeCommentAmount(memoData) > 0;
+
+  const tagColors = useMemo(() => {
+    return getTagColorClasses(memoData.tags || []);
+  }, [memoData.tags]);
 
   const contextValue = useMemo(
     () => ({
@@ -86,7 +91,13 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
 
   const article = (
     <article
-      className={cn(MEMO_CARD_BASE_CLASSES, showCommentPreview ? "mb-0 rounded-b-none" : "mb-2", className)}
+      className={cn(MEMO_CARD_BASE_CLASSES, 
+        showCommentPreview ? "mb-0 rounded-b-none" : "mb-2", 
+        tagColors.background,
+        tagColors.border,
+        tagColors.hover,
+        className
+      )}
       ref={cardRef}
       tabIndex={readonly ? -1 : 0}
     >
