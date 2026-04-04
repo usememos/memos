@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/pkg/errors"
 	"golang.org/x/oauth2"
@@ -79,7 +79,7 @@ func (p *IdentityProvider) ExchangeToken(ctx context.Context, redirectURL, code,
 
 // UserInfo returns the parsed user information using the given OAuth2 token.
 func (p *IdentityProvider) UserInfo(token string) (*idp.IdentityProviderUserInfo, error) {
-	client := &http.Client{}
+	client := &http.Client{Timeout: 10 * time.Second}
 	req, err := http.NewRequest(http.MethodGet, p.config.UserInfoUrl, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create http request")
@@ -101,7 +101,6 @@ func (p *IdentityProvider) UserInfo(token string) (*idp.IdentityProviderUserInfo
 	if err := json.Unmarshal(body, &claims); err != nil {
 		return nil, errors.Wrap(err, "failed to unmarshal response body")
 	}
-	slog.Info("user info claims", "claims", claims)
 	userInfo := &idp.IdentityProviderUserInfo{}
 	if v, ok := claims[p.config.FieldMapping.Identifier].(string); ok {
 		userInfo.Identifier = v
@@ -129,6 +128,5 @@ func (p *IdentityProvider) UserInfo(token string) (*idp.IdentityProviderUserInfo
 			userInfo.AvatarURL = v
 		}
 	}
-	slog.Info("user info", "userInfo", userInfo)
 	return userInfo, nil
 }
