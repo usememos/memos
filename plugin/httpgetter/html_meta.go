@@ -51,9 +51,8 @@ func GetHTMLMeta(urlStr string) (*HTMLMeta, error) {
 		return nil, errors.New("not a HTML page")
 	}
 
-	// TODO: limit the size of the response body
-
-	htmlMeta := extractHTMLMeta(response.Body)
+	reader := io.LimitReader(response.Body, 1<<20) // 1 MB max
+	htmlMeta := extractHTMLMeta(reader)
 	enrichSiteMeta(response.Request.URL, htmlMeta)
 	return htmlMeta, nil
 }
