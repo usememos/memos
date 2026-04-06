@@ -79,6 +79,14 @@ func (s *ConnectServiceHandler) ListUsers(ctx context.Context, req *connect.Requ
 	return connect.NewResponse(resp), nil
 }
 
+func (s *ConnectServiceHandler) BatchGetUsers(ctx context.Context, req *connect.Request[v1pb.BatchGetUsersRequest]) (*connect.Response[v1pb.BatchGetUsersResponse], error) {
+	resp, err := s.APIV1Service.BatchGetUsers(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 func (s *ConnectServiceHandler) GetUser(ctx context.Context, req *connect.Request[v1pb.GetUserRequest]) (*connect.Response[v1pb.User], error) {
 	resp, err := s.APIV1Service.GetUser(ctx, req.Msg)
 	if err != nil {
