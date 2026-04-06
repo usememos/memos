@@ -1345,7 +1345,7 @@ func (s *APIV1Service) ListUserNotifications(ctx context.Context, request *v1pb.
 
 	notifications := []*v1pb.UserNotification{}
 	for _, inbox := range inboxes {
-		notification, err := s.convertInboxToUserNotificationWithUsersAndMemos(ctx, inbox, currentUser, usersByID, memosByID)
+		notification, err := s.convertInboxToUserNotificationWithUsersAndMemos(inbox, currentUser, usersByID, memosByID)
 		if err != nil {
 			if status.Code(err) == codes.NotFound {
 				slog.Warn("Skipping notification with missing user",
@@ -1497,7 +1497,7 @@ func (s *APIV1Service) convertInboxToUserNotification(ctx context.Context, inbox
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list notification memos: %v", err)
 	}
-	return s.convertInboxToUserNotificationWithUsersAndMemos(ctx, inbox, viewer, usersByID, memosByID)
+	return s.convertInboxToUserNotificationWithUsersAndMemos(inbox, viewer, usersByID, memosByID)
 }
 
 func collectInboxMemoIDs(inboxes []*store.Inbox) []int32 {
@@ -1517,12 +1517,14 @@ func collectInboxMemoIDs(inboxes []*store.Inbox) []int32 {
 			if payload != nil {
 				memoIDs = append(memoIDs, payload.MemoId, payload.RelatedMemoId)
 			}
+		default:
+			// Ignore notification types without memo references.
 		}
 	}
 	return memoIDs
 }
 
-func (s *APIV1Service) convertInboxToUserNotificationWithUsersAndMemos(ctx context.Context, inbox *store.Inbox, viewer *store.User, usersByID map[int32]*store.User, memosByID map[int32]*store.Memo) (*v1pb.UserNotification, error) {
+func (s *APIV1Service) convertInboxToUserNotificationWithUsersAndMemos(inbox *store.Inbox, viewer *store.User, usersByID map[int32]*store.User, memosByID map[int32]*store.Memo) (*v1pb.UserNotification, error) {
 	receiver := usersByID[inbox.ReceiverID]
 	if receiver == nil {
 		return nil, status.Errorf(codes.NotFound, "notification receiver not found")
