@@ -89,7 +89,7 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	if len(create.Content) > contentLengthLimit {
 		return nil, status.Errorf(codes.InvalidArgument, "content too long (max %d characters)", contentLengthLimit)
 	}
-	if err := memopayload.RebuildMemoPayload(create, s.MarkdownService); err != nil {
+	if err := memopayload.RebuildMemoPayload(ctx, create, s.MarkdownService); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to rebuild memo payload: %v", err)
 	}
 	if request.Memo.Location != nil {
@@ -158,6 +158,10 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 			Visibility: memo.Visibility,
 			CreatorID:  resolveSSECreatorID(memo, nil),
 		})
+	}
+
+	if !isMentionNotificationSuppressed(ctx) {
+		s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, nil, "")
 	}
 
 	return memoMessage, nil
@@ -433,8 +437,12 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	update := &store.UpdateMemo{
 		ID: memo.ID,
 	}
+	var previousContent string
+	contentUpdated := false
 	for _, path := range request.UpdateMask.Paths {
 		if path == "content" {
+			contentUpdated = true
+			previousContent = memo.Content
 			contentLengthLimit, err := s.getContentLengthLimit(ctx)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to get content length limit")
@@ -443,7 +451,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 				return nil, status.Errorf(codes.InvalidArgument, "content too long (max %d characters)", contentLengthLimit)
 			}
 			memo.Content = request.Memo.Content
-			if err := memopayload.RebuildMemoPayload(memo, s.MarkdownService); err != nil {
+			if err := memopayload.RebuildMemoPayload(ctx, memo, s.MarkdownService); err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to rebuild memo payload: %v", err)
 			}
 			update.Content = &memo.Content
@@ -504,6 +512,9 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	memo, parentMemo, memoMessage, err := s.buildUpdatedMemoState(ctx, memo.ID)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to build updated memo state")
+	}
+	if contentUpdated {
+		s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, parentMemo, previousContent)
 	}
 	s.dispatchMemoUpdatedSideEffects(ctx, memo, parentMemo, memoMessage)
 
@@ -614,7 +625,7 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 
 	// Create the memo comment first; suppress the generic memo.created SSE event
 	// since CreateMemoComment broadcasts memo.comment.created for the parent instead.
-	memoComment, err := s.CreateMemo(withSuppressSSE(ctx), &v1pb.CreateMemoRequest{
+	memoComment, err := s.CreateMemo(withSuppressMentionNotifications(withSuppressSSE(ctx)), &v1pb.CreateMemoRequest{
 		Memo:   request.Comment,
 		MemoId: request.CommentId,
 	})
@@ -669,6 +680,8 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 	if err := s.DispatchMemoCommentCreatedWebhook(ctx, memoComment, relatedMemo.CreatorID); err != nil {
 		slog.Warn("Failed to dispatch memo comment created webhook", slog.Any("err", err))
 	}
+
+	s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, relatedMemo, "")
 
 	// Broadcast live refresh event for the parent memo so subscribers see the new comment.
 	s.SSEHub.Broadcast(&SSEEvent{

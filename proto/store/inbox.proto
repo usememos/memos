@@ -10,15 +10,23 @@ message InboxMessage {
     int32 related_memo_id = 2;
   }
 
+  message MemoMentionPayload {
+    int32 memo_id = 1;
+    int32 related_memo_id = 2;
+  }
+
   // The type of the inbox message.
   Type type = 1;
   oneof payload {
     MemoCommentPayload memo_comment = 2;
+    MemoMentionPayload memo_mention = 3;
   }
 
   enum Type {
     TYPE_UNSPECIFIED = 0;
     // Memo comment notification.
     MEMO_COMMENT = 1;
+    // Memo mention notification.
+    MEMO_MENTION = 2;
   }
 }

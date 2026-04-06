@@ -49,7 +49,7 @@ func (r *Runner) RunOnce(ctx context.Context) {
 		// Process batch
 		batchSuccessCount := 0
 		for _, memo := range memos {
-			if err := RebuildMemoPayload(memo, r.MarkdownService); err != nil {
+			if err := RebuildMemoPayload(ctx, memo, r.MarkdownService); err != nil {
 				slog.Error("failed to rebuild memo payload", "err", err, "memoID", memo.ID)
 				continue
 			}
@@ -71,7 +71,7 @@ func (r *Runner) RunOnce(ctx context.Context) {
 	}
 }
 
-func RebuildMemoPayload(memo *store.Memo, markdownService markdown.Service) error {
+func RebuildMemoPayload(_ context.Context, memo *store.Memo, markdownService markdown.Service) error {
 	if memo.Payload == nil {
 		memo.Payload = &storepb.MemoPayload{}
 	}

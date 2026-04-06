@@ -20,6 +20,7 @@ import (
 // ExtractedData contains all metadata extracted from markdown in a single pass.
 type ExtractedData struct {
 	Tags     []string
+	Mentions []string
 	Property *storepb.MemoPayload_Property
 }
 
@@ -62,13 +63,21 @@ type service struct {
 type Option func(*config)
 
 type config struct {
-	enableTags bool
+	enableTags     bool
+	enableMentions bool
 }
 
 // WithTagExtension enables #tag parsing.
 func WithTagExtension() Option {
 	return func(c *config) {
 		c.enableTags = true
+	}
+}
+
+// WithMentionExtension enables @mention parsing.
+func WithMentionExtension() Option {
+	return func(c *config) {
+		c.enableMentions = true
 	}
 }
 
@@ -86,6 +95,9 @@ func NewService(opts ...Option) Service {
 	// Add custom extensions based on config
 	if cfg.enableTags {
 		exts = append(exts, extensions.TagExtension)
+	}
+	if cfg.enableMentions {
+		exts = append(exts, extensions.MentionExtension)
 	}
 
 	md := goldmark.New(
@@ -330,6 +342,7 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 
 	data := &ExtractedData{
 		Tags:     []string{},
+		Mentions: []string{},
 		Property: &storepb.MemoPayload_Property{},
 	}
 
@@ -344,6 +357,9 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 		// Extract tags
 		if tagNode, ok := n.(*mast.TagNode); ok {
 			data.Tags = append(data.Tags, string(tagNode.Tag))
+		}
+		if mentionNode, ok := n.(*mast.MentionNode); ok {
+			data.Mentions = append(data.Mentions, strings.ToLower(string(mentionNode.Username)))
 		}
 
 		// Check if the first block-level child of the document is an H1 heading.
@@ -382,6 +398,7 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 
 	// Deduplicate tags while preserving original case
 	data.Tags = uniquePreserveCase(data.Tags)
+	data.Mentions = uniquePreserveCase(data.Mentions)
 
 	return data, nil
 }
