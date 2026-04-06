@@ -61,6 +61,30 @@ func TestCreateAttachment(t *testing.T) {
 		require.Equal(t, "application/octet-stream", attachment.Type)
 	})
 
+	t.Run("Type_WithParameters_NormalizedBeforeValidation", func(t *testing.T) {
+		attachment, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{
+			Attachment: &v1pb.Attachment{
+				Filename: "voice-note.webm",
+				Type:     "audio/webm;codecs=opus",
+				Content:  []byte("fake webm content"),
+			},
+		})
+		require.NoError(t, err)
+		require.Equal(t, "audio/webm", attachment.Type)
+	})
+
+	t.Run("Type_InvalidFormat_Rejected", func(t *testing.T) {
+		_, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{
+			Attachment: &v1pb.Attachment{
+				Filename: "broken.webm",
+				Type:     `audio/webm;codecs="unterminated`,
+				Content:  []byte("fake webm content"),
+			},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "invalid MIME type format")
+	})
+
 	t.Run("LocalStorage_PathCollisionUsesUniqueReference", func(t *testing.T) {
 		_, err := ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
 			Key: storepb.InstanceSettingKey_STORAGE,
