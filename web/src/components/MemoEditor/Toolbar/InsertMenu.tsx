@@ -20,6 +20,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -135,27 +136,27 @@ const InsertMenu = (props: InsertMenuProps) => {
       [
         {
           key: "upload",
-          label: t("common.upload"),
+          label: t("editor.insert-menu.upload-file"),
           icon: FileIcon,
           onClick: handleUploadClick,
         },
         {
+          key: "record-audio",
+          label: t("editor.audio-recorder.trigger"),
+          icon: MicIcon,
+          onClick: () => props.onAudioRecorderClick?.(),
+        },
+        {
           key: "link",
-          label: t("tooltip.link-memo"),
+          label: t("editor.insert-menu.link-memo"),
           icon: LinkIcon,
           onClick: handleOpenLinkDialog,
         },
         {
           key: "location",
-          label: t("tooltip.select-location"),
+          label: t("editor.insert-menu.add-location"),
           icon: MapPinIcon,
           onClick: handleLocationClick,
-        },
-        {
-          key: "voice-note",
-          label: t("editor.voice-recorder.trigger"),
-          icon: MicIcon,
-          onClick: () => props.onVoiceRecorderClick?.(),
         },
       ] satisfies Array<{ key: string; label: string; icon: LucideIcon; onClick: () => void }>,
     [handleLocationClick, handleOpenLinkDialog, handleUploadClick, props, t],
@@ -170,12 +171,20 @@ const InsertMenu = (props: InsertMenuProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          {menuItems.map((item) => (
+          {menuItems.slice(0, 2).map((item) => (
             <DropdownMenuItem key={item.key} onClick={item.onClick}>
               <item.icon className="w-4 h-4" />
               {item.label}
             </DropdownMenuItem>
           ))}
+          <DropdownMenuSeparator />
+          {menuItems.slice(2).map((item) => (
+            <DropdownMenuItem key={item.key} onClick={item.onClick}>
+              <item.icon className="w-4 h-4" />
+              {item.label}
+            </DropdownMenuItem>
+          ))}
+          <DropdownMenuSeparator />
           {/* View submenu with Focus Mode */}
           <DropdownMenuSub open={moreSubmenuOpen} onOpenChange={setMoreSubmenuOpen}>
             <DropdownMenuSubTrigger onPointerEnter={handleTriggerEnter} onPointerLeave={handleTriggerLeave}>

@@ -17,6 +17,7 @@ export const useFileUpload = (onFilesSelected: (localFiles: LocalFile[]) => void
       files.map((file) => ({
         file,
         previewUrl: URL.createObjectURL(file),
+        origin: "upload",
       })),
     );
     onFilesSelected(localFiles);
