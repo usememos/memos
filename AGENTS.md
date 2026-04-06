@@ -12,7 +12,7 @@ go run ./cmd/memos --port 8081    # Start dev server
 go test ./...                      # Run all tests
 go test -v ./store/...             # Run store tests (all 3 DB drivers via TestContainers)
 go test -v -race ./server/...      # Run server tests with race detection
-go test -v -race ./plugin/...      # Run plugin tests with race detection
+go test -v -race ./internal/...    # Run internal package tests with race detection
 go test -v -run TestFoo ./pkg/...  # Run a single test
 go mod tidy -go=1.26.1             # Match CI tidy check
 golangci-lint run                  # Lint (v2, config: .golangci.yaml)
@@ -62,8 +62,8 @@ proto/
 ├── store/                  # Internal storage messages
 └── gen/                    # Generated Go, TypeScript, OpenAPI
 
-plugin/                     # scheduler, cron, email, filter (CEL), webhook,
-                            # markdown (Goldmark), httpgetter, idp (OAuth2), storage/s3
+internal/                   # app-private packages: scheduler, cron, email, filter (CEL),
+                            # webhook, markdown (Goldmark), httpgetter, idp (OAuth2), storage/s3
 
 web/src/
 ├── connect.ts              # Connect RPC client + auth interceptor + token refresh
@@ -98,7 +98,7 @@ web/src/
 
 ## CI/CD
 
-- **backend-tests.yml:** Go 1.26.1, `go mod tidy -go=1.26.1`, golangci-lint v2.11.3, tests parallelized by group (store, server, plugin, other)
+- **backend-tests.yml:** Go 1.26.1, `go mod tidy -go=1.26.1`, golangci-lint v2.11.3, tests parallelized by group (store, server, internal, other)
 - **build-canary-image.yml:** Builds frontend with `pnpm release`, then publishes canary multi-arch container images for linux/amd64 and linux/arm64
 - **frontend-tests.yml:** Node 24, pnpm 10, lint + build
 - **proto-linter.yml:** buf lint + format check

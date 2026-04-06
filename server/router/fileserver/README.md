@@ -193,7 +193,7 @@ Parses data URI to extract MIME type and base64 data.
 - `server/auth` - Authentication utilities
 - `store` - Database operations
 - `internal/profile` - Server configuration
-- `plugin/storage/s3` - S3 storage client
+- `internal/storage/s3` - S3 storage client
 
 ## Configuration
 

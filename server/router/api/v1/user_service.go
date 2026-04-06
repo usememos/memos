@@ -22,7 +22,7 @@ import (
 
 	"github.com/usememos/memos/internal/base"
 	"github.com/usememos/memos/internal/util"
-	"github.com/usememos/memos/plugin/webhook"
+	"github.com/usememos/memos/internal/webhook"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/auth"

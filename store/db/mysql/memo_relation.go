@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/usememos/memos/plugin/filter"
+	"github.com/usememos/memos/internal/filter"
 	"github.com/usememos/memos/store"
 )
 
