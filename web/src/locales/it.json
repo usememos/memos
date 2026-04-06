@@ -124,7 +124,37 @@
     "no-changes-detected": "Nessuna modifica rilevata",
     "save": "Salva",
     "saving": "Salvataggio...",
-    "slash-commands": "Digita `/` per i comandi"
+    "slash-commands": "Digita `/` per i comandi",
+    "insert-menu": {
+      "add-location": "Aggiungi posizione",
+      "link-memo": "Collegamento promemoria",
+      "upload-file": "Carica file"
+    },
+    "audio-recorder": {
+      "attachment-label": "Registrazione audio",
+      "attachment-label-with-time": "Registrazione audio {{time}}",
+      "discard": "Scartare",
+      "error": "Microfono non disponibile",
+      "error-description": "Riprova dopo aver verificato l'accesso al microfono per questo sito.",
+      "idle-description": "Avvia la registrazione per aggiungere una registrazione audio come allegato.",
+      "keep": "Continua a registrare",
+      "pause-recording": "Metti in pausa la registrazione audio",
+      "play-recording": "Riproduci la registrazione audio",
+      "ready": "Registrazione pronta",
+      "ready-description": "Visualizza l'anteprima del clip, quindi conservalo come allegato audio o eliminalo.",
+      "record-again": "Registra di nuovo",
+      "recording": "Registrazione dell'audio",
+      "recording-description": "Cattura un rapido allegato audio. Durata attuale: {{duration}}",
+      "requesting": "Richiesta di accesso...",
+      "requesting-permission": "Richiesta di accesso al microfono",
+      "requesting-permission-description": "Consenti l'accesso al microfono nel browser per avviare la registrazione.",
+      "start": "Inizia a registrare",
+      "stop": "Interrompi la registrazione",
+      "title": "Registratore audio",
+      "trigger": "Registra l'audio",
+      "unsupported": "Registrazione audio non supportata",
+      "unsupported-description": "Questo browser non può registrare l'audio dal compositore di promemoria."
+    }
   },
   "inbox": {
     "failed-to-load": "Impossibile caricare l'elemento della posta in arrivo",
@@ -159,7 +189,8 @@
     "filters": {
       "has-code": "haCodice",
       "has-link": "haLink",
-      "has-task-list": "haListaCompiti"
+      "has-task-list": "haListaCompiti",
+      "label": "Filtri"
     },
     "links": "Link",
     "load-more": "Carica altro",
@@ -176,6 +207,32 @@
       "private": "Privato",
       "protected": "Protetto",
       "public": "Pubblico"
+    },
+    "outline": "Contorno",
+    "share": {
+      "active-links": "Collegamenti di condivisione attivi",
+      "copied": "Copiato!",
+      "copy": "Copia collegamento",
+      "create-failed": "Impossibile creare il collegamento di condivisione",
+      "create-link": "Crea nuovo collegamento",
+      "creating": "Creazione…",
+      "expiry-1-day": "1 giorno",
+      "expiry-30-days": "30 giorni",
+      "expiry-7-days": "7 giorni",
+      "expiry-label": "Scade",
+      "expiry-never": "Mai",
+      "expires-on": "Scadenza {{date}}",
+      "invalid-link": "Questo collegamento non è valido o è scaduto.",
+      "never-expires": "Non scade mai",
+      "no-links": "Nessun link di condivisione ancora. Creane uno qui sotto.",
+      "open-panel": "Gestisci i collegamenti di condivisione",
+      "revoke": "Revoca",
+      "revoke-failed": "Impossibile revocare il collegamento",
+      "revoked": "Collegamento di condivisione revocato",
+      "section-label": "Condivisione",
+      "share": "Condividi",
+      "shared-by": "Condiviso da {{creator}}",
+      "title": "Condividi questo promemoria"
     }
   },
   "message": {
@@ -261,7 +318,8 @@
       "restore-success": "{{username}} ripristinato con successo",
       "user": "Utente",
       "label": "Membri",
-      "list-title": "Lista membri"
+      "list-title": "Lista membri",
+      "no-members-found": "Nessun membro trovato"
     },
     "my-account": {
       "label": "Il mio account"
@@ -383,7 +441,8 @@
       },
       "description": "Elenco di tutti i token di accesso del tuo account.",
       "title": "Token di accesso",
-      "token": "Token"
+      "token": "Token",
+      "no-tokens-found": "Nessun token di accesso trovato"
     },
     "account": {
       "change-password": "Cambia password",
@@ -415,7 +474,8 @@
       "enable-memo-location": "Abilita posizione memo",
       "reactions": "Reazioni",
       "title": "Impostazioni memo",
-      "label": "Memo"
+      "label": "Memo",
+      "reactions-required": "L'elenco delle reazioni non deve essere vuoto"
     },
     "webhook": {
       "create-dialog": {
@@ -436,6 +496,20 @@
       "title": "Webhooks",
       "url": "URL",
       "label": "Webhooks"
+    },
+    "tags": {
+      "label": "Tag",
+      "title": "Tagga i metadati",
+      "description": "Assegna colori di visualizzazione opzionali ai tag a livello di istanza o sfoca il contenuto dei promemoria corrispondenti. I nomi dei tag vengono trattati come modelli regex ancorati.",
+      "background-color": "Colore di sfondo",
+      "blur-content": "Sfoca il contenuto",
+      "no-tags-configured": "Nessun metadato del tag configurato.",
+      "tag-name": "Nome dell'etichetta",
+      "tag-name-placeholder": "ad es. work o project/.*",
+      "tag-already-exists": "L'etichetta esiste già.",
+      "tag-pattern-hint": "Nome del tag o modello regex (ad esempio project/.* corrisponde a tutti i tag project/)",
+      "invalid-regex": "Modello regex non valido o non sicuro.",
+      "using-default-color": "Utilizzando il colore predefinito."
     }
   },
   "tag": {
@@ -461,5 +535,10 @@
     "select-visibility": "Visibilità",
     "tags": "Tag",
     "upload-attachment": "Carica allegato(i)"
+  },
+  "live-update": {
+    "connected": "Aggiornamenti live attivi",
+    "connecting": "Connessione agli aggiornamenti in tempo reale...",
+    "disconnected": "Aggiornamenti in tempo reale non disponibili"
   }
 }

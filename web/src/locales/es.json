@@ -124,7 +124,37 @@
     "no-changes-detected": "No se detectaron cambios",
     "save": "Guardar",
     "saving": "Guardando...",
-    "slash-commands": "Escribe `/` para comandos"
+    "slash-commands": "Escribe `/` para comandos",
+    "insert-menu": {
+      "add-location": "Agregar ubicación",
+      "link-memo": "Nota de enlace",
+      "upload-file": "Subir archivo"
+    },
+    "audio-recorder": {
+      "attachment-label": "Grabación de audio",
+      "attachment-label-with-time": "Grabación de audio {{time}}",
+      "discard": "Descartar",
+      "error": "Micrófono no disponible",
+      "error-description": "Inténtalo de nuevo después de comprobar el acceso al micrófono de este sitio.",
+      "idle-description": "Inicie la grabación para agregar una grabación de audio como archivo adjunto.",
+      "keep": "seguir grabando",
+      "pause-recording": "Pausar grabación de audio",
+      "play-recording": "Reproducir grabación de audio",
+      "ready": "Grabación lista",
+      "ready-description": "Obtenga una vista previa del clip y luego guárdelo como archivo adjunto de audio o deséchelo.",
+      "record-again": "Grabar de nuevo",
+      "recording": "Grabación de audio",
+      "recording-description": "Capture un archivo adjunto de audio rápido. Duración actual: {{duration}}",
+      "requesting": "Solicitando acceso...",
+      "requesting-permission": "Solicitando acceso al micrófono",
+      "requesting-permission-description": "Permita el acceso al micrófono en su navegador para comenzar a grabar.",
+      "start": "Empezar a grabar",
+      "stop": "dejar de grabar",
+      "title": "grabadora de audio",
+      "trigger": "grabar audio",
+      "unsupported": "Grabación de audio no compatible",
+      "unsupported-description": "Este navegador no puede grabar audio del compositor de notas."
+    }
   },
   "inbox": {
     "failed-to-load": "Error al cargar el elemento de bandeja de entrada",
@@ -159,7 +189,8 @@
     "filters": {
       "has-code": "tieneCódigo",
       "has-link": "tieneEnlace",
-      "has-task-list": "tieneListaTareas"
+      "has-task-list": "tieneListaTareas",
+      "label": "Filtros"
     },
     "links": "Enlaces",
     "load-more": "Cargar más",
@@ -176,6 +207,32 @@
       "private": "Privado",
       "protected": "Protegido",
       "public": "Público"
+    },
+    "outline": "esquema",
+    "share": {
+      "active-links": "Enlaces activos para compartir",
+      "copied": "¡Copiado!",
+      "copy": "Copiar enlace",
+      "create-failed": "No se pudo crear el enlace para compartir",
+      "create-link": "Crear nuevo enlace",
+      "creating": "Creando…",
+      "expiry-1-day": "1 dia",
+      "expiry-30-days": "30 dias",
+      "expiry-7-days": "7 dias",
+      "expiry-label": "Vence",
+      "expiry-never": "nunca",
+      "expires-on": "Expira el {{date}}",
+      "invalid-link": "Este enlace no es válido o ha caducado.",
+      "never-expires": "Nunca caduca",
+      "no-links": "Aún no hay enlaces para compartir. Crea uno a continuación.",
+      "open-panel": "Administrar enlaces para compartir",
+      "revoke": "Revocar",
+      "revoke-failed": "No se pudo revocar el enlace",
+      "revoked": "Compartir enlace revocado",
+      "section-label": "Compartir",
+      "share": "Compartir",
+      "shared-by": "Compartido por {{creator}}",
+      "title": "Comparte esta nota"
     }
   },
   "message": {
@@ -261,7 +318,8 @@
       "restore-success": "{{username}} restaurado correctamente",
       "user": "Usuario",
       "label": "Miembro",
-      "list-title": "Lista de miembros"
+      "list-title": "Lista de miembros",
+      "no-members-found": "No se encontraron miembros"
     },
     "my-account": {
       "label": "Mi cuenta"
@@ -383,7 +441,8 @@
       },
       "description": "Lista de todos los tokens de acceso de tu cuenta.",
       "title": "Tokens de acceso",
-      "token": "Token"
+      "token": "Token",
+      "no-tokens-found": "No se encontraron tokens de acceso"
     },
     "account": {
       "change-password": "Cambiar contraseña",
@@ -415,7 +474,8 @@
       "enable-memo-location": "Habilitar ubicación del memo",
       "reactions": "Reacciones",
       "title": "Configuración de memos",
-      "label": "Memo"
+      "label": "Memo",
+      "reactions-required": "La lista de reacciones no debe estar vacía."
     },
     "webhook": {
       "create-dialog": {
@@ -436,6 +496,20 @@
       "title": "Webhooks",
       "url": "URL",
       "label": "Webhooks"
+    },
+    "tags": {
+      "label": "Etiquetas",
+      "title": "Metadatos de etiquetas",
+      "description": "Asigne colores de visualización opcionales a etiquetas en toda la instancia o difumine el contenido de la nota coincidente. Los nombres de las etiquetas se tratan como patrones de expresiones regulares anclados.",
+      "background-color": "Color de fondo",
+      "blur-content": "Contenido borroso",
+      "no-tags-configured": "No hay metadatos de etiqueta configurados.",
+      "tag-name": "Nombre de etiqueta",
+      "tag-name-placeholder": "por ej. work o project/.*",
+      "tag-already-exists": "La etiqueta ya existe.",
+      "tag-pattern-hint": "Nombre de etiqueta o patrón de expresión regular (por ejemplo, project/.* coincide con todas las etiquetas project/)",
+      "invalid-regex": "Patrón de expresiones regulares no válido o inseguro.",
+      "using-default-color": "Usando el color predeterminado."
     }
   },
   "tag": {
@@ -461,5 +535,10 @@
     "select-visibility": "Visibilidad",
     "tags": "Etiquetas",
     "upload-attachment": "Subir archivo(s)"
+  },
+  "live-update": {
+    "connected": "Actualizaciones en vivo activas",
+    "connecting": "Conectándose a actualizaciones en vivo...",
+    "disconnected": "Actualizaciones en vivo no disponibles"
   }
 }

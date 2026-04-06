@@ -124,7 +124,37 @@
     "no-changes-detected": "Ingen endringer oppdaget",
     "save": "Lagre",
     "saving": "Lagrer...",
-    "slash-commands": "Skriv `/` for kommandoer"
+    "slash-commands": "Skriv `/` for kommandoer",
+    "insert-menu": {
+      "add-location": "Legg til plassering",
+      "link-memo": "Koblingsnotat",
+      "upload-file": "Last opp fil"
+    },
+    "audio-recorder": {
+      "attachment-label": "Lydopptak",
+      "attachment-label-with-time": "Lydopptak {{time}}",
+      "discard": "Kast",
+      "error": "Mikrofonen er ikke tilgjengelig",
+      "error-description": "Prøv igjen etter å ha sjekket mikrofontilgangen for dette nettstedet.",
+      "idle-description": "Start opptak for å legge til et lydopptak som et vedlegg.",
+      "keep": "Fortsett å ta opp",
+      "pause-recording": "Sett lydopptak på pause",
+      "play-recording": "Spill av lydopptak",
+      "ready": "Opptak klar",
+      "ready-description": "Forhåndsvis klippet, behold det deretter som et lydvedlegg eller kast det.",
+      "record-again": "Ta opp igjen",
+      "recording": "Opptak av lyd",
+      "recording-description": "Ta et raskt lydvedlegg. Nåværende lengde: {{duration}}",
+      "requesting": "Ber om tilgang...",
+      "requesting-permission": "Ber om mikrofontilgang",
+      "requesting-permission-description": "Tillat mikrofontilgang i nettleseren din for å starte opptaket.",
+      "start": "Start opptaket",
+      "stop": "Stopp opptaket",
+      "title": "Lydopptaker",
+      "trigger": "Ta opp lyd",
+      "unsupported": "Lydopptak støttes ikke",
+      "unsupported-description": "Denne nettleseren kan ikke ta opp lyd fra memokomponisten."
+    }
   },
   "inbox": {
     "failed-to-load": "Kunne ikke laste innbokselement",
@@ -159,7 +189,8 @@
     "filters": {
       "has-code": "harKode",
       "has-link": "harLink",
-      "has-task-list": "harGjøremålsListe"
+      "has-task-list": "harGjøremålsListe",
+      "label": "Filtre"
     },
     "links": "Linker",
     "load-more": "Last inn mer",
@@ -176,6 +207,32 @@
       "private": "Privat",
       "protected": "Beskyttet",
       "public": "Offentlig"
+    },
+    "outline": "Disposisjon",
+    "share": {
+      "active-links": "Aktive delingslenker",
+      "copied": "Kopiert!",
+      "copy": "Kopier lenken",
+      "create-failed": "Kunne ikke opprette delelink",
+      "create-link": "Opprett ny lenke",
+      "creating": "Oppretter …",
+      "expiry-1-day": "1 dag",
+      "expiry-30-days": "30 dager",
+      "expiry-7-days": "7 dager",
+      "expiry-label": "Utløper",
+      "expiry-never": "Aldri",
+      "expires-on": "Utløper {{date}}",
+      "invalid-link": "Denne koblingen er ugyldig eller har utløpt.",
+      "never-expires": "Utløper aldri",
+      "no-links": "Ingen delingslenker ennå. Lag en nedenfor.",
+      "open-panel": "Administrer delingslenker",
+      "revoke": "Oppheve",
+      "revoke-failed": "Kunne ikke tilbakekalle koblingen",
+      "revoked": "Delingslenken er opphevet",
+      "section-label": "Deling",
+      "share": "Del",
+      "shared-by": "Delt av {{creator}}",
+      "title": "Del dette notatet"
     }
   },
   "message": {
@@ -261,7 +318,8 @@
       "restore-success": "{{username}} gjenopprettet vellykket",
       "user": "Bruker",
       "label": "Medlem",
-      "list-title": "Medlemsliste"
+      "list-title": "Medlemsliste",
+      "no-members-found": "Ingen medlemmer funnet"
     },
     "my-account": {
       "label": "Min konto"
@@ -383,7 +441,8 @@
       },
       "description": "Liste over alle access tokens for din konto.",
       "title": "Access tokens",
-      "token": "Token"
+      "token": "Token",
+      "no-tokens-found": "Fant ingen tilgangstokener"
     },
     "account": {
       "change-password": "Endre passord",
@@ -415,7 +474,8 @@
       "enable-memo-location": "Slå på lokasjon for memoer",
       "reactions": "Reaksjoner",
       "title": "Memo-relaterte innstillinger",
-      "label": "Memo"
+      "label": "Memo",
+      "reactions-required": "Reaksjonslisten må ikke være tom"
     },
     "webhook": {
       "create-dialog": {
@@ -436,6 +496,20 @@
       "title": "Webhooks",
       "url": "URL",
       "label": "Webhooks"
+    },
+    "tags": {
+      "label": "Tagger",
+      "title": "Taggmetadata",
+      "description": "Tildel valgfrie skjermfarger til tagger for hele forekomsten, eller uskarp samsvarende memoinnhold. Tag-navn behandles som forankrede regex-mønstre.",
+      "background-color": "Bakgrunnsfarge",
+      "blur-content": "Uskarp innhold",
+      "no-tags-configured": "Ingen tag-metadata er konfigurert.",
+      "tag-name": "Tag navn",
+      "tag-name-placeholder": "f.eks. work eller project/.*",
+      "tag-already-exists": "Taggen finnes allerede.",
+      "tag-pattern-hint": "Tagnavn eller regulært uttrykksmønster (f.eks. project/.* samsvarer med alle project/-taggene)",
+      "invalid-regex": "Ugyldig eller usikkert regulært uttrykk.",
+      "using-default-color": "Bruker standardfarge."
     }
   },
   "tag": {
@@ -461,5 +535,10 @@
     "select-visibility": "Synlighet",
     "tags": "Tagger",
     "upload-attachment": "Last opp vedlegg"
+  },
+  "live-update": {
+    "connected": "Liveoppdateringer aktive",
+    "connecting": "Kobler til live-oppdateringer ...",
+    "disconnected": "Liveoppdateringer er ikke tilgjengelige"
   }
 }

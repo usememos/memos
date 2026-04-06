@@ -124,7 +124,37 @@
     "no-changes-detected": "Ni zaznanih sprememb",
     "save": "Shrani",
     "saving": "Shranjujem...",
-    "slash-commands": "Vnesi `/` za ukaze"
+    "slash-commands": "Vnesi `/` za ukaze",
+    "insert-menu": {
+      "add-location": "Dodajte lokacijo",
+      "link-memo": "Beležka povezave",
+      "upload-file": "Naloži datoteko"
+    },
+    "audio-recorder": {
+      "attachment-label": "Zvočni posnetek",
+      "attachment-label-with-time": "Zvočni posnetek {{time}}",
+      "discard": "Zavrzi",
+      "error": "Mikrofon ni na voljo",
+      "error-description": "Po preverjanju dostopa do mikrofona za to spletno mesto poskusite znova.",
+      "idle-description": "Začnite snemati, da dodate zvočni posnetek kot prilogo.",
+      "keep": "Nadaljujte s snemanjem",
+      "pause-recording": "Začasno ustavite snemanje zvoka",
+      "play-recording": "Predvajaj zvočni posnetek",
+      "ready": "Snemanje pripravljeno",
+      "ready-description": "Predoglejte si posnetek, nato pa ga shranite kot zvočno prilogo ali zavrzite.",
+      "record-again": "Ponovno posnemi",
+      "recording": "Snemanje zvoka",
+      "recording-description": "Zajemite hitro zvočno prilogo. Trenutna dolžina: {{duration}}",
+      "requesting": "Zahtevam dostop ...",
+      "requesting-permission": "Zahtevam dostop do mikrofona",
+      "requesting-permission-description": "Za začetek snemanja omogočite dostop do mikrofona v brskalniku.",
+      "start": "Začnite snemati",
+      "stop": "Ustavi snemanje",
+      "title": "Snemalnik zvoka",
+      "trigger": "Posnemite zvok",
+      "unsupported": "Snemanje zvoka ni podprto",
+      "unsupported-description": "Ta brskalnik ne more snemati zvoka iz pisatelja beležk."
+    }
   },
   "inbox": {
     "failed-to-load": "Ni bilo mogoče naložiti elementa prejetega",
@@ -160,7 +190,8 @@
     "filters": {
       "has-code": "imaKodo",
       "has-link": "imaPovezavo",
-      "has-task-list": "imaSeznamOpravil"
+      "has-task-list": "imaSeznamOpravil",
+      "label": "Filtri"
     },
     "links": "Povezave",
     "load-more": "Naloži več",
@@ -177,6 +208,32 @@
       "private": "Zasebno",
       "protected": "Za uporabnike",
       "public": "Javno"
+    },
+    "outline": "Oris",
+    "share": {
+      "active-links": "Aktivne povezave za skupno rabo",
+      "copied": "Kopirano!",
+      "copy": "Kopiraj povezavo",
+      "create-failed": "Povezave za skupno rabo ni bilo mogoče ustvariti",
+      "create-link": "Ustvari novo povezavo",
+      "creating": "Ustvarjanje ...",
+      "expiry-1-day": "1 dan",
+      "expiry-30-days": "30 dni",
+      "expiry-7-days": "7 dni",
+      "expiry-label": "poteče",
+      "expiry-never": "Nikoli",
+      "expires-on": "Poteče {{date}}",
+      "invalid-link": "Ta povezava ni veljavna ali je potekla.",
+      "never-expires": "Nikoli ne poteče",
+      "no-links": "Povezav za skupno rabo še ni. Ustvarite ga spodaj.",
+      "open-panel": "Upravljanje povezav za skupno rabo",
+      "revoke": "Prekliči",
+      "revoke-failed": "Povezave ni bilo mogoče preklicati",
+      "revoked": "Povezava za skupno rabo preklicana",
+      "section-label": "Skupna raba",
+      "share": "Delite",
+      "shared-by": "V skupno rabo dal {{creator}}",
+      "title": "Delite to beležko"
     }
   },
   "message": {
@@ -262,7 +319,8 @@
       "restore-success": "{{username}} je uspešno obnovljen",
       "user": "Uporabnik",
       "label": "Uporabnik",
-      "list-title": "Seznam uporabnikov"
+      "list-title": "Seznam uporabnikov",
+      "no-members-found": "Ni članov"
     },
     "my-account": {
       "label": "Moj račun"
@@ -384,7 +442,8 @@
       },
       "description": "Seznam vseh dostopnih žetonov za vaš račun.",
       "title": "Dostopni žetoni",
-      "token": "Žeton"
+      "token": "Žeton",
+      "no-tokens-found": "Ni najdenih žetonov za dostop"
     },
     "account": {
       "change-password": "Zamenjaj geslo",
@@ -416,7 +475,8 @@
       "enable-memo-location": "Omogoči lokacijo beležk",
       "reactions": "Odzivi",
       "title": "Nastavitve povezane z beležko",
-      "label": "Beležka"
+      "label": "Beležka",
+      "reactions-required": "Seznam reakcij ne sme biti prazen"
     },
     "webhook": {
       "create-dialog": {
@@ -437,6 +497,20 @@
       "title": "Webhooks",
       "url": "URL",
       "label": "Webhooks"
+    },
+    "tags": {
+      "label": "Oznake",
+      "title": "Metapodatki oznake",
+      "description": "Dodelite izbirne barve prikaza oznakam za celotno instanco ali zameglite vsebino beležke. Imena oznak se obravnavajo kot zasidrani vzorci regularnih izrazov.",
+      "background-color": "Barva ozadja",
+      "blur-content": "Zameglitev vsebine",
+      "no-tags-configured": "Metapodatki oznake niso konfigurirani.",
+      "tag-name": "Ime oznake",
+      "tag-name-placeholder": "npr. work ali project/.*",
+      "tag-already-exists": "Oznaka že obstaja.",
+      "tag-pattern-hint": "Ime oznake ali vzorec regularnega izraza (npr. project/.* se ujema z vsemi oznakami project/)",
+      "invalid-regex": "Neveljaven ali nevaren vzorec regularnega izraza.",
+      "using-default-color": "Uporaba privzete barve."
     }
   },
   "tag": {
@@ -462,5 +536,10 @@
     "select-visibility": "Vidnost",
     "tags": "Značke",
     "upload-attachment": "Naloži prilogo(e)"
+  },
+  "live-update": {
+    "connected": "Posodobitve v živo so aktivne",
+    "connecting": "Povezovanje s posodobitvami v živo ...",
+    "disconnected": "Posodobitve v živo niso na voljo"
   }
 }
