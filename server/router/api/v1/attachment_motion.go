@@ -67,20 +67,3 @@ func isMultiMemberMotionGroup(attachments []*store.Attachment) bool {
 	}
 	return true
 }
-
-func motionRolePriority(motion *storepb.MotionMedia) int {
-	if motion == nil {
-		return 99
-	}
-
-	switch motion.Role {
-	case storepb.MotionMediaRole_STILL:
-		return 0
-	case storepb.MotionMediaRole_VIDEO:
-		return 1
-	case storepb.MotionMediaRole_CONTAINER:
-		return 2
-	default:
-		return 99
-	}
-}

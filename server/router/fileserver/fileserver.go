@@ -497,7 +497,7 @@ func (s *FileServerService) serveMotionClip(c *echo.Context, attachment *store.A
 	return nil
 }
 
-func (s *FileServerService) getOrExtractMotionClip(ctx context.Context, attachment *store.Attachment) ([]byte, error) {
+func (s *FileServerService) getOrExtractMotionClip(_ context.Context, attachment *store.Attachment) ([]byte, error) {
 	motionPath, err := s.getMotionPath(attachment)
 	if err != nil {
 		return nil, err
