@@ -1,6 +1,6 @@
 import { Code, ConnectError } from "@connectrpc/connect";
 import { ArrowUpLeftFromCircleIcon } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import MemoCommentSection from "@/components/MemoCommentSection";
 import { MemoDetailSidebar, MemoDetailSidebarDrawer } from "@/components/MemoDetailSidebar";
@@ -16,6 +16,7 @@ import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 
 const MemoDetail = () => {
   const md = useMediaQuery("md");
+  const [shareImageDialogOpen, setShareImageDialogOpen] = useState(false);
   const params = useParams();
   const location = useLocation();
   const { state: locationState, hash } = location;
@@ -77,7 +78,7 @@ const MemoDetail = () => {
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       {!md && (
         <MobileHeader>
-          <MemoDetailSidebarDrawer memo={displayMemo} />
+          <MemoDetailSidebarDrawer memo={displayMemo} onShareImageOpen={() => setShareImageDialogOpen(true)} />
         </MobileHeader>
       )}
       <div className={cn("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
@@ -100,15 +101,17 @@ const MemoDetail = () => {
             memo={displayMemo}
             compact={false}
             parentPage={locationState?.from}
+            shareImageDialogOpen={shareImageDialogOpen}
             showCreator
             showVisibility
             showPinned
+            onShareImageDialogOpenChange={setShareImageDialogOpen}
           />
           <MemoCommentSection memo={displayMemo} comments={comments} parentPage={locationState?.from} />
         </div>
         {md && (
           <div className="sticky top-0 left-0 shrink-0 -mt-6 w-56 h-full">
-            <MemoDetailSidebar className="py-6" memo={displayMemo} />
+            <MemoDetailSidebar className="py-6" memo={displayMemo} onShareImageOpen={() => setShareImageDialogOpen(true)} />
           </div>
         )}
       </div>

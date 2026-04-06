@@ -12,6 +12,7 @@ export interface MemoViewContextValue {
   creator: User | undefined;
   currentUser: User | undefined;
   parentPage: string;
+  cardWidth: number;
   isArchived: boolean;
   readonly: boolean;
   showBlurredContent: boolean;

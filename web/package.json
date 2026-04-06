@@ -38,6 +38,7 @@
     "dayjs": "^1.11.20",
     "fuse.js": "^7.1.0",
     "highlight.js": "^11.11.1",
+    "html-to-image": "^1.11.13",
     "i18next": "^25.8.18",
     "katex": "^0.16.38",
     "leaflet": "^1.9.4",
