@@ -219,3 +219,36 @@ func (d *DB) DeleteAttachment(ctx context.Context, delete *store.DeleteAttachmen
 	}
 	return nil
 }
+
+func (d *DB) DeleteAttachments(ctx context.Context, deletes []*store.DeleteAttachment) error {
+	if len(deletes) == 0 {
+		return nil
+	}
+
+	tx, err := d.db.BeginTx(ctx, nil)
+	if err != nil {
+		return errors.Wrap(err, "failed to start attachment delete transaction")
+	}
+	defer func() {
+		if tx != nil {
+			_ = tx.Rollback()
+		}
+	}()
+
+	stmt := `DELETE FROM attachment WHERE id = $1`
+	for _, delete := range deletes {
+		result, err := tx.ExecContext(ctx, stmt, delete.ID)
+		if err != nil {
+			return err
+		}
+		if _, err := result.RowsAffected(); err != nil {
+			return err
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+	tx = nil
+	return nil
+}

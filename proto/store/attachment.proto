@@ -17,10 +17,33 @@ enum AttachmentStorageType {
   EXTERNAL = 3;
 }
 
+enum MotionMediaFamily {
+  MOTION_MEDIA_FAMILY_UNSPECIFIED = 0;
+  APPLE_LIVE_PHOTO = 1;
+  ANDROID_MOTION_PHOTO = 2;
+}
+
+enum MotionMediaRole {
+  MOTION_MEDIA_ROLE_UNSPECIFIED = 0;
+  STILL = 1;
+  VIDEO = 2;
+  CONTAINER = 3;
+}
+
+message MotionMedia {
+  MotionMediaFamily family = 1;
+  MotionMediaRole role = 2;
+  string group_id = 3;
+  int64 presentation_timestamp_us = 4;
+  bool has_embedded_video = 5;
+}
+
 message AttachmentPayload {
   oneof payload {
     S3Object s3_object = 1;
   }
+
+  MotionMedia motion_media = 10;
 
   message S3Object {
     StorageS3Config s3_config = 1;

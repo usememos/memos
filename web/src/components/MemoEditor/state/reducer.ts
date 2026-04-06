@@ -74,6 +74,12 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         localFiles: state.localFiles.filter((f) => f.previewUrl !== action.payload),
       };
 
+    case "SET_LOCAL_FILES":
+      return {
+        ...state,
+        localFiles: action.payload,
+      };
+
     case "CLEAR_LOCAL_FILES":
       return {
         ...state,

@@ -49,6 +49,11 @@ export const editorActions = {
     payload: previewUrl,
   }),
 
+  setLocalFiles: (files: LocalFile[]): EditorAction => ({
+    type: "SET_LOCAL_FILES",
+    payload: files,
+  }),
+
   clearLocalFiles: (): EditorAction => ({
     type: "CLEAR_LOCAL_FILES",
   }),

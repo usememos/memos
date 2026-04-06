@@ -19,6 +19,7 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/sync/semaphore"
 
+	"github.com/usememos/memos/internal/motionphoto"
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/plugin/storage/s3"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -30,6 +31,9 @@ import (
 const (
 	// ThumbnailCacheFolder is the folder name where thumbnail images are stored.
 	ThumbnailCacheFolder = ".thumbnail_cache"
+
+	// MotionCacheFolder is the folder name where extracted motion clips are stored.
+	MotionCacheFolder = ".motion_cache"
 
 	// thumbnailMaxSize is the maximum dimension (width or height) for thumbnails.
 	thumbnailMaxSize = 600
@@ -122,6 +126,7 @@ func (s *FileServerService) serveAttachmentFile(c *echo.Context) error {
 	ctx := c.Request().Context()
 	uid := c.Param("uid")
 	wantThumbnail := c.QueryParam("thumbnail") == "true"
+	wantMotion := c.QueryParam("motion") == "true"
 
 	attachment, err := s.Store.GetAttachment(ctx, &store.FindAttachment{
 		UID:     &uid,
@@ -136,6 +141,10 @@ func (s *FileServerService) serveAttachmentFile(c *echo.Context) error {
 
 	if err := s.checkAttachmentPermission(ctx, c, attachment); err != nil {
 		return err
+	}
+
+	if wantMotion {
+		return s.serveMotionClip(c, attachment)
 	}
 
 	contentType := s.sanitizeContentType(attachment.Type)
@@ -226,6 +235,7 @@ func (s *FileServerService) serveStaticFile(c *echo.Context, attachment *store.A
 			slog.Warn("failed to get thumbnail", "error", err)
 		} else {
 			blob = thumbnailBlob
+			contentType = "image/jpeg"
 		}
 	}
 
@@ -411,7 +421,7 @@ func (s *FileServerService) getThumbnailPath(attachment *store.Attachment) (stri
 	if err := os.MkdirAll(cacheFolder, os.ModePerm); err != nil {
 		return "", errors.Wrap(err, "failed to create thumbnail cache folder")
 	}
-	filename := fmt.Sprintf("%d%s", attachment.ID, filepath.Ext(attachment.Filename))
+	filename := fmt.Sprintf("%s.jpeg", attachment.UID)
 	return filepath.Join(cacheFolder, filename), nil
 }
 
@@ -443,7 +453,13 @@ func (s *FileServerService) generateThumbnail(attachment *store.Attachment, thum
 
 	thumbnailImage := imaging.Resize(img, thumbnailWidth, thumbnailHeight, imaging.Lanczos)
 
-	if err := imaging.Save(thumbnailImage, thumbnailPath); err != nil {
+	output, err := os.Create(thumbnailPath)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create thumbnail file")
+	}
+	defer output.Close()
+
+	if err := imaging.Encode(output, thumbnailImage, imaging.JPEG, imaging.JPEGQuality(90)); err != nil {
 		return nil, errors.Wrap(err, "failed to save thumbnail")
 	}
 
@@ -461,6 +477,60 @@ func calculateThumbnailDimensions(width, height int) (int, int) {
 		return thumbnailMaxSize, 0 // Landscape: constrain width.
 	}
 	return 0, thumbnailMaxSize // Portrait: constrain height.
+}
+
+func (s *FileServerService) serveMotionClip(c *echo.Context, attachment *store.Attachment) error {
+	motionMedia := attachment.Payload.GetMotionMedia()
+	if motionMedia == nil || motionMedia.Family != storepb.MotionMediaFamily_ANDROID_MOTION_PHOTO || !motionMedia.HasEmbeddedVideo {
+		return echo.NewHTTPError(http.StatusBadRequest, "attachment does not have motion clip")
+	}
+
+	clipBlob, err := s.getOrExtractMotionClip(c.Request().Context(), attachment)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get motion clip").Wrap(err)
+	}
+
+	setSecurityHeaders(c)
+	setMediaHeaders(c, "video/mp4", "video/mp4")
+	modTime := time.Unix(attachment.UpdatedTs, 0)
+	http.ServeContent(c.Response(), c.Request(), attachment.UID+".mp4", modTime, bytes.NewReader(clipBlob))
+	return nil
+}
+
+func (s *FileServerService) getOrExtractMotionClip(_ context.Context, attachment *store.Attachment) ([]byte, error) {
+	motionPath, err := s.getMotionPath(attachment)
+	if err != nil {
+		return nil, err
+	}
+
+	if blob, err := s.readCachedThumbnail(motionPath); err == nil {
+		return blob, nil
+	}
+
+	blob, err := s.getAttachmentBlob(attachment)
+	if err != nil {
+		return nil, err
+	}
+
+	videoBlob, _ := motionphoto.ExtractVideo(blob)
+	if len(videoBlob) == 0 {
+		return nil, errors.New("motion video not found")
+	}
+
+	if err := os.WriteFile(motionPath, videoBlob, 0644); err != nil {
+		return nil, errors.Wrap(err, "failed to cache motion clip")
+	}
+
+	return videoBlob, nil
+}
+
+func (s *FileServerService) getMotionPath(attachment *store.Attachment) (string, error) {
+	cacheFolder := filepath.Join(s.Profile.Data, MotionCacheFolder)
+	if err := os.MkdirAll(cacheFolder, os.ModePerm); err != nil {
+		return "", errors.Wrap(err, "failed to create motion cache folder")
+	}
+
+	return filepath.Join(cacheFolder, attachment.UID+".mp4"), nil
 }
 
 // =============================================================================

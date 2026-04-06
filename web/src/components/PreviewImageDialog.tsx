@@ -2,16 +2,21 @@ import { X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import type { PreviewMediaItem } from "@/utils/media-item";
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  imgUrls: string[];
+  imgUrls?: string[];
+  items?: PreviewMediaItem[];
   initialIndex?: number;
 }
 
-function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: Props) {
+function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIndex = 0 }: Props) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const previewItems =
+    items ??
+    imgUrls.map((url) => ({ id: url, kind: "image" as const, sourceUrl: url, posterUrl: url, filename: "Image", isMotion: false }));
 
   // Update current index when initialIndex prop changes
   useEffect(() => {
@@ -28,7 +33,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
           onOpenChange(false);
           break;
         case "ArrowRight":
-          setCurrentIndex((prev) => Math.min(prev + 1, imgUrls.length - 1));
+          setCurrentIndex((prev) => Math.min(prev + 1, previewItems.length - 1));
           break;
         case "ArrowLeft":
           setCurrentIndex((prev) => Math.max(prev - 1, 0));
@@ -53,10 +58,11 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
   };
 
   // Return early if no images provided
-  if (!imgUrls.length) return null;
+  if (!previewItems.length) return null;
 
   // Ensure currentIndex is within bounds
-  const safeIndex = Math.max(0, Math.min(currentIndex, imgUrls.length - 1));
+  const safeIndex = Math.max(0, Math.min(currentIndex, previewItems.length - 1));
+  const currentItem = previewItems[safeIndex];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -79,14 +85,30 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls, initialIndex = 0 }: P
 
         {/* Image container */}
         <div className="w-full h-full flex items-center justify-center p-4 sm:p-8 overflow-auto" onClick={handleBackdropClick}>
-          <img
-            src={imgUrls[safeIndex]}
-            alt={`Preview image ${safeIndex + 1} of ${imgUrls.length}`}
-            className="max-w-full max-h-full object-contain select-none"
-            draggable={false}
-            loading="eager"
-            decoding="async"
-          />
+          {currentItem.kind === "video" ? (
+            <video
+              key={currentItem.id}
+              src={currentItem.sourceUrl}
+              poster={currentItem.posterUrl}
+              className="max-w-full max-h-full object-contain"
+              controls
+              autoPlay
+              onLoadedMetadata={(event) => {
+                if (currentItem.presentationTimestampUs && currentItem.presentationTimestampUs > 0n) {
+                  event.currentTarget.currentTime = Number(currentItem.presentationTimestampUs) / 1_000_000;
+                }
+              }}
+            />
+          ) : (
+            <img
+              src={currentItem.sourceUrl}
+              alt={`Preview image ${safeIndex + 1} of ${previewItems.length}`}
+              className="max-w-full max-h-full object-contain select-none"
+              draggable={false}
+              loading="eager"
+              decoding="async"
+            />
+          )}
         </div>
 
         {/* Screen reader description */}
