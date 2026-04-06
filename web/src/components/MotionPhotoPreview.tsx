@@ -41,10 +41,11 @@ const MotionPhotoPreview = ({
         containerClassName={cn("max-w-full max-h-full", containerClassName)}
         mediaClassName={mediaClassName}
       />
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
         className={cn(
-          "absolute rounded-full border border-border/45 bg-background/65 px-2.5 py-1 text-xs font-semibold tracking-wide text-foreground backdrop-blur-sm transition-colors hover:bg-background/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+          "absolute select-none rounded-full border border-border/45 bg-background/65 px-2.5 py-1 text-xs font-semibold tracking-wide text-foreground backdrop-blur-sm transition-colors hover:bg-background/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
           badgeClassName,
         )}
         onMouseEnter={() => setMotionActive(true)}
@@ -64,10 +65,16 @@ const MotionPhotoPreview = ({
           }
         }}
         onPointerCancel={() => setMotionActive(false)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            setMotionActive((prev) => !prev);
+          }
+        }}
         aria-label="Hover or press to play live photo"
       >
         LIVE
-      </button>
+      </div>
     </div>
   );
 };
