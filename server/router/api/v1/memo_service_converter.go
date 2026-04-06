@@ -2,7 +2,9 @@ package v1
 
 import (
 	"context"
+	stderrors "errors"
 	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/pkg/errors"
@@ -11,6 +13,11 @@ import (
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
+)
+
+var (
+	errMemoCreatorNotFound     = stderrors.New("memo creator not found")
+	errReactionCreatorNotFound = stderrors.New("reaction creator not found")
 )
 
 func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Memo, reactions []*store.Reaction, attachments []*store.Attachment, relations []*v1pb.MemoRelation) (*v1pb.Memo, error) {
@@ -34,7 +41,7 @@ func (s *APIV1Service) convertMemoFromStoreWithCreators(ctx context.Context, mem
 	name := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
 	creator := creatorMap[memo.CreatorID]
 	if creator == nil {
-		return nil, errors.New("memo creator not found")
+		return nil, errMemoCreatorNotFound
 	}
 	memoMessage := &v1pb.Memo{
 		Name:        name,
@@ -58,13 +65,9 @@ func (s *APIV1Service) convertMemoFromStoreWithCreators(ctx context.Context, mem
 		memoMessage.Parent = &parentName
 	}
 
-	memoMessage.Reactions = []*v1pb.Reaction{}
-	for _, reaction := range reactions {
-		reactionResponse, err := s.convertReactionFromStore(ctx, reaction)
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to convert reaction")
-		}
-		memoMessage.Reactions = append(memoMessage.Reactions, reactionResponse)
+	memoMessage.Reactions, err = s.convertReactionsFromStoreWithCreators(ctx, reactions, creatorMap)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to convert reactions")
 	}
 
 	if relations != nil {
@@ -86,6 +89,92 @@ func (s *APIV1Service) convertMemoFromStoreWithCreators(ctx context.Context, mem
 	memoMessage.Snippet = snippet
 
 	return memoMessage, nil
+}
+
+func (s *APIV1Service) listUsersByIDWithExisting(ctx context.Context, userIDs []int32, existing map[int32]*store.User) (map[int32]*store.User, error) {
+	usersByID := make(map[int32]*store.User, len(existing)+len(userIDs))
+	for userID, user := range existing {
+		if user != nil {
+			usersByID[userID] = user
+		}
+	}
+
+	missingUserIDs := make([]int32, 0, len(userIDs))
+	seenMissingUserIDs := make(map[int32]struct{}, len(userIDs))
+	for _, userID := range userIDs {
+		if _, ok := usersByID[userID]; ok {
+			continue
+		}
+		if _, ok := seenMissingUserIDs[userID]; ok {
+			continue
+		}
+		seenMissingUserIDs[userID] = struct{}{}
+		missingUserIDs = append(missingUserIDs, userID)
+	}
+
+	if len(missingUserIDs) == 0 {
+		return usersByID, nil
+	}
+
+	missingUsersByID, err := s.listUsersByID(ctx, missingUserIDs)
+	if err != nil {
+		return nil, err
+	}
+	for userID, user := range missingUsersByID {
+		if user != nil {
+			usersByID[userID] = user
+		}
+	}
+	return usersByID, nil
+}
+
+func (s *APIV1Service) convertReactionsFromStoreWithCreators(ctx context.Context, reactions []*store.Reaction, creatorMap map[int32]*store.User) ([]*v1pb.Reaction, error) {
+	if len(reactions) == 0 {
+		return []*v1pb.Reaction{}, nil
+	}
+
+	creatorIDs := make([]int32, 0, len(reactions))
+	for _, reaction := range reactions {
+		creatorIDs = append(creatorIDs, reaction.CreatorID)
+	}
+	creatorsByID, err := s.listUsersByIDWithExisting(ctx, creatorIDs, creatorMap)
+	if err != nil {
+		return nil, err
+	}
+
+	reactionMessages := make([]*v1pb.Reaction, 0, len(reactions))
+	for _, reaction := range reactions {
+		reactionMessage, err := convertReactionFromStoreWithCreators(reaction, creatorsByID)
+		if err != nil {
+			if stderrors.Is(err, errReactionCreatorNotFound) {
+				slog.Warn("Skipping reaction with missing creator",
+					slog.Int64("reaction_id", int64(reaction.ID)),
+					slog.Int64("creator_id", int64(reaction.CreatorID)),
+					slog.String("content_id", reaction.ContentID),
+				)
+				continue
+			}
+			return nil, err
+		}
+		reactionMessages = append(reactionMessages, reactionMessage)
+	}
+	return reactionMessages, nil
+}
+
+func convertReactionFromStoreWithCreators(reaction *store.Reaction, creatorsByID map[int32]*store.User) (*v1pb.Reaction, error) {
+	creator := creatorsByID[reaction.CreatorID]
+	if creator == nil {
+		return nil, errReactionCreatorNotFound
+	}
+
+	reactionUID := fmt.Sprintf("%d", reaction.ID)
+	return &v1pb.Reaction{
+		Name:         fmt.Sprintf("%s/%s%s", reaction.ContentID, ReactionNamePrefix, reactionUID),
+		Creator:      BuildUserName(creator.Username),
+		ContentId:    reaction.ContentID,
+		ReactionType: reaction.ReactionType,
+		CreateTime:   timestamppb.New(time.Unix(reaction.CreatedTs, 0)),
+	}, nil
 }
 
 // batchConvertMemoRelations batch-loads relations for a list of memos and returns

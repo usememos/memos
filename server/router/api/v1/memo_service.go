@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	stderrors "errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -312,6 +313,14 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 
 		memoMessage, err := s.convertMemoFromStoreWithCreators(ctx, memo, reactions, attachments, relations, creatorMap)
 		if err != nil {
+			if stderrors.Is(err, errMemoCreatorNotFound) {
+				slog.Warn("Skipping memo with missing creator",
+					slog.Int64("memo_id", int64(memo.ID)),
+					slog.String("memo_uid", memo.UID),
+					slog.Int64("creator_id", int64(memo.CreatorID)),
+				)
+				continue
+			}
 			return nil, errors.Wrap(err, "failed to convert memo")
 		}
 
@@ -384,6 +393,9 @@ func (s *APIV1Service) GetMemo(ctx context.Context, request *v1pb.GetMemoRequest
 	}
 	memoMessage, err := s.convertMemoFromStore(ctx, memo, reactions, attachments, relations)
 	if err != nil {
+		if stderrors.Is(err, errMemoCreatorNotFound) {
+			return nil, status.Errorf(codes.NotFound, "memo creator not found")
+		}
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
 	return memoMessage, nil
@@ -767,6 +779,15 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 
 		memoMessage, err := s.convertMemoFromStoreWithCreators(ctx, m, reactions, attachments, relations, creatorMap)
 		if err != nil {
+			if stderrors.Is(err, errMemoCreatorNotFound) {
+				slog.Warn("Skipping memo comment with missing creator",
+					slog.Int64("memo_id", int64(m.ID)),
+					slog.String("memo_uid", m.UID),
+					slog.Int64("creator_id", int64(m.CreatorID)),
+					slog.String("parent_name", request.Name),
+				)
+				continue
+			}
 			return nil, errors.Wrap(err, "failed to convert memo")
 		}
 		memosResponse = append(memosResponse, memoMessage)

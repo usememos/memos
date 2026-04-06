@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
+	"log/slog"
 	"regexp"
 	"strconv"
 	"strings"
@@ -1293,6 +1294,14 @@ func (s *APIV1Service) ListUserNotifications(ctx context.Context, request *v1pb.
 	for _, inbox := range inboxes {
 		notification, err := s.convertInboxToUserNotificationWithUsers(ctx, inbox, usersByID)
 		if err != nil {
+			if status.Code(err) == codes.NotFound {
+				slog.Warn("Skipping notification with missing user",
+					slog.Int64("notification_id", int64(inbox.ID)),
+					slog.Int64("receiver_id", int64(inbox.ReceiverID)),
+					slog.Int64("sender_id", int64(inbox.SenderID)),
+				)
+				continue
+			}
 			return nil, status.Errorf(codes.Internal, "failed to convert inbox: %v", err)
 		}
 		notifications = append(notifications, notification)

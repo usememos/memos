@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
+	"github.com/usememos/memos/store"
 )
 
 func TestDeleteMemoReaction(t *testing.T) {
@@ -192,4 +193,43 @@ func TestDeleteMemoReaction(t *testing.T) {
 		require.Contains(t, err.Error(), "permission denied")
 		require.NotContains(t, err.Error(), "not found")
 	})
+}
+
+func TestListMemoReactionsSkipsMissingCreators(t *testing.T) {
+	ctx := context.Background()
+
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	owner, err := ts.CreateRegularUser(ctx, "reaction-owner")
+	require.NoError(t, err)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+
+	reactor, err := ts.CreateRegularUser(ctx, "reaction-orphan")
+	require.NoError(t, err)
+	reactorCtx := ts.CreateUserContext(ctx, reactor.ID)
+
+	memo, err := ts.Service.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "reaction list memo",
+			Visibility: apiv1.Visibility_PUBLIC,
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = ts.Service.UpsertMemoReaction(reactorCtx, &apiv1.UpsertMemoReactionRequest{
+		Name: memo.Name,
+		Reaction: &apiv1.Reaction{
+			ContentId:    memo.Name,
+			ReactionType: "🔥",
+		},
+	})
+	require.NoError(t, err)
+
+	err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: reactor.ID})
+	require.NoError(t, err)
+
+	resp, err := ts.Service.ListMemoReactions(ctx, &apiv1.ListMemoReactionsRequest{Name: memo.Name})
+	require.NoError(t, err)
+	require.Empty(t, resp.Reactions)
 }
