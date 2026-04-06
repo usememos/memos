@@ -11,15 +11,31 @@ import {
   isMotionAttachment,
 } from "./attachment";
 
-export interface PreviewMediaItem {
+interface PreviewMediaItemBase {
   id: string;
-  kind: "image" | "video";
+  filename: string;
+}
+
+export interface ImagePreviewMediaItem extends PreviewMediaItemBase {
+  kind: "image";
   sourceUrl: string;
   posterUrl?: string;
-  filename: string;
-  isMotion: boolean;
+}
+
+export interface VideoPreviewMediaItem extends PreviewMediaItemBase {
+  kind: "video";
+  sourceUrl: string;
+  posterUrl?: string;
+}
+
+export interface MotionPreviewMediaItem extends PreviewMediaItemBase {
+  kind: "motion";
+  posterUrl: string;
+  motionUrl: string;
   presentationTimestampUs?: bigint;
 }
+
+export type PreviewMediaItem = ImagePreviewMediaItem | VideoPreviewMediaItem | MotionPreviewMediaItem;
 
 export interface AttachmentVisualItem {
   id: string;
@@ -115,7 +131,6 @@ function buildSingleAttachmentItem(attachment: Attachment): AttachmentVisualItem
       sourceUrl,
       posterUrl,
       filename: attachment.filename,
-      isMotion: false,
     },
     mimeType: attachment.type,
   };
@@ -135,11 +150,10 @@ function buildAppleMotionItem(still: Attachment, video: Attachment): AttachmentV
     attachments: [still, video],
     previewItem: {
       id: getAttachmentMotionGroupId(still) ?? still.name,
-      kind: "video",
-      sourceUrl,
+      kind: "motion",
       posterUrl,
+      motionUrl: sourceUrl,
       filename: still.filename,
-      isMotion: true,
     },
     mimeType: still.type,
   };
@@ -156,11 +170,10 @@ function buildAndroidMotionItem(attachment: Attachment): AttachmentVisualItem {
     attachments: [attachment],
     previewItem: {
       id: attachment.name,
-      kind: "video",
-      sourceUrl: getAttachmentMotionClipUrl(attachment),
+      kind: "motion",
+      motionUrl: getAttachmentMotionClipUrl(attachment),
       posterUrl: getAttachmentThumbnailUrl(attachment),
       filename: attachment.filename,
-      isMotion: true,
       presentationTimestampUs: attachment.motionMedia?.presentationTimestampUs,
     },
     mimeType: attachment.type,

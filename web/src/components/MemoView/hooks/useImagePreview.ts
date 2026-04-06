@@ -37,7 +37,6 @@ function normalizePreviewItems(items: string | string[] | PreviewMediaItem[]): P
         sourceUrl: items,
         posterUrl: items,
         filename: "Image",
-        isMotion: false,
       },
     ];
   }
@@ -49,7 +48,6 @@ function normalizePreviewItems(items: string | string[] | PreviewMediaItem[]): P
       sourceUrl: url,
       posterUrl: url,
       filename: "Image",
-      isMotion: false,
     }));
   }
 

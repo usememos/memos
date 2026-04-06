@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import MotionPhotoPreview from "@/components/MotionPhotoPreview";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import type { PreviewMediaItem } from "@/utils/media-item";
@@ -15,8 +16,7 @@ interface Props {
 function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIndex = 0 }: Props) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const previewItems =
-    items ??
-    imgUrls.map((url) => ({ id: url, kind: "image" as const, sourceUrl: url, posterUrl: url, filename: "Image", isMotion: false }));
+    items ?? imgUrls.map((url) => ({ id: url, kind: "image" as const, sourceUrl: url, posterUrl: url, filename: "Image" }));
 
   // Update current index when initialIndex prop changes
   useEffect(() => {
@@ -93,11 +93,16 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
               className="max-w-full max-h-full object-contain"
               controls
               autoPlay
-              onLoadedMetadata={(event) => {
-                if (currentItem.presentationTimestampUs && currentItem.presentationTimestampUs > 0n) {
-                  event.currentTarget.currentTime = Number(currentItem.presentationTimestampUs) / 1_000_000;
-                }
-              }}
+            />
+          ) : currentItem.kind === "motion" ? (
+            <MotionPhotoPreview
+              key={currentItem.id}
+              posterUrl={currentItem.posterUrl}
+              motionUrl={currentItem.motionUrl}
+              alt={`Preview live photo ${safeIndex + 1} of ${previewItems.length}`}
+              presentationTimestampUs={currentItem.presentationTimestampUs}
+              badgeClassName="left-4 top-4"
+              mediaClassName="max-h-[calc(100vh-2rem)] max-w-[calc(100vw-2rem)] object-contain sm:max-h-[calc(100vh-4rem)] sm:max-w-[calc(100vw-4rem)]"
             />
           ) : (
             <img
@@ -113,7 +118,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
 
         {/* Screen reader description */}
         <div id="image-preview-description" className="sr-only">
-          Image preview dialog. Press Escape to close or click outside the image.
+          Attachment preview dialog. Press Escape to close or click outside the media.
         </div>
       </DialogContent>
     </Dialog>
