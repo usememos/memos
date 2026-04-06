@@ -1,10 +1,11 @@
 import { useCallback } from "react";
 import { useInstance } from "@/contexts/InstanceContext";
+import type { PreviewMediaItem } from "@/utils/media-item";
 
 interface UseMemoHandlersOptions {
   readonly: boolean;
   openEditor: () => void;
-  openPreview: (urls: string | string[], index?: number) => void;
+  openPreview: (items: string | string[] | PreviewMediaItem[], index?: number) => void;
 }
 
 export const useMemoHandlers = (options: UseMemoHandlersOptions) => {

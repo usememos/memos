@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/usememos/memos/plugin/scheduler"
+	"github.com/usememos/memos/internal/scheduler"
 )
 
 // TestRealWorldScenario tests a realistic multi-job scenario.

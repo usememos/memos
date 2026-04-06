@@ -2,6 +2,7 @@ import { MapPinIcon, XIcon } from "lucide-react";
 import type { FC } from "react";
 import { cn } from "@/lib/utils";
 import type { Location } from "@/types/proto/api/v1/memo_service_pb";
+import { getLocationCoordinatesText, getLocationDisplayText } from "./locationHelpers";
 
 interface LocationDisplayEditorProps {
   location: Location;
@@ -10,7 +11,7 @@ interface LocationDisplayEditorProps {
 }
 
 const LocationDisplayEditor: FC<LocationDisplayEditorProps> = ({ location, onRemove, className }) => {
-  const displayText = location.placeholder || `${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}`;
+  const displayText = getLocationDisplayText(location);
 
   return (
     <div
@@ -25,9 +26,7 @@ const LocationDisplayEditor: FC<LocationDisplayEditorProps> = ({ location, onRem
         <span className="text-xs truncate" title={displayText}>
           {displayText}
         </span>
-        <span className="text-[11px] text-muted-foreground shrink-0 hidden sm:inline">
-          {location.latitude.toFixed(4)}°, {location.longitude.toFixed(4)}°
-        </span>
+        <span className="text-[11px] text-muted-foreground shrink-0 hidden sm:inline">{getLocationCoordinatesText(location)}</span>
       </div>
 
       {onRemove && (

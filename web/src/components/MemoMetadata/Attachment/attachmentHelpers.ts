@@ -18,27 +18,24 @@ export const isVideoAttachment = (attachment: Attachment): boolean => getAttachm
 export const isAudioAttachment = (attachment: Attachment): boolean => getAttachmentType(attachment) === "audio/*";
 
 export const separateAttachments = (attachments: Attachment[]): AttachmentGroups => {
-  const groups: AttachmentGroups = {
-    visual: [],
-    audio: [],
-    docs: [],
-  };
+  return attachments.reduce<AttachmentGroups>(
+    (groups, attachment) => {
+      if (isImageAttachment(attachment) || isVideoAttachment(attachment)) {
+        groups.visual.push(attachment);
+      } else if (isAudioAttachment(attachment)) {
+        groups.audio.push(attachment);
+      } else {
+        groups.docs.push(attachment);
+      }
 
-  for (const attachment of attachments) {
-    if (isImageAttachment(attachment) || isVideoAttachment(attachment)) {
-      groups.visual.push(attachment);
-      continue;
-    }
-
-    if (isAudioAttachment(attachment)) {
-      groups.audio.push(attachment);
-      continue;
-    }
-
-    groups.docs.push(attachment);
-  }
-
-  return groups;
+      return groups;
+    },
+    {
+      visual: [],
+      audio: [],
+      docs: [],
+    },
+  );
 };
 
 export const getAttachmentMetadata = (attachment: Attachment): AttachmentMetadata => ({

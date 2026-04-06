@@ -11,9 +11,9 @@ import (
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/text"
 
-	mast "github.com/usememos/memos/plugin/markdown/ast"
-	"github.com/usememos/memos/plugin/markdown/extensions"
-	"github.com/usememos/memos/plugin/markdown/renderer"
+	mast "github.com/usememos/memos/internal/markdown/ast"
+	"github.com/usememos/memos/internal/markdown/extensions"
+	"github.com/usememos/memos/internal/markdown/renderer"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 

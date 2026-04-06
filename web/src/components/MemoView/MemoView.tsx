@@ -77,6 +77,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
         className="mb-2"
         cacheKey={`inline-memo-editor-${memoData.name}`}
         memo={memoData}
+        parentMemoName={memoData.parent || undefined}
         onConfirm={closeEditor}
         onCancel={closeEditor}
       />
@@ -96,7 +97,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       <PreviewImageDialog
         open={previewState.open}
         onOpenChange={setPreviewOpen}
-        imgUrls={previewState.urls}
+        items={previewState.items}
         initialIndex={previewState.index}
       />
     </article>

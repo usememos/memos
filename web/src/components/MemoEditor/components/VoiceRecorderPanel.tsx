@@ -1,7 +1,7 @@
 import { AudioLinesIcon, LoaderCircleIcon, MicIcon, RotateCcwIcon, SquareIcon, Trash2Icon } from "lucide-react";
 import type { FC } from "react";
 import { AudioAttachmentItem } from "@/components/MemoMetadata/Attachment";
-import { formatAudioTime } from "@/components/MemoMetadata/Attachment/attachmentViewHelpers";
+import { formatAudioTime } from "@/components/MemoMetadata/Attachment/attachmentHelpers";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -87,10 +87,10 @@ export const VoiceRecorderPanel: FC<VoiceRecorderPanelProps> = ({
         <div className="mt-3">
           <AudioAttachmentItem
             filename={recording.localFile.file.name}
-            displayName="Voice note"
             sourceUrl={recording.localFile.previewUrl}
             mimeType={recording.mimeType}
             size={recording.localFile.file.size}
+            title="Voice note"
           />
         </div>
       )}

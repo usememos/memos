@@ -49,6 +49,9 @@ const (
 	// AttachmentServiceDeleteAttachmentProcedure is the fully-qualified name of the AttachmentService's
 	// DeleteAttachment RPC.
 	AttachmentServiceDeleteAttachmentProcedure = "/memos.api.v1.AttachmentService/DeleteAttachment"
+	// AttachmentServiceBatchDeleteAttachmentsProcedure is the fully-qualified name of the
+	// AttachmentService's BatchDeleteAttachments RPC.
+	AttachmentServiceBatchDeleteAttachmentsProcedure = "/memos.api.v1.AttachmentService/BatchDeleteAttachments"
 )
 
 // AttachmentServiceClient is a client for the memos.api.v1.AttachmentService service.
@@ -63,6 +66,8 @@ type AttachmentServiceClient interface {
 	UpdateAttachment(context.Context, *connect.Request[v1.UpdateAttachmentRequest]) (*connect.Response[v1.Attachment], error)
 	// DeleteAttachment deletes an attachment by name.
 	DeleteAttachment(context.Context, *connect.Request[v1.DeleteAttachmentRequest]) (*connect.Response[emptypb.Empty], error)
+	// BatchDeleteAttachments deletes multiple attachments in one request.
+	BatchDeleteAttachments(context.Context, *connect.Request[v1.BatchDeleteAttachmentsRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
 // NewAttachmentServiceClient constructs a client for the memos.api.v1.AttachmentService service. By
@@ -106,16 +111,23 @@ func NewAttachmentServiceClient(httpClient connect.HTTPClient, baseURL string, o
 			connect.WithSchema(attachmentServiceMethods.ByName("DeleteAttachment")),
 			connect.WithClientOptions(opts...),
 		),
+		batchDeleteAttachments: connect.NewClient[v1.BatchDeleteAttachmentsRequest, emptypb.Empty](
+			httpClient,
+			baseURL+AttachmentServiceBatchDeleteAttachmentsProcedure,
+			connect.WithSchema(attachmentServiceMethods.ByName("BatchDeleteAttachments")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // attachmentServiceClient implements AttachmentServiceClient.
 type attachmentServiceClient struct {
-	createAttachment *connect.Client[v1.CreateAttachmentRequest, v1.Attachment]
-	listAttachments  *connect.Client[v1.ListAttachmentsRequest, v1.ListAttachmentsResponse]
-	getAttachment    *connect.Client[v1.GetAttachmentRequest, v1.Attachment]
-	updateAttachment *connect.Client[v1.UpdateAttachmentRequest, v1.Attachment]
-	deleteAttachment *connect.Client[v1.DeleteAttachmentRequest, emptypb.Empty]
+	createAttachment       *connect.Client[v1.CreateAttachmentRequest, v1.Attachment]
+	listAttachments        *connect.Client[v1.ListAttachmentsRequest, v1.ListAttachmentsResponse]
+	getAttachment          *connect.Client[v1.GetAttachmentRequest, v1.Attachment]
+	updateAttachment       *connect.Client[v1.UpdateAttachmentRequest, v1.Attachment]
+	deleteAttachment       *connect.Client[v1.DeleteAttachmentRequest, emptypb.Empty]
+	batchDeleteAttachments *connect.Client[v1.BatchDeleteAttachmentsRequest, emptypb.Empty]
 }
 
 // CreateAttachment calls memos.api.v1.AttachmentService.CreateAttachment.
@@ -143,6 +155,11 @@ func (c *attachmentServiceClient) DeleteAttachment(ctx context.Context, req *con
 	return c.deleteAttachment.CallUnary(ctx, req)
 }
 
+// BatchDeleteAttachments calls memos.api.v1.AttachmentService.BatchDeleteAttachments.
+func (c *attachmentServiceClient) BatchDeleteAttachments(ctx context.Context, req *connect.Request[v1.BatchDeleteAttachmentsRequest]) (*connect.Response[emptypb.Empty], error) {
+	return c.batchDeleteAttachments.CallUnary(ctx, req)
+}
+
 // AttachmentServiceHandler is an implementation of the memos.api.v1.AttachmentService service.
 type AttachmentServiceHandler interface {
 	// CreateAttachment creates a new attachment.
@@ -155,6 +172,8 @@ type AttachmentServiceHandler interface {
 	UpdateAttachment(context.Context, *connect.Request[v1.UpdateAttachmentRequest]) (*connect.Response[v1.Attachment], error)
 	// DeleteAttachment deletes an attachment by name.
 	DeleteAttachment(context.Context, *connect.Request[v1.DeleteAttachmentRequest]) (*connect.Response[emptypb.Empty], error)
+	// BatchDeleteAttachments deletes multiple attachments in one request.
+	BatchDeleteAttachments(context.Context, *connect.Request[v1.BatchDeleteAttachmentsRequest]) (*connect.Response[emptypb.Empty], error)
 }
 
 // NewAttachmentServiceHandler builds an HTTP handler from the service implementation. It returns
@@ -194,6 +213,12 @@ func NewAttachmentServiceHandler(svc AttachmentServiceHandler, opts ...connect.H
 		connect.WithSchema(attachmentServiceMethods.ByName("DeleteAttachment")),
 		connect.WithHandlerOptions(opts...),
 	)
+	attachmentServiceBatchDeleteAttachmentsHandler := connect.NewUnaryHandler(
+		AttachmentServiceBatchDeleteAttachmentsProcedure,
+		svc.BatchDeleteAttachments,
+		connect.WithSchema(attachmentServiceMethods.ByName("BatchDeleteAttachments")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/memos.api.v1.AttachmentService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case AttachmentServiceCreateAttachmentProcedure:
@@ -206,6 +231,8 @@ func NewAttachmentServiceHandler(svc AttachmentServiceHandler, opts ...connect.H
 			attachmentServiceUpdateAttachmentHandler.ServeHTTP(w, r)
 		case AttachmentServiceDeleteAttachmentProcedure:
 			attachmentServiceDeleteAttachmentHandler.ServeHTTP(w, r)
+		case AttachmentServiceBatchDeleteAttachmentsProcedure:
+			attachmentServiceBatchDeleteAttachmentsHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -233,4 +260,8 @@ func (UnimplementedAttachmentServiceHandler) UpdateAttachment(context.Context, *
 
 func (UnimplementedAttachmentServiceHandler) DeleteAttachment(context.Context, *connect.Request[v1.DeleteAttachmentRequest]) (*connect.Response[emptypb.Empty], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.AttachmentService.DeleteAttachment is not implemented"))
+}
+
+func (UnimplementedAttachmentServiceHandler) BatchDeleteAttachments(context.Context, *connect.Request[v1.BatchDeleteAttachmentsRequest]) (*connect.Response[emptypb.Empty], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.AttachmentService.BatchDeleteAttachments is not implemented"))
 }

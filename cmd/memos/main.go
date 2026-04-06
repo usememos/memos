@@ -15,7 +15,7 @@ import (
 
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/internal/version"
-	"github.com/usememos/memos/plugin/webhook"
+	"github.com/usememos/memos/internal/webhook"
 	"github.com/usememos/memos/server"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"

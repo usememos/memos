@@ -1,4 +1,4 @@
-// Package oauth2 is the plugin for OAuth2 Identity Provider.
+// Package oauth2 implements the OAuth2 identity provider integration.
 package oauth2
 
 import (
@@ -12,7 +12,7 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/oauth2"
 
-	"github.com/usememos/memos/plugin/idp"
+	"github.com/usememos/memos/internal/idp"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 

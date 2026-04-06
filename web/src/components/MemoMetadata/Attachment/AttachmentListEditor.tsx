@@ -2,16 +2,16 @@ import { ChevronDownIcon, ChevronUpIcon, FileIcon, PaperclipIcon, XIcon } from "
 import type { FC } from "react";
 import type { AttachmentItem, LocalFile } from "@/components/MemoEditor/types/attachment";
 import { toAttachmentItems } from "@/components/MemoEditor/types/attachment";
+import MetadataSection from "@/components/MemoMetadata/MetadataSection";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
-import SectionHeader from "../SectionHeader";
-import AudioAttachmentItem from "./AudioAttachmentItem";
 
 interface AttachmentListEditorProps {
   attachments: Attachment[];
   localFiles?: LocalFile[];
   onAttachmentsChange?: (attachments: Attachment[]) => void;
+  onLocalFilesChange?: (localFiles: LocalFile[]) => void;
   onRemoveLocalFile?: (previewUrl: string) => void;
 }
 
@@ -23,46 +23,24 @@ const AttachmentItemCard: FC<{
   canMoveUp?: boolean;
   canMoveDown?: boolean;
 }> = ({ item, onRemove, onMoveUp, onMoveDown, canMoveUp = true, canMoveDown = true }) => {
-  const { category, filename, thumbnailUrl, mimeType, size, sourceUrl } = item;
-  const fileTypeLabel = getFileTypeLabel(mimeType);
+  const { category, filename, thumbnailUrl, mimeType, size } = item;
+  const fileTypeLabel = item.category === "motion" ? "Live Photo" : getFileTypeLabel(mimeType);
   const fileSizeLabel = size ? formatFileSize(size) : undefined;
   const displayName = category === "audio" && /^voice-(recording|note)-/i.test(filename) ? "Voice note" : filename;
-
-  if (category === "audio") {
-    return (
-      <div className="rounded border border-transparent transition-all hover:border-border hover:bg-accent/20">
-        <AudioAttachmentItem
-          filename={filename}
-          displayName={displayName}
-          sourceUrl={sourceUrl}
-          mimeType={mimeType}
-          size={size}
-          actionSlot={
-            onRemove ? (
-              <button
-                type="button"
-                onClick={onRemove}
-                className="inline-flex size-6.5 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
-                title="Remove"
-                aria-label="Remove attachment"
-              >
-                <XIcon className="h-3 w-3" />
-              </button>
-            ) : undefined
-          }
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="relative rounded border border-transparent px-1.5 py-1 transition-all hover:border-border hover:bg-accent/20">
       <div className="flex items-center gap-1.5">
-        <div className="flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded bg-muted/40">
-          {category === "image" && thumbnailUrl ? (
+        <div className="relative flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded bg-muted/40">
+          {(category === "image" || category === "motion") && thumbnailUrl ? (
             <img src={thumbnailUrl} alt="" className="h-full w-full object-cover" />
           ) : (
             <FileIcon className="h-3.5 w-3.5 text-muted-foreground" />
+          )}
+          {category === "motion" && (
+            <span className="absolute inset-x-0 bottom-0 bg-black/70 text-center text-[7px] font-semibold uppercase tracking-wide text-white">
+              Live
+            </span>
           )}
         </div>
 
@@ -132,66 +110,91 @@ const AttachmentItemCard: FC<{
   );
 };
 
-const AttachmentListEditor: FC<AttachmentListEditorProps> = ({ attachments, localFiles = [], onAttachmentsChange, onRemoveLocalFile }) => {
+const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
+  attachments,
+  localFiles = [],
+  onAttachmentsChange,
+  onLocalFilesChange,
+  onRemoveLocalFile,
+}) => {
   if (attachments.length === 0 && localFiles.length === 0) {
     return null;
   }
 
   const items = toAttachmentItems(attachments, localFiles);
+  const attachmentItems = items.filter((item) => !item.isLocal);
+  const localItems = items.filter((item) => item.isLocal);
 
-  const handleMoveUp = (index: number) => {
-    if (index === 0 || !onAttachmentsChange) return;
+  const handleMoveAttachments = (itemId: string, direction: -1 | 1) => {
+    if (!onAttachmentsChange) return;
 
-    const newAttachments = [...attachments];
-    [newAttachments[index - 1], newAttachments[index]] = [newAttachments[index], newAttachments[index - 1]];
-    onAttachmentsChange(newAttachments);
-  };
-
-  const handleMoveDown = (index: number) => {
-    if (index === attachments.length - 1 || !onAttachmentsChange) return;
-
-    const newAttachments = [...attachments];
-    [newAttachments[index], newAttachments[index + 1]] = [newAttachments[index + 1], newAttachments[index]];
-    onAttachmentsChange(newAttachments);
-  };
-
-  const handleRemoveAttachment = (name: string) => {
-    if (onAttachmentsChange) {
-      onAttachmentsChange(attachments.filter((attachment) => attachment.name !== name));
+    const itemIndex = attachmentItems.findIndex((item) => item.id === itemId);
+    const targetIndex = itemIndex + direction;
+    if (itemIndex < 0 || targetIndex < 0 || targetIndex >= attachmentItems.length) {
+      return;
     }
+
+    const reorderedItems = [...attachmentItems];
+    [reorderedItems[itemIndex], reorderedItems[targetIndex]] = [reorderedItems[targetIndex], reorderedItems[itemIndex]];
+
+    const attachmentMap = new Map(attachments.map((attachment) => [attachment.name, attachment]));
+    onAttachmentsChange(
+      reorderedItems.flatMap((item) => item.memberIds.map((memberId) => attachmentMap.get(memberId)).filter(Boolean) as Attachment[]),
+    );
   };
 
-  const handleRemoveItem = (item: (typeof items)[0]) => {
+  const handleMoveLocalFiles = (itemId: string, direction: -1 | 1) => {
+    if (!onLocalFilesChange) return;
+
+    const itemIndex = localItems.findIndex((item) => item.id === itemId);
+    const targetIndex = itemIndex + direction;
+    if (itemIndex < 0 || targetIndex < 0 || targetIndex >= localItems.length) {
+      return;
+    }
+
+    const reorderedItems = [...localItems];
+    [reorderedItems[itemIndex], reorderedItems[targetIndex]] = [reorderedItems[targetIndex], reorderedItems[itemIndex]];
+
+    const localFileMap = new Map(localFiles.map((localFile) => [localFile.previewUrl, localFile]));
+    onLocalFilesChange(
+      reorderedItems.flatMap((item) => item.memberIds.map((memberId) => localFileMap.get(memberId)).filter(Boolean) as LocalFile[]),
+    );
+  };
+
+  const handleRemoveItem = (item: AttachmentItem) => {
     if (item.isLocal) {
-      onRemoveLocalFile?.(item.id);
-    } else {
-      handleRemoveAttachment(item.id);
+      const nextLocalFiles = localFiles.filter((file) => !item.memberIds.includes(file.previewUrl));
+      onLocalFilesChange?.(nextLocalFiles);
+      if (!onLocalFilesChange) {
+        item.memberIds.forEach((previewUrl) => onRemoveLocalFile?.(previewUrl));
+      }
+      return;
+    }
+
+    if (onAttachmentsChange) {
+      onAttachmentsChange(attachments.filter((attachment) => !item.memberIds.includes(attachment.name)));
     }
   };
 
   return (
-    <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
-      <SectionHeader icon={PaperclipIcon} title="Attachments" count={items.length} />
+    <MetadataSection icon={PaperclipIcon} title="Attachments" count={items.length} contentClassName="flex flex-col gap-0.5 p-1 sm:p-1.5">
+      {items.map((item) => {
+        const itemList = item.isLocal ? localItems : attachmentItems;
+        const itemIndex = itemList.findIndex((entry) => entry.id === item.id);
 
-      <div className="p-1 sm:p-1.5 flex flex-col gap-0.5">
-        {items.map((item) => {
-          const isLocalFile = item.isLocal;
-          const attachmentIndex = isLocalFile ? -1 : attachments.findIndex((a) => a.name === item.id);
-
-          return (
-            <AttachmentItemCard
-              key={item.id}
-              item={item}
-              onRemove={() => handleRemoveItem(item)}
-              onMoveUp={!isLocalFile ? () => handleMoveUp(attachmentIndex) : undefined}
-              onMoveDown={!isLocalFile ? () => handleMoveDown(attachmentIndex) : undefined}
-              canMoveUp={!isLocalFile && attachmentIndex > 0}
-              canMoveDown={!isLocalFile && attachmentIndex < attachments.length - 1}
-            />
-          );
-        })}
-      </div>
-    </div>
+        return (
+          <AttachmentItemCard
+            key={item.id}
+            item={item}
+            onRemove={() => handleRemoveItem(item)}
+            onMoveUp={item.isLocal ? () => handleMoveLocalFiles(item.id, -1) : () => handleMoveAttachments(item.id, -1)}
+            onMoveDown={item.isLocal ? () => handleMoveLocalFiles(item.id, 1) : () => handleMoveAttachments(item.id, 1)}
+            canMoveUp={itemIndex > 0}
+            canMoveDown={itemIndex >= 0 && itemIndex < itemList.length - 1}
+          />
+        );
+      })}
+    </MetadataSection>
   );
 };
 

@@ -23,7 +23,7 @@ This plugin provides a simple, reliable email sending interface following indust
 ### 1. Configure SMTP Settings
 
 ```go
-import "github.com/usememos/memos/plugin/email"
+import "github.com/usememos/memos/internal/email"
 
 config := &email.Config{
     SMTPHost:     "smtp.gmail.com",
@@ -191,13 +191,13 @@ email.Send(config, message)
 
 ```bash
 # All tests
-go test ./plugin/email/... -v
+go test ./internal/email/... -v
 
 # With coverage
-go test ./plugin/email/... -v -cover
+go test ./internal/email/... -v -cover
 
 # With race detector
-go test ./plugin/email/... -race
+go test ./internal/email/... -race
 ```
 
 ### Manual Testing
@@ -209,7 +209,7 @@ package main
 
 import (
     "log"
-    "github.com/usememos/memos/plugin/email"
+    "github.com/usememos/memos/internal/email"
 )
 
 func main() {
@@ -466,7 +466,7 @@ Sends email using the client's configuration.
 ## Architecture
 
 ```
-plugin/email/
+internal/email/
 ├── config.go       # SMTP configuration types
 ├── message.go      # Email message types and formatting
 ├── client.go       # SMTP client implementation
@@ -481,12 +481,12 @@ Part of the Memos project. See main repository for license details.
 
 ## Contributing
 
-This plugin follows the Memos contribution guidelines. Please ensure:
+This package follows the Memos contribution guidelines. Please ensure:
 
 1. All code is tested (TDD approach)
-2. Tests pass: `go test ./plugin/email/... -v`
-3. Code is formatted: `go fmt ./plugin/email/...`
-4. No linting errors: `golangci-lint run ./plugin/email/...`
+2. Tests pass: `go test ./internal/email/... -v`
+3. Code is formatted: `go fmt ./internal/email/...`
+4. No linting errors: `golangci-lint run ./internal/email/...`
 
 ## Support
 

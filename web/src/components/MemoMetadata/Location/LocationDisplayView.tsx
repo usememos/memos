@@ -5,6 +5,7 @@ import { LocationPicker } from "@/components/map";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import type { Location } from "@/types/proto/api/v1/memo_service_pb";
+import { getLocationCoordinatesText, getLocationDisplayText } from "./locationHelpers";
 
 interface LocationDisplayViewProps {
   location?: Location;
@@ -18,27 +19,25 @@ const LocationDisplayView = ({ location, className }: LocationDisplayViewProps) 
     return null;
   }
 
-  const displayText = location.placeholder || `Position: [${location.latitude}, ${location.longitude}]`;
+  const displayText = getLocationDisplayText(location);
 
   return (
     <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
       <PopoverTrigger asChild>
-        <div
+        <button
+          type="button"
           className={cn(
             "w-full flex flex-row gap-2 cursor-pointer",
             "relative inline-flex items-center gap-1.5 px-2 h-7 rounded-md border border-border bg-muted/20 hover:bg-accent/20 text-muted-foreground hover:text-foreground text-xs transition-colors",
             className,
           )}
-          onClick={() => setPopoverOpen(true)}
         >
           <span className="shrink-0 text-muted-foreground">
             <MapPinIcon className="w-3.5 h-3.5" />
           </span>
-          <span className="text-nowrap opacity-80">
-            [{location.latitude.toFixed(2)}°, {location.longitude.toFixed(2)}°]
-          </span>
+          <span className="text-nowrap opacity-80">[{getLocationCoordinatesText(location, 2)}]</span>
           <span className="text-nowrap truncate">{displayText}</span>
-        </div>
+        </button>
       </PopoverTrigger>
       <PopoverContent align="start">
         <div className="min-w-80 sm:w-lg flex flex-col justify-start items-start">

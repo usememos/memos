@@ -110,6 +110,54 @@ func TestGetMemoByShare_IncludesReactions(t *testing.T) {
 	require.Equal(t, memo.Name, sharedMemo.Reactions[0].ContentId)
 }
 
+func TestGetMemoByShare_SkipsReactionsWithMissingCreators(t *testing.T) {
+	ctx := context.Background()
+
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	owner, err := ts.CreateRegularUser(ctx, "share-owner")
+	require.NoError(t, err)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+
+	reactor, err := ts.CreateRegularUser(ctx, "share-reaction-orphan")
+	require.NoError(t, err)
+	reactorCtx := ts.CreateUserContext(ctx, reactor.ID)
+
+	memo, err := ts.Service.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "memo with orphan share reaction",
+			Visibility: apiv1.Visibility_PUBLIC,
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = ts.Service.UpsertMemoReaction(reactorCtx, &apiv1.UpsertMemoReactionRequest{
+		Name: memo.Name,
+		Reaction: &apiv1.Reaction{
+			ContentId:    memo.Name,
+			ReactionType: "👍",
+		},
+	})
+	require.NoError(t, err)
+
+	share, err := ts.Service.CreateMemoShare(ownerCtx, &apiv1.CreateMemoShareRequest{
+		Parent:    memo.Name,
+		MemoShare: &apiv1.MemoShare{},
+	})
+	require.NoError(t, err)
+
+	err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: reactor.ID})
+	require.NoError(t, err)
+
+	shareToken := share.Name[strings.LastIndex(share.Name, "/")+1:]
+	sharedMemo, err := ts.Service.GetMemoByShare(ctx, &apiv1.GetMemoByShareRequest{
+		ShareId: shareToken,
+	})
+	require.NoError(t, err)
+	require.Empty(t, sharedMemo.Reactions)
+}
+
 func TestGetMemoByShare_ReturnsNotFoundForUnknownShare(t *testing.T) {
 	ctx := context.Background()
 

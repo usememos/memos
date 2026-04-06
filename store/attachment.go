@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/internal/base"
-	"github.com/usememos/memos/plugin/storage/s3"
+	"github.com/usememos/memos/internal/storage/s3"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
@@ -71,6 +71,11 @@ type DeleteAttachment struct {
 	MemoID *int32
 }
 
+const (
+	thumbnailCacheFolder = ".thumbnail_cache"
+	motionCacheFolder    = ".motion_cache"
+)
+
 func (s *Store) CreateAttachment(ctx context.Context, create *Attachment) (*Attachment, error) {
 	if !base.UIDMatcher.MatchString(create.UID) {
 		return nil, errors.New("invalid uid")
@@ -123,6 +128,56 @@ func (s *Store) DeleteAttachment(ctx context.Context, delete *DeleteAttachment) 
 		return errors.New("attachment not found")
 	}
 
+	if err := s.DeleteAttachmentStorage(ctx, attachment); err != nil {
+		if attachment.StorageType == storepb.AttachmentStorageType_LOCAL {
+			return errors.Wrap(err, "failed to delete local file")
+		}
+		slog.Warn("Failed to delete attachment storage", slog.Any("err", err))
+	}
+
+	return s.driver.DeleteAttachment(ctx, delete)
+}
+
+func (s *Store) DeleteAttachments(ctx context.Context, attachments []*Attachment) error {
+	if len(attachments) == 0 {
+		return nil
+	}
+
+	deletes := make([]*DeleteAttachment, 0, len(attachments))
+	for _, attachment := range attachments {
+		if attachment == nil {
+			continue
+		}
+		deletes = append(deletes, &DeleteAttachment{ID: attachment.ID, MemoID: attachment.MemoID})
+	}
+	if len(deletes) == 0 {
+		return nil
+	}
+
+	if err := s.driver.DeleteAttachments(ctx, deletes); err != nil {
+		return err
+	}
+
+	for _, attachment := range attachments {
+		if attachment == nil {
+			continue
+		}
+		if err := s.DeleteAttachmentStorage(ctx, attachment); err != nil {
+			if attachment.StorageType == storepb.AttachmentStorageType_LOCAL {
+				return errors.Wrap(err, "failed to delete local file")
+			}
+			slog.Warn("Failed to delete attachment storage", slog.Any("err", err))
+		}
+	}
+
+	return nil
+}
+
+func (s *Store) DeleteAttachmentStorage(ctx context.Context, attachment *Attachment) error {
+	if attachment == nil {
+		return nil
+	}
+
 	if attachment.StorageType == storepb.AttachmentStorageType_LOCAL {
 		if err := func() error {
 			p := filepath.FromSlash(attachment.Reference)
@@ -135,7 +190,7 @@ func (s *Store) DeleteAttachment(ctx context.Context, delete *DeleteAttachment) 
 			}
 			return nil
 		}(); err != nil {
-			return errors.Wrap(err, "failed to delete local file")
+			return err
 		}
 	} else if attachment.StorageType == storepb.AttachmentStorageType_S3 {
 		if err := func() error {
@@ -164,9 +219,21 @@ func (s *Store) DeleteAttachment(ctx context.Context, delete *DeleteAttachment) 
 			}
 			return nil
 		}(); err != nil {
-			slog.Warn("Failed to delete s3 object", slog.Any("err", err))
+			return err
 		}
 	}
 
-	return s.driver.DeleteAttachment(ctx, delete)
+	s.deleteAttachmentDerivedCaches(attachment)
+	return nil
+}
+
+func (s *Store) deleteAttachmentDerivedCaches(attachment *Attachment) {
+	for _, cachePath := range []string{
+		filepath.Join(s.profile.Data, thumbnailCacheFolder, attachment.UID+".jpeg"),
+		filepath.Join(s.profile.Data, motionCacheFolder, attachment.UID+".mp4"),
+	} {
+		if err := os.Remove(cachePath); err != nil && !os.IsNotExist(err) {
+			slog.Warn("Failed to delete derived attachment cache", slog.String("path", cachePath), slog.Any("err", err))
+		}
+	}
 }

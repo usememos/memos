@@ -8,7 +8,7 @@ import (
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/text"
 
-	mast "github.com/usememos/memos/plugin/markdown/ast"
+	mast "github.com/usememos/memos/internal/markdown/ast"
 )
 
 func TestTagParser(t *testing.T) {
