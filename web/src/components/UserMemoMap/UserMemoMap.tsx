@@ -1,6 +1,5 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import L, { DivIcon } from "leaflet";
-import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import { ArrowUpRightIcon, MapPinIcon } from "lucide-react";
 import { useEffect, useMemo } from "react";
@@ -97,7 +96,7 @@ const UserMemoMap = ({ creator, className }: Props) => {
       <MapContainer
         center={defaultCenter}
         zoom={2}
-        className="h-full w-full z-0"
+        className="h-full w-full z-0 !bg-muted"
         scrollWheelZoom
         zoomControl={false}
         attributionControl={false}
