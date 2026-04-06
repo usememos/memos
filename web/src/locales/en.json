@@ -3,6 +3,7 @@
     "blogs": "Blogs",
     "description": "A privacy-first, lightweight note-taking service. Easily capture and share your great thoughts.",
     "documents": "Documents",
+    "media": "Media",
     "github-repository": "GitHub Repo",
     "official-website": "Official Website"
   },
@@ -14,6 +15,38 @@
     "repeat-new-password": "Repeat the new password",
     "sign-in-tip": "Already have an account?",
     "sign-up-tip": "Don't have an account yet?"
+  },
+  "attachment-library": {
+    "actions": {
+      "open": "Open",
+      "retry": "Retry"
+    },
+    "empty": {
+      "audio": "No audio attachments yet.",
+      "documents": "No document attachments yet.",
+      "media": "No media attachments yet."
+    },
+    "errors": {
+      "load": "Failed to load attachments."
+    },
+    "labels": {
+      "live": "Live",
+      "live-photo": "Live Photo",
+      "memo": "Memo",
+      "not-linked": "Not linked",
+      "unknown-date": "Unknown date",
+      "unused": "Unused"
+    },
+    "tabs": {
+      "audio": "Audio",
+      "documents": "Documents",
+      "media": "Media"
+    },
+    "unused": {
+      "confirm-description": "This removes every uploaded file that is not linked to a memo.",
+      "description": "These uploads were never attached to a memo. Review or remove them here.",
+      "title": "Unlinked uploads"
+    }
   },
   "common": {
     "about": "About",
