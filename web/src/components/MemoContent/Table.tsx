@@ -97,11 +97,27 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
     if (tableIndex < 0) return;
     setIsDeleting(true);
     try {
+      // Get table bounds before replacement for localized whitespace normalization
+      const tables = findAllTables(memo.content);
+      const tableToDelete = tables[tableIndex];
+      if (!tableToDelete) return;
+
       // Replace the table with an empty string to delete it.
       let newContent = replaceNthTable(memo.content, tableIndex, "");
-      // Normalize consecutive blank lines: collapse runs of 3+ newlines to 2 (single blank line).
-      // This preserves intentional paragraph breaks while preventing excess whitespace.
-      newContent = newContent.replace(/\n\n\n+/g, "\n\n");
+
+      // Normalize consecutive blank lines only around the deletion seam.
+      // The replacement happens at tableToDelete.start, so check a small window
+      // around that position for excessive whitespace.
+      const seamStart = Math.max(0, tableToDelete.start - 2);
+      const seamEnd = Math.min(newContent.length, tableToDelete.start + 2);
+      const beforeSeam = newContent.slice(0, seamStart);
+      const seamArea = newContent.slice(seamStart, seamEnd);
+      const afterSeam = newContent.slice(seamEnd);
+
+      // Normalize runs of 3+ newlines to 2 newlines in the seam area
+      const normalizedSeam = seamArea.replace(/\n\n\n+/g, "\n\n");
+      newContent = beforeSeam + normalizedSeam + afterSeam;
+
       await updateMemo({
         update: { name: memo.name, content: newContent },
         updateMask: ["content"],
