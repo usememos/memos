@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { LocalFile } from "../types/attachment";
 import { useBlobUrls } from "./useBlobUrls";
 
@@ -50,6 +50,7 @@ function createRecordedFile(blob: Blob, mimeType: string): File {
 export const useAudioRecorder = (actions: AudioRecorderActions) => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
+  const [recordingStream, setRecordingStream] = useState<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const startedAtRef = useRef<number | null>(null);
   const elapsedTimerRef = useRef<number | null>(null);
@@ -67,6 +68,7 @@ export const useAudioRecorder = (actions: AudioRecorderActions) => {
   const cleanupStream = () => {
     mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
     mediaStreamRef.current = null;
+    setRecordingStream(null);
   };
 
   const resetRecorderRefs = () => {
@@ -130,6 +132,7 @@ export const useAudioRecorder = (actions: AudioRecorderActions) => {
 
       recorderMimeTypeRef.current = mimeType;
       mediaStreamRef.current = stream;
+      setRecordingStream(stream);
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
 
@@ -221,5 +224,6 @@ export const useAudioRecorder = (actions: AudioRecorderActions) => {
     startRecording,
     stopRecording,
     resetRecording,
+    recordingStream,
   };
 };
