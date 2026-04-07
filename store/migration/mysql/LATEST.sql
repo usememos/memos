@@ -109,3 +109,88 @@ CREATE TABLE `memo_share` (
 );
 
 CREATE INDEX `idx_memo_share_memo_id` ON `memo_share`(`memo_id`);
+
+-- dreaming_runs
+CREATE TABLE `dreaming_runs` (
+  `id`              VARCHAR(36) NOT NULL PRIMARY KEY,
+  `run_type`        VARCHAR(16) NOT NULL,
+  `status`          VARCHAR(16) NOT NULL DEFAULT 'running',
+  `started_at`      BIGINT NOT NULL,
+  `finished_at`     BIGINT,
+  `lock_holder`     VARCHAR(256) NOT NULL DEFAULT '',
+  `error_message`   TEXT NOT NULL,
+  `stats_json`      TEXT NOT NULL,
+  `phase`           VARCHAR(32) NOT NULL DEFAULT ''
+);
+
+-- dreaming_replay_queue
+CREATE TABLE `dreaming_replay_queue` (
+  `id`                       VARCHAR(36) NOT NULL PRIMARY KEY,
+  `chunk_id`                 VARCHAR(256) NOT NULL,
+  `session_key`              VARCHAR(256) NOT NULL,
+  `activation_score`         DOUBLE NOT NULL DEFAULT 0,
+  `novelty_score`            DOUBLE NOT NULL DEFAULT 0,
+  `rehearsal_count`          INT NOT NULL DEFAULT 0,
+  `first_queued_at`          BIGINT NOT NULL,
+  `last_replayed_at`         BIGINT,
+  `queue_reason`             VARCHAR(256) NOT NULL DEFAULT '',
+  `status`                   VARCHAR(16) NOT NULL DEFAULT 'queued',
+  `spindle_tag`              VARCHAR(16) NOT NULL DEFAULT 'none',
+  `dreaming_candidate_score` DOUBLE NOT NULL DEFAULT 0,
+  `candidate_kind_hint`      VARCHAR(256)
+);
+
+CREATE INDEX `idx_dreaming_rq_chunk_id` ON `dreaming_replay_queue`(`chunk_id`);
+CREATE INDEX `idx_dreaming_rq_session_key` ON `dreaming_replay_queue`(`session_key`);
+CREATE INDEX `idx_dreaming_rq_status` ON `dreaming_replay_queue`(`status`);
+CREATE INDEX `idx_dreaming_rq_activation` ON `dreaming_replay_queue`(`activation_score` DESC);
+
+-- dreaming_insights
+CREATE TABLE `dreaming_insights` (
+  `id`                 VARCHAR(36) NOT NULL PRIMARY KEY,
+  `summary`            TEXT NOT NULL,
+  `kind`               VARCHAR(256) NOT NULL DEFAULT '',
+  `phase`              VARCHAR(16) NOT NULL DEFAULT 'light',
+  `memory_class`       VARCHAR(16) NOT NULL DEFAULT 'consolidated',
+  `status`             VARCHAR(16) NOT NULL DEFAULT 'active',
+  `confidence`         DOUBLE NOT NULL DEFAULT 0,
+  `salience_score`     DOUBLE NOT NULL DEFAULT 1.0,
+  `retrieval_priority` DOUBLE NOT NULL DEFAULT 0,
+  `decay_factor`       DOUBLE NOT NULL DEFAULT 1.0,
+  `support_count`      INT NOT NULL DEFAULT 0,
+  `created_at`         BIGINT NOT NULL DEFAULT (UNIX_TIMESTAMP()),
+  `updated_at`         BIGINT NOT NULL DEFAULT (UNIX_TIMESTAMP()),
+  `last_reinforced_at` BIGINT,
+  `merged_into`        VARCHAR(36),
+  `creator_id`         INT NOT NULL DEFAULT 1,
+  UNIQUE(`summary`(255), `kind`, `phase`)
+);
+
+CREATE INDEX `idx_dreaming_ins_memory_class` ON `dreaming_insights`(`memory_class`);
+CREATE INDEX `idx_dreaming_ins_status` ON `dreaming_insights`(`status`);
+CREATE INDEX `idx_dreaming_ins_retrieval_priority` ON `dreaming_insights`(`retrieval_priority` DESC);
+CREATE INDEX `idx_dreaming_ins_created_at` ON `dreaming_insights`(`created_at`);
+CREATE INDEX `idx_dreaming_ins_kind` ON `dreaming_insights`(`kind`);
+
+-- dreaming_insight_evidence
+CREATE TABLE `dreaming_insight_evidence` (
+  `id`            VARCHAR(36) NOT NULL PRIMARY KEY,
+  `insight_id`    VARCHAR(36) NOT NULL,
+  `chunk_id`      VARCHAR(256) NOT NULL,
+  `session_key`   VARCHAR(256) NOT NULL DEFAULT '',
+  `relevance`     DOUBLE NOT NULL DEFAULT 0,
+  `evidence_role` VARCHAR(16) NOT NULL DEFAULT 'supporting',
+  `created_at`    BIGINT NOT NULL,
+  FOREIGN KEY (`insight_id`) REFERENCES `dreaming_insights`(`id`) ON DELETE CASCADE
+);
+
+CREATE INDEX `idx_dreaming_iev_insight_id` ON `dreaming_insight_evidence`(`insight_id`);
+CREATE INDEX `idx_dreaming_iev_chunk_id` ON `dreaming_insight_evidence`(`chunk_id`);
+
+-- dreaming_insight_embeddings
+CREATE TABLE `dreaming_insight_embeddings` (
+  `insight_id` VARCHAR(36) NOT NULL PRIMARY KEY,
+  `embedding`  MEDIUMBLOB NOT NULL,
+  `created_at` BIGINT NOT NULL,
+  FOREIGN KEY (`insight_id`) REFERENCES `dreaming_insights`(`id`) ON DELETE CASCADE
+);

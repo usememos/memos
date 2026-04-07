@@ -70,4 +70,27 @@ type Driver interface {
 	ListMemoShares(ctx context.Context, find *FindMemoShare) ([]*MemoShare, error)
 	GetMemoShare(ctx context.Context, find *FindMemoShare) (*MemoShare, error)
 	DeleteMemoShare(ctx context.Context, delete *DeleteMemoShare) error
+
+	// Dreaming model related methods.
+	CreateDreamingRun(ctx context.Context, create *DreamingRun) (*DreamingRun, error)
+	ListDreamingRuns(ctx context.Context, find *FindDreamingRun) ([]*DreamingRun, error)
+	UpdateDreamingRun(ctx context.Context, update *UpdateDreamingRun) error
+	DeleteDreamingRun(ctx context.Context, delete *DeleteDreamingRun) error
+
+	CreateDreamingReplayQueueItem(ctx context.Context, create *DreamingReplayQueueItem) (*DreamingReplayQueueItem, error)
+	ListDreamingReplayQueueItems(ctx context.Context, find *FindDreamingReplayQueueItem) ([]*DreamingReplayQueueItem, error)
+	UpdateDreamingReplayQueueItem(ctx context.Context, update *UpdateDreamingReplayQueueItem) error
+	DeleteDreamingReplayQueueItem(ctx context.Context, delete *DeleteDreamingReplayQueueItem) error
+
+	CreateDreamingInsight(ctx context.Context, create *DreamingInsight) (*DreamingInsight, error)
+	ListDreamingInsights(ctx context.Context, find *FindDreamingInsight) ([]*DreamingInsight, error)
+	UpdateDreamingInsight(ctx context.Context, update *UpdateDreamingInsight) error
+	DeleteDreamingInsight(ctx context.Context, delete *DeleteDreamingInsight) error
+
+	CreateDreamingInsightEvidence(ctx context.Context, create *DreamingInsightEvidence) (*DreamingInsightEvidence, error)
+	ListDreamingInsightEvidences(ctx context.Context, find *FindDreamingInsightEvidence) ([]*DreamingInsightEvidence, error)
+
+	UpsertDreamingInsightEmbedding(ctx context.Context, upsert *UpsertDreamingInsightEmbedding) error
+	ListDreamingInsightEmbeddings(ctx context.Context, find *FindDreamingInsightEmbedding) ([]*DreamingInsightEmbedding, error)
 }
+

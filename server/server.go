@@ -22,6 +22,7 @@ import (
 	mcprouter "github.com/usememos/memos/server/router/mcp"
 	"github.com/usememos/memos/server/router/rss"
 	"github.com/usememos/memos/server/runner/s3presign"
+	dreamingrunner "github.com/usememos/memos/server/runner/dreaming"
 	"github.com/usememos/memos/store"
 )
 
@@ -158,6 +159,18 @@ func (s *Server) StartBackgroundRunners(ctx context.Context) {
 	go func() {
 		s3presignRunner.Run(s3Context)
 		slog.Info("s3presign runner stopped")
+	}()
+
+	// Create and start dreaming runner.
+	dreamingContext, dreamingCancel := context.WithCancel(ctx)
+	s.runnerCancelFuncs = append(s.runnerCancelFuncs, dreamingCancel)
+
+	dreamingRunner := dreamingrunner.NewRunner(s.Store)
+	dreamingRunner.RunOnce(ctx)
+
+	go func() {
+		dreamingRunner.Run(dreamingContext)
+		slog.Info("dreaming runner stopped")
 	}()
 
 	// Log the number of goroutines running
