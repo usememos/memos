@@ -157,9 +157,9 @@ const MemoContent = (props: MemoContentProps) => {
                 {children}
               </Table>
             ),
-            thead: ({ children }) => <TableHead>{children}</TableHead>,
-            tbody: ({ children }) => <TableBody>{children}</TableBody>,
-            tr: ({ children }) => <TableRow>{children}</TableRow>,
+            thead: ({ children, ...props }) => <TableHead {...props}>{children}</TableHead>,
+            tbody: ({ children, ...props }) => <TableBody {...props}>{children}</TableBody>,
+            tr: ({ children, ...props }) => <TableRow {...props}>{children}</TableRow>,
             th: ({ children, ...props }) => <TableHeaderCell {...props}>{children}</TableHeaderCell>,
             td: ({ children, ...props }) => <TableCell {...props}>{children}</TableCell>,
           }}

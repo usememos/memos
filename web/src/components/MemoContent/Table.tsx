@@ -112,7 +112,7 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
         <table className={cn("w-full border-collapse text-sm", className)} {...props}>
           {children}
         </table>
-        {!readonly && (
+        {!readonly && currentTableIndex >= 0 && (
           <div className="absolute top-1.5 right-1.5 flex items-center gap-1 opacity-0 group-hover/table:opacity-100 transition-all">
             <button
               type="button"

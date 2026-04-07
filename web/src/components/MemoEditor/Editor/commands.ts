@@ -25,7 +25,7 @@ export const editorCommands: Command[] = [
   },
   {
     name: "table",
-    run: () => "| Header | Header |\n| ------ | ------ |\n| Cell   | Cell |",
+    run: () => "\n| Header | Header |\n| ------ | ------ |\n| Cell   | Cell |\n",
     cursorOffset: 1,
   },
 ];
