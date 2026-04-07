@@ -206,6 +206,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         {isAudioRecorderOpen && (state.audioRecorder.status === "recording" || state.audioRecorder.status === "requesting_permission") && (
           <AudioRecorderPanel
             audioRecorder={state.audioRecorder}
+            mediaStream={audioRecorder.recordingStream}
             onStop={audioRecorder.stopRecording}
             onCancel={handleCancelAudioRecording}
           />
