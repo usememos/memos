@@ -1,4 +1,4 @@
-import { PencilIcon, TrashIcon } from "lucide-react";
+import { Loader2Icon, PencilIcon, TrashIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useMemoViewContext, useMemoViewDerived } from "@/components/MemoView/MemoViewContext";
@@ -27,6 +27,7 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [tableData, setTableData] = useState<TableData | null>(null);
   const [tableIndex, setTableIndex] = useState(-1);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { memo } = useMemoViewContext();
   const { readonly } = useMemoViewDerived();
@@ -94,9 +95,10 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
 
   const handleConfirmDelete = useCallback(async () => {
     if (tableIndex < 0) return;
-    // Replace the table with an empty string to delete it.
-    const newContent = replaceNthTable(memo.content, tableIndex, "");
+    setIsDeleting(true);
     try {
+      // Replace the table with an empty string to delete it.
+      const newContent = replaceNthTable(memo.content, tableIndex, "");
       await updateMemo({
         update: { name: memo.name, content: newContent },
         updateMask: ["content"],
@@ -104,6 +106,8 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
       setDeleteDialogOpen(false);
     } catch (error: unknown) {
       handleError(error, toast.error, { context: "Delete table", fallbackMessage: "An error occurred" });
+    } finally {
+      setIsDeleting(false);
     }
   }, [memo.content, memo.name, tableIndex, updateMemo]);
 
@@ -146,9 +150,12 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="ghost">{t("common.cancel")}</Button>
+              <Button variant="ghost" disabled={isDeleting}>
+                {t("common.cancel")}
+              </Button>
             </DialogClose>
-            <Button variant="destructive" onClick={handleConfirmDelete}>
+            <Button variant="destructive" onClick={handleConfirmDelete} disabled={isDeleting}>
+              {isDeleting && <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />}
               {t("common.delete")}
             </Button>
           </DialogFooter>
