@@ -5,6 +5,7 @@ import { authServiceClient, refreshAccessToken, shortcutServiceClient, userServi
 import { userKeys } from "@/hooks/useUserQueries";
 import type { Shortcut } from "@/types/proto/api/v1/shortcut_service_pb";
 import type { User, UserSetting_GeneralSetting, UserSetting_WebhooksSetting } from "@/types/proto/api/v1/user_service_pb";
+import { retryAuthInitialization } from "./auth-initialize";
 
 interface AuthState {
   currentUser: User | undefined;
@@ -80,9 +81,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const { user: currentUser } = await authServiceClient.getCurrentUser({});
+      const { currentUser, settings } = await retryAuthInitialization({
+        operation: async () => {
+          const { user: currentUser } = await authServiceClient.getCurrentUser({});
 
-      if (!currentUser) {
+          if (!currentUser) {
+            return {
+              currentUser: undefined,
+              settings: undefined,
+            };
+          }
+
+          const settings = await fetchUserSettings(currentUser.name);
+
+          return {
+            currentUser,
+            settings,
+          };
+        },
+      });
+
+      if (!currentUser || !settings) {
         clearAccessToken();
         setState({
           currentUser: undefined,
@@ -94,8 +113,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         return;
       }
-
-      const settings = await fetchUserSettings(currentUser.name);
 
       setState({
         currentUser,
