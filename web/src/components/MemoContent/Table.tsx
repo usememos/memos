@@ -98,7 +98,10 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
     setIsDeleting(true);
     try {
       // Replace the table with an empty string to delete it.
-      const newContent = replaceNthTable(memo.content, tableIndex, "");
+      let newContent = replaceNthTable(memo.content, tableIndex, "");
+      // Normalize consecutive blank lines: collapse runs of 3+ newlines to 2 (single blank line).
+      // This preserves intentional paragraph breaks while preventing excess whitespace.
+      newContent = newContent.replace(/\n\n\n+/g, "\n\n");
       await updateMemo({
         update: { name: memo.name, content: newContent },
         updateMask: ["content"],
