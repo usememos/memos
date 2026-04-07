@@ -15,13 +15,41 @@ export interface AttachmentItem {
   readonly sourceUrl: string;
   readonly size?: number;
   readonly isLocal: boolean;
+  readonly isVoiceNote: boolean;
+  readonly audioMeta?: LocalFile["audioMeta"];
 }
 
 export interface LocalFile {
   readonly file: File;
   readonly previewUrl: string;
+  readonly origin?: "audio_recording" | "upload";
+  readonly audioMeta?: {
+    readonly durationSeconds: number;
+  };
   readonly motionMedia?: MotionMedia;
 }
+
+const AUDIO_RECORDING_FILENAME_RE = /^(?:voice-(?:recording|note)|audio-recording)-(\d{8})-(\d{4,6})/i;
+
+export const isAudioRecordingFilename = (filename: string): boolean => AUDIO_RECORDING_FILENAME_RE.test(filename);
+
+export const getAudioRecordingTimeLabel = (filename: string): string | undefined => {
+  const match = filename.match(AUDIO_RECORDING_FILENAME_RE);
+  const timePart = match?.[2];
+  if (!timePart) {
+    return undefined;
+  }
+
+  if (timePart.length === 4) {
+    return `${timePart.slice(0, 2)}:${timePart.slice(2, 4)}`;
+  }
+
+  if (timePart.length === 6) {
+    return `${timePart.slice(0, 2)}:${timePart.slice(2, 4)}:${timePart.slice(4, 6)}`;
+  }
+
+  return undefined;
+};
 
 function categorizeFile(mimeType: string, motionMedia?: MotionMedia): FileCategory {
   if (motionMedia) return "motion";
@@ -45,6 +73,8 @@ function attachmentGroupToItem(attachment: Attachment): AttachmentItem {
     sourceUrl,
     size: Number(attachment.size),
     isLocal: false,
+    isVoiceNote: categorizeFile(attachment.type) === "audio" && isAudioRecordingFilename(attachment.filename),
+    audioMeta: undefined,
   };
 }
 
@@ -59,6 +89,8 @@ function visualItemToAttachmentItem(item: ReturnType<typeof buildAttachmentVisua
     sourceUrl: item.sourceUrl,
     size: item.attachments.reduce((total, attachment) => total + Number(attachment.size), 0),
     isLocal: false,
+    isVoiceNote: false,
+    audioMeta: undefined,
   };
 }
 
@@ -73,6 +105,10 @@ function fileToItem(file: LocalFile): AttachmentItem {
     sourceUrl: file.previewUrl,
     size: file.file.size,
     isLocal: true,
+    isVoiceNote:
+      categorizeFile(file.file.type, file.motionMedia) === "audio" &&
+      (file.origin === "audio_recording" || isAudioRecordingFilename(file.file.name)),
+    audioMeta: file.audioMeta,
   };
 }
 
@@ -111,6 +147,8 @@ function toLocalMotionItems(localFiles: LocalFile[]): AttachmentItem[] {
           sourceUrl: video.previewUrl,
           size: still.file.size + video.file.size,
           isLocal: true,
+          isVoiceNote: false,
+          audioMeta: undefined,
         },
       ];
     }

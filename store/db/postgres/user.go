@@ -86,6 +86,7 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 
 func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User, error) {
 	where, args := []string{"1 = 1"}, []any{}
+	orderBy := []string{"created_ts DESC", "row_status DESC"}
 
 	if len(find.Filters) > 0 {
 		return nil, errors.Errorf("user filters are not supported")
@@ -102,6 +103,17 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 		}
 		where = append(where, fmt.Sprintf("id IN (%s)", strings.Join(holders, ", ")))
 	}
+	if len(find.UsernameList) > 0 {
+		holders := make([]string, 0, len(find.UsernameList))
+		for _, username := range find.UsernameList {
+			holders = append(holders, placeholder(len(args)+1))
+			args = append(args, username)
+		}
+		where = append(where, fmt.Sprintf("username IN (%s)", strings.Join(holders, ", ")))
+	}
+	if v := find.RowStatus; v != nil {
+		where, args = append(where, "row_status = "+placeholder(len(args)+1)), append(args, *v)
+	}
 	if v := find.Username; v != nil {
 		where, args = append(where, "username = "+placeholder(len(args)+1)), append(args, *v)
 	}
@@ -114,8 +126,19 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 	if v := find.Nickname; v != nil {
 		where, args = append(where, "nickname = "+placeholder(len(args)+1)), append(args, *v)
 	}
-
-	orderBy := []string{"created_ts DESC", "row_status DESC"}
+	if v := find.Search; v != nil && strings.TrimSpace(*v) != "" {
+		query := strings.ToLower(strings.TrimSpace(*v))
+		where, args = append(where, "(LOWER(username) LIKE "+placeholder(len(args)+1)+" OR LOWER(nickname) LIKE "+placeholder(len(args)+2)+")"), append(args, "%"+query+"%", "%"+query+"%")
+		orderBy = []string{
+			"CASE WHEN LOWER(username) = " + placeholder(len(args)+1) + " THEN 0 " +
+				"WHEN LOWER(username) LIKE " + placeholder(len(args)+2) + " THEN 1 " +
+				"WHEN LOWER(nickname) LIKE " + placeholder(len(args)+3) + " THEN 2 ELSE 3 END",
+			"LENGTH(username) ASC",
+			"created_ts DESC",
+			"row_status DESC",
+		}
+		args = append(args, query, query+"%", query+"%")
+	}
 	query := `
 		SELECT 
 			id,

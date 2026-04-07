@@ -42,6 +42,7 @@ func NewTestService(t *testing.T) *TestService {
 	secret := "test-secret"
 	markdownService := markdown.NewService(
 		markdown.WithTagExtension(),
+		markdown.WithMentionExtension(),
 	)
 	service := &apiv1.APIV1Service{
 		Secret:          secret,

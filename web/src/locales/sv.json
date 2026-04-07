@@ -124,7 +124,37 @@
     "no-changes-detected": "Inga ändringar upptäckta",
     "save": "Spara",
     "saving": "Sparar...",
-    "slash-commands": "Skriv `/` för kommandon"
+    "slash-commands": "Skriv `/` för kommandon",
+    "insert-menu": {
+      "add-location": "Lägg till plats",
+      "link-memo": "Länkmemo",
+      "upload-file": "Ladda upp fil"
+    },
+    "audio-recorder": {
+      "attachment-label": "Ljudinspelning",
+      "attachment-label-with-time": "Ljudinspelning {{time}}",
+      "discard": "Släng",
+      "error": "Mikrofonen är inte tillgänglig",
+      "error-description": "Försök igen efter att ha kontrollerat mikrofonåtkomsten för den här webbplatsen.",
+      "idle-description": "Börja spela in för att lägga till en ljudinspelning som en bilaga.",
+      "keep": "Fortsätt spela in",
+      "pause-recording": "Pausa ljudinspelning",
+      "play-recording": "Spela ljudinspelning",
+      "ready": "Inspelning klar",
+      "ready-description": "Förhandsgranska klippet och behåll det sedan som en ljudbilaga eller släng det.",
+      "record-again": "Spela in igen",
+      "recording": "Spelar in ljud",
+      "recording-description": "Fånga en snabb ljudbilaga. Aktuell längd: {{duration}}",
+      "requesting": "Begär åtkomst...",
+      "requesting-permission": "Begär mikrofonåtkomst",
+      "requesting-permission-description": "Tillåt mikrofonåtkomst i din webbläsare för att börja spela in.",
+      "start": "Börja spela in",
+      "stop": "Sluta spela in",
+      "title": "Ljudinspelare",
+      "trigger": "Spela in ljud",
+      "unsupported": "Ljudinspelning stöds inte",
+      "unsupported-description": "Den här webbläsaren kan inte spela in ljud från memoskrivaren."
+    }
   },
   "inbox": {
     "failed-to-load": "Misslyckades att ladda inkorgsobjekt",
@@ -159,7 +189,8 @@
     "filters": {
       "has-code": "harKod",
       "has-link": "harLänk",
-      "has-task-list": "harAttGöraLista"
+      "has-task-list": "harAttGöraLista",
+      "label": "Filter"
     },
     "links": "Länkar",
     "load-more": "Ladda mer",
@@ -176,6 +207,32 @@
       "private": "Privat",
       "protected": "Skyddad",
       "public": "Offentlig"
+    },
+    "outline": "Disposition",
+    "share": {
+      "active-links": "Aktiva delningslänkar",
+      "copied": "Kopierade!",
+      "copy": "Kopiera länk",
+      "create-failed": "Det gick inte att skapa delningslänk",
+      "create-link": "Skapa ny länk",
+      "creating": "Skapar...",
+      "expiry-1-day": "1 dag",
+      "expiry-30-days": "30 dagar",
+      "expiry-7-days": "7 dagar",
+      "expiry-label": "Upphör att gälla",
+      "expiry-never": "Aldrig",
+      "expires-on": "Upphör {{date}}",
+      "invalid-link": "Denna länk är ogiltig eller har upphört att gälla.",
+      "never-expires": "Går aldrig ut",
+      "no-links": "Inga delningslänkar ännu. Skapa en nedan.",
+      "open-panel": "Hantera delningslänkar",
+      "revoke": "Återkalla",
+      "revoke-failed": "Det gick inte att återkalla länken",
+      "revoked": "Delningslänken har återkallats",
+      "section-label": "Dela",
+      "share": "Dela",
+      "shared-by": "Delas av {{creator}}",
+      "title": "Dela detta memo"
     }
   },
   "message": {
@@ -261,7 +318,8 @@
       "restore-success": "{{username}} återställdes framgångsrikt",
       "user": "Användare",
       "label": "Medlem",
-      "list-title": "Medlemslista"
+      "list-title": "Medlemslista",
+      "no-members-found": "Inga medlemmar hittades"
     },
     "my-account": {
       "label": "Mitt konto"
@@ -383,7 +441,8 @@
       },
       "description": "En lista över alla åtkomsttoken för ditt konto.",
       "title": "Åtkomsttoken",
-      "token": "Token"
+      "token": "Token",
+      "no-tokens-found": "Inga åtkomsttokens hittades"
     },
     "account": {
       "change-password": "Ändra lösenord",
@@ -415,7 +474,8 @@
       "enable-memo-location": "Aktivera plats för anteckning",
       "reactions": "Reaktioner",
       "title": "Inställningar för anteckningar",
-      "label": "Anteckning"
+      "label": "Anteckning",
+      "reactions-required": "Reaktionslistan får inte vara tom"
     },
     "webhook": {
       "create-dialog": {
@@ -436,6 +496,20 @@
       "title": "Webhooks",
       "url": "URL",
       "label": "Webhooks"
+    },
+    "tags": {
+      "label": "Taggar",
+      "title": "Tagga metadata",
+      "description": "Tilldela valfria skärmfärger till taggar för hela instansen, eller gör matchande memoinnehåll oskarpa. Taggnamn behandlas som förankrade regexmönster.",
+      "background-color": "Bakgrundsfärg",
+      "blur-content": "Oskärpa innehåll",
+      "no-tags-configured": "Ingen taggmetadata har konfigurerats.",
+      "tag-name": "Taggnamn",
+      "tag-name-placeholder": "t.ex. work eller project/.*",
+      "tag-already-exists": "Taggen finns redan.",
+      "tag-pattern-hint": "Taggnamn eller regexmönster (t.ex. project/.* matchar alla project/-taggar)",
+      "invalid-regex": "Ogiltigt eller osäkert regexmönster.",
+      "using-default-color": "Använder standardfärg."
     }
   },
   "tag": {
@@ -461,5 +535,10 @@
     "select-visibility": "Synlighet",
     "tags": "Taggar",
     "upload-attachment": "Ladda upp bilagor"
+  },
+  "live-update": {
+    "connected": "Liveuppdateringar aktiva",
+    "connecting": "Ansluter till liveuppdateringar...",
+    "disconnected": "Liveuppdateringar är inte tillgängliga"
   }
 }

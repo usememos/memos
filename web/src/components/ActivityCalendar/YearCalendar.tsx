@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { getMaxYear, MIN_YEAR } from "./constants";
 import { MonthCalendar } from "./MonthCalendar";
-import type { YearCalendarProps } from "./types";
-import { calculateYearMaxCount, filterDataByYear, generateMonthsForYear, getMonthLabel } from "./utils";
+import type { CalendarData, YearCalendarProps } from "./types";
+import { calculateMaxCount, filterDataByYear, generateMonthsForYear, getMonthLabel } from "./utils";
 
 interface YearNavigationProps {
   selectedYear: number;
@@ -70,7 +70,7 @@ YearNavigation.displayName = "YearNavigation";
 
 interface MonthCardProps {
   month: string;
-  data: Record<string, number>;
+  data: CalendarData;
   maxCount: number;
   onDateClick: (date: string) => void;
 }
@@ -87,7 +87,7 @@ export const YearCalendar = memo(({ selectedYear, data, onYearChange, onDateClic
   const currentYear = useMemo(() => new Date().getFullYear(), []);
   const yearData = useMemo(() => filterDataByYear(data, selectedYear), [data, selectedYear]);
   const months = useMemo(() => generateMonthsForYear(selectedYear), [selectedYear]);
-  const yearMaxCount = useMemo(() => calculateYearMaxCount(yearData), [yearData]);
+  const yearMaxCount = useMemo(() => calculateMaxCount(yearData), [yearData]);
 
   const canGoPrev = selectedYear > MIN_YEAR;
   const canGoNext = selectedYear < getMaxYear();

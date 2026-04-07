@@ -124,7 +124,37 @@
     "no-changes-detected": "Nincs változás",
     "save": "Mentés",
     "saving": "Mentés...",
-    "slash-commands": "Írj `/` parancsokat"
+    "slash-commands": "Írj `/` parancsokat",
+    "insert-menu": {
+      "add-location": "Hely hozzáadása",
+      "link-memo": "Linkjegyzet",
+      "upload-file": "Fájl feltöltése"
+    },
+    "audio-recorder": {
+      "attachment-label": "Hangfelvétel",
+      "attachment-label-with-time": "Hangfelvétel {{time}}",
+      "discard": "Eldobni",
+      "error": "Mikrofon nem elérhető",
+      "error-description": "Próbálja újra, miután ellenőrizte a webhely mikrofon-hozzáférését.",
+      "idle-description": "Indítsa el a felvételt, ha hangfelvételt szeretne csatolni.",
+      "keep": "Folytassa a rögzítést",
+      "pause-recording": "Hangfelvétel szüneteltetése",
+      "play-recording": "Hangfelvétel lejátszása",
+      "ready": "Felvétel kész",
+      "ready-description": "Tekintse meg a klip előnézetét, majd tartsa meg hangmellékletként, vagy dobja el.",
+      "record-again": "Rögzítse újra",
+      "recording": "Hang rögzítése",
+      "recording-description": "Gyors hangmelléklet rögzítése. Jelenlegi hossza: {{duration}}",
+      "requesting": "Hozzáférés kérése...",
+      "requesting-permission": "Mikrofon hozzáférés kérése",
+      "requesting-permission-description": "A rögzítés megkezdéséhez engedélyezze a mikrofonhoz való hozzáférést a böngészőjében.",
+      "start": "Indítsa el a felvételt",
+      "stop": "Állítsa le a felvételt",
+      "title": "Hangrögzítő",
+      "trigger": "Hang rögzítése",
+      "unsupported": "A hangfelvétel nem támogatott",
+      "unsupported-description": "Ez a böngésző nem tud hangot rögzíteni a jegyzetkészítőből."
+    }
   },
   "inbox": {
     "failed-to-load": "Nem sikerült betölteni az értesítést",
@@ -159,7 +189,8 @@
     "filters": {
       "has-code": "vanKód",
       "has-link": "vanLink",
-      "has-task-list": "vanFeladatLista"
+      "has-task-list": "vanFeladatLista",
+      "label": "Szűrők"
     },
     "links": "Hivatkozások",
     "load-more": "Több betöltése",
@@ -176,6 +207,32 @@
       "private": "Privát",
       "protected": "Munkatér",
       "public": "Nyilvános"
+    },
+    "outline": "Vázlat",
+    "share": {
+      "active-links": "Aktív megosztási linkek",
+      "copied": "Másolva!",
+      "copy": "Link másolása",
+      "create-failed": "Nem sikerült létrehozni a megosztási linket",
+      "create-link": "Új link létrehozása",
+      "creating": "Létrehozás…",
+      "expiry-1-day": "1 nap",
+      "expiry-30-days": "30 nap",
+      "expiry-7-days": "7 nap",
+      "expiry-label": "Lejár",
+      "expiry-never": "Soha",
+      "expires-on": "{{date}} lejár",
+      "invalid-link": "Ez a link érvénytelen vagy lejárt.",
+      "never-expires": "Soha nem jár le",
+      "no-links": "Még nincsenek megosztási linkek. Hozzon létre egyet lent.",
+      "open-panel": "Megosztási linkek kezelése",
+      "revoke": "Visszavonás",
+      "revoke-failed": "Nem sikerült visszavonni a linket",
+      "revoked": "Megosztási link visszavonva",
+      "section-label": "Megosztás",
+      "share": "Megosztás",
+      "shared-by": "Megosztva: {{creator}}",
+      "title": "Oszd meg ezt a feljegyzést"
     }
   },
   "message": {
@@ -261,7 +318,8 @@
       "restore-success": "{{username}} sikeresen visszaállítva",
       "user": "Felhasználó",
       "label": "Tag",
-      "list-title": "Taglista"
+      "list-title": "Taglista",
+      "no-members-found": "Nem találhatók tagok"
     },
     "my-account": {
       "label": "Fiókom"
@@ -383,7 +441,8 @@
       },
       "description": "A fiókodhoz tartozó összes hozzáférési token listája.",
       "title": "Hozzáférési tokenek",
-      "token": "Token"
+      "token": "Token",
+      "no-tokens-found": "Nem található hozzáférési token"
     },
     "account": {
       "change-password": "Jelszó megváltoztatása",
@@ -415,7 +474,8 @@
       "enable-memo-location": "Jegyzet helyének engedélyezése",
       "reactions": "Reakciók",
       "title": "Jegyzethez kapcsolódó beállítások",
-      "label": "Jegyzet"
+      "label": "Jegyzet",
+      "reactions-required": "A reakciólista nem lehet üres"
     },
     "webhook": {
       "create-dialog": {
@@ -436,6 +496,20 @@
       "title": "Webhooks",
       "url": "URL",
       "label": "Webhooks"
+    },
+    "tags": {
+      "label": "Címkék",
+      "title": "Címke metaadatok",
+      "description": "Rendeljen opcionális megjelenítési színeket a címkékhez az egész példányra kiterjedően, vagy homályosítsa el a megfelelő emlékeztető tartalmát. A címkeneveket a rendszer rögzített regex mintákként kezeli.",
+      "background-color": "Háttérszín",
+      "blur-content": "Tartalom elhomályosítása",
+      "no-tags-configured": "Nincsenek konfigurálva címke metaadatok.",
+      "tag-name": "Címke neve",
+      "tag-name-placeholder": "pl. work vagy project/.*",
+      "tag-already-exists": "A címke már létezik.",
+      "tag-pattern-hint": "Címke neve vagy reguláris kifejezési mintája (pl. a project/.* megfelel az összes project/ címkének)",
+      "invalid-regex": "Érvénytelen vagy nem biztonságos reguláris kifejezés.",
+      "using-default-color": "Az alapértelmezett szín használata."
     }
   },
   "tag": {
@@ -461,5 +535,10 @@
     "select-visibility": "Láthatóság",
     "tags": "Címkék",
     "upload-attachment": "Melléklet(ek) feltöltése"
+  },
+  "live-update": {
+    "connected": "Élő frissítések aktívak",
+    "connecting": "Csatlakozás az élő frissítésekhez...",
+    "disconnected": "Élő frissítések nem érhetők el"
   }
 }

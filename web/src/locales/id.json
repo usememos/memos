@@ -124,7 +124,37 @@
     "no-changes-detected": "Tidak ada perubahan yang terdeteksi",
     "save": "Simpan",
     "saving": "Menyimpan...",
-    "slash-commands": "Ketik `/` untuk perintah"
+    "slash-commands": "Ketik `/` untuk perintah",
+    "insert-menu": {
+      "add-location": "Tambahkan lokasi",
+      "link-memo": "Tautan memo",
+      "upload-file": "Unggah berkas"
+    },
+    "audio-recorder": {
+      "attachment-label": "Rekaman audio",
+      "attachment-label-with-time": "Rekaman audio {{time}}",
+      "discard": "Buang",
+      "error": "Mikrofon tidak tersedia",
+      "error-description": "Coba lagi setelah memeriksa akses mikrofon untuk situs ini.",
+      "idle-description": "Mulai merekam untuk menambahkan rekaman audio sebagai lampiran.",
+      "keep": "Teruslah merekam",
+      "pause-recording": "Jeda rekaman audio",
+      "play-recording": "Putar rekaman audio",
+      "ready": "Rekaman siap",
+      "ready-description": "Pratinjau klipnya, lalu simpan sebagai lampiran audio atau buang.",
+      "record-again": "Rekam lagi",
+      "recording": "Merekam audio",
+      "recording-description": "Tangkap lampiran audio cepat. Durasi saat ini: {{duration}}",
+      "requesting": "Meminta akses...",
+      "requesting-permission": "Meminta akses mikrofon",
+      "requesting-permission-description": "Izinkan akses mikrofon di browser Anda untuk mulai merekam.",
+      "start": "Mulai merekam",
+      "stop": "Berhenti merekam",
+      "title": "Perekam audio",
+      "trigger": "Rekam audio",
+      "unsupported": "Rekaman audio tidak didukung",
+      "unsupported-description": "Browser ini tidak dapat merekam audio dari pembuat memo."
+    }
   },
   "inbox": {
     "failed-to-load": "Gagal memuat item kotak masuk",
@@ -159,7 +189,8 @@
     "filters": {
       "has-code": "Memiliki kode",
       "has-link": "Memiliki tautan",
-      "has-task-list": "Memiliki daftar tugas"
+      "has-task-list": "Memiliki daftar tugas",
+      "label": "Filter"
     },
     "links": "Tautan",
     "load-more": "Muat lebih banyak",
@@ -176,6 +207,32 @@
       "private": "Pribadi",
       "protected": "Terlindungi",
       "public": "Publik"
+    },
+    "outline": "Garis Besar",
+    "share": {
+      "active-links": "Tautan berbagi aktif",
+      "copied": "Disalin!",
+      "copy": "Salin tautan",
+      "create-failed": "Gagal membuat tautan berbagi",
+      "create-link": "Buat tautan baru",
+      "creating": "Membuat…",
+      "expiry-1-day": "1 hari",
+      "expiry-30-days": "30 hari",
+      "expiry-7-days": "7 hari",
+      "expiry-label": "Kedaluwarsa",
+      "expiry-never": "Tidak pernah",
+      "expires-on": "Kedaluwarsa {{date}}",
+      "invalid-link": "Tautan ini tidak valid atau telah kedaluwarsa.",
+      "never-expires": "Tidak pernah kadaluarsa",
+      "no-links": "Belum ada tautan berbagi. Buat satu di bawah.",
+      "open-panel": "Kelola tautan berbagi",
+      "revoke": "Cabut",
+      "revoke-failed": "Gagal mencabut tautan",
+      "revoked": "Bagikan tautan dicabut",
+      "section-label": "Berbagi",
+      "share": "Bagikan",
+      "shared-by": "Dibagikan oleh {{creator}}",
+      "title": "Bagikan memo ini"
     }
   },
   "message": {
@@ -261,7 +318,8 @@
       "restore-success": "{{username}} berhasil dipulihkan",
       "user": "Pengguna",
       "label": "Anggota",
-      "list-title": "Daftar Anggota"
+      "list-title": "Daftar Anggota",
+      "no-members-found": "Tidak ada anggota yang ditemukan"
     },
     "my-account": {
       "label": "Akun Saya"
@@ -383,7 +441,8 @@
       },
       "description": "Daftar semua token akses untuk akun Anda.",
       "title": "Token Akses",
-      "token": "Token"
+      "token": "Token",
+      "no-tokens-found": "Tidak ada token akses yang ditemukan"
     },
     "account": {
       "change-password": "Ubah kata sandi",
@@ -415,7 +474,8 @@
       "enable-memo-location": "Aktifkan lokasi memo",
       "reactions": "Reaksi",
       "title": "Pengaturan terkait Memo",
-      "label": "Memo"
+      "label": "Memo",
+      "reactions-required": "Daftar reaksi wajib diisi"
     },
     "webhook": {
       "create-dialog": {
@@ -436,6 +496,20 @@
       "title": "Webhook",
       "url": "URL",
       "label": "Webhook"
+    },
+    "tags": {
+      "label": "Tag",
+      "title": "Metadata tanda",
+      "description": "Tetapkan warna tampilan opsional ke seluruh tag, atau buramkan konten memo yang cocok. Nama tag diperlakukan sebagai pola regex berlabuh.",
+      "background-color": "Warna latar belakang",
+      "blur-content": "Mengaburkan konten",
+      "no-tags-configured": "Tidak ada metadata tag yang dikonfigurasi.",
+      "tag-name": "Nama tanda",
+      "tag-name-placeholder": "misalnya work atau project/.*",
+      "tag-already-exists": "Label sudah ada.",
+      "tag-pattern-hint": "Nama tag atau pola ekspresi reguler (misalnya project/.* cocok dengan semua tag project/)",
+      "invalid-regex": "Pola regex tidak valid atau tidak aman.",
+      "using-default-color": "Menggunakan warna default."
     }
   },
   "tag": {
@@ -461,5 +535,10 @@
     "select-visibility": "Pilih Visibilitas",
     "tags": "Tag",
     "upload-attachment": "Unggah Lampiran"
+  },
+  "live-update": {
+    "connected": "Pembaruan langsung aktif",
+    "connecting": "Menghubungkan ke pembaruan langsung...",
+    "disconnected": "Pembaruan langsung tidak tersedia"
   }
 }

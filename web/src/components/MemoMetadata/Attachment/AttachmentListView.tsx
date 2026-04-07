@@ -1,6 +1,7 @@
 import { DownloadIcon, FileIcon, PaperclipIcon, PlayIcon } from "lucide-react";
 import { useMemo } from "react";
 import MetadataSection from "@/components/MemoMetadata/MetadataSection";
+import MotionPhotoPreview from "@/components/MotionPhotoPreview";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentUrl } from "@/utils/attachment";
@@ -49,12 +50,6 @@ const DocumentItem = ({ attachment }: { attachment: Attachment }) => {
   );
 };
 
-const MotionBadge = () => (
-  <span className="pointer-events-none absolute left-2 top-2 rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white backdrop-blur-sm">
-    LIVE
-  </span>
-);
-
 const MotionItem = ({
   item,
   featured = false,
@@ -82,6 +77,16 @@ const MotionItem = ({
             className="h-full w-full rounded-none object-cover transition-transform duration-300 group-hover:scale-[1.02]"
             preload="metadata"
           />
+        ) : item.kind === "motion" ? (
+          <MotionPhotoPreview
+            posterUrl={item.posterUrl}
+            motionUrl={item.previewItem.kind === "motion" ? item.previewItem.motionUrl : item.sourceUrl}
+            alt={item.filename}
+            presentationTimestampUs={item.previewItem.kind === "motion" ? item.previewItem.presentationTimestampUs : undefined}
+            containerClassName="h-full w-full"
+            badgeClassName="left-2 top-2 px-2 py-0.5 text-[10px]"
+            mediaClassName="h-full w-full rounded-none object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+          />
         ) : (
           <img
             src={item.posterUrl}
@@ -91,9 +96,8 @@ const MotionItem = ({
             decoding="async"
           />
         )}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-        {item.kind === "motion" && <MotionBadge />}
-        {item.previewItem.kind === "video" && (
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-foreground/15 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+        {item.kind === "video" && (
           <span className="pointer-events-none absolute bottom-2 right-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-background/80 text-foreground/70 backdrop-blur-sm">
             <PlayIcon className="h-3.5 w-3.5 fill-current" />
           </span>

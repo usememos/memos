@@ -124,7 +124,37 @@
     "no-changes-detected": "لم يتم الكشف عن تغييرات",
     "save": "حفظ",
     "saving": "جارِ الحفظ...",
-    "slash-commands": "اكتب `/` للأوامر"
+    "slash-commands": "اكتب `/` للأوامر",
+    "insert-menu": {
+      "add-location": "أضف الموقع",
+      "link-memo": "مذكرة الارتباط",
+      "upload-file": "تحميل الملف"
+    },
+    "audio-recorder": {
+      "attachment-label": "تسجيل صوتي",
+      "attachment-label-with-time": "تسجيل صوتي {{time}}",
+      "discard": "تجاهل",
+      "error": "الميكروفون غير متوفر",
+      "error-description": "حاول مرة أخرى بعد التحقق من وصول الميكروفون لهذا الموقع.",
+      "idle-description": "ابدأ التسجيل لإضافة تسجيل صوتي كمرفق.",
+      "keep": "استمر في التسجيل",
+      "pause-recording": "إيقاف التسجيل الصوتي مؤقتًا",
+      "play-recording": "تشغيل التسجيل الصوتي",
+      "ready": "التسجيل جاهز",
+      "ready-description": "قم بمعاينة المقطع، ثم احتفظ به كمرفق صوتي أو تجاهله.",
+      "record-again": "سجل مرة أخرى",
+      "recording": "تسجيل الصوت",
+      "recording-description": "التقاط مرفق صوتي سريع. الطول الحالي: {{duration}}",
+      "requesting": "جارٍ طلب الوصول...",
+      "requesting-permission": "طلب الوصول إلى الميكروفون",
+      "requesting-permission-description": "اسمح بالوصول إلى الميكروفون في متصفحك لبدء التسجيل.",
+      "start": "ابدأ التسجيل",
+      "stop": "توقف عن التسجيل",
+      "title": "مسجل الصوت",
+      "trigger": "تسجيل الصوت",
+      "unsupported": "التسجيل الصوتي غير مدعوم",
+      "unsupported-description": "لا يمكن لهذا المتصفح تسجيل الصوت من مؤلف المذكرة."
+    }
   },
   "inbox": {
     "failed-to-load": "فشل تحميل عنصر صندوق الوارد",
@@ -159,7 +189,8 @@
     "filters": {
       "has-code": "يحتوي على كود",
       "has-link": "يحتوي على رابط",
-      "has-task-list": "يحتوي على قائمة مهام"
+      "has-task-list": "يحتوي على قائمة مهام",
+      "label": "المرشحات"
     },
     "links": "روابط",
     "load-more": "تحميل المزيد",
@@ -176,6 +207,32 @@
       "private": "خاص",
       "protected": "محمي",
       "public": "عام"
+    },
+    "outline": "الخطوط العريضة",
+    "share": {
+      "active-links": "روابط المشاركة النشطة",
+      "copied": "منسوخ!",
+      "copy": "انسخ الرابط",
+      "create-failed": "فشل إنشاء رابط المشاركة",
+      "create-link": "إنشاء رابط جديد",
+      "creating": "جارٍ الإنشاء…",
+      "expiry-1-day": "يوم واحد",
+      "expiry-30-days": "30 يوما",
+      "expiry-7-days": "7 أيام",
+      "expiry-label": "تنتهي",
+      "expiry-never": "أبدا",
+      "expires-on": "تنتهي صلاحيته في {{date}}",
+      "invalid-link": "هذا الرابط غير صالح أو انتهت صلاحيته.",
+      "never-expires": "لا تنتهي صلاحيته أبدًا",
+      "no-links": "لا توجد روابط مشاركة حتى الآن. قم بإنشاء واحد أدناه.",
+      "open-panel": "إدارة روابط المشاركة",
+      "revoke": "إبطال",
+      "revoke-failed": "فشل في إلغاء الارتباط",
+      "revoked": "تم إبطال رابط المشاركة",
+      "section-label": "المشاركة",
+      "share": "شارك",
+      "shared-by": "تمت المشاركة بواسطة {{creator}}",
+      "title": "شارك هذه المذكرة"
     }
   },
   "message": {
@@ -261,7 +318,8 @@
       "restore-success": "تم استعادة {{username}} بنجاح",
       "user": "مستخدم",
       "label": "عضو",
-      "list-title": "قائمة الأعضاء"
+      "list-title": "قائمة الأعضاء",
+      "no-members-found": "لم يتم العثور على أعضاء"
     },
     "my-account": {
       "label": "حسابي"
@@ -383,7 +441,8 @@
       },
       "description": "قائمة بجميع رموز الوصول لحسابك.",
       "title": "رموز الوصول",
-      "token": "رمز"
+      "token": "رمز",
+      "no-tokens-found": "لم يتم العثور على رموز الوصول"
     },
     "account": {
       "change-password": "تغيير كلمة المرور",
@@ -415,7 +474,8 @@
       "enable-memo-location": "تمكين موقع المذكرة",
       "reactions": "تفاعلات",
       "title": "إعدادات المذكرة",
-      "label": "مذكرة"
+      "label": "مذكرة",
+      "reactions-required": "يجب ألا تكون قائمة التفاعلات فارغة"
     },
     "webhook": {
       "create-dialog": {
@@ -436,6 +496,20 @@
       "title": "Webhooks",
       "url": "الرابط",
       "label": "Webhooks"
+    },
+    "tags": {
+      "label": "العلامات",
+      "title": "البيانات الوصفية للعلامة",
+      "description": "قم بتعيين ألوان عرض اختيارية للعلامات على مستوى المثيل، أو قم بطمس محتوى المذكرة المطابق. يتم التعامل مع أسماء العلامات كأنماط regex الراسخة.",
+      "background-color": "لون الخلفية",
+      "blur-content": "طمس المحتوى",
+      "no-tags-configured": "لم يتم تكوين بيانات تعريف العلامة.",
+      "tag-name": "اسم العلامة",
+      "tag-name-placeholder": "على سبيل المثال work أو project/.*",
+      "tag-already-exists": "العلامة موجودة بالفعل.",
+      "tag-pattern-hint": "اسم العلامة أو نمط التعبير العادي (على سبيل المثال، project/.* يتطابق مع جميع علامات project/)",
+      "invalid-regex": "نمط التعبير العادي غير صالح أو غير آمن.",
+      "using-default-color": "باستخدام اللون الافتراضي."
     }
   },
   "tag": {
@@ -461,5 +535,10 @@
     "select-visibility": "الرؤية",
     "tags": "العلامات",
     "upload-attachment": "رفع المرفق"
+  },
+  "live-update": {
+    "connected": "التحديثات الحية نشطة",
+    "connecting": "جارٍ الاتصال بالتحديثات المباشرة...",
+    "disconnected": "التحديثات المباشرة غير متوفرة"
   }
 }

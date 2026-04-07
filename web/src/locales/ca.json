@@ -124,7 +124,37 @@
     "no-changes-detected": "No s'han detectat canvis",
     "save": "Guarda",
     "saving": "Guardant...",
-    "slash-commands": "Escriu `/` per a comandaments"
+    "slash-commands": "Escriu `/` per a comandaments",
+    "insert-menu": {
+      "add-location": "Afegeix la ubicació",
+      "link-memo": "Nota d'enllaç",
+      "upload-file": "Carrega el fitxer"
+    },
+    "audio-recorder": {
+      "attachment-label": "Gravació d'àudio",
+      "attachment-label-with-time": "Gravació d'àudio {{time}}",
+      "discard": "Descartar",
+      "error": "Micròfon no disponible",
+      "error-description": "Torna-ho a provar després de comprovar l'accés al micròfon d'aquest lloc.",
+      "idle-description": "Comenceu a gravar per afegir una gravació d'àudio com a fitxer adjunt.",
+      "keep": "Continua gravant",
+      "pause-recording": "Posa en pausa la gravació d'àudio",
+      "play-recording": "Reprodueix una gravació d'àudio",
+      "ready": "Enregistrament a punt",
+      "ready-description": "Previsualitzeu el clip i, a continuació, deseu-lo com a fitxer adjunt d'àudio o descarteu-lo.",
+      "record-again": "Torna a gravar",
+      "recording": "Gravació d'àudio",
+      "recording-description": "Captura un fitxer adjunt d'àudio ràpid. Durada actual: {{duration}}",
+      "requesting": "S'està demanant accés...",
+      "requesting-permission": "Sol·licitant accés al micròfon",
+      "requesting-permission-description": "Permet l'accés al micròfon al navegador per començar a gravar.",
+      "start": "Comença a gravar",
+      "stop": "Atura la gravació",
+      "title": "Gravadora d'àudio",
+      "trigger": "Gravar àudio",
+      "unsupported": "La gravació d'àudio no és compatible",
+      "unsupported-description": "Aquest navegador no pot gravar àudio del compositor de memòries."
+    }
   },
   "inbox": {
     "failed-to-load": "Error en carregar la bústia",
@@ -159,7 +189,8 @@
     "filters": {
       "has-code": "téCodi",
       "has-link": "téEnllaç",
-      "has-task-list": "téLlistaTasques"
+      "has-task-list": "téLlistaTasques",
+      "label": "Filtres"
     },
     "links": "Enllaços",
     "load-more": "Carrega més",
@@ -176,6 +207,32 @@
       "private": "Privat",
       "protected": "Espai de treball",
       "public": "Públic"
+    },
+    "outline": "Esquema",
+    "share": {
+      "active-links": "Enllaços actius per compartir",
+      "copied": "Copiat!",
+      "copy": "Copia l'enllaç",
+      "create-failed": "No s'ha pogut crear l'enllaç compartit",
+      "create-link": "Crea un enllaç nou",
+      "creating": "S'està creant…",
+      "expiry-1-day": "1 dia",
+      "expiry-30-days": "30 dies",
+      "expiry-7-days": "7 dies",
+      "expiry-label": "Caduca",
+      "expiry-never": "Mai",
+      "expires-on": "Caduca el {{date}}",
+      "invalid-link": "Aquest enllaç no és vàlid o ha caducat.",
+      "never-expires": "Mai caduca",
+      "no-links": "Encara no hi ha enllaços per compartir. Creeu-ne un a continuació.",
+      "open-panel": "Gestioneu els enllaços compartits",
+      "revoke": "Revocar",
+      "revoke-failed": "No s'ha pogut revocar l'enllaç",
+      "revoked": "S'ha revocat l'enllaç per compartir",
+      "section-label": "Compartint",
+      "share": "Comparteix",
+      "shared-by": "Compartit per {{creator}}",
+      "title": "Comparteix aquesta nota"
     }
   },
   "message": {
@@ -261,7 +318,8 @@
       "restore-success": "{{username}} restaurat correctament",
       "user": "Usuari",
       "label": "Membre",
-      "list-title": "Llista de membres"
+      "list-title": "Llista de membres",
+      "no-members-found": "No s'han trobat membres"
     },
     "my-account": {
       "label": "El meu compte"
@@ -383,7 +441,8 @@
       },
       "description": "Llista de tots els tokens d'accés del teu compte.",
       "title": "Tokens d'accés",
-      "token": "Token"
+      "token": "Token",
+      "no-tokens-found": "No s'han trobat fitxes d'accés"
     },
     "account": {
       "change-password": "Canvia la contrasenya",
@@ -415,7 +474,8 @@
       "enable-memo-location": "Habilita la ubicació de la nota",
       "reactions": "Reaccions",
       "title": "Configuració de notes",
-      "label": "Nota"
+      "label": "Nota",
+      "reactions-required": "La llista de reaccions no ha d'estar buida"
     },
     "webhook": {
       "create-dialog": {
@@ -436,6 +496,20 @@
       "title": "Webhooks",
       "url": "URL",
       "label": "Webhooks"
+    },
+    "tags": {
+      "label": "Etiquetes",
+      "title": "Metadades de l'etiqueta",
+      "description": "Assigna colors de visualització opcionals a les etiquetes a tota la instància o desenfoca el contingut de la nota coincident. Els noms d'etiquetes es tracten com a patrons d'expressió regular ancorats.",
+      "background-color": "Color de fons",
+      "blur-content": "Contingut desenfocat",
+      "no-tags-configured": "No s'han configurat metadades d'etiquetes.",
+      "tag-name": "Nom de l'etiqueta",
+      "tag-name-placeholder": "p. ex. work o project/.*",
+      "tag-already-exists": "L'etiqueta ja existeix.",
+      "tag-pattern-hint": "Nom de l'etiqueta o patró d'expressió regular (p. ex., project/.* coincideix amb totes les etiquetes project/)",
+      "invalid-regex": "Patró d'expressió regular no vàlid o no segur.",
+      "using-default-color": "Utilitzant el color predeterminat."
     }
   },
   "tag": {
@@ -461,5 +535,10 @@
     "select-visibility": "Visibilitat",
     "tags": "Etiquetes",
     "upload-attachment": "Puja adjunt(s)"
+  },
+  "live-update": {
+    "connected": "Actualitzacions en directe actives",
+    "connecting": "S'està connectant a actualitzacions en directe...",
+    "disconnected": "Actualitzacions en directe no disponibles"
   }
 }

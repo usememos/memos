@@ -82,24 +82,25 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 	if !validateFilename(request.Attachment.Filename) {
 		return nil, status.Errorf(codes.InvalidArgument, "filename contains invalid characters or format")
 	}
-	if request.Attachment.Type == "" {
+	normalizedMimeType := request.Attachment.Type
+	if normalizedMimeType == "" {
 		ext := filepath.Ext(request.Attachment.Filename)
 		mimeType := mime.TypeByExtension(ext)
 		if mimeType == "" {
 			mimeType = http.DetectContentType(request.Attachment.Content)
 		}
-		// ParseMediaType to strip parameters
-		mediaType, _, err := mime.ParseMediaType(mimeType)
-		if err == nil {
-			request.Attachment.Type = mediaType
+		if normalizedType, ok := normalizeMimeType(mimeType); ok {
+			normalizedMimeType = normalizedType
 		}
 	}
-	if request.Attachment.Type == "" {
-		request.Attachment.Type = "application/octet-stream"
+	if normalizedMimeType == "" {
+		normalizedMimeType = "application/octet-stream"
 	}
-	if !isValidMimeType(request.Attachment.Type) {
+	normalizedType, ok := normalizeMimeType(normalizedMimeType)
+	if !ok {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid MIME type format")
 	}
+	request.Attachment.Type = normalizedType
 
 	attachmentUID, err := ValidateAndGenerateUID(request.AttachmentId)
 	if err != nil {
@@ -617,16 +618,18 @@ func validateFilename(filename string) bool {
 	return true
 }
 
-func isValidMimeType(mimeType string) bool {
-	// Reject empty or excessively long MIME types
+func normalizeMimeType(mimeType string) (string, bool) {
+	mimeType = strings.TrimSpace(mimeType)
 	if mimeType == "" || len(mimeType) > 255 {
-		return false
+		return "", false
 	}
 
-	// MIME type must match the pattern: type/subtype
-	// Allow common characters in MIME types per RFC 2045
-	matched, _ := regexp.MatchString(`^[a-zA-Z0-9][a-zA-Z0-9!#$&^_.+-]{0,126}/[a-zA-Z0-9][a-zA-Z0-9!#$&^_.+-]{0,126}$`, mimeType)
-	return matched
+	mediaType, _, err := mime.ParseMediaType(mimeType)
+	if err != nil || mediaType == "" || len(mediaType) > 255 {
+		return "", false
+	}
+
+	return mediaType, true
 }
 
 func (s *APIV1Service) validateAttachmentFilter(ctx context.Context, filterStr string) error {

@@ -124,7 +124,37 @@
     "no-changes-detected": "تغییری شناسایی نشد",
     "save": "ذخیره",
     "saving": "در حال ذخیره...",
-    "slash-commands": "برای دستورات '/' را تایپ کنید"
+    "slash-commands": "برای دستورات '/' را تایپ کنید",
+    "insert-menu": {
+      "add-location": "اضافه کردن مکان",
+      "link-memo": "پیوند یادداشت",
+      "upload-file": "آپلود فایل"
+    },
+    "audio-recorder": {
+      "attachment-label": "ضبط صدا",
+      "attachment-label-with-time": "ضبط صدا {{time}}",
+      "discard": "دور انداختن",
+      "error": "میکروفون در دسترس نیست",
+      "error-description": "پس از بررسی دسترسی میکروفون برای این سایت، دوباره امتحان کنید.",
+      "idle-description": "شروع به ضبط کنید تا صدای ضبط شده را به عنوان پیوست اضافه کنید.",
+      "keep": "به ضبط ادامه دهید",
+      "pause-recording": "مکث ضبط صدا",
+      "play-recording": "پخش صدا ضبط شده",
+      "ready": "ضبط آماده است",
+      "ready-description": "کلیپ را پیش نمایش کنید، سپس آن را به عنوان پیوست صوتی نگه داری�� یا آن را دور بیندازید.",
+      "record-again": "دوباره ضبط کن",
+      "recording": "ضبط صدا",
+      "recording-description": "یک پیوست صوتی سریع ضبط کنید. طول فعلی: {{duration}}",
+      "requesting": "درخواست دسترسی...",
+      "requesting-permission": "درخواست دسترسی به میکروفون",
+      "requesting-permission-description": "اجازه دسترسی به میکروفون در مرورگر خود برای شروع ضبط را بدهید.",
+      "start": "شروع به ضبط کنید",
+      "stop": "ضبط را متوقف کنید",
+      "title": "ضبط کننده صدا",
+      "trigger": "ضبط صدا",
+      "unsupported": "ضبط صدا پشتیبانی نمی شود",
+      "unsupported-description": "این مرورگر نمی تواند صدا را از آهنگساز یادداشت ضبط کند."
+    }
   },
   "inbox": {
     "failed-to-load": "بارگذاری آیتم صندوق ورودی ناموفق بود",
@@ -159,7 +189,8 @@
     "filters": {
       "has-code": "دارای کد",
       "has-link": "دارای پیوند",
-      "has-task-list": "دارای لیست کارها"
+      "has-task-list": "دارای لیست کارها",
+      "label": "فیلترها"
     },
     "links": "پیوندها",
     "load-more": "بارگذاری بیشتر",
@@ -176,6 +207,32 @@
       "private": "خصوصی",
       "protected": "فضای کار",
       "public": "عمومی"
+    },
+    "outline": "طرح کلی",
+    "share": {
+      "active-links": "لینک های اشتراک گذاری فعال",
+      "copied": "کپی شده!",
+      "copy": "لینک را کپی کنید",
+      "create-failed": "پیوند اشتراک‌گذاری ایجاد نشد",
+      "create-link": "لینک جدید ایجاد کنید",
+      "creating": "در حال ایجاد…",
+      "expiry-1-day": "1 روز",
+      "expiry-30-days": "30 روز",
+      "expiry-7-days": "7 روز",
+      "expiry-label": "منقضی می شود",
+      "expiry-never": "هرگز",
+      "expires-on": "تاریخ انقضا {{date}}",
+      "invalid-link": "این پیوند نامعتبر است یا منقضی شده است.",
+      "never-expires": "هرگز منقضی نمی شود",
+      "no-links": "هنوز لینک اشتراک گذاری وجود ندارد. یکی را در زیر ایجاد کنید.",
+      "open-panel": "لینک های اشتراک گذاری را مدیریت کنید",
+      "revoke": "لغو",
+      "revoke-failed": "پیوند لغو نشد",
+      "revoked": "پیوند اشتراک گذاری باطل شد",
+      "section-label": "اشتراک گذاری",
+      "share": "به اشتراک بگذارید",
+      "shared-by": "اشتراک‌گذاری شده توسط {{creator}}",
+      "title": "این یادداشت را به اشتراک بگذارید"
     }
   },
   "message": {
@@ -261,7 +318,8 @@
       "restore-success": "{{username}} با موفقیت بازیابی شد",
       "user": "کاربر",
       "label": "عضو",
-      "list-title": "لیست اعضا"
+      "list-title": "لیست اعضا",
+      "no-members-found": "هیچ عضوی پیدا نشد"
     },
     "my-account": {
       "label": "حساب من"
@@ -383,7 +441,8 @@
       },
       "description": "لیست تمام توکن‌های دسترسی حساب شما.",
       "title": "توکن‌های دسترسی",
-      "token": "توکن"
+      "token": "توکن",
+      "no-tokens-found": "هیچ نشانه دسترسی یافت نشد"
     },
     "account": {
       "change-password": "تغییر گذرواژه",
@@ -415,7 +474,8 @@
       "enable-memo-location": "فعال‌سازی موقعیت یادداشت",
       "reactions": "واکنش‌ها",
       "title": "تنظیمات یادداشت",
-      "label": "یادداشت"
+      "label": "یادداشت",
+      "reactions-required": "لیست واکنش ها نباید خالی باشد"
     },
     "webhook": {
       "create-dialog": {
@@ -436,6 +496,20 @@
       "title": "وب‌هوک‌ها",
       "url": "آدرس",
       "label": "وب‌هوک‌ها"
+    },
+    "tags": {
+      "label": "برچسب ها",
+      "title": "متادیتا را تگ کنید",
+      "description": "رنگ‌های نمایش اختیاری را به برچسب‌ها در سطح نمونه اختصاص دهید یا محتوای یادداشت منطبق را محو کنید. نام برچسب ها به عنوان الگوهای رژکس لنگردار در نظر گرفته می شوند.",
+      "background-color": "رنگ پس زمینه",
+      "blur-content": "محو کردن محتوا",
+      "no-tags-configured": "هیچ متادیتای برچسب پیکربندی نشده است.",
+      "tag-name": "نام را تگ کنید",
+      "tag-name-placeholder": "به عنوان مثال work یا project/.*",
+      "tag-already-exists": "برچسب از قبل وجود دارد.",
+      "tag-pattern-hint": "نام برچسب یا الگوی regex (به عنوان مثال project/.* با همه برچسب های project/ مطابقت دارد)",
+      "invalid-regex": "الگوی regex نامعتبر یا ناایمن.",
+      "using-default-color": "استفاده از رنگ پیش فرض"
     }
   },
   "tag": {
@@ -461,5 +535,10 @@
     "select-visibility": "قابلیت مشاهده",
     "tags": "برچسب‌ها",
     "upload-attachment": "بارگذاری پیوست(ها)"
+  },
+  "live-update": {
+    "connected": "به روز رسانی زنده فعال است",
+    "connecting": "در حال اتصال به به‌روزرسانی‌های زنده...",
+    "disconnected": "به روز رسانی زنده در دسترس نیست"
   }
 }

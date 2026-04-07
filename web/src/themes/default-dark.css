@@ -10,8 +10,8 @@
   --popover: oklch(0.17 0.006 265);
   --popover-foreground: oklch(0.82 0.005 265);
 
-  /* Primary — bright blue, clearly interactive in dark context */
-  --primary: oklch(0.65 0.15 250);
+  /* Primary — subdued blue that sits back on dark surfaces */
+  --primary: oklch(0.42 0.08 250);
   --primary-foreground: oklch(0.98 0.003 265);
 
   /* Secondary — subtle elevated surface for secondary buttons */
@@ -33,7 +33,7 @@
   /* Borders — --border for layout dividers, --input for form field borders */
   --border: oklch(0.21 0.007 265);
   --input: oklch(0.25 0.007 265);
-  --ring: oklch(0.65 0.15 250);
+  --ring: oklch(0.34 0.06 250);
 
   /* Sidebar — darkest surface, distinct from background */
   --sidebar: oklch(0.07 0.005 265);

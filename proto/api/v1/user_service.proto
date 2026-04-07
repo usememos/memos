@@ -19,6 +19,14 @@ service UserService {
     option (google.api.http) = {get: "/api/v1/users"};
   }
 
+  // BatchGetUsers returns active users by usernames.
+  rpc BatchGetUsers(BatchGetUsersRequest) returns (BatchGetUsersResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/users:batchGet"
+      body: "*"
+    };
+  }
+
   // GetUser gets a user by username.
   // Format: users/{username} (e.g., users/steven)
   rpc GetUser(GetUserRequest) returns (User) {
@@ -240,6 +248,14 @@ message ListUsersResponse {
 
   // The total count of users (may be approximate).
   int32 total_size = 3;
+}
+
+message BatchGetUsersRequest {
+  repeated string usernames = 1;
+}
+
+message BatchGetUsersResponse {
+  repeated User users = 1;
 }
 
 message GetUserRequest {
@@ -612,6 +628,9 @@ message UserNotification {
     (google.api.resource_reference) = {type: "memos.api.v1/User"}
   ];
 
+  // The sender user details.
+  User sender_user = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+
   // The status of the notification.
   Status status = 3 [(google.api.field_behavior) = OPTIONAL];
 
@@ -623,6 +642,7 @@ message UserNotification {
 
   oneof payload {
     MemoCommentPayload memo_comment = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+    MemoMentionPayload memo_mention = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
   }
 
   message MemoCommentPayload {
@@ -633,6 +653,28 @@ message UserNotification {
     // The name of related memo.
     // Format: memos/{memo}
     string related_memo = 2;
+
+    // Preview text of the comment memo.
+    string memo_snippet = 3;
+
+    // Preview text of the related memo.
+    string related_memo_snippet = 4;
+  }
+
+  message MemoMentionPayload {
+    // The memo that contains the mention.
+    // Format: memos/{memo}
+    string memo = 1;
+
+    // The related parent memo when the mention was created in a comment.
+    // Format: memos/{memo}
+    string related_memo = 2;
+
+    // Preview text of the memo that contains the mention.
+    string memo_snippet = 3;
+
+    // Preview text of the related parent memo.
+    string related_memo_snippet = 4;
   }
 
   enum Status {
@@ -644,6 +686,7 @@ message UserNotification {
   enum Type {
     TYPE_UNSPECIFIED = 0;
     MEMO_COMMENT = 1;
+    MEMO_MENTION = 2;
   }
 }
 

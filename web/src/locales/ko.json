@@ -124,7 +124,37 @@
     "no-changes-detected": "변경사항이 없습니다",
     "save": "저장",
     "saving": "저장 중...",
-    "slash-commands": "명령어를 보시려면 /를 입력하세요."
+    "slash-commands": "명령어를 보시려면 /를 입력하세요.",
+    "insert-menu": {
+      "add-location": "위치 추가",
+      "link-memo": "링크 메모",
+      "upload-file": "파일 업로드"
+    },
+    "audio-recorder": {
+      "attachment-label": "오디오 녹음",
+      "attachment-label-with-time": "오디오 녹음 {{time}}",
+      "discard": "폐기",
+      "error": "마이크를 사용할 수 없음",
+      "error-description": "이 사이트의 마이크 액세스를 확인한 후 다시 시도하세요.",
+      "idle-description": "오디오 녹음을 첨부 파일로 추가하려면 녹음을 시작하세요.",
+      "keep": "계속 녹음하세요",
+      "pause-recording": "오디오 녹음 일시 중지",
+      "play-recording": "오디오 녹음 재생",
+      "ready": "녹음 준비 완료",
+      "ready-description": "클립을 미리 본 다음 오디오 첨부 파일로 보관하거나 삭제하세요.",
+      "record-again": "다시 녹음하세요",
+      "recording": "오디오 녹음",
+      "recording-description": "빠른 오디오 첨부 파일을 캡처하세요. 현재 길이: {{duration}}",
+      "requesting": "액세스를 요청하는 중...",
+      "requesting-permission": "마이크 액세스 요청 중",
+      "requesting-permission-description": "녹음을 시작하려면 브라우저에서 마이크 액세스를 허용하세요.",
+      "start": "녹음 시작",
+      "stop": "녹음 중지",
+      "title": "오디오 레코더",
+      "trigger": "오디오 녹음",
+      "unsupported": "오디오 녹음이 지원되지 않음",
+      "unsupported-description": "이 브라우저는 메모 작성기의 오디오를 녹음할 수 없습니다."
+    }
   },
   "inbox": {
     "failed-to-load": "알림함 항목을 불러오지 못했습니다",
@@ -159,7 +189,8 @@
     "filters": {
       "has-code": "코드있음",
       "has-link": "링크있음",
-      "has-task-list": "할일목록있음"
+      "has-task-list": "할일목록있음",
+      "label": "필터"
     },
     "links": "링크",
     "load-more": "더보기",
@@ -176,6 +207,32 @@
       "private": "나만 볼 수 있음",
       "protected": "멤버 전용",
       "public": "공개"
+    },
+    "outline": "개요",
+    "share": {
+      "active-links": "활성 공유 링크",
+      "copied": "복사되었습니다!",
+      "copy": "링크 복사",
+      "create-failed": "공유 링크를 생성하지 못했습니다.",
+      "create-link": "새 링크 만들기",
+      "creating": "만드는 중…",
+      "expiry-1-day": "1일",
+      "expiry-30-days": "30일",
+      "expiry-7-days": "7일",
+      "expiry-label": "만료",
+      "expiry-never": "절대로",
+      "expires-on": "{{date}}에 만료됨",
+      "invalid-link": "이 링크는 유효하지 않거나 만료되었습니다.",
+      "never-expires": "만료되지 않음",
+      "no-links": "아직 공유 링크가 없습니다. 아래에서 하나를 만드세요.",
+      "open-panel": "공유 링크 관리",
+      "revoke": "취소",
+      "revoke-failed": "링크를 취소하지 못했습니다.",
+      "revoked": "공유 링크가 취소되었습니다.",
+      "section-label": "공유",
+      "share": "공유",
+      "shared-by": "{{creator}}님이 공유함",
+      "title": "이 메모를 공유하세요"
     }
   },
   "message": {
@@ -261,7 +318,8 @@
       "restore-success": "{{username}}님이 성공적으로 복구되었습니다",
       "user": "사용자",
       "label": "멤버",
-      "list-title": "멤버 목록"
+      "list-title": "멤버 목록",
+      "no-members-found": "회원을 찾을 수 없습니다."
     },
     "my-account": {
       "label": "내 계정"
@@ -383,7 +441,8 @@
       },
       "description": "계정의 모든 액세스 토큰 목록입니다.",
       "title": "액세스 토큰",
-      "token": "토큰"
+      "token": "토큰",
+      "no-tokens-found": "액세스 토큰을 찾을 수 없습니다."
     },
     "account": {
       "change-password": "비밀번호 변경",
@@ -415,7 +474,8 @@
       "enable-memo-location": "메모 위치 활성화",
       "reactions": "반응",
       "title": "메모 관련 설정",
-      "label": "메모"
+      "label": "메모",
+      "reactions-required": "반응 목록은 비워둘 수 없습니다."
     },
     "webhook": {
       "create-dialog": {
@@ -436,6 +496,20 @@
       "title": "Webhook",
       "url": "URL",
       "label": "Webhook"
+    },
+    "tags": {
+      "label": "태그",
+      "title": "태그 메타데이터",
+      "description": "인스턴스 전체의 태그에 선택적 표시 색상을 할당하거나 일치하는 메모 내용을 흐리게 만듭니다. 태그 이름은 고정된 정규식 패턴으로 처리됩니다.",
+      "background-color": "배경색",
+      "blur-content": "콘텐츠를 흐리게 처리",
+      "no-tags-configured": "구성된 태그 메타데이터가 없습니다.",
+      "tag-name": "태그 이름",
+      "tag-name-placeholder": "예를 들어 work 또는 project/.*",
+      "tag-already-exists": "태그가 이미 존재합니다.",
+      "tag-pattern-hint": "태그 이름 또는 정규식 패턴(예: project/.*는 모든 project/ 태그와 일치함)",
+      "invalid-regex": "유효하지 않거나 안전하지 않은 정규식 패턴입니다.",
+      "using-default-color": "기본 색상을 사용합니다."
     }
   },
   "tag": {
@@ -461,5 +535,10 @@
     "select-visibility": "공개 범위",
     "tags": "태그",
     "upload-attachment": "첨부파일 업로드"
+  },
+  "live-update": {
+    "connected": "실시간 업데이트 활성화",
+    "connecting": "실시간 업데이트에 연결 중...",
+    "disconnected": "실시간 업데이트를 사용할 수 없습니다"
   }
 }

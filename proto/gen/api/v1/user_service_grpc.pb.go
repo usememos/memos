@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	UserService_ListUsers_FullMethodName                 = "/memos.api.v1.UserService/ListUsers"
+	UserService_BatchGetUsers_FullMethodName             = "/memos.api.v1.UserService/BatchGetUsers"
 	UserService_GetUser_FullMethodName                   = "/memos.api.v1.UserService/GetUser"
 	UserService_CreateUser_FullMethodName                = "/memos.api.v1.UserService/CreateUser"
 	UserService_UpdateUser_FullMethodName                = "/memos.api.v1.UserService/UpdateUser"
@@ -48,6 +49,8 @@ const (
 type UserServiceClient interface {
 	// ListUsers returns a list of users.
 	ListUsers(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error)
+	// BatchGetUsers returns active users by usernames.
+	BatchGetUsers(ctx context.Context, in *BatchGetUsersRequest, opts ...grpc.CallOption) (*BatchGetUsersResponse, error)
 	// GetUser gets a user by username.
 	// Format: users/{username} (e.g., users/steven)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*User, error)
@@ -103,6 +106,16 @@ func (c *userServiceClient) ListUsers(ctx context.Context, in *ListUsersRequest,
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListUsersResponse)
 	err := c.cc.Invoke(ctx, UserService_ListUsers_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) BatchGetUsers(ctx context.Context, in *BatchGetUsersRequest, opts ...grpc.CallOption) (*BatchGetUsersResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BatchGetUsersResponse)
+	err := c.cc.Invoke(ctx, UserService_BatchGetUsers_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -305,6 +318,8 @@ func (c *userServiceClient) DeleteUserNotification(ctx context.Context, in *Dele
 type UserServiceServer interface {
 	// ListUsers returns a list of users.
 	ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
+	// BatchGetUsers returns active users by usernames.
+	BatchGetUsers(context.Context, *BatchGetUsersRequest) (*BatchGetUsersResponse, error)
 	// GetUser gets a user by username.
 	// Format: users/{username} (e.g., users/steven)
 	GetUser(context.Context, *GetUserRequest) (*User, error)
@@ -358,6 +373,9 @@ type UnimplementedUserServiceServer struct{}
 
 func (UnimplementedUserServiceServer) ListUsers(context.Context, *ListUsersRequest) (*ListUsersResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListUsers not implemented")
+}
+func (UnimplementedUserServiceServer) BatchGetUsers(context.Context, *BatchGetUsersRequest) (*BatchGetUsersResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method BatchGetUsers not implemented")
 }
 func (UnimplementedUserServiceServer) GetUser(context.Context, *GetUserRequest) (*User, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetUser not implemented")
@@ -451,6 +469,24 @@ func _UserService_ListUsers_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServiceServer).ListUsers(ctx, req.(*ListUsersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_BatchGetUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BatchGetUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).BatchGetUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_BatchGetUsers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).BatchGetUsers(ctx, req.(*BatchGetUsersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -807,6 +843,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListUsers",
 			Handler:    _UserService_ListUsers_Handler,
+		},
+		{
+			MethodName: "BatchGetUsers",
+			Handler:    _UserService_BatchGetUsers_Handler,
 		},
 		{
 			MethodName: "GetUser",

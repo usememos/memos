@@ -124,7 +124,37 @@
     "no-changes-detected": "Geen wijzigingen gedetecteerd",
     "save": "Opslaan",
     "saving": "Opslaan...",
-    "slash-commands": "Typ `/` voor opdrachten"
+    "slash-commands": "Typ `/` voor opdrachten",
+    "insert-menu": {
+      "add-location": "Locatie toevoegen",
+      "link-memo": "Link-memo",
+      "upload-file": "Bestand uploaden"
+    },
+    "audio-recorder": {
+      "attachment-label": "Audio-opname",
+      "attachment-label-with-time": "Audio-opname {{time}}",
+      "discard": "Gooi weg",
+      "error": "Microfoon niet beschikbaar",
+      "error-description": "Probeer het opnieuw nadat u de microfoontoegang voor deze site heeft gecontroleerd.",
+      "idle-description": "Start de opname om een audio-opname als bijlage toe te voegen.",
+      "keep": "Blijf opnemen",
+      "pause-recording": "Pauzeer de audio-opname",
+      "play-recording": "Audio-opname afspelen",
+      "ready": "Opname klaar",
+      "ready-description": "Bekijk een voorbeeld van de clip en bewaar deze als audiobijlage of gooi deze weg.",
+      "record-again": "Neem opnieuw op",
+      "recording": "Audio opnemen",
+      "recording-description": "Leg een snelle audiobijlage vast. Huidige lengte: {{duration}}",
+      "requesting": "Toegang aanvragen...",
+      "requesting-permission": "Microfoontoegang aanvragen",
+      "requesting-permission-description": "Geef toegang tot de microfoon in uw browser om de opname te starten.",
+      "start": "Begin met opnemen",
+      "stop": "Stop met opnemen",
+      "title": "Audiorecorder",
+      "trigger": "Audio opnemen",
+      "unsupported": "Audio-opname wordt niet ondersteund",
+      "unsupported-description": "Deze browser kan geen audio opnemen van de memocomponist."
+    }
   },
   "inbox": {
     "failed-to-load": "Postvak-item laden mislukt",
@@ -159,7 +189,8 @@
     "filters": {
       "has-code": "heeftCode",
       "has-link": "heeftLink",
-      "has-task-list": "heeftTakenlijst"
+      "has-task-list": "heeftTakenlijst",
+      "label": "Filters"
     },
     "links": "Links",
     "load-more": "Meer laden",
@@ -176,6 +207,32 @@
       "private": "Privé",
       "protected": "Werkruimte",
       "public": "Openbaar"
+    },
+    "outline": "Overzicht",
+    "share": {
+      "active-links": "Actieve deellinks",
+      "copied": "Gekopieerd!",
+      "copy": "Kopieer link",
+      "create-failed": "Kan de deellink niet maken",
+      "create-link": "Nieuwe koppeling maken",
+      "creating": "Creëren…",
+      "expiry-1-day": "1 dag",
+      "expiry-30-days": "30 dagen",
+      "expiry-7-days": "7 dagen",
+      "expiry-label": "Verloopt",
+      "expiry-never": "Nooit",
+      "expires-on": "Verloopt op {{date}}",
+      "invalid-link": "Deze link is ongeldig of verlopen.",
+      "never-expires": "Verloopt nooit",
+      "no-links": "Nog geen deellinks. Maak er hieronder één aan.",
+      "open-panel": "Beheer deellinks",
+      "revoke": "Intrekken",
+      "revoke-failed": "Kan de link niet intrekken",
+      "revoked": "Deellink ingetrokken",
+      "section-label": "Delen",
+      "share": "Deel",
+      "shared-by": "Gedeeld door {{creator}}",
+      "title": "Deel deze notitie"
     }
   },
   "message": {
@@ -261,7 +318,8 @@
       "restore-success": "{{username}} succesvol teruggezet",
       "user": "Gebruiker",
       "label": "Gebruiker",
-      "list-title": "Gebruikers"
+      "list-title": "Gebruikers",
+      "no-members-found": "Geen leden gevonden"
     },
     "my-account": {
       "label": "Mijn account"
@@ -383,7 +441,8 @@
       },
       "description": "Lijst van alle accesstokens voor je account.",
       "title": "Accesstokens",
-      "token": "Token"
+      "token": "Token",
+      "no-tokens-found": "Geen toegangstokens gevonden"
     },
     "account": {
       "change-password": "Wachtwoord wijzigen",
@@ -415,7 +474,8 @@
       "enable-memo-location": "Memo-locatie inschakelen",
       "reactions": "Reacties",
       "title": "Memo-gerelateerde instellingen",
-      "label": "Memo"
+      "label": "Memo",
+      "reactions-required": "Reactielijst mag niet leeg zijn"
     },
     "webhook": {
       "create-dialog": {
@@ -436,6 +496,20 @@
       "title": "Webhooks",
       "url": "URL",
       "label": "Webhooks"
+    },
+    "tags": {
+      "label": "Labels",
+      "title": "Metagegevens van tags",
+      "description": "Wijs optionele weergavekleuren toe aan tags voor de hele instantie, of vervaag overeenkomende memo-inhoud. Tagnamen worden behandeld als verankerde regex-patronen.",
+      "background-color": "Achtergrondkleur",
+      "blur-content": "Inhoud vervagen",
+      "no-tags-configured": "Geen tag-metagegevens geconfigureerd.",
+      "tag-name": "Tagnaam",
+      "tag-name-placeholder": "bijv. work of project/.*",
+      "tag-already-exists": "Label bestaat al.",
+      "tag-pattern-hint": "Tagnaam of regex-patroon (bijvoorbeeld project/.* komt overeen met alle project/ tags)",
+      "invalid-regex": "Ongeldig of onveilig regex-patroon.",
+      "using-default-color": "Standaardkleur gebruiken."
     }
   },
   "tag": {
@@ -461,5 +535,10 @@
     "select-visibility": "Zichtbaarheid",
     "tags": "Labels",
     "upload-attachment": "Bijlage(s) uploaden"
+  },
+  "live-update": {
+    "connected": "Live-updates actief",
+    "connecting": "Verbinding maken met live updates...",
+    "disconnected": "Live-updates niet beschikbaar"
   }
 }

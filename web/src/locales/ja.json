@@ -124,7 +124,37 @@
     "no-changes-detected": "変更はありません",
     "save": "保存",
     "saving": "保存中...",
-    "slash-commands": "コマンドを入力するには `/` を入力"
+    "slash-commands": "コマンドを入力するには `/` を入力",
+    "insert-menu": {
+      "add-location": "場所を追加",
+      "link-memo": "リンクメモ",
+      "upload-file": "ファイルをアップロードする"
+    },
+    "audio-recorder": {
+      "attachment-label": "音声録音",
+      "attachment-label-with-time": "音声録音 {{time}}",
+      "discard": "廃棄する",
+      "error": "マイクが使用でき��せん",
+      "error-description": "このサイトのマイク アクセスを確認してから、もう一度お試しください。",
+      "idle-description": "録音を開始して、オーディオ録音を添付ファイルとして追加します。",
+      "keep": "記録し続ける",
+      "pause-recording": "音声録音を一時停止する",
+      "play-recording": "オーディオ録音を再生する",
+      "ready": "録音準備完了",
+      "ready-description": "クリップをプレビューして、オーディオ添付ファイルとして保存するか、破棄します。",
+      "record-again": "再度録音する",
+      "recording": "音声の録音",
+      "recording-description": "簡単な音声添付ファイルをキャプチャします。現在の長さ: {{duration}}",
+      "requesting": "アクセスをリクエスト中...",
+      "requesting-permission": "マイクへのアクセスをリクエストしています",
+      "requesting-permission-description": "ブラウザでマイクへのアクセスを許可して、録音を開始します。",
+      "start": "録音を開始する",
+      "stop": "録���を停止する",
+      "title": "オーディオレコーダー",
+      "trigger": "音声を録音する",
+      "unsupported": "音声録音はサポートされていません",
+      "unsupported-description": "このブラウザではメモコンポーザーから音声を録音できません。"
+    }
   },
   "inbox": {
     "failed-to-load": "受信トレイアイテムの読み込みに失敗しました",
@@ -159,7 +189,8 @@
     "filters": {
       "has-code": "コードあり",
       "has-link": "リンクあり",
-      "has-task-list": "タスクリストあり"
+      "has-task-list": "タスクリストあり",
+      "label": "フィルター"
     },
     "links": "リンク",
     "load-more": "さらに読み込む",
@@ -176,6 +207,32 @@
       "private": "非公開",
       "protected": "メンバーに表示",
       "public": "公開メモ"
+    },
+    "outline": "概要",
+    "share": {
+      "active-links": "アクティブな共有リンク",
+      "copied": "コピーしました！",
+      "copy": "リンクをコピー",
+      "create-failed": "共有リンクの作成に失敗しました",
+      "create-link": "新しいリンクを作成する",
+      "creating": "作成中…",
+      "expiry-1-day": "1日",
+      "expiry-30-days": "30日",
+      "expiry-7-days": "7日間",
+      "expiry-label": "有効期限が切れます",
+      "expiry-never": "決してしない",
+      "expires-on": "{{date}} に期限切れになります",
+      "invalid-link": "このリンクは無効であるか、有効期限が切れています。",
+      "never-expires": "有効期限はありません",
+      "no-links": "共有リンクはまだありません。以下に作成します。",
+      "open-panel": "共有リンクを管理する",
+      "revoke": "取り消し",
+      "revoke-failed": "リンクを取り消すことができませんでした",
+      "revoked": "共有リンクが取り消されました",
+      "section-label": "共有",
+      "share": "シェアする",
+      "shared-by": "{{creator}} によって共有されました",
+      "title": "このメモを共有する"
     }
   },
   "message": {
@@ -261,7 +318,8 @@
       "restore-success": "{{username}} を復元しました",
       "user": "ユーザー",
       "label": "メンバー",
-      "list-title": "メンバーリスト"
+      "list-title": "メンバーリスト",
+      "no-members-found": "メンバーが見つかりませんでした"
     },
     "my-account": {
       "label": "アカウント設定"
@@ -383,7 +441,8 @@
       },
       "description": "あなたのアカウントのすべてのアクセストークン一覧です。",
       "title": "アクセストークン",
-      "token": "トークン"
+      "token": "トークン",
+      "no-tokens-found": "アクセストークンが見つかりません"
     },
     "account": {
       "change-password": "パスワードを変更",
@@ -415,7 +474,8 @@
       "enable-memo-location": "メモの位置情報を有効化",
       "reactions": "リアクション",
       "title": "メモ関連設定",
-      "label": "メモ"
+      "label": "メモ",
+      "reactions-required": "反応リストを空にすることはできません"
     },
     "webhook": {
       "create-dialog": {
@@ -436,6 +496,20 @@
       "title": "Webhook",
       "url": "URL",
       "label": "Webhook"
+    },
+    "tags": {
+      "label": "タグ",
+      "title": "タグメタデータ",
+      "description": "インスタンス全体のタグにオプションの表示色を割り当てたり、一致するメモのコンテンツをぼかしたりできます。タグ名はアンカーされた正規表現パターンとして扱われます。",
+      "background-color": "背景色",
+      "blur-content": "ぼかしコンテンツ",
+      "no-tags-configured": "タグのメタデータが構成されていません。",
+      "tag-name": "タグ名",
+      "tag-name-placeholder": "例: work または project/.*",
+      "tag-already-exists": "タグはすでに存在します。",
+      "tag-pattern-hint": "タグ名または正規表現パターン (例: project/.* はすべての project/ タグに一致します)",
+      "invalid-regex": "無効または安全でない正規表現パターンです。",
+      "using-default-color": "デフォルトの色を使用します。"
     }
   },
   "tag": {
@@ -461,5 +535,10 @@
     "select-visibility": "公開範囲",
     "tags": "タグ",
     "upload-attachment": "添付ファイルをアップロード"
+  },
+  "live-update": {
+    "connected": "ライブアップデートがアクティブです",
+    "connecting": "ライブアップデートに接続しています...",
+    "disconnected": "ライブアップデートは利用できません"
   }
 }

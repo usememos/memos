@@ -124,7 +124,37 @@
     "no-changes-detected": "Nenhuma alteração detetada",
     "save": "Guardar",
     "saving": "A guardar...",
-    "slash-commands": "Digite `/` para comandos"
+    "slash-commands": "Digite `/` para comandos",
+    "insert-menu": {
+      "add-location": "Adicionar local",
+      "link-memo": "Vincular memorando",
+      "upload-file": "Carregar ficheiro"
+    },
+    "audio-recorder": {
+      "attachment-label": "Gravação de áudio",
+      "attachment-label-with-time": "Gravação de áudio {{time}}",
+      "discard": "Descartar",
+      "error": "Microfone indisponível",
+      "error-description": "Tente novamente depois de verificar o acesso ao microfone deste site.",
+      "idle-description": "Comece a gravar para adicionar uma gravação de áudio como anexo.",
+      "keep": "Continue a gravar",
+      "pause-recording": "Pausar gravação de áudio",
+      "play-recording": "Reproduzir gravação áudio",
+      "ready": "Gravação pronta",
+      "ready-description": "Visualize o clipe e guarde-o como anexo áudio ou elimine-o.",
+      "record-again": "Grave novamente",
+      "recording": "Gravando áudio",
+      "recording-description": "Capte um anexo áudio rápido. Duração atual: {{duration}}",
+      "requesting": "Solicitando o acesso...",
+      "requesting-permission": "Solicitando acesso ao microfone",
+      "requesting-permission-description": "Permita o acesso ao microfone no seu browser para iniciar a gravação.",
+      "start": "Comece a gravar",
+      "stop": "Pare de gravar",
+      "title": "Gravador de áudio",
+      "trigger": "Gravar áudio",
+      "unsupported": "Gravação de áudio não suportada",
+      "unsupported-description": "Este navegador não pode gravar áudio do compositor de memorandos."
+    }
   },
   "inbox": {
     "failed-to-load": "Falha ao carregar item da caixa de entrada",
@@ -159,7 +189,8 @@
     "filters": {
       "has-code": "temCódigo",
       "has-link": "temLink",
-      "has-task-list": "temListaDeTarefas"
+      "has-task-list": "temListaDeTarefas",
+      "label": "Filtros"
     },
     "links": "Links",
     "load-more": "Carregar mais",
@@ -176,6 +207,32 @@
       "private": "Privado",
       "protected": "Protegido",
       "public": "Público"
+    },
+    "outline": "Esboço",
+    "share": {
+      "active-links": "Links de partilha ativos",
+      "copied": "Copiado!",
+      "copy": "Copiar link",
+      "create-failed": "Falha ao criar link de partilha",
+      "create-link": "Criar novo link",
+      "creating": "Criando…",
+      "expiry-1-day": "1 dia",
+      "expiry-30-days": "30 dias",
+      "expiry-7-days": "7 dias",
+      "expiry-label": "Expira",
+      "expiry-never": "Nunca",
+      "expires-on": "Expira em {{date}}",
+      "invalid-link": "Este link é inválido ou expirou.",
+      "never-expires": "Nunca expira",
+      "no-links": "Ainda não existem links de partilha. Crie um abaixo.",
+      "open-panel": "Gerir links de partilha",
+      "revoke": "Revogar",
+      "revoke-failed": "Falha ao revogar link",
+      "revoked": "Link de partilha revogado",
+      "section-label": "Compartilhando",
+      "share": "Compartilhar",
+      "shared-by": "Partilhado por {{creator}}",
+      "title": "Partilhe este memorando"
     }
   },
   "message": {
@@ -261,7 +318,8 @@
       "restore-success": "{{username}} restaurado com sucesso",
       "user": "Utilizador",
       "label": "Membro",
-      "list-title": "Lista de membros"
+      "list-title": "Lista de membros",
+      "no-members-found": "Nenhum membro encontrado"
     },
     "my-account": {
       "label": "A Minha Conta"
@@ -383,7 +441,8 @@
       },
       "description": "Uma lista de todos os tokens de acesso para a sua conta.",
       "title": "Tokens de Acesso",
-      "token": "Token"
+      "token": "Token",
+      "no-tokens-found": "Nenhum token de acesso encontrado"
     },
     "account": {
       "change-password": "Alterar palavra-passe",
@@ -415,7 +474,8 @@
       "enable-memo-location": "Ativar localização em memos",
       "reactions": "Reações",
       "title": "Definições relacionadas com memos",
-      "label": "Memo"
+      "label": "Memo",
+      "reactions-required": "A lista de reações não deve estar vazia"
     },
     "webhook": {
       "create-dialog": {
@@ -436,6 +496,20 @@
       "title": "Webhooks",
       "url": "URL",
       "label": "Webhooks"
+    },
+    "tags": {
+      "label": "Etiquetas",
+      "title": "Metadados de etiquetas",
+      "description": "Atribua cores de visualização opcionais a etiquetas em toda a instância ou desfoque o conteúdo do memorando correspondente. Os nomes das etiquetas são tratados como padrões regex ancorados.",
+      "background-color": "Cor de fundo",
+      "blur-content": "Desfocar conteúdo",
+      "no-tags-configured": "Sem metadado de tag configurado.",
+      "tag-name": "Nome da etiqueta",
+      "tag-name-placeholder": "por exemplo work ou project/.*",
+      "tag-already-exists": "A etiqueta já existe.",
+      "tag-pattern-hint": "Nome da etiqueta ou padrão regex (por exemplo, project/.* corresponde a todas as etiquetas project/)",
+      "invalid-regex": "Padrão regex inválido ou inseguro.",
+      "using-default-color": "Utilizando a cor padrão."
     }
   },
   "tag": {
@@ -461,5 +535,10 @@
     "select-visibility": "Visibilidade",
     "tags": "Etiquetas",
     "upload-attachment": "Carregar Anexo(s)"
+  },
+  "live-update": {
+    "connected": "Atualizações ao vivo ativas",
+    "connecting": "Ligar-se às atualizações ao vivo...",
+    "disconnected": "Atualizações ao vivo indisponíveis"
   }
 }

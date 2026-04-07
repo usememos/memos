@@ -340,6 +340,15 @@ func TestExtractAllTitle(t *testing.T) {
 	}
 }
 
+func TestExtractAllMentions(t *testing.T) {
+	svc := NewService(WithTagExtension(), WithMentionExtension())
+
+	data, err := svc.ExtractAll([]byte("Hi @Alice and @bob. Email support@example.com should stay plain. #tag"))
+	require.NoError(t, err)
+	assert.ElementsMatch(t, []string{"alice", "bob"}, data.Mentions)
+	assert.ElementsMatch(t, []string{"tag"}, data.Tags)
+}
+
 func TestExtractTags(t *testing.T) {
 	tests := []struct {
 		name     string

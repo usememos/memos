@@ -124,7 +124,37 @@
     "no-changes-detected": "Keine Änderungen erkannt",
     "save": "Speichern",
     "saving": "Speichern...",
-    "slash-commands": "Nutze `/` für Befehle"
+    "slash-commands": "Nutze `/` für Befehle",
+    "insert-menu": {
+      "add-location": "Standort hinzufügen",
+      "link-memo": "Link-Memo",
+      "upload-file": "Datei hochladen"
+    },
+    "audio-recorder": {
+      "attachment-label": "Audioaufnahme",
+      "attachment-label-with-time": "Audioaufnahme {{time}}",
+      "discard": "Verwerfen",
+      "error": "Mikrofon nicht verfügbar",
+      "error-description": "Versuchen Sie es erneut, nachdem Sie den Mikrofonzugriff für diese Website überprüft haben.",
+      "idle-description": "Starten Sie die Aufnahme, um eine Audioaufnahme als Anhang hinzuzufügen.",
+      "keep": "Nehmen Sie weiter auf",
+      "pause-recording": "Audioaufnahme anhalten",
+      "play-recording": "Audioaufnahme abspielen",
+      "ready": "Aufnahme bereit",
+      "ready-description": "Sehen Sie sich den Clip in der Vorschau an und behalten Sie ihn dann als Audioanhang bei oder verwerfen Sie ihn.",
+      "record-again": "Nochmals aufnehmen",
+      "recording": "Audioaufnahme",
+      "recording-description": "Nehmen Sie einen schnellen Audioanhang auf. Aktuelle Länge: {{duration}}",
+      "requesting": "Zugriff wird angefordert...",
+      "requesting-permission": "Mikrofonzugriff anfordern",
+      "requesting-permission-description": "Erlauben Sie den Mikrofonzugriff in Ihrem Browser, um die Aufnahme zu starten.",
+      "start": "Starten Sie die Aufnahme",
+      "stop": "Stoppen Sie die Aufnahme",
+      "title": "Audiorecorder",
+      "trigger": "Audio aufnehmen",
+      "unsupported": "Audioaufnahme wird nicht unterstützt",
+      "unsupported-description": "Dieser Browser kann keine Audiodaten vom Memo Composer aufzeichnen."
+    }
   },
   "inbox": {
     "failed-to-load": "Fehler beim Laden des Eintrags",
@@ -159,7 +189,8 @@
     "filters": {
       "has-code": "hatCode",
       "has-link": "hatLink",
-      "has-task-list": "hatAufgabenliste"
+      "has-task-list": "hatAufgabenliste",
+      "label": "Filter"
     },
     "links": "Links",
     "load-more": "Mehr laden",
@@ -176,6 +207,32 @@
       "private": "Privat",
       "protected": "Geschützt",
       "public": "Öffentlich"
+    },
+    "outline": "Gliederung",
+    "share": {
+      "active-links": "Aktive Share-Links",
+      "copied": "Kopiert!",
+      "copy": "Link kopieren",
+      "create-failed": "Der Freigabelink konnte nicht erstellt werden",
+      "create-link": "Neuen Link erstellen",
+      "creating": "Erstellen…",
+      "expiry-1-day": "1 Tag",
+      "expiry-30-days": "30 Tage",
+      "expiry-7-days": "7 Tage",
+      "expiry-label": "Läuft ab",
+      "expiry-never": "Niemals",
+      "expires-on": "Läuft am {{date}} ab",
+      "invalid-link": "Dieser Link ist ungültig oder abgelaufen.",
+      "never-expires": "Läuft nie ab",
+      "no-links": "Noch keine Links zum Teilen. Erstellen Sie unten eines.",
+      "open-panel": "Teilen-Links verwalten",
+      "revoke": "Widerrufen",
+      "revoke-failed": "Der Link konnte nicht widerrufen werden",
+      "revoked": "Link zum Teilen widerrufen",
+      "section-label": "Teilen",
+      "share": "Teilen",
+      "shared-by": "Geteilt von {{creator}}",
+      "title": "Teilen Sie dieses Memo"
     }
   },
   "message": {
@@ -261,7 +318,8 @@
       "restore-success": "{{username}} erfolgreich wiederhergestellt",
       "user": "Benutzer",
       "label": "Mitglied",
-      "list-title": "Mitgliederliste"
+      "list-title": "Mitgliederliste",
+      "no-members-found": "Keine Mitglieder gefunden"
     },
     "my-account": {
       "label": "Mein Konto"
@@ -383,7 +441,8 @@
       },
       "description": "Liste aller Zugangstoken für deinen Benutzer.",
       "title": "Zugangstoken",
-      "token": "Token"
+      "token": "Token",
+      "no-tokens-found": "Keine Zugriffstoken gefunden"
     },
     "account": {
       "change-password": "Passwort ändern",
@@ -415,7 +474,8 @@
       "enable-memo-location": "Notiz-Standort aktivieren",
       "reactions": "Reaktionen",
       "title": "Notiz-Einstellungen",
-      "label": "Notiz"
+      "label": "Notiz",
+      "reactions-required": "Die Reaktionsliste darf nicht leer sein"
     },
     "webhook": {
       "create-dialog": {
@@ -436,6 +496,20 @@
       "title": "Webhooks",
       "url": "URL",
       "label": "Webhooks"
+    },
+    "tags": {
+      "label": "Schlagworte",
+      "title": "Tag-Metadaten",
+      "description": "Weisen Sie Tags instanzenweit optionale Anzeigefarben zu oder verwischen Sie passende Memoinhalte. Tag-Namen werden als verankerte Regex-Muster behandelt.",
+      "background-color": "Hintergrundfarbe",
+      "blur-content": "Inhalte verwischen",
+      "no-tags-configured": "Keine Tag-Metadaten konfiguriert.",
+      "tag-name": "Tag-Name",
+      "tag-name-placeholder": "z.B. work oder project/.*",
+      "tag-already-exists": "Tag existiert bereits.",
+      "tag-pattern-hint": "Tag-Name oder Regex-Muster (z. B. project/.* stimmt mit allen project/-Tags überein)",
+      "invalid-regex": "Ungültiges oder unsicheres Regex-Muster.",
+      "using-default-color": "Standardfarbe verwenden."
     }
   },
   "tag": {
@@ -461,5 +535,10 @@
     "select-visibility": "Sichtbarkeit",
     "tags": "Tags",
     "upload-attachment": "Anhang hochladen"
+  },
+  "live-update": {
+    "connected": "Live-Updates aktiv",
+    "connecting": "Verbindung zu Live-Updates wird hergestellt...",
+    "disconnected": "Live-Updates nicht verfügbar"
   }
 }
