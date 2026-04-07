@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { isEqual } from "lodash-es";
-import { CheckCircleIcon, Code2Icon, HashIcon, ImageIcon, LinkIcon, type LucideIcon, Share2Icon } from "lucide-react";
+import { CheckCircleIcon, ChevronRightIcon, Code2Icon, HashIcon, ImageIcon, LinkIcon, type LucideIcon, Share2Icon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -40,6 +40,9 @@ const PROPERTY_BADGE_CLASSES =
 const TAG_BADGE_CLASSES =
   "inline-flex items-center gap-1 px-1 rounded-md border border-border/60 bg-muted/60 text-sm text-muted-foreground hover:bg-muted hover:text-foreground/80 transition-colors cursor-pointer";
 
+const SHARE_ACTION_ROW_CLASSES =
+  "h-auto min-h-0 w-full justify-between rounded-none px-2 py-1.5 text-xs font-normal leading-tight text-muted-foreground transition-colors hover:bg-muted/40 hover:text-muted-foreground focus-visible:ring-offset-0 gap-1.5";
+
 const MemoDetailSidebar = ({ memo, className, onShareImageOpen }: Props) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
@@ -67,17 +70,24 @@ const MemoDetailSidebar = ({ memo, className, onShareImageOpen }: Props) => {
 
       {(canManageShares || onShareImageOpen) && (
         <SidebarSection label={t("memo.share.section-label")}>
-          <div className="flex flex-col gap-2">
+          <div className="overflow-hidden rounded-md border border-border/50 bg-muted/20">
             {onShareImageOpen && (
-              <Button variant="outline" className="w-full justify-start gap-2" onClick={onShareImageOpen}>
-                <ImageIcon className="w-4 h-4" />
-                {t("memo.share.open-image")}
+              <Button variant="ghost" size="sm" className={SHARE_ACTION_ROW_CLASSES} onClick={onShareImageOpen}>
+                <span className="flex min-w-0 flex-1 items-center gap-2">
+                  <ImageIcon className="size-3.5 shrink-0 text-muted-foreground/90" />
+                  <span className="truncate">{t("memo.share.open-image")}</span>
+                </span>
+                <ChevronRightIcon className="size-3.5 shrink-0 text-muted-foreground/35" />
               </Button>
             )}
+            {onShareImageOpen && canManageShares && <div className="border-t border-border/50" />}
             {canManageShares && (
-              <Button variant="outline" className="w-full justify-start gap-2" onClick={() => setSharePanelOpen(true)}>
-                <Share2Icon className="w-4 h-4" />
-                {t("memo.share.open-panel")}
+              <Button variant="ghost" size="sm" className={SHARE_ACTION_ROW_CLASSES} onClick={() => setSharePanelOpen(true)}>
+                <span className="flex min-w-0 flex-1 items-center gap-2">
+                  <Share2Icon className="size-3.5 shrink-0 text-muted-foreground/90" />
+                  <span className="truncate">{t("memo.share.open-panel")}</span>
+                </span>
+                <ChevronRightIcon className="size-3.5 shrink-0 text-muted-foreground/35" />
               </Button>
             )}
           </div>
