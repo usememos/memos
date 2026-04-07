@@ -1,12 +1,11 @@
-import { create } from "@bufbuild/protobuf";
 import { LinkIcon, XIcon } from "lucide-react";
 import type { FC } from "react";
-import { useEffect, useMemo, useState } from "react";
-import { memoServiceClient } from "@/connect";
+import { useMemo } from "react";
+import MetadataSection from "@/components/MemoMetadata/MetadataSection";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
-import { MemoRelation_Memo, MemoRelation_MemoSchema, MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
-import SectionHeader from "../SectionHeader";
 import RelationCard from "./RelationCard";
+import { getEditorReferenceRelations } from "./relationHelpers";
+import { useResolvedRelationMemos } from "./useResolvedRelationMemos";
 
 interface RelationListEditorProps {
   relations: MemoRelation[];
@@ -40,31 +39,8 @@ const RelationItemCard: FC<{
 };
 
 const RelationListEditor: FC<RelationListEditorProps> = ({ relations, onRelationsChange, parentPage, memoName }) => {
-  const referenceRelations = useMemo(
-    () => relations.filter((r) => r.type === MemoRelation_Type.REFERENCE && (!memoName || !r.memo?.name || r.memo.name === memoName)),
-    [relations, memoName],
-  );
-  const [fetchedMemos, setFetchedMemos] = useState<Record<string, MemoRelation_Memo>>({});
-
-  useEffect(() => {
-    (async () => {
-      const missingSnippetRelations = referenceRelations.filter((relation) => !relation.relatedMemo?.snippet && relation.relatedMemo?.name);
-      if (missingSnippetRelations.length > 0) {
-        const requests = missingSnippetRelations.map(async (relation) => {
-          const memo = await memoServiceClient.getMemo({ name: relation.relatedMemo!.name });
-          return create(MemoRelation_MemoSchema, { name: memo.name, snippet: memo.snippet });
-        });
-        const list = await Promise.all(requests);
-        setFetchedMemos((prev) => {
-          const next = { ...prev };
-          for (const memo of list) {
-            next[memo.name] = memo;
-          }
-          return next;
-        });
-      }
-    })();
-  }, [referenceRelations]);
+  const referenceRelations = useMemo(() => getEditorReferenceRelations(relations, memoName), [relations, memoName]);
+  const resolvedMemos = useResolvedRelationMemos(referenceRelations);
 
   const handleDeleteRelation = (memoName: string) => {
     if (onRelationsChange) {
@@ -77,17 +53,18 @@ const RelationListEditor: FC<RelationListEditorProps> = ({ relations, onRelation
   }
 
   return (
-    <div className="w-full rounded-lg border border-border bg-muted/20 overflow-hidden">
-      <SectionHeader icon={LinkIcon} title="Relations" count={referenceRelations.length} />
-
-      <div className="p-1 sm:p-1.5 flex flex-col gap-0.5">
-        {referenceRelations.map((relation) => {
-          const relatedMemo = relation.relatedMemo!;
-          const memo = relatedMemo.snippet ? relatedMemo : fetchedMemos[relatedMemo.name] || relatedMemo;
-          return <RelationItemCard key={memo.name} memo={memo} onRemove={() => handleDeleteRelation(memo.name)} parentPage={parentPage} />;
-        })}
-      </div>
-    </div>
+    <MetadataSection
+      icon={LinkIcon}
+      title="Relations"
+      count={referenceRelations.length}
+      contentClassName="flex flex-col gap-0.5 p-1 sm:p-1.5"
+    >
+      {referenceRelations.map((relation) => {
+        const relatedMemo = relation.relatedMemo!;
+        const memo = relatedMemo.snippet ? relatedMemo : resolvedMemos[relatedMemo.name] || relatedMemo;
+        return <RelationItemCard key={memo.name} memo={memo} onRemove={() => handleDeleteRelation(memo.name)} parentPage={parentPage} />;
+      })}
+    </MetadataSection>
   );
 };
 

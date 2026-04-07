@@ -11,6 +11,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
+	"github.com/usememos/memos/store"
 )
 
 func TestListMemos(t *testing.T) {
@@ -251,6 +252,125 @@ func TestListMemos(t *testing.T) {
 	userTwoReaction := memoThreeRes.Reactions[userTwoReactionIdx]
 	require.NotNil(t, userTwoReaction)
 	require.Equal(t, "👍", userTwoReaction.ReactionType)
+}
+
+func TestListMemosSkipsReactionsWithMissingCreators(t *testing.T) {
+	ctx := context.Background()
+
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	owner, err := ts.CreateRegularUser(ctx, "memo-owner")
+	require.NoError(t, err)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+
+	reactor, err := ts.CreateRegularUser(ctx, "memo-reactor")
+	require.NoError(t, err)
+	reactorCtx := ts.CreateUserContext(ctx, reactor.ID)
+
+	memo, err := ts.Service.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "memo with orphan reaction",
+			Visibility: apiv1.Visibility_PUBLIC,
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = ts.Service.UpsertMemoReaction(reactorCtx, &apiv1.UpsertMemoReactionRequest{
+		Name: memo.Name,
+		Reaction: &apiv1.Reaction{
+			ContentId:    memo.Name,
+			ReactionType: "👍",
+		},
+	})
+	require.NoError(t, err)
+
+	err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: reactor.ID})
+	require.NoError(t, err)
+
+	resp, err := ts.Service.ListMemos(ownerCtx, &apiv1.ListMemosRequest{PageSize: 10})
+	require.NoError(t, err)
+	require.Len(t, resp.Memos, 1)
+	require.Equal(t, memo.Name, resp.Memos[0].Name)
+	require.Empty(t, resp.Memos[0].Reactions)
+}
+
+func TestListMemosSkipsMemosWithMissingCreators(t *testing.T) {
+	ctx := context.Background()
+
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	owner, err := ts.CreateRegularUser(ctx, "memo-visible-owner")
+	require.NoError(t, err)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+
+	orphanCreator, err := ts.CreateRegularUser(ctx, "memo-orphan-creator")
+	require.NoError(t, err)
+	orphanCtx := ts.CreateUserContext(ctx, orphanCreator.ID)
+
+	ownerMemo, err := ts.Service.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "owner memo",
+			Visibility: apiv1.Visibility_PRIVATE,
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = ts.Service.CreateMemo(orphanCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "orphan memo",
+			Visibility: apiv1.Visibility_PUBLIC,
+		},
+	})
+	require.NoError(t, err)
+
+	err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: orphanCreator.ID})
+	require.NoError(t, err)
+
+	resp, err := ts.Service.ListMemos(ownerCtx, &apiv1.ListMemosRequest{PageSize: 10})
+	require.NoError(t, err)
+	require.Len(t, resp.Memos, 1)
+	require.Equal(t, ownerMemo.Name, resp.Memos[0].Name)
+}
+
+func TestListMemoCommentsSkipsCommentsWithMissingCreators(t *testing.T) {
+	ctx := context.Background()
+
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	owner, err := ts.CreateRegularUser(ctx, "comment-owner")
+	require.NoError(t, err)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+
+	commenter, err := ts.CreateRegularUser(ctx, "comment-orphan")
+	require.NoError(t, err)
+	commenterCtx := ts.CreateUserContext(ctx, commenter.ID)
+
+	memo, err := ts.Service.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "memo with comment",
+			Visibility: apiv1.Visibility_PUBLIC,
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = ts.Service.CreateMemoComment(commenterCtx, &apiv1.CreateMemoCommentRequest{
+		Name: memo.Name,
+		Comment: &apiv1.Memo{
+			Content:    "comment to orphan",
+			Visibility: apiv1.Visibility_PUBLIC,
+		},
+	})
+	require.NoError(t, err)
+
+	err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: commenter.ID})
+	require.NoError(t, err)
+
+	resp, err := ts.Service.ListMemoComments(ownerCtx, &apiv1.ListMemoCommentsRequest{Name: memo.Name})
+	require.NoError(t, err)
+	require.Empty(t, resp.Memos)
 }
 
 // TestCreateMemoWithCustomTimestamps tests that custom timestamps can be set when creating memos and comments.

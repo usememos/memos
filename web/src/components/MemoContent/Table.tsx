@@ -1,6 +1,7 @@
 import { PencilIcon, TrashIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import { useMemoViewContext, useMemoViewDerived } from "@/components/MemoView/MemoViewContext";
 import TableEditorDialog from "@/components/TableEditorDialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -10,7 +11,6 @@ import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import type { TableData } from "@/utils/markdown-table";
 import { findAllTables, parseMarkdownTable, replaceNthTable } from "@/utils/markdown-table";
-import { useMemoViewContext, useMemoViewDerived } from "@/components/MemoView/MemoViewContext";
 import type { ReactMarkdownProps } from "./markdown/types";
 
 // ---------------------------------------------------------------------------

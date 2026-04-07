@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import TableEditorDialog from "@/components/TableEditorDialog";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,10 +10,18 @@ import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
-import { EditorContent, EditorMetadata, EditorToolbar, FocusModeExitButton, FocusModeOverlay, TimestampPopover } from "./components";
+import {
+  AudioRecorderPanel,
+  EditorContent,
+  EditorMetadata,
+  EditorToolbar,
+  FocusModeExitButton,
+  FocusModeOverlay,
+  TimestampPopover,
+} from "./components";
 import { FOCUS_MODE_STYLES } from "./constants";
 import type { EditorRefActions } from "./Editor";
-import { useAutoSave, useFocusMode, useKeyboard, useMemoInit } from "./hooks";
+import { useAudioRecorder, useAutoSave, useFocusMode, useKeyboard, useMemoInit } from "./hooks";
 import { cacheService, errorService, memoService, validationService } from "./services";
 import { EditorProvider, useEditorContext } from "./state";
 import type { MemoEditorProps } from "./types";
@@ -40,6 +48,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const editorRef = useRef<EditorRefActions>(null);
   const { state, actions, dispatch } = useEditorContext();
   const { userGeneralSetting } = useAuth();
+  const [isAudioRecorderOpen, setIsAudioRecorderOpen] = useState(false);
 
   const memoName = memo?.name;
 
@@ -61,8 +70,50 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   // Focus mode management with body scroll lock
   useFocusMode(state.ui.isFocusMode);
 
+  const audioRecorderActions = useMemo(
+    () => ({
+      setAudioRecorderSupport: (value: boolean) => dispatch(actions.setAudioRecorderSupport(value)),
+      setAudioRecorderPermission: (value: "unknown" | "granted" | "denied") => dispatch(actions.setAudioRecorderPermission(value)),
+      setAudioRecorderStatus: (value: "idle" | "requesting_permission" | "recording" | "error" | "unsupported") =>
+        dispatch(actions.setAudioRecorderStatus(value)),
+      setAudioRecorderElapsed: (value: number) => dispatch(actions.setAudioRecorderElapsed(value)),
+      setAudioRecorderError: (value?: string) => dispatch(actions.setAudioRecorderError(value)),
+      onRecordingComplete: (localFile: (typeof state.localFiles)[number]) => {
+        dispatch(actions.addLocalFile(localFile));
+        setIsAudioRecorderOpen(false);
+      },
+    }),
+    [actions, dispatch, state.localFiles],
+  );
+
+  const audioRecorder = useAudioRecorder(audioRecorderActions);
+
+  useEffect(() => {
+    if (!isAudioRecorderOpen) {
+      return;
+    }
+
+    if (state.audioRecorder.status === "error" || state.audioRecorder.status === "unsupported") {
+      toast.error(state.audioRecorder.error || t("editor.audio-recorder.error-description"));
+      setIsAudioRecorderOpen(false);
+    }
+  }, [isAudioRecorderOpen, state.audioRecorder.error, state.audioRecorder.status, t]);
+
   const handleToggleFocusMode = () => {
     dispatch(actions.toggleFocusMode());
+  };
+
+  const handleAudioRecorderClick = () => {
+    if (state.audioRecorder.status === "recording" || state.audioRecorder.status === "requesting_permission") {
+      return;
+    }
+
+    void handleStartAudioRecording();
+  };
+
+  const handleCancelAudioRecording = () => {
+    audioRecorder.resetRecording();
+    setIsAudioRecorderOpen(false);
   };
 
   // Table editor dialog (shared by slash command and toolbar).
@@ -77,6 +128,10 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     setTableDialogOpen(false);
     editorRef.current?.focus();
   }, []);
+  const handleStartAudioRecording = async () => {
+    setIsAudioRecorderOpen(true);
+    await audioRecorder.startRecording();
+  };
 
   useKeyboard(editorRef, handleSave);
 
@@ -179,10 +234,24 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         {/* Editor content grows to fill available space in focus mode */}
         <EditorContent ref={editorRef} placeholder={placeholder} onOpenTableEditor={handleOpenTableEditor} />
 
+        {isAudioRecorderOpen && (state.audioRecorder.status === "recording" || state.audioRecorder.status === "requesting_permission") && (
+          <AudioRecorderPanel
+            audioRecorder={state.audioRecorder}
+            onStop={audioRecorder.stopRecording}
+            onCancel={handleCancelAudioRecording}
+          />
+        )}
+
         {/* Metadata and toolbar grouped together at bottom */}
         <div className="w-full flex flex-col gap-2">
           <EditorMetadata memoName={memoName} />
-          <EditorToolbar onSave={handleSave} onCancel={onCancel} memoName={memoName} onOpenTableEditor={handleOpenTableEditor} />
+          <EditorToolbar
+            onSave={handleSave}
+            onCancel={onCancel}
+            memoName={memoName}
+            onAudioRecorderClick={handleAudioRecorderClick}
+            onOpenTableEditor={handleOpenTableEditor}
+          />
         </div>
       </div>
 

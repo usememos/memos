@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { isEqual } from "lodash-es";
-import { CheckCircleIcon, Code2Icon, HashIcon, LinkIcon, type LucideIcon, Share2Icon } from "lucide-react";
+import { CheckCircleIcon, Code2Icon, HashIcon, ImageIcon, LinkIcon, type LucideIcon, Share2Icon } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -16,6 +16,7 @@ import MemoSharePanel from "./MemoSharePanel";
 interface Props {
   memo: Memo;
   className?: string;
+  onShareImageOpen?: () => void;
 }
 
 interface PropertyBadge {
@@ -39,7 +40,7 @@ const PROPERTY_BADGE_CLASSES =
 const TAG_BADGE_CLASSES =
   "inline-flex items-center gap-1 px-1 rounded-md border border-border/60 bg-muted/60 text-sm text-muted-foreground hover:bg-muted hover:text-foreground/80 transition-colors cursor-pointer";
 
-const MemoDetailSidebar = ({ memo, className }: Props) => {
+const MemoDetailSidebar = ({ memo, className, onShareImageOpen }: Props) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const [sharePanelOpen, setSharePanelOpen] = useState(false);
@@ -64,12 +65,22 @@ const MemoDetailSidebar = ({ memo, className }: Props) => {
         </SidebarSection>
       )}
 
-      {canManageShares && (
+      {(canManageShares || onShareImageOpen) && (
         <SidebarSection label={t("memo.share.section-label")}>
-          <Button variant="outline" className="w-full justify-start gap-2" onClick={() => setSharePanelOpen(true)}>
-            <Share2Icon className="w-4 h-4" />
-            {t("memo.share.open-panel")}
-          </Button>
+          <div className="flex flex-col gap-2">
+            {onShareImageOpen && (
+              <Button variant="outline" className="w-full justify-start gap-2" onClick={onShareImageOpen}>
+                <ImageIcon className="w-4 h-4" />
+                {t("memo.share.open-image")}
+              </Button>
+            )}
+            {canManageShares && (
+              <Button variant="outline" className="w-full justify-start gap-2" onClick={() => setSharePanelOpen(true)}>
+                <Share2Icon className="w-4 h-4" />
+                {t("memo.share.open-panel")}
+              </Button>
+            )}
+          </div>
         </SidebarSection>
       )}
 

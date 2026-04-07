@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-Self-hosted note-taking tool. Go 1.26 backend (Echo v5, Connect RPC + gRPC-Gateway), React 18 + TypeScript 5.9 + Vite 7 frontend, Protocol Buffers API, SQLite/MySQL/PostgreSQL.
+Self-hosted note-taking tool. Go 1.26 backend (Echo v5, Connect RPC + gRPC-Gateway), React 18 + TypeScript 6 + Vite 7 frontend, Protocol Buffers API, SQLite/MySQL/PostgreSQL.
 
 ## Commands
 
@@ -12,7 +12,9 @@ go run ./cmd/memos --port 8081    # Start dev server
 go test ./...                      # Run all tests
 go test -v ./store/...             # Run store tests (all 3 DB drivers via TestContainers)
 go test -v -race ./server/...      # Run server tests with race detection
+go test -v -race ./internal/...    # Run internal package tests with race detection
 go test -v -run TestFoo ./pkg/...  # Run a single test
+go mod tidy -go=1.26.1             # Match CI tidy check
 golangci-lint run                  # Lint (v2, config: .golangci.yaml)
 golangci-lint run --fix            # Auto-fix lint issues (includes goimports)
 
@@ -61,8 +63,8 @@ proto/
 ├── store/                  # Internal storage messages
 └── gen/                    # Generated Go, TypeScript, OpenAPI
 
-plugin/                     # scheduler, cron, email, filter (CEL), webhook,
-                            # markdown (Goldmark), httpgetter, idp (OAuth2), storage/s3
+internal/                   # app-private packages: scheduler, cron, email, filter (CEL),
+                            # webhook, markdown (Goldmark), httpgetter, idp (OAuth2), storage/s3
 
 web/src/
 ├── connect.ts              # Connect RPC client + auth interceptor + token refresh
@@ -97,7 +99,9 @@ web/src/
 
 ## CI/CD
 
-- **backend-tests.yml:** Go 1.26.1, golangci-lint v2.4.0, tests parallelized by group (store, server, plugin, other)
+- **backend-tests.yml:** Go 1.26.1, `go mod tidy -go=1.26.1`, golangci-lint v2.11.3, tests parallelized by group (store, server, internal, other)
+- **build-canary-image.yml:** Builds frontend with `pnpm release`, then publishes canary multi-arch container images for linux/amd64 and linux/arm64
 - **frontend-tests.yml:** Node 24, pnpm 10, lint + build
 - **proto-linter.yml:** buf lint + format check
+- **release.yml:** On version tags, builds frontend once, packages binaries for Linux/macOS/Windows, and publishes release container images/tags
 - **Docker:** Multi-stage (`scripts/Dockerfile`), Alpine 3.21, non-root user, port 5230, multi-arch (amd64/arm64/arm/v7)

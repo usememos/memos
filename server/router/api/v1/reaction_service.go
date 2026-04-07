@@ -2,13 +2,11 @@ package v1
 
 import (
 	"context"
-	"fmt"
-	"time"
+	"log/slog"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
@@ -52,12 +50,9 @@ func (s *APIV1Service) ListMemoReactions(ctx context.Context, request *v1pb.List
 	response := &v1pb.ListMemoReactionsResponse{
 		Reactions: []*v1pb.Reaction{},
 	}
-	for _, reaction := range reactions {
-		reactionMessage, err := s.convertReactionFromStore(ctx, reaction)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to convert reaction")
-		}
-		response.Reactions = append(response.Reactions, reactionMessage)
+	response.Reactions, err = s.convertReactionsFromStoreWithCreators(ctx, reactions, nil)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to convert reactions")
 	}
 	return response, nil
 }
@@ -104,10 +99,11 @@ func (s *APIV1Service) UpsertMemoReaction(ctx context.Context, request *v1pb.Ups
 	}
 
 	// Broadcast live refresh event (reaction belongs to a memo).
-	s.SSEHub.Broadcast(&SSEEvent{
-		Type: SSEEventReactionUpserted,
-		Name: request.Reaction.ContentId,
-	})
+	var parentMemo *store.Memo
+	if memo.ParentUID != nil {
+		parentMemo, _ = s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
+	}
+	s.SSEHub.Broadcast(buildMemoReactionSSEEvent(SSEEventReactionUpserted, request.Reaction.ContentId, memo, parentMemo))
 
 	return reactionMessage, nil
 }
@@ -148,31 +144,38 @@ func (s *APIV1Service) DeleteMemoReaction(ctx context.Context, request *v1pb.Del
 		return nil, status.Errorf(codes.Internal, "failed to delete reaction")
 	}
 
+	memoUID, err := ExtractMemoUIDFromName(reaction.ContentID)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
+	}
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get memo")
+	}
+
 	// Broadcast live refresh event (reaction belongs to a memo).
-	s.SSEHub.Broadcast(&SSEEvent{
-		Type: SSEEventReactionDeleted,
-		Name: reaction.ContentID,
-	})
+	var parentMemo *store.Memo
+	if memo != nil && memo.ParentUID != nil {
+		parentMemo, _ = s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
+	}
+	s.SSEHub.Broadcast(buildMemoReactionSSEEvent(SSEEventReactionDeleted, reaction.ContentID, memo, parentMemo))
 
 	return &emptypb.Empty{}, nil
 }
 
 func (s *APIV1Service) convertReactionFromStore(ctx context.Context, reaction *store.Reaction) (*v1pb.Reaction, error) {
-	reactionUID := fmt.Sprintf("%d", reaction.ID)
-	creator, err := s.Store.GetUser(ctx, &store.FindUser{ID: &reaction.CreatorID})
+	creatorsByID, err := s.listUsersByIDWithExisting(ctx, []int32{reaction.CreatorID}, nil)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get reaction creator")
 	}
-	if creator == nil {
+	reactionMessage, err := convertReactionFromStoreWithCreators(reaction, creatorsByID)
+	if err != nil {
+		slog.Warn("Failed to convert reaction with missing creator",
+			slog.Int64("reaction_id", int64(reaction.ID)),
+			slog.Int64("creator_id", int64(reaction.CreatorID)),
+			slog.String("content_id", reaction.ContentID),
+		)
 		return nil, status.Errorf(codes.NotFound, "reaction creator not found")
 	}
-	// Generate nested resource name: memos/{memo}/reactions/{reaction}
-	// reaction.ContentID already contains "memos/{memo}"
-	return &v1pb.Reaction{
-		Name:         fmt.Sprintf("%s/%s%s", reaction.ContentID, ReactionNamePrefix, reactionUID),
-		Creator:      BuildUserName(creator.Username),
-		ContentId:    reaction.ContentID,
-		ReactionType: reaction.ReactionType,
-		CreateTime:   timestamppb.New(time.Unix(reaction.CreatedTs, 0)),
-	}, nil
+	return reactionMessage, nil
 }

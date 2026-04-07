@@ -6,6 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/usememos/memos/internal/testutil"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
@@ -60,6 +61,30 @@ func TestCreateAttachment(t *testing.T) {
 		require.Equal(t, "application/octet-stream", attachment.Type)
 	})
 
+	t.Run("Type_WithParameters_NormalizedBeforeValidation", func(t *testing.T) {
+		attachment, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{
+			Attachment: &v1pb.Attachment{
+				Filename: "voice-note.webm",
+				Type:     "audio/webm;codecs=opus",
+				Content:  []byte("fake webm content"),
+			},
+		})
+		require.NoError(t, err)
+		require.Equal(t, "audio/webm", attachment.Type)
+	})
+
+	t.Run("Type_InvalidFormat_Rejected", func(t *testing.T) {
+		_, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{
+			Attachment: &v1pb.Attachment{
+				Filename: "broken.webm",
+				Type:     `audio/webm;codecs="unterminated`,
+				Content:  []byte("fake webm content"),
+			},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "invalid MIME type format")
+	})
+
 	t.Run("LocalStorage_PathCollisionUsesUniqueReference", func(t *testing.T) {
 		_, err := ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
 			Key: storepb.InstanceSettingKey_STORAGE,
@@ -110,5 +135,120 @@ func TestCreateAttachment(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, []byte("first-image"), firstBlob)
 		require.Equal(t, []byte("second-image"), secondBlob)
+	})
+}
+
+func TestCreateAttachmentMotionMedia(t *testing.T) {
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	ctx := context.Background()
+
+	user, err := ts.CreateRegularUser(ctx, "motion_user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	t.Run("Apple live photo metadata roundtrip", func(t *testing.T) {
+		attachment, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{
+			Attachment: &v1pb.Attachment{
+				Filename: "live.heic",
+				Type:     "image/heic",
+				Content:  []byte("fake-heic-still"),
+				MotionMedia: &v1pb.MotionMedia{
+					Family:  v1pb.MotionMediaFamily_APPLE_LIVE_PHOTO,
+					Role:    v1pb.MotionMediaRole_STILL,
+					GroupId: "apple-group-1",
+				},
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, attachment.MotionMedia)
+		require.Equal(t, v1pb.MotionMediaFamily_APPLE_LIVE_PHOTO, attachment.MotionMedia.Family)
+		require.Equal(t, v1pb.MotionMediaRole_STILL, attachment.MotionMedia.Role)
+		require.Equal(t, "apple-group-1", attachment.MotionMedia.GroupId)
+	})
+
+	t.Run("Android motion photo detection", func(t *testing.T) {
+		attachment, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{
+			Attachment: &v1pb.Attachment{
+				Filename: "motion.jpg",
+				Type:     "image/jpeg",
+				Content:  testutil.BuildMotionPhotoJPEG(),
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, attachment.MotionMedia)
+		require.Equal(t, v1pb.MotionMediaFamily_ANDROID_MOTION_PHOTO, attachment.MotionMedia.Family)
+		require.Equal(t, v1pb.MotionMediaRole_CONTAINER, attachment.MotionMedia.Role)
+		require.True(t, attachment.MotionMedia.HasEmbeddedVideo)
+	})
+}
+
+func TestBatchDeleteAttachments(t *testing.T) {
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	ctx := context.Background()
+
+	user, err := ts.CreateRegularUser(ctx, "delete_user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	first, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{
+		Attachment: &v1pb.Attachment{Filename: "one.txt", Type: "text/plain", Content: []byte("one")},
+	})
+	require.NoError(t, err)
+	second, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{
+		Attachment: &v1pb.Attachment{Filename: "two.txt", Type: "text/plain", Content: []byte("two")},
+	})
+	require.NoError(t, err)
+
+	_, err = ts.Service.BatchDeleteAttachments(userCtx, &v1pb.BatchDeleteAttachmentsRequest{
+		Names: []string{first.Name, second.Name},
+	})
+	require.NoError(t, err)
+
+	firstUID, err := apiv1.ExtractAttachmentUIDFromName(first.Name)
+	require.NoError(t, err)
+	secondUID, err := apiv1.ExtractAttachmentUIDFromName(second.Name)
+	require.NoError(t, err)
+	storedFirst, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &firstUID})
+	require.NoError(t, err)
+	storedSecond, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &secondUID})
+	require.NoError(t, err)
+	require.Nil(t, storedFirst)
+	require.Nil(t, storedSecond)
+
+	t.Run("deduplicates duplicate names", func(t *testing.T) {
+		third, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{
+			Attachment: &v1pb.Attachment{Filename: "three.txt", Type: "text/plain", Content: []byte("three")},
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.BatchDeleteAttachments(userCtx, &v1pb.BatchDeleteAttachmentsRequest{
+			Names: []string{third.Name, third.Name},
+		})
+		require.NoError(t, err)
+
+		thirdUID, err := apiv1.ExtractAttachmentUIDFromName(third.Name)
+		require.NoError(t, err)
+		storedThird, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &thirdUID})
+		require.NoError(t, err)
+		require.Nil(t, storedThird)
+	})
+
+	t.Run("rejects unauthorized deletes", func(t *testing.T) {
+		ownerAttachment, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{
+			Attachment: &v1pb.Attachment{Filename: "private.txt", Type: "text/plain", Content: []byte("private")},
+		})
+		require.NoError(t, err)
+
+		otherUser, err := ts.CreateRegularUser(ctx, "other_delete_user")
+		require.NoError(t, err)
+		otherCtx := ts.CreateUserContext(ctx, otherUser.ID)
+
+		_, err = ts.Service.BatchDeleteAttachments(otherCtx, &v1pb.BatchDeleteAttachmentsRequest{
+			Names: []string{ownerAttachment.Name},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "permission denied")
 	})
 }

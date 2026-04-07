@@ -12,6 +12,15 @@ const INITIAL_RETRY_DELAY_MS = 1000;
 const MAX_RETRY_DELAY_MS = 30000;
 const RETRY_BACKOFF_MULTIPLIER = 2;
 
+const SSE_EVENT_TYPES = {
+  memoCreated: "memo.created",
+  memoUpdated: "memo.updated",
+  memoDeleted: "memo.deleted",
+  memoCommentCreated: "memo.comment.created",
+  reactionUpserted: "reaction.upserted",
+  reactionDeleted: "reaction.deleted",
+} as const;
+
 // ---------------------------------------------------------------------------
 // Shared connection status store (singleton)
 // ---------------------------------------------------------------------------
@@ -63,6 +72,7 @@ export function useLiveMemoRefresh() {
   const { currentUser } = useAuth();
   const retryDelayRef = useRef(INITIAL_RETRY_DELAY_MS);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const hasConnectedOnceRef = useRef(false);
 
   const currentUserName = currentUser?.name;
   const handleEvent = useCallback((event: SSEChangeEvent) => handleSSEEvent(event, queryClient), [queryClient]);
@@ -101,6 +111,13 @@ export function useLiveMemoRefresh() {
         // Successfully connected - reset retry delay.
         retryDelayRef.current = INITIAL_RETRY_DELAY_MS;
         setSSEStatus("connected");
+        if (hasConnectedOnceRef.current) {
+          // Resync active collaborative views after reconnect because the server may have
+          // dropped events while the client was disconnected or backpressured.
+          queryClient.invalidateQueries({ queryKey: memoKeys.all, refetchType: "active" });
+          queryClient.invalidateQueries({ queryKey: userKeys.stats(), refetchType: "active" });
+        }
+        hasConnectedOnceRef.current = true;
 
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
@@ -175,37 +192,44 @@ export function useLiveMemoRefresh() {
 // ---------------------------------------------------------------------------
 
 interface SSEChangeEvent {
-  type: string;
+  type: (typeof SSE_EVENT_TYPES)[keyof typeof SSE_EVENT_TYPES];
   name: string;
+  parent?: string;
 }
 
 function handleSSEEvent(event: SSEChangeEvent, queryClient: ReturnType<typeof useQueryClient>) {
   switch (event.type) {
-    case "memo.created":
+    case SSE_EVENT_TYPES.memoCreated:
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
       break;
 
-    case "memo.updated":
+    case SSE_EVENT_TYPES.memoUpdated:
       queryClient.invalidateQueries({ queryKey: memoKeys.detail(event.name) });
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
+      if (event.parent) {
+        queryClient.invalidateQueries({ queryKey: memoKeys.comments(event.parent) });
+      }
       break;
 
-    case "memo.deleted":
+    case SSE_EVENT_TYPES.memoDeleted:
       queryClient.removeQueries({ queryKey: memoKeys.detail(event.name) });
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
       break;
 
-    case "memo.comment.created":
+    case SSE_EVENT_TYPES.memoCommentCreated:
       queryClient.invalidateQueries({ queryKey: memoKeys.comments(event.name) });
       queryClient.invalidateQueries({ queryKey: memoKeys.detail(event.name) });
       break;
 
-    case "reaction.upserted":
-    case "reaction.deleted":
+    case SSE_EVENT_TYPES.reactionUpserted:
+    case SSE_EVENT_TYPES.reactionDeleted:
       queryClient.invalidateQueries({ queryKey: memoKeys.detail(event.name) });
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
+      if (event.parent) {
+        queryClient.invalidateQueries({ queryKey: memoKeys.comments(event.parent) });
+      }
       break;
   }
 }

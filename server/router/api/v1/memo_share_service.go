@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	stderrors "errors"
 	"fmt"
 	"time"
 
@@ -182,6 +183,9 @@ func (s *APIV1Service) GetMemoByShare(ctx context.Context, request *v1pb.GetMemo
 
 	memoMessage, err := s.convertMemoFromStore(ctx, memo, reactions, attachments, relations[memo.ID])
 	if err != nil {
+		if stderrors.Is(err, errMemoCreatorNotFound) {
+			return nil, status.Errorf(codes.NotFound, "not found")
+		}
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
 	return memoMessage, nil

@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/plugin/markdown"
 	"github.com/usememos/memos/server/auth"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/store"
@@ -42,6 +42,7 @@ func NewTestService(t *testing.T) *TestService {
 	secret := "test-secret"
 	markdownService := markdown.NewService(
 		markdown.WithTagExtension(),
+		markdown.WithMentionExtension(),
 	)
 	service := &apiv1.APIV1Service{
 		Secret:          secret,

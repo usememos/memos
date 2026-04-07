@@ -124,7 +124,37 @@
     "no-changes-detected": "Non se detectaron cambios",
     "save": "Gardar",
     "saving": "Gardando...",
-    "slash-commands": "Escribe `/` para ordes"
+    "slash-commands": "Escribe `/` para ordes",
+    "insert-menu": {
+      "add-location": "Engadir localización",
+      "link-memo": "Nota de ligazón",
+      "upload-file": "Cargar ficheiro"
+    },
+    "audio-recorder": {
+      "attachment-label": "Gravación de audio",
+      "attachment-label-with-time": "Gravación de audio {{time}}",
+      "discard": "Descartar",
+      "error": "Micrófono non dispoñible",
+      "error-description": "Téntao de novo despois de comprobar o acceso ao micrófono deste sitio.",
+      "idle-description": "Comeza a gravar para engadir unha gravación de audio como anexo.",
+      "keep": "Continúa gravando",
+      "pause-recording": "Pausa a gravación de audio",
+      "play-recording": "Reproducir gravación de audio",
+      "ready": "Gravación lista",
+      "ready-description": "Previsualiza o clip e, a continuación, gárdao como anexo de audio ou bótao.",
+      "record-again": "Gravar de novo",
+      "recording": "Gravación de audio",
+      "recording-description": "Captura un anexo de audio rápido. Duración actual: {{duration}}",
+      "requesting": "Solicitando acceso...",
+      "requesting-permission": "Solicitando acceso ao micrófono",
+      "requesting-permission-description": "Permite o acceso ao micrófono no teu navegador para comezar a gravar.",
+      "start": "Comezar a gravar",
+      "stop": "Deter a gravación",
+      "title": "Gravadora de audio",
+      "trigger": "Gravar audio",
+      "unsupported": "A gravación de audio non é compatible",
+      "unsupported-description": "Este navegador non pode gravar audio do redactor de notas."
+    }
   },
   "inbox": {
     "failed-to-load": "Fallou a carga do elemento da caixa de entrada",
@@ -159,7 +189,8 @@
     "filters": {
       "has-code": "hasCode",
       "has-link": "hasLink",
-      "has-task-list": "hasTaskList"
+      "has-task-list": "hasTaskList",
+      "label": "Filtros"
     },
     "links": "Ligazóns",
     "load-more": "Cargar máis",
@@ -176,6 +207,32 @@
       "private": "Privada",
       "protected": "Protexida",
       "public": "Pública"
+    },
+    "outline": "Esquema",
+    "share": {
+      "active-links": "Ligazóns activas para compartir",
+      "copied": "Copiado!",
+      "copy": "Copiar ligazón",
+      "create-failed": "Produciuse un erro ao crear a ligazón para compartir",
+      "create-link": "Crear nova ligazón",
+      "creating": "Creando…",
+      "expiry-1-day": "1 día",
+      "expiry-30-days": "30 días",
+      "expiry-7-days": "7 días",
+      "expiry-label": "Caduca",
+      "expiry-never": "Nunca",
+      "expires-on": "Caduca o {{date}}",
+      "invalid-link": "Esta ligazón non é válida ou caducou.",
+      "never-expires": "Nunca caduca",
+      "no-links": "Aínda non hai ligazóns para compartir. Crea un a continuación.",
+      "open-panel": "Xestionar ligazóns para compartir",
+      "revoke": "Revogar",
+      "revoke-failed": "Produciuse un erro ao revogar a ligazón",
+      "revoked": "Revogouse a ligazón para compartir",
+      "section-label": "Compartindo",
+      "share": "Compartir",
+      "shared-by": "Compartido por {{creator}}",
+      "title": "Comparte esta nota"
     }
   },
   "message": {
@@ -261,7 +318,8 @@
       "restore-success": "{{username}} restablecida correctamente",
       "user": "Usuaria",
       "label": "Usuaria",
-      "list-title": "Lista de usuarias"
+      "list-title": "Lista de usuarias",
+      "no-members-found": "Non se atopou ningún membro"
     },
     "my-account": {
       "label": "A miña conta"
@@ -383,7 +441,8 @@
       },
       "description": "Lista con todos os tokens de acceso da túa conta.",
       "title": "Tokens de acceso",
-      "token": "Token"
+      "token": "Token",
+      "no-tokens-found": "Non se atoparon tokens de acceso"
     },
     "account": {
       "change-password": "Cambiar contrasinal",
@@ -415,7 +474,8 @@
       "enable-memo-location": "Activar localización nas notas",
       "reactions": "Reaccións",
       "title": "Axustes relacionados coas notas",
-      "label": "Memo"
+      "label": "Memo",
+      "reactions-required": "A lista de reaccións non debe estar baleira"
     },
     "webhook": {
       "create-dialog": {
@@ -436,6 +496,20 @@
       "title": "Webhooks",
       "url": "URL",
       "label": "Webhooks"
+    },
+    "tags": {
+      "label": "Etiquetas",
+      "title": "Metadatos da etiqueta",
+      "description": "Asigne cores de visualización opcionais ás etiquetas en toda a instancia ou desenfoca o contido da nota coincidente. Os nomes das etiquetas trátanse como patróns regex ancorados.",
+      "background-color": "Cor de fondo",
+      "blur-content": "Desenfoque o contido",
+      "no-tags-configured": "Non se configuraron metadatos de etiquetas.",
+      "tag-name": "Nome da etiqueta",
+      "tag-name-placeholder": "p.ex. work ou project/.*",
+      "tag-already-exists": "A etiqueta xa existe.",
+      "tag-pattern-hint": "Nome da etiqueta ou patrón de expresión regular (por exemplo, project/.* coincide con todas as etiquetas project/)",
+      "invalid-regex": "Patrón de expresión regular non válido ou non seguro.",
+      "using-default-color": "Usando a cor predeterminada."
     }
   },
   "tag": {
@@ -461,5 +535,10 @@
     "select-visibility": "Visibilidade",
     "tags": "Etiquetas",
     "upload-attachment": "Anexo(s) subido(s)"
+  },
+  "live-update": {
+    "connected": "Actualizacións en directo activas",
+    "connecting": "Conectando a actualizacións en directo...",
+    "disconnected": "As actualizacións en directo non están dispoñibles"
   }
 }

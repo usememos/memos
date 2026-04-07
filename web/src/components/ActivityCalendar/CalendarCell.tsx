@@ -3,7 +3,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { cn } from "@/lib/utils";
 import { DEFAULT_CELL_SIZE, SMALL_CELL_SIZE } from "./constants";
 import type { CalendarDayCell, CalendarSize } from "./types";
-import { getCellIntensityClass } from "./utils";
+import { getCalendarCellStateClass, getCellIntensityClass } from "./utils";
 
 export interface CalendarCellProps {
   day: CalendarDayCell;
@@ -44,8 +44,7 @@ export const CalendarCell = memo((props: CalendarCellProps) => {
   const buttonClasses = cn(
     baseClasses,
     intensityClass,
-    day.isToday && "ring-2 ring-primary/30 ring-offset-1 font-semibold z-10",
-    day.isSelected && "ring-2 ring-primary ring-offset-1 font-bold z-10",
+    getCalendarCellStateClass(day),
     isInteractive ? "cursor-pointer hover:bg-muted/40 hover:border-border/30" : "cursor-default",
   );
 

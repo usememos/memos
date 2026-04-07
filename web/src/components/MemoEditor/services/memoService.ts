@@ -142,6 +142,13 @@ export const memoService = {
         updateTime: memo.updateTime ? timestampDate(memo.updateTime) : undefined,
       },
       localFiles: [],
+      audioRecorder: {
+        isSupported: true,
+        permission: "unknown",
+        status: "idle",
+        elapsedSeconds: 0,
+        error: undefined,
+      },
     };
   },
 };

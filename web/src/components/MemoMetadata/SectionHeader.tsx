@@ -1,17 +1,19 @@
-import { LucideIcon } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+export interface SectionHeaderTab {
+  id: string;
+  label: string;
+  count: number;
+  active: boolean;
+  onClick: () => void;
+}
 
 interface SectionHeaderProps {
   icon: LucideIcon;
   title: string;
   count: number;
-  tabs?: Array<{
-    id: string;
-    label: string;
-    count: number;
-    active: boolean;
-    onClick: () => void;
-  }>;
+  tabs?: SectionHeaderTab[];
 }
 
 const SectionHeader = ({ icon: Icon, title, count, tabs }: SectionHeaderProps) => {
@@ -24,6 +26,7 @@ const SectionHeader = ({ icon: Icon, title, count, tabs }: SectionHeaderProps) =
           {tabs.map((tab, idx) => (
             <div key={tab.id} className="flex items-center gap-0.5">
               <button
+                type="button"
                 onClick={tab.onClick}
                 className={cn(
                   "text-xs px-0 py-0 transition-colors",

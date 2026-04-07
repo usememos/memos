@@ -10,8 +10,8 @@ import (
 	"github.com/labstack/echo/v5/middleware"
 	"golang.org/x/sync/semaphore"
 
+	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/plugin/markdown"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
@@ -39,6 +39,7 @@ type APIV1Service struct {
 func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store) *APIV1Service {
 	markdownService := markdown.NewService(
 		markdown.WithTagExtension(),
+		markdown.WithMentionExtension(),
 	)
 	return &APIV1Service{
 		Secret:             secret,
@@ -114,9 +115,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 		AllowOrigins: []string{"*"},
 	}))
 	// Register SSE endpoint with same CORS as rest of /api/v1.
-	gwGroup.GET("/api/v1/sse", func(c *echo.Context) error {
-		return handleSSE(c, s.SSEHub, auth.NewAuthenticator(s.Store, s.Secret))
-	})
+	RegisterSSERoutes(gwGroup, s.SSEHub, s.Store, s.Secret)
 	handler := echo.WrapHandler(gwMux)
 
 	gwGroup.Any("/api/v1/*", handler)

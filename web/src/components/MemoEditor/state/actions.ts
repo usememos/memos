@@ -1,7 +1,7 @@
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import type { LocalFile } from "../types/attachment";
-import type { EditorAction, EditorState, LoadingKey } from "./types";
+import type { AudioRecorderPermission, AudioRecorderStatus, EditorAction, EditorState, LoadingKey } from "./types";
 
 export const editorActions = {
   initMemo: (payload: { content: string; metadata: EditorState["metadata"]; timestamps: EditorState["timestamps"] }): EditorAction => ({
@@ -49,6 +49,11 @@ export const editorActions = {
     payload: previewUrl,
   }),
 
+  setLocalFiles: (files: LocalFile[]): EditorAction => ({
+    type: "SET_LOCAL_FILES",
+    payload: files,
+  }),
+
   clearLocalFiles: (): EditorAction => ({
     type: "CLEAR_LOCAL_FILES",
   }),
@@ -70,6 +75,31 @@ export const editorActions = {
   setTimestamps: (timestamps: Partial<EditorState["timestamps"]>): EditorAction => ({
     type: "SET_TIMESTAMPS",
     payload: timestamps,
+  }),
+
+  setAudioRecorderSupport: (value: boolean): EditorAction => ({
+    type: "SET_AUDIO_RECORDER_SUPPORT",
+    payload: value,
+  }),
+
+  setAudioRecorderPermission: (value: AudioRecorderPermission): EditorAction => ({
+    type: "SET_AUDIO_RECORDER_PERMISSION",
+    payload: value,
+  }),
+
+  setAudioRecorderStatus: (value: AudioRecorderStatus): EditorAction => ({
+    type: "SET_AUDIO_RECORDER_STATUS",
+    payload: value,
+  }),
+
+  setAudioRecorderElapsed: (value: number): EditorAction => ({
+    type: "SET_AUDIO_RECORDER_ELAPSED",
+    payload: value,
+  }),
+
+  setAudioRecorderError: (value?: string): EditorAction => ({
+    type: "SET_AUDIO_RECORDER_ERROR",
+    payload: value,
   }),
 
   reset: (): EditorAction => ({

@@ -14,6 +14,7 @@ export const EditorContent = forwardRef<EditorRefActions, EditorContentProps>(({
     const localFiles: LocalFile[] = Array.from(files).map((file) => ({
       file,
       previewUrl: createBlobUrl(file),
+      origin: "upload",
     }));
     localFiles.forEach((localFile) => dispatch(actions.addLocalFile(localFile)));
   });
@@ -50,6 +51,7 @@ export const EditorContent = forwardRef<EditorRefActions, EditorContentProps>(({
     const localFiles: LocalFile[] = files.map((file) => ({
       file,
       previewUrl: createBlobUrl(file),
+      origin: "upload",
     }));
     localFiles.forEach((localFile) => dispatch(actions.addLocalFile(localFile)));
     event.preventDefault();

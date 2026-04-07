@@ -1,16 +1,11 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema, timestampDate } from "@bufbuild/protobuf/wkt";
 import { CheckIcon, MessageCircleIcon, TrashIcon, XIcon } from "lucide-react";
-import { useState } from "react";
 import toast from "react-hot-toast";
 import UserAvatar from "@/components/UserAvatar";
-import { memoServiceClient, userServiceClient } from "@/connect";
-import useAsyncEffect from "@/hooks/useAsyncEffect";
+import { userServiceClient } from "@/connect";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useUser } from "@/hooks/useUserQueries";
-import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
-import { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { UserNotification, UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
@@ -21,53 +16,8 @@ interface Props {
 function MemoCommentMessage({ notification }: Props) {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
-  const [relatedMemo, setRelatedMemo] = useState<Memo | undefined>(undefined);
-  const [commentMemo, setCommentMemo] = useState<Memo | undefined>(undefined);
-  const [senderName, setSenderName] = useState<string | undefined>(undefined);
-  const [initialized, setInitialized] = useState<boolean>(false);
-  const [hasError, setHasError] = useState<boolean>(false);
-
-  const { data: sender } = useUser(senderName || "", { enabled: !!senderName });
-
-  useAsyncEffect(async () => {
-    if (notification.payload?.case !== "memoComment") {
-      setHasError(true);
-      return;
-    }
-
-    try {
-      const memoCommentPayload = notification.payload.value;
-      const memo = await memoServiceClient.getMemo({
-        name: memoCommentPayload.relatedMemo,
-      });
-      setRelatedMemo(memo);
-
-      const comment = await memoServiceClient.getMemo({
-        name: memoCommentPayload.memo,
-      });
-      setCommentMemo(comment);
-
-      setSenderName(notification.sender);
-      setInitialized(true);
-    } catch (error) {
-      handleError(error, () => {}, {
-        context: "Failed to fetch memo comment notification",
-        onError: () => setHasError(true),
-      });
-      return;
-    }
-  }, [notification.payload, notification.sender]);
-
-  const handleNavigateToMemo = async () => {
-    if (!relatedMemo) {
-      return;
-    }
-
-    navigateTo(`/${relatedMemo.name}`);
-    if (notification.status === UserNotification_Status.UNREAD) {
-      handleArchiveMessage(true);
-    }
-  };
+  const commentPayload = notification.payload?.case === "memoComment" ? notification.payload.value : undefined;
+  const sender = notification.senderUser;
 
   const handleArchiveMessage = async (silence = false) => {
     await userServiceClient.updateUserNotification({
@@ -89,22 +39,7 @@ function MemoCommentMessage({ notification }: Props) {
     toast.success(t("message.deleted-successfully"));
   };
 
-  if (!initialized && !hasError) {
-    return (
-      <div className="w-full px-5 py-4 border-b border-border/60 last:border-b-0 bg-muted/10 animate-pulse">
-        <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-full bg-muted/50 shrink-0" />
-          <div className="flex-1 space-y-3">
-            <div className="h-4 bg-muted/50 rounded-md w-2/5" />
-            <div className="h-3 bg-muted/40 rounded-md w-3/4" />
-            <div className="h-20 bg-muted/30 rounded-xl" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (hasError) {
+  if (!commentPayload) {
     return (
       <div className="w-full px-5 py-4 border-b border-border/60 last:border-b-0 bg-destructive/[0.04] group">
         <div className="flex items-center justify-between">
@@ -128,6 +63,13 @@ function MemoCommentMessage({ notification }: Props) {
 
   const isUnread = notification.status === UserNotification_Status.UNREAD;
 
+  const handleNavigateToMemo = async () => {
+    navigateTo(`/${commentPayload.relatedMemo}`);
+    if (isUnread) {
+      await handleArchiveMessage(true);
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -135,11 +77,9 @@ function MemoCommentMessage({ notification }: Props) {
         isUnread ? "bg-primary/[0.03] hover:bg-primary/[0.05]" : "hover:bg-muted/30",
       )}
     >
-      {/* Unread indicator bar */}
       {isUnread && <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary to-primary/60" />}
 
       <div className="flex items-start gap-3">
-        {/* Avatar & Icon */}
         <div className="relative shrink-0">
           <UserAvatar className="w-10 h-10 ring-1 ring-border/40" avatarUrl={sender?.avatarUrl} />
           <div
@@ -152,9 +92,7 @@ function MemoCommentMessage({ notification }: Props) {
           </div>
         </div>
 
-        {/* Content */}
         <div className="flex-1 min-w-0">
-          {/* Header */}
           <div className="flex items-center justify-between gap-3 mb-1">
             <div className="flex items-center gap-1.5 flex-wrap min-w-0">
               <span className="font-semibold text-sm text-foreground/95">{sender?.displayName || sender?.username}</span>
@@ -188,35 +126,29 @@ function MemoCommentMessage({ notification }: Props) {
             </div>
           </div>
 
-          {/* Original Memo Snippet */}
-          {relatedMemo && (
-            <div className="pl-3 border-l-2 border-muted-foreground/20 mb-3">
-              <p className="text-sm text-foreground/60 line-clamp-1 leading-relaxed">
-                <span className="text-xs text-muted-foreground/50 font-medium mr-2 uppercase tracking-wide">Original:</span>
-                {relatedMemo.content || <span className="italic text-muted-foreground/40">Empty memo</span>}
-              </p>
-            </div>
-          )}
+          <div className="pl-3 border-l-2 border-muted-foreground/20 mb-3">
+            <p className="text-sm text-foreground/60 line-clamp-1 leading-relaxed">
+              <span className="text-xs text-muted-foreground/50 font-medium mr-2 uppercase tracking-wide">Original:</span>
+              {commentPayload.relatedMemoSnippet || <span className="italic text-muted-foreground/40">Empty memo</span>}
+            </p>
+          </div>
 
-          {/* Comment Preview */}
-          {commentMemo && (
-            <div
-              onClick={handleNavigateToMemo}
-              className="p-2 sm:p-3 rounded-lg bg-gradient-to-br from-primary/[0.06] to-primary/[0.03] hover:from-primary/[0.1] hover:to-primary/[0.06] cursor-pointer border border-primary/30 hover:border-primary/50 transition-all duration-200 group/comment shadow-sm hover:shadow"
-            >
-              <div className="flex items-start gap-2">
-                <div className="w-5 h-5 flex items-center justify-center shrink-0">
-                  <MessageCircleIcon className="w-4 h-4 text-primary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs text-primary/60 font-semibold mb-1 uppercase tracking-wider">Comment</p>
-                  <p className="text-sm text-foreground/90 line-clamp-2">
-                    {commentMemo.content || <span className="italic text-muted-foreground/50">Empty comment</span>}
-                  </p>
-                </div>
+          <div
+            onClick={handleNavigateToMemo}
+            className="p-2 sm:p-3 rounded-lg bg-gradient-to-br from-primary/[0.06] to-primary/[0.03] hover:from-primary/[0.1] hover:to-primary/[0.06] cursor-pointer border border-primary/30 hover:border-primary/50 transition-all duration-200 group/comment shadow-sm hover:shadow"
+          >
+            <div className="flex items-start gap-2">
+              <div className="w-5 h-5 flex items-center justify-center shrink-0">
+                <MessageCircleIcon className="w-4 h-4 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-primary/60 font-semibold mb-1 uppercase tracking-wider">Comment</p>
+                <p className="text-sm text-foreground/90 line-clamp-2">
+                  {commentPayload.memoSnippet || <span className="italic text-muted-foreground/50">Empty comment</span>}
+                </p>
               </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

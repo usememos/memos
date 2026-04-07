@@ -1,7 +1,7 @@
 import L, { LatLng } from "leaflet";
 import { ExternalLinkIcon, MinusIcon, PlusIcon } from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { createRoot } from "react-dom/client";
+import { createPortal } from "react-dom";
 import { MapContainer, Marker, useMap, useMapEvents } from "react-leaflet";
 import { cn } from "@/lib/utils";
 import { defaultMarkerIcon, ThemedTileLayer } from "./map-utils";
@@ -68,10 +68,9 @@ const GlassButton = ({ icon, onClick, ariaLabel, title }: GlassButtonProps) => {
       className={cn(
         "h-8 w-8 flex items-center justify-center rounded-lg",
         "cursor-pointer transition-all duration-200",
-        "bg-white/80 backdrop-blur-md border border-white/30 shadow-lg",
-        "hover:bg-white/90 hover:scale-105 active:scale-95",
-        "dark:bg-black/80 dark:border-white/10 dark:hover:bg-black/90",
-        "focus:outline-none focus:ring-2 focus:ring-blue-500",
+        "border border-border/80 bg-background/88 text-foreground shadow-sm backdrop-blur-md",
+        "hover:scale-105 hover:bg-background hover:shadow-md active:scale-95",
+        "focus:outline-none focus:ring-2 focus:ring-ring/60",
       )}
     >
       {icon}
@@ -135,7 +134,7 @@ interface MapControlsProps {
 const MapControls = ({ position }: MapControlsProps) => {
   const map = useMap();
   const controlRef = useRef<MapControlsContainer | null>(null);
-  const rootRef = useRef<ReturnType<typeof createRoot> | null>(null);
+  const [container, setContainer] = useState<HTMLDivElement | null>(null);
 
   const handleOpenInGoogleMaps = () => {
     if (!position) return;
@@ -156,39 +155,25 @@ const MapControls = ({ position }: MapControlsProps) => {
     const control = new MapControlsContainer({ position: "topright" });
     controlRef.current = control;
     control.addTo(map);
-
-    // Get container and render React component into it
-    const container = control.getContainer();
-    if (container) {
-      rootRef.current = createRoot(container);
-      rootRef.current.render(
-        <ControlButtons position={position} onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onOpenGoogleMaps={handleOpenInGoogleMaps} />,
-      );
-    }
+    setContainer(control.getContainer() ?? null);
 
     return () => {
-      // Cleanup: unmount React component and remove control
-      if (rootRef.current) {
-        rootRef.current.unmount();
-        rootRef.current = null;
-      }
       if (controlRef.current) {
         controlRef.current.remove();
         controlRef.current = null;
       }
+      setContainer(null);
     };
   }, [map]);
 
-  // Update rendered content when position changes
-  useEffect(() => {
-    if (rootRef.current) {
-      rootRef.current.render(
-        <ControlButtons position={position} onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onOpenGoogleMaps={handleOpenInGoogleMaps} />,
-      );
-    }
-  }, [position]);
+  if (!container) {
+    return null;
+  }
 
-  return null;
+  return createPortal(
+    <ControlButtons position={position} onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onOpenGoogleMaps={handleOpenInGoogleMaps} />,
+    container,
+  );
 };
 
 const MapCleanup = () => {
@@ -222,21 +207,30 @@ const DEFAULT_CENTER_LAT_LNG = new LatLng(48.8584, 2.2945);
 
 const LeafletMap = (props: MapProps) => {
   const position = props.latlng || DEFAULT_CENTER_LAT_LNG;
+  const statusLabel = props.readonly ? "Pinned location" : props.latlng ? "Selected location" : "Choose a location";
 
   return (
-    <MapContainer
-      className="w-full h-72"
-      center={position}
-      zoom={13}
-      scrollWheelZoom={false}
-      zoomControl={false}
-      attributionControl={false}
-    >
-      <ThemedTileLayer />
-      <LocationMarker position={position} readonly={props.readonly} onChange={props.onChange ? props.onChange : () => {}} />
-      <MapControls position={props.latlng} />
-      <MapCleanup />
-    </MapContainer>
+    <div className="memo-location-map relative isolate w-full overflow-hidden rounded-xl border border-border bg-background shadow-sm">
+      <MapContainer
+        className="h-72 w-full !bg-muted"
+        center={position}
+        zoom={13}
+        scrollWheelZoom={false}
+        zoomControl={false}
+        attributionControl={false}
+      >
+        <ThemedTileLayer />
+        <LocationMarker position={position} readonly={props.readonly} onChange={props.onChange ? props.onChange : () => {}} />
+        <MapControls position={props.latlng} />
+        <MapCleanup />
+      </MapContainer>
+
+      <div className="pointer-events-none absolute left-3 top-3 z-[450] flex items-center gap-2">
+        <div className="rounded-full border border-border bg-background/92 px-2.5 py-1 text-[11px] font-medium tracking-[0.02em] text-foreground/80 shadow-sm backdrop-blur-sm">
+          {statusLabel}
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -74,6 +74,12 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         localFiles: state.localFiles.filter((f) => f.previewUrl !== action.payload),
       };
 
+    case "SET_LOCAL_FILES":
+      return {
+        ...state,
+        localFiles: action.payload,
+      };
+
     case "CLEAR_LOCAL_FILES":
       return {
         ...state,
@@ -116,6 +122,52 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         timestamps: {
           ...state.timestamps,
           ...action.payload,
+        },
+      };
+
+    case "SET_AUDIO_RECORDER_SUPPORT":
+      return {
+        ...state,
+        audioRecorder: {
+          ...state.audioRecorder,
+          isSupported: action.payload,
+          status: action.payload ? state.audioRecorder.status : "unsupported",
+        },
+      };
+
+    case "SET_AUDIO_RECORDER_PERMISSION":
+      return {
+        ...state,
+        audioRecorder: {
+          ...state.audioRecorder,
+          permission: action.payload,
+        },
+      };
+
+    case "SET_AUDIO_RECORDER_STATUS":
+      return {
+        ...state,
+        audioRecorder: {
+          ...state.audioRecorder,
+          status: action.payload,
+        },
+      };
+
+    case "SET_AUDIO_RECORDER_ELAPSED":
+      return {
+        ...state,
+        audioRecorder: {
+          ...state.audioRecorder,
+          elapsedSeconds: action.payload,
+        },
+      };
+
+    case "SET_AUDIO_RECORDER_ERROR":
+      return {
+        ...state,
+        audioRecorder: {
+          ...state.audioRecorder,
+          error: action.payload,
         },
       };
 
