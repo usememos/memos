@@ -84,6 +84,7 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
           update: { name: memo.name, content: newContent },
           updateMask: ["content"],
         });
+        setDialogOpen(false);
       } catch (error: unknown) {
         handleError(error, toast.error, { context: "Update table", fallbackMessage: "An error occurred" });
       }
