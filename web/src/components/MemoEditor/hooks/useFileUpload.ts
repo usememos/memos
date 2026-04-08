@@ -26,8 +26,13 @@ export const useFileUpload = (onFilesSelected: (localFiles: LocalFile[]) => void
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
+  const handleUploadClick = (accept = "*") => {
+    if (!fileInputRef.current) {
+      return;
+    }
+
+    fileInputRef.current.accept = accept;
+    fileInputRef.current.click();
   };
 
   return {

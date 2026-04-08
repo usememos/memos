@@ -1,5 +1,6 @@
 import { PauseIcon, PlayIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { cn } from "@/lib/utils";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
 import { formatAudioTime } from "./attachmentHelpers";
 
@@ -56,9 +57,11 @@ interface AudioAttachmentItemProps {
   mimeType: string;
   size?: number;
   title?: string;
+  compact?: boolean;
+  className?: string;
 }
 
-const AudioAttachmentItem = ({ filename, sourceUrl, mimeType, size, title }: AudioAttachmentItemProps) => {
+const AudioAttachmentItem = ({ filename, sourceUrl, mimeType, size, title, compact = false, className }: AudioAttachmentItemProps) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -119,9 +122,9 @@ const AudioAttachmentItem = ({ filename, sourceUrl, mimeType, size, title }: Aud
   };
 
   return (
-    <div className="rounded-xl border border-border/40 bg-background/75 px-2 py-1.5">
-      <div className="flex items-center justify-between gap-1.5">
-        <div className="min-w-0 flex flex-1 items-baseline gap-1">
+    <div className={cn("rounded-xl border border-border/40 bg-background/75", compact ? "px-3 py-2.5" : "px-2 py-1.5", className)}>
+      <div className="flex items-start justify-between gap-2">
+        <div className={cn("min-w-0 flex flex-1", compact ? "flex-col gap-0.5" : "items-baseline gap-1")}>
           <div className="truncate text-sm font-medium leading-5 text-foreground" title={filename}>
             {displayTitle}
           </div>
@@ -141,7 +144,7 @@ const AudioAttachmentItem = ({ filename, sourceUrl, mimeType, size, title }: Aud
         </button>
       </div>
 
-      <div className="mt-1 flex items-center gap-1">
+      <div className={cn("mt-1", compact ? "space-y-1.5" : "flex items-center gap-1")}>
         <AudioProgressBar
           filename={filename}
           currentTime={currentTime}
@@ -151,16 +154,18 @@ const AudioAttachmentItem = ({ filename, sourceUrl, mimeType, size, title }: Aud
           className="min-w-0 flex-1"
         />
 
-        <div className="shrink-0 text-[10px] tabular-nums text-muted-foreground">{timeLabel}</div>
+        <div className={cn("flex items-center", compact ? "justify-between gap-2" : "shrink-0 gap-1")}>
+          <div className="shrink-0 text-[10px] tabular-nums text-muted-foreground">{timeLabel}</div>
 
-        <button
-          type="button"
-          onClick={handlePlaybackRateChange}
-          className="inline-flex h-5 shrink-0 items-center justify-center rounded-md border border-transparent px-1 text-[10px] font-medium text-muted-foreground transition-colors hover:border-border/40 hover:text-foreground"
-          aria-label={`Playback speed ${playbackRate}x for ${displayTitle}`}
-        >
-          {playbackRate}x
-        </button>
+          <button
+            type="button"
+            onClick={handlePlaybackRateChange}
+            className="inline-flex h-5 shrink-0 items-center justify-center rounded-md border border-transparent px-1 text-[10px] font-medium text-muted-foreground transition-colors hover:border-border/40 hover:text-foreground"
+            aria-label={`Playback speed ${playbackRate}x for ${displayTitle}`}
+          >
+            {playbackRate}x
+          </button>
+        </div>
       </div>
 
       <audio
