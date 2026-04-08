@@ -18,7 +18,7 @@
    * Embedded Content
    * ======================================== */
 
-  /* iframes (e.g., YouTube embeds, maps) */
+  /* iframes from trusted embed providers */
   iframe {
     max-width: 100%;
     border-radius: 0.5rem;

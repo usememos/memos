@@ -25,6 +25,7 @@ import { Blockquote, Heading, HorizontalRule, Image, InlineCode, Link, List, Lis
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "./Table";
 import { Tag } from "./Tag";
 import { TaskListItem } from "./TaskListItem";
+import { TrustedIframe } from "./TrustedIframe";
 import type { MemoContentProps } from "./types";
 
 function getMentionUsername(node: Element, children?: React.ReactNode): string {
@@ -148,6 +149,7 @@ const MemoContent = (props: MemoContentProps) => {
             // Inline elements
             a: ({ children, ...props }) => <Link {...props}>{children}</Link>,
             code: ({ children, ...props }) => <InlineCode {...props}>{children}</InlineCode>,
+            iframe: TrustedIframe as React.ComponentType<React.ComponentProps<"iframe">>,
             img: ({ ...props }) => <Image {...props} />,
             // Code blocks
             pre: CodeBlock,
