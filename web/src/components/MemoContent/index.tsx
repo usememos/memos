@@ -68,6 +68,9 @@ const MemoContent = (props: MemoContentProps) => {
         className={cn(
           "relative w-full max-w-full wrap-break-word text-base leading-6",
           "[&>*:last-child]:mb-0",
+          "[&_.katex-display]:max-w-full",
+          "[&_.katex-display]:overflow-x-auto",
+          "[&_.katex-display]:overflow-y-hidden",
           showCompactMode === "ALL" && "overflow-hidden",
           contentClassName,
         )}

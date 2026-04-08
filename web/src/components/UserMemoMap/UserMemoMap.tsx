@@ -111,7 +111,21 @@ const UserMemoMap = ({ creator, className }: Props) => {
         >
           {memosWithLocation.map((memo) => (
             <Marker key={memo.name} position={[memo.location!.latitude, memo.location!.longitude]} icon={defaultMarkerIcon}>
-              <Popup closeButton={false} className="memo-map-popup w-64!">
+              <Popup
+                closeButton={false}
+                className={cn(
+                  "w-64!",
+                  "[&_.leaflet-popup-content-wrapper]:rounded-lg",
+                  "[&_.leaflet-popup-content-wrapper]:border",
+                  "[&_.leaflet-popup-content-wrapper]:border-border",
+                  "[&_.leaflet-popup-content-wrapper]:bg-background",
+                  "[&_.leaflet-popup-content-wrapper]:shadow-lg",
+                  "[&_.leaflet-popup-content]:m-1",
+                  "[&_.leaflet-popup-content]:[font-size:inherit]",
+                  "[&_.leaflet-popup-content]:[line-height:inherit]",
+                  "[&_.leaflet-popup-tip]:bg-background",
+                )}
+              >
                 <div className="flex flex-col gap-2.5 p-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="space-y-1">
