@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { Code, ConnectError } from "@connectrpc/connect";
 
 import { retryAuthInitialization } from "../src/contexts/auth-initialize.ts";
 
@@ -46,3 +47,29 @@ test("throws the final error after exhausting auth initialization retries", asyn
   assert.equal(attempts, 4);
   assert.deepEqual(delays, [500, 1000, 2000]);
 });
+
+test("does not retry terminal unauthenticated auth initialization failures", async () => {
+  const delays = [];
+  let attempts = 0;
+
+  await assert.rejects(
+    () =>
+      retryAuthInitialization({
+        operation: async () => {
+          attempts += 1;
+          throw new ConnectError("session expired", Code.Unauthenticated);
+        },
+        sleep: async (delayMs) => {
+          delays.push(delayMs);
+        },
+      }),
+    (error) => {
+      assert.ok(error instanceof ConnectError);
+      assert.equal(error.code, Code.Unauthenticated);
+      return true;
+    },
+  );
+
+  assert.equal(attempts, 1);
+  assert.deepEqual(delays, []);
+ });

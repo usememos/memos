@@ -1,5 +1,11 @@
+import { Code, ConnectError } from "@connectrpc/connect";
+
 const AUTH_INIT_MAX_RETRIES = 3;
 const AUTH_INIT_INITIAL_DELAY_MS = 500;
+
+function shouldRetryAuthInitialization(error: unknown): boolean {
+  return !(error instanceof ConnectError && error.code === Code.Unauthenticated);
+}
 
 const defaultSleep = async (delayMs: number): Promise<void> => {
   await new Promise((resolve) => {
@@ -19,6 +25,9 @@ export async function retryAuthInitialization<T>({ operation, sleep = defaultSle
     try {
       return await operation();
     } catch (error) {
+      if (!shouldRetryAuthInitialization(error)) {
+        throw error;
+      }
       if (attempt >= AUTH_INIT_MAX_RETRIES) {
         throw error;
       }
