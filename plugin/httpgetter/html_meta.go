@@ -106,7 +106,7 @@ func extractHTMLMeta(resp io.Reader) *HTMLMeta {
 func extractMetaProperty(token html.Token, prop string) (content string, ok bool) {
 	content, ok = "", false
 	for _, attr := range token.Attr {
-		if attr.Key == "property" && attr.Val == prop {
+		if (attr.Key == "property" || attr.Key == "name") && attr.Val == prop {
 			ok = true
 		}
 		if attr.Key == "content" {
