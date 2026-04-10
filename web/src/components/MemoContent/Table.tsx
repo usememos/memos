@@ -100,8 +100,6 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
     if (tableIndex < 0) return;
     setIsDeleting(true);
     try {
-      // Get table bounds before replacement for localized whitespace normalization
-      const tables = findAllTables(memo.content);
       const tableToDelete = tables[tableIndex];
       if (!tableToDelete) return;
 
@@ -134,7 +132,7 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
     } finally {
       setIsDeleting(false);
     }
-  }, [memo.content, memo.name, tableIndex, updateMemo, t]);
+  }, [memo.content, memo.name, tableIndex, tables, updateMemo, t]);
 
   return (
     <>
