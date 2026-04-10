@@ -10,6 +10,18 @@ import type { AttachmentVisualItem, PreviewMediaItem } from "@/utils/media-item"
 import { buildAttachmentVisualItems } from "@/utils/media-item";
 import AudioAttachmentItem from "./AudioAttachmentItem";
 import { getAttachmentMetadata, isAudioAttachment, separateAttachments } from "./attachmentHelpers";
+import {
+  COLLAGE_VIDEO_PLAY_BADGE_CLASS,
+  COVER_MEDIA_CLASS,
+  MEDIA_HOVER_GRADIENT_CLASS,
+  MEDIA_HOVER_SURFACE_CLASS,
+  NATURAL_MEDIA_CLASS,
+  OVERFLOW_TILE_OVERLAY_CLASS,
+  SINGLE_MOTION_VIDEO_CLASS,
+  SINGLE_VIDEO_CARD_WIDTH_CLASS,
+  VISUAL_TILE_BUTTON_CLASS,
+} from "./attachmentVisualClasses";
+import { resolveVisualGalleryLayout } from "./visualGalleryLayout";
 
 interface AttachmentListViewProps {
   attachments: Attachment[];
@@ -17,15 +29,6 @@ interface AttachmentListViewProps {
 }
 
 type VisualItem = AttachmentVisualItem;
-
-const VISUAL_TILE_CLASS =
-  "group relative overflow-hidden rounded-xl border border-border/70 bg-muted/30 text-left transition-colors hover:border-accent/40";
-const COVER_MEDIA_CLASS = "h-full w-full rounded-none object-cover transition-transform duration-300 group-hover:scale-[1.02]";
-const NATURAL_MEDIA_CLASS =
-  "block h-auto max-h-[20rem] w-auto max-w-full rounded-none transition-transform duration-300 group-hover:scale-[1.02]";
-const SINGLE_VIDEO_CARD_WIDTH_CLASS = "w-full max-w-[30rem]";
-const TWO_ITEM_GRID_HEIGHT_CLASS = "h-[11rem] sm:h-[13rem] md:h-[15rem]";
-const MOSAIC_GRID_HEIGHT_CLASS = "h-[13rem] sm:h-[16rem] md:h-[18rem]";
 
 const AttachmentMeta = ({ attachment }: { attachment: Attachment }) => {
   const { fileTypeLabel, fileSizeLabel } = getAttachmentMetadata(attachment);
@@ -74,14 +77,12 @@ const VisualTile = ({
   children,
 }: PropsWithChildren<{ className?: string; onPreview?: () => void; overlayLabel?: string }>) => {
   return (
-    <button type="button" className={cn(VISUAL_TILE_CLASS, className)} onClick={onPreview}>
-      {children}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-foreground/15 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-      {overlayLabel && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/45 text-2xl font-semibold text-white backdrop-blur-[2px]">
-          {overlayLabel}
-        </div>
-      )}
+    <button type="button" className={cn(VISUAL_TILE_BUTTON_CLASS, className)} onClick={onPreview}>
+      <div className={MEDIA_HOVER_SURFACE_CLASS}>
+        {children}
+        <div className={MEDIA_HOVER_GRADIENT_CLASS} aria-hidden />
+      </div>
+      {overlayLabel && <div className={OVERFLOW_TILE_OVERLAY_CLASS}>{overlayLabel}</div>}
     </button>
   );
 };
@@ -116,7 +117,7 @@ const CollageVisualItem = ({
         <>
           <video src={item.sourceUrl} className={COVER_MEDIA_CLASS} preload="metadata" />
           {!overlayLabel && (
-            <VideoPlayBadge className="bottom-2 right-2 h-7 w-7 bg-background/80 text-foreground/70">
+            <VideoPlayBadge className={COLLAGE_VIDEO_PLAY_BADGE_CLASS}>
               <PlayIcon className="h-3.5 w-3.5 fill-current" />
             </VideoPlayBadge>
           )}
@@ -159,7 +160,7 @@ const SingleVisualItem = ({ item, onPreview }: { item: VisualItem; onPreview?: (
           presentationTimestampUs={motionPreviewProps.presentationTimestampUs}
           containerClassName="max-w-full"
           posterClassName={cn(NATURAL_MEDIA_CLASS, "object-contain")}
-          videoClassName="absolute inset-0 h-full w-full rounded-none object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+          videoClassName={SINGLE_MOTION_VIDEO_CLASS}
           badgeClassName="left-2 top-2 px-2 py-0.5 text-[10px]"
         />
       </VisualTile>
@@ -180,48 +181,28 @@ const SingleVisualItem = ({ item, onPreview }: { item: VisualItem; onPreview?: (
 };
 
 const VisualGallery = ({ items, onPreview }: { items: VisualItem[]; onPreview?: (itemId: string) => void }) => {
-  if (items.length === 0) {
+  const layout = resolveVisualGalleryLayout(items);
+
+  if (!layout) {
     return null;
   }
 
-  if (items.length === 1) {
+  if (layout.mode === "single") {
     return (
       <div className="w-full">
-        <SingleVisualItem item={items[0]} onPreview={() => onPreview?.(items[0].id)} />
+        <SingleVisualItem item={layout.item} onPreview={() => onPreview?.(layout.item.id)} />
       </div>
     );
   }
-
-  if (items.length === 2) {
-    return (
-      <div className={cn("grid grid-cols-2 gap-2", TWO_ITEM_GRID_HEIGHT_CLASS)}>
-        {items.map((item) => (
-          <CollageVisualItem key={item.id} item={item} onPreview={() => onPreview?.(item.id)} />
-        ))}
-      </div>
-    );
-  }
-
-  if (items.length === 3) {
-    return (
-      <div className={cn("grid grid-cols-2 grid-rows-2 gap-2", MOSAIC_GRID_HEIGHT_CLASS)}>
-        <CollageVisualItem item={items[0]} className="row-span-2" onPreview={() => onPreview?.(items[0].id)} />
-        <CollageVisualItem item={items[1]} onPreview={() => onPreview?.(items[1].id)} />
-        <CollageVisualItem item={items[2]} onPreview={() => onPreview?.(items[2].id)} />
-      </div>
-    );
-  }
-
-  const visibleItems = items.slice(0, 4);
-  const remainingCount = items.length - visibleItems.length;
 
   return (
-    <div className={cn("grid grid-cols-2 grid-rows-2 gap-2", MOSAIC_GRID_HEIGHT_CLASS)}>
-      {visibleItems.map((item, index) => (
+    <div className={layout.containerClassName}>
+      {layout.cells.map(({ item, className, overlayLabel }) => (
         <CollageVisualItem
           key={item.id}
           item={item}
-          overlayLabel={index === visibleItems.length - 1 && remainingCount > 0 ? `+${remainingCount}` : undefined}
+          className={className}
+          overlayLabel={overlayLabel}
           onPreview={() => onPreview?.(item.id)}
         />
       ))}
