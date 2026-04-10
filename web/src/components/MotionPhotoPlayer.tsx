@@ -8,6 +8,8 @@ interface MotionPhotoPlayerProps {
   presentationTimestampUs?: bigint;
   containerClassName?: string;
   mediaClassName?: string;
+  posterClassName?: string;
+  videoClassName?: string;
   active?: boolean;
   loop?: boolean;
 }
@@ -19,6 +21,8 @@ const MotionPhotoPlayer = ({
   presentationTimestampUs,
   containerClassName,
   mediaClassName,
+  posterClassName,
+  videoClassName,
   active,
   loop = false,
 }: MotionPhotoPlayerProps) => {
@@ -87,7 +91,7 @@ const MotionPhotoPlayer = ({
       <img
         src={posterUrl}
         alt={alt}
-        className={cn("block max-h-full max-w-full select-none object-cover", mediaClassName)}
+        className={cn("block max-h-full max-w-full select-none object-cover", mediaClassName, posterClassName)}
         draggable={false}
         loading="lazy"
         decoding="async"
@@ -100,6 +104,7 @@ const MotionPhotoPlayer = ({
           "pointer-events-none absolute inset-0 h-full w-full object-cover transition-opacity duration-200",
           isPlaying ? "opacity-100" : "opacity-0",
           mediaClassName,
+          videoClassName,
         )}
         muted
         playsInline

@@ -26,6 +26,20 @@ export const cacheService = {
     pendingSaves.set(key, timeoutId);
   },
 
+  saveNow: (key: string, content: string) => {
+    const pendingSave = pendingSaves.get(key);
+    if (pendingSave) {
+      window.clearTimeout(pendingSave);
+      pendingSaves.delete(key);
+    }
+
+    if (content.trim()) {
+      localStorage.setItem(key, content);
+    } else {
+      localStorage.removeItem(key);
+    }
+  },
+
   load(key: string): string {
     return localStorage.getItem(key) || "";
   },

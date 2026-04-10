@@ -4,47 +4,55 @@ import { formatAudioTime } from "@/components/MemoMetadata/Attachment/attachment
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
+import { useAudioWaveform } from "../hooks/useAudioWaveform";
 import type { AudioRecorderPanelProps } from "../types/components";
+import { VoiceWaveform } from "./VoiceWaveform";
 
-export const AudioRecorderPanel: FC<AudioRecorderPanelProps> = ({ audioRecorder, onStop, onCancel }) => {
+export const AudioRecorderPanel: FC<AudioRecorderPanelProps> = ({ audioRecorder, mediaStream, onStop, onCancel }) => {
   const t = useTranslate();
   const { status, elapsedSeconds } = audioRecorder;
 
   const isRequestingPermission = status === "requesting_permission";
+  const isRecording = status === "recording";
+  const waveformLevels = useAudioWaveform(mediaStream, isRecording && mediaStream !== null);
+  const srStatusText = isRequestingPermission ? t("editor.audio-recorder.requesting-permission") : t("editor.audio-recorder.recording");
 
   return (
-    <div className="w-full rounded-lg border border-border/60 bg-muted/20 px-2.5 py-2">
-      <div className="flex items-center gap-2">
-        <div className="min-w-0 flex flex-1 gap-2">
-          <div className="truncate text-sm font-medium text-foreground">
-            {isRequestingPermission ? t("editor.audio-recorder.requesting-permission") : t("editor.audio-recorder.recording")}
-          </div>
-          <div
-            className={cn(
-              "inline-flex shrink-0 items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium",
-              isRequestingPermission
-                ? "border border-border/60 bg-background text-muted-foreground"
-                : "border border-destructive/20 bg-destructive/[0.08] text-destructive",
-            )}
-          >
-            {isRequestingPermission ? (
-              <LoaderCircleIcon className="size-3 animate-spin" />
-            ) : (
-              <span className="size-2 rounded-full bg-destructive" />
-            )}
-            {formatAudioTime(elapsedSeconds)}
-          </div>
-        </div>
+    <div
+      className={cn(
+        "flex w-full items-center justify-between gap-2 rounded-lg border border-border bg-muted/30 px-2.5 py-1.5",
+        "dark:bg-muted/20",
+      )}
+    >
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        {isRequestingPermission ? <LoaderCircleIcon className="size-3.5 shrink-0 animate-spin text-muted-foreground" aria-hidden /> : null}
+        <span className="sr-only">{srStatusText}</span>
+        <VoiceWaveform levels={waveformLevels} className="max-w-[200px] overflow-hidden" />
+        <span className="shrink-0 font-mono text-xs tabular-nums text-muted-foreground">{formatAudioTime(elapsedSeconds)}</span>
+      </div>
 
-        <div className="ml-auto flex shrink-0 items-center gap-1">
-          <Button variant="ghost" size="sm" onClick={onCancel} aria-label={t("common.cancel")}>
-            <XIcon className="size-4" />
-          </Button>
-          <Button size="sm" className="gap-1.5" onClick={onStop} disabled={isRequestingPermission}>
-            <span className="size-2.5 rounded-[2px] bg-current" aria-hidden="true" />
-            {t("editor.audio-recorder.stop")}
-          </Button>
-        </div>
+      <div className="flex shrink-0 items-center gap-1 border-l border-border/60 pl-2">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="size-7 shrink-0 rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
+          onClick={onCancel}
+          aria-label={t("common.cancel")}
+        >
+          <XIcon className="size-3.25" />
+        </Button>
+        <Button
+          type="button"
+          variant="destructive"
+          size="icon"
+          className="size-7 shrink-0 rounded-full shadow-xs"
+          onClick={onStop}
+          disabled={isRequestingPermission}
+          aria-label={t("editor.audio-recorder.stop")}
+        >
+          <span className="size-[7px] rounded-[1.5px] bg-destructive-foreground" aria-hidden />
+        </Button>
       </div>
     </div>
   );

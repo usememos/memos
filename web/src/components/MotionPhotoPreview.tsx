@@ -9,6 +9,8 @@ interface MotionPhotoPreviewProps {
   presentationTimestampUs?: bigint;
   containerClassName?: string;
   mediaClassName?: string;
+  posterClassName?: string;
+  videoClassName?: string;
   badgeClassName?: string;
   loop?: boolean;
 }
@@ -20,6 +22,8 @@ const MotionPhotoPreview = ({
   presentationTimestampUs,
   containerClassName,
   mediaClassName,
+  posterClassName,
+  videoClassName,
   badgeClassName,
   loop = false,
 }: MotionPhotoPreviewProps) => {
@@ -40,6 +44,8 @@ const MotionPhotoPreview = ({
         loop={loop}
         containerClassName={cn("max-w-full max-h-full", containerClassName)}
         mediaClassName={mediaClassName}
+        posterClassName={posterClassName}
+        videoClassName={videoClassName}
       />
       <div
         role="button"

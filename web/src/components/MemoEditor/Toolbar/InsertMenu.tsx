@@ -2,6 +2,7 @@ import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
 import {
   FileIcon,
+  ImageIcon,
   LinkIcon,
   LoaderIcon,
   type LucideIcon,
@@ -38,18 +39,31 @@ import type { LocalFile } from "../types/attachment";
 const InsertMenu = (props: InsertMenuProps) => {
   const t = useTranslate();
   const { state, actions, dispatch } = useEditorContext();
-  const { location: initialLocation, onLocationChange, onToggleFocusMode, onOpenTableEditor, isUploading: isUploadingProp } = props;
+  const {
+    location: initialLocation,
+    onLocationChange,
+    onToggleFocusMode,
+    onOpenTableEditor,
+    isUploading: isUploadingProp,
+  } = props;
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
   const [moreSubmenuOpen, setMoreSubmenuOpen] = useState(false);
 
-  const { handleTriggerEnter, handleTriggerLeave, handleContentEnter, handleContentLeave } = useDropdownMenuSubHoverDelay(
-    150,
-    setMoreSubmenuOpen,
-  );
+  const {
+    handleTriggerEnter,
+    handleTriggerLeave,
+    handleContentEnter,
+    handleContentLeave,
+  } = useDropdownMenuSubHoverDelay(150, setMoreSubmenuOpen);
 
-  const { fileInputRef, selectingFlag, handleFileInputChange, handleUploadClick } = useFileUpload((newFiles: LocalFile[]) => {
+  const {
+    fileInputRef,
+    selectingFlag,
+    handleFileInputChange,
+    handleUploadClick,
+  } = useFileUpload((newFiles: LocalFile[]) => {
     newFiles.forEach((file) => dispatch(actions.addLocalFile(file)));
   });
 
@@ -58,7 +72,14 @@ const InsertMenu = (props: InsertMenuProps) => {
     currentMemoName: props.memoName,
     existingRelations: state.metadata.relations,
     onAddRelation: (relation: MemoRelation) => {
-      dispatch(actions.setMetadata({ relations: uniqBy([...state.metadata.relations, relation], (r) => r.relatedMemo?.name) }));
+      dispatch(
+        actions.setMetadata({
+          relations: uniqBy(
+            [...state.metadata.relations, relation],
+            (r) => r.relatedMemo?.name,
+          ),
+        }),
+      );
       setLinkDialogOpen(false);
     },
   });
@@ -74,7 +95,9 @@ const InsertMenu = (props: InsertMenuProps) => {
     setPlaceholder,
   } = location;
 
-  const [debouncedPosition, setDebouncedPosition] = useState<LatLng | undefined>(undefined);
+  const [debouncedPosition, setDebouncedPosition] = useState<
+    LatLng | undefined
+  >(undefined);
 
   useDebounce(
     () => {
@@ -84,7 +107,10 @@ const InsertMenu = (props: InsertMenuProps) => {
     [locationState.position],
   );
 
-  const { data: displayName } = useReverseGeocoding(debouncedPosition?.lat, debouncedPosition?.lng);
+  const { data: displayName } = useReverseGeocoding(
+    debouncedPosition?.lat,
+    debouncedPosition?.lng,
+  );
 
   useEffect(() => {
     if (displayName) {
@@ -104,7 +130,9 @@ const InsertMenu = (props: InsertMenuProps) => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            handleLocationPositionChange(new LatLng(position.coords.latitude, position.coords.longitude));
+            handleLocationPositionChange(
+              new LatLng(position.coords.latitude, position.coords.longitude),
+            );
           },
           (error) => {
             console.error("Geolocation error:", error);
@@ -132,20 +160,34 @@ const InsertMenu = (props: InsertMenuProps) => {
     setMoreSubmenuOpen(false);
   }, [onToggleFocusMode]);
 
+  const handleMediaUploadClick = useCallback(() => {
+    handleUploadClick("image/*,video/*");
+  }, [handleUploadClick]);
+
+  const handleFileUploadClick = useCallback(() => {
+    handleUploadClick();
+  }, [handleUploadClick]);
+
   const menuItems = useMemo(
     () =>
       [
         {
-          key: "upload",
-          label: t("editor.insert-menu.upload-file"),
-          icon: FileIcon,
-          onClick: handleUploadClick,
+          key: "upload-media",
+          label: t("attachment-library.tabs.media"),
+          icon: ImageIcon,
+          onClick: handleMediaUploadClick,
         },
         {
           key: "record-audio",
           label: t("editor.audio-recorder.trigger"),
           icon: MicIcon,
           onClick: () => props.onAudioRecorderClick?.(),
+        },
+        {
+          key: "upload-file",
+          label: t("common.file"),
+          icon: FileIcon,
+          onClick: handleFileUploadClick,
         },
         {
           key: "table",
@@ -165,27 +207,49 @@ const InsertMenu = (props: InsertMenuProps) => {
           icon: MapPinIcon,
           onClick: handleLocationClick,
         },
-      ] satisfies Array<{ key: string; label: string; icon: LucideIcon; onClick: () => void }>,
-    [handleLocationClick, handleOpenLinkDialog, handleUploadClick, onOpenTableEditor, props, t],
+      ] satisfies Array<{
+        key: string;
+        label: string;
+        icon: LucideIcon;
+        onClick: () => void;
+      }>,
+    [
+      handleFileUploadClick,
+      handleLocationClick,
+      handleMediaUploadClick,
+      handleOpenLinkDialog,
+      onOpenTableEditor,
+      props,
+      t,
+    ],
   );
 
   return (
     <>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" className="shadow-none" disabled={isUploading}>
-            {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <PlusIcon className="size-4" />}
+          <Button
+            variant="outline"
+            size="icon"
+            className="shadow-none"
+            disabled={isUploading}
+          >
+            {isUploading ? (
+              <LoaderIcon className="size-4 animate-spin" />
+            ) : (
+              <PlusIcon className="size-4" />
+            )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          {menuItems.slice(0, 2).map((item) => (
+          {menuItems.slice(0, 3).map((item) => (
             <DropdownMenuItem key={item.key} onClick={item.onClick}>
               <item.icon className="w-4 h-4" />
               {item.label}
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
-          {menuItems.slice(2).map((item) => (
+          {menuItems.slice(3).map((item) => (
             <DropdownMenuItem key={item.key} onClick={item.onClick}>
               <item.icon className="w-4 h-4" />
               {item.label}
@@ -193,19 +257,30 @@ const InsertMenu = (props: InsertMenuProps) => {
           ))}
           <DropdownMenuSeparator />
           {/* View submenu with Focus Mode */}
-          <DropdownMenuSub open={moreSubmenuOpen} onOpenChange={setMoreSubmenuOpen}>
-            <DropdownMenuSubTrigger onPointerEnter={handleTriggerEnter} onPointerLeave={handleTriggerLeave}>
+          <DropdownMenuSub
+            open={moreSubmenuOpen}
+            onOpenChange={setMoreSubmenuOpen}
+          >
+            <DropdownMenuSubTrigger
+              onPointerEnter={handleTriggerEnter}
+              onPointerLeave={handleTriggerLeave}
+            >
               <MoreHorizontalIcon className="w-4 h-4" />
               {t("common.more")}
             </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent onPointerEnter={handleContentEnter} onPointerLeave={handleContentLeave}>
+            <DropdownMenuSubContent
+              onPointerEnter={handleContentEnter}
+              onPointerLeave={handleContentLeave}
+            >
               <DropdownMenuItem onClick={handleToggleFocusMode}>
                 <Maximize2Icon className="w-4 h-4" />
                 {t("editor.focus-mode")}
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
-          <div className="px-2 py-1 text-xs text-muted-foreground opacity-80">{t("editor.slash-commands")}</div>
+          <div className="px-2 py-1 text-xs text-muted-foreground opacity-80">
+            {t("editor.slash-commands")}
+          </div>
         </DropdownMenuContent>
       </DropdownMenu>
 

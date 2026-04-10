@@ -6,7 +6,13 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useTranslate } from "@/utils/i18n";
 import { useMemoViewContext } from "../MemoView/MemoViewContext";
 import MemoShareImagePreview from "./MemoShareImagePreview";
-import { buildMemoShareImageFileName, createMemoShareImageBlob, getMemoShareDialogWidth, getMemoSharePreviewWidth } from "./memoShareImage";
+import {
+  buildMemoShareImageFileName,
+  createMemoShareImageBlob,
+  getMemoShareDialogWidth,
+  getMemoSharePreviewWidth,
+  getMemoShareRenderWidth,
+} from "./memoShareImage";
 
 interface MemoShareImageDialogProps {
   open: boolean;
@@ -21,6 +27,7 @@ const MemoShareImageDialog = ({ open, onOpenChange }: MemoShareImageDialogProps)
 
   const previewWidth = useMemo(() => getMemoSharePreviewWidth(cardWidth), [cardWidth]);
   const dialogWidth = useMemo(() => getMemoShareDialogWidth(previewWidth), [previewWidth]);
+  const previewRenderWidth = useMemo(() => getMemoShareRenderWidth(previewWidth, dialogWidth), [dialogWidth, previewWidth]);
 
   const createShareBlob = useCallback(async () => {
     const preview = previewRef.current;
@@ -81,31 +88,47 @@ const MemoShareImageDialog = ({ open, onOpenChange }: MemoShareImageDialogProps)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent size="full" className="md:w-auto md:max-w-none" style={{ width: `${dialogWidth}px` }}>
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <ImageIcon className="h-4 w-4" />
-            {t("memo.share.image-title")}
-          </DialogTitle>
-          <DialogDescription>{t("memo.share.image-description", { width: previewWidth })}</DialogDescription>
-        </DialogHeader>
+      <DialogContent
+        size="full"
+        className="min-h-0 overflow-hidden !gap-0 !p-0 md:w-auto md:max-w-none"
+        style={{ width: `${dialogWidth}px` }}
+      >
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <DialogHeader className="shrink-0 border-b border-border/60 px-4 py-3 sm:px-5">
+            <DialogTitle className="flex items-center gap-2 text-base font-medium">
+              <ImageIcon className="h-4 w-4 text-muted-foreground" />
+              {t("memo.share.image-title")}
+            </DialogTitle>
+            <DialogDescription className="text-xs">{t("memo.share.image-description", { width: previewRenderWidth })}</DialogDescription>
+          </DialogHeader>
 
-        <div className="overflow-auto p-1 sm:p-2">
-          <MemoShareImagePreview ref={previewRef} width={previewWidth} />
-        </div>
+          <div className="relative flex min-h-0 flex-1 items-start justify-center overflow-auto bg-muted/20 px-4 py-3 sm:px-5 sm:py-4">
+            <MemoShareImagePreview ref={previewRef} width={previewRenderWidth} />
+          </div>
 
-        <DialogFooter>
-          {supportsNativeShare && (
-            <Button variant="outline" onClick={handleNativeShare} disabled={isRendering}>
-              {isRendering ? <Loader2Icon className="mr-2 h-4 w-4 animate-spin" /> : <Share2Icon className="mr-2 h-4 w-4" />}
-              {t("memo.share.image-share")}
+          <DialogFooter className="shrink-0 border-t border-border/60 px-4 py-3 sm:px-5">
+            {supportsNativeShare && (
+              <Button
+                variant="ghost"
+                className="text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                onClick={handleNativeShare}
+                disabled={isRendering}
+              >
+                {isRendering ? <Loader2Icon className="mr-2 h-4 w-4 animate-spin" /> : <Share2Icon className="mr-2 h-4 w-4" />}
+                {t("memo.share.image-share")}
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              className="border-border/70 text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+              onClick={handleDownload}
+              disabled={isRendering}
+            >
+              {isRendering ? <Loader2Icon className="mr-2 h-4 w-4 animate-spin" /> : <DownloadIcon className="mr-2 h-4 w-4" />}
+              {t("memo.share.image-download")}
             </Button>
-          )}
-          <Button onClick={handleDownload} disabled={isRendering}>
-            {isRendering ? <Loader2Icon className="mr-2 h-4 w-4 animate-spin" /> : <DownloadIcon className="mr-2 h-4 w-4" />}
-            {t("memo.share.image-download")}
-          </Button>
-        </DialogFooter>
+          </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
