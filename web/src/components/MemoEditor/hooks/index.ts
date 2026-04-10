@@ -1,5 +1,6 @@
 // Custom hooks for MemoEditor (internal use only)
 export { useAudioRecorder } from "./useAudioRecorder";
+export { useAudioWaveform } from "./useAudioWaveform";
 export { useAutoSave } from "./useAutoSave";
 export { useBlobUrls } from "./useBlobUrls";
 export { useDragAndDrop } from "./useDragAndDrop";

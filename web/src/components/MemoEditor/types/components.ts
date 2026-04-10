@@ -32,6 +32,8 @@ export interface EditorMetadataProps {
 
 export interface AudioRecorderPanelProps {
   audioRecorder: EditorState["audioRecorder"];
+  /** Active mic stream while recording; used for live waveform visualization. */
+  mediaStream: MediaStream | null;
   onStop: () => void;
   onCancel: () => void;
 }

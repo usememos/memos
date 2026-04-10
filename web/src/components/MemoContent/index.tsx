@@ -24,6 +24,7 @@ import { Blockquote, Heading, HorizontalRule, Image, InlineCode, Link, List, Lis
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "./Table";
 import { Tag } from "./Tag";
 import { TaskListItem } from "./TaskListItem";
+import { TrustedIframe } from "./TrustedIframe";
 import type { MemoContentProps } from "./types";
 
 function getMentionUsername(node: Element, children?: React.ReactNode): string {
@@ -66,6 +67,9 @@ const MemoContent = (props: MemoContentProps) => {
         className={cn(
           "relative w-full max-w-full wrap-break-word text-base leading-6",
           "[&>*:last-child]:mb-0",
+          "[&_.katex-display]:max-w-full",
+          "[&_.katex-display]:overflow-x-auto",
+          "[&_.katex-display]:overflow-y-hidden",
           showCompactMode === "ALL" && "overflow-hidden",
           contentClassName,
         )}
@@ -121,7 +125,8 @@ const MemoContent = (props: MemoContentProps) => {
             li: ({ children, ...props }) => <ListItem {...props}>{children}</ListItem>,
             // Inline elements
             a: ({ children, ...props }) => <Link {...props}>{children}</Link>,
-            code: ({ children }) => <InlineCode>{children}</InlineCode>,
+            code: ({ children, ...props }) => <InlineCode {...props}>{children}</InlineCode>,
+            iframe: TrustedIframe as React.ComponentType<React.ComponentProps<"iframe">>,
             img: ({ ...props }) => <Image {...props} />,
             // Code blocks
             pre: CodeBlock,

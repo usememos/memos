@@ -1,6 +1,8 @@
 import { toBlob } from "html-to-image";
 
 const WINDOW_HORIZONTAL_MARGIN = 32;
+const PREVIEW_HORIZONTAL_PADDING_IN_DIALOG = 40;
+const PREVIEW_WIDTH_BOOST_IN_DIALOG = 48;
 
 export const MEMO_SHARE_IMAGE_CONFIG = {
   dialogExtraWidth: 80,
@@ -73,6 +75,11 @@ export const getMemoShareDialogWidth = (previewWidth: number) => {
   const viewportWidth =
     typeof window === "undefined" ? previewWidth + MEMO_SHARE_IMAGE_CONFIG.dialogExtraWidth : window.innerWidth - WINDOW_HORIZONTAL_MARGIN;
   return Math.min(previewWidth + MEMO_SHARE_IMAGE_CONFIG.dialogExtraWidth, viewportWidth);
+};
+
+export const getMemoShareRenderWidth = (previewWidth: number, dialogWidth: number) => {
+  const maxRenderWidth = Math.max(MEMO_SHARE_IMAGE_CONFIG.minWidth, dialogWidth - PREVIEW_HORIZONTAL_PADDING_IN_DIALOG);
+  return clamp(previewWidth + PREVIEW_WIDTH_BOOST_IN_DIALOG, MEMO_SHARE_IMAGE_CONFIG.minWidth, maxRenderWidth);
 };
 
 export const getMemoSharePreviewAvatarUrl = (avatarUrl?: string) => (isExportableImageUrl(avatarUrl) ? avatarUrl : undefined);

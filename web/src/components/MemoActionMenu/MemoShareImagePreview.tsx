@@ -34,18 +34,11 @@ const MemoShareImagePreview = forwardRef<HTMLDivElement, { width: number }>(({ w
   }, [memo.attachments]);
 
   return (
-    <div
-      ref={ref}
-      className="relative overflow-hidden rounded-[24px] border border-border/50 bg-linear-to-br from-background via-muted/15 to-background p-2.5 sm:p-3"
-      style={{ width }}
-    >
-      <div className="pointer-events-none absolute -top-16 right-0 h-32 w-32 rounded-full bg-sky-500/8 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-20 -left-10 h-36 w-36 rounded-full bg-amber-400/8 blur-3xl" />
-
-      <div className="relative overflow-hidden rounded-[20px] border border-border/60 bg-background/98 p-4 shadow-sm shadow-foreground/5 sm:p-5">
+    <div ref={ref} className="overflow-hidden rounded-xl border border-border/50 bg-background p-2 sm:p-2.5" style={{ width }}>
+      <div className="overflow-hidden rounded-lg border border-border/60 bg-background p-4 sm:p-5">
         <div className="flex items-start gap-3">
           <div className="flex min-w-0 items-center gap-2.5">
-            <UserAvatar avatarUrl={avatarUrl} className="h-9 w-9 rounded-2xl" />
+            <UserAvatar avatarUrl={avatarUrl} className="h-8 w-8 rounded-xl" />
             <div className="min-w-0">
               <div className="truncate text-[13px] font-semibold text-foreground">{displayName}</div>
               {formattedDisplayTime && <div className="truncate text-xs text-muted-foreground">{formattedDisplayTime}</div>}
@@ -65,7 +58,7 @@ const MemoShareImagePreview = forwardRef<HTMLDivElement, { width: number }>(({ w
               <div
                 key={item.id}
                 className={cn(
-                  "relative overflow-hidden rounded-[18px] border border-border/70 bg-muted/40",
+                  "relative overflow-hidden rounded-md border border-border/70 bg-muted/30",
                   visualItems.length === 1 ? "aspect-[4/3]" : "aspect-square",
                   visualItems.length === 3 && index === 0 && "col-span-2 aspect-[2.2/1]",
                 )}

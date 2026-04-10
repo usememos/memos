@@ -2,51 +2,12 @@
 @import "tw-animate-css";
 @import "./themes/default.css";
 
-@theme {
-  --default-transition-duration: 150ms;
-}
-
 @layer base {
   * {
     @apply border-border outline-none ring-0;
   }
+
   body {
     @apply bg-background text-foreground;
-  }
-
-  /* ========================================
-   * Embedded Content
-   * ======================================== */
-
-  /* iframes (e.g., YouTube embeds, maps) */
-  iframe {
-    max-width: 100%;
-    border-radius: 0.5rem;
-    border: 1px solid var(--border);
-  }
-
-  /* KaTeX math rendering */
-  .katex-display {
-    overflow-x: auto;
-    overflow-y: hidden;
-    max-width: 100%;
-  }
-
-  /* Leaflet Popup Overrides */
-  .leaflet-popup-content-wrapper {
-    border-radius: 0.5rem !important;
-    border: 1px solid var(--border) !important;
-    background-color: var(--background) !important;
-    box-shadow: var(--shadow-lg) !important;
-  }
-
-  .leaflet-popup-content {
-    margin: 4px !important;
-    line-height: inherit !important;
-    font-size: inherit !important;
-  }
-
-  .leaflet-popup-tip {
-    background-color: var(--background) !important;
   }
 }
