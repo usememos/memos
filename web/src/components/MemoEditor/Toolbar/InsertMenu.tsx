@@ -197,7 +197,13 @@ const InsertMenu = (props: InsertMenuProps) => {
     <>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" className="shadow-none" disabled={isUploading}>
+          <Button
+            variant="outline"
+            size="icon"
+            className="shadow-none"
+            disabled={isUploading}
+            aria-label={isUploading ? t("common.uploading") : t("editor.insert-menu.upload-file")}
+          >
             {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <PlusIcon className="size-4" />}
           </Button>
         </DropdownMenuTrigger>
