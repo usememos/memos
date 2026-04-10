@@ -309,6 +309,8 @@
     "failed-to-embed-memo": "Failed to embed memo",
     "fill-all": "Please fill in all fields.",
     "fill-all-required-fields": "Please fill all required fields",
+    "failed-to-delete-table": "Failed to delete table",
+    "failed-to-update-table": "Failed to update table",
     "maximum-upload-size-is": "Maximum allowed upload size is {{size}} MiB",
     "memo-not-found": "Memo not found.",
     "new-password-not-match": "New passwords do not match.",

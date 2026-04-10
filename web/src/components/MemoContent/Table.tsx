@@ -87,10 +87,13 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
         });
         setDialogOpen(false);
       } catch (error: unknown) {
-        handleError(error, toast.error, { context: "Update table", fallbackMessage: "An error occurred" });
+        handleError(error, toast.error, {
+          context: "Update table",
+          fallbackMessage: t("message.failed-to-update-table"),
+        });
       }
     },
-    [memo.content, memo.name, tableIndex, updateMemo],
+    [memo.content, memo.name, tableIndex, updateMemo, t],
   );
 
   const handleConfirmDelete = useCallback(async () => {
@@ -124,11 +127,14 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
       });
       setDeleteDialogOpen(false);
     } catch (error: unknown) {
-      handleError(error, toast.error, { context: "Delete table", fallbackMessage: "An error occurred" });
+      handleError(error, toast.error, {
+        context: "Delete table",
+        fallbackMessage: t("message.failed-to-delete-table"),
+      });
     } finally {
       setIsDeleting(false);
     }
-  }, [memo.content, memo.name, tableIndex, updateMemo]);
+  }, [memo.content, memo.name, tableIndex, updateMemo, t]);
 
   return (
     <>
@@ -143,6 +149,7 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
               className="p-1 rounded bg-accent/80 text-muted-foreground hover:bg-destructive/20 hover:text-destructive transition-colors"
               onClick={handleDeleteClick}
               title={t("common.delete")}
+              aria-label={t("common.delete")}
             >
               <TrashIcon className="size-3.5" />
             </button>
@@ -151,6 +158,7 @@ export const Table = ({ children, className, node, ...props }: TableProps) => {
               className="p-1 rounded bg-accent/80 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
               onClick={handleEditClick}
               title={t("common.edit")}
+              aria-label={t("common.edit")}
             >
               <PencilIcon className="size-3.5" />
             </button>
