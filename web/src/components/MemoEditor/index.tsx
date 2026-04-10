@@ -54,10 +54,10 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   // Get default visibility from user settings
   const defaultVisibility = userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined;
 
-  useMemoInit({ editorRef, memo, cacheKey, username: currentUser?.name ?? "", autoFocus, defaultVisibility });
+  const { isInitialized } = useMemoInit({ editorRef, memo, cacheKey, username: currentUser?.name ?? "", autoFocus, defaultVisibility });
 
   // Auto-save content to localStorage
-  useAutoSave(state.content, currentUser?.name ?? "", cacheKey);
+  useAutoSave(state.content, currentUser?.name ?? "", cacheKey, isInitialized);
 
   // Focus mode management with body scroll lock
   useFocusMode(state.ui.isFocusMode);
