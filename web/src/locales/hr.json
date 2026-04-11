@@ -124,7 +124,37 @@
     "no-changes-detected": "Nema promjena",
     "save": "Sačuvaj",
     "saving": "Spremanje...",
-    "slash-commands": "Upisi `/` za naredbe"
+    "slash-commands": "Upisi `/` za naredbe",
+    "insert-menu": {
+      "add-location": "Dodajte lokaciju",
+      "link-memo": "Link dopis",
+      "upload-file": "Učitaj datoteku"
+    },
+    "audio-recorder": {
+      "attachment-label": "Audio snimanje",
+      "attachment-label-with-time": "Audio snimak {{time}}",
+      "discard": "Odbaciti",
+      "error": "Mikrofon nedostupan",
+      "error-description": "Pokušajte ponovo nakon provjere pristupa mikrofonu za ovu stranicu.",
+      "idle-description": "Započnite snimanje da biste audio snimku dodali kao privitak.",
+      "keep": "Nastavi snimati",
+      "pause-recording": "Pauziraj audio snimanje",
+      "play-recording": "Reproduciraj audio zapis",
+      "ready": "Snimanje spremno",
+      "ready-description": "Pregledajte isječak, zatim ga zadržite kao audioprivitak ili ga odbacite.",
+      "record-again": "Snimi ponovo",
+      "recording": "Snimanje zvuka",
+      "recording-description": "Snimite brzi audioprivitak. Trenutačno trajanje: {{duration}}",
+      "requesting": "Traženje pristupa...",
+      "requesting-permission": "Zahtjev za pristup mikrofonu",
+      "requesting-permission-description": "Za početak snimanja dopustite pristup mikrofonu u pregledniku.",
+      "start": "Započnite snimanje",
+      "stop": "Zaustavi snimanje",
+      "title": "Snimač zvuka",
+      "trigger": "Snimi audio",
+      "unsupported": "Audio snimanje nije podržano",
+      "unsupported-description": "Ovaj preglednik ne može snimati zvuk iz skladatelja bilješki."
+    }
   },
   "inbox": {
     "failed-to-load": "Neuspjelo učitavanje stavke pristigle pošte",
@@ -159,7 +189,8 @@
     "filters": {
       "has-code": "imaKod",
       "has-link": "imaLink",
-      "has-task-list": "imaZadatke"
+      "has-task-list": "imaZadatke",
+      "label": "Filteri"
     },
     "links": "Linkovi",
     "load-more": "Učitaj više",
@@ -176,6 +207,32 @@
       "private": "Privatno",
       "protected": "Za članove",
       "public": "Javno"
+    },
+    "outline": "Obris",
+    "share": {
+      "active-links": "Aktivno dijeljenje poveznica",
+      "copied": "Kopirano!",
+      "copy": "Kopiraj vezu",
+      "create-failed": "Stvaranje veze za dijeljenje nije uspjelo",
+      "create-link": "Izradi novu poveznicu",
+      "creating": "Izrada...",
+      "expiry-1-day": "1 dan",
+      "expiry-30-days": "30 dana",
+      "expiry-7-days": "7 dana",
+      "expiry-label": "ističe",
+      "expiry-never": "nikada",
+      "expires-on": "Istječe {{date}}",
+      "invalid-link": "Ova veza nije važeća ili je istekla.",
+      "never-expires": "Nikada ne ističe",
+      "no-links": "Još nema poveznica za dijeljenje. Izradite jedan ispod.",
+      "open-panel": "Upravljanje vezama za dijeljenje",
+      "revoke": "opozvati",
+      "revoke-failed": "Opoziv veze nije uspio",
+      "revoked": "Dijeljenje veze opozvano",
+      "section-label": "Dijeljenje",
+      "share": "Podijelite",
+      "shared-by": "Podijelio {{creator}}",
+      "title": "Podijelite ovaj dopis"
     }
   },
   "message": {
@@ -261,7 +318,8 @@
       "restore-success": "{{username}} uspješno vraćen",
       "user": "Korisnik",
       "label": "Član",
-      "list-title": "Popis članova"
+      "list-title": "Popis članova",
+      "no-members-found": "Nema pronađenih članova"
     },
     "my-account": {
       "label": "Moj račun"
@@ -383,7 +441,8 @@
       },
       "description": "Popis svih tokena pristupa za tvoj račun.",
       "title": "Tokeni pristupa",
-      "token": "Token"
+      "token": "Token",
+      "no-tokens-found": "Nisu pronađeni pristupni tokeni"
     },
     "account": {
       "change-password": "Promijeni lozinku",
@@ -415,7 +474,8 @@
       "enable-memo-location": "Omogući lokaciju memoa",
       "reactions": "Reakcije",
       "title": "Postavke vezane uz memo",
-      "label": "Memo"
+      "label": "Memo",
+      "reactions-required": "Popis reakcija ne smije biti prazan"
     },
     "webhook": {
       "create-dialog": {
@@ -436,6 +496,20 @@
       "title": "Webhooks",
       "url": "URL",
       "label": "Webhooks"
+    },
+    "tags": {
+      "label": "oznake",
+      "title": "Metapodaci oznake",
+      "description": "Dodijelite izborne boje prikaza oznakama za cijelu instancu ili zamutite odgovarajući sadržaj bilješke. Nazivi oznaka tretiraju se kao usidreni uzorci regularnih izraza.",
+      "background-color": "Boja pozadine",
+      "blur-content": "Zamućivanje sadržaja",
+      "no-tags-configured": "Metapodaci oznake nisu konfigurirani.",
+      "tag-name": "Naziv oznake",
+      "tag-name-placeholder": "npr. work ili project/.*",
+      "tag-already-exists": "Oznaka već postoji.",
+      "tag-pattern-hint": "Naziv oznake ili uzorak regularnog izraza (npr. project/.* odgovara svim oznakama project/)",
+      "invalid-regex": "Nevažeći ili nesiguran uzorak regularnog izraza.",
+      "using-default-color": "Korištenje zadane boje."
     }
   },
   "tag": {
@@ -461,5 +535,10 @@
     "select-visibility": "Vidljivost",
     "tags": "Tagovi",
     "upload-attachment": "Prenesi privitak/e"
+  },
+  "live-update": {
+    "connected": "Aktivna ažuriranja uživo",
+    "connecting": "Povezivanje s ažuriranjima uživo...",
+    "disconnected": "Ažuriranja uživo nisu dostupna"
   }
 }

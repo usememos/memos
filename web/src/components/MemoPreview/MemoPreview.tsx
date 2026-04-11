@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
-import { getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
+import { getAttachmentType, isMotionAttachment } from "@/utils/attachment";
+import { buildAttachmentVisualItems, countLogicalAttachmentItems } from "@/utils/media-item";
 import MemoContent from "../MemoContent";
 import { MemoViewContext, type MemoViewContextValue } from "../MemoView/MemoViewContext";
 
@@ -26,6 +27,7 @@ const STUB_CONTEXT: MemoViewContextValue = {
   creator: undefined,
   currentUser: undefined,
   parentPage: "/",
+  cardWidth: 0,
   isArchived: false,
   readonly: true,
   showBlurredContent: false,
@@ -36,28 +38,35 @@ const STUB_CONTEXT: MemoViewContextValue = {
 };
 
 const AttachmentThumbnails = ({ attachments }: { attachments: Attachment[] }) => {
-  const images: Attachment[] = [];
-  const others: Attachment[] = [];
-  for (const a of attachments) {
-    if (getAttachmentType(a) === "image/*") images.push(a);
-    else others.push(a);
-  }
+  const visualAttachments = attachments.filter(
+    (attachment) =>
+      getAttachmentType(attachment) === "image/*" || getAttachmentType(attachment) === "video/*" || isMotionAttachment(attachment),
+  );
+  const items = buildAttachmentVisualItems(visualAttachments);
+  const images = items.filter((item) => item.kind === "image" || item.kind === "motion");
+  const others = items.filter((item) => item.kind === "video");
 
   return (
     <div className="flex items-center gap-1.5 flex-wrap">
-      {images.map((a) => (
-        <img
-          key={a.name}
-          src={getAttachmentUrl(a)}
-          alt={a.filename}
-          className="w-10 h-10 rounded border border-border object-cover bg-muted/40"
-          loading="lazy"
-        />
+      {images.map((item) => (
+        <div key={item.id} className="relative">
+          <img
+            src={item.posterUrl}
+            alt={item.filename}
+            className="w-10 h-10 rounded border border-border object-cover bg-muted/40"
+            loading="lazy"
+          />
+          {item.kind === "motion" && (
+            <span className="absolute left-1 top-1 rounded bg-black/70 px-1 py-0.5 text-[8px] font-semibold leading-none text-white">
+              LIVE
+            </span>
+          )}
+        </div>
       ))}
-      {others.map((a) => (
-        <div key={a.name} className="flex items-center gap-1 text-[10px] text-muted-foreground">
+      {others.map((item) => (
+        <div key={item.id} className="flex items-center gap-1 text-[10px] text-muted-foreground">
           <FileIcon className="w-3 h-3 shrink-0" />
-          <span className="truncate max-w-[80px]">{a.filename}</span>
+          <span className="truncate max-w-[80px]">{item.filename}</span>
         </div>
       ))}
     </div>
@@ -138,7 +147,7 @@ const MemoPreview = ({
           (truncate ? (
             <div className="shrink-0 text-muted-foreground/70 inline-flex justify-center items-center gap-0.5">
               <FileIcon className="w-3 h-3 inline-block" />
-              <span className="text-xs">{attachments.length}</span>
+              <span className="text-xs">{countLogicalAttachmentItems(attachments)}</span>
             </div>
           ) : (
             <AttachmentThumbnails attachments={attachments} />

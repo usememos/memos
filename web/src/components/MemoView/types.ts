@@ -8,6 +8,8 @@ export interface MemoViewProps {
   showPinned?: boolean;
   className?: string;
   parentPage?: string;
+  shareImageDialogOpen?: boolean;
+  onShareImageDialogOpenChange?: (open: boolean) => void;
 }
 
 export interface MemoHeaderProps {

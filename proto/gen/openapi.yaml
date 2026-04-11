@@ -176,6 +176,28 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/attachments:batchDelete:
+        post:
+            tags:
+                - AttachmentService
+            description: BatchDeleteAttachments deletes multiple attachments in one request.
+            operationId: AttachmentService_BatchDeleteAttachments
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/BatchDeleteAttachmentsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/auth/me:
         get:
             tags:
@@ -1955,6 +1977,31 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/users:batchGet:
+        post:
+            tags:
+                - UserService
+            description: BatchGetUsers returns active users by usernames.
+            operationId: UserService_BatchGetUsers
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/BatchGetUsersRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BatchGetUsersResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/users:stats:
         get:
             tags:
@@ -2015,6 +2062,33 @@ components:
                     description: |-
                         Optional. The related memo. Refer to `Memo.name`.
                          Format: memos/{memo}
+                motionMedia:
+                    allOf:
+                        - $ref: '#/components/schemas/MotionMedia'
+                    description: Optional. Motion media metadata.
+        BatchDeleteAttachmentsRequest:
+            required:
+                - names
+            type: object
+            properties:
+                names:
+                    type: array
+                    items:
+                        type: string
+        BatchGetUsersRequest:
+            type: object
+            properties:
+                usernames:
+                    type: array
+                    items:
+                        type: string
+        BatchGetUsersResponse:
+            type: object
+            properties:
+                users:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/User'
         Color:
             type: object
             properties:
@@ -2781,6 +2855,30 @@ components:
                     type: string
                     description: The title extracted from the first H1 heading, if present.
             description: Computed properties of a memo.
+        MotionMedia:
+            type: object
+            properties:
+                family:
+                    enum:
+                        - MOTION_MEDIA_FAMILY_UNSPECIFIED
+                        - APPLE_LIVE_PHOTO
+                        - ANDROID_MOTION_PHOTO
+                    type: string
+                    format: enum
+                role:
+                    enum:
+                        - MOTION_MEDIA_ROLE_UNSPECIFIED
+                        - STILL
+                        - VIDEO
+                        - CONTAINER
+                    type: string
+                    format: enum
+                groupId:
+                    type: string
+                presentationTimestampUs:
+                    type: string
+                hasEmbeddedVideo:
+                    type: boolean
         NotificationSetting_EmailSetting:
             type: object
             properties:
@@ -3133,6 +3231,11 @@ components:
                     description: |-
                         The sender of the notification.
                          Format: users/{user}
+                senderUser:
+                    readOnly: true
+                    allOf:
+                        - $ref: '#/components/schemas/User'
+                    description: The sender user details.
                 status:
                     enum:
                         - STATUS_UNSPECIFIED
@@ -3151,6 +3254,7 @@ components:
                     enum:
                         - TYPE_UNSPECIFIED
                         - MEMO_COMMENT
+                        - MEMO_MENTION
                     type: string
                     description: The type of the notification.
                     format: enum
@@ -3158,6 +3262,10 @@ components:
                     readOnly: true
                     allOf:
                         - $ref: '#/components/schemas/UserNotification_MemoCommentPayload'
+                memoMention:
+                    readOnly: true
+                    allOf:
+                        - $ref: '#/components/schemas/UserNotification_MemoMentionPayload'
         UserNotification_MemoCommentPayload:
             type: object
             properties:
@@ -3171,6 +3279,31 @@ components:
                     description: |-
                         The name of related memo.
                          Format: memos/{memo}
+                memoSnippet:
+                    type: string
+                    description: Preview text of the comment memo.
+                relatedMemoSnippet:
+                    type: string
+                    description: Preview text of the related memo.
+        UserNotification_MemoMentionPayload:
+            type: object
+            properties:
+                memo:
+                    type: string
+                    description: |-
+                        The memo that contains the mention.
+                         Format: memos/{memo}
+                relatedMemo:
+                    type: string
+                    description: |-
+                        The related parent memo when the mention was created in a comment.
+                         Format: memos/{memo}
+                memoSnippet:
+                    type: string
+                    description: Preview text of the memo that contains the mention.
+                relatedMemoSnippet:
+                    type: string
+                    description: Preview text of the related parent memo.
         UserSetting:
             type: object
             properties:

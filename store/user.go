@@ -60,11 +60,14 @@ type FindUser struct {
 	ID     *int32
 	IDList []int32
 
+	UsernameList []string
+
 	RowStatus *RowStatus
 	Username  *string
 	Role      *Role
 	Email     *string
 	Nickname  *string
+	Search    *string
 
 	// Domain specific fields
 	Filters []string

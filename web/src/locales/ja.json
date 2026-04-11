@@ -229,6 +229,32 @@
       "private": "非公開",
       "protected": "メンバーに表示",
       "public": "公開メモ"
+    },
+    "outline": "概要",
+    "share": {
+      "active-links": "アクティブな共有リンク",
+      "copied": "コピーしました！",
+      "copy": "リンクをコピー",
+      "create-failed": "共有リンクの作成に失敗しました",
+      "create-link": "新しいリンクを作成する",
+      "creating": "作成中…",
+      "expiry-1-day": "1日",
+      "expiry-30-days": "30日",
+      "expiry-7-days": "7日間",
+      "expiry-label": "有効期限が切れます",
+      "expiry-never": "決してしない",
+      "expires-on": "{{date}} に期限切れになります",
+      "invalid-link": "このリンクは無効であるか、有効期限が切れています。",
+      "never-expires": "有効期限はありません",
+      "no-links": "共有リンクはまだありません。以下に作成します。",
+      "open-panel": "共有リンクを管理する",
+      "revoke": "取り消し",
+      "revoke-failed": "リンクを取り消すことができませんでした",
+      "revoked": "共有リンクが取り消されました",
+      "section-label": "共有",
+      "share": "シェアする",
+      "shared-by": "{{creator}} によって共有されました",
+      "title": "このメモを共有する"
     }
   },
   "message": {
@@ -531,5 +557,10 @@
     "select-visibility": "公開範囲",
     "tags": "タグ",
     "upload-attachment": "添付ファイルをアップロード"
+  },
+  "live-update": {
+    "connected": "ライブアップデートがアクティブです",
+    "connecting": "ライブアップデートに接続しています...",
+    "disconnected": "ライブアップデートは利用できません"
   }
 }

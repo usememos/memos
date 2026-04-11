@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
+import type { PreviewMediaItem } from "@/utils/media-item";
 import { RELATIVE_TIME_THRESHOLD_MS } from "./constants";
 
 export interface MemoViewContextValue {
@@ -11,13 +12,14 @@ export interface MemoViewContextValue {
   creator: User | undefined;
   currentUser: User | undefined;
   parentPage: string;
+  cardWidth: number;
   isArchived: boolean;
   readonly: boolean;
   showBlurredContent: boolean;
   blurred: boolean;
   openEditor: () => void;
   toggleBlurVisibility: () => void;
-  openPreview: (urls: string | string[], index?: number) => void;
+  openPreview: (items: string | string[] | PreviewMediaItem[], index?: number) => void;
 }
 
 export const MemoViewContext = createContext<MemoViewContextValue | null>(null);

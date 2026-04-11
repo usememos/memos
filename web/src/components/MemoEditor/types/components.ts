@@ -23,21 +23,19 @@ export interface EditorToolbarProps {
   onSave: () => void;
   onCancel?: () => void;
   memoName?: string;
-  onVoiceRecorderClick: () => void;
+  onAudioRecorderClick: () => void;
 }
 
 export interface EditorMetadataProps {
   memoName?: string;
 }
 
-export interface VoiceRecorderPanelProps {
-  voiceRecorder: EditorState["voiceRecorder"];
-  onStart: () => void;
+export interface AudioRecorderPanelProps {
+  audioRecorder: EditorState["audioRecorder"];
+  /** Active mic stream while recording; used for live waveform visualization. */
+  mediaStream: MediaStream | null;
   onStop: () => void;
-  onKeep: () => void;
-  onDiscard: () => void;
-  onRecordAgain: () => void;
-  onClose: () => void;
+  onCancel: () => void;
 }
 
 export interface FocusModeOverlayProps {
@@ -57,7 +55,7 @@ export interface InsertMenuProps {
   onLocationChange: (location?: Location) => void;
   onToggleFocusMode?: () => void;
   memoName?: string;
-  onVoiceRecorderClick?: () => void;
+  onAudioRecorderClick?: () => void;
 }
 
 export interface TagSuggestionsProps {

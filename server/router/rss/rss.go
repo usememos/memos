@@ -14,8 +14,8 @@ import (
 	"github.com/gorilla/feeds"
 	"github.com/labstack/echo/v5"
 
+	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/plugin/markdown"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )

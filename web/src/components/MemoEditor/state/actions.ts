@@ -1,7 +1,7 @@
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import type { LocalFile } from "../types/attachment";
-import type { EditorAction, EditorState, LoadingKey, VoiceRecorderPermission, VoiceRecorderStatus, VoiceRecordingPreview } from "./types";
+import type { AudioRecorderPermission, AudioRecorderStatus, EditorAction, EditorState, LoadingKey } from "./types";
 
 export const editorActions = {
   initMemo: (payload: { content: string; metadata: EditorState["metadata"]; timestamps: EditorState["timestamps"] }): EditorAction => ({
@@ -49,6 +49,11 @@ export const editorActions = {
     payload: previewUrl,
   }),
 
+  setLocalFiles: (files: LocalFile[]): EditorAction => ({
+    type: "SET_LOCAL_FILES",
+    payload: files,
+  }),
+
   clearLocalFiles: (): EditorAction => ({
     type: "CLEAR_LOCAL_FILES",
   }),
@@ -72,33 +77,28 @@ export const editorActions = {
     payload: timestamps,
   }),
 
-  setVoiceRecorderSupport: (value: boolean): EditorAction => ({
-    type: "SET_VOICE_RECORDER_SUPPORT",
+  setAudioRecorderSupport: (value: boolean): EditorAction => ({
+    type: "SET_AUDIO_RECORDER_SUPPORT",
     payload: value,
   }),
 
-  setVoiceRecorderPermission: (value: VoiceRecorderPermission): EditorAction => ({
-    type: "SET_VOICE_RECORDER_PERMISSION",
+  setAudioRecorderPermission: (value: AudioRecorderPermission): EditorAction => ({
+    type: "SET_AUDIO_RECORDER_PERMISSION",
     payload: value,
   }),
 
-  setVoiceRecorderStatus: (value: VoiceRecorderStatus): EditorAction => ({
-    type: "SET_VOICE_RECORDER_STATUS",
+  setAudioRecorderStatus: (value: AudioRecorderStatus): EditorAction => ({
+    type: "SET_AUDIO_RECORDER_STATUS",
     payload: value,
   }),
 
-  setVoiceRecorderElapsed: (value: number): EditorAction => ({
-    type: "SET_VOICE_RECORDER_ELAPSED",
+  setAudioRecorderElapsed: (value: number): EditorAction => ({
+    type: "SET_AUDIO_RECORDER_ELAPSED",
     payload: value,
   }),
 
-  setVoiceRecorderError: (value?: string): EditorAction => ({
-    type: "SET_VOICE_RECORDER_ERROR",
-    payload: value,
-  }),
-
-  setVoiceRecording: (value?: VoiceRecordingPreview): EditorAction => ({
-    type: "SET_VOICE_RECORDING",
+  setAudioRecorderError: (value?: string): EditorAction => ({
+    type: "SET_AUDIO_RECORDER_ERROR",
     payload: value,
   }),
 

@@ -124,7 +124,37 @@
     "no-changes-detected": "Aucun changement détecté",
     "save": "Enregistrer",
     "saving": "Enregistrement...",
-    "slash-commands": "Tapez `/` pour les commandes"
+    "slash-commands": "Tapez `/` pour les commandes",
+    "insert-menu": {
+      "add-location": "Ajouter un emplacement",
+      "link-memo": "Mémo de lien",
+      "upload-file": "Télécharger le fichier"
+    },
+    "audio-recorder": {
+      "attachment-label": "Enregistrement audio",
+      "attachment-label-with-time": "Enregistrement audio {{time}}",
+      "discard": "Jeter",
+      "error": "Microphone indisponible",
+      "error-description": "Réessayez après avoir vérifié l'accès au microphone pour ce site.",
+      "idle-description": "Démarrez l'enregistrement pour ajouter un enregistrement audio en pièce jointe.",
+      "keep": "Continuer à enregistrer",
+      "pause-recording": "Suspendre l'enregistrement audio",
+      "play-recording": "Lire l'enregistrement audio",
+      "ready": "Prêt pour l'enregistrement",
+      "ready-description": "Prévisualisez le clip, puis conservez-le en tant que pièce jointe audio ou supprimez-le.",
+      "record-again": "Enregistrer à nouveau",
+      "recording": "Enregistrement audio",
+      "recording-description": "Capturez une pièce jointe audio rapide. Durée actuelle : {{duration}}",
+      "requesting": "Demande d'accès...",
+      "requesting-permission": "Demander l'accès au microphone",
+      "requesting-permission-description": "Autorisez l'accès au microphone dans votre navigateur pour démarrer l'enregistrement.",
+      "start": "Commencer l'enregistrement",
+      "stop": "Arrêter l'enregistrement",
+      "title": "Enregistreur audio",
+      "trigger": "Enregistrer du son",
+      "unsupported": "Enregistrement audio non pris en charge",
+      "unsupported-description": "Ce navigateur ne peut pas enregistrer l'audio du compositeur de mémos."
+    }
   },
   "inbox": {
     "failed-to-load": "Échec du chargement de l'élément",
@@ -159,7 +189,8 @@
     "filters": {
       "has-code": "aCode",
       "has-link": "aLien",
-      "has-task-list": "aListeTâches"
+      "has-task-list": "aListeTâches",
+      "label": "Filtres"
     },
     "links": "Liens",
     "load-more": "Charger plus",
@@ -176,6 +207,32 @@
       "private": "Privé",
       "protected": "Protégé",
       "public": "Public"
+    },
+    "outline": "Aperçu",
+    "share": {
+      "active-links": "Liens de partage actifs",
+      "copied": "Copié!",
+      "copy": "Copier le lien",
+      "create-failed": "Échec de la création du lien de partage",
+      "create-link": "Créer un nouveau lien",
+      "creating": "Création…",
+      "expiry-1-day": "1 jour",
+      "expiry-30-days": "30 jours",
+      "expiry-7-days": "7 jours",
+      "expiry-label": "Expire",
+      "expiry-never": "Jamais",
+      "expires-on": "Expire le {{date}}",
+      "invalid-link": "Ce lien n'est pas valide ou a expiré.",
+      "never-expires": "N'expire jamais",
+      "no-links": "Aucun lien de partage pour l'instant. Créez-en un ci-dessous.",
+      "open-panel": "Gérer les liens de partage",
+      "revoke": "Révoquer",
+      "revoke-failed": "Échec de la révocation du lien",
+      "revoked": "Lien de partage révoqué",
+      "section-label": "Partage",
+      "share": "Partager",
+      "shared-by": "Partagé par {{creator}}",
+      "title": "Partagez ce mémo"
     }
   },
   "message": {
@@ -261,7 +318,8 @@
       "restore-success": "{{username}} restauré avec succès",
       "user": "Utilisateur",
       "label": "Membre",
-      "list-title": "Liste des membres"
+      "list-title": "Liste des membres",
+      "no-members-found": "Aucun membre trouvé"
     },
     "my-account": {
       "label": "Mon compte"
@@ -383,7 +441,8 @@
       },
       "description": "Liste de tous les jetons d'accès de votre compte.",
       "title": "Jetons d'accès",
-      "token": "Jeton"
+      "token": "Jeton",
+      "no-tokens-found": "Aucun jeton d'accès trouvé"
     },
     "account": {
       "change-password": "Changer le mot de passe",
@@ -415,7 +474,8 @@
       "enable-memo-location": "Activer la localisation des notes",
       "reactions": "Réactions",
       "title": "Paramètres des notes",
-      "label": "Note"
+      "label": "Note",
+      "reactions-required": "La liste des réactions ne doit pas être vide"
     },
     "webhook": {
       "create-dialog": {
@@ -436,6 +496,20 @@
       "title": "Webhooks",
       "url": "URL",
       "label": "Webhooks"
+    },
+    "tags": {
+      "label": "Balises",
+      "title": "Métadonnées des balises",
+      "description": "Attribuez des couleurs d'affichage facultatives aux balises à l'échelle de l'instance ou floutez le contenu du mémo correspondant. Les noms de balises sont traités comme des modèles d’expression régulière ancrés.",
+      "background-color": "Couleur de fond",
+      "blur-content": "Flou du contenu",
+      "no-tags-configured": "Aucune métadonnée de balise configurée.",
+      "tag-name": "Nom de la balise",
+      "tag-name-placeholder": "par ex. work ou project/.*",
+      "tag-already-exists": "La balise existe déjà.",
+      "tag-pattern-hint": "Nom de la balise ou modèle d'expression régulière (par exemple, project/.* correspond à toutes les balises project/)",
+      "invalid-regex": "Modèle d'expression régulière invalide ou dangereux.",
+      "using-default-color": "Utilisation de la couleur par défaut."
     }
   },
   "tag": {
@@ -461,5 +535,10 @@
     "select-visibility": "Visibilité",
     "tags": "Tags",
     "upload-attachment": "Téléverser des pièces jointes"
+  },
+  "live-update": {
+    "connected": "Mises à jour en direct actives",
+    "connecting": "Connexion aux mises à jour en direct...",
+    "disconnected": "Mises à jour en direct indisponibles"
   }
 }

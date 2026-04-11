@@ -10,8 +10,8 @@ import (
 	"github.com/labstack/echo/v5/middleware"
 	"golang.org/x/sync/semaphore"
 
+	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/plugin/markdown"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
@@ -39,6 +39,7 @@ type APIV1Service struct {
 func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store) *APIV1Service {
 	markdownService := markdown.NewService(
 		markdown.WithTagExtension(),
+		markdown.WithMentionExtension(),
 	)
 	return &APIV1Service{
 		Secret:             secret,

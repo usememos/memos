@@ -74,6 +74,12 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         localFiles: state.localFiles.filter((f) => f.previewUrl !== action.payload),
       };
 
+    case "SET_LOCAL_FILES":
+      return {
+        ...state,
+        localFiles: action.payload,
+      };
+
     case "CLEAR_LOCAL_FILES":
       return {
         ...state,
@@ -119,58 +125,49 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         },
       };
 
-    case "SET_VOICE_RECORDER_SUPPORT":
+    case "SET_AUDIO_RECORDER_SUPPORT":
       return {
         ...state,
-        voiceRecorder: {
-          ...state.voiceRecorder,
+        audioRecorder: {
+          ...state.audioRecorder,
           isSupported: action.payload,
-          status: action.payload ? state.voiceRecorder.status : "unsupported",
+          status: action.payload ? state.audioRecorder.status : "unsupported",
         },
       };
 
-    case "SET_VOICE_RECORDER_PERMISSION":
+    case "SET_AUDIO_RECORDER_PERMISSION":
       return {
         ...state,
-        voiceRecorder: {
-          ...state.voiceRecorder,
+        audioRecorder: {
+          ...state.audioRecorder,
           permission: action.payload,
         },
       };
 
-    case "SET_VOICE_RECORDER_STATUS":
+    case "SET_AUDIO_RECORDER_STATUS":
       return {
         ...state,
-        voiceRecorder: {
-          ...state.voiceRecorder,
+        audioRecorder: {
+          ...state.audioRecorder,
           status: action.payload,
         },
       };
 
-    case "SET_VOICE_RECORDER_ELAPSED":
+    case "SET_AUDIO_RECORDER_ELAPSED":
       return {
         ...state,
-        voiceRecorder: {
-          ...state.voiceRecorder,
+        audioRecorder: {
+          ...state.audioRecorder,
           elapsedSeconds: action.payload,
         },
       };
 
-    case "SET_VOICE_RECORDER_ERROR":
+    case "SET_AUDIO_RECORDER_ERROR":
       return {
         ...state,
-        voiceRecorder: {
-          ...state.voiceRecorder,
+        audioRecorder: {
+          ...state.audioRecorder,
           error: action.payload,
-        },
-      };
-
-    case "SET_VOICE_RECORDING":
-      return {
-        ...state,
-        voiceRecorder: {
-          ...state.voiceRecorder,
-          recording: action.payload,
         },
       };
 

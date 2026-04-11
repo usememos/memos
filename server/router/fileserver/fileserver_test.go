@@ -11,8 +11,9 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/require"
 
+	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/plugin/markdown"
+	"github.com/usememos/memos/internal/testutil"
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/server/auth"
 	apiv1service "github.com/usememos/memos/server/router/api/v1"
@@ -137,6 +138,51 @@ func TestServeAttachmentFile_ShareTokenRejectsCommentAttachment(t *testing.T) {
 	e.ServeHTTP(rec, req)
 
 	require.Equal(t, http.StatusUnauthorized, rec.Code)
+}
+
+func TestServeAttachmentFile_MotionClip(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	creator, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "motion-owner",
+		Role:     store.RoleUser,
+		Email:    "motion-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+
+	attachment, err := svc.CreateAttachment(creatorCtx, &apiv1.CreateAttachmentRequest{
+		Attachment: &apiv1.Attachment{
+			Filename: "motion.jpg",
+			Type:     "image/jpeg",
+			Content:  testutil.BuildMotionPhotoJPEG(),
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = svc.CreateMemo(creatorCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "motion memo",
+			Visibility: apiv1.Visibility_PUBLIC,
+			Attachments: []*apiv1.Attachment{
+				{Name: attachment.Name},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+
+	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s?motion=true", attachment.Name, attachment.Filename), nil)
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "video/mp4", rec.Header().Get("Content-Type"))
+	require.Contains(t, rec.Body.String(), "ftyp")
 }
 
 func newShareAttachmentTestServices(ctx context.Context, t *testing.T) (*apiv1service.APIV1Service, *FileServerService, *store.Store, func()) {

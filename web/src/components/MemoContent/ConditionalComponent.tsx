@@ -1,6 +1,6 @@
 import type { Element } from "hast";
 import React from "react";
-import { isTagElement, isTaskListItemElement } from "@/types/markdown";
+import { isMentionElement, isTagElement, isTaskListItemElement } from "@/types/markdown";
 
 /**
  * Creates a conditional component that renders different components
@@ -33,4 +33,4 @@ export const createConditionalComponent = <P extends Record<string, unknown>>(
 };
 
 // Re-export type guards for convenience
-export { isTagElement as isTagNode, isTaskListItemElement as isTaskListItemNode };
+export { isMentionElement as isMentionNode, isTagElement as isTagNode, isTaskListItemElement as isTaskListItemNode };

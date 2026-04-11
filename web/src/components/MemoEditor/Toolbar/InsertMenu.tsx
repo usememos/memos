@@ -2,6 +2,7 @@ import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
 import {
   FileIcon,
+  ImageIcon,
   LinkIcon,
   LoaderIcon,
   type LucideIcon,
@@ -20,6 +21,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -130,35 +132,49 @@ const InsertMenu = (props: InsertMenuProps) => {
     setMoreSubmenuOpen(false);
   }, [onToggleFocusMode]);
 
+  const handleMediaUploadClick = useCallback(() => {
+    handleUploadClick("image/*,video/*");
+  }, [handleUploadClick]);
+
+  const handleFileUploadClick = useCallback(() => {
+    handleUploadClick();
+  }, [handleUploadClick]);
+
   const menuItems = useMemo(
     () =>
       [
         {
-          key: "upload",
-          label: t("common.upload"),
+          key: "upload-media",
+          label: t("attachment-library.tabs.media"),
+          icon: ImageIcon,
+          onClick: handleMediaUploadClick,
+        },
+        {
+          key: "record-audio",
+          label: t("editor.audio-recorder.trigger"),
+          icon: MicIcon,
+          onClick: () => props.onAudioRecorderClick?.(),
+        },
+        {
+          key: "upload-file",
+          label: t("common.file"),
           icon: FileIcon,
-          onClick: handleUploadClick,
+          onClick: handleFileUploadClick,
         },
         {
           key: "link",
-          label: t("tooltip.link-memo"),
+          label: t("editor.insert-menu.link-memo"),
           icon: LinkIcon,
           onClick: handleOpenLinkDialog,
         },
         {
           key: "location",
-          label: t("tooltip.select-location"),
+          label: t("editor.insert-menu.add-location"),
           icon: MapPinIcon,
           onClick: handleLocationClick,
         },
-        {
-          key: "voice-note",
-          label: t("editor.voice-recorder.trigger"),
-          icon: MicIcon,
-          onClick: () => props.onVoiceRecorderClick?.(),
-        },
       ] satisfies Array<{ key: string; label: string; icon: LucideIcon; onClick: () => void }>,
-    [handleLocationClick, handleOpenLinkDialog, handleUploadClick, props, t],
+    [handleFileUploadClick, handleLocationClick, handleMediaUploadClick, handleOpenLinkDialog, props, t],
   );
 
   return (
@@ -170,12 +186,20 @@ const InsertMenu = (props: InsertMenuProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          {menuItems.map((item) => (
+          {menuItems.slice(0, 3).map((item) => (
             <DropdownMenuItem key={item.key} onClick={item.onClick}>
               <item.icon className="w-4 h-4" />
               {item.label}
             </DropdownMenuItem>
           ))}
+          <DropdownMenuSeparator />
+          {menuItems.slice(3).map((item) => (
+            <DropdownMenuItem key={item.key} onClick={item.onClick}>
+              <item.icon className="w-4 h-4" />
+              {item.label}
+            </DropdownMenuItem>
+          ))}
+          <DropdownMenuSeparator />
           {/* View submenu with Focus Mode */}
           <DropdownMenuSub open={moreSubmenuOpen} onOpenChange={setMoreSubmenuOpen}>
             <DropdownMenuSubTrigger onPointerEnter={handleTriggerEnter} onPointerLeave={handleTriggerLeave}>

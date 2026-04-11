@@ -163,4 +163,64 @@ func TestSetMemoAttachments(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "not found")
 	})
+
+	t.Run("SetMemoAttachments removes incomplete live photo groups", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "live_group_user")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+
+		still, err := ts.Service.CreateAttachment(userCtx, &apiv1.CreateAttachmentRequest{
+			Attachment: &apiv1.Attachment{
+				Filename: "live.heic",
+				Type:     "image/heic",
+				Content:  []byte("still"),
+				MotionMedia: &apiv1.MotionMedia{
+					Family:  apiv1.MotionMediaFamily_APPLE_LIVE_PHOTO,
+					Role:    apiv1.MotionMediaRole_STILL,
+					GroupId: "memo-live-group",
+				},
+			},
+		})
+		require.NoError(t, err)
+		video, err := ts.Service.CreateAttachment(userCtx, &apiv1.CreateAttachmentRequest{
+			Attachment: &apiv1.Attachment{
+				Filename: "live.mov",
+				Type:     "video/quicktime",
+				Content:  []byte("video"),
+				MotionMedia: &apiv1.MotionMedia{
+					Family:  apiv1.MotionMediaFamily_APPLE_LIVE_PHOTO,
+					Role:    apiv1.MotionMediaRole_VIDEO,
+					GroupId: "memo-live-group",
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		memo, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+			Memo: &apiv1.Memo{
+				Content:    "memo with live photo",
+				Visibility: apiv1.Visibility_PRIVATE,
+				Attachments: []*apiv1.Attachment{
+					{Name: still.Name},
+					{Name: video.Name},
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.SetMemoAttachments(userCtx, &apiv1.SetMemoAttachmentsRequest{
+			Name: memo.Name,
+			Attachments: []*apiv1.Attachment{
+				{Name: still.Name},
+			},
+		})
+		require.NoError(t, err)
+
+		response, err := ts.Service.ListMemoAttachments(userCtx, &apiv1.ListMemoAttachmentsRequest{Name: memo.Name})
+		require.NoError(t, err)
+		require.Len(t, response.Attachments, 0)
+	})
 }

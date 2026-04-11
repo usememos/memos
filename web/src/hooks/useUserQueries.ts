@@ -6,6 +6,8 @@ import { buildUserSettingName } from "@/helpers/resource-names";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { User, UserSetting, UserSetting_GeneralSetting, UserSetting_Key, UserSettingSchema } from "@/types/proto/api/v1/user_service_pb";
 
+const BATCH_GET_USERS_LIMIT = 100;
+
 // Query keys factory
 export const userKeys = {
   all: ["users"] as const,
@@ -16,7 +18,8 @@ export const userKeys = {
   currentUser: () => [...userKeys.all, "current"] as const,
   shortcuts: () => [...userKeys.all, "shortcuts"] as const,
   notifications: () => [...userKeys.all, "notifications"] as const,
-  byNames: (names: string[]) => [...userKeys.all, "byNames", ...names.sort()] as const,
+  byNames: (names: string[]) => [...userKeys.all, "byNames", ...[...names].sort()] as const,
+  byUsernames: (usernames: string[]) => [...userKeys.all, "byUsernames", ...[...usernames].sort()] as const,
 };
 
 export function useUser(name: string, options?: { enabled?: boolean }) {
@@ -242,5 +245,32 @@ export function useUsersByNames(names: string[]) {
     },
     enabled,
     staleTime: 1000 * 60 * 5, // 5 minutes - user profiles don't change often
+  });
+}
+
+// Hook to fetch multiple users by usernames (returns Map<username, User>)
+export function useUsersByUsernames(usernames: string[], options?: { enabled?: boolean }) {
+  const enabled = (options?.enabled ?? true) && usernames.length > 0;
+  const uniqueUsernames = Array.from(new Set(usernames));
+
+  return useQuery({
+    queryKey: userKeys.byUsernames(uniqueUsernames),
+    queryFn: async () => {
+      const batches = [];
+      for (let i = 0; i < uniqueUsernames.length; i += BATCH_GET_USERS_LIMIT) {
+        batches.push(uniqueUsernames.slice(i, i + BATCH_GET_USERS_LIMIT));
+      }
+
+      const responses = await Promise.all(batches.map((batch) => userServiceClient.batchGetUsers({ usernames: batch })));
+      const usersByUsername = new Map(responses.flatMap((response) => response.users).map((user) => [user.username, user] as const));
+
+      const userMap = new Map<string, User | undefined>();
+      for (const username of uniqueUsernames) {
+        userMap.set(username, usersByUsername.get(username));
+      }
+      return userMap;
+    },
+    enabled,
+    staleTime: 1000 * 60 * 5,
   });
 }

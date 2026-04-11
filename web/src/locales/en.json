@@ -3,6 +3,7 @@
     "blogs": "Blogs",
     "description": "A privacy-first, lightweight note-taking service. Easily capture and share your great thoughts.",
     "documents": "Documents",
+    "media": "Media",
     "github-repository": "GitHub Repo",
     "official-website": "Official Website"
   },
@@ -14,6 +15,38 @@
     "repeat-new-password": "Repeat the new password",
     "sign-in-tip": "Already have an account?",
     "sign-up-tip": "Don't have an account yet?"
+  },
+  "attachment-library": {
+    "actions": {
+      "open": "Open",
+      "retry": "Retry"
+    },
+    "empty": {
+      "audio": "No audio attachments yet.",
+      "documents": "No document attachments yet.",
+      "media": "No media attachments yet."
+    },
+    "errors": {
+      "load": "Failed to load attachments."
+    },
+    "labels": {
+      "live": "Live",
+      "live-photo": "Live Photo",
+      "memo": "Memo",
+      "not-linked": "Not linked",
+      "unknown-date": "Unknown date",
+      "unused": "Unused"
+    },
+    "tabs": {
+      "audio": "Audio",
+      "documents": "Documents",
+      "media": "Media"
+    },
+    "unused": {
+      "confirm-description": "This removes every uploaded file that is not linked to a memo.",
+      "description": "These uploads were never attached to a memo. Review or remove them here.",
+      "title": "Unlinked uploads"
+    }
   },
   "common": {
     "about": "About",
@@ -121,29 +154,38 @@
     "any-thoughts": "Any thoughts...",
     "exit-focus-mode": "Exit Focus Mode",
     "focus-mode": "Focus Mode",
+    "insert-menu": {
+      "add-location": "Add location",
+      "link-memo": "Link memo",
+      "upload-file": "Upload file"
+    },
     "no-changes-detected": "No changes detected",
     "save": "Save",
     "saving": "Saving...",
     "slash-commands": "Type `/` for commands",
-    "voice-recorder": {
+    "audio-recorder": {
+      "attachment-label": "Audio recording",
+      "attachment-label-with-time": "Audio recording {{time}}",
       "discard": "Discard",
       "error": "Microphone unavailable",
       "error-description": "Try again after checking microphone access for this site.",
-      "idle-description": "Start recording to add a voice note as an audio attachment.",
+      "idle-description": "Start recording to add an audio recording as an attachment.",
       "keep": "Keep recording",
+      "pause-recording": "Pause audio recording",
+      "play-recording": "Play audio recording",
       "ready": "Recording ready",
       "ready-description": "Preview the clip, then keep it as an audio attachment or discard it.",
       "record-again": "Record again",
-      "recording": "Recording voice note",
+      "recording": "Recording audio",
       "recording-description": "Capture a quick audio attachment. Current length: {{duration}}",
       "requesting": "Requesting access...",
       "requesting-permission": "Requesting microphone access",
       "requesting-permission-description": "Allow microphone access in your browser to start recording.",
       "start": "Start recording",
       "stop": "Stop recording",
-      "title": "Voice recorder",
-      "trigger": "Voice note",
-      "unsupported": "Voice recording unsupported",
+      "title": "Audio recorder",
+      "trigger": "Record audio",
+      "unsupported": "Audio recording unsupported",
       "unsupported-description": "This browser cannot record audio from the memo composer."
     }
   },
@@ -207,10 +249,19 @@
       "expiry-7-days": "7 days",
       "expiry-label": "Expires",
       "expiry-never": "Never",
+      "image-description": "Preview rendered at your current device width ({{width}}px).",
+      "image-download": "Download PNG",
+      "image-download-failed": "Failed to export image",
+      "image-downloaded": "Image saved",
+      "image-footer": "Shared from Memos",
+      "image-share": "Share image",
+      "image-share-failed": "Failed to share image",
+      "image-title": "Share as image",
       "expires-on": "Expires {{date}}",
       "invalid-link": "This link is invalid or has expired.",
       "never-expires": "Never expires",
       "no-links": "No share links yet. Create one below.",
+      "open-image": "Share as image",
       "open-panel": "Manage share links",
       "revoke": "Revoke",
       "revoke-failed": "Failed to revoke link",

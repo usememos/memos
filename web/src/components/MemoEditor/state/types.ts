@@ -4,14 +4,8 @@ import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { LocalFile } from "../types/attachment";
 
 export type LoadingKey = "saving" | "uploading" | "loading";
-export type VoiceRecorderPermission = "unknown" | "granted" | "denied";
-export type VoiceRecorderStatus = "idle" | "requesting_permission" | "recording" | "recorded" | "error" | "unsupported";
-
-export interface VoiceRecordingPreview {
-  localFile: LocalFile;
-  durationSeconds: number;
-  mimeType: string;
-}
+export type AudioRecorderPermission = "unknown" | "granted" | "denied";
+export type AudioRecorderStatus = "idle" | "requesting_permission" | "recording" | "error" | "unsupported";
 
 export interface EditorState {
   content: string;
@@ -35,13 +29,12 @@ export interface EditorState {
     updateTime?: Date;
   };
   localFiles: LocalFile[];
-  voiceRecorder: {
+  audioRecorder: {
     isSupported: boolean;
-    permission: VoiceRecorderPermission;
-    status: VoiceRecorderStatus;
+    permission: AudioRecorderPermission;
+    status: AudioRecorderStatus;
     elapsedSeconds: number;
     error?: string;
-    recording?: VoiceRecordingPreview;
   };
 }
 
@@ -55,17 +48,17 @@ export type EditorAction =
   | { type: "REMOVE_RELATION"; payload: string }
   | { type: "ADD_LOCAL_FILE"; payload: LocalFile }
   | { type: "REMOVE_LOCAL_FILE"; payload: string }
+  | { type: "SET_LOCAL_FILES"; payload: LocalFile[] }
   | { type: "CLEAR_LOCAL_FILES" }
   | { type: "TOGGLE_FOCUS_MODE" }
   | { type: "SET_LOADING"; payload: { key: LoadingKey; value: boolean } }
   | { type: "SET_COMPOSING"; payload: boolean }
   | { type: "SET_TIMESTAMPS"; payload: Partial<EditorState["timestamps"]> }
-  | { type: "SET_VOICE_RECORDER_SUPPORT"; payload: boolean }
-  | { type: "SET_VOICE_RECORDER_PERMISSION"; payload: VoiceRecorderPermission }
-  | { type: "SET_VOICE_RECORDER_STATUS"; payload: VoiceRecorderStatus }
-  | { type: "SET_VOICE_RECORDER_ELAPSED"; payload: number }
-  | { type: "SET_VOICE_RECORDER_ERROR"; payload?: string }
-  | { type: "SET_VOICE_RECORDING"; payload?: VoiceRecordingPreview }
+  | { type: "SET_AUDIO_RECORDER_SUPPORT"; payload: boolean }
+  | { type: "SET_AUDIO_RECORDER_PERMISSION"; payload: AudioRecorderPermission }
+  | { type: "SET_AUDIO_RECORDER_STATUS"; payload: AudioRecorderStatus }
+  | { type: "SET_AUDIO_RECORDER_ELAPSED"; payload: number }
+  | { type: "SET_AUDIO_RECORDER_ERROR"; payload?: string }
   | { type: "RESET" };
 
 export const initialState: EditorState = {
@@ -90,12 +83,11 @@ export const initialState: EditorState = {
     updateTime: undefined,
   },
   localFiles: [],
-  voiceRecorder: {
+  audioRecorder: {
     isSupported: true,
     permission: "unknown",
     status: "idle",
     elapsedSeconds: 0,
     error: undefined,
-    recording: undefined,
   },
 };

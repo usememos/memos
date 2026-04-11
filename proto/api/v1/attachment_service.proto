@@ -43,6 +43,34 @@ service AttachmentService {
     option (google.api.http) = {delete: "/api/v1/{name=attachments/*}"};
     option (google.api.method_signature) = "name";
   }
+  // BatchDeleteAttachments deletes multiple attachments in one request.
+  rpc BatchDeleteAttachments(BatchDeleteAttachmentsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/attachments:batchDelete"
+      body: "*"
+    };
+  }
+}
+
+enum MotionMediaFamily {
+  MOTION_MEDIA_FAMILY_UNSPECIFIED = 0;
+  APPLE_LIVE_PHOTO = 1;
+  ANDROID_MOTION_PHOTO = 2;
+}
+
+enum MotionMediaRole {
+  MOTION_MEDIA_ROLE_UNSPECIFIED = 0;
+  STILL = 1;
+  VIDEO = 2;
+  CONTAINER = 3;
+}
+
+message MotionMedia {
+  MotionMediaFamily family = 1;
+  MotionMediaRole role = 2;
+  string group_id = 3;
+  int64 presentation_timestamp_us = 4;
+  bool has_embedded_video = 5;
 }
 
 message Attachment {
@@ -78,6 +106,9 @@ message Attachment {
   // Optional. The related memo. Refer to `Memo.name`.
   // Format: memos/{memo}
   optional string memo = 8 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Motion media metadata.
+  MotionMedia motion_media = 9 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message CreateAttachmentRequest {
@@ -147,4 +178,8 @@ message DeleteAttachmentRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/Attachment"}
   ];
+}
+
+message BatchDeleteAttachmentsRequest {
+  repeated string names = 1 [(google.api.field_behavior) = REQUIRED];
 }

@@ -121,16 +121,25 @@
     "any-thoughts": "Düşünceleriniz...",
     "exit-focus-mode": "Odak modundan çık",
     "focus-mode": "Odak modu",
+    "insert-menu": {
+      "add-location": "Konum ekle",
+      "link-memo": "Not bağla",
+      "upload-file": "Dosya yükle"
+    },
     "no-changes-detected": "Değişiklik yok",
     "save": "Kaydet",
     "saving": "Kaydediliyor...",
     "slash-commands": "Komutlar için `/` yazın",
-    "voice-recorder": {
+    "audio-recorder": {
+      "attachment-label": "Ses kaydı",
+      "attachment-label-with-time": "Ses kaydı {{time}}",
       "discard": "Sil",
       "error": "Mikrofon kullanılamıyor",
       "error-description": "Bu site için mikrofon erişimini kontrol ettikten sonra tekrar deneyin.",
       "idle-description": "Ses eki olarak bir sesli not eklemek için kayda başlayın.",
       "keep": "Sakla",
+      "pause-recording": "Ses kaydını duraklat",
+      "play-recording": "Ses kaydını oynat",
       "ready": "Kayıt hazır",
       "ready-description": "Klibi önizleyin, ardından ses eki olarak saklayın veya silin.",
       "record-again": "Tekrar kaydet",

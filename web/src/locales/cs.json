@@ -124,7 +124,37 @@
     "no-changes-detected": "Nebyly zjištěny žádné změny",
     "save": "Uložit",
     "saving": "Ukládání...",
-    "slash-commands": "Pro příkazy zadejte `/`"
+    "slash-commands": "Pro příkazy zadejte `/`",
+    "insert-menu": {
+      "add-location": "Přidat umístění",
+      "link-memo": "Odkaz na poznámku",
+      "upload-file": "Nahrajte soubor"
+    },
+    "audio-recorder": {
+      "attachment-label": "Záznam zvuku",
+      "attachment-label-with-time": "Záznam zvuku {{time}}",
+      "discard": "Zahodit",
+      "error": "Mikrofon není k dispozici",
+      "error-description": "Zkuste to znovu po kontrole přístupu k mikrofonu pro tento web.",
+      "idle-description": "Spusťte nahrávání a přidejte zvukovou nahrávku jako přílohu.",
+      "keep": "Pokračujte v nahrávání",
+      "pause-recording": "Pozastavit nahrávání zvuku",
+      "play-recording": "Přehrát zvukový záznam",
+      "ready": "Nahrávání připraveno",
+      "ready-description": "Prohlédněte si klip a poté jej uchovejte jako zvukovou přílohu nebo jej zlikvidujte.",
+      "record-again": "Nahrajte znovu",
+      "recording": "Nahrávání zvuku",
+      "recording-description": "Zachyťte rychlou zvukovou přílohu. Aktuální délka: {{duration}}",
+      "requesting": "Žádost o přístup...",
+      "requesting-permission": "Žádost o přístup k mikrofonu",
+      "requesting-permission-description": "Chcete-li zahájit nahrávání, povolte v prohl��žeči přístup k mikrofonu.",
+      "start": "Spusťte nahrávání",
+      "stop": "Zastavit nahrávání",
+      "title": "Audio rekordér",
+      "trigger": "Záznam zvuku",
+      "unsupported": "Záznam zvuku není podporován",
+      "unsupported-description": "Tento prohlížeč nemůže nahrávat zvuk ze skladatele poznámek."
+    }
   },
   "inbox": {
     "failed-to-load": "Nepodařilo se načíst položku doručené pošty",
@@ -159,7 +189,8 @@
     "filters": {
       "has-code": "maKod",
       "has-link": "maOdkaz",
-      "has-task-list": "maSeznamUkolu"
+      "has-task-list": "maSeznamUkolu",
+      "label": "Filtry"
     },
     "links": "Odkazy",
     "load-more": "Načíst více",
@@ -176,6 +207,32 @@
       "private": "Soukromá",
       "protected": "Chráněná",
       "public": "Veřejná"
+    },
+    "outline": "Obrys",
+    "share": {
+      "active-links": "Odkazy aktivního sdílení",
+      "copied": "Zkopírováno!",
+      "copy": "Zkopírujte odkaz",
+      "create-failed": "Nepodařilo se vytvořit odkaz pro sdílení",
+      "create-link": "Vytvořit nový odkaz",
+      "creating": "Vytváření…",
+      "expiry-1-day": "1 den",
+      "expiry-30-days": "30 dní",
+      "expiry-7-days": "7 dní",
+      "expiry-label": "Platnost vyprší",
+      "expiry-never": "Nikdy",
+      "expires-on": "Platnost vyprší {{date}}",
+      "invalid-link": "Tento odkaz je neplatný nebo jeho platnost vypršela.",
+      "never-expires": "Nikdy nevyprší",
+      "no-links": "Zatím žádné odkazy na sdílení. Vytvořte jej níže.",
+      "open-panel": "Správa sdílení odkazů",
+      "revoke": "Odvolat",
+      "revoke-failed": "Odkaz se nepodařilo zrušit",
+      "revoked": "Odkaz na sdílení byl zrušen",
+      "section-label": "Sdílení",
+      "share": "Sdílejte",
+      "shared-by": "Sdílel {{creator}}",
+      "title": "Sdílejte tuto poznámku"
     }
   },
   "message": {
@@ -261,7 +318,8 @@
       "restore-success": "{{username}} úspěšně obnoven",
       "user": "Uživatel",
       "label": "Uživatel",
-      "list-title": "Seznam uživatelů"
+      "list-title": "Seznam uživatelů",
+      "no-members-found": "Nebyli nalezeni žádní členové"
     },
     "my-account": {
       "label": "Můj účet"
@@ -383,7 +441,8 @@
       },
       "description": "Seznam všech přístupových tokenů k vašemu účtu.",
       "title": "Přístupové tokeny",
-      "token": "Token"
+      "token": "Token",
+      "no-tokens-found": "Nebyly nalezeny žádné přístupové tokeny"
     },
     "account": {
       "change-password": "Změnit heslo",
@@ -415,7 +474,8 @@
       "enable-memo-location": "Povolit umístění poznámek",
       "reactions": "Reakce",
       "title": "Nastavení související s poznámkami",
-      "label": "Poznámky"
+      "label": "Poznámky",
+      "reactions-required": "Seznam reakcí nesmí být prázdný"
     },
     "webhook": {
       "create-dialog": {
@@ -436,6 +496,20 @@
       "title": "Webhooky",
       "url": "URL",
       "label": "Webhooky"
+    },
+    "tags": {
+      "label": "Tagy",
+      "title": "Metadata značky",
+      "description": "Přiřaďte volitelné barvy zobrazení značkám v celé instanci nebo rozmažte odpovídající obsah poznámky. S názvy značek se zachází jako s ukotvenými vzory regulárních výrazů.",
+      "background-color": "Barva pozadí",
+      "blur-content": "Rozmazání obsahu",
+      "no-tags-configured": "Nejsou nakonfigurována žádná metadata značky.",
+      "tag-name": "Název značky",
+      "tag-name-placeholder": "např. work nebo project/.*",
+      "tag-already-exists": "Značka již existuje.",
+      "tag-pattern-hint": "Název značky nebo vzor regulárního výrazu (např. project/.* odpovídá všem značkám project/)",
+      "invalid-regex": "Neplatný nebo nebezpečný vzor regulárního výrazu.",
+      "using-default-color": "Použití výchozí barvy."
     }
   },
   "tag": {
@@ -461,5 +535,10 @@
     "select-visibility": "Viditelnost",
     "tags": "Štítky",
     "upload-attachment": "Nahrát přílohy"
+  },
+  "live-update": {
+    "connected": "Živé aktualizace jsou aktivní",
+    "connecting": "Připojování k živým aktualizacím...",
+    "disconnected": "Živé aktualizace nejsou k dispozici"
   }
 }

@@ -49,7 +49,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test-group: [store, server, plugin, other]
+        test-group: [store, server, internal, other]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -71,8 +71,8 @@ jobs:
             server)
               go test -v -race -coverprofile=coverage.out -covermode=atomic ./server/...
               ;;
-            plugin)
-              go test -v -race -coverprofile=coverage.out -covermode=atomic ./plugin/...
+            internal)
+              go test -v -race -coverprofile=coverage.out -covermode=atomic ./internal/...
               ;;
             other)
               go test -v -race -coverprofile=coverage.out -covermode=atomic \

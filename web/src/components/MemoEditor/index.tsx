@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -10,17 +10,17 @@ import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
 import {
+  AudioRecorderPanel,
   EditorContent,
   EditorMetadata,
   EditorToolbar,
   FocusModeExitButton,
   FocusModeOverlay,
   TimestampPopover,
-  VoiceRecorderPanel,
 } from "./components";
 import { FOCUS_MODE_STYLES } from "./constants";
 import type { EditorRefActions } from "./Editor";
-import { useAutoSave, useFocusMode, useKeyboard, useMemoInit, useVoiceRecorder } from "./hooks";
+import { useAudioRecorder, useAutoSave, useFocusMode, useKeyboard, useMemoInit } from "./hooks";
 import { cacheService, errorService, memoService, validationService } from "./services";
 import { EditorProvider, useEditorContext } from "./state";
 import type { MemoEditorProps } from "./types";
@@ -47,87 +47,70 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const editorRef = useRef<EditorRefActions>(null);
   const { state, actions, dispatch } = useEditorContext();
   const { userGeneralSetting } = useAuth();
-  const [isVoiceRecorderOpen, setIsVoiceRecorderOpen] = useState(false);
+  const [isAudioRecorderOpen, setIsAudioRecorderOpen] = useState(false);
 
   const memoName = memo?.name;
 
   // Get default visibility from user settings
   const defaultVisibility = userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined;
 
-  useMemoInit({ editorRef, memo, cacheKey, username: currentUser?.name ?? "", autoFocus, defaultVisibility });
+  const { isInitialized } = useMemoInit({ editorRef, memo, cacheKey, username: currentUser?.name ?? "", autoFocus, defaultVisibility });
 
   // Auto-save content to localStorage
-  useAutoSave(state.content, currentUser?.name ?? "", cacheKey);
+  useAutoSave(state.content, currentUser?.name ?? "", cacheKey, isInitialized);
 
   // Focus mode management with body scroll lock
   useFocusMode(state.ui.isFocusMode);
 
-  const voiceRecorderActions = useMemo(
+  const audioRecorderActions = useMemo(
     () => ({
-      setVoiceRecorderSupport: (value: boolean) => dispatch(actions.setVoiceRecorderSupport(value)),
-      setVoiceRecorderPermission: (value: "unknown" | "granted" | "denied") => dispatch(actions.setVoiceRecorderPermission(value)),
-      setVoiceRecorderStatus: (value: "idle" | "requesting_permission" | "recording" | "recorded" | "error" | "unsupported") =>
-        dispatch(actions.setVoiceRecorderStatus(value)),
-      setVoiceRecorderElapsed: (value: number) => dispatch(actions.setVoiceRecorderElapsed(value)),
-      setVoiceRecorderError: (value?: string) => dispatch(actions.setVoiceRecorderError(value)),
-      setVoiceRecording: (value?: typeof state.voiceRecorder.recording) => dispatch(actions.setVoiceRecording(value)),
+      setAudioRecorderSupport: (value: boolean) => dispatch(actions.setAudioRecorderSupport(value)),
+      setAudioRecorderPermission: (value: "unknown" | "granted" | "denied") => dispatch(actions.setAudioRecorderPermission(value)),
+      setAudioRecorderStatus: (value: "idle" | "requesting_permission" | "recording" | "error" | "unsupported") =>
+        dispatch(actions.setAudioRecorderStatus(value)),
+      setAudioRecorderElapsed: (value: number) => dispatch(actions.setAudioRecorderElapsed(value)),
+      setAudioRecorderError: (value?: string) => dispatch(actions.setAudioRecorderError(value)),
+      onRecordingComplete: (localFile: (typeof state.localFiles)[number]) => {
+        dispatch(actions.addLocalFile(localFile));
+        setIsAudioRecorderOpen(false);
+      },
     }),
-    [actions, dispatch],
+    [actions, dispatch, state.localFiles],
   );
 
-  const voiceRecorder = useVoiceRecorder(voiceRecorderActions);
+  const audioRecorder = useAudioRecorder(audioRecorderActions);
+
+  useEffect(() => {
+    if (!isAudioRecorderOpen) {
+      return;
+    }
+
+    if (state.audioRecorder.status === "error" || state.audioRecorder.status === "unsupported") {
+      toast.error(state.audioRecorder.error || t("editor.audio-recorder.error-description"));
+      setIsAudioRecorderOpen(false);
+    }
+  }, [isAudioRecorderOpen, state.audioRecorder.error, state.audioRecorder.status, t]);
 
   const handleToggleFocusMode = () => {
     dispatch(actions.toggleFocusMode());
   };
 
-  const handleStartVoiceRecording = async () => {
-    setIsVoiceRecorderOpen(true);
-    await voiceRecorder.startRecording();
+  const handleStartAudioRecording = async () => {
+    setIsAudioRecorderOpen(true);
+    await audioRecorder.startRecording();
   };
 
-  const handleVoiceRecorderClick = () => {
-    setIsVoiceRecorderOpen(true);
-
-    if (
-      state.voiceRecorder.status === "recording" ||
-      state.voiceRecorder.status === "requesting_permission" ||
-      state.voiceRecorder.status === "recorded"
-    ) {
+  const handleAudioRecorderClick = () => {
+    if (state.audioRecorder.status === "recording" || state.audioRecorder.status === "requesting_permission") {
       return;
     }
 
-    void handleStartVoiceRecording();
+    void handleStartAudioRecording();
   };
 
-  const handleKeepVoiceRecording = () => {
-    const recording = state.voiceRecorder.recording;
-    if (!recording) {
-      return;
-    }
-
-    dispatch(actions.addLocalFile(recording.localFile));
-    voiceRecorder.resetRecording();
-    setIsVoiceRecorderOpen(false);
-  };
-
-  const handleDiscardVoiceRecording = () => {
-    voiceRecorder.resetRecording();
-    setIsVoiceRecorderOpen(false);
-  };
-
-  const handleCloseVoiceRecorder = () => {
-    if (state.voiceRecorder.status === "recording" || state.voiceRecorder.status === "requesting_permission") {
-      return;
-    }
-
-    voiceRecorder.resetRecording();
-    setIsVoiceRecorderOpen(false);
-  };
-
-  const handleRecordAgain = async () => {
-    voiceRecorder.resetRecording();
-    await handleStartVoiceRecording();
+  const handleCancelAudioRecording = () => {
+    audioRecorder.resetRecording();
+    setIsAudioRecorderOpen(false);
   };
 
   useKeyboard(editorRef, handleSave);
@@ -220,22 +203,19 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         {/* Editor content grows to fill available space in focus mode */}
         <EditorContent ref={editorRef} placeholder={placeholder} />
 
-        {isVoiceRecorderOpen && (
-          <VoiceRecorderPanel
-            voiceRecorder={state.voiceRecorder}
-            onStart={() => void handleStartVoiceRecording()}
-            onStop={voiceRecorder.stopRecording}
-            onKeep={handleKeepVoiceRecording}
-            onDiscard={handleDiscardVoiceRecording}
-            onRecordAgain={() => void handleRecordAgain()}
-            onClose={handleCloseVoiceRecorder}
+        {isAudioRecorderOpen && (state.audioRecorder.status === "recording" || state.audioRecorder.status === "requesting_permission") && (
+          <AudioRecorderPanel
+            audioRecorder={state.audioRecorder}
+            mediaStream={audioRecorder.recordingStream}
+            onStop={audioRecorder.stopRecording}
+            onCancel={handleCancelAudioRecording}
           />
         )}
 
         {/* Metadata and toolbar grouped together at bottom */}
         <div className="w-full flex flex-col gap-2">
           <EditorMetadata memoName={memoName} />
-          <EditorToolbar onSave={handleSave} onCancel={onCancel} memoName={memoName} onVoiceRecorderClick={handleVoiceRecorderClick} />
+          <EditorToolbar onSave={handleSave} onCancel={onCancel} memoName={memoName} onAudioRecorderClick={handleAudioRecorderClick} />
         </div>
       </div>
     </>
