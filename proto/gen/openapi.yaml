@@ -2420,7 +2420,6 @@ components:
                         - AI_PROVIDER_TYPE_UNSPECIFIED
                         - OPENAI
                         - OPENAI_COMPATIBLE
-                        - ANTHROPIC
                         - GEMINI
                     type: string
                     format: enum

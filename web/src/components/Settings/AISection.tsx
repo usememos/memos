@@ -41,7 +41,6 @@ type LocalAIProvider = {
 const providerTypeOptions = [
   InstanceSetting_AIProviderType.OPENAI,
   InstanceSetting_AIProviderType.OPENAI_COMPATIBLE,
-  InstanceSetting_AIProviderType.ANTHROPIC,
   InstanceSetting_AIProviderType.GEMINI,
 ];
 

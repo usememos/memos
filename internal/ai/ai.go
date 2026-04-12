@@ -8,8 +8,6 @@ const (
 	ProviderOpenAI ProviderType = "OPENAI"
 	// ProviderOpenAICompatible is an OpenAI-compatible API endpoint.
 	ProviderOpenAICompatible ProviderType = "OPENAI_COMPATIBLE"
-	// ProviderAnthropic is Anthropic's API.
-	ProviderAnthropic ProviderType = "ANTHROPIC"
 	// ProviderGemini is Google's Gemini API.
 	ProviderGemini ProviderType = "GEMINI"
 )
