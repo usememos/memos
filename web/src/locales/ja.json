@@ -155,9 +155,9 @@
     "unread": "未読"
   },
   "live-update": {
-    "connected": "ライブ更新が有効です",
-    "connecting": "ライブ更新に接続中...",
-    "disconnected": "ライブ更新が利用できません"
+    "connected": "ライブアップデートがアクティブです",
+    "connecting": "ライブアップデートに接続しています...",
+    "disconnected": "ライブアップデートは利用できません"
   },
   "markdown": {
     "checkbox": "チェックボックス",
@@ -193,44 +193,8 @@
     "no-archived-memos": "アーカイブされたメモはありません。",
     "no-memos": "メモがありません。",
     "order-by": "並び替え",
-    "outline": "アウトライン",
-    "search-placeholder": "メモを検索...",
-    "share": {
-      "active-links": "有効な共有リンク",
-      "copied": "コピーしました！",
-      "copy": "リンクをコピー",
-      "create-failed": "共有リンクの作成に失敗しました",
-      "create-link": "新しいリンクを作成",
-      "creating": "作成中…",
-      "expiry-1-day": "1日",
-      "expiry-30-days": "30日",
-      "expiry-7-days": "7日",
-      "expiry-label": "有効期限",
-      "expiry-never": "無期限",
-      "expires-on": "{{date}}に期限切れ",
-      "invalid-link": "このリンクは無効か期限切れです。",
-      "never-expires": "有効期限なし",
-      "no-links": "共有リンクはまだありません。下記から作成してください。",
-      "open-panel": "共有リンクを管理",
-      "revoke": "失効させる",
-      "revoke-failed": "リンクの失効に失敗しました",
-      "revoked": "共有リンクを失効させました",
-      "section-label": "共有",
-      "share": "共有",
-      "shared-by": "{{creator}}が共有",
-      "title": "このメモを共有"
-    },
-    "show-less": "表示を減らす",
-    "show-more": "もっと見る",
-    "to-do": "タスク",
-    "view-detail": "詳細を見る",
-    "visibility": {
-      "disabled": "公開メモは無効化されています。",
-      "private": "非公開",
-      "protected": "メンバーに表示",
-      "public": "公開メモ"
-    },
     "outline": "概要",
+    "search-placeholder": "メモを検索...",
     "share": {
       "active-links": "アクティブな共有リンク",
       "copied": "コピーしました！",
@@ -255,6 +219,16 @@
       "share": "シェアする",
       "shared-by": "{{creator}} によって共有されました",
       "title": "このメモを共有する"
+    },
+    "show-less": "表示を減らす",
+    "show-more": "もっと見る",
+    "to-do": "タスク",
+    "view-detail": "詳細を見る",
+    "visibility": {
+      "disabled": "公開メモは無効化されています。",
+      "private": "非公開",
+      "protected": "メンバーに表示",
+      "public": "公開メモ"
     }
   },
   "message": {
@@ -557,10 +531,5 @@
     "select-visibility": "公開範囲",
     "tags": "タグ",
     "upload-attachment": "添付ファイルをアップロード"
-  },
-  "live-update": {
-    "connected": "ライブアップデートがアクティブです",
-    "connecting": "ライブアップデートに接続しています...",
-    "disconnected": "ライブアップデートは利用できません"
   }
 }
