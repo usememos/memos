@@ -326,6 +326,55 @@ func TestInstanceSettingNotificationSetting(t *testing.T) {
 	ts.Close()
 }
 
+func TestInstanceSettingAISetting(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+
+	aiSetting, err := ts.GetInstanceAISetting(ctx)
+	require.NoError(t, err)
+	require.NotNil(t, aiSetting)
+	require.Empty(t, aiSetting.Providers)
+
+	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_AI,
+		Value: &storepb.InstanceSetting_AiSetting{
+			AiSetting: &storepb.InstanceAISetting{
+				Providers: []*storepb.AIProviderConfig{
+					{
+						Id:           "openai-main",
+						Title:        "OpenAI",
+						Type:         storepb.AIProviderType_OPENAI,
+						Endpoint:     "https://api.openai.com/v1",
+						ApiKey:       "sk-test",
+						Models:       []string{"gpt-5.4", "gpt-5.4-mini"},
+						DefaultModel: "gpt-5.4",
+					},
+					{
+						Id:           "company-gateway",
+						Title:        "Company Gateway",
+						Type:         storepb.AIProviderType_OPENAI_COMPATIBLE,
+						Endpoint:     "https://llm.example.com/v1",
+						ApiKey:       "gw-test",
+						Models:       []string{"qwen-plus"},
+						DefaultModel: "qwen-plus",
+					},
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	aiSetting, err = ts.GetInstanceAISetting(ctx)
+	require.NoError(t, err)
+	require.Len(t, aiSetting.Providers, 2)
+	require.Equal(t, "openai-main", aiSetting.Providers[0].Id)
+	require.Equal(t, "sk-test", aiSetting.Providers[0].ApiKey)
+	require.Equal(t, "company-gateway", aiSetting.Providers[1].Id)
+
+	ts.Close()
+}
+
 func TestInstanceSettingListAll(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()

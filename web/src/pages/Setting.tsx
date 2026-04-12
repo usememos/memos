@@ -1,4 +1,5 @@
 import {
+  BotIcon,
   CogIcon,
   DatabaseIcon,
   KeyIcon,
@@ -13,6 +14,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import MobileHeader from "@/components/MobileHeader";
+import AISection from "@/components/Settings/AISection";
 import InstanceSection from "@/components/Settings/InstanceSection";
 import MemberSection from "@/components/Settings/MemberSection";
 import MemoRelatedSettings from "@/components/Settings/MemoRelatedSettings";
@@ -31,10 +33,10 @@ import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 import { User_Role } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
-type SettingSection = "my-account" | "preference" | "webhook" | "member" | "system" | "memo" | "storage" | "sso" | "tags";
+type SettingSection = "my-account" | "preference" | "webhook" | "member" | "system" | "memo" | "storage" | "sso" | "tags" | "ai";
 
 const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference", "webhook"];
-const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo", "tags", "storage", "sso"];
+const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo", "tags", "storage", "sso", "ai"];
 
 const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   "my-account": UserIcon,
@@ -46,6 +48,7 @@ const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   storage: DatabaseIcon,
   tags: TagsIcon,
   sso: KeyIcon,
+  ai: BotIcon,
 };
 
 const SECTION_COMPONENT_MAP: Record<SettingSection, React.ComponentType> = {
@@ -58,6 +61,7 @@ const SECTION_COMPONENT_MAP: Record<SettingSection, React.ComponentType> = {
   storage: StorageSection,
   tags: TagsSection,
   sso: SSOSection,
+  ai: AISection,
 };
 
 const Setting = () => {
@@ -86,6 +90,7 @@ const Setting = () => {
     // Fetch admin-only settings that are not eagerly loaded by InstanceContext.
     fetchSetting(InstanceSetting_Key.STORAGE);
     fetchSetting(InstanceSetting_Key.TAGS);
+    fetchSetting(InstanceSetting_Key.AI);
   }, [isHost, fetchSetting]);
 
   const handleSectionSelectorItemClick = (section: SettingSection) => {

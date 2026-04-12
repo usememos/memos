@@ -20,7 +20,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file api/v1/instance_service.proto.
  */
 export const file_api_v1_instance_service: GenFile = /*@__PURE__*/
-  fileDesc("Ch1hcGkvdjEvaW5zdGFuY2Vfc2VydmljZS5wcm90bxIMbWVtb3MuYXBpLnYxImkKD0luc3RhbmNlUHJvZmlsZRIPCgd2ZXJzaW9uGAIgASgJEgwKBGRlbW8YAyABKAgSFAoMaW5zdGFuY2VfdXJsGAYgASgJEiEKBWFkbWluGAcgASgLMhIubWVtb3MuYXBpLnYxLlVzZXIiGwoZR2V0SW5zdGFuY2VQcm9maWxlUmVxdWVzdCL3EAoPSW5zdGFuY2VTZXR0aW5nEhEKBG5hbWUYASABKAlCA+BBCBJHCg9nZW5lcmFsX3NldHRpbmcYAiABKAsyLC5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nLkdlbmVyYWxTZXR0aW5nSAASRwoPc3RvcmFnZV9zZXR0aW5nGAMgASgLMiwubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5TdG9yYWdlU2V0dGluZ0gAElAKFG1lbW9fcmVsYXRlZF9zZXR0aW5nGAQgASgLMjAubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5NZW1vUmVsYXRlZFNldHRpbmdIABJBCgx0YWdzX3NldHRpbmcYBSABKAsyKS5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nLlRhZ3NTZXR0aW5nSAASUQoUbm90aWZpY2F0aW9uX3NldHRpbmcYBiABKAsyMS5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nLk5vdGlmaWNhdGlvblNldHRpbmdIABqHAwoOR2VuZXJhbFNldHRpbmcSIgoaZGlzYWxsb3dfdXNlcl9yZWdpc3RyYXRpb24YAiABKAgSHgoWZGlzYWxsb3dfcGFzc3dvcmRfYXV0aBgDIAEoCBIZChFhZGRpdGlvbmFsX3NjcmlwdBgEIAEoCRIYChBhZGRpdGlvbmFsX3N0eWxlGAUgASgJElIKDmN1c3RvbV9wcm9maWxlGAYgASgLMjoubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5HZW5lcmFsU2V0dGluZy5DdXN0b21Qcm9maWxlEh0KFXdlZWtfc3RhcnRfZGF5X29mZnNldBgHIAEoBRIgChhkaXNhbGxvd19jaGFuZ2VfdXNlcm5hbWUYCCABKAgSIAoYZGlzYWxsb3dfY2hhbmdlX25pY2tuYW1lGAkgASgIGkUKDUN1c3RvbVByb2ZpbGUSDQoFdGl0bGUYASABKAkSEwoLZGVzY3JpcHRpb24YAiABKAkSEAoIbG9nb191cmwYAyABKAkaugMKDlN0b3JhZ2VTZXR0aW5nEk4KDHN0b3JhZ2VfdHlwZRgBIAEoDjI4Lm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmcuU3RvcmFnZVNldHRpbmcuU3RvcmFnZVR5cGUSGQoRZmlsZXBhdGhfdGVtcGxhdGUYAiABKAkSHAoUdXBsb2FkX3NpemVfbGltaXRfbWIYAyABKAMSSAoJczNfY29uZmlnGAQgASgLMjUubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5TdG9yYWdlU2V0dGluZy5TM0NvbmZpZxqGAQoIUzNDb25maWcSFQoNYWNjZXNzX2tleV9pZBgBIAEoCRIZChFhY2Nlc3Nfa2V5X3NlY3JldBgCIAEoCRIQCghlbmRwb2ludBgDIAEoCRIOCgZyZWdpb24YBCABKAkSDgoGYnVja2V0GAUgASgJEhYKDnVzZV9wYXRoX3N0eWxlGAYgASgIIkwKC1N0b3JhZ2VUeXBlEhwKGFNUT1JBR0VfVFlQRV9VTlNQRUNJRklFRBAAEgwKCERBVEFCQVNFEAESCQoFTE9DQUwQAhIGCgJTMxADGokBChJNZW1vUmVsYXRlZFNldHRpbmcSIAoYZGlzcGxheV93aXRoX3VwZGF0ZV90aW1lGAIgASgIEhwKFGNvbnRlbnRfbGVuZ3RoX2xpbWl0GAMgASgFEiAKGGVuYWJsZV9kb3VibGVfY2xpY2tfZWRpdBgEIAEoCBIRCglyZWFjdGlvbnMYByADKAkaUQoLVGFnTWV0YWRhdGESLAoQYmFja2dyb3VuZF9jb2xvchgBIAEoCzISLmdvb2dsZS50eXBlLkNvbG9yEhQKDGJsdXJfY29udGVudBgCIAEoCBqoAQoLVGFnc1NldHRpbmcSQQoEdGFncxgBIAMoCzIzLm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmcuVGFnc1NldHRpbmcuVGFnc0VudHJ5GlYKCVRhZ3NFbnRyeRILCgNrZXkYASABKAkSOAoFdmFsdWUYAiABKAsyKS5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nLlRhZ01ldGFkYXRhOgI4ARq1AgoTTm90aWZpY2F0aW9uU2V0dGluZxJNCgVlbWFpbBgBIAEoCzI+Lm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmcuTm90aWZpY2F0aW9uU2V0dGluZy5FbWFpbFNldHRpbmcazgEKDEVtYWlsU2V0dGluZxIPCgdlbmFibGVkGAEgASgIEhEKCXNtdHBfaG9zdBgCIAEoCRIRCglzbXRwX3BvcnQYAyABKAUSFQoNc210cF91c2VybmFtZRgEIAEoCRIVCg1zbXRwX3Bhc3N3b3JkGAUgASgJEhIKCmZyb21fZW1haWwYBiABKAkSEQoJZnJvbV9uYW1lGAcgASgJEhAKCHJlcGx5X3RvGAggASgJEg8KB3VzZV90bHMYCSABKAgSDwoHdXNlX3NzbBgKIAEoCCJiCgNLZXkSEwoPS0VZX1VOU1BFQ0lGSUVEEAASCwoHR0VORVJBTBABEgsKB1NUT1JBR0UQAhIQCgxNRU1PX1JFTEFURUQQAxIICgRUQUdTEAQSEAoMTk9USUZJQ0FUSU9OEAU6YepBXgocbWVtb3MuYXBpLnYxL0luc3RhbmNlU2V0dGluZxIbaW5zdGFuY2Uvc2V0dGluZ3Mve3NldHRpbmd9KhBpbnN0YW5jZVNldHRpbmdzMg9pbnN0YW5jZVNldHRpbmdCBwoFdmFsdWUiTwoZR2V0SW5zdGFuY2VTZXR0aW5nUmVxdWVzdBIyCgRuYW1lGAEgASgJQiTgQQL6QR4KHG1lbW9zLmFwaS52MS9JbnN0YW5jZVNldHRpbmciiQEKHFVwZGF0ZUluc3RhbmNlU2V0dGluZ1JlcXVlc3QSMwoHc2V0dGluZxgBIAEoCzIdLm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmdCA+BBAhI0Cgt1cGRhdGVfbWFzaxgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5GaWVsZE1hc2tCA+BBATLbAwoPSW5zdGFuY2VTZXJ2aWNlEn4KEkdldEluc3RhbmNlUHJvZmlsZRInLm1lbW9zLmFwaS52MS5HZXRJbnN0YW5jZVByb2ZpbGVSZXF1ZXN0Gh0ubWVtb3MuYXBpLnYxLkluc3RhbmNlUHJvZmlsZSIggtPkkwIaEhgvYXBpL3YxL2luc3RhbmNlL3Byb2ZpbGUSjwEKEkdldEluc3RhbmNlU2V0dGluZxInLm1lbW9zLmFwaS52MS5HZXRJbnN0YW5jZVNldHRpbmdSZXF1ZXN0Gh0ubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZyIx2kEEbmFtZYLT5JMCJBIiL2FwaS92MS97bmFtZT1pbnN0YW5jZS9zZXR0aW5ncy8qfRK1AQoVVXBkYXRlSW5zdGFuY2VTZXR0aW5nEioubWVtb3MuYXBpLnYxLlVwZGF0ZUluc3RhbmNlU2V0dGluZ1JlcXVlc3QaHS5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nIlHaQRNzZXR0aW5nLHVwZGF0ZV9tYXNrgtPkkwI1OgdzZXR0aW5nMiovYXBpL3YxL3tzZXR0aW5nLm5hbWU9aW5zdGFuY2Uvc2V0dGluZ3MvKn1CrAEKEGNvbS5tZW1vcy5hcGkudjFCFEluc3RhbmNlU2VydmljZVByb3RvUAFaMGdpdGh1Yi5jb20vdXNlbWVtb3MvbWVtb3MvcHJvdG8vZ2VuL2FwaS92MTthcGl2MaICA01BWKoCDE1lbW9zLkFwaS5WMcoCDE1lbW9zXEFwaVxWMeICGE1lbW9zXEFwaVxWMVxHUEJNZXRhZGF0YeoCDk1lbW9zOjpBcGk6OlYxYgZwcm90bzM", [file_api_v1_user_service, file_google_api_annotations, file_google_api_client, file_google_api_field_behavior, file_google_api_resource, file_google_protobuf_field_mask, file_google_type_color]);
+  fileDesc("Ch1hcGkvdjEvaW5zdGFuY2Vfc2VydmljZS5wcm90bxIMbWVtb3MuYXBpLnYxImkKD0luc3RhbmNlUHJvZmlsZRIPCgd2ZXJzaW9uGAIgASgJEgwKBGRlbW8YAyABKAgSFAoMaW5zdGFuY2VfdXJsGAYgASgJEiEKBWFkbWluGAcgASgLMhIubWVtb3MuYXBpLnYxLlVzZXIiGwoZR2V0SW5zdGFuY2VQcm9maWxlUmVxdWVzdCLwFAoPSW5zdGFuY2VTZXR0aW5nEhEKBG5hbWUYASABKAlCA+BBCBJHCg9nZW5lcmFsX3NldHRpbmcYAiABKAsyLC5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nLkdlbmVyYWxTZXR0aW5nSAASRwoPc3RvcmFnZV9zZXR0aW5nGAMgASgLMiwubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5TdG9yYWdlU2V0dGluZ0gAElAKFG1lbW9fcmVsYXRlZF9zZXR0aW5nGAQgASgLMjAubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5NZW1vUmVsYXRlZFNldHRpbmdIABJBCgx0YWdzX3NldHRpbmcYBSABKAsyKS5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nLlRhZ3NTZXR0aW5nSAASUQoUbm90aWZpY2F0aW9uX3NldHRpbmcYBiABKAsyMS5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nLk5vdGlmaWNhdGlvblNldHRpbmdIABI9CgphaV9zZXR0aW5nGAcgASgLMicubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5BSVNldHRpbmdIABqHAwoOR2VuZXJhbFNldHRpbmcSIgoaZGlzYWxsb3dfdXNlcl9yZWdpc3RyYXRpb24YAiABKAgSHgoWZGlzYWxsb3dfcGFzc3dvcmRfYXV0aBgDIAEoCBIZChFhZGRpdGlvbmFsX3NjcmlwdBgEIAEoCRIYChBhZGRpdGlvbmFsX3N0eWxlGAUgASgJElIKDmN1c3RvbV9wcm9maWxlGAYgASgLMjoubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5HZW5lcmFsU2V0dGluZy5DdXN0b21Qcm9maWxlEh0KFXdlZWtfc3RhcnRfZGF5X29mZnNldBgHIAEoBRIgChhkaXNhbGxvd19jaGFuZ2VfdXNlcm5hbWUYCCABKAgSIAoYZGlzYWxsb3dfY2hhbmdlX25pY2tuYW1lGAkgASgIGkUKDUN1c3RvbVByb2ZpbGUSDQoFdGl0bGUYASABKAkSEwoLZGVzY3JpcHRpb24YAiABKAkSEAoIbG9nb191cmwYAyABKAkaugMKDlN0b3JhZ2VTZXR0aW5nEk4KDHN0b3JhZ2VfdHlwZRgBIAEoDjI4Lm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmcuU3RvcmFnZVNldHRpbmcuU3RvcmFnZVR5cGUSGQoRZmlsZXBhdGhfdGVtcGxhdGUYAiABKAkSHAoUdXBsb2FkX3NpemVfbGltaXRfbWIYAyABKAMSSAoJczNfY29uZmlnGAQgASgLMjUubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5TdG9yYWdlU2V0dGluZy5TM0NvbmZpZxqGAQoIUzNDb25maWcSFQoNYWNjZXNzX2tleV9pZBgBIAEoCRIZChFhY2Nlc3Nfa2V5X3NlY3JldBgCIAEoCRIQCghlbmRwb2ludBgDIAEoCRIOCgZyZWdpb24YBCABKAkSDgoGYnVja2V0GAUgASgJEhYKDnVzZV9wYXRoX3N0eWxlGAYgASgIIkwKC1N0b3JhZ2VUeXBlEhwKGFNUT1JBR0VfVFlQRV9VTlNQRUNJRklFRBAAEgwKCERBVEFCQVNFEAESCQoFTE9DQUwQAhIGCgJTMxADGokBChJNZW1vUmVsYXRlZFNldHRpbmcSIAoYZGlzcGxheV93aXRoX3VwZGF0ZV90aW1lGAIgASgIEhwKFGNvbnRlbnRfbGVuZ3RoX2xpbWl0GAMgASgFEiAKGGVuYWJsZV9kb3VibGVfY2xpY2tfZWRpdBgEIAEoCBIRCglyZWFjdGlvbnMYByADKAkaUQoLVGFnTWV0YWRhdGESLAoQYmFja2dyb3VuZF9jb2xvchgBIAEoCzISLmdvb2dsZS50eXBlLkNvbG9yEhQKDGJsdXJfY29udGVudBgCIAEoCBqoAQoLVGFnc1NldHRpbmcSQQoEdGFncxgBIAMoCzIzLm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmcuVGFnc1NldHRpbmcuVGFnc0VudHJ5GlYKCVRhZ3NFbnRyeRILCgNrZXkYASABKAkSOAoFdmFsdWUYAiABKAsyKS5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nLlRhZ01ldGFkYXRhOgI4ARq1AgoTTm90aWZpY2F0aW9uU2V0dGluZxJNCgVlbWFpbBgBIAEoCzI+Lm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmcuTm90aWZpY2F0aW9uU2V0dGluZy5FbWFpbFNldHRpbmcazgEKDEVtYWlsU2V0dGluZxIPCgdlbmFibGVkGAEgASgIEhEKCXNtdHBfaG9zdBgCIAEoCRIRCglzbXRwX3BvcnQYAyABKAUSFQoNc210cF91c2VybmFtZRgEIAEoCRIVCg1zbXRwX3Bhc3N3b3JkGAUgASgJEhIKCmZyb21fZW1haWwYBiABKAkSEQoJZnJvbV9uYW1lGAcgASgJEhAKCHJlcGx5X3RvGAggASgJEg8KB3VzZV90bHMYCSABKAgSDwoHdXNlX3NzbBgKIAEoCBpOCglBSVNldHRpbmcSQQoJcHJvdmlkZXJzGAEgAygLMi4ubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZy5BSVByb3ZpZGVyQ29uZmlnGu0BChBBSVByb3ZpZGVyQ29uZmlnEgoKAmlkGAEgASgJEg0KBXRpdGxlGAIgASgJEjoKBHR5cGUYAyABKA4yLC5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nLkFJUHJvdmlkZXJUeXBlEhAKCGVuZHBvaW50GAQgASgJEhQKB2FwaV9rZXkYBSABKAlCA+BBBBIOCgZtb2RlbHMYBiADKAkSFQoNZGVmYXVsdF9tb2RlbBgHIAEoCRIYCgthcGlfa2V5X3NldBgIIAEoCEID4EEDEhkKDGFwaV9rZXlfaGludBgJIAEoCUID4EEDImoKA0tleRITCg9LRVlfVU5TUEVDSUZJRUQQABILCgdHRU5FUkFMEAESCwoHU1RPUkFHRRACEhAKDE1FTU9fUkVMQVRFRBADEggKBFRBR1MQBBIQCgxOT1RJRklDQVRJT04QBRIGCgJBSRAGInAKDkFJUHJvdmlkZXJUeXBlEiAKHEFJX1BST1ZJREVSX1RZUEVfVU5TUEVDSUZJRUQQABIKCgZPUEVOQUkQARIVChFPUEVOQUlfQ09NUEFUSUJMRRACEg0KCUFOVEhST1BJQxADEgoKBkdFTUlOSRAEOmHqQV4KHG1lbW9zLmFwaS52MS9JbnN0YW5jZVNldHRpbmcSG2luc3RhbmNlL3NldHRpbmdzL3tzZXR0aW5nfSoQaW5zdGFuY2VTZXR0aW5nczIPaW5zdGFuY2VTZXR0aW5nQgcKBXZhbHVlIk8KGUdldEluc3RhbmNlU2V0dGluZ1JlcXVlc3QSMgoEbmFtZRgBIAEoCUIk4EEC+kEeChxtZW1vcy5hcGkudjEvSW5zdGFuY2VTZXR0aW5nIokBChxVcGRhdGVJbnN0YW5jZVNldHRpbmdSZXF1ZXN0EjMKB3NldHRpbmcYASABKAsyHS5tZW1vcy5hcGkudjEuSW5zdGFuY2VTZXR0aW5nQgPgQQISNAoLdXBkYXRlX21hc2sYAiABKAsyGi5nb29nbGUucHJvdG9idWYuRmllbGRNYXNrQgPgQQEy2wMKD0luc3RhbmNlU2VydmljZRJ+ChJHZXRJbnN0YW5jZVByb2ZpbGUSJy5tZW1vcy5hcGkudjEuR2V0SW5zdGFuY2VQcm9maWxlUmVxdWVzdBodLm1lbW9zLmFwaS52MS5JbnN0YW5jZVByb2ZpbGUiIILT5JMCGhIYL2FwaS92MS9pbnN0YW5jZS9wcm9maWxlEo8BChJHZXRJbnN0YW5jZVNldHRpbmcSJy5tZW1vcy5hcGkudjEuR2V0SW5zdGFuY2VTZXR0aW5nUmVxdWVzdBodLm1lbW9zLmFwaS52MS5JbnN0YW5jZVNldHRpbmciMdpBBG5hbWWC0+STAiQSIi9hcGkvdjEve25hbWU9aW5zdGFuY2Uvc2V0dGluZ3MvKn0StQEKFVVwZGF0ZUluc3RhbmNlU2V0dGluZxIqLm1lbW9zLmFwaS52MS5VcGRhdGVJbnN0YW5jZVNldHRpbmdSZXF1ZXN0Gh0ubWVtb3MuYXBpLnYxLkluc3RhbmNlU2V0dGluZyJR2kETc2V0dGluZyx1cGRhdGVfbWFza4LT5JMCNToHc2V0dGluZzIqL2FwaS92MS97c2V0dGluZy5uYW1lPWluc3RhbmNlL3NldHRpbmdzLyp9QqwBChBjb20ubWVtb3MuYXBpLnYxQhRJbnN0YW5jZVNlcnZpY2VQcm90b1ABWjBnaXRodWIuY29tL3VzZW1lbW9zL21lbW9zL3Byb3RvL2dlbi9hcGkvdjE7YXBpdjGiAgNNQViqAgxNZW1vcy5BcGkuVjHKAgxNZW1vc1xBcGlcVjHiAhhNZW1vc1xBcGlcVjFcR1BCTWV0YWRhdGHqAg5NZW1vczo6QXBpOjpWMWIGcHJvdG8z", [file_api_v1_user_service, file_google_api_annotations, file_google_api_client, file_google_api_field_behavior, file_google_api_resource, file_google_protobuf_field_mask, file_google_type_color]);
 
 /**
  * Instance profile message containing basic instance information.
@@ -127,6 +127,12 @@ export type InstanceSetting = Message<"memos.api.v1.InstanceSetting"> & {
      */
     value: InstanceSetting_NotificationSetting;
     case: "notificationSetting";
+  } | {
+    /**
+     * @generated from field: memos.api.v1.InstanceSetting.AISetting ai_setting = 7;
+     */
+    value: InstanceSetting_AISetting;
+    case: "aiSetting";
   } | { case: undefined; value?: undefined };
 };
 
@@ -544,6 +550,92 @@ export const InstanceSetting_NotificationSetting_EmailSettingSchema: GenMessage<
   messageDesc(file_api_v1_instance_service, 2, 5, 0);
 
 /**
+ * AI provider configuration settings.
+ *
+ * @generated from message memos.api.v1.InstanceSetting.AISetting
+ */
+export type InstanceSetting_AISetting = Message<"memos.api.v1.InstanceSetting.AISetting"> & {
+  /**
+   * providers is the list of AI provider configurations available instance-wide.
+   *
+   * @generated from field: repeated memos.api.v1.InstanceSetting.AIProviderConfig providers = 1;
+   */
+  providers: InstanceSetting_AIProviderConfig[];
+};
+
+/**
+ * Describes the message memos.api.v1.InstanceSetting.AISetting.
+ * Use `create(InstanceSetting_AISettingSchema)` to create a new message.
+ */
+export const InstanceSetting_AISettingSchema: GenMessage<InstanceSetting_AISetting> = /*@__PURE__*/
+  messageDesc(file_api_v1_instance_service, 2, 6);
+
+/**
+ * AIProviderConfig represents one callable AI provider connection.
+ *
+ * @generated from message memos.api.v1.InstanceSetting.AIProviderConfig
+ */
+export type InstanceSetting_AIProviderConfig = Message<"memos.api.v1.InstanceSetting.AIProviderConfig"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string title = 2;
+   */
+  title: string;
+
+  /**
+   * @generated from field: memos.api.v1.InstanceSetting.AIProviderType type = 3;
+   */
+  type: InstanceSetting_AIProviderType;
+
+  /**
+   * @generated from field: string endpoint = 4;
+   */
+  endpoint: string;
+
+  /**
+   * api_key is write-only and is never returned by GetInstanceSetting.
+   *
+   * @generated from field: string api_key = 5;
+   */
+  apiKey: string;
+
+  /**
+   * @generated from field: repeated string models = 6;
+   */
+  models: string[];
+
+  /**
+   * @generated from field: string default_model = 7;
+   */
+  defaultModel: string;
+
+  /**
+   * api_key_set indicates whether an API key is stored for this provider.
+   *
+   * @generated from field: bool api_key_set = 8;
+   */
+  apiKeySet: boolean;
+
+  /**
+   * api_key_hint is a masked hint for the stored API key.
+   *
+   * @generated from field: string api_key_hint = 9;
+   */
+  apiKeyHint: string;
+};
+
+/**
+ * Describes the message memos.api.v1.InstanceSetting.AIProviderConfig.
+ * Use `create(InstanceSetting_AIProviderConfigSchema)` to create a new message.
+ */
+export const InstanceSetting_AIProviderConfigSchema: GenMessage<InstanceSetting_AIProviderConfig> = /*@__PURE__*/
+  messageDesc(file_api_v1_instance_service, 2, 7);
+
+/**
  * Enumeration of instance setting keys.
  *
  * @generated from enum memos.api.v1.InstanceSetting.Key
@@ -588,6 +680,13 @@ export enum InstanceSetting_Key {
    * @generated from enum value: NOTIFICATION = 5;
    */
   NOTIFICATION = 5,
+
+  /**
+   * AI is the key for AI provider settings.
+   *
+   * @generated from enum value: AI = 6;
+   */
+  AI = 6,
 }
 
 /**
@@ -595,6 +694,44 @@ export enum InstanceSetting_Key {
  */
 export const InstanceSetting_KeySchema: GenEnum<InstanceSetting_Key> = /*@__PURE__*/
   enumDesc(file_api_v1_instance_service, 2, 0);
+
+/**
+ * AIProviderType is the provider implementation type.
+ *
+ * @generated from enum memos.api.v1.InstanceSetting.AIProviderType
+ */
+export enum InstanceSetting_AIProviderType {
+  /**
+   * @generated from enum value: AI_PROVIDER_TYPE_UNSPECIFIED = 0;
+   */
+  AI_PROVIDER_TYPE_UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: OPENAI = 1;
+   */
+  OPENAI = 1,
+
+  /**
+   * @generated from enum value: OPENAI_COMPATIBLE = 2;
+   */
+  OPENAI_COMPATIBLE = 2,
+
+  /**
+   * @generated from enum value: ANTHROPIC = 3;
+   */
+  ANTHROPIC = 3,
+
+  /**
+   * @generated from enum value: GEMINI = 4;
+   */
+  GEMINI = 4,
+}
+
+/**
+ * Describes the enum memos.api.v1.InstanceSetting.AIProviderType.
+ */
+export const InstanceSetting_AIProviderTypeSchema: GenEnum<InstanceSetting_AIProviderType> = /*@__PURE__*/
+  enumDesc(file_api_v1_instance_service, 2, 1);
 
 /**
  * Request message for GetInstanceSetting method.

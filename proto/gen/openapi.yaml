@@ -6,6 +6,31 @@ info:
     title: ""
     version: 0.0.1
 paths:
+    /api/v1/ai:transcribe:
+        post:
+            tags:
+                - AIService
+            description: Transcribe transcribes an audio file using an instance AI provider.
+            operationId: AIService_Transcribe
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TranscribeRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/TranscribeResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/attachments:
         get:
             tags:
@@ -2380,7 +2405,55 @@ components:
                     $ref: '#/components/schemas/InstanceSetting_TagsSetting'
                 notificationSetting:
                     $ref: '#/components/schemas/InstanceSetting_NotificationSetting'
+                aiSetting:
+                    $ref: '#/components/schemas/InstanceSetting_AISetting'
             description: An instance setting resource.
+        InstanceSetting_AIProviderConfig:
+            type: object
+            properties:
+                id:
+                    type: string
+                title:
+                    type: string
+                type:
+                    enum:
+                        - AI_PROVIDER_TYPE_UNSPECIFIED
+                        - OPENAI
+                        - OPENAI_COMPATIBLE
+                        - ANTHROPIC
+                        - GEMINI
+                    type: string
+                    format: enum
+                endpoint:
+                    type: string
+                apiKey:
+                    writeOnly: true
+                    type: string
+                    description: api_key is write-only and is never returned by GetInstanceSetting.
+                models:
+                    type: array
+                    items:
+                        type: string
+                defaultModel:
+                    type: string
+                apiKeySet:
+                    readOnly: true
+                    type: boolean
+                    description: api_key_set indicates whether an API key is stored for this provider.
+                apiKeyHint:
+                    readOnly: true
+                    type: string
+                    description: api_key_hint is a masked hint for the stored API key.
+            description: AIProviderConfig represents one callable AI provider connection.
+        InstanceSetting_AISetting:
+            type: object
+            properties:
+                providers:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/InstanceSetting_AIProviderConfig'
+                    description: providers is the list of AI provider configurations available instance-wide.
+            description: AI provider configuration settings.
         InstanceSetting_GeneralSetting:
             type: object
             properties:
@@ -3144,6 +3217,59 @@ components:
             description: |-
                 S3 configuration for cloud storage backend.
                  Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
+        TranscribeRequest:
+            required:
+                - providerId
+                - config
+                - audio
+            type: object
+            properties:
+                providerId:
+                    type: string
+                    description: Required. The instance AI provider ID to use.
+                config:
+                    allOf:
+                        - $ref: '#/components/schemas/TranscriptionConfig'
+                    description: Required. Transcription options.
+                audio:
+                    allOf:
+                        - $ref: '#/components/schemas/TranscriptionAudio'
+                    description: Required. Audio input.
+        TranscribeResponse:
+            type: object
+            properties:
+                text:
+                    type: string
+                    description: The transcribed text.
+        TranscriptionAudio:
+            type: object
+            properties:
+                content:
+                    writeOnly: true
+                    type: string
+                    description: Inline audio bytes.
+                    format: bytes
+                uri:
+                    type: string
+                    description: URI for audio content. Reserved for future use.
+                filename:
+                    type: string
+                    description: Optional. The uploaded filename.
+                contentType:
+                    type: string
+                    description: Optional. The MIME type of the input audio.
+        TranscriptionConfig:
+            type: object
+            properties:
+                model:
+                    type: string
+                    description: Optional. The model to use. If empty, the provider's default model is used.
+                prompt:
+                    type: string
+                    description: Optional. A prompt to improve transcription quality.
+                language:
+                    type: string
+                    description: Optional. The language of the input audio.
         UpsertMemoReactionRequest:
             required:
                 - name
@@ -3419,6 +3545,7 @@ components:
                     format: date-time
             description: UserWebhook represents a webhook owned by a user.
 tags:
+    - name: AIService
     - name: AttachmentService
     - name: AuthService
     - name: IdentityProviderService

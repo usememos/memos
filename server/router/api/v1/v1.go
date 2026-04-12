@@ -23,6 +23,7 @@ type APIV1Service struct {
 	v1pb.UnimplementedUserServiceServer
 	v1pb.UnimplementedMemoServiceServer
 	v1pb.UnimplementedAttachmentServiceServer
+	v1pb.UnimplementedAIServiceServer
 	v1pb.UnimplementedShortcutServiceServer
 	v1pb.UnimplementedIdentityProviderServiceServer
 
@@ -102,6 +103,9 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 		return err
 	}
 	if err := v1pb.RegisterAttachmentServiceHandlerServer(ctx, gwMux, s); err != nil {
+		return err
+	}
+	if err := v1pb.RegisterAIServiceHandlerServer(ctx, gwMux, s); err != nil {
 		return err
 	}
 	if err := v1pb.RegisterShortcutServiceHandlerServer(ctx, gwMux, s); err != nil {
