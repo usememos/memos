@@ -185,6 +185,55 @@ func TestServeAttachmentFile_MotionClip(t *testing.T) {
 	require.Contains(t, rec.Body.String(), "ftyp")
 }
 
+func TestServeAttachmentFile_SVGThumbnailServedAsImageWithSecurityHeaders(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	creator, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "svg-owner",
+		Role:     store.RoleUser,
+		Email:    "svg-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+
+	svgContent := []byte(`<svg xmlns="http://www.w3.org/2000/svg" width="120" height="40"><text x="0" y="20">memos</text></svg>`)
+	attachment, err := svc.CreateAttachment(creatorCtx, &apiv1.CreateAttachmentRequest{
+		Attachment: &apiv1.Attachment{
+			Filename: "preview.svg",
+			Type:     "image/svg+xml",
+			Content:  svgContent,
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = svc.CreateMemo(creatorCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "svg memo",
+			Visibility: apiv1.Visibility_PUBLIC,
+			Attachments: []*apiv1.Attachment{
+				{Name: attachment.Name},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+
+	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s?thumbnail=true", attachment.Name, attachment.Filename), nil)
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "image/svg+xml", rec.Header().Get("Content-Type"))
+	require.Empty(t, rec.Header().Get("Content-Disposition"))
+	require.Equal(t, "nosniff", rec.Header().Get("X-Content-Type-Options"))
+	require.Equal(t, "default-src 'none'; style-src 'unsafe-inline';", rec.Header().Get("Content-Security-Policy"))
+	require.Equal(t, svgContent, rec.Body.Bytes())
+}
+
 func newShareAttachmentTestServices(ctx context.Context, t *testing.T) (*apiv1service.APIV1Service, *FileServerService, *store.Store, func()) {
 	t.Helper()
 

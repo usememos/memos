@@ -55,7 +55,6 @@ var xssUnsafeTypes = map[string]bool{
 	"text/xml":                 true,
 	"application/xml":          true,
 	"application/xhtml+xml":    true,
-	"image/svg+xml":            true,
 }
 
 // thumbnailSupportedTypes contains image MIME types that support thumbnail generation.
