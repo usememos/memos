@@ -170,6 +170,8 @@ func convertAIProviderTypeFromStore(providerType storepb.AIProviderType) ai.Prov
 		return ai.ProviderOpenAICompatible
 	case storepb.AIProviderType_GEMINI:
 		return ai.ProviderGemini
+	case storepb.AIProviderType_ANTHROPIC:
+		return ai.ProviderAnthropic
 	default:
 		return ""
 	}

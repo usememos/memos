@@ -10,6 +10,8 @@ const (
 	ProviderOpenAICompatible ProviderType = "OPENAI_COMPATIBLE"
 	// ProviderGemini is Google's Gemini API.
 	ProviderGemini ProviderType = "GEMINI"
+	// ProviderAnthropic is Anthropic's API.
+	ProviderAnthropic ProviderType = "ANTHROPIC"
 )
 
 // ProviderConfig configures a callable AI provider connection.

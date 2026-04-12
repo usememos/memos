@@ -2421,6 +2421,7 @@ components:
                         - OPENAI
                         - OPENAI_COMPATIBLE
                         - GEMINI
+                        - ANTHROPIC
                     type: string
                     format: enum
                 endpoint:

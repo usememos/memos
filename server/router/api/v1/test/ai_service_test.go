@@ -154,6 +154,47 @@ func TestTranscribe(t *testing.T) {
 		require.Equal(t, "gemini transcript", resp.Text)
 	})
 
+	t.Run("rejects Anthropic transcription as unsupported", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "anthropic-user")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+
+		_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_AI,
+			Value: &storepb.InstanceSetting_AiSetting{
+				AiSetting: &storepb.InstanceAISetting{
+					Providers: []*storepb.AIProviderConfig{
+						{
+							Id:           "anthropic-main",
+							Title:        "Anthropic",
+							Type:         storepb.AIProviderType_ANTHROPIC,
+							Endpoint:     "https://api.anthropic.com/v1",
+							ApiKey:       "sk-ant-test",
+							Models:       []string{"claude-sonnet-4-5"},
+							DefaultModel: "claude-sonnet-4-5",
+						},
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.Transcribe(userCtx, &v1pb.TranscribeRequest{
+			ProviderId: "anthropic-main",
+			Config:     &v1pb.TranscriptionConfig{},
+			Audio: &v1pb.TranscriptionAudio{
+				Source:      &v1pb.TranscriptionAudio_Content{Content: []byte("RIFF")},
+				Filename:    "voice.wav",
+				ContentType: "audio/wav",
+			},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "capability unsupported")
+	})
+
 	t.Run("rejects unconfigured model", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()

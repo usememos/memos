@@ -233,6 +233,7 @@ message InstanceSetting {
     OPENAI = 1;
     OPENAI_COMPATIBLE = 2;
     GEMINI = 3;
+    ANTHROPIC = 4;
   }
 }
 

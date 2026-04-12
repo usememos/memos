@@ -523,6 +523,9 @@ func (s *APIV1Service) prepareInstanceAISettingForUpdate(ctx context.Context, se
 		if provider.Type == storepb.AIProviderType_OPENAI && provider.Endpoint == "" {
 			provider.Endpoint = "https://api.openai.com/v1"
 		}
+		if provider.Type == storepb.AIProviderType_ANTHROPIC && provider.Endpoint == "" {
+			provider.Endpoint = "https://api.anthropic.com/v1"
+		}
 		if provider.Type == storepb.AIProviderType_OPENAI_COMPATIBLE && provider.Endpoint == "" {
 			return errors.Errorf("provider %q endpoint is required", provider.Id)
 		}

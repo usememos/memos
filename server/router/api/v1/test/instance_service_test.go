@@ -624,4 +624,39 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		require.Equal(t, []string{"gpt-5.4-mini", "gpt-5.4"}, stored.GetProviders()[0].GetModels())
 		require.Equal(t, "gpt-5.4-mini", stored.GetProviders()[0].GetDefaultModel())
 	})
+
+	t.Run("UpdateInstanceSetting - Anthropic provider gets default endpoint", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/AI",
+				Value: &v1pb.InstanceSetting_AiSetting{
+					AiSetting: &v1pb.InstanceSetting_AISetting{
+						Providers: []*v1pb.InstanceSetting_AIProviderConfig{
+							{
+								Id:           "anthropic-main",
+								Title:        "Anthropic",
+								Type:         v1pb.InstanceSetting_ANTHROPIC,
+								ApiKey:       "sk-ant-test",
+								Models:       []string{"claude-sonnet-4-5"},
+								DefaultModel: "claude-sonnet-4-5",
+							},
+						},
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		stored, err := ts.Store.GetInstanceAISetting(ctx)
+		require.NoError(t, err)
+		require.Len(t, stored.GetProviders(), 1)
+		require.Equal(t, "https://api.anthropic.com/v1", stored.GetProviders()[0].GetEndpoint())
+	})
 }

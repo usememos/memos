@@ -100,6 +100,7 @@ const (
 	InstanceSetting_OPENAI                       InstanceSetting_AIProviderType = 1
 	InstanceSetting_OPENAI_COMPATIBLE            InstanceSetting_AIProviderType = 2
 	InstanceSetting_GEMINI                       InstanceSetting_AIProviderType = 3
+	InstanceSetting_ANTHROPIC                    InstanceSetting_AIProviderType = 4
 )
 
 // Enum value maps for InstanceSetting_AIProviderType.
@@ -109,12 +110,14 @@ var (
 		1: "OPENAI",
 		2: "OPENAI_COMPATIBLE",
 		3: "GEMINI",
+		4: "ANTHROPIC",
 	}
 	InstanceSetting_AIProviderType_value = map[string]int32{
 		"AI_PROVIDER_TYPE_UNSPECIFIED": 0,
 		"OPENAI":                       1,
 		"OPENAI_COMPATIBLE":            2,
 		"GEMINI":                       3,
+		"ANTHROPIC":                    4,
 	}
 )
 
@@ -1411,7 +1414,7 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\x04demo\x18\x03 \x01(\bR\x04demo\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\x12(\n" +
 	"\x05admin\x18\a \x01(\v2\x12.memos.api.v1.UserR\x05admin\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\xd3\x1a\n" +
+	"\x19GetInstanceProfileRequest\"\xe2\x1a\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2,.memos.api.v1.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12W\n" +
@@ -1499,14 +1502,15 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\fMEMO_RELATED\x10\x03\x12\b\n" +
 	"\x04TAGS\x10\x04\x12\x10\n" +
 	"\fNOTIFICATION\x10\x05\x12\x06\n" +
-	"\x02AI\x10\x06\"a\n" +
+	"\x02AI\x10\x06\"p\n" +
 	"\x0eAIProviderType\x12 \n" +
 	"\x1cAI_PROVIDER_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06OPENAI\x10\x01\x12\x15\n" +
 	"\x11OPENAI_COMPATIBLE\x10\x02\x12\n" +
 	"\n" +
-	"\x06GEMINI\x10\x03:a\xeaA^\n" +
+	"\x06GEMINI\x10\x03\x12\r\n" +
+	"\tANTHROPIC\x10\x04:a\xeaA^\n" +
 	"\x1cmemos.api.v1/InstanceSetting\x12\x1binstance/settings/{setting}*\x10instanceSettings2\x0finstanceSettingB\a\n" +
 	"\x05value\"U\n" +
 	"\x19GetInstanceSettingRequest\x128\n" +

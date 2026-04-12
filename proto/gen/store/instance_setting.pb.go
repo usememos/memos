@@ -100,6 +100,7 @@ const (
 	AIProviderType_OPENAI                       AIProviderType = 1
 	AIProviderType_OPENAI_COMPATIBLE            AIProviderType = 2
 	AIProviderType_GEMINI                       AIProviderType = 3
+	AIProviderType_ANTHROPIC                    AIProviderType = 4
 )
 
 // Enum value maps for AIProviderType.
@@ -109,12 +110,14 @@ var (
 		1: "OPENAI",
 		2: "OPENAI_COMPATIBLE",
 		3: "GEMINI",
+		4: "ANTHROPIC",
 	}
 	AIProviderType_value = map[string]int32{
 		"AI_PROVIDER_TYPE_UNSPECIFIED": 0,
 		"OPENAI":                       1,
 		"OPENAI_COMPATIBLE":            2,
 		"GEMINI":                       3,
+		"ANTHROPIC":                    4,
 	}
 )
 
@@ -1321,14 +1324,15 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\fMEMO_RELATED\x10\x04\x12\b\n" +
 	"\x04TAGS\x10\x05\x12\x10\n" +
 	"\fNOTIFICATION\x10\x06\x12\x06\n" +
-	"\x02AI\x10\a*a\n" +
+	"\x02AI\x10\a*p\n" +
 	"\x0eAIProviderType\x12 \n" +
 	"\x1cAI_PROVIDER_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06OPENAI\x10\x01\x12\x15\n" +
 	"\x11OPENAI_COMPATIBLE\x10\x02\x12\n" +
 	"\n" +
-	"\x06GEMINI\x10\x03B\x9f\x01\n" +
+	"\x06GEMINI\x10\x03\x12\r\n" +
+	"\tANTHROPIC\x10\x04B\x9f\x01\n" +
 	"\x0fcom.memos.storeB\x14InstanceSettingProtoP\x01Z)github.com/usememos/memos/proto/gen/store\xa2\x02\x03MSX\xaa\x02\vMemos.Store\xca\x02\vMemos\\Store\xe2\x02\x17Memos\\Store\\GPBMetadata\xea\x02\fMemos::Storeb\x06proto3"
 
 var (
