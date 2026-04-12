@@ -5,6 +5,8 @@ import {
   InstanceProfile,
   InstanceProfileSchema,
   InstanceSetting,
+  InstanceSetting_AISetting,
+  InstanceSetting_AISettingSchema,
   InstanceSetting_GeneralSetting,
   InstanceSetting_GeneralSettingSchema,
   InstanceSetting_Key,
@@ -39,6 +41,7 @@ interface InstanceContextValue extends InstanceState {
   memoRelatedSetting: InstanceSetting_MemoRelatedSetting;
   storageSetting: InstanceSetting_StorageSetting;
   tagsSetting: InstanceSetting_TagsSetting;
+  aiSetting: InstanceSetting_AISetting;
   initialize: () => Promise<void>;
   fetchSetting: (key: InstanceSetting_Key) => Promise<void>;
   updateSetting: (setting: InstanceSetting) => Promise<void>;
@@ -86,6 +89,14 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
       return setting.value.value;
     }
     return create(InstanceSetting_TagsSettingSchema, {});
+  }, [state.settings]);
+
+  const aiSetting = useMemo((): InstanceSetting_AISetting => {
+    const setting = state.settings.find((s) => s.name === `${instanceSettingNamePrefix}AI`);
+    if (setting?.value.case === "aiSetting") {
+      return setting.value.value;
+    }
+    return create(InstanceSetting_AISettingSchema, {});
   }, [state.settings]);
 
   const initialize = useCallback(async () => {
@@ -142,11 +153,12 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
       memoRelatedSetting,
       storageSetting,
       tagsSetting,
+      aiSetting,
       initialize,
       fetchSetting,
       updateSetting,
     }),
-    [state, generalSetting, memoRelatedSetting, storageSetting, tagsSetting, initialize, fetchSetting, updateSetting],
+    [state, generalSetting, memoRelatedSetting, storageSetting, tagsSetting, aiSetting, initialize, fetchSetting, updateSetting],
   );
 
   return <InstanceContext.Provider value={value}>{children}</InstanceContext.Provider>;

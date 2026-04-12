@@ -238,6 +238,34 @@ func TestGetInstanceSetting(t *testing.T) {
 			"SmtpPassword must never be returned in responses")
 	})
 
+	t.Run("GetInstanceSetting - AI setting requires admin", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		admin, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, admin.ID)
+
+		regularUser, err := ts.CreateRegularUser(ctx, "user")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, regularUser.ID)
+
+		req := &v1pb.GetInstanceSettingRequest{Name: "instance/settings/AI"}
+
+		_, err = ts.Service.GetInstanceSetting(ctx, req)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "not authenticated")
+
+		_, err = ts.Service.GetInstanceSetting(userCtx, req)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "permission denied")
+
+		resp, err := ts.Service.GetInstanceSetting(adminCtx, req)
+		require.NoError(t, err)
+		require.NotNil(t, resp.GetAiSetting())
+		require.Empty(t, resp.GetAiSetting().GetProviders())
+	})
+
 	t.Run("GetInstanceSetting - invalid setting name", func(t *testing.T) {
 		// Create test service for this specific test
 		ts := NewTestService(t)
@@ -257,6 +285,41 @@ func TestGetInstanceSetting(t *testing.T) {
 
 func TestUpdateInstanceSetting(t *testing.T) {
 	ctx := context.Background()
+
+	t.Run("UpdateInstanceSetting - AI setting requires admin", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		regularUser, err := ts.CreateRegularUser(ctx, "user")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, regularUser.ID)
+
+		setting := &v1pb.InstanceSetting{
+			Name: "instance/settings/AI",
+			Value: &v1pb.InstanceSetting_AiSetting{
+				AiSetting: &v1pb.InstanceSetting_AISetting{
+					Providers: []*v1pb.InstanceSetting_AIProviderConfig{
+						{
+							Id:           "openai-main",
+							Title:        "OpenAI",
+							Type:         v1pb.InstanceSetting_OPENAI,
+							ApiKey:       "sk-test",
+							Models:       []string{"gpt-4o-transcribe"},
+							DefaultModel: "gpt-4o-transcribe",
+						},
+					},
+				},
+			},
+		}
+
+		_, err = ts.Service.UpdateInstanceSetting(ctx, &v1pb.UpdateInstanceSettingRequest{Setting: setting})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "not authenticated")
+
+		_, err = ts.Service.UpdateInstanceSetting(userCtx, &v1pb.UpdateInstanceSettingRequest{Setting: setting})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "permission denied")
+	})
 
 	t.Run("UpdateInstanceSetting - tags setting", func(t *testing.T) {
 		ts := NewTestService(t)
@@ -489,5 +552,76 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		require.Equal(t, "super-secret", stored.GetS3Config().GetAccessKeySecret(),
 			"existing AccessKeySecret must be preserved when an empty value is sent")
 		require.Equal(t, "s3-v2.example.com", stored.GetS3Config().GetEndpoint())
+	})
+
+	t.Run("UpdateInstanceSetting - AI provider keys are write-only and preserved on empty", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/AI",
+				Value: &v1pb.InstanceSetting_AiSetting{
+					AiSetting: &v1pb.InstanceSetting_AISetting{
+						Providers: []*v1pb.InstanceSetting_AIProviderConfig{
+							{
+								Id:           "openai-main",
+								Title:        "OpenAI",
+								Type:         v1pb.InstanceSetting_OPENAI,
+								ApiKey:       "sk-original",
+								Models:       []string{"gpt-5.4", "gpt-5.4-mini"},
+								DefaultModel: "gpt-5.4",
+							},
+						},
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		resp, err := ts.Service.GetInstanceSetting(adminCtx, &v1pb.GetInstanceSettingRequest{
+			Name: "instance/settings/AI",
+		})
+		require.NoError(t, err)
+		require.Len(t, resp.GetAiSetting().GetProviders(), 1)
+		provider := resp.GetAiSetting().GetProviders()[0]
+		require.Empty(t, provider.GetApiKey(), "AI provider API key must never be returned in responses")
+		require.True(t, provider.GetApiKeySet())
+		require.Equal(t, "sk-o...inal", provider.GetApiKeyHint())
+		require.Equal(t, "https://api.openai.com/v1", provider.GetEndpoint())
+
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/AI",
+				Value: &v1pb.InstanceSetting_AiSetting{
+					AiSetting: &v1pb.InstanceSetting_AISetting{
+						Providers: []*v1pb.InstanceSetting_AIProviderConfig{
+							{
+								Id:           "openai-main",
+								Title:        "OpenAI primary",
+								Type:         v1pb.InstanceSetting_OPENAI,
+								ApiKey:       "",
+								Models:       []string{"gpt-5.4-mini", "gpt-5.4-mini", "gpt-5.4"},
+								DefaultModel: "",
+							},
+						},
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		stored, err := ts.Store.GetInstanceAISetting(ctx)
+		require.NoError(t, err)
+		require.Len(t, stored.GetProviders(), 1)
+		require.Equal(t, "sk-original", stored.GetProviders()[0].GetApiKey(),
+			"existing AI provider API key must be preserved when an empty value is sent")
+		require.Equal(t, "OpenAI primary", stored.GetProviders()[0].GetTitle())
+		require.Equal(t, []string{"gpt-5.4-mini", "gpt-5.4"}, stored.GetProviders()[0].GetModels())
+		require.Equal(t, "gpt-5.4-mini", stored.GetProviders()[0].GetDefaultModel())
 	})
 }

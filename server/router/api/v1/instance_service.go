@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"math"
 	"regexp"
+	"slices"
 	"strings"
 
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 	colorpb "google.golang.org/genproto/googleapis/type/color"
 	"google.golang.org/grpc/codes"
@@ -54,6 +56,8 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 		_, err = s.Store.GetInstanceTagsSetting(ctx)
 	case storepb.InstanceSettingKey_NOTIFICATION:
 		_, err = s.Store.GetInstanceNotificationSetting(ctx)
+	case storepb.InstanceSettingKey_AI:
+		_, err = s.Store.GetInstanceAISetting(ctx)
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "unsupported instance setting key: %v", instanceSettingKey)
 	}
@@ -71,9 +75,10 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 		return nil, status.Errorf(codes.NotFound, "instance setting not found")
 	}
 
-	// Storage and notification settings contain credentials; restrict to admins only.
+	// Storage, notification, and AI settings contain credentials; restrict to admins only.
 	if instanceSetting.Key == storepb.InstanceSettingKey_STORAGE ||
-		instanceSetting.Key == storepb.InstanceSettingKey_NOTIFICATION {
+		instanceSetting.Key == storepb.InstanceSettingKey_NOTIFICATION ||
+		instanceSetting.Key == storepb.InstanceSettingKey_AI {
 		user, err := s.fetchCurrentUser(ctx)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -127,6 +132,10 @@ func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.
 				storage.S3Config.AccessKeySecret = existing.S3Config.AccessKeySecret
 			}
 		}
+	case storepb.InstanceSettingKey_AI:
+		if err := s.prepareInstanceAISettingForUpdate(ctx, updateSetting.GetAiSetting()); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid AI setting: %v", err)
+		}
 	default:
 		// No credential preservation needed for other setting types.
 	}
@@ -164,6 +173,10 @@ func convertInstanceSettingFromStore(setting *storepb.InstanceSetting) *v1pb.Ins
 		instanceSetting.Value = &v1pb.InstanceSetting_NotificationSetting_{
 			NotificationSetting: convertInstanceNotificationSettingFromStore(setting.GetNotificationSetting()),
 		}
+	case *storepb.InstanceSetting_AiSetting:
+		instanceSetting.Value = &v1pb.InstanceSetting_AiSetting{
+			AiSetting: convertInstanceAISettingFromStore(setting.GetAiSetting()),
+		}
 	default:
 		// Leave Value unset for unsupported setting variants.
 	}
@@ -198,6 +211,10 @@ func convertInstanceSettingToStore(setting *v1pb.InstanceSetting) *storepb.Insta
 	case storepb.InstanceSettingKey_NOTIFICATION:
 		instanceSetting.Value = &storepb.InstanceSetting_NotificationSetting{
 			NotificationSetting: convertInstanceNotificationSettingToStore(setting.GetNotificationSetting()),
+		}
+	case storepb.InstanceSettingKey_AI:
+		instanceSetting.Value = &storepb.InstanceSetting_AiSetting{
+			AiSetting: convertInstanceAISettingToStore(setting.GetAiSetting()),
 		}
 	default:
 		// Keep the default GeneralSetting value
@@ -398,6 +415,58 @@ func convertInstanceNotificationSettingToStore(setting *v1pb.InstanceSetting_Not
 	return notificationSetting
 }
 
+func convertInstanceAISettingFromStore(setting *storepb.InstanceAISetting) *v1pb.InstanceSetting_AISetting {
+	if setting == nil {
+		return nil
+	}
+
+	aiSetting := &v1pb.InstanceSetting_AISetting{
+		Providers: make([]*v1pb.InstanceSetting_AIProviderConfig, 0, len(setting.Providers)),
+	}
+	for _, provider := range setting.Providers {
+		if provider == nil {
+			continue
+		}
+		apiKey := provider.GetApiKey()
+		aiSetting.Providers = append(aiSetting.Providers, &v1pb.InstanceSetting_AIProviderConfig{
+			Id:           provider.GetId(),
+			Title:        provider.GetTitle(),
+			Type:         v1pb.InstanceSetting_AIProviderType(provider.GetType()),
+			Endpoint:     provider.GetEndpoint(),
+			Models:       provider.GetModels(),
+			DefaultModel: provider.GetDefaultModel(),
+			ApiKeySet:    apiKey != "",
+			ApiKeyHint:   maskAPIKey(apiKey),
+		})
+	}
+	return aiSetting
+}
+
+func convertInstanceAISettingToStore(setting *v1pb.InstanceSetting_AISetting) *storepb.InstanceAISetting {
+	if setting == nil {
+		return nil
+	}
+
+	aiSetting := &storepb.InstanceAISetting{
+		Providers: make([]*storepb.AIProviderConfig, 0, len(setting.Providers)),
+	}
+	for _, provider := range setting.Providers {
+		if provider == nil {
+			continue
+		}
+		aiSetting.Providers = append(aiSetting.Providers, &storepb.AIProviderConfig{
+			Id:           provider.GetId(),
+			Title:        provider.GetTitle(),
+			Type:         storepb.AIProviderType(provider.GetType()),
+			Endpoint:     provider.GetEndpoint(),
+			ApiKey:       provider.GetApiKey(),
+			Models:       provider.GetModels(),
+			DefaultModel: provider.GetDefaultModel(),
+		})
+	}
+	return aiSetting
+}
+
 func validateInstanceSetting(setting *v1pb.InstanceSetting) error {
 	key, err := ExtractInstanceSettingKeyFromName(setting.Name)
 	if err != nil {
@@ -407,6 +476,104 @@ func validateInstanceSetting(setting *v1pb.InstanceSetting) error {
 		return nil
 	}
 	return validateInstanceTagsSetting(setting.GetTagsSetting())
+}
+
+func (s *APIV1Service) prepareInstanceAISettingForUpdate(ctx context.Context, setting *storepb.InstanceAISetting) error {
+	if setting == nil {
+		return errors.New("AI setting is required")
+	}
+
+	existing, err := s.Store.GetInstanceAISetting(ctx)
+	if err != nil {
+		return errors.Wrap(err, "failed to get existing AI setting")
+	}
+	existingProviders := map[string]*storepb.AIProviderConfig{}
+	if existing != nil {
+		for _, provider := range existing.Providers {
+			if provider != nil && provider.Id != "" {
+				existingProviders[provider.Id] = provider
+			}
+		}
+	}
+
+	seenIDs := map[string]bool{}
+	for _, provider := range setting.Providers {
+		if provider == nil {
+			return errors.New("provider cannot be nil")
+		}
+
+		provider.Id = strings.TrimSpace(provider.Id)
+		if provider.Id == "" {
+			provider.Id = shortuuid.New()
+		}
+		if seenIDs[provider.Id] {
+			return errors.Errorf("duplicate provider ID %q", provider.Id)
+		}
+		seenIDs[provider.Id] = true
+
+		provider.Title = strings.TrimSpace(provider.Title)
+		if provider.Title == "" {
+			return errors.New("provider title is required")
+		}
+		if provider.Type == storepb.AIProviderType_AI_PROVIDER_TYPE_UNSPECIFIED {
+			return errors.Errorf("provider %q type is required", provider.Id)
+		}
+
+		provider.Endpoint = strings.TrimSpace(provider.Endpoint)
+		if provider.Type == storepb.AIProviderType_OPENAI && provider.Endpoint == "" {
+			provider.Endpoint = "https://api.openai.com/v1"
+		}
+		if provider.Type == storepb.AIProviderType_OPENAI_COMPATIBLE && provider.Endpoint == "" {
+			return errors.Errorf("provider %q endpoint is required", provider.Id)
+		}
+
+		provider.Models = normalizeAIModels(provider.Models)
+		if len(provider.Models) == 0 {
+			return errors.Errorf("provider %q must define at least one model", provider.Id)
+		}
+		provider.DefaultModel = strings.TrimSpace(provider.DefaultModel)
+		if provider.DefaultModel == "" {
+			provider.DefaultModel = provider.Models[0]
+		}
+		if !slices.Contains(provider.Models, provider.DefaultModel) {
+			return errors.Errorf("provider %q default model %q must be included in models", provider.Id, provider.DefaultModel)
+		}
+
+		if provider.ApiKey == "" {
+			if existingProvider, ok := existingProviders[provider.Id]; ok {
+				provider.ApiKey = existingProvider.ApiKey
+			}
+		}
+		if provider.ApiKey == "" {
+			return errors.Errorf("provider %q API key is required", provider.Id)
+		}
+	}
+	return nil
+}
+
+func normalizeAIModels(models []string) []string {
+	normalized := []string{}
+	seen := map[string]bool{}
+	for _, model := range models {
+		model = strings.TrimSpace(model)
+		if model == "" || seen[model] {
+			continue
+		}
+		seen[model] = true
+		normalized = append(normalized, model)
+	}
+	return normalized
+}
+
+func maskAPIKey(apiKey string) string {
+	if apiKey == "" {
+		return ""
+	}
+	if len(apiKey) <= 8 {
+		return "..."
+	}
+	prefixLength := min(4, len(apiKey))
+	return apiKey[:prefixLength] + "..." + apiKey[len(apiKey)-4:]
 }
 
 func validateInstanceTagsSetting(setting *v1pb.InstanceSetting_TagsSetting) error {

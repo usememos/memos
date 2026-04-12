@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+
+option go_package = "gen/api/v1";
+
+service AIService {
+  // Transcribe transcribes an audio file using an instance AI provider.
+  rpc Transcribe(TranscribeRequest) returns (TranscribeResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/ai:transcribe"
+      body: "*"
+    };
+    option (google.api.method_signature) = "provider_id,config,audio";
+  }
+}
+
+message TranscribeRequest {
+  // Required. The instance AI provider ID to use.
+  string provider_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. Transcription options.
+  TranscriptionConfig config = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. Audio input.
+  TranscriptionAudio audio = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+message TranscriptionConfig {
+  // Optional. The model to use. If empty, the provider's default model is used.
+  string model = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A prompt to improve transcription quality.
+  string prompt = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The language of the input audio.
+  string language = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message TranscriptionAudio {
+  oneof source {
+    // Inline audio bytes.
+    bytes content = 1 [(google.api.field_behavior) = INPUT_ONLY];
+
+    // URI for audio content. Reserved for future use.
+    string uri = 2;
+  }
+
+  // Optional. The uploaded filename.
+  string filename = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The MIME type of the input audio.
+  string content_type = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message TranscribeResponse {
+  // The transcribed text.
+  string text = 1;
+}

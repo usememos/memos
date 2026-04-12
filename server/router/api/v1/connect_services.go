@@ -435,6 +435,16 @@ func (s *ConnectServiceHandler) BatchDeleteAttachments(ctx context.Context, req 
 	return connect.NewResponse(resp), nil
 }
 
+// AIService
+
+func (s *ConnectServiceHandler) Transcribe(ctx context.Context, req *connect.Request[v1pb.TranscribeRequest]) (*connect.Response[v1pb.TranscribeResponse], error) {
+	resp, err := s.APIV1Service.Transcribe(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 // ShortcutService
 
 func (s *ConnectServiceHandler) ListShortcuts(ctx context.Context, req *connect.Request[v1pb.ListShortcutsRequest]) (*connect.Response[v1pb.ListShortcutsResponse], error) {

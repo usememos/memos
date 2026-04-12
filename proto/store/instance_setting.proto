@@ -20,6 +20,8 @@ enum InstanceSettingKey {
   TAGS = 5;
   // NOTIFICATION is the key for notification transport settings.
   NOTIFICATION = 6;
+  // AI is the key for AI provider settings.
+  AI = 7;
 }
 
 message InstanceSetting {
@@ -31,6 +33,7 @@ message InstanceSetting {
     InstanceMemoRelatedSetting memo_related_setting = 5;
     InstanceTagsSetting tags_setting = 6;
     InstanceNotificationSetting notification_setting = 7;
+    InstanceAISetting ai_setting = 8;
   }
 }
 
@@ -141,4 +144,28 @@ message InstanceNotificationSetting {
     bool use_tls = 9;
     bool use_ssl = 10;
   }
+}
+
+message InstanceAISetting {
+  // providers is the list of AI provider configurations available instance-wide.
+  repeated AIProviderConfig providers = 1;
+}
+
+message AIProviderConfig {
+  string id = 1;
+  string title = 2;
+  AIProviderType type = 3;
+  string endpoint = 4;
+  // api_key is write-only at the API layer and is required by the server to call providers.
+  string api_key = 5;
+  repeated string models = 6;
+  string default_model = 7;
+}
+
+enum AIProviderType {
+  AI_PROVIDER_TYPE_UNSPECIFIED = 0;
+  OPENAI = 1;
+  OPENAI_COMPATIBLE = 2;
+  ANTHROPIC = 3;
+  GEMINI = 4;
 }
