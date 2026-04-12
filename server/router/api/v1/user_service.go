@@ -295,7 +295,8 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 			role := convertUserRoleToStore(request.User.Role)
 			update.Role = &role
 		case "password":
-			passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.User.Password), bcrypt.DefaultCost)
+			// Use cost factor 12 (above the default of 10) to resist GPU-accelerated cracking attacks.
+			passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.User.Password), 12)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to generate password hash: %v", err)
 			}
