@@ -232,8 +232,7 @@ message InstanceSetting {
     AI_PROVIDER_TYPE_UNSPECIFIED = 0;
     OPENAI = 1;
     OPENAI_COMPATIBLE = 2;
-    ANTHROPIC = 3;
-    GEMINI = 4;
+    GEMINI = 3;
   }
 }
 

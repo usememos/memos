@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/usememos/memos/internal/ai"
+	"github.com/usememos/memos/internal/ai/gemini"
 	"github.com/usememos/memos/internal/ai/openai"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -25,16 +26,22 @@ const (
 )
 
 var supportedTranscriptionContentTypes = map[string]bool{
-	"audio/mpeg":  true,
-	"audio/mp4":   true,
-	"audio/mpga":  true,
-	"audio/wav":   true,
-	"audio/x-wav": true,
-	"audio/webm":  true,
-	"audio/x-m4a": true,
-	"video/mp4":   true,
-	"video/mpeg":  true,
-	"video/webm":  true,
+	"audio/aac":    true,
+	"audio/aiff":   true,
+	"audio/flac":   true,
+	"audio/mpeg":   true,
+	"audio/mp3":    true,
+	"audio/mp4":    true,
+	"audio/mpga":   true,
+	"audio/ogg":    true,
+	"audio/wav":    true,
+	"audio/x-wav":  true,
+	"audio/x-flac": true,
+	"audio/x-m4a":  true,
+	"audio/webm":   true,
+	"video/mp4":    true,
+	"video/mpeg":   true,
+	"video/webm":   true,
 }
 
 // Transcribe transcribes an audio file using an instance AI provider.
@@ -161,8 +168,6 @@ func convertAIProviderTypeFromStore(providerType storepb.AIProviderType) ai.Prov
 		return ai.ProviderOpenAI
 	case storepb.AIProviderType_OPENAI_COMPATIBLE:
 		return ai.ProviderOpenAICompatible
-	case storepb.AIProviderType_ANTHROPIC:
-		return ai.ProviderAnthropic
 	case storepb.AIProviderType_GEMINI:
 		return ai.ProviderGemini
 	default:
@@ -174,6 +179,8 @@ func newAITranscriber(provider ai.ProviderConfig) (ai.Transcriber, error) {
 	switch provider.Type {
 	case ai.ProviderOpenAI, ai.ProviderOpenAICompatible:
 		return openai.NewTranscriber(provider)
+	case ai.ProviderGemini:
+		return gemini.NewTranscriber(provider)
 	default:
 		return nil, errors.Wrapf(ai.ErrCapabilityUnsupported, "provider type %q", provider.Type)
 	}
