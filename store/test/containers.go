@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	
 	"os"
 	"strings"
 	"sync"
@@ -13,7 +12,6 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types/container"
-	
 	"github.com/pkg/errors"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/mysql"
