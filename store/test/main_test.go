@@ -20,7 +20,7 @@ func TestMain(m *testing.M) {
 	// No DRIVER set - run tests for all drivers sequentially
 	runAllDrivers()
 }
-
+//, "mysql", "postgres"
 func runAllDrivers() {
 	drivers := []string{"sqlite", "mysql", "postgres"}
 	_, currentFile, _, _ := runtime.Caller(0)
