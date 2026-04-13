@@ -238,7 +238,7 @@ func TestGetInstanceSetting(t *testing.T) {
 			"SmtpPassword must never be returned in responses")
 	})
 
-	t.Run("GetInstanceSetting - AI setting requires admin", func(t *testing.T) {
+	t.Run("GetInstanceSetting - AI setting requires authenticated user", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -256,11 +256,12 @@ func TestGetInstanceSetting(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "not authenticated")
 
-		_, err = ts.Service.GetInstanceSetting(userCtx, req)
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "permission denied")
+		resp, err := ts.Service.GetInstanceSetting(userCtx, req)
+		require.NoError(t, err)
+		require.NotNil(t, resp.GetAiSetting())
+		require.Empty(t, resp.GetAiSetting().GetProviders())
 
-		resp, err := ts.Service.GetInstanceSetting(adminCtx, req)
+		resp, err = ts.Service.GetInstanceSetting(adminCtx, req)
 		require.NoError(t, err)
 		require.NotNil(t, resp.GetAiSetting())
 		require.Empty(t, resp.GetAiSetting().GetProviders())
@@ -300,12 +301,10 @@ func TestUpdateInstanceSetting(t *testing.T) {
 				AiSetting: &v1pb.InstanceSetting_AISetting{
 					Providers: []*v1pb.InstanceSetting_AIProviderConfig{
 						{
-							Id:           "openai-main",
-							Title:        "OpenAI",
-							Type:         v1pb.InstanceSetting_OPENAI,
-							ApiKey:       "sk-test",
-							Models:       []string{"gpt-4o-transcribe"},
-							DefaultModel: "gpt-4o-transcribe",
+							Id:     "openai-main",
+							Title:  "OpenAI",
+							Type:   v1pb.InstanceSetting_OPENAI,
+							ApiKey: "sk-test",
 						},
 					},
 				},
@@ -569,12 +568,10 @@ func TestUpdateInstanceSetting(t *testing.T) {
 					AiSetting: &v1pb.InstanceSetting_AISetting{
 						Providers: []*v1pb.InstanceSetting_AIProviderConfig{
 							{
-								Id:           "openai-main",
-								Title:        "OpenAI",
-								Type:         v1pb.InstanceSetting_OPENAI,
-								ApiKey:       "sk-original",
-								Models:       []string{"gpt-5.4", "gpt-5.4-mini"},
-								DefaultModel: "gpt-5.4",
+								Id:     "openai-main",
+								Title:  "OpenAI",
+								Type:   v1pb.InstanceSetting_OPENAI,
+								ApiKey: "sk-original",
 							},
 						},
 					},
@@ -601,12 +598,10 @@ func TestUpdateInstanceSetting(t *testing.T) {
 					AiSetting: &v1pb.InstanceSetting_AISetting{
 						Providers: []*v1pb.InstanceSetting_AIProviderConfig{
 							{
-								Id:           "openai-main",
-								Title:        "OpenAI primary",
-								Type:         v1pb.InstanceSetting_OPENAI,
-								ApiKey:       "",
-								Models:       []string{"gpt-5.4-mini", "gpt-5.4-mini", "gpt-5.4"},
-								DefaultModel: "",
+								Id:     "openai-main",
+								Title:  "OpenAI primary",
+								Type:   v1pb.InstanceSetting_OPENAI,
+								ApiKey: "",
 							},
 						},
 					},
@@ -621,42 +616,5 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		require.Equal(t, "sk-original", stored.GetProviders()[0].GetApiKey(),
 			"existing AI provider API key must be preserved when an empty value is sent")
 		require.Equal(t, "OpenAI primary", stored.GetProviders()[0].GetTitle())
-		require.Equal(t, []string{"gpt-5.4-mini", "gpt-5.4"}, stored.GetProviders()[0].GetModels())
-		require.Equal(t, "gpt-5.4-mini", stored.GetProviders()[0].GetDefaultModel())
-	})
-
-	t.Run("UpdateInstanceSetting - Anthropic provider gets default endpoint", func(t *testing.T) {
-		ts := NewTestService(t)
-		defer ts.Cleanup()
-
-		hostUser, err := ts.CreateHostUser(ctx, "admin")
-		require.NoError(t, err)
-		adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
-
-		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
-			Setting: &v1pb.InstanceSetting{
-				Name: "instance/settings/AI",
-				Value: &v1pb.InstanceSetting_AiSetting{
-					AiSetting: &v1pb.InstanceSetting_AISetting{
-						Providers: []*v1pb.InstanceSetting_AIProviderConfig{
-							{
-								Id:           "anthropic-main",
-								Title:        "Anthropic",
-								Type:         v1pb.InstanceSetting_ANTHROPIC,
-								ApiKey:       "sk-ant-test",
-								Models:       []string{"claude-sonnet-4-5"},
-								DefaultModel: "claude-sonnet-4-5",
-							},
-						},
-					},
-				},
-			},
-		})
-		require.NoError(t, err)
-
-		stored, err := ts.Store.GetInstanceAISetting(ctx)
-		require.NoError(t, err)
-		require.Len(t, stored.GetProviders(), 1)
-		require.Equal(t, "https://api.anthropic.com/v1", stored.GetProviders()[0].GetEndpoint())
 	})
 }

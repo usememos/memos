@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math"
 	"regexp"
-	"slices"
 	"strings"
 
 	"github.com/lithammer/shortuuid/v4"
@@ -75,10 +74,9 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 		return nil, status.Errorf(codes.NotFound, "instance setting not found")
 	}
 
-	// Storage, notification, and AI settings contain credentials; restrict to admins only.
+	// Storage and notification settings contain credentials; restrict to admins only.
 	if instanceSetting.Key == storepb.InstanceSettingKey_STORAGE ||
-		instanceSetting.Key == storepb.InstanceSettingKey_NOTIFICATION ||
-		instanceSetting.Key == storepb.InstanceSettingKey_AI {
+		instanceSetting.Key == storepb.InstanceSettingKey_NOTIFICATION {
 		user, err := s.fetchCurrentUser(ctx)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -88,6 +86,15 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 		}
 		if user.Role != store.RoleAdmin {
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+	}
+	if instanceSetting.Key == storepb.InstanceSettingKey_AI {
+		user, err := s.fetchCurrentUser(ctx)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+		}
+		if user == nil {
+			return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 		}
 	}
 
@@ -429,14 +436,12 @@ func convertInstanceAISettingFromStore(setting *storepb.InstanceAISetting) *v1pb
 		}
 		apiKey := provider.GetApiKey()
 		aiSetting.Providers = append(aiSetting.Providers, &v1pb.InstanceSetting_AIProviderConfig{
-			Id:           provider.GetId(),
-			Title:        provider.GetTitle(),
-			Type:         v1pb.InstanceSetting_AIProviderType(provider.GetType()),
-			Endpoint:     provider.GetEndpoint(),
-			Models:       provider.GetModels(),
-			DefaultModel: provider.GetDefaultModel(),
-			ApiKeySet:    apiKey != "",
-			ApiKeyHint:   maskAPIKey(apiKey),
+			Id:         provider.GetId(),
+			Title:      provider.GetTitle(),
+			Type:       v1pb.InstanceSetting_AIProviderType(provider.GetType()),
+			Endpoint:   provider.GetEndpoint(),
+			ApiKeySet:  apiKey != "",
+			ApiKeyHint: maskAPIKey(apiKey),
 		})
 	}
 	return aiSetting
@@ -455,13 +460,11 @@ func convertInstanceAISettingToStore(setting *v1pb.InstanceSetting_AISetting) *s
 			continue
 		}
 		aiSetting.Providers = append(aiSetting.Providers, &storepb.AIProviderConfig{
-			Id:           provider.GetId(),
-			Title:        provider.GetTitle(),
-			Type:         storepb.AIProviderType(provider.GetType()),
-			Endpoint:     provider.GetEndpoint(),
-			ApiKey:       provider.GetApiKey(),
-			Models:       provider.GetModels(),
-			DefaultModel: provider.GetDefaultModel(),
+			Id:       provider.GetId(),
+			Title:    provider.GetTitle(),
+			Type:     storepb.AIProviderType(provider.GetType()),
+			Endpoint: provider.GetEndpoint(),
+			ApiKey:   provider.GetApiKey(),
 		})
 	}
 	return aiSetting
@@ -515,31 +518,16 @@ func (s *APIV1Service) prepareInstanceAISettingForUpdate(ctx context.Context, se
 		if provider.Title == "" {
 			return errors.New("provider title is required")
 		}
-		if provider.Type == storepb.AIProviderType_AI_PROVIDER_TYPE_UNSPECIFIED {
-			return errors.Errorf("provider %q type is required", provider.Id)
+		if provider.Type != storepb.AIProviderType_OPENAI && provider.Type != storepb.AIProviderType_GEMINI {
+			return errors.Errorf("provider %q has unsupported type", provider.Id)
 		}
 
 		provider.Endpoint = strings.TrimSpace(provider.Endpoint)
 		if provider.Type == storepb.AIProviderType_OPENAI && provider.Endpoint == "" {
 			provider.Endpoint = "https://api.openai.com/v1"
 		}
-		if provider.Type == storepb.AIProviderType_ANTHROPIC && provider.Endpoint == "" {
-			provider.Endpoint = "https://api.anthropic.com/v1"
-		}
-		if provider.Type == storepb.AIProviderType_OPENAI_COMPATIBLE && provider.Endpoint == "" {
-			return errors.Errorf("provider %q endpoint is required", provider.Id)
-		}
-
-		provider.Models = normalizeAIModels(provider.Models)
-		if len(provider.Models) == 0 {
-			return errors.Errorf("provider %q must define at least one model", provider.Id)
-		}
-		provider.DefaultModel = strings.TrimSpace(provider.DefaultModel)
-		if provider.DefaultModel == "" {
-			provider.DefaultModel = provider.Models[0]
-		}
-		if !slices.Contains(provider.Models, provider.DefaultModel) {
-			return errors.Errorf("provider %q default model %q must be included in models", provider.Id, provider.DefaultModel)
+		if provider.Type == storepb.AIProviderType_GEMINI && provider.Endpoint == "" {
+			provider.Endpoint = "https://generativelanguage.googleapis.com/v1beta"
 		}
 
 		if provider.ApiKey == "" {
@@ -552,20 +540,6 @@ func (s *APIV1Service) prepareInstanceAISettingForUpdate(ctx context.Context, se
 		}
 	}
 	return nil
-}
-
-func normalizeAIModels(models []string) []string {
-	normalized := []string{}
-	seen := map[string]bool{}
-	for _, model := range models {
-		model = strings.TrimSpace(model)
-		if model == "" || seen[model] {
-			continue
-		}
-		seen[model] = true
-		normalized = append(normalized, model)
-	}
-	return normalized
 }
 
 func maskAPIKey(apiKey string) string {

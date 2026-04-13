@@ -133,6 +133,7 @@
     "audio-recorder": {
       "attachment-label": "錄音",
       "attachment-label-with-time": "錄音 {{time}}",
+      "configure-ai-provider": "請先配置 AI provider",
       "discard": "丟棄",
       "error": "麥克風不可用",
       "error-description": "檢查此網站的麥克風存取權限後重試。",
@@ -151,6 +152,11 @@
       "start": "開始錄音",
       "stop": "停止錄音",
       "title": "錄音機",
+      "transcribe": "轉為文字",
+      "transcribe-empty": "未偵測到語音",
+      "transcribe-error": "音訊轉寫失敗",
+      "transcribe-success": "轉寫內容已加入",
+      "transcribing": "轉寫中...",
       "trigger": "錄製音訊",
       "unsupported": "不支援錄音",
       "unsupported-description": "此瀏覽器無法錄製備忘錄編輯器中的音訊。"
@@ -332,6 +338,33 @@
     },
     "my-account": {
       "label": "我的帳號"
+    },
+    "ai": {
+      "add-provider": "新增 provider",
+      "api-key": "API key",
+      "api-key-required": "API key 不可為空。",
+      "byok-description": "使用你自己的 OpenAI 或 Gemini 帳號 API key。Memos 會從本實例伺服器直接呼叫 provider。",
+      "byok-key-note": "使用你在 provider 帳號中建立的 key；Memos 不提供共享 AI 憑證。",
+      "byok-label": "BYOK",
+      "byok-model-note": "Memos 會為音訊轉寫等功能選擇內建支援的模型。",
+      "byok-storage-note": "Key 保存在本實例中，載入設定時只返回脫敏提示。",
+      "byok-title": "使用你自己的 AI 帳號",
+      "configured": "已設定",
+      "current-key": "目前 key：{{key}}",
+      "default-endpoint": "預設端點",
+      "delete-provider": "刪除 AI provider `{{title}}`？",
+      "description": "Provider key 由實例擁有者提供，並用於伺服器端 AI 功能。",
+      "dialog-description": "新增你自己的 provider 帳號 key。Memos 會為每個 provider 使用內建模型；編輯時留空 API key 可保留已保存的 key。",
+      "edit-provider": "編輯 provider",
+      "endpoint": "端點",
+      "endpoint-hint": "留空則使用官方 provider 端點。",
+      "keep-api-key": "留空以保留已保存的 key",
+      "label": "AI",
+      "no-providers": "尚未設定 AI provider。",
+      "provider-title": "Provider 名稱",
+      "provider-title-required": "Provider 名稱不可為空。",
+      "provider-type": "Provider 類型",
+      "providers": "Providers"
     },
     "preference": {
       "default-memo-sort-option": "備忘錄顯示時間",

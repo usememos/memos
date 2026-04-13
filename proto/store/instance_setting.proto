@@ -158,14 +158,10 @@ message AIProviderConfig {
   string endpoint = 4;
   // api_key is write-only at the API layer and is required by the server to call providers.
   string api_key = 5;
-  repeated string models = 6;
-  string default_model = 7;
 }
 
 enum AIProviderType {
   AI_PROVIDER_TYPE_UNSPECIFIED = 0;
   OPENAI = 1;
-  OPENAI_COMPATIBLE = 2;
-  GEMINI = 3;
-  ANTHROPIC = 4;
+  GEMINI = 2;
 }

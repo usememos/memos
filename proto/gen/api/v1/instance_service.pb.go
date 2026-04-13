@@ -98,9 +98,7 @@ type InstanceSetting_AIProviderType int32
 const (
 	InstanceSetting_AI_PROVIDER_TYPE_UNSPECIFIED InstanceSetting_AIProviderType = 0
 	InstanceSetting_OPENAI                       InstanceSetting_AIProviderType = 1
-	InstanceSetting_OPENAI_COMPATIBLE            InstanceSetting_AIProviderType = 2
-	InstanceSetting_GEMINI                       InstanceSetting_AIProviderType = 3
-	InstanceSetting_ANTHROPIC                    InstanceSetting_AIProviderType = 4
+	InstanceSetting_GEMINI                       InstanceSetting_AIProviderType = 2
 )
 
 // Enum value maps for InstanceSetting_AIProviderType.
@@ -108,16 +106,12 @@ var (
 	InstanceSetting_AIProviderType_name = map[int32]string{
 		0: "AI_PROVIDER_TYPE_UNSPECIFIED",
 		1: "OPENAI",
-		2: "OPENAI_COMPATIBLE",
-		3: "GEMINI",
-		4: "ANTHROPIC",
+		2: "GEMINI",
 	}
 	InstanceSetting_AIProviderType_value = map[string]int32{
 		"AI_PROVIDER_TYPE_UNSPECIFIED": 0,
 		"OPENAI":                       1,
-		"OPENAI_COMPATIBLE":            2,
-		"GEMINI":                       3,
-		"ANTHROPIC":                    4,
+		"GEMINI":                       2,
 	}
 )
 
@@ -1036,9 +1030,7 @@ type InstanceSetting_AIProviderConfig struct {
 	Type     InstanceSetting_AIProviderType `protobuf:"varint,3,opt,name=type,proto3,enum=memos.api.v1.InstanceSetting_AIProviderType" json:"type,omitempty"`
 	Endpoint string                         `protobuf:"bytes,4,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
 	// api_key is write-only and is never returned by GetInstanceSetting.
-	ApiKey       string   `protobuf:"bytes,5,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
-	Models       []string `protobuf:"bytes,6,rep,name=models,proto3" json:"models,omitempty"`
-	DefaultModel string   `protobuf:"bytes,7,opt,name=default_model,json=defaultModel,proto3" json:"default_model,omitempty"`
+	ApiKey string `protobuf:"bytes,5,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
 	// api_key_set indicates whether an API key is stored for this provider.
 	ApiKeySet bool `protobuf:"varint,8,opt,name=api_key_set,json=apiKeySet,proto3" json:"api_key_set,omitempty"`
 	// api_key_hint is a masked hint for the stored API key.
@@ -1108,20 +1100,6 @@ func (x *InstanceSetting_AIProviderConfig) GetEndpoint() string {
 func (x *InstanceSetting_AIProviderConfig) GetApiKey() string {
 	if x != nil {
 		return x.ApiKey
-	}
-	return ""
-}
-
-func (x *InstanceSetting_AIProviderConfig) GetModels() []string {
-	if x != nil {
-		return x.Models
-	}
-	return nil
-}
-
-func (x *InstanceSetting_AIProviderConfig) GetDefaultModel() string {
-	if x != nil {
-		return x.DefaultModel
 	}
 	return ""
 }
@@ -1414,7 +1392,7 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\x04demo\x18\x03 \x01(\bR\x04demo\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\x12(\n" +
 	"\x05admin\x18\a \x01(\v2\x12.memos.api.v1.UserR\x05admin\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\xe2\x1a\n" +
+	"\x19GetInstanceProfileRequest\"\xff\x19\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2,.memos.api.v1.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12W\n" +
@@ -1483,15 +1461,13 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\ause_ssl\x18\n" +
 	" \x01(\bR\x06useSsl\x1aY\n" +
 	"\tAISetting\x12L\n" +
-	"\tproviders\x18\x01 \x03(\v2..memos.api.v1.InstanceSetting.AIProviderConfigR\tproviders\x1a\xbd\x02\n" +
+	"\tproviders\x18\x01 \x03(\v2..memos.api.v1.InstanceSetting.AIProviderConfigR\tproviders\x1a\x80\x02\n" +
 	"\x10AIProviderConfig\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12@\n" +
 	"\x04type\x18\x03 \x01(\x0e2,.memos.api.v1.InstanceSetting.AIProviderTypeR\x04type\x12\x1a\n" +
 	"\bendpoint\x18\x04 \x01(\tR\bendpoint\x12\x1c\n" +
-	"\aapi_key\x18\x05 \x01(\tB\x03\xe0A\x04R\x06apiKey\x12\x16\n" +
-	"\x06models\x18\x06 \x03(\tR\x06models\x12#\n" +
-	"\rdefault_model\x18\a \x01(\tR\fdefaultModel\x12#\n" +
+	"\aapi_key\x18\x05 \x01(\tB\x03\xe0A\x04R\x06apiKey\x12#\n" +
 	"\vapi_key_set\x18\b \x01(\bB\x03\xe0A\x03R\tapiKeySet\x12%\n" +
 	"\fapi_key_hint\x18\t \x01(\tB\x03\xe0A\x03R\n" +
 	"apiKeyHint\"j\n" +
@@ -1502,15 +1478,13 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\fMEMO_RELATED\x10\x03\x12\b\n" +
 	"\x04TAGS\x10\x04\x12\x10\n" +
 	"\fNOTIFICATION\x10\x05\x12\x06\n" +
-	"\x02AI\x10\x06\"p\n" +
+	"\x02AI\x10\x06\"J\n" +
 	"\x0eAIProviderType\x12 \n" +
 	"\x1cAI_PROVIDER_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
-	"\x06OPENAI\x10\x01\x12\x15\n" +
-	"\x11OPENAI_COMPATIBLE\x10\x02\x12\n" +
+	"\x06OPENAI\x10\x01\x12\n" +
 	"\n" +
-	"\x06GEMINI\x10\x03\x12\r\n" +
-	"\tANTHROPIC\x10\x04:a\xeaA^\n" +
+	"\x06GEMINI\x10\x02:a\xeaA^\n" +
 	"\x1cmemos.api.v1/InstanceSetting\x12\x1binstance/settings/{setting}*\x10instanceSettings2\x0finstanceSettingB\a\n" +
 	"\x05value\"U\n" +
 	"\x19GetInstanceSettingRequest\x128\n" +

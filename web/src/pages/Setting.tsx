@@ -1,7 +1,7 @@
 import {
-  BotIcon,
   CogIcon,
   DatabaseIcon,
+  HeartHandshakeIcon,
   KeyIcon,
   LibraryIcon,
   LucideIcon,
@@ -48,7 +48,7 @@ const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
   storage: DatabaseIcon,
   tags: TagsIcon,
   sso: KeyIcon,
-  ai: BotIcon,
+  ai: HeartHandshakeIcon,
 };
 
 const SECTION_COMPONENT_MAP: Record<SettingSection, React.ComponentType> = {
