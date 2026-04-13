@@ -345,26 +345,26 @@ func StartMemosContainer(ctx context.Context, cfg MemosContainerConfig) (testcon
 	return ctr, nil
 }
 
-func getContainerDSN(driver, hostDSN string) (string, error) {
-	switch driver {
-	case "mysql":
-		cfg, err := mysqldriver.ParseDSN(hostDSN)
-		if err != nil {
-			return "", errors.Wrap(err, "failed to parse mysql dsn")
-		}
-		cfg.Net = "tcp"
-		cfg.Addr = net.JoinHostPort(mysqlNetworkAlias, "3306")
-		return cfg.FormatDSN(), nil
-	case "postgres":
-		u, err := url.Parse(hostDSN)
-		if err != nil {
-			return "", errors.Wrap(err, "failed to parse postgres dsn")
-		}
-		u.Host = net.JoinHostPort(postgresNetworkAlias, "5432")
-		return u.String(), nil
-	case "sqlite":
-		return hostDSN, nil
-	default:
-		return "", errors.Errorf("unsupported driver for container dsn: %s", driver)
-	}
-}
+// func getContainerDSN(driver, hostDSN string) (string, error) {
+// 	switch driver {
+// 	case "mysql":
+// 		cfg, err := mysqldriver.ParseDSN(hostDSN)
+// 		if err != nil {
+// 			return "", errors.Wrap(err, "failed to parse mysql dsn")
+// 		}
+// 		cfg.Net = "tcp"
+// 		cfg.Addr = net.JoinHostPort(mysqlNetworkAlias, "3306")
+// 		return cfg.FormatDSN(), nil
+// 	case "postgres":
+// 		u, err := url.Parse(hostDSN)
+// 		if err != nil {
+// 			return "", errors.Wrap(err, "failed to parse postgres dsn")
+// 		}
+// 		u.Host = net.JoinHostPort(postgresNetworkAlias, "5432")
+// 		return u.String(), nil
+// 	case "sqlite":
+// 		return hostDSN, nil
+// 	default:
+// 		return "", errors.Errorf("unsupported driver for container dsn: %s", driver)
+// 	}
+// }
