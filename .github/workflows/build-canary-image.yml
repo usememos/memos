@@ -94,7 +94,7 @@ jobs:
           platforms: ${{ matrix.platform }}
           cache-from: type=gha,scope=build-${{ matrix.platform }}
           cache-to: type=gha,mode=max,scope=build-${{ matrix.platform }}
-          outputs: type=image,name=neosmemo/memos,push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,name=jixuanlalala/memos,push-by-digest=true,name-canonical=true,push=true
 
       - name: Export digest
         run: |
@@ -132,7 +132,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            neosmemo/memos
+            jixuanlalala/memos
             ghcr.io/usememos/memos
           flavor: |
             latest=false
@@ -156,11 +156,11 @@ jobs:
         working-directory: /tmp/digests
         run: |
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf 'neosmemo/memos@sha256:%s ' *)
+            $(printf 'jixuanlalala/memos@sha256:%s ' *)
         env:
           DOCKER_METADATA_OUTPUT_JSON: ${{ steps.meta.outputs.json }}
 
       - name: Inspect images
         run: |
-          docker buildx imagetools inspect neosmemo/memos:canary
+          docker buildx imagetools inspect jixuanlalala/memos:canary
           docker buildx imagetools inspect ghcr.io/usememos/memos:canary
