@@ -24,7 +24,7 @@ import (
 )
 
 // "net".
-	// "net/url".
+// "net/url".
 // mysqldriver "github.com/go-sql-driver/mysql".
 const (
 	testUser     = "root"
