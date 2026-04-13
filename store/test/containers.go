@@ -4,8 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	// "net"
-	// "net/url"
+	
 	"os"
 	"strings"
 	"sync"
@@ -14,7 +13,7 @@ import (
 	"time"
 
 	"github.com/docker/docker/api/types/container"
-	// mysqldriver "github.com/go-sql-driver/mysql"
+	
 	"github.com/pkg/errors"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/mysql"
@@ -26,6 +25,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// "net".
+	// "net/url".
+// mysqldriver "github.com/go-sql-driver/mysql".
 const (
 	testUser     = "root"
 	testPassword = "test"

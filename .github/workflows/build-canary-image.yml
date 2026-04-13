@@ -133,7 +133,7 @@ jobs:
         with:
           images: |
             jixuanlalala/memos
-            ghcr.io/jixuanlalala/memos
+            ghcr.io/jixuanlalalala/memos
           flavor: |
             latest=false
           tags: |
@@ -163,4 +163,4 @@ jobs:
       - name: Inspect images
         run: |
           docker buildx imagetools inspect jixuanlalala/memos:canary
-          docker buildx imagetools inspect ghcr.io/jixuanlalala/memos:canary
+          docker buildx imagetools inspect ghcr.io/jixuanlalalala/memos:canary
