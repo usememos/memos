@@ -617,5 +617,4 @@ func TestUpdateInstanceSetting(t *testing.T) {
 			"existing AI provider API key must be preserved when an empty value is sent")
 		require.Equal(t, "OpenAI primary", stored.GetProviders()[0].GetTitle())
 	})
-
 }
