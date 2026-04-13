@@ -3,6 +3,7 @@ import type { LocalFile } from "../types/attachment";
 import { useBlobUrls } from "./useBlobUrls";
 
 const FALLBACK_AUDIO_MIME_TYPE = "audio/webm";
+export type AudioRecordingCompleteMode = "attach" | "transcribe";
 
 interface AudioRecorderActions {
   setAudioRecorderSupport: (value: boolean) => void;
@@ -10,7 +11,8 @@ interface AudioRecorderActions {
   setAudioRecorderStatus: (value: "idle" | "requesting_permission" | "recording" | "error" | "unsupported") => void;
   setAudioRecorderElapsed: (value: number) => void;
   setAudioRecorderError: (value?: string) => void;
-  onRecordingComplete: (localFile: LocalFile) => void;
+  onRecordingComplete: (localFile: LocalFile, mode: AudioRecordingCompleteMode) => void;
+  onRecordingEmpty?: (mode: AudioRecordingCompleteMode) => void;
 }
 
 const AUDIO_MIME_TYPE_CANDIDATES = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg;codecs=opus"] as const;
@@ -55,6 +57,7 @@ export const useAudioRecorder = (actions: AudioRecorderActions) => {
   const startedAtRef = useRef<number | null>(null);
   const elapsedTimerRef = useRef<number | null>(null);
   const recorderMimeTypeRef = useRef<string>(FALLBACK_AUDIO_MIME_TYPE);
+  const completionModeRef = useRef<AudioRecordingCompleteMode>("attach");
   const startRequestIdRef = useRef(0);
   const { createBlobUrl } = useBlobUrls();
 
@@ -153,10 +156,13 @@ export const useAudioRecorder = (actions: AudioRecorderActions) => {
 
         const durationSeconds = startedAtRef.current ? Math.max(0, Math.round((Date.now() - startedAtRef.current) / 1000)) : 0;
         const blob = new Blob(chunksRef.current, { type: recorderMimeTypeRef.current });
+        const completionMode = completionModeRef.current;
+        completionModeRef.current = "attach";
         if (blob.size === 0) {
           actions.setAudioRecorderElapsed(0);
           actions.setAudioRecorderError(undefined);
           actions.setAudioRecorderStatus("idle");
+          actions.onRecordingEmpty?.(completionMode);
           resetRecorderRefs();
           return;
         }
@@ -164,14 +170,17 @@ export const useAudioRecorder = (actions: AudioRecorderActions) => {
         const file = createRecordedFile(blob, recorderMimeTypeRef.current);
         const previewUrl = createBlobUrl(file);
 
-        actions.onRecordingComplete({
-          file,
-          previewUrl,
-          origin: "audio_recording",
-          audioMeta: {
-            durationSeconds,
+        actions.onRecordingComplete(
+          {
+            file,
+            previewUrl,
+            origin: "audio_recording",
+            audioMeta: {
+              durationSeconds,
+            },
           },
-        });
+          completionMode,
+        );
         actions.setAudioRecorderElapsed(0);
         actions.setAudioRecorderError(undefined);
         actions.setAudioRecorderStatus("idle");
@@ -203,17 +212,20 @@ export const useAudioRecorder = (actions: AudioRecorderActions) => {
     }
   };
 
-  const stopRecording = () => {
+  const stopRecording = (mode: AudioRecordingCompleteMode = "attach") => {
     if (!mediaRecorderRef.current || mediaRecorderRef.current.state === "inactive") {
-      return;
+      return false;
     }
 
+    completionModeRef.current = mode;
     cleanupTimer();
     mediaRecorderRef.current.stop();
+    return true;
   };
 
   const resetRecording = () => {
     startRequestIdRef.current += 1;
+    completionModeRef.current = "attach";
     resetRecorderRefs();
     actions.setAudioRecorderElapsed(0);
     actions.setAudioRecorderError(undefined);

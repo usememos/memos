@@ -87,12 +87,10 @@ func (x *TranscribeRequest) GetAudio() *TranscriptionAudio {
 
 type TranscriptionConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. The model to use. If empty, the provider's default model is used.
-	Model string `protobuf:"bytes,1,opt,name=model,proto3" json:"model,omitempty"`
 	// Optional. A prompt to improve transcription quality.
-	Prompt string `protobuf:"bytes,2,opt,name=prompt,proto3" json:"prompt,omitempty"`
+	Prompt string `protobuf:"bytes,1,opt,name=prompt,proto3" json:"prompt,omitempty"`
 	// Optional. The language of the input audio.
-	Language      string `protobuf:"bytes,3,opt,name=language,proto3" json:"language,omitempty"`
+	Language      string `protobuf:"bytes,2,opt,name=language,proto3" json:"language,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -125,13 +123,6 @@ func (x *TranscriptionConfig) ProtoReflect() protoreflect.Message {
 // Deprecated: Use TranscriptionConfig.ProtoReflect.Descriptor instead.
 func (*TranscriptionConfig) Descriptor() ([]byte, []int) {
 	return file_api_v1_ai_service_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *TranscriptionConfig) GetModel() string {
-	if x != nil {
-		return x.Model
-	}
-	return ""
 }
 
 func (x *TranscriptionConfig) GetPrompt() string {
@@ -304,11 +295,10 @@ const file_api_v1_ai_service_proto_rawDesc = "" +
 	"\vprovider_id\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
 	"providerId\x12>\n" +
 	"\x06config\x18\x02 \x01(\v2!.memos.api.v1.TranscriptionConfigB\x03\xe0A\x02R\x06config\x12;\n" +
-	"\x05audio\x18\x03 \x01(\v2 .memos.api.v1.TranscriptionAudioB\x03\xe0A\x02R\x05audio\"n\n" +
-	"\x13TranscriptionConfig\x12\x19\n" +
-	"\x05model\x18\x01 \x01(\tB\x03\xe0A\x01R\x05model\x12\x1b\n" +
-	"\x06prompt\x18\x02 \x01(\tB\x03\xe0A\x01R\x06prompt\x12\x1f\n" +
-	"\blanguage\x18\x03 \x01(\tB\x03\xe0A\x01R\blanguage\"\x9c\x01\n" +
+	"\x05audio\x18\x03 \x01(\v2 .memos.api.v1.TranscriptionAudioB\x03\xe0A\x02R\x05audio\"S\n" +
+	"\x13TranscriptionConfig\x12\x1b\n" +
+	"\x06prompt\x18\x01 \x01(\tB\x03\xe0A\x01R\x06prompt\x12\x1f\n" +
+	"\blanguage\x18\x02 \x01(\tB\x03\xe0A\x01R\blanguage\"\x9c\x01\n" +
 	"\x12TranscriptionAudio\x12\x1f\n" +
 	"\acontent\x18\x01 \x01(\fB\x03\xe0A\x04H\x00R\acontent\x12\x12\n" +
 	"\x03uri\x18\x02 \x01(\tH\x00R\x03uri\x12\x1f\n" +

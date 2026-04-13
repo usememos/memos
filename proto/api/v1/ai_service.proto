@@ -31,14 +31,11 @@ message TranscribeRequest {
 }
 
 message TranscriptionConfig {
-  // Optional. The model to use. If empty, the provider's default model is used.
-  string model = 1 [(google.api.field_behavior) = OPTIONAL];
-
   // Optional. A prompt to improve transcription quality.
-  string prompt = 2 [(google.api.field_behavior) = OPTIONAL];
+  string prompt = 1 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. The language of the input audio.
-  string language = 3 [(google.api.field_behavior) = OPTIONAL];
+  string language = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message TranscriptionAudio {

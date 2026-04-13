@@ -13,7 +13,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file api/v1/ai_service.proto.
  */
 export const file_api_v1_ai_service: GenFile = /*@__PURE__*/
-  fileDesc("ChdhcGkvdjEvYWlfc2VydmljZS5wcm90bxIMbWVtb3MuYXBpLnYxIpsBChFUcmFuc2NyaWJlUmVxdWVzdBIYCgtwcm92aWRlcl9pZBgBIAEoCUID4EECEjYKBmNvbmZpZxgCIAEoCzIhLm1lbW9zLmFwaS52MS5UcmFuc2NyaXB0aW9uQ29uZmlnQgPgQQISNAoFYXVkaW8YAyABKAsyIC5tZW1vcy5hcGkudjEuVHJhbnNjcmlwdGlvbkF1ZGlvQgPgQQIiVQoTVHJhbnNjcmlwdGlvbkNvbmZpZxISCgVtb2RlbBgBIAEoCUID4EEBEhMKBnByb21wdBgCIAEoCUID4EEBEhUKCGxhbmd1YWdlGAMgASgJQgPgQQEidwoSVHJhbnNjcmlwdGlvbkF1ZGlvEhYKB2NvbnRlbnQYASABKAxCA+BBBEgAEg0KA3VyaRgCIAEoCUgAEhUKCGZpbGVuYW1lGAMgASgJQgPgQQESGQoMY29udGVudF90eXBlGAQgASgJQgPgQQFCCAoGc291cmNlIiIKElRyYW5zY3JpYmVSZXNwb25zZRIMCgR0ZXh0GAEgASgJMpoBCglBSVNlcnZpY2USjAEKClRyYW5zY3JpYmUSHy5tZW1vcy5hcGkudjEuVHJhbnNjcmliZVJlcXVlc3QaIC5tZW1vcy5hcGkudjEuVHJhbnNjcmliZVJlc3BvbnNlIjvaQRhwcm92aWRlcl9pZCxjb25maWcsYXVkaW+C0+STAho6ASoiFS9hcGkvdjEvYWk6dHJhbnNjcmliZUKmAQoQY29tLm1lbW9zLmFwaS52MUIOQWlTZXJ2aWNlUHJvdG9QAVowZ2l0aHViLmNvbS91c2VtZW1vcy9tZW1vcy9wcm90by9nZW4vYXBpL3YxO2FwaXYxogIDTUFYqgIMTWVtb3MuQXBpLlYxygIMTWVtb3NcQXBpXFYx4gIYTWVtb3NcQXBpXFYxXEdQQk1ldGFkYXRh6gIOTWVtb3M6OkFwaTo6VjFiBnByb3RvMw", [file_google_api_annotations, file_google_api_client, file_google_api_field_behavior]);
+  fileDesc("ChdhcGkvdjEvYWlfc2VydmljZS5wcm90bxIMbWVtb3MuYXBpLnYxIpsBChFUcmFuc2NyaWJlUmVxdWVzdBIYCgtwcm92aWRlcl9pZBgBIAEoCUID4EECEjYKBmNvbmZpZxgCIAEoCzIhLm1lbW9zLmFwaS52MS5UcmFuc2NyaXB0aW9uQ29uZmlnQgPgQQISNAoFYXVkaW8YAyABKAsyIC5tZW1vcy5hcGkudjEuVHJhbnNjcmlwdGlvbkF1ZGlvQgPgQQIiQQoTVHJhbnNjcmlwdGlvbkNvbmZpZxITCgZwcm9tcHQYASABKAlCA+BBARIVCghsYW5ndWFnZRgCIAEoCUID4EEBIncKElRyYW5zY3JpcHRpb25BdWRpbxIWCgdjb250ZW50GAEgASgMQgPgQQRIABINCgN1cmkYAiABKAlIABIVCghmaWxlbmFtZRgDIAEoCUID4EEBEhkKDGNvbnRlbnRfdHlwZRgEIAEoCUID4EEBQggKBnNvdXJjZSIiChJUcmFuc2NyaWJlUmVzcG9uc2USDAoEdGV4dBgBIAEoCTKaAQoJQUlTZXJ2aWNlEowBCgpUcmFuc2NyaWJlEh8ubWVtb3MuYXBpLnYxLlRyYW5zY3JpYmVSZXF1ZXN0GiAubWVtb3MuYXBpLnYxLlRyYW5zY3JpYmVSZXNwb25zZSI72kEYcHJvdmlkZXJfaWQsY29uZmlnLGF1ZGlvgtPkkwIaOgEqIhUvYXBpL3YxL2FpOnRyYW5zY3JpYmVCpgEKEGNvbS5tZW1vcy5hcGkudjFCDkFpU2VydmljZVByb3RvUAFaMGdpdGh1Yi5jb20vdXNlbWVtb3MvbWVtb3MvcHJvdG8vZ2VuL2FwaS92MTthcGl2MaICA01BWKoCDE1lbW9zLkFwaS5WMcoCDE1lbW9zXEFwaVxWMeICGE1lbW9zXEFwaVxWMVxHUEJNZXRhZGF0YeoCDk1lbW9zOjpBcGk6OlYxYgZwcm90bzM", [file_google_api_annotations, file_google_api_client, file_google_api_field_behavior]);
 
 /**
  * @generated from message memos.api.v1.TranscribeRequest
@@ -53,23 +53,16 @@ export const TranscribeRequestSchema: GenMessage<TranscribeRequest> = /*@__PURE_
  */
 export type TranscriptionConfig = Message<"memos.api.v1.TranscriptionConfig"> & {
   /**
-   * Optional. The model to use. If empty, the provider's default model is used.
-   *
-   * @generated from field: string model = 1;
-   */
-  model: string;
-
-  /**
    * Optional. A prompt to improve transcription quality.
    *
-   * @generated from field: string prompt = 2;
+   * @generated from field: string prompt = 1;
    */
   prompt: string;
 
   /**
    * Optional. The language of the input audio.
    *
-   * @generated from field: string language = 3;
+   * @generated from field: string language = 2;
    */
   language: string;
 };

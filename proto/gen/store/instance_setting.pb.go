@@ -98,9 +98,7 @@ type AIProviderType int32
 const (
 	AIProviderType_AI_PROVIDER_TYPE_UNSPECIFIED AIProviderType = 0
 	AIProviderType_OPENAI                       AIProviderType = 1
-	AIProviderType_OPENAI_COMPATIBLE            AIProviderType = 2
-	AIProviderType_GEMINI                       AIProviderType = 3
-	AIProviderType_ANTHROPIC                    AIProviderType = 4
+	AIProviderType_GEMINI                       AIProviderType = 2
 )
 
 // Enum value maps for AIProviderType.
@@ -108,16 +106,12 @@ var (
 	AIProviderType_name = map[int32]string{
 		0: "AI_PROVIDER_TYPE_UNSPECIFIED",
 		1: "OPENAI",
-		2: "OPENAI_COMPATIBLE",
-		3: "GEMINI",
-		4: "ANTHROPIC",
+		2: "GEMINI",
 	}
 	AIProviderType_value = map[string]int32{
 		"AI_PROVIDER_TYPE_UNSPECIFIED": 0,
 		"OPENAI":                       1,
-		"OPENAI_COMPATIBLE":            2,
-		"GEMINI":                       3,
-		"ANTHROPIC":                    4,
+		"GEMINI":                       2,
 	}
 )
 
@@ -1026,9 +1020,7 @@ type AIProviderConfig struct {
 	Type     AIProviderType         `protobuf:"varint,3,opt,name=type,proto3,enum=memos.store.AIProviderType" json:"type,omitempty"`
 	Endpoint string                 `protobuf:"bytes,4,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
 	// api_key is write-only at the API layer and is required by the server to call providers.
-	ApiKey        string   `protobuf:"bytes,5,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
-	Models        []string `protobuf:"bytes,6,rep,name=models,proto3" json:"models,omitempty"`
-	DefaultModel  string   `protobuf:"bytes,7,opt,name=default_model,json=defaultModel,proto3" json:"default_model,omitempty"`
+	ApiKey        string `protobuf:"bytes,5,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1094,20 +1086,6 @@ func (x *AIProviderConfig) GetEndpoint() string {
 func (x *AIProviderConfig) GetApiKey() string {
 	if x != nil {
 		return x.ApiKey
-	}
-	return ""
-}
-
-func (x *AIProviderConfig) GetModels() []string {
-	if x != nil {
-		return x.Models
-	}
-	return nil
-}
-
-func (x *AIProviderConfig) GetDefaultModel() string {
-	if x != nil {
-		return x.DefaultModel
 	}
 	return ""
 }
@@ -1307,15 +1285,13 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\ause_ssl\x18\n" +
 	" \x01(\bR\x06useSsl\"P\n" +
 	"\x11InstanceAISetting\x12;\n" +
-	"\tproviders\x18\x01 \x03(\v2\x1d.memos.store.AIProviderConfigR\tproviders\"\xdb\x01\n" +
+	"\tproviders\x18\x01 \x03(\v2\x1d.memos.store.AIProviderConfigR\tproviders\"\x9e\x01\n" +
 	"\x10AIProviderConfig\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12/\n" +
 	"\x04type\x18\x03 \x01(\x0e2\x1b.memos.store.AIProviderTypeR\x04type\x12\x1a\n" +
 	"\bendpoint\x18\x04 \x01(\tR\bendpoint\x12\x17\n" +
-	"\aapi_key\x18\x05 \x01(\tR\x06apiKey\x12\x16\n" +
-	"\x06models\x18\x06 \x03(\tR\x06models\x12#\n" +
-	"\rdefault_model\x18\a \x01(\tR\fdefaultModel*\x95\x01\n" +
+	"\aapi_key\x18\x05 \x01(\tR\x06apiKey*\x95\x01\n" +
 	"\x12InstanceSettingKey\x12$\n" +
 	" INSTANCE_SETTING_KEY_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\v\n" +
@@ -1324,15 +1300,13 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\fMEMO_RELATED\x10\x04\x12\b\n" +
 	"\x04TAGS\x10\x05\x12\x10\n" +
 	"\fNOTIFICATION\x10\x06\x12\x06\n" +
-	"\x02AI\x10\a*p\n" +
+	"\x02AI\x10\a*J\n" +
 	"\x0eAIProviderType\x12 \n" +
 	"\x1cAI_PROVIDER_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
-	"\x06OPENAI\x10\x01\x12\x15\n" +
-	"\x11OPENAI_COMPATIBLE\x10\x02\x12\n" +
+	"\x06OPENAI\x10\x01\x12\n" +
 	"\n" +
-	"\x06GEMINI\x10\x03\x12\r\n" +
-	"\tANTHROPIC\x10\x04B\x9f\x01\n" +
+	"\x06GEMINI\x10\x02B\x9f\x01\n" +
 	"\x0fcom.memos.storeB\x14InstanceSettingProtoP\x01Z)github.com/usememos/memos/proto/gen/store\xa2\x02\x03MSX\xaa\x02\vMemos.Store\xca\x02\vMemos\\Store\xe2\x02\x17Memos\\Store\\GPBMetadata\xea\x02\fMemos::Storeb\x06proto3"
 
 var (

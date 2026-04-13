@@ -36,6 +36,9 @@ export interface AudioRecorderPanelProps {
   mediaStream: MediaStream | null;
   onStop: () => void;
   onCancel: () => void;
+  onTranscribe?: () => void;
+  canTranscribe?: boolean;
+  isTranscribing?: boolean;
 }
 
 export interface FocusModeOverlayProps {

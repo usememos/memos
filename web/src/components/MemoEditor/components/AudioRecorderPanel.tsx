@@ -1,21 +1,35 @@
-import { LoaderCircleIcon, XIcon } from "lucide-react";
+import { AudioWaveformIcon, LoaderCircleIcon, SquareIcon, XIcon } from "lucide-react";
 import type { FC } from "react";
 import { formatAudioTime } from "@/components/MemoMetadata/Attachment/attachmentHelpers";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { useAudioWaveform } from "../hooks/useAudioWaveform";
 import type { AudioRecorderPanelProps } from "../types/components";
 import { VoiceWaveform } from "./VoiceWaveform";
 
-export const AudioRecorderPanel: FC<AudioRecorderPanelProps> = ({ audioRecorder, mediaStream, onStop, onCancel }) => {
+export const AudioRecorderPanel: FC<AudioRecorderPanelProps> = ({
+  audioRecorder,
+  mediaStream,
+  onStop,
+  onCancel,
+  onTranscribe,
+  canTranscribe = false,
+  isTranscribing = false,
+}) => {
   const t = useTranslate();
   const { status, elapsedSeconds } = audioRecorder;
 
   const isRequestingPermission = status === "requesting_permission";
   const isRecording = status === "recording";
+  const isTranscribeDisabled = !canTranscribe || isRequestingPermission || isTranscribing;
   const waveformLevels = useAudioWaveform(mediaStream, isRecording && mediaStream !== null);
-  const srStatusText = isRequestingPermission ? t("editor.audio-recorder.requesting-permission") : t("editor.audio-recorder.recording");
+  const srStatusText = isTranscribing
+    ? t("editor.audio-recorder.transcribing")
+    : isRequestingPermission
+      ? t("editor.audio-recorder.requesting-permission")
+      : t("editor.audio-recorder.recording");
 
   return (
     <div
@@ -25,10 +39,14 @@ export const AudioRecorderPanel: FC<AudioRecorderPanelProps> = ({ audioRecorder,
       )}
     >
       <div className="flex min-w-0 flex-1 items-center gap-2">
-        {isRequestingPermission ? <LoaderCircleIcon className="size-3.5 shrink-0 animate-spin text-muted-foreground" aria-hidden /> : null}
+        {isRequestingPermission || isTranscribing ? (
+          <LoaderCircleIcon className="size-3.5 shrink-0 animate-spin text-muted-foreground" aria-hidden />
+        ) : null}
         <span className="sr-only">{srStatusText}</span>
         <VoiceWaveform levels={waveformLevels} className="max-w-[200px] overflow-hidden" />
-        <span className="shrink-0 font-mono text-xs tabular-nums text-muted-foreground">{formatAudioTime(elapsedSeconds)}</span>
+        <span className="shrink-0 font-mono text-xs tabular-nums text-muted-foreground">
+          {isTranscribing ? t("editor.audio-recorder.transcribing") : formatAudioTime(elapsedSeconds)}
+        </span>
       </div>
 
       <div className="flex shrink-0 items-center gap-1 border-l border-border/60 pl-2">
@@ -36,22 +54,43 @@ export const AudioRecorderPanel: FC<AudioRecorderPanelProps> = ({ audioRecorder,
           type="button"
           variant="ghost"
           size="icon"
-          className="size-7 shrink-0 rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
+          className="rounded-full"
           onClick={onCancel}
+          disabled={isTranscribing}
           aria-label={t("common.cancel")}
         >
-          <XIcon className="size-3.25" />
+          <XIcon className="size-4" />
         </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="-ml-2 inline-flex">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="rounded-full"
+                onClick={onTranscribe}
+                disabled={isTranscribeDisabled}
+                aria-label={canTranscribe ? t("editor.audio-recorder.transcribe") : t("editor.audio-recorder.configure-ai-provider")}
+              >
+                <AudioWaveformIcon className="size-4" />
+              </Button>
+            </span>
+          </TooltipTrigger>
+          <TooltipContent side="top">
+            <p>{canTranscribe ? t("editor.audio-recorder.transcribe") : t("editor.audio-recorder.configure-ai-provider")}</p>
+          </TooltipContent>
+        </Tooltip>
         <Button
           type="button"
           variant="destructive"
           size="icon"
-          className="size-7 shrink-0 rounded-full shadow-xs"
+          className="rounded-full"
           onClick={onStop}
-          disabled={isRequestingPermission}
+          disabled={isRequestingPermission || isTranscribing}
           aria-label={t("editor.audio-recorder.stop")}
         >
-          <span className="size-[7px] rounded-[1.5px] bg-destructive-foreground" aria-hidden />
+          <SquareIcon className="size-4" />
         </Button>
       </div>
     </div>

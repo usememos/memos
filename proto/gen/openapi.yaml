@@ -2419,9 +2419,7 @@ components:
                     enum:
                         - AI_PROVIDER_TYPE_UNSPECIFIED
                         - OPENAI
-                        - OPENAI_COMPATIBLE
                         - GEMINI
-                        - ANTHROPIC
                     type: string
                     format: enum
                 endpoint:
@@ -2430,12 +2428,6 @@ components:
                     writeOnly: true
                     type: string
                     description: api_key is write-only and is never returned by GetInstanceSetting.
-                models:
-                    type: array
-                    items:
-                        type: string
-                defaultModel:
-                    type: string
                 apiKeySet:
                     readOnly: true
                     type: boolean
@@ -3261,9 +3253,6 @@ components:
         TranscriptionConfig:
             type: object
             properties:
-                model:
-                    type: string
-                    description: Optional. The model to use. If empty, the provider's default model is used.
                 prompt:
                     type: string
                     description: Optional. A prompt to improve transcription quality.

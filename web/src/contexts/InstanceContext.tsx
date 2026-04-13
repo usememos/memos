@@ -1,5 +1,5 @@
 import { create } from "@bufbuild/protobuf";
-import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, type ReactNode, useCallback, useContext, useMemo, useRef, useState } from "react";
 import { instanceServiceClient } from "@/connect";
 import {
   InstanceProfile,
@@ -57,6 +57,8 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
     isLoading: true,
     profileLoaded: false,
   });
+
+  const fetchedSettingsRef = useRef<Set<string>>(new Set());
 
   // Memoize derived settings to prevent unnecessary recalculations
   const generalSetting = useMemo((): InstanceSetting_GeneralSetting => {
@@ -128,13 +130,21 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const fetchSetting = useCallback(async (key: InstanceSetting_Key) => {
-    const setting = await instanceServiceClient.getInstanceSetting({
-      name: buildInstanceSettingName(key),
-    });
-    setState((prev) => ({
-      ...prev,
-      settings: [...prev.settings.filter((s) => s.name !== setting.name), setting],
-    }));
+    const name = buildInstanceSettingName(key);
+    if (fetchedSettingsRef.current.has(name)) {
+      return;
+    }
+    fetchedSettingsRef.current.add(name);
+    try {
+      const setting = await instanceServiceClient.getInstanceSetting({ name });
+      setState((prev) => ({
+        ...prev,
+        settings: [...prev.settings.filter((s) => s.name !== setting.name), setting],
+      }));
+    } catch (error) {
+      fetchedSettingsRef.current.delete(name);
+      throw error;
+    }
   }, []);
 
   const updateSetting = useCallback(async (setting: InstanceSetting) => {

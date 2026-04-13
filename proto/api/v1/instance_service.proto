@@ -219,8 +219,6 @@ message InstanceSetting {
     string endpoint = 4;
     // api_key is write-only and is never returned by GetInstanceSetting.
     string api_key = 5 [(google.api.field_behavior) = INPUT_ONLY];
-    repeated string models = 6;
-    string default_model = 7;
     // api_key_set indicates whether an API key is stored for this provider.
     bool api_key_set = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
     // api_key_hint is a masked hint for the stored API key.
@@ -231,9 +229,7 @@ message InstanceSetting {
   enum AIProviderType {
     AI_PROVIDER_TYPE_UNSPECIFIED = 0;
     OPENAI = 1;
-    OPENAI_COMPATIBLE = 2;
-    GEMINI = 3;
-    ANTHROPIC = 4;
+    GEMINI = 2;
   }
 }
 

@@ -10,7 +10,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { useInstance } from "@/contexts/InstanceContext";
 import { handleError } from "@/lib/error";
 import {
@@ -34,16 +33,11 @@ type LocalAIProvider = {
   apiKey: string;
   apiKeySet: boolean;
   apiKeyHint: string;
-  models: string[];
-  defaultModel: string;
 };
 
-const providerTypeOptions = [
-  InstanceSetting_AIProviderType.OPENAI,
-  InstanceSetting_AIProviderType.OPENAI_COMPATIBLE,
-  InstanceSetting_AIProviderType.GEMINI,
-  InstanceSetting_AIProviderType.ANTHROPIC,
-];
+const providerTypeOptions = [InstanceSetting_AIProviderType.OPENAI, InstanceSetting_AIProviderType.GEMINI];
+
+const byokNotes = ["setting.ai.byok-key-note", "setting.ai.byok-storage-note", "setting.ai.byok-model-note"] as const;
 
 const createProviderID = () => {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -64,17 +58,7 @@ const toLocalProvider = (provider: InstanceSetting_AIProviderConfig): LocalAIPro
   apiKey: "",
   apiKeySet: provider.apiKeySet,
   apiKeyHint: provider.apiKeyHint,
-  models: [...provider.models],
-  defaultModel: provider.defaultModel,
 });
-
-const normalizeModels = (value: string) => {
-  const models = value
-    .split(/\r?\n/)
-    .map((model) => model.trim())
-    .filter(Boolean);
-  return Array.from(new Set(models));
-};
 
 const newProvider = (): LocalAIProvider => ({
   id: createProviderID(),
@@ -84,8 +68,6 @@ const newProvider = (): LocalAIProvider => ({
   apiKey: "",
   apiKeySet: false,
   apiKeyHint: "",
-  models: [],
-  defaultModel: "",
 });
 
 const toProviderConfig = (provider: LocalAIProvider) =>
@@ -95,8 +77,6 @@ const toProviderConfig = (provider: LocalAIProvider) =>
     type: provider.type,
     endpoint: provider.endpoint.trim(),
     apiKey: provider.apiKey,
-    models: provider.models,
-    defaultModel: provider.defaultModel.trim(),
   });
 
 const AISection = () => {
@@ -124,27 +104,13 @@ const AISection = () => {
   const handleSaveProvider = (provider: LocalAIProvider) => {
     const title = provider.title.trim();
     const endpoint = provider.endpoint.trim();
-    const models = provider.models.map((model) => model.trim()).filter(Boolean);
-    const defaultModel = provider.defaultModel.trim() || models[0] || "";
 
     if (!title) {
       toast.error(t("setting.ai.provider-title-required"));
       return;
     }
-    if (provider.type === InstanceSetting_AIProviderType.OPENAI_COMPATIBLE && !endpoint) {
-      toast.error(t("setting.ai.endpoint-required"));
-      return;
-    }
     if (!provider.apiKeySet && !provider.apiKey.trim()) {
       toast.error(t("setting.ai.api-key-required"));
-      return;
-    }
-    if (models.length === 0) {
-      toast.error(t("setting.ai.models-required"));
-      return;
-    }
-    if (defaultModel && !models.includes(defaultModel)) {
-      toast.error(t("setting.ai.default-model-required"));
       return;
     }
 
@@ -152,8 +118,6 @@ const AISection = () => {
       ...provider,
       title,
       endpoint,
-      models,
-      defaultModel,
     };
     setProviders((prev) => {
       const exists = prev.some((item) => item.id === normalizedProvider.id);
@@ -203,6 +167,26 @@ const AISection = () => {
         </Button>
       }
     >
+      <section className="rounded-lg border border-border bg-muted/30 px-4 py-3">
+        <div className="flex max-w-3xl flex-col gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-md border border-border bg-background px-2 py-0.5 text-xs font-medium text-foreground">
+              {t("setting.ai.byok-label")}
+            </span>
+            <h4 className="text-sm font-semibold text-foreground">{t("setting.ai.byok-title")}</h4>
+          </div>
+          <p className="text-sm text-muted-foreground">{t("setting.ai.byok-description")}</p>
+          <ul className="space-y-1 text-sm text-muted-foreground">
+            {byokNotes.map((note) => (
+              <li key={note} className="flex gap-2">
+                <span className="mt-2 size-1 rounded-full bg-muted-foreground/60" aria-hidden />
+                <span>{t(note)}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
       <SettingGroup title={t("setting.ai.providers")} description={t("setting.ai.description")}>
         <SettingTable
           columns={[
@@ -222,13 +206,10 @@ const AISection = () => {
               render: (_, provider: LocalAIProvider) => <span>{getProviderTypeLabel(provider.type)}</span>,
             },
             {
-              key: "models",
-              header: t("setting.ai.models"),
+              key: "endpoint",
+              header: t("setting.ai.endpoint"),
               render: (_, provider: LocalAIProvider) => (
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-foreground">{provider.defaultModel || provider.models[0] || "-"}</span>
-                  <span className="text-xs text-muted-foreground">{t("setting.ai.model-count", { count: provider.models.length })}</span>
-                </div>
+                <span className="font-mono text-xs">{provider.endpoint || t("setting.ai.default-endpoint")}</span>
               ),
             },
             {
@@ -299,12 +280,10 @@ interface AIProviderDialogProps {
 const AIProviderDialog = ({ provider, onOpenChange, onSave }: AIProviderDialogProps) => {
   const t = useTranslate();
   const [draft, setDraft] = useState<LocalAIProvider>(() => provider ?? newProvider());
-  const [modelsText, setModelsText] = useState("");
 
   useEffect(() => {
     const next = provider ?? newProvider();
     setDraft(next);
-    setModelsText(next.models.join("\n"));
   }, [provider]);
 
   const updateDraft = (partial: Partial<LocalAIProvider>) => {
@@ -312,10 +291,7 @@ const AIProviderDialog = ({ provider, onOpenChange, onSave }: AIProviderDialogPr
   };
 
   const handleSave = () => {
-    onSave({
-      ...draft,
-      models: normalizeModels(modelsText),
-    });
+    onSave(draft);
   };
 
   return (
@@ -356,8 +332,9 @@ const AIProviderDialog = ({ provider, onOpenChange, onSave }: AIProviderDialogPr
             <Input
               value={draft.endpoint}
               onChange={(e) => updateDraft({ endpoint: e.target.value })}
-              placeholder={draft.type === InstanceSetting_AIProviderType.OPENAI ? "https://api.openai.com/v1" : "https://example.com/v1"}
+              placeholder={getDefaultEndpointPlaceholder(draft.type)}
             />
+            <p className="text-xs text-muted-foreground">{t("setting.ai.endpoint-hint")}</p>
           </div>
 
           <div className="flex flex-col gap-1.5 sm:col-span-2">
@@ -372,26 +349,6 @@ const AIProviderDialog = ({ provider, onOpenChange, onSave }: AIProviderDialogPr
               <p className="text-xs text-muted-foreground">{t("setting.ai.current-key", { key: draft.apiKeyHint || "-" })}</p>
             )}
           </div>
-
-          <div className="flex flex-col gap-1.5 sm:col-span-2">
-            <Label>{t("setting.ai.models")}</Label>
-            <Textarea
-              className="font-mono text-sm min-h-28"
-              value={modelsText}
-              onChange={(e) => setModelsText(e.target.value)}
-              placeholder={"gpt-4o-transcribe\ngpt-4o-mini-transcribe"}
-            />
-            <p className="text-xs text-muted-foreground">{t("setting.ai.models-hint")}</p>
-          </div>
-
-          <div className="flex flex-col gap-1.5 sm:col-span-2">
-            <Label>{t("setting.ai.default-model")}</Label>
-            <Input
-              value={draft.defaultModel}
-              onChange={(e) => updateDraft({ defaultModel: e.target.value })}
-              placeholder={normalizeModels(modelsText)[0] ?? ""}
-            />
-          </div>
         </div>
 
         <DialogFooter>
@@ -403,6 +360,17 @@ const AIProviderDialog = ({ provider, onOpenChange, onSave }: AIProviderDialogPr
       </DialogContent>
     </Dialog>
   );
+};
+
+const getDefaultEndpointPlaceholder = (type: InstanceSetting_AIProviderType) => {
+  switch (type) {
+    case InstanceSetting_AIProviderType.OPENAI:
+      return "https://api.openai.com/v1";
+    case InstanceSetting_AIProviderType.GEMINI:
+      return "https://generativelanguage.googleapis.com/v1beta";
+    default:
+      return "";
+  }
 };
 
 export default AISection;

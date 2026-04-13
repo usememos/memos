@@ -22,9 +22,7 @@ func TestTranscribe(t *testing.T) {
 
 		_, err := ts.Service.Transcribe(ctx, &v1pb.TranscribeRequest{
 			ProviderId: "openai-main",
-			Config: &v1pb.TranscriptionConfig{
-				Model: "gpt-4o-transcribe",
-			},
+			Config:     &v1pb.TranscriptionConfig{},
 			Audio: &v1pb.TranscriptionAudio{
 				Source:      &v1pb.TranscriptionAudio_Content{Content: []byte("RIFF")},
 				Filename:    "voice.wav",
@@ -68,13 +66,11 @@ func TestTranscribe(t *testing.T) {
 				AiSetting: &storepb.InstanceAISetting{
 					Providers: []*storepb.AIProviderConfig{
 						{
-							Id:           "openai-main",
-							Title:        "OpenAI",
-							Type:         storepb.AIProviderType_OPENAI_COMPATIBLE,
-							Endpoint:     openAIServer.URL,
-							ApiKey:       "sk-test",
-							Models:       []string{"gpt-4o-transcribe"},
-							DefaultModel: "gpt-4o-transcribe",
+							Id:       "openai-main",
+							Title:    "OpenAI",
+							Type:     storepb.AIProviderType_OPENAI,
+							Endpoint: openAIServer.URL,
+							ApiKey:   "sk-test",
 						},
 					},
 				},
@@ -95,6 +91,48 @@ func TestTranscribe(t *testing.T) {
 		})
 		require.NoError(t, err)
 		require.Equal(t, "transcribed text", resp.Text)
+	})
+
+	t.Run("returns provider error without rewriting it", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "notfound-user")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+
+		openAIServer := httptest.NewServer(http.NotFoundHandler())
+		defer openAIServer.Close()
+
+		_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_AI,
+			Value: &storepb.InstanceSetting_AiSetting{
+				AiSetting: &storepb.InstanceAISetting{
+					Providers: []*storepb.AIProviderConfig{
+						{
+							Id:       "openai-main",
+							Title:    "OpenAI",
+							Type:     storepb.AIProviderType_OPENAI,
+							Endpoint: openAIServer.URL,
+							ApiKey:   "sk-test",
+						},
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.Transcribe(userCtx, &v1pb.TranscribeRequest{
+			ProviderId: "openai-main",
+			Config:     &v1pb.TranscriptionConfig{},
+			Audio: &v1pb.TranscriptionAudio{
+				Source:      &v1pb.TranscriptionAudio_Content{Content: []byte("RIFF")},
+				Filename:    "voice.wav",
+				ContentType: "audio/wav",
+			},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "failed to transcribe audio")
 	})
 
 	t.Run("transcribes audio file with Gemini provider", func(t *testing.T) {
@@ -127,13 +165,11 @@ func TestTranscribe(t *testing.T) {
 				AiSetting: &storepb.InstanceAISetting{
 					Providers: []*storepb.AIProviderConfig{
 						{
-							Id:           "gemini-main",
-							Title:        "Gemini",
-							Type:         storepb.AIProviderType_GEMINI,
-							Endpoint:     geminiServer.URL + "/v1beta",
-							ApiKey:       "gemini-key",
-							Models:       []string{"gemini-2.5-flash"},
-							DefaultModel: "gemini-2.5-flash",
+							Id:       "gemini-main",
+							Title:    "Gemini",
+							Type:     storepb.AIProviderType_GEMINI,
+							Endpoint: geminiServer.URL + "/v1beta",
+							ApiKey:   "gemini-key",
 						},
 					},
 				},
@@ -154,48 +190,7 @@ func TestTranscribe(t *testing.T) {
 		require.Equal(t, "gemini transcript", resp.Text)
 	})
 
-	t.Run("rejects Anthropic transcription as unsupported", func(t *testing.T) {
-		ts := NewTestService(t)
-		defer ts.Cleanup()
-
-		user, err := ts.CreateRegularUser(ctx, "anthropic-user")
-		require.NoError(t, err)
-		userCtx := ts.CreateUserContext(ctx, user.ID)
-
-		_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
-			Key: storepb.InstanceSettingKey_AI,
-			Value: &storepb.InstanceSetting_AiSetting{
-				AiSetting: &storepb.InstanceAISetting{
-					Providers: []*storepb.AIProviderConfig{
-						{
-							Id:           "anthropic-main",
-							Title:        "Anthropic",
-							Type:         storepb.AIProviderType_ANTHROPIC,
-							Endpoint:     "https://api.anthropic.com/v1",
-							ApiKey:       "sk-ant-test",
-							Models:       []string{"claude-sonnet-4-5"},
-							DefaultModel: "claude-sonnet-4-5",
-						},
-					},
-				},
-			},
-		})
-		require.NoError(t, err)
-
-		_, err = ts.Service.Transcribe(userCtx, &v1pb.TranscribeRequest{
-			ProviderId: "anthropic-main",
-			Config:     &v1pb.TranscriptionConfig{},
-			Audio: &v1pb.TranscriptionAudio{
-				Source:      &v1pb.TranscriptionAudio_Content{Content: []byte("RIFF")},
-				Filename:    "voice.wav",
-				ContentType: "audio/wav",
-			},
-		})
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "capability unsupported")
-	})
-
-	t.Run("rejects unconfigured model", func(t *testing.T) {
+	t.Run("uses built-in transcription model", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -203,19 +198,27 @@ func TestTranscribe(t *testing.T) {
 		require.NoError(t, err)
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
+		openAIServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			require.NoError(t, r.ParseMultipartForm(10<<20))
+			require.Equal(t, "gpt-4o-transcribe", r.FormValue("model"))
+			w.Header().Set("Content-Type", "application/json")
+			require.NoError(t, json.NewEncoder(w).Encode(map[string]string{
+				"text": "built-in model",
+			}))
+		}))
+		defer openAIServer.Close()
+
 		_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
 			Key: storepb.InstanceSettingKey_AI,
 			Value: &storepb.InstanceSetting_AiSetting{
 				AiSetting: &storepb.InstanceAISetting{
 					Providers: []*storepb.AIProviderConfig{
 						{
-							Id:           "openai-main",
-							Title:        "OpenAI",
-							Type:         storepb.AIProviderType_OPENAI_COMPATIBLE,
-							Endpoint:     "https://example.com/v1",
-							ApiKey:       "sk-test",
-							Models:       []string{"gpt-4o-transcribe"},
-							DefaultModel: "gpt-4o-transcribe",
+							Id:       "openai-main",
+							Title:    "OpenAI",
+							Type:     storepb.AIProviderType_OPENAI,
+							Endpoint: openAIServer.URL,
+							ApiKey:   "sk-test",
 						},
 					},
 				},
@@ -223,19 +226,17 @@ func TestTranscribe(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		_, err = ts.Service.Transcribe(userCtx, &v1pb.TranscribeRequest{
+		resp, err := ts.Service.Transcribe(userCtx, &v1pb.TranscribeRequest{
 			ProviderId: "openai-main",
-			Config: &v1pb.TranscriptionConfig{
-				Model: "other-model",
-			},
+			Config:     &v1pb.TranscriptionConfig{},
 			Audio: &v1pb.TranscriptionAudio{
 				Source:      &v1pb.TranscriptionAudio_Content{Content: []byte("RIFF")},
 				Filename:    "voice.wav",
 				ContentType: "audio/wav",
 			},
 		})
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "not configured")
+		require.NoError(t, err)
+		require.Equal(t, "built-in model", resp.Text)
 	})
 
 	t.Run("rejects non-audio content before provider call", func(t *testing.T) {
@@ -252,13 +253,11 @@ func TestTranscribe(t *testing.T) {
 				AiSetting: &storepb.InstanceAISetting{
 					Providers: []*storepb.AIProviderConfig{
 						{
-							Id:           "openai-main",
-							Title:        "OpenAI",
-							Type:         storepb.AIProviderType_OPENAI_COMPATIBLE,
-							Endpoint:     "https://example.com/v1",
-							ApiKey:       "sk-test",
-							Models:       []string{"gpt-4o-transcribe"},
-							DefaultModel: "gpt-4o-transcribe",
+							Id:       "openai-main",
+							Title:    "OpenAI",
+							Type:     storepb.AIProviderType_OPENAI,
+							Endpoint: "https://example.com/v1",
+							ApiKey:   "sk-test",
 						},
 					},
 				},
@@ -268,9 +267,7 @@ func TestTranscribe(t *testing.T) {
 
 		_, err = ts.Service.Transcribe(userCtx, &v1pb.TranscribeRequest{
 			ProviderId: "openai-main",
-			Config: &v1pb.TranscriptionConfig{
-				Model: "gpt-4o-transcribe",
-			},
+			Config:     &v1pb.TranscriptionConfig{},
 			Audio: &v1pb.TranscriptionAudio{
 				Source:      &v1pb.TranscriptionAudio_Content{Content: []byte("not audio")},
 				Filename:    "notes.txt",

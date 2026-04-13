@@ -342,22 +342,18 @@ func TestInstanceSettingAISetting(t *testing.T) {
 			AiSetting: &storepb.InstanceAISetting{
 				Providers: []*storepb.AIProviderConfig{
 					{
-						Id:           "openai-main",
-						Title:        "OpenAI",
-						Type:         storepb.AIProviderType_OPENAI,
-						Endpoint:     "https://api.openai.com/v1",
-						ApiKey:       "sk-test",
-						Models:       []string{"gpt-5.4", "gpt-5.4-mini"},
-						DefaultModel: "gpt-5.4",
+						Id:       "openai-main",
+						Title:    "OpenAI",
+						Type:     storepb.AIProviderType_OPENAI,
+						Endpoint: "https://api.openai.com/v1",
+						ApiKey:   "sk-test",
 					},
 					{
-						Id:           "company-gateway",
-						Title:        "Company Gateway",
-						Type:         storepb.AIProviderType_OPENAI_COMPATIBLE,
-						Endpoint:     "https://llm.example.com/v1",
-						ApiKey:       "gw-test",
-						Models:       []string{"qwen-plus"},
-						DefaultModel: "qwen-plus",
+						Id:       "gemini-main",
+						Title:    "Gemini",
+						Type:     storepb.AIProviderType_GEMINI,
+						Endpoint: "https://generativelanguage.googleapis.com/v1beta",
+						ApiKey:   "gemini-test",
 					},
 				},
 			},
@@ -370,7 +366,7 @@ func TestInstanceSettingAISetting(t *testing.T) {
 	require.Len(t, aiSetting.Providers, 2)
 	require.Equal(t, "openai-main", aiSetting.Providers[0].Id)
 	require.Equal(t, "sk-test", aiSetting.Providers[0].ApiKey)
-	require.Equal(t, "company-gateway", aiSetting.Providers[1].Id)
+	require.Equal(t, "gemini-main", aiSetting.Providers[1].Id)
 
 	ts.Close()
 }
