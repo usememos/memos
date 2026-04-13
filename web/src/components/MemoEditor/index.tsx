@@ -61,10 +61,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
   const memoName = memo?.name;
   const transcriptionProvider = useMemo(
-    () =>
-      aiSetting.providers.find(
-        (provider) => provider.apiKeySet && TRANSCRIPTION_PROVIDER_TYPES.includes(provider.type),
-      ),
+    () => aiSetting.providers.find((provider) => provider.apiKeySet && TRANSCRIPTION_PROVIDER_TYPES.includes(provider.type)),
     [aiSetting.providers],
   );
 
