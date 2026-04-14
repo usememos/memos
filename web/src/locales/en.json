@@ -16,6 +16,11 @@
     "sign-in-tip": "Already have an account?",
     "sign-up-tip": "Don't have an account yet?"
   },
+  "demo": {
+    "banner-description": "Changes are temporary and may be reset.",
+    "banner-title": "Memos demo",
+    "deploy-link": "Deploy your Memos"
+  },
   "attachment-library": {
     "actions": {
       "open": "Open",

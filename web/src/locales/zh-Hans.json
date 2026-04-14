@@ -15,6 +15,11 @@
     "sign-in-tip": "已有账户？",
     "sign-up-tip": "还没有账户？"
   },
+  "demo": {
+    "banner-description": "这里的改动是临时的，可能会被重置。",
+    "banner-title": "Memos 演示站",
+    "deploy-link": "部署你的 Memos"
+  },
   "common": {
     "about": "关于",
     "add": "增加",
