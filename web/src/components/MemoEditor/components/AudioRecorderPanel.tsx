@@ -23,7 +23,7 @@ export const AudioRecorderPanel: FC<AudioRecorderPanelProps> = ({
 
   const isRequestingPermission = status === "requesting_permission";
   const isRecording = status === "recording";
-  const isTranscribeDisabled = !canTranscribe || isRequestingPermission || isTranscribing;
+  const isTranscribeDisabled = isRequestingPermission || isTranscribing;
   const waveformLevels = useAudioWaveform(mediaStream, isRecording && mediaStream !== null);
   const srStatusText = isTranscribing
     ? t("editor.audio-recorder.transcribing")
@@ -61,26 +61,28 @@ export const AudioRecorderPanel: FC<AudioRecorderPanelProps> = ({
         >
           <XIcon className="size-4" />
         </Button>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span className="-ml-2 inline-flex">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="rounded-full"
-                onClick={onTranscribe}
-                disabled={isTranscribeDisabled}
-                aria-label={canTranscribe ? t("editor.audio-recorder.transcribe") : t("editor.audio-recorder.configure-ai-provider")}
-              >
-                <AudioWaveformIcon className="size-4" />
-              </Button>
-            </span>
-          </TooltipTrigger>
-          <TooltipContent side="top">
-            <p>{canTranscribe ? t("editor.audio-recorder.transcribe") : t("editor.audio-recorder.configure-ai-provider")}</p>
-          </TooltipContent>
-        </Tooltip>
+        {canTranscribe && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="-ml-2 inline-flex">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full"
+                  onClick={onTranscribe}
+                  disabled={isTranscribeDisabled}
+                  aria-label={t("editor.audio-recorder.transcribe")}
+                >
+                  <AudioWaveformIcon className="size-4" />
+                </Button>
+              </span>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p>{t("editor.audio-recorder.transcribe")}</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
         <Button
           type="button"
           variant="destructive"
