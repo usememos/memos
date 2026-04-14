@@ -13,11 +13,8 @@ import { Routes } from "@/router";
 const ARCHIVED_ROUTE = "/archived";
 const PROFILE_ROUTE = "/u/:username";
 const DESKTOP_EXPLORER_WIDTH_CLASS = "w-64";
-const DESKTOP_EXPLORER_CLASS_NAME = cn(
-  "fixed top-0 left-16 h-svh shrink-0 border-r border-border transition-all",
-  DESKTOP_EXPLORER_WIDTH_CLASS,
-);
-const MAIN_CONTENT_CLASS_NAME = cn("w-full min-h-full", "md:pl-64");
+const DESKTOP_EXPLORER_CLASS_NAME = cn("sticky top-0 h-svh shrink-0 border-r border-border transition-all", DESKTOP_EXPLORER_WIDTH_CLASS);
+const MAIN_CONTENT_CLASS_NAME = "w-full min-h-full min-w-0 flex-1";
 
 const MainLayout = () => {
   const md = useMediaQuery("md");
@@ -71,7 +68,7 @@ const MainLayout = () => {
   const memoExplorerProps = { context, statisticsData: statistics, tagCount: tags };
 
   return (
-    <section className="@container w-full min-h-full flex flex-col justify-start items-center">
+    <section className="@container w-full min-h-full flex flex-col justify-start items-center md:flex-row md:items-start">
       {!md && (
         <MobileHeader>
           <MemoExplorerDrawer {...memoExplorerProps} />

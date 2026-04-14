@@ -15,6 +15,10 @@
     "sign-in-tip": "已經有帳戶了嗎？",
     "sign-up-tip": "還沒有帳戶嗎？"
   },
+  "demo": {
+    "banner-description": "這裡的改動是暫時的，可能會被重置。",
+    "banner-title": "Memos 演示站"
+  },
   "common": {
     "about": "關於",
     "add": "新增",
