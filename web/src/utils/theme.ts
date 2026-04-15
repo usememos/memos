@@ -182,6 +182,17 @@ const updateThemeColorMeta = (theme: ResolvedTheme): void => {
   }
 };
 
+const isDarkTheme = (theme: ResolvedTheme): boolean => {
+  return theme.endsWith("-dark") || theme.endsWith(".dark");
+};
+
+/**
+ * Updates the browser native control color scheme to match the current theme.
+ */
+const updateColorScheme = (theme: ResolvedTheme): void => {
+  document.documentElement.style.colorScheme = isDarkTheme(theme) ? "dark" : "light";
+};
+
 // ============================================================================
 // Main Theme Loading
 // ============================================================================
@@ -193,7 +204,8 @@ const updateThemeColorMeta = (theme: ResolvedTheme): void => {
  * 2. Resolves "system" to actual theme
  * 3. Injects theme CSS
  * 4. Sets data-theme attribute
- * 5. Persists to localStorage
+ * 5. Updates browser native UI colors
+ * 6. Persists to localStorage
  */
 export const loadTheme = (themeName: string): void => {
   const validTheme = validateTheme(themeName);
@@ -202,6 +214,7 @@ export const loadTheme = (themeName: string): void => {
   injectThemeStyle(resolvedTheme);
   setThemeAttribute(resolvedTheme);
   updateThemeColorMeta(resolvedTheme);
+  updateColorScheme(resolvedTheme);
   setStoredTheme(validTheme); // Store original theme preference (not resolved)
 };
 
