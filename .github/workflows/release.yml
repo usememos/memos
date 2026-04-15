@@ -10,6 +10,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
   GO_VERSION: "1.26.1"
   NODE_VERSION: "24"
@@ -243,7 +246,6 @@ jobs:
         with:
           tag_name: ${{ needs.prepare.outputs.tag }}
           name: ${{ needs.prepare.outputs.tag }}
-          generate_release_notes: true
           prerelease: ${{ needs.prepare.outputs.is_prerelease == 'true' }}
           files: artifacts/*
 
