@@ -99,6 +99,15 @@ Contributions are welcome — bug reports, feature suggestions, pull requests, d
 - [Improve documentation](https://github.com/usememos/dotcom)
 - [Help with translations](https://github.com/usememos/memos/tree/main/web/src/locales)
 
+### Commit Messages
+
+Release automation uses [Conventional Commits](https://www.conventionalcommits.org/) to determine version bumps and changelog entries. When squash-merging a pull request, use a conventional commit title:
+
+- `fix: ...` for bug fixes, which creates a patch release.
+- `feat: ...` for new features, which creates a minor release.
+- `feat!: ...` or a `BREAKING CHANGE:` footer for breaking changes.
+- `docs: ...`, `chore: ...`, `ci: ...`, and `test: ...` for changes that should not create a release by themselves.
+
 ## Sponsors
 
 Love Memos? [Sponsor us on GitHub](https://github.com/sponsors/usememos) to help keep the project growing!
