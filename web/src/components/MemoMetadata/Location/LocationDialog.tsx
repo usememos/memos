@@ -35,7 +35,7 @@ export const LocationDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[min(28rem,calc(100vw-2rem))] p-0!">
+      <DialogContent className="max-w-[min(28rem,calc(100vw-2rem))] p-0!" showCloseButton={false}>
         <VisuallyHidden>
           <DialogClose />
         </VisuallyHidden>
@@ -47,7 +47,7 @@ export const LocationDialog = ({
         </VisuallyHidden>
         <div className="flex flex-col">
           <div className="w-full h-64 overflow-hidden rounded-t-md bg-muted/30">
-            <LocationPicker latlng={position} onChange={onPositionChange} />
+            <LocationPicker className="h-full" latlng={position} onChange={onPositionChange} />
           </div>
           <div className="w-full flex flex-col p-3 gap-3">
             <div className="grid grid-cols-2 gap-3">

@@ -6,26 +6,25 @@ import { MapContainer, Marker, useMap, useMapEvents } from "react-leaflet";
 import { cn } from "@/lib/utils";
 import { defaultMarkerIcon, ThemedTileLayer } from "./map-utils";
 
-interface MarkerProps {
+interface LocationMarkerProps {
   position: LatLng | undefined;
   onChange: (position: LatLng) => void;
   readonly?: boolean;
 }
 
-const LocationMarker = (props: MarkerProps) => {
-  const [position, setPosition] = useState(props.position);
+const LocationMarker = ({ position: initialPosition, onChange, readonly: readOnly }: LocationMarkerProps) => {
+  const [position, setPosition] = useState(initialPosition);
   const initializedRef = useRef(false);
 
   const map = useMapEvents({
     click(e) {
-      if (props.readonly) {
+      if (readOnly) {
         return;
       }
 
       setPosition(e.latlng);
       map.locate();
-      // Call the parent onChange function.
-      props.onChange(e.latlng);
+      onChange(e.latlng);
     },
     locationfound() {},
   });
@@ -37,15 +36,14 @@ const LocationMarker = (props: MarkerProps) => {
     }
   }, [map]);
 
-  // Keep marker and map in sync with external position updates
   useEffect(() => {
-    if (props.position) {
-      setPosition(props.position);
-      map.setView(props.position);
+    if (initialPosition) {
+      setPosition(initialPosition);
+      map.setView(initialPosition);
     } else {
       setPosition(undefined);
     }
-  }, [props.position, map]);
+  }, [initialPosition, map]);
 
   return position === undefined ? null : <Marker position={position} icon={defaultMarkerIcon}></Marker>;
 };
@@ -197,22 +195,29 @@ const MapCleanup = () => {
   return null;
 };
 
-interface MapProps {
+interface LocationPickerProps {
   readonly?: boolean;
   latlng?: LatLng;
   onChange?: (position: LatLng) => void;
+  className?: string;
 }
 
 const DEFAULT_CENTER_LAT_LNG = new LatLng(48.8584, 2.2945);
+const noopOnLocationChange = () => {};
 
-const LeafletMap = (props: MapProps) => {
-  const position = props.latlng || DEFAULT_CENTER_LAT_LNG;
-  const statusLabel = props.readonly ? "Pinned location" : props.latlng ? "Selected location" : "Choose a location";
+const LocationPicker = ({ readonly: readOnly = false, latlng, onChange = noopOnLocationChange, className }: LocationPickerProps) => {
+  const position = latlng || DEFAULT_CENTER_LAT_LNG;
+  const statusLabel = readOnly ? "Pinned location" : latlng ? "Selected location" : "Choose a location";
 
   return (
-    <div className="memo-location-map relative isolate w-full overflow-hidden rounded-xl border border-border bg-background shadow-sm">
+    <div
+      className={cn(
+        "memo-location-map relative isolate h-72 w-full overflow-hidden rounded-xl border border-border bg-background shadow-sm",
+        className,
+      )}
+    >
       <MapContainer
-        className="h-72 w-full !bg-muted"
+        className="h-full w-full !bg-muted"
         center={position}
         zoom={13}
         scrollWheelZoom={false}
@@ -220,8 +225,8 @@ const LeafletMap = (props: MapProps) => {
         attributionControl={false}
       >
         <ThemedTileLayer />
-        <LocationMarker position={position} readonly={props.readonly} onChange={props.onChange ? props.onChange : () => {}} />
-        <MapControls position={props.latlng} />
+        <LocationMarker position={position} readonly={readOnly} onChange={onChange} />
+        <MapControls position={latlng} />
         <MapCleanup />
       </MapContainer>
 
@@ -234,4 +239,4 @@ const LeafletMap = (props: MapProps) => {
   );
 };
 
-export default LeafletMap;
+export default LocationPicker;
