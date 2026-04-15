@@ -10,8 +10,8 @@
   --popover: oklch(0.17 0.006 265);
   --popover-foreground: oklch(0.82 0.005 265);
 
-  /* Primary — subdued blue that sits back on dark surfaces */
-  --primary: oklch(0.42 0.08 250);
+  /* Primary — subdued amber that sits back on dark surfaces */
+  --primary: oklch(0.50 0.10 35);
   --primary-foreground: oklch(0.98 0.003 265);
 
   /* Secondary — subtle elevated surface for secondary buttons */
