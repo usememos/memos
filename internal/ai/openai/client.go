@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	openaisdk "github.com/openai/openai-go/v3"
+	"github.com/openai/openai-go/v3/option"
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/internal/ai"
@@ -15,8 +17,7 @@ const defaultEndpoint = "https://api.openai.com/v1"
 
 // Transcriber transcribes audio with OpenAI-compatible transcription APIs.
 type Transcriber struct {
-	endpoint   string
-	apiKey     string
+	client     openaisdk.Client
 	httpClient *http.Client
 }
 
@@ -34,15 +35,18 @@ func NewTranscriber(config ai.ProviderConfig, options ...Option) (*Transcriber, 
 	}
 
 	transcriber := &Transcriber{
-		endpoint: endpoint,
-		apiKey:   config.APIKey,
 		httpClient: &http.Client{
 			Timeout: 2 * time.Minute,
 		},
 	}
-	for _, option := range options {
-		option(transcriber)
+	for _, applyOption := range options {
+		applyOption(transcriber)
 	}
+	transcriber.client = openaisdk.NewClient(
+		option.WithAPIKey(config.APIKey),
+		option.WithBaseURL(strings.TrimRight(endpoint, "/")),
+		option.WithHTTPClient(transcriber.httpClient),
+	)
 	return transcriber, nil
 }
 
