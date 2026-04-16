@@ -373,6 +373,46 @@ func TestListMemoCommentsSkipsCommentsWithMissingCreators(t *testing.T) {
 	require.Empty(t, resp.Memos)
 }
 
+func TestListMemoCommentsPaginates(t *testing.T) {
+	ctx := context.Background()
+
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	owner, err := ts.CreateRegularUser(ctx, "comment-page-owner")
+	require.NoError(t, err)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+
+	memo, err := ts.Service.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "memo with paged comments",
+			Visibility: apiv1.Visibility_PUBLIC,
+		},
+	})
+	require.NoError(t, err)
+
+	for i := 0; i < 3; i++ {
+		_, err = ts.Service.CreateMemoComment(ownerCtx, &apiv1.CreateMemoCommentRequest{
+			Name: memo.Name,
+			Comment: &apiv1.Memo{
+				Content:    fmt.Sprintf("comment %d", i),
+				Visibility: apiv1.Visibility_PUBLIC,
+			},
+		})
+		require.NoError(t, err)
+	}
+
+	firstPage, err := ts.Service.ListMemoComments(ownerCtx, &apiv1.ListMemoCommentsRequest{Name: memo.Name, PageSize: 2})
+	require.NoError(t, err)
+	require.Len(t, firstPage.Memos, 2)
+	require.NotEmpty(t, firstPage.NextPageToken)
+
+	secondPage, err := ts.Service.ListMemoComments(ownerCtx, &apiv1.ListMemoCommentsRequest{Name: memo.Name, PageToken: firstPage.NextPageToken})
+	require.NoError(t, err)
+	require.Len(t, secondPage.Memos, 1)
+	require.Empty(t, secondPage.NextPageToken)
+}
+
 // TestCreateMemoWithCustomTimestamps tests that custom timestamps can be set when creating memos and comments.
 // This addresses issue #5483: https://github.com/usememos/memos/issues/5483
 func TestCreateMemoWithCustomTimestamps(t *testing.T) {

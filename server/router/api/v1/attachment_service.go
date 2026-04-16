@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
+	"image"
 	"io"
 	"log/slog"
 	"mime"
@@ -45,6 +46,7 @@ const (
 	// Quality 95 maintains visual quality while ensuring metadata is removed.
 	defaultJPEGQuality        = 95
 	maxBatchDeleteAttachments = 100
+	maxImagePixels            = 50_000_000
 )
 
 var SupportedThumbnailMimeTypes = []string{
@@ -148,12 +150,18 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 	// Strip EXIF metadata from images for privacy protection.
 	// This removes sensitive information like GPS location, device details, etc.
 	if shouldStripExif(create.Type) && !isAndroidMotionContainer(create.Payload.GetMotionMedia()) {
-		if strippedBlob, err := stripImageExif(create.Blob, create.Type); err != nil {
+		release, err := s.acquireImageProcessingSlot(ctx)
+		if err != nil {
+			return nil, status.Errorf(codes.ResourceExhausted, "too many image processing requests")
+		}
+		strippedBlob, stripErr := stripImageExif(create.Blob, create.Type)
+		release()
+		if stripErr != nil {
 			// Log warning but continue with original image to ensure uploads don't fail.
 			slog.Warn("failed to strip EXIF metadata from image",
 				slog.String("type", create.Type),
 				slog.String("filename", create.Filename),
-				slog.String("error", err.Error()))
+				slog.String("error", stripErr.Error()))
 		} else {
 			create.Blob = strippedBlob
 			create.Size = int64(len(strippedBlob))
@@ -745,6 +753,32 @@ func shouldStripExif(mimeType string) bool {
 	return exifCapableImageTypes[mimeType]
 }
 
+func (s *APIV1Service) acquireImageProcessingSlot(ctx context.Context) (func(), error) {
+	if s.imageProcessingSemaphore == nil {
+		return func() {}, nil
+	}
+	if err := s.imageProcessingSemaphore.Acquire(ctx, 1); err != nil {
+		return nil, err
+	}
+	return func() {
+		s.imageProcessingSemaphore.Release(1)
+	}, nil
+}
+
+func validateImagePixelCount(imageData []byte) error {
+	config, _, err := image.DecodeConfig(bytes.NewReader(imageData))
+	if err != nil {
+		return nil
+	}
+	if config.Width <= 0 || config.Height <= 0 {
+		return errors.New("invalid image dimensions")
+	}
+	if config.Width > maxImagePixels/config.Height {
+		return errors.Errorf("image dimensions exceed maximum of %d pixels", maxImagePixels)
+	}
+	return nil
+}
+
 // stripImageExif removes EXIF metadata from image files by decoding and re-encoding them.
 // This prevents exposure of sensitive metadata such as GPS location, camera details, and timestamps.
 //
@@ -759,6 +793,10 @@ func shouldStripExif(mimeType string) bool {
 //
 // Returns the cleaned image data without any EXIF metadata, or an error if processing fails.
 func stripImageExif(imageData []byte, mimeType string) ([]byte, error) {
+	if err := validateImagePixelCount(imageData); err != nil {
+		return nil, err
+	}
+
 	// Decode image with automatic EXIF orientation correction.
 	// This ensures the image displays correctly after metadata removal.
 	img, err := imaging.Decode(bytes.NewReader(imageData), imaging.AutoOrientation(true))

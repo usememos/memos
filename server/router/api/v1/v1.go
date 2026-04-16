@@ -17,6 +17,8 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+const maxAPIRequestBytes = 256 << 20
+
 type APIV1Service struct {
 	v1pb.UnimplementedInstanceServiceServer
 	v1pb.UnimplementedAuthServiceServer
@@ -34,7 +36,8 @@ type APIV1Service struct {
 	SSEHub          *SSEHub
 
 	// thumbnailSemaphore limits concurrent thumbnail generation to prevent memory exhaustion
-	thumbnailSemaphore *semaphore.Weighted
+	thumbnailSemaphore       *semaphore.Weighted
+	imageProcessingSemaphore *semaphore.Weighted
 }
 
 func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store) *APIV1Service {
@@ -43,12 +46,13 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 		markdown.WithMentionExtension(),
 	)
 	return &APIV1Service{
-		Secret:             secret,
-		Profile:            profile,
-		Store:              store,
-		MarkdownService:    markdownService,
-		SSEHub:             NewSSEHub(),
-		thumbnailSemaphore: semaphore.NewWeighted(3), // Limit to 3 concurrent thumbnail generations
+		Secret:                   secret,
+		Profile:                  profile,
+		Store:                    store,
+		MarkdownService:          markdownService,
+		SSEHub:                   NewSSEHub(),
+		thumbnailSemaphore:       semaphore.NewWeighted(3), // Limit to 3 concurrent thumbnail generations
+		imageProcessingSemaphore: semaphore.NewWeighted(2),
 	}
 }
 
@@ -120,7 +124,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	}))
 	// Register SSE endpoint with same CORS as rest of /api/v1.
 	RegisterSSERoutes(gwGroup, s.SSEHub, s.Store, s.Secret)
-	handler := echo.WrapHandler(gwMux)
+	handler := echo.WrapHandler(http.MaxBytesHandler(gwMux, maxAPIRequestBytes))
 
 	gwGroup.Any("/api/v1/*", handler)
 	gwGroup.Any("/file/*", handler)
@@ -135,7 +139,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	)
 	connectMux := http.NewServeMux()
 	connectHandler := NewConnectServiceHandler(s)
-	connectHandler.RegisterConnectHandlers(connectMux, connectInterceptors)
+	connectHandler.RegisterConnectHandlers(connectMux, connectInterceptors, connect.WithReadMaxBytes(maxAPIRequestBytes))
 
 	// Wrap with CORS for browser access
 	corsHandler := middleware.CORSWithConfig(middleware.CORSConfig{
@@ -147,7 +151,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 		AllowCredentials: true,
 	})
 	connectGroup := echoServer.Group("", corsHandler)
-	connectGroup.Any("/memos.api.v1.*", echo.WrapHandler(connectMux))
+	connectGroup.Any("/memos.api.v1.*", echo.WrapHandler(http.MaxBytesHandler(connectMux, maxAPIRequestBytes)))
 
 	return nil
 }

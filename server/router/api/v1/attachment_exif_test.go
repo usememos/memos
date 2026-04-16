@@ -2,6 +2,8 @@ package v1
 
 import (
 	"bytes"
+	"encoding/binary"
+	"hash/crc32"
 	"image"
 	"image/color"
 	"image/jpeg"
@@ -188,4 +190,43 @@ func TestStripImageExif(t *testing.T) {
 		_, err := stripImageExif(emptyData, "image/jpeg")
 		assert.Error(t, err)
 	})
+}
+
+func TestValidateImagePixelCountRejectsOversizedDimensions(t *testing.T) {
+	t.Parallel()
+
+	err := validateImagePixelCount(testPNGHeaderWithDimensions(100_000, 100_000))
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "image dimensions exceed maximum")
+}
+
+func TestStripImageExifRejectsOversizedDimensionsBeforeDecode(t *testing.T) {
+	t.Parallel()
+
+	_, err := stripImageExif(testPNGHeaderWithDimensions(100_000, 100_000), "image/png")
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "image dimensions exceed maximum")
+}
+
+func testPNGHeaderWithDimensions(width, height uint32) []byte {
+	var buf bytes.Buffer
+	buf.Write([]byte{0x89, 'P', 'N', 'G', '\r', '\n', 0x1a, '\n'})
+
+	ihdr := make([]byte, 13)
+	binary.BigEndian.PutUint32(ihdr[0:4], width)
+	binary.BigEndian.PutUint32(ihdr[4:8], height)
+	ihdr[8] = 8
+	ihdr[9] = 2
+
+	writePNGChunk(&buf, "IHDR", ihdr)
+	writePNGChunk(&buf, "IEND", nil)
+	return buf.Bytes()
+}
+
+func writePNGChunk(buf *bytes.Buffer, chunkType string, data []byte) {
+	_ = binary.Write(buf, binary.BigEndian, uint32(len(data)))
+	buf.WriteString(chunkType)
+	buf.Write(data)
+	crc := crc32.ChecksumIEEE(append([]byte(chunkType), data...))
+	_ = binary.Write(buf, binary.BigEndian, crc)
 }

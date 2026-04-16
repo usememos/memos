@@ -6,6 +6,35 @@ import (
 	"github.com/pkg/errors"
 )
 
+type asyncEmailRequest struct {
+	config  *Config
+	message *Message
+}
+
+var asyncEmailQueue = make(chan asyncEmailRequest, 128)
+
+func init() {
+	for range 2 {
+		go func() {
+			for request := range asyncEmailQueue {
+				if err := Send(request.config, request.message); err != nil {
+					recipients := ""
+					if request.message != nil && len(request.message.To) > 0 {
+						recipients = request.message.To[0]
+						if len(request.message.To) > 1 {
+							recipients += " and others"
+						}
+					}
+
+					slog.Warn("Failed to send email asynchronously",
+						slog.String("recipients", recipients),
+						slog.Any("error", err))
+				}
+			}
+		}()
+	}
+}
+
 // Send sends an email synchronously.
 // Returns an error if the email fails to send.
 func Send(config *Config, message *Message) error {
@@ -21,23 +50,12 @@ func Send(config *Config, message *Message) error {
 }
 
 // SendAsync sends an email asynchronously.
-// It spawns a new goroutine to handle the sending and does not wait for the response.
+// It enqueues the message for bounded asynchronous sending and does not wait for the response.
 // Any errors are logged but not returned.
 func SendAsync(config *Config, message *Message) {
-	go func() {
-		if err := Send(config, message); err != nil {
-			// Since we're in a goroutine, we can only log the error
-			recipients := ""
-			if message != nil && len(message.To) > 0 {
-				recipients = message.To[0]
-				if len(message.To) > 1 {
-					recipients += " and others"
-				}
-			}
-
-			slog.Warn("Failed to send email asynchronously",
-				slog.String("recipients", recipients),
-				slog.Any("error", err))
-		}
-	}()
+	select {
+	case asyncEmailQueue <- asyncEmailRequest{config: config, message: message}:
+	default:
+		slog.Warn("Dropped email because the async queue is full")
+	}
 }

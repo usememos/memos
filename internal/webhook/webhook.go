@@ -28,7 +28,24 @@ var (
 			DialContext: safeDialContext,
 		},
 	}
+
+	asyncPostQueue = make(chan *WebhookRequestPayload, 128)
 )
+
+func init() {
+	for range 4 {
+		go func() {
+			for payload := range asyncPostQueue {
+				if err := Post(payload); err != nil {
+					slog.Warn("Failed to dispatch webhook asynchronously",
+						slog.String("url", payload.URL),
+						slog.String("activityType", payload.ActivityType),
+						slog.Any("err", err))
+				}
+			}
+		}()
+	}
+}
 
 // safeDialContext is a net.Dialer.DialContext replacement that resolves the target
 // hostname and rejects any address that falls within a reserved/private IP range.
@@ -82,7 +99,7 @@ func Post(requestPayload *WebhookRequestPayload) error {
 	}
 	defer resp.Body.Close()
 
-	b, err := io.ReadAll(resp.Body)
+	b, err := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
 	if err != nil {
 		return errors.Wrapf(err, "failed to read webhook response from %s", requestPayload.URL)
 	}
@@ -107,14 +124,17 @@ func Post(requestPayload *WebhookRequestPayload) error {
 }
 
 // PostAsync posts the message to webhook endpoint asynchronously.
-// It spawns a new goroutine to handle the request and does not wait for the response.
+// It enqueues the request for bounded asynchronous dispatch and does not wait for the response.
 func PostAsync(requestPayload *WebhookRequestPayload) {
-	go func() {
-		if err := Post(requestPayload); err != nil {
-			slog.Warn("Failed to dispatch webhook asynchronously",
-				slog.String("url", requestPayload.URL),
-				slog.String("activityType", requestPayload.ActivityType),
-				slog.Any("err", err))
-		}
-	}()
+	if requestPayload == nil {
+		slog.Warn("Dropped webhook dispatch because payload is nil")
+		return
+	}
+	select {
+	case asyncPostQueue <- requestPayload:
+	default:
+		slog.Warn("Dropped webhook dispatch because the async queue is full",
+			slog.String("url", requestPayload.URL),
+			slog.String("activityType", requestPayload.ActivityType))
+	}
 }

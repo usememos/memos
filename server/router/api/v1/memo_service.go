@@ -232,14 +232,15 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		if err := unmarshalPageToken(request.PageToken, &pageToken); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
 		}
-		limit = int(pageToken.Limit)
+		limit = normalizePageSize(pageToken.Limit)
 		offset = int(pageToken.Offset)
+		if offset < 0 {
+			offset = 0
+		}
 	} else {
-		limit = int(request.PageSize)
+		limit = normalizePageSize(request.PageSize)
 	}
-	if limit <= 0 {
-		limit = DefaultPageSize
-	}
+	limit = min(limit, MaxPageSize)
 	limitPlusOne := limit + 1
 	memoFind.Limit = &limitPlusOne
 	memoFind.Offset = &offset
@@ -715,18 +716,45 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 		memoFilter = fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "PROTECTED"]`, currentUser.ID)
 	}
 	memoRelationComment := store.MemoRelationComment
+	var limit, offset int
+	if request.PageToken != "" {
+		var pageToken v1pb.PageToken
+		if err := unmarshalPageToken(request.PageToken, &pageToken); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
+		}
+		limit = normalizePageSize(pageToken.Limit)
+		offset = int(pageToken.Offset)
+		if offset < 0 {
+			offset = 0
+		}
+	} else {
+		limit = normalizePageSize(request.PageSize)
+	}
+	limitPlusOne := limit + 1
 	memoRelations, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
 		RelatedMemoID: &memo.ID,
 		Type:          &memoRelationComment,
 		MemoFilter:    &memoFilter,
+		Limit:         &limitPlusOne,
+		Offset:        &offset,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memo relations")
 	}
 
+	nextPageToken := ""
+	if len(memoRelations) == limitPlusOne {
+		memoRelations = memoRelations[:limit]
+		nextPageToken, err = getPageToken(limit, offset+limit)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get next page token, error: %v", err)
+		}
+	}
+
 	if len(memoRelations) == 0 {
 		response := &v1pb.ListMemoCommentsResponse{
-			Memos: []*v1pb.Memo{},
+			Memos:         []*v1pb.Memo{},
+			NextPageToken: nextPageToken,
 		}
 		return response, nil
 	}
@@ -807,7 +835,8 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 	}
 
 	response := &v1pb.ListMemoCommentsResponse{
-		Memos: memosResponse,
+		Memos:         memosResponse,
+		NextPageToken: nextPageToken,
 	}
 	return response, nil
 }

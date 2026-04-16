@@ -44,6 +44,17 @@ func getPageToken(limit int, offset int) (string, error) {
 	})
 }
 
+func normalizePageSize(pageSize int32) int {
+	limit := int(pageSize)
+	if limit <= 0 {
+		return DefaultPageSize
+	}
+	if limit > MaxPageSize {
+		return MaxPageSize
+	}
+	return limit
+}
+
 func marshalPageToken(pageToken *v1pb.PageToken) (string, error) {
 	b, err := proto.Marshal(pageToken)
 	if err != nil {

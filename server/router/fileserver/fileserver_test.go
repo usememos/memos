@@ -73,6 +73,52 @@ func TestServeAttachmentFile_ShareTokenAllowsDirectMemoAttachment(t *testing.T) 
 	require.Equal(t, "memo attachment", rec.Body.String())
 }
 
+func TestServeAttachmentFile_LocalStaticFileSupportsRangeRequests(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	creator, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "range-owner",
+		Role:     store.RoleUser,
+		Email:    "range-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+
+	attachment, err := svc.CreateAttachment(creatorCtx, &apiv1.CreateAttachmentRequest{
+		Attachment: &apiv1.Attachment{
+			Filename: "range.txt",
+			Type:     "text/plain",
+			Content:  []byte("0123456789"),
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = svc.CreateMemo(creatorCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "range memo",
+			Visibility: apiv1.Visibility_PUBLIC,
+			Attachments: []*apiv1.Attachment{
+				{Name: attachment.Name},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+
+	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename), nil)
+	req.Header.Set("Range", "bytes=2-5")
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+
+	require.Equal(t, http.StatusPartialContent, rec.Code)
+	require.Equal(t, "2345", rec.Body.String())
+	require.Equal(t, "bytes 2-5/10", rec.Header().Get("Content-Range"))
+}
+
 func TestServeAttachmentFile_ShareTokenRejectsCommentAttachment(t *testing.T) {
 	ctx := context.Background()
 	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)

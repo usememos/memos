@@ -223,18 +223,14 @@ func (s *FileServerService) serveMediaStream(c *echo.Context, attachment *store.
 
 // serveStaticFile serves non-streaming files (images, documents, etc.).
 func (s *FileServerService) serveStaticFile(c *echo.Context, attachment *store.Attachment, contentType string, wantThumbnail bool) error {
-	blob, err := s.getAttachmentBlob(attachment)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get attachment blob").Wrap(err)
-	}
-
 	// Generate thumbnail for supported image types.
 	if wantThumbnail && thumbnailSupportedTypes[attachment.Type] {
 		if thumbnailBlob, err := s.getOrGenerateThumbnail(c.Request().Context(), attachment); err != nil {
 			slog.Warn("failed to get thumbnail", "error", err)
 		} else {
-			blob = thumbnailBlob
-			contentType = "image/jpeg"
+			setSecurityHeaders(c)
+			setMediaHeaders(c, "image/jpeg", attachment.Type)
+			return c.Blob(http.StatusOK, "image/jpeg", thumbnailBlob)
 		}
 	}
 
@@ -246,7 +242,24 @@ func (s *FileServerService) serveStaticFile(c *echo.Context, attachment *store.A
 		c.Response().Header().Set(echo.HeaderContentDisposition, fmt.Sprintf("attachment; filename=%q", attachment.Filename))
 	}
 
-	return c.Blob(http.StatusOK, contentType, blob)
+	switch attachment.StorageType {
+	case storepb.AttachmentStorageType_LOCAL:
+		filePath, err := s.resolveLocalPath(attachment.Reference)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to resolve file path").Wrap(err)
+		}
+		http.ServeFile(c.Response(), c.Request(), filePath)
+		return nil
+	case storepb.AttachmentStorageType_S3:
+		reader, err := s.getAttachmentReader(c.Request().Context(), attachment)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get attachment reader").Wrap(err)
+		}
+		defer reader.Close()
+		return c.Stream(http.StatusOK, contentType, reader)
+	default:
+		return c.Blob(http.StatusOK, contentType, attachment.Blob)
+	}
 }
 
 // =============================================================================
@@ -260,7 +273,7 @@ func (s *FileServerService) getAttachmentBlob(attachment *store.Attachment) ([]b
 		return s.readLocalFile(attachment.Reference)
 
 	case storepb.AttachmentStorageType_S3:
-		return s.downloadFromS3(attachment)
+		return s.downloadFromS3(context.Background(), attachment)
 
 	default:
 		return attachment.Blob, nil
@@ -268,7 +281,7 @@ func (s *FileServerService) getAttachmentBlob(attachment *store.Attachment) ([]b
 }
 
 // getAttachmentReader returns a reader for streaming attachment content.
-func (s *FileServerService) getAttachmentReader(attachment *store.Attachment) (io.ReadCloser, error) {
+func (s *FileServerService) getAttachmentReader(ctx context.Context, attachment *store.Attachment) (io.ReadCloser, error) {
 	switch attachment.StorageType {
 	case storepb.AttachmentStorageType_LOCAL:
 		filePath, err := s.resolveLocalPath(attachment.Reference)
@@ -289,7 +302,7 @@ func (s *FileServerService) getAttachmentReader(attachment *store.Attachment) (i
 		if err != nil {
 			return nil, err
 		}
-		reader, err := s3Client.GetObjectStream(context.Background(), s3Object.Key)
+		reader, err := s3Client.GetObjectStream(ctx, s3Object.Key)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to stream from S3")
 		}
@@ -356,13 +369,13 @@ func (*FileServerService) createS3Client(attachment *store.Attachment) (*s3.Clie
 }
 
 // downloadFromS3 downloads the entire object from S3.
-func (s *FileServerService) downloadFromS3(attachment *store.Attachment) ([]byte, error) {
+func (s *FileServerService) downloadFromS3(ctx context.Context, attachment *store.Attachment) ([]byte, error) {
 	client, s3Object, err := s.createS3Client(attachment)
 	if err != nil {
 		return nil, err
 	}
 
-	blob, err := client.GetObject(context.Background(), s3Object.Key)
+	blob, err := client.GetObject(ctx, s3Object.Key)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to download from S3")
 	}
@@ -411,7 +424,7 @@ func (s *FileServerService) getOrGenerateThumbnail(ctx context.Context, attachme
 		return blob, nil
 	}
 
-	return s.generateThumbnail(attachment, thumbnailPath)
+	return s.generateThumbnail(ctx, attachment, thumbnailPath)
 }
 
 // getThumbnailPath returns the file path for a cached thumbnail.
@@ -435,8 +448,8 @@ func (*FileServerService) readCachedThumbnail(path string) ([]byte, error) {
 }
 
 // generateThumbnail creates a new thumbnail and saves it to disk.
-func (s *FileServerService) generateThumbnail(attachment *store.Attachment, thumbnailPath string) ([]byte, error) {
-	reader, err := s.getAttachmentReader(attachment)
+func (s *FileServerService) generateThumbnail(ctx context.Context, attachment *store.Attachment, thumbnailPath string) ([]byte, error) {
+	reader, err := s.getAttachmentReader(ctx, attachment)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get attachment reader")
 	}

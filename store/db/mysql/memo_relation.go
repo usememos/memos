@@ -34,13 +34,13 @@ func (d *DB) UpsertMemoRelation(ctx context.Context, create *store.MemoRelation)
 func (d *DB) ListMemoRelations(ctx context.Context, find *store.FindMemoRelation) ([]*store.MemoRelation, error) {
 	where, args := []string{"TRUE"}, []any{}
 	if find.MemoID != nil {
-		where, args = append(where, "`memo_id` = ?"), append(args, find.MemoID)
+		where, args = append(where, "`memo_id` = ?"), append(args, *find.MemoID)
 	}
 	if find.RelatedMemoID != nil {
-		where, args = append(where, "`related_memo_id` = ?"), append(args, find.RelatedMemoID)
+		where, args = append(where, "`related_memo_id` = ?"), append(args, *find.RelatedMemoID)
 	}
 	if find.Type != nil {
-		where, args = append(where, "`type` = ?"), append(args, find.Type)
+		where, args = append(where, "`type` = ?"), append(args, *find.Type)
 	}
 	if len(find.MemoIDList) > 0 {
 		placeholders := make([]string, len(find.MemoIDList))
@@ -73,7 +73,15 @@ func (d *DB) ListMemoRelations(ctx context.Context, find *store.FindMemoRelation
 		}
 	}
 
-	rows, err := d.db.QueryContext(ctx, "SELECT `memo_id`, `related_memo_id`, `type` FROM `memo_relation` WHERE "+strings.Join(where, " AND "), args...)
+	query := "SELECT `memo_id`, `related_memo_id`, `type` FROM `memo_relation` WHERE " + strings.Join(where, " AND ") + " ORDER BY `memo_id` DESC"
+	if find.Limit != nil {
+		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
+		if find.Offset != nil {
+			query = fmt.Sprintf("%s OFFSET %d", query, *find.Offset)
+		}
+	}
+
+	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -102,13 +110,13 @@ func (d *DB) ListMemoRelations(ctx context.Context, find *store.FindMemoRelation
 func (d *DB) DeleteMemoRelation(ctx context.Context, delete *store.DeleteMemoRelation) error {
 	where, args := []string{"TRUE"}, []any{}
 	if delete.MemoID != nil {
-		where, args = append(where, "`memo_id` = ?"), append(args, delete.MemoID)
+		where, args = append(where, "`memo_id` = ?"), append(args, *delete.MemoID)
 	}
 	if delete.RelatedMemoID != nil {
-		where, args = append(where, "`related_memo_id` = ?"), append(args, delete.RelatedMemoID)
+		where, args = append(where, "`related_memo_id` = ?"), append(args, *delete.RelatedMemoID)
 	}
 	if delete.Type != nil {
-		where, args = append(where, "`type` = ?"), append(args, delete.Type)
+		where, args = append(where, "`type` = ?"), append(args, *delete.Type)
 	}
 	stmt := "DELETE FROM `memo_relation` WHERE " + strings.Join(where, " AND ")
 	result, err := d.db.ExecContext(ctx, stmt, args...)
