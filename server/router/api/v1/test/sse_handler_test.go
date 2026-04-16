@@ -86,9 +86,12 @@ func TestSSEHandler_Authentication(t *testing.T) {
 		require.NoError(t, err)
 		req.Header.Set("Authorization", "Bearer "+token)
 
-		resp, err := server.Client().Do(req)
-		require.NoError(t, err)
-		defer resp.Body.Close()
+		resp, err := server.Client().Do(req) //nolint:bodyclose // Body is closed after verifying the SSE stream disconnects.
+		if err != nil {
+			t.Fatal(err)
+		}
+		body := resp.Body
+		defer body.Close()
 		require.Equal(t, http.StatusOK, resp.StatusCode)
 		require.Equal(t, "text/event-stream", resp.Header.Get("Content-Type"))
 
@@ -96,7 +99,7 @@ func TestSSEHandler_Authentication(t *testing.T) {
 
 		done := make(chan error, 1)
 		go func() {
-			_, err := io.ReadAll(resp.Body)
+			_, err := io.ReadAll(body)
 			done <- err
 		}()
 
