@@ -1,4 +1,4 @@
-package gemini
+package ai
 
 import (
 	"context"
@@ -11,11 +11,9 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-
-	"github.com/usememos/memos/internal/ai"
 )
 
-func TestTranscribe(t *testing.T) {
+func TestGeminiTranscribe(t *testing.T) {
 	t.Parallel()
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -61,7 +59,8 @@ func TestTranscribe(t *testing.T) {
 	}))
 	defer server.Close()
 
-	transcriber, err := NewTranscriber(ai.ProviderConfig{
+	transcriber, err := NewTranscriber(ProviderConfig{
+		Type:     ProviderGemini,
 		Endpoint: server.URL + "/v1beta",
 		APIKey:   "test-key",
 	})
@@ -69,7 +68,7 @@ func TestTranscribe(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	response, err := transcriber.Transcribe(ctx, ai.TranscribeRequest{
+	response, err := transcriber.Transcribe(ctx, TranscribeRequest{
 		Model:       "models/gemini-2.5-flash",
 		ContentType: "audio/mpeg",
 		Audio:       strings.NewReader("audio bytes"),
@@ -80,16 +79,17 @@ func TestTranscribe(t *testing.T) {
 	require.Equal(t, "hello from gemini", response.Text)
 }
 
-func TestTranscribeRejectsUnsupportedContentType(t *testing.T) {
+func TestGeminiTranscribeRejectsUnsupportedContentType(t *testing.T) {
 	t.Parallel()
 
-	transcriber, err := NewTranscriber(ai.ProviderConfig{
+	transcriber, err := NewTranscriber(ProviderConfig{
+		Type:     ProviderGemini,
 		Endpoint: "https://example.com/v1beta",
 		APIKey:   "test-key",
 	})
 	require.NoError(t, err)
 
-	_, err = transcriber.Transcribe(context.Background(), ai.TranscribeRequest{
+	_, err = transcriber.Transcribe(context.Background(), TranscribeRequest{
 		Model:       "gemini-2.5-flash",
 		ContentType: "video/mp4",
 		Audio:       strings.NewReader("video bytes"),
