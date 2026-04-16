@@ -7,13 +7,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"github.com/usememos/memos/internal/ai"
-	"github.com/usememos/memos/internal/ai/gemini"
-	"github.com/usememos/memos/internal/ai/openai"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
@@ -97,7 +94,7 @@ func (s *APIV1Service) Transcribe(ctx context.Context, request *v1pb.TranscribeR
 	if err != nil {
 		return nil, err
 	}
-	transcriber, err := newAITranscriber(provider)
+	transcriber, err := ai.NewTranscriber(provider)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "failed to create AI transcriber: %v", err)
 	}
@@ -162,17 +159,6 @@ func convertAIProviderTypeFromStore(providerType storepb.AIProviderType) ai.Prov
 		return ai.ProviderGemini
 	default:
 		return ""
-	}
-}
-
-func newAITranscriber(provider ai.ProviderConfig) (ai.Transcriber, error) {
-	switch provider.Type {
-	case ai.ProviderOpenAI:
-		return openai.NewTranscriber(provider)
-	case ai.ProviderGemini:
-		return gemini.NewTranscriber(provider)
-	default:
-		return nil, errors.Wrapf(ai.ErrCapabilityUnsupported, "provider type %q", provider.Type)
 	}
 }
 

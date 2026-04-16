@@ -1,4 +1,4 @@
-package openai
+package ai
 
 import (
 	"context"
@@ -6,13 +6,36 @@ import (
 	"strings"
 
 	openaisdk "github.com/openai/openai-go/v3"
+	openaioption "github.com/openai/openai-go/v3/option"
 	"github.com/pkg/errors"
-
-	"github.com/usememos/memos/internal/ai"
 )
 
-// Transcribe transcribes audio with the /audio/transcriptions endpoint.
-func (t *Transcriber) Transcribe(ctx context.Context, request ai.TranscribeRequest) (*ai.TranscribeResponse, error) {
+const defaultOpenAIEndpoint = "https://api.openai.com/v1"
+
+type openAITranscriber struct {
+	client openaisdk.Client
+}
+
+func newOpenAITranscriber(config ProviderConfig, options transcriberOptions) (*openAITranscriber, error) {
+	endpoint, err := normalizeEndpoint(config.Endpoint, defaultOpenAIEndpoint, "OpenAI")
+	if err != nil {
+		return nil, err
+	}
+	if err := requireAPIKey(config.APIKey, "OpenAI"); err != nil {
+		return nil, err
+	}
+
+	return &openAITranscriber{
+		client: openaisdk.NewClient(
+			openaioption.WithAPIKey(config.APIKey),
+			openaioption.WithBaseURL(endpoint),
+			openaioption.WithHTTPClient(options.httpClient),
+		),
+	}, nil
+}
+
+// Transcribe transcribes audio with the OpenAI /audio/transcriptions endpoint.
+func (t *openAITranscriber) Transcribe(ctx context.Context, request TranscribeRequest) (*TranscribeResponse, error) {
 	if strings.TrimSpace(request.Model) == "" {
 		return nil, errors.New("model is required")
 	}
@@ -20,7 +43,7 @@ func (t *Transcriber) Transcribe(ctx context.Context, request ai.TranscribeReque
 		return nil, errors.New("audio is required")
 	}
 
-	filename, contentType, err := normalizeAudioFileMetadata(request)
+	filename, contentType, err := normalizeOpenAIAudioFileMetadata(request)
 	if err != nil {
 		return nil, err
 	}
@@ -39,16 +62,16 @@ func (t *Transcriber) Transcribe(ctx context.Context, request ai.TranscribeReque
 
 	response, err := t.client.Audio.Transcriptions.New(ctx, params)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to send transcription request")
+		return nil, errors.Wrap(err, "failed to send OpenAI transcription request")
 	}
-	return &ai.TranscribeResponse{
+	return &TranscribeResponse{
 		Text:     response.Text,
 		Language: response.Language,
 		Duration: response.Duration,
 	}, nil
 }
 
-func normalizeAudioFileMetadata(request ai.TranscribeRequest) (string, string, error) {
+func normalizeOpenAIAudioFileMetadata(request TranscribeRequest) (string, string, error) {
 	filename := strings.TrimSpace(request.Filename)
 	if filename == "" {
 		filename = "audio"
