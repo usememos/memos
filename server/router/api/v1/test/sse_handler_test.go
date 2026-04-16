@@ -2,9 +2,11 @@ package test
 
 import (
 	"context"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/require"
@@ -74,5 +76,35 @@ func TestSSEHandler_Authentication(t *testing.T) {
 		rec := httptest.NewRecorder()
 		e.ServeHTTP(rec, req)
 		require.Equal(t, http.StatusUnauthorized, rec.Code)
+	})
+
+	t.Run("hub close disconnects stream", func(t *testing.T) {
+		server := httptest.NewServer(e)
+		defer server.Close()
+
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, server.URL+"/api/v1/sse", nil)
+		require.NoError(t, err)
+		req.Header.Set("Authorization", "Bearer "+token)
+
+		resp, err := server.Client().Do(req)
+		require.NoError(t, err)
+		defer resp.Body.Close()
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+		require.Equal(t, "text/event-stream", resp.Header.Get("Content-Type"))
+
+		ts.Service.SSEHub.Close()
+
+		done := make(chan error, 1)
+		go func() {
+			_, err := io.ReadAll(resp.Body)
+			done <- err
+		}()
+
+		select {
+		case err := <-done:
+			require.NoError(t, err)
+		case <-time.After(time.Second):
+			t.Fatal("SSE stream did not close after hub close")
+		}
 	})
 }

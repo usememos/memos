@@ -56,6 +56,7 @@ type SSEClient struct {
 type SSEHub struct {
 	mu      sync.RWMutex
 	clients map[*SSEClient]struct{}
+	closed  bool
 }
 
 // NewSSEHub creates a new SSE hub.
@@ -75,7 +76,11 @@ func (h *SSEHub) Subscribe(userID int32, role store.Role) *SSEClient {
 		role:   role,
 	}
 	h.mu.Lock()
-	h.clients[c] = struct{}{}
+	if h.closed {
+		close(c.events)
+	} else {
+		h.clients[c] = struct{}{}
+	}
 	h.mu.Unlock()
 	return c
 }
@@ -88,6 +93,20 @@ func (h *SSEHub) Unsubscribe(c *SSEClient) {
 		close(c.events)
 	}
 	h.mu.Unlock()
+}
+
+// Close disconnects all subscribed SSE clients.
+func (h *SSEHub) Close() {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	if h.closed {
+		return
+	}
+	h.closed = true
+	for c := range h.clients {
+		delete(h.clients, c)
+		close(c.events)
+	}
 }
 
 // Broadcast sends an event to all connected clients.

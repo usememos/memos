@@ -47,6 +47,28 @@ func TestSSEHub_SubscribeUnsubscribe(t *testing.T) {
 	assert.False(t, ok, "channel should be closed after Unsubscribe")
 }
 
+func TestSSEHub_Close(t *testing.T) {
+	hub := NewSSEHub()
+	c1 := hub.Subscribe(1, store.RoleUser)
+	c2 := hub.Subscribe(2, store.RoleAdmin)
+
+	hub.Close()
+	hub.Close()
+
+	for _, ch := range []chan []byte{c1.events, c2.events} {
+		_, ok := <-ch
+		assert.False(t, ok, "channel should be closed after hub close")
+	}
+
+	late := hub.Subscribe(3, store.RoleUser)
+	_, ok := <-late.events
+	assert.False(t, ok, "late subscriber should be closed immediately")
+
+	hub.Broadcast(&SSEEvent{Type: SSEEventMemoCreated, Name: "memos/123"})
+	hub.Unsubscribe(c1)
+	hub.Unsubscribe(late)
+}
+
 func TestSSEHub_Broadcast(t *testing.T) {
 	hub := NewSSEHub()
 	client := hub.Subscribe(1, store.RoleUser)
