@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for reporting a bug! Please fill out the form below so we can reproduce and fix the issue.
+        Thanks for reporting a bug. Please provide enough detail for maintainers to reproduce the issue.
 
         **Before submitting**, please search [existing issues](https://github.com/usememos/memos/issues) to avoid duplicates.
 
@@ -14,61 +14,31 @@ body:
     attributes:
       label: Pre-submission Checklist
       options:
-        - label: I have searched existing issues and confirmed this bug has not been reported
+        - label: I have searched existing issues and confirmed this has not already been reported
           required: true
-        - label: I can reproduce this bug on the latest version or the [demo site](https://demo.usememos.com)
-          required: true
-        - label: This is a bug, not a question (use [Discussions](https://github.com/usememos/memos/discussions) for questions)
+        - label: This is a bug report, not a question or configuration request
           required: true
 
   - type: input
     id: version
     attributes:
       label: Memos Version
-      description: Find this in **Settings > System > About** or via the `--version` flag
-      placeholder: "v0.25.2"
+      description: Use the version shown in **Settings > System**, the container image tag, the release binary version, or `memos --version`. Please do not write `latest` only.
+      placeholder: "v0.25.x, ghcr.io/usememos/memos:v0.25.x, main@abcdef, or demo site"
     validations:
       required: true
-
-  - type: dropdown
-    id: deployment
-    attributes:
-      label: Deployment Method
-      options:
-        - Docker
-        - Pre-built binary
-        - Built from source
-    validations:
-      required: true
-
-  - type: dropdown
-    id: database
-    attributes:
-      label: Database
-      options:
-        - SQLite
-        - PostgreSQL
-        - MySQL
-    validations:
-      required: true
-
-  - type: input
-    id: browser-os
-    attributes:
-      label: Browser & OS
-      description: e.g. Chrome 120 on macOS 15, Firefox 130 on Ubuntu 24.04
-      placeholder: "Chrome 120 on macOS 15"
-    validations:
-      required: false
 
   - type: textarea
-    id: bug-description
+    id: environment
     attributes:
-      label: Bug Description
-      description: A clear and concise description of what the bug is
-      placeholder: When I try to..., the application...
-    validations:
-      required: true
+      label: Environment Details
+      description: Include anything relevant to where Memos is running.
+      placeholder: |
+        - Deployment: Docker / binary / source / demo site
+        - Database: SQLite / PostgreSQL / MySQL
+        - Browser: Chrome 120 on macOS 15
+        - Server OS: Ubuntu 24.04
+        - Reverse proxy: nginx / Caddy / Traefik / none
 
   - type: textarea
     id: reproduction-steps
@@ -76,9 +46,19 @@ body:
       label: Steps to Reproduce
       description: Minimal steps to reliably reproduce the issue
       placeholder: |
-        1. Go to '...'
-        2. Click on '...'
-        3. See error
+        1. Go to ...
+        2. Click ...
+        3. Enter ...
+        4. See ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: Current Behavior
+      description: What happened? Include exact error messages if available.
+      placeholder: The application ...
     validations:
       required: true
 
@@ -92,8 +72,17 @@ body:
       required: true
 
   - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Paste relevant server logs, browser console output, or network errors. Remove secrets before submitting.
+      render: shell
+      placeholder: |
+        Paste logs here.
+
+  - type: textarea
     id: additional-context
     attributes:
-      label: Screenshots, Logs & Additional Context
-      description: Attach screenshots, browser console errors, or server logs if available
-      placeholder: Drag and drop images here, or paste error logs...
+      label: Additional Context
+      description: Attach screenshots, screen recordings, sample data, or links to related issues.
+      placeholder: Drag and drop files here or add any extra context.

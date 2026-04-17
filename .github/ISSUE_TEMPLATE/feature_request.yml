@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for suggesting a feature! Please fill out the form below so we can understand your idea.
+        Thanks for suggesting an improvement. Please describe the problem first so maintainers can evaluate the request.
 
         **Before submitting**, please search [existing issues](https://github.com/usememos/memos/issues?q=label%3Aenhancement) to avoid duplicates.
 
@@ -14,43 +14,29 @@ body:
     attributes:
       label: Pre-submission Checklist
       options:
-        - label: I have searched existing issues and confirmed this feature has not been requested
+        - label: I have searched existing issues and confirmed this has not already been requested
           required: true
-        - label: This is a feature request, not a bug report or question
+        - label: This is a feature request, not a bug report or support question
           required: true
-
-  - type: dropdown
-    id: feature-type
-    attributes:
-      label: Feature Area
-      options:
-        - User Interface (UI)
-        - User Experience (UX)
-        - API / Backend
-        - Integrations / Plugins
-        - Security / Privacy
-        - Performance
-        - Other
-    validations:
-      required: true
 
   - type: textarea
-    id: problem-statement
+    id: problem
     attributes:
       label: Problem or Use Case
-      description: What problem does this feature solve? Why do you need it?
+      description: What problem does this solve? Describe the user need, not just the proposed UI or API.
       placeholder: |
-        I often need to... but currently there's no way to...
+        I often need to ...
+        Today, this is difficult because ...
     validations:
       required: true
 
   - type: textarea
-    id: proposed-solution
+    id: solution
     attributes:
       label: Proposed Solution
-      description: Describe what you'd like to happen
+      description: Describe the behavior you would like Memos to support.
       placeholder: |
-        It would be great if Memos could...
+        Memos should ...
     validations:
       required: true
 
@@ -58,21 +44,14 @@ body:
     id: alternatives
     attributes:
       label: Alternatives Considered
-      description: Have you considered any workarounds or alternative approaches?
+      description: Existing workarounds, related tools, or simpler alternatives you considered.
       placeholder: |
-        I've tried... but it doesn't work well because...
+        I tried ...
+        It does not work well because ...
 
   - type: textarea
     id: additional-context
     attributes:
       label: Additional Context
-      description: Mockups, screenshots, examples from other apps, or any other context
-      placeholder: Drag and drop images here...
-
-  - type: checkboxes
-    id: contribution
-    attributes:
-      label: Contribution
-      description: Would you be willing to help implement this feature?
-      options:
-        - label: I'm willing to submit a pull request for this feature
+      description: Mockups, screenshots, examples from other apps, API sketches, or any other context.
+      placeholder: Drag and drop files here or add links/examples.
