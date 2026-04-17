@@ -1,5 +1,7 @@
+import { CalendarClockIcon, XIcon } from "lucide-react";
 import { type FC, useRef, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { useEditorContext } from "../state";
 
@@ -8,6 +10,12 @@ const DATETIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
 function formatDate(date: Date): string {
   const pad = (n: number) => String(n).padStart(2, "0");
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
+/** Format a Date as a value for <input type="datetime-local"> (YYYY-MM-DDTHH:mm). */
+function toDatetimeLocalValue(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
 function parseDate(value: string): Date | undefined {
@@ -55,6 +63,7 @@ const TimestampInput: FC<{
   );
 };
 
+/** Popover shown when editing an existing memo (full create + update time editing). */
 export const TimestampPopover: FC = () => {
   const t = useTranslate();
   const { state, actions, dispatch } = useEditorContext();
@@ -83,6 +92,64 @@ export const TimestampPopover: FC = () => {
           date={updateTime}
           onChange={(d) => dispatch(actions.setTimestamps({ updateTime: d }))}
         />
+      </PopoverContent>
+    </Popover>
+  );
+};
+
+/** Calendar icon with a date & time picker for backdating new memos. */
+export const BackdatePopover: FC = () => {
+  const t = useTranslate();
+  const { state, actions, dispatch } = useEditorContext();
+  const { createTime } = state.timestamps;
+  const [open, setOpen] = useState(false);
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const date = new Date(e.target.value);
+    if (!Number.isNaN(date.getTime())) {
+      dispatch(actions.setTimestamps({ createTime: date }));
+    }
+  };
+
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    dispatch(actions.setTimestamps({ createTime: undefined }));
+    setOpen(false);
+  };
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className={cn(
+            "flex items-center gap-1.5 text-sm transition-colors cursor-pointer",
+            createTime ? "text-foreground hover:text-foreground/80" : "text-muted-foreground hover:text-foreground",
+          )}
+          title={t("editor.set-creation-date")}
+        >
+          <CalendarClockIcon className="size-4" />
+          {createTime && <span className="font-mono text-xs">{formatDate(createTime)}</span>}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent align="start" className="w-auto p-3 space-y-2">
+        <label className="text-xs font-medium text-muted-foreground">{t("editor.set-creation-date")}</label>
+        <input
+          type="datetime-local"
+          className="block w-full rounded-md border border-border bg-background px-2 py-1 text-sm"
+          value={createTime ? toDatetimeLocalValue(createTime) : ""}
+          onChange={handleDateChange}
+        />
+        {createTime && (
+          <button
+            type="button"
+            onClick={handleClear}
+            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+          >
+            <XIcon className="size-3" />
+            {t("common.clear")}
+          </button>
+        )}
       </PopoverContent>
     </Popover>
   );
