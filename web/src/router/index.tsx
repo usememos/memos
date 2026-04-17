@@ -1,10 +1,12 @@
 import { lazy } from "react";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, type RouteObject } from "react-router-dom";
 import App from "@/App";
 import { ChunkLoadErrorFallback } from "@/components/ErrorBoundary";
 import MainLayout from "@/layouts/MainLayout";
 import RootLayout from "@/layouts/RootLayout";
 import Home from "@/pages/Home";
+import { LandingRoute, RequireAuthRoute, RequireGuestRoute } from "./guards";
+import { ROUTES } from "./routes";
 
 // Wrap lazy imports to auto-reload on chunk load failure (e.g., after redeployment).
 function lazyWithReload<T extends React.ComponentType>(factory: () => Promise<{ default: T }>) {
@@ -37,13 +39,16 @@ const SignIn = lazyWithReload(() => import("@/pages/SignIn"));
 const SignUp = lazyWithReload(() => import("@/pages/SignUp"));
 const UserProfile = lazyWithReload(() => import("@/pages/UserProfile"));
 
-import { ROUTES } from "./routes";
-
-// Backward compatibility alias
+// Backward compatibility alias.
 export const Routes = ROUTES;
 export { ROUTES };
 
-const router = createBrowserRouter([
+/**
+ * Static route configuration. Exported so tests can assert on the tree shape
+ * (e.g. that `/auth/callback` stays outside the guest-only guard subtree) and
+ * so integration tests can drive a `createMemoryRouter` over the same tree.
+ */
+export const routeConfig: RouteObject[] = [
   {
     path: "/",
     element: <App />,
@@ -52,30 +57,49 @@ const router = createBrowserRouter([
       {
         path: Routes.AUTH,
         children: [
-          { path: "", element: <SignIn /> },
-          { path: "admin", element: <AdminSignIn /> },
-          { path: "signup", element: <SignUp /> },
+          // The OAuth callback must run regardless of the current session — an
+          // authenticated tab elsewhere must not block it from consuming its
+          // one-time OAuth state. Keep it outside the guest-only subtree.
           { path: "callback", element: <AuthCallback /> },
+          {
+            element: <RequireGuestRoute />,
+            children: [
+              { path: "", element: <SignIn /> },
+              { path: "admin", element: <AdminSignIn /> },
+              { path: "signup", element: <SignUp /> },
+            ],
+          },
         ],
       },
+      { index: true, element: <LandingRoute /> },
       {
-        path: Routes.ROOT,
+        path: Routes.ENTRY,
         element: <RootLayout />,
         children: [
           {
             element: <MainLayout />,
             children: [
-              { path: "", element: <Home /> },
               { path: Routes.EXPLORE, element: <Explore /> },
-              { path: Routes.ARCHIVED, element: <Archived /> },
               { path: "u/:username", element: <UserProfile /> },
+              {
+                element: <RequireAuthRoute />,
+                children: [
+                  { path: Routes.HOME, element: <Home /> },
+                  { path: Routes.ARCHIVED, element: <Archived /> },
+                ],
+              },
             ],
           },
-          { path: Routes.ATTACHMENTS, element: <Attachments /> },
-          { path: Routes.INBOX, element: <Inboxes /> },
-          { path: Routes.SETTING, element: <Setting /> },
           { path: "memos/:uid", element: <MemoDetail /> },
           { path: "memos/shares/:token", element: <MemoDetail /> },
+          {
+            element: <RequireAuthRoute />,
+            children: [
+              { path: Routes.ATTACHMENTS, element: <Attachments /> },
+              { path: Routes.INBOX, element: <Inboxes /> },
+              { path: Routes.SETTING, element: <Setting /> },
+            ],
+          },
           { path: "403", element: <PermissionDenied /> },
           { path: "404", element: <NotFound /> },
           { path: "*", element: <NotFound /> },
@@ -83,6 +107,8 @@ const router = createBrowserRouter([
       },
     ],
   },
-]);
+];
+
+const router = createBrowserRouter(routeConfig);
 
 export default router;

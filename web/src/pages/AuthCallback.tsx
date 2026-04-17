@@ -7,6 +7,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { absolutifyLink } from "@/helpers/utils";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { handleError } from "@/lib/error";
+import { ROUTES } from "@/router/routes";
+import { getSafeRedirectPath } from "@/utils/auth-redirect";
 import { validateOAuthState } from "@/utils/oauth";
 
 interface State {
@@ -97,8 +99,10 @@ const AuthCallback = () => {
           errorMessage: "",
         });
         await initialize();
-        // Redirect to return URL if specified, otherwise home
-        navigateTo(returnUrl || "/");
+        // Defense-in-depth: even though `returnUrl` was sanitized before being
+        // stored (see storeOAuthState in SignIn), re-validate on the way out so
+        // a corrupted state entry can never be used for an open redirect.
+        navigateTo(getSafeRedirectPath(returnUrl) ?? ROUTES.HOME);
       } catch (error: unknown) {
         handleError(error, () => {}, {
           fallbackMessage: "Failed to authenticate.",

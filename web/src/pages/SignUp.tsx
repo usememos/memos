@@ -77,7 +77,7 @@ const SignUp = () => {
       await initAuth();
       // Refetch instance profile to update the initialized status
       await initInstance();
-      navigateTo(redirectTarget || ROUTES.ROOT, { replace: true });
+      navigateTo(redirectTarget || ROUTES.HOME, { replace: true });
     } catch (error: unknown) {
       handleError(error, toast.error, {
         fallbackMessage: "Sign up failed",

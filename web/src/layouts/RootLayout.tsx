@@ -1,15 +1,11 @@
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
 import usePrevious from "react-use/lib/usePrevious";
 import Navigation from "@/components/Navigation";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
-import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
-import useNavigateTo from "@/hooks/useNavigateTo";
 import { cn } from "@/lib/utils";
-import { ROUTES } from "@/router/routes";
-import { redirectOnAuthFailure } from "@/utils/auth-redirect";
 import { useTranslate } from "@/utils/i18n";
 
 const MEMOS_DEPLOY_URL = "https://usememos.com/docs/deploy";
@@ -34,25 +30,13 @@ const RootLayout = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const sm = useMediaQuery("sm");
-  const currentUser = useCurrentUser();
-  const navigateTo = useNavigateTo();
   const { profile } = useInstance();
   const { removeFilter } = useMemoFilterContext();
-  const pathname = useMemo(() => location.pathname, [location.pathname]);
+  const { pathname } = location;
   const prevPathname = usePrevious(pathname);
 
   useEffect(() => {
-    if (!currentUser) {
-      if (pathname === ROUTES.ROOT) {
-        navigateTo(ROUTES.EXPLORE);
-      } else {
-        redirectOnAuthFailure();
-      }
-    }
-  }, [currentUser, pathname, navigateTo]);
-
-  useEffect(() => {
-    // When the route changes and there is no filter in the search params, remove all filters
+    // When the route changes and there is no filter in the search params, remove all filters.
     if (prevPathname !== pathname && !searchParams.has("filter")) {
       removeFilter(() => true);
     }

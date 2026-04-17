@@ -44,6 +44,10 @@ jobs:
         working-directory: web
         run: pnpm lint
 
+      - name: Run unit tests
+        working-directory: web
+        run: pnpm test
+
   build:
     name: Build
     runs-on: ubuntu-latest

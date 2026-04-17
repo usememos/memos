@@ -42,7 +42,7 @@ export const Tag: React.FC<TagProps> = ({ "data-tag": dataTag, children, classNa
 
     // If the tag is clicked in a memo detail page, we should navigate to the memo list page.
     if (location.pathname.startsWith("/m")) {
-      const pathname = parentPage || Routes.ROOT;
+      const pathname = parentPage || Routes.ENTRY;
       const searchParams = new URLSearchParams();
 
       searchParams.set("filter", stringifyFilters([{ factor: "tagSearch", value: tag }]));
