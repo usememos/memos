@@ -105,7 +105,13 @@ export const BackdatePopover: FC = () => {
   const [open, setOpen] = useState(false);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const date = new Date(e.target.value);
+    const value = e.target.value;
+    if (!value) return;
+    // Parse datetime-local value (YYYY-MM-DDTHH:mm) as local time explicitly
+    const [datePart, timePart] = value.split("T");
+    const [year, month, day] = datePart.split("-").map(Number);
+    const [hours, minutes] = timePart.split(":").map(Number);
+    const date = new Date(year, month - 1, day, hours, minutes);
     if (!Number.isNaN(date.getTime())) {
       dispatch(actions.setTimestamps({ createTime: date }));
     }
