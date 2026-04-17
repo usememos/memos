@@ -154,7 +154,8 @@
       "trigger": "Audio aufnehmen",
       "unsupported": "Audioaufnahme wird nicht unterstützt",
       "unsupported-description": "Dieser Browser kann keine Audiodaten vom Memo Composer aufzeichnen."
-    }
+    },
+    "set-creation-date": "Erstellungsdatum festlegen"
   },
   "inbox": {
     "failed-to-load": "Fehler beim Laden des Eintrags",

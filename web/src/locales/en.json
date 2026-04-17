@@ -198,7 +198,8 @@
       "trigger": "Record audio",
       "unsupported": "Audio recording unsupported",
       "unsupported-description": "This browser cannot record audio from the memo composer."
-    }
+    },
+    "set-creation-date": "Set creation date"
   },
   "inbox": {
     "failed-to-load": "Failed to load inbox item",
