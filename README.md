@@ -52,6 +52,7 @@ Open-source, self-hosted note-taking tool built for quick capture. Markdown-nati
 ## Features
 
 - **Instant Capture** — Timeline-first UI. Open, write, done — no folders to navigate.
+- **Backdate Memos** — Set a custom creation date when writing a new memo to place it anywhere on your timeline — perfect for journaling, importing old notes, or filling in past events.
 - **Total Data Ownership** — Self-hosted on your infrastructure. Notes stored in Markdown, always portable. Zero telemetry.
 - **Radical Simplicity** — Single Go binary, ~20MB Docker image. One command to deploy with SQLite, MySQL, or PostgreSQL.
 - **Open & Extensible** — MIT-licensed with full REST and gRPC APIs for integration.
