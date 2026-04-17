@@ -49,7 +49,7 @@ const MemoCommentListView: React.FC = () => {
             to={`/${memo.name}#comments`}
             className="flex items-center gap-0.5 text-xs text-muted-foreground/80 hover:underline underline-offset-2 transition-colors"
           >
-            View all
+            {t("memo.comment.view-all")}
             <ArrowUpRightIcon className="w-3 h-3" />
           </Link>
         )}

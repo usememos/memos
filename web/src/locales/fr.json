@@ -175,7 +175,8 @@
     "code": "Code",
     "comment": {
       "self": "Commentaires",
-      "write-a-comment": "Écrire un commentaire"
+      "write-a-comment": "Écrire un commentaire",
+      "view-all": "View all"
     },
     "copy-content": "Copier le contenu",
     "copy-link": "Copier le lien",

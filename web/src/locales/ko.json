@@ -175,7 +175,8 @@
     "code": "코드",
     "comment": {
       "self": "댓글",
-      "write-a-comment": "댓글 작성"
+      "write-a-comment": "댓글 작성",
+      "view-all": "View all"
     },
     "copy-content": "콘텐츠 복사",
     "copy-link": "링크 복사",

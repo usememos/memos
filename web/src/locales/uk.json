@@ -175,7 +175,8 @@
     "code": "Код",
     "comment": {
       "self": "Коментарі",
-      "write-a-comment": "Напишіть коментар"
+      "write-a-comment": "Напишіть коментар",
+      "view-all": "View all"
     },
     "copy-content": "Копіювати вміст",
     "copy-link": "Скопіювати посилання",

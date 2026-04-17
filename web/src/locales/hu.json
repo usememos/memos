@@ -175,7 +175,8 @@
     "code": "Kód",
     "comment": {
       "self": "Hozzászólások",
-      "write-a-comment": "Írj hozzászólást"
+      "write-a-comment": "Írj hozzászólást",
+      "view-all": "View all"
     },
     "copy-content": "Tartalom másolása",
     "copy-link": "Hivatkozás másolása",

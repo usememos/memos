@@ -175,7 +175,8 @@
     "code": "Kode",
     "comment": {
       "self": "Kommentarer",
-      "write-a-comment": "Skriv en kommentar"
+      "write-a-comment": "Skriv en kommentar",
+      "view-all": "View all"
     },
     "copy-content": "Kopier innhold",
     "copy-link": "Kopier link",

@@ -175,7 +175,8 @@
     "code": "კოდი",
     "comment": {
       "self": "კომენტარები",
-      "write-a-comment": "კომენტარის დაწერა"
+      "write-a-comment": "კომენტარის დაწერა",
+      "view-all": "View all"
     },
     "copy-content": "კონტენტის კოპირება",
     "copy-link": "ლინკის კოპირება",

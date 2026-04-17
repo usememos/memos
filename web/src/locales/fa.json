@@ -175,7 +175,8 @@
     "code": "کد",
     "comment": {
       "self": "نظرات",
-      "write-a-comment": "یک نظر بنویسید"
+      "write-a-comment": "یک نظر بنویسید",
+      "view-all": "View all"
     },
     "copy-content": "کپی محتوا",
     "copy-link": "کپی پیوند",

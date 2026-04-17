@@ -186,7 +186,8 @@
     "code": "代码",
     "comment": {
       "self": "评论",
-      "write-a-comment": "写评论"
+      "write-a-comment": "写评论",
+      "view-all": "View all"
     },
     "copy-content": "复制内容",
     "copy-link": "复制链接",

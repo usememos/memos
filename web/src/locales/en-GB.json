@@ -224,7 +224,8 @@
     "code": "Code",
     "comment": {
       "self": "Comments",
-      "write-a-comment": "Write a comment"
+      "write-a-comment": "Write a comment",
+      "view-all": "View all"
     },
     "copy-content": "Copy Content",
     "copy-link": "Copy Link",

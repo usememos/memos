@@ -175,7 +175,8 @@
     "code": "Codi",
     "comment": {
       "self": "Comentaris",
-      "write-a-comment": "Escriu un comentari"
+      "write-a-comment": "Escriu un comentari",
+      "view-all": "View all"
     },
     "copy-content": "Copia el contingut",
     "copy-link": "Copia l'enllaç",

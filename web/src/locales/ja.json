@@ -171,7 +171,8 @@
     "code": "コード",
     "comment": {
       "self": "コメント",
-      "write-a-comment": "コメントを書く"
+      "write-a-comment": "コメントを書く",
+      "view-all": "View all"
     },
     "copy-content": "コンテンツをコピー",
     "copy-link": "リンクをコピー",

@@ -180,7 +180,8 @@
     "code": "Kod",
     "comment": {
       "self": "Yorumlar",
-      "write-a-comment": "Yorum yaz"
+      "write-a-comment": "Yorum yaz",
+      "view-all": "View all"
     },
     "copy-content": "İçeriği kopyala",
     "copy-link": "Bağlantıyı Kopyala",

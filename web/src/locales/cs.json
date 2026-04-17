@@ -175,7 +175,8 @@
     "code": "Kód",
     "comment": {
       "self": "Komentáře",
-      "write-a-comment": "Napsat komentář"
+      "write-a-comment": "Napsat komentář",
+      "view-all": "View all"
     },
     "copy-content": "Kopírovat obsah",
     "copy-link": "Kopírovat odkaz",
