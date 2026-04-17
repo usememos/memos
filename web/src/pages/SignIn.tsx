@@ -8,7 +8,6 @@ import { Separator } from "@/components/ui/separator";
 import { identityProviderServiceClient } from "@/connect";
 import { useInstance } from "@/contexts/InstanceContext";
 import { absolutifyLink } from "@/helpers/utils";
-import useCurrentUser from "@/hooks/useCurrentUser";
 import { handleError } from "@/lib/error";
 import { ROUTES } from "@/router/routes";
 import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service_pb";
@@ -18,19 +17,11 @@ import { storeOAuthState } from "@/utils/oauth";
 
 const SignIn = () => {
   const t = useTranslate();
-  const currentUser = useCurrentUser();
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
   const { generalSetting: instanceGeneralSetting } = useInstance();
   const [searchParams] = useSearchParams();
   const redirectTarget = getSafeRedirectPath(searchParams.get(AUTH_REDIRECT_PARAM));
   const signUpPath = searchParams.toString() ? `${ROUTES.AUTH}/signup?${searchParams.toString()}` : `${ROUTES.AUTH}/signup`;
-
-  // Redirect to root page if already signed in.
-  useEffect(() => {
-    if (currentUser?.name) {
-      window.location.href = redirectTarget || ROUTES.ROOT;
-    }
-  }, [currentUser, redirectTarget]);
 
   // Prepare identity provider list.
   useEffect(() => {

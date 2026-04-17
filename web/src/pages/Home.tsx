@@ -29,6 +29,7 @@ const Home = () => {
         orderBy={orderBy}
         filter={memoFilter}
         enabled={isInitialized}
+        showMemoEditor
       />
     </div>
   );
