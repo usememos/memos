@@ -9,6 +9,7 @@ import (
 	mcpserver "github.com/mark3labs/mcp-go/server"
 	"github.com/pkg/errors"
 
+	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
@@ -24,6 +25,11 @@ type attachmentJSON struct {
 	StorageType  string `json:"storage_type"`
 	ExternalLink string `json:"external_link,omitempty"`
 	Memo         string `json:"memo,omitempty"`
+}
+
+type attachmentListJSON struct {
+	Attachments []attachmentJSON `json:"attachments"`
+	HasMore     bool             `json:"has_more"`
 }
 
 func storeAttachmentToJSON(ctx context.Context, stores *store.Store, a *store.Attachment) (attachmentJSON, error) {
@@ -98,26 +104,34 @@ func parseAttachmentUID(name string) (string, error) {
 
 func (s *MCPService) registerAttachmentTools(mcpSrv *mcpserver.MCPServer) {
 	mcpSrv.AddTool(mcp.NewTool("list_attachments",
-		mcp.WithDescription("List attachments owned by the authenticated user. Supports pagination and optional filtering by linked memo."),
-		mcp.WithNumber("page_size", mcp.Description("Maximum attachments to return (1–100, default 20)")),
-		mcp.WithNumber("page", mcp.Description("Zero-based page index (default 0)")),
-		mcp.WithString("memo", mcp.Description(`Filter by linked memo resource name, e.g. "memos/abc123"`)),
+		readOnlyToolOptions("List attachments", "List attachments owned by the authenticated user. Supports pagination and optional filtering by linked memo.",
+			mcp.WithNumber("page_size", mcp.Description("Maximum attachments to return (1–100, default 20)")),
+			mcp.WithNumber("page", mcp.Description("Zero-based page index (default 0)")),
+			mcp.WithString("memo", mcp.Description(`Filter by linked memo resource name, e.g. "memos/abc123"`)),
+			mcp.WithOutputSchema[attachmentListJSON](),
+		)...,
 	), s.handleListAttachments)
 
 	mcpSrv.AddTool(mcp.NewTool("get_attachment",
-		mcp.WithDescription("Get a single attachment's metadata by resource name. Requires authentication."),
-		mcp.WithString("name", mcp.Required(), mcp.Description(`Attachment resource name, e.g. "attachments/abc123"`)),
+		readOnlyToolOptions("Get attachment", "Get a single attachment's metadata by resource name. Requires authentication.",
+			mcp.WithString("name", mcp.Required(), mcp.Description(`Attachment resource name, e.g. "attachments/abc123"`)),
+			mcp.WithOutputSchema[attachmentJSON](),
+		)...,
 	), s.handleGetAttachment)
 
 	mcpSrv.AddTool(mcp.NewTool("delete_attachment",
-		mcp.WithDescription("Permanently delete an attachment and its stored file. Requires authentication and ownership."),
-		mcp.WithString("name", mcp.Required(), mcp.Description(`Attachment resource name, e.g. "attachments/abc123"`)),
+		updateToolOptions("Delete attachment", "Permanently delete an attachment and its stored file. Requires authentication and ownership.",
+			mcp.WithString("name", mcp.Required(), mcp.Description(`Attachment resource name, e.g. "attachments/abc123"`)),
+			mcp.WithOutputSchema[deletedJSON](),
+		)...,
 	), s.handleDeleteAttachment)
 
 	mcpSrv.AddTool(mcp.NewTool("link_attachment_to_memo",
-		mcp.WithDescription("Link an existing attachment to a memo. Requires authentication and ownership of the attachment."),
-		mcp.WithString("name", mcp.Required(), mcp.Description(`Attachment resource name, e.g. "attachments/abc123"`)),
-		mcp.WithString("memo", mcp.Required(), mcp.Description(`Memo resource name, e.g. "memos/abc123"`)),
+		createToolOptions("Link attachment to memo", "Link an existing attachment to a memo. Requires authentication and ownership of the attachment.", true,
+			mcp.WithString("name", mcp.Required(), mcp.Description(`Attachment resource name, e.g. "attachments/abc123"`)),
+			mcp.WithString("memo", mcp.Required(), mcp.Description(`Memo resource name, e.g. "memos/abc123"`)),
+			mcp.WithOutputSchema[attachmentJSON](),
+		)...,
 	), s.handleLinkAttachmentToMemo)
 }
 
@@ -189,15 +203,7 @@ func (s *MCPService) handleListAttachments(ctx context.Context, req mcp.CallTool
 		results[i] = result
 	}
 
-	type listResponse struct {
-		Attachments []attachmentJSON `json:"attachments"`
-		HasMore     bool             `json:"has_more"`
-	}
-	out, err := marshalJSON(listResponse{Attachments: results, HasMore: hasMore})
-	if err != nil {
-		return nil, err
-	}
-	return mcp.NewToolResultText(out), nil
+	return newToolResultJSON(attachmentListJSON{Attachments: results, HasMore: hasMore})
 }
 
 func (s *MCPService) handleGetAttachment(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -224,16 +230,11 @@ func (s *MCPService) handleGetAttachment(ctx context.Context, req mcp.CallToolRe
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve attachment creator: %v", err)), nil
 	}
-	out, err := marshalJSON(result)
-	if err != nil {
-		return nil, err
-	}
-	return mcp.NewToolResultText(out), nil
+	return newToolResultJSON(result)
 }
 
 func (s *MCPService) handleDeleteAttachment(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	userID, err := extractUserID(ctx)
-	if err != nil {
+	if _, err := extractUserID(ctx); err != nil {
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
@@ -242,18 +243,10 @@ func (s *MCPService) handleDeleteAttachment(ctx context.Context, req mcp.CallToo
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
-	attachment, err := s.store.GetAttachment(ctx, &store.FindAttachment{UID: &uid, CreatorID: &userID})
-	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to find attachment: %v", err)), nil
-	}
-	if attachment == nil {
-		return mcp.NewToolResultError("attachment not found"), nil
-	}
-
-	if err := s.store.DeleteAttachment(ctx, &store.DeleteAttachment{ID: attachment.ID}); err != nil {
+	if _, err := s.apiV1Service.DeleteAttachment(ctx, &v1pb.DeleteAttachmentRequest{Name: "attachments/" + uid}); err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to delete attachment: %v", err)), nil
 	}
-	return mcp.NewToolResultText(`{"deleted":true}`), nil
+	return newDeletedToolResult()
 }
 
 func (s *MCPService) handleLinkAttachmentToMemo(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -293,9 +286,30 @@ func (s *MCPService) handleLinkAttachmentToMemo(ctx context.Context, req mcp.Cal
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
-	if err := s.store.UpdateAttachment(ctx, &store.UpdateAttachment{
-		ID:     attachment.ID,
-		MemoID: &memo.ID,
+	currentAttachments, err := s.store.ListAttachments(ctx, &store.FindAttachment{MemoID: &memo.ID})
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to list memo attachments: %v", err)), nil
+	}
+	requestAttachments := make([]*v1pb.Attachment, 0, len(currentAttachments)+1)
+	var currentTarget *store.Attachment
+	for _, current := range currentAttachments {
+		requestAttachments = append(requestAttachments, &v1pb.Attachment{Name: "attachments/" + current.UID})
+		if current.ID == attachment.ID {
+			currentTarget = current
+		}
+	}
+	if currentTarget != nil {
+		result, err := storeAttachmentToJSON(ctx, s.store, currentTarget)
+		if err != nil {
+			return mcp.NewToolResultError(fmt.Sprintf("failed to resolve attachment creator: %v", err)), nil
+		}
+		return newToolResultJSON(result)
+	}
+	requestAttachments = append(requestAttachments, &v1pb.Attachment{Name: "attachments/" + uid})
+
+	if _, err := s.apiV1Service.SetMemoAttachments(ctx, &v1pb.SetMemoAttachmentsRequest{
+		Name:        "memos/" + memoUID,
+		Attachments: requestAttachments,
 	}); err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to link attachment: %v", err)), nil
 	}
@@ -309,9 +323,5 @@ func (s *MCPService) handleLinkAttachmentToMemo(ctx context.Context, req mcp.Cal
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve attachment creator: %v", err)), nil
 	}
-	out, err := marshalJSON(result)
-	if err != nil {
-		return nil, err
-	}
-	return mcp.NewToolResultText(out), nil
+	return newToolResultJSON(result)
 }

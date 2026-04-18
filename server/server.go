@@ -89,7 +89,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	}
 
 	// Register MCP server.
-	mcpService := mcprouter.NewMCPService(s.Profile, s.Store, s.Secret)
+	mcpService := mcprouter.NewMCPService(s.Profile, s.Store, s.Secret, apiV1Service)
 	mcpService.RegisterRoutes(echoServer)
 
 	return s, nil

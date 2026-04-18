@@ -7,6 +7,7 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 	mcpserver "github.com/mark3labs/mcp-go/server"
 
+	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
 )
@@ -19,24 +20,29 @@ type relationJSON struct {
 
 func (s *MCPService) registerRelationTools(mcpSrv *mcpserver.MCPServer) {
 	mcpSrv.AddTool(mcp.NewTool("list_memo_relations",
-		mcp.WithDescription("List all relations (references and comments) for a memo. Requires read access to the memo."),
-		mcp.WithString("name", mcp.Required(), mcp.Description(`Memo resource name, e.g. "memos/abc123"`)),
-		mcp.WithString("type",
-			mcp.Enum("REFERENCE", "COMMENT"),
-			mcp.Description("Filter by relation type (optional)"),
-		),
+		readOnlyToolOptions("List memo relations", "List all relations (references and comments) for a memo. Requires read access to the memo.",
+			mcp.WithString("name", mcp.Required(), mcp.Description(`Memo resource name, e.g. "memos/abc123"`)),
+			mcp.WithString("type",
+				mcp.Enum("REFERENCE", "COMMENT"),
+				mcp.Description("Filter by relation type (optional)"),
+			),
+		)...,
 	), s.handleListMemoRelations)
 
 	mcpSrv.AddTool(mcp.NewTool("create_memo_relation",
-		mcp.WithDescription("Create a reference relation between two memos. Requires authentication. For comments, use create_memo_comment instead."),
-		mcp.WithString("name", mcp.Required(), mcp.Description(`Source memo resource name, e.g. "memos/abc123"`)),
-		mcp.WithString("related_memo", mcp.Required(), mcp.Description(`Target memo resource name, e.g. "memos/def456"`)),
+		createToolOptions("Create memo relation", "Create a reference relation between two memos. Requires authentication. For comments, use create_memo_comment instead.", true,
+			mcp.WithString("name", mcp.Required(), mcp.Description(`Source memo resource name, e.g. "memos/abc123"`)),
+			mcp.WithString("related_memo", mcp.Required(), mcp.Description(`Target memo resource name, e.g. "memos/def456"`)),
+			mcp.WithOutputSchema[relationJSON](),
+		)...,
 	), s.handleCreateMemoRelation)
 
 	mcpSrv.AddTool(mcp.NewTool("delete_memo_relation",
-		mcp.WithDescription("Delete a reference relation between two memos. Requires authentication and ownership of the source memo."),
-		mcp.WithString("name", mcp.Required(), mcp.Description(`Source memo resource name, e.g. "memos/abc123"`)),
-		mcp.WithString("related_memo", mcp.Required(), mcp.Description(`Target memo resource name, e.g. "memos/def456"`)),
+		updateToolOptions("Delete memo relation", "Delete a reference relation between two memos. Requires authentication and ownership of the source memo.",
+			mcp.WithString("name", mcp.Required(), mcp.Description(`Source memo resource name, e.g. "memos/abc123"`)),
+			mcp.WithString("related_memo", mcp.Required(), mcp.Description(`Target memo resource name, e.g. "memos/def456"`)),
+			mcp.WithOutputSchema[deletedJSON](),
+		)...,
 	), s.handleDeleteMemoRelation)
 }
 
@@ -113,11 +119,7 @@ func (s *MCPService) handleListMemoRelations(ctx context.Context, req mcp.CallTo
 		})
 	}
 
-	out, err := marshalJSON(results)
-	if err != nil {
-		return nil, err
-	}
-	return mcp.NewToolResultText(out), nil
+	return newToolResultJSON(results)
 }
 
 func (s *MCPService) handleCreateMemoRelation(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -133,6 +135,9 @@ func (s *MCPService) handleCreateMemoRelation(ctx context.Context, req mcp.CallT
 	dstUID, err := parseMemoUID(req.GetString("related_memo", ""))
 	if err != nil {
 		return mcp.NewToolResultError(err.Error()), nil
+	}
+	if srcUID == dstUID {
+		return mcp.NewToolResultError("cannot create a relation from a memo to itself"), nil
 	}
 
 	srcMemo, err := s.store.GetMemo(ctx, &store.FindMemo{UID: &srcUID})
@@ -157,24 +162,24 @@ func (s *MCPService) handleCreateMemoRelation(ctx context.Context, req mcp.CallT
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
-	relation, err := s.store.UpsertMemoRelation(ctx, &store.MemoRelation{
-		MemoID:        srcMemo.ID,
-		RelatedMemoID: dstMemo.ID,
-		Type:          store.MemoRelationReference,
-	})
+	relations, changed, err := s.buildReferenceRelationSet(ctx, srcMemo, &dstMemo.UID, nil)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to create relation: %v", err)), nil
+		return mcp.NewToolResultError(fmt.Sprintf("failed to build relation set: %v", err)), nil
+	}
+	if changed {
+		if _, err := s.apiV1Service.SetMemoRelations(ctx, &v1pb.SetMemoRelationsRequest{
+			Name:      "memos/" + srcUID,
+			Relations: relations,
+		}); err != nil {
+			return mcp.NewToolResultError(fmt.Sprintf("failed to create relation: %v", err)), nil
+		}
 	}
 
-	out, err := marshalJSON(relationJSON{
+	return newToolResultJSON(relationJSON{
 		Memo:        "memos/" + srcUID,
 		RelatedMemo: "memos/" + dstUID,
-		Type:        string(relation.Type),
+		Type:        string(store.MemoRelationReference),
 	})
-	if err != nil {
-		return nil, err
-	}
-	return mcp.NewToolResultText(out), nil
 }
 
 func (s *MCPService) handleDeleteMemoRelation(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -214,13 +219,79 @@ func (s *MCPService) handleDeleteMemoRelation(ctx context.Context, req mcp.CallT
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
-	refType := store.MemoRelationReference
-	if err := s.store.DeleteMemoRelation(ctx, &store.DeleteMemoRelation{
-		MemoID:        &srcMemo.ID,
-		RelatedMemoID: &dstMemo.ID,
-		Type:          &refType,
-	}); err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to delete relation: %v", err)), nil
+	relations, changed, err := s.buildReferenceRelationSet(ctx, srcMemo, nil, &dstMemo.UID)
+	if err != nil {
+		return mcp.NewToolResultError(fmt.Sprintf("failed to build relation set: %v", err)), nil
 	}
-	return mcp.NewToolResultText(`{"deleted":true}`), nil
+	if changed {
+		if _, err := s.apiV1Service.SetMemoRelations(ctx, &v1pb.SetMemoRelationsRequest{
+			Name:      "memos/" + srcUID,
+			Relations: relations,
+		}); err != nil {
+			return mcp.NewToolResultError(fmt.Sprintf("failed to delete relation: %v", err)), nil
+		}
+	}
+	return newDeletedToolResult()
+}
+
+func (s *MCPService) buildReferenceRelationSet(ctx context.Context, source *store.Memo, includeUID *string, excludeUID *string) ([]*v1pb.MemoRelation, bool, error) {
+	referenceType := store.MemoRelationReference
+	relations, err := s.store.ListMemoRelations(ctx, &store.FindMemoRelation{
+		MemoIDList: []int32{source.ID},
+		Type:       &referenceType,
+	})
+	if err != nil {
+		return nil, false, err
+	}
+
+	idSet := make(map[int32]struct{}, len(relations))
+	for _, relation := range relations {
+		idSet[relation.RelatedMemoID] = struct{}{}
+	}
+	ids := make([]int32, 0, len(idSet))
+	for id := range idSet {
+		ids = append(ids, id)
+	}
+
+	memosByID := map[int32]*store.Memo{}
+	if len(ids) > 0 {
+		memos, err := s.store.ListMemos(ctx, &store.FindMemo{IDList: ids, ExcludeContent: true})
+		if err != nil {
+			return nil, false, err
+		}
+		for _, memo := range memos {
+			memosByID[memo.ID] = memo
+		}
+	}
+
+	result := make([]*v1pb.MemoRelation, 0, len(relations)+1)
+	seenUIDs := map[string]struct{}{}
+	changed := false
+	for _, relation := range relations {
+		relatedMemo := memosByID[relation.RelatedMemoID]
+		if relatedMemo == nil {
+			continue
+		}
+		if excludeUID != nil && relatedMemo.UID == *excludeUID {
+			changed = true
+			continue
+		}
+		result = append(result, newReferenceRelation(source.UID, relatedMemo.UID))
+		seenUIDs[relatedMemo.UID] = struct{}{}
+	}
+	if includeUID != nil {
+		if _, seen := seenUIDs[*includeUID]; !seen && source.UID != *includeUID {
+			result = append(result, newReferenceRelation(source.UID, *includeUID))
+			changed = true
+		}
+	}
+	return result, changed, nil
+}
+
+func newReferenceRelation(sourceUID string, relatedUID string) *v1pb.MemoRelation {
+	return &v1pb.MemoRelation{
+		Memo:        &v1pb.MemoRelation_Memo{Name: "memos/" + sourceUID},
+		RelatedMemo: &v1pb.MemoRelation_Memo{Name: "memos/" + relatedUID},
+		Type:        v1pb.MemoRelation_REFERENCE,
+	}
 }
