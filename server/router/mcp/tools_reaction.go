@@ -7,6 +7,7 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 	mcpserver "github.com/mark3labs/mcp-go/server"
 
+	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
 )
@@ -20,19 +21,24 @@ type reactionJSON struct {
 
 func (s *MCPService) registerReactionTools(mcpSrv *mcpserver.MCPServer) {
 	mcpSrv.AddTool(mcp.NewTool("list_reactions",
-		mcp.WithDescription("List all reactions on a memo. Returns reaction type and creator for each reaction."),
-		mcp.WithString("name", mcp.Required(), mcp.Description(`Memo resource name, e.g. "memos/abc123"`)),
+		readOnlyToolOptions("List reactions", "List all reactions on a memo. Returns reaction type and creator for each reaction.",
+			mcp.WithString("name", mcp.Required(), mcp.Description(`Memo resource name, e.g. "memos/abc123"`)),
+		)...,
 	), s.handleListReactions)
 
 	mcpSrv.AddTool(mcp.NewTool("upsert_reaction",
-		mcp.WithDescription("Add a reaction (emoji) to a memo. If the same reaction already exists from the same user, this is a no-op. Requires authentication."),
-		mcp.WithString("name", mcp.Required(), mcp.Description(`Memo resource name, e.g. "memos/abc123"`)),
-		mcp.WithString("reaction_type", mcp.Required(), mcp.Description(`Reaction emoji, e.g. "👍", "❤️", "🎉"`)),
+		createToolOptions("Upsert reaction", "Add a reaction (emoji) to a memo. If the same reaction already exists from the same user, this is a no-op. Requires authentication.", true,
+			mcp.WithString("name", mcp.Required(), mcp.Description(`Memo resource name, e.g. "memos/abc123"`)),
+			mcp.WithString("reaction_type", mcp.Required(), mcp.Description(`Reaction emoji, e.g. "👍", "❤️", "🎉"`)),
+			mcp.WithOutputSchema[reactionJSON](),
+		)...,
 	), s.handleUpsertReaction)
 
 	mcpSrv.AddTool(mcp.NewTool("delete_reaction",
-		mcp.WithDescription("Remove a reaction by its ID. Requires authentication and ownership of the reaction."),
-		mcp.WithNumber("id", mcp.Required(), mcp.Description("Reaction ID to delete")),
+		updateToolOptions("Delete reaction", "Remove a reaction by its ID. Requires authentication and ownership of the reaction.",
+			mcp.WithNumber("id", mcp.Required(), mcp.Description("Reaction ID to delete")),
+			mcp.WithOutputSchema[deletedJSON](),
+		)...,
 	), s.handleDeleteReaction)
 }
 
@@ -83,11 +89,7 @@ func (s *MCPService) handleListReactions(ctx context.Context, req mcp.CallToolRe
 		}
 	}
 
-	out, err := marshalJSON(results)
-	if err != nil {
-		return nil, err
-	}
-	return mcp.NewToolResultText(out), nil
+	return newToolResultJSON(results)
 }
 
 func (s *MCPService) handleUpsertReaction(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -133,34 +135,26 @@ func (s *MCPService) handleUpsertReaction(ctx context.Context, req mcp.CallToolR
 	}
 
 	contentID := "memos/" + uid
-	reaction, err := s.store.UpsertReaction(ctx, &store.Reaction{
-		CreatorID:    userID,
-		ContentID:    contentID,
-		ReactionType: reactionType,
+	reaction, err := s.apiV1Service.UpsertMemoReaction(ctx, &v1pb.UpsertMemoReactionRequest{
+		Name: contentID,
+		Reaction: &v1pb.Reaction{
+			ContentId:    contentID,
+			ReactionType: reactionType,
+		},
 	})
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to upsert reaction: %v", err)), nil
 	}
 
-	creator, err := lookupUsername(ctx, s.store, reaction.CreatorID)
+	result, err := s.loadReactionJSONByName(ctx, reaction.Name)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve reaction creator: %v", err)), nil
+		return mcp.NewToolResultError(err.Error()), nil
 	}
-	out, err := marshalJSON(reactionJSON{
-		ID:           reaction.ID,
-		Creator:      creator,
-		ReactionType: reaction.ReactionType,
-		CreateTime:   reaction.CreatedTs,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return mcp.NewToolResultText(out), nil
+	return newToolResultJSON(result)
 }
 
 func (s *MCPService) handleDeleteReaction(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	userID, err := extractUserID(ctx)
-	if err != nil {
+	if _, err := extractUserID(ctx); err != nil {
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
@@ -176,12 +170,11 @@ func (s *MCPService) handleDeleteReaction(ctx context.Context, req mcp.CallToolR
 	if reaction == nil {
 		return mcp.NewToolResultError("reaction not found"), nil
 	}
-	if reaction.CreatorID != userID {
-		return mcp.NewToolResultError("permission denied: can only delete your own reactions"), nil
-	}
 
-	if err := s.store.DeleteReaction(ctx, &store.DeleteReaction{ID: reactionID}); err != nil {
+	if _, err := s.apiV1Service.DeleteMemoReaction(ctx, &v1pb.DeleteMemoReactionRequest{
+		Name: fmt.Sprintf("%s/reactions/%d", reaction.ContentID, reactionID),
+	}); err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to delete reaction: %v", err)), nil
 	}
-	return mcp.NewToolResultText(`{"deleted":true}`), nil
+	return newDeletedToolResult()
 }
