@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
@@ -106,6 +107,13 @@ func (s *Server) Start(ctx context.Context) error {
 	listener, err := net.Listen(network, address)
 	if err != nil {
 		return errors.Wrap(err, "failed to listen")
+	}
+
+	if network == "unix" {
+		if err := os.Chmod(address, 0660); err != nil {
+			_ = listener.Close()
+			return errors.Wrap(err, "failed to chmod socket")
+		}
 	}
 
 	// Start Echo server directly (no cmux needed - all traffic is HTTP).
