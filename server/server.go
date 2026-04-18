@@ -111,7 +111,7 @@ func (s *Server) Start(ctx context.Context) error {
 
 	if network == "unix" {
 		if err := os.Chmod(address, 0660); err != nil {
-			listener.Close()
+			_ = listener.Close()
 			return errors.Wrap(err, "failed to chmod socket")
 		}
 	}
