@@ -110,7 +110,7 @@ func (s *MCPService) RegisterRoutes(echoServer *echo.Echo) {
 	mcpGroup.Any("/mcp/x/:toolsets/readonly", echo.WrapHandler(httpHandler))
 }
 
-func (s *MCPService) withRequestConfig(ctx context.Context, r *http.Request) context.Context {
+func (*MCPService) withRequestConfig(ctx context.Context, r *http.Request) context.Context {
 	return context.WithValue(ctx, mcpRequestConfigContextKey{}, parseMCPRequestConfig(r))
 }
 

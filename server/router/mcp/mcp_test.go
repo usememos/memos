@@ -211,7 +211,7 @@ func requireToolAbsent(t *testing.T, names map[string]struct{}, name string) {
 
 func nextSSEEvent(t *testing.T, client *apiv1service.SSEClient) *apiv1service.SSEEvent {
 	t.Helper()
-	events := sseClientEvents(client)
+	events := sseClientEvents(t, client)
 	var data []byte
 	select {
 	case eventData, ok := <-events:
@@ -228,16 +228,19 @@ func nextSSEEvent(t *testing.T, client *apiv1service.SSEClient) *apiv1service.SS
 func requireNoSSEEvent(t *testing.T, client *apiv1service.SSEClient) {
 	t.Helper()
 	select {
-	case eventData, ok := <-sseClientEvents(client):
+	case eventData, ok := <-sseClientEvents(t, client):
 		require.True(t, ok, "SSE client channel closed")
 		t.Fatalf("unexpected SSE event received: %s", string(eventData))
 	case <-time.After(150 * time.Millisecond):
 	}
 }
 
-func sseClientEvents(client *apiv1service.SSEClient) <-chan []byte {
+func sseClientEvents(t *testing.T, client *apiv1service.SSEClient) <-chan []byte {
+	t.Helper()
 	field := reflect.ValueOf(client).Elem().FieldByName("events")
-	return reflect.NewAt(field.Type(), unsafe.Pointer(field.UnsafeAddr())).Elem().Interface().(chan []byte)
+	events, ok := reflect.NewAt(field.Type(), unsafe.Pointer(field.UnsafeAddr())).Elem().Interface().(chan []byte)
+	require.True(t, ok)
+	return events
 }
 
 func TestHandleGetMemoAndReadResourceDenyArchivedMemoToNonCreator(t *testing.T) {
@@ -428,9 +431,13 @@ func TestMCPToolFilteringRoutesAndHeaders(t *testing.T) {
 			"name":      "create_memo",
 			"arguments": map[string]any{"content": "blocked"},
 		})
-		result := callResponse["result"].(map[string]any)
+		result, ok := callResponse["result"].(map[string]any)
+		require.True(t, ok)
 		require.Equal(t, true, result["isError"])
-		content := result["content"].([]any)[0].(map[string]any)
+		rawContent, ok := result["content"].([]any)
+		require.True(t, ok)
+		content, ok := rawContent[0].(map[string]any)
+		require.True(t, ok)
 		require.Contains(t, content["text"], "not enabled")
 	})
 
