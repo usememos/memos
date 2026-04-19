@@ -143,7 +143,7 @@ func ValidateAndGenerateUID(provided string) (string, error) {
 		return shortuuid.New(), nil
 	}
 	if !base.UIDMatcher.MatchString(uid) {
-		return "", status.Errorf(codes.InvalidArgument, "invalid ID format: must be 1-32 characters, alphanumeric and hyphens only, cannot start or end with hyphen")
+		return "", status.Errorf(codes.InvalidArgument, "invalid ID format: must be 1-36 characters, alphanumeric and hyphens only, cannot start or end with hyphen")
 	}
 	return uid, nil
 }
