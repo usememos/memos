@@ -20,7 +20,6 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/internal/base"
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/internal/webhook"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -76,8 +75,8 @@ func normalizeBatchUsernames(usernames []string) []string {
 	uniqueUsernames := make([]string, 0, len(usernames))
 	seen := make(map[string]struct{}, len(usernames))
 	for _, username := range usernames {
-		username = strings.TrimSpace(strings.ToLower(username))
-		if username == "" || !base.UIDMatcher.MatchString(username) {
+		username = strings.TrimSpace(username)
+		if validateUsername(username) != nil {
 			continue
 		}
 		if _, ok := seen[username]; ok {
@@ -177,7 +176,7 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 		roleToAssign = store.RoleUser
 	}
 
-	if !base.UIDMatcher.MatchString(strings.ToLower(request.User.Username)) {
+	if err := validateUsername(request.User.Username); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", request.User.Username)
 	}
 
@@ -254,7 +253,7 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 			if instanceGeneralSetting.DisallowChangeUsername {
 				return nil, status.Errorf(codes.PermissionDenied, "permission denied: disallow change username")
 			}
-			if !base.UIDMatcher.MatchString(strings.ToLower(request.User.Username)) {
+			if err := validateUsername(request.User.Username); err != nil {
 				return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", request.User.Username)
 			}
 			update.Username = &request.User.Username

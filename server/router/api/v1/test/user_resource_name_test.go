@@ -44,6 +44,62 @@ func TestUserResourceName(t *testing.T) {
 		require.Equal(t, "users/newuser", created.Name)
 	})
 
+	t.Run("Mixed-case username remains usable after auth", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "Gnammi")
+		require.NoError(t, err)
+
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+		currentUser, err := ts.Service.GetCurrentUser(userCtx, &apiv1.GetCurrentUserRequest{})
+		require.NoError(t, err)
+		require.NotNil(t, currentUser.GetUser())
+		require.Equal(t, "users/Gnammi", currentUser.GetUser().Name)
+
+		settings, err := ts.Service.ListUserSettings(userCtx, &apiv1.ListUserSettingsRequest{
+			Parent: currentUser.GetUser().Name,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, settings)
+
+		shortcuts, err := ts.Service.ListShortcuts(userCtx, &apiv1.ListShortcutsRequest{
+			Parent: currentUser.GetUser().Name,
+		})
+		require.NoError(t, err)
+		require.NotNil(t, shortcuts)
+	})
+
+	t.Run("BatchGetUsers preserves mixed-case usernames", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "Gnammi")
+		require.NoError(t, err)
+
+		resp, err := ts.Service.BatchGetUsers(ctx, &apiv1.BatchGetUsersRequest{
+			Usernames: []string{user.Username},
+		})
+		require.NoError(t, err)
+		require.Len(t, resp.Users, 1)
+		require.Equal(t, "users/Gnammi", resp.Users[0].Name)
+	})
+
+	t.Run("CreateUser rejects all-numeric usernames", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		_, err := ts.Service.CreateUser(ctx, &apiv1.CreateUserRequest{
+			User: &apiv1.User{
+				Username: "123",
+				Email:    "123@example.com",
+				Password: "password123",
+			},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "invalid username")
+	})
+
 	t.Run("GetUser rejects numeric user resource names", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()

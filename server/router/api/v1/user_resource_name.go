@@ -2,8 +2,6 @@ package v1
 
 import (
 	"context"
-	"strconv"
-	"strings"
 
 	"github.com/pkg/errors"
 
@@ -26,13 +24,29 @@ func ExtractUsernameFromName(name string) (string, error) {
 	if username == "" {
 		return "", errors.Errorf("invalid user name %q", name)
 	}
-	if _, err := strconv.ParseInt(username, 10, 32); err == nil {
-		return "", errors.Errorf("invalid username %q", username)
-	}
-	if username != strings.ToLower(username) || !base.UIDMatcher.MatchString(username) {
-		return "", errors.Errorf("invalid username %q", username)
+	if err := validateUsername(username); err != nil {
+		return "", err
 	}
 	return username, nil
+}
+
+func validateUsername(username string) error {
+	if username == "" || isNumericUsername(username) || !base.UIDMatcher.MatchString(username) {
+		return errors.Errorf("invalid username %q", username)
+	}
+	return nil
+}
+
+func isNumericUsername(username string) bool {
+	if username == "" {
+		return false
+	}
+	for _, char := range username {
+		if char < '0' || char > '9' {
+			return false
+		}
+	}
+	return true
 }
 
 // ResolveUserByName resolves a username-based user resource name to a store user.
