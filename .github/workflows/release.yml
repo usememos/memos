@@ -161,7 +161,7 @@ jobs:
 
           go build \
             -trimpath \
-            -ldflags="-s -w -X github.com/usememos/memos/internal/version.Version=${{ needs.prepare.outputs.version }} -extldflags '-static'" \
+            -ldflags="-s -w -X github.com/usememos/memos/internal/version.Version=${{ needs.prepare.outputs.version }} -X github.com/usememos/memos/internal/version.Commit=${{ github.sha }} -extldflags '-static'" \
             -tags netgo,osusergo \
             -o "build/${output_name}" \
             ./cmd/memos

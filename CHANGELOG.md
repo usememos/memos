@@ -1,12 +1,5 @@
 # Changelog
 
-## [0.27.1](https://github.com/usememos/memos/compare/v0.27.0...v0.27.1) (2026-04-19)
-
-
-### Bug Fixes
-
-* mixed-case user resource names ([#5853](https://github.com/usememos/memos/issues/5853)) ([01be01f](https://github.com/usememos/memos/commit/01be01f4b7676af41bdd1758b1e9b096aa922546))
-
 ## [0.27.0](https://github.com/usememos/memos/compare/v0.26.2...v0.27.0) (2026-04-18)
 
 

@@ -295,19 +295,27 @@ func (s *Store) seed(ctx context.Context) error {
 	return tx.Commit()
 }
 
+// GetCurrentSchemaVersion returns the latest schema version available for the configured database driver.
 func (s *Store) GetCurrentSchemaVersion() (string, error) {
-	currentVersion := version.GetCurrentVersion()
-	minorVersion := version.GetMinorVersion(currentVersion)
-	filePaths, err := fs.Glob(migrationFS, fmt.Sprintf("%s%s/*.sql", s.getMigrationBasePath(), minorVersion))
+	filePaths, err := fs.Glob(migrationFS, fmt.Sprintf("%s*/*.sql", s.getMigrationBasePath()))
 	if err != nil {
 		return "", errors.Wrap(err, "failed to read migration files")
 	}
-
-	slices.Sort(filePaths)
 	if len(filePaths) == 0 {
-		return fmt.Sprintf("%s.0", minorVersion), nil
+		return defaultSchemaVersion, nil
 	}
-	return s.getSchemaVersionOfMigrateScript(filePaths[len(filePaths)-1])
+
+	currentSchemaVersion := defaultSchemaVersion
+	for _, filePath := range filePaths {
+		fileSchemaVersion, err := s.getSchemaVersionOfMigrateScript(filePath)
+		if err != nil {
+			return "", errors.Wrap(err, "failed to get schema version of migrate script")
+		}
+		if version.IsVersionGreaterThan(fileSchemaVersion, currentSchemaVersion) {
+			currentSchemaVersion = fileSchemaVersion
+		}
+	}
+	return currentSchemaVersion, nil
 }
 
 // getSchemaVersionOfMigrateScript extracts the schema version from the migration script file path.
