@@ -71,7 +71,12 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 	return response, nil
 }
 
-// normalizeBatchUsernames trims, de-duplicates and drops invalid entries from a batch lookup input.
+// normalizeBatchUsernames trims, de-duplicates and drops invalid entries from
+// a batch lookup input.
+//
+// Filtering uses validateUsernameForResourceName so legacy SSO-provisioned
+// usernames (including email-shaped values) are preserved, matching the
+// relaxed contract used elsewhere when resolving existing resource names.
 func normalizeBatchUsernames(usernames []string) []string {
 	uniqueUsernames := make([]string, 0, len(usernames))
 	seen := make(map[string]struct{}, len(usernames))
