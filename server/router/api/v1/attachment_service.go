@@ -768,7 +768,9 @@ func (s *APIV1Service) acquireImageProcessingSlot(ctx context.Context) (func(), 
 func validateImagePixelCount(imageData []byte) error {
 	config, _, err := image.DecodeConfig(bytes.NewReader(imageData))
 	if err != nil {
-		return nil
+		// Some formats supported by imaging do not expose dimensions through
+		// the standard image registry. Let the full decoder handle those.
+		return nil //nolint:nilerr
 	}
 	if config.Width <= 0 || config.Height <= 0 {
 		return errors.New("invalid image dimensions")

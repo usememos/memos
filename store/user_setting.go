@@ -51,7 +51,7 @@ func (s *Store) UpsertUserSetting(ctx context.Context, upsert *storepb.UserSetti
 	if userSetting == nil {
 		return nil, errors.New("unexpected nil user setting")
 	}
-	s.userSettingCache.Set(ctx, getUserSettingCacheKey(userSetting.UserId, userSetting.Key.String()), userSetting)
+	s.userSettingCache.Set(ctx, getUserSettingCacheKey(userSetting.UserId, UserSettingKeyString(userSetting.Key)), userSetting)
 	return userSetting, nil
 }
 
@@ -70,7 +70,7 @@ func (s *Store) ListUserSettings(ctx context.Context, find *FindUserSetting) ([]
 		if userSetting == nil {
 			continue
 		}
-		s.userSettingCache.Set(ctx, getUserSettingCacheKey(userSetting.UserId, userSetting.Key.String()), userSetting)
+		s.userSettingCache.Set(ctx, getUserSettingCacheKey(userSetting.UserId, UserSettingKeyString(userSetting.Key)), userSetting)
 		userSettings = append(userSettings, userSetting)
 	}
 	return userSettings, nil
@@ -78,7 +78,7 @@ func (s *Store) ListUserSettings(ctx context.Context, find *FindUserSetting) ([]
 
 func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSetting) (*storepb.UserSetting, error) {
 	if find.UserID != nil {
-		if cache, ok := s.userSettingCache.Get(ctx, getUserSettingCacheKey(*find.UserID, find.Key.String())); ok {
+		if cache, ok := s.userSettingCache.Get(ctx, getUserSettingCacheKey(*find.UserID, UserSettingKeyString(find.Key))); ok {
 			userSetting, ok := cache.(*storepb.UserSetting)
 			if ok {
 				return userSetting, nil
@@ -98,7 +98,7 @@ func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSetting) (*sto
 	}
 
 	userSetting := list[0]
-	s.userSettingCache.Set(ctx, getUserSettingCacheKey(userSetting.UserId, userSetting.Key.String()), userSetting)
+	s.userSettingCache.Set(ctx, getUserSettingCacheKey(userSetting.UserId, UserSettingKeyString(userSetting.Key)), userSetting)
 	return userSetting, nil
 }
 

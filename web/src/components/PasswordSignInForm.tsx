@@ -13,17 +13,20 @@ import useNavigateTo from "@/hooks/useNavigateTo";
 import { handleError } from "@/lib/error";
 import { ROUTES } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
+import { getPasskeyErrorKey, signInWithPasskey, supportsPasskeys } from "@/utils/passkey";
 
 interface PasswordSignInFormProps {
+  allowPasswordAuth?: boolean;
   redirectPath?: string;
 }
 
-function PasswordSignInForm({ redirectPath }: PasswordSignInFormProps) {
+function PasswordSignInForm({ allowPasswordAuth = true, redirectPath }: PasswordSignInFormProps) {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const { profile } = useInstance();
   const { initialize } = useAuth();
   const actionBtnLoadingState = useLoading(false);
+  const passkeyBtnLoadingState = useLoading(false);
   const [username, setUsername] = useState(profile.demo ? "demo" : "");
   const [password, setPassword] = useState(profile.demo ? "secret" : "");
 
@@ -39,10 +42,17 @@ function PasswordSignInForm({ redirectPath }: PasswordSignInFormProps) {
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    handleSignInButtonClick();
+    if (allowPasswordAuth) {
+      handleSignInButtonClick();
+    } else {
+      handlePasskeySignInButtonClick();
+    }
   };
 
   const handleSignInButtonClick = async () => {
+    if (!allowPasswordAuth) {
+      return;
+    }
     if (username === "" || password === "") {
       return;
     }
@@ -73,6 +83,38 @@ function PasswordSignInForm({ redirectPath }: PasswordSignInFormProps) {
     actionBtnLoadingState.setFinish();
   };
 
+  const handlePasskeySignInButtonClick = async () => {
+    if (username === "") {
+      return;
+    }
+
+    if (passkeyBtnLoadingState.isLoading) {
+      return;
+    }
+
+    try {
+      passkeyBtnLoadingState.setLoading();
+      const response = await signInWithPasskey(username);
+      if (response.accessToken) {
+        setAccessToken(response.accessToken, response.accessTokenExpiresAt ? new Date(response.accessTokenExpiresAt) : undefined);
+      }
+      await initialize();
+      navigateTo(redirectPath || ROUTES.ROOT, { replace: true });
+    } catch (error: unknown) {
+      const errorKey = getPasskeyErrorKey(error, "sign-in");
+      if (errorKey) {
+        console.error(error);
+        toast.error(t(errorKey));
+        return;
+      }
+      handleError(error, toast.error, {
+        fallbackMessage: "Failed to sign in with passkey.",
+      });
+    } finally {
+      passkeyBtnLoadingState.setFinish();
+    }
+  };
+
   return (
     <form className="w-full mt-2" onSubmit={handleFormSubmit}>
       <div className="flex flex-col justify-start items-start w-full gap-4">
@@ -91,27 +133,42 @@ function PasswordSignInForm({ redirectPath }: PasswordSignInFormProps) {
             required
           />
         </div>
-        <div className="w-full flex flex-col justify-start items-start">
-          <span className="leading-8 text-muted-foreground">{t("common.password")}</span>
-          <Input
-            className="w-full bg-background h-10"
-            type="password"
-            readOnly={actionBtnLoadingState.isLoading}
-            placeholder={t("common.password")}
-            value={password}
-            autoComplete="current-password"
-            autoCapitalize="off"
-            spellCheck={false}
-            onChange={handlePasswordInputChanged}
-            required
-          />
-        </div>
+        {allowPasswordAuth && (
+          <div className="w-full flex flex-col justify-start items-start">
+            <span className="leading-8 text-muted-foreground">{t("common.password")}</span>
+            <Input
+              className="w-full bg-background h-10"
+              type="password"
+              readOnly={actionBtnLoadingState.isLoading}
+              placeholder={t("common.password")}
+              value={password}
+              autoComplete="current-password"
+              autoCapitalize="off"
+              spellCheck={false}
+              onChange={handlePasswordInputChanged}
+              required
+            />
+          </div>
+        )}
       </div>
-      <div className="flex flex-row justify-end items-center w-full mt-6">
-        <Button type="submit" className="w-full h-10" disabled={actionBtnLoadingState.isLoading} onClick={handleSignInButtonClick}>
-          {t("common.sign-in")}
-          {actionBtnLoadingState.isLoading && <LoaderIcon className="w-5 h-auto ml-2 animate-spin opacity-60" />}
+      <div className="flex flex-col justify-end items-center w-full mt-6 gap-3">
+        {allowPasswordAuth && (
+          <Button type="submit" className="w-full h-10" disabled={actionBtnLoadingState.isLoading} onClick={handleSignInButtonClick}>
+            {t("common.sign-in")}
+            {actionBtnLoadingState.isLoading && <LoaderIcon className="w-5 h-auto ml-2 animate-spin opacity-60" />}
+          </Button>
+        )}
+        <Button
+          type={allowPasswordAuth ? "button" : "submit"}
+          className="w-full h-10"
+          variant="outline"
+          disabled={passkeyBtnLoadingState.isLoading || !supportsPasskeys()}
+          onClick={handlePasskeySignInButtonClick}
+        >
+          {t("auth.sign-in-with-passkey")}
+          {passkeyBtnLoadingState.isLoading && <LoaderIcon className="w-5 h-auto ml-2 animate-spin opacity-60" />}
         </Button>
+        {!supportsPasskeys() && <p className="w-full text-sm text-muted-foreground">{t("auth.passkey-unsupported")}</p>}
       </div>
     </form>
   );
