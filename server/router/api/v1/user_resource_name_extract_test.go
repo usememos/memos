@@ -26,4 +26,7 @@ func TestExtractUsernameFromName_StillRejectsEmptyAndNumeric(t *testing.T) {
 
 	_, err = ExtractUsernameFromName("users/123")
 	require.Error(t, err)
+
+	_, err = ExtractUsernameFromName("users/abc/def")
+	require.Error(t, err)
 }
