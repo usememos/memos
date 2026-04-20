@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
+import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { describe, expect, it } from "vitest";
 import { SANITIZE_SCHEMA, isTrustedIframeSrc } from "@/components/MemoContent/constants";
@@ -28,6 +29,13 @@ const renderMemoContent = (content: string): string =>
     </ReactMarkdown>,
   );
 
+const renderGfmContent = (content: string): string =>
+  renderToStaticMarkup(
+    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[[rehypeSanitize, SANITIZE_SCHEMA]]}>
+      {content}
+    </ReactMarkdown>,
+  );
+
 describe("memo content sanitization", () => {
   it("strips user-controlled inline styles from raw HTML spans", () => {
     const html = renderMemoContent('<span style="position:fixed;inset:0;z-index:99999">overlay</span>');
@@ -42,6 +50,15 @@ describe("memo content sanitization", () => {
 
     expect(html).toMatch(/class="katex"/);
     expect(html).toMatch(/class="katex-html"/);
+  });
+
+  it("preserves checked state for GFM task list items", () => {
+    const html = renderGfmContent("- [x] Done\n- [ ] Todo");
+    const inputs = html.match(/<input[^>]+\/>/g) ?? [];
+
+    expect(inputs).toHaveLength(2);
+    expect(inputs[0]).toContain('checked=""');
+    expect(inputs[1]).not.toContain('checked=""');
   });
 });
 

@@ -1,11 +1,15 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { cacheService } from "../services";
 
 export const useAutoSave = (content: string, username: string, cacheKey: string | undefined, enabled = true) => {
   const latestContentRef = useRef(content);
+  const discardedContentRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     latestContentRef.current = content;
+    if (discardedContentRef.current !== undefined && discardedContentRef.current !== content) {
+      discardedContentRef.current = undefined;
+    }
   }, [content]);
 
   useEffect(() => {
@@ -20,6 +24,10 @@ export const useAutoSave = (content: string, username: string, cacheKey: string 
 
     const key = cacheService.key(username, cacheKey);
     const flushDraft = () => {
+      if (discardedContentRef.current === latestContentRef.current) {
+        return;
+      }
+
       cacheService.saveNow(key, latestContentRef.current);
     };
     const handleVisibilityChange = () => {
@@ -39,4 +47,12 @@ export const useAutoSave = (content: string, username: string, cacheKey: string 
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [username, cacheKey, enabled]);
+
+  const discardDraft = useCallback(() => {
+    const key = cacheService.key(username, cacheKey);
+    discardedContentRef.current = latestContentRef.current;
+    cacheService.clear(key);
+  }, [username, cacheKey]);
+
+  return { discardDraft };
 };
