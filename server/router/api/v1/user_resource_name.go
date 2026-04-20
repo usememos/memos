@@ -25,8 +25,6 @@ func ExtractUsernameFromName(name string) (string, error) {
 	if username == "" {
 		return "", errors.Errorf("invalid user name %q", name)
 	}
-	// SSO may persist Identifier (often an email) as Username without going through
-	// validateUsername (see auth_service). Resource names must still resolve those rows.
 	if err := validateUsernameForResourceName(username); err != nil {
 		return "", err
 	}
@@ -40,17 +38,8 @@ func validateUsername(username string) error {
 	return nil
 }
 
-// validateUsernameForResourceName validates the username segment when parsing a
-// resource name (e.g. users/<username>). Rules are looser than validateUsername so
-// legacy SSO users stored with an email-shaped username remain addressable.
 func validateUsernameForResourceName(username string) error {
-	if username == "" {
-		return errors.Errorf("invalid username %q", username)
-	}
-	if isNumericUsername(username) {
-		return errors.Errorf("invalid username %q", username)
-	}
-	if strings.Contains(username, "/") {
+	if username == "" || isNumericUsername(username) || strings.Contains(username, "/") {
 		return errors.Errorf("invalid username %q", username)
 	}
 	return nil

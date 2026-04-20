@@ -76,7 +76,6 @@ func normalizeBatchUsernames(usernames []string) []string {
 	seen := make(map[string]struct{}, len(usernames))
 	for _, username := range usernames {
 		username = strings.TrimSpace(username)
-		// Match ExtractUsernameFromName: allow legacy SSO email-shaped usernames.
 		if validateUsernameForResourceName(username) != nil {
 			continue
 		}
