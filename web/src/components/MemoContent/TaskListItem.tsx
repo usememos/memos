@@ -61,7 +61,7 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({ checked, node: _node
         name: memo.name,
         content: newContent,
       },
-      updateMask: ["content"],
+      updateMask: ["content", "update_time"],
     });
   };
 
