@@ -9,7 +9,7 @@ const DropdownMenu = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Root>
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
 >(({ ...props }, _ref) => {
-  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />;
+  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" modal={false} {...props} />;
 });
 DropdownMenu.displayName = "DropdownMenu";
 
