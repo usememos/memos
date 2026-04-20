@@ -2,51 +2,18 @@ package mcp
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"regexp"
 	"strings"
 
-	"github.com/lithammer/shortuuid/v4"
 	"github.com/mark3labs/mcp-go/mcp"
 	mcpserver "github.com/mark3labs/mcp-go/server"
 	"github.com/pkg/errors"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
+	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
 )
-
-// tagRegexp matches #tag patterns in memo content.
-// A tag must start with a letter and contain no whitespace or # characters.
-var tagRegexp = regexp.MustCompile(`(?:^|\s)#([A-Za-z][^\s#]*)`)
-
-// extractTags does a best-effort extraction of #tags from raw markdown content.
-// It is used when creating or updating memos via MCP to pre-populate Payload.Tags.
-// The full markdown service may later rebuild a more accurate payload.
-func extractTags(content string) []string {
-	matches := tagRegexp.FindAllStringSubmatch(content, -1)
-	seen := make(map[string]struct{}, len(matches))
-	tags := make([]string, 0, len(matches))
-	for _, m := range matches {
-		tag := m[1]
-		if _, ok := seen[tag]; !ok {
-			seen[tag] = struct{}{}
-			tags = append(tags, tag)
-		}
-	}
-	return tags
-}
-
-// buildPayload constructs a MemoPayload with tags extracted from content.
-// Returns nil when no tags are found so the store omits the payload entirely.
-func buildPayload(content string) *storepb.MemoPayload {
-	tags := extractTags(content)
-	if len(tags) == 0 {
-		return nil
-	}
-	return &storepb.MemoPayload{Tags: tags}
-}
 
 // propertyJSON is the serialisable form of MemoPayload.Property.
 type propertyJSON struct {
@@ -70,6 +37,11 @@ type memoJSON struct {
 	State      string        `json:"state"`
 	Property   *propertyJSON `json:"property,omitempty"`
 	Parent     string        `json:"parent,omitempty"`
+}
+
+type memoListJSON struct {
+	Memos   []memoJSON `json:"memos"`
+	HasMore bool       `json:"has_more"`
 }
 
 func storeMemoToJSON(m *store.Memo) memoJSON {
@@ -205,75 +177,81 @@ func extractUserID(ctx context.Context) (int32, error) {
 	return id, nil
 }
 
-func marshalJSON(v any) (string, error) {
-	b, err := json.Marshal(v)
-	if err != nil {
-		return "", err
-	}
-	return string(b), nil
-}
-
 func (s *MCPService) registerMemoTools(mcpSrv *mcpserver.MCPServer) {
 	mcpSrv.AddTool(mcp.NewTool("list_memos",
-		mcp.WithDescription("List memos visible to the caller. Authenticated users see their own memos plus public and protected memos; unauthenticated callers see only public memos."),
-		mcp.WithNumber("page_size", mcp.Description("Maximum memos to return (1–100, default 20)")),
-		mcp.WithNumber("page", mcp.Description("Zero-based page index for pagination (default 0)")),
-		mcp.WithString("state",
-			mcp.Enum("NORMAL", "ARCHIVED"),
-			mcp.Description("Filter by state: NORMAL (default) or ARCHIVED"),
-		),
-		mcp.WithBoolean("order_by_pinned", mcp.Description("When true, pinned memos appear first (default false)")),
-		mcp.WithString("filter", mcp.Description(`Optional CEL filter (supported subset of standard CEL syntax), e.g. content.contains("keyword") or tags.exists(t, t == "work")`)),
+		readOnlyToolOptions("List memos", "List memos visible to the caller. Authenticated users see their own memos plus public and protected memos; unauthenticated callers see only public memos.",
+			mcp.WithNumber("page_size", mcp.Description("Maximum memos to return (1–100, default 20)")),
+			mcp.WithNumber("page", mcp.Description("Zero-based page index for pagination (default 0)")),
+			mcp.WithString("state",
+				mcp.Enum("NORMAL", "ARCHIVED"),
+				mcp.Description("Filter by state: NORMAL (default) or ARCHIVED"),
+			),
+			mcp.WithBoolean("order_by_pinned", mcp.Description("When true, pinned memos appear first (default false)")),
+			mcp.WithString("filter", mcp.Description(`Optional CEL filter (supported subset of standard CEL syntax), e.g. content.contains("keyword") or tags.exists(t, t == "work")`)),
+			mcp.WithOutputSchema[memoListJSON](),
+		)...,
 	), s.handleListMemos)
 
 	mcpSrv.AddTool(mcp.NewTool("get_memo",
-		mcp.WithDescription("Get a single memo by resource name. Public memos are accessible without authentication."),
-		mcp.WithString("name", mcp.Required(), mcp.Description(`Memo resource name, e.g. "memos/abc123"`)),
+		readOnlyToolOptions("Get memo", "Get a single memo by resource name. Public memos are accessible without authentication.",
+			mcp.WithString("name", mcp.Required(), mcp.Description(`Memo resource name, e.g. "memos/abc123"`)),
+			mcp.WithOutputSchema[memoJSON](),
+		)...,
 	), s.handleGetMemo)
 
 	mcpSrv.AddTool(mcp.NewTool("create_memo",
-		mcp.WithDescription("Create a new memo. Requires authentication."),
-		mcp.WithString("content", mcp.Required(), mcp.Description("Memo content in Markdown. Use #tag syntax for tagging.")),
-		mcp.WithString("visibility",
-			mcp.Enum("PRIVATE", "PROTECTED", "PUBLIC"),
-			mcp.Description("Visibility (default: PRIVATE)"),
-		),
+		createToolOptions("Create memo", "Create a new memo. Requires authentication.", false,
+			mcp.WithString("content", mcp.Required(), mcp.Description("Memo content in Markdown. Use #tag syntax for tagging.")),
+			mcp.WithString("visibility",
+				mcp.Enum("PRIVATE", "PROTECTED", "PUBLIC"),
+				mcp.Description("Visibility (default: PRIVATE)"),
+			),
+			mcp.WithOutputSchema[memoJSON](),
+		)...,
 	), s.handleCreateMemo)
 
 	mcpSrv.AddTool(mcp.NewTool("update_memo",
-		mcp.WithDescription("Update a memo's content, visibility, pin state, or archive state. Requires authentication and ownership. Omit any field to leave it unchanged."),
-		mcp.WithString("name", mcp.Required(), mcp.Description(`Memo resource name, e.g. "memos/abc123"`)),
-		mcp.WithString("content", mcp.Description("New Markdown content")),
-		mcp.WithString("visibility",
-			mcp.Enum("PRIVATE", "PROTECTED", "PUBLIC"),
-			mcp.Description("New visibility"),
-		),
-		mcp.WithBoolean("pinned", mcp.Description("Pin or unpin the memo")),
-		mcp.WithString("state",
-			mcp.Enum("NORMAL", "ARCHIVED"),
-			mcp.Description("Set to ARCHIVED to archive, NORMAL to restore"),
-		),
+		updateToolOptions("Update memo", "Update a memo's content, visibility, pin state, or archive state. Requires authentication and ownership. Omit any field to leave it unchanged.",
+			mcp.WithString("name", mcp.Required(), mcp.Description(`Memo resource name, e.g. "memos/abc123"`)),
+			mcp.WithString("content", mcp.Description("New Markdown content")),
+			mcp.WithString("visibility",
+				mcp.Enum("PRIVATE", "PROTECTED", "PUBLIC"),
+				mcp.Description("New visibility"),
+			),
+			mcp.WithBoolean("pinned", mcp.Description("Pin or unpin the memo")),
+			mcp.WithString("state",
+				mcp.Enum("NORMAL", "ARCHIVED"),
+				mcp.Description("Set to ARCHIVED to archive, NORMAL to restore"),
+			),
+			mcp.WithOutputSchema[memoJSON](),
+		)...,
 	), s.handleUpdateMemo)
 
 	mcpSrv.AddTool(mcp.NewTool("delete_memo",
-		mcp.WithDescription("Permanently delete a memo. Requires authentication and ownership."),
-		mcp.WithString("name", mcp.Required(), mcp.Description(`Memo resource name, e.g. "memos/abc123"`)),
+		updateToolOptions("Delete memo", "Permanently delete a memo. Requires authentication and ownership.",
+			mcp.WithString("name", mcp.Required(), mcp.Description(`Memo resource name, e.g. "memos/abc123"`)),
+			mcp.WithOutputSchema[deletedJSON](),
+		)...,
 	), s.handleDeleteMemo)
 
 	mcpSrv.AddTool(mcp.NewTool("search_memos",
-		mcp.WithDescription("Search memo content. Authenticated users search their own and visible memos; unauthenticated callers search public memos only."),
-		mcp.WithString("query", mcp.Required(), mcp.Description("Text to search for in memo content")),
+		readOnlyToolOptions("Search memos", "Search memo content. Authenticated users search their own and visible memos; unauthenticated callers search public memos only.",
+			mcp.WithString("query", mcp.Required(), mcp.Description("Text to search for in memo content")),
+		)...,
 	), s.handleSearchMemos)
 
 	mcpSrv.AddTool(mcp.NewTool("list_memo_comments",
-		mcp.WithDescription("List comments on a memo. Visibility rules for comments match those of the parent memo."),
-		mcp.WithString("name", mcp.Required(), mcp.Description(`Memo resource name, e.g. "memos/abc123"`)),
+		readOnlyToolOptions("List memo comments", "List comments on a memo. Visibility rules for comments match those of the parent memo.",
+			mcp.WithString("name", mcp.Required(), mcp.Description(`Memo resource name, e.g. "memos/abc123"`)),
+		)...,
 	), s.handleListMemoComments)
 
 	mcpSrv.AddTool(mcp.NewTool("create_memo_comment",
-		mcp.WithDescription("Add a comment to a memo. The comment inherits the parent memo's visibility. Requires authentication."),
-		mcp.WithString("name", mcp.Required(), mcp.Description(`Memo resource name to comment on, e.g. "memos/abc123"`)),
-		mcp.WithString("content", mcp.Required(), mcp.Description("Comment content in Markdown")),
+		createToolOptions("Create memo comment", "Add a comment to a memo. The comment inherits the parent memo's visibility. Requires authentication.", false,
+			mcp.WithString("name", mcp.Required(), mcp.Description(`Memo resource name to comment on, e.g. "memos/abc123"`)),
+			mcp.WithString("content", mcp.Required(), mcp.Description("Comment content in Markdown")),
+			mcp.WithOutputSchema[memoJSON](),
+		)...,
 	), s.handleCreateMemoComment)
 }
 
@@ -342,15 +320,7 @@ func (s *MCPService) handleListMemos(ctx context.Context, req mcp.CallToolReques
 		results[i] = result
 	}
 
-	type listResponse struct {
-		Memos   []memoJSON `json:"memos"`
-		HasMore bool       `json:"has_more"`
-	}
-	out, err := marshalJSON(listResponse{Memos: results, HasMore: hasMore})
-	if err != nil {
-		return nil, err
-	}
-	return mcp.NewToolResultText(out), nil
+	return newToolResultJSON(memoListJSON{Memos: results, HasMore: hasMore})
 }
 
 func (s *MCPService) handleGetMemo(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -376,16 +346,11 @@ func (s *MCPService) handleGetMemo(ctx context.Context, req mcp.CallToolRequest)
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
 	}
-	out, err := marshalJSON(result)
-	if err != nil {
-		return nil, err
-	}
-	return mcp.NewToolResultText(out), nil
+	return newToolResultJSON(result)
 }
 
 func (s *MCPService) handleCreateMemo(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	userID, err := extractUserID(ctx)
-	if err != nil {
+	if _, err := extractUserID(ctx); err != nil {
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
@@ -398,31 +363,25 @@ func (s *MCPService) handleCreateMemo(ctx context.Context, req mcp.CallToolReque
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
-	memo, err := s.store.CreateMemo(ctx, &store.Memo{
-		UID:        shortuuid.New(),
-		CreatorID:  userID,
-		Content:    content,
-		Visibility: visibility,
-		Payload:    buildPayload(content),
+	created, err := s.apiV1Service.CreateMemo(ctx, &v1pb.CreateMemoRequest{
+		Memo: &v1pb.Memo{
+			Content:    content,
+			Visibility: visibilityToProto(visibility),
+		},
 	})
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to create memo: %v", err)), nil
 	}
 
-	result, err := storeMemoToJSONWithStore(ctx, s.store, memo)
+	result, err := s.loadMemoJSONByName(ctx, created.Name)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
+		return mcp.NewToolResultError(err.Error()), nil
 	}
-	out, err := marshalJSON(result)
-	if err != nil {
-		return nil, err
-	}
-	return mcp.NewToolResultText(out), nil
+	return newToolResultJSON(result)
 }
 
 func (s *MCPService) handleUpdateMemo(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	userID, err := extractUserID(ctx)
-	if err != nil {
+	if _, err := extractUserID(ctx); err != nil {
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
@@ -431,66 +390,56 @@ func (s *MCPService) handleUpdateMemo(ctx context.Context, req mcp.CallToolReque
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
-	memo, err := s.store.GetMemo(ctx, &store.FindMemo{UID: &uid})
-	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to get memo: %v", err)), nil
-	}
-	if memo == nil {
-		return mcp.NewToolResultError("memo not found"), nil
-	}
-	if err := checkMemoOwnership(memo, userID); err != nil {
-		return mcp.NewToolResultError(err.Error()), nil
-	}
-
-	update := &store.UpdateMemo{ID: memo.ID}
+	update := &v1pb.Memo{Name: "memos/" + uid}
+	updateMask := &fieldmaskpb.FieldMask{}
 	args := req.GetArguments()
 
 	if v := req.GetString("content", ""); v != "" {
-		update.Content = &v
-		update.Payload = buildPayload(v)
+		update.Content = v
+		updateMask.Paths = append(updateMask.Paths, "content")
 	}
 	if v := req.GetString("visibility", ""); v != "" {
 		vis, err := parseVisibility(v)
 		if err != nil {
 			return mcp.NewToolResultError(err.Error()), nil
 		}
-		update.Visibility = &vis
+		update.Visibility = visibilityToProto(vis)
+		updateMask.Paths = append(updateMask.Paths, "visibility")
 	}
 	if v := req.GetString("state", ""); v != "" {
 		rs, err := parseRowStatus(v)
 		if err != nil {
 			return mcp.NewToolResultError(err.Error()), nil
 		}
-		update.RowStatus = &rs
+		update.State = rowStatusToProto(rs)
+		updateMask.Paths = append(updateMask.Paths, "state")
 	}
 	if _, ok := args["pinned"]; ok {
-		pinned := req.GetBool("pinned", false)
-		update.Pinned = &pinned
+		update.Pinned = req.GetBool("pinned", false)
+		updateMask.Paths = append(updateMask.Paths, "pinned")
 	}
 
-	if err := s.store.UpdateMemo(ctx, update); err != nil {
+	if len(updateMask.Paths) == 0 {
+		return mcp.NewToolResultError("at least one field must be provided to update"), nil
+	}
+
+	updated, err := s.apiV1Service.UpdateMemo(ctx, &v1pb.UpdateMemoRequest{
+		Memo:       update,
+		UpdateMask: updateMask,
+	})
+	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to update memo: %v", err)), nil
 	}
 
-	updated, err := s.store.GetMemo(ctx, &store.FindMemo{ID: &memo.ID})
+	result, err := s.loadMemoJSONByName(ctx, updated.Name)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to fetch updated memo: %v", err)), nil
+		return mcp.NewToolResultError(err.Error()), nil
 	}
-
-	result, err := storeMemoToJSONWithStore(ctx, s.store, updated)
-	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
-	}
-	out, err := marshalJSON(result)
-	if err != nil {
-		return nil, err
-	}
-	return mcp.NewToolResultText(out), nil
+	return newToolResultJSON(result)
 }
 
 func (s *MCPService) handleDeleteMemo(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-	userID, err := extractUserID(ctx)
-	if err != nil {
+	if _, err := extractUserID(ctx); err != nil {
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
@@ -499,21 +448,10 @@ func (s *MCPService) handleDeleteMemo(ctx context.Context, req mcp.CallToolReque
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
-	memo, err := s.store.GetMemo(ctx, &store.FindMemo{UID: &uid})
-	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to get memo: %v", err)), nil
-	}
-	if memo == nil {
-		return mcp.NewToolResultError("memo not found"), nil
-	}
-	if err := checkMemoOwnership(memo, userID); err != nil {
-		return mcp.NewToolResultError(err.Error()), nil
-	}
-
-	if err := s.store.DeleteMemo(ctx, &store.DeleteMemo{ID: memo.ID}); err != nil {
+	if _, err := s.apiV1Service.DeleteMemo(ctx, &v1pb.DeleteMemoRequest{Name: "memos/" + uid}); err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to delete memo: %v", err)), nil
 	}
-	return mcp.NewToolResultText(`{"deleted":true}`), nil
+	return newDeletedToolResult()
 }
 
 func (s *MCPService) handleSearchMemos(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -557,11 +495,7 @@ func (s *MCPService) handleSearchMemos(ctx context.Context, req mcp.CallToolRequ
 		}
 		results[i] = result
 	}
-	out, err := marshalJSON(results)
-	if err != nil {
-		return nil, err
-	}
-	return mcp.NewToolResultText(out), nil
+	return newToolResultJSON(results)
 }
 
 func (s *MCPService) handleListMemoComments(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -592,8 +526,7 @@ func (s *MCPService) handleListMemoComments(ctx context.Context, req mcp.CallToo
 		return mcp.NewToolResultError(fmt.Sprintf("failed to list relations: %v", err)), nil
 	}
 	if len(relations) == 0 {
-		out, _ := marshalJSON([]memoJSON{})
-		return mcp.NewToolResultText(out), nil
+		return newToolResultJSON([]memoJSON{})
 	}
 
 	commentIDs := make([]int32, len(relations))
@@ -626,11 +559,7 @@ func (s *MCPService) handleListMemoComments(ctx context.Context, req mcp.CallToo
 			results = append(results, result)
 		}
 	}
-	out, err := marshalJSON(results)
-	if err != nil {
-		return nil, err
-	}
-	return mcp.NewToolResultText(out), nil
+	return newToolResultJSON(results)
 }
 
 func (s *MCPService) handleCreateMemoComment(ctx context.Context, req mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -659,33 +588,20 @@ func (s *MCPService) handleCreateMemoComment(ctx context.Context, req mcp.CallTo
 		return mcp.NewToolResultError(err.Error()), nil
 	}
 
-	comment, err := s.store.CreateMemo(ctx, &store.Memo{
-		UID:        shortuuid.New(),
-		CreatorID:  userID,
-		Content:    content,
-		Visibility: parent.Visibility,
-		Payload:    buildPayload(content),
-		ParentUID:  &parent.UID,
+	comment, err := s.apiV1Service.CreateMemoComment(ctx, &v1pb.CreateMemoCommentRequest{
+		Name: "memos/" + uid,
+		Comment: &v1pb.Memo{
+			Content:    content,
+			Visibility: visibilityToProto(parent.Visibility),
+		},
 	})
 	if err != nil {
 		return mcp.NewToolResultError(fmt.Sprintf("failed to create comment: %v", err)), nil
 	}
 
-	if _, err = s.store.UpsertMemoRelation(ctx, &store.MemoRelation{
-		MemoID:        comment.ID,
-		RelatedMemoID: parent.ID,
-		Type:          store.MemoRelationComment,
-	}); err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to link comment: %v", err)), nil
-	}
-
-	result, err := storeMemoToJSONWithStore(ctx, s.store, comment)
+	result, err := s.loadMemoJSONByName(ctx, comment.Name)
 	if err != nil {
-		return mcp.NewToolResultError(fmt.Sprintf("failed to resolve memo creator: %v", err)), nil
+		return mcp.NewToolResultError(err.Error()), nil
 	}
-	out, err := marshalJSON(result)
-	if err != nil {
-		return nil, err
-	}
-	return mcp.NewToolResultText(out), nil
+	return newToolResultJSON(result)
 }

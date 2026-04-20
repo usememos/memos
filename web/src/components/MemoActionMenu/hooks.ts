@@ -8,6 +8,7 @@ import { memoKeys, useDeleteMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
+import { ROUTES } from "@/router/routes";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -74,7 +75,7 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
     }
 
     if (isInMemoDetailPage) {
-      navigateTo(memo.state === State.ARCHIVED ? "/" : "/archived");
+      navigateTo(memo.state === State.ARCHIVED ? ROUTES.HOME : ROUTES.ARCHIVED);
     }
     memoUpdatedCallback();
   }, [memo.name, memo.state, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback, updateMemo]);
@@ -109,7 +110,7 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
       queryClient.invalidateQueries({ queryKey: memoKeys.comments(memo.parent) });
     }
     if (isInMemoDetailPage) {
-      navigateTo("/");
+      navigateTo(ROUTES.HOME);
     }
     memoUpdatedCallback();
   }, [memo.name, memo.parent, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback, deleteMemo, queryClient]);

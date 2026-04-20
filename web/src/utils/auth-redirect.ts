@@ -1,50 +1,27 @@
 import { clearAccessToken } from "@/auth-state";
 import { ROUTES } from "@/router/routes";
+import { buildAuthRoute, isPublicRoute } from "./redirect-safety";
 
-const PUBLIC_ROUTES = [
-  ROUTES.AUTH, // Authentication pages
-  ROUTES.EXPLORE, // Explore page
-  ROUTES.SHARED_MEMO + "/", // Shared memo pages (share-link viewer)
-  "/u/", // User profile pages (dynamic)
-  "/memos/", // Individual memo detail pages (dynamic)
-] as const;
+// Re-export the pure helpers so existing call sites (`@/utils/auth-redirect`)
+// keep working without every caller switching to the new module. The side-effectful
+// `redirectOnAuthFailure` lives here; pure logic lives in `./redirect-safety`.
+export {
+  AUTH_REASON_PARAM,
+  AUTH_REASON_PROTECTED_MEMO,
+  AUTH_REDIRECT_PARAM,
+  buildAuthRoute,
+  getSafeRedirectPath,
+  isPublicRoute,
+} from "./redirect-safety";
 
-export const AUTH_REDIRECT_PARAM = "redirect";
-export const AUTH_REASON_PARAM = "reason";
-export const AUTH_REASON_PROTECTED_MEMO = "protected-memo";
-
-function isPublicRoute(path: string): boolean {
-  return PUBLIC_ROUTES.some((route) => path.startsWith(route));
-}
-
-export function getSafeRedirectPath(path: string | null | undefined): string | undefined {
-  if (!path) {
-    return undefined;
-  }
-
-  if (!path.startsWith("/") || path.startsWith("//")) {
-    return undefined;
-  }
-
-  return path;
-}
-
-export function buildAuthRoute(options?: { redirect?: string | null; reason?: string | null }): string {
-  const searchParams = new URLSearchParams();
-  const redirectPath = getSafeRedirectPath(options?.redirect);
-
-  if (redirectPath) {
-    searchParams.set(AUTH_REDIRECT_PARAM, redirectPath);
-  }
-
-  if (options?.reason) {
-    searchParams.set(AUTH_REASON_PARAM, options.reason);
-  }
-
-  const search = searchParams.toString();
-  return search ? `${ROUTES.AUTH}?${search}` : ROUTES.AUTH;
-}
-
+/**
+ * Imperatively redirects the current document to the auth entry page, preserving
+ * the current URL as the `redirect` target. Intended for hard-fail auth paths
+ * (e.g. a refresh-token request returning 401 from a non-React context).
+ *
+ * No-ops when the user is already on an auth page or on a public page that
+ * does not require authentication, unless `forceRedirect` is set.
+ */
 export function redirectOnAuthFailure(
   forceRedirect = false,
   options?: {

@@ -95,6 +95,9 @@ jobs:
           context: .
           file: ./scripts/Dockerfile
           platforms: ${{ matrix.platform }}
+          build-args: |
+            VERSION=canary
+            COMMIT=${{ github.sha }}
           cache-from: type=gha,scope=build-${{ matrix.platform }}
           cache-to: type=gha,mode=max,scope=build-${{ matrix.platform }}
           outputs: type=image,name=neosmemo/memos,push-by-digest=true,name-canonical=true,push=true

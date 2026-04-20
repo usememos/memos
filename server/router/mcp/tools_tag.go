@@ -14,7 +14,7 @@ import (
 
 func (s *MCPService) registerTagTools(mcpSrv *mcpserver.MCPServer) {
 	mcpSrv.AddTool(mcp.NewTool("list_tags",
-		mcp.WithDescription("List all tags with their memo counts. Authenticated users see tags from their own and visible memos; unauthenticated callers see tags from public memos only. Results are sorted by count descending, then alphabetically."),
+		readOnlyToolOptions("List tags", "List all tags with their memo counts. Authenticated users see tags from their own and visible memos; unauthenticated callers see tags from public memos only. Results are sorted by count descending, then alphabetically.")...,
 	), s.handleListTags)
 }
 
@@ -70,9 +70,5 @@ func (s *MCPService) handleListTags(ctx context.Context, _ mcp.CallToolRequest) 
 		}
 	})
 
-	out, err := marshalJSON(entries)
-	if err != nil {
-		return nil, err
-	}
-	return mcp.NewToolResultText(out), nil
+	return newToolResultJSON(entries)
 }

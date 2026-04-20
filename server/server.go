@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 
@@ -88,7 +89,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	}
 
 	// Register MCP server.
-	mcpService := mcprouter.NewMCPService(s.Profile, s.Store, s.Secret)
+	mcpService := mcprouter.NewMCPService(s.Profile, s.Store, s.Secret, apiV1Service)
 	mcpService.RegisterRoutes(echoServer)
 
 	return s, nil
@@ -106,6 +107,13 @@ func (s *Server) Start(ctx context.Context) error {
 	listener, err := net.Listen(network, address)
 	if err != nil {
 		return errors.Wrap(err, "failed to listen")
+	}
+
+	if network == "unix" {
+		if err := os.Chmod(address, 0660); err != nil {
+			_ = listener.Close()
+			return errors.Wrap(err, "failed to chmod socket")
+		}
 	}
 
 	// Start Echo server directly (no cmux needed - all traffic is HTTP).

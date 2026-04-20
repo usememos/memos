@@ -12,6 +12,35 @@ DELETE /mcp (optional session termination)
 
 Transport: [Streamable HTTP](https://modelcontextprotocol.io/specification/2025-03-26/basic/transports) (single endpoint, MCP spec 2025-03-26).
 
+### Tool Filtering
+
+The default `/mcp` endpoint exposes all tools. Clients can opt into a smaller
+tool surface with GitHub-style headers or route aliases:
+
+| Control | Description |
+|---|---|
+| `X-MCP-Readonly: true` | Hide and block mutating tools |
+| `X-MCP-Toolsets: memos,tags,attachments,relations,reactions` | Limit the default tool list to selected toolsets |
+| `X-MCP-Tools: list_tags,get_memo` | Add specific tools to the selected toolset list |
+| `X-MCP-Exclude-Tools: delete_memo` | Remove specific tools |
+
+Equivalent aliases:
+
+```text
+/mcp/readonly
+/mcp/x/{toolsets}
+/mcp/x/{toolsets}/readonly
+```
+
+Examples:
+
+```text
+/mcp/x/memos,tags/readonly
+X-MCP-Toolsets: memos
+X-MCP-Tools: list_tags
+X-MCP-Exclude-Tools: delete_memo
+```
+
 ## Capabilities
 
 The server advertises the following MCP capabilities:
@@ -126,7 +155,9 @@ claude mcp add --scope user --transport http memos http://localhost:5230/mcp \
 
 | File | Responsibility |
 |---|---|
-| `mcp.go` | `MCPService` struct, constructor, route registration, auth middleware |
+| `mcp.go` | `MCPService` struct, constructor, route registration, auth middleware, tool filtering |
+| `tool_metadata.go` | Toolsets, read-only metadata, annotations, structured result helpers |
+| `api_helpers.go` | Conversion helpers for calling API service methods from MCP tools |
 | `tools_memo.go` | Memo CRUD tools + helpers (JSON types, visibility/access checks) |
 | `tools_tag.go` | Tag listing tool |
 | `tools_attachment.go` | Attachment listing, metadata, deletion, linking tools |
