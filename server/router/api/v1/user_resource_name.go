@@ -31,6 +31,7 @@ func ExtractUsernameFromName(name string) (string, error) {
 	return username, nil
 }
 
+// validateUsername enforces the strict username rules used when creating or renaming users.
 func validateUsername(username string) error {
 	if username == "" || isNumericUsername(username) || !base.UIDMatcher.MatchString(username) {
 		return errors.Errorf("invalid username %q", username)
@@ -38,6 +39,8 @@ func validateUsername(username string) error {
 	return nil
 }
 
+// validateUsernameForResourceName is the relaxed validator used when parsing an existing
+// resource name, so rows whose username was persisted by a non-strict path remain addressable.
 func validateUsernameForResourceName(username string) error {
 	if username == "" || isNumericUsername(username) || strings.Contains(username, "/") {
 		return errors.Errorf("invalid username %q", username)
@@ -45,6 +48,7 @@ func validateUsernameForResourceName(username string) error {
 	return nil
 }
 
+// isNumericUsername reports whether username consists solely of decimal digits.
 func isNumericUsername(username string) bool {
 	if username == "" {
 		return false

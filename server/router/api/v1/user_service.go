@@ -71,6 +71,7 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 	return response, nil
 }
 
+// normalizeBatchUsernames trims, de-duplicates and drops invalid entries from a batch lookup input.
 func normalizeBatchUsernames(usernames []string) []string {
 	uniqueUsernames := make([]string, 0, len(usernames))
 	seen := make(map[string]struct{}, len(usernames))
