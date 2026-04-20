@@ -2,11 +2,16 @@ export const CACHE_DEBOUNCE_DELAY = 500;
 
 const pendingSaves = new Map<string, ReturnType<typeof window.setTimeout>>();
 const STRUCTURED_CACHE_ENTRY_KIND = "memos.editor-cache";
+const STRUCTURED_CACHE_ENTRY_VERSION = 1;
 
 function deserializeContent(raw: string): string {
   try {
-    const parsed = JSON.parse(raw) as { kind?: unknown; content?: unknown };
-    if (parsed.kind === STRUCTURED_CACHE_ENTRY_KIND && typeof parsed.content === "string") {
+    const parsed = JSON.parse(raw) as { kind?: unknown; version?: unknown; content?: unknown };
+    if (
+      parsed.kind === STRUCTURED_CACHE_ENTRY_KIND &&
+      parsed.version === STRUCTURED_CACHE_ENTRY_VERSION &&
+      typeof parsed.content === "string"
+    ) {
       return parsed.content;
     }
   } catch {

@@ -46,4 +46,12 @@ describe("memo editor cache", () => {
 
     expect(cacheService.load(key)).toBe(jsonDraft);
   });
+
+  it("keeps structured-looking drafts without a supported version intact", () => {
+    const key = cacheService.key("users/steven", "home-memo-editor");
+    const jsonDraft = JSON.stringify({ kind: "memos.editor-cache", content: "not a supported envelope" });
+    localStorage.setItem(key, jsonDraft);
+
+    expect(cacheService.load(key)).toBe(jsonDraft);
+  });
 });
