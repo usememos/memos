@@ -149,6 +149,17 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get user, error: %v", err)
 		}
+		// When a transform is active and no user was found under the transformed
+		// username, fall back to the raw IdP identifier. This preserves access for
+		// accounts that were created before the transform was configured.
+		if user == nil && username != userInfo.Identifier {
+			user, err = s.Store.GetUser(ctx, &store.FindUser{
+				Username: &userInfo.Identifier,
+			})
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to get user, error: %v", err)
+			}
+		}
 		if user == nil {
 			// Check if the user is allowed to sign up.
 			instanceGeneralSetting, err := s.Store.GetInstanceGeneralSetting(ctx)
