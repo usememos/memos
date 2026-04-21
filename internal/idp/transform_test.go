@@ -8,11 +8,11 @@ import (
 
 func TestApplyIdentifierTransform(t *testing.T) {
 	tests := []struct {
-		name        string
-		expression  string
-		identifier  string
-		want        string
-		wantErr     bool
+		name       string
+		expression string
+		identifier string
+		want       string
+		wantErr    bool
 	}{
 		{
 			name:       "empty expression returns identifier unchanged",
