@@ -162,7 +162,16 @@ func convertIdentityProviderToRaw(identityProvider *storepb.IdentityProvider) (*
 }
 
 func convertIdentityProviderConfigFromRaw(identityProviderType storepb.IdentityProvider_Type, raw string) (*storepb.IdentityProviderConfig, error) {
+	// Try new format: full IdentityProviderConfig JSON (written by current code).
 	config := &storepb.IdentityProviderConfig{}
+	if err := protojsonUnmarshaler.Unmarshal([]byte(raw), config); err == nil && config.GetOauth2Config() != nil {
+		return config, nil
+	}
+
+	// Fall back to legacy format: raw OAuth2Config JSON (written by old code).
+	// In the legacy format the JSON keys belong to OAuth2Config directly, so
+	// oauth2_config is nil after unmarshaling into IdentityProviderConfig.
+	config = &storepb.IdentityProviderConfig{}
 	if identityProviderType == storepb.IdentityProvider_OAUTH2 {
 		oauth2Config := &storepb.OAuth2Config{}
 		if err := protojsonUnmarshaler.Unmarshal([]byte(raw), oauth2Config); err != nil {
@@ -174,13 +183,14 @@ func convertIdentityProviderConfigFromRaw(identityProviderType storepb.IdentityP
 }
 
 func convertIdentityProviderConfigToRaw(identityProviderType storepb.IdentityProvider_Type, config *storepb.IdentityProviderConfig) (string, error) {
-	raw := ""
 	if identityProviderType == storepb.IdentityProvider_OAUTH2 {
-		bytes, err := protojson.Marshal(config.GetOauth2Config())
+		// Marshal the full IdentityProviderConfig so that identifier_transform
+		// (a field on IdentityProviderConfig, not OAuth2Config) is persisted.
+		bytes, err := protojson.Marshal(config)
 		if err != nil {
-			return "", errors.Wrap(err, "Failed to marshal OAuth2Config")
+			return "", errors.Wrap(err, "Failed to marshal IdentityProviderConfig")
 		}
-		raw = string(bytes)
+		return string(bytes), nil
 	}
-	return raw, nil
+	return "", nil
 }

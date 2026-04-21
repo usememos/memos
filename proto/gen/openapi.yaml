@@ -2368,6 +2368,12 @@ components:
             properties:
                 oauth2Config:
                     $ref: '#/components/schemas/OAuth2Config'
+                identifierTransform:
+                    type: string
+                    description: |-
+                        Optional expr-lang expression to transform the raw IdP identifier into a
+                         valid username before sign-in. Receives `identifier` (string), must return
+                         a non-empty string. Example: lower(split(identifier, "@")[0])
         InstanceProfile:
             type: object
             properties:

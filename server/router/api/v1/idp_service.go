@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"github.com/usememos/memos/internal/idp"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -32,6 +33,10 @@ func (s *APIV1Service) CreateIdentityProvider(ctx context.Context, request *v1pb
 
 	storeIdp := convertIdentityProviderToStore(request.IdentityProvider)
 	storeIdp.Uid = idpUID
+
+	if err := idp.ValidateIdentifierTransform(storeIdp.Config.GetIdentifierTransform()); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid identifier_transform: %v", err)
+	}
 
 	identityProvider, err := s.Store.CreateIdentityProvider(ctx, storeIdp)
 	if err != nil {
@@ -127,6 +132,9 @@ func (s *APIV1Service) UpdateIdentityProvider(ctx context.Context, request *v1pb
 				oauth2Config.ClientSecret = existingOAuth.ClientSecret
 			}
 		}
+		if err := idp.ValidateIdentifierTransform(update.Config.GetIdentifierTransform()); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid identifier_transform: %v", err)
+		}
 	}
 
 	identityProvider, err := s.Store.UpdateIdentityProvider(ctx, update)
@@ -194,6 +202,7 @@ func convertIdentityProviderFromStore(identityProvider *storepb.IdentityProvider
 					},
 				},
 			},
+			IdentifierTransform: identityProvider.Config.GetIdentifierTransform(),
 		}
 	}
 	return temp
@@ -229,6 +238,7 @@ func convertIdentityProviderConfigToStore(identityProviderType v1pb.IdentityProv
 					},
 				},
 			},
+			IdentifierTransform: config.GetIdentifierTransform(),
 		}
 	}
 	return nil

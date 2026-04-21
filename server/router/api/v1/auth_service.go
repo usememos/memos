@@ -132,8 +132,19 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 			}
 		}
 
+		username := userInfo.Identifier
+		if transform := identityProvider.Config.GetIdentifierTransform(); transform != "" {
+			username, err = idp.ApplyIdentifierTransform(transform, userInfo.Identifier)
+			if err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "identifier transform failed: %v", err)
+			}
+			if err := validateUsername(username); err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "transformed identifier %q is not a valid username: %v", username, err)
+			}
+		}
+
 		user, err := s.Store.GetUser(ctx, &store.FindUser{
-			Username: &userInfo.Identifier,
+			Username: &username,
 		})
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get user, error: %v", err)
@@ -150,7 +161,7 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 
 			// Create a new user with the user info from the identity provider.
 			userCreate := &store.User{
-				Username: userInfo.Identifier,
+				Username: username,
 				// The new signup user should be normal user by default.
 				Role:      store.RoleUser,
 				Nickname:  userInfo.DisplayName,

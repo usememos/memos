@@ -156,9 +156,13 @@ type IdentityProviderConfig struct {
 	// Types that are valid to be assigned to Config:
 	//
 	//	*IdentityProviderConfig_Oauth2Config
-	Config        isIdentityProviderConfig_Config `protobuf_oneof:"config"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Config isIdentityProviderConfig_Config `protobuf_oneof:"config"`
+	// Optional expr-lang expression to transform the raw IdP identifier into a
+	// valid username before sign-in. Receives `identifier` (string), must return
+	// a non-empty string. Example: lower(split(identifier, "@")[0])
+	IdentifierTransform string `protobuf:"bytes,2,opt,name=identifier_transform,json=identifierTransform,proto3" json:"identifier_transform,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *IdentityProviderConfig) Reset() {
@@ -205,6 +209,13 @@ func (x *IdentityProviderConfig) GetOauth2Config() *OAuth2Config {
 		}
 	}
 	return nil
+}
+
+func (x *IdentityProviderConfig) GetIdentifierTransform() string {
+	if x != nil {
+		return x.IdentifierTransform
+	}
+	return ""
 }
 
 type isIdentityProviderConfig_Config interface {
@@ -392,9 +403,10 @@ const file_store_idp_proto_rawDesc = "" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
-	"\x06OAUTH2\x10\x01\"d\n" +
+	"\x06OAUTH2\x10\x01\"\x97\x01\n" +
 	"\x16IdentityProviderConfig\x12@\n" +
-	"\roauth2_config\x18\x01 \x01(\v2\x19.memos.store.OAuth2ConfigH\x00R\foauth2ConfigB\b\n" +
+	"\roauth2_config\x18\x01 \x01(\v2\x19.memos.store.OAuth2ConfigH\x00R\foauth2Config\x121\n" +
+	"\x14identifier_transform\x18\x02 \x01(\tR\x13identifierTransformB\b\n" +
 	"\x06config\"\x86\x01\n" +
 	"\fFieldMapping\x12\x1e\n" +
 	"\n" +

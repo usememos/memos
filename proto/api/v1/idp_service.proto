@@ -84,6 +84,10 @@ message IdentityProviderConfig {
   oneof config {
     OAuth2Config oauth2_config = 1;
   }
+  // Optional expr-lang expression to transform the raw IdP identifier into a
+  // valid username before sign-in. Receives `identifier` (string), must return
+  // a non-empty string. Example: lower(split(identifier, "@")[0])
+  string identifier_transform = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message FieldMapping {
