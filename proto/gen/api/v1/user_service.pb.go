@@ -2465,7 +2465,7 @@ type UserStats_MemoTypeStats struct {
 
 func (x *UserStats_MemoTypeStats) Reset() {
 	*x = UserStats_MemoTypeStats{}
-	mi := &file_api_v1_user_service_proto_msgTypes[36]
+	mi := &file_api_v1_user_service_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2477,7 +2477,7 @@ func (x *UserStats_MemoTypeStats) String() string {
 func (*UserStats_MemoTypeStats) ProtoMessage() {}
 
 func (x *UserStats_MemoTypeStats) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_user_service_proto_msgTypes[36]
+	mi := &file_api_v1_user_service_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2490,7 +2490,7 @@ func (x *UserStats_MemoTypeStats) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserStats_MemoTypeStats.ProtoReflect.Descriptor instead.
 func (*UserStats_MemoTypeStats) Descriptor() ([]byte, []int) {
-	return file_api_v1_user_service_proto_rawDescGZIP(), []int{9, 1}
+	return file_api_v1_user_service_proto_rawDescGZIP(), []int{9, 0}
 }
 
 func (x *UserStats_MemoTypeStats) GetLinkCount() int32 {
@@ -2847,10 +2847,7 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\x0fmemo_type_stats\x18\x03 \x01(\v2%.memos.api.v1.UserStats.MemoTypeStatsR\rmemoTypeStats\x12B\n" +
 	"\ttag_count\x18\x04 \x03(\v2%.memos.api.v1.UserStats.TagCountEntryR\btagCount\x12!\n" +
 	"\fpinned_memos\x18\x05 \x03(\tR\vpinnedMemos\x12(\n" +
-	"\x10total_memo_count\x18\x06 \x01(\x05R\x0etotalMemoCount\x1a;\n" +
-	"\rTagCountEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\x1a\x8b\x01\n" +
+	"\x10total_memo_count\x18\x06 \x01(\x05R\x0etotalMemoCount\x1a\x8b\x01\n" +
 	"\rMemoTypeStats\x12\x1d\n" +
 	"\n" +
 	"link_count\x18\x01 \x01(\x05R\tlinkCount\x12\x1d\n" +
@@ -2859,7 +2856,10 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\n" +
 	"todo_count\x18\x03 \x01(\x05R\ttodoCount\x12\x1d\n" +
 	"\n" +
-	"undo_count\x18\x04 \x01(\x05R\tundoCount:?\xeaA<\n" +
+	"undo_count\x18\x04 \x01(\x05R\tundoCount\x1a;\n" +
+	"\rTagCountEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01:?\xeaA<\n" +
 	"\x16memos.api.v1/UserStats\x12\fusers/{user}*\tuserStats2\tuserStats\"D\n" +
 	"\x13GetUserStatsRequest\x12-\n" +
 	"\x04name\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
@@ -3085,8 +3085,8 @@ var file_api_v1_user_service_proto_goTypes = []any{
 	(*ListUserNotificationsResponse)(nil),       // 36: memos.api.v1.ListUserNotificationsResponse
 	(*UpdateUserNotificationRequest)(nil),       // 37: memos.api.v1.UpdateUserNotificationRequest
 	(*DeleteUserNotificationRequest)(nil),       // 38: memos.api.v1.DeleteUserNotificationRequest
-	nil,                                         // 39: memos.api.v1.UserStats.TagCountEntry
-	(*UserStats_MemoTypeStats)(nil),             // 40: memos.api.v1.UserStats.MemoTypeStats
+	(*UserStats_MemoTypeStats)(nil),             // 39: memos.api.v1.UserStats.MemoTypeStats
+	nil,                                         // 40: memos.api.v1.UserStats.TagCountEntry
 	(*UserSetting_GeneralSetting)(nil),          // 41: memos.api.v1.UserSetting.GeneralSetting
 	(*UserSetting_WebhooksSetting)(nil),         // 42: memos.api.v1.UserSetting.WebhooksSetting
 	(*UserNotification_MemoCommentPayload)(nil), // 43: memos.api.v1.UserNotification.MemoCommentPayload
@@ -3108,8 +3108,8 @@ var file_api_v1_user_service_proto_depIdxs = []int32{
 	4,  // 8: memos.api.v1.UpdateUserRequest.user:type_name -> memos.api.v1.User
 	47, // 9: memos.api.v1.UpdateUserRequest.update_mask:type_name -> google.protobuf.FieldMask
 	46, // 10: memos.api.v1.UserStats.memo_display_timestamps:type_name -> google.protobuf.Timestamp
-	40, // 11: memos.api.v1.UserStats.memo_type_stats:type_name -> memos.api.v1.UserStats.MemoTypeStats
-	39, // 12: memos.api.v1.UserStats.tag_count:type_name -> memos.api.v1.UserStats.TagCountEntry
+	39, // 11: memos.api.v1.UserStats.memo_type_stats:type_name -> memos.api.v1.UserStats.MemoTypeStats
+	40, // 12: memos.api.v1.UserStats.tag_count:type_name -> memos.api.v1.UserStats.TagCountEntry
 	13, // 13: memos.api.v1.ListAllUserStatsResponse.stats:type_name -> memos.api.v1.UserStats
 	41, // 14: memos.api.v1.UserSetting.general_setting:type_name -> memos.api.v1.UserSetting.GeneralSetting
 	42, // 15: memos.api.v1.UserSetting.webhooks_setting:type_name -> memos.api.v1.UserSetting.WebhooksSetting
