@@ -22,19 +22,13 @@ export const useMemoInit = ({ editorRef, memo, cacheKey, username, autoFocus, de
     if (initializedRef.current) return;
     initializedRef.current = true;
     const key = cacheService.key(username, cacheKey);
-    const cachedContent = cacheService.load(key);
 
     if (memo) {
       const initialState = memoService.fromMemo(memo);
-      // Prefer cached draft over the saved memo content when the user had unsaved
-      // changes (e.g. tab was suspended mid-edit). Uses strict string comparison
-      // against memo.content — both values come from the same proto serialization
-      // path, so format is consistent and whitespace differences are intentional.
-      if (cachedContent.trim() && cachedContent !== memo.content) {
-        initialState.content = cachedContent;
-      }
+      cacheService.clear(key);
       dispatch(actions.initMemo(initialState));
     } else {
+      const cachedContent = cacheService.load(key);
       if (cachedContent) {
         dispatch(actions.updateContent(cachedContent));
       }

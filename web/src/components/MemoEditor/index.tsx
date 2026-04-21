@@ -23,7 +23,7 @@ import {
 import { FOCUS_MODE_STYLES } from "./constants";
 import type { EditorRefActions } from "./Editor";
 import { useAudioRecorder, useAutoSave, useFocusMode, useKeyboard, useMemoInit } from "./hooks";
-import { cacheService, errorService, memoService, transcriptionService, validationService } from "./services";
+import { errorService, memoService, transcriptionService, validationService } from "./services";
 import { EditorProvider, useEditorContext } from "./state";
 import type { MemoEditorProps } from "./types";
 import type { LocalFile } from "./types/attachment";
@@ -69,9 +69,10 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const defaultVisibility = userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined;
 
   const { isInitialized } = useMemoInit({ editorRef, memo, cacheKey, username: currentUser?.name ?? "", autoFocus, defaultVisibility });
+  const isDraftCacheEnabled = !memo;
 
   // Auto-save content to localStorage
-  useAutoSave(state.content, currentUser?.name ?? "", cacheKey, isInitialized);
+  const { discardDraft } = useAutoSave(state.content, currentUser?.name ?? "", cacheKey, isInitialized && isDraftCacheEnabled);
 
   // Focus mode management with body scroll lock
   useFocusMode(state.ui.isFocusMode);
@@ -229,8 +230,9 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         return;
       }
 
-      // Clear localStorage cache on successful save
-      cacheService.clear(cacheService.key(currentUser?.name ?? "", cacheKey));
+      // Clear localStorage cache on successful save and prevent the unmount
+      // flush from writing the just-saved content back as a stale draft.
+      discardDraft();
 
       // Invalidate React Query cache to refresh memo lists across the app
       const invalidationPromises = [
