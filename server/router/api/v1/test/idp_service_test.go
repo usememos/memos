@@ -10,6 +10,7 @@ import (
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/store"
 )
@@ -123,6 +124,27 @@ func TestCreateIdentityProvider(t *testing.T) {
 		require.Error(t, err)
 		require.Equal(t, codes.InvalidArgument, status.Code(err))
 		require.Contains(t, err.Error(), "oauth2_config is required")
+	})
+
+	t.Run("CreateIdentityProvider rejects unspecified type", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
+		req := &v1pb.CreateIdentityProviderRequest{
+			IdentityProvider: &v1pb.IdentityProvider{
+				Title: "Unsupported Type",
+				Type:  v1pb.IdentityProvider_TYPE_UNSPECIFIED,
+			},
+		}
+
+		_, err = ts.Service.CreateIdentityProvider(userCtx, req)
+		require.Error(t, err)
+		require.Equal(t, codes.InvalidArgument, status.Code(err))
+		require.Contains(t, err.Error(), "unsupported identity provider type")
 	})
 }
 
@@ -596,6 +618,35 @@ func TestUpdateIdentityProvider(t *testing.T) {
 		require.NoError(t, err)
 		require.Empty(t, stored.Config.GetIdentifierTransform())
 		require.Equal(t, "secret", stored.Config.GetOauth2Config().ClientSecret)
+	})
+
+	t.Run("UpdateIdentityProvider rejects unsupported stored type", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		_, err = ts.Store.CreateIdentityProvider(ctx, &storepb.IdentityProvider{
+			Uid:  "unsupported-idp",
+			Name: "Unsupported Type",
+			Type: storepb.IdentityProvider_TYPE_UNSPECIFIED,
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.UpdateIdentityProvider(userCtx, &v1pb.UpdateIdentityProviderRequest{
+			IdentityProvider: &v1pb.IdentityProvider{
+				Name: "identity-providers/unsupported-idp",
+				Config: &v1pb.IdentityProviderConfig{
+					IdentifierTransform: "identifier",
+				},
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"config.identifier_transform"}},
+		})
+		require.Error(t, err)
+		require.Equal(t, codes.InvalidArgument, status.Code(err))
+		require.Contains(t, err.Error(), "unsupported identity provider type")
 	})
 }
 

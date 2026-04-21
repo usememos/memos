@@ -235,8 +235,13 @@ func convertIdentityProviderToStore(identityProvider *v1pb.IdentityProvider) *st
 }
 
 func validateIdentityProviderConfig(identityProviderType v1pb.IdentityProvider_Type, config *v1pb.IdentityProviderConfig) error {
-	if identityProviderType == v1pb.IdentityProvider_OAUTH2 && config.GetOauth2Config() == nil {
-		return errors.New("oauth2_config is required for OAUTH2 identity providers")
+	switch identityProviderType {
+	case v1pb.IdentityProvider_OAUTH2:
+		if config.GetOauth2Config() == nil {
+			return errors.New("oauth2_config is required for OAUTH2 identity providers")
+		}
+	default:
+		return errors.Errorf("unsupported identity provider type %s", identityProviderType.String())
 	}
 	return validateStoreIdentityProviderConfig(
 		storepb.IdentityProvider_Type(storepb.IdentityProvider_Type_value[identityProviderType.String()]),
@@ -245,8 +250,13 @@ func validateIdentityProviderConfig(identityProviderType v1pb.IdentityProvider_T
 }
 
 func validateStoreIdentityProviderConfig(identityProviderType storepb.IdentityProvider_Type, config *storepb.IdentityProviderConfig) error {
-	if identityProviderType == storepb.IdentityProvider_OAUTH2 && config.GetOauth2Config() == nil {
-		return errors.New("oauth2_config is required for OAUTH2 identity providers")
+	switch identityProviderType {
+	case storepb.IdentityProvider_OAUTH2:
+		if config.GetOauth2Config() == nil {
+			return errors.New("oauth2_config is required for OAUTH2 identity providers")
+		}
+	default:
+		return errors.Errorf("unsupported identity provider type %s", identityProviderType.String())
 	}
 	if err := idp.ValidateIdentifierTransform(config.GetIdentifierTransform()); err != nil {
 		return errors.Wrap(err, "invalid identifier_transform")
