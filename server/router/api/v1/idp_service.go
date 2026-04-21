@@ -289,7 +289,11 @@ func cloneIdentityProviderConfig(config *storepb.IdentityProviderConfig) *storep
 	if config == nil {
 		return &storepb.IdentityProviderConfig{}
 	}
-	return proto.Clone(config).(*storepb.IdentityProviderConfig)
+	cloned, ok := proto.Clone(config).(*storepb.IdentityProviderConfig)
+	if !ok || cloned == nil {
+		return &storepb.IdentityProviderConfig{}
+	}
+	return cloned
 }
 
 // cloneStringPtr returns a new *string with the same value, or nil. Used for
