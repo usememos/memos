@@ -143,22 +143,11 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 			}
 		}
 
-		user, err := s.Store.GetUser(ctx, &store.FindUser{
-			Username: &username,
+		user, err := resolveExistingSSOUser(userInfo.Identifier, username, func(candidate string) (*store.User, error) {
+			return s.Store.GetUser(ctx, &store.FindUser{Username: &candidate})
 		})
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get user, error: %v", err)
-		}
-		// When a transform is active and no user was found under the transformed
-		// username, fall back to the raw IdP identifier. This preserves access for
-		// accounts that were created before the transform was configured.
-		if user == nil && username != userInfo.Identifier {
-			user, err = s.Store.GetUser(ctx, &store.FindUser{
-				Username: &userInfo.Identifier,
-			})
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to get user, error: %v", err)
-			}
 		}
 		if user == nil {
 			// Check if the user is allowed to sign up.
@@ -213,6 +202,18 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 		AccessToken:          accessToken,
 		AccessTokenExpiresAt: timestamppb.New(accessExpiresAt),
 	}, nil
+}
+
+func resolveExistingSSOUser(rawIdentifier, transformedUsername string, findUser func(string) (*store.User, error)) (*store.User, error) {
+	if rawIdentifier != transformedUsername {
+		// Prefer the raw IdP identifier when it already exists so enabling a
+		// transform does not redirect sign-in to a different pre-existing account.
+		user, err := findUser(rawIdentifier)
+		if err != nil || user != nil {
+			return user, err
+		}
+	}
+	return findUser(transformedUsername)
 }
 
 // doSignIn performs the actual sign-in operation by creating a session and setting the cookie.

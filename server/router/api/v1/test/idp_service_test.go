@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -100,6 +102,27 @@ func TestCreateIdentityProvider(t *testing.T) {
 		_, err := ts.Service.CreateIdentityProvider(ctx, req)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "user not authenticated")
+	})
+
+	t.Run("CreateIdentityProvider rejects missing OAuth2 config", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
+		req := &v1pb.CreateIdentityProviderRequest{
+			IdentityProvider: &v1pb.IdentityProvider{
+				Title: "Missing Config",
+				Type:  v1pb.IdentityProvider_OAUTH2,
+			},
+		}
+
+		_, err = ts.Service.CreateIdentityProvider(userCtx, req)
+		require.Error(t, err)
+		require.Equal(t, codes.InvalidArgument, status.Code(err))
+		require.Contains(t, err.Error(), "oauth2_config is required")
 	})
 }
 
@@ -469,6 +492,110 @@ func TestUpdateIdentityProvider(t *testing.T) {
 		_, err = ts.Service.UpdateIdentityProvider(userCtx, req)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "invalid identity provider name")
+	})
+
+	t.Run("UpdateIdentityProvider preserves identifier transform on config replacement", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		created, err := ts.Service.CreateIdentityProvider(userCtx, &v1pb.CreateIdentityProviderRequest{
+			IdentityProvider: &v1pb.IdentityProvider{
+				Title: "Transform Preserve Test",
+				Type:  v1pb.IdentityProvider_OAUTH2,
+				Config: &v1pb.IdentityProviderConfig{
+					Config: &v1pb.IdentityProviderConfig_Oauth2Config{
+						Oauth2Config: &v1pb.OAuth2Config{
+							ClientId:     "cid",
+							ClientSecret: "secret",
+							AuthUrl:      "https://ex.com/auth",
+							TokenUrl:     "https://ex.com/token",
+							UserInfoUrl:  "https://ex.com/user",
+							FieldMapping: &v1pb.FieldMapping{Identifier: "id"},
+						},
+					},
+					IdentifierTransform: `replace(lower(split(identifier, "@")[0]), ".", "-")`,
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.UpdateIdentityProvider(userCtx, &v1pb.UpdateIdentityProviderRequest{
+			IdentityProvider: &v1pb.IdentityProvider{
+				Name: created.Name,
+				Config: &v1pb.IdentityProviderConfig{
+					Config: &v1pb.IdentityProviderConfig_Oauth2Config{
+						Oauth2Config: &v1pb.OAuth2Config{
+							ClientId:     "updated-client",
+							ClientSecret: "",
+							AuthUrl:      "https://ex.com/updated-auth",
+							TokenUrl:     "https://ex.com/updated-token",
+							UserInfoUrl:  "https://ex.com/updated-user",
+							FieldMapping: &v1pb.FieldMapping{Identifier: "sub"},
+						},
+					},
+				},
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"config"}},
+		})
+		require.NoError(t, err)
+
+		uid, _ := apiv1.ExtractIdentityProviderUIDFromName(created.Name)
+		stored, err := ts.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: &uid})
+		require.NoError(t, err)
+		require.Equal(t, `replace(lower(split(identifier, "@")[0]), ".", "-")`, stored.Config.GetIdentifierTransform())
+		require.Equal(t, "updated-client", stored.Config.GetOauth2Config().ClientId)
+		require.Equal(t, "secret", stored.Config.GetOauth2Config().ClientSecret)
+	})
+
+	t.Run("UpdateIdentityProvider can explicitly clear identifier transform", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		created, err := ts.Service.CreateIdentityProvider(userCtx, &v1pb.CreateIdentityProviderRequest{
+			IdentityProvider: &v1pb.IdentityProvider{
+				Title: "Transform Clear Test",
+				Type:  v1pb.IdentityProvider_OAUTH2,
+				Config: &v1pb.IdentityProviderConfig{
+					Config: &v1pb.IdentityProviderConfig_Oauth2Config{
+						Oauth2Config: &v1pb.OAuth2Config{
+							ClientId:     "cid",
+							ClientSecret: "secret",
+							AuthUrl:      "https://ex.com/auth",
+							TokenUrl:     "https://ex.com/token",
+							UserInfoUrl:  "https://ex.com/user",
+							FieldMapping: &v1pb.FieldMapping{Identifier: "id"},
+						},
+					},
+					IdentifierTransform: `replace(lower(split(identifier, "@")[0]), ".", "-")`,
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.UpdateIdentityProvider(userCtx, &v1pb.UpdateIdentityProviderRequest{
+			IdentityProvider: &v1pb.IdentityProvider{
+				Name: created.Name,
+				Config: &v1pb.IdentityProviderConfig{
+					IdentifierTransform: "",
+				},
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"config.identifier_transform"}},
+		})
+		require.NoError(t, err)
+
+		uid, _ := apiv1.ExtractIdentityProviderUIDFromName(created.Name)
+		stored, err := ts.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: &uid})
+		require.NoError(t, err)
+		require.Empty(t, stored.Config.GetIdentifierTransform())
+		require.Equal(t, "secret", stored.Config.GetOauth2Config().ClientSecret)
 	})
 }
 

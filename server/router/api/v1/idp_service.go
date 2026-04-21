@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/usememos/memos/internal/idp"
@@ -31,12 +33,12 @@ func (s *APIV1Service) CreateIdentityProvider(ctx context.Context, request *v1pb
 		return nil, err
 	}
 
+	if err := validateIdentityProviderConfig(request.IdentityProvider.Type, request.IdentityProvider.Config); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider config: %v", err)
+	}
+
 	storeIdp := convertIdentityProviderToStore(request.IdentityProvider)
 	storeIdp.Uid = idpUID
-
-	if err := idp.ValidateIdentifierTransform(storeIdp.Config.GetIdentifierTransform()); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid identifier_transform: %v", err)
-	}
 
 	identityProvider, err := s.Store.CreateIdentityProvider(ctx, storeIdp)
 	if err != nil {
@@ -110,8 +112,10 @@ func (s *APIV1Service) UpdateIdentityProvider(ctx context.Context, request *v1pb
 
 	update := &store.UpdateIdentityProviderV1{
 		ID:   existing.Id,
-		Type: storepb.IdentityProvider_Type(storepb.IdentityProvider_Type_value[request.IdentityProvider.Type.String()]),
+		Type: existing.Type,
 	}
+	existingIdentityProviderType := v1pb.IdentityProvider_Type(v1pb.IdentityProvider_Type_value[existing.Type.String()])
+	var updateConfig *storepb.IdentityProviderConfig
 	for _, field := range request.UpdateMask.Paths {
 		switch field {
 		case "title":
@@ -119,12 +123,24 @@ func (s *APIV1Service) UpdateIdentityProvider(ctx context.Context, request *v1pb
 		case "identifier_filter":
 			update.IdentifierFilter = &request.IdentityProvider.IdentifierFilter
 		case "config":
-			update.Config = convertIdentityProviderConfigToStore(request.IdentityProvider.Type, request.IdentityProvider.Config)
+			if err := validateIdentityProviderConfig(existingIdentityProviderType, request.IdentityProvider.Config); err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider config: %v", err)
+			}
+			updateConfig = convertIdentityProviderConfigToStore(existingIdentityProviderType, request.IdentityProvider.Config)
+			if updateConfig.GetIdentifierTransform() == "" && existing.Config != nil {
+				updateConfig.IdentifierTransform = existing.Config.GetIdentifierTransform()
+			}
+		case "config.identifier_transform", "config.identifierTransform":
+			if updateConfig == nil {
+				updateConfig = cloneIdentityProviderConfig(existing.Config)
+			}
+			updateConfig.IdentifierTransform = request.IdentityProvider.GetConfig().GetIdentifierTransform()
 		default:
 			// Ignore unsupported fields
 		}
 	}
 
+	update.Config = updateConfig
 	// Preserve write-only credential when the caller sends an empty value.
 	if update.Config != nil {
 		if oauth2Config := update.Config.GetOauth2Config(); oauth2Config != nil && oauth2Config.ClientSecret == "" {
@@ -132,8 +148,8 @@ func (s *APIV1Service) UpdateIdentityProvider(ctx context.Context, request *v1pb
 				oauth2Config.ClientSecret = existingOAuth.ClientSecret
 			}
 		}
-		if err := idp.ValidateIdentifierTransform(update.Config.GetIdentifierTransform()); err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid identifier_transform: %v", err)
+		if err := validateStoreIdentityProviderConfig(update.Type, update.Config); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider config: %v", err)
 		}
 	}
 
@@ -216,6 +232,37 @@ func convertIdentityProviderToStore(identityProvider *v1pb.IdentityProvider) *st
 		Config:           convertIdentityProviderConfigToStore(identityProvider.Type, identityProvider.Config),
 	}
 	return temp
+}
+
+func validateIdentityProviderConfig(identityProviderType v1pb.IdentityProvider_Type, config *v1pb.IdentityProviderConfig) error {
+	if identityProviderType == v1pb.IdentityProvider_OAUTH2 && config.GetOauth2Config() == nil {
+		return errors.New("oauth2_config is required for OAUTH2 identity providers")
+	}
+	return validateStoreIdentityProviderConfig(
+		storepb.IdentityProvider_Type(storepb.IdentityProvider_Type_value[identityProviderType.String()]),
+		convertIdentityProviderConfigToStore(identityProviderType, config),
+	)
+}
+
+func validateStoreIdentityProviderConfig(identityProviderType storepb.IdentityProvider_Type, config *storepb.IdentityProviderConfig) error {
+	if identityProviderType == storepb.IdentityProvider_OAUTH2 && config.GetOauth2Config() == nil {
+		return errors.New("oauth2_config is required for OAUTH2 identity providers")
+	}
+	if err := idp.ValidateIdentifierTransform(config.GetIdentifierTransform()); err != nil {
+		return errors.Wrap(err, "invalid identifier_transform")
+	}
+	return nil
+}
+
+func cloneIdentityProviderConfig(config *storepb.IdentityProviderConfig) *storepb.IdentityProviderConfig {
+	if config == nil {
+		return &storepb.IdentityProviderConfig{}
+	}
+	clonedConfig, ok := proto.Clone(config).(*storepb.IdentityProviderConfig)
+	if !ok || clonedConfig == nil {
+		return &storepb.IdentityProviderConfig{}
+	}
+	return clonedConfig
 }
 
 func convertIdentityProviderConfigToStore(identityProviderType v1pb.IdentityProvider_Type, config *v1pb.IdentityProviderConfig) *storepb.IdentityProviderConfig {
