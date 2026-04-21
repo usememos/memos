@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -539,7 +540,7 @@ func TestUpdateIdentityProvider(t *testing.T) {
 							FieldMapping: &v1pb.FieldMapping{Identifier: "id"},
 						},
 					},
-					IdentifierTransform: `replace(lower(split(identifier, "@")[0]), ".", "-")`,
+					IdentifierTransform: proto.String(`replace(lower(split(identifier, "@")[0]), ".", "-")`),
 				},
 			},
 		})
@@ -596,7 +597,7 @@ func TestUpdateIdentityProvider(t *testing.T) {
 							FieldMapping: &v1pb.FieldMapping{Identifier: "id"},
 						},
 					},
-					IdentifierTransform: `replace(lower(split(identifier, "@")[0]), ".", "-")`,
+					IdentifierTransform: proto.String(`replace(lower(split(identifier, "@")[0]), ".", "-")`),
 				},
 			},
 		})
@@ -606,7 +607,7 @@ func TestUpdateIdentityProvider(t *testing.T) {
 			IdentityProvider: &v1pb.IdentityProvider{
 				Name: created.Name,
 				Config: &v1pb.IdentityProviderConfig{
-					IdentifierTransform: "",
+					IdentifierTransform: proto.String(""),
 				},
 			},
 			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"config.identifier_transform"}},
@@ -639,7 +640,7 @@ func TestUpdateIdentityProvider(t *testing.T) {
 			IdentityProvider: &v1pb.IdentityProvider{
 				Name: "identity-providers/unsupported-idp",
 				Config: &v1pb.IdentityProviderConfig{
-					IdentifierTransform: "identifier",
+					IdentifierTransform: proto.String("identifier"),
 				},
 			},
 			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"config.identifier_transform"}},
@@ -647,6 +648,130 @@ func TestUpdateIdentityProvider(t *testing.T) {
 		require.Error(t, err)
 		require.Equal(t, codes.InvalidArgument, status.Code(err))
 		require.Contains(t, err.Error(), "unsupported identity provider type")
+	})
+
+	t.Run("UpdateIdentityProvider with config mask preserves transform when field omitted", func(t *testing.T) {
+		// Regression: clients unaware of identifier_transform must not be
+		// able to silently clear it by sending a partial config under
+		// mask=["config"]. Presence tracking lets us distinguish "field not
+		// sent" (preserve) from "field explicitly empty" (clear).
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		originalTransform := `replace(lower(split(identifier, "@")[0]), ".", "-")`
+		created, err := ts.Service.CreateIdentityProvider(userCtx, &v1pb.CreateIdentityProviderRequest{
+			IdentityProvider: &v1pb.IdentityProvider{
+				Title: "Transform Preserved On Partial Update",
+				Type:  v1pb.IdentityProvider_OAUTH2,
+				Config: &v1pb.IdentityProviderConfig{
+					Config: &v1pb.IdentityProviderConfig_Oauth2Config{
+						Oauth2Config: &v1pb.OAuth2Config{
+							ClientId:     "cid",
+							ClientSecret: "secret",
+							AuthUrl:      "https://ex.com/auth",
+							TokenUrl:     "https://ex.com/token",
+							UserInfoUrl:  "https://ex.com/user",
+							FieldMapping: &v1pb.FieldMapping{Identifier: "id"},
+						},
+					},
+					IdentifierTransform: proto.String(originalTransform),
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		// Client sends mask=["config"] with a full OAuth2 config but no
+		// identifier_transform field at all (presence-absent).
+		_, err = ts.Service.UpdateIdentityProvider(userCtx, &v1pb.UpdateIdentityProviderRequest{
+			IdentityProvider: &v1pb.IdentityProvider{
+				Name: created.Name,
+				Config: &v1pb.IdentityProviderConfig{
+					Config: &v1pb.IdentityProviderConfig_Oauth2Config{
+						Oauth2Config: &v1pb.OAuth2Config{
+							ClientId:     "new-client",
+							ClientSecret: "new-secret",
+							AuthUrl:      "https://ex.com/auth2",
+							TokenUrl:     "https://ex.com/token2",
+							UserInfoUrl:  "https://ex.com/user2",
+							FieldMapping: &v1pb.FieldMapping{Identifier: "id2"},
+						},
+					},
+					// IdentifierTransform intentionally omitted (nil).
+				},
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"config"}},
+		})
+		require.NoError(t, err)
+
+		uid, _ := apiv1.ExtractIdentityProviderUIDFromName(created.Name)
+		stored, err := ts.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: &uid})
+		require.NoError(t, err)
+		require.Equal(t, originalTransform, stored.Config.GetIdentifierTransform(),
+			"transform must survive a config-mask update that omits the field")
+		require.Equal(t, "new-client", stored.Config.GetOauth2Config().ClientId)
+	})
+
+	t.Run("UpdateIdentityProvider with config mask clears transform when field explicitly empty", func(t *testing.T) {
+		// Counterpart to the previous test: sending an explicit empty
+		// string (presence-present, value "") must clear the transform.
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		created, err := ts.Service.CreateIdentityProvider(userCtx, &v1pb.CreateIdentityProviderRequest{
+			IdentityProvider: &v1pb.IdentityProvider{
+				Title: "Explicit Empty Clears",
+				Type:  v1pb.IdentityProvider_OAUTH2,
+				Config: &v1pb.IdentityProviderConfig{
+					Config: &v1pb.IdentityProviderConfig_Oauth2Config{
+						Oauth2Config: &v1pb.OAuth2Config{
+							ClientId:     "cid",
+							ClientSecret: "secret",
+							AuthUrl:      "https://ex.com/auth",
+							TokenUrl:     "https://ex.com/token",
+							UserInfoUrl:  "https://ex.com/user",
+							FieldMapping: &v1pb.FieldMapping{Identifier: "id"},
+						},
+					},
+					IdentifierTransform: proto.String(`lower(identifier)`),
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.UpdateIdentityProvider(userCtx, &v1pb.UpdateIdentityProviderRequest{
+			IdentityProvider: &v1pb.IdentityProvider{
+				Name: created.Name,
+				Config: &v1pb.IdentityProviderConfig{
+					Config: &v1pb.IdentityProviderConfig_Oauth2Config{
+						Oauth2Config: &v1pb.OAuth2Config{
+							ClientId:     "cid",
+							ClientSecret: "",
+							AuthUrl:      "https://ex.com/auth",
+							TokenUrl:     "https://ex.com/token",
+							UserInfoUrl:  "https://ex.com/user",
+							FieldMapping: &v1pb.FieldMapping{Identifier: "id"},
+						},
+					},
+					IdentifierTransform: proto.String(""),
+				},
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"config"}},
+		})
+		require.NoError(t, err)
+
+		uid, _ := apiv1.ExtractIdentityProviderUIDFromName(created.Name)
+		stored, err := ts.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: &uid})
+		require.NoError(t, err)
+		require.Empty(t, stored.Config.GetIdentifierTransform(),
+			"explicit empty string must clear the transform")
 	})
 }
 

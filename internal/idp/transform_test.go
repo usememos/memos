@@ -1,6 +1,7 @@
 package idp
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -76,4 +77,43 @@ func TestValidateIdentifierTransform(t *testing.T) {
 	require.NoError(t, ValidateIdentifierTransform(`lower(split(identifier, "@")[0])`))
 	require.Error(t, ValidateIdentifierTransform(`unknownFunc(identifier)`))
 	require.Error(t, ValidateIdentifierTransform(`123 +`))
+}
+
+func TestApplyIdentifierTransform_RejectsOversizedExpression(t *testing.T) {
+	oversized := `identifier + "` + strings.Repeat("x", maxIdentifierTransformLength) + `"`
+	require.Greater(t, len(oversized), maxIdentifierTransformLength)
+
+	_, err := ApplyIdentifierTransform(oversized, "jane")
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "exceeds maximum length")
+
+	require.Error(t, ValidateIdentifierTransform(oversized))
+	require.Contains(t, ValidateIdentifierTransform(oversized).Error(), "exceeds maximum length")
+}
+
+func TestApplyIdentifierTransform_RejectsOversizedOutput(t *testing.T) {
+	// Build an expression well within the input length cap that produces an
+	// output larger than maxTransformOutputLength. repeat() is a standard
+	// expr-lang built-in and safe to call at compile time.
+	expression := `repeat(identifier, 100)`
+
+	_, err := ApplyIdentifierTransform(expression, "abcdefghij")
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "output exceeds maximum length")
+}
+
+func TestApplyIdentifierTransform_RejectsComplexExpression(t *testing.T) {
+	// MaxNodes caps AST size. Build an expression that intentionally exceeds
+	// maxIdentifierTransformNodes so the compile step rejects it.
+	var b strings.Builder
+	b.WriteString("identifier")
+	for i := 0; i < maxIdentifierTransformNodes; i++ {
+		b.WriteString(` + "x"`)
+	}
+	expression := b.String()
+	require.LessOrEqual(t, len(expression), maxIdentifierTransformLength)
+
+	_, err := ApplyIdentifierTransform(expression, "a")
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "invalid identifier transform expression")
 }

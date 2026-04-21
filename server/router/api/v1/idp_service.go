@@ -127,14 +127,19 @@ func (s *APIV1Service) UpdateIdentityProvider(ctx context.Context, request *v1pb
 				return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider config: %v", err)
 			}
 			updateConfig = convertIdentityProviderConfigToStore(existingIdentityProviderType, request.IdentityProvider.Config)
-			if updateConfig.GetIdentifierTransform() == "" && existing.Config != nil {
-				updateConfig.IdentifierTransform = existing.Config.GetIdentifierTransform()
+			// identifier_transform is presence-tracked. If the client did not
+			// include the field in the request, preserve the stored value so a
+			// client unaware of the field cannot silently clear it. An explicit
+			// empty string (field present, value "") clears the transform.
+			if updateConfig != nil && request.IdentityProvider.GetConfig().IdentifierTransform == nil {
+				updateConfig.IdentifierTransform = cloneStringPtr(storeConfigIdentifierTransform(existing.Config))
 			}
 		case "config.identifier_transform", "config.identifierTransform":
 			if updateConfig == nil {
 				updateConfig = cloneIdentityProviderConfig(existing.Config)
 			}
-			updateConfig.IdentifierTransform = request.IdentityProvider.GetConfig().GetIdentifierTransform()
+			// Copy presence: nil => clear, non-nil (including empty) => set.
+			updateConfig.IdentifierTransform = cloneStringPtr(request.IdentityProvider.GetConfig().IdentifierTransform)
 		default:
 			// Ignore unsupported fields
 		}
@@ -218,7 +223,10 @@ func convertIdentityProviderFromStore(identityProvider *storepb.IdentityProvider
 					},
 				},
 			},
-			IdentifierTransform: identityProvider.Config.GetIdentifierTransform(),
+			// Pass through the presence-tracked pointer so clients that
+			// round-trip a GET response into UpdateIdentityProvider do not
+			// accidentally clear the transform.
+			IdentifierTransform: cloneStringPtr(storeConfigIdentifierTransform(identityProvider.Config)),
 		}
 	}
 	return temp
@@ -234,6 +242,12 @@ func convertIdentityProviderToStore(identityProvider *v1pb.IdentityProvider) *st
 	return temp
 }
 
+// validateIdentityProviderConfig is the API-facing entry point: it guards the
+// preconditions needed to safely convert to the store representation (so
+// convertIdentityProviderConfigToStore cannot dereference a nil oauth2_config),
+// then delegates to the store-level validator for all remaining field checks.
+// Keeping a single source of truth avoids the previous duplication between
+// the v1 and store validators.
 func validateIdentityProviderConfig(identityProviderType v1pb.IdentityProvider_Type, config *v1pb.IdentityProviderConfig) error {
 	switch identityProviderType {
 	case v1pb.IdentityProvider_OAUTH2:
@@ -243,12 +257,15 @@ func validateIdentityProviderConfig(identityProviderType v1pb.IdentityProvider_T
 	default:
 		return errors.Errorf("unsupported identity provider type %s", identityProviderType.String())
 	}
-	return validateStoreIdentityProviderConfig(
-		storepb.IdentityProvider_Type(storepb.IdentityProvider_Type_value[identityProviderType.String()]),
-		convertIdentityProviderConfigToStore(identityProviderType, config),
-	)
+	storeType := storepb.IdentityProvider_Type(storepb.IdentityProvider_Type_value[identityProviderType.String()])
+	return validateStoreIdentityProviderConfig(storeType, convertIdentityProviderConfigToStore(identityProviderType, config))
 }
 
+// validateStoreIdentityProviderConfig is the single validator that runs on a
+// fully-converted store-layer config. It is called both by the API wrapper
+// above (on the request config) and by UpdateIdentityProvider (on the
+// post-merge config after ClientSecret preservation) so every write path
+// converges on the same checks.
 func validateStoreIdentityProviderConfig(identityProviderType storepb.IdentityProvider_Type, config *storepb.IdentityProviderConfig) error {
 	switch identityProviderType {
 	case storepb.IdentityProvider_OAUTH2:
@@ -264,15 +281,35 @@ func validateStoreIdentityProviderConfig(identityProviderType storepb.IdentityPr
 	return nil
 }
 
+// cloneIdentityProviderConfig returns a deep copy of config, or a fresh empty
+// IdentityProviderConfig if config is nil. The nil guard is required because
+// proto.Clone preserves typed-nil pointers rather than materializing a zero
+// message, which would make subsequent field assignments panic.
 func cloneIdentityProviderConfig(config *storepb.IdentityProviderConfig) *storepb.IdentityProviderConfig {
 	if config == nil {
 		return &storepb.IdentityProviderConfig{}
 	}
-	clonedConfig, ok := proto.Clone(config).(*storepb.IdentityProviderConfig)
-	if !ok || clonedConfig == nil {
-		return &storepb.IdentityProviderConfig{}
+	return proto.Clone(config).(*storepb.IdentityProviderConfig)
+}
+
+// cloneStringPtr returns a new *string with the same value, or nil. Used for
+// copying presence-tracked proto3 optional scalars between messages without
+// aliasing request memory into the store layer.
+func cloneStringPtr(p *string) *string {
+	if p == nil {
+		return nil
 	}
-	return clonedConfig
+	v := *p
+	return &v
+}
+
+// storeConfigIdentifierTransform safely reads the presence-tracked transform
+// pointer from a possibly-nil store config.
+func storeConfigIdentifierTransform(c *storepb.IdentityProviderConfig) *string {
+	if c == nil {
+		return nil
+	}
+	return c.IdentifierTransform
 }
 
 func convertIdentityProviderConfigToStore(identityProviderType v1pb.IdentityProvider_Type, config *v1pb.IdentityProviderConfig) *storepb.IdentityProviderConfig {
@@ -295,7 +332,9 @@ func convertIdentityProviderConfigToStore(identityProviderType v1pb.IdentityProv
 					},
 				},
 			},
-			IdentifierTransform: config.GetIdentifierTransform(),
+			// Preserve presence so downstream callers can distinguish
+			// "field omitted" from "field explicitly set to empty".
+			IdentifierTransform: cloneStringPtr(config.IdentifierTransform),
 		}
 	}
 	return nil

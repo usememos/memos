@@ -24,8 +24,11 @@ message IdentityProviderConfig {
   }
   // Optional expr-lang expression to transform the raw IdP identifier into a
   // valid username before sign-in. Receives `identifier` (string), must return
-  // a non-empty string. Example: lower(split(identifier, "@")[0])
-  string identifier_transform = 2;
+  // a non-empty string. Example: replace(lower(split(identifier, "@")[0]), ".", "-")
+  //
+  // Marked `optional` so the store layer can tell "not set" (preserve existing)
+  // apart from "explicitly cleared" on partial updates.
+  optional string identifier_transform = 2;
 }
 
 message FieldMapping {

@@ -18,6 +18,15 @@ const (
 	// enforces UIDMatcher (max 36 chars), so this is a defence-in-depth
 	// guard against multi-MB return values.
 	maxTransformOutputLength = 255
+
+	// maxIdentifierTransformNodes caps the number of AST nodes in the
+	// compiled expression. A realistic username transform like
+	// `replace(lower(split(identifier, "@")[0]), ".", "-")` uses ~12 nodes;
+	// 64 comfortably fits legitimate use while blocking pathological
+	// nested-built-in expressions that could burn CPU at sign-in time.
+	// expr-lang has no looping constructs, so capping AST size is an
+	// effective DoS guard.
+	maxIdentifierTransformNodes = 64
 )
 
 // ApplyIdentifierTransform evaluates expression against identifier and returns
@@ -39,7 +48,12 @@ func ApplyIdentifierTransform(expression, identifier string) (string, error) {
 	}
 
 	env := map[string]any{"identifier": identifier}
-	program, err := expr.Compile(expression, expr.Env(env), expr.AsKind(reflect.String))
+	program, err := expr.Compile(
+		expression,
+		expr.Env(env),
+		expr.AsKind(reflect.String),
+		expr.MaxNodes(maxIdentifierTransformNodes),
+	)
 	if err != nil {
 		return "", errors.Wrap(err, "invalid identifier transform expression")
 	}
@@ -69,7 +83,12 @@ func ValidateIdentifierTransform(expression string) error {
 		return errors.Errorf("identifier transform expression exceeds maximum length of %d", maxIdentifierTransformLength)
 	}
 	env := map[string]any{"identifier": ""}
-	_, err := expr.Compile(expression, expr.Env(env), expr.AsKind(reflect.String))
+	_, err := expr.Compile(
+		expression,
+		expr.Env(env),
+		expr.AsKind(reflect.String),
+		expr.MaxNodes(maxIdentifierTransformNodes),
+	)
 	if err != nil {
 		return errors.Wrap(err, "invalid identifier transform expression")
 	}

@@ -23,7 +23,8 @@
 
 - `expr-lang/expr` replaces goja as the engine: same sandboxing guarantees, smaller footprint, no timeout complexity, type-safe return enforcement.
 - Expression contract (single expression string) replaces the named-function contract — simpler for admins to write and validate.
-- All other architectural decisions from the original design remain unchanged: top-level column on `idp` table, hard error on bad return, save-time validation, no fallback.
+- Persistence: the transform lives on `IdentityProviderConfig` alongside `OAuth2Config` in the existing `idp.config` JSON blob. No new DB column and no schema migration — the field is presence-tracked inside the wrapper message so empty means "no transform".
+- Hard error on bad return and save-time validation remain unchanged.
 - Field renamed from `identifier_transform_script` to `identifier_transform` — "script" implies multi-statement; "transform" is accurate for a single expression.
 
 ## Design Goals
@@ -36,7 +37,7 @@
 
 4. **G4 — No timeout needed**: `expr` expressions cannot loop; no goroutine or timer is required. Verifiable: build has no `time.AfterFunc` or `vm.Interrupt` code.
 
-5. **G5 — No schema-breaking change**: Existing `IdentityProvider` rows without a transform continue to work unchanged (empty string = no transform). Verifiable: existing integration tests pass without modification.
+5. **G5 — No schema-breaking change**: Existing `IdentityProvider` rows without a transform continue to work unchanged. The transform lives inside the existing `idp.config` JSON blob, so no DB migration is required, and the store write path keeps the legacy `OAuth2Config` JSON shape whenever the transform is empty so rolling back to a pre-feature binary still reads every row correctly. Verifiable: `store.TestConvertIdentityProviderConfigFromRaw_LegacyOAuth2Shape` and the `WritesLegacyWhenTransformEmpty` test both assert this.
 
 6. **G6 — No CGo dependency**: `expr-lang/expr` compiles with `CGO_ENABLED=0`. Verifiable: `CGO_ENABLED=0 go build ./...` passes.
 
@@ -52,36 +53,27 @@ All non-goals from definition.md apply. Additionally:
 
 ### 1. New proto field
 
-**`proto/store/idp.proto`** — add to `IdentityProvider`:
+**`proto/store/idp.proto`** — add to `IdentityProviderConfig`:
 ```
-string identifier_transform = 7;
-```
-
-**`proto/api/v1/idp_service.proto`** — add to `IdentityProvider`:
-```
-string identifier_transform = 6 [(google.api.field_behavior) = OPTIONAL];
+optional string identifier_transform = 2;
 ```
 
-Run `buf generate` to regenerate `proto/gen/store/idp.pb.go` and `proto/gen/api/v1/idp_service.pb.go`.
+**`proto/api/v1/idp_service.proto`** — add to `IdentityProviderConfig`:
+```
+optional string identifier_transform = 2 [(google.api.field_behavior) = OPTIONAL];
+```
 
-### 2. Schema migration
+Marked `optional` so the store layer and the API can distinguish "field omitted" from "explicitly cleared" on partial update_mask patches.
 
-Add `identifier_transform TEXT NOT NULL DEFAULT ''` column to the `idp` table in all three backends.
+Run `buf generate` to regenerate `proto/gen/store/idp.pb.go`, `proto/gen/api/v1/idp_service.pb.go`, `proto/gen/openapi.yaml`, and the TS bindings under `web/src/types/proto/`.
 
-New versioned migration files (version `0.28`, one file each):
-- `store/migration/sqlite/0.28/00__idp_identifier_transform.sql`
-- `store/migration/postgres/0.28/00__idp_identifier_transform.sql`
-- `store/migration/mysql/0.28/00__idp_identifier_transform.sql`
+### 2. No schema migration
 
-Each contains: `ALTER TABLE idp ADD COLUMN identifier_transform TEXT NOT NULL DEFAULT '';`
-
-Update `LATEST.sql` for all three backends to include the new column.
+The new field is serialized inside the existing `idp.config` text column alongside `OAuth2Config`. The store layer keeps writing the historical `OAuth2Config`-only JSON shape whenever `identifier_transform` is empty, and only switches to the wrapped `IdentityProviderConfig` JSON when the transform is actually set. This makes the change safe to roll back: binaries without the feature continue to read every untouched row correctly.
 
 ### 3. Store layer
 
-**`store/idp.go`**: add `IdentifierTransform string` to `store.IdentityProvider`, `IdentifierTransform *string` to `UpdateIdentityProvider` and `UpdateIdentityProviderV1`, update converter functions.
-
-**`store/db/sqlite/idp.go`**, **`store/db/postgres/idp.go`**, **`store/db/mysql/idp.go`**: add `identifier_transform` to INSERT, SELECT/Scan, and UPDATE SET.
+**`store/idp.go`**: `convertIdentityProviderConfigFromRaw` transparently decodes both the legacy `OAuth2Config`-only JSON and the new `IdentityProviderConfig` wrapper (disambiguated by which representation populates fields), so upgrade is transparent. `convertIdentityProviderConfigToRaw` picks the legacy or wrapper shape depending on whether `identifier_transform` is set. No changes to `store.IdentityProvider` struct shape or to any of the per-backend SQL drivers.
 
 ### 4. Expression executor
 
@@ -102,34 +94,33 @@ func ValidateIdentifierTransform(expression string) error
 
 `ApplyIdentifierTransform` internal flow:
 1. If `expression == ""` return `(identifier, nil)`.
-2. `env := map[string]any{"identifier": identifier}`
-3. `program, err := expr.Compile(expression, expr.Env(env), expr.AsKind(reflect.String))` — error on type mismatch or syntax.
-4. `result, err := expr.Run(program, env)` — error on runtime failure.
-5. Assert `result.(string)` is non-empty.
-6. Return result.
+2. Reject expressions longer than `maxIdentifierTransformLength` (1024) bytes up front.
+3. `env := map[string]any{"identifier": identifier}`
+4. `expr.Compile(expression, expr.Env(env), expr.AsKind(reflect.String), expr.MaxNodes(maxIdentifierTransformNodes))` — the `MaxNodes` cap (64) is a defence-in-depth guard against pathological nested built-ins; expr-lang has no looping constructs, so capping AST size is an effective DoS guard.
+5. `result, err := expr.Run(program, env)` — error on runtime failure.
+6. Assert `result.(string)` is non-empty and at most `maxTransformOutputLength` (255) bytes.
 
-`ValidateIdentifierTransform` uses same compile step with `identifier = ""`.
+`ValidateIdentifierTransform` uses the same compile step with `identifier = ""` so admins get save-time feedback without evaluating against real user data.
 
 ### 5. IdP service layer
 
 **`server/router/api/v1/idp_service.go`**
 
-- `convertIdentityProviderFromStore`: map `storepb.IdentityProvider.IdentifierTransform` → `v1pb.IdentityProvider.IdentifierTransform`.
-- `convertIdentityProviderToStore`: reverse.
-- `CreateIdentityProvider`: call `idp.ValidateIdentifierTransform` after convert; return `InvalidArgument` on error.
-- `UpdateIdentityProvider`: add `"identifier_transform"` case to update_mask switch; call `ValidateIdentifierTransform` before persisting.
+- `convertIdentityProviderFromStore` / `convertIdentityProviderConfigToStore`: pass the presence-tracked `*string` through so GET → modify → PATCH round-trips preserve the field.
+- `CreateIdentityProvider`: call `validateIdentityProviderConfig` after UID generation; return `InvalidArgument` on error.
+- `UpdateIdentityProvider` handles two masks:
+  - `"config"` — full config replacement, with a presence-aware merge for `identifier_transform` so clients that don't know about the field (or don't round-trip it) cannot silently clear it. An explicit empty string in the request clears the stored value.
+  - `"config.identifier_transform"` — touches only the transform, so admins can flip it on/off without re-submitting the OAuth2 payload.
+- `validateStoreIdentityProviderConfig` is the single source of truth for config validity; `validateIdentityProviderConfig` is a thin API-facing guard that only enforces the precondition needed to safely run `convertIdentityProviderConfigToStore` and then delegates.
 
 ### 6. Auth service — sign-in path
 
-**`server/router/api/v1/auth_service.go`** — after identifier_filter check (~line 133), before `GetUser`:
+**`server/router/api/v1/auth_service.go`** — after the identifier_filter check, before `GetUser`:
 
 ```
 username := userInfo.Identifier
-if identityProvider.IdentifierTransform != "" {
-    username, err = idp.ApplyIdentifierTransform(
-        identityProvider.IdentifierTransform,
-        userInfo.Identifier,
-    )
+if transform := identityProvider.Config.GetIdentifierTransform(); transform != "" {
+    username, err = idp.ApplyIdentifierTransform(transform, userInfo.Identifier)
     if err != nil {
         return nil, status.Errorf(codes.InvalidArgument, "identifier transform failed: %v", err)
     }
@@ -138,9 +129,11 @@ if identityProvider.IdentifierTransform != "" {
             "transformed identifier %q is not a valid username: %v", username, err)
     }
 }
+
+user, err := resolveExistingSSOUser(userInfo.Identifier, username, ...)
 ```
 
-Replace `userInfo.Identifier` at lines 136 and 153 with `username`.
+`resolveExistingSSOUser` performs two lookups when the transform is active: first by the raw IdP identifier, then by the transformed username. This preserves access for accounts provisioned before the transform was configured (whose stored username is the email-shaped raw identifier) without eagerly migrating those accounts to the new shape.
 
 ### Data flow
 

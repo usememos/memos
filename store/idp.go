@@ -161,36 +161,59 @@ func convertIdentityProviderToRaw(identityProvider *storepb.IdentityProvider) (*
 	return raw, nil
 }
 
+// convertIdentityProviderConfigFromRaw accepts both the legacy raw OAuth2Config
+// JSON format (written by versions <= 0.27) and the new IdentityProviderConfig
+// wrapper format (written when identifier_transform is non-empty). New-format
+// rows carry an "oauth2Config" key; legacy rows carry "clientId" etc. directly.
+// protojsonUnmarshaler has DiscardUnknown=true so both unmarshal without error;
+// we disambiguate by checking which representation actually populated fields.
 func convertIdentityProviderConfigFromRaw(identityProviderType storepb.IdentityProvider_Type, raw string) (*storepb.IdentityProviderConfig, error) {
-	// Try new format: full IdentityProviderConfig JSON (written by current code).
-	config := &storepb.IdentityProviderConfig{}
-	if err := protojsonUnmarshaler.Unmarshal([]byte(raw), config); err == nil && config.GetOauth2Config() != nil {
-		return config, nil
+	if identityProviderType != storepb.IdentityProvider_OAUTH2 {
+		return &storepb.IdentityProviderConfig{}, nil
 	}
 
-	// Fall back to legacy format: raw OAuth2Config JSON (written by old code).
-	// In the legacy format the JSON keys belong to OAuth2Config directly, so
-	// oauth2_config is nil after unmarshaling into IdentityProviderConfig.
-	config = &storepb.IdentityProviderConfig{}
-	if identityProviderType == storepb.IdentityProvider_OAUTH2 {
-		oauth2Config := &storepb.OAuth2Config{}
-		if err := protojsonUnmarshaler.Unmarshal([]byte(raw), oauth2Config); err != nil {
-			return nil, errors.Wrap(err, "Failed to unmarshal OAuth2Config")
+	// Try new format first: full IdentityProviderConfig wrapper.
+	// New-format rows have either an oauth2_config sub-message or a non-empty
+	// identifier_transform (or both). GetIdentifierTransform() returns "" for
+	// both nil (field absent) and &"" (field explicitly empty), but
+	// convertIdentityProviderConfigToRaw only writes the wrapper shape when
+	// identifier_transform is non-empty, so "" here reliably means the field
+	// was never set in the wrapper — no wrapper row will be missed by this check.
+	config := &storepb.IdentityProviderConfig{}
+	if err := protojsonUnmarshaler.Unmarshal([]byte(raw), config); err == nil {
+		if config.GetOauth2Config() != nil || config.GetIdentifierTransform() != "" {
+			return config, nil
 		}
-		config.Config = &storepb.IdentityProviderConfig_Oauth2Config{Oauth2Config: oauth2Config}
 	}
-	return config, nil
+
+	// Fall back to legacy format: raw OAuth2Config JSON.
+	oauth2Config := &storepb.OAuth2Config{}
+	if err := protojsonUnmarshaler.Unmarshal([]byte(raw), oauth2Config); err != nil {
+		return nil, errors.Wrap(err, "Failed to unmarshal OAuth2Config")
+	}
+	return &storepb.IdentityProviderConfig{
+		Config: &storepb.IdentityProviderConfig_Oauth2Config{Oauth2Config: oauth2Config},
+	}, nil
 }
 
+// convertIdentityProviderConfigToRaw writes the legacy OAuth2Config JSON shape
+// when identifier_transform is empty so that rolling back to an older memos
+// binary continues to read existing rows. The new IdentityProviderConfig
+// wrapper shape is only used when the new field is actually in use.
 func convertIdentityProviderConfigToRaw(identityProviderType storepb.IdentityProvider_Type, config *storepb.IdentityProviderConfig) (string, error) {
-	if identityProviderType == storepb.IdentityProvider_OAUTH2 {
-		// Marshal the full IdentityProviderConfig so that identifier_transform
-		// (a field on IdentityProviderConfig, not OAuth2Config) is persisted.
-		bytes, err := protojson.Marshal(config)
+	if identityProviderType != storepb.IdentityProvider_OAUTH2 {
+		return "", nil
+	}
+	if config.GetIdentifierTransform() == "" {
+		bytes, err := protojson.Marshal(config.GetOauth2Config())
 		if err != nil {
-			return "", errors.Wrap(err, "Failed to marshal IdentityProviderConfig")
+			return "", errors.Wrap(err, "Failed to marshal OAuth2Config")
 		}
 		return string(bytes), nil
 	}
-	return "", nil
+	bytes, err := protojson.Marshal(config)
+	if err != nil {
+		return "", errors.Wrap(err, "Failed to marshal IdentityProviderConfig")
+	}
+	return string(bytes), nil
 }

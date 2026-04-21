@@ -2373,7 +2373,12 @@ components:
                     description: |-
                         Optional expr-lang expression to transform the raw IdP identifier into a
                          valid username before sign-in. Receives `identifier` (string), must return
-                         a non-empty string. Example: lower(split(identifier, "@")[0])
+                         a non-empty string. Example: replace(lower(split(identifier, "@")[0]), ".", "-")
+
+                         Presence-tracked: omitting this field from an update_mask=["config"] patch
+                         preserves the stored value; sending an explicit empty string clears it.
+                         Clients that want to touch only this field can use
+                         update_mask=["config.identifier_transform"].
         InstanceProfile:
             type: object
             properties:

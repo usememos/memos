@@ -159,8 +159,11 @@ type IdentityProviderConfig struct {
 	Config isIdentityProviderConfig_Config `protobuf_oneof:"config"`
 	// Optional expr-lang expression to transform the raw IdP identifier into a
 	// valid username before sign-in. Receives `identifier` (string), must return
-	// a non-empty string. Example: lower(split(identifier, "@")[0])
-	IdentifierTransform string `protobuf:"bytes,2,opt,name=identifier_transform,json=identifierTransform,proto3" json:"identifier_transform,omitempty"`
+	// a non-empty string. Example: replace(lower(split(identifier, "@")[0]), ".", "-")
+	//
+	// Marked `optional` so the store layer can tell "not set" (preserve existing)
+	// apart from "explicitly cleared" on partial updates.
+	IdentifierTransform *string `protobuf:"bytes,2,opt,name=identifier_transform,json=identifierTransform,proto3,oneof" json:"identifier_transform,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -212,8 +215,8 @@ func (x *IdentityProviderConfig) GetOauth2Config() *OAuth2Config {
 }
 
 func (x *IdentityProviderConfig) GetIdentifierTransform() string {
-	if x != nil {
-		return x.IdentifierTransform
+	if x != nil && x.IdentifierTransform != nil {
+		return *x.IdentifierTransform
 	}
 	return ""
 }
@@ -403,11 +406,12 @@ const file_store_idp_proto_rawDesc = "" +
 	"\x04Type\x12\x14\n" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
-	"\x06OAUTH2\x10\x01\"\x97\x01\n" +
+	"\x06OAUTH2\x10\x01\"\xb5\x01\n" +
 	"\x16IdentityProviderConfig\x12@\n" +
-	"\roauth2_config\x18\x01 \x01(\v2\x19.memos.store.OAuth2ConfigH\x00R\foauth2Config\x121\n" +
-	"\x14identifier_transform\x18\x02 \x01(\tR\x13identifierTransformB\b\n" +
-	"\x06config\"\x86\x01\n" +
+	"\roauth2_config\x18\x01 \x01(\v2\x19.memos.store.OAuth2ConfigH\x00R\foauth2Config\x126\n" +
+	"\x14identifier_transform\x18\x02 \x01(\tH\x01R\x13identifierTransform\x88\x01\x01B\b\n" +
+	"\x06configB\x17\n" +
+	"\x15_identifier_transform\"\x86\x01\n" +
 	"\fFieldMapping\x12\x1e\n" +
 	"\n" +
 	"identifier\x18\x01 \x01(\tR\n" +

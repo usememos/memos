@@ -161,8 +161,13 @@ type IdentityProviderConfig struct {
 	Config isIdentityProviderConfig_Config `protobuf_oneof:"config"`
 	// Optional expr-lang expression to transform the raw IdP identifier into a
 	// valid username before sign-in. Receives `identifier` (string), must return
-	// a non-empty string. Example: lower(split(identifier, "@")[0])
-	IdentifierTransform string `protobuf:"bytes,2,opt,name=identifier_transform,json=identifierTransform,proto3" json:"identifier_transform,omitempty"`
+	// a non-empty string. Example: replace(lower(split(identifier, "@")[0]), ".", "-")
+	//
+	// Presence-tracked: omitting this field from an update_mask=["config"] patch
+	// preserves the stored value; sending an explicit empty string clears it.
+	// Clients that want to touch only this field can use
+	// update_mask=["config.identifier_transform"].
+	IdentifierTransform *string `protobuf:"bytes,2,opt,name=identifier_transform,json=identifierTransform,proto3,oneof" json:"identifier_transform,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -214,8 +219,8 @@ func (x *IdentityProviderConfig) GetOauth2Config() *OAuth2Config {
 }
 
 func (x *IdentityProviderConfig) GetIdentifierTransform() string {
-	if x != nil {
-		return x.IdentifierTransform
+	if x != nil && x.IdentifierTransform != nil {
+		return *x.IdentifierTransform
 	}
 	return ""
 }
@@ -688,11 +693,12 @@ const file_api_v1_idp_service_proto_rawDesc = "" +
 	"\x10TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06OAUTH2\x10\x01:g\xeaAd\n" +
-	"\x1dmemos.api.v1/IdentityProvider\x12\x18identity-providers/{idp}\x1a\x04name*\x11identityProviders2\x10identityProvider\"\x9d\x01\n" +
+	"\x1dmemos.api.v1/IdentityProvider\x12\x18identity-providers/{idp}\x1a\x04name*\x11identityProviders2\x10identityProvider\"\xbb\x01\n" +
 	"\x16IdentityProviderConfig\x12A\n" +
-	"\roauth2_config\x18\x01 \x01(\v2\x1a.memos.api.v1.OAuth2ConfigH\x00R\foauth2Config\x126\n" +
-	"\x14identifier_transform\x18\x02 \x01(\tB\x03\xe0A\x01R\x13identifierTransformB\b\n" +
-	"\x06config\"\x86\x01\n" +
+	"\roauth2_config\x18\x01 \x01(\v2\x1a.memos.api.v1.OAuth2ConfigH\x00R\foauth2Config\x12;\n" +
+	"\x14identifier_transform\x18\x02 \x01(\tB\x03\xe0A\x01H\x01R\x13identifierTransform\x88\x01\x01B\b\n" +
+	"\x06configB\x17\n" +
+	"\x15_identifier_transform\"\x86\x01\n" +
 	"\fFieldMapping\x12\x1e\n" +
 	"\n" +
 	"identifier\x18\x01 \x01(\tR\n" +
