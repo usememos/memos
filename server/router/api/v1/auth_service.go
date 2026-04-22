@@ -308,13 +308,28 @@ func (s *APIV1Service) bindSSOIdentityToUser(ctx context.Context, currentUser *s
 			if getErr != nil {
 				return nil, getErr
 			}
-			if winner == nil {
-				return nil, status.Errorf(codes.Internal, "user identity conflict reported but no winning row found")
+			if winner != nil {
+				if winner.ID != currentUser.ID {
+					return nil, status.Errorf(codes.AlreadyExists, "identity provider account is already linked to another user")
+				}
+				return currentUser, nil
 			}
-			if winner.ID != currentUser.ID {
-				return nil, status.Errorf(codes.AlreadyExists, "identity provider account is already linked to another user")
+
+			existingForProvider, getErr := s.Store.GetUserIdentity(ctx, &store.FindUserIdentity{
+				UserID:   &currentUser.ID,
+				Provider: &provider,
+			})
+			if getErr != nil {
+				return nil, status.Errorf(codes.Internal, "failed to reload linked identity after race, error: %v", getErr)
 			}
-			return currentUser, nil
+			if existingForProvider != nil {
+				if existingForProvider.ExternUID == externUID {
+					return currentUser, nil
+				}
+				return nil, status.Errorf(codes.AlreadyExists, "identity provider is already linked to another external account for this user")
+			}
+
+			return nil, status.Errorf(codes.Internal, "user identity conflict reported but no winning row found")
 		}
 		return nil, status.Errorf(codes.Internal, "failed to create user identity, error: %v", err)
 	}

@@ -80,6 +80,9 @@ const LinkedIdentitySection = () => {
   );
 
   const handleLinkIdentityProvider = async (identityProvider: IdentityProvider) => {
+    if (!currentUser?.name) {
+      return;
+    }
     const redirectUri = absolutifyLink("/auth/callback");
     const oauth2Config = identityProvider.config?.config?.case === "oauth2Config" ? identityProvider.config.config.value : undefined;
     if (!oauth2Config) {
@@ -89,7 +92,7 @@ const LinkedIdentitySection = () => {
 
     try {
       const returnUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-      const { state, codeChallenge } = await storeOAuthState(identityProvider.name, "link", returnUrl);
+      const { state, codeChallenge } = await storeOAuthState(identityProvider.name, "link", returnUrl, currentUser.name);
 
       let authUrl = `${oauth2Config.authUrl}?client_id=${
         oauth2Config.clientId

@@ -9,6 +9,7 @@ interface OAuthState {
   flowMode: OAuthFlowMode;
   timestamp: number;
   returnUrl?: string;
+  linkingUserName?: string;
   codeVerifier?: string; // PKCE code_verifier
 }
 
@@ -49,6 +50,7 @@ export async function storeOAuthState(
   identityProviderName: string,
   flowMode: OAuthFlowMode,
   returnUrl?: string,
+  linkingUserName?: string,
 ): Promise<{ state: string; codeChallenge?: string }> {
   const state = generateSecureState();
 
@@ -81,6 +83,7 @@ export async function storeOAuthState(
     flowMode,
     timestamp: Date.now(),
     returnUrl,
+    linkingUserName,
     codeVerifier, // Store for later retrieval in callback (undefined if PKCE not available)
   };
 
@@ -95,10 +98,10 @@ export async function storeOAuthState(
 }
 
 // Validate and retrieve OAuth state from storage (CSRF protection)
-// Returns identityProviderName, flowMode, returnUrl, and codeVerifier for PKCE
+// Returns identityProviderName, flowMode, returnUrl, linkingUserName, and codeVerifier for PKCE
 export function validateOAuthState(
   stateParam: string,
-): { identityProviderName: string; flowMode: OAuthFlowMode; returnUrl?: string; codeVerifier?: string } | null {
+): { identityProviderName: string; flowMode: OAuthFlowMode; returnUrl?: string; linkingUserName?: string; codeVerifier?: string } | null {
   try {
     const storedData = sessionStorage.getItem(STATE_STORAGE_KEY);
     if (!storedData) {
@@ -128,6 +131,7 @@ export function validateOAuthState(
       identityProviderName: stateData.identityProviderName,
       flowMode: stateData.flowMode || "signin",
       returnUrl: stateData.returnUrl,
+      linkingUserName: stateData.linkingUserName,
       codeVerifier: stateData.codeVerifier, // Return PKCE code_verifier
     };
   } catch (error) {

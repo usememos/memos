@@ -76,7 +76,7 @@ const AuthCallback = () => {
       return;
     }
 
-    const { flowMode, identityProviderName, returnUrl, codeVerifier } = validatedState;
+    const { flowMode, identityProviderName, returnUrl, linkingUserName, codeVerifier } = validatedState;
     const redirectUri = absolutifyLink("/auth/callback");
     handledRef.current = true;
 
@@ -85,6 +85,9 @@ const AuthCallback = () => {
         if (flowMode === "link") {
           if (!currentUser?.name) {
             throw new Error("Failed to link account. Please sign in to Memos again and retry.");
+          }
+          if (linkingUserName && currentUser.name !== linkingUserName) {
+            throw new Error("The signed-in user changed before the OAuth callback completed. Please retry linking from account settings.");
           }
           await userServiceClient.createLinkedIdentity({
             parent: currentUser.name,
