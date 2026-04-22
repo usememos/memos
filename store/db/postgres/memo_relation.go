@@ -50,18 +50,20 @@ func (d *DB) ListMemoRelations(ctx context.Context, find *store.FindMemoRelation
 		where, args = append(where, "type = "+placeholder(len(args)+1)), append(args, *find.Type)
 	}
 	if len(find.MemoIDList) > 0 {
-		memoPlaceholders := make([]string, len(find.MemoIDList))
+		placeholders := make([]string, len(find.MemoIDList))
 		for i, id := range find.MemoIDList {
-			memoPlaceholders[i] = placeholder(len(args) + 1)
+			placeholders[i] = placeholder(len(args) + 1)
 			args = append(args, id)
 		}
-		relatedPlaceholders := make([]string, len(find.MemoIDList))
-		for i, id := range find.MemoIDList {
-			relatedPlaceholders[i] = placeholder(len(args) + 1)
+		where = append(where, fmt.Sprintf("memo_id IN (%s)", strings.Join(placeholders, ", ")))
+	}
+	if len(find.RelatedMemoIDList) > 0 {
+		placeholders := make([]string, len(find.RelatedMemoIDList))
+		for i, id := range find.RelatedMemoIDList {
+			placeholders[i] = placeholder(len(args) + 1)
 			args = append(args, id)
 		}
-		where = append(where, fmt.Sprintf("(memo_id IN (%s) OR related_memo_id IN (%s))",
-			strings.Join(memoPlaceholders, ", "), strings.Join(relatedPlaceholders, ", ")))
+		where = append(where, fmt.Sprintf("related_memo_id IN (%s)", strings.Join(placeholders, ", ")))
 	}
 	if find.MemoFilter != nil {
 		engine, err := filter.DefaultEngine()

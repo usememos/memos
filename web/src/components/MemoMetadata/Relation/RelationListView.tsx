@@ -5,6 +5,7 @@ import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import RelationCard from "./RelationCard";
 import { getRelationBuckets, getRelationMemo, getRelationMemoName, type RelationDirection } from "./relationHelpers";
+import { useResolvedRelationMemos } from "./useResolvedRelationMemos";
 
 interface RelationListViewProps {
   relations: MemoRelation[];
@@ -16,6 +17,7 @@ interface RelationListViewProps {
 function RelationListView({ relations, currentMemoName, parentPage, className }: RelationListViewProps) {
   const t = useTranslate();
   const [activeTab, setActiveTab] = useState<"referencing" | "referenced">("referencing");
+  const resolvedMemos = useResolvedRelationMemos(relations);
 
   const { referencing: referencingRelations, referenced: referencedRelations } = useMemo(
     () => getRelationBuckets(relations, currentMemoName),
@@ -60,9 +62,15 @@ function RelationListView({ relations, currentMemoName, parentPage, className }:
       }
       contentClassName="flex flex-col gap-0 p-1.5"
     >
-      {activeRelations.map((relation) => (
-        <RelationCard key={getRelationMemoName(relation, direction)} memo={getRelationMemo(relation, direction)!} parentPage={parentPage} />
-      ))}
+      {activeRelations.map((relation) => {
+        const memo = getRelationMemo(relation, direction);
+        if (!memo) {
+          return null;
+        }
+        return (
+          <RelationCard key={getRelationMemoName(relation, direction)} memo={resolvedMemos[memo.name] ?? memo} parentPage={parentPage} />
+        );
+      })}
     </MetadataSection>
   );
 }

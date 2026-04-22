@@ -48,11 +48,15 @@ func (d *DB) ListMemoRelations(ctx context.Context, find *store.FindMemoRelation
 			placeholders[i] = "?"
 			args = append(args, id)
 		}
-		inClause := strings.Join(placeholders, ", ")
-		for _, id := range find.MemoIDList {
+		where = append(where, fmt.Sprintf("`memo_id` IN (%s)", strings.Join(placeholders, ", ")))
+	}
+	if len(find.RelatedMemoIDList) > 0 {
+		placeholders := make([]string, len(find.RelatedMemoIDList))
+		for i, id := range find.RelatedMemoIDList {
+			placeholders[i] = "?"
 			args = append(args, id)
 		}
-		where = append(where, fmt.Sprintf("(`memo_id` IN (%s) OR `related_memo_id` IN (%s))", inClause, inClause))
+		where = append(where, fmt.Sprintf("`related_memo_id` IN (%s)", strings.Join(placeholders, ", ")))
 	}
 	if find.MemoFilter != nil {
 		engine, err := filter.DefaultEngine()

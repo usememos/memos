@@ -176,7 +176,7 @@ func (s *APIV1Service) GetMemoByShare(ctx context.Context, request *v1pb.GetMemo
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list attachments")
 	}
-	relations, err := s.batchConvertMemoRelations(ctx, []*store.Memo{memo})
+	relations, err := s.batchConvertMemoRelations(ctx, []*store.Memo{memo}, true)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to load memo relations")
 	}
