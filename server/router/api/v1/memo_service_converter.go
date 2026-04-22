@@ -220,8 +220,8 @@ func (s *APIV1Service) batchConvertMemoRelations(ctx context.Context, memos []*s
 	}
 
 	outgoingRelations, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
-		MemoIDList: memoIDs,
-		MemoFilter: &memoFilter,
+		SourceMemoIDList: memoIDs,
+		MemoFilter:       &memoFilter,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to batch list outgoing memo relations")

@@ -26,6 +26,8 @@ type FindMemoRelation struct {
 	MemoFilter    *string
 	// MemoIDList matches relations where memo_id OR related_memo_id is in the list.
 	MemoIDList []int32
+	// SourceMemoIDList matches relations where memo_id is in the list.
+	SourceMemoIDList []int32
 	// RelatedMemoIDList matches relations where related_memo_id is in the list.
 	RelatedMemoIDList []int32
 	Limit             *int
