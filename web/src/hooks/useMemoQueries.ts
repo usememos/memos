@@ -5,7 +5,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tansta
 import { memoServiceClient } from "@/connect";
 import { userKeys } from "@/hooks/useUserQueries";
 import type { ListMemosRequest, ListMemosResponse, Memo } from "@/types/proto/api/v1/memo_service_pb";
-import { ListMemosRequestSchema, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import { ListMemoCommentsRequestSchema, ListMemosRequestSchema, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
 // Query keys factory for consistent cache management
 export const memoKeys = {
@@ -243,11 +243,16 @@ export function useDeleteMemo() {
   });
 }
 
-export function useMemoComments(name: string, options?: { enabled?: boolean }) {
+export function useMemoComments(name: string, options?: { enabled?: boolean; pageSize?: number }) {
   return useQuery({
-    queryKey: memoKeys.comments(name),
+    queryKey: [...memoKeys.comments(name), options?.pageSize ?? 0],
     queryFn: async () => {
-      const response = await memoServiceClient.listMemoComments({ name });
+      const response = await memoServiceClient.listMemoComments(
+        create(ListMemoCommentsRequestSchema, {
+          name,
+          pageSize: options?.pageSize ?? 0,
+        }),
+      );
       return response;
     },
     enabled: options?.enabled ?? true,

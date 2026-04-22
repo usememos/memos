@@ -10,7 +10,7 @@ const MemoCommentListView: React.FC = () => {
   const { memo } = useMemoViewContext();
   const { isInMemoDetailPage, commentAmount } = useMemoViewDerived();
 
-  const { data } = useMemoComments(memo.name, { enabled: !isInMemoDetailPage && commentAmount > 0 });
+  const { data } = useMemoComments(memo.name, { enabled: !isInMemoDetailPage && commentAmount > 0, pageSize: 3 });
   const comments = data?.memos ?? [];
   const displayedComments = comments.slice(0, 3);
   const { data: commentCreators } = useUsersByNames(displayedComments.map((comment) => comment.creator));

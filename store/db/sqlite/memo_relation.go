@@ -56,11 +56,26 @@ func (d *DB) ListMemoRelations(ctx context.Context, find *store.FindMemoRelation
 			args = append(args, id)
 		}
 		inClause := strings.Join(placeholders, ", ")
-		// Duplicate args for the second IN clause.
 		for _, id := range find.MemoIDList {
 			args = append(args, id)
 		}
 		where = append(where, fmt.Sprintf("(memo_id IN (%s) OR related_memo_id IN (%s))", inClause, inClause))
+	}
+	if len(find.SourceMemoIDList) > 0 {
+		placeholders := make([]string, len(find.SourceMemoIDList))
+		for i, id := range find.SourceMemoIDList {
+			placeholders[i] = "?"
+			args = append(args, id)
+		}
+		where = append(where, fmt.Sprintf("memo_id IN (%s)", strings.Join(placeholders, ", ")))
+	}
+	if len(find.RelatedMemoIDList) > 0 {
+		placeholders := make([]string, len(find.RelatedMemoIDList))
+		for i, id := range find.RelatedMemoIDList {
+			placeholders[i] = "?"
+			args = append(args, id)
+		}
+		where = append(where, fmt.Sprintf("related_memo_id IN (%s)", strings.Join(placeholders, ", ")))
 	}
 	if find.MemoFilter != nil {
 		engine, err := filter.DefaultEngine()

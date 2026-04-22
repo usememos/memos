@@ -11,9 +11,10 @@ export const useResolvedRelationMemos = (relations: MemoRelation[]) => {
     const names = new Set<string>();
 
     for (const relation of relations) {
-      const relatedMemo = relation.relatedMemo;
-      if (relatedMemo?.name && !relatedMemo.snippet && !resolvedMemos[relatedMemo.name]) {
-        names.add(relatedMemo.name);
+      for (const memo of [relation.memo, relation.relatedMemo]) {
+        if (memo?.name && !memo.snippet && !resolvedMemos[memo.name]) {
+          names.add(memo.name);
+        }
       }
     }
 

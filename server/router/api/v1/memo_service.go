@@ -297,18 +297,22 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 	}
 
 	// RELATIONS (batch load to avoid N+1)
-	relationMap, err := s.batchConvertMemoRelations(ctx, memos)
+	relationMap, err := s.batchConvertMemoRelations(ctx, memos, false)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to batch load memo relations")
 	}
-	creatorIDs := make([]int32, 0, len(memos))
+	creatorIDs := make([]int32, 0, len(memos)+len(reactions))
 	for _, memo := range memos {
 		creatorIDs = append(creatorIDs, memo.CreatorID)
+	}
+	for _, reaction := range reactions {
+		creatorIDs = append(creatorIDs, reaction.CreatorID)
 	}
 	creatorMap, err := s.listUsersByID(ctx, creatorIDs)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memo creators: %v", err)
 	}
+	conversionOptions := memoConversionOptions{displayWithUpdateTime: instanceMemoRelatedSetting.DisplayWithUpdateTime}
 
 	for _, memo := range memos {
 		memoName := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
@@ -316,7 +320,7 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		attachments := attachmentMap[memo.ID]
 		relations := relationMap[memo.ID]
 
-		memoMessage, err := s.convertMemoFromStoreWithCreators(ctx, memo, reactions, attachments, relations, creatorMap)
+		memoMessage, err := s.convertMemoFromStoreWithCreatorsAndOptions(ctx, memo, reactions, attachments, relations, creatorMap, conversionOptions)
 		if err != nil {
 			if stderrors.Is(err, errMemoCreatorNotFound) {
 				slog.Warn("Skipping memo with missing creator",
@@ -798,18 +802,26 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 	}
 
 	// RELATIONS (batch load to avoid N+1)
-	relationMap, err := s.batchConvertMemoRelations(ctx, memos)
+	relationMap, err := s.batchConvertMemoRelations(ctx, memos, false)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to batch load memo relations")
 	}
-	creatorIDs := make([]int32, 0, len(memos))
+	creatorIDs := make([]int32, 0, len(memos)+len(reactions))
 	for _, memo := range memos {
 		creatorIDs = append(creatorIDs, memo.CreatorID)
+	}
+	for _, reaction := range reactions {
+		creatorIDs = append(creatorIDs, reaction.CreatorID)
 	}
 	creatorMap, err := s.listUsersByID(ctx, creatorIDs)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memo creators: %v", err)
 	}
+	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get instance memo related setting")
+	}
+	conversionOptions := memoConversionOptions{displayWithUpdateTime: instanceMemoRelatedSetting.DisplayWithUpdateTime}
 
 	var memosResponse []*v1pb.Memo
 	for _, m := range memos {
@@ -818,7 +830,7 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 		attachments := attachmentMap[m.ID]
 		relations := relationMap[m.ID]
 
-		memoMessage, err := s.convertMemoFromStoreWithCreators(ctx, m, reactions, attachments, relations, creatorMap)
+		memoMessage, err := s.convertMemoFromStoreWithCreatorsAndOptions(ctx, m, reactions, attachments, relations, creatorMap, conversionOptions)
 		if err != nil {
 			if stderrors.Is(err, errMemoCreatorNotFound) {
 				slog.Warn("Skipping memo comment with missing creator",
