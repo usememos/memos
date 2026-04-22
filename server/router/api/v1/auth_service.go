@@ -132,44 +132,9 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 			}
 		}
 
-		user, err := s.Store.GetUser(ctx, &store.FindUser{
-			Username: &userInfo.Identifier,
-		})
+		user, err := s.resolveSSOUser(ctx, identityProvider, userInfo)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get user, error: %v", err)
-		}
-		if user == nil {
-			// Check if the user is allowed to sign up.
-			instanceGeneralSetting, err := s.Store.GetInstanceGeneralSetting(ctx)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to get instance general setting, error: %v", err)
-			}
-			if instanceGeneralSetting.DisallowUserRegistration {
-				return nil, status.Errorf(codes.PermissionDenied, "user registration is not allowed")
-			}
-
-			// Create a new user with the user info from the identity provider.
-			userCreate := &store.User{
-				Username: userInfo.Identifier,
-				// The new signup user should be normal user by default.
-				Role:      store.RoleUser,
-				Nickname:  userInfo.DisplayName,
-				Email:     userInfo.Email,
-				AvatarURL: userInfo.AvatarURL,
-			}
-			password, err := util.RandomString(20)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to generate random password, error: %v", err)
-			}
-			passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to generate password hash, error: %v", err)
-			}
-			userCreate.PasswordHash = string(passwordHash)
-			user, err = s.Store.CreateUser(ctx, userCreate)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to create user, error: %v", err)
-			}
+			return nil, err
 		}
 		existingUser = user
 	}
@@ -191,6 +156,138 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 		AccessToken:          accessToken,
 		AccessTokenExpiresAt: timestamppb.New(accessExpiresAt),
 	}, nil
+}
+
+// resolveSSOUser resolves a local user from an external-identity subject, creating the
+// linkage record (and a new local user if necessary) when first login is allowed.
+//
+// Lookup goes through the user_identity table so that userInfo.Identifier is never used
+// as the local username key. On the miss path, a local user is created with a
+// profile-derived username (see deriveSSOUsername) and the (provider, extern_uid) linkage
+// is inserted in the same flow. If the linkage insert loses a race on the unique
+// (provider, extern_uid) constraint, the provisional local user is cleaned up and the
+// winning linkage's user is returned instead.
+func (s *APIV1Service) resolveSSOUser(ctx context.Context, identityProvider *storepb.IdentityProvider, userInfo *idp.IdentityProviderUserInfo) (*store.User, error) {
+	provider := identityProvider.Uid
+	externUID := userInfo.Identifier
+
+	identity, err := s.Store.GetUserIdentity(ctx, &store.FindUserIdentity{
+		Provider:  &provider,
+		ExternUID: &externUID,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user identity, error: %v", err)
+	}
+	if identity != nil {
+		user, err := s.Store.GetUser(ctx, &store.FindUser{ID: &identity.UserID})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get user, error: %v", err)
+		}
+		if user == nil {
+			return nil, status.Errorf(codes.Internal, "linked user %d not found for identity %d", identity.UserID, identity.ID)
+		}
+		return user, nil
+	}
+
+	// Miss path: enforce the registration gate before creating anything.
+	instanceGeneralSetting, err := s.Store.GetInstanceGeneralSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get instance general setting, error: %v", err)
+	}
+	if instanceGeneralSetting.DisallowUserRegistration {
+		return nil, status.Errorf(codes.PermissionDenied, "user registration is not allowed")
+	}
+
+	password, err := util.RandomString(20)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to generate random password, error: %v", err)
+	}
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to generate password hash, error: %v", err)
+	}
+	// Derive a username and create the local user. deriveSSOUsername probes
+	// availability up front, but username uniqueness is enforced at the database
+	// layer and the probe/insert pair is not atomic. Retry on UNIQUE(username)
+	// violations so concurrent first logins whose profile fields normalize to the
+	// same base (or any other TOCTOU loser) converge on a unique suffixed name
+	// instead of surfacing a spurious Internal error.
+	var user *store.User
+	for attempt := 0; attempt < ssoUserCreateMaxAttempts; attempt++ {
+		username, err := deriveSSOUsername(ctx, s.Store, userInfo)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to derive username, error: %v", err)
+		}
+		user, err = s.Store.CreateUser(ctx, &store.User{
+			Username:     username,
+			Role:         store.RoleUser,
+			Nickname:     userInfo.DisplayName,
+			Email:        userInfo.Email,
+			AvatarURL:    userInfo.AvatarURL,
+			PasswordHash: string(passwordHash),
+		})
+		if err == nil {
+			break
+		}
+		if !isUniqueConstraintViolation(err) {
+			return nil, status.Errorf(codes.Internal, "failed to create user, error: %v", err)
+		}
+		// UNIQUE(username) race lost. Loop and let deriveSSOUsername re-probe; the
+		// winning row now occupies the bare base, so the next call returns a
+		// freshly suffixed candidate.
+		user = nil
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.Internal, "failed to create user: exhausted %d username collision retries", ssoUserCreateMaxAttempts)
+	}
+
+	if _, err := s.Store.CreateUserIdentity(ctx, &store.UserIdentity{
+		UserID:    user.ID,
+		Provider:  provider,
+		ExternUID: externUID,
+	}); err != nil {
+		// Best-effort cleanup: the provisional user row has no linkage and should not remain.
+		_ = s.Store.DeleteUser(ctx, &store.DeleteUser{ID: user.ID})
+		if isUniqueConstraintViolation(err) {
+			// Concurrent first login won the race; load the winning linkage's user.
+			winner, getErr := s.Store.GetUserIdentity(ctx, &store.FindUserIdentity{
+				Provider:  &provider,
+				ExternUID: &externUID,
+			})
+			if getErr != nil {
+				return nil, status.Errorf(codes.Internal, "failed to reload user identity after race, error: %v", getErr)
+			}
+			if winner == nil {
+				return nil, status.Errorf(codes.Internal, "user identity conflict reported but no winning row found")
+			}
+			winnerUser, getErr := s.Store.GetUser(ctx, &store.FindUser{ID: &winner.UserID})
+			if getErr != nil {
+				return nil, status.Errorf(codes.Internal, "failed to get user after race, error: %v", getErr)
+			}
+			if winnerUser == nil {
+				return nil, status.Errorf(codes.Internal, "linked user %d not found after race", winner.UserID)
+			}
+			return winnerUser, nil
+		}
+		return nil, status.Errorf(codes.Internal, "failed to create user identity, error: %v", err)
+	}
+	return user, nil
+}
+
+// isUniqueConstraintViolation matches the driver-specific error messages that each
+// supported backend emits when any UNIQUE constraint rejects an insert. Callers
+// disambiguate which constraint was hit from the insertion context (e.g. inserting
+// a user_identity row can only violate UNIQUE(provider, extern_uid); inserting a
+// user row can only violate UNIQUE(username)). Matches the pattern used in
+// memo_service.go for the memo UID unique check.
+func isUniqueConstraintViolation(err error) bool {
+	if err == nil {
+		return false
+	}
+	msg := err.Error()
+	return strings.Contains(msg, "UNIQUE constraint failed") ||
+		strings.Contains(msg, "duplicate key") ||
+		strings.Contains(msg, "Duplicate entry")
 }
 
 // doSignIn performs the actual sign-in operation by creating a session and setting the cookie.

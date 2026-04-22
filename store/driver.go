@@ -70,4 +70,8 @@ type Driver interface {
 	ListMemoShares(ctx context.Context, find *FindMemoShare) ([]*MemoShare, error)
 	GetMemoShare(ctx context.Context, find *FindMemoShare) (*MemoShare, error)
 	DeleteMemoShare(ctx context.Context, delete *DeleteMemoShare) error
+
+	// UserIdentity model related methods.
+	CreateUserIdentity(ctx context.Context, create *UserIdentity) (*UserIdentity, error)
+	ListUserIdentities(ctx context.Context, find *FindUserIdentity) ([]*UserIdentity, error)
 }
