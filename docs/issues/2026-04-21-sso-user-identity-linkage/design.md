@@ -122,7 +122,7 @@ The store type should mirror the lookup schema:
 - `UserIdentity`: `ID`, `UserID`, `Provider`, `ExternUID`, `CreatedTs`, `UpdatedTs`
 - `FindUserIdentity`: `Provider`, `ExternUID`, `UserID`
 
-Only create and read operations are required in this issue. Update and delete paths are deferred because no current sign-in flow needs them (G5).
+Only create and read operations are required in this issue. Update and delete paths are deferred because no current sign-in flow needs them (G5). The create path must surface provider/external-UID uniqueness conflicts so the sign-in flow can reconcile concurrent first-login races instead of leaving an unlinked local user behind.
 
 ### 3. Route SSO lookup through the linkage record
 
@@ -131,9 +131,10 @@ Change the `auth_service.SignIn` SSO branch so that, after `identifier_filter` p
 1. Resolve the current IdP instance from `idp.uid`.
 2. Query `user_identity` by `(provider = idp.uid, extern_uid = userInfo.Identifier)`.
 3. On hit, load the local user by `user_id`.
-4. On miss, apply the existing registration gate, derive a valid local username from display-oriented fields, create the user, then insert the identity row.
+4. On miss, apply the existing registration gate, derive a valid local username from display-oriented fields, and execute local user creation plus `user_identity` insertion in a single transaction.
+5. If the `user_identity` insert loses a race on the unique `(provider, extern_uid)` key, discard the provisional linkage result, re-read `user_identity`, and continue sign-in using the winning row's `user_id`.
 
-This directly addresses the current runtime coupling in `server/router/api/v1/auth_service.go:135-169` and satisfies G1 and G2. `User.Username` becomes a local account attribute again instead of the SSO subject store.
+This directly addresses the current runtime coupling in `server/router/api/v1/auth_service.go:135-169` and satisfies G1 and G2. `User.Username` becomes a local account attribute again instead of the SSO subject store, and the miss path becomes idempotent under concurrent first sign-ins for the same external identity.
 
 ### 4. Keep username derivation separate from external identity persistence
 
@@ -159,6 +160,8 @@ The migrations should preserve the same logical fields across backends:
 - `updated_ts`
 - unique key on `(provider, extern_uid)`
 - secondary index on `user_id`
+
+The implementation derived from these migrations should treat `(provider, extern_uid)` as both the lookup key and the concurrency guard for first login. A uniqueness conflict on that pair is a recoverable race outcome, not an unrecoverable error path.
 
 ### 6. Document the pattern families explicitly in the issue docs
 
