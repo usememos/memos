@@ -77,11 +77,7 @@ const SignIn = () => {
           <img className="h-14 w-auto rounded-full shadow" src={instanceGeneralSetting.customProfile?.logoUrl || "/logo.webp"} alt="" />
           <p className="ml-2 text-5xl text-foreground opacity-80">{instanceGeneralSetting.customProfile?.title || "Memos"}</p>
         </div>
-        {!instanceGeneralSetting.disallowPasswordAuth ? (
-          <PasswordSignInForm redirectPath={redirectTarget} />
-        ) : (
-          identityProviderList.length === 0 && <p className="w-full text-2xl mt-2 text-muted-foreground">Password auth is not allowed.</p>
-        )}
+        <PasswordSignInForm allowPasswordAuth={!instanceGeneralSetting.disallowPasswordAuth} redirectPath={redirectTarget} />
         {!instanceGeneralSetting.disallowUserRegistration && !instanceGeneralSetting.disallowPasswordAuth && (
           <p className="w-full mt-4 text-sm">
             <span className="text-muted-foreground">{t("auth.sign-up-tip")}</span>
@@ -92,14 +88,12 @@ const SignIn = () => {
         )}
         {identityProviderList.length > 0 && (
           <>
-            {!instanceGeneralSetting.disallowPasswordAuth && (
-              <div className="relative my-4 w-full">
-                <Separator />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="bg-background px-2 text-xs text-muted-foreground">{t("common.or")}</span>
-                </div>
+            <div className="relative my-4 w-full">
+              <Separator />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="bg-background px-2 text-xs text-muted-foreground">{t("common.or")}</span>
               </div>
-            )}
+            </div>
             <div className="w-full flex flex-col space-y-2">
               {identityProviderList.map((identityProvider) => (
                 <Button

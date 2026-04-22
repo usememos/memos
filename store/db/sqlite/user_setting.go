@@ -19,7 +19,7 @@ func (d *DB) UpsertUserSetting(ctx context.Context, upsert *store.UserSetting) (
 		ON CONFLICT(user_id, key) DO UPDATE 
 		SET value = EXCLUDED.value
 	`
-	if _, err := d.db.ExecContext(ctx, stmt, upsert.UserID, upsert.Key.String(), upsert.Value); err != nil {
+	if _, err := d.db.ExecContext(ctx, stmt, upsert.UserID, store.UserSettingKeyString(upsert.Key), upsert.Value); err != nil {
 		return nil, err
 	}
 	return upsert, nil
@@ -29,7 +29,7 @@ func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) 
 	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.Key; v != storepb.UserSetting_KEY_UNSPECIFIED {
-		where, args = append(where, "key = ?"), append(args, v.String())
+		where, args = append(where, "key = ?"), append(args, store.UserSettingKeyString(v))
 	}
 	if v := find.UserID; v != nil {
 		where, args = append(where, "user_id = ?"), append(args, *find.UserID)
@@ -59,7 +59,7 @@ func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) 
 		); err != nil {
 			return nil, err
 		}
-		userSetting.Key = storepb.UserSetting_Key(storepb.UserSetting_Key_value[keyString])
+		userSetting.Key = store.ParseUserSettingKey(keyString)
 		userSettingList = append(userSettingList, userSetting)
 	}
 	if err := rows.Err(); err != nil {

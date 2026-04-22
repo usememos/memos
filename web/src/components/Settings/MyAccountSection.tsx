@@ -4,6 +4,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
 import { useTranslate } from "@/utils/i18n";
 import ChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
+import PasskeyDialog from "../PasskeyDialog";
 import UpdateAccountDialog from "../UpdateAccountDialog";
 import UserAvatar from "../UserAvatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
@@ -16,6 +17,7 @@ const MyAccountSection = () => {
   const user = useCurrentUser();
   const accountDialog = useDialog();
   const passwordDialog = useDialog();
+  const passkeyDialog = useDialog();
 
   return (
     <SettingSection title={t("setting.my-account.label")}>
@@ -41,6 +43,7 @@ const MyAccountSection = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={passkeyDialog.open}>{t("setting.account.passkey-title")}</DropdownMenuItem>
                 <DropdownMenuItem onClick={passwordDialog.open}>{t("setting.account.change-password")}</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -57,6 +60,9 @@ const MyAccountSection = () => {
 
       {/* Change Password Dialog */}
       <ChangeMemberPasswordDialog open={passwordDialog.isOpen} onOpenChange={passwordDialog.setOpen} user={user} />
+
+      {/* Passkey Dialog */}
+      <PasskeyDialog open={passkeyDialog.isOpen} onOpenChange={passkeyDialog.setOpen} />
     </SettingSection>
   );
 };

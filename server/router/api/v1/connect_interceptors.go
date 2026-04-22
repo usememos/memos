@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"net/http"
 	"reflect"
 	"runtime/debug"
 
@@ -30,27 +31,7 @@ func NewMetadataInterceptor() *MetadataInterceptor {
 
 func (*MetadataInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 	return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
-		// Convert HTTP headers to gRPC metadata
-		header := req.Header()
-		md := metadata.MD{}
-
-		// Copy important headers for client info extraction
-		if ua := header.Get("User-Agent"); ua != "" {
-			md.Set("user-agent", ua)
-		}
-		if xff := header.Get("X-Forwarded-For"); xff != "" {
-			md.Set("x-forwarded-for", xff)
-		}
-		if xri := header.Get("X-Real-Ip"); xri != "" {
-			md.Set("x-real-ip", xri)
-		}
-		// Forward Cookie header for authentication methods that need it (e.g., RefreshToken)
-		if cookie := header.Get("Cookie"); cookie != "" {
-			md.Set("cookie", cookie)
-		}
-
-		// Set metadata in context so services can use metadata.FromIncomingContext()
-		ctx = metadata.NewIncomingContext(ctx, md)
+		ctx = metadata.NewIncomingContext(ctx, metadataFromHeaders(req.Header(), ""))
 
 		// Execute the request
 		resp, err := next(ctx, req)
@@ -64,6 +45,29 @@ func (*MetadataInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc 
 		}
 
 		return resp, err
+	}
+}
+
+func metadataFromHeaders(header http.Header, host string) metadata.MD {
+	md := metadata.MD{}
+
+	setMetadataHeader(md, header, "User-Agent", "user-agent")
+	setMetadataHeader(md, header, "X-Forwarded-For", "x-forwarded-for")
+	setMetadataHeader(md, header, "X-Real-Ip", "x-real-ip")
+	setMetadataHeader(md, header, "Cookie", "cookie")
+	setMetadataHeader(md, header, "Origin", "origin")
+	setMetadataHeader(md, header, "X-Forwarded-Host", "x-forwarded-host")
+	setMetadataHeader(md, header, "X-Forwarded-Proto", "x-forwarded-proto")
+	if host != "" {
+		md.Set("host", host)
+	}
+
+	return md
+}
+
+func setMetadataHeader(md metadata.MD, header http.Header, httpHeader, metadataKey string) {
+	if value := header.Get(httpHeader); value != "" {
+		md.Set(metadataKey, value)
 	}
 }
 
