@@ -62,6 +62,18 @@ const (
 	// UserServiceListUserSettingsProcedure is the fully-qualified name of the UserService's
 	// ListUserSettings RPC.
 	UserServiceListUserSettingsProcedure = "/memos.api.v1.UserService/ListUserSettings"
+	// UserServiceListLinkedIdentitiesProcedure is the fully-qualified name of the UserService's
+	// ListLinkedIdentities RPC.
+	UserServiceListLinkedIdentitiesProcedure = "/memos.api.v1.UserService/ListLinkedIdentities"
+	// UserServiceCreateLinkedIdentityProcedure is the fully-qualified name of the UserService's
+	// CreateLinkedIdentity RPC.
+	UserServiceCreateLinkedIdentityProcedure = "/memos.api.v1.UserService/CreateLinkedIdentity"
+	// UserServiceGetLinkedIdentityProcedure is the fully-qualified name of the UserService's
+	// GetLinkedIdentity RPC.
+	UserServiceGetLinkedIdentityProcedure = "/memos.api.v1.UserService/GetLinkedIdentity"
+	// UserServiceDeleteLinkedIdentityProcedure is the fully-qualified name of the UserService's
+	// DeleteLinkedIdentity RPC.
+	UserServiceDeleteLinkedIdentityProcedure = "/memos.api.v1.UserService/DeleteLinkedIdentity"
 	// UserServiceListPersonalAccessTokensProcedure is the fully-qualified name of the UserService's
 	// ListPersonalAccessTokens RPC.
 	UserServiceListPersonalAccessTokensProcedure = "/memos.api.v1.UserService/ListPersonalAccessTokens"
@@ -119,6 +131,14 @@ type UserServiceClient interface {
 	UpdateUserSetting(context.Context, *connect.Request[v1.UpdateUserSettingRequest]) (*connect.Response[v1.UserSetting], error)
 	// ListUserSettings returns a list of user settings.
 	ListUserSettings(context.Context, *connect.Request[v1.ListUserSettingsRequest]) (*connect.Response[v1.ListUserSettingsResponse], error)
+	// ListLinkedIdentities returns a list of linked SSO identities for a user.
+	ListLinkedIdentities(context.Context, *connect.Request[v1.ListLinkedIdentitiesRequest]) (*connect.Response[v1.ListLinkedIdentitiesResponse], error)
+	// CreateLinkedIdentity links an SSO identity to the authenticated user.
+	CreateLinkedIdentity(context.Context, *connect.Request[v1.CreateLinkedIdentityRequest]) (*connect.Response[v1.LinkedIdentity], error)
+	// GetLinkedIdentity gets a linked SSO identity for a user.
+	GetLinkedIdentity(context.Context, *connect.Request[v1.GetLinkedIdentityRequest]) (*connect.Response[v1.LinkedIdentity], error)
+	// DeleteLinkedIdentity unlinks an SSO identity from a user.
+	DeleteLinkedIdentity(context.Context, *connect.Request[v1.DeleteLinkedIdentityRequest]) (*connect.Response[emptypb.Empty], error)
 	// ListPersonalAccessTokens returns a list of Personal Access Tokens (PATs) for a user.
 	// PATs are long-lived tokens for API/script access, distinct from short-lived JWT access tokens.
 	ListPersonalAccessTokens(context.Context, *connect.Request[v1.ListPersonalAccessTokensRequest]) (*connect.Response[v1.ListPersonalAccessTokensResponse], error)
@@ -220,6 +240,30 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceMethods.ByName("ListUserSettings")),
 			connect.WithClientOptions(opts...),
 		),
+		listLinkedIdentities: connect.NewClient[v1.ListLinkedIdentitiesRequest, v1.ListLinkedIdentitiesResponse](
+			httpClient,
+			baseURL+UserServiceListLinkedIdentitiesProcedure,
+			connect.WithSchema(userServiceMethods.ByName("ListLinkedIdentities")),
+			connect.WithClientOptions(opts...),
+		),
+		createLinkedIdentity: connect.NewClient[v1.CreateLinkedIdentityRequest, v1.LinkedIdentity](
+			httpClient,
+			baseURL+UserServiceCreateLinkedIdentityProcedure,
+			connect.WithSchema(userServiceMethods.ByName("CreateLinkedIdentity")),
+			connect.WithClientOptions(opts...),
+		),
+		getLinkedIdentity: connect.NewClient[v1.GetLinkedIdentityRequest, v1.LinkedIdentity](
+			httpClient,
+			baseURL+UserServiceGetLinkedIdentityProcedure,
+			connect.WithSchema(userServiceMethods.ByName("GetLinkedIdentity")),
+			connect.WithClientOptions(opts...),
+		),
+		deleteLinkedIdentity: connect.NewClient[v1.DeleteLinkedIdentityRequest, emptypb.Empty](
+			httpClient,
+			baseURL+UserServiceDeleteLinkedIdentityProcedure,
+			connect.WithSchema(userServiceMethods.ByName("DeleteLinkedIdentity")),
+			connect.WithClientOptions(opts...),
+		),
 		listPersonalAccessTokens: connect.NewClient[v1.ListPersonalAccessTokensRequest, v1.ListPersonalAccessTokensResponse](
 			httpClient,
 			baseURL+UserServiceListPersonalAccessTokensProcedure,
@@ -296,6 +340,10 @@ type userServiceClient struct {
 	getUserSetting            *connect.Client[v1.GetUserSettingRequest, v1.UserSetting]
 	updateUserSetting         *connect.Client[v1.UpdateUserSettingRequest, v1.UserSetting]
 	listUserSettings          *connect.Client[v1.ListUserSettingsRequest, v1.ListUserSettingsResponse]
+	listLinkedIdentities      *connect.Client[v1.ListLinkedIdentitiesRequest, v1.ListLinkedIdentitiesResponse]
+	createLinkedIdentity      *connect.Client[v1.CreateLinkedIdentityRequest, v1.LinkedIdentity]
+	getLinkedIdentity         *connect.Client[v1.GetLinkedIdentityRequest, v1.LinkedIdentity]
+	deleteLinkedIdentity      *connect.Client[v1.DeleteLinkedIdentityRequest, emptypb.Empty]
 	listPersonalAccessTokens  *connect.Client[v1.ListPersonalAccessTokensRequest, v1.ListPersonalAccessTokensResponse]
 	createPersonalAccessToken *connect.Client[v1.CreatePersonalAccessTokenRequest, v1.CreatePersonalAccessTokenResponse]
 	deletePersonalAccessToken *connect.Client[v1.DeletePersonalAccessTokenRequest, emptypb.Empty]
@@ -361,6 +409,26 @@ func (c *userServiceClient) UpdateUserSetting(ctx context.Context, req *connect.
 // ListUserSettings calls memos.api.v1.UserService.ListUserSettings.
 func (c *userServiceClient) ListUserSettings(ctx context.Context, req *connect.Request[v1.ListUserSettingsRequest]) (*connect.Response[v1.ListUserSettingsResponse], error) {
 	return c.listUserSettings.CallUnary(ctx, req)
+}
+
+// ListLinkedIdentities calls memos.api.v1.UserService.ListLinkedIdentities.
+func (c *userServiceClient) ListLinkedIdentities(ctx context.Context, req *connect.Request[v1.ListLinkedIdentitiesRequest]) (*connect.Response[v1.ListLinkedIdentitiesResponse], error) {
+	return c.listLinkedIdentities.CallUnary(ctx, req)
+}
+
+// CreateLinkedIdentity calls memos.api.v1.UserService.CreateLinkedIdentity.
+func (c *userServiceClient) CreateLinkedIdentity(ctx context.Context, req *connect.Request[v1.CreateLinkedIdentityRequest]) (*connect.Response[v1.LinkedIdentity], error) {
+	return c.createLinkedIdentity.CallUnary(ctx, req)
+}
+
+// GetLinkedIdentity calls memos.api.v1.UserService.GetLinkedIdentity.
+func (c *userServiceClient) GetLinkedIdentity(ctx context.Context, req *connect.Request[v1.GetLinkedIdentityRequest]) (*connect.Response[v1.LinkedIdentity], error) {
+	return c.getLinkedIdentity.CallUnary(ctx, req)
+}
+
+// DeleteLinkedIdentity calls memos.api.v1.UserService.DeleteLinkedIdentity.
+func (c *userServiceClient) DeleteLinkedIdentity(ctx context.Context, req *connect.Request[v1.DeleteLinkedIdentityRequest]) (*connect.Response[emptypb.Empty], error) {
+	return c.deleteLinkedIdentity.CallUnary(ctx, req)
 }
 
 // ListPersonalAccessTokens calls memos.api.v1.UserService.ListPersonalAccessTokens.
@@ -438,6 +506,14 @@ type UserServiceHandler interface {
 	UpdateUserSetting(context.Context, *connect.Request[v1.UpdateUserSettingRequest]) (*connect.Response[v1.UserSetting], error)
 	// ListUserSettings returns a list of user settings.
 	ListUserSettings(context.Context, *connect.Request[v1.ListUserSettingsRequest]) (*connect.Response[v1.ListUserSettingsResponse], error)
+	// ListLinkedIdentities returns a list of linked SSO identities for a user.
+	ListLinkedIdentities(context.Context, *connect.Request[v1.ListLinkedIdentitiesRequest]) (*connect.Response[v1.ListLinkedIdentitiesResponse], error)
+	// CreateLinkedIdentity links an SSO identity to the authenticated user.
+	CreateLinkedIdentity(context.Context, *connect.Request[v1.CreateLinkedIdentityRequest]) (*connect.Response[v1.LinkedIdentity], error)
+	// GetLinkedIdentity gets a linked SSO identity for a user.
+	GetLinkedIdentity(context.Context, *connect.Request[v1.GetLinkedIdentityRequest]) (*connect.Response[v1.LinkedIdentity], error)
+	// DeleteLinkedIdentity unlinks an SSO identity from a user.
+	DeleteLinkedIdentity(context.Context, *connect.Request[v1.DeleteLinkedIdentityRequest]) (*connect.Response[emptypb.Empty], error)
 	// ListPersonalAccessTokens returns a list of Personal Access Tokens (PATs) for a user.
 	// PATs are long-lived tokens for API/script access, distinct from short-lived JWT access tokens.
 	ListPersonalAccessTokens(context.Context, *connect.Request[v1.ListPersonalAccessTokensRequest]) (*connect.Response[v1.ListPersonalAccessTokensResponse], error)
@@ -535,6 +611,30 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(userServiceMethods.ByName("ListUserSettings")),
 		connect.WithHandlerOptions(opts...),
 	)
+	userServiceListLinkedIdentitiesHandler := connect.NewUnaryHandler(
+		UserServiceListLinkedIdentitiesProcedure,
+		svc.ListLinkedIdentities,
+		connect.WithSchema(userServiceMethods.ByName("ListLinkedIdentities")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceCreateLinkedIdentityHandler := connect.NewUnaryHandler(
+		UserServiceCreateLinkedIdentityProcedure,
+		svc.CreateLinkedIdentity,
+		connect.WithSchema(userServiceMethods.ByName("CreateLinkedIdentity")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceGetLinkedIdentityHandler := connect.NewUnaryHandler(
+		UserServiceGetLinkedIdentityProcedure,
+		svc.GetLinkedIdentity,
+		connect.WithSchema(userServiceMethods.ByName("GetLinkedIdentity")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceDeleteLinkedIdentityHandler := connect.NewUnaryHandler(
+		UserServiceDeleteLinkedIdentityProcedure,
+		svc.DeleteLinkedIdentity,
+		connect.WithSchema(userServiceMethods.ByName("DeleteLinkedIdentity")),
+		connect.WithHandlerOptions(opts...),
+	)
 	userServiceListPersonalAccessTokensHandler := connect.NewUnaryHandler(
 		UserServiceListPersonalAccessTokensProcedure,
 		svc.ListPersonalAccessTokens,
@@ -619,6 +719,14 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 			userServiceUpdateUserSettingHandler.ServeHTTP(w, r)
 		case UserServiceListUserSettingsProcedure:
 			userServiceListUserSettingsHandler.ServeHTTP(w, r)
+		case UserServiceListLinkedIdentitiesProcedure:
+			userServiceListLinkedIdentitiesHandler.ServeHTTP(w, r)
+		case UserServiceCreateLinkedIdentityProcedure:
+			userServiceCreateLinkedIdentityHandler.ServeHTTP(w, r)
+		case UserServiceGetLinkedIdentityProcedure:
+			userServiceGetLinkedIdentityHandler.ServeHTTP(w, r)
+		case UserServiceDeleteLinkedIdentityProcedure:
+			userServiceDeleteLinkedIdentityHandler.ServeHTTP(w, r)
 		case UserServiceListPersonalAccessTokensProcedure:
 			userServiceListPersonalAccessTokensHandler.ServeHTTP(w, r)
 		case UserServiceCreatePersonalAccessTokenProcedure:
@@ -690,6 +798,22 @@ func (UnimplementedUserServiceHandler) UpdateUserSetting(context.Context, *conne
 
 func (UnimplementedUserServiceHandler) ListUserSettings(context.Context, *connect.Request[v1.ListUserSettingsRequest]) (*connect.Response[v1.ListUserSettingsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.ListUserSettings is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) ListLinkedIdentities(context.Context, *connect.Request[v1.ListLinkedIdentitiesRequest]) (*connect.Response[v1.ListLinkedIdentitiesResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.ListLinkedIdentities is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) CreateLinkedIdentity(context.Context, *connect.Request[v1.CreateLinkedIdentityRequest]) (*connect.Response[v1.LinkedIdentity], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.CreateLinkedIdentity is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) GetLinkedIdentity(context.Context, *connect.Request[v1.GetLinkedIdentityRequest]) (*connect.Response[v1.LinkedIdentity], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.GetLinkedIdentity is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) DeleteLinkedIdentity(context.Context, *connect.Request[v1.DeleteLinkedIdentityRequest]) (*connect.Response[emptypb.Empty], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.DeleteLinkedIdentity is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ListPersonalAccessTokens(context.Context, *connect.Request[v1.ListPersonalAccessTokensRequest]) (*connect.Response[v1.ListPersonalAccessTokensResponse], error) {

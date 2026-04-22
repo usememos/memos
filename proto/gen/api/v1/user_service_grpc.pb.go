@@ -31,6 +31,10 @@ const (
 	UserService_GetUserSetting_FullMethodName            = "/memos.api.v1.UserService/GetUserSetting"
 	UserService_UpdateUserSetting_FullMethodName         = "/memos.api.v1.UserService/UpdateUserSetting"
 	UserService_ListUserSettings_FullMethodName          = "/memos.api.v1.UserService/ListUserSettings"
+	UserService_ListLinkedIdentities_FullMethodName      = "/memos.api.v1.UserService/ListLinkedIdentities"
+	UserService_CreateLinkedIdentity_FullMethodName      = "/memos.api.v1.UserService/CreateLinkedIdentity"
+	UserService_GetLinkedIdentity_FullMethodName         = "/memos.api.v1.UserService/GetLinkedIdentity"
+	UserService_DeleteLinkedIdentity_FullMethodName      = "/memos.api.v1.UserService/DeleteLinkedIdentity"
 	UserService_ListPersonalAccessTokens_FullMethodName  = "/memos.api.v1.UserService/ListPersonalAccessTokens"
 	UserService_CreatePersonalAccessToken_FullMethodName = "/memos.api.v1.UserService/CreatePersonalAccessToken"
 	UserService_DeletePersonalAccessToken_FullMethodName = "/memos.api.v1.UserService/DeletePersonalAccessToken"
@@ -70,6 +74,14 @@ type UserServiceClient interface {
 	UpdateUserSetting(ctx context.Context, in *UpdateUserSettingRequest, opts ...grpc.CallOption) (*UserSetting, error)
 	// ListUserSettings returns a list of user settings.
 	ListUserSettings(ctx context.Context, in *ListUserSettingsRequest, opts ...grpc.CallOption) (*ListUserSettingsResponse, error)
+	// ListLinkedIdentities returns a list of linked SSO identities for a user.
+	ListLinkedIdentities(ctx context.Context, in *ListLinkedIdentitiesRequest, opts ...grpc.CallOption) (*ListLinkedIdentitiesResponse, error)
+	// CreateLinkedIdentity links an SSO identity to the authenticated user.
+	CreateLinkedIdentity(ctx context.Context, in *CreateLinkedIdentityRequest, opts ...grpc.CallOption) (*LinkedIdentity, error)
+	// GetLinkedIdentity gets a linked SSO identity for a user.
+	GetLinkedIdentity(ctx context.Context, in *GetLinkedIdentityRequest, opts ...grpc.CallOption) (*LinkedIdentity, error)
+	// DeleteLinkedIdentity unlinks an SSO identity from a user.
+	DeleteLinkedIdentity(ctx context.Context, in *DeleteLinkedIdentityRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ListPersonalAccessTokens returns a list of Personal Access Tokens (PATs) for a user.
 	// PATs are long-lived tokens for API/script access, distinct from short-lived JWT access tokens.
 	ListPersonalAccessTokens(ctx context.Context, in *ListPersonalAccessTokensRequest, opts ...grpc.CallOption) (*ListPersonalAccessTokensResponse, error)
@@ -212,6 +224,46 @@ func (c *userServiceClient) ListUserSettings(ctx context.Context, in *ListUserSe
 	return out, nil
 }
 
+func (c *userServiceClient) ListLinkedIdentities(ctx context.Context, in *ListLinkedIdentitiesRequest, opts ...grpc.CallOption) (*ListLinkedIdentitiesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListLinkedIdentitiesResponse)
+	err := c.cc.Invoke(ctx, UserService_ListLinkedIdentities_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) CreateLinkedIdentity(ctx context.Context, in *CreateLinkedIdentityRequest, opts ...grpc.CallOption) (*LinkedIdentity, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LinkedIdentity)
+	err := c.cc.Invoke(ctx, UserService_CreateLinkedIdentity_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) GetLinkedIdentity(ctx context.Context, in *GetLinkedIdentityRequest, opts ...grpc.CallOption) (*LinkedIdentity, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LinkedIdentity)
+	err := c.cc.Invoke(ctx, UserService_GetLinkedIdentity_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userServiceClient) DeleteLinkedIdentity(ctx context.Context, in *DeleteLinkedIdentityRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, UserService_DeleteLinkedIdentity_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) ListPersonalAccessTokens(ctx context.Context, in *ListPersonalAccessTokensRequest, opts ...grpc.CallOption) (*ListPersonalAccessTokensResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListPersonalAccessTokensResponse)
@@ -339,6 +391,14 @@ type UserServiceServer interface {
 	UpdateUserSetting(context.Context, *UpdateUserSettingRequest) (*UserSetting, error)
 	// ListUserSettings returns a list of user settings.
 	ListUserSettings(context.Context, *ListUserSettingsRequest) (*ListUserSettingsResponse, error)
+	// ListLinkedIdentities returns a list of linked SSO identities for a user.
+	ListLinkedIdentities(context.Context, *ListLinkedIdentitiesRequest) (*ListLinkedIdentitiesResponse, error)
+	// CreateLinkedIdentity links an SSO identity to the authenticated user.
+	CreateLinkedIdentity(context.Context, *CreateLinkedIdentityRequest) (*LinkedIdentity, error)
+	// GetLinkedIdentity gets a linked SSO identity for a user.
+	GetLinkedIdentity(context.Context, *GetLinkedIdentityRequest) (*LinkedIdentity, error)
+	// DeleteLinkedIdentity unlinks an SSO identity from a user.
+	DeleteLinkedIdentity(context.Context, *DeleteLinkedIdentityRequest) (*emptypb.Empty, error)
 	// ListPersonalAccessTokens returns a list of Personal Access Tokens (PATs) for a user.
 	// PATs are long-lived tokens for API/script access, distinct from short-lived JWT access tokens.
 	ListPersonalAccessTokens(context.Context, *ListPersonalAccessTokensRequest) (*ListPersonalAccessTokensResponse, error)
@@ -403,6 +463,18 @@ func (UnimplementedUserServiceServer) UpdateUserSetting(context.Context, *Update
 }
 func (UnimplementedUserServiceServer) ListUserSettings(context.Context, *ListUserSettingsRequest) (*ListUserSettingsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListUserSettings not implemented")
+}
+func (UnimplementedUserServiceServer) ListLinkedIdentities(context.Context, *ListLinkedIdentitiesRequest) (*ListLinkedIdentitiesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListLinkedIdentities not implemented")
+}
+func (UnimplementedUserServiceServer) CreateLinkedIdentity(context.Context, *CreateLinkedIdentityRequest) (*LinkedIdentity, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateLinkedIdentity not implemented")
+}
+func (UnimplementedUserServiceServer) GetLinkedIdentity(context.Context, *GetLinkedIdentityRequest) (*LinkedIdentity, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetLinkedIdentity not implemented")
+}
+func (UnimplementedUserServiceServer) DeleteLinkedIdentity(context.Context, *DeleteLinkedIdentityRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteLinkedIdentity not implemented")
 }
 func (UnimplementedUserServiceServer) ListPersonalAccessTokens(context.Context, *ListPersonalAccessTokensRequest) (*ListPersonalAccessTokensResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListPersonalAccessTokens not implemented")
@@ -653,6 +725,78 @@ func _UserService_ListUserSettings_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_ListLinkedIdentities_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListLinkedIdentitiesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).ListLinkedIdentities(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_ListLinkedIdentities_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).ListLinkedIdentities(ctx, req.(*ListLinkedIdentitiesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_CreateLinkedIdentity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateLinkedIdentityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).CreateLinkedIdentity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_CreateLinkedIdentity_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).CreateLinkedIdentity(ctx, req.(*CreateLinkedIdentityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_GetLinkedIdentity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLinkedIdentityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetLinkedIdentity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetLinkedIdentity_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetLinkedIdentity(ctx, req.(*GetLinkedIdentityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserService_DeleteLinkedIdentity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteLinkedIdentityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).DeleteLinkedIdentity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_DeleteLinkedIdentity_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).DeleteLinkedIdentity(ctx, req.(*DeleteLinkedIdentityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_ListPersonalAccessTokens_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListPersonalAccessTokensRequest)
 	if err := dec(in); err != nil {
@@ -883,6 +1027,22 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListUserSettings",
 			Handler:    _UserService_ListUserSettings_Handler,
+		},
+		{
+			MethodName: "ListLinkedIdentities",
+			Handler:    _UserService_ListLinkedIdentities_Handler,
+		},
+		{
+			MethodName: "CreateLinkedIdentity",
+			Handler:    _UserService_CreateLinkedIdentity_Handler,
+		},
+		{
+			MethodName: "GetLinkedIdentity",
+			Handler:    _UserService_GetLinkedIdentity_Handler,
+		},
+		{
+			MethodName: "DeleteLinkedIdentity",
+			Handler:    _UserService_DeleteLinkedIdentity_Handler,
 		},
 		{
 			MethodName: "ListPersonalAccessTokens",

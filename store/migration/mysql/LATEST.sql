@@ -118,7 +118,8 @@ CREATE TABLE `user_identity` (
   `extern_uid` VARCHAR(256) NOT NULL,
   `created_ts` BIGINT       NOT NULL DEFAULT (UNIX_TIMESTAMP()),
   `updated_ts` BIGINT       NOT NULL DEFAULT (UNIX_TIMESTAMP()),
-  UNIQUE (`provider`, `extern_uid`)
+  UNIQUE (`provider`, `extern_uid`),
+  UNIQUE (`user_id`, `provider`)
 );
 
 CREATE INDEX `idx_user_identity_user_id` ON `user_identity`(`user_id`);

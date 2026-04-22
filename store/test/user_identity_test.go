@@ -136,3 +136,64 @@ func TestUserIdentitySameExternUIDDifferentProviders(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, list, 2)
 }
+
+func TestUserIdentitySameUserSameProviderConflicts(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	_, err = ts.CreateUserIdentity(ctx, &store.UserIdentity{
+		UserID:    user.ID,
+		Provider:  "idp-A",
+		ExternUID: "sub-1",
+	})
+	require.NoError(t, err)
+
+	_, err = ts.CreateUserIdentity(ctx, &store.UserIdentity{
+		UserID:    user.ID,
+		Provider:  "idp-A",
+		ExternUID: "sub-2",
+	})
+	require.Error(t, err)
+}
+
+func TestUserIdentityDeleteByUserAndProvider(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	_, err = ts.CreateUserIdentity(ctx, &store.UserIdentity{
+		UserID:    user.ID,
+		Provider:  "idp-A",
+		ExternUID: "sub-a-1",
+	})
+	require.NoError(t, err)
+	_, err = ts.CreateUserIdentity(ctx, &store.UserIdentity{
+		UserID:    user.ID,
+		Provider:  "idp-B",
+		ExternUID: "sub-b-1",
+	})
+	require.NoError(t, err)
+
+	provider := "idp-A"
+	err = ts.DeleteUserIdentities(ctx, &store.DeleteUserIdentity{
+		UserID:   &user.ID,
+		Provider: &provider,
+	})
+	require.NoError(t, err)
+
+	list, err := ts.ListUserIdentities(ctx, &store.FindUserIdentity{
+		UserID: &user.ID,
+	})
+	require.NoError(t, err)
+	require.Len(t, list, 1)
+	require.Equal(t, "idp-B", list[0].Provider)
+}

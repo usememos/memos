@@ -70,6 +70,22 @@ func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) 
 	return userSettingList, nil
 }
 
+func (d *DB) DeleteUserSettings(ctx context.Context, delete *store.DeleteUserSetting) error {
+	where, args := []string{"1 = 1"}, []any{}
+
+	if v := delete.Key; v != storepb.UserSetting_KEY_UNSPECIFIED {
+		where, args = append(where, "key = "+placeholder(len(args)+1)), append(args, v.String())
+	}
+	if v := delete.UserID; v != nil {
+		where, args = append(where, "user_id = "+placeholder(len(args)+1)), append(args, *v)
+	}
+
+	if _, err := d.db.ExecContext(ctx, "DELETE FROM user_setting WHERE "+strings.Join(where, " AND "), args...); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (d *DB) GetUserByPATHash(ctx context.Context, tokenHash string) (*store.PATQueryResult, error) {
 	// Simplified query: fetch all PERSONAL_ACCESS_TOKENS rows and search in Go
 	// This matches SQLite/MySQL behavior and avoids PostgreSQL's strict JSONB errors

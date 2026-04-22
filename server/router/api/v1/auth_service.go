@@ -90,49 +90,11 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 		existingUser = user
 	} else if ssoCredentials := request.GetSsoCredentials(); ssoCredentials != nil {
 		// Authentication Method 2: SSO (OAuth2) authentication
-		idpUID, err := ExtractIdentityProviderUIDFromName(ssoCredentials.IdpName)
+		identityProvider, userInfo, err := s.resolveSSOIdentity(ctx, ssoCredentials.IdpName, ssoCredentials.Code, ssoCredentials.RedirectUri, ssoCredentials.CodeVerifier)
 		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider name: %v", err)
+			return nil, err
 		}
-		identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{
-			UID: &idpUID,
-		})
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get identity provider, error: %v", err)
-		}
-		if identityProvider == nil {
-			return nil, status.Errorf(codes.InvalidArgument, "identity provider not found")
-		}
-
-		var userInfo *idp.IdentityProviderUserInfo
-		if identityProvider.Type == storepb.IdentityProvider_OAUTH2 {
-			oauth2IdentityProvider, err := oauth2.NewIdentityProvider(identityProvider.Config.GetOauth2Config())
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to create oauth2 identity provider, error: %v", err)
-			}
-			// Pass code_verifier for PKCE support (empty string if not provided for backward compatibility)
-			token, err := oauth2IdentityProvider.ExchangeToken(ctx, ssoCredentials.RedirectUri, ssoCredentials.Code, ssoCredentials.CodeVerifier)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to exchange token, error: %v", err)
-			}
-			userInfo, err = oauth2IdentityProvider.UserInfo(token)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to get user info, error: %v", err)
-			}
-		}
-
-		identifierFilter := identityProvider.IdentifierFilter
-		if identifierFilter != "" {
-			identifierFilterRegex, err := regexp.Compile(identifierFilter)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to compile identifier filter regex, error: %v", err)
-			}
-			if !identifierFilterRegex.MatchString(userInfo.Identifier) {
-				return nil, status.Errorf(codes.PermissionDenied, "identifier %s is not allowed", userInfo.Identifier)
-			}
-		}
-
-		user, err := s.resolveSSOUser(ctx, identityProvider, userInfo)
+		user, err := s.resolveSSOUser(ctx, nil, identityProvider, userInfo)
 		if err != nil {
 			return nil, err
 		}
@@ -163,30 +125,29 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 //
 // Lookup goes through the user_identity table so that userInfo.Identifier is never used
 // as the local username key. On the miss path, a local user is created with a
-// profile-derived username (see deriveSSOUsername) and the (provider, extern_uid) linkage
-// is inserted in the same flow. If the linkage insert loses a race on the unique
-// (provider, extern_uid) constraint, the provisional local user is cleaned up and the
-// winning linkage's user is returned instead.
-func (s *APIV1Service) resolveSSOUser(ctx context.Context, identityProvider *storepb.IdentityProvider, userInfo *idp.IdentityProviderUserInfo) (*store.User, error) {
+// UUID-based local username (see deriveSSOUsername) and the (provider, extern_uid)
+// linkage is inserted in the same flow. When currentUser is provided by a caller
+// outside AuthService.SignIn, the lookup miss path binds the external identity to
+// that existing user instead. If the linkage insert loses a race on the unique
+// (provider, extern_uid) constraint, the winning linkage's user is loaded and
+// checked against the current user.
+func (s *APIV1Service) resolveSSOUser(ctx context.Context, currentUser *store.User, identityProvider *storepb.IdentityProvider, userInfo *idp.IdentityProviderUserInfo) (*store.User, error) {
 	provider := identityProvider.Uid
 	externUID := userInfo.Identifier
 
-	identity, err := s.Store.GetUserIdentity(ctx, &store.FindUserIdentity{
-		Provider:  &provider,
-		ExternUID: &externUID,
-	})
+	user, err := s.getLinkedSSOUser(ctx, provider, externUID)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user identity, error: %v", err)
+		return nil, err
 	}
-	if identity != nil {
-		user, err := s.Store.GetUser(ctx, &store.FindUser{ID: &identity.UserID})
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get user, error: %v", err)
-		}
-		if user == nil {
-			return nil, status.Errorf(codes.Internal, "linked user %d not found for identity %d", identity.UserID, identity.ID)
+	if user != nil {
+		if currentUser != nil && currentUser.ID != user.ID {
+			return nil, status.Errorf(codes.AlreadyExists, "identity provider account is already linked to another user")
 		}
 		return user, nil
+	}
+
+	if currentUser != nil {
+		return s.bindSSOIdentityToUser(ctx, currentUser, provider, externUID)
 	}
 
 	// Miss path: enforce the registration gate before creating anything.
@@ -206,39 +167,20 @@ func (s *APIV1Service) resolveSSOUser(ctx context.Context, identityProvider *sto
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to generate password hash, error: %v", err)
 	}
-	// Derive a username and create the local user. deriveSSOUsername probes
-	// availability up front, but username uniqueness is enforced at the database
-	// layer and the probe/insert pair is not atomic. Retry on UNIQUE(username)
-	// violations so concurrent first logins whose profile fields normalize to the
-	// same base (or any other TOCTOU loser) converge on a unique suffixed name
-	// instead of surfacing a spurious Internal error.
-	var user *store.User
-	for attempt := 0; attempt < ssoUserCreateMaxAttempts; attempt++ {
-		username, err := deriveSSOUsername(ctx, s.Store, userInfo)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to derive username, error: %v", err)
-		}
-		user, err = s.Store.CreateUser(ctx, &store.User{
-			Username:     username,
-			Role:         store.RoleUser,
-			Nickname:     userInfo.DisplayName,
-			Email:        userInfo.Email,
-			AvatarURL:    userInfo.AvatarURL,
-			PasswordHash: string(passwordHash),
-		})
-		if err == nil {
-			break
-		}
-		if !isUniqueConstraintViolation(err) {
-			return nil, status.Errorf(codes.Internal, "failed to create user, error: %v", err)
-		}
-		// UNIQUE(username) race lost. Loop and let deriveSSOUsername re-probe; the
-		// winning row now occupies the bare base, so the next call returns a
-		// freshly suffixed candidate.
-		user = nil
+	username, err := deriveSSOUsername()
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to derive username, error: %v", err)
 	}
-	if user == nil {
-		return nil, status.Errorf(codes.Internal, "failed to create user: exhausted %d username collision retries", ssoUserCreateMaxAttempts)
+	user, err = s.Store.CreateUser(ctx, &store.User{
+		Username:     username,
+		Role:         store.RoleUser,
+		Nickname:     userInfo.DisplayName,
+		Email:        userInfo.Email,
+		AvatarURL:    userInfo.AvatarURL,
+		PasswordHash: string(passwordHash),
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create user, error: %v", err)
 	}
 
 	if _, err := s.Store.CreateUserIdentity(ctx, &store.UserIdentity{
@@ -272,6 +214,111 @@ func (s *APIV1Service) resolveSSOUser(ctx context.Context, identityProvider *sto
 		return nil, status.Errorf(codes.Internal, "failed to create user identity, error: %v", err)
 	}
 	return user, nil
+}
+
+func (s *APIV1Service) resolveSSOIdentity(ctx context.Context, idpName, code, redirectURI, codeVerifier string) (*storepb.IdentityProvider, *idp.IdentityProviderUserInfo, error) {
+	idpUID, err := ExtractIdentityProviderUIDFromName(idpName)
+	if err != nil {
+		return nil, nil, status.Errorf(codes.InvalidArgument, "invalid identity provider name: %v", err)
+	}
+	identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{
+		UID: &idpUID,
+	})
+	if err != nil {
+		return nil, nil, status.Errorf(codes.Internal, "failed to get identity provider, error: %v", err)
+	}
+	if identityProvider == nil {
+		return nil, nil, status.Errorf(codes.InvalidArgument, "identity provider not found")
+	}
+
+	var userInfo *idp.IdentityProviderUserInfo
+	if identityProvider.Type == storepb.IdentityProvider_OAUTH2 {
+		oauth2IdentityProvider, err := oauth2.NewIdentityProvider(identityProvider.Config.GetOauth2Config())
+		if err != nil {
+			return nil, nil, status.Errorf(codes.Internal, "failed to create oauth2 identity provider, error: %v", err)
+		}
+		// Pass code_verifier for PKCE support (empty string if not provided for backward compatibility)
+		token, err := oauth2IdentityProvider.ExchangeToken(ctx, redirectURI, code, codeVerifier)
+		if err != nil {
+			return nil, nil, status.Errorf(codes.Internal, "failed to exchange token, error: %v", err)
+		}
+		userInfo, err = oauth2IdentityProvider.UserInfo(token)
+		if err != nil {
+			return nil, nil, status.Errorf(codes.Internal, "failed to get user info, error: %v", err)
+		}
+	}
+
+	identifierFilter := identityProvider.IdentifierFilter
+	if identifierFilter != "" {
+		identifierFilterRegex, err := regexp.Compile(identifierFilter)
+		if err != nil {
+			return nil, nil, status.Errorf(codes.Internal, "failed to compile identifier filter regex, error: %v", err)
+		}
+		if !identifierFilterRegex.MatchString(userInfo.Identifier) {
+			return nil, nil, status.Errorf(codes.PermissionDenied, "identifier %s is not allowed", userInfo.Identifier)
+		}
+	}
+
+	return identityProvider, userInfo, nil
+}
+
+func (s *APIV1Service) getLinkedSSOUser(ctx context.Context, provider, externUID string) (*store.User, error) {
+	identity, err := s.Store.GetUserIdentity(ctx, &store.FindUserIdentity{
+		Provider:  &provider,
+		ExternUID: &externUID,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user identity, error: %v", err)
+	}
+	if identity == nil {
+		return nil, nil
+	}
+	user, err := s.Store.GetUser(ctx, &store.FindUser{ID: &identity.UserID})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user, error: %v", err)
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.Internal, "linked user %d not found for identity %d", identity.UserID, identity.ID)
+	}
+	return user, nil
+}
+
+func (s *APIV1Service) bindSSOIdentityToUser(ctx context.Context, currentUser *store.User, provider, externUID string) (*store.User, error) {
+	existingForProvider, err := s.Store.GetUserIdentity(ctx, &store.FindUserIdentity{
+		UserID:   &currentUser.ID,
+		Provider: &provider,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get existing linked identity, error: %v", err)
+	}
+	if existingForProvider != nil {
+		if existingForProvider.ExternUID == externUID {
+			return currentUser, nil
+		}
+		return nil, status.Errorf(codes.AlreadyExists, "identity provider is already linked to another external account for this user")
+	}
+
+	if _, err := s.Store.CreateUserIdentity(ctx, &store.UserIdentity{
+		UserID:    currentUser.ID,
+		Provider:  provider,
+		ExternUID: externUID,
+	}); err != nil {
+		if isUniqueConstraintViolation(err) {
+			winner, getErr := s.getLinkedSSOUser(ctx, provider, externUID)
+			if getErr != nil {
+				return nil, getErr
+			}
+			if winner == nil {
+				return nil, status.Errorf(codes.Internal, "user identity conflict reported but no winning row found")
+			}
+			if winner.ID != currentUser.ID {
+				return nil, status.Errorf(codes.AlreadyExists, "identity provider account is already linked to another user")
+			}
+			return currentUser, nil
+		}
+		return nil, status.Errorf(codes.Internal, "failed to create user identity, error: %v", err)
+	}
+	return currentUser, nil
 }
 
 // isUniqueConstraintViolation matches the driver-specific error messages that each

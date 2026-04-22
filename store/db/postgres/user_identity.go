@@ -74,3 +74,22 @@ func (d *DB) ListUserIdentities(ctx context.Context, find *store.FindUserIdentit
 	}
 	return list, nil
 }
+
+func (d *DB) DeleteUserIdentities(ctx context.Context, delete *store.DeleteUserIdentity) error {
+	where, args := []string{"1 = 1"}, []any{}
+
+	if delete.ID != nil {
+		where, args = append(where, "id = "+placeholder(len(args)+1)), append(args, *delete.ID)
+	}
+	if delete.UserID != nil {
+		where, args = append(where, "user_id = "+placeholder(len(args)+1)), append(args, *delete.UserID)
+	}
+	if delete.Provider != nil {
+		where, args = append(where, "provider = "+placeholder(len(args)+1)), append(args, *delete.Provider)
+	}
+
+	if _, err := d.db.ExecContext(ctx, "DELETE FROM user_identity WHERE "+strings.Join(where, " AND "), args...); err != nil {
+		return err
+	}
+	return nil
+}

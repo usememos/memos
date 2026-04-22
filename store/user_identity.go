@@ -22,6 +22,13 @@ type FindUserIdentity struct {
 	ExternUID *string
 }
 
+// DeleteUserIdentity is used to delete user identity linkage rows.
+type DeleteUserIdentity struct {
+	ID       *int32
+	UserID   *int32
+	Provider *string
+}
+
 // CreateUserIdentity creates a new external-identity linkage record.
 // Returns the driver error on unique-constraint violation; callers are responsible
 // for reconciling concurrent first-login races on (Provider, ExternUID).
@@ -32,6 +39,11 @@ func (s *Store) CreateUserIdentity(ctx context.Context, create *UserIdentity) (*
 // ListUserIdentities returns all linkage records matching the filter.
 func (s *Store) ListUserIdentities(ctx context.Context, find *FindUserIdentity) ([]*UserIdentity, error) {
 	return s.driver.ListUserIdentities(ctx, find)
+}
+
+// DeleteUserIdentities deletes all linkage records matching the filter.
+func (s *Store) DeleteUserIdentities(ctx context.Context, delete *DeleteUserIdentity) error {
+	return s.driver.DeleteUserIdentities(ctx, delete)
 }
 
 // GetUserIdentity returns the first linkage record matching the filter, or nil if none found.

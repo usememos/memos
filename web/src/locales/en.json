@@ -386,6 +386,7 @@
     },
     "account": {
       "change-password": "Change password",
+      "delete-account": "Delete account",
       "email-note": "Optional",
       "export-memos": "Export Memos",
       "nickname-note": "Displayed in the banner",

@@ -45,6 +45,7 @@ type Driver interface {
 	// UserSetting model related methods.
 	UpsertUserSetting(ctx context.Context, upsert *UserSetting) (*UserSetting, error)
 	ListUserSettings(ctx context.Context, find *FindUserSetting) ([]*UserSetting, error)
+	DeleteUserSettings(ctx context.Context, delete *DeleteUserSetting) error
 	GetUserByPATHash(ctx context.Context, tokenHash string) (*PATQueryResult, error)
 
 	// IdentityProvider model related methods.
@@ -74,4 +75,5 @@ type Driver interface {
 	// UserIdentity model related methods.
 	CreateUserIdentity(ctx context.Context, create *UserIdentity) (*UserIdentity, error)
 	ListUserIdentities(ctx context.Context, find *FindUserIdentity) ([]*UserIdentity, error)
+	DeleteUserIdentities(ctx context.Context, delete *DeleteUserIdentity) error
 }
