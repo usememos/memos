@@ -1,4 +1,4 @@
-import { MoreVerticalIcon, PenLineIcon } from "lucide-react";
+import { AlertTriangleIcon, KeyRoundIcon, PenLineIcon } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -14,7 +14,6 @@ import { useTranslate } from "@/utils/i18n";
 import ChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
 import UpdateAccountDialog from "../UpdateAccountDialog";
 import UserAvatar from "../UserAvatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import AccessTokenSection from "./AccessTokenSection";
 import LinkedIdentitySection from "./LinkedIdentitySection";
 import SettingGroup from "./SettingGroup";
@@ -61,19 +60,10 @@ const MyAccountSection = () => {
               <PenLineIcon className="w-4 h-4 mr-1.5" />
               {t("common.edit")}
             </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <MoreVerticalIcon className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={passwordDialog.open}>{t("setting.account.change-password")}</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="text-destructive focus:text-destructive">
-                  {t("setting.account.delete-account")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button variant="outline" size="sm" onClick={passwordDialog.open}>
+              <KeyRoundIcon className="w-4 h-4 mr-1.5" />
+              {t("setting.account.change-password")}
+            </Button>
           </div>
         </div>
       </SettingGroup>
@@ -81,6 +71,25 @@ const MyAccountSection = () => {
       <LinkedIdentitySection />
 
       <AccessTokenSection />
+
+      <SettingGroup showSeparator title={t("setting.account.danger-area")} description={t("setting.account.danger-area-description")}>
+        <div className="flex flex-col gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
+          <div className="flex items-start gap-3">
+            <div className="rounded-full bg-destructive/10 p-2 text-destructive">
+              <AlertTriangleIcon className="h-4 w-4" />
+            </div>
+            <div className="flex-1 space-y-1">
+              <p className="text-sm font-medium text-foreground">{t("setting.account.delete-account")}</p>
+              <p className="text-sm text-muted-foreground">{t("setting.account.delete-account-description")}</p>
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button variant="destructive" size="sm" onClick={() => setDeleteOpen(true)}>
+              {t("setting.account.delete-account")}
+            </Button>
+          </div>
+        </div>
+      </SettingGroup>
 
       {/* Update Account Dialog */}
       <UpdateAccountDialog open={accountDialog.isOpen} onOpenChange={accountDialog.setOpen} />

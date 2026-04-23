@@ -242,7 +242,7 @@ func (s *APIV1Service) resolveSSOIdentity(ctx context.Context, idpName, code, re
 		if err != nil {
 			return nil, nil, status.Errorf(codes.Internal, "failed to exchange token, error: %v", err)
 		}
-		userInfo, err = oauth2IdentityProvider.UserInfo(token)
+		userInfo, err = oauth2IdentityProvider.UserInfo(ctx, token)
 		if err != nil {
 			return nil, nil, status.Errorf(codes.Internal, "failed to get user info, error: %v", err)
 		}

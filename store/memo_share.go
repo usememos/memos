@@ -14,9 +14,10 @@ type MemoShare struct {
 
 // FindMemoShare is used to filter memo shares in list/get queries.
 type FindMemoShare struct {
-	ID     *int32
-	UID    *string
-	MemoID *int32
+	ID        *int32
+	UID       *string
+	MemoID    *int32
+	CreatorID *int32
 }
 
 // DeleteMemoShare identifies a share grant to remove.

@@ -35,7 +35,7 @@ func NewTestService(t *testing.T) *TestService {
 		InstanceURL: "http://localhost:8080",
 		Driver:      "sqlite",
 		DSN:         ":memory:",
-		Data:        t.TempDir(),
+		Data:        testStore.GetDataDir(),
 	}
 
 	// Create APIV1Service with nil grpcServer since we're testing direct calls

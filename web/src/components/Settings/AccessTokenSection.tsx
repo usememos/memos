@@ -79,7 +79,16 @@ const AccessTokenSection = () => {
   };
 
   return (
-    <SettingGroup title={t("setting.access-token.title")} description={t("setting.access-token.description")}>
+    <SettingGroup
+      title={t("setting.access-token.title")}
+      description={t("setting.access-token.description")}
+      actions={
+        <Button onClick={createTokenDialog.open} size="sm">
+          <PlusIcon className="w-4 h-4 mr-1.5" />
+          {t("common.create")}
+        </Button>
+      }
+    >
       <SettingTable
         columns={[
           {
@@ -114,13 +123,6 @@ const AccessTokenSection = () => {
         emptyMessage={t("setting.access-token.no-tokens-found")}
         getRowKey={(token) => token.name}
       />
-
-      <div className="flex justify-end">
-        <Button onClick={createTokenDialog.open} size="sm">
-          <PlusIcon className="w-4 h-4 mr-1.5" />
-          {t("common.create")}
-        </Button>
-      </div>
 
       {/* Create Access Token Dialog */}
       <CreateAccessTokenDialog
