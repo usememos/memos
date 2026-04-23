@@ -268,7 +268,8 @@ func createTestingUserWithRole(ctx context.Context, ts *store.Store, username st
 		Nickname:    username + "_nickname",
 		Description: username + "_description",
 	}
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte("test_password"), bcrypt.DefaultCost)
+	// Use bcrypt.MinCost in tests only for faster test execution; production code uses cost 12.
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte("test_password"), bcrypt.MinCost)
 	if err != nil {
 		return nil, err
 	}
