@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from "react";
 import { clearAccessToken, getAccessToken } from "@/auth-state";
 import { authServiceClient, refreshAccessToken, shortcutServiceClient, userServiceClient } from "@/connect";
+import { retryAuthInitialization } from "@/contexts/auth-initialize";
 import { userKeys } from "@/hooks/useUserQueries";
 import type { Shortcut } from "@/types/proto/api/v1/shortcut_service_pb";
 import type { User, UserSetting_GeneralSetting, UserSetting_WebhooksSetting } from "@/types/proto/api/v1/user_service_pb";
@@ -80,9 +81,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const { user: currentUser } = await authServiceClient.getCurrentUser({});
+      const { currentUser, settings } = await retryAuthInitialization({
+        operation: async () => {
+          const { user: currentUser } = await authServiceClient.getCurrentUser({});
 
-      if (!currentUser) {
+          if (!currentUser) {
+            return {
+              currentUser: undefined,
+              settings: undefined,
+            };
+          }
+
+          const settings = await fetchUserSettings(currentUser.name);
+
+          return {
+            currentUser,
+            settings,
+          };
+        },
+      });
+
+      if (!currentUser || !settings) {
         clearAccessToken();
         setState({
           currentUser: undefined,
@@ -94,8 +113,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         });
         return;
       }
-
-      const settings = await fetchUserSettings(currentUser.name);
 
       setState({
         currentUser,
