@@ -38,11 +38,20 @@ func (*MetadataInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc 
 		if ua := header.Get("User-Agent"); ua != "" {
 			md.Set("user-agent", ua)
 		}
+		if origin := header.Get("Origin"); origin != "" {
+			md.Set("origin", origin)
+		}
 		if xff := header.Get("X-Forwarded-For"); xff != "" {
 			md.Set("x-forwarded-for", xff)
 		}
+		if xfp := header.Get("X-Forwarded-Proto"); xfp != "" {
+			md.Set("x-forwarded-proto", xfp)
+		}
 		if xri := header.Get("X-Real-Ip"); xri != "" {
 			md.Set("x-real-ip", xri)
+		}
+		if forwarded := header.Get("Forwarded"); forwarded != "" {
+			md.Set("forwarded", forwarded)
 		}
 		// Forward Cookie header for authentication methods that need it (e.g., RefreshToken)
 		if cookie := header.Get("Cookie"); cookie != "" {

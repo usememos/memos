@@ -529,6 +529,36 @@ func (s *APIV1Service) clearAuthCookies(ctx context.Context) error {
 	return nil
 }
 
+func isSecureRequest(ctx context.Context) bool {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return false
+	}
+
+	for _, value := range md.Get("x-forwarded-proto") {
+		for _, proto := range strings.Split(value, ",") {
+			if strings.EqualFold(strings.TrimSpace(proto), "https") {
+				return true
+			}
+		}
+	}
+
+	for _, value := range md.Get("forwarded") {
+		lowerValue := strings.ToLower(value)
+		if strings.Contains(lowerValue, "proto=https") {
+			return true
+		}
+	}
+
+	for _, value := range md.Get("origin") {
+		if strings.HasPrefix(strings.ToLower(strings.TrimSpace(value)), "https://") {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (*APIV1Service) buildRefreshTokenCookie(ctx context.Context, refreshToken string, expireTime time.Time) string {
 	attrs := []string{
 		fmt.Sprintf("%s=%s", auth.RefreshTokenCookieName, refreshToken),
@@ -543,19 +573,7 @@ func (*APIV1Service) buildRefreshTokenCookie(ctx context.Context, refreshToken s
 		attrs = append(attrs, "Expires="+expireTime.UTC().Format("Mon, 02 Jan 2006 15:04:05 GMT"))
 	}
 
-	// Try to determine if the request is HTTPS by checking the origin header
-	// Default to non-HTTPS (Lax SameSite) if metadata is not available
-	isHTTPS := false
-	if md, ok := metadata.FromIncomingContext(ctx); ok {
-		for _, v := range md.Get("origin") {
-			if strings.HasPrefix(v, "https://") {
-				isHTTPS = true
-				break
-			}
-		}
-	}
-
-	if isHTTPS {
+	if isSecureRequest(ctx) {
 		attrs = append(attrs, "SameSite=Lax", "Secure")
 	} else {
 		attrs = append(attrs, "SameSite=Lax")

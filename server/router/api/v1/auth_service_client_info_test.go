@@ -2,7 +2,9 @@ package v1
 
 import (
 	"context"
+	"strings"
 	"testing"
+	"time"
 
 	"google.golang.org/grpc/metadata"
 
@@ -176,4 +178,51 @@ func TestClientInfoExamples(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestBuildRefreshTokenCookieSecureFlag(t *testing.T) {
+	service := &APIV1Service{}
+
+	t.Run("sets Secure for https origin", func(t *testing.T) {
+		ctx := metadata.NewIncomingContext(context.Background(), metadata.Pairs(
+			"origin", "https://memos.example",
+		))
+		cookie := service.buildRefreshTokenCookie(ctx, "token", testCookieExpiry())
+		if !containsCookieAttribute(cookie, "Secure") {
+			t.Fatalf("expected Secure attribute in cookie: %s", cookie)
+		}
+	})
+
+	t.Run("sets Secure for forwarded proto", func(t *testing.T) {
+		ctx := metadata.NewIncomingContext(context.Background(), metadata.Pairs(
+			"x-forwarded-proto", "https",
+		))
+		cookie := service.buildRefreshTokenCookie(ctx, "token", testCookieExpiry())
+		if !containsCookieAttribute(cookie, "Secure") {
+			t.Fatalf("expected Secure attribute in cookie: %s", cookie)
+		}
+	})
+
+	t.Run("omits Secure for plain http", func(t *testing.T) {
+		ctx := metadata.NewIncomingContext(context.Background(), metadata.Pairs(
+			"origin", "http://memos.example",
+		))
+		cookie := service.buildRefreshTokenCookie(ctx, "token", testCookieExpiry())
+		if containsCookieAttribute(cookie, "Secure") {
+			t.Fatalf("did not expect Secure attribute in cookie: %s", cookie)
+		}
+	})
+}
+
+func testCookieExpiry() time.Time {
+	return time.Date(2030, time.January, 2, 3, 4, 5, 0, time.UTC)
+}
+
+func containsCookieAttribute(cookie, attr string) bool {
+	for _, part := range strings.Split(cookie, ";") {
+		if strings.EqualFold(strings.TrimSpace(part), attr) {
+			return true
+		}
+	}
+	return false
 }

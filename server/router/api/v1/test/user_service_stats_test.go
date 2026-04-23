@@ -108,5 +108,5 @@ func TestGetUserStats_TagCount(t *testing.T) {
 		Name: "users/1",
 	})
 	require.Error(t, err)
-	require.Contains(t, err.Error(), "invalid user name")
+	require.Contains(t, err.Error(), "user not found")
 }
