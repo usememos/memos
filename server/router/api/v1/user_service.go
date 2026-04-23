@@ -30,6 +30,13 @@ import (
 
 const maxBatchGetUsers = 100
 
+func validatePassword(password string) error {
+	if password == "" {
+		return errors.New("password must not be empty")
+	}
+	return nil
+}
+
 func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersRequest) (*v1pb.ListUsersResponse, error) {
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -156,6 +163,9 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 			if instanceGeneralSetting.DisallowUserRegistration {
 				return nil, status.Errorf(codes.PermissionDenied, "user registration is not allowed")
 			}
+			if instanceGeneralSetting.DisallowPasswordAuth {
+				return nil, status.Errorf(codes.PermissionDenied, "password signup is not allowed")
+			}
 		}
 	}
 
@@ -178,6 +188,9 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 
 	if err := validateUsername(request.User.Username); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", request.User.Username)
+	}
+	if err := validatePassword(request.User.Password); err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
 	// If validate_only is true, just validate without creating
@@ -294,6 +307,9 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 			role := convertUserRoleToStore(request.User.Role)
 			update.Role = &role
 		case "password":
+			if err := validatePassword(request.User.Password); err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "%v", err)
+			}
 			passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.User.Password), bcrypt.DefaultCost)
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to generate password hash: %v", err)

@@ -5,9 +5,11 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	apiv1server "github.com/usememos/memos/server/router/api/v1"
 )
 
 func TestCreateUserRegistration(t *testing.T) {
@@ -171,5 +173,67 @@ func TestCreateUserRegistration(t *testing.T) {
 		require.NotNil(t, createdUser)
 		require.Equal(t, "users/wannabeadmin", createdUser.Name)
 		require.Equal(t, apiv1.User_USER, createdUser.Role, "Unauthenticated users can only create USER role")
+	})
+
+	t.Run("CreateUser blocked when password auth disabled for self signup", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		_, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+
+		_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_GENERAL,
+			Value: &storepb.InstanceSetting_GeneralSetting{
+				GeneralSetting: &storepb.InstanceGeneralSetting{
+					DisallowPasswordAuth: true,
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.CreateUser(ctx, &apiv1.CreateUserRequest{
+			User: &apiv1.User{
+				Username: "newuser",
+				Email:    "newuser@example.com",
+				Password: "password123",
+			},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "password signup is not allowed")
+	})
+
+	t.Run("CreateUser rejects empty password", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		_, err := ts.Service.CreateUser(ctx, &apiv1.CreateUserRequest{
+			User: &apiv1.User{
+				Username: "newuser",
+				Email:    "newuser@example.com",
+				Password: "",
+			},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "password must not be empty")
+	})
+
+	t.Run("UpdateUser rejects empty password", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "alice")
+		require.NoError(t, err)
+
+		authCtx := ts.CreateUserContext(ctx, user.ID)
+		_, err = ts.Service.UpdateUser(authCtx, &apiv1.UpdateUserRequest{
+			User: &apiv1.User{
+				Name:     apiv1server.BuildUserName(user.Username),
+				Password: "",
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"password"}},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "password must not be empty")
 	})
 }

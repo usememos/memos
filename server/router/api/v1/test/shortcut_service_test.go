@@ -94,7 +94,7 @@ func TestListShortcuts(t *testing.T) {
 		require.Contains(t, err.Error(), "permission denied")
 	})
 
-	t.Run("ListShortcuts rejects numeric parent", func(t *testing.T) {
+	t.Run("ListShortcuts returns not found for numeric parent", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -107,7 +107,7 @@ func TestListShortcuts(t *testing.T) {
 			Parent: "users/1",
 		})
 		require.Error(t, err)
-		require.Contains(t, err.Error(), "invalid user name")
+		require.Contains(t, err.Error(), "user not found")
 	})
 }
 
