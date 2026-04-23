@@ -109,3 +109,17 @@ CREATE TABLE memo_share (
 );
 
 CREATE INDEX idx_memo_share_memo_id ON memo_share(memo_id);
+
+-- user_identity
+CREATE TABLE user_identity (
+  id         SERIAL  PRIMARY KEY,
+  user_id    INTEGER NOT NULL,
+  provider   TEXT    NOT NULL,
+  extern_uid TEXT    NOT NULL,
+  created_ts BIGINT  NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+  updated_ts BIGINT  NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+  UNIQUE (provider, extern_uid),
+  UNIQUE (user_id, provider)
+);
+
+CREATE INDEX idx_user_identity_user_id ON user_identity(user_id);

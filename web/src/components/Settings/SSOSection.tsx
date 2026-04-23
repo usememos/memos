@@ -1,5 +1,5 @@
 import { MoreVerticalIcon, PlusIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
@@ -7,12 +7,22 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { identityProviderServiceClient } from "@/connect";
 import { useDialog } from "@/hooks/useDialog";
 import { handleError } from "@/lib/error";
-import { IdentityProvider } from "@/types/proto/api/v1/idp_service_pb";
+import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
 import LearnMore from "../LearnMore";
 import SettingSection from "./SettingSection";
 import SettingTable from "./SettingTable";
+
+interface IdentityProviderRow extends Record<string, unknown> {
+  name: string;
+  providerUid: string;
+  title: string;
+  typeLabel: string;
+  provider: IdentityProvider;
+}
+
+const getIdentityProviderUID = (name: string) => name.replace(/^identity-providers\//, "");
 
 const SSOSection = () => {
   const t = useTranslate();
@@ -22,13 +32,31 @@ const SSOSection = () => {
   const idpDialog = useDialog();
 
   const fetchIdentityProviderList = async () => {
-    const { identityProviders } = await identityProviderServiceClient.listIdentityProviders({});
-    setIdentityProviderList(identityProviders);
+    try {
+      const { identityProviders } = await identityProviderServiceClient.listIdentityProviders({});
+      setIdentityProviderList(identityProviders);
+    } catch (error: unknown) {
+      handleError(error, toast.error, {
+        context: "Load identity providers",
+      });
+    }
   };
 
   useEffect(() => {
-    fetchIdentityProviderList();
+    void fetchIdentityProviderList();
   }, []);
+
+  const rows = useMemo<IdentityProviderRow[]>(
+    () =>
+      identityProviderList.map((provider) => ({
+        name: provider.name,
+        providerUid: getIdentityProviderUID(provider.name),
+        title: provider.title,
+        typeLabel: IdentityProvider_Type[provider.type] ?? "TYPE_UNSPECIFIED",
+        provider,
+      })),
+    [identityProviderList],
+  );
 
   const handleDeleteIdentityProvider = (identityProvider: IdentityProvider) => {
     setDeleteTarget(identityProvider);
@@ -88,20 +116,25 @@ const SSOSection = () => {
       <SettingTable
         columns={[
           {
-            key: "title",
-            header: t("common.name"),
-            render: (_, provider: IdentityProvider) => (
-              <span className="text-foreground">
-                {provider.title}
-                <span className="ml-2 text-sm text-muted-foreground">({provider.type})</span>
-              </span>
+            key: "providerUid",
+            header: "provider_uid",
+            render: (_, row: IdentityProviderRow) => (
+              <div className="flex flex-col">
+                <span className="text-foreground">{row.providerUid}</span>
+                {row.title ? <span className="text-sm text-muted-foreground">{row.title}</span> : null}
+              </div>
             ),
+          },
+          {
+            key: "typeLabel",
+            header: t("common.type"),
+            render: (_, row: IdentityProviderRow) => <span className="text-muted-foreground">{row.typeLabel}</span>,
           },
           {
             key: "actions",
             header: "",
             className: "text-right",
-            render: (_, provider: IdentityProvider) => (
+            render: (_, row: IdentityProviderRow) => (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
@@ -109,9 +142,9 @@ const SSOSection = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" sideOffset={2}>
-                  <DropdownMenuItem onClick={() => handleEditIdentityProvider(provider)}>{t("common.edit")}</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleEditIdentityProvider(row.provider)}>{t("common.edit")}</DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => handleDeleteIdentityProvider(provider)}
+                    onClick={() => handleDeleteIdentityProvider(row.provider)}
                     className="text-destructive focus:text-destructive"
                   >
                     {t("common.delete")}
@@ -121,9 +154,9 @@ const SSOSection = () => {
             ),
           },
         ]}
-        data={identityProviderList}
+        data={rows}
         emptyMessage={t("setting.sso.no-sso-found")}
-        getRowKey={(provider) => provider.name}
+        getRowKey={(row) => row.name}
       />
 
       <CreateIdentityProviderDialog

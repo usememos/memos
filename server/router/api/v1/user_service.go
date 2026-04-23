@@ -335,11 +335,28 @@ func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserR
 	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
+	isSelfDelete := currentUser.ID == userID
+
+	if err := s.Store.DeleteUserIdentities(ctx, &store.DeleteUserIdentity{
+		UserID: &userID,
+	}); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to delete user identities: %v", err)
+	}
+	if err := s.Store.DeleteUserSettings(ctx, &store.DeleteUserSetting{
+		UserID: &userID,
+	}); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to delete user settings: %v", err)
+	}
 
 	if err := s.Store.DeleteUser(ctx, &store.DeleteUser{
 		ID: user.ID,
 	}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete user: %v", err)
+	}
+	if isSelfDelete {
+		if err := s.clearAuthCookies(ctx); err != nil {
+			slog.Warn("failed to clear auth cookies after self delete", "user_id", userID, "error", err)
+		}
 	}
 
 	return &emptypb.Empty{}, nil
@@ -388,6 +405,27 @@ func (s *APIV1Service) resolveUserAndWebhookIDFromName(ctx context.Context, name
 		return nil, "", err
 	}
 	return user, parts[3], nil
+}
+
+func (s *APIV1Service) resolveUserAndLinkedIdentityProviderFromName(ctx context.Context, name string) (*store.User, string, error) {
+	parts := strings.Split(name, "/")
+	if len(parts) != 4 || parts[0] != "users" || parts[2] != "linkedIdentities" {
+		return nil, "", errors.Errorf("invalid linked identity name: %s", name)
+	}
+
+	user, err := s.resolveUserFromName(ctx, BuildUserName(parts[1]))
+	if err != nil {
+		return nil, "", err
+	}
+	return user, parts[3], nil
+}
+
+func convertLinkedIdentityFromStore(user *store.User, identity *store.UserIdentity) *v1pb.LinkedIdentity {
+	return &v1pb.LinkedIdentity{
+		Name:      fmt.Sprintf("%s/linkedIdentities/%s", BuildUserName(user.Username), identity.Provider),
+		IdpName:   IdentityProviderNamePrefix + identity.Provider,
+		ExternUid: identity.ExternUID,
+	}
 }
 
 func (s *APIV1Service) resolveUserAndNotificationIDFromName(ctx context.Context, name string) (*store.User, int32, error) {
@@ -595,6 +633,141 @@ func (s *APIV1Service) ListUserSettings(ctx context.Context, request *v1pb.ListU
 	}
 
 	return response, nil
+}
+
+func (s *APIV1Service) ListLinkedIdentities(ctx context.Context, request *v1pb.ListLinkedIdentitiesRequest) (*v1pb.ListLinkedIdentitiesResponse, error) {
+	user, err := s.resolveUserFromName(ctx, request.Parent)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid parent: %v", err)
+	}
+	userID := user.ID
+
+	claims := auth.GetUserClaims(ctx)
+	if claims == nil || claims.UserID != userID {
+		currentUser, _ := s.fetchCurrentUser(ctx)
+		if currentUser == nil || (currentUser.ID != userID && currentUser.Role != store.RoleAdmin) {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+	}
+
+	identities, err := s.Store.ListUserIdentities(ctx, &store.FindUserIdentity{UserID: &userID})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list linked identities: %v", err)
+	}
+
+	response := &v1pb.ListLinkedIdentitiesResponse{
+		LinkedIdentities: []*v1pb.LinkedIdentity{},
+	}
+	for _, identity := range identities {
+		response.LinkedIdentities = append(response.LinkedIdentities, convertLinkedIdentityFromStore(user, identity))
+	}
+	return response, nil
+}
+
+func (s *APIV1Service) CreateLinkedIdentity(ctx context.Context, request *v1pb.CreateLinkedIdentityRequest) (*v1pb.LinkedIdentity, error) {
+	user, err := s.resolveUserFromName(ctx, request.Parent)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid parent: %v", err)
+	}
+
+	currentUser, err := s.fetchCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+	if currentUser.ID != user.ID {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
+	identityProvider, userInfo, err := s.resolveSSOIdentity(ctx, request.IdpName, request.Code, request.RedirectUri, request.CodeVerifier)
+	if err != nil {
+		return nil, err
+	}
+	provider := identityProvider.Uid
+	externUID := userInfo.Identifier
+
+	if _, err := s.bindSSOIdentityToUser(ctx, currentUser, provider, externUID); err != nil {
+		return nil, err
+	}
+
+	identity, err := s.Store.GetUserIdentity(ctx, &store.FindUserIdentity{
+		UserID:   &currentUser.ID,
+		Provider: &provider,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get linked identity: %v", err)
+	}
+	if identity == nil {
+		return nil, status.Errorf(codes.Internal, "linked identity not found after creation")
+	}
+
+	return convertLinkedIdentityFromStore(user, identity), nil
+}
+
+func (s *APIV1Service) GetLinkedIdentity(ctx context.Context, request *v1pb.GetLinkedIdentityRequest) (*v1pb.LinkedIdentity, error) {
+	user, provider, err := s.resolveUserAndLinkedIdentityProviderFromName(ctx, request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid linked identity name: %v", err)
+	}
+	userID := user.ID
+
+	claims := auth.GetUserClaims(ctx)
+	if claims == nil || claims.UserID != userID {
+		currentUser, _ := s.fetchCurrentUser(ctx)
+		if currentUser == nil || (currentUser.ID != userID && currentUser.Role != store.RoleAdmin) {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+	}
+
+	identity, err := s.Store.GetUserIdentity(ctx, &store.FindUserIdentity{
+		UserID:   &userID,
+		Provider: &provider,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get linked identity: %v", err)
+	}
+	if identity == nil {
+		return nil, status.Errorf(codes.NotFound, "linked identity not found")
+	}
+
+	return convertLinkedIdentityFromStore(user, identity), nil
+}
+
+func (s *APIV1Service) DeleteLinkedIdentity(ctx context.Context, request *v1pb.DeleteLinkedIdentityRequest) (*emptypb.Empty, error) {
+	user, provider, err := s.resolveUserAndLinkedIdentityProviderFromName(ctx, request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid linked identity name: %v", err)
+	}
+	userID := user.ID
+
+	claims := auth.GetUserClaims(ctx)
+	if claims == nil || claims.UserID != userID {
+		currentUser, _ := s.fetchCurrentUser(ctx)
+		if currentUser == nil || (currentUser.ID != userID && currentUser.Role != store.RoleAdmin) {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+	}
+
+	existing, err := s.Store.GetUserIdentity(ctx, &store.FindUserIdentity{
+		UserID:   &userID,
+		Provider: &provider,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get linked identity: %v", err)
+	}
+	if existing == nil {
+		return nil, status.Errorf(codes.NotFound, "linked identity not found")
+	}
+
+	if err := s.Store.DeleteUserIdentities(ctx, &store.DeleteUserIdentity{
+		UserID:   &userID,
+		Provider: &provider,
+	}); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to delete linked identity: %v", err)
+	}
+	return &emptypb.Empty{}, nil
 }
 
 // ListPersonalAccessTokens retrieves all Personal Access Tokens (PATs) for a user.

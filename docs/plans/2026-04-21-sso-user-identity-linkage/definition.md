@@ -2,7 +2,7 @@
 
 SSO sign-in in memos currently treats the IdP-provided identifier as the local username. The identifier value comes from the OAuth2 UserInfo claim named in `FieldMapping.identifier`, while local usernames are validated by `validateUsername` against `base.UIDMatcher`. Real IdPs frequently emit identifiers such as email addresses, opaque subject IDs, or provider-specific account IDs that are valid authentication subjects but are not valid memos usernames.
 
-The existing issue artifacts under `docs/issues/2026-04-21-sso-user-identity-linkage/` already scope a persistent linkage between SSO identities and local users. A broader review of upstream open source schemas now shows that similar systems converge on separating external identity from the local user row, but do not converge on one universal table name or one exact column set. That difference matters because the implementation problem is narrower than "copy one upstream schema exactly" and broader than "pick any new table name locally."
+The existing issue artifacts under `docs/plans/2026-04-21-sso-user-identity-linkage/` already scope a persistent linkage between SSO identities and local users. A broader review of upstream open source schemas now shows that similar systems converge on separating external identity from the local user row, but do not converge on one universal table name or one exact column set. That difference matters because the implementation problem is narrower than "copy one upstream schema exactly" and broader than "pick any new table name locally."
 
 ## Issue Statement
 

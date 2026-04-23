@@ -1,11 +1,15 @@
 const STATE_STORAGE_KEY = "oauth_state";
 const STATE_EXPIRY_MS = 10 * 60 * 1000; // 10 minutes
 
+export type OAuthFlowMode = "signin" | "link";
+
 interface OAuthState {
   state: string;
   identityProviderName: string;
+  flowMode: OAuthFlowMode;
   timestamp: number;
   returnUrl?: string;
+  linkingUserName?: string;
   codeVerifier?: string; // PKCE code_verifier
 }
 
@@ -44,7 +48,9 @@ function base64UrlEncode(buffer: Uint8Array): string {
 // PKCE is optional - if crypto APIs are unavailable (HTTP context), falls back to standard OAuth
 export async function storeOAuthState(
   identityProviderName: string,
+  flowMode: OAuthFlowMode,
   returnUrl?: string,
+  linkingUserName?: string,
 ): Promise<{ state: string; codeChallenge?: string }> {
   const state = generateSecureState();
 
@@ -74,8 +80,10 @@ export async function storeOAuthState(
   const stateData: OAuthState = {
     state,
     identityProviderName,
+    flowMode,
     timestamp: Date.now(),
     returnUrl,
+    linkingUserName,
     codeVerifier, // Store for later retrieval in callback (undefined if PKCE not available)
   };
 
@@ -90,8 +98,10 @@ export async function storeOAuthState(
 }
 
 // Validate and retrieve OAuth state from storage (CSRF protection)
-// Returns identityProviderName, returnUrl, and codeVerifier for PKCE
-export function validateOAuthState(stateParam: string): { identityProviderName: string; returnUrl?: string; codeVerifier?: string } | null {
+// Returns identityProviderName, flowMode, returnUrl, linkingUserName, and codeVerifier for PKCE
+export function validateOAuthState(
+  stateParam: string,
+): { identityProviderName: string; flowMode: OAuthFlowMode; returnUrl?: string; linkingUserName?: string; codeVerifier?: string } | null {
   try {
     const storedData = sessionStorage.getItem(STATE_STORAGE_KEY);
     if (!storedData) {
@@ -119,7 +129,9 @@ export function validateOAuthState(stateParam: string): { identityProviderName: 
     sessionStorage.removeItem(STATE_STORAGE_KEY);
     return {
       identityProviderName: stateData.identityProviderName,
+      flowMode: stateData.flowMode || "signin",
       returnUrl: stateData.returnUrl,
+      linkingUserName: stateData.linkingUserName,
       codeVerifier: stateData.codeVerifier, // Return PKCE code_verifier
     };
   } catch (error) {

@@ -493,6 +493,7 @@
     },
     "account": {
       "change-password": "修改密码",
+      "delete-account": "删除账号",
       "email-note": "可选",
       "export-memos": "导出备忘录",
       "nickname-note": "显示在横幅中",

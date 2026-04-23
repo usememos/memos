@@ -44,7 +44,7 @@ const SignIn = () => {
       try {
         // Generate and store secure state parameter with CSRF protection
         // Also generate PKCE parameters (code_challenge) for enhanced security if available
-        const { state, codeChallenge } = await storeOAuthState(identityProvider.name, redirectTarget);
+        const { state, codeChallenge } = await storeOAuthState(identityProvider.name, "signin", redirectTarget);
 
         // Build OAuth authorization URL with secure state
         // Include PKCE if available (requires HTTPS/localhost for crypto.subtle)

@@ -90,6 +90,33 @@ service UserService {
     option (google.api.method_signature) = "parent";
   }
 
+  // ListLinkedIdentities returns a list of linked SSO identities for a user.
+  rpc ListLinkedIdentities(ListLinkedIdentitiesRequest) returns (ListLinkedIdentitiesResponse) {
+    option (google.api.http) = {get: "/api/v1/{parent=users/*}/linkedIdentities"};
+    option (google.api.method_signature) = "parent";
+  }
+
+  // CreateLinkedIdentity links an SSO identity to the authenticated user.
+  rpc CreateLinkedIdentity(CreateLinkedIdentityRequest) returns (LinkedIdentity) {
+    option (google.api.http) = {
+      post: "/api/v1/{parent=users/*}/linkedIdentities"
+      body: "*"
+    };
+    option (google.api.method_signature) = "parent,idp_name";
+  }
+
+  // GetLinkedIdentity gets a linked SSO identity for a user.
+  rpc GetLinkedIdentity(GetLinkedIdentityRequest) returns (LinkedIdentity) {
+    option (google.api.http) = {get: "/api/v1/{name=users/*/linkedIdentities/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // DeleteLinkedIdentity unlinks an SSO identity from a user.
+  rpc DeleteLinkedIdentity(DeleteLinkedIdentityRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{name=users/*/linkedIdentities/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
   // ListPersonalAccessTokens returns a list of Personal Access Tokens (PATs) for a user.
   // PATs are long-lived tokens for API/script access, distinct from short-lived JWT access tokens.
   rpc ListPersonalAccessTokens(ListPersonalAccessTokensRequest) returns (ListPersonalAccessTokensResponse) {
@@ -464,6 +491,87 @@ message ListUserSettingsResponse {
 
   // The total count of settings (may be approximate).
   int32 total_size = 3;
+}
+
+// LinkedIdentity represents an SSO identity linked to a user account.
+message LinkedIdentity {
+  option (google.api.resource) = {
+    type: "memos.api.v1/LinkedIdentity"
+    pattern: "users/{user}/linkedIdentities/{linked_identity}"
+    singular: "linkedIdentity"
+    plural: "linkedIdentities"
+  };
+
+  // The resource name of the linked identity.
+  // Format: users/{user}/linkedIdentities/{linked_identity}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // The resource name of the identity provider.
+  // Format: identity-providers/{uid}
+  string idp_name = 2 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.resource_reference) = {type: "memos.api.v1/IdentityProvider"}
+  ];
+
+  // The external user identifier from the identity provider.
+  string extern_uid = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+message ListLinkedIdentitiesRequest {
+  // Required. The parent resource whose linked identities will be listed.
+  // Format: users/{user}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
+}
+
+message ListLinkedIdentitiesResponse {
+  // The list of linked identities.
+  repeated LinkedIdentity linked_identities = 1;
+}
+
+message CreateLinkedIdentityRequest {
+  // Required. The parent user who owns the linked identity.
+  // Format: users/{user}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
+
+  // Required. The identity provider to link.
+  // Format: identity-providers/{uid}
+  string idp_name = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/IdentityProvider"}
+  ];
+
+  // Required. The authorization code from the identity provider.
+  string code = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The redirect URI used in the OAuth flow.
+  string redirect_uri = 4 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The PKCE code verifier used in the OAuth flow.
+  string code_verifier = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message GetLinkedIdentityRequest {
+  // Required. The resource name of the linked identity to get.
+  // Format: users/{user}/linkedIdentities/{linked_identity}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/LinkedIdentity"}
+  ];
+}
+
+message DeleteLinkedIdentityRequest {
+  // Required. The resource name of the linked identity to delete.
+  // Format: users/{user}/linkedIdentities/{linked_identity}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/LinkedIdentity"}
+  ];
 }
 
 // PersonalAccessToken represents a long-lived token for API/script access.

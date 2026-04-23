@@ -2,7 +2,7 @@ import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { setAccessToken } from "@/auth-state";
-import { authServiceClient } from "@/connect";
+import { authServiceClient, userServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
 import { absolutifyLink } from "@/helpers/utils";
 import useNavigateTo from "@/hooks/useNavigateTo";
@@ -18,7 +18,7 @@ interface State {
 
 const AuthCallback = () => {
   const navigateTo = useNavigateTo();
-  const { initialize } = useAuth();
+  const { currentUser, initialize, isInitialized } = useAuth();
   const [searchParams] = useSearchParams();
   const handledRef = useRef(false);
   const [state, setState] = useState<State>({
@@ -27,10 +27,12 @@ const AuthCallback = () => {
   });
 
   useEffect(() => {
+    if (!isInitialized) {
+      return;
+    }
     if (handledRef.current) {
       return;
     }
-    handledRef.current = true;
     // Check for OAuth error response first (e.g., user denied access)
     const error = searchParams.get("error");
     const errorDescription = searchParams.get("error_description");
@@ -74,25 +76,42 @@ const AuthCallback = () => {
       return;
     }
 
-    const { identityProviderName, returnUrl, codeVerifier } = validatedState;
+    const { flowMode, identityProviderName, returnUrl, linkingUserName, codeVerifier } = validatedState;
     const redirectUri = absolutifyLink("/auth/callback");
+    handledRef.current = true;
 
     (async () => {
       try {
-        const response = await authServiceClient.signIn({
-          credentials: {
-            case: "ssoCredentials",
-            value: {
-              idpName: identityProviderName,
-              code,
-              redirectUri,
-              codeVerifier: codeVerifier || "", // Pass PKCE code_verifier for token exchange
+        if (flowMode === "link") {
+          if (!currentUser?.name) {
+            throw new Error("Failed to link account. Please sign in to Memos again and retry.");
+          }
+          if (linkingUserName && currentUser.name !== linkingUserName) {
+            throw new Error("The signed-in user changed before the OAuth callback completed. Please retry linking from account settings.");
+          }
+          await userServiceClient.createLinkedIdentity({
+            parent: currentUser.name,
+            idpName: identityProviderName,
+            code,
+            redirectUri,
+            codeVerifier: codeVerifier || "",
+          });
+        } else {
+          const response = await authServiceClient.signIn({
+            credentials: {
+              case: "ssoCredentials",
+              value: {
+                idpName: identityProviderName,
+                code,
+                redirectUri,
+                codeVerifier: codeVerifier || "", // Pass PKCE code_verifier for token exchange
+              },
             },
-          },
-        });
-        // Store access token from login response
-        if (response.accessToken) {
-          setAccessToken(response.accessToken, response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined);
+          });
+          // Store access token from login response
+          if (response.accessToken) {
+            setAccessToken(response.accessToken, response.accessTokenExpiresAt ? timestampDate(response.accessTokenExpiresAt) : undefined);
+          }
         }
         setState({
           loading: false,
@@ -116,7 +135,7 @@ const AuthCallback = () => {
         });
       }
     })();
-  }, [searchParams, navigateTo]);
+  }, [currentUser?.name, initialize, isInitialized, navigateTo, searchParams]);
 
   if (state.loading) return null;
 

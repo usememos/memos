@@ -9,9 +9,6 @@ build/
 bin/
 memos
 
-# Plan/design documents
-docs/plans/
-
 .DS_Store
 
 # Jetbrains
