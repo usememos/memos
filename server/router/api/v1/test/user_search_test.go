@@ -52,3 +52,20 @@ func TestBatchGetUsersRejectsTooManyUsernames(t *testing.T) {
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "too many usernames")
 }
+
+func TestBatchGetUsersRejectsTooManyNonEmptyUsernamesBeforeDedupe(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	usernames := make([]string, 0, 101)
+	for range 101 {
+		usernames = append(usernames, "legacy@example.com")
+	}
+
+	_, err := ts.Service.BatchGetUsers(ctx, &apiv1.BatchGetUsersRequest{
+		Usernames: usernames,
+	})
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "too many usernames")
+}

@@ -3,6 +3,8 @@ package v1
 import (
 	"context"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"connectrpc.com/connect"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -143,8 +145,11 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 
 	// Wrap with CORS for browser access
 	corsHandler := middleware.CORSWithConfig(middleware.CORSConfig{
-		UnsafeAllowOriginFunc: func(_ *echo.Context, origin string) (string, bool, error) {
-			return origin, true, nil
+		UnsafeAllowOriginFunc: func(c *echo.Context, origin string) (string, bool, error) {
+			if s.isAllowedConnectOrigin(c, origin) {
+				return origin, true, nil
+			}
+			return "", false, nil
 		},
 		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodOptions},
 		AllowHeaders:     []string{"*"},
@@ -154,4 +159,24 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	connectGroup.Any("/memos.api.v1.*", echo.WrapHandler(http.MaxBytesHandler(connectMux, maxAPIRequestBytes)))
 
 	return nil
+}
+
+func (s *APIV1Service) isAllowedConnectOrigin(c *echo.Context, origin string) bool {
+	originURL, err := url.Parse(origin)
+	if err != nil || originURL.Scheme == "" || originURL.Host == "" {
+		return false
+	}
+
+	if strings.EqualFold(originURL.Host, c.Request().Host) {
+		return true
+	}
+
+	if s.Profile == nil || s.Profile.InstanceURL == "" {
+		return false
+	}
+	instanceURL, err := url.Parse(s.Profile.InstanceURL)
+	if err != nil || instanceURL.Scheme == "" || instanceURL.Host == "" {
+		return false
+	}
+	return strings.EqualFold(originURL.Scheme, instanceURL.Scheme) && strings.EqualFold(originURL.Host, instanceURL.Host)
 }
