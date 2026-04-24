@@ -228,7 +228,7 @@ export const applyThemeEarly = (): void => {
 export const setupSystemThemeListener = (onThemeChange: () => void): (() => void) => {
   // Guard against SSR
   if (typeof window === "undefined" || !window.matchMedia) {
-    return () => {};
+    return () => { };
   }
 
   const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -245,5 +245,5 @@ export const setupSystemThemeListener = (onThemeChange: () => void): (() => void
     return () => mediaQuery.removeListener(onThemeChange);
   }
 
-  return () => {};
+  return () => { };
 };

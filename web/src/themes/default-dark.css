@@ -1,6 +1,6 @@
 :root {
   /* Surfaces — layered from darkest to lightest, consistent cool-slate tint */
-  --background: oklch(0.09 0.006 265);
+  --background: oklch(33.797% 0.1387 29.223);
   --foreground: oklch(0.82 0.005 265);
 
   --card: oklch(0.13 0.006 265);
