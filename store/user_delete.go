@@ -27,6 +27,7 @@ const (
 	deleteUserDialectSQLite   deleteUserDialect = "sqlite"
 	deleteUserDialectMySQL    deleteUserDialect = "mysql"
 	deleteUserDialectPostgres deleteUserDialect = "postgres"
+	deleteUserBatchSize       int               = 500
 )
 
 type deleteUserMemoRef struct {
@@ -238,25 +239,29 @@ func listDeleteUserMemoTreeIterative(ctx context.Context, tx *sql.Tx, dialect de
 	}
 
 	for len(frontier) > 0 {
-		clause, args := deleteUserInClause(dialect, 1, frontier)
-		children, err := queryDeleteUserMemoRefs(ctx, tx, `
-			SELECT child.id, child.uid
-			FROM memo child
-			JOIN memo_relation rel ON rel.memo_id = child.id AND rel.type = 'COMMENT'
-			WHERE rel.related_memo_id IN `+clause, args...)
-		if err != nil {
-			return nil, err
-		}
-
-		frontier = frontier[:0]
-		for _, child := range children {
-			if _, exists := seen[child.ID]; exists {
-				continue
+		currentFrontier := frontier
+		nextFrontier := make([]int32, 0)
+		for _, batch := range deleteUserBatches(currentFrontier, deleteUserBatchSize) {
+			clause, args := deleteUserInClause(dialect, 1, batch)
+			children, err := queryDeleteUserMemoRefs(ctx, tx, `
+				SELECT child.id, child.uid
+				FROM memo child
+				JOIN memo_relation rel ON rel.memo_id = child.id AND rel.type = 'COMMENT'
+				WHERE rel.related_memo_id IN `+clause, args...)
+			if err != nil {
+				return nil, err
 			}
-			seen[child.ID] = struct{}{}
-			memos = append(memos, child)
-			frontier = append(frontier, child.ID)
+
+			for _, child := range children {
+				if _, exists := seen[child.ID]; exists {
+					continue
+				}
+				seen[child.ID] = struct{}{}
+				memos = append(memos, child)
+				nextFrontier = append(nextFrontier, child.ID)
+			}
 		}
+		frontier = nextFrontier
 	}
 
 	return memos, nil
@@ -285,15 +290,9 @@ func queryDeleteUserMemoRefs(ctx context.Context, tx *sql.Tx, query string, args
 }
 
 func listDeleteUserAttachments(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, userID int32, memoIDs []int32) ([]*Attachment, error) {
-	where := []string{fmt.Sprintf("creator_id = %s", deleteUserPlaceholder(dialect, 1))}
-	args := []any{userID}
-	if len(memoIDs) > 0 {
-		clause, clauseArgs := deleteUserInClause(dialect, len(args)+1, memoIDs)
-		where = append(where, "memo_id IN "+clause)
-		args = append(args, clauseArgs...)
-	}
-
-	rows, err := tx.QueryContext(ctx, `
+	attachments := make([]*Attachment, 0)
+	seen := make(map[int32]struct{})
+	if err := appendDeleteUserAttachments(ctx, tx, `
 		SELECT
 			id,
 			uid,
@@ -303,21 +302,49 @@ func listDeleteUserAttachments(ctx context.Context, tx *sql.Tx, dialect deleteUs
 			reference,
 			payload
 		FROM attachment
-		WHERE `+strings.Join(where, " OR "), args...)
-	if err != nil {
+		WHERE creator_id = `+deleteUserPlaceholder(dialect, 1), []any{userID}, seen, &attachments); err != nil {
 		return nil, err
+	}
+
+	for _, batch := range deleteUserBatches(memoIDs, deleteUserBatchSize) {
+		clause, args := deleteUserInClause(dialect, 1, batch)
+		if err := appendDeleteUserAttachments(ctx, tx, `
+			SELECT
+				id,
+				uid,
+				creator_id,
+				memo_id,
+				storage_type,
+				reference,
+				payload
+			FROM attachment
+			WHERE memo_id IN `+clause, args, seen, &attachments); err != nil {
+			return nil, err
+		}
+	}
+
+	return attachments, nil
+}
+
+func appendDeleteUserAttachments(ctx context.Context, tx *sql.Tx, query string, args []any, seen map[int32]struct{}, attachments *[]*Attachment) error {
+	rows, err := tx.QueryContext(ctx, query, args...)
+	if err != nil {
+		return err
 	}
 	defer rows.Close()
 
-	attachments := make([]*Attachment, 0)
 	for rows.Next() {
 		attachment := &Attachment{}
 		var memoID sql.NullInt32
 		var storageType string
 		var payloadBytes []byte
 		if err := rows.Scan(&attachment.ID, &attachment.UID, &attachment.CreatorID, &memoID, &storageType, &attachment.Reference, &payloadBytes); err != nil {
-			return nil, err
+			return err
 		}
+		if _, exists := seen[attachment.ID]; exists {
+			continue
+		}
+		seen[attachment.ID] = struct{}{}
 		if memoID.Valid {
 			attachment.MemoID = &memoID.Int32
 		}
@@ -325,17 +352,13 @@ func listDeleteUserAttachments(ctx context.Context, tx *sql.Tx, dialect deleteUs
 		payload := &storepb.AttachmentPayload{}
 		if len(payloadBytes) > 0 {
 			if err := protojsonUnmarshaler.Unmarshal(payloadBytes, payload); err != nil {
-				return nil, err
+				return err
 			}
 		}
 		attachment.Payload = payload
-		attachments = append(attachments, attachment)
+		*attachments = append(*attachments, attachment)
 	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return attachments, nil
+	return rows.Err()
 }
 
 func listDeleteUserSettingKeys(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, userID int32) ([]storepb.UserSetting_Key, error) {
@@ -475,21 +498,23 @@ func memoIDInSet(id int32, memoIDSet map[int32]struct{}) bool {
 }
 
 func deleteReactionsByContentIDsTx(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, contentIDs []string) error {
-	if len(contentIDs) == 0 {
-		return nil
+	for _, batch := range deleteUserBatches(contentIDs, deleteUserBatchSize) {
+		clause, args := deleteUserInClause(dialect, 1, batch)
+		if _, err := tx.ExecContext(ctx, `DELETE FROM reaction WHERE content_id IN `+clause, args...); err != nil {
+			return err
+		}
 	}
-	clause, args := deleteUserInClause(dialect, 1, contentIDs)
-	_, err := tx.ExecContext(ctx, `DELETE FROM reaction WHERE content_id IN `+clause, args...)
-	return err
+	return nil
 }
 
 func deleteAttachmentsByIDsTx(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, attachmentIDs []int32) error {
-	if len(attachmentIDs) == 0 {
-		return nil
+	for _, batch := range deleteUserBatches(attachmentIDs, deleteUserBatchSize) {
+		clause, args := deleteUserInClause(dialect, 1, batch)
+		if _, err := tx.ExecContext(ctx, `DELETE FROM attachment WHERE id IN `+clause, args...); err != nil {
+			return err
+		}
 	}
-	clause, args := deleteUserInClause(dialect, 1, attachmentIDs)
-	_, err := tx.ExecContext(ctx, `DELETE FROM attachment WHERE id IN `+clause, args...)
-	return err
+	return nil
 }
 
 func deleteReactionsByCreatorTx(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, userID int32) error {
@@ -498,24 +523,26 @@ func deleteReactionsByCreatorTx(ctx context.Context, tx *sql.Tx, dialect deleteU
 }
 
 func deleteMemoSharesTx(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, userID int32, memoIDs []int32) error {
-	where := []string{fmt.Sprintf("creator_id = %s", deleteUserPlaceholder(dialect, 1))}
-	args := []any{userID}
-	if len(memoIDs) > 0 {
-		clause, clauseArgs := deleteUserInClause(dialect, len(args)+1, memoIDs)
-		where = append(where, "memo_id IN "+clause)
-		args = append(args, clauseArgs...)
+	if _, err := tx.ExecContext(ctx, `DELETE FROM memo_share WHERE creator_id = `+deleteUserPlaceholder(dialect, 1), userID); err != nil {
+		return err
 	}
-	_, err := tx.ExecContext(ctx, `DELETE FROM memo_share WHERE `+strings.Join(where, " OR "), args...)
-	return err
+	for _, batch := range deleteUserBatches(memoIDs, deleteUserBatchSize) {
+		clause, args := deleteUserInClause(dialect, 1, batch)
+		if _, err := tx.ExecContext(ctx, `DELETE FROM memo_share WHERE memo_id IN `+clause, args...); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func deleteInboxesByIDsTx(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, inboxIDs []int32) error {
-	if len(inboxIDs) == 0 {
-		return nil
+	for _, batch := range deleteUserBatches(inboxIDs, deleteUserBatchSize) {
+		clause, args := deleteUserInClause(dialect, 1, batch)
+		if _, err := tx.ExecContext(ctx, `DELETE FROM inbox WHERE id IN `+clause, args...); err != nil {
+			return err
+		}
 	}
-	clause, args := deleteUserInClause(dialect, 1, inboxIDs)
-	_, err := tx.ExecContext(ctx, `DELETE FROM inbox WHERE id IN `+clause, args...)
-	return err
+	return nil
 }
 
 func deleteUserIdentitiesTx(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, userID int32) error {
@@ -529,24 +556,26 @@ func deleteUserSettingsTx(ctx context.Context, tx *sql.Tx, dialect deleteUserDia
 }
 
 func deleteMemoRelationsTx(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, memoIDs []int32) error {
-	if len(memoIDs) == 0 {
-		return nil
+	for _, batch := range deleteUserBatches(memoIDs, deleteUserBatchSize) {
+		memoClause, args := deleteUserInClause(dialect, 1, batch)
+		relatedClause, relatedArgs := deleteUserInClause(dialect, len(args)+1, batch)
+		query := `DELETE FROM memo_relation WHERE memo_id IN ` + memoClause + ` OR related_memo_id IN ` + relatedClause
+		args = append(args, relatedArgs...)
+		if _, err := tx.ExecContext(ctx, query, args...); err != nil {
+			return err
+		}
 	}
-	memoClause, memoArgs := deleteUserInClause(dialect, 1, memoIDs)
-	relatedClause, relatedArgs := deleteUserInClause(dialect, len(memoArgs)+1, memoIDs)
-	query := `DELETE FROM memo_relation WHERE memo_id IN ` + memoClause + ` OR related_memo_id IN ` + relatedClause
-	memoArgs = append(memoArgs, relatedArgs...)
-	_, err := tx.ExecContext(ctx, query, memoArgs...)
-	return err
+	return nil
 }
 
 func deleteMemosTx(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, memoIDs []int32) error {
-	if len(memoIDs) == 0 {
-		return nil
+	for _, batch := range deleteUserBatches(memoIDs, deleteUserBatchSize) {
+		clause, args := deleteUserInClause(dialect, 1, batch)
+		if _, err := tx.ExecContext(ctx, `DELETE FROM memo WHERE id IN `+clause, args...); err != nil {
+			return err
+		}
 	}
-	clause, args := deleteUserInClause(dialect, 1, memoIDs)
-	_, err := tx.ExecContext(ctx, `DELETE FROM memo WHERE id IN `+clause, args...)
-	return err
+	return nil
 }
 
 func deleteUserRowTx(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, userID int32) error {
@@ -580,6 +609,25 @@ func deleteUserInClause[T any](dialect deleteUserDialect, start int, values []T)
 		args = append(args, value)
 	}
 	return "(" + strings.Join(placeholders, ", ") + ")", args
+}
+
+func deleteUserBatches[T any](values []T, size int) [][]T {
+	if len(values) == 0 {
+		return nil
+	}
+	if size <= 0 {
+		size = len(values)
+	}
+
+	batches := make([][]T, 0, (len(values)+size-1)/size)
+	for start := 0; start < len(values); start += size {
+		end := start + size
+		if end > len(values) {
+			end = len(values)
+		}
+		batches = append(batches, values[start:end])
+	}
+	return batches
 }
 
 func memoIDsFromRefs(memos []deleteUserMemoRef) []int32 {
