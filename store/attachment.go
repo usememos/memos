@@ -252,6 +252,6 @@ func (s *Store) deleteAttachmentDerivedCaches(attachment *Attachment) {
 }
 
 func shouldFailDeleteAttachmentStorage(ctx context.Context) bool {
-	failpoint, _ := ctx.Value(deleteAttachmentStorageFailpointKey{}).(bool)
-	return failpoint
+	failpoint, ok := ctx.Value(deleteAttachmentStorageFailpointKey{}).(bool)
+	return ok && failpoint
 }

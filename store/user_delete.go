@@ -63,12 +63,12 @@ func (s *Store) DeleteUserCompletely(ctx context.Context, delete *DeleteUser) ([
 		_ = tx.Rollback()
 	}()
 
-	targets, err := s.collectDeleteUserTargets(ctx, tx, dialect, delete.ID)
+	targets, err := collectDeleteUserTargets(ctx, tx, dialect, delete.ID)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to collect delete user targets")
 	}
 
-	if err := s.deleteUserTargetsTx(ctx, tx, dialect, delete.ID, targets); err != nil {
+	if err := deleteUserTargetsTx(ctx, tx, dialect, delete.ID, targets); err != nil {
 		return nil, errors.Wrap(err, "failed to delete user targets")
 	}
 
@@ -89,7 +89,10 @@ func (s *Store) DeleteUserCompletely(ctx context.Context, delete *DeleteUser) ([
 }
 
 func getDeleteUserFailpoint(ctx context.Context) DeleteUserFailpoint {
-	failpoint, _ := ctx.Value(deleteUserFailpointKey{}).(DeleteUserFailpoint)
+	failpoint, ok := ctx.Value(deleteUserFailpointKey{}).(DeleteUserFailpoint)
+	if !ok {
+		return ""
+	}
 	return failpoint
 }
 
@@ -106,7 +109,7 @@ func getDeleteUserDialect(driver string) (deleteUserDialect, error) {
 	}
 }
 
-func (s *Store) collectDeleteUserTargets(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, userID int32) (*deleteUserTargetSet, error) {
+func collectDeleteUserTargets(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, userID int32) (*deleteUserTargetSet, error) {
 	targets := &deleteUserTargetSet{}
 
 	memos, err := listDeleteUserMemoTree(ctx, tx, dialect, userID)
@@ -137,7 +140,7 @@ func (s *Store) collectDeleteUserTargets(ctx context.Context, tx *sql.Tx, dialec
 	return targets, nil
 }
 
-func (s *Store) deleteUserTargetsTx(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, userID int32, targets *deleteUserTargetSet) error {
+func deleteUserTargetsTx(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, userID int32, targets *deleteUserTargetSet) error {
 	memoIDs := memoIDsFromRefs(targets.memos)
 	contentIDs := memoContentIDsFromRefs(targets.memos)
 
@@ -532,8 +535,8 @@ func deleteMemoRelationsTx(ctx context.Context, tx *sql.Tx, dialect deleteUserDi
 	memoClause, memoArgs := deleteUserInClause(dialect, 1, memoIDs)
 	relatedClause, relatedArgs := deleteUserInClause(dialect, len(memoArgs)+1, memoIDs)
 	query := `DELETE FROM memo_relation WHERE memo_id IN ` + memoClause + ` OR related_memo_id IN ` + relatedClause
-	args := append(memoArgs, relatedArgs...)
-	_, err := tx.ExecContext(ctx, query, args...)
+	memoArgs = append(memoArgs, relatedArgs...)
+	_, err := tx.ExecContext(ctx, query, memoArgs...)
 	return err
 }
 
