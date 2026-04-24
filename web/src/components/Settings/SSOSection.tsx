@@ -2,12 +2,15 @@ import { MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import InfoChip from "@/components/Settings/InfoChip";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { identityProviderServiceClient } from "@/connect";
+import { getIdentityProviderTypeLabel, getOAuth2SummaryItems, getSSOProviderUid, type SummaryItem } from "@/helpers/sso-display";
 import { useDialog } from "@/hooks/useDialog";
 import { handleError } from "@/lib/error";
-import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service_pb";
+import { IdentityProvider } from "@/types/proto/api/v1/idp_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
 import LearnMore from "../LearnMore";
@@ -19,10 +22,9 @@ interface IdentityProviderRow extends Record<string, unknown> {
   providerUid: string;
   title: string;
   typeLabel: string;
+  summaryItems: SummaryItem[];
   provider: IdentityProvider;
 }
-
-const getIdentityProviderUID = (name: string) => name.replace(/^identity-providers\//, "");
 
 const SSOSection = () => {
   const t = useTranslate();
@@ -50,12 +52,13 @@ const SSOSection = () => {
     () =>
       identityProviderList.map((provider) => ({
         name: provider.name,
-        providerUid: getIdentityProviderUID(provider.name),
+        providerUid: getSSOProviderUid(provider.name),
         title: provider.title,
-        typeLabel: IdentityProvider_Type[provider.type] ?? "TYPE_UNSPECIFIED",
+        typeLabel: getIdentityProviderTypeLabel(provider.type),
+        summaryItems: getOAuth2SummaryItems(provider, t),
         provider,
       })),
-    [identityProviderList],
+    [identityProviderList, t],
   );
 
   const handleDeleteIdentityProvider = (identityProvider: IdentityProvider) => {
@@ -114,26 +117,43 @@ const SSOSection = () => {
       }
     >
       <SettingTable
+        variant="info-flow"
         columns={[
           {
-            key: "providerUid",
-            header: "provider_uid",
+            key: "title",
+            header: t("setting.sso.provider"),
             render: (_, row: IdentityProviderRow) => (
-              <div className="flex flex-col">
-                <span className="text-foreground">{row.providerUid}</span>
-                {row.title ? <span className="text-sm text-muted-foreground">{row.title}</span> : null}
+              <div className="flex min-w-[16rem] flex-col gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-medium text-foreground">{row.title}</span>
+                  <Badge variant="secondary" className="rounded-full px-2.5 py-0.5">
+                    {row.typeLabel}
+                  </Badge>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <InfoChip label={t("setting.sso.provider-uid")} value={row.providerUid} />
+                </div>
               </div>
             ),
           },
           {
-            key: "typeLabel",
-            header: t("common.type"),
-            render: (_, row: IdentityProviderRow) => <span className="text-muted-foreground">{row.typeLabel}</span>,
+            key: "summaryItems",
+            header: t("setting.sso.configuration"),
+            render: (_, row: IdentityProviderRow) => (
+              <div className="flex min-w-[24rem] flex-col gap-2">
+                <p className="text-xs text-muted-foreground">{t("setting.sso.configuration-summary-description")}</p>
+                <div className="flex flex-wrap gap-2">
+                  {row.summaryItems.map((item) => (
+                    <InfoChip key={item.key} label={item.label} value={item.value} tooltip={item.tooltip} />
+                  ))}
+                </div>
+              </div>
+            ),
           },
           {
             key: "actions",
             header: "",
-            className: "text-right",
+            className: "w-px text-right",
             render: (_, row: IdentityProviderRow) => (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

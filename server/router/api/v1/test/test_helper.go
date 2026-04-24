@@ -27,15 +27,15 @@ func NewTestService(t *testing.T) *TestService {
 	// Create a test store with SQLite
 	testStore := teststore.NewTestingStore(ctx, t)
 
-	// Create a test profile with a temp directory for file storage,
-	// so tests that create attachments don't leave artifacts in the source tree.
+	// Align the profile data directory with the test store so attachment files and
+	// derived caches resolve against the same location as DeleteAttachmentStorage.
 	testProfile := &profile.Profile{
 		Demo:        true,
 		Version:     "test-1.0.0",
 		InstanceURL: "http://localhost:8080",
 		Driver:      "sqlite",
 		DSN:         ":memory:",
-		Data:        t.TempDir(),
+		Data:        testStore.GetDataDir(),
 	}
 
 	// Create APIV1Service with nil grpcServer since we're testing direct calls

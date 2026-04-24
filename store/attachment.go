@@ -76,6 +76,16 @@ const (
 	motionCacheFolder    = ".motion_cache"
 )
 
+type deleteAttachmentStorageFailpointKey struct{}
+
+// ErrDeleteAttachmentStorageFailpoint is returned by the test-only attachment storage failpoint.
+var ErrDeleteAttachmentStorageFailpoint = errors.New("delete attachment storage failpoint")
+
+// WithDeleteAttachmentStorageFailpoint forces DeleteAttachmentStorage to return a failpoint error.
+func WithDeleteAttachmentStorageFailpoint(ctx context.Context) context.Context {
+	return context.WithValue(ctx, deleteAttachmentStorageFailpointKey{}, true)
+}
+
 func (s *Store) CreateAttachment(ctx context.Context, create *Attachment) (*Attachment, error) {
 	if !base.UIDMatcher.MatchString(create.UID) {
 		return nil, errors.New("invalid uid")
@@ -177,6 +187,9 @@ func (s *Store) DeleteAttachmentStorage(ctx context.Context, attachment *Attachm
 	if attachment == nil {
 		return nil
 	}
+	if shouldFailDeleteAttachmentStorage(ctx) {
+		return ErrDeleteAttachmentStorageFailpoint
+	}
 
 	if attachment.StorageType == storepb.AttachmentStorageType_LOCAL {
 		if err := func() error {
@@ -236,4 +249,9 @@ func (s *Store) deleteAttachmentDerivedCaches(attachment *Attachment) {
 			slog.Warn("Failed to delete derived attachment cache", slog.String("path", cachePath), slog.Any("err", err))
 		}
 	}
+}
+
+func shouldFailDeleteAttachmentStorage(ctx context.Context) bool {
+	failpoint, ok := ctx.Value(deleteAttachmentStorageFailpointKey{}).(bool)
+	return ok && failpoint
 }

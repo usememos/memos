@@ -53,6 +53,9 @@ func (d *DB) ListMemoShares(ctx context.Context, find *store.FindMemoShare) ([]*
 	if find.MemoID != nil {
 		where, args = append(where, "`memo_id` = ?"), append(args, *find.MemoID)
 	}
+	if find.CreatorID != nil {
+		where, args = append(where, "`creator_id` = ?"), append(args, *find.CreatorID)
+	}
 
 	rows, err := d.db.QueryContext(ctx, `
 		SELECT

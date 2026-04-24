@@ -8,6 +8,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/pkg/errors"
 	"golang.org/x/oauth2"
@@ -20,6 +21,8 @@ import (
 type IdentityProvider struct {
 	config *storepb.OAuth2Config
 }
+
+const userInfoRequestTimeout = 10 * time.Second
 
 // NewIdentityProvider initializes a new OAuth2 Identity Provider with the given configuration.
 func NewIdentityProvider(config *storepb.OAuth2Config) (*IdentityProvider, error) {
@@ -78,9 +81,9 @@ func (p *IdentityProvider) ExchangeToken(ctx context.Context, redirectURL, code,
 }
 
 // UserInfo returns the parsed user information using the given OAuth2 token.
-func (p *IdentityProvider) UserInfo(token string) (*idp.IdentityProviderUserInfo, error) {
-	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodGet, p.config.UserInfoUrl, nil)
+func (p *IdentityProvider) UserInfo(ctx context.Context, token string) (*idp.IdentityProviderUserInfo, error) {
+	client := &http.Client{Timeout: userInfoRequestTimeout}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, p.config.UserInfoUrl, nil)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create http request")
 	}
@@ -91,6 +94,14 @@ func (p *IdentityProvider) UserInfo(token string) (*idp.IdentityProviderUserInfo
 		return nil, errors.Wrap(err, "failed to get user information")
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode < http.StatusOK || resp.StatusCode >= http.StatusMultipleChoices {
+		body, readErr := io.ReadAll(io.LimitReader(resp.Body, 4096))
+		if readErr != nil {
+			return nil, errors.Wrap(readErr, "failed to read error response body")
+		}
+		return nil, errors.Errorf("userinfo request failed with status %d: %s", resp.StatusCode, string(body))
+	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {

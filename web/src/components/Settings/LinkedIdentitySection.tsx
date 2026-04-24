@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
+import InfoChip from "@/components/Settings/InfoChip";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { identityProviderServiceClient, userServiceClient } from "@/connect";
+import { getIdentityProviderTypeLabel, getSSOProviderUid } from "@/helpers/sso-display";
 import { absolutifyLink } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { handleError } from "@/lib/error";
@@ -14,8 +17,11 @@ import SettingTable from "./SettingTable";
 
 interface LinkedIdentityRow extends Record<string, unknown> {
   name: string;
+  providerUid: string;
   title: string;
+  typeLabel: string;
   externUid: string;
+  isLinked: boolean;
   linkedIdentity?: LinkedIdentity;
   identityProvider: IdentityProvider;
 }
@@ -70,8 +76,11 @@ const LinkedIdentitySection = () => {
         const linkedIdentity = linkedIdentityByProviderName.get(identityProvider.name);
         return {
           name: identityProvider.name,
+          providerUid: getSSOProviderUid(identityProvider.name),
           title: identityProvider.title,
+          typeLabel: getIdentityProviderTypeLabel(identityProvider.type),
           externUid: linkedIdentity?.externUid ?? "",
+          isLinked: !!linkedIdentity,
           linkedIdentity,
           identityProvider,
         };
@@ -122,7 +131,7 @@ const LinkedIdentitySection = () => {
         name: row.linkedIdentity.name,
       });
       await fetchData();
-      toast.success(`Unlinked ${row.title}.`);
+      toast.success(t("setting.sso.unlink-success", { name: row.title }));
     } catch (error) {
       handleError(error, toast.error, {
         context: "Delete linked identity",
@@ -131,40 +140,55 @@ const LinkedIdentitySection = () => {
     }
   };
 
-  if (oauthIdentityProviders.length === 0) {
-    return null;
-  }
-
   return (
-    <SettingGroup
-      showSeparator
-      title="SSO accounts"
-      description="Each provider can be linked to this account at most once. A linked row shows the current extern_uid and can be unlinked."
-    >
+    <SettingGroup showSeparator title={t("setting.sso.accounts-title")} description={t("setting.sso.accounts-description")}>
       <SettingTable<LinkedIdentityRow>
+        variant="info-flow"
         columns={[
           {
             key: "title",
-            header: "SSO provider",
-            render: (_, row: LinkedIdentityRow) => <span className="text-foreground">{row.title}</span>,
+            header: t("setting.sso.provider"),
+            render: (_, row: LinkedIdentityRow) => (
+              <div className="flex min-w-[16rem] flex-col gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-medium text-foreground">{row.title}</span>
+                  <Badge variant="secondary" className="rounded-full px-2.5 py-0.5">
+                    {row.typeLabel}
+                  </Badge>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <InfoChip label={t("setting.sso.provider-uid")} value={row.providerUid} />
+                </div>
+              </div>
+            ),
           },
           {
             key: "externUid",
-            header: "extern_uid",
+            header: t("setting.sso.account"),
             render: (_, row: LinkedIdentityRow) => (
-              <span className={row.externUid ? "text-foreground" : "text-muted-foreground"}>
-                {row.externUid || t("attachment-library.labels.not-linked")}
-              </span>
+              <div className="flex min-w-[22rem] flex-col gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge variant={row.isLinked ? "default" : "outline"} className="rounded-full px-2.5 py-0.5">
+                    {row.isLinked ? t("setting.sso.linked") : t("setting.sso.not-linked")}
+                  </Badge>
+                  {row.isLinked && row.externUid ? (
+                    <InfoChip label={t("setting.sso.extern-uid")} value={row.externUid} tooltip={row.externUid} />
+                  ) : null}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {row.isLinked ? t("setting.sso.extern-uid-description") : t("setting.sso.not-linked-description")}
+                </p>
+              </div>
             ),
           },
           {
             key: "actions",
             header: "",
-            className: "text-right",
+            className: "w-px text-right",
             render: (_, row: LinkedIdentityRow) =>
               row.linkedIdentity ? (
                 <Button variant="outline" size="sm" onClick={() => handleUnlinkIdentityProvider(row)}>
-                  Unlink
+                  {t("common.unlink")}
                 </Button>
               ) : (
                 <Button variant="outline" size="sm" onClick={() => handleLinkIdentityProvider(row.identityProvider)}>
@@ -174,7 +198,7 @@ const LinkedIdentitySection = () => {
           },
         ]}
         data={rows}
-        emptyMessage="No SSO providers found."
+        emptyMessage={t("setting.sso.no-sso-found")}
         getRowKey={(row) => row.name}
       />
     </SettingGroup>

@@ -47,6 +47,11 @@ func (s *Store) GetDriver() Driver {
 	return s.driver
 }
 
+// GetDataDir returns the store data directory.
+func (s *Store) GetDataDir() string {
+	return s.profile.Data
+}
+
 func (s *Store) Close() error {
 	// Stop all cache cleanup goroutines
 	s.instanceSettingCache.Close()

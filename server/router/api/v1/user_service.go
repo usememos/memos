@@ -353,26 +353,36 @@ func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserR
 	}
 	isSelfDelete := currentUser.ID == userID
 
-	if err := s.Store.DeleteUserIdentities(ctx, &store.DeleteUserIdentity{
-		UserID: &userID,
-	}); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to delete user identities: %v", err)
-	}
-	if err := s.Store.DeleteUserSettings(ctx, &store.DeleteUserSetting{
-		UserID: &userID,
-	}); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to delete user settings: %v", err)
-	}
-
-	if err := s.Store.DeleteUser(ctx, &store.DeleteUser{
+	attachments, err := s.Store.DeleteUserCompletely(ctx, &store.DeleteUser{
 		ID: user.ID,
-	}); err != nil {
+	})
+	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete user: %v", err)
+	}
+	var attachmentCleanupErr error
+	failedAttachmentIDs := make([]int32, 0)
+	for _, attachment := range attachments {
+		if err := s.Store.DeleteAttachmentStorage(ctx, attachment); err != nil {
+			slog.Warn("failed to delete attachment storage after deleting user", "user_id", userID, "attachment_id", attachment.ID, "error", err)
+			failedAttachmentIDs = append(failedAttachmentIDs, attachment.ID)
+			if attachmentCleanupErr == nil {
+				attachmentCleanupErr = err
+			}
+		}
 	}
 	if isSelfDelete {
 		if err := s.clearAuthCookies(ctx); err != nil {
 			slog.Warn("failed to clear auth cookies after self delete", "user_id", userID, "error", err)
 		}
+	}
+	if attachmentCleanupErr != nil {
+		return nil, status.Errorf(
+			codes.Internal,
+			"user was deleted but attachment storage cleanup failed for %d attachment(s), first attachment_id=%d: %v",
+			len(failedAttachmentIDs),
+			failedAttachmentIDs[0],
+			attachmentCleanupErr,
+		)
 	}
 
 	return &emptypb.Empty{}, nil

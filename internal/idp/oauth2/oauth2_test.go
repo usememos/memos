@@ -152,7 +152,7 @@ func TestIdentityProvider(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, testAccessToken, oauthToken)
 
-	userInfoResult, err := oauth2.UserInfo(oauthToken)
+	userInfoResult, err := oauth2.UserInfo(ctx, oauthToken)
 	require.NoError(t, err)
 
 	wantUserInfo := &idp.IdentityProviderUserInfo{
@@ -161,4 +161,56 @@ func TestIdentityProvider(t *testing.T) {
 		Email:       testEmail,
 	}
 	assert.Equal(t, wantUserInfo, userInfoResult)
+}
+
+func TestIdentityProviderUserInfoUsesContext(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer s.Close()
+
+	oauth2, err := NewIdentityProvider(
+		&storepb.OAuth2Config{
+			ClientId:     "test-client-id",
+			ClientSecret: "test-client-secret",
+			TokenUrl:     "https://example.com/oauth2/token",
+			UserInfoUrl:  s.URL,
+			FieldMapping: &storepb.FieldMapping{
+				Identifier: "sub",
+			},
+		},
+	)
+	require.NoError(t, err)
+
+	_, err = oauth2.UserInfo(ctx, "test-access-token")
+	require.Error(t, err)
+	assert.ErrorContains(t, err, "failed to get user information")
+}
+
+func TestIdentityProviderUserInfoRejectsNon2xx(t *testing.T) {
+	s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		http.Error(w, "upstream failure", http.StatusBadGateway)
+	}))
+	defer s.Close()
+
+	oauth2, err := NewIdentityProvider(
+		&storepb.OAuth2Config{
+			ClientId:     "test-client-id",
+			ClientSecret: "test-client-secret",
+			TokenUrl:     "https://example.com/oauth2/token",
+			UserInfoUrl:  s.URL,
+			FieldMapping: &storepb.FieldMapping{
+				Identifier: "sub",
+			},
+		},
+	)
+	require.NoError(t, err)
+
+	_, err = oauth2.UserInfo(context.Background(), "test-access-token")
+	require.Error(t, err)
+	assert.ErrorContains(t, err, "userinfo request failed with status 502")
+	assert.ErrorContains(t, err, "upstream failure")
 }
