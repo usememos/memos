@@ -282,11 +282,18 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
     setOAuth2Scopes(nextState.oauth2Scopes);
   }, [open, isCreating, identityProvider, selectedTemplate]);
 
+  const handleDialogClose = (nextOpen: boolean) => {
+    if (isSubmitting && !nextOpen) {
+      return;
+    }
+    onOpenChange(nextOpen);
+  };
+
   const handleCloseBtnClick = () => {
     if (isSubmitting) {
       return;
     }
-    onOpenChange(false);
+    handleDialogClose(false);
   };
 
   const allowConfirmAction = () => {
@@ -370,7 +377,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
 
     setIsSubmitting(false);
     onSuccess?.();
-    onOpenChange(false);
+    handleDialogClose(false);
   };
 
   const setPartialOAuth2Config = (state: Partial<OAuth2Config>) => {
@@ -390,7 +397,7 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleDialogClose}>
       <DialogContent size="2xl">
         <DialogHeader>
           <DialogTitle>{t(isCreating ? "setting.sso.create-sso" : "setting.sso.update-sso")}</DialogTitle>

@@ -412,7 +412,7 @@ func TestDeleteUserRollbackPreservesAllResources(t *testing.T) {
 		Name: apiv1.BuildUserName(user.Username),
 	})
 	require.Error(t, err)
-	require.ErrorContains(t, err, "failed to delete user")
+	require.ErrorContains(t, err, "delete user failpoint before commit")
 
 	userAfterRollback, err := ts.Store.GetUser(ctx, &store.FindUser{ID: &user.ID})
 	require.NoError(t, err)
@@ -460,10 +460,6 @@ func TestDeleteUserReturnsErrorWhenAttachmentStorageCleanupFails(t *testing.T) {
 	user, err := ts.CreateRegularUser(ctx, "cleanup-failure-owner")
 	require.NoError(t, err)
 
-	undeletableDir := filepath.Join(ts.Profile.Data, "cleanup-failure-dir")
-	require.NoError(t, os.MkdirAll(undeletableDir, 0o755))
-	require.NoError(t, os.WriteFile(filepath.Join(undeletableDir, "nested.txt"), []byte("keep"), 0o644))
-
 	_, err = ts.Store.CreateAttachment(ctx, &store.Attachment{
 		UID:         "attach-cleanup-failure",
 		CreatorID:   user.ID,
@@ -472,17 +468,20 @@ func TestDeleteUserReturnsErrorWhenAttachmentStorageCleanupFails(t *testing.T) {
 		Size:        7,
 		Blob:        []byte("failure"),
 		StorageType: storepb.AttachmentStorageType_LOCAL,
-		Reference:   "cleanup-failure-dir",
+		Reference:   "cleanup-failure.txt",
 	})
 	require.NoError(t, err)
 
 	headerCtx := apiv1.WithHeaderCarrier(ctx)
-	authCtx := ts.CreateUserContext(headerCtx, user.ID)
+	failCtx := store.WithDeleteAttachmentStorageFailpoint(headerCtx)
+	authCtx := ts.CreateUserContext(failCtx, user.ID)
 	_, err = ts.Service.DeleteUser(authCtx, &v1pb.DeleteUserRequest{
 		Name: apiv1.BuildUserName(user.Username),
 	})
 	require.Error(t, err)
 	require.ErrorContains(t, err, "attachment storage cleanup failed")
+	require.ErrorContains(t, err, "attachment_id=")
+	require.ErrorContains(t, err, store.ErrDeleteAttachmentStorageFailpoint.Error())
 
 	deletedUser, err := ts.Store.GetUser(ctx, &store.FindUser{ID: &user.ID})
 	require.NoError(t, err)

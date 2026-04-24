@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
+import InfoChip from "@/components/Settings/InfoChip";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { identityProviderServiceClient, userServiceClient } from "@/connect";
@@ -11,7 +12,6 @@ import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/id
 import { LinkedIdentity } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { storeOAuthState } from "@/utils/oauth";
-import InfoChip from "./InfoChip";
 import SettingGroup from "./SettingGroup";
 import SettingTable from "./SettingTable";
 
@@ -139,10 +139,6 @@ const LinkedIdentitySection = () => {
       });
     }
   };
-
-  if (oauthIdentityProviders.length === 0) {
-    return null;
-  }
 
   return (
     <SettingGroup showSeparator title={t("setting.sso.accounts-title")} description={t("setting.sso.accounts-description")}>

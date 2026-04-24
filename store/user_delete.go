@@ -80,7 +80,7 @@ func (s *Store) DeleteUserCompletely(ctx context.Context, delete *DeleteUser) ([
 		return nil, errors.Wrap(err, "failed to commit delete user transaction")
 	}
 
-	s.userCache.Delete(ctx, string(delete.ID))
+	s.userCache.Delete(ctx, userCacheKey(delete.ID))
 	for _, key := range targets.userSettingKeys {
 		s.userSettingCache.Delete(ctx, getUserSettingCacheKey(delete.ID, key.String()))
 	}
@@ -175,6 +175,10 @@ func (s *Store) deleteUserTargetsTx(ctx context.Context, tx *sql.Tx, dialect del
 }
 
 func listDeleteUserMemoTree(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, userID int32) ([]deleteUserMemoRef, error) {
+	if dialect == deleteUserDialectMySQL {
+		return listDeleteUserMemoTreeIterative(ctx, tx, dialect, userID)
+	}
+
 	rows, err := tx.QueryContext(ctx, `
 		WITH RECURSIVE memo_tree(id, uid) AS (
 			SELECT id, uid
@@ -189,6 +193,74 @@ func listDeleteUserMemoTree(ctx context.Context, tx *sql.Tx, dialect deleteUserD
 		SELECT id, uid
 		FROM memo_tree
 	`, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	memos := make([]deleteUserMemoRef, 0)
+	for rows.Next() {
+		var memo deleteUserMemoRef
+		if err := rows.Scan(&memo.ID, &memo.UID); err != nil {
+			return nil, err
+		}
+		memos = append(memos, memo)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return memos, nil
+}
+
+func listDeleteUserMemoTreeIterative(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, userID int32) ([]deleteUserMemoRef, error) {
+	roots, err := queryDeleteUserMemoRefs(ctx, tx, `
+		SELECT id, uid
+		FROM memo
+		WHERE creator_id = `+deleteUserPlaceholder(dialect, 1), userID)
+	if err != nil {
+		return nil, err
+	}
+
+	memos := make([]deleteUserMemoRef, 0, len(roots))
+	seen := make(map[int32]struct{})
+	frontier := make([]int32, 0, len(roots))
+	for _, memo := range roots {
+		if _, exists := seen[memo.ID]; exists {
+			continue
+		}
+		seen[memo.ID] = struct{}{}
+		memos = append(memos, memo)
+		frontier = append(frontier, memo.ID)
+	}
+
+	for len(frontier) > 0 {
+		clause, args := deleteUserInClause(dialect, 1, frontier)
+		children, err := queryDeleteUserMemoRefs(ctx, tx, `
+			SELECT child.id, child.uid
+			FROM memo child
+			JOIN memo_relation rel ON rel.memo_id = child.id AND rel.type = 'COMMENT'
+			WHERE rel.related_memo_id IN `+clause, args...)
+		if err != nil {
+			return nil, err
+		}
+
+		frontier = frontier[:0]
+		for _, child := range children {
+			if _, exists := seen[child.ID]; exists {
+				continue
+			}
+			seen[child.ID] = struct{}{}
+			memos = append(memos, child)
+			frontier = append(frontier, child.ID)
+		}
+	}
+
+	return memos, nil
+}
+
+func queryDeleteUserMemoRefs(ctx context.Context, tx *sql.Tx, query string, args ...any) ([]deleteUserMemoRef, error) {
+	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -235,7 +307,6 @@ func listDeleteUserAttachments(ctx context.Context, tx *sql.Tx, dialect deleteUs
 	defer rows.Close()
 
 	attachments := make([]*Attachment, 0)
-	seen := make(map[int32]struct{})
 	for rows.Next() {
 		attachment := &Attachment{}
 		var memoID sql.NullInt32
@@ -244,10 +315,6 @@ func listDeleteUserAttachments(ctx context.Context, tx *sql.Tx, dialect deleteUs
 		if err := rows.Scan(&attachment.ID, &attachment.UID, &attachment.CreatorID, &memoID, &storageType, &attachment.Reference, &payloadBytes); err != nil {
 			return nil, err
 		}
-		if _, exists := seen[attachment.ID]; exists {
-			continue
-		}
-		seen[attachment.ID] = struct{}{}
 		if memoID.Valid {
 			attachment.MemoID = &memoID.Int32
 		}
@@ -292,14 +359,54 @@ func listDeleteUserSettingKeys(ctx context.Context, tx *sql.Tx, dialect deleteUs
 }
 
 func listDeleteUserInboxIDs(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, userID int32, memoIDSet map[int32]struct{}) ([]int32, error) {
+	directIDs, err := listDeleteUserDirectInboxIDs(ctx, tx, dialect, userID)
+	if err != nil {
+		return nil, err
+	}
+	inboxIDs := append([]int32{}, directIDs...)
+	if len(memoIDSet) == 0 {
+		return inboxIDs, nil
+	}
+
+	memoIDs, err := listDeleteUserMemoReferencedInboxIDs(ctx, tx, dialect, userID, memoIDSet)
+	if err != nil {
+		return nil, err
+	}
+	return append(inboxIDs, memoIDs...), nil
+}
+
+func listDeleteUserDirectInboxIDs(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, userID int32) ([]int32, error) {
 	rows, err := tx.QueryContext(ctx, `
-		SELECT
-			id,
-			sender_id,
-			receiver_id,
-			message
+		SELECT id
 		FROM inbox
-	`)
+		WHERE sender_id = `+deleteUserPlaceholder(dialect, 1)+`
+			OR receiver_id = `+deleteUserPlaceholder(dialect, 2), userID, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	inboxIDs := make([]int32, 0)
+	for rows.Next() {
+		var inboxID int32
+		if err := rows.Scan(&inboxID); err != nil {
+			return nil, err
+		}
+		inboxIDs = append(inboxIDs, inboxID)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return inboxIDs, nil
+}
+
+func listDeleteUserMemoReferencedInboxIDs(ctx context.Context, tx *sql.Tx, dialect deleteUserDialect, userID int32, memoIDSet map[int32]struct{}) ([]int32, error) {
+	rows, err := tx.QueryContext(ctx, `
+		SELECT id, message
+		FROM inbox
+		WHERE sender_id <> `+deleteUserPlaceholder(dialect, 1)+`
+			AND receiver_id <> `+deleteUserPlaceholder(dialect, 2), userID, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -309,18 +416,12 @@ func listDeleteUserInboxIDs(ctx context.Context, tx *sql.Tx, dialect deleteUserD
 	for rows.Next() {
 		var (
 			inboxID    int32
-			senderID   int32
-			receiverID int32
 			messageRaw []byte
 		)
-		if err := rows.Scan(&inboxID, &senderID, &receiverID, &messageRaw); err != nil {
+		if err := rows.Scan(&inboxID, &messageRaw); err != nil {
 			return nil, err
 		}
-		if senderID == userID || receiverID == userID {
-			inboxIDs = append(inboxIDs, inboxID)
-			continue
-		}
-		if len(memoIDSet) == 0 {
+		if len(messageRaw) == 0 {
 			continue
 		}
 
@@ -374,7 +475,7 @@ func deleteReactionsByContentIDsTx(ctx context.Context, tx *sql.Tx, dialect dele
 	if len(contentIDs) == 0 {
 		return nil
 	}
-	clause, args := deleteUserStringInClause(dialect, 1, contentIDs)
+	clause, args := deleteUserInClause(dialect, 1, contentIDs)
 	_, err := tx.ExecContext(ctx, `DELETE FROM reaction WHERE content_id IN `+clause, args...)
 	return err
 }
@@ -468,17 +569,7 @@ func deleteUserPlaceholder(dialect deleteUserDialect, index int) string {
 	return "?"
 }
 
-func deleteUserInClause(dialect deleteUserDialect, start int, values []int32) (string, []any) {
-	placeholders := make([]string, 0, len(values))
-	args := make([]any, 0, len(values))
-	for i, value := range values {
-		placeholders = append(placeholders, deleteUserPlaceholder(dialect, start+i))
-		args = append(args, value)
-	}
-	return "(" + strings.Join(placeholders, ", ") + ")", args
-}
-
-func deleteUserStringInClause(dialect deleteUserDialect, start int, values []string) (string, []any) {
+func deleteUserInClause[T any](dialect deleteUserDialect, start int, values []T) (string, []any) {
 	placeholders := make([]string, 0, len(values))
 	args := make([]any, 0, len(values))
 	for i, value := range values {

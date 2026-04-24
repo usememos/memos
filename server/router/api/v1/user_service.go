@@ -360,9 +360,11 @@ func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserR
 		return nil, status.Errorf(codes.Internal, "failed to delete user: %v", err)
 	}
 	var attachmentCleanupErr error
+	failedAttachmentIDs := make([]int32, 0)
 	for _, attachment := range attachments {
 		if err := s.Store.DeleteAttachmentStorage(ctx, attachment); err != nil {
 			slog.Warn("failed to delete attachment storage after deleting user", "user_id", userID, "attachment_id", attachment.ID, "error", err)
+			failedAttachmentIDs = append(failedAttachmentIDs, attachment.ID)
 			if attachmentCleanupErr == nil {
 				attachmentCleanupErr = err
 			}
@@ -374,7 +376,13 @@ func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserR
 		}
 	}
 	if attachmentCleanupErr != nil {
-		return nil, status.Errorf(codes.Internal, "user was deleted but attachment storage cleanup failed: %v", attachmentCleanupErr)
+		return nil, status.Errorf(
+			codes.Internal,
+			"user was deleted but attachment storage cleanup failed for %d attachment(s), first attachment_id=%d: %v",
+			len(failedAttachmentIDs),
+			failedAttachmentIDs[0],
+			attachmentCleanupErr,
+		)
 	}
 
 	return &emptypb.Empty{}, nil
