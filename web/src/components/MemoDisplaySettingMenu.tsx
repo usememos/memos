@@ -11,8 +11,8 @@ interface Props {
 
 function MemoDisplaySettingMenu({ className }: Props) {
   const t = useTranslate();
-  const { orderByTimeAsc, toggleSortOrder } = useView();
-  const isApplying = orderByTimeAsc !== false;
+  const { orderByTimeAsc, sortTimeField, setSortTimeField, toggleSortOrder } = useView();
+  const isApplying = orderByTimeAsc !== false || sortTimeField !== "create_time";
 
   return (
     <Popover>
@@ -21,6 +21,21 @@ function MemoDisplaySettingMenu({ className }: Props) {
       </PopoverTrigger>
       <PopoverContent align="end" alignOffset={-12} sideOffset={14}>
         <div className="flex flex-col gap-2 p-1">
+          <div className="w-full flex flex-row justify-between items-center">
+            <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.order-by")}</span>
+            <Select
+              value={sortTimeField}
+              onValueChange={(value) => setSortTimeField(value === "update_time" ? "update_time" : "create_time")}
+            >
+              <SelectTrigger size="sm" className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="create_time">{t("common.created-at")}</SelectItem>
+                <SelectItem value="update_time">{t("common.last-updated-at")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.direction")}</span>
             <Select
@@ -31,7 +46,7 @@ function MemoDisplaySettingMenu({ className }: Props) {
                 }
               }}
             >
-              <SelectTrigger size="sm">
+              <SelectTrigger size="sm" className="w-32">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>

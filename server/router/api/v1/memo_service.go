@@ -190,9 +190,12 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		memoFind.RowStatus = &state
 	}
 
+	orderByDisplayTime := true
 	// Parse order_by field (replaces the old sort and direction fields)
 	if request.OrderBy != "" {
-		if err := s.parseMemoOrderBy(request.OrderBy, memoFind); err != nil {
+		var err error
+		orderByDisplayTime, err = s.parseMemoOrderBy(request.OrderBy, memoFind)
+		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid order_by: %v", err)
 		}
 	} else {
@@ -222,7 +225,7 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get instance memo related setting")
 	}
-	if instanceMemoRelatedSetting.DisplayWithUpdateTime {
+	if orderByDisplayTime && instanceMemoRelatedSetting.DisplayWithUpdateTime {
 		memoFind.OrderByUpdatedTs = true
 	}
 
@@ -940,9 +943,9 @@ func (s *APIV1Service) getMemoContentSnippet(content string) (string, error) {
 // parseMemoOrderBy parses the order_by field and sets the appropriate ordering in memoFind.
 // Follows AIP-132: supports comma-separated list of fields with optional "desc" suffix.
 // Example: "pinned desc, display_time desc" or "create_time asc".
-func (*APIV1Service) parseMemoOrderBy(orderBy string, memoFind *store.FindMemo) error {
+func (*APIV1Service) parseMemoOrderBy(orderBy string, memoFind *store.FindMemo) (bool, error) {
 	if strings.TrimSpace(orderBy) == "" {
-		return errors.New("empty order_by")
+		return false, errors.New("empty order_by")
 	}
 
 	// Split by comma to support multiple sort fields per AIP-132.
@@ -950,6 +953,8 @@ func (*APIV1Service) parseMemoOrderBy(orderBy string, memoFind *store.FindMemo) 
 
 	// Track if we've seen pinned field.
 	hasPinned := false
+	orderByDisplayTime := false
+	hasExplicitTimeField := false
 
 	for _, field := range fields {
 		parts := strings.Fields(strings.TrimSpace(field))
@@ -962,7 +967,7 @@ func (*APIV1Service) parseMemoOrderBy(orderBy string, memoFind *store.FindMemo) 
 		if len(parts) > 1 {
 			fieldDirection = strings.ToLower(parts[1])
 			if fieldDirection != "asc" && fieldDirection != "desc" {
-				return errors.Errorf("invalid order direction: %s, must be 'asc' or 'desc'", parts[1])
+				return false, errors.Errorf("invalid order direction: %s, must be 'asc' or 'desc'", parts[1])
 			}
 		}
 
@@ -971,16 +976,28 @@ func (*APIV1Service) parseMemoOrderBy(orderBy string, memoFind *store.FindMemo) 
 			hasPinned = true
 			memoFind.OrderByPinned = true
 			// Note: pinned is always DESC (true first) regardless of direction specified.
-		case "display_time", "create_time", "name":
+		case "display_time":
 			// Only set if this is the first time field we encounter.
-			if !memoFind.OrderByUpdatedTs {
+			if !hasExplicitTimeField {
+				orderByDisplayTime = true
 				memoFind.OrderByTimeAsc = fieldDirection == "asc"
 			}
+			hasExplicitTimeField = true
+		case "create_time", "name":
+			// Only set if this is the first time field we encounter.
+			if !hasExplicitTimeField {
+				memoFind.OrderByTimeAsc = fieldDirection == "asc"
+			}
+			hasExplicitTimeField = true
 		case "update_time":
-			memoFind.OrderByUpdatedTs = true
-			memoFind.OrderByTimeAsc = fieldDirection == "asc"
+			// Only set if this is the first time field we encounter.
+			if !hasExplicitTimeField {
+				memoFind.OrderByUpdatedTs = true
+				memoFind.OrderByTimeAsc = fieldDirection == "asc"
+			}
+			hasExplicitTimeField = true
 		default:
-			return errors.Errorf("unsupported order field: %s, supported fields are: pinned, display_time, create_time, update_time, name", fieldName)
+			return false, errors.Errorf("unsupported order field: %s, supported fields are: pinned, display_time, create_time, update_time, name", fieldName)
 		}
 	}
 
@@ -989,5 +1006,5 @@ func (*APIV1Service) parseMemoOrderBy(orderBy string, memoFind *store.FindMemo) 
 		memoFind.OrderByTimeAsc = false // default to desc
 	}
 
-	return nil
+	return orderByDisplayTime || !hasExplicitTimeField, nil
 }

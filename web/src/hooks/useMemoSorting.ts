@@ -1,9 +1,9 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import dayjs from "dayjs";
 import { useMemo } from "react";
-import { useView } from "@/contexts/ViewContext";
+import { type MemoSortTimeField, useView } from "@/contexts/ViewContext";
 import { State } from "@/types/proto/api/v1/common_pb";
-import { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 
 export interface UseMemoSortingOptions {
   pinnedFirst?: boolean;
@@ -15,15 +15,20 @@ export interface UseMemoSortingResult {
   orderBy: string;
 }
 
+const getMemoSortTime = (memo: Memo, field: MemoSortTimeField): Date | undefined => {
+  const timestamp = field === "update_time" ? memo.updateTime : memo.createTime;
+  return timestamp ? timestampDate(timestamp) : undefined;
+};
+
 export const useMemoSorting = (options: UseMemoSortingOptions = {}): UseMemoSortingResult => {
   const { pinnedFirst = false, state = State.NORMAL } = options;
-  const { orderByTimeAsc } = useView();
+  const { orderByTimeAsc, sortTimeField } = useView();
 
   // Generate orderBy string for API
   const orderBy = useMemo(() => {
-    const timeOrder = orderByTimeAsc ? "display_time asc" : "display_time desc";
+    const timeOrder = orderByTimeAsc ? `${sortTimeField} asc` : `${sortTimeField} desc`;
     return pinnedFirst ? `pinned desc, ${timeOrder}` : timeOrder;
-  }, [pinnedFirst, orderByTimeAsc]);
+  }, [pinnedFirst, orderByTimeAsc, sortTimeField]);
 
   // Generate listSort function for client-side sorting
   const listSort = useMemo(() => {
@@ -36,13 +41,13 @@ export const useMemoSorting = (options: UseMemoSortingOptions = {}): UseMemoSort
             return b.pinned ? 1 : -1;
           }
 
-          // Then sort by display time
-          const aTime = a.displayTime ? timestampDate(a.displayTime) : undefined;
-          const bTime = b.displayTime ? timestampDate(b.displayTime) : undefined;
+          // Then sort by the selected time field.
+          const aTime = getMemoSortTime(a, sortTimeField);
+          const bTime = getMemoSortTime(b, sortTimeField);
           return orderByTimeAsc ? dayjs(aTime).unix() - dayjs(bTime).unix() : dayjs(bTime).unix() - dayjs(aTime).unix();
         });
     };
-  }, [pinnedFirst, state, orderByTimeAsc]);
+  }, [pinnedFirst, state, orderByTimeAsc, sortTimeField]);
 
   return { listSort, orderBy };
 };

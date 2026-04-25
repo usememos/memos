@@ -254,6 +254,126 @@ func TestListMemos(t *testing.T) {
 	require.Equal(t, "👍", userTwoReaction.ReactionType)
 }
 
+func TestListMemosExplicitTimeOrderByWithDisplayUpdateTime(t *testing.T) {
+	ctx := context.Background()
+
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateHostUser(ctx, "time-order-user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	_, err = ts.Service.UpdateInstanceSetting(userCtx, &apiv1.UpdateInstanceSettingRequest{
+		Setting: &apiv1.InstanceSetting{
+			Name: "instance/settings/MEMO_RELATED",
+			Value: &apiv1.InstanceSetting_MemoRelatedSetting_{
+				MemoRelatedSetting: &apiv1.InstanceSetting_MemoRelatedSetting{
+					DisplayWithUpdateTime: true,
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	memoEarlyCreateLateUpdate, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "early create late update",
+			Visibility: apiv1.Visibility_PRIVATE,
+			CreateTime: timestamppb.New(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+			UpdateTime: timestamppb.New(time.Date(2020, 1, 3, 0, 0, 0, 0, time.UTC)),
+		},
+	})
+	require.NoError(t, err)
+	memoMiddleCreateEarlyUpdate, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "middle create early update",
+			Visibility: apiv1.Visibility_PRIVATE,
+			CreateTime: timestamppb.New(time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)),
+			UpdateTime: timestamppb.New(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+		},
+	})
+	require.NoError(t, err)
+	memoLateCreateMiddleUpdate, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "late create middle update",
+			Visibility: apiv1.Visibility_PRIVATE,
+			CreateTime: timestamppb.New(time.Date(2020, 1, 3, 0, 0, 0, 0, time.UTC)),
+			UpdateTime: timestamppb.New(time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)),
+		},
+	})
+	require.NoError(t, err)
+
+	tests := []struct {
+		name      string
+		orderBy   string
+		wantNames []string
+	}{
+		{
+			name:    "explicit create time",
+			orderBy: "create_time desc",
+			wantNames: []string{
+				memoLateCreateMiddleUpdate.Name,
+				memoMiddleCreateEarlyUpdate.Name,
+				memoEarlyCreateLateUpdate.Name,
+			},
+		},
+		{
+			name:    "explicit create time before display time",
+			orderBy: "create_time desc, display_time desc",
+			wantNames: []string{
+				memoLateCreateMiddleUpdate.Name,
+				memoMiddleCreateEarlyUpdate.Name,
+				memoEarlyCreateLateUpdate.Name,
+			},
+		},
+		{
+			name:    "explicit update time",
+			orderBy: "update_time desc",
+			wantNames: []string{
+				memoEarlyCreateLateUpdate.Name,
+				memoLateCreateMiddleUpdate.Name,
+				memoMiddleCreateEarlyUpdate.Name,
+			},
+		},
+		{
+			name:    "display time follows instance setting",
+			orderBy: "display_time desc",
+			wantNames: []string{
+				memoEarlyCreateLateUpdate.Name,
+				memoLateCreateMiddleUpdate.Name,
+				memoMiddleCreateEarlyUpdate.Name,
+			},
+		},
+		{
+			name:    "default follows instance setting",
+			orderBy: "",
+			wantNames: []string{
+				memoEarlyCreateLateUpdate.Name,
+				memoLateCreateMiddleUpdate.Name,
+				memoMiddleCreateEarlyUpdate.Name,
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			resp, err := ts.Service.ListMemos(userCtx, &apiv1.ListMemosRequest{
+				PageSize: 10,
+				OrderBy:  test.orderBy,
+			})
+			require.NoError(t, err)
+			require.Len(t, resp.Memos, len(test.wantNames))
+
+			gotNames := make([]string, 0, len(resp.Memos))
+			for _, memo := range resp.Memos {
+				gotNames = append(gotNames, memo.Name)
+			}
+			require.Equal(t, test.wantNames, gotNames)
+		})
+	}
+}
+
 func TestListMemosSkipsReactionsWithMissingCreators(t *testing.T) {
 	ctx := context.Background()
 

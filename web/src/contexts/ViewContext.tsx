@@ -1,8 +1,18 @@
 import { createContext, type ReactNode, useContext, useState } from "react";
+import { useInstance } from "@/contexts/InstanceContext";
+
+export type MemoSortTimeField = "create_time" | "update_time";
+
+interface ViewState {
+  orderByTimeAsc: boolean;
+  sortTimeField?: MemoSortTimeField;
+}
 
 interface ViewContextValue {
   orderByTimeAsc: boolean;
+  sortTimeField: MemoSortTimeField;
   toggleSortOrder: () => void;
+  setSortTimeField: (field: MemoSortTimeField) => void;
 }
 
 const ViewContext = createContext<ViewContextValue | null>(null);
@@ -10,13 +20,17 @@ const ViewContext = createContext<ViewContextValue | null>(null);
 const LOCAL_STORAGE_KEY = "memos-view-setting";
 
 export function ViewProvider({ children }: { children: ReactNode }) {
-  const getInitialState = () => {
+  const { memoRelatedSetting } = useInstance();
+
+  const getInitialState = (): ViewState => {
     try {
       const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (cached) {
-        const data = JSON.parse(cached);
+        const data = JSON.parse(cached) as Partial<ViewState>;
+        const sortTimeField = data.sortTimeField === "create_time" || data.sortTimeField === "update_time" ? data.sortTimeField : undefined;
         return {
           orderByTimeAsc: Boolean(data.orderByTimeAsc ?? false),
+          sortTimeField,
         };
       }
     } catch (error) {
@@ -26,8 +40,9 @@ export function ViewProvider({ children }: { children: ReactNode }) {
   };
 
   const [viewState, setViewState] = useState(getInitialState);
+  const sortTimeField = viewState.sortTimeField ?? (memoRelatedSetting.displayWithUpdateTime ? "update_time" : "create_time");
 
-  const persistToStorage = (newState: typeof viewState) => {
+  const persistToStorage = (newState: ViewState) => {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newState));
     } catch (error) {
@@ -43,11 +58,21 @@ export function ViewProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const setSortTimeField = (field: MemoSortTimeField) => {
+    setViewState((prev) => {
+      const newState = { ...prev, sortTimeField: field };
+      persistToStorage(newState);
+      return newState;
+    });
+  };
+
   return (
     <ViewContext.Provider
       value={{
-        ...viewState,
+        orderByTimeAsc: viewState.orderByTimeAsc,
+        sortTimeField,
         toggleSortOrder,
+        setSortTimeField,
       }}
     >
       {children}
