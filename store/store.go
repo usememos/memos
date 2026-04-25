@@ -1,6 +1,7 @@
 package store
 
 import (
+	"sync"
 	"time"
 
 	"github.com/usememos/memos/internal/profile"
@@ -11,6 +12,8 @@ import (
 type Store struct {
 	profile *profile.Profile
 	driver  Driver
+
+	userCreateMu sync.Mutex
 
 	// Cache settings
 	cacheConfig cache.Config

@@ -2,6 +2,8 @@ package test
 
 import (
 	"context"
+	"fmt"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -10,6 +12,7 @@ import (
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	apiv1server "github.com/usememos/memos/server/router/api/v1"
+	"github.com/usememos/memos/store"
 )
 
 func TestCreateUserRegistration(t *testing.T) {
@@ -218,6 +221,41 @@ func TestCreateUserRegistration(t *testing.T) {
 		require.Contains(t, err.Error(), "password must not be empty")
 	})
 
+	t.Run("CreateUser rejects invalid writable usernames", func(t *testing.T) {
+		for _, username := range []string{"alice@example.com", "legacy_user", "123"} {
+			t.Run(username, func(t *testing.T) {
+				ts := NewTestService(t)
+				defer ts.Cleanup()
+
+				_, err := ts.Service.CreateUser(ctx, &apiv1.CreateUserRequest{
+					User: &apiv1.User{
+						Username: username,
+						Email:    "newuser@example.com",
+						Password: "password123",
+					},
+				})
+				require.Error(t, err)
+				require.Contains(t, err.Error(), "invalid username")
+			})
+		}
+	})
+
+	t.Run("CreateUser validate only rejects invalid writable username", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		_, err := ts.Service.CreateUser(ctx, &apiv1.CreateUserRequest{
+			User: &apiv1.User{
+				Username: "alice@example.com",
+				Email:    "newuser@example.com",
+				Password: "password123",
+			},
+			ValidateOnly: true,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "invalid username")
+	})
+
 	t.Run("UpdateUser rejects empty password", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
@@ -235,5 +273,115 @@ func TestCreateUserRegistration(t *testing.T) {
 		})
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "password must not be empty")
+	})
+
+	t.Run("UpdateUser rejects missing user message", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "missing-message")
+		require.NoError(t, err)
+
+		authCtx := ts.CreateUserContext(ctx, user.ID)
+		_, err = ts.Service.UpdateUser(authCtx, &apiv1.UpdateUserRequest{
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"display_name"}},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "user is required")
+	})
+
+	t.Run("CreateUser concurrent first setup creates one admin", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		const workers = 12
+		var wg sync.WaitGroup
+		for i := range workers {
+			wg.Go(func() {
+				_, _ = ts.Service.CreateUser(ctx, &apiv1.CreateUserRequest{
+					User: &apiv1.User{
+						Username: fmt.Sprintf("setup-user-%d", i),
+						Email:    "setup-user@example.com",
+						Password: "password123",
+					},
+				})
+			})
+		}
+		wg.Wait()
+
+		users, err := ts.Store.ListUsers(ctx, &store.FindUser{})
+		require.NoError(t, err)
+		adminCount := 0
+		for _, user := range users {
+			if user.Role == store.RoleAdmin {
+				adminCount++
+			}
+		}
+		require.Equal(t, 1, adminCount)
+	})
+
+	t.Run("UpdateUser state requires admin", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "state-user")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+		_, err = ts.Service.UpdateUser(userCtx, &apiv1.UpdateUserRequest{
+			User: &apiv1.User{
+				Name:  apiv1server.BuildUserName(user.Username),
+				State: apiv1.State_ARCHIVED,
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"state"}},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "permission denied")
+
+		admin, err := ts.CreateHostUser(ctx, "state-admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, admin.ID)
+		updated, err := ts.Service.UpdateUser(adminCtx, &apiv1.UpdateUserRequest{
+			User: &apiv1.User{
+				Name:  apiv1server.BuildUserName(user.Username),
+				State: apiv1.State_ARCHIVED,
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"state"}},
+		})
+		require.NoError(t, err)
+		require.Equal(t, apiv1.State_ARCHIVED, updated.State)
+	})
+
+	t.Run("archived user context is rejected", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "archived-access-user")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+		archived := store.Archived
+		_, err = ts.Store.UpdateUser(ctx, &store.UpdateUser{
+			ID:        user.ID,
+			RowStatus: &archived,
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.GetCurrentUser(userCtx, &apiv1.GetCurrentUserRequest{})
+		require.Error(t, err)
+
+		_, err = ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+			Memo: &apiv1.Memo{
+				Content: "should not be created",
+			},
+		})
+		require.Error(t, err)
+
+		_, err = ts.Service.UpdateUser(userCtx, &apiv1.UpdateUserRequest{
+			User: &apiv1.User{
+				Name:  apiv1server.BuildUserName(user.Username),
+				State: apiv1.State_NORMAL,
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"state"}},
+		})
+		require.Error(t, err)
 	})
 }

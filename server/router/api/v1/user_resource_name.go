@@ -26,7 +26,7 @@ func parseUsernameFromName(name string) (string, error) {
 	return username, nil
 }
 
-func validateUsername(username string) error {
+func validateWritableUsername(username string) error {
 	if username == "" || isNumericUsername(username) || !base.UIDMatcher.MatchString(username) {
 		return errors.Errorf("invalid username %q", username)
 	}

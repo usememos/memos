@@ -13,7 +13,7 @@ import (
 // retry loops around concurrent first-time logins.
 func deriveSSOUsername() (string, error) {
 	username := util.GenUUID()
-	if err := validateUsername(username); err != nil {
+	if err := validateWritableUsername(username); err != nil {
 		return "", errors.Wrap(err, "generated UUID did not satisfy username constraints")
 	}
 	return username, nil

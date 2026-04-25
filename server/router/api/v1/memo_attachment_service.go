@@ -32,7 +32,7 @@ func (s *APIV1Service) SetMemoAttachments(ctx context.Context, request *v1pb.Set
 	if memo == nil {
 		return nil, status.Errorf(codes.NotFound, "memo not found")
 	}
-	if memo.CreatorID != user.ID && !isSuperUser(user) {
+	if !canModifyMemo(user, memo) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 	if err := s.setMemoAttachmentsInternal(ctx, memo, request.Attachments); err != nil {
