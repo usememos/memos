@@ -12,7 +12,7 @@ dayjs.extend(isSameOrBefore);
 export type TranslateFunction = ReturnType<typeof useTranslate>;
 
 export const getCellIntensityClass = (day: CalendarDayCell, maxCount: number): string => {
-  if (!day.isCurrentMonth || day.count === 0) {
+  if (day.count === 0) {
     return CELL_STYLES.EMPTY;
   }
 

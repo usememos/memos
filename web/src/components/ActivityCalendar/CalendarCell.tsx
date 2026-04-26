@@ -35,16 +35,19 @@ export const CalendarCell = memo((props: CalendarCellProps) => {
   const isInteractive = Boolean(onClick && day.count > 0);
   const ariaLabel = day.isSelected ? `${tooltipText} (selected)` : tooltipText;
 
-  if (!day.isCurrentMonth) {
-    return <div className={cn(baseClasses, "text-muted-foreground/30 bg-transparent border-transparent cursor-default")}>{day.label}</div>;
-  }
-
   const intensityClass = getCellIntensityClass(day, maxCount);
+
+  // Adjacent-month days (those shown to fill out the first/last grid row) keep
+  // their heatmap color and click behavior so days with memos are never hidden
+  // by the grid boundary, but are visually muted so it's still obvious they
+  // aren't part of the current month. See #5816.
+  const adjacentMonthClass = !day.isCurrentMonth ? "opacity-60" : "";
 
   const buttonClasses = cn(
     baseClasses,
     intensityClass,
     getCalendarCellStateClass(day),
+    adjacentMonthClass,
     isInteractive ? "cursor-pointer hover:bg-muted/40 hover:border-border/30" : "cursor-default",
   );
 
