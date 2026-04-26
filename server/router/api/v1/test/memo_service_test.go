@@ -254,6 +254,120 @@ func TestListMemos(t *testing.T) {
 	require.Equal(t, "👍", userTwoReaction.ReactionType)
 }
 
+func TestListMemosTimeOrderBy(t *testing.T) {
+	ctx := context.Background()
+
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateHostUser(ctx, "time-order-user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	memoEarlyCreateLateUpdate, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "early create late update",
+			Visibility: apiv1.Visibility_PRIVATE,
+			CreateTime: timestamppb.New(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+			UpdateTime: timestamppb.New(time.Date(2020, 1, 3, 0, 0, 0, 0, time.UTC)),
+		},
+	})
+	require.NoError(t, err)
+	memoMiddleCreateEarlyUpdate, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "middle create early update",
+			Visibility: apiv1.Visibility_PRIVATE,
+			CreateTime: timestamppb.New(time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)),
+			UpdateTime: timestamppb.New(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
+		},
+	})
+	require.NoError(t, err)
+	memoLateCreateMiddleUpdate, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "late create middle update",
+			Visibility: apiv1.Visibility_PRIVATE,
+			CreateTime: timestamppb.New(time.Date(2020, 1, 3, 0, 0, 0, 0, time.UTC)),
+			UpdateTime: timestamppb.New(time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)),
+		},
+	})
+	require.NoError(t, err)
+
+	tests := []struct {
+		name      string
+		orderBy   string
+		wantNames []string
+	}{
+		{
+			name:    "default create time",
+			orderBy: "",
+			wantNames: []string{
+				memoLateCreateMiddleUpdate.Name,
+				memoMiddleCreateEarlyUpdate.Name,
+				memoEarlyCreateLateUpdate.Name,
+			},
+		},
+		{
+			name:    "explicit create time",
+			orderBy: "create_time desc",
+			wantNames: []string{
+				memoLateCreateMiddleUpdate.Name,
+				memoMiddleCreateEarlyUpdate.Name,
+				memoEarlyCreateLateUpdate.Name,
+			},
+		},
+		{
+			name:    "explicit update time",
+			orderBy: "update_time desc",
+			wantNames: []string{
+				memoEarlyCreateLateUpdate.Name,
+				memoLateCreateMiddleUpdate.Name,
+				memoMiddleCreateEarlyUpdate.Name,
+			},
+		},
+		{
+			name:    "pinned with explicit create time",
+			orderBy: "pinned desc, create_time desc",
+			wantNames: []string{
+				memoLateCreateMiddleUpdate.Name,
+				memoMiddleCreateEarlyUpdate.Name,
+				memoEarlyCreateLateUpdate.Name,
+			},
+		},
+		{
+			name:    "explicit create time ascending",
+			orderBy: "create_time asc",
+			wantNames: []string{
+				memoEarlyCreateLateUpdate.Name,
+				memoMiddleCreateEarlyUpdate.Name,
+				memoLateCreateMiddleUpdate.Name,
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			resp, err := ts.Service.ListMemos(userCtx, &apiv1.ListMemosRequest{
+				PageSize: 10,
+				OrderBy:  test.orderBy,
+			})
+			require.NoError(t, err)
+			require.Len(t, resp.Memos, len(test.wantNames))
+
+			gotNames := make([]string, 0, len(resp.Memos))
+			for _, memo := range resp.Memos {
+				gotNames = append(gotNames, memo.Name)
+			}
+			require.Equal(t, test.wantNames, gotNames)
+		})
+	}
+
+	_, err = ts.Service.ListMemos(userCtx, &apiv1.ListMemosRequest{
+		PageSize: 10,
+		OrderBy:  "display_time desc",
+	})
+	require.Error(t, err)
+}
+
 func TestListMemosSkipsReactionsWithMissingCreators(t *testing.T) {
 	ctx := context.Background()
 
@@ -431,7 +545,6 @@ func TestCreateMemoWithCustomTimestamps(t *testing.T) {
 	// Define custom timestamps (January 1, 2020)
 	customCreateTime := time.Date(2020, 1, 1, 12, 0, 0, 0, time.UTC)
 	customUpdateTime := time.Date(2020, 1, 2, 12, 0, 0, 0, time.UTC)
-	customDisplayTime := time.Date(2020, 1, 3, 12, 0, 0, 0, time.UTC)
 
 	// Test 1: Create a memo with custom create_time
 	memoWithCreateTime, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
@@ -457,41 +570,21 @@ func TestCreateMemoWithCustomTimestamps(t *testing.T) {
 	require.NotNil(t, memoWithUpdateTime)
 	require.Equal(t, customUpdateTime.Unix(), memoWithUpdateTime.UpdateTime.AsTime().Unix(), "update_time should match the custom timestamp")
 
-	// Test 3: Create a memo with custom display_time
-	// Note: display_time is computed from either created_ts or updated_ts based on instance setting
-	// Since DisplayWithUpdateTime defaults to false, display_time maps to created_ts
-	memoWithDisplayTime, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
-		Memo: &apiv1.Memo{
-			Content:     "This memo has a custom display time",
-			Visibility:  apiv1.Visibility_PRIVATE,
-			DisplayTime: timestamppb.New(customDisplayTime),
-		},
-	})
-	require.NoError(t, err)
-	require.NotNil(t, memoWithDisplayTime)
-	// Since DisplayWithUpdateTime is false by default, display_time sets created_ts
-	require.Equal(t, customDisplayTime.Unix(), memoWithDisplayTime.DisplayTime.AsTime().Unix(), "display_time should match the custom timestamp")
-	require.Equal(t, customDisplayTime.Unix(), memoWithDisplayTime.CreateTime.AsTime().Unix(), "create_time should also match since display_time maps to created_ts")
-
-	// Test 4: Create a memo with all custom timestamps
-	// When both display_time and create_time are provided, create_time takes precedence
+	// Test 3: Create a memo with all custom timestamps
 	memoWithAllTimestamps, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
 		Memo: &apiv1.Memo{
-			Content:     "This memo has all custom timestamps",
-			Visibility:  apiv1.Visibility_PRIVATE,
-			CreateTime:  timestamppb.New(customCreateTime),
-			UpdateTime:  timestamppb.New(customUpdateTime),
-			DisplayTime: timestamppb.New(customDisplayTime),
+			Content:    "This memo has all custom timestamps",
+			Visibility: apiv1.Visibility_PRIVATE,
+			CreateTime: timestamppb.New(customCreateTime),
+			UpdateTime: timestamppb.New(customUpdateTime),
 		},
 	})
 	require.NoError(t, err)
 	require.NotNil(t, memoWithAllTimestamps)
 	require.Equal(t, customCreateTime.Unix(), memoWithAllTimestamps.CreateTime.AsTime().Unix(), "create_time should match the custom timestamp")
 	require.Equal(t, customUpdateTime.Unix(), memoWithAllTimestamps.UpdateTime.AsTime().Unix(), "update_time should match the custom timestamp")
-	// display_time is computed from created_ts when DisplayWithUpdateTime is false
-	require.Equal(t, customCreateTime.Unix(), memoWithAllTimestamps.DisplayTime.AsTime().Unix(), "display_time should be derived from create_time")
 
-	// Test 5: Create a comment (memo relation) with custom timestamps
+	// Test 4: Create a comment (memo relation) with custom timestamps
 	parentMemo, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
 		Memo: &apiv1.Memo{
 			Content:    "This is the parent memo",
@@ -514,7 +607,7 @@ func TestCreateMemoWithCustomTimestamps(t *testing.T) {
 	require.NotNil(t, comment)
 	require.Equal(t, customCommentCreateTime.Unix(), comment.CreateTime.AsTime().Unix(), "comment create_time should match the custom timestamp")
 
-	// Test 6: Verify that memos without custom timestamps still get auto-generated ones
+	// Test 5: Verify that memos without custom timestamps still get auto-generated ones
 	memoWithoutTimestamps, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
 		Memo: &apiv1.Memo{
 			Content:    "This memo has auto-generated timestamps",

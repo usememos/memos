@@ -204,8 +204,8 @@ message Memo {
   // If not set on creation, the server will set it to the current time.
   google.protobuf.Timestamp update_time = 5 [(google.api.field_behavior) = OPTIONAL];
 
-  // The display timestamp of the memo.
-  google.protobuf.Timestamp display_time = 6 [(google.api.field_behavior) = OPTIONAL];
+  reserved 6;
+  reserved "display_time";
 
   // Required. The content of the memo in Markdown format.
   string content = 7 [(google.api.field_behavior) = REQUIRED];
@@ -291,10 +291,10 @@ message ListMemosRequest {
   State state = 3 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. The order to sort results by.
-  // Default to "display_time desc".
+  // Default to "create_time desc".
   // Supports comma-separated list of fields following AIP-132.
-  // Example: "pinned desc, display_time desc" or "create_time asc"
-  // Supported fields: pinned, display_time, create_time, update_time, name
+  // Example: "pinned desc, create_time desc" or "update_time asc"
+  // Supported fields: pinned, create_time, update_time, name
   string order_by = 4 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. Filter to apply to the list results.

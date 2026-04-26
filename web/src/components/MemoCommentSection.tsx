@@ -67,7 +67,7 @@ const MemoCommentSection = ({ memo, comments, parentPage }: Props) => {
           </div>
         )}
         {comments.map((comment) => (
-          <div className="w-full" key={`${comment.name}-${comment.displayTime}`} id={extractMemoIdFromName(comment.name)}>
+          <div className="w-full" key={`${comment.name}-${comment.updateTime}`} id={extractMemoIdFromName(comment.name)}>
             <MemoView memo={comment} parentPage={parentPage} showCreator compact />
           </div>
         ))}

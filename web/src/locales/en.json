@@ -247,9 +247,13 @@
     "load-more": "Load more",
     "no-archived-memos": "No archived memos.",
     "no-memos": "No memos.",
+    "newest-first": "Newest first",
+    "oldest-first": "Oldest first",
+    "order": "Order",
     "order-by": "Order By",
     "outline": "Outline",
     "search-placeholder": "Search memos...",
+    "shown-time": "Shown time",
     "share": {
       "active-links": "Active share links",
       "copied": "Copied!",

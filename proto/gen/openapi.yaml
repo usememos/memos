@@ -579,10 +579,10 @@ paths:
                   in: query
                   description: |-
                     Optional. The order to sort results by.
-                     Default to "display_time desc".
+                     Default to "create_time desc".
                      Supports comma-separated list of fields following AIP-132.
-                     Example: "pinned desc, display_time desc" or "create_time asc"
-                     Supported fields: pinned, display_time, create_time, update_time, name
+                     Example: "pinned desc, create_time desc" or "update_time asc"
+                     Supported fields: pinned, create_time, update_time, name
                   schema:
                     type: string
                 - name: filter
@@ -2626,9 +2626,6 @@ components:
         InstanceSetting_MemoRelatedSetting:
             type: object
             properties:
-                displayWithUpdateTime:
-                    type: boolean
-                    description: display_with_update_time orders and displays memo with update time.
                 contentLengthLimit:
                     type: integer
                     description: content_length_limit is the limit of content length. Unit is byte.
@@ -2958,10 +2955,6 @@ components:
                     description: |-
                         The last update timestamp.
                          If not set on creation, the server will set it to the current time.
-                    format: date-time
-                displayTime:
-                    type: string
-                    description: The display timestamp of the memo.
                     format: date-time
                 content:
                     type: string
@@ -3637,12 +3630,6 @@ components:
                     description: |-
                         The resource name of the user whose stats these are.
                          Format: users/{user}
-                memoDisplayTimestamps:
-                    type: array
-                    items:
-                        type: string
-                        format: date-time
-                    description: The timestamps when the memos were displayed.
                 memoTypeStats:
                     allOf:
                         - $ref: '#/components/schemas/UserStats_MemoTypeStats'
@@ -3653,6 +3640,12 @@ components:
                         type: integer
                         format: int32
                     description: The count of tags.
+                memoCreatedTimestamps:
+                    type: array
+                    items:
+                        type: string
+                        format: date-time
+                    description: The creation timestamps of the user's memos.
                 pinnedMemos:
                     type: array
                     items:

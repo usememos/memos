@@ -74,7 +74,7 @@ export const LinkMemoDialog = ({
                     <div className="w-full flex flex-col gap-1">
                       <div className="flex items-center gap-1.5 text-sm text-muted-foreground select-none">
                         {alreadyLinked && <LinkIcon className="w-3 h-3 shrink-0" />}
-                        <span>{memo.displayTime && timestampDate(memo.displayTime).toLocaleString()}</span>
+                        <span>{memo.createTime && timestampDate(memo.createTime).toLocaleString()}</span>
                       </div>
                       <MemoPreview name={memo.name} content={memo.content} attachments={memo.attachments} showMemoId />
                     </div>

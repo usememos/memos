@@ -158,8 +158,8 @@ message InstanceSetting {
 
   // Memo-related instance settings and policies.
   message MemoRelatedSetting {
-    // display_with_update_time orders and displays memo with update time.
-    bool display_with_update_time = 2;
+    reserved 2;
+    reserved "display_with_update_time";
     // content_length_limit is the limit of content length. Unit is byte.
     int32 content_length_limit = 3;
     // enable_double_click_edit enables editing on double click.

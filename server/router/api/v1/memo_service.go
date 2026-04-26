@@ -54,25 +54,7 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		Visibility: convertVisibilityToStore(request.Memo.Visibility),
 	}
 
-	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get instance memo related setting")
-	}
-
-	// Handle display_time first: if provided, use it to set the appropriate timestamp
-	// based on the instance setting (similar to UpdateMemo logic)
-	// Note: explicit create_time/update_time below will override this if provided
-	if request.Memo.DisplayTime != nil && request.Memo.DisplayTime.IsValid() {
-		displayTs := request.Memo.DisplayTime.AsTime().Unix()
-		if instanceMemoRelatedSetting.DisplayWithUpdateTime {
-			create.UpdatedTs = displayTs
-		} else {
-			create.CreatedTs = displayTs
-		}
-	}
-
-	// Set custom timestamps if provided in the request
-	// These take precedence over display_time
+	// Set custom timestamps if provided in the request.
 	if request.Memo.CreateTime != nil && request.Memo.CreateTime.IsValid() {
 		createdTs := request.Memo.CreateTime.AsTime().Unix()
 		create.CreatedTs = createdTs
@@ -196,7 +178,7 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 			return nil, status.Errorf(codes.InvalidArgument, "invalid order_by: %v", err)
 		}
 	} else {
-		// Default ordering by display_time desc
+		// Default ordering by create_time desc.
 		memoFind.OrderByTimeAsc = false
 	}
 
@@ -216,14 +198,6 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		} else if *memoFind.CreatorID != currentUser.ID {
 			memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
 		}
-	}
-
-	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get instance memo related setting")
-	}
-	if instanceMemoRelatedSetting.DisplayWithUpdateTime {
-		memoFind.OrderByUpdatedTs = true
 	}
 
 	var limit, offset int
@@ -312,15 +286,13 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memo creators: %v", err)
 	}
-	conversionOptions := memoConversionOptions{displayWithUpdateTime: instanceMemoRelatedSetting.DisplayWithUpdateTime}
-
 	for _, memo := range memos {
 		memoName := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
 		reactions := reactionMap[memoName]
 		attachments := attachmentMap[memo.ID]
 		relations := relationMap[memo.ID]
 
-		memoMessage, err := s.convertMemoFromStoreWithCreatorsAndOptions(ctx, memo, reactions, attachments, relations, creatorMap, conversionOptions)
+		memoMessage, err := s.convertMemoFromStoreWithCreators(ctx, memo, reactions, attachments, relations, creatorMap)
 		if err != nil {
 			if stderrors.Is(err, errMemoCreatorNotFound) {
 				slog.Warn("Skipping memo with missing creator",
@@ -479,16 +451,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			}
 			update.UpdatedTs = &updatedTs
 		} else if path == "display_time" {
-			displayTs := request.Memo.DisplayTime.AsTime().Unix()
-			memoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to get instance memo related setting")
-			}
-			if memoRelatedSetting.DisplayWithUpdateTime {
-				update.UpdatedTs = &displayTs
-			} else {
-				update.CreatedTs = &displayTs
-			}
+			return nil, status.Errorf(codes.InvalidArgument, "display_time is not supported")
 		} else if path == "location" {
 			payload := memo.Payload
 			payload.Location = convertLocationToStore(request.Memo.Location)
@@ -817,12 +780,6 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memo creators: %v", err)
 	}
-	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get instance memo related setting")
-	}
-	conversionOptions := memoConversionOptions{displayWithUpdateTime: instanceMemoRelatedSetting.DisplayWithUpdateTime}
-
 	var memosResponse []*v1pb.Memo
 	for _, m := range memos {
 		memoName := memoIDToNameMap[m.ID]
@@ -830,7 +787,7 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 		attachments := attachmentMap[m.ID]
 		relations := relationMap[m.ID]
 
-		memoMessage, err := s.convertMemoFromStoreWithCreatorsAndOptions(ctx, m, reactions, attachments, relations, creatorMap, conversionOptions)
+		memoMessage, err := s.convertMemoFromStoreWithCreators(ctx, m, reactions, attachments, relations, creatorMap)
 		if err != nil {
 			if stderrors.Is(err, errMemoCreatorNotFound) {
 				slog.Warn("Skipping memo comment with missing creator",
@@ -939,7 +896,7 @@ func (s *APIV1Service) getMemoContentSnippet(content string) (string, error) {
 
 // parseMemoOrderBy parses the order_by field and sets the appropriate ordering in memoFind.
 // Follows AIP-132: supports comma-separated list of fields with optional "desc" suffix.
-// Example: "pinned desc, display_time desc" or "create_time asc".
+// Example: "pinned desc, create_time desc" or "update_time asc".
 func (*APIV1Service) parseMemoOrderBy(orderBy string, memoFind *store.FindMemo) error {
 	if strings.TrimSpace(orderBy) == "" {
 		return errors.New("empty order_by")
@@ -950,6 +907,7 @@ func (*APIV1Service) parseMemoOrderBy(orderBy string, memoFind *store.FindMemo) 
 
 	// Track if we've seen pinned field.
 	hasPinned := false
+	hasExplicitTimeField := false
 
 	for _, field := range fields {
 		parts := strings.Fields(strings.TrimSpace(field))
@@ -971,16 +929,21 @@ func (*APIV1Service) parseMemoOrderBy(orderBy string, memoFind *store.FindMemo) 
 			hasPinned = true
 			memoFind.OrderByPinned = true
 			// Note: pinned is always DESC (true first) regardless of direction specified.
-		case "display_time", "create_time", "name":
+		case "create_time", "name":
 			// Only set if this is the first time field we encounter.
-			if !memoFind.OrderByUpdatedTs {
+			if !hasExplicitTimeField {
 				memoFind.OrderByTimeAsc = fieldDirection == "asc"
 			}
+			hasExplicitTimeField = true
 		case "update_time":
-			memoFind.OrderByUpdatedTs = true
-			memoFind.OrderByTimeAsc = fieldDirection == "asc"
+			// Only set if this is the first time field we encounter.
+			if !hasExplicitTimeField {
+				memoFind.OrderByUpdatedTs = true
+				memoFind.OrderByTimeAsc = fieldDirection == "asc"
+			}
+			hasExplicitTimeField = true
 		default:
-			return errors.Errorf("unsupported order field: %s, supported fields are: pinned, display_time, create_time, update_time, name", fieldName)
+			return errors.Errorf("unsupported order field: %s, supported fields are: pinned, create_time, update_time, name", fieldName)
 		}
 	}
 
