@@ -176,7 +176,8 @@
     "code": "Koda",
     "comment": {
       "self": "Komentarji",
-      "write-a-comment": "Napiši komentar"
+      "write-a-comment": "Napiši komentar",
+      "view-all": "View all"
     },
     "copy-link": "Kopiraj povezavo",
     "copy-content": "Kopiraj vsebino",

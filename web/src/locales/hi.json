@@ -175,7 +175,8 @@
     "code": "कोड",
     "comment": {
       "self": "टिप्पणियाँ",
-      "write-a-comment": "टिप्पणी लिखें"
+      "write-a-comment": "टिप्पणी लिखें",
+      "view-all": "View all"
     },
     "copy-content": "सामग्री कॉपी करें",
     "copy-link": "लिंक कॉपी करें",

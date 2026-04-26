@@ -11,9 +11,9 @@ import MemoShareImageDialog from "../MemoActionMenu/MemoShareImageDialog";
 import MemoEditor from "../MemoEditor";
 import PreviewImageDialog from "../PreviewImageDialog";
 import { MemoBody, MemoCommentListView, MemoHeader } from "./components";
+import { MemoViewContext } from "./MemoViewContext";
 import { MEMO_CARD_BASE_CLASSES } from "./constants";
 import { useImagePreview } from "./hooks";
-import { computeCommentAmount, MemoViewContext } from "./MemoViewContext";
 import type { MemoViewProps } from "./types";
 
 const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
@@ -41,7 +41,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
 
   const location = useLocation();
   const isInMemoDetailPage = location.pathname.startsWith(`/${memoData.name}`) || location.pathname.startsWith("/memos/shares/");
-  const showCommentPreview = !isInMemoDetailPage && computeCommentAmount(memoData) > 0;
+  const showCommentPreview = !isInMemoDetailPage && currentUser;
 
   useEffect(() => {
     const card = cardRef.current;

@@ -185,7 +185,8 @@
     "code": "程式碼",
     "comment": {
       "self": "評論",
-      "write-a-comment": "寫下評論"
+      "write-a-comment": "寫下評論",
+      "view-all": "View all"
     },
     "copy-content": "複製內容",
     "copy-link": "複製連結",

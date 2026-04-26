@@ -175,7 +175,8 @@
     "code": "Kode",
     "comment": {
       "self": "Komentar",
-      "write-a-comment": "Tulis komentar"
+      "write-a-comment": "Tulis komentar",
+      "view-all": "View all"
     },
     "copy-content": "Salin Konten",
     "copy-link": "Salin Tautan",

@@ -175,7 +175,8 @@
     "code": "โค้ด",
     "comment": {
       "self": "ความคิดเห็น",
-      "write-a-comment": "เขียนความคิดเห็น"
+      "write-a-comment": "เขียนความคิดเห็น",
+      "view-all": "View all"
     },
     "copy-content": "คัดลอกเนื้อหา",
     "copy-link": "คัดลอกลิงก์",

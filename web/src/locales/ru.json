@@ -175,7 +175,8 @@
     "code": "Код",
     "comment": {
       "self": "Комментарии",
-      "write-a-comment": "Добавить комментарий"
+      "write-a-comment": "Добавить комментарий",
+      "view-all": "View all"
     },
     "copy-content": "Копировать контент",
     "copy-link": "Скопировать ссылку",

@@ -175,7 +175,8 @@
     "code": "Mã",
     "comment": {
       "self": "Bình luận",
-      "write-a-comment": "Viết bình luận"
+      "write-a-comment": "Viết bình luận",
+      "view-all": "View all"
     },
     "copy-content": "Sao chép nội dung",
     "copy-link": "Sao chép liên kết",
