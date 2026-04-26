@@ -88,7 +88,7 @@ const PagedMemoList = (props: Props) => {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteMemos(
     {
       state: props.state || State.NORMAL,
-      orderBy: props.orderBy || "display_time desc",
+      orderBy: props.orderBy || "create_time desc",
       filter: props.filter,
       pageSize: props.pageSize || DEFAULT_LIST_MEMOS_PAGE_SIZE,
     },

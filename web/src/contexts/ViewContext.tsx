@@ -1,18 +1,18 @@
 import { createContext, type ReactNode, useContext, useState } from "react";
-import { useInstance } from "@/contexts/InstanceContext";
 
-export type MemoSortTimeField = "create_time" | "update_time";
+export type MemoTimeBasis = "create_time" | "update_time";
 
 interface ViewState {
   orderByTimeAsc: boolean;
-  sortTimeField?: MemoSortTimeField;
+  timeBasis?: MemoTimeBasis;
+  sortTimeField?: MemoTimeBasis;
 }
 
 interface ViewContextValue {
   orderByTimeAsc: boolean;
-  sortTimeField: MemoSortTimeField;
+  timeBasis: MemoTimeBasis;
   toggleSortOrder: () => void;
-  setSortTimeField: (field: MemoSortTimeField) => void;
+  setTimeBasis: (field: MemoTimeBasis) => void;
 }
 
 const ViewContext = createContext<ViewContextValue | null>(null);
@@ -20,17 +20,16 @@ const ViewContext = createContext<ViewContextValue | null>(null);
 const LOCAL_STORAGE_KEY = "memos-view-setting";
 
 export function ViewProvider({ children }: { children: ReactNode }) {
-  const { memoRelatedSetting } = useInstance();
-
   const getInitialState = (): ViewState => {
     try {
       const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (cached) {
         const data = JSON.parse(cached) as Partial<ViewState>;
-        const sortTimeField = data.sortTimeField === "create_time" || data.sortTimeField === "update_time" ? data.sortTimeField : undefined;
+        const cachedTimeBasis = data.timeBasis ?? data.sortTimeField;
+        const timeBasis = cachedTimeBasis === "create_time" || cachedTimeBasis === "update_time" ? cachedTimeBasis : undefined;
         return {
           orderByTimeAsc: Boolean(data.orderByTimeAsc ?? false),
-          sortTimeField,
+          timeBasis,
         };
       }
     } catch (error) {
@@ -40,7 +39,7 @@ export function ViewProvider({ children }: { children: ReactNode }) {
   };
 
   const [viewState, setViewState] = useState(getInitialState);
-  const sortTimeField = viewState.sortTimeField ?? (memoRelatedSetting.displayWithUpdateTime ? "update_time" : "create_time");
+  const timeBasis = viewState.timeBasis ?? "create_time";
 
   const persistToStorage = (newState: ViewState) => {
     try {
@@ -58,9 +57,9 @@ export function ViewProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const setSortTimeField = (field: MemoSortTimeField) => {
+  const setTimeBasis = (field: MemoTimeBasis) => {
     setViewState((prev) => {
-      const newState = { ...prev, sortTimeField: field };
+      const newState = { ...prev, timeBasis: field };
       persistToStorage(newState);
       return newState;
     });
@@ -70,9 +69,9 @@ export function ViewProvider({ children }: { children: ReactNode }) {
     <ViewContext.Provider
       value={{
         orderByTimeAsc: viewState.orderByTimeAsc,
-        sortTimeField,
+        timeBasis,
         toggleSortOrder,
-        setSortTimeField,
+        setTimeBasis,
       }}
     >
       {children}

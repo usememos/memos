@@ -354,14 +354,17 @@ message UserStats {
   // Format: users/{user}
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
-  // The timestamps when the memos were displayed.
-  repeated google.protobuf.Timestamp memo_display_timestamps = 2;
+  reserved 2;
+  reserved "memo_display_timestamps";
 
   // The stats of memo types.
   MemoTypeStats memo_type_stats = 3;
 
   // The count of tags.
   map<string, int32> tag_count = 4;
+
+  // The creation timestamps of the user's memos.
+  repeated google.protobuf.Timestamp memo_created_timestamps = 7;
 
   // The pinned memos of the user.
   repeated string pinned_memos = 5;

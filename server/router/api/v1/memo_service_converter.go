@@ -20,10 +20,6 @@ var (
 	errReactionCreatorNotFound = stderrors.New("reaction creator not found")
 )
 
-type memoConversionOptions struct {
-	displayWithUpdateTime bool
-}
-
 func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Memo, reactions []*store.Reaction, attachments []*store.Attachment, relations []*v1pb.MemoRelation) (*v1pb.Memo, error) {
 	creatorMap, err := s.listUsersByID(ctx, []int32{memo.CreatorID})
 	if err != nil {
@@ -33,42 +29,20 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 }
 
 func (s *APIV1Service) convertMemoFromStoreWithCreators(ctx context.Context, memo *store.Memo, reactions []*store.Reaction, attachments []*store.Attachment, relations []*v1pb.MemoRelation, creatorMap map[int32]*store.User) (*v1pb.Memo, error) {
-	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get instance memo related setting")
-	}
-	return s.convertMemoFromStoreWithCreatorsAndOptions(
-		ctx,
-		memo,
-		reactions,
-		attachments,
-		relations,
-		creatorMap,
-		memoConversionOptions{displayWithUpdateTime: instanceMemoRelatedSetting.DisplayWithUpdateTime},
-	)
-}
-
-func (s *APIV1Service) convertMemoFromStoreWithCreatorsAndOptions(ctx context.Context, memo *store.Memo, reactions []*store.Reaction, attachments []*store.Attachment, relations []*v1pb.MemoRelation, creatorMap map[int32]*store.User, options memoConversionOptions) (*v1pb.Memo, error) {
-	displayTs := memo.CreatedTs
-	if options.displayWithUpdateTime {
-		displayTs = memo.UpdatedTs
-	}
-
 	name := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
 	creator := creatorMap[memo.CreatorID]
 	if creator == nil {
 		return nil, errMemoCreatorNotFound
 	}
 	memoMessage := &v1pb.Memo{
-		Name:        name,
-		State:       convertStateFromStore(memo.RowStatus),
-		Creator:     BuildUserName(creator.Username),
-		CreateTime:  timestamppb.New(time.Unix(memo.CreatedTs, 0)),
-		UpdateTime:  timestamppb.New(time.Unix(memo.UpdatedTs, 0)),
-		DisplayTime: timestamppb.New(time.Unix(displayTs, 0)),
-		Content:     memo.Content,
-		Visibility:  convertVisibilityFromStore(memo.Visibility),
-		Pinned:      memo.Pinned,
+		Name:       name,
+		State:      convertStateFromStore(memo.RowStatus),
+		Creator:    BuildUserName(creator.Username),
+		CreateTime: timestamppb.New(time.Unix(memo.CreatedTs, 0)),
+		UpdateTime: timestamppb.New(time.Unix(memo.UpdatedTs, 0)),
+		Content:    memo.Content,
+		Visibility: convertVisibilityFromStore(memo.Visibility),
+		Pinned:     memo.Pinned,
 	}
 	if memo.Payload != nil {
 		memoMessage.Tags = memo.Payload.Tags

@@ -1,4 +1,3 @@
-import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { BookmarkIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
@@ -23,7 +22,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
   const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
 
   const { memo, creator, currentUser, parentPage, isArchived, readonly, openEditor } = useMemoViewContext();
-  const { relativeTimeFormat } = useMemoViewDerived();
+  const { displayTime: memoDisplayTime, relativeTimeFormat } = useMemoViewDerived();
 
   const navigateTo = useNavigateTo();
   const handleGotoMemoDetailPage = useCallback(() => {
@@ -33,13 +32,9 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
   const { unpinMemo } = useMemoActions(memo);
 
   const displayTime = isArchived ? (
-    (memo.displayTime ? timestampDate(memo.displayTime) : undefined)?.toLocaleString(i18n.language)
+    memoDisplayTime?.toLocaleString(i18n.language)
   ) : (
-    <relative-time
-      datetime={(memo.displayTime ? timestampDate(memo.displayTime) : undefined)?.toISOString()}
-      lang={i18n.language}
-      format={relativeTimeFormat}
-    ></relative-time>
+    <relative-time datetime={memoDisplayTime?.toISOString()} lang={i18n.language} format={relativeTimeFormat}></relative-time>
   );
 
   return (

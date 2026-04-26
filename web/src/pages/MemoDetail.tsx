@@ -100,7 +100,7 @@ const MemoDetail = () => {
               </div>
             )}
             <MemoView
-              key={`${displayMemo.name}-${displayMemo.displayTime}`}
+              key={`${displayMemo.name}-${displayMemo.updateTime}`}
               memo={displayMemo}
               compact={false}
               parentPage={locationState?.from}

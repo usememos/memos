@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useInstance } from "@/contexts/InstanceContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { buildMemoCreatorFilter } from "@/helpers/resource-names";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
@@ -37,7 +36,6 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
 
   const { shortcuts } = useAuth();
   const { filters, shortcut: currentShortcut } = useMemoFilterContext();
-  const { memoRelatedSetting } = useInstance();
 
   // Get selected shortcut if needed
   const selectedShortcut = useMemo(() => {
@@ -79,14 +77,11 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
       } else if (filter.factor === "property.hasCode") {
         conditions.push(`has_code`);
       } else if (filter.factor === "displayTime") {
-        const displayWithUpdateTime = memoRelatedSetting?.displayWithUpdateTime ?? false;
-        const factor = displayWithUpdateTime ? "updated_ts" : "created_ts";
-
         const filterDate = new Date(filter.value);
         const filterUtcTimestamp = filterDate.getTime() + filterDate.getTimezoneOffset() * 60 * 1000;
         const timestampAfter = filterUtcTimestamp / 1000;
 
-        conditions.push(`${factor} >= ${timestampAfter} && ${factor} < ${timestampAfter + 60 * 60 * 24}`);
+        conditions.push(`created_ts >= ${timestampAfter} && created_ts < ${timestampAfter + 60 * 60 * 24}`);
       }
     }
 
@@ -97,5 +92,5 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
     }
 
     return conditions.length > 0 ? conditions.join(" && ") : undefined;
-  }, [creatorName, includeShortcuts, includePinned, visibilities, selectedShortcut, filters, memoRelatedSetting]);
+  }, [creatorName, includeShortcuts, includePinned, visibilities, selectedShortcut, filters]);
 };

@@ -72,13 +72,6 @@ const MemoRelatedSettings = () => {
   return (
     <SettingSection title={t("setting.memo.label")}>
       <SettingGroup title={t("common.basic")}>
-        <SettingRow label={t("setting.system.display-with-updated-time")}>
-          <Switch
-            checked={memoRelatedSetting.displayWithUpdateTime}
-            onCheckedChange={(checked) => updatePartialSetting({ displayWithUpdateTime: checked })}
-          />
-        </SettingRow>
-
         <SettingRow label={t("setting.system.enable-double-click-to-edit")}>
           <Switch
             checked={memoRelatedSetting.enableDoubleClickEdit}

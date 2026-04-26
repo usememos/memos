@@ -1,6 +1,7 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { createContext, useContext } from "react";
 import { useLocation } from "react-router-dom";
+import { useView } from "@/contexts/ViewContext";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
@@ -37,12 +38,14 @@ export const computeCommentAmount = (memo: Memo): number =>
 
 export const useMemoViewDerived = () => {
   const { memo, isArchived, readonly } = useMemoViewContext();
+  const { timeBasis } = useView();
   const location = useLocation();
 
   const isInMemoDetailPage = location.pathname.startsWith(`/${memo.name}`) || location.pathname.startsWith("/memos/shares/");
   const commentAmount = computeCommentAmount(memo);
 
-  const displayTime = memo.displayTime ? timestampDate(memo.displayTime) : undefined;
+  const displayTimestamp = timeBasis === "update_time" ? memo.updateTime : memo.createTime;
+  const displayTime = displayTimestamp ? timestampDate(displayTimestamp) : undefined;
   const relativeTimeFormat: "datetime" | "auto" =
     displayTime && Date.now() - displayTime.getTime() > RELATIVE_TIME_THRESHOLD_MS ? "datetime" : "auto";
 
@@ -51,6 +54,7 @@ export const useMemoViewDerived = () => {
     readonly,
     isInMemoDetailPage,
     commentAmount,
+    displayTime,
     relativeTimeFormat,
   };
 };

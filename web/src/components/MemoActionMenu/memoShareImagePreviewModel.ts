@@ -35,7 +35,7 @@ export const buildMemoShareImagePreviewModel = ({
 }: BuildMemoShareImagePreviewModelOptions): MemoShareImagePreviewModel => {
   const displayName = creator?.displayName || creator?.username || fallbackDisplayName;
   const avatarUrl = getMemoSharePreviewAvatarUrl(creator?.avatarUrl);
-  const displayTime = memo.displayTime ? timestampDate(memo.displayTime) : memo.createTime ? timestampDate(memo.createTime) : undefined;
+  const displayTime = memo.createTime ? timestampDate(memo.createTime) : undefined;
   const formattedDisplayTime = displayTime?.toLocaleString(locale, {
     dateStyle: "medium",
     timeStyle: "short",

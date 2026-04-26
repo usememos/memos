@@ -49,15 +49,15 @@ export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}):
         }
       }
       const displayDates = (memosResponse?.memos ?? [])
-        .map((memo) => (memo.displayTime ? timestampDate(memo.displayTime) : undefined))
+        .map((memo) => (memo.createTime ? timestampDate(memo.createTime) : undefined))
         .filter((date): date is Date => date !== undefined)
         .map(toDateString);
       activityStats = countBy(displayDates);
     } else if (userName && userStats) {
       // home/profile: use backend per-user stats
-      if (userStats.memoDisplayTimestamps && userStats.memoDisplayTimestamps.length > 0) {
+      if (userStats.memoCreatedTimestamps && userStats.memoCreatedTimestamps.length > 0) {
         activityStats = countBy(
-          userStats.memoDisplayTimestamps
+          userStats.memoCreatedTimestamps
             .map((ts) => (ts ? timestampDate(ts) : undefined))
             .filter((date): date is Date => date !== undefined)
             .map(toDateString),
@@ -69,7 +69,7 @@ export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}):
     } else if (memosResponse?.memos) {
       // archived/fallback: compute from cached memos
       const displayDates = memosResponse.memos
-        .map((memo) => (memo.displayTime ? timestampDate(memo.displayTime) : undefined))
+        .map((memo) => (memo.createTime ? timestampDate(memo.createTime) : undefined))
         .filter((date): date is Date => date !== undefined)
         .map(toDateString);
       activityStats = countBy(displayDates);
