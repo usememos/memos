@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 env:
-  GO_VERSION: "1.26.1"
+  GO_VERSION: "1.26.2"
   NODE_VERSION: "24"
   PNPM_VERSION: "10"
   ARTIFACT_RETENTION_DAYS: 60
