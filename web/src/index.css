@@ -30,4 +30,19 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  mark.search-highlight {
+    background-color: oklch(0.92 0.07 95);
+    color: oklch(0.25 0.02 95);
+    padding: 0 2px;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    mark.search-highlight {
+      background-color: oklch(0.45 0.08 95);
+      color: oklch(0.98 0.01 95);
+    }
+  }
 }

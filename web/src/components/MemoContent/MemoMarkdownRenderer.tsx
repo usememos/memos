@@ -1,6 +1,7 @@
-import type { Element } from "hast";
+import type { Element, Root } from "hast";
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
+import type { Pluggable } from "unified";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
@@ -9,6 +10,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { isMentionElement, isTagElement, isTaskListItemElement } from "@/types/markdown";
 import { rehypeHeadingId } from "@/utils/rehype-plugins/rehype-heading-id";
+import { rehypeSearchHighlight } from "@/utils/rehype-plugins/rehype-search-highlight";
 import { remarkDisableSetext } from "@/utils/remark-plugins/remark-disable-setext";
 import { remarkMention } from "@/utils/remark-plugins/remark-mention";
 import { remarkPreserveType } from "@/utils/remark-plugins/remark-preserve-type";
@@ -26,6 +28,7 @@ import { TrustedIframe } from "./TrustedIframe";
 interface MemoMarkdownRendererProps {
   content: string;
   resolvedMentionUsernames: Set<string>;
+  searchKeywords?: string[];
 }
 
 function getMentionUsername(node: Element, children?: React.ReactNode): string {
@@ -47,7 +50,18 @@ function getMentionUsername(node: Element, children?: React.ReactNode): string {
   return "";
 }
 
-export const MemoMarkdownRenderer = ({ content, resolvedMentionUsernames }: MemoMarkdownRendererProps) => {
+export const MemoMarkdownRenderer = ({ content, resolvedMentionUsernames, searchKeywords }: MemoMarkdownRendererProps) => {
+  const rehypePlugins: Pluggable[] = [
+    rehypeRaw,
+    [rehypeSanitize, SANITIZE_SCHEMA],
+    rehypeHeadingId,
+    [rehypeKatex, { throwOnError: false, strict: false }],
+  ];
+
+  if (searchKeywords && searchKeywords.length > 0) {
+    rehypePlugins.push([rehypeSearchHighlight, { keywords: searchKeywords, caseSensitive: false }]);
+  }
+
   const markdownComponents: Components = {
     input: ({ node, ...inputProps }) => {
       if (node && isTaskListItemElement(node)) {
@@ -130,7 +144,7 @@ export const MemoMarkdownRenderer = ({ content, resolvedMentionUsernames }: Memo
         remarkTag,
         remarkPreserveType,
       ]}
-      rehypePlugins={[rehypeRaw, [rehypeSanitize, SANITIZE_SCHEMA], rehypeHeadingId, [rehypeKatex, { throwOnError: false, strict: false }]]}
+      rehypePlugins={rehypePlugins}
       components={markdownComponents}
     >
       {content}

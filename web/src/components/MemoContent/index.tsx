@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { memo, useMemo } from "react";
+import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { extractMentionUsernames } from "@/utils/remark-plugins/remark-mention";
@@ -19,6 +20,12 @@ const MemoContent = (props: MemoContentProps) => {
   } = useCompactMode(Boolean(props.compact));
   const mentionUsernames = useMemo(() => extractMentionUsernames(content), [content]);
   const resolvedMentionUsernames = useResolvedMentionUsernames(mentionUsernames);
+  const { getFiltersByFactor } = useMemoFilterContext();
+
+  const searchKeywords = useMemo(() => {
+    const contentSearchFilters = getFiltersByFactor("contentSearch");
+    return contentSearchFilters.map((filter) => filter.value);
+  }, [getFiltersByFactor]);
 
   const compactLabel = useCompactLabel(showCompactMode, t as (key: string) => string);
 
@@ -40,7 +47,11 @@ const MemoContent = (props: MemoContentProps) => {
         onMouseUp={onClick}
         onDoubleClick={onDoubleClick}
       >
-        <MemoMarkdownRenderer content={content} resolvedMentionUsernames={resolvedMentionUsernames} />
+        <MemoMarkdownRenderer
+          content={content}
+          resolvedMentionUsernames={resolvedMentionUsernames}
+          searchKeywords={searchKeywords.length > 0 ? searchKeywords : undefined}
+        />
         {showCompactMode === "ALL" && (
           <div
             className={cn(
