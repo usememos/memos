@@ -1,6 +1,7 @@
 {
   "name": "memos",
   "private": true,
+  "packageManager": "pnpm@11.0.0",
   "engines": {
     "node": ">=24"
   },
@@ -101,10 +102,5 @@
     "typescript": "^6.0.3",
     "vite": "^7.3.2",
     "vitest": "^4.1.5"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild"
-    ]
   }
 }
