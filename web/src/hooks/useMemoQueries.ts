@@ -20,6 +20,7 @@ export const memoKeys = {
 
 type MemoPatch = Partial<Memo> & Pick<Memo, "name">;
 type MemoCollectionQueryData = ListMemosResponse | InfiniteData<ListMemosResponse>;
+type QueryDataSnapshot = [QueryKey, MemoCollectionQueryData][];
 
 export type UpdateType = "state" | "pinned" | "content" | "tags" | "other";
 
@@ -168,6 +169,214 @@ function removeMemoFromCollectionQueries(queryClient: ReturnType<typeof useQuery
   );
 }
 
+function restoreQueriesSnapshot(queryClient: ReturnType<typeof useQueryClient>, snapshot: QueryDataSnapshot) {
+  for (const [queryKey, data] of snapshot) {
+    queryClient.setQueryData(queryKey, data);
+  }
+}
+
+export interface OrderByRule {
+  field: string;
+  direction: "asc" | "desc";
+}
+
+export function parseOrderBy(orderBy: string): OrderByRule[] {
+  const rules: OrderByRule[] = [];
+  const parts = orderBy.split(",").map((s) => s.trim());
+
+  for (const part of parts) {
+    const tokens = part.split(/\s+/);
+    const field = tokens[0] || "create_time";
+    const direction = tokens[1]?.toLowerCase() === "asc" ? "asc" : "desc";
+    rules.push({ field, direction });
+  }
+
+  return rules;
+}
+
+function getMemoSortValue(memo: Memo, field: string): number | string | boolean {
+  if (field === "pinned") {
+    return memo.pinned;
+  }
+  if (field === "create_time") {
+    return memo.createTime?.seconds?.toString() || "";
+  }
+  if (field === "update_time") {
+    return memo.updateTime?.seconds?.toString() || "";
+  }
+  return (memo as Record<string, unknown>)[field] as number | string | boolean;
+}
+
+function sortMemosByOrderBy(memos: Memo[], orderBy: string): Memo[] {
+  const rules = parseOrderBy(orderBy);
+  if (rules.length === 0) {
+    return memos;
+  }
+
+  return [...memos].sort((a, b) => {
+    for (const rule of rules) {
+      const valA = getMemoSortValue(a, rule.field);
+      const valB = getMemoSortValue(b, rule.field);
+
+      let comparison = 0;
+      if (typeof valA === "boolean" && typeof valB === "boolean") {
+        comparison = valA === valB ? 0 : valA ? 1 : -1;
+      } else if (typeof valA === "number" && typeof valB === "number") {
+        comparison = valA - valB;
+      } else {
+        comparison = String(valA).localeCompare(String(valB));
+      }
+
+      if (comparison !== 0) {
+        return rule.direction === "asc" ? comparison : -comparison;
+      }
+    }
+    return 0;
+  });
+}
+
+function reorderMemoListResponse(response: ListMemosResponse, orderBy: string): ListMemosResponse {
+  const sortedMemos = sortMemosByOrderBy(response.memos, orderBy);
+  if (sortedMemos === response.memos) {
+    return response;
+  }
+  return { ...response, memos: sortedMemos };
+}
+
+function reorderMemoListQueryData<T>(data: T | undefined, orderBy: string): T | undefined {
+  if (!data) {
+    return data;
+  }
+
+  if (isMemoListResponse(data)) {
+    return reorderMemoListResponse(data, orderBy) as T;
+  }
+
+  if (isInfiniteMemoListData(data)) {
+    let changed = false;
+    const pages = data.pages.map((page) => {
+      const reorderedPage = reorderMemoListResponse(page, orderBy);
+      if (reorderedPage !== page) {
+        changed = true;
+      }
+      return reorderedPage;
+    });
+
+    return (changed ? { ...data, pages } : data) as T;
+  }
+
+  return data;
+}
+
+export interface SimpleFilter {
+  type: "tag" | "pinned" | "has_link" | "has_task_list" | "has_code" | "content_contains" | "unknown";
+  value?: string;
+  raw: string;
+}
+
+export function parseSimpleFilter(filter: string): SimpleFilter[] {
+  const results: SimpleFilter[] = [];
+  const conditions = filter.split(/\s*&&\s*/);
+
+  for (const condition of conditions) {
+    const trimmed = condition.trim();
+
+    const tagMatch = trimmed.match(/^tag\s+in\s+\[\s*"?([^"\]]+?)"?\s*\]$/i);
+    if (tagMatch) {
+      results.push({ type: "tag", value: tagMatch[1], raw: trimmed });
+      continue;
+    }
+
+    if (trimmed.toLowerCase() === "pinned") {
+      results.push({ type: "pinned", raw: trimmed });
+      continue;
+    }
+    if (trimmed.toLowerCase() === "has_link") {
+      results.push({ type: "has_link", raw: trimmed });
+      continue;
+    }
+    if (trimmed.toLowerCase() === "has_task_list") {
+      results.push({ type: "has_task_list", raw: trimmed });
+      continue;
+    }
+    if (trimmed.toLowerCase() === "has_code") {
+      results.push({ type: "has_code", raw: trimmed });
+      continue;
+    }
+
+    const contentMatch = trimmed.match(/^content\.contains\s*\(\s*"?([^"]+?)"?\s*\)$/i);
+    if (contentMatch) {
+      results.push({ type: "content_contains", value: contentMatch[1], raw: trimmed });
+      continue;
+    }
+
+    results.push({ type: "unknown", raw: trimmed });
+  }
+
+  return results;
+}
+
+export function doesMemoMatchFilter(memo: Memo, filter: SimpleFilter): boolean | undefined {
+  switch (filter.type) {
+    case "tag":
+      if (!filter.value) return undefined;
+      return memo.tags.includes(filter.value);
+
+    case "pinned":
+      return memo.pinned === true;
+
+    case "has_link":
+      return memo.property?.hasLink === true;
+
+    case "has_task_list":
+      return memo.property?.hasTaskList === true;
+
+    case "has_code":
+      return memo.property?.hasCode === true;
+
+    case "content_contains":
+      if (!filter.value) return undefined;
+      return memo.content.toLowerCase().includes(filter.value.toLowerCase());
+
+    case "unknown":
+      return undefined;
+
+    default:
+      return undefined;
+  }
+}
+
+export function shouldMemoStayInQuery(
+  memo: Memo,
+  filters: Partial<ListMemosRequest>,
+  previousMemo?: Memo,
+): boolean | undefined {
+  if (filters.state !== undefined) {
+    if (memo.state !== filters.state) {
+      return false;
+    }
+  } else {
+    if (memo.state !== State.NORMAL) {
+      return false;
+    }
+  }
+
+  if (filters.filter) {
+    const simpleFilters = parseSimpleFilter(filters.filter);
+    for (const sf of simpleFilters) {
+      const matches = doesMemoMatchFilter(memo, sf);
+      if (matches === false) {
+        return false;
+      }
+      if (matches === undefined) {
+        return undefined;
+      }
+    }
+  }
+
+  return true;
+}
+
 function filterMemoFromCollectionQueriesByState(
   queryClient: ReturnType<typeof useQueryClient>,
   memo: Memo,
@@ -197,6 +406,70 @@ function filterMemoFromCollectionQueriesByState(
       if (updatedData !== data) {
         queryClient.setQueryData(queryKey, updatedData);
       }
+    }
+  }
+}
+
+export type FilterEvaluation = {
+  canHandleLocally: boolean;
+  shouldStay: boolean;
+};
+
+export function evaluateMemoFilterChange(
+  memo: Memo,
+  filters: Partial<ListMemosRequest>,
+  previousMemo?: Memo,
+): FilterEvaluation {
+  const result = shouldMemoStayInQuery(memo, filters, previousMemo);
+  if (result === undefined) {
+    return { canHandleLocally: false, shouldStay: true };
+  }
+  return { canHandleLocally: true, shouldStay: result };
+}
+
+function handleOptimisticUpdateForFilter(
+  queryClient: ReturnType<typeof useQueryClient>,
+  updatedMemo: Memo,
+  previousMemo?: Memo,
+) {
+  const queriesData = queryClient.getQueriesData<MemoCollectionQueryData>({ queryKey: memoKeys.lists() });
+
+  for (const [queryKey, data] of queriesData) {
+    const filters = extractListFiltersFromQueryKey(queryKey);
+    if (!filters) {
+      continue;
+    }
+
+    const evaluation = evaluateMemoFilterChange(updatedMemo, filters, previousMemo);
+
+    if (evaluation.canHandleLocally) {
+      if (!evaluation.shouldStay) {
+        const updatedData = removeMemoFromListQueryData(data, updatedMemo.name);
+        if (updatedData !== data) {
+          queryClient.setQueryData(queryKey, updatedData);
+        }
+      } else {
+        const updatedData = patchMemoListQueryData(data, updatedMemo);
+        if (updatedData !== data) {
+          queryClient.setQueryData(queryKey, updatedData);
+        }
+      }
+    }
+  }
+}
+
+function reorderMemoInCollectionQueries(queryClient: ReturnType<typeof useQueryClient>) {
+  const queriesData = queryClient.getQueriesData<MemoCollectionQueryData>({ queryKey: memoKeys.lists() });
+
+  for (const [queryKey, data] of queriesData) {
+    const filters = extractListFiltersFromQueryKey(queryKey);
+    if (!filters || !filters.orderBy) {
+      continue;
+    }
+
+    const updatedData = reorderMemoListQueryData(data, filters.orderBy);
+    if (updatedData !== data) {
+      queryClient.setQueryData(queryKey, updatedData);
     }
   }
 }
@@ -258,7 +531,7 @@ export function useMemo(name: string, options?: { enabled?: boolean }) {
       return memo;
     },
     enabled: options?.enabled ?? true,
-    staleTime: 1000 * 10, // 10 seconds - reduced to prevent stale data in collaborative editing
+    staleTime: 1000 * 10,
   });
 }
 
@@ -271,11 +544,8 @@ export function useCreateMemo() {
       return memo;
     },
     onSuccess: (newMemo) => {
-      // Invalidate memo lists to refetch
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
-      // Add new memo to cache
       queryClient.setQueryData(memoKeys.detail(newMemo.name), newMemo);
-      // Invalidate user stats
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
     },
   });
@@ -294,38 +564,43 @@ export function useUpdateMemo() {
     },
     onMutate: async ({ update, updateMask }) => {
       if (!update.name) {
-        return { previousMemo: undefined, updateTypes: [] as UpdateType[] };
+        return { previousMemo: undefined, updateTypes: [] as UpdateType[], queriesSnapshot: [] as QueryDataSnapshot };
       }
 
       const updateTypes = determineUpdateTypes(updateMask);
 
-      // Cancel outgoing refetches to prevent race conditions
       await queryClient.cancelQueries({ queryKey: memoKeys.all });
 
-      // Snapshot previous value for rollback on error
       const previousMemo =
         queryClient.getQueryData<Memo>(memoKeys.detail(update.name)) || findMemoInCollectionQueries(queryClient, update.name);
+
+      const queriesSnapshot = queryClient.getQueriesData<MemoCollectionQueryData>({ queryKey: memoKeys.all });
+
       const memoPatch: MemoPatch = { ...update, name: update.name };
 
-      // Optimistically update the detail cache
       if (previousMemo) {
         queryClient.setQueryData(memoKeys.detail(update.name), { ...previousMemo, ...memoPatch });
       }
 
-      // Handle state changes specially - remove from non-matching lists
-      if (updateTypes.includes("state") && previousMemo) {
-        const updatedMemo = { ...previousMemo, ...memoPatch } as Memo;
-        filterMemoFromCollectionQueriesByState(queryClient, updatedMemo, previousMemo.state);
+      const updatedMemo = previousMemo ? ({ ...previousMemo, ...memoPatch } as Memo) : undefined;
+
+      if (updateTypes.includes("state") && updatedMemo) {
+        filterMemoFromCollectionQueriesByState(queryClient, updatedMemo, previousMemo?.state);
+      } else if ((updateTypes.includes("content") || updateTypes.includes("tags")) && updatedMemo) {
+        handleOptimisticUpdateForFilter(queryClient, updatedMemo, previousMemo);
+      } else if (updateTypes.includes("pinned")) {
+        patchMemoInCollectionQueries(queryClient, memoPatch);
+        reorderMemoInCollectionQueries(queryClient);
       } else {
-        // For other updates, just patch the collection queries
         patchMemoInCollectionQueries(queryClient, memoPatch);
       }
 
-      return { previousMemo, updateTypes };
+      return { previousMemo, updateTypes, queriesSnapshot };
     },
     onError: (_err, { update }, context) => {
-      // Rollback on error
-      if (context?.previousMemo && update.name) {
+      if (context?.queriesSnapshot && context.queriesSnapshot.length > 0) {
+        restoreQueriesSnapshot(queryClient, context.queriesSnapshot);
+      } else if (context?.previousMemo && update.name) {
         queryClient.setQueryData(memoKeys.detail(update.name), context.previousMemo);
         patchMemoInCollectionQueries(queryClient, context.previousMemo);
       } else {
@@ -335,27 +610,25 @@ export function useUpdateMemo() {
     onSuccess: (updatedMemo, _variables, context) => {
       const updateTypes = context?.updateTypes || [];
 
-      // Update cache with server response
       queryClient.setQueryData(memoKeys.detail(updatedMemo.name), updatedMemo);
 
-      // For state changes: we already handled filtering in onMutate
-      // Just update the memo in lists where it should stay
       if (updateTypes.includes("state")) {
         filterMemoFromCollectionQueriesByState(queryClient, updatedMemo);
+      } else if (updateTypes.includes("content") || updateTypes.includes("tags")) {
+        handleOptimisticUpdateForFilter(queryClient, updatedMemo);
+      } else if (updateTypes.includes("pinned")) {
+        patchMemoInCollectionQueries(queryClient, updatedMemo);
+        reorderMemoInCollectionQueries(queryClient);
       } else {
         patchMemoInCollectionQueries(queryClient, updatedMemo);
       }
 
-      // Only invalidate lists when necessary:
-      // - pinned: server-side sorting may differ from client
-      // - content/tags: may affect filter results
-      // - other: just in case
       const shouldInvalidateLists =
-        updateTypes.includes("pinned") ||
-        updateTypes.includes("content") ||
-        updateTypes.includes("tags") ||
         updateTypes.includes("other") ||
-        updateTypes.length === 0;
+        updateTypes.length === 0 ||
+        (updateTypes.includes("pinned") && true) ||
+        (updateTypes.includes("content") && true) ||
+        (updateTypes.includes("tags") && true);
 
       if (shouldInvalidateLists) {
         queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
@@ -365,7 +638,6 @@ export function useUpdateMemo() {
         queryClient.invalidateQueries({ queryKey: memoKeys.comments(updatedMemo.parent) });
       }
 
-      // Invalidate user stats
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
     },
   });
@@ -380,34 +652,31 @@ export function useDeleteMemo() {
       return name;
     },
     onMutate: async (name: string) => {
-      // Cancel outgoing refetches to prevent race conditions
       await queryClient.cancelQueries({ queryKey: memoKeys.all });
 
-      // Snapshot previous value for rollback on error
       const previousMemo =
         queryClient.getQueryData<Memo>(memoKeys.detail(name)) || findMemoInCollectionQueries(queryClient, name);
 
-      // Optimistically remove from all caches
+      const queriesSnapshot = queryClient.getQueriesData<MemoCollectionQueryData>({ queryKey: memoKeys.all });
+
       queryClient.removeQueries({ queryKey: memoKeys.detail(name) });
       removeMemoFromCollectionQueries(queryClient, name);
 
-      return { previousMemo };
+      return { previousMemo, queriesSnapshot };
     },
-    onError: (_err, name, context) => {
-      // Rollback on error
-      if (context?.previousMemo) {
-        queryClient.setQueryData(memoKeys.detail(name), context.previousMemo);
+    onError: (_err, _name, context) => {
+      if (context?.queriesSnapshot && context.queriesSnapshot.length > 0) {
+        restoreQueriesSnapshot(queryClient, context.queriesSnapshot);
+      } else if (context?.previousMemo) {
+        queryClient.setQueryData(memoKeys.detail(context.previousMemo.name), context.previousMemo);
         patchMemoInCollectionQueries(queryClient, context.previousMemo);
       } else {
         queryClient.invalidateQueries({ queryKey: memoKeys.all });
       }
     },
     onSuccess: (name) => {
-      // Double-check: ensure it's removed from detail cache
       queryClient.removeQueries({ queryKey: memoKeys.detail(name) });
-      // Invalidate lists as a fallback (in case optimistic removal missed something)
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
-      // Invalidate user stats
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
     },
   });
@@ -426,6 +695,17 @@ export function useMemoComments(name: string, options?: { enabled?: boolean; pag
       return response;
     },
     enabled: options?.enabled ?? true,
-    staleTime: 1000 * 60, // 1 minute
+    staleTime: 1000 * 60,
   });
 }
+
+export {
+  extractListFiltersFromQueryKey,
+  removeMemoFromListQueryData,
+  patchMemoListQueryData,
+  findMemoInCollectionQueries,
+  patchMemoInCollectionQueries,
+  removeMemoFromCollectionQueries,
+  filterMemoFromCollectionQueriesByState,
+  sortMemosByOrderBy,
+};
