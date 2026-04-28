@@ -19,6 +19,7 @@ interface AuthContextValue extends AuthState {
   initialize: () => Promise<void>;
   logout: () => Promise<void>;
   refetchSettings: () => Promise<void>;
+  setCurrentUser: (user: User | undefined) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -154,6 +155,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
   }, [fetchUserSettings]);
 
+  // Sync the updated user to AuthContext and React Query cache after profile changes
+  const setCurrentUser = useCallback((user: User | undefined) => {
+  	setState((prev) => ({ ...prev, currentUser: user }));
+  	if (user) {
+  		queryClient.setQueryData(userKeys.currentUser(), user);
+  		queryClient.setQueryData(userKeys.detail(user.name), user);
+  	}
+  }, [queryClient]);
+
   // Memoize context value to prevent unnecessary re-renders of consumers
   const value = useMemo(
     () => ({
@@ -161,8 +171,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       initialize,
       logout,
       refetchSettings,
+      setCurrentUser,
     }),
-    [state, initialize, logout, refetchSettings],
+    [state, initialize, logout, refetchSettings, setCurrentUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
