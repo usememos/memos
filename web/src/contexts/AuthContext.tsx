@@ -156,19 +156,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [fetchUserSettings]);
 
   // Sync the updated user to AuthContext and React Query cache after profile changes
-  const setCurrentUser = useCallback((user: User | undefined) => {
-    const previousUser = queryClient.getQueryData<User>(userKeys.currentUser());
-    setState((prev) => ({ ...prev, currentUser: user }));
-    if (user) {
-      queryClient.setQueryData(userKeys.currentUser(), user);
-      queryClient.setQueryData(userKeys.detail(user.name), user);
-    } else {
-      queryClient.removeQueries({ queryKey: userKeys.currentUser(), exact: true });
-      if (previousUser?.name) {
-        queryClient.removeQueries({ queryKey: userKeys.detail(previousUser.name), exact: true });
+  const setCurrentUser = useCallback(
+    (user: User | undefined) => {
+      const previousUser = queryClient.getQueryData<User>(userKeys.currentUser());
+      setState((prev) => ({ ...prev, currentUser: user }));
+      if (user) {
+        queryClient.setQueryData(userKeys.currentUser(), user);
+        queryClient.setQueryData(userKeys.detail(user.name), user);
+      } else {
+        queryClient.removeQueries({ queryKey: userKeys.currentUser(), exact: true });
+        if (previousUser?.name) {
+          queryClient.removeQueries({ queryKey: userKeys.detail(previousUser.name), exact: true });
+        }
       }
-    }
-  }, [queryClient]);
+    },
+    [queryClient],
+  );
 
   // Memoize context value to prevent unnecessary re-renders of consumers
   const value = useMemo(
