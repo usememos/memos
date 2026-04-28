@@ -1,9 +1,10 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
-import type { InfiniteData } from "@tanstack/react-query";
+import type { InfiniteData, QueryKey } from "@tanstack/react-query";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { memoServiceClient } from "@/connect";
 import { userKeys } from "@/hooks/useUserQueries";
+import { State } from "@/types/proto/api/v1/common_pb";
 import type { ListMemosRequest, ListMemosResponse, Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { ListMemoCommentsRequestSchema, ListMemosRequestSchema, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
@@ -20,12 +21,65 @@ export const memoKeys = {
 type MemoPatch = Partial<Memo> & Pick<Memo, "name">;
 type MemoCollectionQueryData = ListMemosResponse | InfiniteData<ListMemosResponse>;
 
+export type UpdateType = "state" | "pinned" | "content" | "tags" | "other";
+
 function isMemoListResponse(data: unknown): data is ListMemosResponse {
   return typeof data === "object" && data !== null && Array.isArray((data as { memos?: unknown }).memos);
 }
 
 function isInfiniteMemoListData(data: unknown): data is InfiniteData<ListMemosResponse> {
   return typeof data === "object" && data !== null && Array.isArray((data as { pages?: unknown }).pages);
+}
+
+function extractListFiltersFromQueryKey(queryKey: QueryKey): Partial<ListMemosRequest> | undefined {
+  const listsKey = memoKeys.lists();
+  if (queryKey.length <= listsKey.length) {
+    return undefined;
+  }
+  for (let i = 0; i < listsKey.length; i++) {
+    if (queryKey[i] !== listsKey[i]) {
+      return undefined;
+    }
+  }
+  const filters = queryKey[listsKey.length];
+  if (typeof filters === "object" && filters !== null) {
+    return filters as Partial<ListMemosRequest>;
+  }
+  return undefined;
+}
+
+function removeMemoFromListResponse(response: ListMemosResponse, memoName: string): ListMemosResponse {
+  const originalLength = response.memos.length;
+  const memos = response.memos.filter((memo) => memo.name !== memoName);
+  if (memos.length === originalLength) {
+    return response;
+  }
+  return { ...response, memos };
+}
+
+function removeMemoFromListQueryData<T>(data: T | undefined, memoName: string): T | undefined {
+  if (!data) {
+    return data;
+  }
+
+  if (isMemoListResponse(data)) {
+    return removeMemoFromListResponse(data, memoName) as T;
+  }
+
+  if (isInfiniteMemoListData(data)) {
+    let changed = false;
+    const pages = data.pages.map((page) => {
+      const filteredPage = removeMemoFromListResponse(page, memoName);
+      if (filteredPage !== page) {
+        changed = true;
+      }
+      return filteredPage;
+    });
+
+    return (changed ? { ...data, pages } : data) as T;
+  }
+
+  return data;
 }
 
 function patchMemoListResponse(response: ListMemosResponse, update: MemoPatch): ListMemosResponse {
@@ -107,6 +161,65 @@ function patchMemoInCollectionQueries(queryClient: ReturnType<typeof useQueryCli
   queryClient.setQueriesData<MemoCollectionQueryData>({ queryKey: memoKeys.all }, (data) => patchMemoListQueryData(data, update));
 }
 
+function removeMemoFromCollectionQueries(queryClient: ReturnType<typeof useQueryClient>, memoName: string) {
+  queryClient.setQueriesData<MemoCollectionQueryData>(
+    { queryKey: memoKeys.all },
+    (data) => removeMemoFromListQueryData(data, memoName),
+  );
+}
+
+function filterMemoFromCollectionQueriesByState(
+  queryClient: ReturnType<typeof useQueryClient>,
+  memo: Memo,
+  previousState?: State,
+) {
+  const currentState = memo.state;
+  const queriesData = queryClient.getQueriesData<MemoCollectionQueryData>({ queryKey: memoKeys.lists() });
+
+  for (const [queryKey, data] of queriesData) {
+    const filters = extractListFiltersFromQueryKey(queryKey);
+    if (!filters) {
+      continue;
+    }
+
+    const queryState = filters.state ?? State.NORMAL;
+
+    if (previousState !== undefined && previousState === queryState && currentState !== queryState) {
+      const updatedData = removeMemoFromListQueryData(data, memo.name);
+      if (updatedData !== data) {
+        queryClient.setQueryData(queryKey, updatedData);
+      }
+      continue;
+    }
+
+    if (currentState === queryState) {
+      const updatedData = patchMemoListQueryData(data, memo);
+      if (updatedData !== data) {
+        queryClient.setQueryData(queryKey, updatedData);
+      }
+    }
+  }
+}
+
+function determineUpdateTypes(updateMask: string[]): UpdateType[] {
+  const types: UpdateType[] = [];
+
+  for (const path of updateMask) {
+    if (path === "state") {
+      types.push("state");
+    } else if (path === "pinned") {
+      types.push("pinned");
+    } else if (path === "content") {
+      types.push("content");
+      types.push("tags");
+    } else if (!types.includes("other")) {
+      types.push("other");
+    }
+  }
+
+  return types.length > 0 ? types : ["other"];
+}
+
 export function useMemos(request: Partial<ListMemosRequest> = {}) {
   return useQuery({
     queryKey: memoKeys.list(request),
@@ -179,10 +292,12 @@ export function useUpdateMemo() {
       });
       return memo;
     },
-    onMutate: async ({ update }) => {
+    onMutate: async ({ update, updateMask }) => {
       if (!update.name) {
-        return { previousMemo: undefined };
+        return { previousMemo: undefined, updateTypes: [] as UpdateType[] };
       }
+
+      const updateTypes = determineUpdateTypes(updateMask);
 
       // Cancel outgoing refetches to prevent race conditions
       await queryClient.cancelQueries({ queryKey: memoKeys.all });
@@ -192,13 +307,21 @@ export function useUpdateMemo() {
         queryClient.getQueryData<Memo>(memoKeys.detail(update.name)) || findMemoInCollectionQueries(queryClient, update.name);
       const memoPatch: MemoPatch = { ...update, name: update.name };
 
-      // Optimistically update the cache
+      // Optimistically update the detail cache
       if (previousMemo) {
         queryClient.setQueryData(memoKeys.detail(update.name), { ...previousMemo, ...memoPatch });
       }
-      patchMemoInCollectionQueries(queryClient, memoPatch);
 
-      return { previousMemo };
+      // Handle state changes specially - remove from non-matching lists
+      if (updateTypes.includes("state") && previousMemo) {
+        const updatedMemo = { ...previousMemo, ...memoPatch } as Memo;
+        filterMemoFromCollectionQueriesByState(queryClient, updatedMemo, previousMemo.state);
+      } else {
+        // For other updates, just patch the collection queries
+        patchMemoInCollectionQueries(queryClient, memoPatch);
+      }
+
+      return { previousMemo, updateTypes };
     },
     onError: (_err, { update }, context) => {
       // Rollback on error
@@ -209,15 +332,39 @@ export function useUpdateMemo() {
         queryClient.invalidateQueries({ queryKey: memoKeys.all });
       }
     },
-    onSuccess: (updatedMemo) => {
+    onSuccess: (updatedMemo, _variables, context) => {
+      const updateTypes = context?.updateTypes || [];
+
       // Update cache with server response
       queryClient.setQueryData(memoKeys.detail(updatedMemo.name), updatedMemo);
-      patchMemoInCollectionQueries(queryClient, updatedMemo);
-      // Invalidate lists to refresh
-      queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
+
+      // For state changes: we already handled filtering in onMutate
+      // Just update the memo in lists where it should stay
+      if (updateTypes.includes("state")) {
+        filterMemoFromCollectionQueriesByState(queryClient, updatedMemo);
+      } else {
+        patchMemoInCollectionQueries(queryClient, updatedMemo);
+      }
+
+      // Only invalidate lists when necessary:
+      // - pinned: server-side sorting may differ from client
+      // - content/tags: may affect filter results
+      // - other: just in case
+      const shouldInvalidateLists =
+        updateTypes.includes("pinned") ||
+        updateTypes.includes("content") ||
+        updateTypes.includes("tags") ||
+        updateTypes.includes("other") ||
+        updateTypes.length === 0;
+
+      if (shouldInvalidateLists) {
+        queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
+      }
+
       if (updatedMemo.parent) {
         queryClient.invalidateQueries({ queryKey: memoKeys.comments(updatedMemo.parent) });
       }
+
       // Invalidate user stats
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
     },
@@ -232,10 +379,33 @@ export function useDeleteMemo() {
       await memoServiceClient.deleteMemo({ name });
       return name;
     },
-    onSuccess: (name) => {
-      // Remove from cache
+    onMutate: async (name: string) => {
+      // Cancel outgoing refetches to prevent race conditions
+      await queryClient.cancelQueries({ queryKey: memoKeys.all });
+
+      // Snapshot previous value for rollback on error
+      const previousMemo =
+        queryClient.getQueryData<Memo>(memoKeys.detail(name)) || findMemoInCollectionQueries(queryClient, name);
+
+      // Optimistically remove from all caches
       queryClient.removeQueries({ queryKey: memoKeys.detail(name) });
-      // Invalidate lists
+      removeMemoFromCollectionQueries(queryClient, name);
+
+      return { previousMemo };
+    },
+    onError: (_err, name, context) => {
+      // Rollback on error
+      if (context?.previousMemo) {
+        queryClient.setQueryData(memoKeys.detail(name), context.previousMemo);
+        patchMemoInCollectionQueries(queryClient, context.previousMemo);
+      } else {
+        queryClient.invalidateQueries({ queryKey: memoKeys.all });
+      }
+    },
+    onSuccess: (name) => {
+      // Double-check: ensure it's removed from detail cache
+      queryClient.removeQueries({ queryKey: memoKeys.detail(name) });
+      // Invalidate lists as a fallback (in case optimistic removal missed something)
       queryClient.invalidateQueries({ queryKey: memoKeys.lists() });
       // Invalidate user stats
       queryClient.invalidateQueries({ queryKey: userKeys.stats() });
