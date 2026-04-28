@@ -1,7 +1,6 @@
-import type { Element, Root } from "hast";
+import type { Element } from "hast";
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
-import type { Pluggable } from "unified";
 import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
@@ -11,6 +10,7 @@ import remarkMath from "remark-math";
 import { isMentionElement, isTagElement, isTaskListItemElement } from "@/types/markdown";
 import { rehypeHeadingId } from "@/utils/rehype-plugins/rehype-heading-id";
 import { rehypeSearchHighlight } from "@/utils/rehype-plugins/rehype-search-highlight";
+import { rehypeSearchSnippet } from "@/utils/rehype-plugins/rehype-search-snippet";
 import { remarkDisableSetext } from "@/utils/remark-plugins/remark-disable-setext";
 import { remarkMention } from "@/utils/remark-plugins/remark-mention";
 import { remarkPreserveType } from "@/utils/remark-plugins/remark-preserve-type";
@@ -29,6 +29,7 @@ interface MemoMarkdownRendererProps {
   content: string;
   resolvedMentionUsernames: Set<string>;
   searchKeywords?: string[];
+  useSearchSnippet?: boolean;
 }
 
 function getMentionUsername(node: Element, children?: React.ReactNode): string {
@@ -50,18 +51,12 @@ function getMentionUsername(node: Element, children?: React.ReactNode): string {
   return "";
 }
 
-export const MemoMarkdownRenderer = ({ content, resolvedMentionUsernames, searchKeywords }: MemoMarkdownRendererProps) => {
-  const rehypePlugins: Pluggable[] = [
-    rehypeRaw,
-    [rehypeSanitize, SANITIZE_SCHEMA],
-    rehypeHeadingId,
-    [rehypeKatex, { throwOnError: false, strict: false }],
-  ];
-
-  if (searchKeywords && searchKeywords.length > 0) {
-    rehypePlugins.push([rehypeSearchHighlight, { keywords: searchKeywords, caseSensitive: false }]);
-  }
-
+export const MemoMarkdownRenderer = ({
+  content,
+  resolvedMentionUsernames,
+  searchKeywords,
+  useSearchSnippet = false,
+}: MemoMarkdownRendererProps) => {
   const markdownComponents: Components = {
     input: ({ node, ...inputProps }) => {
       if (node && isTaskListItemElement(node)) {
@@ -132,6 +127,19 @@ export const MemoMarkdownRenderer = ({ content, resolvedMentionUsernames, search
     td: ({ children, ...props }) => <TableCell {...props}>{children}</TableCell>,
   };
 
+  const buildRehypePlugins = () => {
+    const plugins: any[] = [rehypeRaw, [rehypeSanitize, SANITIZE_SCHEMA], rehypeHeadingId, [rehypeKatex, { throwOnError: false, strict: false }]];
+
+    if (searchKeywords && searchKeywords.length > 0) {
+      if (useSearchSnippet) {
+        plugins.push([rehypeSearchSnippet, { keywords: searchKeywords, caseSensitive: false, maxBlocks: 6, contextBlocks: 1 }]);
+      }
+      plugins.push([rehypeSearchHighlight, { keywords: searchKeywords, caseSensitive: false }]);
+    }
+
+    return plugins;
+  };
+
   return (
     <ReactMarkdown
       remarkPlugins={[
@@ -144,7 +152,7 @@ export const MemoMarkdownRenderer = ({ content, resolvedMentionUsernames, search
         remarkTag,
         remarkPreserveType,
       ]}
-      rehypePlugins={rehypePlugins}
+      rehypePlugins={buildRehypePlugins()}
       components={markdownComponents}
     >
       {content}

@@ -288,6 +288,9 @@
       "shared-by": "Shared by {{creator}}",
       "title": "Share this memo"
     },
+    "showing-search-matches": "Showing search matches",
+    "show-search-matches": "Show matching content only",
+    "show-full-content": "Show full content",
     "show-less": "Show less",
     "show-more": "Show more",
     "to-do": "To-do",

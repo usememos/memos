@@ -39,6 +39,10 @@
     font-weight: 500;
   }
 
+  p.search-ellipsis {
+    @apply text-muted-foreground text-sm italic my-2 text-center;
+  }
+
   @media (prefers-color-scheme: dark) {
     mark.search-highlight {
       background-color: oklch(0.45 0.08 95);
