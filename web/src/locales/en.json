@@ -435,13 +435,20 @@
       "providers": "Providers"
     },
     "instance": {
+      "access-description": "Control sign-up, authentication, profile editing, and calendar defaults for this instance.",
+      "access-title": "Access and policies",
+      "disallow-change-nickname-description": "Prevent users from changing their display name.",
       "disallow-change-nickname": "Disallow changing nickname",
+      "disallow-change-username-description": "Prevent users from changing their login username.",
       "disallow-change-username": "Disallow changing username",
+      "disallow-password-auth-description": "Require users to sign in through an identity provider instead of password login.",
       "disallow-password-auth": "Disallow password auth",
+      "disallow-user-registration-description": "Prevent new users from creating accounts from the sign-up page.",
       "disallow-user-registration": "Disallow user registration",
       "monday": "Monday",
       "saturday": "Saturday",
       "sunday": "Sunday",
+      "week-start-day-description": "Controls the first day shown in calendar-style views.",
       "week-start-day": "Week start day"
     },
     "member": {
@@ -489,9 +496,16 @@
       "label": "My Account"
     },
     "preference": {
+      "appearance-description": "Choose how the app looks and which language it uses for your account.",
+      "appearance-title": "Appearance",
       "default-memo-sort-option": "Memo display time",
       "default-memo-visibility": "Default memo visibility",
+      "default-memo-visibility-description": "Visibility applied to newly created memos unless changed in the editor.",
       "label": "Preferences",
+      "language-description": "Updates the interface language immediately and saves it to your account.",
+      "memo-defaults-description": "Set the defaults used when composing new memos.",
+      "memo-defaults-title": "Memo defaults",
+      "theme-description": "Applies the selected theme immediately on this device.",
       "theme": "Theme"
     },
     "shortcut": {
@@ -625,16 +639,21 @@
     },
     "system": {
       "additional-script": "Additional script",
+      "additional-script-description": "Inject JavaScript into every web page. Use only trusted code.",
       "additional-script-placeholder": "Additional JavaScript code",
       "additional-style": "Additional style",
+      "additional-style-description": "Inject CSS into the web app to adjust instance-wide presentation.",
       "additional-style-placeholder": "Additional CSS code",
       "allow-user-signup": "Allow user signup",
+      "basic-description": "Configure the public identity shown by this instance.",
       "customize-server": {
         "description": "Description",
         "icon-url": "Icon URL",
         "locale": "Server Locale",
         "title": "Customize Server"
       },
+      "custom-code-description": "Optional instance-wide CSS and JavaScript applied to the frontend.",
+      "custom-code-title": "Custom code",
       "disable-password-login": "Disable password login",
       "disable-password-login-final-warning": "Please type `CONFIRM` if you know what you are doing.",
       "disable-password-login-warning": "This will disable password login for all users. It is not possible to log in without reverting this setting in the database if your configured identity providers fail. You'll also have to be extra careful when removing an identity provider",
@@ -650,6 +669,7 @@
       "server-name": "Server Name",
       "title": "General"
     },
+    "select-section": "Select section",
     "version": "Version",
     "webhook": {
       "create-dialog": {

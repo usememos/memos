@@ -11,7 +11,7 @@ import LocaleSelect from "../LocaleSelect";
 import ThemeSelect from "../ThemeSelect";
 import VisibilityIcon from "../VisibilityIcon";
 import SettingGroup from "./SettingGroup";
-import SettingRow from "./SettingRow";
+import { SettingList, SettingListItem } from "./SettingList";
 import SettingSection from "./SettingSection";
 
 const PreferencesSection = () => {
@@ -69,36 +69,47 @@ const PreferencesSection = () => {
 
   return (
     <SettingSection title={t("setting.preference.label")}>
-      <SettingGroup title={t("common.basic")}>
-        <SettingRow label={t("common.language")}>
-          <LocaleSelect value={setting.locale} onChange={handleLocaleSelectChange} />
-        </SettingRow>
+      <SettingGroup title={t("setting.preference.appearance-title")} description={t("setting.preference.appearance-description")}>
+        <SettingList>
+          <SettingListItem label={t("common.language")} description={t("setting.preference.language-description")}>
+            <LocaleSelect value={setting.locale} onChange={handleLocaleSelectChange} />
+          </SettingListItem>
 
-        <SettingRow label={t("setting.preference.theme")}>
-          <ThemeSelect value={setting.theme} onValueChange={handleThemeChange} />
-        </SettingRow>
+          <SettingListItem label={t("setting.preference.theme")} description={t("setting.preference.theme-description")}>
+            <ThemeSelect value={setting.theme} onValueChange={handleThemeChange} />
+          </SettingListItem>
+        </SettingList>
       </SettingGroup>
 
-      <SettingGroup title={t("common.memo")} showSeparator>
-        <SettingRow label={t("setting.preference.default-memo-visibility")}>
-          <Select value={setting.memoVisibility || "PRIVATE"} onValueChange={handleDefaultMemoVisibilityChanged}>
-            <SelectTrigger className="min-w-fit">
-              <div className="flex items-center gap-2">
-                <VisibilityIcon visibility={convertVisibilityFromString(setting.memoVisibility)} />
-                <SelectValue />
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              {[Visibility.PRIVATE, Visibility.PROTECTED, Visibility.PUBLIC]
-                .map((v) => convertVisibilityToString(v))
-                .map((item) => (
-                  <SelectItem key={item} value={item} className="whitespace-nowrap">
-                    {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
-                  </SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
-        </SettingRow>
+      <SettingGroup
+        title={t("setting.preference.memo-defaults-title")}
+        description={t("setting.preference.memo-defaults-description")}
+        showSeparator
+      >
+        <SettingList>
+          <SettingListItem
+            label={t("setting.preference.default-memo-visibility")}
+            description={t("setting.preference.default-memo-visibility-description")}
+          >
+            <Select value={setting.memoVisibility || "PRIVATE"} onValueChange={handleDefaultMemoVisibilityChanged}>
+              <SelectTrigger className="min-w-fit">
+                <div className="flex items-center gap-2">
+                  <VisibilityIcon visibility={convertVisibilityFromString(setting.memoVisibility)} />
+                  <SelectValue />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                {[Visibility.PRIVATE, Visibility.PROTECTED, Visibility.PUBLIC]
+                  .map((v) => convertVisibilityToString(v))
+                  .map((item) => (
+                    <SelectItem key={item} value={item} className="whitespace-nowrap">
+                      {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
+          </SettingListItem>
+        </SettingList>
       </SettingGroup>
     </SettingSection>
   );

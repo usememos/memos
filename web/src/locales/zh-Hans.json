@@ -382,8 +382,15 @@
       "providers": "Providers"
     },
     "preference": {
+      "appearance-description": "选择当前账号使用的界面语言和外观主题。",
+      "appearance-title": "外观",
       "default-memo-sort-option": "备忘录显示时间",
       "default-memo-visibility": "默认备忘录可见性",
+      "default-memo-visibility-description": "创建新备忘录时默认使用的可见性，仍可在编辑器中调整。",
+      "language-description": "立即更新界面语言，并保存到当前账号。",
+      "memo-defaults-description": "设置创建新备忘录时使用的默认值。",
+      "memo-defaults-title": "备忘录默认值",
+      "theme-description": "立即在当前设备上应用所选主题。",
       "theme": "主题",
       "label": "偏好设置"
     },
@@ -519,16 +526,21 @@
     },
     "system": {
       "additional-script": "自定义脚本",
+      "additional-script-description": "向所有 Web 页面注入 JavaScript。请只使用可信代码。",
       "additional-script-placeholder": "自定义 JavaScript 代码",
       "additional-style": "自定义样式",
+      "additional-style-description": "向前端应用注入 CSS，用于调整实例范围内的显示效果。",
       "additional-style-placeholder": "自定义 CSS 代码",
       "allow-user-signup": "允许用户注册",
+      "basic-description": "配置该实例对外展示的身份信息。",
       "customize-server": {
         "description": "描述",
         "icon-url": "图标链接",
         "locale": "服务器语言环境",
         "title": "自定义服务器"
       },
+      "custom-code-description": "应用到前端的实例范围 CSS 和 JavaScript，可选。",
+      "custom-code-title": "自定义代码",
       "disable-password-login": "禁用密码登录",
       "disable-password-login-final-warning": "如果您知道自己在做什么，请输入 \"CONFIRM\"。",
       "disable-password-login-warning": "所有用户将无法使用密码登录。如果配置的身份提供程序失效，不在数据库中恢复此设置将无法登录。删除身份提供程序时也要格外小心",
@@ -544,6 +556,7 @@
       "title": "一般设置",
       "label": "系统"
     },
+    "select-section": "选择设置项",
     "version": "版本",
     "access-token": {
       "access-token-copied-to-clipboard": "访问令牌已复制到剪贴板",
@@ -585,13 +598,20 @@
       "username-note": "用于登录"
     },
     "instance": {
+      "access-description": "控制该实例的注册、登录、资料编辑和日历默认行为。",
+      "access-title": "访问和策略",
+      "disallow-change-nickname-description": "阻止用户修改显示昵称。",
       "disallow-change-nickname": "禁止修改用户昵称",
+      "disallow-change-username-description": "阻止用户修改登录用户名。",
       "disallow-change-username": "禁止修改用户名",
+      "disallow-password-auth-description": "要求用户通过身份提供商登录，而不是使用密码登录。",
       "disallow-password-auth": "禁用密码登录",
+      "disallow-user-registration-description": "阻止新用户从注册页面创建账号。",
       "disallow-user-registration": "禁用用户注册",
       "monday": "周一",
       "saturday": "周六",
       "sunday": "周日",
+      "week-start-day-description": "控制日历类视图显示的每周第一天。",
       "week-start-day": "周开始日"
     },
     "memo": {

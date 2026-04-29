@@ -11,19 +11,21 @@ interface SettingSectionProps {
 
 const SettingSection: React.FC<SettingSectionProps> = ({ title, description, children, className, actions }) => {
   return (
-    <div className={cn("w-full flex flex-col gap-4 pt-2 pb-4", className)}>
+    <div className={cn("mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-5 py-1 sm:py-2", className)}>
       {(title || description || actions) && (
-        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
-          <div className="flex-1">
+        <div className="flex min-w-0 flex-col gap-3 border-b border-border/70 pb-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0 flex-1">
             {title && (
-              <div className="text-base font-semibold text-foreground mb-1">{typeof title === "string" ? <h3>{title}</h3> : title}</div>
+              <div className="mb-1 text-lg font-semibold tracking-tight text-foreground">
+                {typeof title === "string" ? <h3>{title}</h3> : title}
+              </div>
             )}
-            {description && <p className="text-sm text-muted-foreground">{description}</p>}
+            {description && <p className="max-w-2xl text-sm leading-6 text-muted-foreground">{description}</p>}
           </div>
-          {actions && <div className="flex items-center gap-2">{actions}</div>}
+          {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
         </div>
       )}
-      <div className="flex flex-col gap-4">{children}</div>
+      <div className="flex min-w-0 flex-col gap-5">{children}</div>
     </div>
   );
 };

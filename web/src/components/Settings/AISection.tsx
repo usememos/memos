@@ -11,7 +11,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useInstance } from "@/contexts/InstanceContext";
-import { handleError } from "@/lib/error";
 import {
   InstanceSetting_AIProviderConfig,
   InstanceSetting_AIProviderConfigSchema,
@@ -22,8 +21,10 @@ import {
 } from "@/types/proto/api/v1/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import SettingGroup from "./SettingGroup";
+import { SettingPanel } from "./SettingList";
 import SettingSection from "./SettingSection";
 import SettingTable from "./SettingTable";
+import useInstanceSettingUpdater, { buildInstanceSettingName } from "./useInstanceSettingUpdater";
 
 type LocalAIProvider = {
   id: string;
@@ -81,7 +82,8 @@ const toProviderConfig = (provider: LocalAIProvider) =>
 
 const AISection = () => {
   const t = useTranslate();
-  const { aiSetting: originalSetting, updateSetting, fetchSetting } = useInstance();
+  const saveInstanceSetting = useInstanceSettingUpdater();
+  const { aiSetting: originalSetting } = useInstance();
   const [providers, setProviders] = useState<LocalAIProvider[]>(() => originalSetting.providers.map(toLocalProvider));
   const [editingProvider, setEditingProvider] = useState<LocalAIProvider | undefined>();
   const [deleteTarget, setDeleteTarget] = useState<LocalAIProvider | undefined>();
@@ -136,25 +138,19 @@ const AISection = () => {
   };
 
   const handleSaveSetting = async () => {
-    try {
-      await updateSetting(
-        create(InstanceSettingSchema, {
-          name: `instance/settings/${InstanceSetting_Key[InstanceSetting_Key.AI]}`,
-          value: {
-            case: "aiSetting",
-            value: create(InstanceSetting_AISettingSchema, {
-              providers: providers.map(toProviderConfig),
-            }),
-          },
-        }),
-      );
-      await fetchSetting(InstanceSetting_Key.AI);
-      toast.success(t("message.update-succeed"));
-    } catch (error: unknown) {
-      handleError(error, toast.error, {
-        context: "Update AI providers",
-      });
-    }
+    await saveInstanceSetting({
+      key: InstanceSetting_Key.AI,
+      setting: create(InstanceSettingSchema, {
+        name: buildInstanceSettingName(InstanceSetting_Key.AI),
+        value: {
+          case: "aiSetting",
+          value: create(InstanceSetting_AISettingSchema, {
+            providers: providers.map(toProviderConfig),
+          }),
+        },
+      }),
+      errorContext: "Update AI providers",
+    });
   };
 
   return (
@@ -167,7 +163,7 @@ const AISection = () => {
         </Button>
       }
     >
-      <section className="rounded-lg border border-border bg-muted/30 px-4 py-3">
+      <SettingPanel className="bg-muted/30 px-4 py-3">
         <div className="flex max-w-3xl flex-col gap-2">
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-md border border-border bg-background px-2 py-0.5 text-xs font-medium text-foreground">
@@ -185,7 +181,7 @@ const AISection = () => {
             ))}
           </ul>
         </div>
-      </section>
+      </SettingPanel>
 
       <SettingGroup title={t("setting.ai.providers")} description={t("setting.ai.description")}>
         <SettingTable

@@ -2,7 +2,6 @@ import { create } from "@bufbuild/protobuf";
 import { isEqual } from "lodash-es";
 import { CloudIcon, DatabaseIcon, FolderIcon, LucideIcon } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
-import { toast } from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +9,6 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { useInstance } from "@/contexts/InstanceContext";
-import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
 import {
   InstanceSetting_Key,
@@ -23,8 +21,10 @@ import {
 } from "@/types/proto/api/v1/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import SettingGroup from "./SettingGroup";
+import { SettingPanel } from "./SettingList";
 import SettingRow from "./SettingRow";
 import SettingSection from "./SettingSection";
+import useInstanceSettingUpdater, { buildInstanceSettingName } from "./useInstanceSettingUpdater";
 
 const DEFAULT_FILEPATH_TEMPLATE = "assets/{timestamp}_{uuid}_{filename}";
 
@@ -71,7 +71,8 @@ const storageTypeOptions: StorageTypeOption[] = [
 
 const StorageSection = () => {
   const t = useTranslate();
-  const { storageSetting: originalSetting, updateSetting, fetchSetting } = useInstance();
+  const saveInstanceSetting = useInstanceSettingUpdater();
+  const { storageSetting: originalSetting } = useInstance();
   const [instanceStorageSetting, setInstanceStorageSetting] = useState<InstanceSetting_StorageSetting>(originalSetting);
 
   const selectedStorageOption = useMemo(
@@ -162,23 +163,17 @@ const StorageSection = () => {
   };
 
   const saveInstanceStorageSetting = async () => {
-    try {
-      await updateSetting(
-        create(InstanceSettingSchema, {
-          name: `instance/settings/${InstanceSetting_Key[InstanceSetting_Key.STORAGE]}`,
-          value: {
-            case: "storageSetting",
-            value: instanceStorageSetting,
-          },
-        }),
-      );
-      await fetchSetting(InstanceSetting_Key.STORAGE);
-      toast.success(t("message.update-succeed"));
-    } catch (error: unknown) {
-      handleError(error, toast.error, {
-        context: "Update storage settings",
-      });
-    }
+    await saveInstanceSetting({
+      key: InstanceSetting_Key.STORAGE,
+      setting: create(InstanceSettingSchema, {
+        name: buildInstanceSettingName(InstanceSetting_Key.STORAGE),
+        value: {
+          case: "storageSetting",
+          value: instanceStorageSetting,
+        },
+      }),
+      errorContext: "Update storage settings",
+    });
   };
 
   return (
@@ -189,7 +184,7 @@ const StorageSection = () => {
           onValueChange={(value) => {
             handleStorageTypeChanged(Number(value) as InstanceSetting_StorageSetting_StorageType);
           }}
-          className="overflow-hidden rounded-lg border border-border bg-background divide-y divide-border"
+          className="overflow-hidden rounded-lg border border-border bg-background divide-y divide-border gap-0"
         >
           {storageTypeOptions.map((option) => {
             const Icon = option.icon;
@@ -239,13 +234,13 @@ const StorageSection = () => {
           })}
         </RadioGroup>
 
-        <div className="rounded-md border border-border/70 bg-muted/20 px-3 py-2.5">
+        <SettingPanel className="rounded-md bg-muted/20 px-3 py-2.5">
           <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
             <SelectedStorageIcon className="size-3.5" />
             <span>{t("setting.storage.selected-backend")}</span>
             <span className="text-foreground">{t(selectedStorageOption.titleKey)}</span>
           </div>
-          <ul className="grid gap-1.5 text-xs leading-5 text-muted-foreground sm:grid-cols-2">
+          <ul className="flex flex-col gap-1.5 text-xs leading-5 text-muted-foreground">
             {selectedStorageOption.noteKeys.map((note) => (
               <li key={note} className="flex gap-2">
                 <span className="mt-2 size-1 rounded-full bg-muted-foreground/60" aria-hidden />
@@ -253,7 +248,7 @@ const StorageSection = () => {
               </li>
             ))}
           </ul>
-        </div>
+        </SettingPanel>
 
         <SettingRow label={t("setting.system.max-upload-size")} tooltip={t("setting.system.max-upload-size-hint")}>
           <Input
