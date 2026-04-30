@@ -1294,6 +1294,10 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, user *store.
 		}
 
 		switch key {
+		case storepb.UserSetting_GENERAL:
+			setting.Value = &v1pb.UserSetting_GeneralSetting_{
+				GeneralSetting: getDefaultUserGeneralSetting(),
+			}
 		case storepb.UserSetting_WEBHOOKS:
 			setting.Value = &v1pb.UserSetting_WebhooksSetting_{
 				WebhooksSetting: &v1pb.UserSetting_WebhooksSetting{
@@ -1301,10 +1305,7 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, user *store.
 				},
 			}
 		default:
-			// Default to general setting
-			setting.Value = &v1pb.UserSetting_GeneralSetting_{
-				GeneralSetting: getDefaultUserGeneralSetting(),
-			}
+			return nil
 		}
 		return setting
 	}
@@ -1349,10 +1350,7 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, user *store.
 			},
 		}
 	default:
-		// Default to general setting if unknown key
-		setting.Value = &v1pb.UserSetting_GeneralSetting_{
-			GeneralSetting: getDefaultUserGeneralSetting(),
-		}
+		return nil
 	}
 
 	return setting
