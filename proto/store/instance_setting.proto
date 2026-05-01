@@ -109,6 +109,8 @@ message InstanceMemoRelatedSetting {
   int32 content_length_limit = 3;
   // enable_double_click_edit enables editing on double click.
   bool enable_double_click_edit = 4;
+  // enable_single_click_memo_expand enables toggling compact memo content with a single click.
+  bool enable_single_click_memo_expand = 5;
   // reactions is the list of reactions.
   repeated string reactions = 7;
 }

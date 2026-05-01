@@ -1,5 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { FileIcon } from "lucide-react";
+import { createRef } from "react";
 import { extractMemoIdFromName } from "@/helpers/resource-names";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
@@ -32,6 +33,11 @@ const STUB_CONTEXT: MemoViewContextValue = {
   readonly: true,
   showBlurredContent: false,
   blurred: false,
+  compactMode: {
+    containerRef: createRef<HTMLDivElement>(),
+    mode: undefined,
+    toggle: () => {},
+  },
   openEditor: () => {},
   toggleBlurVisibility: () => {},
   openPreview: () => {},

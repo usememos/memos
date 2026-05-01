@@ -1,25 +1,32 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { COMPACT_STATES, getMaxDisplayHeight } from "./constants";
 import type { ContentCompactView } from "./types";
 
-export const useCompactMode = (enabled: boolean) => {
+export const useCompactMode = (enabled: boolean, resetKey?: string) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mode, setMode] = useState<ContentCompactView | undefined>(undefined);
 
   useEffect(() => {
-    if (!enabled || !containerRef.current) return;
+    if (!enabled || !containerRef.current) {
+      setMode(undefined);
+      return;
+    }
+
     const maxHeight = getMaxDisplayHeight();
     if (containerRef.current.getBoundingClientRect().height > maxHeight) {
       setMode("ALL");
+      return;
     }
-  }, [enabled]);
+
+    setMode(undefined);
+  }, [enabled, resetKey]);
 
   const toggle = useCallback(() => {
     if (!mode) return;
     setMode(COMPACT_STATES[mode].next);
   }, [mode]);
 
-  return { containerRef, mode, toggle };
+  return useMemo(() => ({ containerRef, mode, toggle }), [mode, toggle]);
 };
 
 export const useCompactLabel = (mode: ContentCompactView | undefined, t: (key: string) => string): string => {

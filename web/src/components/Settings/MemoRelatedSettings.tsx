@@ -86,6 +86,13 @@ const MemoRelatedSettings = () => {
           />
         </SettingRow>
 
+        <SettingRow label={t("setting.system.enable-single-click-memo-expand")}>
+          <Switch
+            checked={memoRelatedSetting.enableSingleClickMemoExpand}
+            onCheckedChange={(checked) => updatePartialSetting({ enableSingleClickMemoExpand: checked })}
+          />
+        </SettingRow>
+
         <SettingRow label={t("setting.memo.content-length-limit")}>
           <Input
             className="w-24"

@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { isSuperUser } from "@/utils/user";
 import MemoShareImageDialog from "../MemoActionMenu/MemoShareImageDialog";
+import { useCompactMode } from "../MemoContent/hooks";
 import MemoEditor from "../MemoEditor";
 import PreviewImageDialog from "../PreviewImageDialog";
 import { MemoBody, MemoCommentListView, MemoHeader } from "./components";
@@ -23,7 +24,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const [cardWidth, setCardWidth] = useState(0);
 
   const currentUser = useCurrentUser();
-  const { tagsSetting } = useInstance();
+  const { memoRelatedSetting, tagsSetting } = useInstance();
   const creator = useUser(memoData.creator).data;
   const isArchived = memoData.state === State.ARCHIVED;
   const readonly = memoData.creator !== currentUser?.name && !isSuperUser(currentUser);
@@ -35,6 +36,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const toggleBlurVisibility = useCallback(() => setShowBlurredContent((prev) => !prev), []);
 
   const { previewState, openPreview, setPreviewOpen } = useImagePreview();
+  const compactMode = useCompactMode(Boolean(compact && !memoData.pinned), `${memoData.name}-${memoData.updateTime}`);
 
   const openEditor = useCallback(() => setShowEditor(true), []);
   const closeEditor = useCallback(() => setShowEditor(false), []);
@@ -42,6 +44,25 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const location = useLocation();
   const isInMemoDetailPage = location.pathname.startsWith(`/${memoData.name}`) || location.pathname.startsWith("/memos/shares/");
   const showCommentPreview = !isInMemoDetailPage && computeCommentAmount(memoData) > 0;
+
+  const handleArticleClick = useCallback(
+    (event: React.MouseEvent<HTMLElement>) => {
+      if (!memoRelatedSetting.enableSingleClickMemoExpand || !compactMode.mode || event.defaultPrevented || event.detail > 1) {
+        return;
+      }
+
+      const target = event.target as HTMLElement;
+      if (target.closest("a, button, input, textarea, select, [role='button'], [data-ignore-memo-expand]") || target.tagName === "IMG") {
+        return;
+      }
+      if (window.getSelection()?.toString()) {
+        return;
+      }
+
+      compactMode.toggle();
+    },
+    [compactMode, memoRelatedSetting.enableSingleClickMemoExpand],
+  );
 
   useEffect(() => {
     const card = cardRef.current;
@@ -81,6 +102,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       readonly,
       showBlurredContent,
       blurred,
+      compactMode,
       openEditor,
       toggleBlurVisibility,
       openPreview,
@@ -95,6 +117,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       readonly,
       showBlurredContent,
       blurred,
+      compactMode,
       openEditor,
       toggleBlurVisibility,
       openPreview,
@@ -120,6 +143,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
       className={cn(MEMO_CARD_BASE_CLASSES, showCommentPreview ? "mb-0 rounded-b-none" : "mb-2", className)}
       ref={cardRef}
       tabIndex={readonly ? -1 : 0}
+      onClick={handleArticleClick}
     >
       <MemoHeader showCreator={showCreator} showVisibility={showVisibility} showPinned={showPinned} />
 

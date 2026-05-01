@@ -23,7 +23,8 @@ const BlurOverlay: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
 };
 
 const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
-  const { memo, parentPage, showBlurredContent, blurred, readonly, openEditor, openPreview, toggleBlurVisibility } = useMemoViewContext();
+  const { memo, parentPage, showBlurredContent, blurred, readonly, compactMode, openEditor, openPreview, toggleBlurVisibility } =
+    useMemoViewContext();
 
   const { handleMemoContentClick, handleMemoContentDoubleClick } = useMemoHandlers({ readonly, openEditor, openPreview });
 
@@ -42,6 +43,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
           content={memo.content}
           onClick={handleMemoContentClick}
           onDoubleClick={handleMemoContentDoubleClick}
+          compactMode={compactMode}
           compact={memo.pinned ? false : compact} // Always show full content when pinned
         />
         <AttachmentListView attachments={memo.attachments} onImagePreview={openPreview} />

@@ -50,11 +50,12 @@ function getMentionUsername(node: Element, children?: React.ReactNode): string {
 const MemoContent = (props: MemoContentProps) => {
   const { className, contentClassName, content, onClick, onDoubleClick } = props;
   const t = useTranslate();
+  const internalCompactMode = useCompactMode(Boolean(props.compact));
   const {
     containerRef: memoContentContainerRef,
     mode: showCompactMode,
     toggle: toggleCompactMode,
-  } = useCompactMode(Boolean(props.compact));
+  } = props.compactMode ?? internalCompactMode;
   const mentionUsernames = useMemo(() => extractMentionUsernames(content), [content]);
   const resolvedMentionUsernames = useResolvedMentionUsernames(mentionUsernames);
 
