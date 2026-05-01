@@ -109,7 +109,7 @@ func (s *FrontendService) getSitemapXML(c *echo.Context) error {
 	urls := make([]sitemapURL, 0, len(memos))
 	for _, memo := range memos {
 		urls = append(urls, sitemapURL{
-			Loc: instanceURL + "/m/" + memo.UID,
+			Loc: instanceURL + "/memos/" + memo.UID,
 		})
 	}
 
