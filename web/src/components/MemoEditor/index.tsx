@@ -46,6 +46,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   parentMemoName,
   autoFocus,
   placeholder,
+  defaultCreateTime,
   onConfirm,
   onCancel,
 }) => {
@@ -68,7 +69,15 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   // Get default visibility from user settings
   const defaultVisibility = userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined;
 
-  const { isInitialized } = useMemoInit({ editorRef, memo, cacheKey, username: currentUser?.name ?? "", autoFocus, defaultVisibility });
+  const { isInitialized } = useMemoInit({
+    editorRef,
+    memo,
+    cacheKey,
+    username: currentUser?.name ?? "",
+    autoFocus,
+    defaultVisibility,
+    defaultCreateTime,
+  });
   const isDraftCacheEnabled = !memo;
 
   // Auto-save content to localStorage
@@ -76,6 +85,22 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
   // Focus mode management with body scroll lock
   useFocusMode(state.ui.isFocusMode);
+
+  // Live-sync the draft's createTime/updateTime to the calendar-derived prop.
+  // Only applies in create mode; edit mode owns its own timestamps. Runs after
+  // initial mount (the seed value is set in useMemoInit), and again whenever
+  // the prop changes — e.g., when the user picks a different calendar date
+  // while the editor is open.
+  useEffect(() => {
+    if (memo) return;
+    if (!isInitialized) return;
+    dispatch(
+      actions.setTimestamps({
+        createTime: defaultCreateTime,
+        updateTime: defaultCreateTime,
+      }),
+    );
+  }, [defaultCreateTime, memo, isInitialized, actions, dispatch]);
 
   useEffect(() => {
     if (!currentUser) {
@@ -291,7 +316,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         {/* Exit button is absolutely positioned in top-right corner when active */}
         <FocusModeExitButton isActive={state.ui.isFocusMode} onToggle={handleToggleFocusMode} title={t("editor.exit-focus-mode")} />
 
-        {memoName && (
+        {(memoName || (!memo && state.timestamps.createTime)) && (
           <div className="w-full -mb-1">
             <TimestampPopover />
           </div>

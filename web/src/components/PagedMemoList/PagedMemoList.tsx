@@ -2,8 +2,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ArrowUpIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
+import { deriveDefaultCreateTimeFromFilters } from "@/components/MemoEditor/utils/deriveDefaultCreateTime";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
+import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
@@ -82,8 +84,10 @@ function useAutoFetchWhenNotScrollable({
 const PagedMemoList = (props: Props) => {
   const t = useTranslate();
   const queryClient = useQueryClient();
+  const { filters } = useMemoFilterContext();
 
   const showMemoEditor = props.showMemoEditor ?? false;
+  const defaultCreateTime = useMemo(() => deriveDefaultCreateTimeFromFilters(filters), [filters]);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteMemos(
     {
@@ -152,7 +156,14 @@ const PagedMemoList = (props: Props) => {
           <Skeleton showCreator={props.showCreator} count={4} />
         ) : (
           <>
-            {showMemoEditor ? <MemoEditor className="mb-2" cacheKey="home-memo-editor" placeholder={t("editor.any-thoughts")} /> : null}
+            {showMemoEditor ? (
+              <MemoEditor
+                className="mb-2"
+                cacheKey="home-memo-editor"
+                placeholder={t("editor.any-thoughts")}
+                defaultCreateTime={defaultCreateTime}
+              />
+            ) : null}
             <MemoFilters />
             {sortedMemoList.map((memo) => props.renderer(memo))}
 

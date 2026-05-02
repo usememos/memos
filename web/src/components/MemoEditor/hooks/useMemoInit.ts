@@ -11,9 +11,18 @@ interface UseMemoInitOptions {
   username: string;
   autoFocus?: boolean;
   defaultVisibility?: Visibility;
+  defaultCreateTime?: Date;
 }
 
-export const useMemoInit = ({ editorRef, memo, cacheKey, username, autoFocus, defaultVisibility }: UseMemoInitOptions) => {
+export const useMemoInit = ({
+  editorRef,
+  memo,
+  cacheKey,
+  username,
+  autoFocus,
+  defaultVisibility,
+  defaultCreateTime,
+}: UseMemoInitOptions) => {
   const { actions, dispatch } = useEditorContext();
   const initializedRef = useRef(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -35,6 +44,9 @@ export const useMemoInit = ({ editorRef, memo, cacheKey, username, autoFocus, de
       if (defaultVisibility !== undefined) {
         dispatch(actions.setMetadata({ visibility: defaultVisibility }));
       }
+      if (defaultCreateTime) {
+        dispatch(actions.setTimestamps({ createTime: defaultCreateTime, updateTime: defaultCreateTime }));
+      }
     }
 
     if (autoFocus) {
@@ -42,7 +54,7 @@ export const useMemoInit = ({ editorRef, memo, cacheKey, username, autoFocus, de
     }
 
     setIsInitialized(true);
-  }, [memo, cacheKey, username, autoFocus, defaultVisibility, actions, dispatch, editorRef]);
+  }, [memo, cacheKey, username, autoFocus, defaultVisibility, defaultCreateTime, actions, dispatch, editorRef]);
 
   return { isInitialized };
 };
