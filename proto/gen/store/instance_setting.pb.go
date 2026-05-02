@@ -962,7 +962,10 @@ func (x *InstanceNotificationSetting) GetEmail() *InstanceNotificationSetting_Em
 type InstanceAISetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// providers is the list of AI provider configurations available instance-wide.
-	Providers     []*AIProviderConfig `protobuf:"bytes,1,rep,name=providers,proto3" json:"providers,omitempty"`
+	Providers []*AIProviderConfig `protobuf:"bytes,1,rep,name=providers,proto3" json:"providers,omitempty"`
+	// transcription is the speech-to-text feature configuration.
+	// When unset or transcription.provider_id is empty, transcription is disabled.
+	Transcription *TranscriptionConfig `protobuf:"bytes,2,opt,name=transcription,proto3" json:"transcription,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1000,6 +1003,13 @@ func (*InstanceAISetting) Descriptor() ([]byte, []int) {
 func (x *InstanceAISetting) GetProviders() []*AIProviderConfig {
 	if x != nil {
 		return x.Providers
+	}
+	return nil
+}
+
+func (x *InstanceAISetting) GetTranscription() *TranscriptionConfig {
+	if x != nil {
+		return x.Transcription
 	}
 	return nil
 }
@@ -1081,6 +1091,85 @@ func (x *AIProviderConfig) GetApiKey() string {
 	return ""
 }
 
+// TranscriptionConfig configures the speech-to-text feature.
+type TranscriptionConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// provider_id references an entry in InstanceAISetting.providers[].id.
+	// Empty string means transcription is disabled.
+	ProviderId string `protobuf:"bytes,1,opt,name=provider_id,json=providerId,proto3" json:"provider_id,omitempty"`
+	// model is the provider-specific model identifier.
+	// Empty string falls back to the engine default
+	// (whisper-1 for OPENAI providers, gemini-2.5-flash for GEMINI providers).
+	Model string `protobuf:"bytes,2,opt,name=model,proto3" json:"model,omitempty"`
+	// language is the default ISO 639-1 language hint sent to the provider.
+	// Empty string lets the provider auto-detect.
+	Language string `protobuf:"bytes,3,opt,name=language,proto3" json:"language,omitempty"`
+	// prompt is a default spelling/vocabulary hint passed to the provider.
+	// Used as the OpenAI Whisper "prompt" parameter and folded into the Gemini
+	// generation prompt as a "Context and spelling hints" block.
+	Prompt        string `protobuf:"bytes,4,opt,name=prompt,proto3" json:"prompt,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TranscriptionConfig) Reset() {
+	*x = TranscriptionConfig{}
+	mi := &file_store_instance_setting_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TranscriptionConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TranscriptionConfig) ProtoMessage() {}
+
+func (x *TranscriptionConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_store_instance_setting_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TranscriptionConfig.ProtoReflect.Descriptor instead.
+func (*TranscriptionConfig) Descriptor() ([]byte, []int) {
+	return file_store_instance_setting_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *TranscriptionConfig) GetProviderId() string {
+	if x != nil {
+		return x.ProviderId
+	}
+	return ""
+}
+
+func (x *TranscriptionConfig) GetModel() string {
+	if x != nil {
+		return x.Model
+	}
+	return ""
+}
+
+func (x *TranscriptionConfig) GetLanguage() string {
+	if x != nil {
+		return x.Language
+	}
+	return ""
+}
+
+func (x *TranscriptionConfig) GetPrompt() string {
+	if x != nil {
+		return x.Prompt
+	}
+	return ""
+}
+
 type InstanceNotificationSetting_EmailSetting struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Enabled       bool                   `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
@@ -1099,7 +1188,7 @@ type InstanceNotificationSetting_EmailSetting struct {
 
 func (x *InstanceNotificationSetting_EmailSetting) Reset() {
 	*x = InstanceNotificationSetting_EmailSetting{}
-	mi := &file_store_instance_setting_proto_msgTypes[13]
+	mi := &file_store_instance_setting_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1111,7 +1200,7 @@ func (x *InstanceNotificationSetting_EmailSetting) String() string {
 func (*InstanceNotificationSetting_EmailSetting) ProtoMessage() {}
 
 func (x *InstanceNotificationSetting_EmailSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_store_instance_setting_proto_msgTypes[13]
+	mi := &file_store_instance_setting_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1273,15 +1362,22 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\breply_to\x18\b \x01(\tR\areplyTo\x12\x17\n" +
 	"\ause_tls\x18\t \x01(\bR\x06useTls\x12\x17\n" +
 	"\ause_ssl\x18\n" +
-	" \x01(\bR\x06useSsl\"P\n" +
+	" \x01(\bR\x06useSsl\"\x98\x01\n" +
 	"\x11InstanceAISetting\x12;\n" +
-	"\tproviders\x18\x01 \x03(\v2\x1d.memos.store.AIProviderConfigR\tproviders\"\x9e\x01\n" +
+	"\tproviders\x18\x01 \x03(\v2\x1d.memos.store.AIProviderConfigR\tproviders\x12F\n" +
+	"\rtranscription\x18\x02 \x01(\v2 .memos.store.TranscriptionConfigR\rtranscription\"\x9e\x01\n" +
 	"\x10AIProviderConfig\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12/\n" +
 	"\x04type\x18\x03 \x01(\x0e2\x1b.memos.store.AIProviderTypeR\x04type\x12\x1a\n" +
 	"\bendpoint\x18\x04 \x01(\tR\bendpoint\x12\x17\n" +
-	"\aapi_key\x18\x05 \x01(\tR\x06apiKey*\x95\x01\n" +
+	"\aapi_key\x18\x05 \x01(\tR\x06apiKey\"\x80\x01\n" +
+	"\x13TranscriptionConfig\x12\x1f\n" +
+	"\vprovider_id\x18\x01 \x01(\tR\n" +
+	"providerId\x12\x14\n" +
+	"\x05model\x18\x02 \x01(\tR\x05model\x12\x1a\n" +
+	"\blanguage\x18\x03 \x01(\tR\blanguage\x12\x16\n" +
+	"\x06prompt\x18\x04 \x01(\tR\x06prompt*\x95\x01\n" +
 	"\x12InstanceSettingKey\x12$\n" +
 	" INSTANCE_SETTING_KEY_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\v\n" +
@@ -1312,7 +1408,7 @@ func file_store_instance_setting_proto_rawDescGZIP() []byte {
 }
 
 var file_store_instance_setting_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_store_instance_setting_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_store_instance_setting_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_store_instance_setting_proto_goTypes = []any{
 	(InstanceSettingKey)(0),                          // 0: memos.store.InstanceSettingKey
 	(AIProviderType)(0),                              // 1: memos.store.AIProviderType
@@ -1329,9 +1425,10 @@ var file_store_instance_setting_proto_goTypes = []any{
 	(*InstanceNotificationSetting)(nil),              // 12: memos.store.InstanceNotificationSetting
 	(*InstanceAISetting)(nil),                        // 13: memos.store.InstanceAISetting
 	(*AIProviderConfig)(nil),                         // 14: memos.store.AIProviderConfig
-	nil,                                              // 15: memos.store.InstanceTagsSetting.TagsEntry
-	(*InstanceNotificationSetting_EmailSetting)(nil), // 16: memos.store.InstanceNotificationSetting.EmailSetting
-	(*color.Color)(nil),                              // 17: google.type.Color
+	(*TranscriptionConfig)(nil),                      // 15: memos.store.TranscriptionConfig
+	nil,                                              // 16: memos.store.InstanceTagsSetting.TagsEntry
+	(*InstanceNotificationSetting_EmailSetting)(nil), // 17: memos.store.InstanceNotificationSetting.EmailSetting
+	(*color.Color)(nil),                              // 18: google.type.Color
 }
 var file_store_instance_setting_proto_depIdxs = []int32{
 	0,  // 0: memos.store.InstanceSetting.key:type_name -> memos.store.InstanceSettingKey
@@ -1345,17 +1442,18 @@ var file_store_instance_setting_proto_depIdxs = []int32{
 	6,  // 8: memos.store.InstanceGeneralSetting.custom_profile:type_name -> memos.store.InstanceCustomProfile
 	2,  // 9: memos.store.InstanceStorageSetting.storage_type:type_name -> memos.store.InstanceStorageSetting.StorageType
 	8,  // 10: memos.store.InstanceStorageSetting.s3_config:type_name -> memos.store.StorageS3Config
-	17, // 11: memos.store.InstanceTagMetadata.background_color:type_name -> google.type.Color
-	15, // 12: memos.store.InstanceTagsSetting.tags:type_name -> memos.store.InstanceTagsSetting.TagsEntry
-	16, // 13: memos.store.InstanceNotificationSetting.email:type_name -> memos.store.InstanceNotificationSetting.EmailSetting
+	18, // 11: memos.store.InstanceTagMetadata.background_color:type_name -> google.type.Color
+	16, // 12: memos.store.InstanceTagsSetting.tags:type_name -> memos.store.InstanceTagsSetting.TagsEntry
+	17, // 13: memos.store.InstanceNotificationSetting.email:type_name -> memos.store.InstanceNotificationSetting.EmailSetting
 	14, // 14: memos.store.InstanceAISetting.providers:type_name -> memos.store.AIProviderConfig
-	1,  // 15: memos.store.AIProviderConfig.type:type_name -> memos.store.AIProviderType
-	10, // 16: memos.store.InstanceTagsSetting.TagsEntry.value:type_name -> memos.store.InstanceTagMetadata
-	17, // [17:17] is the sub-list for method output_type
-	17, // [17:17] is the sub-list for method input_type
-	17, // [17:17] is the sub-list for extension type_name
-	17, // [17:17] is the sub-list for extension extendee
-	0,  // [0:17] is the sub-list for field type_name
+	15, // 15: memos.store.InstanceAISetting.transcription:type_name -> memos.store.TranscriptionConfig
+	1,  // 16: memos.store.AIProviderConfig.type:type_name -> memos.store.AIProviderType
+	10, // 17: memos.store.InstanceTagsSetting.TagsEntry.value:type_name -> memos.store.InstanceTagMetadata
+	18, // [18:18] is the sub-list for method output_type
+	18, // [18:18] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_store_instance_setting_proto_init() }
@@ -1378,7 +1476,7 @@ func file_store_instance_setting_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_store_instance_setting_proto_rawDesc), len(file_store_instance_setting_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   14,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

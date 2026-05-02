@@ -2701,6 +2701,12 @@ components:
                     items:
                         $ref: '#/components/schemas/InstanceSetting_AIProviderConfig'
                     description: providers is the list of AI provider configurations available instance-wide.
+                transcription:
+                    allOf:
+                        - $ref: '#/components/schemas/InstanceSetting_TranscriptionConfig'
+                    description: |-
+                        transcription is the speech-to-text feature configuration.
+                         When unset or transcription.provider_id is empty, transcription is disabled.
             description: AI provider configuration settings.
         InstanceSetting_GeneralSetting:
             type: object
@@ -2808,6 +2814,29 @@ components:
                          so a single entry like "project/.*" matches all tags under that prefix.
                          Exact tag names are also valid (they are trivially valid regex patterns).
             description: Tag metadata configuration.
+        InstanceSetting_TranscriptionConfig:
+            type: object
+            properties:
+                providerId:
+                    type: string
+                    description: |-
+                        provider_id references an entry in AISetting.providers[].id.
+                         Empty string means transcription is disabled.
+                model:
+                    type: string
+                    description: |-
+                        model is the provider-specific model identifier.
+                         Empty string falls back to the engine default
+                         (whisper-1 for OPENAI providers, gemini-2.5-flash for GEMINI providers).
+                language:
+                    type: string
+                    description: |-
+                        language is the default ISO 639-1 language hint sent to the provider.
+                         Empty string lets the provider auto-detect.
+                prompt:
+                    type: string
+                    description: prompt is a default spelling/vocabulary hint passed to the provider.
+            description: TranscriptionConfig configures the speech-to-text feature.
         InstanceStats:
             type: object
             properties:
@@ -3538,18 +3567,9 @@ components:
             description: Request message for TestInstanceEmailSetting method.
         TranscribeRequest:
             required:
-                - providerId
-                - config
                 - audio
             type: object
             properties:
-                providerId:
-                    type: string
-                    description: Required. The instance AI provider ID to use.
-                config:
-                    allOf:
-                        - $ref: '#/components/schemas/TranscriptionConfig'
-                    description: Required. Transcription options.
                 audio:
                     allOf:
                         - $ref: '#/components/schemas/TranscriptionAudio'
@@ -3577,15 +3597,6 @@ components:
                 contentType:
                     type: string
                     description: Optional. The MIME type of the input audio.
-        TranscriptionConfig:
-            type: object
-            properties:
-                prompt:
-                    type: string
-                    description: Optional. A prompt to improve transcription quality.
-                language:
-                    type: string
-                    description: Optional. The language of the input audio.
         UpsertMemoReactionRequest:
             required:
                 - name

@@ -15,27 +15,13 @@ service AIService {
       post: "/api/v1/ai:transcribe"
       body: "*"
     };
-    option (google.api.method_signature) = "provider_id,config,audio";
+    option (google.api.method_signature) = "audio";
   }
 }
 
 message TranscribeRequest {
-  // Required. The instance AI provider ID to use.
-  string provider_id = 1 [(google.api.field_behavior) = REQUIRED];
-
-  // Required. Transcription options.
-  TranscriptionConfig config = 2 [(google.api.field_behavior) = REQUIRED];
-
   // Required. Audio input.
-  TranscriptionAudio audio = 3 [(google.api.field_behavior) = REQUIRED];
-}
-
-message TranscriptionConfig {
-  // Optional. A prompt to improve transcription quality.
-  string prompt = 1 [(google.api.field_behavior) = OPTIONAL];
-
-  // Optional. The language of the input audio.
-  string language = 2 [(google.api.field_behavior) = OPTIONAL];
+  TranscriptionAudio audio = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message TranscriptionAudio {

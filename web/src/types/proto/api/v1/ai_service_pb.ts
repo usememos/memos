@@ -13,30 +13,16 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file api/v1/ai_service.proto.
  */
 export const file_api_v1_ai_service: GenFile = /*@__PURE__*/
-  fileDesc("ChdhcGkvdjEvYWlfc2VydmljZS5wcm90bxIMbWVtb3MuYXBpLnYxIpsBChFUcmFuc2NyaWJlUmVxdWVzdBIYCgtwcm92aWRlcl9pZBgBIAEoCUID4EECEjYKBmNvbmZpZxgCIAEoCzIhLm1lbW9zLmFwaS52MS5UcmFuc2NyaXB0aW9uQ29uZmlnQgPgQQISNAoFYXVkaW8YAyABKAsyIC5tZW1vcy5hcGkudjEuVHJhbnNjcmlwdGlvbkF1ZGlvQgPgQQIiQQoTVHJhbnNjcmlwdGlvbkNvbmZpZxITCgZwcm9tcHQYASABKAlCA+BBARIVCghsYW5ndWFnZRgCIAEoCUID4EEBIncKElRyYW5zY3JpcHRpb25BdWRpbxIWCgdjb250ZW50GAEgASgMQgPgQQRIABINCgN1cmkYAiABKAlIABIVCghmaWxlbmFtZRgDIAEoCUID4EEBEhkKDGNvbnRlbnRfdHlwZRgEIAEoCUID4EEBQggKBnNvdXJjZSIiChJUcmFuc2NyaWJlUmVzcG9uc2USDAoEdGV4dBgBIAEoCTKaAQoJQUlTZXJ2aWNlEowBCgpUcmFuc2NyaWJlEh8ubWVtb3MuYXBpLnYxLlRyYW5zY3JpYmVSZXF1ZXN0GiAubWVtb3MuYXBpLnYxLlRyYW5zY3JpYmVSZXNwb25zZSI72kEYcHJvdmlkZXJfaWQsY29uZmlnLGF1ZGlvgtPkkwIaOgEqIhUvYXBpL3YxL2FpOnRyYW5zY3JpYmVCpgEKEGNvbS5tZW1vcy5hcGkudjFCDkFpU2VydmljZVByb3RvUAFaMGdpdGh1Yi5jb20vdXNlbWVtb3MvbWVtb3MvcHJvdG8vZ2VuL2FwaS92MTthcGl2MaICA01BWKoCDE1lbW9zLkFwaS5WMcoCDE1lbW9zXEFwaVxWMeICGE1lbW9zXEFwaVxWMVxHUEJNZXRhZGF0YeoCDk1lbW9zOjpBcGk6OlYxYgZwcm90bzM", [file_google_api_annotations, file_google_api_client, file_google_api_field_behavior]);
+  fileDesc("ChdhcGkvdjEvYWlfc2VydmljZS5wcm90bxIMbWVtb3MuYXBpLnYxIkkKEVRyYW5zY3JpYmVSZXF1ZXN0EjQKBWF1ZGlvGAEgASgLMiAubWVtb3MuYXBpLnYxLlRyYW5zY3JpcHRpb25BdWRpb0ID4EECIncKElRyYW5zY3JpcHRpb25BdWRpbxIWCgdjb250ZW50GAEgASgMQgPgQQRIABINCgN1cmkYAiABKAlIABIVCghmaWxlbmFtZRgDIAEoCUID4EEBEhkKDGNvbnRlbnRfdHlwZRgEIAEoCUID4EEBQggKBnNvdXJjZSIiChJUcmFuc2NyaWJlUmVzcG9uc2USDAoEdGV4dBgBIAEoCTKGAQoJQUlTZXJ2aWNlEnkKClRyYW5zY3JpYmUSHy5tZW1vcy5hcGkudjEuVHJhbnNjcmliZVJlcXVlc3QaIC5tZW1vcy5hcGkudjEuVHJhbnNjcmliZVJlc3BvbnNlIijaQQVhdWRpb4LT5JMCGjoBKiIVL2FwaS92MS9haTp0cmFuc2NyaWJlQqYBChBjb20ubWVtb3MuYXBpLnYxQg5BaVNlcnZpY2VQcm90b1ABWjBnaXRodWIuY29tL3VzZW1lbW9zL21lbW9zL3Byb3RvL2dlbi9hcGkvdjE7YXBpdjGiAgNNQViqAgxNZW1vcy5BcGkuVjHKAgxNZW1vc1xBcGlcVjHiAhhNZW1vc1xBcGlcVjFcR1BCTWV0YWRhdGHqAg5NZW1vczo6QXBpOjpWMWIGcHJvdG8z", [file_google_api_annotations, file_google_api_client, file_google_api_field_behavior]);
 
 /**
  * @generated from message memos.api.v1.TranscribeRequest
  */
 export type TranscribeRequest = Message<"memos.api.v1.TranscribeRequest"> & {
   /**
-   * Required. The instance AI provider ID to use.
-   *
-   * @generated from field: string provider_id = 1;
-   */
-  providerId: string;
-
-  /**
-   * Required. Transcription options.
-   *
-   * @generated from field: memos.api.v1.TranscriptionConfig config = 2;
-   */
-  config?: TranscriptionConfig | undefined;
-
-  /**
    * Required. Audio input.
    *
-   * @generated from field: memos.api.v1.TranscriptionAudio audio = 3;
+   * @generated from field: memos.api.v1.TranscriptionAudio audio = 1;
    */
   audio?: TranscriptionAudio | undefined;
 };
@@ -47,32 +33,6 @@ export type TranscribeRequest = Message<"memos.api.v1.TranscribeRequest"> & {
  */
 export const TranscribeRequestSchema: GenMessage<TranscribeRequest> = /*@__PURE__*/
   messageDesc(file_api_v1_ai_service, 0);
-
-/**
- * @generated from message memos.api.v1.TranscriptionConfig
- */
-export type TranscriptionConfig = Message<"memos.api.v1.TranscriptionConfig"> & {
-  /**
-   * Optional. A prompt to improve transcription quality.
-   *
-   * @generated from field: string prompt = 1;
-   */
-  prompt: string;
-
-  /**
-   * Optional. The language of the input audio.
-   *
-   * @generated from field: string language = 2;
-   */
-  language: string;
-};
-
-/**
- * Describes the message memos.api.v1.TranscriptionConfig.
- * Use `create(TranscriptionConfigSchema)` to create a new message.
- */
-export const TranscriptionConfigSchema: GenMessage<TranscriptionConfig> = /*@__PURE__*/
-  messageDesc(file_api_v1_ai_service, 1);
 
 /**
  * @generated from message memos.api.v1.TranscriptionAudio
@@ -119,7 +79,7 @@ export type TranscriptionAudio = Message<"memos.api.v1.TranscriptionAudio"> & {
  * Use `create(TranscriptionAudioSchema)` to create a new message.
  */
 export const TranscriptionAudioSchema: GenMessage<TranscriptionAudio> = /*@__PURE__*/
-  messageDesc(file_api_v1_ai_service, 2);
+  messageDesc(file_api_v1_ai_service, 1);
 
 /**
  * @generated from message memos.api.v1.TranscribeResponse
@@ -138,7 +98,7 @@ export type TranscribeResponse = Message<"memos.api.v1.TranscribeResponse"> & {
  * Use `create(TranscribeResponseSchema)` to create a new message.
  */
 export const TranscribeResponseSchema: GenMessage<TranscribeResponse> = /*@__PURE__*/
-  messageDesc(file_api_v1_ai_service, 3);
+  messageDesc(file_api_v1_ai_service, 2);
 
 /**
  * @generated from service memos.api.v1.AIService

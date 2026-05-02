@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -730,5 +731,150 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		require.Equal(t, "sk-original", stored.GetProviders()[0].GetApiKey(),
 			"existing AI provider API key must be preserved when an empty value is sent")
 		require.Equal(t, "OpenAI primary", stored.GetProviders()[0].GetTitle())
+	})
+
+	t.Run("UpdateInstanceSetting - transcription provider_id must reference an existing provider", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/AI",
+				Value: &v1pb.InstanceSetting_AiSetting{
+					AiSetting: &v1pb.InstanceSetting_AISetting{
+						Providers: []*v1pb.InstanceSetting_AIProviderConfig{
+							{
+								Id:     "openai-main",
+								Title:  "OpenAI",
+								Type:   v1pb.InstanceSetting_OPENAI,
+								ApiKey: "sk-test",
+							},
+						},
+						Transcription: &v1pb.InstanceSetting_TranscriptionConfig{
+							ProviderId: "does-not-exist",
+						},
+					},
+				},
+			},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "transcription provider_id")
+	})
+
+	t.Run("UpdateInstanceSetting - transcription strings are length-capped", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		base := &v1pb.InstanceSetting{
+			Name: "instance/settings/AI",
+			Value: &v1pb.InstanceSetting_AiSetting{
+				AiSetting: &v1pb.InstanceSetting_AISetting{
+					Providers: []*v1pb.InstanceSetting_AIProviderConfig{
+						{
+							Id:     "openai-main",
+							Title:  "OpenAI",
+							Type:   v1pb.InstanceSetting_OPENAI,
+							ApiKey: "sk-test",
+						},
+					},
+				},
+			},
+		}
+
+		oversizedModel := strings.Repeat("a", 257)
+		base.GetAiSetting().Transcription = &v1pb.InstanceSetting_TranscriptionConfig{
+			ProviderId: "openai-main",
+			Model:      oversizedModel,
+		}
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{Setting: base})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "transcription model")
+
+		oversizedLanguage := strings.Repeat("a", 33)
+		base.GetAiSetting().Transcription = &v1pb.InstanceSetting_TranscriptionConfig{
+			ProviderId: "openai-main",
+			Language:   oversizedLanguage,
+		}
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{Setting: base})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "transcription language")
+
+		oversizedPrompt := strings.Repeat("a", 4097)
+		base.GetAiSetting().Transcription = &v1pb.InstanceSetting_TranscriptionConfig{
+			ProviderId: "openai-main",
+			Prompt:     oversizedPrompt,
+		}
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{Setting: base})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "transcription prompt")
+	})
+
+	t.Run("UpdateInstanceSetting - transcription is preserved when omitted on update", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/AI",
+				Value: &v1pb.InstanceSetting_AiSetting{
+					AiSetting: &v1pb.InstanceSetting_AISetting{
+						Providers: []*v1pb.InstanceSetting_AIProviderConfig{
+							{
+								Id:     "openai-main",
+								Title:  "OpenAI",
+								Type:   v1pb.InstanceSetting_OPENAI,
+								ApiKey: "sk-test",
+							},
+						},
+						Transcription: &v1pb.InstanceSetting_TranscriptionConfig{
+							ProviderId: "openai-main",
+							Model:      "whisper-1",
+							Language:   "en",
+							Prompt:     "names: Alice",
+						},
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/AI",
+				Value: &v1pb.InstanceSetting_AiSetting{
+					AiSetting: &v1pb.InstanceSetting_AISetting{
+						Providers: []*v1pb.InstanceSetting_AIProviderConfig{
+							{
+								Id:     "openai-main",
+								Title:  "OpenAI",
+								Type:   v1pb.InstanceSetting_OPENAI,
+								ApiKey: "",
+							},
+						},
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		stored, err := ts.Store.GetInstanceAISetting(ctx)
+		require.NoError(t, err)
+		require.NotNil(t, stored.GetTranscription())
+		require.Equal(t, "openai-main", stored.GetTranscription().GetProviderId())
+		require.Equal(t, "whisper-1", stored.GetTranscription().GetModel())
+		require.Equal(t, "en", stored.GetTranscription().GetLanguage())
+		require.Equal(t, "names: Alice", stored.GetTranscription().GetPrompt())
 	})
 }

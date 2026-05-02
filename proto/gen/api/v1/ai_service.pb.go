@@ -24,12 +24,8 @@ const (
 
 type TranscribeRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The instance AI provider ID to use.
-	ProviderId string `protobuf:"bytes,1,opt,name=provider_id,json=providerId,proto3" json:"provider_id,omitempty"`
-	// Required. Transcription options.
-	Config *TranscriptionConfig `protobuf:"bytes,2,opt,name=config,proto3" json:"config,omitempty"`
 	// Required. Audio input.
-	Audio         *TranscriptionAudio `protobuf:"bytes,3,opt,name=audio,proto3" json:"audio,omitempty"`
+	Audio         *TranscriptionAudio `protobuf:"bytes,1,opt,name=audio,proto3" json:"audio,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -64,79 +60,11 @@ func (*TranscribeRequest) Descriptor() ([]byte, []int) {
 	return file_api_v1_ai_service_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *TranscribeRequest) GetProviderId() string {
-	if x != nil {
-		return x.ProviderId
-	}
-	return ""
-}
-
-func (x *TranscribeRequest) GetConfig() *TranscriptionConfig {
-	if x != nil {
-		return x.Config
-	}
-	return nil
-}
-
 func (x *TranscribeRequest) GetAudio() *TranscriptionAudio {
 	if x != nil {
 		return x.Audio
 	}
 	return nil
-}
-
-type TranscriptionConfig struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. A prompt to improve transcription quality.
-	Prompt string `protobuf:"bytes,1,opt,name=prompt,proto3" json:"prompt,omitempty"`
-	// Optional. The language of the input audio.
-	Language      string `protobuf:"bytes,2,opt,name=language,proto3" json:"language,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *TranscriptionConfig) Reset() {
-	*x = TranscriptionConfig{}
-	mi := &file_api_v1_ai_service_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *TranscriptionConfig) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*TranscriptionConfig) ProtoMessage() {}
-
-func (x *TranscriptionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_ai_service_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use TranscriptionConfig.ProtoReflect.Descriptor instead.
-func (*TranscriptionConfig) Descriptor() ([]byte, []int) {
-	return file_api_v1_ai_service_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *TranscriptionConfig) GetPrompt() string {
-	if x != nil {
-		return x.Prompt
-	}
-	return ""
-}
-
-func (x *TranscriptionConfig) GetLanguage() string {
-	if x != nil {
-		return x.Language
-	}
-	return ""
 }
 
 type TranscriptionAudio struct {
@@ -156,7 +84,7 @@ type TranscriptionAudio struct {
 
 func (x *TranscriptionAudio) Reset() {
 	*x = TranscriptionAudio{}
-	mi := &file_api_v1_ai_service_proto_msgTypes[2]
+	mi := &file_api_v1_ai_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -168,7 +96,7 @@ func (x *TranscriptionAudio) String() string {
 func (*TranscriptionAudio) ProtoMessage() {}
 
 func (x *TranscriptionAudio) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_ai_service_proto_msgTypes[2]
+	mi := &file_api_v1_ai_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -181,7 +109,7 @@ func (x *TranscriptionAudio) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TranscriptionAudio.ProtoReflect.Descriptor instead.
 func (*TranscriptionAudio) Descriptor() ([]byte, []int) {
-	return file_api_v1_ai_service_proto_rawDescGZIP(), []int{2}
+	return file_api_v1_ai_service_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *TranscriptionAudio) GetSource() isTranscriptionAudio_Source {
@@ -251,7 +179,7 @@ type TranscribeResponse struct {
 
 func (x *TranscribeResponse) Reset() {
 	*x = TranscribeResponse{}
-	mi := &file_api_v1_ai_service_proto_msgTypes[3]
+	mi := &file_api_v1_ai_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -263,7 +191,7 @@ func (x *TranscribeResponse) String() string {
 func (*TranscribeResponse) ProtoMessage() {}
 
 func (x *TranscribeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_v1_ai_service_proto_msgTypes[3]
+	mi := &file_api_v1_ai_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -276,7 +204,7 @@ func (x *TranscribeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TranscribeResponse.ProtoReflect.Descriptor instead.
 func (*TranscribeResponse) Descriptor() ([]byte, []int) {
-	return file_api_v1_ai_service_proto_rawDescGZIP(), []int{3}
+	return file_api_v1_ai_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *TranscribeResponse) GetText() string {
@@ -290,15 +218,9 @@ var File_api_v1_ai_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_ai_service_proto_rawDesc = "" +
 	"\n" +
-	"\x17api/v1/ai_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\"\xb6\x01\n" +
-	"\x11TranscribeRequest\x12$\n" +
-	"\vprovider_id\x18\x01 \x01(\tB\x03\xe0A\x02R\n" +
-	"providerId\x12>\n" +
-	"\x06config\x18\x02 \x01(\v2!.memos.api.v1.TranscriptionConfigB\x03\xe0A\x02R\x06config\x12;\n" +
-	"\x05audio\x18\x03 \x01(\v2 .memos.api.v1.TranscriptionAudioB\x03\xe0A\x02R\x05audio\"S\n" +
-	"\x13TranscriptionConfig\x12\x1b\n" +
-	"\x06prompt\x18\x01 \x01(\tB\x03\xe0A\x01R\x06prompt\x12\x1f\n" +
-	"\blanguage\x18\x02 \x01(\tB\x03\xe0A\x01R\blanguage\"\x9c\x01\n" +
+	"\x17api/v1/ai_service.proto\x12\fmemos.api.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\"P\n" +
+	"\x11TranscribeRequest\x12;\n" +
+	"\x05audio\x18\x01 \x01(\v2 .memos.api.v1.TranscriptionAudioB\x03\xe0A\x02R\x05audio\"\x9c\x01\n" +
 	"\x12TranscriptionAudio\x12\x1f\n" +
 	"\acontent\x18\x01 \x01(\fB\x03\xe0A\x04H\x00R\acontent\x12\x12\n" +
 	"\x03uri\x18\x02 \x01(\tH\x00R\x03uri\x12\x1f\n" +
@@ -306,10 +228,10 @@ const file_api_v1_ai_service_proto_rawDesc = "" +
 	"\fcontent_type\x18\x04 \x01(\tB\x03\xe0A\x01R\vcontentTypeB\b\n" +
 	"\x06source\"(\n" +
 	"\x12TranscribeResponse\x12\x12\n" +
-	"\x04text\x18\x01 \x01(\tR\x04text2\x9a\x01\n" +
-	"\tAIService\x12\x8c\x01\n" +
+	"\x04text\x18\x01 \x01(\tR\x04text2\x86\x01\n" +
+	"\tAIService\x12y\n" +
 	"\n" +
-	"Transcribe\x12\x1f.memos.api.v1.TranscribeRequest\x1a .memos.api.v1.TranscribeResponse\";\xdaA\x18provider_id,config,audio\x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/api/v1/ai:transcribeB\xa6\x01\n" +
+	"Transcribe\x12\x1f.memos.api.v1.TranscribeRequest\x1a .memos.api.v1.TranscribeResponse\"(\xdaA\x05audio\x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/api/v1/ai:transcribeB\xa6\x01\n" +
 	"\x10com.memos.api.v1B\x0eAiServiceProtoP\x01Z0github.com/usememos/memos/proto/gen/api/v1;apiv1\xa2\x02\x03MAX\xaa\x02\fMemos.Api.V1\xca\x02\fMemos\\Api\\V1\xe2\x02\x18Memos\\Api\\V1\\GPBMetadata\xea\x02\x0eMemos::Api::V1b\x06proto3"
 
 var (
@@ -324,23 +246,21 @@ func file_api_v1_ai_service_proto_rawDescGZIP() []byte {
 	return file_api_v1_ai_service_proto_rawDescData
 }
 
-var file_api_v1_ai_service_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_api_v1_ai_service_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_api_v1_ai_service_proto_goTypes = []any{
-	(*TranscribeRequest)(nil),   // 0: memos.api.v1.TranscribeRequest
-	(*TranscriptionConfig)(nil), // 1: memos.api.v1.TranscriptionConfig
-	(*TranscriptionAudio)(nil),  // 2: memos.api.v1.TranscriptionAudio
-	(*TranscribeResponse)(nil),  // 3: memos.api.v1.TranscribeResponse
+	(*TranscribeRequest)(nil),  // 0: memos.api.v1.TranscribeRequest
+	(*TranscriptionAudio)(nil), // 1: memos.api.v1.TranscriptionAudio
+	(*TranscribeResponse)(nil), // 2: memos.api.v1.TranscribeResponse
 }
 var file_api_v1_ai_service_proto_depIdxs = []int32{
-	1, // 0: memos.api.v1.TranscribeRequest.config:type_name -> memos.api.v1.TranscriptionConfig
-	2, // 1: memos.api.v1.TranscribeRequest.audio:type_name -> memos.api.v1.TranscriptionAudio
-	0, // 2: memos.api.v1.AIService.Transcribe:input_type -> memos.api.v1.TranscribeRequest
-	3, // 3: memos.api.v1.AIService.Transcribe:output_type -> memos.api.v1.TranscribeResponse
-	3, // [3:4] is the sub-list for method output_type
-	2, // [2:3] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	1, // 0: memos.api.v1.TranscribeRequest.audio:type_name -> memos.api.v1.TranscriptionAudio
+	0, // 1: memos.api.v1.AIService.Transcribe:input_type -> memos.api.v1.TranscribeRequest
+	2, // 2: memos.api.v1.AIService.Transcribe:output_type -> memos.api.v1.TranscribeResponse
+	2, // [2:3] is the sub-list for method output_type
+	1, // [1:2] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_api_v1_ai_service_proto_init() }
@@ -348,7 +268,7 @@ func file_api_v1_ai_service_proto_init() {
 	if File_api_v1_ai_service_proto != nil {
 		return
 	}
-	file_api_v1_ai_service_proto_msgTypes[2].OneofWrappers = []any{
+	file_api_v1_ai_service_proto_msgTypes[1].OneofWrappers = []any{
 		(*TranscriptionAudio_Content)(nil),
 		(*TranscriptionAudio_Uri)(nil),
 	}
@@ -358,7 +278,7 @@ func file_api_v1_ai_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_v1_ai_service_proto_rawDesc), len(file_api_v1_ai_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

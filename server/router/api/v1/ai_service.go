@@ -17,8 +17,6 @@ import (
 
 const (
 	maxTranscriptionAudioSizeBytes = 25 * MebiByte
-	maxTranscriptionPromptLength   = 4096
-	maxTranscriptionLanguageLength = 32
 	maxTranscriptionFilenameLength = 255
 )
 
@@ -51,20 +49,6 @@ func (s *APIV1Service) Transcribe(ctx context.Context, request *v1pb.TranscribeR
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 
-	if strings.TrimSpace(request.ProviderId) == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "provider_id is required")
-	}
-	if request.Config == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "config is required")
-	}
-	prompt := strings.TrimSpace(request.Config.GetPrompt())
-	if len(prompt) > maxTranscriptionPromptLength {
-		return nil, status.Errorf(codes.InvalidArgument, "prompt is too long; maximum length is %d characters", maxTranscriptionPromptLength)
-	}
-	language := strings.TrimSpace(request.Config.GetLanguage())
-	if len(language) > maxTranscriptionLanguageLength {
-		return nil, status.Errorf(codes.InvalidArgument, "language is too long; maximum length is %d characters", maxTranscriptionLanguageLength)
-	}
 	if request.Audio == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "audio is required")
 	}
@@ -90,10 +74,31 @@ func (s *APIV1Service) Transcribe(ctx context.Context, request *v1pb.TranscribeR
 		return nil, status.Errorf(codes.InvalidArgument, "audio content type %q is not supported", contentType)
 	}
 
-	provider, model, err := s.resolveAIProviderForTranscription(ctx, request.ProviderId)
+	aiSetting, err := s.Store.GetInstanceAISetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get AI setting: %v", err)
+	}
+	persisted := aiSetting.GetTranscription()
+
+	providerID := persisted.GetProviderId()
+	if providerID == "" {
+		return nil, status.Errorf(codes.FailedPrecondition, "transcription is not configured")
+	}
+
+	provider, err := s.resolveAIProvider(aiSetting, providerID)
 	if err != nil {
 		return nil, err
 	}
+
+	model := persisted.GetModel()
+	if model == "" {
+		defaultModel, err := ai.DefaultTranscriptionModel(provider.Type)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "%v", err)
+		}
+		model = defaultModel
+	}
+
 	transcriber, err := ai.NewTranscriber(provider)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "failed to create AI transcriber: %v", err)
@@ -105,8 +110,8 @@ func (s *APIV1Service) Transcribe(ctx context.Context, request *v1pb.TranscribeR
 		ContentType: contentType,
 		Audio:       bytes.NewReader(content),
 		Size:        int64(len(content)),
-		Prompt:      prompt,
-		Language:    language,
+		Prompt:      persisted.GetPrompt(),
+		Language:    persisted.GetLanguage(),
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to transcribe audio: %v", err)
@@ -116,12 +121,7 @@ func (s *APIV1Service) Transcribe(ctx context.Context, request *v1pb.TranscribeR
 	}, nil
 }
 
-func (s *APIV1Service) resolveAIProviderForTranscription(ctx context.Context, providerID string) (ai.ProviderConfig, string, error) {
-	setting, err := s.Store.GetInstanceAISetting(ctx)
-	if err != nil {
-		return ai.ProviderConfig{}, "", status.Errorf(codes.Internal, "failed to get AI setting: %v", err)
-	}
-
+func (*APIV1Service) resolveAIProvider(setting *storepb.InstanceAISetting, providerID string) (ai.ProviderConfig, error) {
 	providers := make([]ai.ProviderConfig, 0, len(setting.GetProviders()))
 	for _, provider := range setting.GetProviders() {
 		if provider == nil {
@@ -132,13 +132,9 @@ func (s *APIV1Service) resolveAIProviderForTranscription(ctx context.Context, pr
 
 	provider, err := ai.FindProvider(providers, providerID)
 	if err != nil {
-		return ai.ProviderConfig{}, "", status.Errorf(codes.NotFound, "AI provider not found")
+		return ai.ProviderConfig{}, status.Errorf(codes.NotFound, "AI provider not found")
 	}
-	selectedModel, err := ai.DefaultTranscriptionModel(provider.Type)
-	if err != nil {
-		return ai.ProviderConfig{}, "", status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	return *provider, selectedModel, nil
+	return *provider, nil
 }
 
 func convertAIProviderConfigFromStore(provider *storepb.AIProviderConfig) ai.ProviderConfig {

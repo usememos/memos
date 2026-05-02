@@ -8,7 +8,7 @@ import { memoKeys } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
-import { InstanceSetting_AIProviderType, InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
+import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
 import {
@@ -27,11 +27,6 @@ import { errorService, memoService, transcriptionService, validationService } fr
 import { EditorProvider, useEditorContext } from "./state";
 import type { MemoEditorProps } from "./types";
 import type { LocalFile } from "./types/attachment";
-
-const TRANSCRIPTION_PROVIDER_TYPES: InstanceSetting_AIProviderType[] = [
-  InstanceSetting_AIProviderType.OPENAI,
-  InstanceSetting_AIProviderType.GEMINI,
-];
 
 const MemoEditor = (props: MemoEditorProps) => (
   <EditorProvider>
@@ -61,10 +56,12 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const [isTranscribingAudio, setIsTranscribingAudio] = useState(false);
 
   const memoName = memo?.name;
-  const transcriptionProvider = useMemo(
-    () => aiSetting.providers.find((provider) => provider.apiKeySet && TRANSCRIPTION_PROVIDER_TYPES.includes(provider.type)),
-    [aiSetting.providers],
-  );
+  const canTranscribe = useMemo(() => {
+    const providerId = aiSetting.transcription?.providerId ?? "";
+    if (!providerId) return false;
+    const provider = aiSetting.providers.find((p) => p.id === providerId);
+    return Boolean(provider?.apiKeySet);
+  }, [aiSetting.providers, aiSetting.transcription?.providerId]);
 
   // Get default visibility from user settings
   const defaultVisibility = userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined;
@@ -129,7 +126,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
   const handleTranscribeRecordedAudio = useCallback(
     async (localFile: LocalFile) => {
-      if (!transcriptionProvider) {
+      if (!canTranscribe) {
         dispatch(actions.addLocalFile(localFile));
         setIsTranscribingAudio(false);
         setIsAudioRecorderOpen(false);
@@ -137,7 +134,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
       }
 
       try {
-        const text = (await transcriptionService.transcribeFile(localFile.file, transcriptionProvider)).trim();
+        const text = (await transcriptionService.transcribeFile(localFile.file)).trim();
         if (!text) {
           dispatch(actions.addLocalFile(localFile));
           toast.error(t("editor.audio-recorder.transcribe-empty"));
@@ -155,7 +152,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         setIsAudioRecorderOpen(false);
       }
     },
-    [actions, dispatch, insertTranscribedText, t, transcriptionProvider],
+    [actions, canTranscribe, dispatch, insertTranscribedText, t],
   );
 
   const audioRecorderActions = useMemo(
@@ -223,7 +220,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   };
 
   const handleTranscribeAudioRecording = () => {
-    if (!transcriptionProvider || isTranscribingAudio) {
+    if (!canTranscribe || isTranscribingAudio) {
       return;
     }
 
@@ -340,7 +337,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
               onStop={audioRecorder.stopRecording}
               onCancel={handleCancelAudioRecording}
               onTranscribe={handleTranscribeAudioRecording}
-              canTranscribe={!!transcriptionProvider}
+              canTranscribe={canTranscribe}
               isTranscribing={isTranscribingAudio}
             />
           )}

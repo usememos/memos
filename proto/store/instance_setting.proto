@@ -149,6 +149,10 @@ message InstanceNotificationSetting {
 message InstanceAISetting {
   // providers is the list of AI provider configurations available instance-wide.
   repeated AIProviderConfig providers = 1;
+
+  // transcription is the speech-to-text feature configuration.
+  // When unset or transcription.provider_id is empty, transcription is disabled.
+  TranscriptionConfig transcription = 2;
 }
 
 message AIProviderConfig {
@@ -164,4 +168,25 @@ enum AIProviderType {
   AI_PROVIDER_TYPE_UNSPECIFIED = 0;
   OPENAI = 1;
   GEMINI = 2;
+}
+
+// TranscriptionConfig configures the speech-to-text feature.
+message TranscriptionConfig {
+  // provider_id references an entry in InstanceAISetting.providers[].id.
+  // Empty string means transcription is disabled.
+  string provider_id = 1;
+
+  // model is the provider-specific model identifier.
+  // Empty string falls back to the engine default
+  // (whisper-1 for OPENAI providers, gemini-2.5-flash for GEMINI providers).
+  string model = 2;
+
+  // language is the default ISO 639-1 language hint sent to the provider.
+  // Empty string lets the provider auto-detect.
+  string language = 3;
+
+  // prompt is a default spelling/vocabulary hint passed to the provider.
+  // Used as the OpenAI Whisper "prompt" parameter and folded into the Gemini
+  // generation prompt as a "Context and spelling hints" block.
+  string prompt = 4;
 }
