@@ -132,7 +132,7 @@ func (*APIV1Service) resolveAIProvider(setting *storepb.InstanceAISetting, provi
 
 	provider, err := ai.FindProvider(providers, providerID)
 	if err != nil {
-		return ai.ProviderConfig{}, status.Errorf(codes.NotFound, "AI provider not found")
+		return ai.ProviderConfig{}, status.Errorf(codes.FailedPrecondition, "transcription provider is not configured")
 	}
 	return *provider, nil
 }

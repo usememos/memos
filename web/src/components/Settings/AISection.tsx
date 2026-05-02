@@ -190,9 +190,10 @@ const AISection = () => {
       ? providers.map((item) => (item.id === normalizedProvider.id ? normalizedProvider : item))
       : [...providers, normalizedProvider];
 
+    const ok = await persistAISetting(nextProviders, originalSetting.transcription, "Update AI provider");
+    if (!ok) return;
     setProviders(nextProviders);
     setEditingProvider(undefined);
-    await persistAISetting(nextProviders, originalSetting.transcription, "Update AI provider");
   };
 
   const handleDeleteProvider = async () => {
@@ -209,12 +210,13 @@ const AISection = () => {
         ? create(InstanceSetting_TranscriptionConfigSchema, {})
         : persistedTranscription;
 
+    const ok = await persistAISetting(nextProviders, nextTranscription, "Delete AI provider");
+    if (!ok) return;
     setProviders(nextProviders);
     if (transcription.providerId === target.id) {
       setTranscription((prev) => ({ ...prev, providerId: "" }));
     }
     setDeleteTarget(undefined);
-    await persistAISetting(nextProviders, nextTranscription, "Delete AI provider");
   };
 
   const handleSaveTranscription = async () => {
@@ -410,6 +412,7 @@ const TranscriptionForm = ({ providers, transcription, referencedProvider, onCha
           onChange={(e) => update({ model: e.target.value })}
           placeholder={placeholderForProvider(referencedProvider)}
           disabled={!transcription.providerId}
+          maxLength={256}
         />
         <p className="text-xs text-muted-foreground">{t("setting.ai.transcription-model-help")}</p>
       </div>
@@ -421,6 +424,7 @@ const TranscriptionForm = ({ providers, transcription, referencedProvider, onCha
           onChange={(e) => update({ language: e.target.value })}
           placeholder={t("setting.ai.transcription-language-placeholder")}
           disabled={!transcription.providerId}
+          maxLength={32}
         />
         <p className="text-xs text-muted-foreground">{t("setting.ai.transcription-language-help")}</p>
       </div>
@@ -433,6 +437,7 @@ const TranscriptionForm = ({ providers, transcription, referencedProvider, onCha
           placeholder={t("setting.ai.transcription-prompt-placeholder")}
           rows={3}
           disabled={!transcription.providerId}
+          maxLength={4096}
         />
         <p className="text-xs text-muted-foreground">{t("setting.ai.transcription-prompt-help")}</p>
       </div>

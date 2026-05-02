@@ -203,7 +203,7 @@ func TestTranscribe(t *testing.T) {
 
 		openAIServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			require.NoError(t, r.ParseMultipartForm(10<<20))
-			require.Equal(t, "gpt-4o-transcribe", r.FormValue("model"))
+			require.Equal(t, "whisper-1", r.FormValue("model"))
 			w.Header().Set("Content-Type", "application/json")
 			require.NoError(t, json.NewEncoder(w).Encode(map[string]string{
 				"text": "built-in model",

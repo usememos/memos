@@ -4,7 +4,7 @@ import "github.com/pkg/errors"
 
 const (
 	// DefaultOpenAITranscriptionModel is the built-in OpenAI transcription model.
-	DefaultOpenAITranscriptionModel = "gpt-4o-transcribe"
+	DefaultOpenAITranscriptionModel = "whisper-1"
 	// DefaultGeminiTranscriptionModel is the built-in Gemini transcription model.
 	DefaultGeminiTranscriptionModel = "gemini-2.5-flash"
 )

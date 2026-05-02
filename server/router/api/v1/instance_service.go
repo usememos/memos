@@ -97,6 +97,7 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 		}
 	}
+	isAdminCaller := false
 	if instanceSetting.Key == storepb.InstanceSettingKey_AI {
 		user, err := s.fetchCurrentUser(ctx)
 		if err != nil {
@@ -105,9 +106,22 @@ func (s *APIV1Service) GetInstanceSetting(ctx context.Context, request *v1pb.Get
 		if user == nil {
 			return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 		}
+		isAdminCaller = user.Role == store.RoleAdmin
 	}
 
-	return convertInstanceSettingFromStore(instanceSetting), nil
+	result := convertInstanceSettingFromStore(instanceSetting)
+	if instanceSetting.Key == storepb.InstanceSettingKey_AI && !isAdminCaller {
+		// Non-admin callers only need transcription.provider_id to gate the
+		// editor's Transcribe button. Model / language / prompt are
+		// admin-entered defaults that may contain proprietary glossary terms,
+		// so they are redacted from non-admin responses.
+		if ai := result.GetAiSetting(); ai != nil && ai.Transcription != nil {
+			ai.Transcription.Model = ""
+			ai.Transcription.Language = ""
+			ai.Transcription.Prompt = ""
+		}
+	}
+	return result, nil
 }
 
 func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.UpdateInstanceSettingRequest) (*v1pb.InstanceSetting, error) {
@@ -660,11 +674,13 @@ func (s *APIV1Service) prepareInstanceAISettingForUpdate(ctx context.Context, se
 
 func preparePersistedTranscriptionConfig(setting *storepb.InstanceAISetting, existing *storepb.InstanceAISetting) error {
 	// Preserve the previously stored transcription config when the request omits it,
-	// matching the same "absence == keep" semantics used for API keys.
+	// matching the same "absence == keep" semantics used for API keys. The preserved
+	// config still falls through to validation below, so a stale provider_id is
+	// rejected if the same update removed or renamed its referenced provider.
+	if setting.Transcription == nil && existing != nil {
+		setting.Transcription = existing.GetTranscription()
+	}
 	if setting.Transcription == nil {
-		if existing != nil {
-			setting.Transcription = existing.GetTranscription()
-		}
 		return nil
 	}
 
