@@ -57,6 +57,11 @@ describe("deriveDefaultCreateTimeFromFilters", () => {
     const result = deriveDefaultCreateTimeFromFilters(filters);
     const after = new Date();
     expect(result).toBeDefined();
+    // Date components must come from the filter, not from `now` — guards
+    // against an impl that silently returns `new Date()` and ignores filters.
+    expect(result!.getFullYear()).toBe(2025);
+    expect(result!.getMonth()).toBe(4); // May (0-indexed)
+    expect(result!.getDate()).toBe(1);
     // Time-of-day should fall between before and after (within 1s tolerance).
     const resultTimeOnly = result!.getHours() * 3600 + result!.getMinutes() * 60 + result!.getSeconds();
     const beforeTimeOnly = before.getHours() * 3600 + before.getMinutes() * 60 + before.getSeconds();

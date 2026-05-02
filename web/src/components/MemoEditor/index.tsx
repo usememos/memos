@@ -282,6 +282,13 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
       if (!memoName && defaultVisibility) {
         dispatch(actions.setMetadata({ visibility: defaultVisibility }));
       }
+      // Re-seed the calendar-derived timestamps so the popover stays visible
+      // and subsequent memos in the same filter session keep the prefilled date.
+      // Without this, the live-sync effect won't re-fire (its deps don't change
+      // across reset), and memo #2 onward would silently fall back to "now".
+      if (!memoName && defaultCreateTime) {
+        dispatch(actions.setTimestamps({ createTime: defaultCreateTime, updateTime: defaultCreateTime }));
+      }
 
       // Notify parent component of successful save
       onConfirm?.(result.memoName);
