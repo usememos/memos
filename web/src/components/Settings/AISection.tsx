@@ -400,9 +400,6 @@ const TranscriptionForm = ({ providers, transcription, referencedProvider, onCha
         {referencedProvider && !referencedProvider.apiKeySet && (
           <p className="text-xs text-destructive">{t("setting.ai.transcription-warning-no-key")}</p>
         )}
-        {referencedProvider?.type === InstanceSetting_AIProviderType.GEMINI && (
-          <p className="text-xs text-muted-foreground">{t("setting.ai.transcription-warning-gemini-webm")}</p>
-        )}
       </div>
 
       <div className="flex flex-col gap-1.5 sm:col-span-2">

@@ -1,4 +1,4 @@
-package ai
+package gemini_test
 
 import (
 	"context"
@@ -11,9 +11,13 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/usememos/memos/internal/ai"
+	"github.com/usememos/memos/internal/ai/audiollm"
+	audiollmgemini "github.com/usememos/memos/internal/ai/audiollm/gemini"
 )
 
-func TestGeminiTranscribe(t *testing.T) {
+func TestGenerateFromAudio(t *testing.T) {
 	t.Parallel()
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -42,14 +46,14 @@ func TestGeminiTranscribe(t *testing.T) {
 		audio, err := base64.StdEncoding.DecodeString(request.Contents[0].Parts[0].InlineData.Data)
 		require.NoError(t, err)
 		require.Equal(t, "audio bytes", string(audio))
-		require.Contains(t, request.Contents[0].Parts[1].Text, "Return only the transcript text")
-		require.Contains(t, request.Contents[0].Parts[1].Text, "Context and spelling hints")
+		require.Equal(t, "transcribe please", request.Contents[0].Parts[1].Text)
 		require.Equal(t, json.Number("0"), request.GenerationConfig["temperature"])
 
 		w.Header().Set("Content-Type", "application/json")
 		require.NoError(t, json.NewEncoder(w).Encode(map[string]any{
 			"candidates": []map[string]any{
 				{
+					"finishReason": "STOP",
 					"content": map[string]any{
 						"parts": []map[string]string{{"text": "hello from gemini"}},
 					},
@@ -59,40 +63,43 @@ func TestGeminiTranscribe(t *testing.T) {
 	}))
 	defer server.Close()
 
-	transcriber, err := NewTranscriber(ProviderConfig{
-		Type:     ProviderGemini,
+	model, err := audiollmgemini.New(ai.ProviderConfig{
+		Type:     ai.ProviderGemini,
 		Endpoint: server.URL + "/v1beta",
 		APIKey:   "test-key",
-	})
+	}, audiollm.ApplyOptions(nil))
 	require.NoError(t, err)
 
+	temp := float32(0)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	response, err := transcriber.Transcribe(ctx, TranscribeRequest{
-		Model:       "models/gemini-2.5-flash",
-		ContentType: "audio/mpeg",
-		Audio:       strings.NewReader("audio bytes"),
-		Prompt:      "Memos, Steven",
-		Language:    "en",
+	resp, err := model.GenerateFromAudio(ctx, audiollm.Request{
+		Model:        "models/gemini-2.5-flash",
+		ContentType:  "audio/mpeg",
+		Audio:        strings.NewReader("audio bytes"),
+		Instructions: "transcribe please",
+		Temperature:  &temp,
 	})
 	require.NoError(t, err)
-	require.Equal(t, "hello from gemini", response.Text)
+	require.Equal(t, "hello from gemini", resp.Text)
+	require.Equal(t, audiollm.FinishStop, resp.FinishReason)
 }
 
-func TestGeminiTranscribeRejectsUnsupportedContentType(t *testing.T) {
+func TestGenerateFromAudioRejectsUnsupportedContentType(t *testing.T) {
 	t.Parallel()
 
-	transcriber, err := NewTranscriber(ProviderConfig{
-		Type:     ProviderGemini,
+	model, err := audiollmgemini.New(ai.ProviderConfig{
+		Type:     ai.ProviderGemini,
 		Endpoint: "https://example.com/v1beta",
 		APIKey:   "test-key",
-	})
+	}, audiollm.ApplyOptions(nil))
 	require.NoError(t, err)
 
-	_, err = transcriber.Transcribe(context.Background(), TranscribeRequest{
-		Model:       "gemini-2.5-flash",
-		ContentType: "video/mp4",
-		Audio:       strings.NewReader("video bytes"),
+	_, err = model.GenerateFromAudio(context.Background(), audiollm.Request{
+		Model:        "gemini-2.5-flash",
+		ContentType:  "video/mp4",
+		Audio:        strings.NewReader("video bytes"),
+		Instructions: "transcribe please",
 	})
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "not supported by Gemini")

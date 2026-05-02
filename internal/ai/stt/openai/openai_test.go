@@ -1,4 +1,4 @@
-package ai
+package openai_test
 
 import (
 	"context"
@@ -10,9 +10,13 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/usememos/memos/internal/ai"
+	"github.com/usememos/memos/internal/ai/stt"
+	sttopenai "github.com/usememos/memos/internal/ai/stt/openai"
 )
 
-func TestOpenAITranscribe(t *testing.T) {
+func TestTranscribe(t *testing.T) {
 	t.Parallel()
 
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -40,16 +44,16 @@ func TestOpenAITranscribe(t *testing.T) {
 	}))
 	defer server.Close()
 
-	transcriber, err := NewTranscriber(ProviderConfig{
-		Type:     ProviderOpenAI,
+	transcriber, err := sttopenai.New(ai.ProviderConfig{
+		Type:     ai.ProviderOpenAI,
 		Endpoint: server.URL,
 		APIKey:   "test-key",
-	})
+	}, stt.ApplyOptions(nil))
 	require.NoError(t, err)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	response, err := transcriber.Transcribe(ctx, TranscribeRequest{
+	response, err := transcriber.Transcribe(ctx, stt.Request{
 		Model:       "gpt-4o-transcribe",
 		Filename:    "voice.wav",
 		ContentType: "audio/wav",
@@ -60,5 +64,5 @@ func TestOpenAITranscribe(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "hello world", response.Text)
 	require.Equal(t, "en", response.Language)
-	require.Equal(t, 1.5, response.Duration)
+	// Note: Duration intentionally omitted from stt.Response — not exposed in the new contract.
 }

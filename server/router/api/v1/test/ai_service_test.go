@@ -152,6 +152,7 @@ func TestTranscribe(t *testing.T) {
 			require.NoError(t, json.NewEncoder(w).Encode(map[string]any{
 				"candidates": []map[string]any{
 					{
+						"finishReason": "STOP",
 						"content": map[string]any{
 							"parts": []map[string]string{{"text": "gemini transcript"}},
 						},

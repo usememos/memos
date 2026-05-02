@@ -1098,15 +1098,23 @@ type TranscriptionConfig struct {
 	// Empty string means transcription is disabled.
 	ProviderId string `protobuf:"bytes,1,opt,name=provider_id,json=providerId,proto3" json:"provider_id,omitempty"`
 	// model is the provider-specific model identifier.
-	// Empty string falls back to the engine default
-	// (whisper-1 for OPENAI providers, gemini-2.5-flash for GEMINI providers).
+	// Empty string falls back to the engine default.
+	// OPENAI examples:
+	//   - whisper-1 (legacy, lower cost)
+	//   - gpt-4o-transcribe, gpt-4o-mini-transcribe (higher quality)
+	//   - gpt-4o-transcribe-diarize (includes speaker labels)
+	//
+	// GEMINI examples:
+	//   - gemini-2.5-flash (default, multimodal call)
+	//   - gemini-2.5-pro
 	Model string `protobuf:"bytes,2,opt,name=model,proto3" json:"model,omitempty"`
 	// language is the default ISO 639-1 language hint sent to the provider.
 	// Empty string lets the provider auto-detect.
 	Language string `protobuf:"bytes,3,opt,name=language,proto3" json:"language,omitempty"`
 	// prompt is a default spelling/vocabulary hint passed to the provider.
-	// Used as the OpenAI Whisper "prompt" parameter and folded into the Gemini
-	// generation prompt as a "Context and spelling hints" block.
+	// Used as the OpenAI Whisper "prompt" parameter (a soft hint that the model
+	// may ignore) and folded into the Gemini generation prompt as a "Context and
+	// spelling hints" block (which the LLM will treat more literally).
 	Prompt        string `protobuf:"bytes,4,opt,name=prompt,proto3" json:"prompt,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
