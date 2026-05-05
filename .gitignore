@@ -7,7 +7,7 @@ web/dist
 # Build artifacts
 build/
 bin/
-memos
+/memos
 
 .DS_Store
 

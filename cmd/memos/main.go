@@ -21,10 +21,21 @@ import (
 	"github.com/usememos/memos/store/db"
 )
 
+func initSlogDefault() {
+	level, err := parseSlogLevel(viper.GetString("log-level"))
+	if err != nil {
+		slog.Warn("invalid log-level value, defaulting to info", "error", err)
+	}
+	slog.SetDefault(newLogger(level, os.Stderr))
+}
+
 var (
 	rootCmd = &cobra.Command{
 		Use:   "memos",
 		Short: `An open source, lightweight note-taking service. Easily capture and share your great thoughts.`,
+		PersistentPreRun: func(_ *cobra.Command, _ []string) {
+			initSlogDefault()
+		},
 		Run: func(_ *cobra.Command, _ []string) {
 			instanceProfile := &profile.Profile{
 				Demo:        viper.GetBool("demo"),
@@ -116,6 +127,7 @@ func init() {
 	rootCmd.PersistentFlags().String("dsn", "", "database source name(aka. DSN)")
 	rootCmd.PersistentFlags().String("instance-url", "", "the url of your memos instance")
 	rootCmd.PersistentFlags().Bool("allow-private-webhooks", false, "allow webhook URLs to resolve to private/reserved IP addresses")
+	rootCmd.PersistentFlags().String("log-level", "info", "log verbosity level (debug, info, warn, error)")
 
 	if err := viper.BindPFlag("demo", rootCmd.PersistentFlags().Lookup("demo")); err != nil {
 		panic(err)
@@ -142,6 +154,9 @@ func init() {
 		panic(err)
 	}
 	if err := viper.BindPFlag("allow-private-webhooks", rootCmd.PersistentFlags().Lookup("allow-private-webhooks")); err != nil {
+		panic(err)
+	}
+	if err := viper.BindPFlag("log-level", rootCmd.PersistentFlags().Lookup("log-level")); err != nil {
 		panic(err)
 	}
 
