@@ -33,9 +33,6 @@ var (
 	rootCmd = &cobra.Command{
 		Use:   "memos",
 		Short: `An open source, lightweight note-taking service. Easily capture and share your great thoughts.`,
-		PersistentPreRun: func(_ *cobra.Command, _ []string) {
-			initSlogDefault()
-		},
 		Run: func(_ *cobra.Command, _ []string) {
 			instanceProfile := &profile.Profile{
 				Demo:        viper.GetBool("demo"),
@@ -114,6 +111,8 @@ var (
 )
 
 func init() {
+	cobra.OnInitialize(initSlogDefault)
+
 	viper.SetDefault("demo", false)
 	viper.SetDefault("driver", "sqlite")
 	viper.SetDefault("port", 8081)
