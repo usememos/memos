@@ -3,13 +3,9 @@ import { XIcon } from "lucide-react";
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-const Sheet = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Root>, React.ComponentPropsWithoutRef<typeof SheetPrimitive.Root>>(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ({ ...props }, _ref) => {
-    return <SheetPrimitive.Root data-slot="sheet" {...props} />;
-  },
-);
-Sheet.displayName = "Sheet";
+const Sheet = ({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) => {
+  return <SheetPrimitive.Root data-slot="sheet" {...props} />;
+};
 
 const SheetTrigger = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Trigger>,

@@ -1,4 +1,5 @@
-import react from "@vitejs/plugin-react";
+import babel from "@rolldown/plugin-babel";
+import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { resolve } from "path";
 import { defineConfig } from "vite";
 import tailwindcss from "@tailwindcss/vite";
@@ -9,9 +10,9 @@ if (process.env.DEV_PROXY_SERVER && process.env.DEV_PROXY_SERVER.length > 0) {
   devProxyServer = process.env.DEV_PROXY_SERVER;
 }
 
-// https://vitejs.dev/config/
+// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), babel({ presets: [reactCompilerPreset()] }), tailwindcss()],
   server: {
     host: "0.0.0.0",
     port: 3001,
@@ -42,12 +43,23 @@ export default defineConfig({
     },
   },
   build: {
-    rollupOptions: {
+    rolldownOptions: {
       output: {
-        manualChunks: {
-          "utils-vendor": ["dayjs", "lodash-es"],
-          "mermaid-vendor": ["mermaid"],
-          "leaflet-vendor": ["leaflet", "react-leaflet"],
+        codeSplitting: {
+          groups: [
+            {
+              name: "utils-vendor",
+              test: /node_modules[\\/](dayjs|lodash-es)([\\/]|$)/,
+            },
+            {
+              name: "mermaid-vendor",
+              test: /node_modules[\\/]mermaid([\\/]|$)/,
+            },
+            {
+              name: "leaflet-vendor",
+              test: /node_modules[\\/](leaflet|react-leaflet)([\\/]|$)/,
+            },
+          ],
         },
       },
     },

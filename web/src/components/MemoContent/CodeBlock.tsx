@@ -1,7 +1,7 @@
 import copy from "copy-to-clipboard";
 import hljs from "highlight.js";
 import { CheckIcon, CopyIcon } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { isValidElement, type ReactElement, type ReactNode, useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import { getThemeWithFallback, resolveTheme } from "@/utils/theme";
@@ -10,7 +10,7 @@ import type { ReactMarkdownProps } from "./markdown/types";
 import { extractCodeContent, extractLanguage } from "./utils";
 
 interface CodeBlockProps extends ReactMarkdownProps {
-  children?: React.ReactNode;
+  children?: ReactNode;
   className?: string;
 }
 
@@ -18,8 +18,8 @@ export const CodeBlock = ({ children, className, node: _node, ...props }: CodeBl
   const { userGeneralSetting } = useAuth();
   const [copied, setCopied] = useState(false);
 
-  const codeElement = children as React.ReactElement;
-  const codeClassName = codeElement?.props?.className || "";
+  const codeElement = isValidElement(children) ? (children as ReactElement<{ className?: string }>) : null;
+  const codeClassName = codeElement?.props.className || "";
   const codeContent = extractCodeContent(children);
   const language = extractLanguage(codeClassName);
 
@@ -93,7 +93,7 @@ export const CodeBlock = ({ children, className, node: _node, ...props }: CodeBl
         setTimeout(() => setCopied(false), 2000);
       } else {
         // Fallback to copy-to-clipboard library for non-secure contexts
-        const success = copy(codeContent);
+        const success = await copy(codeContent);
         if (success) {
           setCopied(true);
           setTimeout(() => setCopied(false), 2000);
@@ -104,7 +104,7 @@ export const CodeBlock = ({ children, className, node: _node, ...props }: CodeBl
     } catch (err) {
       // If native API fails, try fallback
       console.warn("Native clipboard failed, using fallback:", err);
-      const success = copy(codeContent);
+      const success = await copy(codeContent);
       if (success) {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);

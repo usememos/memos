@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { type ForwardedRef, type RefObject, useEffect, useRef, useState } from "react";
 import getCaretCoordinates from "textarea-caret";
 import { EditorRefActions } from ".";
 
@@ -9,8 +9,8 @@ export interface Position {
 }
 
 export interface UseSuggestionsOptions<T> {
-  editorRef: React.RefObject<HTMLTextAreaElement>;
-  editorActions: React.ForwardedRef<EditorRefActions>;
+  editorRef: RefObject<HTMLTextAreaElement | null>;
+  editorActions: ForwardedRef<EditorRefActions>;
   triggerChar: string;
   items: T[];
   filterItems: (items: T[], searchQuery: string) => T[];

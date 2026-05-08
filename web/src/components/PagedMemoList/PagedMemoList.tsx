@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowUpIcon } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
 import { deriveDefaultCreateTimeFromFilters } from "@/components/MemoEditor/utils/deriveDefaultCreateTime";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ import MemoFilters from "../MemoFilters";
 import Skeleton from "../Skeleton";
 
 interface Props {
-  renderer: (memo: Memo) => JSX.Element;
+  renderer: (memo: Memo) => ReactElement;
   listSort?: (list: Memo[]) => Memo[];
   state?: State;
   orderBy?: string;

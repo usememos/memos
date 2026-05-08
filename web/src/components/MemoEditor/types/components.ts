@@ -1,3 +1,4 @@
+import type { ClipboardEvent, ForwardedRef, RefObject } from "react";
 import type { Location, Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { EditorRefActions } from "../Editor";
 import type { Command } from "../Editor/commands";
@@ -70,13 +71,13 @@ export interface InsertMenuProps {
 }
 
 export interface TagSuggestionsProps {
-  editorRef: React.RefObject<HTMLTextAreaElement>;
-  editorActions: React.ForwardedRef<EditorRefActions>;
+  editorRef: RefObject<HTMLTextAreaElement | null>;
+  editorActions: ForwardedRef<EditorRefActions>;
 }
 
 export interface SlashCommandsProps {
-  editorRef: React.RefObject<HTMLTextAreaElement>;
-  editorActions: React.ForwardedRef<EditorRefActions>;
+  editorRef: RefObject<HTMLTextAreaElement | null>;
+  editorActions: ForwardedRef<EditorRefActions>;
   commands: Command[];
 }
 
@@ -85,7 +86,7 @@ export interface EditorProps {
   initialContent: string;
   placeholder: string;
   onContentChange: (content: string) => void;
-  onPaste: (event: React.ClipboardEvent) => void;
+  onPaste: (event: ClipboardEvent) => void;
   isFocusMode?: boolean;
   isInIME?: boolean;
   onCompositionStart?: () => void;
