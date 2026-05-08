@@ -1,15 +1,16 @@
 import { Edit3Icon, MoreVerticalIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { shortcutServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { cn } from "@/lib/utils";
+import { ROUTES } from "@/router";
 import { Shortcut } from "@/types/proto/api/v1/shortcut_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import CreateShortcutDialog from "../CreateShortcutDialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 const emojiRegex = /^(\p{Emoji_Presentation}|\p{Emoji}\uFE0F)$/u;
@@ -23,11 +24,10 @@ const getShortcutId = (name: string): string => {
 
 function ShortcutsSection() {
   const t = useTranslate();
+  const navigate = useNavigate();
   const { shortcuts, refetchSettings } = useAuth();
   const { shortcut: selectedShortcut, setShortcut } = useMemoFilterContext();
-  const [isCreateShortcutDialogOpen, setIsCreateShortcutDialogOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Shortcut | undefined>();
-  const [editingShortcut, setEditingShortcut] = useState<Shortcut | undefined>();
 
   useEffect(() => {
     refetchSettings();
@@ -46,18 +46,11 @@ function ShortcutsSection() {
   };
 
   const handleCreateShortcut = () => {
-    setEditingShortcut(undefined);
-    setIsCreateShortcutDialogOpen(true);
+    navigate(ROUTES.SHORTCUTS, { state: { openCreate: true } });
   };
 
   const handleEditShortcut = (shortcut: Shortcut) => {
-    setEditingShortcut(shortcut);
-    setIsCreateShortcutDialogOpen(true);
-  };
-
-  const handleShortcutDialogSuccess = () => {
-    setIsCreateShortcutDialogOpen(false);
-    setEditingShortcut(undefined);
+    navigate(ROUTES.SHORTCUTS, { state: { shortcut } });
   };
 
   return (
@@ -113,12 +106,6 @@ function ShortcutsSection() {
           );
         })}
       </div>
-      <CreateShortcutDialog
-        open={isCreateShortcutDialogOpen}
-        onOpenChange={setIsCreateShortcutDialogOpen}
-        shortcut={editingShortcut}
-        onSuccess={handleShortcutDialogSuccess}
-      />
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(undefined)}
