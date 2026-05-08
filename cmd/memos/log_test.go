@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"log/slog"
 	"strings"
 	"testing"
@@ -40,10 +41,10 @@ func TestParseSlogLevel(t *testing.T) {
 
 func TestNewLoggerLevelFiltering(t *testing.T) {
 	tests := []struct {
-		level          slog.Level
-		logAt          slog.Level
-		msg            string
-		shouldAppear   bool
+		level        slog.Level
+		logAt        slog.Level
+		msg          string
+		shouldAppear bool
 	}{
 		// debug passes all
 		{slog.LevelDebug, slog.LevelDebug, "debug-msg", true},
@@ -69,7 +70,7 @@ func TestNewLoggerLevelFiltering(t *testing.T) {
 	for _, tt := range tests {
 		var buf bytes.Buffer
 		logger := newLogger(tt.level, &buf)
-		logger.Log(nil, tt.logAt, tt.msg)
+		logger.Log(context.TODO(), tt.logAt, tt.msg)
 
 		appeared := strings.Contains(buf.String(), tt.msg)
 		if appeared != tt.shouldAppear {
