@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ASCII_POOL, pickPiece, type PlaceholderVariant } from "@/components/Placeholder/ascii-pool";
+import { DEFAULT_MESSAGES } from "@/components/Placeholder/messages";
 
 const VARIANTS: PlaceholderVariant[] = ["empty", "loading", "noResults", "notFound"];
 
@@ -40,5 +41,14 @@ describe("pickPiece", () => {
   it("returns a non-empty ascii string", () => {
     const piece = pickPiece("empty");
     expect(piece.ascii.length).toBeGreaterThan(0);
+  });
+});
+
+describe("DEFAULT_MESSAGES", () => {
+  it("provides a non-empty message for every variant", () => {
+    for (const variant of VARIANTS) {
+      expect(DEFAULT_MESSAGES[variant], `variant=${variant}`).toBeTruthy();
+      expect(DEFAULT_MESSAGES[variant].trim().length).toBeGreaterThan(0);
+    }
   });
 });
