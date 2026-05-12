@@ -1,8 +1,8 @@
 /*
  * Animations for <Placeholder>.
  *
- * All keyframes are wrapped in a prefers-reduced-motion guard so users who
- * opt out of motion see a static bird and an instantly-visible message.
+ * Keyframes are wrapped in a prefers-reduced-motion guard so users who opt
+ * out of motion see a static bird.
  */
 
 @media (prefers-reduced-motion: no-preference) {
@@ -12,11 +12,6 @@
 
   .placeholder-motion-flutter {
     animation: placeholder-flutter 0.7s ease-in-out infinite;
-  }
-
-  .placeholder-fade-in {
-    animation: placeholder-fade 1s ease-out 0.3s both;
-    opacity: 0;
   }
 }
 
@@ -37,11 +32,5 @@
   }
   50% {
     transform: translate(2px, -1px);
-  }
-}
-
-@keyframes placeholder-fade {
-  to {
-    opacity: 1;
   }
 }
