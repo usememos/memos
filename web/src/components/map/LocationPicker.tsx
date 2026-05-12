@@ -1,7 +1,7 @@
 import L, { LatLng } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { ExternalLinkIcon, MinusIcon, PlusIcon } from "lucide-react";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { MapContainer, Marker, useMap, useMapEvents } from "react-leaflet";
 import { cn } from "@/lib/utils";
@@ -211,9 +211,8 @@ const DEFAULT_CENTER: MapPoint = { lat: 48.8584, lng: 2.2945 };
 const noopOnLocationChange = () => {};
 
 const LocationPicker = ({ readonly: readOnly = false, latlng, onChange = noopOnLocationChange, className }: LocationPickerProps) => {
-  const position = latlng || DEFAULT_CENTER;
-  const mapCenter = toLatLng(position);
-  const markerPosition = latlng ? toLatLng(latlng) : mapCenter;
+  const mapCenter = useMemo(() => toLatLng(latlng ?? DEFAULT_CENTER), [latlng?.lat, latlng?.lng]);
+  const markerPosition = mapCenter;
   const statusLabel = readOnly ? "Pinned location" : latlng ? "Selected location" : "Choose a location";
 
   return (

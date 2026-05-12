@@ -39,7 +39,11 @@ export const MermaidBlock = ({ children, className }: MermaidBlockProps) => {
 
   // Render diagram when content or theme changes
   useEffect(() => {
-    if (!codeContent) return;
+    if (!codeContent) {
+      setSvg("");
+      setError("");
+      return;
+    }
 
     let cancelled = false;
 
