@@ -1,6 +1,6 @@
-import { useMemo, type ReactNode } from "react";
+import { type ReactNode, useMemo } from "react";
 import { cn } from "@/lib/utils";
-import { pickPiece, type MotionStyle, type PlaceholderVariant } from "./ascii-pool";
+import { type MotionStyle, type PlaceholderVariant, pickPiece } from "./ascii-pool";
 import { DEFAULT_MESSAGES } from "./messages";
 import "./Placeholder.css";
 
@@ -30,10 +30,7 @@ const Placeholder = ({ variant, message, children, className }: PlaceholderProps
     >
       <pre
         aria-hidden="true"
-        className={cn(
-          "font-mono text-xs sm:text-sm leading-tight text-muted-foreground whitespace-pre m-0",
-          MOTION_CLASS[piece.motion],
-        )}
+        className={cn("font-mono text-xs sm:text-sm leading-tight text-muted-foreground whitespace-pre m-0", MOTION_CLASS[piece.motion])}
       >
         {piece.ascii}
       </pre>

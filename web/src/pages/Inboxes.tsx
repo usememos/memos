@@ -2,10 +2,10 @@ import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { sortBy } from "lodash-es";
 import { ArchiveIcon, BellIcon, InboxIcon } from "lucide-react";
 import { useState } from "react";
-import Placeholder from "@/components/Placeholder";
 import MemoCommentMessage from "@/components/Inbox/MemoCommentMessage";
 import MemoMentionMessage from "@/components/Inbox/MemoMentionMessage";
 import MobileHeader from "@/components/MobileHeader";
+import Placeholder from "@/components/Placeholder";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { useNotifications } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
@@ -99,13 +99,7 @@ const Inboxes = () => {
             {notifications.length === 0 ? (
               <Placeholder
                 variant="empty"
-                message={
-                  filter === "unread"
-                    ? t("inbox.no-unread")
-                    : filter === "archived"
-                      ? t("inbox.no-archived")
-                      : t("message.no-data")
-                }
+                message={filter === "unread" ? t("inbox.no-unread") : filter === "archived" ? t("inbox.no-archived") : t("message.no-data")}
               />
             ) : (
               <div className="flex flex-col">
