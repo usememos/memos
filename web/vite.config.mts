@@ -52,12 +52,8 @@ export default defineConfig({
               test: /node_modules[\\/](dayjs|lodash-es)([\\/]|$)/,
             },
             {
-              name: "mermaid-vendor",
-              test: /node_modules[\\/]mermaid([\\/]|$)/,
-            },
-            {
               name: "leaflet-vendor",
-              test: /node_modules[\\/](leaflet|react-leaflet)([\\/]|$)/,
+              test: /node_modules[\\/]leaflet([\\/]|$)/,
             },
           ],
         },

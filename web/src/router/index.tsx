@@ -4,7 +4,6 @@ import App from "@/App";
 import { ChunkLoadErrorFallback } from "@/components/ErrorBoundary";
 import MainLayout from "@/layouts/MainLayout";
 import RootLayout from "@/layouts/RootLayout";
-import Home from "@/pages/Home";
 import { LandingRoute, RequireAuthRoute, RequireGuestRoute } from "./guards";
 import { ROUTES } from "./routes";
 
@@ -29,6 +28,7 @@ const AdminSignIn = lazyWithReload(() => import("@/pages/AdminSignIn"));
 const Archived = lazyWithReload(() => import("@/pages/Archived"));
 const AuthCallback = lazyWithReload(() => import("@/pages/AuthCallback"));
 const Explore = lazyWithReload(() => import("@/pages/Explore"));
+const Home = lazyWithReload(() => import("@/pages/Home"));
 const Inboxes = lazyWithReload(() => import("@/pages/Inboxes"));
 const MemoDetail = lazyWithReload(() => import("@/pages/MemoDetail"));
 const NotFound = lazyWithReload(() => import("@/pages/NotFound"));

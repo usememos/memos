@@ -1,11 +1,11 @@
 import copy from "copy-to-clipboard";
 import { ExternalLinkIcon, LayoutListIcon, type LucideIcon, MapIcon } from "lucide-react";
+import { lazy, Suspense } from "react";
 import { toast } from "react-hot-toast";
 import { useParams, useSearchParams } from "react-router-dom";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
-import UserMemoMap from "@/components/UserMemoMap";
 import { Button } from "@/components/ui/button";
 import { useMemoFilters, useMemoSorting } from "@/hooks";
 import { useUser } from "@/hooks/useUserQueries";
@@ -15,6 +15,8 @@ import { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 type TabView = "memos" | "map";
+
+const UserMemoMap = lazy(() => import("@/components/UserMemoMap"));
 
 const TabButton = ({
   icon: Icon,
@@ -138,7 +140,9 @@ const UserProfile = () => {
                 />
               ) : (
                 <div className="">
-                  <UserMemoMap creator={user.name} className="h-[60dvh] sm:h-[500px] rounded-xl" />
+                  <Suspense fallback={<div className="h-[60dvh] sm:h-[500px] rounded-xl border border-border bg-muted/30" />}>
+                    <UserMemoMap creator={user.name} className="h-[60dvh] sm:h-[500px] rounded-xl" />
+                  </Suspense>
                 </div>
               )}
             </div>

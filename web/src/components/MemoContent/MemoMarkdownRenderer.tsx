@@ -1,4 +1,5 @@
 import type { Element } from "hast";
+import "katex/dist/katex.min.css";
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import rehypeKatex from "rehype-katex";

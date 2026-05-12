@@ -1,6 +1,6 @@
-import type { LatLng } from "leaflet";
 import type { LocationState } from "@/components/MemoEditor/types/insert-menu";
-import { LocationPicker } from "@/components/map";
+import { LazyLocationPicker } from "@/components/map/LazyLocationPicker";
+import type { MapPoint } from "@/components/map/types";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -13,7 +13,7 @@ interface LocationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   state: LocationState;
-  onPositionChange: (position: LatLng) => void;
+  onPositionChange: (position: MapPoint) => void;
   onUpdateCoordinate: (type: "lat" | "lng", value: string) => void;
   onPlaceholderChange: (placeholder: string) => void;
   onCancel: () => void;
@@ -47,7 +47,7 @@ export const LocationDialog = ({
         </VisuallyHidden>
         <div className="flex flex-col">
           <div className="w-full h-64 overflow-hidden rounded-t-md bg-muted/30">
-            <LocationPicker className="h-full" latlng={position} onChange={onPositionChange} />
+            {open && <LazyLocationPicker className="h-full" latlng={position} onChange={onPositionChange} />}
           </div>
           <div className="w-full flex flex-col p-3 gap-3">
             <div className="grid grid-cols-2 gap-3">

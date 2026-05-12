@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
-import { LatLng } from "leaflet";
 import { useCallback, useMemo, useRef, useState } from "react";
+import type { MapPoint } from "@/components/map/types";
 import { Location, LocationSchema } from "@/types/proto/api/v1/memo_service_pb";
 import { LocationState } from "../types/insert-menu";
 
@@ -11,7 +11,7 @@ export const useLocation = (initialLocation?: Location) => {
 
   const [state, setState] = useState<LocationState>({
     placeholder: initialLocation?.placeholder || "",
-    position: initialLocation ? new LatLng(initialLocation.latitude, initialLocation.longitude) : undefined,
+    position: initialLocation ? { lat: initialLocation.latitude, lng: initialLocation.longitude } : undefined,
     latInput: initialLocation ? String(initialLocation.latitude) : "",
     lngInput: initialLocation ? String(initialLocation.longitude) : "",
   });
@@ -20,7 +20,7 @@ export const useLocation = (initialLocation?: Location) => {
   const stateRef = useRef(state);
   stateRef.current = state;
 
-  const updatePosition = useCallback((position?: LatLng) => {
+  const updatePosition = useCallback((position?: MapPoint) => {
     setState((prev) => ({
       ...prev,
       position,
@@ -31,7 +31,7 @@ export const useLocation = (initialLocation?: Location) => {
 
   // Stable — reads locationInitialized via ref to avoid recreating on every change.
   const handlePositionChange = useCallback(
-    (position: LatLng) => {
+    (position: MapPoint) => {
       if (!locationInitializedRef.current) setLocationInitialized(true);
       updatePosition(position);
     },
@@ -45,7 +45,7 @@ export const useLocation = (initialLocation?: Location) => {
     setState((prev) => {
       const next = { ...prev, [type === "lat" ? "latInput" : "lngInput"]: value };
       if (isValid && prev.position) {
-        const newPos = type === "lat" ? new LatLng(num, prev.position.lng) : new LatLng(prev.position.lat, num);
+        const newPos = type === "lat" ? { lat: num, lng: prev.position.lng } : { lat: prev.position.lat, lng: num };
         return { ...next, position: newPos, latInput: String(newPos.lat), lngInput: String(newPos.lng) };
       }
       return next;
