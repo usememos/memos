@@ -38,9 +38,9 @@ describe("<Placeholder>", () => {
     expect(pre!.textContent!.length).toBeGreaterThan(0);
   });
 
-  it("renders a jgs credit string", () => {
+  it("does not render the credit string in the UI (attribution lives in CREDITS.md)", () => {
     render(<Placeholder variant="empty" />);
-    expect(screen.getByText(/jgs/)).toBeInTheDocument();
+    expect(screen.queryByText(/jgs/)).not.toBeInTheDocument();
   });
 
   it('applies role="status" and aria-live="polite" ONLY when variant=loading', () => {

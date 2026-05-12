@@ -35,7 +35,6 @@ const Placeholder = ({ variant, message, children, className }: PlaceholderProps
         {piece.ascii}
       </pre>
       <p className="mt-3 font-mono text-sm text-muted-foreground placeholder-fade-in">{resolvedMessage}</p>
-      <p className="mt-1 font-mono text-[10px] text-muted-foreground/60 placeholder-fade-in">{piece.credit}</p>
       {children && <div className="mt-4">{children}</div>}
     </div>
   );
