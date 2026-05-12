@@ -36,6 +36,7 @@ const PermissionDenied = lazyWithReload(() => import("@/pages/PermissionDenied")
 const Attachments = lazyWithReload(() => import("@/pages/Attachments"));
 const Setting = lazyWithReload(() => import("@/pages/Setting"));
 const Shortcuts = lazyWithReload(() => import("@/pages/Shortcuts"));
+const WeeklyReport = lazyWithReload(() => import("@/pages/WeeklyReport"));
 const SignIn = lazyWithReload(() => import("@/pages/SignIn"));
 const SignUp = lazyWithReload(() => import("@/pages/SignUp"));
 const UserProfile = lazyWithReload(() => import("@/pages/UserProfile"));
@@ -88,6 +89,7 @@ export const routeConfig: RouteObject[] = [
                   { path: Routes.HOME, element: <Home /> },
                   { path: Routes.ARCHIVED, element: <Archived /> },
                   { path: Routes.SHORTCUTS, element: <Shortcuts /> },
+	          { path: Routes.WEEKLY_REPORT, element: <WeeklyReport /> },
                 ],
               },
             ],
