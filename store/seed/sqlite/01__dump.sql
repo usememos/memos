@@ -5,10 +5,12 @@
 
 -- Demo User (Admin) — bootstrap password: changeme
 -- ACTION REQUIRED: Change this password immediately after seeding.
+-- Hash generated with: bcrypt("changeme", cost=10)
 INSERT INTO user (id,username,role,nickname,password_hash) VALUES(1,'demo','ADMIN','Demo User','$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy');
 
 -- Alice (User) — bootstrap password: changeme
 -- ACTION REQUIRED: Change this password immediately after seeding.
+-- Hash generated with: bcrypt("changeme", cost=10)
 INSERT INTO user (id,username,role,nickname,description,password_hash) VALUES(2,'alice','USER','Alice','Developer & avid reader 📚','$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy');
 
 -- 1. Welcome Memo (Pinned)
