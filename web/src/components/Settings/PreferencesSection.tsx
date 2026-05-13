@@ -4,9 +4,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { UserSetting_GeneralSetting, UserSetting_GeneralSettingSchema } from "@/types/proto/api/v1/user_service_pb";
+import { CODE_FONT_OPTIONS, loadFonts, UI_FONT_OPTIONS } from "@/utils/font";
 import { loadLocale, useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
 import { loadTheme } from "@/utils/theme";
+import FontSelect from "../FontSelect";
 import LocaleSelect from "../LocaleSelect";
 import ThemeSelect from "../ThemeSelect";
 import VisibilityIcon from "../VisibilityIcon";
@@ -58,6 +60,30 @@ const PreferencesSection = () => {
     );
   };
 
+  const handleUiFontChange = (uiFont: string) => {
+    loadFonts(uiFont, setting.codeFont || "");
+    updateUserGeneralSetting(
+      { generalSetting: { uiFont }, updateMask: ["ui_font"] },
+      {
+        onSuccess: () => {
+          refetchSettings();
+        },
+      },
+    );
+  };
+
+  const handleCodeFontChange = (codeFont: string) => {
+    loadFonts(setting.uiFont || "", codeFont);
+    updateUserGeneralSetting(
+      { generalSetting: { codeFont }, updateMask: ["code_font"] },
+      {
+        onSuccess: () => {
+          refetchSettings();
+        },
+      },
+    );
+  };
+
   // Provide default values if setting is not loaded yet
   const setting: UserSetting_GeneralSetting =
     generalSetting ||
@@ -65,6 +91,8 @@ const PreferencesSection = () => {
       locale: "en",
       memoVisibility: "PRIVATE",
       theme: "system",
+      uiFont: "",
+      codeFont: "",
     });
 
   return (
@@ -77,6 +105,14 @@ const PreferencesSection = () => {
 
           <SettingListItem label={t("setting.preference.theme")} description={t("setting.preference.theme-description")}>
             <ThemeSelect value={setting.theme} onValueChange={handleThemeChange} />
+          </SettingListItem>
+
+          <SettingListItem label={t("setting.preference.ui-font")} description={t("setting.preference.ui-font-description")}>
+            <FontSelect value={setting.uiFont || ""} options={UI_FONT_OPTIONS} onChange={handleUiFontChange} />
+          </SettingListItem>
+
+          <SettingListItem label={t("setting.preference.code-font")} description={t("setting.preference.code-font-description")}>
+            <FontSelect value={setting.codeFont || ""} options={CODE_FONT_OPTIONS} onChange={handleCodeFontChange} />
           </SettingListItem>
         </SettingList>
       </SettingGroup>

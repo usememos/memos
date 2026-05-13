@@ -447,6 +447,12 @@ message UserSetting {
     // This references a CSS file in the web/public/themes/ directory.
     // If not set, the default theme will be used.
     string theme = 4 [(google.api.field_behavior) = OPTIONAL];
+    // The preferred UI font of the user.
+    // Either a Google Fonts family name (e.g. "Inter") or empty for the system default.
+    string ui_font = 5 [(google.api.field_behavior) = OPTIONAL];
+    // The preferred monospaced/code font of the user.
+    // Either a Google Fonts family name (e.g. "JetBrains Mono") or empty for the system default.
+    string code_font = 6 [(google.api.field_behavior) = OPTIONAL];
   }
 
   // User webhooks configuration.

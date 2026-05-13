@@ -41,6 +41,10 @@ message GeneralUserSetting {
   // The user's theme preference.
   // This references a CSS file in the web/public/themes/ directory.
   string theme = 3;
+  // The user's preferred UI font (Google Fonts family name or empty).
+  string ui_font = 4;
+  // The user's preferred monospaced/code font (Google Fonts family name or empty).
+  string code_font = 5;
 }
 
 message RefreshTokensUserSetting {

@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { useInstance } from "./contexts/InstanceContext";
 import { MemoFilterProvider } from "./contexts/MemoFilterContext";
 import useNavigateTo from "./hooks/useNavigateTo";
+import { useUserFonts } from "./hooks/useUserFonts";
 import { useUserLocale } from "./hooks/useUserLocale";
 import { useUserTheme } from "./hooks/useUserTheme";
 import { cleanupExpiredOAuthState } from "./utils/oauth";
@@ -14,6 +15,7 @@ const App = () => {
   // Apply user preferences reactively
   useUserLocale();
   useUserTheme();
+  useUserFonts();
 
   // Clean up expired OAuth states on app initialization
   useEffect(() => {

@@ -433,6 +433,8 @@ func getDefaultUserGeneralSetting() *v1pb.UserSetting_GeneralSetting {
 		Locale:         "en",
 		MemoVisibility: "PRIVATE",
 		Theme:          "",
+		UiFont:         "",
+		CodeFont:       "",
 	}
 }
 
@@ -600,6 +602,8 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 			MemoVisibility: generalSetting.GetMemoVisibility(),
 			Locale:         generalSetting.GetLocale(),
 			Theme:          generalSetting.GetTheme(),
+			UiFont:         generalSetting.GetUiFont(),
+			CodeFont:       generalSetting.GetCodeFont(),
 		}
 
 		incomingGeneral := request.Setting.GetGeneralSetting()
@@ -614,6 +618,10 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 				updatedGeneral.Theme = incomingGeneral.Theme
 			case "locale":
 				updatedGeneral.Locale = incomingGeneral.Locale
+			case "ui_font":
+				updatedGeneral.UiFont = incomingGeneral.UiFont
+			case "code_font":
+				updatedGeneral.CodeFont = incomingGeneral.CodeFont
 			default:
 				// Ignore unsupported fields.
 			}
@@ -1343,6 +1351,8 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, user *store.
 					Locale:         general.Locale,
 					MemoVisibility: general.MemoVisibility,
 					Theme:          general.Theme,
+					UiFont:         general.UiFont,
+					CodeFont:       general.CodeFont,
 				},
 			}
 		} else {
@@ -1391,6 +1401,8 @@ func convertUserSettingToStore(apiSetting *v1pb.UserSetting, userID int32, key s
 					Locale:         general.Locale,
 					MemoVisibility: general.MemoVisibility,
 					Theme:          general.Theme,
+					UiFont:         general.UiFont,
+					CodeFont:       general.CodeFont,
 				},
 			}
 		} else {
