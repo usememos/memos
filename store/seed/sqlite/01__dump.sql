@@ -1,7 +1,14 @@
--- Demo User (Admin) — password: changeme (MUST be changed after seeding)
+-- =============================================================================
+-- SEED DATA — DEVELOPMENT / DEMO USE ONLY
+-- DO NOT USE IN PRODUCTION WITHOUT CHANGING ALL PASSWORDS BELOW
+-- =============================================================================
+
+-- Demo User (Admin) — bootstrap password: changeme
+-- ACTION REQUIRED: Change this password immediately after seeding.
 INSERT INTO user (id,username,role,nickname,password_hash) VALUES(1,'demo','ADMIN','Demo User','$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy');
 
--- Alice (User) — password: changeme (MUST be changed after seeding)
+-- Alice (User) — bootstrap password: changeme
+-- ACTION REQUIRED: Change this password immediately after seeding.
 INSERT INTO user (id,username,role,nickname,description,password_hash) VALUES(2,'alice','USER','Alice','Developer & avid reader 📚','$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy');
 
 -- 1. Welcome Memo (Pinned)
