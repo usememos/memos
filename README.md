@@ -11,7 +11,13 @@
       </td>
       <td align="center" width="50%">
         <a href="https://coderabbit.link/usememos" target="_blank" rel="noopener">
-          <img alt="CodeRabbit" height="44" src="https://victorious-bubble-f69a016683.media.strapiapp.com/Orange_Typemark_43bf516c9d.svg" />
+        <picture>
+            <source media="(prefers-color-scheme: dark)" srcset="https://victorious-bubble-f69a016683.media.strapiapp.com/White_Typemark_79b9189d19.svg">
+            
+            <source media="(prefers-color-scheme: light)" srcset="https://victorious-bubble-f69a016683.media.strapiapp.com/Orange_Typemark_43bf516c9d.svg">
+            
+            <img alt="CodeRabbit" height="44" src="https://victorious-bubble-f69a016683.media.strapiapp.com/Orange_Typemark_43bf516c9d.svg" />
+          </picture>
           <br/>
           <span>Cut code review time &amp; bugs in half, instantly.</span>
         </a>
