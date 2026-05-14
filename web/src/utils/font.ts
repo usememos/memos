@@ -58,9 +58,10 @@ export const CODE_FONT_OPTIONS: FontOption[] = [
   { value: "Geist Mono", label: "Geist Mono" },
 ];
 
-// Google Fonts family names use ASCII letters, digits, spaces, hyphens, and
-// occasionally periods (e.g. "M PLUS 1"). Reject anything else so a custom
-// value can't smuggle CSS or URL syntax into the <link>/<style> we inject.
+// Google Fonts family names use ASCII letters, digits, spaces, hyphens,
+// periods, and plus signs (e.g. "M PLUS 1"). Reject anything else so a
+// custom value can't smuggle CSS or URL syntax into the <link>/<style> we
+// inject.
 const FAMILY_PATTERN = /^[A-Za-z0-9 .\-+]{1,64}$/;
 
 const normalizeFamily = (raw: string): string => raw.trim().replace(/\s+/g, " ");

@@ -1,4 +1,5 @@
 import { create } from "@bufbuild/protobuf";
+import { useEffect, useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
@@ -60,8 +61,31 @@ const PreferencesSection = () => {
     );
   };
 
+  // Provide default values if setting is not loaded yet
+  const setting: UserSetting_GeneralSetting =
+    generalSetting ||
+    create(UserSetting_GeneralSettingSchema, {
+      locale: "en",
+      memoVisibility: "PRIVATE",
+      theme: "system",
+      uiFont: "",
+      codeFont: "",
+    });
+
+  // Track the currently applied font selections locally so consecutive
+  // changes (e.g. UI font then code font) don't pick up a stale value from
+  // the server snapshot before refetch completes.
+  const [appliedUiFont, setAppliedUiFont] = useState<string>(setting.uiFont || "");
+  const [appliedCodeFont, setAppliedCodeFont] = useState<string>(setting.codeFont || "");
+
+  useEffect(() => {
+    setAppliedUiFont(setting.uiFont || "");
+    setAppliedCodeFont(setting.codeFont || "");
+  }, [setting.uiFont, setting.codeFont]);
+
   const handleUiFontChange = (uiFont: string) => {
-    loadFonts(uiFont, setting.codeFont || "");
+    setAppliedUiFont(uiFont);
+    loadFonts(uiFont, appliedCodeFont);
     updateUserGeneralSetting(
       { generalSetting: { uiFont }, updateMask: ["ui_font"] },
       {
@@ -73,7 +97,8 @@ const PreferencesSection = () => {
   };
 
   const handleCodeFontChange = (codeFont: string) => {
-    loadFonts(setting.uiFont || "", codeFont);
+    setAppliedCodeFont(codeFont);
+    loadFonts(appliedUiFont, codeFont);
     updateUserGeneralSetting(
       { generalSetting: { codeFont }, updateMask: ["code_font"] },
       {
@@ -83,17 +108,6 @@ const PreferencesSection = () => {
       },
     );
   };
-
-  // Provide default values if setting is not loaded yet
-  const setting: UserSetting_GeneralSetting =
-    generalSetting ||
-    create(UserSetting_GeneralSettingSchema, {
-      locale: "en",
-      memoVisibility: "PRIVATE",
-      theme: "system",
-      uiFont: "",
-      codeFont: "",
-    });
 
   return (
     <SettingSection title={t("setting.preference.label")}>
@@ -108,11 +122,11 @@ const PreferencesSection = () => {
           </SettingListItem>
 
           <SettingListItem label={t("setting.preference.ui-font")} description={t("setting.preference.ui-font-description")}>
-            <FontSelect value={setting.uiFont || ""} options={UI_FONT_OPTIONS} onChange={handleUiFontChange} />
+            <FontSelect value={appliedUiFont} options={UI_FONT_OPTIONS} onChange={handleUiFontChange} />
           </SettingListItem>
 
           <SettingListItem label={t("setting.preference.code-font")} description={t("setting.preference.code-font-description")}>
-            <FontSelect value={setting.codeFont || ""} options={CODE_FONT_OPTIONS} onChange={handleCodeFontChange} />
+            <FontSelect value={appliedCodeFont} options={CODE_FONT_OPTIONS} onChange={handleCodeFontChange} />
           </SettingListItem>
         </SettingList>
       </SettingGroup>
