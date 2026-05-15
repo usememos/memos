@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import ReactDOMServer from "react-dom/server";
 import { TileLayer } from "react-leaflet";
 import { useAuth } from "@/contexts/AuthContext";
-import { resolveTheme } from "@/utils/theme";
+import { getThemeMode, resolveTheme } from "@/utils/theme";
 
 const TILE_URLS = {
   light: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
@@ -13,7 +13,7 @@ const TILE_URLS = {
 
 export const ThemedTileLayer = () => {
   const { userGeneralSetting } = useAuth();
-  const isDark = useMemo(() => resolveTheme(userGeneralSetting?.theme || "system").includes("dark"), [userGeneralSetting?.theme]);
+  const isDark = useMemo(() => getThemeMode(resolveTheme(userGeneralSetting?.theme || "system")) === "dark", [userGeneralSetting?.theme]);
   return <TileLayer url={isDark ? TILE_URLS.dark : TILE_URLS.light} />;
 };
 

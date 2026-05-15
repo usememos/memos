@@ -1,3 +1,7 @@
+import catppuccinFrappeThemeContent from "../themes/catppuccin-frappe.css?raw";
+import catppuccinLatteThemeContent from "../themes/catppuccin-latte.css?raw";
+import catppuccinMacchiatoThemeContent from "../themes/catppuccin-macchiato.css?raw";
+import catppuccinMochaThemeContent from "../themes/catppuccin-mocha.css?raw";
 import defaultDarkThemeContent from "../themes/default-dark.css?raw";
 import paperThemeContent from "../themes/paper.css?raw";
 
@@ -5,10 +9,68 @@ import paperThemeContent from "../themes/paper.css?raw";
 // Types and Constants
 // ============================================================================
 
-const VALID_THEMES = ["system", "default", "default-dark", "paper"] as const;
+export type ThemeMode = "light" | "dark";
 
-export type Theme = (typeof VALID_THEMES)[number];
-export type ResolvedTheme = Exclude<Theme, "system">;
+interface ResolvedThemeConfig {
+  label: string;
+  mode: ThemeMode;
+  color: string;
+  content: string | null;
+}
+
+const RESOLVED_THEMES = {
+  default: {
+    label: "Light",
+    mode: "light",
+    color: "#faf9f5",
+    content: null,
+  },
+  "default-dark": {
+    label: "Dark",
+    mode: "dark",
+    color: "#1d1f23",
+    content: defaultDarkThemeContent,
+  },
+  paper: {
+    label: "Paper",
+    mode: "light",
+    color: "#f5ede4",
+    content: paperThemeContent,
+  },
+  "catppuccin-latte": {
+    label: "Catppuccin Latte",
+    mode: "light",
+    color: "#eff1f5",
+    content: catppuccinLatteThemeContent,
+  },
+  "catppuccin-frappe": {
+    label: "Catppuccin Frappé",
+    mode: "dark",
+    color: "#303446",
+    content: catppuccinFrappeThemeContent,
+  },
+  "catppuccin-macchiato": {
+    label: "Catppuccin Macchiato",
+    mode: "dark",
+    color: "#24273a",
+    content: catppuccinMacchiatoThemeContent,
+  },
+  "catppuccin-mocha": {
+    label: "Catppuccin Mocha",
+    mode: "dark",
+    color: "#1e1e2e",
+    content: catppuccinMochaThemeContent,
+  },
+} as const satisfies Record<string, ResolvedThemeConfig>;
+
+const SYSTEM_THEME = {
+  label: "Sync with system",
+} as const;
+
+const VALID_THEMES = ["system", ...Object.keys(RESOLVED_THEMES)] as const;
+
+export type ResolvedTheme = keyof typeof RESOLVED_THEMES;
+export type Theme = "system" | ResolvedTheme;
 
 export interface ThemeOption {
   value: string;
@@ -18,23 +80,9 @@ export interface ThemeOption {
 const STORAGE_KEY = "memos-theme";
 const STYLE_ELEMENT_ID = "instance-theme";
 
-const THEME_CONTENT: Record<ResolvedTheme, string | null> = {
-  default: null,
-  "default-dark": defaultDarkThemeContent,
-  paper: paperThemeContent,
-};
-
-const THEME_COLORS: Record<ResolvedTheme, string> = {
-  default: "#faf9f5",
-  "default-dark": "#1d1f23",
-  paper: "#f5ede4",
-};
-
 export const THEME_OPTIONS: ThemeOption[] = [
-  { value: "system", label: "Sync with system" },
-  { value: "default", label: "Light" },
-  { value: "default-dark", label: "Dark" },
-  { value: "paper", label: "Paper" },
+  { value: "system", label: SYSTEM_THEME.label },
+  ...Object.entries(RESOLVED_THEMES).map(([value, theme]) => ({ value, label: theme.label })),
 ];
 
 // ============================================================================
@@ -67,6 +115,10 @@ export const getSystemTheme = (): ResolvedTheme => {
 export const resolveTheme = (theme: string): ResolvedTheme => {
   const validTheme = validateTheme(theme);
   return validTheme === "system" ? getSystemTheme() : validTheme;
+};
+
+export const getThemeMode = (theme: ResolvedTheme): ThemeMode => {
+  return RESOLVED_THEMES[theme].mode;
 };
 
 // ============================================================================
@@ -150,11 +202,7 @@ const removeThemeStyle = (): void => {
 const injectThemeStyle = (theme: ResolvedTheme): void => {
   removeThemeStyle();
 
-  if (theme === "default") {
-    return; // Use base CSS for default theme
-  }
-
-  const css = THEME_CONTENT[theme];
+  const css = RESOLVED_THEMES[theme].content;
   if (css) {
     const style = document.createElement("style");
     style.id = STYLE_ELEMENT_ID;
@@ -178,19 +226,15 @@ const setThemeAttribute = (theme: ResolvedTheme): void => {
 const updateThemeColorMeta = (theme: ResolvedTheme): void => {
   const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
   if (meta) {
-    meta.content = THEME_COLORS[theme];
+    meta.content = RESOLVED_THEMES[theme].color;
   }
-};
-
-const isDarkTheme = (theme: ResolvedTheme): boolean => {
-  return theme.endsWith("-dark") || theme.endsWith(".dark");
 };
 
 /**
  * Updates the browser native control color scheme to match the current theme.
  */
 const updateColorScheme = (theme: ResolvedTheme): void => {
-  document.documentElement.style.colorScheme = isDarkTheme(theme) ? "dark" : "light";
+  document.documentElement.style.colorScheme = getThemeMode(theme);
 };
 
 // ============================================================================
@@ -252,11 +296,7 @@ export const setupSystemThemeListener = (onThemeChange: () => void): (() => void
     return () => mediaQuery.removeEventListener("change", onThemeChange);
   }
 
-  // Legacy API (Safari < 14)
-  if (mediaQuery.addListener) {
-    mediaQuery.addListener(onThemeChange);
-    return () => mediaQuery.removeListener(onThemeChange);
-  }
-
-  return () => {};
+  // Legacy API fallback for older browsers
+  mediaQuery.addListener(onThemeChange);
+  return () => mediaQuery.removeListener(onThemeChange);
 };
