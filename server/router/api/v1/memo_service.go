@@ -130,11 +130,7 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	attachments := []*store.Attachment{}
 
 	if len(request.Memo.Attachments) > 0 {
-		_, err := s.SetMemoAttachments(ctx, &v1pb.SetMemoAttachmentsRequest{
-			Name:        fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID),
-			Attachments: request.Memo.Attachments,
-		})
-		if err != nil {
+		if err := s.setMemoAttachmentsInternal(ctx, user, memo, request.Memo.Attachments); err != nil {
 			return nil, errors.Wrap(err, "failed to set memo attachments")
 		}
 
@@ -147,11 +143,7 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		attachments = a
 	}
 	if len(request.Memo.Relations) > 0 {
-		_, err := s.SetMemoRelations(ctx, &v1pb.SetMemoRelationsRequest{
-			Name:      fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID),
-			Relations: request.Memo.Relations,
-		})
-		if err != nil {
+		if err := s.setMemoRelationsInternal(ctx, memo, request.Memo.Relations); err != nil {
 			return nil, errors.Wrap(err, "failed to set memo relations")
 		}
 	}
