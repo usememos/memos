@@ -77,3 +77,7 @@ func unmarshalPageToken(s string, pageToken *v1pb.PageToken) error {
 func isSuperUser(user *store.User) bool {
 	return user.Role == store.RoleAdmin
 }
+
+func canModifyMemo(user *store.User, memo *store.Memo) bool {
+	return user != nil && memo != nil && (memo.CreatorID == user.ID || isSuperUser(user))
+}

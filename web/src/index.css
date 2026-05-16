@@ -5,6 +5,26 @@
 @layer base {
   * {
     @apply border-border outline-none ring-0;
+    scrollbar-color: color-mix(in oklch, var(--muted-foreground) 55%, transparent) transparent;
+    scrollbar-width: thin;
+  }
+
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: color-mix(in oklch, var(--muted-foreground) 45%, transparent);
+    border-radius: 999px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in oklch, var(--muted-foreground) 65%, transparent);
   }
 
   body {

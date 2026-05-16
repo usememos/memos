@@ -60,6 +60,7 @@ describe("isPublicRoute", () => {
   it("identifies anonymous-accessible page prefixes", () => {
     expect(isPublicRoute("/auth")).toBe(true);
     expect(isPublicRoute("/auth/signup")).toBe(true);
+    expect(isPublicRoute("/about")).toBe(true);
     expect(isPublicRoute("/explore")).toBe(true);
     expect(isPublicRoute("/memos/abc")).toBe(true);
     expect(isPublicRoute("/memos/shares/abc")).toBe(true);

@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="32" viewBox="0 0 128 32" role="img" aria-labelledby="title desc" shape-rendering="crispEdges">
+  <title id="title">Toucan idle pixel tileset</title>
+  <desc id="desc">A four-frame 32 by 32 pixel toucan idle animation strip.</desc>
+  <defs>
+    <style>
+      .outline { fill: #2f2a24; }
+      .body { fill: #1f2528; }
+      .bodyHighlight { fill: #354046; }
+      .face { fill: #2b3539; }
+      .chest { fill: #f1d88b; }
+      .chestShadow { fill: #c99b55; }
+      .beak { fill: #e57f24; }
+      .beakHighlight { fill: #f4c247; }
+      .beakAccent { fill: #b93d22; }
+      .eye { fill: #120f0d; }
+      .eyeLight { fill: #f4ead5; }
+      .foot { fill: #b86f2e; }
+    </style>
+
+    <symbol id="toucan-open" viewBox="0 0 32 32">
+      <path class="outline" d="M14 5h7v2h3v4h2v12h-2v4h-3v2h-8v-2h-3v-5H8v-3H5v-2H2v-6h2V9h4V7h6V5z" />
+      <path class="beak" d="M4 10h10v1h3v3h-1v3H4v-1H3v-4h1v-2z" />
+      <path class="beakHighlight" d="M5 10h8v1h2v2H5v-3z" />
+      <rect class="beakAccent" x="3" y="14" width="4" height="2" />
+
+      <path class="body" d="M15 8h6v2h2v12h-2v3h-3v2h-5v-2h-2v-5h2v-3h2V8z" />
+      <path class="face" d="M15 8h5v2h1v5h-2v1h-4V8z" />
+      <path class="bodyHighlight" d="M18 10h3v8h-1v2h-2V10z" />
+      <rect class="chest" x="15" y="9" width="2" height="2" />
+      <path class="chest" d="M11 16h6v8h-1v2h-3v-2h-2v-8z" />
+      <rect class="chestShadow" x="12" y="23" width="4" height="1" />
+      <rect class="body" x="16" y="17" width="1" height="5" />
+
+      <rect class="eyeLight" x="15" y="9" width="2" height="2" />
+      <rect class="eye" x="16" y="10" width="1" height="1" />
+      <rect class="bodyHighlight" x="19" y="12" width="1" height="4" />
+
+      <path class="body" d="M24 20h3v2h2v2h-4v-1h-1v-3z" />
+      <rect class="bodyHighlight" x="25" y="21" width="2" height="2" />
+      <rect class="foot" x="13" y="27" width="2" height="3" />
+      <rect class="foot" x="18" y="27" width="2" height="3" />
+    </symbol>
+
+    <symbol id="toucan-breathe" viewBox="0 0 32 32">
+      <path class="outline" d="M14 6h7v2h3v4h2v11h-2v4h-3v2h-8v-2h-3v-5H8v-3H5v-2H2v-6h2V9h4V7h6V6z" />
+      <path class="beak" d="M4 11h10v1h3v3h-1v3H4v-1H3v-4h1v-2z" />
+      <path class="beakHighlight" d="M5 11h8v1h2v2H5v-3z" />
+      <rect class="beakAccent" x="3" y="15" width="4" height="2" />
+
+      <path class="body" d="M15 9h6v2h2v11h-2v3h-3v2h-5v-2h-2v-5h2v-3h2V9z" />
+      <path class="face" d="M15 9h5v2h1v5h-2v1h-4V9z" />
+      <path class="bodyHighlight" d="M18 11h3v7h-1v2h-2v-9z" />
+      <rect class="chest" x="15" y="10" width="2" height="2" />
+      <path class="chest" d="M10 16h7v9h-1v2h-3v-2h-3v-9z" />
+      <rect class="chestShadow" x="11" y="24" width="5" height="1" />
+      <rect class="body" x="17" y="17" width="1" height="5" />
+
+      <rect class="eyeLight" x="15" y="10" width="2" height="2" />
+      <rect class="eye" x="16" y="11" width="1" height="1" />
+      <rect class="bodyHighlight" x="19" y="13" width="1" height="3" />
+
+      <path class="body" d="M25 21h3v2h1v2h-4v-1h-1v-2h1v-1z" />
+      <rect class="bodyHighlight" x="26" y="22" width="2" height="2" />
+      <rect class="foot" x="13" y="27" width="2" height="3" />
+      <rect class="foot" x="18" y="27" width="2" height="3" />
+    </symbol>
+
+    <symbol id="toucan-blink" viewBox="0 0 32 32">
+      <use href="#toucan-open" />
+      <rect class="face" x="15" y="9" width="2" height="2" />
+      <rect class="eye" x="15" y="10" width="2" height="1" />
+    </symbol>
+
+    <symbol id="toucan-settle" viewBox="0 0 32 32">
+      <use href="#toucan-open" />
+      <rect class="bodyHighlight" x="18" y="10" width="3" height="2" />
+      <rect class="chest" x="12" y="17" width="4" height="1" />
+      <rect class="body" x="24" y="21" width="3" height="2" />
+      <rect class="bodyHighlight" x="25" y="22" width="2" height="1" />
+    </symbol>
+  </defs>
+
+  <use href="#toucan-open" x="0" y="0" width="32" height="32" />
+  <use href="#toucan-breathe" x="32" y="0" width="32" height="32" />
+  <use href="#toucan-blink" x="64" y="0" width="32" height="32" />
+  <use href="#toucan-settle" x="96" y="0" width="32" height="32" />
+</svg>

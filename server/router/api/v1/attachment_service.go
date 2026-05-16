@@ -140,6 +140,24 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 	create.Size = int64(size)
 	create.Blob = request.Attachment.Content
 
+	if request.Attachment.Memo != nil {
+		memoUID, err := ExtractMemoUIDFromName(*request.Attachment.Memo)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
+		}
+		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to find memo: %v", err)
+		}
+		if memo == nil {
+			return nil, status.Errorf(codes.NotFound, "memo not found: %s", *request.Attachment.Memo)
+		}
+		if !canModifyMemo(user, memo) {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+		create.MemoID = &memo.ID
+	}
+
 	if create.Payload == nil || create.Payload.MotionMedia == nil {
 		if detectedMotion := detectAndroidMotionMedia(create.Blob, create.Type, attachmentUID); detectedMotion != nil {
 			create.Payload = ensureAttachmentPayload(create.Payload)
@@ -172,20 +190,6 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 		return nil, status.Errorf(codes.Internal, "failed to save attachment blob: %v", err)
 	}
 
-	if request.Attachment.Memo != nil {
-		memoUID, err := ExtractMemoUIDFromName(*request.Attachment.Memo)
-		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
-		}
-		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to find memo: %v", err)
-		}
-		if memo == nil {
-			return nil, status.Errorf(codes.NotFound, "memo not found: %s", *request.Attachment.Memo)
-		}
-		create.MemoID = &memo.ID
-	}
 	attachment, err := s.Store.CreateAttachment(ctx, create)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create attachment: %v", err)

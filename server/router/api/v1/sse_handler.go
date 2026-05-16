@@ -68,6 +68,15 @@ func handleSSE(c *echo.Context, hub *SSEHub, authenticator *auth.Authenticator) 
 
 	slog.Debug("SSE client connected", "userID", userID)
 
+	// Send an initial comment so clients and dev proxies observe the stream
+	// immediately instead of waiting for the first heartbeat or data event.
+	if _, err := fmt.Fprint(w, ": connected\n\n"); err != nil {
+		return nil
+	}
+	if f, ok := w.(http.Flusher); ok {
+		f.Flush()
+	}
+
 	for {
 		select {
 		case <-ctx.Done():

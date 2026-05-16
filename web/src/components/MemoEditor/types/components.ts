@@ -1,3 +1,4 @@
+import type { ClipboardEvent, ForwardedRef, RefObject } from "react";
 import type { Location, Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { EditorRefActions } from "../Editor";
 import type { Command } from "../Editor/commands";
@@ -11,6 +12,14 @@ export interface MemoEditorProps {
   memo?: Memo;
   parentMemoName?: string;
   autoFocus?: boolean;
+  /**
+   * Default `createTime` for a *new* memo (create mode only). When set, the
+   * editor seeds both `createTime` and `updateTime` to this value and renders
+   * the timestamp popover so the user can adjust before saving. Tracked live:
+   * if the prop changes after mount, the editor's timestamps re-sync. Ignored
+   * in edit mode (when `memo` is set).
+   */
+  defaultCreateTime?: Date;
   onConfirm?: (memoName: string) => void;
   onCancel?: () => void;
 }
@@ -62,13 +71,13 @@ export interface InsertMenuProps {
 }
 
 export interface TagSuggestionsProps {
-  editorRef: React.RefObject<HTMLTextAreaElement>;
-  editorActions: React.ForwardedRef<EditorRefActions>;
+  editorRef: RefObject<HTMLTextAreaElement | null>;
+  editorActions: ForwardedRef<EditorRefActions>;
 }
 
 export interface SlashCommandsProps {
-  editorRef: React.RefObject<HTMLTextAreaElement>;
-  editorActions: React.ForwardedRef<EditorRefActions>;
+  editorRef: RefObject<HTMLTextAreaElement | null>;
+  editorActions: ForwardedRef<EditorRefActions>;
   commands: Command[];
 }
 
@@ -77,7 +86,7 @@ export interface EditorProps {
   initialContent: string;
   placeholder: string;
   onContentChange: (content: string) => void;
-  onPaste: (event: React.ClipboardEvent) => void;
+  onPaste: (event: ClipboardEvent) => void;
   isFocusMode?: boolean;
   isInIME?: boolean;
   onCompositionStart?: () => void;

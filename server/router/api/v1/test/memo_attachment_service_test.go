@@ -2,11 +2,13 @@ package test
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
+	"github.com/usememos/memos/store"
 )
 
 func TestSetMemoAttachments(t *testing.T) {
@@ -222,5 +224,123 @@ func TestSetMemoAttachments(t *testing.T) {
 		response, err := ts.Service.ListMemoAttachments(userCtx, &apiv1.ListMemoAttachmentsRequest{Name: memo.Name})
 		require.NoError(t, err)
 		require.Len(t, response.Attachments, 0)
+	})
+
+	t.Run("SetMemoAttachments denies attaching another user's attachment", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		victim, err := ts.CreateRegularUser(ctx, "attachment_victim")
+		require.NoError(t, err)
+		attacker, err := ts.CreateRegularUser(ctx, "attachment_attacker")
+		require.NoError(t, err)
+		victimCtx := ts.CreateUserContext(ctx, victim.ID)
+		attackerCtx := ts.CreateUserContext(ctx, attacker.ID)
+
+		victimAttachment, err := ts.Service.CreateAttachment(victimCtx, &apiv1.CreateAttachmentRequest{
+			Attachment: &apiv1.Attachment{
+				Filename: "secret.txt",
+				Size:     6,
+				Type:     "text/plain",
+				Content:  []byte("secret"),
+			},
+		})
+		require.NoError(t, err)
+
+		victimMemo, err := ts.Service.CreateMemo(victimCtx, &apiv1.CreateMemoRequest{
+			Memo: &apiv1.Memo{
+				Content:    "victim protected memo",
+				Visibility: apiv1.Visibility_PROTECTED,
+				Attachments: []*apiv1.Attachment{
+					{Name: victimAttachment.Name},
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		attackerMemo, err := ts.Service.CreateMemo(attackerCtx, &apiv1.CreateMemoRequest{
+			Memo: &apiv1.Memo{
+				Content:    "attacker public memo",
+				Visibility: apiv1.Visibility_PUBLIC,
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.SetMemoAttachments(attackerCtx, &apiv1.SetMemoAttachmentsRequest{
+			Name: attackerMemo.Name,
+			Attachments: []*apiv1.Attachment{
+				{Name: victimAttachment.Name},
+			},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "cannot attach another user's attachment")
+
+		victimAttachments, err := ts.Service.ListMemoAttachments(victimCtx, &apiv1.ListMemoAttachmentsRequest{Name: victimMemo.Name})
+		require.NoError(t, err)
+		require.Len(t, victimAttachments.Attachments, 1)
+		require.Equal(t, victimAttachment.Name, victimAttachments.Attachments[0].Name)
+
+		attackerAttachments, err := ts.Service.ListMemoAttachments(attackerCtx, &apiv1.ListMemoAttachmentsRequest{Name: attackerMemo.Name})
+		require.NoError(t, err)
+		require.Empty(t, attackerAttachments.Attachments)
+	})
+
+	t.Run("SetMemoAttachments denies removing another user's attached attachment", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		victim, err := ts.CreateRegularUser(ctx, "remove_victim")
+		require.NoError(t, err)
+		attacker, err := ts.CreateRegularUser(ctx, "remove_attacker")
+		require.NoError(t, err)
+		victimCtx := ts.CreateUserContext(ctx, victim.ID)
+		attackerCtx := ts.CreateUserContext(ctx, attacker.ID)
+
+		victimAttachment, err := ts.Service.CreateAttachment(victimCtx, &apiv1.CreateAttachmentRequest{
+			Attachment: &apiv1.Attachment{
+				Filename: "kept.txt",
+				Size:     4,
+				Type:     "text/plain",
+				Content:  []byte("kept"),
+			},
+		})
+		require.NoError(t, err)
+
+		attackerMemo, err := ts.Service.CreateMemo(attackerCtx, &apiv1.CreateMemoRequest{
+			Memo: &apiv1.Memo{
+				Content:    "contaminated memo",
+				Visibility: apiv1.Visibility_PUBLIC,
+			},
+		})
+		require.NoError(t, err)
+
+		attachmentUID := strings.TrimPrefix(victimAttachment.Name, "attachments/")
+		attachment, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachmentUID})
+		require.NoError(t, err)
+		require.NotNil(t, attachment)
+
+		memoUID := strings.TrimPrefix(attackerMemo.Name, "memos/")
+		memo, err := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+		require.NoError(t, err)
+		require.NotNil(t, memo)
+
+		err = ts.Store.UpdateAttachment(ctx, &store.UpdateAttachment{
+			ID:     attachment.ID,
+			MemoID: &memo.ID,
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.SetMemoAttachments(attackerCtx, &apiv1.SetMemoAttachmentsRequest{
+			Name:        attackerMemo.Name,
+			Attachments: []*apiv1.Attachment{},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "cannot remove another user's attachment")
+
+		attachmentAfter, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{ID: &attachment.ID})
+		require.NoError(t, err)
+		require.NotNil(t, attachmentAfter)
+		require.NotNil(t, attachmentAfter.MemoID)
+		require.Equal(t, memo.ID, *attachmentAfter.MemoID)
 	})
 }

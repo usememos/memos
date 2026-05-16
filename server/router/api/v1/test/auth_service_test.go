@@ -154,6 +154,23 @@ func TestListAndDeleteLinkedIdentities(t *testing.T) {
 	require.Empty(t, listResp.LinkedIdentities)
 }
 
+func TestListLinkedIdentitiesRequiresAuthentication(t *testing.T) {
+	t.Parallel()
+
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	ctx := context.Background()
+	user, err := ts.CreateRegularUser(ctx, "linked-identity-auth")
+	require.NoError(t, err)
+
+	_, err = ts.Service.ListLinkedIdentities(ctx, &v1pb.ListLinkedIdentitiesRequest{
+		Parent: apiv1.BuildUserName(user.Username),
+	})
+	require.Error(t, err)
+	require.Equal(t, codes.Unauthenticated, status.Code(err))
+}
+
 func TestCreateLinkedIdentityRejectsSecondIdentityForSameProvider(t *testing.T) {
 	t.Parallel()
 

@@ -15,6 +15,7 @@ export const memoKeys = {
   details: () => [...memoKeys.all, "detail"] as const,
   detail: (name: string) => [...memoKeys.details(), name] as const,
   comments: (name: string) => [...memoKeys.all, "comments", name] as const,
+  linkMetadata: (url: string) => [...memoKeys.all, "linkMetadata", url] as const,
 };
 
 type MemoPatch = Partial<Memo> & Pick<Memo, "name">;
@@ -146,6 +147,30 @@ export function useMemo(name: string, options?: { enabled?: boolean }) {
     },
     enabled: options?.enabled ?? true,
     staleTime: 1000 * 10, // 10 seconds - reduced to prevent stale data in collaborative editing
+  });
+}
+
+function isHTTPURL(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+export function useLinkMetadata(url: string, options?: { enabled?: boolean }) {
+  const trimmedUrl = url.trim();
+
+  return useQuery({
+    queryKey: memoKeys.linkMetadata(trimmedUrl),
+    queryFn: async () => {
+      const metadata = await memoServiceClient.getLinkMetadata({ url: trimmedUrl });
+      return metadata;
+    },
+    enabled: (options?.enabled ?? true) && isHTTPURL(trimmedUrl),
+    staleTime: 1000 * 60 * 60 * 24,
+    gcTime: 1000 * 60 * 60 * 24,
   });
 }
 

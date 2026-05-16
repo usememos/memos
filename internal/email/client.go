@@ -2,10 +2,14 @@ package email
 
 import (
 	"crypto/tls"
+	"net"
 	"net/smtp"
+	"time"
 
 	"github.com/pkg/errors"
 )
+
+const smtpOperationTimeout = 15 * time.Second
 
 // Client represents an SMTP email client.
 type Client struct {
@@ -78,13 +82,32 @@ func (c *Client) Send(message *Message) error {
 func (c *Client) sendWithTLS(auth smtp.Auth, recipients []string, body string) error {
 	serverAddr := c.config.GetServerAddress()
 
-	if c.config.UseTLS {
-		// Use STARTTLS
-		return smtp.SendMail(serverAddr, auth, c.config.FromEmail, recipients, []byte(body))
+	dialer := &net.Dialer{Timeout: smtpOperationTimeout}
+	conn, err := dialer.Dial("tcp", serverAddr)
+	if err != nil {
+		return errors.Wrapf(err, "failed to connect to SMTP server: %s", serverAddr)
+	}
+	defer conn.Close()
+	if err := conn.SetDeadline(time.Now().Add(smtpOperationTimeout)); err != nil {
+		return errors.Wrap(err, "failed to set SMTP connection deadline")
 	}
 
-	// Send without encryption (not recommended)
-	return smtp.SendMail(serverAddr, auth, c.config.FromEmail, recipients, []byte(body))
+	client, err := smtp.NewClient(conn, c.config.SMTPHost)
+	if err != nil {
+		return errors.Wrap(err, "failed to create SMTP client")
+	}
+	defer client.Quit()
+
+	if c.config.UseTLS {
+		if ok, _ := client.Extension("STARTTLS"); !ok {
+			return errors.New("SMTP server does not support STARTTLS")
+		}
+		if err := client.StartTLS(c.createTLSConfig()); err != nil {
+			return errors.Wrap(err, "failed to start SMTP STARTTLS")
+		}
+	}
+
+	return c.sendWithClient(client, auth, recipients, body)
 }
 
 // sendWithSSL sends email using SSL/TLS (port 465).
@@ -93,11 +116,15 @@ func (c *Client) sendWithSSL(auth smtp.Auth, recipients []string, body string) e
 
 	// Create TLS connection
 	tlsConfig := c.createTLSConfig()
-	conn, err := tls.Dial("tcp", serverAddr, tlsConfig)
+	dialer := &net.Dialer{Timeout: smtpOperationTimeout}
+	conn, err := tls.DialWithDialer(dialer, "tcp", serverAddr, tlsConfig)
 	if err != nil {
 		return errors.Wrapf(err, "failed to connect to SMTP server with SSL: %s", serverAddr)
 	}
 	defer conn.Close()
+	if err := conn.SetDeadline(time.Now().Add(smtpOperationTimeout)); err != nil {
+		return errors.Wrap(err, "failed to set SMTP connection deadline")
+	}
 
 	// Create SMTP client
 	client, err := smtp.NewClient(conn, c.config.SMTPHost)
@@ -106,7 +133,10 @@ func (c *Client) sendWithSSL(auth smtp.Auth, recipients []string, body string) e
 	}
 	defer client.Quit()
 
-	// Authenticate
+	return c.sendWithClient(client, auth, recipients, body)
+}
+
+func (c *Client) sendWithClient(client *smtp.Client, auth smtp.Auth, recipients []string, body string) error {
 	if auth != nil {
 		if err := client.Auth(auth); err != nil {
 			return errors.Wrap(err, "SMTP authentication failed")

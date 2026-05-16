@@ -1,14 +1,19 @@
 import L, { LatLng } from "leaflet";
+import "leaflet/dist/leaflet.css";
 import { ExternalLinkIcon, MinusIcon, PlusIcon } from "lucide-react";
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { MapContainer, Marker, useMap, useMapEvents } from "react-leaflet";
 import { cn } from "@/lib/utils";
 import { defaultMarkerIcon, ThemedTileLayer } from "./map-utils";
+import type { MapPoint } from "./types";
+
+const toLatLng = (point: MapPoint): LatLng => new LatLng(point.lat, point.lng);
+const fromLatLng = (latlng: LatLng): MapPoint => ({ lat: latlng.lat, lng: latlng.lng });
 
 interface LocationMarkerProps {
   position: LatLng | undefined;
-  onChange: (position: LatLng) => void;
+  onChange: (position: MapPoint) => void;
   readonly?: boolean;
 }
 
@@ -24,7 +29,7 @@ const LocationMarker = ({ position: initialPosition, onChange, readonly: readOnl
 
       setPosition(e.latlng);
       map.locate();
-      onChange(e.latlng);
+      onChange(fromLatLng(e.latlng));
     },
     locationfound() {},
   });
@@ -78,7 +83,7 @@ const GlassButton = ({ icon, onClick, ariaLabel, title }: GlassButtonProps) => {
 
 // Container for all map control buttons
 interface ControlButtonsProps {
-  position: LatLng | undefined;
+  position: MapPoint | undefined;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onOpenGoogleMaps: () => void;
@@ -126,7 +131,7 @@ class MapControlsContainer extends L.Control {
 }
 
 interface MapControlsProps {
-  position: LatLng | undefined;
+  position: MapPoint | undefined;
 }
 
 const MapControls = ({ position }: MapControlsProps) => {
@@ -197,16 +202,17 @@ const MapCleanup = () => {
 
 interface LocationPickerProps {
   readonly?: boolean;
-  latlng?: LatLng;
-  onChange?: (position: LatLng) => void;
+  latlng?: MapPoint;
+  onChange?: (position: MapPoint) => void;
   className?: string;
 }
 
-const DEFAULT_CENTER_LAT_LNG = new LatLng(48.8584, 2.2945);
+const DEFAULT_CENTER: MapPoint = { lat: 48.8584, lng: 2.2945 };
 const noopOnLocationChange = () => {};
 
 const LocationPicker = ({ readonly: readOnly = false, latlng, onChange = noopOnLocationChange, className }: LocationPickerProps) => {
-  const position = latlng || DEFAULT_CENTER_LAT_LNG;
+  const mapCenter = useMemo(() => toLatLng(latlng ?? DEFAULT_CENTER), [latlng?.lat, latlng?.lng]);
+  const markerPosition = mapCenter;
   const statusLabel = readOnly ? "Pinned location" : latlng ? "Selected location" : "Choose a location";
 
   return (
@@ -218,14 +224,14 @@ const LocationPicker = ({ readonly: readOnly = false, latlng, onChange = noopOnL
     >
       <MapContainer
         className="h-full w-full !bg-muted"
-        center={position}
+        center={mapCenter}
         zoom={13}
         scrollWheelZoom={false}
         zoomControl={false}
         attributionControl={false}
       >
         <ThemedTileLayer />
-        <LocationMarker position={position} readonly={readOnly} onChange={onChange} />
+        <LocationMarker position={markerPosition} readonly={readOnly} onChange={onChange} />
         <MapControls position={latlng} />
         <MapCleanup />
       </MapContainer>

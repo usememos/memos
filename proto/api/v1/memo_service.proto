@@ -126,6 +126,17 @@ service MemoService {
   rpc GetMemoByShare(GetMemoByShareRequest) returns (Memo) {
     option (google.api.http) = {get: "/api/v1/shares/{share_id}"};
   }
+  // GetLinkMetadata gets metadata for a link.
+  rpc GetLinkMetadata(GetLinkMetadataRequest) returns (LinkMetadata) {
+    option (google.api.http) = {get: "/api/v1/memos/-/linkMetadata"};
+  }
+  // BatchGetLinkMetadata gets metadata for links.
+  rpc BatchGetLinkMetadata(BatchGetLinkMetadataRequest) returns (BatchGetLinkMetadataResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/memos/-/linkMetadata:batchGet"
+      body: "*"
+    };
+  }
 }
 
 enum Visibility {
@@ -204,8 +215,8 @@ message Memo {
   // If not set on creation, the server will set it to the current time.
   google.protobuf.Timestamp update_time = 5 [(google.api.field_behavior) = OPTIONAL];
 
-  // The display timestamp of the memo.
-  google.protobuf.Timestamp display_time = 6 [(google.api.field_behavior) = OPTIONAL];
+  reserved 6;
+  reserved "display_time";
 
   // Required. The content of the memo in Markdown format.
   string content = 7 [(google.api.field_behavior) = REQUIRED];
@@ -291,10 +302,10 @@ message ListMemosRequest {
   State state = 3 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. The order to sort results by.
-  // Default to "display_time desc".
+  // Default to "create_time desc".
   // Supports comma-separated list of fields following AIP-132.
-  // Example: "pinned desc, display_time desc" or "create_time asc"
-  // Supported fields: pinned, display_time, create_time, update_time, name
+  // Example: "pinned desc, create_time desc" or "update_time asc"
+  // Supported fields: pinned, create_time, update_time, name
   string order_by = 4 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. Filter to apply to the list results.
@@ -594,4 +605,33 @@ message DeleteMemoShareRequest {
 message GetMemoByShareRequest {
   // Required. The share token extracted from the share URL (/s/{share_id}).
   string share_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetLinkMetadataRequest {
+  // Required. The link URL.
+  string url = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message BatchGetLinkMetadataRequest {
+  // Required. The link URLs.
+  repeated string urls = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message BatchGetLinkMetadataResponse {
+  // The link metadata list, in the same order as the input URLs.
+  repeated LinkMetadata link_metadata = 1;
+}
+
+message LinkMetadata {
+  // The original link URL.
+  string url = 1;
+
+  // The link title.
+  string title = 2;
+
+  // The link description.
+  string description = 3;
+
+  // The link image URL.
+  string image = 4;
 }

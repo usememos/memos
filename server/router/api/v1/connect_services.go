@@ -31,8 +31,32 @@ func (s *ConnectServiceHandler) GetInstanceSetting(ctx context.Context, req *con
 	return connect.NewResponse(resp), nil
 }
 
+func (s *ConnectServiceHandler) BatchGetInstanceSettings(ctx context.Context, req *connect.Request[v1pb.BatchGetInstanceSettingsRequest]) (*connect.Response[v1pb.BatchGetInstanceSettingsResponse], error) {
+	resp, err := s.APIV1Service.BatchGetInstanceSettings(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 func (s *ConnectServiceHandler) UpdateInstanceSetting(ctx context.Context, req *connect.Request[v1pb.UpdateInstanceSettingRequest]) (*connect.Response[v1pb.InstanceSetting], error) {
 	resp, err := s.APIV1Service.UpdateInstanceSetting(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) TestInstanceEmailSetting(ctx context.Context, req *connect.Request[v1pb.TestInstanceEmailSettingRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.TestInstanceEmailSetting(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) GetInstanceStats(ctx context.Context, req *connect.Request[v1pb.GetInstanceStatsRequest]) (*connect.Response[v1pb.InstanceStats], error) {
+	resp, err := s.APIV1Service.GetInstanceStats(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
@@ -409,6 +433,22 @@ func (s *ConnectServiceHandler) DeleteMemoShare(ctx context.Context, req *connec
 
 func (s *ConnectServiceHandler) GetMemoByShare(ctx context.Context, req *connect.Request[v1pb.GetMemoByShareRequest]) (*connect.Response[v1pb.Memo], error) {
 	resp, err := s.APIV1Service.GetMemoByShare(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) GetLinkMetadata(ctx context.Context, req *connect.Request[v1pb.GetLinkMetadataRequest]) (*connect.Response[v1pb.LinkMetadata], error) {
+	resp, err := s.APIV1Service.GetLinkMetadata(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) BatchGetLinkMetadata(ctx context.Context, req *connect.Request[v1pb.BatchGetLinkMetadataRequest]) (*connect.Response[v1pb.BatchGetLinkMetadataResponse], error) {
+	resp, err := s.APIV1Service.BatchGetLinkMetadata(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}

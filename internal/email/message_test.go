@@ -146,6 +146,29 @@ func TestMessageFormatMultipleRecipients(t *testing.T) {
 	}
 }
 
+func TestMessageFormatSanitizesHeaderValues(t *testing.T) {
+	msg := Message{
+		To:      []string{"user@example.com\r\nX-Injected-To: bad"},
+		Cc:      []string{"cc@example.com\r\nX-Injected-Cc: bad"},
+		Subject: "Test\r\nX-Injected-Subject: bad",
+		Body:    "Test Body",
+		ReplyTo: "reply@example.com\r\nX-Injected-Reply-To: bad",
+	}
+
+	formatted := msg.Format("sender@example.com\r\nX-Injected-From: bad", "Sender\r\nX-Injected-Name: bad")
+	headers := strings.SplitN(formatted, "\r\n\r\n", 2)[0]
+
+	if strings.Contains(headers, "\r\nX-Injected") {
+		t.Fatalf("header value injection was not sanitized:\n%s", headers)
+	}
+	if !strings.Contains(headers, "Subject: Test X-Injected-Subject: bad") {
+		t.Error("subject header was not normalized")
+	}
+	if !strings.Contains(headers, "From: Sender X-Injected-Name: bad <sender@example.com X-Injected-From: bad>") {
+		t.Error("from header was not normalized")
+	}
+}
+
 func TestGetAllRecipients(t *testing.T) {
 	msg := Message{
 		To:  []string{"user1@example.com", "user2@example.com"},

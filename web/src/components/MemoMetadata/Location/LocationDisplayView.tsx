@@ -1,7 +1,6 @@
-import { LatLng } from "leaflet";
 import { MapPinIcon } from "lucide-react";
 import { useState } from "react";
-import { LocationPicker } from "@/components/map";
+import { LazyLocationPicker } from "@/components/map/LazyLocationPicker";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import type { Location } from "@/types/proto/api/v1/memo_service_pb";
@@ -41,7 +40,7 @@ const LocationDisplayView = ({ location, className }: LocationDisplayViewProps) 
       </PopoverTrigger>
       <PopoverContent align="start">
         <div className="min-w-80 sm:w-lg flex flex-col justify-start items-start">
-          <LocationPicker latlng={new LatLng(location.latitude, location.longitude)} readonly={true} />
+          {popoverOpen && <LazyLocationPicker latlng={{ lat: location.latitude, lng: location.longitude }} readonly={true} />}
         </div>
       </PopoverContent>
     </Popover>

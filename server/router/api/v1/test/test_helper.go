@@ -32,6 +32,7 @@ func NewTestService(t *testing.T) *TestService {
 	testProfile := &profile.Profile{
 		Demo:        true,
 		Version:     "test-1.0.0",
+		Commit:      "test-commit",
 		InstanceURL: "http://localhost:8080",
 		Driver:      "sqlite",
 		DSN:         ":memory:",

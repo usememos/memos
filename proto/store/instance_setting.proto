@@ -103,8 +103,8 @@ message StorageS3Config {
 }
 
 message InstanceMemoRelatedSetting {
-  // display_with_update_time orders and displays memo with update time.
-  bool display_with_update_time = 2;
+  reserved 2;
+  reserved "display_with_update_time";
   // content_length_limit is the limit of content length. Unit is byte.
   int32 content_length_limit = 3;
   // enable_double_click_edit enables editing on double click.
@@ -149,6 +149,10 @@ message InstanceNotificationSetting {
 message InstanceAISetting {
   // providers is the list of AI provider configurations available instance-wide.
   repeated AIProviderConfig providers = 1;
+
+  // transcription is the speech-to-text feature configuration.
+  // When unset or transcription.provider_id is empty, transcription is disabled.
+  TranscriptionConfig transcription = 2;
 }
 
 message AIProviderConfig {
@@ -164,4 +168,32 @@ enum AIProviderType {
   AI_PROVIDER_TYPE_UNSPECIFIED = 0;
   OPENAI = 1;
   GEMINI = 2;
+}
+
+// TranscriptionConfig configures the speech-to-text feature.
+message TranscriptionConfig {
+  // provider_id references an entry in InstanceAISetting.providers[].id.
+  // Empty string means transcription is disabled.
+  string provider_id = 1;
+
+  // model is the provider-specific model identifier.
+  // Empty string falls back to the engine default.
+  // OPENAI examples:
+  //   - whisper-1 (legacy, lower cost)
+  //   - gpt-4o-transcribe, gpt-4o-mini-transcribe (higher quality)
+  //   - gpt-4o-transcribe-diarize (includes speaker labels)
+  // GEMINI examples:
+  //   - gemini-2.5-flash (default, multimodal call)
+  //   - gemini-2.5-pro
+  string model = 2;
+
+  // language is the default ISO 639-1 language hint sent to the provider.
+  // Empty string lets the provider auto-detect.
+  string language = 3;
+
+  // prompt is a default spelling/vocabulary hint passed to the provider.
+  // Used as the OpenAI Whisper "prompt" parameter (a soft hint that the model
+  // may ignore) and folded into the Gemini generation prompt as a "Context and
+  // spelling hints" block (which the LLM will treat more literally).
+  string prompt = 4;
 }

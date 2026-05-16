@@ -30,6 +30,8 @@ type Profile struct {
 	Driver string
 	// Version is the current version of server
 	Version string
+	// Commit is the current build commit of server
+	Commit string
 	// InstanceURL is the url of your memos instance.
 	InstanceURL string
 }

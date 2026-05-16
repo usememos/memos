@@ -15,6 +15,7 @@ func TestPublicMethodsArePublic(t *testing.T) {
 		// Instance Service
 		"/memos.api.v1.InstanceService/GetInstanceProfile",
 		"/memos.api.v1.InstanceService/GetInstanceSetting",
+		"/memos.api.v1.InstanceService/BatchGetInstanceSettings",
 		// User Service
 		"/memos.api.v1.UserService/CreateUser",
 		"/memos.api.v1.UserService/GetUser",
@@ -27,6 +28,8 @@ func TestPublicMethodsArePublic(t *testing.T) {
 		// Memo Service
 		"/memos.api.v1.MemoService/GetMemo",
 		"/memos.api.v1.MemoService/ListMemos",
+		"/memos.api.v1.MemoService/GetLinkMetadata",
+		"/memos.api.v1.MemoService/BatchGetLinkMetadata",
 	}
 
 	for _, method := range publicMethods {
@@ -44,6 +47,7 @@ func TestProtectedMethodsRequireAuth(t *testing.T) {
 		"/memos.api.v1.AuthService/GetCurrentUser",
 		// Instance Service - admin operations
 		"/memos.api.v1.InstanceService/UpdateInstanceSetting",
+		"/memos.api.v1.InstanceService/TestInstanceEmailSetting",
 		// User Service - modification operations
 		"/memos.api.v1.UserService/ListUsers",
 		"/memos.api.v1.UserService/UpdateUser",

@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/
 import { addMonths, formatMonth, getMonthFromDate, getYearFromDate, setYearAndMonth } from "@/lib/calendar-utils";
 import type { MonthNavigatorProps } from "@/types/statistics";
 
-export const MonthNavigator = memo(({ visibleMonth, onMonthChange, activityStats }: MonthNavigatorProps) => {
+export const MonthNavigator = memo(({ visibleMonth, onMonthChange, activityStats, timeBasis }: MonthNavigatorProps) => {
   const { i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -59,7 +59,13 @@ export const MonthNavigator = memo(({ visibleMonth, onMonthChange, activityStats
           showCloseButton={false}
         >
           <DialogTitle className="sr-only">Select Month</DialogTitle>
-          <YearCalendar selectedYear={currentYear} data={activityStats} onYearChange={handleYearChange} onDateClick={handleDateClick} />
+          <YearCalendar
+            selectedYear={currentYear}
+            data={activityStats}
+            onYearChange={handleYearChange}
+            onDateClick={handleDateClick}
+            timeBasis={timeBasis}
+          />
         </DialogContent>
       </Dialog>
 

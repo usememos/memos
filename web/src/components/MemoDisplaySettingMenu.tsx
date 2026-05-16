@@ -11,8 +11,8 @@ interface Props {
 
 function MemoDisplaySettingMenu({ className }: Props) {
   const t = useTranslate();
-  const { orderByTimeAsc, toggleSortOrder } = useView();
-  const isApplying = orderByTimeAsc !== false;
+  const { orderByTimeAsc, timeBasis, setTimeBasis, toggleSortOrder } = useView();
+  const isApplying = orderByTimeAsc !== false || timeBasis !== "create_time";
 
   return (
     <Popover>
@@ -22,7 +22,19 @@ function MemoDisplaySettingMenu({ className }: Props) {
       <PopoverContent align="end" alignOffset={-12} sideOffset={14}>
         <div className="flex flex-col gap-2 p-1">
           <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.direction")}</span>
+            <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.shown-time")}</span>
+            <Select value={timeBasis} onValueChange={(value) => setTimeBasis(value === "update_time" ? "update_time" : "create_time")}>
+              <SelectTrigger size="sm" className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="create_time">{t("common.created-at")}</SelectItem>
+                <SelectItem value="update_time">{t("common.last-updated-at")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="w-full flex flex-row justify-between items-center">
+            <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.order")}</span>
             <Select
               value={orderByTimeAsc.toString()}
               onValueChange={(value) => {
@@ -31,12 +43,12 @@ function MemoDisplaySettingMenu({ className }: Props) {
                 }
               }}
             >
-              <SelectTrigger size="sm">
+              <SelectTrigger size="sm" className="w-32">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="false">{t("memo.direction-desc")}</SelectItem>
-                <SelectItem value="true">{t("memo.direction-asc")}</SelectItem>
+                <SelectItem value="false">{t("memo.newest-first")}</SelectItem>
+                <SelectItem value="true">{t("memo.oldest-first")}</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -11,13 +11,18 @@ interface Props {
 
 const StatisticsView = (props: Props) => {
   const { statisticsData } = props;
-  const { activityStats } = statisticsData;
+  const { activityStats, timeBasis } = statisticsData;
   const navigateToDateFilter = useDateFilterNavigation();
   const [visibleMonthString, setVisibleMonthString] = useState(dayjs().format("YYYY-MM"));
 
   return (
     <div className="group w-full mt-2 flex flex-col text-muted-foreground animate-fade-in">
-      <MonthNavigator visibleMonth={visibleMonthString} onMonthChange={setVisibleMonthString} activityStats={activityStats} />
+      <MonthNavigator
+        visibleMonth={visibleMonthString}
+        onMonthChange={setVisibleMonthString}
+        activityStats={activityStats}
+        timeBasis={timeBasis}
+      />
 
       <div className="w-full animate-scale-in">
         <MonthCalendar
@@ -25,6 +30,7 @@ const StatisticsView = (props: Props) => {
           data={activityStats}
           maxCount={calculateMaxCount(activityStats)}
           onClick={navigateToDateFilter}
+          timeBasis={timeBasis}
         />
       </div>
     </div>

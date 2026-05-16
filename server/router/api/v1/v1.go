@@ -3,6 +3,8 @@ package v1
 import (
 	"context"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"connectrpc.com/connect"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -14,6 +16,7 @@ import (
 	"github.com/usememos/memos/internal/profile"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/server/auth"
+	"github.com/usememos/memos/server/notification"
 	"github.com/usememos/memos/store"
 )
 
@@ -29,15 +32,19 @@ type APIV1Service struct {
 	v1pb.UnimplementedShortcutServiceServer
 	v1pb.UnimplementedIdentityProviderServiceServer
 
-	Secret          string
-	Profile         *profile.Profile
-	Store           *store.Store
-	MarkdownService markdown.Service
-	SSEHub          *SSEHub
+	Secret                  string
+	Profile                 *profile.Profile
+	Store                   *store.Store
+	MarkdownService         markdown.Service
+	SSEHub                  *SSEHub
+	NotificationEmailSender notification.EmailSender
 
 	// thumbnailSemaphore limits concurrent thumbnail generation to prevent memory exhaustion
 	thumbnailSemaphore       *semaphore.Weighted
 	imageProcessingSemaphore *semaphore.Weighted
+
+	// instanceStatsCache memoizes GetInstanceStats results for instanceStatsCacheTTL.
+	instanceStatsCache instanceStatsCache
 }
 
 func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store) *APIV1Service {
@@ -51,6 +58,7 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 		Store:                    store,
 		MarkdownService:          markdownService,
 		SSEHub:                   NewSSEHub(),
+		NotificationEmailSender:  nil,
 		thumbnailSemaphore:       semaphore.NewWeighted(3), // Limit to 3 concurrent thumbnail generations
 		imageProcessingSemaphore: semaphore.NewWeighted(2),
 	}
@@ -143,8 +151,11 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 
 	// Wrap with CORS for browser access
 	corsHandler := middleware.CORSWithConfig(middleware.CORSConfig{
-		UnsafeAllowOriginFunc: func(_ *echo.Context, origin string) (string, bool, error) {
-			return origin, true, nil
+		UnsafeAllowOriginFunc: func(c *echo.Context, origin string) (string, bool, error) {
+			if s.isAllowedConnectOrigin(c, origin) {
+				return origin, true, nil
+			}
+			return "", false, nil
 		},
 		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodOptions},
 		AllowHeaders:     []string{"*"},
@@ -154,4 +165,24 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	connectGroup.Any("/memos.api.v1.*", echo.WrapHandler(http.MaxBytesHandler(connectMux, maxAPIRequestBytes)))
 
 	return nil
+}
+
+func (s *APIV1Service) isAllowedConnectOrigin(c *echo.Context, origin string) bool {
+	originURL, err := url.Parse(origin)
+	if err != nil || originURL.Scheme == "" || originURL.Host == "" {
+		return false
+	}
+
+	if strings.EqualFold(originURL.Host, c.Request().Host) {
+		return true
+	}
+
+	if s.Profile == nil || s.Profile.InstanceURL == "" {
+		return false
+	}
+	instanceURL, err := url.Parse(s.Profile.InstanceURL)
+	if err != nil || instanceURL.Scheme == "" || instanceURL.Host == "" {
+		return false
+	}
+	return strings.EqualFold(originURL.Scheme, instanceURL.Scheme) && strings.EqualFold(originURL.Host, instanceURL.Host)
 }

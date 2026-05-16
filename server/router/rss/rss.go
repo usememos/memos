@@ -86,9 +86,10 @@ func (s *RSSService) GetExploreRSS(c *echo.Context) error {
 	normalStatus := store.Normal
 	limit := maxRSSItemCount
 	memoFind := store.FindMemo{
-		RowStatus:      &normalStatus,
-		VisibilityList: []store.Visibility{store.Public},
-		Limit:          &limit,
+		RowStatus:       &normalStatus,
+		VisibilityList:  []store.Visibility{store.Public},
+		ExcludeComments: true,
+		Limit:           &limit,
 	}
 	memoList, err := s.Store.ListMemos(ctx, &memoFind)
 	if err != nil {
@@ -135,10 +136,11 @@ func (s *RSSService) GetUserRSS(c *echo.Context) error {
 	normalStatus := store.Normal
 	limit := maxRSSItemCount
 	memoFind := store.FindMemo{
-		CreatorID:      &user.ID,
-		RowStatus:      &normalStatus,
-		VisibilityList: []store.Visibility{store.Public},
-		Limit:          &limit,
+		CreatorID:       &user.ID,
+		RowStatus:       &normalStatus,
+		VisibilityList:  []store.Visibility{store.Public},
+		ExcludeComments: true,
+		Limit:           &limit,
 	}
 	memoList, err := s.Store.ListMemos(ctx, &memoFind)
 	if err != nil {

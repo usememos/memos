@@ -18,7 +18,7 @@ export const CalendarCell = memo((props: CalendarCellProps) => {
   const { day, maxCount, tooltipText, onClick, size = "default", disableTooltip = false } = props;
 
   const handleClick = () => {
-    if (day.count > 0 && onClick) {
+    if (onClick) {
       onClick(day.date);
     }
   };
@@ -32,7 +32,7 @@ export const CalendarCell = memo((props: CalendarCellProps) => {
     sizeConfig.borderRadius,
     smallExtraClasses,
   );
-  const isInteractive = Boolean(onClick && day.count > 0);
+  const isInteractive = Boolean(onClick);
   const ariaLabel = day.isSelected ? `${tooltipText} (selected)` : tooltipText;
 
   if (!day.isCurrentMonth) {
@@ -62,7 +62,7 @@ export const CalendarCell = memo((props: CalendarCellProps) => {
     </button>
   );
 
-  const shouldShowTooltip = tooltipText && day.count > 0 && !disableTooltip;
+  const shouldShowTooltip = tooltipText && !disableTooltip;
 
   if (!shouldShowTooltip) {
     return button;

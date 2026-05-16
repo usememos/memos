@@ -1,4 +1,3 @@
-import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
 import {
   FileIcon,
@@ -15,7 +14,8 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce } from "react-use";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
-import { useReverseGeocoding } from "@/components/map";
+import type { MapPoint } from "@/components/map/types";
+import { useReverseGeocoding } from "@/components/map/useReverseGeocoding";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -74,7 +74,7 @@ const InsertMenu = (props: InsertMenuProps) => {
     setPlaceholder,
   } = location;
 
-  const [debouncedPosition, setDebouncedPosition] = useState<LatLng | undefined>(undefined);
+  const [debouncedPosition, setDebouncedPosition] = useState<MapPoint | undefined>(undefined);
 
   useDebounce(
     () => {
@@ -104,7 +104,7 @@ const InsertMenu = (props: InsertMenuProps) => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            handleLocationPositionChange(new LatLng(position.coords.latitude, position.coords.longitude));
+            handleLocationPositionChange({ lat: position.coords.latitude, lng: position.coords.longitude });
           },
           (error) => {
             console.error("Geolocation error:", error);

@@ -7,18 +7,21 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"github.com/usememos/memos/internal/ai"
+	"github.com/usememos/memos/internal/ai/audiollm"
+	audiollmgemini "github.com/usememos/memos/internal/ai/audiollm/gemini"
+	"github.com/usememos/memos/internal/ai/stt"
+	sttopenai "github.com/usememos/memos/internal/ai/stt/openai"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
 const (
 	maxTranscriptionAudioSizeBytes = 25 * MebiByte
-	maxTranscriptionPromptLength   = 4096
-	maxTranscriptionLanguageLength = 32
 	maxTranscriptionFilenameLength = 255
 )
 
@@ -51,20 +54,6 @@ func (s *APIV1Service) Transcribe(ctx context.Context, request *v1pb.TranscribeR
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 
-	if strings.TrimSpace(request.ProviderId) == "" {
-		return nil, status.Errorf(codes.InvalidArgument, "provider_id is required")
-	}
-	if request.Config == nil {
-		return nil, status.Errorf(codes.InvalidArgument, "config is required")
-	}
-	prompt := strings.TrimSpace(request.Config.GetPrompt())
-	if len(prompt) > maxTranscriptionPromptLength {
-		return nil, status.Errorf(codes.InvalidArgument, "prompt is too long; maximum length is %d characters", maxTranscriptionPromptLength)
-	}
-	language := strings.TrimSpace(request.Config.GetLanguage())
-	if len(language) > maxTranscriptionLanguageLength {
-		return nil, status.Errorf(codes.InvalidArgument, "language is too long; maximum length is %d characters", maxTranscriptionLanguageLength)
-	}
 	if request.Audio == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "audio is required")
 	}
@@ -90,38 +79,121 @@ func (s *APIV1Service) Transcribe(ctx context.Context, request *v1pb.TranscribeR
 		return nil, status.Errorf(codes.InvalidArgument, "audio content type %q is not supported", contentType)
 	}
 
-	provider, model, err := s.resolveAIProviderForTranscription(ctx, request.ProviderId)
+	aiSetting, err := s.Store.GetInstanceAISetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get AI setting: %v", err)
+	}
+	persisted := aiSetting.GetTranscription()
+
+	providerID := persisted.GetProviderId()
+	if providerID == "" {
+		return nil, status.Errorf(codes.FailedPrecondition, "transcription is not configured")
+	}
+
+	provider, err := s.resolveAIProvider(aiSetting, providerID)
 	if err != nil {
 		return nil, err
 	}
-	transcriber, err := ai.NewTranscriber(provider)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "failed to create AI transcriber: %v", err)
+
+	model := persisted.GetModel()
+	if model == "" {
+		defaultModel, err := ai.DefaultTranscriptionModel(provider.Type)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "%v", err)
+		}
+		model = defaultModel
 	}
 
-	transcription, err := transcriber.Transcribe(ctx, ai.TranscribeRequest{
-		Model:       model,
-		Filename:    filename,
-		ContentType: contentType,
-		Audio:       bytes.NewReader(content),
-		Size:        int64(len(content)),
-		Prompt:      prompt,
-		Language:    language,
-	})
+	var text string
+	switch provider.Type {
+	case ai.ProviderOpenAI:
+		text, err = s.transcribeViaSTT(ctx, provider, persisted, model, content, filename, contentType)
+	case ai.ProviderGemini:
+		text, err = s.transcribeViaAudioLLM(ctx, provider, persisted, model, content, contentType)
+	default:
+		return nil, status.Errorf(codes.FailedPrecondition,
+			"provider type %q is not supported for transcription", provider.Type)
+	}
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to transcribe audio: %v", err)
 	}
-	return &v1pb.TranscribeResponse{
-		Text: transcription.Text,
-	}, nil
+	return &v1pb.TranscribeResponse{Text: text}, nil
 }
 
-func (s *APIV1Service) resolveAIProviderForTranscription(ctx context.Context, providerID string) (ai.ProviderConfig, string, error) {
-	setting, err := s.Store.GetInstanceAISetting(ctx)
+func (*APIV1Service) transcribeViaSTT(
+	ctx context.Context,
+	provider ai.ProviderConfig,
+	persisted *storepb.TranscriptionConfig,
+	model string,
+	content []byte,
+	filename string,
+	contentType string,
+) (string, error) {
+	transcriber, err := sttopenai.New(provider, stt.ApplyOptions(nil))
 	if err != nil {
-		return ai.ProviderConfig{}, "", status.Errorf(codes.Internal, "failed to get AI setting: %v", err)
+		return "", errors.Wrap(err, "failed to create STT transcriber")
 	}
+	resp, err := transcriber.Transcribe(ctx, stt.Request{
+		Audio:       bytes.NewReader(content),
+		Size:        int64(len(content)),
+		Filename:    filename,
+		ContentType: contentType,
+		Model:       model,
+		Prompt:      persisted.GetPrompt(),
+		Language:    persisted.GetLanguage(),
+	})
+	if err != nil {
+		return "", err
+	}
+	return resp.Text, nil
+}
 
+func (*APIV1Service) transcribeViaAudioLLM(
+	ctx context.Context,
+	provider ai.ProviderConfig,
+	persisted *storepb.TranscriptionConfig,
+	model string,
+	content []byte,
+	contentType string,
+) (string, error) {
+	m, err := audiollmgemini.New(provider, audiollm.ApplyOptions(nil))
+	if err != nil {
+		return "", errors.Wrap(err, "failed to create audio LLM")
+	}
+	resp, err := m.GenerateFromAudio(ctx, audiollm.Request{
+		Audio:        bytes.NewReader(content),
+		Size:         int64(len(content)),
+		ContentType:  contentType,
+		Model:        model,
+		Instructions: buildTranscriptionInstructions(persisted.GetPrompt(), persisted.GetLanguage()),
+	})
+	if err != nil {
+		return "", err
+	}
+	if resp.FinishReason != audiollm.FinishStop {
+		return "", errors.Errorf("transcription incomplete (finish reason: %s)", resp.FinishReason)
+	}
+	if strings.TrimSpace(resp.Text) == "" {
+		return "", errors.New("transcription response did not include text")
+	}
+	return resp.Text, nil
+}
+
+func buildTranscriptionInstructions(prompt, language string) string {
+	parts := []string{
+		"Transcribe the audio accurately. Return only the transcript text. " +
+			"Do not summarize, explain, or add content that is not spoken.",
+	}
+	if language = strings.TrimSpace(language); language != "" {
+		parts = append(parts, "The input language is "+language+".")
+	}
+	if prompt = strings.TrimSpace(prompt); prompt != "" {
+		parts = append(parts, "Context and spelling hints:\n"+prompt)
+	}
+	return strings.Join(parts, "\n\n")
+}
+
+func (*APIV1Service) resolveAIProvider(setting *storepb.InstanceAISetting, providerID string) (ai.ProviderConfig, error) {
 	providers := make([]ai.ProviderConfig, 0, len(setting.GetProviders()))
 	for _, provider := range setting.GetProviders() {
 		if provider == nil {
@@ -132,13 +204,9 @@ func (s *APIV1Service) resolveAIProviderForTranscription(ctx context.Context, pr
 
 	provider, err := ai.FindProvider(providers, providerID)
 	if err != nil {
-		return ai.ProviderConfig{}, "", status.Errorf(codes.NotFound, "AI provider not found")
+		return ai.ProviderConfig{}, status.Errorf(codes.FailedPrecondition, "transcription provider is not configured")
 	}
-	selectedModel, err := ai.DefaultTranscriptionModel(provider.Type)
-	if err != nil {
-		return ai.ProviderConfig{}, "", status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	return *provider, selectedModel, nil
+	return *provider, nil
 }
 
 func convertAIProviderConfigFromStore(provider *storepb.AIProviderConfig) ai.ProviderConfig {

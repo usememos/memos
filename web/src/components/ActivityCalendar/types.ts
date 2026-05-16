@@ -1,3 +1,5 @@
+import type { MemoTimeBasis } from "@/contexts/ViewContext";
+
 export type CalendarSize = "default" | "small";
 export type CalendarData = Record<string, number>;
 
@@ -28,6 +30,7 @@ export interface MonthCalendarProps {
   selectedDate?: string;
   className?: string;
   disableTooltips?: boolean;
+  timeBasis?: MemoTimeBasis;
 }
 
 export interface YearCalendarProps {
@@ -36,4 +39,5 @@ export interface YearCalendarProps {
   onYearChange: (year: number) => void;
   onDateClick: (date: string) => void;
   className?: string;
+  timeBasis?: MemoTimeBasis;
 }

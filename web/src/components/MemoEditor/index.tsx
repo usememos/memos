@@ -8,7 +8,7 @@ import { memoKeys } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
-import { InstanceSetting_AIProviderType, InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
+import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
 import {
@@ -28,11 +28,6 @@ import { EditorProvider, useEditorContext } from "./state";
 import type { MemoEditorProps } from "./types";
 import type { LocalFile } from "./types/attachment";
 
-const TRANSCRIPTION_PROVIDER_TYPES: InstanceSetting_AIProviderType[] = [
-  InstanceSetting_AIProviderType.OPENAI,
-  InstanceSetting_AIProviderType.GEMINI,
-];
-
 const MemoEditor = (props: MemoEditorProps) => (
   <EditorProvider>
     <MemoEditorImpl {...props} />
@@ -46,6 +41,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   parentMemoName,
   autoFocus,
   placeholder,
+  defaultCreateTime,
   onConfirm,
   onCancel,
 }) => {
@@ -60,15 +56,25 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const [isTranscribingAudio, setIsTranscribingAudio] = useState(false);
 
   const memoName = memo?.name;
-  const transcriptionProvider = useMemo(
-    () => aiSetting.providers.find((provider) => provider.apiKeySet && TRANSCRIPTION_PROVIDER_TYPES.includes(provider.type)),
-    [aiSetting.providers],
-  );
+  const canTranscribe = useMemo(() => {
+    const providerId = aiSetting.transcription?.providerId ?? "";
+    if (!providerId) return false;
+    const provider = aiSetting.providers.find((p) => p.id === providerId);
+    return Boolean(provider?.apiKeySet);
+  }, [aiSetting.providers, aiSetting.transcription?.providerId]);
 
   // Get default visibility from user settings
   const defaultVisibility = userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined;
 
-  const { isInitialized } = useMemoInit({ editorRef, memo, cacheKey, username: currentUser?.name ?? "", autoFocus, defaultVisibility });
+  const { isInitialized } = useMemoInit({
+    editorRef,
+    memo,
+    cacheKey,
+    username: currentUser?.name ?? "",
+    autoFocus,
+    defaultVisibility,
+    defaultCreateTime,
+  });
   const isDraftCacheEnabled = !memo;
 
   // Auto-save content to localStorage
@@ -76,6 +82,22 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
   // Focus mode management with body scroll lock
   useFocusMode(state.ui.isFocusMode);
+
+  // Live-sync the draft's createTime/updateTime to the calendar-derived prop.
+  // Only applies in create mode; edit mode owns its own timestamps. Runs after
+  // initial mount (the seed value is set in useMemoInit), and again whenever
+  // the prop changes — e.g., when the user picks a different calendar date
+  // while the editor is open.
+  useEffect(() => {
+    if (memo) return;
+    if (!isInitialized) return;
+    dispatch(
+      actions.setTimestamps({
+        createTime: defaultCreateTime,
+        updateTime: defaultCreateTime,
+      }),
+    );
+  }, [defaultCreateTime, memo, isInitialized, actions, dispatch]);
 
   useEffect(() => {
     if (!currentUser) {
@@ -104,7 +126,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
   const handleTranscribeRecordedAudio = useCallback(
     async (localFile: LocalFile) => {
-      if (!transcriptionProvider) {
+      if (!canTranscribe) {
         dispatch(actions.addLocalFile(localFile));
         setIsTranscribingAudio(false);
         setIsAudioRecorderOpen(false);
@@ -112,7 +134,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
       }
 
       try {
-        const text = (await transcriptionService.transcribeFile(localFile.file, transcriptionProvider)).trim();
+        const text = (await transcriptionService.transcribeFile(localFile.file)).trim();
         if (!text) {
           dispatch(actions.addLocalFile(localFile));
           toast.error(t("editor.audio-recorder.transcribe-empty"));
@@ -130,7 +152,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         setIsAudioRecorderOpen(false);
       }
     },
-    [actions, dispatch, insertTranscribedText, t, transcriptionProvider],
+    [actions, canTranscribe, dispatch, insertTranscribedText, t],
   );
 
   const audioRecorderActions = useMemo(
@@ -198,7 +220,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   };
 
   const handleTranscribeAudioRecording = () => {
-    if (!transcriptionProvider || isTranscribingAudio) {
+    if (!canTranscribe || isTranscribingAudio) {
       return;
     }
 
@@ -257,6 +279,13 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
       if (!memoName && defaultVisibility) {
         dispatch(actions.setMetadata({ visibility: defaultVisibility }));
       }
+      // Re-seed the calendar-derived timestamps so the popover stays visible
+      // and subsequent memos in the same filter session keep the prefilled date.
+      // Without this, the live-sync effect won't re-fire (its deps don't change
+      // across reset), and memo #2 onward would silently fall back to "now".
+      if (!memoName && defaultCreateTime) {
+        dispatch(actions.setTimestamps({ createTime: defaultCreateTime, updateTime: defaultCreateTime }));
+      }
 
       // Notify parent component of successful save
       onConfirm?.(result.memoName);
@@ -291,7 +320,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         {/* Exit button is absolutely positioned in top-right corner when active */}
         <FocusModeExitButton isActive={state.ui.isFocusMode} onToggle={handleToggleFocusMode} title={t("editor.exit-focus-mode")} />
 
-        {memoName && (
+        {(memoName || (!memo && state.timestamps.createTime)) && (
           <div className="w-full -mb-1">
             <TimestampPopover />
           </div>
@@ -308,7 +337,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
               onStop={audioRecorder.stopRecording}
               onCancel={handleCancelAudioRecording}
               onTranscribe={handleTranscribeAudioRecording}
-              canTranscribe={!!transcriptionProvider}
+              canTranscribe={canTranscribe}
               isTranscribing={isTranscribingAudio}
             />
           )}

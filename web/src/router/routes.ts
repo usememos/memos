@@ -1,11 +1,10 @@
 export const ROUTES = {
-  // Entry-only route. Hosts the landing redirect, never a business page.
-  ENTRY: "/",
-  // The authenticated user's primary workspace page.
-  HOME: "/home",
+  HOME: "/",
+  ABOUT: "/about",
   ATTACHMENTS: "/attachments",
   INBOX: "/inbox",
   ARCHIVED: "/archived",
+  SHORTCUTS: "/shortcuts",
   SETTING: "/setting",
   EXPLORE: "/explore",
   AUTH: "/auth",

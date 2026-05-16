@@ -21,6 +21,7 @@ const MainLayout = () => {
   const location = useLocation();
   const currentUser = useCurrentUser();
   const [profileUserName, setProfileUserName] = useState<string | undefined>();
+  const showMemoExplorer = location.pathname !== Routes.ABOUT;
 
   // Determine context based on current route
   const context: MemoExplorerContext = useMemo(() => {
@@ -69,12 +70,8 @@ const MainLayout = () => {
 
   return (
     <section className="@container w-full min-h-full flex flex-col justify-start items-center md:flex-row md:items-start">
-      {!md && (
-        <MobileHeader>
-          <MemoExplorerDrawer {...memoExplorerProps} />
-        </MobileHeader>
-      )}
-      {md && (
+      {!md && <MobileHeader>{showMemoExplorer && <MemoExplorerDrawer {...memoExplorerProps} />}</MobileHeader>}
+      {md && showMemoExplorer && (
         <div className={DESKTOP_EXPLORER_CLASS_NAME}>
           <MemoExplorer className="px-3 py-6" {...memoExplorerProps} />
         </div>

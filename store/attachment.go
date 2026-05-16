@@ -168,11 +168,18 @@ func (s *Store) DeleteAttachments(ctx context.Context, attachments []*Attachment
 		return err
 	}
 
+	instanceStorageSetting, instanceStorageSettingErr := s.getAttachmentStorageCleanupInstanceSetting(ctx, attachments)
 	for _, attachment := range attachments {
 		if attachment == nil {
 			continue
 		}
-		if err := s.DeleteAttachmentStorage(ctx, attachment); err != nil {
+		var err error
+		if instanceStorageSettingErr != nil && AttachmentNeedsInstanceStorageSetting(attachment) {
+			err = instanceStorageSettingErr
+		} else {
+			err = s.deleteAttachmentStorageImpl(ctx, attachment, instanceStorageSetting)
+		}
+		if err != nil {
 			if attachment.StorageType == storepb.AttachmentStorageType_LOCAL {
 				return errors.Wrap(err, "failed to delete local file")
 			}
@@ -184,6 +191,15 @@ func (s *Store) DeleteAttachments(ctx context.Context, attachments []*Attachment
 }
 
 func (s *Store) DeleteAttachmentStorage(ctx context.Context, attachment *Attachment) error {
+	return s.deleteAttachmentStorageImpl(ctx, attachment, nil)
+}
+
+// DeleteAttachmentStorageWithInstanceSetting deletes attachment storage using a preloaded instance storage setting.
+func (s *Store) DeleteAttachmentStorageWithInstanceSetting(ctx context.Context, attachment *Attachment, instanceStorageSetting *storepb.InstanceStorageSetting) error {
+	return s.deleteAttachmentStorageImpl(ctx, attachment, instanceStorageSetting)
+}
+
+func (s *Store) deleteAttachmentStorageImpl(ctx context.Context, attachment *Attachment, instanceStorageSetting *storepb.InstanceStorageSetting) error {
 	if attachment == nil {
 		return nil
 	}
@@ -211,12 +227,15 @@ func (s *Store) DeleteAttachmentStorage(ctx context.Context, attachment *Attachm
 			if s3ObjectPayload == nil {
 				return errors.Errorf("No s3 object found")
 			}
-			instanceStorageSetting, err := s.GetInstanceStorageSetting(ctx)
-			if err != nil {
-				return errors.Wrap(err, "failed to get instance storage setting")
-			}
 			s3Config := s3ObjectPayload.S3Config
 			if s3Config == nil {
+				if instanceStorageSetting == nil {
+					var err error
+					instanceStorageSetting, err = s.GetInstanceStorageSetting(ctx)
+					if err != nil {
+						return errors.Wrap(err, "failed to get instance storage setting")
+					}
+				}
 				if instanceStorageSetting.S3Config == nil {
 					return errors.Errorf("S3 config is not found")
 				}
@@ -238,6 +257,28 @@ func (s *Store) DeleteAttachmentStorage(ctx context.Context, attachment *Attachm
 
 	s.deleteAttachmentDerivedCaches(attachment)
 	return nil
+}
+
+func (s *Store) getAttachmentStorageCleanupInstanceSetting(ctx context.Context, attachments []*Attachment) (*storepb.InstanceStorageSetting, error) {
+	for _, attachment := range attachments {
+		if AttachmentNeedsInstanceStorageSetting(attachment) {
+			instanceStorageSetting, err := s.GetInstanceStorageSetting(ctx)
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to get instance storage setting")
+			}
+			return instanceStorageSetting, nil
+		}
+	}
+	return nil, nil
+}
+
+// AttachmentNeedsInstanceStorageSetting reports whether S3 cleanup needs the instance fallback storage setting.
+func AttachmentNeedsInstanceStorageSetting(attachment *Attachment) bool {
+	if attachment == nil || attachment.StorageType != storepb.AttachmentStorageType_S3 {
+		return false
+	}
+	s3ObjectPayload := attachment.Payload.GetS3Object()
+	return s3ObjectPayload != nil && s3ObjectPayload.S3Config == nil
 }
 
 func (s *Store) deleteAttachmentDerivedCaches(attachment *Attachment) {

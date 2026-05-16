@@ -141,7 +141,14 @@ func (a *Authenticator) AuthenticateToUser(ctx context.Context, authHeader, cook
 			if !strings.HasPrefix(token, PersonalAccessTokenPrefix) {
 				claims, err := a.AuthenticateByAccessTokenV2(token)
 				if err == nil && claims != nil {
-					return a.store.GetUser(ctx, &store.FindUser{ID: &claims.UserID})
+					user, err := a.store.GetUser(ctx, &store.FindUser{ID: &claims.UserID})
+					if err != nil {
+						return nil, err
+					}
+					if user == nil || user.RowStatus == store.Archived {
+						return nil, nil
+					}
+					return user, nil
 				}
 			} else {
 				user, _, err := a.AuthenticateByPAT(ctx, token)
@@ -174,6 +181,10 @@ func (a *Authenticator) Authenticate(ctx context.Context, authHeader string) *Au
 	if token != "" && !strings.HasPrefix(token, PersonalAccessTokenPrefix) {
 		claims, err := a.AuthenticateByAccessTokenV2(token)
 		if err == nil && claims != nil {
+			user, err := a.store.GetUser(ctx, &store.FindUser{ID: &claims.UserID})
+			if err != nil || user == nil || user.RowStatus == store.Archived {
+				return nil
+			}
 			return &AuthResult{
 				Claims:      claims,
 				AccessToken: token,

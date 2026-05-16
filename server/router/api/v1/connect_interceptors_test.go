@@ -2,11 +2,16 @@ package v1
 
 import (
 	"context"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"connectrpc.com/connect"
+	"github.com/labstack/echo/v5"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/emptypb"
+
+	"github.com/usememos/memos/internal/profile"
 )
 
 func TestMetadataInterceptorForwardsSecurityHeaders(t *testing.T) {
@@ -35,5 +40,26 @@ func TestMetadataInterceptorForwardsSecurityHeaders(t *testing.T) {
 
 	if _, err := handler(context.Background(), req); err != nil {
 		t.Fatalf("metadata interceptor returned error: %v", err)
+	}
+}
+
+func TestAllowedConnectOrigin(t *testing.T) {
+	service := &APIV1Service{
+		Profile: &profile.Profile{InstanceURL: "https://memos.example"},
+	}
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodOptions, "http://localhost/memos.api.v1.AuthService/SignIn", nil)
+	req.Host = "localhost"
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+
+	if !service.isAllowedConnectOrigin(ctx, "http://localhost") {
+		t.Fatal("expected same host origin to be allowed")
+	}
+	if !service.isAllowedConnectOrigin(ctx, "https://memos.example") {
+		t.Fatal("expected instance URL origin to be allowed")
+	}
+	if service.isAllowedConnectOrigin(ctx, "https://evil.example") {
+		t.Fatal("expected unknown origin to be denied")
 	}
 }

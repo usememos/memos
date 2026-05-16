@@ -1,22 +1,24 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowUpIcon } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
+import { deriveDefaultCreateTimeFromFilters } from "@/components/MemoEditor/utils/deriveDefaultCreateTime";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
+import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import Empty from "../Empty";
 import MemoEditor from "../MemoEditor";
 import MemoFilters from "../MemoFilters";
+import Placeholder from "../Placeholder";
 import Skeleton from "../Skeleton";
 
 interface Props {
-  renderer: (memo: Memo) => JSX.Element;
+  renderer: (memo: Memo) => ReactElement;
   listSort?: (list: Memo[]) => Memo[];
   state?: State;
   orderBy?: string;
@@ -82,13 +84,15 @@ function useAutoFetchWhenNotScrollable({
 const PagedMemoList = (props: Props) => {
   const t = useTranslate();
   const queryClient = useQueryClient();
+  const { filters } = useMemoFilterContext();
 
   const showMemoEditor = props.showMemoEditor ?? false;
+  const defaultCreateTime = useMemo(() => deriveDefaultCreateTimeFromFilters(filters), [filters]);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteMemos(
     {
       state: props.state || State.NORMAL,
-      orderBy: props.orderBy || "display_time desc",
+      orderBy: props.orderBy || "create_time desc",
       filter: props.filter,
       pageSize: props.pageSize || DEFAULT_LIST_MEMOS_PAGE_SIZE,
     },
@@ -152,7 +156,14 @@ const PagedMemoList = (props: Props) => {
           <Skeleton showCreator={props.showCreator} count={4} />
         ) : (
           <>
-            {showMemoEditor ? <MemoEditor className="mb-2" cacheKey="home-memo-editor" placeholder={t("editor.any-thoughts")} /> : null}
+            {showMemoEditor ? (
+              <MemoEditor
+                className="mb-2"
+                cacheKey="home-memo-editor"
+                placeholder={t("editor.any-thoughts")}
+                defaultCreateTime={defaultCreateTime}
+              />
+            ) : null}
             <MemoFilters />
             {sortedMemoList.map((memo) => props.renderer(memo))}
 
@@ -163,10 +174,7 @@ const PagedMemoList = (props: Props) => {
             {!isFetchingNextPage && (
               <>
                 {!hasNextPage && sortedMemoList.length === 0 ? (
-                  <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
-                    <Empty />
-                    <p className="mt-2 text-muted-foreground">{t("message.no-data")}</p>
-                  </div>
+                  <Placeholder variant="empty" message={t("message.no-data")} />
                 ) : (
                   <div className="w-full opacity-70 flex flex-row justify-center items-center my-4">
                     <BackToTop />

@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/docker/docker/api/types/container"
 	mysqldriver "github.com/go-sql-driver/mysql"
+	"github.com/moby/moby/api/types/container"
 	"github.com/pkg/errors"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/mysql"
@@ -78,8 +78,18 @@ func requireTestNetwork(ctx context.Context) (*testcontainers.DockerNetwork, err
 	return nw, nil
 }
 
+func skipIfContainerProviderUnavailable(t *testing.T) {
+	t.Helper()
+	if os.Getenv("SKIP_CONTAINER_TESTS") == "1" {
+		t.Skip("skipping container-based test (SKIP_CONTAINER_TESTS=1)")
+	}
+	testcontainers.SkipIfProviderIsNotHealthy(t)
+}
+
 // GetMySQLDSN starts a MySQL container (if not already running) and creates a fresh database for this test.
 func GetMySQLDSN(t *testing.T) string {
+	skipIfContainerProviderUnavailable(t)
+
 	ctx := context.Background()
 
 	mysqlOnce.Do(func() {
@@ -180,6 +190,8 @@ func waitForDB(driver, dsn string, timeout time.Duration) error {
 
 // GetPostgresDSN starts a PostgreSQL container (if not already running) and creates a fresh database for this test.
 func GetPostgresDSN(t *testing.T) string {
+	skipIfContainerProviderUnavailable(t)
+
 	ctx := context.Background()
 
 	postgresOnce.Do(func() {

@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"time"
 
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/usememos/memos/internal/storage/s3"
@@ -75,7 +76,8 @@ func (r *Runner) CheckAndPresign(ctx context.Context) {
 		// Process batch of attachments
 		presignCount := 0
 		for _, attachment := range attachments {
-			s3ObjectPayload := attachment.Payload.GetS3Object()
+			payload := cloneAttachmentPayload(attachment.Payload)
+			s3ObjectPayload := payload.GetS3Object()
 			if s3ObjectPayload == nil {
 				continue
 			}
@@ -114,11 +116,7 @@ func (r *Runner) CheckAndPresign(ctx context.Context) {
 			if err := r.Store.UpdateAttachment(ctx, &store.UpdateAttachment{
 				ID:        attachment.ID,
 				Reference: &presignURL,
-				Payload: &storepb.AttachmentPayload{
-					Payload: &storepb.AttachmentPayload_S3Object_{
-						S3Object: s3ObjectPayload,
-					},
-				},
+				Payload:   payload,
 			}); err != nil {
 				slog.Error("Failed to update attachment", "error", err, "attachmentID", attachment.ID)
 				continue
@@ -131,4 +129,15 @@ func (r *Runner) CheckAndPresign(ctx context.Context) {
 		// Move to next batch
 		offset += len(attachments)
 	}
+}
+
+func cloneAttachmentPayload(payload *storepb.AttachmentPayload) *storepb.AttachmentPayload {
+	if payload == nil {
+		return nil
+	}
+	cloned, ok := proto.Clone(payload).(*storepb.AttachmentPayload)
+	if !ok {
+		return nil
+	}
+	return cloned
 }

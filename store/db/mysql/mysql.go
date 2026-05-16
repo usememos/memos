@@ -57,6 +57,18 @@ func (d *DB) IsInitialized(ctx context.Context) (bool, error) {
 	return exists, nil
 }
 
+// GetDatabaseSize returns the database size in bytes, or -1 if unavailable.
+func (d *DB) GetDatabaseSize(ctx context.Context) (int64, error) {
+	var size int64
+	const q = `SELECT COALESCE(SUM(data_length + index_length), 0)
+	           FROM information_schema.tables
+	           WHERE table_schema = DATABASE()`
+	if err := d.db.QueryRowContext(ctx, q).Scan(&size); err != nil {
+		return -1, errors.Wrap(err, "failed to query mysql database size")
+	}
+	return size, nil
+}
+
 func mergeDSN(baseDSN string) (string, error) {
 	config, err := mysql.ParseDSN(baseDSN)
 	if err != nil {

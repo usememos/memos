@@ -14,8 +14,9 @@ var PublicMethods = map[string]struct{}{
 	"/memos.api.v1.AuthService/RefreshToken": {}, // Token refresh uses cookie, must be accessible when access token expired
 
 	// Instance Service - needed before login to show instance info
-	"/memos.api.v1.InstanceService/GetInstanceProfile": {},
-	"/memos.api.v1.InstanceService/GetInstanceSetting": {},
+	"/memos.api.v1.InstanceService/GetInstanceProfile":       {},
+	"/memos.api.v1.InstanceService/GetInstanceSetting":       {},
+	"/memos.api.v1.InstanceService/BatchGetInstanceSettings": {},
 
 	// User Service - public user profiles and stats
 	"/memos.api.v1.UserService/CreateUser":       {}, // Allow first user registration
@@ -29,9 +30,11 @@ var PublicMethods = map[string]struct{}{
 	"/memos.api.v1.IdentityProviderService/ListIdentityProviders": {},
 
 	// Memo Service - public memos (visibility filtering done in service layer)
-	"/memos.api.v1.MemoService/GetMemo":          {},
-	"/memos.api.v1.MemoService/ListMemos":        {},
-	"/memos.api.v1.MemoService/ListMemoComments": {},
+	"/memos.api.v1.MemoService/GetMemo":              {},
+	"/memos.api.v1.MemoService/ListMemos":            {},
+	"/memos.api.v1.MemoService/ListMemoComments":     {},
+	"/memos.api.v1.MemoService/GetLinkMetadata":      {},
+	"/memos.api.v1.MemoService/BatchGetLinkMetadata": {},
 
 	// Memo sharing - share-token endpoints require no authentication
 	"/memos.api.v1.MemoService/GetMemoByShare": {},

@@ -121,7 +121,7 @@ func (s *APIV1Service) dispatchMemoMentionNotifications(ctx context.Context, mem
 			payload.RelatedMemoId = relatedMemo.ID
 		}
 
-		if _, err := s.Store.CreateInbox(ctx, &store.Inbox{
+		if _, err := s.createInboxWithEmailNotification(ctx, &store.Inbox{
 			SenderID:   memo.CreatorID,
 			ReceiverID: target.ID,
 			Status:     store.UNREAD,

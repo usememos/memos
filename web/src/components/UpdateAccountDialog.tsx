@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import { convertFileToBase64 } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -32,6 +33,7 @@ interface State {
 function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
   const t = useTranslate();
   const currentUser = useCurrentUser();
+  const { setCurrentUser } = useAuth();
   const { generalSetting: instanceGeneralSetting } = useInstance();
   const { mutateAsync: updateUser } = useUpdateUser();
   const [state, setState] = useState<State>({
@@ -128,7 +130,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
       if (!isEqual(currentUser?.description, state.description)) {
         updateMask.push("description");
       }
-      await updateUser({
+      const updatedUser = await updateUser({
         user: {
           name: currentUser?.name,
           username: state.username,
@@ -139,6 +141,7 @@ function UpdateAccountDialog({ open, onOpenChange, onSuccess }: Props) {
         },
         updateMask,
       });
+      setCurrentUser(updatedUser);
       toast.success(t("message.update-succeed"));
       onSuccess?.();
       onOpenChange(false);

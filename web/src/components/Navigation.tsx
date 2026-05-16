@@ -1,4 +1,4 @@
-import { BellIcon, EarthIcon, LibraryIcon, PaperclipIcon, UserCircleIcon } from "lucide-react";
+import { BellIcon, EarthIcon, InfoIcon, LibraryIcon, PaperclipIcon, UserCircleIcon } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -40,6 +40,12 @@ const Navigation = (props: Props) => {
     title: t("common.explore"),
     icon: <EarthIcon className="w-6 h-auto shrink-0" />,
   };
+  const aboutNavLink: NavLinkItem = {
+    id: "header-about",
+    path: Routes.ABOUT,
+    title: t("common.about"),
+    icon: <InfoIcon className="w-6 h-auto shrink-0" />,
+  };
   const attachmentsNavLink: NavLinkItem = {
     id: "header-attachments",
     path: Routes.ATTACHMENTS,
@@ -71,7 +77,7 @@ const Navigation = (props: Props) => {
 
   const primaryNavLinks: NavLinkItem[] = currentUser
     ? [homeNavLink, exploreNavLink, attachmentsNavLink, inboxNavLink]
-    : [exploreNavLink, signInNavLink];
+    : [exploreNavLink, aboutNavLink, signInNavLink];
   const inboxAriaLabel = unreadCount > 0 ? `${t("common.inbox")}, ${unreadCount} unread` : t("common.inbox");
 
   return (
@@ -94,6 +100,7 @@ const Navigation = (props: Props) => {
               }
               key={navLink.id}
               to={navLink.path}
+              end={navLink.path === Routes.HOME}
               id={navLink.id}
               aria-label={navLink.id === "header-inbox" ? inboxAriaLabel : undefined}
               viewTransition

@@ -21,8 +21,6 @@ func TestTranscribe(t *testing.T) {
 		defer ts.Cleanup()
 
 		_, err := ts.Service.Transcribe(ctx, &v1pb.TranscribeRequest{
-			ProviderId: "openai-main",
-			Config:     &v1pb.TranscriptionConfig{},
 			Audio: &v1pb.TranscriptionAudio{
 				Source:      &v1pb.TranscriptionAudio_Content{Content: []byte("RIFF")},
 				Filename:    "voice.wav",
@@ -33,7 +31,7 @@ func TestTranscribe(t *testing.T) {
 		require.Contains(t, err.Error(), "user not authenticated")
 	})
 
-	t.Run("transcribes audio file with configured provider", func(t *testing.T) {
+	t.Run("transcribes audio file using persisted transcription setting", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -45,7 +43,8 @@ func TestTranscribe(t *testing.T) {
 			require.Equal(t, "/audio/transcriptions", r.URL.Path)
 			require.Equal(t, "Bearer sk-test", r.Header.Get("Authorization"))
 			require.NoError(t, r.ParseMultipartForm(10<<20))
-			require.Equal(t, "gpt-4o-transcribe", r.FormValue("model"))
+			require.Equal(t, "whisper-1", r.FormValue("model"))
+			require.Equal(t, "fr", r.FormValue("language"))
 			require.Equal(t, "names: Alice", r.FormValue("prompt"))
 
 			file, header, err := r.FormFile("file")
@@ -73,16 +72,18 @@ func TestTranscribe(t *testing.T) {
 							ApiKey:   "sk-test",
 						},
 					},
+					Transcription: &storepb.TranscriptionConfig{
+						ProviderId: "openai-main",
+						Model:      "whisper-1",
+						Language:   "fr",
+						Prompt:     "names: Alice",
+					},
 				},
 			},
 		})
 		require.NoError(t, err)
 
 		resp, err := ts.Service.Transcribe(userCtx, &v1pb.TranscribeRequest{
-			ProviderId: "openai-main",
-			Config: &v1pb.TranscriptionConfig{
-				Prompt: "names: Alice",
-			},
 			Audio: &v1pb.TranscriptionAudio{
 				Source:      &v1pb.TranscriptionAudio_Content{Content: []byte("RIFF")},
 				Filename:    "voice.wav",
@@ -117,14 +118,15 @@ func TestTranscribe(t *testing.T) {
 							ApiKey:   "sk-test",
 						},
 					},
+					Transcription: &storepb.TranscriptionConfig{
+						ProviderId: "openai-main",
+					},
 				},
 			},
 		})
 		require.NoError(t, err)
 
 		_, err = ts.Service.Transcribe(userCtx, &v1pb.TranscribeRequest{
-			ProviderId: "openai-main",
-			Config:     &v1pb.TranscriptionConfig{},
 			Audio: &v1pb.TranscriptionAudio{
 				Source:      &v1pb.TranscriptionAudio_Content{Content: []byte("RIFF")},
 				Filename:    "voice.wav",
@@ -150,6 +152,7 @@ func TestTranscribe(t *testing.T) {
 			require.NoError(t, json.NewEncoder(w).Encode(map[string]any{
 				"candidates": []map[string]any{
 					{
+						"finishReason": "STOP",
 						"content": map[string]any{
 							"parts": []map[string]string{{"text": "gemini transcript"}},
 						},
@@ -172,14 +175,15 @@ func TestTranscribe(t *testing.T) {
 							ApiKey:   "gemini-key",
 						},
 					},
+					Transcription: &storepb.TranscriptionConfig{
+						ProviderId: "gemini-main",
+					},
 				},
 			},
 		})
 		require.NoError(t, err)
 
 		resp, err := ts.Service.Transcribe(userCtx, &v1pb.TranscribeRequest{
-			ProviderId: "gemini-main",
-			Config:     &v1pb.TranscriptionConfig{},
 			Audio: &v1pb.TranscriptionAudio{
 				Source:      &v1pb.TranscriptionAudio_Content{Content: []byte("mp3 bytes")},
 				Filename:    "voice.mp3",
@@ -190,7 +194,7 @@ func TestTranscribe(t *testing.T) {
 		require.Equal(t, "gemini transcript", resp.Text)
 	})
 
-	t.Run("uses built-in transcription model", func(t *testing.T) {
+	t.Run("falls back to engine default model when transcription model is empty", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -200,7 +204,7 @@ func TestTranscribe(t *testing.T) {
 
 		openAIServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			require.NoError(t, r.ParseMultipartForm(10<<20))
-			require.Equal(t, "gpt-4o-transcribe", r.FormValue("model"))
+			require.Equal(t, "whisper-1", r.FormValue("model"))
 			w.Header().Set("Content-Type", "application/json")
 			require.NoError(t, json.NewEncoder(w).Encode(map[string]string{
 				"text": "built-in model",
@@ -221,14 +225,15 @@ func TestTranscribe(t *testing.T) {
 							ApiKey:   "sk-test",
 						},
 					},
+					Transcription: &storepb.TranscriptionConfig{
+						ProviderId: "openai-main",
+					},
 				},
 			},
 		})
 		require.NoError(t, err)
 
 		resp, err := ts.Service.Transcribe(userCtx, &v1pb.TranscribeRequest{
-			ProviderId: "openai-main",
-			Config:     &v1pb.TranscriptionConfig{},
 			Audio: &v1pb.TranscriptionAudio{
 				Source:      &v1pb.TranscriptionAudio_Content{Content: []byte("RIFF")},
 				Filename:    "voice.wav",
@@ -247,27 +252,7 @@ func TestTranscribe(t *testing.T) {
 		require.NoError(t, err)
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
-			Key: storepb.InstanceSettingKey_AI,
-			Value: &storepb.InstanceSetting_AiSetting{
-				AiSetting: &storepb.InstanceAISetting{
-					Providers: []*storepb.AIProviderConfig{
-						{
-							Id:       "openai-main",
-							Title:    "OpenAI",
-							Type:     storepb.AIProviderType_OPENAI,
-							Endpoint: "https://example.com/v1",
-							ApiKey:   "sk-test",
-						},
-					},
-				},
-			},
-		})
-		require.NoError(t, err)
-
 		_, err = ts.Service.Transcribe(userCtx, &v1pb.TranscribeRequest{
-			ProviderId: "openai-main",
-			Config:     &v1pb.TranscriptionConfig{},
 			Audio: &v1pb.TranscriptionAudio{
 				Source:      &v1pb.TranscriptionAudio_Content{Content: []byte("not audio")},
 				Filename:    "notes.txt",
@@ -276,5 +261,24 @@ func TestTranscribe(t *testing.T) {
 		})
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "not supported")
+	})
+
+	t.Run("returns FailedPrecondition when transcription is not configured", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "alice-empty")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+
+		_, err = ts.Service.Transcribe(userCtx, &v1pb.TranscribeRequest{
+			Audio: &v1pb.TranscriptionAudio{
+				Source:      &v1pb.TranscriptionAudio_Content{Content: []byte("RIFF")},
+				Filename:    "voice.wav",
+				ContentType: "audio/wav",
+			},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "transcription is not configured")
 	})
 }

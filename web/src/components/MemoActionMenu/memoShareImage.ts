@@ -55,7 +55,7 @@ const waitForPreviewAssets = async (node: HTMLElement) => {
 };
 
 export const buildMemoShareImageFileName = (memoName: string) => {
-  const suffix = memoName.split("/").pop() ?? "memo";
+  const suffix = memoName.split("/").pop() || "memo";
   return `memo-${suffix}.png`;
 };
 

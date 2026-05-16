@@ -1,4 +1,14 @@
-import { ArchiveIcon, CheckIcon, GlobeIcon, LogOutIcon, PaletteIcon, SettingsIcon, SquareUserIcon, User2Icon } from "lucide-react";
+import {
+  ArchiveIcon,
+  CheckIcon,
+  GlobeIcon,
+  InfoIcon,
+  LogOutIcon,
+  PaletteIcon,
+  SettingsIcon,
+  SquareUserIcon,
+  User2Icon,
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useSSEConnectionStatus } from "@/hooks/useLiveMemoRefresh";
@@ -131,6 +141,10 @@ const UserMenu = (props: Props) => {
         <DropdownMenuItem onClick={() => navigateTo(Routes.ARCHIVED)}>
           <ArchiveIcon className="size-4 text-muted-foreground" />
           {t("common.archived")}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigateTo(Routes.ABOUT)}>
+          <InfoIcon className="size-4 text-muted-foreground" />
+          {t("common.about")}
         </DropdownMenuItem>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>

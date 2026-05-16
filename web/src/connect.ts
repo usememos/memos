@@ -121,7 +121,7 @@ async function refreshAndGetAccessToken(): Promise<string> {
   return token;
 }
 
-async function getRequestToken(): Promise<string | null> {
+export async function getRequestToken(): Promise<string | null> {
   let token = getAccessToken();
   if (!token) {
     if (!hasStoredToken()) return null;

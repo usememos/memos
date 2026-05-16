@@ -1,10 +1,9 @@
 import { lazy } from "react";
-import { createBrowserRouter, type RouteObject } from "react-router-dom";
+import { createBrowserRouter, Navigate, type RouteObject } from "react-router-dom";
 import App from "@/App";
 import { ChunkLoadErrorFallback } from "@/components/ErrorBoundary";
 import MainLayout from "@/layouts/MainLayout";
 import RootLayout from "@/layouts/RootLayout";
-import Home from "@/pages/Home";
 import { LandingRoute, RequireAuthRoute, RequireGuestRoute } from "./guards";
 import { ROUTES } from "./routes";
 
@@ -26,15 +25,18 @@ function lazyWithReload<T extends React.ComponentType>(factory: () => Promise<{ 
 }
 
 const AdminSignIn = lazyWithReload(() => import("@/pages/AdminSignIn"));
+const About = lazyWithReload(() => import("@/pages/About"));
 const Archived = lazyWithReload(() => import("@/pages/Archived"));
 const AuthCallback = lazyWithReload(() => import("@/pages/AuthCallback"));
 const Explore = lazyWithReload(() => import("@/pages/Explore"));
+const Home = lazyWithReload(() => import("@/pages/Home"));
 const Inboxes = lazyWithReload(() => import("@/pages/Inboxes"));
 const MemoDetail = lazyWithReload(() => import("@/pages/MemoDetail"));
 const NotFound = lazyWithReload(() => import("@/pages/NotFound"));
 const PermissionDenied = lazyWithReload(() => import("@/pages/PermissionDenied"));
 const Attachments = lazyWithReload(() => import("@/pages/Attachments"));
 const Setting = lazyWithReload(() => import("@/pages/Setting"));
+const Shortcuts = lazyWithReload(() => import("@/pages/Shortcuts"));
 const SignIn = lazyWithReload(() => import("@/pages/SignIn"));
 const SignUp = lazyWithReload(() => import("@/pages/SignUp"));
 const UserProfile = lazyWithReload(() => import("@/pages/UserProfile"));
@@ -71,21 +73,26 @@ export const routeConfig: RouteObject[] = [
           },
         ],
       },
-      { index: true, element: <LandingRoute /> },
+      // Backward compatibility: the old `/home` URL now lives at `/`.
+      { path: "home", element: <Navigate to={Routes.HOME} replace /> },
       {
-        path: Routes.ENTRY,
         element: <RootLayout />,
         children: [
           {
             element: <MainLayout />,
             children: [
+              {
+                element: <LandingRoute />,
+                children: [{ index: true, element: <Home /> }],
+              },
+              { path: Routes.ABOUT, element: <About /> },
               { path: Routes.EXPLORE, element: <Explore /> },
               { path: "u/:username", element: <UserProfile /> },
               {
                 element: <RequireAuthRoute />,
                 children: [
-                  { path: Routes.HOME, element: <Home /> },
                   { path: Routes.ARCHIVED, element: <Archived /> },
+                  { path: Routes.SHORTCUTS, element: <Shortcuts /> },
                 ],
               },
             ],

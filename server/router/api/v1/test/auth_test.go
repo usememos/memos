@@ -78,6 +78,33 @@ func TestAuthenticatorAccessTokenV2(t *testing.T) {
 		_, err = authenticator.AuthenticateByAccessTokenV2(token)
 		assert.Error(t, err)
 	})
+
+	t.Run("request authentication rejects archived user", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "archived-access-token")
+		require.NoError(t, err)
+		token, _, err := auth.GenerateAccessTokenV2(
+			user.ID,
+			user.Username,
+			string(user.Role),
+			string(user.RowStatus),
+			[]byte(ts.Secret),
+		)
+		require.NoError(t, err)
+
+		archivedStatus := store.Archived
+		_, err = ts.Store.UpdateUser(ctx, &store.UpdateUser{
+			ID:        user.ID,
+			RowStatus: &archivedStatus,
+		})
+		require.NoError(t, err)
+
+		authenticator := auth.NewAuthenticator(ts.Store, ts.Secret)
+		result := authenticator.Authenticate(ctx, "Bearer "+token)
+		assert.Nil(t, result)
+	})
 }
 
 func TestAuthenticatorRefreshToken(t *testing.T) {

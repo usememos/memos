@@ -1,6 +1,7 @@
 package test
 
 import (
+	"bufio"
 	"context"
 	"io"
 	"net/http"
@@ -76,6 +77,27 @@ func TestSSEHandler_Authentication(t *testing.T) {
 		rec := httptest.NewRecorder()
 		e.ServeHTTP(rec, req)
 		require.Equal(t, http.StatusUnauthorized, rec.Code)
+	})
+
+	t.Run("valid token streams initial comment", func(t *testing.T) {
+		server := httptest.NewServer(e)
+		defer server.Close()
+
+		reqCtx, cancel := context.WithTimeout(ctx, time.Second)
+		defer cancel()
+		req, err := http.NewRequestWithContext(reqCtx, http.MethodGet, server.URL+"/api/v1/sse", nil)
+		require.NoError(t, err)
+		req.Header.Set("Authorization", "Bearer "+token)
+
+		resp, err := server.Client().Do(req)
+		require.NoError(t, err)
+		defer resp.Body.Close()
+		require.Equal(t, http.StatusOK, resp.StatusCode)
+		require.Equal(t, "text/event-stream", resp.Header.Get("Content-Type"))
+
+		line, err := bufio.NewReader(resp.Body).ReadString('\n')
+		require.NoError(t, err)
+		require.Equal(t, ": connected\n", line)
 	})
 
 	t.Run("hub close disconnects stream", func(t *testing.T) {

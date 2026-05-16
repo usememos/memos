@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -9,6 +10,7 @@ import (
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
+	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
 func TestGetInstanceProfile(t *testing.T) {
@@ -29,6 +31,7 @@ func TestGetInstanceProfile(t *testing.T) {
 
 		// Verify the response contains expected data
 		require.Equal(t, "test-1.0.0", resp.Version)
+		require.Equal(t, "test-commit", resp.Commit)
 		require.True(t, resp.Demo)
 		require.Equal(t, "http://localhost:8080", resp.InstanceUrl)
 
@@ -56,6 +59,7 @@ func TestGetInstanceProfile(t *testing.T) {
 
 		// Verify the response contains expected data with initialized flag
 		require.Equal(t, "test-1.0.0", resp.Version)
+		require.Equal(t, "test-commit", resp.Commit)
 		require.True(t, resp.Demo)
 		require.Equal(t, "http://localhost:8080", resp.InstanceUrl)
 
@@ -102,6 +106,7 @@ func TestGetInstanceProfile_Concurrency(t *testing.T) {
 			case resp := <-results:
 				require.NotNil(t, resp)
 				require.Equal(t, "test-1.0.0", resp.Version)
+				require.Equal(t, "test-commit", resp.Commit)
 				require.True(t, resp.Demo)
 				require.Equal(t, "http://localhost:8080", resp.InstanceUrl)
 				require.NotNil(t, resp.Admin)
@@ -282,6 +287,142 @@ func TestGetInstanceSetting(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "invalid instance setting name")
 	})
+}
+
+func TestBatchGetInstanceSettings(t *testing.T) {
+	ctx := context.Background()
+
+	t.Run("BatchGetInstanceSettings - returns settings in request order", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		resp, err := ts.Service.BatchGetInstanceSettings(ctx, &v1pb.BatchGetInstanceSettingsRequest{
+			Names: []string{
+				"instance/settings/TAGS",
+				"instance/settings/GENERAL",
+				"instance/settings/MEMO_RELATED",
+			},
+		})
+
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.Len(t, resp.Settings, 3)
+		require.Equal(t, "instance/settings/TAGS", resp.Settings[0].Name)
+		require.NotNil(t, resp.Settings[0].GetTagsSetting())
+		require.Equal(t, "instance/settings/GENERAL", resp.Settings[1].Name)
+		require.NotNil(t, resp.Settings[1].GetGeneralSetting())
+		require.Equal(t, "instance/settings/MEMO_RELATED", resp.Settings[2].Name)
+		require.NotNil(t, resp.Settings[2].GetMemoRelatedSetting())
+	})
+
+	t.Run("BatchGetInstanceSettings - admin-only setting requires admin", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		regularUser, err := ts.CreateRegularUser(ctx, "batch-user")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, regularUser.ID)
+
+		_, err = ts.Service.BatchGetInstanceSettings(userCtx, &v1pb.BatchGetInstanceSettingsRequest{
+			Names: []string{"instance/settings/GENERAL", "instance/settings/NOTIFICATION"},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "permission denied")
+
+		admin, err := ts.CreateHostUser(ctx, "batch-admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, admin.ID)
+
+		resp, err := ts.Service.BatchGetInstanceSettings(adminCtx, &v1pb.BatchGetInstanceSettingsRequest{
+			Names: []string{"instance/settings/GENERAL", "instance/settings/NOTIFICATION"},
+		})
+		require.NoError(t, err)
+		require.Len(t, resp.Settings, 2)
+		require.NotNil(t, resp.Settings[1].GetNotificationSetting())
+	})
+
+	t.Run("BatchGetInstanceSettings - invalid setting name", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		_, err := ts.Service.BatchGetInstanceSettings(ctx, &v1pb.BatchGetInstanceSettingsRequest{
+			Names: []string{"instance/settings/GENERAL", "invalid/setting/name"},
+		})
+
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "invalid instance setting name")
+	})
+}
+
+func TestTestInstanceEmailSettingAuthorization(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	admin, err := ts.CreateHostUser(ctx, "email-test-admin")
+	require.NoError(t, err)
+	adminCtx := ts.CreateUserContext(ctx, admin.ID)
+
+	regularUser, err := ts.CreateRegularUser(ctx, "email-test-user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, regularUser.ID)
+
+	req := &v1pb.TestInstanceEmailSettingRequest{}
+
+	_, err = ts.Service.TestInstanceEmailSetting(ctx, req)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "not authenticated")
+
+	_, err = ts.Service.TestInstanceEmailSetting(userCtx, req)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "permission denied")
+
+	_, err = ts.Service.TestInstanceEmailSetting(adminCtx, req)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "invalid notification email setting")
+}
+
+func TestTestInstanceEmailSettingRequiresPasswordWhenSMTPIdentityChanges(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	admin, err := ts.CreateHostUser(ctx, "email-test-identity-admin")
+	require.NoError(t, err)
+	adminCtx := ts.CreateUserContext(ctx, admin.ID)
+
+	_, err = ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_NOTIFICATION,
+		Value: &storepb.InstanceSetting_NotificationSetting{
+			NotificationSetting: &storepb.InstanceNotificationSetting{
+				Email: &storepb.InstanceNotificationSetting_EmailSetting{
+					Enabled:      true,
+					SmtpHost:     "smtp.example.com",
+					SmtpPort:     587,
+					SmtpUsername: "bot@example.com",
+					SmtpPassword: "stored-password",
+					FromEmail:    "bot@example.com",
+					UseTls:       true,
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = ts.Service.TestInstanceEmailSetting(adminCtx, &v1pb.TestInstanceEmailSettingRequest{
+		Email: &v1pb.InstanceSetting_NotificationSetting_EmailSetting{
+			Enabled:      true,
+			SmtpHost:     "attacker.example.com",
+			SmtpPort:     587,
+			SmtpUsername: "bot@example.com",
+			SmtpPassword: "",
+			FromEmail:    "bot@example.com",
+			UseTls:       true,
+		},
+		RecipientEmail: admin.Email,
+	})
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "smtp password is required")
 }
 
 func TestUpdateInstanceSetting(t *testing.T) {
@@ -478,7 +619,7 @@ func TestUpdateInstanceSetting(t *testing.T) {
 
 		// Second update with an empty password (simulating a UI that doesn't re-send the secret).
 		notificationSetting.GetNotificationSetting().GetEmail().SmtpPassword = ""
-		notificationSetting.GetNotificationSetting().GetEmail().SmtpHost = "smtp2.example.com"
+		notificationSetting.GetNotificationSetting().GetEmail().FromName = "Updated Bot"
 		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
 			Setting: notificationSetting,
 		})
@@ -489,7 +630,46 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, "original-password", stored.GetEmail().GetSmtpPassword(),
 			"existing SmtpPassword must be preserved when an empty value is sent")
-		require.Equal(t, "smtp2.example.com", stored.GetEmail().GetSmtpHost())
+		require.Equal(t, "Updated Bot", stored.GetEmail().GetFromName())
+	})
+
+	t.Run("UpdateInstanceSetting - empty password rejected when SMTP identity changes", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		notificationSetting := &v1pb.InstanceSetting{
+			Name: "instance/settings/NOTIFICATION",
+			Value: &v1pb.InstanceSetting_NotificationSetting_{
+				NotificationSetting: &v1pb.InstanceSetting_NotificationSetting{
+					Email: &v1pb.InstanceSetting_NotificationSetting_EmailSetting{
+						Enabled:      true,
+						SmtpHost:     "smtp.example.com",
+						SmtpPort:     587,
+						SmtpUsername: "bot@example.com",
+						SmtpPassword: "original-password",
+						FromEmail:    "bot@example.com",
+						UseTls:       true,
+					},
+				},
+			},
+		}
+
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
+			Setting: notificationSetting,
+		})
+		require.NoError(t, err)
+
+		notificationSetting.GetNotificationSetting().GetEmail().SmtpPassword = ""
+		notificationSetting.GetNotificationSetting().GetEmail().SmtpHost = "smtp2.example.com"
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
+			Setting: notificationSetting,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "smtp password is required")
 	})
 
 	t.Run("UpdateInstanceSetting - S3 secret is write-only and preserved on empty", func(t *testing.T) {
@@ -616,5 +796,150 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		require.Equal(t, "sk-original", stored.GetProviders()[0].GetApiKey(),
 			"existing AI provider API key must be preserved when an empty value is sent")
 		require.Equal(t, "OpenAI primary", stored.GetProviders()[0].GetTitle())
+	})
+
+	t.Run("UpdateInstanceSetting - transcription provider_id must reference an existing provider", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/AI",
+				Value: &v1pb.InstanceSetting_AiSetting{
+					AiSetting: &v1pb.InstanceSetting_AISetting{
+						Providers: []*v1pb.InstanceSetting_AIProviderConfig{
+							{
+								Id:     "openai-main",
+								Title:  "OpenAI",
+								Type:   v1pb.InstanceSetting_OPENAI,
+								ApiKey: "sk-test",
+							},
+						},
+						Transcription: &v1pb.InstanceSetting_TranscriptionConfig{
+							ProviderId: "does-not-exist",
+						},
+					},
+				},
+			},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "transcription provider_id")
+	})
+
+	t.Run("UpdateInstanceSetting - transcription strings are length-capped", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		base := &v1pb.InstanceSetting{
+			Name: "instance/settings/AI",
+			Value: &v1pb.InstanceSetting_AiSetting{
+				AiSetting: &v1pb.InstanceSetting_AISetting{
+					Providers: []*v1pb.InstanceSetting_AIProviderConfig{
+						{
+							Id:     "openai-main",
+							Title:  "OpenAI",
+							Type:   v1pb.InstanceSetting_OPENAI,
+							ApiKey: "sk-test",
+						},
+					},
+				},
+			},
+		}
+
+		oversizedModel := strings.Repeat("a", 257)
+		base.GetAiSetting().Transcription = &v1pb.InstanceSetting_TranscriptionConfig{
+			ProviderId: "openai-main",
+			Model:      oversizedModel,
+		}
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{Setting: base})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "transcription model")
+
+		oversizedLanguage := strings.Repeat("a", 33)
+		base.GetAiSetting().Transcription = &v1pb.InstanceSetting_TranscriptionConfig{
+			ProviderId: "openai-main",
+			Language:   oversizedLanguage,
+		}
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{Setting: base})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "transcription language")
+
+		oversizedPrompt := strings.Repeat("a", 4097)
+		base.GetAiSetting().Transcription = &v1pb.InstanceSetting_TranscriptionConfig{
+			ProviderId: "openai-main",
+			Prompt:     oversizedPrompt,
+		}
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{Setting: base})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "transcription prompt")
+	})
+
+	t.Run("UpdateInstanceSetting - transcription is preserved when omitted on update", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, hostUser.ID)
+
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/AI",
+				Value: &v1pb.InstanceSetting_AiSetting{
+					AiSetting: &v1pb.InstanceSetting_AISetting{
+						Providers: []*v1pb.InstanceSetting_AIProviderConfig{
+							{
+								Id:     "openai-main",
+								Title:  "OpenAI",
+								Type:   v1pb.InstanceSetting_OPENAI,
+								ApiKey: "sk-test",
+							},
+						},
+						Transcription: &v1pb.InstanceSetting_TranscriptionConfig{
+							ProviderId: "openai-main",
+							Model:      "whisper-1",
+							Language:   "en",
+							Prompt:     "names: Alice",
+						},
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/AI",
+				Value: &v1pb.InstanceSetting_AiSetting{
+					AiSetting: &v1pb.InstanceSetting_AISetting{
+						Providers: []*v1pb.InstanceSetting_AIProviderConfig{
+							{
+								Id:     "openai-main",
+								Title:  "OpenAI",
+								Type:   v1pb.InstanceSetting_OPENAI,
+								ApiKey: "",
+							},
+						},
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+
+		stored, err := ts.Store.GetInstanceAISetting(ctx)
+		require.NoError(t, err)
+		require.NotNil(t, stored.GetTranscription())
+		require.Equal(t, "openai-main", stored.GetTranscription().GetProviderId())
+		require.Equal(t, "whisper-1", stored.GetTranscription().GetModel())
+		require.Equal(t, "en", stored.GetTranscription().GetLanguage())
+		require.Equal(t, "names: Alice", stored.GetTranscription().GetPrompt())
 	})
 }

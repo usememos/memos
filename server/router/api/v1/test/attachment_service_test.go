@@ -138,6 +138,123 @@ func TestCreateAttachment(t *testing.T) {
 	})
 }
 
+func TestCreateAttachmentMemoPermission(t *testing.T) {
+	ctx := context.Background()
+
+	t.Run("owner can create attachment directly linked to memo", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		owner, err := ts.CreateRegularUser(ctx, "attachment-owner")
+		require.NoError(t, err)
+		ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+
+		memo, err := ts.Service.CreateMemo(ownerCtx, &v1pb.CreateMemoRequest{
+			Memo: &v1pb.Memo{
+				Content: "memo with direct attachment",
+			},
+		})
+		require.NoError(t, err)
+
+		attachment, err := ts.Service.CreateAttachment(ownerCtx, &v1pb.CreateAttachmentRequest{
+			Attachment: &v1pb.Attachment{
+				Filename: "owner.txt",
+				Type:     "text/plain",
+				Content:  []byte("owner"),
+				Memo:     &memo.Name,
+			},
+		})
+		require.NoError(t, err)
+		attachmentUID, err := apiv1.ExtractAttachmentUIDFromName(attachment.Name)
+		require.NoError(t, err)
+		stored, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachmentUID})
+		require.NoError(t, err)
+		require.NotNil(t, stored.MemoID)
+		require.Equal(t, memoIDFromName(ctx, t, ts, memo.Name), *stored.MemoID)
+	})
+
+	t.Run("admin can create attachment directly linked to memo", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		owner, err := ts.CreateRegularUser(ctx, "attachment-admin-owner")
+		require.NoError(t, err)
+		ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+		admin, err := ts.CreateHostUser(ctx, "attachment-admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, admin.ID)
+
+		memo, err := ts.Service.CreateMemo(ownerCtx, &v1pb.CreateMemoRequest{
+			Memo: &v1pb.Memo{
+				Content: "memo with admin attachment",
+			},
+		})
+		require.NoError(t, err)
+
+		attachment, err := ts.Service.CreateAttachment(adminCtx, &v1pb.CreateAttachmentRequest{
+			Attachment: &v1pb.Attachment{
+				Filename: "admin.txt",
+				Type:     "text/plain",
+				Content:  []byte("admin"),
+				Memo:     &memo.Name,
+			},
+		})
+		require.NoError(t, err)
+		attachmentUID, err := apiv1.ExtractAttachmentUIDFromName(attachment.Name)
+		require.NoError(t, err)
+		stored, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachmentUID})
+		require.NoError(t, err)
+		require.NotNil(t, stored.MemoID)
+		require.Equal(t, memoIDFromName(ctx, t, ts, memo.Name), *stored.MemoID)
+	})
+
+	t.Run("non-owner cannot create attachment directly linked to memo", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		owner, err := ts.CreateRegularUser(ctx, "attachment-owner-denied")
+		require.NoError(t, err)
+		ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+		other, err := ts.CreateRegularUser(ctx, "attachment-other-denied")
+		require.NoError(t, err)
+		otherCtx := ts.CreateUserContext(ctx, other.ID)
+
+		memo, err := ts.Service.CreateMemo(ownerCtx, &v1pb.CreateMemoRequest{
+			Memo: &v1pb.Memo{
+				Content: "memo with blocked attachment",
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.CreateAttachment(otherCtx, &v1pb.CreateAttachmentRequest{
+			Attachment: &v1pb.Attachment{
+				Filename: "blocked.txt",
+				Type:     "text/plain",
+				Content:  []byte("blocked"),
+				Memo:     &memo.Name,
+			},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "permission denied")
+
+		attachments, err := ts.Store.ListAttachments(ctx, &store.FindAttachment{
+			CreatorID: &other.ID,
+		})
+		require.NoError(t, err)
+		require.Empty(t, attachments)
+	})
+}
+
+func memoIDFromName(ctx context.Context, t *testing.T, ts *TestService, name string) int32 {
+	t.Helper()
+	memoUID, err := apiv1.ExtractMemoUIDFromName(name)
+	require.NoError(t, err)
+	memo, err := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	require.NoError(t, err)
+	require.NotNil(t, memo)
+	return memo.ID
+}
+
 func TestCreateAttachmentMotionMedia(t *testing.T) {
 	ts := NewTestService(t)
 	defer ts.Cleanup()

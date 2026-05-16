@@ -1,51 +1,13 @@
-import type { Element } from "hast";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { memo, useMemo } from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeKatex from "rehype-katex";
-import rehypeRaw from "rehype-raw";
-import rehypeSanitize from "rehype-sanitize";
-import remarkBreaks from "remark-breaks";
-import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
-import { rehypeHeadingId } from "@/utils/rehype-plugins/rehype-heading-id";
-import { remarkDisableSetext } from "@/utils/remark-plugins/remark-disable-setext";
-import { extractMentionUsernames, remarkMention } from "@/utils/remark-plugins/remark-mention";
-import { remarkPreserveType } from "@/utils/remark-plugins/remark-preserve-type";
-import { remarkTag } from "@/utils/remark-plugins/remark-tag";
-import { CodeBlock } from "./CodeBlock";
-import { isMentionNode, isTagNode, isTaskListItemNode } from "./ConditionalComponent";
-import { COMPACT_MODE_CONFIG, SANITIZE_SCHEMA } from "./constants";
+import { extractMentionUsernames } from "@/utils/remark-plugins/remark-mention";
+import { COMPACT_MODE_CONFIG } from "./constants";
 import { useCompactLabel, useCompactMode } from "./hooks";
-import { Mention } from "./Mention";
+import { MemoMarkdownRenderer } from "./MemoMarkdownRenderer";
 import { useResolvedMentionUsernames } from "./MentionResolutionContext";
-import { Blockquote, Heading, HorizontalRule, Image, InlineCode, Link, List, ListItem, Paragraph } from "./markdown";
-import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "./Table";
-import { Tag } from "./Tag";
-import { TaskListItem } from "./TaskListItem";
-import { TrustedIframe } from "./TrustedIframe";
 import type { MemoContentProps } from "./types";
-
-function getMentionUsername(node: Element, children?: React.ReactNode): string {
-  const dataMention = node.properties?.["data-mention"];
-  if (typeof dataMention === "string" && dataMention !== "") {
-    return dataMention;
-  }
-
-  const camelDataMention = (node.properties as Record<string, unknown> | undefined)?.dataMention;
-  if (typeof camelDataMention === "string" && camelDataMention !== "") {
-    return camelDataMention;
-  }
-
-  const text = Array.isArray(children) ? children.join("") : children;
-  if (typeof text === "string" && text.startsWith("@")) {
-    return text.slice(1).toLowerCase();
-  }
-
-  return "";
-}
 
 const MemoContent = (props: MemoContentProps) => {
   const { className, contentClassName, content, onClick, onDoubleClick } = props;
@@ -78,95 +40,7 @@ const MemoContent = (props: MemoContentProps) => {
         onMouseUp={onClick}
         onDoubleClick={onDoubleClick}
       >
-        <ReactMarkdown
-          remarkPlugins={[remarkDisableSetext, remarkMath, remarkGfm, remarkBreaks, remarkMention, remarkTag, remarkPreserveType]}
-          rehypePlugins={[
-            rehypeRaw,
-            [rehypeSanitize, SANITIZE_SCHEMA],
-            rehypeHeadingId,
-            [rehypeKatex, { throwOnError: false, strict: false }],
-          ]}
-          components={{
-            // Child components consume from MemoViewContext directly
-            input: ((inputProps: React.ComponentProps<"input"> & { node?: Element }) => {
-              const { node, ...rest } = inputProps;
-              if (node && isTaskListItemNode(node)) {
-                return <TaskListItem {...inputProps} />;
-              }
-              return <input {...rest} />;
-            }) as React.ComponentType<React.ComponentProps<"input">>,
-            span: ((spanProps: React.ComponentProps<"span"> & { node?: Element }) => {
-              const { node, ...rest } = spanProps;
-              if (node && isMentionNode(node)) {
-                const username = getMentionUsername(node, spanProps.children);
-                return <Mention {...spanProps} data-mention={username} resolved={resolvedMentionUsernames.has(username)} />;
-              }
-              if (node && isTagNode(node)) {
-                return <Tag {...spanProps} />;
-              }
-              return <span {...rest} />;
-            }) as React.ComponentType<React.ComponentProps<"span">>,
-            // Headings
-            h1: ({ children, ...props }) => (
-              <Heading level={1} {...props}>
-                {children}
-              </Heading>
-            ),
-            h2: ({ children, ...props }) => (
-              <Heading level={2} {...props}>
-                {children}
-              </Heading>
-            ),
-            h3: ({ children, ...props }) => (
-              <Heading level={3} {...props}>
-                {children}
-              </Heading>
-            ),
-            h4: ({ children, ...props }) => (
-              <Heading level={4} {...props}>
-                {children}
-              </Heading>
-            ),
-            h5: ({ children, ...props }) => (
-              <Heading level={5} {...props}>
-                {children}
-              </Heading>
-            ),
-            h6: ({ children, ...props }) => (
-              <Heading level={6} {...props}>
-                {children}
-              </Heading>
-            ),
-            // Block elements
-            p: ({ children, ...props }) => <Paragraph {...props}>{children}</Paragraph>,
-            blockquote: ({ children, ...props }) => <Blockquote {...props}>{children}</Blockquote>,
-            hr: (props) => <HorizontalRule {...props} />,
-            // Lists
-            ul: ({ children, ...props }) => <List {...props}>{children}</List>,
-            ol: ({ children, ...props }) => (
-              <List ordered {...props}>
-                {children}
-              </List>
-            ),
-            li: ({ children, ...props }) => <ListItem {...props}>{children}</ListItem>,
-            // Inline elements
-            a: ({ children, ...props }) => <Link {...props}>{children}</Link>,
-            code: ({ children, ...props }) => <InlineCode {...props}>{children}</InlineCode>,
-            iframe: TrustedIframe as React.ComponentType<React.ComponentProps<"iframe">>,
-            img: ({ ...props }) => <Image {...props} />,
-            // Code blocks
-            pre: CodeBlock,
-            // Tables
-            table: ({ children, ...props }) => <Table {...props}>{children}</Table>,
-            thead: ({ children, ...props }) => <TableHead {...props}>{children}</TableHead>,
-            tbody: ({ children, ...props }) => <TableBody {...props}>{children}</TableBody>,
-            tr: ({ children, ...props }) => <TableRow {...props}>{children}</TableRow>,
-            th: ({ children, ...props }) => <TableHeaderCell {...props}>{children}</TableHeaderCell>,
-            td: ({ children, ...props }) => <TableCell {...props}>{children}</TableCell>,
-          }}
-        >
-          {content}
-        </ReactMarkdown>
+        <MemoMarkdownRenderer content={content} resolvedMentionUsernames={resolvedMentionUsernames} />
         {showCompactMode === "ALL" && (
           <div
             className={cn(

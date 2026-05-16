@@ -13,6 +13,11 @@ type Driver interface {
 
 	IsInitialized(ctx context.Context) (bool, error)
 
+	// GetDatabaseSize returns the database size in bytes, or -1 if unavailable.
+	// A non-nil error indicates a hard failure; -1 with nil error means the
+	// driver cannot report a size from the underlying database.
+	GetDatabaseSize(ctx context.Context) (int64, error)
+
 	// Attachment model related methods.
 	CreateAttachment(ctx context.Context, create *Attachment) (*Attachment, error)
 	ListAttachments(ctx context.Context, find *FindAttachment) ([]*Attachment, error)

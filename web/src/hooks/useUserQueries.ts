@@ -4,9 +4,19 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { shortcutServiceClient, userServiceClient } from "@/connect";
 import { buildUserSettingName } from "@/helpers/resource-names";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { User, UserSetting, UserSetting_GeneralSetting, UserSetting_Key, UserSettingSchema } from "@/types/proto/api/v1/user_service_pb";
+import {
+  type ListAllUserStatsRequest,
+  ListAllUserStatsRequestSchema,
+  User,
+  UserSetting,
+  UserSetting_GeneralSetting,
+  UserSetting_Key,
+  UserSettingSchema,
+  UserStats,
+} from "@/types/proto/api/v1/user_service_pb";
 
 const BATCH_GET_USERS_LIMIT = 100;
+type ListAllUserStatsQuery = Pick<ListAllUserStatsRequest, "state" | "filter">;
 
 // Query keys factory
 export const userKeys = {
@@ -15,6 +25,7 @@ export const userKeys = {
   detail: (name: string) => [...userKeys.details(), name] as const,
   stats: () => [...userKeys.all, "stats"] as const,
   userStats: (name: string) => [...userKeys.stats(), name] as const,
+  allUserStats: (request: Partial<ListAllUserStatsQuery>) => [...userKeys.stats(), "all", request] as const,
   currentUser: () => [...userKeys.all, "current"] as const,
   shortcuts: () => [...userKeys.all, "shortcuts"] as const,
   notifications: () => [...userKeys.all, "notifications"] as const,
@@ -48,6 +59,17 @@ export function useUserStats(username?: string) {
   });
 }
 
+export function useAllUserStats(request: Partial<ListAllUserStatsQuery> = {}, options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: userKeys.allUserStats(request),
+    queryFn: async () => {
+      const { stats } = await userServiceClient.listAllUserStats(create(ListAllUserStatsRequestSchema, request));
+      return stats;
+    },
+    enabled: options?.enabled ?? true,
+  });
+}
+
 export function useShortcuts() {
   return useQuery({
     queryKey: userKeys.shortcuts(),
@@ -78,16 +100,17 @@ export function useNotifications() {
 export function useTagCounts(forCurrentUser = false) {
   const currentUser = useCurrentUser();
 
-  return useQuery({
-    queryKey: forCurrentUser ? [...userKeys.stats(), "tagCounts", "current"] : [...userKeys.stats(), "tagCounts", "all"],
-    queryFn: async () => {
+  return useQuery<UserStats | Record<string, number>, Error, Record<string, number>>({
+    queryKey:
+      forCurrentUser && currentUser?.name
+        ? userKeys.userStats(currentUser.name)
+        : [...userKeys.stats(), "tagCounts", forCurrentUser ? "current" : "all"],
+    queryFn: async (): Promise<UserStats | Record<string, number>> => {
       if (forCurrentUser) {
-        // Fetch current user stats only
         if (!currentUser?.name) {
           return {};
         }
-        const stats = await userServiceClient.getUserStats({ name: currentUser.name });
-        return stats.tagCount || {};
+        return userServiceClient.getUserStats({ name: currentUser.name });
       } else {
         // Fetch all user stats
         const { stats } = await userServiceClient.listAllUserStats({});
@@ -103,6 +126,12 @@ export function useTagCounts(forCurrentUser = false) {
         }
         return tagCount;
       }
+    },
+    select: (data) => {
+      if (forCurrentUser) {
+        return (data as UserStats).tagCount || {};
+      }
+      return data as Record<string, number>;
     },
     enabled: !forCurrentUser || !!currentUser?.name,
     staleTime: 1000 * 60 * 2, // 2 minutes - tags don't change frequently

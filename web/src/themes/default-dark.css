@@ -1,43 +1,43 @@
 :root {
-  /* Surfaces — layered from darkest to lightest, consistent cool-slate tint */
-  --background: oklch(0.09 0.006 265);
-  --foreground: oklch(0.82 0.005 265);
+  /* Surfaces - soft graphite layers for comfortable long-form reading */
+  --background: oklch(0.24 0.008 255);
+  --foreground: oklch(0.9 0.006 255);
 
-  --card: oklch(0.13 0.006 265);
-  --card-foreground: oklch(0.82 0.005 265);
+  --card: oklch(0.275 0.009 255);
+  --card-foreground: oklch(0.9 0.006 255);
 
-  /* Popovers float above cards — slightly lighter to appear elevated */
-  --popover: oklch(0.17 0.006 265);
-  --popover-foreground: oklch(0.82 0.005 265);
+  /* Popovers float above cards without becoming high-glare panels */
+  --popover: oklch(0.32 0.01 255);
+  --popover-foreground: oklch(0.92 0.006 255);
 
-  /* Primary — subdued blue that sits back on dark surfaces */
-  --primary: oklch(0.42 0.08 250);
-  --primary-foreground: oklch(0.98 0.003 265);
+  /* Primary - readable blue for selected items, links, and focused controls */
+  --primary: oklch(0.62 0.11 250);
+  --primary-foreground: oklch(0.98 0.004 255);
 
-  /* Secondary — subtle elevated surface for secondary buttons */
-  --secondary: oklch(0.19 0.007 265);
-  --secondary-foreground: oklch(0.82 0.005 265);
+  /* Secondary - elevated surface for secondary buttons */
+  --secondary: oklch(0.33 0.011 255);
+  --secondary-foreground: oklch(0.88 0.006 255);
 
-  /* Muted — inline backgrounds (code, skeletons, error panels) */
-  --muted: oklch(0.21 0.008 265);
-  --muted-foreground: oklch(0.56 0.005 265);
+  /* Muted - inline backgrounds for code, skeletons, metadata, and panels */
+  --muted: oklch(0.35 0.011 255);
+  --muted-foreground: oklch(0.72 0.007 255);
 
-  /* Accent — hover states, slightly more chromatic than muted to feel interactive */
-  --accent: oklch(0.22 0.012 265);
-  --accent-foreground: oklch(0.88 0.005 265);
+  /* Accent - hover states with a little more color than muted surfaces */
+  --accent: oklch(0.39 0.018 250);
+  --accent-foreground: oklch(0.94 0.006 255);
 
-  /* Destructive — vivid red, clearly visible on dark surfaces */
-  --destructive: oklch(0.62 0.2 22);
-  --destructive-foreground: oklch(0.98 0.003 265);
+  /* Destructive - visible on dark surfaces without overpowering the palette */
+  --destructive: oklch(0.64 0.18 24);
+  --destructive-foreground: oklch(0.98 0.004 255);
 
-  /* Borders — --border for layout dividers, --input for form field borders */
-  --border: oklch(0.21 0.007 265);
-  --input: oklch(0.25 0.007 265);
-  --ring: oklch(0.34 0.06 250);
+  /* Borders - --border for layout dividers, --input for form field borders */
+  --border: oklch(0.38 0.01 255);
+  --input: oklch(0.42 0.011 255);
+  --ring: oklch(0.58 0.095 250);
 
-  /* Sidebar — darkest surface, distinct from background */
-  --sidebar: oklch(0.07 0.005 265);
-  --sidebar-foreground: oklch(0.68 0.005 265);
-  --sidebar-accent: oklch(0.19 0.01 265);
-  --sidebar-accent-foreground: oklch(0.84 0.005 265);
+  /* Sidebar - anchored but no longer near-black */
+  --sidebar: oklch(0.21 0.009 255);
+  --sidebar-foreground: oklch(0.76 0.007 255);
+  --sidebar-accent: oklch(0.31 0.015 250);
+  --sidebar-accent-foreground: oklch(0.9 0.006 255);
 }

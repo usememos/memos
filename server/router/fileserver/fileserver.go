@@ -38,6 +38,10 @@ const (
 	// thumbnailMaxSize is the maximum dimension (width or height) for thumbnails.
 	thumbnailMaxSize = 600
 
+	// thumbnailMetadataProbeSize is the maximum number of original image bytes inspected
+	// before thumbnail generation to detect metadata that the JPEG thumbnail pipeline cannot preserve.
+	thumbnailMetadataProbeSize = 1 << 20
+
 	// maxConcurrentThumbnails limits concurrent thumbnail generation to prevent memory exhaustion.
 	maxConcurrentThumbnails = 3
 
@@ -61,6 +65,7 @@ var xssUnsafeTypes = map[string]bool{
 var thumbnailSupportedTypes = map[string]bool{
 	"image/png":  true,
 	"image/jpeg": true,
+	"image/jpg":  true,
 	"image/heic": true,
 	"image/heif": true,
 	"image/webp": true,
@@ -81,10 +86,13 @@ var avatarAllowedTypes = map[string]bool{
 var SupportedThumbnailMimeTypes = []string{
 	"image/png",
 	"image/jpeg",
+	"image/jpg",
 	"image/heic",
 	"image/heif",
 	"image/webp",
 }
+
+var errUseOriginalForThumbnail = errors.New("serve original image instead of metadata-stripping thumbnail")
 
 // dataURIRegex parses data URI format: data:image/png;base64,iVBORw0KGgo...
 var dataURIRegex = regexp.MustCompile(`^data:(?P<type>[^;]+);base64,(?P<base64>.+)`)
@@ -226,7 +234,9 @@ func (s *FileServerService) serveStaticFile(c *echo.Context, attachment *store.A
 	// Generate thumbnail for supported image types.
 	if wantThumbnail && thumbnailSupportedTypes[attachment.Type] {
 		if thumbnailBlob, err := s.getOrGenerateThumbnail(c.Request().Context(), attachment); err != nil {
-			slog.Warn("failed to get thumbnail", "error", err)
+			if !errors.Is(err, errUseOriginalForThumbnail) {
+				slog.Warn("failed to get thumbnail", "error", err)
+			}
 		} else {
 			setSecurityHeaders(c)
 			setMediaHeaders(c, "image/jpeg", attachment.Type)
@@ -413,6 +423,14 @@ func (s *FileServerService) getOrGenerateThumbnail(ctx context.Context, attachme
 		return blob, nil
 	}
 
+	useOriginal, err := s.shouldUseOriginalForThumbnail(ctx, attachment)
+	if err != nil {
+		return nil, err
+	}
+	if useOriginal {
+		return nil, errUseOriginalForThumbnail
+	}
+
 	// Acquire semaphore to limit concurrent generation.
 	if err := s.thumbnailSemaphore.Acquire(ctx, 1); err != nil {
 		return nil, errors.Wrap(err, "failed to acquire semaphore")
@@ -433,8 +451,74 @@ func (s *FileServerService) getThumbnailPath(attachment *store.Attachment) (stri
 	if err := os.MkdirAll(cacheFolder, os.ModePerm); err != nil {
 		return "", errors.Wrap(err, "failed to create thumbnail cache folder")
 	}
-	filename := fmt.Sprintf("%s.jpeg", attachment.UID)
+	filename := fmt.Sprintf("%s.v2.jpeg", attachment.UID)
 	return filepath.Join(cacheFolder, filename), nil
+}
+
+func (s *FileServerService) shouldUseOriginalForThumbnail(ctx context.Context, attachment *store.Attachment) (bool, error) {
+	if attachment.Type == "image/heic" || attachment.Type == "image/heif" {
+		return true, nil
+	}
+
+	if attachment.Type != "image/jpeg" && attachment.Type != "image/jpg" && attachment.Type != "image/png" && attachment.Type != "image/webp" {
+		return false, nil
+	}
+
+	reader, err := s.getAttachmentReader(ctx, attachment)
+	if err != nil {
+		return false, errors.Wrap(err, "failed to open image for metadata probe")
+	}
+	defer reader.Close()
+
+	probe, err := io.ReadAll(io.LimitReader(reader, thumbnailMetadataProbeSize))
+	if err != nil {
+		return false, errors.Wrap(err, "failed to read image metadata probe")
+	}
+
+	return hasThumbnailSensitiveMetadata(attachment.Type, probe), nil
+}
+
+func hasThumbnailSensitiveMetadata(mimeType string, data []byte) bool {
+	if mimeType == "image/heic" || mimeType == "image/heif" {
+		return true
+	}
+
+	for _, marker := range [][]byte{
+		[]byte("ICC_PROFILE"),
+		[]byte("iCCP"),
+		[]byte("ICCP"),
+		[]byte("cICP"),
+		[]byte("mDCv"),
+		[]byte("cLLi"),
+	} {
+		if bytes.Contains(data, marker) {
+			return true
+		}
+	}
+
+	lowerData := strings.ToLower(string(data))
+	for _, marker := range []string{
+		"hdrgm:",
+		"hdr gain map",
+		"hdrgainmap",
+		"gainmap",
+		"ultrahdr",
+		"adobe:hdrgainmap",
+		"aux:hdr",
+		"auxiliaryimagetype",
+		"display p3",
+		"display-p3",
+		"rec.2020",
+		"bt.2020",
+		"arib-std-b67",
+		"smpte st 2084",
+	} {
+		if strings.Contains(lowerData, marker) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // readCachedThumbnail reads a thumbnail from the cache directory.

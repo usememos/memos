@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react";
+import { type RefObject, useEffect, useRef } from "react";
 import { detectLastListItem, generateListContinuation } from "@/utils/markdown-list-detection";
 import { EditorRefActions } from ".";
 
 interface UseListCompletionOptions {
-  editorRef: React.RefObject<HTMLTextAreaElement>;
+  editorRef: RefObject<HTMLTextAreaElement | null>;
   editorActions: EditorRefActions;
   isInIME: boolean;
 }

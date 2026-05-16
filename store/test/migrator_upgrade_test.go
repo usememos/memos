@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -20,9 +19,7 @@ func TestMigrationFromV0262PreservesLegacyData(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping container-based upgrade test in short mode")
 	}
-	if os.Getenv("SKIP_CONTAINER_TESTS") == "1" {
-		t.Skip("skipping container-based test (SKIP_CONTAINER_TESTS=1)")
-	}
+	skipIfContainerProviderUnavailable(t)
 
 	ctx := context.Background()
 	driver := getDriverFromEnv()

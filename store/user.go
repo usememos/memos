@@ -95,6 +95,30 @@ func (s *Store) CreateUser(ctx context.Context, create *User) (*User, error) {
 	return user, nil
 }
 
+// CreateUserIfNoUsers creates a user only when the instance has no users.
+// The in-process lock prevents concurrent first-user setup requests from
+// creating multiple admins in the same server process.
+func (s *Store) CreateUserIfNoUsers(ctx context.Context, create *User) (*User, bool, error) {
+	s.userCreateMu.Lock()
+	defer s.userCreateMu.Unlock()
+
+	limitOne := 1
+	users, err := s.driver.ListUsers(ctx, &FindUser{Limit: &limitOne})
+	if err != nil {
+		return nil, false, err
+	}
+	if len(users) > 0 {
+		return nil, false, nil
+	}
+
+	user, err := s.driver.CreateUser(ctx, create)
+	if err != nil {
+		return nil, false, err
+	}
+	s.userCache.Set(ctx, userCacheKey(user.ID), user)
+	return user, true, nil
+}
+
 func (s *Store) UpdateUser(ctx context.Context, update *UpdateUser) (*User, error) {
 	user, err := s.driver.UpdateUser(ctx, update)
 	if err != nil {

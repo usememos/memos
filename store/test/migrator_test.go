@@ -3,7 +3,6 @@ package test
 import (
 	"context"
 	"fmt"
-	"os"
 	"testing"
 	"time"
 
@@ -128,10 +127,7 @@ func TestMigrationFromStableVersion(t *testing.T) {
 		t.Skip("skipping upgrade test for non-sqlite driver")
 	}
 
-	// Skip if explicitly disabled (e.g., in environments without Docker)
-	if os.Getenv("SKIP_CONTAINER_TESTS") == "1" {
-		t.Skip("skipping container-based test (SKIP_CONTAINER_TESTS=1)")
-	}
+	skipIfContainerProviderUnavailable(t)
 
 	ctx := context.Background()
 	dataDir := t.TempDir()

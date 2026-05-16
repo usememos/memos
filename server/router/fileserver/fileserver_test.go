@@ -1,8 +1,14 @@
 package fileserver
 
 import (
+	"bytes"
 	"context"
+	"encoding/binary"
 	"fmt"
+	"hash/crc32"
+	"image"
+	"image/color"
+	"image/png"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -278,6 +284,126 @@ func TestServeAttachmentFile_SVGThumbnailServedAsImageWithSecurityHeaders(t *tes
 	require.Equal(t, "nosniff", rec.Header().Get("X-Content-Type-Options"))
 	require.Equal(t, "default-src 'none'; style-src 'unsafe-inline';", rec.Header().Get("Content-Security-Policy"))
 	require.Equal(t, svgContent, rec.Body.Bytes())
+}
+
+func TestServeAttachmentFile_ThumbnailWithSensitiveMetadataServesOriginal(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	creator, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "hdr-owner",
+		Role:     store.RoleUser,
+		Email:    "hdr-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+
+	imageContent := testPNGWithChunk(t, "cICP", []byte{9, 16, 9, 1})
+	attachment, err := svc.CreateAttachment(creatorCtx, &apiv1.CreateAttachmentRequest{
+		Attachment: &apiv1.Attachment{
+			Filename: "hdr.png",
+			Type:     "image/png",
+			Content:  imageContent,
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = svc.CreateMemo(creatorCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "hdr memo",
+			Visibility: apiv1.Visibility_PUBLIC,
+			Attachments: []*apiv1.Attachment{
+				{Name: attachment.Name},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+
+	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s?thumbnail=true", attachment.Name, attachment.Filename), nil)
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "image/png", rec.Header().Get("Content-Type"))
+	require.Equal(t, imageContent, rec.Body.Bytes())
+}
+
+func TestHasThumbnailSensitiveMetadata(t *testing.T) {
+	tests := []struct {
+		name     string
+		mimeType string
+		data     []byte
+		want     bool
+	}{
+		{
+			name:     "jpeg hdr gain map",
+			mimeType: "image/jpeg",
+			data:     []byte("xmp hdrgm:Version=\"1.0\""),
+			want:     true,
+		},
+		{
+			name:     "jpeg icc profile",
+			mimeType: "image/jpeg",
+			data:     []byte("ICC_PROFILE"),
+			want:     true,
+		},
+		{
+			name:     "png cicp chunk",
+			mimeType: "image/png",
+			data:     []byte("cICP"),
+			want:     true,
+		},
+		{
+			name:     "heic",
+			mimeType: "image/heic",
+			data:     nil,
+			want:     true,
+		},
+		{
+			name:     "plain jpeg",
+			mimeType: "image/jpeg",
+			data:     []byte("plain image data"),
+			want:     false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.want, hasThumbnailSensitiveMetadata(tt.mimeType, tt.data))
+		})
+	}
+}
+
+func testPNGWithChunk(t *testing.T, chunkType string, chunkData []byte) []byte {
+	t.Helper()
+
+	img := image.NewRGBA(image.Rect(0, 0, 1, 1))
+	img.Set(0, 0, color.RGBA{R: 255, A: 255})
+
+	var encoded bytes.Buffer
+	require.NoError(t, png.Encode(&encoded, img))
+
+	pngData := encoded.Bytes()
+	iendIndex := bytes.LastIndex(pngData, []byte("IEND"))
+	require.GreaterOrEqual(t, iendIndex, 4)
+
+	chunkStart := iendIndex - 4
+	var chunk bytes.Buffer
+	require.NoError(t, binary.Write(&chunk, binary.BigEndian, uint32(len(chunkData))))
+	chunk.WriteString(chunkType)
+	chunk.Write(chunkData)
+	checksum := crc32.ChecksumIEEE(append([]byte(chunkType), chunkData...))
+	require.NoError(t, binary.Write(&chunk, binary.BigEndian, checksum))
+
+	result := make([]byte, 0, len(pngData)+chunk.Len())
+	result = append(result, pngData[:chunkStart]...)
+	result = append(result, chunk.Bytes()...)
+	result = append(result, pngData[chunkStart:]...)
+	return result
 }
 
 func newShareAttachmentTestServices(ctx context.Context, t *testing.T) (*apiv1service.APIV1Service, *FileServerService, *store.Store, func()) {

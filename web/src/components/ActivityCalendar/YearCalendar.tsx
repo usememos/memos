@@ -1,6 +1,7 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { memo, useMemo } from "react";
 import { Button } from "@/components/ui/button";
+import type { MemoTimeBasis } from "@/contexts/ViewContext";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { getMaxYear, MIN_YEAR } from "./constants";
@@ -73,17 +74,18 @@ interface MonthCardProps {
   data: CalendarData;
   maxCount: number;
   onDateClick: (date: string) => void;
+  timeBasis?: MemoTimeBasis;
 }
 
-const MonthCard = memo(({ month, data, maxCount, onDateClick }: MonthCardProps) => (
+const MonthCard = memo(({ month, data, maxCount, onDateClick, timeBasis }: MonthCardProps) => (
   <article className="flex flex-col gap-2 rounded-xl border border-border/20 bg-muted/5 p-3 transition-colors hover:bg-muted/10">
     <header className="text-[10px] font-medium text-muted-foreground/80 uppercase tracking-widest">{getMonthLabel(month)}</header>
-    <MonthCalendar month={month} data={data} maxCount={maxCount} size="small" onClick={onDateClick} disableTooltips />
+    <MonthCalendar month={month} data={data} maxCount={maxCount} size="small" onClick={onDateClick} disableTooltips timeBasis={timeBasis} />
   </article>
 ));
 MonthCard.displayName = "MonthCard";
 
-export const YearCalendar = memo(({ selectedYear, data, onYearChange, onDateClick, className }: YearCalendarProps) => {
+export const YearCalendar = memo(({ selectedYear, data, onYearChange, onDateClick, className, timeBasis }: YearCalendarProps) => {
   const currentYear = useMemo(() => new Date().getFullYear(), []);
   const yearData = useMemo(() => filterDataByYear(data, selectedYear), [data, selectedYear]);
   const months = useMemo(() => generateMonthsForYear(selectedYear), [selectedYear]);
@@ -106,7 +108,7 @@ export const YearCalendar = memo(({ selectedYear, data, onYearChange, onDateClic
 
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 animate-fade-in">
         {months.map((month) => (
-          <MonthCard key={month} month={month} data={yearData} maxCount={yearMaxCount} onDateClick={onDateClick} />
+          <MonthCard key={month} month={month} data={yearData} maxCount={yearMaxCount} onDateClick={onDateClick} timeBasis={timeBasis} />
         ))}
       </div>
     </section>

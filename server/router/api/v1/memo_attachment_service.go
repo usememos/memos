@@ -32,10 +32,10 @@ func (s *APIV1Service) SetMemoAttachments(ctx context.Context, request *v1pb.Set
 	if memo == nil {
 		return nil, status.Errorf(codes.NotFound, "memo not found")
 	}
-	if memo.CreatorID != user.ID && !isSuperUser(user) {
+	if !canModifyMemo(user, memo) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
-	if err := s.setMemoAttachmentsInternal(ctx, memo, request.Attachments); err != nil {
+	if err := s.setMemoAttachmentsInternal(ctx, user, memo, request.Attachments); err != nil {
 		return nil, err
 	}
 	if err := s.touchMemoUpdatedTimestamp(ctx, memo.ID); err != nil {
@@ -50,7 +50,7 @@ func (s *APIV1Service) SetMemoAttachments(ctx context.Context, request *v1pb.Set
 	return &emptypb.Empty{}, nil
 }
 
-func (s *APIV1Service) setMemoAttachmentsInternal(ctx context.Context, memo *store.Memo, requestAttachments []*v1pb.Attachment) error {
+func (s *APIV1Service) setMemoAttachmentsInternal(ctx context.Context, user *store.User, memo *store.Memo, requestAttachments []*v1pb.Attachment) error {
 	currentAttachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{
 		MemoID: &memo.ID,
 	})
@@ -58,7 +58,7 @@ func (s *APIV1Service) setMemoAttachmentsInternal(ctx context.Context, memo *sto
 		return status.Errorf(codes.Internal, "failed to list attachments")
 	}
 
-	normalizedAttachments, err := s.normalizeMemoAttachmentRequest(ctx, currentAttachments, requestAttachments)
+	normalizedAttachments, err := s.normalizeMemoAttachmentRequest(ctx, user, currentAttachments, requestAttachments)
 	if err != nil {
 		return err
 	}
@@ -71,6 +71,9 @@ func (s *APIV1Service) setMemoAttachmentsInternal(ctx context.Context, memo *sto
 	// Delete attachments that are not in the request.
 	for _, attachment := range currentAttachments {
 		if !requestedIDs[attachment.ID] {
+			if attachment.CreatorID != user.ID && !isSuperUser(user) {
+				return status.Errorf(codes.PermissionDenied, "cannot remove another user's attachment")
+			}
 			if err = s.Store.DeleteAttachment(ctx, &store.DeleteAttachment{
 				ID:     int32(attachment.ID),
 				MemoID: &memo.ID,
@@ -98,6 +101,7 @@ func (s *APIV1Service) setMemoAttachmentsInternal(ctx context.Context, memo *sto
 
 func (s *APIV1Service) normalizeMemoAttachmentRequest(
 	ctx context.Context,
+	user *store.User,
 	currentAttachments []*store.Attachment,
 	requestAttachments []*v1pb.Attachment,
 ) ([]*store.Attachment, error) {
@@ -113,6 +117,9 @@ func (s *APIV1Service) normalizeMemoAttachmentRequest(
 		}
 		if attachment == nil {
 			return nil, status.Errorf(codes.NotFound, "attachment not found: %s", attachmentUID)
+		}
+		if attachment.CreatorID != user.ID && !isSuperUser(user) {
+			return nil, status.Errorf(codes.PermissionDenied, "cannot attach another user's attachment")
 		}
 		requestedAttachments = append(requestedAttachments, attachment)
 	}

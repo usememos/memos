@@ -3,11 +3,13 @@ package test
 import (
 	"context"
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
+	"github.com/usememos/memos/internal/email"
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -103,6 +105,185 @@ func TestListUserNotificationsStoresMemoCommentPayloadInInbox(t *testing.T) {
 	require.NotNil(t, inboxes[0].Message.GetMemoComment())
 	require.NotZero(t, inboxes[0].Message.GetMemoComment().MemoId)
 	require.NotZero(t, inboxes[0].Message.GetMemoComment().RelatedMemoId)
+}
+
+func TestCreateMemoCommentSendsEmailNotificationWhenEnabled(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	var sentConfig *email.Config
+	var sentMessage *email.Message
+	ts.Service.NotificationEmailSender = func(config *email.Config, message *email.Message) {
+		sentConfig = config
+		sentMessage = message
+	}
+
+	_, err := ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_NOTIFICATION,
+		Value: &storepb.InstanceSetting_NotificationSetting{
+			NotificationSetting: &storepb.InstanceNotificationSetting{
+				Email: &storepb.InstanceNotificationSetting_EmailSetting{
+					Enabled:      true,
+					SmtpHost:     "smtp.example.com",
+					SmtpPort:     587,
+					SmtpUsername: "bot@example.com",
+					SmtpPassword: "password",
+					FromEmail:    "bot@example.com",
+					FromName:     "Memos",
+					ReplyTo:      "reply@example.com",
+					UseTls:       true,
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	owner, err := ts.CreateRegularUser(ctx, "email-comment-owner")
+	require.NoError(t, err)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+
+	commenter, err := ts.CreateRegularUser(ctx, "email-commenter")
+	require.NoError(t, err)
+	commenterCtx := ts.CreateUserContext(ctx, commenter.ID)
+
+	memo, err := ts.Service.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "Base memo for email",
+			Visibility: apiv1.Visibility_PUBLIC,
+		},
+	})
+	require.NoError(t, err)
+
+	comment, err := ts.Service.CreateMemoComment(commenterCtx, &apiv1.CreateMemoCommentRequest{
+		Name: memo.Name,
+		Comment: &apiv1.Memo{
+			Content:    "Email comment content",
+			Visibility: apiv1.Visibility_PUBLIC,
+		},
+	})
+	require.NoError(t, err)
+
+	require.NotNil(t, sentConfig)
+	require.Equal(t, "smtp.example.com", sentConfig.SMTPHost)
+	require.Equal(t, 587, sentConfig.SMTPPort)
+	require.Equal(t, "bot@example.com", sentConfig.FromEmail)
+	require.True(t, sentConfig.UseTLS)
+
+	require.NotNil(t, sentMessage)
+	require.Equal(t, []string{owner.Email}, sentMessage.To)
+	require.Equal(t, "reply@example.com", sentMessage.ReplyTo)
+	require.Contains(t, sentMessage.Subject, "commented on your memo")
+	require.Contains(t, sentMessage.Body, "Hi email-comment-owner,")
+	require.Contains(t, sentMessage.Body, "email-commenter commented on your memo.")
+	require.Contains(t, sentMessage.Body, fmt.Sprintf("http://localhost:8080/%s#%s", memo.Name, strings.TrimPrefix(comment.Name, "memos/")))
+	require.Contains(t, sentMessage.Body, "You are receiving this because you own this memo.")
+	require.NotContains(t, sentMessage.Body, "Email comment content")
+	require.NotContains(t, sentMessage.Body, "Base memo for email")
+}
+
+func TestCreateMemoMentionSendsEmailNotificationWhenEnabled(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	var sentMessage *email.Message
+	ts.Service.NotificationEmailSender = func(_ *email.Config, message *email.Message) {
+		sentMessage = message
+	}
+
+	_, err := ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_NOTIFICATION,
+		Value: &storepb.InstanceSetting_NotificationSetting{
+			NotificationSetting: &storepb.InstanceNotificationSetting{
+				Email: &storepb.InstanceNotificationSetting_EmailSetting{
+					Enabled:   true,
+					SmtpHost:  "smtp.example.com",
+					SmtpPort:  587,
+					FromEmail: "bot@example.com",
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	author, err := ts.CreateRegularUser(ctx, "email-mention-author")
+	require.NoError(t, err)
+	authorCtx := ts.CreateUserContext(ctx, author.ID)
+
+	target, err := ts.CreateRegularUser(ctx, "email-mention-target")
+	require.NoError(t, err)
+
+	memo, err := ts.Service.CreateMemo(authorCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    fmt.Sprintf("Hello @%s from email", target.Username),
+			Visibility: apiv1.Visibility_PUBLIC,
+		},
+	})
+	require.NoError(t, err)
+
+	require.NotNil(t, sentMessage)
+	require.Equal(t, []string{target.Email}, sentMessage.To)
+	require.Contains(t, sentMessage.Subject, "mentioned you in a memo")
+	require.Contains(t, sentMessage.Body, "Hi email-mention-target,")
+	require.Contains(t, sentMessage.Body, "email-mention-author mentioned you in a memo.")
+	require.Contains(t, sentMessage.Body, fmt.Sprintf("http://localhost:8080/%s", memo.Name))
+	require.Contains(t, sentMessage.Body, "You are receiving this because you were mentioned in this memo.")
+	require.NotContains(t, sentMessage.Body, "Hello")
+	require.NotContains(t, sentMessage.Body, fmt.Sprintf("Hello @%s from email", target.Username))
+}
+
+func TestCreateMemoCommentSkipsEmailNotificationWithoutInstanceURL(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	ts.Profile.InstanceURL = ""
+
+	var sentMessage *email.Message
+	ts.Service.NotificationEmailSender = func(_ *email.Config, message *email.Message) {
+		sentMessage = message
+	}
+
+	_, err := ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_NOTIFICATION,
+		Value: &storepb.InstanceSetting_NotificationSetting{
+			NotificationSetting: &storepb.InstanceNotificationSetting{
+				Email: &storepb.InstanceNotificationSetting_EmailSetting{
+					Enabled:   true,
+					SmtpHost:  "smtp.example.com",
+					SmtpPort:  587,
+					FromEmail: "bot@example.com",
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	owner, err := ts.CreateRegularUser(ctx, "email-comment-no-url-owner")
+	require.NoError(t, err)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+
+	commenter, err := ts.CreateRegularUser(ctx, "email-comment-no-url-commenter")
+	require.NoError(t, err)
+	commenterCtx := ts.CreateUserContext(ctx, commenter.ID)
+
+	memo, err := ts.Service.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "Base memo without instance URL",
+			Visibility: apiv1.Visibility_PUBLIC,
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = ts.Service.CreateMemoComment(commenterCtx, &apiv1.CreateMemoCommentRequest{
+		Name: memo.Name,
+		Comment: &apiv1.Memo{
+			Content:    "Comment without instance URL",
+			Visibility: apiv1.Visibility_PUBLIC,
+		},
+	})
+	require.NoError(t, err)
+	require.Nil(t, sentMessage)
 }
 
 func TestListUserNotificationsOmitsPayloadWhenMemosDeleted(t *testing.T) {

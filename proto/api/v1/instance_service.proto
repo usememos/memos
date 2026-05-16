@@ -7,7 +7,9 @@ import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
+import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
 import "google/type/color.proto";
 
 option go_package = "gen/api/v1";
@@ -24,6 +26,14 @@ service InstanceService {
     option (google.api.method_signature) = "name";
   }
 
+  // Batch gets instance settings.
+  rpc BatchGetInstanceSettings(BatchGetInstanceSettingsRequest) returns (BatchGetInstanceSettingsResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/instance/settings:batchGet"
+      body: "*"
+    };
+  }
+
   // Updates an instance setting.
   rpc UpdateInstanceSetting(UpdateInstanceSettingRequest) returns (InstanceSetting) {
     option (google.api.http) = {
@@ -31,6 +41,19 @@ service InstanceService {
       body: "setting"
     };
     option (google.api.method_signature) = "setting,update_mask";
+  }
+
+  // Tests notification email delivery with the provided or stored SMTP settings.
+  rpc TestInstanceEmailSetting(TestInstanceEmailSettingRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/api/v1/instance/settings/notification:testEmail"
+      body: "*"
+    };
+  }
+
+  // GetInstanceStats returns resource usage statistics for the instance. Admin only.
+  rpc GetInstanceStats(GetInstanceStatsRequest) returns (InstanceStats) {
+    option (google.api.http) = {get: "/api/v1/instance/stats"};
   }
 }
 
@@ -48,6 +71,9 @@ message InstanceProfile {
   // The first administrator who set up this instance.
   // When null, instance requires initial setup (creating the first admin account).
   User admin = 7;
+
+  // Commit is the current build commit of instance.
+  string commit = 8;
 }
 
 // Request for instance profile.
@@ -146,7 +172,7 @@ message InstanceSetting {
     // Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
     message S3Config {
       string access_key_id = 1;
-      string access_key_secret = 2;
+      string access_key_secret = 2 [(google.api.field_behavior) = INPUT_ONLY];
       string endpoint = 3;
       string region = 4;
       string bucket = 5;
@@ -158,8 +184,8 @@ message InstanceSetting {
 
   // Memo-related instance settings and policies.
   message MemoRelatedSetting {
-    // display_with_update_time orders and displays memo with update time.
-    bool display_with_update_time = 2;
+    reserved 2;
+    reserved "display_with_update_time";
     // content_length_limit is the limit of content length. Unit is byte.
     int32 content_length_limit = 3;
     // enable_double_click_edit enables editing on double click.
@@ -196,7 +222,7 @@ message InstanceSetting {
       string smtp_host = 2;
       int32 smtp_port = 3;
       string smtp_username = 4;
-      string smtp_password = 5;
+      string smtp_password = 5 [(google.api.field_behavior) = INPUT_ONLY];
       string from_email = 6;
       string from_name = 7;
       string reply_to = 8;
@@ -209,6 +235,10 @@ message InstanceSetting {
   message AISetting {
     // providers is the list of AI provider configurations available instance-wide.
     repeated AIProviderConfig providers = 1;
+
+    // transcription is the speech-to-text feature configuration.
+    // When unset or transcription.provider_id is empty, transcription is disabled.
+    TranscriptionConfig transcription = 2;
   }
 
   // AIProviderConfig represents one callable AI provider connection.
@@ -231,6 +261,25 @@ message InstanceSetting {
     OPENAI = 1;
     GEMINI = 2;
   }
+
+  // TranscriptionConfig configures the speech-to-text feature.
+  message TranscriptionConfig {
+    // provider_id references an entry in AISetting.providers[].id.
+    // Empty string means transcription is disabled.
+    string provider_id = 1;
+
+    // model is the provider-specific model identifier.
+    // Empty string falls back to the engine default
+    // (whisper-1 for OPENAI providers, gemini-2.5-flash for GEMINI providers).
+    string model = 2;
+
+    // language is the default ISO 639-1 language hint sent to the provider.
+    // Empty string lets the provider auto-detect.
+    string language = 3;
+
+    // prompt is a default spelling/vocabulary hint passed to the provider.
+    string prompt = 4;
+  }
 }
 
 // Request message for GetInstanceSetting method.
@@ -243,6 +292,22 @@ message GetInstanceSettingRequest {
   ];
 }
 
+// Request message for BatchGetInstanceSettings method.
+message BatchGetInstanceSettingsRequest {
+  // The resource names of the instance settings.
+  // Format: instance/settings/{setting}
+  repeated string names = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/InstanceSetting"}
+  ];
+}
+
+// Response message for BatchGetInstanceSettings method.
+message BatchGetInstanceSettingsResponse {
+  // The instance settings in the same order as the input names.
+  repeated InstanceSetting settings = 1;
+}
+
 // Request message for UpdateInstanceSetting method.
 message UpdateInstanceSettingRequest {
   // The instance setting resource which replaces the resource on the server.
@@ -250,4 +315,33 @@ message UpdateInstanceSettingRequest {
 
   // The list of fields to update.
   google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Request message for TestInstanceEmailSetting method.
+message TestInstanceEmailSettingRequest {
+  // Optional. SMTP email settings to test. If omitted, the stored notification email setting is used.
+  InstanceSetting.NotificationSetting.EmailSetting email = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Recipient email address. If omitted, the current user's email address is used.
+  string recipient_email = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Request message for GetInstanceStats.
+message GetInstanceStatsRequest {}
+
+// Resource usage statistics for the instance.
+message InstanceStats {
+  DatabaseStats database = 1;
+  // Recursive size of the data directory in bytes. -1 if unavailable.
+  int64 local_storage_bytes = 2;
+  // Server-side timestamp when the snapshot was generated.
+  google.protobuf.Timestamp generated_time = 4;
+
+  // Database size statistics.
+  message DatabaseStats {
+    // driver is one of "sqlite", "mysql", "postgres".
+    string driver = 1;
+    // size_bytes is the database size in bytes; -1 if unavailable.
+    int64 size_bytes = 2;
+  }
 }

@@ -595,6 +595,9 @@ func (s *APIV1Service) fetchCurrentUser(ctx context.Context) (*store.User, error
 	if user == nil {
 		return nil, errors.Errorf("user %d not found", userID)
 	}
+	if user.RowStatus == store.Archived {
+		return nil, nil
+	}
 	return user, nil
 }
 

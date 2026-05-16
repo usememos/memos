@@ -35,6 +35,12 @@ func (m *Message) Validate() error {
 // Format creates an RFC 5322 formatted email message.
 func (m *Message) Format(fromEmail, fromName string) string {
 	var sb strings.Builder
+	fromEmail = sanitizeEmailHeaderValue(fromEmail)
+	fromName = sanitizeEmailHeaderValue(fromName)
+	to := sanitizeEmailHeaderValues(m.To)
+	cc := sanitizeEmailHeaderValues(m.Cc)
+	replyTo := sanitizeEmailHeaderValue(m.ReplyTo)
+	subject := sanitizeEmailHeaderValue(m.Subject)
 
 	// From header
 	if fromName != "" {
@@ -44,20 +50,20 @@ func (m *Message) Format(fromEmail, fromName string) string {
 	}
 
 	// To header
-	fmt.Fprintf(&sb, "To: %s\r\n", strings.Join(m.To, ", "))
+	fmt.Fprintf(&sb, "To: %s\r\n", strings.Join(to, ", "))
 
 	// Cc header (optional)
-	if len(m.Cc) > 0 {
-		fmt.Fprintf(&sb, "Cc: %s\r\n", strings.Join(m.Cc, ", "))
+	if len(cc) > 0 {
+		fmt.Fprintf(&sb, "Cc: %s\r\n", strings.Join(cc, ", "))
 	}
 
 	// Reply-To header (optional)
-	if m.ReplyTo != "" {
-		fmt.Fprintf(&sb, "Reply-To: %s\r\n", m.ReplyTo)
+	if replyTo != "" {
+		fmt.Fprintf(&sb, "Reply-To: %s\r\n", replyTo)
 	}
 
 	// Subject header
-	fmt.Fprintf(&sb, "Subject: %s\r\n", m.Subject)
+	fmt.Fprintf(&sb, "Subject: %s\r\n", subject)
 
 	// Date header (RFC 5322 format)
 	fmt.Fprintf(&sb, "Date: %s\r\n", time.Now().Format(time.RFC1123Z))
@@ -79,6 +85,19 @@ func (m *Message) Format(fromEmail, fromName string) string {
 	sb.WriteString(m.Body)
 
 	return sb.String()
+}
+
+func sanitizeEmailHeaderValue(value string) string {
+	value = strings.NewReplacer("\r", " ", "\n", " ").Replace(value)
+	return strings.Join(strings.Fields(value), " ")
+}
+
+func sanitizeEmailHeaderValues(values []string) []string {
+	sanitized := make([]string, 0, len(values))
+	for _, value := range values {
+		sanitized = append(sanitized, sanitizeEmailHeaderValue(value))
+	}
+	return sanitized
 }
 
 // GetAllRecipients returns all recipients (To, Cc, Bcc) as a single slice.

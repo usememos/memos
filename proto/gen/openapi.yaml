@@ -476,6 +476,72 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/instance/settings/notification:testEmail:
+        post:
+            tags:
+                - InstanceService
+            description: Tests notification email delivery with the provided or stored SMTP settings.
+            operationId: InstanceService_TestInstanceEmailSetting
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TestInstanceEmailSettingRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/instance/settings:batchGet:
+        post:
+            tags:
+                - InstanceService
+            description: Batch gets instance settings.
+            operationId: InstanceService_BatchGetInstanceSettings
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/BatchGetInstanceSettingsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BatchGetInstanceSettingsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/instance/stats:
+        get:
+            tags:
+                - InstanceService
+            description: GetInstanceStats returns resource usage statistics for the instance. Admin only.
+            operationId: InstanceService_GetInstanceStats
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/InstanceStats'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/instance/{instance}/*:
         get:
             tags:
@@ -579,10 +645,10 @@ paths:
                   in: query
                   description: |-
                     Optional. The order to sort results by.
-                     Default to "display_time desc".
+                     Default to "create_time desc".
                      Supports comma-separated list of fields following AIP-132.
-                     Example: "pinned desc, display_time desc" or "create_time asc"
-                     Supported fields: pinned, display_time, create_time, update_time, name
+                     Example: "pinned desc, create_time desc" or "update_time asc"
+                     Supported fields: pinned, create_time, update_time, name
                   schema:
                     type: string
                 - name: filter
@@ -637,6 +703,56 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Memo'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/memos/-/linkMetadata:
+        get:
+            tags:
+                - MemoService
+            description: GetLinkMetadata gets metadata for a link.
+            operationId: MemoService_GetLinkMetadata
+            parameters:
+                - name: url
+                  in: query
+                  description: Required. The link URL.
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/LinkMetadata'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/memos/-/linkMetadata:batchGet:
+        post:
+            tags:
+                - MemoService
+            description: BatchGetLinkMetadata gets metadata for links.
+            operationId: MemoService_BatchGetLinkMetadata
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/BatchGetLinkMetadataRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BatchGetLinkMetadataResponse'
                 default:
                     description: Default error response
                     content:
@@ -2150,6 +2266,24 @@ paths:
                 - UserService
             description: ListAllUserStats returns statistics for all users.
             operationId: UserService_ListAllUserStats
+            parameters:
+                - name: state
+                  in: query
+                  description: Optional. The state of memos to include. Defaults to NORMAL.
+                  schema:
+                    enum:
+                        - STATE_UNSPECIFIED
+                        - NORMAL
+                        - ARCHIVED
+                    type: string
+                    format: enum
+                - name: filter
+                  in: query
+                  description: |-
+                    Optional. Filter to apply to memo stats.
+                     Uses the same filter syntax as ListMemos.
+                  schema:
+                    type: string
             responses:
                 "200":
                     description: OK
@@ -2217,6 +2351,46 @@ components:
                     type: array
                     items:
                         type: string
+        BatchGetInstanceSettingsRequest:
+            required:
+                - names
+            type: object
+            properties:
+                names:
+                    type: array
+                    items:
+                        type: string
+                    description: |-
+                        The resource names of the instance settings.
+                         Format: instance/settings/{setting}
+            description: Request message for BatchGetInstanceSettings method.
+        BatchGetInstanceSettingsResponse:
+            type: object
+            properties:
+                settings:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/InstanceSetting'
+                    description: The instance settings in the same order as the input names.
+            description: Response message for BatchGetInstanceSettings method.
+        BatchGetLinkMetadataRequest:
+            required:
+                - urls
+            type: object
+            properties:
+                urls:
+                    type: array
+                    items:
+                        type: string
+                    description: Required. The link URLs.
+        BatchGetLinkMetadataResponse:
+            type: object
+            properties:
+                linkMetadata:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/LinkMetadata'
+                    description: The link metadata list, in the same order as the input URLs.
         BatchGetUsersRequest:
             type: object
             properties:
@@ -2530,6 +2704,9 @@ components:
                     description: |-
                         The first administrator who set up this instance.
                          When null, instance requires initial setup (creating the first admin account).
+                commit:
+                    type: string
+                    description: Commit is the current build commit of instance.
             description: Instance profile message containing basic instance information.
         InstanceSetting:
             type: object
@@ -2589,6 +2766,12 @@ components:
                     items:
                         $ref: '#/components/schemas/InstanceSetting_AIProviderConfig'
                     description: providers is the list of AI provider configurations available instance-wide.
+                transcription:
+                    allOf:
+                        - $ref: '#/components/schemas/InstanceSetting_TranscriptionConfig'
+                    description: |-
+                        transcription is the speech-to-text feature configuration.
+                         When unset or transcription.provider_id is empty, transcription is disabled.
             description: AI provider configuration settings.
         InstanceSetting_GeneralSetting:
             type: object
@@ -2626,9 +2809,6 @@ components:
         InstanceSetting_MemoRelatedSetting:
             type: object
             properties:
-                displayWithUpdateTime:
-                    type: boolean
-                    description: display_with_update_time orders and displays memo with update time.
                 contentLengthLimit:
                     type: integer
                     description: content_length_limit is the limit of content length. Unit is byte.
@@ -2699,6 +2879,67 @@ components:
                          so a single entry like "project/.*" matches all tags under that prefix.
                          Exact tag names are also valid (they are trivially valid regex patterns).
             description: Tag metadata configuration.
+        InstanceSetting_TranscriptionConfig:
+            type: object
+            properties:
+                providerId:
+                    type: string
+                    description: |-
+                        provider_id references an entry in AISetting.providers[].id.
+                         Empty string means transcription is disabled.
+                model:
+                    type: string
+                    description: |-
+                        model is the provider-specific model identifier.
+                         Empty string falls back to the engine default
+                         (whisper-1 for OPENAI providers, gemini-2.5-flash for GEMINI providers).
+                language:
+                    type: string
+                    description: |-
+                        language is the default ISO 639-1 language hint sent to the provider.
+                         Empty string lets the provider auto-detect.
+                prompt:
+                    type: string
+                    description: prompt is a default spelling/vocabulary hint passed to the provider.
+            description: TranscriptionConfig configures the speech-to-text feature.
+        InstanceStats:
+            type: object
+            properties:
+                database:
+                    $ref: '#/components/schemas/InstanceStats_DatabaseStats'
+                localStorageBytes:
+                    type: string
+                    description: Recursive size of the data directory in bytes. -1 if unavailable.
+                generatedTime:
+                    type: string
+                    description: Server-side timestamp when the snapshot was generated.
+                    format: date-time
+            description: Resource usage statistics for the instance.
+        InstanceStats_DatabaseStats:
+            type: object
+            properties:
+                driver:
+                    type: string
+                    description: driver is one of "sqlite", "mysql", "postgres".
+                sizeBytes:
+                    type: string
+                    description: size_bytes is the database size in bytes; -1 if unavailable.
+            description: Database size statistics.
+        LinkMetadata:
+            type: object
+            properties:
+                url:
+                    type: string
+                    description: The original link URL.
+                title:
+                    type: string
+                    description: The link title.
+                description:
+                    type: string
+                    description: The link description.
+                image:
+                    type: string
+                    description: The link image URL.
         LinkedIdentity:
             type: object
             properties:
@@ -2959,10 +3200,6 @@ components:
                         The last update timestamp.
                          If not set on creation, the server will set it to the current time.
                     format: date-time
-                displayTime:
-                    type: string
-                    description: The display timestamp of the memo.
-                    format: date-time
                 content:
                     type: string
                     description: Required. The content of the memo in Markdown format.
@@ -3128,6 +3365,7 @@ components:
                 smtpUsername:
                     type: string
                 smtpPassword:
+                    writeOnly: true
                     type: string
                 fromEmail:
                     type: string
@@ -3368,6 +3606,7 @@ components:
                 accessKeyId:
                     type: string
                 accessKeySecret:
+                    writeOnly: true
                     type: string
                 endpoint:
                     type: string
@@ -3380,20 +3619,22 @@ components:
             description: |-
                 S3 configuration for cloud storage backend.
                  Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
+        TestInstanceEmailSettingRequest:
+            type: object
+            properties:
+                email:
+                    allOf:
+                        - $ref: '#/components/schemas/NotificationSetting_EmailSetting'
+                    description: Optional. SMTP email settings to test. If omitted, the stored notification email setting is used.
+                recipientEmail:
+                    type: string
+                    description: Optional. Recipient email address. If omitted, the current user's email address is used.
+            description: Request message for TestInstanceEmailSetting method.
         TranscribeRequest:
             required:
-                - providerId
-                - config
                 - audio
             type: object
             properties:
-                providerId:
-                    type: string
-                    description: Required. The instance AI provider ID to use.
-                config:
-                    allOf:
-                        - $ref: '#/components/schemas/TranscriptionConfig'
-                    description: Required. Transcription options.
                 audio:
                     allOf:
                         - $ref: '#/components/schemas/TranscriptionAudio'
@@ -3421,15 +3662,6 @@ components:
                 contentType:
                     type: string
                     description: Optional. The MIME type of the input audio.
-        TranscriptionConfig:
-            type: object
-            properties:
-                prompt:
-                    type: string
-                    description: Optional. A prompt to improve transcription quality.
-                language:
-                    type: string
-                    description: Optional. The language of the input audio.
         UpsertMemoReactionRequest:
             required:
                 - name
@@ -3642,12 +3874,6 @@ components:
                     description: |-
                         The resource name of the user whose stats these are.
                          Format: users/{user}
-                memoDisplayTimestamps:
-                    type: array
-                    items:
-                        type: string
-                        format: date-time
-                    description: The timestamps when the memos were displayed.
                 memoTypeStats:
                     allOf:
                         - $ref: '#/components/schemas/UserStats_MemoTypeStats'
@@ -3658,6 +3884,21 @@ components:
                         type: integer
                         format: int32
                     description: The count of tags.
+                memoCreatedTimestamps:
+                    type: array
+                    items:
+                        type: string
+                        format: date-time
+                    description: The creation timestamps of the user's memos.
+                memoUpdatedTimestamps:
+                    type: array
+                    items:
+                        type: string
+                        format: date-time
+                    description: |-
+                        The latest update timestamps of the user's memos (one per memo,
+                         mirrors memo_created_timestamps). Used by the activity heatmap when
+                         the client's view is set to update_time basis.
                 pinnedMemos:
                     type: array
                     items:
