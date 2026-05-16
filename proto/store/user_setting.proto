@@ -41,6 +41,8 @@ message GeneralUserSetting {
   // The user's theme preference.
   // This references a CSS file in the web/public/themes/ directory.
   string theme = 3;
+  // Whether to always expand long memos instead of collapsing them with a "show more" button.
+  bool always_expand_memo = 4;
 }
 
 message RefreshTokensUserSetting {

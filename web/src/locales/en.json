@@ -475,6 +475,7 @@
       "label": "My Account"
     },
     "preference": {
+      "always-expand-memo": "Always expand long memos",
       "default-memo-sort-option": "Memo display time",
       "default-memo-visibility": "Default memo visibility",
       "label": "Preferences",
