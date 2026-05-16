@@ -34,16 +34,19 @@ const SearchBar = () => {
 
   return (
     <div className="relative w-full h-auto flex flex-row justify-start items-center">
-      <SearchIcon className="absolute left-2 w-4 h-auto opacity-40 text-sidebar-foreground" />
+      <SearchIcon className="absolute left-3 w-4 h-auto opacity-50 text-sidebar-foreground" />
       <input
-        className={cn("w-full text-sidebar-foreground leading-6 bg-sidebar border border-border text-sm rounded-lg p-1 pl-8 outline-0")}
+        className={cn(
+          "w-full text-sidebar-foreground leading-6 bg-card border border-border text-sm rounded-lg py-2 pl-9 pr-9 outline-0 shadow-xs",
+          "transition-shadow focus:shadow-sm",
+        )}
         placeholder={t("memo.search-placeholder")}
         value={queryText}
         onChange={onTextChange}
         onKeyDown={onKeyDown}
         ref={inputRef}
       />
-      <MemoDisplaySettingMenu className="absolute right-2 top-2 text-sidebar-foreground" />
+      <MemoDisplaySettingMenu className="absolute right-2 top-2.5 text-sidebar-foreground" />
     </div>
   );
 };

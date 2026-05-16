@@ -1,11 +1,13 @@
 import defaultDarkThemeContent from "../themes/default-dark.css?raw";
+import notebookThemeContent from "../themes/notebook.css?raw";
+import notebookDarkThemeContent from "../themes/notebook-dark.css?raw";
 import paperThemeContent from "../themes/paper.css?raw";
 
 // ============================================================================
 // Types and Constants
 // ============================================================================
 
-const VALID_THEMES = ["system", "default", "default-dark", "paper"] as const;
+const VALID_THEMES = ["system", "default", "default-dark", "paper", "notebook", "notebook-dark"] as const;
 
 export type Theme = (typeof VALID_THEMES)[number];
 export type ResolvedTheme = Exclude<Theme, "system">;
@@ -22,16 +24,22 @@ const THEME_CONTENT: Record<ResolvedTheme, string | null> = {
   default: null,
   "default-dark": defaultDarkThemeContent,
   paper: paperThemeContent,
+  notebook: notebookThemeContent,
+  "notebook-dark": notebookDarkThemeContent,
 };
 
 const THEME_COLORS: Record<ResolvedTheme, string> = {
   default: "#faf9f5",
   "default-dark": "#1d1f23",
   paper: "#f5ede4",
+  notebook: "#f4ede0",
+  "notebook-dark": "#1a1612",
 };
 
 export const THEME_OPTIONS: ThemeOption[] = [
   { value: "system", label: "Sync with system" },
+  { value: "notebook", label: "Notebook" },
+  { value: "notebook-dark", label: "Notebook (Dark)" },
   { value: "default", label: "Light" },
   { value: "default-dark", label: "Dark" },
   { value: "paper", label: "Paper" },
@@ -55,9 +63,9 @@ const validateTheme = (theme: string): Theme => {
  */
 export const getSystemTheme = (): ResolvedTheme => {
   if (typeof window !== "undefined" && window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
-    return "default-dark";
+    return "notebook-dark";
   }
-  return "default";
+  return "notebook";
 };
 
 /**

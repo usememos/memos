@@ -1,0 +1,208 @@
+/* ─────────────────────────────────────────────
+   memos · Quiet Notebook (light)
+   Warm paper palette + terracotta accent.
+   ───────────────────────────────────────────── */
+
+:root {
+  /* Warm paper palette */
+  --notebook-bg: #f4ede0;
+  --notebook-bg-sunk: #ece4d3;
+  --notebook-surface: #fffdf7;
+  --notebook-surface-2: #f8f2e3;
+  --notebook-line: rgba(60, 40, 20, 0.08);
+  --notebook-line-strong: rgba(60, 40, 20, 0.14);
+
+  --notebook-ink: #2a241d;
+  --notebook-ink-2: #5b5043;
+  --notebook-ink-3: #8a7e6e;
+  --notebook-ink-4: #b8ad9b;
+
+  --notebook-accent: #c84a3a;
+  --notebook-accent-soft: #f4ddd6;
+  --notebook-accent-ink: #9c3526;
+
+  /* Map design tokens to app tokens (shadcn / tailwind v4) */
+  --background: var(--notebook-bg);
+  --foreground: var(--notebook-ink);
+  --card: var(--notebook-surface);
+  --card-foreground: var(--notebook-ink);
+  --popover: var(--notebook-surface);
+  --popover-foreground: var(--notebook-ink);
+  --primary: var(--notebook-accent);
+  --primary-foreground: #ffffff;
+  --secondary: var(--notebook-surface-2);
+  --secondary-foreground: var(--notebook-ink);
+  --muted: var(--notebook-surface-2);
+  --muted-foreground: var(--notebook-ink-3);
+  --accent: var(--notebook-accent-soft);
+  --accent-foreground: var(--notebook-accent-ink);
+  --destructive: #b03525;
+  --destructive-foreground: #ffffff;
+  --border: var(--notebook-line);
+  --input: var(--notebook-line-strong);
+  --ring: var(--notebook-accent);
+  --sidebar: var(--notebook-bg);
+  --sidebar-foreground: var(--notebook-ink-2);
+  --sidebar-accent: var(--notebook-surface);
+  --sidebar-accent-foreground: var(--notebook-ink);
+
+  --font-sans:
+    "Inter", "Noto Sans SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif: "Source Serif 4", "Source Han Serif SC", "Noto Serif SC", Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono:
+    "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  --radius: 0.875rem;
+
+  --shadow-xs: 0 1px 0 rgba(60, 40, 20, 0.04);
+  --shadow-sm: 0 1px 0 rgba(60, 40, 20, 0.04), 0 2px 6px rgba(60, 40, 20, 0.04);
+  --shadow: 0 1px 0 rgba(60, 40, 20, 0.04), 0 2px 6px rgba(60, 40, 20, 0.04), 0 12px 24px -16px rgba(60, 40, 20, 0.1);
+  --shadow-md: 0 2px 0 rgba(60, 40, 20, 0.04), 0 8px 18px -4px rgba(60, 40, 20, 0.12);
+  --shadow-lg: 0 2px 0 rgba(60, 40, 20, 0.04), 0 8px 18px -4px rgba(60, 40, 20, 0.12), 0 24px 40px -20px rgba(60, 40, 20, 0.18);
+  --shadow-xl: 0 24px 60px -20px rgba(60, 40, 20, 0.3);
+  --shadow-2xl: 0 24px 60px -20px rgba(60, 40, 20, 0.3);
+}
+
+/* ─── Typography polish ─── */
+body,
+html {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "cv11", "ss01", "ss03";
+  letter-spacing: -0.005em;
+}
+
+/* Page titles use serif */
+.notebook-title,
+h1.notebook-title,
+.notebook h1 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--notebook-ink);
+}
+
+/* Mono details */
+.notebook-mono,
+[data-notebook-mono] {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum";
+}
+
+/* ─── Memo card paper feel ─── */
+[data-theme="notebook"] article.bg-card,
+[data-theme="notebook"] .memo-card {
+  border: 1px solid var(--notebook-line);
+  border-radius: 14px;
+  box-shadow:
+    0 1px 0 rgba(60, 40, 20, 0.04),
+    0 2px 6px rgba(60, 40, 20, 0.04),
+    0 12px 24px -16px rgba(60, 40, 20, 0.1);
+  transition:
+    box-shadow 180ms ease,
+    transform 180ms ease,
+    border-color 180ms ease;
+}
+[data-theme="notebook"] article.bg-card:hover,
+[data-theme="notebook"] .memo-card:hover {
+  box-shadow:
+    0 2px 0 rgba(60, 40, 20, 0.04),
+    0 8px 18px -4px rgba(60, 40, 20, 0.12);
+  border-color: var(--notebook-line-strong);
+}
+
+/* ─── Left rail (Navigation) terracotta active indicator ─── */
+[data-theme="notebook"] .nav-rail-item {
+  position: relative;
+}
+[data-theme="notebook"] .nav-rail-item.is-active::before {
+  content: "";
+  position: absolute;
+  left: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 18px;
+  background: var(--notebook-accent);
+  border-radius: 0 3px 3px 0;
+}
+
+/* ─── Logo serif "m" ─── */
+[data-theme="notebook"] .notebook-logo {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  background: var(--notebook-accent);
+  box-shadow: var(--shadow);
+}
+
+/* ─── Generic helpers used by redesign ─── */
+[data-theme="notebook"] .notebook-divider-dashed {
+  border-top: 1px dashed var(--notebook-line);
+}
+[data-theme="notebook"] .notebook-section-eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--notebook-ink-3);
+  font-weight: 600;
+}
+
+/* ─── Tags inline ─── */
+[data-theme="notebook"] .memo-content .tag-link,
+[data-theme="notebook"] .tag-pill {
+  color: var(--notebook-accent);
+  background: var(--notebook-accent-soft);
+  padding: 1px 6px;
+  border-radius: 5px;
+  font-size: 0.88em;
+}
+
+/* ─── Compose / editor surface ─── */
+[data-theme="notebook"] .memo-editor,
+[data-theme="notebook"] .memo-editor-container {
+  background: var(--notebook-surface);
+  border: 1px solid var(--notebook-line);
+  border-radius: 14px;
+  box-shadow:
+    0 1px 0 rgba(60, 40, 20, 0.04),
+    0 2px 6px rgba(60, 40, 20, 0.04),
+    0 12px 24px -16px rgba(60, 40, 20, 0.1);
+  transition:
+    box-shadow 200ms ease,
+    border-color 200ms ease;
+}
+[data-theme="notebook"] .memo-editor:focus-within,
+[data-theme="notebook"] .memo-editor-container:focus-within {
+  box-shadow:
+    0 2px 0 rgba(60, 40, 20, 0.04),
+    0 8px 18px -4px rgba(60, 40, 20, 0.12),
+    0 24px 40px -20px rgba(60, 40, 20, 0.18);
+  border-color: var(--notebook-line-strong);
+}
+
+/* ─── Right side panel (Memo Explorer) ─── */
+[data-theme="notebook"] .memo-explorer-panel {
+  background: var(--notebook-bg);
+  border-left: 1px solid var(--notebook-line);
+  border-right: 0;
+}
+
+/* ─── Calendar tweaks: slightly serif title ─── */
+[data-theme="notebook"] .month-navigator-title {
+  font-family: var(--font-serif);
+  letter-spacing: -0.01em;
+}
+
+/* ─── Settings panel ─── */
+[data-theme="notebook"] .settings-panel-card {
+  background: var(--notebook-surface);
+  border: 1px solid var(--notebook-line);
+  border-radius: 14px;
+  box-shadow:
+    0 1px 0 rgba(60, 40, 20, 0.04),
+    0 2px 6px rgba(60, 40, 20, 0.04);
+}

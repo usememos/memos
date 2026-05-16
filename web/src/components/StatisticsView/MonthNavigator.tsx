@@ -48,7 +48,7 @@ export const MonthNavigator = memo(({ visibleMonth, onMonthChange, activityStats
         <DialogTrigger asChild>
           <button
             type="button"
-            className="py-0.5 text-sm text-foreground font-medium transition-colors hover:text-foreground/80 select-none"
+            className="month-navigator-title py-0.5 text-sm text-foreground font-semibold transition-colors hover:text-foreground/80 select-none"
           >
             {monthLabel}
           </button>

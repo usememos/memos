@@ -37,8 +37,8 @@ const TagsSection = (props: Props) => {
   };
 
   return (
-    <div className="w-full flex flex-col justify-start items-start mt-3 px-1 h-auto shrink-0 flex-nowrap">
-      <div className="flex flex-row justify-between items-center w-full gap-1 mb-1 text-sm leading-6 text-muted-foreground select-none">
+    <div className="w-full flex flex-col justify-start items-start mt-5 px-1 h-auto shrink-0 flex-nowrap">
+      <div className="flex flex-row justify-between items-center w-full gap-1 mb-2 text-[11px] leading-6 text-muted-foreground select-none uppercase tracking-[0.12em] font-semibold">
         <span>{t("common.tags")}</span>
         {tags.length > 0 && (
           <Popover>
@@ -69,16 +69,16 @@ const TagsSection = (props: Props) => {
                 <div
                   key={tag}
                   className={cn(
-                    "shrink-0 w-auto max-w-full text-sm rounded-md leading-6 flex flex-row justify-start items-center select-none cursor-pointer transition-colors",
-                    "hover:opacity-80",
-                    isActive ? "text-primary" : "text-muted-foreground",
+                    "shrink-0 w-auto max-w-full text-sm rounded-md leading-6 flex flex-row justify-start items-center select-none cursor-pointer transition-colors px-2 py-0.5",
+                    "hover:bg-muted",
+                    isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground",
                   )}
                   onClick={() => handleTagClick(tag)}
                 >
-                  <HashIcon className="w-4 h-auto shrink-0" />
+                  <HashIcon className={cn("w-4 h-auto shrink-0", isActive ? "" : "text-primary opacity-70")} />
                   <div className="inline-flex flex-nowrap ml-0.5 gap-0.5 max-w-[calc(100%-16px)]">
                     <span className={cn("truncate", isActive ? "font-medium" : "")}>{tag}</span>
-                    {amount > 1 && <span className="opacity-60 shrink-0">({amount})</span>}
+                    {amount > 1 && <span className="opacity-60 shrink-0 font-mono text-xs ml-1">{amount}</span>}
                   </div>
                 </div>
               );
