@@ -91,6 +91,13 @@ const PreferencesSection = () => {
           <SettingListItem label={t("setting.preference.theme")} description={t("setting.preference.theme-description")}>
             <ThemeSelect value={setting.theme} onValueChange={handleThemeChange} />
           </SettingListItem>
+
+          <SettingListItem
+            label={t("setting.preference.always-expand-memo")}
+            description={t("setting.preference.always-expand-memo-description")}
+          >
+            <Switch checked={setting.alwaysExpandMemo} onCheckedChange={handleAlwaysExpandMemoChange} />
+          </SettingListItem>
         </SettingList>
       </SettingGroup>
 
@@ -121,13 +128,6 @@ const PreferencesSection = () => {
                   ))}
               </SelectContent>
             </Select>
-          </SettingListItem>
-
-          <SettingListItem
-            label={t("setting.preference.always-expand-memo")}
-            description={t("setting.preference.always-expand-memo-description")}
-          >
-            <Switch checked={setting.alwaysExpandMemo} onCheckedChange={handleAlwaysExpandMemoChange} />
           </SettingListItem>
         </SettingList>
       </SettingGroup>
