@@ -4,6 +4,7 @@ import type { InfiniteData } from "@tanstack/react-query";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { memoServiceClient } from "@/connect";
 import { userKeys } from "@/hooks/useUserQueries";
+import { State } from "@/types/proto/api/v1/common_pb";
 import type { ListMemosRequest, ListMemosResponse, Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { ListMemoCommentsRequestSchema, ListMemosRequestSchema, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
@@ -125,6 +126,34 @@ export function useInfiniteMemos(request: Partial<ListMemosRequest> = {}, option
       const response = await memoServiceClient.listMemos(
         create(ListMemosRequestSchema, {
           ...request,
+          pageToken: pageParam || "",
+        } as Record<string, unknown>),
+      );
+      return response;
+    },
+    initialPageParam: "",
+    getNextPageParam: (lastPage) => lastPage.nextPageToken || undefined,
+    staleTime: 1000 * 60,
+    gcTime: 1000 * 60 * 5,
+    enabled: options?.enabled ?? true,
+  });
+}
+
+/**
+ * Lists the current user's server-side drafts. Mirrors useInfiniteMemos (NOT
+ * the flat useMemos shape): an infinite query pinned to state=DRAFT with a
+ * fixed pageSize of 20, so the drafts dropdown can paginate via fetchNextPage.
+ * Shares memoKeys.list(...) so handleSave's memoKeys.lists() invalidation
+ * refreshes drafts for free.
+ */
+export function useDrafts(request: Partial<ListMemosRequest> = {}, options?: { enabled?: boolean }) {
+  const draftRequest: Partial<ListMemosRequest> = { ...request, pageSize: 20, state: State.DRAFT };
+  return useInfiniteQuery({
+    queryKey: memoKeys.list(draftRequest),
+    queryFn: async ({ pageParam }) => {
+      const response = await memoServiceClient.listMemos(
+        create(ListMemosRequestSchema, {
+          ...draftRequest,
           pageToken: pageParam || "",
         } as Record<string, unknown>),
       );

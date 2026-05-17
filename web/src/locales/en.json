@@ -168,6 +168,10 @@
     },
     "no-changes-detected": "No changes detected",
     "save": "Save",
+    "save-as-draft": "Save as draft",
+    "load-drafts": "Load previous drafts",
+    "loading": "Loading...",
+    "no-drafts": "No drafts yet",
     "saving": "Saving...",
     "slash-commands": "Type `/` for commands",
     "audio-recorder": {

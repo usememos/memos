@@ -162,10 +162,10 @@ func parseVisibility(s string) (store.Visibility, error) {
 // parseRowStatus validates a state string and returns the store constant.
 func parseRowStatus(s string) (store.RowStatus, error) {
 	switch rs := store.RowStatus(s); rs {
-	case store.Normal, store.Archived:
+	case store.Normal, store.Archived, store.Draft:
 		return rs, nil
 	default:
-		return "", errors.Errorf("state must be NORMAL or ARCHIVED; got %q", s)
+		return "", errors.Errorf("state must be NORMAL, ARCHIVED or DRAFT; got %q", s)
 	}
 }
 

@@ -110,6 +110,14 @@ func (s *APIV1Service) ListMemoRelations(ctx context.Context, request *v1pb.List
 	} else {
 		memoFilter = fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "PROTECTED"]`, currentUser.ID)
 	}
+	// A DRAFT memo is creator-only regardless of visibility (E2/E3): the
+	// MemoFilter DSL has no row_status predicate, so drop any relation whose
+	// memo or related memo is a draft the caller does not own. This mirrors the
+	// creator-only discipline enforced in checkMemoReadAccess.
+	var callerID *int32
+	if currentUser != nil {
+		callerID = &currentUser.ID
+	}
 	relationList := []*v1pb.MemoRelation{}
 	tempList, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
 		MemoID:     &memo.ID,
@@ -119,6 +127,13 @@ func (s *APIV1Service) ListMemoRelations(ctx context.Context, request *v1pb.List
 		return nil, status.Errorf(codes.Internal, "failed to list memo relations: %v", err)
 	}
 	for _, raw := range tempList {
+		hidden, err := s.memoRelationHidesDraft(ctx, raw, callerID)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to resolve memo relation visibility")
+		}
+		if hidden {
+			continue
+		}
 		relation, err := s.convertMemoRelationFromStore(ctx, raw)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to convert memo relation")
@@ -133,6 +148,13 @@ func (s *APIV1Service) ListMemoRelations(ctx context.Context, request *v1pb.List
 		return nil, status.Errorf(codes.Internal, "failed to list related memo relations: %v", err)
 	}
 	for _, raw := range tempList {
+		hidden, err := s.memoRelationHidesDraft(ctx, raw, callerID)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to resolve memo relation visibility")
+		}
+		if hidden {
+			continue
+		}
 		relation, err := s.convertMemoRelationFromStore(ctx, raw)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to convert memo relation")
@@ -144,6 +166,25 @@ func (s *APIV1Service) ListMemoRelations(ctx context.Context, request *v1pb.List
 		Relations: relationList,
 	}
 	return response, nil
+}
+
+// memoRelationHidesDraft reports whether the relation references a DRAFT memo
+// the caller does not own. Drafts are creator-only regardless of visibility
+// (E2/E3), so such relations must never be surfaced to a non-creator.
+func (s *APIV1Service) memoRelationHidesDraft(ctx context.Context, memoRelation *store.MemoRelation, callerID *int32) (bool, error) {
+	for _, id := range []int32{memoRelation.MemoID, memoRelation.RelatedMemoID} {
+		related, err := s.Store.GetMemo(ctx, &store.FindMemo{ID: &id})
+		if err != nil {
+			return false, errors.Wrap(err, "failed to get memo for relation visibility check")
+		}
+		if related == nil {
+			continue
+		}
+		if related.RowStatus == store.Draft && (callerID == nil || related.CreatorID != *callerID) {
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
 func (s *APIV1Service) convertMemoRelationFromStore(ctx context.Context, memoRelation *store.MemoRelation) (*v1pb.MemoRelation, error) {

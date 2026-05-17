@@ -27,6 +27,7 @@ const (
 	State_STATE_UNSPECIFIED State = 0
 	State_NORMAL            State = 1
 	State_ARCHIVED          State = 2
+	State_DRAFT             State = 3
 )
 
 // Enum value maps for State.
@@ -35,11 +36,13 @@ var (
 		0: "STATE_UNSPECIFIED",
 		1: "NORMAL",
 		2: "ARCHIVED",
+		3: "DRAFT",
 	}
 	State_value = map[string]int32{
 		"STATE_UNSPECIFIED": 0,
 		"NORMAL":            1,
 		"ARCHIVED":          2,
+		"DRAFT":             3,
 	}
 )
 
@@ -179,12 +182,13 @@ const file_api_v1_common_proto_rawDesc = "" +
 	"\x13api/v1/common.proto\x12\fmemos.api.v1\"9\n" +
 	"\tPageToken\x12\x14\n" +
 	"\x05limit\x18\x01 \x01(\x05R\x05limit\x12\x16\n" +
-	"\x06offset\x18\x02 \x01(\x05R\x06offset*8\n" +
+	"\x06offset\x18\x02 \x01(\x05R\x06offset*C\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06NORMAL\x10\x01\x12\f\n" +
-	"\bARCHIVED\x10\x02*9\n" +
+	"\bARCHIVED\x10\x02\x12\t\n" +
+	"\x05DRAFT\x10\x03*9\n" +
 	"\tDirection\x12\x19\n" +
 	"\x15DIRECTION_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03ASC\x10\x01\x12\b\n" +

@@ -34,6 +34,12 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 		fields = append(fields, "updated_ts")
 		args = append(args, create.UpdatedTs)
 	}
+	// Only set row_status explicitly when provided, so existing callers keep
+	// the schema DEFAULT 'NORMAL' path unchanged (e.g. a DRAFT memo).
+	if create.RowStatus != "" {
+		fields = append(fields, "row_status")
+		args = append(args, create.RowStatus)
+	}
 
 	stmt := "INSERT INTO memo (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id, created_ts, updated_ts, row_status"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(

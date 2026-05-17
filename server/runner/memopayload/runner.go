@@ -30,11 +30,15 @@ func (r *Runner) RunOnce(ctx context.Context) {
 	offset := 0
 	processed := 0
 
+	// RowStatus pinned to Normal so DRAFT memos are skipped entirely — their
+	// payload is left untouched and never rebuilt by this background runner.
+	normalStatus := store.Normal
 	for {
 		limit := batchSize
 		memos, err := r.Store.ListMemos(ctx, &store.FindMemo{
-			Limit:  &limit,
-			Offset: &offset,
+			RowStatus: &normalStatus,
+			Limit:     &limit,
+			Offset:    &offset,
 		})
 		if err != nil {
 			slog.Error("failed to list memos", "err", err)

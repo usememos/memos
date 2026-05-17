@@ -1,4 +1,4 @@
-import type { ClipboardEvent, ForwardedRef, RefObject } from "react";
+import type { ClipboardEvent, ForwardedRef, ReactNode, RefObject } from "react";
 import type { Location, Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { EditorRefActions } from "../Editor";
 import type { Command } from "../Editor/commands";
@@ -33,6 +33,19 @@ export interface EditorToolbarProps {
   onCancel?: () => void;
   memoName?: string;
   onAudioRecorderClick: () => void;
+  /**
+   * When provided, a separate ▾ dropdown trigger (distinct from the primary
+   * Save button) is rendered next to Save; its single "Save as draft" item
+   * calls this. Absent when undefined.
+   */
+  onSaveDraft?: () => void;
+  /**
+   * When provided, a "load previous drafts" icon button is rendered in the
+   * left cluster (next to the InsertMenu). Its return value is the dropdown
+   * body — the scrollable, infinitely-paginated drafts list. Absent when
+   * undefined.
+   */
+  onLoadDrafts?: () => ReactNode;
 }
 
 export interface EditorMetadataProps {
