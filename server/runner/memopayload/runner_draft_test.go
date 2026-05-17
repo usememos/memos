@@ -16,10 +16,9 @@ import (
 // RowStatus filter, so it rebuilds and rewrites DRAFT memo payloads alongside
 // normal ones. The contract requires the runner to skip / exclude DRAFT memos.
 //
-// RED today: after RunOnce, the seeded draft's payload has been rebuilt (Tags
-// populated from its #tag content). A guarded runner leaves the draft's payload
-// untouched. A NORMAL memo is included as a positive control proving the runner
-// does do work.
+// The runner must leave a DRAFT memo's payload untouched (no Tags rebuilt from
+// its #tag content). A NORMAL memo is included as a positive control proving
+// the runner still does its work.
 func TestPayloadRunner_SkipsDraftMemos(t *testing.T) {
 	ctx := context.Background()
 	stores := teststore.NewTestingStore(ctx, t)

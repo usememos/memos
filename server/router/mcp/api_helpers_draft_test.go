@@ -13,9 +13,8 @@ import (
 // reported as State_DRAFT and never silently surfaces as NORMAL (E12, leak
 // regression).
 //
-// RED today: rowStatusToProto has no store.Draft case, so a draft maps to
-// State_NORMAL via the default arm -- a DRAFT memo would be advertised as a
-// normal memo to MCP clients.
+// Without the Draft case a draft falls through to State_NORMAL and would be
+// advertised as a normal memo to MCP clients.
 func TestRowStatusToProtoDraft(t *testing.T) {
 	t.Parallel()
 
@@ -28,10 +27,8 @@ func TestRowStatusToProtoDraft(t *testing.T) {
 
 // TestParseRowStatusDraft pins that the MCP state filter understands DRAFT.
 //
-// RED today: parseRowStatus only accepts NORMAL/ARCHIVED and rejects "DRAFT"
-// with an error, so an MCP client can never query its own drafts. (This is the
-// inverse of a leak: without this, drafts are simply unreachable via MCP, but
-// the contract requires creator-only DRAFT querying to be expressible.)
+// Creator-only DRAFT querying must be expressible via MCP, so parseRowStatus
+// accepts "DRAFT" (without it, drafts are simply unreachable via MCP).
 func TestParseRowStatusDraft(t *testing.T) {
 	t.Parallel()
 

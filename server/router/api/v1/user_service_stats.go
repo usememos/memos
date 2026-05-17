@@ -74,8 +74,8 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, request *v1pb.ListA
 		memoFind.Filters = append(memoFind.Filters, request.Filter)
 	}
 
-	if request.State == v1pb.State_ARCHIVED {
-		// Archived memos are only visible to their creator.
+	if request.State == v1pb.State_ARCHIVED || request.State == v1pb.State_DRAFT {
+		// Archived and draft memos are only visible to their creator.
 		if currentUser == nil {
 			return &v1pb.ListAllUserStatsResponse{}, nil
 		}

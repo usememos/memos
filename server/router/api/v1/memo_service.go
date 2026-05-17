@@ -514,6 +514,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	}
 	var previousContent string
 	contentUpdated := false
+	publishedFromDraft := false
 	for _, path := range request.UpdateMask.Paths {
 		if path == "content" {
 			contentUpdated = true
@@ -555,6 +556,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			// mask" -- a NORMAL->NORMAL no-op must not refresh created_ts
 			// (edge E5 / O4).
 			if memo.RowStatus == store.Draft && rowStatus == store.Normal {
+				publishedFromDraft = true
 				now := time.Now().Unix()
 				update.CreatedTs = &now
 				update.UpdatedTs = &now
@@ -599,8 +601,18 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to build updated memo state")
 	}
-	if contentUpdated {
-		s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, parentMemo, previousContent)
+	// A memo still in DRAFT after the update is not yet published: suppress
+	// mention notifications just like webhook/SSE (contract §4.3). Only once it
+	// is visible do mentions fire: on the DRAFT->NORMAL publish transition,
+	// notify every mention in the now-published content exactly once -- pass an
+	// empty previous content so all current mentions count as new (they were
+	// suppressed while the memo was a draft).
+	if memo.RowStatus != store.Draft {
+		if publishedFromDraft {
+			s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, parentMemo, "")
+		} else if contentUpdated {
+			s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, parentMemo, previousContent)
+		}
 	}
 	s.dispatchMemoUpdatedSideEffects(ctx, memo, parentMemo, memoMessage)
 

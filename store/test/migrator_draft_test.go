@@ -54,20 +54,20 @@ func TestMemoDraftMigrationFreshInstallAcceptsDraft(t *testing.T) {
 	db := openMigrationSQLDB(t, "sqlite", dsn)
 	defer db.Close()
 
-	execMigrationSQL(t, db, fmt.Sprintf(
-		"INSERT INTO memo (uid, creator_id, content, visibility, row_status) VALUES ('draft-fresh', %d, 'draft body', 'PRIVATE', 'DRAFT')",
+	execMigrationSQL(t, db,
+		"INSERT INTO memo (uid, creator_id, content, visibility, row_status) VALUES ('draft-fresh', ?, 'draft body', 'PRIVATE', 'DRAFT')",
 		user.ID,
-	))
+	)
 
 	var rowStatus string
 	require.NoError(t, db.QueryRowContext(ctx, "SELECT row_status FROM memo WHERE uid = 'draft-fresh'").Scan(&rowStatus))
 	require.Equal(t, "DRAFT", rowStatus)
 
 	// The CHECK must still reject an unknown lifecycle value (widened, not dropped).
-	_, err = db.Exec(fmt.Sprintf(
-		"INSERT INTO memo (uid, creator_id, content, visibility, row_status) VALUES ('bogus-rs', %d, 'x', 'PRIVATE', 'BOGUS')",
+	_, err = db.Exec(
+		"INSERT INTO memo (uid, creator_id, content, visibility, row_status) VALUES ('bogus-rs', ?, 'x', 'PRIVATE', 'BOGUS')",
 		user.ID,
-	))
+	)
 	require.Error(t, err, "row_status CHECK must still reject values outside NORMAL/ARCHIVED/DRAFT")
 
 	ts.Close()
@@ -109,10 +109,10 @@ func TestMemoDraftMigrationPreservesRowsAndUnlocksDraft(t *testing.T) {
 
 	db := openMigrationSQLDB(t, "sqlite", dsn)
 	defer db.Close()
-	execMigrationSQL(t, db, fmt.Sprintf(
-		"INSERT INTO memo (uid, creator_id, content, visibility, row_status) VALUES ('draft-post-migrate', %d, 'draft', 'PRIVATE', 'DRAFT')",
+	execMigrationSQL(t, db,
+		"INSERT INTO memo (uid, creator_id, content, visibility, row_status) VALUES ('draft-post-migrate', ?, 'draft', 'PRIVATE', 'DRAFT')",
 		user.ID,
-	))
+	)
 	var count int
 	require.NoError(t, db.QueryRowContext(ctx, "SELECT COUNT(*) FROM memo WHERE row_status = 'DRAFT'").Scan(&count))
 	require.Equal(t, 1, count)

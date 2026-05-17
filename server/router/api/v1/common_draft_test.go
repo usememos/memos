@@ -13,9 +13,9 @@ import (
 // API converters (E12). The default arm must still map unknown -> Normal /
 // STATE_UNSPECIFIED; an explicit DRAFT must round-trip both directions.
 //
-// RED today: convertStateToStore has no State_DRAFT case (default -> Normal),
-// and convertStateFromStore has no store.Draft case (default ->
-// STATE_UNSPECIFIED). A regression here is a silent leak.
+// A regression in either converter (DRAFT slipping through the default arm to
+// Normal / STATE_UNSPECIFIED) is a silent draft leak, so both directions are
+// pinned.
 func TestConvertStateDraftRoundTrip(t *testing.T) {
 	t.Parallel()
 

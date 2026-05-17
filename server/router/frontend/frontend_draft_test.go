@@ -18,7 +18,7 @@ import (
 // VisibilityList=[PUBLIC] with no RowStatus filter, so a PUBLIC-visibility
 // DRAFT leaks into the public sitemap.
 //
-// RED today: the seeded public draft's UID appears in /sitemap.xml.
+// Guards that the seeded public draft's UID never appears in /sitemap.xml.
 func TestFrontendService_SitemapExcludesDraft(t *testing.T) {
 	ctx := context.Background()
 	testStore := teststore.NewTestingStore(ctx, t)

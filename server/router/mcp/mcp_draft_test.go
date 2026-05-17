@@ -30,8 +30,8 @@ func (s *testMCPService) createDraftMemo(t *testing.T, creatorID int32, visibili
 // Added-guard surface: MCP get_memo / read_resource must deny another user's
 // PUBLIC-visibility DRAFT.
 //
-// RED today: checkMemoAccess (mcp/access.go:17-35) only rejects Archived for a
-// non-creator; a PUBLIC draft passes the visibility switch and leaks.
+// checkMemoAccess must reject a non-creator's DRAFT regardless of visibility;
+// otherwise a PUBLIC draft passes the visibility switch and leaks.
 func TestMCPGetMemoAndReadResourceDenyDraftToNonCreator(t *testing.T) {
 	ts := newTestMCPService(t)
 	owner := ts.createUser(t, "draft-owner")
@@ -58,9 +58,8 @@ func TestMCPGetMemoAndReadResourceDenyDraftToNonCreator(t *testing.T) {
 // and applyVisibilityFilter must exclude DRAFT when listing the default NORMAL
 // state.
 //
-// RED today: parseRowStatus rejects "DRAFT" so a creator cannot even ask for
-// drafts; and because applyVisibilityFilter has no DRAFT constraint, the path
-// is unguarded for that surface. We assert the creator-only contract directly.
+// Asserts the creator-only contract directly: a creator can list their own
+// drafts and applyVisibilityFilter excludes DRAFT from the default NORMAL list.
 func TestMCPListMemosDraftIsCreatorOnly(t *testing.T) {
 	ts := newTestMCPService(t)
 	owner := ts.createUser(t, "list-draft-owner")
@@ -84,8 +83,7 @@ func TestMCPListMemosDraftIsCreatorOnly(t *testing.T) {
 }
 
 // Regression pin (already-safe surface): default MCP list_memos (state defaults
-// to NORMAL) must exclude drafts. This PASSES today because the default
-// RowStatus filter is NORMAL, and must STAY green.
+// to NORMAL) must exclude drafts because the default RowStatus filter is NORMAL.
 func TestMCPListMemosDefaultExcludesDraftRegressionPin(t *testing.T) {
 	ts := newTestMCPService(t)
 	owner := ts.createUser(t, "default-list-owner")
@@ -106,7 +104,7 @@ func TestMCPListMemosDefaultExcludesDraftRegressionPin(t *testing.T) {
 }
 
 // Regression pin (already-safe surface): MCP search_memos pins RowStatus=Normal
-// so a DRAFT is never searchable. PASSES today, must STAY green.
+// so a DRAFT is never searchable.
 func TestMCPSearchMemosExcludesDraftRegressionPin(t *testing.T) {
 	ts := newTestMCPService(t)
 	owner := ts.createUser(t, "search-owner")

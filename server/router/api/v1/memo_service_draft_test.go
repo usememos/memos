@@ -43,8 +43,8 @@ func memoMentionInboxes(t *testing.T, svc *APIV1Service, receiverID int32) []*st
 // side-effects (webhook / SSE feed broadcast / mention notification) are all
 // suppressed.
 //
-// RED today: CreateMemo (memo_service.go:87-92) never reads request.Memo.State,
-// so the memo is created NORMAL and all three side-effects fire normally.
+// Without the guard CreateMemo would ignore request.Memo.State and the three
+// side-effects would fire for what should be an unpublished draft.
 func TestCreateMemo_DraftPersistsAndSuppressesSideEffects(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
@@ -95,8 +95,8 @@ func TestCreateMemo_DraftPersistsAndSuppressesSideEffects(t *testing.T) {
 
 // Item 2 (edge E1): CreateMemo with State=STATE_UNSPECIFIED -> persists NORMAL.
 //
-// This currently PASSES (handler ignores state, default is NORMAL) and must
-// STAY green after T7: only an explicit DRAFT yields a draft.
+// Regression pin: only an explicit DRAFT yields a draft; STATE_UNSPECIFIED
+// must keep resolving to NORMAL.
 func TestCreateMemo_UnspecifiedStateIsNormal(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
@@ -120,8 +120,8 @@ func TestCreateMemo_UnspecifiedStateIsNormal(t *testing.T) {
 
 // Item 3: Default ListMemos (no state) excludes a seeded draft.
 //
-// This already PASSES (ListMemos default branch pins store.Normal) and is a
-// regression pin that must STAY green.
+// Regression pin: the ListMemos default branch pins store.Normal, so a seeded
+// draft must never appear in the default list.
 func TestListMemos_DefaultExcludesDraft(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
@@ -152,9 +152,8 @@ func TestListMemos_DefaultExcludesDraft(t *testing.T) {
 // Item 4: ListMemos{state:DRAFT} as creator -> only own drafts;
 // unauthenticated -> empty list (not error), mirroring the ARCHIVED precedent.
 //
-// RED today: ListMemos has no STATE_DRAFT branch (memo_service.go:191-202), so
-// it falls into the else branch and pins store.Normal, returning no drafts for
-// the creator at all.
+// Without the STATE_DRAFT branch ListMemos would fall through to store.Normal
+// and return no drafts for the creator at all.
 func TestListMemos_DraftStateIsCreatorOnly(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
@@ -200,8 +199,8 @@ func TestListMemos_DraftStateIsCreatorOnly(t *testing.T) {
 // Item 5 (edges E2/E3): a non-creator GetMemo on another user's draft -- even a
 // PUBLIC-visibility draft -- is denied.
 //
-// RED today: checkMemoReadAccess (memo_service.go:42-71) only guards Archived;
-// a PUBLIC draft passes the visibility check and leaks to any caller.
+// Without the guard checkMemoReadAccess would only block Archived, and a
+// PUBLIC-visibility draft would pass the visibility check and leak.
 func TestGetMemo_DraftIsCreatorOnlyRegardlessOfVisibility(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
@@ -248,10 +247,8 @@ func TestGetMemo_DraftIsCreatorOnlyRegardlessOfVisibility(t *testing.T) {
 // once and refreshes created_ts/updated_ts; a NORMAL->NORMAL content edit fires
 // no extra side-effect and leaves created_ts unchanged.
 
-// RED today: a draft cannot even be created via the handler (item 1), and there
-// is no Draft->NORMAL transition detection to refresh created_ts. We seed the
-// draft directly in the store so this test isolates the publish-transition
-// behaviour.
+// The draft is seeded directly in the store so this test isolates the
+// Draft->NORMAL publish-transition behaviour (created_ts refresh).
 func TestUpdateMemo_PublishDraftRefreshesTimestampsAndFiresSideEffects(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
@@ -299,9 +296,90 @@ func TestUpdateMemo_PublishDraftRefreshesTimestampsAndFiresSideEffects(t *testin
 	assert.Contains(t, events[0], `"memo.updated"`)
 }
 
+// PR #5964 review (Codex P1): re-saving a memo that STAYS a draft must not
+// notify mentioned users. dispatchMemoMentionNotificationsBestEffort was fired
+// on any content change, ungated by draft status (only webhook/SSE were gated),
+// so editing a PUBLIC draft with a new @mention leaked an inbox notification
+// before publish.
+func TestUpdateMemo_DraftReSaveDoesNotNotifyMentions(t *testing.T) {
+	ctx := context.Background()
+	svc := newIntegrationService(t)
+
+	author, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "draft-resave-author", Role: store.RoleAdmin, Email: "draft-resave-author@example.com",
+	})
+	require.NoError(t, err)
+	mentioned, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "draft-resave-mentioned", Role: store.RoleUser, Email: "draft-resave-mentioned@example.com",
+	})
+	require.NoError(t, err)
+	authorCtx := userCtx(ctx, author.ID)
+
+	draft, err := svc.Store.CreateMemo(ctx, &store.Memo{
+		UID: shortuuid.New(), CreatorID: author.ID, RowStatus: store.Draft,
+		Visibility: store.Public, Content: "draft without a mention yet",
+	})
+	require.NoError(t, err)
+
+	// Re-save the draft adding an @mention while it STAYS a draft.
+	updated, err := svc.UpdateMemo(authorCtx, &v1pb.UpdateMemoRequest{
+		Memo: &v1pb.Memo{
+			Name:    buildMemoName(draft.UID),
+			Content: "now mentioning @draft-resave-mentioned",
+			State:   v1pb.State_DRAFT,
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"content", "state"}},
+	})
+	require.NoError(t, err)
+	require.Equal(t, v1pb.State_DRAFT, updated.State, "memo must still be a draft")
+
+	require.Empty(t, memoMentionInboxes(t, svc, mentioned.ID),
+		"re-saving a memo that stays a draft must not notify mentioned users")
+}
+
+// PR #5964 review (Codex P2): publishing a draft (DRAFT->NORMAL) whose content
+// already contains an @mention must notify that user exactly once. The mention
+// path keyed on previousContent; at publish previousContent == the draft's own
+// content, so the diff saw no "new" mention and the user was never notified
+// (made worse once P1 suppresses notifications while it is a draft).
+func TestUpdateMemo_PublishDraftNotifiesMentions(t *testing.T) {
+	ctx := context.Background()
+	svc := newIntegrationService(t)
+
+	author, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "publish-mention-author", Role: store.RoleAdmin, Email: "publish-mention-author@example.com",
+	})
+	require.NoError(t, err)
+	mentioned, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "publish-mention-target", Role: store.RoleUser, Email: "publish-mention-target@example.com",
+	})
+	require.NoError(t, err)
+	authorCtx := userCtx(ctx, author.ID)
+
+	draft, err := svc.Store.CreateMemo(ctx, &store.Memo{
+		UID: shortuuid.New(), CreatorID: author.ID, RowStatus: store.Draft,
+		Visibility: store.Public, Content: "ready to publish, cc @publish-mention-target",
+	})
+	require.NoError(t, err)
+
+	require.Empty(t, memoMentionInboxes(t, svc, mentioned.ID),
+		"sanity: no inbox before publish")
+
+	_, err = svc.UpdateMemo(authorCtx, &v1pb.UpdateMemoRequest{
+		Memo: &v1pb.Memo{
+			Name:  buildMemoName(draft.UID),
+			State: v1pb.State_NORMAL,
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"state"}},
+	})
+	require.NoError(t, err)
+
+	require.Len(t, memoMentionInboxes(t, svc, mentioned.ID), 1,
+		"publishing a draft must notify users mentioned in its content exactly once")
+}
+
 // Edge E5 reverse: a NORMAL->NORMAL content edit must NOT touch created_ts.
-// This currently PASSES (no publish logic exists) and must STAY green: only the
-// Draft->NORMAL transition refreshes created_ts.
+// Regression pin: only the Draft->NORMAL transition refreshes created_ts.
 func TestUpdateMemo_NormalContentEditDoesNotRefreshCreatedTs(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
@@ -334,9 +412,9 @@ func TestUpdateMemo_NormalContentEditDoesNotRefreshCreatedTs(t *testing.T) {
 }
 
 // Item 8: leakage regression. A seeded DRAFT must be absent from every
-// non-creator surface. The default-NORMAL surfaces (RSS, default list, user
-// stats) already PASS today and are pinned as regressions; the added-guard
-// surfaces (read-access via GetMemo, relations, reaction) FAIL today.
+// non-creator surface: the default-NORMAL surfaces (RSS, default list, user
+// stats) are pinned as regressions; the added-guard surfaces (read-access via
+// GetMemo, relations, reaction) enforce creator-only access.
 //
 // (sitemap / MCP leakage are covered in frontend / mcp packages respectively.)
 
@@ -368,9 +446,40 @@ func TestUserStatsExcludesDraftRegressionPin(t *testing.T) {
 	require.EqualValues(t, 1, stats.TotalMemoCount, "drafts must not be counted in user stats")
 }
 
+// PR #5964 review (Codex P2): ListAllUserStats is a PUBLIC endpoint. Once
+// convertStateToStore maps State_DRAFT, an unauthenticated caller requesting
+// state=DRAFT fell through to the PUBLIC/PROTECTED visibility branch and could
+// enumerate other users' PUBLIC drafts' stats. DRAFT must be creator-only there
+// exactly like ARCHIVED.
+func TestListAllUserStats_DraftStatsAreCreatorOnly(t *testing.T) {
+	ctx := context.Background()
+	svc := newIntegrationService(t)
+
+	author, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "allstats-author", Role: store.RoleUser, Email: "allstats-author@example.com",
+	})
+	require.NoError(t, err)
+
+	_, err = svc.Store.CreateMemo(ctx, &store.Memo{
+		UID: shortuuid.New(), CreatorID: author.ID, RowStatus: store.Draft,
+		Visibility: store.Public, Content: "public draft that must not leak via stats",
+	})
+	require.NoError(t, err)
+
+	// Unauthenticated caller asking for DRAFT stats must see nothing.
+	anon, err := svc.ListAllUserStats(ctx, &v1pb.ListAllUserStatsRequest{State: v1pb.State_DRAFT})
+	require.NoError(t, err)
+	require.Empty(t, anon.Stats, "unauthenticated caller must not get any draft stats")
+
+	// The creator still sees their own draft stats.
+	owner, err := svc.ListAllUserStats(userCtx(ctx, author.ID), &v1pb.ListAllUserStatsRequest{State: v1pb.State_DRAFT})
+	require.NoError(t, err)
+	require.Len(t, owner.Stats, 1, "the creator must still see their own draft stats")
+}
+
 // Added-guard surface: ListMemoRelations must not surface a DRAFT related memo
-// to a non-creator. RED today: relations filter is visibility-only, so a PUBLIC
-// draft pointed at by a relation leaks its content/name.
+// to a non-creator. Without the guard the relations filter is visibility-only,
+// so a PUBLIC draft pointed at by a relation leaks its content/name.
 func TestListMemoRelations_ExcludesDraftFromNonCreator(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
@@ -413,8 +522,8 @@ func TestListMemoRelations_ExcludesDraftFromNonCreator(t *testing.T) {
 }
 
 // Added-guard surface: ListMemoReactions on a PUBLIC draft must be denied to a
-// non-creator. RED today: ListMemoReactions (reaction_service.go:15-58) only
-// checks visibility, so a PUBLIC draft's reactions are readable by anyone.
+// non-creator. Without the guard ListMemoReactions only checks visibility, so
+// a PUBLIC draft's reactions are readable by anyone.
 func TestListMemoReactions_DraftIsCreatorOnly(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)

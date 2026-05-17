@@ -427,7 +427,12 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const handleResumeDraft = useCallback(
     async (draft: Memo) => {
       try {
-        const full = await memoServiceClient.getMemo({ name: draft.name });
+        // Route through the React Query layer (shared memoKeys.detail cache)
+        // rather than calling the connect client directly from the component.
+        const full = await queryClient.fetchQuery({
+          queryKey: memoKeys.detail(draft.name),
+          queryFn: () => memoServiceClient.getMemo({ name: draft.name }),
+        });
         dispatch(actions.initMemo(memoService.fromMemo(full)));
         setResumedDraftName(full.name);
       } catch (error) {
@@ -437,7 +442,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         });
       }
     },
-    [actions, dispatch],
+    [actions, dispatch, queryClient],
   );
 
   return (
