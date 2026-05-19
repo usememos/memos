@@ -1,4 +1,4 @@
-import { BellIcon, EarthIcon, InfoIcon, LibraryIcon, PaperclipIcon, UserCircleIcon } from "lucide-react";
+import { BellIcon, EarthIcon, FileTextIcon, InfoIcon, LibraryIcon, PaperclipIcon, UserCircleIcon } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -34,25 +34,37 @@ const Navigation = (props: Props) => {
     title: t("common.memos"),
     icon: <LibraryIcon className="w-6 h-auto shrink-0" />,
   };
+
   const exploreNavLink: NavLinkItem = {
     id: "header-explore",
     path: Routes.EXPLORE,
     title: t("common.explore"),
     icon: <EarthIcon className="w-6 h-auto shrink-0" />,
   };
+
   const aboutNavLink: NavLinkItem = {
     id: "header-about",
     path: Routes.ABOUT,
     title: t("common.about"),
     icon: <InfoIcon className="w-6 h-auto shrink-0" />,
   };
+
   const attachmentsNavLink: NavLinkItem = {
     id: "header-attachments",
     path: Routes.ATTACHMENTS,
     title: t("common.attachments"),
     icon: <PaperclipIcon className="w-6 h-auto shrink-0" />,
   };
+
+  const weeklyReportNavLink: NavLinkItem = {
+    id: "header-weekly-report",
+    path: Routes.WEEKLY_REPORT,
+    title: "周报",
+    icon: <FileTextIcon className="w-6 h-auto shrink-0" />,
+  };
+
   const unreadCount = notifications.filter((n) => n.status === UserNotification_Status.UNREAD).length;
+
   const inboxNavLink: NavLinkItem = {
     id: "header-inbox",
     path: Routes.INBOX,
@@ -68,6 +80,7 @@ const Navigation = (props: Props) => {
       </div>
     ),
   };
+
   const signInNavLink: NavLinkItem = {
     id: "header-auth",
     path: Routes.AUTH,
@@ -76,8 +89,9 @@ const Navigation = (props: Props) => {
   };
 
   const primaryNavLinks: NavLinkItem[] = currentUser
-    ? [homeNavLink, exploreNavLink, attachmentsNavLink, inboxNavLink]
+    ? [homeNavLink, exploreNavLink, attachmentsNavLink, weeklyReportNavLink, inboxNavLink]
     : [exploreNavLink, aboutNavLink, signInNavLink];
+
   const inboxAriaLabel = unreadCount > 0 ? `${t("common.inbox")}, ${unreadCount} unread` : t("common.inbox");
 
   return (
@@ -86,6 +100,7 @@ const Navigation = (props: Props) => {
         <NavLink className="mb-3 cursor-default" to={currentUser ? Routes.HOME : Routes.EXPLORE}>
           <MemosLogo collapsed={collapsed} />
         </NavLink>
+
         <TooltipProvider>
           {primaryNavLinks.map((navLink) => (
             <NavLink
@@ -117,11 +132,13 @@ const Navigation = (props: Props) => {
               ) : (
                 navLink.icon
               )}
+
               {!props.collapsed && <span className="ml-3 truncate">{navLink.title}</span>}
             </NavLink>
           ))}
         </TooltipProvider>
       </div>
+
       {currentUser && (
         <div className={cn("w-full flex flex-col justify-end", props.collapsed ? "items-center" : "items-start pl-3")}>
           <UserMenu collapsed={collapsed} />
