@@ -14,6 +14,7 @@ const Home = () => {
     creatorName: user?.name,
     includeShortcuts: true,
     includePinned: true,
+    includeGroups: true,
   });
 
   const { listSort, orderBy } = useMemoSorting({

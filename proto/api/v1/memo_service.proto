@@ -144,6 +144,7 @@ enum Visibility {
   PRIVATE = 1;
   PROTECTED = 2;
   PUBLIC = 3;
+  GROUP = 4;
 }
 
 message Reaction {
@@ -254,6 +255,13 @@ message Memo {
 
   // Optional. The location of the memo.
   optional Location location = 18 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The resource name of the group.
+  // Format: groups/{group}
+  optional string group = 19 [
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.resource_reference) = {type: "memos.api.v1/Group"}
+  ];
 
   // Computed properties of a memo.
   message Property {

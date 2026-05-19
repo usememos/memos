@@ -81,4 +81,16 @@ type Driver interface {
 	CreateUserIdentity(ctx context.Context, create *UserIdentity) (*UserIdentity, error)
 	ListUserIdentities(ctx context.Context, find *FindUserIdentity) ([]*UserIdentity, error)
 	DeleteUserIdentities(ctx context.Context, delete *DeleteUserIdentity) error
+
+	// Group model related methods.
+	CreateGroup(ctx context.Context, create *Group) (*Group, error)
+	ListGroups(ctx context.Context, find *FindGroup) ([]*Group, error)
+	UpdateGroup(ctx context.Context, update *UpdateGroup) (*Group, error)
+	DeleteGroup(ctx context.Context, id int32) error
+
+	// GroupMember model related methods.
+	CreateGroupMember(ctx context.Context, create *GroupMember) (*GroupMember, error)
+	ListGroupMembers(ctx context.Context, find *FindGroupMember) ([]*GroupMember, error)
+	UpdateGroupMember(ctx context.Context, update *GroupMember) (*GroupMember, error)
+	DeleteGroupMember(ctx context.Context, delete *GroupMember) error
 }

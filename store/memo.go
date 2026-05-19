@@ -19,6 +19,8 @@ const (
 	Protected Visibility = "PROTECTED"
 	// Private is the PRIVATE visibility.
 	Private Visibility = "PRIVATE"
+	// GroupVisibility is the GROUP visibility.
+	GroupVisibility Visibility = "GROUP"
 )
 
 func (v Visibility) String() string {
@@ -27,6 +29,8 @@ func (v Visibility) String() string {
 		return "PUBLIC"
 	case Protected:
 		return "PROTECTED"
+	case GroupVisibility:
+		return "GROUP"
 	default:
 		return "PRIVATE"
 	}
@@ -47,6 +51,7 @@ type Memo struct {
 	// Domain specific fields
 	Content    string
 	Visibility Visibility
+	GroupID    *int32
 	Pinned     bool
 	Payload    *storepb.MemoPayload
 
@@ -70,6 +75,7 @@ type FindMemo struct {
 	ExcludeContent  bool
 	ExcludeComments bool
 	Filters         []string
+	GroupID         *int32
 
 	// Pagination
 	Limit  *int
@@ -98,6 +104,7 @@ type UpdateMemo struct {
 	RowStatus  *RowStatus
 	Content    *string
 	Visibility *Visibility
+	GroupID    *int32
 	Pinned     *bool
 	Payload    *storepb.MemoPayload
 }

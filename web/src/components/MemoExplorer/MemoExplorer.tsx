@@ -3,6 +3,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
 import type { StatisticsData } from "@/types/statistics";
 import StatisticsView from "../StatisticsView";
+import GroupsSection from "./GroupsSection";
 import ShortcutsSection from "./ShortcutsSection";
 import TagsSection from "./TagsSection";
 
@@ -12,6 +13,7 @@ export interface MemoExplorerFeatures {
   search?: boolean;
   statistics?: boolean;
   shortcuts?: boolean;
+  groups?: boolean;
   tags?: boolean;
 }
 
@@ -30,6 +32,7 @@ const getDefaultFeatures = (context: MemoExplorerContext): MemoExplorerFeatures 
         search: true,
         statistics: true,
         shortcuts: false, // Global explore doesn't use shortcuts
+        groups: false,
         tags: true,
       };
     case "archived":
@@ -37,6 +40,7 @@ const getDefaultFeatures = (context: MemoExplorerContext): MemoExplorerFeatures 
         search: true,
         statistics: true,
         shortcuts: false, // Archived doesn't typically use shortcuts
+        groups: false,
         tags: true,
       };
     case "profile":
@@ -44,6 +48,7 @@ const getDefaultFeatures = (context: MemoExplorerContext): MemoExplorerFeatures 
         search: true,
         statistics: true,
         shortcuts: false, // Profile view doesn't use shortcuts
+        groups: false,
         tags: true,
       };
     case "home":
@@ -52,6 +57,7 @@ const getDefaultFeatures = (context: MemoExplorerContext): MemoExplorerFeatures 
         search: true,
         statistics: true,
         shortcuts: true,
+        groups: true,
         tags: true,
       };
   }
@@ -78,6 +84,7 @@ const MemoExplorer = (props: Props) => {
       <div className="mt-1 px-1 w-full">
         {features.statistics && <StatisticsView statisticsData={statisticsData} />}
         {features.shortcuts && currentUser && <ShortcutsSection />}
+        {features.groups && currentUser && <GroupsSection />}
         {features.tags && <TagsSection readonly={context === "explore"} tagCount={tagCount} />}
       </div>
     </aside>

@@ -48,6 +48,10 @@ function buildUpdateMask(
     mask.add("location");
     patch.location = state.metadata.location;
   }
+  if (!isEqual(state.metadata.groupNames[0] || "", (prevMemo as any).group || "")) {
+    mask.add("group");
+    (patch as any).group = state.metadata.groupNames[0] || "";
+  }
 
   // Auto-update timestamp if content changed
   if (["content", "attachments", "relations", "location"].some((key) => mask.has(key))) {
@@ -110,7 +114,9 @@ export const memoService = {
       location: state.metadata.location,
       createTime: state.timestamps.createTime ? timestampFromDate(state.timestamps.createTime) : undefined,
       updateTime: state.timestamps.updateTime ? timestampFromDate(state.timestamps.updateTime) : undefined,
-    });
+      // Pass the first selected group to the backend
+      group: state.metadata.groupNames[0],
+    } as any);
 
     const memo = options.parentMemoName
       ? await memoServiceClient.createMemoComment({
@@ -131,6 +137,7 @@ export const memoService = {
         attachments: memo.attachments,
         relations: memo.relations,
         location: memo.location,
+        groupNames: (memo as any).group ? [(memo as any).group] : [],
       },
       ui: {
         isFocusMode: false,

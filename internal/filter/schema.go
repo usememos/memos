@@ -134,6 +134,17 @@ func NewSchema() Schema {
 				CompareNeq: true,
 			},
 		},
+		"group_id": {
+			Name:        "group_id",
+			Kind:        FieldKindScalar,
+			Type:        FieldTypeInt,
+			Column:      Column{Table: "memo", Name: "group_id"},
+			Expressions: map[DialectName]string{},
+			AllowedComparisonOps: map[ComparisonOperator]bool{
+				CompareEq:  true,
+				CompareNeq: true,
+			},
+		},
 		"created_ts": {
 			Name:   "created_ts",
 			Kind:   FieldKindScalar,
@@ -245,6 +256,7 @@ func NewSchema() Schema {
 		cel.Variable("content", cel.StringType),
 		cel.Variable("creator", cel.StringType),
 		cel.Variable("creator_id", cel.IntType),
+		cel.Variable("group_id", cel.IntType),
 		cel.Variable("created_ts", cel.IntType),
 		cel.Variable("updated_ts", cel.IntType),
 		cel.Variable("pinned", cel.BoolType),

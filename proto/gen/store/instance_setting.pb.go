@@ -1103,7 +1103,6 @@ type TranscriptionConfig struct {
 	//   - whisper-1 (legacy, lower cost)
 	//   - gpt-4o-transcribe, gpt-4o-mini-transcribe (higher quality)
 	//   - gpt-4o-transcribe-diarize (includes speaker labels)
-	//
 	// GEMINI examples:
 	//   - gemini-2.5-flash (default, multimodal call)
 	//   - gemini-2.5-pro

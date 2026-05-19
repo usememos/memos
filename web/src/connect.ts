@@ -10,6 +10,7 @@ import { InstanceService } from "./types/proto/api/v1/instance_service_pb";
 import { MemoService } from "./types/proto/api/v1/memo_service_pb";
 import { ShortcutService } from "./types/proto/api/v1/shortcut_service_pb";
 import { UserService } from "./types/proto/api/v1/user_service_pb";
+import { GroupService } from "./types/proto/api/v1/group_service_pb";
 import { redirectOnAuthFailure } from "./utils/auth-redirect";
 
 interface RequestWithHeader {
@@ -198,6 +199,7 @@ export const memoServiceClient = createClient(MemoService, transport);
 export const attachmentServiceClient = createClient(AttachmentService, transport);
 export const aiServiceClient = createClient(AIService, transport);
 export const shortcutServiceClient = createClient(ShortcutService, transport);
+export const groupServiceClient = createClient(GroupService, transport);
 
 // Configuration service clients
 export const identityProviderServiceClient = createClient(IdentityProviderService, transport);

@@ -38,6 +38,7 @@ CREATE TABLE memo (
   row_status TEXT NOT NULL DEFAULT 'NORMAL',
   content TEXT NOT NULL,
   visibility TEXT NOT NULL DEFAULT 'PRIVATE',
+  group_id INTEGER DEFAULT NULL,
   pinned BOOLEAN NOT NULL DEFAULT FALSE,
   payload JSONB NOT NULL DEFAULT '{}'
 );
@@ -123,3 +124,21 @@ CREATE TABLE user_identity (
 );
 
 CREATE INDEX idx_user_identity_user_id ON user_identity(user_id);
+
+-- groups
+CREATE TABLE groups (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  creator_id INTEGER NOT NULL,
+  visibility TEXT NOT NULL DEFAULT 'PRIVATE',
+  created_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW())
+);
+
+-- group_members
+CREATE TABLE group_members (
+  group_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  role TEXT NOT NULL DEFAULT 'MEMBER',
+  PRIMARY KEY (group_id, user_id)
+);

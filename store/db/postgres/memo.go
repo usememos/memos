@@ -14,7 +14,7 @@ import (
 )
 
 func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, error) {
-	fields := []string{"uid", "creator_id", "content", "visibility", "payload"}
+	fields := []string{"uid", "creator_id", "content", "visibility", "payload", "group_id"}
 	payload := "{}"
 	if create.Payload != nil {
 		payloadBytes, err := protojson.Marshal(create.Payload)
@@ -23,7 +23,7 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 		}
 		payload = string(payloadBytes)
 	}
-	args := []any{create.UID, create.CreatorID, create.Content, create.Visibility, payload}
+	args := []any{create.UID, create.CreatorID, create.Content, create.Visibility, payload, create.GroupID}
 
 	// Add custom timestamps if provided
 	if create.CreatedTs != 0 {
@@ -94,6 +94,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		where = append(where, fmt.Sprintf("memo.visibility in (%s)", strings.Join(holders, ", ")))
 	}
+	if v := find.GroupID; v != nil {
+		where, args = append(where, "memo.group_id = "+placeholder(len(args)+1)), append(args, *v)
+	}
 	if find.ExcludeComments {
 		where = append(where, "memo_relation.related_memo_id IS NULL")
 	}
@@ -121,6 +124,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		`memo.updated_ts AS updated_ts`,
 		`memo.row_status AS row_status`,
 		`memo.visibility AS visibility`,
+		`memo.group_id AS group_id`,
 		`memo.pinned AS pinned`,
 		`memo.payload AS payload`,
 		`CASE WHEN parent_memo.uid IS NOT NULL THEN parent_memo.uid ELSE NULL END AS parent_uid`,
@@ -161,6 +165,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			&memo.UpdatedTs,
 			&memo.RowStatus,
 			&memo.Visibility,
+			&memo.GroupID,
 			&memo.Pinned,
 			&payloadBytes,
 			&memo.ParentUID,
@@ -218,6 +223,9 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	}
 	if v := update.Visibility; v != nil {
 		set, args = append(set, "visibility = "+placeholder(len(args)+1)), append(args, *v)
+	}
+	if v := update.GroupID; v != nil {
+		set, args = append(set, "group_id = "+placeholder(len(args)+1)), append(args, *v)
 	}
 	if v := update.Pinned; v != nil {
 		set, args = append(set, "pinned = "+placeholder(len(args)+1)), append(args, *v)

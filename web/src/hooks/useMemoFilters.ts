@@ -12,6 +12,8 @@ const getVisibilityName = (visibility: Visibility): string => {
       return "PROTECTED";
     case Visibility.PRIVATE:
       return "PRIVATE";
+    case 4 as any:
+      return "GROUP";
     default:
       return "PRIVATE";
   }
@@ -29,10 +31,12 @@ export interface UseMemoFiltersOptions {
   includeShortcuts?: boolean;
   includePinned?: boolean;
   visibilities?: Visibility[];
+  groupName?: string;
+  includeGroups?: boolean;
 }
 
 export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | undefined => {
-  const { creatorName, includeShortcuts = false, includePinned = false, visibilities } = options;
+  const { creatorName, includeShortcuts = false, includePinned = false, visibilities, groupName, includeGroups } = options;
 
   const { shortcuts } = useAuth();
   const { filters, shortcut: currentShortcut } = useMemoFilterContext();
@@ -51,7 +55,19 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
     if (creatorName) {
       const creatorFilter = buildMemoCreatorFilter(creatorName);
       if (creatorFilter) {
-        conditions.push(creatorFilter);
+        if (includeGroups) {
+          conditions.push(`(${creatorFilter} || visibility == "GROUP")`);
+        } else {
+          conditions.push(creatorFilter);
+        }
+      }
+    }
+
+    if (groupName) {
+      // Extract numeric ID from "groups/1"
+      const groupIdMatch = groupName.match(/^groups\/(\d+)$/);
+      if (groupIdMatch) {
+        conditions.push(`group_id == ${groupIdMatch[1]}`);
       }
     }
 
@@ -92,5 +108,5 @@ export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | un
     }
 
     return conditions.length > 0 ? conditions.join(" && ") : undefined;
-  }, [creatorName, includeShortcuts, includePinned, visibilities, selectedShortcut, filters]);
+  }, [creatorName, includeShortcuts, includePinned, visibilities, selectedShortcut, filters, groupName]);
 };

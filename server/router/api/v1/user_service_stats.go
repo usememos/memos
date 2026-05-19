@@ -80,14 +80,22 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, request *v1pb.ListA
 			return &v1pb.ListAllUserStatsResponse{}, nil
 		}
 		memoFind.CreatorID = &currentUser.ID
-	} else if currentUser == nil {
-		memoFind.VisibilityList = []store.Visibility{store.Public}
 	} else {
 		if memoFind.CreatorID == nil {
-			filter := fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "PROTECTED"]`, currentUser.ID)
+			filter := fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "PROTECTED", "GROUP"]`, currentUser.ID)
 			memoFind.Filters = append(memoFind.Filters, filter)
 		} else if *memoFind.CreatorID != currentUser.ID {
-			memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
+			memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected, store.GroupVisibility}
+		}
+	}
+
+	myGroupIDs := make(map[int32]bool)
+	if currentUser != nil {
+		members, err := s.Store.ListGroupMembers(ctx, &store.FindGroupMember{UserID: &currentUser.ID})
+		if err == nil {
+			for _, member := range members {
+				myGroupIDs[member.GroupID] = true
+			}
 		}
 	}
 
@@ -108,6 +116,15 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, request *v1pb.ListA
 		}
 
 		for _, memo := range memos {
+			if memo.Visibility == store.GroupVisibility {
+				if memo.GroupID == nil {
+					continue
+				}
+				if currentUser == nil || (memo.CreatorID != currentUser.ID && !myGroupIDs[*memo.GroupID]) {
+					continue
+				}
+			}
+
 			// Initialize user stats if not exists
 			if _, exists := userMemoStatMap[memo.CreatorID]; !exists {
 				userMemoStatMap[memo.CreatorID] = &v1pb.UserStats{
@@ -217,7 +234,17 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 	if currentUser == nil {
 		memoFind.VisibilityList = []store.Visibility{store.Public}
 	} else if currentUser.ID != userID {
-		memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
+		memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected, store.GroupVisibility}
+	}
+
+	myGroupIDs := make(map[int32]bool)
+	if currentUser != nil {
+		members, err := s.Store.ListGroupMembers(ctx, &store.FindGroupMember{UserID: &currentUser.ID})
+		if err == nil {
+			for _, member := range members {
+				myGroupIDs[member.GroupID] = true
+			}
+		}
 	}
 
 	createdTimestamps := []*timestamppb.Timestamp{}
@@ -244,9 +271,17 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 			break
 		}
 
-		totalMemoCount += int32(len(memos))
-
 		for _, memo := range memos {
+			if memo.Visibility == store.GroupVisibility {
+				if memo.GroupID == nil {
+					continue
+				}
+				if currentUser == nil || (memo.CreatorID != currentUser.ID && !myGroupIDs[*memo.GroupID]) {
+					continue
+				}
+			}
+
+			totalMemoCount++
 			createdTimestamps = append(createdTimestamps, timestamppb.New(time.Unix(memo.CreatedTs, 0)))
 			updatedTimestamps = append(updatedTimestamps, timestamppb.New(time.Unix(memo.UpdatedTs, 0)))
 			// Count different memo types based on content.

@@ -66,6 +66,19 @@ func (s *APIV1Service) checkMemoReadAccess(ctx context.Context, memo *store.Memo
 		if memo.Visibility == store.Private && memo.CreatorID != user.ID {
 			return status.Errorf(codes.PermissionDenied, "permission denied")
 		}
+		if memo.Visibility == store.GroupVisibility {
+			if memo.GroupID == nil {
+				return status.Errorf(codes.Internal, "group visibility requires a valid group_id")
+			}
+			isMember, err := s.Store.CheckUserInGroup(ctx, user.ID, *memo.GroupID)
+			if err != nil || !isMember {
+				// Fallback: check if the user is the group creator
+				group, err := s.Store.GetGroup(ctx, &store.FindGroup{ID: memo.GroupID})
+				if err != nil || group == nil || group.CreatorID != user.ID {
+					return status.Errorf(codes.PermissionDenied, "permission denied: not a group member")
+				}
+			}
+		}
 	}
 	return nil
 }
@@ -89,6 +102,26 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		CreatorID:  user.ID,
 		Content:    request.Memo.Content,
 		Visibility: convertVisibilityToStore(request.Memo.Visibility),
+	}
+	if request.Memo.Group != nil {
+		var groupID int32
+		if _, err := fmt.Sscanf(*request.Memo.Group, "groups/%d", &groupID); err == nil {
+			create.GroupID = &groupID
+		}
+	}
+
+	if create.Visibility == store.GroupVisibility || create.GroupID != nil {
+		if create.GroupID == nil {
+			return nil, status.Errorf(codes.InvalidArgument, "group visibility or selection requires a valid group_id")
+		}
+		isMember, err := s.Store.CheckUserInGroup(ctx, user.ID, *create.GroupID)
+		if err != nil || !isMember {
+			// Check if they are the group creator
+			group, err := s.Store.GetGroup(ctx, &store.FindGroup{ID: create.GroupID})
+			if err != nil || group == nil || group.CreatorID != user.ID {
+				return nil, status.Errorf(codes.PermissionDenied, "permission denied: not a group member")
+			}
+		}
 	}
 
 	// Set custom timestamps if provided in the request.
@@ -230,10 +263,10 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		memoFind.VisibilityList = []store.Visibility{store.Public}
 	} else {
 		if memoFind.CreatorID == nil {
-			filter := fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "PROTECTED"]`, currentUser.ID)
+			filter := fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "PROTECTED", "GROUP"]`, currentUser.ID)
 			memoFind.Filters = append(memoFind.Filters, filter)
 		} else if *memoFind.CreatorID != currentUser.ID {
-			memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
+			memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected, store.GroupVisibility}
 		}
 	}
 
@@ -323,7 +356,26 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memo creators: %v", err)
 	}
+	myGroupIDs := make(map[int32]bool)
+	if currentUser != nil {
+		members, err := s.Store.ListGroupMembers(ctx, &store.FindGroupMember{UserID: &currentUser.ID})
+		if err == nil {
+			for _, member := range members {
+				myGroupIDs[member.GroupID] = true
+			}
+		}
+	}
+
 	for _, memo := range memos {
+		if memo.Visibility == store.GroupVisibility {
+			if memo.GroupID == nil {
+				continue
+			}
+			if currentUser == nil || (memo.CreatorID != currentUser.ID && !myGroupIDs[*memo.GroupID]) {
+				continue
+			}
+		}
+
 		memoName := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
 		reactions := reactionMap[memoName]
 		attachments := attachmentMap[memo.ID]
@@ -520,7 +572,44 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 				}
 				visibility = parentMemo.Visibility
 			}
+			if visibility == store.GroupVisibility {
+				targetGroupID := memo.GroupID
+				if update.GroupID != nil {
+					targetGroupID = update.GroupID
+				}
+				if targetGroupID == nil {
+					return nil, status.Errorf(codes.InvalidArgument, "group visibility requires a valid group_id")
+				}
+				isMember, err := s.Store.CheckUserInGroup(ctx, user.ID, *targetGroupID)
+				if err != nil || !isMember {
+					// Check if they are the group creator
+					group, err := s.Store.GetGroup(ctx, &store.FindGroup{ID: targetGroupID})
+					if err != nil || group == nil || group.CreatorID != user.ID {
+						return nil, status.Errorf(codes.PermissionDenied, "permission denied: not a group member")
+					}
+				}
+			}
 			update.Visibility = &visibility
+		} else if path == "group" {
+			if request.Memo.Group != nil {
+				var groupID int32
+				if _, err := fmt.Sscanf(*request.Memo.Group, "groups/%d", &groupID); err == nil {
+					update.GroupID = &groupID
+					
+					// Validate membership
+					isMember, err := s.Store.CheckUserInGroup(ctx, user.ID, groupID)
+					if err != nil || !isMember {
+						// Check if they are the group creator
+						group, err := s.Store.GetGroup(ctx, &store.FindGroup{ID: &groupID})
+						if err != nil || group == nil || group.CreatorID != user.ID {
+							return nil, status.Errorf(codes.PermissionDenied, "permission denied: not a group member")
+						}
+					}
+				}
+			} else {
+				// If group is null, set to null in DB
+				update.GroupID = nil
+			}
 		} else if path == "pinned" {
 			update.Pinned = &request.Memo.Pinned
 		} else if path == "state" {
