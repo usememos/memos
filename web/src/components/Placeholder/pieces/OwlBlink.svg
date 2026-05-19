@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="32" viewBox="0 0 160 32" role="img" aria-labelledby="title desc" shape-rendering="crispEdges">
+  <title id="title">Owl blink pixel tileset</title>
+  <desc id="desc">A five-frame 32 by 32 pixel owl idle and blink animation strip.</desc>
+  <defs>
+    <style>
+      .outline { fill: #2f2a24; }
+      .body { fill: #70685d; }
+      .body-dark { fill: #585147; }
+      .wing { fill: #5f584f; }
+      .face { fill: #b8afa2; }
+      .face-dark { fill: #958c7f; }
+      .eye-light { fill: #f4ead5; }
+      .eye-dark { fill: #2f2a24; }
+      .beak { fill: #bf9a53; }
+      .claw { fill: #d8d1c4; }
+      .contact { fill: #2f2a24; }
+    </style>
+
+    <symbol id="owl-open" viewBox="0 0 32 32">
+      <path class="outline" d="M7 0h6v2h6V0h6v3h2v3h2v19h-2v4h-5v2H10v-2H5v-4H3V6h2V3h2V0z" />
+      <path class="body" d="M8 5h16v2h2v17h-2v3h-5v2h-6v-2H8v-3H6V7h2V5z" />
+      <path class="wing" d="M4 15h6v11H8v-1H5v-3H4v-7z" />
+      <path class="wing" d="M22 15h6v7h-1v3h-3v1h-2V15z" />
+
+      <rect class="face" x="7" y="7" width="8" height="11" />
+      <rect class="face" x="17" y="7" width="8" height="11" />
+      <rect class="face-dark" x="9" y="19" width="14" height="5" />
+
+      <rect class="eye-light" x="8" y="9" width="5" height="5" />
+      <rect class="eye-light" x="19" y="9" width="5" height="5" />
+      <rect class="eye-dark" x="10" y="10" width="2" height="3" />
+      <rect class="eye-dark" x="20" y="10" width="2" height="3" />
+
+      <rect class="beak" x="15" y="15" width="2" height="2" />
+      <rect class="beak" x="14" y="17" width="4" height="2" />
+      <rect class="contact" x="11" y="27" width="2" height="3" />
+      <rect class="contact" x="19" y="27" width="2" height="3" />
+      <rect class="claw" x="10" y="30" width="4" height="1" />
+      <rect class="claw" x="18" y="30" width="4" height="1" />
+    </symbol>
+
+    <symbol id="owl-breathe" viewBox="0 0 32 32">
+      <use href="#owl-open" />
+      <rect class="body-dark" x="3" y="16" width="1" height="6" />
+      <rect class="wing" x="4" y="16" width="6" height="10" />
+      <rect class="body-dark" x="28" y="16" width="1" height="6" />
+      <rect class="wing" x="22" y="16" width="6" height="10" />
+      <rect class="body" x="11" y="24" width="10" height="2" />
+      <rect class="body-dark" x="10" y="25" width="12" height="1" />
+      <rect class="claw" x="10" y="30" width="5" height="1" />
+      <rect class="claw" x="17" y="30" width="5" height="1" />
+    </symbol>
+
+    <symbol id="owl-half" viewBox="0 0 32 32">
+      <use href="#owl-breathe" />
+      <rect class="face" x="8" y="9" width="5" height="5" />
+      <rect class="face" x="19" y="9" width="5" height="5" />
+      <rect class="eye-dark" x="8" y="11" width="5" height="2" />
+      <rect class="eye-dark" x="19" y="11" width="5" height="2" />
+    </symbol>
+
+    <symbol id="owl-closed" viewBox="0 0 32 32">
+      <use href="#owl-breathe" />
+      <rect class="face" x="8" y="9" width="5" height="5" />
+      <rect class="face" x="19" y="9" width="5" height="5" />
+      <rect class="eye-dark" x="8" y="12" width="5" height="1" />
+      <rect class="eye-dark" x="19" y="12" width="5" height="1" />
+    </symbol>
+
+    <symbol id="owl-settle" viewBox="0 0 32 32">
+      <use href="#owl-open" />
+      <rect class="body-dark" x="6" y="1" width="2" height="3" />
+      <rect class="body-dark" x="24" y="1" width="2" height="3" />
+      <rect class="body-dark" x="4" y="21" width="1" height="2" />
+      <rect class="body-dark" x="27" y="21" width="1" height="2" />
+      <rect class="face-dark" x="11" y="20" width="10" height="1" />
+    </symbol>
+  </defs>
+
+  <use href="#owl-open" x="0" y="0" width="32" height="32" />
+  <use href="#owl-breathe" x="32" y="0" width="32" height="32" />
+  <use href="#owl-half" x="64" y="0" width="32" height="32" />
+  <use href="#owl-closed" x="96" y="0" width="32" height="32" />
+  <use href="#owl-settle" x="128" y="0" width="32" height="32" />
+</svg>

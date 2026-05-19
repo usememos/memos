@@ -12,9 +12,9 @@ import { userKeys } from "@/hooks/useUserQueries";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import Empty from "../Empty";
 import MemoEditor from "../MemoEditor";
 import MemoFilters from "../MemoFilters";
+import Placeholder from "../Placeholder";
 import Skeleton from "../Skeleton";
 
 interface Props {
@@ -174,10 +174,7 @@ const PagedMemoList = (props: Props) => {
             {!isFetchingNextPage && (
               <>
                 {!hasNextPage && sortedMemoList.length === 0 ? (
-                  <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
-                    <Empty />
-                    <p className="mt-2 text-muted-foreground">{t("message.no-data")}</p>
-                  </div>
+                  <Placeholder variant="empty" message={t("message.no-data")} />
                 ) : (
                   <div className="w-full opacity-70 flex flex-row justify-center items-center my-4">
                     <BackToTop />

@@ -1,5 +1,5 @@
 import { lazy } from "react";
-import { createBrowserRouter, type RouteObject } from "react-router-dom";
+import { createBrowserRouter, Navigate, type RouteObject } from "react-router-dom";
 import App from "@/App";
 import { ChunkLoadErrorFallback } from "@/components/ErrorBoundary";
 import MainLayout from "@/layouts/MainLayout";
@@ -25,6 +25,7 @@ function lazyWithReload<T extends React.ComponentType>(factory: () => Promise<{ 
 }
 
 const AdminSignIn = lazyWithReload(() => import("@/pages/AdminSignIn"));
+const About = lazyWithReload(() => import("@/pages/About"));
 const Archived = lazyWithReload(() => import("@/pages/Archived"));
 const AuthCallback = lazyWithReload(() => import("@/pages/AuthCallback"));
 const Explore = lazyWithReload(() => import("@/pages/Explore"));
@@ -73,20 +74,24 @@ export const routeConfig: RouteObject[] = [
           },
         ],
       },
-      { index: true, element: <LandingRoute /> },
+      // Backward compatibility: the old `/home` URL now lives at `/`.
+      { path: "home", element: <Navigate to={Routes.HOME} replace /> },
       {
-        path: Routes.ENTRY,
         element: <RootLayout />,
         children: [
           {
             element: <MainLayout />,
             children: [
+              {
+                element: <LandingRoute />,
+                children: [{ index: true, element: <Home /> }],
+              },
+              { path: Routes.ABOUT, element: <About /> },
               { path: Routes.EXPLORE, element: <Explore /> },
               { path: "u/:username", element: <UserProfile /> },
               {
                 element: <RequireAuthRoute />,
                 children: [
-                  { path: Routes.HOME, element: <Home /> },
                   { path: Routes.ARCHIVED, element: <Archived /> },
                   { path: Routes.SHORTCUTS, element: <Shortcuts /> },
 	          { path: Routes.WEEKLY_REPORT, element: <WeeklyReport /> },

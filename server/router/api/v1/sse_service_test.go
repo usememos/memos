@@ -113,6 +113,48 @@ func TestCreateMemoComment_NoDuplicateSSEBroadcast(t *testing.T) {
 		"expected memo.comment.created, got: %s", events[0])
 }
 
+func TestCreateMemoWithAttachment_NoDuplicateUpdatedSSEBroadcast(t *testing.T) {
+	ctx := context.Background()
+	svc := newIntegrationService(t)
+
+	user, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "user", Role: store.RoleAdmin, Email: "user@example.com",
+	})
+	require.NoError(t, err)
+	uctx := userCtx(ctx, user.ID)
+
+	attachment, err := svc.CreateAttachment(uctx, &v1pb.CreateAttachmentRequest{
+		Attachment: &v1pb.Attachment{
+			Filename: "test.txt",
+			Size:     5,
+			Type:     "text/plain",
+			Content:  []byte("hello"),
+		},
+	})
+	require.NoError(t, err)
+
+	client := svc.SSEHub.Subscribe(user.ID, store.RoleAdmin)
+	defer svc.SSEHub.Unsubscribe(client)
+
+	memo, err := svc.CreateMemo(uctx, &v1pb.CreateMemoRequest{
+		Memo: &v1pb.Memo{
+			Content:    "memo with initial attachment",
+			Visibility: v1pb.Visibility_PUBLIC,
+			Attachments: []*v1pb.Attachment{
+				{Name: attachment.Name},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	events := collectEventsFor(client.events, 150*time.Millisecond)
+
+	require.Len(t, events, 1, "expected exactly one SSE event for memo creation with attachment, got: %v", events)
+	assert.Contains(t, events[0], `"memo.created"`)
+	assert.Contains(t, events[0], memo.Name)
+	assert.NotContains(t, events[0], `"memo.updated"`)
+}
+
 // ---- Reaction SSE events carry correct visibility / parent fields ----
 
 func TestUpsertMemoReaction_SSEEvent(t *testing.T) {

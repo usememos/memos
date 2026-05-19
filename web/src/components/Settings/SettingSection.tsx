@@ -20,7 +20,7 @@ const SettingSection: React.FC<SettingSectionProps> = ({ title, description, chi
                 {typeof title === "string" ? <h3>{title}</h3> : title}
               </div>
             )}
-            {description && <p className="max-w-2xl text-sm leading-6 text-muted-foreground">{description}</p>}
+            {description && <p className="w-full text-sm leading-6 text-muted-foreground">{description}</p>}
           </div>
           {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
         </div>
