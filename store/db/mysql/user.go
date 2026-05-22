@@ -147,9 +147,11 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 	query := "SELECT `id`, `username`, `role`, `email`, `nickname`, `password_hash`, `avatar_url`, `description`, UNIX_TIMESTAMP(`created_ts`), UNIX_TIMESTAMP(`updated_ts`), `row_status` FROM `user` WHERE " + strings.Join(where, " AND ") + " ORDER BY " + strings.Join(orderBy, ", ")
 	if v := find.Limit; v != nil {
 		query += fmt.Sprintf(" LIMIT %d", *v)
-	}
-	if v := find.Offset; v != nil {
-		query += fmt.Sprintf(" OFFSET %d", *v)
+		if v := find.Offset; v != nil {
+			query += fmt.Sprintf(" OFFSET %d", *v)
+		}
+	} else if find.Offset != nil {
+		return nil, errors.Errorf("offset provided without limit")
 	}
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {

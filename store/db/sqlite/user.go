@@ -168,8 +168,8 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 		if v := find.Offset; v != nil {
 			query += fmt.Sprintf(" OFFSET %d", *v)
 		}
-	} else if v := find.Offset; v != nil {
-		query += fmt.Sprintf(" LIMIT -1 OFFSET %d", *v)
+	} else if find.Offset != nil {
+		return nil, errors.Errorf("offset provided without limit")
 	}
 
 	rows, err := d.db.QueryContext(ctx, query, args...)

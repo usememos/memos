@@ -61,25 +61,29 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 		}
 	}
 	
-	limit := int(request.PageSize)
-	if limit <= 0 {
-		limit = 50
-	} else if limit > 1000 {
-		limit = 1000
-	}
-	userFind.Limit = &limit
-	
+	limit := normalizePageSize(request.PageSize)
+	limitPlusOne := limit + 1
+	userFind.Limit = &limitPlusOne
+
+	var offset int
 	if request.PageToken != "" {
-		offset, err := strconv.Atoi(request.PageToken)
-		if err != nil {
+		var pageToken v1pb.PageToken
+		if err := unmarshalPageToken(request.PageToken, &pageToken); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
 		}
+		offset = int(pageToken.Offset)
 		userFind.Offset = &offset
 	}
 
 	users, err := s.Store.ListUsers(ctx, userFind)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list users: %v", err)
+	}
+
+	var hasNextPage bool
+	if len(users) > limit {
+		users = users[:limit]
+		hasNextPage = true
 	}
 
 	response := &v1pb.ListUsersResponse{
@@ -89,15 +93,15 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 	for _, user := range users {
 		response.Users = append(response.Users, convertUserFromStore(user, currentUser))
 	}
-	
-	if len(users) == limit {
-		nextOffset := 0
-		if request.PageToken != "" {
-			nextOffset, _ = strconv.Atoi(request.PageToken)
+
+	if hasNextPage {
+		nextPageToken, err := getPageToken(limit, offset+limit)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get next page token: %v", err)
 		}
-		response.NextPageToken = strconv.Itoa(nextOffset + limit)
+		response.NextPageToken = nextPageToken
 	}
-	
+
 	return response, nil
 }
 
