@@ -165,9 +165,11 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 		WHERE ` + strings.Join(where, " AND ") + ` ORDER BY ` + strings.Join(orderBy, ", ")
 	if v := find.Limit; v != nil {
 		query += fmt.Sprintf(" LIMIT %d", *v)
-	}
-	if v := find.Offset; v != nil {
-		query += fmt.Sprintf(" OFFSET %d", *v)
+		if v := find.Offset; v != nil {
+			query += fmt.Sprintf(" OFFSET %d", *v)
+		}
+	} else if v := find.Offset; v != nil {
+		query += fmt.Sprintf(" LIMIT -1 OFFSET %d", *v)
 	}
 
 	rows, err := d.db.QueryContext(ctx, query, args...)
