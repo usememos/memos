@@ -60,14 +60,28 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 			userFind.Username = &username
 		}
 	}
+	
+	limit := int(request.PageSize)
+	if limit <= 0 {
+		limit = 50
+	} else if limit > 1000 {
+		limit = 1000
+	}
+	userFind.Limit = &limit
+	
+	if request.PageToken != "" {
+		offset, err := strconv.Atoi(request.PageToken)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
+		}
+		userFind.Offset = &offset
+	}
 
 	users, err := s.Store.ListUsers(ctx, userFind)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list users: %v", err)
 	}
 
-	// TODO: Implement proper ordering, and pagination
-	// For now, return all users with basic structure
 	response := &v1pb.ListUsersResponse{
 		Users:     []*v1pb.User{},
 		TotalSize: int32(len(users)),
@@ -75,6 +89,15 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 	for _, user := range users {
 		response.Users = append(response.Users, convertUserFromStore(user, currentUser))
 	}
+	
+	if len(users) == limit {
+		nextOffset := 0
+		if request.PageToken != "" {
+			nextOffset, _ = strconv.Atoi(request.PageToken)
+		}
+		response.NextPageToken = strconv.Itoa(nextOffset + limit)
+	}
+	
 	return response, nil
 }
 

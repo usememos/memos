@@ -75,6 +75,9 @@ type FindUser struct {
 
 	// The maximum number of users to return.
 	Limit *int
+
+	// The number of users to skip.
+	Offset *int
 }
 
 type DeleteUser struct {
