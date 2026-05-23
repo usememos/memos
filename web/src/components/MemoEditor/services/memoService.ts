@@ -48,9 +48,14 @@ function buildUpdateMask(
     mask.add("location");
     patch.location = state.metadata.location;
   }
+  const prevRemindTime = prevMemo.remindTime ? timestampDate(prevMemo.remindTime) : undefined;
+  if (!isEqual(state.metadata.remindTime, prevRemindTime)) {
+    mask.add("remind_time");
+    patch.remindTime = state.metadata.remindTime ? timestampFromDate(state.metadata.remindTime) : undefined;
+  }
 
   // Auto-update timestamp if content changed
-  if (["content", "attachments", "relations", "location"].some((key) => mask.has(key))) {
+  if (["content", "attachments", "relations", "location", "remind_time"].some((key) => mask.has(key))) {
     mask.add("update_time");
   }
 
@@ -108,6 +113,7 @@ export const memoService = {
       attachments: toAttachmentReferences(allAttachments),
       relations: state.metadata.relations,
       location: state.metadata.location,
+      remindTime: state.metadata.remindTime ? timestampFromDate(state.metadata.remindTime) : undefined,
       createTime: state.timestamps.createTime ? timestampFromDate(state.timestamps.createTime) : undefined,
       updateTime: state.timestamps.updateTime ? timestampFromDate(state.timestamps.updateTime) : undefined,
     });
@@ -131,6 +137,7 @@ export const memoService = {
         attachments: memo.attachments,
         relations: memo.relations,
         location: memo.location,
+        remindTime: memo.remindTime ? timestampDate(memo.remindTime) : undefined,
       },
       ui: {
         isFocusMode: false,
