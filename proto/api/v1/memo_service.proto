@@ -255,6 +255,9 @@ message Memo {
   // Optional. The location of the memo.
   optional Location location = 18 [(google.api.field_behavior) = OPTIONAL];
 
+  // Optional. The reminder time of the memo.
+  google.protobuf.Timestamp remind_time = 19 [(google.api.field_behavior) = OPTIONAL];
+
   // Computed properties of a memo.
   message Property {
     bool has_link = 1;

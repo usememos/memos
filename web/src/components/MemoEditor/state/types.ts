@@ -14,6 +14,7 @@ export interface EditorState {
     attachments: Attachment[];
     relations: MemoRelation[];
     location?: Location;
+    remindTime?: Date;
   };
   ui: {
     isFocusMode: boolean;
@@ -68,6 +69,7 @@ export const initialState: EditorState = {
     attachments: [],
     relations: [],
     location: undefined,
+    remindTime: undefined,
   },
   ui: {
     isFocusMode: false,

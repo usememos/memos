@@ -9,6 +9,7 @@ package store
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -26,6 +27,7 @@ type MemoPayload struct {
 	Property      *MemoPayload_Property  `protobuf:"bytes,1,opt,name=property,proto3" json:"property,omitempty"`
 	Location      *MemoPayload_Location  `protobuf:"bytes,2,opt,name=location,proto3" json:"location,omitempty"`
 	Tags          []string               `protobuf:"bytes,3,rep,name=tags,proto3" json:"tags,omitempty"`
+	RemindTime    *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=remind_time,json=remindTime,proto3" json:"remind_time,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -77,6 +79,13 @@ func (x *MemoPayload) GetLocation() *MemoPayload_Location {
 func (x *MemoPayload) GetTags() []string {
 	if x != nil {
 		return x.Tags
+	}
+	return nil
+}
+
+func (x *MemoPayload) GetRemindTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.RemindTime
 	}
 	return nil
 }
@@ -223,11 +232,13 @@ var File_store_memo_proto protoreflect.FileDescriptor
 
 const file_store_memo_proto_rawDesc = "" +
 	"\n" +
-	"\x10store/memo.proto\x12\vmemos.store\"\xb6\x03\n" +
+	"\x10store/memo.proto\x12\vmemos.store\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf3\x03\n" +
 	"\vMemoPayload\x12=\n" +
 	"\bproperty\x18\x01 \x01(\v2!.memos.store.MemoPayload.PropertyR\bproperty\x12=\n" +
 	"\blocation\x18\x02 \x01(\v2!.memos.store.MemoPayload.LocationR\blocation\x12\x12\n" +
-	"\x04tags\x18\x03 \x03(\tR\x04tags\x1a\xac\x01\n" +
+	"\x04tags\x18\x03 \x03(\tR\x04tags\x12;\n" +
+	"\vremind_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"remindTime\x1a\xac\x01\n" +
 	"\bProperty\x12\x19\n" +
 	"\bhas_link\x18\x01 \x01(\bR\ahasLink\x12\"\n" +
 	"\rhas_task_list\x18\x02 \x01(\bR\vhasTaskList\x12\x19\n" +
@@ -254,18 +265,20 @@ func file_store_memo_proto_rawDescGZIP() []byte {
 
 var file_store_memo_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_store_memo_proto_goTypes = []any{
-	(*MemoPayload)(nil),          // 0: memos.store.MemoPayload
-	(*MemoPayload_Property)(nil), // 1: memos.store.MemoPayload.Property
-	(*MemoPayload_Location)(nil), // 2: memos.store.MemoPayload.Location
+	(*MemoPayload)(nil),           // 0: memos.store.MemoPayload
+	(*MemoPayload_Property)(nil),  // 1: memos.store.MemoPayload.Property
+	(*MemoPayload_Location)(nil),  // 2: memos.store.MemoPayload.Location
+	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
 }
 var file_store_memo_proto_depIdxs = []int32{
 	1, // 0: memos.store.MemoPayload.property:type_name -> memos.store.MemoPayload.Property
 	2, // 1: memos.store.MemoPayload.location:type_name -> memos.store.MemoPayload.Location
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	3, // 2: memos.store.MemoPayload.remind_time:type_name -> google.protobuf.Timestamp
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_store_memo_proto_init() }
