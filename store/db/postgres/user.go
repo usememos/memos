@@ -190,14 +190,3 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 
 	return list, nil
 }
-
-func (d *DB) DeleteUser(ctx context.Context, delete *store.DeleteUser) error {
-	result, err := d.db.ExecContext(ctx, `DELETE FROM "user" WHERE id = $1`, delete.ID)
-	if err != nil {
-		return err
-	}
-	if _, err := result.RowsAffected(); err != nil {
-		return err
-	}
-	return nil
-}

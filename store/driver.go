@@ -45,7 +45,7 @@ type Driver interface {
 	CreateUser(ctx context.Context, create *User) (*User, error)
 	UpdateUser(ctx context.Context, update *UpdateUser) (*User, error)
 	ListUsers(ctx context.Context, find *FindUser) ([]*User, error)
-	DeleteUser(ctx context.Context, delete *DeleteUser) error
+	DeleteUser(ctx context.Context, delete *DeleteUser) (*DeleteUserResult, error)
 
 	// UserSetting model related methods.
 	UpsertUserSetting(ctx context.Context, upsert *UserSetting) (*UserSetting, error)

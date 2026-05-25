@@ -360,7 +360,7 @@ func TestListUserNotificationsSkipsNotificationsWithMissingUsers(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: commenter.ID})
+	_, err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: commenter.ID})
 	require.NoError(t, err)
 
 	resp, err := ts.Service.ListUserNotifications(ownerCtx, &apiv1.ListUserNotificationsRequest{
