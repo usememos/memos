@@ -402,7 +402,7 @@ func TestListMemosSkipsReactionsWithMissingCreators(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: reactor.ID})
+	_, err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: reactor.ID})
 	require.NoError(t, err)
 
 	resp, err := ts.Service.ListMemos(ownerCtx, &apiv1.ListMemosRequest{PageSize: 10})
@@ -442,7 +442,7 @@ func TestListMemosSkipsMemosWithMissingCreators(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: orphanCreator.ID})
+	_, err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: orphanCreator.ID})
 	require.NoError(t, err)
 
 	resp, err := ts.Service.ListMemos(ownerCtx, &apiv1.ListMemosRequest{PageSize: 10})
@@ -482,7 +482,7 @@ func TestListMemoCommentsSkipsCommentsWithMissingCreators(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: commenter.ID})
+	_, err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: commenter.ID})
 	require.NoError(t, err)
 
 	resp, err := ts.Service.ListMemoComments(ownerCtx, &apiv1.ListMemoCommentsRequest{Name: memo.Name})

@@ -3,6 +3,8 @@ package store
 import (
 	"context"
 	"strconv"
+
+	"github.com/pkg/errors"
 )
 
 // Role is the type of a role.
@@ -164,11 +166,14 @@ func (s *Store) GetUser(ctx context.Context, find *FindUser) (*User, error) {
 	return user, nil
 }
 
-func (s *Store) DeleteUser(ctx context.Context, delete *DeleteUser) error {
-	err := s.driver.DeleteUser(ctx, delete)
+func (s *Store) DeleteUser(ctx context.Context, delete *DeleteUser) (*DeleteUserResult, error) {
+	result, err := s.driver.DeleteUser(ctx, delete)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	s.userCache.Delete(ctx, userCacheKey(delete.ID))
-	return nil
+	if result == nil {
+		return nil, errors.New("unexpected nil delete user result")
+	}
+	s.deleteUserCache(ctx, delete.ID, result)
+	return result, nil
 }

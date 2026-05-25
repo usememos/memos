@@ -189,7 +189,7 @@ func (s *APIV1Service) resolveSSOUser(ctx context.Context, currentUser *store.Us
 		ExternUID: externUID,
 	}); err != nil {
 		// Best-effort cleanup: the provisional user row has no linkage and should not remain.
-		_ = s.Store.DeleteUser(ctx, &store.DeleteUser{ID: user.ID})
+		_, _ = s.Store.DeleteUser(ctx, &store.DeleteUser{ID: user.ID})
 		if isUniqueConstraintViolation(err) {
 			// Concurrent first login won the race; load the winning linkage's user.
 			winner, getErr := s.Store.GetUserIdentity(ctx, &store.FindUserIdentity{

@@ -373,12 +373,13 @@ func (s *APIV1Service) DeleteUser(ctx context.Context, request *v1pb.DeleteUserR
 	}
 	isSelfDelete := currentUser.ID == userID
 
-	attachments, err := s.Store.DeleteUserCompletely(ctx, &store.DeleteUser{
+	deleteResult, err := s.Store.DeleteUser(ctx, &store.DeleteUser{
 		ID: user.ID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete user: %v", err)
 	}
+	attachments := deleteResult.Attachments
 	var attachmentCleanupErr error
 	failedAttachmentIDs := make([]int32, 0)
 	attachmentStorageSetting, attachmentStorageSettingErr := getDeleteUserAttachmentStorageSetting(ctx, s.Store, attachments)

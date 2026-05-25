@@ -226,7 +226,7 @@ func TestListMemoReactionsSkipsMissingCreators(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: reactor.ID})
+	_, err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: reactor.ID})
 	require.NoError(t, err)
 
 	resp, err := ts.Service.ListMemoReactions(ctx, &apiv1.ListMemoReactionsRequest{Name: memo.Name})
