@@ -34,6 +34,26 @@ export const EditorContent = forwardRef<EditorRefActions, EditorContentProps>(({
     const clipboard = event.clipboardData;
     if (!clipboard) return;
 
+    // let's implement the logic here
+    const pastedText = clipboard.getData("text");
+    const isUrl = /^https?:\/\/\S+$/.test(pastedText.trim());
+    const textarea = event.target as HTMLTextAreaElement;
+    const { selectionStart, selectionEnd, value } = textarea;
+
+    if (isUrl && selectionStart !== selectionEnd) {
+      event.preventDefault();
+      const selectedText = value.substring(selectionStart, selectionEnd);
+      const markdownLink = `[${selectedText}](${pastedText.trim()})`;
+      const newValue = value.substring(0, selectionStart) + markdownLink + value.substring(selectionEnd);
+      handleContentChange(newValue);
+
+      // Let's reset the cursor position after React re-renders
+      setTimeout(() => {
+        textarea.setSelectionRange(selectionStart + markdownLink.length, selectionStart + markdownLink.length);
+      }, 0);
+      return;
+    }
+
     const files: File[] = [];
     if (clipboard.items && clipboard.items.length > 0) {
       for (const item of Array.from(clipboard.items)) {
