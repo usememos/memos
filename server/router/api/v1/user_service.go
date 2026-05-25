@@ -72,6 +72,9 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
 		}
 		offset = int(pageToken.Offset)
+		if offset < 0 {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: offset must not be negative")
+		}
 		userFind.Offset = &offset
 	}
 
