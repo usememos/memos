@@ -114,7 +114,8 @@
     "username": "Felhasználónév",
     "version": "Verzió",
     "visibility": "Láthatóság",
-    "yourself": "Magad"
+    "yourself": "Magad",
+    "groups": "Csoportok"
   },
   "editor": {
     "add-your-comment-here": "Írd ide a megjegyzésed...",
@@ -540,5 +541,26 @@
     "connected": "Élő frissítések aktívak",
     "connecting": "Csatlakozás az élő frissítésekhez...",
     "disconnected": "Élő frissítések nem érhetők el"
+  },
+  "group": {
+    "back-to-groups": "Vissza a csoportokhoz",
+    "create-group": "Csoport létrehozása",
+    "create-successfully": "Csoport sikeresen létrehozva",
+    "delete-confirm": "Biztosan törölni szeretné ezt a csoportot?",
+    "delete-group": "Csoport törlése",
+    "description": "Leírás",
+    "enter-description": "Adja meg a csoport leírását",
+    "enter-name": "Adja meg a csoport nevét",
+    "group-name": "Csoport neve",
+    "group-timeline": "Csoport idővonala",
+    "loading": "Csoportok betöltése...",
+    "multiple-groups": "{{count}} csoport",
+    "name-cannot-be-empty": "A csoport neve nem lehet üres",
+    "no-groups-found": "Nem találhatók csoportok",
+    "select-groups": "Csoportok kiválasztása",
+    "selected": "Kiválasztva",
+    "update-group": "Csoport frissítése",
+    "update-successfully": "Csoport sikeresen frissítve",
+    "view-timeline": "Idővonal megtekintése"
   }
 }

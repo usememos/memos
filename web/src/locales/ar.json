@@ -114,7 +114,8 @@
     "username": "اسم المستخدم",
     "version": "الإصدار",
     "visibility": "الرؤية",
-    "yourself": "نفسك"
+    "yourself": "نفسك",
+    "groups": "المجموعات"
   },
   "editor": {
     "add-your-comment-here": "أضف تعليقك هنا...",
@@ -540,5 +541,26 @@
     "connected": "التحديثات الحية نشطة",
     "connecting": "جارٍ الاتصال بالتحديثات المباشرة...",
     "disconnected": "التحديثات المباشرة غير متوفرة"
+  },
+  "group": {
+    "back-to-groups": "العودة إلى المجموعات",
+    "create-group": "إنشاء مجموعة",
+    "create-successfully": "تم إنشاء المجموعة بنجاح",
+    "delete-confirm": "هل أنت متأكد أنك تريد حذف هذه المجموعة؟",
+    "delete-group": "حذف المجموعة",
+    "description": "الوصف",
+    "enter-description": "أدخل وصف المجموعة",
+    "enter-name": "أدخل اسم المجموعة",
+    "group-name": "اسم المجموعة",
+    "group-timeline": "المخطط الزمني للمجموعة",
+    "loading": "جاري تحميل المجموعات...",
+    "multiple-groups": "{{count}} مجموعات",
+    "name-cannot-be-empty": "لا يمكن أن يكون اسم المجموعة فارغًا",
+    "no-groups-found": "لم يتم العثور على مجموعات",
+    "select-groups": "حدد المجموعات",
+    "selected": "تم التحديد",
+    "update-group": "تحديث المجموعة",
+    "update-successfully": "تم تحديث المجموعة بنجاح",
+    "view-timeline": "عرض المخطط الزمني"
   }
 }

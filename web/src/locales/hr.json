@@ -114,7 +114,8 @@
     "username": "Korisničko ime",
     "version": "Verzija",
     "visibility": "Vidljivost",
-    "yourself": "Ti"
+    "yourself": "Ti",
+    "groups": "Grupe"
   },
   "editor": {
     "add-your-comment-here": "Dodaj svoj komentar ovdje...",
@@ -540,5 +541,26 @@
     "connected": "Aktivna ažuriranja uživo",
     "connecting": "Povezivanje s ažuriranjima uživo...",
     "disconnected": "Ažuriranja uživo nisu dostupna"
+  },
+  "group": {
+    "back-to-groups": "Natrag na grupe",
+    "create-group": "Stvori grupu",
+    "create-successfully": "Grupa je uspješno stvorena",
+    "delete-confirm": "Jeste li sigurni da želite obrisati ovu grupu?",
+    "delete-group": "Obriši grupu",
+    "description": "Opis",
+    "enter-description": "Unesite opis grupe",
+    "enter-name": "Unesite naziv grupe",
+    "group-name": "Naziv grupe",
+    "group-timeline": "Vremenska crta grupe",
+    "loading": "Učitavanje grupa...",
+    "multiple-groups": "{{count}} grupa",
+    "name-cannot-be-empty": "Naziv grupe ne može biti prazan",
+    "no-groups-found": "Nisu pronađene grupe",
+    "select-groups": "Odaberi grupe",
+    "selected": "Odabrano",
+    "update-group": "Ažuriraj grupu",
+    "update-successfully": "Grupa je uspješno ažurirana",
+    "view-timeline": "Prikaži vremensku crtu"
   }
 }

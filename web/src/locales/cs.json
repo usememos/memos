@@ -114,7 +114,8 @@
     "username": "Uživatelské jméno",
     "version": "Verze",
     "visibility": "Viditelnost",
-    "yourself": "Vy sami"
+    "yourself": "Vy sami",
+    "groups": "Skupiny"
   },
   "editor": {
     "add-your-comment-here": "Přidejte sem svůj komentář...",
@@ -540,5 +541,26 @@
     "connected": "Živé aktualizace jsou aktivní",
     "connecting": "Připojování k živým aktualizacím...",
     "disconnected": "Živé aktualizace nejsou k dispozici"
+  },
+  "group": {
+    "back-to-groups": "Zpět do skupin",
+    "create-group": "Vytvořit skupinu",
+    "create-successfully": "Skupina byla úspěšně vytvořena",
+    "delete-confirm": "Opravdu chcete tuto skupinu smazat?",
+    "delete-group": "Smazat skupinu",
+    "description": "Popis",
+    "enter-description": "Zadejte popis skupiny",
+    "enter-name": "Zadejte název skupiny",
+    "group-name": "Název skupiny",
+    "group-timeline": "Časová osa skupiny",
+    "loading": "Načítání skupin...",
+    "multiple-groups": "{{count}} skupin",
+    "name-cannot-be-empty": "Název skupiny nemůže být prázdný",
+    "no-groups-found": "Nebyly nalezeny žádné skupiny",
+    "select-groups": "Vybrat skupiny",
+    "selected": "Vybráno",
+    "update-group": "Aktualizovat skupinu",
+    "update-successfully": "Skupina byla úspěšně aktualizována",
+    "view-timeline": "Zobrazit časovou osu"
   }
 }

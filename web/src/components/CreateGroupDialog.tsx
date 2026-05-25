@@ -42,7 +42,7 @@ function CreateGroupDialog({ open, onOpenChange, group: initialGroup, onConfirm 
 
   const handleConfirm = async () => {
     if (!displayName.trim()) {
-      toast.error("Group name cannot be empty");
+      toast.error(t("group.name-cannot-be-empty"));
       return;
     }
 
@@ -50,7 +50,7 @@ function CreateGroupDialog({ open, onOpenChange, group: initialGroup, onConfirm 
       requestState.setLoading();
       if (isCreating) {
         await createGroup.mutateAsync({ displayName, description });
-        toast.success("Create group successfully");
+        toast.success(t("group.create-successfully"));
       } else {
         const updateMask: string[] = [];
         const groupToUpdate = create(GroupSchema, {
@@ -72,14 +72,14 @@ function CreateGroupDialog({ open, onOpenChange, group: initialGroup, onConfirm 
             updateMask,
           });
         }
-        toast.success("Update group successfully");
+        toast.success(t("group.update-successfully"));
       }
       requestState.setFinish();
       onConfirm?.();
       onOpenChange(false);
     } catch (error: unknown) {
       handleError(error, toast.error, {
-        context: isCreating ? "Create group" : "Update group",
+        context: isCreating ? t("group.create-group") : t("group.update-group"),
         onError: () => requestState.setError(),
       });
     }
@@ -93,20 +93,20 @@ function CreateGroupDialog({ open, onOpenChange, group: initialGroup, onConfirm 
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="displayName">Group Name</Label>
+            <Label htmlFor="displayName">{t("group.group-name")}</Label>
             <Input
               id="displayName"
               type="text"
-              placeholder="Enter group name"
+              placeholder={t("group.enter-name")}
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">{t("group.description")}</Label>
             <Textarea
               id="description"
-              placeholder="Enter group description"
+              placeholder={t("group.enter-description")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />

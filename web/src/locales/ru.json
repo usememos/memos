@@ -114,7 +114,8 @@
     "username": "Имя пользователя",
     "version": "Версия",
     "visibility": "Видимость",
-    "yourself": "Вы"
+    "yourself": "Вы",
+    "groups": "Группы"
   },
   "editor": {
     "add-your-comment-here": "Напишите свой комментарий...",
@@ -540,5 +541,26 @@
     "connected": "Живые обновления активны",
     "connecting": "Подключение к постоянным обновлениям...",
     "disconnected": "Оперативные обновления недоступны."
+  },
+  "group": {
+    "back-to-groups": "Назад к группам",
+    "create-group": "Создать группу",
+    "create-successfully": "Группа успешно создана",
+    "delete-confirm": "Вы уверены, что хотите удалить эту группу?",
+    "delete-group": "Удалить группу",
+    "description": "Описание",
+    "enter-description": "Введите описание группы",
+    "enter-name": "Введите название группы",
+    "group-name": "Название группы",
+    "group-timeline": "Хроника группы",
+    "loading": "Загрузка групп...",
+    "multiple-groups": "Групп: {{count}}",
+    "name-cannot-be-empty": "Название группы не может быть пустым",
+    "no-groups-found": "Группы не найдены",
+    "select-groups": "Выбрать группы",
+    "selected": "Выбрано",
+    "update-group": "Обновить группу",
+    "update-successfully": "Группа успешно обновлена",
+    "view-timeline": "Показать хронику"
   }
 }

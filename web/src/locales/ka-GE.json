@@ -114,7 +114,8 @@
     "username": "მომხმარებლის სახელი",
     "version": "ვერსია",
     "visibility": "ხილვადობა",
-    "yourself": "თქვენ"
+    "yourself": "თქვენ",
+    "groups": "ჯგუფები"
   },
   "editor": {
     "add-your-comment-here": "დაამატეთ თქვენი კომენტარი აქ...",
@@ -540,5 +541,26 @@
     "connected": "ცოცხალი განახლებები აქტიურია",
     "connecting": "მიმდინარეობს პირდაპირი განახლებების დაკავშირება...",
     "disconnected": "პირდაპირი განახლებები მიუწვდომელია"
+  },
+  "group": {
+    "back-to-groups": "ჯგუფებში დაბრუნება",
+    "create-group": "ჯგუფის შექმნა",
+    "create-successfully": "ჯგუფი წარმატებით შეიქმნა",
+    "delete-confirm": "დარწმუნებული ხართ, რომ გსურთ ამ ჯგუფის წაშლა?",
+    "delete-group": "ჯგუფის წაშლა",
+    "description": "აღწერა",
+    "enter-description": "შეიყვანეთ ჯგუფის აღწერა",
+    "enter-name": "შეიყვანეთ ჯგუფის სახელი",
+    "group-name": "ჯგუფის სახელი",
+    "group-timeline": "ჯგუფის ქრონოლოგია",
+    "loading": "ჯგუფები იტვირთება...",
+    "multiple-groups": "{{count}} ჯგუფი",
+    "name-cannot-be-empty": "ჯგუფის სახელი არ შეიძლება იყოს ცარიელი",
+    "no-groups-found": "ჯგუფები ვერ მოიძებნა",
+    "select-groups": "აირჩიეთ ჯგუფები",
+    "selected": "არჩეული",
+    "update-group": "ჯგუფის განახლება",
+    "update-successfully": "ჯგუფი წარმატებით განახლდა",
+    "view-timeline": "ქრონოლოგიის ნახვა"
   }
 }

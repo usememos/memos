@@ -114,7 +114,8 @@
     "username": "Användarnamn",
     "version": "Version",
     "visibility": "Synlighet",
-    "yourself": "Själv"
+    "yourself": "Själv",
+    "groups": "Grupper"
   },
   "editor": {
     "add-your-comment-here": "Lägg till din kommentar här...",
@@ -540,5 +541,26 @@
     "connected": "Liveuppdateringar aktiva",
     "connecting": "Ansluter till liveuppdateringar...",
     "disconnected": "Liveuppdateringar är inte tillgängliga"
+  },
+  "group": {
+    "back-to-groups": "Tillbaka till grupper",
+    "create-group": "Skapa grupp",
+    "create-successfully": "Gruppen skapades",
+    "delete-confirm": "Är du säker på att du vill ta bort den här gruppen?",
+    "delete-group": "Ta bort grupp",
+    "description": "Beskrivning",
+    "enter-description": "Ange gruppbeskrivning",
+    "enter-name": "Ange gruppnamn",
+    "group-name": "Gruppnamn",
+    "group-timeline": "Grupptidslinje",
+    "loading": "Lassar grupper...",
+    "multiple-groups": "{{count}} grupper",
+    "name-cannot-be-empty": "Gruppnamn kan inte vara tomt",
+    "no-groups-found": "Inga grupper hittades",
+    "select-groups": "Välj grupper",
+    "selected": "Vald",
+    "update-group": "Uppdatera grupp",
+    "update-successfully": "Gruppen uppdaterades",
+    "view-timeline": "Visa tidslinje"
   }
 }

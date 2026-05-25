@@ -5,12 +5,12 @@ import { getAccessToken, hasStoredToken, isTokenExpired, REQUEST_TOKEN_EXPIRY_BU
 import { AIService } from "./types/proto/api/v1/ai_service_pb";
 import { AttachmentService } from "./types/proto/api/v1/attachment_service_pb";
 import { AuthService } from "./types/proto/api/v1/auth_service_pb";
+import { GroupService } from "./types/proto/api/v1/group_service_pb";
 import { IdentityProviderService } from "./types/proto/api/v1/idp_service_pb";
 import { InstanceService } from "./types/proto/api/v1/instance_service_pb";
 import { MemoService } from "./types/proto/api/v1/memo_service_pb";
 import { ShortcutService } from "./types/proto/api/v1/shortcut_service_pb";
 import { UserService } from "./types/proto/api/v1/user_service_pb";
-import { GroupService } from "./types/proto/api/v1/group_service_pb";
 import { redirectOnAuthFailure } from "./utils/auth-redirect";
 
 interface RequestWithHeader {

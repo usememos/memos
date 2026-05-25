@@ -114,7 +114,8 @@
     "username": "Gebruikersnaam",
     "version": "Versie",
     "visibility": "Zichtbaarheid",
-    "yourself": "Jijzelf"
+    "yourself": "Jijzelf",
+    "groups": "Groepen"
   },
   "editor": {
     "add-your-comment-here": "Voeg hier je opmerking toe…",
@@ -540,5 +541,26 @@
     "connected": "Live-updates actief",
     "connecting": "Verbinding maken met live updates...",
     "disconnected": "Live-updates niet beschikbaar"
+  },
+  "group": {
+    "back-to-groups": "Terug naar groepen",
+    "create-group": "Groep maken",
+    "create-successfully": "Groep succesvol aangemaakt",
+    "delete-confirm": "Weet je zeker dat je deze groep wilt verwijderen?",
+    "delete-group": "Groep verwijderen",
+    "description": "Beschrijving",
+    "enter-description": "Voer groepsbeschrijving in",
+    "enter-name": "Voer groepsnaam in",
+    "group-name": "Groepsnaam",
+    "group-timeline": "Groepstijdlijn",
+    "loading": "Groepen laden...",
+    "multiple-groups": "{{count}} groepen",
+    "name-cannot-be-empty": "Groepsnaam mag niet leeg zijn",
+    "no-groups-found": "Geen groepen gevonden",
+    "select-groups": "Groepen selecteren",
+    "selected": "Geselecteerd",
+    "update-group": "Groep bijwerken",
+    "update-successfully": "Groep succesvol bijgewerkt",
+    "view-timeline": "Tijdlijn bekijken"
   }
 }

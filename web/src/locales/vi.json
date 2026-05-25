@@ -114,7 +114,8 @@
     "username": "Tên người dùng",
     "version": "Phiên bản",
     "visibility": "Quyền xem",
-    "yourself": "Bản thân"
+    "yourself": "Bản thân",
+    "groups": "Nhóm"
   },
   "editor": {
     "add-your-comment-here": "Thêm bình luận của bạn tại đây...",
@@ -540,5 +541,26 @@
     "connected": "Cập nhật trực tiếp đang hoạt động",
     "connecting": "Đang kết nối với thông tin cập nhật trực tiếp...",
     "disconnected": "Cập nhật trực tiếp không có sẵn"
+  },
+  "group": {
+    "back-to-groups": "Quay lại Nhóm",
+    "create-group": "Tạo Nhóm",
+    "create-successfully": "Tạo nhóm thành công",
+    "delete-confirm": "Bạn có chắc chắn muốn xóa nhóm này không?",
+    "delete-group": "Xóa Nhóm",
+    "description": "Mô tả",
+    "enter-description": "Nhập mô tả nhóm",
+    "enter-name": "Nhập tên nhóm",
+    "group-name": "Tên Nhóm",
+    "group-timeline": "Dòng thời gian nhóm",
+    "loading": "Đang tải các nhóm...",
+    "multiple-groups": "{{count}} Nhóm",
+    "name-cannot-be-empty": "Tên nhóm không được để trống",
+    "no-groups-found": "Không tìm thấy nhóm",
+    "select-groups": "Chọn Nhóm",
+    "selected": "Đã chọn",
+    "update-group": "Cập nhật Nhóm",
+    "update-successfully": "Cập nhật nhóm thành công",
+    "view-timeline": "Xem dòng thời gian"
   }
 }

@@ -114,7 +114,8 @@
     "username": "نام کاربری",
     "version": "نسخه",
     "visibility": "قابل مشاهده توسط",
-    "yourself": "خودتان"
+    "yourself": "خودتان",
+    "groups": "گروه‌ها"
   },
   "editor": {
     "add-your-comment-here": "نظر خود را اینجا اضافه کنید...",
@@ -540,5 +541,26 @@
     "connected": "به روز رسانی زنده فعال است",
     "connecting": "در حال اتصال به به‌روزرسانی‌های زنده...",
     "disconnected": "به روز رسانی زنده در دسترس نیست"
+  },
+  "group": {
+    "back-to-groups": "بازگشت به گروه‌ها",
+    "create-group": "ایجاد گروه",
+    "create-successfully": "گروه با موفقیت ایجاد شد",
+    "delete-confirm": "آیا مطمئن هستید که می‌خواهید این گروه را حذف کنید؟",
+    "delete-group": "حذف گروه",
+    "description": "توضیحات",
+    "enter-description": "توضیحات گروه را وارد کنید",
+    "enter-name": "نام گروه را وارد کنید",
+    "group-name": "نام گروه",
+    "group-timeline": "خط زمانی گروه",
+    "loading": "در حال بارگذاری گروه‌ها...",
+    "multiple-groups": "{{count}} گروه",
+    "name-cannot-be-empty": "نام گروه نمی‌تواند خالی باشد",
+    "no-groups-found": "گروهی پیدا نشد",
+    "select-groups": "انتخاب گروه‌ها",
+    "selected": "انتخاب شده",
+    "update-group": "به‌روزرسانی گروه",
+    "update-successfully": "گروه با موفقیت به‌روزرسانی شد",
+    "view-timeline": "مشاهده خط زمانی"
   }
 }

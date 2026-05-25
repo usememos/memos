@@ -114,7 +114,8 @@
     "username": "Nome utente",
     "version": "Versione",
     "visibility": "Visibilità",
-    "yourself": "Te stesso"
+    "yourself": "Te stesso",
+    "groups": "Gruppi"
   },
   "editor": {
     "add-your-comment-here": "Aggiungi qui il tuo commento...",
@@ -540,5 +541,26 @@
     "connected": "Aggiornamenti live attivi",
     "connecting": "Connessione agli aggiornamenti in tempo reale...",
     "disconnected": "Aggiornamenti in tempo reale non disponibili"
+  },
+  "group": {
+    "back-to-groups": "Torna ai gruppi",
+    "create-group": "Crea gruppo",
+    "create-successfully": "Gruppo creato con successo",
+    "delete-confirm": "Sei sicuro di voler eliminare questo gruppo?",
+    "delete-group": "Elimina gruppo",
+    "description": "Descrizione",
+    "enter-description": "Inserisci la descrizione del gruppo",
+    "enter-name": "Inserisci il nome del gruppo",
+    "group-name": "Nome gruppo",
+    "group-timeline": "Timeline del gruppo",
+    "loading": "Caricamento gruppi...",
+    "multiple-groups": "{{count}} gruppi",
+    "name-cannot-be-empty": "Il nome del gruppo non può essere vuoto",
+    "no-groups-found": "Nessun gruppo trovato",
+    "select-groups": "Seleziona gruppi",
+    "selected": "Selezionato",
+    "update-group": "Aggiorna gruppo",
+    "update-successfully": "Gruppo aggiornato con successo",
+    "view-timeline": "Visualizza timeline"
   }
 }

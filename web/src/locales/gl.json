@@ -114,7 +114,8 @@
     "username": "Identificador",
     "version": "Versión",
     "visibility": "Visibilidade",
-    "yourself": "Ti"
+    "yourself": "Ti",
+    "groups": "Grupos"
   },
   "editor": {
     "add-your-comment-here": "Engade aquí o comentario...",
@@ -540,5 +541,26 @@
     "connected": "Actualizacións en directo activas",
     "connecting": "Conectando a actualizacións en directo...",
     "disconnected": "As actualizacións en directo non están dispoñibles"
+  },
+  "group": {
+    "back-to-groups": "Volver aos grupos",
+    "create-group": "Crear grupo",
+    "create-successfully": "Grupo creado con éxito",
+    "delete-confirm": "Está seguro de que quere eliminar este grupo?",
+    "delete-group": "Eliminar grupo",
+    "description": "Descrición",
+    "enter-description": "Introduza a descrición do grupo",
+    "enter-name": "Introduza o nome do grupo",
+    "group-name": "Nome do grupo",
+    "group-timeline": "Liña temporal do grupo",
+    "loading": "Cargando os grupos...",
+    "multiple-groups": "{{count}} grupos",
+    "name-cannot-be-empty": "O nome do grupo no pode estar baleiro",
+    "no-groups-found": "Non se atoparon grupos",
+    "select-groups": "Seleccionar grupos",
+    "selected": "Seleccionado",
+    "update-group": "Actualizar grupo",
+    "update-successfully": "Grupo actualizado con éxito",
+    "view-timeline": "Ver liña temporal"
   }
 }

@@ -114,7 +114,8 @@
     "username": "ユーザーネーム",
     "version": "バージョン",
     "visibility": "公開範囲",
-    "yourself": "あなた自身の"
+    "yourself": "あなた自身の",
+    "groups": "グループ"
   },
   "editor": {
     "add-your-comment-here": "ここにコメントを追加...",
@@ -531,5 +532,26 @@
     "select-visibility": "公開範囲",
     "tags": "タグ",
     "upload-attachment": "添付ファイルをアップロード"
+  },
+  "group": {
+    "back-to-groups": "グループに戻る",
+    "create-group": "グループを作成",
+    "create-successfully": "グループを作成しました",
+    "delete-confirm": "このグループを削除してもよろしいですか？",
+    "delete-group": "グループを削除",
+    "description": "説明",
+    "enter-description": "グループの説明を入力",
+    "enter-name": "グループ名を入力",
+    "group-name": "グループ名",
+    "group-timeline": "グループのタイムライン",
+    "loading": "グループを読み込み中...",
+    "multiple-groups": "{{count}} 個のグループ",
+    "name-cannot-be-empty": "グループ名は空にできません",
+    "no-groups-found": "グループが見つかりません",
+    "select-groups": "グループを選択",
+    "selected": "選択済み",
+    "update-group": "グループを更新",
+    "update-successfully": "グループを更新しました",
+    "view-timeline": "タイムラインを表示"
   }
 }

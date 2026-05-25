@@ -114,7 +114,8 @@
     "username": "Kullanıcı adı",
     "version": "Sürüm",
     "visibility": "Görünürlük",
-    "yourself": "Kendiniz"
+    "yourself": "Kendiniz",
+    "groups": "Gruplar"
   },
   "editor": {
     "add-your-comment-here": "Yorumunuzu buraya ekleyin...",
@@ -540,5 +541,26 @@
     "select-visibility": "Görünürlük seç",
     "tags": "Etiketler",
     "upload-attachment": "Ek(leri) yükle"
+  },
+  "group": {
+    "back-to-groups": "Gruplara Geri Dön",
+    "create-group": "Grup Oluştur",
+    "create-successfully": "Grup başarıyla oluşturuldu",
+    "delete-confirm": "Bu grubu silmek istediğinizden emin misiniz?",
+    "delete-group": "Grubu Sil",
+    "description": "Açıklama",
+    "enter-description": "Grup açıklaması girin",
+    "enter-name": "Grup adı girin",
+    "group-name": "Grup Adı",
+    "group-timeline": "Grup Zaman Tüneli",
+    "loading": "Gruplar yükleniyor...",
+    "multiple-groups": "{{count}} Grup",
+    "name-cannot-be-empty": "Grup adı boş olamaz",
+    "no-groups-found": "Grup bulunamadı",
+    "select-groups": "Grupları Seç",
+    "selected": "Seçildi",
+    "update-group": "Grubu Güncelle",
+    "update-successfully": "Grup başarıyla güncellendi",
+    "view-timeline": "Zaman Tünelini Görüntüle"
   }
 }

@@ -2,6 +2,7 @@ import { CheckIcon, UsersIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useGroups } from "@/hooks/useGroupQueries";
+import { useTranslate } from "@/utils/i18n";
 
 interface Props {
   selectedGroupNames: string[];
@@ -10,19 +11,20 @@ interface Props {
 
 const GroupSelector = (props: Props) => {
   const { selectedGroupNames, onChange } = props;
+  const t = useTranslate();
   const { data: groups = [] } = useGroups();
-  const [displayText, setDisplayText] = useState("Select Groups");
+  const [displayText, setDisplayText] = useState(t("group.select-groups"));
 
   useEffect(() => {
     if (!selectedGroupNames || selectedGroupNames.length === 0) {
-      setDisplayText("Select Groups");
+      setDisplayText(t("group.select-groups"));
     } else if (selectedGroupNames.length === 1) {
       const group = groups.find((g) => g.name === selectedGroupNames[0]);
-      setDisplayText(group?.displayName || "Selected");
+      setDisplayText(group?.displayName || t("group.selected"));
     } else {
-      setDisplayText(`${selectedGroupNames.length} Groups`);
+      setDisplayText(t("group.multiple-groups", { count: selectedGroupNames.length }));
     }
-  }, [selectedGroupNames, groups]);
+  }, [selectedGroupNames, groups, t]);
 
   const toggleGroup = (name: string) => {
     const current = selectedGroupNames || [];
@@ -59,7 +61,7 @@ const GroupSelector = (props: Props) => {
               {selectedGroupNames.includes(group.name) && <CheckIcon className="w-4 h-4 text-primary" />}
             </DropdownMenuItem>
           ))}
-          {groups.length === 0 && <div className="p-2 text-sm text-gray-400">No groups found</div>}
+          {groups.length === 0 && <div className="p-2 text-sm text-gray-400">{t("group.no-groups-found")}</div>}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

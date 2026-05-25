@@ -114,7 +114,8 @@
     "username": "Nom d'usuari",
     "version": "Versió",
     "visibility": "Visibilitat",
-    "yourself": "Tu mateix"
+    "yourself": "Tu mateix",
+    "groups": "Grups"
   },
   "editor": {
     "add-your-comment-here": "Afegeix el teu comentari aquí...",
@@ -540,5 +541,26 @@
     "connected": "Actualitzacions en directe actives",
     "connecting": "S'està connectant a actualitzacions en directe...",
     "disconnected": "Actualitzacions en directe no disponibles"
+  },
+  "group": {
+    "back-to-groups": "Tornar als grups",
+    "create-group": "Crear grup",
+    "create-successfully": "Grup creat correctament",
+    "delete-confirm": "Esteu segur que voleu suprimir aquest grup?",
+    "delete-group": "Suprimir grup",
+    "description": "Descripció",
+    "enter-description": "Introduïu la descripció del grup",
+    "enter-name": "Introduïu el nom del grup",
+    "group-name": "Nom del grup",
+    "group-timeline": "Línia temporal del grup",
+    "loading": "Carregant grups...",
+    "multiple-groups": "{{count}} grups",
+    "name-cannot-be-empty": "El nom del grup no pot estar buit",
+    "no-groups-found": "No s'han trobat grups",
+    "select-groups": "Seleccionar grups",
+    "selected": "Seleccionat",
+    "update-group": "Actualitzar grup",
+    "update-successfully": "Grup actualitzat correctament",
+    "view-timeline": "Veure línia temporal"
   }
 }

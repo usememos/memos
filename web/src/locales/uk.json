@@ -114,7 +114,8 @@
     "username": "Ім'я користувача",
     "version": "Версія",
     "visibility": "Видимість",
-    "yourself": "Ви"
+    "yourself": "Ви",
+    "groups": "Групи"
   },
   "editor": {
     "add-your-comment-here": "Додайте свій коментар тут...",
@@ -540,5 +541,26 @@
     "connected": "Оновлення в реальному часі активні",
     "connecting": "Підключення до поточних оновлень...",
     "disconnected": "Оновлення в реальному часі недоступні"
+  },
+  "group": {
+    "back-to-groups": "Назад до груп",
+    "create-group": "Створити групу",
+    "create-successfully": "Групу успішно створено",
+    "delete-confirm": "Ви впевнені, що хочете видалити цю групу?",
+    "delete-group": "Видалити групу",
+    "description": "Опис",
+    "enter-description": "Введіть опис групи",
+    "enter-name": "Введіть назву групи",
+    "group-name": "Назва групи",
+    "group-timeline": "Хронологія групи",
+    "loading": "Завантаження груп...",
+    "multiple-groups": "{{count}} груп",
+    "name-cannot-be-empty": "Назва групи не може бути порожньою",
+    "no-groups-found": "Груп не знайдено",
+    "select-groups": "Вибрати групи",
+    "selected": "Вибрано",
+    "update-group": "Оновити групу",
+    "update-successfully": "Групу успішно оновлено",
+    "view-timeline": "Показати хронологію"
   }
 }

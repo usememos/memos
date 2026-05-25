@@ -114,7 +114,8 @@
     "username": "Brukernavn",
     "version": "Versjon",
     "visibility": "Synlighet",
-    "yourself": "Deg selv"
+    "yourself": "Deg selv",
+    "groups": "Grupper"
   },
   "editor": {
     "add-your-comment-here": "Legg til din kommentar her...",
@@ -540,5 +541,26 @@
     "connected": "Liveoppdateringer aktive",
     "connecting": "Kobler til live-oppdateringer ...",
     "disconnected": "Liveoppdateringer er ikke tilgjengelige"
+  },
+  "group": {
+    "back-to-groups": "Tilbake til grupper",
+    "create-group": "Opprett gruppe",
+    "create-successfully": "Gruppe opprettet",
+    "delete-confirm": "Er du sikker på at du vil slette denne gruppen?",
+    "delete-group": "Slett gruppe",
+    "description": "Beskrivelse",
+    "enter-description": "Skriv inn gruppebeskrivelse",
+    "enter-name": "Skriv inn gruppenavn",
+    "group-name": "Gruppenavn",
+    "group-timeline": "Gruppetidslinje",
+    "loading": "Laster grupper...",
+    "multiple-groups": "{{count}} grupper",
+    "name-cannot-be-empty": "Gruppenavn kan ikke være tomt",
+    "no-groups-found": "Ingen grupper funnet",
+    "select-groups": "Velg grupper",
+    "selected": "Valgt",
+    "update-group": "Oppdater gruppe",
+    "update-successfully": "Gruppe oppdatert",
+    "view-timeline": "Vis tidslinje"
   }
 }

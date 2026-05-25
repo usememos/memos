@@ -170,6 +170,27 @@
       "unsupported-description": "此浏览器无法录制备忘录编辑器中的音频。"
     }
   },
+  "group": {
+    "back-to-groups": "返回群组",
+    "create-group": "创建群组",
+    "create-successfully": "创建群组成功",
+    "delete-confirm": "确定要删除该群组吗？",
+    "delete-group": "删除群组",
+    "description": "描述",
+    "enter-description": "输入群组描述",
+    "enter-name": "输入群组名称",
+    "group-name": "群组名称",
+    "group-timeline": "群组时间线",
+    "loading": "加载群组中...",
+    "multiple-groups": "{{count}} 个群组",
+    "name-cannot-be-empty": "群组名称不能为空",
+    "no-groups-found": "未找到群组",
+    "select-groups": "选择群组",
+    "selected": "已选择",
+    "update-group": "更新群组",
+    "update-successfully": "更新群组成功",
+    "view-timeline": "查看时间线"
+  },
   "inbox": {
     "failed-to-load": "加载失败",
     "memo-comment": "{{user}} 评论了您的“{{memo}}”。",

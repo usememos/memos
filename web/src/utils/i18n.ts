@@ -111,7 +111,16 @@ export const applyLocaleEarly = (): void => {
 };
 
 // Get the display name for a locale in its native language
+const LOCALE_DISPLAY_NAMES: Record<string, string> = {
+  "gl": "Galego",
+  "ka-GE": "ქართული",
+};
+
 export const getLocaleDisplayName = (locale: string): string => {
+  if (LOCALE_DISPLAY_NAMES[locale]) {
+    return LOCALE_DISPLAY_NAMES[locale];
+  }
+  
   try {
     const displayName = new Intl.DisplayNames([locale], { type: "language" }).of(locale);
     if (displayName) {
