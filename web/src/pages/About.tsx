@@ -1,4 +1,5 @@
 import { ExternalLinkIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import TileSpriteStrip from "@/components/Placeholder/TileSpriteStrip";
 import { TILE_SPRITES, type TileSprite } from "@/components/Placeholder/tileSprites";
 import SettingGroup from "@/components/Settings/SettingGroup";
@@ -15,6 +16,36 @@ const PRODUCT_LINKS = [
 
 const PRODUCT_POINTS = ["Open. Write. Done.", "Markdown-native.", "Fully yours."];
 
+const SPONSORS = [
+  {
+    label: "CodeRabbit",
+    href: "https://coderabbit.link/usememos",
+    description: "Cut code review time & bugs in half, instantly.",
+    lightLogo: "https://victorious-bubble-f69a016683.media.strapiapp.com/Orange_Typemark_43bf516c9d.svg",
+    darkLogo: "https://victorious-bubble-f69a016683.media.strapiapp.com/White_Typemark_79b9189d19.svg",
+  },
+  {
+    label: "Warp",
+    href: "https://go.warp.dev/memos",
+    description: "The agentic development environment.",
+    lightLogo: "https://raw.githubusercontent.com/warpdotdev/brand-assets/refs/heads/main/Logos/Warp-Wordmark-Black.png",
+    darkLogo: "https://raw.githubusercontent.com/warpdotdev/brand-assets/refs/heads/main/Logos/Warp-Wordmark-White.png",
+  },
+];
+
+type Sponsor = (typeof SPONSORS)[number];
+
+const isDarkThemeName = (theme: string | null): boolean => {
+  return theme?.endsWith("-dark") || theme?.endsWith(".dark") || false;
+};
+
+const getCurrentThemeUsesDarkLogo = (): boolean => {
+  if (typeof document === "undefined") {
+    return false;
+  }
+  return isDarkThemeName(document.documentElement.getAttribute("data-theme"));
+};
+
 const BirdSprite = ({ sprite }: { sprite: TileSprite }) => {
   return (
     <figure className="flex w-auto min-w-28 flex-none flex-col items-center gap-3 rounded-xl border border-border bg-muted/20 px-4 py-4 text-center">
@@ -23,6 +54,29 @@ const BirdSprite = ({ sprite }: { sprite: TileSprite }) => {
         <h3 className="font-mono text-sm text-foreground">{sprite.name}</h3>
       </figcaption>
     </figure>
+  );
+};
+
+const SponsorLogo = ({ sponsor }: { sponsor: Sponsor }) => {
+  const [usesDarkLogo, setUsesDarkLogo] = useState(getCurrentThemeUsesDarkLogo);
+
+  useEffect(() => {
+    const updateLogoTheme = () => setUsesDarkLogo(getCurrentThemeUsesDarkLogo());
+
+    updateLogoTheme();
+
+    const observer = new MutationObserver(updateLogoTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <img
+      className="h-9 max-w-44 object-contain object-left"
+      src={usesDarkLogo ? sponsor.darkLogo : sponsor.lightLogo}
+      alt={sponsor.label}
+    />
   );
 };
 
@@ -69,6 +123,31 @@ const About = () => {
                   </div>
                 ))}
               </div>
+            </SettingGroup>
+
+            <SettingGroup showSeparator title="Sponsors" description="Featured sponsors helping keep Memos open-source and independent.">
+              <section aria-label="Sponsors" className="grid gap-3 sm:grid-cols-2">
+                {SPONSORS.map((sponsor) => (
+                  <a
+                    key={sponsor.href}
+                    href={sponsor.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group flex min-h-32 min-w-0 flex-col justify-between gap-5 rounded-lg border border-border bg-muted/20 px-4 py-4 text-muted-foreground transition-colors hover:border-primary/40 hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  >
+                    <div className="flex min-w-0 items-start justify-between gap-4">
+                      <SponsorLogo sponsor={sponsor} />
+                      <ExternalLinkIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
+                    </div>
+                    <div className="flex min-w-0 flex-col gap-3">
+                      <p className="text-sm leading-6 text-muted-foreground">{sponsor.description}</p>
+                      <span className="text-xs font-medium text-foreground transition-colors group-hover:text-primary">
+                        Visit {sponsor.label}
+                      </span>
+                    </div>
+                  </a>
+                ))}
+              </section>
             </SettingGroup>
 
             <SettingGroup showSeparator title="Birds" description="Pixel tile strips used by empty states.">
