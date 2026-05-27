@@ -292,6 +292,12 @@
     "show-less": "Show less",
     "show-more": "Show more",
     "to-do": "To-do",
+    "task-actions": {
+      "check-all": "Check all tasks",
+      "title": "Tasks",
+      "uncheck-all": "Uncheck all tasks",
+      "updated": "Tasks updated"
+    },
     "view-detail": "View Detail",
     "visibility": {
       "disabled": "Public memos are disabled",

@@ -12,6 +12,7 @@ import { ROUTES } from "@/router/routes";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import { checkAllTasks, uncheckAllTasks } from "@/utils/markdown-task-actions";
 
 interface UseMemoActionHandlersOptions {
   memo: Memo;
@@ -33,6 +34,31 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
     // Invalidate user stats to trigger refetch
     queryClient.invalidateQueries({ queryKey: userKeys.stats() });
   }, [queryClient]);
+
+  const updateMemoContent = useCallback(
+    async (nextContent: string, context: string) => {
+      if (nextContent === memo.content) {
+        return;
+      }
+
+      try {
+        await updateMemo({
+          update: {
+            name: memo.name,
+            content: nextContent,
+          },
+          updateMask: ["content", "update_time"],
+        });
+        toast.success(t("memo.task-actions.updated"));
+      } catch (error: unknown) {
+        handleError(error, toast.error, {
+          context,
+          fallbackMessage: "An error occurred",
+        });
+      }
+    },
+    [memo.content, memo.name, t, updateMemo],
+  );
 
   const handleTogglePinMemoBtnClick = useCallback(async () => {
     try {
@@ -94,6 +120,14 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
     toast.success(t("message.succeed-copy-content"));
   }, [memo.content, t]);
 
+  const handleCheckAllTaskListItemsClick = useCallback(async () => {
+    await updateMemoContent(checkAllTasks(memo.content), "Check memo task list items");
+  }, [memo.content, updateMemoContent]);
+
+  const handleUncheckAllTaskListItemsClick = useCallback(async () => {
+    await updateMemoContent(uncheckAllTasks(memo.content), "Uncheck memo task list items");
+  }, [memo.content, updateMemoContent]);
+
   const handleDeleteMemoClick = useCallback(() => {
     setDeleteDialogOpen(true);
   }, [setDeleteDialogOpen]);
@@ -121,6 +155,8 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
     handleToggleMemoStatusClick,
     handleCopyLink,
     handleCopyContent,
+    handleCheckAllTaskListItemsClick,
+    handleUncheckAllTaskListItemsClick,
     handleDeleteMemoClick,
     confirmDeleteMemo,
   };
