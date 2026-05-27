@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { AttachmentListView, LocationDisplayView, RelationListView } from "@/components/MemoMetadata";
 import { cn } from "@/lib/utils";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
@@ -22,12 +23,22 @@ const BlurOverlay: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
   );
 };
 
+const getContentRevision = (content: string) => {
+  let hash = 2166136261;
+  for (let i = 0; i < content.length; i++) {
+    hash ^= content.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `${content.length}-${hash >>> 0}`;
+};
+
 const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
   const { memo, parentPage, showBlurredContent, blurred, readonly, openEditor, openPreview, toggleBlurVisibility } = useMemoViewContext();
 
   const { handleMemoContentClick, handleMemoContentDoubleClick } = useMemoHandlers({ readonly, openEditor, openPreview });
 
   const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
+  const contentRevision = useMemo(() => getContentRevision(memo.content), [memo.content]);
 
   return (
     <>
@@ -38,7 +49,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
         )}
       >
         <MemoContent
-          key={`${memo.name}-${memo.updateTime}`}
+          key={`${memo.name}-${contentRevision}`}
           content={memo.content}
           onClick={handleMemoContentClick}
           onDoubleClick={handleMemoContentDoubleClick}

@@ -6,15 +6,3 @@ export interface MemoActionMenuProps {
   className?: string;
   onEdit?: () => void;
 }
-
-export interface UseMemoActionHandlersReturn {
-  handleTogglePinMemoBtnClick: () => Promise<void>;
-  handleEditMemoClick: () => void;
-  handleToggleMemoStatusClick: () => Promise<void>;
-  handleCopyLink: () => void;
-  handleCopyContent: () => void;
-  handleDeleteMemoClick: () => void;
-  confirmDeleteMemo: () => Promise<void>;
-  handleRemoveCompletedTaskListItemsClick: () => void;
-  confirmRemoveCompletedTaskListItems: () => Promise<void>;
-}
