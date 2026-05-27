@@ -68,3 +68,13 @@ export function hyperlinkHighlightedText(editor: EditorRefActions, url: string):
   const newPosition = cursorPosition + selectedContent.length + url.length + 4;
   editor.setCursorPosition(newPosition, newPosition);
 }
+
+export function getMarkdownLinkForPastedUrl(selectedContent: string, pastedText: string): string | undefined {
+  const url = pastedText.trim();
+
+  if (!selectedContent || !URL_REGEX.test(url) || URL_REGEX.test(selectedContent.trim())) {
+    return undefined;
+  }
+
+  return `[${selectedContent}](${url})`;
+}
