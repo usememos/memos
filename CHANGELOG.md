@@ -1,5 +1,49 @@
 # Changelog
 
+## [0.29.0](https://github.com/usememos/memos/compare/v0.28.0...v0.29.0) (2026-05-27)
+
+
+### Features
+
+* **about:** add about page with bird sprites ([411ba7b](https://github.com/usememos/memos/commit/411ba7b34c0c23ad217a7897835097887a28a036))
+* **activity-calendar:** aggregate by ViewContext.timeBasis ([8daef1d](https://github.com/usememos/memos/commit/8daef1dc89544512fff78fd64d8216b2babc2e42))
+* add &lt;Placeholder&gt; component with ASCII bird states ([#5949](https://github.com/usememos/memos/issues/5949)) ([8c16ffa](https://github.com/usememos/memos/commit/8c16ffa1f1410f9413cb57ebe251b4b604f9aeff))
+* add configurable `--log-level` flag ([#5934](https://github.com/usememos/memos/issues/5934)) ([f1e2a06](https://github.com/usememos/memos/commit/f1e2a06b46c7f45ba6562c308d2703fdfb4067b0))
+* add dedicated shortcuts page ([#5942](https://github.com/usememos/memos/issues/5942)) ([1df6479](https://github.com/usememos/memos/commit/1df6479443c334732b862d60a0f76e61f00ebb89))
+* add link metadata endpoints ([9c5c604](https://github.com/usememos/memos/commit/9c5c604944428d3f682f35c9d05a87c1d4c3152f))
+* **frontend:** add pixel bird tilemaps ([cf55f11](https://github.com/usememos/memos/commit/cf55f1107273c928e7c2d6bc26df5f3efea26458))
+* **memo:** add task list quick actions ([#5983](https://github.com/usememos/memos/issues/5983)) ([648b3bd](https://github.com/usememos/memos/commit/648b3bd812e5bf2b1abb9f8b3529efefe4734e7c))
+* **memo:** create memos on the selected calendar date ([#5925](https://github.com/usememos/memos/issues/5925)) ([ef55013](https://github.com/usememos/memos/commit/ef55013418d68e2d6a24a6d02a0365c1ffff03d7))
+* **notification:** add smtp email settings ([cd4f28a](https://github.com/usememos/memos/commit/cd4f28ae1058a125e245ea0a6eae16aea71b8f9d))
+* **placeholder:** add woodpecker tilemap ([638e4f3](https://github.com/usememos/memos/commit/638e4f398e90c556f70af150a79538312c8fc760))
+* render link metadata cards ([0bc5669](https://github.com/usememos/memos/commit/0bc56694b0ca347ab1eb083f62997a22007b763d))
+* **stats:** admin instance resource statistics ([ea0625d](https://github.com/usememos/memos/commit/ea0625da45a419e08158ab4102051f3fe5e59b87))
+* **stats:** support filtered all-user stats ([88ac3ec](https://github.com/usememos/memos/commit/88ac3ec31ee3e808db82663c04a31cf730d1221e))
+* **transcription:** explicit STT settings with provider, model, prompt ([#5926](https://github.com/usememos/memos/issues/5926)) ([238f27d](https://github.com/usememos/memos/commit/238f27dea149492a78a8994470b0aac55fece78d))
+
+
+### Bug Fixes
+
+* avoid update event on memo create attachments ([#5961](https://github.com/usememos/memos/issues/5961)) ([3c3382a](https://github.com/usememos/memos/commit/3c3382a3c652bed3b58058931ff3cbf1d875b9a8))
+* delete user cleanup ([#5981](https://github.com/usememos/memos/issues/5981)) ([e53b7d9](https://github.com/usememos/memos/commit/e53b7d96e70965529ba3b04ea720ea6966f77b60))
+* **editor:** wrap selected text when pasting URL ([e0bb3a2](https://github.com/usememos/memos/commit/e0bb3a2e684e932309df2f9fb0ff774ce8e6b692))
+* **fileserver:** preserve HDR image metadata in thumbnails ([c724232](https://github.com/usememos/memos/commit/c7242324a18962e453e7f2a0309a7c07b358bdbe))
+* **frontend:** correct static cache headers ([084f40b](https://github.com/usememos/memos/commit/084f40bc9e5922ff2d41c08dce837b96696437aa))
+* **frontend:** use correct url path for memos in sitemap.xml ([#5921](https://github.com/usememos/memos/issues/5921)) ([603781f](https://github.com/usememos/memos/commit/603781f792b2603fbda93146988a64a93c92d760))
+* **httpgetter:** prevent DNS rebinding in link metadata fetch ([078488c](https://github.com/usememos/memos/commit/078488ca818626fbcab69bdfb4b93b58dca6b6eb))
+* **markdown:** align list items with checkboxes ([e008b1a](https://github.com/usememos/memos/commit/e008b1a23c77945eff87707eb15578d4d6d74e4c))
+* **memo:** enforce parent visibility for comments ([4a1e401](https://github.com/usememos/memos/commit/4a1e401bd99c7850ac48e9693b25c9ebeecfb042))
+* **s3presign:** preserve motion media payload ([7f1f53f](https://github.com/usememos/memos/commit/7f1f53ffc417962f6930d1e6e3783eacd911003d))
+* **security:** enforce attachment ownership on memo updates ([35bf761](https://github.com/usememos/memos/commit/35bf761b8c2c3f155bdc06e9b373b6076116a725))
+* **sse:** stream initial response and refresh tokens ([21303e8](https://github.com/usememos/memos/commit/21303e879d2c7a857306206d2cbdae83f61983e6))
+* **user:** omit internal settings from list responses ([#5917](https://github.com/usememos/memos/issues/5917)) ([1df3fe7](https://github.com/usememos/memos/commit/1df3fe79559ccf94b6c71e9ffb58e870ed43820d))
+* **web:** sync avatar changes immediately after profile update ([#5903](https://github.com/usememos/memos/issues/5903)) ([328396a](https://github.com/usememos/memos/commit/328396a97f2219592032e8418c383e0ab7edaca6))
+
+
+### Performance Improvements
+
+* lazy load heavy first-screen dependencies ([#5947](https://github.com/usememos/memos/issues/5947)) ([a6024ee](https://github.com/usememos/memos/commit/a6024eebf129c4b8fb65ee0cba09c6657274bfde))
+
 ## [0.28.0](https://github.com/usememos/memos/compare/v0.27.1...v0.28.0) (2026-04-27)
 
 
