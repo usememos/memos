@@ -34,7 +34,8 @@ describe("memo content lists", () => {
     expect(html).toContain('<li class="mt-0.5 leading-6">milk</li>');
     expect(html).not.toContain('<li class="mt-0.5 leading-6">\n<p>milk</p>');
     expect(html).toContain(TASK_LIST_ITEM_CLASS);
-    expect(html).toContain("grid grid-cols-[auto_1fr] items-start gap-x-2");
+    expect(html).toContain("grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-2");
+    expect(html).toContain('<div class="min-w-0 [overflow-wrap:anywhere] [&amp;&gt;*:last-child]:mb-0"> pickup package</div>');
     expect(html).not.toMatch(/<li class="[^"]*task-list-item[^"]*"><p\b/);
   });
 
@@ -49,8 +50,8 @@ describe("memo content lists", () => {
   it("keeps nested task lists on their own row", () => {
     const html = renderListContent("- [ ] asdas\n  - [ ] zzzz");
 
-    expect(html).toContain("grid grid-cols-[auto_1fr] items-start gap-x-2");
-    expect(html).toContain("[&amp;&gt;ul]:col-start-2");
+    expect(html).toContain("grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-2");
+    expect(html).toContain('<div class="min-w-0 [overflow-wrap:anywhere] [&amp;&gt;*:last-child]:mb-0"> asdas');
     expect(html).not.toContain("[&amp;_ul.contains-task-list]:ml-6");
     expect(html).toContain("zzzz");
   });
@@ -58,10 +59,19 @@ describe("memo content lists", () => {
   it("keeps loose task list paragraphs while aligning the first line", () => {
     const html = renderListContent("- [ ] plan\n\n  keep details\n\n- [ ] zzzz");
 
-    expect(html).toMatch(/<li class="[^"]*task-list-item[^"]*">\s*<p>/);
-    expect(html).toContain("[&amp;&gt;p:first-child]:contents");
-    expect(html).toContain("[&amp;&gt;p:not(:first-child)]:col-start-2");
+    expect(html).toMatch(/<li class="[^"]*task-list-item[^"]*">\s*<input type="checkbox" disabled=""\/>/);
+    expect(html).toContain('<div class="min-w-0 [overflow-wrap:anywhere] [&amp;&gt;*:last-child]:mb-0">');
+    expect(html).toContain("<p> plan</p>");
     expect(html).toContain("<p>keep details</p>");
     expect(html).toContain("zzzz");
+  });
+
+  it("keeps inline task markdown in the task body", () => {
+    const html = renderListContent("- [ ] Northern Lights in Iceland — booking this for winter, *finally*");
+
+    expect(html).toContain('<input type="checkbox" disabled=""/>');
+    expect(html).toContain(
+      '<div class="min-w-0 [overflow-wrap:anywhere] [&amp;&gt;*:last-child]:mb-0"> Northern Lights in Iceland — booking this for winter, <em>finally</em></div>',
+    );
   });
 });
