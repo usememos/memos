@@ -1,6 +1,17 @@
-import { ArchiveIcon, CheckIcon, GlobeIcon, LogOutIcon, PaletteIcon, SettingsIcon, SquareUserIcon, User2Icon } from "lucide-react";
+import {
+  ArchiveIcon,
+  CheckIcon,
+  GlobeIcon,
+  InfoIcon,
+  LogOutIcon,
+  PaletteIcon,
+  SettingsIcon,
+  SquareUserIcon,
+  User2Icon,
+} from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { useSSEConnectionStatus } from "@/hooks/useLiveMemoRefresh";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
 import { locales } from "@/i18n";
@@ -18,6 +29,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 interface Props {
   collapsed?: boolean;
@@ -30,6 +42,7 @@ const UserMenu = (props: Props) => {
   const currentUser = useCurrentUser();
   const { userGeneralSetting, refetchSettings, logout } = useAuth();
   const { mutate: updateUserGeneralSetting } = useUpdateUserGeneralSetting(currentUser?.name);
+  const sseStatus = useSSEConnectionStatus();
   const currentLocale = getLocaleWithFallback(userGeneralSetting?.locale);
   const currentTheme = getThemeWithFallback(userGeneralSetting?.theme);
 
@@ -93,11 +106,26 @@ const UserMenu = (props: Props) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild disabled={!currentUser}>
         <div className={cn("w-auto flex flex-row justify-start items-center cursor-pointer text-foreground", collapsed ? "px-1" : "px-3")}>
-          {currentUser?.avatarUrl ? (
-            <UserAvatar className="shrink-0" avatarUrl={currentUser?.avatarUrl} />
-          ) : (
-            <User2Icon className="w-6 mx-auto h-auto text-muted-foreground" />
-          )}
+          <div className="relative shrink-0">
+            {currentUser?.avatarUrl ? (
+              <UserAvatar avatarUrl={currentUser?.avatarUrl} />
+            ) : (
+              <User2Icon className="w-6 mx-auto h-auto text-muted-foreground" />
+            )}
+            {sseStatus !== "connected" && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    className={cn(
+                      "absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-background",
+                      sseStatus === "connecting" ? "bg-muted-foreground animate-pulse" : "bg-destructive",
+                    )}
+                  />
+                </TooltipTrigger>
+                <TooltipContent side="right">{t(`live-update.${sseStatus}` as Parameters<typeof t>[0])}</TooltipContent>
+              </Tooltip>
+            )}
+          </div>
           {!collapsed && (
             <span className="ml-2 text-lg font-medium text-foreground grow truncate">
               {currentUser?.displayName || currentUser?.username}
@@ -113,6 +141,10 @@ const UserMenu = (props: Props) => {
         <DropdownMenuItem onClick={() => navigateTo(Routes.ARCHIVED)}>
           <ArchiveIcon className="size-4 text-muted-foreground" />
           {t("common.archived")}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigateTo(Routes.ABOUT)}>
+          <InfoIcon className="size-4 text-muted-foreground" />
+          {t("common.about")}
         </DropdownMenuItem>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
@@ -132,7 +164,7 @@ const UserMenu = (props: Props) => {
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
             <PaletteIcon className="size-4 text-muted-foreground" />
-            {t("setting.preference-section.theme")}
+            {t("setting.preference.theme")}
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
             {THEME_OPTIONS.map((option) => (

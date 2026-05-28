@@ -8,10 +8,10 @@ import MemoDetailSidebar from "./MemoDetailSidebar";
 
 interface Props {
   memo: Memo;
-  parentPage?: string;
+  onShareImageOpen?: () => void;
 }
 
-const MemoDetailSidebarDrawer = ({ memo, parentPage }: Props) => {
+const MemoDetailSidebarDrawer = ({ memo, onShareImageOpen }: Props) => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
@@ -22,12 +22,12 @@ const MemoDetailSidebarDrawer = ({ memo, parentPage }: Props) => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" className="bg-transparent! px-2">
+        <Button variant="ghost" size="sm" className="px-2">
           <GanttChartIcon className="w-5 h-auto text-muted-foreground" />
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-full sm:w-80 px-4 bg-background">
-        <MemoDetailSidebar className="py-4" memo={memo} parentPage={parentPage} />
+        <MemoDetailSidebar className="py-4" memo={memo} onShareImageOpen={onShareImageOpen} />
       </SheetContent>
     </Sheet>
   );

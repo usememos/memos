@@ -9,7 +9,7 @@ import { cleanupExpiredOAuthState } from "./utils/oauth";
 
 const App = () => {
   const navigateTo = useNavigateTo();
-  const { profile: instanceProfile, generalSetting: instanceGeneralSetting } = useInstance();
+  const { profile: instanceProfile, profileLoaded, generalSetting: instanceGeneralSetting } = useInstance();
 
   // Apply user preferences reactively
   useUserLocale();
@@ -20,12 +20,13 @@ const App = () => {
     cleanupExpiredOAuthState();
   }, []);
 
-  // Redirect to sign up page if instance not initialized (no admin account exists yet)
+  // Redirect to sign up page if instance not initialized (no admin account exists yet).
+  // Guard with profileLoaded so a fetch failure doesn't incorrectly trigger the redirect.
   useEffect(() => {
-    if (!instanceProfile.admin) {
+    if (profileLoaded && !instanceProfile.admin) {
       navigateTo("/auth/signup");
     }
-  }, [instanceProfile.admin, navigateTo]);
+  }, [profileLoaded, instanceProfile.admin, navigateTo]);
 
   useEffect(() => {
     if (instanceGeneralSetting.additionalStyle) {

@@ -4,6 +4,8 @@ import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { LocalFile } from "../types/attachment";
 
 export type LoadingKey = "saving" | "uploading" | "loading";
+export type AudioRecorderPermission = "unknown" | "granted" | "denied";
+export type AudioRecorderStatus = "idle" | "requesting_permission" | "recording" | "error" | "unsupported";
 
 export interface EditorState {
   content: string;
@@ -20,7 +22,6 @@ export interface EditorState {
       uploading: boolean;
       loading: boolean;
     };
-    isDragging: boolean;
     isComposing: boolean;
   };
   timestamps: {
@@ -28,6 +29,13 @@ export interface EditorState {
     updateTime?: Date;
   };
   localFiles: LocalFile[];
+  audioRecorder: {
+    isSupported: boolean;
+    permission: AudioRecorderPermission;
+    status: AudioRecorderStatus;
+    elapsedSeconds: number;
+    error?: string;
+  };
 }
 
 export type EditorAction =
@@ -40,12 +48,17 @@ export type EditorAction =
   | { type: "REMOVE_RELATION"; payload: string }
   | { type: "ADD_LOCAL_FILE"; payload: LocalFile }
   | { type: "REMOVE_LOCAL_FILE"; payload: string }
+  | { type: "SET_LOCAL_FILES"; payload: LocalFile[] }
   | { type: "CLEAR_LOCAL_FILES" }
   | { type: "TOGGLE_FOCUS_MODE" }
   | { type: "SET_LOADING"; payload: { key: LoadingKey; value: boolean } }
-  | { type: "SET_DRAGGING"; payload: boolean }
   | { type: "SET_COMPOSING"; payload: boolean }
   | { type: "SET_TIMESTAMPS"; payload: Partial<EditorState["timestamps"]> }
+  | { type: "SET_AUDIO_RECORDER_SUPPORT"; payload: boolean }
+  | { type: "SET_AUDIO_RECORDER_PERMISSION"; payload: AudioRecorderPermission }
+  | { type: "SET_AUDIO_RECORDER_STATUS"; payload: AudioRecorderStatus }
+  | { type: "SET_AUDIO_RECORDER_ELAPSED"; payload: number }
+  | { type: "SET_AUDIO_RECORDER_ERROR"; payload?: string }
   | { type: "RESET" };
 
 export const initialState: EditorState = {
@@ -63,7 +76,6 @@ export const initialState: EditorState = {
       uploading: false,
       loading: false,
     },
-    isDragging: false,
     isComposing: false,
   },
   timestamps: {
@@ -71,4 +83,11 @@ export const initialState: EditorState = {
     updateTime: undefined,
   },
   localFiles: [],
+  audioRecorder: {
+    isSupported: true,
+    permission: "unknown",
+    status: "idle",
+    elapsedSeconds: 0,
+    error: undefined,
+  },
 };

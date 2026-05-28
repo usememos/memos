@@ -10,6 +10,7 @@
     "create-your-account": "Crea el teu compte",
     "host-tip": "T'estàs registrant com a amfitrió.",
     "new-password": "Nova contrasenya",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Repeteix la contrasenya",
     "sign-in-tip": "Ja tens un compte?",
     "sign-up-tip": "Encara no tens un compte?"
@@ -18,23 +19,35 @@
     "about": "Quant a",
     "add": "Afegeix",
     "admin": "Administrador",
+    "all": "Tots",
     "archive": "Arxivar",
     "archived": "Arxivat",
     "attachments": "Adjunts",
+    "auto-expand": "Expansió automàtica",
     "avatar": "Avatar",
     "basic": "Bàsic",
     "beta": "Beta",
+    "calendar": "Calendari",
     "cancel": "Cancel·lar",
     "change": "Canviar",
     "clear": "Netejar",
     "close": "Tanca",
     "collapse": "Redueix",
     "confirm": "Confirmar",
+    "copy": "Copia",
     "create": "Crea",
     "created-at": "Creat el",
     "database": "Base de dades",
     "day": "Dia",
-    "days": "Dies",
+    "days": {
+      "fri": "Dv",
+      "mon": "Dl",
+      "sat": "Ds",
+      "sun": "Dg",
+      "thu": "Dj",
+      "tue": "Dt",
+      "wed": "Dc"
+    },
     "delete": "Esborra",
     "description": "Descripció",
     "edit": "Edita",
@@ -50,12 +63,13 @@
     "input": "Entrada",
     "language": "Llenguatge",
     "last-updated-at": "Darrera actualització el",
-    "layout": "Disseny",
     "learn-more": "Saber-ne més",
     "link": "Enllaç",
+    "map": "Mapa",
     "mark": "Marca",
     "memo": "Memo",
     "memos": "Memos",
+    "more": "Més",
     "name": "Nom",
     "new": "Nou",
     "nickname": "Sobrenom",
@@ -90,6 +104,7 @@
     "statistics": "Estadístiques",
     "tags": "Etiquetes",
     "title": "Títol",
+    "today": "Avui",
     "tree-mode": "Mode arbre",
     "type": "Tipus",
     "unpin": "Desenganxa",
@@ -101,29 +116,52 @@
     "visibility": "Visibilitat",
     "yourself": "Tu mateix"
   },
-  "days": {
-    "fri": "Dv",
-    "mon": "Dl",
-    "sat": "Ds",
-    "sun": "Dg",
-    "thu": "Dj",
-    "tue": "Dt",
-    "wed": "Dc"
-  },
   "editor": {
     "add-your-comment-here": "Afegeix el teu comentari aquí...",
     "any-thoughts": "Alguna idea...",
+    "exit-focus-mode": "Surt del mode focus",
+    "focus-mode": "Mode focus",
+    "no-changes-detected": "No s'han detectat canvis",
     "save": "Guarda",
-    "no-changes-detected": "No s'han detectat canvis"
-  },
-  "filters": {
-    "has-code": "téCodi",
-    "has-link": "téEnllaç",
-    "has-task-list": "téLlistaTasques"
+    "saving": "Guardant...",
+    "slash-commands": "Escriu `/` per a comandaments",
+    "insert-menu": {
+      "add-location": "Afegeix la ubicació",
+      "link-memo": "Nota d'enllaç",
+      "upload-file": "Carrega el fitxer"
+    },
+    "audio-recorder": {
+      "attachment-label": "Gravació d'àudio",
+      "attachment-label-with-time": "Gravació d'àudio {{time}}",
+      "discard": "Descartar",
+      "error": "Micròfon no disponible",
+      "error-description": "Torna-ho a provar després de comprovar l'accés al micròfon d'aquest lloc.",
+      "idle-description": "Comenceu a gravar per afegir una gravació d'àudio com a fitxer adjunt.",
+      "keep": "Continua gravant",
+      "pause-recording": "Posa en pausa la gravació d'àudio",
+      "play-recording": "Reprodueix una gravació d'àudio",
+      "ready": "Enregistrament a punt",
+      "ready-description": "Previsualitzeu el clip i, a continuació, deseu-lo com a fitxer adjunt d'àudio o descarteu-lo.",
+      "record-again": "Torna a gravar",
+      "recording": "Gravació d'àudio",
+      "recording-description": "Captura un fitxer adjunt d'àudio ràpid. Durada actual: {{duration}}",
+      "requesting": "S'està demanant accés...",
+      "requesting-permission": "Sol·licitant accés al micròfon",
+      "requesting-permission-description": "Permet l'accés al micròfon al navegador per començar a gravar.",
+      "start": "Comença a gravar",
+      "stop": "Atura la gravació",
+      "title": "Gravadora d'àudio",
+      "trigger": "Gravar àudio",
+      "unsupported": "La gravació d'àudio no és compatible",
+      "unsupported-description": "Aquest navegador no pot gravar àudio del compositor de memòries."
+    }
   },
   "inbox": {
+    "failed-to-load": "Error en carregar la bústia",
     "memo-comment": "{{user}} ha comentat la teva {{memo}}.",
-    "version-update": "Nova versió {{version}} disponible ara!"
+    "no-archived": "No hi ha notificacions arxivades",
+    "no-unread": "No hi ha notificacions no llegides",
+    "unread": "No llegit"
   },
   "markdown": {
     "checkbox": "Casella de selecció",
@@ -132,21 +170,28 @@
   },
   "memo": {
     "archived-at": "Arxivat el",
-    "click-to-hide-nsfw-content": "Fes clic per ocultar contingut sensible",
-    "click-to-show-nsfw-content": "Fes clic per mostrar contingut sensible",
+    "click-to-hide-sensitive-content": "Fes clic per ocultar contingut sensible",
+    "click-to-show-sensitive-content": "Fes clic per mostrar contingut sensible",
     "code": "Codi",
     "comment": {
       "self": "Comentaris",
       "write-a-comment": "Escriu un comentari"
     },
+    "copy-content": "Copia el contingut",
     "copy-link": "Copia l'enllaç",
     "count-memos-in-date": "{{count}} {{memos}} el {{date}}",
     "delete-confirm": "Estàs segur que vols esborrar aquesta nota? AQUESTA ACCIÓ ÉS IRREVERSIBLE",
+    "delete-confirm-description": "Aquesta acció és irreversible. Els adjunts, enllaços i referències també s'eliminaran.",
     "direction": "Direcció",
     "direction-asc": "Ascendent",
     "direction-desc": "Descendent",
     "display-time": "Mostra l'hora",
-    "filters": "Filtres",
+    "filters": {
+      "has-code": "téCodi",
+      "has-link": "téEnllaç",
+      "has-task-list": "téLlistaTasques",
+      "label": "Filtres"
+    },
     "links": "Enllaços",
     "load-more": "Carrega més",
     "no-archived-memos": "No hi ha notes arxivades.",
@@ -163,8 +208,32 @@
       "protected": "Espai de treball",
       "public": "Públic"
     },
-    "list": "Llista",
-    "masonry": "Maçoneria"
+    "outline": "Esquema",
+    "share": {
+      "active-links": "Enllaços actius per compartir",
+      "copied": "Copiat!",
+      "copy": "Copia l'enllaç",
+      "create-failed": "No s'ha pogut crear l'enllaç compartit",
+      "create-link": "Crea un enllaç nou",
+      "creating": "S'està creant…",
+      "expiry-1-day": "1 dia",
+      "expiry-30-days": "30 dies",
+      "expiry-7-days": "7 dies",
+      "expiry-label": "Caduca",
+      "expiry-never": "Mai",
+      "expires-on": "Caduca el {{date}}",
+      "invalid-link": "Aquest enllaç no és vàlid o ha caducat.",
+      "never-expires": "Mai caduca",
+      "no-links": "Encara no hi ha enllaços per compartir. Creeu-ne un a continuació.",
+      "open-panel": "Gestioneu els enllaços compartits",
+      "revoke": "Revocar",
+      "revoke-failed": "No s'ha pogut revocar l'enllaç",
+      "revoked": "S'ha revocat l'enllaç per compartir",
+      "section-label": "Compartint",
+      "share": "Comparteix",
+      "shared-by": "Compartit per {{creator}}",
+      "title": "Comparteix aquesta nota"
+    }
   },
   "message": {
     "archived-successfully": "Arxivat correctament",
@@ -182,6 +251,7 @@
     "password-changed": "Contrasenya canviada",
     "password-not-match": "Les contrasenyes no coincideixen.",
     "restored-successfully": "Restaurat correctament",
+    "succeed-copy-content": "Contingut copiat correctament.",
     "succeed-copy-link": "Enllaç copiat correctament.",
     "update-succeed": "Actualització correcta",
     "user-not-found": "Usuari no trobat"
@@ -212,6 +282,10 @@
       "title": "Crea recurs",
       "upload-method": "Mètode de pujada"
     },
+    "delete-all-unused": "Elimina tots els sense ús",
+    "delete-all-unused-confirm": "Estàs segur que vols eliminar tots els recursos sense ús? AQUESTA ACCIÓ ÉS IRREVERSIBLE",
+    "delete-all-unused-error": "Error en eliminar els recursos sense ús",
+    "delete-all-unused-success": "Recursos eliminats correctament",
     "delete-resource": "Elimina recurs",
     "delete-selected-resources": "Elimina recursos seleccionats",
     "fetching-data": "Carregant dades…",
@@ -230,66 +304,37 @@
     "go-to-home": "Vés a l'inici"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "Token d'accés copiat al porta-retalls",
-      "access-token-deletion": "Estàs segur que vols eliminar el token d'accés {{accessToken}}? AQUESTA ACCIÓ ÉS IRREVERSIBLE.",
-      "create-dialog": {
-        "create-access-token": "Crea token d'accés",
-        "created-at": "Creat el",
-        "description": "Descripció",
-        "duration-1m": "1 mes",
-        "duration-8h": "8 hores",
-        "duration-never": "Mai",
-        "expiration": "Caducitat",
-        "expires-at": "Caduca el",
-        "some-description": "Alguna descripció..."
-      },
-      "description": "Llista de tots els tokens d'accés del teu compte.",
-      "title": "Tokens d'accés",
-      "token": "Token"
-    },
-    "account-section": {
-      "change-password": "Canvia la contrasenya",
-      "email-note": "Opcional",
-      "export-memos": "Exporta notes",
-      "nickname-note": "Mostrat a la capçalera",
-      "openapi-reset": "Reinicia la clau OpenAPI",
-      "openapi-sample-post": "Hola #memos des de {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "Reinicia l'API",
-      "title": "Informació del compte",
-      "update-information": "Actualitza la informació",
-      "username-note": "Utilitzat per iniciar sessió"
-    },
-    "member": "Membre",
-    "member-list": "Llista de membres",
-    "member-section": {
+    "member": {
       "admin": "Administrador",
       "archive-member": "Arxiva el membre",
+      "archive-success": "{{username}} arxivat correctament",
       "archive-warning": "Estàs segur que vols arxivar {{username}}?",
+      "archive-warning-description": "Arxivar desactiva el compte. Pots restaurar-lo o eliminar-lo més tard.",
       "create-a-member": "Crea un membre",
       "delete-member": "Elimina el membre",
-      "delete-warning": "Estàs segur que vols eliminar {{username}}? AQUESTA ACCIÓ ÉS IRREVERSIBLE",
-      "user": "Usuari"
+      "delete-success": "{{username}} eliminat correctament",
+      "delete-warning": "Estàs segur que vols eliminar {{username}}?",
+      "delete-warning-description": "AQUESTA ACció ÉS IRREVERSIBLE",
+      "restore-success": "{{username}} restaurat correctament",
+      "user": "Usuari",
+      "label": "Membre",
+      "list-title": "Llista de membres",
+      "no-members-found": "No s'han trobat membres"
     },
-    "memo-related": "Nota",
-    "memo-related-settings": {
-      "content-length-limit": "Límit de longitud del contingut (Bytes)",
-      "enable-blur-nsfw-content": "Habilita el difuminat de contingut sensible (NSFW)",
-      "enable-memo-comments": "Habilita els comentaris a les notes",
-      "enable-memo-location": "Habilita la ubicació de la nota",
-      "reactions": "Reaccions",
-      "title": "Configuració de notes"
+    "my-account": {
+      "label": "El meu compte"
     },
-    "my-account": "El meu compte",
-    "preference": "Preferències",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "Hora de visualització de la nota",
       "default-memo-visibility": "Visibilitat per defecte de la nota",
-      "theme": "Tema"
+      "theme": "Tema",
+      "label": "Preferències"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "shortcut": {
+      "delete-confirm": "Estàs segur que vols eliminar la drecera `{{title}}`?",
+      "delete-success": "Drecera `{{title}}` eliminada correctament"
+    },
+    "sso": {
       "authorization-endpoint": "Punt final d'autorització",
       "client-id": "ID de client",
       "client-secret": "Secret de client",
@@ -311,10 +356,10 @@
       "template": "Plantilla",
       "token-endpoint": "Punt final de token",
       "update-sso": "Actualitza SSO",
-      "user-endpoint": "Punt final d'usuari"
+      "user-endpoint": "Punt final d'usuari",
+      "label": "SSO"
     },
-    "storage": "Emmagatzematge",
-    "storage-section": {
+    "storage": {
       "accesskey": "Clau d'accés",
       "accesskey-placeholder": "Clau d'accés / ID d'accés",
       "bucket": "Bucket",
@@ -346,10 +391,10 @@
       "url-prefix-placeholder": "Prefix d'URL personalitzat, opcional",
       "url-suffix": "Sufix d'URL",
       "url-suffix-placeholder": "Sufix d'URL personalitzat, opcional",
-      "warning-text": "Estàs segur que vols eliminar el servei d'emmagatzematge \"{{name}}\"? AQUESTA ACCIÓ ÉS IRREVERSIBLE"
+      "warning-text": "Estàs segur que vols eliminar el servei d'emmagatzematge \"{{name}}\"? AQUESTA ACCIÓ ÉS IRREVERSIBLE",
+      "label": "Emmagatzematge"
     },
-    "system": "Sistema",
-    "system-section": {
+    "system": {
       "additional-script": "Script addicional",
       "additional-script-placeholder": "Codi JavaScript addicional",
       "additional-style": "Estil addicional",
@@ -364,7 +409,6 @@
       "disable-password-login": "Desactiva l'inici de sessió amb contrasenya",
       "disable-password-login-final-warning": "Escriu \"CONFIRM\" si saps el que estàs fent.",
       "disable-password-login-warning": "Això desactivarà l'inici de sessió amb contrasenya per a tots els usuaris. No serà possible iniciar sessió sense revertir aquesta configuració a la base de dades si els proveïdors d'identitat fallen. Vés amb compte en eliminar un proveïdor d'identitat",
-      "disable-public-memos": "Desactiva notes públiques",
       "display-with-updated-time": "Mostra amb hora d'actualització",
       "enable-auto-compact": "Habilita la compactació automàtica",
       "enable-double-click-to-edit": "Habilita doble clic per editar",
@@ -374,23 +418,46 @@
       "max-upload-size-hint": "El valor recomanat és 32 MiB.",
       "removed-completed-task-list-items": "Habilita l'eliminació de tasques completades",
       "server-name": "Nom del servidor",
-      "title": "General"
+      "title": "General",
+      "label": "Sistema"
     },
     "version": "Versió",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "Token d'accés copiat al porta-retalls",
+      "access-token-deleted": "Token d'accés `{{description}}` eliminat",
+      "access-token-deletion": "Estàs segur que vols eliminar el token d'accés `{{description}}`?",
+      "access-token-deletion-description": "Aquesta acció és irreversible. Hauràs d'actualitzar qualsevol servei que utilitzi aquest token per utilitzar un de nou.",
       "create-dialog": {
-        "an-easy-to-remember-name": "Un nom fàcil de recordar",
-        "create-webhook": "Crea webhook",
-        "edit-webhook": "Edita webhook",
-        "payload-url": "URL de càrrega",
-        "title": "Títol",
-        "url-example-post-receive": "https://example.com/postreceive"
+        "access-token-created": "Token d'accés `{{description}}` creat",
+        "create-access-token": "Crea token d'accés",
+        "created-at": "Creat el",
+        "description": "Descripció",
+        "duration-1m": "1 mes",
+        "duration-8h": "8 hores",
+        "duration-never": "Mai",
+        "expiration": "Caducitat",
+        "expires-at": "Caduca el",
+        "some-description": "Alguna descripció..."
       },
-      "no-webhooks-found": "No s'han trobat webhooks.",
-      "title": "Webhooks",
-      "url": "URL"
+      "description": "Llista de tots els tokens d'accés del teu compte.",
+      "title": "Tokens d'accés",
+      "token": "Token",
+      "no-tokens-found": "No s'han trobat fitxes d'accés"
     },
-    "instance-section": {
+    "account": {
+      "change-password": "Canvia la contrasenya",
+      "email-note": "Opcional",
+      "export-memos": "Exporta notes",
+      "nickname-note": "Mostrat a la capçalera",
+      "openapi-reset": "Reinicia la clau OpenAPI",
+      "openapi-sample-post": "Hola #memos des de {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "Reinicia l'API",
+      "title": "Informació del compte",
+      "update-information": "Actualitza la informació",
+      "username-note": "Utilitzat per iniciar sessió"
+    },
+    "instance": {
       "disallow-change-nickname": "No permetis canviar el sobrenom",
       "disallow-change-username": "No permetis canviar el nom d'usuari",
       "disallow-password-auth": "No permetis autenticació per contrasenya",
@@ -399,6 +466,50 @@
       "saturday": "Dissabte",
       "sunday": "Diumenge",
       "week-start-day": "Dia d'inici de setmana"
+    },
+    "memo": {
+      "content-length-limit": "Límit de longitud del contingut (Bytes)",
+      "enable-blur-sensitive-content": "Habilita el difuminat de contingut sensible (NSFW)",
+      "enable-memo-comments": "Habilita els comentaris a les notes",
+      "enable-memo-location": "Habilita la ubicació de la nota",
+      "reactions": "Reaccions",
+      "title": "Configuració de notes",
+      "label": "Nota",
+      "reactions-required": "La llista de reaccions no ha d'estar buida"
+    },
+    "webhook": {
+      "create-dialog": {
+        "an-easy-to-remember-name": "Un nom fàcil de recordar",
+        "create-webhook": "Crea webhook",
+        "create-webhook-success": "Webhook `{{name}}` creat",
+        "edit-webhook": "Edita webhook",
+        "payload-url": "URL de càrrega",
+        "title": "Títol",
+        "url-example-post-receive": "https://example.com/postreceive"
+      },
+      "delete-dialog": {
+        "delete-webhook-description": "Aquesta acció és irreversible.",
+        "delete-webhook-success": "Webhook `{{name}}` eliminat correctament",
+        "delete-webhook-title": "Estàs segur que vols eliminar el webhook `{{name}}`?"
+      },
+      "no-webhooks-found": "No s'han trobat webhooks.",
+      "title": "Webhooks",
+      "url": "URL",
+      "label": "Webhooks"
+    },
+    "tags": {
+      "label": "Etiquetes",
+      "title": "Metadades de l'etiqueta",
+      "description": "Assigna colors de visualització opcionals a les etiquetes a tota la instància o desenfoca el contingut de la nota coincident. Els noms d'etiquetes es tracten com a patrons d'expressió regular ancorats.",
+      "background-color": "Color de fons",
+      "blur-content": "Contingut desenfocat",
+      "no-tags-configured": "No s'han configurat metadades d'etiquetes.",
+      "tag-name": "Nom de l'etiqueta",
+      "tag-name-placeholder": "p. ex. work o project/.*",
+      "tag-already-exists": "L'etiqueta ja existeix.",
+      "tag-pattern-hint": "Nom de l'etiqueta o patró d'expressió regular (p. ex., project/.* coincideix amb totes les etiquetes project/)",
+      "invalid-regex": "Patró d'expressió regular no vàlid o no segur.",
+      "using-default-color": "Utilitzant el color predeterminat."
     }
   },
   "tag": {
@@ -406,6 +517,7 @@
     "create-tag": "Crea etiqueta",
     "create-tags-guide": "Pots crear etiquetes escrivint `#etiqueta`.",
     "delete-confirm": "Estàs segur que vols eliminar aquesta etiqueta? Totes les notes relacionades s'arxivaran.",
+    "delete-success": "Etiqueta eliminada correctament",
     "delete-tag": "Elimina etiqueta",
     "new-name": "Nom nou",
     "no-tag-found": "No s'ha trobat cap etiqueta",
@@ -415,5 +527,18 @@
     "rename-success": "Etiqueta reanomenada correctament",
     "rename-tag": "Reanomena etiqueta",
     "rename-tip": "Totes les teves notes amb aquesta etiqueta s'actualitzaran."
+  },
+  "tooltip": {
+    "link-memo": "Enllaça nota",
+    "markdown-menu": "Markdown",
+    "select-location": "Ubicació",
+    "select-visibility": "Visibilitat",
+    "tags": "Etiquetes",
+    "upload-attachment": "Puja adjunt(s)"
+  },
+  "live-update": {
+    "connected": "Actualitzacions en directe actives",
+    "connecting": "S'està connectant a actualitzacions en directe...",
+    "disconnected": "Actualitzacions en directe no disponibles"
   }
 }

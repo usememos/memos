@@ -1,10 +1,11 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from "react";
+import { type ClipboardEvent, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from "react";
 import getCaretCoordinates from "textarea-caret";
 import { cn } from "@/lib/utils";
 import { EDITOR_HEIGHT } from "../constants";
 import type { EditorProps } from "../types";
 import { editorCommands } from "./commands";
 import SlashCommands from "./SlashCommands";
+import { getMarkdownLinkForPastedUrl } from "./shortcuts";
 import TagSuggestions from "./TagSuggestions";
 import { useListCompletion } from "./useListCompletion";
 
@@ -181,6 +182,28 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
     isInIME,
   });
 
+  const handleEditorPaste = useCallback(
+    (event: ClipboardEvent<HTMLTextAreaElement>) => {
+      const editor = editorRef.current;
+      const pastedText = event.clipboardData?.getData("text/plain") || event.clipboardData?.getData("text");
+      const markdownLink = editor ? getMarkdownLinkForPastedUrl(editorActions.getSelectedContent(), pastedText) : undefined;
+
+      if (markdownLink) {
+        event.preventDefault();
+        editorActions.insertText(markdownLink);
+        return;
+      }
+
+      onPaste(event);
+    },
+    [editorActions, onPaste],
+  );
+
+  // Recalculate editor height when focus mode changes
+  useEffect(() => {
+    updateEditorHeight();
+  }, [isFocusMode, updateEditorHeight]);
+
   return (
     <div
       className={cn(
@@ -192,14 +215,14 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
     >
       <textarea
         className={cn(
-          "w-full my-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none placeholder:opacity-70 whitespace-pre-wrap break-words",
+          "w-full text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none placeholder:opacity-70 whitespace-pre-wrap wrap-break-word",
           // Focus mode: flex-1 h-0 to grow within flex container; Normal: h-full to fill wrapper
           isFocusMode ? "flex-1 h-0" : "h-full",
         )}
         rows={1}
         placeholder={placeholder}
         ref={editorRef}
-        onPaste={onPaste}
+        onPaste={handleEditorPaste}
         onInput={handleEditorInput}
         onCompositionStart={onCompositionStart}
         onCompositionEnd={onCompositionEnd}

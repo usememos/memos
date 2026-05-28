@@ -135,7 +135,6 @@ export const memoService = {
       ui: {
         isFocusMode: false,
         isLoading: { saving: false, uploading: false, loading: false },
-        isDragging: false,
         isComposing: false,
       },
       timestamps: {
@@ -143,6 +142,13 @@ export const memoService = {
         updateTime: memo.updateTime ? timestampDate(memo.updateTime) : undefined,
       },
       localFiles: [],
+      audioRecorder: {
+        isSupported: true,
+        permission: "unknown",
+        status: "idle",
+        elapsedSeconds: 0,
+        error: undefined,
+      },
     };
   },
 };

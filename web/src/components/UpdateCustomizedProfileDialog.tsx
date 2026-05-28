@@ -106,23 +106,23 @@ function UpdateCustomizedProfileDialog({ open, onOpenChange, onSuccess }: Props)
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>{t("setting.system-section.customize-server.title")}</DialogTitle>
+          <DialogTitle>{t("setting.system.customize-server.title")}</DialogTitle>
           <DialogDescription>Customize your instance appearance and settings.</DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="server-name">{t("setting.system-section.server-name")}</Label>
+            <Label htmlFor="server-name">{t("setting.system.server-name")}</Label>
             <Input id="server-name" type="text" value={customProfile.title} onChange={handleNameChanged} placeholder="Enter server name" />
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="icon-url">{t("setting.system-section.customize-server.icon-url")}</Label>
+            <Label htmlFor="icon-url">{t("setting.system.customize-server.icon-url")}</Label>
             <Input id="icon-url" type="text" value={customProfile.logoUrl} onChange={handleLogoUrlChanged} placeholder="Enter icon URL" />
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="description">{t("setting.system-section.customize-server.description")}</Label>
+            <Label htmlFor="description">{t("setting.system.customize-server.description")}</Label>
             <Textarea
               id="description"
               rows={3}

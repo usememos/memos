@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GO_VERSION: "1.25.7"
+  GO_VERSION: "1.26.2"
 
 jobs:
   static-checks:
@@ -40,7 +40,7 @@ jobs:
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.4.0
+          version: v2.11.3
           args: --timeout=3m
 
   tests:
@@ -49,7 +49,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test-group: [store, server, plugin, other]
+        test-group: [store, server, internal, other]
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -71,8 +71,8 @@ jobs:
             server)
               go test -v -race -coverprofile=coverage.out -covermode=atomic ./server/...
               ;;
-            plugin)
-              go test -v -race -coverprofile=coverage.out -covermode=atomic ./plugin/...
+            internal)
+              go test -v -race -coverprofile=coverage.out -covermode=atomic ./internal/...
               ;;
             other)
               go test -v -race -coverprofile=coverage.out -covermode=atomic \

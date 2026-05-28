@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/internal/base"
-	"github.com/usememos/memos/plugin/storage/s3"
+	"github.com/usememos/memos/internal/storage/s3"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
@@ -71,6 +71,21 @@ type DeleteAttachment struct {
 	MemoID *int32
 }
 
+const (
+	thumbnailCacheFolder = ".thumbnail_cache"
+	motionCacheFolder    = ".motion_cache"
+)
+
+type deleteAttachmentStorageFailpointKey struct{}
+
+// ErrDeleteAttachmentStorageFailpoint is returned by the test-only attachment storage failpoint.
+var ErrDeleteAttachmentStorageFailpoint = errors.New("delete attachment storage failpoint")
+
+// WithDeleteAttachmentStorageFailpoint forces DeleteAttachmentStorage to return a failpoint error.
+func WithDeleteAttachmentStorageFailpoint(ctx context.Context) context.Context {
+	return context.WithValue(ctx, deleteAttachmentStorageFailpointKey{}, true)
+}
+
 func (s *Store) CreateAttachment(ctx context.Context, create *Attachment) (*Attachment, error) {
 	if !base.UIDMatcher.MatchString(create.UID) {
 		return nil, errors.New("invalid uid")
@@ -80,11 +95,12 @@ func (s *Store) CreateAttachment(ctx context.Context, create *Attachment) (*Atta
 
 func (s *Store) ListAttachments(ctx context.Context, find *FindAttachment) ([]*Attachment, error) {
 	// Set default limits to prevent loading too many attachments at once
-	if find.Limit == nil && find.GetBlob {
+	shouldApplyDefaultLimit := find.Limit == nil && len(find.MemoIDList) == 0
+	if shouldApplyDefaultLimit && find.GetBlob {
 		// When fetching blobs, we should be especially careful with limits
 		defaultLimit := 10
 		find.Limit = &defaultLimit
-	} else if find.Limit == nil {
+	} else if shouldApplyDefaultLimit {
 		// Even without blobs, let's default to a reasonable limit
 		defaultLimit := 100
 		find.Limit = &defaultLimit
@@ -122,6 +138,75 @@ func (s *Store) DeleteAttachment(ctx context.Context, delete *DeleteAttachment) 
 		return errors.New("attachment not found")
 	}
 
+	if err := s.DeleteAttachmentStorage(ctx, attachment); err != nil {
+		if attachment.StorageType == storepb.AttachmentStorageType_LOCAL {
+			return errors.Wrap(err, "failed to delete local file")
+		}
+		slog.Warn("Failed to delete attachment storage", slog.Any("err", err))
+	}
+
+	return s.driver.DeleteAttachment(ctx, delete)
+}
+
+func (s *Store) DeleteAttachments(ctx context.Context, attachments []*Attachment) error {
+	if len(attachments) == 0 {
+		return nil
+	}
+
+	deletes := make([]*DeleteAttachment, 0, len(attachments))
+	for _, attachment := range attachments {
+		if attachment == nil {
+			continue
+		}
+		deletes = append(deletes, &DeleteAttachment{ID: attachment.ID, MemoID: attachment.MemoID})
+	}
+	if len(deletes) == 0 {
+		return nil
+	}
+
+	if err := s.driver.DeleteAttachments(ctx, deletes); err != nil {
+		return err
+	}
+
+	instanceStorageSetting, instanceStorageSettingErr := s.getAttachmentStorageCleanupInstanceSetting(ctx, attachments)
+	for _, attachment := range attachments {
+		if attachment == nil {
+			continue
+		}
+		var err error
+		if instanceStorageSettingErr != nil && AttachmentNeedsInstanceStorageSetting(attachment) {
+			err = instanceStorageSettingErr
+		} else {
+			err = s.deleteAttachmentStorageImpl(ctx, attachment, instanceStorageSetting)
+		}
+		if err != nil {
+			if attachment.StorageType == storepb.AttachmentStorageType_LOCAL {
+				return errors.Wrap(err, "failed to delete local file")
+			}
+			slog.Warn("Failed to delete attachment storage", slog.Any("err", err))
+		}
+	}
+
+	return nil
+}
+
+func (s *Store) DeleteAttachmentStorage(ctx context.Context, attachment *Attachment) error {
+	return s.deleteAttachmentStorageImpl(ctx, attachment, nil)
+}
+
+// DeleteAttachmentStorageWithInstanceSetting deletes attachment storage using a preloaded instance storage setting.
+func (s *Store) DeleteAttachmentStorageWithInstanceSetting(ctx context.Context, attachment *Attachment, instanceStorageSetting *storepb.InstanceStorageSetting) error {
+	return s.deleteAttachmentStorageImpl(ctx, attachment, instanceStorageSetting)
+}
+
+func (s *Store) deleteAttachmentStorageImpl(ctx context.Context, attachment *Attachment, instanceStorageSetting *storepb.InstanceStorageSetting) error {
+	if attachment == nil {
+		return nil
+	}
+	if shouldFailDeleteAttachmentStorage(ctx) {
+		return ErrDeleteAttachmentStorageFailpoint
+	}
+
 	if attachment.StorageType == storepb.AttachmentStorageType_LOCAL {
 		if err := func() error {
 			p := filepath.FromSlash(attachment.Reference)
@@ -129,12 +214,12 @@ func (s *Store) DeleteAttachment(ctx context.Context, delete *DeleteAttachment) 
 				p = filepath.Join(s.profile.Data, p)
 			}
 			err := os.Remove(p)
-			if err != nil {
+			if err != nil && !os.IsNotExist(err) {
 				return errors.Wrap(err, "failed to delete local file")
 			}
 			return nil
 		}(); err != nil {
-			return errors.Wrap(err, "failed to delete local file")
+			return err
 		}
 	} else if attachment.StorageType == storepb.AttachmentStorageType_S3 {
 		if err := func() error {
@@ -142,12 +227,15 @@ func (s *Store) DeleteAttachment(ctx context.Context, delete *DeleteAttachment) 
 			if s3ObjectPayload == nil {
 				return errors.Errorf("No s3 object found")
 			}
-			instanceStorageSetting, err := s.GetInstanceStorageSetting(ctx)
-			if err != nil {
-				return errors.Wrap(err, "failed to get instance storage setting")
-			}
 			s3Config := s3ObjectPayload.S3Config
 			if s3Config == nil {
+				if instanceStorageSetting == nil {
+					var err error
+					instanceStorageSetting, err = s.GetInstanceStorageSetting(ctx)
+					if err != nil {
+						return errors.Wrap(err, "failed to get instance storage setting")
+					}
+				}
 				if instanceStorageSetting.S3Config == nil {
 					return errors.Errorf("S3 config is not found")
 				}
@@ -163,9 +251,48 @@ func (s *Store) DeleteAttachment(ctx context.Context, delete *DeleteAttachment) 
 			}
 			return nil
 		}(); err != nil {
-			slog.Warn("Failed to delete s3 object", slog.Any("err", err))
+			return err
 		}
 	}
 
-	return s.driver.DeleteAttachment(ctx, delete)
+	s.deleteAttachmentDerivedCaches(attachment)
+	return nil
+}
+
+func (s *Store) getAttachmentStorageCleanupInstanceSetting(ctx context.Context, attachments []*Attachment) (*storepb.InstanceStorageSetting, error) {
+	for _, attachment := range attachments {
+		if AttachmentNeedsInstanceStorageSetting(attachment) {
+			instanceStorageSetting, err := s.GetInstanceStorageSetting(ctx)
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to get instance storage setting")
+			}
+			return instanceStorageSetting, nil
+		}
+	}
+	return nil, nil
+}
+
+// AttachmentNeedsInstanceStorageSetting reports whether S3 cleanup needs the instance fallback storage setting.
+func AttachmentNeedsInstanceStorageSetting(attachment *Attachment) bool {
+	if attachment == nil || attachment.StorageType != storepb.AttachmentStorageType_S3 {
+		return false
+	}
+	s3ObjectPayload := attachment.Payload.GetS3Object()
+	return s3ObjectPayload != nil && s3ObjectPayload.S3Config == nil
+}
+
+func (s *Store) deleteAttachmentDerivedCaches(attachment *Attachment) {
+	for _, cachePath := range []string{
+		filepath.Join(s.profile.Data, thumbnailCacheFolder, attachment.UID+".jpeg"),
+		filepath.Join(s.profile.Data, motionCacheFolder, attachment.UID+".mp4"),
+	} {
+		if err := os.Remove(cachePath); err != nil && !os.IsNotExist(err) {
+			slog.Warn("Failed to delete derived attachment cache", slog.String("path", cachePath), slog.Any("err", err))
+		}
+	}
+}
+
+func shouldFailDeleteAttachmentStorage(ctx context.Context) bool {
+	failpoint, ok := ctx.Value(deleteAttachmentStorageFailpointKey{}).(bool)
+	return ok && failpoint
 }

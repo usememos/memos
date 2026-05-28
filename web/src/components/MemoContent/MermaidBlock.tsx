@@ -1,5 +1,4 @@
-import mermaid from "mermaid";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import { getThemeWithFallback, resolveTheme, setupSystemThemeListener } from "@/utils/theme";
@@ -10,82 +9,91 @@ interface MermaidBlockProps {
   className?: string;
 }
 
-const getMermaidTheme = (appTheme: string): "default" | "dark" => {
-  return appTheme === "default-dark" ? "dark" : "default";
+type MermaidTheme = "default" | "dark";
+
+const toMermaidTheme = (appTheme: string): MermaidTheme => (appTheme === "default-dark" ? "dark" : "default");
+
+const formatErrorMessage = (err: unknown): string => {
+  const msg = err instanceof Error ? err.message : "Failed to render diagram";
+  if (/no diagram type detected/i.test(msg)) {
+    return `${msg} — check that the diagram type is valid (e.g. sequenceDiagram, classDiagram, erDiagram)`;
+  }
+  return msg;
 };
 
 export const MermaidBlock = ({ children, className }: MermaidBlockProps) => {
   const { userGeneralSetting } = useAuth();
-  const containerRef = useRef<HTMLDivElement>(null);
   const [svg, setSvg] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [systemThemeChange, setSystemThemeChange] = useState(0);
 
   const codeContent = extractCodeContent(children);
-
-  // Get theme preference (reactive via AuthContext)
-  // Falls back to localStorage or system preference if no user setting
   const themePreference = getThemeWithFallback(userGeneralSetting?.theme);
-
-  // Resolve theme to actual value (handles "system" theme + system theme changes)
   const currentTheme = useMemo(() => resolveTheme(themePreference), [themePreference, systemThemeChange]);
 
-  // Listen for OS theme changes when using "system" theme preference
+  // Re-resolve theme when OS preference changes (only relevant when using "system" theme)
   useEffect(() => {
-    if (themePreference !== "system") {
-      return;
-    }
-
-    return setupSystemThemeListener(() => {
-      setSystemThemeChange((prev) => prev + 1);
-    });
+    if (themePreference !== "system") return;
+    return setupSystemThemeListener(() => setSystemThemeChange((n) => n + 1));
   }, [themePreference]);
 
-  // Render Mermaid diagram when content or theme changes
+  // Render diagram when content or theme changes
   useEffect(() => {
-    if (!codeContent || !containerRef.current) {
+    if (!codeContent) {
+      setSvg("");
+      setError("");
       return;
     }
+
+    let cancelled = false;
 
     const renderDiagram = async () => {
       try {
-        const id = `mermaid-${Math.random().toString(36).substring(7)}`;
-        const mermaidTheme = getMermaidTheme(currentTheme);
+        const { default: mermaid } = await import("mermaid");
+        if (cancelled) return;
 
         mermaid.initialize({
           startOnLoad: false,
-          theme: mermaidTheme,
+          theme: toMermaidTheme(currentTheme),
           securityLevel: "strict",
           fontFamily: "inherit",
+          suppressErrorRendering: true,
         });
 
+        const id = `mermaid-${Math.random().toString(36).substring(7)}`;
         const { svg: renderedSvg } = await mermaid.render(id, codeContent);
+        if (cancelled) return;
+
         setSvg(renderedSvg);
         setError("");
       } catch (err) {
+        if (cancelled) return;
         console.error("Failed to render mermaid diagram:", err);
-        setError(err instanceof Error ? err.message : "Failed to render diagram");
+        setSvg("");
+        setError(formatErrorMessage(err));
       }
     };
 
     renderDiagram();
+
+    return () => {
+      cancelled = true;
+    };
   }, [codeContent, currentTheme]);
 
-  // If there's an error, fall back to showing the code
   if (error) {
     return (
       <div className="w-full">
-        <div className="text-sm text-destructive mb-2">Mermaid Error: {error}</div>
-        <pre className={className}>
-          <code className="language-mermaid">{codeContent}</code>
-        </pre>
+        <div className="text-sm text-destructive mb-2 whitespace-normal break-words">Mermaid Error: {error}</div>
+        <code className="block language-mermaid whitespace-pre text-sm">{codeContent}</code>
       </div>
     );
   }
 
+  if (!svg) return null;
+
   return (
     <div
-      ref={containerRef}
       className={cn("mermaid-diagram w-full flex justify-center items-center my-2 overflow-x-auto", className)}
       dangerouslySetInnerHTML={{ __html: svg }}
     />

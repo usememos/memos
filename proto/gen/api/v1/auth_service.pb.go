@@ -440,8 +440,9 @@ func (x *SignInRequest_PasswordCredentials) GetPassword() string {
 // Nested message for SSO authentication credentials.
 type SignInRequest_SSOCredentials struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The ID of the SSO provider.
-	IdpId int32 `protobuf:"varint,1,opt,name=idp_id,json=idpId,proto3" json:"idp_id,omitempty"`
+	// The resource name of the SSO provider.
+	// Format: identity-providers/{uid}
+	IdpName string `protobuf:"bytes,1,opt,name=idp_name,json=idpName,proto3" json:"idp_name,omitempty"`
 	// The authorization code from the SSO provider.
 	Code string `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
 	// The redirect URI used in the SSO flow.
@@ -483,11 +484,11 @@ func (*SignInRequest_SSOCredentials) Descriptor() ([]byte, []int) {
 	return file_api_v1_auth_service_proto_rawDescGZIP(), []int{2, 1}
 }
 
-func (x *SignInRequest_SSOCredentials) GetIdpId() int32 {
+func (x *SignInRequest_SSOCredentials) GetIdpName() string {
 	if x != nil {
-		return x.IdpId
+		return x.IdpName
 	}
-	return 0
+	return ""
 }
 
 func (x *SignInRequest_SSOCredentials) GetCode() string {
@@ -518,15 +519,15 @@ const file_api_v1_auth_service_proto_rawDesc = "" +
 	"\x19api/v1/auth_service.proto\x12\fmemos.api.v1\x1a\x19api/v1/user_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x17\n" +
 	"\x15GetCurrentUserRequest\"@\n" +
 	"\x16GetCurrentUserResponse\x12&\n" +
-	"\x04user\x18\x01 \x01(\v2\x12.memos.api.v1.UserR\x04user\"\xce\x03\n" +
+	"\x04user\x18\x01 \x01(\v2\x12.memos.api.v1.UserR\x04user\"\xd2\x03\n" +
 	"\rSignInRequest\x12d\n" +
 	"\x14password_credentials\x18\x01 \x01(\v2/.memos.api.v1.SignInRequest.PasswordCredentialsH\x00R\x13passwordCredentials\x12U\n" +
 	"\x0fsso_credentials\x18\x02 \x01(\v2*.memos.api.v1.SignInRequest.SSOCredentialsH\x00R\x0essoCredentials\x1aW\n" +
 	"\x13PasswordCredentials\x12\x1f\n" +
 	"\busername\x18\x01 \x01(\tB\x03\xe0A\x02R\busername\x12\x1f\n" +
-	"\bpassword\x18\x02 \x01(\tB\x03\xe0A\x02R\bpassword\x1a\x97\x01\n" +
-	"\x0eSSOCredentials\x12\x1a\n" +
-	"\x06idp_id\x18\x01 \x01(\x05B\x03\xe0A\x02R\x05idpId\x12\x17\n" +
+	"\bpassword\x18\x02 \x01(\tB\x03\xe0A\x02R\bpassword\x1a\x9b\x01\n" +
+	"\x0eSSOCredentials\x12\x1e\n" +
+	"\bidp_name\x18\x01 \x01(\tB\x03\xe0A\x02R\aidpName\x12\x17\n" +
 	"\x04code\x18\x02 \x01(\tB\x03\xe0A\x02R\x04code\x12&\n" +
 	"\fredirect_uri\x18\x03 \x01(\tB\x03\xe0A\x02R\vredirectUri\x12(\n" +
 	"\rcode_verifier\x18\x04 \x01(\tB\x03\xe0A\x01R\fcodeVerifierB\r\n" +

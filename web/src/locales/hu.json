@@ -10,6 +10,7 @@
     "create-your-account": "Fiók létrehozása",
     "host-tip": "A weboldal rendszergazdájaként regisztrál.",
     "new-password": "Új jelszó",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Jelszó ismét",
     "sign-in-tip": "Már van fiókod?",
     "sign-up-tip": "Még nincs fiókod?"
@@ -18,23 +19,35 @@
     "about": "Névjegy",
     "add": "Hozzáadás",
     "admin": "Admin",
+    "all": "Összes",
     "archive": "Archiválás",
     "archived": "Archívum",
     "attachments": "Mellékletek",
+    "auto-expand": "Automatikus kinyitás",
     "avatar": "Avatar",
     "basic": "Általános",
     "beta": "Béta",
+    "calendar": "Naptár",
     "cancel": "Mégsem",
     "change": "Módosítás",
     "clear": "Törlés",
     "close": "Bezárás",
     "collapse": "Összecsukás",
     "confirm": "Megerősít",
+    "copy": "Másolás",
     "create": "Létrehozás",
     "created-at": "Létrehozva",
     "database": "Adatbázis",
     "day": "Nap",
-    "days": "Napok",
+    "days": {
+      "fri": "Pé",
+      "mon": "Hé",
+      "sat": "Szo",
+      "sun": "Vas",
+      "thu": "Csü",
+      "tue": "Ke",
+      "wed": "Sze"
+    },
     "delete": "Törlés",
     "description": "Leírás",
     "edit": "Szerkesztés",
@@ -50,12 +63,13 @@
     "input": "Bemenet",
     "language": "Nyelv",
     "last-updated-at": "Utoljára frissítve",
-    "layout": "Elrendezés",
     "learn-more": "További információ",
     "link": "Hivatkozás",
+    "map": "Térkép",
     "mark": "Megjelölés",
     "memo": "Jegyzet",
     "memos": "Jegyzetek",
+    "more": "Több",
     "name": "Név",
     "new": "Új",
     "nickname": "Becenév",
@@ -67,7 +81,7 @@
     "preview": "Előnézet",
     "profile": "Profil",
     "properties": "Tulajdonságok",
-    "referenced-by": "Hivatkozza",
+    "referenced-by": "Hivatkozta",
     "referencing": "Hivatkozik",
     "relations": "Kapcsolatok",
     "remember-me": "Megjegyzés",
@@ -90,6 +104,7 @@
     "statistics": "Statisztikák",
     "tags": "Címkék",
     "title": "Cím",
+    "today": "Ma",
     "tree-mode": "Fa nézet",
     "type": "Típus",
     "unpin": "Feloldás",
@@ -101,29 +116,52 @@
     "visibility": "Láthatóság",
     "yourself": "Magad"
   },
-  "days": {
-    "fri": "Pé",
-    "mon": "Hé",
-    "sat": "Szo",
-    "sun": "Vas",
-    "thu": "Csü",
-    "tue": "Ke",
-    "wed": "Sze"
-  },
   "editor": {
     "add-your-comment-here": "Írd ide a megjegyzésed...",
     "any-thoughts": "Bármi ami a fejedben jár...",
+    "exit-focus-mode": "Kilépés a fókusz módból",
+    "focus-mode": "Fókusz mód",
+    "no-changes-detected": "Nincs változás",
     "save": "Mentés",
-    "no-changes-detected": "Nincs változás"
-  },
-  "filters": {
-    "has-code": "vanKód",
-    "has-link": "vanLink",
-    "has-task-list": "vanFeladatLista"
+    "saving": "Mentés...",
+    "slash-commands": "Írj `/` parancsokat",
+    "insert-menu": {
+      "add-location": "Hely hozzáadása",
+      "link-memo": "Linkjegyzet",
+      "upload-file": "Fájl feltöltése"
+    },
+    "audio-recorder": {
+      "attachment-label": "Hangfelvétel",
+      "attachment-label-with-time": "Hangfelvétel {{time}}",
+      "discard": "Eldobni",
+      "error": "Mikrofon nem elérhető",
+      "error-description": "Próbálja újra, miután ellenőrizte a webhely mikrofon-hozzáférését.",
+      "idle-description": "Indítsa el a felvételt, ha hangfelvételt szeretne csatolni.",
+      "keep": "Folytassa a rögzítést",
+      "pause-recording": "Hangfelvétel szüneteltetése",
+      "play-recording": "Hangfelvétel lejátszása",
+      "ready": "Felvétel kész",
+      "ready-description": "Tekintse meg a klip előnézetét, majd tartsa meg hangmellékletként, vagy dobja el.",
+      "record-again": "Rögzítse újra",
+      "recording": "Hang rögzítése",
+      "recording-description": "Gyors hangmelléklet rögzítése. Jelenlegi hossza: {{duration}}",
+      "requesting": "Hozzáférés kérése...",
+      "requesting-permission": "Mikrofon hozzáférés kérése",
+      "requesting-permission-description": "A rögzítés megkezdéséhez engedélyezze a mikrofonhoz való hozzáférést a böngészőjében.",
+      "start": "Indítsa el a felvételt",
+      "stop": "Állítsa le a felvételt",
+      "title": "Hangrögzítő",
+      "trigger": "Hang rögzítése",
+      "unsupported": "A hangfelvétel nem támogatott",
+      "unsupported-description": "Ez a böngésző nem tud hangot rögzíteni a jegyzetkészítőből."
+    }
   },
   "inbox": {
+    "failed-to-load": "Nem sikerült betölteni az értesítést",
     "memo-comment": "{{user}} hozzászólt ehhez: {{memo}}.",
-    "version-update": "Az új {{version}} verzió már elérhető!"
+    "no-archived": "Nincsenek archivált értesítések",
+    "no-unread": "Nincsenek olvasatlan értesítések",
+    "unread": "Olvasatlan"
   },
   "markdown": {
     "checkbox": "Jelölőnégyzet",
@@ -132,25 +170,30 @@
   },
   "memo": {
     "archived-at": "Archiválva:",
-    "click-to-hide-nsfw-content": "Kattints a kényes tartalom elrejtéséhez",
-    "click-to-show-nsfw-content": "Kattints a kényes tartalom megjelenítéséhez",
+    "click-to-hide-sensitive-content": "Kattints a kényes tartalom elrejtéséhez",
+    "click-to-show-sensitive-content": "Kattints a kényes tartalom megjelenítéséhez",
     "code": "Kód",
     "comment": {
       "self": "Hozzászólások",
       "write-a-comment": "Írj hozzászólást"
     },
+    "copy-content": "Tartalom másolása",
     "copy-link": "Hivatkozás másolása",
-    "count-memos-in-date": "{{count}} jegyzet ezen a napon: {{date}}",
+    "count-memos-in-date": "{{count}} {{memos}} ezen a napon: {{date}}",
     "delete-confirm": "Biztosan törlöd ezt a jegyzetet? EZ A MŰVELET VÉGLEGES",
+    "delete-confirm-description": "Ez a művelet visszafordíthatatlan. A mellékletek, hivatkozások és referenciák is törlődnek.",
     "direction": "Irány",
     "direction-asc": "Növekvő",
     "direction-desc": "Csökkenő",
     "display-time": "Megjelenítési idő",
-    "filters": "Szűrők",
+    "filters": {
+      "has-code": "vanKód",
+      "has-link": "vanLink",
+      "has-task-list": "vanFeladatLista",
+      "label": "Szűrők"
+    },
     "links": "Hivatkozások",
-    "list": "Lista",
     "load-more": "Több betöltése",
-    "masonry": "Masonry",
     "no-archived-memos": "Nincsenek archivált jegyzetek.",
     "no-memos": "Nincsenek jegyzetek.",
     "order-by": "Rendezés",
@@ -164,6 +207,32 @@
       "private": "Privát",
       "protected": "Munkatér",
       "public": "Nyilvános"
+    },
+    "outline": "Vázlat",
+    "share": {
+      "active-links": "Aktív megosztási linkek",
+      "copied": "Másolva!",
+      "copy": "Link másolása",
+      "create-failed": "Nem sikerült létrehozni a megosztási linket",
+      "create-link": "Új link létrehozása",
+      "creating": "Létrehozás…",
+      "expiry-1-day": "1 nap",
+      "expiry-30-days": "30 nap",
+      "expiry-7-days": "7 nap",
+      "expiry-label": "Lejár",
+      "expiry-never": "Soha",
+      "expires-on": "{{date}} lejár",
+      "invalid-link": "Ez a link érvénytelen vagy lejárt.",
+      "never-expires": "Soha nem jár le",
+      "no-links": "Még nincsenek megosztási linkek. Hozzon létre egyet lent.",
+      "open-panel": "Megosztási linkek kezelése",
+      "revoke": "Visszavonás",
+      "revoke-failed": "Nem sikerült visszavonni a linket",
+      "revoked": "Megosztási link visszavonva",
+      "section-label": "Megosztás",
+      "share": "Megosztás",
+      "shared-by": "Megosztva: {{creator}}",
+      "title": "Oszd meg ezt a feljegyzést"
     }
   },
   "message": {
@@ -182,10 +251,10 @@
     "password-changed": "Jelszó megváltoztatva",
     "password-not-match": "A jelszavak nem egyeznek.",
     "restored-successfully": "Sikeres visszaállítás",
+    "succeed-copy-content": "Tartalom sikeresen másolva.",
     "succeed-copy-link": "Hivatkozás sikeresen másolva.",
     "update-succeed": "Sikeres frissítés",
-    "user-not-found": "Felhasználó nem található",
-    "microphone-not-available": "A mikrofon nem elérhető"
+    "user-not-found": "Felhasználó nem található"
   },
   "reference": {
     "add-references": "Referenciák hozzáadása",
@@ -194,7 +263,7 @@
     "search-placeholder": "Tartalom keresése"
   },
   "resource": {
-    "clear": "Töröl",
+    "clear": "Törlés",
     "copy-link": "Hivatkozás másolása",
     "create-dialog": {
       "external-link": {
@@ -213,6 +282,10 @@
       "title": "Állomány létrehozása",
       "upload-method": "Feltöltési mód"
     },
+    "delete-all-unused": "Nem használtak törlése",
+    "delete-all-unused-confirm": "Biztosan törlöd az összes nem használt állományt? EZ A MŰVELET VÉGLEGES",
+    "delete-all-unused-error": "Nem sikerült törölni a nem használt állományokat",
+    "delete-all-unused-success": "Állományok sikeresen törölve",
     "delete-resource": "Állomány törlése",
     "delete-selected-resources": "Kijelölt állományok törlése",
     "fetching-data": "Adatok lekérése…",
@@ -231,64 +304,37 @@
     "go-to-home": "Vissza a főoldalra"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "Hozzáférési token vágólapra másolva",
-      "access-token-deletion": "Biztosan törlöd a hozzáférési tokent {{accessToken}}? EZ A MŰVELET VÉGLEGES.",
-      "create-dialog": {
-        "create-access-token": "Hozzáférési token létrehozása",
-        "created-at": "Létrehozva",
-        "description": "Leírás",
-        "duration-1m": "1 hónap",
-        "duration-8h": "8 óra",
-        "duration-never": "Soha",
-        "expiration": "Lejárat",
-        "expires-at": "Lejárat dátuma",
-        "some-description": "Néhány leírás..."
-      },
-      "description": "A fiókodhoz tartozó összes hozzáférési token listája.",
-      "title": "Hozzáférési tokenek",
-      "token": "Token"
-    },
-    "account-section": {
-      "change-password": "Jelszó megváltoztatása",
-      "email-note": "Nem kötelező",
-      "export-memos": "Jegyzetek exportálása",
-      "nickname-note": "A bannerben megjelenített",
-      "openapi-reset": "OpenAPI kulcs visszaállítása",
-      "openapi-sample-post": "Hello #memos innen: {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "API visszaállítása",
-      "title": "Fiókinformáció",
-      "update-information": "Információ frissítése",
-      "username-note": "Bejelentkezéshez használt"
-    },
-    "member": "Tag",
-    "member-list": "Taglista",
-    "member-section": {
+    "member": {
+      "admin": "Admin",
       "archive-member": "Tag archiválása",
+      "archive-success": "{{username}} sikeresen archiválva",
       "archive-warning": "Biztosan archiválod {{username}} tagot?",
+      "archive-warning-description": "Az archiválás letiltja a fiókot. Később visszaállíthatod vagy törölheted.",
       "create-a-member": "Tag létrehozása",
       "delete-member": "Tag törlése",
-      "delete-warning": "Biztosan törlöd {{username}} tagot? EZ A MŰVELET VÉGLEGES"
+      "delete-success": "{{username}} sikeresen törölve",
+      "delete-warning": "Biztosan törlöd {{username}} tagot?",
+      "delete-warning-description": "EZ A MŰVELET VÉGLEGES",
+      "restore-success": "{{username}} sikeresen visszaállítva",
+      "user": "Felhasználó",
+      "label": "Tag",
+      "list-title": "Taglista",
+      "no-members-found": "Nem találhatók tagok"
     },
-    "memo-related": "Jegyzet",
-    "memo-related-settings": {
-      "content-length-limit": "Tartalom hosszának korlátja (bájt)",
-      "enable-blur-nsfw-content": "Érzékeny (NSFW) tartalom elhomályosításának engedélyezése",
-      "enable-memo-comments": "Jegyzet hozzászólások engedélyezése",
-      "enable-memo-location": "Jegyzet helyének engedélyezése",
-      "reactions": "Reakciók",
-      "title": "Jegyzethez kapcsolódó beállítások"
+    "my-account": {
+      "label": "Fiókom"
     },
-    "my-account": "Fiókom",
-    "preference": "Preferenciák",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "Jegyzet megjelenítési ideje",
       "default-memo-visibility": "Jegyzetek alapértelmezett láthatósága",
-      "theme": "Téma"
+      "theme": "Téma",
+      "label": "Preferenciák"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "shortcut": {
+      "delete-confirm": "Biztosan törlöd a `{{title}}` gyorsbillentyűt?",
+      "delete-success": "`{{title}}` gyorsbillentyű sikeresen törölve"
+    },
+    "sso": {
       "authorization-endpoint": "Hitelesítési végpont",
       "client-id": "Kliens ID",
       "client-secret": "Kliens titok",
@@ -310,10 +356,10 @@
       "template": "Sablon",
       "token-endpoint": "Token végpont",
       "update-sso": "SSO frissítése",
-      "user-endpoint": "Felhasználói végpont"
+      "user-endpoint": "Felhasználói végpont",
+      "label": "SSO"
     },
-    "storage": "Tárhely",
-    "storage-section": {
+    "storage": {
       "accesskey": "Hozzáférési kulcs",
       "accesskey-placeholder": "Access key / Access ID",
       "bucket": "Bucket",
@@ -345,10 +391,10 @@
       "url-prefix-placeholder": "Egyedi URL előtag, nem kötelező",
       "url-suffix": "URL utótag",
       "url-suffix-placeholder": "Egyedi URL utótag, nem kötelező",
-      "warning-text": "Biztosan törlöd a(z) \"{{name}}\" tárhelyszolgáltatást? EZ A MŰVELET VÉGLEGES"
+      "warning-text": "Biztosan törlöd a(z) \"{{name}}\" tárhelyszolgáltatást? EZ A MŰVELET VÉGLEGES",
+      "label": "Tárhely"
     },
-    "system": "Rendszer",
-    "system-section": {
+    "system": {
       "additional-script": "Egyedi script",
       "additional-script-placeholder": "Egyedi JavaScript kód",
       "additional-style": "Egyedi stílus",
@@ -362,8 +408,7 @@
       },
       "disable-password-login": "Jelszavas bejelentkezés letiltása",
       "disable-password-login-final-warning": "Írd be, hogy \"CONFIRM\" ha tudod mit csinálsz.",
-      "disable-password-login-warning": "Ez letiltja a jelszavas bejelentkezést minden felhasználó számára. Ha a konfigurált identitásszolgáltatók nem elérhetőek, a bejelentkezés nem lehetséges, ezen beállítás kikapcsolása nélkül az adatbázisban. Ezen kívül fokozott figyelem szükséges identitásszolgálók eltávolítása során is",
-      "disable-public-memos": "Nyilvános jegyzetek letiltása",
+      "disable-password-login-warning": "Ez letiltja a jelszavas bejelentkezést minden felhasználó számára. Ha a konfigurált identitásszolgáltatók nem érhetők el, a bejelentkezés nem lehetséges ezen beállítás kikapcsolása nélkül az adatbázisban. Ezen kívül fokozott figyelem szükséges az identitásszolgáltatók eltávolítása során is",
       "display-with-updated-time": "Megjelenítés frissített idővel",
       "enable-auto-compact": "Automatikus tömörítés engedélyezése",
       "enable-double-click-to-edit": "Dupla kattintásos szerkesztés engedélyezése",
@@ -373,23 +418,46 @@
       "max-upload-size-hint": "Az ajánlott érték 32 MiB.",
       "removed-completed-task-list-items": "Kész feladatok törlésének engedélyezése",
       "server-name": "Szerver neve",
-      "title": "Általános"
+      "title": "Általános",
+      "label": "Rendszer"
     },
     "version": "Verzió",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "Hozzáférési token vágólapra másolva",
+      "access-token-deleted": "Hozzáférési token `{{description}}` törölve",
+      "access-token-deletion": "Biztosan törlöd a hozzáférési tokent `{{description}}`?",
+      "access-token-deletion-description": "Ez a művelet visszafordíthatatlan. Frissítened kell minden szolgáltatást, amely ezt a tokent használja, hogy új tokent használjanak.",
       "create-dialog": {
-        "an-easy-to-remember-name": "Könnyen megjegyezhető név",
-        "create-webhook": "Webhook létrehozása",
-        "edit-webhook": "Webhook szerkesztése",
-        "payload-url": "Payload URL",
-        "title": "Cím",
-        "url-example-post-receive": "https://example.com/postreceive"
+        "access-token-created": "Hozzáférési token `{{description}}` létrehozva",
+        "create-access-token": "Hozzáférési token létrehozása",
+        "created-at": "Létrehozva",
+        "description": "Leírás",
+        "duration-1m": "1 hónap",
+        "duration-8h": "8 óra",
+        "duration-never": "Soha",
+        "expiration": "Lejárat",
+        "expires-at": "Lejárat dátuma",
+        "some-description": "Néhány leírás..."
       },
-      "no-webhooks-found": "Nincs webhook.",
-      "title": "Webhooks",
-      "url": "URL"
+      "description": "A fiókodhoz tartozó összes hozzáférési token listája.",
+      "title": "Hozzáférési tokenek",
+      "token": "Token",
+      "no-tokens-found": "Nem található hozzáférési token"
     },
-    "instance-section": {
+    "account": {
+      "change-password": "Jelszó megváltoztatása",
+      "email-note": "Nem kötelező",
+      "export-memos": "Jegyzetek exportálása",
+      "nickname-note": "A bannerben megjelenített",
+      "openapi-reset": "OpenAPI kulcs visszaállítása",
+      "openapi-sample-post": "Hello #memos innen: {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "API visszaállítása",
+      "title": "Fiókinformáció",
+      "update-information": "Információ frissítése",
+      "username-note": "Bejelentkezéshez használt"
+    },
+    "instance": {
       "disallow-change-nickname": "Becenév módosításának tiltása",
       "disallow-change-username": "Felhasználónév módosításának tiltása",
       "disallow-password-auth": "Jelszavas hitelesítés tiltása",
@@ -398,6 +466,50 @@
       "saturday": "Szombat",
       "sunday": "Vasárnap",
       "week-start-day": "A hét kezdőnapja"
+    },
+    "memo": {
+      "content-length-limit": "Tartalom hosszának korlátja (bájt)",
+      "enable-blur-sensitive-content": "Érzékeny (NSFW) tartalom elhomályosításának engedélyezése",
+      "enable-memo-comments": "Jegyzet hozzászólások engedélyezése",
+      "enable-memo-location": "Jegyzet helyének engedélyezése",
+      "reactions": "Reakciók",
+      "title": "Jegyzethez kapcsolódó beállítások",
+      "label": "Jegyzet",
+      "reactions-required": "A reakciólista nem lehet üres"
+    },
+    "webhook": {
+      "create-dialog": {
+        "an-easy-to-remember-name": "Könnyen megjegyezhető név",
+        "create-webhook": "Webhook létrehozása",
+        "create-webhook-success": "`{{name}}` webhook létrehozva",
+        "edit-webhook": "Webhook szerkesztése",
+        "payload-url": "Payload URL",
+        "title": "Cím",
+        "url-example-post-receive": "https://example.com/postreceive"
+      },
+      "delete-dialog": {
+        "delete-webhook-description": "Ez a művelet visszafordíthatatlan.",
+        "delete-webhook-success": "`{{name}}` webhook sikeresen törölve",
+        "delete-webhook-title": "Biztosan törlöd a `{{name}}` webhookot?"
+      },
+      "no-webhooks-found": "Nincs webhook.",
+      "title": "Webhooks",
+      "url": "URL",
+      "label": "Webhooks"
+    },
+    "tags": {
+      "label": "Címkék",
+      "title": "Címke metaadatok",
+      "description": "Rendeljen opcionális megjelenítési színeket a címkékhez az egész példányra kiterjedően, vagy homályosítsa el a megfelelő emlékeztető tartalmát. A címkeneveket a rendszer rögzített regex mintákként kezeli.",
+      "background-color": "Háttérszín",
+      "blur-content": "Tartalom elhomályosítása",
+      "no-tags-configured": "Nincsenek konfigurálva címke metaadatok.",
+      "tag-name": "Címke neve",
+      "tag-name-placeholder": "pl. work vagy project/.*",
+      "tag-already-exists": "A címke már létezik.",
+      "tag-pattern-hint": "Címke neve vagy reguláris kifejezési mintája (pl. a project/.* megfelel az összes project/ címkének)",
+      "invalid-regex": "Érvénytelen vagy nem biztonságos reguláris kifejezés.",
+      "using-default-color": "Az alapértelmezett szín használata."
     }
   },
   "tag": {
@@ -405,6 +517,7 @@
     "create-tag": "Címke létrehozása",
     "create-tags-guide": "Létrehozhatsz címkéket `#címke` beírásával.",
     "delete-confirm": "Biztosan törlöd ezt a címkét? Minden kapcsolódó jegyzet archiválva lesz.",
+    "delete-success": "Címke sikeresen törölve",
     "delete-tag": "Címke törlése",
     "new-name": "Új név",
     "no-tag-found": "Nem található címke",
@@ -414,5 +527,18 @@
     "rename-success": "Címke sikeresen átnevezve",
     "rename-tag": "Címke átnevezése",
     "rename-tip": "Minden jegyzeted ezzel a címkével frissülni fog."
+  },
+  "tooltip": {
+    "link-memo": "Jegyzet hivatkozása",
+    "markdown-menu": "Markdown",
+    "select-location": "Helyszín",
+    "select-visibility": "Láthatóság",
+    "tags": "Címkék",
+    "upload-attachment": "Melléklet(ek) feltöltése"
+  },
+  "live-update": {
+    "connected": "Élő frissítések aktívak",
+    "connecting": "Csatlakozás az élő frissítésekhez...",
+    "disconnected": "Élő frissítések nem érhetők el"
   }
 }

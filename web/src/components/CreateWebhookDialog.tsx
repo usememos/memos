@@ -121,32 +121,30 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {isCreating
-              ? t("setting.webhook-section.create-dialog.create-webhook")
-              : t("setting.webhook-section.create-dialog.edit-webhook")}
+            {isCreating ? t("setting.webhook.create-dialog.create-webhook") : t("setting.webhook.create-dialog.edit-webhook")}
           </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="grid gap-2">
             <Label htmlFor="displayName">
-              {t("setting.webhook-section.create-dialog.title")} <span className="text-destructive">*</span>
+              {t("setting.webhook.create-dialog.title")} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="displayName"
               type="text"
-              placeholder={t("setting.webhook-section.create-dialog.an-easy-to-remember-name")}
+              placeholder={t("setting.webhook.create-dialog.an-easy-to-remember-name")}
               value={state.displayName}
               onChange={handleTitleInputChange}
             />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="url">
-              {t("setting.webhook-section.create-dialog.payload-url")} <span className="text-destructive">*</span>
+              {t("setting.webhook.create-dialog.payload-url")} <span className="text-destructive">*</span>
             </Label>
             <Input
               id="url"
               type="text"
-              placeholder={t("setting.webhook-section.create-dialog.url-example-post-receive")}
+              placeholder={t("setting.webhook.create-dialog.url-example-post-receive")}
               value={state.url}
               onChange={handleUrlInputChange}
             />

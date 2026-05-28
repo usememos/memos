@@ -10,6 +10,7 @@
     "create-your-account": "계정 만들기",
     "host-tip": "사이트 주인으로서의 계정을 등록합니다.",
     "new-password": "새 비밀번호",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "새 비밀번호 재확인",
     "sign-in-tip": "이미 계정이 있으신가요?",
     "sign-up-tip": "아직 계정이 없으신가요?"
@@ -38,7 +39,15 @@
     "created-at": "생성일",
     "database": "데이터베이스",
     "day": "일",
-    "days": "일",
+    "days": {
+      "fri": "금",
+      "mon": "월",
+      "sat": "토",
+      "sun": "일",
+      "thu": "목",
+      "tue": "화",
+      "wed": "수"
+    },
     "delete": "삭제",
     "description": "설명",
     "edit": "편집",
@@ -54,13 +63,13 @@
     "input": "입력",
     "language": "언어",
     "last-updated-at": "마지막 수정일",
-    "layout": "레이아웃",
     "learn-more": "더 보기",
     "link": "링크",
     "map": "지도",
     "mark": "연결",
     "memo": "메모",
     "memos": "메모",
+    "more": "더보기",
     "name": "이름",
     "new": "신규",
     "nickname": "닉네임",
@@ -105,38 +114,54 @@
     "username": "유저네임",
     "version": "버전",
     "visibility": "공개 범위",
-    "yourself": "자기 자신",
-    "more": "더보기"
-  },
-  "days": {
-    "fri": "금",
-    "mon": "월",
-    "sat": "토",
-    "sun": "일",
-    "thu": "목",
-    "tue": "화",
-    "wed": "수"
+    "yourself": "자기 자신"
   },
   "editor": {
     "add-your-comment-here": "여기에 댓글을 추가하세요...",
     "any-thoughts": "떠오르는 게 있나요...",
-    "save": "저장",
-    "no-changes-detected": "변경사항이 없습니다",
-    "focus-mode": "집중 모드",
     "exit-focus-mode": "집중 모드 종료",
-    "slash-commands": "명령어를 보시려면 /를 입력하세요."
-  },
-  "filters": {
-    "has-code": "코드있음",
-    "has-link": "링크있음",
-    "has-task-list": "할일목록있음"
+    "focus-mode": "집중 모드",
+    "no-changes-detected": "변경사항이 없습니다",
+    "save": "저장",
+    "saving": "저장 중...",
+    "slash-commands": "명령어를 보시려면 /를 입력하세요.",
+    "insert-menu": {
+      "add-location": "위치 추가",
+      "link-memo": "링크 메모",
+      "upload-file": "파일 업로드"
+    },
+    "audio-recorder": {
+      "attachment-label": "오디오 녹음",
+      "attachment-label-with-time": "오디오 녹음 {{time}}",
+      "discard": "폐기",
+      "error": "마이크를 사용할 수 없음",
+      "error-description": "이 사이트의 마이크 액세스를 확인한 후 다시 시도하세요.",
+      "idle-description": "오디오 녹음을 첨부 파일로 추가하려면 녹음을 시작하세요.",
+      "keep": "계속 녹음하세요",
+      "pause-recording": "오디오 녹음 일시 중지",
+      "play-recording": "오디오 녹음 재생",
+      "ready": "녹음 준비 완료",
+      "ready-description": "클립을 미리 본 다음 오디오 첨부 파일로 보관하거나 삭제하세요.",
+      "record-again": "다시 녹음하세요",
+      "recording": "오디오 녹음",
+      "recording-description": "빠른 오디오 첨부 파일을 캡처하세요. 현재 길이: {{duration}}",
+      "requesting": "액세스를 요청하는 중...",
+      "requesting-permission": "마이크 액세스 요청 중",
+      "requesting-permission-description": "녹음을 시작하려면 브라우저에서 마이크 액세스를 허용하세요.",
+      "start": "녹음 시작",
+      "stop": "녹음 중지",
+      "title": "오디오 레코더",
+      "trigger": "오디오 녹음",
+      "unsupported": "오디오 녹음이 지원되지 않음",
+      "unsupported-description": "이 브라우저는 메모 작성기의 오디오를 녹음할 수 없습니다."
+    }
   },
   "inbox": {
-    "memo-comment": "{{user}}님이 {{memo}}에 댓글을 남겼습니다.",
     "failed-to-load": "알림함 항목을 불러오지 못했습니다",
-    "unread": "읽지 않음",
+    "memo-comment": "{{user}}님이 {{memo}}에 댓글을 남겼습니다.",
+    "no-archived": "보관된 알림이 없습니다",
     "no-unread": "읽지 않은 알림이 없습니다",
-    "no-archived": "보관된 알림이 없습니다"
+    "unread": "읽지 않음"
   },
   "markdown": {
     "checkbox": "체크박스",
@@ -145,8 +170,8 @@
   },
   "memo": {
     "archived-at": "보관된 날짜",
-    "click-to-hide-nsfw-content": "민감한(성인) 콘텐츠 숨기기",
-    "click-to-show-nsfw-content": "민감한(성인) 콘텐츠 보기",
+    "click-to-hide-sensitive-content": "민감한(성인) 콘텐츠 숨기기",
+    "click-to-show-sensitive-content": "민감한(성인) 콘텐츠 보기",
     "code": "코드",
     "comment": {
       "self": "댓글",
@@ -161,7 +186,12 @@
     "direction-asc": "오름차순",
     "direction-desc": "내림차순",
     "display-time": "표시 시간",
-    "filters": "필터",
+    "filters": {
+      "has-code": "코드있음",
+      "has-link": "링크있음",
+      "has-task-list": "할일목록있음",
+      "label": "필터"
+    },
     "links": "링크",
     "load-more": "더보기",
     "no-archived-memos": "보관처리된 메모가 없습니다.",
@@ -178,8 +208,32 @@
       "protected": "멤버 전용",
       "public": "공개"
     },
-    "list": "목록",
-    "masonry": "메이슨리"
+    "outline": "개요",
+    "share": {
+      "active-links": "활성 공유 링크",
+      "copied": "복사되었습니다!",
+      "copy": "링크 복사",
+      "create-failed": "공유 링크를 생성하지 못했습니다.",
+      "create-link": "새 링크 만들기",
+      "creating": "만드는 중…",
+      "expiry-1-day": "1일",
+      "expiry-30-days": "30일",
+      "expiry-7-days": "7일",
+      "expiry-label": "만료",
+      "expiry-never": "절대로",
+      "expires-on": "{{date}}에 만료됨",
+      "invalid-link": "이 링크는 유효하지 않거나 만료되었습니다.",
+      "never-expires": "만료되지 않음",
+      "no-links": "아직 공유 링크가 없습니다. 아래에서 하나를 만드세요.",
+      "open-panel": "공유 링크 관리",
+      "revoke": "취소",
+      "revoke-failed": "링크를 취소하지 못했습니다.",
+      "revoked": "공유 링크가 취소되었습니다.",
+      "section-label": "공유",
+      "share": "공유",
+      "shared-by": "{{creator}}님이 공유함",
+      "title": "이 메모를 공유하세요"
+    }
   },
   "message": {
     "archived-successfully": "성공적으로 보관되었습니다",
@@ -228,12 +282,12 @@
       "title": "리소스 생성",
       "upload-method": "업로드 방법"
     },
-    "delete-resource": "리소스 삭제",
-    "delete-selected-resources": "선택된 리소스 삭제",
     "delete-all-unused": "사용하지 않는 항목 모두 삭제",
     "delete-all-unused-confirm": "사용하지 않는 모든 리소스를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
-    "delete-all-unused-success": "리소스가 성공적으로 삭제되었습니다",
     "delete-all-unused-error": "사용하지 않는 리소스 삭제에 실패했습니다",
+    "delete-all-unused-success": "리소스가 성공적으로 삭제되었습니다",
+    "delete-resource": "리소스 삭제",
+    "delete-selected-resources": "선택된 리소스 삭제",
     "fetching-data": "불러오는 중…",
     "file-drag-drop-prompt": "업로드할 파일을 여기에 드래그하세요",
     "linked-amount": "연결된 수",
@@ -250,78 +304,37 @@
     "go-to-home": "홈으로"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "액세스 토큰이 복사되었습니다",
-      "access-token-deletion": "액세스 토큰 {{accessToken}}을 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다.",
-      "access-token-deletion-description": "이 작업은 되돌릴 수 없습니다. 이 토큰을 사용하는 서비스들은 새 토큰을 사용하도록 업데이트해야 합니다.",
-      "access-token-deleted": "액세스 토큰 `{{description}}`이 삭제되었습니다",
-      "create-dialog": {
-        "access-token-created": "액세스 토큰 `{{description}}`이 생성되었습니다",
-        "create-access-token": "액세스 토큰 생성",
-        "created-at": "생성일",
-        "description": "설명",
-        "duration-1m": "1개월",
-        "duration-8h": "8시간",
-        "duration-never": "영구",
-        "expiration": "만료",
-        "expires-at": "만료일",
-        "some-description": "설명..."
-      },
-      "description": "계정의 모든 액세스 토큰 목록입니다.",
-      "title": "액세스 토큰",
-      "token": "토큰"
-    },
-    "account-section": {
-      "change-password": "비밀번호 변경",
-      "email-note": "선택 사항",
-      "export-memos": "메모 내보내기",
-      "nickname-note": "배너에 표시됨",
-      "openapi-reset": "OpenAPI 키 초기화",
-      "openapi-sample-post": "안녕, {{url}} ! #memo",
-      "openapi-title": "OpenAPI",
-      "reset-api": "API 초기화",
-      "title": "계정 정보",
-      "update-information": "정보 변경",
-      "username-note": "로그인하는 데 사용됨"
-    },
-    "member": "멤버",
-    "member-list": "멤버 목록",
-    "member-section": {
+    "member": {
       "admin": "관리자",
       "archive-member": "멤버 보관처리",
+      "archive-success": "{{username}}님이 성공적으로 보관처리되었습니다",
       "archive-warning": "멤버 {{username}}의 계정을 보관처리하시겠습니까?",
       "archive-warning-description": "보관처리하면 해당 계정이 비활성화됩니다. 나중에 복구하거나 삭제할 수 있습니다.",
-      "archive-success": "{{username}}님이 성공적으로 보관처리되었습니다",
-      "restore-success": "{{username}}님이 성공적으로 복구되었습니다",
       "create-a-member": "새 멤버 등록",
       "delete-member": "멤버 계정 삭제",
+      "delete-success": "{{username}}님이 성공적으로 삭제되었습니다",
       "delete-warning": "멤버 {{username}}의 계정을 완전히 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다.",
       "delete-warning-description": "이 작업은 되돌릴 수 없습니다.",
-      "delete-success": "{{username}}님이 성공적으로 삭제되었습니다",
-      "user": "사용자"
+      "restore-success": "{{username}}님이 성공적으로 복구되었습니다",
+      "user": "사용자",
+      "label": "멤버",
+      "list-title": "멤버 목록",
+      "no-members-found": "회원을 찾을 수 없습니다."
     },
-    "memo-related": "메모",
-    "memo-related-settings": {
-      "content-length-limit": "내용 길이 제한 (바이트)",
-      "enable-blur-nsfw-content": "민감한(성인) 콘텐츠 블러 처리 활성화",
-      "enable-memo-comments": "메모 댓글 활성화",
-      "enable-memo-location": "메모 위치 활성화",
-      "reactions": "반응",
-      "title": "메모 관련 설정"
+    "my-account": {
+      "label": "내 계정"
     },
-    "my-account": "내 계정",
-    "preference": "개인 설정",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "메모에 표시할 시각",
       "default-memo-visibility": "메모 공개 범위 기본값",
-      "theme": "테마"
+      "theme": "테마",
+      "label": "개인 설정"
     },
     "shortcut": {
       "delete-confirm": "바로가기 `{{title}}`를 정말로 삭제하시겠습니까?",
       "delete-success": "바로가기 `{{title}}`가 성공적으로 삭제되었습니다"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "인증 엔드포인트",
       "client-id": "클라이언트 ID",
       "client-secret": "클라이언트 비밀키",
@@ -343,10 +356,10 @@
       "template": "템플릿",
       "token-endpoint": "토큰 엔드포인트",
       "update-sso": "SSO 수정",
-      "user-endpoint": "유저 엔드포인트"
+      "user-endpoint": "유저 엔드포인트",
+      "label": "SSO"
     },
-    "storage": "저장소",
-    "storage-section": {
+    "storage": {
       "accesskey": "액세스 키",
       "accesskey-placeholder": "액세스 키 / 액세스 ID",
       "bucket": "버킷",
@@ -378,10 +391,10 @@
       "url-prefix-placeholder": "URL 앞에 붙을 커스텀 접두사, 선택 사항",
       "url-suffix": "URL 접미사",
       "url-suffix-placeholder": "URL 뒤에 붙을 커스텀 접미사, 선택 사항",
-      "warning-text": "저장소 서비스 \"{{name}}\"을(를) 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다"
+      "warning-text": "저장소 서비스 \"{{name}}\"을(를) 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다",
+      "label": "저장소"
     },
-    "system": "시스템",
-    "system-section": {
+    "system": {
       "additional-script": "추가 스크립트",
       "additional-script-placeholder": "추가 JavaScript 코드",
       "additional-style": "추가 스타일",
@@ -396,7 +409,6 @@
       "disable-password-login": "비밀번호 로그인 금지",
       "disable-password-login-final-warning": "이로부터 발생할 수 있는 모든 상황을 이해했다면, 아래에 \"CONFIRM\"을 입력해 주세요.",
       "disable-password-login-warning": "모든 사용자가 비밀번호를 사용해서 로그인하지 못하게 합니다. 설정된 SSO에 문제가 생겼을 경우, 데이터베이스를 직접 조작해서 이 설정을 끄지 않는 한 절대로 로그인하지 못하게 됩니다. SSO 설정을 수정/제거할 때에는 특히 조심해 주세요",
-      "disable-public-memos": "공개된 메모 금지",
       "display-with-updated-time": "수정된 시각을 표시",
       "enable-auto-compact": "자동 압축 활성화",
       "enable-double-click-to-edit": "더블 클릭으로 편집 활성화",
@@ -406,10 +418,66 @@
       "max-upload-size-hint": "권장값은 32 MiB입니다.",
       "removed-completed-task-list-items": "완료된 할 일 삭제 활성화",
       "server-name": "서버 이름",
-      "title": "일반"
+      "title": "일반",
+      "label": "시스템"
     },
     "version": "버전",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "액세스 토큰이 복사되었습니다",
+      "access-token-deleted": "액세스 토큰 `{{description}}`이 삭제되었습니다",
+      "access-token-deletion": "액세스 토큰 {{description}}을 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다.",
+      "access-token-deletion-description": "이 작업은 되돌릴 수 없습니다. 이 토큰을 사용하는 서비스들은 새 토큰을 사용하도록 업데이트해야 합니다.",
+      "create-dialog": {
+        "access-token-created": "액세스 토큰 `{{description}}`이 생성되었습니다",
+        "create-access-token": "액세스 토큰 생성",
+        "created-at": "생성일",
+        "description": "설명",
+        "duration-1m": "1개월",
+        "duration-8h": "8시간",
+        "duration-never": "영구",
+        "expiration": "만료",
+        "expires-at": "만료일",
+        "some-description": "설명..."
+      },
+      "description": "계정의 모든 액세스 토큰 목록입니다.",
+      "title": "액세스 토큰",
+      "token": "토큰",
+      "no-tokens-found": "액세스 토큰을 찾을 수 없습니다."
+    },
+    "account": {
+      "change-password": "비밀번호 변경",
+      "email-note": "선택 사항",
+      "export-memos": "메모 내보내기",
+      "nickname-note": "배너에 표시됨",
+      "openapi-reset": "OpenAPI 키 초기화",
+      "openapi-sample-post": "안녕, {{url}} ! #memo",
+      "openapi-title": "OpenAPI",
+      "reset-api": "API 초기화",
+      "title": "계정 정보",
+      "update-information": "정보 변경",
+      "username-note": "로그인하는 데 사용됨"
+    },
+    "instance": {
+      "disallow-change-nickname": "닉네임 변경 금지",
+      "disallow-change-username": "유저네임 변경 금지",
+      "disallow-password-auth": "비밀번호 인증 금지",
+      "disallow-user-registration": "회원가입 금지",
+      "monday": "월요일",
+      "saturday": "토요일",
+      "sunday": "일요일",
+      "week-start-day": "주 시작 요일"
+    },
+    "memo": {
+      "content-length-limit": "내용 길이 제한 (바이트)",
+      "enable-blur-sensitive-content": "민감한(성인) 콘텐츠 블러 처리 활성화",
+      "enable-memo-comments": "메모 댓글 활성화",
+      "enable-memo-location": "메모 위치 활성화",
+      "reactions": "반응",
+      "title": "메모 관련 설정",
+      "label": "메모",
+      "reactions-required": "반응 목록은 비워둘 수 없습니다."
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "기억하기 쉬운 이름",
         "create-webhook": "Webhook 생성",
@@ -421,22 +489,27 @@
       },
       "delete-dialog": {
         "delete-webhook-description": "이 작업은 되돌릴 수 없습니다.",
-        "delete-webhook-title": "Webhook `{{name}}`을 정말로 삭제하시겠습니까?",
-        "delete-webhook-success": "Webhook `{{name}}`이 성공적으로 삭제되었습니다"
+        "delete-webhook-success": "Webhook `{{name}}`이 성공적으로 삭제되었습니다",
+        "delete-webhook-title": "Webhook `{{name}}`을 정말로 삭제하시겠습니까?"
       },
       "no-webhooks-found": "Webhook이 없습니다.",
       "title": "Webhook",
-      "url": "URL"
+      "url": "URL",
+      "label": "Webhook"
     },
-    "instance-section": {
-      "disallow-change-nickname": "닉네임 변경 금지",
-      "disallow-change-username": "유저네임 변경 금지",
-      "disallow-password-auth": "비밀번호 인증 금지",
-      "disallow-user-registration": "회원가입 금지",
-      "monday": "월요일",
-      "saturday": "토요일",
-      "sunday": "일요일",
-      "week-start-day": "주 시작 요일"
+    "tags": {
+      "label": "태그",
+      "title": "태그 메타데이터",
+      "description": "인스턴스 전체의 태그에 선택적 표시 색상을 할당하거나 일치하는 메모 내용을 흐리게 만듭니다. 태그 이름은 고정된 정규식 패턴으로 처리됩니다.",
+      "background-color": "배경색",
+      "blur-content": "콘텐츠를 흐리게 처리",
+      "no-tags-configured": "구성된 태그 메타데이터가 없습니다.",
+      "tag-name": "태그 이름",
+      "tag-name-placeholder": "예를 들어 work 또는 project/.*",
+      "tag-already-exists": "태그가 이미 존재합니다.",
+      "tag-pattern-hint": "태그 이름 또는 정규식 패턴(예: project/.*는 모든 project/ 태그와 일치함)",
+      "invalid-regex": "유효하지 않거나 안전하지 않은 정규식 패턴입니다.",
+      "using-default-color": "기본 색상을 사용합니다."
     }
   },
   "tag": {
@@ -444,8 +517,8 @@
     "create-tag": "태그 생성",
     "create-tags-guide": "`#태그`를 입력하여 태그를 만들 수 있습니다.",
     "delete-confirm": "이 태그를 삭제하시겠습니까? 관련된 모든 메모가 보관됩니다.",
-    "delete-tag": "태그 삭제",
     "delete-success": "태그가 성공적으로 삭제되었습니다",
+    "delete-tag": "태그 삭제",
     "new-name": "새 이름",
     "no-tag-found": "태그를 찾을 수 없습니다",
     "old-name": "이전 이름",
@@ -462,5 +535,10 @@
     "select-visibility": "공개 범위",
     "tags": "태그",
     "upload-attachment": "첨부파일 업로드"
+  },
+  "live-update": {
+    "connected": "실시간 업데이트 활성화",
+    "connecting": "실시간 업데이트에 연결 중...",
+    "disconnected": "실시간 업데이트를 사용할 수 없습니다"
   }
 }

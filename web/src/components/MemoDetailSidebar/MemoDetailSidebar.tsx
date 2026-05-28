@@ -1,95 +1,137 @@
 import { create } from "@bufbuild/protobuf";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { isEqual } from "lodash-es";
-import { CheckCircleIcon, Code2Icon, HashIcon, LinkIcon } from "lucide-react";
+import { CheckCircleIcon, ChevronRightIcon, Code2Icon, HashIcon, ImageIcon, LinkIcon, type LucideIcon, Share2Icon } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Button } from "@/components/ui/button";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
-import { Memo, Memo_PropertySchema, MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
-import { useTranslate } from "@/utils/i18n";
-import MemoRelationForceGraph from "../MemoRelationForceGraph";
+import { Memo, Memo_PropertySchema } from "@/types/proto/api/v1/memo_service_pb";
+import { type Translations, useTranslate } from "@/utils/i18n";
+import { extractHeadings } from "@/utils/markdown-manipulation";
+import { isSuperUser } from "@/utils/user";
+import MemoOutline from "./MemoOutline";
+import MemoSharePanel from "./MemoSharePanel";
 
 interface Props {
   memo: Memo;
   className?: string;
-  parentPage?: string;
+  onShareImageOpen?: () => void;
 }
 
-const MemoDetailSidebar = ({ memo, className, parentPage }: Props) => {
+interface PropertyBadge {
+  icon: LucideIcon;
+  labelKey: Translations;
+}
+
+const SidebarSection = ({ label, count, children }: { label: string; count?: number; children: React.ReactNode }) => (
+  <div className="w-full space-y-2">
+    <div className="flex items-center gap-1.5">
+      <p className="text-xs font-medium text-muted-foreground/50 uppercase tracking-wider">{label}</p>
+      {count != null && <span className="text-xs text-muted-foreground/30">({count})</span>}
+    </div>
+    {children}
+  </div>
+);
+
+const PROPERTY_BADGE_CLASSES =
+  "inline-flex items-center gap-1.5 px-2 py-1 rounded-md border border-border/60 bg-muted/60 text-xs text-muted-foreground";
+
+const TAG_BADGE_CLASSES =
+  "inline-flex items-center gap-1 px-1 rounded-md border border-border/60 bg-muted/60 text-sm text-muted-foreground hover:bg-muted hover:text-foreground/80 transition-colors cursor-pointer";
+
+const SHARE_ACTION_ROW_CLASSES =
+  "h-auto min-h-0 w-full justify-between rounded-none px-2 py-1.5 text-xs font-normal leading-tight text-muted-foreground transition-colors hover:bg-muted/40 hover:text-muted-foreground focus-visible:ring-offset-0 gap-1.5";
+
+const MemoDetailSidebar = ({ memo, className, onShareImageOpen }: Props) => {
   const t = useTranslate();
+  const currentUser = useCurrentUser();
+  const [sharePanelOpen, setSharePanelOpen] = useState(false);
   const property = create(Memo_PropertySchema, memo.property || {});
-  const hasSpecialProperty = property.hasLink || property.hasTaskList || property.hasCode;
-  const hasReferenceRelations = memo.relations.some((r) => r.type === MemoRelation_Type.REFERENCE);
+  const canManageShares = !memo.parent && (memo.creator === currentUser?.name || isSuperUser(currentUser));
+  const hasUpdated = !isEqual(memo.createTime, memo.updateTime);
+  const headings = useMemo(() => extractHeadings(memo.content), [memo.content]);
+
+  const propertyBadges = useMemo(() => {
+    const badges: PropertyBadge[] = [];
+    if (property.hasLink) badges.push({ icon: LinkIcon, labelKey: "memo.links" });
+    if (property.hasTaskList) badges.push({ icon: CheckCircleIcon, labelKey: "memo.to-do" });
+    if (property.hasCode) badges.push({ icon: Code2Icon, labelKey: "memo.code" });
+    return badges;
+  }, [property.hasLink, property.hasTaskList, property.hasCode]);
 
   return (
-    <aside className={cn("relative w-full h-auto max-h-screen overflow-auto flex flex-col justify-start items-start", className)}>
-      <div className="flex flex-col justify-start items-start w-full gap-4 h-auto shrink-0 flex-nowrap">
-        {hasReferenceRelations && (
-          <div className="relative w-full h-36 border border-border rounded-lg bg-muted overflow-hidden">
-            <MemoRelationForceGraph className="w-full h-full" memo={memo} parentPage={parentPage} />
-            <div className="absolute top-2 left-2 text-xs text-muted-foreground/60 font-medium gap-1 flex flex-row items-center">
-              <span>{t("common.relations")}</span>
-              <span className="text-xs opacity-60">(Beta)</span>
-            </div>
-          </div>
-        )}
+    <aside className={cn("relative w-full h-auto max-h-screen overflow-auto flex flex-col gap-5", className)}>
+      {headings.length > 0 && (
+        <SidebarSection label={t("memo.outline")}>
+          <MemoOutline headings={headings} />
+        </SidebarSection>
+      )}
 
-        <div className="w-full space-y-1">
-          <p className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wide px-1">{t("common.created-at")}</p>
-          <p className="text-sm text-muted-foreground px-1">{memo.createTime ? timestampDate(memo.createTime).toLocaleString() : "-"}</p>
+      {(canManageShares || onShareImageOpen) && (
+        <SidebarSection label={t("memo.share.section-label")}>
+          <div className="overflow-hidden rounded-md border border-border/50 bg-muted/20">
+            {onShareImageOpen && (
+              <Button variant="ghost" size="sm" className={SHARE_ACTION_ROW_CLASSES} onClick={onShareImageOpen}>
+                <span className="flex min-w-0 flex-1 items-center gap-2">
+                  <ImageIcon className="size-3.5 shrink-0 text-muted-foreground/90" />
+                  <span className="truncate">{t("memo.share.open-image")}</span>
+                </span>
+                <ChevronRightIcon className="size-3.5 shrink-0 text-muted-foreground/35" />
+              </Button>
+            )}
+            {onShareImageOpen && canManageShares && <div className="border-t border-border/50" />}
+            {canManageShares && (
+              <Button variant="ghost" size="sm" className={SHARE_ACTION_ROW_CLASSES} onClick={() => setSharePanelOpen(true)}>
+                <span className="flex min-w-0 flex-1 items-center gap-2">
+                  <Share2Icon className="size-3.5 shrink-0 text-muted-foreground/90" />
+                  <span className="truncate">{t("memo.share.open-panel")}</span>
+                </span>
+                <ChevronRightIcon className="size-3.5 shrink-0 text-muted-foreground/35" />
+              </Button>
+            )}
+          </div>
+        </SidebarSection>
+      )}
+
+      <SidebarSection label={t("common.created-at")}>
+        <div className="flex flex-col gap-1">
+          <p className="text-sm text-foreground/70">{memo.createTime ? timestampDate(memo.createTime).toLocaleString() : "—"}</p>
+          {hasUpdated && (
+            <p className="text-xs text-muted-foreground">
+              {t("common.last-updated-at")}: {memo.updateTime ? timestampDate(memo.updateTime).toLocaleString() : "—"}
+            </p>
+          )}
         </div>
+      </SidebarSection>
 
-        {!isEqual(memo.createTime, memo.updateTime) && (
-          <div className="w-full space-y-1">
-            <p className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wide px-1">{t("common.last-updated-at")}</p>
-            <p className="text-sm text-muted-foreground px-1">{memo.updateTime ? timestampDate(memo.updateTime).toLocaleString() : "-"}</p>
+      {propertyBadges.length > 0 && (
+        <SidebarSection label={t("common.properties")}>
+          <div className="flex flex-wrap gap-1.5">
+            {propertyBadges.map(({ icon: Icon, labelKey }) => (
+              <span key={labelKey} className={PROPERTY_BADGE_CLASSES}>
+                <Icon className="w-3.5 h-3.5" />
+                {t(labelKey)}
+              </span>
+            ))}
           </div>
-        )}
+        </SidebarSection>
+      )}
 
-        {hasSpecialProperty && (
-          <div className="w-full space-y-2">
-            <p className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wide px-1">{t("common.properties")}</p>
-            <div className="w-full flex flex-row justify-start items-center gap-2 flex-wrap px-1">
-              {property.hasLink && (
-                <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-muted/50 border border-border/50 rounded-md text-xs text-muted-foreground">
-                  <LinkIcon className="w-3.5 h-3.5" />
-                  <span>{t("memo.links")}</span>
-                </div>
-              )}
-              {property.hasTaskList && (
-                <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-muted/50 border border-border/50 rounded-md text-xs text-muted-foreground">
-                  <CheckCircleIcon className="w-3.5 h-3.5" />
-                  <span>{t("memo.to-do")}</span>
-                </div>
-              )}
-              {property.hasCode && (
-                <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-muted/50 border border-border/50 rounded-md text-xs text-muted-foreground">
-                  <Code2Icon className="w-3.5 h-3.5" />
-                  <span>{t("memo.code")}</span>
-                </div>
-              )}
-            </div>
+      {memo.tags.length > 0 && (
+        <SidebarSection label={t("common.tags")} count={memo.tags.length}>
+          <div className="flex flex-wrap gap-1.5">
+            {memo.tags.map((tag) => (
+              <span key={tag} className={TAG_BADGE_CLASSES}>
+                <HashIcon className="w-3 h-3 opacity-50" />
+                {tag}
+              </span>
+            ))}
           </div>
-        )}
+        </SidebarSection>
+      )}
 
-        {memo.tags.length > 0 && (
-          <div className="w-full space-y-2">
-            <div className="flex flex-row justify-start items-center gap-1.5 px-1">
-              <p className="text-xs font-medium text-muted-foreground/60 uppercase tracking-wide">{t("common.tags")}</p>
-              <span className="text-xs text-muted-foreground/40">({memo.tags.length})</span>
-            </div>
-            <div className="w-full flex flex-row justify-start items-center flex-wrap gap-1.5 px-1">
-              {memo.tags.map((tag) => (
-                <div
-                  key={tag}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-muted/50 border border-border/50 rounded-md text-xs text-muted-foreground hover:bg-muted transition-colors cursor-pointer group"
-                >
-                  <HashIcon className="w-3 h-3 opacity-40 group-hover:opacity-60 transition-opacity" />
-                  <span className="opacity-80 group-hover:opacity-100 transition-opacity">{tag}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+      {sharePanelOpen && <MemoSharePanel memoName={memo.name} open={sharePanelOpen} onClose={() => setSharePanelOpen(false)} />}
     </aside>
   );
 };

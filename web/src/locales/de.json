@@ -10,6 +10,7 @@
     "create-your-account": "Benutzerkonto anlegen",
     "host-tip": "Du registrierst dich als Host dieser Seite.",
     "new-password": "Neues Passwort",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Neues Passwort wiederholen",
     "sign-in-tip": "Bereits ein Benutzerkonto?",
     "sign-up-tip": "Noch kein Benutzerkonto?"
@@ -38,7 +39,15 @@
     "created-at": "Erstellt am",
     "database": "Datenbank",
     "day": "Tag",
-    "days": "Tage",
+    "days": {
+      "fri": "Fr",
+      "mon": "Mo",
+      "sat": "Sa",
+      "sun": "So",
+      "thu": "Do",
+      "tue": "Di",
+      "wed": "Mi"
+    },
     "delete": "Löschen",
     "description": "Beschreibung",
     "edit": "Bearbeiten",
@@ -54,13 +63,13 @@
     "input": "Eingabe",
     "language": "Sprache",
     "last-updated-at": "Zuletzt aktualisiert am",
-    "layout": "Layout",
     "learn-more": "Mehr erfahren",
     "link": "Link",
     "map": "Karte",
     "mark": "Markieren",
     "memo": "Notiz",
     "memos": "Notizen",
+    "more": "Mehr",
     "name": "Name",
     "new": "Neu",
     "nickname": "Spitzname",
@@ -86,7 +95,7 @@
     "select": "Auswählen",
     "settings": "Einstellungen",
     "share": "Teilen",
-    "shortcut-filter": "Verknüpfung filtern",
+    "shortcut-filter": "Verknüpfungsfilter",
     "shortcuts": "Verknüpfungen",
     "sign-in": "Anmelden",
     "sign-in-with": "Anmelden mit {{provider}}",
@@ -102,41 +111,57 @@
     "update": "Update",
     "upload": "Hochladen",
     "user": "Benutzer",
-    "username": "Nutzername",
+    "username": "Benutzername",
     "version": "Version",
     "visibility": "Sichtbarkeit",
-    "yourself": "Du selbst",
-    "more": "Mehr"
-  },
-  "days": {
-    "fri": "Fr",
-    "mon": "Mo",
-    "sat": "Sa",
-    "sun": "So",
-    "thu": "Do",
-    "tue": "Di",
-    "wed": "Mi"
+    "yourself": "Du selbst"
   },
   "editor": {
     "add-your-comment-here": "Füge deinen Kommentar hinzu...",
     "any-thoughts": "Ein Gedanke...",
-    "save": "Speichern",
-    "no-changes-detected": "Keine Änderungen erkannt",
-    "focus-mode": "Fokus Modus",
     "exit-focus-mode": "Fokus Modus verlassen",
-    "slash-commands": "Nutze `/` für Befehle"
-  },
-  "filters": {
-    "has-code": "hatCode",
-    "has-link": "hatLink",
-    "has-task-list": "hatAufgabenliste"
+    "focus-mode": "Fokus Modus",
+    "no-changes-detected": "Keine Änderungen erkannt",
+    "save": "Speichern",
+    "saving": "Speichern...",
+    "slash-commands": "Nutze `/` für Befehle",
+    "insert-menu": {
+      "add-location": "Standort hinzufügen",
+      "link-memo": "Link-Memo",
+      "upload-file": "Datei hochladen"
+    },
+    "audio-recorder": {
+      "attachment-label": "Audioaufnahme",
+      "attachment-label-with-time": "Audioaufnahme {{time}}",
+      "discard": "Verwerfen",
+      "error": "Mikrofon nicht verfügbar",
+      "error-description": "Versuchen Sie es erneut, nachdem Sie den Mikrofonzugriff für diese Website überprüft haben.",
+      "idle-description": "Starten Sie die Aufnahme, um eine Audioaufnahme als Anhang hinzuzufügen.",
+      "keep": "Nehmen Sie weiter auf",
+      "pause-recording": "Audioaufnahme anhalten",
+      "play-recording": "Audioaufnahme abspielen",
+      "ready": "Aufnahme bereit",
+      "ready-description": "Sehen Sie sich den Clip in der Vorschau an und behalten Sie ihn dann als Audioanhang bei oder verwerfen Sie ihn.",
+      "record-again": "Nochmals aufnehmen",
+      "recording": "Audioaufnahme",
+      "recording-description": "Nehmen Sie einen schnellen Audioanhang auf. Aktuelle Länge: {{duration}}",
+      "requesting": "Zugriff wird angefordert...",
+      "requesting-permission": "Mikrofonzugriff anfordern",
+      "requesting-permission-description": "Erlauben Sie den Mikrofonzugriff in Ihrem Browser, um die Aufnahme zu starten.",
+      "start": "Starten Sie die Aufnahme",
+      "stop": "Stoppen Sie die Aufnahme",
+      "title": "Audiorecorder",
+      "trigger": "Audio aufnehmen",
+      "unsupported": "Audioaufnahme wird nicht unterstützt",
+      "unsupported-description": "Dieser Browser kann keine Audiodaten vom Memo Composer aufzeichnen."
+    }
   },
   "inbox": {
-    "memo-comment": "{{user}} hat einen Kommentar zu {{memo}} hinterlassen.",
     "failed-to-load": "Fehler beim Laden des Eintrags",
-    "unread": "Ungelesen",
+    "memo-comment": "{{user}} hat einen Kommentar zu {{memo}} hinterlassen.",
+    "no-archived": "Keine archivierten Benachrichtigungen",
     "no-unread": "Keine ungelesenen Benachrichtigungen",
-    "no-archived": "Keine archivierten Benachrichtigungen"
+    "unread": "Ungelesen"
   },
   "markdown": {
     "checkbox": "Checkbox",
@@ -145,8 +170,8 @@
   },
   "memo": {
     "archived-at": "Archiviert am",
-    "click-to-hide-nsfw-content": "Klicken, um sensible Inhalte auszublenden",
-    "click-to-show-nsfw-content": "Klicken, um sensible Inhalte anzuzeigen",
+    "click-to-hide-sensitive-content": "Klicken, um sensible Inhalte auszublenden",
+    "click-to-show-sensitive-content": "Klicken, um sensible Inhalte anzuzeigen",
     "code": "Code",
     "comment": {
       "self": "Kommentare",
@@ -154,18 +179,21 @@
     },
     "copy-content": "Inhalt kopieren",
     "copy-link": "Link kopieren",
-    "count-memos-in-date": "{{count}} Notizen in {{date}}",
+    "count-memos-in-date": "{{count}} {{memos}} in {{date}}",
     "delete-confirm": "Bist du sicher, dass du diese Notiz löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
     "delete-confirm-description": "Dieser Vorgang ist nicht rückgängig zu machen. Anhänge, Links und Verknüpfungen werden ebenfalls gelöscht.",
     "direction": "Richtung",
     "direction-asc": "Aufsteigend",
     "direction-desc": "Absteigend",
     "display-time": "Anzeigedatum",
-    "filters": "Filter",
+    "filters": {
+      "has-code": "hatCode",
+      "has-link": "hatLink",
+      "has-task-list": "hatAufgabenliste",
+      "label": "Filter"
+    },
     "links": "Links",
-    "list": "Liste",
     "load-more": "Mehr laden",
-    "masonry": "Masonry",
     "no-archived-memos": "Keine archivierten Notizen.",
     "no-memos": "Keine Notizen.",
     "order-by": "Sortieren nach",
@@ -179,6 +207,32 @@
       "private": "Privat",
       "protected": "Geschützt",
       "public": "Öffentlich"
+    },
+    "outline": "Gliederung",
+    "share": {
+      "active-links": "Aktive Share-Links",
+      "copied": "Kopiert!",
+      "copy": "Link kopieren",
+      "create-failed": "Der Freigabelink konnte nicht erstellt werden",
+      "create-link": "Neuen Link erstellen",
+      "creating": "Erstellen…",
+      "expiry-1-day": "1 Tag",
+      "expiry-30-days": "30 Tage",
+      "expiry-7-days": "7 Tage",
+      "expiry-label": "Läuft ab",
+      "expiry-never": "Niemals",
+      "expires-on": "Läuft am {{date}} ab",
+      "invalid-link": "Dieser Link ist ungültig oder abgelaufen.",
+      "never-expires": "Läuft nie ab",
+      "no-links": "Noch keine Links zum Teilen. Erstellen Sie unten eines.",
+      "open-panel": "Teilen-Links verwalten",
+      "revoke": "Widerrufen",
+      "revoke-failed": "Der Link konnte nicht widerrufen werden",
+      "revoked": "Link zum Teilen widerrufen",
+      "section-label": "Teilen",
+      "share": "Teilen",
+      "shared-by": "Geteilt von {{creator}}",
+      "title": "Teilen Sie dieses Memo"
     }
   },
   "message": {
@@ -228,12 +282,12 @@
       "title": "Ressource erstellen",
       "upload-method": "Upload-Methode"
     },
+    "delete-all-unused": "Alle ungenutzten löschen",
+    "delete-all-unused-confirm": "Bist du sicher, dass du alle ungenutzten Elemente löschen willst? DIESER VORGANG KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
+    "delete-all-unused-error": "Das Löschen ungenutzter Elemente ist fehlgeschlagen",
+    "delete-all-unused-success": "Elemente erfolgreich gelöscht",
     "delete-resource": "Ressource löschen",
     "delete-selected-resources": "Ausgewählte Ressourcen löschen",
-    "delete-all-unused": "Lösche alle ungenutzten",
-    "delete-all-unused-confirm": "Bist du sicher, dass du alle ungenutzten Elemente löschen willst? DIESER VORGANG KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
-    "delete-all-unused-success": "Elemente erfolgreich gelöscht",
-    "delete-all-unused-error": "Das Löschen ungenutzter Elemente ist fehlgeschlagen",
     "fetching-data": "Lade Daten…",
     "file-drag-drop-prompt": "Datei hierher ziehen und ablegen, um sie hochzuladen",
     "linked-amount": "Anzahl verlinkter Memos",
@@ -250,78 +304,37 @@
     "go-to-home": "Zurück zur Startseite"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "Zugangstoken in die Zwischenablage kopiert",
-      "access-token-deletion": "Bist du sicher, dass du das Zugangstoken {{accessToken}} löschen möchtest? DIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN.",
-      "access-token-deletion-description": "Diese Aktion kann nicht rückgängig gemacht werden. Du musst alle Dienste, die diesen Token verwenden, mit einem neuen Token nutzen.",
-      "access-token-deleted": "Zugangstoken `{{description}}` gelöscht",
-      "create-dialog": {
-        "access-token-created": "Zugangstoken `{{description}}` erstellt",
-        "create-access-token": "Zugangstoken erstellen",
-        "created-at": "Erstellt am",
-        "description": "Beschreibung",
-        "duration-1m": "1 Monat",
-        "duration-8h": "8 Stunden",
-        "duration-never": "Nie",
-        "expiration": "Ablauf",
-        "expires-at": "Läuft ab am",
-        "some-description": "Eine Beschreibung..."
-      },
-      "description": "Liste aller Zugangstoken für deinen Benutzer.",
-      "title": "Zugangstoken",
-      "token": "Token"
-    },
-    "account-section": {
-      "change-password": "Passwort ändern",
-      "email-note": "Optional",
-      "export-memos": "Notizen exportieren",
-      "nickname-note": "Wird im Banner angezeigt",
-      "openapi-reset": "OpenAPI Key zurücksetzen",
-      "openapi-sample-post": "Hallo #memos von {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "API zurücksetzen",
-      "title": "Konto-Informationen",
-      "update-information": "Informationen ändern",
-      "username-note": "Zum Anmelden verwendet"
-    },
-    "member": "Mitglied",
-    "member-list": "Mitgliederliste",
-    "member-section": {
+    "member": {
       "admin": "Admin",
       "archive-member": "Mitglied archivieren",
+      "archive-success": "{{username}} erfolgreich archiviert",
       "archive-warning": "Bist du sicher, dass du {{username}} archivieren möchtest?",
       "archive-warning-description": "Die Archivierung deaktiviert den Account. Du kannst ihn später Wiederherstellen oder löschen.",
-      "archive-success": "{{username}} erfolgreich archiviert",
-      "restore-success": "{{username}} erfolgreich wiederhergestellt",
       "create-a-member": "Mitglied hinzufügen",
       "delete-member": "Mitglied löschen",
+      "delete-success": "{{username}} erfolgreich gelöscht",
       "delete-warning": "Bist du sicher, dass du {{username}} löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
       "delete-warning-description": "DIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
-      "delete-success": "{{username}} erfolgreich gelöscht",
-      "user": "Benutzer"
+      "restore-success": "{{username}} erfolgreich wiederhergestellt",
+      "user": "Benutzer",
+      "label": "Mitglied",
+      "list-title": "Mitgliederliste",
+      "no-members-found": "Keine Mitglieder gefunden"
     },
-    "memo-related": "Notiz",
-    "memo-related-settings": {
-      "content-length-limit": "Limitierung der Inhaltslänge (Byte)",
-      "enable-blur-nsfw-content": "Unschärfe für sensible Inhalte (NSFW) aktivieren",
-      "enable-memo-comments": "Kommentare für Notizen aktivieren",
-      "enable-memo-location": "Notiz-Standort aktivieren",
-      "reactions": "Reaktionen",
-      "title": "Notiz-Einstellungen"
+    "my-account": {
+      "label": "Mein Konto"
     },
-    "my-account": "Mein Konto",
-    "preference": "Einstellungen",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "Anzeigedatum der Notiz",
       "default-memo-visibility": "Standard-Notizsichtbarkeit",
-      "theme": "Design"
+      "theme": "Design",
+      "label": "Einstellungen"
     },
     "shortcut": {
-      "delete-confirm": "Bist du dir sicher, dass du die Verknüpfung `{{title}}` löschen möchtest?",
+      "delete-confirm": "Bist du sicher, dass du die Verknüpfung `{{title}}` löschen möchtest?",
       "delete-success": "Verknüpfung `{{title}}` erfolgreich gelöscht"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "Autorisierungsendpunkt",
       "client-id": "Client ID",
       "client-secret": "Client Secret",
@@ -343,10 +356,10 @@
       "template": "Vorlage",
       "token-endpoint": "Token-Endpunkt",
       "update-sso": "SSO aktualisieren",
-      "user-endpoint": "Benutzer-Endpunkt"
+      "user-endpoint": "Benutzer-Endpunkt",
+      "label": "SSO"
     },
-    "storage": "Speicher",
-    "storage-section": {
+    "storage": {
       "accesskey": "Zugangsschlüssel",
       "accesskey-placeholder": "Zugangsschlüssel / Zugangs-ID",
       "bucket": "Bucket",
@@ -378,10 +391,10 @@
       "url-prefix-placeholder": "Benutzerdefiniertes URL-Präfix, optional",
       "url-suffix": "URL-Suffix",
       "url-suffix-placeholder": "Benutzerdefiniertes URL-Suffix, optional",
-      "warning-text": "Bist du sicher, dass du den Speicherdienst \"{{name}}\" löschen möchtest? DIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN"
+      "warning-text": "Bist du sicher, dass du den Speicherdienst \"{{name}}\" löschen möchtest? DIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
+      "label": "Speicher"
     },
-    "system": "System",
-    "system-section": {
+    "system": {
       "additional-script": "Zusätzliches Skript",
       "additional-script-placeholder": "Zusätzlicher JavaScript-Code",
       "additional-style": "Zusätzlicher Stil",
@@ -396,7 +409,6 @@
       "disable-password-login": "Passwort-Login deaktivieren",
       "disable-password-login-final-warning": "Bitte tippe \"CONFIRM\", wenn du weißt, was du tust.",
       "disable-password-login-warning": "Dadurch wird der Passwort-Login für alle Benutzer deaktiviert. Es ist nicht möglich, sich anzumelden, ohne diese Einstellung in der Datenbank rückgängig zu machen, falls deine konfigurierten Identitätsanbieter ausfallen. Sei besonders vorsichtig beim Entfernen eines Identitätsanbieters.",
-      "disable-public-memos": "Öffentliche Notizen deaktivieren",
       "display-with-updated-time": "Mit aktualisierter Zeit anzeigen",
       "enable-auto-compact": "Automatische Komprimierung aktivieren",
       "enable-double-click-to-edit": "Doppelklick zum Bearbeiten aktivieren",
@@ -406,12 +418,68 @@
       "max-upload-size-hint": "Empfohlener Wert ist 32 MiB.",
       "removed-completed-task-list-items": "Entfernen abgeschlossener Aufgaben aktivieren",
       "server-name": "Servername",
-      "title": "Allgemein"
+      "title": "Allgemein",
+      "label": "System"
     },
     "version": "Version",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "Zugangstoken in die Zwischenablage kopiert",
+      "access-token-deleted": "Zugangstoken `{{description}}` gelöscht",
+      "access-token-deletion": "Bist du sicher, dass du das Zugangstoken `{{description}}` löschen möchtest? DIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN.",
+      "access-token-deletion-description": "Diese Aktion kann nicht rückgängig gemacht werden. Du musst alle Dienste, die diesen Token verwenden, mit einem neuen Token nutzen.",
       "create-dialog": {
-        "an-easy-to-remember-name": "Einfach zu merkender Name",
+        "access-token-created": "Zugangstoken `{{description}}` erstellt",
+        "create-access-token": "Zugangstoken erstellen",
+        "created-at": "Erstellt am",
+        "description": "Beschreibung",
+        "duration-1m": "1 Monat",
+        "duration-8h": "8 Stunden",
+        "duration-never": "Nie",
+        "expiration": "Ablauf",
+        "expires-at": "Läuft ab am",
+        "some-description": "Eine Beschreibung..."
+      },
+      "description": "Liste aller Zugangstoken für deinen Benutzer.",
+      "title": "Zugangstoken",
+      "token": "Token",
+      "no-tokens-found": "Keine Zugriffstoken gefunden"
+    },
+    "account": {
+      "change-password": "Passwort ändern",
+      "email-note": "Optional",
+      "export-memos": "Notizen exportieren",
+      "nickname-note": "Wird im Banner angezeigt",
+      "openapi-reset": "OpenAPI Key zurücksetzen",
+      "openapi-sample-post": "Hallo #memos von {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "API zurücksetzen",
+      "title": "Konto-Informationen",
+      "update-information": "Informationen ändern",
+      "username-note": "Zum Anmelden verwendet"
+    },
+    "instance": {
+      "disallow-change-nickname": "Ändern des Spitznamens verbieten",
+      "disallow-change-username": "Ändern des Benutzernamens verbieten",
+      "disallow-password-auth": "Passwort-Authentifizierung verbieten",
+      "disallow-user-registration": "Benutzerregistrierung verbieten",
+      "monday": "Montag",
+      "saturday": "Samstag",
+      "sunday": "Sonntag",
+      "week-start-day": "Wochenstarttag"
+    },
+    "memo": {
+      "content-length-limit": "Limitierung der Inhaltslänge (Byte)",
+      "enable-blur-sensitive-content": "Unschärfe für sensible Inhalte (NSFW) aktivieren",
+      "enable-memo-comments": "Kommentare für Notizen aktivieren",
+      "enable-memo-location": "Notiz-Standort aktivieren",
+      "reactions": "Reaktionen",
+      "title": "Notiz-Einstellungen",
+      "label": "Notiz",
+      "reactions-required": "Die Reaktionsliste darf nicht leer sein"
+    },
+    "webhook": {
+      "create-dialog": {
+        "an-easy-to-remember-name": "Einprägsamer Name",
         "create-webhook": "Webhook erstellen",
         "create-webhook-success": "Webhook `{{name}}` erstellt",
         "edit-webhook": "Webhook bearbeiten",
@@ -421,22 +489,27 @@
       },
       "delete-dialog": {
         "delete-webhook-description": "Diese Aktion kann nicht rückgängig gemacht werden",
-        "delete-webhook-title": "Bist du dir sicher, dass du den Webhook `{{name}}` löschen möchtest?",
-        "delete-webhook-success": "Webhook `{{name}}` erfolgreich gelöscht"
+        "delete-webhook-success": "Webhook `{{name}}` erfolgreich gelöscht",
+        "delete-webhook-title": "Bist du sicher, dass du den Webhook `{{name}}` löschen möchtest?"
       },
       "no-webhooks-found": "Keine Webhooks gefunden.",
       "title": "Webhooks",
-      "url": "URL"
+      "url": "URL",
+      "label": "Webhooks"
     },
-    "instance-section": {
-      "disallow-change-nickname": "Ändern des Spitznamens verbieten",
-      "disallow-change-username": "Ändern des Benutzernamens verbieten",
-      "disallow-password-auth": "Passwort-Authentifizierung verbieten",
-      "disallow-user-registration": "Benutzerregistrierung verbieten",
-      "monday": "Montag",
-      "saturday": "Samstag",
-      "sunday": "Sonntag",
-      "week-start-day": "Wochenstarttag"
+    "tags": {
+      "label": "Schlagworte",
+      "title": "Tag-Metadaten",
+      "description": "Weisen Sie Tags instanzenweit optionale Anzeigefarben zu oder verwischen Sie passende Memoinhalte. Tag-Namen werden als verankerte Regex-Muster behandelt.",
+      "background-color": "Hintergrundfarbe",
+      "blur-content": "Inhalte verwischen",
+      "no-tags-configured": "Keine Tag-Metadaten konfiguriert.",
+      "tag-name": "Tag-Name",
+      "tag-name-placeholder": "z.B. work oder project/.*",
+      "tag-already-exists": "Tag existiert bereits.",
+      "tag-pattern-hint": "Tag-Name oder Regex-Muster (z. B. project/.* stimmt mit allen project/-Tags überein)",
+      "invalid-regex": "Ungültiges oder unsicheres Regex-Muster.",
+      "using-default-color": "Standardfarbe verwenden."
     }
   },
   "tag": {
@@ -444,8 +517,8 @@
     "create-tag": "Tag erstellen",
     "create-tags-guide": "Du kannst Tags erstellen, indem du `#tag` eingibst.",
     "delete-confirm": "Bist du sicher, dass du diesen Tag löschen möchtest? Alle zugehörigen Notizen werden archiviert.",
-    "delete-tag": "Tag löschen",
     "delete-success": "Tag erfolgreich gelöscht",
+    "delete-tag": "Tag löschen",
     "new-name": "Neuer Name",
     "no-tag-found": "Kein Tag gefunden",
     "old-name": "Alter Name",
@@ -462,5 +535,10 @@
     "select-visibility": "Sichtbarkeit",
     "tags": "Tags",
     "upload-attachment": "Anhang hochladen"
+  },
+  "live-update": {
+    "connected": "Live-Updates aktiv",
+    "connecting": "Verbindung zu Live-Updates wird hergestellt...",
+    "disconnected": "Live-Updates nicht verfügbar"
   }
 }

@@ -42,15 +42,15 @@ const FILTER_CONFIGS: Record<FilterFactor, FilterConfig> = {
   },
   "property.hasLink": {
     icon: LinkIcon,
-    getLabel: (_, t) => t("filters.has-link"),
+    getLabel: (_, t) => t("memo.filters.has-link"),
   },
   "property.hasTaskList": {
     icon: CheckCircleIcon,
-    getLabel: (_, t) => t("filters.has-task-list"),
+    getLabel: (_, t) => t("memo.filters.has-task-list"),
   },
   "property.hasCode": {
     icon: CodeIcon,
-    getLabel: (_, t) => t("filters.has-code"),
+    getLabel: (_, t) => t("memo.filters.has-code"),
   },
 };
 

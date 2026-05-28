@@ -10,9 +10,9 @@ import (
 )
 
 func (d *DB) CreateIdentityProvider(ctx context.Context, create *store.IdentityProvider) (*store.IdentityProvider, error) {
-	placeholders := []string{"?", "?", "?", "?"}
-	fields := []string{"`name`", "`type`", "`identifier_filter`", "`config`"}
-	args := []any{create.Name, create.Type.String(), create.IdentifierFilter, create.Config}
+	placeholders := []string{"?", "?", "?", "?", "?"}
+	fields := []string{"`uid`", "`name`", "`type`", "`identifier_filter`", "`config`"}
+	args := []any{create.UID, create.Name, create.Type.String(), create.IdentifierFilter, create.Config}
 
 	stmt := "INSERT INTO `idp` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholders, ", ") + ") RETURNING `id`"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(&create.ID); err != nil {
@@ -28,10 +28,14 @@ func (d *DB) ListIdentityProviders(ctx context.Context, find *store.FindIdentity
 	if v := find.ID; v != nil {
 		where, args = append(where, fmt.Sprintf("id = $%d", len(args)+1)), append(args, *v)
 	}
+	if v := find.UID; v != nil {
+		where, args = append(where, fmt.Sprintf("uid = $%d", len(args)+1)), append(args, *v)
+	}
 
 	rows, err := d.db.QueryContext(ctx, `
 		SELECT
 			id,
+			uid,
 			name,
 			type,
 			identifier_filter,
@@ -51,6 +55,7 @@ func (d *DB) ListIdentityProviders(ctx context.Context, find *store.FindIdentity
 		var typeString string
 		if err := rows.Scan(
 			&identityProvider.ID,
+			&identityProvider.UID,
 			&identityProvider.Name,
 			&typeString,
 			&identityProvider.IdentifierFilter,
@@ -86,12 +91,13 @@ func (d *DB) UpdateIdentityProvider(ctx context.Context, update *store.UpdateIde
 		UPDATE idp
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
-		RETURNING id, name, type, identifier_filter, config
+		RETURNING id, uid, name, type, identifier_filter, config
 	`
 	var identityProvider store.IdentityProvider
 	var typeString string
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
 		&identityProvider.ID,
+		&identityProvider.UID,
 		&identityProvider.Name,
 		&typeString,
 		&identityProvider.IdentifierFilter,

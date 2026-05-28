@@ -37,6 +37,12 @@ func (s *Store) UpsertInstanceSetting(ctx context.Context, upsert *storepb.Insta
 		valueBytes, err = protojson.Marshal(upsert.GetStorageSetting())
 	} else if upsert.Key == storepb.InstanceSettingKey_MEMO_RELATED {
 		valueBytes, err = protojson.Marshal(upsert.GetMemoRelatedSetting())
+	} else if upsert.Key == storepb.InstanceSettingKey_TAGS {
+		valueBytes, err = protojson.Marshal(upsert.GetTagsSetting())
+	} else if upsert.Key == storepb.InstanceSettingKey_NOTIFICATION {
+		valueBytes, err = protojson.Marshal(upsert.GetNotificationSetting())
+	} else if upsert.Key == storepb.InstanceSettingKey_AI {
+		valueBytes, err = protojson.Marshal(upsert.GetAiSetting())
 	} else {
 		return nil, errors.Errorf("unsupported instance setting key: %v", upsert.Key)
 	}
@@ -168,10 +174,74 @@ func (s *Store) GetInstanceMemoRelatedSetting(ctx context.Context) (*storepb.Ins
 	return instanceMemoRelatedSetting, nil
 }
 
+func (s *Store) GetInstanceTagsSetting(ctx context.Context) (*storepb.InstanceTagsSetting, error) {
+	instanceSetting, err := s.GetInstanceSetting(ctx, &FindInstanceSetting{
+		Name: storepb.InstanceSettingKey_TAGS.String(),
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get instance tags setting")
+	}
+
+	instanceTagsSetting := &storepb.InstanceTagsSetting{}
+	if instanceSetting != nil {
+		instanceTagsSetting = instanceSetting.GetTagsSetting()
+	}
+	if instanceTagsSetting.Tags == nil {
+		instanceTagsSetting.Tags = map[string]*storepb.InstanceTagMetadata{}
+	}
+	s.instanceSettingCache.Set(ctx, storepb.InstanceSettingKey_TAGS.String(), &storepb.InstanceSetting{
+		Key:   storepb.InstanceSettingKey_TAGS,
+		Value: &storepb.InstanceSetting_TagsSetting{TagsSetting: instanceTagsSetting},
+	})
+	return instanceTagsSetting, nil
+}
+
+func (s *Store) GetInstanceNotificationSetting(ctx context.Context) (*storepb.InstanceNotificationSetting, error) {
+	instanceSetting, err := s.GetInstanceSetting(ctx, &FindInstanceSetting{
+		Name: storepb.InstanceSettingKey_NOTIFICATION.String(),
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get instance notification setting")
+	}
+
+	instanceNotificationSetting := &storepb.InstanceNotificationSetting{}
+	if instanceSetting != nil {
+		instanceNotificationSetting = instanceSetting.GetNotificationSetting()
+	}
+	if instanceNotificationSetting.Email == nil {
+		instanceNotificationSetting.Email = &storepb.InstanceNotificationSetting_EmailSetting{}
+	}
+	s.instanceSettingCache.Set(ctx, storepb.InstanceSettingKey_NOTIFICATION.String(), &storepb.InstanceSetting{
+		Key:   storepb.InstanceSettingKey_NOTIFICATION,
+		Value: &storepb.InstanceSetting_NotificationSetting{NotificationSetting: instanceNotificationSetting},
+	})
+	return instanceNotificationSetting, nil
+}
+
+// GetInstanceAISetting gets the AI provider settings for the instance.
+func (s *Store) GetInstanceAISetting(ctx context.Context) (*storepb.InstanceAISetting, error) {
+	instanceSetting, err := s.GetInstanceSetting(ctx, &FindInstanceSetting{
+		Name: storepb.InstanceSettingKey_AI.String(),
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get instance AI setting")
+	}
+
+	instanceAISetting := &storepb.InstanceAISetting{}
+	if instanceSetting != nil {
+		instanceAISetting = instanceSetting.GetAiSetting()
+	}
+	s.instanceSettingCache.Set(ctx, storepb.InstanceSettingKey_AI.String(), &storepb.InstanceSetting{
+		Key:   storepb.InstanceSettingKey_AI,
+		Value: &storepb.InstanceSetting_AiSetting{AiSetting: instanceAISetting},
+	})
+	return instanceAISetting, nil
+}
+
 const (
-	defaultInstanceStorageType       = storepb.InstanceStorageSetting_DATABASE
+	defaultInstanceStorageType       = storepb.InstanceStorageSetting_LOCAL
 	defaultInstanceUploadSizeLimitMb = 30
-	defaultInstanceFilepathTemplate  = "assets/{timestamp}_{filename}"
+	defaultInstanceFilepathTemplate  = "assets/{timestamp}_{uuid}_{filename}"
 )
 
 func (s *Store) GetInstanceStorageSetting(ctx context.Context) (*storepb.InstanceStorageSetting, error) {
@@ -231,6 +301,24 @@ func convertInstanceSettingFromRaw(instanceSettingRaw *InstanceSetting) (*storep
 			return nil, err
 		}
 		instanceSetting.Value = &storepb.InstanceSetting_MemoRelatedSetting{MemoRelatedSetting: memoRelatedSetting}
+	case storepb.InstanceSettingKey_TAGS.String():
+		tagsSetting := &storepb.InstanceTagsSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(instanceSettingRaw.Value), tagsSetting); err != nil {
+			return nil, err
+		}
+		instanceSetting.Value = &storepb.InstanceSetting_TagsSetting{TagsSetting: tagsSetting}
+	case storepb.InstanceSettingKey_NOTIFICATION.String():
+		notificationSetting := &storepb.InstanceNotificationSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(instanceSettingRaw.Value), notificationSetting); err != nil {
+			return nil, err
+		}
+		instanceSetting.Value = &storepb.InstanceSetting_NotificationSetting{NotificationSetting: notificationSetting}
+	case storepb.InstanceSettingKey_AI.String():
+		aiSetting := &storepb.InstanceAISetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(instanceSettingRaw.Value), aiSetting); err != nil {
+			return nil, err
+		}
+		instanceSetting.Value = &storepb.InstanceSetting_AiSetting{AiSetting: aiSetting}
 	default:
 		// Skip unsupported instance setting key.
 		return nil, nil

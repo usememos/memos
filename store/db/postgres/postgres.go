@@ -55,3 +55,13 @@ func (d *DB) IsInitialized(ctx context.Context) (bool, error) {
 	}
 	return exists, nil
 }
+
+// GetDatabaseSize returns the database size in bytes, or -1 if unavailable.
+func (d *DB) GetDatabaseSize(ctx context.Context) (int64, error) {
+	var size int64
+	const q = `SELECT pg_database_size(current_database())`
+	if err := d.db.QueryRowContext(ctx, q).Scan(&size); err != nil {
+		return -1, errors.Wrap(err, "failed to query postgres database size")
+	}
+	return size, nil
+}

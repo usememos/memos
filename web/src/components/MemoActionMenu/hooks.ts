@@ -4,13 +4,15 @@ import { useCallback } from "react";
 import toast from "react-hot-toast";
 import { useLocation } from "react-router-dom";
 import { useInstance } from "@/contexts/InstanceContext";
-import { useDeleteMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
+import { memoKeys, useDeleteMemo, useUpdateMemo } from "@/hooks/useMemoQueries";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
+import { ROUTES } from "@/router/routes";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import { checkAllTasks, uncheckAllTasks } from "@/utils/markdown-task-actions";
 
 interface UseMemoActionHandlersOptions {
   memo: Memo;
@@ -32,6 +34,31 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
     // Invalidate user stats to trigger refetch
     queryClient.invalidateQueries({ queryKey: userKeys.stats() });
   }, [queryClient]);
+
+  const updateMemoContent = useCallback(
+    async (nextContent: string, context: string) => {
+      if (nextContent === memo.content) {
+        return;
+      }
+
+      try {
+        await updateMemo({
+          update: {
+            name: memo.name,
+            content: nextContent,
+          },
+          updateMask: ["content", "update_time"],
+        });
+        toast.success(t("memo.task-actions.updated"));
+      } catch (error: unknown) {
+        handleError(error, toast.error, {
+          context,
+          fallbackMessage: "An error occurred",
+        });
+      }
+    },
+    [memo.content, memo.name, t, updateMemo],
+  );
 
   const handleTogglePinMemoBtnClick = useCallback(async () => {
     try {
@@ -74,7 +101,7 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
     }
 
     if (isInMemoDetailPage) {
-      navigateTo(memo.state === State.ARCHIVED ? "/" : "/archived");
+      navigateTo(memo.state === State.ARCHIVED ? ROUTES.HOME : ROUTES.ARCHIVED);
     }
     memoUpdatedCallback();
   }, [memo.name, memo.state, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback, updateMemo]);
@@ -93,18 +120,34 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
     toast.success(t("message.succeed-copy-content"));
   }, [memo.content, t]);
 
+  const handleCheckAllTaskListItemsClick = useCallback(async () => {
+    await updateMemoContent(checkAllTasks(memo.content), "Check memo task list items");
+  }, [memo.content, updateMemoContent]);
+
+  const handleUncheckAllTaskListItemsClick = useCallback(async () => {
+    await updateMemoContent(uncheckAllTasks(memo.content), "Uncheck memo task list items");
+  }, [memo.content, updateMemoContent]);
+
   const handleDeleteMemoClick = useCallback(() => {
     setDeleteDialogOpen(true);
   }, [setDeleteDialogOpen]);
 
   const confirmDeleteMemo = useCallback(async () => {
-    await deleteMemo(memo.name);
+    try {
+      await deleteMemo(memo.name);
+    } catch (error: unknown) {
+      handleError(error, toast.error, { context: "Delete memo", fallbackMessage: "An error occurred" });
+      return;
+    }
     toast.success(t("message.deleted-successfully"));
+    if (memo.parent) {
+      queryClient.invalidateQueries({ queryKey: memoKeys.comments(memo.parent) });
+    }
     if (isInMemoDetailPage) {
-      navigateTo("/");
+      navigateTo(ROUTES.HOME);
     }
     memoUpdatedCallback();
-  }, [memo.name, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback, deleteMemo]);
+  }, [memo.name, memo.parent, t, isInMemoDetailPage, navigateTo, memoUpdatedCallback, deleteMemo, queryClient]);
 
   return {
     handleTogglePinMemoBtnClick,
@@ -112,6 +155,8 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
     handleToggleMemoStatusClick,
     handleCopyLink,
     handleCopyContent,
+    handleCheckAllTaskListItemsClick,
+    handleUncheckAllTaskListItemsClick,
     handleDeleteMemoClick,
     confirmDeleteMemo,
   };

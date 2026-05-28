@@ -10,29 +10,44 @@
     "create-your-account": "حساب کاربری خود را ایجاد کنید.",
     "host-tip": "حساب شما به عنوان مدیر سایت تعریف خواهد شد.",
     "new-password": "گذرواژه جدید",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "گذرواژه جدید را تکرار کنید",
     "sign-in-tip": "آیا حساب کاربری تعریف شده دارید؟",
-    "sign-up-tip": "آیا حساب کاربری تعریف شده نداربد؟"
+    "sign-up-tip": "آیا حساب کاربری تعریف شده ندارید؟"
   },
   "common": {
     "about": "درباره",
     "add": "اضافه کردن",
     "admin": "مدیر",
+    "all": "همه",
     "archive": "آرشیو",
     "archived": "آرشیو شده",
+    "attachments": "پیوست‌ها",
+    "auto-expand": "گسترش خودکار",
     "avatar": "آواتار",
     "basic": "ساده",
     "beta": "بتا",
+    "calendar": "تقویم",
     "cancel": "لغو",
     "change": "تعویض",
     "clear": "پاکسازی",
     "close": "بستن",
     "collapse": "جمع کردن",
     "confirm": "تایید",
+    "copy": "کپی",
     "create": "ایجاد",
+    "created-at": "ایجاد شده در",
     "database": "پایگاه داده",
     "day": "روز",
-    "days": "روزها",
+    "days": {
+      "fri": "ج",
+      "mon": "د",
+      "sat": "ش",
+      "sun": "ی",
+      "thu": "پ",
+      "tue": "س",
+      "wed": "چ"
+    },
     "delete": "حذف",
     "description": "توضیحات",
     "edit": "ویرایش",
@@ -45,12 +60,17 @@
     "image": "تصویر",
     "in": "در",
     "inbox": "صندوق ورودی",
+    "input": "ورودی",
     "language": "زبان",
+    "last-updated-at": "آخرین بروزرسانی در",
     "learn-more": "اطلاعات بیشتر",
     "link": "پیوست",
+    "map": "نقشه",
     "mark": "علامت‌گذاری",
     "memo": "یادداشت",
     "memos": "یادداشت‌ها",
+    "more": "بیشتر",
+    "name": "نام",
     "new": "جدید",
     "nickname": "نام مستعار",
     "null": "خالی",
@@ -60,6 +80,10 @@
     "pinned": "نشان شده",
     "preview": "پیشنمایش",
     "profile": "مشخصات",
+    "properties": "ویژگی‌ها",
+    "referenced-by": "ارجاع داده شده توسط",
+    "referencing": "ارجاع دادن",
+    "relations": "روابط",
     "remember-me": "مرابه خاطر بسپار",
     "rename": "تغییر نام دادن",
     "reset": "تنظیم مجدد",
@@ -67,49 +91,77 @@
     "restore": "بازیابی",
     "role": "نقش",
     "save": "ذخیره",
-    "search": "جست و جو",
+    "search": "جستجو",
     "select": "انتخاب کردن",
     "settings": "تنظیمات",
     "share": "اشتراک",
+    "shortcut-filter": "فیلتر میانبر",
+    "shortcuts": "میانبرها",
     "sign-in": "ورود به حساب کاربری",
     "sign-in-with": "{{provider}} ورود با",
     "sign-out": "خروج از حساب کاربری",
     "sign-up": "ایجاد حساب کاربری",
     "statistics": "آمار",
     "tags": "برچسب‌ها",
-    "title": "تیتر",
+    "title": "عنوان",
+    "today": "امروز",
+    "tree-mode": "حالت درختی",
     "type": "نوع",
     "unpin": "حذف نشان",
     "update": "بروزرسانی",
     "upload": "بارگذاری",
+    "user": "کاربر",
     "username": "نام کاربری",
     "version": "نسخه",
     "visibility": "قابل مشاهده توسط",
     "yourself": "خودتان"
   },
-  "days": {
-    "fri": "ج",
-    "mon": "د",
-    "sat": "ش",
-    "sun": "ی",
-    "thu": "پ",
-    "tue": "س",
-    "wed": "چ"
-  },
   "editor": {
-    "add-your-comment-here": "نظر حود را اینجا اضافه کنید...",
+    "add-your-comment-here": "نظر خود را اینجا اضافه کنید...",
     "any-thoughts": "فکر شما...",
+    "exit-focus-mode": "خروج از حالت تمرکز",
+    "focus-mode": "حالت تمرکز",
     "no-changes-detected": "تغییری شناسایی نشد",
-    "save": "ذخیره"
-  },
-  "filters": {
-    "has-code": "دارای کد",
-    "has-link": "دارای پیوند",
-    "has-task-list": "دارای لیست کارها"
+    "save": "ذخیره",
+    "saving": "در حال ذخیره...",
+    "slash-commands": "برای دستورات '/' را تایپ کنید",
+    "insert-menu": {
+      "add-location": "اضافه کردن مکان",
+      "link-memo": "پیوند یادداشت",
+      "upload-file": "آپلود فایل"
+    },
+    "audio-recorder": {
+      "attachment-label": "ضبط صدا",
+      "attachment-label-with-time": "ضبط صدا {{time}}",
+      "discard": "دور انداختن",
+      "error": "میکروفون در دسترس نیست",
+      "error-description": "پس از بررسی دسترسی میکروفون برای این سایت، دوباره امتحان کنید.",
+      "idle-description": "شروع به ضبط کنید تا صدای ضبط شده را به عنوان پیوست اضافه کنید.",
+      "keep": "به ضبط ادامه دهید",
+      "pause-recording": "مکث ضبط صدا",
+      "play-recording": "پخش صدا ضبط شده",
+      "ready": "ضبط آماده است",
+      "ready-description": "کلیپ را پیش نمایش کنید، سپس آن را به عنوان پیوست صوتی نگه داری�� یا آن را دور بیندازید.",
+      "record-again": "دوباره ضبط کن",
+      "recording": "ضبط صدا",
+      "recording-description": "یک پیوست صوتی سریع ضبط کنید. طول فعلی: {{duration}}",
+      "requesting": "درخواست دسترسی...",
+      "requesting-permission": "درخواست دسترسی به میکروفون",
+      "requesting-permission-description": "اجازه دسترسی به میکروفون در مرورگر خود برای شروع ضبط را بدهید.",
+      "start": "شروع به ضبط کنید",
+      "stop": "ضبط را متوقف کنید",
+      "title": "ضبط کننده صدا",
+      "trigger": "ضبط صدا",
+      "unsupported": "ضبط صدا پشتیبانی نمی شود",
+      "unsupported-description": "این مرورگر نمی تواند صدا را از آهنگساز یادداشت ضبط کند."
+    }
   },
   "inbox": {
-    "memo-comment": " یک نظر برروی یادداشت شما «{{memo}}» اضافه کرده است!{{user}}",
-    "version-update": "نسخه جدید «{{version}}» اکنون در دسترس است!"
+    "failed-to-load": "بارگذاری آیتم صندوق ورودی ناموفق بود",
+    "memo-comment": "یک نظر برروی یادداشت شما «{{memo}}» اضافه کرده است!{{user}}",
+    "no-archived": "هیچ اعلان آرشیو شده‌ای نیست",
+    "no-unread": "هیچ اعلان خوانده نشده‌ای نیست",
+    "unread": "خوانده نشده"
   },
   "markdown": {
     "checkbox": "چک‌باکس",
@@ -118,23 +170,30 @@
   },
   "memo": {
     "archived-at": "آرشیو شده در",
-    "click-to-hide-nsfw-content": "برای مخفی کردن محتوای حساس کلیک کنید",
-    "click-to-show-nsfw-content": "برای نمایش محتوای حساس کلیک کنید",
+    "click-to-hide-sensitive-content": "برای مخفی کردن محتوای حساس کلیک کنید",
+    "click-to-show-sensitive-content": "برای نمایش محتوای حساس کلیک کنید",
     "code": "کد",
     "comment": {
       "self": "نظرات",
       "write-a-comment": "یک نظر بنویسید"
     },
+    "copy-content": "کپی محتوا",
+    "copy-link": "کپی پیوند",
     "count-memos-in-date": "{{count}} {{memos}} در {{date}}",
+    "delete-confirm": "آیا مطمئن هستید که می‌خواهید این یادداشت را حذف کنید؟",
+    "delete-confirm-description": "این عمل غیرقابل بازگشت است. پیوست‌ها، پیوندها و ارجاعات نیز حذف خواهند شد.",
     "direction": "جهت",
     "direction-asc": "صعودی",
     "direction-desc": "نزولی",
     "display-time": "زمان نمایش",
-    "filters": "فیلترها",
+    "filters": {
+      "has-code": "دارای کد",
+      "has-link": "دارای پیوند",
+      "has-task-list": "دارای لیست کارها",
+      "label": "فیلترها"
+    },
     "links": "پیوندها",
-    "list": "لیست",
     "load-more": "بارگذاری بیشتر",
-    "masonry": "آجرچینی",
     "no-archived-memos": "یادداشت آرشیو شده‌ای وجود ندارد.",
     "no-memos": "یادداشتی یافت نشد.",
     "order-by": "مرتب‌سازی بر اساس",
@@ -148,6 +207,32 @@
       "private": "خصوصی",
       "protected": "فضای کار",
       "public": "عمومی"
+    },
+    "outline": "طرح کلی",
+    "share": {
+      "active-links": "لینک های اشتراک گذاری فعال",
+      "copied": "کپی شده!",
+      "copy": "لینک را کپی کنید",
+      "create-failed": "پیوند اشتراک‌گذاری ایجاد نشد",
+      "create-link": "لینک جدید ایجاد کنید",
+      "creating": "در حال ایجاد…",
+      "expiry-1-day": "1 روز",
+      "expiry-30-days": "30 روز",
+      "expiry-7-days": "7 روز",
+      "expiry-label": "منقضی می شود",
+      "expiry-never": "هرگز",
+      "expires-on": "تاریخ انقضا {{date}}",
+      "invalid-link": "این پیوند نامعتبر است یا منقضی شده است.",
+      "never-expires": "هرگز منقضی نمی شود",
+      "no-links": "هنوز لینک اشتراک گذاری وجود ندارد. یکی را در زیر ایجاد کنید.",
+      "open-panel": "لینک های اشتراک گذاری را مدیریت کنید",
+      "revoke": "لغو",
+      "revoke-failed": "پیوند لغو نشد",
+      "revoked": "پیوند اشتراک گذاری باطل شد",
+      "section-label": "اشتراک گذاری",
+      "share": "به اشتراک بگذارید",
+      "shared-by": "اشتراک‌گذاری شده توسط {{creator}}",
+      "title": "این یادداشت را به اشتراک بگذارید"
     }
   },
   "message": {
@@ -157,9 +242,19 @@
     "deleted-successfully": "با موفقیت حذف شد",
     "description-is-required": "توضیحات اجباری است",
     "failed-to-embed-memo": "درج یادداشت ناموفق بود",
+    "fill-all": "لطفاً همه فیلدها را پر کنید.",
     "fill-all-required-fields": "لطفا همه فیلدهای ضروری را پر کنید",
+    "maximum-upload-size-is": "حداکثر حجم مجاز بارگذاری {{size}} مگابایت است",
+    "memo-not-found": "یادداشت یافت نشد.",
+    "new-password-not-match": "گذرواژه‌های جدید مطابقت ندارند.",
+    "no-data": "هیچ داده‌ای یافت نشد.",
+    "password-changed": "گذرواژه تغییر یافت",
+    "password-not-match": "گذرواژه‌ها مطابقت ندارند.",
+    "restored-successfully": "با موفقیت بازیابی شد",
+    "succeed-copy-content": "محتوا با موفقیت کپی شد.",
+    "succeed-copy-link": "پیوند با موفقیت کپی شد.",
     "update-succeed": "بروزرسانی موفق بود",
-    "restored-successfully": "با موفقیت بازیابی شد"
+    "user-not-found": "کاربر یافت نشد"
   },
   "reference": {
     "add-references": "افزودن منابع",
@@ -187,16 +282,20 @@
       "title": "ایجاد منبع",
       "upload-method": "روش بارگذاری"
     },
+    "delete-all-unused": "حذف همه استفاده نشده‌ها",
+    "delete-all-unused-confirm": "آیا مطمئن هستید که می‌خواهید همه منابع استفاده نشده را حذف کنید؟ این عمل غیرقابل بازگشت است",
+    "delete-all-unused-error": "حذف منابع استفاده نشده ناموفق بود",
+    "delete-all-unused-success": "منابع با موفقیت حذف شدند",
     "delete-resource": "حذف منبع",
     "delete-selected-resources": "حذف منابع انتخاب شده",
-    "fetching-data": "درحال دریافت اطلاعات...",
+    "fetching-data": "در حال دریافت اطلاعات...",
     "file-drag-drop-prompt": "فایل خود را بکشید و در اینجا رها کنید تا بارگذاری شود",
     "linked-amount": "تعداد پیوست‌ها",
     "no-files-selected": "فایلی انتخاب نشده",
     "no-resources": "منبعی وجود ندارد",
     "no-unused-resources": "منبع بدون استفاده وجود ندارد.",
     "reset-link": "بازنشانی لینک",
-    "reset-link-prompt": "آیا از بازنشانی لینک اطمینان دارید؟ با این کار تمام استفاده‌های این لینک از بین می رود. این عمل غیر قابل بازگشت است ",
+    "reset-link-prompt": "آیا از بازنشانی لینک اطمینان دارید؟ با این کار تمام استفاده‌های این لینک از بین می‌رود. این عمل غیرقابل بازگشت است",
     "reset-resource-link": "بازنشانی لینک منبع",
     "unused-resources": "منابع استفاده نشده"
   },
@@ -205,70 +304,41 @@
     "go-to-home": "برو به خانه"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "توکن دسترسی کپی شد",
-      "access-token-deletion": "آیا از حذف توکن دسترسی {{accessToken}} اطمینان دارید؟ این عمل غیرقابل بازگشت است.",
-      "create-dialog": {
-        "create-access-token": "ایجاد توکن دسترسی",
-        "created-at": "ایجاد شده در",
-        "description": "توضیحات",
-        "duration-1m": "۱ ماه",
-        "duration-8h": "۸ ساعت",
-        "duration-never": "هرگز",
-        "expiration": "انقضا",
-        "expires-at": "منقضی می‌شود در",
-        "some-description": "توضیحی..."
-      },
-      "description": "لیست تمام توکن‌های دسترسی حساب شما.",
-      "title": "توکن‌های دسترسی",
-      "token": "توکن"
-    },
-    "account-section": {
-      "change-password": "تغییر گذرواژه",
-      "email-note": "اختیاری",
-      "export-memos": "خارج کردن یادداشت‌ها",
-      "nickname-note": "در بنر نمایش داده می‌شود",
-      "openapi-reset": "بازنشانی کلید OpenAPI",
-      "openapi-sample-post": "Hello #memos from {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "بازنشانی API",
-      "title": "اطلاعات حساب کاربری",
-      "update-information": "بروزرسانی اطلاعات",
-      "username-note": "برای ورود استفاده می‌شود"
-    },
-    "member": "عضو",
-    "member-list": "لیست اعضا",
-    "member-section": {
+    "member": {
       "admin": "مدیر",
       "archive-member": "آرشیو کردن عضو",
+      "archive-success": "{{username}} با موفقیت آرشیو شد",
       "archive-warning": "آیا از آرشیو کردن {{username}} اطمینان دارید؟",
+      "archive-warning-description": "آرشیو کردن حساب را غیرفعال می‌کند. می‌توانید آن را بعداً بازیابی یا حذف کنید.",
       "create-a-member": "ایجاد عضو",
       "delete-member": "حذف عضو",
-      "delete-warning": "آیا از حذف {{username}} اطمینان دارید؟ این عمل غیرقابل بازگشت است",
-      "user": "کاربر"
+      "delete-success": "{{username}} با موفقیت حذف شد",
+      "delete-warning": "آیا از حذف {{username}} اطمینان دارید؟",
+      "delete-warning-description": "این عمل غیرقابل بازگشت است",
+      "restore-success": "{{username}} با موفقیت بازیابی شد",
+      "user": "کاربر",
+      "label": "عضو",
+      "list-title": "لیست اعضا",
+      "no-members-found": "هیچ عضوی پیدا نشد"
     },
-    "memo-related": "یادداشت",
-    "memo-related-settings": {
-      "content-length-limit": "محدودیت طول محتوا (بایت)",
-      "enable-blur-nsfw-content": "فعال‌سازی تار کردن محتوای حساس (NSFW)",
-      "enable-memo-comments": "فعال‌سازی نظرات یادداشت",
-      "enable-memo-location": "فعال‌سازی موقعیت یادداشت",
-      "reactions": "واکنش‌ها",
-      "title": "تنظیمات یادداشت"
+    "my-account": {
+      "label": "حساب من"
     },
-    "my-account": "حساب من",
-    "preference": "ترجیحات",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "زمان نمایش یادداشت",
       "default-memo-visibility": "قابلیت مشاهده پیش‌فرض یادداشت",
-      "theme": "پوسته"
+      "theme": "پوسته",
+      "label": "ترجیحات"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "shortcut": {
+      "delete-confirm": "آیا مطمئن هستید که می‌خواهید میانبر «{{title}}» را حذف کنید؟",
+      "delete-success": "میانبر «{{title}}» با موفقیت حذف شد"
+    },
+    "sso": {
       "authorization-endpoint": "آدرس نقطه مجوز",
       "client-id": "شناسه کلاینت",
       "client-secret": "راز کلاینت",
-      "confirm-delete": "آیا از حذف پیکربندی SSO \"{{name}}\" اطمینان دارید؟ این عمل غیرقابل بازگشت است",
+      "confirm-delete": "آیا از حذف پیکربندی SSO «{{name}}» اطمینان دارید؟ این عمل غیرقابل بازگشت است",
       "create-sso": "ایجاد SSO",
       "custom": "سفارشی",
       "delete-sso": "تایید حذف",
@@ -286,10 +356,10 @@
       "template": "قالب",
       "token-endpoint": "آدرس نقطه توکن",
       "update-sso": "بروزرسانی SSO",
-      "user-endpoint": "آدرس نقطه کاربر"
+      "user-endpoint": "آدرس نقطه کاربر",
+      "label": "SSO"
     },
-    "storage": "ذخیره‌سازی",
-    "storage-section": {
+    "storage": {
       "accesskey": "کلید دسترسی",
       "accesskey-placeholder": "کلید دسترسی / شناسه دسترسی",
       "bucket": "باکت",
@@ -321,10 +391,10 @@
       "url-prefix-placeholder": "پیشوند سفارشی آدرس، اختیاری",
       "url-suffix": "پسوند آدرس",
       "url-suffix-placeholder": "پسوند سفارشی آدرس، اختیاری",
-      "warning-text": "آیا از حذف سرویس ذخیره‌سازی \"{{name}}\" اطمینان دارید؟ این عمل غیرقابل بازگشت است"
+      "warning-text": "آیا از حذف سرویس ذخیره‌سازی «{{name}}» اطمینان دارید؟ این عمل غیرقابل بازگشت است",
+      "label": "ذخیره‌سازی"
     },
-    "system": "سیستم",
-    "system-section": {
+    "system": {
       "additional-script": "اسکریپت اضافی",
       "additional-script-placeholder": "کد جاوااسکریپت اضافی",
       "additional-style": "استایل اضافی",
@@ -337,9 +407,8 @@
         "title": "سفارشی‌سازی سرور"
       },
       "disable-password-login": "غیرفعال‌سازی ورود با گذرواژه",
-      "disable-password-login-final-warning": "لطفاً اگر مطمئن هستید \"CONFIRM\" را وارد کنید.",
+      "disable-password-login-final-warning": "لطفاً اگر مطمئن هستید «CONFIRM» را وارد کنید.",
       "disable-password-login-warning": "این کار ورود با گذرواژه را برای همه کاربران غیرفعال می‌کند. اگر ارائه‌دهندگان هویت شما از کار بیفتند، بدون بازگرداندن این تنظیم در پایگاه داده، ورود ممکن نیست. هنگام حذف ارائه‌دهنده هویت دقت کنید.",
-      "disable-public-memos": "غیرفعال‌سازی یادداشت‌های عمومی",
       "display-with-updated-time": "نمایش با زمان بروزرسانی",
       "enable-auto-compact": "فعال‌سازی فشرده‌سازی خودکار",
       "enable-double-click-to-edit": "فعال‌سازی دوبار کلیک برای ویرایش",
@@ -349,23 +418,46 @@
       "max-upload-size-hint": "مقدار پیشنهادی ۳۲ مگابایت است.",
       "removed-completed-task-list-items": "فعال‌سازی حذف موارد تکمیل‌شده لیست کارها",
       "server-name": "نام سرور",
-      "title": "عمومی"
+      "title": "عمومی",
+      "label": "سیستم"
     },
     "version": "نسخه",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "توکن دسترسی کپی شد",
+      "access-token-deleted": "توکن دسترسی «{{description}}» حذف شد",
+      "access-token-deletion": "آیا از حذف توکن دسترسی «{{description}}» اطمینان دارید؟",
+      "access-token-deletion-description": "این عمل غیرقابل بازگشت است. باید هر سرویسی که از این توکن استفاده می‌کند را به‌روزرسانی کنید تا از توکن جدید استفاده کند.",
       "create-dialog": {
-        "an-easy-to-remember-name": "نامی آسان برای به خاطر سپردن",
-        "create-webhook": "ایجاد وب‌هوک",
-        "edit-webhook": "ویرایش وب‌هوک",
-        "payload-url": "آدرس بارگذاری",
-        "title": "عنوان",
-        "url-example-post-receive": "https://example.com/postreceive"
+        "access-token-created": "توکن دسترسی «{{description}}» ایجاد شد",
+        "create-access-token": "ایجاد توکن دسترسی",
+        "created-at": "ایجاد شده در",
+        "description": "توضیحات",
+        "duration-1m": "۱ ماه",
+        "duration-8h": "۸ ساعت",
+        "duration-never": "هرگز",
+        "expiration": "انقضا",
+        "expires-at": "منقضی می‌شود در",
+        "some-description": "توضیحی..."
       },
-      "no-webhooks-found": "وب‌هوکی یافت نشد.",
-      "title": "وب‌هوک‌ها",
-      "url": "آدرس"
+      "description": "لیست تمام توکن‌های دسترسی حساب شما.",
+      "title": "توکن‌های دسترسی",
+      "token": "توکن",
+      "no-tokens-found": "هیچ نشانه دسترسی یافت نشد"
     },
-    "instance-section": {
+    "account": {
+      "change-password": "تغییر گذرواژه",
+      "email-note": "اختیاری",
+      "export-memos": "صادرات یادداشت‌ها",
+      "nickname-note": "در بنر نمایش داده می‌شود",
+      "openapi-reset": "بازنشانی کلید OpenAPI",
+      "openapi-sample-post": "Hello #memos from {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "بازنشانی API",
+      "title": "اطلاعات حساب کاربری",
+      "update-information": "بروزرسانی اطلاعات",
+      "username-note": "برای ورود استفاده می‌شود"
+    },
+    "instance": {
       "disallow-change-nickname": "غیرفعال‌سازی تغییر نام مستعار",
       "disallow-change-username": "غیرفعال‌سازی تغییر نام کاربری",
       "disallow-password-auth": "غیرفعال‌سازی احراز هویت با گذرواژه",
@@ -374,6 +466,50 @@
       "saturday": "شنبه",
       "sunday": "یکشنبه",
       "week-start-day": "روز شروع هفته"
+    },
+    "memo": {
+      "content-length-limit": "محدودیت طول محتوا (بایت)",
+      "enable-blur-sensitive-content": "فعال‌سازی تار کردن محتوای حساس (NSFW)",
+      "enable-memo-comments": "فعال‌سازی نظرات یادداشت",
+      "enable-memo-location": "فعال‌سازی موقعیت یادداشت",
+      "reactions": "واکنش‌ها",
+      "title": "تنظیمات یادداشت",
+      "label": "یادداشت",
+      "reactions-required": "لیست واکنش ها نباید خالی باشد"
+    },
+    "webhook": {
+      "create-dialog": {
+        "an-easy-to-remember-name": "نامی آسان برای به خاطر سپردن",
+        "create-webhook": "ایجاد وب‌هوک",
+        "create-webhook-success": "وب‌هوک «{{name}}» ایجاد شد",
+        "edit-webhook": "ویرایش وب‌هوک",
+        "payload-url": "آدرس بارگذاری",
+        "title": "عنوان",
+        "url-example-post-receive": "https://example.com/postreceive"
+      },
+      "delete-dialog": {
+        "delete-webhook-description": "این عمل غیرقابل بازگشت است.",
+        "delete-webhook-success": "وب‌هوک «{{name}}» با موفقیت حذف شد",
+        "delete-webhook-title": "آیا مطمئن هستید که می‌خواهید وب‌هوک «{{name}}» را حذف کنید؟"
+      },
+      "no-webhooks-found": "وب‌هوکی یافت نشد.",
+      "title": "وب‌هوک‌ها",
+      "url": "آدرس",
+      "label": "وب‌هوک‌ها"
+    },
+    "tags": {
+      "label": "برچسب ها",
+      "title": "متادیتا را تگ کنید",
+      "description": "رنگ‌های نمایش اختیاری را به برچسب‌ها در سطح نمونه اختصاص دهید یا محتوای یادداشت منطبق را محو کنید. نام برچسب ها به عنوان الگوهای رژکس لنگردار در نظر گرفته می شوند.",
+      "background-color": "رنگ پس زمینه",
+      "blur-content": "محو کردن محتوا",
+      "no-tags-configured": "هیچ متادیتای برچسب پیکربندی نشده است.",
+      "tag-name": "نام را تگ کنید",
+      "tag-name-placeholder": "به عنوان مثال work یا project/.*",
+      "tag-already-exists": "برچسب از قبل وجود دارد.",
+      "tag-pattern-hint": "نام برچسب یا الگوی regex (به عنوان مثال project/.* با همه برچسب های project/ مطابقت دارد)",
+      "invalid-regex": "الگوی regex نامعتبر یا ناایمن.",
+      "using-default-color": "استفاده از رنگ پیش فرض"
     }
   },
   "tag": {
@@ -381,6 +517,7 @@
     "create-tag": "ایجاد برچسب",
     "create-tags-guide": "می‌توانید با وارد کردن `#برچسب` برچسب بسازید.",
     "delete-confirm": "آیا از حذف این برچسب اطمینان دارید؟ همه یادداشت‌های مرتبط آرشیو خواهند شد.",
+    "delete-success": "برچسب با موفقیت حذف شد",
     "delete-tag": "حذف برچسب",
     "new-name": "نام جدید",
     "no-tag-found": "برچسبی یافت نشد",
@@ -390,5 +527,18 @@
     "rename-success": "برچسب با موفقیت تغییر نام یافت",
     "rename-tag": "تغییر نام برچسب",
     "rename-tip": "همه یادداشت‌های شما با این برچسب بروزرسانی خواهند شد."
+  },
+  "tooltip": {
+    "link-memo": "پیوند یادداشت",
+    "markdown-menu": "مارک‌داون",
+    "select-location": "موقعیت",
+    "select-visibility": "قابلیت مشاهده",
+    "tags": "برچسب‌ها",
+    "upload-attachment": "بارگذاری پیوست(ها)"
+  },
+  "live-update": {
+    "connected": "به روز رسانی زنده فعال است",
+    "connecting": "در حال اتصال به به‌روزرسانی‌های زنده...",
+    "disconnected": "به روز رسانی زنده در دسترس نیست"
   }
 }

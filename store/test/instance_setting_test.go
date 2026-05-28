@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	colorpb "google.golang.org/genproto/googleapis/type/color"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -193,9 +194,9 @@ func TestInstanceSettingStorageSetting(t *testing.T) {
 	storageSetting, err := ts.GetInstanceStorageSetting(ctx)
 	require.NoError(t, err)
 	require.NotNil(t, storageSetting)
-	require.Equal(t, storepb.InstanceStorageSetting_DATABASE, storageSetting.StorageType)
+	require.Equal(t, storepb.InstanceStorageSetting_LOCAL, storageSetting.StorageType)
 	require.Equal(t, int64(30), storageSetting.UploadSizeLimitMb)
-	require.Equal(t, "assets/{timestamp}_{filename}", storageSetting.FilepathTemplate)
+	require.Equal(t, "assets/{timestamp}_{uuid}_{filename}", storageSetting.FilepathTemplate)
 
 	// Set custom storage setting
 	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
@@ -216,6 +217,156 @@ func TestInstanceSettingStorageSetting(t *testing.T) {
 	require.Equal(t, storepb.InstanceStorageSetting_LOCAL, storageSetting.StorageType)
 	require.Equal(t, int64(100), storageSetting.UploadSizeLimitMb)
 	require.Equal(t, "uploads/{date}/{filename}", storageSetting.FilepathTemplate)
+
+	ts.Close()
+}
+
+func TestInstanceSettingTagsSetting(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+
+	tagsSetting, err := ts.GetInstanceTagsSetting(ctx)
+	require.NoError(t, err)
+	require.NotNil(t, tagsSetting)
+	require.Empty(t, tagsSetting.Tags)
+
+	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_TAGS,
+		Value: &storepb.InstanceSetting_TagsSetting{
+			TagsSetting: &storepb.InstanceTagsSetting{
+				Tags: map[string]*storepb.InstanceTagMetadata{
+					"bug": {
+						BackgroundColor: &colorpb.Color{
+							Red:   0.9,
+							Green: 0.1,
+							Blue:  0.1,
+						},
+					},
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	tagsSetting, err = ts.GetInstanceTagsSetting(ctx)
+	require.NoError(t, err)
+	require.Contains(t, tagsSetting.Tags, "bug")
+	require.InDelta(t, 0.9, tagsSetting.Tags["bug"].GetBackgroundColor().GetRed(), 0.0001)
+
+	ts.Close()
+}
+
+func TestInstanceSettingTagsSettingWithoutColor(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+
+	_, err := ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_TAGS,
+		Value: &storepb.InstanceSetting_TagsSetting{
+			TagsSetting: &storepb.InstanceTagsSetting{
+				Tags: map[string]*storepb.InstanceTagMetadata{
+					"spoiler": {
+						BlurContent: true,
+					},
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	tagsSetting, err := ts.GetInstanceTagsSetting(ctx)
+	require.NoError(t, err)
+	require.Contains(t, tagsSetting.Tags, "spoiler")
+	require.Nil(t, tagsSetting.Tags["spoiler"].GetBackgroundColor())
+	require.True(t, tagsSetting.Tags["spoiler"].GetBlurContent())
+
+	ts.Close()
+}
+
+func TestInstanceSettingNotificationSetting(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+
+	notificationSetting, err := ts.GetInstanceNotificationSetting(ctx)
+	require.NoError(t, err)
+	require.NotNil(t, notificationSetting)
+	require.NotNil(t, notificationSetting.Email)
+	require.False(t, notificationSetting.Email.Enabled)
+
+	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_NOTIFICATION,
+		Value: &storepb.InstanceSetting_NotificationSetting{
+			NotificationSetting: &storepb.InstanceNotificationSetting{
+				Email: &storepb.InstanceNotificationSetting_EmailSetting{
+					Enabled:      true,
+					SmtpHost:     "smtp.example.com",
+					SmtpPort:     587,
+					SmtpUsername: "bot@example.com",
+					SmtpPassword: "secret",
+					FromEmail:    "bot@example.com",
+					FromName:     "Memos Bot",
+					ReplyTo:      "support@example.com",
+					UseTls:       true,
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	notificationSetting, err = ts.GetInstanceNotificationSetting(ctx)
+	require.NoError(t, err)
+	require.True(t, notificationSetting.Email.Enabled)
+	require.Equal(t, "smtp.example.com", notificationSetting.Email.SmtpHost)
+	require.Equal(t, int32(587), notificationSetting.Email.SmtpPort)
+	require.Equal(t, "bot@example.com", notificationSetting.Email.FromEmail)
+
+	ts.Close()
+}
+
+func TestInstanceSettingAISetting(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+
+	aiSetting, err := ts.GetInstanceAISetting(ctx)
+	require.NoError(t, err)
+	require.NotNil(t, aiSetting)
+	require.Empty(t, aiSetting.Providers)
+
+	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_AI,
+		Value: &storepb.InstanceSetting_AiSetting{
+			AiSetting: &storepb.InstanceAISetting{
+				Providers: []*storepb.AIProviderConfig{
+					{
+						Id:       "openai-main",
+						Title:    "OpenAI",
+						Type:     storepb.AIProviderType_OPENAI,
+						Endpoint: "https://api.openai.com/v1",
+						ApiKey:   "sk-test",
+					},
+					{
+						Id:       "gemini-main",
+						Title:    "Gemini",
+						Type:     storepb.AIProviderType_GEMINI,
+						Endpoint: "https://generativelanguage.googleapis.com/v1beta",
+						ApiKey:   "gemini-test",
+					},
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	aiSetting, err = ts.GetInstanceAISetting(ctx)
+	require.NoError(t, err)
+	require.Len(t, aiSetting.Providers, 2)
+	require.Equal(t, "openai-main", aiSetting.Providers[0].Id)
+	require.Equal(t, "sk-test", aiSetting.Providers[0].ApiKey)
+	require.Equal(t, "gemini-main", aiSetting.Providers[1].Id)
 
 	ts.Close()
 }
@@ -247,10 +398,18 @@ func TestInstanceSettingListAll(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// List all - should have 2 more than initial
+	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_NOTIFICATION,
+		Value: &storepb.InstanceSetting_NotificationSetting{
+			NotificationSetting: &storepb.InstanceNotificationSetting{},
+		},
+	})
+	require.NoError(t, err)
+
+	// List all - should have 3 more than initial
 	list, err := ts.ListInstanceSettings(ctx, &store.FindInstanceSetting{})
 	require.NoError(t, err)
-	require.Equal(t, initialCount+2, len(list))
+	require.Equal(t, initialCount+3, len(list))
 
 	ts.Close()
 }

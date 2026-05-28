@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { type ForwardedRef, type RefObject, useEffect, useRef, useState } from "react";
 import getCaretCoordinates from "textarea-caret";
 import { EditorRefActions } from ".";
 
@@ -9,8 +9,8 @@ export interface Position {
 }
 
 export interface UseSuggestionsOptions<T> {
-  editorRef: React.RefObject<HTMLTextAreaElement>;
-  editorActions: React.ForwardedRef<EditorRefActions>;
+  editorRef: RefObject<HTMLTextAreaElement | null>;
+  editorActions: ForwardedRef<EditorRefActions>;
   triggerChar: string;
   items: T[];
   filterItems: (items: T[], searchQuery: string) => T[];
@@ -22,6 +22,7 @@ export interface UseSuggestionsReturn<T> {
   suggestions: T[];
   selectedIndex: number;
   isVisible: boolean;
+  searchQuery: string;
   handleItemSelect: (item: T) => void;
 }
 
@@ -52,12 +53,17 @@ export function useSuggestions<T>({
   const hide = () => setPosition(null);
 
   const suggestionsRef = useRef<T[]>([]);
+  const searchQueryRef = useRef("");
   suggestionsRef.current = (() => {
     const [word] = getCurrentWord();
     if (!word.startsWith(triggerChar)) return [];
-    const searchQuery = word.slice(triggerChar.length).toLowerCase();
-    return filterItems(items, searchQuery);
+    searchQueryRef.current = word.slice(triggerChar.length).toLowerCase();
+    return filterItems(items, searchQueryRef.current);
   })();
+  if (suggestionsRef.current.length === 0) {
+    const [word] = getCurrentWord();
+    searchQueryRef.current = word.startsWith(triggerChar) ? word.slice(triggerChar.length).toLowerCase() : "";
+  }
 
   const isVisibleRef = useRef(false);
   isVisibleRef.current = !!(position && suggestionsRef.current.length > 0);
@@ -153,6 +159,7 @@ export function useSuggestions<T>({
     suggestions: suggestionsRef.current,
     selectedIndex,
     isVisible: isVisibleRef.current,
+    searchQuery: searchQueryRef.current,
     handleItemSelect: handleAutocomplete,
   };
 }

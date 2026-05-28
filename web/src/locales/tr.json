@@ -10,6 +10,7 @@
     "create-your-account": "Hesabınızı oluşturun",
     "host-tip": "Site Yöneticisi olarak kayıt oluyorsunuz.",
     "new-password": "Yeni şifre",
+    "protected-memo-notice": "Bu not herkese açık değil. Devam etmek için giriş yapın.",
     "repeat-new-password": "Yeni şifreyi tekrar girin",
     "sign-in-tip": "Zaten hesabınız var mı?",
     "sign-up-tip": "Henüz hesabınız yok mu?"
@@ -18,23 +19,35 @@
     "about": "Hakkında",
     "add": "Ekle",
     "admin": "Yönetici",
+    "all": "Tümü",
     "archive": "Arşiv",
     "archived": "Arşivlendi",
     "attachments": "Ekler",
+    "auto-expand": "Otomatik genişlet",
     "avatar": "Profil Resmi",
     "basic": "Temel",
-    "beta": "Beta",
+    "beta": "Beta sürümü",
+    "calendar": "Takvim",
     "cancel": "İptal",
     "change": "Değiştir",
     "clear": "Temizle",
     "close": "Kapat",
     "collapse": "Daralt",
     "confirm": "Onayla",
+    "copy": "Kopyala",
     "create": "Oluştur",
     "created-at": "Oluşturulma Tarihi",
     "database": "Veritabanı",
     "day": "Gün",
-    "days": "Gün",
+    "days": {
+      "fri": "Cum",
+      "mon": "Pzt",
+      "sat": "Cmt",
+      "sun": "Paz",
+      "thu": "Per",
+      "tue": "Sal",
+      "wed": "Çar"
+    },
     "delete": "Sil",
     "description": "Açıklama",
     "edit": "Düzenle",
@@ -50,12 +63,13 @@
     "input": "Girdi",
     "language": "Dil",
     "last-updated-at": "Son güncelleme",
-    "layout": "Yerleşim",
     "learn-more": "Daha fazla bilgi",
     "link": "Bağlantı",
+    "map": "Harita",
     "mark": "İşaretle",
     "memo": "Not",
     "memos": "Notlar",
+    "more": "Daha fazla",
     "name": "İsim",
     "new": "Yeni",
     "nickname": "Takma Ad",
@@ -67,8 +81,8 @@
     "preview": "Önizleme",
     "profile": "Profil",
     "properties": "Özellikler",
-    "referenced-by": "Referanslayan",
-    "referencing": "Referanslanan",
+    "referenced-by": "Referans Verilenler",
+    "referencing": "Referans Verenler",
     "relations": "İlişkiler",
     "remember-me": "Beni hatırla",
     "rename": "Yeniden adlandır",
@@ -90,6 +104,7 @@
     "statistics": "İstatistikler",
     "tags": "Etiketler",
     "title": "Başlık",
+    "today": "Bugün",
     "tree-mode": "Ağaç modu",
     "type": "Tür",
     "unpin": "Sabitlemeyi kaldır",
@@ -101,29 +116,57 @@
     "visibility": "Görünürlük",
     "yourself": "Kendiniz"
   },
-  "days": {
-    "fri": "Cum",
-    "mon": "Pzt",
-    "sat": "Cmt",
-    "sun": "Paz",
-    "thu": "Per",
-    "tue": "Sal",
-    "wed": "Çar"
-  },
   "editor": {
     "add-your-comment-here": "Yorumunuzu buraya ekleyin...",
     "any-thoughts": "Düşünceleriniz...",
+    "exit-focus-mode": "Odak modundan çık",
+    "focus-mode": "Odak modu",
+    "insert-menu": {
+      "add-location": "Konum ekle",
+      "link-memo": "Not bağla",
+      "upload-file": "Dosya yükle"
+    },
+    "no-changes-detected": "Değişiklik yok",
     "save": "Kaydet",
-    "no-changes-detected": "Değişiklik yok"
-  },
-  "filters": {
-    "has-code": "kodVar",
-    "has-link": "bağlantıVar",
-    "has-task-list": "görevListesiVar"
+    "saving": "Kaydediliyor...",
+    "slash-commands": "Komutlar için `/` yazın",
+    "audio-recorder": {
+      "attachment-label": "Ses kaydı",
+      "attachment-label-with-time": "Ses kaydı {{time}}",
+      "discard": "Sil",
+      "error": "Mikrofon kullanılamıyor",
+      "error-description": "Bu site için mikrofon erişimini kontrol ettikten sonra tekrar deneyin.",
+      "idle-description": "Ses eki olarak bir sesli not eklemek için kayda başlayın.",
+      "keep": "Sakla",
+      "pause-recording": "Ses kaydını duraklat",
+      "play-recording": "Ses kaydını oynat",
+      "ready": "Kayıt hazır",
+      "ready-description": "Klibi önizleyin, ardından ses eki olarak saklayın veya silin.",
+      "record-again": "Tekrar kaydet",
+      "recording": "Sesli not kaydediliyor",
+      "recording-description": "Hızlı bir ses eki kaydedin. Geçerli süre: {{duration}}",
+      "requesting": "Erişim isteniyor...",
+      "requesting-permission": "Mikrofon erişimi isteniyor",
+      "requesting-permission-description": "Kayda başlamak için tarayıcınızda mikrofon erişimine izin verin.",
+      "start": "Kayda başla",
+      "stop": "Kaydı durdur",
+      "title": "Ses kaydedici",
+      "trigger": "Sesli not",
+      "unsupported": "Ses kaydı desteklenmiyor",
+      "unsupported-description": "Bu tarayıcı not düzenleyicisinden ses kaydı yapamaz."
+    }
   },
   "inbox": {
+    "failed-to-load": "Gelen kutusu öğesi yüklenemedi",
     "memo-comment": "{{user}} {{memo}} notunuza yorum yaptı.",
-    "version-update": "Yeni sürüm {{version}} kullanıma hazır!"
+    "no-archived": "Arşivlenmiş bildirim yok",
+    "no-unread": "Okunmamış bildirim yok",
+    "unread": "Okunmamış"
+  },
+  "live-update": {
+    "connected": "Canlı güncellemeler etkin",
+    "connecting": "Canlı güncellemelere bağlanılıyor...",
+    "disconnected": "Canlı güncellemeler kullanılamıyor"
   },
   "markdown": {
     "checkbox": "Onay kutusu",
@@ -132,27 +175,60 @@
   },
   "memo": {
     "archived-at": "Arşivlenme tarihi",
-    "click-to-hide-nsfw-content": "NSFW içeriği gizlemek için tıklayın",
-    "click-to-show-nsfw-content": "NSFW içeriği göstermek için tıklayın",
+    "click-to-hide-sensitive-content": "Hassas içeriği gizlemek için tıklayın",
+    "click-to-show-sensitive-content": "Hassas içeriği göstermek için tıklayın",
     "code": "Kod",
     "comment": {
       "self": "Yorumlar",
       "write-a-comment": "Yorum yaz"
     },
+    "copy-content": "İçeriği kopyala",
     "copy-link": "Bağlantıyı Kopyala",
     "count-memos-in-date": "{{date}} tarihinde {{count}} {{memos}}",
-    "delete-confirm": "Bu notu silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ",
+    "delete-confirm": "Bu notu silmek istediğinizden emin misiniz?",
+    "delete-confirm-description": "Bu işlem geri alınamaz. Ekler, bağlantılar ve referanslar da kaldırılacaktır.",
     "direction": "Yön",
     "direction-asc": "Artan",
     "direction-desc": "Azalan",
     "display-time": "Görüntüleme Zamanı",
-    "filters": "Filtreler",
+    "filters": {
+      "has-code": "Kod içerir",
+      "has-link": "Bağlantı içerir",
+      "has-task-list": "Yapılacaklar listesi içerir",
+      "label": "Filtreler"
+    },
     "links": "Bağlantılar",
     "load-more": "Daha fazla yükle",
     "no-archived-memos": "Arşivlenmiş not yok.",
     "no-memos": "Not yok.",
     "order-by": "Sıralama Ölçütü",
+    "outline": "Ana hatlar",
     "search-placeholder": "Notlarda ara",
+    "share": {
+      "active-links": "Etkin paylaşım bağlantıları",
+      "copied": "Kopyalandı!",
+      "copy": "Bağlantıyı kopyala",
+      "create-failed": "Paylaşım bağlantısı oluşturulamadı",
+      "create-link": "Yeni bağlantı oluştur",
+      "creating": "Oluşturuluyor...",
+      "expiry-1-day": "1 gün",
+      "expiry-30-days": "30 gün",
+      "expiry-7-days": "7 gün",
+      "expiry-label": "Süre sonu",
+      "expiry-never": "Asla",
+      "expires-on": "{{date}} tarihinde sona erer",
+      "invalid-link": "Bu bağlantı geçersiz veya süresi dolmuş.",
+      "never-expires": "Süresi dolmaz",
+      "no-links": "Henüz paylaşım bağlantısı yok. Aşağıdan bir tane oluşturun.",
+      "open-panel": "Paylaşım bağlantılarını yönet",
+      "revoke": "İptal et",
+      "revoke-failed": "Bağlantı iptal edilemedi",
+      "revoked": "Paylaşım bağlantısı iptal edildi",
+      "section-label": "Paylaşım",
+      "share": "Paylaş",
+      "shared-by": "{{creator}} tarafından paylaşıldı",
+      "title": "Bu notu paylaş"
+    },
     "show-less": "Daha az göster",
     "show-more": "Daha fazla göster",
     "to-do": "Yapılacaklar",
@@ -160,11 +236,9 @@
     "visibility": {
       "disabled": "Herkese açık notlar devre dışı",
       "private": "Özel",
-      "protected": "Çalışma Alanı",
+      "protected": "Korumalı",
       "public": "Herkese Açık"
-    },
-    "list": "Liste",
-    "masonry": "Masonry"
+    }
   },
   "message": {
     "archived-successfully": "Başarıyla arşivlendi",
@@ -182,6 +256,7 @@
     "password-changed": "Şifre Değiştirildi",
     "password-not-match": "Şifreler eşleşmiyor.",
     "restored-successfully": "Başarıyla geri yüklendi",
+    "succeed-copy-content": "İçerik başarıyla kopyalandı.",
     "succeed-copy-link": "Bağlantı başarıyla kopyalandı.",
     "update-succeed": "Güncelleme başarılı",
     "user-not-found": "Kullanıcı bulunamadı"
@@ -212,6 +287,10 @@
       "title": "Kaynak Oluştur",
       "upload-method": "Yükleme yöntemi"
     },
+    "delete-all-unused": "Kullanılmayanların hepsini sil",
+    "delete-all-unused-confirm": "Kullanılmayan tüm kaynakları silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ",
+    "delete-all-unused-error": "Kullanılmayan kaynaklar silinemedi",
+    "delete-all-unused-success": "Kaynaklar başarıyla silindi",
     "delete-resource": "Kaynağı Sil",
     "delete-selected-resources": "Seçili Kaynakları Sil",
     "fetching-data": "Veriler alınıyor…",
@@ -230,66 +309,37 @@
     "go-to-home": "Ana Sayfaya Git"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "Erişim tokeni panoya kopyalandı",
-      "access-token-deletion": "{{accessToken}} erişim tokenini silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ.",
-      "create-dialog": {
-        "create-access-token": "Erişim Tokeni Oluştur",
-        "created-at": "Oluşturulma Tarihi",
-        "description": "Açıklama",
-        "duration-1m": "1 Ay",
-        "duration-8h": "8 Saat",
-        "duration-never": "Asla",
-        "expiration": "Son Kullanma Tarihi",
-        "expires-at": "Sona Erme Tarihi",
-        "some-description": "Bir açıklama..."
-      },
-      "description": "Hesabınız için tüm erişim tokenlerinin listesi.",
-      "title": "Erişim Tokenleri",
-      "token": "Token"
-    },
-    "account-section": {
-      "change-password": "Şifre değiştir",
-      "email-note": "İsteğe bağlı",
-      "export-memos": "Notları Dışa Aktar",
-      "nickname-note": "Banner'da görüntülenir",
-      "openapi-reset": "OpenAPI Anahtarını Sıfırla",
-      "openapi-sample-post": "Merhaba #memos, {{url}} adresinden",
-      "openapi-title": "OpenAPI",
-      "reset-api": "API'yi Sıfırla",
-      "title": "Hesap Bilgileri",
-      "update-information": "Bilgileri Güncelle",
-      "username-note": "Giriş yapmak için kullanılır"
-    },
-    "member": "Üye",
-    "member-list": "Üye listesi",
-    "member-section": {
+    "member": {
       "admin": "Yönetici",
       "archive-member": "Üyeyi arşivle",
+      "archive-success": "{{username}} başarıyla arşivlendi",
       "archive-warning": "{{username}} kullanıcısını arşivlemek istediğinizden emin misiniz?",
+      "archive-warning-description": "Arşivleme hesabı devre dışı bırakır. Daha sonra geri yükleyebilir veya silebilirsiniz.",
       "create-a-member": "Üye oluştur",
       "delete-member": "Üyeyi Sil",
+      "delete-success": "{{username}} başarıyla silindi",
       "delete-warning": "{{username}} kullanıcısını silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ",
-      "user": "Kullanıcı"
+      "delete-warning-description": "BU İŞLEM GERİ ALINAMAZ",
+      "restore-success": "{{username}} başarıyla geri yüklendi",
+      "user": "Kullanıcı",
+      "label": "Üye",
+      "list-title": "Üye listesi",
+      "no-members-found": "Üye bulunamadı"
     },
-    "memo-related": "Not",
-    "memo-related-settings": {
-      "content-length-limit": "İçerik uzunluğu sınırı (Bayt)",
-      "enable-blur-nsfw-content": "NSFW içeriği bulanıklaştırmayı etkinleştir",
-      "enable-memo-comments": "Not yorumlarını etkinleştir",
-      "enable-memo-location": "Not konumunu etkinleştir",
-      "reactions": "Tepkiler",
-      "title": "Not ile ilgili ayarlar"
+    "my-account": {
+      "label": "Hesabım"
     },
-    "my-account": "Hesabım",
-    "preference": "Tercihler",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "Not görüntüleme zamanı",
       "default-memo-visibility": "Varsayılan not görünürlüğü",
-      "theme": "Tema"
+      "theme": "Tema",
+      "label": "Tercihler"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "shortcut": {
+      "delete-confirm": "`{{title}}` kısayolunu silmek istediğinizden emin misiniz?",
+      "delete-success": "`{{title}}` kısayolu başarıyla silindi"
+    },
+    "sso": {
       "authorization-endpoint": "Yetkilendirme uç noktası",
       "client-id": "İstemci Kimliği",
       "client-secret": "İstemci Gizli Anahtarı",
@@ -311,14 +361,14 @@
       "template": "Şablon",
       "token-endpoint": "Token uç noktası",
       "update-sso": "SSO'yu Güncelle",
-      "user-endpoint": "Kullanıcı uç noktası"
+      "user-endpoint": "Kullanıcı uç noktası",
+      "label": "SSO"
     },
-    "storage": "Depolama",
-    "storage-section": {
+    "storage": {
       "accesskey": "Erişim anahtarı",
       "accesskey-placeholder": "Erişim anahtarı / Erişim Kimliği",
-      "bucket": "Bucket",
-      "bucket-placeholder": "Bucket adı",
+      "bucket": "Kova",
+      "bucket-placeholder": "Kova adı",
       "create-a-service": "Servis oluştur",
       "create-storage": "Depolama Oluştur",
       "current-storage": "Mevcut nesne depolama",
@@ -346,10 +396,10 @@
       "url-prefix-placeholder": "Özel URL öneki, isteğe bağlı",
       "url-suffix": "URL soneki",
       "url-suffix-placeholder": "Özel URL soneki, isteğe bağlı",
-      "warning-text": "\"{{name}}\" depolama servisini silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ"
+      "warning-text": "\"{{name}}\" depolama servisini silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ",
+      "label": "Depolama"
     },
-    "system": "Sistem",
-    "system-section": {
+    "system": {
       "additional-script": "Ek script",
       "additional-script-placeholder": "Ek JavaScript kodu",
       "additional-style": "Ek stil",
@@ -364,7 +414,6 @@
       "disable-password-login": "Şifre ile girişi devre dışı bırak",
       "disable-password-login-final-warning": "Ne yaptığınızı biliyorsanız lütfen \"CONFIRM\" yazın.",
       "disable-password-login-warning": "Bu, tüm kullanıcılar için şifre ile girişi devre dışı bırakacaktır. Yapılandırılmış kimlik sağlayıcılarınız başarısız olursa, veritabanında bu ayarı geri almadan giriş yapmak mümkün olmayacaktır. Ayrıca bir kimlik sağlayıcıyı kaldırırken çok dikkatli olmanız gerekecektir",
-      "disable-public-memos": "Herkese açık notları devre dışı bırak",
       "display-with-updated-time": "Güncellenme zamanıyla görüntüle",
       "enable-auto-compact": "Otomatik sıkıştırmayı etkinleştir",
       "enable-double-click-to-edit": "Düzenlemek için çift tıklamayı etkinleştir",
@@ -374,23 +423,46 @@
       "max-upload-size-hint": "Önerilen değer 32 MiB'dir.",
       "removed-completed-task-list-items": "Tamamlanan görev listesi öğelerinin kaldırılmasını etkinleştir",
       "server-name": "Sunucu Adı",
-      "title": "Genel"
+      "title": "Genel",
+      "label": "Sistem"
     },
     "version": "Sürüm",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "Erişim tokeni panoya kopyalandı",
+      "access-token-deleted": "`{{description}}` erişim tokeni silindi",
+      "access-token-deletion": "{{description}} erişim tokenini silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ.",
+      "access-token-deletion-description": "Bu işlem geri alınamaz. Bu tokeni kullanan tüm hizmetleri yeni bir token kullanacak şekilde güncellemeniz gerekecektir.",
       "create-dialog": {
-        "an-easy-to-remember-name": "Hatırlaması kolay bir isim",
-        "create-webhook": "Webhook oluştur",
-        "edit-webhook": "Webhook düzenle",
-        "payload-url": "Payload URL'si",
-        "title": "Başlık",
-        "url-example-post-receive": "https://example.com/postreceive"
+        "access-token-created": "`{{description}}` erişim tokeni oluşturuldu",
+        "create-access-token": "Erişim Tokeni Oluştur",
+        "created-at": "Oluşturulma Tarihi",
+        "description": "Açıklama",
+        "duration-1m": "1 Ay",
+        "duration-8h": "8 Saat",
+        "duration-never": "Asla",
+        "expiration": "Son Kullanma Tarihi",
+        "expires-at": "Sona Erme Tarihi",
+        "some-description": "Bir açıklama..."
       },
-      "no-webhooks-found": "Webhook bulunamadı.",
-      "title": "Webhook'lar",
-      "url": "URL"
+      "description": "Hesabınız için tüm erişim tokenlerinin listesi.",
+      "title": "Erişim Tokenleri",
+      "token": "Token",
+      "no-tokens-found": "Erişim tokeni bulunamadı"
     },
-    "instance-section": {
+    "account": {
+      "change-password": "Şifre değiştir",
+      "email-note": "İsteğe bağlı",
+      "export-memos": "Notları Dışa Aktar",
+      "nickname-note": "Banner'da görüntülenir",
+      "openapi-reset": "OpenAPI Anahtarını Sıfırla",
+      "openapi-sample-post": "Merhaba #memos, {{url}} adresinden",
+      "openapi-title": "OpenAPI",
+      "reset-api": "API'yi Sıfırla",
+      "title": "Hesap Bilgileri",
+      "update-information": "Bilgileri Güncelle",
+      "username-note": "Giriş yapmak için kullanılır"
+    },
+    "instance": {
       "disallow-change-nickname": "Takma ad değiştirmeyi yasakla",
       "disallow-change-username": "Kullanıcı adı değiştirmeyi yasakla",
       "disallow-password-auth": "Şifre ile kimlik doğrulamayı yasakla",
@@ -399,6 +471,50 @@
       "saturday": "Cumartesi",
       "sunday": "Pazar",
       "week-start-day": "Haftanın başlangıç günü"
+    },
+    "memo": {
+      "content-length-limit": "İçerik uzunluğu sınırı (Bayt)",
+      "enable-blur-sensitive-content": "Hassas içeriği bulanıklaştırmayı etkinleştir",
+      "enable-memo-comments": "Not yorumlarını etkinleştir",
+      "enable-memo-location": "Not konumunu etkinleştir",
+      "reactions": "Tepkiler",
+      "title": "Not ile ilgili ayarlar",
+      "label": "Not",
+      "reactions-required": "Tepki listesi boş olamaz"
+    },
+    "webhook": {
+      "create-dialog": {
+        "an-easy-to-remember-name": "Hatırlaması kolay bir isim",
+        "create-webhook": "Webhook oluştur",
+        "create-webhook-success": "`{{name}}` webhook'u oluşturuldu",
+        "edit-webhook": "Webhook düzenle",
+        "payload-url": "Payload URL'si",
+        "title": "Başlık",
+        "url-example-post-receive": "https://ornek.com/postreceive"
+      },
+      "delete-dialog": {
+        "delete-webhook-description": "Bu işlem geri alınamaz.",
+        "delete-webhook-success": "`{{name}}` webhook'u başarıyla silindi",
+        "delete-webhook-title": "`{{name}}` webhook'unu silmek istediğinizden emin misiniz?"
+      },
+      "no-webhooks-found": "Webhook bulunamadı.",
+      "title": "Webhook'lar",
+      "url": "URL",
+      "label": "Webhook'lar"
+    },
+    "tags": {
+      "label": "Etiketler",
+      "title": "Etiket meta verileri",
+      "description": "Etiketlere sunucu genelinde isteğe bağlı görüntüleme renkleri atayın veya eşleşen not içeriğini bulanıklaştırın. Etiket adları sabitlenmiş regex desenleri olarak değerlendirilir.",
+      "background-color": "Arka plan rengi",
+      "blur-content": "İçeriği bulanıklaştır",
+      "no-tags-configured": "Yapılandırılmış etiket meta verisi yok.",
+      "tag-name": "Etiket adı",
+      "tag-name-placeholder": "ör. is veya proje/.*",
+      "tag-already-exists": "Etiket zaten mevcut.",
+      "tag-pattern-hint": "Etiket adı veya regex deseni (ör. proje/.* tüm proje/ etiketlerini eşleştirir)",
+      "invalid-regex": "Geçersiz veya güvenli olmayan regex deseni.",
+      "using-default-color": "Varsayılan renk kullanılıyor."
     }
   },
   "tag": {
@@ -406,6 +522,7 @@
     "create-tag": "Etiket Oluştur",
     "create-tags-guide": "`#etiket` yazarak etiket oluşturabilirsiniz.",
     "delete-confirm": "Bu etiketi silmek istediğinizden emin misiniz? İlgili tüm notlar arşivlenecektir.",
+    "delete-success": "Etiket başarıyla silindi",
     "delete-tag": "Etiketi Sil",
     "new-name": "Yeni İsim",
     "no-tag-found": "Etiket bulunamadı",
@@ -415,5 +532,13 @@
     "rename-success": "Etiket başarıyla yeniden adlandırıldı",
     "rename-tag": "Etiketi yeniden adlandır",
     "rename-tip": "Bu etiketle ilişkili tüm notların etiketini değiştirecektir."
+  },
+  "tooltip": {
+    "link-memo": "Notu Bağla",
+    "markdown-menu": "Markdown menüsü",
+    "select-location": "Konum seç",
+    "select-visibility": "Görünürlük seç",
+    "tags": "Etiketler",
+    "upload-attachment": "Ek(leri) yükle"
   }
 }

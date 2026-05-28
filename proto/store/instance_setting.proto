@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package memos.store;
 
+import "google/type/color.proto";
+
 option go_package = "gen/store";
 
 enum InstanceSettingKey {
@@ -14,6 +16,12 @@ enum InstanceSettingKey {
   STORAGE = 3;
   // MEMO_RELATED is the key for memo related settings.
   MEMO_RELATED = 4;
+  // TAGS is the key for tag metadata.
+  TAGS = 5;
+  // NOTIFICATION is the key for notification transport settings.
+  NOTIFICATION = 6;
+  // AI is the key for AI provider settings.
+  AI = 7;
 }
 
 message InstanceSetting {
@@ -23,6 +31,9 @@ message InstanceSetting {
     InstanceGeneralSetting general_setting = 3;
     InstanceStorageSetting storage_setting = 4;
     InstanceMemoRelatedSetting memo_related_setting = 5;
+    InstanceTagsSetting tags_setting = 6;
+    InstanceNotificationSetting notification_setting = 7;
+    InstanceAISetting ai_setting = 8;
   }
 }
 
@@ -92,14 +103,97 @@ message StorageS3Config {
 }
 
 message InstanceMemoRelatedSetting {
-  // disallow_public_visibility disallows set memo as public visibility.
-  bool disallow_public_visibility = 1;
-  // display_with_update_time orders and displays memo with update time.
-  bool display_with_update_time = 2;
+  reserved 2;
+  reserved "display_with_update_time";
   // content_length_limit is the limit of content length. Unit is byte.
   int32 content_length_limit = 3;
   // enable_double_click_edit enables editing on double click.
   bool enable_double_click_edit = 4;
   // reactions is the list of reactions.
   repeated string reactions = 7;
+}
+
+message InstanceTagMetadata {
+  // Optional background color for the tag label.
+  // When unset, the default tag color is used.
+  google.type.Color background_color = 1;
+  // Whether memos with this tag should have their content blurred.
+  bool blur_content = 2;
+}
+
+message InstanceTagsSetting {
+  // Map of tag name pattern to tag metadata.
+  // Each key is treated as an anchored regular expression (^pattern$),
+  // so a single entry like "project/.*" matches all tags under that prefix.
+  // Exact tag names are also valid (they are trivially valid regex patterns).
+  map<string, InstanceTagMetadata> tags = 1;
+}
+
+message InstanceNotificationSetting {
+  EmailSetting email = 1;
+
+  message EmailSetting {
+    bool enabled = 1;
+    string smtp_host = 2;
+    int32 smtp_port = 3;
+    string smtp_username = 4;
+    string smtp_password = 5;
+    string from_email = 6;
+    string from_name = 7;
+    string reply_to = 8;
+    bool use_tls = 9;
+    bool use_ssl = 10;
+  }
+}
+
+message InstanceAISetting {
+  // providers is the list of AI provider configurations available instance-wide.
+  repeated AIProviderConfig providers = 1;
+
+  // transcription is the speech-to-text feature configuration.
+  // When unset or transcription.provider_id is empty, transcription is disabled.
+  TranscriptionConfig transcription = 2;
+}
+
+message AIProviderConfig {
+  string id = 1;
+  string title = 2;
+  AIProviderType type = 3;
+  string endpoint = 4;
+  // api_key is write-only at the API layer and is required by the server to call providers.
+  string api_key = 5;
+}
+
+enum AIProviderType {
+  AI_PROVIDER_TYPE_UNSPECIFIED = 0;
+  OPENAI = 1;
+  GEMINI = 2;
+}
+
+// TranscriptionConfig configures the speech-to-text feature.
+message TranscriptionConfig {
+  // provider_id references an entry in InstanceAISetting.providers[].id.
+  // Empty string means transcription is disabled.
+  string provider_id = 1;
+
+  // model is the provider-specific model identifier.
+  // Empty string falls back to the engine default.
+  // OPENAI examples:
+  //   - whisper-1 (legacy, lower cost)
+  //   - gpt-4o-transcribe, gpt-4o-mini-transcribe (higher quality)
+  //   - gpt-4o-transcribe-diarize (includes speaker labels)
+  // GEMINI examples:
+  //   - gemini-2.5-flash (default, multimodal call)
+  //   - gemini-2.5-pro
+  string model = 2;
+
+  // language is the default ISO 639-1 language hint sent to the provider.
+  // Empty string lets the provider auto-detect.
+  string language = 3;
+
+  // prompt is a default spelling/vocabulary hint passed to the provider.
+  // Used as the OpenAI Whisper "prompt" parameter (a soft hint that the model
+  // may ignore) and folded into the Gemini generation prompt as a "Context and
+  // spelling hints" block (which the LLM will treat more literally).
+  string prompt = 4;
 }

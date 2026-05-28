@@ -1,6 +1,64 @@
+import { Children, cloneElement, isValidElement, type ReactElement, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { TASK_LIST_CLASS, TASK_LIST_ITEM_CLASS } from "../constants";
+import { NestedMarkdownRenderContext } from "../MarkdownRenderContext";
 import type { ReactMarkdownProps } from "./types";
+
+interface TaskListChildProps {
+  children?: ReactNode;
+  node?: {
+    tagName?: string;
+    properties?: {
+      type?: unknown;
+    };
+  };
+  type?: string;
+}
+
+const isCheckboxInput = (child: ReactNode): child is ReactElement<TaskListChildProps> => {
+  return (
+    isValidElement<TaskListChildProps>(child) && (child.props.type === "checkbox" || child.props.node?.properties?.type === "checkbox")
+  );
+};
+
+const isParagraphElement = (child: ReactNode): child is ReactElement<TaskListChildProps> => {
+  return isValidElement<TaskListChildProps>(child) && (child.type === "p" || child.props.node?.tagName === "p");
+};
+
+const splitTaskListItemChildren = (children: ReactNode) => {
+  let checkbox: ReactNode;
+  const content: ReactNode[] = [];
+
+  Children.toArray(children).forEach((child) => {
+    if (!checkbox && isCheckboxInput(child)) {
+      checkbox = child;
+      return;
+    }
+
+    if (!checkbox && isParagraphElement(child)) {
+      const paragraphChildren: ReactNode[] = [];
+
+      Children.toArray(child.props.children).forEach((paragraphChild) => {
+        if (!checkbox && isCheckboxInput(paragraphChild)) {
+          checkbox = paragraphChild;
+          return;
+        }
+        paragraphChildren.push(paragraphChild);
+      });
+
+      if (checkbox) {
+        if (paragraphChildren.length > 0) {
+          content.push(cloneElement(child, undefined, ...paragraphChildren));
+        }
+        return;
+      }
+    }
+
+    content.push(child);
+  });
+
+  return { checkbox, content };
+};
 
 interface ListProps extends React.HTMLAttributes<HTMLUListElement | HTMLOListElement>, ReactMarkdownProps {
   ordered?: boolean;
@@ -20,8 +78,8 @@ export const List = ({ ordered, children, className, node: _node, ...domProps }:
       className={cn(
         "my-0 mb-2 list-outside",
         isTaskList
-          ? // Task list: no bullets, nested lists get left margin for indentation
-            "list-none [&_ul.contains-task-list]:ml-6"
+          ? // Task list indentation is handled by task item grid columns.
+            "list-none"
           : // Regular list: standard padding and list style
             cn("pl-6", ordered ? "list-decimal" : "list-disc"),
         className,
@@ -40,32 +98,32 @@ interface ListItemProps extends React.LiHTMLAttributes<HTMLLIElement>, ReactMark
 /**
  * List item component for both regular and task list items
  * Detects task items via the "task-list-item" class added by remark-gfm
- * Applies specialized styling for task checkboxes
  */
 export const ListItem = ({ children, className, node: _node, ...domProps }: ListItemProps) => {
   const isTaskListItem = className?.includes(TASK_LIST_ITEM_CLASS);
 
   if (isTaskListItem) {
+    const { checkbox, content } = splitTaskListItemChildren(children);
+
     return (
       <li
         className={cn(
-          "mt-0.5 leading-6 list-none",
-          // Checkbox styling: margin and alignment
-          "[&>button]:mr-2 [&>button]:align-middle",
-          // Inline paragraph for task text
-          "[&>p]:inline [&>p]:m-0",
+          "mt-0.5 min-w-0 leading-6 list-none grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-2 [&>[data-slot=checkbox]]:mt-1",
           className,
         )}
         {...domProps}
       >
-        {children}
+        <NestedMarkdownRenderContext>
+          {checkbox}
+          <div className="min-w-0 [overflow-wrap:anywhere] [&>*:last-child]:mb-0">{content}</div>
+        </NestedMarkdownRenderContext>
       </li>
     );
   }
 
   return (
     <li className={cn("mt-0.5 leading-6", className)} {...domProps}>
-      {children}
+      <NestedMarkdownRenderContext>{children}</NestedMarkdownRenderContext>
     </li>
   );
 };

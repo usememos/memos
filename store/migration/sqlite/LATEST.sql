@@ -68,19 +68,10 @@ CREATE TABLE attachment (
   payload TEXT NOT NULL DEFAULT '{}'
 );
 
--- activity
-CREATE TABLE activity (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  creator_id INTEGER NOT NULL,
-  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-  type TEXT NOT NULL DEFAULT '',
-  level TEXT NOT NULL CHECK (level IN ('INFO', 'WARN', 'ERROR')) DEFAULT 'INFO',
-  payload TEXT NOT NULL DEFAULT '{}'
-);
-
 -- idp
 CREATE TABLE idp (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
+  uid TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL,
   type TEXT NOT NULL,
   identifier_filter TEXT NOT NULL DEFAULT '',
@@ -106,3 +97,30 @@ CREATE TABLE reaction (
   reaction_type TEXT NOT NULL,
   UNIQUE(creator_id, content_id, reaction_type)
 );
+
+-- memo_share
+CREATE TABLE memo_share (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  uid        TEXT    NOT NULL UNIQUE,
+  memo_id    INTEGER NOT NULL,
+  creator_id INTEGER NOT NULL,
+  created_ts BIGINT  NOT NULL DEFAULT (strftime('%s', 'now')),
+  expires_ts BIGINT  DEFAULT NULL,
+  FOREIGN KEY (memo_id) REFERENCES memo(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_memo_share_memo_id ON memo_share(memo_id);
+
+-- user_identity
+CREATE TABLE user_identity (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id    INTEGER NOT NULL,
+  provider   TEXT    NOT NULL,
+  extern_uid TEXT    NOT NULL,
+  created_ts BIGINT  NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_ts BIGINT  NOT NULL DEFAULT (strftime('%s', 'now')),
+  UNIQUE (provider, extern_uid),
+  UNIQUE (user_id, provider)
+);
+
+CREATE INDEX idx_user_identity_user_id ON user_identity(user_id);

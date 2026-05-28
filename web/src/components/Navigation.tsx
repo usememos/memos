@@ -1,4 +1,4 @@
-import { BellIcon, EarthIcon, LibraryIcon, PaperclipIcon, UserCircleIcon } from "lucide-react";
+import { BellIcon, EarthIcon, InfoIcon, LibraryIcon, PaperclipIcon, UserCircleIcon } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -30,7 +30,7 @@ const Navigation = (props: Props) => {
 
   const homeNavLink: NavLinkItem = {
     id: "header-memos",
-    path: Routes.ROOT,
+    path: Routes.HOME,
     title: t("common.memos"),
     icon: <LibraryIcon className="w-6 h-auto shrink-0" />,
   };
@@ -39,6 +39,12 @@ const Navigation = (props: Props) => {
     path: Routes.EXPLORE,
     title: t("common.explore"),
     icon: <EarthIcon className="w-6 h-auto shrink-0" />,
+  };
+  const aboutNavLink: NavLinkItem = {
+    id: "header-about",
+    path: Routes.ABOUT,
+    title: t("common.about"),
+    icon: <InfoIcon className="w-6 h-auto shrink-0" />,
   };
   const attachmentsNavLink: NavLinkItem = {
     id: "header-attachments",
@@ -69,34 +75,37 @@ const Navigation = (props: Props) => {
     icon: <UserCircleIcon className="w-6 h-auto shrink-0" />,
   };
 
-  const navLinks: NavLinkItem[] = currentUser
+  const primaryNavLinks: NavLinkItem[] = currentUser
     ? [homeNavLink, exploreNavLink, attachmentsNavLink, inboxNavLink]
-    : [exploreNavLink, signInNavLink];
+    : [exploreNavLink, aboutNavLink, signInNavLink];
+  const inboxAriaLabel = unreadCount > 0 ? `${t("common.inbox")}, ${unreadCount} unread` : t("common.inbox");
 
   return (
     <header className={cn("w-full h-full overflow-auto flex flex-col justify-between items-start gap-4", className)}>
       <div className="w-full px-1 py-1 flex flex-col justify-start items-start space-y-2 overflow-auto overflow-x-hidden shrink">
-        <NavLink className="mb-3 cursor-default" to={currentUser ? Routes.ROOT : Routes.EXPLORE}>
+        <NavLink className="mb-3 cursor-default" to={currentUser ? Routes.HOME : Routes.EXPLORE}>
           <MemosLogo collapsed={collapsed} />
         </NavLink>
-        {navLinks.map((navLink) => (
-          <NavLink
-            className={({ isActive }) =>
-              cn(
-                "px-2 py-2 rounded-2xl border flex flex-row items-center text-lg text-sidebar-foreground transition-colors",
-                collapsed ? "" : "w-full px-4",
-                isActive
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground border-sidebar-accent-border drop-shadow"
-                  : "border-transparent hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:border-sidebar-accent-border opacity-80",
-              )
-            }
-            key={navLink.id}
-            to={navLink.path}
-            id={navLink.id}
-            viewTransition
-          >
-            {props.collapsed ? (
-              <TooltipProvider>
+        <TooltipProvider>
+          {primaryNavLinks.map((navLink) => (
+            <NavLink
+              className={({ isActive }) =>
+                cn(
+                  "px-2 py-2 rounded-2xl border flex flex-row items-center text-lg text-sidebar-foreground transition-colors",
+                  collapsed ? "" : "w-full px-4",
+                  isActive
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground border-sidebar-accent-border drop-shadow"
+                    : "border-transparent hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:border-sidebar-accent-border opacity-80",
+                )
+              }
+              key={navLink.id}
+              to={navLink.path}
+              end={navLink.path === Routes.HOME}
+              id={navLink.id}
+              aria-label={navLink.id === "header-inbox" ? inboxAriaLabel : undefined}
+              viewTransition
+            >
+              {props.collapsed ? (
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <div>{navLink.icon}</div>
@@ -105,13 +114,13 @@ const Navigation = (props: Props) => {
                     <p>{navLink.title}</p>
                   </TooltipContent>
                 </Tooltip>
-              </TooltipProvider>
-            ) : (
-              navLink.icon
-            )}
-            {!props.collapsed && <span className="ml-3 truncate">{navLink.title}</span>}
-          </NavLink>
-        ))}
+              ) : (
+                navLink.icon
+              )}
+              {!props.collapsed && <span className="ml-3 truncate">{navLink.title}</span>}
+            </NavLink>
+          ))}
+        </TooltipProvider>
       </div>
       {currentUser && (
         <div className={cn("w-full flex flex-col justify-end", props.collapsed ? "items-center" : "items-start pl-3")}>

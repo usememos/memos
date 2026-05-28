@@ -14,7 +14,8 @@ export function formatFileSize(bytes: number): string {
 export function getFileTypeLabel(mimeType: string): string {
   if (!mimeType) return "File";
 
-  const [category, subtype] = mimeType.split("/");
+  const normalizedMimeType = mimeType.toLowerCase().split(";")[0].trim();
+  const [category = "", subtype = ""] = normalizedMimeType.split("/");
 
   const specialCases: Record<string, string> = {
     "application/pdf": "PDF",
@@ -29,8 +30,8 @@ export function getFileTypeLabel(mimeType: string): string {
     "application/javascript": "JS",
   };
 
-  if (specialCases[mimeType]) {
-    return specialCases[mimeType];
+  if (specialCases[normalizedMimeType]) {
+    return specialCases[normalizedMimeType];
   }
 
   if (category === "image") {
@@ -51,7 +52,7 @@ export function getFileTypeLabel(mimeType: string): string {
   if (category === "video") {
     const videoTypes: Record<string, string> = {
       mp4: "MP4",
-      webm: "WebM",
+      webm: "WEBM",
       ogg: "OGG",
       avi: "AVI",
       mov: "MOV",
@@ -66,7 +67,7 @@ export function getFileTypeLabel(mimeType: string): string {
       mpeg: "MP3",
       wav: "WAV",
       ogg: "OGG",
-      webm: "WebM",
+      webm: "WEBM",
     };
     return audioTypes[subtype] || subtype.toUpperCase();
   }

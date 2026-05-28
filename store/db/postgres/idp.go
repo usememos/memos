@@ -9,8 +9,8 @@ import (
 )
 
 func (d *DB) CreateIdentityProvider(ctx context.Context, create *store.IdentityProvider) (*store.IdentityProvider, error) {
-	fields := []string{"name", "type", "identifier_filter", "config"}
-	args := []any{create.Name, create.Type.String(), create.IdentifierFilter, create.Config}
+	fields := []string{"uid", "name", "type", "identifier_filter", "config"}
+	args := []any{create.UID, create.Name, create.Type.String(), create.IdentifierFilter, create.Config}
 	stmt := "INSERT INTO idp (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(&create.ID); err != nil {
 		return nil, err
@@ -25,10 +25,14 @@ func (d *DB) ListIdentityProviders(ctx context.Context, find *store.FindIdentity
 	if v := find.ID; v != nil {
 		where, args = append(where, "id = "+placeholder(len(args)+1)), append(args, *v)
 	}
+	if v := find.UID; v != nil {
+		where, args = append(where, "uid = "+placeholder(len(args)+1)), append(args, *v)
+	}
 
 	rows, err := d.db.QueryContext(ctx, `
 		SELECT
 			id,
+			uid,
 			name,
 			type,
 			identifier_filter,
@@ -48,6 +52,7 @@ func (d *DB) ListIdentityProviders(ctx context.Context, find *store.FindIdentity
 		var typeString string
 		if err := rows.Scan(
 			&identityProvider.ID,
+			&identityProvider.UID,
 			&identityProvider.Name,
 			&typeString,
 			&identityProvider.IdentifierFilter,
@@ -83,7 +88,7 @@ func (d *DB) UpdateIdentityProvider(ctx context.Context, update *store.UpdateIde
 		UPDATE idp
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ` + placeholder(len(args)+1) + `
-		RETURNING id, name, type, identifier_filter, config
+		RETURNING id, uid, name, type, identifier_filter, config
 	`
 	args = append(args, update.ID)
 
@@ -91,6 +96,7 @@ func (d *DB) UpdateIdentityProvider(ctx context.Context, update *store.UpdateIde
 	var typeString string
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
 		&identityProvider.ID,
+		&identityProvider.UID,
 		&identityProvider.Name,
 		&typeString,
 		&identityProvider.IdentifierFilter,

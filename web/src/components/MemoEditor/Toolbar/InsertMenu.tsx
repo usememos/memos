@@ -1,14 +1,27 @@
-import { LatLng } from "leaflet";
 import { uniqBy } from "lodash-es";
-import { FileIcon, LinkIcon, LoaderIcon, type LucideIcon, MapPinIcon, Maximize2Icon, MoreHorizontalIcon, PlusIcon } from "lucide-react";
+import {
+  FileIcon,
+  ImageIcon,
+  LinkIcon,
+  LoaderIcon,
+  type LucideIcon,
+  MapPinIcon,
+  Maximize2Icon,
+  MicIcon,
+  MoreHorizontalIcon,
+  PlusIcon,
+} from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce } from "react-use";
-import { useReverseGeocoding } from "@/components/map";
+import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
+import type { MapPoint } from "@/components/map/types";
+import { useReverseGeocoding } from "@/components/map/useReverseGeocoding";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -17,7 +30,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { LinkMemoDialog, LocationDialog } from "../components";
 import { useFileUpload, useLinkMemo, useLocation } from "../hooks";
 import { useEditorContext } from "../state";
 import type { InsertMenuProps } from "../types";
@@ -52,24 +64,33 @@ const InsertMenu = (props: InsertMenuProps) => {
   });
 
   const location = useLocation(props.location);
+  const {
+    state: locationState,
+    locationInitialized,
+    handlePositionChange: handleLocationPositionChange,
+    getLocation,
+    reset: locationReset,
+    updateCoordinate,
+    setPlaceholder,
+  } = location;
 
-  const [debouncedPosition, setDebouncedPosition] = useState<LatLng | undefined>(undefined);
+  const [debouncedPosition, setDebouncedPosition] = useState<MapPoint | undefined>(undefined);
 
   useDebounce(
     () => {
-      setDebouncedPosition(location.state.position);
+      setDebouncedPosition(locationState.position);
     },
     1000,
-    [location.state.position],
+    [locationState.position],
   );
 
   const { data: displayName } = useReverseGeocoding(debouncedPosition?.lat, debouncedPosition?.lng);
 
   useEffect(() => {
     if (displayName) {
-      location.setPlaceholder(displayName);
+      setPlaceholder(displayName);
     }
-  }, [displayName]);
+  }, [displayName, setPlaceholder]);
 
   const isUploading = selectingFlag || isUploadingProp;
 
@@ -79,11 +100,11 @@ const InsertMenu = (props: InsertMenuProps) => {
 
   const handleLocationClick = useCallback(() => {
     setLocationDialogOpen(true);
-    if (!initialLocation && !location.locationInitialized) {
+    if (!initialLocation && !locationInitialized) {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
-            location.handlePositionChange(new LatLng(position.coords.latitude, position.coords.longitude));
+            handleLocationPositionChange({ lat: position.coords.latitude, lng: position.coords.longitude });
           },
           (error) => {
             console.error("Geolocation error:", error);
@@ -91,56 +112,69 @@ const InsertMenu = (props: InsertMenuProps) => {
         );
       }
     }
-  }, [initialLocation, location]);
+  }, [initialLocation, locationInitialized, handleLocationPositionChange]);
 
   const handleLocationConfirm = useCallback(() => {
-    const newLocation = location.getLocation();
+    const newLocation = getLocation();
     if (newLocation) {
       onLocationChange(newLocation);
       setLocationDialogOpen(false);
     }
-  }, [location, onLocationChange]);
+  }, [getLocation, onLocationChange]);
 
   const handleLocationCancel = useCallback(() => {
-    location.reset();
+    locationReset();
     setLocationDialogOpen(false);
-  }, [location]);
-
-  const handlePositionChange = useCallback(
-    (position: LatLng) => {
-      location.handlePositionChange(position);
-    },
-    [location],
-  );
+  }, [locationReset]);
 
   const handleToggleFocusMode = useCallback(() => {
     onToggleFocusMode?.();
     setMoreSubmenuOpen(false);
   }, [onToggleFocusMode]);
 
+  const handleMediaUploadClick = useCallback(() => {
+    handleUploadClick("image/*,video/*");
+  }, [handleUploadClick]);
+
+  const handleFileUploadClick = useCallback(() => {
+    handleUploadClick();
+  }, [handleUploadClick]);
+
   const menuItems = useMemo(
     () =>
       [
         {
-          key: "upload",
-          label: t("common.upload"),
+          key: "upload-media",
+          label: t("attachment-library.tabs.media"),
+          icon: ImageIcon,
+          onClick: handleMediaUploadClick,
+        },
+        {
+          key: "record-audio",
+          label: t("editor.audio-recorder.trigger"),
+          icon: MicIcon,
+          onClick: () => props.onAudioRecorderClick?.(),
+        },
+        {
+          key: "upload-file",
+          label: t("common.file"),
           icon: FileIcon,
-          onClick: handleUploadClick,
+          onClick: handleFileUploadClick,
         },
         {
           key: "link",
-          label: t("tooltip.link-memo"),
+          label: t("editor.insert-menu.link-memo"),
           icon: LinkIcon,
           onClick: handleOpenLinkDialog,
         },
         {
           key: "location",
-          label: t("tooltip.select-location"),
+          label: t("editor.insert-menu.add-location"),
           icon: MapPinIcon,
           onClick: handleLocationClick,
         },
       ] satisfies Array<{ key: string; label: string; icon: LucideIcon; onClick: () => void }>,
-    [handleLocationClick, handleOpenLinkDialog, handleUploadClick, t],
+    [handleFileUploadClick, handleLocationClick, handleMediaUploadClick, handleOpenLinkDialog, props, t],
   );
 
   return (
@@ -152,12 +186,20 @@ const InsertMenu = (props: InsertMenuProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          {menuItems.map((item) => (
+          {menuItems.slice(0, 3).map((item) => (
             <DropdownMenuItem key={item.key} onClick={item.onClick}>
               <item.icon className="w-4 h-4" />
               {item.label}
             </DropdownMenuItem>
           ))}
+          <DropdownMenuSeparator />
+          {menuItems.slice(3).map((item) => (
+            <DropdownMenuItem key={item.key} onClick={item.onClick}>
+              <item.icon className="w-4 h-4" />
+              {item.label}
+            </DropdownMenuItem>
+          ))}
+          <DropdownMenuSeparator />
           {/* View submenu with Focus Mode */}
           <DropdownMenuSub open={moreSubmenuOpen} onOpenChange={setMoreSubmenuOpen}>
             <DropdownMenuSubTrigger onPointerEnter={handleTriggerEnter} onPointerLeave={handleTriggerLeave}>
@@ -194,16 +236,16 @@ const InsertMenu = (props: InsertMenuProps) => {
         filteredMemos={linkMemo.filteredMemos}
         isFetching={linkMemo.isFetching}
         onSelectMemo={linkMemo.addMemoRelation}
+        isAlreadyLinked={linkMemo.isAlreadyLinked}
       />
 
       <LocationDialog
         open={locationDialogOpen}
         onOpenChange={setLocationDialogOpen}
-        state={location.state}
-        locationInitialized={location.locationInitialized}
-        onPositionChange={handlePositionChange}
-        onUpdateCoordinate={location.updateCoordinate}
-        onPlaceholderChange={location.setPlaceholder}
+        state={locationState}
+        onPositionChange={handleLocationPositionChange}
+        onUpdateCoordinate={updateCoordinate}
+        onPlaceholderChange={setPlaceholder}
         onCancel={handleLocationCancel}
         onConfirm={handleLocationConfirm}
       />

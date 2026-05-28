@@ -74,3 +74,4 @@ plugin/             → Backend plugins (scheduler, email, filter, webhook, mark
 - **Biome config**: 140 char line width, double quotes, semicolons always, 2-space indent.
 - **DB changes**: Must add migration SQL for all three drivers + update LATEST.sql.
 - **New API endpoints**: Define in .proto → `buf generate` → implement in `*_service.go` → add to `acl_config.go` if public → add React Query hook.
+See `AGENTS.md` for full architecture, workflows, conventions, and patterns.

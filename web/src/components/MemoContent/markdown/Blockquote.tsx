@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { NestedMarkdownRenderContext } from "../MarkdownRenderContext";
 import type { ReactMarkdownProps } from "./types";
 
 interface BlockquoteProps extends React.BlockquoteHTMLAttributes<HTMLQuoteElement>, ReactMarkdownProps {
@@ -11,7 +12,7 @@ interface BlockquoteProps extends React.BlockquoteHTMLAttributes<HTMLQuoteElemen
 export const Blockquote = ({ children, className, node: _node, ...props }: BlockquoteProps) => {
   return (
     <blockquote className={cn("my-0 mb-2 border-l-4 border-primary/30 pl-3 text-muted-foreground italic", className)} {...props}>
-      {children}
+      <NestedMarkdownRenderContext>{children}</NestedMarkdownRenderContext>
     </blockquote>
   );
 };

@@ -6,7 +6,8 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
-	"runtime"
+	"os"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -19,19 +20,25 @@ import (
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/server/router/fileserver"
 	"github.com/usememos/memos/server/router/frontend"
+	mcprouter "github.com/usememos/memos/server/router/mcp"
 	"github.com/usememos/memos/server/router/rss"
 	"github.com/usememos/memos/server/runner/s3presign"
 	"github.com/usememos/memos/store"
 )
+
+const shutdownTimeout = 10 * time.Second
 
 type Server struct {
 	Secret  string
 	Profile *profile.Profile
 	Store   *store.Store
 
-	echoServer        *echo.Echo
-	httpServer        *http.Server
-	runnerCancelFuncs []context.CancelFunc
+	echoServer *echo.Echo
+	httpServer *http.Server
+	sseHub     *apiv1.SSEHub
+
+	backgroundRunnerCancels []context.CancelFunc
+	backgroundRunnerWG      sync.WaitGroup
 }
 
 func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store) (*Server, error) {
@@ -66,6 +73,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	rootGroup := echoServer.Group("")
 
 	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store)
+	s.sseHub = apiV1Service.SSEHub
 
 	// Register HTTP file server routes BEFORE gRPC-Gateway to ensure proper range request handling for Safari.
 	// This uses native HTTP serving (http.ServeContent) instead of gRPC for video/audio files.
@@ -74,10 +82,15 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 	// Create and register RSS routes (needs markdown service from apiV1Service).
 	rss.NewRSSService(s.Profile, s.Store, apiV1Service.MarkdownService).RegisterRoutes(rootGroup)
-	// Register gRPC gateway as api v1.
+
+	// Register gRPC gateway as api v1 (includes SSE endpoint on CORS-enabled group).
 	if err := apiV1Service.RegisterGateway(ctx, echoServer); err != nil {
 		return nil, errors.Wrap(err, "failed to register gRPC gateway")
 	}
+
+	// Register MCP server.
+	mcpService := mcprouter.NewMCPService(s.Profile, s.Store, s.Secret, apiV1Service)
+	mcpService.RegisterRoutes(echoServer)
 
 	return s, nil
 }
@@ -96,6 +109,13 @@ func (s *Server) Start(ctx context.Context) error {
 		return errors.Wrap(err, "failed to listen")
 	}
 
+	if network == "unix" {
+		if err := os.Chmod(address, 0660); err != nil {
+			_ = listener.Close()
+			return errors.Wrap(err, "failed to chmod socket")
+		}
+	}
+
 	// Start Echo server directly (no cmux needed - all traffic is HTTP).
 	s.httpServer = &http.Server{Handler: s.echoServer}
 	go func() {
@@ -103,30 +123,21 @@ func (s *Server) Start(ctx context.Context) error {
 			slog.Error("failed to start echo server", "error", err)
 		}
 	}()
-	s.StartBackgroundRunners(ctx)
+	s.startBackgroundRunners(ctx)
 
 	return nil
 }
 
 func (s *Server) Shutdown(ctx context.Context) {
-	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, shutdownTimeout)
 	defer cancel()
 
 	slog.Info("server shutting down")
 
-	// Cancel all background runners
-	for _, cancelFunc := range s.runnerCancelFuncs {
-		if cancelFunc != nil {
-			cancelFunc()
-		}
-	}
-
-	// Shutdown HTTP server.
-	if s.httpServer != nil {
-		if err := s.httpServer.Shutdown(ctx); err != nil {
-			slog.Error("failed to shutdown server", slog.String("error", err.Error()))
-		}
-	}
+	s.stopBackgroundRunners()
+	s.closeLongLivedConnections()
+	s.shutdownHTTPServer(ctx)
+	s.waitBackgroundRunners(ctx)
 
 	// Close database connection.
 	if err := s.Store.Close(); err != nil {
@@ -136,26 +147,73 @@ func (s *Server) Shutdown(ctx context.Context) {
 	slog.Info("memos stopped properly")
 }
 
-func (s *Server) StartBackgroundRunners(ctx context.Context) {
+func (s *Server) startBackgroundRunners(ctx context.Context) {
 	// Create a separate context for each background runner
 	// This allows us to control cancellation for each runner independently
 	s3Context, s3Cancel := context.WithCancel(ctx)
 
 	// Store the cancel function so we can properly shut down runners
-	s.runnerCancelFuncs = append(s.runnerCancelFuncs, s3Cancel)
+	s.backgroundRunnerCancels = append(s.backgroundRunnerCancels, s3Cancel)
 
 	// Create and start S3 presign runner
 	s3presignRunner := s3presign.NewRunner(s.Store)
 	s3presignRunner.RunOnce(ctx)
 
 	// Start continuous S3 presign runner
+	s.backgroundRunnerWG.Add(1)
 	go func() {
+		defer s.backgroundRunnerWG.Done()
 		s3presignRunner.Run(s3Context)
 		slog.Info("s3presign runner stopped")
 	}()
 
-	// Log the number of goroutines running
-	slog.Info("background runners started", "goroutines", runtime.NumGoroutine())
+	slog.Info("background runners started")
+}
+
+func (s *Server) stopBackgroundRunners() {
+	for _, cancelFunc := range s.backgroundRunnerCancels {
+		if cancelFunc != nil {
+			cancelFunc()
+		}
+	}
+}
+
+func (s *Server) waitBackgroundRunners(ctx context.Context) {
+	done := make(chan struct{})
+	go func() {
+		s.backgroundRunnerWG.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+	case <-ctx.Done():
+		select {
+		case <-done:
+			return
+		default:
+		}
+		slog.Error("failed to stop background runners", slog.String("error", ctx.Err().Error()))
+	}
+}
+
+func (s *Server) closeLongLivedConnections() {
+	// Long-lived SSE requests do not finish on their own during http.Server.Shutdown.
+	if s.sseHub != nil {
+		s.sseHub.Close()
+	}
+}
+
+func (s *Server) shutdownHTTPServer(ctx context.Context) {
+	if s.httpServer == nil {
+		return
+	}
+	if err := s.httpServer.Shutdown(ctx); err != nil {
+		slog.Error("failed to shutdown server", slog.String("error", err.Error()))
+		if closeErr := s.httpServer.Close(); closeErr != nil && closeErr != http.ErrServerClosed {
+			slog.Error("failed to close server", slog.String("error", closeErr.Error()))
+		}
+	}
 }
 
 func (s *Server) getOrUpsertInstanceBasicSetting(ctx context.Context) (*storepb.InstanceBasicSetting, error) {

@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/binary"
 	"fmt"
+	"image"
 	"io"
 	"log/slog"
 	"mime"
@@ -16,17 +17,17 @@ import (
 	"time"
 
 	"github.com/disintegration/imaging"
-	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	"github.com/usememos/memos/internal/filter"
+	"github.com/usememos/memos/internal/motionphoto"
 	"github.com/usememos/memos/internal/profile"
+	"github.com/usememos/memos/internal/storage/s3"
 	"github.com/usememos/memos/internal/util"
-	"github.com/usememos/memos/plugin/filter"
-	"github.com/usememos/memos/plugin/storage/s3"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -43,7 +44,9 @@ const (
 
 	// defaultJPEGQuality is the JPEG quality used when re-encoding images for EXIF stripping.
 	// Quality 95 maintains visual quality while ensuring metadata is removed.
-	defaultJPEGQuality = 95
+	defaultJPEGQuality        = 95
+	maxBatchDeleteAttachments = 100
+	maxImagePixels            = 50_000_000
 )
 
 var SupportedThumbnailMimeTypes = []string{
@@ -81,29 +84,29 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 	if !validateFilename(request.Attachment.Filename) {
 		return nil, status.Errorf(codes.InvalidArgument, "filename contains invalid characters or format")
 	}
-	if request.Attachment.Type == "" {
+	normalizedMimeType := request.Attachment.Type
+	if normalizedMimeType == "" {
 		ext := filepath.Ext(request.Attachment.Filename)
 		mimeType := mime.TypeByExtension(ext)
 		if mimeType == "" {
 			mimeType = http.DetectContentType(request.Attachment.Content)
 		}
-		// ParseMediaType to strip parameters
-		mediaType, _, err := mime.ParseMediaType(mimeType)
-		if err == nil {
-			request.Attachment.Type = mediaType
+		if normalizedType, ok := normalizeMimeType(mimeType); ok {
+			normalizedMimeType = normalizedType
 		}
 	}
-	if request.Attachment.Type == "" {
-		request.Attachment.Type = "application/octet-stream"
+	if normalizedMimeType == "" {
+		normalizedMimeType = "application/octet-stream"
 	}
-	if !isValidMimeType(request.Attachment.Type) {
+	normalizedType, ok := normalizeMimeType(normalizedMimeType)
+	if !ok {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid MIME type format")
 	}
+	request.Attachment.Type = normalizedType
 
-	// Use provided attachment_id or generate a new one
-	attachmentUID := request.AttachmentId
-	if attachmentUID == "" {
-		attachmentUID = shortuuid.New()
+	attachmentUID, err := ValidateAndGenerateUID(request.AttachmentId)
+	if err != nil {
+		return nil, err
 	}
 
 	create := &store.Attachment{
@@ -111,6 +114,15 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 		CreatorID: user.ID,
 		Filename:  request.Attachment.Filename,
 		Type:      request.Attachment.Type,
+	}
+
+	inputMotionMedia, err := validateClientMotionMedia(request.Attachment.MotionMedia, attachmentUID)
+	if err != nil {
+		return nil, err
+	}
+	if inputMotionMedia != nil {
+		create.Payload = ensureAttachmentPayload(create.Payload)
+		create.Payload.MotionMedia = inputMotionMedia
 	}
 
 	instanceStorageSetting, err := s.Store.GetInstanceStorageSetting(ctx)
@@ -128,25 +140,6 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 	create.Size = int64(size)
 	create.Blob = request.Attachment.Content
 
-	// Strip EXIF metadata from images for privacy protection.
-	// This removes sensitive information like GPS location, device details, etc.
-	if shouldStripExif(create.Type) {
-		if strippedBlob, err := stripImageExif(create.Blob, create.Type); err != nil {
-			// Log warning but continue with original image to ensure uploads don't fail.
-			slog.Warn("failed to strip EXIF metadata from image",
-				slog.String("type", create.Type),
-				slog.String("filename", create.Filename),
-				slog.String("error", err.Error()))
-		} else {
-			create.Blob = strippedBlob
-			create.Size = int64(len(strippedBlob))
-		}
-	}
-
-	if err := SaveAttachmentBlob(ctx, s.Profile, s.Store, create); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to save attachment blob: %v", err)
-	}
-
 	if request.Attachment.Memo != nil {
 		memoUID, err := ExtractMemoUIDFromName(*request.Attachment.Memo)
 		if err != nil {
@@ -159,8 +152,44 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 		if memo == nil {
 			return nil, status.Errorf(codes.NotFound, "memo not found: %s", *request.Attachment.Memo)
 		}
+		if !canModifyMemo(user, memo) {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
 		create.MemoID = &memo.ID
 	}
+
+	if create.Payload == nil || create.Payload.MotionMedia == nil {
+		if detectedMotion := detectAndroidMotionMedia(create.Blob, create.Type, attachmentUID); detectedMotion != nil {
+			create.Payload = ensureAttachmentPayload(create.Payload)
+			create.Payload.MotionMedia = detectedMotion
+		}
+	}
+
+	// Strip EXIF metadata from images for privacy protection.
+	// This removes sensitive information like GPS location, device details, etc.
+	if shouldStripExif(create.Type) && !isAndroidMotionContainer(create.Payload.GetMotionMedia()) {
+		release, err := s.acquireImageProcessingSlot(ctx)
+		if err != nil {
+			return nil, status.Errorf(codes.ResourceExhausted, "too many image processing requests")
+		}
+		strippedBlob, stripErr := stripImageExif(create.Blob, create.Type)
+		release()
+		if stripErr != nil {
+			// Log warning but continue with original image to ensure uploads don't fail.
+			slog.Warn("failed to strip EXIF metadata from image",
+				slog.String("type", create.Type),
+				slog.String("filename", create.Filename),
+				slog.String("error", stripErr.Error()))
+		} else {
+			create.Blob = strippedBlob
+			create.Size = int64(len(strippedBlob))
+		}
+	}
+
+	if err := SaveAttachmentBlob(ctx, s.Profile, s.Store, create); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to save attachment blob: %v", err)
+	}
+
 	attachment, err := s.Store.CreateAttachment(ctx, create)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create attachment: %v", err)
@@ -335,13 +364,64 @@ func (s *APIV1Service) DeleteAttachment(ctx context.Context, request *v1pb.Delet
 	return &emptypb.Empty{}, nil
 }
 
+func (s *APIV1Service) BatchDeleteAttachments(ctx context.Context, request *v1pb.BatchDeleteAttachmentsRequest) (*emptypb.Empty, error) {
+	user, err := s.fetchCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+	if len(request.Names) == 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "attachment names are required")
+	}
+	if len(request.Names) > maxBatchDeleteAttachments {
+		return nil, status.Errorf(codes.InvalidArgument, "too many attachment names; max %d", maxBatchDeleteAttachments)
+	}
+
+	attachments := make([]*store.Attachment, 0, len(request.Names))
+	seen := make(map[string]bool, len(request.Names))
+	for _, name := range request.Names {
+		if name == "" {
+			return nil, status.Errorf(codes.InvalidArgument, "attachment name is required")
+		}
+		if seen[name] {
+			continue
+		}
+		seen[name] = true
+
+		attachmentUID, err := ExtractAttachmentUIDFromName(name)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid attachment id: %v", err)
+		}
+		attachment, err := s.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachmentUID})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get attachment: %v", err)
+		}
+		if attachment == nil {
+			return nil, status.Errorf(codes.NotFound, "attachment not found")
+		}
+		if attachment.CreatorID != user.ID && !isSuperUser(user) {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+		attachments = append(attachments, attachment)
+	}
+
+	if err := s.Store.DeleteAttachments(ctx, attachments); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to delete attachments: %v", err)
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
 func convertAttachmentFromStore(attachment *store.Attachment) *v1pb.Attachment {
 	attachmentMessage := &v1pb.Attachment{
-		Name:       fmt.Sprintf("%s%s", AttachmentNamePrefix, attachment.UID),
-		CreateTime: timestamppb.New(time.Unix(attachment.CreatedTs, 0)),
-		Filename:   attachment.Filename,
-		Type:       attachment.Type,
-		Size:       attachment.Size,
+		Name:        fmt.Sprintf("%s%s", AttachmentNamePrefix, attachment.UID),
+		CreateTime:  timestamppb.New(time.Unix(attachment.CreatedTs, 0)),
+		Filename:    attachment.Filename,
+		Type:        attachment.Type,
+		Size:        attachment.Size,
+		MotionMedia: convertMotionMediaFromStore(getAttachmentMotionMedia(attachment)),
 	}
 	if attachment.MemoUID != nil && *attachment.MemoUID != "" {
 		memoName := fmt.Sprintf("%s%s", MemoNamePrefix, *attachment.MemoUID)
@@ -354,7 +434,7 @@ func convertAttachmentFromStore(attachment *store.Attachment) *v1pb.Attachment {
 	return attachmentMessage
 }
 
-// SaveAttachmentBlob save the blob of attachment based on the storage config.
+// SaveAttachmentBlob saves the blob of attachment based on the storage config.
 func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *store.Store, create *store.Attachment) error {
 	instanceStorageSetting, err := stores.GetInstanceStorageSetting(ctx)
 	if err != nil {
@@ -362,7 +442,7 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 	}
 
 	if instanceStorageSetting.StorageType == storepb.InstanceStorageSetting_LOCAL {
-		filepathTemplate := "assets/{timestamp}_{filename}"
+		filepathTemplate := "assets/{timestamp}_{uuid}_{filename}"
 		if instanceStorageSetting.FilepathTemplate != "" {
 			filepathTemplate = instanceStorageSetting.FilepathTemplate
 		}
@@ -378,6 +458,15 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 		osPath := filepath.FromSlash(internalPath)
 		if !filepath.IsAbs(osPath) {
 			osPath = filepath.Join(profile.Data, osPath)
+		}
+		osPath = ensureUniqueLocalAttachmentPath(osPath, create.UID)
+		internalPath = filepath.ToSlash(osPath)
+		if !filepath.IsAbs(filepath.FromSlash(internalPath)) {
+			internalPath, err = filepath.Rel(profile.Data, osPath)
+			if err != nil {
+				return errors.Wrap(err, "Failed to get relative path")
+			}
+			internalPath = filepath.ToSlash(internalPath)
 		}
 		dir := filepath.Dir(osPath)
 		if err = os.MkdirAll(dir, os.ModePerm); err != nil {
@@ -418,15 +507,15 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 		create.Reference = presignURL
 		create.Blob = nil
 		create.StorageType = storepb.AttachmentStorageType_S3
-		create.Payload = &storepb.AttachmentPayload{
-			Payload: &storepb.AttachmentPayload_S3Object_{
-				S3Object: &storepb.AttachmentPayload_S3Object{
-					S3Config:          s3Config,
-					Key:               key,
-					LastPresignedTime: timestamppb.New(time.Now()),
-				},
+		payload := ensureAttachmentPayload(create.Payload)
+		payload.Payload = &storepb.AttachmentPayload_S3Object_{
+			S3Object: &storepb.AttachmentPayload_S3Object{
+				S3Config:          s3Config,
+				Key:               key,
+				LastPresignedTime: timestamppb.New(time.Now()),
 			},
 		}
+		create.Payload = payload
 	}
 
 	return nil
@@ -516,6 +605,16 @@ func replaceFilenameWithPathTemplate(path, filename string) string {
 	return path
 }
 
+func ensureUniqueLocalAttachmentPath(path, uid string) string {
+	if _, err := os.Stat(path); err != nil {
+		return path
+	}
+
+	ext := filepath.Ext(path)
+	base := strings.TrimSuffix(path, ext)
+	return base + "_" + uid + ext
+}
+
 func validateFilename(filename string) bool {
 	// Reject path traversal attempts and make sure no additional directories are created
 	if !filepath.IsLocal(filename) || strings.ContainsAny(filename, "/\\") {
@@ -531,16 +630,18 @@ func validateFilename(filename string) bool {
 	return true
 }
 
-func isValidMimeType(mimeType string) bool {
-	// Reject empty or excessively long MIME types
+func normalizeMimeType(mimeType string) (string, bool) {
+	mimeType = strings.TrimSpace(mimeType)
 	if mimeType == "" || len(mimeType) > 255 {
-		return false
+		return "", false
 	}
 
-	// MIME type must match the pattern: type/subtype
-	// Allow common characters in MIME types per RFC 2045
-	matched, _ := regexp.MatchString(`^[a-zA-Z0-9][a-zA-Z0-9!#$&^_.+-]{0,126}/[a-zA-Z0-9][a-zA-Z0-9!#$&^_.+-]{0,126}$`, mimeType)
-	return matched
+	mediaType, _, err := mime.ParseMediaType(mimeType)
+	if err != nil || mediaType == "" || len(mediaType) > 255 {
+		return "", false
+	}
+
+	return mediaType, true
 }
 
 func (s *APIV1Service) validateAttachmentFilter(ctx context.Context, filterStr string) error {
@@ -607,11 +708,81 @@ func (s *APIV1Service) checkAttachmentAccess(ctx context.Context, attachment *st
 	return nil
 }
 
+func validateClientMotionMedia(motion *v1pb.MotionMedia, attachmentUID string) (*storepb.MotionMedia, error) {
+	if motion == nil {
+		return nil, nil
+	}
+
+	if motion.Family != v1pb.MotionMediaFamily_APPLE_LIVE_PHOTO {
+		return nil, status.Errorf(codes.InvalidArgument, "only Apple Live Photo motion metadata can be provided by clients")
+	}
+	if motion.Role != v1pb.MotionMediaRole_STILL && motion.Role != v1pb.MotionMediaRole_VIDEO {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid Apple Live Photo motion role")
+	}
+
+	storeMotion := convertMotionMediaToStore(motion)
+	if storeMotion.GroupId == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "motion media group_id is required")
+	}
+	if storeMotion.Family == storepb.MotionMediaFamily_ANDROID_MOTION_PHOTO && storeMotion.GroupId == "" {
+		storeMotion.GroupId = attachmentUID
+	}
+
+	return storeMotion, nil
+}
+
+func detectAndroidMotionMedia(blob []byte, mimeType, attachmentUID string) *storepb.MotionMedia {
+	if mimeType != "image/jpeg" && mimeType != "image/jpg" {
+		return nil
+	}
+
+	detection := motionphoto.DetectJPEG(blob)
+	if detection == nil {
+		return nil
+	}
+
+	return &storepb.MotionMedia{
+		Family:                  storepb.MotionMediaFamily_ANDROID_MOTION_PHOTO,
+		Role:                    storepb.MotionMediaRole_CONTAINER,
+		GroupId:                 attachmentUID,
+		PresentationTimestampUs: detection.PresentationTimestampUs,
+		HasEmbeddedVideo:        true,
+	}
+}
+
 // shouldStripExif checks if the MIME type is an image format that may contain EXIF metadata.
 // Returns true for formats like JPEG, TIFF, WebP, HEIC, and HEIF which commonly contain
 // privacy-sensitive metadata such as GPS coordinates, camera settings, and device information.
 func shouldStripExif(mimeType string) bool {
 	return exifCapableImageTypes[mimeType]
+}
+
+func (s *APIV1Service) acquireImageProcessingSlot(ctx context.Context) (func(), error) {
+	if s.imageProcessingSemaphore == nil {
+		return func() {}, nil
+	}
+	if err := s.imageProcessingSemaphore.Acquire(ctx, 1); err != nil {
+		return nil, err
+	}
+	return func() {
+		s.imageProcessingSemaphore.Release(1)
+	}, nil
+}
+
+func validateImagePixelCount(imageData []byte) error {
+	config, _, err := image.DecodeConfig(bytes.NewReader(imageData))
+	if err != nil {
+		// Some formats supported by imaging do not expose dimensions through
+		// the standard image registry. Let the full decoder handle those.
+		return nil //nolint:nilerr
+	}
+	if config.Width <= 0 || config.Height <= 0 {
+		return errors.New("invalid image dimensions")
+	}
+	if config.Width > maxImagePixels/config.Height {
+		return errors.Errorf("image dimensions exceed maximum of %d pixels", maxImagePixels)
+	}
+	return nil
 }
 
 // stripImageExif removes EXIF metadata from image files by decoding and re-encoding them.
@@ -628,6 +799,10 @@ func shouldStripExif(mimeType string) bool {
 //
 // Returns the cleaned image data without any EXIF metadata, or an error if processing fails.
 func stripImageExif(imageData []byte, mimeType string) ([]byte, error) {
+	if err := validateImagePixelCount(imageData); err != nil {
+		return nil, err
+	}
+
 	// Decode image with automatic EXIF orientation correction.
 	// This ensures the image displays correctly after metadata removal.
 	img, err := imaging.Decode(bytes.NewReader(imageData), imaging.AutoOrientation(true))

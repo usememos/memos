@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+
+option go_package = "gen/api/v1";
+
+service AIService {
+  // Transcribe transcribes an audio file using an instance AI provider.
+  rpc Transcribe(TranscribeRequest) returns (TranscribeResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/ai:transcribe"
+      body: "*"
+    };
+    option (google.api.method_signature) = "audio";
+  }
+}
+
+message TranscribeRequest {
+  // Required. Audio input.
+  TranscriptionAudio audio = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message TranscriptionAudio {
+  oneof source {
+    // Inline audio bytes.
+    bytes content = 1 [(google.api.field_behavior) = INPUT_ONLY];
+
+    // URI for audio content. Reserved for future use.
+    string uri = 2;
+  }
+
+  // Optional. The uploaded filename.
+  string filename = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. The MIME type of the input audio.
+  string content_type = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message TranscribeResponse {
+  // The transcribed text.
+  string text = 1;
+}

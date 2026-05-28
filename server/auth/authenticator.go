@@ -130,6 +130,47 @@ type AuthResult struct {
 	AccessToken string      // Non-empty if authenticated via JWT
 }
 
+// AuthenticateToUser resolves the current request to a *store.User, checking the
+// Authorization header first (access token or PAT), then falling back to the
+// refresh token cookie. Returns (nil, nil) when no credentials are present.
+func (a *Authenticator) AuthenticateToUser(ctx context.Context, authHeader, cookieHeader string) (*store.User, error) {
+	// Try Bearer token first.
+	if authHeader != "" {
+		token := ExtractBearerToken(authHeader)
+		if token != "" {
+			if !strings.HasPrefix(token, PersonalAccessTokenPrefix) {
+				claims, err := a.AuthenticateByAccessTokenV2(token)
+				if err == nil && claims != nil {
+					user, err := a.store.GetUser(ctx, &store.FindUser{ID: &claims.UserID})
+					if err != nil {
+						return nil, err
+					}
+					if user == nil || user.RowStatus == store.Archived {
+						return nil, nil
+					}
+					return user, nil
+				}
+			} else {
+				user, _, err := a.AuthenticateByPAT(ctx, token)
+				if err == nil {
+					return user, nil
+				}
+			}
+		}
+	}
+
+	// Fallback: refresh token cookie.
+	if cookieHeader != "" {
+		refreshToken := ExtractRefreshTokenFromCookie(cookieHeader)
+		if refreshToken != "" {
+			user, _, err := a.AuthenticateByRefreshToken(ctx, refreshToken)
+			return user, err
+		}
+	}
+
+	return nil, nil
+}
+
 // Authenticate tries to authenticate using the provided credentials.
 // Priority: 1. Access Token V2, 2. PAT
 // Returns nil if no valid credentials are provided.
@@ -140,6 +181,10 @@ func (a *Authenticator) Authenticate(ctx context.Context, authHeader string) *Au
 	if token != "" && !strings.HasPrefix(token, PersonalAccessTokenPrefix) {
 		claims, err := a.AuthenticateByAccessTokenV2(token)
 		if err == nil && claims != nil {
+			user, err := a.store.GetUser(ctx, &store.FindUser{ID: &claims.UserID})
+			if err != nil || user == nil || user.RowStatus == store.Archived {
+				return nil
+			}
 			return &AuthResult{
 				Claims:      claims,
 				AccessToken: token,

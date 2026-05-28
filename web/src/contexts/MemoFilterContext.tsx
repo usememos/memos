@@ -117,6 +117,10 @@ export function MemoFilterProvider({ children }: { children: ReactNode }) {
 
   const setShortcut = useCallback((newShortcut?: string) => {
     setShortcutState(newShortcut);
+    // Clear content search filter when selecting a shortcut (issue #5462)
+    if (newShortcut !== undefined) {
+      setFiltersState((prev) => prev.filter((f) => f.factor !== "contentSearch"));
+    }
   }, []);
 
   const hasFilter = useCallback((filter: MemoFilter) => filters.some((f) => getMemoFilterKey(f) === getMemoFilterKey(filter)), [filters]);

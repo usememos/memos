@@ -6,18 +6,21 @@ export const instanceSettingNamePrefix = "instance/settings/";
 export const userNamePrefix = "users/";
 export const memoNamePrefix = "memos/";
 export const identityProviderNamePrefix = "identity-providers/";
-export const activityNamePrefix = "activities/";
 
-export const extractUserIdFromName = (name: string) => {
-  return name.split(userNamePrefix).pop() || "";
+export const buildMemoCreatorFilter = (name: string) => {
+  if (!name) {
+    return undefined;
+  }
+  const normalizedName = name.startsWith(userNamePrefix) ? name : `${userNamePrefix}${name}`;
+  return `creator == ${JSON.stringify(normalizedName)}`;
 };
 
 export const extractMemoIdFromName = (name: string) => {
   return name.split(memoNamePrefix).pop() || "";
 };
 
-export const extractIdentityProviderIdFromName = (name: string) => {
-  return parseInt(name.split(identityProviderNamePrefix).pop() || "", 10);
+export const extractIdentityProviderUidFromName = (name: string) => {
+  return name.split(identityProviderNamePrefix).pop() || "";
 };
 
 // Helper function to convert InstanceSetting_Key enum value to string name

@@ -1,87 +1,80 @@
-import { CogIcon, DatabaseIcon, KeyIcon, LibraryIcon, LucideIcon, Settings2Icon, UserIcon, UsersIcon } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import MobileHeader from "@/components/MobileHeader";
-import InstanceSection from "@/components/Settings/InstanceSection";
-import MemberSection from "@/components/Settings/MemberSection";
-import MemoRelatedSettings from "@/components/Settings/MemoRelatedSettings";
-import MyAccountSection from "@/components/Settings/MyAccountSection";
-import PreferencesSection from "@/components/Settings/PreferencesSection";
 import SectionMenuItem from "@/components/Settings/SectionMenuItem";
-import SSOSection from "@/components/Settings/SSOSection";
-import StorageSection from "@/components/Settings/StorageSection";
+import {
+  DEFAULT_SETTING_SECTION,
+  isSettingSectionKey,
+  SETTINGS_SECTIONS,
+  type SettingSectionDefinition,
+  type SettingSectionKey,
+} from "@/components/Settings/settingSections";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
-import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 import { User_Role } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
-type SettingSection = "my-account" | "preference" | "member" | "system" | "memo-related" | "storage" | "sso";
+const GITHUB_COMMIT_URL_PREFIX = "https://github.com/usememos/memos/commit/";
 
-interface State {
-  selectedSection: SettingSection;
-}
-
-const BASIC_SECTIONS: SettingSection[] = ["my-account", "preference"];
-const ADMIN_SECTIONS: SettingSection[] = ["member", "system", "memo-related", "storage", "sso"];
-const SECTION_ICON_MAP: Record<SettingSection, LucideIcon> = {
-  "my-account": UserIcon,
-  preference: CogIcon,
-  member: UsersIcon,
-  system: Settings2Icon,
-  "memo-related": LibraryIcon,
-  storage: DatabaseIcon,
-  sso: KeyIcon,
-};
+const isCommitSha = (commit: string) => /^[0-9a-f]{7,40}$/i.test(commit);
 
 const Setting = () => {
   const t = useTranslate();
   const sm = useMediaQuery("sm");
   const location = useLocation();
   const user = useCurrentUser();
-  const { profile, fetchSetting } = useInstance();
-  const [state, setState] = useState<State>({
-    selectedSection: "my-account",
-  });
+  const { profile, fetchSettings } = useInstance();
+  const [selectedSection, setSelectedSection] = useState<SettingSectionKey>(DEFAULT_SETTING_SECTION);
   const isHost = user?.role === User_Role.ADMIN;
+  const commitUrl = isCommitSha(profile.commit) ? `${GITHUB_COMMIT_URL_PREFIX}${profile.commit}` : "";
 
-  const settingsSectionList = useMemo(() => {
-    let settingList = [...BASIC_SECTIONS];
-    if (isHost) {
-      settingList = settingList.concat(ADMIN_SECTIONS);
-    }
-    return settingList;
+  const sectionGroups = useMemo(() => {
+    const visibleSections = SETTINGS_SECTIONS.filter((section) => section.scope === "basic" || isHost);
+    return {
+      basic: visibleSections.filter((section) => section.scope === "basic"),
+      admin: visibleSections.filter((section) => section.scope === "admin"),
+      all: visibleSections,
+    };
   }, [isHost]);
 
+  const visibleSectionKeys = useMemo(() => new Set(sectionGroups.all.map((section) => section.key)), [sectionGroups.all]);
+
   useEffect(() => {
-    let hash = location.hash.slice(1) as SettingSection;
-    // If the hash is not a valid section, redirect to the default section.
-    if (![...BASIC_SECTIONS, ...ADMIN_SECTIONS].includes(hash)) {
-      hash = "my-account";
-    }
-    setState({
-      selectedSection: hash,
-    });
-  }, [location.hash]);
+    const hash = location.hash.slice(1);
+    const nextSection = isSettingSectionKey(hash) && visibleSectionKeys.has(hash) ? hash : DEFAULT_SETTING_SECTION;
+    setSelectedSection(nextSection);
+  }, [location.hash, visibleSectionKeys]);
 
   useEffect(() => {
     if (!isHost) {
       return;
     }
+    const preloadSettingKeys = new Set(sectionGroups.admin.flatMap((section) => section.preloadSettingKeys ?? []));
+    void fetchSettings([...preloadSettingKeys]);
+  }, [fetchSettings, isHost, sectionGroups.admin]);
 
-    // Initial fetch for instance settings.
-    (async () => {
-      [InstanceSetting_Key.MEMO_RELATED, InstanceSetting_Key.STORAGE].forEach(async (key) => {
-        await fetchSetting(key);
-      });
-    })();
-  }, [isHost, fetchSetting]);
+  const handleSectionSelectorItemClick = (section: SettingSectionKey) => {
+    window.location.hash = section;
+  };
 
-  const handleSectionSelectorItemClick = useCallback((settingSection: SettingSection) => {
-    window.location.hash = settingSection;
-  }, []);
+  const selectedSectionDefinition =
+    sectionGroups.all.find((section) => section.key === selectedSection) ??
+    SETTINGS_SECTIONS.find((section) => section.key === DEFAULT_SETTING_SECTION) ??
+    SETTINGS_SECTIONS[0];
+  const ActiveSection = selectedSectionDefinition.component;
+
+  const renderSectionMenuItems = (sections: SettingSectionDefinition[]) =>
+    sections.map((section) => (
+      <SectionMenuItem
+        key={section.key}
+        text={t(section.labelKey)}
+        icon={section.icon}
+        isSelected={selectedSection === section.key}
+        onClick={() => handleSectionSelectorItemClick(section.key)}
+      />
+    ));
 
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-start sm:pt-3 md:pt-6 pb-8">
@@ -91,70 +84,50 @@ const Setting = () => {
           {sm && (
             <div className="flex flex-col justify-start items-start w-40 h-auto shrink-0 py-2">
               <span className="text-sm mt-0.5 pl-3 font-mono select-none text-muted-foreground">{t("common.basic")}</span>
-              <div className="w-full flex flex-col justify-start items-start mt-1">
-                {BASIC_SECTIONS.map((item) => (
-                  <SectionMenuItem
-                    key={item}
-                    text={t(`setting.${item}`)}
-                    icon={SECTION_ICON_MAP[item]}
-                    isSelected={state.selectedSection === item}
-                    onClick={() => handleSectionSelectorItemClick(item)}
-                  />
-                ))}
-              </div>
-              {isHost ? (
+              <div className="w-full flex flex-col justify-start items-start mt-1">{renderSectionMenuItems(sectionGroups.basic)}</div>
+              {isHost && (
                 <>
                   <span className="text-sm mt-4 pl-3 font-mono select-none text-muted-foreground">{t("common.admin")}</span>
                   <div className="w-full flex flex-col justify-start items-start mt-1">
-                    {ADMIN_SECTIONS.map((item) => (
-                      <SectionMenuItem
-                        key={item}
-                        text={t(`setting.${item}`)}
-                        icon={SECTION_ICON_MAP[item]}
-                        isSelected={state.selectedSection === item}
-                        onClick={() => handleSectionSelectorItemClick(item)}
-                      />
-                    ))}
-                    <span className="px-3 mt-2 opacity-70 text-sm">
-                      {t("setting.version")}: v{profile.version} (tmd)
-                    </span>
+                    {renderSectionMenuItems(sectionGroups.admin)}
+                    <div className="px-3 mt-2 opacity-70 text-sm leading-5">
+                      {t("setting.version")}: {profile.version}
+                      {profile.commit && (
+                        <span className="block font-mono break-all">
+                          Commit:{" "}
+                          {commitUrl ? (
+                            <a className="underline hover:text-foreground" href={commitUrl} target="_blank" rel="noreferrer">
+                              {profile.commit}
+                            </a>
+                          ) : (
+                            profile.commit
+                          )}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </>
-              ) : null}
+              )}
             </div>
           )}
           <div className="w-full grow sm:pl-4 overflow-x-auto">
             {!sm && (
               <div className="w-auto inline-block my-2">
-                <Select value={state.selectedSection} onValueChange={(value) => handleSectionSelectorItemClick(value as SettingSection)}>
+                <Select value={selectedSection} onValueChange={(value) => handleSectionSelectorItemClick(value as SettingSectionKey)}>
                   <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select section" />
+                    <SelectValue placeholder={t("setting.select-section")} />
                   </SelectTrigger>
                   <SelectContent>
-                    {settingsSectionList.map((settingSection) => (
-                      <SelectItem key={settingSection} value={settingSection}>
-                        {t(`setting.${settingSection}`)}
+                    {sectionGroups.all.map((section) => (
+                      <SelectItem key={section.key} value={section.key}>
+                        {t(section.labelKey)}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
             )}
-            {state.selectedSection === "my-account" ? (
-              <MyAccountSection />
-            ) : state.selectedSection === "preference" ? (
-              <PreferencesSection />
-            ) : state.selectedSection === "member" ? (
-              <MemberSection />
-            ) : state.selectedSection === "system" ? (
-              <InstanceSection />
-            ) : state.selectedSection === "memo-related" ? (
-              <MemoRelatedSettings />
-            ) : state.selectedSection === "storage" ? (
-              <StorageSection />
-            ) : state.selectedSection === "sso" ? (
-              <SSOSection />
-            ) : null}
+            <ActiveSection />
           </div>
         </div>
       </div>

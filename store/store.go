@@ -1,6 +1,7 @@
 package store
 
 import (
+	"sync"
 	"time"
 
 	"github.com/usememos/memos/internal/profile"
@@ -11,6 +12,8 @@ import (
 type Store struct {
 	profile *profile.Profile
 	driver  Driver
+
+	userCreateMu sync.Mutex
 
 	// Cache settings
 	cacheConfig cache.Config
@@ -45,6 +48,11 @@ func New(driver Driver, profile *profile.Profile) *Store {
 
 func (s *Store) GetDriver() Driver {
 	return s.driver
+}
+
+// GetDataDir returns the store data directory.
+func (s *Store) GetDataDir() string {
+	return s.profile.Data
 }
 
 func (s *Store) Close() error {

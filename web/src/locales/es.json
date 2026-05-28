@@ -10,39 +10,66 @@
     "create-your-account": "Crea tu cuenta",
     "host-tip": "Te estás registrando como anfitrión del sitio.",
     "new-password": "Nueva contraseña",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Repite la nueva contraseña",
     "sign-in-tip": "¿Ya tienes una cuenta?",
     "sign-up-tip": "¿Aún no tienes una cuenta?"
   },
   "common": {
     "about": "Acerca de",
+    "add": "Agregar",
     "admin": "Administrador",
+    "all": "Todos",
     "archive": "Archivar",
     "archived": "Archivado",
+    "attachments": "Adjuntos",
+    "auto-expand": "Auto expandir",
     "avatar": "Avatar",
     "basic": "Básico",
     "beta": "Beta",
+    "calendar": "Calendario",
     "cancel": "Cancelar",
     "change": "Cambiar",
+    "clear": "Borrar",
     "close": "Cerrar",
+    "collapse": "Colapsar",
     "confirm": "Confirmar",
+    "copy": "Copiar",
     "create": "Crear",
+    "created-at": "Creado en",
     "database": "Base de datos",
+    "day": "Día",
+    "days": {
+      "fri": "Vie",
+      "mon": "Lun",
+      "sat": "Sáb",
+      "sun": "Dom",
+      "thu": "Jue",
+      "tue": "Mar",
+      "wed": "Mié"
+    },
     "delete": "Eliminar",
+    "description": "Descripción",
     "edit": "Editar",
-    "email": "Email",
+    "email": "Correo electrónico",
+    "expand": "Expandir",
     "explore": "Explorar",
     "file": "Archivo",
-    "filter": "Filtros",
+    "filter": "Filtro",
     "home": "Inicio",
     "image": "Imagen",
+    "in": "En",
     "inbox": "Bandeja de entrada",
+    "input": "Entrada",
     "language": "Idioma",
+    "last-updated-at": "Última actualización en",
     "learn-more": "Saber más",
     "link": "Enlace",
+    "map": "Mapa",
     "mark": "Marcar",
     "memo": "Memo",
     "memos": "Memos",
+    "more": "Más",
     "name": "Nombre",
     "new": "Nuevo",
     "nickname": "Apodo",
@@ -50,8 +77,13 @@
     "or": "o",
     "password": "Contraseña",
     "pin": "Enganchar",
+    "pinned": "Fijado",
     "preview": "Vista previa",
     "profile": "Perfil",
+    "properties": "Propiedades",
+    "referenced-by": "Referenciado por",
+    "referencing": "Referenciando",
+    "relations": "Relaciones",
     "remember-me": "Recuérdame",
     "rename": "Renombrar",
     "reset": "Restablecer",
@@ -63,65 +95,73 @@
     "select": "Seleccionar",
     "settings": "Configuración",
     "share": "Compartir",
+    "shortcut-filter": "Filtro de atajos",
+    "shortcuts": "Atajos",
     "sign-in": "Iniciar sesión",
     "sign-in-with": "Iniciar sesión con {{provider}}",
     "sign-out": "Cerrar sesión",
     "sign-up": "Registrarse",
+    "statistics": "Estadísticas",
     "tags": "Etiquetas",
     "title": "Título",
+    "today": "Hoy",
+    "tree-mode": "Modo árbol",
     "type": "Tipo",
     "unpin": "Desenganchar",
     "update": "Actualizar",
+    "upload": "Subir",
+    "user": "Usuario",
     "username": "Usuario",
     "version": "Versión",
     "visibility": "Visibilidad",
-    "add": "Agregar",
-    "attachments": "Adjuntos",
-    "collapse": "Colapsar",
-    "created-at": "Creado en",
-    "day": "Día",
-    "days": "Días",
-    "expand": "Expandir",
-    "in": "En",
-    "input": "Entrada",
-    "last-updated-at": "Última actualización en",
-    "layout": "Diseño",
-    "pinned": "Fijado",
-    "properties": "Propiedades",
-    "referenced-by": "Referenciado por",
-    "referencing": "Referenciando",
-    "relations": "Relaciones",
-    "shortcut-filter": "Filtro de atajos",
-    "shortcuts": "Atajos",
-    "statistics": "Estadísticas",
-    "tree-mode": "Modo árbol",
-    "upload": "Subir",
-    "user": "Usuario",
     "yourself": "Tú mismo"
   },
-  "days": {
-    "fri": "Vie",
-    "mon": "Lun",
-    "sat": "Sáb",
-    "sun": "Dom",
-    "thu": "Jue",
-    "tue": "Mar",
-    "wed": "Mié"
-  },
   "editor": {
-    "any-thoughts": "Alguna idea...",
-    "save": "Guardar",
     "add-your-comment-here": "Agrega tu comentario aquí...",
-    "no-changes-detected": "No se detectaron cambios"
-  },
-  "filters": {
-    "has-code": "tieneCódigo",
-    "has-link": "tieneEnlace",
-    "has-task-list": "tieneListaTareas"
+    "any-thoughts": "Alguna idea...",
+    "exit-focus-mode": "Salir del modo enfoque",
+    "focus-mode": "Modo enfoque",
+    "no-changes-detected": "No se detectaron cambios",
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "slash-commands": "Escribe `/` para comandos",
+    "insert-menu": {
+      "add-location": "Agregar ubicación",
+      "link-memo": "Nota de enlace",
+      "upload-file": "Subir archivo"
+    },
+    "audio-recorder": {
+      "attachment-label": "Grabación de audio",
+      "attachment-label-with-time": "Grabación de audio {{time}}",
+      "discard": "Descartar",
+      "error": "Micrófono no disponible",
+      "error-description": "Inténtalo de nuevo después de comprobar el acceso al micrófono de este sitio.",
+      "idle-description": "Inicie la grabación para agregar una grabación de audio como archivo adjunto.",
+      "keep": "seguir grabando",
+      "pause-recording": "Pausar grabación de audio",
+      "play-recording": "Reproducir grabación de audio",
+      "ready": "Grabación lista",
+      "ready-description": "Obtenga una vista previa del clip y luego guárdelo como archivo adjunto de audio o deséchelo.",
+      "record-again": "Grabar de nuevo",
+      "recording": "Grabación de audio",
+      "recording-description": "Capture un archivo adjunto de audio rápido. Duración actual: {{duration}}",
+      "requesting": "Solicitando acceso...",
+      "requesting-permission": "Solicitando acceso al micrófono",
+      "requesting-permission-description": "Permita el acceso al micrófono en su navegador para comenzar a grabar.",
+      "start": "Empezar a grabar",
+      "stop": "dejar de grabar",
+      "title": "grabadora de audio",
+      "trigger": "grabar audio",
+      "unsupported": "Grabación de audio no compatible",
+      "unsupported-description": "Este navegador no puede grabar audio del compositor de notas."
+    }
   },
   "inbox": {
+    "failed-to-load": "Error al cargar el elemento de bandeja de entrada",
     "memo-comment": "{{user}} tiene un comentario sobre tu {{memo}}.",
-    "version-update": "¡Ya está disponible la nueva versión {{version}}!"
+    "no-archived": "No hay notificaciones archivadas",
+    "no-unread": "No hay notificaciones no leídas",
+    "unread": "No leído"
   },
   "markdown": {
     "checkbox": "Casilla de verificación",
@@ -130,23 +170,30 @@
   },
   "memo": {
     "archived-at": "Archivado en",
+    "click-to-hide-sensitive-content": "Haz clic para ocultar contenido sensible",
+    "click-to-show-sensitive-content": "Haz clic para mostrar contenido sensible",
+    "code": "Código",
     "comment": {
       "self": "Comentarios",
       "write-a-comment": "Escribe un comentario"
     },
-    "click-to-hide-nsfw-content": "Haz clic para ocultar contenido sensible",
-    "click-to-show-nsfw-content": "Haz clic para mostrar contenido sensible",
-    "code": "Código",
+    "copy-content": "Copiar contenido",
+    "copy-link": "Copiar enlace",
     "count-memos-in-date": "{{count}} {{memos}} en {{date}}",
+    "delete-confirm": "¿Estás seguro de que quieres eliminar este memo?",
+    "delete-confirm-description": "Esta acción es irreversible. Los adjuntos, enlaces y referencias también se eliminarán.",
     "direction": "Dirección",
     "direction-asc": "Ascendente",
     "direction-desc": "Descendente",
-    "display-time": "Mostrar hora",
-    "filters": "Filtros",
+    "display-time": "Hora de visualización",
+    "filters": {
+      "has-code": "tieneCódigo",
+      "has-link": "tieneEnlace",
+      "has-task-list": "tieneListaTareas",
+      "label": "Filtros"
+    },
     "links": "Enlaces",
-    "list": "Lista",
     "load-more": "Cargar más",
-    "masonry": "Mosaico",
     "no-archived-memos": "No hay memos archivados.",
     "no-memos": "No hay memos.",
     "order-by": "Ordenar por",
@@ -158,8 +205,34 @@
     "visibility": {
       "disabled": "Los memos públicos están deshabilitados",
       "private": "Privado",
-      "protected": "Espacio de trabajo",
+      "protected": "Protegido",
       "public": "Público"
+    },
+    "outline": "esquema",
+    "share": {
+      "active-links": "Enlaces activos para compartir",
+      "copied": "¡Copiado!",
+      "copy": "Copiar enlace",
+      "create-failed": "No se pudo crear el enlace para compartir",
+      "create-link": "Crear nuevo enlace",
+      "creating": "Creando…",
+      "expiry-1-day": "1 dia",
+      "expiry-30-days": "30 dias",
+      "expiry-7-days": "7 dias",
+      "expiry-label": "Vence",
+      "expiry-never": "nunca",
+      "expires-on": "Expira el {{date}}",
+      "invalid-link": "Este enlace no es válido o ha caducado.",
+      "never-expires": "Nunca caduca",
+      "no-links": "Aún no hay enlaces para compartir. Crea uno a continuación.",
+      "open-panel": "Administrar enlaces para compartir",
+      "revoke": "Revocar",
+      "revoke-failed": "No se pudo revocar el enlace",
+      "revoked": "Compartir enlace revocado",
+      "section-label": "Compartir",
+      "share": "Compartir",
+      "shared-by": "Compartido por {{creator}}",
+      "title": "Comparte esta nota"
     }
   },
   "message": {
@@ -178,6 +251,7 @@
     "password-changed": "Contraseña cambiada",
     "password-not-match": "Las contraseñas no coinciden.",
     "restored-successfully": "Restaurado con éxito",
+    "succeed-copy-content": "Contenido copiado correctamente.",
     "succeed-copy-link": "Enlace copiado correctamente.",
     "update-succeed": "Actualización exitosa",
     "user-not-found": "Usuario no encontrado"
@@ -208,16 +282,20 @@
       "title": "Crear recurso",
       "upload-method": "Método de carga"
     },
+    "delete-all-unused": "Eliminar todo lo no utilizado",
+    "delete-all-unused-confirm": "¿Estás seguro de que quieres eliminar todos los recursos no utilizados? ESTA ACCIÓN ES IRREVERSIBLE",
+    "delete-all-unused-error": "Error al eliminar los recursos no utilizados",
+    "delete-all-unused-success": "Recursos eliminados correctamente",
     "delete-resource": "Borrar recurso",
     "delete-selected-resources": "Borrar recursos seleccionados",
     "fetching-data": "Obteniendo datos…",
     "file-drag-drop-prompt": "Arrastra y suelta tu archivo aquí para subirlo",
-    "linked-amount": "Importe de la nota vinculado",
+    "linked-amount": "Notas vinculadas",
     "no-files-selected": "No hay archivos seleccionados",
     "no-resources": "Sin recursos.",
     "no-unused-resources": "No hay recursos sin utilizar",
     "reset-link": "Restablecer enlace",
-    "reset-link-prompt": "¿Está seguro de restablecer el enlace? Esto romperá todos los usos actuales del enlace. ESTA ACCIÓN ES IRREVERSIBLE",
+    "reset-link-prompt": "¿Estás seguro de restablecer el enlace? Esto romperá todos los usos actuales del enlace. ESTA ACCIÓN ES IRREVERSIBLE",
     "reset-resource-link": "Restablecer enlace de recursos",
     "unused-resources": "Recursos sin utilizar"
   },
@@ -226,66 +304,37 @@
     "go-to-home": "Ir al inicio"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "Token de acceso copiado al portapapeles",
-      "access-token-deletion": "¿Estás seguro de eliminar el token de acceso {{accessToken}}? ESTA ACCIÓN ES IRREVERSIBLE.",
-      "create-dialog": {
-        "create-access-token": "Crear token de acceso",
-        "created-at": "Creado en",
-        "description": "Descripción",
-        "duration-1m": "1 mes",
-        "duration-8h": "8 horas",
-        "duration-never": "Nunca",
-        "expiration": "Expiración",
-        "expires-at": "Expira en",
-        "some-description": "Alguna descripción..."
-      },
-      "description": "Lista de todos los tokens de acceso de tu cuenta.",
-      "title": "Tokens de acceso",
-      "token": "Token"
-    },
-    "account-section": {
-      "change-password": "Cambiar contraseña",
-      "email-note": "Opcional",
-      "export-memos": "Exportar memos",
-      "nickname-note": "Mostrado en el banner",
-      "openapi-reset": "Restablecer clave OpenAPI",
-      "openapi-sample-post": "Hola #memos desde {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "Restablecer API",
-      "title": "Información de la cuenta",
-      "update-information": "Actualizar información",
-      "username-note": "Usado para iniciar sesión"
-    },
-    "member": "Miembro",
-    "member-list": "Lista de miembros",
-    "member-section": {
+    "member": {
       "admin": "Administrador",
       "archive-member": "Archivar miembro",
+      "archive-success": "{{username}} archivado correctamente",
       "archive-warning": "¿Estás seguro de archivar a {{username}}?",
+      "archive-warning-description": "Archivar deshabilita la cuenta. Puedes restaurarla o eliminarla más tarde.",
       "create-a-member": "Crear un miembro",
       "delete-member": "Eliminar miembro",
+      "delete-success": "{{username}} eliminado correctamente",
       "delete-warning": "¿Estás seguro de eliminar a {{username}}? ESTA ACCIÓN ES IRREVERSIBLE",
-      "user": "Usuario"
+      "delete-warning-description": "ESTA ACCIÓN ES IRREVERSIBLE",
+      "restore-success": "{{username}} restaurado correctamente",
+      "user": "Usuario",
+      "label": "Miembro",
+      "list-title": "Lista de miembros",
+      "no-members-found": "No se encontraron miembros"
     },
-    "memo-related": "Memo",
-    "memo-related-settings": {
-      "content-length-limit": "Límite de longitud de contenido (Bytes)",
-      "enable-blur-nsfw-content": "Habilitar difuminado de contenido sensible (NSFW)",
-      "enable-memo-comments": "Habilitar comentarios en los memos",
-      "enable-memo-location": "Habilitar ubicación del memo",
-      "reactions": "Reacciones",
-      "title": "Configuración de memos"
+    "my-account": {
+      "label": "Mi cuenta"
     },
-    "my-account": "Mi cuenta",
-    "preference": "Preferencias",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "Hora de visualización del memo",
       "default-memo-visibility": "Visibilidad predeterminada del memo",
-      "theme": "Tema"
+      "theme": "Tema",
+      "label": "Preferencias"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "shortcut": {
+      "delete-confirm": "¿Estás seguro de que quieres eliminar el atajo `{{title}}`?",
+      "delete-success": "Atajo `{{title}}` eliminado correctamente"
+    },
+    "sso": {
       "authorization-endpoint": "Punto final de autorización",
       "client-id": "ID del cliente",
       "client-secret": "Secreto del cliente",
@@ -307,10 +356,10 @@
       "template": "Plantilla",
       "token-endpoint": "Punto final de token",
       "update-sso": "Actualizar SSO",
-      "user-endpoint": "Punto final de usuario"
+      "user-endpoint": "Punto final de usuario",
+      "label": "SSO"
     },
-    "storage": "Almacenamiento",
-    "storage-section": {
+    "storage": {
       "accesskey": "Clave de acceso",
       "accesskey-placeholder": "Clave de acceso / ID de acceso",
       "bucket": "Bucket",
@@ -342,10 +391,10 @@
       "url-prefix-placeholder": "Prefijo de URL personalizado, opcional",
       "url-suffix": "Sufijo de URL",
       "url-suffix-placeholder": "Sufijo de URL personalizado, opcional",
-      "warning-text": "¿Estás seguro de eliminar el servicio de almacenamiento \"{{name}}\"? ESTA ACCIÓN ES IRREVERSIBLE"
+      "warning-text": "¿Estás seguro de eliminar el servicio de almacenamiento \"{{name}}\"? ESTA ACCIÓN ES IRREVERSIBLE",
+      "label": "Almacenamiento"
     },
-    "system": "Sistema",
-    "system-section": {
+    "system": {
       "additional-script": "Script adicional",
       "additional-script-placeholder": "Código JavaScript adicional",
       "additional-style": "Estilo adicional",
@@ -360,7 +409,6 @@
       "disable-password-login": "Desactivar inicio de sesión con contraseña",
       "disable-password-login-final-warning": "Por favor escribe \"CONFIRM\" si sabes lo que haces.",
       "disable-password-login-warning": "Esto deshabilitará el inicio de sesión con contraseña para todos los usuarios. No será posible iniciar sesión sin revertir esta configuración en la base de datos si tus proveedores de identidad fallan. Debes tener especial cuidado al eliminar un proveedor de identidad",
-      "disable-public-memos": "Desactivar memos públicos",
       "display-with-updated-time": "Mostrar con hora actualizada",
       "enable-auto-compact": "Habilitar auto compactación",
       "enable-double-click-to-edit": "Habilitar doble clic para editar",
@@ -370,23 +418,46 @@
       "max-upload-size-hint": "El valor recomendado es 32 MiB.",
       "removed-completed-task-list-items": "Habilitar eliminación de tareas completadas",
       "server-name": "Nombre del servidor",
-      "title": "General"
+      "title": "General",
+      "label": "Sistema"
     },
     "version": "Versión",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "Token de acceso copiado al portapapeles",
+      "access-token-deleted": "Token de acceso `{{description}}` eliminado",
+      "access-token-deletion": "¿Estás seguro de que quieres eliminar el token de acceso `{{description}}`?",
+      "access-token-deletion-description": "Esta acción es irreversible. Necesitarás actualizar cualquier servicio que use este token para usar uno nuevo.",
       "create-dialog": {
-        "an-easy-to-remember-name": "Un nombre fácil de recordar",
-        "create-webhook": "Crear webhook",
-        "edit-webhook": "Editar webhook",
-        "payload-url": "URL de carga",
-        "title": "Título",
-        "url-example-post-receive": "https://example.com/postreceive"
+        "access-token-created": "Token de acceso `{{description}}` creado",
+        "create-access-token": "Crear token de acceso",
+        "created-at": "Creado en",
+        "description": "Descripción",
+        "duration-1m": "1 mes",
+        "duration-8h": "8 horas",
+        "duration-never": "Nunca",
+        "expiration": "Expiración",
+        "expires-at": "Expira en",
+        "some-description": "Alguna descripción..."
       },
-      "no-webhooks-found": "No se encontraron webhooks.",
-      "title": "Webhooks",
-      "url": "URL"
+      "description": "Lista de todos los tokens de acceso de tu cuenta.",
+      "title": "Tokens de acceso",
+      "token": "Token",
+      "no-tokens-found": "No se encontraron tokens de acceso"
     },
-    "instance-section": {
+    "account": {
+      "change-password": "Cambiar contraseña",
+      "email-note": "Opcional",
+      "export-memos": "Exportar memos",
+      "nickname-note": "Mostrado en el banner",
+      "openapi-reset": "Restablecer clave OpenAPI",
+      "openapi-sample-post": "Hola #memos desde {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "Restablecer API",
+      "title": "Información de la cuenta",
+      "update-information": "Actualizar información",
+      "username-note": "Usado para iniciar sesión"
+    },
+    "instance": {
       "disallow-change-nickname": "No permitir cambiar apodo",
       "disallow-change-username": "No permitir cambiar nombre de usuario",
       "disallow-password-auth": "No permitir autenticación por contraseña",
@@ -395,6 +466,50 @@
       "saturday": "Sábado",
       "sunday": "Domingo",
       "week-start-day": "Día de inicio de semana"
+    },
+    "memo": {
+      "content-length-limit": "Límite de longitud de contenido (Bytes)",
+      "enable-blur-sensitive-content": "Habilitar difuminado de contenido sensible (NSFW)",
+      "enable-memo-comments": "Habilitar comentarios en los memos",
+      "enable-memo-location": "Habilitar ubicación del memo",
+      "reactions": "Reacciones",
+      "title": "Configuración de memos",
+      "label": "Memo",
+      "reactions-required": "La lista de reacciones no debe estar vacía."
+    },
+    "webhook": {
+      "create-dialog": {
+        "an-easy-to-remember-name": "Un nombre fácil de recordar",
+        "create-webhook": "Crear webhook",
+        "create-webhook-success": "Webhook `{{name}}` creado",
+        "edit-webhook": "Editar webhook",
+        "payload-url": "URL de carga",
+        "title": "Título",
+        "url-example-post-receive": "https://example.com/postreceive"
+      },
+      "delete-dialog": {
+        "delete-webhook-description": "Esta acción es irreversible.",
+        "delete-webhook-success": "Webhook `{{name}}` eliminado correctamente",
+        "delete-webhook-title": "¿Estás seguro de que quieres eliminar el webhook `{{name}}`?"
+      },
+      "no-webhooks-found": "No se encontraron webhooks.",
+      "title": "Webhooks",
+      "url": "URL",
+      "label": "Webhooks"
+    },
+    "tags": {
+      "label": "Etiquetas",
+      "title": "Metadatos de etiquetas",
+      "description": "Asigne colores de visualización opcionales a etiquetas en toda la instancia o difumine el contenido de la nota coincidente. Los nombres de las etiquetas se tratan como patrones de expresiones regulares anclados.",
+      "background-color": "Color de fondo",
+      "blur-content": "Contenido borroso",
+      "no-tags-configured": "No hay metadatos de etiqueta configurados.",
+      "tag-name": "Nombre de etiqueta",
+      "tag-name-placeholder": "por ej. work o project/.*",
+      "tag-already-exists": "La etiqueta ya existe.",
+      "tag-pattern-hint": "Nombre de etiqueta o patrón de expresión regular (por ejemplo, project/.* coincide con todas las etiquetas project/)",
+      "invalid-regex": "Patrón de expresiones regulares no válido o inseguro.",
+      "using-default-color": "Usando el color predeterminado."
     }
   },
   "tag": {
@@ -402,6 +517,7 @@
     "create-tag": "Crear etiqueta",
     "create-tags-guide": "Puedes crear etiquetas escribiendo `#etiqueta`.",
     "delete-confirm": "¿Estás seguro de eliminar esta etiqueta? Todos los memos relacionados serán archivados.",
+    "delete-success": "Etiqueta eliminada correctamente",
     "delete-tag": "Eliminar etiqueta",
     "new-name": "Nombre nuevo",
     "no-tag-found": "No se encontró ninguna etiqueta",
@@ -411,5 +527,18 @@
     "rename-success": "Etiqueta renombrada correctamente",
     "rename-tag": "Renombrar etiqueta",
     "rename-tip": "Todos tus memos con esta etiqueta serán actualizados."
+  },
+  "tooltip": {
+    "link-memo": "Vincular memo",
+    "markdown-menu": "Markdown",
+    "select-location": "Ubicación",
+    "select-visibility": "Visibilidad",
+    "tags": "Etiquetas",
+    "upload-attachment": "Subir archivo(s)"
+  },
+  "live-update": {
+    "connected": "Actualizaciones en vivo activas",
+    "connecting": "Conectándose a actualizaciones en vivo...",
+    "disconnected": "Actualizaciones en vivo no disponibles"
   }
 }

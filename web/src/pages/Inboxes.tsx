@@ -2,9 +2,10 @@ import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { sortBy } from "lodash-es";
 import { ArchiveIcon, BellIcon, InboxIcon } from "lucide-react";
 import { useState } from "react";
-import Empty from "@/components/Empty";
 import MemoCommentMessage from "@/components/Inbox/MemoCommentMessage";
+import MemoMentionMessage from "@/components/Inbox/MemoMentionMessage";
 import MobileHeader from "@/components/MobileHeader";
+import Placeholder from "@/components/Placeholder";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { useNotifications } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
@@ -96,17 +97,18 @@ const Inboxes = () => {
           {/* Notifications List */}
           <div className="w-full">
             {notifications.length === 0 ? (
-              <div className="w-full py-16 flex flex-col justify-center items-center">
-                <Empty />
-                <p className="mt-4 text-sm text-muted-foreground">
-                  {filter === "unread" ? t("inbox.no-unread") : filter === "archived" ? t("inbox.no-archived") : t("message.no-data")}
-                </p>
-              </div>
+              <Placeholder
+                variant="empty"
+                message={filter === "unread" ? t("inbox.no-unread") : filter === "archived" ? t("inbox.no-archived") : t("message.no-data")}
+              />
             ) : (
               <div className="flex flex-col">
                 {notifications.map((notification: UserNotification) => {
                   if (notification.type === UserNotification_Type.MEMO_COMMENT) {
                     return <MemoCommentMessage key={notification.name} notification={notification} />;
+                  }
+                  if (notification.type === UserNotification_Type.MEMO_MENTION) {
+                    return <MemoMentionMessage key={notification.name} notification={notification} />;
                   }
                   return null;
                 })}

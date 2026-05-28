@@ -1,33 +1,27 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import AuthFooter from "@/components/AuthFooter";
 import PasswordSignInForm from "@/components/PasswordSignInForm";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { identityProviderServiceClient } from "@/connect";
 import { useInstance } from "@/contexts/InstanceContext";
-import { extractIdentityProviderIdFromName } from "@/helpers/resource-names";
 import { absolutifyLink } from "@/helpers/utils";
-import useCurrentUser from "@/hooks/useCurrentUser";
 import { handleError } from "@/lib/error";
-import { Routes } from "@/router";
+import { ROUTES } from "@/router/routes";
 import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service_pb";
+import { AUTH_REDIRECT_PARAM, getSafeRedirectPath } from "@/utils/auth-redirect";
 import { useTranslate } from "@/utils/i18n";
 import { storeOAuthState } from "@/utils/oauth";
 
 const SignIn = () => {
   const t = useTranslate();
-  const currentUser = useCurrentUser();
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
   const { generalSetting: instanceGeneralSetting } = useInstance();
-
-  // Redirect to root page if already signed in.
-  useEffect(() => {
-    if (currentUser?.name) {
-      window.location.href = Routes.ROOT;
-    }
-  }, [currentUser]);
+  const [searchParams] = useSearchParams();
+  const redirectTarget = getSafeRedirectPath(searchParams.get(AUTH_REDIRECT_PARAM));
+  const signUpPath = searchParams.toString() ? `${ROUTES.AUTH}/signup?${searchParams.toString()}` : `${ROUTES.AUTH}/signup`;
 
   // Prepare identity provider list.
   useEffect(() => {
@@ -50,8 +44,7 @@ const SignIn = () => {
       try {
         // Generate and store secure state parameter with CSRF protection
         // Also generate PKCE parameters (code_challenge) for enhanced security if available
-        const identityProviderId = extractIdentityProviderIdFromName(identityProvider.name);
-        const { state, codeChallenge } = await storeOAuthState(identityProviderId);
+        const { state, codeChallenge } = await storeOAuthState(identityProvider.name, "signin", redirectTarget);
 
         // Build OAuth authorization URL with secure state
         // Include PKCE if available (requires HTTPS/localhost for crypto.subtle)
@@ -85,14 +78,14 @@ const SignIn = () => {
           <p className="ml-2 text-5xl text-foreground opacity-80">{instanceGeneralSetting.customProfile?.title || "Memos"}</p>
         </div>
         {!instanceGeneralSetting.disallowPasswordAuth ? (
-          <PasswordSignInForm />
+          <PasswordSignInForm redirectPath={redirectTarget} />
         ) : (
           identityProviderList.length === 0 && <p className="w-full text-2xl mt-2 text-muted-foreground">Password auth is not allowed.</p>
         )}
         {!instanceGeneralSetting.disallowUserRegistration && !instanceGeneralSetting.disallowPasswordAuth && (
           <p className="w-full mt-4 text-sm">
             <span className="text-muted-foreground">{t("auth.sign-up-tip")}</span>
-            <Link to="/auth/signup" className="cursor-pointer ml-2 text-primary hover:underline" viewTransition>
+            <Link to={signUpPath} className="cursor-pointer ml-2 text-primary hover:underline" viewTransition>
               {t("common.sign-up")}
             </Link>
           </p>

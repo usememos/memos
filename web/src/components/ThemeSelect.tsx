@@ -1,4 +1,5 @@
-import { Monitor, Moon, MoonStar, Palette, Sun, Wallpaper } from "lucide-react";
+import { Monitor, Moon, Palette, Sun } from "lucide-react";
+import type { ReactElement } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { loadTheme, THEME_OPTIONS } from "@/utils/theme";
 
@@ -8,13 +9,11 @@ interface ThemeSelectProps {
   className?: string;
 }
 
-const THEME_ICONS: Record<string, JSX.Element> = {
+const THEME_ICONS: Record<string, ReactElement> = {
   system: <Monitor className="w-4 h-4" />,
   default: <Sun className="w-4 h-4" />,
   "default-dark": <Moon className="w-4 h-4" />,
-  midnight: <MoonStar className="w-4 h-4" />,
   paper: <Palette className="w-4 h-4" />,
-  whitewall: <Wallpaper className="w-4 h-4" />,
 };
 
 const ThemeSelect = ({ value, onValueChange, className }: ThemeSelectProps = {}) => {

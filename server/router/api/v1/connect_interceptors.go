@@ -38,11 +38,20 @@ func (*MetadataInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc 
 		if ua := header.Get("User-Agent"); ua != "" {
 			md.Set("user-agent", ua)
 		}
+		if origin := header.Get("Origin"); origin != "" {
+			md.Set("origin", origin)
+		}
 		if xff := header.Get("X-Forwarded-For"); xff != "" {
 			md.Set("x-forwarded-for", xff)
 		}
+		if xfp := header.Get("X-Forwarded-Proto"); xfp != "" {
+			md.Set("x-forwarded-proto", xfp)
+		}
 		if xri := header.Get("X-Real-Ip"); xri != "" {
 			md.Set("x-real-ip", xri)
+		}
+		if forwarded := header.Get("Forwarded"); forwarded != "" {
+			md.Set("forwarded", forwarded)
 		}
 		// Forward Cookie header for authentication methods that need it (e.g., RefreshToken)
 		if cookie := header.Get("Cookie"); cookie != "" {
@@ -222,17 +231,7 @@ func (in *AuthInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 			return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("authentication required"))
 		}
 
-		// Set context based on auth result
-		if result != nil {
-			if result.Claims != nil {
-				// Access Token V2 - stateless, use claims
-				ctx = auth.SetUserClaimsInContext(ctx, result.Claims)
-				ctx = context.WithValue(ctx, auth.UserIDContextKey, result.Claims.UserID)
-			} else if result.User != nil {
-				// PAT - have full user
-				ctx = auth.SetUserInContext(ctx, result.User, result.AccessToken)
-			}
-		}
+		ctx = auth.ApplyToContext(ctx, result)
 
 		return next(ctx, req)
 	}

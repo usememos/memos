@@ -75,7 +75,7 @@ function ChangeMemberPasswordDialog({ open, onOpenChange, user, onSuccess }: Pro
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {t("setting.account-section.change-password")} ({user.displayName})
+            {t("setting.account.change-password")} ({user.displayName})
           </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-4">

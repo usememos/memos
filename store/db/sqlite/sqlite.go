@@ -73,3 +73,15 @@ func (d *DB) IsInitialized(ctx context.Context) (bool, error) {
 	}
 	return exists, nil
 }
+
+// GetDatabaseSize returns the database size in bytes, or -1 if unavailable.
+func (d *DB) GetDatabaseSize(ctx context.Context) (int64, error) {
+	var pageCount, pageSize int64
+	if err := d.db.QueryRowContext(ctx, "PRAGMA page_count").Scan(&pageCount); err != nil {
+		return -1, errors.Wrap(err, "failed to read page_count")
+	}
+	if err := d.db.QueryRowContext(ctx, "PRAGMA page_size").Scan(&pageSize); err != nil {
+		return -1, errors.Wrap(err, "failed to read page_size")
+	}
+	return pageCount * pageSize, nil
+}

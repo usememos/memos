@@ -8,7 +8,7 @@ import (
 	"io/fs"
 	"log/slog"
 	"path/filepath"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -84,14 +84,10 @@ func shouldApplyMigration(fileVersion, currentDBVersion, targetVersion string) b
 // validateMigrationFileName checks if a migration file follows the expected naming convention.
 // Expected format: "NN__description.sql" where NN is a zero-padded number.
 func validateMigrationFileName(filename string) error {
-	if !strings.Contains(filename, MigrateFileNameSplit) {
+	parts := strings.SplitN(filename, MigrateFileNameSplit, 2)
+	if len(parts) < 2 {
 		return errors.Errorf("invalid migration filename format (missing %s): %s", MigrateFileNameSplit, filename)
 	}
-	parts := strings.Split(filename, MigrateFileNameSplit)
-	if len(parts) < 2 {
-		return errors.Errorf("invalid migration filename format: %s", filename)
-	}
-	// Check if first part is a number
 	if _, err := strconv.Atoi(parts[0]); err != nil {
 		return errors.Errorf("migration filename must start with a number: %s", filename)
 	}
@@ -122,7 +118,7 @@ func (s *Store) Migrate(ctx context.Context) error {
 		)
 		return errors.Errorf("cannot downgrade schema version from %s to %s", instanceBasicSetting.SchemaVersion, currentSchemaVersion)
 	}
-	// Apply migrations if needed (including when schema version is empty)
+	// Apply migrations if needed.
 	if isVersionEmpty(instanceBasicSetting.SchemaVersion) || version.IsVersionGreaterThan(currentSchemaVersion, instanceBasicSetting.SchemaVersion) {
 		if err := s.applyMigrations(ctx, instanceBasicSetting.SchemaVersion, currentSchemaVersion); err != nil {
 			return errors.Wrap(err, "failed to apply migrations")
@@ -146,7 +142,7 @@ func (s *Store) applyMigrations(ctx context.Context, currentSchemaVersion, targe
 	if err != nil {
 		return errors.Wrap(err, "failed to read migration files")
 	}
-	sort.Strings(filePaths)
+	slices.Sort(filePaths)
 
 	// Start a transaction to apply migrations atomically
 	tx, err := s.driver.GetDB().Begin()
@@ -254,6 +250,7 @@ func (s *Store) preMigrate(ctx context.Context) error {
 	}
 	return nil
 }
+
 func (s *Store) getMigrationBasePath() string {
 	return fmt.Sprintf("migration/%s/", s.profile.Driver)
 }
@@ -278,7 +275,7 @@ func (s *Store) seed(ctx context.Context) error {
 	}
 
 	// Sort seed files by name. This is important to ensure that seed files are applied in order.
-	sort.Strings(filenames)
+	slices.Sort(filenames)
 	// Start a transaction to apply the seed files.
 	tx, err := s.driver.GetDB().Begin()
 	if err != nil {
@@ -298,19 +295,27 @@ func (s *Store) seed(ctx context.Context) error {
 	return tx.Commit()
 }
 
+// GetCurrentSchemaVersion returns the latest schema version available for the configured database driver.
 func (s *Store) GetCurrentSchemaVersion() (string, error) {
-	currentVersion := version.GetCurrentVersion()
-	minorVersion := version.GetMinorVersion(currentVersion)
-	filePaths, err := fs.Glob(migrationFS, fmt.Sprintf("%s%s/*.sql", s.getMigrationBasePath(), minorVersion))
+	filePaths, err := fs.Glob(migrationFS, fmt.Sprintf("%s*/*.sql", s.getMigrationBasePath()))
 	if err != nil {
 		return "", errors.Wrap(err, "failed to read migration files")
 	}
-
-	sort.Strings(filePaths)
 	if len(filePaths) == 0 {
-		return fmt.Sprintf("%s.0", minorVersion), nil
+		return defaultSchemaVersion, nil
 	}
-	return s.getSchemaVersionOfMigrateScript(filePaths[len(filePaths)-1])
+
+	currentSchemaVersion := defaultSchemaVersion
+	for _, filePath := range filePaths {
+		fileSchemaVersion, err := s.getSchemaVersionOfMigrateScript(filePath)
+		if err != nil {
+			return "", errors.Wrap(err, "failed to get schema version of migrate script")
+		}
+		if version.IsVersionGreaterThan(fileSchemaVersion, currentSchemaVersion) {
+			currentSchemaVersion = fileSchemaVersion
+		}
+	}
+	return currentSchemaVersion, nil
 }
 
 // getSchemaVersionOfMigrateScript extracts the schema version from the migration script file path.
@@ -370,36 +375,39 @@ func (s *Store) checkMinimumUpgradeVersion(ctx context.Context) error {
 	if err != nil {
 		return errors.Wrap(err, "failed to get instance basic setting")
 	}
-
 	schemaVersion := instanceBasicSetting.SchemaVersion
 
-	// If schema version is >= 0.22.0, the installation is up-to-date
+	// Modern installation: nothing to check.
 	if !isVersionEmpty(schemaVersion) && version.IsVersionGreaterOrEqualThan(schemaVersion, "0.22.0") {
 		return nil
 	}
 
-	// If schema version is set but < 0.22.0, this is an old installation
-	if !isVersionEmpty(schemaVersion) && !version.IsVersionGreaterOrEqualThan(schemaVersion, "0.22.0") {
-		currentVersion, _ := s.GetCurrentSchemaVersion()
-
-		return errors.Errorf(
-			"Your Memos installation is too old to upgrade directly.\n\n"+
-				"Your current version: %s\n"+
-				"Target version: %s\n"+
-				"Minimum required: v0.22.0 (May 2024)\n\n"+
-				"Upgrade path:\n"+
-				"1. First upgrade to v0.25.3: https://github.com/usememos/memos/releases/tag/v0.25.3\n"+
-				"2. Start the server and verify it works\n"+
-				"3. Then upgrade to the latest version\n\n"+
-				"This is required because schema version tracking was moved from migration_history\n"+
-				"to system_setting in v0.22.0. The intermediate upgrade handles this migration safely.",
-			schemaVersion,
-			currentVersion,
-		)
+	// Schema version is empty for fresh installs too, but preMigrate sets it before we get here.
+	// So empty schema version on an initialized DB means a pre-v0.22 legacy installation.
+	if isVersionEmpty(schemaVersion) {
+		initialized, err := s.driver.IsInitialized(ctx)
+		if err != nil {
+			return errors.Wrap(err, "failed to check if database is initialized")
+		}
+		if !initialized {
+			return nil
+		}
 	}
 
-	// Schema version is empty - this is either a fresh install or corrupted installation
-	// Fresh installs will have schema version set immediately after LATEST.sql is applied
-	// So this should not be an issue in normal operation
-	return nil
+	// schemaVersion is either set but < 0.22.0, or empty on an initialized (legacy) DB.
+	currentVersion, _ := s.GetCurrentSchemaVersion()
+	return errors.Errorf(
+		"Your Memos installation is too old to upgrade directly.\n\n"+
+			"Your current version: %s\n"+
+			"Target version: %s\n"+
+			"Minimum required: v0.22.0 (May 2024)\n\n"+
+			"Upgrade path:\n"+
+			"1. First upgrade to v0.25.3: https://github.com/usememos/memos/releases/tag/v0.25.3\n"+
+			"2. Start the server and verify it works\n"+
+			"3. Then upgrade to the latest version\n\n"+
+			"This is required because schema version tracking was moved from migration_history\n"+
+			"to system_setting in v0.22.0. The intermediate upgrade handles this migration safely.",
+		schemaVersion,
+		currentVersion,
+	)
 }

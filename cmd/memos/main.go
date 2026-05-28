@@ -15,10 +15,19 @@ import (
 
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/internal/version"
+	"github.com/usememos/memos/internal/webhook"
 	"github.com/usememos/memos/server"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
 )
+
+func initSlogDefault() {
+	level, err := parseSlogLevel(viper.GetString("log-level"))
+	if err != nil {
+		slog.Warn("invalid log-level value, defaulting to info", "error", err)
+	}
+	slog.SetDefault(newLogger(level, os.Stderr))
+}
 
 var (
 	rootCmd = &cobra.Command{
@@ -36,6 +45,8 @@ var (
 				InstanceURL: viper.GetString("instance-url"),
 			}
 			instanceProfile.Version = version.GetCurrentVersion()
+			instanceProfile.Commit = version.Commit
+			webhook.AllowPrivateIPs = viper.GetBool("allow-private-webhooks")
 
 			if err := instanceProfile.Validate(); err != nil {
 				slog.Error("failed to validate profile", "error", err)
@@ -90,9 +101,18 @@ var (
 			<-ctx.Done()
 		},
 	}
+	versionCmd = &cobra.Command{
+		Use:   "version",
+		Short: "Print the current Memos version",
+		Run: func(_ *cobra.Command, _ []string) {
+			fmt.Println(version.GetCurrentVersion())
+		},
+	}
 )
 
 func init() {
+	cobra.OnInitialize(initSlogDefault)
+
 	viper.SetDefault("demo", false)
 	viper.SetDefault("driver", "sqlite")
 	viper.SetDefault("port", 8081)
@@ -105,6 +125,8 @@ func init() {
 	rootCmd.PersistentFlags().String("driver", "sqlite", "database driver")
 	rootCmd.PersistentFlags().String("dsn", "", "database source name(aka. DSN)")
 	rootCmd.PersistentFlags().String("instance-url", "", "the url of your memos instance")
+	rootCmd.PersistentFlags().Bool("allow-private-webhooks", false, "allow webhook URLs to resolve to private/reserved IP addresses")
+	rootCmd.PersistentFlags().String("log-level", "info", "log verbosity level (debug, info, warn, error)")
 
 	if err := viper.BindPFlag("demo", rootCmd.PersistentFlags().Lookup("demo")); err != nil {
 		panic(err)
@@ -130,10 +152,18 @@ func init() {
 	if err := viper.BindPFlag("instance-url", rootCmd.PersistentFlags().Lookup("instance-url")); err != nil {
 		panic(err)
 	}
+	if err := viper.BindPFlag("allow-private-webhooks", rootCmd.PersistentFlags().Lookup("allow-private-webhooks")); err != nil {
+		panic(err)
+	}
+	if err := viper.BindPFlag("log-level", rootCmd.PersistentFlags().Lookup("log-level")); err != nil {
+		panic(err)
+	}
 
 	viper.SetEnvPrefix("memos")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
+
+	rootCmd.AddCommand(versionCmd)
 }
 
 func printGreetings(profile *profile.Profile) {

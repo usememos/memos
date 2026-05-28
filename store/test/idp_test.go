@@ -15,6 +15,7 @@ func TestIdentityProviderStore(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	createdIDP, err := ts.CreateIdentityProvider(ctx, &storepb.IdentityProvider{
+		Uid:              "test-github-oauth",
 		Name:             "GitHub OAuth",
 		Type:             storepb.IdentityProvider_OAUTH2,
 		IdentifierFilter: "",
@@ -37,6 +38,7 @@ func TestIdentityProviderStore(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
+	require.Equal(t, "test-github-oauth", createdIDP.Uid)
 	idp, err := ts.GetIdentityProvider(ctx, &store.FindIdentityProvider{
 		ID: &createdIDP.Id,
 	})
@@ -66,7 +68,7 @@ func TestIdentityProviderGetByID(t *testing.T) {
 	ts := NewTestingStore(ctx, t)
 
 	// Create IDP
-	idp, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("Test IDP"))
+	idp, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("Test IDP", "test-idp"))
 	require.NoError(t, err)
 
 	// Get by ID
@@ -75,6 +77,13 @@ func TestIdentityProviderGetByID(t *testing.T) {
 	require.NotNil(t, found)
 	require.Equal(t, idp.Id, found.Id)
 	require.Equal(t, idp.Name, found.Name)
+
+	// Get by UID
+	foundByUID, err := ts.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: &idp.Uid})
+	require.NoError(t, err)
+	require.NotNil(t, foundByUID)
+	require.Equal(t, idp.Id, foundByUID.Id)
+	require.Equal(t, idp.Uid, foundByUID.Uid)
 
 	// Get by non-existent ID
 	nonExistentID := int32(99999)
@@ -91,11 +100,11 @@ func TestIdentityProviderListMultiple(t *testing.T) {
 	ts := NewTestingStore(ctx, t)
 
 	// Create multiple IDPs
-	_, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("GitHub OAuth"))
+	_, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("GitHub OAuth", "github-oauth"))
 	require.NoError(t, err)
-	_, err = ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("Google OAuth"))
+	_, err = ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("Google OAuth", "google-oauth"))
 	require.NoError(t, err)
-	_, err = ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("GitLab OAuth"))
+	_, err = ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("GitLab OAuth", "gitlab-oauth"))
 	require.NoError(t, err)
 
 	// List all
@@ -112,9 +121,9 @@ func TestIdentityProviderListByID(t *testing.T) {
 	ts := NewTestingStore(ctx, t)
 
 	// Create multiple IDPs
-	idp1, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("GitHub OAuth"))
+	idp1, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("GitHub OAuth", "github-oauth"))
 	require.NoError(t, err)
-	_, err = ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("Google OAuth"))
+	_, err = ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("Google OAuth", "google-oauth"))
 	require.NoError(t, err)
 
 	// List by specific ID
@@ -131,7 +140,7 @@ func TestIdentityProviderUpdateName(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
-	idp, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("Original Name"))
+	idp, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("Original Name", "original-name"))
 	require.NoError(t, err)
 	require.Equal(t, "Original Name", idp.Name)
 
@@ -158,7 +167,7 @@ func TestIdentityProviderUpdateIdentifierFilter(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
-	idp, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("Test IDP"))
+	idp, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("Test IDP", "test-idp"))
 	require.NoError(t, err)
 	require.Equal(t, "", idp.IdentifierFilter)
 
@@ -185,7 +194,7 @@ func TestIdentityProviderUpdateConfig(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
-	idp, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("Test IDP"))
+	idp, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("Test IDP", "test-idp"))
 	require.NoError(t, err)
 
 	// Update config
@@ -229,7 +238,7 @@ func TestIdentityProviderUpdateMultipleFields(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
-	idp, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("Original"))
+	idp, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("Original", "original"))
 	require.NoError(t, err)
 
 	// Update multiple fields at once
@@ -253,7 +262,7 @@ func TestIdentityProviderDelete(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 
-	idp, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("Test IDP"))
+	idp, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("Test IDP", "test-idp"))
 	require.NoError(t, err)
 
 	// Delete
@@ -274,9 +283,9 @@ func TestIdentityProviderDeleteNotAffectOthers(t *testing.T) {
 	ts := NewTestingStore(ctx, t)
 
 	// Create multiple IDPs
-	idp1, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("IDP 1"))
+	idp1, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("IDP 1", "idp-1"))
 	require.NoError(t, err)
-	idp2, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("IDP 2"))
+	idp2, err := ts.CreateIdentityProvider(ctx, createTestOAuth2IDP("IDP 2", "idp-2"))
 	require.NoError(t, err)
 
 	// Delete first one
@@ -304,6 +313,7 @@ func TestIdentityProviderOAuth2ConfigScopes(t *testing.T) {
 
 	// Create IDP with multiple scopes
 	idp, err := ts.CreateIdentityProvider(ctx, &storepb.IdentityProvider{
+		Uid:  "multi-scope-oauth",
 		Name: "Multi-Scope OAuth",
 		Type: storepb.IdentityProvider_OAUTH2,
 		Config: &storepb.IdentityProviderConfig{
@@ -343,6 +353,7 @@ func TestIdentityProviderFieldMapping(t *testing.T) {
 
 	// Create IDP with custom field mapping
 	idp, err := ts.CreateIdentityProvider(ctx, &storepb.IdentityProvider{
+		Uid:  "custom-field-mapping",
 		Name: "Custom Field Mapping",
 		Type: storepb.IdentityProvider_OAUTH2,
 		Config: &storepb.IdentityProviderConfig{
@@ -382,17 +393,19 @@ func TestIdentityProviderIdentifierFilterPatterns(t *testing.T) {
 
 	testCases := []struct {
 		name   string
+		uid    string
 		filter string
 	}{
-		{"Domain filter", "@company\\.com$"},
-		{"Prefix filter", "^admin_"},
-		{"Complex regex", "^[a-z]+@(dept1|dept2)\\.example\\.com$"},
-		{"Empty filter", ""},
+		{"Domain filter", "domain-filter", "@company\\.com$"},
+		{"Prefix filter", "prefix-filter", "^admin_"},
+		{"Complex regex", "complex-regex", "^[a-z]+@(dept1|dept2)\\.example\\.com$"},
+		{"Empty filter", "empty-filter", ""},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			idp, err := ts.CreateIdentityProvider(ctx, &storepb.IdentityProvider{
+				Uid:              tc.uid,
 				Name:             tc.name,
 				Type:             storepb.IdentityProvider_OAUTH2,
 				IdentifierFilter: tc.filter,
@@ -428,8 +441,9 @@ func TestIdentityProviderIdentifierFilterPatterns(t *testing.T) {
 }
 
 // Helper function to create a test OAuth2 IDP.
-func createTestOAuth2IDP(name string) *storepb.IdentityProvider {
+func createTestOAuth2IDP(name, uid string) *storepb.IdentityProvider {
 	return &storepb.IdentityProvider{
+		Uid:              uid,
 		Name:             name,
 		Type:             storepb.IdentityProvider_OAUTH2,
 		IdentifierFilter: "",

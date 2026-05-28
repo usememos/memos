@@ -12,6 +12,7 @@ import { handleError } from "@/lib/error";
 import { CreatePersonalAccessTokenResponse, PersonalAccessToken } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import CreateAccessTokenDialog from "../CreateAccessTokenDialog";
+import SettingGroup from "./SettingGroup";
 import SettingTable from "./SettingTable";
 
 const listAccessTokens = async (parent: string) => {
@@ -55,20 +56,16 @@ const AccessTokenSection = () => {
     // Copy the token to clipboard - this is the only time it will be shown
     if (response.token) {
       copy(response.token);
-      toast.success(t("setting.access-token-section.access-token-copied-to-clipboard"));
+      toast.success(t("setting.access-token.access-token-copied-to-clipboard"));
     }
     toast.success(
-      t("setting.access-token-section.create-dialog.access-token-created", {
+      t("setting.access-token.create-dialog.access-token-created", {
         description: response.personalAccessToken?.description ?? "",
       }),
     );
   };
 
-  const handleCreateToken = () => {
-    createTokenDialog.open();
-  };
-
-  const handleDeleteAccessToken = async (token: PersonalAccessToken) => {
+  const handleDeleteAccessToken = (token: PersonalAccessToken) => {
     setDeleteTarget(token);
   };
 
@@ -78,22 +75,20 @@ const AccessTokenSection = () => {
     await userServiceClient.deletePersonalAccessToken({ name: tokenName });
     setPersonalAccessTokens((prev) => prev.filter((token) => token.name !== tokenName));
     setDeleteTarget(undefined);
-    toast.success(t("setting.access-token-section.access-token-deleted", { description }));
+    toast.success(t("setting.access-token.access-token-deleted", { description }));
   };
 
   return (
-    <div className="w-full flex flex-col gap-2">
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
-        <div className="flex flex-col gap-1">
-          <h4 className="text-sm font-medium text-muted-foreground">{t("setting.access-token-section.title")}</h4>
-          <p className="text-xs text-muted-foreground">{t("setting.access-token-section.description")}</p>
-        </div>
-        <Button onClick={handleCreateToken} size="sm">
+    <SettingGroup
+      title={t("setting.access-token.title")}
+      description={t("setting.access-token.description")}
+      actions={
+        <Button onClick={createTokenDialog.open} size="sm">
           <PlusIcon className="w-4 h-4 mr-1.5" />
           {t("common.create")}
         </Button>
-      </div>
-
+      }
+    >
       <SettingTable
         columns={[
           {
@@ -103,15 +98,15 @@ const AccessTokenSection = () => {
           },
           {
             key: "createdAt",
-            header: t("setting.access-token-section.create-dialog.created-at"),
+            header: t("setting.access-token.create-dialog.created-at"),
             render: (_, token: PersonalAccessToken) => (token.createdAt ? timestampDate(token.createdAt) : undefined)?.toLocaleString(),
           },
           {
             key: "expiresAt",
-            header: t("setting.access-token-section.create-dialog.expires-at"),
+            header: t("setting.access-token.create-dialog.expires-at"),
             render: (_, token: PersonalAccessToken) =>
               (token.expiresAt ? timestampDate(token.expiresAt) : undefined)?.toLocaleString() ??
-              t("setting.access-token-section.create-dialog.duration-never"),
+              t("setting.access-token.create-dialog.duration-never"),
           },
           {
             key: "actions",
@@ -125,7 +120,7 @@ const AccessTokenSection = () => {
           },
         ]}
         data={personalAccessTokens}
-        emptyMessage="No access tokens found"
+        emptyMessage={t("setting.access-token.no-tokens-found")}
         getRowKey={(token) => token.name}
       />
 
@@ -138,14 +133,14 @@ const AccessTokenSection = () => {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(undefined)}
-        title={deleteTarget ? t("setting.access-token-section.access-token-deletion", { description: deleteTarget.description }) : ""}
-        description={t("setting.access-token-section.access-token-deletion-description")}
+        title={deleteTarget ? t("setting.access-token.access-token-deletion", { description: deleteTarget.description }) : ""}
+        description={t("setting.access-token.access-token-deletion-description")}
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={confirmDeleteAccessToken}
         confirmVariant="destructive"
       />
-    </div>
+    </SettingGroup>
   );
 };
 

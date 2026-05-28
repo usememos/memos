@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -14,25 +13,74 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func (s *APIV1Service) ListAllUserStats(ctx context.Context, _ *v1pb.ListAllUserStatsRequest) (*v1pb.ListAllUserStatsResponse, error) {
-	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get instance memo related setting")
+func (s *APIV1Service) listUsersByID(ctx context.Context, userIDs []int32) (map[int32]*store.User, error) {
+	if len(userIDs) == 0 {
+		return map[int32]*store.User{}, nil
 	}
 
-	normalStatus := store.Normal
+	uniqueUserIDs := make([]int32, 0, len(userIDs))
+	seenUserIDs := make(map[int32]struct{}, len(userIDs))
+	for _, userID := range userIDs {
+		if _, seen := seenUserIDs[userID]; seen {
+			continue
+		}
+		seenUserIDs[userID] = struct{}{}
+		uniqueUserIDs = append(uniqueUserIDs, userID)
+	}
+
+	users, err := s.Store.ListUsers(ctx, &store.FindUser{IDList: uniqueUserIDs})
+	if err != nil {
+		return nil, err
+	}
+
+	usersByID := make(map[int32]*store.User, len(users))
+	for _, user := range users {
+		usersByID[user.ID] = user
+	}
+	return usersByID, nil
+}
+
+func (s *APIV1Service) listUsernamesByID(ctx context.Context, userIDs []int32) (map[int32]string, error) {
+	usersByID, err := s.listUsersByID(ctx, userIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	usernamesByID := make(map[int32]string, len(usersByID))
+	for _, user := range usersByID {
+		usernamesByID[user.ID] = user.Username
+	}
+	return usernamesByID, nil
+}
+
+func (s *APIV1Service) ListAllUserStats(ctx context.Context, request *v1pb.ListAllUserStatsRequest) (*v1pb.ListAllUserStatsResponse, error) {
+	rowStatus := convertStateToStore(request.State)
 	memoFind := &store.FindMemo{
 		// Exclude comments by default.
 		ExcludeComments: true,
 		ExcludeContent:  true,
-		RowStatus:       &normalStatus,
+		RowStatus:       &rowStatus,
 	}
 
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
-	if currentUser == nil {
+
+	if request.Filter != "" {
+		if err := s.validateFilter(ctx, request.Filter); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
+		}
+		memoFind.Filters = append(memoFind.Filters, request.Filter)
+	}
+
+	if request.State == v1pb.State_ARCHIVED {
+		// Archived memos are only visible to their creator.
+		if currentUser == nil {
+			return &v1pb.ListAllUserStatsResponse{}, nil
+		}
+		memoFind.CreatorID = &currentUser.ID
+	} else if currentUser == nil {
 		memoFind.VisibilityList = []store.Visibility{store.Public}
 	} else {
 		if memoFind.CreatorID == nil {
@@ -44,6 +92,7 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, _ *v1pb.ListAllUser
 	}
 
 	userMemoStatMap := make(map[int32]*v1pb.UserStats)
+	pinnedMemoIDsByUserID := make(map[int32][]int32)
 	limit := 1000
 	offset := 0
 	memoFind.Limit = &limit
@@ -62,9 +111,10 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, _ *v1pb.ListAllUser
 			// Initialize user stats if not exists
 			if _, exists := userMemoStatMap[memo.CreatorID]; !exists {
 				userMemoStatMap[memo.CreatorID] = &v1pb.UserStats{
-					Name:                  fmt.Sprintf("users/%d/stats", memo.CreatorID),
+					Name:                  "",
 					TagCount:              make(map[string]int32),
-					MemoDisplayTimestamps: []*timestamppb.Timestamp{},
+					MemoCreatedTimestamps: []*timestamppb.Timestamp{},
+					MemoUpdatedTimestamps: []*timestamppb.Timestamp{},
 					PinnedMemos:           []string{},
 					MemoTypeStats: &v1pb.UserStats_MemoTypeStats{
 						LinkCount: 0,
@@ -77,12 +127,8 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, _ *v1pb.ListAllUser
 
 			stats := userMemoStatMap[memo.CreatorID]
 
-			// Add display timestamp
-			displayTs := memo.CreatedTs
-			if instanceMemoRelatedSetting.DisplayWithUpdateTime {
-				displayTs = memo.UpdatedTs
-			}
-			stats.MemoDisplayTimestamps = append(stats.MemoDisplayTimestamps, timestamppb.New(time.Unix(displayTs, 0)))
+			stats.MemoCreatedTimestamps = append(stats.MemoCreatedTimestamps, timestamppb.New(time.Unix(memo.CreatedTs, 0)))
+			stats.MemoUpdatedTimestamps = append(stats.MemoUpdatedTimestamps, timestamppb.New(time.Unix(memo.UpdatedTs, 0)))
 
 			// Count memo stats
 			stats.TotalMemoCount++
@@ -110,7 +156,7 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, _ *v1pb.ListAllUser
 
 			// Track pinned memos
 			if memo.Pinned {
-				stats.PinnedMemos = append(stats.PinnedMemos, fmt.Sprintf("users/%d/memos/%d", memo.CreatorID, memo.ID))
+				pinnedMemoIDsByUserID[memo.CreatorID] = append(pinnedMemoIDsByUserID[memo.CreatorID], memo.ID)
 			}
 		}
 
@@ -118,7 +164,23 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, _ *v1pb.ListAllUser
 	}
 
 	userMemoStats := []*v1pb.UserStats{}
-	for _, userMemoStat := range userMemoStatMap {
+	userIDs := make([]int32, 0, len(userMemoStatMap))
+	for userID := range userMemoStatMap {
+		userIDs = append(userIDs, userID)
+	}
+	usernamesByID, err := s.listUsernamesByID(ctx, userIDs)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list users: %v", err)
+	}
+	for userID, userMemoStat := range userMemoStatMap {
+		username, ok := usernamesByID[userID]
+		if !ok {
+			return nil, status.Errorf(codes.Internal, "failed to resolve user stats name")
+		}
+		userMemoStat.Name = fmt.Sprintf("%s/stats", BuildUserName(username))
+		for _, memoID := range pinnedMemoIDsByUserID[userID] {
+			userMemoStat.PinnedMemos = append(userMemoStat.PinnedMemos, fmt.Sprintf("%s/memos/%d", BuildUserName(username), memoID))
+		}
 		userMemoStats = append(userMemoStats, userMemoStat)
 	}
 
@@ -129,10 +191,14 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, _ *v1pb.ListAllUser
 }
 
 func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserStatsRequest) (*v1pb.UserStats, error) {
-	userID, err := ExtractUserIDFromName(request.Name)
+	user, err := ResolveUserByName(ctx, s.Store, request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid user name: %v", err)
 	}
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "user not found")
+	}
+	userID := user.ID
 
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -154,12 +220,8 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 		memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
 	}
 
-	instanceMemoRelatedSetting, err := s.Store.GetInstanceMemoRelatedSetting(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get instance memo related setting")
-	}
-
-	displayTimestamps := []*timestamppb.Timestamp{}
+	createdTimestamps := []*timestamppb.Timestamp{}
+	updatedTimestamps := []*timestamppb.Timestamp{}
 	tagCount := make(map[string]int32)
 	linkCount := int32(0)
 	codeCount := int32(0)
@@ -185,11 +247,8 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 		totalMemoCount += int32(len(memos))
 
 		for _, memo := range memos {
-			displayTs := memo.CreatedTs
-			if instanceMemoRelatedSetting.DisplayWithUpdateTime {
-				displayTs = memo.UpdatedTs
-			}
-			displayTimestamps = append(displayTimestamps, timestamppb.New(time.Unix(displayTs, 0)))
+			createdTimestamps = append(createdTimestamps, timestamppb.New(time.Unix(memo.CreatedTs, 0)))
+			updatedTimestamps = append(updatedTimestamps, timestamppb.New(time.Unix(memo.UpdatedTs, 0)))
 			// Count different memo types based on content.
 			if memo.Payload != nil {
 				for _, tag := range memo.Payload.Tags {
@@ -211,7 +270,7 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 				}
 			}
 			if memo.Pinned {
-				pinnedMemos = append(pinnedMemos, fmt.Sprintf("users/%d/memos/%d", userID, memo.ID))
+				pinnedMemos = append(pinnedMemos, fmt.Sprintf("%s/memos/%d", BuildUserName(user.Username), memo.ID))
 			}
 		}
 
@@ -219,8 +278,9 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 	}
 
 	userStats := &v1pb.UserStats{
-		Name:                  fmt.Sprintf("users/%d/stats", userID),
-		MemoDisplayTimestamps: displayTimestamps,
+		Name:                  fmt.Sprintf("%s/stats", BuildUserName(user.Username)),
+		MemoCreatedTimestamps: createdTimestamps,
+		MemoUpdatedTimestamps: updatedTimestamps,
 		TagCount:              tagCount,
 		PinnedMemos:           pinnedMemos,
 		TotalMemoCount:        totalMemoCount,

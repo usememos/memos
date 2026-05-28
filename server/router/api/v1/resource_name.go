@@ -4,8 +4,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/pkg/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
+	"github.com/usememos/memos/internal/base"
 	"github.com/usememos/memos/internal/util"
 )
 
@@ -13,11 +17,11 @@ const (
 	InstanceSettingNamePrefix  = "instance/settings/"
 	UserNamePrefix             = "users/"
 	MemoNamePrefix             = "memos/"
+	MemoShareNamePrefix        = "shares/"
 	AttachmentNamePrefix       = "attachments/"
 	ReactionNamePrefix         = "reactions/"
 	InboxNamePrefix            = "inboxes/"
 	IdentityProviderNamePrefix = "identity-providers/"
-	ActivityNamePrefix         = "activities/"
 	WebhookNamePrefix          = "webhooks/"
 )
 
@@ -73,17 +77,6 @@ func ExtractUserIDFromName(name string) (int32, error) {
 	return id, nil
 }
 
-// extractUserIdentifierFromName extracts the identifier (ID or username) from a user resource name.
-// Supports: "users/101" or "users/steven"
-// Returns the identifier string (e.g., "101" or "steven").
-func extractUserIdentifierFromName(name string) string {
-	tokens, err := GetNameParentTokens(name, UserNamePrefix)
-	if err != nil || len(tokens) == 0 {
-		return ""
-	}
-	return tokens[0]
-}
-
 // ExtractMemoUIDFromName returns the memo UID from a resource name.
 // e.g., "memos/uuid" -> "uuid".
 func ExtractMemoUIDFromName(name string) (string, error) {
@@ -133,26 +126,24 @@ func ExtractInboxIDFromName(name string) (int32, error) {
 	return id, nil
 }
 
-func ExtractIdentityProviderIDFromName(name string) (int32, error) {
+func ExtractIdentityProviderUIDFromName(name string) (string, error) {
 	tokens, err := GetNameParentTokens(name, IdentityProviderNamePrefix)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
-	id, err := util.ConvertStringToInt32(tokens[0])
-	if err != nil {
-		return 0, errors.Errorf("invalid identity provider ID %q", tokens[0])
-	}
-	return id, nil
+	return tokens[0], nil
 }
 
-func ExtractActivityIDFromName(name string) (int32, error) {
-	tokens, err := GetNameParentTokens(name, ActivityNamePrefix)
-	if err != nil {
-		return 0, err
+// ValidateAndGenerateUID validates a user-provided UID or generates a new one.
+// If provided is empty, a new shortuuid is generated.
+// If provided is non-empty, it is validated against base.UIDMatcher.
+func ValidateAndGenerateUID(provided string) (string, error) {
+	uid := strings.TrimSpace(provided)
+	if uid == "" {
+		return shortuuid.New(), nil
 	}
-	id, err := util.ConvertStringToInt32(tokens[0])
-	if err != nil {
-		return 0, errors.Errorf("invalid activity ID %q", tokens[0])
+	if !base.UIDMatcher.MatchString(uid) {
+		return "", status.Errorf(codes.InvalidArgument, "invalid ID format: must be 1-36 characters, alphanumeric and hyphens only, cannot start or end with hyphen")
 	}
-	return id, nil
+	return uid, nil
 }

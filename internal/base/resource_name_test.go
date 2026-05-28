@@ -22,6 +22,8 @@ func TestUIDMatcher(t *testing.T) {
 		{"a1234567890123456789012345678901", true},
 		{"abc123", true},
 		{"abc123-", false},
+		{"123e4567-e89b-12d3-a456-426614174000", true},   // UUID v4 from IDP
+		{"a123456789012345678901234567890123456", false}, // 37 characters (too long)
 	}
 
 	for _, test := range tests {

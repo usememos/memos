@@ -29,7 +29,7 @@ func NewDB(profile *profile.Profile) (store.Driver, error) {
 	driver := DB{profile: profile}
 	driver.config, err = mysql.ParseDSN(dsn)
 	if err != nil {
-		return nil, errors.New("Parse DSN eroor")
+		return nil, errors.New("Parse DSN error")
 	}
 
 	driver.db, err = sql.Open("mysql", dsn)
@@ -55,6 +55,18 @@ func (d *DB) IsInitialized(ctx context.Context) (bool, error) {
 		return false, errors.Wrap(err, "failed to check if database is initialized")
 	}
 	return exists, nil
+}
+
+// GetDatabaseSize returns the database size in bytes, or -1 if unavailable.
+func (d *DB) GetDatabaseSize(ctx context.Context) (int64, error) {
+	var size int64
+	const q = `SELECT COALESCE(SUM(data_length + index_length), 0)
+	           FROM information_schema.tables
+	           WHERE table_schema = DATABASE()`
+	if err := d.db.QueryRowContext(ctx, q).Scan(&size); err != nil {
+		return -1, errors.Wrap(err, "failed to query mysql database size")
+	}
+	return size, nil
 }
 
 func mergeDSN(baseDSN string) (string, error) {

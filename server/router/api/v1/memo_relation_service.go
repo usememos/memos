@@ -35,18 +35,34 @@ func (s *APIV1Service) SetMemoRelations(ctx context.Context, request *v1pb.SetMe
 	if memo.CreatorID != user.ID && !isSuperUser(user) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
+	if err := s.setMemoRelationsInternal(ctx, memo, request.Relations); err != nil {
+		return nil, err
+	}
+	if err := s.touchMemoUpdatedTimestamp(ctx, memo.ID); err != nil {
+		return nil, err
+	}
+	updatedMemo, parentMemo, memoMessage, err := s.buildUpdatedMemoState(ctx, memo.ID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to build updated memo state")
+	}
+	s.dispatchMemoUpdatedSideEffects(ctx, updatedMemo, parentMemo, memoMessage)
+
+	return &emptypb.Empty{}, nil
+}
+
+func (s *APIV1Service) setMemoRelationsInternal(ctx context.Context, memo *store.Memo, relations []*v1pb.MemoRelation) error {
 	referenceType := store.MemoRelationReference
 	// Delete all reference relations first.
 	if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelation{
 		MemoID: &memo.ID,
 		Type:   &referenceType,
 	}); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to delete memo relation")
+		return status.Errorf(codes.Internal, "failed to delete memo relation")
 	}
 
-	for _, relation := range request.Relations {
+	for _, relation := range relations {
 		// Ignore reflexive relations.
-		if request.Name == relation.RelatedMemo.Name {
+		if buildMemoName(memo.UID) == relation.RelatedMemo.Name {
 			continue
 		}
 		// Ignore comment relations as there's no need to update a comment's relation.
@@ -56,22 +72,22 @@ func (s *APIV1Service) SetMemoRelations(ctx context.Context, request *v1pb.SetMe
 		}
 		relatedMemoUID, err := ExtractMemoUIDFromName(relation.RelatedMemo.Name)
 		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "invalid related memo name: %v", err)
+			return status.Errorf(codes.InvalidArgument, "invalid related memo name: %v", err)
 		}
 		relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &relatedMemoUID})
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get related memo")
+			return status.Errorf(codes.Internal, "failed to get related memo")
 		}
 		if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelation{
 			MemoID:        memo.ID,
 			RelatedMemoID: relatedMemo.ID,
 			Type:          convertMemoRelationTypeToStore(relation.Type),
 		}); err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to upsert memo relation")
+			return status.Errorf(codes.Internal, "failed to upsert memo relation")
 		}
 	}
 
-	return &emptypb.Empty{}, nil
+	return nil
 }
 
 func (s *APIV1Service) ListMemoRelations(ctx context.Context, request *v1pb.ListMemoRelationsRequest) (*v1pb.ListMemoRelationsResponse, error) {

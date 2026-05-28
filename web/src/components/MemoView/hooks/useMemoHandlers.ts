@@ -1,23 +1,16 @@
 import { useCallback } from "react";
 import { useInstance } from "@/contexts/InstanceContext";
-import useNavigateTo from "@/hooks/useNavigateTo";
+import type { PreviewMediaItem } from "@/utils/media-item";
 
 interface UseMemoHandlersOptions {
-  memoName: string;
-  parentPage: string;
   readonly: boolean;
   openEditor: () => void;
-  openPreview: (url: string) => void;
+  openPreview: (items: string | string[] | PreviewMediaItem[], index?: number) => void;
 }
 
 export const useMemoHandlers = (options: UseMemoHandlersOptions) => {
-  const { memoName, parentPage, readonly, openEditor, openPreview } = options;
-  const navigateTo = useNavigateTo();
+  const { readonly, openEditor, openPreview } = options;
   const { memoRelatedSetting } = useInstance();
-
-  const handleGotoMemoDetailPage = useCallback(() => {
-    navigateTo(`/${memoName}`, { state: { from: parentPage } });
-  }, [memoName, parentPage, navigateTo]);
 
   const handleMemoContentClick = useCallback(
     (e: React.MouseEvent) => {
@@ -43,5 +36,5 @@ export const useMemoHandlers = (options: UseMemoHandlersOptions) => {
     [readonly, openEditor, memoRelatedSetting.enableDoubleClickEdit],
   );
 
-  return { handleGotoMemoDetailPage, handleMemoContentClick, handleMemoContentDoubleClick };
+  return { handleMemoContentClick, handleMemoContentDoubleClick };
 };

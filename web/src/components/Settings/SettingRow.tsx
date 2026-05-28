@@ -4,7 +4,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { cn } from "@/lib/utils";
 
 interface SettingRowProps {
-  label: string;
+  label: React.ReactNode;
   description?: string;
   tooltip?: string;
   children: React.ReactNode;
@@ -14,10 +14,16 @@ interface SettingRowProps {
 
 const SettingRow: React.FC<SettingRowProps> = ({ label, description, tooltip, children, className, vertical = false }) => {
   return (
-    <div className={cn("w-full flex gap-3", vertical ? "flex-col" : "flex-row justify-between items-center", className)}>
-      <div className={cn("flex flex-col gap-1", vertical ? "w-full" : "flex-1 min-w-0")}>
+    <div
+      className={cn(
+        "flex w-full min-w-0 gap-3",
+        vertical ? "flex-col" : "flex-col sm:flex-row sm:items-center sm:justify-between",
+        className,
+      )}
+    >
+      <div className={cn("flex min-w-0 flex-col gap-1", vertical ? "w-full" : "flex-1")}>
         <div className="flex items-center gap-1.5">
-          <span className={cn("text-sm", vertical ? "font-medium" : "")}>{label}</span>
+          <div className={cn("text-sm", vertical ? "font-medium" : "")}>{label}</div>
           {tooltip && (
             <TooltipProvider>
               <Tooltip>
@@ -33,7 +39,7 @@ const SettingRow: React.FC<SettingRowProps> = ({ label, description, tooltip, ch
         </div>
         {description && <p className="text-xs text-muted-foreground">{description}</p>}
       </div>
-      <div className={cn("flex items-center", vertical ? "w-full" : "shrink-0")}>{children}</div>
+      <div className={cn("flex min-w-0 items-center", vertical ? "w-full" : "w-full sm:w-auto sm:shrink-0")}>{children}</div>
     </div>
   );
 };

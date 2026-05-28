@@ -14,8 +14,8 @@ import (
 	"github.com/gorilla/feeds"
 	"github.com/labstack/echo/v5"
 
+	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/plugin/markdown"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -86,9 +86,10 @@ func (s *RSSService) GetExploreRSS(c *echo.Context) error {
 	normalStatus := store.Normal
 	limit := maxRSSItemCount
 	memoFind := store.FindMemo{
-		RowStatus:      &normalStatus,
-		VisibilityList: []store.Visibility{store.Public},
-		Limit:          &limit,
+		RowStatus:       &normalStatus,
+		VisibilityList:  []store.Visibility{store.Public},
+		ExcludeComments: true,
+		Limit:           &limit,
 	}
 	memoList, err := s.Store.ListMemos(ctx, &memoFind)
 	if err != nil {
@@ -135,10 +136,11 @@ func (s *RSSService) GetUserRSS(c *echo.Context) error {
 	normalStatus := store.Normal
 	limit := maxRSSItemCount
 	memoFind := store.FindMemo{
-		CreatorID:      &user.ID,
-		RowStatus:      &normalStatus,
-		VisibilityList: []store.Visibility{store.Public},
-		Limit:          &limit,
+		CreatorID:       &user.ID,
+		RowStatus:       &normalStatus,
+		VisibilityList:  []store.Visibility{store.Public},
+		ExcludeComments: true,
+		Limit:           &limit,
 	}
 	memoList, err := s.Store.ListMemos(ctx, &memoFind)
 	if err != nil {
@@ -211,18 +213,24 @@ func (s *RSSService) generateRSSFromMemoList(ctx context.Context, memoList []*st
 		creatorMap[user.ID] = user
 	} else {
 		// Multi-user feed - batch load all unique creators
-		creatorIDs := make(map[int32]bool)
+		creatorIDList := []int32{}
+		creatorIDMap := make(map[int32]bool)
 		for _, memo := range memoList[:itemCountLimit] {
-			creatorIDs[memo.CreatorID] = true
+			if !creatorIDMap[memo.CreatorID] {
+				creatorIDList = append(creatorIDList, memo.CreatorID)
+				creatorIDMap[memo.CreatorID] = true
+			}
 		}
 
-		// Batch load all users with a single query by getting all users and filtering
-		// Note: This is more efficient than N separate queries
-		for creatorID := range creatorIDs {
-			creator, err := s.Store.GetUser(ctx, &store.FindUser{ID: &creatorID})
-			if err == nil && creator != nil {
-				creatorMap[creatorID] = creator
-			}
+		// Batch load all users with a single query
+		users, err := s.Store.ListUsers(ctx, &store.FindUser{
+			IDList: creatorIDList,
+		})
+		if err != nil {
+			return "", lastModified, err
+		}
+		for _, creator := range users {
+			creatorMap[creator.ID] = creator
 		}
 	}
 

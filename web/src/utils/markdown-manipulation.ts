@@ -1,7 +1,7 @@
 // Utilities for manipulating markdown strings using AST parsing
 // Uses mdast for accurate task detection that properly handles code blocks
 
-import type { ListItem } from "mdast";
+import type { Heading, ListItem } from "mdast";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { gfmFromMarkdown } from "mdast-util-gfm";
 import { gfm } from "micromark-extension-gfm";
@@ -103,6 +103,65 @@ export interface TaskItem {
   checked: boolean;
   content: string;
   indentation: number;
+}
+
+export interface HeadingItem {
+  text: string;
+  level: 1 | 2 | 3 | 4;
+  slug: string;
+}
+
+/**
+ * Slugify a string into a URL-friendly anchor ID.
+ */
+export function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+/**
+ * Extract h1–h4 headings from markdown content for outline navigation.
+ */
+export function extractHeadings(markdown: string): HeadingItem[] {
+  const tree = fromMarkdown(markdown, {
+    extensions: [gfm()],
+    mdastExtensions: [gfmFromMarkdown()],
+  });
+
+  const headings: HeadingItem[] = [];
+  const slugCounts = new Map<string, number>();
+
+  visit(tree, "heading", (node: Heading) => {
+    if (node.depth < 1 || node.depth > 4) return;
+
+    const text = getNodeText(node as unknown as MdastNode);
+    if (!text) return;
+
+    let slug = slugify(text);
+    const count = slugCounts.get(slug) || 0;
+    slugCounts.set(slug, count + 1);
+    if (count > 0) slug = `${slug}-${count}`;
+
+    headings.push({ text, level: node.depth as 1 | 2 | 3 | 4, slug });
+  });
+
+  return headings;
+}
+
+interface MdastNode {
+  value?: string;
+  children?: MdastNode[];
+}
+
+function getNodeText(node: MdastNode): string {
+  if (node.value) return node.value;
+  if (node.children) return node.children.map(getNodeText).join("");
+  return "";
 }
 
 export function extractTasks(markdown: string): TaskItem[] {

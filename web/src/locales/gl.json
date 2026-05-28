@@ -10,6 +10,7 @@
     "create-your-account": "Crea a túa conta",
     "host-tip": "Estás creando a conta como Site Host.",
     "new-password": "Novo contrasinal",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Repite o novo contrasinal",
     "sign-in-tip": "Xa tes unha conta?",
     "sign-up-tip": "Aínda non tes unha conta?"
@@ -38,7 +39,15 @@
     "created-at": "Creada o",
     "database": "Base de datos",
     "day": "Día",
-    "days": "Días",
+    "days": {
+      "fri": "Ven",
+      "mon": "Lun",
+      "sat": "Sáb",
+      "sun": "Dom",
+      "thu": "Xov",
+      "tue": "Mar",
+      "wed": "Mér"
+    },
     "delete": "Eliminar",
     "description": "Descrición",
     "edit": "Editar",
@@ -54,12 +63,13 @@
     "input": "Entrada",
     "language": "Idioma",
     "last-updated-at": "Última actualización",
-    "layout": "Disposición",
     "learn-more": "Saber máis",
     "link": "Ligar",
+    "map": "Map",
     "mark": "Marcar",
     "memo": "Memo",
     "memos": "Memos",
+    "more": "Máis",
     "name": "Nome",
     "new": "Novidade",
     "nickname": "Alcume",
@@ -74,7 +84,7 @@
     "referenced-by": "Referida por",
     "referencing": "Referindo",
     "relations": "Relacións",
-    "remember-me": "Lembrarmo",
+    "remember-me": "Lembrarme",
     "rename": "Cambiar nome",
     "reset": "Restablecer",
     "resources": "Recursos",
@@ -104,38 +114,54 @@
     "username": "Identificador",
     "version": "Versión",
     "visibility": "Visibilidade",
-    "yourself": "Ti",
-    "more": "Máis"
-  },
-  "days": {
-    "fri": "Ven",
-    "mon": "Lun",
-    "sat": "Sáb",
-    "sun": "Dom",
-    "thu": "Xov",
-    "tue": "Mar",
-    "wed": "Mér"
+    "yourself": "Ti"
   },
   "editor": {
     "add-your-comment-here": "Engade aquí o comentario...",
     "any-thoughts": "O que pensas...",
-    "save": "Gardar",
-    "no-changes-detected": "Non se detectaron cambios",
-    "focus-mode": "Modo Sen distraccións",
     "exit-focus-mode": "Saír do modo sen distraccións",
-    "slash-commands": "Escribe `/` para ordes"
-  },
-  "filters": {
-    "has-code": "hasCode",
-    "has-link": "hasLink",
-    "has-task-list": "hasTaskList"
+    "focus-mode": "Modo Sen distraccións",
+    "no-changes-detected": "Non se detectaron cambios",
+    "save": "Gardar",
+    "saving": "Gardando...",
+    "slash-commands": "Escribe `/` para ordes",
+    "insert-menu": {
+      "add-location": "Engadir localización",
+      "link-memo": "Nota de ligazón",
+      "upload-file": "Cargar ficheiro"
+    },
+    "audio-recorder": {
+      "attachment-label": "Gravación de audio",
+      "attachment-label-with-time": "Gravación de audio {{time}}",
+      "discard": "Descartar",
+      "error": "Micrófono non dispoñible",
+      "error-description": "Téntao de novo despois de comprobar o acceso ao micrófono deste sitio.",
+      "idle-description": "Comeza a gravar para engadir unha gravación de audio como anexo.",
+      "keep": "Continúa gravando",
+      "pause-recording": "Pausa a gravación de audio",
+      "play-recording": "Reproducir gravación de audio",
+      "ready": "Gravación lista",
+      "ready-description": "Previsualiza o clip e, a continuación, gárdao como anexo de audio ou bótao.",
+      "record-again": "Gravar de novo",
+      "recording": "Gravación de audio",
+      "recording-description": "Captura un anexo de audio rápido. Duración actual: {{duration}}",
+      "requesting": "Solicitando acceso...",
+      "requesting-permission": "Solicitando acceso ao micrófono",
+      "requesting-permission-description": "Permite o acceso ao micrófono no teu navegador para comezar a gravar.",
+      "start": "Comezar a gravar",
+      "stop": "Deter a gravación",
+      "title": "Gravadora de audio",
+      "trigger": "Gravar audio",
+      "unsupported": "A gravación de audio non é compatible",
+      "unsupported-description": "Este navegador non pode gravar audio do redactor de notas."
+    }
   },
   "inbox": {
-    "memo-comment": "{{user}} fixo un comentario en {{memo}}.",
     "failed-to-load": "Fallou a carga do elemento da caixa de entrada",
-    "unread": "Sen ler",
+    "memo-comment": "{{user}} fixo un comentario en {{memo}}.",
+    "no-archived": "Non hai notificacións arquivadas",
     "no-unread": "Non hai notificacións sen ler",
-    "no-archived": "Non hai notificacións arquivadas"
+    "unread": "Sen ler"
   },
   "markdown": {
     "checkbox": "Marca de selección",
@@ -144,8 +170,8 @@
   },
   "memo": {
     "archived-at": "Arquivada o",
-    "click-to-hide-nsfw-content": "Preme para ocultar contido NSFW",
-    "click-to-show-nsfw-content": "Preme para mostrar contido NSFW",
+    "click-to-hide-sensitive-content": "Preme para ocultar contido NSFW",
+    "click-to-show-sensitive-content": "Preme para mostrar contido NSFW",
     "code": "Código",
     "comment": {
       "self": "Comentarios",
@@ -160,7 +186,12 @@
     "direction-asc": "Ascendente",
     "direction-desc": "Descendente",
     "display-time": "Mostrar hora",
-    "filters": "Filtros",
+    "filters": {
+      "has-code": "hasCode",
+      "has-link": "hasLink",
+      "has-task-list": "hasTaskList",
+      "label": "Filtros"
+    },
     "links": "Ligazóns",
     "load-more": "Cargar máis",
     "no-archived-memos": "Sen memos arquivadas.",
@@ -177,8 +208,32 @@
       "protected": "Protexida",
       "public": "Pública"
     },
-    "list": "Lista",
-    "masonry": "Masonry"
+    "outline": "Esquema",
+    "share": {
+      "active-links": "Ligazóns activas para compartir",
+      "copied": "Copiado!",
+      "copy": "Copiar ligazón",
+      "create-failed": "Produciuse un erro ao crear a ligazón para compartir",
+      "create-link": "Crear nova ligazón",
+      "creating": "Creando…",
+      "expiry-1-day": "1 día",
+      "expiry-30-days": "30 días",
+      "expiry-7-days": "7 días",
+      "expiry-label": "Caduca",
+      "expiry-never": "Nunca",
+      "expires-on": "Caduca o {{date}}",
+      "invalid-link": "Esta ligazón non é válida ou caducou.",
+      "never-expires": "Nunca caduca",
+      "no-links": "Aínda non hai ligazóns para compartir. Crea un a continuación.",
+      "open-panel": "Xestionar ligazóns para compartir",
+      "revoke": "Revogar",
+      "revoke-failed": "Produciuse un erro ao revogar a ligazón",
+      "revoked": "Revogouse a ligazón para compartir",
+      "section-label": "Compartindo",
+      "share": "Compartir",
+      "shared-by": "Compartido por {{creator}}",
+      "title": "Comparte esta nota"
+    }
   },
   "message": {
     "archived-successfully": "Arquivada correctamente",
@@ -227,12 +282,12 @@
       "title": "Crear recurso",
       "upload-method": "Método de subida"
     },
-    "delete-resource": "Eliminar recurso",
-    "delete-selected-resources": "Eliminar recursos seleccionados",
     "delete-all-unused": "Eliminar todos sen usar",
     "delete-all-unused-confirm": "Tes certeza de querer eliminar todos os recursos que non estás a utilizar? ESTA ACCIÓN NON É REVERSIBLE",
-    "delete-all-unused-success": "Recursos eliminados correctamente",
     "delete-all-unused-error": "Fallou a eliminación dos recursos non utilizados",
+    "delete-all-unused-success": "Recursos eliminados correctamente",
+    "delete-resource": "Eliminar recurso",
+    "delete-selected-resources": "Eliminar recursos seleccionados",
     "fetching-data": "Obtendo datos…",
     "file-drag-drop-prompt": "Arrastra e solta aquí o ficheiro a subir",
     "linked-amount": "Número de ligazóns",
@@ -249,78 +304,37 @@
     "go-to-home": "Ir ao Inicio"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "Token de acceso copiado ao portapapeis",
-      "access-token-deletion": "Tes certeza de querer eliminar o toke de acceso `{{description}}`?",
-      "access-token-deletion-description": "Esta acción non é reversible. Terás que actualizar o token de acceso en todos os servizos que utilicen o actual.",
-      "access-token-deleted": "Eliminouse o token de acceso `{{description}}`",
-      "create-dialog": {
-        "access-token-created": "Creouse o token de acceso `{{description}}`",
-        "create-access-token": "Crear token de acceso",
-        "created-at": "Creado o",
-        "description": "Descrición",
-        "duration-1m": "1 mes",
-        "duration-8h": "8 horas",
-        "duration-never": "Nunca",
-        "expiration": "Caducidade",
-        "expires-at": "Caduca o",
-        "some-description": "Descrición..."
-      },
-      "description": "Lista con todos os tokens de acceso da túa conta.",
-      "title": "Tokens de acceso",
-      "token": "Token"
-    },
-    "account-section": {
-      "change-password": "Cambiar contrasinal",
-      "email-note": "Optativo",
-      "export-memos": "Exportar Memos",
-      "nickname-note": "Mostrado na cabeceira",
-      "openapi-reset": "Restablecer clave OpenAPI",
-      "openapi-sample-post": "Ola #memos desde {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "Restablecer API",
-      "title": "Información da conta",
-      "update-information": "Actualizar información",
-      "username-note": "Utilizada para acceder"
-    },
-    "member": "Usuaria",
-    "member-list": "Lista de usuarias",
-    "member-section": {
+    "member": {
       "admin": "Admin",
       "archive-member": "Arquivar usuaria",
+      "archive-success": "{{username}} arquivada correctamente",
       "archive-warning": "Tes certeza de querer arquivar a {{username}}?",
       "archive-warning-description": "Ao arquivar desactivas a conta. Podes restablecela ou eliminala máis tarde.",
-      "archive-success": "{{username}} arquivada correctamente",
-      "restore-success": "{{username}} restablecida correctamente",
       "create-a-member": "Crear usuaria",
       "delete-member": "Eliminar usuaria",
+      "delete-success": "Eliminouse a {{username}} correctamente",
       "delete-warning": "Tes certeza de querer eliminar a {{username}}?",
       "delete-warning-description": "ESTA ACCIÓN NON É REVERSIBLE",
-      "delete-success": "Eliminouse a {{username}} correctamente",
-      "user": "Usuaria"
+      "restore-success": "{{username}} restablecida correctamente",
+      "user": "Usuaria",
+      "label": "Usuaria",
+      "list-title": "Lista de usuarias",
+      "no-members-found": "Non se atopou ningún membro"
     },
-    "memo-related": "Memo",
-    "memo-related-settings": {
-      "content-length-limit": "Límite de lonxitude do contido (Byte)",
-      "enable-blur-nsfw-content": "Activar esvaecemento do contido sensible (NSFW)",
-      "enable-memo-comments": "Activar comentarios nas notas",
-      "enable-memo-location": "Activar localización nas notas",
-      "reactions": "Reaccións",
-      "title": "Axustes relacionados coas notas"
+    "my-account": {
+      "label": "A miña conta"
     },
-    "my-account": "A miña conta",
-    "preference": "Preferencias",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "Hora da nota mostrada",
       "default-memo-visibility": "Visibilidade por defecto",
-      "theme": "Decorado"
+      "theme": "Decorado",
+      "label": "Preferencias"
     },
     "shortcut": {
       "delete-confirm": "Tes certeza de querer eliminar o atallo `{{title}}`?",
       "delete-success": "Eliminouse correctamente o atallo `{{title}}`"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "sso": {
       "authorization-endpoint": "Punto de acceso para autorización",
       "client-id": "ID do cliente",
       "client-secret": "Secreto do cliente",
@@ -342,10 +356,10 @@
       "template": "Modelo",
       "token-endpoint": "Token do punto de acceso",
       "update-sso": "Actualizar SSO",
-      "user-endpoint": "Punto de acceso da usuaria"
+      "user-endpoint": "Punto de acceso da usuaria",
+      "label": "SSO"
     },
-    "storage": "Almacenaxe",
-    "storage-section": {
+    "storage": {
       "accesskey": "Clave de acceso",
       "accesskey-placeholder": "Clave de acceso / ID de acceso",
       "bucket": "Bucket",
@@ -370,17 +384,17 @@
       "type-database": "Base de datos",
       "type-local": "Sistema local de ficheiros",
       "update-a-service": "Actualizar un servizo",
-      "update-local-path": "Actulizar ruta de almacenaxe local",
+      "update-local-path": "Actualizar ruta de almacenaxe local",
       "update-local-path-description": "A ruta local de almacenaxe é a ruta relativa ao teu ficheiro de base de datos",
       "update-storage": "Actualizar almacenaxe",
       "url-prefix": "Prefixo do URL",
       "url-prefix-placeholder": "Prefixo personalizado do URL, optativo",
       "url-suffix": "Sufixo do URL",
       "url-suffix-placeholder": "Sufixo personalizado do URL, optativo",
-      "warning-text": "Tes certeza de querer eliminar o servizo de almacenaxe `{{name}}`? ESTA ACCIÓN NON É REVERSIBLE."
+      "warning-text": "Tes certeza de querer eliminar o servizo de almacenaxe `{{name}}`? ESTA ACCIÓN NON É REVERSIBLE.",
+      "label": "Almacenaxe"
     },
-    "system": "Sistema",
-    "system-section": {
+    "system": {
       "additional-script": "Script adicional",
       "additional-script-placeholder": "Código JavaScript adicional",
       "additional-style": "Estilo adicional",
@@ -395,7 +409,6 @@
       "disable-password-login": "Desactivar acceso con contrasinal",
       "disable-password-login-final-warning": "Escribe `CONFIRM` se sabes o que estás a facer.",
       "disable-password-login-warning": "Isto desactiva o acceso con contrasinal para todas as usuarias. Non é posible acceder sen reverter este axuste na base de datos se os provedores de acceso configurados fallan. Pon moito coidado cando elimines un provedor de identidades",
-      "disable-public-memos": "Disactivar notas públicas",
       "display-with-updated-time": "Mostrar coa hora actualizada",
       "enable-auto-compact": "Activar auto compatacta",
       "enable-double-click-to-edit": "Activar dobre pulsación para editar",
@@ -405,10 +418,66 @@
       "max-upload-size-hint": "O valor recomendado é 32 MiB.",
       "removed-completed-task-list-items": "Activar a eliminación dos elementos da lista de tarefas completadas",
       "server-name": "Nome do servidor",
-      "title": "Xeral"
+      "title": "Xeral",
+      "label": "Sistema"
     },
     "version": "Versión",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "Token de acceso copiado ao portapapeis",
+      "access-token-deleted": "Eliminouse o token de acceso `{{description}}`",
+      "access-token-deletion": "Tes certeza de querer eliminar o toke de acceso `{{description}}`?",
+      "access-token-deletion-description": "Esta acción non é reversible. Terás que actualizar o token de acceso en todos os servizos que utilicen o actual.",
+      "create-dialog": {
+        "access-token-created": "Creouse o token de acceso `{{description}}`",
+        "create-access-token": "Crear token de acceso",
+        "created-at": "Creado o",
+        "description": "Descrición",
+        "duration-1m": "1 mes",
+        "duration-8h": "8 horas",
+        "duration-never": "Nunca",
+        "expiration": "Caducidade",
+        "expires-at": "Caduca o",
+        "some-description": "Descrición..."
+      },
+      "description": "Lista con todos os tokens de acceso da túa conta.",
+      "title": "Tokens de acceso",
+      "token": "Token",
+      "no-tokens-found": "Non se atoparon tokens de acceso"
+    },
+    "account": {
+      "change-password": "Cambiar contrasinal",
+      "email-note": "Optativo",
+      "export-memos": "Exportar Memos",
+      "nickname-note": "Mostrado na cabeceira",
+      "openapi-reset": "Restablecer clave OpenAPI",
+      "openapi-sample-post": "Ola #memos desde {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "Restablecer API",
+      "title": "Información da conta",
+      "update-information": "Actualizar información",
+      "username-note": "Utilizada para acceder"
+    },
+    "instance": {
+      "disallow-change-nickname": "Non permitir cambiar o alcume",
+      "disallow-change-username": "Non permitir cambiar o identificador",
+      "disallow-password-auth": "Desactivar acceso con contrasinal",
+      "disallow-user-registration": "Non permitir a creación de contas",
+      "monday": "Luns",
+      "saturday": "Sábado",
+      "sunday": "Domingo",
+      "week-start-day": "Comezo da semana"
+    },
+    "memo": {
+      "content-length-limit": "Límite de lonxitude do contido (Byte)",
+      "enable-blur-sensitive-content": "Activar esvaecemento do contido sensible (NSFW)",
+      "enable-memo-comments": "Activar comentarios nas notas",
+      "enable-memo-location": "Activar localización nas notas",
+      "reactions": "Reaccións",
+      "title": "Axustes relacionados coas notas",
+      "label": "Memo",
+      "reactions-required": "A lista de reaccións non debe estar baleira"
+    },
+    "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "Un nome doado de lembrar",
         "create-webhook": "Crear webhook",
@@ -420,22 +489,27 @@
       },
       "delete-dialog": {
         "delete-webhook-description": "Esta acción non é reversible.",
-        "delete-webhook-title": "Tes certeza de querer eliminar o webhook `{{name}}`?",
-        "delete-webhook-success": "Eliminouse correctamente o webhook `{{name}}`"
+        "delete-webhook-success": "Eliminouse correctamente o webhook `{{name}}`",
+        "delete-webhook-title": "Tes certeza de querer eliminar o webhook `{{name}}`?"
       },
       "no-webhooks-found": "Non hai webhooks.",
       "title": "Webhooks",
-      "url": "URL"
+      "url": "URL",
+      "label": "Webhooks"
     },
-    "instance-section": {
-      "disallow-change-nickname": "Non permitir cambiar o alcume",
-      "disallow-change-username": "Non permitir cambiar o identificador",
-      "disallow-password-auth": "Desactivar acceso con contrasinal",
-      "disallow-user-registration": "Non permitir a creación de contas",
-      "monday": "Luns",
-      "saturday": "Sábado",
-      "sunday": "Domingo",
-      "week-start-day": "Comezo da semana"
+    "tags": {
+      "label": "Etiquetas",
+      "title": "Metadatos da etiqueta",
+      "description": "Asigne cores de visualización opcionais ás etiquetas en toda a instancia ou desenfoca o contido da nota coincidente. Os nomes das etiquetas trátanse como patróns regex ancorados.",
+      "background-color": "Cor de fondo",
+      "blur-content": "Desenfoque o contido",
+      "no-tags-configured": "Non se configuraron metadatos de etiquetas.",
+      "tag-name": "Nome da etiqueta",
+      "tag-name-placeholder": "p.ex. work ou project/.*",
+      "tag-already-exists": "A etiqueta xa existe.",
+      "tag-pattern-hint": "Nome da etiqueta ou patrón de expresión regular (por exemplo, project/.* coincide con todas as etiquetas project/)",
+      "invalid-regex": "Patrón de expresión regular non válido ou non seguro.",
+      "using-default-color": "Usando a cor predeterminada."
     }
   },
   "tag": {
@@ -443,8 +517,8 @@
     "create-tag": "Crear etiqueta",
     "create-tags-guide": "Podes crear etiquetas escribindo `#etiqueta`.",
     "delete-confirm": "Tes certeza de querer eliminar esta etiqueta? Todas as notas afectadas vanse arquivar.",
-    "delete-tag": "Eliminar etiqueta",
     "delete-success": "Etiqueta eliminada corretamente",
+    "delete-tag": "Eliminar etiqueta",
     "new-name": "Novo nome",
     "no-tag-found": "Sen etiquetas",
     "old-name": "Nome antigo",
@@ -461,5 +535,10 @@
     "select-visibility": "Visibilidade",
     "tags": "Etiquetas",
     "upload-attachment": "Anexo(s) subido(s)"
+  },
+  "live-update": {
+    "connected": "Actualizacións en directo activas",
+    "connecting": "Conectando a actualizacións en directo...",
+    "disconnected": "As actualizacións en directo non están dispoñibles"
   }
 }

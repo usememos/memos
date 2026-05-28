@@ -1,58 +1,42 @@
 name: Feature Request
-description: If you have a suggestion for a new feature
-labels: [enhancement]
+description: Suggest a new feature or improvement
+type: Feature
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for suggesting a new feature! Please complete the form below to help us understand your idea.
+        Thanks for suggesting an improvement. Please describe the problem first so maintainers can evaluate the request.
+
+        **Before submitting**, please search [existing issues](https://github.com/usememos/memos/issues?q=label%3Aenhancement) to avoid duplicates.
 
   - type: checkboxes
     id: pre-check
     attributes:
       label: Pre-submission Checklist
-      description: Please confirm you have completed the following steps before submitting
       options:
-        - label: I have searched the existing issues and this feature has not been requested yet
+        - label: I have searched existing issues and confirmed this has not already been requested
+          required: true
+        - label: This is a feature request, not a bug report or support question
           required: true
 
-  - type: dropdown
-    id: feature-type
-    attributes:
-      label: Type of Feature
-      description: What type of feature is this?
-      options:
-        - User Interface (UI)
-        - User Experience (UX)
-        - API / Backend
-        - Documentation
-        - Integrations / Plugins
-        - Security / Privacy
-        - Performance
-        - Other
-      default: 0
-    validations:
-      required: true
-
   - type: textarea
-    id: problem-statement
+    id: problem
     attributes:
       label: Problem or Use Case
-      description: What problem does this feature solve? What are you trying to accomplish?
+      description: What problem does this solve? Describe the user need, not just the proposed UI or API.
       placeholder: |
-        I often need to... but currently there's no way to...
-        This would help me/users to...
+        I often need to ...
+        Today, this is difficult because ...
     validations:
       required: true
 
   - type: textarea
-    id: proposed-solution
+    id: solution
     attributes:
       label: Proposed Solution
-      description: A clear and concise description of what you want to happen
+      description: Describe the behavior you would like Memos to support.
       placeholder: |
-        It would be great if Memos could...
-        For example, a button/feature that...
+        Memos should ...
     validations:
       required: true
 
@@ -60,17 +44,14 @@ body:
     id: alternatives
     attributes:
       label: Alternatives Considered
-      description: Have you considered any alternative solutions or workarounds?
+      description: Existing workarounds, related tools, or simpler alternatives you considered.
       placeholder: |
-        I've tried... but it doesn't work well because...
-        An alternative could be...
+        I tried ...
+        It does not work well because ...
 
   - type: textarea
     id: additional-context
     attributes:
       label: Additional Context
-      description: Add any other context, mockups, screenshots, or examples about the feature request
-      placeholder: |
-        - Similar feature in other apps: ...
-        - Mockups or screenshots: ...
-        - Related discussions: ...
+      description: Mockups, screenshots, examples from other apps, API sketches, or any other context.
+      placeholder: Drag and drop files here or add links/examples.

@@ -4,14 +4,9 @@ import * as React from "react";
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
-const DropdownMenu = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Root>
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
->(({ ...props }, _ref) => {
-  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />;
-});
-DropdownMenu.displayName = "DropdownMenu";
+const DropdownMenu = ({ ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Root>) => {
+  return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" modal={false} {...props} />;
+};
 
 const DropdownMenuPortal = ({ ...props }: React.ComponentProps<typeof DropdownMenuPrimitive.Portal>) => {
   return <DropdownMenuPrimitive.Portal data-slot="dropdown-menu-portal" {...props} />;
@@ -255,19 +250,19 @@ function useDropdownMenuSubHoverDelay(closeDelay = 150, onOpenChange?: (open: bo
 
 export {
   DropdownMenu,
-  DropdownMenuPortal,
-  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuGroup,
-  DropdownMenuLabel,
   DropdownMenuItem,
-  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuSub,
-  DropdownMenuSubTrigger,
   DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
   useDropdownMenuSubHoverDelay,
 };

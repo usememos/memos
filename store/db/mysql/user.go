@@ -83,6 +83,7 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 
 func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User, error) {
 	where, args := []string{"1 = 1"}, []any{}
+	orderBy := []string{"`created_ts` DESC", "`row_status` DESC"}
 
 	if len(find.Filters) > 0 {
 		return nil, errors.Errorf("user filters are not supported")
@@ -90,6 +91,35 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 
 	if v := find.ID; v != nil {
 		where, args = append(where, "`id` = ?"), append(args, *v)
+	}
+	if len(find.IDList) > 0 {
+		placeholders := make([]string, 0, len(find.IDList))
+		for range find.IDList {
+			placeholders = append(placeholders, "?")
+		}
+		where, args = append(where, fmt.Sprintf("`id` IN (%s)", strings.Join(placeholders, ", "))), append(args, func() []any {
+			list := make([]any, 0, len(find.IDList))
+			for _, id := range find.IDList {
+				list = append(list, id)
+			}
+			return list
+		}()...)
+	}
+	if len(find.UsernameList) > 0 {
+		placeholders := make([]string, 0, len(find.UsernameList))
+		for range find.UsernameList {
+			placeholders = append(placeholders, "?")
+		}
+		where, args = append(where, fmt.Sprintf("`username` IN (%s)", strings.Join(placeholders, ", "))), append(args, func() []any {
+			list := make([]any, 0, len(find.UsernameList))
+			for _, username := range find.UsernameList {
+				list = append(list, username)
+			}
+			return list
+		}()...)
+	}
+	if v := find.RowStatus; v != nil {
+		where, args = append(where, "`row_status` = ?"), append(args, *v)
 	}
 	if v := find.Username; v != nil {
 		where, args = append(where, "`username` = ?"), append(args, *v)
@@ -103,8 +133,17 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 	if v := find.Nickname; v != nil {
 		where, args = append(where, "`nickname` = ?"), append(args, *v)
 	}
-
-	orderBy := []string{"`created_ts` DESC", "`row_status` DESC"}
+	if v := find.Search; v != nil && strings.TrimSpace(*v) != "" {
+		query := strings.ToLower(strings.TrimSpace(*v))
+		where, args = append(where, "(LOWER(`username`) LIKE ? OR LOWER(`nickname`) LIKE ?)"), append(args, "%"+query+"%", "%"+query+"%")
+		orderBy = []string{
+			"CASE WHEN LOWER(`username`) = ? THEN 0 WHEN LOWER(`username`) LIKE ? THEN 1 WHEN LOWER(`nickname`) LIKE ? THEN 2 ELSE 3 END",
+			"CHAR_LENGTH(`username`) ASC",
+			"`created_ts` DESC",
+			"`row_status` DESC",
+		}
+		args = append(args, query, query+"%", query+"%")
+	}
 	query := "SELECT `id`, `username`, `role`, `email`, `nickname`, `password_hash`, `avatar_url`, `description`, UNIX_TIMESTAMP(`created_ts`), UNIX_TIMESTAMP(`updated_ts`), `row_status` FROM `user` WHERE " + strings.Join(where, " AND ") + " ORDER BY " + strings.Join(orderBy, ", ")
 	if v := find.Limit; v != nil {
 		query += fmt.Sprintf(" LIMIT %d", *v)
@@ -152,15 +191,4 @@ func (d *DB) GetUser(ctx context.Context, find *store.FindUser) (*store.User, er
 		return nil, errors.Errorf("unexpected user count: %d", len(list))
 	}
 	return list[0], nil
-}
-
-func (d *DB) DeleteUser(ctx context.Context, delete *store.DeleteUser) error {
-	result, err := d.db.ExecContext(ctx, "DELETE FROM `user` WHERE `id` = ?", delete.ID)
-	if err != nil {
-		return err
-	}
-	if _, err := result.RowsAffected(); err != nil {
-		return err
-	}
-	return nil
 }

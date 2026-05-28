@@ -184,7 +184,7 @@ Parses data URI to extract MIME type and base64 data.
 ## Dependencies
 
 ### External Packages
-- `github.com/labstack/echo/v4` - HTTP router and middleware
+- `github.com/labstack/echo/v5` - HTTP router and middleware
 - `github.com/golang-jwt/jwt/v5` - JWT parsing and validation
 - `github.com/disintegration/imaging` - Image thumbnail generation
 - `golang.org/x/sync/semaphore` - Concurrency control for thumbnails
@@ -193,7 +193,7 @@ Parses data URI to extract MIME type and base64 data.
 - `server/auth` - Authentication utilities
 - `store` - Database operations
 - `internal/profile` - Server configuration
-- `plugin/storage/s3` - S3 storage client
+- `internal/storage/s3` - S3 storage client
 
 ## Configuration
 
@@ -285,9 +285,6 @@ See SAFARI_FIX.md for recommended test coverage.
 ```bash
 # Test attachment
 curl "http://localhost:8081/file/attachments/{uid}/file.jpg"
-
-# Test avatar by ID
-curl "http://localhost:8081/file/users/1/avatar"
 
 # Test avatar by username
 curl "http://localhost:8081/file/users/steven/avatar"

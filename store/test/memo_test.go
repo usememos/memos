@@ -387,6 +387,65 @@ func TestMemoInvalidUID(t *testing.T) {
 	ts.Close()
 }
 
+func TestMemoCreateWithCustomTimestamps(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	customCreatedTs := int64(1700000000) // 2023-11-14 22:13:20 UTC
+	customUpdatedTs := int64(1700000001)
+
+	memo, err := ts.CreateMemo(ctx, &store.Memo{
+		UID:        "custom-timestamp-memo",
+		CreatorID:  user.ID,
+		Content:    "content with custom timestamps",
+		Visibility: store.Public,
+		CreatedTs:  customCreatedTs,
+		UpdatedTs:  customUpdatedTs,
+	})
+	require.NoError(t, err)
+	require.Equal(t, customCreatedTs, memo.CreatedTs)
+	require.Equal(t, customUpdatedTs, memo.UpdatedTs)
+
+	// Fetch and verify timestamps are preserved
+	found, err := ts.GetMemo(ctx, &store.FindMemo{ID: &memo.ID})
+	require.NoError(t, err)
+	require.NotNil(t, found)
+	require.Equal(t, customCreatedTs, found.CreatedTs)
+	require.Equal(t, customUpdatedTs, found.UpdatedTs)
+
+	ts.Close()
+}
+
+func TestMemoCreateWithOnlyCreatedTs(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	customCreatedTs := int64(1609459200) // 2021-01-01 00:00:00 UTC
+
+	memo, err := ts.CreateMemo(ctx, &store.Memo{
+		UID:        "custom-created-ts-only",
+		CreatorID:  user.ID,
+		Content:    "content with custom created_ts only",
+		Visibility: store.Public,
+		CreatedTs:  customCreatedTs,
+	})
+	require.NoError(t, err)
+	require.Equal(t, customCreatedTs, memo.CreatedTs)
+
+	found, err := ts.GetMemo(ctx, &store.FindMemo{ID: &memo.ID})
+	require.NoError(t, err)
+	require.NotNil(t, found)
+	require.Equal(t, customCreatedTs, found.CreatedTs)
+
+	ts.Close()
+}
+
 func TestMemoWithPayload(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()

@@ -1,8 +1,16 @@
 {
+  "about": {
+    "blogs": "Blog",
+    "description": "Dịch vụ ghi chú nhẹ, ưu tiên quyền riêng tư. Dễ dàng ghi lại và chia sẻ những suy nghĩ tuyệt vời của bạn.",
+    "documents": "Tài liệu",
+    "github-repository": "Kho GitHub",
+    "official-website": "Trang web chính thức"
+  },
   "auth": {
     "create-your-account": "Tạo tài khoản của bạn",
     "host-tip": "Bạn đang đăng ký với tư cách Quản trị viên Trang.",
     "new-password": "Mật khẩu mới",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Nhập lại mật khẩu mới",
     "sign-in-tip": "Đã có tài khoản?",
     "sign-up-tip": "Chưa có tài khoản?"
@@ -11,36 +19,57 @@
     "about": "Giới thiệu",
     "add": "Thêm",
     "admin": "Quản trị",
+    "all": "Tất cả",
     "archive": "Lưu trữ",
     "archived": "Đã lưu trữ",
+    "attachments": "Tệp đính kèm",
+    "auto-expand": "Mở rộng tự động",
     "avatar": "Ảnh đại diện",
     "basic": "Cơ bản",
     "beta": "Beta",
+    "calendar": "Lịch",
     "cancel": "Hủy",
     "change": "Thay đổi",
     "clear": "Xóa",
     "close": "Đóng",
     "collapse": "Thu gọn",
     "confirm": "Xác nhận",
+    "copy": "Sao chép",
     "create": "Tạo",
+    "created-at": "Ngày tạo",
     "database": "Cơ sở dữ liệu",
-    "days": "Ngày",
+    "day": "Ngày",
+    "days": {
+      "fri": "T6",
+      "mon": "T2",
+      "sat": "T7",
+      "sun": "CN",
+      "thu": "T5",
+      "tue": "T3",
+      "wed": "T4"
+    },
     "delete": "Xóa",
     "description": "Mô tả",
     "edit": "Chỉnh sửa",
-    "email": "Email",
+    "email": "Thư điện tử",
     "expand": "Mở rộng",
     "explore": "Khám phá",
     "file": "Tệp",
     "filter": "Lọc",
     "home": "Trang chủ",
     "image": "Hình ảnh",
+    "in": "Trong",
     "inbox": "Hộp thư đến",
+    "input": "Nhập liệu",
     "language": "Ngôn ngữ",
+    "last-updated-at": "Cập nhật lần cuối",
     "learn-more": "Tìm hiểu thêm",
     "link": "Liên kết",
+    "map": "Bản đồ",
     "mark": "Đánh dấu",
+    "memo": "Ghi chú",
     "memos": "Ghi chú",
+    "more": "Thêm",
     "name": "Tên",
     "new": "Mới",
     "nickname": "Biệt danh",
@@ -51,6 +80,10 @@
     "pinned": "Đã ghim",
     "preview": "Xem trước",
     "profile": "Hồ sơ",
+    "properties": "Thuộc tính",
+    "referenced-by": "Được tham chiếu bởi",
+    "referencing": "Đang tham chiếu",
+    "relations": "Liên kết",
     "remember-me": "Ghi nhớ tôi",
     "rename": "Đổi tên",
     "reset": "Đặt lại",
@@ -62,6 +95,8 @@
     "select": "Chọn",
     "settings": "Cài đặt",
     "share": "Chia sẻ",
+    "shortcut-filter": "Bộ lọc phím tắt",
+    "shortcuts": "Phím tắt",
     "sign-in": "Đăng nhập",
     "sign-in-with": "Đăng nhập bằng {{provider}}",
     "sign-out": "Đăng xuất",
@@ -69,32 +104,64 @@
     "statistics": "Thống kê",
     "tags": "Thẻ",
     "title": "Tiêu đề",
+    "today": "Hôm nay",
+    "tree-mode": "Chế độ cây",
     "type": "Loại",
     "unpin": "Bỏ ghim",
     "update": "Cập nhật",
     "upload": "Tải lên",
+    "user": "Người dùng",
     "username": "Tên người dùng",
     "version": "Phiên bản",
     "visibility": "Quyền xem",
     "yourself": "Bản thân"
   },
-  "days": {
-    "fri": "T6",
-    "mon": "T2",
-    "sat": "T7",
-    "sun": "CN",
-    "thu": "T5",
-    "tue": "T3",
-    "wed": "T4"
-  },
   "editor": {
     "add-your-comment-here": "Thêm bình luận của bạn tại đây...",
     "any-thoughts": "Có suy nghĩ gì...",
-    "save": "Lưu"
+    "exit-focus-mode": "Thoát chế độ tập trung",
+    "focus-mode": "Chế độ tập trung",
+    "no-changes-detected": "Không phát hiện thay đổi",
+    "save": "Lưu",
+    "saving": "Đang lưu...",
+    "slash-commands": "Nhập `/` để sử dụng lệnh",
+    "insert-menu": {
+      "add-location": "Thêm vị trí",
+      "link-memo": "Liên kết bản ghi nhớ",
+      "upload-file": "Tải tập tin lên"
+    },
+    "audio-recorder": {
+      "attachment-label": "Ghi âm",
+      "attachment-label-with-time": "Ghi âm {{time}}",
+      "discard": "Loại bỏ",
+      "error": "Không có micrô",
+      "error-description": "Hãy thử lại sau khi kiểm tra quyền truy cập micrô cho trang web này.",
+      "idle-description": "Bắt đầu ghi để thêm bản ghi âm dưới dạng tệp đính kèm.",
+      "keep": "Tiếp tục ghi âm",
+      "pause-recording": "Tạm dừng ghi âm",
+      "play-recording": "Phát bản ghi âm",
+      "ready": "Đã sẵn sàng ghi âm",
+      "ready-description": "Xem trước clip, sau đó giữ nó dưới dạng tệp đính kèm âm thanh hoặc loại bỏ nó.",
+      "record-again": "Ghi lại",
+      "recording": "Ghi âm thanh",
+      "recording-description": "Ghi lại tệp đính kèm âm thanh nhanh chóng. Độ dài hiện tại: {{duration}}",
+      "requesting": "Đang yêu cầu quyền truy cập...",
+      "requesting-permission": "Yêu cầu quyền truy cập micrô",
+      "requesting-permission-description": "Cho phép truy cập micrô trong trình duyệt của bạn để bắt đầu ghi âm.",
+      "start": "Bắt đầu ghi",
+      "stop": "Dừng ghi",
+      "title": "Máy ghi âm",
+      "trigger": "Ghi âm thanh",
+      "unsupported": "Ghi âm không được hỗ trợ",
+      "unsupported-description": "Trình duyệt này không thể ghi lại âm thanh từ trình soạn thảo ghi nhớ."
+    }
   },
   "inbox": {
+    "failed-to-load": "Không thể tải mục hộp thư",
     "memo-comment": "{{user}} đã bình luận về {{memo}} của bạn.",
-    "version-update": "Phiên bản mới {{version}} đã có sẵn!"
+    "no-archived": "Không có thông báo đã lưu trữ",
+    "no-unread": "Không có thông báo chưa đọc",
+    "unread": "Chưa đọc"
   },
   "markdown": {
     "checkbox": "Hộp kiểm",
@@ -103,17 +170,33 @@
   },
   "memo": {
     "archived-at": "Đã lưu trữ lúc",
+    "click-to-hide-sensitive-content": "Nhấp để ẩn nội dung nhạy cảm",
+    "click-to-show-sensitive-content": "Nhấp để hiện nội dung nhạy cảm",
     "code": "Mã",
     "comment": {
       "self": "Bình luận",
       "write-a-comment": "Viết bình luận"
     },
+    "copy-content": "Sao chép nội dung",
     "copy-link": "Sao chép liên kết",
-    "count-memos-in-date": "{{count}} ghi chú trong {{date}}",
+    "count-memos-in-date": "{{count}} {{memos}} trong {{date}}",
     "delete-confirm": "Bạn có chắc chắn muốn xóa ghi chú này không? HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC",
+    "delete-confirm-description": "Hành động này không thể hoàn tác. Tệp đính kèm, liên kết và tham chiếu cũng sẽ bị xóa.",
+    "direction": "Hướng",
+    "direction-asc": "Tăng dần",
+    "direction-desc": "Giảm dần",
+    "display-time": "Thời gian hiển thị",
+    "filters": {
+      "has-code": "cóMã",
+      "has-link": "cóLiênKết",
+      "has-task-list": "cóDanhSáchViệc",
+      "label": "Bộ lọc"
+    },
     "links": "Liên kết",
     "load-more": "Tải thêm",
     "no-archived-memos": "Không có ghi chú nào được lưu trữ.",
+    "no-memos": "Không có ghi chú nào.",
+    "order-by": "Sắp xếp theo",
     "search-placeholder": "Tìm kiếm ghi chú",
     "show-less": "Hiển thị ít hơn",
     "show-more": "Hiển thị thêm",
@@ -124,6 +207,32 @@
       "private": "Riêng tư",
       "protected": "Không gian làm việc",
       "public": "Công khai"
+    },
+    "outline": "phác thảo",
+    "share": {
+      "active-links": "Liên kết chia sẻ đang hoạt động",
+      "copied": "Đã sao chép!",
+      "copy": "Sao chép liên kết",
+      "create-failed": "Không tạo được liên kết chia sẻ",
+      "create-link": "Tạo liên kết mới",
+      "creating": "Đang tạo…",
+      "expiry-1-day": "1 ngày",
+      "expiry-30-days": "30 ngày",
+      "expiry-7-days": "7 ngày",
+      "expiry-label": "Hết hạn",
+      "expiry-never": "không bao giờ",
+      "expires-on": "Hết hạn {{date}}",
+      "invalid-link": "Liên kết này không hợp lệ hoặc đã hết hạn.",
+      "never-expires": "Không bao giờ hết hạn",
+      "no-links": "Chưa có link chia sẻ. Tạo một cái bên dưới.",
+      "open-panel": "Quản lý liên kết chia sẻ",
+      "revoke": "Thu hồi",
+      "revoke-failed": "Không thể thu hồi liên kết",
+      "revoked": "Liên kết chia sẻ đã bị thu hồi",
+      "section-label": "Chia sẻ",
+      "share": "Chia sẻ",
+      "shared-by": "Được chia sẻ bởi {{creator}}",
+      "title": "Chia sẻ bản ghi nhớ này"
     }
   },
   "message": {
@@ -131,7 +240,10 @@
     "change-memo-created-time": "Thay đổi thời gian tạo ghi chú",
     "copied": "Đã sao chép",
     "deleted-successfully": "Xóa thành công",
+    "description-is-required": "Mô tả là bắt buộc",
+    "failed-to-embed-memo": "Không thể nhúng ghi chú",
     "fill-all": "Vui lòng điền vào tất cả các trường.",
+    "fill-all-required-fields": "Vui lòng điền vào tất cả các trường bắt buộc",
     "maximum-upload-size-is": "Kích thước tải lên tối đa là {{size}} MiB",
     "memo-not-found": "Không tìm thấy ghi chú.",
     "new-password-not-match": "Mật khẩu mới không khớp.",
@@ -139,6 +251,7 @@
     "password-changed": "Đã thay đổi mật khẩu",
     "password-not-match": "Mật khẩu không khớp.",
     "restored-successfully": "Khôi phục thành công",
+    "succeed-copy-content": "Đã sao chép nội dung thành công.",
     "succeed-copy-link": "Sao chép liên kết thành công.",
     "update-succeed": "Cập nhật thành công",
     "user-not-found": "Không tìm thấy người dùng"
@@ -169,6 +282,10 @@
       "title": "Tạo tài nguyên",
       "upload-method": "Phương thức tải lên"
     },
+    "delete-all-unused": "Xóa tất cả không sử dụng",
+    "delete-all-unused-confirm": "Bạn có chắc chắn muốn xóa tất cả tài nguyên không sử dụng? HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC",
+    "delete-all-unused-error": "Không thể xóa tài nguyên không sử dụng",
+    "delete-all-unused-success": "Đã xóa tài nguyên thành công",
     "delete-resource": "Xóa tài nguyên",
     "delete-selected-resources": "Xóa các tài nguyên đã chọn",
     "fetching-data": "Đang tải dữ liệu…",
@@ -179,57 +296,45 @@
     "no-unused-resources": "Không có tài nguyên không sử dụng",
     "reset-link": "Đặt lại liên kết",
     "reset-link-prompt": "Bạn có chắc chắn muốn đặt lại liên kết? Điều này sẽ làm hỏng tất cả các liên kết hiện tại. HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC",
-    "reset-resource-link": "Đặt lại liên kết tài nguyên"
+    "reset-resource-link": "Đặt lại liên kết tài nguyên",
+    "unused-resources": "Tài nguyên không sử dụng"
   },
   "router": {
     "back-to-top": "Lên đầu trang",
     "go-to-home": "Về trang chủ"
   },
   "setting": {
-    "access-token-section": {
-      "description": "Danh sách tất cả token truy cập cho tài khoản của bạn.",
-      "title": "Token truy cập",
-      "token": "Token"
-    },
-    "account-section": {
-      "change-password": "Đổi mật khẩu",
-      "email-note": "Tùy chọn",
-      "export-memos": "Xuất ghi chú",
-      "nickname-note": "Hiển thị trên banner",
-      "openapi-reset": "Đặt lại khóa OpenAPI",
-      "openapi-sample-post": "Xin chào #memos từ {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "Đặt lại API",
-      "title": "Thông tin tài khoản",
-      "update-information": "Cập nhật thông tin",
-      "username-note": "Dùng để đăng nhập"
-    },
-    "member": "Thành viên",
-    "member-list": "Danh sách thành viên",
-    "member-section": {
+    "member": {
+      "admin": "Quản trị viên",
       "archive-member": "Lưu trữ thành viên",
+      "archive-success": "{{username}} đã được lưu trữ thành công",
       "archive-warning": "Bạn có chắc chắn muốn lưu trữ {{username}}?",
+      "archive-warning-description": "Lưu trữ sẽ vô hiệu hóa tài khoản. Bạn có thể khôi phục hoặc xóa sau.",
       "create-a-member": "Tạo thành viên mới",
       "delete-member": "Xóa thành viên",
-      "delete-warning": "Bạn có chắc chắn muốn xóa {{username}}? HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC"
+      "delete-success": "{{username}} đã được xóa thành công",
+      "delete-warning": "Bạn có chắc chắn muốn xóa {{username}}? HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC",
+      "delete-warning-description": "HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC",
+      "restore-success": "{{username}} đã được khôi phục thành công",
+      "user": "Người dùng",
+      "label": "Thành viên",
+      "list-title": "Danh sách thành viên",
+      "no-members-found": "Không tìm thấy thành viên nào"
     },
-    "memo-related": "Ghi chú",
-    "memo-related-settings": {
-      "content-length-limit": "Giới hạn độ dài nội dung (Byte)",
-      "enable-memo-comments": "Bật bình luận ghi chú",
-      "enable-memo-location": "Bật vị trí ghi chú",
-      "reactions": "Phản ứng",
-      "title": "Cài đặt liên quan đến ghi chú"
+    "my-account": {
+      "label": "Tài khoản của tôi"
     },
-    "my-account": "Tài khoản của tôi",
-    "preference": "Tùy chỉnh",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "Thời gian hiển thị ghi chú",
       "default-memo-visibility": "Quyền xem ghi chú mặc định",
-      "theme": "Giao diện"
+      "theme": "Giao diện",
+      "label": "Tùy chỉnh"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "shortcut": {
+      "delete-confirm": "Bạn có chắc chắn muốn xóa phím tắt `{{title}}`?",
+      "delete-success": "Đã xóa phím tắt `{{title}}` thành công"
+    },
+    "sso": {
       "authorization-endpoint": "Điểm cuối xác thực",
       "client-id": "ID khách hàng",
       "client-secret": "Khóa bí mật",
@@ -251,10 +356,10 @@
       "template": "Mẫu",
       "token-endpoint": "Điểm cuối token",
       "update-sso": "Cập nhật SSO",
-      "user-endpoint": "Điểm cuối người dùng"
+      "user-endpoint": "Điểm cuối người dùng",
+      "label": "SSO"
     },
-    "storage": "Lưu trữ",
-    "storage-section": {
+    "storage": {
       "accesskey": "Khóa truy cập",
       "accesskey-placeholder": "Khóa truy cập / ID truy cập",
       "bucket": "Bucket",
@@ -264,6 +369,7 @@
       "current-storage": "Kho lưu trữ đối tượng hiện tại",
       "delete-storage": "Xóa kho lưu trữ",
       "endpoint": "Điểm cuối",
+      "filepath-template": "Mẫu đường dẫn tệp",
       "local-storage-path": "Đường dẫn lưu trữ cục bộ",
       "path": "Đường dẫn lưu trữ",
       "path-description": "Bạn có thể sử dụng các biến động như trong lưu trữ cục bộ, ví dụ {filename}",
@@ -285,10 +391,10 @@
       "url-prefix-placeholder": "Tiền tố URL tùy chỉnh, tùy chọn",
       "url-suffix": "Hậu tố URL",
       "url-suffix-placeholder": "Hậu tố URL tùy chỉnh, tùy chọn",
-      "warning-text": "Bạn có chắc chắn muốn xóa dịch vụ lưu trữ \"{{name}}\"? HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC"
+      "warning-text": "Bạn có chắc chắn muốn xóa dịch vụ lưu trữ \"{{name}}\"? HÀNH ĐỘNG NÀY KHÔNG THỂ HOÀN TÁC",
+      "label": "Lưu trữ"
     },
-    "system": "Hệ thống",
-    "system-section": {
+    "system": {
       "additional-script": "Script bổ sung",
       "additional-script-placeholder": "Mã JavaScript bổ sung",
       "additional-style": "Kiểu bổ sung",
@@ -303,7 +409,6 @@
       "disable-password-login": "Vô hiệu hóa đăng nhập bằng mật khẩu",
       "disable-password-login-final-warning": "Vui lòng nhập \"CONFIRM\" nếu bạn biết mình đang làm gì.",
       "disable-password-login-warning": "Điều này sẽ vô hiệu hóa đăng nhập bằng mật khẩu cho tất cả người dùng. Không thể đăng nhập nếu không hoàn tác cài đặt này trong cơ sở dữ liệu khi nhà cung cấp danh tính đã cấu hình gặp sự cố. Bạn cũng cần phải thật cẩn thận khi xóa nhà cung cấp danh tính",
-      "disable-public-memos": "Vô hiệu hóa ghi chú công khai",
       "display-with-updated-time": "Hiển thị với thời gian cập nhật",
       "enable-auto-compact": "Bật tự động nén",
       "enable-double-click-to-edit": "Bật nhấp đúp để chỉnh sửa",
@@ -312,15 +417,47 @@
       "max-upload-size": "Kích thước tải lên tối đa (MiB)",
       "max-upload-size-hint": "Giá trị đề xuất là 32 MiB.",
       "removed-completed-task-list-items": "Kích hoạt xóa đã hoàn thành",
-      "server-name": "Tên máy chủ"
+      "server-name": "Tên máy chủ",
+      "title": "Chung",
+      "label": "Hệ thống"
     },
     "version": "Phiên bản",
-    "webhook-section": {
-      "no-webhooks-found": "Không tìm thấy webhook nào.",
-      "title": "Webhook",
-      "url": "Url"
+    "access-token": {
+      "access-token-copied-to-clipboard": "Đã sao chép token truy cập vào bộ nhớ tạm",
+      "access-token-deleted": "Đã xóa token truy cập `{{description}}`",
+      "access-token-deletion": "Bạn có chắc chắn muốn xóa token truy cập `{{description}}`?",
+      "access-token-deletion-description": "Hành động này không thể hoàn tác. Bạn cần cập nhật các dịch vụ sử dụng token này để sử dụng token mới.",
+      "create-dialog": {
+        "access-token-created": "Đã tạo token truy cập `{{description}}`",
+        "create-access-token": "Tạo token truy cập",
+        "created-at": "Ngày tạo",
+        "description": "Mô tả",
+        "duration-1m": "1 tháng",
+        "duration-8h": "8 giờ",
+        "duration-never": "Không bao giờ",
+        "expiration": "Hết hạn",
+        "expires-at": "Hết hạn lúc",
+        "some-description": "Một số mô tả..."
+      },
+      "description": "Danh sách tất cả token truy cập cho tài khoản của bạn.",
+      "title": "Token truy cập",
+      "token": "Token",
+      "no-tokens-found": "Không tìm thấy mã thông báo truy cập"
     },
-    "instance-section": {
+    "account": {
+      "change-password": "Đổi mật khẩu",
+      "email-note": "Tùy chọn",
+      "export-memos": "Xuất ghi chú",
+      "nickname-note": "Hiển thị trên banner",
+      "openapi-reset": "Đặt lại khóa OpenAPI",
+      "openapi-sample-post": "Xin chào #memos từ {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "Đặt lại API",
+      "title": "Thông tin tài khoản",
+      "update-information": "Cập nhật thông tin",
+      "username-note": "Dùng để đăng nhập"
+    },
+    "instance": {
       "disallow-change-nickname": "Không cho phép đổi biệt danh",
       "disallow-change-username": "Không cho phép đổi tên người dùng",
       "disallow-password-auth": "Không cho phép xác thực bằng mật khẩu",
@@ -329,6 +466,50 @@
       "saturday": "Thứ bảy",
       "sunday": "Chủ nhật",
       "week-start-day": "Ngày bắt đầu tuần"
+    },
+    "memo": {
+      "content-length-limit": "Giới hạn độ dài nội dung (Byte)",
+      "enable-blur-sensitive-content": "Bật làm mờ nội dung nhạy cảm (NSFW)",
+      "enable-memo-comments": "Bật bình luận ghi chú",
+      "enable-memo-location": "Bật vị trí ghi chú",
+      "reactions": "Phản ứng",
+      "title": "Cài đặt liên quan đến ghi chú",
+      "label": "Ghi chú",
+      "reactions-required": "Danh sách phản ứng không được trống"
+    },
+    "webhook": {
+      "create-dialog": {
+        "an-easy-to-remember-name": "Tên dễ nhớ",
+        "create-webhook": "Tạo webhook",
+        "create-webhook-success": "Đã tạo webhook `{{name}}`",
+        "edit-webhook": "Chỉnh sửa webhook",
+        "payload-url": "URL payload",
+        "title": "Tiêu đề",
+        "url-example-post-receive": "https://example.com/postreceive"
+      },
+      "delete-dialog": {
+        "delete-webhook-description": "Hành động này không thể hoàn tác.",
+        "delete-webhook-success": "Đã xóa webhook `{{name}}` thành công",
+        "delete-webhook-title": "Bạn có chắc chắn muốn xóa webhook `{{name}}`?"
+      },
+      "no-webhooks-found": "Không tìm thấy webhook nào.",
+      "title": "Webhook",
+      "url": "Url",
+      "label": "Webhook"
+    },
+    "tags": {
+      "label": "Thẻ",
+      "title": "Siêu dữ liệu thẻ",
+      "description": "Gán màu hiển thị tùy chọn cho toàn bộ thẻ hoặc làm mờ nội dung ghi nhớ phù hợp. Tên thẻ được coi là mẫu biểu thức chính quy được neo.",
+      "background-color": "Màu nền",
+      "blur-content": "Làm mờ nội dung",
+      "no-tags-configured": "Không có siêu dữ liệu thẻ nào được định cấu hình.",
+      "tag-name": "Tên thẻ",
+      "tag-name-placeholder": "ví dụ: công việc hoặc project/.*",
+      "tag-already-exists": "Thẻ đã tồn tại.",
+      "tag-pattern-hint": "Tên thẻ hoặc mẫu biểu thức chính quy (ví dụ: project/.* khớp với tất cả các thẻ project/)",
+      "invalid-regex": "Mẫu biểu thức chính quy không hợp lệ hoặc không an toàn.",
+      "using-default-color": "Sử dụng màu mặc định."
     }
   },
   "tag": {
@@ -336,7 +517,28 @@
     "create-tag": "Tạo thẻ",
     "create-tags-guide": "Bạn có thể tạo thẻ bằng cách nhập `#thẻ`.",
     "delete-confirm": "Bạn có chắc chắn muốn xóa thẻ này không? Tất cả các ghi chú liên quan sẽ được lưu trữ.",
+    "delete-success": "Đã xóa thẻ thành công",
     "delete-tag": "Xóa thẻ",
-    "no-tag-found": "Không tìm thấy thẻ"
+    "new-name": "Tên mới",
+    "no-tag-found": "Không tìm thấy thẻ",
+    "old-name": "Tên cũ",
+    "rename-error-empty": "Tên thẻ không được để trống hoặc chứa khoảng trắng",
+    "rename-error-repeat": "Tên mới không được trùng với tên cũ",
+    "rename-success": "Đổi tên thẻ thành công",
+    "rename-tag": "Đổi tên thẻ",
+    "rename-tip": "Tất cả ghi chú có thẻ này sẽ được cập nhật."
+  },
+  "tooltip": {
+    "link-memo": "Liên kết ghi chú",
+    "markdown-menu": "Markdown",
+    "select-location": "Chọn vị trí",
+    "select-visibility": "Chọn quyền xem",
+    "tags": "Thẻ",
+    "upload-attachment": "Tải lên tệp đính kèm"
+  },
+  "live-update": {
+    "connected": "Cập nhật trực tiếp đang hoạt động",
+    "connecting": "Đang kết nối với thông tin cập nhật trực tiếp...",
+    "disconnected": "Cập nhật trực tiếp không có sẵn"
   }
 }

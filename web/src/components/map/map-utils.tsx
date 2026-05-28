@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { resolveTheme } from "@/utils/theme";
 
 const TILE_URLS = {
-  light: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  light: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
   dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
 } as const;
 
@@ -24,12 +24,17 @@ interface MarkerIconOptions {
 }
 
 export const createMarkerIcon = (options?: MarkerIconOptions): DivIcon => {
-  const { fill = "orange", size = 28, className = "" } = options || {};
+  const { fill = "var(--primary)", size = 28, className = "" } = options || {};
   return new DivIcon({
-    className: "relative border-none",
+    className: "relative border-none bg-transparent",
     html: ReactDOMServer.renderToString(
-      <MapPinIcon className={`absolute bottom-1/2 -left-1/2 ${className}`.trim()} fill={fill} size={size} />,
+      <div className={`relative flex items-center justify-center ${className}`.trim()}>
+        <MapPinIcon fill={fill} size={size} strokeWidth={1.9} style={{ filter: "drop-shadow(0 6px 10px rgba(15, 23, 42, 0.22))" }} />
+      </div>,
     ),
+    iconSize: [size + 8, size + 8],
+    iconAnchor: [(size + 8) / 2, size + 4],
+    popupAnchor: [0, -(size * 0.7)],
   });
 };
 

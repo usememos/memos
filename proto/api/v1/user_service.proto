@@ -19,10 +19,16 @@ service UserService {
     option (google.api.http) = {get: "/api/v1/users"};
   }
 
-  // GetUser gets a user by ID or username.
-  // Supports both numeric IDs and username strings:
-  //   - users/{id}       (e.g., users/101)
-  //   - users/{username} (e.g., users/steven)
+  // BatchGetUsers returns active users by usernames.
+  rpc BatchGetUsers(BatchGetUsersRequest) returns (BatchGetUsersResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/users:batchGet"
+      body: "*"
+    };
+  }
+
+  // GetUser gets a user by username.
+  // Format: users/{username} (e.g., users/steven)
   rpc GetUser(GetUserRequest) returns (User) {
     option (google.api.http) = {get: "/api/v1/{name=users/*}"};
     option (google.api.method_signature) = "name";
@@ -82,6 +88,33 @@ service UserService {
   rpc ListUserSettings(ListUserSettingsRequest) returns (ListUserSettingsResponse) {
     option (google.api.http) = {get: "/api/v1/{parent=users/*}/settings"};
     option (google.api.method_signature) = "parent";
+  }
+
+  // ListLinkedIdentities returns a list of linked SSO identities for a user.
+  rpc ListLinkedIdentities(ListLinkedIdentitiesRequest) returns (ListLinkedIdentitiesResponse) {
+    option (google.api.http) = {get: "/api/v1/{parent=users/*}/linkedIdentities"};
+    option (google.api.method_signature) = "parent";
+  }
+
+  // CreateLinkedIdentity links an SSO identity to the authenticated user.
+  rpc CreateLinkedIdentity(CreateLinkedIdentityRequest) returns (LinkedIdentity) {
+    option (google.api.http) = {
+      post: "/api/v1/{parent=users/*}/linkedIdentities"
+      body: "*"
+    };
+    option (google.api.method_signature) = "parent,idp_name";
+  }
+
+  // GetLinkedIdentity gets a linked SSO identity for a user.
+  rpc GetLinkedIdentity(GetLinkedIdentityRequest) returns (LinkedIdentity) {
+    option (google.api.http) = {get: "/api/v1/{name=users/*/linkedIdentities/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // DeleteLinkedIdentity unlinks an SSO identity from a user.
+  rpc DeleteLinkedIdentity(DeleteLinkedIdentityRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{name=users/*/linkedIdentities/*}"};
+    option (google.api.method_signature) = "name";
   }
 
   // ListPersonalAccessTokens returns a list of Personal Access Tokens (PATs) for a user.
@@ -244,12 +277,17 @@ message ListUsersResponse {
   int32 total_size = 3;
 }
 
+message BatchGetUsersRequest {
+  repeated string usernames = 1;
+}
+
+message BatchGetUsersResponse {
+  repeated User users = 1;
+}
+
 message GetUserRequest {
   // Required. The resource name of the user.
-  // Supports both numeric IDs and username strings:
-  //   - users/{id}       (e.g., users/101)
-  //   - users/{username} (e.g., users/steven)
-  // Format: users/{id_or_username}
+  // Format: users/{username}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/User"}
@@ -316,14 +354,22 @@ message UserStats {
   // Format: users/{user}
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
-  // The timestamps when the memos were displayed.
-  repeated google.protobuf.Timestamp memo_display_timestamps = 2;
+  reserved 2;
+  reserved "memo_display_timestamps";
 
   // The stats of memo types.
   MemoTypeStats memo_type_stats = 3;
 
   // The count of tags.
   map<string, int32> tag_count = 4;
+
+  // The creation timestamps of the user's memos.
+  repeated google.protobuf.Timestamp memo_created_timestamps = 7;
+
+  // The latest update timestamps of the user's memos (one per memo,
+  // mirrors memo_created_timestamps). Used by the activity heatmap when
+  // the client's view is set to update_time basis.
+  repeated google.protobuf.Timestamp memo_updated_timestamps = 8;
 
   // The pinned memos of the user.
   repeated string pinned_memos = 5;
@@ -350,7 +396,12 @@ message GetUserStatsRequest {
 }
 
 message ListAllUserStatsRequest {
-  // This endpoint doesn't take any parameters.
+  // Optional. The state of memos to include. Defaults to NORMAL.
+  State state = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Filter to apply to memo stats.
+  // Uses the same filter syntax as ListMemos.
+  string filter = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message ListAllUserStatsResponse {
@@ -362,14 +413,14 @@ message ListAllUserStatsResponse {
 message UserSetting {
   option (google.api.resource) = {
     type: "memos.api.v1/UserSetting"
-    pattern: "users/{user}/settings/{setting}"
+    pattern: "users/{username}/settings/{setting}"
     singular: "userSetting"
     plural: "userSettings"
   };
 
   // The name of the user setting.
-  // Format: users/{user}/settings/{setting}, {setting} is the key for the setting.
-  // For example, "users/123/settings/GENERAL" for general settings.
+  // Format: users/{username}/settings/{setting}, {setting} is the key for the setting.
+  // For example, "users/steven/settings/GENERAL" for general settings.
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
   oneof value {
@@ -453,6 +504,87 @@ message ListUserSettingsResponse {
 
   // The total count of settings (may be approximate).
   int32 total_size = 3;
+}
+
+// LinkedIdentity represents an SSO identity linked to a user account.
+message LinkedIdentity {
+  option (google.api.resource) = {
+    type: "memos.api.v1/LinkedIdentity"
+    pattern: "users/{user}/linkedIdentities/{linked_identity}"
+    singular: "linkedIdentity"
+    plural: "linkedIdentities"
+  };
+
+  // The resource name of the linked identity.
+  // Format: users/{user}/linkedIdentities/{linked_identity}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // The resource name of the identity provider.
+  // Format: identity-providers/{uid}
+  string idp_name = 2 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.resource_reference) = {type: "memos.api.v1/IdentityProvider"}
+  ];
+
+  // The external user identifier from the identity provider.
+  string extern_uid = 3 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+message ListLinkedIdentitiesRequest {
+  // Required. The parent resource whose linked identities will be listed.
+  // Format: users/{user}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
+}
+
+message ListLinkedIdentitiesResponse {
+  // The list of linked identities.
+  repeated LinkedIdentity linked_identities = 1;
+}
+
+message CreateLinkedIdentityRequest {
+  // Required. The parent user who owns the linked identity.
+  // Format: users/{user}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
+
+  // Required. The identity provider to link.
+  // Format: identity-providers/{uid}
+  string idp_name = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/IdentityProvider"}
+  ];
+
+  // Required. The authorization code from the identity provider.
+  string code = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The redirect URI used in the OAuth flow.
+  string redirect_uri = 4 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The PKCE code verifier used in the OAuth flow.
+  string code_verifier = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message GetLinkedIdentityRequest {
+  // Required. The resource name of the linked identity to get.
+  // Format: users/{user}/linkedIdentities/{linked_identity}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/LinkedIdentity"}
+  ];
+}
+
+message DeleteLinkedIdentityRequest {
+  // Required. The resource name of the linked identity to delete.
+  // Format: users/{user}/linkedIdentities/{linked_identity}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/LinkedIdentity"}
+  ];
 }
 
 // PersonalAccessToken represents a long-lived token for API/script access.
@@ -617,6 +749,9 @@ message UserNotification {
     (google.api.resource_reference) = {type: "memos.api.v1/User"}
   ];
 
+  // The sender user details.
+  User sender_user = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+
   // The status of the notification.
   Status status = 3 [(google.api.field_behavior) = OPTIONAL];
 
@@ -626,8 +761,42 @@ message UserNotification {
   // The type of the notification.
   Type type = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
 
-  // The activity ID associated with this notification.
-  optional int32 activity_id = 6 [(google.api.field_behavior) = OPTIONAL];
+  oneof payload {
+    MemoCommentPayload memo_comment = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+    MemoMentionPayload memo_mention = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+  }
+
+  message MemoCommentPayload {
+    // The memo name of comment.
+    // Format: memos/{memo}
+    string memo = 1;
+
+    // The name of related memo.
+    // Format: memos/{memo}
+    string related_memo = 2;
+
+    // Preview text of the comment memo.
+    string memo_snippet = 3;
+
+    // Preview text of the related memo.
+    string related_memo_snippet = 4;
+  }
+
+  message MemoMentionPayload {
+    // The memo that contains the mention.
+    // Format: memos/{memo}
+    string memo = 1;
+
+    // The related parent memo when the mention was created in a comment.
+    // Format: memos/{memo}
+    string related_memo = 2;
+
+    // Preview text of the memo that contains the mention.
+    string memo_snippet = 3;
+
+    // Preview text of the related parent memo.
+    string related_memo_snippet = 4;
+  }
 
   enum Status {
     STATUS_UNSPECIFIED = 0;
@@ -638,6 +807,7 @@ message UserNotification {
   enum Type {
     TYPE_UNSPECIFIED = 0;
     MEMO_COMMENT = 1;
+    MEMO_MENTION = 2;
   }
 }
 

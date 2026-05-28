@@ -15,6 +15,7 @@ message IdentityProvider {
   Type type = 3;
   string identifier_filter = 4;
   IdentityProviderConfig config = 5;
+  string uid = 6;
 }
 
 message IdentityProviderConfig {

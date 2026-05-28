@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/usememos/memos/plugin/filter"
+	"github.com/usememos/memos/internal/filter"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -29,12 +29,12 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 	// Add custom timestamps if provided
 	if create.CreatedTs != 0 {
 		fields = append(fields, "`created_ts`")
-		placeholder = append(placeholder, "?")
+		placeholder = append(placeholder, "FROM_UNIXTIME(?)")
 		args = append(args, create.CreatedTs)
 	}
 	if create.UpdatedTs != 0 {
 		fields = append(fields, "`updated_ts`")
-		placeholder = append(placeholder, "?")
+		placeholder = append(placeholder, "FROM_UNIXTIME(?)")
 		args = append(args, create.UpdatedTs)
 	}
 
@@ -145,6 +145,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	}
 
 	query := "SELECT " + strings.Join(fields, ", ") + " FROM `memo`" + " " +
+		"LEFT JOIN `user` AS `memo_creator` ON `memo`.`creator_id` = `memo_creator`.`id`" + " " +
 		"LEFT JOIN `memo_relation` ON `memo`.`id` = `memo_relation`.`memo_id` AND `memo_relation`.`type` = 'COMMENT'" + " " +
 		"LEFT JOIN `memo` AS `parent_memo` ON `memo_relation`.`related_memo_id` = `parent_memo`.`id`" + " " +
 		"WHERE " + strings.Join(where, " AND ") + " " +

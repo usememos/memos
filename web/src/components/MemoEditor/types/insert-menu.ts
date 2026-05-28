@@ -1,8 +1,8 @@
-import { LatLng } from "leaflet";
+import type { MapPoint } from "@/components/map/types";
 
 export interface LocationState {
   placeholder: string;
-  position?: LatLng;
+  position?: MapPoint;
   latInput: string;
   lngInput: string;
 }

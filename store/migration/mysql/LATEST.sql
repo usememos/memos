@@ -67,19 +67,10 @@ CREATE TABLE `attachment` (
   `payload` TEXT NOT NULL
 );
 
--- activity
-CREATE TABLE `activity` (
-  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `creator_id` INT NOT NULL,
-  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `type` VARCHAR(256) NOT NULL DEFAULT '',
-  `level` VARCHAR(256) NOT NULL DEFAULT 'INFO',
-  `payload` TEXT NOT NULL
-);
-
 -- idp
 CREATE TABLE `idp` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `uid` VARCHAR(256) NOT NULL UNIQUE,
   `name` TEXT NOT NULL,
   `type` TEXT NOT NULL,
   `identifier_filter` VARCHAR(256) NOT NULL DEFAULT '',
@@ -105,3 +96,30 @@ CREATE TABLE `reaction` (
   `reaction_type` VARCHAR(256) NOT NULL,
   UNIQUE(`creator_id`,`content_id`,`reaction_type`)  
 );
+
+-- memo_share
+CREATE TABLE `memo_share` (
+  `id`         INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `uid`        VARCHAR(255) NOT NULL UNIQUE,
+  `memo_id`    INT          NOT NULL,
+  `creator_id` INT          NOT NULL,
+  `created_ts` BIGINT       NOT NULL DEFAULT (UNIX_TIMESTAMP()),
+  `expires_ts` BIGINT       DEFAULT NULL,
+  FOREIGN KEY (`memo_id`) REFERENCES `memo`(`id`) ON DELETE CASCADE
+);
+
+CREATE INDEX `idx_memo_share_memo_id` ON `memo_share`(`memo_id`);
+
+-- user_identity
+CREATE TABLE `user_identity` (
+  `id`         INT          NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `user_id`    INT          NOT NULL,
+  `provider`   VARCHAR(256) NOT NULL,
+  `extern_uid` VARCHAR(256) NOT NULL,
+  `created_ts` BIGINT       NOT NULL DEFAULT (UNIX_TIMESTAMP()),
+  `updated_ts` BIGINT       NOT NULL DEFAULT (UNIX_TIMESTAMP()),
+  UNIQUE (`provider`, `extern_uid`),
+  UNIQUE (`user_id`, `provider`)
+);
+
+CREATE INDEX `idx_user_identity_user_id` ON `user_identity`(`user_id`);

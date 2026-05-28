@@ -1,5 +1,3 @@
-export const LOCALSTORAGE_DEBOUNCE_DELAY = 500;
-
 export const FOCUS_MODE_STYLES = {
   backdrop: "fixed inset-0 bg-black/20 backdrop-blur-sm z-40",
   container: {

@@ -8,20 +8,16 @@ export interface MemoViewProps {
   showPinned?: boolean;
   className?: string;
   parentPage?: string;
+  shareImageDialogOpen?: boolean;
+  onShareImageDialogOpenChange?: (open: boolean) => void;
 }
 
 export interface MemoHeaderProps {
   showCreator?: boolean;
   showVisibility?: boolean;
   showPinned?: boolean;
-  onEdit: () => void;
-  onGotoDetail: () => void;
-  onUnpin: () => void;
 }
 
 export interface MemoBodyProps {
   compact?: boolean;
-  onContentClick: (e: React.MouseEvent) => void;
-  onContentDoubleClick: (e: React.MouseEvent) => void;
-  onToggleNsfwVisibility: () => void;
 }

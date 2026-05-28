@@ -10,6 +10,7 @@
     "create-your-account": "Створіть обліковий запис",
     "host-tip": "Ви реєструєтеся як власник сайту.",
     "new-password": "Новий пароль",
+    "protected-memo-notice": "This memo is not public. Sign in to continue.",
     "repeat-new-password": "Повторіть новий пароль",
     "sign-in-tip": "Вже маєте обліковий запис?",
     "sign-up-tip": "Ще не маєте облікового запису?"
@@ -18,23 +19,35 @@
     "about": "Про Memos",
     "add": "Додати",
     "admin": "Адмін",
+    "all": "Усі",
     "archive": "Архів",
     "archived": "Архівовано",
     "attachments": "Вкладення",
+    "auto-expand": "Авторозгортання",
     "avatar": "Аватар",
     "basic": "Основний",
     "beta": "Бета-версія",
+    "calendar": "Календар",
     "cancel": "Скасувати",
     "change": "Змінити",
     "clear": "Очистити",
     "close": "Закрити",
     "collapse": "Згорнути",
     "confirm": "Підтвердити",
+    "copy": "Копіювати",
     "create": "Створити",
     "created-at": "Створено",
     "database": "База даних",
     "day": "День",
-    "days": "Днів",
+    "days": {
+      "fri": "П'ят.",
+      "mon": "Пон.",
+      "sat": "Суб.",
+      "sun": "Нед.",
+      "thu": "Чет.",
+      "tue": "Вів.",
+      "wed": "Сер."
+    },
     "delete": "Видалити",
     "description": "Опис",
     "edit": "Редагувати",
@@ -50,12 +63,13 @@
     "input": "Ввід",
     "language": "Мова",
     "last-updated-at": "Останнє оновлення",
-    "layout": "Макет",
     "learn-more": "Дізнатися більше",
     "link": "Посилання",
+    "map": "Мапа",
     "mark": "Позначити",
     "memo": "Нотатка",
     "memos": "Нотатки",
+    "more": "Більше",
     "name": "Назва",
     "new": "Новий",
     "nickname": "Нікнейм",
@@ -90,6 +104,7 @@
     "statistics": "Статистика",
     "tags": "Теги",
     "title": "Заголовок",
+    "today": "Сьогодні",
     "tree-mode": "Деревовидний режим",
     "type": "Тип",
     "unpin": "Відкріпити",
@@ -101,29 +116,52 @@
     "visibility": "Видимість",
     "yourself": "Ви"
   },
-  "days": {
-    "fri": "П'ят.",
-    "mon": "Пон.",
-    "sat": "Суб.",
-    "sun": "Нед.",
-    "thu": "Чет.",
-    "tue": "Вів.",
-    "wed": "Сер."
-  },
   "editor": {
     "add-your-comment-here": "Додайте свій коментар тут...",
     "any-thoughts": "Якісь думки...",
+    "exit-focus-mode": "Вийти з режиму фокусування",
+    "focus-mode": "Режим фокусування",
+    "no-changes-detected": "Змін не виявлено",
     "save": "Зберегти",
-    "no-changes-detected": "Змін не виявлено"
-  },
-  "filters": {
-    "has-code": "єКод",
-    "has-link": "єПосилання",
-    "has-task-list": "єСписокЗавдань"
+    "saving": "Збереження...",
+    "slash-commands": "Введіть `/` для команд",
+    "insert-menu": {
+      "add-location": "Додайте місцезнаходження",
+      "link-memo": "Пам'ятка про посилання",
+      "upload-file": "Завантажити файл"
+    },
+    "audio-recorder": {
+      "attachment-label": "Аудіозапис",
+      "attachment-label-with-time": "Аудіозапис {{time}}",
+      "discard": "Відкинути",
+      "error": "Мікрофон недоступний",
+      "error-description": "Повторіть спробу після перевірки доступу до мікрофона для цього сайту.",
+      "idle-description": "Почніть запис, щоб додати аудіозапис як вкладення.",
+      "keep": "Продовжуйте запис",
+      "pause-recording": "Призупинити аудіозапис",
+      "play-recording": "Відтворити аудіозапис",
+      "ready": "Запис готовий",
+      "ready-description": "Перегляньте кліп, а потім збережіть його як аудіоприкріплення або викиньте.",
+      "record-again": "Запис знову",
+      "recording": "Запис звуку",
+      "recording-description": "Зробіть швидкий аудіоприкріплення. Поточна тривалість: {{duration}}",
+      "requesting": "Запит на доступ...",
+      "requesting-permission": "Запит на доступ до мікрофона",
+      "requesting-permission-description": "Щоб почати запис, надайте доступ до мікрофона у своєму браузері.",
+      "start": "Почніть запис",
+      "stop": "Зупинити запис",
+      "title": "Аудіозаписувач",
+      "trigger": "Запис звуку",
+      "unsupported": "Аудіозапис не підтримується",
+      "unsupported-description": "Цей веб-переглядач не може записувати аудіо з редактора записів."
+    }
   },
   "inbox": {
+    "failed-to-load": "Не вдалося завантажити елемент вхідних",
     "memo-comment": "{{user}} залишив коментар до вашої {{memo}}.",
-    "version-update": "Нова версія {{version}} доступна!"
+    "no-archived": "Немає архівованих сповіщень",
+    "no-unread": "Немає непрочитаних сповіщень",
+    "unread": "Непрочитані"
   },
   "markdown": {
     "checkbox": "Чекбокс",
@@ -132,21 +170,28 @@
   },
   "memo": {
     "archived-at": "Архівовано о",
-    "click-to-hide-nsfw-content": "Натисніть, щоб приховати NSFW-контент",
-    "click-to-show-nsfw-content": "Натисніть, щоб показати NSFW-контент",
+    "click-to-hide-sensitive-content": "Натисніть, щоб приховати NSFW-контент",
+    "click-to-show-sensitive-content": "Натисніть, щоб показати NSFW-контент",
     "code": "Код",
     "comment": {
       "self": "Коментарі",
       "write-a-comment": "Напишіть коментар"
     },
+    "copy-content": "Копіювати вміст",
     "copy-link": "Скопіювати посилання",
-    "count-memos-in-date": "{{count}} нотаток в {{date}}",
+    "count-memos-in-date": "{{count}} {{memos}} в {{date}}",
     "delete-confirm": "Ви впевнені, що хочете видалити цю нотатку? ЦЯ ДІЯ Є НЕВІДКЛИКНОЮ",
+    "delete-confirm-description": "Ця дія є незворотною. Вкладення, посилання та посилання також буде видалено.",
     "direction": "Напрямок",
     "direction-asc": "За зростанням",
     "direction-desc": "За спаданням",
     "display-time": "Час відображення",
-    "filters": "Фільтри",
+    "filters": {
+      "has-code": "єКод",
+      "has-link": "єПосилання",
+      "has-task-list": "єСписокЗавдань",
+      "label": "Фільтри"
+    },
     "links": "Посилання",
     "load-more": "Завантажити більше",
     "no-archived-memos": "Немає архівованих нотаток.",
@@ -163,8 +208,32 @@
       "protected": "Робоча область",
       "public": "Публічні"
     },
-    "list": "Список",
-    "masonry": "Плитка"
+    "outline": "Контур",
+    "share": {
+      "active-links": "Активні посилання для обміну",
+      "copied": "Скопійовано!",
+      "copy": "Копіювати посилання",
+      "create-failed": "Не вдалося створити посилання для спільного доступу",
+      "create-link": "Створити нове посилання",
+      "creating": "Створення…",
+      "expiry-1-day": "1 день",
+      "expiry-30-days": "30 днів",
+      "expiry-7-days": "7 днів",
+      "expiry-label": "Термін дії закінчується",
+      "expiry-never": "Ніколи",
+      "expires-on": "Термін дії закінчується {{date}}",
+      "invalid-link": "Це посилання недійсне або термін його дії минув.",
+      "never-expires": "Ніколи не закінчується",
+      "no-links": "Ще немає посилань для спільного використання. Створіть його нижче.",
+      "open-panel": "Керуйте посиланнями для спільного доступу",
+      "revoke": "Відкликати",
+      "revoke-failed": "Не вдалося скасувати посилання",
+      "revoked": "Посилання для спільного доступу скасовано",
+      "section-label": "Обмін",
+      "share": "Поділіться",
+      "shared-by": "Надав доступ {{creator}}",
+      "title": "Поділіться цією запискою"
+    }
   },
   "message": {
     "archived-successfully": "Архівовано успішно",
@@ -182,6 +251,7 @@
     "password-changed": "Пароль змінено",
     "password-not-match": "Паролі не співпадають.",
     "restored-successfully": "Успішно відновлено",
+    "succeed-copy-content": "Вміст успішно скопійовано.",
     "succeed-copy-link": "Посилання успішно скопійовано.",
     "update-succeed": "Оновлення успішне",
     "user-not-found": "Користувача не знайдено"
@@ -200,7 +270,7 @@
         "file-name": "Назва файлу",
         "file-name-placeholder": "Назва файлу",
         "link": "Посилання",
-        "link-placeholder": "https://the.link.to/your/resource",
+        "link-placeholder": "https://посилання.на.ваш.ресурс",
         "option": "Зовнішнє посилання",
         "type": "Тип",
         "type-placeholder": "Тип файлу"
@@ -212,6 +282,10 @@
       "title": "Створити ресурс",
       "upload-method": "Метод завантаження"
     },
+    "delete-all-unused": "Видалити всі невикористані",
+    "delete-all-unused-confirm": "Ви впевнені, що хочете видалити всі невикористані ресурси? ЦЯ ДІЯ Є НЕВІДКЛИКНОЮ",
+    "delete-all-unused-error": "Не вдалося видалити невикористані ресурси",
+    "delete-all-unused-success": "Ресурси успішно видалено",
     "delete-resource": "Видалити ресурс",
     "delete-selected-resources": "Видалити вибрані ресурси",
     "fetching-data": "Отримання даних…",
@@ -230,66 +304,37 @@
     "go-to-home": "На головну"
   },
   "setting": {
-    "access-token-section": {
-      "access-token-copied-to-clipboard": "Токен доступу скопійовано в буфер обміну",
-      "access-token-deletion": "Ви впевнені, що хочете видалити токен доступу {{accessToken}}? ЦЯ ДІЯ Є НЕВІДКЛИКНОЮ.",
-      "create-dialog": {
-        "create-access-token": "Створити токен доступу",
-        "created-at": "Створено",
-        "description": "Опис",
-        "duration-1m": "1 місяць",
-        "duration-8h": "8 годин",
-        "duration-never": "Ніколи",
-        "expiration": "Термін дії",
-        "expires-at": "Закінчується",
-        "some-description": "Деякий опис..."
-      },
-      "description": "Список усіх токенів доступу для вашого облікового запису.",
-      "title": "Токени доступу",
-      "token": "Токен"
-    },
-    "account-section": {
-      "change-password": "Змінити пароль",
-      "email-note": "Необов'язково",
-      "export-memos": "Експортувати нотатки",
-      "nickname-note": "Відображається в банері",
-      "openapi-reset": "Скинути OpenAPI ключ",
-      "openapi-sample-post": "Привіт #memos з {{url}}",
-      "openapi-title": "OpenAPI",
-      "reset-api": "Скинути API",
-      "title": "Інформація про обліковий запис",
-      "update-information": "Оновити інформацію",
-      "username-note": "Використовується для входу"
-    },
-    "member": "Учасник",
-    "member-list": "Список учасників",
-    "member-section": {
+    "member": {
       "admin": "Адмін",
       "archive-member": "Архівувати учасника",
+      "archive-success": "{{username}} успішно архівовано",
       "archive-warning": "Ви впевнені, що хочете архівувати {{username}}?",
+      "archive-warning-description": "Архівація вимикає обліковий запис. Ви можете відновити або видалити його пізніше.",
       "create-a-member": "Створити учасника",
       "delete-member": "Видалити учасника",
+      "delete-success": "{{username}} успішно видалено",
       "delete-warning": "Ви впевнені, що хочете видалити {{username}}? ЦЯ ДІЯ Є НЕВІДКЛИКНОЮ",
-      "user": "Користувач"
+      "delete-warning-description": "ЦЯ ДІЯ Є НЕВІДКЛИКНОЮ",
+      "restore-success": "{{username}} успішно відновлено",
+      "user": "Користувач",
+      "label": "Учасник",
+      "list-title": "Список учасників",
+      "no-members-found": "Учасників не знайдено"
     },
-    "memo-related": "Нотатка",
-    "memo-related-settings": {
-      "content-length-limit": "Обмеження довжини вмісту (байт)",
-      "enable-blur-nsfw-content": "Увімкнути розмиття чутливого контенту (NSFW)",
-      "enable-memo-comments": "Увімкнути коментарі до нотаток",
-      "enable-memo-location": "Увімкнути місцезнаходження нотаток",
-      "reactions": "Реакції",
-      "title": "Налаштування, пов'язані з нотатками"
+    "my-account": {
+      "label": "Мій обліковий запис"
     },
-    "my-account": "Мій обліковий запис",
-    "preference": "Налаштування",
-    "preference-section": {
+    "preference": {
       "default-memo-sort-option": "Час відображення нотаток",
       "default-memo-visibility": "Типова видимість нотаток",
-      "theme": "Тема"
+      "theme": "Тема",
+      "label": "Налаштування"
     },
-    "sso": "SSO",
-    "sso-section": {
+    "shortcut": {
+      "delete-confirm": "Ви впевнені, що хочете видалити ярлик `{{title}}`?",
+      "delete-success": "Ярлик `{{title}}` успішно видалено"
+    },
+    "sso": {
       "authorization-endpoint": "Точка авторизації",
       "client-id": "Ідентифікатор клієнта",
       "client-secret": "Секрет клієнта",
@@ -311,10 +356,10 @@
       "template": "Шаблон",
       "token-endpoint": "Точка доступу токенів",
       "update-sso": "Оновити SSO",
-      "user-endpoint": "Кінцева точка користувача"
+      "user-endpoint": "Кінцева точка користувача",
+      "label": "SSO"
     },
-    "storage": "Сховище",
-    "storage-section": {
+    "storage": {
       "accesskey": "Ключ доступу",
       "accesskey-placeholder": "Ключ доступу / Ідентифікатор доступу",
       "bucket": "Контейнер",
@@ -346,10 +391,10 @@
       "url-prefix-placeholder": "Користувацький префікс URL, необов'язково",
       "url-suffix": "Суфікс URL",
       "url-suffix-placeholder": "Користувацький суфікс URL, необов'язково",
-      "warning-text": "Ви впевнені, що хочете видалити службу сховища \"{{name}}\"? ЦЯ ДІЯ Є НЕВІДКЛИКНОЮ"
+      "warning-text": "Ви впевнені, що хочете видалити службу сховища \"{{name}}\"? ЦЯ ДІЯ Є НЕВІДКЛИКНОЮ",
+      "label": "Сховище"
     },
-    "system": "Система",
-    "system-section": {
+    "system": {
       "additional-script": "Додатковий скрипт",
       "additional-script-placeholder": "Додатковий JavaScript код",
       "additional-style": "Додатковий стиль",
@@ -364,7 +409,6 @@
       "disable-password-login": "Вимкнути вхід за паролем",
       "disable-password-login-final-warning": "Будь ласка, введіть \"ПІДТВЕРДЖУЮ\", якщо ви знаєте, що робите.",
       "disable-password-login-warning": "Це вимкне вхід за паролем для всіх користувачів. Вхід без скасування цього налаштування в базі даних неможливий, якщо ваші налаштовані постачальники ідентичності не працюють. Також слід бути особливо обережними при видаленні постачальника ідентичності.",
-      "disable-public-memos": "Вимкнути публічні нотатки",
       "display-with-updated-time": "Відображати з оновленим часом",
       "enable-auto-compact": "Увімкнути автоматичне стиснення",
       "enable-double-click-to-edit": "Увімкнути двократне натискання для редагування",
@@ -374,23 +418,46 @@
       "max-upload-size-hint": "Рекомендується значення - 32 MiB.",
       "removed-completed-task-list-items": "Увімкнути видалення виконаних завдань",
       "server-name": "Назва сервера",
-      "title": "Загальні"
+      "title": "Загальні",
+      "label": "Система"
     },
     "version": "Версія",
-    "webhook-section": {
+    "access-token": {
+      "access-token-copied-to-clipboard": "Токен доступу скопійовано в буфер обміну",
+      "access-token-deleted": "Токен доступу `{{description}}` видалено",
+      "access-token-deletion": "Ви впевнені, що хочете видалити токен доступу {{description}}? ЦЯ ДІЯ Є НЕВІДКЛИКНОЮ.",
+      "access-token-deletion-description": "Ця дія є незворотною. Вам потрібно буде оновити будь-які служби, що використовують цей токен, щоб використовувати новий токен.",
       "create-dialog": {
-        "an-easy-to-remember-name": "Легке для запам'ятовування ім'я",
-        "create-webhook": "Створити вебхук",
-        "edit-webhook": "Редагувати вебхук",
-        "payload-url": "URL корисного навантаження",
-        "title": "Заголовок",
-        "url-example-post-receive": "https://example.com/postreceive"
+        "access-token-created": "Токен доступу `{{description}}` створено",
+        "create-access-token": "Створити токен доступу",
+        "created-at": "Створено",
+        "description": "Опис",
+        "duration-1m": "1 місяць",
+        "duration-8h": "8 годин",
+        "duration-never": "Ніколи",
+        "expiration": "Термін дії",
+        "expires-at": "Закінчується",
+        "some-description": "Деякий опис..."
       },
-      "no-webhooks-found": "Вебхуків не знайдено.",
-      "title": "Вебхуки",
-      "url": "URL"
+      "description": "Список усіх токенів доступу для вашого облікового запису.",
+      "title": "Токени доступу",
+      "token": "Токен",
+      "no-tokens-found": "Токенів доступу не знайдено"
     },
-    "instance-section": {
+    "account": {
+      "change-password": "Змінити пароль",
+      "email-note": "Необов'язково",
+      "export-memos": "Експортувати нотатки",
+      "nickname-note": "Відображається в банері",
+      "openapi-reset": "Скинути OpenAPI ключ",
+      "openapi-sample-post": "Привіт #memos з {{url}}",
+      "openapi-title": "OpenAPI",
+      "reset-api": "Скинути API",
+      "title": "Інформація про обліковий запис",
+      "update-information": "Оновити інформацію",
+      "username-note": "Використовується для входу"
+    },
+    "instance": {
       "disallow-change-nickname": "Заборонити зміну нікнейму",
       "disallow-change-username": "Заборонити зміну імені користувача",
       "disallow-password-auth": "Заборонити авторизацію за паролем",
@@ -399,6 +466,50 @@
       "saturday": "Субота",
       "sunday": "Неділя",
       "week-start-day": "День початку тижня"
+    },
+    "memo": {
+      "content-length-limit": "Обмеження довжини вмісту (байт)",
+      "enable-blur-sensitive-content": "Увімкнути розмиття чутливого контенту (NSFW)",
+      "enable-memo-comments": "Увімкнути коментарі до нотаток",
+      "enable-memo-location": "Увімкнути місцезнаходження нотаток",
+      "reactions": "Реакції",
+      "title": "Налаштування, пов'язані з нотатками",
+      "label": "Нотатка",
+      "reactions-required": "Список реакцій не повинен бути порожнім"
+    },
+    "webhook": {
+      "create-dialog": {
+        "an-easy-to-remember-name": "Легке для запам'ятовування ім'я",
+        "create-webhook": "Створити вебхук",
+        "create-webhook-success": "Вебхук `{{name}}` створено",
+        "edit-webhook": "Редагувати вебхук",
+        "payload-url": "URL корисного навантаження",
+        "title": "Заголовок",
+        "url-example-post-receive": "https://приклад.com/postreceive"
+      },
+      "delete-dialog": {
+        "delete-webhook-description": "Ця дія є незворотною.",
+        "delete-webhook-success": "Вебхук `{{name}}` успішно видалено",
+        "delete-webhook-title": "Ви впевнені, що хочете видалити вебхук `{{name}}`?"
+      },
+      "no-webhooks-found": "Вебхуків не знайдено.",
+      "title": "Вебхуки",
+      "url": "Посилання",
+      "label": "Вебхуки"
+    },
+    "tags": {
+      "label": "Теги",
+      "title": "Метадані тегів",
+      "description": "Призначте додаткові кольори відображення тегам для всього екземпляра або розмийте відповідний вміст нагадування. Назви тегів розглядаються як прив’язані шаблони регулярних виразів.",
+      "background-color": "Колір фону",
+      "blur-content": "Розмиття вмісту",
+      "no-tags-configured": "Метадані тегу не налаштовано.",
+      "tag-name": "Назва тега",
+      "tag-name-placeholder": "напр. work або project/.*",
+      "tag-already-exists": "Тег уже існує.",
+      "tag-pattern-hint": "Назва тегу або шаблон регулярного виразу (наприклад, project/.* відповідає всім тегам project/)",
+      "invalid-regex": "Недійсний або небезпечний шаблон регулярного виразу.",
+      "using-default-color": "Використання кольору за замовчуванням."
     }
   },
   "tag": {
@@ -406,6 +517,7 @@
     "create-tag": "Створити тег",
     "create-tags-guide": "Ви можете створити теги, ввівши `#тег`.",
     "delete-confirm": "Ви впевнені, що хочете видалити цей тег? Всі пов'язані нотатки будуть архівовані.",
+    "delete-success": "Тег успішно видалено",
     "delete-tag": "Видалити тег",
     "new-name": "Нова назва",
     "no-tag-found": "Тегів не знайдено",
@@ -415,5 +527,18 @@
     "rename-success": "Тег успішно перейменовано",
     "rename-tag": "Перейменувати тег",
     "rename-tip": "Всі ваші нотатки з цим тегом також будуть оновлені"
+  },
+  "tooltip": {
+    "link-memo": "Посилання на нотатку",
+    "markdown-menu": "Markdown",
+    "select-location": "Місцезнаходження",
+    "select-visibility": "Видимість",
+    "tags": "Теги",
+    "upload-attachment": "Завантажити вкладення"
+  },
+  "live-update": {
+    "connected": "Оновлення в реальному часі активні",
+    "connecting": "Підключення до поточних оновлень...",
+    "disconnected": "Оновлення в реальному часі недоступні"
   }
 }

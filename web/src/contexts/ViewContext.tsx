@@ -1,12 +1,18 @@
 import { createContext, type ReactNode, useContext, useState } from "react";
 
-export type LayoutMode = "LIST" | "MASONRY";
+export type MemoTimeBasis = "create_time" | "update_time";
+
+interface ViewState {
+  orderByTimeAsc: boolean;
+  timeBasis?: MemoTimeBasis;
+  sortTimeField?: MemoTimeBasis;
+}
 
 interface ViewContextValue {
   orderByTimeAsc: boolean;
-  layout: LayoutMode;
+  timeBasis: MemoTimeBasis;
   toggleSortOrder: () => void;
-  setLayout: (layout: LayoutMode) => void;
+  setTimeBasis: (field: MemoTimeBasis) => void;
 }
 
 const ViewContext = createContext<ViewContextValue | null>(null);
@@ -14,26 +20,28 @@ const ViewContext = createContext<ViewContextValue | null>(null);
 const LOCAL_STORAGE_KEY = "memos-view-setting";
 
 export function ViewProvider({ children }: { children: ReactNode }) {
-  // Load initial state from localStorage
-  const getInitialState = () => {
+  const getInitialState = (): ViewState => {
     try {
       const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (cached) {
-        const data = JSON.parse(cached);
+        const data = JSON.parse(cached) as Partial<ViewState>;
+        const cachedTimeBasis = data.timeBasis ?? data.sortTimeField;
+        const timeBasis = cachedTimeBasis === "create_time" || cachedTimeBasis === "update_time" ? cachedTimeBasis : undefined;
         return {
           orderByTimeAsc: Boolean(data.orderByTimeAsc ?? false),
-          layout: (["LIST", "MASONRY"].includes(data.layout) ? data.layout : "LIST") as LayoutMode,
+          timeBasis,
         };
       }
     } catch (error) {
       console.warn("Failed to load view settings from localStorage:", error);
     }
-    return { orderByTimeAsc: false, layout: "LIST" as LayoutMode };
+    return { orderByTimeAsc: false };
   };
 
   const [viewState, setViewState] = useState(getInitialState);
+  const timeBasis = viewState.timeBasis ?? "create_time";
 
-  const persistToStorage = (newState: typeof viewState) => {
+  const persistToStorage = (newState: ViewState) => {
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newState));
     } catch (error) {
@@ -49,9 +57,9 @@ export function ViewProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const setLayout = (layout: LayoutMode) => {
+  const setTimeBasis = (field: MemoTimeBasis) => {
     setViewState((prev) => {
-      const newState = { ...prev, layout };
+      const newState = { ...prev, timeBasis: field };
       persistToStorage(newState);
       return newState;
     });
@@ -60,9 +68,10 @@ export function ViewProvider({ children }: { children: ReactNode }) {
   return (
     <ViewContext.Provider
       value={{
-        ...viewState,
+        orderByTimeAsc: viewState.orderByTimeAsc,
+        timeBasis,
         toggleSortOrder,
-        setLayout,
+        setTimeBasis,
       }}
     >
       {children}

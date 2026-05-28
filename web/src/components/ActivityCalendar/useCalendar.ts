@@ -1,11 +1,11 @@
 import dayjs from "dayjs";
 import { useMemo } from "react";
-import { DAYS_IN_WEEK, MIN_COUNT, WEEKEND_DAYS } from "./constants";
-import type { CalendarDayCell, CalendarMatrixResult } from "./types";
+import { DAYS_IN_WEEK } from "./constants";
+import type { CalendarData, CalendarDayCell, CalendarMatrixResult } from "./types";
 
 export interface UseCalendarMatrixParams {
   month: string;
-  data: Record<string, number>;
+  data: CalendarData;
   weekDays: string[];
   weekStartDayOffset: number;
   today: string;
@@ -15,7 +15,7 @@ export interface UseCalendarMatrixParams {
 const createCalendarDayCell = (
   current: dayjs.Dayjs,
   monthKey: string,
-  data: Record<string, number>,
+  data: CalendarData,
   today: string,
   selectedDate: string,
 ): CalendarDayCell => {
@@ -30,7 +30,6 @@ const createCalendarDayCell = (
     isCurrentMonth,
     isToday: isoDate === today,
     isSelected: isoDate === selectedDate,
-    isWeekend: WEEKEND_DAYS.includes(current.day() as 0 | 6),
   };
 };
 
@@ -68,7 +67,6 @@ export const useCalendarMatrix = ({
     const { calendarStart, dayCount } = calculateCalendarBoundaries(monthStart, weekStartDayOffset);
 
     const weeks: CalendarMatrixResult["weeks"] = [];
-    let maxCount = 0;
 
     // Iterate through each day in the calendar grid
     for (let index = 0; index < dayCount; index += 1) {
@@ -82,13 +80,11 @@ export const useCalendarMatrix = ({
       // Create the day cell object with data and status flags
       const dayCell = createCalendarDayCell(current, monthKey, data, today, selectedDate);
       weeks[weekIndex].days.push(dayCell);
-      maxCount = Math.max(maxCount, dayCell.count);
     }
 
     return {
       weeks,
       weekDays: rotatedWeekDays,
-      maxCount: Math.max(maxCount, MIN_COUNT),
     };
   }, [month, data, weekDays, weekStartDayOffset, today, selectedDate]);
 };

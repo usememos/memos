@@ -23,7 +23,7 @@ const WeekdayHeader = memo(({ weekDays, size }: WeekdayHeaderProps) => (
     {weekDays.map((label, index) => (
       <div
         key={index}
-        className="flex h-4 items-center justify-center font-medium uppercase tracking-wide text-muted-foreground/60"
+        className="flex h-4 items-center justify-center uppercase tracking-wide text-muted-foreground/60"
         role="columnheader"
         aria-label={label}
       >
@@ -35,11 +35,22 @@ const WeekdayHeader = memo(({ weekDays, size }: WeekdayHeaderProps) => (
 WeekdayHeader.displayName = "WeekdayHeader";
 
 export const MonthCalendar = memo((props: MonthCalendarProps) => {
-  const { month, data, maxCount, size = "default", onClick, className, disableTooltips = false } = props;
+  const {
+    month,
+    data,
+    maxCount,
+    size = "default",
+    onClick,
+    selectedDate,
+    className,
+    disableTooltips = false,
+    timeBasis = "create_time",
+  } = props;
   const t = useTranslate();
   const { generalSetting } = useInstance();
   const today = useTodayDate();
   const weekDays = useWeekdayLabels();
+  const gridStyle = GRID_STYLES[size];
 
   const { weeks, weekDays: rotatedWeekDays } = useCalendarMatrix({
     month,
@@ -47,7 +58,7 @@ export const MonthCalendar = memo((props: MonthCalendarProps) => {
     weekDays,
     weekStartDayOffset: generalSetting.weekStartDayOffset,
     today,
-    selectedDate: "",
+    selectedDate: selectedDate ?? "",
   });
 
   const flatDays = useMemo(() => weeks.flatMap((week) => week.days), [weeks]);
@@ -56,13 +67,13 @@ export const MonthCalendar = memo((props: MonthCalendarProps) => {
     <div className={cn("flex flex-col", className)} role="grid" aria-label={`Calendar for ${month}`}>
       <WeekdayHeader weekDays={rotatedWeekDays} size={size} />
 
-      <div className={cn("grid grid-cols-7", GRID_STYLES[size].gap)} role="rowgroup">
+      <div className={cn("grid grid-cols-7", gridStyle.gap)} role="rowgroup">
         {flatDays.map((day) => (
           <CalendarCell
             key={day.date}
             day={day}
             maxCount={maxCount}
-            tooltipText={getTooltipText(day.count, day.date, t)}
+            tooltipText={getTooltipText(day.count, day.date, t, timeBasis)}
             onClick={onClick}
             size={size}
             disableTooltip={disableTooltips}

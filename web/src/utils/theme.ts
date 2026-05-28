@@ -1,13 +1,11 @@
 import defaultDarkThemeContent from "../themes/default-dark.css?raw";
-import midnightThemeContent from "../themes/midnight.css?raw";
 import paperThemeContent from "../themes/paper.css?raw";
-import whitewallThemeContent from "../themes/whitewall.css?raw";
 
 // ============================================================================
 // Types and Constants
 // ============================================================================
 
-const VALID_THEMES = ["system", "default", "default-dark", "midnight", "paper", "whitewall"] as const;
+const VALID_THEMES = ["system", "default", "default-dark", "paper"] as const;
 
 export type Theme = (typeof VALID_THEMES)[number];
 export type ResolvedTheme = Exclude<Theme, "system">;
@@ -23,18 +21,20 @@ const STYLE_ELEMENT_ID = "instance-theme";
 const THEME_CONTENT: Record<ResolvedTheme, string | null> = {
   default: null,
   "default-dark": defaultDarkThemeContent,
-  midnight: midnightThemeContent,
   paper: paperThemeContent,
-  whitewall: whitewallThemeContent,
+};
+
+const THEME_COLORS: Record<ResolvedTheme, string> = {
+  default: "#faf9f5",
+  "default-dark": "#1d1f23",
+  paper: "#f5ede4",
 };
 
 export const THEME_OPTIONS: ThemeOption[] = [
   { value: "system", label: "Sync with system" },
   { value: "default", label: "Light" },
   { value: "default-dark", label: "Dark" },
-  { value: "midnight", label: "Midnight" },
   { value: "paper", label: "Paper" },
-  { value: "whitewall", label: "Whitewall" },
 ];
 
 // ============================================================================
@@ -171,6 +171,28 @@ const setThemeAttribute = (theme: ResolvedTheme): void => {
   document.documentElement.setAttribute("data-theme", theme);
 };
 
+/**
+ * Updates the theme-color meta tag to match the current theme background.
+ * This colors the browser/status bar on mobile devices.
+ */
+const updateThemeColorMeta = (theme: ResolvedTheme): void => {
+  const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  if (meta) {
+    meta.content = THEME_COLORS[theme];
+  }
+};
+
+const isDarkTheme = (theme: ResolvedTheme): boolean => {
+  return theme.endsWith("-dark") || theme.endsWith(".dark");
+};
+
+/**
+ * Updates the browser native control color scheme to match the current theme.
+ */
+const updateColorScheme = (theme: ResolvedTheme): void => {
+  document.documentElement.style.colorScheme = isDarkTheme(theme) ? "dark" : "light";
+};
+
 // ============================================================================
 // Main Theme Loading
 // ============================================================================
@@ -182,7 +204,8 @@ const setThemeAttribute = (theme: ResolvedTheme): void => {
  * 2. Resolves "system" to actual theme
  * 3. Injects theme CSS
  * 4. Sets data-theme attribute
- * 5. Persists to localStorage
+ * 5. Updates browser native UI colors
+ * 6. Persists to localStorage
  */
 export const loadTheme = (themeName: string): void => {
   const validTheme = validateTheme(themeName);
@@ -190,6 +213,8 @@ export const loadTheme = (themeName: string): void => {
 
   injectThemeStyle(resolvedTheme);
   setThemeAttribute(resolvedTheme);
+  updateThemeColorMeta(resolvedTheme);
+  updateColorScheme(resolvedTheme);
   setStoredTheme(validTheme); // Store original theme preference (not resolved)
 };
 
