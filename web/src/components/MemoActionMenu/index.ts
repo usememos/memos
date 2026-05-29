@@ -1,3 +1,3 @@
 export { useMemoActionHandlers } from "./hooks";
 export { default, default as MemoActionMenu } from "./MemoActionMenu";
-export type { MemoActionMenuProps, UseMemoActionHandlersReturn } from "./types";
+export type { MemoActionMenuProps } from "./types";

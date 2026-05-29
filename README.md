@@ -42,38 +42,6 @@ Open-source, self-hosted note-taking tool built for quick capture. Markdown-nati
 
 <img src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/demo.png" alt="Memos Demo Screenshot" height="512" />
 
-### Sponsors
-
-[**TestMu AI** - The world’s first full-stack Agentic AI Quality Engineering platform](https://www.testmuai.com/?utm_medium=sponsor&utm_source=memos)
-
-<a href="https://www.testmuai.com/?utm_medium=sponsor&utm_source=memos" target="_blank" rel="noopener">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://usememos.com/sponsors/testmu-dark.svg" />
-    <source media="(prefers-color-scheme: light)" srcset="https://usememos.com/sponsors/testmu.svg" />
-    <img src="https://usememos.com/sponsors/testmu.svg" alt="TestMu AI" height="36" />
-  </picture>
-</a>
-
-<p></p>
-
-[**SSD Nodes** - Affordable VPS hosting for self-hosters](https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor)
-
-<a href="https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor" target="_blank" rel="noopener">
-  <img src="https://usememos.com/sponsors/ssd-nodes.svg" alt="SSD Nodes" height="72" />
-</a>
-
-<p></p>
-
-[**InstaPods** - Get your app online in seconds](https://instapods.com/?utm_source=memos&utm_medium=sponsor) • [Deploy Memos in 30 Seconds](https://instapods.com/apps/memos/?utm_source=memos&utm_medium=sponsor)
-
-<a href="https://instapods.com/?utm_source=memos&utm_medium=sponsor" target="_blank" rel="noopener">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/usememos/dotcom/main/public/sponsors/instapods-dark.svg" />
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/usememos/dotcom/main/public/sponsors/instapods.svg" />
-    <img src="https://raw.githubusercontent.com/usememos/dotcom/main/public/sponsors/instapods.svg" alt="InstaPods" height="72" />
-  </picture>
-</a>
-
 ## Features
 
 - **Instant Capture** — Timeline-first UI. Open, write, done — no folders to navigate.
@@ -125,6 +93,10 @@ Contributions are welcome — bug reports, feature suggestions, pull requests, d
 - [Help with translations](https://github.com/usememos/memos/tree/main/web/src/locales)
 
 ## Sponsors
+* [**CodeRabbit** - Cut code review time & bugs in half, instantly](https://coderabbit.link/usememos)
+* [**Warp** - The agentic development environment](https://go.warp.dev/memos)
+* [**SSD Nodes** - Affordable VPS hosting for self-hosters](https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor)
+* [**InstaPods** - Get your app online in seconds](https://instapods.com/?utm_source=memos&utm_medium=sponsor) • [Deploy Memos in 30 Seconds](https://instapods.com/apps/memos/?utm_source=memos&utm_medium=sponsor)
 
 Love Memos? [Sponsor us on GitHub](https://github.com/sponsors/usememos) to help keep the project growing!
 

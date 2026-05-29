@@ -8,8 +8,66 @@ import (
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/stretchr/testify/require"
 
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
+
+func TestAttachmentNeedsInstanceStorageSetting(t *testing.T) {
+	tests := []struct {
+		name       string
+		attachment *store.Attachment
+		want       bool
+	}{
+		{
+			name: "nil attachment",
+		},
+		{
+			name: "local attachment",
+			attachment: &store.Attachment{
+				StorageType: storepb.AttachmentStorageType_LOCAL,
+			},
+		},
+		{
+			name: "s3 attachment without payload",
+			attachment: &store.Attachment{
+				StorageType: storepb.AttachmentStorageType_S3,
+			},
+		},
+		{
+			name: "s3 attachment with embedded config",
+			attachment: &store.Attachment{
+				StorageType: storepb.AttachmentStorageType_S3,
+				Payload: &storepb.AttachmentPayload{
+					Payload: &storepb.AttachmentPayload_S3Object_{
+						S3Object: &storepb.AttachmentPayload_S3Object{
+							S3Config: &storepb.StorageS3Config{},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "s3 attachment without embedded config",
+			attachment: &store.Attachment{
+				StorageType: storepb.AttachmentStorageType_S3,
+				Payload: &storepb.AttachmentPayload{
+					Payload: &storepb.AttachmentPayload_S3Object_{
+						S3Object: &storepb.AttachmentPayload_S3Object{},
+					},
+				},
+			},
+			want: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if got := store.AttachmentNeedsInstanceStorageSetting(test.attachment); got != test.want {
+				t.Fatalf("AttachmentNeedsInstanceStorageSetting() = %v, want %v", got, test.want)
+			}
+		})
+	}
+}
 
 func TestAttachmentStore(t *testing.T) {
 	t.Parallel()

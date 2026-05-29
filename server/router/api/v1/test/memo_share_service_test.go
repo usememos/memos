@@ -147,7 +147,7 @@ func TestGetMemoByShare_SkipsReactionsWithMissingCreators(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: reactor.ID})
+	_, err = ts.Store.DeleteUser(ctx, &store.DeleteUser{ID: reactor.ID})
 	require.NoError(t, err)
 
 	shareToken := share.Name[strings.LastIndex(share.Name, "/")+1:]
