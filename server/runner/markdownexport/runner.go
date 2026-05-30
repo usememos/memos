@@ -40,7 +40,7 @@ import (
 
 // Schedule the runner once a day. The work is cheap, but there is no value in
 // running it more often for a filesystem mirror.
-const runnerInterval = time.Second * 10
+const runnerInterval = time.Hour * 24
 
 // listBatchSize bounds how many memos we pull from the store per query so the
 // runner stays gentle on large instances.
