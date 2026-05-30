@@ -50,11 +50,17 @@ const listBatchSize = 200
 // segment derived from a username or uid.
 var unsafeFilenameChars = regexp.MustCompile(`[^A-Za-z0-9._-]`)
 
+// Runner mirrors the store's memos to a directory of markdown files. Store
+// supplies read access (ListUsers, ListMemos); Profile supplies the instance
+// data directory used to resolve a relative MEMOS_MARKDOWN_EXPORT_DIR.
 type Runner struct {
 	Store   *store.Store
 	Profile *profile.Profile
 }
 
+// NewRunner returns a Runner ready to export. It performs no I/O; the runner
+// is safe to wire into the server unconditionally and short-circuits at
+// RunOnce time when MEMOS_MARKDOWN_EXPORT_DIR is unset.
 func NewRunner(store *store.Store, profile *profile.Profile) *Runner {
 	return &Runner{
 		Store:   store,
@@ -62,6 +68,9 @@ func NewRunner(store *store.Store, profile *profile.Profile) *Runner {
 	}
 }
 
+// Run drives the export loop, calling RunOnce on each runnerInterval tick
+// and returning when ctx is cancelled. Callers typically also invoke RunOnce
+// once at startup so the first export is not delayed by a full tick.
 func (r *Runner) Run(ctx context.Context) {
 	ticker := time.NewTicker(runnerInterval)
 	defer ticker.Stop()
