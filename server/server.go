@@ -22,6 +22,7 @@ import (
 	"github.com/usememos/memos/server/router/frontend"
 	mcprouter "github.com/usememos/memos/server/router/mcp"
 	"github.com/usememos/memos/server/router/rss"
+	"github.com/usememos/memos/server/runner/markdownexport"
 	"github.com/usememos/memos/server/runner/s3presign"
 	"github.com/usememos/memos/store"
 )
@@ -165,6 +166,21 @@ func (s *Server) startBackgroundRunners(ctx context.Context) {
 		defer s.backgroundRunnerWG.Done()
 		s3presignRunner.Run(s3Context)
 		slog.Info("s3presign runner stopped")
+	}()
+
+	// Markdown export runner. No-op unless MEMOS_MARKDOWN_EXPORT_DIR is set,
+	// so it is always wired and operators opt in via env.
+	mdExportContext, mdExportCancel := context.WithCancel(ctx)
+	s.backgroundRunnerCancels = append(s.backgroundRunnerCancels, mdExportCancel)
+
+	mdExportRunner := markdownexport.NewRunner(s.Store, s.Profile)
+	mdExportRunner.RunOnce(ctx)
+
+	s.backgroundRunnerWG.Add(1)
+	go func() {
+		defer s.backgroundRunnerWG.Done()
+		mdExportRunner.Run(mdExportContext)
+		slog.Info("markdown export runner stopped")
 	}()
 
 	slog.Info("background runners started")

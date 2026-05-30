@@ -49,7 +49,7 @@ server/
 │   ├── frontend/           # SPA static file serving
 │   ├── fileserver/         # Native HTTP file server (thumbnails, range requests)
 │   └── rss/                # RSS feeds
-└── runner/                 # Background: memo payload processing, S3 presign refresh
+└── runner/                 # Background: memo payload processing, S3 presign refresh, markdown export
 
 store/
 ├── driver.go               # Database driver interface
