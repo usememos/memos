@@ -44,6 +44,7 @@
     "highlight.js": "^11.11.1",
     "html-to-image": "^1.11.13",
     "i18next": "^26.0.10",
+    "js-cookie": "3.0.7",
     "katex": "^0.16.45",
     "leaflet": "^1.9.4",
     "leaflet.markercluster": "^1.5.3",
