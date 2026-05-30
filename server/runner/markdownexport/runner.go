@@ -76,6 +76,9 @@ func (r *Runner) Run(ctx context.Context) {
 	}
 }
 
+// RunOnce performs a single export pass and returns. It is a no-op when
+// MEMOS_MARKDOWN_EXPORT_DIR is unset, so it's safe to call unconditionally
+// on server startup.
 func (r *Runner) RunOnce(ctx context.Context) {
 	exportDir := r.exportDir()
 	if exportDir == "" {

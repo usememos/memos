@@ -20,7 +20,7 @@ The runner fires once on server startup and then every 24 hours. It is intention
 
 ## Layout
 
-```
+```text
 <exportDir>/
 └── <username>/
     └── <YYYY-MM-DD>/
@@ -63,7 +63,7 @@ After writing all current memos the runner walks the export directory and remove
 - Any `.md` file it did not write this run (orphans from deleted, archived, or relocated memos).
 - Now-empty `<date>` and `<username>` directories.
 
-Non-`.md` files are left alone — drop a `README.md` or `.gitignore` in the export dir and it survives.
+**Any `.md` file the exporter did not write this run is treated as an orphan and deleted**, regardless of name — so dropping your own `README.md` or `notes.md` in the export tree won't survive the next run. Non-`.md` files (like `.gitignore` or `.git/`) are left alone.
 
 ## Example
 
