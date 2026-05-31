@@ -1,9 +1,9 @@
 import { create } from "@bufbuild/protobuf";
 import { useEffect, useMemo, useState } from "react";
-import useDebounce from "react-use/lib/useDebounce";
 import { memoServiceClient } from "@/connect";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import { buildMemoCreatorFilter } from "@/helpers/resource-names";
+import { useDebouncedEffect } from "@/hooks";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import {
   type Memo,
@@ -38,7 +38,7 @@ export const useLinkMemo = ({ isOpen, currentMemoName, existingRelations, onAddR
     }
   }, [isOpen]);
 
-  useDebounce(
+  useDebouncedEffect(
     async () => {
       if (!isOpen) return;
 

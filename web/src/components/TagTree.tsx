@@ -1,6 +1,5 @@
 import { ChevronRightIcon, HashIcon } from "lucide-react";
-import { useEffect, useState } from "react";
-import useToggle from "react-use/lib/useToggle";
+import { useCallback, useEffect, useState } from "react";
 import { type MemoFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 
 interface Tag {
@@ -91,10 +90,10 @@ const TagItemContainer = (props: TagItemContainerProps) => {
   const tagFilters = getFiltersByFactor("tagSearch");
   const isActive = tagFilters.some((f: MemoFilter) => f.value === tag.text);
   const hasSubTags = tag.subTags.length > 0;
-  const [showSubTags, toggleSubTags] = useToggle(false);
+  const [showSubTags, setShowSubTags] = useState(false);
 
   useEffect(() => {
-    toggleSubTags(expandSubTags);
+    setShowSubTags(expandSubTags);
   }, [expandSubTags]);
 
   const handleTagClick = () => {
@@ -110,10 +109,10 @@ const TagItemContainer = (props: TagItemContainerProps) => {
     }
   };
 
-  const handleToggleBtnClick = (event: React.MouseEvent) => {
+  const handleToggleBtnClick = useCallback((event: React.MouseEvent) => {
     event.stopPropagation();
-    toggleSubTags();
-  };
+    setShowSubTags((current) => !current);
+  }, []);
 
   return (
     <>

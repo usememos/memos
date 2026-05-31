@@ -12,7 +12,6 @@ import {
   PlusIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useDebounce } from "react-use";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
 import type { MapPoint } from "@/components/map/types";
 import { useReverseGeocoding } from "@/components/map/useReverseGeocoding";
@@ -28,6 +27,7 @@ import {
   DropdownMenuTrigger,
   useDropdownMenuSubHoverDelay,
 } from "@/components/ui/dropdown-menu";
+import { useDebouncedEffect } from "@/hooks";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { useFileUpload, useLinkMemo, useLocation } from "../hooks";
@@ -76,7 +76,7 @@ const InsertMenu = (props: InsertMenuProps) => {
 
   const [debouncedPosition, setDebouncedPosition] = useState<MapPoint | undefined>(undefined);
 
-  useDebounce(
+  useDebouncedEffect(
     () => {
       setDebouncedPosition(locationState.position);
     },
