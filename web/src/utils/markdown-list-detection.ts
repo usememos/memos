@@ -2,17 +2,14 @@ export interface ListItemInfo {
   type: "task" | "unordered" | "ordered" | null;
   symbol?: string; // For task/unordered lists: "- ", "* ", "+ "
   number?: number; // For ordered lists: 1, 2, 3, etc.
-  indent?: string; // Leading whitespace
+  indent: number; // Whitespace count
 }
 
 // Detect the list item type of the last line before cursor
-export function detectLastListItem(contentBeforeCursor: string): ListItemInfo {
-  const lines = contentBeforeCursor.split("\n");
-  const lastLine = lines[lines.length - 1];
-
-  // Extract indentation
+export function detectLastListItem(lastLine: string): ListItemInfo {
   const indentMatch = lastLine.match(/^(\s*)/);
-  const indent = indentMatch ? indentMatch[1] : "";
+  const leadingSpaces = indentMatch ? indentMatch[1] : "";
+  const indent = leadingSpaces.length;
 
   // Task list: - [ ] or - [x] or - [X]
   const taskMatch = lastLine.match(/^(\s*)([-*+])\s+\[([ xX])\]\s+/);
@@ -52,7 +49,7 @@ export function detectLastListItem(contentBeforeCursor: string): ListItemInfo {
 
 // Generate the text to insert when pressing Enter on a list item
 export function generateListContinuation(listInfo: ListItemInfo): string {
-  const indent = listInfo.indent || "";
+  const indent = " ".repeat(listInfo.indent);
 
   switch (listInfo.type) {
     case "task":
@@ -64,4 +61,40 @@ export function generateListContinuation(listInfo: ListItemInfo): string {
     default:
       return indent;
   }
+}
+
+export function renumberOrderedLists(content: string): string {
+  const lines = content.split("\n");
+  const orderedListRegex = /^(\s*)(\d+)([.)])\s+/;
+  const counters: Map<number, number> = new Map();
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    if (line.trim() === "") {
+      counters.clear();
+      continue;
+    }
+
+    const match = line.match(orderedListRegex);
+    if (!match) {
+      counters.clear();
+      continue;
+    }
+
+    const leadingSpaces = match[1];
+    const order = match[2];
+    const delimiter = match[3];
+    const indentLevel = Math.floor(leadingSpaces.length / 4);
+    for (const key of [...counters.keys()]) {
+      if (key > indentLevel) counters.delete(key);
+    }
+    const currentCounter = (counters.get(indentLevel) || 0) + 1;
+    counters.set(indentLevel, currentCounter);
+
+    const prefix = leadingSpaces + order + delimiter + " ";
+    lines[i] = leadingSpaces + currentCounter + delimiter + " " + line.slice(prefix.length);
+  }
+
+  return lines.join("\n");
 }

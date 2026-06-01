@@ -1,5 +1,5 @@
 import { type RefObject, useEffect, useRef } from "react";
-import { detectLastListItem, generateListContinuation } from "@/utils/markdown-list-detection";
+import { detectLastListItem, generateListContinuation, renumberOrderedLists } from "@/utils/markdown-list-detection";
 import { EditorRefActions } from ".";
 
 interface UseListCompletionOptions {
@@ -38,7 +38,7 @@ export function useListCompletion({ editorRef, editorActions, isInIME }: UseList
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Enter" || isInIMERef.current || event.shiftKey || event.ctrlKey || event.metaKey || event.altKey) {
+      if ((event.key !== "Enter" && event.key !== "Tab") || isInIMERef.current || event.ctrlKey || event.metaKey || event.altKey) {
         return;
       }
 
@@ -50,26 +50,72 @@ export function useListCompletion({ editorRef, editorActions, isInIME }: UseList
 
       const actions = editorActionsRef.current;
       const cursorPosition = actions.getCursorPosition();
-      const contentBeforeCursor = actions.getContent().substring(0, cursorPosition);
-      const listInfo = detectLastListItem(contentBeforeCursor);
+      const content = actions.getContent();
+      const contentBeforeCursor = content.substring(0, cursorPosition);
+      const lines = contentBeforeCursor.split("\n");
+      const fullLines = content.split("\n");
+      let currentLineNum = lines.length - 1;
+      const lastLineContent = fullLines[currentLineNum];
 
-      if (!listInfo.type) return;
+      const listInfo = detectLastListItem(lastLineContent);
+
+      if (!listInfo.type) {
+        if (event.key === "Tab" && !event.shiftKey) {
+          event.preventDefault();
+          actions.insertText("    ");
+        }
+        return;
+      }
 
       event.preventDefault();
 
-      const lines = contentBeforeCursor.split("\n");
-      const currentLine = lines[lines.length - 1];
+      const lastLineContentBeforeCursor = lines[currentLineNum];
+      const lineStartPos = cursorPosition - lastLineContentBeforeCursor.length;
+      let offsetInLine = cursorPosition - lineStartPos;
+      let cursorOffsetAdjustment: number = 0;
+      if (event.key === "Enter") {
+        if (isEmptyListItem(lastLineContentBeforeCursor)) {
+          actions.removeText(lineStartPos, lastLineContentBeforeCursor.length);
+        } else {
+          const continuation = offsetInLine > listInfo.indent ? generateListContinuation(listInfo) : "";
+          actions.insertText("\n" + continuation);
+          cursorOffsetAdjustment = continuation.length;
+          currentLineNum += 1;
+          offsetInLine = 0;
+          console.debug("adjust:", cursorOffsetAdjustment);
+          setTimeout(() => actions.scrollToCursor(), 0);
+        }
+      } else if (event.key === "Tab") {
+        const contentLines = content.split("\n");
+        const fullLine = contentLines[currentLineNum];
+        const leadingSpaces = fullLine.match(/^(\s*)/)?.[1]?.length ?? 0;
 
-      if (isEmptyListItem(currentLine)) {
-        const lineStartPos = cursorPosition - currentLine.length;
-        actions.removeText(lineStartPos, currentLine.length);
-      } else {
-        const continuation = generateListContinuation(listInfo);
-        actions.insertText("\n" + continuation);
+        let newLine: string;
 
-        // Auto-scroll to keep cursor visible after inserting list item
-        setTimeout(() => actions.scrollToCursor(), 0);
+        if (event.shiftKey) {
+          const spacesToRemove = Math.min(4, leadingSpaces);
+          newLine = fullLine.slice(spacesToRemove);
+          cursorOffsetAdjustment = -spacesToRemove;
+        } else {
+          const spacesToAdd = 4 - (leadingSpaces % 4);
+          newLine = " ".repeat(spacesToAdd) + fullLine;
+          cursorOffsetAdjustment = spacesToAdd;
+        }
+
+        actions.setLine(currentLineNum, newLine);
       }
+      const dirtyContent = actions.getContent();
+      const newContent = renumberOrderedLists(dirtyContent);
+      actions.setContent(newContent);
+
+      const finalLines = newContent.split("\n");
+      let newCursorPos = 0;
+      for (let i = 0; i < currentLineNum; i++) {
+        newCursorPos += finalLines[i].length + 1;
+      }
+      const newOffsetInLine = Math.max(0, Math.min(offsetInLine + cursorOffsetAdjustment, finalLines[currentLineNum]?.length ?? 0));
+      newCursorPos += newOffsetInLine;
+      actions.setCursorPosition(newCursorPos);
     };
 
     editor.addEventListener("compositionend", handleCompositionEnd);
