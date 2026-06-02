@@ -131,4 +131,15 @@ describe("memo editor list indent (Tab/Shift+Tab)", () => {
 
     expect(textarea.value).toBe("1. first\n2. nested a\n3. second\n    1. nested b");
   });
+
+  it("preserve ordered-list counters across nested non-ordered lines.", () => {
+    const textarea = renderEditor("1. first\n    - child\n2. second");
+
+    const curosrBeforeNestedA = "1. first\n    - child".length;
+    textarea.setSelectionRange(curosrBeforeNestedA, curosrBeforeNestedA);
+
+    simulateKeyDown(textarea, "Tab", true);
+
+    expect(textarea.value).toBe("1. first\n- child\n2. second");
+  });
 });

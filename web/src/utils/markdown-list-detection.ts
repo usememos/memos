@@ -72,13 +72,11 @@ export function renumberOrderedLists(content: string): string {
     const line = lines[i];
 
     if (line.trim() === "") {
-      counters.clear();
       continue;
     }
 
     const match = line.match(orderedListRegex);
     if (!match) {
-      counters.clear();
       continue;
     }
 
