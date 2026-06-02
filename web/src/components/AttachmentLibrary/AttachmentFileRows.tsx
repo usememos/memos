@@ -1,5 +1,6 @@
 import { FileAudioIcon, FileIcon, PlayIcon } from "lucide-react";
 import AudioAttachmentItem from "@/components/MemoMetadata/Attachment/AudioAttachmentItem";
+import VideoPoster from "@/components/VideoPoster";
 import type { AttachmentLibraryListItem } from "@/hooks/useAttachmentLibrary";
 import { cn } from "@/lib/utils";
 import { getAttachmentThumbnailUrl, getAttachmentType, isMotionAttachment } from "@/utils/attachment";
@@ -26,7 +27,7 @@ const AttachmentThumb = ({ item, className }: { item: AttachmentLibraryListItem;
   if (type === "video/*") {
     return (
       <div className={cn("relative overflow-hidden rounded-xl bg-muted/35", className)}>
-        <video src={item.sourceUrl} className="h-full w-full object-cover" preload="metadata" />
+        <VideoPoster sourceUrl={item.sourceUrl} alt={item.attachment.filename} className="h-full w-full object-cover" />
         <span className="absolute bottom-2 right-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-background/85 text-foreground shadow-sm">
           <PlayIcon className="h-3.5 w-3.5 fill-current" />
         </span>

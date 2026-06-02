@@ -3,6 +3,7 @@ import type { PropsWithChildren } from "react";
 import { useMemo } from "react";
 import MetadataSection from "@/components/MemoMetadata/MetadataSection";
 import MotionPhotoPreview from "@/components/MotionPhotoPreview";
+import VideoPoster from "@/components/VideoPoster";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentUrl } from "@/utils/attachment";
@@ -115,7 +116,7 @@ const CollageVisualItem = ({
     <VisualTile className={cn("block h-full w-full", className)} onPreview={onPreview} overlayLabel={overlayLabel}>
       {item.kind === "video" ? (
         <>
-          <video src={item.sourceUrl} className={COVER_MEDIA_CLASS} preload="metadata" />
+          <VideoPoster sourceUrl={item.sourceUrl} posterUrl={item.posterUrl} alt={item.filename} className={COVER_MEDIA_CLASS} />
           {!overlayLabel && (
             <VideoPlayBadge className={COLLAGE_VIDEO_PLAY_BADGE_CLASS}>
               <PlayIcon className="h-3.5 w-3.5 fill-current" />
@@ -170,7 +171,7 @@ const SingleVisualItem = ({ item, onPreview }: { item: VisualItem; onPreview?: (
   return (
     <VisualTile className={cn("block", SINGLE_VIDEO_CARD_WIDTH_CLASS)} onPreview={onPreview}>
       <div className="relative aspect-video bg-black/5">
-        <video src={item.sourceUrl} poster={item.posterUrl} className={COVER_MEDIA_CLASS} preload="metadata" />
+        <VideoPoster sourceUrl={item.sourceUrl} posterUrl={item.posterUrl} alt={item.filename} className={COVER_MEDIA_CLASS} />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent" />
         <VideoPlayBadge className="bottom-3 right-3 h-9 w-9">
           <PlayIcon className="h-4 w-4 fill-current" />
