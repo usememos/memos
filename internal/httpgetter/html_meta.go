@@ -176,11 +176,6 @@ func extractHTMLMeta(resp io.Reader) *HTMLMeta {
 				token := tokenizer.Token()
 				htmlMeta.Title = token.Data
 			} else if token.DataAtom == atom.Meta {
-				description, ok := extractMetaProperty(token, "description")
-				if ok {
-					htmlMeta.Description = description
-				}
-
 				ogTitle, ok := extractMetaProperty(token, "og:title")
 				if ok {
 					htmlMeta.Title = ogTitle
@@ -194,6 +189,11 @@ func extractHTMLMeta(resp io.Reader) *HTMLMeta {
 				ogImage, ok := extractMetaProperty(token, "og:image")
 				if ok {
 					htmlMeta.Image = ogImage
+				}
+
+				description, ok := extractMetaProperty(token, "description")
+				if ok && htmlMeta.Description == "" {
+					htmlMeta.Description = description
 				}
 			}
 		}
