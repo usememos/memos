@@ -17,6 +17,22 @@ const EMPTY_LIST_PATTERNS = [
 
 const isEmptyListItem = (line: string) => EMPTY_LIST_PATTERNS.some((pattern) => pattern.test(line));
 
+function getMarkerWidthDelta(oldLine: string, newLine: string): number {
+  const getNumericMarkerLen = (line: string): number | null => {
+    const match = line.match(/^\s*\d+[.)]/);
+    return match ? match[0].trim().length : null;
+  };
+
+  const oldNum = getNumericMarkerLen(oldLine);
+  const newNum = getNumericMarkerLen(newLine);
+
+  if (oldNum !== null && newNum !== null) {
+    return newNum - oldNum;
+  }
+
+  return 0;
+}
+
 export function useListCompletion({ editorRef, editorActions, isInIME }: UseListCompletionOptions) {
   const isInIMERef = useRef(isInIME);
   isInIMERef.current = isInIME;
@@ -71,8 +87,8 @@ export function useListCompletion({ editorRef, editorActions, isInIME }: UseList
 
       const lastLineContentBeforeCursor = lines[currentLineNum];
       const lineStartPos = cursorPosition - lastLineContentBeforeCursor.length;
-      let offsetInLine = cursorPosition - lineStartPos;
-      let cursorOffsetAdjustment: number = 0;
+      const offsetInLine = cursorPosition - lineStartPos;
+      let cursorOffsetAdjustment = 0;
       if (event.key === "Enter") {
         if (isEmptyListItem(lastLineContentBeforeCursor)) {
           actions.removeText(lineStartPos, lastLineContentBeforeCursor.length);
@@ -81,24 +97,20 @@ export function useListCompletion({ editorRef, editorActions, isInIME }: UseList
           actions.insertText("\n" + continuation);
           cursorOffsetAdjustment = continuation.length;
           currentLineNum += 1;
-          offsetInLine = 0;
-          console.debug("adjust:", cursorOffsetAdjustment);
           setTimeout(() => actions.scrollToCursor(), 0);
         }
       } else if (event.key === "Tab") {
-        const contentLines = content.split("\n");
-        const fullLine = contentLines[currentLineNum];
-        const leadingSpaces = fullLine.match(/^(\s*)/)?.[1]?.length ?? 0;
+        const leadingSpaces = lastLineContent.match(/^(\s*)/)?.[1]?.length ?? 0;
 
         let newLine: string;
 
         if (event.shiftKey) {
           const spacesToRemove = Math.min(4, leadingSpaces);
-          newLine = fullLine.slice(spacesToRemove);
+          newLine = lastLineContent.slice(spacesToRemove);
           cursorOffsetAdjustment = -spacesToRemove;
         } else {
           const spacesToAdd = 4 - (leadingSpaces % 4);
-          newLine = " ".repeat(spacesToAdd) + fullLine;
+          newLine = " ".repeat(spacesToAdd) + lastLineContent;
           cursorOffsetAdjustment = spacesToAdd;
         }
 
@@ -113,7 +125,9 @@ export function useListCompletion({ editorRef, editorActions, isInIME }: UseList
       for (let i = 0; i < currentLineNum; i++) {
         newCursorPos += finalLines[i].length + 1;
       }
-      const newOffsetInLine = Math.max(0, Math.min(offsetInLine + cursorOffsetAdjustment, finalLines[currentLineNum]?.length ?? 0));
+      const finalLine = finalLines[currentLineNum] ?? "";
+      const markerWidthDelta = getMarkerWidthDelta(lastLineContent, finalLine);
+      const newOffsetInLine = Math.max(0, Math.min(offsetInLine + cursorOffsetAdjustment + markerWidthDelta, finalLine.length));
       newCursorPos += newOffsetInLine;
       actions.setCursorPosition(newCursorPos);
     };

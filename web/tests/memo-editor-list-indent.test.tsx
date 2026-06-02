@@ -142,4 +142,41 @@ describe("memo editor list indent (Tab/Shift+Tab)", () => {
 
     expect(textarea.value).toBe("1. first\n- child\n2. second");
   });
+
+  it("preserves cursor position when renumbering changes marker width", () => {
+    const textarea = renderEditor(
+      "1. a\n2. b\n3. c\n4. d\n5. e\n6. f\n7. g\n8. h\n9. i\n10. tenth",
+    );
+
+    const tenthLineStart = "1. a\n2. b\n3. c\n4. d\n5. e\n6. f\n7. g\n8. h\n9. i\n".length;
+    const cursorInTenthContent = tenthLineStart + "10. t".length;
+    textarea.setSelectionRange(cursorInTenthContent, cursorInTenthContent);
+
+    simulateKeyDown(textarea, "Tab");
+
+    const newTenthLineStart = "1. a\n2. b\n3. c\n4. d\n5. e\n6. f\n7. g\n8. h\n9. i\n".length;
+    const expectedCursor = newTenthLineStart + "    1. t".length;
+    expect(textarea.selectionStart).toBe(expectedCursor);
+    expect(textarea.selectionEnd).toBe(expectedCursor);
+  });
+
+  it("preserves cursor position on Shift+Tab when renumbering widens the marker", () => {
+    const textarea = renderEditor(
+      "1. a\n2. b\n3. c\n4. d\n5. e\n6. f\n7. g\n8. h\n9. i\n    1. tenth",
+    );
+
+    const tenthLineStart = "1. a\n2. b\n3. c\n4. d\n5. e\n6. f\n7. g\n8. h\n9. i\n".length;
+    const cursorInContent = tenthLineStart + "    1. t".length;
+    textarea.setSelectionRange(cursorInContent, cursorInContent);
+
+    simulateKeyDown(textarea, "Tab", true);
+
+    const newTenthLineStart = "1. a\n2. b\n3. c\n4. d\n5. e\n6. f\n7. g\n8. h\n9. i\n".length;
+    const expectedCursor = newTenthLineStart + "10. t".length;
+    expect(textarea.value).toBe(
+      "1. a\n2. b\n3. c\n4. d\n5. e\n6. f\n7. g\n8. h\n9. i\n10. tenth",
+    );
+    expect(textarea.selectionStart).toBe(expectedCursor);
+    expect(textarea.selectionEnd).toBe(expectedCursor);
+  });
 });
