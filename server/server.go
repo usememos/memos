@@ -49,6 +49,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 	echoServer := echo.New()
 	echoServer.Use(middleware.Recover())
+	echoServer.Use(newCORSMiddleware(profile))
 	s.echoServer = echoServer
 
 	instanceBasicSetting, err := s.getOrUpsertInstanceBasicSetting(ctx)
