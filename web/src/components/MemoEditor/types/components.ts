@@ -75,6 +75,11 @@ export interface TagSuggestionsProps {
   editorActions: ForwardedRef<EditorRefActions>;
 }
 
+export interface UserSuggestionsProps {
+  editorRef: RefObject<HTMLTextAreaElement | null>;
+  editorActions: ForwardedRef<EditorRefActions>;
+}
+
 export interface SlashCommandsProps {
   editorRef: RefObject<HTMLTextAreaElement | null>;
   editorActions: ForwardedRef<EditorRefActions>;

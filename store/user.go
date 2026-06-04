@@ -71,6 +71,7 @@ type FindUser struct {
 	Email     *string
 	Nickname  *string
 	Search    *string
+	UsernameSearch *string
 
 	// Domain specific fields
 	Filters []string

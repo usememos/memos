@@ -7,6 +7,7 @@ import { editorCommands } from "./commands";
 import SlashCommands from "./SlashCommands";
 import { getMarkdownLinkForPastedUrl } from "./shortcuts";
 import TagSuggestions from "./TagSuggestions";
+import UserSuggestions from "./UserSuggestions";
 import { useListCompletion } from "./useListCompletion";
 
 export interface EditorRefActions {
@@ -228,6 +229,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
         onCompositionEnd={onCompositionEnd}
       ></textarea>
       <TagSuggestions editorRef={editorRef} editorActions={ref} />
+      <UserSuggestions editorRef={editorRef} editorActions={ref} />
       <SlashCommands editorRef={editorRef} editorActions={ref} commands={editorCommands} />
     </div>
   );

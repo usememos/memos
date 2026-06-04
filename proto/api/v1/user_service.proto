@@ -19,6 +19,12 @@ service UserService {
     option (google.api.http) = {get: "/api/v1/users"};
   }
 
+  // SearchUsers searches for users by username or display name.
+  // Used for mention autocomplete in the memo editor.
+  rpc SearchUsers(SearchUsersRequest) returns (SearchUsersResponse) {
+    option (google.api.http) = {get: "/api/v1/users:search"};
+  }
+
   // BatchGetUsers returns active users by usernames.
   rpc BatchGetUsers(BatchGetUsersRequest) returns (BatchGetUsersResponse) {
     option (google.api.http) = {
@@ -840,4 +846,16 @@ message DeleteUserNotificationRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/UserNotification"}
   ];
+}
+
+message SearchUsersRequest {
+  // Required. Search query to filter users by username or display name.
+  string filter = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. Maximum number of users to return (default 20, max 100).
+  int32 page_size = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message SearchUsersResponse {
+  repeated User users = 1;
 }

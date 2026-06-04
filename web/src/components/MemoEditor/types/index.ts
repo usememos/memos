@@ -11,6 +11,7 @@ export type {
   MemoEditorProps,
   SlashCommandsProps,
   TagSuggestionsProps,
+  UserSuggestionsProps,
   VisibilitySelectorProps,
 } from "./components";
 export type { LocationState } from "./insert-menu";

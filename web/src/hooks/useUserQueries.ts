@@ -216,6 +216,22 @@ export function useListUsers() {
   });
 }
 
+export function useSearchUsers(filter: string, options?: { enabled?: boolean }) {
+  const enabled = (options?.enabled ?? true) && filter.length >= 2;
+
+  return useQuery({
+    queryKey: [...userKeys.all, "search", filter],
+    queryFn: async () => {
+      const { users } = await userServiceClient.searchUsers({
+        filter: filter,
+      });
+      return users;
+    },
+    enabled,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+}
+
 // Hook to update user general setting (convenience wrapper)
 export function useUpdateUserGeneralSetting(currentUserName?: string) {
   const queryClient = useQueryClient();

@@ -148,6 +148,10 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 		}
 		args = append(args, query, query+"%", query+"%")
 	}
+	if v := find.UsernameSearch; v != nil && strings.TrimSpace(*v) != "" {
+		searchQuery := strings.ToLower(strings.TrimSpace(*v))
+		where, args = append(where, "(LOWER(username) LIKE ? OR LOWER(nickname) LIKE ?)"), append(args, "%"+searchQuery+"%", "%"+searchQuery+"%")
+	}
 	query := `
 		SELECT 
 			id,
