@@ -1,0 +1,28 @@
+# fly.toml app configuration file generated for memos-bv6xyg on 2026-06-05T07:13:51Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'memos-bv6xyg'
+primary_region = 'ams'
+
+[build]
+  [build.args]
+    GO_VERSION = '1.26.2'
+
+[env]
+  PORT = '8080'
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+  memory_mb = 256
