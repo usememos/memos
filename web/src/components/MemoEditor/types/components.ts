@@ -66,6 +66,7 @@ export interface InsertMenuProps {
   location?: Location;
   onLocationChange: (location?: Location) => void;
   onToggleFocusMode?: () => void;
+  onCalendarClick?: () => void;
   memoName?: string;
   onAudioRecorderClick?: () => void;
 }

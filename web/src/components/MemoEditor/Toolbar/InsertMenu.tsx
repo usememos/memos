@@ -2,6 +2,7 @@ import { uniqBy } from "lodash-es";
 import {
   FileIcon,
   ImageIcon,
+    CalendarIcon,
   LinkIcon,
   LoaderIcon,
   type LucideIcon,
@@ -38,7 +39,7 @@ import type { LocalFile } from "../types/attachment";
 const InsertMenu = (props: InsertMenuProps) => {
   const t = useTranslate();
   const { state, actions, dispatch } = useEditorContext();
-  const { location: initialLocation, onLocationChange, onToggleFocusMode, isUploading: isUploadingProp } = props;
+  const { location: initialLocation, onLocationChange, onToggleFocusMode, isUploading: isUploadingProp, onCalendarClick } = props;
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
@@ -140,9 +141,19 @@ const InsertMenu = (props: InsertMenuProps) => {
     handleUploadClick();
   }, [handleUploadClick]);
 
+  const handleGoogleCalendarClick = useCallback(() => {
+    onCalendarClick?.();
+  }, [onCalendarClick])
+
   const menuItems = useMemo(
     () =>
       [
+        {
+          key: "google-calendar",
+          label: t("google.calendar"),
+          icon: CalendarIcon,
+          onClick: handleGoogleCalendarClick,
+        },
         {
           key: "upload-media",
           label: t("attachment-library.tabs.media"),
@@ -186,14 +197,21 @@ const InsertMenu = (props: InsertMenuProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          {menuItems.slice(0, 3).map((item) => (
+          {menuItems.slice(0, 1).map((item) => (
+              <DropdownMenuItem key={item.key} onClick={item.onClick}>
+                <item.icon className="w-4 h-4" />
+                {item.label}
+              </DropdownMenuItem>
+          ))}
+          <DropdownMenuSeparator />
+          {menuItems.slice(1, 4).map((item) => (
             <DropdownMenuItem key={item.key} onClick={item.onClick}>
               <item.icon className="w-4 h-4" />
               {item.label}
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
-          {menuItems.slice(3).map((item) => (
+          {menuItems.slice(4).map((item) => (
             <DropdownMenuItem key={item.key} onClick={item.onClick}>
               <item.icon className="w-4 h-4" />
               {item.label}
