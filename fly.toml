@@ -4,7 +4,7 @@ app = 'memos-bv6xyg'
 primary_region = 'ams'
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = "scripts/Dockerfile"
   [build.args]
     GO_VERSION = '1.26.2'
 
