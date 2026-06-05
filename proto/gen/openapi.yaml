@@ -3851,6 +3851,11 @@ components:
                         The preferred theme of the user.
                          This references a CSS file in the web/public/themes/ directory.
                          If not set, the default theme will be used.
+                alwaysExpandMemo:
+                    type: boolean
+                    description: |-
+                        Whether to always expand long memos instead of collapsing them
+                         with a "show more" button.
             description: General user settings configuration.
         UserSetting_WebhooksSetting:
             type: object

@@ -239,9 +239,11 @@ type GeneralUserSetting struct {
 	MemoVisibility string `protobuf:"bytes,2,opt,name=memo_visibility,json=memoVisibility,proto3" json:"memo_visibility,omitempty"`
 	// The user's theme preference.
 	// This references a CSS file in the web/public/themes/ directory.
-	Theme         string `protobuf:"bytes,3,opt,name=theme,proto3" json:"theme,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Theme string `protobuf:"bytes,3,opt,name=theme,proto3" json:"theme,omitempty"`
+	// Whether to always expand long memos instead of collapsing them with a "show more" button.
+	AlwaysExpandMemo bool `protobuf:"varint,4,opt,name=always_expand_memo,json=alwaysExpandMemo,proto3" json:"always_expand_memo,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *GeneralUserSetting) Reset() {
@@ -293,6 +295,13 @@ func (x *GeneralUserSetting) GetTheme() string {
 		return x.Theme
 	}
 	return ""
+}
+
+func (x *GeneralUserSetting) GetAlwaysExpandMemo() bool {
+	if x != nil {
+		return x.AlwaysExpandMemo
+	}
+	return false
 }
 
 type RefreshTokensUserSetting struct {
@@ -866,11 +875,12 @@ const file_store_user_setting_proto_rawDesc = "" +
 	"\bWEBHOOKS\x10\x05\x12\x12\n" +
 	"\x0eREFRESH_TOKENS\x10\x06\x12\x1a\n" +
 	"\x16PERSONAL_ACCESS_TOKENS\x10\aB\a\n" +
-	"\x05value\"k\n" +
+	"\x05value\"\x99\x01\n" +
 	"\x12GeneralUserSetting\x12\x16\n" +
 	"\x06locale\x18\x01 \x01(\tR\x06locale\x12'\n" +
 	"\x0fmemo_visibility\x18\x02 \x01(\tR\x0ememoVisibility\x12\x14\n" +
-	"\x05theme\x18\x03 \x01(\tR\x05theme\"\xa4\x04\n" +
+	"\x05theme\x18\x03 \x01(\tR\x05theme\x12,\n" +
+	"\x12always_expand_memo\x18\x04 \x01(\bR\x10alwaysExpandMemo\"\xa4\x04\n" +
 	"\x18RefreshTokensUserSetting\x12Y\n" +
 	"\x0erefresh_tokens\x18\x01 \x03(\v22.memos.store.RefreshTokensUserSetting.RefreshTokenR\rrefreshTokens\x1a\x94\x02\n" +
 	"\fRefreshToken\x12\x19\n" +

@@ -431,9 +431,10 @@ func getDeleteUserAttachmentStorageSetting(ctx context.Context, stores *store.St
 
 func getDefaultUserGeneralSetting() *v1pb.UserSetting_GeneralSetting {
 	return &v1pb.UserSetting_GeneralSetting{
-		Locale:         "en",
-		MemoVisibility: "PRIVATE",
-		Theme:          "",
+		Locale:           "en",
+		MemoVisibility:   "PRIVATE",
+		Theme:            "",
+		AlwaysExpandMemo: false,
 	}
 }
 
@@ -598,9 +599,10 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 		}
 
 		updatedGeneral := &v1pb.UserSetting_GeneralSetting{
-			MemoVisibility: generalSetting.GetMemoVisibility(),
-			Locale:         generalSetting.GetLocale(),
-			Theme:          generalSetting.GetTheme(),
+			MemoVisibility:   generalSetting.GetMemoVisibility(),
+			Locale:           generalSetting.GetLocale(),
+			Theme:            generalSetting.GetTheme(),
+			AlwaysExpandMemo: generalSetting.GetAlwaysExpandMemo(),
 		}
 
 		incomingGeneral := request.Setting.GetGeneralSetting()
@@ -615,6 +617,8 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 				updatedGeneral.Theme = incomingGeneral.Theme
 			case "locale":
 				updatedGeneral.Locale = incomingGeneral.Locale
+			case "always_expand_memo":
+				updatedGeneral.AlwaysExpandMemo = incomingGeneral.AlwaysExpandMemo
 			default:
 				// Ignore unsupported fields.
 			}
@@ -1341,9 +1345,10 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, user *store.
 		if general := storeSetting.GetGeneral(); general != nil {
 			setting.Value = &v1pb.UserSetting_GeneralSetting_{
 				GeneralSetting: &v1pb.UserSetting_GeneralSetting{
-					Locale:         general.Locale,
-					MemoVisibility: general.MemoVisibility,
-					Theme:          general.Theme,
+					Locale:           general.Locale,
+					MemoVisibility:   general.MemoVisibility,
+					Theme:            general.Theme,
+					AlwaysExpandMemo: general.AlwaysExpandMemo,
 				},
 			}
 		} else {
@@ -1389,9 +1394,10 @@ func convertUserSettingToStore(apiSetting *v1pb.UserSetting, userID int32, key s
 		if general := apiSetting.GetGeneralSetting(); general != nil {
 			storeSetting.Value = &storepb.UserSetting_General{
 				General: &storepb.GeneralUserSetting{
-					Locale:         general.Locale,
-					MemoVisibility: general.MemoVisibility,
-					Theme:          general.Theme,
+					Locale:           general.Locale,
+					MemoVisibility:   general.MemoVisibility,
+					Theme:            general.Theme,
+					AlwaysExpandMemo: general.AlwaysExpandMemo,
 				},
 			}
 		} else {

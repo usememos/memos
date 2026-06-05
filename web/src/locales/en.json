@@ -556,6 +556,8 @@
       "use-tls-description": "Upgrade the SMTP connection with STARTTLS. Keep this on for Gmail with port 587."
     },
     "preference": {
+      "always-expand-memo": "Always expand long memos",
+      "always-expand-memo-description": "Show the full memo content instead of collapsing long memos behind a \"Show more\" button.",
       "appearance-description": "Choose how the app looks and which language it uses for your account.",
       "appearance-title": "Appearance",
       "default-memo-sort-option": "Memo display time",

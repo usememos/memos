@@ -1,5 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
@@ -58,6 +59,17 @@ const PreferencesSection = () => {
     );
   };
 
+  const handleAlwaysExpandMemoChange = (alwaysExpandMemo: boolean) => {
+    updateUserGeneralSetting(
+      { generalSetting: { alwaysExpandMemo }, updateMask: ["always_expand_memo"] },
+      {
+        onSuccess: () => {
+          refetchSettings();
+        },
+      },
+    );
+  };
+
   // Provide default values if setting is not loaded yet
   const setting: UserSetting_GeneralSetting =
     generalSetting ||
@@ -65,6 +77,7 @@ const PreferencesSection = () => {
       locale: "en",
       memoVisibility: "PRIVATE",
       theme: "system",
+      alwaysExpandMemo: false,
     });
 
   return (
@@ -77,6 +90,13 @@ const PreferencesSection = () => {
 
           <SettingListItem label={t("setting.preference.theme")} description={t("setting.preference.theme-description")}>
             <ThemeSelect value={setting.theme} onValueChange={handleThemeChange} />
+          </SettingListItem>
+
+          <SettingListItem
+            label={t("setting.preference.always-expand-memo")}
+            description={t("setting.preference.always-expand-memo-description")}
+          >
+            <Switch checked={setting.alwaysExpandMemo} onCheckedChange={handleAlwaysExpandMemoChange} />
           </SettingListItem>
         </SettingList>
       </SettingGroup>
