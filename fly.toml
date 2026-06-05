@@ -14,6 +14,7 @@ primary_region = 'ams'
 
 [env]
   MEMOS_PORT = '5230'
+  MEMOS_ADDR = '0.0.0.0'
   MEMOS_DRIVER = 'postgres'
 
 [http_service]
