@@ -558,15 +558,21 @@
     "preference": {
       "appearance-description": "Choose how the app looks and which language it uses for your account.",
       "appearance-title": "Appearance",
+      "code-font": "Code font",
+      "code-font-description": "Font used for code blocks and inline code. Loaded from Google Fonts.",
       "default-memo-sort-option": "Memo display time",
       "default-memo-visibility": "Default memo visibility",
       "default-memo-visibility-description": "Visibility applied to newly created memos unless changed in the editor.",
+      "font-custom": "Custom…",
+      "font-custom-placeholder": "Google Fonts family name",
       "label": "Preferences",
       "language-description": "Updates the interface language immediately and saves it to your account.",
       "memo-defaults-description": "Set the defaults used when composing new memos.",
       "memo-defaults-title": "Memo defaults",
       "theme-description": "Applies the selected theme immediately on this device.",
-      "theme": "Theme"
+      "theme": "Theme",
+      "ui-font": "UI font",
+      "ui-font-description": "Font used across the interface. Loaded from Google Fonts."
     },
     "shortcut": {
       "delete-confirm": "Are you sure you want to delete shortcut `{{title}}`?",

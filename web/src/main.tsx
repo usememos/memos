@@ -16,11 +16,13 @@ import { useLiveMemoRefresh } from "@/hooks/useLiveMemoRefresh";
 import { useTokenRefreshOnFocus } from "@/hooks/useTokenRefreshOnFocus";
 import { queryClient } from "@/lib/query-client";
 import router from "./router";
+import { applyFontsEarly } from "./utils/font";
 import { applyLocaleEarly } from "./utils/i18n";
 import { applyThemeEarly } from "./utils/theme";
 
-// Apply theme and locale early to prevent flash
+// Apply theme, fonts and locale early to prevent flash
 applyThemeEarly();
+applyFontsEarly();
 applyLocaleEarly();
 
 // Inner component that initializes contexts

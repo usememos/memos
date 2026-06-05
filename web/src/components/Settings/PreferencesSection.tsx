@@ -1,12 +1,15 @@
 import { create } from "@bufbuild/protobuf";
+import { useEffect, useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { UserSetting_GeneralSetting, UserSetting_GeneralSettingSchema } from "@/types/proto/api/v1/user_service_pb";
+import { CODE_FONT_OPTIONS, loadFonts, UI_FONT_OPTIONS } from "@/utils/font";
 import { loadLocale, useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
 import { loadTheme } from "@/utils/theme";
+import FontSelect from "../FontSelect";
 import LocaleSelect from "../LocaleSelect";
 import ThemeSelect from "../ThemeSelect";
 import VisibilityIcon from "../VisibilityIcon";
@@ -65,7 +68,46 @@ const PreferencesSection = () => {
       locale: "en",
       memoVisibility: "PRIVATE",
       theme: "system",
+      uiFont: "",
+      codeFont: "",
     });
+
+  // Track the currently applied font selections locally so consecutive
+  // changes (e.g. UI font then code font) don't pick up a stale value from
+  // the server snapshot before refetch completes.
+  const [appliedUiFont, setAppliedUiFont] = useState<string>(setting.uiFont || "");
+  const [appliedCodeFont, setAppliedCodeFont] = useState<string>(setting.codeFont || "");
+
+  useEffect(() => {
+    setAppliedUiFont(setting.uiFont || "");
+    setAppliedCodeFont(setting.codeFont || "");
+  }, [setting.uiFont, setting.codeFont]);
+
+  const handleUiFontChange = (uiFont: string) => {
+    setAppliedUiFont(uiFont);
+    loadFonts(uiFont, appliedCodeFont);
+    updateUserGeneralSetting(
+      { generalSetting: { uiFont }, updateMask: ["ui_font"] },
+      {
+        onSuccess: () => {
+          refetchSettings();
+        },
+      },
+    );
+  };
+
+  const handleCodeFontChange = (codeFont: string) => {
+    setAppliedCodeFont(codeFont);
+    loadFonts(appliedUiFont, codeFont);
+    updateUserGeneralSetting(
+      { generalSetting: { codeFont }, updateMask: ["code_font"] },
+      {
+        onSuccess: () => {
+          refetchSettings();
+        },
+      },
+    );
+  };
 
   return (
     <SettingSection title={t("setting.preference.label")}>
@@ -77,6 +119,14 @@ const PreferencesSection = () => {
 
           <SettingListItem label={t("setting.preference.theme")} description={t("setting.preference.theme-description")}>
             <ThemeSelect value={setting.theme} onValueChange={handleThemeChange} />
+          </SettingListItem>
+
+          <SettingListItem label={t("setting.preference.ui-font")} description={t("setting.preference.ui-font-description")}>
+            <FontSelect value={appliedUiFont} options={UI_FONT_OPTIONS} onChange={handleUiFontChange} />
+          </SettingListItem>
+
+          <SettingListItem label={t("setting.preference.code-font")} description={t("setting.preference.code-font-description")}>
+            <FontSelect value={appliedCodeFont} options={CODE_FONT_OPTIONS} onChange={handleCodeFontChange} />
           </SettingListItem>
         </SettingList>
       </SettingGroup>
