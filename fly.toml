@@ -1,10 +1,14 @@
-# fly.toml app configuration file generated for memos-bv6xyg on 2026-06-05T07:13:51Z
+# fly.toml app configuration file generated for memos-bv6xyg on 2026-06-05T08:02:40Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
 app = 'memos-bv6xyg'
 primary_region = 'ams'
 
 [build]
-  dockerfile = "scripts/Dockerfile"
+  dockerfile = 'scripts/Dockerfile'
+
   [build.args]
     GO_VERSION = '1.26.2'
 
