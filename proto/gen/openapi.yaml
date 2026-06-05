@@ -639,6 +639,7 @@ paths:
                         - STATE_UNSPECIFIED
                         - NORMAL
                         - ARCHIVED
+                        - DRAFT
                     type: string
                     format: enum
                 - name: orderBy
@@ -2275,6 +2276,7 @@ paths:
                         - STATE_UNSPECIFIED
                         - NORMAL
                         - ARCHIVED
+                        - DRAFT
                     type: string
                     format: enum
                 - name: filter
@@ -3179,6 +3181,7 @@ components:
                         - STATE_UNSPECIFIED
                         - NORMAL
                         - ARCHIVED
+                        - DRAFT
                     type: string
                     description: The state of the memo.
                     format: enum
@@ -3721,6 +3724,7 @@ components:
                         - STATE_UNSPECIFIED
                         - NORMAL
                         - ARCHIVED
+                        - DRAFT
                     type: string
                     description: The state of the user.
                     format: enum

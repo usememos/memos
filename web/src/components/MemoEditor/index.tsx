@@ -1,14 +1,18 @@
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { memoServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { memoKeys } from "@/hooks/useMemoQueries";
+import { memoKeys, useDrafts } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { cn } from "@/lib/utils";
 import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
+import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
 import {
@@ -27,6 +31,64 @@ import { errorService, memoService, transcriptionService, validationService } fr
 import { EditorProvider, useEditorContext } from "./state";
 import type { MemoEditorProps } from "./types";
 import type { LocalFile } from "./types/attachment";
+
+// Scrollable, infinitely-paginated drafts list rendered inside the toolbar's
+// "load previous drafts" DropdownMenuContent. Infinite scroll is driven by an
+// IntersectionObserver sentinel scoped to THIS fixed-height scroll box (the
+// window-scroll PagedMemoList cannot drive a fixed container, so it is not
+// reused here). Internal (non-exported) — not a new public component/route.
+const DraftsListMenu = ({ onSelect }: { onSelect: (draft: Memo) => void }) => {
+  const t = useTranslate();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useDrafts({});
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  const drafts = useMemo(() => (data?.pages ?? []).flatMap((page) => page.memos), [data]);
+
+  useEffect(() => {
+    const root = scrollRef.current;
+    const sentinel = sentinelRef.current;
+    if (!root || !sentinel || !hasNextPage) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          void fetchNextPage();
+        }
+      },
+      { root, rootMargin: "0px 0px 80px 0px" },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  return (
+    <div ref={scrollRef} className="max-h-[60vh] overflow-y-auto p-1">
+      {isLoading ? (
+        <div className="px-2 py-1.5 text-sm text-muted-foreground">{t("editor.loading")}</div>
+      ) : drafts.length === 0 ? (
+        <div className="px-2 py-1.5 text-sm text-muted-foreground">{t("editor.no-drafts")}</div>
+      ) : (
+        <>
+          {drafts.map((draft) => {
+            const firstLine = draft.content.split("\n").find((line) => line.trim()) ?? "";
+            const updated = draft.updateTime ? timestampDate(draft.updateTime).toLocaleString() : "";
+            return (
+              <DropdownMenuItem key={draft.name} className="flex flex-col items-start gap-0.5" onSelect={() => onSelect(draft)}>
+                <span className="w-full truncate text-sm">{firstLine || draft.name}</span>
+                {updated && <span className="text-xs text-muted-foreground">{updated}</span>}
+              </DropdownMenuItem>
+            );
+          })}
+          <div ref={sentinelRef} />
+          {isFetchingNextPage && <div className="px-2 py-1.5 text-xs text-muted-foreground">{t("editor.loading")}</div>}
+        </>
+      )}
+    </div>
+  );
+};
 
 const MemoEditor = (props: MemoEditorProps) => (
   <EditorProvider>
@@ -54,6 +116,10 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const { aiSetting, fetchSetting } = useInstance();
   const [isAudioRecorderOpen, setIsAudioRecorderOpen] = useState(false);
   const [isTranscribingAudio, setIsTranscribingAudio] = useState(false);
+  // Name of a server draft resumed into this editor (O3: fetch-into-fresh-
+  // editor, NOT tracked on EditorState). Re-saving passes it as
+  // saveDraft's draftMemoName so the same draft is updated, not duplicated.
+  const [resumedDraftName, setResumedDraftName] = useState<string | undefined>(undefined);
 
   const memoName = memo?.name;
   const canTranscribe = useMemo(() => {
@@ -244,7 +310,14 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     dispatch(actions.setLoading("saving", true));
 
     try {
-      const result = await memoService.save(state, { memoName, parentMemoName });
+      // Publishing a resumed draft must transition that SAME draft row
+      // (DRAFT -> NORMAL) — not mint a new NORMAL memo, which would duplicate
+      // it onto Home and leave the draft stranded in the Drafts list. Only
+      // applies in the create-mode composer (no memoName, not a comment).
+      const isPublishingResumedDraft = Boolean(resumedDraftName) && !memoName && !parentMemoName;
+      const result = isPublishingResumedDraft
+        ? { ...(await memoService.publishDraft(state, { draftMemoName: resumedDraftName! })), hasChanges: true }
+        : await memoService.save(state, { memoName, parentMemoName });
 
       if (!result.hasChanges) {
         toast.error(t("editor.no-changes-detected"));
@@ -274,6 +347,9 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
       await Promise.all(invalidationPromises);
 
+      // A resumed draft is now published and detached from this editor.
+      setResumedDraftName(undefined);
+
       // Reset editor state to initial values
       dispatch(actions.reset());
       if (!memoName && defaultVisibility) {
@@ -298,6 +374,76 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
       dispatch(actions.setLoading("saving", false));
     }
   }
+
+  // Server-side draft save (sibling of handleSave). Unlike handleSave it does
+  // NOT gate on validationService.canSave — a draft may be empty/partial (E4).
+  async function handleSaveDraft() {
+    dispatch(actions.setLoading("saving", true));
+
+    try {
+      await memoService.saveDraft(state, {
+        draftMemoName: resumedDraftName,
+        username: currentUser?.name,
+        cacheKey,
+      });
+
+      // Clear the localStorage keystroke buffer + suppress the unmount flush so
+      // it cannot stale-restore over the just-saved server draft (edge E7).
+      discardDraft();
+
+      // Same invalidation set as handleSave. memoKeys.lists() also covers the
+      // useDrafts query (it shares memoKeys.list(...)), so the drafts list
+      // refreshes for free.
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: memoKeys.lists() }),
+        queryClient.invalidateQueries({ queryKey: userKeys.stats() }),
+      ]);
+
+      // Reset the editor like a successful save; a resumed draft is now
+      // detached from this editor instance.
+      setResumedDraftName(undefined);
+      dispatch(actions.reset());
+      if (defaultVisibility) {
+        dispatch(actions.setMetadata({ visibility: defaultVisibility }));
+      }
+      if (defaultCreateTime) {
+        dispatch(actions.setTimestamps({ createTime: defaultCreateTime, updateTime: defaultCreateTime }));
+      }
+
+      toast.success(t("editor.save-as-draft"));
+    } catch (error) {
+      handleError(error, toast.error, {
+        context: "Failed to save draft",
+        fallbackMessage: errorService.getErrorMessage(error),
+      });
+    } finally {
+      dispatch(actions.setLoading("saving", false));
+    }
+  }
+
+  // Resume a draft: fetch it by name and hydrate the editor reducer the same
+  // way an existing memo is loaded (memoService.fromMemo + initMemo). EditorState
+  // is NOT extended (O3); the draft's name is tracked in component-local state.
+  const handleResumeDraft = useCallback(
+    async (draft: Memo) => {
+      try {
+        // Route through the React Query layer (shared memoKeys.detail cache)
+        // rather than calling the connect client directly from the component.
+        const full = await queryClient.fetchQuery({
+          queryKey: memoKeys.detail(draft.name),
+          queryFn: () => memoServiceClient.getMemo({ name: draft.name }),
+        });
+        dispatch(actions.initMemo(memoService.fromMemo(full)));
+        setResumedDraftName(full.name);
+      } catch (error) {
+        handleError(error, toast.error, {
+          context: "Failed to load draft",
+          fallbackMessage: errorService.getErrorMessage(error),
+        });
+      }
+    },
+    [actions, dispatch, queryClient],
+  );
 
   return (
     <>
@@ -345,7 +491,18 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         {/* Metadata and toolbar grouped together at bottom */}
         <div className="w-full flex flex-col gap-2">
           <EditorMetadata memoName={memoName} />
-          <EditorToolbar onSave={handleSave} onCancel={onCancel} memoName={memoName} onAudioRecorderClick={handleAudioRecorderClick} />
+          <EditorToolbar
+            onSave={handleSave}
+            onCancel={onCancel}
+            memoName={memoName}
+            onAudioRecorderClick={handleAudioRecorderClick}
+            onSaveDraft={isDraftCacheEnabled && !parentMemoName ? handleSaveDraft : undefined}
+            onLoadDrafts={
+              isDraftCacheEnabled && !parentMemoName
+                ? () => <DraftsListMenu onSelect={(draft) => void handleResumeDraft(draft)} />
+                : undefined
+            }
+          />
         </div>
       </div>
     </>

@@ -37,6 +37,13 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 		placeholder = append(placeholder, "FROM_UNIXTIME(?)")
 		args = append(args, create.UpdatedTs)
 	}
+	// Only set row_status explicitly when provided, so existing callers keep
+	// the schema DEFAULT 'NORMAL' path unchanged (e.g. a DRAFT memo).
+	if create.RowStatus != "" {
+		fields = append(fields, "`row_status`")
+		placeholder = append(placeholder, "?")
+		args = append(args, create.RowStatus)
+	}
 
 	stmt := "INSERT INTO `memo` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
 	result, err := d.db.ExecContext(ctx, stmt, args...)

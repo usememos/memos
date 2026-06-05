@@ -8,6 +8,7 @@ enum State {
   STATE_UNSPECIFIED = 0;
   NORMAL = 1;
   ARCHIVED = 2;
+  DRAFT = 3;
 }
 
 // Used internally for obfuscating the page token.

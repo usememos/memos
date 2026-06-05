@@ -182,9 +182,9 @@ func seedLegacyMigrationData(ctx context.Context, t *testing.T, driver string, d
 	require.NotContains(t, message, "\"memoComment\"")
 }
 
-func execMigrationSQL(t *testing.T, db *sql.DB, query string) {
+func execMigrationSQL(t *testing.T, db *sql.DB, query string, args ...any) {
 	t.Helper()
-	_, err := db.Exec(query)
+	_, err := db.Exec(query, args...)
 	require.NoError(t, err, "failed to execute SQL: %s", query)
 }
 

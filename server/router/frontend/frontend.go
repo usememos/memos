@@ -147,8 +147,12 @@ func (s *FrontendService) getSitemapXML(c *echo.Context) error {
 		return err
 	}
 
+	// RowStatus pinned to Normal so a PUBLIC-visibility DRAFT (or an archived
+	// memo) never leaks into the public sitemap.
+	normalStatus := store.Normal
 	memos, err := s.Store.ListMemos(c.Request().Context(), &store.FindMemo{
 		VisibilityList: []store.Visibility{store.Public},
+		RowStatus:      &normalStatus,
 	})
 	if err != nil {
 		return errors.Wrap(err, "failed to list public memos for sitemap")

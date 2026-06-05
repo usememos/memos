@@ -26,6 +26,19 @@ func (s *APIV1Service) ListMemoReactions(ctx context.Context, request *v1pb.List
 		return nil, status.Errorf(codes.NotFound, "memo not found")
 	}
 
+	// A DRAFT memo is creator-only regardless of visibility (E2/E3): do not
+	// surface its reactions to a non-creator, even for a PUBLIC-visibility
+	// draft. This mirrors the creator-only check in checkMemoReadAccess.
+	if memo.RowStatus == store.Draft {
+		user, err := s.fetchCurrentUser(ctx)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get user")
+		}
+		if user == nil || memo.CreatorID != user.ID {
+			return nil, status.Errorf(codes.NotFound, "memo not found")
+		}
+	}
+
 	// Check memo visibility.
 	if memo.Visibility != store.Public {
 		user, err := s.fetchCurrentUser(ctx)

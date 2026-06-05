@@ -10,7 +10,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file api/v1/common.proto.
  */
 export const file_api_v1_common: GenFile = /*@__PURE__*/
-  fileDesc("ChNhcGkvdjEvY29tbW9uLnByb3RvEgxtZW1vcy5hcGkudjEiKgoJUGFnZVRva2VuEg0KBWxpbWl0GAEgASgFEg4KBm9mZnNldBgCIAEoBSo4CgVTdGF0ZRIVChFTVEFURV9VTlNQRUNJRklFRBAAEgoKBk5PUk1BTBABEgwKCEFSQ0hJVkVEEAIqOQoJRGlyZWN0aW9uEhkKFURJUkVDVElPTl9VTlNQRUNJRklFRBAAEgcKA0FTQxABEggKBERFU0MQAkKjAQoQY29tLm1lbW9zLmFwaS52MUILQ29tbW9uUHJvdG9QAVowZ2l0aHViLmNvbS91c2VtZW1vcy9tZW1vcy9wcm90by9nZW4vYXBpL3YxO2FwaXYxogIDTUFYqgIMTWVtb3MuQXBpLlYxygIMTWVtb3NcQXBpXFYx4gIYTWVtb3NcQXBpXFYxXEdQQk1ldGFkYXRh6gIOTWVtb3M6OkFwaTo6VjFiBnByb3RvMw");
+  fileDesc("ChNhcGkvdjEvY29tbW9uLnByb3RvEgxtZW1vcy5hcGkudjEiKgoJUGFnZVRva2VuEg0KBWxpbWl0GAEgASgFEg4KBm9mZnNldBgCIAEoBSpDCgVTdGF0ZRIVChFTVEFURV9VTlNQRUNJRklFRBAAEgoKBk5PUk1BTBABEgwKCEFSQ0hJVkVEEAISCQoFRFJBRlQQAyo5CglEaXJlY3Rpb24SGQoVRElSRUNUSU9OX1VOU1BFQ0lGSUVEEAASBwoDQVNDEAESCAoEREVTQxACQqMBChBjb20ubWVtb3MuYXBpLnYxQgtDb21tb25Qcm90b1ABWjBnaXRodWIuY29tL3VzZW1lbW9zL21lbW9zL3Byb3RvL2dlbi9hcGkvdjE7YXBpdjGiAgNNQViqAgxNZW1vcy5BcGkuVjHKAgxNZW1vc1xBcGlcVjHiAhhNZW1vc1xBcGlcVjFcR1BCTWV0YWRhdGHqAg5NZW1vczo6QXBpOjpWMWIGcHJvdG8z");
 
 /**
  * Used internally for obfuscating the page token.
@@ -54,6 +54,11 @@ export enum State {
    * @generated from enum value: ARCHIVED = 2;
    */
   ARCHIVED = 2,
+
+  /**
+   * @generated from enum value: DRAFT = 3;
+   */
+  DRAFT = 3,
 }
 
 /**

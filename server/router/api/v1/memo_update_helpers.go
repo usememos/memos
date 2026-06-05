@@ -64,6 +64,15 @@ func (s *APIV1Service) buildUpdatedMemoState(ctx context.Context, memoID int32) 
 }
 
 func (s *APIV1Service) dispatchMemoUpdatedSideEffects(ctx context.Context, memo *store.Memo, parentMemo *store.Memo, memoMessage *v1pb.Memo) {
+	// A memo that is still a draft after the update has not been published:
+	// suppress the webhook/SSE just like CreateMemo does for a draft. On the
+	// publish transition (Draft->NORMAL) the post-update row status is NORMAL,
+	// so the normal update side-effects fire here -- this is the moment the
+	// memo becomes visible (contract §4.3).
+	if memo.RowStatus == store.Draft {
+		return
+	}
+
 	if err := s.DispatchMemoUpdatedWebhook(ctx, memoMessage); err != nil {
 		slog.Warn("Failed to dispatch memo updated webhook", slog.Any("err", err))
 	}

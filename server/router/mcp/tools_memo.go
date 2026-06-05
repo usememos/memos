@@ -162,10 +162,10 @@ func parseVisibility(s string) (store.Visibility, error) {
 // parseRowStatus validates a state string and returns the store constant.
 func parseRowStatus(s string) (store.RowStatus, error) {
 	switch rs := store.RowStatus(s); rs {
-	case store.Normal, store.Archived:
+	case store.Normal, store.Archived, store.Draft:
 		return rs, nil
 	default:
-		return "", errors.Errorf("state must be NORMAL or ARCHIVED; got %q", s)
+		return "", errors.Errorf("state must be NORMAL, ARCHIVED or DRAFT; got %q", s)
 	}
 }
 
@@ -183,8 +183,8 @@ func (s *MCPService) registerMemoTools(mcpSrv *mcpserver.MCPServer) {
 			mcp.WithNumber("page_size", mcp.Description("Maximum memos to return (1–100, default 20)")),
 			mcp.WithNumber("page", mcp.Description("Zero-based page index for pagination (default 0)")),
 			mcp.WithString("state",
-				mcp.Enum("NORMAL", "ARCHIVED"),
-				mcp.Description("Filter by state: NORMAL (default) or ARCHIVED"),
+				mcp.Enum("NORMAL", "ARCHIVED", "DRAFT"),
+				mcp.Description("Filter by state: NORMAL (default), ARCHIVED, or DRAFT (your own drafts only)"),
 			),
 			mcp.WithBoolean("order_by_pinned", mcp.Description("When true, pinned memos appear first (default false)")),
 			mcp.WithString("filter", mcp.Description(`Optional CEL filter (supported subset of standard CEL syntax), e.g. content.contains("keyword") or tags.exists(t, t == "work")`)),
@@ -220,8 +220,8 @@ func (s *MCPService) registerMemoTools(mcpSrv *mcpserver.MCPServer) {
 			),
 			mcp.WithBoolean("pinned", mcp.Description("Pin or unpin the memo")),
 			mcp.WithString("state",
-				mcp.Enum("NORMAL", "ARCHIVED"),
-				mcp.Description("Set to ARCHIVED to archive, NORMAL to restore"),
+				mcp.Enum("NORMAL", "ARCHIVED", "DRAFT"),
+				mcp.Description("Set to ARCHIVED to archive, NORMAL to restore or publish a draft, DRAFT to keep as an unpublished draft"),
 			),
 			mcp.WithOutputSchema[memoJSON](),
 		)...,

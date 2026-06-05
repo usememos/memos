@@ -17,6 +17,8 @@ const (
 	Normal RowStatus = "NORMAL"
 	// Archived is the status for an archived row.
 	Archived RowStatus = "ARCHIVED"
+	// Draft is the status for an unpublished draft memo row.
+	Draft RowStatus = "DRAFT"
 )
 
 func (r RowStatus) String() string {

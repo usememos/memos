@@ -25,6 +25,8 @@ func rowStatusToProto(rowStatus store.RowStatus) v1pb.State {
 	switch rowStatus {
 	case store.Archived:
 		return v1pb.State_ARCHIVED
+	case store.Draft:
+		return v1pb.State_DRAFT
 	default:
 		return v1pb.State_NORMAL
 	}

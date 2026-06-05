@@ -18,6 +18,12 @@ func checkMemoAccess(memo *store.Memo, userID int32) error {
 	if memo.RowStatus == store.Archived && memo.CreatorID != userID {
 		return errors.New("permission denied")
 	}
+	// Draft memos are creator-only regardless of visibility (E2/E3): a
+	// PUBLIC-visibility draft stays invisible to every non-creator until
+	// published.
+	if memo.RowStatus == store.Draft && memo.CreatorID != userID {
+		return errors.New("permission denied")
+	}
 
 	switch memo.Visibility {
 	case store.Protected:
@@ -55,6 +61,25 @@ func applyVisibilityFilter(find *store.FindMemo, userID int32, rowStatus *store.
 		}
 		find.CreatorID = &userID
 		return
+	}
+	// Draft memos are creator-only regardless of visibility (E2/E3): mirror the
+	// Archived creator-scoping above so a non-creator never sees another user's
+	// draft, even a PUBLIC-visibility one.
+	if rowStatus != nil && *rowStatus == store.Draft {
+		if userID == 0 {
+			impossibleCreatorID := int32(-1)
+			find.CreatorID = &impossibleCreatorID
+			return
+		}
+		find.CreatorID = &userID
+		return
+	}
+	// When no explicit row status is requested, the default surface must never
+	// expose drafts to anyone (including the creator) — drafts are only
+	// reachable via an explicit state=DRAFT query.
+	if rowStatus == nil {
+		normal := store.Normal
+		find.RowStatus = &normal
 	}
 	if userID == 0 {
 		find.VisibilityList = []store.Visibility{store.Public}

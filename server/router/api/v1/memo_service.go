@@ -55,6 +55,20 @@ func (s *APIV1Service) checkMemoReadAccess(ctx context.Context, memo *store.Memo
 		}
 	}
 
+	// Draft memos are creator-only regardless of visibility (E2/E3): a
+	// PUBLIC-visibility draft is still invisible to every non-creator until
+	// published. This check intentionally precedes the visibility logic so the
+	// state filter overrides visibility.
+	if memo.RowStatus == store.Draft {
+		user, err := s.fetchCurrentUser(ctx)
+		if err != nil {
+			return status.Errorf(codes.Internal, "failed to get user")
+		}
+		if user == nil || memo.CreatorID != user.ID {
+			return status.Errorf(codes.NotFound, "memo not found")
+		}
+	}
+
 	if memo.Visibility != store.Public {
 		user, err := s.fetchCurrentUser(ctx)
 		if err != nil {
@@ -89,6 +103,9 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		CreatorID:  user.ID,
 		Content:    request.Memo.Content,
 		Visibility: convertVisibilityToStore(request.Memo.Visibility),
+		// STATE_UNSPECIFIED resolves to store.Normal via the converter's default
+		// arm (E1/C2); only an explicit DRAFT yields a draft row.
+		RowStatus: convertStateToStore(request.Memo.State),
 	}
 
 	// Set custom timestamps if provided in the request.
@@ -156,23 +173,29 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
-	// Try to dispatch webhook when memo is created.
-	if err := s.DispatchMemoCreatedWebhook(ctx, memoMessage); err != nil {
-		slog.Warn("Failed to dispatch memo created webhook", slog.Any("err", err))
-	}
+	// A draft is not yet published: it must not webhook, must not hit live
+	// feeds, and must not notify mentioned users until it transitions to a
+	// visible state (contract §4.1.3). The attachment/relation/timestamp
+	// blocks above still run so the draft inherits the full memo machinery.
+	if memo.RowStatus != store.Draft {
+		// Try to dispatch webhook when memo is created.
+		if err := s.DispatchMemoCreatedWebhook(ctx, memoMessage); err != nil {
+			slog.Warn("Failed to dispatch memo created webhook", slog.Any("err", err))
+		}
 
-	// Broadcast live refresh event (skipped when called from CreateMemoComment).
-	if !isSSESuppressed(ctx) {
-		s.SSEHub.Broadcast(&SSEEvent{
-			Type:       SSEEventMemoCreated,
-			Name:       memoMessage.Name,
-			Visibility: memo.Visibility,
-			CreatorID:  resolveSSECreatorID(memo, nil),
-		})
-	}
+		// Broadcast live refresh event (skipped when called from CreateMemoComment).
+		if !isSSESuppressed(ctx) {
+			s.SSEHub.Broadcast(&SSEEvent{
+				Type:       SSEEventMemoCreated,
+				Name:       memoMessage.Name,
+				Visibility: memo.Visibility,
+				CreatorID:  resolveSSECreatorID(memo, nil),
+			})
+		}
 
-	if !isMentionNotificationSuppressed(ctx) {
-		s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, nil, "")
+		if !isMentionNotificationSuppressed(ctx) {
+			s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, nil, "")
+		}
 	}
 
 	return memoMessage, nil
@@ -192,6 +215,14 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		state := store.Archived
 		memoFind.RowStatus = &state
 		// Archived memos are only visible to their creator.
+		if currentUser == nil {
+			return &v1pb.ListMemosResponse{}, nil
+		}
+		memoFind.CreatorID = &currentUser.ID
+	} else if request.State == v1pb.State_DRAFT {
+		state := store.Draft
+		memoFind.RowStatus = &state
+		// Drafts are only visible to their creator.
 		if currentUser == nil {
 			return &v1pb.ListMemosResponse{}, nil
 		}
@@ -483,6 +514,7 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	}
 	var previousContent string
 	contentUpdated := false
+	publishedFromDraft := false
 	for _, path := range request.UpdateMask.Paths {
 		if path == "content" {
 			contentUpdated = true
@@ -518,6 +550,17 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 		} else if path == "state" {
 			rowStatus := convertStateToStore(request.Memo.State)
 			update.RowStatus = &rowStatus
+			// Publish transition: a draft becoming NORMAL is the moment the
+			// memo becomes visible. Key on the transition itself (prior row
+			// status Draft AND the new state NORMAL), not merely "state in
+			// mask" -- a NORMAL->NORMAL no-op must not refresh created_ts
+			// (edge E5 / O4).
+			if memo.RowStatus == store.Draft && rowStatus == store.Normal {
+				publishedFromDraft = true
+				now := time.Now().Unix()
+				update.CreatedTs = &now
+				update.UpdatedTs = &now
+			}
 		} else if path == "create_time" {
 			createdTs := request.Memo.CreateTime.AsTime().Unix()
 			update.CreatedTs = &createdTs
@@ -558,8 +601,18 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to build updated memo state")
 	}
-	if contentUpdated {
-		s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, parentMemo, previousContent)
+	// A memo still in DRAFT after the update is not yet published: suppress
+	// mention notifications just like webhook/SSE (contract §4.3). Only once it
+	// is visible do mentions fire: on the DRAFT->NORMAL publish transition,
+	// notify every mention in the now-published content exactly once -- pass an
+	// empty previous content so all current mentions count as new (they were
+	// suppressed while the memo was a draft).
+	if memo.RowStatus != store.Draft {
+		if publishedFromDraft {
+			s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, parentMemo, "")
+		} else if contentUpdated {
+			s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, parentMemo, previousContent)
+		}
 	}
 	s.dispatchMemoUpdatedSideEffects(ctx, memo, parentMemo, memoMessage)
 
