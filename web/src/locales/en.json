@@ -53,6 +53,9 @@
       "title": "Unlinked uploads"
     }
   },
+  "google": {
+    "calendar": "Google Calendar"
+  },
   "common": {
     "about": "About",
     "add": "Add",

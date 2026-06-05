@@ -20,6 +20,8 @@ export interface MemoEditorProps {
    * in edit mode (when `memo` is set).
    */
   defaultCreateTime?: Date;
+  /** Pre-filled content for a new memo (e.g. a tag string when browsing by tag). */
+  defaultContent?: string;
   onConfirm?: (memoName: string) => void;
   onCancel?: () => void;
 }
@@ -66,6 +68,7 @@ export interface InsertMenuProps {
   location?: Location;
   onLocationChange: (location?: Location) => void;
   onToggleFocusMode?: () => void;
+  onCalendarClick?: () => void;
   memoName?: string;
   onAudioRecorderClick?: () => void;
 }

@@ -88,6 +88,11 @@ const PagedMemoList = (props: Props) => {
 
   const showMemoEditor = props.showMemoEditor ?? false;
   const defaultCreateTime = useMemo(() => deriveDefaultCreateTimeFromFilters(filters), [filters]);
+  const defaultContent = useMemo(() => {
+    const tagFilters = filters.filter((f) => f.factor === "tagSearch");
+    if (tagFilters.length === 0) return undefined;
+    return tagFilters.map((f) => `#${f.value}`).join(" ") + " ";
+  }, [filters]);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteMemos(
     {
@@ -158,10 +163,12 @@ const PagedMemoList = (props: Props) => {
           <>
             {showMemoEditor ? (
               <MemoEditor
-                className="mb-2"
-                cacheKey="home-memo-editor"
+                key={defaultContent ? `home-memo-editor-${defaultContent.trim()}` : "home-memo-editor"}
+                className="mb-3"
+                cacheKey={defaultContent ? `home-memo-editor-${defaultContent.trim()}` : "home-memo-editor"}
                 placeholder={t("editor.any-thoughts")}
                 defaultCreateTime={defaultCreateTime}
+                defaultContent={defaultContent}
               />
             ) : null}
             <MemoFilters />

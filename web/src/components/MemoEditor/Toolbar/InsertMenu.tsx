@@ -2,6 +2,7 @@ import { uniqBy } from "lodash-es";
 import {
   FileIcon,
   ImageIcon,
+    CalendarIcon,
   LinkIcon,
   LoaderIcon,
   type LucideIcon,
@@ -12,6 +13,7 @@ import {
   PlusIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import useMediaQuery from "@/hooks/useMediaQuery";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
 import type { MapPoint } from "@/components/map/types";
 import { useReverseGeocoding } from "@/components/map/useReverseGeocoding";
@@ -38,7 +40,8 @@ import type { LocalFile } from "../types/attachment";
 const InsertMenu = (props: InsertMenuProps) => {
   const t = useTranslate();
   const { state, actions, dispatch } = useEditorContext();
-  const { location: initialLocation, onLocationChange, onToggleFocusMode, isUploading: isUploadingProp } = props;
+  const { location: initialLocation, onLocationChange, onToggleFocusMode, isUploading: isUploadingProp, onCalendarClick } = props;
+  const isDesktop = useMediaQuery("sm");
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
@@ -140,9 +143,19 @@ const InsertMenu = (props: InsertMenuProps) => {
     handleUploadClick();
   }, [handleUploadClick]);
 
+  const handleGoogleCalendarClick = useCallback(() => {
+    onCalendarClick?.();
+  }, [onCalendarClick])
+
   const menuItems = useMemo(
     () =>
       [
+        {
+          key: "google-calendar",
+          label: t("google.calendar"),
+          icon: CalendarIcon,
+          onClick: handleGoogleCalendarClick,
+        },
         {
           key: "upload-media",
           label: t("attachment-library.tabs.media"),
@@ -186,14 +199,21 @@ const InsertMenu = (props: InsertMenuProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          {menuItems.slice(0, 3).map((item) => (
+          {menuItems.slice(0, 1).map((item) => (
+              <DropdownMenuItem key={item.key} onClick={item.onClick}>
+                <item.icon className="w-4 h-4" />
+                {item.label}
+              </DropdownMenuItem>
+          ))}
+          <DropdownMenuSeparator />
+          {menuItems.slice(1, 4).map((item) => (
             <DropdownMenuItem key={item.key} onClick={item.onClick}>
               <item.icon className="w-4 h-4" />
               {item.label}
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
-          {menuItems.slice(3).map((item) => (
+          {menuItems.slice(4).map((item) => (
             <DropdownMenuItem key={item.key} onClick={item.onClick}>
               <item.icon className="w-4 h-4" />
               {item.label}
@@ -202,11 +222,17 @@ const InsertMenu = (props: InsertMenuProps) => {
           <DropdownMenuSeparator />
           {/* View submenu with Focus Mode */}
           <DropdownMenuSub open={moreSubmenuOpen} onOpenChange={setMoreSubmenuOpen}>
-            <DropdownMenuSubTrigger onPointerEnter={handleTriggerEnter} onPointerLeave={handleTriggerLeave}>
+            <DropdownMenuSubTrigger
+              onPointerEnter={isDesktop ? handleTriggerEnter : undefined}
+              onPointerLeave={isDesktop ? handleTriggerLeave : undefined}
+            >
               <MoreHorizontalIcon className="w-4 h-4" />
               {t("common.more")}
             </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent onPointerEnter={handleContentEnter} onPointerLeave={handleContentLeave}>
+            <DropdownMenuSubContent
+              onPointerEnter={isDesktop ? handleContentEnter : undefined}
+              onPointerLeave={isDesktop ? handleContentLeave : undefined}
+            >
               <DropdownMenuItem onClick={handleToggleFocusMode}>
                 <Maximize2Icon className="w-4 h-4" />
                 {t("editor.focus-mode")}

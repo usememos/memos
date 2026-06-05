@@ -1,7 +1,7 @@
-import { BookmarkIcon } from "lucide-react";
+import { PinIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import i18n from "@/i18n";
 import { cn } from "@/lib/utils";
@@ -50,6 +50,18 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
 
   return (
     <div className="w-full flex flex-row justify-between items-center gap-2">
+      {/* Pinned badge — absolute, does not push content */}
+      {showPinned && memo.pinned && (
+        <button
+          type="button"
+          onClick={unpinMemo}
+          className="absolute left-0 -top-[9px] flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+        >
+          <PinIcon className="w-3 h-3" />
+          {t("common.pinned")}
+        </button>
+      )}
+
       <div className="w-auto max-w-[calc(100%-8rem)] grow flex flex-row justify-start items-center">
         {showCreator && creator ? (
           <CreatorDisplay creator={creator} displayTime={displayTime} timeTooltip={timeTooltip} onGotoDetail={handleGotoMemoDetailPage} />
@@ -78,21 +90,6 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
               {t(`memo.visibility.${convertVisibilityToString(memo.visibility).toLowerCase()}` as Parameters<typeof t>[0])}
             </TooltipContent>
           </Tooltip>
-        )}
-
-        {showPinned && memo.pinned && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="cursor-pointer">
-                  <BookmarkIcon className="w-4 h-auto text-primary" onClick={unpinMemo} />
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{t("common.unpin")}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
         )}
 
         <MemoActionMenu memo={memo} readonly={readonly} onEdit={openEditor} />
