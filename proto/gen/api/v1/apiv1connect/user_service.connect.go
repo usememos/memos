@@ -36,6 +36,8 @@ const (
 const (
 	// UserServiceListUsersProcedure is the fully-qualified name of the UserService's ListUsers RPC.
 	UserServiceListUsersProcedure = "/memos.api.v1.UserService/ListUsers"
+	// UserServiceSearchUsersProcedure is the fully-qualified name of the UserService's SearchUsers RPC.
+	UserServiceSearchUsersProcedure = "/memos.api.v1.UserService/SearchUsers"
 	// UserServiceBatchGetUsersProcedure is the fully-qualified name of the UserService's BatchGetUsers
 	// RPC.
 	UserServiceBatchGetUsersProcedure = "/memos.api.v1.UserService/BatchGetUsers"
@@ -110,6 +112,9 @@ const (
 type UserServiceClient interface {
 	// ListUsers returns a list of users.
 	ListUsers(context.Context, *connect.Request[v1.ListUsersRequest]) (*connect.Response[v1.ListUsersResponse], error)
+	// SearchUsers searches for users by username or display name.
+	// Used for mention autocomplete in the memo editor.
+	SearchUsers(context.Context, *connect.Request[v1.SearchUsersRequest]) (*connect.Response[v1.SearchUsersResponse], error)
 	// BatchGetUsers returns active users by usernames.
 	BatchGetUsers(context.Context, *connect.Request[v1.BatchGetUsersRequest]) (*connect.Response[v1.BatchGetUsersResponse], error)
 	// GetUser gets a user by username.
@@ -178,6 +183,12 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			httpClient,
 			baseURL+UserServiceListUsersProcedure,
 			connect.WithSchema(userServiceMethods.ByName("ListUsers")),
+			connect.WithClientOptions(opts...),
+		),
+		searchUsers: connect.NewClient[v1.SearchUsersRequest, v1.SearchUsersResponse](
+			httpClient,
+			baseURL+UserServiceSearchUsersProcedure,
+			connect.WithSchema(userServiceMethods.ByName("SearchUsers")),
 			connect.WithClientOptions(opts...),
 		),
 		batchGetUsers: connect.NewClient[v1.BatchGetUsersRequest, v1.BatchGetUsersResponse](
@@ -330,6 +341,7 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 // userServiceClient implements UserServiceClient.
 type userServiceClient struct {
 	listUsers                 *connect.Client[v1.ListUsersRequest, v1.ListUsersResponse]
+	searchUsers               *connect.Client[v1.SearchUsersRequest, v1.SearchUsersResponse]
 	batchGetUsers             *connect.Client[v1.BatchGetUsersRequest, v1.BatchGetUsersResponse]
 	getUser                   *connect.Client[v1.GetUserRequest, v1.User]
 	createUser                *connect.Client[v1.CreateUserRequest, v1.User]
@@ -359,6 +371,11 @@ type userServiceClient struct {
 // ListUsers calls memos.api.v1.UserService.ListUsers.
 func (c *userServiceClient) ListUsers(ctx context.Context, req *connect.Request[v1.ListUsersRequest]) (*connect.Response[v1.ListUsersResponse], error) {
 	return c.listUsers.CallUnary(ctx, req)
+}
+
+// SearchUsers calls memos.api.v1.UserService.SearchUsers.
+func (c *userServiceClient) SearchUsers(ctx context.Context, req *connect.Request[v1.SearchUsersRequest]) (*connect.Response[v1.SearchUsersResponse], error) {
+	return c.searchUsers.CallUnary(ctx, req)
 }
 
 // BatchGetUsers calls memos.api.v1.UserService.BatchGetUsers.
@@ -485,6 +502,9 @@ func (c *userServiceClient) DeleteUserNotification(ctx context.Context, req *con
 type UserServiceHandler interface {
 	// ListUsers returns a list of users.
 	ListUsers(context.Context, *connect.Request[v1.ListUsersRequest]) (*connect.Response[v1.ListUsersResponse], error)
+	// SearchUsers searches for users by username or display name.
+	// Used for mention autocomplete in the memo editor.
+	SearchUsers(context.Context, *connect.Request[v1.SearchUsersRequest]) (*connect.Response[v1.SearchUsersResponse], error)
 	// BatchGetUsers returns active users by usernames.
 	BatchGetUsers(context.Context, *connect.Request[v1.BatchGetUsersRequest]) (*connect.Response[v1.BatchGetUsersResponse], error)
 	// GetUser gets a user by username.
@@ -549,6 +569,12 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		UserServiceListUsersProcedure,
 		svc.ListUsers,
 		connect.WithSchema(userServiceMethods.ByName("ListUsers")),
+		connect.WithHandlerOptions(opts...),
+	)
+	userServiceSearchUsersHandler := connect.NewUnaryHandler(
+		UserServiceSearchUsersProcedure,
+		svc.SearchUsers,
+		connect.WithSchema(userServiceMethods.ByName("SearchUsers")),
 		connect.WithHandlerOptions(opts...),
 	)
 	userServiceBatchGetUsersHandler := connect.NewUnaryHandler(
@@ -699,6 +725,8 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		switch r.URL.Path {
 		case UserServiceListUsersProcedure:
 			userServiceListUsersHandler.ServeHTTP(w, r)
+		case UserServiceSearchUsersProcedure:
+			userServiceSearchUsersHandler.ServeHTTP(w, r)
 		case UserServiceBatchGetUsersProcedure:
 			userServiceBatchGetUsersHandler.ServeHTTP(w, r)
 		case UserServiceGetUserProcedure:
@@ -758,6 +786,10 @@ type UnimplementedUserServiceHandler struct{}
 
 func (UnimplementedUserServiceHandler) ListUsers(context.Context, *connect.Request[v1.ListUsersRequest]) (*connect.Response[v1.ListUsersResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.ListUsers is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) SearchUsers(context.Context, *connect.Request[v1.SearchUsersRequest]) (*connect.Response[v1.SearchUsersResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.SearchUsers is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) BatchGetUsers(context.Context, *connect.Request[v1.BatchGetUsersRequest]) (*connect.Response[v1.BatchGetUsersResponse], error) {

@@ -78,6 +78,38 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 	return response, nil
 }
 
+func (s *APIV1Service) SearchUsers(ctx context.Context, request *v1pb.SearchUsersRequest) (*v1pb.SearchUsersResponse, error) {
+	currentUser, err := s.fetchCurrentUser(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+	if currentUser == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	}
+
+	if request.Filter == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "filter is required")
+	}
+
+	// Search users by username or display name
+	normal := store.Normal
+	users, err := s.Store.ListUsers(ctx, &store.FindUser{
+		RowStatus:      &normal,
+		UsernameSearch: &request.Filter,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to search users: %v", err)
+	}
+
+	response := &v1pb.SearchUsersResponse{
+		Users: make([]*v1pb.User, 0, len(users)),
+	}
+	for _, user := range users {
+		response.Users = append(response.Users, convertUserFromStore(user, currentUser))
+	}
+	return response, nil
+}
+
 func normalizeBatchUsernames(usernames []string) ([]string, int) {
 	uniqueUsernames := make([]string, 0, len(usernames))
 	seen := make(map[string]struct{}, len(usernames))
