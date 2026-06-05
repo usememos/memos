@@ -5,6 +5,8 @@ primary_region = 'ams'
 
 [build]
   dockerfile = "Dockerfile"
+  [build.args]
+    GO_VERSION = '1.26.2'
 
 [env]
   MEMOS_PORT = '5230'
