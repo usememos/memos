@@ -45,7 +45,6 @@ server/
 │   ├── api/v1/             # 8 gRPC services (Connect + Gateway)
 │   │   ├── acl_config.go   # Public endpoints whitelist
 │   │   ├── sse_hub.go      # Server-Sent Events (live updates)
-│   │   └── mcp/            # MCP server for AI assistants
 │   ├── frontend/           # SPA static file serving
 │   ├── fileserver/         # Native HTTP file server (thumbnails, range requests)
 │   └── rss/                # RSS feeds
