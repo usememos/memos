@@ -13,7 +13,7 @@
 // many memos share a date.
 //
 // Each file carries YAML frontmatter (uid, created, updated, visibility,
-// pinned, tags) followed by the raw markdown content of the memo.
+// pinned, tags, attachments) followed by the raw markdown content of the memo.
 //
 // Configuration (via environment):
 //   - MEMOS_MARKDOWN_EXPORT_DIR: writable path to export into. If unset, the
@@ -35,6 +35,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/internal/profile"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
@@ -127,6 +128,14 @@ func (r *Runner) export(ctx context.Context, exportDir string) error {
 		return errors.Wrap(err, "create export dir")
 	}
 
+	// The instance data dir is the base for relativizing local attachment paths
+	// (see attachmentStoragePath). Empty when there's no Profile, which just
+	// leaves those paths absolute.
+	var dataDir string
+	if r.Profile != nil {
+		dataDir = r.Profile.Data
+	}
+
 	// Build a creator_id -> username map up front so each memo file lands in
 	// the right per-user folder.
 	users, err := r.Store.ListUsers(ctx, &store.FindUser{})
@@ -159,6 +168,13 @@ func (r *Runner) export(ctx context.Context, exportDir string) error {
 			break
 		}
 
+		// Batch-load this page's attachments in a single query (rather than one
+		// per memo) so the frontmatter can list each memo's attached files.
+		attachmentsByMemo, err := r.attachmentsByMemo(ctx, memos)
+		if err != nil {
+			return errors.Wrap(err, "list attachments")
+		}
+
 		for _, memo := range memos {
 			username := usernameByID[memo.CreatorID]
 			if username == "" {
@@ -170,7 +186,7 @@ func (r *Runner) export(ctx context.Context, exportDir string) error {
 			relPath := filepath.Join(safeSegment(username), memoDate(memo), safeSegment(memo.UID)+".md")
 			absPath := filepath.Join(exportDir, relPath)
 
-			if err := writeIfChanged(absPath, renderMemo(memo)); err != nil {
+			if err := writeIfChanged(absPath, renderMemo(memo, attachmentsByMemo[memo.ID], dataDir)); err != nil {
 				slog.Error("failed to write memo file",
 					slog.String("path", absPath),
 					slog.String("error", err.Error()))
@@ -189,8 +205,38 @@ func (r *Runner) export(ctx context.Context, exportDir string) error {
 	return nil
 }
 
+// attachmentsByMemo loads the attachments for a page of memos in one query and
+// groups them by memo ID. It avoids the N+1 of querying per memo. Callers must
+// pass a non-empty page; an empty page yields an empty map without a query.
+func (r *Runner) attachmentsByMemo(ctx context.Context, memos []*store.Memo) (map[int32][]*store.Attachment, error) {
+	byMemo := make(map[int32][]*store.Attachment, len(memos))
+	if len(memos) == 0 {
+		return byMemo, nil
+	}
+
+	memoIDs := make([]int32, 0, len(memos))
+	for _, memo := range memos {
+		memoIDs = append(memoIDs, memo.ID)
+	}
+
+	// MemoIDList disables the store's default row limit, so every attachment on
+	// the page is returned. GetBlob stays false: we list filenames, not bytes.
+	attachments, err := r.Store.ListAttachments(ctx, &store.FindAttachment{MemoIDList: memoIDs})
+	if err != nil {
+		return nil, err
+	}
+	for _, attachment := range attachments {
+		if attachment.MemoID == nil {
+			continue
+		}
+		byMemo[*attachment.MemoID] = append(byMemo[*attachment.MemoID], attachment)
+	}
+	return byMemo, nil
+}
+
 // renderMemo produces the full file body: YAML frontmatter + raw content.
-func renderMemo(memo *store.Memo) string {
+// dataDir is the instance data dir, used to relativize local attachment paths.
+func renderMemo(memo *store.Memo, attachments []*store.Attachment, dataDir string) string {
 	var b strings.Builder
 	b.WriteString("---\n")
 	fmt.Fprintf(&b, "uid: %s\n", memo.UID)
@@ -209,6 +255,8 @@ func renderMemo(memo *store.Memo) string {
 		}
 	}
 
+	b.WriteString(renderAttachmentsBlock(attachments, dataDir))
+
 	b.WriteString("---\n\n")
 	b.WriteString(memo.Content)
 	if !strings.HasSuffix(memo.Content, "\n") {
@@ -217,8 +265,102 @@ func renderMemo(memo *store.Memo) string {
 	return b.String()
 }
 
+// renderAttachmentsBlock returns the `attachments:` frontmatter block, or "" if
+// the memo has none. Each entry carries the attachment's original filename and,
+// when known, the stable storage path where its bytes live (see
+// attachmentStoragePath). Entries are sorted by filename (then UID) so unchanged
+// memos don't churn the file — the store lists attachments newest-first, which
+// would otherwise reshuffle them whenever one is touched. Duplicate filenames
+// are kept: they are distinct files that both belong to the memo. dataDir is
+// the instance data dir, used to relativize local attachment paths.
+func renderAttachmentsBlock(attachments []*store.Attachment, dataDir string) string {
+	if len(attachments) == 0 {
+		return ""
+	}
+	sorted := append([]*store.Attachment(nil), attachments...)
+	slices.SortFunc(sorted, func(a, b *store.Attachment) int {
+		if c := strings.Compare(a.Filename, b.Filename); c != 0 {
+			return c
+		}
+		return strings.Compare(a.UID, b.UID)
+	})
+
+	var sb strings.Builder
+	sb.WriteString("attachments:\n")
+	for _, a := range sorted {
+		fmt.Fprintf(&sb, "  - filename: %s\n", yamlQuoteString(a.Filename))
+		if path := attachmentStoragePath(a, dataDir); path != "" {
+			fmt.Fprintf(&sb, "    path: %s\n", yamlQuoteString(path))
+		}
+	}
+	return sb.String()
+}
+
+// attachmentStoragePath returns a stable reference to where the attachment's
+// bytes live, or "" when there is none worth recording. The value depends on
+// the storage backend:
+//   - LOCAL: the path relative to dataDir when the file lives under it (e.g.
+//     "assets/..."), so the value stays valid regardless of where the data dir
+//     is mounted; otherwise the stored absolute path.
+//   - EXTERNAL: the Reference — the external URL.
+//   - S3: the object key, not the Reference. The Reference is a periodically
+//     refreshed presigned URL that would churn the export on every refresh.
+func attachmentStoragePath(a *store.Attachment, dataDir string) string {
+	if a.StorageType == storepb.AttachmentStorageType_S3 {
+		return a.Payload.GetS3Object().GetKey()
+	}
+	if a.StorageType == storepb.AttachmentStorageType_LOCAL {
+		return relativizeLocalPath(a.Reference, dataDir)
+	}
+	return a.Reference
+}
+
+// relativizeLocalPath rewrites an absolute local attachment path to one relative
+// to dataDir (with forward slashes), so the export is portable across hosts and
+// container mounts. It returns ref unchanged when dataDir is unset, ref isn't
+// absolute, or the file lives outside dataDir (where a "../.." path would be
+// less useful than the absolute one).
+func relativizeLocalPath(ref, dataDir string) string {
+	if dataDir == "" || !filepath.IsAbs(ref) {
+		return ref
+	}
+	rel, err := filepath.Rel(dataDir, ref)
+	if err != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+		return ref
+	}
+	return filepath.ToSlash(rel)
+}
+
+// yamlQuoteString renders s as a double-quoted YAML scalar. Filenames are
+// arbitrary user input, so unlike tags they must be quoted and escaped to stay
+// valid YAML (spaces, leading indicators, colons, embedded quotes, etc.).
+func yamlQuoteString(s string) string {
+	var b strings.Builder
+	b.WriteByte('"')
+	for _, r := range s {
+		switch r {
+		case '\\':
+			b.WriteString(`\\`)
+		case '"':
+			b.WriteString(`\"`)
+		case '\n':
+			b.WriteString(`\n`)
+		case '\r':
+			b.WriteString(`\r`)
+		case '\t':
+			b.WriteString(`\t`)
+		default:
+			b.WriteRune(r)
+		}
+	}
+	b.WriteByte('"')
+	return b.String()
+}
+
 // writeIfChanged writes content only when the file is absent or differs, so we
-// preserve mtimes for downstream tools (backups, indexers, file watchers).
+// preserve mtimes for downstream tools (backups, indexers, file watchers). The
+// file's mtime therefore tracks when the export last wrote it, not the memo's
+// update time — that lives in the `updated` frontmatter field instead.
 func writeIfChanged(path, content string) error {
 	if existing, err := os.ReadFile(path); err == nil && string(existing) == content {
 		return nil
