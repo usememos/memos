@@ -105,7 +105,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
     return (
       <MemoEditor
         autoFocus
-        className="mb-2"
+        className="mb-3"
         cacheKey={`inline-memo-editor-${memoData.name}`}
         memo={memoData}
         parentMemoName={memoData.parent || undefined}
@@ -117,7 +117,12 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
 
   const article = (
     <article
-      className={cn(MEMO_CARD_BASE_CLASSES, showCommentPreview ? "mb-0 rounded-b-none" : "mb-2", className)}
+      className={cn(
+        MEMO_CARD_BASE_CLASSES,
+        showCommentPreview ? "mb-0 rounded-b-none" : "mb-3",
+        showPinned && memoData.pinned && "border-l-2 border-l-primary",
+        className,
+      )}
       ref={cardRef}
       tabIndex={readonly ? -1 : 0}
     >
@@ -141,7 +146,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   return (
     <MemoViewContext.Provider value={contextValue}>
       {showCommentPreview ? (
-        <div className="w-full mb-2">
+        <div className="w-full mb-3">
           {article}
           <MemoCommentListView />
         </div>

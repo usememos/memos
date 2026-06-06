@@ -12,6 +12,7 @@ interface UseMemoInitOptions {
   autoFocus?: boolean;
   defaultVisibility?: Visibility;
   defaultCreateTime?: Date;
+  defaultContent?: string;
 }
 
 export const useMemoInit = ({
@@ -22,6 +23,7 @@ export const useMemoInit = ({
   autoFocus,
   defaultVisibility,
   defaultCreateTime,
+  defaultContent,
 }: UseMemoInitOptions) => {
   const { actions, dispatch } = useEditorContext();
   const initializedRef = useRef(false);
@@ -40,6 +42,8 @@ export const useMemoInit = ({
       const cachedContent = cacheService.load(key);
       if (cachedContent) {
         dispatch(actions.updateContent(cachedContent));
+      } else if (defaultContent) {
+        dispatch(actions.updateContent(defaultContent));
       }
       if (defaultVisibility !== undefined) {
         dispatch(actions.setMetadata({ visibility: defaultVisibility }));
@@ -54,7 +58,7 @@ export const useMemoInit = ({
     }
 
     setIsInitialized(true);
-  }, [memo, cacheKey, username, autoFocus, defaultVisibility, defaultCreateTime, actions, dispatch, editorRef]);
+  }, [memo, cacheKey, username, autoFocus, defaultVisibility, defaultCreateTime, defaultContent, actions, dispatch, editorRef]);
 
   return { isInitialized };
 };

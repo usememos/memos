@@ -26,6 +26,10 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
     dispatch(actions.setMetadata({ visibility }));
   };
 
+  const onCalendarClick = () => {
+    console.log("Calendar clicked");
+  }
+
   return (
     <div className="w-full flex flex-row justify-between items-center mb-2">
       <div className="flex flex-row justify-start items-center">
@@ -36,6 +40,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
           onToggleFocusMode={handleToggleFocusMode}
           memoName={memoName}
           onAudioRecorderClick={onAudioRecorderClick}
+          onCalendarClick={onCalendarClick}
         />
       </div>
 

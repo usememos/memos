@@ -3,22 +3,30 @@ import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { useInstance } from "@/contexts/InstanceContext";
+import { useMobileDrawer } from "@/contexts/MobileDrawerContext";
 import Navigation from "./Navigation";
 import UserAvatar from "./UserAvatar";
 
 const NavigationDrawer = () => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const { setDrawerOpen } = useMobileDrawer();
   const { generalSetting } = useInstance();
   const title = generalSetting.customProfile?.title || "Memos";
   const avatarUrl = generalSetting.customProfile?.logoUrl || "/full-logo.webp";
 
   useEffect(() => {
     setOpen(false);
-  }, [location.key]);
+    setDrawerOpen(false);
+  }, [location.key, setDrawerOpen]);
+
+  const handleOpenChange = (value: boolean) => {
+    setOpen(value);
+    setDrawerOpen(value);
+  };
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetTrigger asChild>
         <Button variant="ghost" className="px-2">
           <UserAvatar className="shrink-0 w-6 h-6 rounded-md" avatarUrl={avatarUrl} />
