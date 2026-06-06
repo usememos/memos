@@ -119,6 +119,26 @@ func (s *service) parse(content []byte) (gast.Node, error) {
 	return doc, nil
 }
 
+func isTagNodeInLinkOrImage(n gast.Node) bool {
+	for parent := n.Parent(); parent != nil; parent = parent.Parent() {
+		switch parent.Kind() {
+		case gast.KindLink, gast.KindImage:
+			return true
+		default:
+			// Keep walking ancestors.
+		}
+	}
+	return false
+}
+
+func asMemoTagNode(n gast.Node) (*mast.TagNode, bool) {
+	tagNode, ok := n.(*mast.TagNode)
+	if !ok || isTagNodeInLinkOrImage(n) {
+		return nil, false
+	}
+	return tagNode, true
+}
+
 // ExtractTags returns all #tags found in content.
 func (s *service) ExtractTags(content []byte) ([]string, error) {
 	root, err := s.parse(content)
@@ -134,8 +154,7 @@ func (s *service) ExtractTags(content []byte) ([]string, error) {
 			return gast.WalkContinue, nil
 		}
 
-		// Check for custom TagNode
-		if tagNode, ok := n.(*mast.TagNode); ok {
+		if tagNode, ok := asMemoTagNode(n); ok {
 			tags = append(tags, string(tagNode.Tag))
 		}
 
@@ -354,8 +373,7 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 			return gast.WalkContinue, nil
 		}
 
-		// Extract tags
-		if tagNode, ok := n.(*mast.TagNode); ok {
+		if tagNode, ok := asMemoTagNode(n); ok {
 			data.Tags = append(data.Tags, string(tagNode.Tag))
 		}
 		if mentionNode, ok := n.(*mast.MentionNode); ok {
@@ -416,8 +434,7 @@ func (s *service) RenameTag(content []byte, oldTag, newTag string) (string, erro
 			return gast.WalkContinue, nil
 		}
 
-		// Check for custom TagNode and rename if it matches
-		if tagNode, ok := n.(*mast.TagNode); ok {
+		if tagNode, ok := asMemoTagNode(n); ok {
 			if string(tagNode.Tag) == oldTag {
 				tagNode.Tag = []byte(newTag)
 			}

@@ -20,7 +20,6 @@ import (
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/server/router/fileserver"
 	"github.com/usememos/memos/server/router/frontend"
-	mcprouter "github.com/usememos/memos/server/router/mcp"
 	"github.com/usememos/memos/server/router/rss"
 	"github.com/usememos/memos/server/runner/markdownexport"
 	"github.com/usememos/memos/server/runner/s3presign"
@@ -50,6 +49,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 	echoServer := echo.New()
 	echoServer.Use(middleware.Recover())
+	echoServer.Use(newCORSMiddleware(profile))
 	s.echoServer = echoServer
 
 	instanceBasicSetting, err := s.getOrUpsertInstanceBasicSetting(ctx)
@@ -88,10 +88,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	if err := apiV1Service.RegisterGateway(ctx, echoServer); err != nil {
 		return nil, errors.Wrap(err, "failed to register gRPC gateway")
 	}
-
-	// Register MCP server.
-	mcpService := mcprouter.NewMCPService(s.Profile, s.Store, s.Secret, apiV1Service)
-	mcpService.RegisterRoutes(echoServer)
 
 	return s, nil
 }

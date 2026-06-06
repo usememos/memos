@@ -31,6 +31,9 @@ INSERT INTO memo (id,uid,creator_id,content,visibility,payload) VALUES(8,'gitche
 -- 9. Sponsor Memo (Pinned) — largest id so it sorts above Welcome among pinned memos
 INSERT INTO memo (id,uid,creator_id,content,visibility,pinned,payload) VALUES(9,'sponsor0000001',1,replace('Memos is free and open source, sustained by the companies and individuals who choose to back it. 🙏 Their support keeps the project independent — no ads, no telemetry, no paywalled features. If you build with Memos, please consider supporting them in return.\n\n## ⭐ Featured Sponsors\n\n<a href="https://coderabbit.link/usememos" target="_blank" rel="noopener"><img src="https://victorious-bubble-f69a016683.media.strapiapp.com/Orange_Typemark_43bf516c9d.svg" alt="CodeRabbit" height="44" /></a>\n\nCut code review time & bugs in half, instantly.\n\n[coderabbit.link/usememos →](https://coderabbit.link/usememos)\n\n---\n\n<a href="https://go.warp.dev/memos" target="_blank" rel="noopener"><img src="https://raw.githubusercontent.com/warpdotdev/brand-assets/refs/heads/main/Logos/Warp-Wordmark-Black.png" alt="Warp" height="44" /></a>\n\nThe agentic development environment.\n\n[go.warp.dev/memos →](https://go.warp.dev/memos)\n\n## 🤝 Supporting Sponsors\n\n- [SSD Nodes — Affordable VPS hosting for self-hosters](https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor)\n- [InstaPods — Get your app online in seconds](https://instapods.com/?utm_source=memos&utm_medium=sponsor)\n\n---\n\nWant to see your company here? Reach out via [GitHub Sponsors](https://github.com/sponsors/usememos) — sponsorships fund ongoing development and keep Memos free for everyone.\n\n#sponsors','\n',char(10)),'PUBLIC',1,'{"tags":["sponsors"],"property":{"hasLink":true}}');
 
+-- 10. Scratchpad Promo (Pinned) — largest id so it sorts above other pinned memos
+INSERT INTO memo (id,uid,creator_id,content,visibility,pinned,payload) VALUES(10,'scratchpad0001',1,replace('## 🧩 Try Memos Scratchpad\n\nA lightweight visual canvas for quick thoughts, links, images, files, and small cards before they become polished notes.\n\n[Open Scratchpad →](https://usememos.com/scratchpad)\n\n| Need | Scratchpad helps you |\n|------|----------------------|\n| Capture fast | Double-click to add notes |\n| Arrange freely | Drag cards around |\n| Add context | Attach files, links, and images |\n| Move around | Zoom and pan without setup |\n\n### Local-first\n\nYour Scratchpad cards stay in your browser. Memos does not access, sync, or store them.','\n',char(10)),'PUBLIC',1,'{"tags":["scratchpad"],"property":{"hasLink":true}}');
+
 -- Memo Relations
 INSERT INTO memo_relation VALUES(6,1,'COMMENT');     -- Alice comments on Welcome
 INSERT INTO memo_relation VALUES(7,3,'COMMENT');     -- Alice comments on Git Cheat Sheet
@@ -47,6 +50,8 @@ INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(7,1,'memos/
 INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(8,2,'memos/sponsor0000001','👍');
 INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(9,2,'memos/gitcheatsheet01','🔥');
 INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(10,2,'memos/travelbucket01','👀');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(11,1,'memos/scratchpad0001','💡');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(12,2,'memos/scratchpad0001','🚀');
 
 -- System Settings
 INSERT INTO system_setting VALUES ('MEMO_RELATED', '{"contentLengthLimit":8192,"enableAutoCompact":true,"enableComment":true,"enableLocation":true,"defaultVisibility":"PUBLIC","reactions":["👍","💛","🔥","👏","😂","👌","🚀","👀","🤔","🤡","❓","+1","🎉","💡","✅"]}', '');

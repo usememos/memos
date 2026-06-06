@@ -1,7 +1,7 @@
 import { HashIcon, MoreVerticalIcon, TagsIcon } from "lucide-react";
-import useLocalStorage from "react-use/lib/useLocalStorage";
 import { Switch } from "@/components/ui/switch";
 import { type MemoFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { useLocalStorage } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import TagTree from "../TagTree";

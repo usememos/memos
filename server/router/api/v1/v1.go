@@ -3,13 +3,10 @@ package v1
 import (
 	"context"
 	"net/http"
-	"net/url"
-	"strings"
 
 	"connectrpc.com/connect"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/labstack/echo/v5"
-	"github.com/labstack/echo/v5/middleware"
 	"golang.org/x/sync/semaphore"
 
 	"github.com/usememos/memos/internal/markdown"
@@ -127,9 +124,6 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 		return err
 	}
 	gwGroup := echoServer.Group("")
-	gwGroup.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"*"},
-	}))
 	// Register SSE endpoint with same CORS as rest of /api/v1.
 	RegisterSSERoutes(gwGroup, s.SSEHub, s.Store, s.Secret)
 	handler := echo.WrapHandler(http.MaxBytesHandler(gwMux, maxAPIRequestBytes))
@@ -149,40 +143,8 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	connectHandler := NewConnectServiceHandler(s)
 	connectHandler.RegisterConnectHandlers(connectMux, connectInterceptors, connect.WithReadMaxBytes(maxAPIRequestBytes))
 
-	// Wrap with CORS for browser access
-	corsHandler := middleware.CORSWithConfig(middleware.CORSConfig{
-		UnsafeAllowOriginFunc: func(c *echo.Context, origin string) (string, bool, error) {
-			if s.isAllowedConnectOrigin(c, origin) {
-				return origin, true, nil
-			}
-			return "", false, nil
-		},
-		AllowMethods:     []string{http.MethodGet, http.MethodPost, http.MethodOptions},
-		AllowHeaders:     []string{"*"},
-		AllowCredentials: true,
-	})
-	connectGroup := echoServer.Group("", corsHandler)
+	connectGroup := echoServer.Group("")
 	connectGroup.Any("/memos.api.v1.*", echo.WrapHandler(http.MaxBytesHandler(connectMux, maxAPIRequestBytes)))
 
 	return nil
-}
-
-func (s *APIV1Service) isAllowedConnectOrigin(c *echo.Context, origin string) bool {
-	originURL, err := url.Parse(origin)
-	if err != nil || originURL.Scheme == "" || originURL.Host == "" {
-		return false
-	}
-
-	if strings.EqualFold(originURL.Host, c.Request().Host) {
-		return true
-	}
-
-	if s.Profile == nil || s.Profile.InstanceURL == "" {
-		return false
-	}
-	instanceURL, err := url.Parse(s.Profile.InstanceURL)
-	if err != nil || instanceURL.Scheme == "" || instanceURL.Host == "" {
-		return false
-	}
-	return strings.EqualFold(originURL.Scheme, instanceURL.Scheme) && strings.EqualFold(originURL.Host, instanceURL.Host)
 }

@@ -55,6 +55,74 @@ func TestGetHTMLMeta(t *testing.T) {
 	}, *metadata)
 }
 
+func TestGetHTMLMetaWithNameOnly(t *testing.T) {
+	originalHTTPClient := httpClient
+	t.Cleanup(func() {
+		httpClient = originalHTTPClient
+	})
+
+	httpClient = &http.Client{
+		Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+			require.Equal(t, "http://93.184.216.34/blog", req.URL.String())
+			return &http.Response{
+				StatusCode: http.StatusOK,
+				Header:     http.Header{"Content-Type": []string{"text/html; charset=utf-8"}},
+				Body: io.NopCloser(strings.NewReader(`<!doctype html>
+<html>
+<head>
+  <title>Sample Page</title>
+  <meta name="description" content="This description should appear in the link preview.">
+</head>
+<body>Hello</body>
+</html>`)),
+				Request: req,
+			}, nil
+		}),
+	}
+
+	metadata, err := GetHTMLMeta("http://93.184.216.34/blog")
+	require.NoError(t, err)
+	require.Equal(t, HTMLMeta{
+		Title:       "Sample Page",
+		Description: "This description should appear in the link preview.",
+		Image:       "",
+	}, *metadata)
+}
+
+func TestGetHTMLMetaWithNameCaseInsensitive(t *testing.T) {
+	originalHTTPClient := httpClient
+	t.Cleanup(func() {
+		httpClient = originalHTTPClient
+	})
+
+	httpClient = &http.Client{
+		Transport: roundTripFunc(func(req *http.Request) (*http.Response, error) {
+			require.Equal(t, "http://93.184.216.34/blog", req.URL.String())
+			return &http.Response{
+				StatusCode: http.StatusOK,
+				Header:     http.Header{"Content-Type": []string{"text/html; charset=utf-8"}},
+				Body: io.NopCloser(strings.NewReader(`<!doctype html>
+<html>
+<head>
+  <title>Sample Page</title>
+  <meta name="Description" content="Case insensitive description match.">
+</head>
+<body>Hello</body>
+</html>`)),
+				Request: req,
+			}, nil
+		}),
+	}
+
+	metadata, err := GetHTMLMeta("http://93.184.216.34/blog")
+	require.NoError(t, err)
+	require.Equal(t, HTMLMeta{
+		Title:       "Sample Page",
+		Description: "Case insensitive description match.",
+		Image:       "",
+	}, *metadata)
+}
+
 func TestGetHTMLMetaForInternal(t *testing.T) {
 	// test for internal IP
 	if _, err := GetHTMLMeta("http://192.168.0.1"); !errors.Is(err, ErrInternalIP) {

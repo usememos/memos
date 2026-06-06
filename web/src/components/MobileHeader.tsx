@@ -1,4 +1,4 @@
-import useWindowScroll from "react-use/lib/useWindowScroll";
+import { useEffect, useState } from "react";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
 import NavigationDrawer from "./NavigationDrawer";
@@ -10,9 +10,22 @@ interface Props {
 
 const MobileHeader = (props: Props) => {
   const { className, children } = props;
-  const { y: offsetTop } = useWindowScroll();
+  const [offsetTop, setOffsetTop] = useState(() => (typeof window === "undefined" ? 0 : window.scrollY));
   const md = useMediaQuery("md");
   const sm = useMediaQuery("sm");
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setOffsetTop(window.scrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   if (md) return null;
 

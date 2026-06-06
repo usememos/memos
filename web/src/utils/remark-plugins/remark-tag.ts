@@ -1,6 +1,5 @@
 import type { Root, Text } from "mdast";
 import type { Node as UnistNode } from "unist";
-import { visit } from "unist-util-visit";
 import type { TagNode, TagNodeData } from "@/types/markdown";
 
 const MAX_TAG_LENGTH = 100;
@@ -81,17 +80,27 @@ function createTagNode(tagValue: string): TagNode {
   } as TagNode;
 }
 
-export const remarkTag = () => {
-  return (tree: Root) => {
-    visit(tree, (node, index, parent) => {
-      if (node.type !== "text" || !parent || index === null) return;
+type ParentNode = UnistNode & { children: UnistNode[] };
 
-      const textNode = node as Text;
-      const text = textNode.value;
-      const segments = parseTagsFromText(text);
+function isParentNode(node: UnistNode): node is ParentNode {
+  return Array.isArray((node as { children?: unknown }).children);
+}
+
+function isLinkNode(node: UnistNode): boolean {
+  return node.type === "link" || node.type === "linkReference";
+}
+
+function transformTagTextNodes(parent: ParentNode, insideLink: boolean): void {
+  for (let index = 0; index < parent.children.length; index++) {
+    const child = parent.children[index];
+    const childInsideLink = insideLink || isLinkNode(child);
+
+    if (child.type === "text" && !childInsideLink) {
+      const textNode = child as Text;
+      const segments = parseTagsFromText(textNode.value);
 
       if (segments.every((seg) => seg.type === "text")) {
-        return;
+        continue;
       }
 
       const newNodes = segments.map((segment) => {
@@ -104,9 +113,19 @@ export const remarkTag = () => {
         } as Text;
       });
 
-      if (typeof index === "number" && parent) {
-        (parent.children as UnistNode[]).splice(index, 1, ...(newNodes as UnistNode[]));
-      }
-    });
+      parent.children.splice(index, 1, ...(newNodes as UnistNode[]));
+      index += newNodes.length - 1;
+      continue;
+    }
+
+    if (isParentNode(child)) {
+      transformTagTextNodes(child, childInsideLink);
+    }
+  }
+}
+
+export const remarkTag = () => {
+  return (tree: Root) => {
+    transformTagTextNodes(tree as ParentNode, false);
   };
 };

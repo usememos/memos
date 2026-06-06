@@ -1,6 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Outlet, useLocation, useSearchParams } from "react-router-dom";
-import usePrevious from "react-use/lib/usePrevious";
 import Navigation from "@/components/Navigation";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
@@ -33,14 +32,18 @@ const RootLayout = () => {
   const { profile } = useInstance();
   const { removeFilter } = useMemoFilterContext();
   const { pathname } = location;
-  const prevPathname = usePrevious(pathname);
+  const prevPathnameRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
+    const prevPathname = prevPathnameRef.current;
+
     // When the route changes and there is no filter in the search params, remove all filters.
-    if (prevPathname !== pathname && !searchParams.has("filter")) {
+    if (prevPathname !== undefined && prevPathname !== pathname && !searchParams.has("filter")) {
       removeFilter(() => true);
     }
-  }, [prevPathname, pathname, searchParams, removeFilter]);
+
+    prevPathnameRef.current = pathname;
+  }, [pathname, searchParams, removeFilter]);
 
   return (
     <div className="w-full min-h-full flex flex-row justify-center items-start sm:pl-16">

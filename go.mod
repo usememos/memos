@@ -18,7 +18,6 @@ require (
 	github.com/labstack/echo/v5 v5.1.0
 	github.com/lib/pq v1.12.3
 	github.com/lithammer/shortuuid/v4 v4.2.0
-	github.com/mark3labs/mcp-go v0.49.0
 	github.com/moby/moby/api v1.54.2
 	github.com/openai/openai-go/v3 v3.32.0
 	github.com/pion/opus v0.0.0-20260430223319-81a9c5dc5013
@@ -72,7 +71,6 @@ require (
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/jsonschema-go v0.4.3 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.15 // indirect
 	github.com/googleapis/gax-go/v2 v2.22.0 // indirect
@@ -108,7 +106,6 @@ require (
 	github.com/tidwall/sjson v1.2.5 // indirect
 	github.com/tklauser/go-sysconf v0.3.16 // indirect
 	github.com/tklauser/numcpus v0.11.0 // indirect
-	github.com/yosida95/uritemplate/v3 v3.0.2 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.68.0 // indirect
