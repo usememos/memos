@@ -151,21 +151,35 @@ func (r *Runner) export(ctx context.Context, exportDir string) error {
 	// write is an orphan (its memo was deleted or archived) and gets pruned.
 	written := make(map[string]struct{})
 
+	// Capture a stable snapshot of memo IDs in a single query, then load each
+	// page by ID. Offset pagination over a live store can skip rows when memos
+	// are created or removed mid-sweep; a skipped memo would be missing from
+	// `written`, so pruneOrphans would delete its file (recreated next run).
+	// ExcludeContent keeps the snapshot light — full memos load per page below.
 	normal := store.Normal
-	offset := 0
-	for {
-		limit := listBatchSize
-		off := offset
+	idSnapshot, err := r.Store.ListMemos(ctx, &store.FindMemo{
+		RowStatus:      &normal,
+		ExcludeContent: true,
+	})
+	if err != nil {
+		return errors.Wrap(err, "list memo ids")
+	}
+	memoIDs := make([]int32, len(idSnapshot))
+	for i, memo := range idSnapshot {
+		memoIDs[i] = memo.ID
+	}
+
+	for start := 0; start < len(memoIDs); start += listBatchSize {
+		pageIDs := memoIDs[start:min(start+listBatchSize, len(memoIDs))]
+
+		// Re-filter by RowStatus so any memo archived or deleted since the
+		// snapshot is dropped here (and pruned), never re-exported stale.
 		memos, err := r.Store.ListMemos(ctx, &store.FindMemo{
 			RowStatus: &normal,
-			Limit:     &limit,
-			Offset:    &off,
+			IDList:    pageIDs,
 		})
 		if err != nil {
 			return errors.Wrap(err, "list memos")
-		}
-		if len(memos) == 0 {
-			break
 		}
 
 		// Batch-load this page's attachments in a single query (rather than one
@@ -194,8 +208,6 @@ func (r *Runner) export(ctx context.Context, exportDir string) error {
 			}
 			written[absPath] = struct{}{}
 		}
-
-		offset += len(memos)
 	}
 
 	pruneOrphans(exportDir, written)
