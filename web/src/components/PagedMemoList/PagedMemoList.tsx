@@ -16,6 +16,7 @@ import MemoEditor from "../MemoEditor";
 import MemoFilters from "../MemoFilters";
 import Placeholder from "../Placeholder";
 import Skeleton from "../Skeleton";
+import useScrollTop from "@/hooks/useScrollToTop"
 
 interface Props {
   renderer: (memo: Memo) => ReactElement;
@@ -164,7 +165,6 @@ const PagedMemoList = (props: Props) => {
             {showMemoEditor ? (
               <MemoEditor
                 key={defaultContent ? `home-memo-editor-${defaultContent.trim()}` : "home-memo-editor"}
-                className="mb-3"
                 cacheKey={defaultContent ? `home-memo-editor-${defaultContent.trim()}` : "home-memo-editor"}
                 placeholder={t("editor.any-thoughts")}
                 defaultCreateTime={defaultCreateTime}
@@ -201,23 +201,7 @@ const PagedMemoList = (props: Props) => {
 const BackToTop = () => {
   const t = useTranslate();
   const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const shouldShow = window.scrollY > 400;
-      setIsVisible(shouldShow);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
+  const { scrollToTop } = useScrollTop(400, setIsVisible);
 
   // Don't render if not visible
   if (!isVisible) {

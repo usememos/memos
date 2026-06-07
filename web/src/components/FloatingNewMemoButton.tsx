@@ -4,18 +4,21 @@ import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useMobileDrawer } from "@/contexts/MobileDrawerContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { cn } from "@/lib/utils";
+import useScrollTop from "@/hooks/useScrollToTop"
 
 const FloatingNewMemoButton = () => {
   const navigate = useNavigate();
   const { clearAllFilters } = useMemoFilterContext();
   const { isDrawerOpen } = useMobileDrawer();
   const currentUser = useCurrentUser();
+  const { scrollToTop } = useScrollTop(0);
 
   if (!currentUser) return null;
 
   const handleClick = () => {
     clearAllFilters();
     navigate("/");
+    scrollToTop()
   };
 
   return (
@@ -26,6 +29,7 @@ const FloatingNewMemoButton = () => {
         // z-30 keeps button above regular content but below:
         // - Focus Mode backdrop (z-40)
         // - Radix modals/sheets/dialogs (z-50)
+          "cursor-pointer",
         "fixed bottom-6 right-6 z-30",
         "flex items-center justify-center",
         "w-14 h-14 rounded-full shadow-lg",

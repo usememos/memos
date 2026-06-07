@@ -11,3 +11,4 @@ export * from "./useMemoSorting";
 export * from "./useNavigateTo";
 export * from "./useUserLocale";
 export * from "./useUserTheme";
+export * from "./useScrollToTop"
