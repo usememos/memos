@@ -81,9 +81,18 @@ describe("memo editor markdown shortcuts", () => {
 
       expect(textarea).toHaveValue("read the *docs*");
     });
+
+    it("preserves bold when italicizing already-bolded text", () => {
+      const textarea = renderEditor("read the **docs**");
+      textarea.setSelectionRange(9, 17);
+
+      fireEvent.keyDown(textarea, { key: "i", ctrlKey: true });
+
+      expect(textarea).toHaveValue("read the ***docs***");
+    });
   });
 
-describe("shortcuts suppressed during IME composition", () => {
+  describe("shortcuts suppressed during IME composition", () => {
     it("does not apply bold during IME input", () => {
       const textarea = renderEditor("テスト", true);
       textarea.setSelectionRange(0, 3);
