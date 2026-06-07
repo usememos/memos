@@ -72,6 +72,15 @@ describe("memo editor markdown shortcuts", () => {
 
       expect(textarea).toHaveValue("read the docs");
     });
+
+    it("works with metaKey (Mac Cmd+I)", () => {
+      const textarea = renderEditor("read the docs");
+      textarea.setSelectionRange(9, 13);
+
+      fireEvent.keyDown(textarea, { key: "i", metaKey: true });
+
+      expect(textarea).toHaveValue("read the *docs*");
+    });
   });
 
 describe("shortcuts suppressed during IME composition", () => {
