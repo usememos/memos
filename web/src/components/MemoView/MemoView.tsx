@@ -150,7 +150,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const swipeEnabled = !isDesktop && !readonly && !isInMemoDetailPage;
   // When swipe is enabled, spacing moves to the wrapper as padding (not margin) so the pinned badge —
   // which pokes a few pixels above the card's top edge — stays inside the wrapper's clipping box and isn't cut off.
-  const cardSpacingClassName = showCommentPreview ? "pb-3" : "pt-3 pb-0!";
+  const cardSpacingClassName = "pt-3 pb-0!";
 
   const article = (
     <article
@@ -198,7 +198,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   return (
     <MemoViewContext.Provider value={contextValue}>
       {showCommentPreview ? (
-        <div className="w-full mb-3">
+        <div className="w-full md:mt-3">
           {cardContent}
           <MemoCommentListView />
         </div>

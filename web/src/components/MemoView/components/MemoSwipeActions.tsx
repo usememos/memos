@@ -156,7 +156,7 @@ const MemoSwipeActions: React.FC<Props> = ({ primaryAction, onDelete, disabled, 
         // `overflow-clip` (unlike `overflow-hidden`) clips content without turning this element
         // into a scroll container — `position: sticky` on the action labels below can therefore
         // still resolve against the page viewport instead of being pinned to the card's bounds.
-        "w-full overflow-clip transition-[max-height,opacity] ease-in-out",
+        "w-full overflow-clip transition-[max-height,opacity] ease-in-out pt-3",
         removing ? "opacity-0 duration-200" : "opacity-100 duration-0",
         className,
       )}
