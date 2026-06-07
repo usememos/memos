@@ -3,7 +3,6 @@ import type { EditorRefActions } from "./index";
 const SHORTCUTS = {
   BOLD: { key: "b", delimiter: "**" },
   ITALIC: { key: "i", delimiter: "*" },
-  LINK: { key: "k" },
 } as const;
 
 const URL_PLACEHOLDER = "url";
@@ -18,9 +17,6 @@ export function handleMarkdownShortcuts(event: React.KeyboardEvent, editor: Edit
   } else if (key === SHORTCUTS.ITALIC.key) {
     event.preventDefault();
     toggleTextStyle(editor, SHORTCUTS.ITALIC.delimiter);
-  } else if (key === SHORTCUTS.LINK.key) {
-    event.preventDefault();
-    insertHyperlink(editor);
   }
 }
 

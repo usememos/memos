@@ -5,7 +5,7 @@ import { EDITOR_HEIGHT } from "../constants";
 import type { EditorProps } from "../types";
 import { editorCommands } from "./commands";
 import SlashCommands from "./SlashCommands";
-import { getMarkdownLinkForPastedUrl } from "./shortcuts";
+import { getMarkdownLinkForPastedUrl, handleMarkdownShortcuts } from "./shortcuts";
 import TagSuggestions from "./TagSuggestions";
 import { useListCompletion } from "./useListCompletion";
 
@@ -182,6 +182,15 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
     isInIME,
   });
 
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if ((event.ctrlKey || event.metaKey) && !isInIME) {
+        handleMarkdownShortcuts(event, editorActions);
+      }
+    },
+    [editorActions, isInIME],
+  );
+
   const handleEditorPaste = useCallback(
     (event: ClipboardEvent<HTMLTextAreaElement>) => {
       const editor = editorRef.current;
@@ -222,6 +231,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
         rows={1}
         placeholder={placeholder}
         ref={editorRef}
+        onKeyDown={handleKeyDown}
         onPaste={handleEditorPaste}
         onInput={handleEditorInput}
         onCompositionStart={onCompositionStart}
