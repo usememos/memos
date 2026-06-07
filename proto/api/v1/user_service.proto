@@ -10,6 +10,7 @@ import "google/api/resource.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
+import "google/type/color.proto";
 
 option go_package = "gen/api/v1";
 
@@ -426,6 +427,7 @@ message UserSetting {
   oneof value {
     GeneralSetting general_setting = 2;
     WebhooksSetting webhooks_setting = 5;
+    TagsSetting tags_setting = 6;
   }
 
   // Enumeration of user setting keys.
@@ -435,6 +437,8 @@ message UserSetting {
     GENERAL = 1;
     // WEBHOOKS is the key for user webhooks.
     WEBHOOKS = 4;
+    // TAGS is the key for per-user tag metadata.
+    TAGS = 5;
   }
 
   // General user settings configuration.
@@ -447,6 +451,22 @@ message UserSetting {
     // This references a CSS file in the web/public/themes/ directory.
     // If not set, the default theme will be used.
     string theme = 4 [(google.api.field_behavior) = OPTIONAL];
+  }
+
+  // Tag metadata for user-specific display rules.
+  message TagMetadata {
+    // Optional background color for the tag label.
+    // When unset, the default tag color is used.
+    google.type.Color background_color = 1 [(google.api.field_behavior) = OPTIONAL];
+    // Whether memos with this tag should have their content blurred.
+    bool blur_content = 2 [(google.api.field_behavior) = OPTIONAL];
+  }
+
+  // User-specific tag metadata.
+  message TagsSetting {
+    // Map of tag name pattern to tag metadata.
+    // Each key is treated as an anchored regular expression (^pattern$).
+    map<string, TagMetadata> tags = 1 [(google.api.field_behavior) = OPTIONAL];
   }
 
   // User webhooks configuration.

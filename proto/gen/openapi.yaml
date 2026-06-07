@@ -2878,7 +2878,10 @@ components:
                          Each key is treated as an anchored regular expression (^pattern$),
                          so a single entry like "project/.*" matches all tags under that prefix.
                          Exact tag names are also valid (they are trivially valid regex patterns).
-            description: Tag metadata configuration.
+            description: |-
+                Tag metadata configuration.
+                 Active tag metadata is stored in per-user tag settings.
+                 This message remains for backward compatibility with existing clients and migrations.
         InstanceSetting_TranscriptionConfig:
             type: object
             properties:
@@ -3835,6 +3838,8 @@ components:
                     $ref: '#/components/schemas/UserSetting_GeneralSetting'
                 webhooksSetting:
                     $ref: '#/components/schemas/UserSetting_WebhooksSetting'
+                tagsSetting:
+                    $ref: '#/components/schemas/UserSetting_TagsSetting'
             description: User settings message
         UserSetting_GeneralSetting:
             type: object
@@ -3852,6 +3857,30 @@ components:
                          This references a CSS file in the web/public/themes/ directory.
                          If not set, the default theme will be used.
             description: General user settings configuration.
+        UserSetting_TagMetadata:
+            type: object
+            properties:
+                backgroundColor:
+                    allOf:
+                        - $ref: '#/components/schemas/Color'
+                    description: |-
+                        Optional background color for the tag label.
+                         When unset, the default tag color is used.
+                blurContent:
+                    type: boolean
+                    description: Whether memos with this tag should have their content blurred.
+            description: Tag metadata for user-specific display rules.
+        UserSetting_TagsSetting:
+            type: object
+            properties:
+                tags:
+                    type: object
+                    additionalProperties:
+                        $ref: '#/components/schemas/UserSetting_TagMetadata'
+                    description: |-
+                        Map of tag name pattern to tag metadata.
+                         Each key is treated as an anchored regular expression (^pattern$).
+            description: User-specific tag metadata.
         UserSetting_WebhooksSetting:
             type: object
             properties:

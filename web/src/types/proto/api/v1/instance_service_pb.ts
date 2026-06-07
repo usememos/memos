@@ -444,6 +444,8 @@ export const InstanceSetting_TagMetadataSchema: GenMessage<InstanceSetting_TagMe
 
 /**
  * Tag metadata configuration.
+ * Active tag metadata is stored in per-user tag settings.
+ * This message remains for backward compatibility with existing clients and migrations.
  *
  * @generated from message memos.api.v1.InstanceSetting.TagsSetting
  */

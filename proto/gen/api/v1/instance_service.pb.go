@@ -1133,6 +1133,8 @@ func (x *InstanceSetting_TagMetadata) GetBlurContent() bool {
 }
 
 // Tag metadata configuration.
+// Active tag metadata is stored in per-user tag settings.
+// This message remains for backward compatibility with existing clients and migrations.
 type InstanceSetting_TagsSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Map of tag name pattern to tag metadata.

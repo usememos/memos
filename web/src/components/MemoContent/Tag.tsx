@@ -1,6 +1,6 @@
 import type { Element } from "hast";
 import { useLocation } from "react-router-dom";
-import { useInstance } from "@/contexts/InstanceContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { type MemoFilter, stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { colorToHex } from "@/lib/color";
@@ -20,14 +20,15 @@ export const Tag: React.FC<TagProps> = ({ "data-tag": dataTag, children, classNa
   const location = useLocation();
   const navigateTo = useNavigateTo();
   const { getFiltersByFactor, removeFilter, addFilter } = useMemoFilterContext();
-  const { tagsSetting } = useInstance();
+  const { userTagsSetting } = useAuth();
 
   const tag = dataTag || "";
 
-  // Custom color from admin tag metadata. Dynamic hex values must use inline styles
+  // Custom color from user tag metadata. Dynamic hex values must use inline styles
   // because Tailwind can't scan dynamically constructed class names.
   // Text uses a darkened variant (40% color + black) for contrast on light backgrounds.
-  const bgHex = colorToHex(findTagMetadata(tag, tagsSetting)?.backgroundColor);
+  const metadata = userTagsSetting ? findTagMetadata(tag, userTagsSetting) : undefined;
+  const bgHex = colorToHex(metadata?.backgroundColor);
   const tagStyle: React.CSSProperties | undefined = bgHex
     ? {
         borderColor: bgHex,

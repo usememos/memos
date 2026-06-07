@@ -1,4 +1,4 @@
-import type { InstanceSetting_TagMetadata, InstanceSetting_TagsSetting } from "@/types/proto/api/v1/instance_service_pb";
+import type { UserSetting_TagMetadata, UserSetting_TagsSetting } from "@/types/proto/api/v1/user_service_pb";
 
 // Cache compiled regexes to avoid re-compiling on every tag render.
 const compiledPatternCache = new Map<string, RegExp | null>();
@@ -25,7 +25,7 @@ const getCompiledPattern = (pattern: string): RegExp | null => {
  * 1. Exact key match (O(1) fast path, backward-compatible).
  * 2. Iterate all keys and test as anchored regex — first match wins.
  */
-export const findTagMetadata = (tag: string, tagsSetting: InstanceSetting_TagsSetting): InstanceSetting_TagMetadata | undefined => {
+export const findTagMetadata = (tag: string, tagsSetting: UserSetting_TagsSetting): UserSetting_TagMetadata | undefined => {
   // Fast path: exact match.
   if (tagsSetting.tags[tag]) {
     return tagsSetting.tags[tag];

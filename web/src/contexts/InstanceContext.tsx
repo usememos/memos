@@ -16,8 +16,6 @@ import {
   InstanceSetting_NotificationSettingSchema,
   InstanceSetting_StorageSetting,
   InstanceSetting_StorageSettingSchema,
-  InstanceSetting_TagsSetting,
-  InstanceSetting_TagsSettingSchema,
 } from "@/types/proto/api/v1/instance_service_pb";
 
 const instanceSettingNamePrefix = "instance/settings/";
@@ -42,7 +40,6 @@ interface InstanceContextValue extends InstanceState {
   generalSetting: InstanceSetting_GeneralSetting;
   memoRelatedSetting: InstanceSetting_MemoRelatedSetting;
   storageSetting: InstanceSetting_StorageSetting;
-  tagsSetting: InstanceSetting_TagsSetting;
   notificationSetting: InstanceSetting_NotificationSetting;
   aiSetting: InstanceSetting_AISetting;
   initialize: () => Promise<void>;
@@ -89,14 +86,6 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
     return create(InstanceSetting_StorageSettingSchema, {});
   }, [state.settings]);
 
-  const tagsSetting = useMemo((): InstanceSetting_TagsSetting => {
-    const setting = state.settings.find((s) => s.name === `${instanceSettingNamePrefix}TAGS`);
-    if (setting?.value.case === "tagsSetting") {
-      return setting.value.value;
-    }
-    return create(InstanceSetting_TagsSettingSchema, {});
-  }, [state.settings]);
-
   const notificationSetting = useMemo((): InstanceSetting_NotificationSetting => {
     const setting = state.settings.find((s) => s.name === `${instanceSettingNamePrefix}NOTIFICATION`);
     if (setting?.value.case === "notificationSetting") {
@@ -119,11 +108,7 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
       const profile = await instanceServiceClient.getInstanceProfile({});
 
       const settingsResponse = await instanceServiceClient.batchGetInstanceSettings({
-        names: [
-          buildInstanceSettingName(InstanceSetting_Key.GENERAL),
-          buildInstanceSettingName(InstanceSetting_Key.MEMO_RELATED),
-          buildInstanceSettingName(InstanceSetting_Key.TAGS),
-        ],
+        names: [buildInstanceSettingName(InstanceSetting_Key.GENERAL), buildInstanceSettingName(InstanceSetting_Key.MEMO_RELATED)],
       });
       for (const setting of settingsResponse.settings) {
         fetchedSettingsRef.current.add(setting.name);
@@ -204,7 +189,6 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
       generalSetting,
       memoRelatedSetting,
       storageSetting,
-      tagsSetting,
       notificationSetting,
       aiSetting,
       initialize,
@@ -217,7 +201,6 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
       generalSetting,
       memoRelatedSetting,
       storageSetting,
-      tagsSetting,
       notificationSetting,
       aiSetting,
       initialize,

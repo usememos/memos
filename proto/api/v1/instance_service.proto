@@ -204,6 +204,8 @@ message InstanceSetting {
   }
 
   // Tag metadata configuration.
+  // Active tag metadata is stored in per-user tag settings.
+  // This message remains for backward compatibility with existing clients and migrations.
   message TagsSetting {
     // Map of tag name pattern to tag metadata.
     // Each key is treated as an anchored regular expression (^pattern$),
