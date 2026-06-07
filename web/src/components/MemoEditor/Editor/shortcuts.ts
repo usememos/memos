@@ -3,7 +3,6 @@ import type { EditorRefActions } from "./index";
 const SHORTCUTS = {
   BOLD: { key: "b", delimiter: "**" },
   ITALIC: { key: "i", delimiter: "*" },
-  LINK: { key: "k" },
 } as const;
 
 const URL_PLACEHOLDER = "url";
@@ -18,9 +17,6 @@ export function handleMarkdownShortcuts(event: React.KeyboardEvent, editor: Edit
   } else if (key === SHORTCUTS.ITALIC.key) {
     event.preventDefault();
     toggleTextStyle(editor, SHORTCUTS.ITALIC.delimiter);
-  } else if (key === SHORTCUTS.LINK.key) {
-    event.preventDefault();
-    insertHyperlink(editor);
   }
 }
 
@@ -47,7 +43,7 @@ export function insertHyperlink(editor: EditorRefActions, url?: string): void {
 function toggleTextStyle(editor: EditorRefActions, delimiter: string): void {
   const cursorPosition = editor.getCursorPosition();
   const selectedContent = editor.getSelectedContent();
-  const isStyled = selectedContent.startsWith(delimiter) && selectedContent.endsWith(delimiter);
+  const isStyled = isTextStyled(selectedContent, delimiter);
 
   if (isStyled) {
     const unstyled = selectedContent.slice(delimiter.length, -delimiter.length);
@@ -57,6 +53,32 @@ function toggleTextStyle(editor: EditorRefActions, delimiter: string): void {
     editor.insertText(`${delimiter}${selectedContent}${delimiter}`);
     editor.setCursorPosition(cursorPosition + delimiter.length, cursorPosition + delimiter.length + selectedContent.length);
   }
+}
+
+function isTextStyled(text: string, delimiter: string): boolean {
+  if (!text.startsWith(delimiter) || !text.endsWith(delimiter)) {
+    return false;
+  }
+
+  if (delimiter !== "*") {
+    return true;
+  }
+
+  const leadingAsterisks = countConsecutive(text, "*", "start");
+  const trailingAsterisks = countConsecutive(text, "*", "end");
+  return leadingAsterisks % 2 === 1 && trailingAsterisks % 2 === 1;
+}
+
+function countConsecutive(text: string, character: string, position: "start" | "end"): number {
+  let count = 0;
+  let index = position === "start" ? 0 : text.length - 1;
+
+  while (index >= 0 && index < text.length && text[index] === character) {
+    count += 1;
+    index += position === "start" ? 1 : -1;
+  }
+
+  return count;
 }
 
 export function hyperlinkHighlightedText(editor: EditorRefActions, url: string): void {
