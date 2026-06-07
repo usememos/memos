@@ -938,6 +938,7 @@ func (s *APIV1Service) DispatchMemoCommentCreatedWebhook(ctx context.Context, co
 		}
 		payload.ActivityType = "memos.memo.comment.created"
 		payload.URL = hook.Url
+		payload.SigningSecret = hook.SigningSecret
 		webhook.PostAsync(payload)
 	}
 	return nil
@@ -963,6 +964,7 @@ func (s *APIV1Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *v1p
 		}
 		payload.ActivityType = activityType
 		payload.URL = hook.Url
+		payload.SigningSecret = hook.SigningSecret
 
 		// Use asynchronous webhook dispatch
 		webhook.PostAsync(payload)
