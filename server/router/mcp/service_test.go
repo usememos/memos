@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"os"
 	"testing"
 
 	"github.com/labstack/echo/v5"
@@ -11,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/usememos/memos/internal/profile"
+	memosproto "github.com/usememos/memos/proto"
 )
 
 func TestIsAllowedMCPOrigin(t *testing.T) {
@@ -60,6 +62,12 @@ func TestNewMCPServiceUsesEmbeddedOpenAPISpec(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, service.handler)
 	require.Len(t, service.operationsByTool, len(curatedOperationIDs))
+}
+
+func TestEmbeddedOpenAPISpecMatchesGeneratedFile(t *testing.T) {
+	generated, err := os.ReadFile("../../../proto/gen/openapi.yaml")
+	require.NoError(t, err)
+	require.Equal(t, generated, memosproto.OpenAPIYAML())
 }
 
 func TestMCPToolHandlerForwardsArgumentsAndAuthorization(t *testing.T) {

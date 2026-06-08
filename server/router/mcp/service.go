@@ -11,6 +11,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/usememos/memos/internal/profile"
+	memosproto "github.com/usememos/memos/proto"
 )
 
 // MCPService serves the OpenAPI-driven MCP endpoint.
@@ -67,7 +68,7 @@ func NewMCPService(profile *profile.Profile, echoServer *echo.Echo) (*MCPService
 
 func loadMCPServiceOpenAPISpec() (*openAPISpec, error) {
 	spec := &openAPISpec{}
-	if err := yaml.Unmarshal(embeddedOpenAPISpec, spec); err != nil {
+	if err := yaml.Unmarshal(memosproto.OpenAPIYAML(), spec); err != nil {
 		return nil, errors.Wrap(err, "failed to parse embedded OpenAPI spec")
 	}
 	if spec.Paths == nil {
