@@ -1198,7 +1198,11 @@ func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.Upda
 		}
 		updatedWebhook.Title = request.Webhook.DisplayName
 		if request.Webhook.SigningSecret != "" {
-			updatedWebhook.SigningSecret = strings.TrimSpace(request.Webhook.SigningSecret)
+			secret := strings.TrimSpace(request.Webhook.SigningSecret)
+			if err := webhook.ValidateSigningSecret(secret); err != nil {
+				return nil, err
+			}
+			updatedWebhook.SigningSecret = secret
 		}
 	}
 

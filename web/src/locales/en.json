@@ -736,6 +736,7 @@
         "an-easy-to-remember-name": "An easy-to-remember name",
         "create-webhook": "Create webhook",
         "create-webhook-success": "Webhook `{{name}}` created",
+        "copy-secret": "Copy signing secret",
         "edit-webhook": "Edit webhook",
         "generate-secret": "Generate",
         "payload-url": "Payload URL",

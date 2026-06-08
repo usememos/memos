@@ -58,6 +58,16 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
     }
   }, [webhookName, currentUser]);
 
+  useEffect(() => {
+    if (open && isCreating) {
+      setState({
+        displayName: "",
+        url: "",
+        signingSecret: "",
+      });
+    }
+  }, [open, isCreating]);
+
   const setPartialState = (partialState: Partial<State>) => {
     setState({
       ...state,
@@ -92,10 +102,12 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
 
   const handleCopySecret = () => {
     if (!state.signingSecret) return;
-    copy(state.signingSecret);
+    copy(state.signingSecret.trim());
     setSecretCopied(true);
     setTimeout(() => setSecretCopied(false), 2000);
   };
+
+  const normalizedSigningSecret = state.signingSecret?.trim() ?? "";
 
   const handleSaveBtnClick = async () => {
     if (!state.displayName || !state.url) {
@@ -116,7 +128,7 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
           webhook: {
             displayName: state.displayName,
             url: state.url,
-            signingSecret: state.signingSecret ?? "",
+            signingSecret: normalizedSigningSecret,
           },
         });
       } else {
@@ -129,7 +141,7 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
             name: webhookName,
             displayName: state.displayName,
             url: state.url,
-            ...(state.signingSecret !== undefined && { signingSecret: state.signingSecret }),
+            ...(state.signingSecret !== undefined && { signingSecret: normalizedSigningSecret }),
           },
           updateMask: create(FieldMaskSchema, { paths: updateMaskPaths }),
         });
@@ -191,7 +203,14 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
                 onChange={handleSigningSecretInputChange}
                 className="flex-1"
               />
-              <Button type="button" variant="ghost" size="icon" onClick={handleCopySecret} disabled={!state.signingSecret}>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={handleCopySecret}
+                disabled={!state.signingSecret}
+                aria-label={t("setting.webhook.create-dialog.copy-secret")}
+              >
                 {secretCopied ? <CheckIcon className="h-4 w-4 text-green-500" /> : <CopyIcon className="h-4 w-4" />}
               </Button>
               <Button type="button" variant="outline" onClick={handleGenerateSecret}>

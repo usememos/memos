@@ -12,6 +12,7 @@ import (
 	"net"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -105,7 +106,14 @@ func Post(requestPayload *WebhookRequestPayload) error {
 		msgID := "msg_" + uuid.New().String()
 		timestamp := strconv.FormatInt(time.Now().Unix(), 10)
 
-		mac := hmac.New(sha256.New, []byte(requestPayload.SigningSecret))
+		key := []byte(requestPayload.SigningSecret)
+		if strings.HasPrefix(requestPayload.SigningSecret, "whsec_") {
+			if decoded, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(requestPayload.SigningSecret, "whsec_")); err == nil {
+				key = decoded
+			}
+		}
+
+		mac := hmac.New(sha256.New, key)
 		mac.Write([]byte(msgID + "." + timestamp + "."))
 		mac.Write(body)
 		signature := base64.StdEncoding.EncodeToString(mac.Sum(nil))
