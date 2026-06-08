@@ -16,7 +16,7 @@ const MemoContent = (props: MemoContentProps) => {
     containerRef: memoContentContainerRef,
     mode: showCompactMode,
     toggle: toggleCompactMode,
-  } = useCompactMode(Boolean(props.compact));
+  } = useCompactMode(Boolean(props.compact), content);
   const mentionUsernames = useMemo(() => extractMentionUsernames(content), [content]);
   const resolvedMentionUsernames = useResolvedMentionUsernames(mentionUsernames);
 

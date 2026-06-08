@@ -2,17 +2,25 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { COMPACT_STATES, getMaxDisplayHeight } from "./constants";
 import type { ContentCompactView } from "./types";
 
-export const useCompactMode = (enabled: boolean) => {
+export const useCompactMode = (enabled: boolean, revision: string) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mode, setMode] = useState<ContentCompactView | undefined>(undefined);
 
   useEffect(() => {
-    if (!enabled || !containerRef.current) return;
-    const maxHeight = getMaxDisplayHeight();
-    if (containerRef.current.getBoundingClientRect().height > maxHeight) {
-      setMode("ALL");
+    if (!enabled || !containerRef.current) {
+      setMode(undefined);
+      return;
     }
-  }, [enabled]);
+
+    const maxHeight = getMaxDisplayHeight();
+    const shouldCompact = Math.max(containerRef.current.scrollHeight, containerRef.current.getBoundingClientRect().height) > maxHeight;
+    setMode((currentMode) => {
+      if (!shouldCompact) {
+        return undefined;
+      }
+      return currentMode ?? "ALL";
+    });
+  }, [enabled, revision]);
 
   const toggle = useCallback(() => {
     if (!mode) return;
