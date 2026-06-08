@@ -1,13 +1,16 @@
 name: Feature Request
-description: Suggest a new feature or improvement
+description: Propose a product improvement with a clear use case
 type: Feature
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for suggesting an improvement. Please describe the problem first so maintainers can evaluate the request.
+        Thanks for suggesting an improvement. Please describe the problem and workflow first so maintainers can evaluate the request.
 
-        **Before submitting**, please search [existing issues](https://github.com/usememos/memos/issues?q=label%3Aenhancement) to avoid duplicates.
+        Before submitting:
+        - Search [existing feature requests](https://github.com/usememos/memos/issues?q=label%3Aenhancement) to avoid duplicates.
+        - Use [Discussions](https://github.com/usememos/memos/discussions) for broad ideas, setup help, or questions.
+        - Keep one feature request focused on one user problem.
 
   - type: checkboxes
     id: pre-check
@@ -18,6 +21,28 @@ body:
           required: true
         - label: This is a feature request, not a bug report or support question
           required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Choose the main area this request affects.
+      multiple: true
+      options:
+        - Web UI
+        - Mobile / responsive experience
+        - API
+        - Authentication / SSO
+        - Administration
+        - Memo editor
+        - Search / filters
+        - Tags / organization
+        - Resources / attachments
+        - Import / export
+        - Deployment / operations
+        - Other
+    validations:
+      required: true
 
   - type: textarea
     id: problem
@@ -31,10 +56,21 @@ body:
       required: true
 
   - type: textarea
+    id: users
+    attributes:
+      label: Who Would Use This?
+      description: Describe the user, role, team, or workflow that would benefit.
+      placeholder: |
+        This helps ...
+        They currently ...
+    validations:
+      required: true
+
+  - type: textarea
     id: solution
     attributes:
       label: Proposed Solution
-      description: Describe the behavior you would like Memos to support.
+      description: Describe the behavior you would like Memos to support. Include UI, API, or configuration details if relevant.
       placeholder: |
         Memos should ...
     validations:
@@ -50,8 +86,24 @@ body:
         It does not work well because ...
 
   - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility and Migration
+      description: Note any expected impact on existing users, APIs, storage, permissions, or deployments.
+      placeholder: |
+        This should not affect existing memos because ...
+        Existing API clients may need ...
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples
+      description: Link to screenshots, mockups, API sketches, related apps, or existing issues that show the desired behavior.
+      placeholder: Drag and drop files here or add links/examples.
+
+  - type: textarea
     id: additional-context
     attributes:
       label: Additional Context
-      description: Mockups, screenshots, examples from other apps, API sketches, or any other context.
-      placeholder: Drag and drop files here or add links/examples.
+      description: Add any extra context that does not fit above.
+      placeholder: Any other details.
