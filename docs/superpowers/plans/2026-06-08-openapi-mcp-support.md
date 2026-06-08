@@ -25,8 +25,8 @@
 - `server/router/mcp/service_test.go` — MCP initialize/tools/list/tools/call protocol tests.
 
 **Modify:**
-- `go.mod` — add `github.com/modelcontextprotocol/go-sdk`.
-- `go.sum` — updated by `go get`/`go mod tidy`.
+- `go.mod` — add `github.com/modelcontextprotocol/go-sdk` in Task 3 when `server/router/mcp/catalog_test.go` first imports it.
+- `go.sum` — updated by `go get`/`go mod tidy` in Task 3.
 - `server/server.go` — import `server/router/mcp` and register the new MCP service after API routes are registered.
 
 ---
@@ -47,29 +47,22 @@ Expected: a docs-only commit that keeps the implementation plan separate from fe
 
 ---
 
-## Task 1: Add the standard MCP SDK dependency
+## Task 1: Removed standalone MCP SDK dependency task
 
 **Files:**
-- Modify: `go.mod`
-- Modify: `go.sum`
+- None
 
-- [ ] **Step 1: Add the official Go MCP SDK**
+- [ ] **Step 1: Skip standalone dependency addition**
 
-```bash
-go get github.com/modelcontextprotocol/go-sdk@v1.6.1
-```
-
-Expected: `go.mod` gains `github.com/modelcontextprotocol/go-sdk v1.6.1` and `go.sum` gains its checksums. This SDK is the official Go SDK and exposes `mcp.NewStreamableHTTPHandler`, `mcp.Server.AddTool`, raw JSON schemas, tool annotations, and object-shaped `CallToolResult.StructuredContent`.
-
-- [ ] **Step 2: Tidy with the repository Go version**
+Do not add `github.com/modelcontextprotocol/go-sdk` as a standalone dependency. `go mod tidy -go=1.26.2` removes unused library dependencies when no Go source imports them yet, and this SDK must not be kept as a Go tool dependency. Add the SDK in Task 3 when catalog tests and implementation first import `github.com/modelcontextprotocol/go-sdk/mcp`.
 
 ```bash
 go mod tidy -go=1.26.2
 ```
 
-Expected: command succeeds. `github.com/modelcontextprotocol/go-sdk` remains in `go.mod`; generated or unrelated files do not change.
+Expected: command succeeds. `github.com/modelcontextprotocol/go-sdk` is not present in `go.mod` or `go.sum`; generated or unrelated files do not change.
 
-- [ ] **Step 3: Verify dependency graph builds**
+- [ ] **Step 2: Verify existing server packages**
 
 ```bash
 go test ./server/...
@@ -77,11 +70,11 @@ go test ./server/...
 
 Expected: PASS for existing server packages before MCP files are added.
 
-- [ ] **Step 4: Commit**
+- [ ] **Step 3: Commit plan correction if needed**
 
 ```bash
-git add go.mod go.sum
-git commit -m "chore(mcp): add official Go SDK"
+git add docs/superpowers/plans/2026-06-08-openapi-mcp-support.md go.mod go.sum
+git commit -m "docs(mcp): fold SDK dependency into implementation task"
 ```
 
 ---
@@ -365,6 +358,8 @@ git commit -m "feat(mcp): parse generated OpenAPI operations"
 ## Task 3: Convert curated OpenAPI operations into MCP tool definitions
 
 **Files:**
+- Modify: `go.mod`
+- Modify: `go.sum`
 - Create: `server/router/mcp/catalog.go`
 - Test: `server/router/mcp/catalog_test.go`
 
@@ -446,7 +441,15 @@ func TestBuildCuratedToolsHasUniqueNames(t *testing.T) {
 }
 ```
 
-- [ ] **Step 2: Run tests and verify they fail**
+- [ ] **Step 2: Add the official Go MCP SDK once tests import it**
+
+```bash
+go get github.com/modelcontextprotocol/go-sdk@v1.6.1
+```
+
+Expected: `go.mod` gains `github.com/modelcontextprotocol/go-sdk v1.6.1` and `go.sum` gains its checksums. This SDK is the official Go SDK and exposes `mcp.NewStreamableHTTPHandler`, `mcp.Server.AddTool`, raw JSON schemas, tool annotations, and object-shaped `CallToolResult.StructuredContent`. Do not add it with `go get -tool`.
+
+- [ ] **Step 3: Run tests and verify they fail**
 
 ```bash
 go test ./server/router/mcp/... -run 'TestCuratedOperationIDsStayMemoFocused|TestToolNameFromOperationID|TestBuildToolFromOperationIncludesSchemasAndMetadata|TestBuildCuratedToolsHasUniqueNames'
@@ -454,7 +457,7 @@ go test ./server/router/mcp/... -run 'TestCuratedOperationIDsStayMemoFocused|Tes
 
 Expected: FAIL because `catalog.go` symbols do not exist.
 
-- [ ] **Step 3: Implement `catalog.go`**
+- [ ] **Step 4: Implement `catalog.go`**
 
 Create `server/router/mcp/catalog.go`:
 
@@ -630,7 +633,15 @@ func annotationsForMethod(method string, name string) *sdkmcp.ToolAnnotations {
 }
 ```
 
-- [ ] **Step 4: Run catalog tests**
+- [ ] **Step 5: Tidy with the repository Go version**
+
+```bash
+go mod tidy -go=1.26.2
+```
+
+Expected: command succeeds. `github.com/modelcontextprotocol/go-sdk` remains in `go.mod` because `catalog_test.go` and `catalog.go` import `github.com/modelcontextprotocol/go-sdk/mcp`.
+
+- [ ] **Step 6: Run catalog tests**
 
 ```bash
 go test ./server/router/mcp/... -run 'TestCuratedOperationIDsStayMemoFocused|TestToolNameFromOperationID|TestBuildToolFromOperationIncludesSchemasAndMetadata|TestBuildCuratedToolsHasUniqueNames'
@@ -638,10 +649,10 @@ go test ./server/router/mcp/... -run 'TestCuratedOperationIDsStayMemoFocused|Tes
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
-git add server/router/mcp/catalog.go server/router/mcp/catalog_test.go
+git add go.mod go.sum server/router/mcp/catalog.go server/router/mcp/catalog_test.go
 git commit -m "feat(mcp): derive tools from curated OpenAPI operations"
 ```
 
