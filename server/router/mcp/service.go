@@ -85,6 +85,9 @@ func newMCPToolHandler(adapter *apiAdapter, operation *registeredOperation) sdkm
 				return newToolErrorResult(errors.Wrap(err, "failed to decode MCP tool arguments").Error()), nil
 			}
 		}
+		if err := validateToolArguments(operation.InputSchema, arguments); err != nil {
+			return newToolErrorResult(err.Error()), nil
+		}
 
 		authorization := ""
 		if request.Extra != nil {

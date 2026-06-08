@@ -172,6 +172,72 @@ func TestMCPToolCallReturnsObjectStructuredContent(t *testing.T) {
 	}, result["structuredContent"])
 }
 
+func TestMCPToolCallRejectsInvalidArguments(t *testing.T) {
+	echoServer := echo.New()
+	routeHits := 0
+	echoServer.GET("/api/v1/memos", func(c *echo.Context) error {
+		routeHits++
+		return c.JSON(http.StatusOK, map[string]any{"memos": []any{}})
+	})
+	echoServer.GET("/api/v1/memos/:memo", func(c *echo.Context) error {
+		routeHits++
+		return c.JSON(http.StatusOK, map[string]any{"name": c.Param("memo")})
+	})
+
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+	require.NoError(t, err)
+	service.RegisterRoutes(echoServer)
+
+	initializeMCP(t, echoServer)
+
+	tests := []struct {
+		name      string
+		toolName  string
+		arguments map[string]any
+		wantError string
+	}{
+		{
+			name:      "unknown argument",
+			toolName:  "memo_list_memos",
+			arguments: map[string]any{"unexpected": true},
+			wantError: `unknown argument "unexpected"`,
+		},
+		{
+			name:      "missing required argument",
+			toolName:  "memo_get_memo",
+			arguments: map[string]any{},
+			wantError: `missing required argument "memo"`,
+		},
+		{
+			name:      "wrong primitive type",
+			toolName:  "memo_list_memos",
+			arguments: map[string]any{"pageSize": "ten"},
+			wantError: `argument "pageSize" must be integer`,
+		},
+	}
+
+	for index, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			response := postMCP(t, echoServer, map[string]any{
+				"jsonrpc": "2.0",
+				"id":      index + 2,
+				"method":  "tools/call",
+				"params": map[string]any{
+					"name":      test.toolName,
+					"arguments": test.arguments,
+				},
+			})
+
+			result := response["result"].(map[string]any)
+			require.Equal(t, true, result["isError"])
+			structured := result["structuredContent"].(map[string]any)
+			errorObject := structured["error"].(map[string]any)
+			require.Contains(t, errorObject["message"], test.wantError)
+		})
+	}
+	require.Zero(t, routeHits)
+}
+
 func initializeMCP(t *testing.T, echoServer *echo.Echo) {
 	t.Helper()
 	response := postMCP(t, echoServer, map[string]any{

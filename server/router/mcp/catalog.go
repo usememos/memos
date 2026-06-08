@@ -34,6 +34,7 @@ type registeredOperation struct {
 	Method      string
 	Path        string
 	Operation   *openAPIOperation
+	InputSchema jsonSchema
 }
 
 var wordBoundary = regexp.MustCompile(`([a-z0-9])([A-Z])`)
@@ -61,6 +62,7 @@ func buildCuratedTools(registry map[string]*openAPIOperation) ([]*sdkmcp.Tool, m
 func buildToolFromOperation(operation *openAPIOperation) (*sdkmcp.Tool, *registeredOperation) {
 	name := toolNameFromOperationID(operation.OperationID)
 	title := titleFromToolName(name)
+	inputSchema := inputSchemaForOperation(operation)
 	tool := &sdkmcp.Tool{
 		Meta: sdkmcp.Meta{
 			"operationId": operation.OperationID,
@@ -70,7 +72,7 @@ func buildToolFromOperation(operation *openAPIOperation) (*sdkmcp.Tool, *registe
 		Name:         name,
 		Title:        title,
 		Description:  operation.Description,
-		InputSchema:  inputSchemaForOperation(operation),
+		InputSchema:  inputSchema,
 		OutputSchema: outputSchemaForOperation(operation),
 		Annotations:  annotationsForMethod(operation.Method, title),
 	}
@@ -81,6 +83,7 @@ func buildToolFromOperation(operation *openAPIOperation) (*sdkmcp.Tool, *registe
 		Method:      operation.Method,
 		Path:        operation.Path,
 		Operation:   operation,
+		InputSchema: inputSchema,
 	}
 }
 
@@ -111,6 +114,7 @@ func titleFromToolName(name string) string {
 func inputSchemaForOperation(operation *openAPIOperation) jsonSchema {
 	properties := map[string]any{}
 	required := []string{}
+	defs := map[string]any{}
 	for _, parameter := range operation.Parameters {
 		schema := cloneSchema(parameter.Schema)
 		if parameter.Description != "" {
@@ -123,7 +127,11 @@ func inputSchemaForOperation(operation *openAPIOperation) jsonSchema {
 	}
 
 	if operation.RequestBody != nil {
-		properties["body"] = requestBodySchema(operation)
+		bodySchema := requestBodySchema(operation)
+		for name, definition := range extractSchemaDefs(bodySchema) {
+			defs[name] = definition
+		}
+		properties["body"] = bodySchema
 		if operation.RequestBody.Required {
 			required = append(required, "body")
 		}
@@ -136,6 +144,9 @@ func inputSchemaForOperation(operation *openAPIOperation) jsonSchema {
 	}
 	if len(required) > 0 {
 		schema["required"] = required
+	}
+	if len(defs) > 0 {
+		schema["$defs"] = defs
 	}
 	return schema
 }
@@ -160,6 +171,15 @@ func cloneSchema(schema jsonSchema) jsonSchema {
 		clone[key] = value
 	}
 	return clone
+}
+
+func extractSchemaDefs(schema jsonSchema) map[string]any {
+	defs, ok := schema["$defs"].(map[string]any)
+	if !ok {
+		return nil
+	}
+	delete(schema, "$defs")
+	return defs
 }
 
 func annotationsForMethod(method string, title string) *sdkmcp.ToolAnnotations {

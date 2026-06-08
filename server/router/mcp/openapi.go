@@ -126,22 +126,120 @@ func operationRequestBodySchema(spec *openAPISpec, operation *openAPIOperation) 
 }
 
 func resolveSchemaRef(spec *openAPISpec, schema jsonSchema) (jsonSchema, error) {
-	ref, ok := schema["$ref"].(string)
-	if !ok || ref == "" {
-		return schema, nil
+	defs := map[string]any{}
+	resolved, err := resolveSchemaValue(spec, schema, defs, map[string]bool{}, true)
+	if err != nil {
+		return nil, err
 	}
 
-	const prefix = "#/components/schemas/"
-	if !strings.HasPrefix(ref, prefix) {
-		return nil, errors.Errorf("unsupported schema ref %q", ref)
-	}
-
-	name := strings.TrimPrefix(ref, prefix)
-	resolved, ok := spec.Components.Schemas[name]
+	resolvedSchema, ok := resolved.(map[string]any)
 	if !ok {
-		return nil, errors.Errorf("schema ref %q not found", ref)
+		return nil, errors.New("resolved schema is not an object")
+	}
+	if len(defs) > 0 {
+		resolvedSchema["$defs"] = defs
+	}
+	return jsonSchema(resolvedSchema), nil
+}
+
+func resolveSchemaValue(spec *openAPISpec, value any, defs map[string]any, resolving map[string]bool, inlineRef bool) (any, error) {
+	switch typed := value.(type) {
+	case jsonSchema:
+		return resolveSchemaMap(spec, map[string]any(typed), defs, resolving, inlineRef)
+	case map[string]any:
+		return resolveSchemaMap(spec, typed, defs, resolving, inlineRef)
+	case []any:
+		resolved := make([]any, 0, len(typed))
+		for _, item := range typed {
+			resolvedItem, err := resolveSchemaValue(spec, item, defs, resolving, false)
+			if err != nil {
+				return nil, err
+			}
+			resolved = append(resolved, resolvedItem)
+		}
+		return resolved, nil
+	default:
+		return value, nil
+	}
+}
+
+func resolveSchemaMap(spec *openAPISpec, schema map[string]any, defs map[string]any, resolving map[string]bool, inlineRef bool) (map[string]any, error) {
+	if ref, ok := schema["$ref"].(string); ok && ref != "" {
+		name, err := schemaComponentName(ref)
+		if err != nil {
+			return nil, err
+		}
+		if inlineRef {
+			return resolveComponentSchema(spec, name, defs, resolving)
+		}
+		if err := addSchemaDef(spec, name, defs, resolving); err != nil {
+			return nil, err
+		}
+		return map[string]any{"$ref": "#/$defs/" + name}, nil
+	}
+
+	resolved := make(map[string]any, len(schema))
+	for key, value := range schema {
+		resolvedValue, err := resolveSchemaValue(spec, value, defs, resolving, false)
+		if err != nil {
+			return nil, err
+		}
+		resolved[key] = resolvedValue
 	}
 	return resolved, nil
+}
+
+func resolveComponentSchema(spec *openAPISpec, name string, defs map[string]any, resolving map[string]bool) (map[string]any, error) {
+	component, ok := spec.Components.Schemas[name]
+	if !ok {
+		return nil, errors.Errorf("schema ref %q not found", schemaComponentRef(name))
+	}
+	resolving[name] = true
+	resolved, err := resolveSchemaMap(spec, map[string]any(component), defs, resolving, false)
+	delete(resolving, name)
+	if err != nil {
+		return nil, err
+	}
+	if _, ok := defs[name]; ok {
+		defs[name] = resolved
+	}
+	return resolved, nil
+}
+
+func addSchemaDef(spec *openAPISpec, name string, defs map[string]any, resolving map[string]bool) error {
+	if _, ok := defs[name]; ok {
+		return nil
+	}
+	component, ok := spec.Components.Schemas[name]
+	if !ok {
+		return errors.Errorf("schema ref %q not found", schemaComponentRef(name))
+	}
+
+	defs[name] = map[string]any{}
+	if resolving[name] {
+		return nil
+	}
+
+	resolving[name] = true
+	resolved, err := resolveSchemaMap(spec, map[string]any(component), defs, resolving, false)
+	delete(resolving, name)
+	if err != nil {
+		return err
+	}
+	defs[name] = resolved
+	return nil
+}
+
+func schemaComponentName(ref string) (string, error) {
+	const prefix = "#/components/schemas/"
+	if !strings.HasPrefix(ref, prefix) {
+		return "", errors.Errorf("unsupported schema ref %q", ref)
+	}
+	return strings.TrimPrefix(ref, prefix), nil
+}
+
+func schemaComponentRef(name string) string {
+	return "#/components/schemas/" + name
 }
 
 func okSchema() jsonSchema {

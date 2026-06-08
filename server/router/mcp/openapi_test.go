@@ -1,6 +1,7 @@
 package mcp
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -81,6 +82,45 @@ func TestResolveSchemaRef(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "object", schema["type"])
 	require.Contains(t, schema["properties"], "memos")
+}
+
+func TestResolveSchemaRefRewritesNestedComponentRefs(t *testing.T) {
+	spec := &openAPISpec{
+		Components: openAPIComponents{
+			Schemas: map[string]jsonSchema{
+				"ListMemosResponse": {
+					"type": "object",
+					"properties": map[string]any{
+						"memos": map[string]any{
+							"type":  "array",
+							"items": map[string]any{"$ref": "#/components/schemas/Memo"},
+						},
+					},
+				},
+				"Memo": {
+					"type": "object",
+					"properties": map[string]any{
+						"attachment": map[string]any{"$ref": "#/components/schemas/Attachment"},
+					},
+				},
+				"Attachment": {
+					"type": "object",
+					"properties": map[string]any{
+						"name": map[string]any{"type": "string"},
+					},
+				},
+			},
+		},
+	}
+
+	schema, err := resolveSchemaRef(spec, jsonSchema{"$ref": "#/components/schemas/ListMemosResponse"})
+	require.NoError(t, err)
+
+	data, err := json.Marshal(schema)
+	require.NoError(t, err)
+	require.NotContains(t, string(data), "#/components/schemas")
+	require.Contains(t, string(data), `"#/$defs/Memo"`)
+	require.Contains(t, string(data), `"#/$defs/Attachment"`)
 }
 
 func TestBuildOperationRegistryResolvesRequestBodySchema(t *testing.T) {

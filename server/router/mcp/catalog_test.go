@@ -86,6 +86,15 @@ func TestBuildToolFromOperationIncludesRequestBodySchema(t *testing.T) {
 	body := properties["body"].(jsonSchema)
 	require.Equal(t, "object", body["type"])
 	require.Contains(t, body["properties"], "content")
+
+	err = validateToolArguments(tool.InputSchema.(jsonSchema), map[string]any{
+		"body": map[string]any{
+			"state":      "NORMAL",
+			"content":    "hello",
+			"visibility": "PRIVATE",
+		},
+	})
+	require.NoError(t, err)
 }
 
 func TestBuildCuratedToolsHasUniqueNames(t *testing.T) {
@@ -106,6 +115,13 @@ func TestBuildCuratedToolsHasUniqueNames(t *testing.T) {
 		require.NotContains(t, names, tool.Name)
 		names[tool.Name] = struct{}{}
 		require.Equal(t, tool.Name, operations[tool.Name].ToolName)
+
+		inputBytes, err := json.Marshal(tool.InputSchema)
+		require.NoError(t, err)
+		require.NotContains(t, string(inputBytes), "#/components/schemas")
+		outputBytes, err := json.Marshal(tool.OutputSchema)
+		require.NoError(t, err)
+		require.NotContains(t, string(outputBytes), "#/components/schemas")
 	}
 }
 

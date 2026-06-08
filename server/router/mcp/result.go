@@ -36,11 +36,17 @@ func newStructuredToolResult(value any) (*sdkmcp.CallToolResult, error) {
 }
 
 func newToolErrorResult(message string) *sdkmcp.CallToolResult {
+	structured := map[string]any{
+		"error": map[string]any{
+			"message": message,
+		},
+	}
 	return &sdkmcp.CallToolResult{
 		Content: []sdkmcp.Content{
 			&sdkmcp.TextContent{Text: message},
 		},
-		IsError: true,
+		StructuredContent: structured,
+		IsError:           true,
 	}
 }
 
