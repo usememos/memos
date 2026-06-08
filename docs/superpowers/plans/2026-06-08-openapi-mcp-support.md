@@ -1541,7 +1541,7 @@ go mod tidy -go=1.26.2
 git diff -- go.mod go.sum
 ```
 
-Expected: no diff after tidy, or only dependency changes already produced by Task 1.
+Expected: no diff after tidy, or only dependency changes already produced by Task 3.
 
 - [ ] **Step 4: Inspect final diff**
 
