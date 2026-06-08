@@ -1,9 +1,11 @@
 package mcp
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"net/http"
+	"net/http/httptest"
 	"os"
 	"testing"
 
@@ -105,4 +107,103 @@ func TestMCPToolHandlerForwardsArgumentsAndAuthorization(t *testing.T) {
 	require.Equal(t, map[string]any{
 		"memos": []any{map[string]any{"name": "memos/test"}},
 	}, result.StructuredContent)
+}
+
+func TestMCPProtocolListsCuratedToolsOnly(t *testing.T) {
+	echoServer := echo.New()
+
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+	require.NoError(t, err)
+	service.RegisterRoutes(echoServer)
+
+	initializeMCP(t, echoServer)
+	response := postMCP(t, echoServer, map[string]any{
+		"jsonrpc": "2.0",
+		"id":      2,
+		"method":  "tools/list",
+	})
+
+	result := response["result"].(map[string]any)
+	tools := result["tools"].([]any)
+	require.Len(t, tools, len(curatedOperationIDs))
+
+	names := map[string]struct{}{}
+	for _, rawTool := range tools {
+		tool := rawTool.(map[string]any)
+		name := tool["name"].(string)
+		names[name] = struct{}{}
+		require.Contains(t, tool, "inputSchema")
+		require.Contains(t, tool, "outputSchema")
+	}
+	require.Contains(t, names, "memo_list_memos")
+	require.Contains(t, names, "memo_create_memo")
+	require.NotContains(t, names, "auth_sign_in")
+	require.NotContains(t, names, "user_create_user")
+}
+
+func TestMCPToolCallReturnsObjectStructuredContent(t *testing.T) {
+	echoServer := echo.New()
+	echoServer.GET("/api/v1/memos", func(c *echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]any{
+			"memos": []any{map[string]any{"name": "memos/abc123"}},
+		})
+	})
+
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+	require.NoError(t, err)
+	service.RegisterRoutes(echoServer)
+
+	initializeMCP(t, echoServer)
+	response := postMCP(t, echoServer, map[string]any{
+		"jsonrpc": "2.0",
+		"id":      2,
+		"method":  "tools/call",
+		"params": map[string]any{
+			"name": "memo_list_memos",
+			"arguments": map[string]any{
+				"pageSize": 1,
+			},
+		},
+	})
+
+	result := response["result"].(map[string]any)
+	structured := result["structuredContent"].(map[string]any)
+	require.Contains(t, structured, "memos")
+	require.NotContains(t, structured, "result")
+}
+
+func initializeMCP(t *testing.T, echoServer *echo.Echo) {
+	t.Helper()
+	response := postMCP(t, echoServer, map[string]any{
+		"jsonrpc": "2.0",
+		"id":      1,
+		"method":  "initialize",
+		"params": map[string]any{
+			"protocolVersion": "2025-06-18",
+			"capabilities":    map[string]any{},
+			"clientInfo": map[string]any{
+				"name":    "memos-test",
+				"version": "1.0.0",
+			},
+		},
+	})
+	require.NotNil(t, response["result"])
+}
+
+func postMCP(t *testing.T, echoServer *echo.Echo, payload map[string]any) map[string]any {
+	t.Helper()
+	data, err := json.Marshal(payload)
+	require.NoError(t, err)
+
+	request := httptest.NewRequest(http.MethodPost, "/mcp", bytes.NewReader(data))
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Accept", "application/json, text/event-stream")
+
+	recorder := httptest.NewRecorder()
+	echoServer.ServeHTTP(recorder, request)
+	require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
+
+	var response map[string]any
+	require.NoError(t, json.Unmarshal(recorder.Body.Bytes(), &response))
+	return response
 }
