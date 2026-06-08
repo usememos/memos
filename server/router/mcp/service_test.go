@@ -167,9 +167,9 @@ func TestMCPToolCallReturnsObjectStructuredContent(t *testing.T) {
 	})
 
 	result := response["result"].(map[string]any)
-	structured := result["structuredContent"].(map[string]any)
-	require.Contains(t, structured, "memos")
-	require.NotContains(t, structured, "result")
+	require.Equal(t, map[string]any{
+		"memos": []any{map[string]any{"name": "memos/abc123"}},
+	}, result["structuredContent"])
 }
 
 func initializeMCP(t *testing.T, echoServer *echo.Echo) {
