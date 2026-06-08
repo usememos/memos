@@ -12,10 +12,14 @@ func TestCuratedOperationIDsStayMemoFocused(t *testing.T) {
 	require.Len(t, curatedOperationIDs, 17)
 
 	for _, operationID := range curatedOperationIDs {
+		require.NotContains(t, operationID, "Admin")
 		require.NotContains(t, operationID, "AuthService_")
+		require.NotContains(t, operationID, "UserService_")
+		require.NotContains(t, operationID, "AIService_")
 		require.NotContains(t, operationID, "IdentityProviderService_")
 		require.NotContains(t, operationID, "InstanceService_")
 		require.NotContains(t, operationID, "PersonalAccessToken")
+		require.NotContains(t, operationID, "PAT")
 		require.NotContains(t, operationID, "Webhook")
 		require.NotContains(t, operationID, "Share")
 		require.NotContains(t, operationID, "BatchDelete")
