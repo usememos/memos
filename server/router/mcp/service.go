@@ -8,14 +8,10 @@ import (
 	"github.com/labstack/echo/v5"
 	sdkmcp "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/pkg/errors"
+	"gopkg.in/yaml.v3"
 
 	"github.com/usememos/memos/internal/profile"
 )
-
-var openAPISpecPaths = []string{
-	"proto/gen/openapi.yaml",
-	"../../../proto/gen/openapi.yaml",
-}
 
 // MCPService serves the OpenAPI-driven MCP endpoint.
 type MCPService struct {
@@ -70,15 +66,14 @@ func NewMCPService(profile *profile.Profile, echoServer *echo.Echo) (*MCPService
 }
 
 func loadMCPServiceOpenAPISpec() (*openAPISpec, error) {
-	var lastErr error
-	for _, path := range openAPISpecPaths {
-		spec, err := loadOpenAPISpec(path)
-		if err == nil {
-			return spec, nil
-		}
-		lastErr = err
+	spec := &openAPISpec{}
+	if err := yaml.Unmarshal(embeddedOpenAPISpec, spec); err != nil {
+		return nil, errors.Wrap(err, "failed to parse embedded OpenAPI spec")
 	}
-	return nil, errors.Wrap(lastErr, "failed to load MCP OpenAPI spec")
+	if spec.Paths == nil {
+		return nil, errors.New("embedded OpenAPI spec has no paths")
+	}
+	return spec, nil
 }
 
 func newMCPToolHandler(adapter *apiAdapter, operation *registeredOperation) sdkmcp.ToolHandler {

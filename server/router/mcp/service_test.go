@@ -53,6 +53,15 @@ func TestNewMCPServiceRegistersCuratedTools(t *testing.T) {
 	require.Equal(t, "/api/v1/memos", operation.Path)
 }
 
+func TestNewMCPServiceUsesEmbeddedOpenAPISpec(t *testing.T) {
+	t.Chdir(t.TempDir())
+
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echo.New())
+	require.NoError(t, err)
+	require.NotNil(t, service.handler)
+	require.Len(t, service.operationsByTool, len(curatedOperationIDs))
+}
+
 func TestMCPToolHandlerForwardsArgumentsAndAuthorization(t *testing.T) {
 	echoServer := echo.New()
 	echoServer.GET("/api/v1/memos", func(c *echo.Context) error {
