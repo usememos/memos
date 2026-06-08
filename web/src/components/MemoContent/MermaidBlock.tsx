@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
-import { getThemeWithFallback, resolveTheme, setupSystemThemeListener } from "@/utils/theme";
+import { getThemeMode, getThemeWithFallback, resolveTheme, setupSystemThemeListener } from "@/utils/theme";
 import { extractCodeContent } from "./utils";
 
 interface MermaidBlockProps {
@@ -11,7 +11,7 @@ interface MermaidBlockProps {
 
 type MermaidTheme = "default" | "dark";
 
-const toMermaidTheme = (appTheme: string): MermaidTheme => (appTheme === "default-dark" ? "dark" : "default");
+const toMermaidTheme = (appTheme: string): MermaidTheme => (getThemeMode(resolveTheme(appTheme)) === "dark" ? "dark" : "default");
 
 const formatErrorMessage = (err: unknown): string => {
   const msg = err instanceof Error ? err.message : "Failed to render diagram";

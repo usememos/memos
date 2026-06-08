@@ -1,0 +1,186 @@
+/*
+  Catppuccin Frappé theme for Memos
+  Based on the official Catppuccin style guide.
+*/
+
+:root {
+  --ctp-rosewater: #f2d5cf;
+  --ctp-flamingo: #eebebe;
+  --ctp-pink: #f4b8e4;
+  --ctp-mauve: #ca9ee6;
+  --ctp-red: #e78284;
+  --ctp-maroon: #ea999c;
+  --ctp-peach: #ef9f76;
+  --ctp-yellow: #e5c890;
+  --ctp-green: #a6d189;
+  --ctp-teal: #81c8be;
+  --ctp-sky: #99d1db;
+  --ctp-sapphire: #85c1dc;
+  --ctp-blue: #8caaee;
+  --ctp-lavender: #babbf1;
+  --ctp-text: #c6d0f5;
+  --ctp-subtext1: #b5bfe2;
+  --ctp-subtext0: #a5adce;
+  --ctp-overlay2: #949cbb;
+  --ctp-overlay1: #838ba7;
+  --ctp-overlay0: #737994;
+  --ctp-surface2: #626880;
+  --ctp-surface1: #51576d;
+  --ctp-surface0: #414559;
+  --ctp-base: #303446;
+  --ctp-mantle: #292c3c;
+  --ctp-crust: #232634;
+
+  /* Memos/Tailwind tokens */
+  --background: var(--ctp-base);
+  --foreground: var(--ctp-text);
+  --card: var(--ctp-mantle);
+  --card-foreground: var(--ctp-text);
+  --popover: var(--ctp-mantle);
+  --popover-foreground: var(--ctp-text);
+  --primary: var(--ctp-mauve);
+  --primary-foreground: var(--ctp-base);
+  --secondary: var(--ctp-surface0);
+  --secondary-foreground: var(--ctp-text);
+  --muted: var(--ctp-surface0);
+  --muted-foreground: var(--ctp-subtext0);
+  --accent: var(--ctp-surface1);
+  --accent-foreground: var(--ctp-text);
+  --destructive: var(--ctp-red);
+  --destructive-foreground: var(--ctp-base);
+  --border: var(--ctp-surface1);
+  --input: var(--ctp-surface2);
+  --ring: var(--ctp-mauve);
+  --sidebar: var(--ctp-mantle);
+  --sidebar-foreground: var(--ctp-subtext1);
+  --sidebar-accent: var(--ctp-surface0);
+  --sidebar-accent-foreground: var(--ctp-text);
+
+  color-scheme: dark;
+  caret-color: var(--ctp-rosewater);
+}
+
+/* Typography: text/subtext/overlay guidance */
+.text-muted-foreground,
+.text-secondary-foreground\/80,
+.text-foreground\/60,
+.text-foreground\/70,
+[class*="muted-foreground"] {
+  color: var(--ctp-subtext0) !important;
+}
+
+/* Links and URL-like actions: blue per Catppuccin guide. */
+a,
+a:visited,
+.markdown-body a,
+.memo-content a {
+  color: var(--ctp-blue) !important;
+}
+
+a:hover,
+.markdown-body a:hover,
+.memo-content a:hover {
+  color: var(--ctp-sapphire) !important;
+}
+
+/* Tags/pills: blue per guide, with base/on-accent text. */
+[class*="tag"],
+a[href*="tag"],
+.rounded-full.bg-primary,
+.bg-primary\/10 {
+  border-color: color-mix(in srgb, var(--ctp-blue) 45%, transparent) !important;
+}
+
+/* Selection: overlay2 at 25%, per guide. */
+::selection {
+  background: color-mix(in srgb, var(--ctp-overlay2) 25%, transparent);
+  color: var(--ctp-text);
+}
+
+/* Focus/cursor: rosewater cursor, mauve focus ring. */
+*:focus-visible {
+  outline-color: var(--ctp-mauve) !important;
+}
+
+input,
+textarea,
+select,
+[contenteditable="true"] {
+  caret-color: var(--ctp-rosewater);
+}
+
+/* Semantic states. */
+.text-green-500,
+.text-green-600,
+.text-emerald-500,
+.text-emerald-600,
+[class*="text-success"] {
+  color: var(--ctp-green) !important;
+}
+
+.text-yellow-500,
+.text-yellow-600,
+.text-amber-500,
+.text-amber-600,
+[class*="text-warning"] {
+  color: var(--ctp-yellow) !important;
+}
+
+.text-red-500,
+.text-red-600,
+.text-destructive,
+[class*="text-error"] {
+  color: var(--ctp-red) !important;
+}
+
+.bg-green-500,
+.bg-green-600,
+.bg-emerald-500,
+.bg-emerald-600,
+[class*="bg-success"] {
+  background-color: var(--ctp-green) !important;
+  color: var(--ctp-base) !important;
+}
+
+.bg-yellow-500,
+.bg-yellow-600,
+.bg-amber-500,
+.bg-amber-600,
+[class*="bg-warning"] {
+  background-color: var(--ctp-yellow) !important;
+  color: var(--ctp-base) !important;
+}
+
+.bg-red-500,
+.bg-red-600,
+.bg-destructive,
+[class*="bg-error"] {
+  background-color: var(--ctp-red) !important;
+  color: var(--ctp-base) !important;
+}
+
+/* Code blocks: surface pane with text, keeping syntax highlighting legible. */
+code:not(pre code),
+pre {
+  background-color: var(--ctp-surface0) !important;
+  color: var(--ctp-text) !important;
+  border-color: var(--ctp-surface1) !important;
+}
+
+pre code {
+  background: transparent !important;
+}
+
+/* Form and surface polish. */
+button,
+input,
+textarea,
+select {
+  border-color: var(--ctp-surface2);
+}
+
+hr,
+.border,
+[class*="border-border"] {
+  border-color: var(--ctp-surface1) !important;
+}

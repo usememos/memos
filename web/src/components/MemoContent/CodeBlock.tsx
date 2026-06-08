@@ -4,7 +4,7 @@ import { CheckIcon, CopyIcon } from "lucide-react";
 import { isValidElement, type ReactElement, type ReactNode, useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
-import { getThemeWithFallback, resolveTheme } from "@/utils/theme";
+import { getThemeMode, getThemeWithFallback, resolveTheme } from "@/utils/theme";
 import { MermaidBlock } from "./MermaidBlock";
 import type { ReactMarkdownProps } from "./markdown/types";
 import { extractCodeContent, extractLanguage } from "./utils";
@@ -36,7 +36,7 @@ export const CodeBlock = ({ children, className, node: _node, ...props }: CodeBl
 
   const theme = getThemeWithFallback(userGeneralSetting?.theme);
   const resolvedTheme = resolveTheme(theme);
-  const isDarkTheme = resolvedTheme.includes("dark");
+  const isDarkTheme = getThemeMode(resolvedTheme) === "dark";
 
   // Dynamically load highlight.js theme based on app theme
   useEffect(() => {

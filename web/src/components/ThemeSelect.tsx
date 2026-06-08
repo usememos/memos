@@ -14,6 +14,10 @@ const THEME_ICONS: Record<string, ReactElement> = {
   default: <Sun className="w-4 h-4" />,
   "default-dark": <Moon className="w-4 h-4" />,
   paper: <Palette className="w-4 h-4" />,
+  "catppuccin-latte": <Palette className="w-4 h-4" />,
+  "catppuccin-frappe": <Palette className="w-4 h-4" />,
+  "catppuccin-macchiato": <Palette className="w-4 h-4" />,
+  "catppuccin-mocha": <Palette className="w-4 h-4" />,
 };
 
 const ThemeSelect = ({ value, onValueChange, className }: ThemeSelectProps = {}) => {
