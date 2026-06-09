@@ -1095,12 +1095,16 @@ func (s *APIV1Service) CreateUserWebhook(ctx context.Context, request *v1pb.Crea
 	if err := webhook.ValidateURL(strings.TrimSpace(request.Webhook.Url)); err != nil {
 		return nil, err
 	}
+	if err := webhook.ValidateSigningSecret(strings.TrimSpace(request.Webhook.SigningSecret)); err != nil {
+		return nil, err
+	}
 
 	webhookID := generateUserWebhookID()
 	webhook := &storepb.WebhooksUserSetting_Webhook{
-		Id:    webhookID,
-		Title: request.Webhook.DisplayName,
-		Url:   strings.TrimSpace(request.Webhook.Url),
+		Id:            webhookID,
+		Title:         request.Webhook.DisplayName,
+		Url:           strings.TrimSpace(request.Webhook.Url),
+		SigningSecret: strings.TrimSpace(request.Webhook.SigningSecret),
 	}
 
 	err = s.Store.AddUserWebhook(ctx, userID, webhook)
@@ -1154,9 +1158,10 @@ func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.Upda
 
 	// Update the webhook
 	updatedWebhook := &storepb.WebhooksUserSetting_Webhook{
-		Id:    webhookID,
-		Title: targetWebhook.Title,
-		Url:   targetWebhook.Url,
+		Id:            webhookID,
+		Title:         targetWebhook.Title,
+		Url:           targetWebhook.Url,
+		SigningSecret: targetWebhook.SigningSecret,
 	}
 
 	if request.UpdateMask != nil {
@@ -1172,6 +1177,12 @@ func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.Upda
 				}
 			case "display_name":
 				updatedWebhook.Title = request.Webhook.DisplayName
+			case "signing_secret":
+				secret := strings.TrimSpace(request.Webhook.SigningSecret)
+				if err := webhook.ValidateSigningSecret(secret); err != nil {
+					return nil, err
+				}
+				updatedWebhook.SigningSecret = secret
 			default:
 				// Ignore unsupported fields
 			}
@@ -1186,6 +1197,13 @@ func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.Upda
 			updatedWebhook.Url = trimmed
 		}
 		updatedWebhook.Title = request.Webhook.DisplayName
+		if request.Webhook.SigningSecret != "" {
+			secret := strings.TrimSpace(request.Webhook.SigningSecret)
+			if err := webhook.ValidateSigningSecret(secret); err != nil {
+				return nil, err
+			}
+			updatedWebhook.SigningSecret = secret
+		}
 	}
 
 	err = s.Store.UpdateUserWebhook(ctx, userID, updatedWebhook)

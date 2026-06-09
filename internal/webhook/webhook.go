@@ -3,13 +3,19 @@ package webhook
 import (
 	"bytes"
 	"context"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"io"
 	"log/slog"
 	"net"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -78,6 +84,8 @@ type WebhookRequestPayload struct {
 	Creator string `json:"creator"`
 	// The memo that triggered this webhook (if applicable).
 	Memo *v1pb.Memo `json:"memo"`
+	// Optional signing secret for HMAC-SHA256 signature. Not serialized to JSON.
+	SigningSecret string `json:"-"`
 }
 
 // Post posts the message to webhook endpoint.
@@ -93,6 +101,28 @@ func Post(requestPayload *WebhookRequestPayload) error {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
+
+	if requestPayload.SigningSecret != "" {
+		msgID := "msg_" + uuid.New().String()
+		timestamp := strconv.FormatInt(time.Now().Unix(), 10)
+
+		key := []byte(requestPayload.SigningSecret)
+		if strings.HasPrefix(requestPayload.SigningSecret, "whsec_") {
+			if decoded, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(requestPayload.SigningSecret, "whsec_")); err == nil {
+				key = decoded
+			}
+		}
+
+		mac := hmac.New(sha256.New, key)
+		mac.Write([]byte(msgID + "." + timestamp + "."))
+		mac.Write(body)
+		signature := base64.StdEncoding.EncodeToString(mac.Sum(nil))
+
+		req.Header.Set("webhook-id", msgID)
+		req.Header.Set("webhook-timestamp", timestamp)
+		req.Header.Set("webhook-signature", "v1,"+signature)
+	}
+
 	resp, err := safeClient.Do(req)
 	if err != nil {
 		return errors.Wrapf(err, "failed to post webhook to %s", requestPayload.URL)

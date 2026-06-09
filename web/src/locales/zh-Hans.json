@@ -642,8 +642,13 @@
         "an-easy-to-remember-name": "请输入一个容易记住的标题",
         "create-webhook": "创建 Webhook",
         "create-webhook-success": "Webhook `{{name}}` 已创建",
+        "copy-secret": "复制签名密钥",
         "edit-webhook": "编辑 Webhook",
+        "generate-secret": "生成",
         "payload-url": "请输入有效的 URL",
+        "signing-secret": "签名密钥",
+        "signing-secret-description": "可选。用于对请求体进行 HMAC-SHA256 签名，遵循 Standard Webhooks 规范。",
+        "signing-secret-placeholder": "输入密钥或点击生成",
         "title": "标题",
         "url-example-post-receive": "https://example.com/postreceive"
       },

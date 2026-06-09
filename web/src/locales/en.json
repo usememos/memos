@@ -739,8 +739,13 @@
         "an-easy-to-remember-name": "An easy-to-remember name",
         "create-webhook": "Create webhook",
         "create-webhook-success": "Webhook `{{name}}` created",
+        "copy-secret": "Copy signing secret",
         "edit-webhook": "Edit webhook",
+        "generate-secret": "Generate",
         "payload-url": "Payload URL",
+        "signing-secret": "Signing Secret",
+        "signing-secret-description": "Optional. Used to HMAC-SHA256 sign the request body following the Standard Webhooks spec.",
+        "signing-secret-placeholder": "Enter a secret or generate one",
         "title": "Title",
         "url-example-post-receive": "https://example.com/postreceive"
       },
