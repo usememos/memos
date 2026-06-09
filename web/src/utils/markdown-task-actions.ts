@@ -16,6 +16,7 @@ interface MarkdownEdit extends SourceRange {
 interface ParsedTaskItem {
   checked: boolean;
   checkboxMarker: SourceRange;
+  lineRange: SourceRange;
 }
 
 interface LineInfo {
@@ -78,6 +79,10 @@ function parseTaskItems(markdown: string): ParsedTaskItem[] {
     if (startLine === undefined) {
       return;
     }
+    const endLine = node.position.end.line;
+    if (endLine === undefined) {
+      return;
+    }
 
     const lineInfo = getLineInfo(markdown, lineStarts, startLine);
     if (!lineInfo) {
@@ -96,6 +101,10 @@ function parseTaskItems(markdown: string): ParsedTaskItem[] {
       checkboxMarker: {
         start: markerStart,
         end: markerStart + 1,
+      },
+      lineRange: {
+        start: lineInfo.startOffset,
+        end: lineStarts[endLine] ?? markdown.length,
       },
     });
   });
@@ -138,10 +147,26 @@ function setAllTaskMarkers(markdown: string, checked: boolean): string {
   return applyMarkdownEdits(markdown, edits);
 }
 
+function removeCompletedTaskItems(markdown: string): string {
+  const edits = parseTaskItems(markdown)
+    .filter((task) => task.checked)
+    .map<MarkdownEdit>((task) => ({
+      start: task.lineRange.start,
+      end: task.lineRange.end,
+      replacement: "",
+    }));
+
+  return applyMarkdownEdits(markdown, edits);
+}
+
 export function uncheckAllTasks(markdown: string): string {
   return setAllTaskMarkers(markdown, false);
 }
 
 export function checkAllTasks(markdown: string): string {
   return setAllTaskMarkers(markdown, true);
+}
+
+export function removeCompletedTasks(markdown: string): string {
+  return removeCompletedTaskItems(markdown);
 }

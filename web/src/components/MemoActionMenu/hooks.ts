@@ -12,7 +12,7 @@ import { ROUTES } from "@/router/routes";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { checkAllTasks, uncheckAllTasks } from "@/utils/markdown-task-actions";
+import { checkAllTasks, removeCompletedTasks, uncheckAllTasks } from "@/utils/markdown-task-actions";
 
 interface UseMemoActionHandlersOptions {
   memo: Memo;
@@ -128,6 +128,10 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
     await updateMemoContent(uncheckAllTasks(memo.content), "Uncheck memo task list items");
   }, [memo.content, updateMemoContent]);
 
+  const handleRemoveCompletedTaskListItemsClick = useCallback(async () => {
+    await updateMemoContent(removeCompletedTasks(memo.content), "Remove completed memo task list items");
+  }, [memo.content, updateMemoContent]);
+
   const handleDeleteMemoClick = useCallback(() => {
     setDeleteDialogOpen(true);
   }, [setDeleteDialogOpen]);
@@ -157,6 +161,7 @@ export const useMemoActionHandlers = ({ memo, onEdit, setDeleteDialogOpen }: Use
     handleCopyContent,
     handleCheckAllTaskListItemsClick,
     handleUncheckAllTaskListItemsClick,
+    handleRemoveCompletedTaskListItemsClick,
     handleDeleteMemoClick,
     confirmDeleteMemo,
   };

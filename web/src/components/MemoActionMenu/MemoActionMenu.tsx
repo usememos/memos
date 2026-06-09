@@ -11,6 +11,7 @@ import {
   ListChecksIcon,
   ListRestartIcon,
   MoreVerticalIcon,
+  Trash2Icon,
   TrashIcon,
 } from "lucide-react";
 import { useState } from "react";
@@ -55,6 +56,7 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
     handleCopyContent,
     handleCheckAllTaskListItemsClick,
     handleUncheckAllTaskListItemsClick,
+    handleRemoveCompletedTaskListItemsClick,
     handleDeleteMemoClick,
     confirmDeleteMemo,
   } = useMemoActionHandlers({
@@ -122,6 +124,10 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
               <DropdownMenuItem disabled={!hasCompletedTasks} onClick={handleUncheckAllTaskListItemsClick}>
                 <ListRestartIcon className="w-4 h-auto" />
                 {t("memo.task-actions.uncheck-all")}
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled={!hasCompletedTasks} onClick={handleRemoveCompletedTaskListItemsClick}>
+                <Trash2Icon className="w-4 h-auto" />
+                {t("memo.task-actions.remove-completed")}
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
