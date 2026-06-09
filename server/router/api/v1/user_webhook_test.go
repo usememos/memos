@@ -26,4 +26,5 @@ func TestConvertUserWebhookFromUserSettingOmitsSigningSecret(t *testing.T) {
 	require.Equal(t, "My Webhook", apiWebhook.DisplayName)
 	require.Equal(t, "https://example.com/postreceive", apiWebhook.Url)
 	require.Empty(t, apiWebhook.SigningSecret, "signing secret must never be returned in API responses")
+	require.True(t, apiWebhook.HasSigningSecret, "has_signing_secret must be true when secret is configured")
 }
