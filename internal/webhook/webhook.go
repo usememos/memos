@@ -88,6 +88,22 @@ type WebhookRequestPayload struct {
 	SigningSecret string `json:"-"`
 }
 
+// resolveSigningKey returns the raw HMAC key for a signing secret. Secrets using
+// the Standard Webhooks "whsec_<base64>" serialization are base64-decoded to their
+// raw bytes; any other secret is used as-is. It returns an error when a whsec_-prefixed
+// secret is not valid base64, so callers fail loudly instead of silently signing with
+// the wrong key (which would make every signature unverifiable by the receiver).
+func resolveSigningKey(secret string) ([]byte, error) {
+	if rest, ok := strings.CutPrefix(secret, "whsec_"); ok {
+		decoded, err := base64.StdEncoding.DecodeString(rest)
+		if err != nil {
+			return nil, errors.Wrap(err, "signing secret has whsec_ prefix but is not valid base64")
+		}
+		return decoded, nil
+	}
+	return []byte(secret), nil
+}
+
 // Post posts the message to webhook endpoint.
 func Post(requestPayload *WebhookRequestPayload) error {
 	body, err := json.Marshal(requestPayload)
@@ -103,15 +119,13 @@ func Post(requestPayload *WebhookRequestPayload) error {
 	req.Header.Set("Content-Type", "application/json")
 
 	if requestPayload.SigningSecret != "" {
+		key, err := resolveSigningKey(requestPayload.SigningSecret)
+		if err != nil {
+			return errors.Wrapf(err, "failed to derive signing key for webhook to %s", requestPayload.URL)
+		}
+
 		msgID := "msg_" + uuid.New().String()
 		timestamp := strconv.FormatInt(time.Now().Unix(), 10)
-
-		key := []byte(requestPayload.SigningSecret)
-		if strings.HasPrefix(requestPayload.SigningSecret, "whsec_") {
-			if decoded, err := base64.StdEncoding.DecodeString(strings.TrimPrefix(requestPayload.SigningSecret, "whsec_")); err == nil {
-				key = decoded
-			}
-		}
 
 		mac := hmac.New(sha256.New, key)
 		mac.Write([]byte(msgID + "." + timestamp + "."))
