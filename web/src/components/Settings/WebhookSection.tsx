@@ -100,10 +100,10 @@ const WebhookSection = () => {
             className: "text-right",
             render: (_, webhook: UserWebhook) => (
               <>
-                <Button variant="ghost" size="sm" onClick={() => handleEditWebhook(webhook)}>
+                <Button variant="ghost" size="sm" onClick={() => handleEditWebhook(webhook)} aria-label={t("common.edit")}>
                   <PencilIcon className="w-4 h-auto" />
                 </Button>
-                <Button variant="ghost" size="sm" onClick={() => handleDeleteWebhook(webhook)}>
+                <Button variant="ghost" size="sm" onClick={() => handleDeleteWebhook(webhook)} aria-label={t("common.delete")}>
                   <TrashIcon className="text-destructive w-4 h-auto" />
                 </Button>
               </>
