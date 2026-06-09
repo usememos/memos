@@ -4,7 +4,8 @@
     "description": "プライバシー重視の軽量ノートサービス。あなたの素晴らしいアイデアを簡単に記録・共有できます。",
     "documents": "ドキュメント",
     "github-repository": "GitHubリポジトリ",
-    "official-website": "公式サイト"
+    "official-website": "公式サイト",
+    "media": "メディア"
   },
   "auth": {
     "create-your-account": "アカウントを作成",
@@ -114,7 +115,9 @@
     "username": "ユーザーネーム",
     "version": "バージョン",
     "visibility": "公開範囲",
-    "yourself": "あなた自身の"
+    "yourself": "あなた自身の",
+    "empty-placeholder": "空の",
+    "unlink": "リンクを解除する"
   },
   "editor": {
     "add-your-comment-here": "ここにコメントを追加...",
@@ -125,26 +128,41 @@
     "save": "保存",
     "saving": "保存中...",
     "slash-commands": "コマンドを入力するには `/` を入力",
-    "voice-recorder": {
+    "insert-menu": {
+      "add-location": "場所を追加",
+      "link-memo": "リンクメモ",
+      "upload-file": "ファイルをアップロードする"
+    },
+    "audio-recorder": {
+      "attachment-label": "音声録音",
+      "attachment-label-with-time": "音声録音 {{time}}",
+      "configure-ai-provider": "最初に AI プロバイダーを構成します",
       "discard": "破棄",
       "error": "マイクが使用できません",
-      "error-description": "このサイトのマイクへのアクセス権を確認してから再試行してください。",
-      "idle-description": "録音を開始して音声ノートを音声添付ファイルとして追加します。",
-      "keep": "録音を続ける",
-      "ready": "録音完了",
-      "ready-description": "クリップをプレビューして、音声添付ファイルとして保存するか破棄してください。",
-      "record-again": "録り直す",
-      "recording": "音声ノートを録音中",
-      "recording-description": "短い音声添付ファイルを録音します。現在の長さ: {{duration}}",
-      "requesting": "アクセスを要求中...",
-      "requesting-permission": "マイクへのアクセスを要求しています",
-      "requesting-permission-description": "ブラウザでマイクへのアクセスを許可して録音を開始してください。",
-      "start": "録音開始",
-      "stop": "録音停止",
-      "title": "ボイスレコーダー",
-      "trigger": "音声メモ",
+      "error-description": "このサイトのマイク アクセスを確認してから、もう一度お試しください。",
+      "idle-description": "録音を開始して、オーディオ録音を添付ファイルとして追加します。",
+      "keep": "記録し続ける",
+      "pause-recording": "音声録音を一時停止する",
+      "play-recording": "オーディオ録音を再生する",
+      "ready": "録音準備完了",
+      "ready-description": "クリップをプレビューして、オーディオ添付ファイルとして保存するか、破棄します。",
+      "record-again": "再度録音する",
+      "recording": "音声の録音",
+      "recording-description": "簡単な音声添付ファイルをキャプチャします。 現在の長さ: {{duration}}",
+      "requesting": "アクセスをリクエスト中...",
+      "requesting-permission": "マイクへのアクセスをリクエストしています",
+      "requesting-permission-description": "ブラウザでマイクへのアクセスを許可して、録音を開始します。",
+      "start": "録音を開始する",
+      "stop": "録音を停止する",
+      "title": "オーディオレコーダー",
+      "transcribe": "転写する",
+      "transcribe-empty": "音声が検出されませんでした",
+      "transcribe-error": "音声の文字起こしに失敗しました",
+      "transcribe-success": "転写を追加しました",
+      "transcribing": "転記中...",
+      "trigger": "音声を録音する",
       "unsupported": "音声録音はサポートされていません",
-      "unsupported-description": "このブラウザではメモコンポーザーからの音声録音ができません。"
+      "unsupported-description": "このブラウザではメモコンポーザーから音声を録音できません。"
     }
   },
   "inbox": {
@@ -218,7 +236,16 @@
       "section-label": "共有",
       "share": "シェアする",
       "shared-by": "{{creator}} によって共有されました",
-      "title": "このメモを共有する"
+      "title": "このメモを共有する",
+      "image-description": "現在のデバイスの幅 ({{width}}px) でレンダリングされたプレビュー。",
+      "image-download": "ダウンロード",
+      "image-download-failed": "画像のエクスポートに失敗しました",
+      "image-downloaded": "画像を保存しました",
+      "image-footer": "Memosから共有",
+      "image-share": "画像を共有する",
+      "image-share-failed": "画像の共有に失敗しました",
+      "image-title": "画像として共有",
+      "open-image": "画像として共有"
     },
     "show-less": "表示を減らす",
     "show-more": "もっと見る",
@@ -229,6 +256,17 @@
       "private": "非公開",
       "protected": "メンバーに表示",
       "public": "公開メモ"
+    },
+    "count-memos-updated-in-date": "{{count}} {{memos}} を {{date}} に更新",
+    "newest-first": "新しい順",
+    "oldest-first": "古い順",
+    "order": "注文",
+    "shown-time": "上映時間",
+    "task-actions": {
+      "check-all": "すべてのタスクをチェックする",
+      "title": "タスク",
+      "uncheck-all": "すべてのタスクのチェックを外します",
+      "updated": "タスクが更新されました"
     }
   },
   "message": {
@@ -333,7 +371,11 @@
       "reset-api": "APIをリセットする",
       "title": "アカウント情報",
       "update-information": "プロフィールを編集",
-      "username-note": "サインインに使用します"
+      "username-note": "サインインに使用します",
+      "danger-area": "危険区域",
+      "danger-area-description": "取り消しできないアカウントのアクションがここに存在します。 続行する前に、それらをよく確認してください。",
+      "delete-account": "アカウントを削除する",
+      "delete-account-description": "このアカウントと関連するすべてのアクセスをこのインスタンスから完全に削除します。 この操作は元に戻すことができません。"
     },
     "instance": {
       "disallow-change-nickname": "ニックネーム変更を禁止",
@@ -343,7 +385,14 @@
       "monday": "月曜日",
       "saturday": "土曜日",
       "sunday": "日曜日",
-      "week-start-day": "週の開始日"
+      "week-start-day": "週の開始日",
+      "access-description": "このインスタンスのサインアップ、認証、プロファイル編集、およびカレンダーのデフォルトを制御します。",
+      "access-title": "アクセスとポリシー",
+      "disallow-change-nickname-description": "ユーザーが表示名を変更できないようにします。",
+      "disallow-change-username-description": "ユーザーがログイン ユーザー名を変更できないようにします。",
+      "disallow-password-auth-description": "ユーザーにパスワード ログインではなく、アイデンティティ プロバイダーを介してサインインすることを要求します。",
+      "disallow-user-registration-description": "新しいユーザーがサインアップ ページからアカウントを作成できないようにします。",
+      "week-start-day-description": "カレンダー形式のビューに表示される最初の日を制御します。"
     },
     "member": {
       "admin": "管理者",
@@ -360,7 +409,11 @@
       "list-title": "メンバーリスト",
       "restore-success": "{{username}} を復元しました",
       "user": "ユーザー",
-      "no-members-found": "メンバーが見つかりません"
+      "no-members-found": "メンバーが見つかりません",
+      "active": "アクティブ",
+      "archived": "アーカイブ済み",
+      "member-column": "メンバー",
+      "summary-column": "まとめ"
     },
     "memo": {
       "content-length-limit": "内容の最大長（バイト）",
@@ -370,7 +423,17 @@
       "label": "メモ",
       "reactions": "リアクション",
       "title": "メモ関連設定",
-      "reactions-required": "リアクションリストは空にできません"
+      "reactions-required": "リアクションリストは空にできません",
+      "add-reaction": "リアクションを追加",
+      "bytes-unit": "バイト",
+      "configured-reactions": "設定された反応",
+      "content-length-limit-description": "サーバーが受け入れるメモ本体の最大サイズ。",
+      "double-click-edit-description": "ユーザーがメモをダブルクリックしてメモ編集を開くことができるようにします。",
+      "editing-description": "メモの編集動作とサーバー側のコンテンツ制限を制御します。",
+      "editing-title": "編集",
+      "reaction-placeholder": "例えば 👍",
+      "reactions-description": "ユーザーがメモに適用できる反応オプションを定義します。",
+      "remove-reaction": "反応を取り除く"
     },
     "my-account": {
       "label": "アカウント設定"
@@ -379,7 +442,14 @@
       "default-memo-sort-option": "メモの表示時間",
       "default-memo-visibility": "公開範囲の初期設定",
       "label": "設定",
-      "theme": "テーマ"
+      "theme": "テーマ",
+      "appearance-description": "アプリの外観と、アカウントで使用する言語を選択します。",
+      "appearance-title": "外観",
+      "default-memo-visibility-description": "エディターで変更しない限り、新しく作成されたメモに表示設定が適用されます。",
+      "language-description": "インターフェイス言語をすぐに更新し、アカウントに保存します。",
+      "memo-defaults-description": "新しいメモを作成するときに使用するデフォルトを設定します。",
+      "memo-defaults-title": "メモのデフォルト",
+      "theme-description": "選択したテーマをこのデバイスにすぐに適用します。"
     },
     "shortcut": {
       "delete-confirm": "ショートカット `{{title}}` を削除してもよろしいですか？",
@@ -408,7 +478,47 @@
       "template": "テンプレート",
       "token-endpoint": "トークンエンドポイント",
       "update-sso": "SSOを更新する",
-      "user-endpoint": "ユーザーエンドポイント"
+      "user-endpoint": "ユーザーエンドポイント",
+      "account": "アカウント",
+      "accounts-description": "各 ID プロバイダーを確認し、現在のリンク状態を確認して、このアカウントから外部 ID を接続または切断します。",
+      "accounts-title": "SSO アカウント",
+      "avatar-url": "アバター URL",
+      "basic-settings": "基本設定",
+      "basic-settings-description": "OAuth の詳細を入力する前に、プロバイダー ID、表示名、およびオプションの ID ルールを設定します。",
+      "client-secret-optional-description": "既存のクライアント シークレットを変更しない場合は、空白のままにします。",
+      "configuration": "構成",
+      "configuration-summary-description": "完全な構成をインラインで公開することなく、プロバイダーの識別と監査に役立つ重要な要素を示します。",
+      "create-sso-description": "管理者が管理するシングル サインオン用の新しい ID プロバイダーを作成します。",
+      "endpoints": "エンドポイント",
+      "extern-uid": "外部ID",
+      "extern-uid-description": "これは、現在アカウントにリンクされているプロバイダー側​​の ID です。",
+      "filter-disabled": "無効",
+      "identifier-filter-description": "サインインできる外部識別子を許可または制限するために使用されるオプションの正規表現。",
+      "field-mapping": "クレームマッピング",
+      "field-mapping-description": "ユーザーの識別に使用される上流プロファイル フィールドとプロファイル データを事前入力します。",
+      "field-mapping-identifier-description": "サインインまたはアカウントのリンク時に安定した外部識別子として使用されます。",
+      "linked": "リンク済み",
+      "mapping": "マッピング",
+      "mapping-avatar-short": "アバター",
+      "mapping-display-name-short": "名前",
+      "mapping-email-short": "電子メール",
+      "mapping-identifier-short": "ID",
+      "mapping-none": "未設定",
+      "not-linked": "リンクされていません",
+      "not-linked-description": "外部 ID はまだリンクされていません。 このプロバイダーに接続して、後でサインインできます。",
+      "oauth-configuration": "OAuthの構成",
+      "oauth-configuration-description": "OAuth クライアントの資格情報と、サインイン時に使用されるプロバイダー エンドポイントを入力します。",
+      "provider": "プロバイダー",
+      "provider-id": "プロバイダーID",
+      "provider-id-description": "小文字、数字、ハイフンのみ。 この値はプロバイダー リソース名の一部になります。",
+      "provider-uid": "UID",
+      "redirect-url-description": "認可コード フローが完了できるように、このコールバック URL をアイデンティティ プロバイダーに登録します。",
+      "scope-count_one": "{{count}} スコープ",
+      "scope-count_other": "{{count}} スコープ",
+      "scopes-description": "スコープはスペースで区切ります。 ほとんどのプロバイダーは、プロフィールや電子メール アクセスなどの小さなセットのみを必要とします。",
+      "template-description": "プロバイダーのプリセットから開始して、テナントの資格情報とエンドポイントを調整します。",
+      "unlink-success": "リンクされていない {{name}}。",
+      "update-sso-description": "プロバイダーの構成を確認し、変更する必要があるフィールドを保存します。"
     },
     "storage": {
       "accesskey": "アクセスキー",
@@ -443,7 +553,32 @@
       "url-prefix-placeholder": "カスタムURLプレフィックス（任意）",
       "url-suffix": "URLサフィックス",
       "url-suffix-placeholder": "カスタムURLサフィックス（任意）",
-      "warning-text": "ストレージサービス `{{name}}` を削除しますか？この操作は元に戻せません。"
+      "warning-text": "ストレージサービス `{{name}}` を削除しますか？この操作は元に戻せません。",
+      "accesskey-description": "バケットまたはS3互換サービスのアクセスキーID。",
+      "badge-default": "デフォルト",
+      "badge-recommended": "推奨",
+      "bucket-description": "新しい添付オブジェクトが保存されるバケット。",
+      "current-storage-description": "新しい添付ファイルを保存する場所を選択します。 既存の添付ファイルは現在の保管場所に残ります。",
+      "database-description": "添付ファイル BLOB をアプリケーション データベースに直接保存します。",
+      "database-note-backup": "小規模なインスタンスのメモと一緒に簡単にバックアップできます。",
+      "database-note-size": "データベースは、添付ファイルが多数または大規模であると急速に増大する可能性があります。",
+      "endpoint-description": "サービスエンドポイント (AWS S3、Cloudflare R2、MinIO、またはその他の互換性のある URL など)。",
+      "filepath-template-description": "ローカルおよび S3 ストレージによって使用されます。 {timestamp}、{uuid}、{filename}をサポートします。 デフォルト: 資産/{timestamp}_{uuid}_{filename}。",
+      "local-description": "新しい添付ファイルをサーバー ファイル システムに保存します。 これは新しいインスタンスのデフォルトです。",
+      "local-note-backup": "特に Docker またはコンテナー デプロイメントでは、添付ファイル ディレクトリを永続化してバックアップします。",
+      "local-note-path": "相対パスは、インスタンス プロファイル データ ディレクトリの下に書き込まれます。",
+      "region-description": "プロバイダーが必要とする地域。 一部の互換性のあるサービスでは、プロバイダーが受け入れる任意の地域文字列で十分です。",
+      "s3-configuration": "S3の構成",
+      "s3-configuration-description": "新しい添付ファイル用に S3 互換バケットを構成します。",
+      "s3-description": "新しい添付ファイルを S3 互換のオブジェクト ストレージ サービスに保存します。",
+      "s3-note-config": "有効なエンドポイント、リージョン、バケット、認証情報、権限、およびサーバー ネットワーク アクセスが必要です。",
+      "s3-note-scale": "大規模な添付ライブラリ、クラウド展開、または複数のアプリケーション インスタンスに最適です。",
+      "secretkey-description": "バケットまたは S3 互換サービスの秘密アクセス キー。",
+      "secretkey-preserve-description": "既存の秘密キーを保持するには、空白のままにします。",
+      "selected-backend": "選択済み",
+      "type-s3": "S3対応ストレージ",
+      "use-path-style": "パス形式の URL を使用する",
+      "use-path-style-description": "仮想ホスト型バケットをサポートしない MinIO または一部の S3 互換サービスなどのプロバイダーに対してこれを有効にします。"
     },
     "system": {
       "additional-script": "追加スクリプト",
@@ -470,7 +605,12 @@
       "max-upload-size-hint": "推奨値は32 MiBです。",
       "removed-completed-task-list-items": "完了したタスクリスト項目の削除を有効化",
       "server-name": "サーバー名",
-      "title": "全般"
+      "title": "全般",
+      "additional-script-description": "JavaScript をすべての Web ページに挿入します。 信頼できるコードのみを使用してください。",
+      "additional-style-description": "CSS を Web アプリに挿入して、インスタンス全体のプレゼンテーションを調整します。",
+      "basic-description": "このインスタンスによって表示されるパブリック ID を構成します。",
+      "custom-code-description": "フロントエンドに適用されるオプションのインスタンス全体の CSS および JavaScript。",
+      "custom-code-title": "カスタムコード"
     },
     "version": "バージョン",
     "webhook": {
@@ -505,7 +645,111 @@
       "tag-already-exists": "タグはすでに存在します。",
       "tag-pattern-hint": "タグ名または正規表現パターン（例: project/.* はすべての project/ タグに一致）",
       "invalid-regex": "無効または安全でない正規表現パターンです。",
-      "using-default-color": "デフォルトの色を使用しています。"
+      "using-default-color": "デフォルトの色を使用しています。",
+      "add-rule": "ルールの追加",
+      "configured-rules": "設定されたルール",
+      "default-color": "デフォルト",
+      "matching-rule": "アンカー付き正規表現",
+      "used-count": "{{count}}メモ"
+    },
+    "ai": {
+      "add-provider": "プロバイダーの追加",
+      "api-key": "APIキー",
+      "api-key-required": "APIキーが必要です。",
+      "byok-description": "自分のアカウントの API キーを使用して OpenAI または Gemini を接続します。 Memos は、このサーバーからプロバイダーを直接呼び出します。",
+      "byok-key-note": "プロバイダー アカウントのキーを使用します。 Memos には、共有 AI 資格情報がバンドルされていません。",
+      "byok-label": "BYOK",
+      "byok-model-note": "Memos は、音声転写などの機能をサポートするモデルを選択します。",
+      "byok-storage-note": "キーはこのインスタンスに残り、設定が読み込まれるときにマスクされます。",
+      "byok-title": "自分の AI アカウントを使用する",
+      "configured": "設定済み",
+      "current-key": "現在のキー: {{key}}",
+      "default-endpoint": "デフォルトのエンドポイント",
+      "delete-provider": "AI プロバイダー `{{title}}` を削除しますか?",
+      "description": "プロバイダー キーはインスタンス所有者によって提供され、サーバー側の AI 機能によって使用されます。",
+      "dialog-description": "自分のプロバイダー アカウントからキーを追加します。 Memos は各プロバイダーの組み込みモデルを使用します。 保存されたキーを保持するには、編集中は API キーを空白のままにしてください。",
+      "edit-provider": "プロバイダーの編集",
+      "endpoint": "終点",
+      "endpoint-hint": "公式プロバイダー エンドポイントを使用するには、空のままにします。",
+      "integrations-description": "プロバイダー キーはインスタンス所有者によって提供され、サーバー側の AI 機能によって使用されます。",
+      "integrations-title": "AIの統合",
+      "keep-api-key": "既存のキーを保持するには空白のままにします",
+      "label": "AI",
+      "no-providers": "AI プロバイダーが構成されていません。",
+      "provider-title": "プロバイダ名",
+      "provider-title-required": "プロバイダー名は必須です。",
+      "provider-type": "プロバイダーの種類",
+      "providers": "プロバイダー",
+      "transcription-description": "メモコンポーザーで音声を録音するときに使用される音声テキスト変換設定。",
+      "transcription-empty-providers": "まず AI 統合を追加して、転写を有効にします。",
+      "transcription-language-help": "ISO 639-1 ショート コード (en、de、zh など)。 自動検出するには空のままにします。",
+      "transcription-language-placeholder": "自動検出",
+      "transcription-language": "デフォルトの言語",
+      "transcription-model-help": "フリーテキスト。 プロバイダーのモデル識別子を使用します。 ささやき-1、gpt-4o-transcribe、ささやき-large-v3-turbo。",
+      "transcription-model-placeholder-gemini": "ジェミニ-2.5-フラッシュ、ジェミニ-2.5-プロ",
+      "transcription-model-placeholder-openai": "ささやき-1、gpt-4o-transcribe、gpt-4o-mini-transcribe、gpt-4o-transcribe-diarize",
+      "transcription-model": "モデル",
+      "transcription-no-provider": "なし - 転写は無効です",
+      "transcription-prompt-help": "固有名詞や専門用語のスペルを改善します。 OpenAI Whisper はこれをソフト ヒントとして扱います (Whisper の制限はおよそ 224 トークンです)。 Gemini は、生成プロンプト内でこれをリテラル命令として扱います。",
+      "transcription-prompt-placeholder": "名前：アリス、ボブ。 用語集: Kubernetes、OAuth。",
+      "transcription-prompt": "プロンプトヒント",
+      "transcription-provider": "プロバイダー",
+      "transcription-title": "転写",
+      "transcription-warning-no-key": "選択したプロバイダーには API キー セットがありません。 上記の統合を編集して追加します。"
+    },
+    "notification": {
+      "email-description": "メモのコメントやメンションについては、コピーを電子メールで送信します。 Gmail は、smtp.gmail.com、ポート 587、STARTTLS、およびアプリ パスワードで動作します。",
+      "email-enabled": "電子メール通知を有効にする",
+      "email-enabled-description": "アプリ内の受信トレイ通知に加えて電子メールが送信されます。 ユーザーに対してこれを有効にする前に、必須フィールドに入力してください。",
+      "email-title": "メール配信",
+      "from-email": "メールから",
+      "from-email-description": "通知メールに表示される送信者アドレス。 Gmail の場合は、SMTP ユーザー名と同じ Gmail アカウントを使用します。",
+      "from-name": "名前から",
+      "from-name-description": "送信者アドレスの横に表示される表示名。 メールアドレスのみを表示するには空白のままにします。",
+      "label": "通知",
+      "reply-to": "返信先",
+      "reply-to-description": "通知メールへの返信用のアドレス。 From メール アドレスで返信を受信するには、空白のままにします。",
+      "requirement-gmail": "Gmailに必要",
+      "requirement-optional": "オプション",
+      "requirement-recommended": "推奨",
+      "requirement-required": "必須",
+      "smtp-host": "SMTPホスト",
+      "smtp-host-description": "SMTP サーバーのホスト名。 Gmail には smtp.gmail.com を使用します。",
+      "smtp-password": "SMTPパスワード",
+      "smtp-password-description": "SMTP パスワードまたはアプリ固有のトークン。 Gmail では、通常のアカウントのパスワードではなく、Google アプリのパスワードが必要です。",
+      "smtp-password-placeholder-existing": "現在のパスワードを保持するには空白のままにしてください",
+      "smtp-password-preserve-description": "既存の SMTP パスワードを保持するには、空白のままにします。 資格情報をローテーションする場合にのみ、新しいアプリ パスワードを入力します。",
+      "smtp-port": "SMTPポート",
+      "smtp-port-description": "Gmail およびほとんどのプロバイダーでは、587 を STARTTLS とともに使用します。 SSL/TLS を有効にする場合は、465 のみを使用してください。",
+      "smtp-username": "SMTPのユーザー名",
+      "smtp-username-description": "認証ユーザー名。 Gmail には完全な Gmail アドレスが必要です。",
+      "test-email": "テストメールを送信する",
+      "test-email-missing-recipient": "テストメールを送信する前に、アカウントにメール アドレスを設定してください。",
+      "test-email-sending": "テストメールを送信しています...",
+      "test-email-success": "{{email}} に送信されるテスト電子メール。",
+      "use-ssl": "SSL/TLSを使用する",
+      "use-ssl-description": "通常はポート 465 を使用して、暗黙的な TLS を使用します。 ポート 587 で STARTTLS を使用する場合は、これをオフにします。",
+      "use-tls": "STARTTLSを使用する",
+      "use-tls-description": "SMTP 接続を STARTTLS にアップグレードします。 ポート 587 の Gmail ではこれをオンのままにします。"
+    },
+    "select-section": "セクションを選択",
+    "resource-stats": {
+      "label": "リソース",
+      "title": "リソース統計",
+      "description": "このインスタンスのリソース使用量。",
+      "database": {
+        "title": "データベース",
+        "driver": "ドライバ",
+        "size": "サイズ"
+      },
+      "local-storage": {
+        "title": "ローカルストレージ",
+        "size": "データディレクトリのサイズ"
+      },
+      "unknown": "未知",
+      "last-updated": "最終更新日 {{ago}}",
+      "refresh": "リフレッシュ",
+      "load-error": "統計のロードに失敗しました"
     }
   },
   "tag": {
@@ -531,5 +775,42 @@
     "select-visibility": "公開範囲",
     "tags": "タグ",
     "upload-attachment": "添付ファイルをアップロード"
+  },
+  "demo": {
+    "banner-description": "変更は一時的なものであり、リセットされる場合があります。",
+    "banner-title": "Memos デモ",
+    "deploy-link": "Memos を導入する"
+  },
+  "attachment-library": {
+    "actions": {
+      "open": "開ける",
+      "retry": "リトライ"
+    },
+    "empty": {
+      "audio": "音声の添付ファイルはまだありません。",
+      "documents": "まだ文書の添付ファイルがありません。",
+      "media": "メディアの添付ファイルはまだありません。"
+    },
+    "errors": {
+      "load": "添付ファイルの読み込みに失敗しました。"
+    },
+    "labels": {
+      "live": "ライブ",
+      "live-photo": "ライブフォト",
+      "memo": "メモ",
+      "not-linked": "リンクされていません",
+      "unknown-date": "日付不明",
+      "unused": "未使用"
+    },
+    "tabs": {
+      "audio": "オーディオ",
+      "documents": "書類",
+      "media": "メディア"
+    },
+    "unused": {
+      "confirm-description": "これにより、メモにリンクされていないすべてのアップロードされたファイルが削除されます。",
+      "description": "これらのアップロードはメモに添付されることはありませんでした。 ここでそれらを確認または削除してください。",
+      "title": "リンクされていないアップロード"
+    }
   }
 }
