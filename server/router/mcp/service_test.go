@@ -123,14 +123,18 @@ func TestMCPProtocolListsCuratedToolsOnly(t *testing.T) {
 		"method":  "tools/list",
 	})
 
-	result := response["result"].(map[string]any)
-	tools := result["tools"].([]any)
+	result, ok := response["result"].(map[string]any)
+	require.True(t, ok)
+	tools, ok := result["tools"].([]any)
+	require.True(t, ok)
 	require.Len(t, tools, len(curatedOperationIDs))
 
 	names := map[string]struct{}{}
 	for _, rawTool := range tools {
-		tool := rawTool.(map[string]any)
-		name := tool["name"].(string)
+		tool, ok := rawTool.(map[string]any)
+		require.True(t, ok)
+		name, ok := tool["name"].(string)
+		require.True(t, ok)
 		names[name] = struct{}{}
 		require.Contains(t, tool, "inputSchema")
 		require.Contains(t, tool, "outputSchema")
@@ -166,7 +170,8 @@ func TestMCPToolCallReturnsObjectStructuredContent(t *testing.T) {
 		},
 	})
 
-	result := response["result"].(map[string]any)
+	result, ok := response["result"].(map[string]any)
+	require.True(t, ok)
 	require.Equal(t, map[string]any{
 		"memos": []any{map[string]any{"name": "memos/abc123"}},
 	}, result["structuredContent"])
@@ -228,10 +233,13 @@ func TestMCPToolCallRejectsInvalidArguments(t *testing.T) {
 				},
 			})
 
-			result := response["result"].(map[string]any)
+			result, ok := response["result"].(map[string]any)
+			require.True(t, ok)
 			require.Equal(t, true, result["isError"])
-			structured := result["structuredContent"].(map[string]any)
-			errorObject := structured["error"].(map[string]any)
+			structured, ok := result["structuredContent"].(map[string]any)
+			require.True(t, ok)
+			errorObject, ok := structured["error"].(map[string]any)
+			require.True(t, ok)
 			require.Contains(t, errorObject["message"], test.wantError)
 		})
 	}

@@ -59,9 +59,6 @@ func validateSchemaValue(schemaValue any, path string, label string, value any, 
 		types = []string{"object"}
 	}
 	for _, schemaType := range types {
-		if schemaType == "null" && value == nil {
-			return nil
-		}
 		if schemaTypeMatchesValue(schemaType, value) {
 			if schemaType == "object" {
 				return validateObjectSchema(schema, path, value, root)
@@ -88,7 +85,7 @@ func validateObjectSchema(schema map[string]any, path string, value any, root js
 		}
 	}
 
-	if schema["additionalProperties"] == false {
+	if additionalProperties, ok := schema["additionalProperties"].(bool); ok && !additionalProperties {
 		for name := range object {
 			if _, ok := properties[name]; !ok {
 				return errors.Errorf(`unknown argument "%s"`, joinSchemaPath(path, name))

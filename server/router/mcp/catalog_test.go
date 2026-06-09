@@ -78,16 +78,19 @@ func TestBuildToolFromOperationIncludesRequestBodySchema(t *testing.T) {
 	require.False(t, *tool.Annotations.DestructiveHint)
 	require.False(t, tool.Annotations.IdempotentHint)
 
-	input := tool.InputSchema.(jsonSchema)
+	input, ok := tool.InputSchema.(jsonSchema)
+	require.True(t, ok)
 	require.Contains(t, input["required"], "body")
-	properties := input["properties"].(map[string]any)
+	properties, ok := input["properties"].(map[string]any)
+	require.True(t, ok)
 	require.Contains(t, properties, "memoId")
 	require.Contains(t, properties, "body")
-	body := properties["body"].(jsonSchema)
+	body, ok := properties["body"].(jsonSchema)
+	require.True(t, ok)
 	require.Equal(t, "object", body["type"])
 	require.Contains(t, body["properties"], "content")
 
-	err = validateToolArguments(tool.InputSchema.(jsonSchema), map[string]any{
+	err = validateToolArguments(input, map[string]any{
 		"body": map[string]any{
 			"state":      "NORMAL",
 			"content":    "hello",

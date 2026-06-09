@@ -206,7 +206,8 @@ func TestExecuteOperationConvertsAPIErrorsToToolErrors(t *testing.T) {
 			"message": "404 Not Found: missing memo",
 		},
 	}, result.StructuredContent)
-	text := result.Content[0].(*sdkmcp.TextContent)
+	text, ok := result.Content[0].(*sdkmcp.TextContent)
+	require.True(t, ok)
 	require.Contains(t, text.Text, "404")
 	require.Contains(t, text.Text, "missing memo")
 }
