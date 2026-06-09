@@ -116,6 +116,9 @@
     "visibility": "Visibilidade",
     "yourself": "Você mesmo"
   },
+  "locale-picker": {
+    "no-language-feedback": "Idioma não encontrado? Enviar comentários"
+  },
   "editor": {
     "add-your-comment-here": "Adicione seu comentário aqui…",
     "any-thoughts": "Alguma ideia…",

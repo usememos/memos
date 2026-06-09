@@ -156,6 +156,9 @@
     "visibility": "Nähtavus",
     "yourself": "iseennast"
   },
+  "locale-picker": {
+    "no-language-feedback": "Keelt ei leitud? Esitage tagasisidet"
+  },
   "editor": {
     "add-your-comment-here": "Lisa oma kommentaar siia...",
     "any-thoughts": "Mingid mõtted...",

@@ -119,6 +119,9 @@
     "empty-placeholder": "Buit",
     "unlink": "Desenllaça"
   },
+  "locale-picker": {
+    "no-language-feedback": "No s'ha trobat l'idioma? Envieu comentaris"
+  },
   "editor": {
     "add-your-comment-here": "Afegeix el teu comentari aquí...",
     "any-thoughts": "Alguna idea...",

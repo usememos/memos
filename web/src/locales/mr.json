@@ -116,6 +116,9 @@
     "visibility": "दृश्यमानता",
     "yourself": "स्वतः"
   },
+  "locale-picker": {
+    "no-language-feedback": "भाषा सापडली नाही? अभिप्राय सबमिट करा"
+  },
   "editor": {
     "add-your-comment-here": "तुमची टिप्पणी येथे जो़डा",
     "any-thoughts": "आपले विचार...",

@@ -119,6 +119,9 @@
     "empty-placeholder": "ცარიელი",
     "unlink": "გაუქმება"
   },
+  "locale-picker": {
+    "no-language-feedback": "ენა ვერ მოიძებნა? გამოხმაურება"
+  },
   "editor": {
     "add-your-comment-here": "დაამატეთ თქვენი კომენტარი აქ...",
     "any-thoughts": "რამე იდეები...",

@@ -156,6 +156,9 @@
     "visibility": "Viditeľnosť",
     "yourself": "seba"
   },
+  "locale-picker": {
+    "no-language-feedback": "Jazyk sa nenašiel? Odoslať spätnú väzbu"
+  },
   "editor": {
     "add-your-comment-here": "Tu pridajte svoj komentár...",
     "any-thoughts": "Akékoľvek myšlienky...",

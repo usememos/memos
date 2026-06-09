@@ -156,6 +156,9 @@
     "visibility": "Redzamība",
     "yourself": "sevi"
   },
+  "locale-picker": {
+    "no-language-feedback": "Valoda nav atrasta? Iesniedziet atsauksmes"
+  },
   "editor": {
     "add-your-comment-here": "Pievienojiet savu komentāru šeit...",
     "any-thoughts": "Jebkuras domas...",

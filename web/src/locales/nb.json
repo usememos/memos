@@ -119,6 +119,9 @@
     "empty-placeholder": "Tømme",
     "unlink": "Fjern tilknytningen"
   },
+  "locale-picker": {
+    "no-language-feedback": "Finner du ikke språket? Send tilbakemelding"
+  },
   "editor": {
     "add-your-comment-here": "Legg til din kommentar her...",
     "any-thoughts": "Noen tanker...",

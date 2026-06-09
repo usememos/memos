@@ -116,6 +116,9 @@
     "visibility": "Visibilitas",
     "yourself": "Anda sendiri"
   },
+  "locale-picker": {
+    "no-language-feedback": "Bahasa tidak ditemukan? Kirim masukan"
+  },
   "editor": {
     "add-your-comment-here": "Tambahkan komentar Anda di sini...",
     "any-thoughts": "Punya pemikiran...",

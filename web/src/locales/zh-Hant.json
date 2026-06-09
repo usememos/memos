@@ -156,6 +156,9 @@
     "visibility": "瀏覽權限",
     "yourself": "您自己"
   },
+  "locale-picker": {
+    "no-language-feedback": "未找到語言？ 提交回饋"
+  },
   "editor": {
     "add-your-comment-here": "在這裡添加您的評論...",
     "any-thoughts": "任何想法...",

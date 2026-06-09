@@ -116,6 +116,9 @@
     "visibility": "공개 범위",
     "yourself": "자기 자신"
   },
+  "locale-picker": {
+    "no-language-feedback": "언어를 찾을 수 없나요? 피드백 제출"
+  },
   "editor": {
     "add-your-comment-here": "여기에 댓글을 추가하세요...",
     "any-thoughts": "떠오르는 게 있나요...",

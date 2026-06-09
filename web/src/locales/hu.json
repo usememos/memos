@@ -119,6 +119,9 @@
     "empty-placeholder": "Üres",
     "unlink": "Leválasztás"
   },
+  "locale-picker": {
+    "no-language-feedback": "Nem található a nyelv? Visszajelzés küldése"
+  },
   "editor": {
     "add-your-comment-here": "Írd ide a megjegyzésed...",
     "any-thoughts": "Bármi ami a fejedben jár...",

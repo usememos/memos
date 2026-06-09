@@ -116,6 +116,9 @@
     "visibility": "การมองเห็น",
     "yourself": "ตัวคุณ"
   },
+  "locale-picker": {
+    "no-language-feedback": "ไม่พบภาษา? ส่งข้อเสนอแนะ"
+  },
   "editor": {
     "add-your-comment-here": "เพิ่มความคิดเห็นของคุณที่นี่...",
     "any-thoughts": "ความคิดใดๆ...",

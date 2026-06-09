@@ -119,6 +119,9 @@
     "empty-placeholder": "prazno",
     "unlink": "Prekini povezavo"
   },
+  "locale-picker": {
+    "no-language-feedback": "Jezik ni bil najden? Pošlji povratne informacije"
+  },
   "editor": {
     "add-your-comment-here": "Tu dodaj svoj komentar...",
     "any-thoughts": "Kakšne misli...",

@@ -116,6 +116,9 @@
     "visibility": "قابل مشاهده توسط",
     "yourself": "خودتان"
   },
+  "locale-picker": {
+    "no-language-feedback": "زبان پیدا نشد؟ ارسال بازخورد"
+  },
   "editor": {
     "add-your-comment-here": "نظر خود را اینجا اضافه کنید...",
     "any-thoughts": "فکر شما...",

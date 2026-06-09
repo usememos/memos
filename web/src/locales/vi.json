@@ -116,6 +116,9 @@
     "visibility": "Quyền xem",
     "yourself": "Bản thân"
   },
+  "locale-picker": {
+    "no-language-feedback": "Không tìm thấy ngôn ngữ? Gửi phản hồi"
+  },
   "editor": {
     "add-your-comment-here": "Thêm bình luận của bạn tại đây...",
     "any-thoughts": "Có suy nghĩ gì...",

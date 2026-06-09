@@ -119,6 +119,9 @@
     "empty-placeholder": "Prázdný",
     "unlink": "Odpojit"
   },
+  "locale-picker": {
+    "no-language-feedback": "Jazyk nenalezen? Odeslat zpětnou vazbu"
+  },
   "editor": {
     "add-your-comment-here": "Přidejte sem svůj komentář...",
     "any-thoughts": "Jakékoli myšlenky...",

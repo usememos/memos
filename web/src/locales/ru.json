@@ -119,6 +119,9 @@
     "empty-placeholder": "Пустой",
     "unlink": "Отсоединить"
   },
+  "locale-picker": {
+    "no-language-feedback": "Язык не найден? Отправить отзыв"
+  },
   "editor": {
     "add-your-comment-here": "Напишите свой комментарий...",
     "any-thoughts": "Напишите что-нибудь...",

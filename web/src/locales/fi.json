@@ -156,6 +156,9 @@
     "visibility": "Näkyvyys",
     "yourself": "itseäsi"
   },
+  "locale-picker": {
+    "no-language-feedback": "Eikö kieltä löydy? Lähetä palautetta"
+  },
   "editor": {
     "add-your-comment-here": "Lisää kommenttisi tähän...",
     "any-thoughts": "Mitään ajatuksia...",

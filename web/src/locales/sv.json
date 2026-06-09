@@ -119,6 +119,9 @@
     "empty-placeholder": "Tömma",
     "unlink": "Ta bort länken"
   },
+  "locale-picker": {
+    "no-language-feedback": "Språket hittades inte? Skicka feedback"
+  },
   "editor": {
     "add-your-comment-here": "Lägg till din kommentar här...",
     "any-thoughts": "Några tankar...",

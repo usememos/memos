@@ -156,6 +156,9 @@
     "visibility": "Matomumas",
     "yourself": "save"
   },
+  "locale-picker": {
+    "no-language-feedback": "Kalba nerasta? Pateikite atsiliepimą"
+  },
   "editor": {
     "add-your-comment-here": "Pridėkite savo komentarą čia...",
     "any-thoughts": "Bet kokios mintys...",

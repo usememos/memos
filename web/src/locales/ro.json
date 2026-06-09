@@ -156,6 +156,9 @@
     "visibility": "Vizibilitate",
     "yourself": "Te"
   },
+  "locale-picker": {
+    "no-language-feedback": "Limba nu a fost găsită? Trimiteți feedback"
+  },
   "editor": {
     "add-your-comment-here": "Adauga comentariul tau aici...",
     "any-thoughts": "Orice gânduri...",

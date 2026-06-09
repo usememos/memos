@@ -119,6 +119,9 @@
     "empty-placeholder": "Boş",
     "unlink": "Bağlantıyı kaldır"
   },
+  "locale-picker": {
+    "no-language-feedback": "Dil bulunamadı mı? Geri bildirim gönder"
+  },
   "editor": {
     "add-your-comment-here": "Yorumunuzu buraya ekleyin...",
     "any-thoughts": "Düşünceleriniz...",

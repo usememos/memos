@@ -119,6 +119,9 @@
     "empty-placeholder": "Baleiro",
     "unlink": "Desvincular"
   },
+  "locale-picker": {
+    "no-language-feedback": "Non se atopou o idioma? Enviar comentarios"
+  },
   "editor": {
     "add-your-comment-here": "Engade aquí o comentario...",
     "any-thoughts": "O que pensas...",

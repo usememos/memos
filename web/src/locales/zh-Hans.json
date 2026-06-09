@@ -123,6 +123,9 @@
     "visibility": "可见性",
     "yourself": "您自己"
   },
+  "locale-picker": {
+    "no-language-feedback": "未找到语言？ 提交反馈"
+  },
   "editor": {
     "add-your-comment-here": "请输入您的评论...",
     "any-thoughts": "此刻的想法...",

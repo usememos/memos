@@ -156,6 +156,9 @@
     "visibility": "Ορατότητα",
     "yourself": "Σύ ο ίδιος"
   },
+  "locale-picker": {
+    "no-language-feedback": "Δεν βρέθηκε η γλώσσα; Υποβολή σχολίων"
+  },
   "editor": {
     "add-your-comment-here": "Προσθέστε το σχόλιό σας εδώ...",
     "any-thoughts": "Οποιαδήποτε σκέψη...",

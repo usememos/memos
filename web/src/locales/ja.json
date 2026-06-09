@@ -119,6 +119,9 @@
     "empty-placeholder": "空の",
     "unlink": "リンクを解除する"
   },
+  "locale-picker": {
+    "no-language-feedback": "言語が見つかりませんか? フィードバックを送信する"
+  },
   "editor": {
     "add-your-comment-here": "ここにコメントを追加...",
     "any-thoughts": "今思ったことは...",

@@ -119,6 +119,9 @@
     "empty-placeholder": "Prazan",
     "unlink": "Prekini vezu"
   },
+  "locale-picker": {
+    "no-language-feedback": "Jezik nije pronađen? Pošaljite povratne informacije"
+  },
   "editor": {
     "add-your-comment-here": "Dodaj svoj komentar ovdje...",
     "any-thoughts": "Imaš li misli...",

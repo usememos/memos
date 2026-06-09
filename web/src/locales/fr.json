@@ -119,6 +119,9 @@
     "empty-placeholder": "Vide",
     "unlink": "Dissocier"
   },
+  "locale-picker": {
+    "no-language-feedback": "Langue introuvable ? Soumettre des commentaires"
+  },
   "editor": {
     "add-your-comment-here": "Ajoutez votre commentaire ici...",
     "any-thoughts": "Des idées...",

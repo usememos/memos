@@ -156,6 +156,9 @@
     "visibility": "Видимост",
     "yourself": "Себе си"
   },
+  "locale-picker": {
+    "no-language-feedback": "Езикът не е намерен? Изпратете обратна връзка"
+  },
   "editor": {
     "add-your-comment-here": "Добавете своя коментар тук...",
     "any-thoughts": "Някакви мисли...",

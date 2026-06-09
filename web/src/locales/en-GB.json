@@ -119,6 +119,9 @@
     "empty-placeholder": "Empty",
     "unlink": "Unlink"
   },
+  "locale-picker": {
+    "no-language-feedback": "Language not found? Submit feedback"
+  },
   "editor": {
     "add-your-comment-here": "Add your comment here...",
     "any-thoughts": "Any thoughts...",

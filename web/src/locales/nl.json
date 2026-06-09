@@ -119,6 +119,9 @@
     "empty-placeholder": "Leeg",
     "unlink": "Ontkoppelen"
   },
+  "locale-picker": {
+    "no-language-feedback": "Taal niet gevonden? Geef feedback"
+  },
   "editor": {
     "add-your-comment-here": "Voeg hier je opmerking toe…",
     "any-thoughts": "Enkele gedachten…",

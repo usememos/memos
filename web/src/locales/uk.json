@@ -119,6 +119,9 @@
     "empty-placeholder": "Порожній",
     "unlink": "Від’єднати"
   },
+  "locale-picker": {
+    "no-language-feedback": "Мова не знайдена? Надіслати відгук"
+  },
   "editor": {
     "add-your-comment-here": "Додайте свій коментар тут...",
     "any-thoughts": "Якісь думки...",

@@ -122,3 +122,36 @@ export const getLocaleDisplayName = (locale: string): string => {
   }
   return locale;
 };
+
+export const normalizeLocaleSearchText = (value: string): string => {
+  return value
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .toLowerCase();
+};
+
+const getLocaleDisplayNameForLanguage = (locale: string, displayLanguage: string): string => {
+  try {
+    return new Intl.DisplayNames([displayLanguage], { type: "language" }).of(locale) ?? locale;
+  } catch {
+    return locale;
+  }
+};
+
+export const getLocaleSearchLabels = (locale: string, uiLocale: string): string[] => {
+  return Array.from(
+    new Set([
+      locale,
+      getLocaleDisplayNameForLanguage(locale, locale),
+      getLocaleDisplayNameForLanguage(locale, "en"),
+      getLocaleDisplayNameForLanguage(locale, uiLocale),
+    ]),
+  );
+};
+
+export const localeMatchesSearch = (locale: string, query: string, uiLocale: string): boolean => {
+  const normalizedQuery = normalizeLocaleSearchText(query.trim());
+  if (!normalizedQuery) return true;
+
+  return getLocaleSearchLabels(locale, uiLocale).some((label) => normalizeLocaleSearchText(label).includes(normalizedQuery));
+};
