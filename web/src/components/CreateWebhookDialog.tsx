@@ -112,6 +112,9 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
       return prefix + t("setting.webhook.create-dialog.signing-secret-pending-no-changes");
     }
     if (state.signingSecret === "") {
+      if (isCreating) {
+        return prefix + t("setting.webhook.create-dialog.signing-secret-pending-no-changes");
+      }
       return prefix + t("setting.webhook.create-dialog.signing-secret-pending-cleared");
     }
     return prefix + t("setting.webhook.create-dialog.signing-secret-pending-generated");
