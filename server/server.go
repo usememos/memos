@@ -20,6 +20,7 @@ import (
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/server/router/fileserver"
 	"github.com/usememos/memos/server/router/frontend"
+	"github.com/usememos/memos/server/router/mcp"
 	"github.com/usememos/memos/server/router/rss"
 	"github.com/usememos/memos/server/runner/s3presign"
 	"github.com/usememos/memos/store"
@@ -87,6 +88,12 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	if err := apiV1Service.RegisterGateway(ctx, echoServer); err != nil {
 		return nil, errors.Wrap(err, "failed to register gRPC gateway")
 	}
+
+	mcpService, err := mcp.NewMCPService(profile, echoServer)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create MCP service")
+	}
+	mcpService.RegisterRoutes(echoServer)
 
 	return s, nil
 }
