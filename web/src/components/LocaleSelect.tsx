@@ -5,10 +5,11 @@ import { loadLocale } from "@/utils/i18n";
 interface Props {
   value: Locale;
   onChange: (locale: Locale) => void;
+  className?: string;
 }
 
 const LocaleSelect: FC<Props> = (props: Props) => {
-  const { onChange, value } = props;
+  const { className, onChange, value } = props;
 
   const handleSelectChange = async (locale: Locale) => {
     // Apply locale globally immediately
@@ -17,7 +18,7 @@ const LocaleSelect: FC<Props> = (props: Props) => {
     onChange(locale);
   };
 
-  return <LocalePicker value={value} onChange={handleSelectChange} />;
+  return <LocalePicker value={value} onChange={handleSelectChange} className={className} />;
 };
 
 export default LocaleSelect;

@@ -28,8 +28,13 @@ export const LocaleSearchList = (props: LocaleSearchListProps) => {
   );
 
   return (
-    <div className={cn("w-64 max-w-[calc(100vw-2rem)]", className)}>
-      <div className="relative p-1">
+    <div
+      className={cn(
+        "flex max-h-[min(24rem,calc(100vh-2rem))] w-[var(--radix-popover-trigger-width)] min-w-48 max-w-[calc(100vw-2rem)] flex-col",
+        className,
+      )}
+    >
+      <div className="relative shrink-0 p-1">
         <SearchIcon className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={query}
@@ -40,7 +45,7 @@ export const LocaleSearchList = (props: LocaleSearchListProps) => {
           aria-label={t("common.language")}
         />
       </div>
-      <div className="mt-1 max-h-72 overflow-y-auto p-1" role="listbox" aria-label={t("common.language")}>
+      <div className="mt-1 min-h-0 flex-1 touch-pan-y overflow-y-auto p-1" role="listbox" aria-label={t("common.language")}>
         {filteredLocales.map((locale) => (
           <button
             type="button"
@@ -53,9 +58,11 @@ export const LocaleSearchList = (props: LocaleSearchListProps) => {
             )}
             onClick={() => onChange(locale)}
           >
-            {value === locale ? <CheckIcon className="size-4 text-primary" /> : <span className="size-4" />}
-            <span className="min-w-0 flex-1 truncate">{getLocaleDisplayName(locale)}</span>
-            <span className="shrink-0 text-xs text-muted-foreground">{locale}</span>
+            <span className="flex min-w-0 flex-1 items-baseline gap-1.5">
+              <span className="truncate">{getLocaleDisplayName(locale)}</span>
+              <span className="shrink-0 text-xs text-muted-foreground">{locale}</span>
+            </span>
+            {value === locale ? <CheckIcon className="size-4 shrink-0 text-primary" /> : <span className="size-4 shrink-0" />}
           </button>
         ))}
         {filteredLocales.length === 0 && (
@@ -94,11 +101,11 @@ const LocalePicker = (props: LocalePickerProps) => {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button type="button" variant="outline" className={cn("w-full justify-between", className)}>
-          <span className="flex min-w-0 items-center gap-2">
-            <GlobeIcon className="size-4 text-muted-foreground" />
+          <span className="flex min-w-0 flex-1 items-center gap-2">
+            <GlobeIcon className="size-4 shrink-0 text-muted-foreground" />
             <span className="truncate">{getLocaleDisplayName(value)}</span>
           </span>
-          <ChevronDownIcon className="size-4 text-muted-foreground" />
+          <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground" />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="p-0">

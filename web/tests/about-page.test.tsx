@@ -41,6 +41,15 @@ describe("<About>", () => {
     }
   });
 
+  it("does not add nested horizontal page padding on mobile", () => {
+    const { container } = render(<About />);
+
+    const contentWrapper = container.querySelector("section > div");
+
+    expect(contentWrapper).toHaveClass("w-full");
+    expect(contentWrapper).not.toHaveClass("px-4");
+  });
+
   it("uses dark sponsor logos when the app theme is dark", () => {
     document.documentElement.setAttribute("data-theme", "default-dark");
 

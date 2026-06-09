@@ -83,7 +83,7 @@ const SponsorLogo = ({ sponsor }: { sponsor: Sponsor }) => {
 const About = () => {
   return (
     <section className="mx-auto w-full max-w-5xl min-h-full flex flex-col justify-start items-start sm:pt-3 md:pt-6 pb-8">
-      <div className="w-full px-4 sm:px-6">
+      <div className="w-full">
         <div className="w-full rounded-xl border border-border bg-background px-4 py-4 text-muted-foreground">
           <SettingSection
             title="About Memos"
