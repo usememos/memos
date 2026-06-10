@@ -1,3 +1,4 @@
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { BookmarkIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
@@ -48,13 +49,40 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
     updatedAt: updateTime ? `${t("common.last-updated-at")}: ${updateTime.toLocaleString(i18n.language)}` : undefined,
   };
 
+  const remindStatus = (() => {
+    if (!memo.remindTime) return null;
+    const remindDate = timestampDate(memo.remindTime);
+    const now = new Date();
+
+    if (remindDate.getTime() < now.getTime()) {
+      return "已到期";
+    }
+
+    const isSameDay =
+      remindDate.getFullYear() === now.getFullYear() &&
+      remindDate.getMonth() === now.getMonth() &&
+      remindDate.getDate() === now.getDate();
+
+    if (isSameDay) {
+      return "今日提醒";
+    }
+
+    return null;
+  })();
+
   return (
     <div className="w-full flex flex-row justify-between items-center gap-2">
-      <div className="w-auto max-w-[calc(100%-8rem)] grow flex flex-row justify-start items-center">
+      <div className="w-auto max-w-[calc(100%-8rem)] grow flex flex-row justify-start items-center gap-2">
         {showCreator && creator ? (
           <CreatorDisplay creator={creator} displayTime={displayTime} timeTooltip={timeTooltip} onGotoDetail={handleGotoMemoDetailPage} />
         ) : (
           <TimeDisplay displayTime={displayTime} timeTooltip={timeTooltip} onGotoDetail={handleGotoMemoDetailPage} />
+        )}
+
+        {remindStatus && (
+          <span className="inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-xs text-orange-700">
+            {remindStatus}
+          </span>
         )}
       </div>
 

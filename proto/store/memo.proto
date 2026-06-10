@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package memos.store;
 
+import "google/protobuf/timestamp.proto";
+
 option go_package = "gen/store";
 
 message MemoPayload {
@@ -10,6 +12,8 @@ message MemoPayload {
   Location location = 2;
 
   repeated string tags = 3;
+
+  google.protobuf.Timestamp remind_time = 4;
 
   // The calculated properties from the memo content.
   message Property {

@@ -114,6 +114,9 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	if request.Memo.Location != nil {
 		create.Payload.Location = convertLocationToStore(request.Memo.Location)
 	}
+	if request.Memo.RemindTime != nil && request.Memo.RemindTime.IsValid() {
+		create.Payload.RemindTime = request.Memo.RemindTime
+	}
 
 	memo, err := s.Store.CreateMemo(ctx, create)
 	if err != nil {
@@ -130,7 +133,11 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	attachments := []*store.Attachment{}
 
 	if len(request.Memo.Attachments) > 0 {
-		if err := s.setMemoAttachmentsInternal(ctx, user, memo, request.Memo.Attachments); err != nil {
+		_, err := s.SetMemoAttachments(ctx, &v1pb.SetMemoAttachmentsRequest{
+			Name:        fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID),
+			Attachments: request.Memo.Attachments,
+		})
+		if err != nil {
 			return nil, errors.Wrap(err, "failed to set memo attachments")
 		}
 
@@ -143,7 +150,11 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 		attachments = a
 	}
 	if len(request.Memo.Relations) > 0 {
-		if err := s.setMemoRelationsInternal(ctx, memo, request.Memo.Relations); err != nil {
+		_, err := s.SetMemoRelations(ctx, &v1pb.SetMemoRelationsRequest{
+			Name:      fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID),
+			Relations: request.Memo.Relations,
+		})
+		if err != nil {
 			return nil, errors.Wrap(err, "failed to set memo relations")
 		}
 	}
@@ -531,7 +542,19 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			return nil, status.Errorf(codes.InvalidArgument, "display_time is not supported")
 		} else if path == "location" {
 			payload := memo.Payload
+			if payload == nil {
+				payload = &storepb.MemoPayload{}
+			}
 			payload.Location = convertLocationToStore(request.Memo.Location)
+			memo.Payload = payload
+			update.Payload = payload
+		} else if path == "remind_time" {
+			payload := memo.Payload
+			if payload == nil {
+				payload = &storepb.MemoPayload{}
+			}
+			payload.RemindTime = request.Memo.RemindTime
+			memo.Payload = payload
 			update.Payload = payload
 		} else if path == "attachments" {
 			if err := s.setMemoAttachmentsInternal(ctx, user, memo, request.Memo.Attachments); err != nil {
