@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import type { Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
-import type { EditorRefActions } from "../Editor";
+import { useTranslate } from "@/utils/i18n";
+import { getPreferredEditorMode } from "../editorMode";
 import { cacheService, memoService } from "../services";
 import { useEditorContext } from "../state";
+import { isLosslessRoundTrip } from "../TiptapEditor/markdownCodec";
+import type { EditorController } from "../types/editorController";
 
 interface UseMemoInitOptions {
-  editorRef: React.RefObject<EditorRefActions | null>;
+  editorRef: React.RefObject<EditorController | null>;
   memo?: Memo;
   cacheKey?: string;
   username: string;
@@ -23,6 +27,7 @@ export const useMemoInit = ({
   defaultVisibility,
   defaultCreateTime,
 }: UseMemoInitOptions) => {
+  const t = useTranslate();
   const { actions, dispatch } = useEditorContext();
   const initializedRef = useRef(false);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -36,6 +41,16 @@ export const useMemoInit = ({
       const initialState = memoService.fromMemo(memo);
       cacheService.clear(key);
       dispatch(actions.initMemo(initialState));
+      // Load guard (tripwire): if the WYSIWYG round trip would change this
+      // memo's meaning, edit it raw for this session. Preference untouched —
+      // and INIT_MEMO ignores ui state, so the mode must be dispatched here.
+      // No length cap: the check runs in a useEffect (post-paint). Add a cap
+      // if profiling ever identifies cost on very large memos.
+      if (getPreferredEditorMode() === "wysiwyg" && initialState.content && !isLosslessRoundTrip(initialState.content)) {
+        console.warn("memo content failed wysiwyg round-trip; falling back to raw editor", memo.name);
+        dispatch(actions.setEditorMode("raw"));
+        toast(t("editor.unsupported-syntax-raw-mode"));
+      }
     } else {
       const cachedContent = cacheService.load(key);
       if (cachedContent) {
@@ -54,7 +69,7 @@ export const useMemoInit = ({
     }
 
     setIsInitialized(true);
-  }, [memo, cacheKey, username, autoFocus, defaultVisibility, defaultCreateTime, actions, dispatch, editorRef]);
+  }, [memo, cacheKey, username, autoFocus, defaultVisibility, defaultCreateTime, actions, dispatch, editorRef, t]);
 
   return { isInitialized };
 };

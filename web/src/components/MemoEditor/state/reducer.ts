@@ -1,5 +1,5 @@
 import type { EditorAction, EditorState } from "./types";
-import { initialState } from "./types";
+import { createInitialState } from "./types";
 
 export function editorReducer(state: EditorState, action: EditorAction): EditorState {
   switch (action.type) {
@@ -171,10 +171,20 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         },
       };
 
-    case "RESET":
+    case "SET_EDITOR_MODE":
       return {
-        ...initialState,
+        ...state,
+        ui: {
+          ...state.ui,
+          editorMode: action.payload,
+          // A composition can't survive an editor swap; a stuck flag would
+          // disable the textarea's IME-guarded features until the next IME cycle.
+          isComposing: false,
+        },
       };
+
+    case "RESET":
+      return createInitialState();
 
     default:
       return state;

@@ -13,4 +13,5 @@ export type {
   TagSuggestionsProps,
   VisibilitySelectorProps,
 } from "./components";
+export type { EditorController } from "./editorController";
 export type { LocationState } from "./insert-menu";

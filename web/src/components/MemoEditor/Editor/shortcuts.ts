@@ -40,7 +40,7 @@ export function insertHyperlink(editor: EditorRefActions, url?: string): void {
   }
 }
 
-function toggleTextStyle(editor: EditorRefActions, delimiter: string): void {
+export function toggleTextStyle(editor: EditorRefActions, delimiter: string): void {
   const cursorPosition = editor.getCursorPosition();
   const selectedContent = editor.getSelectedContent();
   const isStyled = isTextStyled(selectedContent, delimiter);

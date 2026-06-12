@@ -31,3 +31,126 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Tiptap WYSIWYG memo editor */
+.memo-wysiwyg p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Tailwind's preflight resets h1–h6 to inherit; restore the same heading
+   scale the memo view uses (MemoContent/markdown/Heading.tsx) so live
+   conversion is visible while editing. */
+.memo-wysiwyg h1,
+.memo-wysiwyg h2,
+.memo-wysiwyg h3,
+.memo-wysiwyg h4,
+.memo-wysiwyg h5,
+.memo-wysiwyg h6 {
+  margin: 0.75rem 0 0.5rem;
+  line-height: 1.25;
+}
+
+.memo-wysiwyg h1:first-child,
+.memo-wysiwyg h2:first-child,
+.memo-wysiwyg h3:first-child {
+  margin-top: 0;
+}
+
+.memo-wysiwyg h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.memo-wysiwyg h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.375rem;
+}
+
+.memo-wysiwyg h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.memo-wysiwyg h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.memo-wysiwyg h5 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.memo-wysiwyg h6 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+
+.memo-wysiwyg ul,
+.memo-wysiwyg ol {
+  padding-left: 1.5rem;
+}
+
+.memo-wysiwyg ul {
+  list-style: disc;
+}
+
+.memo-wysiwyg ol {
+  list-style: decimal;
+}
+
+.memo-wysiwyg ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0;
+}
+
+.memo-wysiwyg ul[data-type="taskList"] li {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.memo-wysiwyg ul[data-type="taskList"] li > label {
+  flex: 0 0 auto;
+  user-select: none;
+}
+
+.memo-wysiwyg ul[data-type="taskList"] li > div {
+  flex: 1 1 auto;
+}
+
+.memo-wysiwyg blockquote {
+  border-left: 2px solid var(--border);
+  padding-left: 0.75rem;
+  opacity: 0.9;
+}
+
+.memo-wysiwyg pre {
+  background: var(--muted);
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.875rem;
+  white-space: pre-wrap;
+}
+
+.memo-wysiwyg code {
+  background: var(--muted);
+  border-radius: 0.25rem;
+  padding: 0 0.25rem;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.875em;
+}
+
+.memo-wysiwyg pre code {
+  background: transparent;
+  padding: 0;
+}
