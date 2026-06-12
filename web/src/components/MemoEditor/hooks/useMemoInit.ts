@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import type { Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import { isLosslessRoundTrip } from "../Editor/markdownCodec";
 import { getPreferredEditorMode } from "../editorMode";
 import { cacheService, memoService } from "../services";
 import { useEditorContext } from "../state";
-import { isLosslessRoundTrip } from "../TiptapEditor/markdownCodec";
 import type { EditorController } from "../types/editorController";
 
 interface UseMemoInitOptions {

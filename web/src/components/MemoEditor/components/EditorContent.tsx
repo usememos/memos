@@ -1,9 +1,8 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from "react";
-import Editor, { type EditorRefActions } from "../Editor";
-import { createTextareaController } from "../Editor/controllerAdapter";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from "react";
+import Editor from "../Editor";
 import { useBlobUrls, useDragAndDrop } from "../hooks";
+import PlainEditor from "../PlainEditor";
 import { useEditorContext } from "../state";
-import TiptapEditor from "../TiptapEditor";
 import type { EditorContentProps } from "../types";
 import type { LocalFile } from "../types/attachment";
 import type { EditorController } from "../types/editorController";
@@ -19,16 +18,14 @@ export const EditorContent = forwardRef<EditorController, EditorContentProps>(({
   const { createBlobUrl } = useBlobUrls();
   const mode = state.ui.editorMode;
 
-  const textareaActionsRef = useRef<EditorRefActions>(null);
-  const tiptapControllerRef = useRef<EditorController>(null);
-  const textareaController = useMemo(() => createTextareaController(() => textareaActionsRef.current), []);
+  // Both editors implement EditorController; the host holds one ref each and
+  // routes the parent's single ref to whichever mode is active.
+  const wysiwygRef = useRef<EditorController>(null);
+  const plainRef = useRef<EditorController>(null);
 
   const modeRef = useRef(mode);
   modeRef.current = mode;
-  const getActive = useCallback(
-    (): EditorController | null => (modeRef.current === "wysiwyg" ? tiptapControllerRef.current : textareaController),
-    [textareaController],
-  );
+  const getActive = useCallback((): EditorController | null => (modeRef.current === "wysiwyg" ? wysiwygRef.current : plainRef.current), []);
 
   // Mid-edit mode switches should land the user back in the editor, not on
   // the toolbar button. Skipped on first mount (useMemoInit owns autofocus).
@@ -68,14 +65,6 @@ export const EditorContent = forwardRef<EditorController, EditorContentProps>(({
     localFiles.forEach((localFile) => dispatch(actions.addLocalFile(localFile)));
   });
 
-  const handleCompositionStart = () => {
-    dispatch(actions.setComposing(true));
-  };
-
-  const handleCompositionEnd = () => {
-    dispatch(actions.setComposing(false));
-  };
-
   const handleContentChange = (content: string) => {
     dispatch(actions.updateContent(content));
   };
@@ -109,11 +98,8 @@ export const EditorContent = forwardRef<EditorController, EditorContentProps>(({
   return (
     <div className="w-full flex flex-col flex-1" {...dragHandlers}>
       {mode === "wysiwyg" ? (
-        // No composition wiring: ProseMirror handles IME natively, and
-        // state.ui.isComposing is only read by the raw editor below — feeding
-        // it from here could only strand the flag across a mode switch.
-        <TiptapEditor
-          ref={tiptapControllerRef}
+        <Editor
+          ref={wysiwygRef}
           className="memo-editor-content"
           initialContent={state.content}
           placeholder={placeholder || ""}
@@ -122,17 +108,14 @@ export const EditorContent = forwardRef<EditorController, EditorContentProps>(({
           onPaste={handlePaste}
         />
       ) : (
-        <Editor
-          ref={textareaActionsRef}
+        <PlainEditor
+          ref={plainRef}
           className="memo-editor-content"
           initialContent={state.content}
           placeholder={placeholder || ""}
           isFocusMode={state.ui.isFocusMode}
-          isInIME={state.ui.isComposing}
           onContentChange={handleContentChange}
           onPaste={handlePaste}
-          onCompositionStart={handleCompositionStart}
-          onCompositionEnd={handleCompositionEnd}
         />
       )}
     </div>

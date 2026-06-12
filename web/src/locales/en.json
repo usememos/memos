@@ -173,9 +173,8 @@
     "save": "Save",
     "saving": "Saving...",
     "slash-commands": "Type `/` for commands",
-    "switch-to-raw": "Edit raw Markdown",
-    "switch-to-wysiwyg": "Edit rich text",
     "unsupported-syntax-raw-mode": "This memo contains syntax the rich-text editor can't safely edit, so it opened in raw Markdown mode.",
+    "wysiwyg-editor": "WYSIWYG Editor",
     "audio-recorder": {
       "attachment-label": "Audio recording",
       "attachment-label-with-time": "Audio recording {{time}}",

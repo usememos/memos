@@ -1,6 +1,6 @@
-import { describe, expect, it } from "vitest";
 import type { JSONContent } from "@tiptap/core";
-import { parseMarkdown, roundTripMarkdown } from "@/components/MemoEditor/TiptapEditor/markdownCodec";
+import { describe, expect, it } from "vitest";
+import { parseMarkdown, roundTripMarkdown } from "@/components/MemoEditor/Editor/markdownCodec";
 
 function firstParagraphChildren(markdown: string) {
   return parseMarkdown(markdown).content?.[0]?.content ?? [];

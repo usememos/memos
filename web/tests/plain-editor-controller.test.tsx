@@ -1,30 +1,20 @@
 import { render, screen } from "@testing-library/react";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
-import Editor, { type EditorRefActions } from "@/components/MemoEditor/Editor";
-import { createTextareaController } from "@/components/MemoEditor/Editor/controllerAdapter";
-
-vi.mock("@/components/MemoEditor/Editor/TagSuggestions", () => ({ default: () => null }));
-vi.mock("@/components/MemoEditor/Editor/SlashCommands", () => ({ default: () => null }));
+import PlainEditor from "@/components/MemoEditor/PlainEditor";
+import type { EditorController } from "@/components/MemoEditor/types/editorController";
 
 function setup(initialContent = "") {
-  const ref = createRef<EditorRefActions>();
+  const ref = createRef<EditorController>();
   render(
-    <Editor
-      ref={ref}
-      className=""
-      initialContent={initialContent}
-      placeholder="memo"
-      onContentChange={vi.fn()}
-      onPaste={vi.fn()}
-    />,
+    <PlainEditor ref={ref} className="" initialContent={initialContent} placeholder="memo" onContentChange={vi.fn()} onPaste={vi.fn()} />,
   );
-  const controller = createTextareaController(() => ref.current);
+  const controller = ref.current as EditorController;
   const textarea = screen.getByPlaceholderText("memo") as HTMLTextAreaElement;
   return { controller, textarea };
 }
 
-describe("textarea EditorController adapter", () => {
+describe("PlainEditor EditorController", () => {
   it("getMarkdown/setMarkdown mirror the textarea value", () => {
     const { controller, textarea } = setup("hello");
     expect(controller.getMarkdown()).toBe("hello");

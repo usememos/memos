@@ -38,12 +38,9 @@ MemoEditor/
 ├── hooks/                  # React hooks (utilities)
 │   ├── useMemoInit.ts      # Initializes editor content; load guard for WYSIWYG
 │   └── ...
-├── Editor/                 # Textarea (raw mode) implementation
-│   ├── controllerAdapter.ts  # Adapts EditorRefActions → EditorController
-│   ├── TagSuggestions.tsx    # # popup for raw mode
-│   ├── SlashCommands.tsx     # / popup for raw mode
-│   └── ...
-├── TiptapEditor/           # Tiptap WYSIWYG implementation
+├── PlainEditor/            # Plain textarea (raw mode) implementation
+│   └── index.tsx             # Bare textarea implementing EditorController directly
+├── Editor/                 # Tiptap WYSIWYG implementation (default)
 │   ├── index.tsx             # Editor component; implements EditorController
 │   ├── extensions.ts         # Canonical schema-relevant extension set (shared with codec)
 │   ├── markdownCodec.ts      # Headless parse/serialize helpers (singleton editor)
@@ -72,8 +69,8 @@ Uses `useReducer` + Context for predictable state transitions. All state changes
 
 `types/editorController.ts` defines the `EditorController` interface — `focus`, `getMarkdown`, `setMarkdown`, `insertMarkdown`, formatting toggles, etc. — that callers outside an editor implementation must use exclusively.
 
-- **WYSIWYG mode** (`TiptapEditor/`): Tiptap/ProseMirror rich-text editor. The default mode. Implements `EditorController` directly via `useImperativeHandle` in `TiptapEditor/index.tsx`.
-- **Raw mode** (`Editor/`): plain textarea. `Editor/controllerAdapter.ts` adapts the textarea's imperative string-surgery API (`EditorRefActions`) to the same `EditorController` contract.
+- **WYSIWYG mode** (`Editor/`): Tiptap/ProseMirror rich-text editor. The default mode. Implements `EditorController` directly via `useImperativeHandle` in `Editor/index.tsx`.
+- **Raw mode** (`PlainEditor/`): a bare textarea with no in-editor assistance (no suggestion popups, list continuation, or keyboard markdown shortcuts) — just auto-grow and cursor-visibility scrolling. It implements `EditorController` directly (markdown is just the textarea value), so the toolbar's formatting toggles still work.
 
 `components/EditorContent.tsx` hosts whichever implementation `state.ui.editorMode` selects and exposes a single mode-routing `EditorController` facade to the rest of the component tree via `forwardRef`.
 
@@ -83,9 +80,9 @@ The toolbar button in `EditorToolbar.tsx` dispatches `SET_EDITOR_MODE` and calls
 
 Mode switching is a markdown handoff: because both editors write into `state.content` on every keystroke, the incoming editor simply initializes from it — no content is ever pushed between editors directly.
 
-### Markdown fidelity layer (TiptapEditor)
+### Markdown fidelity layer (Editor)
 
-`TiptapEditor/extensions.ts` exports `buildExtensions()`, the canonical schema-relevant extension set. It is shared by the live editor and the headless `markdownCodec.ts` (parse/serialize/round-trip helpers over a singleton Tiptap instance) so parse and serialize behavior is identical in both contexts.
+`Editor/extensions.ts` exports `buildExtensions()`, the canonical schema-relevant extension set. It is shared by the live editor and the headless `markdownCodec.ts` (parse/serialize/round-trip helpers over a singleton Tiptap instance) so parse and serialize behavior is identical in both contexts.
 
 `PreservedBlock.ts` handles syntax the WYSIWYG editor does not model richly: tables, `$$math$$`, and raw HTML are captured at parse time with their raw markdown source, shown as editable monospace literal text, and re-emitted byte-for-byte on serialize.
 
@@ -93,10 +90,7 @@ Mode switching is a markdown handoff: because both editors write into `state.con
 
 ### Suggestions
 
-Both modes provide `#` tag and `/` slash-command suggestion popups, but they are implemented separately:
-
-- WYSIWYG mode: `TiptapEditor/TagSuggestion.ts` and `TiptapEditor/SlashCommand.ts`, both using the shared `TiptapEditor/suggestionMenu.tsx` renderer.
-- Raw mode: `Editor/TagSuggestions.tsx` and `Editor/SlashCommands.tsx`.
+`#` tag and `/` slash-command suggestion popups are a **WYSIWYG-only** feature: `Editor/TagSuggestion.ts` and `Editor/SlashCommand.ts`, both using the shared `Editor/suggestionMenu.tsx` renderer. Raw mode is a plain textarea with no suggestions.
 
 ### Load guard
 

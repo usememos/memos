@@ -1,7 +1,8 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { createRef } from "react";
+import { createRoot } from "react-dom/client";
 import { describe, expect, it, vi } from "vitest";
-import { SuggestionMenu, createSuggestionRenderer, type SuggestionMenuHandle } from "@/components/MemoEditor/TiptapEditor/suggestionMenu";
+import { createSuggestionRenderer, SuggestionMenu, type SuggestionMenuHandle } from "@/components/MemoEditor/Editor/suggestionMenu";
 
 function setup(items = ["alpha", "beta", "gamma"]) {
   const command = vi.fn();
@@ -79,7 +80,6 @@ describe("createSuggestionRenderer blur handling", () => {
         setRenderer: vi.fn((_id: string, renderer: { reactElement: React.ReactNode; element: HTMLElement }) => {
           // Mimic the real portal: render the element directly into renderer.element
           // via React so it shows up in the DOM when appended to document.body.
-          const { createRoot } = require("react-dom/client") as typeof import("react-dom/client");
           const root = createRoot(renderer.element);
           act(() => {
             root.render(renderer.reactElement as React.ReactElement);

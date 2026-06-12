@@ -1,244 +1,196 @@
-import { type ClipboardEvent, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from "react";
-import getCaretCoordinates from "textarea-caret";
+import { Extension } from "@tiptap/core";
+import { Placeholder } from "@tiptap/extensions";
+import type { EditorProps as ProseMirrorEditorProps } from "@tiptap/pm/view";
+import { EditorContent as RichTextContent, useEditor } from "@tiptap/react";
+import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef } from "react";
+import { matchPath } from "react-router-dom";
+import { useTagCounts } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
+import { ROUTES as Routes } from "@/router/routes";
 import { EDITOR_HEIGHT } from "../constants";
-import type { EditorProps } from "../types";
-import { editorCommands } from "./commands";
-import SlashCommands from "./SlashCommands";
-import { getMarkdownLinkForPastedUrl, handleMarkdownShortcuts } from "./shortcuts";
-import TagSuggestions from "./TagSuggestions";
-import { useListCompletion } from "./useListCompletion";
+import type { EditorController } from "../types/editorController";
+import { buildExtensions } from "./extensions";
+import { SlashCommand } from "./SlashCommand";
+import { TagSuggestion } from "./TagSuggestion";
 
-export interface EditorRefActions {
-  getEditor: () => HTMLTextAreaElement | null;
-  focus: () => void;
-  scrollToCursor: () => void;
-  insertText: (text: string, prefix?: string, suffix?: string) => void;
-  removeText: (start: number, length: number) => void;
-  setContent: (text: string) => void;
-  getContent: () => string;
-  getSelectedContent: () => string;
-  getCursorPosition: () => number;
-  setCursorPosition: (startPos: number, endPos?: number) => void;
-  getCursorLineNumber: () => number;
-  getLine: (lineNumber: number) => string;
-  setLine: (lineNumber: number, text: string) => void;
+// Mod-Enter is the app-wide "save memo" shortcut (useKeyboard). StarterKit's
+// HardBreak extension also binds Mod-Enter to insert a hard break, which would
+// mutate the document right before save fires. This extension swallows the
+// shortcut (returning true stops further keymap handlers) while preserving
+// DOM event bubbling — preventDefault does NOT stopPropagation, so the window-
+// level save listener in useKeyboard still receives and handles the keystroke.
+// Priority 1000 > HardBreak's default 100, so this handler runs first.
+// Shift-Enter still inserts a hard break as expected.
+const SaveShortcutPassthrough = Extension.create({
+  name: "saveShortcutPassthrough",
+  priority: 1000,
+  addKeyboardShortcuts() {
+    return {
+      "Mod-Enter": () => true,
+    };
+  },
+});
+
+export interface EditorProps {
+  className?: string;
+  initialContent: string;
+  placeholder: string;
+  isFocusMode?: boolean;
+  onContentChange: (content: string) => void;
+  onPaste: (event: React.ClipboardEvent) => void;
 }
 
-const Editor = forwardRef(function Editor(props: EditorProps, ref: React.ForwardedRef<EditorRefActions>) {
-  const {
-    className,
-    initialContent,
-    placeholder,
-    onPaste,
-    onContentChange: handleContentChangeCallback,
-    isFocusMode,
-    isInIME = false,
-    onCompositionStart,
-    onCompositionEnd,
-  } = props;
-  const editorRef = useRef<HTMLTextAreaElement>(null);
+/**
+ * The Document serializer joins/terminates blocks with `\n\n`, so e.g. a task
+ * list serializes with a trailing blank line. Outer whitespace is meaningless
+ * at the document level (the round-trip corpus compares modulo outer trim),
+ * so every markdown string leaving this component is trimmed.
+ */
+function serializeMarkdown(editor: { getMarkdown: () => string } | null): string {
+  return (editor?.getMarkdown() ?? "").trim();
+}
 
-  const updateEditorHeight = useCallback(() => {
-    if (editorRef.current) {
-      editorRef.current.style.height = "auto";
-      editorRef.current.style.height = `${editorRef.current.scrollHeight ?? 0}px`;
-    }
-  }, []);
+/**
+ * WYSIWYG memo editor built on ProseMirror. Markdown is the only format
+ * crossing its boundary: in via setContent(contentType: "markdown"), out via
+ * serializeMarkdown() on every update. IME, list continuation, input rules,
+ * and auto-grow are native ProseMirror/contenteditable behavior.
+ */
+const Editor = forwardRef<EditorController, EditorProps>(function Editor(props, ref) {
+  const { className, initialContent, placeholder, isFocusMode, onContentChange, onPaste } = props;
 
-  const updateContent = useCallback(() => {
-    if (editorRef.current) {
-      handleContentChangeCallback(editorRef.current.value);
-      updateEditorHeight();
-    }
-  }, [handleContentChangeCallback, updateEditorHeight]);
+  // Last markdown emitted through onContentChange, so the sync effect can
+  // recognize the parent echoing our own value back without re-serializing.
+  const lastEmittedRef = useRef<string | null>(null);
+  // Read through refs so the memoized extension/editorProps closures below
+  // always see the latest props (Placeholder decorations recompute per
+  // transaction; handlePaste resolves per event).
+  const placeholderRef = useRef(placeholder);
+  placeholderRef.current = placeholder;
+  const onPasteRef = useRef(onPaste);
+  onPasteRef.current = onPaste;
 
-  const scrollToCaret = useCallback((options: { force?: boolean } = {}) => {
-    const editor = editorRef.current;
-    if (!editor) return;
+  // On the explore page suggestions include all users' tags; otherwise the
+  // current user's. Same sourcing as the raw editor's TagSuggestions.
+  const isExplorePage = useMemo(() => Boolean(matchPath(Routes.EXPLORE, window.location.pathname)), []);
+  const { data: tagCount = {} } = useTagCounts(!isExplorePage);
+  const sortedTags = useMemo(
+    () =>
+      Object.entries(tagCount)
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .map(([tag]) => tag),
+    [tagCount],
+  );
+  const tagsRef = useRef<string[]>([]);
+  tagsRef.current = sortedTags;
 
-    const { force = false } = options;
-    const caret = getCaretCoordinates(editor, editor.selectionEnd);
-
-    if (force) {
-      editor.scrollTop = Math.max(0, caret.top - editor.clientHeight / 2);
-      return;
-    }
-
-    const lineHeight = parseFloat(getComputedStyle(editor).lineHeight) || 24;
-    const viewportBottom = editor.scrollTop + editor.clientHeight;
-    // Scroll if cursor is near or beyond bottom edge (within 2 lines)
-    if (caret.top + lineHeight * 2 > viewportBottom) {
-      editor.scrollTop = Math.max(0, caret.top - editor.clientHeight / 2);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (editorRef.current && initialContent) {
-      editorRef.current.value = initialContent;
-      handleContentChangeCallback(initialContent);
-      updateEditorHeight();
-    }
-    // Only run once on mount to set initial content
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Update editor when content is externally changed (e.g., reset after save)
-  useEffect(() => {
-    if (editorRef.current && editorRef.current.value !== initialContent) {
-      editorRef.current.value = initialContent;
-      updateEditorHeight();
-    }
-  }, [initialContent, updateEditorHeight]);
-
-  const editorActions: EditorRefActions = useMemo(
+  // Stable option identities so useEditor's compareOptions stays equal across
+  // renders and the editor skips a needless setOptions/view.setProps pass per
+  // keystroke. All dynamic values reach the closures through refs above.
+  // `content` is only consumed at editor creation — later external changes
+  // flow through the sync effect — so the mount-time value is frozen too.
+  const mountContentRef = useRef(initialContent);
+  const extensions = useMemo(
+    () => [
+      ...buildExtensions(),
+      Placeholder.configure({ placeholder: () => placeholderRef.current }),
+      TagSuggestion.configure({ getTags: () => tagsRef.current }),
+      SlashCommand,
+      SaveShortcutPassthrough,
+    ],
+    [],
+  );
+  const editorProps = useMemo<ProseMirrorEditorProps>(
     () => ({
-      getEditor: () => editorRef.current,
-      focus: () => editorRef.current?.focus(),
-      scrollToCursor: () => {
-        scrollToCaret({ force: true });
+      attributes: {
+        class: "memo-wysiwyg outline-none w-full text-base break-words min-h-6",
       },
-      insertText: (content = "", prefix = "", suffix = "") => {
-        const editor = editorRef.current;
-        if (!editor) return;
-
-        const cursorPos = editor.selectionStart;
-        const endPos = editor.selectionEnd;
-        const prev = editor.value;
-        const actual = content || prev.slice(cursorPos, endPos);
-        editor.value = prev.slice(0, cursorPos) + prefix + actual + suffix + prev.slice(endPos);
-
-        editor.focus();
-        editor.setSelectionRange(cursorPos + prefix.length + actual.length, cursorPos + prefix.length + actual.length);
-        updateContent();
-      },
-      removeText: (start: number, length: number) => {
-        const editor = editorRef.current;
-        if (!editor) return;
-
-        editor.value = editor.value.slice(0, start) + editor.value.slice(start + length);
-        editor.focus();
-        editor.setSelectionRange(start, start);
-        updateContent();
-      },
-      setContent: (text: string) => {
-        const editor = editorRef.current;
-        if (editor) {
-          editor.value = text;
-          updateContent();
+      handlePaste: (_view, event) => {
+        const hasFiles = Array.from(event.clipboardData?.items ?? []).some((item) => item.kind === "file");
+        if (hasFiles) {
+          onPasteRef.current(event as unknown as React.ClipboardEvent);
+          return true;
         }
-      },
-      getContent: () => editorRef.current?.value ?? "",
-      getCursorPosition: () => editorRef.current?.selectionStart ?? 0,
-      getSelectedContent: () => {
-        const editor = editorRef.current;
-        if (!editor) return "";
-        return editor.value.slice(editor.selectionStart, editor.selectionEnd);
-      },
-      setCursorPosition: (startPos: number, endPos?: number) => {
-        const editor = editorRef.current;
-        if (!editor) return;
-        // setSelectionRange requires valid arguments; default to startPos if endPos is undefined
-        const endPosition = endPos !== undefined && !Number.isNaN(endPos) ? endPos : startPos;
-        editor.setSelectionRange(startPos, endPosition);
-      },
-      getCursorLineNumber: () => {
-        const editor = editorRef.current;
-        if (!editor) return 0;
-        const lines = editor.value.slice(0, editor.selectionStart).split("\n");
-        return lines.length - 1;
-      },
-      getLine: (lineNumber: number) => editorRef.current?.value.split("\n")[lineNumber] ?? "",
-      setLine: (lineNumber: number, text: string) => {
-        const editor = editorRef.current;
-        if (!editor) return;
-        const lines = editor.value.split("\n");
-        lines[lineNumber] = text;
-        editor.value = lines.join("\n");
-        editor.focus();
-        updateContent();
+        // Text paste (incl. URL-over-selection → link) is handled natively.
+        return false;
       },
     }),
-    [updateContent, scrollToCaret],
+    [],
   );
 
-  useImperativeHandle(ref, () => editorActions, [editorActions]);
-
-  const handleEditorInput = useCallback(() => {
-    if (editorRef.current) {
-      handleContentChangeCallback(editorRef.current.value);
-      updateEditorHeight();
-
-      // Auto-scroll to keep cursor visible when typing
-      // See: https://github.com/usememos/memos/issues/5469
-      scrollToCaret();
-    }
-  }, [handleContentChangeCallback, updateEditorHeight, scrollToCaret]);
-
-  // Auto-complete markdown lists when pressing Enter
-  useListCompletion({
-    editorRef,
-    editorActions,
-    isInIME,
+  const editor = useEditor({
+    extensions,
+    content: mountContentRef.current,
+    contentType: "markdown",
+    editorProps,
+    onUpdate: ({ editor: currentEditor }) => {
+      const markdown = serializeMarkdown(currentEditor);
+      lastEmittedRef.current = markdown;
+      onContentChange(markdown);
+    },
   });
 
-  const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if ((event.ctrlKey || event.metaKey) && !isInIME) {
-        handleMarkdownShortcuts(event, editorActions);
-      }
-    },
-    [editorActions, isInIME],
-  );
-
-  const handleEditorPaste = useCallback(
-    (event: ClipboardEvent<HTMLTextAreaElement>) => {
-      const editor = editorRef.current;
-      const pastedText = event.clipboardData?.getData("text/plain") || event.clipboardData?.getData("text");
-      const markdownLink = editor ? getMarkdownLinkForPastedUrl(editorActions.getSelectedContent(), pastedText) : undefined;
-
-      if (markdownLink) {
-        event.preventDefault();
-        editorActions.insertText(markdownLink);
-        return;
-      }
-
-      onPaste(event);
-    },
-    [editorActions, onPaste],
-  );
-
-  // Recalculate editor height when focus mode changes
+  // Sync external content changes (e.g. reset after save, draft restore)
+  // without clobbering the document the user is typing into: only apply when
+  // the markdown actually differs.
   useEffect(() => {
-    updateEditorHeight();
-  }, [isFocusMode, updateEditorHeight]);
+    if (!editor) {
+      return;
+    }
+    // Parent echo of our own emission — nothing to sync (O(1) fast path).
+    // Comparing against the live document instead would race: a keystroke
+    // landing between the emission and this passive effect would make the
+    // echo look like an external change and clobber the keystroke/cursor.
+    if (initialContent === lastEmittedRef.current) {
+      return;
+    }
+    // Never clobber an in-progress IME composition.
+    if (editor.view.composing) {
+      return;
+    }
+    if (serializeMarkdown(editor) !== initialContent.trim()) {
+      editor.commands.setContent(initialContent, { contentType: "markdown", emitUpdate: false });
+      // A subsequent identical echo of this value is also a no-op.
+      lastEmittedRef.current = initialContent;
+    }
+  }, [initialContent, editor]);
+
+  useImperativeHandle(
+    ref,
+    (): EditorController => ({
+      focus: () => editor?.commands.focus(),
+      hasFocus: () => editor?.isFocused ?? false,
+      // Contract: whitespace-only counts as empty. The editor's structural
+      // `editor.isEmpty` would call a paragraph of spaces non-empty.
+      isEmpty: () => serializeMarkdown(editor) === "",
+      getMarkdown: () => serializeMarkdown(editor),
+      setMarkdown: (markdown) => editor?.commands.setContent(markdown, { contentType: "markdown" }),
+      insertMarkdown: (markdown) => editor?.chain().focus().insertContent(markdown, { contentType: "markdown" }).run(),
+      scrollToCursor: () => editor?.commands.scrollIntoView(),
+      selectAll: () => editor?.commands.selectAll(),
+      toggleBold: () => editor?.chain().focus().toggleBold().run(),
+      toggleItalic: () => editor?.chain().focus().toggleItalic().run(),
+      toggleTaskList: () => editor?.chain().focus().toggleTaskList().run(),
+    }),
+    [editor],
+  );
 
   return (
     <div
       className={cn(
-        "flex flex-col justify-start items-start relative w-full bg-inherit",
-        // Focus mode: flex-1 to grow and fill space; Normal: h-auto with max-height
+        "flex flex-col justify-start items-start relative w-full bg-inherit overflow-y-auto overflow-x-hidden",
         isFocusMode ? "flex-1" : `h-auto ${EDITOR_HEIGHT.normal}`,
         className,
       )}
+      onClick={(event) => {
+        // In focus mode the wrapper extends below the content; a click on the
+        // empty area should land the caret at the end instead of doing nothing.
+        if (event.target === event.currentTarget) {
+          editor?.commands.focus("end");
+        }
+      }}
     >
-      <textarea
-        className={cn(
-          "w-full text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none placeholder:opacity-70 whitespace-pre-wrap wrap-break-word",
-          // Focus mode: flex-1 h-0 to grow within flex container; Normal: h-full to fill wrapper
-          isFocusMode ? "flex-1 h-0" : "h-full",
-        )}
-        rows={1}
-        placeholder={placeholder}
-        ref={editorRef}
-        onKeyDown={handleKeyDown}
-        onPaste={handleEditorPaste}
-        onInput={handleEditorInput}
-        onCompositionStart={onCompositionStart}
-        onCompositionEnd={onCompositionEnd}
-      ></textarea>
-      <TagSuggestions editorRef={editorRef} editorActions={ref} />
-      <SlashCommands editorRef={editorRef} editorActions={ref} commands={editorCommands} />
+      <RichTextContent editor={editor} className="w-full" />
     </div>
   );
 });

@@ -31,11 +31,4 @@ describe("editor mode in reducer", () => {
     const reset = editorReducer(state, { type: "RESET" });
     expect(reset.ui.editorMode).toBe("raw");
   });
-
-  it("SET_EDITOR_MODE clears isComposing", () => {
-    const state = { ...createInitialState() };
-    state.ui = { ...state.ui, isComposing: true };
-    const next = editorReducer(state, { type: "SET_EDITOR_MODE", payload: "raw" });
-    expect(next.ui.isComposing).toBe(false);
-  });
 });

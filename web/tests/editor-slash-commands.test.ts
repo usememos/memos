@@ -1,7 +1,7 @@
 import { Editor } from "@tiptap/core";
 import { afterEach, describe, expect, it } from "vitest";
-import { buildExtensions } from "@/components/MemoEditor/TiptapEditor/extensions";
-import { filterSlashCommands, slashCommandItems } from "@/components/MemoEditor/TiptapEditor/SlashCommand";
+import { buildExtensions } from "@/components/MemoEditor/Editor/extensions";
+import { filterSlashCommands, slashCommandItems } from "@/components/MemoEditor/Editor/SlashCommand";
 
 let editor: Editor;
 
