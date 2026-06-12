@@ -2,7 +2,7 @@ import { createContext, type Dispatch, type FC, type PropsWithChildren, useConte
 import { editorActions } from "./actions";
 import { editorReducer } from "./reducer";
 import type { EditorAction, EditorState } from "./types";
-import { initialState } from "./types";
+import { createInitialState } from "./types";
 
 interface EditorContextValue {
   state: EditorState;
@@ -25,7 +25,7 @@ interface EditorProviderProps extends PropsWithChildren {
 }
 
 export const EditorProvider: FC<EditorProviderProps> = ({ children, initialEditorState }) => {
-  const [state, dispatch] = useReducer(editorReducer, initialEditorState || initialState);
+  const [state, dispatch] = useReducer(editorReducer, initialEditorState, (provided) => provided ?? createInitialState());
 
   const value = useMemo<EditorContextValue>(
     () => ({

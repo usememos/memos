@@ -1,5 +1,6 @@
 import { uniqBy } from "lodash-es";
 import {
+  CodeXmlIcon,
   FileIcon,
   ImageIcon,
   LinkIcon,
@@ -10,6 +11,7 @@ import {
   MicIcon,
   MoreHorizontalIcon,
   PlusIcon,
+  TypeIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
@@ -30,6 +32,7 @@ import {
 import { useDebouncedEffect } from "@/hooks";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import { setPreferredEditorMode } from "../editorMode";
 import { useFileUpload, useLinkMemo, useLocation } from "../hooks";
 import { useEditorContext } from "../state";
 import type { InsertMenuProps } from "../types";
@@ -132,6 +135,12 @@ const InsertMenu = (props: InsertMenuProps) => {
     setMoreSubmenuOpen(false);
   }, [onToggleFocusMode]);
 
+  const handleToggleEditorMode = useCallback(() => {
+    const next = state.ui.editorMode === "wysiwyg" ? "raw" : "wysiwyg";
+    dispatch(actions.setEditorMode(next));
+    setPreferredEditorMode(next);
+  }, [state.ui.editorMode, actions, dispatch]);
+
   const handleMediaUploadClick = useCallback(() => {
     handleUploadClick("image/*,video/*");
   }, [handleUploadClick]);
@@ -200,6 +209,11 @@ const InsertMenu = (props: InsertMenuProps) => {
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
+          {/* Editor display mode: raw Markdown ↔ rich text (WYSIWYG) */}
+          <DropdownMenuItem onClick={handleToggleEditorMode}>
+            {state.ui.editorMode === "wysiwyg" ? <CodeXmlIcon className="w-4 h-4" /> : <TypeIcon className="w-4 h-4" />}
+            {state.ui.editorMode === "wysiwyg" ? t("editor.switch-to-raw") : t("editor.switch-to-wysiwyg")}
+          </DropdownMenuItem>
           {/* View submenu with Focus Mode */}
           <DropdownMenuSub open={moreSubmenuOpen} onOpenChange={setMoreSubmenuOpen}>
             <DropdownMenuSubTrigger onPointerEnter={handleTriggerEnter} onPointerLeave={handleTriggerLeave}>

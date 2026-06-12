@@ -1,5 +1,6 @@
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
+import type { EditorMode } from "../editorMode";
 import type { LocalFile } from "../types/attachment";
 import type { AudioRecorderPermission, AudioRecorderStatus, EditorAction, EditorState, LoadingKey } from "./types";
 
@@ -100,6 +101,11 @@ export const editorActions = {
   setAudioRecorderError: (value?: string): EditorAction => ({
     type: "SET_AUDIO_RECORDER_ERROR",
     payload: value,
+  }),
+
+  setEditorMode: (mode: EditorMode): EditorAction => ({
+    type: "SET_EDITOR_MODE",
+    payload: mode,
   }),
 
   reset: (): EditorAction => ({

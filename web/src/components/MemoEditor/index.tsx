@@ -21,12 +21,12 @@ import {
   TimestampPopover,
 } from "./components";
 import { FOCUS_MODE_STYLES } from "./constants";
-import type { EditorRefActions } from "./Editor";
 import { useAudioRecorder, useAutoSave, useFocusMode, useKeyboard, useMemoInit } from "./hooks";
 import { errorService, memoService, transcriptionService, validationService } from "./services";
 import { EditorProvider, useEditorContext } from "./state";
 import type { MemoEditorProps } from "./types";
 import type { LocalFile } from "./types/attachment";
+import type { EditorController } from "./types/editorController";
 
 const MemoEditor = (props: MemoEditorProps) => (
   <EditorProvider>
@@ -48,7 +48,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const t = useTranslate();
   const queryClient = useQueryClient();
   const currentUser = useCurrentUser();
-  const editorRef = useRef<EditorRefActions>(null);
+  const editorRef = useRef<EditorController>(null);
   const { state, actions, dispatch } = useEditorContext();
   const { userGeneralSetting } = useAuth();
   const { aiSetting, fetchSetting } = useInstance();
@@ -112,15 +112,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     if (!editor) {
       return;
     }
-
-    const content = editor.getContent();
-    const cursor = editor.getCursorPosition();
-    const beforeCursor = content.slice(0, cursor);
-    const afterCursor = content.slice(cursor);
-    const prefix = beforeCursor.length === 0 || beforeCursor.endsWith("\n\n") ? "" : beforeCursor.endsWith("\n") ? "\n" : "\n\n";
-    const suffix = afterCursor.length === 0 || afterCursor.startsWith("\n\n") ? "" : afterCursor.startsWith("\n") ? "\n" : "\n\n";
-
-    editor.insertText(text, prefix, suffix);
+    editor.insertMarkdown(text);
     editor.scrollToCursor();
   }, []);
 
