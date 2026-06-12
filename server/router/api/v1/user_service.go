@@ -83,14 +83,35 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 			userFind.Username = &username
 		}
 	}
+	
+	limit := normalizePageSize(request.PageSize)
+	limitPlusOne := limit + 1
+	userFind.Limit = &limitPlusOne
+
+	var offset int
+	if request.PageToken != "" {
+		var pageToken v1pb.PageToken
+		if err := unmarshalPageToken(request.PageToken, &pageToken); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
+		}
+		offset = int(pageToken.Offset)
+		if offset < 0 {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: offset must not be negative")
+		}
+		userFind.Offset = &offset
+	}
 
 	users, err := s.Store.ListUsers(ctx, userFind)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list users: %v", err)
 	}
 
-	// TODO: Implement proper ordering, and pagination
-	// For now, return all users with basic structure
+	var hasNextPage bool
+	if len(users) > limit {
+		users = users[:limit]
+		hasNextPage = true
+	}
+
 	response := &v1pb.ListUsersResponse{
 		Users:     []*v1pb.User{},
 		TotalSize: int32(len(users)),
@@ -98,6 +119,15 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 	for _, user := range users {
 		response.Users = append(response.Users, convertUserFromStore(user, currentUser))
 	}
+
+	if hasNextPage {
+		nextPageToken, err := getPageToken(limit, offset+limit)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get next page token: %v", err)
+		}
+		response.NextPageToken = nextPageToken
+	}
+
 	return response, nil
 }
 
