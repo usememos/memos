@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseMarkdown, roundTripMarkdown } from "@/components/MemoEditor/TiptapEditor/markdownCodec";
+import { parseMarkdown, roundTripMarkdown } from "@/components/MemoEditor/Editor/markdownCodec";
 
 function blockTypes(markdown: string): string[] {
   return (parseMarkdown(markdown).content ?? []).map((node) => node.type ?? "");

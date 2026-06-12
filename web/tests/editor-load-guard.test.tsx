@@ -1,6 +1,6 @@
+import { create } from "@bufbuild/protobuf";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import { create } from "@bufbuild/protobuf";
 import { useMemoInit } from "@/components/MemoEditor/hooks";
 import { EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
 import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
@@ -12,7 +12,7 @@ vi.mock("react-hot-toast", () => ({
 }));
 
 const isLosslessMock = vi.hoisted(() => vi.fn());
-vi.mock("@/components/MemoEditor/TiptapEditor/markdownCodec", () => ({
+vi.mock("@/components/MemoEditor/Editor/markdownCodec", () => ({
   isLosslessRoundTrip: isLosslessMock,
 }));
 

@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { parseMarkdown, roundTripMarkdown } from "@/components/MemoEditor/TiptapEditor/markdownCodec";
+import { parseMarkdown, roundTripMarkdown } from "@/components/MemoEditor/Editor/markdownCodec";
 
 const CORPUS_DIR = join(__dirname, "fixtures", "markdown-corpus");
 

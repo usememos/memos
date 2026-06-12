@@ -7,8 +7,6 @@ vi.mock("@/hooks/useUserQueries", () => ({
   useTagCounts: () => ({ data: {} }),
 }));
 
-vi.mock("@/components/MemoEditor/Editor/TagSuggestions", () => ({ default: () => null }));
-vi.mock("@/components/MemoEditor/Editor/SlashCommands", () => ({ default: () => null }));
 // useTranslate returns the key string in tests (no i18next backend initialised).
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 
@@ -23,11 +21,7 @@ function ModeProbe() {
       >
         {state.ui.editorMode}
       </button>
-      <button
-        type="button"
-        data-testid="probe-set-content"
-        onClick={() => dispatch(actions.updateContent("from **wysiwyg**"))}
-      >
+      <button type="button" data-testid="probe-set-content" onClick={() => dispatch(actions.updateContent("from **wysiwyg**"))}>
         set content
       </button>
     </>
@@ -103,7 +97,7 @@ describe("editor mode switching", () => {
 
   it("focuses the incoming editor after a toggle", () => {
     localStorage.setItem("memos-editor-mode", "raw");
-    // Tiptap's focus command schedules the actual DOM focus via
+    // The WYSIWYG editor's focus command schedules the actual DOM focus via
     // requestAnimationFrame. Mock rAF to fire synchronously so we can assert
     // that HTMLElement.prototype.focus() was called within the act() boundary.
     const pendingRafs: FrameRequestCallback[] = [];
@@ -119,7 +113,7 @@ describe("editor mode switching", () => {
     act(() => {
       fireEvent.click(screen.getByTestId("probe-toggle")); // raw → wysiwyg
     });
-    // Flush pending animation frames (captures Tiptap's deferred view.focus()).
+    // Flush pending animation frames (captures the editor's deferred view.focus()).
     act(() => {
       pendingRafs.splice(0).forEach((cb) => cb(0));
     });

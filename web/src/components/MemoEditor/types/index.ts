@@ -3,14 +3,11 @@
 export type {
   EditorContentProps,
   EditorMetadataProps,
-  EditorProps,
   EditorToolbarProps,
   FocusModeExitButtonProps,
   FocusModeOverlayProps,
   InsertMenuProps,
   MemoEditorProps,
-  SlashCommandsProps,
-  TagSuggestionsProps,
   VisibilitySelectorProps,
 } from "./components";
 export type { EditorController } from "./editorController";

@@ -1,7 +1,7 @@
 /**
- * The contract both memo editors (raw textarea and Tiptap WYSIWYG) implement.
+ * The contract both memo editors (raw textarea and WYSIWYG) implement.
  * Everything outside an editor implementation must talk markdown through this
- * interface and never reach for editor-specific APIs like EditorRefActions.
+ * interface and never reach for an editor's internal DOM/ProseMirror APIs.
  */
 export interface EditorController {
   focus(): void;

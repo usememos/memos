@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import InsertMenu from "@/components/MemoEditor/Toolbar/InsertMenu";
 import { EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
+import InsertMenu from "@/components/MemoEditor/Toolbar/InsertMenu";
 
 // useTranslate returns the i18n key directly (no i18next backend in tests).
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
@@ -36,29 +36,34 @@ function renderInsertMenu() {
   );
 }
 
+// Opens the "+" dropdown, then its "More" submenu, and returns the
+// "WYSIWYG Editor" checkbox item.
+function openWysiwygCheckbox() {
+  // Open the dropdown (keyboard open is the most reliable path in jsdom).
+  fireEvent.keyDown(screen.getByRole("button"), { key: "Enter" });
+  // Open the "More" submenu (controlled open state toggles on trigger click).
+  fireEvent.click(screen.getByText("common.more"));
+  return screen.getByText("editor.wysiwyg-editor");
+}
+
 describe("InsertMenu editor-mode toggle", () => {
-  it("switches mode and persists the preference when the item is selected", () => {
+  it("unchecking the WYSIWYG item switches to raw and persists the preference", () => {
     localStorage.clear();
     renderInsertMenu();
     expect(screen.getByTestId("mode").textContent).toBe("wysiwyg");
 
-    // Open the dropdown (keyboard open is the most reliable path in jsdom).
-    fireEvent.keyDown(screen.getByRole("button"), { key: "Enter" });
-
-    // Default mode is wysiwyg, so the item offers to switch to raw.
-    fireEvent.click(screen.getByText("editor.switch-to-raw"));
+    fireEvent.click(openWysiwygCheckbox());
 
     expect(screen.getByTestId("mode").textContent).toBe("raw");
     expect(localStorage.getItem("memos-editor-mode")).toBe("raw");
   });
 
-  it("offers to switch back to rich text when already in raw mode", () => {
+  it("checking the WYSIWYG item switches back to rich text from raw mode", () => {
     localStorage.setItem("memos-editor-mode", "raw");
     renderInsertMenu();
     expect(screen.getByTestId("mode").textContent).toBe("raw");
 
-    fireEvent.keyDown(screen.getByRole("button"), { key: "Enter" });
-    fireEvent.click(screen.getByText("editor.switch-to-wysiwyg"));
+    fireEvent.click(openWysiwygCheckbox());
 
     expect(screen.getByTestId("mode").textContent).toBe("wysiwyg");
     expect(localStorage.getItem("memos-editor-mode")).toBe("wysiwyg");

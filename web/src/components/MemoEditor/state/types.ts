@@ -23,7 +23,6 @@ export interface EditorState {
       uploading: boolean;
       loading: boolean;
     };
-    isComposing: boolean;
     editorMode: EditorMode;
   };
   timestamps: {
@@ -54,7 +53,6 @@ export type EditorAction =
   | { type: "CLEAR_LOCAL_FILES" }
   | { type: "TOGGLE_FOCUS_MODE" }
   | { type: "SET_LOADING"; payload: { key: LoadingKey; value: boolean } }
-  | { type: "SET_COMPOSING"; payload: boolean }
   | { type: "SET_TIMESTAMPS"; payload: Partial<EditorState["timestamps"]> }
   | { type: "SET_AUDIO_RECORDER_SUPPORT"; payload: boolean }
   | { type: "SET_AUDIO_RECORDER_PERMISSION"; payload: AudioRecorderPermission }
@@ -82,7 +80,6 @@ const defaultState: EditorState = {
       uploading: false,
       loading: false,
     },
-    isComposing: false,
     editorMode: "wysiwyg",
   },
   timestamps: {

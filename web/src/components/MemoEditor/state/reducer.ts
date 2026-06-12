@@ -107,15 +107,6 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         },
       };
 
-    case "SET_COMPOSING":
-      return {
-        ...state,
-        ui: {
-          ...state.ui,
-          isComposing: action.payload,
-        },
-      };
-
     case "SET_TIMESTAMPS":
       return {
         ...state,
@@ -177,9 +168,6 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         ui: {
           ...state.ui,
           editorMode: action.payload,
-          // A composition can't survive an editor swap; a stuck flag would
-          // disable the textarea's IME-guarded features until the next IME cycle.
-          isComposing: false,
         },
       };
 

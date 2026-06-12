@@ -1,8 +1,8 @@
-import type { Editor } from "@tiptap/core";
 import { act, fireEvent, render } from "@testing-library/react";
+import type { Editor as EditorInstance } from "@tiptap/core";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
-import TiptapEditor from "@/components/MemoEditor/TiptapEditor";
+import Editor from "@/components/MemoEditor/Editor";
 import type { EditorController } from "@/components/MemoEditor/types/editorController";
 
 vi.mock("@/hooks/useUserQueries", async (importOriginal) => ({
@@ -14,11 +14,11 @@ function setup(initialContent = "") {
   const ref = createRef<EditorController>();
   const onContentChange = vi.fn();
   const { container } = render(
-    <TiptapEditor ref={ref} initialContent={initialContent} placeholder="memo" onContentChange={onContentChange} onPaste={vi.fn()} />,
+    <Editor ref={ref} initialContent={initialContent} placeholder="memo" onContentChange={onContentChange} onPaste={vi.fn()} />,
   );
-  // Tiptap exposes the editor instance on the ProseMirror DOM node; tests use
-  // it only where the EditorController surface cannot produce the state.
-  const editor = (container.querySelector(".ProseMirror") as HTMLElement & { editor?: Editor }).editor as Editor;
+  // The editor instance is exposed on the ProseMirror DOM node; tests use it
+  // only where the EditorController surface cannot produce the state.
+  const editor = (container.querySelector(".ProseMirror") as HTMLElement & { editor?: EditorInstance }).editor as EditorInstance;
   return { ref, onContentChange, editor };
 }
 
@@ -28,14 +28,14 @@ function setupRerenderable(initialContent = "") {
   const ref = createRef<EditorController>();
   const onContentChange = vi.fn();
   const renderEditor = (content: string) => (
-    <TiptapEditor ref={ref} initialContent={content} placeholder="memo" onContentChange={onContentChange} onPaste={vi.fn()} />
+    <Editor ref={ref} initialContent={content} placeholder="memo" onContentChange={onContentChange} onPaste={vi.fn()} />
   );
   const { rerender: rtlRerender } = render(renderEditor(initialContent));
   const rerender = (content: string) => act(() => rtlRerender(renderEditor(content)));
   return { ref, onContentChange, rerender };
 }
 
-describe("TiptapEditor EditorController", () => {
+describe("Editor EditorController", () => {
   it("loads markdown and serializes it back", () => {
     const { ref } = setup("# Title\n\nSome **bold** text.");
     expect(ref.current?.getMarkdown()).toBe("# Title\n\nSome **bold** text.");

@@ -1,6 +1,5 @@
 import { uniqBy } from "lodash-es";
 import {
-  CodeXmlIcon,
   FileIcon,
   ImageIcon,
   LinkIcon,
@@ -11,7 +10,6 @@ import {
   MicIcon,
   MoreHorizontalIcon,
   PlusIcon,
-  TypeIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
@@ -20,6 +18,7 @@ import { useReverseGeocoding } from "@/components/map/useReverseGeocoding";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
@@ -135,11 +134,14 @@ const InsertMenu = (props: InsertMenuProps) => {
     setMoreSubmenuOpen(false);
   }, [onToggleFocusMode]);
 
-  const handleToggleEditorMode = useCallback(() => {
-    const next = state.ui.editorMode === "wysiwyg" ? "raw" : "wysiwyg";
-    dispatch(actions.setEditorMode(next));
-    setPreferredEditorMode(next);
-  }, [state.ui.editorMode, actions, dispatch]);
+  const handleEditorModeChange = useCallback(
+    (checked: boolean) => {
+      const next = checked ? "wysiwyg" : "raw";
+      dispatch(actions.setEditorMode(next));
+      setPreferredEditorMode(next);
+    },
+    [actions, dispatch],
+  );
 
   const handleMediaUploadClick = useCallback(() => {
     handleUploadClick("image/*,video/*");
@@ -209,12 +211,7 @@ const InsertMenu = (props: InsertMenuProps) => {
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
-          {/* Editor display mode: raw Markdown ↔ rich text (WYSIWYG) */}
-          <DropdownMenuItem onClick={handleToggleEditorMode}>
-            {state.ui.editorMode === "wysiwyg" ? <CodeXmlIcon className="w-4 h-4" /> : <TypeIcon className="w-4 h-4" />}
-            {state.ui.editorMode === "wysiwyg" ? t("editor.switch-to-raw") : t("editor.switch-to-wysiwyg")}
-          </DropdownMenuItem>
-          {/* View submenu with Focus Mode */}
+          {/* View submenu with Focus Mode + editor display mode */}
           <DropdownMenuSub open={moreSubmenuOpen} onOpenChange={setMoreSubmenuOpen}>
             <DropdownMenuSubTrigger onPointerEnter={handleTriggerEnter} onPointerLeave={handleTriggerLeave}>
               <MoreHorizontalIcon className="w-4 h-4" />
@@ -225,6 +222,10 @@ const InsertMenu = (props: InsertMenuProps) => {
                 <Maximize2Icon className="w-4 h-4" />
                 {t("editor.focus-mode")}
               </DropdownMenuItem>
+              {/* Editor display mode: checked = rich text (WYSIWYG), unchecked = raw Markdown */}
+              <DropdownMenuCheckboxItem checked={state.ui.editorMode === "wysiwyg"} onCheckedChange={handleEditorModeChange}>
+                {t("editor.wysiwyg-editor")}
+              </DropdownMenuCheckboxItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
           <div className="px-2 py-1 text-xs text-muted-foreground opacity-80">{t("editor.slash-commands")}</div>

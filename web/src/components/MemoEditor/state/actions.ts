@@ -68,11 +68,6 @@ export const editorActions = {
     payload: { key, value },
   }),
 
-  setComposing: (value: boolean): EditorAction => ({
-    type: "SET_COMPOSING",
-    payload: value,
-  }),
-
   setTimestamps: (timestamps: Partial<EditorState["timestamps"]>): EditorAction => ({
     type: "SET_TIMESTAMPS",
     payload: timestamps,
