@@ -4,7 +4,8 @@
     "description": "Memos 是一个隐私优先、轻量级的笔记解决方案，可以轻松捕捉和分享您的想法。",
     "documents": "文档",
     "github-repository": "GitHub 仓库",
-    "official-website": "官网"
+    "official-website": "官网",
+    "media": "媒体"
   },
   "auth": {
     "create-your-account": "创建您的账户",
@@ -170,7 +171,9 @@
       "trigger": "录制音频",
       "unsupported": "不支持录音",
       "unsupported-description": "此浏览器无法录制备忘录编辑器中的音频。"
-    }
+    },
+    "unsupported-syntax-raw-mode": "此备忘包含富文本编辑器无法安全编辑的语法，已切换到原始 Markdown 模式。",
+    "wysiwyg-editor": "所见即所得编辑器"
   },
   "inbox": {
     "failed-to-load": "加载失败",
@@ -262,6 +265,13 @@
       "share": "分享",
       "shared-by": "由 {{creator}} 分享",
       "title": "分享这份备忘录"
+    },
+    "count-memos-updated-in-date": "{{date}} 更新了 {{count}} 条{{memos}}",
+    "task-actions": {
+      "check-all": "全部完成",
+      "title": "任务",
+      "uncheck-all": "全部取消完成",
+      "updated": "任务已更新"
     }
   },
   "message": {
@@ -299,7 +309,7 @@
         "file-name": "文件名",
         "file-name-placeholder": "文件名",
         "link": "链接",
-        "link-placeholder": "https://the.link.to/your/resource",
+        "link-placeholder": "https://example.com/your/resource",
         "option": "外部链接",
         "type": "类型",
         "type-placeholder": "文件类型"
@@ -359,11 +369,11 @@
     },
     "ai": {
       "add-provider": "添加 provider",
-      "api-key": "API key",
+      "api-key": "API 密钥",
       "api-key-required": "API key 不能为空。",
       "byok-description": "使用你自己的 OpenAI 或 Gemini 账号 API key。Memos 会从本实例服务器直接调用 provider。",
       "byok-key-note": "使用你在 provider 账号中创建的 key；Memos 不提供共享 AI 凭据。",
-      "byok-label": "BYOK",
+      "byok-label": "自带密钥",
       "byok-model-note": "Memos 会为音频转写等功能选择内置支持的模型。",
       "byok-storage-note": "Key 保存在本实例中，加载设置时只返回脱敏提示。",
       "byok-title": "使用你自己的 AI 账号",
@@ -382,7 +392,25 @@
       "provider-title": "Provider 名称",
       "provider-title-required": "Provider 名称不能为空。",
       "provider-type": "Provider 类型",
-      "providers": "Providers"
+      "providers": "供应商",
+      "integrations-description": "由实例管理员提供的供应商密钥，用于服务端 AI 功能。",
+      "integrations-title": "AI 集成",
+      "transcription-description": "在备忘编辑器中录制音频时使用的语音转文字设置。",
+      "transcription-empty-providers": "请先添加 AI 集成以启用语音转写。",
+      "transcription-language": "默认语言",
+      "transcription-language-help": "ISO 639-1 语言代码（如 en、de、zh）。留空则自动检测。",
+      "transcription-language-placeholder": "自动检测",
+      "transcription-model": "模型",
+      "transcription-model-help": "自由填写。填入供应商的模型标识符，如 whisper-1、gpt-4o-transcribe、whisper-large-v3-turbo。",
+      "transcription-model-placeholder-gemini": "gemini-2.5-flash, gemini-2.5-pro",
+      "transcription-model-placeholder-openai": "whisper-1, gpt-4o-transcribe, gpt-4o-mini-transcribe, gpt-4o-transcribe-diarize",
+      "transcription-no-provider": "无 — 语音转写已禁用",
+      "transcription-prompt": "提示词",
+      "transcription-prompt-help": "用于改进专有名词和专业术语的拼写。OpenAI Whisper 将此作为前一个片段的延续；Gemini 将其视为系统指令。",
+      "transcription-prompt-placeholder": "人名：张三、李四。术语：Kubernetes、OAuth。",
+      "transcription-provider": "供应商",
+      "transcription-title": "语音转写",
+      "transcription-warning-no-key": "所选供应商未设置 API 密钥。请在上方编辑集成信息以添加密钥。"
     },
     "preference": {
       "appearance-description": "选择当前账号使用的界面语言和外观主题。",
@@ -438,9 +466,9 @@
       "oauth-configuration": "OAuth 配置",
       "oauth-configuration-description": "填写 OAuth 客户端凭据，以及登录流程中使用的 provider 端点。",
       "provider": "提供程序",
-      "provider-id": "Provider ID",
+      "provider-id": "供应商 ID",
       "provider-id-description": "仅支持小写字母、数字和连字符。该值会成为 provider 资源名的一部分。",
-      "provider-uid": "UID",
+      "provider-uid": "用户 UID",
       "redirect-url": "重定向链接",
       "redirect-url-description": "将这个回调地址注册到身份提供程序中，授权码流程才能正确返回。",
       "scopes": "范围",
@@ -452,10 +480,10 @@
       "template": "模板",
       "template-description": "先选择一个 provider 预设，再按你的租户信息调整凭据和端点。",
       "mapping": "映射",
-      "mapping-avatar-short": "avatar",
-      "mapping-display-name-short": "name",
-      "mapping-email-short": "email",
-      "mapping-identifier-short": "id",
+      "mapping-avatar-short": "头像",
+      "mapping-display-name-short": "名称",
+      "mapping-email-short": "邮箱",
+      "mapping-identifier-short": "ID",
       "mapping-none": "未配置",
       "unlink-success": "已解绑 {{name}}。",
       "label": "单点登录",
@@ -680,6 +708,59 @@
       "invalid-regex": "无效或不安全的正则表达式模式。",
       "used-count": "{{count}} 条备忘录",
       "using-default-color": "使用默认颜色。"
+    },
+    "notification": {
+      "email-description": "备忘评论和提及时发送邮件副本。Gmail 可使用 smtp.gmail.com，端口 587 并开启 STARTTLS。",
+      "email-enabled": "启用邮件通知",
+      "email-enabled-description": "邮件通知将在应用内通知的基础上额外发送。请先填写下方必填项再启用。",
+      "email-title": "邮件发送",
+      "from-email": "发件邮箱",
+      "from-email-description": "通知邮件中显示的发件人地址。使用 Gmail 时填写同一个 Gmail 账号。",
+      "from-name": "发件名称",
+      "from-name-description": "发件人地址旁显示的显示名称。留空则只显示邮箱地址。",
+      "label": "通知",
+      "reply-to": "回复地址",
+      "reply-to-description": "通知邮件的回复地址。留空则回复将发送至发件邮箱。",
+      "requirement-gmail": "Gmail 必填",
+      "requirement-optional": "可选",
+      "requirement-recommended": "建议",
+      "requirement-required": "必填",
+      "smtp-host": "SMTP 主机",
+      "smtp-host-description": "SMTP 服务器主机名。Gmail 使用 smtp.gmail.com。",
+      "smtp-password": "SMTP 密码",
+      "smtp-password-description": "SMTP 密码或应用专用令牌。Gmail 需要 Google 应用密码，而非账号密码。",
+      "smtp-password-placeholder-existing": "留空以保留当前密码",
+      "smtp-password-preserve-description": "留空以保留现有 SMTP 密码。仅在需要更换时输入新的应用密码。",
+      "smtp-port": "SMTP 端口",
+      "smtp-port-description": "Gmail 和大多数供应商使用 587 端口搭配 STARTTLS。仅在使用隐式 TLS 时用 465 端口。",
+      "smtp-username": "SMTP 用户名",
+      "smtp-username-description": "认证用户名。Gmail 需填写完整的 Gmail 地址。",
+      "test-email": "发送测试邮件",
+      "test-email-missing-recipient": "请在发送测试邮件前为您的账户设置邮箱地址。",
+      "test-email-sending": "正在发送测试邮件…",
+      "test-email-success": "测试邮件已发送至 {{email}}。",
+      "use-ssl": "使用 SSL/TLS",
+      "use-ssl-description": "使用隐式 TLS，通常搭配 465 端口。若在 587 端口使用 STARTTLS 请关闭此选项。",
+      "use-tls": "使用 STARTTLS",
+      "use-tls-description": "通过 STARTTLS 升级 SMTP 连接。Gmail 使用 587 端口时保持开启。"
+    },
+    "resource-stats": {
+      "database": {
+        "driver": "驱动",
+        "size": "大小",
+        "title": "数据库"
+      },
+      "description": "此实例的资源使用情况。",
+      "label": "资源",
+      "last-updated": "{{ago}} 前更新",
+      "load-error": "加载统计数据失败",
+      "local-storage": {
+        "size": "数据目录大小",
+        "title": "本地存储"
+      },
+      "refresh": "刷新",
+      "title": "资源统计",
+      "unknown": "未知"
     }
   },
   "tag": {
@@ -710,5 +791,37 @@
     "connected": "已连接",
     "connecting": "正在连接",
     "disconnected": "已断开"
+  },
+  "attachment-library": {
+    "actions": {
+      "open": "打开",
+      "retry": "重试"
+    },
+    "empty": {
+      "audio": "暂无音频附件",
+      "documents": "暂无文档附件",
+      "media": "暂无媒体附件"
+    },
+    "errors": {
+      "load": "加载附件失败"
+    },
+    "labels": {
+      "live": "实况",
+      "live-photo": "实况照片",
+      "memo": "备忘",
+      "not-linked": "未关联",
+      "unknown-date": "未知日期",
+      "unused": "未使用"
+    },
+    "tabs": {
+      "audio": "音频",
+      "documents": "文档",
+      "media": "媒体"
+    },
+    "unused": {
+      "confirm-description": "这将删除所有未关联到任何备忘的上传文件。",
+      "description": "这些文件从未附加到任何备忘。可在此查看或删除。",
+      "title": "未关联的上传"
+    }
   }
 }
