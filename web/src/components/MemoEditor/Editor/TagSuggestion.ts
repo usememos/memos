@@ -27,10 +27,16 @@ export const TagSuggestion = Extension.create<TagSuggestionOptions>({
         char: "#",
         allowSpaces: false,
         items: ({ query }) => {
-          const tags = this.options.getTags();
+          // Require at least one char after `#` so a bare `#` (or `# ` heading)
+          // doesn't pop the tag menu and conflict with markdown headings.
+          if (query.length === 0) {
+            return [];
+          }
           const q = query.toLowerCase();
-          const filtered = q ? tags.filter((tag) => tag.toLowerCase().includes(q)) : tags;
-          return filtered.slice(0, MAX_SUGGESTIONS);
+          return this.options
+            .getTags()
+            .filter((tag) => tag.toLowerCase().includes(q))
+            .slice(0, MAX_SUGGESTIONS);
         },
         command: ({ editor, range, props: tag }) => {
           editor

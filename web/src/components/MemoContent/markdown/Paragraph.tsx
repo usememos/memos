@@ -1,4 +1,5 @@
 import type { Element } from "hast";
+import { markdownStyles } from "@/lib/markdownStyles";
 import { cn } from "@/lib/utils";
 import LinkMetadataCard from "../LinkMetadataCard";
 import { useMarkdownRenderContext } from "../MarkdownRenderContext";
@@ -47,7 +48,7 @@ export const Paragraph = ({ children, className, node, ...props }: ParagraphProp
   const { blockDepth } = useMarkdownRenderContext();
   const href = blockDepth === 0 ? getSingleLinkHref(node) : undefined;
   const paragraph = (
-    <p className={cn("my-0 mb-2 leading-6", className)} {...props}>
+    <p className={cn(markdownStyles.paragraph, className)} {...props}>
       {children}
     </p>
   );

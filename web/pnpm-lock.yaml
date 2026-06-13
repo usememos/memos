@@ -68,6 +68,9 @@ importers:
       '@tiptap/core':
         specifier: 3.26.0
         version: 3.26.0(@tiptap/pm@3.26.0)
+      '@tiptap/extension-heading':
+        specifier: 3.26.0
+        version: 3.26.0(@tiptap/core@3.26.0(@tiptap/pm@3.26.0))
       '@tiptap/extension-list':
         specifier: 3.26.0
         version: 3.26.0(@tiptap/core@3.26.0(@tiptap/pm@3.26.0))(@tiptap/pm@3.26.0)

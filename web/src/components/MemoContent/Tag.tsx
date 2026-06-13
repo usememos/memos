@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { type MemoFilter, stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { colorToHex } from "@/lib/color";
+import { tagStyles } from "@/lib/markdownStyles";
 import { findTagMetadata } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
@@ -66,11 +67,7 @@ export const Tag: React.FC<TagProps> = ({ "data-tag": dataTag, children, classNa
 
   return (
     <span
-      className={cn(
-        "inline-flex items-center align-baseline px-1.5 py-0.5 text-[0.9em] leading-none font-normal rounded-full border cursor-pointer transition-opacity hover:opacity-75",
-        !bgHex && "border-primary text-primary bg-primary/15",
-        className,
-      )}
+      className={cn(tagStyles.base, "cursor-pointer transition-opacity hover:opacity-75", !bgHex && tagStyles.defaultColor, className)}
       style={tagStyle}
       data-tag={tag}
       {...props}

@@ -2,6 +2,11 @@ import type { MarkdownToken } from "@tiptap/core";
 import { InputRule, Mark, mergeAttributes } from "@tiptap/core";
 import type { TokenizerThis, Tokens } from "marked";
 import { marked } from "marked";
+import { tagStyles } from "@/lib/markdownStyles";
+
+// Default tag pill, shared with the read-only view (MemoContent/Tag.tsx).
+// Computed once — renderHTML runs on every view update.
+const TAG_CLASS = `${tagStyles.base} ${tagStyles.defaultColor}`;
 
 // Mirrors the renderer's tag lexer (web/src/utils/remark-plugins/remark-tag.ts):
 // letters, numbers, symbols, plus _ - / &, max 100 chars. Keep the two in sync.
@@ -123,7 +128,7 @@ export const Tag = Mark.create({
     return [
       "span",
       mergeAttributes(HTMLAttributes, {
-        class: "inline-block rounded bg-accent text-accent-foreground px-1",
+        class: TAG_CLASS,
       }),
       0,
     ];
