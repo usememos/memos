@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.30.0](https://github.com/usememos/memos/compare/v0.29.1...v0.30.0) (2026-06-13)
+
+
+### Features
+
+* add OpenAPI-driven MCP support ([#6026](https://github.com/usememos/memos/issues/6026)) ([777d227](https://github.com/usememos/memos/commit/777d227eb992c4feccd5d78c781cf8e9094e38de))
+* add optional webhook signing secret (Standard Webhooks HMAC-SHA256) ([#6013](https://github.com/usememos/memos/issues/6013)) ([063a444](https://github.com/usememos/memos/commit/063a44498d49ac44c439ad6b8f7f617485fe6f5d))
+* **i18n:** add searchable locale picker ([4183985](https://github.com/usememos/memos/commit/418398587cef90151745ba0dbc51cef4762045ca))
+* **i18n:** expand European locale coverage ([a47d049](https://github.com/usememos/memos/commit/a47d04954e75c54491138601c72f1c0cbe140f3c))
+* **settings:** move tag metadata to user settings ([#6017](https://github.com/usememos/memos/issues/6017)) ([9eabb55](https://github.com/usememos/memos/commit/9eabb554d5631ef3af9455cda654fefa1317dfac))
+* **web:** markdown WYSIWYG editor with raw-mode toggle ([#6030](https://github.com/usememos/memos/issues/6030)) ([797f1ff](https://github.com/usememos/memos/commit/797f1ff15dcb94543ce15462f7cfc8d292f2ffa7))
+
+
+### Bug Fixes
+
+* **editor:** wire Ctrl+B and Ctrl+I markdown shortcuts to textarea ([#6016](https://github.com/usememos/memos/issues/6016)) ([8f13773](https://github.com/usememos/memos/commit/8f1377324f9c59505a39d395c09ff7536459911a))
+* **markdown:** ignore tags inside links ([a50ce09](https://github.com/usememos/memos/commit/a50ce09e8159836aed1a97fa717488283378200f))
+* **memo:** preserve expanded todo list state ([ecbe2ab](https://github.com/usememos/memos/commit/ecbe2ab7977fcd3521aeae1226e816a9dc2a6a40))
+* **webhook:** fail loud on malformed signing secret and add tests ([f497f00](https://github.com/usememos/memos/commit/f497f009ceb6e2c51b8805dabedb0494a0d65e5b))
+* **web:** improve mobile control spacing ([1052c04](https://github.com/usememos/memos/commit/1052c04d33034b229615a257436d4dc242cf72b2))
+
 ## [0.29.1](https://github.com/usememos/memos/compare/v0.29.0...v0.29.1) (2026-06-04)
 
 
