@@ -85,14 +85,36 @@ const shortcutExamples = [
     description: "Search text inside memo content.",
     icon: SearchIcon,
   },
+  {
+    title: "Starts with",
+    filter: 'content.startsWith("TODO")',
+    description: "Memos whose content begins with text (also endsWith).",
+    icon: SearchIcon,
+  },
+  {
+    title: "Regex match",
+    filter: 'content.matches("v[0-9]+")',
+    description: "Match content with a regular expression.",
+    icon: FilterIcon,
+  },
+  {
+    title: "All tags match",
+    filter: 'tags.all(t, t.startsWith("work/"))',
+    description: "Every tag must satisfy the predicate (tagged memos only).",
+    icon: TagsIcon,
+  },
 ];
 
 const filterFields = [
   "content.contains(...)",
+  "content.startsWith(...)",
+  "content.endsWith(...)",
+  "content.matches(...)",
   "visibility",
   "pinned",
   "tag in [...]",
   "tags.exists(...)",
+  "tags.all(...)",
   "has_task_list",
   "has_incomplete_tasks",
   "has_link",

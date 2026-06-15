@@ -31,6 +31,10 @@ func NewDB(profile *profile.Profile) (store.Driver, error) {
 		return nil, errors.Wrap(err, "failed to register sqlite unicode lower function")
 	}
 
+	if err := ensureRegexpRegistered(); err != nil {
+		return nil, errors.Wrap(err, "failed to register sqlite regexp function")
+	}
+
 	// Connect to the database with some sane settings:
 	// - No shared-cache: it's obsolete; WAL journal mode is a better solution.
 	// - No foreign key constraints: it's currently disabled by default, but it's a

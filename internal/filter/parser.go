@@ -87,7 +87,13 @@ func buildCallCondition(call *exprv1.Expr_Call, schema Schema) (Condition, error
 	case "@in":
 		return buildInCondition(call, schema)
 	case "contains":
-		return buildContainsCondition(call, schema)
+		return buildTextMatchCondition(call, schema, TextMatchContains)
+	case "startsWith":
+		return buildTextMatchCondition(call, schema, TextMatchPrefix)
+	case "endsWith":
+		return buildTextMatchCondition(call, schema, TextMatchSuffix)
+	case "matches":
+		return buildMatchesCondition(call, schema)
 	default:
 		val, ok, err := evaluateBool(call)
 		if err != nil {
@@ -193,9 +199,9 @@ func buildInCondition(call *exprv1.Expr_Call, schema Schema) (Condition, error) 
 	return nil, errors.New("invalid use of in operator")
 }
 
-func buildContainsCondition(call *exprv1.Expr_Call, schema Schema) (Condition, error) {
+func buildTextMatchCondition(call *exprv1.Expr_Call, schema Schema, mode TextMatchMode) (Condition, error) {
 	if call.Target == nil {
-		return nil, errors.New("contains requires a target")
+		return nil, errors.New("text match requires a target")
 	}
 	targetName, err := getIdentName(call.Target)
 	if err != nil {
@@ -207,22 +213,56 @@ func buildContainsCondition(call *exprv1.Expr_Call, schema Schema) (Condition, e
 		return nil, errors.Errorf("unknown identifier %q", targetName)
 	}
 	if !field.SupportsContains {
-		return nil, errors.Errorf("identifier %q does not support contains()", targetName)
+		return nil, errors.Errorf("identifier %q does not support text matching", targetName)
 	}
 	if len(call.Args) != 1 {
-		return nil, errors.New("contains expects exactly one argument")
+		return nil, errors.New("text match expects exactly one argument")
 	}
 	value, err := getConstValue(call.Args[0])
 	if err != nil {
-		return nil, errors.Wrap(err, "contains only supports literal arguments")
+		return nil, errors.Wrap(err, "text match only supports literal arguments")
 	}
 	str, ok := value.(string)
 	if !ok {
-		return nil, errors.New("contains argument must be a string")
+		return nil, errors.New("text match argument must be a string")
 	}
-	return &ContainsCondition{
+	return &TextMatchCondition{
 		Field: targetName,
+		Mode:  mode,
 		Value: str,
+	}, nil
+}
+
+func buildMatchesCondition(call *exprv1.Expr_Call, schema Schema) (Condition, error) {
+	if call.Target == nil {
+		return nil, errors.New("matches requires a target")
+	}
+	targetName, err := getIdentName(call.Target)
+	if err != nil {
+		return nil, err
+	}
+
+	field, ok := schema.Field(targetName)
+	if !ok {
+		return nil, errors.Errorf("unknown identifier %q", targetName)
+	}
+	if !field.SupportsContains {
+		return nil, errors.Errorf("identifier %q does not support matches()", targetName)
+	}
+	if len(call.Args) != 1 {
+		return nil, errors.New("matches expects exactly one argument")
+	}
+	value, err := getConstValue(call.Args[0])
+	if err != nil {
+		return nil, errors.Wrap(err, "matches only supports literal arguments")
+	}
+	pattern, ok := value.(string)
+	if !ok {
+		return nil, errors.New("matches argument must be a string")
+	}
+	return &RegexCondition{
+		Field:   targetName,
+		Pattern: pattern,
 	}, nil
 }
 
@@ -466,10 +506,10 @@ func detectComprehensionKind(comp *exprv1.Expr_Comprehension) (ComprehensionKind
 		}
 	}
 
-	// all() starts with true and uses AND (&&) - not supported
+	// all() starts with true and uses AND (&&) in the loop step.
 	if accuInit.GetBoolValue() {
 		if step := comp.LoopStep.GetCallExpr(); step != nil && step.Function == "_&&_" {
-			return "", errors.New("all() comprehension is not supported; use exists() instead")
+			return ComprehensionAll, nil
 		}
 	}
 

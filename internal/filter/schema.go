@@ -256,6 +256,7 @@ func NewSchema() Schema {
 		cel.Variable("has_code", cel.BoolType),
 		cel.Variable("has_incomplete_tasks", cel.BoolType),
 		nowFunction,
+		cel.ASTValidators(cel.ValidateRegexLiterals()),
 	}
 
 	return Schema{
@@ -277,11 +278,12 @@ func NewAttachmentSchema() Schema {
 			Expressions:      map[DialectName]string{},
 		},
 		"mime_type": {
-			Name:        "mime_type",
-			Kind:        FieldKindScalar,
-			Type:        FieldTypeString,
-			Column:      Column{Table: "attachment", Name: "type"},
-			Expressions: map[DialectName]string{},
+			Name:             "mime_type",
+			Kind:             FieldKindScalar,
+			Type:             FieldTypeString,
+			Column:           Column{Table: "attachment", Name: "type"},
+			SupportsContains: true,
+			Expressions:      map[DialectName]string{},
 		},
 		"create_time": {
 			Name:   "create_time",
@@ -315,6 +317,7 @@ func NewAttachmentSchema() Schema {
 		cel.Variable("create_time", cel.IntType),
 		cel.Variable("memo_id", cel.AnyType),
 		nowFunction,
+		cel.ASTValidators(cel.ValidateRegexLiterals()),
 	}
 
 	return Schema{

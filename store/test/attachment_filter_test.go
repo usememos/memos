@@ -35,6 +35,42 @@ func TestAttachmentFilterFilenameContains(t *testing.T) {
 	require.Len(t, attachments, 0)
 }
 
+func TestAttachmentFilterFilenameEndsWith(t *testing.T) {
+	t.Parallel()
+	tc := NewAttachmentFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("report.pdf").MimeType("application/pdf"))
+	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("photo.png").MimeType("image/png"))
+
+	got := tc.ListWithFilter(`filename.endsWith(".pdf")`)
+	require.Len(t, got, 1)
+	require.Equal(t, "report.pdf", got[0].Filename)
+
+	// matches() on mime_type, anchored.
+	got = tc.ListWithFilter(`mime_type.matches("^image/")`)
+	require.Len(t, got, 1)
+	require.Equal(t, "photo.png", got[0].Filename)
+}
+
+func TestAttachmentFilterFilenameStartsWith(t *testing.T) {
+	t.Parallel()
+	tc := NewAttachmentFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("invoice-2026.pdf").MimeType("application/pdf"))
+	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("photo.png").MimeType("image/png"))
+
+	got := tc.ListWithFilter(`filename.startsWith("invoice")`)
+	require.Len(t, got, 1)
+	require.Equal(t, "invoice-2026.pdf", got[0].Filename)
+
+	// mime_type prefix matching (newly enabled).
+	got = tc.ListWithFilter(`mime_type.startsWith("image/")`)
+	require.Len(t, got, 1)
+	require.Equal(t, "photo.png", got[0].Filename)
+}
+
 func TestAttachmentFilterFilenameSpecialCharacters(t *testing.T) {
 	t.Parallel()
 	tc := NewAttachmentFilterTestContext(t)

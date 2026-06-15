@@ -53,6 +53,20 @@ stmt, _ := engine.CompileToStatement(ctx, `has_task_list && visibility == "PUBLI
   Postgres uses `@>`.
 - **Boolean Flags** — Fields such as `has_task_list` render as `IS TRUE` equality
   checks, or comparisons against `CAST('true' AS JSON)` depending on the dialect.
+- **String Matching** — `content.contains(x)`, `content.startsWith(x)`, and
+  `content.endsWith(x)` render as case-insensitive `LIKE`/`ILIKE` with LIKE
+  metacharacters (`%`, `_`, `\`) escaped. Available on scalar string fields whose
+  schema sets `SupportsContains` (memo `content`; attachment `filename`,
+  `mime_type`).
+- **Regex** — `field.matches("pattern")` renders to `~` (Postgres) or `REGEXP`
+  (MySQL/SQLite). SQLite uses a Go-backed `regexp` function registered in
+  `store/db/sqlite/functions.go`. Patterns are validated at compile time against
+  Go's RE2 via `cel.ValidateRegexLiterals()`. **Caveat:** regex *syntax* differs
+  per engine (Go RE2 on SQLite, POSIX ERE on Postgres, ICU on MySQL 8.0+), so
+  engine-specific patterns may not be portable.
+- **Tag `all()`** — `tags.all(t, <pred>)` matches only non-empty tag sets where
+  every element satisfies the predicate, via per-element iteration
+  (`json_each` / `jsonb_array_elements_text` / `JSON_TABLE`).
 
 ## Typical Integration
 
