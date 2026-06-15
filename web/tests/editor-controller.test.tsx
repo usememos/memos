@@ -1,5 +1,6 @@
 import { act, fireEvent, render } from "@testing-library/react";
 import type { Editor as EditorInstance } from "@tiptap/core";
+import { AllSelection } from "@tiptap/pm/state";
 import { createRef } from "react";
 import { describe, expect, it, vi } from "vitest";
 import Editor from "@/components/MemoEditor/Editor";
@@ -168,5 +169,44 @@ describe("keyboard shortcuts", () => {
     expect(editor.state.doc.toString()).toContain("hardBreak");
     // The serialized markdown now contains a hard break (two trailing spaces + newline).
     expect(ref.current?.getMarkdown()).not.toBe("hello");
+  });
+});
+
+describe("select-all then delete", () => {
+  it("collapses to a caret instead of leaving a highlighted empty block", () => {
+    // Repro of the reported bug: Ctrl+A makes an AllSelection, Backspace empties
+    // the document. AllSelection.map() always returns another AllSelection, so
+    // without intervention the selection is left as a non-empty whole-document
+    // AllSelection over the empty paragraph — which the view paints as a
+    // "selected" empty block (the screenshot artifact).
+    const { ref, editor } = setup("hello world");
+    const proseMirrorEl = document.querySelector(".ProseMirror") as HTMLElement;
+    act(() => {
+      editor.commands.selectAll();
+    });
+    expect(editor.state.selection).toBeInstanceOf(AllSelection);
+    act(() => {
+      fireEvent.keyDown(proseMirrorEl, { key: "Backspace" });
+    });
+    expect(ref.current?.isEmpty()).toBe(true);
+    // The fix: the leftover selection must be a collapsed caret, never a
+    // lingering non-empty AllSelection.
+    expect(editor.state.selection.empty).toBe(true);
+    expect(editor.state.selection).not.toBeInstanceOf(AllSelection);
+  });
+
+  it("deleting an all-selection via the deleteSelection command also collapses (covers Cut)", () => {
+    // Cut (Cmd-X) and programmatic deletes go through deleteSelection rather
+    // than the Backspace keymap, but hit the same AllSelection.map() trap.
+    const { ref, editor } = setup("# Title\n\nsome **bold** text");
+    act(() => {
+      editor.commands.selectAll();
+    });
+    act(() => {
+      editor.commands.deleteSelection();
+    });
+    expect(ref.current?.isEmpty()).toBe(true);
+    expect(editor.state.selection.empty).toBe(true);
+    expect(editor.state.selection).not.toBeInstanceOf(AllSelection);
   });
 });

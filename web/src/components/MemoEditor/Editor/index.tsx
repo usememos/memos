@@ -1,5 +1,6 @@
 import { Extension } from "@tiptap/core";
 import { Placeholder } from "@tiptap/extensions";
+import { AllSelection, Plugin, PluginKey, Selection } from "@tiptap/pm/state";
 import type { EditorProps as ProseMirrorEditorProps } from "@tiptap/pm/view";
 import { EditorContent as RichTextContent, useEditor } from "@tiptap/react";
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef } from "react";
@@ -28,6 +29,32 @@ const SaveShortcutPassthrough = Extension.create({
     return {
       "Mod-Enter": () => true,
     };
+  },
+});
+
+// Ctrl+A makes ProseMirror's whole-document AllSelection. Deleting it
+// (Backspace / Delete / Cut) empties the document, but AllSelection.map()
+// always returns another AllSelection — so the editor is left holding a
+// non-empty selection spanning the now-empty paragraph, which the view paints
+// as a "selected" empty block (the reported artifact). After any doc-changing
+// edit that leaves an AllSelection behind, collapse it to a caret at the start,
+// the same way deleting an ordinary text selection collapses to a cursor.
+// The `instanceof AllSelection` guard re-evaluates against the post-collapse
+// state, so the appended selection-only transaction is not re-processed.
+const CollapseAllSelectionAfterDelete = Extension.create({
+  name: "collapseAllSelectionAfterDelete",
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        key: new PluginKey("collapseAllSelectionAfterDelete"),
+        appendTransaction: (transactions, _oldState, newState) => {
+          if (!transactions.some((tr) => tr.docChanged) || !(newState.selection instanceof AllSelection)) {
+            return null;
+          }
+          return newState.tr.setSelection(Selection.atStart(newState.doc));
+        },
+      }),
+    ];
   },
 });
 
@@ -97,6 +124,7 @@ const Editor = forwardRef<EditorController, EditorProps>(function Editor(props, 
       TagSuggestion.configure({ getTags: () => tagsRef.current }),
       SlashCommand,
       SaveShortcutPassthrough,
+      CollapseAllSelectionAfterDelete,
     ],
     [],
   );
