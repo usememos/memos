@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -244,6 +245,55 @@ func TestMCPToolCallRejectsInvalidArguments(t *testing.T) {
 		})
 	}
 	require.Zero(t, routeHits)
+}
+
+// TestMCPLoopbackBehindReverseProxy verifies that a loopback-bound instance
+// served under a non-loopback Host (the reverse-proxy deployment shape) is no
+// longer rejected by the SDK's DNS-rebinding guard, while memos' own Origin
+// allowlist still rejects disallowed origins.
+func TestMCPLoopbackBehindReverseProxy(t *testing.T) {
+	echoServer := echo.New()
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+	require.NoError(t, err)
+	service.RegisterRoutes(echoServer)
+
+	initialize, err := json.Marshal(map[string]any{
+		"jsonrpc": "2.0",
+		"id":      1,
+		"method":  "initialize",
+		"params": map[string]any{
+			"protocolVersion": "2025-06-18",
+			"capabilities":    map[string]any{},
+			"clientInfo":      map[string]any{"name": "memos-test", "version": "1.0.0"},
+		},
+	})
+	require.NoError(t, err)
+
+	// Simulate the proxied deployment: the connection terminates on a loopback
+	// address, but the public Host header is a real domain.
+	newRequest := func() *http.Request {
+		request := httptest.NewRequest(http.MethodPost, "/mcp", bytes.NewReader(initialize))
+		request.Host = "demo.usememos.com"
+		request.Header.Set("Content-Type", "application/json")
+		request.Header.Set("Accept", "application/json, text/event-stream")
+		loopback := &net.TCPAddr{IP: net.IPv4(127, 0, 0, 1), Port: 5230}
+		ctx := context.WithValue(request.Context(), http.LocalAddrContextKey, loopback)
+		return request.WithContext(ctx)
+	}
+
+	t.Run("allows non-loopback host with no origin", func(t *testing.T) {
+		recorder := httptest.NewRecorder()
+		echoServer.ServeHTTP(recorder, newRequest())
+		require.Equal(t, http.StatusOK, recorder.Code, recorder.Body.String())
+	})
+
+	t.Run("still rejects a disallowed origin", func(t *testing.T) {
+		request := newRequest()
+		request.Header.Set("Origin", "https://evil.example.com")
+		recorder := httptest.NewRecorder()
+		echoServer.ServeHTTP(recorder, request)
+		require.Equal(t, http.StatusForbidden, recorder.Code)
+	})
 }
 
 func initializeMCP(t *testing.T, echoServer *echo.Echo) {

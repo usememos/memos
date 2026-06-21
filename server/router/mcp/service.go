@@ -57,6 +57,13 @@ func NewMCPService(profile *profile.Profile, echoServer *echo.Echo) (*MCPService
 	}, &sdkmcp.StreamableHTTPOptions{
 		Stateless:    true,
 		JSONResponse: true,
+		// memos is typically served behind a reverse proxy with the app bound to a
+		// loopback address while the public Host header is a real domain. The SDK's
+		// DNS-rebinding guard treats that shape as an attack and rejects every
+		// request with 403 ("invalid Host header"). Disable it and rely on memos'
+		// own Origin/Host allowlist (see RegisterRoutes -> isAllowedMCPOrigin) for
+		// CSRF / DNS-rebinding protection instead.
+		DisableLocalhostProtection: true,
 	})
 
 	return &MCPService{
