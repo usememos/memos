@@ -10,7 +10,7 @@ import MobileHeader from "@/components/MobileHeader";
 import { memoNamePrefix } from "@/helpers/resource-names";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import useMemoDetailError from "@/hooks/useMemoDetailError";
-import { useMemo, useMemoComments } from "@/hooks/useMemoQueries";
+import { useInfiniteMemoComments, useMemo } from "@/hooks/useMemoQueries";
 import { useSharedMemo, withShareAttachmentLinks } from "@/hooks/useMemoShareQueries";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
@@ -48,10 +48,14 @@ const MemoDetail = () => {
     enabled: !!memo?.parent,
   });
 
-  const { data: commentsResponse } = useMemoComments(memoName, {
+  const {
+    data: comments = [],
+    fetchNextPage: fetchNextComments,
+    hasNextPage: hasNextComments,
+    isFetchingNextPage: isFetchingNextComments,
+  } = useInfiniteMemoComments(memoName, {
     enabled: !!memo,
   });
-  const comments = commentsResponse?.memos || [];
 
   useEffect(() => {
     if (!hash || comments.length === 0) return;
@@ -110,7 +114,14 @@ const MemoDetail = () => {
               showPinned
               onShareImageDialogOpenChange={setShareImageDialogOpen}
             />
-            <MemoCommentSection memo={displayMemo} comments={comments} parentPage={locationState?.from} />
+            <MemoCommentSection
+              memo={displayMemo}
+              comments={comments}
+              parentPage={locationState?.from}
+              hasMoreComments={hasNextComments}
+              isFetchingMoreComments={isFetchingNextComments}
+              onLoadMoreComments={fetchNextComments}
+            />
           </div>
           {md && (
             <div className="sticky top-0 left-0 shrink-0 -mt-6 w-56 h-full">

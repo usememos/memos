@@ -1,4 +1,4 @@
-import { MessageCircleIcon } from "lucide-react";
+import { LoaderCircleIcon, MessageCircleIcon } from "lucide-react";
 import { useState } from "react";
 import MemoEditor from "@/components/MemoEditor";
 import MemoView from "@/components/MemoView";
@@ -12,9 +12,12 @@ interface Props {
   memo: Memo;
   comments: Memo[];
   parentPage?: string;
+  hasMoreComments?: boolean;
+  isFetchingMoreComments?: boolean;
+  onLoadMoreComments?: () => void;
 }
 
-const MemoCommentSection = ({ memo, comments, parentPage }: Props) => {
+const MemoCommentSection = ({ memo, comments, parentPage, hasMoreComments, isFetchingMoreComments, onLoadMoreComments }: Props) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const [showEditor, setShowEditor] = useState(false);
@@ -71,6 +74,14 @@ const MemoCommentSection = ({ memo, comments, parentPage }: Props) => {
             <MemoView memo={comment} parentPage={parentPage} showCreator compact />
           </div>
         ))}
+        {hasMoreComments && (
+          <div className="w-full mt-4 flex justify-center">
+            <Button variant="outline" className="rounded-full px-4" onClick={onLoadMoreComments} disabled={isFetchingMoreComments}>
+              {isFetchingMoreComments && <LoaderCircleIcon className="h-4 w-4 animate-spin" />}
+              {t(isFetchingMoreComments ? "resource.fetching-data" : "memo.load-more")}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
