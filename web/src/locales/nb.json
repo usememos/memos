@@ -135,7 +135,6 @@
     "no-changes-detected": "Ingen endringer oppdaget",
     "save": "Lagre",
     "saving": "Lagrer...",
-    "slash-commands": "Skriv `/` for kommandoer",
     "audio-recorder": {
       "attachment-label": "Lydopptak",
       "attachment-label-with-time": "Lydopptak {{time}}",

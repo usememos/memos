@@ -135,7 +135,6 @@
     "no-changes-detected": "Nincs változás",
     "save": "Mentés",
     "saving": "Mentés...",
-    "slash-commands": "Írj `/` parancsokat",
     "audio-recorder": {
       "attachment-label": "Hangfelvétel",
       "attachment-label-with-time": "Hangfelvétel {{time}}",

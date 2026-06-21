@@ -172,7 +172,6 @@
     "no-changes-detected": "Izmaiņas nav konstatētas",
     "save": "Saglabāt",
     "saving": "Notiek saglabāšana...",
-    "slash-commands": "Komandām ierakstiet `/`",
     "audio-recorder": {
       "attachment-label": "Audio ieraksts",
       "attachment-label-with-time": "Audio ieraksts {{time}}",

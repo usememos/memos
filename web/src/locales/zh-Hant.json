@@ -172,7 +172,6 @@
     "no-changes-detected": "未發現變更",
     "save": "儲存",
     "saving": "儲存中...",
-    "slash-commands": "輸入 `/` 以使用指令",
     "audio-recorder": {
       "attachment-label": "錄音",
       "attachment-label-with-time": "錄音 {{time}}",

@@ -135,7 +135,6 @@
     "no-changes-detected": "Nema promjena",
     "save": "Sačuvaj",
     "saving": "Spremanje...",
-    "slash-commands": "Upisi `/` za naredbe",
     "audio-recorder": {
       "attachment-label": "Audio snimanje",
       "attachment-label-with-time": "Audio snimak {{time}}",

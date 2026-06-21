@@ -130,7 +130,6 @@
     "no-changes-detected": "変更はありません",
     "save": "保存",
     "saving": "保存中...",
-    "slash-commands": "コマンドを入力するには `/` を入力",
     "insert-menu": {
       "add-location": "場所を追加",
       "link-memo": "リンクメモ",

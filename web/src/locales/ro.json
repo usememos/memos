@@ -172,7 +172,6 @@
     "no-changes-detected": "Nu au fost detectate modificări",
     "save": "Salva",
     "saving": "Economisire...",
-    "slash-commands": "Tastați `/` pentru comenzi",
     "audio-recorder": {
       "attachment-label": "Înregistrare audio",
       "attachment-label-with-time": "Înregistrare audio {{time}}",

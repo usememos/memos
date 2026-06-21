@@ -172,7 +172,6 @@
     "no-changes-detected": "Ingen ændringer registreret",
     "save": "Spare",
     "saving": "Gemmer...",
-    "slash-commands": "Skriv `/` for kommandoer",
     "audio-recorder": {
       "attachment-label": "Lydoptagelse",
       "attachment-label-with-time": "Lydoptagelse {{time}}",

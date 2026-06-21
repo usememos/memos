@@ -135,7 +135,6 @@
     "no-changes-detected": "Değişiklik yok",
     "save": "Kaydet",
     "saving": "Kaydediliyor...",
-    "slash-commands": "Komutlar için `/` yazın",
     "audio-recorder": {
       "attachment-label": "Ses kaydı",
       "attachment-label-with-time": "Ses kaydı {{time}}",

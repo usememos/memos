@@ -135,7 +135,6 @@
     "no-changes-detected": "Non se detectaron cambios",
     "save": "Gardar",
     "saving": "Gardando...",
-    "slash-commands": "Escribe `/` para ordes",
     "audio-recorder": {
       "attachment-label": "Gravación de audio",
       "attachment-label-with-time": "Gravación de audio {{time}}",

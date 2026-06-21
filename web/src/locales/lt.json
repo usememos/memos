@@ -172,7 +172,6 @@
     "no-changes-detected": "Pakeitimų neaptikta",
     "save": "Išsaugoti",
     "saving": "Išsaugoma...",
-    "slash-commands": "Įveskite `/` komandoms",
     "audio-recorder": {
       "attachment-label": "Garso įrašymas",
       "attachment-label-with-time": "Garso įrašymas {{time}}",

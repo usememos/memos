@@ -135,7 +135,6 @@
     "no-changes-detected": "Inga ändringar upptäckta",
     "save": "Spara",
     "saving": "Sparar...",
-    "slash-commands": "Skriv `/` för kommandon",
     "audio-recorder": {
       "attachment-label": "Ljudinspelning",
       "attachment-label-with-time": "Ljudinspelning {{time}}",

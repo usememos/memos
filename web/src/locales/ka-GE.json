@@ -135,7 +135,6 @@
     "no-changes-detected": "ცვლილებები არ აღმოჩენილა",
     "save": "შენახვა",
     "saving": "შენახვა...",
-    "slash-commands": "შეიყვანეთ `/` ბრძანებებისთვის",
     "audio-recorder": {
       "attachment-label": "აუდიო ჩანაწერი",
       "attachment-label-with-time": "აუდიო ჩანაწერი {{time}}",

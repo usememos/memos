@@ -127,7 +127,6 @@
     "no-changes-detected": "ไม่มีการเปลี่ยนแปลง",
     "save": "บันทึก",
     "saving": "กำลังบันทึก...",
-    "slash-commands": "พิมพ์ `/` สำหรับคำสั่ง",
     "insert-menu": {
       "add-location": "เพิ่มสถานที่",
       "link-memo": "บันทึกการเชื่อมโยง",

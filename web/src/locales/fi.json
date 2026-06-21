@@ -172,7 +172,6 @@
     "no-changes-detected": "Muutoksia ei havaittu",
     "save": "Tallentaa",
     "saving": "Tallennetaan...",
-    "slash-commands": "Kirjoita komentoja varten `/`",
     "audio-recorder": {
       "attachment-label": "Äänen tallennus",
       "attachment-label-with-time": "Äänen tallennus {{time}}",

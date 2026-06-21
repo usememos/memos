@@ -172,7 +172,6 @@
     "no-changes-detected": "Nezistili sa žiadne zmeny",
     "save": "Uložiť",
     "saving": "Ukladá sa...",
-    "slash-commands": "Pre príkazy zadajte `/`",
     "audio-recorder": {
       "attachment-label": "Zvukový záznam",
       "attachment-label-with-time": "Záznam zvuku {{time}}",

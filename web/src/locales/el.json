@@ -172,7 +172,6 @@
     "no-changes-detected": "Δεν εντοπίστηκαν αλλαγές",
     "save": "Εκτός",
     "saving": "Οικονομία...",
-    "slash-commands": "Πληκτρολογήστε `/` για εντολές",
     "audio-recorder": {
       "attachment-label": "Ηχογράφηση",
       "attachment-label-with-time": "Εγγραφή ήχου {{time}}",

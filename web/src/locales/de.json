@@ -135,7 +135,6 @@
     "no-changes-detected": "Keine Änderungen erkannt",
     "save": "Speichern",
     "saving": "Speichern...",
-    "slash-commands": "Nutze `/` für Befehle",
     "audio-recorder": {
       "attachment-label": "Audioaufnahme",
       "attachment-label-with-time": "Audioaufnahme {{time}}",

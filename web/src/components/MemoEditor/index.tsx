@@ -18,6 +18,7 @@ import {
   EditorToolbar,
   FocusModeExitButton,
   FocusModeOverlay,
+  FormattingToolbar,
   TimestampPopover,
 } from "./components";
 import { FOCUS_MODE_STYLES } from "./constants";
@@ -26,7 +27,7 @@ import { errorService, memoService, transcriptionService, validationService } fr
 import { EditorProvider, useEditorContext } from "./state";
 import type { MemoEditorProps } from "./types";
 import type { LocalFile } from "./types/attachment";
-import type { EditorController } from "./types/editorController";
+import type { EditorController, FormattingController } from "./types/editorController";
 
 const MemoEditor = (props: MemoEditorProps) => (
   <EditorProvider>
@@ -48,7 +49,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const t = useTranslate();
   const queryClient = useQueryClient();
   const currentUser = useCurrentUser();
-  const editorRef = useRef<EditorController>(null);
+  const editorRef = useRef<EditorController & FormattingController>(null);
   const { state, actions, dispatch } = useEditorContext();
   const { userGeneralSetting } = useAuth();
   const { aiSetting, fetchSetting } = useInstance();
@@ -309,8 +310,14 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
           className,
         )}
       >
-        {/* Exit button is absolutely positioned in top-right corner when active */}
-        <FocusModeExitButton isActive={state.ui.isFocusMode} onToggle={handleToggleFocusMode} title={t("editor.exit-focus-mode")} />
+        {/* Focus-mode header. WYSIWYG gets the formatting toolbar (exit lives in
+            it); raw mode falls back to the floating exit button. */}
+        {state.ui.isFocusMode &&
+          (state.ui.editorMode === "wysiwyg" ? (
+            <FormattingToolbar controllerRef={editorRef} onExit={handleToggleFocusMode} className={FOCUS_MODE_STYLES.formattingHeader} />
+          ) : (
+            <FocusModeExitButton isActive onToggle={handleToggleFocusMode} title={t("editor.exit-focus-mode")} />
+          ))}
 
         {(memoName || (!memo && state.timestamps.createTime)) && (
           <div className="w-full -mb-1">

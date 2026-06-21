@@ -172,7 +172,6 @@
     "no-changes-detected": "Muudatusi ei tuvastatud",
     "save": "Salvesta",
     "saving": "Salvestamine...",
-    "slash-commands": "Käskude jaoks tippige `/`",
     "audio-recorder": {
       "attachment-label": "Helisalvestus",
       "attachment-label-with-time": "Helisalvestus {{time}}",

@@ -164,6 +164,22 @@
     "any-thoughts": "Any thoughts...",
     "exit-focus-mode": "Exit Focus Mode",
     "focus-mode": "Focus Mode",
+    "format": {
+      "heading": "Heading",
+      "paragraph": "Paragraph",
+      "heading-1": "Heading 1",
+      "heading-2": "Heading 2",
+      "heading-3": "Heading 3",
+      "bold": "Bold",
+      "italic": "Italic",
+      "code": "Inline code",
+      "bullet-list": "Bullet list",
+      "ordered-list": "Numbered list",
+      "task-list": "To-do list",
+      "link": "Link",
+      "link-prompt": "Enter a URL",
+      "more": "More formatting"
+    },
     "insert-menu": {
       "add-location": "Add location",
       "link-memo": "Link memo",
@@ -172,7 +188,6 @@
     "no-changes-detected": "No changes detected",
     "save": "Save",
     "saving": "Saving...",
-    "slash-commands": "Type `/` for commands",
     "unsupported-syntax-raw-mode": "This memo contains syntax the rich-text editor can't safely edit, so it opened in raw Markdown mode.",
     "wysiwyg-editor": "WYSIWYG Editor",
     "audio-recorder": {

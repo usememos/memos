@@ -5,7 +5,7 @@ import PlainEditor from "../PlainEditor";
 import { useEditorContext } from "../state";
 import type { EditorContentProps } from "../types";
 import type { LocalFile } from "../types/attachment";
-import type { EditorController } from "../types/editorController";
+import type { EditorController, FormattingController, ToolbarHeadingLevel } from "../types/editorController";
 
 /**
  * Hosts one of the two editor implementations behind the EditorController
@@ -13,14 +13,14 @@ import type { EditorController } from "../types/editorController";
  * handoff: both editors serialize into state.content on every change, so the
  * incoming editor simply initializes from it.
  */
-export const EditorContent = forwardRef<EditorController, EditorContentProps>(({ placeholder }, ref) => {
+export const EditorContent = forwardRef<EditorController & FormattingController, EditorContentProps>(({ placeholder }, ref) => {
   const { state, actions, dispatch } = useEditorContext();
   const { createBlobUrl } = useBlobUrls();
   const mode = state.ui.editorMode;
 
   // Both editors implement EditorController; the host holds one ref each and
   // routes the parent's single ref to whichever mode is active.
-  const wysiwygRef = useRef<EditorController>(null);
+  const wysiwygRef = useRef<EditorController & FormattingController>(null);
   const plainRef = useRef<EditorController>(null);
 
   const modeRef = useRef(mode);
@@ -40,7 +40,7 @@ export const EditorContent = forwardRef<EditorController, EditorContentProps>(({
 
   useImperativeHandle(
     ref,
-    (): EditorController => ({
+    (): EditorController & FormattingController => ({
       focus: () => getActive()?.focus(),
       hasFocus: () => getActive()?.hasFocus() ?? false,
       isEmpty: () => getActive()?.isEmpty() ?? true,
@@ -52,6 +52,17 @@ export const EditorContent = forwardRef<EditorController, EditorContentProps>(({
       toggleBold: () => getActive()?.toggleBold(),
       toggleItalic: () => getActive()?.toggleItalic(),
       toggleTaskList: () => getActive()?.toggleTaskList(),
+      // Formatting surface — only the WYSIWYG editor implements it; inert in raw
+      // mode, where the toolbar is never shown.
+      toggleCode: () => wysiwygRef.current?.toggleCode(),
+      toggleBulletList: () => wysiwygRef.current?.toggleBulletList(),
+      toggleOrderedList: () => wysiwygRef.current?.toggleOrderedList(),
+      setHeading: (level: ToolbarHeadingLevel) => wysiwygRef.current?.setHeading(level),
+      setParagraph: () => wysiwygRef.current?.setParagraph(),
+      toggleLink: (url?: string) => wysiwygRef.current?.toggleLink(url),
+      getSelectedText: () => wysiwygRef.current?.getSelectedText() ?? "",
+      isActive: (name: string, attrs?: Record<string, unknown>) => wysiwygRef.current?.isActive(name, attrs) ?? false,
+      subscribe: (listener: () => void) => wysiwygRef.current?.subscribe(listener) ?? (() => {}),
     }),
     [getActive],
   );

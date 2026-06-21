@@ -135,7 +135,6 @@
     "no-changes-detected": "Змін не виявлено",
     "save": "Зберегти",
     "saving": "Збереження...",
-    "slash-commands": "Введіть `/` для команд",
     "audio-recorder": {
       "attachment-label": "Аудіозапис",
       "attachment-label-with-time": "Аудіозапис {{time}}",

@@ -9,9 +9,8 @@ import { useTagCounts } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
 import { ROUTES as Routes } from "@/router/routes";
 import { EDITOR_HEIGHT } from "../constants";
-import type { EditorController } from "../types/editorController";
+import type { EditorController, FormattingController } from "../types/editorController";
 import { buildExtensions } from "./extensions";
-import { SlashCommand } from "./SlashCommand";
 import { TagSuggestion } from "./TagSuggestion";
 
 // Mod-Enter is the app-wide "save memo" shortcut (useKeyboard). StarterKit's
@@ -83,12 +82,15 @@ function serializeMarkdown(editor: { getMarkdown: () => string } | null): string
  * serializeMarkdown() on every update. IME, list continuation, input rules,
  * and auto-grow are native ProseMirror/contenteditable behavior.
  */
-const Editor = forwardRef<EditorController, EditorProps>(function Editor(props, ref) {
+const Editor = forwardRef<EditorController & FormattingController, EditorProps>(function Editor(props, ref) {
   const { className, initialContent, placeholder, isFocusMode, onContentChange, onPaste } = props;
 
   // Last markdown emitted through onContentChange, so the sync effect can
   // recognize the parent echoing our own value back without re-serializing.
   const lastEmittedRef = useRef<string | null>(null);
+  // Stable across editor re-creation so the toolbar can subscribe once. The
+  // effect below binds the live editor's transaction/selection events to it.
+  const activeListenersRef = useRef(new Set<() => void>());
   // Read through refs so the memoized extension/editorProps closures below
   // always see the latest props (Placeholder decorations recompute per
   // transaction; handlePaste resolves per event).
@@ -122,7 +124,6 @@ const Editor = forwardRef<EditorController, EditorProps>(function Editor(props, 
       ...buildExtensions(),
       Placeholder.configure({ placeholder: () => placeholderRef.current }),
       TagSuggestion.configure({ getTags: () => tagsRef.current }),
-      SlashCommand,
       SaveShortcutPassthrough,
       CollapseAllSelectionAfterDelete,
     ],
@@ -183,9 +184,23 @@ const Editor = forwardRef<EditorController, EditorProps>(function Editor(props, 
     }
   }, [initialContent, editor]);
 
+  // Fan editor transactions out to toolbar subscribers so active-state
+  // highlighting tracks the cursor live. Every change — including a pure
+  // selection move — is a transaction, so this single event covers both.
+  useEffect(() => {
+    if (!editor) {
+      return;
+    }
+    const notify = () => activeListenersRef.current.forEach((listener) => listener());
+    editor.on("transaction", notify);
+    return () => {
+      editor.off("transaction", notify);
+    };
+  }, [editor]);
+
   useImperativeHandle(
     ref,
-    (): EditorController => ({
+    (): EditorController & FormattingController => ({
       focus: () => editor?.commands.focus(),
       hasFocus: () => editor?.isFocused ?? false,
       // Contract: whitespace-only counts as empty. The editor's structural
@@ -199,6 +214,39 @@ const Editor = forwardRef<EditorController, EditorProps>(function Editor(props, 
       toggleBold: () => editor?.chain().focus().toggleBold().run(),
       toggleItalic: () => editor?.chain().focus().toggleItalic().run(),
       toggleTaskList: () => editor?.chain().focus().toggleTaskList().run(),
+      toggleCode: () => editor?.chain().focus().toggleCode().run(),
+      toggleBulletList: () => editor?.chain().focus().toggleBulletList().run(),
+      toggleOrderedList: () => editor?.chain().focus().toggleOrderedList().run(),
+      setHeading: (level) => editor?.chain().focus().setHeading({ level }).run(),
+      setParagraph: () => editor?.chain().focus().setParagraph().run(),
+      toggleLink: (url) => {
+        if (!editor) {
+          return;
+        }
+        if (editor.isActive("link")) {
+          editor.chain().focus().unsetLink().run();
+          return;
+        }
+        const href = url?.trim();
+        if (!href) {
+          return;
+        }
+        editor.chain().focus().extendMarkRange("link").setLink({ href }).run();
+      },
+      getSelectedText: () => {
+        if (!editor) {
+          return "";
+        }
+        const { from, to } = editor.state.selection;
+        return editor.state.doc.textBetween(from, to, " ");
+      },
+      isActive: (name, attrs) => editor?.isActive(name, attrs ?? {}) ?? false,
+      subscribe: (listener) => {
+        activeListenersRef.current.add(listener);
+        return () => {
+          activeListenersRef.current.delete(listener);
+        };
+      },
     }),
     [editor],
   );

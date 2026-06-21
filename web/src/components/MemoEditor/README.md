@@ -47,8 +47,7 @@ MemoEditor/
 │   ├── PreservedBlock.ts     # Byte-for-byte preservation of tables, math, raw HTML
 │   ├── Tag.ts                # Memos #tag mark
 │   ├── TagSuggestion.ts      # # popup for WYSIWYG mode
-│   ├── SlashCommand.ts       # / popup for WYSIWYG mode
-│   └── suggestionMenu.tsx    # Shared suggestion popup renderer (used by both above)
+│   └── suggestionMenu.tsx    # Shared suggestion popup renderer (used by TagSuggestion)
 ├── Toolbar/                # Toolbar sub-components (InsertMenu, VisibilitySelector)
 ├── editorMode.ts           # EditorMode type + localStorage persistence helpers
 ├── constants.ts
@@ -90,7 +89,7 @@ Mode switching is a markdown handoff: because both editors write into `state.con
 
 ### Suggestions
 
-`#` tag and `/` slash-command suggestion popups are a **WYSIWYG-only** feature: `Editor/TagSuggestion.ts` and `Editor/SlashCommand.ts`, both using the shared `Editor/suggestionMenu.tsx` renderer. Raw mode is a plain textarea with no suggestions.
+The `#` tag suggestion popup is a **WYSIWYG-only** feature: `Editor/TagSuggestion.ts`, using the shared `Editor/suggestionMenu.tsx` renderer. Raw mode is a plain textarea with no suggestions. (Formatting actions that a `/` command menu would once have offered — lists, code, link — are now available from the focus-mode `FormattingToolbar` header.)
 
 ### Load guard
 

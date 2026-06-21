@@ -135,7 +135,6 @@
     "no-changes-detected": "Nebyly zjištěny žádné změny",
     "save": "Uložit",
     "saving": "Ukládání...",
-    "slash-commands": "Pro příkazy zadejte `/`",
     "audio-recorder": {
       "attachment-label": "Záznam zvuku",
       "attachment-label-with-time": "Záznam zvuku {{time}}",

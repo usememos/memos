@@ -172,7 +172,6 @@
     "no-changes-detected": "Нису откривене промене",
     "save": "Сачувај",
     "saving": "Чување...",
-    "slash-commands": "Унесите `/` за команде",
     "audio-recorder": {
       "attachment-label": "Аудио снимак",
       "attachment-label-with-time": "Аудио запис {{time}}",
