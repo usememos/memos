@@ -209,11 +209,17 @@ type InstanceProfile struct {
 	Demo bool `protobuf:"varint,3,opt,name=demo,proto3" json:"demo,omitempty"`
 	// Instance URL is the URL of the instance.
 	InstanceUrl string `protobuf:"bytes,6,opt,name=instance_url,json=instanceUrl,proto3" json:"instance_url,omitempty"`
-	// The first administrator who set up this instance.
-	// When null, instance requires initial setup (creating the first admin account).
+	// The first administrator who set up this instance, for display purposes.
+	// May be null on an instance that has lost all admins; use needs_setup to
+	// determine whether initial setup is actually required.
 	Admin *User `protobuf:"bytes,7,opt,name=admin,proto3" json:"admin,omitempty"`
 	// Commit is the current build commit of instance.
-	Commit        string `protobuf:"bytes,8,opt,name=commit,proto3" json:"commit,omitempty"`
+	Commit string `protobuf:"bytes,8,opt,name=commit,proto3" json:"commit,omitempty"`
+	// NeedsSetup is true when the instance has no users yet and requires initial
+	// setup (creating the first admin account). Unlike a null admin, this stays
+	// false once any user exists, so an instance that has lost its admins is not
+	// mistaken for a fresh install.
+	NeedsSetup    bool `protobuf:"varint,9,opt,name=needs_setup,json=needsSetup,proto3" json:"needs_setup,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -281,6 +287,13 @@ func (x *InstanceProfile) GetCommit() string {
 		return x.Commit
 	}
 	return ""
+}
+
+func (x *InstanceProfile) GetNeedsSetup() bool {
+	if x != nil {
+		return x.NeedsSetup
+	}
+	return false
 }
 
 // Request for instance profile.
@@ -1780,13 +1793,15 @@ var File_api_v1_instance_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1dapi/v1/instance_service.proto\x12\fmemos.api.v1\x1a\x19api/v1/user_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/color.proto\"\xa4\x01\n" +
+	"\x1dapi/v1/instance_service.proto\x12\fmemos.api.v1\x1a\x19api/v1/user_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/color.proto\"\xc5\x01\n" +
 	"\x0fInstanceProfile\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04demo\x18\x03 \x01(\bR\x04demo\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\x12(\n" +
 	"\x05admin\x18\a \x01(\v2\x12.memos.api.v1.UserR\x05admin\x12\x16\n" +
-	"\x06commit\x18\b \x01(\tR\x06commit\"\x1b\n" +
+	"\x06commit\x18\b \x01(\tR\x06commit\x12\x1f\n" +
+	"\vneeds_setup\x18\t \x01(\bR\n" +
+	"needsSetup\"\x1b\n" +
 	"\x19GetInstanceProfileRequest\"\xcd\x1b\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +

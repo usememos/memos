@@ -68,12 +68,19 @@ message InstanceProfile {
   // Instance URL is the URL of the instance.
   string instance_url = 6;
 
-  // The first administrator who set up this instance.
-  // When null, instance requires initial setup (creating the first admin account).
+  // The first administrator who set up this instance, for display purposes.
+  // May be null on an instance that has lost all admins; use needs_setup to
+  // determine whether initial setup is actually required.
   User admin = 7;
 
   // Commit is the current build commit of instance.
   string commit = 8;
+
+  // NeedsSetup is true when the instance has no users yet and requires initial
+  // setup (creating the first admin account). Unlike a null admin, this stays
+  // false once any user exists, so an instance that has lost its admins is not
+  // mistaken for a fresh install.
+  bool needs_setup = 9;
 }
 
 // Request for instance profile.

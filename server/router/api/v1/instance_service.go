@@ -52,12 +52,23 @@ func (s *APIV1Service) GetInstanceProfile(ctx context.Context, _ *v1pb.GetInstan
 		return nil, status.Errorf(codes.Internal, "failed to get instance admin: %v", err)
 	}
 
+	// needs_setup reflects whether the instance has any users at all, which is
+	// the real signal for first-run setup. It is deliberately independent of the
+	// admin lookup: an instance that has lost its admins still has users and must
+	// not be treated as a fresh install.
+	limitOne := 1
+	users, err := s.Store.ListUsers(ctx, &store.FindUser{Limit: &limitOne})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list users: %v", err)
+	}
+
 	instanceProfile := &v1pb.InstanceProfile{
 		Version:     s.Profile.Version,
 		Demo:        s.Profile.Demo,
 		InstanceUrl: s.Profile.InstanceURL,
-		Admin:       admin, // nil when not initialized
+		Admin:       admin, // for display only; may be nil even on a populated instance
 		Commit:      s.Profile.Commit,
+		NeedsSetup:  len(users) == 0,
 	}
 	return instanceProfile, nil
 }
