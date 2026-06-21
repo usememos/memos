@@ -153,10 +153,9 @@ const ShortcutGuide = ({ onUseExample }: ShortcutGuideProps) => {
           {shortcutExamples.map((example) => {
             const Icon = example.icon;
             return (
-              <button
+              <div
                 key={example.filter}
-                type="button"
-                className="group rounded-md border border-transparent p-2 text-left transition-colors hover:border-border hover:bg-muted/50"
+                className="group cursor-pointer rounded-md border border-transparent p-2 text-left transition-colors hover:border-border hover:bg-muted/50"
                 onClick={() => onUseExample(example)}
               >
                 <span className="flex items-center gap-2 text-sm font-medium text-foreground">
@@ -165,7 +164,7 @@ const ShortcutGuide = ({ onUseExample }: ShortcutGuideProps) => {
                 </span>
                 <span className="mt-1 block font-mono text-xs leading-5 text-muted-foreground">{example.filter}</span>
                 <span className="mt-1 block text-xs leading-5 text-muted-foreground">{example.description}</span>
-              </button>
+              </div>
             );
           })}
         </div>

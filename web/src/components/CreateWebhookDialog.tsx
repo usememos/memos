@@ -211,7 +211,7 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
                 disabled={!state.signingSecret}
                 aria-label={t("setting.webhook.create-dialog.copy-secret")}
               >
-                {secretCopied ? <CheckIcon className="h-4 w-4 text-green-500" /> : <CopyIcon className="h-4 w-4" />}
+                {secretCopied ? <CheckIcon className="h-4 w-4 text-success" /> : <CopyIcon className="h-4 w-4" />}
               </Button>
               <Button type="button" variant="outline" onClick={handleGenerateSecret}>
                 {t("setting.webhook.create-dialog.generate-secret")}

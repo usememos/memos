@@ -47,13 +47,12 @@ export const LocaleSearchList = (props: LocaleSearchListProps) => {
       </div>
       <div className="mt-1 min-h-0 flex-1 touch-pan-y overflow-y-auto p-1" role="listbox" aria-label={t("common.language")}>
         {filteredLocales.map((locale) => (
-          <button
-            type="button"
+          <div
             key={locale}
             role="option"
             aria-selected={value === locale}
             className={cn(
-              "flex h-8 w-full items-center gap-2 rounded-sm px-2 text-left text-sm outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+              "flex h-8 w-full cursor-pointer items-center gap-2 rounded-sm px-2 text-left text-sm outline-hidden transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
               value === locale && "bg-accent/60",
             )}
             onClick={() => onChange(locale)}
@@ -63,7 +62,7 @@ export const LocaleSearchList = (props: LocaleSearchListProps) => {
               <span className="shrink-0 text-xs text-muted-foreground">{locale}</span>
             </span>
             {value === locale ? <CheckIcon className="size-4 shrink-0 text-primary" /> : <span className="size-4 shrink-0" />}
-          </button>
+          </div>
         ))}
         {filteredLocales.length === 0 && (
           <div className="px-2 py-6 text-center text-sm">

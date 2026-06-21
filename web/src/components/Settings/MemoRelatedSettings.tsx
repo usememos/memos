@@ -127,14 +127,14 @@ const MemoRelatedSettings = () => {
             {memoRelatedSetting.reactions.map((reactionType) => (
               <Badge key={reactionType} variant="outline" className="flex h-8 items-center gap-2 rounded-md px-2.5 font-normal">
                 <span>{reactionType}</span>
-                <button
-                  type="button"
-                  className="text-muted-foreground transition-colors hover:text-destructive"
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
                   onClick={() => updatePartialSetting({ reactions: memoRelatedSetting.reactions.filter((r) => r !== reactionType) })}
                   aria-label={t("setting.memo.remove-reaction")}
                 >
                   <X className="size-3.5" />
-                </button>
+                </Button>
               </Badge>
             ))}
           </div>

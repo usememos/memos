@@ -4,6 +4,7 @@ import type { AttachmentItem, LocalFile } from "@/components/MemoEditor/types/at
 import { getAudioRecordingTimeLabel, toAttachmentItems } from "@/components/MemoEditor/types/attachment";
 import MetadataSection from "@/components/MemoMetadata/MetadataSection";
 import PreviewImageDialog from "@/components/PreviewImageDialog";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
@@ -33,56 +34,50 @@ const AttachmentItemActions: FC<{
   return (
     <div className="shrink-0 flex items-center gap-0.5">
       {onMoveUp && (
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="icon-sm"
           onClick={(event) => {
             stopPropagation(event);
             onMoveUp();
           }}
           disabled={!canMoveUp}
-          className={cn(
-            "touch-manipulation rounded p-0.5 transition-colors hover:bg-accent active:bg-accent",
-            !canMoveUp && "cursor-not-allowed opacity-20 hover:bg-transparent",
-          )}
           title="Move up"
           aria-label="Move attachment up"
         >
           <ChevronUpIcon className="h-3 w-3 text-muted-foreground" />
-        </button>
+        </Button>
       )}
 
       {onMoveDown && (
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="icon-sm"
           onClick={(event) => {
             stopPropagation(event);
             onMoveDown();
           }}
           disabled={!canMoveDown}
-          className={cn(
-            "touch-manipulation rounded p-0.5 transition-colors hover:bg-accent active:bg-accent",
-            !canMoveDown && "cursor-not-allowed opacity-20 hover:bg-transparent",
-          )}
           title="Move down"
           aria-label="Move attachment down"
         >
           <ChevronDownIcon className="h-3 w-3 text-muted-foreground" />
-        </button>
+        </Button>
       )}
 
       {onRemove && (
-        <button
-          type="button"
+        <Button
+          variant="ghost"
+          size="icon-sm"
           onClick={(event) => {
             stopPropagation(event);
             onRemove();
           }}
-          className="ml-0.5 touch-manipulation rounded p-0.5 transition-colors hover:bg-destructive/10 active:bg-destructive/10"
           title="Remove"
           aria-label="Remove attachment"
         >
           <XIcon className="h-3 w-3 text-muted-foreground hover:text-destructive" />
-        </button>
+        </Button>
       )}
     </div>
   );
@@ -141,8 +136,7 @@ const AttachmentItemCard: FC<{
       <div className="flex items-center gap-1.5">
         <div className="relative flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded bg-muted/40">
           {(category === "image" || category === "motion") && thumbnailUrl ? (
-            <button
-              type="button"
+            <div
               onClick={(event) => {
                 event.stopPropagation();
                 onPreview?.();
@@ -151,13 +145,13 @@ const AttachmentItemCard: FC<{
               aria-label={`Preview ${filename}`}
             >
               <img src={thumbnailUrl} alt="" className="h-full w-full object-cover" />
-            </button>
+            </div>
           ) : isVoiceNote ? (
             <>
               <button
                 type="button"
                 onClick={handleAudioToggle}
-                className="flex size-full items-center justify-center rounded bg-muted/40 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                className="flex size-full items-center justify-center rounded bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground"
                 aria-label={isPlaying ? t("editor.audio-recorder.pause-recording") : t("editor.audio-recorder.play-recording")}
               >
                 {isPlaying ? <PauseIcon className="h-3.5 w-3.5" /> : <PlayIcon className="h-3.5 w-3.5 translate-x-[0.5px]" />}
@@ -179,7 +173,7 @@ const AttachmentItemCard: FC<{
                 event.stopPropagation();
                 onPreview?.();
               }}
-              className="flex size-full items-center justify-center rounded bg-muted/40 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              className="flex size-full items-center justify-center rounded bg-muted/40 text-muted-foreground hover:bg-accent hover:text-foreground"
               aria-label={`Preview ${filename}`}
             >
               <PlayIcon className="h-3.5 w-3.5 translate-x-[0.5px]" />

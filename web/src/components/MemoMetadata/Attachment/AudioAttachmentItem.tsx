@@ -1,5 +1,6 @@
 import { PauseIcon, PlayIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
 import { formatAudioTime } from "./attachmentHelpers";
@@ -134,14 +135,14 @@ const AudioAttachmentItem = ({ filename, sourceUrl, mimeType, size, title, compa
           </div>
         </div>
 
-        <button
-          type="button"
+        <Button
+          variant="outline"
+          size="icon-sm"
           onClick={togglePlayback}
-          className="inline-flex size-5.5 shrink-0 items-center justify-center rounded-md border border-border/45 bg-background/90 text-foreground transition-colors hover:bg-muted/45"
           aria-label={isPlaying ? `Pause ${displayTitle}` : `Play ${displayTitle}`}
         >
           {isPlaying ? <PauseIcon className="size-2.5" /> : <PlayIcon className="size-2.5 translate-x-[0.5px]" />}
-        </button>
+        </Button>
       </div>
 
       <div className={cn("mt-1", compact ? "space-y-1.5" : "flex items-center gap-1")}>
@@ -157,14 +158,14 @@ const AudioAttachmentItem = ({ filename, sourceUrl, mimeType, size, title, compa
         <div className={cn("flex items-center", compact ? "justify-between gap-2" : "shrink-0 gap-1")}>
           <div className="shrink-0 text-[10px] tabular-nums text-muted-foreground">{timeLabel}</div>
 
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handlePlaybackRateChange}
-            className="inline-flex h-5 shrink-0 items-center justify-center rounded-md border border-transparent px-1 text-[10px] font-medium text-muted-foreground transition-colors hover:border-border/40 hover:text-foreground"
             aria-label={`Playback speed ${playbackRate}x for ${displayTitle}`}
           >
             {playbackRate}x
-          </button>
+          </Button>
         </div>
       </div>
 

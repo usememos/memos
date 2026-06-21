@@ -1,5 +1,6 @@
 import { MapPinIcon, XIcon } from "lucide-react";
 import type { FC } from "react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Location } from "@/types/proto/api/v1/memo_service_pb";
 import { getLocationCoordinatesText, getLocationDisplayText } from "./locationHelpers";
@@ -30,15 +31,9 @@ const LocationDisplayEditor: FC<LocationDisplayEditorProps> = ({ location, onRem
       </div>
 
       {onRemove && (
-        <button
-          type="button"
-          onClick={onRemove}
-          className="p-0.5 rounded hover:bg-destructive/10 active:bg-destructive/10 transition-colors touch-manipulation shrink-0 ml-auto"
-          title="Remove"
-          aria-label="Remove location"
-        >
+        <Button variant="ghost" size="icon-sm" onClick={onRemove} title="Remove" aria-label="Remove location">
           <XIcon className="w-3 h-3 text-muted-foreground hover:text-destructive" />
-        </button>
+        </Button>
       )}
     </div>
   );

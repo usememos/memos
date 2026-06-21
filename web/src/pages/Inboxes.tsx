@@ -6,9 +6,9 @@ import MemoCommentMessage from "@/components/Inbox/MemoCommentMessage";
 import MemoMentionMessage from "@/components/Inbox/MemoMentionMessage";
 import MobileHeader from "@/components/MobileHeader";
 import Placeholder from "@/components/Placeholder";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { useNotifications } from "@/hooks/useUserQueries";
-import { cn } from "@/lib/utils";
 import { UserNotification, UserNotification_Status, UserNotification_Type } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
@@ -55,43 +55,21 @@ const Inboxes = () => {
 
           {/* Filter Tabs */}
           <div className="w-full px-4 py-2 border-b border-border bg-muted/30">
-            <div className="flex flex-row gap-1">
-              <button
-                onClick={() => setFilter("all")}
-                className={cn(
-                  "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
-                  filter === "all"
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-background/50",
-                )}
-              >
-                {t("common.all")} ({allNotifications.length})
-              </button>
-              <button
-                onClick={() => setFilter("unread")}
-                className={cn(
-                  "px-3 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5",
-                  filter === "unread"
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-background/50",
-                )}
-              >
-                <InboxIcon className="w-3.5 h-auto" />
-                {t("inbox.unread")} ({unreadCount})
-              </button>
-              <button
-                onClick={() => setFilter("archived")}
-                className={cn(
-                  "px-3 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5",
-                  filter === "archived"
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-background/50",
-                )}
-              >
-                <ArchiveIcon className="w-3.5 h-auto" />
-                {t("common.archived")} ({archivedCount})
-              </button>
-            </div>
+            <Tabs value={filter} onValueChange={(value) => setFilter(value as typeof filter)} variant="segmented">
+              <TabsList>
+                <TabsTrigger value="all">
+                  {t("common.all")} ({allNotifications.length})
+                </TabsTrigger>
+                <TabsTrigger value="unread">
+                  <InboxIcon className="w-3.5 h-auto" />
+                  {t("inbox.unread")} ({unreadCount})
+                </TabsTrigger>
+                <TabsTrigger value="archived">
+                  <ArchiveIcon className="w-3.5 h-auto" />
+                  {t("common.archived")} ({archivedCount})
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
           </div>
 
           {/* Notifications List */}

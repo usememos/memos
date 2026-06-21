@@ -59,7 +59,7 @@ function ShareLinkRow({ share, memoName }: ShareLinkRowProps) {
         <span className="truncate font-mono text-xs text-muted-foreground">{url}</span>
         <div className="flex shrink-0 items-center gap-1">
           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleCopy} title={t("memo.share.copy")}>
-            {copied ? <CheckIcon className="h-3.5 w-3.5 text-green-500" /> : <CopyIcon className="h-3.5 w-3.5" />}
+            {copied ? <CheckIcon className="h-3.5 w-3.5 text-success" /> : <CopyIcon className="h-3.5 w-3.5" />}
           </Button>
           <Button
             variant="ghost"

@@ -20,6 +20,7 @@ const buttonVariants = cva(
         sm: "h-7 rounded-md gap-1 px-2 has-[>svg]:px-2",
         lg: "h-9 rounded-md px-4",
         icon: "size-8",
+        "icon-sm": "size-6",
       },
     },
     defaultVariants: {
@@ -43,3 +44,5 @@ const Button = React.forwardRef<
 Button.displayName = "Button";
 
 export { Button, buttonVariants };
+export type ButtonVariant = VariantProps<typeof buttonVariants>["variant"];
+export type ButtonSize = VariantProps<typeof buttonVariants>["size"];

@@ -45,7 +45,10 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
   );
   const timeTooltip = {
     createdAt: createTime ? `${t("common.created-at")}: ${createTime.toLocaleString(i18n.language)}` : undefined,
-    updatedAt: updateTime ? `${t("common.last-updated-at")}: ${updateTime.toLocaleString(i18n.language)}` : undefined,
+    updatedAt:
+      updateTime && (!createTime || updateTime.getTime() !== createTime.getTime())
+        ? `${t("common.last-updated-at")}: ${updateTime.toLocaleString(i18n.language)}`
+        : undefined,
   };
 
   return (
@@ -122,13 +125,12 @@ const CreatorDisplay: React.FC<CreatorDisplayProps> = ({ creator, displayTime, t
         {creator.displayName || creator.username}
       </Link>
       <TimeTooltip content={timeTooltip}>
-        <button
-          type="button"
+        <span
           className="w-auto -mt-0.5 text-xs leading-tight text-muted-foreground select-none cursor-pointer hover:opacity-80 transition-colors text-left"
           onClick={onGotoDetail}
         >
           {displayTime}
-        </button>
+        </span>
       </TimeTooltip>
     </div>
   </div>
@@ -157,13 +159,12 @@ interface TimeDisplayProps {
 
 const TimeDisplay: React.FC<TimeDisplayProps> = ({ displayTime, timeTooltip, onGotoDetail }) => (
   <TimeTooltip content={timeTooltip}>
-    <button
-      type="button"
+    <span
       className="w-auto text-sm leading-tight text-muted-foreground select-none cursor-pointer hover:text-foreground transition-colors text-left"
       onClick={onGotoDetail}
     >
       {displayTime}
-    </button>
+    </span>
   </TimeTooltip>
 );
 

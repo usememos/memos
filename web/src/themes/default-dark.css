@@ -30,6 +30,12 @@
   --destructive: oklch(0.64 0.18 24);
   --destructive-foreground: oklch(0.98 0.004 255);
 
+  /* Feedback - success (green) and warning (amber), tuned brighter for dark surfaces */
+  --success: oklch(0.7 0.15 155);
+  --success-foreground: oklch(0.2 0.03 155);
+  --warning: oklch(0.78 0.14 75);
+  --warning-foreground: oklch(0.25 0.03 75);
+
   /* Borders - --border for layout dividers, --input for form field borders */
   --border: oklch(0.38 0.01 255);
   --input: oklch(0.42 0.011 255);

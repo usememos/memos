@@ -29,7 +29,7 @@ export const Mention: React.FC<MentionProps> = ({
   return (
     <a
       href={`/u/${username}`}
-      className={cn("text-blue-600 underline-offset-2 hover:underline dark:text-blue-400", className)}
+      className={cn("text-primary underline-offset-2 hover:underline", className)}
       data-mention={username}
       title={`@${username}`}
       {...props}
