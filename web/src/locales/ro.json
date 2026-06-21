@@ -246,6 +246,7 @@
       "has-task-list": "areTaskList",
       "label": "Filtre"
     },
+    "compact-mode": "Mod compact",
     "links": "Legături",
     "load-more": "Încărcați mai multe",
     "no-archived-memos": "Fără memorii arhivate.",

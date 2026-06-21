@@ -6,13 +6,16 @@ interface ViewState {
   orderByTimeAsc: boolean;
   timeBasis?: MemoTimeBasis;
   sortTimeField?: MemoTimeBasis;
+  compactMode: boolean;
 }
 
 interface ViewContextValue {
   orderByTimeAsc: boolean;
   timeBasis: MemoTimeBasis;
+  compactMode: boolean;
   toggleSortOrder: () => void;
   setTimeBasis: (field: MemoTimeBasis) => void;
+  setCompactMode: (value: boolean) => void;
 }
 
 const ViewContext = createContext<ViewContextValue | null>(null);
@@ -30,12 +33,13 @@ export function ViewProvider({ children }: { children: ReactNode }) {
         return {
           orderByTimeAsc: Boolean(data.orderByTimeAsc ?? false),
           timeBasis,
+          compactMode: Boolean(data.compactMode ?? false),
         };
       }
     } catch (error) {
       console.warn("Failed to load view settings from localStorage:", error);
     }
-    return { orderByTimeAsc: false };
+    return { orderByTimeAsc: false, compactMode: false };
   };
 
   const [viewState, setViewState] = useState(getInitialState);
@@ -65,13 +69,23 @@ export function ViewProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const setCompactMode = (value: boolean) => {
+    setViewState((prev) => {
+      const newState = { ...prev, compactMode: value };
+      persistToStorage(newState);
+      return newState;
+    });
+  };
+
   return (
     <ViewContext.Provider
       value={{
         orderByTimeAsc: viewState.orderByTimeAsc,
         timeBasis,
+        compactMode: viewState.compactMode,
         toggleSortOrder,
         setTimeBasis,
+        setCompactMode,
       }}
     >
       {children}

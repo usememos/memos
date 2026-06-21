@@ -208,6 +208,7 @@
       "has-task-list": "hasTaskList",
       "label": "Filters"
     },
+    "compact-mode": "Compact mode",
     "links": "Links",
     "load-more": "Load more",
     "no-archived-memos": "No archived memos.",

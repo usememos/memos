@@ -246,6 +246,7 @@
       "has-task-list": "hasTaskList",
       "label": "Филтри"
     },
+    "compact-mode": "Компактен режим",
     "links": "Връзки",
     "load-more": "Заредете повече",
     "no-archived-memos": "Няма архивирани бележки.",

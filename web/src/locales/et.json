@@ -246,6 +246,7 @@
       "has-task-list": "hasTaskList",
       "label": "Filtrid"
     },
+    "compact-mode": "Kompaktne režiim",
     "links": "Lingid",
     "load-more": "Laadige rohkem",
     "no-archived-memos": "Arhiveeritud memosid pole.",

@@ -8,6 +8,7 @@ import PagedMemoList from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useView } from "@/contexts/ViewContext";
 import { useMemoFilters, useMemoSorting } from "@/hooks";
 import { useUser } from "@/hooks/useUserQueries";
 import { State } from "@/types/proto/api/v1/common_pb";
@@ -50,6 +51,7 @@ const UserProfile = () => {
   const username = useParams().username;
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = (searchParams.get("view") === "map" ? "map" : "memos") as TabView;
+  const { compactMode } = useView();
 
   const { data: user, isLoading, error } = useUser(`users/${username}`, { enabled: !!username });
 
@@ -111,7 +113,7 @@ const UserProfile = () => {
               {activeTab === "memos" ? (
                 <PagedMemoList
                   renderer={(memo: Memo) => (
-                    <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showVisibility showPinned compact />
+                    <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showVisibility showPinned compact={compactMode} />
                   )}
                   listSort={listSort}
                   orderBy={orderBy}

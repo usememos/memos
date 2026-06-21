@@ -208,6 +208,7 @@
       "has-task-list": "aListeTâches",
       "label": "Filtres"
     },
+    "compact-mode": "Mode compact",
     "links": "Liens",
     "load-more": "Charger plus",
     "no-archived-memos": "Aucune note archivée.",

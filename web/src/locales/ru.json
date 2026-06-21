@@ -208,6 +208,7 @@
       "has-task-list": "hasTaskList",
       "label": "Фильтры"
     },
+    "compact-mode": "Компактный режим",
     "links": "Ссылки",
     "load-more": "Загрузить еще",
     "no-archived-memos": "Нет заархивированных записей.",

@@ -246,6 +246,7 @@
       "has-task-list": "hasTaskList",
       "label": "Suodattimet"
     },
+    "compact-mode": "Tiivis tila",
     "links": "Linkit",
     "load-more": "Lataa lisää",
     "no-archived-memos": "Ei arkistoituja muistioita.",

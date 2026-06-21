@@ -208,6 +208,7 @@
       "has-task-list": "タスクリストあり",
       "label": "フィルター"
     },
+    "compact-mode": "コンパクト表示",
     "links": "リンク",
     "load-more": "さらに読み込む",
     "no-archived-memos": "アーカイブされたメモはありません。",

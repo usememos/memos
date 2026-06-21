@@ -194,6 +194,7 @@
       "has-task-list": "할일목록있음",
       "label": "필터"
     },
+    "compact-mode": "간략 보기",
     "links": "링크",
     "load-more": "더보기",
     "no-archived-memos": "보관처리된 메모가 없습니다.",

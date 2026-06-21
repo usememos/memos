@@ -194,6 +194,7 @@
       "has-task-list": "temListaDeTarefas",
       "label": "Filtros"
     },
+    "compact-mode": "Modo compacto",
     "links": "Links",
     "load-more": "Carregar mais",
     "no-archived-memos": "Nenhum memo arquivado.",
