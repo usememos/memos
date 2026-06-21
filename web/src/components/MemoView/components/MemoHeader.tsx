@@ -2,6 +2,7 @@ import { BookmarkIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useNewMemo } from "@/contexts/NewMemoContext";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import i18n from "@/i18n";
 import { cn } from "@/lib/utils";
@@ -23,6 +24,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
 
   const { memo, creator, currentUser, parentPage, isArchived, readonly, openEditor } = useMemoViewContext();
   const { createTime, updateTime, displayTime: memoDisplayTime, isDisplayingUpdatedTime, relativeTimeFormat } = useMemoViewDerived();
+  const { newMemoName } = useNewMemo();
 
   const navigateTo = useNavigateTo();
   const handleGotoMemoDetailPage = useCallback(() => {
@@ -58,6 +60,11 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
           <CreatorDisplay creator={creator} displayTime={displayTime} timeTooltip={timeTooltip} onGotoDetail={handleGotoMemoDetailPage} />
         ) : (
           <TimeDisplay displayTime={displayTime} timeTooltip={timeTooltip} onGotoDetail={handleGotoMemoDetailPage} />
+        )}
+        {memo.name === newMemoName && (
+          <span className="ml-2 shrink-0 rounded-full bg-primary/10 px-1.5 py-0.5 text-xs font-medium leading-none text-primary">
+            {t("memo.new-badge")}
+          </span>
         )}
       </div>
 

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { COMPACT_STATES, getMaxDisplayHeight } from "./constants";
+import { COMPACT_STATES, getCompactTriggerHeightPx, shouldCompactContent } from "./constants";
 import type { ContentCompactView } from "./types";
 
 export const useCompactMode = (enabled: boolean, revision: string) => {
@@ -12,8 +12,8 @@ export const useCompactMode = (enabled: boolean, revision: string) => {
       return;
     }
 
-    const maxHeight = getMaxDisplayHeight();
-    const shouldCompact = Math.max(containerRef.current.scrollHeight, containerRef.current.getBoundingClientRect().height) > maxHeight;
+    const contentHeight = Math.max(containerRef.current.scrollHeight, containerRef.current.getBoundingClientRect().height);
+    const shouldCompact = shouldCompactContent(contentHeight, getCompactTriggerHeightPx());
     setMode((currentMode) => {
       if (!shouldCompact) {
         return undefined;

@@ -6,8 +6,10 @@ import { deriveDefaultCreateTimeFromFilters } from "@/components/MemoEditor/util
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { useNewMemo } from "@/contexts/NewMemoContext";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
+import { hoistMemoToFront } from "@/hooks/useMemoSorting";
 import { userKeys } from "@/hooks/useUserQueries";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
@@ -102,8 +104,13 @@ const PagedMemoList = (props: Props) => {
   // Flatten pages into a single array of memos
   const memos = useMemo(() => data?.pages.flatMap((page) => page.memos) || [], [data]);
 
-  // Apply custom sorting if provided, otherwise use memos directly
-  const sortedMemoList = useMemo(() => (props.listSort ? props.listSort(memos) : memos), [memos, props.listSort]);
+  // Apply custom sorting if provided, otherwise use memos directly, then hoist
+  // a freshly created memo to the very top so it stays visible above pins.
+  const { newMemoName } = useNewMemo();
+  const sortedMemoList = useMemo(() => {
+    const sorted = props.listSort ? props.listSort(memos) : memos;
+    return hoistMemoToFront(sorted, newMemoName);
+  }, [memos, props.listSort, newMemoName]);
 
   // Prefetch creators when new data arrives to improve performance
   useEffect(() => {

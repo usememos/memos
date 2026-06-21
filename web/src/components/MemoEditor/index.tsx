@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
+import { useNewMemo } from "@/contexts/NewMemoContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { memoKeys } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
@@ -53,6 +54,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const { state, actions, dispatch } = useEditorContext();
   const { userGeneralSetting } = useAuth();
   const { aiSetting, fetchSetting } = useInstance();
+  const { markNewMemo } = useNewMemo();
   const [isAudioRecorderOpen, setIsAudioRecorderOpen] = useState(false);
   const [isTranscribingAudio, setIsTranscribingAudio] = useState(false);
 
@@ -278,6 +280,12 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
       // across reset), and memo #2 onward would silently fall back to "now".
       if (!memoName && defaultCreateTime) {
         dispatch(actions.setTimestamps({ createTime: defaultCreateTime, updateTime: defaultCreateTime }));
+      }
+
+      // Surface a freshly created top-level memo at the top of the list so it
+      // stays visible even when pinned memos would otherwise push it down.
+      if (!memoName && !parentMemoName) {
+        markNewMemo(result.memoName);
       }
 
       // Notify parent component of successful save

@@ -3,7 +3,7 @@ import { memo, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { extractMentionUsernames } from "@/utils/remark-plugins/remark-mention";
-import { COMPACT_MODE_CONFIG } from "./constants";
+import { COMPACT_MODE_CONFIG, getPreviewMaxHeightPx } from "./constants";
 import { useCompactLabel, useCompactMode } from "./hooks";
 import { MemoMarkdownRenderer } from "./MemoMarkdownRenderer";
 import { useResolvedMentionUsernames } from "./MentionResolutionContext";
@@ -36,7 +36,7 @@ const MemoContent = (props: MemoContentProps) => {
           showCompactMode === "ALL" && "overflow-hidden",
           contentClassName,
         )}
-        style={showCompactMode === "ALL" ? { maxHeight: `${COMPACT_MODE_CONFIG.maxHeightVh}vh` } : undefined}
+        style={showCompactMode === "ALL" ? { maxHeight: `${getPreviewMaxHeightPx()}px` } : undefined}
         onMouseUp={onClick}
         onDoubleClick={onDoubleClick}
       >

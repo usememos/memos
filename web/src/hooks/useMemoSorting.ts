@@ -20,6 +20,19 @@ const getMemoSortTime = (memo: Memo, timeBasis: MemoTimeBasis): Date | undefined
   return timestamp ? timestampDate(timestamp) : undefined;
 };
 
+// Moves the memo with the given name to the front of the list, above pinned
+// memos, so a freshly created memo is immediately visible. Returns the input
+// unchanged when the name is null, absent, or already first.
+export const hoistMemoToFront = (memos: Memo[], name: string | null): Memo[] => {
+  if (!name) return memos;
+  const index = memos.findIndex((memo) => memo.name === name);
+  if (index <= 0) return memos;
+  const reordered = memos.slice();
+  const [memo] = reordered.splice(index, 1);
+  reordered.unshift(memo);
+  return reordered;
+};
+
 export const useMemoSorting = (options: UseMemoSortingOptions = {}): UseMemoSortingResult => {
   const { pinnedFirst = false, state = State.NORMAL } = options;
   const { orderByTimeAsc, timeBasis } = useView();
