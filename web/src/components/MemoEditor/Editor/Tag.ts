@@ -3,19 +3,20 @@ import { InputRule, Mark, mergeAttributes } from "@tiptap/core";
 import type { TokenizerThis, Tokens } from "marked";
 import { marked } from "marked";
 import { tagStyles } from "@/lib/markdownStyles";
+import { MAX_TAG_LENGTH, TAG_CHAR_CLASS } from "@/utils/tag-grammar";
 
 // Default tag pill, shared with the read-only view (MemoContent/Tag.tsx).
 // Computed once — renderHTML runs on every view update.
 const TAG_CLASS = `${tagStyles.base} ${tagStyles.defaultColor}`;
 
-// Mirrors the renderer's tag lexer (web/src/utils/remark-plugins/remark-tag.ts):
-// letters, numbers, symbols, plus _ - / &, max 100 chars. Keep the two in sync.
-const TAG_CHAR = "[\\p{L}\\p{N}\\p{S}_\\-/&]";
-const TAG_INPUT_RULE = new RegExp(`(?:^|\\s)#(${TAG_CHAR}{1,100})\\s$`, "u");
-const TAG_TOKEN_RULE = new RegExp(`^#(${TAG_CHAR}{1,100})`, "u");
+// Built from the shared tag grammar (@/utils/tag-grammar) so the editor's
+// tokenizer/input rule can't drift from the read-only renderer's lexer
+// (web/src/utils/remark-plugins/remark-tag.ts).
+const TAG_INPUT_RULE = new RegExp(`(?:^|\\s)#(${TAG_CHAR_CLASS}{1,${MAX_TAG_LENGTH}})\\s$`, "u");
+const TAG_TOKEN_RULE = new RegExp(`^#(${TAG_CHAR_CLASS}{1,${MAX_TAG_LENGTH}})`, "u");
 // Tests the REMAINDER of the source (not a single code unit) so astral-plane
 // tag characters (emoji et al.) are seen whole, not as lone surrogates.
-const TAG_CHAR_AHEAD = new RegExp(`^${TAG_CHAR}`, "u");
+const TAG_CHAR_AHEAD = new RegExp(`^${TAG_CHAR_CLASS}`, "u");
 
 /**
  * Tag tokenizer, registered DIRECTLY on the global marked singleton instead of

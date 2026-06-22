@@ -2,7 +2,7 @@ import { create } from "@bufbuild/protobuf";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { useMemoInit } from "@/components/MemoEditor/hooks";
-import { EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
+import { EditorProvider, useEditorSelector } from "@/components/MemoEditor/state";
 import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
 const toastMock = vi.hoisted(() => vi.fn());
@@ -21,8 +21,8 @@ vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 function Harness({ content }: { content: string }) {
   const memo = create(MemoSchema, { name: "memos/1", content });
   useMemoInit({ editorRef: { current: null }, memo, username: "users/test" });
-  const { state } = useEditorContext();
-  return <span data-testid="mode">{state.ui.editorMode}</span>;
+  const editorMode = useEditorSelector((s) => s.ui.editorMode);
+  return <span data-testid="mode">{editorMode}</span>;
 }
 
 function renderGuard(content: string) {

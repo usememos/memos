@@ -2,7 +2,8 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { createRef } from "react";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { FormattingToolbar } from "@/components/MemoEditor/components/FormattingToolbar";
-import type { EditorController, FormattingController } from "@/components/MemoEditor/types/editorController";
+import { type ActiveFormatState, EMPTY_ACTIVE_FORMATS } from "@/components/MemoEditor/Editor/editorCommands";
+import type { EditorController } from "@/components/MemoEditor/types/editorController";
 
 // Match the repo convention: t echoes the i18n key (no i18next backend in tests),
 // so accessible names below are the keys themselves.
@@ -16,87 +17,80 @@ beforeAll(() => {
   Element.prototype.releasePointerCapture = vi.fn();
 });
 
-type Handle = EditorController & FormattingController;
-
-function makeController(overrides: Partial<Handle> = {}): Handle {
-  const noop = () => {};
-  return {
-    focus: noop,
+function makeController(opts: { active?: Partial<ActiveFormatState>; getSelectedText?: () => string } = {}) {
+  const run = vi.fn();
+  const activeFormats: ActiveFormatState = { ...EMPTY_ACTIVE_FORMATS, ...opts.active };
+  const controller: EditorController = {
+    focus: () => {},
     hasFocus: () => false,
     isEmpty: () => true,
     getMarkdown: () => "",
-    setMarkdown: noop,
-    insertMarkdown: noop,
-    scrollToCursor: noop,
-    selectAll: noop,
-    toggleBold: vi.fn(),
-    toggleItalic: vi.fn(),
-    toggleTaskList: vi.fn(),
-    toggleCode: vi.fn(),
-    toggleBulletList: vi.fn(),
-    toggleOrderedList: vi.fn(),
-    setHeading: vi.fn(),
-    setParagraph: vi.fn(),
-    toggleLink: vi.fn(),
-    getSelectedText: () => "",
-    isActive: () => false,
-    subscribe: () => () => {},
-    ...overrides,
+    setMarkdown: () => {},
+    insertMarkdown: vi.fn(),
+    scrollToCursor: () => {},
+    selectAll: () => {},
+    formatting: {
+      run,
+      getActiveFormats: () => activeFormats,
+      getSelectedText: opts.getSelectedText ?? (() => ""),
+      subscribe: () => () => {},
+    },
   };
+  return { controller, run };
 }
 
-function renderToolbar(controller: Handle, onExit = vi.fn()) {
-  const ref = createRef<Handle>();
+function renderToolbar(controller: EditorController, onExit = vi.fn()) {
+  const ref = createRef<EditorController>();
   ref.current = controller;
   render(<FormattingToolbar controllerRef={ref} onExit={onExit} />);
   return { onExit };
 }
 
 describe("FormattingToolbar", () => {
-  it("invokes toggleBold when the bold button is clicked", () => {
-    const controller = makeController();
+  it("runs the bold command when the bold button is clicked", () => {
+    const { controller, run } = makeController();
     renderToolbar(controller);
     fireEvent.click(screen.getByRole("button", { name: "editor.format.bold" }));
-    expect(controller.toggleBold).toHaveBeenCalledTimes(1);
+    expect(run).toHaveBeenCalledWith("bold");
   });
 
-  it("invokes setHeading when a heading level is chosen", () => {
-    const controller = makeController();
+  it("runs the heading command when a heading level is chosen", () => {
+    const { controller, run } = makeController();
     renderToolbar(controller);
     // Keyboard open is the most reliable path for Radix menus in jsdom.
     fireEvent.keyDown(screen.getByRole("button", { name: "editor.format.heading" }), { key: "Enter" });
     fireEvent.click(screen.getByRole("menuitem", { name: "editor.format.heading-2" }));
-    expect(controller.setHeading).toHaveBeenCalledWith(2);
+    expect(run).toHaveBeenCalledWith("heading2");
   });
 
   it("reflects active marks via aria-pressed", () => {
-    const controller = makeController({ isActive: (name) => name === "bold" });
+    const { controller } = makeController({ active: { bold: true } });
     renderToolbar(controller);
     expect(screen.getByRole("button", { name: "editor.format.bold" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("button", { name: "editor.format.italic" })).toHaveAttribute("aria-pressed", "false");
   });
 
   it("prompts for a URL and links the selection when adding a link", () => {
-    const controller = makeController({ getSelectedText: () => "memos" });
+    const { controller, run } = makeController({ getSelectedText: () => "memos" });
     const promptSpy = vi.spyOn(window, "prompt").mockReturnValue("https://usememos.com");
     renderToolbar(controller);
     fireEvent.click(screen.getByRole("button", { name: "editor.format.link" }));
-    expect(controller.toggleLink).toHaveBeenCalledWith("https://usememos.com");
+    expect(run).toHaveBeenCalledWith("link", { url: "https://usememos.com" });
     promptSpy.mockRestore();
   });
 
   it("removes an active link without prompting", () => {
-    const controller = makeController({ isActive: (name) => name === "link" });
+    const { controller, run } = makeController({ active: { link: true } });
     const promptSpy = vi.spyOn(window, "prompt");
     renderToolbar(controller);
     fireEvent.click(screen.getByRole("button", { name: "editor.format.link" }));
     expect(promptSpy).not.toHaveBeenCalled();
-    expect(controller.toggleLink).toHaveBeenCalledWith();
+    expect(run).toHaveBeenCalledWith("link");
     promptSpy.mockRestore();
   });
 
   it("calls onExit when the exit button is clicked", () => {
-    const controller = makeController();
+    const { controller } = makeController();
     const { onExit } = renderToolbar(controller);
     fireEvent.click(screen.getByRole("button", { name: "editor.exit-focus-mode" }));
     expect(onExit).toHaveBeenCalledTimes(1);

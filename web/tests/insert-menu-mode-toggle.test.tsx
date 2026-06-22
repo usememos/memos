@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import { EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
+import { EditorProvider, useEditorSelector } from "@/components/MemoEditor/state";
 import InsertMenu from "@/components/MemoEditor/Toolbar/InsertMenu";
 
 // useTranslate returns the i18n key directly (no i18next backend in tests).
@@ -20,8 +20,8 @@ beforeAll(() => {
 });
 
 function ModeProbe() {
-  const { state } = useEditorContext();
-  return <span data-testid="mode">{state.ui.editorMode}</span>;
+  const editorMode = useEditorSelector((s) => s.ui.editorMode);
+  return <span data-testid="mode">{editorMode}</span>;
 }
 
 function renderInsertMenu() {

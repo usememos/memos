@@ -1,7 +1,9 @@
+import type { ActiveFormatState, EditorCommandContext, EditorCommandId } from "../Editor/editorCommands";
+
 /**
  * The contract both memo editors (raw textarea and WYSIWYG) implement.
- * Everything outside an editor implementation must talk markdown through this
- * interface and never reach for an editor's internal DOM/ProseMirror APIs.
+ * Everything outside an editor implementation talks markdown through this
+ * interface and never reaches for an editor's internal DOM/ProseMirror APIs.
  */
 export interface EditorController {
   focus(): void;
@@ -17,43 +19,28 @@ export interface EditorController {
   scrollToCursor(): void;
   /** Select the entire document (used by tests and select-all flows). */
   selectAll(): void;
-  // Formatting intents — each editor realizes them natively.
-  toggleBold(): void;
-  toggleItalic(): void;
-  toggleTaskList(): void;
+  /**
+   * Rich-formatting capability. Present only on editors that support it — the
+   * WYSIWYG editor sets it; the raw textarea leaves it undefined. The
+   * focus-mode FormattingToolbar (its only consumer) is shown solely in WYSIWYG
+   * mode, so it can rely on this being present.
+   */
+  formatting?: FormattingController;
 }
 
-/** Heading levels surfaced in the formatting toolbar's heading dropdown. */
-export type ToolbarHeadingLevel = 1 | 2 | 3;
-
 /**
- * Rich-formatting surface used by the focus-mode FormattingToolbar. Additive to
- * EditorController and implemented only by the WYSIWYG editor — the toolbar is
- * never shown for the raw editor, so EditorContent routes these to the WYSIWYG
- * handle and returns inert defaults in raw mode.
- *
- * isActive / subscribe are the sanctioned (and only) place ProseMirror state
- * leaks across the editor boundary, so toolbar buttons can reflect live state.
+ * Rich-formatting surface, backed by the editor command catalog
+ * (Editor/editorCommands.ts). `getActiveFormats` is the sanctioned, typed place
+ * editor state crosses the boundary — ProseMirror node/mark names never leak
+ * out as stringly-typed `isActive(name)` calls.
  */
 export interface FormattingController {
-  // toggleBold / toggleItalic / toggleTaskList come from EditorController — the
-  // toolbar always consumes `EditorController & FormattingController`.
-  toggleCode(): void;
-  toggleBulletList(): void;
-  toggleOrderedList(): void;
-  /** Set the current block to a heading of the given level. */
-  setHeading(level: ToolbarHeadingLevel): void;
-  /** Set the current block back to a paragraph. */
-  setParagraph(): void;
-  /**
-   * Toggle a link. When a link is active it is removed; otherwise the given URL
-   * is applied to the current selection/word. No-ops when adding without a URL.
-   */
-  toggleLink(url?: string): void;
+  /** Run a catalog command (e.g. "bold", "heading2", "link"). */
+  run(command: EditorCommandId, ctx?: EditorCommandContext): void;
+  /** Snapshot of which marks/blocks are active at the current selection. */
+  getActiveFormats(): ActiveFormatState;
   /** Plain text of the current selection ("" when the selection is empty). */
   getSelectedText(): string;
-  /** Whether a mark/node (optionally with attrs) is active at the selection. */
-  isActive(name: string, attrs?: Record<string, unknown>): boolean;
-  /** Register a listener fired on every editor transaction/selection change. Returns an unsubscribe. */
+  /** Register a listener fired on every transaction/selection change. Returns an unsubscribe. */
   subscribe(listener: () => void): () => void;
 }

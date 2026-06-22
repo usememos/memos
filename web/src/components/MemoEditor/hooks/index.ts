@@ -5,7 +5,7 @@ export { useAudioWaveform } from "./useAudioWaveform";
 export { useAutoSave } from "./useAutoSave";
 export { useBlobUrls } from "./useBlobUrls";
 export { useDragAndDrop } from "./useDragAndDrop";
-export { type ActiveMarks, useEditorActiveState } from "./useEditorActiveState";
+export { useEditorActiveState } from "./useEditorActiveState";
 export { COMPACT_TOOLBAR_WIDTH, isCompactWidth, useElementWidth } from "./useElementWidth";
 export { useFileUpload } from "./useFileUpload";
 export { useFocusMode } from "./useFocusMode";

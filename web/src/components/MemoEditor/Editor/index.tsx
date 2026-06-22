@@ -9,9 +9,10 @@ import { useTagCounts } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
 import { ROUTES as Routes } from "@/router/routes";
 import { EDITOR_HEIGHT } from "../constants";
-import type { EditorController, FormattingController } from "../types/editorController";
+import type { EditorController } from "../types/editorController";
+import { EDITOR_COMMANDS_BY_ID, EMPTY_ACTIVE_FORMATS, getActiveFormats } from "./editorCommands";
 import { buildExtensions } from "./extensions";
-import { TagSuggestion } from "./TagSuggestion";
+import { createTagSuggestion } from "./TagSuggestion";
 
 // Mod-Enter is the app-wide "save memo" shortcut (useKeyboard). StarterKit's
 // HardBreak extension also binds Mod-Enter to insert a hard break, which would
@@ -82,7 +83,7 @@ function serializeMarkdown(editor: { getMarkdown: () => string } | null): string
  * serializeMarkdown() on every update. IME, list continuation, input rules,
  * and auto-grow are native ProseMirror/contenteditable behavior.
  */
-const Editor = forwardRef<EditorController & FormattingController, EditorProps>(function Editor(props, ref) {
+const Editor = forwardRef<EditorController, EditorProps>(function Editor(props, ref) {
   const { className, initialContent, placeholder, isFocusMode, onContentChange, onPaste } = props;
 
   // Last markdown emitted through onContentChange, so the sync effect can
@@ -100,7 +101,7 @@ const Editor = forwardRef<EditorController & FormattingController, EditorProps>(
   onPasteRef.current = onPaste;
 
   // On the explore page suggestions include all users' tags; otherwise the
-  // current user's. Same sourcing as the raw editor's TagSuggestions.
+  // current user's.
   const isExplorePage = useMemo(() => Boolean(matchPath(Routes.EXPLORE, window.location.pathname)), []);
   const { data: tagCount = {} } = useTagCounts(!isExplorePage);
   const sortedTags = useMemo(
@@ -123,7 +124,7 @@ const Editor = forwardRef<EditorController & FormattingController, EditorProps>(
     () => [
       ...buildExtensions(),
       Placeholder.configure({ placeholder: () => placeholderRef.current }),
-      TagSuggestion.configure({ getTags: () => tagsRef.current }),
+      createTagSuggestion({ getTags: () => tagsRef.current }),
       SaveShortcutPassthrough,
       CollapseAllSelectionAfterDelete,
     ],
@@ -200,7 +201,7 @@ const Editor = forwardRef<EditorController & FormattingController, EditorProps>(
 
   useImperativeHandle(
     ref,
-    (): EditorController & FormattingController => ({
+    (): EditorController => ({
       focus: () => editor?.commands.focus(),
       hasFocus: () => editor?.isFocused ?? false,
       // Contract: whitespace-only counts as empty. The editor's structural
@@ -211,41 +212,29 @@ const Editor = forwardRef<EditorController & FormattingController, EditorProps>(
       insertMarkdown: (markdown) => editor?.chain().focus().insertContent(markdown, { contentType: "markdown" }).run(),
       scrollToCursor: () => editor?.commands.scrollIntoView(),
       selectAll: () => editor?.commands.selectAll(),
-      toggleBold: () => editor?.chain().focus().toggleBold().run(),
-      toggleItalic: () => editor?.chain().focus().toggleItalic().run(),
-      toggleTaskList: () => editor?.chain().focus().toggleTaskList().run(),
-      toggleCode: () => editor?.chain().focus().toggleCode().run(),
-      toggleBulletList: () => editor?.chain().focus().toggleBulletList().run(),
-      toggleOrderedList: () => editor?.chain().focus().toggleOrderedList().run(),
-      setHeading: (level) => editor?.chain().focus().setHeading({ level }).run(),
-      setParagraph: () => editor?.chain().focus().setParagraph().run(),
-      toggleLink: (url) => {
-        if (!editor) {
-          return;
-        }
-        if (editor.isActive("link")) {
-          editor.chain().focus().unsetLink().run();
-          return;
-        }
-        const href = url?.trim();
-        if (!href) {
-          return;
-        }
-        editor.chain().focus().extendMarkRange("link").setLink({ href }).run();
-      },
-      getSelectedText: () => {
-        if (!editor) {
-          return "";
-        }
-        const { from, to } = editor.state.selection;
-        return editor.state.doc.textBetween(from, to, " ");
-      },
-      isActive: (name, attrs) => editor?.isActive(name, attrs ?? {}) ?? false,
-      subscribe: (listener) => {
-        activeListenersRef.current.add(listener);
-        return () => {
-          activeListenersRef.current.delete(listener);
-        };
+      // WYSIWYG supports rich formatting; the whole surface is driven by the
+      // shared command catalog (editorCommands.ts), so adding a verb there
+      // flows here — and to the toolbar and active-state — with no edit here.
+      formatting: {
+        run: (command, ctx) => {
+          if (editor) {
+            EDITOR_COMMANDS_BY_ID[command]?.run(editor, ctx);
+          }
+        },
+        getActiveFormats: () => (editor ? getActiveFormats(editor) : EMPTY_ACTIVE_FORMATS),
+        getSelectedText: () => {
+          if (!editor) {
+            return "";
+          }
+          const { from, to } = editor.state.selection;
+          return editor.state.doc.textBetween(from, to, " ");
+        },
+        subscribe: (listener) => {
+          activeListenersRef.current.add(listener);
+          return () => {
+            activeListenersRef.current.delete(listener);
+          };
+        },
       },
     }),
     [editor],

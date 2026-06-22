@@ -1,24 +1,7 @@
 import type { Root, Text } from "mdast";
 import type { Node as UnistNode } from "unist";
 import type { TagNode, TagNodeData } from "@/types/markdown";
-
-const MAX_TAG_LENGTH = 100;
-
-function isTagChar(char: string): boolean {
-  if (/\p{L}/u.test(char)) {
-    return true;
-  }
-
-  if (/\p{N}/u.test(char)) {
-    return true;
-  }
-
-  if (/\p{S}/u.test(char)) {
-    return true;
-  }
-
-  return char === "_" || char === "-" || char === "/" || char === "&";
-}
+import { isTagChar, MAX_TAG_LENGTH } from "@/utils/tag-grammar";
 
 function parseTagsFromText(text: string): Array<{ type: "text"; value: string } | { type: "tag"; value: string }> {
   const segments: Array<{ type: "text"; value: string } | { type: "tag"; value: string }> = [];

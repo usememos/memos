@@ -2,10 +2,14 @@ import { create } from "@bufbuild/protobuf";
 import { useRef } from "react";
 import { type MotionMedia, MotionMediaFamily, MotionMediaRole, MotionMediaSchema } from "@/types/proto/api/v1/attachment_service_pb";
 import type { LocalFile } from "../types/attachment";
+import { useBlobUrls } from "./useBlobUrls";
 
 export const useFileUpload = (onFilesSelected: (localFiles: LocalFile[]) => void) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const selectingFlagRef = useRef(false);
+  // Track preview blob URLs so they're revoked on unmount instead of leaking
+  // (matches the paste/drop/audio paths, which all go through useBlobUrls).
+  const { createBlobUrl } = useBlobUrls();
 
   const handleFileInputChange = (event?: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(fileInputRef.current?.files || event?.target.files || []);
@@ -16,7 +20,7 @@ export const useFileUpload = (onFilesSelected: (localFiles: LocalFile[]) => void
     const localFiles: LocalFile[] = pairAppleLivePhotoFiles(
       files.map((file) => ({
         file,
-        previewUrl: URL.createObjectURL(file),
+        previewUrl: createBlobUrl(file),
         origin: "upload",
       })),
     );

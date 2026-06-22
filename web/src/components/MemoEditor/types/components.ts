@@ -1,5 +1,5 @@
 import type { Location, Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
-import type { EditorState } from "../state";
+import type { AudioRecorderStatus } from "../hooks/useAudioRecorder";
 
 export interface MemoEditorProps {
   className?: string;
@@ -37,7 +37,7 @@ export interface EditorMetadataProps {
 }
 
 export interface AudioRecorderPanelProps {
-  audioRecorder: EditorState["audioRecorder"];
+  audioRecorder: { status: AudioRecorderStatus; elapsedSeconds: number };
   /** Active mic stream while recording; used for live waveform visualization. */
   mediaStream: MediaStream | null;
   onStop: () => void;

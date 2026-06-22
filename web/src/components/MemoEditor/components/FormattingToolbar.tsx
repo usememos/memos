@@ -1,16 +1,4 @@
-import {
-  BoldIcon,
-  CodeIcon,
-  HeadingIcon,
-  ItalicIcon,
-  LinkIcon,
-  ListIcon,
-  ListOrderedIcon,
-  ListTodoIcon,
-  type LucideIcon,
-  Minimize2Icon,
-  MoreHorizontalIcon,
-} from "lucide-react";
+import { HeadingIcon, type LucideIcon, Minimize2Icon, MoreHorizontalIcon } from "lucide-react";
 import { type RefObject, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,20 +10,30 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
+import {
+  EDITOR_COMMANDS,
+  EDITOR_COMMANDS_BY_ID,
+  type EditorCommand,
+  type EditorCommandId,
+  isCommandActive,
+} from "../Editor/editorCommands";
 import { isCompactWidth, useEditorActiveState, useElementWidth } from "../hooks";
-import type { EditorController, FormattingController, ToolbarHeadingLevel } from "../types/editorController";
+import type { EditorController } from "../types/editorController";
 
 interface FormattingToolbarProps {
-  controllerRef: RefObject<(EditorController & FormattingController) | null>;
+  controllerRef: RefObject<EditorController | null>;
   onExit: () => void;
   /** Extra classes for the host to frame the toolbar (e.g. the focus-mode header band). */
   className?: string;
 }
 
-const HEADING_LEVELS: ToolbarHeadingLevel[] = [1, 2, 3];
+const MARK_COMMANDS = EDITOR_COMMANDS.filter((command) => command.group === "mark");
+const LIST_COMMANDS = EDITOR_COMMANDS.filter((command) => command.group === "list");
+// Paragraph + headings render as a single label-only dropdown (a closed set).
+const HEADING_COMMANDS = EDITOR_COMMANDS.filter((command) => command.group === "heading");
 
 interface ToolbarButton {
-  Icon: LucideIcon;
+  Icon?: LucideIcon;
   label: string;
   active: boolean;
   onClick: () => void;
@@ -43,9 +41,10 @@ interface ToolbarButton {
 
 /**
  * Focus-mode header: a rich-text formatting toolbar driven entirely through the
- * editor controller. Purely presentational — owns no editor state beyond the
- * derived active-marks map. Responsive: below COMPACT_TOOLBAR_WIDTH the list and
- * link controls fold into a "more" menu while marks stay inline.
+ * editor controller's formatting capability. Every button is derived from the
+ * shared command catalog (Editor/editorCommands.ts), so adding a verb there
+ * surfaces it here automatically. Responsive: below COMPACT_TOOLBAR_WIDTH the
+ * list and link controls fold into a "more" menu while marks stay inline.
  */
 export function FormattingToolbar({ controllerRef, onExit, className }: FormattingToolbarProps) {
   const t = useTranslate();
@@ -54,57 +53,42 @@ export function FormattingToolbar({ controllerRef, onExit, className }: Formatti
   const compact = isCompactWidth(width);
   const active = useEditorActiveState(controllerRef);
 
+  const run = (id: EditorCommandId) => controllerRef.current?.formatting?.run(id);
+
   const handleLink = () => {
-    const controller = controllerRef.current;
-    if (!controller) {
+    const formatting = controllerRef.current?.formatting;
+    if (!formatting) {
       return;
     }
-    if (controller.isActive("link")) {
-      controller.toggleLink();
+    if (formatting.getActiveFormats().link) {
+      formatting.run("link");
       return;
     }
     const url = window.prompt(t("editor.format.link-prompt"));
     if (!url) {
       return;
     }
-    const selected = controller.getSelectedText();
+    const selected = formatting.getSelectedText();
     if (selected) {
-      controller.toggleLink(url);
+      formatting.run("link", { url });
     } else {
-      controller.insertMarkdown(`[${url}](${url})`);
+      controllerRef.current?.insertMarkdown(`[${url}](${url})`);
     }
   };
 
-  const headingLabel = active.headingLevel === null ? t("editor.format.paragraph") : t(`editor.format.heading-${active.headingLevel}`);
+  // Map a catalog command to a toolbar button. `link` keeps its bespoke
+  // prompt-then-apply flow; everything else just runs its command.
+  const toButton = (command: EditorCommand): ToolbarButton => ({
+    Icon: command.icon,
+    label: t(command.labelKey),
+    active: isCommandActive(active, command.id),
+    onClick: command.id === "link" ? handleLink : () => run(command.id),
+  });
 
-  // One descriptor per control drives both layouts, so each action's icon,
-  // label, active flag, and command live in a single place.
-  const markButtons: ToolbarButton[] = [
-    { Icon: BoldIcon, label: t("editor.format.bold"), active: active.bold, onClick: () => controllerRef.current?.toggleBold() },
-    { Icon: ItalicIcon, label: t("editor.format.italic"), active: active.italic, onClick: () => controllerRef.current?.toggleItalic() },
-    { Icon: CodeIcon, label: t("editor.format.code"), active: active.code, onClick: () => controllerRef.current?.toggleCode() },
-  ];
-  const listButtons: ToolbarButton[] = [
-    {
-      Icon: ListIcon,
-      label: t("editor.format.bullet-list"),
-      active: active.bulletList,
-      onClick: () => controllerRef.current?.toggleBulletList(),
-    },
-    {
-      Icon: ListOrderedIcon,
-      label: t("editor.format.ordered-list"),
-      active: active.orderedList,
-      onClick: () => controllerRef.current?.toggleOrderedList(),
-    },
-    {
-      Icon: ListTodoIcon,
-      label: t("editor.format.task-list"),
-      active: active.taskList,
-      onClick: () => controllerRef.current?.toggleTaskList(),
-    },
-  ];
-  const linkButton: ToolbarButton = { Icon: LinkIcon, label: t("editor.format.link"), active: active.link, onClick: handleLink };
+  const headingLabel = active.headingLevel === null ? t("editor.format.paragraph") : t(`editor.format.heading-${active.headingLevel}`);
+  const markButtons = MARK_COMMANDS.map(toButton);
+  const listButtons = LIST_COMMANDS.map(toButton);
+  const linkButton = toButton(EDITOR_COMMANDS_BY_ID.link);
 
   return (
     <div
@@ -121,10 +105,9 @@ export function FormattingToolbar({ controllerRef, onExit, className }: Formatti
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={() => controllerRef.current?.setParagraph()}>{t("editor.format.paragraph")}</DropdownMenuItem>
-          {HEADING_LEVELS.map((level) => (
-            <DropdownMenuItem key={level} onClick={() => controllerRef.current?.setHeading(level)}>
-              {t(`editor.format.heading-${level}`)}
+          {HEADING_COMMANDS.map((command) => (
+            <DropdownMenuItem key={command.id} onClick={() => run(command.id)}>
+              {t(command.labelKey)}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
@@ -182,7 +165,7 @@ function FmtButton({ Icon, active, label, onClick }: ToolbarButton) {
   // kit usage policy) rather than overriding className.
   return (
     <Button variant={active ? "secondary" : "ghost"} size="icon" aria-label={label} aria-pressed={active} title={label} onClick={onClick}>
-      <Icon className="w-4 h-4" />
+      {Icon && <Icon className="w-4 h-4" />}
     </Button>
   );
 }

@@ -25,7 +25,7 @@ interface SuggestionMenuProps<T> {
   getItemKey: (item: T) => string;
 }
 
-// Visual parity with the textarea editor's popup (Editor/SuggestionsPopup.tsx).
+// Floating popup chrome shared by every suggestion trigger (tags today, more later).
 const MENU_STYLES = {
   container:
     "z-50 p-1 max-w-48 max-h-60 rounded border bg-popover text-popover-foreground shadow-lg font-mono flex flex-col overflow-y-auto overflow-x-hidden",

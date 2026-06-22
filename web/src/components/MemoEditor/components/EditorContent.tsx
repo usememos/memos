@@ -2,10 +2,10 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 
 import Editor from "../Editor";
 import { useBlobUrls, useDragAndDrop } from "../hooks";
 import PlainEditor from "../PlainEditor";
-import { useEditorContext } from "../state";
+import { useEditorContext, useEditorSelector } from "../state";
 import type { EditorContentProps } from "../types";
 import type { LocalFile } from "../types/attachment";
-import type { EditorController, FormattingController, ToolbarHeadingLevel } from "../types/editorController";
+import type { EditorController } from "../types/editorController";
 
 /**
  * Hosts one of the two editor implementations behind the EditorController
@@ -13,14 +13,16 @@ import type { EditorController, FormattingController, ToolbarHeadingLevel } from
  * handoff: both editors serialize into state.content on every change, so the
  * incoming editor simply initializes from it.
  */
-export const EditorContent = forwardRef<EditorController & FormattingController, EditorContentProps>(({ placeholder }, ref) => {
-  const { state, actions, dispatch } = useEditorContext();
+export const EditorContent = forwardRef<EditorController, EditorContentProps>(({ placeholder }, ref) => {
+  const { actions, dispatch } = useEditorContext();
   const { createBlobUrl } = useBlobUrls();
-  const mode = state.ui.editorMode;
+  const content = useEditorSelector((s) => s.content);
+  const mode = useEditorSelector((s) => s.ui.editorMode);
+  const isFocusMode = useEditorSelector((s) => s.ui.isFocusMode);
 
   // Both editors implement EditorController; the host holds one ref each and
   // routes the parent's single ref to whichever mode is active.
-  const wysiwygRef = useRef<EditorController & FormattingController>(null);
+  const wysiwygRef = useRef<EditorController>(null);
   const plainRef = useRef<EditorController>(null);
 
   const modeRef = useRef(mode);
@@ -40,7 +42,7 @@ export const EditorContent = forwardRef<EditorController & FormattingController,
 
   useImperativeHandle(
     ref,
-    (): EditorController & FormattingController => ({
+    (): EditorController => ({
       focus: () => getActive()?.focus(),
       hasFocus: () => getActive()?.hasFocus() ?? false,
       isEmpty: () => getActive()?.isEmpty() ?? true,
@@ -49,20 +51,12 @@ export const EditorContent = forwardRef<EditorController & FormattingController,
       insertMarkdown: (markdown) => getActive()?.insertMarkdown(markdown),
       scrollToCursor: () => getActive()?.scrollToCursor(),
       selectAll: () => getActive()?.selectAll(),
-      toggleBold: () => getActive()?.toggleBold(),
-      toggleItalic: () => getActive()?.toggleItalic(),
-      toggleTaskList: () => getActive()?.toggleTaskList(),
-      // Formatting surface — only the WYSIWYG editor implements it; inert in raw
-      // mode, where the toolbar is never shown.
-      toggleCode: () => wysiwygRef.current?.toggleCode(),
-      toggleBulletList: () => wysiwygRef.current?.toggleBulletList(),
-      toggleOrderedList: () => wysiwygRef.current?.toggleOrderedList(),
-      setHeading: (level: ToolbarHeadingLevel) => wysiwygRef.current?.setHeading(level),
-      setParagraph: () => wysiwygRef.current?.setParagraph(),
-      toggleLink: (url?: string) => wysiwygRef.current?.toggleLink(url),
-      getSelectedText: () => wysiwygRef.current?.getSelectedText() ?? "",
-      isActive: (name: string, attrs?: Record<string, unknown>) => wysiwygRef.current?.isActive(name, attrs) ?? false,
-      subscribe: (listener: () => void) => wysiwygRef.current?.subscribe(listener) ?? (() => {}),
+      // Formatting is whatever the active editor exposes: the WYSIWYG editor
+      // provides it, the raw textarea leaves it undefined. No more faking a
+      // per-verb inert surface — the toolbar simply isn't shown in raw mode.
+      get formatting() {
+        return getActive()?.formatting;
+      },
     }),
     [getActive],
   );
@@ -112,9 +106,9 @@ export const EditorContent = forwardRef<EditorController & FormattingController,
         <Editor
           ref={wysiwygRef}
           className="memo-editor-content"
-          initialContent={state.content}
+          initialContent={content}
           placeholder={placeholder || ""}
-          isFocusMode={state.ui.isFocusMode}
+          isFocusMode={isFocusMode}
           onContentChange={handleContentChange}
           onPaste={handlePaste}
         />
@@ -122,9 +116,9 @@ export const EditorContent = forwardRef<EditorController & FormattingController,
         <PlainEditor
           ref={plainRef}
           className="memo-editor-content"
-          initialContent={state.content}
+          initialContent={content}
           placeholder={placeholder || ""}
-          isFocusMode={state.ui.isFocusMode}
+          isFocusMode={isFocusMode}
           onContentChange={handleContentChange}
           onPaste={handlePaste}
         />

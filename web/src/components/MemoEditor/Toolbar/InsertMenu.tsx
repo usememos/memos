@@ -33,13 +33,15 @@ import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { setPreferredEditorMode } from "../editorMode";
 import { useFileUpload, useLinkMemo, useLocation } from "../hooks";
-import { useEditorContext } from "../state";
+import { useEditorContext, useEditorSelector } from "../state";
 import type { InsertMenuProps } from "../types";
 import type { LocalFile } from "../types/attachment";
 
 const InsertMenu = (props: InsertMenuProps) => {
   const t = useTranslate();
-  const { state, actions, dispatch } = useEditorContext();
+  const { actions, dispatch } = useEditorContext();
+  const relations = useEditorSelector((s) => s.metadata.relations);
+  const editorMode = useEditorSelector((s) => s.ui.editorMode);
   const { location: initialLocation, onLocationChange, onToggleFocusMode, isUploading: isUploadingProp } = props;
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
@@ -58,9 +60,9 @@ const InsertMenu = (props: InsertMenuProps) => {
   const linkMemo = useLinkMemo({
     isOpen: linkDialogOpen,
     currentMemoName: props.memoName,
-    existingRelations: state.metadata.relations,
+    existingRelations: relations,
     onAddRelation: (relation: MemoRelation) => {
-      dispatch(actions.setMetadata({ relations: uniqBy([...state.metadata.relations, relation], (r) => r.relatedMemo?.name) }));
+      dispatch(actions.setMetadata({ relations: uniqBy([...relations, relation], (r) => r.relatedMemo?.name) }));
       setLinkDialogOpen(false);
     },
   });
@@ -223,7 +225,7 @@ const InsertMenu = (props: InsertMenuProps) => {
                 {t("editor.focus-mode")}
               </DropdownMenuItem>
               {/* Editor display mode: checked = rich text (WYSIWYG), unchecked = raw Markdown */}
-              <DropdownMenuCheckboxItem checked={state.ui.editorMode === "wysiwyg"} onCheckedChange={handleEditorModeChange}>
+              <DropdownMenuCheckboxItem checked={editorMode === "wysiwyg"} onCheckedChange={handleEditorModeChange}>
                 {t("editor.wysiwyg-editor")}
               </DropdownMenuCheckboxItem>
             </DropdownMenuSubContent>

@@ -71,16 +71,16 @@ describe("Editor EditorController", () => {
     expect(onContentChange).toHaveBeenCalledWith(expect.stringContaining("hello"));
   });
 
-  it("toggleBold bolds the selected text", () => {
+  it("formatting.run('bold') bolds the selected text", () => {
     const { ref } = setup("bold me");
     act(() => ref.current?.selectAll());
-    act(() => ref.current?.toggleBold());
+    act(() => ref.current?.formatting?.run("bold"));
     expect(ref.current?.getMarkdown()).toBe("**bold me**");
   });
 
-  it("toggleTaskList converts the current block", () => {
+  it("formatting.run('taskList') converts the current block", () => {
     const { ref } = setup("buy milk");
-    act(() => ref.current?.toggleTaskList());
+    act(() => ref.current?.formatting?.run("taskList"));
     expect(ref.current?.getMarkdown()).toBe("- [ ] buy milk");
   });
 });

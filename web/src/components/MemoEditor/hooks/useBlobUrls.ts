@@ -18,11 +18,5 @@ export function useBlobUrls() {
       urlsRef.current.add(url);
       return url;
     },
-    revokeBlobUrl: (url: string) => {
-      if (urlsRef.current.has(url)) {
-        URL.revokeObjectURL(url);
-        urlsRef.current.delete(url);
-      }
-    },
   };
 }

@@ -22,15 +22,9 @@ interface TextareaActions {
   insertText: (text: string, prefix?: string, suffix?: string) => void;
   setContent: (text: string) => void;
   getContent: () => string;
-  getSelectedContent: () => string;
   getCursorPosition: () => number;
   setCursorPosition: (startPos: number, endPos?: number) => void;
-  getCursorLineNumber: () => number;
-  getLine: (lineNumber: number) => string;
-  setLine: (lineNumber: number, text: string) => void;
 }
-
-const TASK_PREFIX = "- [ ] ";
 
 const PlainEditor = forwardRef(function PlainEditor(props: PlainEditorProps, ref: React.ForwardedRef<EditorController>) {
   const { className, initialContent, placeholder, onPaste, onContentChange: handleContentChangeCallback, isFocusMode } = props;
@@ -117,11 +111,6 @@ const PlainEditor = forwardRef(function PlainEditor(props: PlainEditorProps, ref
         }
       },
       getContent: () => editorRef.current?.value ?? "",
-      getSelectedContent: () => {
-        const editor = editorRef.current;
-        if (!editor) return "";
-        return editor.value.slice(editor.selectionStart, editor.selectionEnd);
-      },
       getCursorPosition: () => editorRef.current?.selectionStart ?? 0,
       setCursorPosition: (startPos: number, endPos?: number) => {
         const editor = editorRef.current;
@@ -130,28 +119,14 @@ const PlainEditor = forwardRef(function PlainEditor(props: PlainEditorProps, ref
         const endPosition = endPos !== undefined && !Number.isNaN(endPos) ? endPos : startPos;
         editor.setSelectionRange(startPos, endPosition);
       },
-      getCursorLineNumber: () => {
-        const editor = editorRef.current;
-        if (!editor) return 0;
-        const lines = editor.value.slice(0, editor.selectionStart).split("\n");
-        return lines.length - 1;
-      },
-      getLine: (lineNumber: number) => editorRef.current?.value.split("\n")[lineNumber] ?? "",
-      setLine: (lineNumber: number, text: string) => {
-        const editor = editorRef.current;
-        if (!editor) return;
-        const lines = editor.value.split("\n");
-        lines[lineNumber] = text;
-        editor.value = lines.join("\n");
-        editor.focus();
-        updateContent();
-      },
     }),
     [updateContent, scrollToCaret],
   );
 
-  // Realize the shared EditorController contract on top of textarea surgery, so
-  // the toolbar's formatting toggles and the mode-routing host talk markdown.
+  // The raw textarea is an honest fallback: it realizes only the core
+  // EditorController surface (markdown in/out, focus, selection) on top of
+  // textarea string ops. It exposes no `formatting` capability — the focus-mode
+  // toolbar is WYSIWYG-only — so rich formatting is never faked here.
   useImperativeHandle(
     ref,
     (): EditorController => ({
@@ -175,19 +150,6 @@ const PlainEditor = forwardRef(function PlainEditor(props: PlainEditorProps, ref
       },
       scrollToCursor: () => actions.scrollToCursor(),
       selectAll: () => actions.setCursorPosition(0, actions.getContent().length),
-      toggleBold: () => toggleTextStyle(actions, "**"),
-      toggleItalic: () => toggleTextStyle(actions, "*"),
-      toggleTaskList: () => {
-        const lineNumber = actions.getCursorLineNumber();
-        const line = actions.getLine(lineNumber);
-        const taskMatch = line.match(/^(\s*)- \[[ xX]\] /);
-        if (taskMatch) {
-          actions.setLine(lineNumber, taskMatch[1] + line.slice(taskMatch[0].length));
-        } else {
-          const indent = line.match(/^(\s*)/)?.[1] ?? "";
-          actions.setLine(lineNumber, `${indent}${TASK_PREFIX}${line.slice(indent.length)}`);
-        }
-      },
     }),
     [actions],
   );
@@ -232,42 +194,5 @@ const PlainEditor = forwardRef(function PlainEditor(props: PlainEditorProps, ref
     </div>
   );
 });
-
-function toggleTextStyle(editor: TextareaActions, delimiter: string): void {
-  const cursorPosition = editor.getCursorPosition();
-  const selectedContent = editor.getSelectedContent();
-  const isStyled = isTextStyled(selectedContent, delimiter);
-
-  if (isStyled) {
-    const unstyled = selectedContent.slice(delimiter.length, -delimiter.length);
-    editor.insertText(unstyled);
-    editor.setCursorPosition(cursorPosition, cursorPosition + unstyled.length);
-  } else {
-    editor.insertText(`${delimiter}${selectedContent}${delimiter}`);
-    editor.setCursorPosition(cursorPosition + delimiter.length, cursorPosition + delimiter.length + selectedContent.length);
-  }
-}
-
-function isTextStyled(text: string, delimiter: string): boolean {
-  if (!text.startsWith(delimiter) || !text.endsWith(delimiter)) {
-    return false;
-  }
-  if (delimiter !== "*") {
-    return true;
-  }
-  const leadingAsterisks = countConsecutive(text, "*", "start");
-  const trailingAsterisks = countConsecutive(text, "*", "end");
-  return leadingAsterisks % 2 === 1 && trailingAsterisks % 2 === 1;
-}
-
-function countConsecutive(text: string, character: string, position: "start" | "end"): number {
-  let count = 0;
-  let index = position === "start" ? 0 : text.length - 1;
-  while (index >= 0 && index < text.length && text[index] === character) {
-    count += 1;
-    index += position === "start" ? 1 : -1;
-  }
-  return count;
-}
 
 export default PlainEditor;

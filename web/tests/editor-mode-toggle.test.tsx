@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { EditorContent } from "@/components/MemoEditor/components/EditorContent";
-import { EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
+import { EditorProvider, useEditorContext, useEditorSelector } from "@/components/MemoEditor/state";
 
 vi.mock("@/hooks/useUserQueries", () => ({
   useTagCounts: () => ({ data: {} }),
@@ -11,15 +11,16 @@ vi.mock("@/hooks/useUserQueries", () => ({
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 
 function ModeProbe() {
-  const { state, actions, dispatch } = useEditorContext();
+  const { actions, dispatch } = useEditorContext();
+  const editorMode = useEditorSelector((s) => s.ui.editorMode);
   return (
     <>
       <button
         type="button"
         data-testid="probe-toggle"
-        onClick={() => dispatch(actions.setEditorMode(state.ui.editorMode === "wysiwyg" ? "raw" : "wysiwyg"))}
+        onClick={() => dispatch(actions.setEditorMode(editorMode === "wysiwyg" ? "raw" : "wysiwyg"))}
       >
-        {state.ui.editorMode}
+        {editorMode}
       </button>
       <button type="button" data-testid="probe-set-content" onClick={() => dispatch(actions.updateContent("from **wysiwyg**"))}>
         set content

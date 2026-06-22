@@ -34,36 +34,11 @@ describe("PlainEditor EditorController", () => {
     expect(textarea.value).toBe("first line\n\ntranscribed");
   });
 
-  it("toggleBold wraps the selection in **", () => {
-    const { controller, textarea } = setup("read the docs");
-    textarea.setSelectionRange(9, 13);
-    controller.toggleBold();
-    expect(textarea.value).toBe("read the **docs**");
-  });
-
-  it("toggleTaskList prefixes and unprefixes the current line", () => {
-    const { controller, textarea } = setup("buy milk");
-    textarea.setSelectionRange(4, 4);
-    controller.toggleTaskList();
-    expect(textarea.value).toBe("- [ ] buy milk");
-    controller.toggleTaskList();
-    expect(textarea.value).toBe("buy milk");
-  });
-
-  it("toggleTaskList unprefixes a checked task line", () => {
-    const { controller, textarea } = setup("- [x] done thing");
-    textarea.setSelectionRange(8, 8);
-    controller.toggleTaskList();
-    expect(textarea.value).toBe("done thing");
-  });
-
-  it("toggleTaskList preserves indentation", () => {
-    const { controller, textarea } = setup("  nested item");
-    textarea.setSelectionRange(4, 4);
-    controller.toggleTaskList();
-    expect(textarea.value).toBe("  - [ ] nested item");
-    controller.toggleTaskList();
-    expect(textarea.value).toBe("  nested item");
+  // The raw textarea is an honest fallback with no rich-formatting capability
+  // (controller.formatting is undefined); the focus-mode toolbar is WYSIWYG-only.
+  it("exposes no formatting capability", () => {
+    const { controller } = setup("x");
+    expect(controller.formatting).toBeUndefined();
   });
 
   it("insertMarkdown with an empty string is a no-op", () => {
