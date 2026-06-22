@@ -121,6 +121,7 @@ const WebhookSection = () => {
         onSuccess={handleCreateWebhookDialogConfirm}
       />
       <CreateWebhookDialog
+        key={editingWebhookName ?? "edit-webhook-dialog"}
         open={!!editingWebhookName}
         onOpenChange={(open) => !open && setEditingWebhookName(undefined)}
         webhookName={editingWebhookName}
