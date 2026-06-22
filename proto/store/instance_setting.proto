@@ -100,6 +100,10 @@ message StorageS3Config {
   string region = 4;
   string bucket = 5;
   bool use_path_style = 6;
+  // insecure_skip_tls_verify disables TLS certificate verification when connecting
+  // to the S3 endpoint. Only enable this for trusted endpoints that use a self-signed
+  // certificate; it removes protection against man-in-the-middle attacks.
+  bool insecure_skip_tls_verify = 7;
 }
 
 message InstanceMemoRelatedSetting {

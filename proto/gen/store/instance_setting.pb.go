@@ -673,8 +673,12 @@ type StorageS3Config struct {
 	Region          string                 `protobuf:"bytes,4,opt,name=region,proto3" json:"region,omitempty"`
 	Bucket          string                 `protobuf:"bytes,5,opt,name=bucket,proto3" json:"bucket,omitempty"`
 	UsePathStyle    bool                   `protobuf:"varint,6,opt,name=use_path_style,json=usePathStyle,proto3" json:"use_path_style,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// insecure_skip_tls_verify disables TLS certificate verification when connecting
+	// to the S3 endpoint. Only enable this for trusted endpoints that use a self-signed
+	// certificate; it removes protection against man-in-the-middle attacks.
+	InsecureSkipTlsVerify bool `protobuf:"varint,7,opt,name=insecure_skip_tls_verify,json=insecureSkipTlsVerify,proto3" json:"insecure_skip_tls_verify,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *StorageS3Config) Reset() {
@@ -745,6 +749,13 @@ func (x *StorageS3Config) GetBucket() string {
 func (x *StorageS3Config) GetUsePathStyle() bool {
 	if x != nil {
 		return x.UsePathStyle
+	}
+	return false
+}
+
+func (x *StorageS3Config) GetInsecureSkipTlsVerify() bool {
+	if x != nil {
+		return x.InsecureSkipTlsVerify
 	}
 	return false
 }
@@ -1338,14 +1349,15 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\t\n" +
 	"\x05LOCAL\x10\x02\x12\x06\n" +
-	"\x02S3\x10\x03\"\xd3\x01\n" +
+	"\x02S3\x10\x03\"\x8c\x02\n" +
 	"\x0fStorageS3Config\x12\"\n" +
 	"\raccess_key_id\x18\x01 \x01(\tR\vaccessKeyId\x12*\n" +
 	"\x11access_key_secret\x18\x02 \x01(\tR\x0faccessKeySecret\x12\x1a\n" +
 	"\bendpoint\x18\x03 \x01(\tR\bendpoint\x12\x16\n" +
 	"\x06region\x18\x04 \x01(\tR\x06region\x12\x16\n" +
 	"\x06bucket\x18\x05 \x01(\tR\x06bucket\x12$\n" +
-	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\"\xc5\x01\n" +
+	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\x127\n" +
+	"\x18insecure_skip_tls_verify\x18\a \x01(\bR\x15insecureSkipTlsVerify\"\xc5\x01\n" +
 	"\x1aInstanceMemoRelatedSetting\x120\n" +
 	"\x14content_length_limit\x18\x03 \x01(\x05R\x12contentLengthLimit\x127\n" +
 	"\x18enable_double_click_edit\x18\x04 \x01(\bR\x15enableDoubleClickEdit\x12\x1c\n" +

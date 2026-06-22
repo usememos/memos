@@ -3627,6 +3627,12 @@ components:
                     type: string
                 usePathStyle:
                     type: boolean
+                insecureSkipTlsVerify:
+                    type: boolean
+                    description: |-
+                        insecure_skip_tls_verify disables TLS certificate verification when connecting
+                         to the S3 endpoint. Only enable this for trusted endpoints that use a self-signed
+                         certificate; it removes protection against man-in-the-middle attacks.
             description: |-
                 S3 configuration for cloud storage backend.
                  Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/

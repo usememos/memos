@@ -444,10 +444,11 @@ func convertInstanceStorageSettingFromStore(settingpb *storepb.InstanceStorageSe
 		setting.S3Config = &v1pb.InstanceSetting_StorageSetting_S3Config{
 			AccessKeyId: settingpb.S3Config.AccessKeyId,
 			// AccessKeySecret is write-only: never returned in responses.
-			Endpoint:     settingpb.S3Config.Endpoint,
-			Region:       settingpb.S3Config.Region,
-			Bucket:       settingpb.S3Config.Bucket,
-			UsePathStyle: settingpb.S3Config.UsePathStyle,
+			Endpoint:              settingpb.S3Config.Endpoint,
+			Region:                settingpb.S3Config.Region,
+			Bucket:                settingpb.S3Config.Bucket,
+			UsePathStyle:          settingpb.S3Config.UsePathStyle,
+			InsecureSkipTlsVerify: settingpb.S3Config.InsecureSkipTlsVerify,
 		}
 	}
 	return setting
@@ -464,12 +465,13 @@ func convertInstanceStorageSettingToStore(setting *v1pb.InstanceSetting_StorageS
 	}
 	if setting.S3Config != nil {
 		settingpb.S3Config = &storepb.StorageS3Config{
-			AccessKeyId:     setting.S3Config.AccessKeyId,
-			AccessKeySecret: setting.S3Config.AccessKeySecret,
-			Endpoint:        setting.S3Config.Endpoint,
-			Region:          setting.S3Config.Region,
-			Bucket:          setting.S3Config.Bucket,
-			UsePathStyle:    setting.S3Config.UsePathStyle,
+			AccessKeyId:           setting.S3Config.AccessKeyId,
+			AccessKeySecret:       setting.S3Config.AccessKeySecret,
+			Endpoint:              setting.S3Config.Endpoint,
+			Region:                setting.S3Config.Region,
+			Bucket:                setting.S3Config.Bucket,
+			UsePathStyle:          setting.S3Config.UsePathStyle,
+			InsecureSkipTlsVerify: setting.S3Config.InsecureSkipTlsVerify,
 		}
 	}
 	return settingpb

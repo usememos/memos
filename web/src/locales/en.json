@@ -680,6 +680,8 @@
       "endpoint-description": "Service endpoint, such as an AWS S3, Cloudflare R2, MinIO, or other compatible URL.",
       "filepath-template": "Filepath template",
       "filepath-template-description": "Used by local and S3 storage. Supports {timestamp}, {uuid}, and {filename}. Default: assets/{timestamp}_{uuid}_{filename}.",
+      "insecure-skip-tls-verify": "Skip TLS verification",
+      "insecure-skip-tls-verify-description": "Disable TLS certificate verification for the S3 endpoint. Enable only for trusted endpoints using a self-signed certificate; this removes protection against man-in-the-middle attacks.",
       "label": "Storage",
       "local-description": "Store new attachments on the server file system. This is the default for new instances.",
       "local-note-backup": "Persist and back up the attachment directory, especially in Docker or container deployments.",
