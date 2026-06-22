@@ -167,9 +167,83 @@ func (r *renderer) renderComparison(cond *ComparisonCondition) (renderResult, er
 		}
 	case *FunctionValue:
 		return r.renderFunctionComparison(left, cond.Operator, cond.Right)
+	case *FieldAccessorValue:
+		return r.renderAccessorComparison(left, cond.Operator, cond.Right)
 	default:
 		return renderResult{}, errors.New("comparison must start with a field reference or supported function")
 	}
+}
+
+// accessorSpec maps a CEL timestamp accessor to per-dialect SQL date-part tokens
+// and the offset to subtract so the result matches CEL's base (e.g. CEL months
+// are 0-based but every dialect reports 1-based, so off=1). off is indexed
+// [sqlite, postgres, mysql].
+type accessorSpec struct {
+	sqlite string // strftime format specifier
+	pg     string // EXTRACT field
+	mysql  string // function name
+	off    [3]int
+}
+
+var accessorSpecs = map[string]accessorSpec{
+	"getFullYear":   {"%Y", "YEAR", "YEAR", [3]int{0, 0, 0}},
+	"getMonth":      {"%m", "MONTH", "MONTH", [3]int{1, 1, 1}},
+	"getDate":       {"%d", "DAY", "DAYOFMONTH", [3]int{0, 0, 0}},
+	"getDayOfMonth": {"%d", "DAY", "DAYOFMONTH", [3]int{1, 1, 1}},
+	"getDayOfWeek":  {"%w", "DOW", "DAYOFWEEK", [3]int{0, 0, 1}},
+	"getDayOfYear":  {"%j", "DOY", "DAYOFYEAR", [3]int{1, 1, 1}},
+	"getHours":      {"%H", "HOUR", "HOUR", [3]int{0, 0, 0}},
+	"getMinutes":    {"%M", "MINUTE", "MINUTE", [3]int{0, 0, 0}},
+	"getSeconds":    {"%S", "SECOND", "SECOND", [3]int{0, 0, 0}},
+}
+
+func (r *renderer) renderAccessorComparison(acc *FieldAccessorValue, op ComparisonOperator, right ValueExpr) (renderResult, error) {
+	field, ok := r.schema.Field(acc.Field)
+	if !ok {
+		return renderResult{}, errors.Errorf("unknown field %q", acc.Field)
+	}
+	value, err := expectNumericLiteral(right)
+	if err != nil {
+		return renderResult{}, err
+	}
+	expr, err := r.timestampAccessorExpr(field, acc.Accessor)
+	if err != nil {
+		return renderResult{}, err
+	}
+	placeholder := r.addArg(value)
+	return renderResult{
+		sql: fmt.Sprintf("%s %s %s", expr, sqlOperator(op), placeholder),
+	}, nil
+}
+
+// timestampAccessorExpr builds a dialect-specific integer expression for a CEL
+// timestamp accessor. Extraction is UTC on SQLite/Postgres (epoch columns); on
+// MySQL the TIMESTAMP column is read in the server session time zone.
+func (r *renderer) timestampAccessorExpr(field Field, accessor string) (string, error) {
+	spec, ok := accessorSpecs[accessor]
+	if !ok {
+		return "", errors.Errorf("unsupported timestamp accessor %q", accessor)
+	}
+	col := qualifyColumn(r.dialect, field.Column)
+	var base string
+	var off int
+	switch r.dialect {
+	case DialectSQLite:
+		base = fmt.Sprintf("CAST(strftime('%s', %s, 'unixepoch') AS INTEGER)", spec.sqlite, col)
+		off = spec.off[0]
+	case DialectPostgres:
+		base = fmt.Sprintf("CAST(EXTRACT(%s FROM to_timestamp(%s) AT TIME ZONE 'UTC') AS INTEGER)", spec.pg, col)
+		off = spec.off[1]
+	case DialectMySQL:
+		base = fmt.Sprintf("%s(%s)", spec.mysql, col)
+		off = spec.off[2]
+	default:
+		return "", errors.Errorf("unsupported dialect %q", r.dialect)
+	}
+	if off != 0 {
+		base = fmt.Sprintf("(%s - %d)", base, off)
+	}
+	return base, nil
 }
 
 func (r *renderer) renderFunctionComparison(fn *FunctionValue, op ComparisonOperator, right ValueExpr) (renderResult, error) {
@@ -188,8 +262,11 @@ func (r *renderer) renderFunctionComparison(fn *FunctionValue, op ComparisonOper
 	if !ok {
 		return renderResult{}, errors.Errorf("unknown field %q", fieldArg.Name)
 	}
-	if field.Kind != FieldKindJSONList {
-		return renderResult{}, errors.Errorf("size() only supports tag lists, got %q", field.Name)
+	if field.Kind == FieldKindVirtualAlias {
+		field, ok = r.schema.ResolveAlias(fieldArg.Name)
+		if !ok {
+			return renderResult{}, errors.Errorf("invalid alias %q", fieldArg.Name)
+		}
 	}
 
 	value, err := expectNumericLiteral(right)
@@ -197,11 +274,31 @@ func (r *renderer) renderFunctionComparison(fn *FunctionValue, op ComparisonOper
 		return renderResult{}, err
 	}
 
-	expr := jsonArrayLengthExpr(r.dialect, field)
+	var expr string
+	switch {
+	case field.Kind == FieldKindJSONList:
+		expr = jsonArrayLengthExpr(r.dialect, field)
+	case field.Kind == FieldKindScalar && field.Type == FieldTypeString:
+		expr = stringLengthExpr(r.dialect, field.columnExpr(r.dialect))
+	default:
+		return renderResult{}, errors.Errorf("size() does not support field %q", field.Name)
+	}
+
 	placeholder := r.addArg(value)
 	return renderResult{
 		sql: fmt.Sprintf("%s %s %s", expr, sqlOperator(op), placeholder),
 	}, nil
+}
+
+// stringLengthExpr returns the character-count expression for a string column.
+// MySQL's LENGTH counts bytes, so CHAR_LENGTH is used to count characters and
+// match CEL's size() code-point semantics; SQLite/Postgres LENGTH already counts
+// characters.
+func stringLengthExpr(d DialectName, colExpr string) string {
+	if d == DialectMySQL {
+		return fmt.Sprintf("CHAR_LENGTH(%s)", colExpr)
+	}
+	return fmt.Sprintf("LENGTH(%s)", colExpr)
 }
 
 func (r *renderer) renderScalarComparison(field Field, op ComparisonOperator, right ValueExpr) (renderResult, error) {
@@ -525,6 +622,10 @@ func (r *renderer) renderListComprehension(cond *ListComprehensionCondition) (re
 		return r.renderTagAll(field, cond.Predicate)
 	}
 
+	if cond.Kind == ComprehensionExistsOne {
+		return r.renderTagExistsOne(field, cond.Predicate)
+	}
+
 	// Render based on predicate type
 	switch pred := cond.Predicate.(type) {
 	case *EqualsPredicate:
@@ -562,6 +663,27 @@ func (r *renderer) renderTagAll(field Field, pred PredicateExpr) (renderResult, 
 		nonEmpty := fmt.Sprintf("%s IS NOT NULL AND jsonb_array_length(%s) > 0", arrayExpr, arrayExpr)
 		sub := fmt.Sprintf("NOT EXISTS (SELECT 1 FROM jsonb_array_elements_text(%s) AS elem(value) WHERE NOT (%s))", arrayExpr, elemCond)
 		return renderResult{sql: fmt.Sprintf("(%s AND %s)", nonEmpty, sub)}, nil
+	default:
+		return renderResult{}, errors.Errorf("unsupported dialect %s", r.dialect)
+	}
+}
+
+// renderTagExistsOne renders tags.exists_one(t, <pred>): exactly one element
+// satisfies the predicate, via a COUNT(...) = 1 subquery. A null or empty array
+// yields COUNT 0, which is correctly not equal to 1.
+func (r *renderer) renderTagExistsOne(field Field, pred PredicateExpr) (renderResult, error) {
+	arrayExpr := jsonArrayExpr(r.dialect, field)
+	elemCond, err := r.elementPredicateSQL(pred)
+	if err != nil {
+		return renderResult{}, err
+	}
+	switch r.dialect {
+	case DialectSQLite:
+		return renderResult{sql: fmt.Sprintf("(SELECT COUNT(*) FROM json_each(%s) WHERE %s) = 1", arrayExpr, elemCond)}, nil
+	case DialectMySQL:
+		return renderResult{sql: fmt.Sprintf("(SELECT COUNT(*) FROM JSON_TABLE(%s, '$[*]' COLUMNS (value VARCHAR(512) PATH '$')) AS elem WHERE %s) = 1", arrayExpr, elemCond)}, nil
+	case DialectPostgres:
+		return renderResult{sql: fmt.Sprintf("(SELECT COUNT(*) FROM jsonb_array_elements_text(%s) AS elem(value) WHERE %s) = 1", arrayExpr, elemCond)}, nil
 	default:
 		return renderResult{}, errors.Errorf("unsupported dialect %s", r.dialect)
 	}

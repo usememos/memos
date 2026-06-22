@@ -45,7 +45,7 @@ const shortcutExamples = [
   },
   {
     title: "Recent notes",
-    filter: "created_ts >= now() - 60 * 60",
+    filter: 'created_ts >= now - duration("1h")',
     description: "Memos created in the last hour.",
     icon: Clock3Icon,
   },
@@ -103,6 +103,42 @@ const shortcutExamples = [
     description: "Every tag must satisfy the predicate (tagged memos only).",
     icon: TagsIcon,
   },
+  {
+    title: "One project tag",
+    filter: 'tags.exists_one(t, t.startsWith("project/"))',
+    description: "Exactly one tag matches the predicate.",
+    icon: TagsIcon,
+  },
+  {
+    title: "Any of these tags",
+    filter: 'sets.intersects(tags, ["work", "urgent"])',
+    description: "Tags intersect the given set.",
+    icon: TagsIcon,
+  },
+  {
+    title: "Exactly these tags",
+    filter: 'sets.equivalent(tags, ["inbox"])',
+    description: "Tagged with exactly this set, nothing more.",
+    icon: TagsIcon,
+  },
+  {
+    title: "Memos from 2024",
+    filter: "created_ts.getFullYear() == 2024",
+    description: "Filter by calendar year.",
+    icon: Clock3Icon,
+  },
+  {
+    title: "Weekend notes",
+    filter: "created_ts.getDayOfWeek() == 0 || created_ts.getDayOfWeek() == 6",
+    description: "Created on a Sunday or Saturday (0 = Sunday).",
+    icon: Clock3Icon,
+  },
+  {
+    title: "Long notes",
+    filter: "size(content) > 280",
+    description: "Memos longer than 280 characters.",
+    icon: FilterIcon,
+  },
 ];
 
 const filterFields = [
@@ -115,12 +151,22 @@ const filterFields = [
   "tag in [...]",
   "tags.exists(...)",
   "tags.all(...)",
+  "tags.exists_one(...)",
+  "sets.contains(tags, [...])",
+  "sets.intersects(tags, [...])",
+  "sets.equivalent(tags, [...])",
+  "size(content) > ...",
   "has_task_list",
   "has_incomplete_tasks",
   "has_link",
   "has_code",
-  "created_ts",
+  'created_ts >= now - duration("24h")',
+  "created_ts.getFullYear() == ...",
+  "created_ts.getMonth() == ... (0 = Jan)",
+  "created_ts.getDayOfWeek() == ... (0 = Sun)",
   "updated_ts",
+  "now",
+  'timestamp("2025-01-01T00:00:00Z")',
 ];
 
 const getShortcutId = (name: string): string => {
@@ -435,7 +481,11 @@ const Shortcuts = () => {
                   />
                   <p className="text-xs leading-5 text-muted-foreground">
                     Combine expressions with <span className="font-mono">&&</span>, <span className="font-mono">||</span>, and{" "}
-                    <span className="font-mono">!</span>. Time fields use Unix seconds and support <span className="font-mono">now()</span>.
+                    <span className="font-mono">!</span>. Time fields are timestamps — use <span className="font-mono">now</span>,{" "}
+                    <span className="font-mono">duration("24h")</span>, <span className="font-mono">timestamp(...)</span>, and accessors
+                    like <span className="font-mono">created_ts.getFullYear()</span>. Tags support{" "}
+                    <span className="font-mono">sets.contains/intersects/equivalent</span> and{" "}
+                    <span className="font-mono">size(content)</span> measures length.
                   </p>
                 </div>
               </div>

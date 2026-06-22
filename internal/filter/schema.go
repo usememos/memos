@@ -2,11 +2,9 @@ package filter
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/google/cel-go/cel"
-	"github.com/google/cel-go/common/types"
-	"github.com/google/cel-go/common/types/ref"
+	"github.com/google/cel-go/ext"
 )
 
 // DialectName enumerates supported SQL dialects.
@@ -86,16 +84,6 @@ func (s Schema) ResolveAlias(name string) (Field, bool) {
 	}
 	return field, true
 }
-
-var nowFunction = cel.Function("now",
-	cel.Overload("now",
-		[]*cel.Type{},
-		cel.IntType,
-		cel.FunctionBinding(func(_ ...ref.Val) ref.Val {
-			return types.Int(time.Now().Unix())
-		}),
-	),
-)
 
 // NewSchema constructs the memo filter schema and CEL environment.
 func NewSchema() Schema {
@@ -245,8 +233,8 @@ func NewSchema() Schema {
 		cel.Variable("content", cel.StringType),
 		cel.Variable("creator", cel.StringType),
 		cel.Variable("creator_id", cel.IntType),
-		cel.Variable("created_ts", cel.IntType),
-		cel.Variable("updated_ts", cel.IntType),
+		cel.Variable("created_ts", cel.TimestampType),
+		cel.Variable("updated_ts", cel.TimestampType),
 		cel.Variable("pinned", cel.BoolType),
 		cel.Variable("tag", cel.StringType),
 		cel.Variable("tags", cel.ListType(cel.StringType)),
@@ -255,7 +243,8 @@ func NewSchema() Schema {
 		cel.Variable("has_link", cel.BoolType),
 		cel.Variable("has_code", cel.BoolType),
 		cel.Variable("has_incomplete_tasks", cel.BoolType),
-		nowFunction,
+		cel.Variable("now", cel.TimestampType),
+		ext.Sets(),
 		cel.ASTValidators(cel.ValidateRegexLiterals()),
 	}
 
@@ -314,9 +303,9 @@ func NewAttachmentSchema() Schema {
 	envOptions := []cel.EnvOption{
 		cel.Variable("filename", cel.StringType),
 		cel.Variable("mime_type", cel.StringType),
-		cel.Variable("create_time", cel.IntType),
+		cel.Variable("create_time", cel.TimestampType),
 		cel.Variable("memo_id", cel.AnyType),
-		nowFunction,
+		cel.Variable("now", cel.TimestampType),
 		cel.ASTValidators(cel.ValidateRegexLiterals()),
 	}
 

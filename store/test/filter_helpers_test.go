@@ -66,6 +66,11 @@ func (b *MemoBuilder) Visibility(v store.Visibility) *MemoBuilder {
 	return b
 }
 
+func (b *MemoBuilder) CreatedTs(ts int64) *MemoBuilder {
+	b.memo.CreatedTs = ts
+	return b
+}
+
 func (b *MemoBuilder) Tags(tags ...string) *MemoBuilder {
 	if b.memo.Payload == nil {
 		b.memo.Payload = &storepb.MemoPayload{}

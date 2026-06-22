@@ -7,10 +7,18 @@ import (
 	exprv1 "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 )
 
-func buildCondition(expr *exprv1.Expr, schema Schema) (Condition, error) {
+// parseContext carries the schema plus the frozen evaluation time used to fold
+// the `now` variable into a constant. Freezing once per compile guarantees a
+// single filter observes a single instant.
+type parseContext struct {
+	schema Schema
+	now    time.Time
+}
+
+func buildCondition(expr *exprv1.Expr, pc parseContext) (Condition, error) {
 	switch v := expr.ExprKind.(type) {
 	case *exprv1.Expr_CallExpr:
-		return buildCallCondition(v.CallExpr, schema)
+		return buildCallCondition(v.CallExpr, pc)
 	case *exprv1.Expr_ConstExpr:
 		val, err := getConstValue(expr)
 		if err != nil {
@@ -22,7 +30,7 @@ func buildCondition(expr *exprv1.Expr, schema Schema) (Condition, error) {
 		return nil, errors.New("filter must evaluate to a boolean value")
 	case *exprv1.Expr_IdentExpr:
 		name := v.IdentExpr.GetName()
-		field, ok := schema.Field(name)
+		field, ok := pc.schema.Field(name)
 		if !ok {
 			return nil, errors.Errorf("unknown identifier %q", name)
 		}
@@ -31,23 +39,23 @@ func buildCondition(expr *exprv1.Expr, schema Schema) (Condition, error) {
 		}
 		return &FieldPredicateCondition{Field: name}, nil
 	case *exprv1.Expr_ComprehensionExpr:
-		return buildComprehensionCondition(v.ComprehensionExpr, schema)
+		return buildComprehensionCondition(v.ComprehensionExpr, pc.schema)
 	default:
 		return nil, errors.New("unsupported top-level expression")
 	}
 }
 
-func buildCallCondition(call *exprv1.Expr_Call, schema Schema) (Condition, error) {
+func buildCallCondition(call *exprv1.Expr_Call, pc parseContext) (Condition, error) {
 	switch call.Function {
 	case "_&&_":
 		if len(call.Args) != 2 {
 			return nil, errors.New("logical AND expects two arguments")
 		}
-		left, err := buildCondition(call.Args[0], schema)
+		left, err := buildCondition(call.Args[0], pc)
 		if err != nil {
 			return nil, err
 		}
-		right, err := buildCondition(call.Args[1], schema)
+		right, err := buildCondition(call.Args[1], pc)
 		if err != nil {
 			return nil, err
 		}
@@ -60,11 +68,11 @@ func buildCallCondition(call *exprv1.Expr_Call, schema Schema) (Condition, error
 		if len(call.Args) != 2 {
 			return nil, errors.New("logical OR expects two arguments")
 		}
-		left, err := buildCondition(call.Args[0], schema)
+		left, err := buildCondition(call.Args[0], pc)
 		if err != nil {
 			return nil, err
 		}
-		right, err := buildCondition(call.Args[1], schema)
+		right, err := buildCondition(call.Args[1], pc)
 		if err != nil {
 			return nil, err
 		}
@@ -77,23 +85,25 @@ func buildCallCondition(call *exprv1.Expr_Call, schema Schema) (Condition, error
 		if len(call.Args) != 1 {
 			return nil, errors.New("logical NOT expects one argument")
 		}
-		child, err := buildCondition(call.Args[0], schema)
+		child, err := buildCondition(call.Args[0], pc)
 		if err != nil {
 			return nil, err
 		}
 		return &NotCondition{Expr: child}, nil
 	case "_==_", "_!=_", "_<_", "_>_", "_<=_", "_>=_":
-		return buildComparisonCondition(call, schema)
+		return buildComparisonCondition(call, pc)
 	case "@in":
-		return buildInCondition(call, schema)
+		return buildInCondition(call, pc)
 	case "contains":
-		return buildTextMatchCondition(call, schema, TextMatchContains)
+		return buildTextMatchCondition(call, pc.schema, TextMatchContains)
 	case "startsWith":
-		return buildTextMatchCondition(call, schema, TextMatchPrefix)
+		return buildTextMatchCondition(call, pc.schema, TextMatchPrefix)
 	case "endsWith":
-		return buildTextMatchCondition(call, schema, TextMatchSuffix)
+		return buildTextMatchCondition(call, pc.schema, TextMatchSuffix)
 	case "matches":
-		return buildMatchesCondition(call, schema)
+		return buildMatchesCondition(call, pc.schema)
+	case "sets.contains", "sets.intersects", "sets.equivalent":
+		return buildSetCondition(call, pc)
 	default:
 		val, ok, err := evaluateBool(call)
 		if err != nil {
@@ -106,7 +116,7 @@ func buildCallCondition(call *exprv1.Expr_Call, schema Schema) (Condition, error
 	}
 }
 
-func buildComparisonCondition(call *exprv1.Expr_Call, schema Schema) (Condition, error) {
+func buildComparisonCondition(call *exprv1.Expr_Call, pc parseContext) (Condition, error) {
 	if len(call.Args) != 2 {
 		return nil, errors.New("comparison expects two arguments")
 	}
@@ -115,23 +125,23 @@ func buildComparisonCondition(call *exprv1.Expr_Call, schema Schema) (Condition,
 		return nil, err
 	}
 
-	left, err := buildValueExpr(call.Args[0], schema)
+	left, err := buildValueExpr(call.Args[0], pc)
 	if err != nil {
 		return nil, err
 	}
-	right, err := buildValueExpr(call.Args[1], schema)
+	right, err := buildValueExpr(call.Args[1], pc)
 	if err != nil {
 		return nil, err
 	}
 
 	// If the left side is a field, validate allowed operators.
 	if field, ok := left.(*FieldRef); ok {
-		def, exists := schema.Field(field.Name)
+		def, exists := pc.schema.Field(field.Name)
 		if !exists {
 			return nil, errors.Errorf("unknown identifier %q", field.Name)
 		}
 		if def.Kind == FieldKindVirtualAlias {
-			def, exists = schema.ResolveAlias(field.Name)
+			def, exists = pc.schema.ResolveAlias(field.Name)
 			if !exists {
 				return nil, errors.Errorf("invalid alias %q", field.Name)
 			}
@@ -150,15 +160,15 @@ func buildComparisonCondition(call *exprv1.Expr_Call, schema Schema) (Condition,
 	}, nil
 }
 
-func buildInCondition(call *exprv1.Expr_Call, schema Schema) (Condition, error) {
+func buildInCondition(call *exprv1.Expr_Call, pc parseContext) (Condition, error) {
 	if len(call.Args) != 2 {
 		return nil, errors.New("in operator expects two arguments")
 	}
 
 	// Handle identifier in list syntax.
 	if identName, err := getIdentName(call.Args[0]); err == nil {
-		if field, ok := schema.Field(identName); ok && field.Kind == FieldKindVirtualAlias {
-			if _, aliasOk := schema.ResolveAlias(identName); !aliasOk {
+		if field, ok := pc.schema.Field(identName); ok && field.Kind == FieldKindVirtualAlias {
+			if _, aliasOk := pc.schema.ResolveAlias(identName); !aliasOk {
 				return nil, errors.Errorf("invalid alias %q", identName)
 			}
 		} else if !ok {
@@ -168,7 +178,7 @@ func buildInCondition(call *exprv1.Expr_Call, schema Schema) (Condition, error) 
 		if listExpr := call.Args[1].GetListExpr(); listExpr != nil {
 			values := make([]ValueExpr, 0, len(listExpr.Elements))
 			for _, element := range listExpr.Elements {
-				value, err := buildValueExpr(element, schema)
+				value, err := buildValueExpr(element, pc)
 				if err != nil {
 					return nil, err
 				}
@@ -183,10 +193,10 @@ func buildInCondition(call *exprv1.Expr_Call, schema Schema) (Condition, error) 
 
 	// Handle "value in identifier" syntax.
 	if identName, err := getIdentName(call.Args[1]); err == nil {
-		if _, ok := schema.Field(identName); !ok {
+		if _, ok := pc.schema.Field(identName); !ok {
 			return nil, errors.Errorf("unknown identifier %q", identName)
 		}
-		element, err := buildValueExpr(call.Args[0], schema)
+		element, err := buildValueExpr(call.Args[0], pc)
 		if err != nil {
 			return nil, err
 		}
@@ -266,9 +276,13 @@ func buildMatchesCondition(call *exprv1.Expr_Call, schema Schema) (Condition, er
 	}, nil
 }
 
-func buildValueExpr(expr *exprv1.Expr, schema Schema) (ValueExpr, error) {
+func buildValueExpr(expr *exprv1.Expr, pc parseContext) (ValueExpr, error) {
 	if identName, err := getIdentName(expr); err == nil {
-		if _, ok := schema.Field(identName); !ok {
+		// `now` is not a schema field; it folds to the frozen evaluation time.
+		if identName == "now" {
+			return &LiteralValue{Value: pc.now.Unix()}, nil
+		}
+		if _, ok := pc.schema.Field(identName); !ok {
 			return nil, errors.Errorf("unknown identifier %q", identName)
 		}
 		return &FieldRef{Name: identName}, nil
@@ -278,7 +292,7 @@ func buildValueExpr(expr *exprv1.Expr, schema Schema) (ValueExpr, error) {
 		return &LiteralValue{Value: literal}, nil
 	}
 
-	if value, ok, err := evaluateNumeric(expr); err != nil {
+	if value, ok, err := evaluateNumeric(expr, pc.now); err != nil {
 		return nil, err
 	} else if ok {
 		return &LiteralValue{Value: value}, nil
@@ -291,12 +305,15 @@ func buildValueExpr(expr *exprv1.Expr, schema Schema) (ValueExpr, error) {
 	}
 
 	if call := expr.GetCallExpr(); call != nil {
+		if call.Target != nil && isTimestampAccessor(call.Function) {
+			return buildTimestampAccessor(call, pc.schema)
+		}
 		switch call.Function {
 		case "size":
 			if len(call.Args) != 1 {
 				return nil, errors.New("size() expects one argument")
 			}
-			arg, err := buildValueExpr(call.Args[0], schema)
+			arg, err := buildValueExpr(call.Args[0], pc)
 			if err != nil {
 				return nil, err
 			}
@@ -304,10 +321,8 @@ func buildValueExpr(expr *exprv1.Expr, schema Schema) (ValueExpr, error) {
 				Name: "size",
 				Args: []ValueExpr{arg},
 			}, nil
-		case "now":
-			return &LiteralValue{Value: timeNowUnix()}, nil
 		case "_+_", "_-_", "_*_":
-			value, ok, err := evaluateNumeric(expr)
+			value, ok, err := evaluateNumeric(expr, pc.now)
 			if err != nil {
 				return nil, err
 			}
@@ -396,7 +411,11 @@ func evaluateBoolExpr(expr *exprv1.Expr) (bool, bool, error) {
 	return false, false, nil
 }
 
-func evaluateNumeric(expr *exprv1.Expr) (int64, bool, error) {
+// evaluateNumeric constant-folds an expression to an int64 measured in seconds:
+// timestamps and `now` fold to Unix epoch seconds, durations fold to a number of
+// seconds, and the two combine through standard arithmetic. CEL has already
+// type-checked the operand combinations, so the folded int math is well-formed.
+func evaluateNumeric(expr *exprv1.Expr, now time.Time) (int64, bool, error) {
 	if literal, err := getConstValue(expr); err == nil {
 		switch v := literal.(type) {
 		case int64:
@@ -407,26 +426,36 @@ func evaluateNumeric(expr *exprv1.Expr) (int64, bool, error) {
 		return 0, false, nil
 	}
 
+	// The `now` variable folds to the frozen evaluation time.
+	if ident := expr.GetIdentExpr(); ident != nil {
+		if ident.GetName() == "now" {
+			return now.Unix(), true, nil
+		}
+		return 0, false, nil
+	}
+
 	call := expr.GetCallExpr()
 	if call == nil {
 		return 0, false, nil
 	}
 
 	switch call.Function {
-	case "now":
-		return timeNowUnix(), true, nil
-	case "_+_", "_-_", "_*_":
+	case "timestamp":
+		return evaluateTimestamp(call)
+	case "duration":
+		return evaluateDuration(call)
+	case "_+_", "_-_", "_*_", "_/_", "_%_":
 		if len(call.Args) != 2 {
 			return 0, false, errors.New("arithmetic requires two arguments")
 		}
-		left, ok, err := evaluateNumeric(call.Args[0])
+		left, ok, err := evaluateNumeric(call.Args[0], now)
 		if err != nil {
 			return 0, false, err
 		}
 		if !ok {
 			return 0, false, nil
 		}
-		right, ok, err := evaluateNumeric(call.Args[1])
+		right, ok, err := evaluateNumeric(call.Args[1], now)
 		if err != nil {
 			return 0, false, err
 		}
@@ -440,6 +469,16 @@ func evaluateNumeric(expr *exprv1.Expr) (int64, bool, error) {
 			return left - right, true, nil
 		case "_*_":
 			return left * right, true, nil
+		case "_/_":
+			if right == 0 {
+				return 0, false, errors.New("division by zero")
+			}
+			return left / right, true, nil
+		case "_%_":
+			if right == 0 {
+				return 0, false, errors.New("modulo by zero")
+			}
+			return left % right, true, nil
 		default:
 			return 0, false, errors.Errorf("unsupported arithmetic operator %q", call.Function)
 		}
@@ -448,8 +487,185 @@ func evaluateNumeric(expr *exprv1.Expr) (int64, bool, error) {
 	}
 }
 
-func timeNowUnix() int64 {
-	return time.Now().Unix()
+// evaluateTimestamp folds timestamp("RFC3339") and timestamp(<epoch int>) into
+// Unix epoch seconds.
+func evaluateTimestamp(call *exprv1.Expr_Call) (int64, bool, error) {
+	if len(call.Args) != 1 {
+		return 0, false, errors.New("timestamp() expects one argument")
+	}
+	value, err := getConstValue(call.Args[0])
+	if err != nil {
+		return 0, false, errors.Wrap(err, "timestamp() only supports literal arguments")
+	}
+	switch v := value.(type) {
+	case string:
+		ts, err := time.Parse(time.RFC3339, v)
+		if err != nil {
+			return 0, false, errors.Wrap(err, "invalid timestamp literal")
+		}
+		return ts.Unix(), true, nil
+	case int64:
+		return v, true, nil
+	default:
+		return 0, false, errors.New("timestamp() argument must be an RFC3339 string or epoch int")
+	}
+}
+
+// evaluateDuration folds duration("<go-duration>") into a number of seconds.
+func evaluateDuration(call *exprv1.Expr_Call) (int64, bool, error) {
+	if len(call.Args) != 1 {
+		return 0, false, errors.New("duration() expects one argument")
+	}
+	value, err := getConstValue(call.Args[0])
+	if err != nil {
+		return 0, false, errors.Wrap(err, "duration() only supports literal arguments")
+	}
+	str, ok := value.(string)
+	if !ok {
+		return 0, false, errors.New("duration() argument must be a string")
+	}
+	d, err := time.ParseDuration(str)
+	if err != nil {
+		return 0, false, errors.Wrap(err, "invalid duration literal")
+	}
+	return int64(d.Seconds()), true, nil
+}
+
+// timestampAccessors is the set of supported CEL timestamp accessor methods.
+var timestampAccessors = map[string]bool{
+	"getFullYear":   true,
+	"getMonth":      true,
+	"getDate":       true,
+	"getDayOfMonth": true,
+	"getDayOfWeek":  true,
+	"getDayOfYear":  true,
+	"getHours":      true,
+	"getMinutes":    true,
+	"getSeconds":    true,
+}
+
+func isTimestampAccessor(name string) bool {
+	return timestampAccessors[name]
+}
+
+// buildTimestampAccessor converts created_ts.getMonth() into a FieldAccessorValue.
+// Timezone arguments are rejected; extraction is UTC (see renderer).
+func buildTimestampAccessor(call *exprv1.Expr_Call, schema Schema) (ValueExpr, error) {
+	targetName, err := getIdentName(call.Target)
+	if err != nil {
+		return nil, errors.Wrap(err, "timestamp accessor requires a field target")
+	}
+	field, ok := schema.Field(targetName)
+	if !ok {
+		return nil, errors.Errorf("unknown identifier %q", targetName)
+	}
+	if field.Type != FieldTypeTimestamp {
+		return nil, errors.Errorf("%s() is only valid on timestamp fields, got %q", call.Function, targetName)
+	}
+	if len(call.Args) != 0 {
+		return nil, errors.Errorf("%s() with a timezone argument is not supported", call.Function)
+	}
+	return &FieldAccessorValue{Field: targetName, Accessor: call.Function}, nil
+}
+
+// buildSetCondition desugars ext.Sets() operations over a JSON list field into
+// existing IR: membership reduces to ElementInCondition, and equivalence adds a
+// length check. This relies on the list field being a set (no duplicates), which
+// holds for memo tags.
+func buildSetCondition(call *exprv1.Expr_Call, pc parseContext) (Condition, error) {
+	if len(call.Args) != 2 {
+		return nil, errors.Errorf("%s expects two arguments", call.Function)
+	}
+
+	fieldName, err := getIdentName(call.Args[0])
+	if err != nil {
+		return nil, errors.Wrap(err, "set operations require a list field as the first argument")
+	}
+	field, ok := pc.schema.Field(fieldName)
+	if !ok {
+		return nil, errors.Errorf("unknown identifier %q", fieldName)
+	}
+	if field.Kind != FieldKindJSONList {
+		return nil, errors.Errorf("set operations require a list field, got %q", fieldName)
+	}
+
+	listExpr := call.Args[1].GetListExpr()
+	if listExpr == nil {
+		return nil, errors.New("set operations require a list literal as the second argument")
+	}
+	values := make([]string, 0, len(listExpr.Elements))
+	for _, el := range listExpr.Elements {
+		v, err := getConstValue(el)
+		if err != nil {
+			return nil, errors.Wrap(err, "set operations only support literal string elements")
+		}
+		s, ok := v.(string)
+		if !ok {
+			return nil, errors.New("set operations require string elements")
+		}
+		values = append(values, s)
+	}
+
+	membership := func(s string) Condition {
+		return &ElementInCondition{Element: &LiteralValue{Value: s}, Field: fieldName}
+	}
+	sizeEquals := func(n int) Condition {
+		return &ComparisonCondition{
+			Left:     &FunctionValue{Name: "size", Args: []ValueExpr{&FieldRef{Name: fieldName}}},
+			Operator: CompareEq,
+			Right:    &LiteralValue{Value: int64(n)},
+		}
+	}
+
+	switch call.Function {
+	case "sets.contains":
+		if len(values) == 0 {
+			return &ConstantCondition{Value: true}, nil
+		}
+		return combineConditions(LogicalAnd, mapConditions(values, membership)), nil
+	case "sets.intersects":
+		if len(values) == 0 {
+			return &ConstantCondition{Value: false}, nil
+		}
+		return combineConditions(LogicalOr, mapConditions(values, membership)), nil
+	case "sets.equivalent":
+		distinct := distinctStrings(values)
+		if len(distinct) == 0 {
+			return sizeEquals(0), nil
+		}
+		contains := combineConditions(LogicalAnd, mapConditions(distinct, membership))
+		return &LogicalCondition{Operator: LogicalAnd, Left: contains, Right: sizeEquals(len(distinct))}, nil
+	default:
+		return nil, errors.Errorf("unsupported set operation %q", call.Function)
+	}
+}
+
+func mapConditions(values []string, f func(string) Condition) []Condition {
+	conds := make([]Condition, 0, len(values))
+	for _, v := range values {
+		conds = append(conds, f(v))
+	}
+	return conds
+}
+
+func combineConditions(op LogicalOperator, conds []Condition) Condition {
+	result := conds[0]
+	for _, c := range conds[1:] {
+		result = &LogicalCondition{Operator: op, Left: result, Right: c}
+	}
+	return result
+}
+
+func distinctStrings(values []string) []string {
+	seen := make(map[string]bool, len(values))
+	out := make([]string, 0, len(values))
+	for _, v := range values {
+		if !seen[v] {
+			seen[v] = true
+			out = append(out, v)
+		}
+	}
+	return out
 }
 
 // buildComprehensionCondition handles CEL comprehension expressions (exists, all, etc.).
@@ -513,7 +729,15 @@ func detectComprehensionKind(comp *exprv1.Expr_Comprehension) (ComprehensionKind
 		}
 	}
 
-	return "", errors.New("unsupported comprehension type; only exists() is supported")
+	// exists_one() starts at int(0) and increments via a conditional (predicate ?
+	// accu + 1 : accu) in the loop step.
+	if _, isInt := accuInit.GetConstantKind().(*exprv1.Constant_Int64Value); isInt {
+		if step := comp.LoopStep.GetCallExpr(); step != nil && step.Function == "_?_:_" {
+			return ComprehensionExistsOne, nil
+		}
+	}
+
+	return "", errors.New("unsupported comprehension type (supported: exists, all, exists_one)")
 }
 
 // extractPredicate extracts the predicate expression from the comprehension loop step.
@@ -525,12 +749,20 @@ func extractPredicate(comp *exprv1.Expr_Comprehension, _ Schema) (PredicateExpr,
 		return nil, errors.New("comprehension loop step must be a call expression")
 	}
 
-	if len(step.Args) != 2 {
-		return nil, errors.New("comprehension loop step must have two arguments")
+	// exists/all: accu || predicate  /  accu && predicate  -> predicate is arg[1].
+	// exists_one: predicate ? accu + 1 : accu               -> predicate is arg[0].
+	var predicateExpr *exprv1.Expr
+	if step.Function == "_?_:_" {
+		if len(step.Args) != 3 {
+			return nil, errors.New("exists_one loop step must have three arguments")
+		}
+		predicateExpr = step.Args[0]
+	} else {
+		if len(step.Args) != 2 {
+			return nil, errors.New("comprehension loop step must have two arguments")
+		}
+		predicateExpr = step.Args[1]
 	}
-
-	// The predicate is the second argument
-	predicateExpr := step.Args[1]
 	predicateCall := predicateExpr.GetCallExpr()
 	if predicateCall == nil {
 		return nil, errors.New("comprehension predicate must be a function call")

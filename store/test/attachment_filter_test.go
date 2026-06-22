@@ -159,7 +159,7 @@ func TestAttachmentFilterMimeTypeInList(t *testing.T) {
 // =============================================================================
 // Create Time Field Tests
 // Schema: create_time (timestamp, all comparison operators)
-// Functions: now(), arithmetic (+, -, *)
+// Time helpers: now variable, timestamp(...), duration(...)
 // =============================================================================
 
 func TestAttachmentFilterCreateTimeComparison(t *testing.T) {
@@ -171,15 +171,15 @@ func TestAttachmentFilterCreateTimeComparison(t *testing.T) {
 	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("test.png").MimeType("image/png"))
 
 	// Test: create_time < future (should match)
-	attachments := tc.ListWithFilter(`create_time < ` + formatInt64(now+3600))
+	attachments := tc.ListWithFilter(`create_time < timestamp(` + formatInt64(now+3600) + `)`)
 	require.Len(t, attachments, 1)
 
 	// Test: create_time > past (should match)
-	attachments = tc.ListWithFilter(`create_time > ` + formatInt64(now-3600))
+	attachments = tc.ListWithFilter(`create_time > timestamp(` + formatInt64(now-3600) + `)`)
 	require.Len(t, attachments, 1)
 
 	// Test: create_time > future (should not match)
-	attachments = tc.ListWithFilter(`create_time > ` + formatInt64(now+3600))
+	attachments = tc.ListWithFilter(`create_time > timestamp(` + formatInt64(now+3600) + `)`)
 	require.Len(t, attachments, 0)
 }
 
@@ -190,12 +190,12 @@ func TestAttachmentFilterCreateTimeWithNow(t *testing.T) {
 
 	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("test.png").MimeType("image/png"))
 
-	// Test: create_time < now() + 5 (buffer for container clock drift)
-	attachments := tc.ListWithFilter(`create_time < now() + 5`)
+	// Test: create_time < now + 5s (buffer for container clock drift)
+	attachments := tc.ListWithFilter(`create_time < now + duration("5s")`)
 	require.Len(t, attachments, 1)
 
-	// Test: create_time > now() + 5 (should not match)
-	attachments = tc.ListWithFilter(`create_time > now() + 5`)
+	// Test: create_time > now + 5s (should not match)
+	attachments = tc.ListWithFilter(`create_time > now + duration("5s")`)
 	require.Len(t, attachments, 0)
 }
 
@@ -206,16 +206,16 @@ func TestAttachmentFilterCreateTimeArithmetic(t *testing.T) {
 
 	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("test.png").MimeType("image/png"))
 
-	// Test: create_time >= now() - 3600 (attachments created in last hour)
-	attachments := tc.ListWithFilter(`create_time >= now() - 3600`)
+	// Test: create_time >= now - 1h (attachments created in last hour)
+	attachments := tc.ListWithFilter(`create_time >= now - duration("1h")`)
 	require.Len(t, attachments, 1)
 
-	// Test: create_time < now() - 86400 (attachments older than 1 day - should be empty)
-	attachments = tc.ListWithFilter(`create_time < now() - 86400`)
+	// Test: create_time < now - 24h (attachments older than 1 day - should be empty)
+	attachments = tc.ListWithFilter(`create_time < now - duration("24h")`)
 	require.Len(t, attachments, 0)
 
-	// Test: Multiplication - create_time >= now() - 60 * 60
-	attachments = tc.ListWithFilter(`create_time >= now() - 60 * 60`)
+	// Test: chained duration arithmetic - create_time >= now - 30m - 30m
+	attachments = tc.ListWithFilter(`create_time >= now - duration("30m") - duration("30m")`)
 	require.Len(t, attachments, 1)
 }
 
@@ -227,19 +227,19 @@ func TestAttachmentFilterAllComparisonOperators(t *testing.T) {
 	tc.CreateAttachment(NewAttachmentBuilder(tc.CreatorID).Filename("test.png").MimeType("image/png"))
 
 	// Test: < (less than)
-	attachments := tc.ListWithFilter(`create_time < now() + 3600`)
+	attachments := tc.ListWithFilter(`create_time < now + duration("1h")`)
 	require.Len(t, attachments, 1)
 
 	// Test: <= (less than or equal) with buffer for clock drift
-	attachments = tc.ListWithFilter(`create_time < now() + 5`)
+	attachments = tc.ListWithFilter(`create_time < now + duration("5s")`)
 	require.Len(t, attachments, 1)
 
 	// Test: > (greater than)
-	attachments = tc.ListWithFilter(`create_time > now() - 3600`)
+	attachments = tc.ListWithFilter(`create_time > now - duration("1h")`)
 	require.Len(t, attachments, 1)
 
 	// Test: >= (greater than or equal)
-	attachments = tc.ListWithFilter(`create_time >= now() - 60`)
+	attachments = tc.ListWithFilter(`create_time >= now - duration("60s")`)
 	require.Len(t, attachments, 1)
 }
 

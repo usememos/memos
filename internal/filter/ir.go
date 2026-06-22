@@ -134,6 +134,15 @@ type FunctionValue struct {
 
 func (*FunctionValue) isValueExpr() {}
 
+// FieldAccessorValue captures a CEL timestamp accessor on a field, such as
+// created_ts.getMonth(). It renders to a dialect-specific date-part extraction.
+type FieldAccessorValue struct {
+	Field    string
+	Accessor string // e.g. "getFullYear", "getMonth"
+}
+
+func (*FieldAccessorValue) isValueExpr() {}
+
 // ListComprehensionCondition represents CEL macros like exists(), all(), filter().
 type ListComprehensionCondition struct {
 	Kind      ComprehensionKind
@@ -148,8 +157,9 @@ func (*ListComprehensionCondition) isCondition() {}
 type ComprehensionKind string
 
 const (
-	ComprehensionExists ComprehensionKind = "exists"
-	ComprehensionAll    ComprehensionKind = "all"
+	ComprehensionExists    ComprehensionKind = "exists"
+	ComprehensionAll       ComprehensionKind = "all"
+	ComprehensionExistsOne ComprehensionKind = "exists_one"
 )
 
 // PredicateExpr represents predicates used in comprehensions.

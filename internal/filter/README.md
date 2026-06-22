@@ -48,6 +48,12 @@ stmt, _ := engine.CompileToStatement(ctx, `has_task_list && visibility == "PUBLI
   tracks offsets to compose queries with pre-existing arguments.
 - **JSON Fields** — Memo metadata lives in `memo.payload`. The renderer handles
   `JSON_EXTRACT`/`json_extract`/`->`/`->>` variations and boolean coercion.
+- **Time Fields** — `created_ts`, `updated_ts`, and attachment `create_time` are
+  CEL `timestamp` values. Express instants with the `now` variable,
+  `duration("…")` (e.g. `created_ts >= now - duration("24h")`), or
+  `timestamp("2006-01-02T15:04:05Z")` / `timestamp(<epoch-seconds>)`. These fold
+  to epoch seconds at compile time — `now` is frozen once per compile (injectable
+  for tests via the engine clock) — so the backing columns stay unchanged.
 - **Tag Operations** — `tag in [...]` and `"tag" in tags` become JSON array
   predicates. SQLite uses `LIKE` patterns, MySQL uses `JSON_CONTAINS`, and
   Postgres uses `@>`.
@@ -64,9 +70,26 @@ stmt, _ := engine.CompileToStatement(ctx, `has_task_list && visibility == "PUBLI
   Go's RE2 via `cel.ValidateRegexLiterals()`. **Caveat:** regex *syntax* differs
   per engine (Go RE2 on SQLite, POSIX ERE on Postgres, ICU on MySQL 8.0+), so
   engine-specific patterns may not be portable.
-- **Tag `all()`** — `tags.all(t, <pred>)` matches only non-empty tag sets where
-  every element satisfies the predicate, via per-element iteration
-  (`json_each` / `jsonb_array_elements_text` / `JSON_TABLE`).
+- **Tag `all()` / `exists_one()`** — `tags.all(t, <pred>)` matches only non-empty
+  tag sets where every element satisfies the predicate; `tags.exists_one(t,
+  <pred>)` matches when exactly one element does (`COUNT(...) = 1`). Both iterate
+  per-element (`json_each` / `jsonb_array_elements_text` / `JSON_TABLE`).
+- **Timestamp Accessors** — `created_ts.getFullYear()`, `getMonth()`, `getDate()`,
+  `getDayOfMonth()`, `getDayOfWeek()`, `getDayOfYear()`, `getHours()`,
+  `getMinutes()`, `getSeconds()` render to date-part extraction (`strftime` /
+  `EXTRACT` / `YEAR`/`MONTH`/…). Results are normalized to CEL's base (0-based
+  month, 0-based day-of-week with 0 = Sunday). Extraction is UTC on SQLite/Postgres
+  (epoch columns); on MySQL the `TIMESTAMP` column is read in the session time
+  zone. A timezone argument is not supported.
+- **Set Operations** — `ext.Sets()`: `sets.contains(tags, [...])`,
+  `sets.intersects(tags, [...])`, and `sets.equivalent(tags, [...])` desugar to
+  exact-membership checks (AND / OR of `"v" in tags`); `equivalent` adds a
+  `size(tags)` length check (relies on tags being a set).
+- **`size()`** — `size(tags)` renders to JSON array length; `size(content)` (and
+  other string fields) render to `LENGTH` / `CHAR_LENGTH` (MySQL) for code-point
+  counts.
+- **Arithmetic** — `+`, `-`, `*`, `/`, `%` constant-fold on literal/`now`/`duration`
+  operands (division and modulo guard against a zero divisor).
 
 ## Typical Integration
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/google/cel-go/cel"
 	"github.com/pkg/errors"
@@ -13,6 +14,10 @@ import (
 type Engine struct {
 	schema Schema
 	env    *cel.Env
+	// nowFunc resolves the value of the `now` variable. It is frozen once per
+	// Compile so a single filter sees a single instant, and is overridable in
+	// tests for deterministic folding.
+	nowFunc func() time.Time
 }
 
 // NewEngine builds a new Engine for the provided schema.
@@ -22,8 +27,9 @@ func NewEngine(schema Schema) (*Engine, error) {
 		return nil, errors.Wrap(err, "failed to create CEL environment")
 	}
 	return &Engine{
-		schema: schema,
-		env:    env,
+		schema:  schema,
+		env:     env,
+		nowFunc: time.Now,
 	}, nil
 }
 
@@ -53,7 +59,7 @@ func (e *Engine) Compile(_ context.Context, filter string) (*Program, error) {
 		return nil, errors.Wrap(err, "failed to convert AST")
 	}
 
-	cond, err := buildCondition(parsed.GetExpr(), e.schema)
+	cond, err := buildCondition(parsed.GetExpr(), parseContext{schema: e.schema, now: e.nowFunc()})
 	if err != nil {
 		return nil, err
 	}
