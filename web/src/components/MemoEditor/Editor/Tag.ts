@@ -1,93 +1,19 @@
 import type { MarkdownToken } from "@tiptap/core";
 import { InputRule, Mark, mergeAttributes } from "@tiptap/core";
-import type { TokenizerThis, Tokens } from "marked";
-import { marked } from "marked";
 import { tagStyles } from "@/lib/markdownStyles";
-import { MAX_TAG_LENGTH, TAG_CHAR_CLASS } from "@/utils/tag-grammar";
+import { TAG_RUN } from "@/utils/tag-grammar";
 
 // Default tag pill, shared with the read-only view (MemoContent/Tag.tsx).
 // Computed once — renderHTML runs on every view update.
 const TAG_CLASS = `${tagStyles.base} ${tagStyles.defaultColor}`;
 
-// Built from the shared tag grammar (@/utils/tag-grammar) so the editor's
-// tokenizer/input rule can't drift from the read-only renderer's lexer
-// (web/src/utils/remark-plugins/remark-tag.ts).
-const TAG_INPUT_RULE = new RegExp(`(?:^|\\s)#(${TAG_CHAR_CLASS}{1,${MAX_TAG_LENGTH}})\\s$`, "u");
-const TAG_TOKEN_RULE = new RegExp(`^#(${TAG_CHAR_CLASS}{1,${MAX_TAG_LENGTH}})`, "u");
-// Tests the REMAINDER of the source (not a single code unit) so astral-plane
-// tag characters (emoji et al.) are seen whole, not as lone surrogates.
-const TAG_CHAR_AHEAD = new RegExp(`^${TAG_CHAR_CLASS}`, "u");
-
-/**
- * Tag tokenizer, registered DIRECTLY on the global marked singleton instead of
- * through `markdownTokenizer`. Two reasons:
- *
- * 1. `@tiptap/markdown`'s MarkdownManager wraps `markdownTokenizer.tokenize`
- *    in `tokenizer(src, tokens) { ... tokenize(src, tokens, helper) }` — the
- *    wrapper receives marked's TokenizerThis (with `lexer.state.inLink`) but
- *    does NOT forward it, so a manager-registered tokenizer can never know it
- *    is inside a link label. Registered natively, marked invokes us with
- *    `this.lexer` bound and we can decline inside `[label](url)` the same way
- *    remark-tag skips link nodes.
- * 2. The manager defaults to the global `marked` export (`markedInstance =
- *    options?.marked ?? marked`) and `web` resolves the exact same marked
- *    module instance as `@tiptap/markdown` does, so this registration is
- *    visible to every lexer the manager creates. Module scope + idempotent:
- *    registered exactly once per page load (the manager's own per-Editor
- *    `marked.use` calls are the accumulation hazard documented in
- *    markdownCodec.ts; this adds a single registration, ever).
- *
- * The Tag mark below still declares `markdownTokenName: "memoTag"` +
- * `parseMarkdown`, which is all the manager needs to route the token.
- */
-function tokenizeTag(this: TokenizerThis, src: string): Tokens.Generic | undefined {
-  // remark-tag skips link nodes entirely; marked sets `state.inLink` while
-  // tokenizing link/reflink labels, so declining here keeps `[see #x](url)`
-  // a plain link label instead of tearing the tag out of it.
-  if (this.lexer?.state?.inLink) {
-    return undefined;
-  }
-  const match = TAG_TOKEN_RULE.exec(src);
-  if (!match) {
-    return undefined;
-  }
-  const rest = src.slice(match[0].length);
-  // `#a#b`: decline when the run is directly followed by another `#`, so the
-  // FIRST run stays plain text. NOT full remark parity — remark-tag treats
-  // `#a#b` as two tags and `##x` as all-text, while here `#a#b` becomes text
-  // "#a" + tag "b" and `##x` becomes text "#" + tag "x". The divergence is
-  // visual-only in the editor: both shapes serialize back byte-identically
-  // (the surrounding text nodes re-emit their literal characters).
-  if (rest.startsWith("#")) {
-    return undefined;
-  }
-  // Runs longer than 100 tag characters are not tags at all in remark-tag
-  // (the whole run stays plain text) — decline instead of splitting the run
-  // into a 100-char tag plus leftover text.
-  if (TAG_CHAR_AHEAD.test(rest)) {
-    return undefined;
-  }
-  return { type: "memoTag", raw: match[0], text: match[0], tag: match[1] };
-}
-
-let tagTokenizerRegistered = false;
-function registerTagTokenizer() {
-  if (tagTokenizerRegistered) {
-    return;
-  }
-  tagTokenizerRegistered = true;
-  marked.use({
-    extensions: [
-      {
-        name: "memoTag",
-        level: "inline",
-        start: (src: string) => src.indexOf("#"),
-        tokenizer: tokenizeTag,
-      },
-    ],
-  });
-}
-registerTagTokenizer();
+// Built from the shared TAG_RUN (@/utils/tag-grammar) so the editor's input
+// rule and tokenizer can't drift from the serialize-escape or the read-only
+// renderer's lexer (web/src/utils/remark-plugins/remark-tag.ts). The capped-run
+// lookahead in TAG_RUN also makes an over-long run decline to match — no
+// separate length check needed.
+const TAG_INPUT_RULE = new RegExp(`(?:^|\\s)#(${TAG_RUN})\\s$`, "u");
+const TAG_TOKEN_RULE = new RegExp(`^#(${TAG_RUN})`, "u");
 
 /**
  * Mark for memos `#tags`: styled in the editor, serialized back to `#tag`
@@ -99,8 +25,20 @@ registerTagTokenizer();
  * `applyMarkToContent` only attaches enclosing marks to text nodes, so an
  * atom inside bold silently drops the bold delimiters.
  *
- * Parsed live while typing (input rule) and from markdown (the native marked
- * tokenizer above).
+ * Parsed live while typing (the input rule) and from markdown (the
+ * `markdownTokenizer` below — the canonical @tiptap/markdown extension point,
+ * https://tiptap.dev/docs/editor/markdown/advanced-usage/custom-tokenizer).
+ *
+ * Two consequences of going through the manager (vs. registering on `marked`
+ * directly) are handled in tagMarkdown.ts:
+ *   - The tokenizer can't see whether it sits inside a link label — the manager
+ *     forwards only `{ inlineTokens, blockTokens }`, not the lexer's `inLink`
+ *     state — so tag-in-link skipping is a tree pass there, mirroring how the
+ *     read-only renderer (remark-tag) skips link nodes.
+ *   - The manager re-registers this tokenizer onto the global `marked` on every
+ *     Editor construction (the accumulation noted in markdownCodec.ts). The
+ *     impact is sub-millisecond for memo-sized content and the test codec is a
+ *     singleton; accepted as the cost of the canonical API.
  */
 export const Tag = Mark.create({
   name: "tag",
@@ -154,6 +92,26 @@ export const Tag = Mark.create({
     ];
   },
 
+  markdownTokenizer: {
+    name: "memoTag",
+    level: "inline",
+    start: (src: string) => src.indexOf("#"),
+    tokenize: (src: string) => {
+      const match = TAG_TOKEN_RULE.exec(src);
+      if (!match) {
+        return undefined;
+      }
+      // `#a#b`: decline when the run is directly followed by another `#`, so the
+      // FIRST run stays plain text "#a" + tag "b" (`##x` likewise → text "#" +
+      // tag "x"). The serialize-escape then escapes the tag-shaped literal "#a",
+      // so `#a#b` round-trips as `\#a#b` — doc-equivalent and stable thereafter.
+      // (An over-long run already declines: TAG_RUN's lookahead fails to match.)
+      if (src.slice(match[0].length).startsWith("#")) {
+        return undefined;
+      }
+      return { type: "memoTag", raw: match[0], tag: match[1] };
+    },
+  },
   markdownTokenName: "memoTag",
   parseMarkdown: (token, helpers) => {
     const t = token as MarkdownToken & { tag?: string };

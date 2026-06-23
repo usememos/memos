@@ -96,9 +96,13 @@ describe("Tag mark", () => {
     expect(roundTripMarkdown(input).trim()).toBe(input);
   });
 
-  it("round-trips ##x and #a#b byte-identically (visual divergence documented in Tag.ts)", () => {
+  it("round-trips ##x unchanged and normalizes #a#b to \\#a#b (conservative # escaping)", () => {
+    // "##x" → text "#" + tag "x"; the lone "#" is not tag-shaped, so untouched.
     expect(roundTripMarkdown("##x").trim()).toBe("##x");
-    expect(roundTripMarkdown("#a#b").trim()).toBe("#a#b");
+    // "#a#b" → text "#a" + tag "b"; the plain "#a" is tag-shaped, so the
+    // serializer escapes it to keep it literal. Doc-equivalent, stable after.
+    expect(roundTripMarkdown("#a#b").trim()).toBe("\\#a#b");
+    expect(roundTripMarkdown("\\#a#b").trim()).toBe("\\#a#b");
   });
 
   it("treats a run longer than 100 tag characters as plain text", () => {
@@ -109,9 +113,29 @@ describe("Tag mark", () => {
     expect(textNodes.some((n) => hasTagMark(n))).toBe(false);
   });
 
-  it("documents known gap: backslash-escaped \\# degrades after one cycle (upstream escape dropping)", () => {
-    const out = roundTripMarkdown("\\#escaped");
-    expect(out.trim()).toBe("#escaped"); // upstream drops the escape (pre-existing); re-parse then sees a tag
-    expect(roundTripMarkdown(out)).toBe(out); // at least stable from then on
+  it("keeps a backslash-escaped \\#tag literal and durable across round-trips", () => {
+    const input = "\\#NAS is my server";
+
+    // Escapes are lexical: `\#NAS` parses to ordinary text — no tag mark, no
+    // bespoke "escaped tag" node — the `\` is simply consumed.
+    const children = firstParagraphChildren(input);
+    expect(children.some(hasTagMark)).toBe(false);
+    expect(children.map((n) => n.text ?? "").join("")).toBe("#NAS is my server");
+
+    // The serializer re-escapes the tag-shaped `#`, so it never degrades into a
+    // tag...
+    const once = roundTripMarkdown(input).trim();
+    expect(once).toBe("\\#NAS is my server");
+    // ...and stays stable on every subsequent cycle.
+    expect(roundTripMarkdown(once).trim()).toBe(once);
+  });
+
+  it("escapes only the literal tag while still tagging a real one beside it", () => {
+    const input = "\\#NAS and #real";
+    expect(roundTripMarkdown(input).trim()).toBe("\\#NAS and #real");
+
+    const tagged = firstParagraphChildren(input).filter(hasTagMark);
+    expect(tagged).toHaveLength(1);
+    expect(tagged[0]).toMatchObject({ text: "#real", marks: [{ type: "tag", attrs: { tag: "real" } }] });
   });
 });

@@ -1,11 +1,11 @@
 import { type AnyExtension, mergeAttributes } from "@tiptap/core";
 import { Heading } from "@tiptap/extension-heading";
 import { TaskItem, TaskList } from "@tiptap/extension-list";
-import { Markdown } from "@tiptap/markdown";
 import StarterKit from "@tiptap/starter-kit";
 import { type HeadingLevel, headingClass, markdownStyles } from "@/lib/markdownStyles";
 import { preservedExtensions } from "./PreservedBlock";
 import { Tag } from "./Tag";
+import { TagAwareMarkdown } from "./tagMarkdown";
 
 /**
  * StarterKit's Heading is bundled and cannot vary classes by level via static
@@ -46,7 +46,7 @@ export function buildExtensions(): AnyExtension[] {
     StyledHeading.configure({ levels: [1, 2, 3, 4, 5, 6] }),
     TaskList,
     TaskItem.configure({ nested: true }),
-    Markdown,
+    TagAwareMarkdown,
     ...preservedExtensions,
     Tag,
   ];

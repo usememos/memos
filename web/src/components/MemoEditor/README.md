@@ -45,7 +45,8 @@ MemoEditor/
 │   ├── extensions.ts         # Canonical schema-relevant extension set (shared with codec)
 │   ├── markdownCodec.ts      # Headless parse/serialize helpers (singleton editor)
 │   ├── PreservedBlock.ts     # Byte-for-byte preservation of tables, math, raw HTML
-│   ├── Tag.ts                # Memos #tag mark
+│   ├── Tag.ts                # Memos #tag mark (markdownTokenizer + input rule)
+│   ├── tagMarkdown.ts        # Tag-aware Markdown: # escape on serialize, link-skip on parse
 │   ├── TagSuggestion.ts      # # popup for WYSIWYG mode
 │   └── suggestionMenu.tsx    # Shared suggestion popup renderer (used by TagSuggestion)
 ├── Toolbar/                # Toolbar sub-components (InsertMenu, VisibilitySelector)
@@ -85,7 +86,17 @@ Mode switching is a markdown handoff: because both editors write into `state.con
 
 `PreservedBlock.ts` handles syntax the WYSIWYG editor does not model richly: tables, `$$math$$`, and raw HTML are captured at parse time with their raw markdown source, shown as editable monospace literal text, and re-emitted byte-for-byte on serialize.
 
-`Tag.ts` models memos `#tags` as a `code: true` text mark, letting tags round-trip byte-identically even inside bold or heading spans.
+`Tag.ts` models memos `#tags` as a `code: true` text mark, letting tags round-trip byte-identically even inside bold or heading spans. Its `#tag` lexing is a `markdownTokenizer` (the canonical `@tiptap/markdown` extension point); `tagMarkdown.ts` adds the two things that tokenizer can't do — on serialize it backslash-escapes a literal `#` that would otherwise re-parse into a tag (escapes are lexical, so there is no "escaped tag" node), and on parse it strips the tag mark from text inside link labels. The `#tag` grammar itself lives once in `utils/tag-grammar.ts` (`TAG_RUN`), shared by the tokenizer, the serialize-escape, and the read-only `remark-tag` renderer so they can't drift.
+
+### Why the markdown manager is worked around in several places
+
+`@tiptap/markdown` (3.26.0) exposes no public, per-instance hook for custom tokenizers or for text escaping, and it registers each extension's tokenizer onto the **global** `marked` singleton on every `new Editor()` — registrations it never removes. That one limitation is the reason for three otherwise-surprising choices, each documented in detail at its call site:
+
+- **`markdownCodec.ts` keeps a single editor instance** — re-creating editors would leak tokenizer registrations onto global `marked` and measurably degrade parse time.
+- **`PreservedBlock.ts` registers its tokenizers on `marked` once at module scope** (idempotent) instead of via the per-extension `markdownTokenizer`, to avoid that per-construction accumulation.
+- **`tagMarkdown.ts` composes onto the manager in `onBeforeCreate`** (escape, link-skip) because the relevant manager methods are `private` with no public seam.
+
+`Tag.ts` deliberately uses the canonical `markdownTokenizer` API and accepts the per-construction re-registration as its cost; `PreservedBlock.ts` refuses it for its seven tokenizers. The asymmetry is intentional — collapse both onto one path if upstream ever ships a public per-instance tokenizer hook.
 
 ### Suggestions
 

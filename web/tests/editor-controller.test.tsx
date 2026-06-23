@@ -105,6 +105,43 @@ describe("tag suggestion insertion", () => {
   });
 });
 
+describe("tag escaping", () => {
+  // Drives the ProseMirror input-rules plugin the way real typing does:
+  // someProp("handleTextInput", …) is exactly what the view calls on keystroke.
+  function typeText(editor: EditorInstance, text: string) {
+    const { from } = editor.state.selection;
+    editor.view.someProp("handleTextInput", (handler) => handler(editor.view, from, from, text));
+  }
+
+  it("undoing the tag autoformat leaves a durable literal #tag, not a pill", () => {
+    const { ref, editor } = setup("");
+    act(() => {
+      editor.view.dispatch(editor.state.tr.insertText("#NAS", 1));
+    });
+    act(() => typeText(editor, " ")); // tag input rule fires → pill
+    act(() => {
+      editor.commands.undoInputRule(); // the standard "I didn't want that" gesture
+    });
+
+    // Back to plain text — and the serializer escapes it so it can't re-tag.
+    expect(ref.current?.getMarkdown()?.trim()).toBe("\\#NAS");
+    const para = editor.getJSON().content?.[0];
+    expect(para?.content?.some((n) => (n.marks ?? []).some((m) => m.type === "tag"))).toBeFalsy();
+  });
+
+  it("a plain #tag still becomes a tag", () => {
+    const { ref, editor } = setup("");
+    act(() => {
+      editor.view.dispatch(editor.state.tr.insertText("#work", 1));
+    });
+    act(() => typeText(editor, " "));
+
+    expect(ref.current?.getMarkdown()?.trim()).toBe("#work");
+    const para = editor.getJSON().content?.[0];
+    expect(para?.content?.[0]).toMatchObject({ text: "#work", marks: [{ type: "tag" }] });
+  });
+});
+
 describe("external content sync", () => {
   it("a trim-equal echo of the editor's own output does not reset the document", () => {
     const { ref, rerender } = setupRerenderable("hello");
