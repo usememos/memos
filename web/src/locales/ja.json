@@ -165,7 +165,25 @@
       "trigger": "音声を録音する",
       "unsupported": "音声録音はサポートされていません",
       "unsupported-description": "このブラウザではメモコンポーザーから音声を録音できません。"
-    }
+    },
+    "format": {
+      "heading": "見出し",
+      "paragraph": "段落",
+      "heading-1": "見出し1",
+      "heading-2": "見出し2",
+      "heading-3": "見出し3",
+      "bold": "太字",
+      "italic": "斜体",
+      "code": "インラインコード",
+      "bullet-list": "箇条書きリスト",
+      "ordered-list": "番号付きリスト",
+      "task-list": "タスクリスト",
+      "link": "リンク",
+      "link-prompt": "URLを入力",
+      "more": "その他の書式"
+    },
+    "unsupported-syntax-raw-mode": "このメモにはリッチテキストエディターで安全に編集できない構文が含まれているため、Markdownの生入力モードで開きました。",
+    "wysiwyg-editor": "WYSIWYGエディター"
   },
   "inbox": {
     "failed-to-load": "受信トレイアイテムの読み込みに失敗しました",
@@ -270,7 +288,8 @@
       "title": "タスク",
       "uncheck-all": "すべてのタスクのチェックを外します",
       "updated": "タスクが更新されました"
-    }
+    },
+    "new-badge": "新着"
   },
   "message": {
     "archived-successfully": "アーカイブが完了しました",
@@ -581,7 +600,9 @@
       "selected-backend": "選択済み",
       "type-s3": "S3対応ストレージ",
       "use-path-style": "パス形式の URL を使用する",
-      "use-path-style-description": "仮想ホスト型バケットをサポートしない MinIO または一部の S3 互換サービスなどのプロバイダーに対してこれを有効にします。"
+      "use-path-style-description": "仮想ホスト型バケットをサポートしない MinIO または一部の S3 互換サービスなどのプロバイダーに対してこれを有効にします。",
+      "insecure-skip-tls-verify": "TLS検証をスキップ",
+      "insecure-skip-tls-verify-description": "S3エンドポイントのTLS証明書検証を無効にします。自己署名証明書を使用する信頼できるエンドポイントの場合にのみ有効にしてください。中間者攻撃に対する保護が失われます。"
     },
     "system": {
       "additional-script": "追加スクリプト",
@@ -624,7 +645,12 @@
         "edit-webhook": "Webhookを編集",
         "payload-url": "ペイロードURL",
         "title": "タイトル",
-        "url-example-post-receive": "https://example.com/postreceive"
+        "url-example-post-receive": "https://example.com/postreceive",
+        "copy-secret": "署名シークレットをコピー",
+        "generate-secret": "生成",
+        "signing-secret": "署名シークレット",
+        "signing-secret-description": "任意。Standard Webhooks仕様に従い、リクエストボディをHMAC-SHA256で署名するために使用します。",
+        "signing-secret-placeholder": "シークレットを入力するか生成してください"
       },
       "delete-dialog": {
         "delete-webhook-description": "この操作は元に戻せません。",
