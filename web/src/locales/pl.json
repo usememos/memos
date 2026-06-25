@@ -580,7 +580,7 @@
       "accesskey-description": "Identyfikator klucza dostępu dla zasobnika lub usługi kompatybilnej z S3.",
       "badge-default": "Domyślny",
       "badge-recommended": "Zalecony",
-      "bucket-description": "Wiadro, w którym będą przechowywane nowe obiekty załączników.",
+      "bucket-description": "Bucket, w którym będą przechowywane nowe obiekty załączników.",
       "current-storage-description": "Wybierz miejsce przechowywania nowych załączników. Istniejące załączniki pozostają w bieżącej lokalizacji przechowywania.",
       "database-description": "Przechowuj obiekty BLOB załączników bezpośrednio w bazie danych aplikacji.",
       "database-note-backup": "Łatwe tworzenie kopii zapasowych wraz z notatkami dotyczącymi małych instancji.",
@@ -597,8 +597,8 @@
       "s3-configuration-description": "Skonfiguruj łyżkę kompatybilną z S3 dla nowych osprzętów.",
       "s3-description": "Przechowuj nowe załączniki w usłudze przechowywania obiektów zgodnej z S3.",
       "s3-note-config": "Wymaga prawidłowego punktu końcowego, regionu, zasobnika, poświadczeń, uprawnień i dostępu do sieci serwera.",
-      "s3-note-scale": "Najlepsze w przypadku dużych bibliotek załączników, wdrożeń w chmurze lub wielu wystąpień aplikacji.",
-      "secretkey-description": "Tajny klucz dostępu do wiadra lub usługi kompatybilnej z S3.",
+      "s3-note-scale": "Najlepsze w przypadku dużej biblioteki załączników, wdrożeń w chmurze lub wielu instacji aplikacji.",
+      "secretkey-description": "Tajny klucz dostępu do bucketu lub usługi kompatybilnej z S3.",
       "secretkey-preserve-description": "Pozostaw puste, aby zachować istniejący tajny klucz.",
       "selected-backend": "Wybrany",
       "type-s3": "Pamięć kompatybilna z S3",
@@ -775,7 +775,7 @@
       "description": "Użycie zasobów dla tej instancji.",
       "database": {
         "title": "Baza danych",
-        "driver": "Kierowca",
+        "driver": "Sterownik",
         "size": "Rozmiar"
       },
       "local-storage": {
@@ -784,7 +784,7 @@
       },
       "unknown": "Nieznany",
       "last-updated": "Ostatnia aktualizacja {{ago}}",
-      "refresh": "Odświeżać",
+      "refresh": "Odśwież",
       "load-error": "Nie udało się załadować statystyk"
     }
   },
@@ -841,7 +841,7 @@
     "tabs": {
       "audio": "Audio",
       "documents": "Dokumenty",
-      "media": "Głoska bezdźwięczna"
+      "media": "Media"
     },
     "unused": {
       "confirm-description": "Spowoduje to usunięcie każdego przesłanego pliku, który nie jest powiązany z notatką.",
