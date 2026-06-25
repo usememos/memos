@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useNewMemo } from "@/contexts/NewMemoContext";
-import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
+import { DEFAULT_LIST_MEMOS_PAGE_SIZE, SKELETON_LOADING_DELAY_MS } from "@/helpers/consts";
+import { useDelayedFlag } from "@/hooks/useDelayedFlag";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { hoistMemoToFront } from "@/hooks/useMemoSorting";
 import { userKeys } from "@/hooks/useUserQueries";
@@ -101,6 +102,9 @@ const PagedMemoList = (props: Props) => {
     { enabled: props.enabled ?? true },
   );
 
+  // Only show the skeleton once loading exceeds the delay, so fast loads don't flash it.
+  const showSkeleton = useDelayedFlag(isLoading, SKELETON_LOADING_DELAY_MS);
+
   // Flatten pages into a single array of memos
   const memos = useMemo(() => data?.pages.flatMap((page) => page.memos) || [], [data]);
 
@@ -158,9 +162,11 @@ const PagedMemoList = (props: Props) => {
   const children = (
     <MentionResolutionProvider contents={sortedMemoList.map((memo) => memo.content)}>
       <div className="flex flex-col justify-start w-full max-w-2xl mx-auto">
-        {/* Show skeleton loader during initial load */}
+        {/* During initial load, show the skeleton only after the delay; render nothing before then to avoid a flash. */}
         {isLoading ? (
-          <Skeleton showCreator={props.showCreator} count={4} />
+          showSkeleton ? (
+            <Skeleton showCreator={props.showCreator} count={4} />
+          ) : null
         ) : (
           <>
             {showMemoEditor ? (

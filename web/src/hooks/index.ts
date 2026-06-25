@@ -2,6 +2,7 @@ export * from "./useAsyncEffect";
 export * from "./useCurrentUser";
 export * from "./useDateFilterNavigation";
 export * from "./useDebouncedEffect";
+export * from "./useDelayedFlag";
 export * from "./useFilteredMemoStats";
 export * from "./useLoading";
 export * from "./useLocalStorage";
