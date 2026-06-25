@@ -3993,6 +3993,10 @@ components:
                     description: |-
                         Optional. Signing secret used to HMAC-SHA256 sign the webhook request body.
                          This field is input-only; it is never returned in responses.
+                hasSigningSecret:
+                    readOnly: true
+                    type: boolean
+                    description: Whether this webhook has a signing secret configured.
             description: UserWebhook represents a webhook owned by a user.
 tags:
     - name: AIService

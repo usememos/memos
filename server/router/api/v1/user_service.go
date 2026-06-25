@@ -1271,9 +1271,10 @@ func generateUserWebhookID() string {
 // convertUserWebhookFromUserSetting converts a storepb webhook to a v1pb UserWebhook.
 func convertUserWebhookFromUserSetting(webhook *storepb.WebhooksUserSetting_Webhook, user *store.User) *v1pb.UserWebhook {
 	return &v1pb.UserWebhook{
-		Name:        fmt.Sprintf("%s/webhooks/%s", BuildUserName(user.Username), webhook.Id),
-		Url:         webhook.Url,
-		DisplayName: webhook.Title,
+		Name:             fmt.Sprintf("%s/webhooks/%s", BuildUserName(user.Username), webhook.Id),
+		Url:              webhook.Url,
+		DisplayName:      webhook.Title,
+		HasSigningSecret: webhook.SigningSecret != "",
 		// Note: create_time and update_time are not available in the user setting webhook structure
 		// This is a limitation of storing webhooks in user settings vs the dedicated webhook table
 	}
@@ -1470,9 +1471,10 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, user *store.
 			apiWebhooks = make([]*v1pb.UserWebhook, 0, len(webhooks.Webhooks))
 			for _, webhook := range webhooks.Webhooks {
 				apiWebhook := &v1pb.UserWebhook{
-					Name:        fmt.Sprintf("%s/webhooks/%s", BuildUserName(user.Username), webhook.Id),
-					Url:         webhook.Url,
-					DisplayName: webhook.Title,
+					Name:             fmt.Sprintf("%s/webhooks/%s", BuildUserName(user.Username), webhook.Id),
+					Url:              webhook.Url,
+					DisplayName:      webhook.Title,
+					HasSigningSecret: webhook.SigningSecret != "",
 				}
 				apiWebhooks = append(apiWebhooks, apiWebhook)
 			}

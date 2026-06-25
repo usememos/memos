@@ -2166,8 +2166,10 @@ type UserWebhook struct {
 	// Optional. Signing secret used to HMAC-SHA256 sign the webhook request body.
 	// This field is input-only; it is never returned in responses.
 	SigningSecret string `protobuf:"bytes,6,opt,name=signing_secret,json=signingSecret,proto3" json:"signing_secret,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// Whether this webhook has a signing secret configured.
+	HasSigningSecret bool `protobuf:"varint,7,opt,name=has_signing_secret,json=hasSigningSecret,proto3" json:"has_signing_secret,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *UserWebhook) Reset() {
@@ -2240,6 +2242,13 @@ func (x *UserWebhook) GetSigningSecret() string {
 		return x.SigningSecret
 	}
 	return ""
+}
+
+func (x *UserWebhook) GetHasSigningSecret() bool {
+	if x != nil {
+		return x.HasSigningSecret
+	}
+	return false
 }
 
 type ListUserWebhooksRequest struct {
@@ -3467,7 +3476,7 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\x05token\x18\x02 \x01(\tR\x05token\"`\n" +
 	" DeletePersonalAccessTokenRequest\x12<\n" +
 	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" memos.api.v1/PersonalAccessTokenR\x04name\"\x86\x02\n" +
+	" memos.api.v1/PersonalAccessTokenR\x04name\"\xb9\x02\n" +
 	"\vUserWebhook\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12!\n" +
@@ -3476,7 +3485,8 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"createTime\x12@\n" +
 	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"updateTime\x12*\n" +
-	"\x0esigning_secret\x18\x06 \x01(\tB\x03\xe0A\x04R\rsigningSecret\"6\n" +
+	"\x0esigning_secret\x18\x06 \x01(\tB\x03\xe0A\x04R\rsigningSecret\x121\n" +
+	"\x12has_signing_secret\x18\a \x01(\bB\x03\xe0A\x03R\x10hasSigningSecret\"6\n" +
 	"\x17ListUserWebhooksRequest\x12\x1b\n" +
 	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\"Q\n" +
 	"\x18ListUserWebhooksResponse\x125\n" +

@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import copy from "copy-to-clipboard";
-import { CheckIcon, CopyIcon } from "lucide-react";
+import { CheckIcon, CopyIcon, Trash2Icon } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,7 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
     signingSecret: isCreating ? "" : undefined,
   });
   const requestState = useLoading(false);
+  const [hasExistingSecret, setHasExistingSecret] = useState(false);
   const [secretCopied, setSecretCopied] = useState(false);
 
   useEffect(() => {
@@ -53,6 +54,7 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
               url: webhook.url,
               signingSecret: undefined,
             });
+            setHasExistingSecret(webhook.hasSigningSecret);
           }
         });
     }
@@ -65,6 +67,8 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
         url: "",
         signingSecret: "",
       });
+      setHasExistingSecret(false);
+      setSecretCopied(false);
     }
   }, [open, isCreating]);
 
@@ -87,27 +91,34 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
     });
   };
 
-  const handleSigningSecretInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPartialState({
-      signingSecret: e.target.value,
-    });
-  };
-
-  const handleGenerateSecret = () => {
+  const handleGenerateAndCopy = () => {
     const bytes = crypto.getRandomValues(new Uint8Array(32));
     const secret = "whsec_" + btoa(String.fromCharCode(...bytes));
     setPartialState({ signingSecret: secret });
-    setSecretCopied(false);
-  };
-
-  const handleCopySecret = () => {
-    if (!state.signingSecret) return;
-    copy(state.signingSecret.trim());
+    copy(secret);
     setSecretCopied(true);
     setTimeout(() => setSecretCopied(false), 2000);
   };
 
+  const handleClearSecret = () => {
+    setPartialState({ signingSecret: "" });
+  };
+
   const normalizedSigningSecret = state.signingSecret?.trim() ?? "";
+
+  const getPendingLabel = () => {
+    const prefix = `${t("setting.webhook.create-dialog.signing-secret-pending")}: `;
+    if (state.signingSecret === undefined) {
+      return prefix + t("setting.webhook.create-dialog.signing-secret-pending-no-changes");
+    }
+    if (state.signingSecret === "") {
+      if (isCreating) {
+        return prefix + t("setting.webhook.create-dialog.signing-secret-pending-no-changes");
+      }
+      return prefix + t("setting.webhook.create-dialog.signing-secret-pending-cleared");
+    }
+    return prefix + t("setting.webhook.create-dialog.signing-secret-pending-generated");
+  };
 
   const handleSaveBtnClick = async () => {
     if (!state.displayName || !state.url) {
@@ -192,30 +203,47 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="signingSecret">{t("setting.webhook.create-dialog.signing-secret")}</Label>
-            <span className="text-xs text-muted-foreground">{t("setting.webhook.create-dialog.signing-secret-description")}</span>
-            <div className="flex gap-2">
-              <Input
-                id="signingSecret"
-                type="password"
-                placeholder={t("setting.webhook.create-dialog.signing-secret-placeholder")}
-                value={state.signingSecret ?? ""}
-                onChange={handleSigningSecretInputChange}
-                className="flex-1"
-              />
+            <div className="flex items-center gap-2">
+              <Label>{t("setting.webhook.create-dialog.signing-secret")}</Label>
+              <span className="text-xs text-muted-foreground">
+                {t("setting.webhook.create-dialog.signing-secret-status")}:{" "}
+                {hasExistingSecret
+                  ? t("setting.webhook.create-dialog.signing-secret-configured")
+                  : t("setting.webhook.create-dialog.signing-secret-not-configured")}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
               <Button
                 type="button"
-                variant="ghost"
-                size="icon"
-                onClick={handleCopySecret}
-                disabled={!state.signingSecret}
-                aria-label={t("setting.webhook.create-dialog.copy-secret")}
+                variant="outline"
+                size="sm"
+                onClick={handleGenerateAndCopy}
+                aria-label={t("setting.webhook.create-dialog.generate-and-copy-secret")}
               >
-                {secretCopied ? <CheckIcon className="h-4 w-4 text-success" /> : <CopyIcon className="h-4 w-4" />}
+                {secretCopied ? (
+                  <>
+                    <CheckIcon className="mr-1 h-3.5 w-3.5 text-success" />
+                    {t("setting.webhook.create-dialog.copied")}
+                  </>
+                ) : (
+                  <>
+                    <CopyIcon className="mr-1 h-3.5 w-3.5" />
+                    {t("setting.webhook.create-dialog.generate-and-copy-secret")}
+                  </>
+                )}
               </Button>
-              <Button type="button" variant="outline" onClick={handleGenerateSecret}>
-                {t("setting.webhook.create-dialog.generate-secret")}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleClearSecret}
+                disabled={!state.signingSecret && !hasExistingSecret}
+                aria-label={t("setting.webhook.create-dialog.clear-secret")}
+              >
+                <Trash2Icon className="mr-1 h-3.5 w-3.5" />
+                {t("setting.webhook.create-dialog.clear-secret")}
               </Button>
+              <span className="text-xs text-muted-foreground">{getPendingLabel()}</span>
             </div>
           </div>
         </div>
@@ -224,7 +252,7 @@ function CreateWebhookDialog({ open, onOpenChange, webhookName, onSuccess }: Pro
             {t("common.cancel")}
           </Button>
           <Button disabled={requestState.isLoading} onClick={handleSaveBtnClick}>
-            {t("common.create")}
+            {isCreating ? t("common.create") : t("common.save")}
           </Button>
         </DialogFooter>
       </DialogContent>
