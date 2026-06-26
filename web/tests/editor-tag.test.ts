@@ -43,6 +43,16 @@ describe("Tag mark", () => {
     expect(tagged?.marks?.find((m) => m.type === "tag")?.attrs?.tag).toBe("work/project-1");
   });
 
+  it("includes combining marks in a tag run", () => {
+    // Malayalam കവിത carries a spacing combining vowel sign (U+0D3F, \p{M});
+    // the tag must cover the whole word, not stop at the first mark.
+    expect(firstParagraphChildren("#കവിത")[0]).toMatchObject({
+      type: "text",
+      text: "#കവിത",
+      marks: [{ type: "tag", attrs: { tag: "കവിത" } }],
+    });
+  });
+
   it("does not turn headings into tags", () => {
     expect(parseMarkdown("# heading").content?.[0]?.type).toBe("heading");
   });

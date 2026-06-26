@@ -70,6 +70,15 @@ describe("remarkTag", () => {
     expect(html).toContain('data-tag="second"');
   });
 
+  it("tags a whole word containing combining marks", () => {
+    // Malayalam കവിത = ka, va, vowel-sign-i (U+0D3F, a spacing combining mark),
+    // ta. The vowel sign is a \p{M} character, so the tag must not stop at കവ.
+    const html = renderMarkdown("#കവിത");
+
+    expect(html).toContain('data-tag="കവിത"');
+    expect(html).not.toContain('data-tag="കവ"');
+  });
+
   it("still tags a hash that shares a text node with an entity reference", () => {
     // The source slice ("...&amp;...") differs from the decoded value, so the
     // escape-aware path bows out and the tag is detected the original way.
