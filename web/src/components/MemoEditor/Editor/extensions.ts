@@ -3,6 +3,7 @@ import { Heading } from "@tiptap/extension-heading";
 import { TaskItem, TaskList } from "@tiptap/extension-list";
 import StarterKit from "@tiptap/starter-kit";
 import { type HeadingLevel, headingClass, markdownStyles } from "@/lib/markdownStyles";
+import { Mention } from "./Mention";
 import { preservedExtensions } from "./PreservedBlock";
 import { Tag } from "./Tag";
 import { TagAwareMarkdown } from "./tagMarkdown";
@@ -49,5 +50,6 @@ export function buildExtensions(): AnyExtension[] {
     TagAwareMarkdown,
     ...preservedExtensions,
     Tag,
+    Mention,
   ];
 }

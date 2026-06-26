@@ -67,3 +67,14 @@ export const tagStyles = {
   /** Default theme color, used when no custom tag color is set. */
   defaultColor: "border-primary text-primary bg-primary/15",
 } as const;
+
+/**
+ * `@mention` styling, shared by the read-only memo view (MemoContent/Mention.tsx)
+ * and the editor's mention mark (MemoEditor/Editor/Mention.ts) so a mention looks
+ * identical while typing and after saving. Unlike a tag this is not a pill — it
+ * is the same primary-colored accent the resolved read-only mention uses in its
+ * resting state (the read-only view adds `hover:underline` for its link).
+ */
+export const mentionStyles = {
+  base: "text-primary underline-offset-2",
+} as const;

@@ -34,7 +34,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
 
   return (
     <div className="w-full flex flex-row justify-between items-center mb-2">
-      <div className="flex flex-row justify-start items-center">
+      <div className="flex flex-row justify-start items-center gap-1">
         <InsertMenu
           isUploading={isUploading}
           location={location}
@@ -43,11 +43,10 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
           memoName={memoName}
           onAudioRecorderClick={onAudioRecorderClick}
         />
+        <VisibilitySelector value={visibility} onChange={handleVisibilityChange} />
       </div>
 
       <div className="flex flex-row justify-end items-center gap-2">
-        <VisibilitySelector value={visibility} onChange={handleVisibilityChange} />
-
         {onCancel && (
           <Button variant="ghost" onClick={onCancel} disabled={isSaving}>
             {t("common.cancel")}

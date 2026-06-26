@@ -1,4 +1,5 @@
 import type { Element } from "hast";
+import { mentionStyles } from "@/lib/markdownStyles";
 import { cn } from "@/lib/utils";
 
 interface MentionProps extends React.HTMLAttributes<HTMLSpanElement> {
@@ -29,7 +30,7 @@ export const Mention: React.FC<MentionProps> = ({
   return (
     <a
       href={`/u/${username}`}
-      className={cn("text-primary underline-offset-2 hover:underline", className)}
+      className={cn(mentionStyles.base, "hover:underline", className)}
       data-mention={username}
       title={`@${username}`}
       {...props}
