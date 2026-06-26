@@ -1095,7 +1095,16 @@ func (s *APIV1Service) CreateUserWebhook(ctx context.Context, request *v1pb.Crea
 	if err := webhook.ValidateURL(strings.TrimSpace(request.Webhook.Url)); err != nil {
 		return nil, err
 	}
-	if err := webhook.ValidateSigningSecret(strings.TrimSpace(request.Webhook.SigningSecret)); err != nil {
+	// The signing secret is generated server-side so it always meets the Standard
+	// Webhooks length requirement. A client-supplied secret is still accepted (and
+	// validated) for backward compatibility.
+	signingSecret := strings.TrimSpace(request.Webhook.SigningSecret)
+	if signingSecret == "" {
+		signingSecret, err = webhook.GenerateSigningSecret()
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to generate signing secret: %v", err)
+		}
+	} else if err := webhook.ValidateSigningSecret(signingSecret); err != nil {
 		return nil, err
 	}
 
@@ -1104,7 +1113,7 @@ func (s *APIV1Service) CreateUserWebhook(ctx context.Context, request *v1pb.Crea
 		Id:            webhookID,
 		Title:         request.Webhook.DisplayName,
 		Url:           strings.TrimSpace(request.Webhook.Url),
-		SigningSecret: strings.TrimSpace(request.Webhook.SigningSecret),
+		SigningSecret: signingSecret,
 	}
 
 	err = s.Store.AddUserWebhook(ctx, userID, webhook)
@@ -1259,6 +1268,34 @@ func (s *APIV1Service) DeleteUserWebhook(ctx context.Context, request *v1pb.Dele
 	return &emptypb.Empty{}, nil
 }
 
+// GetUserWebhookSigningSecret reveals the signing secret for a single webhook.
+// This is the only endpoint that returns the secret value; it is gated to the
+// webhook owner (or an admin) and the secret is never included in list/create/update responses.
+func (s *APIV1Service) GetUserWebhookSigningSecret(ctx context.Context, request *v1pb.GetUserWebhookSigningSecretRequest) (*v1pb.GetUserWebhookSigningSecretResponse, error) {
+	user, webhookID, err := s.resolveUserAndWebhookIDFromName(ctx, request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid webhook name: %v", err)
+	}
+	userID := user.ID
+
+	if _, err := s.authorizeUserResourceAccess(ctx, userID, true); err != nil {
+		return nil, err
+	}
+
+	webhooks, err := s.Store.GetUserWebhooks(ctx, userID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user webhooks: %v", err)
+	}
+
+	for _, webhook := range webhooks {
+		if webhook.Id == webhookID {
+			return &v1pb.GetUserWebhookSigningSecretResponse{SigningSecret: webhook.SigningSecret}, nil
+		}
+	}
+
+	return nil, status.Errorf(codes.NotFound, "webhook not found")
+}
+
 // Helper functions for webhook operations
 
 // generateUserWebhookID generates a unique ID for user webhooks.
@@ -1274,7 +1311,7 @@ func convertUserWebhookFromUserSetting(webhook *storepb.WebhooksUserSetting_Webh
 		Name:             fmt.Sprintf("%s/webhooks/%s", BuildUserName(user.Username), webhook.Id),
 		Url:              webhook.Url,
 		DisplayName:      webhook.Title,
-		HasSigningSecret: webhook.SigningSecret != "",
+		SigningSecretSet: webhook.SigningSecret != "",
 		// Note: create_time and update_time are not available in the user setting webhook structure
 		// This is a limitation of storing webhooks in user settings vs the dedicated webhook table
 	}
@@ -1474,7 +1511,7 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, user *store.
 					Name:             fmt.Sprintf("%s/webhooks/%s", BuildUserName(user.Username), webhook.Id),
 					Url:              webhook.Url,
 					DisplayName:      webhook.Title,
-					HasSigningSecret: webhook.SigningSecret != "",
+					SigningSecretSet: webhook.SigningSecret != "",
 				}
 				apiWebhooks = append(apiWebhooks, apiWebhook)
 			}

@@ -170,6 +170,14 @@ service UserService {
     option (google.api.method_signature) = "name";
   }
 
+  // GetUserWebhookSigningSecret returns the signing secret for a webhook.
+  // The secret is returned only through this explicit, owner-gated call; it is
+  // never included in List/Create/Update responses.
+  rpc GetUserWebhookSigningSecret(GetUserWebhookSigningSecretRequest) returns (GetUserWebhookSigningSecretResponse) {
+    option (google.api.http) = {get: "/api/v1/{name=users/*/webhooks/*}:getSigningSecret"};
+    option (google.api.method_signature) = "name";
+  }
+
   // ListUserNotifications lists notifications for a user.
   rpc ListUserNotifications(ListUserNotificationsRequest) returns (ListUserNotificationsResponse) {
     option (google.api.http) = {get: "/api/v1/{parent=users/*}/notifications"};
@@ -715,8 +723,8 @@ message UserWebhook {
   // This field is input-only; it is never returned in responses.
   string signing_secret = 6 [(google.api.field_behavior) = INPUT_ONLY];
 
-  // Whether this webhook has a signing secret configured.
-  bool has_signing_secret = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+  // Whether a signing secret is configured for this webhook.
+  bool signing_secret_set = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message ListUserWebhooksRequest {
@@ -751,6 +759,17 @@ message DeleteUserWebhookRequest {
   // The name of the webhook to delete.
   // Format: users/{user}/webhooks/{webhook}
   string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetUserWebhookSigningSecretRequest {
+  // The name of the webhook whose signing secret to reveal.
+  // Format: users/{user}/webhooks/{webhook}
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetUserWebhookSigningSecretResponse {
+  // The signing secret, in the Standard Webhooks "whsec_<base64>" form.
+  string signing_secret = 1;
 }
 
 message UserNotification {

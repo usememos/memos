@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/hmac"
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
@@ -102,6 +103,17 @@ func resolveSigningKey(secret string) ([]byte, error) {
 		return decoded, nil
 	}
 	return []byte(secret), nil
+}
+
+// GenerateSigningSecret returns a new Standard Webhooks signing secret in the
+// "whsec_<base64>" form, backed by 32 cryptographically-random bytes — comfortably
+// within the spec's 24–64 byte range.
+func GenerateSigningSecret() (string, error) {
+	buf := make([]byte, 32)
+	if _, err := rand.Read(buf); err != nil {
+		return "", errors.Wrap(err, "failed to read random bytes for signing secret")
+	}
+	return "whsec_" + base64.StdEncoding.EncodeToString(buf), nil
 }
 
 // Post posts the message to webhook endpoint.

@@ -2209,6 +2209,41 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/webhooks/{webhook}:getSigningSecret:
+        get:
+            tags:
+                - UserService
+            description: |-
+                GetUserWebhookSigningSecret returns the signing secret for a webhook.
+                 The secret is returned only through this explicit, owner-gated call; it is
+                 never included in List/Create/Update responses.
+            operationId: UserService_GetUserWebhookSigningSecret
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: webhook
+                  in: path
+                  description: The webhook id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetUserWebhookSigningSecretResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/users/{user}:getStats:
         get:
             tags:
@@ -2644,6 +2679,12 @@ components:
                     allOf:
                         - $ref: '#/components/schemas/User'
                     description: The authenticated user's information.
+        GetUserWebhookSigningSecretResponse:
+            type: object
+            properties:
+                signingSecret:
+                    type: string
+                    description: The signing secret, in the Standard Webhooks "whsec_<base64>" form.
         GoogleProtobufAny:
             type: object
             properties:
@@ -3993,10 +4034,10 @@ components:
                     description: |-
                         Optional. Signing secret used to HMAC-SHA256 sign the webhook request body.
                          This field is input-only; it is never returned in responses.
-                hasSigningSecret:
+                signingSecretSet:
                     readOnly: true
                     type: boolean
-                    description: Whether this webhook has a signing secret configured.
+                    description: Whether a signing secret is configured for this webhook.
             description: UserWebhook represents a webhook owned by a user.
 tags:
     - name: AIService

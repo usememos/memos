@@ -41,6 +41,21 @@ func TestResolveSigningKey(t *testing.T) {
 	})
 }
 
+func TestGenerateSigningSecret(t *testing.T) {
+	secret, err := GenerateSigningSecret()
+	require.NoError(t, err)
+	require.True(t, strings.HasPrefix(secret, "whsec_"), "generated secret must use the whsec_ prefix")
+	require.NoError(t, ValidateSigningSecret(secret), "generated secret must pass validation")
+
+	key, err := resolveSigningKey(secret)
+	require.NoError(t, err)
+	require.Len(t, key, 32, "generated secret must decode to 32 raw bytes")
+
+	other, err := GenerateSigningSecret()
+	require.NoError(t, err)
+	require.NotEqual(t, secret, other, "each generated secret must be unique")
+}
+
 func TestValidateSigningSecret(t *testing.T) {
 	tests := []struct {
 		name    string
