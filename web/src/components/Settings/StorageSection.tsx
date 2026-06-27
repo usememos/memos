@@ -146,6 +146,7 @@ const StorageSection = () => {
           region: existing?.region ?? "",
           bucket: existing?.bucket ?? "",
           usePathStyle: existing?.usePathStyle ?? false,
+          insecureSkipTlsVerify: existing?.insecureSkipTlsVerify ?? false,
           [field]: value,
         }),
       }),
@@ -330,6 +331,16 @@ const StorageSection = () => {
             <Switch
               checked={instanceStorageSetting.s3Config?.usePathStyle ?? false}
               onCheckedChange={(checked) => handleS3FieldChange("usePathStyle", checked)}
+            />
+          </SettingRow>
+
+          <SettingRow
+            label={t("setting.storage.insecure-skip-tls-verify")}
+            description={t("setting.storage.insecure-skip-tls-verify-description")}
+          >
+            <Switch
+              checked={instanceStorageSetting.s3Config?.insecureSkipTlsVerify ?? false}
+              onCheckedChange={(checked) => handleS3FieldChange("insecureSkipTlsVerify", checked)}
             />
           </SettingRow>
         </SettingGroup>

@@ -1,5 +1,6 @@
 import { Settings2Icon } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { useView } from "@/contexts/ViewContext";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -11,8 +12,8 @@ interface Props {
 
 function MemoDisplaySettingMenu({ className }: Props) {
   const t = useTranslate();
-  const { orderByTimeAsc, timeBasis, setTimeBasis, toggleSortOrder } = useView();
-  const isApplying = orderByTimeAsc !== false || timeBasis !== "create_time";
+  const { orderByTimeAsc, timeBasis, compactMode, linkPreview, setTimeBasis, toggleSortOrder, setCompactMode, setLinkPreview } = useView();
+  const isApplying = orderByTimeAsc !== false || timeBasis !== "create_time" || compactMode || !linkPreview;
 
   return (
     <Popover>
@@ -51,6 +52,14 @@ function MemoDisplaySettingMenu({ className }: Props) {
                 <SelectItem value="true">{t("memo.oldest-first")}</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <div className="w-full flex flex-row justify-between items-center">
+            <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.compact-mode")}</span>
+            <Switch checked={compactMode} onCheckedChange={setCompactMode} />
+          </div>
+          <div className="w-full flex flex-row justify-between items-center">
+            <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.link-preview")}</span>
+            <Switch checked={linkPreview} onCheckedChange={setLinkPreview} />
           </div>
         </div>
       </PopoverContent>

@@ -35,8 +35,9 @@ func TestGetInstanceProfile(t *testing.T) {
 		require.True(t, resp.Demo)
 		require.Equal(t, "http://localhost:8080", resp.InstanceUrl)
 
-		// Instance should not be initialized since no admin users are created
+		// Instance should not be initialized since no users exist at all.
 		require.Nil(t, resp.Admin)
+		require.True(t, resp.NeedsSetup)
 	})
 
 	t.Run("GetInstanceProfile with initialized instance", func(t *testing.T) {
@@ -66,6 +67,29 @@ func TestGetInstanceProfile(t *testing.T) {
 		// Instance should be initialized since an admin user exists
 		require.NotNil(t, resp.Admin)
 		require.Equal(t, hostUser.Username, resp.Admin.Username)
+		require.False(t, resp.NeedsSetup)
+	})
+
+	t.Run("GetInstanceProfile with users but no admin", func(t *testing.T) {
+		// Create test service for this specific test
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		// Create a regular user but no admin. This mirrors an instance that has
+		// lost all of its admins: admin is nil, but the instance is NOT a fresh
+		// install and must not be flagged for first-run setup.
+		regularUser, err := ts.CreateRegularUser(ctx, "alice")
+		require.NoError(t, err)
+		require.NotNil(t, regularUser)
+
+		req := &v1pb.GetInstanceProfileRequest{}
+		resp, err := ts.Service.GetInstanceProfile(ctx, req)
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		// No admin to display, but setup is already done because a user exists.
+		require.Nil(t, resp.Admin)
+		require.False(t, resp.NeedsSetup)
 	})
 }
 

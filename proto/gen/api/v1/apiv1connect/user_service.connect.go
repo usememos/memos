@@ -95,6 +95,9 @@ const (
 	// UserServiceDeleteUserWebhookProcedure is the fully-qualified name of the UserService's
 	// DeleteUserWebhook RPC.
 	UserServiceDeleteUserWebhookProcedure = "/memos.api.v1.UserService/DeleteUserWebhook"
+	// UserServiceGetUserWebhookSigningSecretProcedure is the fully-qualified name of the UserService's
+	// GetUserWebhookSigningSecret RPC.
+	UserServiceGetUserWebhookSigningSecretProcedure = "/memos.api.v1.UserService/GetUserWebhookSigningSecret"
 	// UserServiceListUserNotificationsProcedure is the fully-qualified name of the UserService's
 	// ListUserNotifications RPC.
 	UserServiceListUserNotificationsProcedure = "/memos.api.v1.UserService/ListUserNotifications"
@@ -155,6 +158,10 @@ type UserServiceClient interface {
 	UpdateUserWebhook(context.Context, *connect.Request[v1.UpdateUserWebhookRequest]) (*connect.Response[v1.UserWebhook], error)
 	// DeleteUserWebhook deletes a webhook for a user.
 	DeleteUserWebhook(context.Context, *connect.Request[v1.DeleteUserWebhookRequest]) (*connect.Response[emptypb.Empty], error)
+	// GetUserWebhookSigningSecret returns the signing secret for a webhook.
+	// The secret is returned only through this explicit, owner-gated call; it is
+	// never included in List/Create/Update responses.
+	GetUserWebhookSigningSecret(context.Context, *connect.Request[v1.GetUserWebhookSigningSecretRequest]) (*connect.Response[v1.GetUserWebhookSigningSecretResponse], error)
 	// ListUserNotifications lists notifications for a user.
 	ListUserNotifications(context.Context, *connect.Request[v1.ListUserNotificationsRequest]) (*connect.Response[v1.ListUserNotificationsResponse], error)
 	// UpdateUserNotification updates a notification.
@@ -306,6 +313,12 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(userServiceMethods.ByName("DeleteUserWebhook")),
 			connect.WithClientOptions(opts...),
 		),
+		getUserWebhookSigningSecret: connect.NewClient[v1.GetUserWebhookSigningSecretRequest, v1.GetUserWebhookSigningSecretResponse](
+			httpClient,
+			baseURL+UserServiceGetUserWebhookSigningSecretProcedure,
+			connect.WithSchema(userServiceMethods.ByName("GetUserWebhookSigningSecret")),
+			connect.WithClientOptions(opts...),
+		),
 		listUserNotifications: connect.NewClient[v1.ListUserNotificationsRequest, v1.ListUserNotificationsResponse](
 			httpClient,
 			baseURL+UserServiceListUserNotificationsProcedure,
@@ -329,31 +342,32 @@ func NewUserServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 
 // userServiceClient implements UserServiceClient.
 type userServiceClient struct {
-	listUsers                 *connect.Client[v1.ListUsersRequest, v1.ListUsersResponse]
-	batchGetUsers             *connect.Client[v1.BatchGetUsersRequest, v1.BatchGetUsersResponse]
-	getUser                   *connect.Client[v1.GetUserRequest, v1.User]
-	createUser                *connect.Client[v1.CreateUserRequest, v1.User]
-	updateUser                *connect.Client[v1.UpdateUserRequest, v1.User]
-	deleteUser                *connect.Client[v1.DeleteUserRequest, emptypb.Empty]
-	listAllUserStats          *connect.Client[v1.ListAllUserStatsRequest, v1.ListAllUserStatsResponse]
-	getUserStats              *connect.Client[v1.GetUserStatsRequest, v1.UserStats]
-	getUserSetting            *connect.Client[v1.GetUserSettingRequest, v1.UserSetting]
-	updateUserSetting         *connect.Client[v1.UpdateUserSettingRequest, v1.UserSetting]
-	listUserSettings          *connect.Client[v1.ListUserSettingsRequest, v1.ListUserSettingsResponse]
-	listLinkedIdentities      *connect.Client[v1.ListLinkedIdentitiesRequest, v1.ListLinkedIdentitiesResponse]
-	createLinkedIdentity      *connect.Client[v1.CreateLinkedIdentityRequest, v1.LinkedIdentity]
-	getLinkedIdentity         *connect.Client[v1.GetLinkedIdentityRequest, v1.LinkedIdentity]
-	deleteLinkedIdentity      *connect.Client[v1.DeleteLinkedIdentityRequest, emptypb.Empty]
-	listPersonalAccessTokens  *connect.Client[v1.ListPersonalAccessTokensRequest, v1.ListPersonalAccessTokensResponse]
-	createPersonalAccessToken *connect.Client[v1.CreatePersonalAccessTokenRequest, v1.CreatePersonalAccessTokenResponse]
-	deletePersonalAccessToken *connect.Client[v1.DeletePersonalAccessTokenRequest, emptypb.Empty]
-	listUserWebhooks          *connect.Client[v1.ListUserWebhooksRequest, v1.ListUserWebhooksResponse]
-	createUserWebhook         *connect.Client[v1.CreateUserWebhookRequest, v1.UserWebhook]
-	updateUserWebhook         *connect.Client[v1.UpdateUserWebhookRequest, v1.UserWebhook]
-	deleteUserWebhook         *connect.Client[v1.DeleteUserWebhookRequest, emptypb.Empty]
-	listUserNotifications     *connect.Client[v1.ListUserNotificationsRequest, v1.ListUserNotificationsResponse]
-	updateUserNotification    *connect.Client[v1.UpdateUserNotificationRequest, v1.UserNotification]
-	deleteUserNotification    *connect.Client[v1.DeleteUserNotificationRequest, emptypb.Empty]
+	listUsers                   *connect.Client[v1.ListUsersRequest, v1.ListUsersResponse]
+	batchGetUsers               *connect.Client[v1.BatchGetUsersRequest, v1.BatchGetUsersResponse]
+	getUser                     *connect.Client[v1.GetUserRequest, v1.User]
+	createUser                  *connect.Client[v1.CreateUserRequest, v1.User]
+	updateUser                  *connect.Client[v1.UpdateUserRequest, v1.User]
+	deleteUser                  *connect.Client[v1.DeleteUserRequest, emptypb.Empty]
+	listAllUserStats            *connect.Client[v1.ListAllUserStatsRequest, v1.ListAllUserStatsResponse]
+	getUserStats                *connect.Client[v1.GetUserStatsRequest, v1.UserStats]
+	getUserSetting              *connect.Client[v1.GetUserSettingRequest, v1.UserSetting]
+	updateUserSetting           *connect.Client[v1.UpdateUserSettingRequest, v1.UserSetting]
+	listUserSettings            *connect.Client[v1.ListUserSettingsRequest, v1.ListUserSettingsResponse]
+	listLinkedIdentities        *connect.Client[v1.ListLinkedIdentitiesRequest, v1.ListLinkedIdentitiesResponse]
+	createLinkedIdentity        *connect.Client[v1.CreateLinkedIdentityRequest, v1.LinkedIdentity]
+	getLinkedIdentity           *connect.Client[v1.GetLinkedIdentityRequest, v1.LinkedIdentity]
+	deleteLinkedIdentity        *connect.Client[v1.DeleteLinkedIdentityRequest, emptypb.Empty]
+	listPersonalAccessTokens    *connect.Client[v1.ListPersonalAccessTokensRequest, v1.ListPersonalAccessTokensResponse]
+	createPersonalAccessToken   *connect.Client[v1.CreatePersonalAccessTokenRequest, v1.CreatePersonalAccessTokenResponse]
+	deletePersonalAccessToken   *connect.Client[v1.DeletePersonalAccessTokenRequest, emptypb.Empty]
+	listUserWebhooks            *connect.Client[v1.ListUserWebhooksRequest, v1.ListUserWebhooksResponse]
+	createUserWebhook           *connect.Client[v1.CreateUserWebhookRequest, v1.UserWebhook]
+	updateUserWebhook           *connect.Client[v1.UpdateUserWebhookRequest, v1.UserWebhook]
+	deleteUserWebhook           *connect.Client[v1.DeleteUserWebhookRequest, emptypb.Empty]
+	getUserWebhookSigningSecret *connect.Client[v1.GetUserWebhookSigningSecretRequest, v1.GetUserWebhookSigningSecretResponse]
+	listUserNotifications       *connect.Client[v1.ListUserNotificationsRequest, v1.ListUserNotificationsResponse]
+	updateUserNotification      *connect.Client[v1.UpdateUserNotificationRequest, v1.UserNotification]
+	deleteUserNotification      *connect.Client[v1.DeleteUserNotificationRequest, emptypb.Empty]
 }
 
 // ListUsers calls memos.api.v1.UserService.ListUsers.
@@ -466,6 +480,11 @@ func (c *userServiceClient) DeleteUserWebhook(ctx context.Context, req *connect.
 	return c.deleteUserWebhook.CallUnary(ctx, req)
 }
 
+// GetUserWebhookSigningSecret calls memos.api.v1.UserService.GetUserWebhookSigningSecret.
+func (c *userServiceClient) GetUserWebhookSigningSecret(ctx context.Context, req *connect.Request[v1.GetUserWebhookSigningSecretRequest]) (*connect.Response[v1.GetUserWebhookSigningSecretResponse], error) {
+	return c.getUserWebhookSigningSecret.CallUnary(ctx, req)
+}
+
 // ListUserNotifications calls memos.api.v1.UserService.ListUserNotifications.
 func (c *userServiceClient) ListUserNotifications(ctx context.Context, req *connect.Request[v1.ListUserNotificationsRequest]) (*connect.Response[v1.ListUserNotificationsResponse], error) {
 	return c.listUserNotifications.CallUnary(ctx, req)
@@ -530,6 +549,10 @@ type UserServiceHandler interface {
 	UpdateUserWebhook(context.Context, *connect.Request[v1.UpdateUserWebhookRequest]) (*connect.Response[v1.UserWebhook], error)
 	// DeleteUserWebhook deletes a webhook for a user.
 	DeleteUserWebhook(context.Context, *connect.Request[v1.DeleteUserWebhookRequest]) (*connect.Response[emptypb.Empty], error)
+	// GetUserWebhookSigningSecret returns the signing secret for a webhook.
+	// The secret is returned only through this explicit, owner-gated call; it is
+	// never included in List/Create/Update responses.
+	GetUserWebhookSigningSecret(context.Context, *connect.Request[v1.GetUserWebhookSigningSecretRequest]) (*connect.Response[v1.GetUserWebhookSigningSecretResponse], error)
 	// ListUserNotifications lists notifications for a user.
 	ListUserNotifications(context.Context, *connect.Request[v1.ListUserNotificationsRequest]) (*connect.Response[v1.ListUserNotificationsResponse], error)
 	// UpdateUserNotification updates a notification.
@@ -677,6 +700,12 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(userServiceMethods.ByName("DeleteUserWebhook")),
 		connect.WithHandlerOptions(opts...),
 	)
+	userServiceGetUserWebhookSigningSecretHandler := connect.NewUnaryHandler(
+		UserServiceGetUserWebhookSigningSecretProcedure,
+		svc.GetUserWebhookSigningSecret,
+		connect.WithSchema(userServiceMethods.ByName("GetUserWebhookSigningSecret")),
+		connect.WithHandlerOptions(opts...),
+	)
 	userServiceListUserNotificationsHandler := connect.NewUnaryHandler(
 		UserServiceListUserNotificationsProcedure,
 		svc.ListUserNotifications,
@@ -741,6 +770,8 @@ func NewUserServiceHandler(svc UserServiceHandler, opts ...connect.HandlerOption
 			userServiceUpdateUserWebhookHandler.ServeHTTP(w, r)
 		case UserServiceDeleteUserWebhookProcedure:
 			userServiceDeleteUserWebhookHandler.ServeHTTP(w, r)
+		case UserServiceGetUserWebhookSigningSecretProcedure:
+			userServiceGetUserWebhookSigningSecretHandler.ServeHTTP(w, r)
 		case UserServiceListUserNotificationsProcedure:
 			userServiceListUserNotificationsHandler.ServeHTTP(w, r)
 		case UserServiceUpdateUserNotificationProcedure:
@@ -842,6 +873,10 @@ func (UnimplementedUserServiceHandler) UpdateUserWebhook(context.Context, *conne
 
 func (UnimplementedUserServiceHandler) DeleteUserWebhook(context.Context, *connect.Request[v1.DeleteUserWebhookRequest]) (*connect.Response[emptypb.Empty], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.DeleteUserWebhook is not implemented"))
+}
+
+func (UnimplementedUserServiceHandler) GetUserWebhookSigningSecret(context.Context, *connect.Request[v1.GetUserWebhookSigningSecretRequest]) (*connect.Response[v1.GetUserWebhookSigningSecretResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.UserService.GetUserWebhookSigningSecret is not implemented"))
 }
 
 func (UnimplementedUserServiceHandler) ListUserNotifications(context.Context, *connect.Request[v1.ListUserNotificationsRequest]) (*connect.Response[v1.ListUserNotificationsResponse], error) {

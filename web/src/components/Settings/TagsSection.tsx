@@ -7,23 +7,23 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { useInstance } from "@/contexts/InstanceContext";
-import { useTagCounts } from "@/hooks/useUserQueries";
+import { useAuth } from "@/contexts/AuthContext";
+import { buildUserSettingName } from "@/helpers/resource-names";
+import { useTagCounts, useUpdateUserSetting } from "@/hooks/useUserQueries";
 import { colorToHex } from "@/lib/color";
 import { isValidTagPattern } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import {
-  InstanceSetting_Key,
-  InstanceSetting_TagMetadataSchema,
-  InstanceSetting_TagsSettingSchema,
-  InstanceSettingSchema,
-} from "@/types/proto/api/v1/instance_service_pb";
+  UserSetting_Key,
+  UserSetting_TagMetadataSchema,
+  UserSetting_TagsSettingSchema,
+  UserSettingSchema,
+} from "@/types/proto/api/v1/user_service_pb";
 import { ColorSchema } from "@/types/proto/google/type/color_pb";
 import { useTranslate } from "@/utils/i18n";
 import SettingGroup from "./SettingGroup";
 import { SettingList, SettingPanel } from "./SettingList";
 import SettingSection from "./SettingSection";
-import useInstanceSettingUpdater, { buildInstanceSettingName } from "./useInstanceSettingUpdater";
 
 const DEFAULT_TAG_COLOR = "#ffffff";
 
@@ -50,9 +50,10 @@ const toLocalTagMeta = (meta: {
 
 const TagsSection = () => {
   const t = useTranslate();
-  const saveInstanceSetting = useInstanceSettingUpdater();
-  const { tagsSetting: originalSetting } = useInstance();
-  const { data: tagCounts = {} } = useTagCounts(false);
+  const { currentUser, userTagsSetting, refetchSettings } = useAuth();
+  const { mutateAsync: updateUserSetting } = useUpdateUserSetting();
+  const { data: tagCounts = {} } = useTagCounts(true);
+  const originalSetting = useMemo(() => userTagsSetting ?? create(UserSetting_TagsSettingSchema, {}), [userTagsSetting]);
 
   // Local state: map of tagName → { color, blur } for editing.
   const [localTags, setLocalTags] = useState<Record<string, LocalTagMeta>>(() =>
@@ -130,24 +131,28 @@ const TagsSection = () => {
     const tags = Object.fromEntries(
       Object.entries(localTags).map(([name, meta]) => [
         name,
-        create(InstanceSetting_TagMetadataSchema, {
+        create(UserSetting_TagMetadataSchema, {
           blurContent: meta.blur,
           ...(meta.color ? { backgroundColor: hexToColor(meta.color) } : {}),
         }),
       ]),
     );
 
-    await saveInstanceSetting({
-      key: InstanceSetting_Key.TAGS,
-      setting: create(InstanceSettingSchema, {
-        name: buildInstanceSettingName(InstanceSetting_Key.TAGS),
+    if (!currentUser) {
+      return;
+    }
+
+    await updateUserSetting({
+      setting: create(UserSettingSchema, {
+        name: buildUserSettingName(currentUser.name, UserSetting_Key.TAGS),
         value: {
           case: "tagsSetting",
-          value: create(InstanceSetting_TagsSettingSchema, { tags }),
+          value: create(UserSetting_TagsSettingSchema, { tags }),
         },
       }),
-      errorContext: "Update tags setting",
+      updateMask: ["tags"],
     });
+    await refetchSettings();
   };
 
   return (
@@ -273,7 +278,7 @@ const TagsSection = () => {
       </SettingGroup>
 
       <div className="w-full flex justify-end">
-        <Button disabled={!hasChanges} onClick={handleSave}>
+        <Button disabled={!hasChanges || !currentUser} onClick={handleSave}>
           {t("common.save")}
         </Button>
       </div>

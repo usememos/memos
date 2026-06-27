@@ -18,6 +18,7 @@ import { useReverseGeocoding } from "@/components/map/useReverseGeocoding";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
@@ -30,14 +31,17 @@ import {
 import { useDebouncedEffect } from "@/hooks";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import { setPreferredEditorMode } from "../editorMode";
 import { useFileUpload, useLinkMemo, useLocation } from "../hooks";
-import { useEditorContext } from "../state";
+import { useEditorContext, useEditorSelector } from "../state";
 import type { InsertMenuProps } from "../types";
 import type { LocalFile } from "../types/attachment";
 
 const InsertMenu = (props: InsertMenuProps) => {
   const t = useTranslate();
-  const { state, actions, dispatch } = useEditorContext();
+  const { actions, dispatch } = useEditorContext();
+  const relations = useEditorSelector((s) => s.metadata.relations);
+  const editorMode = useEditorSelector((s) => s.ui.editorMode);
   const { location: initialLocation, onLocationChange, onToggleFocusMode, isUploading: isUploadingProp } = props;
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
@@ -56,9 +60,9 @@ const InsertMenu = (props: InsertMenuProps) => {
   const linkMemo = useLinkMemo({
     isOpen: linkDialogOpen,
     currentMemoName: props.memoName,
-    existingRelations: state.metadata.relations,
+    existingRelations: relations,
     onAddRelation: (relation: MemoRelation) => {
-      dispatch(actions.setMetadata({ relations: uniqBy([...state.metadata.relations, relation], (r) => r.relatedMemo?.name) }));
+      dispatch(actions.setMetadata({ relations: uniqBy([...relations, relation], (r) => r.relatedMemo?.name) }));
       setLinkDialogOpen(false);
     },
   });
@@ -132,6 +136,15 @@ const InsertMenu = (props: InsertMenuProps) => {
     setMoreSubmenuOpen(false);
   }, [onToggleFocusMode]);
 
+  const handleEditorModeChange = useCallback(
+    (checked: boolean) => {
+      const next = checked ? "wysiwyg" : "raw";
+      dispatch(actions.setEditorMode(next));
+      setPreferredEditorMode(next);
+    },
+    [actions, dispatch],
+  );
+
   const handleMediaUploadClick = useCallback(() => {
     handleUploadClick("image/*,video/*");
   }, [handleUploadClick]);
@@ -181,7 +194,7 @@ const InsertMenu = (props: InsertMenuProps) => {
     <>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon" className="shadow-none" disabled={isUploading}>
+          <Button variant="secondary" size="icon" disabled={isUploading}>
             {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <PlusIcon className="size-4" />}
           </Button>
         </DropdownMenuTrigger>
@@ -200,7 +213,7 @@ const InsertMenu = (props: InsertMenuProps) => {
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
-          {/* View submenu with Focus Mode */}
+          {/* View submenu with Focus Mode + editor display mode */}
           <DropdownMenuSub open={moreSubmenuOpen} onOpenChange={setMoreSubmenuOpen}>
             <DropdownMenuSubTrigger onPointerEnter={handleTriggerEnter} onPointerLeave={handleTriggerLeave}>
               <MoreHorizontalIcon className="w-4 h-4" />
@@ -211,9 +224,12 @@ const InsertMenu = (props: InsertMenuProps) => {
                 <Maximize2Icon className="w-4 h-4" />
                 {t("editor.focus-mode")}
               </DropdownMenuItem>
+              {/* Editor display mode: checked = rich text (WYSIWYG), unchecked = raw Markdown */}
+              <DropdownMenuCheckboxItem checked={editorMode === "wysiwyg"} onCheckedChange={handleEditorModeChange}>
+                {t("editor.wysiwyg-editor")}
+              </DropdownMenuCheckboxItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
-          <div className="px-2 py-1 text-xs text-muted-foreground opacity-80">{t("editor.slash-commands")}</div>
         </DropdownMenuContent>
       </DropdownMenu>
 

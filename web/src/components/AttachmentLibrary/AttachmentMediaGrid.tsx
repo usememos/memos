@@ -16,7 +16,7 @@ const AttachmentMediaCard = ({ item, onPreview }: { item: AttachmentLibraryMedia
 
   return (
     <article className="overflow-hidden rounded-[20px] border border-border/60 bg-background/90 shadow-sm shadow-black/[0.03]">
-      <button type="button" className="relative block w-full cursor-pointer text-left" onClick={onPreview}>
+      <div className="relative block w-full cursor-pointer text-left" onClick={onPreview}>
         <div className="relative aspect-[5/4] overflow-hidden bg-muted/40">
           {item.kind === "video" ? (
             <>
@@ -45,7 +45,7 @@ const AttachmentMediaCard = ({ item, onPreview }: { item: AttachmentLibraryMedia
             <img src={item.posterUrl} alt={item.filename} className="h-full w-full object-cover" loading="lazy" decoding="async" />
           )}
         </div>
-      </button>
+      </div>
 
       <div className="flex flex-col gap-2 p-3">
         <div className="flex items-start justify-between gap-2">

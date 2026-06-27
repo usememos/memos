@@ -3,6 +3,7 @@ package server
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/labstack/echo/v5"
@@ -85,7 +86,7 @@ func TestCORSMiddleware(t *testing.T) {
 		return c.NoContent(http.StatusOK)
 	})
 
-	t.Run("allows instance URL origin on preflight", func(t *testing.T) {
+	t.Run("trusted origin gets credentialed access", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodOptions, "/api/v1/test", nil)
 		req.Header.Set("Origin", "https://memos.example")
 		req.Header.Set("Access-Control-Request-Method", http.MethodPost)
@@ -104,7 +105,7 @@ func TestCORSMiddleware(t *testing.T) {
 		}
 	})
 
-	t.Run("omits CORS headers for unknown origin preflight", func(t *testing.T) {
+	t.Run("arbitrary origin is reflected without credentials", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodOptions, "/api/v1/test", nil)
 		req.Header.Set("Origin", "https://evil.example")
 		req.Header.Set("Access-Control-Request-Method", http.MethodPost)
@@ -115,8 +116,40 @@ func TestCORSMiddleware(t *testing.T) {
 		if rec.Code != http.StatusNoContent {
 			t.Fatalf("expected status %d, got %d", http.StatusNoContent, rec.Code)
 		}
+		// The API is open to any origin (token auth), so the origin is reflected...
+		if got := rec.Header().Get("Access-Control-Allow-Origin"); got != "https://evil.example" {
+			t.Fatalf("expected origin to be reflected, got %q", got)
+		}
+		// ...but an untrusted origin must NOT be granted credentialed (cookie) access.
+		if got := rec.Header().Get("Access-Control-Allow-Credentials"); got != "" {
+			t.Fatalf("expected no Access-Control-Allow-Credentials for untrusted origin, got %q", got)
+		}
+	})
+
+	t.Run("arbitrary origin may send Authorization header", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodOptions, "/api/v1/test", nil)
+		req.Header.Set("Origin", "https://app.third-party.example")
+		req.Header.Set("Access-Control-Request-Method", http.MethodPost)
+		req.Header.Set("Access-Control-Request-Headers", "Authorization")
+		rec := httptest.NewRecorder()
+
+		e.ServeHTTP(rec, req)
+
+		if got := rec.Header().Get("Access-Control-Allow-Headers"); !strings.Contains(strings.ToLower(got), "authorization") {
+			t.Fatalf("expected Authorization to be allowed for a cross-origin token client, got %q", got)
+		}
+	})
+
+	t.Run("null origin is not reflected", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodOptions, "/api/v1/test", nil)
+		req.Header.Set("Origin", "null")
+		req.Header.Set("Access-Control-Request-Method", http.MethodPost)
+		rec := httptest.NewRecorder()
+
+		e.ServeHTTP(rec, req)
+
 		if got := rec.Header().Get("Access-Control-Allow-Origin"); got != "" {
-			t.Fatalf("expected no Access-Control-Allow-Origin, got %q", got)
+			t.Fatalf("expected null origin not to be reflected, got %q", got)
 		}
 	})
 }

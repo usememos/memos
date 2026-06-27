@@ -37,6 +37,29 @@ func validatePassword(password string) error {
 	return nil
 }
 
+func validateUserTagsSetting(setting *v1pb.UserSetting_TagsSetting) error {
+	if setting == nil {
+		return errors.New("tags setting is required")
+	}
+	for tag, metadata := range setting.Tags {
+		if strings.TrimSpace(tag) == "" {
+			return errors.New("tag key cannot be empty")
+		}
+		if _, err := regexp.Compile(tag); err != nil {
+			return errors.Wrapf(err, "tag key %q is not a valid regex pattern", tag)
+		}
+		if metadata == nil {
+			return errors.Errorf("tag metadata is required for %q", tag)
+		}
+		if metadata.GetBackgroundColor() != nil {
+			if err := validateInstanceColor(metadata.GetBackgroundColor()); err != nil {
+				return errors.Wrapf(err, "background_color for %q", tag)
+			}
+		}
+	}
+	return nil
+}
+
 func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersRequest) (*v1pb.ListUsersResponse, error) {
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
@@ -626,6 +649,33 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 				GeneralSetting: updatedGeneral,
 			},
 		}
+	case storepb.UserSetting_TAGS:
+		var shouldUpdateTags bool
+		for _, field := range request.UpdateMask.Paths {
+			switch field {
+			case "tags":
+				shouldUpdateTags = true
+			default:
+				return nil, status.Errorf(codes.InvalidArgument, "unsupported update mask path for tags setting: %s", field)
+			}
+		}
+		if !shouldUpdateTags {
+			return nil, status.Errorf(codes.InvalidArgument, "update mask must include tags")
+		}
+
+		incomingTags := request.Setting.GetTagsSetting()
+		if incomingTags == nil {
+			return nil, status.Errorf(codes.InvalidArgument, "tags setting is required")
+		}
+		if err := validateUserTagsSetting(incomingTags); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid user tags setting: %v", err)
+		}
+		updatedSetting = &v1pb.UserSetting{
+			Name: request.Setting.Name,
+			Value: &v1pb.UserSetting_TagsSetting_{
+				TagsSetting: incomingTags,
+			},
+		}
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "setting type %s should not be updated via UpdateUserSetting", storeKey.String())
 	}
@@ -1045,12 +1095,25 @@ func (s *APIV1Service) CreateUserWebhook(ctx context.Context, request *v1pb.Crea
 	if err := webhook.ValidateURL(strings.TrimSpace(request.Webhook.Url)); err != nil {
 		return nil, err
 	}
+	// The signing secret is generated server-side so it always meets the Standard
+	// Webhooks length requirement. A client-supplied secret is still accepted (and
+	// validated) for backward compatibility.
+	signingSecret := strings.TrimSpace(request.Webhook.SigningSecret)
+	if signingSecret == "" {
+		signingSecret, err = webhook.GenerateSigningSecret()
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to generate signing secret: %v", err)
+		}
+	} else if err := webhook.ValidateSigningSecret(signingSecret); err != nil {
+		return nil, err
+	}
 
 	webhookID := generateUserWebhookID()
 	webhook := &storepb.WebhooksUserSetting_Webhook{
-		Id:    webhookID,
-		Title: request.Webhook.DisplayName,
-		Url:   strings.TrimSpace(request.Webhook.Url),
+		Id:            webhookID,
+		Title:         request.Webhook.DisplayName,
+		Url:           strings.TrimSpace(request.Webhook.Url),
+		SigningSecret: signingSecret,
 	}
 
 	err = s.Store.AddUserWebhook(ctx, userID, webhook)
@@ -1104,9 +1167,10 @@ func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.Upda
 
 	// Update the webhook
 	updatedWebhook := &storepb.WebhooksUserSetting_Webhook{
-		Id:    webhookID,
-		Title: targetWebhook.Title,
-		Url:   targetWebhook.Url,
+		Id:            webhookID,
+		Title:         targetWebhook.Title,
+		Url:           targetWebhook.Url,
+		SigningSecret: targetWebhook.SigningSecret,
 	}
 
 	if request.UpdateMask != nil {
@@ -1122,6 +1186,12 @@ func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.Upda
 				}
 			case "display_name":
 				updatedWebhook.Title = request.Webhook.DisplayName
+			case "signing_secret":
+				secret := strings.TrimSpace(request.Webhook.SigningSecret)
+				if err := webhook.ValidateSigningSecret(secret); err != nil {
+					return nil, err
+				}
+				updatedWebhook.SigningSecret = secret
 			default:
 				// Ignore unsupported fields
 			}
@@ -1136,6 +1206,13 @@ func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.Upda
 			updatedWebhook.Url = trimmed
 		}
 		updatedWebhook.Title = request.Webhook.DisplayName
+		if request.Webhook.SigningSecret != "" {
+			secret := strings.TrimSpace(request.Webhook.SigningSecret)
+			if err := webhook.ValidateSigningSecret(secret); err != nil {
+				return nil, err
+			}
+			updatedWebhook.SigningSecret = secret
+		}
 	}
 
 	err = s.Store.UpdateUserWebhook(ctx, userID, updatedWebhook)
@@ -1191,6 +1268,34 @@ func (s *APIV1Service) DeleteUserWebhook(ctx context.Context, request *v1pb.Dele
 	return &emptypb.Empty{}, nil
 }
 
+// GetUserWebhookSigningSecret reveals the signing secret for a single webhook.
+// This is the only endpoint that returns the secret value; it is gated to the
+// webhook owner (or an admin) and the secret is never included in list/create/update responses.
+func (s *APIV1Service) GetUserWebhookSigningSecret(ctx context.Context, request *v1pb.GetUserWebhookSigningSecretRequest) (*v1pb.GetUserWebhookSigningSecretResponse, error) {
+	user, webhookID, err := s.resolveUserAndWebhookIDFromName(ctx, request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid webhook name: %v", err)
+	}
+	userID := user.ID
+
+	if _, err := s.authorizeUserResourceAccess(ctx, userID, true); err != nil {
+		return nil, err
+	}
+
+	webhooks, err := s.Store.GetUserWebhooks(ctx, userID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user webhooks: %v", err)
+	}
+
+	for _, webhook := range webhooks {
+		if webhook.Id == webhookID {
+			return &v1pb.GetUserWebhookSigningSecretResponse{SigningSecret: webhook.SigningSecret}, nil
+		}
+	}
+
+	return nil, status.Errorf(codes.NotFound, "webhook not found")
+}
+
 // Helper functions for webhook operations
 
 // generateUserWebhookID generates a unique ID for user webhooks.
@@ -1203,9 +1308,10 @@ func generateUserWebhookID() string {
 // convertUserWebhookFromUserSetting converts a storepb webhook to a v1pb UserWebhook.
 func convertUserWebhookFromUserSetting(webhook *storepb.WebhooksUserSetting_Webhook, user *store.User) *v1pb.UserWebhook {
 	return &v1pb.UserWebhook{
-		Name:        fmt.Sprintf("%s/webhooks/%s", BuildUserName(user.Username), webhook.Id),
-		Url:         webhook.Url,
-		DisplayName: webhook.Title,
+		Name:             fmt.Sprintf("%s/webhooks/%s", BuildUserName(user.Username), webhook.Id),
+		Url:              webhook.Url,
+		DisplayName:      webhook.Title,
+		SigningSecretSet: webhook.SigningSecret != "",
 		// Note: create_time and update_time are not available in the user setting webhook structure
 		// This is a limitation of storing webhooks in user settings vs the dedicated webhook table
 	}
@@ -1286,6 +1392,8 @@ func convertSettingKeyToStore(key string) (storepb.UserSetting_Key, error) {
 		return storepb.UserSetting_GENERAL, nil
 	case v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_WEBHOOKS)]:
 		return storepb.UserSetting_WEBHOOKS, nil
+	case v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_TAGS)]:
+		return storepb.UserSetting_TAGS, nil
 	default:
 		return storepb.UserSetting_KEY_UNSPECIFIED, errors.Errorf("unknown setting key: %s", key)
 	}
@@ -1300,9 +1408,47 @@ func convertSettingKeyFromStore(key storepb.UserSetting_Key) string {
 		return "SHORTCUTS" // Not defined in API proto
 	case storepb.UserSetting_WEBHOOKS:
 		return v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_WEBHOOKS)]
+	case storepb.UserSetting_TAGS:
+		return v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_TAGS)]
 	default:
 		return "unknown"
 	}
+}
+
+func convertUserTagsSettingFromStore(setting *storepb.TagsUserSetting) *v1pb.UserSetting_TagsSetting {
+	if setting == nil {
+		return &v1pb.UserSetting_TagsSetting{Tags: map[string]*v1pb.UserSetting_TagMetadata{}}
+	}
+	tags := make(map[string]*v1pb.UserSetting_TagMetadata, len(setting.Tags))
+	for tag, metadata := range setting.Tags {
+		if metadata == nil {
+			tags[tag] = &v1pb.UserSetting_TagMetadata{}
+			continue
+		}
+		tags[tag] = &v1pb.UserSetting_TagMetadata{
+			BackgroundColor: metadata.GetBackgroundColor(),
+			BlurContent:     metadata.GetBlurContent(),
+		}
+	}
+	return &v1pb.UserSetting_TagsSetting{Tags: tags}
+}
+
+func convertUserTagsSettingToStore(setting *v1pb.UserSetting_TagsSetting) *storepb.TagsUserSetting {
+	if setting == nil {
+		return &storepb.TagsUserSetting{Tags: map[string]*storepb.UserTagMetadata{}}
+	}
+	tags := make(map[string]*storepb.UserTagMetadata, len(setting.Tags))
+	for tag, metadata := range setting.Tags {
+		if metadata == nil {
+			tags[tag] = &storepb.UserTagMetadata{}
+			continue
+		}
+		tags[tag] = &storepb.UserTagMetadata{
+			BackgroundColor: metadata.GetBackgroundColor(),
+			BlurContent:     metadata.GetBlurContent(),
+		}
+	}
+	return &storepb.TagsUserSetting{Tags: tags}
 }
 
 // convertUserSettingFromStore converts store UserSetting to API UserSetting.
@@ -1324,6 +1470,10 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, user *store.
 				WebhooksSetting: &v1pb.UserSetting_WebhooksSetting{
 					Webhooks: []*v1pb.UserWebhook{},
 				},
+			}
+		case storepb.UserSetting_TAGS:
+			setting.Value = &v1pb.UserSetting_TagsSetting_{
+				TagsSetting: &v1pb.UserSetting_TagsSetting{Tags: map[string]*v1pb.UserSetting_TagMetadata{}},
 			}
 		default:
 			return nil
@@ -1358,9 +1508,10 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, user *store.
 			apiWebhooks = make([]*v1pb.UserWebhook, 0, len(webhooks.Webhooks))
 			for _, webhook := range webhooks.Webhooks {
 				apiWebhook := &v1pb.UserWebhook{
-					Name:        fmt.Sprintf("%s/webhooks/%s", BuildUserName(user.Username), webhook.Id),
-					Url:         webhook.Url,
-					DisplayName: webhook.Title,
+					Name:             fmt.Sprintf("%s/webhooks/%s", BuildUserName(user.Username), webhook.Id),
+					Url:              webhook.Url,
+					DisplayName:      webhook.Title,
+					SigningSecretSet: webhook.SigningSecret != "",
 				}
 				apiWebhooks = append(apiWebhooks, apiWebhook)
 			}
@@ -1369,6 +1520,10 @@ func convertUserSettingFromStore(storeSetting *storepb.UserSetting, user *store.
 			WebhooksSetting: &v1pb.UserSetting_WebhooksSetting{
 				Webhooks: apiWebhooks,
 			},
+		}
+	case storepb.UserSetting_TAGS:
+		setting.Value = &v1pb.UserSetting_TagsSetting_{
+			TagsSetting: convertUserTagsSettingFromStore(storeSetting.GetTags()),
 		}
 	default:
 		return nil
@@ -1415,6 +1570,14 @@ func convertUserSettingToStore(apiSetting *v1pb.UserSetting, userID int32, key s
 			}
 		} else {
 			return nil, errors.Errorf("webhooks setting is required")
+		}
+	case storepb.UserSetting_TAGS:
+		if tags := apiSetting.GetTagsSetting(); tags != nil {
+			storeSetting.Value = &storepb.UserSetting_Tags{
+				Tags: convertUserTagsSettingToStore(tags),
+			}
+		} else {
+			return nil, errors.Errorf("tags setting is required")
 		}
 	default:
 		return nil, errors.Errorf("unsupported setting key: %v", key)

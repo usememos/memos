@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export interface SectionHeaderTab {
@@ -25,16 +26,17 @@ const SectionHeader = ({ icon: Icon, title, count, tabs }: SectionHeaderProps) =
         <div className="flex items-center gap-0.5">
           {tabs.map((tab, idx) => (
             <div key={tab.id} className="flex items-center gap-0.5">
-              <button
-                type="button"
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={tab.onClick}
                 className={cn(
-                  "text-xs px-0 py-0 transition-colors",
+                  "h-auto text-xs px-0 py-0 hover:bg-transparent",
                   tab.active ? "text-muted-foreground" : "text-muted-foreground/60 hover:text-muted-foreground",
                 )}
               >
                 {tab.label} ({tab.count})
-              </button>
+              </Button>
               {idx < tabs.length - 1 && <span className="text-muted-foreground/40 font-mono text-xs">/</span>}
             </div>
           ))}

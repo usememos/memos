@@ -1,8 +1,5 @@
-import type { ClipboardEvent, ForwardedRef, RefObject } from "react";
 import type { Location, Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
-import type { EditorRefActions } from "../Editor";
-import type { Command } from "../Editor/commands";
-import type { EditorState } from "../state";
+import type { AudioRecorderStatus } from "../hooks/useAudioRecorder";
 
 export interface MemoEditorProps {
   className?: string;
@@ -40,7 +37,7 @@ export interface EditorMetadataProps {
 }
 
 export interface AudioRecorderPanelProps {
-  audioRecorder: EditorState["audioRecorder"];
+  audioRecorder: { status: AudioRecorderStatus; elapsedSeconds: number };
   /** Active mic stream while recording; used for live waveform visualization. */
   mediaStream: MediaStream | null;
   onStop: () => void;
@@ -68,29 +65,6 @@ export interface InsertMenuProps {
   onToggleFocusMode?: () => void;
   memoName?: string;
   onAudioRecorderClick?: () => void;
-}
-
-export interface TagSuggestionsProps {
-  editorRef: RefObject<HTMLTextAreaElement | null>;
-  editorActions: ForwardedRef<EditorRefActions>;
-}
-
-export interface SlashCommandsProps {
-  editorRef: RefObject<HTMLTextAreaElement | null>;
-  editorActions: ForwardedRef<EditorRefActions>;
-  commands: Command[];
-}
-
-export interface EditorProps {
-  className: string;
-  initialContent: string;
-  placeholder: string;
-  onContentChange: (content: string) => void;
-  onPaste: (event: ClipboardEvent) => void;
-  isFocusMode?: boolean;
-  isInIME?: boolean;
-  onCompositionStart?: () => void;
-  onCompositionEnd?: () => void;
 }
 
 export interface VisibilitySelectorProps {

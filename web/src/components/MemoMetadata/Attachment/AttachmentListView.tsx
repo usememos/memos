@@ -78,13 +78,13 @@ const VisualTile = ({
   children,
 }: PropsWithChildren<{ className?: string; onPreview?: () => void; overlayLabel?: string }>) => {
   return (
-    <button type="button" className={cn(VISUAL_TILE_BUTTON_CLASS, className)} onClick={onPreview}>
+    <div className={cn(VISUAL_TILE_BUTTON_CLASS, className)} onClick={onPreview}>
       <div className={MEDIA_HOVER_SURFACE_CLASS}>
         {children}
         <div className={MEDIA_HOVER_GRADIENT_CLASS} aria-hidden />
       </div>
       {overlayLabel && <div className={OVERFLOW_TILE_OVERLAY_CLASS}>{overlayLabel}</div>}
-    </button>
+    </div>
   );
 };
 

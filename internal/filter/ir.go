@@ -73,13 +73,32 @@ type ElementInCondition struct {
 
 func (*ElementInCondition) isCondition() {}
 
-// ContainsCondition models the <field>.contains(<value>) call.
-type ContainsCondition struct {
+// TextMatchMode enumerates LIKE-based string match modes.
+type TextMatchMode string
+
+const (
+	TextMatchContains TextMatchMode = "contains"
+	TextMatchPrefix   TextMatchMode = "prefix"
+	TextMatchSuffix   TextMatchMode = "suffix"
+)
+
+// TextMatchCondition models a case-insensitive LIKE match on a scalar string field
+// (content.contains/startsWith/endsWith).
+type TextMatchCondition struct {
 	Field string
+	Mode  TextMatchMode
 	Value string
 }
 
-func (*ContainsCondition) isCondition() {}
+func (*TextMatchCondition) isCondition() {}
+
+// RegexCondition models field.matches("pattern") on a string field.
+type RegexCondition struct {
+	Field   string
+	Pattern string
+}
+
+func (*RegexCondition) isCondition() {}
 
 // ConstantCondition captures a literal boolean outcome.
 type ConstantCondition struct {
@@ -115,6 +134,15 @@ type FunctionValue struct {
 
 func (*FunctionValue) isValueExpr() {}
 
+// FieldAccessorValue captures a CEL timestamp accessor on a field, such as
+// created_ts.getMonth(). It renders to a dialect-specific date-part extraction.
+type FieldAccessorValue struct {
+	Field    string
+	Accessor string // e.g. "getFullYear", "getMonth"
+}
+
+func (*FieldAccessorValue) isValueExpr() {}
+
 // ListComprehensionCondition represents CEL macros like exists(), all(), filter().
 type ListComprehensionCondition struct {
 	Kind      ComprehensionKind
@@ -129,7 +157,9 @@ func (*ListComprehensionCondition) isCondition() {}
 type ComprehensionKind string
 
 const (
-	ComprehensionExists ComprehensionKind = "exists"
+	ComprehensionExists    ComprehensionKind = "exists"
+	ComprehensionAll       ComprehensionKind = "all"
+	ComprehensionExistsOne ComprehensionKind = "exists_one"
 )
 
 // PredicateExpr represents predicates used in comprehensions.

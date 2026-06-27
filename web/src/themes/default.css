@@ -15,6 +15,10 @@
   --accent-foreground: oklch(0.2671 0.0196 98.939);
   --destructive: oklch(0.5 0.12 25);
   --destructive-foreground: oklch(1 0 0);
+  --success: oklch(0.55 0.13 150);
+  --success-foreground: oklch(0.98 0.01 150);
+  --warning: oklch(0.62 0.12 70);
+  --warning-foreground: oklch(0.25 0.03 75);
   --border: oklch(0.8847 0.0069 97.3627);
   --input: oklch(0.7621 0.0156 98.3528);
   --ring: oklch(0.45 0.08 250);
@@ -56,6 +60,10 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -80,4 +88,10 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+
+  /* Layering tiers — keep overlays/dropdowns/tooltips stacked consistently.
+     Used by the ui/ primitives via z-overlay / z-dropdown / z-tooltip. */
+  --z-index-overlay: 50;
+  --z-index-dropdown: 60;
+  --z-index-tooltip: 70;
 }

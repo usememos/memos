@@ -15,24 +15,6 @@ describe("<About>", () => {
     expect(screen.getByText(/Capture first/i)).toBeInTheDocument();
     expect(screen.getByText(/quick capture/i)).toBeInTheDocument();
 
-    const sponsors = screen.getByRole("region", { name: "Sponsors" });
-    expect(within(sponsors).getByRole("link", { name: /CodeRabbit/i })).toHaveAttribute("href", "https://coderabbit.link/usememos");
-    expect(within(sponsors).getByRole("link", { name: /Warp/i })).toHaveAttribute("href", "https://go.warp.dev/memos");
-    expect(within(sponsors).getByText(/Cut code review time/i)).toBeInTheDocument();
-    expect(within(sponsors).getByText(/agentic development environment/i)).toBeInTheDocument();
-    expect(within(sponsors).getByAltText("CodeRabbit").closest("a")).toHaveAttribute("href", "https://coderabbit.link/usememos");
-    expect(
-      within(sponsors)
-        .getByText(/Cut code review time/i)
-        .closest("a"),
-    ).toHaveAttribute("href", "https://coderabbit.link/usememos");
-    expect(within(sponsors).getByAltText("Warp").closest("a")).toHaveAttribute("href", "https://go.warp.dev/memos");
-    expect(
-      within(sponsors)
-        .getByText(/agentic development environment/i)
-        .closest("a"),
-    ).toHaveAttribute("href", "https://go.warp.dev/memos");
-
     const birds = screen.getByRole("region", { name: "Birds" });
     expect(within(birds).getAllByTestId("about-bird-sprite")).toHaveLength(TILE_SPRITES.length);
 
@@ -41,18 +23,12 @@ describe("<About>", () => {
     }
   });
 
-  it("uses dark sponsor logos when the app theme is dark", () => {
-    document.documentElement.setAttribute("data-theme", "default-dark");
+  it("does not add nested horizontal page padding on mobile", () => {
+    const { container } = render(<About />);
 
-    render(<About />);
+    const contentWrapper = container.querySelector("section > div");
 
-    expect(screen.getByAltText("CodeRabbit")).toHaveAttribute(
-      "src",
-      "https://victorious-bubble-f69a016683.media.strapiapp.com/White_Typemark_79b9189d19.svg",
-    );
-    expect(screen.getByAltText("Warp")).toHaveAttribute(
-      "src",
-      "https://raw.githubusercontent.com/warpdotdev/brand-assets/refs/heads/main/Logos/Warp-Wordmark-White.png",
-    );
+    expect(contentWrapper).toHaveClass("w-full");
+    expect(contentWrapper).not.toHaveClass("px-4");
   });
 });

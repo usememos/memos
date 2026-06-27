@@ -10,6 +10,14 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+func uids(memos []*store.Memo) []string {
+	out := make([]string, 0, len(memos))
+	for _, m := range memos {
+		out = append(out, m.UID)
+	}
+	return out
+}
+
 // =============================================================================
 // Content Field Tests
 // Schema: content (string, supports contains)
@@ -92,6 +100,182 @@ func TestMemoFilterContentCaseSensitivity(t *testing.T) {
 	if len(memosLower) > 0 {
 		require.Equal(t, "MixedCase Content", memosLower[0].Content)
 	}
+}
+
+func TestMemoFilterTagsAll(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateMemo(NewMemoBuilder("memo-all-work", tc.User.ID).Content("all work").Tags("work/a", "work/b"))
+	tc.CreateMemo(NewMemoBuilder("memo-mixed", tc.User.ID).Content("mixed").Tags("work/a", "home"))
+	tc.CreateMemo(NewMemoBuilder("memo-untagged", tc.User.ID).Content("untagged"))
+
+	// Every tag starts with "work/": only the all-work memo qualifies.
+	memos := tc.ListWithFilter(`tags.all(t, t.startsWith("work/"))`)
+	require.Len(t, memos, 1)
+	require.Equal(t, "memo-all-work", memos[0].UID)
+
+	// Untagged memos must NOT match (non-empty guard, decision B).
+	require.NotContains(t, uids(memos), "memo-untagged")
+}
+
+func TestMemoFilterTagsAllEquals(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateMemo(NewMemoBuilder("memo-only-x", tc.User.ID).Content("only x").Tags("x", "x"))
+	tc.CreateMemo(NewMemoBuilder("memo-x-and-y", tc.User.ID).Content("x and y").Tags("x", "y"))
+
+	memos := tc.ListWithFilter(`tags.all(t, t == "x")`)
+	require.Len(t, memos, 1)
+	require.Equal(t, "memo-only-x", memos[0].UID)
+}
+
+func TestMemoFilterContentStartsWithEscaping(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateMemo(NewMemoBuilder("memo-pct", tc.User.ID).Content("100% complete"))
+	tc.CreateMemo(NewMemoBuilder("memo-plain", tc.User.ID).Content("100 things to do"))
+
+	// The % must be treated literally, not as a LIKE wildcard.
+	memos := tc.ListWithFilter(`content.startsWith("100%")`)
+	require.Len(t, memos, 1)
+	require.Equal(t, "memo-pct", memos[0].UID)
+}
+
+func TestMemoFilterStartsWithCombinedAndNegated(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateMemo(NewMemoBuilder("memo-pub", tc.User.ID).Content("Hello public").Visibility(store.Public))
+	tc.CreateMemo(NewMemoBuilder("memo-priv", tc.User.ID).Content("Hello private").Visibility(store.Private))
+	tc.CreateMemo(NewMemoBuilder("memo-bye", tc.User.ID).Content("Goodbye public").Visibility(store.Public))
+
+	memos := tc.ListWithFilter(`content.startsWith("Hello") && visibility == "PUBLIC"`)
+	require.Len(t, memos, 1)
+	require.Equal(t, "memo-pub", memos[0].UID)
+
+	memos = tc.ListWithFilter(`!content.startsWith("Hello")`)
+	require.Len(t, memos, 1)
+	require.Equal(t, "memo-bye", memos[0].UID)
+}
+
+func TestMemoFilterContentMatchesAdvanced(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateMemo(NewMemoBuilder("memo-release", tc.User.ID).Content("release v2024 notes"))
+	tc.CreateMemo(NewMemoBuilder("memo-draft", tc.User.ID).Content("draft document"))
+	tc.CreateMemo(NewMemoBuilder("memo-animals", tc.User.ID).Content("cat and dog"))
+
+	// Anchor: starts with "release".
+	memos := tc.ListWithFilter(`content.matches("^release")`)
+	require.Len(t, memos, 1)
+	require.Equal(t, "memo-release", memos[0].UID)
+
+	// Character class + quantifier: a 4-digit run (portable across RE2/POSIX/ICU).
+	memos = tc.ListWithFilter(`content.matches("[0-9]{4}")`)
+	require.Len(t, memos, 1)
+	require.Equal(t, "memo-release", memos[0].UID)
+
+	// Alternation.
+	memos = tc.ListWithFilter(`content.matches("cat|mouse")`)
+	require.Len(t, memos, 1)
+	require.Equal(t, "memo-animals", memos[0].UID)
+
+	// No match.
+	memos = tc.ListWithFilter(`content.matches("^zzz")`)
+	require.Len(t, memos, 0)
+}
+
+func TestMemoFilterTagsAllMorePredicates(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateMemo(NewMemoBuilder("memo-all-done", tc.User.ID).Tags("a/done", "b/done"))
+	tc.CreateMemo(NewMemoBuilder("memo-mixed", tc.User.ID).Tags("a/done", "b/todo"))
+	tc.CreateMemo(NewMemoBuilder("memo-single", tc.User.ID).Tags("solo/done"))
+
+	// endsWith: every tag ends with "done".
+	memos := tc.ListWithFilter(`tags.all(t, t.endsWith("done"))`)
+	require.ElementsMatch(t, []string{"memo-all-done", "memo-single"}, uids(memos))
+
+	// contains: every tag contains "/".
+	memos = tc.ListWithFilter(`tags.all(t, t.contains("/"))`)
+	require.ElementsMatch(t, []string{"memo-all-done", "memo-mixed", "memo-single"}, uids(memos))
+}
+
+func TestMemoFilterTagsAllNegatedAndCombined(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateMemo(NewMemoBuilder("memo-work", tc.User.ID).Content("work memo").Tags("work/a", "work/b"))
+	tc.CreateMemo(NewMemoBuilder("memo-mixed", tc.User.ID).Content("mixed memo").Tags("work/a", "home"))
+	tc.CreateMemo(NewMemoBuilder("memo-untagged", tc.User.ID).Content("untagged memo"))
+
+	// Negation: NOT all-work. The untagged memo's all() is false (non-empty guard),
+	// so !all() is true and it is included.
+	memos := tc.ListWithFilter(`!tags.all(t, t.startsWith("work/"))`)
+	require.ElementsMatch(t, []string{"memo-mixed", "memo-untagged"}, uids(memos))
+
+	// Combined with a content filter.
+	memos = tc.ListWithFilter(`tags.all(t, t.startsWith("work/")) && content.contains("work")`)
+	require.Len(t, memos, 1)
+	require.Equal(t, "memo-work", memos[0].UID)
+}
+
+func TestMemoFilterContentStartsWith(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateMemo(NewMemoBuilder("memo-todo", tc.User.ID).Content("TODO: buy milk"))
+	tc.CreateMemo(NewMemoBuilder("memo-done", tc.User.ID).Content("Done with milk"))
+
+	// Prefix match, case-insensitive (consistent with contains()).
+	memos := tc.ListWithFilter(`content.startsWith("todo")`)
+	require.Len(t, memos, 1)
+	require.Equal(t, "memo-todo", memos[0].UID)
+
+	memos = tc.ListWithFilter(`content.startsWith("nope")`)
+	require.Len(t, memos, 0)
+}
+
+func TestMemoFilterContentEndsWith(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateMemo(NewMemoBuilder("memo-md", tc.User.ID).Content("notes.md"))
+	tc.CreateMemo(NewMemoBuilder("memo-txt", tc.User.ID).Content("notes.txt"))
+
+	memos := tc.ListWithFilter(`content.endsWith(".md")`)
+	require.Len(t, memos, 1)
+	require.Equal(t, "memo-md", memos[0].UID)
+}
+
+func TestMemoFilterContentMatches(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+
+	tc.CreateMemo(NewMemoBuilder("memo-v1", tc.User.ID).Content("release v12 shipped"))
+	tc.CreateMemo(NewMemoBuilder("memo-plain", tc.User.ID).Content("no version here"))
+
+	memos := tc.ListWithFilter(`content.matches("v[0-9]+")`)
+	require.Len(t, memos, 1)
+	require.Equal(t, "memo-v1", memos[0].UID)
+
+	memos = tc.ListWithFilter(`content.matches("^xyz")`)
+	require.Len(t, memos, 0)
 }
 
 // =============================================================================
@@ -441,7 +625,7 @@ func TestMemoFilterCombinedJSONBool(t *testing.T) {
 // =============================================================================
 // Timestamp Field Tests
 // Schema: created_ts, updated_ts (timestamp, all comparison operators)
-// Functions: now(), arithmetic (+, -, *)
+// Time helpers: now variable, timestamp(...), duration(...)
 // =============================================================================
 
 func TestMemoFilterCreatedTsComparison(t *testing.T) {
@@ -453,15 +637,15 @@ func TestMemoFilterCreatedTsComparison(t *testing.T) {
 	tc.CreateMemo(NewMemoBuilder("memo-ts", tc.User.ID).Content("Timestamp test"))
 
 	// Test: created_ts < future (should match)
-	memos := tc.ListWithFilter(`created_ts < ` + formatInt64(now+3600))
+	memos := tc.ListWithFilter(`created_ts < timestamp(` + formatInt64(now+3600) + `)`)
 	require.Len(t, memos, 1)
 
 	// Test: created_ts > past (should match)
-	memos = tc.ListWithFilter(`created_ts > ` + formatInt64(now-3600))
+	memos = tc.ListWithFilter(`created_ts > timestamp(` + formatInt64(now-3600) + `)`)
 	require.Len(t, memos, 1)
 
 	// Test: created_ts > future (should not match)
-	memos = tc.ListWithFilter(`created_ts > ` + formatInt64(now+3600))
+	memos = tc.ListWithFilter(`created_ts > timestamp(` + formatInt64(now+3600) + `)`)
 	require.Len(t, memos, 0)
 }
 
@@ -472,12 +656,12 @@ func TestMemoFilterCreatedTsWithNow(t *testing.T) {
 
 	tc.CreateMemo(NewMemoBuilder("memo-ts-test", tc.User.ID).Content("Timestamp test"))
 
-	// Test: created_ts < now() + 5 (buffer for container clock drift)
-	memos := tc.ListWithFilter(`created_ts < now() + 5`)
+	// Test: created_ts < now + 5s (buffer for container clock drift)
+	memos := tc.ListWithFilter(`created_ts < now + duration("5s")`)
 	require.Len(t, memos, 1)
 
-	// Test: created_ts > now() + 5 (should not match)
-	memos = tc.ListWithFilter(`created_ts > now() + 5`)
+	// Test: created_ts > now + 5s (should not match)
+	memos = tc.ListWithFilter(`created_ts > now + duration("5s")`)
 	require.Len(t, memos, 0)
 }
 
@@ -488,16 +672,16 @@ func TestMemoFilterCreatedTsArithmetic(t *testing.T) {
 
 	tc.CreateMemo(NewMemoBuilder("memo-ts-arith", tc.User.ID).Content("Timestamp arithmetic test"))
 
-	// Test: created_ts >= now() - 3600 (memos created in last hour)
-	memos := tc.ListWithFilter(`created_ts >= now() - 3600`)
+	// Test: created_ts >= now - 1h (memos created in last hour)
+	memos := tc.ListWithFilter(`created_ts >= now - duration("1h")`)
 	require.Len(t, memos, 1)
 
-	// Test: created_ts < now() - 86400 (memos older than 1 day - should be empty)
-	memos = tc.ListWithFilter(`created_ts < now() - 86400`)
+	// Test: created_ts < now - 24h (memos older than 1 day - should be empty)
+	memos = tc.ListWithFilter(`created_ts < now - duration("24h")`)
 	require.Len(t, memos, 0)
 
-	// Test: Multiplication - created_ts >= now() - 60 * 60
-	memos = tc.ListWithFilter(`created_ts >= now() - 60 * 60`)
+	// Test: chained duration arithmetic - created_ts >= now - 30m - 30m
+	memos = tc.ListWithFilter(`created_ts >= now - duration("30m") - duration("30m")`)
 	require.Len(t, memos, 1)
 }
 
@@ -516,12 +700,12 @@ func TestMemoFilterUpdatedTs(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// Test: updated_ts >= now() - 60 (updated in last minute)
-	memos := tc.ListWithFilter(`updated_ts >= now() - 60`)
+	// Test: updated_ts >= now - 60s (updated in last minute)
+	memos := tc.ListWithFilter(`updated_ts >= now - duration("60s")`)
 	require.Len(t, memos, 1)
 
-	// Test: updated_ts > now() + 3600 (should be empty)
-	memos = tc.ListWithFilter(`updated_ts > now() + 3600`)
+	// Test: updated_ts > now + 1h (should be empty)
+	memos = tc.ListWithFilter(`updated_ts > now + duration("1h")`)
 	require.Len(t, memos, 0)
 }
 
@@ -533,19 +717,19 @@ func TestMemoFilterAllComparisonOperators(t *testing.T) {
 	tc.CreateMemo(NewMemoBuilder("memo-ops", tc.User.ID).Content("Comparison operators test"))
 
 	// Test: < (less than)
-	memos := tc.ListWithFilter(`created_ts < now() + 3600`)
+	memos := tc.ListWithFilter(`created_ts < now + duration("1h")`)
 	require.Len(t, memos, 1)
 
 	// Test: <= (less than or equal) with buffer for clock drift
-	memos = tc.ListWithFilter(`created_ts < now() + 5`)
+	memos = tc.ListWithFilter(`created_ts < now + duration("5s")`)
 	require.Len(t, memos, 1)
 
 	// Test: > (greater than)
-	memos = tc.ListWithFilter(`created_ts > now() - 3600`)
+	memos = tc.ListWithFilter(`created_ts > now - duration("1h")`)
 	require.Len(t, memos, 1)
 
 	// Test: >= (greater than or equal)
-	memos = tc.ListWithFilter(`created_ts >= now() - 60`)
+	memos = tc.ListWithFilter(`created_ts >= now - duration("60s")`)
 	require.Len(t, memos, 1)
 }
 

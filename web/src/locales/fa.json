@@ -116,6 +116,9 @@
     "visibility": "قابل مشاهده توسط",
     "yourself": "خودتان"
   },
+  "locale-picker": {
+    "no-language-feedback": "زبان پیدا نشد؟ ارسال بازخورد"
+  },
   "editor": {
     "add-your-comment-here": "نظر خود را اینجا اضافه کنید...",
     "any-thoughts": "فکر شما...",
@@ -124,7 +127,6 @@
     "no-changes-detected": "تغییری شناسایی نشد",
     "save": "ذخیره",
     "saving": "در حال ذخیره...",
-    "slash-commands": "برای دستورات '/' را تایپ کنید",
     "insert-menu": {
       "add-location": "اضافه کردن مکان",
       "link-memo": "پیوند یادداشت",
@@ -192,6 +194,8 @@
       "has-task-list": "دارای لیست کارها",
       "label": "فیلترها"
     },
+    "compact-mode": "حالت فشرده",
+    "link-preview": "پیش‌نمایش پیوند",
     "links": "پیوندها",
     "load-more": "بارگذاری بیشتر",
     "no-archived-memos": "یادداشت آرشیو شده‌ای وجود ندارد.",

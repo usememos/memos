@@ -13,10 +13,8 @@ const InfoChip = ({ label, value, tooltip, className }: Props) => {
   const chip = (
     <Badge
       variant="outline"
-      className={cn(
-        "max-w-full items-start gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-normal leading-4 whitespace-nowrap",
-        className,
-      )}
+      shape="pill"
+      className={cn("max-w-full items-start gap-1.5 px-2.5 py-1 text-[11px] font-normal leading-4 whitespace-nowrap", className)}
     >
       <span className="text-muted-foreground">{label}</span>
       <span className="max-w-[20rem] truncate text-foreground">{value}</span>

@@ -51,4 +51,31 @@ describe("remarkTag", () => {
     expect(html).toContain('data-tag="urgent"');
     expect(html).toContain('data-tag="later"');
   });
+
+  it("does not turn a backslash-escaped \\#tag into a tag, but still tags an unescaped one", () => {
+    const html = renderMarkdown("\\#NAS is my server and a #real tag");
+
+    // Escaped: rendered as the literal text "#NAS", never a tag pill.
+    expect(html).not.toContain('data-tag="NAS"');
+    expect(html).toContain("#NAS");
+    // Unescaped neighbour is unaffected.
+    expect(html).toContain('data-tag="real"');
+  });
+
+  it("escapes only the marked hash when escaped and unescaped tags share a node", () => {
+    const html = renderMarkdown("\\#first then #second");
+
+    expect(html).not.toContain('data-tag="first"');
+    expect(html).toContain("#first");
+    expect(html).toContain('data-tag="second"');
+  });
+
+  it("still tags a hash that shares a text node with an entity reference", () => {
+    // The source slice ("...&amp;...") differs from the decoded value, so the
+    // escape-aware path bows out and the tag is detected the original way.
+    const html = renderMarkdown("Tom &amp; Jerry #cartoon");
+
+    expect(html).toContain('data-tag="cartoon"');
+    expect(html).toContain("Tom &amp; Jerry");
+  });
 });

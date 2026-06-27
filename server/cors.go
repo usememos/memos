@@ -12,13 +12,29 @@ import (
 
 func newCORSMiddleware(profile *profile.Profile) echo.MiddlewareFunc {
 	return middleware.CORSWithConfig(middleware.CORSConfig{
+		// The API is open to any origin so that token-authenticated clients
+		// (Access Token V2 / PAT in the Authorization header) can call it from
+		// anywhere. Credentials — i.e. the SameSite=Lax refresh-token cookie — are
+		// granted only to trusted origins (same host or the configured InstanceURL).
+		//
+		// AllowCredentials stays false here on purpose: the per-origin
+		// Access-Control-Allow-Credentials header is set inside the func below.
+		// Do NOT switch this to AllowCredentials:true — emitting that header for
+		// every reflected origin would let a malicious same-site subdomain read the
+		// cookie-authenticated /auth/refresh response and steal an access token.
+		AllowCredentials: false,
 		UnsafeAllowOriginFunc: func(c *echo.Context, origin string) (string, bool, error) {
-			if isAllowedCORSOrigin(profile, c.Request().Host, origin) {
-				return origin, true, nil
+			// Never reflect the opaque "null" origin (sandboxed iframes, file://).
+			if origin == "null" {
+				return "", false, nil
 			}
-			return "", false, nil
+			// Trusted origins additionally get credentialed (cookie) access.
+			if isAllowedCORSOrigin(profile, c.Request().Host, origin) {
+				c.Response().Header().Set(echo.HeaderAccessControlAllowCredentials, "true")
+			}
+			// Reflect every origin; only trusted ones carry the credentials header.
+			return origin, true, nil
 		},
-		AllowCredentials: true,
 	})
 }
 

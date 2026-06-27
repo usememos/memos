@@ -2,12 +2,7 @@ import type { Root, Text } from "mdast";
 import type { Node as UnistNode } from "unist";
 import { visit } from "unist-util-visit";
 import type { MentionNode, MentionNodeData } from "@/types/markdown";
-
-const MAX_MENTION_LENGTH = 32;
-
-function isMentionChar(char: string): boolean {
-  return /[A-Za-z0-9-]/.test(char);
-}
+import { isMentionChar, MAX_MENTION_LENGTH } from "@/utils/mention-grammar";
 
 function isMentionBoundary(char: string): boolean {
   if (!char) return true;

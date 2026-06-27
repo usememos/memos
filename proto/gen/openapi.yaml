@@ -2209,6 +2209,41 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/users/{user}/webhooks/{webhook}:getSigningSecret:
+        get:
+            tags:
+                - UserService
+            description: |-
+                GetUserWebhookSigningSecret returns the signing secret for a webhook.
+                 The secret is returned only through this explicit, owner-gated call; it is
+                 never included in List/Create/Update responses.
+            operationId: UserService_GetUserWebhookSigningSecret
+            parameters:
+                - name: user
+                  in: path
+                  description: The user id.
+                  required: true
+                  schema:
+                    type: string
+                - name: webhook
+                  in: path
+                  description: The webhook id.
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetUserWebhookSigningSecretResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/users/{user}:getStats:
         get:
             tags:
@@ -2644,6 +2679,12 @@ components:
                     allOf:
                         - $ref: '#/components/schemas/User'
                     description: The authenticated user's information.
+        GetUserWebhookSigningSecretResponse:
+            type: object
+            properties:
+                signingSecret:
+                    type: string
+                    description: The signing secret, in the Standard Webhooks "whsec_<base64>" form.
         GoogleProtobufAny:
             type: object
             properties:
@@ -2702,11 +2743,19 @@ components:
                     allOf:
                         - $ref: '#/components/schemas/User'
                     description: |-
-                        The first administrator who set up this instance.
-                         When null, instance requires initial setup (creating the first admin account).
+                        The first administrator who set up this instance, for display purposes.
+                         May be null on an instance that has lost all admins; use needs_setup to
+                         determine whether initial setup is actually required.
                 commit:
                     type: string
                     description: Commit is the current build commit of instance.
+                needsSetup:
+                    type: boolean
+                    description: |-
+                        NeedsSetup is true when the instance has no users yet and requires initial
+                         setup (creating the first admin account). Unlike a null admin, this stays
+                         false once any user exists, so an instance that has lost its admins is not
+                         mistaken for a fresh install.
             description: Instance profile message containing basic instance information.
         InstanceSetting:
             type: object
@@ -2878,7 +2927,10 @@ components:
                          Each key is treated as an anchored regular expression (^pattern$),
                          so a single entry like "project/.*" matches all tags under that prefix.
                          Exact tag names are also valid (they are trivially valid regex patterns).
-            description: Tag metadata configuration.
+            description: |-
+                Tag metadata configuration.
+                 Active tag metadata is stored in per-user tag settings.
+                 This message remains for backward compatibility with existing clients and migrations.
         InstanceSetting_TranscriptionConfig:
             type: object
             properties:
@@ -3616,6 +3668,12 @@ components:
                     type: string
                 usePathStyle:
                     type: boolean
+                insecureSkipTlsVerify:
+                    type: boolean
+                    description: |-
+                        insecure_skip_tls_verify disables TLS certificate verification when connecting
+                         to the S3 endpoint. Only enable this for trusted endpoints that use a self-signed
+                         certificate; it removes protection against man-in-the-middle attacks.
             description: |-
                 S3 configuration for cloud storage backend.
                  Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
@@ -3835,6 +3893,8 @@ components:
                     $ref: '#/components/schemas/UserSetting_GeneralSetting'
                 webhooksSetting:
                     $ref: '#/components/schemas/UserSetting_WebhooksSetting'
+                tagsSetting:
+                    $ref: '#/components/schemas/UserSetting_TagsSetting'
             description: User settings message
         UserSetting_GeneralSetting:
             type: object
@@ -3852,6 +3912,30 @@ components:
                          This references a CSS file in the web/public/themes/ directory.
                          If not set, the default theme will be used.
             description: General user settings configuration.
+        UserSetting_TagMetadata:
+            type: object
+            properties:
+                backgroundColor:
+                    allOf:
+                        - $ref: '#/components/schemas/Color'
+                    description: |-
+                        Optional background color for the tag label.
+                         When unset, the default tag color is used.
+                blurContent:
+                    type: boolean
+                    description: Whether memos with this tag should have their content blurred.
+            description: Tag metadata for user-specific display rules.
+        UserSetting_TagsSetting:
+            type: object
+            properties:
+                tags:
+                    type: object
+                    additionalProperties:
+                        $ref: '#/components/schemas/UserSetting_TagMetadata'
+                    description: |-
+                        Map of tag name pattern to tag metadata.
+                         Each key is treated as an anchored regular expression (^pattern$).
+            description: User-specific tag metadata.
         UserSetting_WebhooksSetting:
             type: object
             properties:
@@ -3944,6 +4028,16 @@ components:
                     type: string
                     description: The last update time of the webhook.
                     format: date-time
+                signingSecret:
+                    writeOnly: true
+                    type: string
+                    description: |-
+                        Optional. Signing secret used to HMAC-SHA256 sign the webhook request body.
+                         This field is input-only; it is never returned in responses.
+                signingSecretSet:
+                    readOnly: true
+                    type: boolean
+                    description: Whether a signing secret is configured for this webhook.
             description: UserWebhook represents a webhook owned by a user.
 tags:
     - name: AIService

@@ -1,4 +1,5 @@
 import { Children, cloneElement, isValidElement, type ReactElement, type ReactNode } from "react";
+import { markdownStyles } from "@/lib/markdownStyles";
 import { cn } from "@/lib/utils";
 import { TASK_LIST_CLASS, TASK_LIST_ITEM_CLASS } from "../constants";
 import { NestedMarkdownRenderContext } from "../MarkdownRenderContext";
@@ -72,20 +73,12 @@ interface ListProps extends React.HTMLAttributes<HTMLUListElement | HTMLOListEle
 export const List = ({ ordered, children, className, node: _node, ...domProps }: ListProps) => {
   const Component = ordered ? "ol" : "ul";
   const isTaskList = className?.includes(TASK_LIST_CLASS);
+  // Task list indentation is handled by task item grid columns; regular lists
+  // use the shared token (padding + list style).
+  const listClass = isTaskList ? "my-0 mb-2 list-outside list-none" : ordered ? markdownStyles.orderedList : markdownStyles.bulletList;
 
   return (
-    <Component
-      className={cn(
-        "my-0 mb-2 list-outside",
-        isTaskList
-          ? // Task list indentation is handled by task item grid columns.
-            "list-none"
-          : // Regular list: standard padding and list style
-            cn("pl-6", ordered ? "list-decimal" : "list-disc"),
-        className,
-      )}
-      {...domProps}
-    >
+    <Component className={cn(listClass, className)} {...domProps}>
       {children}
     </Component>
   );
@@ -122,7 +115,7 @@ export const ListItem = ({ children, className, node: _node, ...domProps }: List
   }
 
   return (
-    <li className={cn("mt-0.5 leading-6", className)} {...domProps}>
+    <li className={cn(markdownStyles.listItem, className)} {...domProps}>
       <NestedMarkdownRenderContext>{children}</NestedMarkdownRenderContext>
     </li>
   );

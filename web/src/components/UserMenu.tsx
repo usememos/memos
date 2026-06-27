@@ -14,11 +14,11 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import { useSSEConnectionStatus } from "@/hooks/useLiveMemoRefresh";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
-import { locales } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
-import { getLocaleDisplayName, getLocaleWithFallback, loadLocale, useTranslate } from "@/utils/i18n";
+import { getLocaleWithFallback, loadLocale, useTranslate } from "@/utils/i18n";
 import { getThemeWithFallback, loadTheme, THEME_OPTIONS } from "@/utils/theme";
+import { LocaleSearchList } from "./LocalePicker";
 import UserAvatar from "./UserAvatar";
 import {
   DropdownMenu,
@@ -151,14 +151,8 @@ const UserMenu = (props: Props) => {
             <GlobeIcon className="size-4 text-muted-foreground" />
             {t("common.language")}
           </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="max-h-[90vh] overflow-y-auto">
-            {locales.map((locale) => (
-              <DropdownMenuItem key={locale} onClick={() => handleLocaleChange(locale)}>
-                {currentLocale === locale && <CheckIcon className="w-4 h-auto" />}
-                {currentLocale !== locale && <span className="w-4" />}
-                {getLocaleDisplayName(locale)}
-              </DropdownMenuItem>
-            ))}
+          <DropdownMenuSubContent className="max-h-[min(24rem,var(--radix-dropdown-menu-content-available-height))] overflow-y-auto p-0">
+            <LocaleSearchList value={currentLocale} onChange={handleLocaleChange} className="w-64" />
           </DropdownMenuSubContent>
         </DropdownMenuSub>
         <DropdownMenuSub>

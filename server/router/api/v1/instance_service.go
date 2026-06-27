@@ -52,12 +52,23 @@ func (s *APIV1Service) GetInstanceProfile(ctx context.Context, _ *v1pb.GetInstan
 		return nil, status.Errorf(codes.Internal, "failed to get instance admin: %v", err)
 	}
 
+	// needs_setup reflects whether the instance has any users at all, which is
+	// the real signal for first-run setup. It is deliberately independent of the
+	// admin lookup: an instance that has lost its admins still has users and must
+	// not be treated as a fresh install.
+	limitOne := 1
+	users, err := s.Store.ListUsers(ctx, &store.FindUser{Limit: &limitOne})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list users: %v", err)
+	}
+
 	instanceProfile := &v1pb.InstanceProfile{
 		Version:     s.Profile.Version,
 		Demo:        s.Profile.Demo,
 		InstanceUrl: s.Profile.InstanceURL,
-		Admin:       admin, // nil when not initialized
+		Admin:       admin, // for display only; may be nil even on a populated instance
 		Commit:      s.Profile.Commit,
+		NeedsSetup:  len(users) == 0,
 	}
 	return instanceProfile, nil
 }
@@ -433,10 +444,11 @@ func convertInstanceStorageSettingFromStore(settingpb *storepb.InstanceStorageSe
 		setting.S3Config = &v1pb.InstanceSetting_StorageSetting_S3Config{
 			AccessKeyId: settingpb.S3Config.AccessKeyId,
 			// AccessKeySecret is write-only: never returned in responses.
-			Endpoint:     settingpb.S3Config.Endpoint,
-			Region:       settingpb.S3Config.Region,
-			Bucket:       settingpb.S3Config.Bucket,
-			UsePathStyle: settingpb.S3Config.UsePathStyle,
+			Endpoint:              settingpb.S3Config.Endpoint,
+			Region:                settingpb.S3Config.Region,
+			Bucket:                settingpb.S3Config.Bucket,
+			UsePathStyle:          settingpb.S3Config.UsePathStyle,
+			InsecureSkipTlsVerify: settingpb.S3Config.InsecureSkipTlsVerify,
 		}
 	}
 	return setting
@@ -453,12 +465,13 @@ func convertInstanceStorageSettingToStore(setting *v1pb.InstanceSetting_StorageS
 	}
 	if setting.S3Config != nil {
 		settingpb.S3Config = &storepb.StorageS3Config{
-			AccessKeyId:     setting.S3Config.AccessKeyId,
-			AccessKeySecret: setting.S3Config.AccessKeySecret,
-			Endpoint:        setting.S3Config.Endpoint,
-			Region:          setting.S3Config.Region,
-			Bucket:          setting.S3Config.Bucket,
-			UsePathStyle:    setting.S3Config.UsePathStyle,
+			AccessKeyId:           setting.S3Config.AccessKeyId,
+			AccessKeySecret:       setting.S3Config.AccessKeySecret,
+			Endpoint:              setting.S3Config.Endpoint,
+			Region:                setting.S3Config.Region,
+			Bucket:                setting.S3Config.Bucket,
+			UsePathStyle:          setting.S3Config.UsePathStyle,
+			InsecureSkipTlsVerify: setting.S3Config.InsecureSkipTlsVerify,
 		}
 	}
 	return settingpb

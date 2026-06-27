@@ -3,13 +3,20 @@ package webhook
 import (
 	"bytes"
 	"context"
+	"crypto/hmac"
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"io"
 	"log/slog"
 	"net"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -78,6 +85,35 @@ type WebhookRequestPayload struct {
 	Creator string `json:"creator"`
 	// The memo that triggered this webhook (if applicable).
 	Memo *v1pb.Memo `json:"memo"`
+	// Optional signing secret for HMAC-SHA256 signature. Not serialized to JSON.
+	SigningSecret string `json:"-"`
+}
+
+// resolveSigningKey returns the raw HMAC key for a signing secret. Secrets using
+// the Standard Webhooks "whsec_<base64>" serialization are base64-decoded to their
+// raw bytes; any other secret is used as-is. It returns an error when a whsec_-prefixed
+// secret is not valid base64, so callers fail loudly instead of silently signing with
+// the wrong key (which would make every signature unverifiable by the receiver).
+func resolveSigningKey(secret string) ([]byte, error) {
+	if rest, ok := strings.CutPrefix(secret, "whsec_"); ok {
+		decoded, err := base64.StdEncoding.DecodeString(rest)
+		if err != nil {
+			return nil, errors.Wrap(err, "signing secret has whsec_ prefix but is not valid base64")
+		}
+		return decoded, nil
+	}
+	return []byte(secret), nil
+}
+
+// GenerateSigningSecret returns a new Standard Webhooks signing secret in the
+// "whsec_<base64>" form, backed by 32 cryptographically-random bytes — comfortably
+// within the spec's 24–64 byte range.
+func GenerateSigningSecret() (string, error) {
+	buf := make([]byte, 32)
+	if _, err := rand.Read(buf); err != nil {
+		return "", errors.Wrap(err, "failed to read random bytes for signing secret")
+	}
+	return "whsec_" + base64.StdEncoding.EncodeToString(buf), nil
 }
 
 // Post posts the message to webhook endpoint.
@@ -93,6 +129,26 @@ func Post(requestPayload *WebhookRequestPayload) error {
 	}
 
 	req.Header.Set("Content-Type", "application/json")
+
+	if requestPayload.SigningSecret != "" {
+		key, err := resolveSigningKey(requestPayload.SigningSecret)
+		if err != nil {
+			return errors.Wrapf(err, "failed to derive signing key for webhook to %s", requestPayload.URL)
+		}
+
+		msgID := "msg_" + uuid.New().String()
+		timestamp := strconv.FormatInt(time.Now().Unix(), 10)
+
+		mac := hmac.New(sha256.New, key)
+		mac.Write([]byte(msgID + "." + timestamp + "."))
+		mac.Write(body)
+		signature := base64.StdEncoding.EncodeToString(mac.Sum(nil))
+
+		req.Header.Set("webhook-id", msgID)
+		req.Header.Set("webhook-timestamp", timestamp)
+		req.Header.Set("webhook-signature", "v1,"+signature)
+	}
+
 	resp, err := safeClient.Do(req)
 	if err != nil {
 		return errors.Wrapf(err, "failed to post webhook to %s", requestPayload.URL)

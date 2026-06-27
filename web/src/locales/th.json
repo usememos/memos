@@ -116,6 +116,9 @@
     "visibility": "การมองเห็น",
     "yourself": "ตัวคุณ"
   },
+  "locale-picker": {
+    "no-language-feedback": "ไม่พบภาษา? ส่งข้อเสนอแนะ"
+  },
   "editor": {
     "add-your-comment-here": "เพิ่มความคิดเห็นของคุณที่นี่...",
     "any-thoughts": "ความคิดใดๆ...",
@@ -124,7 +127,6 @@
     "no-changes-detected": "ไม่มีการเปลี่ยนแปลง",
     "save": "บันทึก",
     "saving": "กำลังบันทึก...",
-    "slash-commands": "พิมพ์ `/` สำหรับคำสั่ง",
     "insert-menu": {
       "add-location": "เพิ่มสถานที่",
       "link-memo": "บันทึกการเชื่อมโยง",
@@ -192,6 +194,8 @@
       "has-task-list": "มีรายการที่ต้องทำ",
       "label": "ตัวกรอง"
     },
+    "compact-mode": "โหมดกะทัดรัด",
+    "link-preview": "ตัวอย่างลิงก์",
     "links": "ลิงก์",
     "load-more": "โหลดเพิ่มเติม",
     "no-archived-memos": "ไม่มีบันทึกช่วยจำที่ถูกเก็บถาวร",

@@ -116,6 +116,9 @@
     "visibility": "Visibilitas",
     "yourself": "Anda sendiri"
   },
+  "locale-picker": {
+    "no-language-feedback": "Bahasa tidak ditemukan? Kirim masukan"
+  },
   "editor": {
     "add-your-comment-here": "Tambahkan komentar Anda di sini...",
     "any-thoughts": "Punya pemikiran...",
@@ -124,7 +127,6 @@
     "no-changes-detected": "Tidak ada perubahan yang terdeteksi",
     "save": "Simpan",
     "saving": "Menyimpan...",
-    "slash-commands": "Ketik `/` untuk perintah",
     "insert-menu": {
       "add-location": "Tambahkan lokasi",
       "link-memo": "Tautan memo",
@@ -192,6 +194,8 @@
       "has-task-list": "Memiliki daftar tugas",
       "label": "Filter"
     },
+    "compact-mode": "Mode ringkas",
+    "link-preview": "Pratinjau tautan",
     "links": "Tautan",
     "load-more": "Muat lebih banyak",
     "no-archived-memos": "Tidak ada memo yang diarsipkan.",

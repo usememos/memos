@@ -116,6 +116,9 @@
     "visibility": "الرؤية",
     "yourself": "نفسك"
   },
+  "locale-picker": {
+    "no-language-feedback": "لم يتم العثور على اللغة؟ إرسال ردود الفعل"
+  },
   "editor": {
     "add-your-comment-here": "أضف تعليقك هنا...",
     "any-thoughts": "أية أفكار...",
@@ -124,7 +127,6 @@
     "no-changes-detected": "لم يتم الكشف عن تغييرات",
     "save": "حفظ",
     "saving": "جارِ الحفظ...",
-    "slash-commands": "اكتب `/` للأوامر",
     "insert-menu": {
       "add-location": "أضف الموقع",
       "link-memo": "مذكرة الارتباط",
@@ -192,6 +194,8 @@
       "has-task-list": "يحتوي على قائمة مهام",
       "label": "المرشحات"
     },
+    "compact-mode": "الوضع المضغوط",
+    "link-preview": "معاينة الرابط",
     "links": "روابط",
     "load-more": "تحميل المزيد",
     "no-archived-memos": "لا يوجد مذكرات مؤرشفة",

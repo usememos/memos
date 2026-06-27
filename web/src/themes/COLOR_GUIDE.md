@@ -92,17 +92,25 @@ The color system supports both light and dark themes automatically through CSS c
 
 ### ⚠️ Feedback Colors
 
-| Variable                   | Light Theme | Dark Theme | Usage                           |
-| -------------------------- | ----------- | ---------- | ------------------------------- |
-| `--destructive`            | Very dark   | Red        | Error states, dangerous actions |
-| `--destructive-foreground` | White       | White      | Text on destructive backgrounds |
+| Variable                   | Light Theme | Dark Theme    | Usage                              |
+| -------------------------- | ----------- | ------------- | ---------------------------------- |
+| `--destructive`            | Very dark   | Red           | Error states, dangerous actions    |
+| `--destructive-foreground` | White       | White         | Text on destructive backgrounds    |
+| `--success`                | Green       | Brighter green| Confirmation states (copied, saved)|
+| `--success-foreground`     | Near white  | Near black    | Text on success backgrounds        |
+| `--warning`                | Amber       | Brighter amber| Caution states (unused, deprecated)|
+| `--warning-foreground`     | Dark        | Dark          | Text on warning backgrounds        |
 
 **When to use:**
 
-- Error messages
-- Delete buttons
-- Warning alerts
-- Validation failures
+- Error messages, delete buttons, validation failures → `--destructive`
+- Success confirmations (e.g. "copied ✓", saved) → `--success`
+- Non-critical caution (e.g. unused attachments) → `--warning`
+
+For tinted treatments (badges, panels), pair the token with an opacity modifier
+the same way `--destructive` is used, e.g. `border-warning/30 bg-warning/10 text-warning`.
+This auto-adapts across themes — never hardcode `amber-*` / `green-*` palette classes
+or add manual `dark:` overrides for feedback states.
 
 ### 📊 Data Visualization
 
@@ -260,39 +268,27 @@ To ensure proper contrast and accessibility:
 
 ## Z-Index Hierarchy
 
-The application uses a structured z-index hierarchy to ensure proper layering of UI components:
+The layering tiers are defined once as Tailwind tokens in `default.css`
+(`--z-index-overlay/dropdown/tooltip`) and consumed via named utilities — do not
+hardcode `z-[60]`-style literals.
 
-| Component Type    | Z-Index  | Usage                                 |
-| ----------------- | -------- | ------------------------------------- |
-| **Base Content**  | `z-0`    | Normal page content                   |
-| **Overlays**      | `z-50`   | Dialog/Sheet backgrounds              |
-| **Modal Content** | `z-50`   | Dialog/Sheet content                  |
-| **Dropdowns**     | `z-[60]` | Select, DropdownMenu, Popover content |
-| **Tooltips**      | `z-[70]` | Tooltip content (highest priority)    |
+| Component Type    | Utility       | Value | Usage                                 |
+| ----------------- | ------------- | ----- | ------------------------------------- |
+| **Base Content**  | `z-0`         | 0     | Normal page content                   |
+| **Overlays**      | `z-overlay`   | 50    | Dialog/Sheet backgrounds              |
+| **Modal Content** | `z-overlay`   | 50    | Dialog/Sheet content                  |
+| **Dropdowns**     | `z-dropdown`  | 60    | Select, DropdownMenu, Popover content |
+| **Tooltips**      | `z-tooltip`   | 70    | Tooltip content (highest priority)    |
 
 ### Rules
 
-1. **Dialog/Sheet**: Use `z-50` for both overlay and content
-2. **Interactive Elements**: Use `z-[60]` for dropdowns inside dialogs
-3. **Tooltips**: Use `z-[70]` to appear above all other elements
+1. **Dialog/Sheet**: Use `z-overlay` for both overlay and content
+2. **Interactive Elements**: Use `z-dropdown` for dropdowns inside dialogs
+3. **Tooltips**: Use `z-tooltip` to appear above all other elements
 4. **Always test**: Ensure Select/DropdownMenu works inside Dialog/Sheet
 
-### Example
-
-```tsx
-// ✅ Correct: Select inside Dialog will appear above dialog content
-<Dialog>
-  <DialogContent>
-    <Select>
-      <SelectContent className="z-[60]">
-        {" "}
-        {/* Higher than dialog */}
-        <SelectItem>Option 1</SelectItem>
-      </SelectContent>
-    </Select>
-  </DialogContent>
-</Dialog>
-```
+These are already the defaults baked into the `ui/` primitives, so a `Select`
+inside a `Dialog` renders above the overlay without any extra `z-*` class.
 
 ---
 

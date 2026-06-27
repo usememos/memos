@@ -27,7 +27,7 @@ export const CalendarCell = memo((props: CalendarCellProps) => {
   const smallExtraClasses = size === "small" ? `${SMALL_CELL_SIZE.dimensions} min-h-0` : "";
 
   const baseClasses = cn(
-    "aspect-square w-full flex items-center justify-center text-center transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-2 select-none border border-border/10 bg-muted/20",
+    "aspect-square w-full flex items-center justify-center text-center transition-all duration-150 select-none border border-border/10 bg-muted/20",
     sizeConfig.font,
     sizeConfig.borderRadius,
     smallExtraClasses,
@@ -42,6 +42,7 @@ export const CalendarCell = memo((props: CalendarCellProps) => {
   const intensityClass = getCellIntensityClass(day, maxCount);
 
   const buttonClasses = cn(
+    "h-auto p-0",
     baseClasses,
     intensityClass,
     getCalendarCellStateClass(day),
