@@ -131,8 +131,11 @@ a personal access token as a bearer credential. Example client config:
 
 ## Tool surface
 
-The first version exposes a curated allowlist (`curatedOperationIDs` in
-`catalog.go`), all memo- and attachment-focused:
+The server exposes a curated allowlist (`curatedOperationIDs` in `catalog.go`),
+centered on memos and attachments, plus two read-only orientation tools:
+`shortcut_list_shortcuts` (surfaces a user's saved CEL filters for reuse with
+`memo_list_memos`) and `auth_get_current_user` (a "whoami" so an agent can
+resolve its own user — the single allowed auth/identity operation):
 
 | OpenAPI operation | MCP tool |
 | --- | --- |
@@ -153,18 +156,25 @@ The first version exposes a curated allowlist (`curatedOperationIDs` in
 | `AttachmentService_ListAttachments` | `attachment_list_attachments` |
 | `AttachmentService_GetAttachment` | `attachment_get_attachment` |
 | `AttachmentService_DeleteAttachment` | `attachment_delete_attachment` |
+| `ShortcutService_ListShortcuts` | `shortcut_list_shortcuts` |
+| `AuthService_GetCurrentUser` | `auth_get_current_user` |
 
 **Naming rule** (`toolNameFromOperationID`): drop the `Service` suffix from the
 subject and convert both subject and method from camelCase to snake_case, joined
 by `_`. So `MemoService_ListMemos → memo_list_memos`.
 
-**Annotations** (`annotationsForMethod`) are derived from the HTTP method:
+**Annotations** (`annotationsForOperation`) start from the HTTP method:
 
 | Method | ReadOnly | Destructive | Idempotent |
 | --- | --- | --- | --- |
 | GET | true | false | true |
 | DELETE | false | true | true |
 | other (POST, PATCH, …) | false | false | false |
+
+A per-operation override (`idempotentOperationIDs`) then corrects cases the
+method heuristic gets wrong: `MemoService_SetMemoAttachments` and
+`MemoService_SetMemoRelations` are PATCH but declaratively replace the full set
+on a memo, so they report `IdempotentHint: true`.
 
 `OpenWorldHint` is `false` for all tools. Annotations are client hints; they do
 not replace API authorization.

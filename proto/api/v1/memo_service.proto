@@ -15,7 +15,9 @@ import "google/protobuf/timestamp.proto";
 option go_package = "gen/api/v1";
 
 service MemoService {
-  // CreateMemo creates a memo.
+  // CreateMemo creates a memo. The request body is a Memo; set its content
+  // (Markdown) and visibility (PRIVATE | PROTECTED | PUBLIC, default PRIVATE).
+  // The memo is owned by the authenticated user; requires authentication.
   rpc CreateMemo(CreateMemoRequest) returns (Memo) {
     option (google.api.http) = {
       post: "/api/v1/memos"
@@ -46,7 +48,9 @@ service MemoService {
     option (google.api.http) = {delete: "/api/v1/{name=memos/*}"};
     option (google.api.method_signature) = "name";
   }
-  // SetMemoAttachments sets attachments for a memo.
+  // SetMemoAttachments replaces the full set of attachments on a memo with the
+  // provided list (not an append). Pass the complete desired set; an empty list
+  // clears all attachments. Idempotent.
   rpc SetMemoAttachments(SetMemoAttachmentsRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       patch: "/api/v1/{name=memos/*}/attachments"
@@ -59,7 +63,9 @@ service MemoService {
     option (google.api.http) = {get: "/api/v1/{name=memos/*}/attachments"};
     option (google.api.method_signature) = "name";
   }
-  // SetMemoRelations sets relations for a memo.
+  // SetMemoRelations replaces the full set of relations on a memo with the
+  // provided list (not an append). Pass the complete desired set; an empty list
+  // clears all relations. Idempotent.
   rpc SetMemoRelations(SetMemoRelationsRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       patch: "/api/v1/{name=memos/*}/relations"
@@ -90,7 +96,8 @@ service MemoService {
     option (google.api.http) = {get: "/api/v1/{name=memos/*}/reactions"};
     option (google.api.method_signature) = "name";
   }
-  // UpsertMemoReaction upserts a reaction for a memo.
+  // UpsertMemoReaction adds or updates the authenticated user's reaction on a
+  // memo. The reaction's content_id is the memo's resource name (memos/{memo}).
   rpc UpsertMemoReaction(UpsertMemoReactionRequest) returns (Reaction) {
     option (google.api.http) = {
       post: "/api/v1/{name=memos/*}/reactions"
@@ -139,10 +146,14 @@ service MemoService {
   }
 }
 
+// Visibility controls who can read a memo.
 enum Visibility {
   VISIBILITY_UNSPECIFIED = 0;
+  // PRIVATE: only the creator can read the memo.
   PRIVATE = 1;
+  // PROTECTED: signed-in users of the instance can read the memo.
   PROTECTED = 2;
+  // PUBLIC: anyone, including anonymous visitors, can read the memo.
   PUBLIC = 3;
 }
 
@@ -222,6 +233,8 @@ message Memo {
   string content = 7 [(google.api.field_behavior) = REQUIRED];
 
   // The visibility of the memo.
+  // One of PRIVATE (creator only), PROTECTED (signed-in users), or
+  // PUBLIC (anyone). Defaults to PRIVATE on creation when unspecified.
   Visibility visibility = 9 [(google.api.field_behavior) = REQUIRED];
 
   // Output only. The tags extracted from the content.
@@ -305,12 +318,24 @@ message ListMemosRequest {
   // Default to "create_time desc".
   // Supports comma-separated list of fields following AIP-132.
   // Example: "pinned desc, create_time desc" or "update_time asc"
-  // Supported fields: pinned, create_time, update_time, name
+  // Supported fields: pinned, create_time, update_time, name.
+  // Note: order_by uses create_time / update_time, while the filter
+  // expression uses created_ts / updated_ts for the same timestamps.
   string order_by = 4 [(google.api.field_behavior) = OPTIONAL];
 
-  // Optional. Filter to apply to the list results.
-  // Filter is a CEL expression to filter memos.
-  // Refer to `Shortcut.filter`.
+  // Optional. A CEL expression to filter memos. Combine terms with && and ||.
+  // Available fields:
+  //   content (string), creator (string, e.g. "users/1"),
+  //   created_ts / updated_ts (timestamp), pinned (bool),
+  //   visibility (string: PRIVATE | PROTECTED | PUBLIC),
+  //   tags (list<string>; match with `"work" in tags`, not `tag == "work"`),
+  //   has_task_list / has_link / has_code / has_incomplete_tasks (bool).
+  // Note: the time fields here are created_ts / updated_ts, which differ from
+  // the create_time / update_time names used by order_by.
+  // Examples:
+  //   pinned == true && visibility == "PUBLIC"
+  //   tags.exists(t, t == "urgent")
+  //   content.contains("roadmap") && created_ts > now - duration("168h")
   string filter = 5 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. If true, show deleted memos in the response.

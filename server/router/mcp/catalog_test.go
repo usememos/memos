@@ -9,11 +9,15 @@ import (
 )
 
 func TestCuratedOperationIDsStayMemoFocused(t *testing.T) {
-	require.Len(t, curatedOperationIDs, 17)
+	require.Len(t, curatedOperationIDs, 19)
 
 	for _, operationID := range curatedOperationIDs {
 		require.NotContains(t, operationID, "Admin")
-		require.NotContains(t, operationID, "AuthService_")
+		// AuthService_GetCurrentUser is the single allowed auth op (read-only
+		// "whoami"); the rest of the auth/identity surface stays off MCP.
+		if operationID != "AuthService_GetCurrentUser" {
+			require.NotContains(t, operationID, "AuthService_")
+		}
 		require.NotContains(t, operationID, "UserService_")
 		require.NotContains(t, operationID, "AIService_")
 		require.NotContains(t, operationID, "IdentityProviderService_")
@@ -98,6 +102,53 @@ func TestBuildToolFromOperationIncludesRequestBodySchema(t *testing.T) {
 		},
 	})
 	require.NoError(t, err)
+}
+
+func TestBuildToolFromOperationExposesCurrentUser(t *testing.T) {
+	spec, err := loadOpenAPISpec("../../../proto/gen/openapi.yaml")
+	require.NoError(t, err)
+	registry, err := buildOperationRegistry(spec)
+	require.NoError(t, err)
+
+	tool, operation := buildToolFromOperation(registry["AuthService_GetCurrentUser"])
+	require.Equal(t, "auth_get_current_user", tool.Name)
+	require.Equal(t, "GET", operation.Method)
+	require.True(t, tool.Annotations.ReadOnlyHint)
+}
+
+func TestBuildToolFromOperationExposesListShortcuts(t *testing.T) {
+	spec, err := loadOpenAPISpec("../../../proto/gen/openapi.yaml")
+	require.NoError(t, err)
+	registry, err := buildOperationRegistry(spec)
+	require.NoError(t, err)
+
+	tool, operation := buildToolFromOperation(registry["ShortcutService_ListShortcuts"])
+	require.Equal(t, "shortcut_list_shortcuts", tool.Name)
+	require.Equal(t, "GET", operation.Method)
+	require.True(t, tool.Annotations.ReadOnlyHint)
+
+	input, ok := tool.InputSchema.(jsonSchema)
+	require.True(t, ok)
+	properties, ok := input["properties"].(map[string]any)
+	require.True(t, ok)
+	require.Contains(t, properties, "user")
+}
+
+func TestBuildToolFromOperationMarksSetOperationsIdempotent(t *testing.T) {
+	spec, err := loadOpenAPISpec("../../../proto/gen/openapi.yaml")
+	require.NoError(t, err)
+	registry, err := buildOperationRegistry(spec)
+	require.NoError(t, err)
+
+	for _, operationID := range []string{"MemoService_SetMemoAttachments", "MemoService_SetMemoRelations"} {
+		tool, operation := buildToolFromOperation(registry[operationID])
+		require.Equal(t, "PATCH", operation.Method, operationID)
+		// PATCH is non-idempotent by the method heuristic, but the per-operation
+		// override restores the declarative "set" semantics.
+		require.True(t, tool.Annotations.IdempotentHint, operationID)
+		require.False(t, tool.Annotations.ReadOnlyHint, operationID)
+		require.False(t, *tool.Annotations.DestructiveHint, operationID)
+	}
 }
 
 func TestBuildCuratedToolsHasUniqueNames(t *testing.T) {

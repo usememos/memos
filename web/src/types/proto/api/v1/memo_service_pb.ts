@@ -125,6 +125,8 @@ export type Memo = Message<"memos.api.v1.Memo"> & {
 
   /**
    * The visibility of the memo.
+   * One of PRIVATE (creator only), PROTECTED (signed-in users), or
+   * PUBLIC (anyone). Defaults to PRIVATE on creation when unspecified.
    *
    * @generated from field: memos.api.v1.Visibility visibility = 9;
    */
@@ -338,16 +340,28 @@ export type ListMemosRequest = Message<"memos.api.v1.ListMemosRequest"> & {
    * Default to "create_time desc".
    * Supports comma-separated list of fields following AIP-132.
    * Example: "pinned desc, create_time desc" or "update_time asc"
-   * Supported fields: pinned, create_time, update_time, name
+   * Supported fields: pinned, create_time, update_time, name.
+   * Note: order_by uses create_time / update_time, while the filter
+   * expression uses created_ts / updated_ts for the same timestamps.
    *
    * @generated from field: string order_by = 4;
    */
   orderBy: string;
 
   /**
-   * Optional. Filter to apply to the list results.
-   * Filter is a CEL expression to filter memos.
-   * Refer to `Shortcut.filter`.
+   * Optional. A CEL expression to filter memos. Combine terms with && and ||.
+   * Available fields:
+   *   content (string), creator (string, e.g. "users/1"),
+   *   created_ts / updated_ts (timestamp), pinned (bool),
+   *   visibility (string: PRIVATE | PROTECTED | PUBLIC),
+   *   tags (list<string>; match with `"work" in tags`, not `tag == "work"`),
+   *   has_task_list / has_link / has_code / has_incomplete_tasks (bool).
+   * Note: the time fields here are created_ts / updated_ts, which differ from
+   * the create_time / update_time names used by order_by.
+   * Examples:
+   *   pinned == true && visibility == "PUBLIC"
+   *   tags.exists(t, t == "urgent")
+   *   content.contains("roadmap") && created_ts > now - duration("168h")
    *
    * @generated from field: string filter = 5;
    */
@@ -1193,6 +1207,8 @@ export const LinkMetadataSchema: GenMessage<LinkMetadata> = /*@__PURE__*/
   messageDesc(file_api_v1_memo_service, 32);
 
 /**
+ * Visibility controls who can read a memo.
+ *
  * @generated from enum memos.api.v1.Visibility
  */
 export enum Visibility {
@@ -1202,16 +1218,22 @@ export enum Visibility {
   VISIBILITY_UNSPECIFIED = 0,
 
   /**
+   * PRIVATE: only the creator can read the memo.
+   *
    * @generated from enum value: PRIVATE = 1;
    */
   PRIVATE = 1,
 
   /**
+   * PROTECTED: signed-in users of the instance can read the memo.
+   *
    * @generated from enum value: PROTECTED = 2;
    */
   PROTECTED = 2,
 
   /**
+   * PUBLIC: anyone, including anonymous visitors, can read the memo.
+   *
    * @generated from enum value: PUBLIC = 3;
    */
   PUBLIC = 3,
@@ -1228,7 +1250,9 @@ export const VisibilitySchema: GenEnum<Visibility> = /*@__PURE__*/
  */
 export const MemoService: GenService<{
   /**
-   * CreateMemo creates a memo.
+   * CreateMemo creates a memo. The request body is a Memo; set its content
+   * (Markdown) and visibility (PRIVATE | PROTECTED | PUBLIC, default PRIVATE).
+   * The memo is owned by the authenticated user; requires authentication.
    *
    * @generated from rpc memos.api.v1.MemoService.CreateMemo
    */
@@ -1278,7 +1302,9 @@ export const MemoService: GenService<{
     output: typeof EmptySchema;
   },
   /**
-   * SetMemoAttachments sets attachments for a memo.
+   * SetMemoAttachments replaces the full set of attachments on a memo with the
+   * provided list (not an append). Pass the complete desired set; an empty list
+   * clears all attachments. Idempotent.
    *
    * @generated from rpc memos.api.v1.MemoService.SetMemoAttachments
    */
@@ -1298,7 +1324,9 @@ export const MemoService: GenService<{
     output: typeof ListMemoAttachmentsResponseSchema;
   },
   /**
-   * SetMemoRelations sets relations for a memo.
+   * SetMemoRelations replaces the full set of relations on a memo with the
+   * provided list (not an append). Pass the complete desired set; an empty list
+   * clears all relations. Idempotent.
    *
    * @generated from rpc memos.api.v1.MemoService.SetMemoRelations
    */
@@ -1348,7 +1376,8 @@ export const MemoService: GenService<{
     output: typeof ListMemoReactionsResponseSchema;
   },
   /**
-   * UpsertMemoReaction upserts a reaction for a memo.
+   * UpsertMemoReaction adds or updates the authenticated user's reaction on a
+   * memo. The reaction's content_id is the memo's resource name (memos/{memo}).
    *
    * @generated from rpc memos.api.v1.MemoService.UpsertMemoReaction
    */

@@ -12,7 +12,9 @@ import "google/protobuf/field_mask.proto";
 option go_package = "gen/api/v1";
 
 service ShortcutService {
-  // ListShortcuts returns a list of shortcuts for a user.
+  // ListShortcuts returns a user's saved shortcuts. Each shortcut is a named,
+  // reusable CEL filter (see Shortcut.filter); pass its filter string directly
+  // to the ListMemos `filter` argument to reuse a saved view.
   rpc ListShortcuts(ListShortcutsRequest) returns (ListShortcutsResponse) {
     option (google.api.http) = {get: "/api/v1/{parent=users/*}/shortcuts"};
     option (google.api.method_signature) = "parent";
@@ -64,7 +66,8 @@ message Shortcut {
   // The title of the shortcut.
   string title = 2 [(google.api.field_behavior) = REQUIRED];
 
-  // The filter expression for the shortcut.
+  // The CEL filter expression for the shortcut, using the same grammar as the
+  // ListMemos `filter` argument. Reuse it by passing this value to ListMemos.
   string filter = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 

@@ -38,7 +38,8 @@ export type Shortcut = Message<"memos.api.v1.Shortcut"> & {
   title: string;
 
   /**
-   * The filter expression for the shortcut.
+   * The CEL filter expression for the shortcut, using the same grammar as the
+   * ListMemos `filter` argument. Reuse it by passing this value to ListMemos.
    *
    * @generated from field: string filter = 3;
    */
@@ -196,7 +197,9 @@ export const DeleteShortcutRequestSchema: GenMessage<DeleteShortcutRequest> = /*
  */
 export const ShortcutService: GenService<{
   /**
-   * ListShortcuts returns a list of shortcuts for a user.
+   * ListShortcuts returns a user's saved shortcuts. Each shortcut is a named,
+   * reusable CEL filter (see Shortcut.filter); pass its filter string directly
+   * to the ListMemos `filter` argument to reuse a saved view.
    *
    * @generated from rpc memos.api.v1.ShortcutService.ListShortcuts
    */

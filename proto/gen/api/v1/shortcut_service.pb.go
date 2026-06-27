@@ -31,7 +31,8 @@ type Shortcut struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The title of the shortcut.
 	Title string `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	// The filter expression for the shortcut.
+	// The CEL filter expression for the shortcut, using the same grammar as the
+	// ListMemos `filter` argument. Reuse it by passing this value to ListMemos.
 	Filter        string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

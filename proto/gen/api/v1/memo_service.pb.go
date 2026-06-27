@@ -25,13 +25,17 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Visibility controls who can read a memo.
 type Visibility int32
 
 const (
 	Visibility_VISIBILITY_UNSPECIFIED Visibility = 0
-	Visibility_PRIVATE                Visibility = 1
-	Visibility_PROTECTED              Visibility = 2
-	Visibility_PUBLIC                 Visibility = 3
+	// PRIVATE: only the creator can read the memo.
+	Visibility_PRIVATE Visibility = 1
+	// PROTECTED: signed-in users of the instance can read the memo.
+	Visibility_PROTECTED Visibility = 2
+	// PUBLIC: anyone, including anonymous visitors, can read the memo.
+	Visibility_PUBLIC Visibility = 3
 )
 
 // Enum value maps for Visibility.
@@ -231,6 +235,8 @@ type Memo struct {
 	// Required. The content of the memo in Markdown format.
 	Content string `protobuf:"bytes,7,opt,name=content,proto3" json:"content,omitempty"`
 	// The visibility of the memo.
+	// One of PRIVATE (creator only), PROTECTED (signed-in users), or
+	// PUBLIC (anyone). Defaults to PRIVATE on creation when unspecified.
 	Visibility Visibility `protobuf:"varint,9,opt,name=visibility,proto3,enum=memos.api.v1.Visibility" json:"visibility,omitempty"`
 	// Output only. The tags extracted from the content.
 	Tags []string `protobuf:"bytes,10,rep,name=tags,proto3" json:"tags,omitempty"`
@@ -532,11 +538,26 @@ type ListMemosRequest struct {
 	// Default to "create_time desc".
 	// Supports comma-separated list of fields following AIP-132.
 	// Example: "pinned desc, create_time desc" or "update_time asc"
-	// Supported fields: pinned, create_time, update_time, name
+	// Supported fields: pinned, create_time, update_time, name.
+	// Note: order_by uses create_time / update_time, while the filter
+	// expression uses created_ts / updated_ts for the same timestamps.
 	OrderBy string `protobuf:"bytes,4,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
-	// Optional. Filter to apply to the list results.
-	// Filter is a CEL expression to filter memos.
-	// Refer to `Shortcut.filter`.
+	// Optional. A CEL expression to filter memos. Combine terms with && and ||.
+	// Available fields:
+	//
+	//	content (string), creator (string, e.g. "users/1"),
+	//	created_ts / updated_ts (timestamp), pinned (bool),
+	//	visibility (string: PRIVATE | PROTECTED | PUBLIC),
+	//	tags (list<string>; match with `"work" in tags`, not `tag == "work"`),
+	//	has_task_list / has_link / has_code / has_incomplete_tasks (bool).
+	//
+	// Note: the time fields here are created_ts / updated_ts, which differ from
+	// the create_time / update_time names used by order_by.
+	// Examples:
+	//
+	//	pinned == true && visibility == "PUBLIC"
+	//	tags.exists(t, t == "urgent")
+	//	content.contains("roadmap") && created_ts > now - duration("168h")
 	Filter string `protobuf:"bytes,5,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. If true, show deleted memos in the response.
 	ShowDeleted   bool `protobuf:"varint,6,opt,name=show_deleted,json=showDeleted,proto3" json:"show_deleted,omitempty"`

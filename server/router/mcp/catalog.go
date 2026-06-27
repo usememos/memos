@@ -26,6 +26,10 @@ var curatedOperationIDs = []string{
 	"AttachmentService_ListAttachments",
 	"AttachmentService_GetAttachment",
 	"AttachmentService_DeleteAttachment",
+	"ShortcutService_ListShortcuts",
+	// The only allowed auth/identity operation: a read-only "whoami" so agents
+	// can resolve the current user (e.g. for ShortcutService_ListShortcuts).
+	"AuthService_GetCurrentUser",
 }
 
 type registeredOperation struct {
@@ -74,7 +78,7 @@ func buildToolFromOperation(operation *openAPIOperation) (*sdkmcp.Tool, *registe
 		Description:  operation.Description,
 		InputSchema:  inputSchema,
 		OutputSchema: outputSchemaForOperation(operation),
-		Annotations:  annotationsForMethod(operation.Method, title),
+		Annotations:  annotationsForOperation(operation, title),
 	}
 
 	return tool, &registeredOperation{
@@ -180,6 +184,26 @@ func extractSchemaDefs(schema jsonSchema) map[string]any {
 	}
 	delete(schema, "$defs")
 	return defs
+}
+
+// idempotentOperationIDs lists operations whose idempotency the HTTP-method
+// heuristic gets wrong. The "Set*" operations declaratively replace the full
+// set on a memo, so repeating an identical call converges to the same state —
+// idempotent — even though they are served over PATCH (which the heuristic
+// treats as non-idempotent).
+var idempotentOperationIDs = map[string]bool{
+	"MemoService_SetMemoAttachments": true,
+	"MemoService_SetMemoRelations":   true,
+}
+
+// annotationsForOperation derives the method-based annotations and then applies
+// per-operation overrides that the HTTP method alone cannot express.
+func annotationsForOperation(operation *openAPIOperation, title string) *sdkmcp.ToolAnnotations {
+	annotations := annotationsForMethod(operation.Method, title)
+	if idempotentOperationIDs[operation.OperationID] {
+		annotations.IdempotentHint = true
+	}
+	return annotations
 }
 
 func annotationsForMethod(method string, title string) *sdkmcp.ToolAnnotations {
