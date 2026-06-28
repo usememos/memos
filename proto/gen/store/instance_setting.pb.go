@@ -1037,7 +1037,13 @@ type AIProviderConfig struct {
 	Type     AIProviderType         `protobuf:"varint,3,opt,name=type,proto3,enum=memos.store.AIProviderType" json:"type,omitempty"`
 	Endpoint string                 `protobuf:"bytes,4,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
 	// api_key is write-only at the API layer and is required by the server to call providers.
-	ApiKey        string `protobuf:"bytes,5,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
+	ApiKey string `protobuf:"bytes,5,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
+	// model is the model identifier for this provider.
+	// For Ollama: e.g., "llama3", "gemma4", "qwen2.5"
+	// For OpenAI: e.g., "gpt-4", "gpt-3.5-turbo"
+	// For Gemini: e.g., "gemini-pro", "gemini-pro-vision"
+	// Empty string falls back to provider default.
+	Model         string `protobuf:"bytes,6,opt,name=model,proto3" json:"model,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1103,6 +1109,13 @@ func (x *AIProviderConfig) GetEndpoint() string {
 func (x *AIProviderConfig) GetApiKey() string {
 	if x != nil {
 		return x.ApiKey
+	}
+	return ""
+}
+
+func (x *AIProviderConfig) GetModel() string {
+	if x != nil {
+		return x.Model
 	}
 	return ""
 }

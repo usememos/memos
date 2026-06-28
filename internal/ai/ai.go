@@ -19,4 +19,5 @@ type ProviderConfig struct {
 	Type     ProviderType
 	Endpoint string
 	APIKey   string
+	Model    string
 }

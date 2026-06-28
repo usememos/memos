@@ -17,7 +17,7 @@ import (
 
 const (
 	defaultBaseURL = "http://127.0.0.1:11434"
-	defaultModel   = "llama3"
+	defaultModel   = "gemma4"
 )
 
 // Config configures an Ollama provider.

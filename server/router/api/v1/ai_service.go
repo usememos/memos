@@ -216,6 +216,7 @@ func convertAIProviderConfigFromStore(provider *storepb.AIProviderConfig) ai.Pro
 		Type:     convertAIProviderTypeFromStore(provider.GetType()),
 		Endpoint: provider.GetEndpoint(),
 		APIKey:   provider.GetApiKey(),
+		Model:    provider.GetModel(),
 	}
 }
 

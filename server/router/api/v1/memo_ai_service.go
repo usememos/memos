@@ -179,9 +179,13 @@ func (s *APIV1Service) newOllamaProvider(provider ai.ProviderConfig) (*llm.Ollam
 	if baseURL == "" {
 		baseURL = strings.TrimSpace(s.Profile.OllamaBaseURL)
 	}
+	model := strings.TrimSpace(provider.Model)
+	if model == "" {
+		model = strings.TrimSpace(s.Profile.OllamaModel)
+	}
 	return llm.NewOllamaProvider(llm.Config{
 		BaseURL: baseURL,
-		Model:   strings.TrimSpace(s.Profile.OllamaModel),
+		Model:   model,
 	})
 }
 

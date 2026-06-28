@@ -37,6 +37,7 @@ type LocalAIProvider = {
   apiKey: string;
   apiKeySet: boolean;
   apiKeyHint: string;
+  model: string;
 };
 
 type LocalTranscription = {
@@ -82,6 +83,7 @@ const toLocalProvider = (provider: InstanceSetting_AIProviderConfig): LocalAIPro
   apiKey: "",
   apiKeySet: provider.apiKeySet,
   apiKeyHint: provider.apiKeyHint,
+  model: provider.model,
 });
 
 const toLocalTranscription = (config: InstanceSetting_TranscriptionConfig | undefined): LocalTranscription => ({
@@ -99,6 +101,7 @@ const newProvider = (): LocalAIProvider => ({
   apiKey: "",
   apiKeySet: false,
   apiKeyHint: "",
+  model: "",
 });
 
 const toProviderConfig = (provider: LocalAIProvider) =>
@@ -108,6 +111,7 @@ const toProviderConfig = (provider: LocalAIProvider) =>
     type: provider.type,
     endpoint: provider.endpoint.trim(),
     apiKey: provider.apiKey,
+    model: provider.model.trim(),
   });
 
 const toTranscriptionConfig = (transcription: LocalTranscription) =>
@@ -541,6 +545,22 @@ const AIProviderDialog = ({ provider, onOpenChange, onSave }: AIProviderDialogPr
               <p className="text-xs text-muted-foreground">{t("setting.ai.current-key", { key: draft.apiKeyHint || "-" })}</p>
             ) : null}
           </div>
+
+          <div className="flex flex-col gap-1.5 sm:col-span-2">
+            <Label>Model</Label>
+            <Input
+              value={draft.model}
+              onChange={(e) => updateDraft({ model: e.target.value })}
+              placeholder={getDefaultModelPlaceholder(draft.type)}
+            />
+            <p className="text-xs text-muted-foreground">
+              {draft.type === InstanceSetting_AIProviderType.OLLAMA
+                ? "Model name in Ollama (e.g., gemma4, llama3, qwen2.5). Leave empty for default."
+                : draft.type === InstanceSetting_AIProviderType.OPENAI
+                  ? "OpenAI model (e.g., gpt-4, gpt-3.5-turbo). Leave empty for default."
+                  : "Gemini model (e.g., gemini-pro, gemini-pro-vision). Leave empty for default."}
+            </p>
+          </div>
         </div>
 
         <DialogFooter>
@@ -562,6 +582,19 @@ const getDefaultEndpointPlaceholder = (type: InstanceSetting_AIProviderType) => 
       return "https://generativelanguage.googleapis.com/v1beta";
     case InstanceSetting_AIProviderType.OLLAMA:
       return "http://localhost:11434";
+    default:
+      return "";
+  }
+};
+
+const getDefaultModelPlaceholder = (type: InstanceSetting_AIProviderType) => {
+  switch (type) {
+    case InstanceSetting_AIProviderType.OPENAI:
+      return "gpt-4";
+    case InstanceSetting_AIProviderType.GEMINI:
+      return "gemini-pro";
+    case InstanceSetting_AIProviderType.OLLAMA:
+      return "gemma4";
     default:
       return "";
   }
