@@ -46,7 +46,11 @@ type LocalTranscription = {
   prompt: string;
 };
 
-const providerTypeOptions = [InstanceSetting_AIProviderType.OPENAI, InstanceSetting_AIProviderType.GEMINI];
+const providerTypeOptions = [
+  InstanceSetting_AIProviderType.OPENAI,
+  InstanceSetting_AIProviderType.GEMINI,
+  InstanceSetting_AIProviderType.OLLAMA,
+];
 
 const byokNotes = ["setting.ai.byok-key-note", "setting.ai.byok-storage-note", "setting.ai.byok-model-note"] as const;
 
@@ -58,7 +62,16 @@ const createProviderID = () => {
 };
 
 const getProviderTypeLabel = (type: InstanceSetting_AIProviderType) => {
-  return InstanceSetting_AIProviderType[type] ?? "UNKNOWN";
+  switch (type) {
+    case InstanceSetting_AIProviderType.OPENAI:
+      return "OpenAI";
+    case InstanceSetting_AIProviderType.GEMINI:
+      return "Gemini";
+    case InstanceSetting_AIProviderType.OLLAMA:
+      return "Ollama";
+    default:
+      return "UNKNOWN";
+  }
 };
 
 const toLocalProvider = (provider: InstanceSetting_AIProviderConfig): LocalAIProvider => ({
@@ -179,7 +192,7 @@ const AISection = () => {
       toast.error(t("setting.ai.provider-title-required"));
       return;
     }
-    if (!provider.apiKeySet && !provider.apiKey.trim()) {
+    if (provider.type !== InstanceSetting_AIProviderType.OLLAMA && !provider.apiKeySet && !provider.apiKey.trim()) {
       toast.error(t("setting.ai.api-key-required"));
       return;
     }
@@ -514,11 +527,19 @@ const AIProviderDialog = ({ provider, onOpenChange, onSave }: AIProviderDialogPr
               type="password"
               value={draft.apiKey}
               onChange={(e) => updateDraft({ apiKey: e.target.value })}
-              placeholder={draft.apiKeySet ? t("setting.ai.keep-api-key") : ""}
+              placeholder={
+                draft.type === InstanceSetting_AIProviderType.OLLAMA
+                  ? "Optional for Ollama"
+                  : draft.apiKeySet
+                    ? t("setting.ai.keep-api-key")
+                    : ""
+              }
             />
-            {draft.apiKeySet && (
+            {draft.type === InstanceSetting_AIProviderType.OLLAMA ? (
+              <p className="text-xs text-muted-foreground">Ollama does not require an API key when running locally.</p>
+            ) : draft.apiKeySet ? (
               <p className="text-xs text-muted-foreground">{t("setting.ai.current-key", { key: draft.apiKeyHint || "-" })}</p>
-            )}
+            ) : null}
           </div>
         </div>
 
@@ -539,6 +560,8 @@ const getDefaultEndpointPlaceholder = (type: InstanceSetting_AIProviderType) => 
       return "https://api.openai.com/v1";
     case InstanceSetting_AIProviderType.GEMINI:
       return "https://generativelanguage.googleapis.com/v1beta";
+    case InstanceSetting_AIProviderType.OLLAMA:
+      return "http://localhost:11434";
     default:
       return "";
   }

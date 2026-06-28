@@ -84,7 +84,7 @@ const MemoDetail = () => {
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       {!md && (
         <MobileHeader>
-          <MemoDetailSidebarDrawer memo={displayMemo} onShareImageOpen={() => setShareImageDialogOpen(true)} />
+          <MemoDetailSidebarDrawer memo={displayMemo} onShareImageOpen={() => setShareImageDialogOpen(true)} showAI={!isShareMode} />
         </MobileHeader>
       )}
       <MentionResolutionProvider contents={mentionResolutionContents}>
@@ -125,7 +125,12 @@ const MemoDetail = () => {
           </div>
           {md && (
             <div className="sticky top-0 left-0 shrink-0 -mt-6 w-56 h-full">
-              <MemoDetailSidebar className="py-6" memo={displayMemo} onShareImageOpen={() => setShareImageDialogOpen(true)} />
+              <MemoDetailSidebar
+                className="py-6"
+                memo={displayMemo}
+                onShareImageOpen={() => setShareImageDialogOpen(true)}
+                showAI={!isShareMode}
+              />
             </div>
           )}
         </div>

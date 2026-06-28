@@ -10,6 +10,7 @@ import { Memo, Memo_PropertySchema } from "@/types/proto/api/v1/memo_service_pb"
 import { type Translations, useTranslate } from "@/utils/i18n";
 import { extractHeadings } from "@/utils/markdown-manipulation";
 import { isSuperUser } from "@/utils/user";
+import MemoAISection from "./MemoAISection";
 import MemoOutline from "./MemoOutline";
 import MemoSharePanel from "./MemoSharePanel";
 
@@ -17,6 +18,7 @@ interface Props {
   memo: Memo;
   className?: string;
   onShareImageOpen?: () => void;
+  showAI?: boolean;
 }
 
 interface PropertyBadge {
@@ -43,7 +45,7 @@ const TAG_BADGE_CLASSES =
 const SHARE_ACTION_ROW_CLASSES =
   "h-auto min-h-0 w-full justify-between rounded-none px-2 py-1.5 text-xs font-normal leading-tight text-muted-foreground transition-colors hover:bg-muted/40 hover:text-muted-foreground focus-visible:ring-offset-0 gap-1.5";
 
-const MemoDetailSidebar = ({ memo, className, onShareImageOpen }: Props) => {
+const MemoDetailSidebar = ({ memo, className, onShareImageOpen, showAI = true }: Props) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const [sharePanelOpen, setSharePanelOpen] = useState(false);
@@ -67,6 +69,8 @@ const MemoDetailSidebar = ({ memo, className, onShareImageOpen }: Props) => {
           <MemoOutline headings={headings} />
         </SidebarSection>
       )}
+
+      {showAI && <MemoAISection memo={memo} />}
 
       {(canManageShares || onShareImageOpen) && (
         <SidebarSection label={t("memo.share.section-label")}>

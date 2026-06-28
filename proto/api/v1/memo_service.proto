@@ -130,6 +130,30 @@ service MemoService {
   rpc GetLinkMetadata(GetLinkMetadataRequest) returns (LinkMetadata) {
     option (google.api.http) = {get: "/api/v1/memos/-/linkMetadata"};
   }
+  // GenerateMemoSummary generates a summary for a memo.
+  rpc GenerateMemoSummary(GenerateMemoSummaryRequest) returns (GenerateMemoSummaryResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/{name=memos/*}/ai/summary"
+      body: "*"
+    };
+    option (google.api.method_signature) = "name";
+  }
+  // GenerateMemoTags suggests tags for a memo.
+  rpc GenerateMemoTags(GenerateMemoTagsRequest) returns (GenerateMemoTagsResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/{name=memos/*}/ai/tags"
+      body: "*"
+    };
+    option (google.api.method_signature) = "name";
+  }
+  // GenerateMemoRelations suggests related memos for a memo.
+  rpc GenerateMemoRelations(GenerateMemoRelationsRequest) returns (GenerateMemoRelationsResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/{name=memos/*}/ai/relations"
+      body: "*"
+    };
+    option (google.api.method_signature) = "name";
+  }
   // BatchGetLinkMetadata gets metadata for links.
   rpc BatchGetLinkMetadata(BatchGetLinkMetadataRequest) returns (BatchGetLinkMetadataResponse) {
     option (google.api.http) = {
@@ -634,4 +658,48 @@ message LinkMetadata {
 
   // The link image URL.
   string image = 4;
+}
+
+message GenerateMemoSummaryRequest {
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
+  string provider_id = 2;
+}
+
+message GenerateMemoSummaryResponse {
+  string summary = 1;
+}
+
+message GenerateMemoTagsRequest {
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
+  string provider_id = 2;
+}
+
+message GenerateMemoTagsResponse {
+  repeated string tags = 1;
+}
+
+message GenerateMemoRelation {
+  string name = 1 [(google.api.resource_reference) = {type: "memos.api.v1/Memo"}];
+  float score = 2;
+  string reason = 3;
+  string snippet = 4;
+}
+
+message GenerateMemoRelationsRequest {
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
+  ];
+  string provider_id = 2;
+  int32 limit = 3;
+}
+
+message GenerateMemoRelationsResponse {
+  repeated GenerateMemoRelation relations = 1;
 }

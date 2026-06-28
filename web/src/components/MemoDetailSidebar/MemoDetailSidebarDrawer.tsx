@@ -9,9 +9,10 @@ import MemoDetailSidebar from "./MemoDetailSidebar";
 interface Props {
   memo: Memo;
   onShareImageOpen?: () => void;
+  showAI?: boolean;
 }
 
-const MemoDetailSidebarDrawer = ({ memo, onShareImageOpen }: Props) => {
+const MemoDetailSidebarDrawer = ({ memo, onShareImageOpen, showAI = true }: Props) => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
@@ -27,7 +28,7 @@ const MemoDetailSidebarDrawer = ({ memo, onShareImageOpen }: Props) => {
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="w-full sm:w-80 px-4 bg-background">
-        <MemoDetailSidebar className="py-4" memo={memo} onShareImageOpen={onShareImageOpen} />
+        <MemoDetailSidebar className="py-4" memo={memo} onShareImageOpen={onShareImageOpen} showAI={showAI} />
       </SheetContent>
     </Sheet>
   );

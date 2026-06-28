@@ -225,6 +225,8 @@ func convertAIProviderTypeFromStore(providerType storepb.AIProviderType) ai.Prov
 		return ai.ProviderOpenAI
 	case storepb.AIProviderType_GEMINI:
 		return ai.ProviderGemini
+	case storepb.AIProviderType_OLLAMA:
+		return ai.ProviderOllama
 	default:
 		return ""
 	}

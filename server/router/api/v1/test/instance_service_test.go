@@ -485,6 +485,35 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		require.Contains(t, err.Error(), "permission denied")
 	})
 
+	t.Run("UpdateInstanceSetting - AI ollama provider does not require api key", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		hostUser, err := ts.CreateHostUser(ctx, "admin")
+		require.NoError(t, err)
+
+		resp, err := ts.Service.UpdateInstanceSetting(ts.CreateUserContext(ctx, hostUser.ID), &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/AI",
+				Value: &v1pb.InstanceSetting_AiSetting{
+					AiSetting: &v1pb.InstanceSetting_AISetting{
+						Providers: []*v1pb.InstanceSetting_AIProviderConfig{
+							{
+								Id:       "ollama-local",
+								Title:    "Local Ollama",
+								Type:     v1pb.InstanceSetting_OLLAMA,
+								Endpoint: "http://localhost:11434",
+							},
+						},
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+		require.Len(t, resp.GetAiSetting().GetProviders(), 1)
+		require.Equal(t, v1pb.InstanceSetting_OLLAMA, resp.GetAiSetting().GetProviders()[0].GetType())
+	})
+
 	t.Run("UpdateInstanceSetting - tags setting", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()

@@ -43,6 +43,8 @@ var (
 				Driver:      viper.GetString("driver"),
 				DSN:         viper.GetString("dsn"),
 				InstanceURL: viper.GetString("instance-url"),
+				OllamaBaseURL: viper.GetString("ollama-base-url"),
+				OllamaModel:   viper.GetString("ollama-model"),
 			}
 			instanceProfile.Version = version.GetCurrentVersion()
 			instanceProfile.Commit = version.Commit
@@ -116,6 +118,8 @@ func init() {
 	viper.SetDefault("demo", false)
 	viper.SetDefault("driver", "sqlite")
 	viper.SetDefault("port", 8081)
+	viper.SetDefault("ollama-base-url", "http://localhost:11434")
+	viper.SetDefault("ollama-model", "llama3")
 
 	rootCmd.PersistentFlags().Bool("demo", false, "enable demo mode")
 	rootCmd.PersistentFlags().String("addr", "", "address of server")
@@ -125,6 +129,8 @@ func init() {
 	rootCmd.PersistentFlags().String("driver", "sqlite", "database driver")
 	rootCmd.PersistentFlags().String("dsn", "", "database source name(aka. DSN)")
 	rootCmd.PersistentFlags().String("instance-url", "", "the url of your memos instance")
+	rootCmd.PersistentFlags().String("ollama-base-url", "http://localhost:11434", "base URL of the local Ollama service")
+	rootCmd.PersistentFlags().String("ollama-model", "llama3", "default Ollama model for local AI tasks")
 	rootCmd.PersistentFlags().Bool("allow-private-webhooks", false, "allow webhook URLs to resolve to private/reserved IP addresses")
 	rootCmd.PersistentFlags().String("log-level", "info", "log verbosity level (debug, info, warn, error)")
 
@@ -152,6 +158,12 @@ func init() {
 	if err := viper.BindPFlag("instance-url", rootCmd.PersistentFlags().Lookup("instance-url")); err != nil {
 		panic(err)
 	}
+	if err := viper.BindPFlag("ollama-base-url", rootCmd.PersistentFlags().Lookup("ollama-base-url")); err != nil {
+		panic(err)
+	}
+	if err := viper.BindPFlag("ollama-model", rootCmd.PersistentFlags().Lookup("ollama-model")); err != nil {
+		panic(err)
+	}
 	if err := viper.BindPFlag("allow-private-webhooks", rootCmd.PersistentFlags().Lookup("allow-private-webhooks")); err != nil {
 		panic(err)
 	}
@@ -162,6 +174,12 @@ func init() {
 	viper.SetEnvPrefix("memos")
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	viper.AutomaticEnv()
+	if err := viper.BindEnv("ollama-base-url", "OLLAMA_BASE_URL"); err != nil {
+		panic(err)
+	}
+	if err := viper.BindEnv("ollama-model", "OLLAMA_MODEL"); err != nil {
+		panic(err)
+	}
 
 	rootCmd.AddCommand(versionCmd)
 }

@@ -383,6 +383,30 @@ func (s *ConnectServiceHandler) ListMemoComments(ctx context.Context, req *conne
 	return connect.NewResponse(resp), nil
 }
 
+func (s *ConnectServiceHandler) GenerateMemoSummary(ctx context.Context, req *connect.Request[v1pb.GenerateMemoSummaryRequest]) (*connect.Response[v1pb.GenerateMemoSummaryResponse], error) {
+	resp, err := s.APIV1Service.GenerateMemoSummary(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) GenerateMemoTags(ctx context.Context, req *connect.Request[v1pb.GenerateMemoTagsRequest]) (*connect.Response[v1pb.GenerateMemoTagsResponse], error) {
+	resp, err := s.APIV1Service.GenerateMemoTags(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) GenerateMemoRelations(ctx context.Context, req *connect.Request[v1pb.GenerateMemoRelationsRequest]) (*connect.Response[v1pb.GenerateMemoRelationsResponse], error) {
+	resp, err := s.APIV1Service.GenerateMemoRelations(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 func (s *ConnectServiceHandler) ListMemoReactions(ctx context.Context, req *connect.Request[v1pb.ListMemoReactionsRequest]) (*connect.Response[v1pb.ListMemoReactionsResponse], error) {
 	resp, err := s.APIV1Service.ListMemoReactions(ctx, req.Msg)
 	if err != nil {

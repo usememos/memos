@@ -8,6 +8,8 @@ const (
 	ProviderOpenAI ProviderType = "OPENAI"
 	// ProviderGemini is Google's Gemini API.
 	ProviderGemini ProviderType = "GEMINI"
+	// ProviderOllama is a local Ollama deployment.
+	ProviderOllama ProviderType = "OLLAMA"
 )
 
 // ProviderConfig configures a callable AI provider connection.

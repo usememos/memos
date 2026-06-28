@@ -40,35 +40,23 @@ paths:
             parameters:
                 - name: pageSize
                   in: query
-                  description: |-
-                    Optional. The maximum number of attachments to return.
-                     The service may return fewer than this value.
-                     If unspecified, at most 50 attachments will be returned.
-                     The maximum value is 1000; values above 1000 will be coerced to 1000.
+                  description: "Optional. The maximum number of attachments to return.\r\n The service may return fewer than this value.\r\n If unspecified, at most 50 attachments will be returned.\r\n The maximum value is 1000; values above 1000 will be coerced to 1000."
                   schema:
                     type: integer
                     format: int32
                 - name: pageToken
                   in: query
-                  description: |-
-                    Optional. A page token, received from a previous `ListAttachments` call.
-                     Provide this to retrieve the subsequent page.
+                  description: "Optional. A page token, received from a previous `ListAttachments` call.\r\n Provide this to retrieve the subsequent page."
                   schema:
                     type: string
                 - name: filter
                   in: query
-                  description: |-
-                    Optional. Filter to apply to the list results.
-                     Example: "mime_type==\"image/png\"" or "filename.contains(\"test\")"
-                     Supported operators: =, !=, <, <=, >, >=, : (contains), in
-                     Supported fields: filename, mime_type, create_time, memo
+                  description: "Optional. Filter to apply to the list results.\r\n Example: \"mime_type==\\\"image/png\\\"\" or \"filename.contains(\\\"test\\\")\"\r\n Supported operators: =, !=, <, <=, >, >=, : (contains), in\r\n Supported fields: filename, mime_type, create_time, memo"
                   schema:
                     type: string
                 - name: orderBy
                   in: query
-                  description: |-
-                    Optional. The order to sort results by.
-                     Example: "create_time desc" or "filename asc"
+                  description: "Optional. The order to sort results by.\r\n Example: \"create_time desc\" or \"filename asc\""
                   schema:
                     type: string
             responses:
@@ -92,9 +80,7 @@ paths:
             parameters:
                 - name: attachmentId
                   in: query
-                  description: |-
-                    Optional. The attachment ID to use for this attachment.
-                     If empty, a unique ID will be generated.
+                  description: "Optional. The attachment ID to use for this attachment.\r\n If empty, a unique ID will be generated."
                   schema:
                     type: string
             requestBody:
@@ -227,10 +213,7 @@ paths:
         get:
             tags:
                 - AuthService
-            description: |-
-                GetCurrentUser returns the authenticated user's information.
-                 Validates the access token and returns user details.
-                 Similar to OIDC's /userinfo endpoint.
+            description: "GetCurrentUser returns the authenticated user's information.\r\n Validates the access token and returns user details.\r\n Similar to OIDC's /userinfo endpoint."
             operationId: AuthService_GetCurrentUser
             responses:
                 "200":
@@ -249,10 +232,7 @@ paths:
         post:
             tags:
                 - AuthService
-            description: |-
-                RefreshToken exchanges a valid refresh token for a new access token.
-                 The refresh token is read from the HttpOnly cookie.
-                 Returns a new short-lived access token.
+            description: "RefreshToken exchanges a valid refresh token for a new access token.\r\n The refresh token is read from the HttpOnly cookie.\r\n Returns a new short-lived access token."
             operationId: AuthService_RefreshToken
             requestBody:
                 content:
@@ -277,10 +257,7 @@ paths:
         post:
             tags:
                 - AuthService
-            description: |-
-                SignIn authenticates a user with credentials and returns tokens.
-                 On success, returns an access token and sets a refresh token cookie.
-                 Supports password-based and SSO authentication methods.
+            description: "SignIn authenticates a user with credentials and returns tokens.\r\n On success, returns an access token and sets a refresh token cookie.\r\n Supports password-based and SSO authentication methods."
             operationId: AuthService_SignIn
             requestBody:
                 content:
@@ -305,9 +282,7 @@ paths:
         post:
             tags:
                 - AuthService
-            description: |-
-                SignOut terminates the user's authentication.
-                 Revokes the refresh token and clears the authentication cookie.
+            description: "SignOut terminates the user's authentication.\r\n Revokes the refresh token and clears the authentication cookie."
             operationId: AuthService_SignOut
             responses:
                 "200":
@@ -346,9 +321,7 @@ paths:
             parameters:
                 - name: identityProviderId
                   in: query
-                  description: |-
-                    Optional. The ID to use for the identity provider, which will become the final component of the resource name.
-                     If not provided, the system will generate one.
+                  description: "Optional. The ID to use for the identity provider, which will become the final component of the resource name.\r\n If not provided, the system will generate one."
                   schema:
                     type: string
             requestBody:
@@ -432,9 +405,7 @@ paths:
                     type: string
                 - name: updateMask
                   in: query
-                  description: |-
-                    Required. The update mask applies to the resource. Only the top level fields of
-                     IdentityProvider are supported.
+                  description: "Required. The update mask applies to the resource. Only the top level fields of\r\n IdentityProvider are supported."
                   schema:
                     type: string
                     format: field-mask
@@ -614,26 +585,18 @@ paths:
             parameters:
                 - name: pageSize
                   in: query
-                  description: |-
-                    Optional. The maximum number of memos to return.
-                     The service may return fewer than this value.
-                     If unspecified, at most 50 memos will be returned.
-                     The maximum value is 1000; values above 1000 will be coerced to 1000.
+                  description: "Optional. The maximum number of memos to return.\r\n The service may return fewer than this value.\r\n If unspecified, at most 50 memos will be returned.\r\n The maximum value is 1000; values above 1000 will be coerced to 1000."
                   schema:
                     type: integer
                     format: int32
                 - name: pageToken
                   in: query
-                  description: |-
-                    Optional. A page token, received from a previous `ListMemos` call.
-                     Provide this to retrieve the subsequent page.
+                  description: "Optional. A page token, received from a previous `ListMemos` call.\r\n Provide this to retrieve the subsequent page."
                   schema:
                     type: string
                 - name: state
                   in: query
-                  description: |-
-                    Optional. The state of the memos to list.
-                     Default to `NORMAL`. Set to `ARCHIVED` to list archived memos.
+                  description: "Optional. The state of the memos to list.\r\n Default to `NORMAL`. Set to `ARCHIVED` to list archived memos."
                   schema:
                     enum:
                         - STATE_UNSPECIFIED
@@ -643,20 +606,12 @@ paths:
                     format: enum
                 - name: orderBy
                   in: query
-                  description: |-
-                    Optional. The order to sort results by.
-                     Default to "create_time desc".
-                     Supports comma-separated list of fields following AIP-132.
-                     Example: "pinned desc, create_time desc" or "update_time asc"
-                     Supported fields: pinned, create_time, update_time, name
+                  description: "Optional. The order to sort results by.\r\n Default to \"create_time desc\".\r\n Supports comma-separated list of fields following AIP-132.\r\n Example: \"pinned desc, create_time desc\" or \"update_time asc\"\r\n Supported fields: pinned, create_time, update_time, name"
                   schema:
                     type: string
                 - name: filter
                   in: query
-                  description: |-
-                    Optional. Filter to apply to the list results.
-                     Filter is a CEL expression to filter memos.
-                     Refer to `Shortcut.filter`.
+                  description: "Optional. Filter to apply to the list results.\r\n Filter is a CEL expression to filter memos.\r\n Refer to `Shortcut.filter`."
                   schema:
                     type: string
                 - name: showDeleted
@@ -685,9 +640,7 @@ paths:
             parameters:
                 - name: memoId
                   in: query
-                  description: |-
-                    Optional. The memo ID to use for this memo.
-                     If empty, a unique ID will be generated.
+                  description: "Optional. The memo ID to use for this memo.\r\n If empty, a unique ID will be generated."
                   schema:
                     type: string
             requestBody:
@@ -843,6 +796,102 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Memo'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/memos/{memo}/ai/relations:
+        post:
+            tags:
+                - MemoService
+            description: GenerateMemoRelations suggests related memos for a memo.
+            operationId: MemoService_GenerateMemoRelations
+            parameters:
+                - name: memo
+                  in: path
+                  description: The memo id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GenerateMemoRelationsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GenerateMemoRelationsResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/memos/{memo}/ai/summary:
+        post:
+            tags:
+                - MemoService
+            description: GenerateMemoSummary generates a summary for a memo.
+            operationId: MemoService_GenerateMemoSummary
+            parameters:
+                - name: memo
+                  in: path
+                  description: The memo id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GenerateMemoSummaryRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GenerateMemoSummaryResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/memos/{memo}/ai/tags:
+        post:
+            tags:
+                - MemoService
+            description: GenerateMemoTags suggests tags for a memo.
+            operationId: MemoService_GenerateMemoTags
+            parameters:
+                - name: memo
+                  in: path
+                  description: The memo id.
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GenerateMemoTagsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GenerateMemoTagsResponse'
                 default:
                     description: Default error response
                     content:
@@ -1244,9 +1293,7 @@ paths:
         get:
             tags:
                 - MemoService
-            description: |-
-                GetMemoByShare resolves a share token to its memo. No authentication required.
-                 Returns NOT_FOUND if the token is invalid or expired.
+            description: "GetMemoByShare resolves a share token to its memo. No authentication required.\r\n Returns NOT_FOUND if the token is invalid or expired."
             operationId: MemoService_GetMemoByShare
             parameters:
                 - name: shareId
@@ -1277,28 +1324,18 @@ paths:
             parameters:
                 - name: pageSize
                   in: query
-                  description: |-
-                    Optional. The maximum number of users to return.
-                     The service may return fewer than this value.
-                     If unspecified, at most 50 users will be returned.
-                     The maximum value is 1000; values above 1000 will be coerced to 1000.
+                  description: "Optional. The maximum number of users to return.\r\n The service may return fewer than this value.\r\n If unspecified, at most 50 users will be returned.\r\n The maximum value is 1000; values above 1000 will be coerced to 1000."
                   schema:
                     type: integer
                     format: int32
                 - name: pageToken
                   in: query
-                  description: |-
-                    Optional. A page token, received from a previous `ListUsers` call.
-                     Provide this to retrieve the subsequent page.
+                  description: "Optional. A page token, received from a previous `ListUsers` call.\r\n Provide this to retrieve the subsequent page."
                   schema:
                     type: string
                 - name: filter
                   in: query
-                  description: |-
-                    Optional. Filter to apply to the list results.
-                     Example: "username == 'steven'"
-                     Supported operators: ==
-                     Supported fields: username
+                  description: "Optional. Filter to apply to the list results.\r\n Example: \"username == 'steven'\"\r\n Supported operators: ==\r\n Supported fields: username"
                   schema:
                     type: string
                 - name: showDeleted
@@ -1327,10 +1364,7 @@ paths:
             parameters:
                 - name: userId
                   in: query
-                  description: |-
-                    Optional. The user ID to use for this user.
-                     If empty, a unique ID will be generated.
-                     Must match the pattern [a-z0-9-]+
+                  description: "Optional. The user ID to use for this user.\r\n If empty, a unique ID will be generated.\r\n Must match the pattern [a-z0-9-]+"
                   schema:
                     type: string
                 - name: validateOnly
@@ -1340,9 +1374,7 @@ paths:
                     type: boolean
                 - name: requestId
                   in: query
-                  description: |-
-                    Optional. An idempotency token that can be used to ensure that multiple
-                     requests to create a user have the same result.
+                  description: "Optional. An idempotency token that can be used to ensure that multiple\r\n requests to create a user have the same result."
                   schema:
                     type: string
             requestBody:
@@ -1368,9 +1400,7 @@ paths:
         get:
             tags:
                 - UserService
-            description: |-
-                GetUser gets a user by username.
-                 Format: users/{username} (e.g., users/steven)
+            description: "GetUser gets a user by username.\r\n Format: users/{username} (e.g., users/steven)"
             operationId: UserService_GetUser
             parameters:
                 - name: user
@@ -1381,9 +1411,7 @@ paths:
                     type: string
                 - name: readMask
                   in: query
-                  description: |-
-                    Optional. The fields to return in the response.
-                     If not specified, all fields are returned.
+                  description: "Optional. The fields to return in the response.\r\n If not specified, all fields are returned."
                   schema:
                     type: string
                     format: field-mask
@@ -1700,9 +1728,7 @@ paths:
         get:
             tags:
                 - UserService
-            description: |-
-                ListPersonalAccessTokens returns a list of Personal Access Tokens (PATs) for a user.
-                 PATs are long-lived tokens for API/script access, distinct from short-lived JWT access tokens.
+            description: "ListPersonalAccessTokens returns a list of Personal Access Tokens (PATs) for a user.\r\n PATs are long-lived tokens for API/script access, distinct from short-lived JWT access tokens."
             operationId: UserService_ListPersonalAccessTokens
             parameters:
                 - name: user
@@ -1738,9 +1764,7 @@ paths:
         post:
             tags:
                 - UserService
-            description: |-
-                CreatePersonalAccessToken creates a new Personal Access Token for a user.
-                 The token value is only returned once upon creation.
+            description: "CreatePersonalAccessToken creates a new Personal Access Token for a user.\r\n The token value is only returned once upon creation."
             operationId: UserService_CreatePersonalAccessToken
             parameters:
                 - name: user
@@ -1812,19 +1836,13 @@ paths:
                     type: string
                 - name: pageSize
                   in: query
-                  description: |-
-                    Optional. The maximum number of settings to return.
-                     The service may return fewer than this value.
-                     If unspecified, at most 50 settings will be returned.
-                     The maximum value is 1000; values above 1000 will be coerced to 1000.
+                  description: "Optional. The maximum number of settings to return.\r\n The service may return fewer than this value.\r\n If unspecified, at most 50 settings will be returned.\r\n The maximum value is 1000; values above 1000 will be coerced to 1000."
                   schema:
                     type: integer
                     format: int32
                 - name: pageToken
                   in: query
-                  description: |-
-                    Optional. A page token, received from a previous `ListUserSettings` call.
-                     Provide this to retrieve the subsequent page.
+                  description: "Optional. A page token, received from a previous `ListUserSettings` call.\r\n Provide this to retrieve the subsequent page."
                   schema:
                     type: string
             responses:
@@ -2279,9 +2297,7 @@ paths:
                     format: enum
                 - name: filter
                   in: query
-                  description: |-
-                    Optional. Filter to apply to memo stats.
-                     Uses the same filter syntax as ListMemos.
+                  description: "Optional. Filter to apply to memo stats.\r\n Uses the same filter syntax as ListMemos."
                   schema:
                     type: string
             responses:
@@ -2307,9 +2323,7 @@ components:
             properties:
                 name:
                     type: string
-                    description: |-
-                        The name of the attachment.
-                         Format: attachments/{attachment}
+                    description: "The name of the attachment.\r\n Format: attachments/{attachment}"
                 createTime:
                     readOnly: true
                     type: string
@@ -2335,9 +2349,7 @@ components:
                     description: Output only. The size of the attachment in bytes.
                 memo:
                     type: string
-                    description: |-
-                        Optional. The related memo. Refer to `Memo.name`.
-                         Format: memos/{memo}
+                    description: "Optional. The related memo. Refer to `Memo.name`.\r\n Format: memos/{memo}"
                 motionMedia:
                     allOf:
                         - $ref: '#/components/schemas/MotionMedia'
@@ -2360,9 +2372,7 @@ components:
                     type: array
                     items:
                         type: string
-                    description: |-
-                        The resource names of the instance settings.
-                         Format: instance/settings/{setting}
+                    description: "The resource names of the instance settings.\r\n Format: instance/settings/{setting}"
             description: Request message for BatchGetInstanceSettings method.
         BatchGetInstanceSettingsResponse:
             type: object
@@ -2570,14 +2580,10 @@ components:
             properties:
                 parent:
                     type: string
-                    description: |-
-                        Required. The parent user who owns the linked identity.
-                         Format: users/{user}
+                    description: "Required. The parent user who owns the linked identity.\r\n Format: users/{user}"
                 idpName:
                     type: string
-                    description: |-
-                        Required. The identity provider to link.
-                         Format: identity-providers/{uid}
+                    description: "Required. The identity provider to link.\r\n Format: identity-providers/{uid}"
                 code:
                     type: string
                     description: Required. The authorization code from the identity provider.
@@ -2594,9 +2600,7 @@ components:
             properties:
                 parent:
                     type: string
-                    description: |-
-                        Required. The parent resource where this token will be created.
-                         Format: users/{user}
+                    description: "Required. The parent resource where this token will be created.\r\n Format: users/{user}"
                 description:
                     type: string
                     description: Optional. Description of the personal access token.
@@ -2613,9 +2617,7 @@ components:
                     description: The personal access token metadata.
                 token:
                     type: string
-                    description: |-
-                        The actual token value - only returned on creation.
-                         This is the only time the token value will be visible.
+                    description: "The actual token value - only returned on creation.\r\n This is the only time the token value will be visible."
         FieldMapping:
             type: object
             properties:
@@ -2637,6 +2639,67 @@ components:
                 logoUrl:
                     type: string
             description: Custom profile configuration for instance branding.
+        GenerateMemoRelation:
+            type: object
+            properties:
+                name:
+                    type: string
+                score:
+                    type: number
+                    format: float
+                reason:
+                    type: string
+                snippet:
+                    type: string
+        GenerateMemoRelationsRequest:
+            required:
+                - name
+            type: object
+            properties:
+                name:
+                    type: string
+                providerId:
+                    type: string
+                limit:
+                    type: integer
+                    format: int32
+        GenerateMemoRelationsResponse:
+            type: object
+            properties:
+                relations:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GenerateMemoRelation'
+        GenerateMemoSummaryRequest:
+            required:
+                - name
+            type: object
+            properties:
+                name:
+                    type: string
+                providerId:
+                    type: string
+        GenerateMemoSummaryResponse:
+            type: object
+            properties:
+                summary:
+                    type: string
+        GenerateMemoTagsRequest:
+            required:
+                - name
+            type: object
+            properties:
+                name:
+                    type: string
+                providerId:
+                    type: string
+        GenerateMemoTagsResponse:
+            type: object
+            properties:
+                tags:
+                    type: array
+                    items:
+                        type: string
         GetCurrentUserResponse:
             type: object
             properties:
@@ -2661,9 +2724,7 @@ components:
             properties:
                 name:
                     type: string
-                    description: |-
-                        The resource name of the identity provider.
-                         Format: identity-providers/{idp}
+                    description: "The resource name of the identity provider.\r\n Format: identity-providers/{idp}"
                 type:
                     enum:
                         - TYPE_UNSPECIFIED
@@ -2701,29 +2762,20 @@ components:
                 admin:
                     allOf:
                         - $ref: '#/components/schemas/User'
-                    description: |-
-                        The first administrator who set up this instance, for display purposes.
-                         May be null on an instance that has lost all admins; use needs_setup to
-                         determine whether initial setup is actually required.
+                    description: "The first administrator who set up this instance, for display purposes.\r\n May be null on an instance that has lost all admins; use needs_setup to\r\n determine whether initial setup is actually required."
                 commit:
                     type: string
                     description: Commit is the current build commit of instance.
                 needsSetup:
                     type: boolean
-                    description: |-
-                        NeedsSetup is true when the instance has no users yet and requires initial
-                         setup (creating the first admin account). Unlike a null admin, this stays
-                         false once any user exists, so an instance that has lost its admins is not
-                         mistaken for a fresh install.
+                    description: "NeedsSetup is true when the instance has no users yet and requires initial\r\n setup (creating the first admin account). Unlike a null admin, this stays\r\n false once any user exists, so an instance that has lost its admins is not\r\n mistaken for a fresh install."
             description: Instance profile message containing basic instance information.
         InstanceSetting:
             type: object
             properties:
                 name:
                     type: string
-                    description: |-
-                        The name of the instance setting.
-                         Format: instance/settings/{setting}
+                    description: "The name of the instance setting.\r\n Format: instance/settings/{setting}"
                 generalSetting:
                     $ref: '#/components/schemas/InstanceSetting_GeneralSetting'
                 storageSetting:
@@ -2749,6 +2801,7 @@ components:
                         - AI_PROVIDER_TYPE_UNSPECIFIED
                         - OPENAI
                         - GEMINI
+                        - OLLAMA
                     type: string
                     format: enum
                 endpoint:
@@ -2756,7 +2809,7 @@ components:
                 apiKey:
                     writeOnly: true
                     type: string
-                    description: api_key is write-only and is never returned by GetInstanceSetting.
+                    description: "api_key is write-only and is never returned by GetInstanceSetting.\r\n It is required only for providers that need authentication."
                 apiKeySet:
                     readOnly: true
                     type: boolean
@@ -2777,9 +2830,7 @@ components:
                 transcription:
                     allOf:
                         - $ref: '#/components/schemas/InstanceSetting_TranscriptionConfig'
-                    description: |-
-                        transcription is the speech-to-text feature configuration.
-                         When unset or transcription.provider_id is empty, transcription is disabled.
+                    description: "transcription is the speech-to-text feature configuration.\r\n When unset or transcription.provider_id is empty, transcription is disabled."
             description: AI provider configuration settings.
         InstanceSetting_GeneralSetting:
             type: object
@@ -2802,10 +2853,7 @@ components:
                     description: custom_profile is the custom profile.
                 weekStartDayOffset:
                     type: integer
-                    description: |-
-                        week_start_day_offset is the week start day offset from Sunday.
-                         0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday
-                         Default is Sunday.
+                    description: "week_start_day_offset is the week start day offset from Sunday.\r\n 0: Sunday, 1: Monday, 2: Tuesday, 3: Wednesday, 4: Thursday, 5: Friday, 6: Saturday\r\n Default is Sunday."
                     format: int32
                 disallowChangeUsername:
                     type: boolean
@@ -2850,9 +2898,7 @@ components:
                     format: enum
                 filepathTemplate:
                     type: string
-                    description: |-
-                        The template of file path.
-                         e.g. assets/{timestamp}_{filename}
+                    description: "The template of file path.\r\n e.g. assets/{timestamp}_{filename}"
                 uploadSizeLimitMb:
                     type: string
                     description: The max upload size in megabytes.
@@ -2867,9 +2913,7 @@ components:
                 backgroundColor:
                     allOf:
                         - $ref: '#/components/schemas/Color'
-                    description: |-
-                        Optional background color for the tag label.
-                         When unset, the default tag color is used.
+                    description: "Optional background color for the tag label.\r\n When unset, the default tag color is used."
                 blurContent:
                     type: boolean
                     description: Whether memos with this tag should have their content blurred.
@@ -2881,34 +2925,20 @@ components:
                     type: object
                     additionalProperties:
                         $ref: '#/components/schemas/InstanceSetting_TagMetadata'
-                    description: |-
-                        Map of tag name pattern to tag metadata.
-                         Each key is treated as an anchored regular expression (^pattern$),
-                         so a single entry like "project/.*" matches all tags under that prefix.
-                         Exact tag names are also valid (they are trivially valid regex patterns).
-            description: |-
-                Tag metadata configuration.
-                 Active tag metadata is stored in per-user tag settings.
-                 This message remains for backward compatibility with existing clients and migrations.
+                    description: "Map of tag name pattern to tag metadata.\r\n Each key is treated as an anchored regular expression (^pattern$),\r\n so a single entry like \"project/.*\" matches all tags under that prefix.\r\n Exact tag names are also valid (they are trivially valid regex patterns)."
+            description: "Tag metadata configuration.\r\n Active tag metadata is stored in per-user tag settings.\r\n This message remains for backward compatibility with existing clients and migrations."
         InstanceSetting_TranscriptionConfig:
             type: object
             properties:
                 providerId:
                     type: string
-                    description: |-
-                        provider_id references an entry in AISetting.providers[].id.
-                         Empty string means transcription is disabled.
+                    description: "provider_id references an entry in AISetting.providers[].id.\r\n Empty string means transcription is disabled."
                 model:
                     type: string
-                    description: |-
-                        model is the provider-specific model identifier.
-                         Empty string falls back to the engine default
-                         (whisper-1 for OPENAI providers, gemini-2.5-flash for GEMINI providers).
+                    description: "model is the provider-specific model identifier.\r\n Empty string falls back to the engine default\r\n (whisper-1 for OPENAI providers, gemini-2.5-flash for GEMINI providers)."
                 language:
                     type: string
-                    description: |-
-                        language is the default ISO 639-1 language hint sent to the provider.
-                         Empty string lets the provider auto-detect.
+                    description: "language is the default ISO 639-1 language hint sent to the provider.\r\n Empty string lets the provider auto-detect."
                 prompt:
                     type: string
                     description: prompt is a default spelling/vocabulary hint passed to the provider.
@@ -2956,15 +2986,11 @@ components:
             properties:
                 name:
                     type: string
-                    description: |-
-                        The resource name of the linked identity.
-                         Format: users/{user}/linkedIdentities/{linked_identity}
+                    description: "The resource name of the linked identity.\r\n Format: users/{user}/linkedIdentities/{linked_identity}"
                 idpName:
                     readOnly: true
                     type: string
-                    description: |-
-                        The resource name of the identity provider.
-                         Format: identity-providers/{uid}
+                    description: "The resource name of the identity provider.\r\n Format: identity-providers/{uid}"
                 externUid:
                     readOnly: true
                     type: string
@@ -2988,9 +3014,7 @@ components:
                     description: The list of attachments.
                 nextPageToken:
                     type: string
-                    description: |-
-                        A token that can be sent as `page_token` to retrieve the next page.
-                         If this field is omitted, there are no subsequent pages.
+                    description: "A token that can be sent as `page_token` to retrieve the next page.\r\n If this field is omitted, there are no subsequent pages."
                 totalSize:
                     type: integer
                     description: The total count of attachments (may be approximate).
@@ -3081,9 +3105,7 @@ components:
                     description: The list of memos.
                 nextPageToken:
                     type: string
-                    description: |-
-                        A token that can be sent as `page_token` to retrieve the next page.
-                         If this field is omitted, there are no subsequent pages.
+                    description: "A token that can be sent as `page_token` to retrieve the next page.\r\n If this field is omitted, there are no subsequent pages."
         ListPersonalAccessTokensResponse:
             type: object
             properties:
@@ -3126,9 +3148,7 @@ components:
                     description: The list of user settings.
                 nextPageToken:
                     type: string
-                    description: |-
-                        A token that can be sent as `page_token` to retrieve the next page.
-                         If this field is omitted, there are no subsequent pages.
+                    description: "A token that can be sent as `page_token` to retrieve the next page.\r\n If this field is omitted, there are no subsequent pages."
                 totalSize:
                     type: integer
                     description: The total count of settings (may be approximate).
@@ -3152,9 +3172,7 @@ components:
                     description: The list of users.
                 nextPageToken:
                     type: string
-                    description: |-
-                        A token that can be sent as `page_token` to retrieve the next page.
-                         If this field is omitted, there are no subsequent pages.
+                    description: "A token that can be sent as `page_token` to retrieve the next page.\r\n If this field is omitted, there are no subsequent pages."
                 totalSize:
                     type: integer
                     description: The total count of users (may be approximate).
@@ -3182,9 +3200,7 @@ components:
             properties:
                 name:
                     type: string
-                    description: |-
-                        The resource name of the memo.
-                         Format: memos/{memo}, memo is the user defined id or uuid.
+                    description: "The resource name of the memo.\r\n Format: memos/{memo}, memo is the user defined id or uuid."
                 state:
                     enum:
                         - STATE_UNSPECIFIED
@@ -3196,20 +3212,14 @@ components:
                 creator:
                     readOnly: true
                     type: string
-                    description: |-
-                        The name of the creator.
-                         Format: users/{user}
+                    description: "The name of the creator.\r\n Format: users/{user}"
                 createTime:
                     type: string
-                    description: |-
-                        The creation timestamp.
-                         If not set on creation, the server will set it to the current time.
+                    description: "The creation timestamp.\r\n If not set on creation, the server will set it to the current time."
                     format: date-time
                 updateTime:
                     type: string
-                    description: |-
-                        The last update timestamp.
-                         If not set on creation, the server will set it to the current time.
+                    description: "The last update timestamp.\r\n If not set on creation, the server will set it to the current time."
                     format: date-time
                 content:
                     type: string
@@ -3256,9 +3266,7 @@ components:
                 parent:
                     readOnly: true
                     type: string
-                    description: |-
-                        Output only. The name of the parent memo.
-                         Format: memos/{memo}
+                    description: "Output only. The name of the parent memo.\r\n Format: memos/{memo}"
                 snippet:
                     readOnly: true
                     type: string
@@ -3296,9 +3304,7 @@ components:
             properties:
                 name:
                     type: string
-                    description: |-
-                        The resource name of the memo.
-                         Format: memos/{memo}
+                    description: "The resource name of the memo.\r\n Format: memos/{memo}"
                 snippet:
                     readOnly: true
                     type: string
@@ -3309,9 +3315,7 @@ components:
             properties:
                 name:
                     type: string
-                    description: |-
-                        The resource name of the share. Format: memos/{memo}/shares/{share}
-                         The {share} segment is the opaque token used in the share URL.
+                    description: "The resource name of the share. Format: memos/{memo}/shares/{share}\r\n The {share} segment is the opaque token used in the share URL."
                 createTime:
                     readOnly: true
                     type: string
@@ -3319,9 +3323,7 @@ components:
                     format: date-time
                 expireTime:
                     type: string
-                    description: |-
-                        Optional. When set, the share link stops working after this time.
-                         If unset, the link never expires.
+                    description: "Optional. When set, the share link stops working after this time.\r\n If unset, the link never expires."
                     format: date-time
             description: MemoShare is an access grant that permits read-only access to a memo via an opaque bearer token.
         Memo_Property:
@@ -3413,9 +3415,7 @@ components:
             properties:
                 name:
                     type: string
-                    description: |-
-                        The resource name of the personal access token.
-                         Format: users/{user}/personalAccessTokens/{personal_access_token}
+                    description: "The resource name of the personal access token.\r\n Format: users/{user}/personalAccessTokens/{personal_access_token}"
                 description:
                     type: string
                     description: The description of the token.
@@ -3433,9 +3433,7 @@ components:
                     type: string
                     description: Output only. The last used timestamp.
                     format: date-time
-            description: |-
-                PersonalAccessToken represents a long-lived token for API/script access.
-                 PATs are distinct from short-lived JWT access tokens used for session authentication.
+            description: "PersonalAccessToken represents a long-lived token for API/script access.\r\n PATs are distinct from short-lived JWT access tokens used for session authentication."
         Reaction:
             required:
                 - contentId
@@ -3445,21 +3443,14 @@ components:
                 name:
                     readOnly: true
                     type: string
-                    description: |-
-                        The resource name of the reaction.
-                         Format: memos/{memo}/reactions/{reaction}
+                    description: "The resource name of the reaction.\r\n Format: memos/{memo}/reactions/{reaction}"
                 creator:
                     readOnly: true
                     type: string
-                    description: |-
-                        The resource name of the creator.
-                         Format: users/{user}
+                    description: "The resource name of the creator.\r\n Format: users/{user}"
                 contentId:
                     type: string
-                    description: |-
-                        The resource name of the content.
-                         For memo reactions, this should be the memo's resource name.
-                         Format: memos/{memo}
+                    description: "The resource name of the content.\r\n For memo reactions, this should be the memo's resource name.\r\n Format: memos/{memo}"
                 reactionType:
                     type: string
                     description: "Required. The type of reaction (e.g., \"\U0001F44D\", \"❤️\", \"\U0001F604\")."
@@ -3489,9 +3480,7 @@ components:
             properties:
                 name:
                     type: string
-                    description: |-
-                        Required. The resource name of the memo.
-                         Format: memos/{memo}
+                    description: "Required. The resource name of the memo.\r\n Format: memos/{memo}"
                 attachments:
                     type: array
                     items:
@@ -3505,9 +3494,7 @@ components:
             properties:
                 name:
                     type: string
-                    description: |-
-                        Required. The resource name of the memo.
-                         Format: memos/{memo}
+                    description: "Required. The resource name of the memo.\r\n Format: memos/{memo}"
                 relations:
                     type: array
                     items:
@@ -3520,9 +3507,7 @@ components:
             properties:
                 name:
                     type: string
-                    description: |-
-                        The resource name of the shortcut.
-                         Format: users/{username}/shortcuts/{shortcut}
+                    description: "The resource name of the shortcut.\r\n Format: users/{username}/shortcuts/{shortcut}"
                 title:
                     type: string
                     description: The title of the shortcut.
@@ -3562,9 +3547,7 @@ components:
             properties:
                 idpName:
                     type: string
-                    description: |-
-                        The resource name of the SSO provider.
-                         Format: identity-providers/{uid}
+                    description: "The resource name of the SSO provider.\r\n Format: identity-providers/{uid}"
                 code:
                     type: string
                     description: The authorization code from the SSO provider.
@@ -3573,9 +3556,7 @@ components:
                     description: The redirect URI used in the SSO flow.
                 codeVerifier:
                     type: string
-                    description: |-
-                        The PKCE code verifier for enhanced security (RFC 7636).
-                         Optional - enables PKCE flow protection against authorization code interception.
+                    description: "The PKCE code verifier for enhanced security (RFC 7636).\r\n Optional - enables PKCE flow protection against authorization code interception."
             description: Nested message for SSO authentication credentials.
         SignInResponse:
             type: object
@@ -3586,14 +3567,10 @@ components:
                     description: The authenticated user's information.
                 accessToken:
                     type: string
-                    description: |-
-                        The short-lived access token for API requests.
-                         Store in memory only, not in localStorage.
+                    description: "The short-lived access token for API requests.\r\n Store in memory only, not in localStorage."
                 accessTokenExpiresAt:
                     type: string
-                    description: |-
-                        When the access token expires.
-                         Client should call RefreshToken before this time.
+                    description: "When the access token expires.\r\n Client should call RefreshToken before this time."
                     format: date-time
         Status:
             type: object
@@ -3629,13 +3606,8 @@ components:
                     type: boolean
                 insecureSkipTlsVerify:
                     type: boolean
-                    description: |-
-                        insecure_skip_tls_verify disables TLS certificate verification when connecting
-                         to the S3 endpoint. Only enable this for trusted endpoints that use a self-signed
-                         certificate; it removes protection against man-in-the-middle attacks.
-            description: |-
-                S3 configuration for cloud storage backend.
-                 Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
+                    description: "insecure_skip_tls_verify disables TLS certificate verification when connecting\r\n to the S3 endpoint. Only enable this for trusted endpoints that use a self-signed\r\n certificate; it removes protection against man-in-the-middle attacks."
+            description: "S3 configuration for cloud storage backend.\r\n Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/"
         TestInstanceEmailSettingRequest:
             type: object
             properties:
@@ -3687,9 +3659,7 @@ components:
             properties:
                 name:
                     type: string
-                    description: |-
-                        Required. The resource name of the memo.
-                         Format: memos/{memo}
+                    description: "Required. The resource name of the memo.\r\n Format: memos/{memo}"
                 reaction:
                     allOf:
                         - $ref: '#/components/schemas/Reaction'
@@ -3703,9 +3673,7 @@ components:
             properties:
                 name:
                     type: string
-                    description: |-
-                        The resource name of the user.
-                         Format: users/{user}
+                    description: "The resource name of the user.\r\n Format: users/{user}"
                 role:
                     enum:
                         - ROLE_UNSPECIFIED
@@ -3757,15 +3725,11 @@ components:
                 name:
                     readOnly: true
                     type: string
-                    description: |-
-                        The resource name of the notification.
-                         Format: users/{user}/notifications/{notification}
+                    description: "The resource name of the notification.\r\n Format: users/{user}/notifications/{notification}"
                 sender:
                     readOnly: true
                     type: string
-                    description: |-
-                        The sender of the notification.
-                         Format: users/{user}
+                    description: "The sender of the notification.\r\n Format: users/{user}"
                 senderUser:
                     readOnly: true
                     allOf:
@@ -3806,14 +3770,10 @@ components:
             properties:
                 memo:
                     type: string
-                    description: |-
-                        The memo name of comment.
-                         Format: memos/{memo}
+                    description: "The memo name of comment.\r\n Format: memos/{memo}"
                 relatedMemo:
                     type: string
-                    description: |-
-                        The name of related memo.
-                         Format: memos/{memo}
+                    description: "The name of related memo.\r\n Format: memos/{memo}"
                 memoSnippet:
                     type: string
                     description: Preview text of the comment memo.
@@ -3825,14 +3785,10 @@ components:
             properties:
                 memo:
                     type: string
-                    description: |-
-                        The memo that contains the mention.
-                         Format: memos/{memo}
+                    description: "The memo that contains the mention.\r\n Format: memos/{memo}"
                 relatedMemo:
                     type: string
-                    description: |-
-                        The related parent memo when the mention was created in a comment.
-                         Format: memos/{memo}
+                    description: "The related parent memo when the mention was created in a comment.\r\n Format: memos/{memo}"
                 memoSnippet:
                     type: string
                     description: Preview text of the memo that contains the mention.
@@ -3844,10 +3800,7 @@ components:
             properties:
                 name:
                     type: string
-                    description: |-
-                        The name of the user setting.
-                         Format: users/{username}/settings/{setting}, {setting} is the key for the setting.
-                         For example, "users/steven/settings/GENERAL" for general settings.
+                    description: "The name of the user setting.\r\n Format: users/{username}/settings/{setting}, {setting} is the key for the setting.\r\n For example, \"users/steven/settings/GENERAL\" for general settings."
                 generalSetting:
                     $ref: '#/components/schemas/UserSetting_GeneralSetting'
                 webhooksSetting:
@@ -3866,10 +3819,7 @@ components:
                     description: The default visibility of the memo.
                 theme:
                     type: string
-                    description: |-
-                        The preferred theme of the user.
-                         This references a CSS file in the web/public/themes/ directory.
-                         If not set, the default theme will be used.
+                    description: "The preferred theme of the user.\r\n This references a CSS file in the web/public/themes/ directory.\r\n If not set, the default theme will be used."
             description: General user settings configuration.
         UserSetting_TagMetadata:
             type: object
@@ -3877,9 +3827,7 @@ components:
                 backgroundColor:
                     allOf:
                         - $ref: '#/components/schemas/Color'
-                    description: |-
-                        Optional background color for the tag label.
-                         When unset, the default tag color is used.
+                    description: "Optional background color for the tag label.\r\n When unset, the default tag color is used."
                 blurContent:
                     type: boolean
                     description: Whether memos with this tag should have their content blurred.
@@ -3891,9 +3839,7 @@ components:
                     type: object
                     additionalProperties:
                         $ref: '#/components/schemas/UserSetting_TagMetadata'
-                    description: |-
-                        Map of tag name pattern to tag metadata.
-                         Each key is treated as an anchored regular expression (^pattern$).
+                    description: "Map of tag name pattern to tag metadata.\r\n Each key is treated as an anchored regular expression (^pattern$)."
             description: User-specific tag metadata.
         UserSetting_WebhooksSetting:
             type: object
@@ -3909,9 +3855,7 @@ components:
             properties:
                 name:
                     type: string
-                    description: |-
-                        The resource name of the user whose stats these are.
-                         Format: users/{user}
+                    description: "The resource name of the user whose stats these are.\r\n Format: users/{user}"
                 memoTypeStats:
                     allOf:
                         - $ref: '#/components/schemas/UserStats_MemoTypeStats'
@@ -3933,10 +3877,7 @@ components:
                     items:
                         type: string
                         format: date-time
-                    description: |-
-                        The latest update timestamps of the user's memos (one per memo,
-                         mirrors memo_created_timestamps). Used by the activity heatmap when
-                         the client's view is set to update_time basis.
+                    description: "The latest update timestamps of the user's memos (one per memo,\r\n mirrors memo_created_timestamps). Used by the activity heatmap when\r\n the client's view is set to update_time basis."
                 pinnedMemos:
                     type: array
                     items:
@@ -3968,9 +3909,7 @@ components:
             properties:
                 name:
                     type: string
-                    description: |-
-                        The name of the webhook.
-                         Format: users/{user}/webhooks/{webhook}
+                    description: "The name of the webhook.\r\n Format: users/{user}/webhooks/{webhook}"
                 url:
                     type: string
                     description: The URL to send the webhook to.
@@ -3990,9 +3929,7 @@ components:
                 signingSecret:
                     writeOnly: true
                     type: string
-                    description: |-
-                        Optional. Signing secret used to HMAC-SHA256 sign the webhook request body.
-                         This field is input-only; it is never returned in responses.
+                    description: "Optional. Signing secret used to HMAC-SHA256 sign the webhook request body.\r\n This field is input-only; it is never returned in responses."
             description: UserWebhook represents a webhook owned by a user.
 tags:
     - name: AIService

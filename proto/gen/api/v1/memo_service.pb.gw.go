@@ -926,6 +926,141 @@ func local_request_MemoService_GetLinkMetadata_0(ctx context.Context, marshaler 
 	return msg, metadata, err
 }
 
+func request_MemoService_GenerateMemoSummary_0(ctx context.Context, marshaler runtime.Marshaler, client MemoServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq GenerateMemoSummaryRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["name"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
+	}
+	protoReq.Name, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
+	}
+	msg, err := client.GenerateMemoSummary(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_MemoService_GenerateMemoSummary_0(ctx context.Context, marshaler runtime.Marshaler, server MemoServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq GenerateMemoSummaryRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	val, ok := pathParams["name"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
+	}
+	protoReq.Name, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
+	}
+	msg, err := server.GenerateMemoSummary(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+func request_MemoService_GenerateMemoTags_0(ctx context.Context, marshaler runtime.Marshaler, client MemoServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq GenerateMemoTagsRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["name"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
+	}
+	protoReq.Name, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
+	}
+	msg, err := client.GenerateMemoTags(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_MemoService_GenerateMemoTags_0(ctx context.Context, marshaler runtime.Marshaler, server MemoServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq GenerateMemoTagsRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	val, ok := pathParams["name"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
+	}
+	protoReq.Name, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
+	}
+	msg, err := server.GenerateMemoTags(ctx, &protoReq)
+	return msg, metadata, err
+}
+
+func request_MemoService_GenerateMemoRelations_0(ctx context.Context, marshaler runtime.Marshaler, client MemoServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq GenerateMemoRelationsRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	if req.Body != nil {
+		_, _ = io.Copy(io.Discard, req.Body)
+	}
+	val, ok := pathParams["name"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
+	}
+	protoReq.Name, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
+	}
+	msg, err := client.GenerateMemoRelations(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	return msg, metadata, err
+}
+
+func local_request_MemoService_GenerateMemoRelations_0(ctx context.Context, marshaler runtime.Marshaler, server MemoServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var (
+		protoReq GenerateMemoRelationsRequest
+		metadata runtime.ServerMetadata
+		err      error
+	)
+	if err := marshaler.NewDecoder(req.Body).Decode(&protoReq); err != nil && !errors.Is(err, io.EOF) {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	val, ok := pathParams["name"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "name")
+	}
+	protoReq.Name, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "name", err)
+	}
+	msg, err := server.GenerateMemoRelations(ctx, &protoReq)
+	return msg, metadata, err
+}
+
 func request_MemoService_BatchGetLinkMetadata_0(ctx context.Context, marshaler runtime.Marshaler, client MemoServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq BatchGetLinkMetadataRequest
@@ -1339,6 +1474,66 @@ func RegisterMemoServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		}
 		forward_MemoService_GetLinkMetadata_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodPost, pattern_MemoService_GenerateMemoSummary_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v1.MemoService/GenerateMemoSummary", runtime.WithHTTPPathPattern("/api/v1/{name=memos/*}/ai/summary"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_MemoService_GenerateMemoSummary_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_MemoService_GenerateMemoSummary_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_MemoService_GenerateMemoTags_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v1.MemoService/GenerateMemoTags", runtime.WithHTTPPathPattern("/api/v1/{name=memos/*}/ai/tags"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_MemoService_GenerateMemoTags_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_MemoService_GenerateMemoTags_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_MemoService_GenerateMemoRelations_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		var stream runtime.ServerTransportStream
+		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v1.MemoService/GenerateMemoRelations", runtime.WithHTTPPathPattern("/api/v1/{name=memos/*}/ai/relations"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := local_request_MemoService_GenerateMemoRelations_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_MemoService_GenerateMemoRelations_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	mux.Handle(http.MethodPost, pattern_MemoService_BatchGetLinkMetadata_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -1722,6 +1917,57 @@ func RegisterMemoServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		}
 		forward_MemoService_GetLinkMetadata_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
+	mux.Handle(http.MethodPost, pattern_MemoService_GenerateMemoSummary_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.v1.MemoService/GenerateMemoSummary", runtime.WithHTTPPathPattern("/api/v1/{name=memos/*}/ai/summary"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_MemoService_GenerateMemoSummary_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_MemoService_GenerateMemoSummary_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_MemoService_GenerateMemoTags_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.v1.MemoService/GenerateMemoTags", runtime.WithHTTPPathPattern("/api/v1/{name=memos/*}/ai/tags"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_MemoService_GenerateMemoTags_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_MemoService_GenerateMemoTags_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
+	mux.Handle(http.MethodPost, pattern_MemoService_GenerateMemoRelations_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+		ctx, cancel := context.WithCancel(req.Context())
+		defer cancel()
+		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.v1.MemoService/GenerateMemoRelations", runtime.WithHTTPPathPattern("/api/v1/{name=memos/*}/ai/relations"))
+		if err != nil {
+			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		resp, md, err := request_MemoService_GenerateMemoRelations_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
+		if err != nil {
+			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
+			return
+		}
+		forward_MemoService_GenerateMemoRelations_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+	})
 	mux.Handle(http.MethodPost, pattern_MemoService_BatchGetLinkMetadata_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
@@ -1743,47 +1989,53 @@ func RegisterMemoServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 }
 
 var (
-	pattern_MemoService_CreateMemo_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "memos"}, ""))
-	pattern_MemoService_ListMemos_0            = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "memos"}, ""))
-	pattern_MemoService_GetMemo_0              = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3}, []string{"api", "v1", "memos", "name"}, ""))
-	pattern_MemoService_UpdateMemo_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3}, []string{"api", "v1", "memos", "memo.name"}, ""))
-	pattern_MemoService_DeleteMemo_0           = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3}, []string{"api", "v1", "memos", "name"}, ""))
-	pattern_MemoService_SetMemoAttachments_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "attachments"}, ""))
-	pattern_MemoService_ListMemoAttachments_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "attachments"}, ""))
-	pattern_MemoService_SetMemoRelations_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "relations"}, ""))
-	pattern_MemoService_ListMemoRelations_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "relations"}, ""))
-	pattern_MemoService_CreateMemoComment_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "comments"}, ""))
-	pattern_MemoService_ListMemoComments_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "comments"}, ""))
-	pattern_MemoService_ListMemoReactions_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "reactions"}, ""))
-	pattern_MemoService_UpsertMemoReaction_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "reactions"}, ""))
-	pattern_MemoService_DeleteMemoReaction_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 2, 3, 1, 0, 4, 4, 5, 4}, []string{"api", "v1", "memos", "reactions", "name"}, ""))
-	pattern_MemoService_CreateMemoShare_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "parent", "shares"}, ""))
-	pattern_MemoService_ListMemoShares_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "parent", "shares"}, ""))
-	pattern_MemoService_DeleteMemoShare_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 2, 3, 1, 0, 4, 4, 5, 4}, []string{"api", "v1", "memos", "shares", "name"}, ""))
-	pattern_MemoService_GetMemoByShare_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "shares", "share_id"}, ""))
-	pattern_MemoService_GetLinkMetadata_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "memos", "-", "linkMetadata"}, ""))
-	pattern_MemoService_BatchGetLinkMetadata_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "memos", "-", "linkMetadata"}, "batchGet"))
+	pattern_MemoService_CreateMemo_0            = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "memos"}, ""))
+	pattern_MemoService_ListMemos_0             = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "memos"}, ""))
+	pattern_MemoService_GetMemo_0               = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3}, []string{"api", "v1", "memos", "name"}, ""))
+	pattern_MemoService_UpdateMemo_0            = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3}, []string{"api", "v1", "memos", "memo.name"}, ""))
+	pattern_MemoService_DeleteMemo_0            = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3}, []string{"api", "v1", "memos", "name"}, ""))
+	pattern_MemoService_SetMemoAttachments_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "attachments"}, ""))
+	pattern_MemoService_ListMemoAttachments_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "attachments"}, ""))
+	pattern_MemoService_SetMemoRelations_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "relations"}, ""))
+	pattern_MemoService_ListMemoRelations_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "relations"}, ""))
+	pattern_MemoService_CreateMemoComment_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "comments"}, ""))
+	pattern_MemoService_ListMemoComments_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "comments"}, ""))
+	pattern_MemoService_ListMemoReactions_0     = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "reactions"}, ""))
+	pattern_MemoService_UpsertMemoReaction_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "name", "reactions"}, ""))
+	pattern_MemoService_DeleteMemoReaction_0    = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 2, 3, 1, 0, 4, 4, 5, 4}, []string{"api", "v1", "memos", "reactions", "name"}, ""))
+	pattern_MemoService_CreateMemoShare_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "parent", "shares"}, ""))
+	pattern_MemoService_ListMemoShares_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "parent", "shares"}, ""))
+	pattern_MemoService_DeleteMemoShare_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 2, 3, 1, 0, 4, 4, 5, 4}, []string{"api", "v1", "memos", "shares", "name"}, ""))
+	pattern_MemoService_GetMemoByShare_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "shares", "share_id"}, ""))
+	pattern_MemoService_GetLinkMetadata_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "memos", "-", "linkMetadata"}, ""))
+	pattern_MemoService_GenerateMemoSummary_0   = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4, 2, 5}, []string{"api", "v1", "memos", "name", "ai", "summary"}, ""))
+	pattern_MemoService_GenerateMemoTags_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4, 2, 5}, []string{"api", "v1", "memos", "name", "ai", "tags"}, ""))
+	pattern_MemoService_GenerateMemoRelations_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4, 2, 5}, []string{"api", "v1", "memos", "name", "ai", "relations"}, ""))
+	pattern_MemoService_BatchGetLinkMetadata_0  = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "memos", "-", "linkMetadata"}, "batchGet"))
 )
 
 var (
-	forward_MemoService_CreateMemo_0           = runtime.ForwardResponseMessage
-	forward_MemoService_ListMemos_0            = runtime.ForwardResponseMessage
-	forward_MemoService_GetMemo_0              = runtime.ForwardResponseMessage
-	forward_MemoService_UpdateMemo_0           = runtime.ForwardResponseMessage
-	forward_MemoService_DeleteMemo_0           = runtime.ForwardResponseMessage
-	forward_MemoService_SetMemoAttachments_0   = runtime.ForwardResponseMessage
-	forward_MemoService_ListMemoAttachments_0  = runtime.ForwardResponseMessage
-	forward_MemoService_SetMemoRelations_0     = runtime.ForwardResponseMessage
-	forward_MemoService_ListMemoRelations_0    = runtime.ForwardResponseMessage
-	forward_MemoService_CreateMemoComment_0    = runtime.ForwardResponseMessage
-	forward_MemoService_ListMemoComments_0     = runtime.ForwardResponseMessage
-	forward_MemoService_ListMemoReactions_0    = runtime.ForwardResponseMessage
-	forward_MemoService_UpsertMemoReaction_0   = runtime.ForwardResponseMessage
-	forward_MemoService_DeleteMemoReaction_0   = runtime.ForwardResponseMessage
-	forward_MemoService_CreateMemoShare_0      = runtime.ForwardResponseMessage
-	forward_MemoService_ListMemoShares_0       = runtime.ForwardResponseMessage
-	forward_MemoService_DeleteMemoShare_0      = runtime.ForwardResponseMessage
-	forward_MemoService_GetMemoByShare_0       = runtime.ForwardResponseMessage
-	forward_MemoService_GetLinkMetadata_0      = runtime.ForwardResponseMessage
-	forward_MemoService_BatchGetLinkMetadata_0 = runtime.ForwardResponseMessage
+	forward_MemoService_CreateMemo_0            = runtime.ForwardResponseMessage
+	forward_MemoService_ListMemos_0             = runtime.ForwardResponseMessage
+	forward_MemoService_GetMemo_0               = runtime.ForwardResponseMessage
+	forward_MemoService_UpdateMemo_0            = runtime.ForwardResponseMessage
+	forward_MemoService_DeleteMemo_0            = runtime.ForwardResponseMessage
+	forward_MemoService_SetMemoAttachments_0    = runtime.ForwardResponseMessage
+	forward_MemoService_ListMemoAttachments_0   = runtime.ForwardResponseMessage
+	forward_MemoService_SetMemoRelations_0      = runtime.ForwardResponseMessage
+	forward_MemoService_ListMemoRelations_0     = runtime.ForwardResponseMessage
+	forward_MemoService_CreateMemoComment_0     = runtime.ForwardResponseMessage
+	forward_MemoService_ListMemoComments_0      = runtime.ForwardResponseMessage
+	forward_MemoService_ListMemoReactions_0     = runtime.ForwardResponseMessage
+	forward_MemoService_UpsertMemoReaction_0    = runtime.ForwardResponseMessage
+	forward_MemoService_DeleteMemoReaction_0    = runtime.ForwardResponseMessage
+	forward_MemoService_CreateMemoShare_0       = runtime.ForwardResponseMessage
+	forward_MemoService_ListMemoShares_0        = runtime.ForwardResponseMessage
+	forward_MemoService_DeleteMemoShare_0       = runtime.ForwardResponseMessage
+	forward_MemoService_GetMemoByShare_0        = runtime.ForwardResponseMessage
+	forward_MemoService_GetLinkMetadata_0       = runtime.ForwardResponseMessage
+	forward_MemoService_GenerateMemoSummary_0   = runtime.ForwardResponseMessage
+	forward_MemoService_GenerateMemoTags_0      = runtime.ForwardResponseMessage
+	forward_MemoService_GenerateMemoRelations_0 = runtime.ForwardResponseMessage
+	forward_MemoService_BatchGetLinkMetadata_0  = runtime.ForwardResponseMessage
 )

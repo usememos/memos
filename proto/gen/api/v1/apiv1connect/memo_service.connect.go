@@ -86,6 +86,15 @@ const (
 	// MemoServiceGetLinkMetadataProcedure is the fully-qualified name of the MemoService's
 	// GetLinkMetadata RPC.
 	MemoServiceGetLinkMetadataProcedure = "/memos.api.v1.MemoService/GetLinkMetadata"
+	// MemoServiceGenerateMemoSummaryProcedure is the fully-qualified name of the MemoService's
+	// GenerateMemoSummary RPC.
+	MemoServiceGenerateMemoSummaryProcedure = "/memos.api.v1.MemoService/GenerateMemoSummary"
+	// MemoServiceGenerateMemoTagsProcedure is the fully-qualified name of the MemoService's
+	// GenerateMemoTags RPC.
+	MemoServiceGenerateMemoTagsProcedure = "/memos.api.v1.MemoService/GenerateMemoTags"
+	// MemoServiceGenerateMemoRelationsProcedure is the fully-qualified name of the MemoService's
+	// GenerateMemoRelations RPC.
+	MemoServiceGenerateMemoRelationsProcedure = "/memos.api.v1.MemoService/GenerateMemoRelations"
 	// MemoServiceBatchGetLinkMetadataProcedure is the fully-qualified name of the MemoService's
 	// BatchGetLinkMetadata RPC.
 	MemoServiceBatchGetLinkMetadataProcedure = "/memos.api.v1.MemoService/BatchGetLinkMetadata"
@@ -132,6 +141,12 @@ type MemoServiceClient interface {
 	GetMemoByShare(context.Context, *connect.Request[v1.GetMemoByShareRequest]) (*connect.Response[v1.Memo], error)
 	// GetLinkMetadata gets metadata for a link.
 	GetLinkMetadata(context.Context, *connect.Request[v1.GetLinkMetadataRequest]) (*connect.Response[v1.LinkMetadata], error)
+	// GenerateMemoSummary generates a summary for a memo.
+	GenerateMemoSummary(context.Context, *connect.Request[v1.GenerateMemoSummaryRequest]) (*connect.Response[v1.GenerateMemoSummaryResponse], error)
+	// GenerateMemoTags suggests tags for a memo.
+	GenerateMemoTags(context.Context, *connect.Request[v1.GenerateMemoTagsRequest]) (*connect.Response[v1.GenerateMemoTagsResponse], error)
+	// GenerateMemoRelations suggests related memos for a memo.
+	GenerateMemoRelations(context.Context, *connect.Request[v1.GenerateMemoRelationsRequest]) (*connect.Response[v1.GenerateMemoRelationsResponse], error)
 	// BatchGetLinkMetadata gets metadata for links.
 	BatchGetLinkMetadata(context.Context, *connect.Request[v1.BatchGetLinkMetadataRequest]) (*connect.Response[v1.BatchGetLinkMetadataResponse], error)
 }
@@ -261,6 +276,24 @@ func NewMemoServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(memoServiceMethods.ByName("GetLinkMetadata")),
 			connect.WithClientOptions(opts...),
 		),
+		generateMemoSummary: connect.NewClient[v1.GenerateMemoSummaryRequest, v1.GenerateMemoSummaryResponse](
+			httpClient,
+			baseURL+MemoServiceGenerateMemoSummaryProcedure,
+			connect.WithSchema(memoServiceMethods.ByName("GenerateMemoSummary")),
+			connect.WithClientOptions(opts...),
+		),
+		generateMemoTags: connect.NewClient[v1.GenerateMemoTagsRequest, v1.GenerateMemoTagsResponse](
+			httpClient,
+			baseURL+MemoServiceGenerateMemoTagsProcedure,
+			connect.WithSchema(memoServiceMethods.ByName("GenerateMemoTags")),
+			connect.WithClientOptions(opts...),
+		),
+		generateMemoRelations: connect.NewClient[v1.GenerateMemoRelationsRequest, v1.GenerateMemoRelationsResponse](
+			httpClient,
+			baseURL+MemoServiceGenerateMemoRelationsProcedure,
+			connect.WithSchema(memoServiceMethods.ByName("GenerateMemoRelations")),
+			connect.WithClientOptions(opts...),
+		),
 		batchGetLinkMetadata: connect.NewClient[v1.BatchGetLinkMetadataRequest, v1.BatchGetLinkMetadataResponse](
 			httpClient,
 			baseURL+MemoServiceBatchGetLinkMetadataProcedure,
@@ -272,26 +305,29 @@ func NewMemoServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 
 // memoServiceClient implements MemoServiceClient.
 type memoServiceClient struct {
-	createMemo           *connect.Client[v1.CreateMemoRequest, v1.Memo]
-	listMemos            *connect.Client[v1.ListMemosRequest, v1.ListMemosResponse]
-	getMemo              *connect.Client[v1.GetMemoRequest, v1.Memo]
-	updateMemo           *connect.Client[v1.UpdateMemoRequest, v1.Memo]
-	deleteMemo           *connect.Client[v1.DeleteMemoRequest, emptypb.Empty]
-	setMemoAttachments   *connect.Client[v1.SetMemoAttachmentsRequest, emptypb.Empty]
-	listMemoAttachments  *connect.Client[v1.ListMemoAttachmentsRequest, v1.ListMemoAttachmentsResponse]
-	setMemoRelations     *connect.Client[v1.SetMemoRelationsRequest, emptypb.Empty]
-	listMemoRelations    *connect.Client[v1.ListMemoRelationsRequest, v1.ListMemoRelationsResponse]
-	createMemoComment    *connect.Client[v1.CreateMemoCommentRequest, v1.Memo]
-	listMemoComments     *connect.Client[v1.ListMemoCommentsRequest, v1.ListMemoCommentsResponse]
-	listMemoReactions    *connect.Client[v1.ListMemoReactionsRequest, v1.ListMemoReactionsResponse]
-	upsertMemoReaction   *connect.Client[v1.UpsertMemoReactionRequest, v1.Reaction]
-	deleteMemoReaction   *connect.Client[v1.DeleteMemoReactionRequest, emptypb.Empty]
-	createMemoShare      *connect.Client[v1.CreateMemoShareRequest, v1.MemoShare]
-	listMemoShares       *connect.Client[v1.ListMemoSharesRequest, v1.ListMemoSharesResponse]
-	deleteMemoShare      *connect.Client[v1.DeleteMemoShareRequest, emptypb.Empty]
-	getMemoByShare       *connect.Client[v1.GetMemoByShareRequest, v1.Memo]
-	getLinkMetadata      *connect.Client[v1.GetLinkMetadataRequest, v1.LinkMetadata]
-	batchGetLinkMetadata *connect.Client[v1.BatchGetLinkMetadataRequest, v1.BatchGetLinkMetadataResponse]
+	createMemo            *connect.Client[v1.CreateMemoRequest, v1.Memo]
+	listMemos             *connect.Client[v1.ListMemosRequest, v1.ListMemosResponse]
+	getMemo               *connect.Client[v1.GetMemoRequest, v1.Memo]
+	updateMemo            *connect.Client[v1.UpdateMemoRequest, v1.Memo]
+	deleteMemo            *connect.Client[v1.DeleteMemoRequest, emptypb.Empty]
+	setMemoAttachments    *connect.Client[v1.SetMemoAttachmentsRequest, emptypb.Empty]
+	listMemoAttachments   *connect.Client[v1.ListMemoAttachmentsRequest, v1.ListMemoAttachmentsResponse]
+	setMemoRelations      *connect.Client[v1.SetMemoRelationsRequest, emptypb.Empty]
+	listMemoRelations     *connect.Client[v1.ListMemoRelationsRequest, v1.ListMemoRelationsResponse]
+	createMemoComment     *connect.Client[v1.CreateMemoCommentRequest, v1.Memo]
+	listMemoComments      *connect.Client[v1.ListMemoCommentsRequest, v1.ListMemoCommentsResponse]
+	listMemoReactions     *connect.Client[v1.ListMemoReactionsRequest, v1.ListMemoReactionsResponse]
+	upsertMemoReaction    *connect.Client[v1.UpsertMemoReactionRequest, v1.Reaction]
+	deleteMemoReaction    *connect.Client[v1.DeleteMemoReactionRequest, emptypb.Empty]
+	createMemoShare       *connect.Client[v1.CreateMemoShareRequest, v1.MemoShare]
+	listMemoShares        *connect.Client[v1.ListMemoSharesRequest, v1.ListMemoSharesResponse]
+	deleteMemoShare       *connect.Client[v1.DeleteMemoShareRequest, emptypb.Empty]
+	getMemoByShare        *connect.Client[v1.GetMemoByShareRequest, v1.Memo]
+	getLinkMetadata       *connect.Client[v1.GetLinkMetadataRequest, v1.LinkMetadata]
+	generateMemoSummary   *connect.Client[v1.GenerateMemoSummaryRequest, v1.GenerateMemoSummaryResponse]
+	generateMemoTags      *connect.Client[v1.GenerateMemoTagsRequest, v1.GenerateMemoTagsResponse]
+	generateMemoRelations *connect.Client[v1.GenerateMemoRelationsRequest, v1.GenerateMemoRelationsResponse]
+	batchGetLinkMetadata  *connect.Client[v1.BatchGetLinkMetadataRequest, v1.BatchGetLinkMetadataResponse]
 }
 
 // CreateMemo calls memos.api.v1.MemoService.CreateMemo.
@@ -389,6 +425,21 @@ func (c *memoServiceClient) GetLinkMetadata(ctx context.Context, req *connect.Re
 	return c.getLinkMetadata.CallUnary(ctx, req)
 }
 
+// GenerateMemoSummary calls memos.api.v1.MemoService.GenerateMemoSummary.
+func (c *memoServiceClient) GenerateMemoSummary(ctx context.Context, req *connect.Request[v1.GenerateMemoSummaryRequest]) (*connect.Response[v1.GenerateMemoSummaryResponse], error) {
+	return c.generateMemoSummary.CallUnary(ctx, req)
+}
+
+// GenerateMemoTags calls memos.api.v1.MemoService.GenerateMemoTags.
+func (c *memoServiceClient) GenerateMemoTags(ctx context.Context, req *connect.Request[v1.GenerateMemoTagsRequest]) (*connect.Response[v1.GenerateMemoTagsResponse], error) {
+	return c.generateMemoTags.CallUnary(ctx, req)
+}
+
+// GenerateMemoRelations calls memos.api.v1.MemoService.GenerateMemoRelations.
+func (c *memoServiceClient) GenerateMemoRelations(ctx context.Context, req *connect.Request[v1.GenerateMemoRelationsRequest]) (*connect.Response[v1.GenerateMemoRelationsResponse], error) {
+	return c.generateMemoRelations.CallUnary(ctx, req)
+}
+
 // BatchGetLinkMetadata calls memos.api.v1.MemoService.BatchGetLinkMetadata.
 func (c *memoServiceClient) BatchGetLinkMetadata(ctx context.Context, req *connect.Request[v1.BatchGetLinkMetadataRequest]) (*connect.Response[v1.BatchGetLinkMetadataResponse], error) {
 	return c.batchGetLinkMetadata.CallUnary(ctx, req)
@@ -435,6 +486,12 @@ type MemoServiceHandler interface {
 	GetMemoByShare(context.Context, *connect.Request[v1.GetMemoByShareRequest]) (*connect.Response[v1.Memo], error)
 	// GetLinkMetadata gets metadata for a link.
 	GetLinkMetadata(context.Context, *connect.Request[v1.GetLinkMetadataRequest]) (*connect.Response[v1.LinkMetadata], error)
+	// GenerateMemoSummary generates a summary for a memo.
+	GenerateMemoSummary(context.Context, *connect.Request[v1.GenerateMemoSummaryRequest]) (*connect.Response[v1.GenerateMemoSummaryResponse], error)
+	// GenerateMemoTags suggests tags for a memo.
+	GenerateMemoTags(context.Context, *connect.Request[v1.GenerateMemoTagsRequest]) (*connect.Response[v1.GenerateMemoTagsResponse], error)
+	// GenerateMemoRelations suggests related memos for a memo.
+	GenerateMemoRelations(context.Context, *connect.Request[v1.GenerateMemoRelationsRequest]) (*connect.Response[v1.GenerateMemoRelationsResponse], error)
 	// BatchGetLinkMetadata gets metadata for links.
 	BatchGetLinkMetadata(context.Context, *connect.Request[v1.BatchGetLinkMetadataRequest]) (*connect.Response[v1.BatchGetLinkMetadataResponse], error)
 }
@@ -560,6 +617,24 @@ func NewMemoServiceHandler(svc MemoServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(memoServiceMethods.ByName("GetLinkMetadata")),
 		connect.WithHandlerOptions(opts...),
 	)
+	memoServiceGenerateMemoSummaryHandler := connect.NewUnaryHandler(
+		MemoServiceGenerateMemoSummaryProcedure,
+		svc.GenerateMemoSummary,
+		connect.WithSchema(memoServiceMethods.ByName("GenerateMemoSummary")),
+		connect.WithHandlerOptions(opts...),
+	)
+	memoServiceGenerateMemoTagsHandler := connect.NewUnaryHandler(
+		MemoServiceGenerateMemoTagsProcedure,
+		svc.GenerateMemoTags,
+		connect.WithSchema(memoServiceMethods.ByName("GenerateMemoTags")),
+		connect.WithHandlerOptions(opts...),
+	)
+	memoServiceGenerateMemoRelationsHandler := connect.NewUnaryHandler(
+		MemoServiceGenerateMemoRelationsProcedure,
+		svc.GenerateMemoRelations,
+		connect.WithSchema(memoServiceMethods.ByName("GenerateMemoRelations")),
+		connect.WithHandlerOptions(opts...),
+	)
 	memoServiceBatchGetLinkMetadataHandler := connect.NewUnaryHandler(
 		MemoServiceBatchGetLinkMetadataProcedure,
 		svc.BatchGetLinkMetadata,
@@ -606,6 +681,12 @@ func NewMemoServiceHandler(svc MemoServiceHandler, opts ...connect.HandlerOption
 			memoServiceGetMemoByShareHandler.ServeHTTP(w, r)
 		case MemoServiceGetLinkMetadataProcedure:
 			memoServiceGetLinkMetadataHandler.ServeHTTP(w, r)
+		case MemoServiceGenerateMemoSummaryProcedure:
+			memoServiceGenerateMemoSummaryHandler.ServeHTTP(w, r)
+		case MemoServiceGenerateMemoTagsProcedure:
+			memoServiceGenerateMemoTagsHandler.ServeHTTP(w, r)
+		case MemoServiceGenerateMemoRelationsProcedure:
+			memoServiceGenerateMemoRelationsHandler.ServeHTTP(w, r)
 		case MemoServiceBatchGetLinkMetadataProcedure:
 			memoServiceBatchGetLinkMetadataHandler.ServeHTTP(w, r)
 		default:
@@ -691,6 +772,18 @@ func (UnimplementedMemoServiceHandler) GetMemoByShare(context.Context, *connect.
 
 func (UnimplementedMemoServiceHandler) GetLinkMetadata(context.Context, *connect.Request[v1.GetLinkMetadataRequest]) (*connect.Response[v1.LinkMetadata], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.MemoService.GetLinkMetadata is not implemented"))
+}
+
+func (UnimplementedMemoServiceHandler) GenerateMemoSummary(context.Context, *connect.Request[v1.GenerateMemoSummaryRequest]) (*connect.Response[v1.GenerateMemoSummaryResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.MemoService.GenerateMemoSummary is not implemented"))
+}
+
+func (UnimplementedMemoServiceHandler) GenerateMemoTags(context.Context, *connect.Request[v1.GenerateMemoTagsRequest]) (*connect.Response[v1.GenerateMemoTagsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.MemoService.GenerateMemoTags is not implemented"))
+}
+
+func (UnimplementedMemoServiceHandler) GenerateMemoRelations(context.Context, *connect.Request[v1.GenerateMemoRelationsRequest]) (*connect.Response[v1.GenerateMemoRelationsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.MemoService.GenerateMemoRelations is not implemented"))
 }
 
 func (UnimplementedMemoServiceHandler) BatchGetLinkMetadata(context.Context, *connect.Request[v1.BatchGetLinkMetadataRequest]) (*connect.Response[v1.BatchGetLinkMetadataResponse], error) {

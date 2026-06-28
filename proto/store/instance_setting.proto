@@ -174,6 +174,7 @@ enum AIProviderType {
   AI_PROVIDER_TYPE_UNSPECIFIED = 0;
   OPENAI = 1;
   GEMINI = 2;
+  OLLAMA = 3;
 }
 
 // TranscriptionConfig configures the speech-to-text feature.

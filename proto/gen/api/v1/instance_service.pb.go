@@ -101,6 +101,7 @@ const (
 	InstanceSetting_AI_PROVIDER_TYPE_UNSPECIFIED InstanceSetting_AIProviderType = 0
 	InstanceSetting_OPENAI                       InstanceSetting_AIProviderType = 1
 	InstanceSetting_GEMINI                       InstanceSetting_AIProviderType = 2
+	InstanceSetting_OLLAMA                       InstanceSetting_AIProviderType = 3
 )
 
 // Enum value maps for InstanceSetting_AIProviderType.
@@ -109,11 +110,13 @@ var (
 		0: "AI_PROVIDER_TYPE_UNSPECIFIED",
 		1: "OPENAI",
 		2: "GEMINI",
+		3: "OLLAMA",
 	}
 	InstanceSetting_AIProviderType_value = map[string]int32{
 		"AI_PROVIDER_TYPE_UNSPECIFIED": 0,
 		"OPENAI":                       1,
 		"GEMINI":                       2,
+		"OLLAMA":                       3,
 	}
 )
 
@@ -1305,6 +1308,7 @@ type InstanceSetting_AIProviderConfig struct {
 	Type     InstanceSetting_AIProviderType `protobuf:"varint,3,opt,name=type,proto3,enum=memos.api.v1.InstanceSetting_AIProviderType" json:"type,omitempty"`
 	Endpoint string                         `protobuf:"bytes,4,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
 	// api_key is write-only and is never returned by GetInstanceSetting.
+	// It is required only for providers that need authentication.
 	ApiKey string `protobuf:"bytes,5,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
 	// api_key_set indicates whether an API key is stored for this provider.
 	ApiKeySet bool `protobuf:"varint,8,opt,name=api_key_set,json=apiKeySet,proto3" json:"api_key_set,omitempty"`
@@ -1813,7 +1817,7 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\x06commit\x18\b \x01(\tR\x06commit\x12\x1f\n" +
 	"\vneeds_setup\x18\t \x01(\bR\n" +
 	"needsSetup\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\x86\x1c\n" +
+	"\x19GetInstanceProfileRequest\"\x92\x1c\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2,.memos.api.v1.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12W\n" +
@@ -1906,13 +1910,15 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\fMEMO_RELATED\x10\x03\x12\b\n" +
 	"\x04TAGS\x10\x04\x12\x10\n" +
 	"\fNOTIFICATION\x10\x05\x12\x06\n" +
-	"\x02AI\x10\x06\"J\n" +
+	"\x02AI\x10\x06\"V\n" +
 	"\x0eAIProviderType\x12 \n" +
 	"\x1cAI_PROVIDER_TYPE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06OPENAI\x10\x01\x12\n" +
 	"\n" +
-	"\x06GEMINI\x10\x02:a\xeaA^\n" +
+	"\x06GEMINI\x10\x02\x12\n" +
+	"\n" +
+	"\x06OLLAMA\x10\x03:a\xeaA^\n" +
 	"\x1cmemos.api.v1/InstanceSetting\x12\x1binstance/settings/{setting}*\x10instanceSettings2\x0finstanceSettingB\a\n" +
 	"\x05value\"U\n" +
 	"\x19GetInstanceSettingRequest\x128\n" +

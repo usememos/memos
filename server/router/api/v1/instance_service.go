@@ -699,7 +699,7 @@ func (s *APIV1Service) prepareInstanceAISettingForUpdate(ctx context.Context, se
 		if provider.Title == "" {
 			return errors.New("provider title is required")
 		}
-		if provider.Type != storepb.AIProviderType_OPENAI && provider.Type != storepb.AIProviderType_GEMINI {
+		if provider.Type != storepb.AIProviderType_OPENAI && provider.Type != storepb.AIProviderType_GEMINI && provider.Type != storepb.AIProviderType_OLLAMA {
 			return errors.Errorf("provider %q has unsupported type", provider.Id)
 		}
 
@@ -716,7 +716,7 @@ func (s *APIV1Service) prepareInstanceAISettingForUpdate(ctx context.Context, se
 				provider.ApiKey = existingProvider.ApiKey
 			}
 		}
-		if provider.ApiKey == "" {
+		if provider.Type != storepb.AIProviderType_OLLAMA && provider.ApiKey == "" {
 			return errors.Errorf("provider %q API key is required", provider.Id)
 		}
 	}

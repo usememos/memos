@@ -34,6 +34,10 @@ type Profile struct {
 	Commit string
 	// InstanceURL is the url of your memos instance.
 	InstanceURL string
+	// OllamaBaseURL is the base URL for the local Ollama service.
+	OllamaBaseURL string
+	// OllamaModel is the default Ollama model used for local AI tasks.
+	OllamaModel string
 }
 
 func checkDataDir(dataDir string) (string, error) {

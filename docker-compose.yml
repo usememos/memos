@@ -1,0 +1,20 @@
+services:
+  memos:
+    build: .
+    container_name: memos-dev
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./:/app
+      - memos-data:/var/opt/memos
+      - /app/web/node_modules
+    environment:
+      - MEMOS_PORT=8081
+      - MEMOS_DATA=/var/opt/memos
+      - MEMOS_DRIVER=sqlite
+    stdin_open: true
+    tty: true
+
+volumes:
+  memos-data:
+    driver: local
