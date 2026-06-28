@@ -4,9 +4,9 @@ import type { Location, Visibility } from "@/types/proto/api/v1/memo_service_pb"
 import { useTranslate } from "@/utils/i18n";
 import { validationService } from "../services";
 import { useEditorContext, useEditorSelector } from "../state";
-import InsertMenu from "../Toolbar/InsertMenu";
-import VisibilitySelector from "../Toolbar/VisibilitySelector";
 import type { EditorToolbarProps } from "../types";
+import InsertMenu from "./InsertMenu";
+import VisibilitySelector from "./VisibilitySelector";
 
 export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoName, onAudioRecorderClick }) => {
   const t = useTranslate();

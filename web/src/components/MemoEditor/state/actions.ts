@@ -1,4 +1,3 @@
-import type { EditorMode } from "../editorMode";
 import type { LocalFile } from "../types/attachment";
 import type { EditorAction, EditorState, LoadingKey } from "./types";
 
@@ -50,11 +49,6 @@ export const editorActions = {
   setRecorderBusy: (value: boolean): EditorAction => ({
     type: "SET_RECORDER_BUSY",
     payload: value,
-  }),
-
-  setEditorMode: (mode: EditorMode): EditorAction => ({
-    type: "SET_EDITOR_MODE",
-    payload: mode,
   }),
 
   reset: (): EditorAction => ({

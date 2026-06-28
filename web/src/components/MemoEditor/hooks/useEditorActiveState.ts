@@ -1,5 +1,5 @@
 import { type RefObject, useEffect, useState } from "react";
-import { type ActiveFormatState, EMPTY_ACTIVE_FORMATS } from "../Editor/editorCommands";
+import { type ActiveFormatState, EMPTY_ACTIVE_FORMATS } from "../formatting/commands";
 import type { EditorController } from "../types/editorController";
 
 function sameActiveFormats(a: ActiveFormatState, b: ActiveFormatState): boolean {

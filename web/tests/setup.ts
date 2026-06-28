@@ -19,6 +19,10 @@ if (typeof document !== "undefined") {
     Range.prototype.getBoundingClientRect = () =>
       ({ x: 0, y: 0, top: 0, left: 0, bottom: 0, right: 0, width: 0, height: 0, toJSON: () => ({}) }) as DOMRect;
   }
+  // CodeMirror probes additional layout APIs jsdom doesn't implement while measuring.
+  if (typeof Element !== "undefined" && !Element.prototype.getClientRects) {
+    Element.prototype.getClientRects = () => [] as unknown as DOMRectList;
+  }
 }
 
 // jsdom runs with an opaque origin (no URL set), so its built-in localStorage

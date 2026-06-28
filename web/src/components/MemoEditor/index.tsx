@@ -12,20 +12,12 @@ import { cn } from "@/lib/utils";
 import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
-import {
-  AudioRecorderPanel,
-  EditorContent,
-  EditorMetadata,
-  EditorToolbar,
-  FocusModeExitButton,
-  FocusModeOverlay,
-  FormattingToolbar,
-  TimestampPopover,
-} from "./components";
+import { AudioRecorderPanel, EditorContent, EditorMetadata, FocusModeOverlay, TimestampPopover } from "./components";
 import { FOCUS_MODE_STYLES } from "./constants";
 import { useAudioRecorder, useAutoSave, useFocusMode, useKeyboard, useMemoInit } from "./hooks";
 import { errorService, memoService, transcriptionService, validationService } from "./services";
 import { EditorProvider, useEditorContext, useEditorSelector } from "./state";
+import { EditorToolbar, FormattingToolbar } from "./Toolbar";
 import type { MemoEditorProps } from "./types";
 import type { LocalFile } from "./types/attachment";
 import type { EditorController } from "./types/editorController";
@@ -56,7 +48,6 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   // typing (which changes content) does not re-render the editor shell and its
   // toolbar/metadata children.
   const isFocusMode = useEditorSelector((s) => s.ui.isFocusMode);
-  const editorMode = useEditorSelector((s) => s.ui.editorMode);
   const hasTimestamp = useEditorSelector((s) => Boolean(s.timestamps.createTime));
   const { userGeneralSetting } = useAuth();
   const { aiSetting, fetchSetting } = useInstance();
@@ -323,14 +314,10 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
           className,
         )}
       >
-        {/* Focus-mode header. WYSIWYG gets the formatting toolbar (exit lives in
-            it); raw mode falls back to the floating exit button. */}
-        {isFocusMode &&
-          (editorMode === "wysiwyg" ? (
-            <FormattingToolbar controllerRef={editorRef} onExit={handleToggleFocusMode} className={FOCUS_MODE_STYLES.formattingHeader} />
-          ) : (
-            <FocusModeExitButton isActive onToggle={handleToggleFocusMode} title={t("editor.exit-focus-mode")} />
-          ))}
+        {/* Focus-mode header: the formatting toolbar (exit lives in it). */}
+        {isFocusMode && (
+          <FormattingToolbar controllerRef={editorRef} onExit={handleToggleFocusMode} className={FOCUS_MODE_STYLES.formattingHeader} />
+        )}
 
         {(memoName || (!memo && hasTimestamp)) && (
           <div className="w-full -mb-1">

@@ -1,8 +1,7 @@
 /**
  * The single source of truth for memos' `#tag` lexing grammar, shared by the
- * editor tokenizer + serialize-escape (components/MemoEditor/Editor/Tag.ts and
- * tagMarkdown.ts) and the read-only renderer (utils/remark-plugins/remark-tag.ts)
- * so they can't drift.
+ * editor and the read-only renderer (utils/remark-plugins/remark-tag.ts) so they
+ * can't drift.
  *
  * A tag character is any Unicode letter, mark, number, or symbol, plus
  * `_ - / &`. The mark class (`\p{M}`) keeps combining marks — Indic vowel

@@ -1,9 +1,9 @@
-import type { ActiveFormatState, EditorCommandContext, EditorCommandId } from "../Editor/editorCommands";
+import type { ActiveFormatState, EditorCommandContext, EditorCommandId } from "../formatting/commands";
 
 /**
- * The contract both memo editors (raw textarea and WYSIWYG) implement.
- * Everything outside an editor implementation talks markdown through this
- * interface and never reaches for an editor's internal DOM/ProseMirror APIs.
+ * The contract the memo editor (Editor) implements. Everything outside the
+ * editor implementation talks markdown through this interface and never reaches
+ * for the editor's internal CodeMirror/DOM APIs.
  */
 export interface EditorController {
   focus(): void;
@@ -20,19 +20,18 @@ export interface EditorController {
   /** Select the entire document (used by tests and select-all flows). */
   selectAll(): void;
   /**
-   * Rich-formatting capability. Present only on editors that support it — the
-   * WYSIWYG editor sets it; the raw textarea leaves it undefined. The
-   * focus-mode FormattingToolbar (its only consumer) is shown solely in WYSIWYG
-   * mode, so it can rely on this being present.
+   * Rich-formatting capability driving the focus-mode FormattingToolbar.
+   * Editor always sets it; the field is optional so the contract stays
+   * decoupled from any one editor implementation.
    */
   formatting?: FormattingController;
 }
 
 /**
  * Rich-formatting surface, backed by the editor command catalog
- * (Editor/editorCommands.ts). `getActiveFormats` is the sanctioned, typed place
- * editor state crosses the boundary — ProseMirror node/mark names never leak
- * out as stringly-typed `isActive(name)` calls.
+ * (formatting/commands.ts). `getActiveFormats` is the sanctioned, typed place
+ * editor state crosses the boundary — the editor's internal node/mark names
+ * never leak out as stringly-typed `isActive(name)` calls.
  */
 export interface FormattingController {
   /** Run a catalog command (e.g. "bold", "heading2", "link"). */

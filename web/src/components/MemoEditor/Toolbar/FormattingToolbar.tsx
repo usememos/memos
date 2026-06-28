@@ -10,15 +10,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
-import {
-  EDITOR_COMMANDS,
-  EDITOR_COMMANDS_BY_ID,
-  type EditorCommand,
-  type EditorCommandId,
-  isCommandActive,
-} from "../Editor/editorCommands";
+import { EDITOR_COMMANDS, EDITOR_COMMANDS_BY_ID, type EditorCommand, type EditorCommandId, isCommandActive } from "../formatting/commands";
 import { isCompactWidth, useEditorActiveState, useElementWidth } from "../hooks";
-import type { EditorController } from "../types/editorController";
+import type { EditorController } from "../types";
 
 interface FormattingToolbarProps {
   controllerRef: RefObject<EditorController | null>;
@@ -42,7 +36,7 @@ interface ToolbarButton {
 /**
  * Focus-mode header: a rich-text formatting toolbar driven entirely through the
  * editor controller's formatting capability. Every button is derived from the
- * shared command catalog (Editor/editorCommands.ts), so adding a verb there
+ * shared command catalog (formatting/commands.ts), so adding a verb there
  * surfaces it here automatically. Responsive: below COMPACT_TOOLBAR_WIDTH the
  * list and link controls fold into a "more" menu while marks stay inline.
  */

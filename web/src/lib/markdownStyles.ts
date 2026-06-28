@@ -18,8 +18,7 @@ const headingBaseClasses = "mt-3 mb-2 leading-tight";
 /**
  * Complete heading class per level, precomputed once at module load (base +
  * per-level). headingClass is a hot path — MemoContent renders it per heading
- * and the editor's renderHTML runs it on essentially every keystroke — so the
- * cn() merge happens here, not per call.
+ * on every content render — so the cn() merge happens here, not per call.
  */
 const headingClasses: Record<HeadingLevel, string> = {
   1: cn(headingBaseClasses, headingLevelClasses[1]),
@@ -32,10 +31,10 @@ const headingClasses: Record<HeadingLevel, string> = {
 
 /**
  * Single source of truth for the styling of common markdown elements rendered
- * by BOTH the read-only memo view (MemoContent) and the WYSIWYG editor
- * (MemoEditor). Each value is a complete, standalone Tailwind class string so it
- * can be dropped onto a DOM element as-is (the editor sets these via Tiptap
- * `HTMLAttributes`; MemoContent merges them with `cn`).
+ * by the read-only memo view (MemoContent). Each value is a complete, standalone
+ * Tailwind class string so it can be dropped onto a DOM element as-is (MemoContent
+ * merges them with `cn`). The editor does not use these — it styles its raw
+ * markdown source via CodeMirror decorations in `MemoEditor/Editor/theme.ts`.
  *
  * These are static string literals so Tailwind's JIT scanner detects them.
  */
@@ -45,6 +44,10 @@ export const markdownStyles = {
   bulletList: "my-0 mb-2 list-outside pl-6 list-disc",
   orderedList: "my-0 mb-2 list-outside pl-6 list-decimal",
   listItem: "mt-0.5 leading-6",
+  // Shared by the read-only task item (MemoContent/markdown/List.tsx) and the
+  // editor so the checkbox + text grid stays identical in both.
+  taskListItem: "mt-0.5 min-w-0 leading-6 list-none grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-2 [&>[data-slot=checkbox]]:mt-1",
+  taskItemContent: "min-w-0 [overflow-wrap:anywhere] [&>*:last-child]:mb-0",
   inlineCode: "font-mono text-sm bg-muted px-1 py-0.5 rounded-md",
   link: "text-primary underline decoration-primary/50 underline-offset-2 transition-colors hover:decoration-primary",
   horizontalRule: "my-2 h-0 border-0 border-b border-border",
@@ -54,12 +57,10 @@ export const markdownStyles = {
 export const headingClass = (level: HeadingLevel): string => headingClasses[level];
 
 /**
- * Tag pill styling, shared by the read-only memo view (MemoContent/Tag.tsx) and
- * the editor's tag mark (MemoEditor/Editor/Tag.ts) so a `#tag` looks identical
- * while typing and after saving. Split into two tokens so the viewer can swap
- * `defaultColor` for an inline custom color, and so the editor — which is never
- * custom-colored and is not a filter button — takes the shape + default color
- * without the viewer's click/hover affordances.
+ * Tag pill styling for the read-only memo view (MemoContent/Tag.tsx). Split into
+ * two tokens so the viewer can swap `defaultColor` for an inline custom color.
+ * (The editor does not use these; it colors `#tag` source via the
+ * `cm-memo-tag` decoration in Editor/theme.ts.)
  */
 export const tagStyles = {
   /** Shape, padding, and typography — always applied. */
@@ -69,11 +70,11 @@ export const tagStyles = {
 } as const;
 
 /**
- * `@mention` styling, shared by the read-only memo view (MemoContent/Mention.tsx)
- * and the editor's mention mark (MemoEditor/Editor/Mention.ts) so a mention looks
- * identical while typing and after saving. Unlike a tag this is not a pill — it
- * is the same primary-colored accent the resolved read-only mention uses in its
- * resting state (the read-only view adds `hover:underline` for its link).
+ * `@mention` styling for the read-only memo view (MemoContent/Mention.tsx).
+ * Unlike a tag this is not a pill — it is a primary-colored accent (the read-only
+ * view adds `hover:underline` for its link). (The editor does not use these; it
+ * colors `@mention` source via the `cm-memo-mention` decoration in
+ * Editor/theme.ts.)
  */
 export const mentionStyles = {
   base: "text-primary underline-offset-2",

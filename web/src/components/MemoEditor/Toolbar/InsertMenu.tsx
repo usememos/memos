@@ -18,7 +18,6 @@ import { useReverseGeocoding } from "@/components/map/useReverseGeocoding";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
@@ -31,7 +30,6 @@ import {
 import { useDebouncedEffect } from "@/hooks";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { setPreferredEditorMode } from "../editorMode";
 import { useFileUpload, useLinkMemo, useLocation } from "../hooks";
 import { useEditorContext, useEditorSelector } from "../state";
 import type { InsertMenuProps } from "../types";
@@ -41,7 +39,6 @@ const InsertMenu = (props: InsertMenuProps) => {
   const t = useTranslate();
   const { actions, dispatch } = useEditorContext();
   const relations = useEditorSelector((s) => s.metadata.relations);
-  const editorMode = useEditorSelector((s) => s.ui.editorMode);
   const { location: initialLocation, onLocationChange, onToggleFocusMode, isUploading: isUploadingProp } = props;
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
@@ -136,15 +133,6 @@ const InsertMenu = (props: InsertMenuProps) => {
     setMoreSubmenuOpen(false);
   }, [onToggleFocusMode]);
 
-  const handleEditorModeChange = useCallback(
-    (checked: boolean) => {
-      const next = checked ? "wysiwyg" : "raw";
-      dispatch(actions.setEditorMode(next));
-      setPreferredEditorMode(next);
-    },
-    [actions, dispatch],
-  );
-
   const handleMediaUploadClick = useCallback(() => {
     handleUploadClick("image/*,video/*");
   }, [handleUploadClick]);
@@ -224,10 +212,6 @@ const InsertMenu = (props: InsertMenuProps) => {
                 <Maximize2Icon className="w-4 h-4" />
                 {t("editor.focus-mode")}
               </DropdownMenuItem>
-              {/* Editor display mode: checked = rich text (WYSIWYG), unchecked = raw Markdown */}
-              <DropdownMenuCheckboxItem checked={editorMode === "wysiwyg"} onCheckedChange={handleEditorModeChange}>
-                {t("editor.wysiwyg-editor")}
-              </DropdownMenuCheckboxItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
         </DropdownMenuContent>

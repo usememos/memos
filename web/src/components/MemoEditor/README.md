@@ -2,7 +2,7 @@
 
 ## Overview
 
-MemoEditor uses a three-layer architecture for better separation of concerns and testability. It ships two editor implementations — a WYSIWYG rich-text editor (Tiptap/ProseMirror, the default) and a plain-text textarea — behind a single `EditorController` contract, so all layers above the editor boundary are mode-agnostic.
+MemoEditor is a three-layer component. At its core is a single editor — `Editor/`, a CodeMirror 6 "decorated source" editor. It stores the memo as **raw markdown, verbatim** (no parse/serialize round-trip) and styles that source in place with CodeMirror decorations: the markers (`#`, `*`, `` ` ``, list bullets, fences) stay visible but de-emphasized while the styled text leads. There is one editor and one storage format; everything above the editor boundary talks markdown through the `EditorController` contract.
 
 ## Architecture
 
@@ -15,8 +15,8 @@ MemoEditor uses a three-layer architecture for better separation of concerns and
 ┌─────────────────▼───────────────────────┐
 │   State Layer (Reducer + Context)       │
 │   - state/, useEditorContext()          │
-│   - state.content  ← markdown (source  │
-│     of truth for both editor modes)     │
+│   - state.content  ← markdown (the      │
+│     single source of truth)             │
 └─────────────────┬───────────────────────┘
                   │
 ┌─────────────────▼───────────────────────┐
@@ -32,29 +32,25 @@ MemoEditor/
 ├── state/                  # State management (reducer, actions, context)
 ├── services/               # Business logic (pure functions)
 ├── components/             # UI components
-│   ├── EditorContent.tsx   # Hosts the active editor; exposes mode-routing controller
-│   ├── EditorToolbar.tsx   # Toolbar including the mode toggle button
+│   ├── EditorContent.tsx   # Hosts Editor; forwards its EditorController ref
+│   ├── EditorToolbar.tsx   # Toolbar
 │   └── ...
 ├── hooks/                  # React hooks (utilities)
-│   ├── useMemoInit.ts      # Initializes editor content; load guard for WYSIWYG
-│   └── ...
-├── PlainEditor/            # Plain textarea (raw mode) implementation
-│   └── index.tsx             # Bare textarea implementing EditorController directly
-├── Editor/                 # Tiptap WYSIWYG implementation (default)
-│   ├── index.tsx             # Editor component; implements EditorController
-│   ├── extensions.ts         # Canonical schema-relevant extension set (shared with codec)
-│   ├── markdownCodec.ts      # Headless parse/serialize helpers (singleton editor)
-│   ├── PreservedBlock.ts     # Byte-for-byte preservation of tables, math, raw HTML
-│   ├── Tag.ts                # Memos #tag mark (markdownTokenizer + input rule)
-│   ├── tagMarkdown.ts        # Tag-aware Markdown: # escape on serialize, link-skip on parse
-│   ├── TagSuggestion.ts      # # popup for WYSIWYG mode
-│   └── suggestionMenu.tsx    # Shared suggestion popup renderer (used by TagSuggestion)
+├── Editor/           # The CodeMirror 6 decorated-source editor
+│   ├── index.tsx               # React wrapper: mounts the EditorView, owns the
+│   │                           #   controller refs, syncs initialContent in/out
+│   ├── extensions.ts           # buildEditorExtensions(): assembles the CM extension set
+│   ├── theme.ts                # Syntax-highlight style + editor theme (CSS-var colors)
+│   ├── tagMentionDecorations.ts# ViewPlugin that decorates #tag / @mention spans
+│   ├── tagAutocomplete.ts      # CM autocompletion source for #tag
+│   ├── formatting.ts           # FormattingController impl (toggle marks, headings, lists)
+│   └── controller.ts           # EditorController impl over an EditorView
+├── formatting/
+│   └── commands.ts         # Backend-agnostic catalog of formatting verbs
 ├── Toolbar/                # Toolbar sub-components (InsertMenu, VisibilitySelector)
-├── editorMode.ts           # EditorMode type + localStorage persistence helpers
 ├── constants.ts
 └── types/
-    ├── editorController.ts # EditorController interface (the cross-mode contract)
-    └── ...
+    └── editorController.ts # EditorController / FormattingController interfaces
 ```
 
 ## Key Concepts
@@ -63,48 +59,32 @@ MemoEditor/
 
 Uses `useReducer` + Context for predictable state transitions. All state changes go through action creators.
 
-`state.content` holds the document as a **markdown string** and is the single source of truth for both editor modes. Each editor serializes its current content into the reducer on every change via `onContentChange`; neither editor reads content back from the other.
+`state.content` holds the document as a **markdown string** and is the single source of truth. Because the editor stores markdown verbatim, `state.content` is exactly the editor's document — there is no encoding or normalization step.
 
-### Dual-mode editor
+### The editor contract
 
-`types/editorController.ts` defines the `EditorController` interface — `focus`, `getMarkdown`, `setMarkdown`, `insertMarkdown`, formatting toggles, etc. — that callers outside an editor implementation must use exclusively.
+`types/editorController.ts` defines `EditorController` — `focus`, `getMarkdown`, `setMarkdown`, `insertMarkdown`, `selectAll`, `scrollToCursor`, plus an optional `formatting` capability. Callers outside the editor implementation use this interface exclusively and never reach into CodeMirror internals.
 
-- **WYSIWYG mode** (`Editor/`): Tiptap/ProseMirror rich-text editor. The default mode. Implements `EditorController` directly via `useImperativeHandle` in `Editor/index.tsx`.
-- **Raw mode** (`PlainEditor/`): a bare textarea with no in-editor assistance (no suggestion popups, list continuation, or keyboard markdown shortcuts) — just auto-grow and cursor-visibility scrolling. It implements `EditorController` directly (markdown is just the textarea value), so the toolbar's formatting toggles still work.
+`Editor/controller.ts` implements `EditorController` over a CodeMirror `EditorView`: `getMarkdown` is just `view.state.doc.toString()`, `setMarkdown` replaces the whole document, and `insertMarkdown` block-pads the insertion so it lands as its own block.
 
-`components/EditorContent.tsx` hosts whichever implementation `state.ui.editorMode` selects and exposes a single mode-routing `EditorController` facade to the rest of the component tree via `forwardRef`.
+`FormattingController` (same file in `types/`) is the rich-formatting surface the focus-mode `FormattingToolbar` drives: `run(commandId, ctx?)`, `getActiveFormats()`, `getSelectedText()`, and `subscribe(listener)`. `Editor/formatting.ts` implements it by editing the markdown source directly — toggling inline marks (`**`/`*`/`` ` ``), line prefixes (`- `, `1. `, `- [ ] `), and ATX heading prefixes (`#`…) — and by reading active state from the Lezer syntax tree at the caret.
 
-### Mode toggle
+### Formatting command catalog
 
-The toolbar button in `EditorToolbar.tsx` dispatches `SET_EDITOR_MODE` and calls `setPreferredEditorMode` (from `editorMode.ts`) to persist the preference per device in `localStorage["memos-editor-mode"]`. WYSIWYG is the default when no preference is stored.
+`formatting/commands.ts` is the single, editor-agnostic catalog of formatting verbs (`EDITOR_COMMANDS`, `EditorCommandId`, `ActiveFormatState`, `isCommandActive`). It is metadata only — labels (i18n keys), icons, and grouping — with no dependency on any concrete editor. The toolbar and the active-state highlighting derive everything from this catalog; `Editor/formatting.ts` supplies how each verb is applied to the live CodeMirror document. To add a verb, add one entry here (and its field on `ActiveFormatState`).
 
-Mode switching is a markdown handoff: because both editors write into `state.content` on every keystroke, the incoming editor simply initializes from it — no content is ever pushed between editors directly.
+### Editor extensions
 
-### Markdown fidelity layer (Editor)
+`Editor/extensions.ts` exports `buildEditorExtensions()`, which composes the CodeMirror extension set: `@codemirror/lang-markdown` (with GFM), line wrapping, a placeholder, the editor theme, the `#tag`/`@mention` decoration plugin, the `#tag` autocomplete, and an update listener that pushes document changes back to the reducer via `onChange`.
 
-`Editor/extensions.ts` exports `buildExtensions()`, the canonical schema-relevant extension set. It is shared by the live editor and the headless `markdownCodec.ts` (parse/serialize/round-trip helpers over a singleton Tiptap instance) so parse and serialize behavior is identical in both contexts.
+`Editor/theme.ts` defines the decorated-source look: a `HighlightStyle` over the Lezer markdown highlight tags (headings, strong, emphasis, code, links, quotes, markers) and an `EditorView.theme`. Colors come from CSS custom properties so light/dark themes just work. This is the editor's own styling — the read-only memo view styles itself separately via `@/lib/markdownStyles`.
 
-`PreservedBlock.ts` handles syntax the WYSIWYG editor does not model richly: tables, `$$math$$`, and raw HTML are captured at parse time with their raw markdown source, shown as editable monospace literal text, and re-emitted byte-for-byte on serialize.
+### Tags and mentions
 
-`Tag.ts` models memos `#tags` as a `code: true` text mark, letting tags round-trip byte-identically even inside bold or heading spans. Its `#tag` lexing is a `markdownTokenizer` (the canonical `@tiptap/markdown` extension point); `tagMarkdown.ts` adds the two things that tokenizer can't do — on serialize it backslash-escapes a literal `#` that would otherwise re-parse into a tag (escapes are lexical, so there is no "escaped tag" node), and on parse it strips the tag mark from text inside link labels. The `#tag` grammar itself lives once in `utils/tag-grammar.ts` (`TAG_RUN`), shared by the tokenizer, the serialize-escape, and the read-only `remark-tag` renderer so they can't drift.
+`#tag` autocomplete and `#tag`/`@mention` decoration both reuse the shared grammar so the editor can't drift from the rest of the app:
 
-### Why the markdown manager is worked around in several places
-
-`@tiptap/markdown` (3.26.0) exposes no public, per-instance hook for custom tokenizers or for text escaping, and it registers each extension's tokenizer onto the **global** `marked` singleton on every `new Editor()` — registrations it never removes. That one limitation is the reason for three otherwise-surprising choices, each documented in detail at its call site:
-
-- **`markdownCodec.ts` keeps a single editor instance** — re-creating editors would leak tokenizer registrations onto global `marked` and measurably degrade parse time.
-- **`PreservedBlock.ts` registers its tokenizers on `marked` once at module scope** (idempotent) instead of via the per-extension `markdownTokenizer`, to avoid that per-construction accumulation.
-- **`tagMarkdown.ts` composes onto the manager in `onBeforeCreate`** (escape, link-skip) because the relevant manager methods are `private` with no public seam.
-
-`Tag.ts` deliberately uses the canonical `markdownTokenizer` API and accepts the per-construction re-registration as its cost; `PreservedBlock.ts` refuses it for its seven tokenizers. The asymmetry is intentional — collapse both onto one path if upstream ever ships a public per-instance tokenizer hook.
-
-### Suggestions
-
-The `#` tag suggestion popup is a **WYSIWYG-only** feature: `Editor/TagSuggestion.ts`, using the shared `Editor/suggestionMenu.tsx` renderer. Raw mode is a plain textarea with no suggestions. (Formatting actions that a `/` command menu would once have offered — lists, code, link — are now available from the focus-mode `FormattingToolbar` header.)
-
-### Load guard
-
-`hooks/useMemoInit.ts` runs a round-trip check on every existing memo when the editor opens. If the preferred mode is WYSIWYG and `isLosslessRoundTrip` (from `markdownCodec.ts`) returns false for the memo's content, the editor falls back to raw mode for that session only (preference is not changed) and shows a toast. This is a safety net; the corpus tests are designed to make it never fire in practice.
+- `Editor/tagMentionDecorations.ts` is a `ViewPlugin` that scans the visible ranges and adds `cm-memo-tag` / `cm-memo-mention` marks, matching against `TAG_RUN` (`@/utils/tag-grammar`) and `MENTION_RUN` (`@/utils/mention-grammar`).
+- `Editor/tagAutocomplete.ts` is a CodeMirror autocompletion source for `#tag`, matching the in-progress token with `TAG_CHAR_CLASS` (`@/utils/tag-grammar`) and offering known tags (from `useTagCounts`).
 
 ### Services
 
@@ -113,13 +93,6 @@ Pure TypeScript functions containing business logic. No React hooks, easy to tes
 ### Components
 
 Thin presentation components that dispatch actions and render UI.
-
-## Markdown fidelity contract
-
-The round-trip corpus tests in `web/tests/markdown-roundtrip.test.ts`, backed by fixtures under `web/tests/fixtures/markdown-corpus/`, enforce two guarantees:
-
-- **Supported syntax** (`supported/`): a parse → serialize → parse cycle produces an identical document tree (semantic equality; marker style may normalize).
-- **Preserved syntax** (`preserved/`): tables, math, and raw HTML round-trip byte-for-byte.
 
 ## Usage
 

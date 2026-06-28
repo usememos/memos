@@ -80,15 +80,6 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         recorderBusy: action.payload,
       };
 
-    case "SET_EDITOR_MODE":
-      return {
-        ...state,
-        ui: {
-          ...state.ui,
-          editorMode: action.payload,
-        },
-      };
-
     case "RESET":
       return createInitialState();
 

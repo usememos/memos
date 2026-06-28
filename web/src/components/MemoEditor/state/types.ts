@@ -1,7 +1,6 @@
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import type { Location, MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
-import { type EditorMode, getPreferredEditorMode } from "../editorMode";
 import type { LocalFile } from "../types/attachment";
 
 export type LoadingKey = "saving" | "uploading" | "loading";
@@ -21,7 +20,6 @@ export interface EditorState {
       uploading: boolean;
       loading: boolean;
     };
-    editorMode: EditorMode;
   };
   timestamps: {
     createTime?: Date;
@@ -44,12 +42,9 @@ export type EditorAction =
   | { type: "SET_LOADING"; payload: { key: LoadingKey; value: boolean } }
   | { type: "SET_TIMESTAMPS"; payload: Partial<EditorState["timestamps"]> }
   | { type: "SET_RECORDER_BUSY"; payload: boolean }
-  | { type: "SET_EDITOR_MODE"; payload: EditorMode }
   | { type: "RESET" };
 
-// Module-private template for createInitialState — not exported because its
-// hardcoded editorMode ignores the persisted preference; always go through
-// createInitialState() for a real initial state.
+// Module-private template for createInitialState.
 const defaultState: EditorState = {
   content: "",
   metadata: {
@@ -65,7 +60,6 @@ const defaultState: EditorState = {
       uploading: false,
       loading: false,
     },
-    editorMode: "wysiwyg",
   },
   timestamps: {
     createTime: undefined,
@@ -75,14 +69,10 @@ const defaultState: EditorState = {
   recorderBusy: false,
 };
 
-/**
- * Fresh initial state for a mounting editor. Reads the persisted mode
- * preference at call time (not module load) so newly opened editors honor a
- * toggle made earlier in the session.
- */
+/** Fresh initial state for a mounting editor. */
 export function createInitialState(): EditorState {
   return {
     ...defaultState,
-    ui: { ...defaultState.ui, editorMode: getPreferredEditorMode() },
+    ui: { ...defaultState.ui },
   };
 }

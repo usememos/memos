@@ -1,7 +1,7 @@
 /**
  * The single source of truth for memos' `@mention` lexing grammar, shared by the
- * editor tokenizer (components/MemoEditor/Editor/Mention.ts) and the read-only
- * renderer (utils/remark-plugins/remark-mention.ts) so they can't drift.
+ * editor and the read-only renderer (utils/remark-plugins/remark-mention.ts) so
+ * they can't drift.
  *
  * A mention character is an ASCII letter, digit, or hyphen. A username is capped
  * at MAX_MENTION_LENGTH characters and must contain at least one letter or digit

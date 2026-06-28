@@ -99,16 +99,10 @@ export const ListItem = ({ children, className, node: _node, ...domProps }: List
     const { checkbox, content } = splitTaskListItemChildren(children);
 
     return (
-      <li
-        className={cn(
-          "mt-0.5 min-w-0 leading-6 list-none grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-2 [&>[data-slot=checkbox]]:mt-1",
-          className,
-        )}
-        {...domProps}
-      >
+      <li className={cn(markdownStyles.taskListItem, className)} {...domProps}>
         <NestedMarkdownRenderContext>
           {checkbox}
-          <div className="min-w-0 [overflow-wrap:anywhere] [&>*:last-child]:mb-0">{content}</div>
+          <div className={markdownStyles.taskItemContent}>{content}</div>
         </NestedMarkdownRenderContext>
       </li>
     );

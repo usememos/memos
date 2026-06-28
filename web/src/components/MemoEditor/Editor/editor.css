@@ -1,0 +1,133 @@
+/*
+ * Styling for the CodeMirror source editor, in plain CSS with the app's theme
+ * variables — the same model Obsidian / GitHub use for an app-integrated CM6
+ * editor (class-based tokens + CSS, not a CSS-in-JS theme). Co-located with the
+ * component and scoped to its wrapper so nothing leaks to other CM instances.
+ *
+ * Token classes (.cm-md-*) come from the tagHighlighter in theme.ts; heading
+ * line classes (.cm-md-h*) from headingDecorations.ts; #tag/@mention
+ * (.cm-memo-*) from tagMentionDecorations.ts; the rest are CodeMirror's own.
+ */
+.memo-editor-content {
+  & .cm-editor {
+    background: transparent;
+    font-size: 1rem;
+  }
+  & .cm-editor.cm-focused {
+    outline: none;
+  }
+  & .cm-content {
+    font-family: inherit;
+    padding: 0;
+    caret-color: var(--foreground);
+  }
+  & .cm-line {
+    padding: 0;
+  }
+  & .cm-scroller {
+    font-family: inherit;
+    line-height: 1.5;
+  }
+  & .cm-placeholder {
+    color: var(--muted-foreground);
+    opacity: 0.7;
+  }
+
+  /* drawSelection() caret + selection (no base color theme is loaded). */
+  & .cm-cursor,
+  & .cm-dropCursor {
+    border-left-color: var(--foreground);
+  }
+  & .cm-selectionBackground,
+  & .cm-focused .cm-selectionBackground {
+    background: var(--accent);
+  }
+
+  /* Markdown tokens. Markers (#, *, fences, bullets) stay visible but muted
+     (.cm-md-mark); styled text leads. */
+  & .cm-md-strong {
+    font-weight: 700;
+  }
+  & .cm-md-emphasis {
+    font-style: italic;
+  }
+  & .cm-md-strike {
+    text-decoration: line-through;
+  }
+  & .cm-md-code {
+    font-family: var(--font-mono, monospace);
+    color: var(--foreground);
+  }
+  & .cm-md-link {
+    color: var(--primary);
+    text-decoration: underline;
+  }
+  & .cm-md-url {
+    color: var(--muted-foreground);
+  }
+  & .cm-md-quote {
+    color: var(--muted-foreground);
+    font-style: italic;
+  }
+  & .cm-md-mark {
+    color: var(--muted-foreground);
+  }
+
+  /* Heading lines (require a space after the hashes; headingDecorations.ts). */
+  & .cm-md-h1 {
+    font-size: 1.5em;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  & .cm-md-h2 {
+    font-size: 1.3em;
+    font-weight: 600;
+  }
+  & .cm-md-h3 {
+    font-size: 1.15em;
+    font-weight: 600;
+  }
+  & .cm-md-h4,
+  & .cm-md-h5,
+  & .cm-md-h6 {
+    font-weight: 600;
+  }
+
+  /* #tag / @mention decorations. */
+  & .cm-memo-tag,
+  & .cm-memo-mention {
+    color: var(--primary);
+  }
+
+  /* Tag autocomplete popover — app surface, not CodeMirror defaults. */
+  & .cm-tooltip.cm-tooltip-autocomplete {
+    background: var(--popover);
+    color: var(--popover-foreground);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    font-family: inherit;
+    font-size: 0.9rem;
+  }
+  & .cm-tooltip-autocomplete > ul {
+    font-family: inherit;
+    color: var(--popover-foreground);
+  }
+  & .cm-tooltip-autocomplete > ul > li {
+    padding: 0.25rem 0.5rem;
+    color: var(--popover-foreground);
+  }
+  & .cm-tooltip-autocomplete > ul > li[aria-selected] {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  & .cm-completionIcon {
+    display: none;
+  }
+  & .cm-completionMatchedText {
+    text-decoration: none;
+    font-weight: 600;
+    color: inherit;
+  }
+}
