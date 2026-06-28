@@ -13,12 +13,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useSSEConnectionStatus } from "@/hooks/useLiveMemoRefresh";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
+import { useUpdateUserGeneralSetting, useUserStats } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
 import { Routes } from "@/router";
 import { getLocaleWithFallback, loadLocale, useTranslate } from "@/utils/i18n";
 import { getThemeWithFallback, loadTheme, THEME_OPTIONS } from "@/utils/theme";
 import { LocaleSearchList } from "./LocalePicker";
+import StreakBadge from "./StreakBadge";
 import UserAvatar from "./UserAvatar";
 import {
   DropdownMenu,
@@ -45,6 +46,10 @@ const UserMenu = (props: Props) => {
   const sseStatus = useSSEConnectionStatus();
   const currentLocale = getLocaleWithFallback(userGeneralSetting?.locale);
   const currentTheme = getThemeWithFallback(userGeneralSetting?.theme);
+
+  // Fetch user stats for streak display
+  const { data: userStats } = useUserStats(currentUser?.name);
+  const streakStats = userStats?.streakStats;
 
   const handleLocaleChange = async (locale: Locale) => {
     if (!currentUser) return;
@@ -127,9 +132,19 @@ const UserMenu = (props: Props) => {
             )}
           </div>
           {!collapsed && (
-            <span className="ml-2 text-lg font-medium text-foreground grow truncate">
-              {currentUser?.displayName || currentUser?.username}
-            </span>
+            <div className="ml-2 flex flex-col gap-1 grow">
+              <span className="text-lg font-medium text-foreground truncate">
+                {currentUser?.displayName || currentUser?.username}
+              </span>
+              {streakStats && streakStats.currentStreak > 0 && (
+                <StreakBadge
+                  currentStreak={streakStats.currentStreak}
+                  longestStreak={streakStats.longestStreak}
+                  size="sm"
+                  className="self-start"
+                />
+              )}
+            </div>
           )}
         </div>
       </DropdownMenuTrigger>

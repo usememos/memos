@@ -45,14 +45,22 @@ export function useUser(name: string, options?: { enabled?: boolean }) {
   });
 }
 
-export function useUserStats(username?: string) {
+export function useUserStats(username?: string, options?: { timezoneOffsetMinutes?: number }) {
+  // Get timezone offset in minutes from UTC
+  // JavaScript returns offset in minutes with opposite sign (e.g., UTC+8 returns -480)
+  // We need to negate it to match the backend expectation (UTC+8 = 480)
+  const timezoneOffsetMinutes = options?.timezoneOffsetMinutes ?? -new Date().getTimezoneOffset();
+
   return useQuery({
-    queryKey: username ? userKeys.userStats(username) : userKeys.stats(),
+    queryKey: username ? [...userKeys.userStats(username), timezoneOffsetMinutes] : userKeys.stats(),
     queryFn: async () => {
       if (!username) {
         throw new Error("Username is required");
       }
-      const stats = await userServiceClient.getUserStats({ name: username });
+      const stats = await userServiceClient.getUserStats({
+        name: username,
+        timezoneOffsetMinutes,
+      });
       return stats;
     },
     enabled: !!username,

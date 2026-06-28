@@ -1039,7 +1039,7 @@ type AIProviderConfig struct {
 	// api_key is write-only at the API layer and is required by the server to call providers.
 	ApiKey string `protobuf:"bytes,5,opt,name=api_key,json=apiKey,proto3" json:"api_key,omitempty"`
 	// model is the model identifier for this provider.
-	// For Ollama: e.g., "llama3", "gemma4", "qwen2.5"
+	// For Ollama: e.g., "llama3", "gemma2", "qwen2.5"
 	// For OpenAI: e.g., "gpt-4", "gpt-3.5-turbo"
 	// For Gemini: e.g., "gemini-pro", "gemini-pro-vision"
 	// Empty string falls back to provider default.
@@ -1402,13 +1402,14 @@ const file_store_instance_setting_proto_rawDesc = "" +
 	" \x01(\bR\x06useSsl\"\x98\x01\n" +
 	"\x11InstanceAISetting\x12;\n" +
 	"\tproviders\x18\x01 \x03(\v2\x1d.memos.store.AIProviderConfigR\tproviders\x12F\n" +
-	"\rtranscription\x18\x02 \x01(\v2 .memos.store.TranscriptionConfigR\rtranscription\"\x9e\x01\n" +
+	"\rtranscription\x18\x02 \x01(\v2 .memos.store.TranscriptionConfigR\rtranscription\"\xb4\x01\n" +
 	"\x10AIProviderConfig\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12/\n" +
 	"\x04type\x18\x03 \x01(\x0e2\x1b.memos.store.AIProviderTypeR\x04type\x12\x1a\n" +
 	"\bendpoint\x18\x04 \x01(\tR\bendpoint\x12\x17\n" +
-	"\aapi_key\x18\x05 \x01(\tR\x06apiKey\"\x80\x01\n" +
+	"\aapi_key\x18\x05 \x01(\tR\x06apiKey\x12\x14\n" +
+	"\x05model\x18\x06 \x01(\tR\x05model\"\x80\x01\n" +
 	"\x13TranscriptionConfig\x12\x1f\n" +
 	"\vprovider_id\x18\x01 \x01(\tR\n" +
 	"providerId\x12\x14\n" +

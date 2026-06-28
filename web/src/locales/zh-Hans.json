@@ -763,6 +763,15 @@
       "unknown": "未知"
     }
   },
+  "streak": {
+    "current": "当前连续",
+    "longest": "历史最高",
+    "days": "天",
+    "new-record": "🎉 新纪录！",
+    "milestone-7": "连续打卡 7 天！",
+    "milestone-30": "连续打卡 30 天！继续保持！",
+    "milestone-100": "太棒了！连续打卡 100 天！"
+  },
   "tag": {
     "all-tags": "全部标签",
     "create-tag": "创建标签",

@@ -818,6 +818,15 @@
       "load-error": "Failed to load statistics"
     }
   },
+  "streak": {
+    "current": "Current Streak",
+    "longest": "Longest Streak",
+    "days": "days",
+    "new-record": "🎉 New Record!",
+    "milestone-7": "7-day streak!",
+    "milestone-30": "30-day streak! Keep it up!",
+    "milestone-100": "Amazing! 100-day streak!"
+  },
   "tag": {
     "all-tags": "All Tags",
     "create-tag": "Create Tag",

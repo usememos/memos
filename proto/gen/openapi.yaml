@@ -2240,6 +2240,12 @@ paths:
                   required: true
                   schema:
                     type: string
+                - name: timezoneOffsetMinutes
+                  in: query
+                  description: "Optional. Timezone offset in minutes from UTC.\r\n Used to calculate streak based on user's local timezone.\r\n Example: UTC+8 = 480, UTC-5 = -300"
+                  schema:
+                    type: integer
+                    format: int32
             responses:
                 "200":
                     description: OK
@@ -3887,6 +3893,10 @@ components:
                     type: integer
                     description: Total memo count.
                     format: int32
+                streakStats:
+                    allOf:
+                        - $ref: '#/components/schemas/UserStats_StreakStats'
+                    description: Streak statistics.
             description: User statistics messages
         UserStats_MemoTypeStats:
             type: object
@@ -3904,6 +3914,21 @@ components:
                     type: integer
                     format: int32
             description: Memo type statistics.
+        UserStats_StreakStats:
+            type: object
+            properties:
+                currentStreak:
+                    type: integer
+                    description: Current consecutive days with at least one NORMAL memo.
+                    format: int32
+                longestStreak:
+                    type: integer
+                    description: Longest consecutive days streak in history.
+                    format: int32
+                lastActiveDate:
+                    type: string
+                    description: Last active date in YYYY-MM-DD format (in user's timezone).
+            description: Streak statistics for check-in tracking.
         UserWebhook:
             type: object
             properties:

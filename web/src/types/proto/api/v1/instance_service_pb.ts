@@ -635,17 +635,6 @@ export type InstanceSetting_AIProviderConfig = Message<"memos.api.v1.InstanceSet
   apiKey: string;
 
   /**
-   * model is the model identifier for this provider.
-   * For Ollama: e.g., "llama3", "gemma4", "qwen2.5"
-   * For OpenAI: e.g., "gpt-4", "gpt-3.5-turbo"
-   * For Gemini: e.g., "gemini-pro", "gemini-pro-vision"
-   * Empty string falls back to provider default.
-   *
-   * @generated from field: string model = 6;
-   */
-  model: string;
-
-  /**
    * api_key_set indicates whether an API key is stored for this provider.
    *
    * @generated from field: bool api_key_set = 8;

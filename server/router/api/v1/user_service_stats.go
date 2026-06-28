@@ -205,6 +205,9 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
 
+	// Extract timezone offset from request (default to UTC if not provided)
+	timezoneOffsetMinutes := request.TimezoneOffsetMinutes
+
 	normalStatus := store.Normal
 	memoFind := &store.FindMemo{
 		CreatorID: &userID,
@@ -277,6 +280,12 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 		offset += limit
 	}
 
+	// Calculate streak statistics
+	streakStats, err := s.CalculateUserStreak(ctx, userID, timezoneOffsetMinutes)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to calculate streak: %v", err)
+	}
+
 	userStats := &v1pb.UserStats{
 		Name:                  fmt.Sprintf("%s/stats", BuildUserName(user.Username)),
 		MemoCreatedTimestamps: createdTimestamps,
@@ -289,6 +298,11 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 			CodeCount: codeCount,
 			TodoCount: todoCount,
 			UndoCount: undoCount,
+		},
+		StreakStats: &v1pb.UserStats_StreakStats{
+			CurrentStreak:  streakStats.CurrentStreak,
+			LongestStreak:  streakStats.LongestStreak,
+			LastActiveDate: streakStats.LastActiveDate,
 		},
 	}
 

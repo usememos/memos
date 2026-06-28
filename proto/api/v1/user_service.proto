@@ -378,12 +378,25 @@ message UserStats {
   // Total memo count.
   int32 total_memo_count = 6;
 
+  // Streak statistics.
+  StreakStats streak_stats = 9;
+
   // Memo type statistics.
   message MemoTypeStats {
     int32 link_count = 1;
     int32 code_count = 2;
     int32 todo_count = 3;
     int32 undo_count = 4;
+  }
+
+  // Streak statistics for check-in tracking.
+  message StreakStats {
+    // Current consecutive days with at least one NORMAL memo.
+    int32 current_streak = 1;
+    // Longest consecutive days streak in history.
+    int32 longest_streak = 2;
+    // Last active date in YYYY-MM-DD format (in user's timezone).
+    string last_active_date = 3;
   }
 }
 
@@ -394,6 +407,11 @@ message GetUserStatsRequest {
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/User"}
   ];
+
+  // Optional. Timezone offset in minutes from UTC.
+  // Used to calculate streak based on user's local timezone.
+  // Example: UTC+8 = 480, UTC-5 = -300
+  int32 timezone_offset_minutes = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 message ListAllUserStatsRequest {

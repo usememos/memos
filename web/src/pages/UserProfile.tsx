@@ -5,12 +5,13 @@ import { toast } from "react-hot-toast";
 import { useParams, useSearchParams } from "react-router-dom";
 import MemoView from "@/components/MemoView";
 import PagedMemoList from "@/components/PagedMemoList";
+import StreakBadge from "@/components/StreakBadge";
 import UserAvatar from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useView } from "@/contexts/ViewContext";
 import { useMemoFilters, useMemoSorting } from "@/hooks";
-import { useUser } from "@/hooks/useUserQueries";
+import { useUser, useUserStats } from "@/hooks/useUserQueries";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -27,14 +28,35 @@ interface User {
   description?: string;
 }
 
-const ProfileHeader = ({ user, onCopyProfileLink, shareLabel }: { user: User; onCopyProfileLink: () => void; shareLabel: string }) => (
+interface StreakStats {
+  currentStreak: number;
+  longestStreak: number;
+  lastActiveDate: string;
+}
+
+const ProfileHeader = ({
+  user,
+  streakStats,
+  onCopyProfileLink,
+  shareLabel,
+}: {
+  user: User;
+  streakStats?: StreakStats;
+  onCopyProfileLink: () => void;
+  shareLabel: string;
+}) => (
   <div className="border-b border-border/10 px-4 py-8 sm:px-6">
     <div className="mx-auto flex max-w-2xl gap-4 sm:gap-6">
       <UserAvatar className="h-20 w-20 shrink-0 rounded-2xl shadow-sm sm:h-24 sm:w-24" avatarUrl={user.avatarUrl} />
       <div className="flex flex-1 flex-col gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground sm:text-3xl">{user.displayName || user.username}</h1>
-          {user.displayName && <p className="text-sm text-muted-foreground">@{user.username}</p>}
+        <div className="flex items-center gap-3 flex-wrap">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground sm:text-3xl">{user.displayName || user.username}</h1>
+            {user.displayName && <p className="text-sm text-muted-foreground">@{user.username}</p>}
+          </div>
+          {streakStats && streakStats.currentStreak > 0 && (
+            <StreakBadge currentStreak={streakStats.currentStreak} longestStreak={streakStats.longestStreak} size="md" />
+          )}
         </div>
         {user.description && <p className="text-sm text-foreground/70">{user.description}</p>}
         <Button variant="outline" size="sm" onClick={onCopyProfileLink} className="w-fit gap-2">
@@ -54,6 +76,7 @@ const UserProfile = () => {
   const { compactMode } = useView();
 
   const { data: user, isLoading, error } = useUser(`users/${username}`, { enabled: !!username });
+  const { data: userStats } = useUserStats(user?.name);
 
   if (error && !isLoading) {
     toast.error(t("message.user-not-found"));
@@ -89,7 +112,12 @@ const UserProfile = () => {
     <section className="flex min-h-screen w-full flex-col bg-background">
       {user ? (
         <>
-          <ProfileHeader user={user} onCopyProfileLink={handleCopyProfileLink} shareLabel={t("common.share")} />
+          <ProfileHeader
+            user={user}
+            streakStats={userStats?.streakStats}
+            onCopyProfileLink={handleCopyProfileLink}
+            shareLabel={t("common.share")}
+          />
 
           <div className="border-b border-border/10 mb-4">
             <div className="mx-auto flex max-w-2xl">
