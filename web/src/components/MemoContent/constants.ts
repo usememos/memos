@@ -58,6 +58,11 @@ export const isTrustedIframeSrc = (src: string): boolean => TRUSTED_IFRAME_SRC_P
  */
 export const SANITIZE_SCHEMA = {
   ...defaultSchema,
+  // Don't re-prefix `id`/`name` attributes. remark-rehype already namespaces footnote ids with
+  // `user-content-` and emits matching `#user-content-…` hrefs; the default schema's clobbering
+  // would prepend a *second* `user-content-` to the ids only (not the hrefs), breaking in-page
+  // navigation. Leaving ids untouched keeps footnote (and heading) anchors pointing at real targets.
+  clobber: [],
   attributes: {
     ...defaultSchema.attributes,
     img: [...(defaultSchema.attributes?.img || []), "height", "width"],

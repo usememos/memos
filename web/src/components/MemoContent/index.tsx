@@ -33,6 +33,12 @@ const MemoContent = (props: MemoContentProps) => {
           "[&_.katex-display]:max-w-full",
           "[&_.katex-display]:overflow-x-auto",
           "[&_.katex-display]:overflow-y-hidden",
+          // Footnotes: quiet GitHub-style footer — thin separator, smaller muted text, unobtrusive links.
+          "[&_.footnotes]:mt-4 [&_.footnotes]:border-t [&_.footnotes]:border-border [&_.footnotes]:pt-2",
+          "[&_.footnotes]:text-sm [&_.footnotes]:text-muted-foreground",
+          // GitHub renders footnote ref/backref links without an underline (underline on hover only).
+          "[&_[data-footnote-ref]]:no-underline [&_[data-footnote-ref]:hover]:underline",
+          "[&_.data-footnote-backref]:no-underline [&_.data-footnote-backref:hover]:underline",
           showCompactMode === "ALL" && "overflow-hidden",
           contentClassName,
         )}
@@ -40,7 +46,12 @@ const MemoContent = (props: MemoContentProps) => {
         onMouseUp={onClick}
         onDoubleClick={onDoubleClick}
       >
-        <MemoMarkdownRenderer content={content} resolvedMentionUsernames={resolvedMentionUsernames} />
+        <MemoMarkdownRenderer
+          content={content}
+          resolvedMentionUsernames={resolvedMentionUsernames}
+          memoName={props.memoName}
+          compact={Boolean(props.compact)}
+        />
         {showCompactMode === "ALL" && (
           <div
             className={cn(

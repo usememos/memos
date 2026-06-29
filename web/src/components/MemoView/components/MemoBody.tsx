@@ -36,6 +36,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
       >
         <MemoContent
           key={memo.name}
+          memoName={memo.name}
           content={memo.content}
           onClick={handleMemoContentClick}
           onDoubleClick={handleMemoContentDoubleClick}

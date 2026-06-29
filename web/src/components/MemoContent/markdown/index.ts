@@ -1,3 +1,4 @@
+export { AnchorLink } from "./AnchorLink";
 export { Blockquote } from "./Blockquote";
 export { Heading } from "./Heading";
 export { HorizontalRule } from "./HorizontalRule";

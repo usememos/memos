@@ -1,6 +1,6 @@
 import { Code, ConnectError } from "@connectrpc/connect";
 import { ArrowUpLeftFromCircleIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import MemoCommentSection from "@/components/MemoCommentSection";
 import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
@@ -57,11 +57,17 @@ const MemoDetail = () => {
     enabled: !!memo,
   });
 
+  // Scroll to the hash target once it's in the DOM. The effect re-runs as the memo loads (footnote
+  // anchors) and as comments arrive (comment anchors), since the target may render in either; the
+  // ref guards against re-scrolling the same hash on every later comments page-load.
+  const scrolledHashRef = useRef("");
   useEffect(() => {
-    if (!hash || comments.length === 0) return;
-    const el = document.getElementById(hash.slice(1));
-    el?.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [hash, comments]);
+    if (!hash || scrolledHashRef.current === hash) return;
+    const el = document.getElementById(decodeURIComponent(hash.slice(1)));
+    if (!el) return;
+    scrolledHashRef.current = hash;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [hash, memo, comments]);
 
   if (isShareMode) {
     const isNotFound = error instanceof ConnectError && (error.code === Code.NotFound || error.code === Code.Unauthenticated);
