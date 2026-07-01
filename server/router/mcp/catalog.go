@@ -24,6 +24,7 @@ var curatedOperationIDs = []string{
 	"MemoService_ListMemoRelations",
 	"MemoService_SetMemoRelations",
 	"AttachmentService_ListAttachments",
+	"AttachmentService_CreateAttachment",
 	"AttachmentService_GetAttachment",
 	"AttachmentService_DeleteAttachment",
 	"ShortcutService_ListShortcuts",

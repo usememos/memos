@@ -154,6 +154,7 @@ resolve its own user — the single allowed auth/identity operation):
 | `MemoService_ListMemoRelations` | `memo_list_memo_relations` |
 | `MemoService_SetMemoRelations` | `memo_set_memo_relations` |
 | `AttachmentService_ListAttachments` | `attachment_list_attachments` |
+| `AttachmentService_CreateAttachment` | `attachment_create_attachment` |
 | `AttachmentService_GetAttachment` | `attachment_get_attachment` |
 | `AttachmentService_DeleteAttachment` | `attachment_delete_attachment` |
 | `ShortcutService_ListShortcuts` | `shortcut_list_shortcuts` |

@@ -9,7 +9,7 @@ import (
 )
 
 func TestCuratedOperationIDsStayMemoFocused(t *testing.T) {
-	require.Len(t, curatedOperationIDs, 19)
+	require.Len(t, curatedOperationIDs, 20)
 
 	for _, operationID := range curatedOperationIDs {
 		require.NotContains(t, operationID, "Admin")
@@ -99,6 +99,42 @@ func TestBuildToolFromOperationIncludesRequestBodySchema(t *testing.T) {
 			"state":      "NORMAL",
 			"content":    "hello",
 			"visibility": "PRIVATE",
+		},
+	})
+	require.NoError(t, err)
+}
+
+func TestBuildToolFromOperationExposesCreateAttachment(t *testing.T) {
+	spec, err := loadOpenAPISpec("../../../proto/gen/openapi.yaml")
+	require.NoError(t, err)
+	registry, err := buildOperationRegistry(spec)
+	require.NoError(t, err)
+
+	tool, operation := buildToolFromOperation(registry["AttachmentService_CreateAttachment"])
+	require.Equal(t, "attachment_create_attachment", tool.Name)
+	require.Equal(t, "POST", operation.Method)
+	require.False(t, tool.Annotations.ReadOnlyHint)
+	require.False(t, *tool.Annotations.DestructiveHint)
+	require.False(t, tool.Annotations.IdempotentHint)
+
+	input, ok := tool.InputSchema.(jsonSchema)
+	require.True(t, ok)
+	require.Contains(t, input["required"], "body")
+	properties, ok := input["properties"].(map[string]any)
+	require.True(t, ok)
+	// attachmentId is an optional query parameter; the file itself is the body.
+	require.Contains(t, properties, "attachmentId")
+	require.Contains(t, properties, "body")
+	body, ok := properties["body"].(jsonSchema)
+	require.True(t, ok)
+	require.Contains(t, body["properties"], "filename")
+	require.Contains(t, body["properties"], "content")
+
+	err = validateToolArguments(input, map[string]any{
+		"body": map[string]any{
+			"filename": "screenshot.png",
+			"type":     "image/png",
+			"content":  "aGVsbG8=",
 		},
 	})
 	require.NoError(t, err)
