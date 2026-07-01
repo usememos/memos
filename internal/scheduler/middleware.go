@@ -2,6 +2,7 @@ package scheduler
 
 import (
 	"context"
+	"slices"
 	"time"
 
 	"github.com/pkg/errors"
@@ -15,8 +16,8 @@ type Middleware func(JobHandler) JobHandler
 func Chain(middlewares ...Middleware) Middleware {
 	return func(handler JobHandler) JobHandler {
 		// Apply middleware in reverse order so first middleware wraps outermost
-		for i := len(middlewares) - 1; i >= 0; i-- {
-			handler = middlewares[i](handler)
+		for _, middleware := range slices.Backward(middlewares) {
+			handler = middleware(handler)
 		}
 		return handler
 	}
