@@ -93,14 +93,7 @@ export function FormattingToolbar({ controllerRef, onExit, className }: Formatti
     } else {
       // window.prompt blurs the editor, so refocus below regardless of outcome.
       const url = window.prompt(t("editor.format.link-prompt"));
-      if (url) {
-        const selected = formatting.getSelectedText();
-        if (selected) {
-          formatting.run("link", { url });
-        } else {
-          controllerRef.current?.insertMarkdown(`[${url}](${url})`);
-        }
-      }
+      if (url) formatting.run("link", { url });
     }
     controllerRef.current?.focus();
   };

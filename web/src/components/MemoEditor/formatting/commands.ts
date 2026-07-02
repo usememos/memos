@@ -15,6 +15,11 @@ import type { Translations } from "@/utils/i18n";
 
 export type ToolbarHeadingLevel = 1 | 2 | 3;
 
+/** Clamp a raw heading depth to the toolbar's addressable levels (H4–H6 → null). */
+export function toToolbarHeadingLevel(level: number): ToolbarHeadingLevel | null {
+  return level === 1 || level === 2 || level === 3 ? level : null;
+}
+
 export type EditorCommandId =
   | "bold"
   | "italic"

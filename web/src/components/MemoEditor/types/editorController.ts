@@ -38,8 +38,6 @@ export interface FormattingController {
   run(command: EditorCommandId, ctx?: EditorCommandContext): void;
   /** Snapshot of which marks/blocks are active at the current selection. */
   getActiveFormats(): ActiveFormatState;
-  /** Plain text of the current selection ("" when the selection is empty). */
-  getSelectedText(): string;
   /** Register a listener fired on every transaction/selection change. Returns an unsubscribe. */
   subscribe(listener: () => void): () => void;
 }

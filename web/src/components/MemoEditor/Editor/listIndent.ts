@@ -9,13 +9,15 @@ const ORDERED_ITEM = /^(\s*)(\d+)([.)])(\s+)(.*)$/;
 // column where the item's content — and therefore a nested child — begins.
 const LIST_PREFIX = /^\s*(?:[-*+]|\d+[.)])\s+/;
 
-const leadingWhitespace = (text: string): number => text.length - text.trimStart().length;
+export const leadingWhitespace = (text: string): number => text.length - text.trimStart().length;
 
-function selectedLineNumbers(view: EditorView): number[] {
+/** Unique line numbers covered by the selection (also used by formatting.ts). */
+export function selectedLineNumbers(view: EditorView): number[] {
   const { doc, selection } = view.state;
   const nums = new Set<number>();
   for (const range of selection.ranges) {
-    for (let n = doc.lineAt(range.from).number; n <= doc.lineAt(range.to).number; n++) {
+    const last = doc.lineAt(range.to).number;
+    for (let n = doc.lineAt(range.from).number; n <= last; n++) {
       nums.add(n);
     }
   }
