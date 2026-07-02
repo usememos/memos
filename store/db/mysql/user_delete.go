@@ -524,10 +524,7 @@ func deleteUserBatches[T any](values []T, size int) [][]T {
 
 	batches := make([][]T, 0, (len(values)+size-1)/size)
 	for start := 0; start < len(values); start += size {
-		end := start + size
-		if end > len(values) {
-			end = len(values)
-		}
+		end := min(start+size, len(values))
 		batches = append(batches, values[start:end])
 	}
 	return batches

@@ -98,10 +98,7 @@ func WebMOpusToWAV(input []byte) ([]byte, error) {
 		}
 	}
 
-	skip := preSkip * channels
-	if skip > len(pcm) {
-		skip = len(pcm)
-	}
+	skip := min(preSkip*channels, len(pcm))
 	pcm = pcm[skip:]
 
 	return encodeWAV(pcm, opusOutputSampleRate, channels), nil

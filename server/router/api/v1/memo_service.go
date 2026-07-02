@@ -236,10 +236,7 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
 		}
 		limit = normalizePageSize(pageToken.Limit)
-		offset = int(pageToken.Offset)
-		if offset < 0 {
-			offset = 0
-		}
+		offset = max(int(pageToken.Offset), 0)
 	} else {
 		limit = normalizePageSize(request.PageSize)
 	}
@@ -782,10 +779,7 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
 		}
 		limit = normalizePageSize(pageToken.Limit)
-		offset = int(pageToken.Offset)
-		if offset < 0 {
-			offset = 0
-		}
+		offset = max(int(pageToken.Offset), 0)
 	} else {
 		limit = normalizePageSize(request.PageSize)
 	}
