@@ -1,5 +1,50 @@
 # Changelog
 
+## [0.30.0](https://github.com/usememos/memos/compare/v0.29.1...v0.30.0) (2026-07-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* **filter:** now() is removed (use the `now` variable) and time fields are timestamps, so bare-epoch comparisons need timestamp(<epoch>). Existing saved shortcuts using the old syntax must be updated.
+
+### Features
+
+* add OpenAPI-driven MCP support ([#6026](https://github.com/usememos/memos/issues/6026)) ([777d227](https://github.com/usememos/memos/commit/777d227eb992c4feccd5d78c781cf8e9094e38de))
+* add optional webhook signing secret (Standard Webhooks HMAC-SHA256) ([#6013](https://github.com/usememos/memos/issues/6013)) ([063a444](https://github.com/usememos/memos/commit/063a44498d49ac44c439ad6b8f7f617485fe6f5d))
+* add webhook edit UI and signing secret status indicator ([#6027](https://github.com/usememos/memos/issues/6027)) ([c703b05](https://github.com/usememos/memos/commit/c703b05dabb1ef4571c91611937ccb08381af6af))
+* **editor:** add focus-mode formatting toolbar ([deddf71](https://github.com/usememos/memos/commit/deddf71d7b4bd4d7b70a8112a753a39c1aa7d3cb))
+* **editor:** recognize and style [@mentions](https://github.com/mentions) in the rich editor ([daa71d0](https://github.com/usememos/memos/commit/daa71d0456d07a25ff5ea435e46577d31d030728))
+* **filter:** expand CEL filter surface with startsWith/endsWith, matches(), and all() ([f0e4a56](https://github.com/usememos/memos/commit/f0e4a5624f4371e08fb0c41510891c9f8cce6ba0))
+* **filter:** standard CEL now variable, time accessors, set ops ([26f4b73](https://github.com/usememos/memos/commit/26f4b73cb9a996f9232daad2b5daa34360742697))
+* **i18n:** add searchable locale picker ([4183985](https://github.com/usememos/memos/commit/418398587cef90151745ba0dbc51cef4762045ca))
+* **i18n:** expand European locale coverage ([a47d049](https://github.com/usememos/memos/commit/a47d04954e75c54491138601c72f1c0cbe140f3c))
+* **markdown:** render and navigate GFM footnotes ([1020060](https://github.com/usememos/memos/commit/10200606db24e3d70fb8efefee99c7b0a369ddea))
+* **mcp:** expose create_attachment tool ([0e1d821](https://github.com/usememos/memos/commit/0e1d821fb84310feff40b90d899403d45bced596)), closes [#6057](https://github.com/usememos/memos/issues/6057)
+* **settings:** move tag metadata to user settings ([#6017](https://github.com/usememos/memos/issues/6017)) ([9eabb55](https://github.com/usememos/memos/commit/9eabb554d5631ef3af9455cda654fefa1317dfac))
+* **storage:** add insecure_skip_tls_verify option for S3 ([20c19ef](https://github.com/usememos/memos/commit/20c19ef82dcaa4cb133ac5c520390ffccdc3cdfd)), closes [#6039](https://github.com/usememos/memos/issues/6039)
+* surface newly created memo above pinned list ([6eb1786](https://github.com/usememos/memos/commit/6eb17864df21f43de978b69d3deb45df7264780e))
+* **web:** add link preview view setting ([e3e4ae1](https://github.com/usememos/memos/commit/e3e4ae10512f514f71729779b5096d0d591c8cf4))
+* **web:** markdown WYSIWYG editor with raw-mode toggle ([#6030](https://github.com/usememos/memos/issues/6030)) ([797f1ff](https://github.com/usememos/memos/commit/797f1ff15dcb94543ce15462f7cfc8d292f2ffa7))
+
+
+### Bug Fixes
+
+* **comments:** list all memo comments via pagination ([f727ad2](https://github.com/usememos/memos/commit/f727ad217c7ba29e8314a68bc0a54dc97f937602))
+* **cors:** open API to any origin for token auth, keep cookies same-origin ([385fa22](https://github.com/usememos/memos/commit/385fa22056c51a42a0eb99fd08a8876009c2c52d))
+* **editor:** collapse lingering select-all selection after delete ([817561d](https://github.com/usememos/memos/commit/817561df8f52c204df2393a8f6cbeb152383f37f))
+* **editor:** make formatting commands toggle and convert correctly ([c349c15](https://github.com/usememos/memos/commit/c349c1549e49950e3171b7de28faba5d89249cfa))
+* **editor:** support backslash-escaping literal #tags ([5f7e038](https://github.com/usememos/memos/commit/5f7e038aa76a604e63122eca23684b3b68342841))
+* **editor:** wire Ctrl+B and Ctrl+I markdown shortcuts to textarea ([#6016](https://github.com/usememos/memos/issues/6016)) ([8f13773](https://github.com/usememos/memos/commit/8f1377324f9c59505a39d395c09ff7536459911a))
+* **instance:** add needs_setup so admin-less instances aren't treated as fresh ([96cb653](https://github.com/usememos/memos/commit/96cb65320b714ef8d7993ddb7c9182350ee9da4c))
+* **location:** truncate long address in memo location chip ([3b601b8](https://github.com/usememos/memos/commit/3b601b841670ece4a2832341a99ccc74124a745e))
+* **markdown:** ignore tags inside links ([a50ce09](https://github.com/usememos/memos/commit/a50ce09e8159836aed1a97fa717488283378200f))
+* **mcp:** allow reverse-proxied instances to serve /mcp ([8fa2ff4](https://github.com/usememos/memos/commit/8fa2ff442355787fd565cf8ba8eb892a99a90e31))
+* **memo:** preserve expanded todo list state ([ecbe2ab](https://github.com/usememos/memos/commit/ecbe2ab7977fcd3521aeae1226e816a9dc2a6a40))
+* **tags:** include combining marks in tag character class ([#6051](https://github.com/usememos/memos/issues/6051)) ([281e0dc](https://github.com/usememos/memos/commit/281e0dc17c1c7052609fbce0c86a90c9320136b2))
+* **web:** delay loading skeleton to avoid flash on fast loads ([9e84f61](https://github.com/usememos/memos/commit/9e84f6102926fe4a9c6364b92d8c738b0b347cde)), closes [#6047](https://github.com/usememos/memos/issues/6047)
+* **webhook:** fail loud on malformed signing secret and add tests ([f497f00](https://github.com/usememos/memos/commit/f497f009ceb6e2c51b8805dabedb0494a0d65e5b))
+* **web:** improve mobile control spacing ([1052c04](https://github.com/usememos/memos/commit/1052c04d33034b229615a257436d4dc242cf72b2))
+
 ## [0.29.1](https://github.com/usememos/memos/compare/v0.29.0...v0.29.1) (2026-06-04)
 
 
