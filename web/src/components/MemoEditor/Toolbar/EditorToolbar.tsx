@@ -8,7 +8,14 @@ import type { EditorToolbarProps } from "../types";
 import InsertMenu from "./InsertMenu";
 import VisibilitySelector from "./VisibilitySelector";
 
-export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoName, onAudioRecorderClick }) => {
+export const EditorToolbar: FC<EditorToolbarProps> = ({
+  onSave,
+  onCancel,
+  memoName,
+  onAudioRecorderClick,
+  isFormattingToolbarVisible,
+  onToggleFormattingToolbar,
+}) => {
   const t = useTranslate();
   const { actions, dispatch } = useEditorContext();
   // Subscribe to narrow/derived slices so typing (which only changes content)
@@ -42,6 +49,8 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({ onSave, onCancel, memoNa
           onToggleFocusMode={handleToggleFocusMode}
           memoName={memoName}
           onAudioRecorderClick={onAudioRecorderClick}
+          isFormattingToolbarVisible={isFormattingToolbarVisible}
+          onToggleFormattingToolbar={onToggleFormattingToolbar}
         />
         <VisibilitySelector value={visibility} onChange={handleVisibilityChange} />
       </div>

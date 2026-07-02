@@ -30,6 +30,9 @@ export interface EditorToolbarProps {
   onCancel?: () => void;
   memoName?: string;
   onAudioRecorderClick: () => void;
+  /** Whether the formatting toolbar is shown in normal mode (persisted preference). */
+  isFormattingToolbarVisible: boolean;
+  onToggleFormattingToolbar: () => void;
 }
 
 export interface EditorMetadataProps {
@@ -65,6 +68,9 @@ export interface InsertMenuProps {
   onToggleFocusMode?: () => void;
   memoName?: string;
   onAudioRecorderClick?: () => void;
+  /** Persisted toggle for the normal-mode formatting toolbar. */
+  isFormattingToolbarVisible?: boolean;
+  onToggleFormattingToolbar?: () => void;
 }
 
 export interface VisibilitySelectorProps {

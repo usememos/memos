@@ -10,6 +10,7 @@ import {
   MicIcon,
   MoreHorizontalIcon,
   PlusIcon,
+  TypeIcon,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
@@ -18,6 +19,7 @@ import { useReverseGeocoding } from "@/components/map/useReverseGeocoding";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
@@ -39,7 +41,14 @@ const InsertMenu = (props: InsertMenuProps) => {
   const t = useTranslate();
   const { actions, dispatch } = useEditorContext();
   const relations = useEditorSelector((s) => s.metadata.relations);
-  const { location: initialLocation, onLocationChange, onToggleFocusMode, isUploading: isUploadingProp } = props;
+  const {
+    location: initialLocation,
+    onLocationChange,
+    onToggleFocusMode,
+    onToggleFormattingToolbar,
+    isFormattingToolbarVisible,
+    isUploading: isUploadingProp,
+  } = props;
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
@@ -133,6 +142,11 @@ const InsertMenu = (props: InsertMenuProps) => {
     setMoreSubmenuOpen(false);
   }, [onToggleFocusMode]);
 
+  const handleToggleFormattingToolbar = useCallback(() => {
+    onToggleFormattingToolbar?.();
+    setMoreSubmenuOpen(false);
+  }, [onToggleFormattingToolbar]);
+
   const handleMediaUploadClick = useCallback(() => {
     handleUploadClick("image/*,video/*");
   }, [handleUploadClick]);
@@ -201,7 +215,7 @@ const InsertMenu = (props: InsertMenuProps) => {
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
-          {/* View submenu with Focus Mode + editor display mode */}
+          {/* View submenu: focus mode + normal-mode formatting toolbar toggle */}
           <DropdownMenuSub open={moreSubmenuOpen} onOpenChange={setMoreSubmenuOpen}>
             <DropdownMenuSubTrigger onPointerEnter={handleTriggerEnter} onPointerLeave={handleTriggerLeave}>
               <MoreHorizontalIcon className="w-4 h-4" />
@@ -212,6 +226,10 @@ const InsertMenu = (props: InsertMenuProps) => {
                 <Maximize2Icon className="w-4 h-4" />
                 {t("editor.focus-mode")}
               </DropdownMenuItem>
+              <DropdownMenuCheckboxItem checked={Boolean(isFormattingToolbarVisible)} onCheckedChange={handleToggleFormattingToolbar}>
+                <TypeIcon className="w-4 h-4" />
+                {t("editor.formatting-toolbar")}
+              </DropdownMenuCheckboxItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
         </DropdownMenuContent>
