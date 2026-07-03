@@ -4,11 +4,6 @@ tmp
 # Frontend asset
 web/dist
 
-# Build artifacts
-build/
-bin/
-memos
-
 .DS_Store
 
 # Jetbrains

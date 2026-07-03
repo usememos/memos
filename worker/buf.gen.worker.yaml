@@ -1,0 +1,7 @@
+version: v2
+plugins:
+  - remote: buf.build/bufbuild/es
+    out: src/gen
+    opt:
+      - target=ts
+    include_imports: true

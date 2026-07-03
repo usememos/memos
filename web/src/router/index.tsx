@@ -4,7 +4,7 @@ import App from "@/App";
 import { ChunkLoadErrorFallback } from "@/components/ErrorBoundary";
 import MainLayout from "@/layouts/MainLayout";
 import RootLayout from "@/layouts/RootLayout";
-import { LandingRoute, RequireAuthRoute, RequireGuestRoute } from "./guards";
+import { LandingRoute, RequireAuthRoute } from "./guards";
 import { ROUTES } from "./routes";
 
 // Wrap lazy imports to auto-reload on chunk load failure (e.g., after redeployment).
@@ -24,10 +24,8 @@ function lazyWithReload<T extends React.ComponentType>(factory: () => Promise<{ 
   );
 }
 
-const AdminSignIn = lazyWithReload(() => import("@/pages/AdminSignIn"));
 const About = lazyWithReload(() => import("@/pages/About"));
 const Archived = lazyWithReload(() => import("@/pages/Archived"));
-const AuthCallback = lazyWithReload(() => import("@/pages/AuthCallback"));
 const Explore = lazyWithReload(() => import("@/pages/Explore"));
 const Home = lazyWithReload(() => import("@/pages/Home"));
 const Inboxes = lazyWithReload(() => import("@/pages/Inboxes"));
@@ -37,8 +35,6 @@ const PermissionDenied = lazyWithReload(() => import("@/pages/PermissionDenied")
 const Attachments = lazyWithReload(() => import("@/pages/Attachments"));
 const Setting = lazyWithReload(() => import("@/pages/Setting"));
 const Shortcuts = lazyWithReload(() => import("@/pages/Shortcuts"));
-const SignIn = lazyWithReload(() => import("@/pages/SignIn"));
-const SignUp = lazyWithReload(() => import("@/pages/SignUp"));
 const UserProfile = lazyWithReload(() => import("@/pages/UserProfile"));
 
 // Backward compatibility alias.
@@ -56,23 +52,7 @@ export const routeConfig: RouteObject[] = [
     element: <App />,
     errorElement: <ChunkLoadErrorFallback />,
     children: [
-      {
-        path: Routes.AUTH,
-        children: [
-          // The OAuth callback must run regardless of the current session — an
-          // authenticated tab elsewhere must not block it from consuming its
-          // one-time OAuth state. Keep it outside the guest-only subtree.
-          { path: "callback", element: <AuthCallback /> },
-          {
-            element: <RequireGuestRoute />,
-            children: [
-              { path: "", element: <SignIn /> },
-              { path: "admin", element: <AdminSignIn /> },
-              { path: "signup", element: <SignUp /> },
-            ],
-          },
-        ],
-      },
+      // Authentication lives in Cloudflare Access — no /auth routes.
       // Backward compatibility: the old `/home` URL now lives at `/`.
       { path: "home", element: <Navigate to={Routes.HOME} replace /> },
       {

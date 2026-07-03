@@ -1,9 +1,7 @@
 import {
   BarChart3Icon,
   CogIcon,
-  DatabaseIcon,
   HeartHandshakeIcon,
-  KeyIcon,
   LibraryIcon,
   type LucideIcon,
   MailIcon,
@@ -22,12 +20,12 @@ import MyAccountSection from "@/components/Settings/MyAccountSection";
 import NotificationSection from "@/components/Settings/NotificationSection";
 import PreferencesSection from "@/components/Settings/PreferencesSection";
 import ResourceStatsSection from "@/components/Settings/ResourceStatsSection";
-import SSOSection from "@/components/Settings/SSOSection";
-import StorageSection from "@/components/Settings/StorageSection";
 import TagsSection from "@/components/Settings/TagsSection";
 import WebhookSection from "@/components/Settings/WebhookSection";
 import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 
+// SSO and storage sections are gone: identity lives in Cloudflare Access,
+// attachments live in R2 (configured via wrangler bindings).
 export type SettingSectionKey =
   | "my-account"
   | "preference"
@@ -35,9 +33,7 @@ export type SettingSectionKey =
   | "member"
   | "system"
   | "memo"
-  | "storage"
   | "notification"
-  | "sso"
   | "tags"
   | "ai"
   | "resource-stats";
@@ -104,27 +100,12 @@ export const SETTINGS_SECTIONS: SettingSectionDefinition[] = [
     component: TagsSection,
   },
   {
-    key: "storage",
-    scope: "admin",
-    labelKey: "setting.storage.label",
-    icon: DatabaseIcon,
-    component: StorageSection,
-    preloadSettingKeys: [InstanceSetting_Key.STORAGE],
-  },
-  {
     key: "notification",
     scope: "admin",
     labelKey: "setting.notification.label",
     icon: MailIcon,
     component: NotificationSection,
     preloadSettingKeys: [InstanceSetting_Key.NOTIFICATION],
-  },
-  {
-    key: "sso",
-    scope: "admin",
-    labelKey: "setting.sso.label",
-    icon: KeyIcon,
-    component: SSOSection,
   },
   {
     key: "ai",

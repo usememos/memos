@@ -1,8 +1,0 @@
-blank_issues_enabled: false
-contact_links:
-  - name: Questions & Support
-    url: https://github.com/usememos/memos/discussions
-    about: Ask questions or get help in GitHub Discussions — please don't open issues for questions
-  - name: Documentation
-    url: https://www.usememos.com/docs
-    about: Check the documentation before opening an issue

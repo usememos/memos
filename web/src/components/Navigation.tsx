@@ -15,6 +15,10 @@ interface NavLinkItem {
   path: string;
   title: string;
   icon: React.ReactNode;
+  // Forces a full-document navigation instead of client-side routing. Used for
+  // the sign-in link so Cloudflare Access can intercept the request and present
+  // its login page.
+  reloadDocument?: boolean;
 }
 
 interface Props {
@@ -70,9 +74,15 @@ const Navigation = (props: Props) => {
   };
   const signInNavLink: NavLinkItem = {
     id: "header-auth",
-    path: Routes.AUTH,
+    // Only a handful of app pages (see worker/README.md's Access section) sit
+    // behind a Cloudflare Access "Allow" policy — everything else, including
+    // the home page, is intentionally left unmanaged by Access so it stays
+    // reachable without forcing a login. A full load of one of those gated
+    // pages is what actually triggers the Access login screen.
+    path: Routes.SETTING,
     title: t("common.sign-in"),
     icon: <UserCircleIcon className="w-6 h-auto shrink-0" />,
+    reloadDocument: true,
   };
 
   const primaryNavLinks: NavLinkItem[] = currentUser
@@ -102,6 +112,7 @@ const Navigation = (props: Props) => {
               to={navLink.path}
               end={navLink.path === Routes.HOME}
               id={navLink.id}
+              reloadDocument={navLink.reloadDocument}
               aria-label={navLink.id === "header-inbox" ? inboxAriaLabel : undefined}
               viewTransition
             >

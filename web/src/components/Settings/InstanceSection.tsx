@@ -5,10 +5,8 @@ import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { identityProviderServiceClient } from "@/connect";
 import { useInstance } from "@/contexts/InstanceContext";
 import useDialog from "@/hooks/useDialog";
-import { IdentityProvider } from "@/types/proto/api/v1/idp_service_pb";
 import {
   InstanceSetting_GeneralSetting,
   InstanceSetting_GeneralSettingSchema,
@@ -26,22 +24,12 @@ const InstanceSection = () => {
   const t = useTranslate();
   const customizeDialog = useDialog();
   const saveInstanceSetting = useInstanceSettingUpdater();
-  const { generalSetting: originalSetting, profile } = useInstance();
+  const { generalSetting: originalSetting } = useInstance();
   const [instanceGeneralSetting, setInstanceGeneralSetting] = useState<InstanceSetting_GeneralSetting>(originalSetting);
-  const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
 
   useEffect(() => {
     setInstanceGeneralSetting(originalSetting);
   }, [originalSetting]);
-
-  const fetchIdentityProviderList = async () => {
-    const { identityProviders } = await identityProviderServiceClient.listIdentityProviders({});
-    setIdentityProviderList(identityProviders);
-  };
-
-  useEffect(() => {
-    fetchIdentityProviderList();
-  }, []);
 
   const updatePartialSetting = (partial: Partial<InstanceSetting_GeneralSetting>) => {
     setInstanceGeneralSetting(
@@ -98,28 +86,7 @@ const InstanceSection = () => {
 
       <SettingGroup title={t("setting.instance.access-title")} description={t("setting.instance.access-description")} showSeparator>
         <SettingList>
-          <SettingListItem
-            label={t("setting.instance.disallow-user-registration")}
-            description={t("setting.instance.disallow-user-registration-description")}
-          >
-            <Switch
-              disabled={profile.demo}
-              checked={instanceGeneralSetting.disallowUserRegistration}
-              onCheckedChange={(checked) => updatePartialSetting({ disallowUserRegistration: checked })}
-            />
-          </SettingListItem>
-
-          <SettingListItem
-            label={t("setting.instance.disallow-password-auth")}
-            description={t("setting.instance.disallow-password-auth-description")}
-          >
-            <Switch
-              disabled={profile.demo || (identityProviderList.length === 0 && !instanceGeneralSetting.disallowPasswordAuth)}
-              checked={instanceGeneralSetting.disallowPasswordAuth}
-              onCheckedChange={(checked) => updatePartialSetting({ disallowPasswordAuth: checked })}
-            />
-          </SettingListItem>
-
+          {/* Registration and password auth are governed by Cloudflare Access policies. */}
           <SettingListItem
             label={t("setting.instance.disallow-change-username")}
             description={t("setting.instance.disallow-change-username-description")}

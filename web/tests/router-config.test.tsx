@@ -2,7 +2,7 @@ import { isValidElement } from "react";
 import type { RouteObject } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { routeConfig, ROUTES } from "@/router";
-import { RequireAuthRoute, RequireGuestRoute } from "@/router/guards";
+import { RequireAuthRoute } from "@/router/guards";
 
 // Walk the nested route config and find the first route with the given path,
 // starting from the provided roots. Returns undefined if nothing matches.
@@ -39,15 +39,9 @@ function hasAncestorOfType(routes: RouteObject[], path: string, guardType: unkno
 }
 
 describe("router configuration", () => {
-  it("keeps /auth/callback outside the guest-only guard", () => {
-    // Regression guard for issue #5846 follow-up: an authenticated tab elsewhere
-    // must not short-circuit the OAuth callback via RequireGuestRoute.
-    expect(hasAncestorOfType(routeConfig, "callback", RequireGuestRoute)).toBe(false);
-  });
-
-  it("wraps the remaining /auth children in RequireGuestRoute", () => {
-    for (const path of ["", "admin", "signup"]) {
-      expect(hasAncestorOfType(routeConfig, path, RequireGuestRoute)).toBe(true);
+  it("has no in-app auth routes (authentication lives in Cloudflare Access)", () => {
+    for (const path of ["callback", "admin", "signup"]) {
+      expect(findByPath(routeConfig, path)).toBeUndefined();
     }
   });
 
@@ -61,9 +55,5 @@ describe("router configuration", () => {
     for (const path of [ROUTES.ABOUT, ROUTES.EXPLORE, "memos/:uid", "memos/shares/:token", "u/:username"]) {
       expect(hasAncestorOfType(routeConfig, path, RequireAuthRoute)).toBe(false);
     }
-  });
-
-  it("exposes an accessible /auth/callback route definition", () => {
-    expect(findByPath(routeConfig, "callback")).toBeTruthy();
   });
 });

@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useSSEConnectionStatus } from "@/hooks/useLiveMemoRefresh";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
@@ -29,7 +28,6 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 interface Props {
   collapsed?: boolean;
@@ -42,7 +40,6 @@ const UserMenu = (props: Props) => {
   const currentUser = useCurrentUser();
   const { userGeneralSetting, refetchSettings, logout } = useAuth();
   const { mutate: updateUserGeneralSetting } = useUpdateUserGeneralSetting(currentUser?.name);
-  const sseStatus = useSSEConnectionStatus();
   const currentLocale = getLocaleWithFallback(userGeneralSetting?.locale);
   const currentTheme = getThemeWithFallback(userGeneralSetting?.theme);
 
@@ -77,11 +74,8 @@ const UserMenu = (props: Props) => {
   };
 
   const handleSignOut = async () => {
-    // First, clear auth state and cache BEFORE doing anything else
-    await logout();
-
     try {
-      // Then clear user-specific localStorage items
+      // Clear user-specific localStorage items before logout navigates away.
       // Preserve app-wide settings (theme, locale, view preferences, tag view settings)
       const keysToPreserve = ["memos-theme", "memos-locale", "memos-view-setting", "tag-view-as-tree", "tag-tree-auto-expand"];
       const keysToRemove: string[] = [];
@@ -98,8 +92,8 @@ const UserMenu = (props: Props) => {
       // Ignore errors from localStorage operations
     }
 
-    // Always redirect to auth page (use replace to prevent back navigation)
-    window.location.replace(Routes.AUTH);
+    // logout() clears caches and redirects to the Cloudflare Access logout endpoint.
+    await logout();
   };
 
   return (
@@ -111,19 +105,6 @@ const UserMenu = (props: Props) => {
               <UserAvatar avatarUrl={currentUser?.avatarUrl} />
             ) : (
               <User2Icon className="w-6 mx-auto h-auto text-muted-foreground" />
-            )}
-            {sseStatus !== "connected" && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span
-                    className={cn(
-                      "absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-background",
-                      sseStatus === "connecting" ? "bg-muted-foreground animate-pulse" : "bg-destructive",
-                    )}
-                  />
-                </TooltipTrigger>
-                <TooltipContent side="right">{t(`live-update.${sseStatus}` as Parameters<typeof t>[0])}</TooltipContent>
-              </Tooltip>
             )}
           </div>
           {!collapsed && (

@@ -1,6 +1,5 @@
-import { Navigate, Outlet, useLocation, useSearchParams } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { AUTH_REDIRECT_PARAM, buildAuthRoute, getSafeRedirectPath } from "@/utils/auth-redirect";
 import { ROUTES } from "./routes";
 
 /**
@@ -30,37 +29,19 @@ export const LandingRoute = () => {
 };
 
 /**
- * Guard for routes that require an authenticated user. Unauthenticated visitors
- * are redirected to `/auth` with the original location preserved as the `redirect`
- * query parameter, so they return to the intended page after signing in.
+ * Guard for routes that require an authenticated user. Authentication is
+ * handled by Cloudflare Access: a full page load on a protected path triggers
+ * the Access login flow. Client-side navigation bypasses the server, so an
+ * anonymous visitor (who arrived via a public bypassed path) is sent through
+ * a full reload to let Access authenticate them.
  */
 export const RequireAuthRoute = () => {
   const currentUser = useCurrentUser();
   const location = useLocation();
 
   if (!currentUser) {
-    const redirect = `${location.pathname}${location.search}${location.hash}`;
-    return <Navigate to={buildAuthRoute({ redirect })} replace />;
-  }
-
-  return <Outlet />;
-};
-
-/**
- * Guard for guest-only routes (sign-in and sign-up). Already-authenticated users
- * are redirected to the requested `redirect` target (when safe) or to `/`.
- *
- * The OAuth callback route (`/auth/callback`) intentionally opts out of this guard:
- * an authenticated session in another tab must not prevent the callback from
- * consuming its one-time OAuth state and completing the in-flight sign-in.
- */
-export const RequireGuestRoute = () => {
-  const currentUser = useCurrentUser();
-  const [searchParams] = useSearchParams();
-
-  if (currentUser) {
-    const redirectTarget = getSafeRedirectPath(searchParams.get(AUTH_REDIRECT_PARAM));
-    return <Navigate to={redirectTarget || ROUTES.HOME} replace />;
+    window.location.assign(`${location.pathname}${location.search}${location.hash}`);
+    return null;
   }
 
   return <Outlet />;

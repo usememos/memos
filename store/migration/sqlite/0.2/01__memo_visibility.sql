@@ -1,4 +1,0 @@
-ALTER TABLE
-  memo
-ADD
-  COLUMN visibility TEXT NOT NULL CHECK (visibility IN ('PUBLIC', 'PRIVATE')) DEFAULT 'PRIVATE';
