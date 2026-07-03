@@ -1,0 +1,43 @@
+{
+  "name": "memos-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "gen": "npx @bufbuild/buf generate --template buf.gen.worker.yaml ../proto",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "db:migrate:local": "wrangler d1 migrations apply memos --local",
+    "db:migrate:remote": "wrangler d1 migrations apply memos --remote"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.12.0",
+    "@connectrpc/connect": "^2.1.1",
+    "jose": "^6.0.11",
+    "mdast-util-to-string": "^4.0.0",
+    "rehype-sanitize": "^6.0.0",
+    "rehype-stringify": "^10.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "unified": "^11.0.5"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.8.19",
+    "@cloudflare/workers-types": "^4.20260620.0",
+    "@connectrpc/connect-web": "^2.1.2",
+    "@types/mdast": "^4.0.4",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4",
+    "wrangler": "^4.107.0"
+  },
+  "allowScripts": {
+    "esbuild@0.25.4": true,
+    "esbuild@0.28.1": true,
+    "sharp@0.33.5": true,
+    "sharp@0.34.5": true,
+    "workerd@1.20250906.0": true,
+    "workerd@1.20260701.1": true
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "memos",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-06-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "memos.maksimyugai.com", "custom_domain": true }],
+
+  "assets": {
+    "directory": "../web/dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    // API and file routes must reach the Worker even if a static file could match.
+    "run_worker_first": [
+      "/memos.api.v1.*",
+      "/file/*",
+      "/mcp",
+      "/explore/rss.xml",
+      "/u/*",
+      "/sitemap.xml",
+      "/robots.txt",
+      "/healthz",
+    ],
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "memos",
+      "database_id": "39566a55-2fd4-41da-a54a-ff48154c9f40",
+      "migrations_dir": "migrations",
+    },
+  ],
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "memos",
+    },
+  ],
+  "vars": {
+    // Cloudflare Access team domain, e.g. "myteam" for myteam.cloudflareaccess.com.
+    "ACCESS_TEAM_DOMAIN": "yugai.cloudflareaccess.com",
+    // Access application AUD tag (Zero Trust dashboard -> Access -> Applications).
+    "ACCESS_AUD": "1df73931e32210dba6610285f6d40c6d0d6ae31c354fe4c68f2828d68ebd3285",
+    // Comma-separated emails that get the ADMIN role on first sign-in.
+    "ADMIN_EMAILS": "mail@maksimyugai.com",
+    // Public URL of the instance, used for RSS/sitemap links.
+    "INSTANCE_URL": "https://memos.maksimyugai.com",
+    // Local development only: acts as this user when no Access JWT is present.
+    // Must stay empty in production.
+    "DEV_USER_EMAIL": "",
+  },
+  // Secrets (wrangler secret put): OPENAI_API_KEY, GEMINI_API_KEY, RESEND_API_KEY.
+}

@@ -7,7 +7,6 @@ export const ROUTES = {
   SHORTCUTS: "/shortcuts",
   SETTING: "/setting",
   EXPLORE: "/explore",
-  AUTH: "/auth",
   SHARED_MEMO: "/memos/shares",
 } as const;
 

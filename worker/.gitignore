@@ -1,0 +1,8 @@
+node_modules/
+.wrangler/
+.dev.vars
+
+# One-off data import scripts (contain personal data from the old instance).
+# Kept out of migrations/ so they never get picked up by readD1Migrations()
+# in vitest.config.ts (which would seed the test DB with real personal data).
+seed/

@@ -1,7 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from "react";
-import { clearAccessToken, getAccessToken } from "@/auth-state";
-import { authServiceClient, refreshAccessToken, shortcutServiceClient, userServiceClient } from "@/connect";
+import { authServiceClient, shortcutServiceClient, userServiceClient } from "@/connect";
 import { userKeys } from "@/hooks/useUserQueries";
 import type { Shortcut } from "@/types/proto/api/v1/shortcut_service_pb";
 import type {
@@ -30,17 +29,19 @@ interface AuthContextValue extends AuthState {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+const EMPTY_STATE: AuthState = {
+  currentUser: undefined,
+  userGeneralSetting: undefined,
+  userWebhooksSetting: undefined,
+  userTagsSetting: undefined,
+  shortcuts: [],
+  isInitialized: true,
+  isLoading: false,
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
-  const [state, setState] = useState<AuthState>({
-    currentUser: undefined,
-    userGeneralSetting: undefined,
-    userWebhooksSetting: undefined,
-    userTagsSetting: undefined,
-    shortcuts: [],
-    isInitialized: false,
-    isLoading: true,
-  });
+  const [state, setState] = useState<AuthState>({ ...EMPTY_STATE, isInitialized: false, isLoading: true });
 
   const fetchUserSettings = useCallback(async (userName: string) => {
     const [{ settings }, { shortcuts }] = await Promise.all([
@@ -60,98 +61,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  // Cloudflare Access handles authentication before the request reaches the
+  // server. GetCurrentUser resolves the user from the Access session; an
+  // Unauthenticated error means we're on a public (bypassed) path.
   const initialize = useCallback(async () => {
     setState((prev) => ({ ...prev, isLoading: true }));
-
-    // Try to get or refresh the access token.
-    // This handles PWA isolated storage scenarios (e.g., iOS Safari) where localStorage
-    // may be empty but a valid HTTP-only refresh token cookie still exists.
-    // getAccessToken() returns a cached token or loads from localStorage if valid.
-    if (!getAccessToken()) {
-      try {
-        await refreshAccessToken();
-      } catch {
-        // Refresh failed - no valid session
-      }
-    }
-
-    // If we still don't have a token after refresh attempt, skip getCurrentUser call
-    // to avoid unnecessary network request for unauthenticated users.
-    if (!getAccessToken()) {
-      setState({
-        currentUser: undefined,
-        userGeneralSetting: undefined,
-        userWebhooksSetting: undefined,
-        userTagsSetting: undefined,
-        shortcuts: [],
-        isInitialized: true,
-        isLoading: false,
-      });
-      return;
-    }
-
     try {
       const { user: currentUser } = await authServiceClient.getCurrentUser({});
-
       if (!currentUser) {
-        clearAccessToken();
-        setState({
-          currentUser: undefined,
-          userGeneralSetting: undefined,
-          userWebhooksSetting: undefined,
-          userTagsSetting: undefined,
-          shortcuts: [],
-          isInitialized: true,
-          isLoading: false,
-        });
+        setState(EMPTY_STATE);
         return;
       }
-
       const settings = await fetchUserSettings(currentUser.name);
-
       setState({
         currentUser,
         ...settings,
         isInitialized: true,
         isLoading: false,
       });
-
-      // Pre-populate React Query cache
       queryClient.setQueryData(userKeys.currentUser(), currentUser);
       queryClient.setQueryData(userKeys.detail(currentUser.name), currentUser);
-    } catch (error) {
-      console.error("Failed to initialize auth:", error);
-      clearAccessToken();
-      setState({
-        currentUser: undefined,
-        userGeneralSetting: undefined,
-        userWebhooksSetting: undefined,
-        userTagsSetting: undefined,
-        shortcuts: [],
-        isInitialized: true,
-        isLoading: false,
-      });
+    } catch {
+      // Anonymous visitor on a public path — not an error.
+      setState(EMPTY_STATE);
     }
   }, [fetchUserSettings, queryClient]);
 
+  // Sign-out is a Cloudflare Access concern: clear local state and hit the
+  // Access logout endpoint, which revokes the CF_Authorization cookie.
   const logout = useCallback(async () => {
-    try {
-      await authServiceClient.signOut({});
-    } catch (error) {
-      console.error("[AuthContext] Failed to sign out:", error);
-    } finally {
-      clearAccessToken();
-      setState({
-        currentUser: undefined,
-        userGeneralSetting: undefined,
-        userWebhooksSetting: undefined,
-        userTagsSetting: undefined,
-        shortcuts: [],
-        isInitialized: true,
-        isLoading: false,
-      });
-      queryClient.clear();
-    }
+    queryClient.clear();
+    window.location.href = "/cdn-cgi/access/logout";
   }, [queryClient]);
 
   const refetchSettings = useCallback(async () => {

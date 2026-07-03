@@ -1,1 +1,0 @@
-ALTER TABLE `user` ADD COLUMN `description` VARCHAR(256) NOT NULL DEFAULT '';

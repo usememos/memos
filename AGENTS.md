@@ -5,48 +5,51 @@ repo. If a fact here conflicts with source files or CI config, trust the source 
 
 ## Project Snapshot
 
-Memos is a self-hosted note-taking app.
+Memos is a note-taking app, migrated from a self-hosted Go server to **Cloudflare Workers**.
 
-- Backend: Go 1.26.2, Echo v5, Connect RPC, gRPC-Gateway, Protocol Buffers.
+- Backend: TypeScript on Cloudflare Workers, Connect-RPC, D1 (SQLite), R2 (attachments), Workers Static Assets.
 - Frontend: React 19, TypeScript 6, Vite 8, Tailwind CSS v4, React Query v5.
-- Storage: SQLite, MySQL, PostgreSQL.
-- Generated API outputs: `proto/gen/` for Go/OpenAPI, `web/src/types/proto/` for TypeScript.
+- Auth: Cloudflare Access (JWT verified via JWKS). No built-in password/OAuth/session auth — see `worker/README.md`.
+- Generated API outputs: `worker/src/gen/` for the Worker, `web/src/types/proto/` for the frontend — both from `proto/`.
+
+There is no Go code, no Docker image, and no self-hosted deploy path anymore. `worker/README.md` is the source of truth for
+architecture, local dev, and deployment (including the Cloudflare Access setup).
 
 ## Working Rules
 
 - Read relevant code before editing; prefer local patterns over new abstractions.
 - Keep diffs scoped. Do not do repo-wide cleanup, dependency churn, or generated-file rewrites unless the task requires it.
-- Do not hand-edit generated proto outputs. Change `.proto` files, then run `buf generate`.
-- Add migrations for all database drivers when schema changes, and update each driver's `LATEST.sql`.
-- Add public API endpoints to `server/router/api/v1/acl_config.go`.
-- Ask before adding heavy dependencies, changing auth/token behavior, or altering Docker/release workflows.
+- Do not hand-edit generated proto outputs (`worker/src/gen/`, `web/src/types/proto/`). Change `.proto` files, then regenerate.
+- Schema changes: add a new numbered migration under `worker/migrations/`. There is only one driver (D1/SQLite) now.
+- Ask before adding heavy dependencies, changing auth behavior, or altering the Cloudflare Access model.
+- One-off personal/production data imports belong in `worker/seed/`, never in `worker/migrations/` — that directory is also
+  scanned by `worker/vitest.config.ts` to seed the test D1, so a data-import script there leaks real data into every test run.
 
 ## Commands
 
 Run from the repository root unless a command starts with `cd`.
 
 ```bash
-# Backend
-go run ./cmd/memos --port 8081    # Start backend dev server
-go test ./...                      # Run all Go tests
-go test -v ./store/...             # Store tests, including DB drivers via TestContainers
-go test -v -race ./server/...      # Server tests with race detector
-go test -v -race ./internal/...    # Internal package tests with race detector
-go test -v -run TestFoo ./pkg/...  # Run matching Go tests
-go mod tidy -go=1.26.2             # Match CI tidy check
-golangci-lint run                  # Go lint, config: .golangci.yaml
-golangci-lint run --fix            # Auto-fix lint, including goimports
+# Worker (backend)
+cd worker && npm install               # Install dependencies
+cd worker && npm run gen               # Regenerate TS proto types into src/gen/
+cd worker && npm run dev               # wrangler dev, http://localhost:8787
+cd worker && npm run typecheck         # tsc --noEmit
+cd worker && npm test                  # vitest with @cloudflare/vitest-pool-workers (real D1/R2)
+cd worker && npm run db:migrate:local  # Apply migrations to local D1
+cd worker && npm run db:migrate:remote # Apply migrations to production D1
+cd worker && npx wrangler deploy       # Deploy the Worker (requires web/dist built first)
 
 # Frontend
 cd web && pnpm install             # Install dependencies
-cd web && pnpm dev                 # Dev server on :3001, proxying API to :8081
+cd web && pnpm dev                 # Dev server on :3001, proxying API to :8787 (wrangler dev)
 cd web && pnpm lint                # Type check + Biome lint
 cd web && pnpm test                # Vitest unit tests
 cd web && pnpm build               # Production build
-cd web && pnpm release             # Build SPA into server/router/frontend/dist
+cd web && pnpm release             # Build SPA into web/dist (served by the Worker's assets binding)
 
 # Protocol Buffers
-cd proto && buf generate           # Regenerate Go + TypeScript + OpenAPI
+cd proto && buf generate           # Regenerate TypeScript (frontend types only; run `npm run gen` in worker/ separately)
 cd proto && buf lint               # Lint proto files
 cd proto && buf format -w          # Format proto files
 ```
@@ -55,20 +58,22 @@ cd proto && buf format -w          # Format proto files
 
 | Path | Purpose |
 | --- | --- |
-| `cmd/memos/main.go` | Cobra/Viper CLI setup and server startup |
-| `server/server.go` | Echo HTTP server and background runner wiring |
-| `server/auth/` | JWT access tokens, refresh tokens, PAT handling |
-| `server/router/api/v1/` | Connect/gRPC-Gateway services, ACL config, SSE hub |
-| `server/router/frontend/` | Static SPA serving |
-| `server/router/fileserver/` | Native HTTP file serving, thumbnails, range requests |
-| `server/runner/` | Background memo processing and S3 presign refresh |
-| `store/` | Store facade, cache, migrations, driver interface |
-| `store/db/{sqlite,mysql,postgres}/` | Database-specific drivers and SQL |
+| `worker/src/index.ts` | Fetch handler entry point: routes to Connect-RPC, `/file`, RSS/sitemap, `/mcp`, or static assets |
+| `worker/src/auth/` | Cloudflare Access JWT verification and per-request auth context |
+| `worker/src/services/` | Connect-RPC service implementations (memo, user, instance, attachment, shortcut, ai, auth) |
+| `worker/src/store/` | D1 query layer (parameterized SQL, no ORM) |
+| `worker/src/filter/` | CEL-subset parser and SQL renderer for memo/attachment filters |
+| `worker/src/markdown/` | Tag/mention/property extraction (port of the old Go markdown service) |
+| `worker/src/routes/` | `/file` (R2 streaming), RSS/sitemap, `/mcp` |
+| `worker/src/lib/` | Webhooks, email (Resend), notifications |
+| `worker/migrations/` | D1 schema migrations, applied via `wrangler d1 migrations apply` |
+| `worker/seed/` | One-off, git-ignored personal data import scripts — not part of the migration chain |
+| `worker/test/` | Vitest integration tests (stage1–5, filter, access) |
 | `proto/api/v1/` | Public API service definitions |
-| `proto/store/` | Internal storage proto messages |
-| `internal/` | App-private packages: scheduler, cron, email, CEL filter, markdown, idp, S3 |
-| `web/src/connect.ts` | Connect RPC clients, auth interceptor, access-token refresh |
-| `web/src/auth-state.ts` | Token storage and BroadcastChannel cross-tab sync |
+| `proto/store/` | Internal storage proto messages (used for JSON-encoded D1 payload columns) |
+| `web/src/connect.ts` | Connect RPC clients (no token/refresh logic — Access handles auth via cookie) |
+| `web/src/contexts/AuthContext.tsx` | Current-user state; sign-out redirects to Access's logout endpoint |
+| `web/src/router/guards.tsx` | `LandingRoute`, `RequireAuthRoute` (full-page reload to trigger Access login) |
 | `web/src/hooks/` | React Query hooks for server state |
 | `web/src/contexts/` | React context for client/UI state |
 | `web/src/components/` | Radix/Tailwind UI components and feature components |
@@ -78,21 +83,14 @@ cd proto && buf format -w          # Format proto files
 
 | Change | Update | Verify |
 | --- | --- | --- |
-| Go service or router behavior | Service code under `server/`, tests near package | `go test -v -race ./server/...` |
-| Store or migration behavior | `store/`, all three DB driver migrations, `LATEST.sql` | `go test -v ./store/...` |
-| Internal package logic | Relevant `internal/` package tests | `go test -v -race ./internal/...` |
+| Worker service behavior | `worker/src/services/`, tests in `worker/test/` | `cd worker && npm test` |
+| D1 schema | New file under `worker/migrations/` | `npm run db:migrate:local && npm test` |
+| CEL filter behavior | `worker/src/filter/` | `cd worker && npx vitest run test/filter.test.ts` |
+| Markdown extraction | `worker/src/markdown/` | `cd worker && npx vitest run test/filter.test.ts` |
 | Frontend behavior | Components/hooks/contexts under `web/src/` | `cd web && pnpm lint && pnpm test` |
 | Frontend production output | Vite config or release-sensitive UI | `cd web && pnpm build` or `pnpm release` |
-| Proto API | `.proto` source plus generated outputs | `cd proto && buf generate && buf lint` |
-| Public unauthenticated route | `server/router/api/v1/acl_config.go` | Targeted server test or manual route check |
-
-## Go Conventions
-
-- Wrap errors with `errors.Wrap(err, "context")` from `github.com/pkg/errors`; do not use `fmt.Errorf`.
-- Return service errors with `status.Errorf(codes.X, "message")`.
-- Keep imports grouped as stdlib, third-party, then `github.com/usememos/memos`; goimports is run by golangci-lint.
-- Add doc comments for exported identifiers; godot enforces exported comment punctuation.
-- Avoid package-level mutable state unless the surrounding package already uses that pattern.
+| Proto API | `.proto` source plus generated outputs | `cd proto && buf generate && buf lint`, then `cd worker && npm run gen` |
+| Access/auth behavior | `worker/src/auth/`, `worker/README.md` | `cd worker && npx vitest run test/access.test.ts test/stage2.test.ts` |
 
 ## Frontend Conventions
 
@@ -103,12 +101,21 @@ cd proto && buf format -w          # Format proto files
 - Reuse Radix primitives and existing components before adding new UI primitives.
 - Keep generated proto TypeScript under `web/src/types/proto/` out of manual edits and Biome rewrites.
 
+## Worker Conventions
+
+- Use `ConnectError` with a `Code` from `@connectrpc/connect` for RPC failures; never throw plain `Error` from a service method.
+- `requireUser`/`requireAdmin` (in `worker/src/services/context.ts`) are the standard authorization guards — call them at the
+  top of any RPC that needs an identity, matching how the old Go server checked `fetchCurrentUser`.
+- D1 has no interactive transactions — use `db.batch([...])` for multi-statement writes that must be atomic.
+- Keep the same JSON shape in `payload` columns (memo/attachment) as the `storepb` protos — they're read by both old and new
+  rows and by `toJsonString`/`fromJsonString` from `@bufbuild/protobuf`.
+
 ## Database And Proto Rules
 
-- Schema changes require SQLite, MySQL, and PostgreSQL migrations plus `LATEST.sql` updates.
-- Fresh-install SQL and incremental migrations must stay equivalent.
+- D1 is the only backing store now (previously SQLite/MySQL/PostgreSQL were all supported in Go).
 - Proto field changes must preserve compatibility unless the task explicitly allows a breaking API change.
-- Regenerate after proto edits and include both Go/OpenAPI and TypeScript generated outputs.
+- Regenerate both `worker/src/gen/` (`cd worker && npm run gen`) and `web/src/types/proto/` (`cd proto && buf generate`) after
+  editing `.proto` files.
 
 ## Verification Policy
 
@@ -119,7 +126,7 @@ cd proto && buf format -w          # Format proto files
 
 ## CI Reference
 
-- Backend CI: Go 1.26.2, `go mod tidy -go=1.26.2`, golangci-lint v2.11.3, test groups `store`, `server`, `internal`, `other`.
-- Frontend CI: Node 24, pnpm 11.0.1, `pnpm lint`, `pnpm test`, `pnpm build`.
-- Proto CI: `buf lint` and `buf format` check.
-- Docker: `scripts/Dockerfile`, Alpine 3.21 runtime, non-root user, port 5230, multi-arch amd64/arm64/arm/v7.
+- Frontend CI: Node 24, pnpm 11.0.1, `pnpm lint`, `pnpm test`, `pnpm build` (`.github/workflows/frontend-tests.yml`).
+- Proto CI: `buf lint` and `buf format` check (`.github/workflows/proto-linter.yml`).
+- There is no backend/Docker/release CI — deployment is `cd worker && npx wrangler deploy`, done manually or from a workflow
+  you add yourself.

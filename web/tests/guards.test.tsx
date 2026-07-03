@@ -9,7 +9,7 @@ vi.mock("@/hooks/useCurrentUser", () => ({
 }));
 
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { LandingRoute, RequireAuthRoute, RequireGuestRoute } from "@/router/guards";
+import { LandingRoute, RequireAuthRoute } from "@/router/guards";
 
 const mockedUseCurrentUser = vi.mocked(useCurrentUser);
 
@@ -92,8 +92,15 @@ describe("RequireAuthRoute", () => {
     expect(screen.getByTestId("protected")).toHaveTextContent("secret");
   });
 
-  it("redirects unauthenticated users to /auth with the preserved location", () => {
+  it("triggers a full-page navigation so Cloudflare Access can authenticate", () => {
     mockedUseCurrentUser.mockReturnValue(undefined);
+    // jsdom's location.assign isn't spyable; replace location with a stub.
+    const assign = vi.fn();
+    const originalLocation = window.location;
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: { ...originalLocation, assign },
+    });
 
     renderAt(
       "/setting?tab=pins#latest",
@@ -101,92 +108,11 @@ describe("RequireAuthRoute", () => {
         <Route element={<RequireAuthRoute />}>
           <Route path="/setting" element={<div data-testid="protected">secret</div>} />
         </Route>
-        <Route path="/auth" element={<LocationProbe />} />
       </Routes>,
     );
 
-    expect(screen.getByTestId("location").textContent).toBe("/auth?redirect=%2Fsetting%3Ftab%3Dpins%23latest");
-  });
-});
-
-describe("RequireGuestRoute", () => {
-  it("renders the auth page when no user is present", () => {
-    mockedUseCurrentUser.mockReturnValue(undefined);
-
-    renderAt(
-      "/auth",
-      <Routes>
-        <Route element={<RequireGuestRoute />}>
-          <Route path="/auth" element={<div data-testid="sign-in">sign in</div>} />
-        </Route>
-      </Routes>,
-    );
-
-    expect(screen.getByTestId("sign-in")).toHaveTextContent("sign in");
-  });
-
-  it("redirects already-authenticated users to / by default", () => {
-    mockedUseCurrentUser.mockReturnValue(fakeUser);
-
-    renderAt(
-      "/auth",
-      <Routes>
-        <Route element={<RequireGuestRoute />}>
-          <Route path="/auth" element={<div>sign in</div>} />
-        </Route>
-        <Route path="/" element={<LocationProbe />} />
-      </Routes>,
-    );
-
-    expect(screen.getByTestId("location").textContent).toBe("/");
-  });
-
-  it("honours a safe redirect target from the query string", () => {
-    mockedUseCurrentUser.mockReturnValue(fakeUser);
-
-    renderAt(
-      "/auth?redirect=%2Fsetting",
-      <Routes>
-        <Route element={<RequireGuestRoute />}>
-          <Route path="/auth" element={<div>sign in</div>} />
-        </Route>
-        <Route path="/setting" element={<LocationProbe />} />
-        <Route path="/" element={<LocationProbe />} />
-      </Routes>,
-    );
-
-    expect(screen.getByTestId("location").textContent).toBe("/setting");
-  });
-
-  it("ignores an auth-family redirect target and falls back to /", () => {
-    mockedUseCurrentUser.mockReturnValue(fakeUser);
-
-    renderAt(
-      "/auth?redirect=%2Fauth%2Fcallback",
-      <Routes>
-        <Route element={<RequireGuestRoute />}>
-          <Route path="/auth" element={<div>sign in</div>} />
-        </Route>
-        <Route path="/" element={<LocationProbe />} />
-      </Routes>,
-    );
-
-    expect(screen.getByTestId("location").textContent).toBe("/");
-  });
-
-  it("ignores an external redirect target and falls back to /", () => {
-    mockedUseCurrentUser.mockReturnValue(fakeUser);
-
-    renderAt(
-      "/auth?redirect=%2F%2Fevil.example%2Fphish",
-      <Routes>
-        <Route element={<RequireGuestRoute />}>
-          <Route path="/auth" element={<div>sign in</div>} />
-        </Route>
-        <Route path="/" element={<LocationProbe />} />
-      </Routes>,
-    );
-
-    expect(screen.getByTestId("location").textContent).toBe("/");
+    expect(assign).toHaveBeenCalledWith("/setting?tab=pins#latest");
+    expect(screen.queryByTestId("protected")).toBeNull();
+    Object.defineProperty(window, "location", { configurable: true, value: originalLocation });
   });
 });

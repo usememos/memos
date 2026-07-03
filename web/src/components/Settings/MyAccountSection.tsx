@@ -1,4 +1,4 @@
-import { AlertTriangleIcon, KeyRoundIcon, PenLineIcon } from "lucide-react";
+import { AlertTriangleIcon, PenLineIcon } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -7,25 +7,20 @@ import { userServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useDialog } from "@/hooks/useDialog";
-import useNavigateTo from "@/hooks/useNavigateTo";
 import { handleError } from "@/lib/error";
-import { ROUTES } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
-import ChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
 import UpdateAccountDialog from "../UpdateAccountDialog";
 import UserAvatar from "../UserAvatar";
-import AccessTokenSection from "./AccessTokenSection";
-import LinkedIdentitySection from "./LinkedIdentitySection";
 import SettingGroup from "./SettingGroup";
 import SettingSection from "./SettingSection";
 
+// Passwords, access tokens and linked identities are managed by Cloudflare
+// Access; only profile editing and account deletion remain here.
 const MyAccountSection = () => {
   const t = useTranslate();
   const user = useCurrentUser();
   const { logout } = useAuth();
-  const navigateTo = useNavigateTo();
   const accountDialog = useDialog();
-  const passwordDialog = useDialog();
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const handleDeleteAccount = async () => {
@@ -34,9 +29,8 @@ const MyAccountSection = () => {
     }
     try {
       await userServiceClient.deleteUser({ name: user.name });
-      await logout();
       toast.success(t("setting.member.delete-success", { username: user.username }));
-      navigateTo(ROUTES.AUTH, { replace: true });
+      await logout();
     } catch (error) {
       handleError(error, toast.error, { context: "Delete account" });
       throw error;
@@ -60,17 +54,9 @@ const MyAccountSection = () => {
               <PenLineIcon className="w-4 h-4 mr-1.5" />
               {t("common.edit")}
             </Button>
-            <Button variant="outline" size="sm" onClick={passwordDialog.open}>
-              <KeyRoundIcon className="w-4 h-4 mr-1.5" />
-              {t("setting.account.change-password")}
-            </Button>
           </div>
         </div>
       </SettingGroup>
-
-      <LinkedIdentitySection />
-
-      <AccessTokenSection />
 
       <SettingGroup showSeparator title={t("setting.account.danger-area")} description={t("setting.account.danger-area-description")}>
         <div className="flex flex-col gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4">
@@ -93,9 +79,6 @@ const MyAccountSection = () => {
 
       {/* Update Account Dialog */}
       <UpdateAccountDialog open={accountDialog.isOpen} onOpenChange={accountDialog.setOpen} />
-
-      {/* Change Password Dialog */}
-      <ChangeMemberPasswordDialog open={passwordDialog.isOpen} onOpenChange={passwordDialog.setOpen} user={user} />
 
       <ConfirmDialog
         open={deleteOpen}
