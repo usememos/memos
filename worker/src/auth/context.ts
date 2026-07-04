@@ -27,11 +27,15 @@ async function resolveEmail(request: Request, env: Env): Promise<string | undefi
       const claims = await verifyAccessJwt(assertion, env.ACCESS_TEAM_DOMAIN, env.ACCESS_AUD);
       return claims.email;
     } catch (error) {
-      // A stale/invalid cookie on a public path degrades to anonymous; a bad
-      // header (which only Access itself sets) is a hard failure.
-      if (request.headers.has("Cf-Access-Jwt-Assertion")) {
-        throw error;
-      }
+      // Cloudflare Access only forwards Cf-Access-Jwt-Assertion after
+      // validating it itself, so a failure here means OUR verification is out
+      // of sync (wrong ACCESS_AUD/ACCESS_TEAM_DOMAIN, clock skew, a momentary
+      // JWKS fetch hiccup) rather than a forged token. Degrading to anonymous
+      // — instead of throwing and 500ing the whole request — keeps public
+      // content reachable even during a misconfiguration; per-resource checks
+      // (requireUser/requireAdmin, memo visibility) still deny anything that
+      // actually needs an identity.
+      console.warn("Access JWT verification failed; treating request as anonymous:", error);
       return undefined;
     }
   }
