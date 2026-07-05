@@ -36,6 +36,17 @@ type Profile struct {
 	InstanceURL string
 }
 
+// AllowAnonymous reports whether unauthenticated visitors may access the instance.
+//
+// Anonymous access is enabled only when an InstanceURL is configured. An instance
+// with no InstanceURL set is treated as private: anonymous callers are limited to
+// the auth-bootstrap endpoints (sign-in, share links, etc.) and the web UI redirects
+// them to the sign-in page instead of the public Explore view. Authenticated callers
+// (session, access token, or personal access token) are never affected.
+func (p *Profile) AllowAnonymous() bool {
+	return strings.TrimSpace(p.InstanceURL) != ""
+}
+
 func checkDataDir(dataDir string) (string, error) {
 	// Convert to absolute path if relative path is supplied.
 	if !filepath.IsAbs(dataDir) {

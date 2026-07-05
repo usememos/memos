@@ -12,6 +12,7 @@ export {
   buildAuthRoute,
   getSafeRedirectPath,
   isPublicRoute,
+  shouldGatePrivateInstance,
 } from "./redirect-safety";
 
 /**

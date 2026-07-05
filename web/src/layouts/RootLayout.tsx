@@ -1,10 +1,12 @@
 import { useEffect, useRef } from "react";
-import { Outlet, useLocation, useSearchParams } from "react-router-dom";
+import { Navigate, Outlet, useLocation, useSearchParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
+import { buildAuthRoute, shouldGatePrivateInstance } from "@/utils/auth-redirect";
 import { useTranslate } from "@/utils/i18n";
 
 const MEMOS_DEPLOY_URL = "https://usememos.com/docs/deploy";
@@ -29,6 +31,7 @@ const RootLayout = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const sm = useMediaQuery("sm");
+  const currentUser = useCurrentUser();
   const { profile } = useInstance();
   const { removeFilter } = useMemoFilterContext();
   const { pathname } = location;
@@ -44,6 +47,14 @@ const RootLayout = () => {
 
     prevPathnameRef.current = pathname;
   }, [pathname, searchParams, removeFilter]);
+
+  // Private instance (no InstanceURL configured): anonymous visitors may only reach
+  // share links; everything else redirects to the sign-in page, preserving the intended
+  // destination. Public instances keep the open Explore behavior for logged-out users.
+  if (shouldGatePrivateInstance({ isPrivateInstance: !profile.instanceUrl, isAuthenticated: !!currentUser, pathname })) {
+    const redirect = `${pathname}${location.search}${location.hash}`;
+    return <Navigate to={buildAuthRoute({ redirect })} replace />;
+  }
 
   return (
     <div className="w-full min-h-full flex flex-row justify-center items-start sm:pl-16">

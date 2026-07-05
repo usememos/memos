@@ -30,6 +30,17 @@ interface AuthContextValue extends AuthState {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+/** Settled auth state for a request with no valid session (init finished, not loading). */
+const UNAUTHENTICATED_STATE: AuthState = {
+  currentUser: undefined,
+  userGeneralSetting: undefined,
+  userWebhooksSetting: undefined,
+  userTagsSetting: undefined,
+  shortcuts: [],
+  isInitialized: true,
+  isLoading: false,
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const [state, setState] = useState<AuthState>({
@@ -78,15 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // If we still don't have a token after refresh attempt, skip getCurrentUser call
     // to avoid unnecessary network request for unauthenticated users.
     if (!getAccessToken()) {
-      setState({
-        currentUser: undefined,
-        userGeneralSetting: undefined,
-        userWebhooksSetting: undefined,
-        userTagsSetting: undefined,
-        shortcuts: [],
-        isInitialized: true,
-        isLoading: false,
-      });
+      setState(UNAUTHENTICATED_STATE);
       return;
     }
 
@@ -95,15 +98,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (!currentUser) {
         clearAccessToken();
-        setState({
-          currentUser: undefined,
-          userGeneralSetting: undefined,
-          userWebhooksSetting: undefined,
-          userTagsSetting: undefined,
-          shortcuts: [],
-          isInitialized: true,
-          isLoading: false,
-        });
+        setState(UNAUTHENTICATED_STATE);
         return;
       }
 
@@ -122,15 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Failed to initialize auth:", error);
       clearAccessToken();
-      setState({
-        currentUser: undefined,
-        userGeneralSetting: undefined,
-        userWebhooksSetting: undefined,
-        userTagsSetting: undefined,
-        shortcuts: [],
-        isInitialized: true,
-        isLoading: false,
-      });
+      setState(UNAUTHENTICATED_STATE);
     }
   }, [fetchUserSettings, queryClient]);
 
@@ -141,15 +128,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error("[AuthContext] Failed to sign out:", error);
     } finally {
       clearAccessToken();
-      setState({
-        currentUser: undefined,
-        userGeneralSetting: undefined,
-        userWebhooksSetting: undefined,
-        userTagsSetting: undefined,
-        shortcuts: [],
-        isInitialized: true,
-        isLoading: false,
-      });
+      setState(UNAUTHENTICATED_STATE);
       queryClient.clear();
     }
   }, [queryClient]);

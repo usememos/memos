@@ -167,6 +167,19 @@ func (s *FileServerService) serveAttachmentFile(c *echo.Context) error {
 // serveUserAvatar serves user avatar images.
 func (s *FileServerService) serveUserAvatar(c *echo.Context) error {
 	ctx := c.Request().Context()
+
+	// On a private instance (no InstanceURL), avatars are not exposed to anonymous
+	// visitors; a valid session, access token, or PAT is required.
+	if !s.Profile.AllowAnonymous() {
+		viewer, err := s.getCurrentUser(ctx, c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").Wrap(err)
+		}
+		if viewer == nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized access")
+		}
+	}
+
 	identifier := c.Param("identifier")
 
 	user, err := s.getUserByUsername(ctx, identifier)
@@ -658,7 +671,10 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c *ec
 		return echo.NewHTTPError(http.StatusNotFound, "memo not found")
 	}
 
-	if memo.Visibility == store.Public {
+	// Public-visibility attachments are served to anonymous visitors only when the
+	// instance allows anonymous access. On a private instance (no InstanceURL), the
+	// request must still resolve to an authenticated user or a valid share token below.
+	if memo.Visibility == store.Public && s.Profile.AllowAnonymous() {
 		return nil
 	}
 

@@ -46,3 +46,38 @@ func IsPublicMethod(procedure string) bool {
 	_, ok := PublicMethods[procedure]
 	return ok
 }
+
+// AuthBootstrapMethods is the subset of PublicMethods that stays reachable by
+// anonymous callers even when the instance is private (no InstanceURL configured).
+//
+// It is the minimum required to render the sign-in page, authenticate, and follow
+// share links. Every entry here MUST also exist in PublicMethods. CreateUser is
+// intentionally excluded and handled separately (allowed only during first-run
+// setup, while the instance has no users yet).
+var AuthBootstrapMethods = map[string]struct{}{
+	// Auth Service - sign-in and token refresh.
+	"/memos.api.v1.AuthService/SignIn":       {},
+	"/memos.api.v1.AuthService/RefreshToken": {},
+
+	// Instance Service - needed to render the sign-in page (branding, auth options).
+	"/memos.api.v1.InstanceService/GetInstanceProfile":       {},
+	"/memos.api.v1.InstanceService/GetInstanceSetting":       {},
+	"/memos.api.v1.InstanceService/BatchGetInstanceSettings": {},
+
+	// Identity Provider Service - SSO buttons on the sign-in page.
+	"/memos.api.v1.IdentityProviderService/ListIdentityProviders": {},
+
+	// Memo sharing - share-token access stays public even on a private instance.
+	"/memos.api.v1.MemoService/GetMemoByShare": {},
+}
+
+// createUserProcedure is the CreateUser endpoint. On a private instance it is
+// served to anonymous callers only while no user exists yet (initial admin setup).
+const createUserProcedure = "/memos.api.v1.UserService/CreateUser"
+
+// IsAuthBootstrapMethod reports whether an anonymous request to procedure is one
+// of the fixed endpoints allowed while the instance is private.
+func IsAuthBootstrapMethod(procedure string) bool {
+	_, ok := AuthBootstrapMethods[procedure]
+	return ok
+}
