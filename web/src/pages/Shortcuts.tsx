@@ -62,6 +62,12 @@ const shortcutExamples = [
     icon: TagsIcon,
   },
   {
+    title: "Untagged",
+    filter: "size(tags) == 0",
+    description: "Memos without any tags.",
+    icon: TagsIcon,
+  },
+  {
     title: "Archive tree",
     filter: 'tags.exists(t, t.startsWith("archive"))',
     description: "Match hierarchical tags by prefix.",
@@ -155,6 +161,7 @@ const filterFields = [
   "sets.contains(tags, [...])",
   "sets.intersects(tags, [...])",
   "sets.equivalent(tags, [...])",
+  "size(tags) == ...",
   "size(content) > ...",
   "has_task_list",
   "has_incomplete_tasks",
