@@ -1,33 +1,16 @@
 import { uniqBy } from "lodash-es";
-import {
-  FileIcon,
-  ImageIcon,
-  LinkIcon,
-  LoaderIcon,
-  type LucideIcon,
-  MapPinIcon,
-  Maximize2Icon,
-  MicIcon,
-  MoreHorizontalIcon,
-  PlusIcon,
-  TypeIcon,
-} from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { CheckIcon, FileIcon, ImageIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MicIcon, PlusIcon, TypeIcon } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
 import type { MapPoint } from "@/components/map/types";
 import { useReverseGeocoding } from "@/components/map/useReverseGeocoding";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-  useDropdownMenuSubHoverDelay,
 } from "@/components/ui/dropdown-menu";
 import { useDebouncedEffect } from "@/hooks";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
@@ -52,12 +35,6 @@ const InsertMenu = (props: InsertMenuProps) => {
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
-  const [moreSubmenuOpen, setMoreSubmenuOpen] = useState(false);
-
-  const { handleTriggerEnter, handleTriggerLeave, handleContentEnter, handleContentLeave } = useDropdownMenuSubHoverDelay(
-    150,
-    setMoreSubmenuOpen,
-  );
 
   const { fileInputRef, selectingFlag, handleFileInputChange, handleUploadClick } = useFileUpload((newFiles: LocalFile[]) => {
     newFiles.forEach((file) => dispatch(actions.addLocalFile(file)));
@@ -137,16 +114,6 @@ const InsertMenu = (props: InsertMenuProps) => {
     setLocationDialogOpen(false);
   }, [locationReset]);
 
-  const handleToggleFocusMode = useCallback(() => {
-    onToggleFocusMode?.();
-    setMoreSubmenuOpen(false);
-  }, [onToggleFocusMode]);
-
-  const handleToggleFormattingToolbar = useCallback(() => {
-    onToggleFormattingToolbar?.();
-    setMoreSubmenuOpen(false);
-  }, [onToggleFormattingToolbar]);
-
   const handleMediaUploadClick = useCallback(() => {
     handleUploadClick("image/*,video/*");
   }, [handleUploadClick]);
@@ -155,83 +122,41 @@ const InsertMenu = (props: InsertMenuProps) => {
     handleUploadClick();
   }, [handleUploadClick]);
 
-  const menuItems = useMemo(
-    () =>
-      [
-        {
-          key: "upload-media",
-          label: t("attachment-library.tabs.media"),
-          icon: ImageIcon,
-          onClick: handleMediaUploadClick,
-        },
-        {
-          key: "record-audio",
-          label: t("editor.audio-recorder.trigger"),
-          icon: MicIcon,
-          onClick: () => props.onAudioRecorderClick?.(),
-        },
-        {
-          key: "upload-file",
-          label: t("common.file"),
-          icon: FileIcon,
-          onClick: handleFileUploadClick,
-        },
-        {
-          key: "link",
-          label: t("editor.insert-menu.link-memo"),
-          icon: LinkIcon,
-          onClick: handleOpenLinkDialog,
-        },
-        {
-          key: "location",
-          label: t("editor.insert-menu.add-location"),
-          icon: MapPinIcon,
-          onClick: handleLocationClick,
-        },
-      ] satisfies Array<{ key: string; label: string; icon: LucideIcon; onClick: () => void }>,
-    [handleFileUploadClick, handleLocationClick, handleMediaUploadClick, handleOpenLinkDialog, props, t],
-  );
+  // Insert actions (add content).
+  const insertItems = [
+    { key: "media", label: t("attachment-library.tabs.media"), icon: ImageIcon, onClick: handleMediaUploadClick },
+    { key: "audio", label: t("editor.audio-recorder.trigger"), icon: MicIcon, onClick: props.onAudioRecorderClick },
+    { key: "file", label: t("common.file"), icon: FileIcon, onClick: handleFileUploadClick },
+    { key: "link", label: t("editor.insert-menu.link-memo"), icon: LinkIcon, onClick: handleOpenLinkDialog },
+    { key: "location", label: t("editor.insert-menu.add-location"), icon: MapPinIcon, onClick: handleLocationClick },
+  ];
 
   return (
     <>
-      <DropdownMenu modal={false}>
+      <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="secondary" size="icon" disabled={isUploading}>
             {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <PlusIcon className="size-4" />}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          {menuItems.slice(0, 3).map((item) => (
+          {insertItems.map((item) => (
             <DropdownMenuItem key={item.key} onClick={item.onClick}>
               <item.icon className="w-4 h-4" />
               {item.label}
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
-          {menuItems.slice(3).map((item) => (
-            <DropdownMenuItem key={item.key} onClick={item.onClick}>
-              <item.icon className="w-4 h-4" />
-              {item.label}
-            </DropdownMenuItem>
-          ))}
-          <DropdownMenuSeparator />
-          {/* View submenu: focus mode + normal-mode formatting toolbar toggle */}
-          <DropdownMenuSub open={moreSubmenuOpen} onOpenChange={setMoreSubmenuOpen}>
-            <DropdownMenuSubTrigger onPointerEnter={handleTriggerEnter} onPointerLeave={handleTriggerLeave}>
-              <MoreHorizontalIcon className="w-4 h-4" />
-              {t("common.more")}
-            </DropdownMenuSubTrigger>
-            <DropdownMenuSubContent onPointerEnter={handleContentEnter} onPointerLeave={handleContentLeave}>
-              <DropdownMenuItem onClick={handleToggleFocusMode}>
-                <Maximize2Icon className="w-4 h-4" />
-                {t("editor.focus-mode")}
-              </DropdownMenuItem>
-              <DropdownMenuCheckboxItem checked={Boolean(isFormattingToolbarVisible)} onCheckedChange={handleToggleFormattingToolbar}>
-                <TypeIcon className="w-4 h-4" />
-                {t("editor.formatting-toolbar")}
-              </DropdownMenuCheckboxItem>
-            </DropdownMenuSubContent>
-          </DropdownMenuSub>
+          {/* View toggles: focus mode + formatting-toolbar visibility. */}
+          <DropdownMenuItem onClick={onToggleFocusMode}>
+            <Maximize2Icon className="w-4 h-4" />
+            {t("editor.focus-mode")}
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={onToggleFormattingToolbar}>
+            <TypeIcon className="w-4 h-4" />
+            {t("editor.formatting-toolbar")}
+            {isFormattingToolbarVisible && <CheckIcon className="w-4 h-4 ml-auto" />}
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 

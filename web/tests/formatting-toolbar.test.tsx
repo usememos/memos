@@ -70,25 +70,6 @@ describe("FormattingToolbar", () => {
     expect(screen.getByRole("button", { name: "editor.format.italic" })).toHaveAttribute("aria-pressed", "false");
   });
 
-  it("prompts for a URL and links the selection when adding a link", () => {
-    const { controller, run } = makeController({ getSelectedText: () => "memos" });
-    const promptSpy = vi.spyOn(window, "prompt").mockReturnValue("https://usememos.com");
-    renderToolbar(controller);
-    fireEvent.click(screen.getByRole("button", { name: "editor.format.link" }));
-    expect(run).toHaveBeenCalledWith("link", { url: "https://usememos.com" });
-    promptSpy.mockRestore();
-  });
-
-  it("removes an active link without prompting", () => {
-    const { controller, run } = makeController({ active: { link: true } });
-    const promptSpy = vi.spyOn(window, "prompt");
-    renderToolbar(controller);
-    fireEvent.click(screen.getByRole("button", { name: "editor.format.link" }));
-    expect(promptSpy).not.toHaveBeenCalled();
-    expect(run).toHaveBeenCalledWith("link");
-    promptSpy.mockRestore();
-  });
-
   it("calls onExit when the exit button is clicked", () => {
     const { controller } = makeController();
     const { onExit } = renderToolbar(controller);

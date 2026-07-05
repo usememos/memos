@@ -1,18 +1,11 @@
 import { Heading1Icon, Heading2Icon, Heading3Icon, type LucideIcon, Minimize2Icon, MoreHorizontalIcon, PilcrowIcon } from "lucide-react";
 import { type ComponentPropsWithoutRef, forwardRef, type MouseEventHandler, type RefObject, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import {
   EDITOR_COMMANDS,
-  EDITOR_COMMANDS_BY_ID,
   type EditorCommand,
   type EditorCommandId,
   isCommandActive,
@@ -60,12 +53,12 @@ const SEGMENT_ACTIVE = "bg-accent text-accent-foreground";
 const preventFocusSteal: MouseEventHandler<HTMLButtonElement> = (event) => event.preventDefault();
 
 /**
- * Formatting toolbar: a lean inline row of the heading picker plus mark/list/link
+ * Formatting toolbar: a lean inline row of the heading picker plus mark/list
  * controls, every one derived from the shared command catalog
  * (formatting/commands.ts), so adding a verb there surfaces it here automatically.
  * Groups are separated by thin vertical dividers. Responsive: below
- * COMPACT_TOOLBAR_WIDTH the list and link controls fold into a "more" menu while
- * marks stay inline. In focus mode an exit button is pushed to the far edge.
+ * COMPACT_TOOLBAR_WIDTH the list controls fold into a "more" menu while marks stay
+ * inline. In focus mode an exit button is pushed to the far edge.
  */
 export function FormattingToolbar({ controllerRef, onExit, className }: FormattingToolbarProps) {
   const t = useTranslate();
@@ -83,28 +76,12 @@ export function FormattingToolbar({ controllerRef, onExit, className }: Formatti
     controllerRef.current?.focus();
   };
 
-  const handleLink = () => {
-    const formatting = controllerRef.current?.formatting;
-    if (!formatting) {
-      return;
-    }
-    if (formatting.getActiveFormats().link) {
-      formatting.run("link");
-    } else {
-      // window.prompt blurs the editor, so refocus below regardless of outcome.
-      const url = window.prompt(t("editor.format.link-prompt"));
-      if (url) formatting.run("link", { url });
-    }
-    controllerRef.current?.focus();
-  };
-
-  // Map a catalog command to a toolbar button. `link` keeps its bespoke
-  // prompt-then-apply flow; everything else just runs its command.
+  // Map a catalog command to a toolbar button.
   const toButton = (command: EditorCommand): ToolbarButton => ({
     Icon: command.icon,
     label: t(command.labelKey),
     active: isCommandActive(active, command.id),
-    onClick: command.id === "link" ? handleLink : () => run(command.id),
+    onClick: () => run(command.id),
   });
 
   // Pilcrow for paragraph, else the matching Hn glyph. Deeper levels (H4–H6)
@@ -112,7 +89,6 @@ export function FormattingToolbar({ controllerRef, onExit, className }: Formatti
   const HeadingGlyph = active.headingLevel === null ? PilcrowIcon : HEADING_LEVEL_ICONS[active.headingLevel];
   const markButtons = MARK_COMMANDS.map(toButton);
   const listButtons = LIST_COMMANDS.map(toButton);
-  const linkButton = toButton(EDITOR_COMMANDS_BY_ID.link);
 
   return (
     <div
@@ -153,18 +129,10 @@ export function FormattingToolbar({ controllerRef, onExit, className }: Formatti
                 {button.label}
               </DropdownMenuItem>
             ))}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={linkButton.onClick}>{linkButton.label}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <>
-          {listButtons.map((button) => (
-            <SegmentButton key={button.label} {...button} onMouseDown={preventFocusSteal} />
-          ))}
-          <Divider />
-          <SegmentButton {...linkButton} onMouseDown={preventFocusSteal} />
-        </>
+        listButtons.map((button) => <SegmentButton key={button.label} {...button} onMouseDown={preventFocusSteal} />)
       )}
 
       {onExit && (
@@ -179,7 +147,7 @@ export function FormattingToolbar({ controllerRef, onExit, className }: Formatti
   );
 }
 
-// Thin vertical rule between command groups (heading · marks · lists · link).
+// Thin vertical rule between command groups (heading · marks · lists).
 function Divider() {
   return <span aria-hidden="true" className="w-px h-5 bg-border mx-1.5 shrink-0" />;
 }
