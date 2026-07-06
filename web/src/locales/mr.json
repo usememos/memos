@@ -117,6 +117,9 @@
     "yourself": "स्वतः",
     "groups": "गट"
   },
+  "locale-picker": {
+    "no-language-feedback": "भाषा सापडली नाही? अभिप्राय सबमिट करा"
+  },
   "editor": {
     "add-your-comment-here": "तुमची टिप्पणी येथे जो़डा",
     "any-thoughts": "आपले विचार...",
@@ -125,7 +128,6 @@
     "no-changes-detected": "कोणतेही बदल आढळले नाहीत",
     "save": "जतन",
     "saving": "जतन होत आहे...",
-    "slash-commands": "कमांडसाठी `/` टाइप करा",
     "insert-menu": {
       "add-location": "स्थान जोडा",
       "link-memo": "लिंक मेमो",
@@ -193,6 +195,8 @@
       "has-task-list": "कार्यसूची आहे",
       "label": "फिल्टर"
     },
+    "compact-mode": "संक्षिप्त मोड",
+    "link-preview": "दुवा पूर्वावलोकन",
     "links": "लिंक्स",
     "load-more": "अधिक लोड करा",
     "no-archived-memos": "कोणतेही संग्रहित मेमो नाहीत.",

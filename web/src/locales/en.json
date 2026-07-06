@@ -157,11 +157,31 @@
     "visibility": "Visibility",
     "yourself": "Yourself"
   },
+  "locale-picker": {
+    "no-language-feedback": "Language not found? Submit feedback"
+  },
   "editor": {
     "add-your-comment-here": "Add your comment here...",
     "any-thoughts": "Any thoughts...",
     "exit-focus-mode": "Exit Focus Mode",
     "focus-mode": "Focus Mode",
+    "formatting-toolbar": "Formatting toolbar",
+    "format": {
+      "heading": "Heading",
+      "paragraph": "Paragraph",
+      "heading-1": "Heading 1",
+      "heading-2": "Heading 2",
+      "heading-3": "Heading 3",
+      "bold": "Bold",
+      "italic": "Italic",
+      "code": "Inline code",
+      "bullet-list": "Bullet list",
+      "ordered-list": "Numbered list",
+      "task-list": "To-do list",
+      "link": "Link",
+      "link-prompt": "Enter a URL",
+      "more": "More formatting"
+    },
     "insert-menu": {
       "add-location": "Add location",
       "link-memo": "Link memo",
@@ -170,7 +190,8 @@
     "no-changes-detected": "No changes detected",
     "save": "Save",
     "saving": "Saving...",
-    "slash-commands": "Type `/` for commands",
+    "unsupported-syntax-raw-mode": "This memo contains syntax the rich-text editor can't safely edit, so it opened in raw Markdown mode.",
+    "wysiwyg-editor": "WYSIWYG Editor",
     "audio-recorder": {
       "attachment-label": "Audio recording",
       "attachment-label-with-time": "Audio recording {{time}}",
@@ -266,10 +287,13 @@
       "has-task-list": "hasTaskList",
       "label": "Filters"
     },
+    "compact-mode": "Compact mode",
+    "link-preview": "Link preview",
     "links": "Links",
     "load-more": "Load more",
     "no-archived-memos": "No archived memos.",
     "no-memos": "No memos.",
+    "new-badge": "New",
     "newest-first": "Newest first",
     "oldest-first": "Oldest first",
     "order": "Order",
@@ -680,6 +704,8 @@
       "endpoint-description": "Service endpoint, such as an AWS S3, Cloudflare R2, MinIO, or other compatible URL.",
       "filepath-template": "Filepath template",
       "filepath-template-description": "Used by local and S3 storage. Supports {timestamp}, {uuid}, and {filename}. Default: assets/{timestamp}_{uuid}_{filename}.",
+      "insecure-skip-tls-verify": "Skip TLS verification",
+      "insecure-skip-tls-verify-description": "Disable TLS certificate verification for the S3 endpoint. Enable only for trusted endpoints using a self-signed certificate; this removes protection against man-in-the-middle attacks.",
       "label": "Storage",
       "local-description": "Store new attachments on the server file system. This is the default for new instances.",
       "local-note-backup": "Persist and back up the attachment directory, especially in Docker or container deployments.",
@@ -756,10 +782,18 @@
     "webhook": {
       "create-dialog": {
         "an-easy-to-remember-name": "An easy-to-remember name",
+        "copy-secret": "Copy signing secret",
         "create-webhook": "Create webhook",
         "create-webhook-success": "Webhook `{{name}}` created",
         "edit-webhook": "Edit webhook",
+        "generate-secret": "Generate",
         "payload-url": "Payload URL",
+        "reveal-secret": "Reveal",
+        "signing-secret": "Signing Secret",
+        "signing-secret-auto-note": "A signing secret is generated automatically. You can reveal it after creating.",
+        "signing-secret-configured": "Configured",
+        "signing-secret-created-note": "Webhook created. Copy the signing secret now — you can also reveal it later from Edit.",
+        "signing-secret-not-configured": "Not configured",
         "title": "Title",
         "url-example-post-receive": "https://example.com/postreceive"
       },

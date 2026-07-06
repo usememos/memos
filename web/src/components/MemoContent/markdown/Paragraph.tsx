@@ -1,4 +1,6 @@
 import type { Element } from "hast";
+import { useLinkPreviewEnabled } from "@/contexts/ViewContext";
+import { markdownStyles } from "@/lib/markdownStyles";
 import { cn } from "@/lib/utils";
 import LinkMetadataCard from "../LinkMetadataCard";
 import { useMarkdownRenderContext } from "../MarkdownRenderContext";
@@ -45,9 +47,10 @@ export function getSingleLinkHref(node?: Element): string | undefined {
 
 export const Paragraph = ({ children, className, node, ...props }: ParagraphProps) => {
   const { blockDepth } = useMarkdownRenderContext();
-  const href = blockDepth === 0 ? getSingleLinkHref(node) : undefined;
+  const linkPreviewEnabled = useLinkPreviewEnabled();
+  const href = blockDepth === 0 && linkPreviewEnabled ? getSingleLinkHref(node) : undefined;
   const paragraph = (
-    <p className={cn("my-0 mb-2 leading-6", className)} {...props}>
+    <p className={cn(markdownStyles.paragraph, className)} {...props}>
       {children}
     </p>
   );

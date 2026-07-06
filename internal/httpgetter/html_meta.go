@@ -7,6 +7,7 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -175,11 +176,6 @@ func extractHTMLMeta(resp io.Reader) *HTMLMeta {
 				token := tokenizer.Token()
 				htmlMeta.Title = token.Data
 			} else if token.DataAtom == atom.Meta {
-				description, ok := extractMetaProperty(token, "description")
-				if ok {
-					htmlMeta.Description = description
-				}
-
 				ogTitle, ok := extractMetaProperty(token, "og:title")
 				if ok {
 					htmlMeta.Title = ogTitle
@@ -194,6 +190,11 @@ func extractHTMLMeta(resp io.Reader) *HTMLMeta {
 				if ok {
 					htmlMeta.Image = ogImage
 				}
+
+				description, ok := extractMetaProperty(token, "description")
+				if ok && htmlMeta.Description == "" {
+					htmlMeta.Description = description
+				}
 			}
 		}
 	}
@@ -204,7 +205,7 @@ func extractHTMLMeta(resp io.Reader) *HTMLMeta {
 func extractMetaProperty(token html.Token, prop string) (content string, ok bool) {
 	content, ok = "", false
 	for _, attr := range token.Attr {
-		if attr.Key == "property" && attr.Val == prop {
+		if (attr.Key == "property" || attr.Key == "name") && strings.EqualFold(attr.Val, prop) {
 			ok = true
 		}
 		if attr.Key == "content" {

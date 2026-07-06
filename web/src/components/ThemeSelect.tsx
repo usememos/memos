@@ -7,6 +7,7 @@ interface ThemeSelectProps {
   value?: string;
   onValueChange?: (theme: string) => void;
   className?: string;
+  compact?: boolean;
 }
 
 const THEME_ICONS: Record<string, ReactElement> = {
@@ -16,8 +17,9 @@ const THEME_ICONS: Record<string, ReactElement> = {
   paper: <Palette className="w-4 h-4" />,
 };
 
-const ThemeSelect = ({ value, onValueChange, className }: ThemeSelectProps = {}) => {
+const ThemeSelect = ({ value, onValueChange, className, compact = false }: ThemeSelectProps = {}) => {
   const currentTheme = value || "system";
+  const triggerLabel = currentTheme === "system" ? "System" : THEME_OPTIONS.find((option) => option.value === currentTheme)?.label;
 
   const handleThemeChange = (newTheme: string) => {
     // Apply theme globally immediately
@@ -31,8 +33,9 @@ const ThemeSelect = ({ value, onValueChange, className }: ThemeSelectProps = {})
   return (
     <Select value={currentTheme} onValueChange={handleThemeChange}>
       <SelectTrigger className={className}>
-        <div className="flex items-center gap-2">
-          <SelectValue placeholder="Select theme" />
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          {compact && THEME_ICONS[currentTheme]}
+          {compact ? <span className="truncate">{triggerLabel}</span> : <SelectValue className="truncate" placeholder="Select theme" />}
         </div>
       </SelectTrigger>
       <SelectContent>

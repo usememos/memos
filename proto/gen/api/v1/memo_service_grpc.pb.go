@@ -46,7 +46,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MemoServiceClient interface {
-	// CreateMemo creates a memo.
+	// CreateMemo creates a memo. The request body is a Memo; set its content
+	// (Markdown) and visibility (PRIVATE | PROTECTED | PUBLIC, default PRIVATE).
+	// The memo is owned by the authenticated user; requires authentication.
 	CreateMemo(ctx context.Context, in *CreateMemoRequest, opts ...grpc.CallOption) (*Memo, error)
 	// ListMemos lists memos with pagination and filter.
 	ListMemos(ctx context.Context, in *ListMemosRequest, opts ...grpc.CallOption) (*ListMemosResponse, error)
@@ -56,11 +58,15 @@ type MemoServiceClient interface {
 	UpdateMemo(ctx context.Context, in *UpdateMemoRequest, opts ...grpc.CallOption) (*Memo, error)
 	// DeleteMemo deletes a memo.
 	DeleteMemo(ctx context.Context, in *DeleteMemoRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// SetMemoAttachments sets attachments for a memo.
+	// SetMemoAttachments replaces the full set of attachments on a memo with the
+	// provided list (not an append). Pass the complete desired set; an empty list
+	// clears all attachments. Idempotent.
 	SetMemoAttachments(ctx context.Context, in *SetMemoAttachmentsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ListMemoAttachments lists attachments for a memo.
 	ListMemoAttachments(ctx context.Context, in *ListMemoAttachmentsRequest, opts ...grpc.CallOption) (*ListMemoAttachmentsResponse, error)
-	// SetMemoRelations sets relations for a memo.
+	// SetMemoRelations replaces the full set of relations on a memo with the
+	// provided list (not an append). Pass the complete desired set; an empty list
+	// clears all relations. Idempotent.
 	SetMemoRelations(ctx context.Context, in *SetMemoRelationsRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// ListMemoRelations lists relations for a memo.
 	ListMemoRelations(ctx context.Context, in *ListMemoRelationsRequest, opts ...grpc.CallOption) (*ListMemoRelationsResponse, error)
@@ -70,7 +76,8 @@ type MemoServiceClient interface {
 	ListMemoComments(ctx context.Context, in *ListMemoCommentsRequest, opts ...grpc.CallOption) (*ListMemoCommentsResponse, error)
 	// ListMemoReactions lists reactions for a memo.
 	ListMemoReactions(ctx context.Context, in *ListMemoReactionsRequest, opts ...grpc.CallOption) (*ListMemoReactionsResponse, error)
-	// UpsertMemoReaction upserts a reaction for a memo.
+	// UpsertMemoReaction adds or updates the authenticated user's reaction on a
+	// memo. The reaction's content_id is the memo's resource name (memos/{memo}).
 	UpsertMemoReaction(ctx context.Context, in *UpsertMemoReactionRequest, opts ...grpc.CallOption) (*Reaction, error)
 	// DeleteMemoReaction deletes a reaction for a memo.
 	DeleteMemoReaction(ctx context.Context, in *DeleteMemoReactionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
@@ -301,7 +308,9 @@ func (c *memoServiceClient) BatchGetLinkMetadata(ctx context.Context, in *BatchG
 // All implementations must embed UnimplementedMemoServiceServer
 // for forward compatibility.
 type MemoServiceServer interface {
-	// CreateMemo creates a memo.
+	// CreateMemo creates a memo. The request body is a Memo; set its content
+	// (Markdown) and visibility (PRIVATE | PROTECTED | PUBLIC, default PRIVATE).
+	// The memo is owned by the authenticated user; requires authentication.
 	CreateMemo(context.Context, *CreateMemoRequest) (*Memo, error)
 	// ListMemos lists memos with pagination and filter.
 	ListMemos(context.Context, *ListMemosRequest) (*ListMemosResponse, error)
@@ -311,11 +320,15 @@ type MemoServiceServer interface {
 	UpdateMemo(context.Context, *UpdateMemoRequest) (*Memo, error)
 	// DeleteMemo deletes a memo.
 	DeleteMemo(context.Context, *DeleteMemoRequest) (*emptypb.Empty, error)
-	// SetMemoAttachments sets attachments for a memo.
+	// SetMemoAttachments replaces the full set of attachments on a memo with the
+	// provided list (not an append). Pass the complete desired set; an empty list
+	// clears all attachments. Idempotent.
 	SetMemoAttachments(context.Context, *SetMemoAttachmentsRequest) (*emptypb.Empty, error)
 	// ListMemoAttachments lists attachments for a memo.
 	ListMemoAttachments(context.Context, *ListMemoAttachmentsRequest) (*ListMemoAttachmentsResponse, error)
-	// SetMemoRelations sets relations for a memo.
+	// SetMemoRelations replaces the full set of relations on a memo with the
+	// provided list (not an append). Pass the complete desired set; an empty list
+	// clears all relations. Idempotent.
 	SetMemoRelations(context.Context, *SetMemoRelationsRequest) (*emptypb.Empty, error)
 	// ListMemoRelations lists relations for a memo.
 	ListMemoRelations(context.Context, *ListMemoRelationsRequest) (*ListMemoRelationsResponse, error)
@@ -325,7 +338,8 @@ type MemoServiceServer interface {
 	ListMemoComments(context.Context, *ListMemoCommentsRequest) (*ListMemoCommentsResponse, error)
 	// ListMemoReactions lists reactions for a memo.
 	ListMemoReactions(context.Context, *ListMemoReactionsRequest) (*ListMemoReactionsResponse, error)
-	// UpsertMemoReaction upserts a reaction for a memo.
+	// UpsertMemoReaction adds or updates the authenticated user's reaction on a
+	// memo. The reaction's content_id is the memo's resource name (memos/{memo}).
 	UpsertMemoReaction(context.Context, *UpsertMemoReactionRequest) (*Reaction, error)
 	// DeleteMemoReaction deletes a reaction for a memo.
 	DeleteMemoReaction(context.Context, *DeleteMemoReactionRequest) (*emptypb.Empty, error)

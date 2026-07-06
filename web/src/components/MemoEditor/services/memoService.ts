@@ -128,8 +128,12 @@ export const memoService = {
     return { memoName: memo.name, hasChanges: true };
   },
 
-  /** Build editor state from an already-loaded Memo entity (no network request). */
-  fromMemo(memo: Memo): EditorState {
+  /**
+   * Build the INIT_MEMO payload from an already-loaded Memo entity (no network
+   * request). Returns only the fields the reducer's INIT_MEMO case consumes —
+   * UI state (mode, loading flags, …) is owned by the reducer, not by memos.
+   */
+  fromMemo(memo: Memo): Pick<EditorState, "content" | "metadata" | "timestamps"> {
     return {
       content: memo.content,
       metadata: {
@@ -139,22 +143,9 @@ export const memoService = {
         location: memo.location,
         groupNames: (memo as any).group ? [(memo as any).group] : [],
       },
-      ui: {
-        isFocusMode: false,
-        isLoading: { saving: false, uploading: false, loading: false },
-        isComposing: false,
-      },
       timestamps: {
         createTime: memo.createTime ? timestampDate(memo.createTime) : undefined,
         updateTime: memo.updateTime ? timestampDate(memo.updateTime) : undefined,
-      },
-      localFiles: [],
-      audioRecorder: {
-        isSupported: true,
-        permission: "unknown",
-        status: "idle",
-        elapsedSeconds: 0,
-        error: undefined,
       },
     };
   },

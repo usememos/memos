@@ -81,3 +81,23 @@ func ValidateURL(rawURL string) error {
 	}
 	return nil
 }
+
+// ValidateSigningSecret checks that secret is either empty (allowed) or contains
+// only printable ASCII characters (0x20–0x7E), excluding all control characters
+// such as \r and \n, which would corrupt the webhook signature headers. When the
+// secret uses the Standard Webhooks "whsec_<base64>" serialization, the base64
+// body must decode cleanly so signing cannot silently fall back to the wrong key.
+func ValidateSigningSecret(secret string) error {
+	if secret == "" {
+		return nil
+	}
+	for _, r := range secret {
+		if r < 0x20 || r > 0x7E {
+			return status.Errorf(codes.InvalidArgument, "signing secret contains invalid character")
+		}
+	}
+	if _, err := resolveSigningKey(secret); err != nil {
+		return status.Errorf(codes.InvalidArgument, "%v", err)
+	}
+	return nil
+}

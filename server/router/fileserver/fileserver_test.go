@@ -3,6 +3,7 @@ package fileserver
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/binary"
 	"fmt"
 	"hash/crc32"
@@ -13,14 +14,18 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/internal/testutil"
+	"github.com/usememos/memos/internal/util"
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/auth"
 	apiv1service "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/store"
@@ -432,4 +437,165 @@ func newShareAttachmentTestServices(ctx context.Context, t *testing.T) (*apiv1se
 	return apiService, fileService, testStore, func() {
 		testStore.Close()
 	}
+}
+
+// makePNGDataURI returns a minimal valid PNG encoded as a data URI, suitable for a
+// user avatar.
+func makePNGDataURI(t *testing.T) string {
+	t.Helper()
+	img := image.NewRGBA(image.Rect(0, 0, 1, 1))
+	img.Set(0, 0, color.RGBA{R: 1, G: 2, B: 3, A: 255})
+	var buf bytes.Buffer
+	require.NoError(t, png.Encode(&buf, img))
+	return "data:image/png;base64," + base64.StdEncoding.EncodeToString(buf.Bytes())
+}
+
+// TestServeAttachmentFile_PrivateInstanceDeniesAnonymous verifies that a public
+// memo's attachment is served to anonymous visitors on an open instance but denied
+// on a private instance (no InstanceURL configured).
+func TestServeAttachmentFile_PrivateInstanceDeniesAnonymous(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	creator, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "private-attachment-owner",
+		Role:     store.RoleUser,
+		Email:    "private-attachment-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+
+	attachment, err := svc.CreateAttachment(creatorCtx, &apiv1.CreateAttachmentRequest{
+		Attachment: &apiv1.Attachment{
+			Filename: "public.txt",
+			Type:     "text/plain",
+			Content:  []byte("public content"),
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = svc.CreateMemo(creatorCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:     "public memo",
+			Visibility:  apiv1.Visibility_PUBLIC,
+			Attachments: []*apiv1.Attachment{{Name: attachment.Name}},
+		},
+	})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	url := fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename)
+
+	anonymousGet := func() int {
+		rec := httptest.NewRecorder()
+		e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
+		return rec.Code
+	}
+
+	// Open instance: anonymous access to a public memo's attachment is allowed.
+	fs.Profile.InstanceURL = "http://localhost:8080"
+	require.Equal(t, http.StatusOK, anonymousGet())
+
+	// Private instance: the same anonymous request is denied.
+	fs.Profile.InstanceURL = ""
+	require.Equal(t, http.StatusUnauthorized, anonymousGet())
+}
+
+// TestServeUserAvatar_PrivateInstanceRequiresAuth verifies that avatars are exposed
+// to anonymous visitors on an open instance but require authentication on a private
+// instance.
+func TestServeUserAvatar_PrivateInstanceRequiresAuth(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	_, err := svc.Store.CreateUser(ctx, &store.User{
+		Username:  "avatar-owner",
+		Role:      store.RoleUser,
+		Email:     "avatar-owner@example.com",
+		AvatarURL: makePNGDataURI(t),
+	})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+
+	anonymousGet := func() int {
+		rec := httptest.NewRecorder()
+		e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/file/users/avatar-owner/avatar", nil))
+		return rec.Code
+	}
+
+	// Open instance: anonymous avatar access is allowed.
+	fs.Profile.InstanceURL = "http://localhost:8080"
+	require.Equal(t, http.StatusOK, anonymousGet())
+
+	// Private instance: anonymous avatar access is denied.
+	fs.Profile.InstanceURL = ""
+	require.Equal(t, http.StatusUnauthorized, anonymousGet())
+}
+
+// TestServeAttachmentFile_RefreshCookieAuthenticatesOwner verifies that the file
+// server authenticates a request via the refresh-token cookie (the browser <img>
+// flow) — the AuthenticateToUser cookie fallback — letting the owner fetch their own
+// private memo's attachment without an Authorization header.
+func TestServeAttachmentFile_RefreshCookieAuthenticatesOwner(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	owner, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "cookie-owner",
+		Role:     store.RoleUser,
+		Email:    "cookie-owner@example.com",
+	})
+	require.NoError(t, err)
+	ownerCtx := context.WithValue(ctx, auth.UserIDContextKey, owner.ID)
+
+	attachment, err := svc.CreateAttachment(ownerCtx, &apiv1.CreateAttachmentRequest{
+		Attachment: &apiv1.Attachment{
+			Filename: "secret.txt",
+			Type:     "text/plain",
+			Content:  []byte("secret content"),
+		},
+	})
+	require.NoError(t, err)
+
+	_, err = svc.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:     "private memo",
+			Visibility:  apiv1.Visibility_PRIVATE,
+			Attachments: []*apiv1.Attachment{{Name: attachment.Name}},
+		},
+	})
+	require.NoError(t, err)
+
+	// Mint a valid refresh token for the owner and store its record.
+	tokenID := util.GenUUID()
+	require.NoError(t, svc.Store.AddUserRefreshToken(ctx, owner.ID, &storepb.RefreshTokensUserSetting_RefreshToken{
+		TokenId:   tokenID,
+		ExpiresAt: timestamppb.New(time.Now().Add(auth.RefreshTokenDuration)),
+		CreatedAt: timestamppb.Now(),
+	}))
+	refreshToken, _, err := auth.GenerateRefreshToken(owner.ID, tokenID, []byte(svc.Secret))
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	url := fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename)
+
+	// Without credentials, the private attachment is denied.
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
+	require.Equal(t, http.StatusUnauthorized, rec.Code)
+
+	// With the refresh-token cookie, the owner is authenticated and served.
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(&http.Cookie{Name: auth.RefreshTokenCookieName, Value: refreshToken})
+	rec = httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "secret content", rec.Body.String())
 }

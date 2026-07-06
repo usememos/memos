@@ -1,6 +1,6 @@
 import { Code, ConnectError } from "@connectrpc/connect";
 import { ArrowUpLeftFromCircleIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import MemoCommentSection from "@/components/MemoCommentSection";
 import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
@@ -10,7 +10,7 @@ import MobileHeader from "@/components/MobileHeader";
 import { memoNamePrefix } from "@/helpers/resource-names";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import useMemoDetailError from "@/hooks/useMemoDetailError";
-import { useMemo, useMemoComments } from "@/hooks/useMemoQueries";
+import { useInfiniteMemoComments, useMemo } from "@/hooks/useMemoQueries";
 import { useSharedMemo, withShareAttachmentLinks } from "@/hooks/useMemoShareQueries";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
@@ -48,16 +48,26 @@ const MemoDetail = () => {
     enabled: !!memo?.parent,
   });
 
-  const { data: commentsResponse } = useMemoComments(memoName, {
+  const {
+    data: comments = [],
+    fetchNextPage: fetchNextComments,
+    hasNextPage: hasNextComments,
+    isFetchingNextPage: isFetchingNextComments,
+  } = useInfiniteMemoComments(memoName, {
     enabled: !!memo,
   });
-  const comments = commentsResponse?.memos || [];
 
+  // Scroll to the hash target once it's in the DOM. The effect re-runs as the memo loads (footnote
+  // anchors) and as comments arrive (comment anchors), since the target may render in either; the
+  // ref guards against re-scrolling the same hash on every later comments page-load.
+  const scrolledHashRef = useRef("");
   useEffect(() => {
-    if (!hash || comments.length === 0) return;
-    const el = document.getElementById(hash.slice(1));
-    el?.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [hash, comments]);
+    if (!hash || scrolledHashRef.current === hash) return;
+    const el = document.getElementById(decodeURIComponent(hash.slice(1)));
+    if (!el) return;
+    scrolledHashRef.current = hash;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [hash, memo, comments]);
 
   if (isShareMode) {
     const isNotFound = error instanceof ConnectError && (error.code === Code.NotFound || error.code === Code.Unauthenticated);
@@ -110,7 +120,14 @@ const MemoDetail = () => {
               showPinned
               onShareImageDialogOpenChange={setShareImageDialogOpen}
             />
-            <MemoCommentSection memo={displayMemo} comments={comments} parentPage={locationState?.from} />
+            <MemoCommentSection
+              memo={displayMemo}
+              comments={comments}
+              parentPage={locationState?.from}
+              hasMoreComments={hasNextComments}
+              isFetchingMoreComments={isFetchingNextComments}
+              onLoadMoreComments={fetchNextComments}
+            />
           </div>
           {md && (
             <div className="sticky top-0 left-0 shrink-0 -mt-6 w-56 h-full">

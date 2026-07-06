@@ -23,7 +23,7 @@ export const validationService = {
     }
 
     // Cannot save while audio recorder is active
-    if (state.audioRecorder.status === "recording" || state.audioRecorder.status === "requesting_permission") {
+    if (state.recorderBusy) {
       return { valid: false, reason: "Finish audio recording before saving" };
     }
 

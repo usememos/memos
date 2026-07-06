@@ -193,6 +193,13 @@ func printGreetings(profile *profile.Profile) {
 		fmt.Printf("Server running on unix socket: %s\n", profile.UNIXSock)
 	}
 
+	// Access mode is derived from instance_url: set = public, unset = private.
+	accessMode := "private"
+	if profile.AllowAnonymous() {
+		accessMode = "public"
+	}
+	fmt.Printf("Access mode: %s\n", accessMode)
+
 	fmt.Println()
 	fmt.Printf("Documentation: %s\n", "https://usememos.com")
 	fmt.Printf("Source code: %s\n", "https://github.com/usememos/memos")

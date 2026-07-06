@@ -269,10 +269,7 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
 		}
 		limit = normalizePageSize(pageToken.Limit)
-		offset = int(pageToken.Offset)
-		if offset < 0 {
-			offset = 0
-		}
+		offset = max(int(pageToken.Offset), 0)
 	} else {
 		limit = normalizePageSize(request.PageSize)
 	}
@@ -871,10 +868,7 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 			return nil, status.Errorf(codes.InvalidArgument, "invalid page token: %v", err)
 		}
 		limit = normalizePageSize(pageToken.Limit)
-		offset = int(pageToken.Offset)
-		if offset < 0 {
-			offset = 0
-		}
+		offset = max(int(pageToken.Offset), 0)
 	} else {
 		limit = normalizePageSize(request.PageSize)
 	}
@@ -1027,6 +1021,7 @@ func (s *APIV1Service) DispatchMemoCommentCreatedWebhook(ctx context.Context, co
 		}
 		payload.ActivityType = "memos.memo.comment.created"
 		payload.URL = hook.Url
+		payload.SigningSecret = hook.SigningSecret
 		webhook.PostAsync(payload)
 	}
 	return nil
@@ -1052,6 +1047,7 @@ func (s *APIV1Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *v1p
 		}
 		payload.ActivityType = activityType
 		payload.URL = hook.Url
+		payload.SigningSecret = hook.SigningSecret
 
 		// Use asynchronous webhook dispatch
 		webhook.PostAsync(payload)

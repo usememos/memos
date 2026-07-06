@@ -4,13 +4,9 @@ import { useBlobUrls } from "./useBlobUrls";
 
 const FALLBACK_AUDIO_MIME_TYPE = "audio/webm";
 export type AudioRecordingCompleteMode = "attach" | "transcribe";
+export type AudioRecorderStatus = "idle" | "requesting_permission" | "recording" | "error" | "unsupported";
 
-interface AudioRecorderActions {
-  setAudioRecorderSupport: (value: boolean) => void;
-  setAudioRecorderPermission: (value: "unknown" | "granted" | "denied") => void;
-  setAudioRecorderStatus: (value: "idle" | "requesting_permission" | "recording" | "error" | "unsupported") => void;
-  setAudioRecorderElapsed: (value: number) => void;
-  setAudioRecorderError: (value?: string) => void;
+interface UseAudioRecorderOptions {
   onRecordingComplete: (localFile: LocalFile, mode: AudioRecordingCompleteMode) => void;
   onRecordingEmpty?: (mode: AudioRecordingCompleteMode) => void;
 }
@@ -49,10 +45,22 @@ function createRecordedFile(blob: Blob, mimeType: string): File {
   return new File([blob], `voice-note-${datePart}-${timePart}.${extension}`, { type: mimeType });
 }
 
-export const useAudioRecorder = (actions: AudioRecorderActions) => {
+/**
+ * Owns the full audio-recording lifecycle and its display state (status,
+ * elapsed time, error, live stream). This is component-private state — only the
+ * editor that mounts the hook reads it — so it lives here rather than in the
+ * shared editor reducer. The single bit other components care about (whether a
+ * recording is in flight, for save-gating) is derived from `status` by the
+ * caller.
+ */
+export const useAudioRecorder = (options: UseAudioRecorderOptions) => {
+  const [status, setStatus] = useState<AudioRecorderStatus>("idle");
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [recordingStream, setRecordingStream] = useState<MediaStream | null>(null);
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const mediaStreamRef = useRef<MediaStream | null>(null);
-  const [recordingStream, setRecordingStream] = useState<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const startedAtRef = useRef<number | null>(null);
   const elapsedTimerRef = useRef<number | null>(null);
@@ -60,6 +68,12 @@ export const useAudioRecorder = (actions: AudioRecorderActions) => {
   const completionModeRef = useRef<AudioRecordingCompleteMode>("attach");
   const startRequestIdRef = useRef(0);
   const { createBlobUrl } = useBlobUrls();
+
+  // The MediaRecorder "stop" listener is registered once per recording but may
+  // fire after later renders, so read completion callbacks through a ref to
+  // always invoke the latest ones (avoids a stale-closure bug).
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
   const cleanupTimer = () => {
     if (elapsedTimerRef.current !== null) {
@@ -89,20 +103,21 @@ export const useAudioRecorder = (actions: AudioRecorderActions) => {
       typeof navigator.mediaDevices?.getUserMedia === "function" &&
       typeof MediaRecorder !== "undefined";
 
-    actions.setAudioRecorderSupport(isSupported);
     if (!isSupported) {
-      actions.setAudioRecorderStatus("unsupported");
-      actions.setAudioRecorderError("Audio recording is not supported in this browser.");
+      setStatus("unsupported");
+      setError("Audio recording is not supported in this browser.");
       return;
     }
 
-    actions.setAudioRecorderStatus("idle");
-    actions.setAudioRecorderError(undefined);
+    setStatus("idle");
+    setError(undefined);
 
     return () => {
       resetRecorderRefs();
     };
-  }, [actions]);
+    // Mount-only: detect support once and tear down on unmount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const startRecording = async () => {
     const requestId = startRequestIdRef.current + 1;
@@ -113,15 +128,14 @@ export const useAudioRecorder = (actions: AudioRecorderActions) => {
       typeof navigator.mediaDevices?.getUserMedia !== "function" ||
       typeof MediaRecorder === "undefined"
     ) {
-      actions.setAudioRecorderSupport(false);
-      actions.setAudioRecorderStatus("unsupported");
-      actions.setAudioRecorderError("Audio recording is not supported in this browser.");
+      setStatus("unsupported");
+      setError("Audio recording is not supported in this browser.");
       return;
     }
 
-    actions.setAudioRecorderError(undefined);
-    actions.setAudioRecorderStatus("requesting_permission");
-    actions.setAudioRecorderElapsed(0);
+    setError(undefined);
+    setStatus("requesting_permission");
+    setElapsedSeconds(0);
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -159,10 +173,10 @@ export const useAudioRecorder = (actions: AudioRecorderActions) => {
         const completionMode = completionModeRef.current;
         completionModeRef.current = "attach";
         if (blob.size === 0) {
-          actions.setAudioRecorderElapsed(0);
-          actions.setAudioRecorderError(undefined);
-          actions.setAudioRecorderStatus("idle");
-          actions.onRecordingEmpty?.(completionMode);
+          setElapsedSeconds(0);
+          setError(undefined);
+          setStatus("idle");
+          optionsRef.current.onRecordingEmpty?.(completionMode);
           resetRecorderRefs();
           return;
         }
@@ -170,7 +184,7 @@ export const useAudioRecorder = (actions: AudioRecorderActions) => {
         const file = createRecordedFile(blob, recorderMimeTypeRef.current);
         const previewUrl = createBlobUrl(file);
 
-        actions.onRecordingComplete(
+        optionsRef.current.onRecordingComplete(
           {
             file,
             previewUrl,
@@ -181,20 +195,19 @@ export const useAudioRecorder = (actions: AudioRecorderActions) => {
           },
           completionMode,
         );
-        actions.setAudioRecorderElapsed(0);
-        actions.setAudioRecorderError(undefined);
-        actions.setAudioRecorderStatus("idle");
+        setElapsedSeconds(0);
+        setError(undefined);
+        setStatus("idle");
         resetRecorderRefs();
       });
 
       mediaRecorder.start();
       startedAtRef.current = Date.now();
-      actions.setAudioRecorderPermission("granted");
-      actions.setAudioRecorderStatus("recording");
+      setStatus("recording");
 
       elapsedTimerRef.current = window.setInterval(() => {
         if (startedAtRef.current) {
-          actions.setAudioRecorderElapsed(Math.max(0, Math.floor((Date.now() - startedAtRef.current) / 1000)));
+          setElapsedSeconds(Math.max(0, Math.floor((Date.now() - startedAtRef.current) / 1000)));
         }
       }, 250);
     } catch (error) {
@@ -205,9 +218,8 @@ export const useAudioRecorder = (actions: AudioRecorderActions) => {
       const permissionDenied =
         error instanceof DOMException && (error.name === "NotAllowedError" || error.name === "PermissionDeniedError");
 
-      actions.setAudioRecorderPermission(permissionDenied ? "denied" : "unknown");
-      actions.setAudioRecorderStatus("error");
-      actions.setAudioRecorderError(permissionDenied ? "Microphone permission was denied." : "Failed to start audio recording.");
+      setStatus("error");
+      setError(permissionDenied ? "Microphone permission was denied." : "Failed to start audio recording.");
       resetRecorderRefs();
     }
   };
@@ -227,15 +239,23 @@ export const useAudioRecorder = (actions: AudioRecorderActions) => {
     startRequestIdRef.current += 1;
     completionModeRef.current = "attach";
     resetRecorderRefs();
-    actions.setAudioRecorderElapsed(0);
-    actions.setAudioRecorderError(undefined);
-    actions.setAudioRecorderStatus("idle");
+    setElapsedSeconds(0);
+    setError(undefined);
+    setStatus("idle");
   };
 
+  // "Busy" = requesting permission or actively recording. The single derived
+  // concept callers need (save-gating, UI guards), owned here next to `status`.
+  const isBusy = status === "recording" || status === "requesting_permission";
+
   return {
+    status,
+    isBusy,
+    elapsedSeconds,
+    error,
+    recordingStream,
     startRecording,
     stopRecording,
     resetRecording,
-    recordingStream,
   };
 };

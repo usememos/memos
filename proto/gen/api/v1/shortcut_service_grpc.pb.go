@@ -31,7 +31,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ShortcutServiceClient interface {
-	// ListShortcuts returns a list of shortcuts for a user.
+	// ListShortcuts returns a user's saved shortcuts. Each shortcut is a named,
+	// reusable CEL filter (see Shortcut.filter); pass its filter string directly
+	// to the ListMemos `filter` argument to reuse a saved view.
 	ListShortcuts(ctx context.Context, in *ListShortcutsRequest, opts ...grpc.CallOption) (*ListShortcutsResponse, error)
 	// GetShortcut gets a shortcut by name.
 	GetShortcut(ctx context.Context, in *GetShortcutRequest, opts ...grpc.CallOption) (*Shortcut, error)
@@ -105,7 +107,9 @@ func (c *shortcutServiceClient) DeleteShortcut(ctx context.Context, in *DeleteSh
 // All implementations must embed UnimplementedShortcutServiceServer
 // for forward compatibility.
 type ShortcutServiceServer interface {
-	// ListShortcuts returns a list of shortcuts for a user.
+	// ListShortcuts returns a user's saved shortcuts. Each shortcut is a named,
+	// reusable CEL filter (see Shortcut.filter); pass its filter string directly
+	// to the ListMemos `filter` argument to reuse a saved view.
 	ListShortcuts(context.Context, *ListShortcutsRequest) (*ListShortcutsResponse, error)
 	// GetShortcut gets a shortcut by name.
 	GetShortcut(context.Context, *GetShortcutRequest) (*Shortcut, error)

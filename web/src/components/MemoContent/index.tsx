@@ -3,7 +3,7 @@ import { memo, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { extractMentionUsernames } from "@/utils/remark-plugins/remark-mention";
-import { COMPACT_MODE_CONFIG } from "./constants";
+import { COMPACT_MODE_CONFIG, getPreviewMaxHeightPx } from "./constants";
 import { useCompactLabel, useCompactMode } from "./hooks";
 import { MemoMarkdownRenderer } from "./MemoMarkdownRenderer";
 import { useResolvedMentionUsernames } from "./MentionResolutionContext";
@@ -16,7 +16,7 @@ const MemoContent = (props: MemoContentProps) => {
     containerRef: memoContentContainerRef,
     mode: showCompactMode,
     toggle: toggleCompactMode,
-  } = useCompactMode(Boolean(props.compact));
+  } = useCompactMode(Boolean(props.compact), content);
   const mentionUsernames = useMemo(() => extractMentionUsernames(content), [content]);
   const resolvedMentionUsernames = useResolvedMentionUsernames(mentionUsernames);
 
@@ -33,14 +33,25 @@ const MemoContent = (props: MemoContentProps) => {
           "[&_.katex-display]:max-w-full",
           "[&_.katex-display]:overflow-x-auto",
           "[&_.katex-display]:overflow-y-hidden",
+          // Footnotes: quiet GitHub-style footer — thin separator, smaller muted text, unobtrusive links.
+          "[&_.footnotes]:mt-4 [&_.footnotes]:border-t [&_.footnotes]:border-border [&_.footnotes]:pt-2",
+          "[&_.footnotes]:text-sm [&_.footnotes]:text-muted-foreground",
+          // GitHub renders footnote ref/backref links without an underline (underline on hover only).
+          "[&_[data-footnote-ref]]:no-underline [&_[data-footnote-ref]:hover]:underline",
+          "[&_.data-footnote-backref]:no-underline [&_.data-footnote-backref:hover]:underline",
           showCompactMode === "ALL" && "overflow-hidden",
           contentClassName,
         )}
-        style={showCompactMode === "ALL" ? { maxHeight: `${COMPACT_MODE_CONFIG.maxHeightVh}vh` } : undefined}
+        style={showCompactMode === "ALL" ? { maxHeight: `${getPreviewMaxHeightPx()}px` } : undefined}
         onMouseUp={onClick}
         onDoubleClick={onDoubleClick}
       >
-        <MemoMarkdownRenderer content={content} resolvedMentionUsernames={resolvedMentionUsernames} />
+        <MemoMarkdownRenderer
+          content={content}
+          resolvedMentionUsernames={resolvedMentionUsernames}
+          memoName={props.memoName}
+          compact={Boolean(props.compact)}
+        />
         {showCompactMode === "ALL" && (
           <div
             className={cn(

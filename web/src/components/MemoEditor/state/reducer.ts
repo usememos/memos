@@ -1,5 +1,5 @@
 import type { EditorAction, EditorState } from "./types";
-import { initialState } from "./types";
+import { createInitialState } from "./types";
 
 export function editorReducer(state: EditorState, action: EditorAction): EditorState {
   switch (action.type) {
@@ -26,42 +26,6 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         },
       };
 
-    case "ADD_ATTACHMENT":
-      return {
-        ...state,
-        metadata: {
-          ...state.metadata,
-          attachments: [...state.metadata.attachments, action.payload],
-        },
-      };
-
-    case "REMOVE_ATTACHMENT":
-      return {
-        ...state,
-        metadata: {
-          ...state.metadata,
-          attachments: state.metadata.attachments.filter((a) => a.name !== action.payload),
-        },
-      };
-
-    case "ADD_RELATION":
-      return {
-        ...state,
-        metadata: {
-          ...state.metadata,
-          relations: [...state.metadata.relations, action.payload],
-        },
-      };
-
-    case "REMOVE_RELATION":
-      return {
-        ...state,
-        metadata: {
-          ...state.metadata,
-          relations: state.metadata.relations.filter((r) => r.relatedMemo?.name !== action.payload),
-        },
-      };
-
     case "ADD_LOCAL_FILE":
       return {
         ...state,
@@ -78,12 +42,6 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
       return {
         ...state,
         localFiles: action.payload,
-      };
-
-    case "CLEAR_LOCAL_FILES":
-      return {
-        ...state,
-        localFiles: [],
       };
 
     case "TOGGLE_FOCUS_MODE":
@@ -107,15 +65,6 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         },
       };
 
-    case "SET_COMPOSING":
-      return {
-        ...state,
-        ui: {
-          ...state.ui,
-          isComposing: action.payload,
-        },
-      };
-
     case "SET_TIMESTAMPS":
       return {
         ...state,
@@ -125,56 +74,14 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         },
       };
 
-    case "SET_AUDIO_RECORDER_SUPPORT":
+    case "SET_RECORDER_BUSY":
       return {
         ...state,
-        audioRecorder: {
-          ...state.audioRecorder,
-          isSupported: action.payload,
-          status: action.payload ? state.audioRecorder.status : "unsupported",
-        },
-      };
-
-    case "SET_AUDIO_RECORDER_PERMISSION":
-      return {
-        ...state,
-        audioRecorder: {
-          ...state.audioRecorder,
-          permission: action.payload,
-        },
-      };
-
-    case "SET_AUDIO_RECORDER_STATUS":
-      return {
-        ...state,
-        audioRecorder: {
-          ...state.audioRecorder,
-          status: action.payload,
-        },
-      };
-
-    case "SET_AUDIO_RECORDER_ELAPSED":
-      return {
-        ...state,
-        audioRecorder: {
-          ...state.audioRecorder,
-          elapsedSeconds: action.payload,
-        },
-      };
-
-    case "SET_AUDIO_RECORDER_ERROR":
-      return {
-        ...state,
-        audioRecorder: {
-          ...state.audioRecorder,
-          error: action.payload,
-        },
+        recorderBusy: action.payload,
       };
 
     case "RESET":
-      return {
-        ...initialState,
-      };
+      return createInitialState();
 
     default:
       return state;

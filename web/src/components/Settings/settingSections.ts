@@ -98,11 +98,10 @@ export const SETTINGS_SECTIONS: SettingSectionDefinition[] = [
   },
   {
     key: "tags",
-    scope: "admin",
+    scope: "basic",
     labelKey: "setting.tags.label",
     icon: TagsIcon,
     component: TagsSection,
-    preloadSettingKeys: [InstanceSetting_Key.TAGS],
   },
   {
     key: "storage",

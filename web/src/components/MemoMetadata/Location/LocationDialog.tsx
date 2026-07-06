@@ -1,4 +1,4 @@
-import type { LocationState } from "@/components/MemoEditor/types/insert-menu";
+import type { LocationState } from "@/components/MemoEditor/types/insertMenu";
 import { LazyLocationPicker } from "@/components/map/LazyLocationPicker";
 import type { MapPoint } from "@/components/map/types";
 import { Button } from "@/components/ui/button";

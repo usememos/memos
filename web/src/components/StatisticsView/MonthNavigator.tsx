@@ -70,22 +70,10 @@ export const MonthNavigator = memo(({ visibleMonth, onMonthChange, activityStats
       </Dialog>
 
       <nav className="flex items-center shrink-0" aria-label="Month navigation">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handlePrevMonth}
-          aria-label="Previous month"
-          className="h-7 w-7 p-0 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/40"
-        >
+        <Button variant="ghost" size="icon-sm" onClick={handlePrevMonth} aria-label="Previous month">
           <ChevronLeftIcon className="w-4 h-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleNextMonth}
-          aria-label="Next month"
-          className="h-7 w-7 p-0 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/40"
-        >
+        <Button variant="ghost" size="icon-sm" onClick={handleNextMonth} aria-label="Next month">
           <ChevronRightIcon className="w-4 h-4" />
         </Button>
       </nav>

@@ -269,6 +269,14 @@ func (s *ConnectServiceHandler) DeleteUserWebhook(ctx context.Context, req *conn
 	return connect.NewResponse(resp), nil
 }
 
+func (s *ConnectServiceHandler) GetUserWebhookSigningSecret(ctx context.Context, req *connect.Request[v1pb.GetUserWebhookSigningSecretRequest]) (*connect.Response[v1pb.GetUserWebhookSigningSecretResponse], error) {
+	resp, err := s.APIV1Service.GetUserWebhookSigningSecret(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 func (s *ConnectServiceHandler) ListUserNotifications(ctx context.Context, req *connect.Request[v1pb.ListUserNotificationsRequest]) (*connect.Response[v1pb.ListUserNotificationsResponse], error) {
 	resp, err := s.APIV1Service.ListUserNotifications(ctx, req.Msg)
 	if err != nil {

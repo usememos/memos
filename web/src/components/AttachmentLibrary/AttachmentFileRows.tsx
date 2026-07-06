@@ -1,5 +1,6 @@
 import { FileAudioIcon, FileIcon, PlayIcon } from "lucide-react";
 import AudioAttachmentItem from "@/components/MemoMetadata/Attachment/AudioAttachmentItem";
+import VideoPoster from "@/components/VideoPoster";
 import type { AttachmentLibraryListItem } from "@/hooks/useAttachmentLibrary";
 import { cn } from "@/lib/utils";
 import { getAttachmentThumbnailUrl, getAttachmentType, isMotionAttachment } from "@/utils/attachment";
@@ -26,7 +27,7 @@ const AttachmentThumb = ({ item, className }: { item: AttachmentLibraryListItem;
   if (type === "video/*") {
     return (
       <div className={cn("relative overflow-hidden rounded-xl bg-muted/35", className)}>
-        <video src={item.sourceUrl} className="h-full w-full object-cover" preload="metadata" />
+        <VideoPoster sourceUrl={item.sourceUrl} alt={item.attachment.filename} className="h-full w-full object-cover" />
         <span className="absolute bottom-2 right-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-background/85 text-foreground shadow-sm">
           <PlayIcon className="h-3.5 w-3.5 fill-current" />
         </span>
@@ -103,7 +104,7 @@ export const AttachmentUnusedRows = ({ items }: { items: AttachmentLibraryListIt
       {items.map((item) => (
         <article
           key={item.attachment.name}
-          className="flex items-center gap-2.5 rounded-[18px] border border-amber-200/70 bg-amber-50/50 p-3 shadow-sm shadow-black/[0.02] dark:border-amber-900/50 dark:bg-amber-950/10"
+          className="flex items-center gap-2.5 rounded-[18px] border border-warning/30 bg-warning/5 p-3 shadow-sm shadow-black/[0.02]"
         >
           <AttachmentThumb item={item} className="h-10 w-10 shrink-0" />
 
@@ -117,10 +118,7 @@ export const AttachmentUnusedRows = ({ items }: { items: AttachmentLibraryListIt
             </div>
           </div>
 
-          <AttachmentOpenButton
-            className="text-amber-900/80 hover:text-amber-950 dark:text-amber-100/80 dark:hover:text-amber-50"
-            href={item.sourceUrl}
-          />
+          <AttachmentOpenButton className="text-warning/90 hover:text-warning" href={item.sourceUrl} />
         </article>
       ))}
     </div>

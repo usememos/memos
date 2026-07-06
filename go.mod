@@ -10,7 +10,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.15
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.100.0
 	github.com/go-sql-driver/mysql v1.9.3
-	github.com/google/cel-go v0.28.0
+	github.com/google/cel-go v0.28.1
+	github.com/google/jsonschema-go v0.4.3
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/feeds v1.2.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.29.0
@@ -18,8 +19,8 @@ require (
 	github.com/labstack/echo/v5 v5.1.0
 	github.com/lib/pq v1.12.3
 	github.com/lithammer/shortuuid/v4 v4.2.0
-	github.com/mark3labs/mcp-go v0.49.0
 	github.com/moby/moby/api v1.54.2
+	github.com/modelcontextprotocol/go-sdk v1.6.1
 	github.com/openai/openai-go/v3 v3.32.0
 	github.com/pion/opus v0.0.0-20260430223319-81a9c5dc5013
 	github.com/pkg/errors v0.9.1
@@ -72,7 +73,6 @@ require (
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/jsonschema-go v0.4.3 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.15 // indirect
 	github.com/googleapis/gax-go/v2 v2.22.0 // indirect
@@ -96,6 +96,8 @@ require (
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/sagikazarmark/locafero v0.12.0 // indirect
+	github.com/segmentio/asm v1.1.3 // indirect
+	github.com/segmentio/encoding v0.5.4 // indirect
 	github.com/shirou/gopsutil/v4 v4.26.3 // indirect
 	github.com/sirupsen/logrus v1.9.4 // indirect
 	github.com/spf13/afero v1.15.0 // indirect
@@ -148,5 +150,5 @@ require (
 	golang.org/x/text v0.36.0
 	golang.org/x/time v0.15.0 // indirect
 	google.golang.org/protobuf v1.36.11
-	gopkg.in/yaml.v3 v3.0.1 // indirect
+	gopkg.in/yaml.v3 v3.0.1
 )

@@ -117,6 +117,9 @@
     "yourself": "자기 자신",
     "groups": "그룹"
   },
+  "locale-picker": {
+    "no-language-feedback": "언어를 찾을 수 없나요? 피드백 제출"
+  },
   "editor": {
     "add-your-comment-here": "여기에 댓글을 추가하세요...",
     "any-thoughts": "떠오르는 게 있나요...",
@@ -125,7 +128,6 @@
     "no-changes-detected": "변경사항이 없습니다",
     "save": "저장",
     "saving": "저장 중...",
-    "slash-commands": "명령어를 보시려면 /를 입력하세요.",
     "insert-menu": {
       "add-location": "위치 추가",
       "link-memo": "링크 메모",
@@ -193,6 +195,8 @@
       "has-task-list": "할일목록있음",
       "label": "필터"
     },
+    "compact-mode": "간략 보기",
+    "link-preview": "링크 미리보기",
     "links": "링크",
     "load-more": "더보기",
     "no-archived-memos": "보관처리된 메모가 없습니다.",

@@ -1,13 +1,26 @@
 import { forwardRef } from "react";
-import Editor, { type EditorRefActions } from "../Editor";
+import Editor from "../Editor";
 import { useBlobUrls, useDragAndDrop } from "../hooks";
-import { useEditorContext } from "../state";
+import { useEditorContext, useEditorSelector } from "../state";
 import type { EditorContentProps } from "../types";
 import type { LocalFile } from "../types/attachment";
+import type { EditorController } from "../types/editorController";
 
-export const EditorContent = forwardRef<EditorRefActions, EditorContentProps>(({ placeholder }, ref) => {
-  const { state, actions, dispatch } = useEditorContext();
+// Imported eagerly (not React.lazy): the editor is the always-present compose
+// box on the home route, which is already code-split — so deferring the
+// CodeMirror bundle separately bought nothing and made the editor paint empty
+// for a beat before its placeholder appeared (a visible flicker on load).
+
+/**
+ * Hosts the CodeMirror Editor behind the EditorController contract. The
+ * editor serializes into state.content on every change and exposes its
+ * formatting capability for the focus-mode toolbar.
+ */
+export const EditorContent = forwardRef<EditorController, EditorContentProps>(({ placeholder }, ref) => {
+  const { actions, dispatch } = useEditorContext();
   const { createBlobUrl } = useBlobUrls();
+  const content = useEditorSelector((s) => s.content);
+  const isFocusMode = useEditorSelector((s) => s.ui.isFocusMode);
 
   const { dragHandlers } = useDragAndDrop((files: FileList) => {
     const localFiles: LocalFile[] = Array.from(files).map((file) => ({
@@ -17,14 +30,6 @@ export const EditorContent = forwardRef<EditorRefActions, EditorContentProps>(({
     }));
     localFiles.forEach((localFile) => dispatch(actions.addLocalFile(localFile)));
   });
-
-  const handleCompositionStart = () => {
-    dispatch(actions.setComposing(true));
-  };
-
-  const handleCompositionEnd = () => {
-    dispatch(actions.setComposing(false));
-  };
 
   const handleContentChange = (content: string) => {
     dispatch(actions.updateContent(content));
@@ -61,14 +66,11 @@ export const EditorContent = forwardRef<EditorRefActions, EditorContentProps>(({
       <Editor
         ref={ref}
         className="memo-editor-content"
-        initialContent={state.content}
+        initialContent={content}
         placeholder={placeholder || ""}
-        isFocusMode={state.ui.isFocusMode}
-        isInIME={state.ui.isComposing}
+        isFocusMode={isFocusMode}
         onContentChange={handleContentChange}
         onPaste={handlePaste}
-        onCompositionStart={handleCompositionStart}
-        onCompositionEnd={handleCompositionEnd}
       />
     </div>
   );

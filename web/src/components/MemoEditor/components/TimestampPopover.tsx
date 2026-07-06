@@ -1,7 +1,7 @@
 import { type FC, useRef, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useTranslate } from "@/utils/i18n";
-import { useEditorContext } from "../state";
+import { useEditorContext, useEditorSelector } from "../state";
 
 const DATETIME_FORMAT = "YYYY-MM-DD HH:mm:ss";
 
@@ -57,8 +57,9 @@ const TimestampInput: FC<{
 
 export const TimestampPopover: FC = () => {
   const t = useTranslate();
-  const { state, actions, dispatch } = useEditorContext();
-  const { createTime, updateTime } = state.timestamps;
+  const { actions, dispatch } = useEditorContext();
+  const createTime = useEditorSelector((s) => s.timestamps.createTime);
+  const updateTime = useEditorSelector((s) => s.timestamps.updateTime);
 
   if (!createTime) return null;
 

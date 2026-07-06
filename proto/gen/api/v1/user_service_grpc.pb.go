@@ -20,31 +20,32 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_ListUsers_FullMethodName                 = "/memos.api.v1.UserService/ListUsers"
-	UserService_BatchGetUsers_FullMethodName             = "/memos.api.v1.UserService/BatchGetUsers"
-	UserService_GetUser_FullMethodName                   = "/memos.api.v1.UserService/GetUser"
-	UserService_CreateUser_FullMethodName                = "/memos.api.v1.UserService/CreateUser"
-	UserService_UpdateUser_FullMethodName                = "/memos.api.v1.UserService/UpdateUser"
-	UserService_DeleteUser_FullMethodName                = "/memos.api.v1.UserService/DeleteUser"
-	UserService_ListAllUserStats_FullMethodName          = "/memos.api.v1.UserService/ListAllUserStats"
-	UserService_GetUserStats_FullMethodName              = "/memos.api.v1.UserService/GetUserStats"
-	UserService_GetUserSetting_FullMethodName            = "/memos.api.v1.UserService/GetUserSetting"
-	UserService_UpdateUserSetting_FullMethodName         = "/memos.api.v1.UserService/UpdateUserSetting"
-	UserService_ListUserSettings_FullMethodName          = "/memos.api.v1.UserService/ListUserSettings"
-	UserService_ListLinkedIdentities_FullMethodName      = "/memos.api.v1.UserService/ListLinkedIdentities"
-	UserService_CreateLinkedIdentity_FullMethodName      = "/memos.api.v1.UserService/CreateLinkedIdentity"
-	UserService_GetLinkedIdentity_FullMethodName         = "/memos.api.v1.UserService/GetLinkedIdentity"
-	UserService_DeleteLinkedIdentity_FullMethodName      = "/memos.api.v1.UserService/DeleteLinkedIdentity"
-	UserService_ListPersonalAccessTokens_FullMethodName  = "/memos.api.v1.UserService/ListPersonalAccessTokens"
-	UserService_CreatePersonalAccessToken_FullMethodName = "/memos.api.v1.UserService/CreatePersonalAccessToken"
-	UserService_DeletePersonalAccessToken_FullMethodName = "/memos.api.v1.UserService/DeletePersonalAccessToken"
-	UserService_ListUserWebhooks_FullMethodName          = "/memos.api.v1.UserService/ListUserWebhooks"
-	UserService_CreateUserWebhook_FullMethodName         = "/memos.api.v1.UserService/CreateUserWebhook"
-	UserService_UpdateUserWebhook_FullMethodName         = "/memos.api.v1.UserService/UpdateUserWebhook"
-	UserService_DeleteUserWebhook_FullMethodName         = "/memos.api.v1.UserService/DeleteUserWebhook"
-	UserService_ListUserNotifications_FullMethodName     = "/memos.api.v1.UserService/ListUserNotifications"
-	UserService_UpdateUserNotification_FullMethodName    = "/memos.api.v1.UserService/UpdateUserNotification"
-	UserService_DeleteUserNotification_FullMethodName    = "/memos.api.v1.UserService/DeleteUserNotification"
+	UserService_ListUsers_FullMethodName                   = "/memos.api.v1.UserService/ListUsers"
+	UserService_BatchGetUsers_FullMethodName               = "/memos.api.v1.UserService/BatchGetUsers"
+	UserService_GetUser_FullMethodName                     = "/memos.api.v1.UserService/GetUser"
+	UserService_CreateUser_FullMethodName                  = "/memos.api.v1.UserService/CreateUser"
+	UserService_UpdateUser_FullMethodName                  = "/memos.api.v1.UserService/UpdateUser"
+	UserService_DeleteUser_FullMethodName                  = "/memos.api.v1.UserService/DeleteUser"
+	UserService_ListAllUserStats_FullMethodName            = "/memos.api.v1.UserService/ListAllUserStats"
+	UserService_GetUserStats_FullMethodName                = "/memos.api.v1.UserService/GetUserStats"
+	UserService_GetUserSetting_FullMethodName              = "/memos.api.v1.UserService/GetUserSetting"
+	UserService_UpdateUserSetting_FullMethodName           = "/memos.api.v1.UserService/UpdateUserSetting"
+	UserService_ListUserSettings_FullMethodName            = "/memos.api.v1.UserService/ListUserSettings"
+	UserService_ListLinkedIdentities_FullMethodName        = "/memos.api.v1.UserService/ListLinkedIdentities"
+	UserService_CreateLinkedIdentity_FullMethodName        = "/memos.api.v1.UserService/CreateLinkedIdentity"
+	UserService_GetLinkedIdentity_FullMethodName           = "/memos.api.v1.UserService/GetLinkedIdentity"
+	UserService_DeleteLinkedIdentity_FullMethodName        = "/memos.api.v1.UserService/DeleteLinkedIdentity"
+	UserService_ListPersonalAccessTokens_FullMethodName    = "/memos.api.v1.UserService/ListPersonalAccessTokens"
+	UserService_CreatePersonalAccessToken_FullMethodName   = "/memos.api.v1.UserService/CreatePersonalAccessToken"
+	UserService_DeletePersonalAccessToken_FullMethodName   = "/memos.api.v1.UserService/DeletePersonalAccessToken"
+	UserService_ListUserWebhooks_FullMethodName            = "/memos.api.v1.UserService/ListUserWebhooks"
+	UserService_CreateUserWebhook_FullMethodName           = "/memos.api.v1.UserService/CreateUserWebhook"
+	UserService_UpdateUserWebhook_FullMethodName           = "/memos.api.v1.UserService/UpdateUserWebhook"
+	UserService_DeleteUserWebhook_FullMethodName           = "/memos.api.v1.UserService/DeleteUserWebhook"
+	UserService_GetUserWebhookSigningSecret_FullMethodName = "/memos.api.v1.UserService/GetUserWebhookSigningSecret"
+	UserService_ListUserNotifications_FullMethodName       = "/memos.api.v1.UserService/ListUserNotifications"
+	UserService_UpdateUserNotification_FullMethodName      = "/memos.api.v1.UserService/UpdateUserNotification"
+	UserService_DeleteUserNotification_FullMethodName      = "/memos.api.v1.UserService/DeleteUserNotification"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -98,6 +99,10 @@ type UserServiceClient interface {
 	UpdateUserWebhook(ctx context.Context, in *UpdateUserWebhookRequest, opts ...grpc.CallOption) (*UserWebhook, error)
 	// DeleteUserWebhook deletes a webhook for a user.
 	DeleteUserWebhook(ctx context.Context, in *DeleteUserWebhookRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// GetUserWebhookSigningSecret returns the signing secret for a webhook.
+	// The secret is returned only through this explicit, owner-gated call; it is
+	// never included in List/Create/Update responses.
+	GetUserWebhookSigningSecret(ctx context.Context, in *GetUserWebhookSigningSecretRequest, opts ...grpc.CallOption) (*GetUserWebhookSigningSecretResponse, error)
 	// ListUserNotifications lists notifications for a user.
 	ListUserNotifications(ctx context.Context, in *ListUserNotificationsRequest, opts ...grpc.CallOption) (*ListUserNotificationsResponse, error)
 	// UpdateUserNotification updates a notification.
@@ -334,6 +339,16 @@ func (c *userServiceClient) DeleteUserWebhook(ctx context.Context, in *DeleteUse
 	return out, nil
 }
 
+func (c *userServiceClient) GetUserWebhookSigningSecret(ctx context.Context, in *GetUserWebhookSigningSecretRequest, opts ...grpc.CallOption) (*GetUserWebhookSigningSecretResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUserWebhookSigningSecretResponse)
+	err := c.cc.Invoke(ctx, UserService_GetUserWebhookSigningSecret_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) ListUserNotifications(ctx context.Context, in *ListUserNotificationsRequest, opts ...grpc.CallOption) (*ListUserNotificationsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListUserNotificationsResponse)
@@ -415,6 +430,10 @@ type UserServiceServer interface {
 	UpdateUserWebhook(context.Context, *UpdateUserWebhookRequest) (*UserWebhook, error)
 	// DeleteUserWebhook deletes a webhook for a user.
 	DeleteUserWebhook(context.Context, *DeleteUserWebhookRequest) (*emptypb.Empty, error)
+	// GetUserWebhookSigningSecret returns the signing secret for a webhook.
+	// The secret is returned only through this explicit, owner-gated call; it is
+	// never included in List/Create/Update responses.
+	GetUserWebhookSigningSecret(context.Context, *GetUserWebhookSigningSecretRequest) (*GetUserWebhookSigningSecretResponse, error)
 	// ListUserNotifications lists notifications for a user.
 	ListUserNotifications(context.Context, *ListUserNotificationsRequest) (*ListUserNotificationsResponse, error)
 	// UpdateUserNotification updates a notification.
@@ -496,6 +515,9 @@ func (UnimplementedUserServiceServer) UpdateUserWebhook(context.Context, *Update
 }
 func (UnimplementedUserServiceServer) DeleteUserWebhook(context.Context, *DeleteUserWebhookRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteUserWebhook not implemented")
+}
+func (UnimplementedUserServiceServer) GetUserWebhookSigningSecret(context.Context, *GetUserWebhookSigningSecretRequest) (*GetUserWebhookSigningSecretResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetUserWebhookSigningSecret not implemented")
 }
 func (UnimplementedUserServiceServer) ListUserNotifications(context.Context, *ListUserNotificationsRequest) (*ListUserNotificationsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListUserNotifications not implemented")
@@ -923,6 +945,24 @@ func _UserService_DeleteUserWebhook_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetUserWebhookSigningSecret_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserWebhookSigningSecretRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUserWebhookSigningSecret(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetUserWebhookSigningSecret_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUserWebhookSigningSecret(ctx, req.(*GetUserWebhookSigningSecretRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_ListUserNotifications_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListUserNotificationsRequest)
 	if err := dec(in); err != nil {
@@ -1071,6 +1111,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteUserWebhook",
 			Handler:    _UserService_DeleteUserWebhook_Handler,
+		},
+		{
+			MethodName: "GetUserWebhookSigningSecret",
+			Handler:    _UserService_GetUserWebhookSigningSecret_Handler,
 		},
 		{
 			MethodName: "ListUserNotifications",

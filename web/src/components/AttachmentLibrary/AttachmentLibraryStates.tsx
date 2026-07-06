@@ -53,7 +53,7 @@ export const AttachmentLibraryUnusedPanel = ({ count, isDeleting, isExpanded, on
   const t = useTranslate();
 
   return (
-    <div className="rounded-2xl border border-amber-200/70 bg-amber-50/50 p-4 dark:border-amber-900/50 dark:bg-amber-950/10">
+    <div className="rounded-2xl border border-warning/30 bg-warning/5 p-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="min-w-0">
           <div className="text-sm font-medium text-foreground">
@@ -63,7 +63,7 @@ export const AttachmentLibraryUnusedPanel = ({ count, isDeleting, isExpanded, on
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Button type="button" variant="outline" className="rounded-full border-amber-300/70 bg-background/80 px-3" onClick={onToggle}>
+          <Button type="button" variant="outline" className="rounded-full border-warning/40 bg-background/80 px-3" onClick={onToggle}>
             {isExpanded ? t("common.close") : t("attachment-library.labels.unused")}
           </Button>
           <Button variant="destructive" className="rounded-full" onClick={onDelete} disabled={isDeleting}>

@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { AUTH_REDIRECT_PARAM, buildAuthRoute, getSafeRedirectPath, isPublicRoute } from "@/utils/redirect-safety";
+import {
+  AUTH_REDIRECT_PARAM,
+  buildAuthRoute,
+  getSafeRedirectPath,
+  isPublicRoute,
+  shouldGatePrivateInstance,
+} from "@/utils/redirect-safety";
 
 describe("getSafeRedirectPath", () => {
   it("accepts safe same-origin internal paths", () => {
@@ -73,5 +79,26 @@ describe("isPublicRoute", () => {
     expect(isPublicRoute("/inbox")).toBe(false);
     expect(isPublicRoute("/attachments")).toBe(false);
     expect(isPublicRoute("/archived")).toBe(false);
+  });
+});
+
+describe("shouldGatePrivateInstance", () => {
+  it("never gates on an open (public) instance", () => {
+    expect(shouldGatePrivateInstance({ isPrivateInstance: false, isAuthenticated: false, pathname: "/" })).toBe(false);
+    expect(shouldGatePrivateInstance({ isPrivateInstance: false, isAuthenticated: false, pathname: "/explore" })).toBe(false);
+  });
+
+  it("never gates an authenticated visitor", () => {
+    expect(shouldGatePrivateInstance({ isPrivateInstance: true, isAuthenticated: true, pathname: "/explore" })).toBe(false);
+  });
+
+  it("gates anonymous visitors to non-share pages on a private instance", () => {
+    for (const pathname of ["/", "/explore", "/about", "/memos/abc", "/u/steven", "/setting"]) {
+      expect(shouldGatePrivateInstance({ isPrivateInstance: true, isAuthenticated: false, pathname })).toBe(true);
+    }
+  });
+
+  it("keeps share links reachable for anonymous visitors on a private instance", () => {
+    expect(shouldGatePrivateInstance({ isPrivateInstance: true, isAuthenticated: false, pathname: "/memos/shares/token123" })).toBe(false);
   });
 });

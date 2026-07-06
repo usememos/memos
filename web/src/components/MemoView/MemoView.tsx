@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { useInstance } from "@/contexts/InstanceContext";
+import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useUser } from "@/hooks/useUserQueries";
 import { findTagMetadata } from "@/lib/tag";
@@ -23,15 +23,15 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const [cardWidth, setCardWidth] = useState(0);
 
   const currentUser = useCurrentUser();
-  const { tagsSetting } = useInstance();
+  const { userTagsSetting } = useAuth();
   const creator = useUser(memoData.creator).data;
   const isArchived = memoData.state === State.ARCHIVED;
   const readonly = memoData.creator !== currentUser?.name && !isSuperUser(currentUser);
   const parentPage = parentPageProp || "/";
 
-  // Blur content when any tag has blur_content enabled in the instance tag settings.
+  // Blur content when any tag has blur_content enabled in the current user's tag settings.
   const [showBlurredContent, setShowBlurredContent] = useState(false);
-  const blurred = memoData.tags?.some((tag) => findTagMetadata(tag, tagsSetting)?.blurContent) ?? false;
+  const blurred = memoData.tags?.some((tag) => userTagsSetting && findTagMetadata(tag, userTagsSetting)?.blurContent) ?? false;
   const toggleBlurVisibility = useCallback(() => setShowBlurredContent((prev) => !prev), []);
 
   const { previewState, openPreview, setPreviewOpen } = useImagePreview();

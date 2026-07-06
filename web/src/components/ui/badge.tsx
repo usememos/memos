@@ -12,10 +12,16 @@ const badgeVariants = cva(
         secondary: "border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90",
         destructive: "border-transparent bg-destructive text-destructive-foreground [a&]:hover:bg-destructive/90",
         outline: "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+        warning: "border-warning/40 bg-warning/10 text-warning",
+      },
+      shape: {
+        default: "",
+        pill: "rounded-full",
       },
     },
     defaultVariants: {
       variant: "default",
+      shape: "default",
     },
   },
 );
@@ -23,12 +29,15 @@ const badgeVariants = cva(
 function Badge({
   className,
   variant,
+  shape,
   asChild = false,
   ...props
 }: React.ComponentProps<"span"> & VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
   const Comp = asChild ? Slot : "span";
 
-  return <Comp data-slot="badge" className={cn(badgeVariants({ variant }), className)} {...props} />;
+  return <Comp data-slot="badge" className={cn(badgeVariants({ variant, shape }), className)} {...props} />;
 }
 
 export { Badge, badgeVariants };
+export type BadgeVariant = VariantProps<typeof badgeVariants>["variant"];
+export type BadgeShape = VariantProps<typeof badgeVariants>["shape"];

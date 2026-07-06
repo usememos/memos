@@ -88,3 +88,50 @@ func TestUnknownMethodsRequireAuth(t *testing.T) {
 		})
 	}
 }
+
+// TestAuthBootstrapMethodsAreSubsetOfPublic verifies every auth-bootstrap method is
+// also a public method. A bootstrap method that wasn't public would be rejected before
+// the private-instance check runs, breaking sign-in on a private instance.
+func TestAuthBootstrapMethodsAreSubsetOfPublic(t *testing.T) {
+	for method := range AuthBootstrapMethods {
+		t.Run(method, func(t *testing.T) {
+			assert.True(t, IsPublicMethod(method), "auth-bootstrap method %s must also be a public method", method)
+		})
+	}
+}
+
+// TestAuthBootstrapClassification verifies which endpoints remain reachable by
+// anonymous callers on a private instance (no InstanceURL configured).
+func TestAuthBootstrapClassification(t *testing.T) {
+	// Reachable while private: sign-in flow, instance metadata, SSO, share links.
+	bootstrap := []string{
+		"/memos.api.v1.AuthService/SignIn",
+		"/memos.api.v1.AuthService/RefreshToken",
+		"/memos.api.v1.InstanceService/GetInstanceProfile",
+		"/memos.api.v1.InstanceService/GetInstanceSetting",
+		"/memos.api.v1.InstanceService/BatchGetInstanceSettings",
+		"/memos.api.v1.IdentityProviderService/ListIdentityProviders",
+		"/memos.api.v1.MemoService/GetMemoByShare",
+	}
+	for _, method := range bootstrap {
+		t.Run("bootstrap/"+method, func(t *testing.T) {
+			assert.True(t, IsAuthBootstrapMethod(method), "expected %s to be reachable on a private instance", method)
+		})
+	}
+
+	// Public on an open instance, but gated on a private one: browsing and profiles.
+	// CreateUser is gated here too; it is allowed separately only during first-run setup.
+	gatedWhilePrivate := []string{
+		"/memos.api.v1.MemoService/ListMemos",
+		"/memos.api.v1.MemoService/GetMemo",
+		"/memos.api.v1.MemoService/ListMemoComments",
+		"/memos.api.v1.UserService/GetUser",
+		"/memos.api.v1.UserService/ListAllUserStats",
+		"/memos.api.v1.UserService/CreateUser",
+	}
+	for _, method := range gatedWhilePrivate {
+		t.Run("gated/"+method, func(t *testing.T) {
+			assert.False(t, IsAuthBootstrapMethod(method), "expected %s to be gated on a private instance", method)
+		})
+	}
+}

@@ -1,32 +1,4 @@
-<div align="center">
-  <p><b>Featured Sponsors</b></p>
-  <table>
-    <tr>
-      <td align="center" width="50%">
-        <a href="https://go.warp.dev/memos" target="_blank" rel="noopener">
-          <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/warpdotdev/brand-assets/refs/heads/main/Logos/Warp-Wordmark-White.png" />
-            <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/warpdotdev/brand-assets/refs/heads/main/Logos/Warp-Wordmark-Black.png" />
-            <img alt="Warp" height="44" src="https://raw.githubusercontent.com/warpdotdev/brand-assets/refs/heads/main/Logos/Warp-Wordmark-Black.png" />
-          </picture>
-          <br/>
-          <span>Warp is an agentic development environment.</span>
-        </a>
-      </td>
-      <td align="center" width="50%">
-        <a href="https://coderabbit.link/usememos" target="_blank" rel="noopener">
-          <picture>
-            <source media="(prefers-color-scheme: dark)" srcset="https://victorious-bubble-f69a016683.media.strapiapp.com/White_Typemark_79b9189d19.svg" />
-            <source media="(prefers-color-scheme: light)" srcset="https://victorious-bubble-f69a016683.media.strapiapp.com/Orange_Typemark_43bf516c9d.svg" />
-            <img alt="CodeRabbit" height="44" src="https://victorious-bubble-f69a016683.media.strapiapp.com/Orange_Typemark_43bf516c9d.svg" />
-          </picture>
-          <br/>
-          <span>Cut code review time &amp; bugs in half, instantly.</span>
-        </a>
-      </td>
-    </tr>
-  </table>
-</div>
+> ✨ Featured Sponsor: [CodeRabbit](https://coderabbit.link/usememos) — Cut code review time & bugs in half, instantly.
 
 # Memos
 
@@ -94,7 +66,6 @@ Contributions are welcome — bug reports, feature suggestions, pull requests, d
 
 ## Sponsors
 * [**CodeRabbit** - Cut code review time & bugs in half, instantly](https://coderabbit.link/usememos)
-* [**Warp** - The agentic development environment](https://go.warp.dev/memos)
 * [**SSD Nodes** - Affordable VPS hosting for self-hosters](https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor)
 * [**InstaPods** - Get your app online in seconds](https://instapods.com/?utm_source=memos&utm_medium=sponsor) • [Deploy Memos in 30 Seconds](https://instapods.com/apps/memos/?utm_source=memos&utm_medium=sponsor)
 

@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import type { Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
-import type { EditorRefActions } from "../Editor";
 import { cacheService, memoService } from "../services";
 import { useEditorContext } from "../state";
+import type { EditorController } from "../types/editorController";
 
 interface UseMemoInitOptions {
-  editorRef: React.RefObject<EditorRefActions | null>;
+  editorRef: React.RefObject<EditorController | null>;
   memo?: Memo;
   cacheKey?: string;
   username: string;

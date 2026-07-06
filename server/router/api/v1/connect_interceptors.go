@@ -2,7 +2,6 @@ package v1
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 	"reflect"
@@ -13,7 +12,6 @@ import (
 	"google.golang.org/grpc/metadata"
 
 	"github.com/usememos/memos/server/auth"
-	"github.com/usememos/memos/store"
 )
 
 // MetadataInterceptor converts Connect HTTP headers to gRPC metadata.
@@ -204,19 +202,16 @@ func (in *RecoveryInterceptor) logPanic(procedure string, panicValue any) {
 	slog.LogAttrs(context.Background(), slog.LevelError, "panic recovered in Connect handler", attrs...)
 }
 
-// AuthInterceptor handles authentication for Connect handlers.
-//
-// It enforces authentication for all endpoints except those listed in PublicMethods.
-// Role-based authorization (admin checks) remains in the service layer.
+// AuthInterceptor enforces authentication and anonymous-access policy for Connect
+// handlers by delegating to the shared Authorizer. Role-based authorization
+// (admin checks) remains in the service layer.
 type AuthInterceptor struct {
-	authenticator *auth.Authenticator
+	authorizer *Authorizer
 }
 
-// NewAuthInterceptor creates a new auth interceptor.
-func NewAuthInterceptor(store *store.Store, secret string) *AuthInterceptor {
-	return &AuthInterceptor{
-		authenticator: auth.NewAuthenticator(store, secret),
-	}
+// NewAuthInterceptor creates a new auth interceptor backed by the shared Authorizer.
+func NewAuthInterceptor(authorizer *Authorizer) *AuthInterceptor {
+	return &AuthInterceptor{authorizer: authorizer}
 }
 
 func (in *AuthInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
@@ -224,11 +219,9 @@ func (in *AuthInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 		header := req.Header()
 		authHeader := header.Get("Authorization")
 
-		result := in.authenticator.Authenticate(ctx, authHeader)
-
-		// Enforce authentication for non-public methods
-		if result == nil && !IsPublicMethod(req.Spec().Procedure) {
-			return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("authentication required"))
+		result := in.authorizer.Authenticate(ctx, authHeader)
+		if err := in.authorizer.CheckAccess(ctx, req.Spec().Procedure, result); err != nil {
+			return nil, connect.NewError(connect.CodeUnauthenticated, err)
 		}
 
 		ctx = auth.ApplyToContext(ctx, result)

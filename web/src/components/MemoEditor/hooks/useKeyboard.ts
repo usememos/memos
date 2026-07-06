@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
-import type { EditorRefActions } from "../Editor";
+import type { EditorController } from "../types/editorController";
 
-export const useKeyboard = (editorRef: React.RefObject<EditorRefActions | null>, onSave: () => void) => {
+export const useKeyboard = (editorRef: React.RefObject<EditorController | null>, onSave: () => void) => {
   const onSaveRef = useRef(onSave);
   onSaveRef.current = onSave;
 
@@ -11,14 +11,7 @@ export const useKeyboard = (editorRef: React.RefObject<EditorRefActions | null>,
         return;
       }
 
-      const editor = editorRef.current?.getEditor();
-      if (!editor) {
-        return;
-      }
-
-      const activeElement = document.activeElement;
-      const target = event.target;
-      if (activeElement !== editor && target !== editor) {
+      if (!editorRef.current?.hasFocus()) {
         return;
       }
 

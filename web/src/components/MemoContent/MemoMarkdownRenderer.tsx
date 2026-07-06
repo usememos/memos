@@ -19,7 +19,7 @@ import { CodeBlock } from "./CodeBlock";
 import { SANITIZE_SCHEMA } from "./constants";
 import { MarkdownRenderContext, rootMarkdownRenderContext } from "./MarkdownRenderContext";
 import { Mention } from "./Mention";
-import { Blockquote, Heading, HorizontalRule, Image, InlineCode, Link, List, ListItem, Paragraph } from "./markdown";
+import { AnchorLink, Blockquote, Heading, HorizontalRule, Image, InlineCode, Link, List, ListItem, Paragraph } from "./markdown";
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "./Table";
 import { Tag } from "./Tag";
 import { TaskListItem } from "./TaskListItem";
@@ -28,6 +28,10 @@ import { TrustedIframe } from "./TrustedIframe";
 interface MemoMarkdownRendererProps {
   content: string;
   resolvedMentionUsernames: Set<string>;
+  /** Resource name of the memo (e.g. `memos/abc123`), used to target footnote links at the detail page. */
+  memoName?: string;
+  /** Whether the memo is rendered as a collapsed feed card. */
+  compact?: boolean;
 }
 
 function getMentionUsername(node: Element, children?: React.ReactNode): string {
@@ -49,7 +53,7 @@ function getMentionUsername(node: Element, children?: React.ReactNode): string {
   return "";
 }
 
-export const MemoMarkdownRenderer = ({ content, resolvedMentionUsernames }: MemoMarkdownRendererProps) => {
+export const MemoMarkdownRenderer = ({ content, resolvedMentionUsernames, memoName, compact }: MemoMarkdownRendererProps) => {
   const markdownComponents: Components = {
     input: ({ node, ...inputProps }) => {
       if (node && isTaskListItemElement(node)) {
@@ -107,7 +111,22 @@ export const MemoMarkdownRenderer = ({ content, resolvedMentionUsernames }: Memo
       </List>
     ),
     li: ({ children, ...props }) => <ListItem {...props}>{children}</ListItem>,
-    a: ({ children, ...props }) => <Link {...props}>{children}</Link>,
+    a: ({ children, href, ...props }) => {
+      // In-page anchors (footnote refs/backrefs, heading links) navigate within the memo rather
+      // than opening a new tab; everything else is treated as an external link.
+      if (typeof href === "string" && href.startsWith("#")) {
+        return (
+          <AnchorLink href={href} memoName={memoName} compact={compact} {...props}>
+            {children}
+          </AnchorLink>
+        );
+      }
+      return (
+        <Link href={href} {...props}>
+          {children}
+        </Link>
+      );
+    },
     code: ({ children, ...props }) => <InlineCode {...props}>{children}</InlineCode>,
     iframe: TrustedIframe,
     img: (props) => <Image {...props} />,

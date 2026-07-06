@@ -117,6 +117,9 @@
     "yourself": "Bản thân",
     "groups": "Nhóm"
   },
+  "locale-picker": {
+    "no-language-feedback": "Không tìm thấy ngôn ngữ? Gửi phản hồi"
+  },
   "editor": {
     "add-your-comment-here": "Thêm bình luận của bạn tại đây...",
     "any-thoughts": "Có suy nghĩ gì...",
@@ -125,7 +128,6 @@
     "no-changes-detected": "Không phát hiện thay đổi",
     "save": "Lưu",
     "saving": "Đang lưu...",
-    "slash-commands": "Nhập `/` để sử dụng lệnh",
     "insert-menu": {
       "add-location": "Thêm vị trí",
       "link-memo": "Liên kết bản ghi nhớ",
@@ -193,6 +195,8 @@
       "has-task-list": "cóDanhSáchViệc",
       "label": "Bộ lọc"
     },
+    "compact-mode": "Chế độ thu gọn",
+    "link-preview": "Xem trước liên kết",
     "links": "Liên kết",
     "load-more": "Tải thêm",
     "no-archived-memos": "Không có ghi chú nào được lưu trữ.",

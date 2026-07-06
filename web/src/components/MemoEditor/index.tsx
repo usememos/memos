@@ -3,6 +3,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
+import { useNewMemo } from "@/contexts/NewMemoContext";
+import { useLocalStorage } from "@/hooks";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { memoKeys } from "@/hooks/useMemoQueries";
 import { userKeys } from "@/hooks/useUserQueries";
@@ -11,22 +13,15 @@ import { cn } from "@/lib/utils";
 import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
-import {
-  AudioRecorderPanel,
-  EditorContent,
-  EditorMetadata,
-  EditorToolbar,
-  FocusModeExitButton,
-  FocusModeOverlay,
-  TimestampPopover,
-} from "./components";
-import { FOCUS_MODE_STYLES } from "./constants";
-import type { EditorRefActions } from "./Editor";
+import { AudioRecorderPanel, EditorContent, EditorMetadata, FocusModeOverlay, TimestampPopover } from "./components";
+import { FOCUS_MODE_STYLES, FORMATTING_TOOLBAR_STORAGE_KEY } from "./constants";
 import { useAudioRecorder, useAutoSave, useFocusMode, useKeyboard, useMemoInit } from "./hooks";
 import { errorService, memoService, transcriptionService, validationService } from "./services";
-import { EditorProvider, useEditorContext } from "./state";
+import { EditorProvider, useEditorContext, useEditorSelector } from "./state";
+import { EditorToolbar, FormattingToolbar } from "./Toolbar";
 import type { MemoEditorProps } from "./types";
 import type { LocalFile } from "./types/attachment";
+import type { EditorController } from "./types/editorController";
 
 const MemoEditor = (props: MemoEditorProps) => (
   <EditorProvider>
@@ -48,12 +43,21 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const t = useTranslate();
   const queryClient = useQueryClient();
   const currentUser = useCurrentUser();
-  const editorRef = useRef<EditorRefActions>(null);
-  const { state, actions, dispatch } = useEditorContext();
+  const editorRef = useRef<EditorController>(null);
+  const { actions, dispatch, getState } = useEditorContext();
+  // Subscribe only to the low-frequency slices this component renders from, so
+  // typing (which changes content) does not re-render the editor shell and its
+  // toolbar/metadata children.
+  const isFocusMode = useEditorSelector((s) => s.ui.isFocusMode);
+  const hasTimestamp = useEditorSelector((s) => Boolean(s.timestamps.createTime));
   const { userGeneralSetting } = useAuth();
   const { aiSetting, fetchSetting } = useInstance();
+  const { markNewMemo } = useNewMemo();
   const [isAudioRecorderOpen, setIsAudioRecorderOpen] = useState(false);
   const [isTranscribingAudio, setIsTranscribingAudio] = useState(false);
+  // Persisted preference: also show the formatting toolbar in normal mode. Focus
+  // mode always shows it regardless; this only governs the non-focus layout.
+  const [isFormattingToolbarVisible, setFormattingToolbarVisible] = useLocalStorage(FORMATTING_TOOLBAR_STORAGE_KEY, false);
 
   const memoName = memo?.name;
   const canTranscribe = useMemo(() => {
@@ -77,11 +81,11 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   });
   const isDraftCacheEnabled = !memo;
 
-  // Auto-save content to localStorage
-  const { discardDraft } = useAutoSave(state.content, currentUser?.name ?? "", cacheKey, isInitialized && isDraftCacheEnabled);
+  // Auto-save content to localStorage (subscribes to the store internally).
+  const { discardDraft } = useAutoSave(currentUser?.name ?? "", cacheKey, isInitialized && isDraftCacheEnabled);
 
   // Focus mode management with body scroll lock
-  useFocusMode(state.ui.isFocusMode);
+  useFocusMode(isFocusMode);
 
   // Live-sync the draft's createTime/updateTime to the calendar-derived prop.
   // Only applies in create mode; edit mode owns its own timestamps. Runs after
@@ -112,15 +116,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     if (!editor) {
       return;
     }
-
-    const content = editor.getContent();
-    const cursor = editor.getCursorPosition();
-    const beforeCursor = content.slice(0, cursor);
-    const afterCursor = content.slice(cursor);
-    const prefix = beforeCursor.length === 0 || beforeCursor.endsWith("\n\n") ? "" : beforeCursor.endsWith("\n") ? "\n" : "\n\n";
-    const suffix = afterCursor.length === 0 || afterCursor.startsWith("\n\n") ? "" : afterCursor.startsWith("\n") ? "\n" : "\n\n";
-
-    editor.insertText(text, prefix, suffix);
+    editor.insertMarkdown(text);
     editor.scrollToCursor();
   }, []);
 
@@ -155,50 +151,50 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     [actions, canTranscribe, dispatch, insertTranscribedText, t],
   );
 
-  const audioRecorderActions = useMemo(
-    () => ({
-      setAudioRecorderSupport: (value: boolean) => dispatch(actions.setAudioRecorderSupport(value)),
-      setAudioRecorderPermission: (value: "unknown" | "granted" | "denied") => dispatch(actions.setAudioRecorderPermission(value)),
-      setAudioRecorderStatus: (value: "idle" | "requesting_permission" | "recording" | "error" | "unsupported") =>
-        dispatch(actions.setAudioRecorderStatus(value)),
-      setAudioRecorderElapsed: (value: number) => dispatch(actions.setAudioRecorderElapsed(value)),
-      setAudioRecorderError: (value?: string) => dispatch(actions.setAudioRecorderError(value)),
-      onRecordingComplete: (localFile: LocalFile, mode: "attach" | "transcribe") => {
-        if (mode === "transcribe") {
-          void handleTranscribeRecordedAudio(localFile);
-          return;
-        }
+  const audioRecorder = useAudioRecorder({
+    onRecordingComplete: (localFile, mode) => {
+      if (mode === "transcribe") {
+        void handleTranscribeRecordedAudio(localFile);
+        return;
+      }
 
-        dispatch(actions.addLocalFile(localFile));
-        setIsAudioRecorderOpen(false);
-      },
-      onRecordingEmpty: (mode: "attach" | "transcribe") => {
-        if (mode === "transcribe") {
-          setIsTranscribingAudio(false);
-          toast.error(t("editor.audio-recorder.transcribe-empty"));
-        }
-        setIsAudioRecorderOpen(false);
-      },
-    }),
-    [actions, dispatch, handleTranscribeRecordedAudio, t],
-  );
+      dispatch(actions.addLocalFile(localFile));
+      setIsAudioRecorderOpen(false);
+    },
+    onRecordingEmpty: (mode) => {
+      if (mode === "transcribe") {
+        setIsTranscribingAudio(false);
+        toast.error(t("editor.audio-recorder.transcribe-empty"));
+      }
+      setIsAudioRecorderOpen(false);
+    },
+  });
 
-  const audioRecorder = useAudioRecorder(audioRecorderActions);
+  // Mirror the recorder's busy state into the store so validationService.canSave
+  // (consumed here and by EditorToolbar) can block saves mid-recording without
+  // the reducer owning the recorder's full state.
+  useEffect(() => {
+    dispatch(actions.setRecorderBusy(audioRecorder.isBusy));
+  }, [audioRecorder.isBusy, actions, dispatch]);
 
   useEffect(() => {
     if (!isAudioRecorderOpen) {
       return;
     }
 
-    if (state.audioRecorder.status === "error" || state.audioRecorder.status === "unsupported") {
-      toast.error(state.audioRecorder.error || t("editor.audio-recorder.error-description"));
+    if (audioRecorder.status === "error" || audioRecorder.status === "unsupported") {
+      toast.error(audioRecorder.error || t("editor.audio-recorder.error-description"));
       setIsAudioRecorderOpen(false);
     }
-  }, [isAudioRecorderOpen, state.audioRecorder.error, state.audioRecorder.status, t]);
+  }, [isAudioRecorderOpen, audioRecorder.error, audioRecorder.status, t]);
 
   const handleToggleFocusMode = () => {
     dispatch(actions.toggleFocusMode());
   };
+
+  const handleToggleFormattingToolbar = useCallback(() => {
+    setFormattingToolbarVisible((visible) => !visible);
+  }, [setFormattingToolbarVisible]);
 
   const handleStartAudioRecording = async () => {
     setIsAudioRecorderOpen(true);
@@ -206,7 +202,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   };
 
   const handleAudioRecorderClick = () => {
-    if (state.audioRecorder.status === "recording" || state.audioRecorder.status === "requesting_permission") {
+    if (audioRecorder.isBusy) {
       return;
     }
 
@@ -234,6 +230,9 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   useKeyboard(editorRef, handleSave);
 
   async function handleSave() {
+    // Read the latest state imperatively — this component no longer subscribes
+    // to content, so the closure can't rely on a per-render `state` snapshot.
+    const state = getState();
     // Validate before saving
     const { valid, reason } = validationService.canSave(state);
     if (!valid) {
@@ -287,6 +286,12 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         dispatch(actions.setTimestamps({ createTime: defaultCreateTime, updateTime: defaultCreateTime }));
       }
 
+      // Surface a freshly created top-level memo at the top of the list so it
+      // stays visible even when pinned memos would otherwise push it down.
+      if (!memoName && !parentMemoName) {
+        markNewMemo(result.memoName);
+      }
+
       // Notify parent component of successful save
       onConfirm?.(result.memoName);
     } catch (error) {
@@ -301,7 +306,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
   return (
     <>
-      <FocusModeOverlay isActive={state.ui.isFocusMode} onToggle={handleToggleFocusMode} />
+      <FocusModeOverlay isActive={isFocusMode} onToggle={handleToggleFocusMode} />
 
       {/*
         Layout structure:
@@ -313,14 +318,18 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         className={cn(
           "group relative w-full flex flex-col justify-between items-start bg-card px-4 pt-3 pb-1 rounded-lg border border-border gap-2",
           FOCUS_MODE_STYLES.transition,
-          state.ui.isFocusMode && cn(FOCUS_MODE_STYLES.container.base, FOCUS_MODE_STYLES.container.spacing),
+          isFocusMode && cn(FOCUS_MODE_STYLES.container.base, FOCUS_MODE_STYLES.container.spacing),
           className,
         )}
       >
-        {/* Exit button is absolutely positioned in top-right corner when active */}
-        <FocusModeExitButton isActive={state.ui.isFocusMode} onToggle={handleToggleFocusMode} title={t("editor.exit-focus-mode")} />
+        {/* Formatting toolbar. Always shown in focus mode (with an exit button);
+            in normal mode it appears only when the user toggled it on via the
+            insert menu. */}
+        {(isFocusMode || isFormattingToolbarVisible) && (
+          <FormattingToolbar controllerRef={editorRef} onExit={isFocusMode ? handleToggleFocusMode : undefined} />
+        )}
 
-        {(memoName || (!memo && state.timestamps.createTime)) && (
+        {(memoName || (!memo && hasTimestamp)) && (
           <div className="w-full -mb-1">
             <TimestampPopover />
           </div>
@@ -329,23 +338,29 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         {/* Editor content grows to fill available space in focus mode */}
         <EditorContent ref={editorRef} placeholder={placeholder} />
 
-        {isAudioRecorderOpen &&
-          (state.audioRecorder.status === "recording" || state.audioRecorder.status === "requesting_permission" || isTranscribingAudio) && (
-            <AudioRecorderPanel
-              audioRecorder={state.audioRecorder}
-              mediaStream={audioRecorder.recordingStream}
-              onStop={audioRecorder.stopRecording}
-              onCancel={handleCancelAudioRecording}
-              onTranscribe={handleTranscribeAudioRecording}
-              canTranscribe={canTranscribe}
-              isTranscribing={isTranscribingAudio}
-            />
-          )}
+        {isAudioRecorderOpen && (audioRecorder.isBusy || isTranscribingAudio) && (
+          <AudioRecorderPanel
+            audioRecorder={{ status: audioRecorder.status, elapsedSeconds: audioRecorder.elapsedSeconds }}
+            mediaStream={audioRecorder.recordingStream}
+            onStop={audioRecorder.stopRecording}
+            onCancel={handleCancelAudioRecording}
+            onTranscribe={handleTranscribeAudioRecording}
+            canTranscribe={canTranscribe}
+            isTranscribing={isTranscribingAudio}
+          />
+        )}
 
         {/* Metadata and toolbar grouped together at bottom */}
         <div className="w-full flex flex-col gap-2">
           <EditorMetadata memoName={memoName} />
-          <EditorToolbar onSave={handleSave} onCancel={onCancel} memoName={memoName} onAudioRecorderClick={handleAudioRecorderClick} />
+          <EditorToolbar
+            onSave={handleSave}
+            onCancel={onCancel}
+            memoName={memoName}
+            onAudioRecorderClick={handleAudioRecorderClick}
+            isFormattingToolbarVisible={isFormattingToolbarVisible}
+            onToggleFormattingToolbar={handleToggleFormattingToolbar}
+          />
         </div>
       </div>
     </>

@@ -53,7 +53,9 @@ const (
 
 // ShortcutServiceClient is a client for the memos.api.v1.ShortcutService service.
 type ShortcutServiceClient interface {
-	// ListShortcuts returns a list of shortcuts for a user.
+	// ListShortcuts returns a user's saved shortcuts. Each shortcut is a named,
+	// reusable CEL filter (see Shortcut.filter); pass its filter string directly
+	// to the ListMemos `filter` argument to reuse a saved view.
 	ListShortcuts(context.Context, *connect.Request[v1.ListShortcutsRequest]) (*connect.Response[v1.ListShortcutsResponse], error)
 	// GetShortcut gets a shortcut by name.
 	GetShortcut(context.Context, *connect.Request[v1.GetShortcutRequest]) (*connect.Response[v1.Shortcut], error)
@@ -145,7 +147,9 @@ func (c *shortcutServiceClient) DeleteShortcut(ctx context.Context, req *connect
 
 // ShortcutServiceHandler is an implementation of the memos.api.v1.ShortcutService service.
 type ShortcutServiceHandler interface {
-	// ListShortcuts returns a list of shortcuts for a user.
+	// ListShortcuts returns a user's saved shortcuts. Each shortcut is a named,
+	// reusable CEL filter (see Shortcut.filter); pass its filter string directly
+	// to the ListMemos `filter` argument to reuse a saved view.
 	ListShortcuts(context.Context, *connect.Request[v1.ListShortcutsRequest]) (*connect.Response[v1.ListShortcutsResponse], error)
 	// GetShortcut gets a shortcut by name.
 	GetShortcut(context.Context, *connect.Request[v1.GetShortcutRequest]) (*connect.Response[v1.Shortcut], error)

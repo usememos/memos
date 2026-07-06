@@ -1,4 +1,4 @@
-import { PlusIcon, TrashIcon } from "lucide-react";
+import { PencilIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -17,6 +17,7 @@ const WebhookSection = () => {
   const currentUser = useCurrentUser();
   const [webhooks, setWebhooks] = useState<UserWebhook[]>([]);
   const [isCreateWebhookDialogOpen, setIsCreateWebhookDialogOpen] = useState(false);
+  const [editingWebhookName, setEditingWebhookName] = useState<string | undefined>(undefined);
   const [deleteTarget, setDeleteTarget] = useState<UserWebhook | undefined>(undefined);
 
   const fetchWebhooks = async () => {
@@ -37,6 +38,16 @@ const WebhookSection = () => {
     setWebhooks(webhooks);
     setIsCreateWebhookDialogOpen(false);
     toast.success(t("setting.webhook.create-dialog.create-webhook-success", { name }));
+  };
+
+  const handleEditWebhook = (webhook: UserWebhook) => {
+    setEditingWebhookName(webhook.name);
+  };
+
+  const handleEditWebhookDialogConfirm = async () => {
+    const webhooks = await fetchWebhooks();
+    setWebhooks(webhooks);
+    setEditingWebhookName(undefined);
   };
 
   const handleDeleteWebhook = (webhook: UserWebhook) => {
@@ -88,9 +99,14 @@ const WebhookSection = () => {
             header: "",
             className: "text-right",
             render: (_, webhook: UserWebhook) => (
-              <Button variant="ghost" size="sm" onClick={() => handleDeleteWebhook(webhook)}>
-                <TrashIcon className="text-destructive w-4 h-auto" />
-              </Button>
+              <>
+                <Button variant="ghost" size="sm" onClick={() => handleEditWebhook(webhook)} aria-label={t("common.edit")}>
+                  <PencilIcon className="w-4 h-auto" />
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => handleDeleteWebhook(webhook)} aria-label={t("common.delete")}>
+                  <TrashIcon className="text-destructive w-4 h-auto" />
+                </Button>
+              </>
             ),
           },
         ]}
@@ -103,6 +119,13 @@ const WebhookSection = () => {
         open={isCreateWebhookDialogOpen}
         onOpenChange={setIsCreateWebhookDialogOpen}
         onSuccess={handleCreateWebhookDialogConfirm}
+      />
+      <CreateWebhookDialog
+        key={editingWebhookName ?? "edit-webhook-dialog"}
+        open={!!editingWebhookName}
+        onOpenChange={(open) => !open && setEditingWebhookName(undefined)}
+        webhookName={editingWebhookName}
+        onSuccess={handleEditWebhookDialogConfirm}
       />
       <ConfirmDialog
         open={!!deleteTarget}

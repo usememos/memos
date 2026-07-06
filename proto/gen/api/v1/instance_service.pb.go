@@ -209,11 +209,17 @@ type InstanceProfile struct {
 	Demo bool `protobuf:"varint,3,opt,name=demo,proto3" json:"demo,omitempty"`
 	// Instance URL is the URL of the instance.
 	InstanceUrl string `protobuf:"bytes,6,opt,name=instance_url,json=instanceUrl,proto3" json:"instance_url,omitempty"`
-	// The first administrator who set up this instance.
-	// When null, instance requires initial setup (creating the first admin account).
+	// The first administrator who set up this instance, for display purposes.
+	// May be null on an instance that has lost all admins; use needs_setup to
+	// determine whether initial setup is actually required.
 	Admin *User `protobuf:"bytes,7,opt,name=admin,proto3" json:"admin,omitempty"`
 	// Commit is the current build commit of instance.
-	Commit        string `protobuf:"bytes,8,opt,name=commit,proto3" json:"commit,omitempty"`
+	Commit string `protobuf:"bytes,8,opt,name=commit,proto3" json:"commit,omitempty"`
+	// NeedsSetup is true when the instance has no users yet and requires initial
+	// setup (creating the first admin account). Unlike a null admin, this stays
+	// false once any user exists, so an instance that has lost its admins is not
+	// mistaken for a fresh install.
+	NeedsSetup    bool `protobuf:"varint,9,opt,name=needs_setup,json=needsSetup,proto3" json:"needs_setup,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -281,6 +287,13 @@ func (x *InstanceProfile) GetCommit() string {
 		return x.Commit
 	}
 	return ""
+}
+
+func (x *InstanceProfile) GetNeedsSetup() bool {
+	if x != nil {
+		return x.NeedsSetup
+	}
+	return false
 }
 
 // Request for instance profile.
@@ -1133,6 +1146,8 @@ func (x *InstanceSetting_TagMetadata) GetBlurContent() bool {
 }
 
 // Tag metadata configuration.
+// Active tag metadata is stored in per-user tag settings.
+// This message remains for backward compatibility with existing clients and migrations.
 type InstanceSetting_TagsSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Map of tag name pattern to tag metadata.
@@ -1526,8 +1541,12 @@ type InstanceSetting_StorageSetting_S3Config struct {
 	Region          string                 `protobuf:"bytes,4,opt,name=region,proto3" json:"region,omitempty"`
 	Bucket          string                 `protobuf:"bytes,5,opt,name=bucket,proto3" json:"bucket,omitempty"`
 	UsePathStyle    bool                   `protobuf:"varint,6,opt,name=use_path_style,json=usePathStyle,proto3" json:"use_path_style,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// insecure_skip_tls_verify disables TLS certificate verification when connecting
+	// to the S3 endpoint. Only enable this for trusted endpoints that use a self-signed
+	// certificate; it removes protection against man-in-the-middle attacks.
+	InsecureSkipTlsVerify bool `protobuf:"varint,7,opt,name=insecure_skip_tls_verify,json=insecureSkipTlsVerify,proto3" json:"insecure_skip_tls_verify,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *InstanceSetting_StorageSetting_S3Config) Reset() {
@@ -1598,6 +1617,13 @@ func (x *InstanceSetting_StorageSetting_S3Config) GetBucket() string {
 func (x *InstanceSetting_StorageSetting_S3Config) GetUsePathStyle() bool {
 	if x != nil {
 		return x.UsePathStyle
+	}
+	return false
+}
+
+func (x *InstanceSetting_StorageSetting_S3Config) GetInsecureSkipTlsVerify() bool {
+	if x != nil {
+		return x.InsecureSkipTlsVerify
 	}
 	return false
 }
@@ -1778,14 +1804,16 @@ var File_api_v1_instance_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1dapi/v1/instance_service.proto\x12\fmemos.api.v1\x1a\x19api/v1/user_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/color.proto\"\xa4\x01\n" +
+	"\x1dapi/v1/instance_service.proto\x12\fmemos.api.v1\x1a\x19api/v1/user_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/color.proto\"\xc5\x01\n" +
 	"\x0fInstanceProfile\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04demo\x18\x03 \x01(\bR\x04demo\x12!\n" +
 	"\finstance_url\x18\x06 \x01(\tR\vinstanceUrl\x12(\n" +
 	"\x05admin\x18\a \x01(\v2\x12.memos.api.v1.UserR\x05admin\x12\x16\n" +
-	"\x06commit\x18\b \x01(\tR\x06commit\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\xcd\x1b\n" +
+	"\x06commit\x18\b \x01(\tR\x06commit\x12\x1f\n" +
+	"\vneeds_setup\x18\t \x01(\bR\n" +
+	"needsSetup\"\x1b\n" +
+	"\x19GetInstanceProfileRequest\"\x86\x1c\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2,.memos.api.v1.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12W\n" +
@@ -1807,19 +1835,20 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\rCustomProfile\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +
-	"\blogo_url\x18\x03 \x01(\tR\alogoUrl\x1a\xc1\x04\n" +
+	"\blogo_url\x18\x03 \x01(\tR\alogoUrl\x1a\xfa\x04\n" +
 	"\x0eStorageSetting\x12[\n" +
 	"\fstorage_type\x18\x01 \x01(\x0e28.memos.api.v1.InstanceSetting.StorageSetting.StorageTypeR\vstorageType\x12+\n" +
 	"\x11filepath_template\x18\x02 \x01(\tR\x10filepathTemplate\x12/\n" +
 	"\x14upload_size_limit_mb\x18\x03 \x01(\x03R\x11uploadSizeLimitMb\x12R\n" +
-	"\ts3_config\x18\x04 \x01(\v25.memos.api.v1.InstanceSetting.StorageSetting.S3ConfigR\bs3Config\x1a\xd1\x01\n" +
+	"\ts3_config\x18\x04 \x01(\v25.memos.api.v1.InstanceSetting.StorageSetting.S3ConfigR\bs3Config\x1a\x8a\x02\n" +
 	"\bS3Config\x12\"\n" +
 	"\raccess_key_id\x18\x01 \x01(\tR\vaccessKeyId\x12/\n" +
 	"\x11access_key_secret\x18\x02 \x01(\tB\x03\xe0A\x04R\x0faccessKeySecret\x12\x1a\n" +
 	"\bendpoint\x18\x03 \x01(\tR\bendpoint\x12\x16\n" +
 	"\x06region\x18\x04 \x01(\tR\x06region\x12\x16\n" +
 	"\x06bucket\x18\x05 \x01(\tR\x06bucket\x12$\n" +
-	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\"L\n" +
+	"\x0euse_path_style\x18\x06 \x01(\bR\fusePathStyle\x127\n" +
+	"\x18insecure_skip_tls_verify\x18\a \x01(\bR\x15insecureSkipTlsVerify\"L\n" +
 	"\vStorageType\x12\x1c\n" +
 	"\x18STORAGE_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bDATABASE\x10\x01\x12\t\n" +

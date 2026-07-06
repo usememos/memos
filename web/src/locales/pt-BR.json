@@ -117,6 +117,9 @@
     "yourself": "Você mesmo",
     "groups": "Grupos"
   },
+  "locale-picker": {
+    "no-language-feedback": "Idioma não encontrado? Enviar comentários"
+  },
   "editor": {
     "add-your-comment-here": "Adicione seu comentário aqui…",
     "any-thoughts": "Alguma ideia…",
@@ -125,7 +128,6 @@
     "no-changes-detected": "Nenhuma alteração detectada",
     "save": "Salvar",
     "saving": "Salvando…",
-    "slash-commands": "Digite `/` para comandos",
     "insert-menu": {
       "add-location": "Adicionar local",
       "link-memo": "Vincular memorando",
@@ -193,6 +195,8 @@
       "has-task-list": "temListaDeTarefas",
       "label": "Filtros"
     },
+    "compact-mode": "Modo compacto",
+    "link-preview": "Pré-visualização de links",
     "links": "Links",
     "load-more": "Carregar mais",
     "no-archived-memos": "Nenhum memo arquivado.",

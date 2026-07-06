@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { useAudioWaveform } from "../hooks/useAudioWaveform";
-import type { AudioRecorderPanelProps } from "../types/components";
+import type { AudioRecorderPanelProps } from "../types";
 import { VoiceWaveform } from "./VoiceWaveform";
 
 export const AudioRecorderPanel: FC<AudioRecorderPanelProps> = ({
