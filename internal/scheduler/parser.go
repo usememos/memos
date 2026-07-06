@@ -1,6 +1,7 @@
 package scheduler
 
 import (
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -208,12 +209,7 @@ type listMatcher struct {
 }
 
 func (m *listMatcher) matches(value int) bool {
-	for _, v := range m.values {
-		if v == value {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(m.values, value)
 }
 
 // stepMatcher matches values at regular intervals.
