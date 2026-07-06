@@ -10,9 +10,9 @@ const VisibilitySelector = (props: VisibilitySelectorProps) => {
   const t = useTranslate();
 
   const visibilityOptions = [
-    { value: Visibility.PRIVATE, label: t("memo.visibility.private") },
-    { value: Visibility.PROTECTED, label: t("memo.visibility.protected") },
-    { value: Visibility.PUBLIC, label: t("memo.visibility.public") },
+    { value: Visibility.PRIVATE, label: t("memo.visibility.private"), description: t("memo.visibility.private-description") },
+    { value: Visibility.PROTECTED, label: t("memo.visibility.protected"), description: t("memo.visibility.protected-description") },
+    { value: Visibility.PUBLIC, label: t("memo.visibility.public"), description: t("memo.visibility.public-description") },
   ] as const;
 
   const currentLabel = visibilityOptions.find((option) => option.value === value)?.label || "";
@@ -28,10 +28,13 @@ const VisibilitySelector = (props: VisibilitySelectorProps) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
         {visibilityOptions.map((option) => (
-          <DropdownMenuItem key={option.value} className="cursor-pointer gap-2" onClick={() => onChange(option.value)}>
+          <DropdownMenuItem key={option.value} onClick={() => onChange(option.value)}>
             <VisibilityIcon visibility={option.value} />
-            <span className="flex-1">{option.label}</span>
-            {value === option.value && <CheckIcon className="w-4 h-4 text-primary" />}
+            <div className="flex flex-col">
+              <span>{option.label}</span>
+              <span className="text-xs text-muted-foreground">{option.description}</span>
+            </div>
+            {value === option.value && <CheckIcon className="ml-auto w-4 h-4 text-primary" />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

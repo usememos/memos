@@ -16,16 +16,20 @@ interface EditorProps {
   placeholder: string;
   onContentChange: (content: string) => void;
   onPaste: (event: React.ClipboardEvent) => void;
+  /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
+  onSubmit: () => void;
   isFocusMode?: boolean;
 }
 
 const Editor = forwardRef(function Editor(props: EditorProps, ref: React.ForwardedRef<EditorController>) {
-  const { className, initialContent, placeholder, onContentChange, onPaste, isFocusMode } = props;
+  const { className, initialContent, placeholder, onContentChange, onPaste, onSubmit, isFocusMode } = props;
   const hostRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const controllerRef = useRef<EditorController | null>(null);
   const onChangeRef = useRef(onContentChange);
   onChangeRef.current = onContentChange;
+  const onSubmitRef = useRef(onSubmit);
+  onSubmitRef.current = onSubmit;
   const listenersRef = useRef(new Set<() => void>());
   const { data: tagData } = useTagCounts();
   const tags = useMemo(() => Object.keys(tagData ?? {}), [tagData]);
@@ -44,6 +48,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
           placeholder,
           onChange: (md) => onChangeRef.current(md),
           onUpdate: () => listenersRef.current.forEach((l) => l()),
+          onSubmit: () => onSubmitRef.current(),
           getTags: () => tagsRef.current,
         }),
       }),

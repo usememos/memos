@@ -9,7 +9,6 @@ export { useEditorActiveState } from "./useEditorActiveState";
 export { COMPACT_TOOLBAR_WIDTH, isCompactWidth, useElementWidth } from "./useElementWidth";
 export { useFileUpload } from "./useFileUpload";
 export { useFocusMode } from "./useFocusMode";
-export { useKeyboard } from "./useKeyboard";
 export { useLinkMemo } from "./useLinkMemo";
 export { useLocation } from "./useLocation";
 export { useMemoInit } from "./useMemoInit";
