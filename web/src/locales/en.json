@@ -265,6 +265,7 @@
       "has-task-list": "hasTaskList",
       "label": "Filters"
     },
+    "columns": "Columns",
     "compact-mode": "Compact mode",
     "link-preview": "Link preview",
     "links": "Links",
@@ -326,8 +327,11 @@
     "visibility": {
       "disabled": "Public memos are disabled",
       "private": "Private",
+      "private-description": "Only visible to you",
       "protected": "Protected",
-      "public": "Public"
+      "protected-description": "Visible to signed-in users",
+      "public": "Public",
+      "public-description": "Visible to everyone"
     }
   },
   "message": {

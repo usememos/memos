@@ -1,6 +1,5 @@
 import MemoView from "@/components/MemoView";
-import PagedMemoList from "@/components/PagedMemoList";
-import { useView } from "@/contexts/ViewContext";
+import PagedMemoList, { getMemoKey } from "@/components/PagedMemoList";
 import { useMemoFilters, useMemoSorting } from "@/hooks";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { State } from "@/types/proto/api/v1/common_pb";
@@ -8,7 +7,6 @@ import { Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
 
 const Explore = () => {
   const currentUser = useCurrentUser();
-  const { compactMode } = useView();
 
   // Determine visibility filter based on authentication status
   // - Logged-in users: Can see PUBLIC and PROTECTED memos
@@ -31,9 +29,7 @@ const Explore = () => {
 
   return (
     <PagedMemoList
-      renderer={(memo: Memo) => (
-        <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showCreator showVisibility compact={compactMode} />
-      )}
+      renderer={(memo: Memo, { compact }) => <MemoView key={getMemoKey(memo)} memo={memo} showCreator showVisibility compact={compact} />}
       listSort={listSort}
       orderBy={orderBy}
       filter={memoFilter}

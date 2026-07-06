@@ -23,6 +23,8 @@ export interface MemoEditorProps {
 
 export interface EditorContentProps {
   placeholder?: string;
+  /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
+  onSubmit: () => void;
 }
 
 export interface EditorToolbarProps {

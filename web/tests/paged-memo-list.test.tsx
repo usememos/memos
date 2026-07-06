@@ -1,11 +1,15 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import PagedMemoList from "@/components/PagedMemoList";
+import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+
+const view = vi.hoisted(() => ({ maxColumns: 1 as 0 | 1 | 2 | 3, compactMode: false }));
+const feed = vi.hoisted(() => ({ memos: [] as unknown[] }));
 
 vi.mock("@/hooks/useMemoQueries", () => ({
   useInfiniteMemos: () => ({
-    data: { pages: [{ memos: [], nextPageToken: "" }] },
+    data: { pages: [{ memos: feed.memos, nextPageToken: "" }] },
     fetchNextPage: vi.fn(async () => undefined),
     hasNextPage: false,
     isFetchingNextPage: false,
@@ -15,6 +19,10 @@ vi.mock("@/hooks/useMemoQueries", () => ({
 
 vi.mock("@/contexts/MemoFilterContext", () => ({
   useMemoFilterContext: () => ({ filters: [] }),
+}));
+
+vi.mock("@/contexts/ViewContext", () => ({
+  useView: () => view,
 }));
 
 vi.mock("@/utils/i18n", () => ({
@@ -33,17 +41,65 @@ vi.mock("@/components/MemoEditor", () => ({
   default: () => <div data-testid="memo-editor" />,
 }));
 
-describe("<PagedMemoList>", () => {
-  it("uses the tile sprite Placeholder for the empty state", () => {
-    const queryClient = new QueryClient();
+const memo = { name: "memos/1", content: "hello", updateTime: undefined } as unknown as Memo;
 
-    render(
-      <QueryClientProvider client={queryClient}>
-        <PagedMemoList renderer={() => <div />} />
-      </QueryClientProvider>,
-    );
+const renderList = (renderer: (memo: Memo, options: { compact: boolean }) => React.ReactElement = () => <div />) =>
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <PagedMemoList renderer={renderer} />
+    </QueryClientProvider>,
+  );
+
+describe("<PagedMemoList>", () => {
+  beforeEach(() => {
+    view.maxColumns = 1;
+    view.compactMode = false;
+    feed.memos = [];
+  });
+
+  it("uses the tile sprite Placeholder for the empty state", () => {
+    renderList();
 
     expect(screen.getByText("No data found.")).toBeInTheDocument();
     expect(screen.getByTestId("placeholder-sprite")).toBeInTheDocument();
+  });
+
+  describe("compact policy", () => {
+    beforeEach(() => {
+      feed.memos = [memo];
+    });
+
+    it("threads compact=false at one column with compact mode off", () => {
+      const renderer = vi.fn((m: Memo) => <div key={m.name} />);
+      renderList(renderer);
+      expect(renderer).toHaveBeenCalledWith(expect.objectContaining({ name: "memos/1" }), { compact: false });
+    });
+
+    it("threads compact=true at one column with compact mode on", () => {
+      view.compactMode = true;
+      const renderer = vi.fn((m: Memo) => <div key={m.name} />);
+      renderList(renderer);
+      expect(renderer).toHaveBeenCalledWith(expect.objectContaining({ name: "memos/1" }), { compact: true });
+    });
+
+    it("respects the compact setting in the narrow-width fallback even when columns are allowed", () => {
+      // jsdom measures 0px, so the flow fallback renders and behaves exactly like maxColumns = 1.
+      view.maxColumns = 0;
+      const renderer = vi.fn((m: Memo) => <div key={m.name} />);
+      renderList(renderer);
+      expect(renderer).toHaveBeenCalledWith(expect.objectContaining({ name: "memos/1" }), { compact: false });
+    });
+
+    it("forces compact once the width fits the grid", () => {
+      view.maxColumns = 0;
+      const widthSpy = vi.spyOn(Element.prototype, "clientWidth", "get").mockReturnValue(1200);
+      try {
+        const renderer = vi.fn((m: Memo) => <div key={m.name} />);
+        renderList(renderer);
+        expect(renderer).toHaveBeenCalledWith(expect.objectContaining({ name: "memos/1" }), { compact: true });
+      } finally {
+        widthSpy.mockRestore();
+      }
+    });
   });
 });

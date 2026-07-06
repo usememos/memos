@@ -16,7 +16,7 @@ import type { EditorController } from "../types/editorController";
  * editor serializes into state.content on every change and exposes its
  * formatting capability for the focus-mode toolbar.
  */
-export const EditorContent = forwardRef<EditorController, EditorContentProps>(({ placeholder }, ref) => {
+export const EditorContent = forwardRef<EditorController, EditorContentProps>(({ placeholder, onSubmit }, ref) => {
   const { actions, dispatch } = useEditorContext();
   const { createBlobUrl } = useBlobUrls();
   const content = useEditorSelector((s) => s.content);
@@ -71,6 +71,7 @@ export const EditorContent = forwardRef<EditorController, EditorContentProps>(({
         isFocusMode={isFocusMode}
         onContentChange={handleContentChange}
         onPaste={handlePaste}
+        onSubmit={onSubmit}
       />
     </div>
   );
