@@ -134,6 +134,21 @@ func buildComparisonCondition(call *exprv1.Expr_Call, pc parseContext) (Conditio
 		return nil, err
 	}
 
+	// The renderer expects a field/function/accessor on the left. A folded
+	// literal on the left (e.g. now.getMonth() == created_ts.getMonth()) swaps
+	// operands; two literals fold to a constant outcome.
+	if leftLit, ok := left.(*LiteralValue); ok {
+		if rightLit, ok := right.(*LiteralValue); ok {
+			outcome, err := compareLiterals(leftLit.Value, op, rightLit.Value)
+			if err != nil {
+				return nil, err
+			}
+			return &ConstantCondition{Value: outcome}, nil
+		}
+		left, right = right, left
+		op = mirrorComparisonOperator(op)
+	}
+
 	// If the left side is a field, validate allowed operators.
 	if field, ok := left.(*FieldRef); ok {
 		def, exists := pc.schema.Field(field.Name)
@@ -158,6 +173,90 @@ func buildComparisonCondition(call *exprv1.Expr_Call, pc parseContext) (Conditio
 		Operator: op,
 		Right:    right,
 	}, nil
+}
+
+// mirrorComparisonOperator flips an operator so swapped operands keep the
+// original meaning (a < b ⇔ b > a).
+func mirrorComparisonOperator(op ComparisonOperator) ComparisonOperator {
+	switch op {
+	case CompareLt:
+		return CompareGt
+	case CompareLte:
+		return CompareGte
+	case CompareGt:
+		return CompareLt
+	case CompareGte:
+		return CompareLte
+	default:
+		return op
+	}
+}
+
+// compareLiterals evaluates a comparison whose operands both folded to
+// constants (e.g. now.getFullYear() >= 2026) into a boolean outcome.
+func compareLiterals(left any, op ComparisonOperator, right any) (bool, error) {
+	if l, r, ok := asFloats(left, right); ok {
+		switch op {
+		case CompareEq:
+			return l == r, nil
+		case CompareNeq:
+			return l != r, nil
+		case CompareLt:
+			return l < r, nil
+		case CompareLte:
+			return l <= r, nil
+		case CompareGt:
+			return l > r, nil
+		case CompareGte:
+			return l >= r, nil
+		}
+	}
+	if l, ok := left.(string); ok {
+		if r, ok := right.(string); ok {
+			switch op {
+			case CompareEq:
+				return l == r, nil
+			case CompareNeq:
+				return l != r, nil
+			case CompareLt:
+				return l < r, nil
+			case CompareLte:
+				return l <= r, nil
+			case CompareGt:
+				return l > r, nil
+			case CompareGte:
+				return l >= r, nil
+			}
+		}
+	}
+	if l, ok := left.(bool); ok {
+		if r, ok := right.(bool); ok {
+			switch op {
+			case CompareEq:
+				return l == r, nil
+			case CompareNeq:
+				return l != r, nil
+			}
+		}
+	}
+	return false, errors.Errorf("unsupported constant comparison %T %s %T", left, op, right)
+}
+
+// asFloats widens both operands to float64 when each is numeric.
+func asFloats(left, right any) (float64, float64, bool) {
+	l, lok := toFloat(left)
+	r, rok := toFloat(right)
+	return l, r, lok && rok
+}
+
+func toFloat(v any) (float64, bool) {
+	switch x := v.(type) {
+	case int64:
+		return float64(x), true
+	case float64:
+		return x, true
+	}
+	return 0, false
 }
 
 func buildInCondition(call *exprv1.Expr_Call, pc parseContext) (Condition, error) {
@@ -306,7 +405,7 @@ func buildValueExpr(expr *exprv1.Expr, pc parseContext) (ValueExpr, error) {
 
 	if call := expr.GetCallExpr(); call != nil {
 		if call.Target != nil && isTimestampAccessor(call.Function) {
-			return buildTimestampAccessor(call, pc.schema)
+			return buildTimestampAccessor(call, pc)
 		}
 		switch call.Function {
 		case "size":
@@ -549,23 +648,56 @@ func isTimestampAccessor(name string) bool {
 }
 
 // buildTimestampAccessor converts created_ts.getMonth() into a FieldAccessorValue.
+// A `now` target folds to a literal date part of the frozen evaluation time, so
+// expressions like created_ts.getMonth() == now.getMonth() stay dynamic per compile.
 // Timezone arguments are rejected; extraction is UTC (see renderer).
-func buildTimestampAccessor(call *exprv1.Expr_Call, schema Schema) (ValueExpr, error) {
+func buildTimestampAccessor(call *exprv1.Expr_Call, pc parseContext) (ValueExpr, error) {
 	targetName, err := getIdentName(call.Target)
 	if err != nil {
 		return nil, errors.Wrap(err, "timestamp accessor requires a field target")
 	}
-	field, ok := schema.Field(targetName)
+	if len(call.Args) != 0 {
+		return nil, errors.Errorf("%s() with a timezone argument is not supported", call.Function)
+	}
+	if targetName == "now" {
+		return &LiteralValue{Value: foldNowAccessor(call.Function, pc.now)}, nil
+	}
+	field, ok := pc.schema.Field(targetName)
 	if !ok {
 		return nil, errors.Errorf("unknown identifier %q", targetName)
 	}
 	if field.Type != FieldTypeTimestamp {
 		return nil, errors.Errorf("%s() is only valid on timestamp fields, got %q", call.Function, targetName)
 	}
-	if len(call.Args) != 0 {
-		return nil, errors.Errorf("%s() with a timezone argument is not supported", call.Function)
-	}
 	return &FieldAccessorValue{Field: targetName, Accessor: call.Function}, nil
+}
+
+// foldNowAccessor evaluates a timestamp accessor against the frozen evaluation
+// time in UTC, matching CEL result bases (0-based month, day-of-month, day-of-week
+// with 0 = Sunday, and day-of-year; 1-based getDate).
+func foldNowAccessor(accessor string, now time.Time) int64 {
+	t := now.UTC()
+	switch accessor {
+	case "getFullYear":
+		return int64(t.Year())
+	case "getMonth":
+		return int64(t.Month()) - 1
+	case "getDate":
+		return int64(t.Day())
+	case "getDayOfMonth":
+		return int64(t.Day()) - 1
+	case "getDayOfWeek":
+		return int64(t.Weekday())
+	case "getDayOfYear":
+		return int64(t.YearDay()) - 1
+	case "getHours":
+		return int64(t.Hour())
+	case "getMinutes":
+		return int64(t.Minute())
+	case "getSeconds":
+		return int64(t.Second())
+	}
+	return 0
 }
 
 // buildSetCondition desugars ext.Sets() operations over a JSON list field into

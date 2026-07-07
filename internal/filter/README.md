@@ -78,9 +78,12 @@ stmt, _ := engine.CompileToStatement(ctx, `has_task_list && visibility == "PUBLI
   `getDayOfMonth()`, `getDayOfWeek()`, `getDayOfYear()`, `getHours()`,
   `getMinutes()`, `getSeconds()` render to date-part extraction (`strftime` /
   `EXTRACT` / `YEAR`/`MONTH`/…). Results are normalized to CEL's base (0-based
-  month, 0-based day-of-week with 0 = Sunday). Extraction is UTC on SQLite/Postgres
-  (epoch columns); on MySQL the `TIMESTAMP` column is read in the session time
-  zone. A timezone argument is not supported.
+  month, 0-based day-of-week with 0 = Sunday). The same accessors on `now` fold
+  to literal date parts of the frozen evaluation time (UTC), so saved filters
+  like `created_ts.getMonth() == now.getMonth() && created_ts.getDate() ==
+  now.getDate()` ("on this day") re-resolve on every compile. Extraction is UTC
+  on SQLite/Postgres (epoch columns); on MySQL the `TIMESTAMP` column is read in
+  the session time zone. A timezone argument is not supported.
 - **Set Operations** — `ext.Sets()`: `sets.contains(tags, [...])`,
   `sets.intersects(tags, [...])`, and `sets.equivalent(tags, [...])` desugar to
   exact-membership checks (AND / OR of `"v" in tags`); `equivalent` adds a
