@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import { AttachmentListEditor, LocationDisplayEditor, RelationListEditor } from "@/components/MemoMetadata";
+import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { useEditorContext, useEditorSelector } from "../state";
 import type { EditorMetadataProps } from "../types";
 import GroupSelector from "./GroupSelector";
@@ -31,11 +32,8 @@ export const EditorMetadata: FC<EditorMetadataProps> = ({ memoName }) => {
 
       {location && <LocationDisplayEditor location={location} onRemove={() => dispatch(actions.setMetadata({ location: undefined }))} />}
 
-      {(visibility as any) === 4 && (
-        <GroupSelector
-          selectedGroupNames={groupNames}
-          onChange={(groupNames) => dispatch(actions.setMetadata({ groupNames }))}
-        />
+      {visibility === Visibility.GROUP && (
+        <GroupSelector selectedGroupNames={groupNames} onChange={(groupNames) => dispatch(actions.setMetadata({ groupNames }))} />
       )}
     </div>
   );

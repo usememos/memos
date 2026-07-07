@@ -25,13 +25,13 @@ type sseRouteRegistrar interface {
 func RegisterSSERoutes(router sseRouteRegistrar, hub *SSEHub, storeInstance *store.Store, secret string) {
 	authenticator := auth.NewAuthenticator(storeInstance, secret)
 	router.GET("/api/v1/sse", func(c *echo.Context) error {
-		return handleSSE(c, hub, authenticator)
+		return handleSSE(c, hub, authenticator, storeInstance)
 	})
 }
 
 // handleSSE handles the SSE connection for live memo refresh.
 // Authentication is done via Bearer token in the Authorization header.
-func handleSSE(c *echo.Context, hub *SSEHub, authenticator *auth.Authenticator) error {
+func handleSSE(c *echo.Context, hub *SSEHub, authenticator *auth.Authenticator, storeInstance *store.Store) error {
 	// Authenticate the request.
 	authHeader := c.Request().Header.Get("Authorization")
 	result := authenticator.Authenticate(c.Request().Context(), authHeader)
@@ -56,8 +56,17 @@ func handleSSE(c *echo.Context, hub *SSEHub, authenticator *auth.Authenticator) 
 		f.Flush()
 	}
 
+	// Fetch user's groups to populate groupIDs
+	groupIDs := []int32{}
+	members, err := storeInstance.ListGroupMembers(c.Request().Context(), &store.FindGroupMember{UserID: &userID})
+	if err == nil {
+		for _, member := range members {
+			groupIDs = append(groupIDs, member.GroupID)
+		}
+	}
+
 	// Subscribe to the hub.
-	client := hub.Subscribe(userID, role)
+	client := hub.Subscribe(userID, role, groupIDs)
 	defer hub.Unsubscribe(client)
 
 	// Create a ticker for heartbeat pings.

@@ -18,20 +18,18 @@ const GroupSelector = (props: Props) => {
   useEffect(() => {
     if (!selectedGroupNames || selectedGroupNames.length === 0) {
       setDisplayText(t("group.select-groups"));
-    } else if (selectedGroupNames.length === 1) {
+    } else {
       const group = groups.find((g) => g.name === selectedGroupNames[0]);
       setDisplayText(group?.displayName || t("group.selected"));
-    } else {
-      setDisplayText(t("group.multiple-groups", { count: selectedGroupNames.length }));
     }
   }, [selectedGroupNames, groups, t]);
 
   const toggleGroup = (name: string) => {
     const current = selectedGroupNames || [];
     if (current.includes(name)) {
-      onChange(current.filter((n) => n !== name));
+      onChange([]);
     } else {
-      onChange([...current, name]);
+      onChange([name]);
     }
   };
 

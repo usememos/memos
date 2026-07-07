@@ -70,12 +70,13 @@ func NewSSEHub() *SSEHub {
 
 // Subscribe registers a new client and returns it.
 // The caller must call Unsubscribe when done.
-func (h *SSEHub) Subscribe(userID int32, role store.Role) *SSEClient {
+func (h *SSEHub) Subscribe(userID int32, role store.Role, groupIDs []int32) *SSEClient {
 	c := &SSEClient{
 		// Buffer a few events so a slow client doesn't block broadcasting.
-		events: make(chan []byte, 32),
-		userID: userID,
-		role:   role,
+		events:   make(chan []byte, 32),
+		userID:   userID,
+		role:     role,
+		groupIDs: groupIDs,
 	}
 	h.mu.Lock()
 	if h.closed {

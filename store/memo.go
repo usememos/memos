@@ -97,16 +97,17 @@ type FindMemoPayload struct {
 }
 
 type UpdateMemo struct {
-	ID         int32
-	UID        *string
-	CreatedTs  *int64
-	UpdatedTs  *int64
-	RowStatus  *RowStatus
-	Content    *string
-	Visibility *Visibility
-	GroupID    *int32
-	Pinned     *bool
-	Payload    *storepb.MemoPayload
+	ID           int32
+	UID          *string
+	CreatedTs    *int64
+	UpdatedTs    *int64
+	RowStatus    *RowStatus
+	Content      *string
+	Visibility   *Visibility
+	GroupID      *int32
+	ClearGroupID bool
+	Pinned       *bool
+	Payload      *storepb.MemoPayload
 }
 
 type DeleteMemo struct {

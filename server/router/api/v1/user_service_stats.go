@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"google.golang.org/grpc/codes"
@@ -81,23 +82,41 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, request *v1pb.ListA
 		}
 		memoFind.CreatorID = &currentUser.ID
 	} else {
-		if memoFind.CreatorID == nil {
-			filter := fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "PROTECTED", "GROUP"]`, currentUser.ID)
-			memoFind.Filters = append(memoFind.Filters, filter)
-		} else if *memoFind.CreatorID != currentUser.ID {
-			memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected, store.GroupVisibility}
-		}
-	}
+		if currentUser == nil {
+			memoFind.VisibilityList = []store.Visibility{store.Public}
+		} else {
+			// Fetch user's groups to build GROUP visibility filter
+			myGroupIDs := []int32{}
+			members, err := s.Store.ListGroupMembers(ctx, &store.FindGroupMember{UserID: &currentUser.ID})
+			if err == nil {
+				for _, member := range members {
+					myGroupIDs = append(myGroupIDs, member.GroupID)
+				}
+			}
 
-	myGroupIDs := make(map[int32]bool)
-	if currentUser != nil {
-		members, err := s.Store.ListGroupMembers(ctx, &store.FindGroupMember{UserID: &currentUser.ID})
-		if err == nil {
-			for _, member := range members {
-				myGroupIDs[member.GroupID] = true
+			var groupFilter string
+			if len(myGroupIDs) > 0 {
+				var groupConds []string
+				for _, gid := range myGroupIDs {
+					groupConds = append(groupConds, fmt.Sprintf("group_id == %d", gid))
+				}
+				groupFilter = fmt.Sprintf(`(visibility == "GROUP" && (%s))`, strings.Join(groupConds, " || "))
+			} else {
+				groupFilter = `(visibility == "GROUP" && group_id == -1)`
+			}
+
+			if memoFind.CreatorID == nil {
+				filter := fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "PROTECTED"] || %s`, currentUser.ID, groupFilter)
+				memoFind.Filters = append(memoFind.Filters, filter)
+			} else if *memoFind.CreatorID != currentUser.ID {
+				filter := fmt.Sprintf(`creator_id == %d && (visibility in ["PUBLIC", "PROTECTED"] || %s)`, *memoFind.CreatorID, groupFilter)
+				memoFind.Filters = append(memoFind.Filters, filter)
+				memoFind.CreatorID = nil
 			}
 		}
 	}
+
+
 
 	userMemoStatMap := make(map[int32]*v1pb.UserStats)
 	pinnedMemoIDsByUserID := make(map[int32][]int32)
@@ -116,14 +135,7 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, request *v1pb.ListA
 		}
 
 		for _, memo := range memos {
-			if memo.Visibility == store.GroupVisibility {
-				if memo.GroupID == nil {
-					continue
-				}
-				if currentUser == nil || (memo.CreatorID != currentUser.ID && !myGroupIDs[*memo.GroupID]) {
-					continue
-				}
-			}
+
 
 			// Initialize user stats if not exists
 			if _, exists := userMemoStatMap[memo.CreatorID]; !exists {
@@ -233,19 +245,35 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 
 	if currentUser == nil {
 		memoFind.VisibilityList = []store.Visibility{store.Public}
-	} else if currentUser.ID != userID {
-		memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected, store.GroupVisibility}
-	}
-
-	myGroupIDs := make(map[int32]bool)
-	if currentUser != nil {
+	} else if currentUser.ID == userID {
+		// Creator can view all their memos
+	} else {
+		// Fetch user's groups to build GROUP visibility filter
+		myGroupIDs := []int32{}
 		members, err := s.Store.ListGroupMembers(ctx, &store.FindGroupMember{UserID: &currentUser.ID})
 		if err == nil {
 			for _, member := range members {
-				myGroupIDs[member.GroupID] = true
+				myGroupIDs = append(myGroupIDs, member.GroupID)
 			}
 		}
+
+		var groupFilter string
+		if len(myGroupIDs) > 0 {
+			var groupConds []string
+			for _, gid := range myGroupIDs {
+				groupConds = append(groupConds, fmt.Sprintf("group_id == %d", gid))
+			}
+			groupFilter = fmt.Sprintf(`(visibility == "GROUP" && (%s))`, strings.Join(groupConds, " || "))
+		} else {
+			groupFilter = `(visibility == "GROUP" && group_id == -1)`
+		}
+
+		filter := fmt.Sprintf(`creator_id == %d && (visibility in ["PUBLIC", "PROTECTED"] || %s)`, userID, groupFilter)
+		memoFind.Filters = append(memoFind.Filters, filter)
+		memoFind.CreatorID = nil
 	}
+
+
 
 	createdTimestamps := []*timestamppb.Timestamp{}
 	updatedTimestamps := []*timestamppb.Timestamp{}
@@ -272,14 +300,7 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 		}
 
 		for _, memo := range memos {
-			if memo.Visibility == store.GroupVisibility {
-				if memo.GroupID == nil {
-					continue
-				}
-				if currentUser == nil || (memo.CreatorID != currentUser.ID && !myGroupIDs[*memo.GroupID]) {
-					continue
-				}
-			}
+
 
 			totalMemoCount++
 			createdTimestamps = append(createdTimestamps, timestamppb.New(time.Unix(memo.CreatedTs, 0)))

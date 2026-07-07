@@ -217,11 +217,9 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	if v := update.Visibility; v != nil {
 		set, args = append(set, "`visibility` = ?"), append(args, *v)
 	}
-	// We check if GroupID is present, even if it's nil, we might want to unset it.
-	// But `UpdateMemo` type has GroupID *int32. So nil means not updated. 
-	// The problem is we can't easily unset it unless we add another flag or use a hack.
-	// We'll just handle normal updates for now.
-	if v := update.GroupID; v != nil {
+	if update.ClearGroupID {
+		set = append(set, "`group_id` = NULL")
+	} else if v := update.GroupID; v != nil {
 		set, args = append(set, "`group_id` = ?"), append(args, *v)
 	}
 	if v := update.Pinned; v != nil {

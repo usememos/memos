@@ -12,7 +12,7 @@ const getVisibilityName = (visibility: Visibility): string => {
       return "PROTECTED";
     case Visibility.PRIVATE:
       return "PRIVATE";
-    case 4 as any:
+    case Visibility.GROUP:
       return "GROUP";
     default:
       return "PRIVATE";

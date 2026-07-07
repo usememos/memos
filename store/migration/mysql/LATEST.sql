@@ -40,7 +40,9 @@ CREATE TABLE `memo` (
   `visibility` VARCHAR(256) NOT NULL DEFAULT 'PRIVATE',
   `group_id` INT DEFAULT NULL,
   `pinned` BOOLEAN NOT NULL DEFAULT FALSE,
-  `payload` JSON NOT NULL
+  `payload` JSON NOT NULL,
+  FOREIGN KEY (`group_id`) REFERENCES `groups`(`id`) ON DELETE SET NULL,
+  FOREIGN KEY (`creator_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
 );
 
 -- memo_relation
@@ -132,7 +134,8 @@ CREATE TABLE `groups` (
   `description` TEXT NOT NULL,
   `creator_id` INT NOT NULL,
   `visibility` VARCHAR(256) NOT NULL DEFAULT 'PRIVATE',
-  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`creator_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
 );
 
 -- group_members
@@ -140,5 +143,7 @@ CREATE TABLE `group_members` (
   `group_id` INT NOT NULL,
   `user_id` INT NOT NULL,
   `role` VARCHAR(256) NOT NULL DEFAULT 'MEMBER',
-  PRIMARY KEY (`group_id`, `user_id`)
+  PRIMARY KEY (`group_id`, `user_id`),
+  FOREIGN KEY (`group_id`) REFERENCES `groups`(`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON DELETE CASCADE
 );

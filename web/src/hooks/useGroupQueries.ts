@@ -27,9 +27,12 @@ export function useCreateGroup() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (group: any) => {
+    mutationFn: async (group: { displayName: string; description: string }) => {
       const createdGroup = await groupServiceClient.createGroup({
-        group: create(GroupSchema, group),
+        group: create(GroupSchema, {
+          displayName: group.displayName,
+          description: group.description,
+        }),
       });
       return createdGroup;
     },

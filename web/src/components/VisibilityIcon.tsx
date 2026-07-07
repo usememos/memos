@@ -17,7 +17,7 @@ const VisibilityIcon = (props: Props) => {
     VIcon = UsersIcon;
   } else if (visibility === Visibility.PUBLIC) {
     VIcon = Globe2Icon;
-  } else if ((visibility as any) === 4) {
+  } else if (visibility === Visibility.GROUP) {
     VIcon = UsersIcon;
   }
   if (!VIcon) {

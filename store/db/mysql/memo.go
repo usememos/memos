@@ -239,7 +239,9 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	if v := update.Visibility; v != nil {
 		set, args = append(set, "`visibility` = ?"), append(args, *v)
 	}
-	if v := update.GroupID; v != nil {
+	if update.ClearGroupID {
+		set = append(set, "`group_id` = NULL")
+	} else if v := update.GroupID; v != nil {
 		set, args = append(set, "`group_id` = ?"), append(args, *v)
 	}
 	if v := update.Pinned; v != nil {

@@ -4,6 +4,7 @@ import (
 	"context"
 )
 
+// Group is the schema for a group.
 type Group struct {
 	ID          int32
 	Name        string
@@ -13,23 +14,27 @@ type Group struct {
 	CreatedTs   int64
 }
 
+// GroupMember is the schema for a group member.
 type GroupMember struct {
 	GroupID int32
 	UserID  int32
 	Role    string // "MEMBER", "ADMIN", "OWNER"
 }
 
+// FindGroup is the query filter for listing groups.
 type FindGroup struct {
 	ID        *int32
 	Name      *string
 	CreatorID *int32
 }
 
+// FindGroupMember is the query filter for listing group members.
 type FindGroupMember struct {
 	GroupID *int32
 	UserID  *int32
 }
 
+// UpdateGroup is the schema for updating a group.
 type UpdateGroup struct {
 	ID          int32
 	Name        *string

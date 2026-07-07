@@ -9,6 +9,14 @@ import (
 )
 
 func (d *DB) CreateGroup(ctx context.Context, create *store.Group) (*store.Group, error) {
+	tx, err := d.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to begin transaction")
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
 	stmt := `
 		INSERT INTO groups (
 			name,
@@ -18,7 +26,7 @@ func (d *DB) CreateGroup(ctx context.Context, create *store.Group) (*store.Group
 		)
 		VALUES (?, ?, ?, ?)
 	`
-	result, err := d.db.ExecContext(
+	result, err := tx.ExecContext(
 		ctx,
 		stmt,
 		create.Name,
@@ -27,17 +35,34 @@ func (d *DB) CreateGroup(ctx context.Context, create *store.Group) (*store.Group
 		create.Visibility,
 	)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to insert group")
 	}
 
 	rawID, err := result.LastInsertId()
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to get last insert id")
 	}
-	id := int32(rawID)
-	group, err := d.GetGroup(ctx, &store.FindGroup{ID: &id})
+	create.ID = int32(rawID)
+
+	memberStmt := `
+		INSERT INTO group_members (
+			group_id,
+			user_id,
+			role
+		)
+		VALUES (?, ?, 'OWNER')
+	`
+	if _, err := tx.ExecContext(ctx, memberStmt, create.ID, create.CreatorID); err != nil {
+		return nil, errors.Wrap(err, "failed to insert owner member")
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, errors.Wrap(err, "failed to commit transaction")
+	}
+
+	group, err := d.GetGroup(ctx, &store.FindGroup{ID: &create.ID})
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to get group")
 	}
 	return group, nil
 }
@@ -57,7 +82,7 @@ func (d *DB) ListGroups(ctx context.Context, find *store.FindGroup) ([]*store.Gr
 	query := "SELECT id, name, description, creator_id, visibility, UNIX_TIMESTAMP(created_ts) FROM groups WHERE " + strings.Join(where, " AND ")
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to query groups")
 	}
 	defer rows.Close()
 
@@ -72,7 +97,7 @@ func (d *DB) ListGroups(ctx context.Context, find *store.FindGroup) ([]*store.Gr
 			&group.Visibility,
 			&group.CreatedTs,
 		); err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "failed to scan group")
 		}
 		list = append(list, &group)
 	}
@@ -99,18 +124,21 @@ func (d *DB) UpdateGroup(ctx context.Context, update *store.UpdateGroup) (*store
 	args = append(args, update.ID)
 	query := "UPDATE groups SET " + strings.Join(set, ", ") + " WHERE id = ?"
 	if _, err := d.db.ExecContext(ctx, query, args...); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to execute update group query")
 	}
 
 	return d.GetGroup(ctx, &store.FindGroup{ID: &update.ID})
 }
 
 func (d *DB) DeleteGroup(ctx context.Context, id int32) error {
+	if _, err := d.db.ExecContext(ctx, "UPDATE memo SET group_id = NULL WHERE group_id = ?", id); err != nil {
+		return errors.Wrap(err, "failed to unset group_id in memo")
+	}
 	if _, err := d.db.ExecContext(ctx, "DELETE FROM group_members WHERE group_id = ?", id); err != nil {
-		return err
+		return errors.Wrap(err, "failed to delete group members")
 	}
 	if _, err := d.db.ExecContext(ctx, "DELETE FROM groups WHERE id = ?", id); err != nil {
-		return err
+		return errors.Wrap(err, "failed to delete group")
 	}
 	return nil
 }
@@ -118,7 +146,7 @@ func (d *DB) DeleteGroup(ctx context.Context, id int32) error {
 func (d *DB) GetGroup(ctx context.Context, find *store.FindGroup) (*store.Group, error) {
 	list, err := d.ListGroups(ctx, find)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to list groups in GetGroup")
 	}
 	if len(list) == 0 {
 		return nil, nil
@@ -136,7 +164,7 @@ func (d *DB) CreateGroupMember(ctx context.Context, create *store.GroupMember) (
 		VALUES (?, ?, ?)
 	`
 	if _, err := d.db.ExecContext(ctx, stmt, create.GroupID, create.UserID, create.Role); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to insert group member")
 	}
 	return create, nil
 }
@@ -153,7 +181,7 @@ func (d *DB) ListGroupMembers(ctx context.Context, find *store.FindGroupMember) 
 	query := "SELECT group_id, user_id, role FROM group_members WHERE " + strings.Join(where, " AND ")
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to query group members")
 	}
 	defer rows.Close()
 
@@ -165,7 +193,7 @@ func (d *DB) ListGroupMembers(ctx context.Context, find *store.FindGroupMember) 
 			&member.UserID,
 			&member.Role,
 		); err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "failed to scan group member")
 		}
 		list = append(list, &member)
 	}
@@ -176,7 +204,7 @@ func (d *DB) ListGroupMembers(ctx context.Context, find *store.FindGroupMember) 
 func (d *DB) UpdateGroupMember(ctx context.Context, update *store.GroupMember) (*store.GroupMember, error) {
 	query := "UPDATE group_members SET role = ? WHERE group_id = ? AND user_id = ?"
 	if _, err := d.db.ExecContext(ctx, query, update.Role, update.GroupID, update.UserID); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to update group member")
 	}
 	return update, nil
 }
@@ -187,7 +215,7 @@ func (d *DB) DeleteGroupMember(ctx context.Context, delete *store.GroupMember) e
 	}
 	query := "DELETE FROM group_members WHERE group_id = ? AND user_id = ?"
 	if _, err := d.db.ExecContext(ctx, query, delete.GroupID, delete.UserID); err != nil {
-		return err
+		return errors.Wrap(err, "failed to delete group member")
 	}
 	return nil
 }

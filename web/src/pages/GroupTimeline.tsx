@@ -6,7 +6,7 @@ import PagedMemoList from "@/components/PagedMemoList";
 import { useMemoFilters, useMemoSorting } from "@/hooks";
 import { useGroups } from "@/hooks/useGroupQueries";
 import { State } from "@/types/proto/api/v1/common_pb";
-import { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import { Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const GroupTimeline = () => {
@@ -25,7 +25,7 @@ const GroupTimeline = () => {
   const memoFilter = useMemoFilters({
     includeShortcuts: false,
     includePinned: false,
-    visibilities: [4 as any], // GROUP visibility
+    visibilities: [Visibility.GROUP], // GROUP visibility
     groupName: groupName, // Will compile to group_id == X
   });
 

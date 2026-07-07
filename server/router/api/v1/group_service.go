@@ -33,16 +33,6 @@ func (s *APIV1Service) CreateGroup(ctx context.Context, request *v1pb.CreateGrou
 		return nil, status.Errorf(codes.Internal, "failed to create group")
 	}
 
-	// Also add the creator as the OWNER
-	_, err = s.Store.CreateGroupMember(ctx, &store.GroupMember{
-		GroupID: group.ID,
-		UserID:  user.ID,
-		Role:    "OWNER",
-	})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to create group member")
-	}
-
 	return s.convertGroupFromStore(ctx, group)
 }
 
@@ -99,10 +89,7 @@ func (s *APIV1Service) UpdateGroup(ctx context.Context, request *v1pb.UpdateGrou
 		return nil, status.Errorf(codes.Internal, "failed to list group members")
 	}
 
-	fmt.Printf("[DEBUG] UpdateGroup: groupID=%d, group.CreatorID=%d, user.ID=%d, members_len=%d\n", groupID, group.CreatorID, user.ID, len(members))
-	for i, member := range members {
-		fmt.Printf("[DEBUG] Member %d: UserID=%d, Role=%s\n", i, member.UserID, member.Role)
-	}
+
 
 	isOwnerOrAdmin := false
 	if user.Role == store.RoleAdmin {
@@ -174,10 +161,7 @@ func (s *APIV1Service) DeleteGroup(ctx context.Context, request *v1pb.DeleteGrou
 		return nil, status.Errorf(codes.Internal, "failed to list group members")
 	}
 
-	fmt.Printf("[DEBUG] DeleteGroup: groupID=%d, group.CreatorID=%d, user.ID=%d, members_len=%d\n", groupID, group.CreatorID, user.ID, len(members))
-	for i, member := range members {
-		fmt.Printf("[DEBUG] Member %d: UserID=%d, Role=%s\n", i, member.UserID, member.Role)
-	}
+
 
 	isOwnerOrAdmin := false
 	if user.Role == store.RoleAdmin {
