@@ -128,7 +128,13 @@ const MemoPreview = ({
       <div className="text-sm text-muted-foreground truncate min-w-0">No content</div>
     )
   ) : (
-    hasContent && <MemoContent content={content} compact={compact} />
+    // Previews are inert (pointer-events-none), so a static CSS bound replaces the
+    // interactive clamp a full memo card gets.
+    hasContent && (
+      <div className="max-h-36 w-full overflow-hidden">
+        <MemoContent content={content} compact={compact} />
+      </div>
+    )
   );
 
   return (
