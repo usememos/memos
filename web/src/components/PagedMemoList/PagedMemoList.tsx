@@ -30,8 +30,6 @@ export const getMemoKey = (memo: Memo) => `${memo.name}-${memo.updateTime}`;
 // Columns never stretch past this, so 2 columns on a wide monitor stay readable and the
 // grid centers in the leftover space instead of filling it.
 const MAX_COLUMN_WIDTH = 420;
-// Grid tiles are clipped to this height (with a fade), so one long memo can't dominate a column.
-const MAX_ITEM_HEIGHT = 360;
 
 // The grid packs cards into columns, so a card-shaped skeleton doesn't fit; use a spinner.
 const GridLoader = () => (
@@ -271,7 +269,6 @@ const PagedMemoList = (props: Props) => {
                 getKey={getMemoKey}
                 renderItem={(memo) => props.renderer(memo, { compact: effectiveCompact })}
                 leading={gridLeading}
-                maxItemHeight={MAX_ITEM_HEIGHT}
                 priorityKey={priorityKey}
                 maxColumns={maxColumns}
                 maxColumnWidth={MAX_COLUMN_WIDTH}

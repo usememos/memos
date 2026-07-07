@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { CLAMP_PREVIEW_HEIGHT_PX, CLAMP_TRIGGER_HEIGHT_PX } from "@/components/ClampedSection";
 import MemoBody from "@/components/MemoView/components/MemoBody";
 
 const mockState = vi.hoisted(() => ({
@@ -62,14 +63,18 @@ const createMemo = (content: string) => ({
   reactions: [],
 });
 
-describe("<MemoBody /> compact content", () => {
-  it("keeps expanded compact content expanded when memo content changes", async () => {
-    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function () {
-      if ((this as HTMLElement).hasAttribute("data-memo-content")) {
-        return { x: 0, y: 0, width: 320, height: 1000, top: 0, right: 320, bottom: 1000, left: 0, toJSON: () => ({}) };
-      }
-      return { x: 0, y: 0, width: 0, height: 0, top: 0, right: 0, bottom: 0, left: 0, toJSON: () => ({}) };
-    });
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+describe("<MemoBody /> compact body clamp", () => {
+  it("keeps a buffer between the preview height and the fold trigger", () => {
+    expect(CLAMP_TRIGGER_HEIGHT_PX).toBeGreaterThan(CLAMP_PREVIEW_HEIGHT_PX);
+  });
+
+  it("folds tall compact bodies and keeps them expanded across content changes", async () => {
+    // jsdom has no layout; report every element as taller than the fold trigger.
+    vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockReturnValue(CLAMP_TRIGGER_HEIGHT_PX + 100);
 
     mockState.memo = createMemo("line 1\nline 2");
     const { rerender } = render(<MemoBody compact={true} />);
@@ -82,5 +87,14 @@ describe("<MemoBody /> compact content", () => {
     rerender(<MemoBody compact={true} />);
 
     expect(screen.getByRole("button", { name: /memo\.show-less/ })).toBeInTheDocument();
+  });
+
+  it("renders no clamp when compact is off", () => {
+    vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockReturnValue(CLAMP_TRIGGER_HEIGHT_PX + 100);
+
+    mockState.memo = createMemo("tall content");
+    render(<MemoBody compact={false} />);
+
+    expect(screen.queryByRole("button", { name: /memo\.show-more/ })).toBeNull();
   });
 });

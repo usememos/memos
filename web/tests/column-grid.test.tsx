@@ -36,16 +36,6 @@ describe("<ColumnGrid>", () => {
     expect(grid.children[0].querySelector('[data-testid="composer"]')).not.toBeNull();
   });
 
-  it("renders a fade overlay per item only when a max item height is set", () => {
-    const withCap = render(
-      <ColumnGrid items={[item("a"), item("b")]} getKey={getKey} renderItem={(i) => <div key={i.id} />} maxItemHeight={360} />,
-    );
-    expect(withCap.container.querySelectorAll("[data-grid-fade]")).toHaveLength(2);
-
-    const noCap = render(<ColumnGrid items={[item("a"), item("b")]} getKey={getKey} renderItem={(i) => <div key={i.id} />} />);
-    expect(noCap.container.querySelectorAll("[data-grid-fade]")).toHaveLength(0);
-  });
-
   it("renders nothing for an empty list", () => {
     const { container } = render(<ColumnGrid items={[]} getKey={getKey} renderItem={() => <div data-testid="card" />} />);
 

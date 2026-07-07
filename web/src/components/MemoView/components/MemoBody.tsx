@@ -1,6 +1,7 @@
+import ClampedSection from "@/components/ClampedSection";
 import { AttachmentListView, LocationDisplayView, RelationListView } from "@/components/MemoMetadata";
+import { isReferenceRelation } from "@/components/MemoMetadata/Relation/relationHelpers";
 import { cn } from "@/lib/utils";
-import { MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import MemoContent from "../../MemoContent";
 import { MemoReactionListView } from "../../MemoReactionListView";
@@ -24,7 +25,7 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
 
   const { handleMemoContentClick, handleMemoContentDoubleClick } = useMemoHandlers({ readonly, openEditor, openPreview });
 
-  const referencedMemos = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
+  const referencedMemos = memo.relations.filter(isReferenceRelation);
 
   return (
     <>
@@ -34,17 +35,20 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
           blurred && !showBlurredContent && "blur-lg transition-all duration-200",
         )}
       >
-        <MemoContent
-          key={memo.name}
-          memoName={memo.name}
-          content={memo.content}
-          onClick={handleMemoContentClick}
-          onDoubleClick={handleMemoContentDoubleClick}
-          compact={memo.pinned ? false : compact} // Always show full content when pinned
-        />
-        <AttachmentListView attachments={memo.attachments} onImagePreview={openPreview} />
-        <RelationListView relations={referencedMemos} currentMemoName={memo.name} parentPage={parentPage} />
-        {memo.location && <LocationDisplayView location={memo.location} />}
+        {/* Compact bounds the whole body — attachments included — behind one Show more.
+            Reactions stay outside so they never hide under the fade. */}
+        <ClampedSection enabled={Boolean(compact)}>
+          <MemoContent
+            memoName={memo.name}
+            content={memo.content}
+            onClick={handleMemoContentClick}
+            onDoubleClick={handleMemoContentDoubleClick}
+            compact={Boolean(compact)}
+          />
+          <AttachmentListView attachments={memo.attachments} onImagePreview={openPreview} />
+          <RelationListView relations={referencedMemos} currentMemoName={memo.name} parentPage={parentPage} />
+          {memo.location && <LocationDisplayView location={memo.location} />}
+        </ClampedSection>
         <MemoReactionListView memo={memo} reactions={memo.reactions} />
       </div>
 

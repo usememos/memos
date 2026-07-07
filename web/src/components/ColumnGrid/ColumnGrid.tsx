@@ -7,8 +7,6 @@ interface ColumnGridProps<T> {
   renderItem: (item: T) => ReactNode;
   /** Optional node packed as the very first tile (e.g. the note composer). */
   leading?: ReactNode;
-  /** When set, cap each tile to this height (px) with a bottom fade, so no tile dominates a column. */
-  maxItemHeight?: number;
   /** Key that must land at the top of column one (e.g. a just-created memo), not the shortest column. */
   priorityKey?: string;
   /** Upper bound on the column count; 0 or undefined means as many as fit. */
@@ -47,7 +45,7 @@ const shortestColumn = (heights: number[]): number => {
  * memo (or a card growing when its image loads) only shifts the one affected column —
  * never the whole wall. Balance holds because every new card fills the shortest column.
  */
-function ColumnGrid<T>({ items, getKey, renderItem, leading, maxItemHeight, priorityKey, maxColumns, maxColumnWidth }: ColumnGridProps<T>) {
+function ColumnGrid<T>({ items, getKey, renderItem, leading, priorityKey, maxColumns, maxColumnWidth }: ColumnGridProps<T>) {
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const refCallbacks = useRef<Map<string, (el: HTMLDivElement | null) => void>>(new Map());
@@ -88,44 +86,24 @@ function ColumnGrid<T>({ items, getKey, renderItem, leading, maxItemHeight, prio
       if (el) ordered.push({ key, el });
     }
 
-    // Pass 1 (writes): fix each card's width, drop its own bottom margin so spacing is owned
-    // entirely by `gap`, and clear any prior cap so the natural height can be measured.
-    // `firstElementChild` is the item's rendered root (the memo card, or the comment wrapper).
+    // Pass 1 (writes): fix each card's width and drop its own bottom margin so spacing is
+    // owned entirely by `gap`. `firstElementChild` is the item's rendered root. Items are
+    // expected to bound their own height — the grid never clips content itself.
     for (const { el } of ordered) {
       el.style.width = `${columnWidth}px`;
       const child = el.firstElementChild;
       if (child instanceof HTMLElement) {
         child.style.marginBottom = "0px";
-        child.style.maxHeight = "";
-        child.style.overflow = "";
       }
     }
 
-    // Pass 2 (reads): natural height of every card, measured once. We read the inner element,
-    // not the absolutely-positioned wrapper (whose block-formatting context would fold in margins).
-    const naturalByKey = new Map<string, number>();
-    for (const { key, el } of ordered) {
-      const child = el.firstElementChild;
-      naturalByKey.set(key, child instanceof HTMLElement ? child.offsetHeight : el.offsetHeight);
-    }
-
-    // Pass 3 (writes): clip tall cards to maxItemHeight and show their fade, so a single long
-    // memo can't dominate a column and the wall stays tidy. The leading tile is never capped.
+    // Pass 2 (reads): height of every card, measured once after the width writes so the
+    // browser reflows a single time. We read the inner element, not the absolutely-positioned
+    // wrapper (whose block-formatting context would fold in margins).
     const heightByKey = new Map<string, number>();
     for (const { key, el } of ordered) {
-      const natural = naturalByKey.get(key) ?? 0;
-      const capped = maxItemHeight != null && key !== LEADING_KEY && natural > maxItemHeight;
       const child = el.firstElementChild;
-      if (capped && child instanceof HTMLElement) {
-        child.style.maxHeight = `${maxItemHeight}px`;
-        child.style.overflow = "hidden";
-      }
-      // The fade overlay, when present, is the wrapper's last child (rendered right after the item).
-      const fade = el.lastElementChild;
-      if (fade instanceof HTMLElement && fade.hasAttribute("data-grid-fade")) {
-        fade.style.display = capped ? "block" : "";
-      }
-      heightByKey.set(key, capped ? (maxItemHeight as number) : natural);
+      heightByKey.set(key, child instanceof HTMLElement ? child.offsetHeight : el.offsetHeight);
     }
     const heightOf = (key: string) => heightByKey.get(key) ?? 0;
 
@@ -169,7 +147,7 @@ function ColumnGrid<T>({ items, getKey, renderItem, leading, maxItemHeight, prio
     }
 
     setContainerHeight(Math.max(0, ...columnY.map((h) => h - GRID_GAP)));
-  }, [items, getKey, maxItemHeight, priorityKey, maxColumns, maxColumnWidth]);
+  }, [items, getKey, priorityKey, maxColumns, maxColumnWidth]);
 
   // Keep a stable reference so observer callbacks always run the latest layout.
   const relayoutRef = useRef(relayout);
@@ -256,14 +234,6 @@ function ColumnGrid<T>({ items, getKey, renderItem, leading, maxItemHeight, prio
         return (
           <div key={key} ref={getItemRef(key)} className="absolute top-0 left-0" style={{ willChange: "transform" }}>
             {renderItem(item)}
-            {maxItemHeight != null && (
-              <div
-                data-grid-fade
-                aria-hidden
-                className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-12 rounded-b-lg"
-                style={{ background: "linear-gradient(to top, var(--card), transparent)" }}
-              />
-            )}
           </div>
         );
       })}

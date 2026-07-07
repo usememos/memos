@@ -35,19 +35,59 @@ function MemoDisplaySettingMenu({ className }: Props) {
     setLinkPreview,
     setMaxColumns,
   } = useView();
-  const isApplying = orderByTimeAsc !== false || timeBasis !== "create_time" || compactMode || !linkPreview || maxColumns !== 1;
   // Multi-column grids always render compact tiles, so the toggle is shown as on and locked
   // there; it only becomes a real choice at a single column.
   const compactLocked = maxColumns !== 1;
 
   return (
     <Popover>
-      <PopoverTrigger className={cn(className, isApplying ? "text-primary bg-primary/10 rounded" : "opacity-40")}>
+      <PopoverTrigger className={cn(className, "opacity-40 hover:opacity-100 transition-opacity")}>
         <Settings2Icon className="w-4 h-auto shrink-0" />
       </PopoverTrigger>
       <PopoverContent align="end" alignOffset={-12} sideOffset={14}>
         <div className="flex flex-col gap-2 p-1">
           <div className="w-full flex flex-row justify-between items-center">
+            <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.shown-time")}</span>
+            <Select value={timeBasis} onValueChange={(value) => setTimeBasis(value === "update_time" ? "update_time" : "create_time")}>
+              <SelectTrigger size="sm" className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="create_time">{t("common.created-at")}</SelectItem>
+                <SelectItem value="update_time">{t("common.last-updated-at")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="w-full flex flex-row justify-between items-center">
+            <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.order")}</span>
+            <Select
+              value={orderByTimeAsc.toString()}
+              onValueChange={(value) => {
+                if ((value === "true") !== orderByTimeAsc) {
+                  toggleSortOrder();
+                }
+              }}
+            >
+              <SelectTrigger size="sm" className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="false">{t("memo.newest-first")}</SelectItem>
+                <SelectItem value="true">{t("memo.oldest-first")}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="w-full flex flex-row justify-between items-center">
+            <span className={cn("text-sm shrink-0 mr-3", compactLocked ? "text-muted-foreground" : "text-foreground")}>
+              {t("memo.compact-mode")}
+            </span>
+            <Switch checked={compactLocked || compactMode} onCheckedChange={setCompactMode} disabled={compactLocked} />
+          </div>
+          <div className="w-full flex flex-row justify-between items-center">
+            <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.link-preview")}</span>
+            <Switch checked={linkPreview} onCheckedChange={setLinkPreview} />
+          </div>
+          <div className="w-full flex flex-row justify-between items-center border-t border-border/50 pt-2">
             <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.layout")}</span>
             {/* A quiet muted track (28px tall, borderless); only the active option carries the accent
                 fill. A radiogroup with roving tabindex, since the options are mutually exclusive. */}
@@ -101,47 +141,6 @@ function MemoDisplaySettingMenu({ className }: Props) {
                 );
               })}
             </div>
-          </div>
-          <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.shown-time")}</span>
-            <Select value={timeBasis} onValueChange={(value) => setTimeBasis(value === "update_time" ? "update_time" : "create_time")}>
-              <SelectTrigger size="sm" className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="create_time">{t("common.created-at")}</SelectItem>
-                <SelectItem value="update_time">{t("common.last-updated-at")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.order")}</span>
-            <Select
-              value={orderByTimeAsc.toString()}
-              onValueChange={(value) => {
-                if ((value === "true") !== orderByTimeAsc) {
-                  toggleSortOrder();
-                }
-              }}
-            >
-              <SelectTrigger size="sm" className="w-32">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="false">{t("memo.newest-first")}</SelectItem>
-                <SelectItem value="true">{t("memo.oldest-first")}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="w-full flex flex-row justify-between items-center">
-            <span className={cn("text-sm shrink-0 mr-3", compactLocked ? "text-muted-foreground" : "text-foreground")}>
-              {t("memo.compact-mode")}
-            </span>
-            <Switch checked={compactLocked || compactMode} onCheckedChange={setCompactMode} disabled={compactLocked} />
-          </div>
-          <div className="w-full flex flex-row justify-between items-center">
-            <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.link-preview")}</span>
-            <Switch checked={linkPreview} onCheckedChange={setLinkPreview} />
           </div>
         </div>
       </PopoverContent>
