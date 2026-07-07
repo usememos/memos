@@ -51,6 +51,7 @@ Don't want to install yet? Try our [live demo](https://demo.usememos.com/) first
 - **Pre-built Binaries** - Available for Linux, macOS, and Windows
 - **Kubernetes** - Helm charts and manifests available
 - **Build from Source** - For development and customization
+- **Managed Hosting** - [![Deploy with Zenith](https://cdn.zenith.hosting/buttons/deploy-with-zenith.svg)](https://zenith.hosting/host/memos)
 
 See our [installation guide](https://usememos.com/docs/deploy) for detailed instructions.
 
