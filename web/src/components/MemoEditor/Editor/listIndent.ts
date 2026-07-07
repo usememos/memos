@@ -11,7 +11,7 @@ const LIST_PREFIX = /^\s*(?:[-*+]|\d+[.)])\s+/;
 
 export const leadingWhitespace = (text: string): number => text.length - text.trimStart().length;
 
-/** Unique line numbers covered by the selection (also used by formatting.ts). */
+/** Unique line numbers covered by the selection, ascending (also used by formatting.ts). */
 export function selectedLineNumbers(view: EditorView): number[] {
   const { doc, selection } = view.state;
   const nums = new Set<number>();
@@ -21,7 +21,7 @@ export function selectedLineNumbers(view: EditorView): number[] {
       nums.add(n);
     }
   }
-  return [...nums];
+  return [...nums].sort((a, b) => a - b);
 }
 
 /** Preceding lines, nearest first, stopping at the first blank line (list end). */

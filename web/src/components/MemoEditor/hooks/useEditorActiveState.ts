@@ -2,17 +2,12 @@ import { type RefObject, useEffect, useState } from "react";
 import { type ActiveFormatState, EMPTY_ACTIVE_FORMATS } from "../formatting/commands";
 import type { EditorController } from "../types/editorController";
 
+// Derive the key set from the canonical empty snapshot so a command added to
+// ActiveFormatState is compared automatically (all fields are primitives).
+const ACTIVE_FORMAT_KEYS = Object.keys(EMPTY_ACTIVE_FORMATS) as (keyof ActiveFormatState)[];
+
 function sameActiveFormats(a: ActiveFormatState, b: ActiveFormatState): boolean {
-  return (
-    a.bold === b.bold &&
-    a.italic === b.italic &&
-    a.code === b.code &&
-    a.bulletList === b.bulletList &&
-    a.orderedList === b.orderedList &&
-    a.taskList === b.taskList &&
-    a.link === b.link &&
-    a.headingLevel === b.headingLevel
-  );
+  return ACTIVE_FORMAT_KEYS.every((key) => a[key] === b[key]);
 }
 
 /**
