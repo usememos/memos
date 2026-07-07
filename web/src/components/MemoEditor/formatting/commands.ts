@@ -1,4 +1,15 @@
-import { BoldIcon, CodeIcon, ItalicIcon, LinkIcon, ListIcon, ListOrderedIcon, ListTodoIcon, type LucideIcon } from "lucide-react";
+import {
+  BoldIcon,
+  CodeIcon,
+  ItalicIcon,
+  LinkIcon,
+  ListIcon,
+  ListOrderedIcon,
+  ListTodoIcon,
+  type LucideIcon,
+  SquareCodeIcon,
+  StrikethroughIcon,
+} from "lucide-react";
 import type { Translations } from "@/utils/i18n";
 
 /**
@@ -23,7 +34,9 @@ export function toToolbarHeadingLevel(level: number): ToolbarHeadingLevel | null
 export type EditorCommandId =
   | "bold"
   | "italic"
+  | "strikethrough"
   | "code"
+  | "codeBlock"
   | "bulletList"
   | "orderedList"
   | "taskList"
@@ -37,7 +50,9 @@ export type EditorCommandId =
 export interface ActiveFormatState {
   bold: boolean;
   italic: boolean;
+  strikethrough: boolean;
   code: boolean;
+  codeBlock: boolean;
   bulletList: boolean;
   orderedList: boolean;
   taskList: boolean;
@@ -48,7 +63,9 @@ export interface ActiveFormatState {
 export const EMPTY_ACTIVE_FORMATS: ActiveFormatState = {
   bold: false,
   italic: false,
+  strikethrough: false,
   code: false,
+  codeBlock: false,
   bulletList: false,
   orderedList: false,
   taskList: false,
@@ -61,8 +78,9 @@ export interface EditorCommandContext {
   url?: string;
 }
 
-/** Toolbar grouping — the toolbar builds each group by filtering on this. */
-export type EditorCommandGroup = "mark" | "list" | "heading" | "link";
+/** Toolbar grouping — the toolbar builds each group by filtering on this.
+ *  `mark` = inline formatting, `block` = line/block-level (lists, code block). */
+export type EditorCommandGroup = "mark" | "block" | "heading" | "link";
 
 export interface EditorCommand {
   id: EditorCommandId;
@@ -87,6 +105,12 @@ export const EDITOR_COMMANDS: EditorCommand[] = [
     group: "mark",
   },
   {
+    id: "strikethrough",
+    labelKey: "editor.format.strikethrough",
+    icon: StrikethroughIcon,
+    group: "mark",
+  },
+  {
     id: "code",
     labelKey: "editor.format.code",
     icon: CodeIcon,
@@ -96,19 +120,25 @@ export const EDITOR_COMMANDS: EditorCommand[] = [
     id: "bulletList",
     labelKey: "editor.format.bullet-list",
     icon: ListIcon,
-    group: "list",
+    group: "block",
   },
   {
     id: "orderedList",
     labelKey: "editor.format.ordered-list",
     icon: ListOrderedIcon,
-    group: "list",
+    group: "block",
   },
   {
     id: "taskList",
     labelKey: "editor.format.task-list",
     icon: ListTodoIcon,
-    group: "list",
+    group: "block",
+  },
+  {
+    id: "codeBlock",
+    labelKey: "editor.format.code-block",
+    icon: SquareCodeIcon,
+    group: "block",
   },
   {
     id: "paragraph",
@@ -156,7 +186,7 @@ export function isCommandActive(active: ActiveFormatState, id: EditorCommandId):
       return active.headingLevel === 2;
     case "heading3":
       return active.headingLevel === 3;
-    // bold/italic/code/bulletList/orderedList/taskList/link map 1:1 to the snapshot.
+    // The remaining ids (marks, blocks, link) map 1:1 to the snapshot.
     default:
       return active[id];
   }

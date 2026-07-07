@@ -1,4 +1,5 @@
 import { syntaxTree } from "@codemirror/language";
+import type { EditorState } from "@codemirror/state";
 import type { EditorView } from "@codemirror/view";
 import {
   type ActiveFormatState,
@@ -10,17 +11,19 @@ import {
 import type { FormattingController } from "../types/editorController";
 import { leadingWhitespace, selectedLineNumbers } from "./listIndent";
 
-type MarkCommand = "bold" | "italic" | "code";
+type MarkCommand = "bold" | "italic" | "strikethrough" | "code";
 type ListCommand = "bulletList" | "orderedList" | "taskList";
 
 // One row per inline mark: the markdown token plus the syntax-tree wrapper and
 // delimiter node names (verified empirically against the Lezer markdown parser:
-// StrongEmphasis/Emphasis use `EmphasisMark`, InlineCode uses `CodeMark`).
+// StrongEmphasis/Emphasis use `EmphasisMark`, InlineCode uses `CodeMark`, and
+// GFM strikethrough uses `Strikethrough`/`StrikethroughMark`).
 // Dispatch, toggling, the delimiter guard, and active-state detection all
 // derive from this table, so adding a mark is one row here + a catalog entry.
 const MARKS: Record<MarkCommand, { token: string; wrapper: string; delimiter: string }> = {
   bold: { token: "**", wrapper: "StrongEmphasis", delimiter: "EmphasisMark" },
   italic: { token: "*", wrapper: "Emphasis", delimiter: "EmphasisMark" },
+  strikethrough: { token: "~~", wrapper: "Strikethrough", delimiter: "StrikethroughMark" },
   code: { token: "`", wrapper: "InlineCode", delimiter: "CodeMark" },
 };
 const MARK_COMMANDS = Object.keys(MARKS) as MarkCommand[];
@@ -30,6 +33,17 @@ const WRAPPER_TO_MARK: Record<string, MarkCommand> = Object.fromEntries(MARK_COM
 // real parsed markup (e.g. between the two `*` of a bold delimiter), not to a
 // dangling empty pair.
 const DELIMITER_NODES = new Set(MARK_COMMANDS.map((c) => MARKS[c].delimiter));
+// Doubled mark tokens (`****`, `~~~~`, …): what a freshly inserted empty pair
+// looks like. Markdown parses some of them as entirely different constructs
+// (`~~~~` is a bare tilde code fence), so consumers that would otherwise
+// believe that construct check here first.
+const EMPTY_MARK_PAIRS = new Set(MARK_COMMANDS.map((c) => MARKS[c].token + MARKS[c].token));
+const MAX_EMPTY_PAIR_LENGTH = Math.max(...MARK_COMMANDS.map((c) => 2 * MARKS[c].token.length));
+
+/** Whether [from, to) is exactly some mark's empty delimiter pair. */
+function isEmptyMarkPair(state: EditorState, from: number, to: number): boolean {
+  return to - from <= MAX_EMPTY_PAIR_LENGTH && EMPTY_MARK_PAIRS.has(state.sliceDoc(from, to));
+}
 
 const LIST_MARKERS: Record<ListCommand, string> = { bulletList: "- ", orderedList: "1. ", taskList: "- [ ] " };
 
@@ -98,16 +112,25 @@ function wrapSelection(view: EditorView, token: string) {
   });
 }
 
-/** Delimiter child ranges of the mark's wrapper node when the selection sits in one. */
-function findMarkDelimiters(view: EditorView, command: MarkCommand): { from: number; to: number }[] | null {
-  const { wrapper, delimiter } = MARKS[command];
+/**
+ * Delimiter child ranges of the nearest `wrapper` ancestor at the selection,
+ * or null when the selection doesn't sit in one (or it has fewer than
+ * `minMarks` delimiters). Shared by every toggle-off path so they all agree.
+ *
+ * The head probe mirrors getActiveFormats (resolve side -1) so stripping
+ * fires exactly when the toolbar shows the command active. With a non-empty
+ * selection, additionally probe both edges from inside the selection, so a
+ * selection that includes the delimiters (the whole `**text**`) still
+ * resolves into the wrapper regardless of selection direction.
+ */
+function findWrappedDelimiters(
+  view: EditorView,
+  wrapper: string,
+  delimiter: string,
+  minMarks: number,
+): { from: number; to: number }[] | null {
   const { from, to, head } = view.state.selection.main;
   const tree = syntaxTree(view.state);
-  // The head probe mirrors getActiveFormats (resolve side -1) so stripping
-  // fires exactly when the toolbar shows the mark active. With a non-empty
-  // selection, additionally probe both edges from inside the selection, so a
-  // selection that includes the delimiters (the whole `**text**`) still
-  // resolves into the mark regardless of selection direction.
   const probes: [number, -1 | 1][] =
     from === to
       ? [[head, -1]]
@@ -120,21 +143,21 @@ function findMarkDelimiters(view: EditorView, command: MarkCommand): { from: num
     for (const n of ancestors(tree, pos, side)) {
       if (n.name !== wrapper) continue;
       const marks = childRanges(n, delimiter);
-      if (marks.length >= 2) return marks;
+      if (marks.length >= minMarks) return marks;
     }
   }
   return null;
 }
 
 /**
- * Toggle an inline mark (bold/italic/code). When the selection already sits in
- * the corresponding mark, strip the surrounding delimiter nodes instead of
- * nesting a new pair. Deleting the actual delimiter child ranges handles the
- * differing delimiter lengths (`**` vs `*` vs `` ` ``) automatically.
+ * Toggle an inline mark (bold/italic/strikethrough/code). When the selection
+ * already sits in the corresponding mark, strip the surrounding delimiter
+ * nodes instead of nesting a new pair. Deleting the actual delimiter child
+ * ranges handles the differing delimiter lengths (`**` vs `` ` ``) automatically.
  */
 function toggleMark(view: EditorView, command: MarkCommand) {
-  const { token } = MARKS[command];
-  const marks = findMarkDelimiters(view, command);
+  const { token, wrapper, delimiter } = MARKS[command];
+  const marks = findWrappedDelimiters(view, wrapper, delimiter, 2);
   if (marks) {
     const opening = marks[0];
     const closing = marks[marks.length - 1];
@@ -147,11 +170,10 @@ function toggleMark(view: EditorView, command: MarkCommand) {
     return;
   }
   // Empty pair: a cursor sitting between freshly inserted delimiters (`**|**`).
-  // Markdown never parses empty emphasis (bare `****` is a horizontal rule or
-  // plain text), so the tree probe above can't see it — check the text instead,
-  // but only when the adjacent tokens are NOT real parsed delimiters (otherwise
-  // an italic click between the `*`s of a bold delimiter would destroy it).
-  // Without this, re-clicking the button keeps nesting new pairs.
+  // Markdown never parses an empty mark as that mark (bare `****` is a
+  // horizontal rule, `~~~~` a tilde code fence, `` `` `` plain text), so the
+  // tree probe above can't see it — check the text instead. Without this,
+  // re-clicking the button keeps nesting new pairs.
   const { from, to } = view.state.selection.main;
   if (
     from === to &&
@@ -159,19 +181,74 @@ function toggleMark(view: EditorView, command: MarkCommand) {
     to + token.length <= view.state.doc.length &&
     view.state.sliceDoc(from - token.length, to + token.length) === token + token
   ) {
+    const delFrom = from - token.length;
+    const delTo = to + token.length;
+    // Deleting is only unsafe when the adjacent tokens belong to parsed markup
+    // reaching beyond the pair itself — e.g. an italic click between the `*`s
+    // of a bold delimiter would destroy that bold. A construct contained
+    // entirely in the deletion range (the `~~~~` the parser reads as an empty
+    // tilde fence) is just this empty pair wearing another node name.
     const tree = syntaxTree(view.state);
-    const inRealDelimiter = DELIMITER_NODES.has(tree.resolve(from, -1).name) || DELIMITER_NODES.has(tree.resolve(to, 1).name);
-    if (!inRealDelimiter) {
+    const blocking = (n: TreeNode) => {
+      if (!DELIMITER_NODES.has(n.name)) return false;
+      const construct = n.parent ?? n;
+      return construct.from < delFrom || construct.to > delTo;
+    };
+    if (!blocking(tree.resolve(from, -1)) && !blocking(tree.resolve(to, 1))) {
       view.dispatch({
         changes: [
-          { from: from - token.length, to: from, insert: "" },
-          { from: to, to: to + token.length, insert: "" },
+          { from: delFrom, to: from, insert: "" },
+          { from: to, to: delTo, insert: "" },
         ],
       });
       return;
     }
   }
   wrapSelection(view, token);
+}
+
+/**
+ * Toggle a fenced code block. When the selection sits inside one, remove its
+ * fence lines (keeping the content); otherwise wrap the selected lines in a
+ * new ``` fence. Unclosed blocks (opening fence only) lose just that fence.
+ */
+function toggleCodeBlock(view: EditorView) {
+  const { state } = view;
+  const { from, to } = state.selection.main;
+  const marks = findWrappedDelimiters(view, "FencedCode", "CodeMark", 1);
+  if (marks) {
+    const openLine = state.doc.lineAt(marks[0].from);
+    // Delete each fence line together with its trailing newline. When the
+    // closing fence is the document's last line there is no trailing newline
+    // to take, so eat the preceding one instead — unless that would overlap
+    // the opening deletion (empty block at end of document).
+    const openEnd = Math.min(openLine.to + 1, state.doc.length);
+    const specs = [{ from: openLine.from, to: openEnd, insert: "" }];
+    if (marks.length >= 2) {
+      const closeLine = state.doc.lineAt(marks[marks.length - 1].from);
+      const closeIsLastLine = closeLine.to === state.doc.length;
+      const closeTo = closeIsLastLine ? closeLine.to : closeLine.to + 1;
+      const closeFrom = closeIsLastLine && closeLine.from - 1 >= openEnd ? closeLine.from - 1 : closeLine.from;
+      specs.push({ from: closeFrom, to: closeTo, insert: "" });
+    }
+    const changes = state.changes(specs);
+    view.dispatch({ changes, selection: state.selection.map(changes) });
+    return;
+  }
+  const lineNumbers = selectedLineNumbers(view);
+  const first = state.doc.line(lineNumbers[0]);
+  const last = state.doc.line(lineNumbers[lineNumbers.length - 1]);
+  const fence = "```";
+  // Both selection ends sit within [first.from, last.to], so they shift by
+  // exactly the opening `\`\`\`\n` — keeping the selection on the content (and
+  // dropping a lone cursor inside the new empty block).
+  view.dispatch({
+    changes: [
+      { from: first.from, insert: `${fence}\n` },
+      { from: last.to, insert: `\n${fence}` },
+    ],
+    selection: { anchor: from + fence.length + 1, head: to + fence.length + 1 },
+  });
 }
 
 /**
@@ -184,9 +261,7 @@ function toggleMark(view: EditorView, command: MarkCommand) {
  */
 function toggleListLine(view: EditorView, command: ListCommand) {
   const { state } = view;
-  const lines = selectedLineNumbers(view)
-    .sort((a, b) => a - b)
-    .map((n) => state.doc.line(n));
+  const lines = selectedLineNumbers(view).map((n) => state.doc.line(n));
   const nonBlank = lines.filter((line) => line.text.trim() !== "");
   const targets = lines.length === 1 || nonBlank.length === 0 ? lines : nonBlank;
   const infos = targets.map((line) => lineListInfo(line.text));
@@ -245,6 +320,7 @@ export function createFormattingController(view: EditorView, listeners: Set<() =
   return {
     run(command: EditorCommandId, ctx?: EditorCommandContext) {
       if (isMarkCommand(command)) return toggleMark(view, command);
+      if (command === "codeBlock") return toggleCodeBlock(view);
       if (command === "bulletList" || command === "orderedList" || command === "taskList") {
         return toggleListLine(view, command);
       }
@@ -272,6 +348,10 @@ export function createFormattingController(view: EditorView, listeners: Set<() =
         const mark = WRAPPER_TO_MARK[n.name];
         if (mark) active[mark] = true;
         else if (n.name === "Link") active.link = true;
+        // The isEmptyMarkPair guard: a fresh empty strikethrough pair
+        // (`~~|~~`) parses as a bare tilde code fence — don't light the
+        // code-block button while the cursor sits in one.
+        else if (n.name === "FencedCode" && !isEmptyMarkPair(view.state, n.from, n.to)) active.codeBlock = true;
       }
       // Line modes (lists, headings) come from the same line inspection the
       // toggles use, keeping highlight and toggle behavior in lockstep.

@@ -1,4 +1,4 @@
-import { Heading1Icon, Heading2Icon, Heading3Icon, type LucideIcon, Minimize2Icon, MoreHorizontalIcon, PilcrowIcon } from "lucide-react";
+import { Heading1Icon, Heading2Icon, Heading3Icon, type LucideIcon, Minimize2Icon, MoreHorizontalIcon, TypeIcon } from "lucide-react";
 import { type ComponentPropsWithoutRef, forwardRef, type MouseEventHandler, type RefObject, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -23,7 +23,7 @@ interface FormattingToolbarProps {
 }
 
 const MARK_COMMANDS = EDITOR_COMMANDS.filter((command) => command.group === "mark");
-const LIST_COMMANDS = EDITOR_COMMANDS.filter((command) => command.group === "list");
+const BLOCK_COMMANDS = EDITOR_COMMANDS.filter((command) => command.group === "block");
 // Paragraph + headings render as a single icon dropdown (a closed set); the
 // trigger glyph reflects the current block level.
 const HEADING_COMMANDS = EDITOR_COMMANDS.filter((command) => command.group === "heading");
@@ -53,12 +53,12 @@ const SEGMENT_ACTIVE = "bg-accent text-accent-foreground";
 const preventFocusSteal: MouseEventHandler<HTMLButtonElement> = (event) => event.preventDefault();
 
 /**
- * Formatting toolbar: a lean inline row of the heading picker plus mark/list
+ * Formatting toolbar: a lean inline row of the heading picker plus mark/block
  * controls, every one derived from the shared command catalog
  * (formatting/commands.ts), so adding a verb there surfaces it here automatically.
  * Groups are separated by thin vertical dividers. Responsive: below
- * COMPACT_TOOLBAR_WIDTH the list controls fold into a "more" menu while marks stay
- * inline. In focus mode an exit button is pushed to the far edge.
+ * COMPACT_TOOLBAR_WIDTH the block controls fold into a "more" menu while marks
+ * stay inline. In focus mode an exit button is pushed to the far edge.
  */
 export function FormattingToolbar({ controllerRef, onExit, className }: FormattingToolbarProps) {
   const t = useTranslate();
@@ -84,11 +84,11 @@ export function FormattingToolbar({ controllerRef, onExit, className }: Formatti
     onClick: () => run(command.id),
   });
 
-  // Pilcrow for paragraph, else the matching Hn glyph. Deeper levels (H4–H6)
-  // aren't toolbar-addressable and report as null, i.e. the pilcrow.
-  const HeadingGlyph = active.headingLevel === null ? PilcrowIcon : HEADING_LEVEL_ICONS[active.headingLevel];
+  // Type glyph for paragraph, else the matching Hn glyph. Deeper levels (H4–H6)
+  // aren't toolbar-addressable and report as null, i.e. the Type glyph.
+  const HeadingGlyph = active.headingLevel === null ? TypeIcon : HEADING_LEVEL_ICONS[active.headingLevel];
   const markButtons = MARK_COMMANDS.map(toButton);
-  const listButtons = LIST_COMMANDS.map(toButton);
+  const blockButtons = BLOCK_COMMANDS.map(toButton);
 
   return (
     <div
@@ -124,7 +124,7 @@ export function FormattingToolbar({ controllerRef, onExit, className }: Formatti
             <SegmentButton Icon={MoreHorizontalIcon} label={t("editor.format.more")} />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" onCloseAutoFocus={returnFocusToEditor}>
-            {listButtons.map((button) => (
+            {blockButtons.map((button) => (
               <DropdownMenuItem key={button.label} onClick={button.onClick}>
                 {button.label}
               </DropdownMenuItem>
@@ -132,7 +132,7 @@ export function FormattingToolbar({ controllerRef, onExit, className }: Formatti
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        listButtons.map((button) => <SegmentButton key={button.label} {...button} onMouseDown={preventFocusSteal} />)
+        blockButtons.map((button) => <SegmentButton key={button.label} {...button} onMouseDown={preventFocusSteal} />)
       )}
 
       {onExit && (
@@ -147,7 +147,7 @@ export function FormattingToolbar({ controllerRef, onExit, className }: Formatti
   );
 }
 
-// Thin vertical rule between command groups (heading · marks · lists).
+// Thin vertical rule between command groups (heading · marks · blocks).
 function Divider() {
   return <span aria-hidden="true" className="w-px h-5 bg-border mx-1.5 shrink-0" />;
 }
