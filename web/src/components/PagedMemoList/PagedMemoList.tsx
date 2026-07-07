@@ -8,7 +8,7 @@ import { userServiceClient } from "@/connect";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import { useView } from "@/contexts/ViewContext";
-import { DEFAULT_LIST_MEMOS_PAGE_SIZE, SKELETON_LOADING_DELAY_MS } from "@/helpers/consts";
+import { DEFAULT_LIST_MEMOS_PAGE_SIZE, LOADING_INDICATOR_DELAY_MS } from "@/helpers/consts";
 import { useDelayedFlag } from "@/hooks/useDelayedFlag";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { hoistMemoToFront } from "@/hooks/useMemoSorting";
@@ -21,7 +21,6 @@ import ColumnGrid, { columnCountForWidth, GRID_GAP } from "../ColumnGrid";
 import MemoEditor from "../MemoEditor";
 import MemoFilters from "../MemoFilters";
 import Placeholder from "../Placeholder";
-import Skeleton from "../Skeleton";
 
 // Memo identity for React keys and the grid's sticky column assignments. The pages use it
 // for their renderer keys too, so flow-list and grid identity can never drift apart.
@@ -31,8 +30,7 @@ export const getMemoKey = (memo: Memo) => `${memo.name}-${memo.updateTime}`;
 // grid centers in the leftover space instead of filling it.
 const MAX_COLUMN_WIDTH = 420;
 
-// The grid packs cards into columns, so a card-shaped skeleton doesn't fit; use a spinner.
-const GridLoader = () => (
+const Loader = () => (
   <div className="w-full flex flex-row justify-center items-center py-8">
     <LoaderCircleIcon className="h-6 w-6 animate-spin text-muted-foreground" />
   </div>
@@ -146,8 +144,8 @@ const PagedMemoList = (props: Props) => {
     { enabled: props.enabled ?? true },
   );
 
-  // Only show the skeleton once loading exceeds the delay, so fast loads don't flash it.
-  const showSkeleton = useDelayedFlag(isLoading, SKELETON_LOADING_DELAY_MS);
+  // Only show the spinner once loading exceeds the delay, so fast loads don't flash it.
+  const showLoader = useDelayedFlag(isLoading, LOADING_INDICATOR_DELAY_MS);
 
   // Flatten pages into a single array of memos
   const memos = useMemo(() => data?.pages.flatMap((page) => page.memos) || [], [data]);
@@ -234,10 +232,10 @@ const PagedMemoList = (props: Props) => {
       </div>
     ) : undefined;
 
-  // Pagination skeleton, empty state, and back-to-top are identical across both layouts.
+  // Pagination spinner, empty state, and back-to-top are identical across both layouts.
   const footer = (
     <>
-      {isFetchingNextPage && (useGrid ? <GridLoader /> : <Skeleton showCreator={props.showCreator} count={2} />)}
+      {isFetchingNextPage && <Loader />}
       {!isFetchingNextPage && !hasNextPage && sortedMemoList.length === 0 && !memoEditor && (
         <Placeholder variant="empty" message={t("message.no-data")} />
       )}
@@ -253,14 +251,10 @@ const PagedMemoList = (props: Props) => {
     <MentionResolutionProvider contents={contents}>
       <div ref={layoutMeasureRef} className="w-full">
         <div className={cn("flex flex-col justify-start w-full mx-auto", useGrid ? "max-w-none" : "max-w-2xl")}>
-          {/* During initial load, show the skeleton only after the delay; render nothing before then to avoid a flash. */}
+          {/* During initial load, show the spinner only after the delay; render nothing before then to avoid a flash. */}
           {isLoading ? (
-            showSkeleton ? (
-              useGrid ? (
-                <GridLoader />
-              ) : (
-                <Skeleton showCreator={props.showCreator} count={4} />
-              )
+            showLoader ? (
+              <Loader />
             ) : null
           ) : useGrid ? (
             <>
