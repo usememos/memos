@@ -31,10 +31,24 @@ export interface EditorExtensionsOptions {
   placeholder: string;
   onChange: (markdown: string) => void;
   onUpdate: () => void;
+  onSubmit: () => void;
   getTags: () => string[];
 }
 
-export function buildEditorExtensions({ placeholder, onChange, onUpdate, getTags }: EditorExtensionsOptions): Extension[] {
+export function buildEditorExtensions({ placeholder, onChange, onUpdate, onSubmit, getTags }: EditorExtensionsOptions): Extension[] {
+  // Submitting must outrank defaultKeymap's own Mod-Enter (insertBlankLine): the save
+  // shortcut ends the memo, it must not also edit the document. Meta and Ctrl are bound
+  // explicitly (not via the platform-dependent Mod-) so Cmd+Enter and Ctrl+Enter both
+  // submit everywhere, matching the historical window-level shortcut.
+  const submit = () => {
+    onSubmit();
+    return true;
+  };
+  const submitKeys: KeyBinding[] = [
+    { key: "Meta-Enter", run: submit },
+    { key: "Ctrl-Enter", run: submit },
+  ];
+
   return [
     // Core editing behavior. Without these the editor relies on raw
     // contenteditable: typing works but there is no visible caret on focus
@@ -56,7 +70,7 @@ export function buildEditorExtensions({ placeholder, onChange, onUpdate, getTags
     // tagAutocomplete must precede the editing keymap so the completion popup's
     // Enter/Tab/arrow bindings win while it is open.
     tagAutocomplete(getTags),
-    keymap.of([...editorKeys, indentWithTab, ...defaultKeymap, ...historyKeymap]),
+    keymap.of([...submitKeys, ...editorKeys, indentWithTab, ...defaultKeymap, ...historyKeymap]),
     EditorView.updateListener.of((u) => {
       if (u.docChanged) onChange(u.state.doc.toString());
       // Toolbar active-state depends only on the doc and selection; skip the

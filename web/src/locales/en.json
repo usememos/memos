@@ -288,6 +288,13 @@
       "label": "Filters"
     },
     "compact-mode": "Compact mode",
+    "layout": "Layout",
+    "layout-auto": "Auto",
+    "layout-auto-description": "As many columns as fit the screen",
+    "layout-columns": "{{n}} columns",
+    "layout-columns-description": "Up to {{n}} columns when the width allows",
+    "layout-list": "List",
+    "layout-list-description": "A single reading-width column",
     "link-preview": "Link preview",
     "links": "Links",
     "load-more": "Load more",
@@ -348,8 +355,12 @@
     "visibility": {
       "disabled": "Public memos are disabled",
       "private": "Private",
+      "private-description": "Only visible to you",
       "protected": "Protected",
-      "public": "Public"
+      "protected-description": "Visible to signed-in users",
+      "public": "Public",
+      "public-description": "Visible to everyone",
+      "group-description": "Visible to group members"
     }
   },
   "message": {

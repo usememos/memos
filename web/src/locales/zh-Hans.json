@@ -251,8 +251,12 @@
     "visibility": {
       "disabled": "已禁用公开备忘录",
       "private": "私有",
+      "private-description": "仅自己可见",
       "protected": "工作区",
-      "public": "公开"
+      "protected-description": "登录用户可见",
+      "public": "公开",
+      "public-description": "所有人可见",
+      "group-description": "仅群组成员可见"
     },
     "outline": "概要",
     "share": {

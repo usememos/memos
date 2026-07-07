@@ -6,11 +6,11 @@ import { describe, expect, it } from "vitest";
 import { MemoMarkdownRenderer } from "@/components/MemoContent/MemoMarkdownRenderer";
 import { buildEditorExtensions } from "@/components/MemoEditor/Editor/extensions";
 
-function makeView(doc: string) {
+function makeView(doc: string, onSubmit: () => void = () => {}) {
   return new EditorView({
     state: EditorState.create({
       doc,
-      extensions: buildEditorExtensions({ placeholder: "", onChange: () => {}, onUpdate: () => {}, getTags: () => [] }),
+      extensions: buildEditorExtensions({ placeholder: "", onChange: () => {}, onUpdate: () => {}, onSubmit, getTags: () => [] }),
     }),
     parent: document.body,
   });
@@ -28,6 +28,38 @@ function tabOnLine(view: EditorView, lineNumber: number, shiftKey = false) {
 }
 
 describe("editor key bindings", () => {
+  it("Cmd+Enter submits without inserting a blank line", () => {
+    let submitted = 0;
+    const view = makeView("hello", () => {
+      submitted += 1;
+    });
+    view.dispatch({ selection: { anchor: 5 } });
+    press(view, "Enter", { metaKey: true });
+    // The save shortcut must outrank defaultKeymap's Mod-Enter (insertBlankLine).
+    expect(submitted).toBe(1);
+    expect(view.state.doc.toString()).toBe("hello");
+    view.destroy();
+  });
+
+  it("Ctrl+Enter also submits without editing the document", () => {
+    let submitted = 0;
+    const view = makeView("hello", () => {
+      submitted += 1;
+    });
+    press(view, "Enter", { ctrlKey: true });
+    expect(submitted).toBe(1);
+    expect(view.state.doc.toString()).toBe("hello");
+    view.destroy();
+  });
+
+  it("plain Enter still inserts a newline", () => {
+    const view = makeView("hello");
+    view.dispatch({ selection: { anchor: 5 } });
+    press(view, "Enter");
+    expect(view.state.doc.toString()).toBe("hello\n");
+    view.destroy();
+  });
+
   it("Tab indents a non-list line by two spaces", () => {
     const view = makeView("hello");
     view.dispatch({ selection: { anchor: 0 } });

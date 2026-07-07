@@ -4,11 +4,10 @@ import { lazy, Suspense } from "react";
 import { toast } from "react-hot-toast";
 import { useParams, useSearchParams } from "react-router-dom";
 import MemoView from "@/components/MemoView";
-import PagedMemoList from "@/components/PagedMemoList";
+import PagedMemoList, { getMemoKey } from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useView } from "@/contexts/ViewContext";
 import { useMemoFilters, useMemoSorting } from "@/hooks";
 import { useUser } from "@/hooks/useUserQueries";
 import { State } from "@/types/proto/api/v1/common_pb";
@@ -51,7 +50,6 @@ const UserProfile = () => {
   const username = useParams().username;
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = (searchParams.get("view") === "map" ? "map" : "memos") as TabView;
-  const { compactMode } = useView();
 
   const { data: user, isLoading, error } = useUser(`users/${username}`, { enabled: !!username });
 
@@ -112,8 +110,8 @@ const UserProfile = () => {
             <div className="mx-auto w-full max-w-2xl">
               {activeTab === "memos" ? (
                 <PagedMemoList
-                  renderer={(memo: Memo) => (
-                    <MemoView key={`${memo.name}-${memo.updateTime}`} memo={memo} showVisibility showPinned compact={compactMode} />
+                  renderer={(memo: Memo, { compact }) => (
+                    <MemoView key={getMemoKey(memo)} memo={memo} showVisibility showPinned compact={compact} />
                   )}
                   listSort={listSort}
                   orderBy={orderBy}
