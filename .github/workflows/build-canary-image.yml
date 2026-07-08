@@ -62,6 +62,14 @@ jobs:
           - linux/arm64
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Resolve version from latest tag
+        id: version
+        run: |
+          version="$(git describe --tags --abbrev=0 2>/dev/null || echo dev)"
+          echo "version=${version#v}" >> "$GITHUB_OUTPUT"
 
       - name: Download frontend artifacts
         uses: actions/download-artifact@v7
@@ -96,7 +104,7 @@ jobs:
           file: ./scripts/Dockerfile
           platforms: ${{ matrix.platform }}
           build-args: |
-            VERSION=canary
+            VERSION=${{ steps.version.outputs.version }}
             COMMIT=${{ github.sha }}
           cache-from: type=gha,scope=build-${{ matrix.platform }}
           cache-to: type=gha,mode=max,scope=build-${{ matrix.platform }}
