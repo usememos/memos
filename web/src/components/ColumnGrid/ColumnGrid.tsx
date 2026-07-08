@@ -209,6 +209,19 @@ function ColumnGrid<T>({ items, getKey, renderItem, leading, priorityKey, maxCol
       if (!target) continue;
       const firstPlacement = !positionedKeysRef.current.has(key);
       if (firstPlacement) positionedKeysRef.current.add(key);
+      // The leading tile (the note composer) is positioned with left/top rather than a
+      // transform so it never becomes the containing block for its own position:fixed
+      // descendants. A transform (or will-change:transform) here would trap the editor's
+      // focus-mode overlay — which is meant to cover the viewport — inside this column tile.
+      // The leading tile is pinned to column one's top and only shifts horizontally on
+      // resize (which snaps anyway), so it loses no animation by skipping the transform.
+      if (key === LEADING_KEY) {
+        el.style.transition = "none";
+        el.style.transform = "";
+        el.style.left = `${target.x}px`;
+        el.style.top = `${target.y}px`;
+        continue;
+      }
       el.style.transition = animateRepack && !firstPlacement ? "" : "none";
       el.style.transform = `translate3d(${target.x}px, ${target.y}px, 0)`;
     }
@@ -294,12 +307,10 @@ function ColumnGrid<T>({ items, getKey, renderItem, leading, priorityKey, maxCol
   return (
     <div ref={containerRef} className="relative w-full" style={{ height: containerHeight }}>
       {leading != null && (
-        <div
-          key={LEADING_KEY}
-          ref={getItemRef(LEADING_KEY)}
-          className="absolute top-0 left-0 transition-transform duration-200 ease-out motion-reduce:transition-none"
-          style={{ willChange: "transform" }}
-        >
+        // Positioned with left/top (see relayout), and deliberately WITHOUT
+        // transform/will-change so it never establishes a containing block that would trap
+        // the composer's focus-mode overlay inside this tile.
+        <div key={LEADING_KEY} ref={getItemRef(LEADING_KEY)} className="absolute top-0 left-0">
           {leading}
         </div>
       )}
