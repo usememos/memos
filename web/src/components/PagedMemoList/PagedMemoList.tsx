@@ -22,9 +22,10 @@ import MemoEditor from "../MemoEditor";
 import MemoFilters from "../MemoFilters";
 import Placeholder from "../Placeholder";
 import Skeleton from "../Skeleton";
+import { estimateMemoCardHeight } from "./memoCardHeight";
 
-// Memo identity for React keys and the grid's sticky column assignments. The pages use it
-// for their renderer keys too, so flow-list and grid identity can never drift apart.
+// Memo identity for React keys and grid planning. The pages use it for their renderer keys too,
+// so flow-list and grid identity can never drift apart.
 export const getMemoKey = (memo: Memo) => `${memo.name}-${memo.updateTime}`;
 
 // Columns never stretch past this, so 2 columns on a wide monitor stay readable and the
@@ -268,6 +269,7 @@ const PagedMemoList = (props: Props) => {
                 items={sortedMemoList}
                 getKey={getMemoKey}
                 renderItem={(memo) => props.renderer(memo, { compact: effectiveCompact })}
+                estimateHeight={estimateMemoCardHeight}
                 leading={gridLeading}
                 priorityKey={priorityKey}
                 maxColumns={maxColumns}
