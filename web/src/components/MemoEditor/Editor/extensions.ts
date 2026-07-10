@@ -1,7 +1,7 @@
 import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
 import { markdown } from "@codemirror/lang-markdown";
 import { indentUnit } from "@codemirror/language";
-import { EditorState, type Extension } from "@codemirror/state";
+import type { Extension } from "@codemirror/state";
 import { placeholder as cmPlaceholder, dropCursor, EditorView, type KeyBinding, keymap } from "@codemirror/view";
 import { GFM } from "@lezer/markdown";
 import { headingDecorations } from "./headingDecorations";
@@ -57,10 +57,10 @@ export function buildEditorExtensions({ placeholder, onChange, onUpdate, onSubmi
     // core — basicSetup bundles them, and we assemble them here. The
     // in-focus caret itself is the browser's native one (editor.css sets
     // caret-color), not drawSelection() — CodeMirror's own line/selection
-    // spacing stays intact that way.
+    // spacing stays intact that way. Multi-cursor selection stays disabled
+    // (no allowMultipleSelections) since this is a single-cursor prose editor.
     history(),
     dropCursor(),
-    EditorState.allowMultipleSelections.of(true),
     // Indent with spaces (markdown), matching the 2-space bullet nesting.
     indentUnit.of("  "),
     markdown({ extensions: [GFM] }),
