@@ -1,7 +1,7 @@
 import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
 import { markdown } from "@codemirror/lang-markdown";
 import { indentUnit } from "@codemirror/language";
-import type { Extension } from "@codemirror/state";
+import { Compartment, type Extension } from "@codemirror/state";
 import { placeholder as cmPlaceholder, drawSelection, dropCursor, EditorView, type KeyBinding, keymap } from "@codemirror/view";
 import { GFM } from "@lezer/markdown";
 import { headingDecorations } from "./headingDecorations";
@@ -30,12 +30,33 @@ const editorKeys: KeyBinding[] = [
 export interface EditorExtensionsOptions {
   placeholder: string;
   onChange: (markdown: string) => void;
+  onFiles: (files: File[]) => void;
   onUpdate: () => void;
   onSubmit: () => void;
   getTags: () => string[];
 }
 
-export function buildEditorExtensions({ placeholder, onChange, onUpdate, onSubmit, getTags }: EditorExtensionsOptions): Extension[] {
+export const placeholderCompartment = new Compartment();
+
+function clipboardFiles(event: ClipboardEvent): File[] {
+  const clipboard = event.clipboardData;
+  if (!clipboard) return [];
+
+  const itemFiles = Array.from(clipboard.items)
+    .filter((item) => item.kind === "file")
+    .map((item) => item.getAsFile())
+    .filter((file): file is File => file !== null);
+  return itemFiles.length > 0 ? itemFiles : Array.from(clipboard.files);
+}
+
+export function buildEditorExtensions({
+  placeholder,
+  onChange,
+  onFiles,
+  onUpdate,
+  onSubmit,
+  getTags,
+}: EditorExtensionsOptions): Extension[] {
   // Submitting must outrank defaultKeymap's own Mod-Enter (insertBlankLine): the save
   // shortcut ends the memo, it must not also edit the document. Meta and Ctrl are bound
   // explicitly (not via the platform-dependent Mod-) so Cmd+Enter and Ctrl+Enter both
@@ -60,7 +81,21 @@ export function buildEditorExtensions({ placeholder, onChange, onUpdate, onSubmi
     markdown({ extensions: [GFM] }),
     ...memoEditorTheme,
     EditorView.lineWrapping,
-    cmPlaceholder(placeholder),
+    placeholderCompartment.of(cmPlaceholder(placeholder)),
+    EditorView.domEventHandlers({
+      paste: (event) => {
+        const files = clipboardFiles(event);
+        if (files.length === 0) return false;
+        onFiles(files);
+        return true;
+      },
+      drop: (event) => {
+        const files = Array.from(event.dataTransfer?.files ?? []);
+        if (files.length === 0) return false;
+        onFiles(files);
+        return true;
+      },
+    }),
     tagMentionDecorations,
     headingDecorations,
     // tagAutocomplete must precede the editing keymap so the completion popup's
