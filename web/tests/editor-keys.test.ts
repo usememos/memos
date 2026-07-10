@@ -10,7 +10,14 @@ function makeView(doc: string, onSubmit: () => void = () => {}) {
   return new EditorView({
     state: EditorState.create({
       doc,
-      extensions: buildEditorExtensions({ placeholder: "", onChange: () => {}, onUpdate: () => {}, onSubmit, getTags: () => [] }),
+      extensions: buildEditorExtensions({
+        placeholder: "",
+        onChange: () => {},
+        onFiles: () => {},
+        onUpdate: () => {},
+        onSubmit,
+        getTags: () => [],
+      }),
     }),
     parent: document.body,
   });

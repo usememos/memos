@@ -4,7 +4,6 @@ export { useAudioRecorder } from "./useAudioRecorder";
 export { useAudioWaveform } from "./useAudioWaveform";
 export { useAutoSave } from "./useAutoSave";
 export { useBlobUrls } from "./useBlobUrls";
-export { useDragAndDrop } from "./useDragAndDrop";
 export { useEditorActiveState } from "./useEditorActiveState";
 export { COMPACT_TOOLBAR_WIDTH, isCompactWidth, useElementWidth } from "./useElementWidth";
 export { useFileUpload } from "./useFileUpload";
