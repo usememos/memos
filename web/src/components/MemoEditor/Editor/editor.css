@@ -12,14 +12,11 @@
   & .cm-editor {
     background: transparent;
     font-size: 1rem;
-    /* Fill the host so the whole visible editor area belongs to CodeMirror.
-       Without this the editor only grows to its content height, and any empty
-       space below the text (notably in focus mode, where the host is tall) is
-       bare host markup — clicking it can't focus the editor or place the caret,
-       so the caret appears to vanish in "empty" space (#6076). height:100%
-       collapses to auto when the host is auto-height (normal mode), so this
-       only fills when the host has a definite height. */
+    max-height: 50vh;
+  }
+  &[data-focus-mode] .cm-editor {
     height: 100%;
+    max-height: none;
   }
   & .cm-editor.cm-focused {
     outline: none;
@@ -27,7 +24,6 @@
   & .cm-content {
     font-family: inherit;
     padding: 0;
-    caret-color: var(--foreground);
   }
   & .cm-line {
     padding: 0;
@@ -35,6 +31,7 @@
   & .cm-scroller {
     font-family: inherit;
     line-height: 1.5;
+    overflow: auto;
   }
   & .cm-placeholder {
     color: var(--muted-foreground);

@@ -1,7 +1,7 @@
 import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
 import { markdown } from "@codemirror/lang-markdown";
 import { indentUnit } from "@codemirror/language";
-import { EditorState, type Extension } from "@codemirror/state";
+import type { Extension } from "@codemirror/state";
 import { placeholder as cmPlaceholder, drawSelection, dropCursor, EditorView, type KeyBinding, keymap } from "@codemirror/view";
 import { GFM } from "@lezer/markdown";
 import { headingDecorations } from "./headingDecorations";
@@ -50,15 +50,11 @@ export function buildEditorExtensions({ placeholder, onChange, onUpdate, onSubmi
   ];
 
   return [
-    // Core editing behavior. Without these the editor relies on raw
-    // contenteditable: typing works but there is no visible caret on focus
-    // (drawSelection), no undo/redo (history), and Enter/selection/word-motion
-    // keys are unwired (defaultKeymap). They are NOT part of CodeMirror's
-    // minimal core — basicSetup bundles them, and we assemble them here.
+    // Core editing behavior. These are the pieces from CM6 setup that this memo
+    // editor uses, without enabling multi-cursor selection.
     history(),
     drawSelection(),
     dropCursor(),
-    EditorState.allowMultipleSelections.of(true),
     // Indent with spaces (markdown), matching the 2-space bullet nesting.
     indentUnit.of("  "),
     markdown({ extensions: [GFM] }),

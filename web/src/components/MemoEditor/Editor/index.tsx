@@ -3,7 +3,6 @@ import { EditorView } from "@codemirror/view";
 import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef } from "react";
 import { useTagCounts } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
-import { EDITOR_HEIGHT } from "../constants";
 import type { EditorController } from "../types/editorController";
 import { createController } from "./controller";
 import "./editor.css";
@@ -78,13 +77,10 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
 
   return (
     <div
-      className={cn(
-        "flex flex-col justify-start items-start relative w-full bg-inherit",
-        isFocusMode ? "flex-1" : `h-auto ${EDITOR_HEIGHT.normal}`,
-        className,
-      )}
+      className={cn("relative flex w-full flex-col items-start justify-start bg-inherit", isFocusMode && "min-h-0 flex-1", className)}
+      data-focus-mode={isFocusMode || undefined}
     >
-      <div ref={hostRef} className={cn("w-full text-base overflow-y-auto", isFocusMode ? "flex-1 h-0" : "h-full")} onPaste={onPaste} />
+      <div ref={hostRef} className={cn("w-full text-base", isFocusMode && "min-h-0 flex-1")} onPaste={onPaste} />
     </div>
   );
 });
