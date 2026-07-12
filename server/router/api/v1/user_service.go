@@ -89,15 +89,52 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 		return nil, status.Errorf(codes.Internal, "failed to list users: %v", err)
 	}
 
-	// TODO: Implement proper ordering, and pagination
-	// For now, return all users with basic structure
+	// Implement pagination
+	pageSize := int(request.PageSize)
+	if pageSize <= 0 {
+		pageSize = 50
+	}
+	if pageSize > 1000 {
+		pageSize = 1000
+	}
+
+	offset := 0
+	if request.PageToken != "" {
+		if parsed, err := fmt.Sscanf(request.PageToken, "%d", &offset); err != nil || parsed != 1 {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid page token")
+		}
+	}
+
+	totalSize := len(users)
+
+	if offset < 0 || offset > totalSize {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid page token")
+	}
+
+	end := offset + pageSize
+	if end > totalSize {
+		end = totalSize
+	}
+
+	pagedUsers := users[offset:end]
+
+	// Apply in-memory pagination until store-level pagination and ordering are implemented.
 	response := &v1pb.ListUsersResponse{
 		Users:     []*v1pb.User{},
-		TotalSize: int32(len(users)),
+		TotalSize: int32(totalSize),
 	}
-	for _, user := range users {
-		response.Users = append(response.Users, convertUserFromStore(user, currentUser))
+
+	for _, user := range pagedUsers {
+		response.Users = append(
+			response.Users,
+			convertUserFromStore(user, currentUser),
+		)
 	}
+
+	if end < totalSize {
+		response.NextPageToken = fmt.Sprintf("%d", end)
+	}
+
 	return response, nil
 }
 
