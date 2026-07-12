@@ -48,6 +48,10 @@ function buildUpdateMask(
     mask.add("location");
     patch.location = state.metadata.location;
   }
+  if (!isEqual(state.metadata.groupNames[0] || "", prevMemo.group || "")) {
+    mask.add("group");
+    patch.group = state.metadata.groupNames[0] || "";
+  }
 
   // Auto-update timestamp if content changed
   if (["content", "attachments", "relations", "location"].some((key) => mask.has(key))) {
@@ -110,6 +114,8 @@ export const memoService = {
       location: state.metadata.location,
       createTime: state.timestamps.createTime ? timestampFromDate(state.timestamps.createTime) : undefined,
       updateTime: state.timestamps.updateTime ? timestampFromDate(state.timestamps.updateTime) : undefined,
+      // Pass the first selected group to the backend
+      group: state.metadata.groupNames[0],
     });
 
     const memo = options.parentMemoName
@@ -135,6 +141,7 @@ export const memoService = {
         attachments: memo.attachments,
         relations: memo.relations,
         location: memo.location,
+        groupNames: memo.group ? [memo.group] : [],
       },
       timestamps: {
         createTime: memo.createTime ? timestampDate(memo.createTime) : undefined,

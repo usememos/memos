@@ -606,3 +606,78 @@ func (s *ConnectServiceHandler) DeleteIdentityProvider(ctx context.Context, req 
 	}
 	return connect.NewResponse(resp), nil
 }
+
+// GroupService
+
+func (s *ConnectServiceHandler) CreateGroup(ctx context.Context, req *connect.Request[v1pb.CreateGroupRequest]) (*connect.Response[v1pb.Group], error) {
+	resp, err := s.APIV1Service.CreateGroup(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) ListGroups(ctx context.Context, req *connect.Request[v1pb.ListGroupsRequest]) (*connect.Response[v1pb.ListGroupsResponse], error) {
+	resp, err := s.APIV1Service.ListGroups(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) GetGroup(ctx context.Context, req *connect.Request[v1pb.GetGroupRequest]) (*connect.Response[v1pb.Group], error) {
+	resp, err := s.APIV1Service.GetGroup(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) UpdateGroup(ctx context.Context, req *connect.Request[v1pb.UpdateGroupRequest]) (*connect.Response[v1pb.Group], error) {
+	resp, err := s.APIV1Service.UpdateGroup(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) DeleteGroup(ctx context.Context, req *connect.Request[v1pb.DeleteGroupRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.DeleteGroup(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) AddGroupMember(ctx context.Context, req *connect.Request[v1pb.AddGroupMemberRequest]) (*connect.Response[v1pb.GroupMember], error) {
+	resp, err := s.APIV1Service.AddGroupMember(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) ListGroupMembers(ctx context.Context, req *connect.Request[v1pb.ListGroupMembersRequest]) (*connect.Response[v1pb.ListGroupMembersResponse], error) {
+	resp, err := s.APIV1Service.ListGroupMembers(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) UpdateGroupMember(ctx context.Context, req *connect.Request[v1pb.UpdateGroupMemberRequest]) (*connect.Response[v1pb.GroupMember], error) {
+	resp, err := s.APIV1Service.UpdateGroupMember(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
+func (s *ConnectServiceHandler) RemoveGroupMember(ctx context.Context, req *connect.Request[v1pb.RemoveGroupMemberRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.RemoveGroupMember(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+

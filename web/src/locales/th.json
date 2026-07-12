@@ -114,7 +114,8 @@
     "username": "ชื่อผู้ใช้",
     "version": "เวอร์ชั่น",
     "visibility": "การมองเห็น",
-    "yourself": "ตัวคุณ"
+    "yourself": "ตัวคุณ",
+    "groups": "กลุ่ม"
   },
   "locale-picker": {
     "no-language-feedback": "ไม่พบภาษา? ส่งข้อเสนอแนะ"
@@ -544,5 +545,26 @@
     "connected": "การอัปเดตสดเปิดใช้งานอยู่",
     "connecting": "กำลังเชื่อมต่อกับการอัปเดตสด...",
     "disconnected": "การอัปเดตสดไม่พร้อมใช้งาน"
+  },
+  "group": {
+    "back-to-groups": "กลับไปที่กลุ่ม",
+    "create-group": "สร้างกลุ่ม",
+    "create-successfully": "สร้างกลุ่มสำเร็จ",
+    "delete-confirm": "คุณแน่ใจหรือไม่ว่าต้องการลบกลุ่มนี้?",
+    "delete-group": "ลบกลุ่ม",
+    "description": "คำอธิบาย",
+    "enter-description": "ใส่คำอธิบายกลุ่ม",
+    "enter-name": "ใส่ชื่อกลุ่ม",
+    "group-name": "ชื่อกลุ่ม",
+    "group-timeline": "ไทม์ไลน์กลุ่ม",
+    "loading": "กำลังโหลดกลุ่ม...",
+    "multiple-groups": "{{count}} กลุ่ม",
+    "name-cannot-be-empty": "ชื่อกลุ่มต้องไม่ว่างเปล่า",
+    "no-groups-found": "ไม่พบกลุ่ม",
+    "select-groups": "เลือกกลุ่ม",
+    "selected": "เลือกแล้ว",
+    "update-group": "อัปเดตกลุ่ม",
+    "update-successfully": "อัปเดตกลุ่มสำเร็จ",
+    "view-timeline": "ดูไทม์ไลน์"
   }
 }

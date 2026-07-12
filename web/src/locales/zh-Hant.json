@@ -154,7 +154,8 @@
     "username": "帳號",
     "version": "版本",
     "visibility": "瀏覽權限",
-    "yourself": "您自己"
+    "yourself": "您自己",
+    "groups": "群組"
   },
   "locale-picker": {
     "no-language-feedback": "未找到語言？ 提交回饋"
@@ -810,5 +811,26 @@
     "select-visibility": "瀏覽權限",
     "tags": "標籤",
     "upload-attachment": "上傳附件"
+  },
+  "group": {
+    "back-to-groups": "返回群組",
+    "create-group": "建立群組",
+    "create-successfully": "建立群組成功",
+    "delete-confirm": "確定要刪除此群組嗎？",
+    "delete-group": "刪除群組",
+    "description": "描述",
+    "enter-description": "輸入群組描述",
+    "enter-name": "輸入群組名稱",
+    "group-name": "群組名稱",
+    "group-timeline": "群組時間線",
+    "loading": "載入群組中...",
+    "multiple-groups": "{{count}} 個群組",
+    "name-cannot-be-empty": "群組名稱不能為空",
+    "no-groups-found": "未找到群組",
+    "select-groups": "選擇群組",
+    "selected": "已選擇",
+    "update-group": "更新群組",
+    "update-successfully": "更新群組成功",
+    "view-timeline": "查看時間線"
   }
 }

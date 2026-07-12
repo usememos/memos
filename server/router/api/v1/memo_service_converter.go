@@ -44,6 +44,10 @@ func (s *APIV1Service) convertMemoFromStoreWithCreators(ctx context.Context, mem
 		Visibility: convertVisibilityFromStore(memo.Visibility),
 		Pinned:     memo.Pinned,
 	}
+	if memo.GroupID != nil {
+		groupName := fmt.Sprintf("groups/%d", *memo.GroupID)
+		memoMessage.Group = &groupName
+	}
 	if memo.Payload != nil {
 		memoMessage.Tags = memo.Payload.Tags
 		memoMessage.Property = convertMemoPropertyFromStore(memo.Payload.Property)
@@ -355,6 +359,8 @@ func convertVisibilityFromStore(visibility store.Visibility) v1pb.Visibility {
 		return v1pb.Visibility_PROTECTED
 	case store.Public:
 		return v1pb.Visibility_PUBLIC
+	case store.GroupVisibility:
+		return v1pb.Visibility(4)
 	default:
 		return v1pb.Visibility_VISIBILITY_UNSPECIFIED
 	}
@@ -366,6 +372,8 @@ func convertVisibilityToStore(visibility v1pb.Visibility) store.Visibility {
 		return store.Protected
 	case v1pb.Visibility_PUBLIC:
 		return store.Public
+	case v1pb.Visibility(4):
+		return store.GroupVisibility
 	default:
 		return store.Private
 	}

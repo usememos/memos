@@ -61,6 +61,7 @@
     "email": "邮箱",
     "expand": "展开",
     "explore": "发现",
+    "groups": "群组",
     "file": "文件",
     "filter": "过滤器",
     "home": "主页",
@@ -174,6 +175,27 @@
     "unsupported-syntax-raw-mode": "此备忘包含富文本编辑器无法安全编辑的语法，已切换到原始 Markdown 模式。",
     "wysiwyg-editor": "所见即所得编辑器"
   },
+  "group": {
+    "back-to-groups": "返回群组",
+    "create-group": "创建群组",
+    "create-successfully": "创建群组成功",
+    "delete-confirm": "确定要删除该群组吗？",
+    "delete-group": "删除群组",
+    "description": "描述",
+    "enter-description": "输入群组描述",
+    "enter-name": "输入群组名称",
+    "group-name": "群组名称",
+    "group-timeline": "群组时间线",
+    "loading": "加载群组中...",
+    "multiple-groups": "{{count}} 个群组",
+    "name-cannot-be-empty": "群组名称不能为空",
+    "no-groups-found": "未找到群组",
+    "select-groups": "选择群组",
+    "selected": "已选择",
+    "update-group": "更新群组",
+    "update-successfully": "更新群组成功",
+    "view-timeline": "查看时间线"
+  },
   "inbox": {
     "failed-to-load": "加载失败",
     "memo-comment": "{{user}} 评论了您的“{{memo}}”。",
@@ -229,8 +251,12 @@
     "visibility": {
       "disabled": "已禁用公开备忘录",
       "private": "私有",
+      "private-description": "仅自己可见",
       "protected": "工作区",
-      "public": "公开"
+      "protected-description": "登录用户可见",
+      "public": "公开",
+      "public-description": "所有人可见",
+      "group-description": "仅群组成员可见"
     },
     "outline": "概要",
     "share": {

@@ -114,7 +114,8 @@
     "username": "Nama pengguna",
     "version": "Versi",
     "visibility": "Visibilitas",
-    "yourself": "Anda sendiri"
+    "yourself": "Anda sendiri",
+    "groups": "Grup"
   },
   "locale-picker": {
     "no-language-feedback": "Bahasa tidak ditemukan? Kirim masukan"
@@ -544,5 +545,26 @@
     "connected": "Pembaruan langsung aktif",
     "connecting": "Menghubungkan ke pembaruan langsung...",
     "disconnected": "Pembaruan langsung tidak tersedia"
+  },
+  "group": {
+    "back-to-groups": "Kembali ke Grup",
+    "create-group": "Buat Grup",
+    "create-successfully": "Grup berhasil dibuat",
+    "delete-confirm": "Apakah Anda yakin ingin menghapus grup ini?",
+    "delete-group": "Hapus Grup",
+    "description": "Deskripsi",
+    "enter-description": "Masukkan deskripsi grup",
+    "enter-name": "Masukkan nama grup",
+    "group-name": "Nama Grup",
+    "group-timeline": "Linimasa Grup",
+    "loading": "Memuat grup...",
+    "multiple-groups": "{{count}} Grup",
+    "name-cannot-be-empty": "Nama grup tidak boleh kosong",
+    "no-groups-found": "Grup tidak ditemukan",
+    "select-groups": "Pilih Grup",
+    "selected": "Terpilih",
+    "update-group": "Perbarui Grup",
+    "update-successfully": "Grup berhasil diperbarui",
+    "view-timeline": "Lihat Linimasa"
   }
 }

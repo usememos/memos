@@ -13,6 +13,7 @@ const VisibilitySelector = (props: VisibilitySelectorProps) => {
     { value: Visibility.PRIVATE, label: t("memo.visibility.private"), description: t("memo.visibility.private-description") },
     { value: Visibility.PROTECTED, label: t("memo.visibility.protected"), description: t("memo.visibility.protected-description") },
     { value: Visibility.PUBLIC, label: t("memo.visibility.public"), description: t("memo.visibility.public-description") },
+    { value: Visibility.GROUP, label: t("common.groups"), description: t("memo.visibility.group-description") },
   ] as const;
 
   const currentLabel = visibilityOptions.find((option) => option.value === value)?.label || "";

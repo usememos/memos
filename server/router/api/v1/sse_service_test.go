@@ -93,7 +93,7 @@ func TestCreateMemoComment_NoDuplicateSSEBroadcast(t *testing.T) {
 
 	// Subscribe after the parent memo is created so the memo.created event
 	// for the parent does not pollute the assertion window.
-	client := svc.SSEHub.Subscribe(author.ID, store.RoleAdmin)
+	client := svc.SSEHub.Subscribe(author.ID, store.RoleAdmin, nil)
 	defer svc.SSEHub.Unsubscribe(client)
 
 	// Create a comment.  Before the fix, this fired both memo.created (for the
@@ -133,7 +133,7 @@ func TestCreateMemoWithAttachment_NoDuplicateUpdatedSSEBroadcast(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	client := svc.SSEHub.Subscribe(user.ID, store.RoleAdmin)
+	client := svc.SSEHub.Subscribe(user.ID, store.RoleAdmin, nil)
 	defer svc.SSEHub.Unsubscribe(client)
 
 	memo, err := svc.CreateMemo(uctx, &v1pb.CreateMemoRequest{
@@ -172,7 +172,7 @@ func TestUpsertMemoReaction_SSEEvent(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	client := svc.SSEHub.Subscribe(user.ID, store.RoleAdmin)
+	client := svc.SSEHub.Subscribe(user.ID, store.RoleAdmin, nil)
 	defer svc.SSEHub.Unsubscribe(client)
 
 	_, err = svc.UpsertMemoReaction(uctx, &v1pb.UpsertMemoReactionRequest{
@@ -215,7 +215,7 @@ func TestDeleteMemoReaction_SSEEvent(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	client := svc.SSEHub.Subscribe(user.ID, store.RoleAdmin)
+	client := svc.SSEHub.Subscribe(user.ID, store.RoleAdmin, nil)
 	defer svc.SSEHub.Unsubscribe(client)
 
 	_, err = svc.DeleteMemoReaction(uctx, &v1pb.DeleteMemoReactionRequest{
@@ -255,7 +255,7 @@ func TestSetMemoAttachments_EmitsMemoUpdatedSSEEvent(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	client := svc.SSEHub.Subscribe(user.ID, store.RoleAdmin)
+	client := svc.SSEHub.Subscribe(user.ID, store.RoleAdmin, nil)
 	defer svc.SSEHub.Unsubscribe(client)
 
 	_, err = svc.SetMemoAttachments(uctx, &v1pb.SetMemoAttachmentsRequest{
@@ -292,7 +292,7 @@ func TestSetMemoRelations_EmitsMemoUpdatedSSEEvent(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	client := svc.SSEHub.Subscribe(user.ID, store.RoleAdmin)
+	client := svc.SSEHub.Subscribe(user.ID, store.RoleAdmin, nil)
 	defer svc.SSEHub.Unsubscribe(client)
 
 	_, err = svc.SetMemoRelations(uctx, &v1pb.SetMemoRelationsRequest{

@@ -114,7 +114,8 @@
     "username": "उपयोगकर्ता नाम",
     "version": "संस्करण",
     "visibility": "दृश्यता",
-    "yourself": "खुद"
+    "yourself": "खुद",
+    "groups": "समूह"
   },
   "locale-picker": {
     "no-language-feedback": "भाषा नहीं मिली? प्रतिक्रिया सबमिट करें"
@@ -544,5 +545,26 @@
     "connected": "लाइव अपडेट सक्रिय",
     "connecting": "लाइव अपडेट से कनेक्ट हो रहा है...",
     "disconnected": "लाइव अपडेट उपलब्ध नहीं है"
+  },
+  "group": {
+    "back-to-groups": "समूहों पर वापस जाएं",
+    "create-group": "समूह बनाएं",
+    "create-successfully": "समूह सफलतापूर्वक बनाया गया",
+    "delete-confirm": "क्या आप वाकई इस समूह को हटाना चाहते हैं?",
+    "delete-group": "समूह हटाएं",
+    "description": "विवरण",
+    "enter-description": "समूह का विवरण दर्ज करें",
+    "enter-name": "समूह का नाम दर्ज करें",
+    "group-name": "समूह का नाम",
+    "group-timeline": "समूह टाइमलाइन",
+    "loading": "समूह लोड हो रहे हैं...",
+    "multiple-groups": "{{count}} समूह",
+    "name-cannot-be-empty": "समूह का नाम खाली नहीं हो सकता",
+    "no-groups-found": "कोई समूह नहीं मिला",
+    "select-groups": "समूह चुनें",
+    "selected": "चयनित",
+    "update-group": "समूह अपडेट करें",
+    "update-successfully": "समूह सफलतापूर्वक अपडेट किया गया",
+    "view-timeline": "टाइमलाइन देखें"
   }
 }

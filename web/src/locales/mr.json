@@ -114,7 +114,8 @@
     "username": "वापरकर्तानाव",
     "version": "आवृत्ती",
     "visibility": "दृश्यमानता",
-    "yourself": "स्वतः"
+    "yourself": "स्वतः",
+    "groups": "गट"
   },
   "locale-picker": {
     "no-language-feedback": "भाषा सापडली नाही? अभिप्राय सबमिट करा"
@@ -544,5 +545,26 @@
     "connected": "थेट अद्यतने सक्रिय",
     "connecting": "थेट अपडेटशी कनेक्ट करत आहे...",
     "disconnected": "थेट अद्यतने अनुपलब्ध"
+  },
+  "group": {
+    "back-to-groups": "गटांवर परत जा",
+    "create-group": "गट तयार करा",
+    "create-successfully": "गट यशस्वीरित्या तयार केला",
+    "delete-confirm": "तुम्हाला नक्की हा गट हटवायचा आहे का?",
+    "delete-group": "गट हटवा",
+    "description": "वर्णन",
+    "enter-description": "गटाचे वर्णन प्रविष्ट करा",
+    "enter-name": "गटाचे नाव प्रविष्ट करा",
+    "group-name": "गटाचे नाव",
+    "group-timeline": "गट टाइमलाइन",
+    "loading": "गट लोड होत आहेत...",
+    "multiple-groups": "{{count}} गट",
+    "name-cannot-be-empty": "गटाचे नाव रिकामे असू शकत नाही",
+    "no-groups-found": "कोणतेही गट आढळले नाहीत",
+    "select-groups": "गट निवडा",
+    "selected": "निवडलेले",
+    "update-group": "गट अद्यतन करा",
+    "update-successfully": "गट यशस्वीरित्या अद्यतनित केला",
+    "view-timeline": "टाइमलाइन पहा"
   }
 }

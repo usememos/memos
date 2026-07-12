@@ -31,6 +31,7 @@ type SSEEvent struct {
 	// Visibility and CreatorID are used only for server-side delivery filtering.
 	Visibility store.Visibility `json:"-"`
 	CreatorID  int32            `json:"-"`
+	GroupID    *int32           `json:"-"`
 }
 
 // JSON returns the JSON representation of the event.
@@ -46,9 +47,10 @@ func (e *SSEEvent) JSON() []byte {
 
 // SSEClient represents a single SSE connection.
 type SSEClient struct {
-	events chan []byte
-	userID int32
-	role   store.Role
+	events   chan []byte
+	userID   int32
+	role     store.Role
+	groupIDs []int32 // Cached group IDs for filtering.
 }
 
 // SSEHub manages SSE client connections and broadcasts events.
@@ -68,12 +70,13 @@ func NewSSEHub() *SSEHub {
 
 // Subscribe registers a new client and returns it.
 // The caller must call Unsubscribe when done.
-func (h *SSEHub) Subscribe(userID int32, role store.Role) *SSEClient {
+func (h *SSEHub) Subscribe(userID int32, role store.Role, groupIDs []int32) *SSEClient {
 	c := &SSEClient{
 		// Buffer a few events so a slow client doesn't block broadcasting.
-		events: make(chan []byte, 32),
-		userID: userID,
-		role:   role,
+		events:   make(chan []byte, 32),
+		userID:   userID,
+		role:     role,
+		groupIDs: groupIDs,
 	}
 	h.mu.Lock()
 	if h.closed {
@@ -135,6 +138,18 @@ func (c *SSEClient) canReceive(event *SSEEvent) bool {
 	switch event.Visibility {
 	case store.Private:
 		return c.userID == event.CreatorID || c.role == store.RoleAdmin
+	case store.GroupVisibility:
+		if c.role == store.RoleAdmin {
+			return true
+		}
+		if event.GroupID != nil {
+			for _, gid := range c.groupIDs {
+				if gid == *event.GroupID {
+					return true
+				}
+			}
+		}
+		return false
 	case store.Public, store.Protected, "":
 		return true
 	default:

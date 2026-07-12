@@ -30,6 +30,8 @@ const Archived = lazyWithReload(() => import("@/pages/Archived"));
 const AuthCallback = lazyWithReload(() => import("@/pages/AuthCallback"));
 const Explore = lazyWithReload(() => import("@/pages/Explore"));
 const Home = lazyWithReload(() => import("@/pages/Home"));
+const GroupDetail = lazyWithReload(() => import("@/pages/GroupDetail"));
+const GroupTimeline = lazyWithReload(() => import("@/pages/GroupTimeline"));
 const Inboxes = lazyWithReload(() => import("@/pages/Inboxes"));
 const MemoDetail = lazyWithReload(() => import("@/pages/MemoDetail"));
 const NotFound = lazyWithReload(() => import("@/pages/NotFound"));
@@ -87,6 +89,8 @@ export const routeConfig: RouteObject[] = [
               },
               { path: Routes.ABOUT, element: <About /> },
               { path: Routes.EXPLORE, element: <Explore /> },
+              { path: Routes.GROUPS, element: <GroupDetail /> },
+              { path: Routes.GROUP_TIMELINE, element: <GroupTimeline /> },
               { path: "u/:username", element: <UserProfile /> },
               {
                 element: <RequireAuthRoute />,

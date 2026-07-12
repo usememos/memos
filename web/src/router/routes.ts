@@ -8,6 +8,8 @@ export const ROUTES = {
   SETTING: "/setting",
   EXPLORE: "/explore",
   AUTH: "/auth",
+  GROUPS: "/groups",
+  GROUP_TIMELINE: "/groups/:name",
   SHARED_MEMO: "/memos/shares",
 } as const;
 

@@ -93,6 +93,7 @@
     "email": "Email",
     "expand": "Expand",
     "explore": "Explore",
+    "groups": "Groups",
     "file": "File",
     "filter": "Filter",
     "home": "Home",
@@ -225,6 +226,27 @@
       "unsupported-description": "This browser cannot record audio from the memo composer."
     }
   },
+  "group": {
+    "back-to-groups": "Back to Groups",
+    "create-group": "Create Group",
+    "create-successfully": "Create group successfully",
+    "delete-confirm": "Are you sure you want to delete this group?",
+    "delete-group": "Delete Group",
+    "description": "Description",
+    "enter-description": "Enter group description",
+    "enter-name": "Enter group name",
+    "group-name": "Group Name",
+    "group-timeline": "Group Timeline",
+    "loading": "Loading groups...",
+    "multiple-groups": "{{count}} Groups",
+    "name-cannot-be-empty": "Group name cannot be empty",
+    "no-groups-found": "No groups found",
+    "select-groups": "Select Groups",
+    "selected": "Selected",
+    "update-group": "Update Group",
+    "update-successfully": "Update group successfully",
+    "view-timeline": "View Timeline"
+  },
   "inbox": {
     "failed-to-load": "Failed to load inbox item",
     "memo-comment": "{{user}} has a comment on your {{memo}}.",
@@ -339,7 +361,8 @@
       "protected": "Protected",
       "protected-description": "Visible to signed-in users",
       "public": "Public",
-      "public-description": "Visible to everyone"
+      "public-description": "Visible to everyone",
+      "group-description": "Visible to group members"
     }
   },
   "message": {

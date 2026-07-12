@@ -25,17 +25,14 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Visibility controls who can read a memo.
 type Visibility int32
 
 const (
 	Visibility_VISIBILITY_UNSPECIFIED Visibility = 0
-	// PRIVATE: only the creator can read the memo.
-	Visibility_PRIVATE Visibility = 1
-	// PROTECTED: signed-in users of the instance can read the memo.
-	Visibility_PROTECTED Visibility = 2
-	// PUBLIC: anyone, including anonymous visitors, can read the memo.
-	Visibility_PUBLIC Visibility = 3
+	Visibility_PRIVATE                Visibility = 1
+	Visibility_PROTECTED              Visibility = 2
+	Visibility_PUBLIC                 Visibility = 3
+	Visibility_GROUP                  Visibility = 4
 )
 
 // Enum value maps for Visibility.
@@ -45,12 +42,14 @@ var (
 		1: "PRIVATE",
 		2: "PROTECTED",
 		3: "PUBLIC",
+		4: "GROUP",
 	}
 	Visibility_value = map[string]int32{
 		"VISIBILITY_UNSPECIFIED": 0,
 		"PRIVATE":                1,
 		"PROTECTED":              2,
 		"PUBLIC":                 3,
+		"GROUP":                  4,
 	}
 )
 
@@ -235,8 +234,6 @@ type Memo struct {
 	// Required. The content of the memo in Markdown format.
 	Content string `protobuf:"bytes,7,opt,name=content,proto3" json:"content,omitempty"`
 	// The visibility of the memo.
-	// One of PRIVATE (creator only), PROTECTED (signed-in users), or
-	// PUBLIC (anyone). Defaults to PRIVATE on creation when unspecified.
 	Visibility Visibility `protobuf:"varint,9,opt,name=visibility,proto3,enum=memos.api.v1.Visibility" json:"visibility,omitempty"`
 	// Output only. The tags extracted from the content.
 	Tags []string `protobuf:"bytes,10,rep,name=tags,proto3" json:"tags,omitempty"`
@@ -256,7 +253,10 @@ type Memo struct {
 	// Output only. The snippet of the memo content. Plain text only.
 	Snippet string `protobuf:"bytes,17,opt,name=snippet,proto3" json:"snippet,omitempty"`
 	// Optional. The location of the memo.
-	Location      *Location `protobuf:"bytes,18,opt,name=location,proto3,oneof" json:"location,omitempty"`
+	Location *Location `protobuf:"bytes,18,opt,name=location,proto3,oneof" json:"location,omitempty"`
+	// Optional. The resource name of the group.
+	// Format: groups/{group}
+	Group         *string `protobuf:"bytes,19,opt,name=group,proto3,oneof" json:"group,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -403,6 +403,13 @@ func (x *Memo) GetLocation() *Location {
 	return nil
 }
 
+func (x *Memo) GetGroup() string {
+	if x != nil && x.Group != nil {
+		return *x.Group
+	}
+	return ""
+}
+
 type Location struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// A placeholder text for the location.
@@ -538,26 +545,11 @@ type ListMemosRequest struct {
 	// Default to "create_time desc".
 	// Supports comma-separated list of fields following AIP-132.
 	// Example: "pinned desc, create_time desc" or "update_time asc"
-	// Supported fields: pinned, create_time, update_time, name.
-	// Note: order_by uses create_time / update_time, while the filter
-	// expression uses created_ts / updated_ts for the same timestamps.
+	// Supported fields: pinned, create_time, update_time, name
 	OrderBy string `protobuf:"bytes,4,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
-	// Optional. A CEL expression to filter memos. Combine terms with && and ||.
-	// Available fields:
-	//
-	//	content (string), creator (string, e.g. "users/1"),
-	//	created_ts / updated_ts (timestamp), pinned (bool),
-	//	visibility (string: PRIVATE | PROTECTED | PUBLIC),
-	//	tags (list<string>; match with `"work" in tags`, not `tag == "work"`),
-	//	has_task_list / has_link / has_code / has_incomplete_tasks (bool).
-	//
-	// Note: the time fields here are created_ts / updated_ts, which differ from
-	// the create_time / update_time names used by order_by.
-	// Examples:
-	//
-	//	pinned == true && visibility == "PUBLIC"
-	//	tags.exists(t, t == "urgent")
-	//	content.contains("roadmap") && created_ts > now - duration("168h")
+	// Optional. Filter to apply to the list results.
+	// Filter is a CEL expression to filter memos.
+	// Refer to `Shortcut.filter`.
 	Filter string `protobuf:"bytes,5,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. If true, show deleted memos in the response.
 	ShowDeleted   bool `protobuf:"varint,6,opt,name=show_deleted,json=showDeleted,proto3" json:"show_deleted,omitempty"`
@@ -2343,7 +2335,7 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\rreaction_type\x18\x04 \x01(\tB\x03\xe0A\x02R\freactionType\x12@\n" +
 	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime:X\xeaAU\n" +
-	"\x15memos.api.v1/Reaction\x12!memos/{memo}/reactions/{reaction}\x1a\x04name*\treactions2\breaction\"\xbe\b\n" +
+	"\x15memos.api.v1/Reaction\x12!memos/{memo}/reactions/{reaction}\x1a\x04name*\treactions2\breaction\"\xff\b\n" +
 	"\x04Memo\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12.\n" +
 	"\x05state\x18\x02 \x01(\x0e2\x13.memos.api.v1.StateB\x03\xe0A\x02R\x05state\x123\n" +
@@ -2367,7 +2359,9 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\x06parent\x18\x10 \x01(\tB\x19\xe0A\x03\xfaA\x13\n" +
 	"\x11memos.api.v1/MemoH\x00R\x06parent\x88\x01\x01\x12\x1d\n" +
 	"\asnippet\x18\x11 \x01(\tB\x03\xe0A\x03R\asnippet\x12<\n" +
-	"\blocation\x18\x12 \x01(\v2\x16.memos.api.v1.LocationB\x03\xe0A\x01H\x01R\blocation\x88\x01\x01\x1a\xac\x01\n" +
+	"\blocation\x18\x12 \x01(\v2\x16.memos.api.v1.LocationB\x03\xe0A\x01H\x01R\blocation\x88\x01\x01\x125\n" +
+	"\x05group\x18\x13 \x01(\tB\x1a\xe0A\x01\xfaA\x14\n" +
+	"\x12memos.api.v1/GroupH\x02R\x05group\x88\x01\x01\x1a\xac\x01\n" +
 	"\bProperty\x12\x19\n" +
 	"\bhas_link\x18\x01 \x01(\bR\ahasLink\x12\"\n" +
 	"\rhas_task_list\x18\x02 \x01(\bR\vhasTaskList\x12\x19\n" +
@@ -2376,7 +2370,8 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\x05title\x18\x05 \x01(\tR\x05title:7\xeaA4\n" +
 	"\x11memos.api.v1/Memo\x12\fmemos/{memo}\x1a\x04name*\x05memos2\x04memoB\t\n" +
 	"\a_parentB\v\n" +
-	"\t_locationJ\x04\b\x06\x10\aR\fdisplay_time\"u\n" +
+	"\t_locationB\b\n" +
+	"\x06_groupJ\x04\b\x06\x10\aR\fdisplay_time\"u\n" +
 	"\bLocation\x12%\n" +
 	"\vplaceholder\x18\x01 \x01(\tB\x03\xe0A\x01R\vplaceholder\x12\x1f\n" +
 	"\blatitude\x18\x02 \x01(\x01B\x03\xe0A\x01R\blatitude\x12!\n" +
@@ -2514,14 +2509,15 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12\x14\n" +
-	"\x05image\x18\x04 \x01(\tR\x05image*P\n" +
+	"\x05image\x18\x04 \x01(\tR\x05image*[\n" +
 	"\n" +
 	"Visibility\x12\x1a\n" +
 	"\x16VISIBILITY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPRIVATE\x10\x01\x12\r\n" +
 	"\tPROTECTED\x10\x02\x12\n" +
 	"\n" +
-	"\x06PUBLIC\x10\x032\x8b\x15\n" +
+	"\x06PUBLIC\x10\x03\x12\t\n" +
+	"\x05GROUP\x10\x042\x8b\x15\n" +
 	"\vMemoService\x12e\n" +
 	"\n" +
 	"CreateMemo\x12\x1f.memos.api.v1.CreateMemoRequest\x1a\x12.memos.api.v1.Memo\"\"\xdaA\x04memo\x82\xd3\xe4\x93\x02\x15:\x04memo\"\r/api/v1/memos\x12f\n" +

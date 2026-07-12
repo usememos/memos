@@ -44,7 +44,7 @@ export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}):
   // explore/archived: fetch backend grouped stats and aggregate them locally.
   // ListAllUserStats AND's the request filter with the server's auth filter, so
   // private memos are not included unless explicitly visible to the current user.
-  const exploreVisibilityFilter = currentUser != null ? 'visibility in ["PUBLIC", "PROTECTED"]' : 'visibility in ["PUBLIC"]';
+  const exploreVisibilityFilter = currentUser != null ? 'visibility in ["PUBLIC", "PROTECTED", "GROUP"]' : 'visibility in ["PUBLIC"]';
   const allUserStatsRequest =
     context === "explore"
       ? { state: State.NORMAL, filter: exploreVisibilityFilter }

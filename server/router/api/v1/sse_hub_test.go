@@ -35,7 +35,7 @@ func mustNotReceive(t *testing.T, ch <-chan []byte, within time.Duration) {
 func TestSSEHub_SubscribeUnsubscribe(t *testing.T) {
 	hub := NewSSEHub()
 
-	client := hub.Subscribe(1, store.RoleUser)
+	client := hub.Subscribe(1, store.RoleUser, nil)
 	require.NotNil(t, client)
 	require.NotNil(t, client.events)
 
@@ -49,8 +49,8 @@ func TestSSEHub_SubscribeUnsubscribe(t *testing.T) {
 
 func TestSSEHub_Close(t *testing.T) {
 	hub := NewSSEHub()
-	c1 := hub.Subscribe(1, store.RoleUser)
-	c2 := hub.Subscribe(2, store.RoleAdmin)
+	c1 := hub.Subscribe(1, store.RoleUser, nil)
+	c2 := hub.Subscribe(2, store.RoleAdmin, nil)
 
 	hub.Close()
 	hub.Close()
@@ -60,7 +60,7 @@ func TestSSEHub_Close(t *testing.T) {
 		assert.False(t, ok, "channel should be closed after hub close")
 	}
 
-	late := hub.Subscribe(3, store.RoleUser)
+	late := hub.Subscribe(3, store.RoleUser, nil)
 	_, ok := <-late.events
 	assert.False(t, ok, "late subscriber should be closed immediately")
 
@@ -71,7 +71,7 @@ func TestSSEHub_Close(t *testing.T) {
 
 func TestSSEHub_Broadcast(t *testing.T) {
 	hub := NewSSEHub()
-	client := hub.Subscribe(1, store.RoleUser)
+	client := hub.Subscribe(1, store.RoleUser, nil)
 	defer hub.Unsubscribe(client)
 
 	event := &SSEEvent{Type: SSEEventMemoCreated, Name: "memos/123"}
@@ -88,9 +88,9 @@ func TestSSEHub_Broadcast(t *testing.T) {
 
 func TestSSEHub_BroadcastMultipleClients(t *testing.T) {
 	hub := NewSSEHub()
-	c1 := hub.Subscribe(1, store.RoleUser)
+	c1 := hub.Subscribe(1, store.RoleUser, nil)
 	defer hub.Unsubscribe(c1)
-	c2 := hub.Subscribe(2, store.RoleUser)
+	c2 := hub.Subscribe(2, store.RoleUser, nil)
 	defer hub.Unsubscribe(c2)
 
 	event := &SSEEvent{Type: SSEEventMemoDeleted, Name: "memos/456"}
@@ -118,11 +118,11 @@ func TestSSEEvent_JSON(t *testing.T) {
 
 func TestSSEHub_PrivateEventsAreScoped(t *testing.T) {
 	hub := NewSSEHub()
-	owner := hub.Subscribe(1, store.RoleUser)
+	owner := hub.Subscribe(1, store.RoleUser, nil)
 	defer hub.Unsubscribe(owner)
-	other := hub.Subscribe(2, store.RoleUser)
+	other := hub.Subscribe(2, store.RoleUser, nil)
 	defer hub.Unsubscribe(other)
-	admin := hub.Subscribe(3, store.RoleAdmin)
+	admin := hub.Subscribe(3, store.RoleAdmin, nil)
 	defer hub.Unsubscribe(admin)
 
 	hub.Broadcast(&SSEEvent{
@@ -153,7 +153,7 @@ func TestSSEHub_PrivateEventsAreScoped(t *testing.T) {
 
 func TestSSEClient_CanReceive_UnknownVisibility(t *testing.T) {
 	hub := NewSSEHub()
-	client := hub.Subscribe(1, store.RoleUser)
+	client := hub.Subscribe(1, store.RoleUser, nil)
 	defer hub.Unsubscribe(client)
 
 	// An event with an unrecognised visibility value should be denied (safe default).
@@ -169,7 +169,7 @@ func TestSSEClient_CanReceive_UnknownVisibility(t *testing.T) {
 func TestSSEHub_SlowClientEventsDropped(t *testing.T) {
 	hub := NewSSEHub()
 	// Subscribe but never read, so the channel fills up.
-	slow := hub.Subscribe(1, store.RoleUser)
+	slow := hub.Subscribe(1, store.RoleUser, nil)
 	defer hub.Unsubscribe(slow)
 
 	event := &SSEEvent{Type: SSEEventMemoCreated, Name: "memos/x"}

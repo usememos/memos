@@ -1,0 +1,186 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/api/v1";
+
+service GroupService {
+  // CreateGroup creates a new group.
+  rpc CreateGroup(CreateGroupRequest) returns (Group) {
+    option (google.api.http) = {
+      post: "/api/v1/groups"
+      body: "group"
+    };
+  }
+
+  // ListGroups lists all groups.
+  rpc ListGroups(ListGroupsRequest) returns (ListGroupsResponse) {
+    option (google.api.http) = {get: "/api/v1/groups"};
+  }
+
+  // GetGroup gets a group by name.
+  rpc GetGroup(GetGroupRequest) returns (Group) {
+    option (google.api.http) = {get: "/api/v1/{name=groups/*}"};
+  }
+
+  // UpdateGroup updates a group.
+  rpc UpdateGroup(UpdateGroupRequest) returns (Group) {
+    option (google.api.http) = {
+      patch: "/api/v1/{group.name=groups/*}"
+      body: "group"
+    };
+  }
+
+  // DeleteGroup deletes a group.
+  rpc DeleteGroup(DeleteGroupRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{name=groups/*}"};
+  }
+
+  // AddGroupMember adds a member to a group.
+  rpc AddGroupMember(AddGroupMemberRequest) returns (GroupMember) {
+    option (google.api.http) = {
+      post: "/api/v1/{parent=groups/*}/members"
+      body: "member"
+    };
+  }
+
+  // ListGroupMembers lists all members of a group.
+  rpc ListGroupMembers(ListGroupMembersRequest) returns (ListGroupMembersResponse) {
+    option (google.api.http) = {get: "/api/v1/{parent=groups/*}/members"};
+  }
+
+  // UpdateGroupMember updates a member of a group.
+  rpc UpdateGroupMember(UpdateGroupMemberRequest) returns (GroupMember) {
+    option (google.api.http) = {
+      patch: "/api/v1/{member.name=groups/*/members/*}"
+      body: "member"
+    };
+  }
+
+  // RemoveGroupMember removes a member from a group.
+  rpc RemoveGroupMember(RemoveGroupMemberRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{name=groups/*/members/*}"};
+  }
+}
+
+message Group {
+  option (google.api.resource) = {
+    type: "memos.api.v1/Group"
+    pattern: "groups/{group}"
+    singular: "group"
+    plural: "groups"
+  };
+
+  // The resource name of the group.
+  // Format: groups/{group}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // The display name of the group.
+  string display_name = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The description of the group.
+  string description = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // The name of the creator.
+  // Format: users/{user}
+  string creator = 4 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
+
+  // The creation timestamp.
+  google.protobuf.Timestamp create_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+message GroupMember {
+  option (google.api.resource) = {
+    type: "memos.api.v1/GroupMember"
+    pattern: "groups/{group}/members/{member}"
+    singular: "member"
+    plural: "members"
+  };
+
+  // The resource name of the group member.
+  // Format: groups/{group}/members/{member}
+  // The {member} segment is the user ID.
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // The role of the member in the group.
+  enum Role {
+    ROLE_UNSPECIFIED = 0;
+    MEMBER = 1;
+    ADMIN = 2;
+    OWNER = 3;
+  }
+  Role role = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message CreateGroupRequest {
+  Group group = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListGroupsRequest {
+  // Optional pagination, etc. can be added later.
+}
+
+message ListGroupsResponse {
+  repeated Group groups = 1;
+}
+
+message GetGroupRequest {
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Group"}
+  ];
+}
+
+message UpdateGroupRequest {
+  Group group = 1 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message DeleteGroupRequest {
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Group"}
+  ];
+}
+
+message AddGroupMemberRequest {
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Group"}
+  ];
+  GroupMember member = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListGroupMembersRequest {
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/Group"}
+  ];
+}
+
+message ListGroupMembersResponse {
+  repeated GroupMember members = 1;
+}
+
+message UpdateGroupMemberRequest {
+  GroupMember member = 1 [(google.api.field_behavior) = REQUIRED];
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message RemoveGroupMemberRequest {
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/GroupMember"}
+  ];
+}

@@ -38,9 +38,12 @@ CREATE TABLE memo (
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   row_status TEXT NOT NULL CHECK (row_status IN ('NORMAL', 'ARCHIVED')) DEFAULT 'NORMAL',
   content TEXT NOT NULL DEFAULT '',
-  visibility TEXT NOT NULL CHECK (visibility IN ('PUBLIC', 'PROTECTED', 'PRIVATE')) DEFAULT 'PRIVATE',
+  visibility TEXT NOT NULL CHECK (visibility IN ('PUBLIC', 'PROTECTED', 'PRIVATE', 'GROUP')) DEFAULT 'PRIVATE',
+  group_id INTEGER DEFAULT NULL,
   pinned INTEGER NOT NULL CHECK (pinned IN (0, 1)) DEFAULT 0,
-  payload TEXT NOT NULL DEFAULT '{}'
+  payload TEXT NOT NULL DEFAULT '{}',
+  FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE SET NULL,
+  FOREIGN KEY (creator_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 -- memo_relation
@@ -124,3 +127,24 @@ CREATE TABLE user_identity (
 );
 
 CREATE INDEX idx_user_identity_user_id ON user_identity(user_id);
+
+-- groups
+CREATE TABLE groups (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  creator_id INTEGER NOT NULL,
+  visibility TEXT NOT NULL DEFAULT 'PRIVATE',
+  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY (creator_id) REFERENCES user(id) ON DELETE CASCADE
+);
+
+-- group_members
+CREATE TABLE group_members (
+  group_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  role TEXT NOT NULL DEFAULT 'MEMBER',
+  PRIMARY KEY (group_id, user_id),
+  FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+);
