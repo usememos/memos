@@ -7,7 +7,6 @@ import {
   ListOrderedIcon,
   ListTodoIcon,
   type LucideIcon,
-  SquareCodeIcon,
   StrikethroughIcon,
 } from "lucide-react";
 import type { Translations } from "@/utils/i18n";
@@ -111,12 +110,6 @@ export const EDITOR_COMMANDS: EditorCommand[] = [
     group: "mark",
   },
   {
-    id: "code",
-    labelKey: "editor.format.code",
-    icon: CodeIcon,
-    group: "mark",
-  },
-  {
     id: "bulletList",
     labelKey: "editor.format.bullet-list",
     icon: ListIcon,
@@ -137,7 +130,7 @@ export const EDITOR_COMMANDS: EditorCommand[] = [
   {
     id: "codeBlock",
     labelKey: "editor.format.code-block",
-    icon: SquareCodeIcon,
+    icon: CodeIcon,
     group: "block",
   },
   {

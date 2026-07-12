@@ -11,3 +11,4 @@ export { useFocusMode } from "./useFocusMode";
 export { useLinkMemo } from "./useLinkMemo";
 export { useLocation } from "./useLocation";
 export { useMemoInit } from "./useMemoInit";
+export { useMemoSave } from "./useMemoSave";

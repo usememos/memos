@@ -36,6 +36,8 @@ MemoEditor/
 │   ├── EditorToolbar.tsx   # Toolbar
 │   └── ...
 ├── hooks/                  # React hooks (utilities)
+│   ├── useMemoSave.ts      # Save transaction, cache invalidation, and reset
+│   └── useFocusMode.ts     # Scroll lock and layout-stable focus presentation
 ├── Editor/           # The CodeMirror 6 decorated-source editor
 │   ├── index.tsx               # React wrapper: mounts the EditorView, owns the
 │   │                           #   controller refs, syncs initialContent in/out
@@ -89,6 +91,13 @@ Uses `useReducer` + Context for predictable state transitions. All state changes
 ### Services
 
 Pure TypeScript functions containing business logic. No React hooks, easy to test.
+
+### Lifecycle hooks
+
+Cross-cutting React workflows stay outside the editor shell. `useMemoSave`
+coordinates validation, persistence, query invalidation, and post-save reducer
+state. `useFocusMode` owns focus mode's DOM lifecycle, including restoring the
+previous body scroll style and preserving the editor's place in grid layouts.
 
 ### Components
 
