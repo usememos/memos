@@ -221,25 +221,29 @@ const PagedMemoList = (props: Props) => {
   // Stable reference so MentionResolutionProvider's memo (keyed on the array) actually holds.
   const contents = useMemo(() => sortedMemoList.map((memo) => memo.content), [sortedMemoList]);
 
+  const emptyPlaceholder =
+    !isFetchingNextPage && !hasNextPage && sortedMemoList.length === 0 ? (
+      <Placeholder variant="empty" message={t("message.no-data")} className="w-full" />
+    ) : null;
+
   // Column one is the action column: the composer and any active filters head it, and the
-  // newest memo lands directly beneath them (priorityKey above). Every vertical seam inside
-  // the stack uses GRID_GAP so y-spacing matches the grid's x-spacing exactly.
+  // empty state follows them. The newest memo also lands directly beneath them (priorityKey
+  // above). Every vertical seam inside the stack uses GRID_GAP so y-spacing matches the
+  // grid's x-spacing exactly.
   const hasFilters = filters.length > 0;
   const gridLeading =
-    memoEditor || hasFilters ? (
+    memoEditor || hasFilters || emptyPlaceholder ? (
       <div className="flex w-full flex-col" style={{ gap: GRID_GAP }}>
         {memoEditor}
         <MemoFilters />
+        {emptyPlaceholder}
       </div>
     ) : undefined;
 
-  // Pagination spinner, empty state, and back-to-top are identical across both layouts.
+  // Pagination controls are identical across both layouts.
   const footer = (
     <>
       {isFetchingNextPage && <Loader />}
-      {!isFetchingNextPage && !hasNextPage && sortedMemoList.length === 0 && !memoEditor && (
-        <Placeholder variant="empty" message={t("message.no-data")} />
-      )}
       {!isFetchingNextPage && (hasNextPage || sortedMemoList.length > 0) && (
         <div className="w-full opacity-70 flex flex-row justify-center items-center my-4">
           <BackToTop />
@@ -276,6 +280,7 @@ const PagedMemoList = (props: Props) => {
               {memoEditor}
               <MemoFilters className="mb-2" />
               {sortedMemoList.map((memo) => props.renderer(memo, { compact: effectiveCompact }))}
+              {emptyPlaceholder}
               {footer}
             </>
           )}

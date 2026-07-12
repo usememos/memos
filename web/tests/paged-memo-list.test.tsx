@@ -43,10 +43,13 @@ vi.mock("@/components/MemoEditor", () => ({
 
 const memo = { name: "memos/1", content: "hello", updateTime: undefined } as unknown as Memo;
 
-const renderList = (renderer: (memo: Memo, options: { compact: boolean }) => React.ReactElement = () => <div />) =>
+const renderList = (
+  renderer: (memo: Memo, options: { compact: boolean }) => React.ReactElement = () => <div />,
+  options: { showMemoEditor?: boolean } = {},
+) =>
   render(
     <QueryClientProvider client={new QueryClient()}>
-      <PagedMemoList renderer={renderer} />
+      <PagedMemoList renderer={renderer} showMemoEditor={options.showMemoEditor} />
     </QueryClientProvider>,
   );
 
@@ -62,6 +65,28 @@ describe("<PagedMemoList>", () => {
 
     expect(screen.getByText("No data found.")).toBeInTheDocument();
     expect(screen.getByTestId("placeholder-sprite")).toBeInTheDocument();
+  });
+
+  it("shows the empty state below the memo editor", () => {
+    renderList(undefined, { showMemoEditor: true });
+
+    expect(screen.getByTestId("memo-editor")).toBeInTheDocument();
+    expect(screen.getByText("No data found.")).toBeInTheDocument();
+    expect(screen.getByTestId("placeholder-sprite")).toBeInTheDocument();
+  });
+
+  it("places the empty state in the first grid column", () => {
+    view.maxColumns = 0;
+    const widthSpy = vi.spyOn(Element.prototype, "clientWidth", "get").mockReturnValue(1200);
+    try {
+      renderList(undefined, { showMemoEditor: true });
+
+      const leadingTile = screen.getByText("No data found.").closest(".absolute");
+      expect(leadingTile).not.toBeNull();
+      expect(leadingTile).toContainElement(screen.getByTestId("memo-editor"));
+    } finally {
+      widthSpy.mockRestore();
+    }
   });
 
   describe("compact policy", () => {

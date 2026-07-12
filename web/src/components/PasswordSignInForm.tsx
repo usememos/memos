@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
-import { useInstance } from "@/contexts/InstanceContext";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { handleError } from "@/lib/error";
@@ -21,11 +20,10 @@ interface PasswordSignInFormProps {
 function PasswordSignInForm({ redirectPath }: PasswordSignInFormProps) {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
-  const { profile } = useInstance();
   const { initialize } = useAuth();
   const actionBtnLoadingState = useLoading(false);
-  const [username, setUsername] = useState(profile.demo ? "demo" : "");
-  const [password, setPassword] = useState(profile.demo ? "secret" : "");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;

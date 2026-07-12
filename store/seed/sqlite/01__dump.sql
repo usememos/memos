@@ -1,8 +1,8 @@
--- Demo User (Admin) — password: demo
-INSERT INTO user (id,username,role,nickname,password_hash) VALUES(1,'demo','ADMIN','Demo User','$2a$10$c.slEVgf5b/3BnAWlLb/vOu7VVSOKJ4ljwMe9xzlx9IhKnvAsJYM6');
+-- Demo User (Admin) — the random source password was discarded; use SSO or the demo access token.
+INSERT INTO user (id,username,role,nickname,password_hash) VALUES(1,'demo','ADMIN','Demo User','$2y$12$A/8h4XS6hQmRVVSRFQHsR.wWVJbSG40avhuphOBdK5ws99W1kunr6');
 
--- Alice (User) — password: demo
-INSERT INTO user (id,username,role,nickname,description,password_hash) VALUES(2,'alice','USER','Alice','Developer & avid reader 📚','$2a$10$c.slEVgf5b/3BnAWlLb/vOu7VVSOKJ4ljwMe9xzlx9IhKnvAsJYM6');
+-- Alice (User) — the random source password was discarded; sign in through SSO.
+INSERT INTO user (id,username,role,nickname,description,password_hash) VALUES(2,'alice','USER','Alice','Developer & avid reader 📚','$2y$12$CaqLYlvpHjL1qbVNny0lre59ctT2doIvVLh4Pn1yipsDUtbcbeum6');
 
 -- 1. Welcome Memo (Pinned) — newest created_ts so it leads the pinned section
 INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,pinned,payload) VALUES(1,'welcome2memos001',1,strftime('%s','now','-2 days'),strftime('%s','now','-2 days'),replace('# Welcome to Memos 👋\n\nAn open-source, self-hosted note-taking tool for people who think in fragments. Capture quickly, organize lightly, own everything.\n\n> Most apps treat notes like documents. Memos treats them like thoughts — short, timestamped, searchable.\n\n## Try it right now\n\n- [x] Open this memo\n- [ ] React with 🎉 below\n- [ ] Scroll the timeline to see what others have written\n- [ ] Write your own first memo\n\n## What you can do here\n\n| Feature | Example |\n|---------|---------|\n| **Markdown** | Headings, **bold**, *italic*, `code`, ~~strikethrough~~ |\n| **Tags** | Type `#anything` and it becomes a filter |\n| **Task lists** | `- [ ]` checkboxes that toggle inline |\n| **Code blocks** | Fenced blocks with syntax highlighting |\n| **Tables** | Pipes and dashes — yes, this one |\n| **Attachments** | Drag images, videos, or files right in |\n| **Location** | Geotag a memo to where you wrote it |\n| **Relations** | Link memos together as references or replies |\n\n## Self-host in one command\n\n```bash\ndocker run -d -p 5230:5230 -v ~/.memos:/var/opt/memos neosmemo/memos:stable\n```\n\nThen open `http://localhost:5230` and start writing.\n\n---\n\nScroll the timeline to see each feature used in real memos. #welcome #getting-started','\n',char(10)),'PUBLIC',1,'{"tags":["welcome","getting-started"],"property":{"hasLink":false,"hasCode":true,"hasTaskList":true,"hasIncompleteTasks":true}}');
@@ -59,4 +59,5 @@ INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(12,2,'memos
 INSERT INTO user_setting (user_id,key,value) VALUES(1,'PERSONAL_ACCESS_TOKENS','{"tokens":[{"tokenId":"demo-access-token","tokenHash":"7631cdaa5b56a39371dab01d5d186fd73f05602cc8ad29bf72ffef3713badd9d","description":"Demo access token","createdAt":"2024-01-01T00:00:00Z"}]}');
 
 -- System Settings
+INSERT INTO system_setting VALUES ('GENERAL', '{"disallowPasswordAuth":true}', 'Require identity provider sign-in for the public demo.');
 INSERT INTO system_setting VALUES ('MEMO_RELATED', '{"contentLengthLimit":8192,"enableAutoCompact":true,"enableComment":true,"enableLocation":true,"defaultVisibility":"PUBLIC","reactions":["👍","💛","🔥","👏","😂","👌","🚀","👀","🤔","🤡","❓","+1","🎉","💡","✅"]}', '');
