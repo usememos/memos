@@ -28,6 +28,7 @@ import (
 // 2. checkMinimumUpgradeVersion: Verify installation can be upgraded (reject pre-0.22 installations)
 // 3. Migrate (prod mode): Apply incremental migrations from current to target version
 // 4. Migrate (demo mode): Seed database with demo data
+// 5. Reconcile identity providers from /etc/secrets/memos-idp-*.json
 //
 // Version Tracking:
 // - New installations: Schema version set in system_setting immediately
@@ -130,6 +131,9 @@ func (s *Store) Migrate(ctx context.Context) error {
 		if err := s.seed(ctx); err != nil {
 			return errors.Wrap(err, "failed to seed")
 		}
+	}
+	if err := s.ApplyIdentityProviderBootstrapDir(ctx, defaultIdentityProviderBootstrapDir); err != nil {
+		return errors.Wrap(err, "failed to apply identity provider bootstrap")
 	}
 
 	return nil
