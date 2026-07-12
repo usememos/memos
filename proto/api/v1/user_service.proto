@@ -281,9 +281,6 @@ message ListUsersResponse {
   // A token that can be sent as `page_token` to retrieve the next page.
   // If this field is omitted, there are no subsequent pages.
   string next_page_token = 2;
-
-  // The total count of users (may be approximate).
-  int32 total_size = 3;
 }
 
 message BatchGetUsersRequest {
@@ -529,9 +526,6 @@ message ListUserSettingsResponse {
   // A token that can be sent as `page_token` to retrieve the next page.
   // If this field is omitted, there are no subsequent pages.
   string next_page_token = 2;
-
-  // The total count of settings (may be approximate).
-  int32 total_size = 3;
 }
 
 // LinkedIdentity represents an SSO identity linked to a user account.
@@ -663,9 +657,6 @@ message ListPersonalAccessTokensResponse {
 
   // A token for the next page of results.
   string next_page_token = 2;
-
-  // The total count of personal access tokens.
-  int32 total_size = 3;
 }
 
 message CreatePersonalAccessTokenRequest {

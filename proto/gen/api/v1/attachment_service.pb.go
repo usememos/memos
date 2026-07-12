@@ -463,8 +463,6 @@ type ListAttachmentsResponse struct {
 	// A token that can be sent as `page_token` to retrieve the next page.
 	// If this field is omitted, there are no subsequent pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
-	// The total count of attachments (may be approximate).
-	TotalSize     int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -511,13 +509,6 @@ func (x *ListAttachmentsResponse) GetNextPageToken() string {
 		return x.NextPageToken
 	}
 	return ""
-}
-
-func (x *ListAttachmentsResponse) GetTotalSize() int32 {
-	if x != nil {
-		return x.TotalSize
-	}
-	return 0
 }
 
 type GetAttachmentRequest struct {
@@ -746,12 +737,10 @@ const file_api_v1_attachment_service_proto_rawDesc = "" +
 	"\n" +
 	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
 	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x9c\x01\n" +
+	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\"}\n" +
 	"\x17ListAttachmentsResponse\x12:\n" +
 	"\vattachments\x18\x01 \x03(\v2\x18.memos.api.v1.AttachmentR\vattachments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
-	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"K\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"K\n" +
 	"\x14GetAttachmentRequest\x123\n" +
 	"\x04name\x18\x01 \x01(\tB\x1f\xe0A\x02\xfaA\x19\n" +
 	"\x17memos.api.v1/AttachmentR\x04name\"\x9a\x01\n" +

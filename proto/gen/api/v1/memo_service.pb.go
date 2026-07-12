@@ -1399,8 +1399,6 @@ type ListMemoCommentsResponse struct {
 	Memos []*Memo `protobuf:"bytes,1,rep,name=memos,proto3" json:"memos,omitempty"`
 	// A token for the next page of results.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
-	// The total count of comments.
-	TotalSize     int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1447,13 +1445,6 @@ func (x *ListMemoCommentsResponse) GetNextPageToken() string {
 		return x.NextPageToken
 	}
 	return ""
-}
-
-func (x *ListMemoCommentsResponse) GetTotalSize() int32 {
-	if x != nil {
-		return x.TotalSize
-	}
-	return 0
 }
 
 type ListMemoReactionsRequest struct {
@@ -1526,8 +1517,6 @@ type ListMemoReactionsResponse struct {
 	Reactions []*Reaction `protobuf:"bytes,1,rep,name=reactions,proto3" json:"reactions,omitempty"`
 	// A token for the next page of results.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
-	// The total count of reactions.
-	TotalSize     int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1574,13 +1563,6 @@ func (x *ListMemoReactionsResponse) GetNextPageToken() string {
 		return x.NextPageToken
 	}
 	return ""
-}
-
-func (x *ListMemoReactionsResponse) GetTotalSize() int32 {
-	if x != nil {
-		return x.TotalSize
-	}
-	return 0
 }
 
 type UpsertMemoReactionRequest struct {
@@ -2456,23 +2438,19 @@ const file_api_v1_memo_service_proto_rawDesc = "" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x8b\x01\n" +
+	"\border_by\x18\x04 \x01(\tB\x03\xe0A\x01R\aorderBy\"l\n" +
 	"\x18ListMemoCommentsResponse\x12(\n" +
 	"\x05memos\x18\x01 \x03(\v2\x12.memos.api.v1.MemoR\x05memos\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
-	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\x8f\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x8f\x01\n" +
 	"\x18ListMemoReactionsRequest\x12-\n" +
 	"\x04name\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
 	"\x11memos.api.v1/MemoR\x04name\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x98\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"y\n" +
 	"\x19ListMemoReactionsResponse\x124\n" +
 	"\treactions\x18\x01 \x03(\v2\x16.memos.api.v1.ReactionR\treactions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
-	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\x83\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x83\x01\n" +
 	"\x19UpsertMemoReactionRequest\x12-\n" +
 	"\x04name\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
 	"\x11memos.api.v1/MemoR\x04name\x127\n" +

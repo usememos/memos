@@ -83,7 +83,7 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 
 func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User, error) {
 	where, args := []string{"1 = 1"}, []any{}
-	orderBy := []string{"`created_ts` DESC", "`row_status` DESC"}
+	orderBy := []string{"`created_ts` DESC", "`row_status` DESC", "`id` DESC"}
 
 	if len(find.Filters) > 0 {
 		return nil, errors.Errorf("user filters are not supported")
@@ -147,6 +147,9 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 	query := "SELECT `id`, `username`, `role`, `email`, `nickname`, `password_hash`, `avatar_url`, `description`, UNIX_TIMESTAMP(`created_ts`), UNIX_TIMESTAMP(`updated_ts`), `row_status` FROM `user` WHERE " + strings.Join(where, " AND ") + " ORDER BY " + strings.Join(orderBy, ", ")
 	if v := find.Limit; v != nil {
 		query += fmt.Sprintf(" LIMIT %d", *v)
+		if v := find.Offset; v != nil {
+			query += fmt.Sprintf(" OFFSET %d", *v)
+		}
 	}
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {

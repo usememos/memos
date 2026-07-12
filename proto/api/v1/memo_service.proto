@@ -519,9 +519,6 @@ message ListMemoCommentsResponse {
 
   // A token for the next page of results.
   string next_page_token = 2;
-
-  // The total count of comments.
-  int32 total_size = 3;
 }
 
 message ListMemoReactionsRequest {
@@ -545,9 +542,6 @@ message ListMemoReactionsResponse {
 
   // A token for the next page of results.
   string next_page_token = 2;
-
-  // The total count of reactions.
-  int32 total_size = 3;
 }
 
 message UpsertMemoReactionRequest {

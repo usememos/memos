@@ -12,7 +12,7 @@ import (
 
 const (
 	// DefaultPageSize is the default page size for requests.
-	DefaultPageSize = 10
+	DefaultPageSize = 50
 	// MaxPageSize is the maximum page size for requests.
 	MaxPageSize = 1000
 )

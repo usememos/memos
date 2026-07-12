@@ -194,14 +194,7 @@ func (s *APIV1Service) ListAttachments(ctx context.Context, request *v1pb.ListAt
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
 
-	// Set default page size
-	pageSize := int(request.PageSize)
-	if pageSize <= 0 {
-		pageSize = 50
-	}
-	if pageSize > 1000 {
-		pageSize = 1000
-	}
+	pageSize := normalizePageSize(request.PageSize)
 
 	// Parse page token for offset
 	offset := 0
@@ -237,10 +230,6 @@ func (s *APIV1Service) ListAttachments(ctx context.Context, request *v1pb.ListAt
 	for _, attachment := range attachments {
 		response.Attachments = append(response.Attachments, convertAttachmentFromStore(attachment))
 	}
-
-	// For simplicity, set total size to the number of returned attachments.
-	// In a full implementation, you'd want a separate count query
-	response.TotalSize = int32(len(response.Attachments))
 
 	// Set next page token if we got the full page size (indicating there might be more)
 	if len(attachments) == pageSize {

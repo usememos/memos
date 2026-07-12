@@ -220,8 +220,7 @@ func (s *APIV1Service) ListUserSettings(ctx context.Context, request *v1pb.ListU
 		settings = append([]*v1pb.UserSetting{defaultGeneral}, settings...)
 	}
 	response := &v1pb.ListUserSettingsResponse{
-		Settings:  settings,
-		TotalSize: int32(len(settings)),
+		Settings: settings,
 	}
 
 	return response, nil

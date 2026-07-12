@@ -454,8 +454,6 @@ type ListUsersResponse struct {
 	// A token that can be sent as `page_token` to retrieve the next page.
 	// If this field is omitted, there are no subsequent pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
-	// The total count of users (may be approximate).
-	TotalSize     int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -502,13 +500,6 @@ func (x *ListUsersResponse) GetNextPageToken() string {
 		return x.NextPageToken
 	}
 	return ""
-}
-
-func (x *ListUsersResponse) GetTotalSize() int32 {
-	if x != nil {
-		return x.TotalSize
-	}
-	return 0
 }
 
 type BatchGetUsersRequest struct {
@@ -1384,8 +1375,6 @@ type ListUserSettingsResponse struct {
 	// A token that can be sent as `page_token` to retrieve the next page.
 	// If this field is omitted, there are no subsequent pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
-	// The total count of settings (may be approximate).
-	TotalSize     int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1432,13 +1421,6 @@ func (x *ListUserSettingsResponse) GetNextPageToken() string {
 		return x.NextPageToken
 	}
 	return ""
-}
-
-func (x *ListUserSettingsResponse) GetTotalSize() int32 {
-	if x != nil {
-		return x.TotalSize
-	}
-	return 0
 }
 
 // LinkedIdentity represents an SSO identity linked to a user account.
@@ -1927,8 +1909,6 @@ type ListPersonalAccessTokensResponse struct {
 	PersonalAccessTokens []*PersonalAccessToken `protobuf:"bytes,1,rep,name=personal_access_tokens,json=personalAccessTokens,proto3" json:"personal_access_tokens,omitempty"`
 	// A token for the next page of results.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
-	// The total count of personal access tokens.
-	TotalSize     int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1975,13 +1955,6 @@ func (x *ListPersonalAccessTokensResponse) GetNextPageToken() string {
 		return x.NextPageToken
 	}
 	return ""
-}
-
-func (x *ListPersonalAccessTokensResponse) GetTotalSize() int32 {
-	if x != nil {
-		return x.TotalSize
-	}
-	return 0
 }
 
 type CreatePersonalAccessTokenRequest struct {
@@ -3408,12 +3381,10 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\n" +
 	"page_token\x18\x02 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
 	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter\x12&\n" +
-	"\fshow_deleted\x18\x04 \x01(\bB\x03\xe0A\x01R\vshowDeleted\"\x84\x01\n" +
+	"\fshow_deleted\x18\x04 \x01(\bB\x03\xe0A\x01R\vshowDeleted\"e\n" +
 	"\x11ListUsersResponse\x12(\n" +
 	"\x05users\x18\x01 \x03(\v2\x12.memos.api.v1.UserR\x05users\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
-	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"4\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"4\n" +
 	"\x14BatchGetUsersRequest\x12\x1c\n" +
 	"\tusernames\x18\x01 \x03(\tR\tusernames\"A\n" +
 	"\x15BatchGetUsersResponse\x12(\n" +
@@ -3504,12 +3475,10 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\x11memos.api.v1/UserR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\x98\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"y\n" +
 	"\x18ListUserSettingsResponse\x125\n" +
 	"\bsettings\x18\x01 \x03(\v2\x19.memos.api.v1.UserSettingR\bsettings\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
-	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\x84\x02\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x84\x02\n" +
 	"\x0eLinkedIdentity\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
 	"\bidp_name\x18\x02 \x01(\tB%\xe0A\x03\xfaA\x1f\n" +
@@ -3551,12 +3520,10 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\x11memos.api.v1/UserR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
-	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xc2\x01\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xa3\x01\n" +
 	" ListPersonalAccessTokensResponse\x12W\n" +
 	"\x16personal_access_tokens\x18\x01 \x03(\v2!.memos.api.v1.PersonalAccessTokenR\x14personalAccessTokens\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
-	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"\xa9\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa9\x01\n" +
 	" CreatePersonalAccessTokenRequest\x121\n" +
 	"\x06parent\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
 	"\x11memos.api.v1/UserR\x06parent\x12%\n" +

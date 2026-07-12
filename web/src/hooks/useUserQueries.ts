@@ -205,12 +205,18 @@ export function useUpdateUserSetting() {
   });
 }
 
-// Hook to list all users
+// Hook to list all users, paging through every result.
 export function useListUsers() {
   return useQuery({
     queryKey: userKeys.all,
     queryFn: async () => {
-      const { users } = await userServiceClient.listUsers({});
+      const users: User[] = [];
+      let pageToken = "";
+      do {
+        const response = await userServiceClient.listUsers({ pageToken });
+        users.push(...response.users);
+        pageToken = response.nextPageToken;
+      } while (pageToken);
       return users;
     },
   });
