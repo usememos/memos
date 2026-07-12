@@ -7,11 +7,11 @@ import { MentionResolutionProvider } from "@/components/MemoContent/MentionResol
 import { MemoDetailSidebar, MemoDetailSidebarDrawer } from "@/components/MemoDetailSidebar";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
-import { memoNamePrefix } from "@/helpers/resource-names";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import useMemoDetailError from "@/hooks/useMemoDetailError";
 import { useInfiniteMemoComments, useMemo } from "@/hooks/useMemoQueries";
 import { useSharedMemo, withShareAttachmentLinks } from "@/hooks/useMemoShareQueries";
+import { memoNamePrefix } from "@/lib/resource-names";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 

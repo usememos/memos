@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
-import { buildMemoCreatorFilter } from "@/helpers/resource-names";
+import { buildMemoCreatorFilter } from "@/lib/resource-names";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 
 const getVisibilityName = (visibility: Visibility): string => {

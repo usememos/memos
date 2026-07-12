@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
-import { buildUserSettingName } from "@/helpers/resource-names";
 import { useTagCounts, useUpdateUserSetting } from "@/hooks/useUserQueries";
 import { colorToHex } from "@/lib/color";
+import { buildUserSettingName } from "@/lib/resource-names";
 import { isValidTagPattern } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import {

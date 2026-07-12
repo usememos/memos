@@ -2,8 +2,8 @@ import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { shortcutServiceClient, userServiceClient } from "@/connect";
-import { buildUserSettingName } from "@/helpers/resource-names";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { buildUserSettingName } from "@/lib/resource-names";
 import {
   type ListAllUserStatsRequest,
   ListAllUserStatsRequestSchema,

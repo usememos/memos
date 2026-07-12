@@ -3,8 +3,8 @@ import { useState } from "react";
 import MemoEditor from "@/components/MemoEditor";
 import MemoView from "@/components/MemoView";
 import { Button } from "@/components/ui/button";
-import { extractMemoIdFromName } from "@/helpers/resource-names";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { extractMemoIdFromName } from "@/lib/resource-names";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 

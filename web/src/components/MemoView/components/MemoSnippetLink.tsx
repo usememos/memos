@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { extractMemoIdFromName } from "@/helpers/resource-names";
+import { extractMemoIdFromName } from "@/lib/resource-names";
 import { cn } from "@/lib/utils";
 
 interface MemoSnippetLinkProps {

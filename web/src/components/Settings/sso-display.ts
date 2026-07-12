@@ -1,4 +1,4 @@
-import { extractIdentityProviderUidFromName } from "@/helpers/resource-names";
+import { extractIdentityProviderUidFromName } from "@/lib/resource-names";
 import { type FieldMapping, type IdentityProvider, IdentityProvider_Type, type OAuth2Config } from "@/types/proto/api/v1/idp_service_pb";
 import type { Translations } from "@/utils/i18n";
 

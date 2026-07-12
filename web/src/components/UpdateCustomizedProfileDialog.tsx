@@ -7,8 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useInstance } from "@/contexts/InstanceContext";
-import { buildInstanceSettingName } from "@/helpers/resource-names";
 import { handleError } from "@/lib/error";
+import { buildInstanceSettingName } from "@/lib/resource-names";
 import {
   InstanceSetting_GeneralSetting_CustomProfile,
   InstanceSetting_GeneralSetting_CustomProfileSchema,

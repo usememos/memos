@@ -3,11 +3,16 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import InfoChip from "@/components/Settings/InfoChip";
+import {
+  getIdentityProviderTypeLabel,
+  getOAuth2SummaryItems,
+  getSSOProviderUid,
+  type SummaryItem,
+} from "@/components/Settings/sso-display";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { identityProviderServiceClient } from "@/connect";
-import { getIdentityProviderTypeLabel, getOAuth2SummaryItems, getSSOProviderUid, type SummaryItem } from "@/helpers/sso-display";
 import { useDialog } from "@/hooks/useDialog";
 import { handleError } from "@/lib/error";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service_pb";

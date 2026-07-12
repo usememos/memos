@@ -1,9 +1,9 @@
 import { ArrowUpRightIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MemoPreview } from "@/components/MemoPreview";
-import { extractMemoIdFromName } from "@/helpers/resource-names";
 import { useMemoComments } from "@/hooks/useMemoQueries";
 import { useUsersByNames } from "@/hooks/useUserQueries";
+import { extractMemoIdFromName } from "@/lib/resource-names";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
 
 const MemoCommentListView: React.FC = () => {

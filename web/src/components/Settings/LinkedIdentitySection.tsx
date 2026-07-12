@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import InfoChip from "@/components/Settings/InfoChip";
+import { getIdentityProviderTypeLabel, getSSOProviderUid } from "@/components/Settings/sso-display";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { identityProviderServiceClient, userServiceClient } from "@/connect";
-import { getIdentityProviderTypeLabel, getSSOProviderUid } from "@/helpers/sso-display";
-import { absolutifyLink } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { absolutifyLink } from "@/lib/browser";
 import { handleError } from "@/lib/error";
 import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service_pb";
 import { LinkedIdentity } from "@/types/proto/api/v1/user_service_pb";

@@ -79,7 +79,7 @@ func isNilAnyResponse(resp connect.AnyResponse) bool {
 		return true
 	}
 	val := reflect.ValueOf(resp)
-	return val.Kind() == reflect.Ptr && val.IsNil()
+	return val.Kind() == reflect.Pointer && val.IsNil()
 }
 
 func (*MetadataInterceptor) WrapStreamingClient(next connect.StreamingClientFunc) connect.StreamingClientFunc {

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { identityProviderServiceClient } from "@/connect";
 import { useInstance } from "@/contexts/InstanceContext";
-import { absolutifyLink } from "@/helpers/utils";
+import { absolutifyLink } from "@/lib/browser";
 import { handleError } from "@/lib/error";
 import { ROUTES } from "@/router/routes";
 import { IdentityProvider, IdentityProvider_Type } from "@/types/proto/api/v1/idp_service_pb";

@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { FileIcon } from "lucide-react";
-import { extractMemoIdFromName } from "@/helpers/resource-names";
+import { extractMemoIdFromName } from "@/lib/resource-names";
 import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { MemoSchema } from "@/types/proto/api/v1/memo_service_pb";

@@ -3,8 +3,8 @@ import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import type { InfiniteData } from "@tanstack/react-query";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { memoServiceClient } from "@/connect";
-import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/helpers/consts";
 import { userKeys } from "@/hooks/useUserQueries";
+import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/lib/constants";
 import type { ListMemosRequest, ListMemosResponse, Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { ListMemoCommentsRequestSchema, ListMemosRequestSchema, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
