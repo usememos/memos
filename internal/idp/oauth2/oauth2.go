@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log/slog"
 	"net/http"
 	"time"
 
@@ -54,7 +53,7 @@ func (p *IdentityProvider) ExchangeToken(ctx context.Context, redirectURL, code,
 		Endpoint: oauth2.Endpoint{
 			AuthURL:   p.config.AuthUrl,
 			TokenURL:  p.config.TokenUrl,
-			AuthStyle: oauth2.AuthStyleInParams,
+			AuthStyle: oauth2.AuthStyleAutoDetect,
 		},
 	}
 
@@ -112,7 +111,6 @@ func (p *IdentityProvider) UserInfo(ctx context.Context, token string) (*idp.Ide
 	if err := json.Unmarshal(body, &claims); err != nil {
 		return nil, errors.Wrap(err, "failed to unmarshal response body")
 	}
-	slog.Info("user info claims", "claims", claims)
 	userInfo := &idp.IdentityProviderUserInfo{}
 	if v, ok := claims[p.config.FieldMapping.Identifier].(string); ok {
 		userInfo.Identifier = v
@@ -140,6 +138,5 @@ func (p *IdentityProvider) UserInfo(ctx context.Context, token string) (*idp.Ide
 			userInfo.AvatarURL = v
 		}
 	}
-	slog.Info("user info", "userInfo", userInfo)
 	return userInfo, nil
 }

@@ -163,6 +163,81 @@ func TestIdentityProvider(t *testing.T) {
 	assert.Equal(t, wantUserInfo, userInfoResult)
 }
 
+func TestIdentityProviderExchangeTokenClientAuthentication(t *testing.T) {
+	const (
+		clientID     = "test-client-id"
+		clientSecret = "test-client-secret"
+		code         = "test-code"
+		accessToken  = "test-access-token"
+		codeVerifier = "test-code-verifier"
+	)
+
+	tests := []struct {
+		name             string
+		acceptBasicAuth  bool
+		expectedRequests int
+	}{
+		{
+			name:             "client secret basic",
+			acceptBasicAuth:  true,
+			expectedRequests: 1,
+		},
+		{
+			name:             "client secret post fallback",
+			acceptBasicAuth:  false,
+			expectedRequests: 2,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			requestCount := 0
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				requestCount++
+				require.NoError(t, r.ParseForm())
+				require.Equal(t, code, r.Form.Get("code"))
+				require.Equal(t, codeVerifier, r.Form.Get("code_verifier"))
+
+				username, password, hasBasicAuth := r.BasicAuth()
+				if test.acceptBasicAuth {
+					require.True(t, hasBasicAuth)
+					require.Equal(t, clientID, username)
+					require.Equal(t, clientSecret, password)
+					require.Empty(t, r.Form.Get("client_id"))
+					require.Empty(t, r.Form.Get("client_secret"))
+				} else if hasBasicAuth {
+					http.Error(w, `{"error":"invalid_client"}`, http.StatusUnauthorized)
+					return
+				} else {
+					require.Equal(t, clientID, r.Form.Get("client_id"))
+					require.Equal(t, clientSecret, r.Form.Get("client_secret"))
+				}
+
+				w.Header().Set("Content-Type", "application/json")
+				require.NoError(t, json.NewEncoder(w).Encode(map[string]any{
+					"access_token": accessToken,
+					"token_type":   "Bearer",
+				}))
+			}))
+			defer server.Close()
+
+			provider, err := NewIdentityProvider(&storepb.OAuth2Config{
+				ClientId:     clientID,
+				ClientSecret: clientSecret,
+				TokenUrl:     server.URL,
+				UserInfoUrl:  "https://example.com/oauth2/userinfo",
+				FieldMapping: &storepb.FieldMapping{Identifier: "sub"},
+			})
+			require.NoError(t, err)
+
+			token, err := provider.ExchangeToken(context.Background(), "https://example.com/auth/callback", code, codeVerifier)
+			require.NoError(t, err)
+			assert.Equal(t, accessToken, token)
+			assert.Equal(t, test.expectedRequests, requestCount)
+		})
+	}
+}
+
 func TestIdentityProviderUserInfoUsesContext(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
