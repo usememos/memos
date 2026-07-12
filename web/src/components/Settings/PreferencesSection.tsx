@@ -1,6 +1,9 @@
 import { create } from "@bufbuild/protobuf";
+import { QUICK_ACTIONS_STORAGE_KEY } from "@/components/MemoView/components/MemoQuickActions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLocalStorage } from "@/hooks";
 import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import { UserSetting_GeneralSetting, UserSetting_GeneralSettingSchema } from "@/types/proto/api/v1/user_service_pb";
@@ -18,6 +21,7 @@ const PreferencesSection = () => {
   const t = useTranslate();
   const { currentUser, userGeneralSetting: generalSetting, refetchSettings } = useAuth();
   const { mutate: updateUserGeneralSetting } = useUpdateUserGeneralSetting(currentUser?.name);
+  const [quickActionsEnabled, setQuickActionsEnabled] = useLocalStorage(QUICK_ACTIONS_STORAGE_KEY, false);
 
   const handleLocaleSelectChange = (locale: Locale) => {
     // Apply locale immediately for instant UI feedback and persist to localStorage
@@ -77,6 +81,14 @@ const PreferencesSection = () => {
 
           <SettingListItem label={t("setting.preference.theme")} description={t("setting.preference.theme-description")}>
             <ThemeSelect value={setting.theme} onValueChange={handleThemeChange} />
+          </SettingListItem>
+        </SettingList>
+      </SettingGroup>
+
+      <SettingGroup title={t("setting.preference.behavior-title")} description={t("setting.preference.behavior-description")} showSeparator>
+        <SettingList>
+          <SettingListItem label={t("setting.preference.quick-actions")} description={t("setting.preference.quick-actions-description")}>
+            <Switch checked={quickActionsEnabled} onCheckedChange={setQuickActionsEnabled} />
           </SettingListItem>
         </SettingList>
       </SettingGroup>

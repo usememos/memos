@@ -582,6 +582,8 @@
     "preference": {
       "appearance-description": "Choose how the app looks and which language it uses for your account.",
       "appearance-title": "Appearance",
+      "behavior-description": "Adjust interaction shortcuts for memos. Settings are stored in this browser.",
+      "behavior-title": "Behavior",
       "default-memo-sort-option": "Memo display time",
       "default-memo-visibility": "Default memo visibility",
       "default-memo-visibility-description": "Visibility applied to newly created memos unless changed in the editor.",
@@ -589,6 +591,8 @@
       "language-description": "Updates the interface language immediately and saves it to your account.",
       "memo-defaults-description": "Set the defaults used when composing new memos.",
       "memo-defaults-title": "Memo defaults",
+      "quick-actions": "Quick action buttons",
+      "quick-actions-description": "Show pin, edit, archive, and delete shortcuts when hovering over a memo on desktop.",
       "theme-description": "Applies the selected theme immediately on this device.",
       "theme": "Theme"
     },
