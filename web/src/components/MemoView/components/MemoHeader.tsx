@@ -17,6 +17,7 @@ import VisibilityIcon from "../../VisibilityIcon";
 import { useMemoActions } from "../hooks";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
 import type { MemoHeaderProps } from "../types";
+import MemoQuickActions from "./MemoQuickActions";
 
 const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, showPinned }) => {
   const t = useTranslate();
@@ -105,6 +106,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
           </TooltipProvider>
         )}
 
+        <MemoQuickActions memo={memo} readonly={readonly} onEdit={openEditor} />
         <MemoActionMenu memo={memo} readonly={readonly} onEdit={openEditor} />
       </div>
     </div>
