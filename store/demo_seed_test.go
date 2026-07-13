@@ -13,7 +13,7 @@ import (
 	"github.com/usememos/memos/store/db/sqlite"
 )
 
-func TestDemoSeedRequiresIdentityProviderSignIn(t *testing.T) {
+func TestDemoSeedUsesDeploymentAuthenticationPolicy(t *testing.T) {
 	ctx := context.Background()
 	p := &profile.Profile{
 		Demo:   true,
@@ -31,8 +31,20 @@ func TestDemoSeedRequiresIdentityProviderSignIn(t *testing.T) {
 	require.NoError(t, stores.Migrate(ctx))
 	generalSetting, err := stores.GetInstanceGeneralSetting(ctx)
 	require.NoError(t, err)
+	require.False(t, generalSetting.DisallowPasswordAuth, "authentication policy must come from deployment configuration")
+	require.False(t, generalSetting.DisallowUserRegistration, "SSO first-login provisioning must remain enabled")
+
+	secretDir := t.TempDir()
+	writeDeploymentIdentityProvider(t, filepath.Join(secretDir, "memos-idp-primary-sso.json"), "primary-sso", "Primary SSO", "secret")
+	writeDeploymentGeneralSetting(t, filepath.Join(secretDir, "memos-instance-setting-general.json"), 0, true)
+	require.NoError(t, stores.LoadDeploymentConfigurationDir(ctx, secretDir))
+	generalSetting, err = stores.GetInstanceGeneralSetting(ctx)
+	require.NoError(t, err)
 	require.True(t, generalSetting.DisallowPasswordAuth)
 	require.False(t, generalSetting.DisallowUserRegistration, "SSO first-login provisioning must remain enabled")
+	provider, err := stores.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: ptr("primary-sso")})
+	require.NoError(t, err)
+	require.NotNil(t, provider)
 
 	demoUsername := "demo"
 	demoUser, err := stores.GetUser(ctx, &store.FindUser{Username: &demoUsername})

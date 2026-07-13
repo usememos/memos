@@ -58,6 +58,8 @@ type Driver interface {
 	ListIdentityProviders(ctx context.Context, find *FindIdentityProvider) ([]*IdentityProvider, error)
 	UpdateIdentityProvider(ctx context.Context, update *UpdateIdentityProvider) (*IdentityProvider, error)
 	DeleteIdentityProvider(ctx context.Context, delete *DeleteIdentityProvider) error
+	ApplyAuthenticationConfigMutation(ctx context.Context, mutation *AuthenticationConfigMutation) error
+	IsRetryableAuthenticationMutationError(err error) bool
 
 	// Inbox model related methods.
 	CreateInbox(ctx context.Context, create *Inbox) (*Inbox, error)

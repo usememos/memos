@@ -52,6 +52,48 @@ func (s *Store) CreateIdentityProvider(ctx context.Context, create *storepb.Iden
 }
 
 func (s *Store) ListIdentityProviders(ctx context.Context, find *FindIdentityProvider) ([]*storepb.IdentityProvider, error) {
+	stored, err := s.listStoredIdentityProviders(ctx, find)
+	if err != nil {
+		return nil, err
+	}
+	// File-backed providers do not have database IDs. ID-filtered reads are raw
+	// stored-resource lookups used by mutation paths.
+	if find.ID != nil {
+		return stored, nil
+	}
+	if find.UID != nil {
+		if provider := s.getDeploymentIdentityProvider(*find.UID); provider != nil {
+			return []*storepb.IdentityProvider{provider}, nil
+		}
+		return stored, nil
+	}
+
+	deploymentProviders := s.listDeploymentIdentityProviders()
+	deploymentByUID := make(map[string]*storepb.IdentityProvider, len(deploymentProviders))
+	for _, provider := range deploymentProviders {
+		deploymentByUID[provider.Uid] = provider
+	}
+	identityProviders := make([]*storepb.IdentityProvider, 0, len(stored)+len(deploymentProviders))
+	for _, provider := range stored {
+		if configured := deploymentByUID[provider.Uid]; configured != nil {
+			identityProviders = append(identityProviders, configured)
+			delete(deploymentByUID, provider.Uid)
+			continue
+		}
+		identityProviders = append(identityProviders, provider)
+	}
+	// listDeploymentIdentityProviders is UID-sorted, so providers that exist
+	// only in deployment configuration are appended deterministically without
+	// reordering existing database-backed providers.
+	for _, provider := range deploymentProviders {
+		if deploymentByUID[provider.Uid] != nil {
+			identityProviders = append(identityProviders, provider)
+		}
+	}
+	return identityProviders, nil
+}
+
+func (s *Store) listStoredIdentityProviders(ctx context.Context, find *FindIdentityProvider) ([]*storepb.IdentityProvider, error) {
 	list, err := s.driver.ListIdentityProviders(ctx, find)
 	if err != nil {
 		return nil, err
@@ -77,11 +119,26 @@ func (s *Store) GetIdentityProvider(ctx context.Context, find *FindIdentityProvi
 		return nil, nil
 	}
 	if len(list) > 1 {
-		return nil, errors.Errorf("Found multiple identity providers with ID %d", *find.ID)
+		return nil, errors.New("found multiple identity providers")
 	}
 
 	identityProvider := list[0]
 	return identityProvider, nil
+}
+
+// GetStoredIdentityProvider returns a database-backed provider without deployment shadowing.
+func (s *Store) GetStoredIdentityProvider(ctx context.Context, find *FindIdentityProvider) (*storepb.IdentityProvider, error) {
+	list, err := s.listStoredIdentityProviders(ctx, find)
+	if err != nil {
+		return nil, err
+	}
+	if len(list) == 0 {
+		return nil, nil
+	}
+	if len(list) > 1 {
+		return nil, errors.New("found multiple stored identity providers")
+	}
+	return list[0], nil
 }
 
 type UpdateIdentityProviderV1 struct {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -28,6 +29,9 @@ func (s *APIV1Service) CreateIdentityProvider(ctx context.Context, request *v1pb
 	idpUID, err := ValidateAndGenerateUID(request.IdentityProviderId)
 	if err != nil {
 		return nil, err
+	}
+	if s.Store.IsIdentityProviderDeploymentConfigured(idpUID) {
+		return nil, status.Errorf(codes.FailedPrecondition, "identity provider %q is configured by the deployment", idpUID)
 	}
 
 	storeIdp := convertIdentityProviderToStore(request.IdentityProvider)
@@ -93,9 +97,12 @@ func (s *APIV1Service) UpdateIdentityProvider(ctx context.Context, request *v1pb
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider name: %v", err)
 	}
+	if s.Store.IsIdentityProviderDeploymentConfigured(uid) {
+		return nil, status.Errorf(codes.FailedPrecondition, "identity provider %q is configured by the deployment", uid)
+	}
 
 	// Look up the IdP by UID to get the internal ID for update.
-	existing, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: &uid})
+	existing, err := s.Store.GetStoredIdentityProvider(ctx, &store.FindIdentityProvider{UID: &uid})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get identity provider, error: %+v", err)
 	}
@@ -152,9 +159,12 @@ func (s *APIV1Service) DeleteIdentityProvider(ctx context.Context, request *v1pb
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid identity provider name: %v", err)
 	}
+	if s.Store.IsIdentityProviderDeploymentConfigured(uid) {
+		return nil, status.Errorf(codes.FailedPrecondition, "identity provider %q is configured by the deployment", uid)
+	}
 
 	// Look up the IdP by UID to get the internal ID for deletion.
-	identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{UID: &uid})
+	identityProvider, err := s.Store.GetStoredIdentityProvider(ctx, &store.FindIdentityProvider{UID: &uid})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to check identity provider existence: %v", err)
 	}
@@ -162,7 +172,10 @@ func (s *APIV1Service) DeleteIdentityProvider(ctx context.Context, request *v1pb
 		return nil, status.Errorf(codes.NotFound, "identity provider not found")
 	}
 
-	if err := s.Store.DeleteIdentityProvider(ctx, &store.DeleteIdentityProvider{ID: identityProvider.Id}); err != nil {
+	if err := s.Store.DeleteIdentityProviderSafely(ctx, &store.DeleteIdentityProvider{ID: identityProvider.Id}); err != nil {
+		if errors.Is(err, store.ErrUnsafeAuthenticationConfiguration) {
+			return nil, status.Error(codes.FailedPrecondition, err.Error())
+		}
 		return nil, status.Errorf(codes.Internal, "failed to delete identity provider, error: %+v", err)
 	}
 	return &emptypb.Empty{}, nil

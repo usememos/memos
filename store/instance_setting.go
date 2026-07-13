@@ -1,7 +1,9 @@
 package store
 
 import (
+	"cmp"
 	"context"
+	"slices"
 
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -59,11 +61,43 @@ func (s *Store) UpsertInstanceSetting(ctx context.Context, upsert *storepb.Insta
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to convert instance setting")
 	}
-	s.instanceSettingCache.Set(ctx, instanceSetting.Key.String(), instanceSetting)
+	s.cacheInstanceSetting(ctx, instanceSetting)
 	return instanceSetting, nil
 }
 
 func (s *Store) ListInstanceSettings(ctx context.Context, find *FindInstanceSetting) ([]*storepb.InstanceSetting, error) {
+	stored, err := s.listStoredInstanceSettings(ctx, find)
+	if err != nil {
+		return nil, err
+	}
+	if find.Name != "" {
+		key, ok := storepb.InstanceSettingKey_value[find.Name]
+		if ok {
+			if configured := s.getDeploymentInstanceSetting(storepb.InstanceSettingKey(key)); configured != nil {
+				return []*storepb.InstanceSetting{configured}, nil
+			}
+		}
+		return stored, nil
+	}
+
+	byKey := make(map[storepb.InstanceSettingKey]*storepb.InstanceSetting, len(stored))
+	for _, setting := range stored {
+		byKey[setting.Key] = setting
+	}
+	s.deploymentConfigMu.RLock()
+	for key, setting := range s.deploymentConfig.instanceSettings {
+		byKey[key] = cloneInstanceSetting(setting)
+	}
+	s.deploymentConfigMu.RUnlock()
+	settings := make([]*storepb.InstanceSetting, 0, len(byKey))
+	for _, setting := range byKey {
+		settings = append(settings, setting)
+	}
+	slices.SortFunc(settings, func(a, b *storepb.InstanceSetting) int { return cmp.Compare(a.Key, b.Key) })
+	return settings, nil
+}
+
+func (s *Store) listStoredInstanceSettings(ctx context.Context, find *FindInstanceSetting) ([]*storepb.InstanceSetting, error) {
 	list, err := s.driver.ListInstanceSettings(ctx, find)
 	if err != nil {
 		return nil, err
@@ -78,13 +112,37 @@ func (s *Store) ListInstanceSettings(ctx context.Context, find *FindInstanceSett
 		if instanceSetting == nil {
 			continue
 		}
-		s.instanceSettingCache.Set(ctx, instanceSetting.Key.String(), instanceSetting)
+		s.cacheInstanceSetting(ctx, instanceSetting)
 		instanceSettings = append(instanceSettings, instanceSetting)
 	}
 	return instanceSettings, nil
 }
 
+func (s *Store) getRawInstanceSetting(ctx context.Context, name string) (*storepb.InstanceSetting, error) {
+	list, err := s.listStoredInstanceSettings(ctx, &FindInstanceSetting{Name: name})
+	if err != nil {
+		return nil, err
+	}
+	if len(list) == 0 {
+		return nil, nil
+	}
+	if len(list) > 1 {
+		return nil, errors.Errorf("found multiple stored instance settings with key %s", name)
+	}
+	return list[0], nil
+}
+
+// GetStoredInstanceSetting returns a database-backed setting without deployment shadowing.
+func (s *Store) GetStoredInstanceSetting(ctx context.Context, find *FindInstanceSetting) (*storepb.InstanceSetting, error) {
+	return s.getRawInstanceSetting(ctx, find.Name)
+}
+
 func (s *Store) GetInstanceSetting(ctx context.Context, find *FindInstanceSetting) (*storepb.InstanceSetting, error) {
+	if key, ok := storepb.InstanceSettingKey_value[find.Name]; ok {
+		if setting := s.getDeploymentInstanceSetting(storepb.InstanceSettingKey(key)); setting != nil {
+			return setting, nil
+		}
+	}
 	if cache, ok := s.instanceSettingCache.Get(ctx, find.Name); ok {
 		instanceSetting, ok := cache.(*storepb.InstanceSetting)
 		if ok {
@@ -105,6 +163,13 @@ func (s *Store) GetInstanceSetting(ctx context.Context, find *FindInstanceSettin
 	return list[0], nil
 }
 
+func (s *Store) cacheInstanceSetting(ctx context.Context, setting *storepb.InstanceSetting) {
+	if setting == nil || s.IsInstanceSettingDeploymentConfigured(setting.Key) {
+		return
+	}
+	s.instanceSettingCache.Set(ctx, setting.Key.String(), setting)
+}
+
 func (s *Store) GetInstanceBasicSetting(ctx context.Context) (*storepb.InstanceBasicSetting, error) {
 	instanceSetting, err := s.GetInstanceSetting(ctx, &FindInstanceSetting{
 		Name: storepb.InstanceSettingKey_BASIC.String(),
@@ -117,7 +182,7 @@ func (s *Store) GetInstanceBasicSetting(ctx context.Context) (*storepb.InstanceB
 	if instanceSetting != nil {
 		instanceBasicSetting = instanceSetting.GetBasicSetting()
 	}
-	s.instanceSettingCache.Set(ctx, storepb.InstanceSettingKey_BASIC.String(), &storepb.InstanceSetting{
+	s.cacheInstanceSetting(ctx, &storepb.InstanceSetting{
 		Key:   storepb.InstanceSettingKey_BASIC,
 		Value: &storepb.InstanceSetting_BasicSetting{BasicSetting: instanceBasicSetting},
 	})
@@ -136,7 +201,7 @@ func (s *Store) GetInstanceGeneralSetting(ctx context.Context) (*storepb.Instanc
 	if instanceSetting != nil {
 		instanceGeneralSetting = instanceSetting.GetGeneralSetting()
 	}
-	s.instanceSettingCache.Set(ctx, storepb.InstanceSettingKey_GENERAL.String(), &storepb.InstanceSetting{
+	s.cacheInstanceSetting(ctx, &storepb.InstanceSetting{
 		Key:   storepb.InstanceSettingKey_GENERAL,
 		Value: &storepb.InstanceSetting_GeneralSetting{GeneralSetting: instanceGeneralSetting},
 	})
@@ -167,7 +232,7 @@ func (s *Store) GetInstanceMemoRelatedSetting(ctx context.Context) (*storepb.Ins
 	if len(instanceMemoRelatedSetting.Reactions) == 0 {
 		instanceMemoRelatedSetting.Reactions = append(instanceMemoRelatedSetting.Reactions, DefaultReactions...)
 	}
-	s.instanceSettingCache.Set(ctx, storepb.InstanceSettingKey_MEMO_RELATED.String(), &storepb.InstanceSetting{
+	s.cacheInstanceSetting(ctx, &storepb.InstanceSetting{
 		Key:   storepb.InstanceSettingKey_MEMO_RELATED,
 		Value: &storepb.InstanceSetting_MemoRelatedSetting{MemoRelatedSetting: instanceMemoRelatedSetting},
 	})
@@ -189,7 +254,7 @@ func (s *Store) GetInstanceTagsSetting(ctx context.Context) (*storepb.InstanceTa
 	if instanceTagsSetting.Tags == nil {
 		instanceTagsSetting.Tags = map[string]*storepb.InstanceTagMetadata{}
 	}
-	s.instanceSettingCache.Set(ctx, storepb.InstanceSettingKey_TAGS.String(), &storepb.InstanceSetting{
+	s.cacheInstanceSetting(ctx, &storepb.InstanceSetting{
 		Key:   storepb.InstanceSettingKey_TAGS,
 		Value: &storepb.InstanceSetting_TagsSetting{TagsSetting: instanceTagsSetting},
 	})
@@ -211,7 +276,7 @@ func (s *Store) GetInstanceNotificationSetting(ctx context.Context) (*storepb.In
 	if instanceNotificationSetting.Email == nil {
 		instanceNotificationSetting.Email = &storepb.InstanceNotificationSetting_EmailSetting{}
 	}
-	s.instanceSettingCache.Set(ctx, storepb.InstanceSettingKey_NOTIFICATION.String(), &storepb.InstanceSetting{
+	s.cacheInstanceSetting(ctx, &storepb.InstanceSetting{
 		Key:   storepb.InstanceSettingKey_NOTIFICATION,
 		Value: &storepb.InstanceSetting_NotificationSetting{NotificationSetting: instanceNotificationSetting},
 	})
@@ -231,7 +296,7 @@ func (s *Store) GetInstanceAISetting(ctx context.Context) (*storepb.InstanceAISe
 	if instanceSetting != nil {
 		instanceAISetting = instanceSetting.GetAiSetting()
 	}
-	s.instanceSettingCache.Set(ctx, storepb.InstanceSettingKey_AI.String(), &storepb.InstanceSetting{
+	s.cacheInstanceSetting(ctx, &storepb.InstanceSetting{
 		Key:   storepb.InstanceSettingKey_AI,
 		Value: &storepb.InstanceSetting_AiSetting{AiSetting: instanceAISetting},
 	})
@@ -265,7 +330,7 @@ func (s *Store) GetInstanceStorageSetting(ctx context.Context) (*storepb.Instanc
 	if instanceStorageSetting.FilepathTemplate == "" {
 		instanceStorageSetting.FilepathTemplate = defaultInstanceFilepathTemplate
 	}
-	s.instanceSettingCache.Set(ctx, storepb.InstanceSettingKey_STORAGE.String(), &storepb.InstanceSetting{
+	s.cacheInstanceSetting(ctx, &storepb.InstanceSetting{
 		Key:   storepb.InstanceSettingKey_STORAGE,
 		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: instanceStorageSetting},
 	})

@@ -99,36 +99,41 @@ func (s *APIV1Service) getInstanceSettingByName(ctx context.Context, name string
 
 	instanceSettingKey := storepb.InstanceSettingKey(storepb.InstanceSettingKey_value[instanceSettingKeyString])
 	// Get instance setting from store with default value.
+	var instanceSetting *storepb.InstanceSetting
 	switch instanceSettingKey {
 	case storepb.InstanceSettingKey_BASIC:
-		_, err = s.Store.GetInstanceBasicSetting(ctx)
+		var setting *storepb.InstanceBasicSetting
+		setting, err = s.Store.GetInstanceBasicSetting(ctx)
+		instanceSetting = &storepb.InstanceSetting{Key: instanceSettingKey, Value: &storepb.InstanceSetting_BasicSetting{BasicSetting: setting}}
 	case storepb.InstanceSettingKey_GENERAL:
-		_, err = s.Store.GetInstanceGeneralSetting(ctx)
+		var setting *storepb.InstanceGeneralSetting
+		setting, err = s.Store.GetInstanceGeneralSetting(ctx)
+		instanceSetting = &storepb.InstanceSetting{Key: instanceSettingKey, Value: &storepb.InstanceSetting_GeneralSetting{GeneralSetting: setting}}
 	case storepb.InstanceSettingKey_MEMO_RELATED:
-		_, err = s.Store.GetInstanceMemoRelatedSetting(ctx)
+		var setting *storepb.InstanceMemoRelatedSetting
+		setting, err = s.Store.GetInstanceMemoRelatedSetting(ctx)
+		instanceSetting = &storepb.InstanceSetting{Key: instanceSettingKey, Value: &storepb.InstanceSetting_MemoRelatedSetting{MemoRelatedSetting: setting}}
 	case storepb.InstanceSettingKey_STORAGE:
-		_, err = s.Store.GetInstanceStorageSetting(ctx)
+		var setting *storepb.InstanceStorageSetting
+		setting, err = s.Store.GetInstanceStorageSetting(ctx)
+		instanceSetting = &storepb.InstanceSetting{Key: instanceSettingKey, Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: setting}}
 	case storepb.InstanceSettingKey_TAGS:
-		_, err = s.Store.GetInstanceTagsSetting(ctx)
+		var setting *storepb.InstanceTagsSetting
+		setting, err = s.Store.GetInstanceTagsSetting(ctx)
+		instanceSetting = &storepb.InstanceSetting{Key: instanceSettingKey, Value: &storepb.InstanceSetting_TagsSetting{TagsSetting: setting}}
 	case storepb.InstanceSettingKey_NOTIFICATION:
-		_, err = s.Store.GetInstanceNotificationSetting(ctx)
+		var setting *storepb.InstanceNotificationSetting
+		setting, err = s.Store.GetInstanceNotificationSetting(ctx)
+		instanceSetting = &storepb.InstanceSetting{Key: instanceSettingKey, Value: &storepb.InstanceSetting_NotificationSetting{NotificationSetting: setting}}
 	case storepb.InstanceSettingKey_AI:
-		_, err = s.Store.GetInstanceAISetting(ctx)
+		var setting *storepb.InstanceAISetting
+		setting, err = s.Store.GetInstanceAISetting(ctx)
+		instanceSetting = &storepb.InstanceSetting{Key: instanceSettingKey, Value: &storepb.InstanceSetting_AiSetting{AiSetting: setting}}
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "unsupported instance setting key: %v", instanceSettingKey)
 	}
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get instance setting: %v", err)
-	}
-
-	instanceSetting, err := s.Store.GetInstanceSetting(ctx, &store.FindInstanceSetting{
-		Name: instanceSettingKey.String(),
-	})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get instance setting: %v", err)
-	}
-	if instanceSetting == nil {
-		return nil, status.Errorf(codes.NotFound, "instance setting not found")
 	}
 
 	// Storage and notification settings contain credentials; restrict to admins only.
@@ -183,6 +188,17 @@ func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.
 	if user.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
+	if request.Setting == nil {
+		return nil, status.Errorf(codes.InvalidArgument, "instance setting is required")
+	}
+	settingKeyString, err := ExtractInstanceSettingKeyFromName(request.Setting.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid instance setting name: %v", err)
+	}
+	settingKey := storepb.InstanceSettingKey(storepb.InstanceSettingKey_value[settingKeyString])
+	if s.Store.IsInstanceSettingDeploymentConfigured(settingKey) {
+		return nil, status.Errorf(codes.FailedPrecondition, "instance setting %q is configured by the deployment", settingKeyString)
+	}
 
 	// TODO: Apply update_mask if specified
 	_ = request.UpdateMask
@@ -221,8 +237,16 @@ func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.
 		// No credential preservation needed for other setting types.
 	}
 
-	instanceSetting, err := s.Store.UpsertInstanceSetting(ctx, updateSetting)
+	var instanceSetting *storepb.InstanceSetting
+	if updateSetting.Key == storepb.InstanceSettingKey_GENERAL {
+		instanceSetting, err = s.Store.UpsertInstanceGeneralSettingSafely(ctx, updateSetting)
+	} else {
+		instanceSetting, err = s.Store.UpsertInstanceSetting(ctx, updateSetting)
+	}
 	if err != nil {
+		if errors.Is(err, store.ErrUnsafeAuthenticationConfiguration) {
+			return nil, status.Error(codes.FailedPrecondition, err.Error())
+		}
 		return nil, status.Errorf(codes.Internal, "failed to upsert instance setting: %v", err)
 	}
 

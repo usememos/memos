@@ -59,5 +59,4 @@ INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(12,2,'memos
 INSERT INTO user_setting (user_id,key,value) VALUES(1,'PERSONAL_ACCESS_TOKENS','{"tokens":[{"tokenId":"demo-access-token","tokenHash":"7631cdaa5b56a39371dab01d5d186fd73f05602cc8ad29bf72ffef3713badd9d","description":"Demo access token","createdAt":"2024-01-01T00:00:00Z"}]}');
 
 -- System Settings
-INSERT INTO system_setting VALUES ('GENERAL', '{"disallowPasswordAuth":true}', 'Require identity provider sign-in for the public demo.');
 INSERT INTO system_setting VALUES ('MEMO_RELATED', '{"contentLengthLimit":8192,"enableAutoCompact":true,"enableComment":true,"enableLocation":true,"defaultVisibility":"PUBLIC","reactions":["👍","💛","🔥","👏","😂","👌","🚀","👀","🤔","🤡","❓","+1","🎉","💡","✅"]}', '');

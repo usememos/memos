@@ -67,6 +67,11 @@ var (
 				slog.Error("failed to migrate", "error", err)
 				return
 			}
+			if err := storeInstance.LoadDeploymentConfiguration(ctx); err != nil {
+				cancel()
+				slog.Error("failed to load deployment configuration", "error", err)
+				return
+			}
 
 			s, err := server.NewServer(ctx, instanceProfile, storeInstance)
 			if err != nil {
