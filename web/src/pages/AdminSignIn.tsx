@@ -1,22 +1,32 @@
-import AuthFooter from "@/components/AuthFooter";
+import { ArrowLeftIcon, ShieldCheckIcon } from "lucide-react";
+import { Link } from "react-router-dom";
+import AuthPageLayout, { AuthChip } from "@/components/AuthPageLayout";
 import PasswordSignInForm from "@/components/PasswordSignInForm";
-import { useInstance } from "@/contexts/InstanceContext";
+import { ROUTES } from "@/router/routes";
+import { useTranslate } from "@/utils/i18n";
 
 const AdminSignIn = () => {
-  const { generalSetting: instanceGeneralSetting } = useInstance();
+  const t = useTranslate();
 
   return (
-    <div className="py-4 sm:py-8 w-80 max-w-full min-h-svh mx-auto flex flex-col justify-start items-center">
-      <div className="w-full py-4 grow flex flex-col justify-center items-center">
-        <div className="w-full flex flex-row justify-center items-center mb-6">
-          <img className="h-14 w-auto rounded-full shadow" src={instanceGeneralSetting.customProfile?.logoUrl || "/logo.webp"} alt="" />
-          <p className="ml-2 text-5xl text-foreground opacity-80">{instanceGeneralSetting.customProfile?.title || "Memos"}</p>
-        </div>
-        <p className="w-full text-xl font-medium text-muted-foreground">Sign in with admin accounts</p>
-        <PasswordSignInForm />
-      </div>
-      <AuthFooter />
-    </div>
+    <AuthPageLayout
+      chip={
+        <AuthChip>
+          <ShieldCheckIcon className="h-3 w-3" />
+          {t("common.admin")}
+        </AuthChip>
+      }
+      title={t("auth.admin-sign-in")}
+      subtitle={t("auth.admin-sign-in-tip")}
+    >
+      <PasswordSignInForm />
+      <p className="mt-5 text-center text-sm">
+        <Link to={ROUTES.AUTH} className="inline-flex items-center gap-1 text-primary hover:underline" viewTransition>
+          <ArrowLeftIcon className="h-3.5 w-3.5" />
+          {t("auth.back-to-sign-in")}
+        </Link>
+      </p>
+    </AuthPageLayout>
   );
 };
 

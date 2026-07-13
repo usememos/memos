@@ -3,8 +3,8 @@ import { LoaderIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { setAccessToken } from "@/auth-state";
+import CredentialFields from "@/components/CredentialFields";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { authServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
 import useLoading from "@/hooks/useLoading";
@@ -25,22 +25,9 @@ function PasswordSignInForm({ redirectPath }: PasswordSignInFormProps) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const text = e.target.value as string;
-    setUsername(text);
-  };
-
-  const handlePasswordInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const text = e.target.value as string;
-    setPassword(text);
-  };
-
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    handleSignInButtonClick();
-  };
 
-  const handleSignInButtonClick = async () => {
     if (username === "" || password === "") {
       return;
     }
@@ -72,45 +59,20 @@ function PasswordSignInForm({ redirectPath }: PasswordSignInFormProps) {
   };
 
   return (
-    <form className="w-full mt-2" onSubmit={handleFormSubmit}>
-      <div className="flex flex-col justify-start items-start w-full gap-4">
-        <div className="w-full flex flex-col justify-start items-start">
-          <span className="leading-8 text-muted-foreground">{t("common.username")}</span>
-          <Input
-            className="w-full bg-background h-10"
-            type="text"
-            readOnly={actionBtnLoadingState.isLoading}
-            placeholder={t("common.username")}
-            value={username}
-            autoComplete="username"
-            autoCapitalize="off"
-            spellCheck={false}
-            onChange={handleUsernameInputChanged}
-            required
-          />
-        </div>
-        <div className="w-full flex flex-col justify-start items-start">
-          <span className="leading-8 text-muted-foreground">{t("common.password")}</span>
-          <Input
-            className="w-full bg-background h-10"
-            type="password"
-            readOnly={actionBtnLoadingState.isLoading}
-            placeholder={t("common.password")}
-            value={password}
-            autoComplete="current-password"
-            autoCapitalize="off"
-            spellCheck={false}
-            onChange={handlePasswordInputChanged}
-            required
-          />
-        </div>
-      </div>
-      <div className="flex flex-row justify-end items-center w-full mt-6">
-        <Button type="submit" className="w-full h-10" disabled={actionBtnLoadingState.isLoading} onClick={handleSignInButtonClick}>
-          {t("common.sign-in")}
-          {actionBtnLoadingState.isLoading && <LoaderIcon className="w-5 h-auto ml-2 animate-spin opacity-60" />}
-        </Button>
-      </div>
+    <form className="flex w-full flex-col gap-4" onSubmit={handleFormSubmit}>
+      <CredentialFields
+        idPrefix="signin"
+        username={username}
+        password={password}
+        passwordAutoComplete="current-password"
+        readOnly={actionBtnLoadingState.isLoading}
+        onUsernameChange={setUsername}
+        onPasswordChange={setPassword}
+      />
+      <Button type="submit" disabled={actionBtnLoadingState.isLoading}>
+        {t("common.sign-in")}
+        {actionBtnLoadingState.isLoading && <LoaderIcon className="ml-1 h-4 w-auto animate-spin opacity-60" />}
+      </Button>
     </form>
   );
 }

@@ -87,3 +87,12 @@ export function shouldGatePrivateInstance(params: { isPrivateInstance: boolean; 
   }
   return !pathname.startsWith(`${ROUTES.SHARED_MEMO}/`);
 }
+
+/**
+ * Appends the given search params to a path, so links between auth pages
+ * (sign-in <-> sign-up) preserve the redirect target and other params.
+ */
+export function appendSearchParams(path: string, searchParams: URLSearchParams): string {
+  const queryString = searchParams.toString();
+  return queryString ? `${path}?${queryString}` : path;
+}

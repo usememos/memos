@@ -8,6 +8,9 @@ export const ROUTES = {
   SETTING: "/setting",
   EXPLORE: "/explore",
   AUTH: "/auth",
+  AUTH_SIGNUP: "/auth/signup",
+  AUTH_ADMIN: "/auth/admin",
+  AUTH_CALLBACK: "/auth/callback",
   SHARED_MEMO: "/memos/shares",
 } as const;
 

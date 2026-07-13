@@ -1,22 +1,24 @@
 import { create } from "@bufbuild/protobuf";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import { LoaderIcon } from "lucide-react";
+import { InfoIcon, LoaderIcon, LockIcon, SparklesIcon, UserRoundXIcon } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { setAccessToken } from "@/auth-state";
-import AuthFooter from "@/components/AuthFooter";
+import AuthPageLayout, { AuthChip, AuthEmptyState, AuthLinkPrompt } from "@/components/AuthPageLayout";
+import CredentialFields from "@/components/CredentialFields";
+import IdentityProviderButtons from "@/components/IdentityProviderButtons";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { authServiceClient, userServiceClient } from "@/connect";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
+import { useIdentityProviderList } from "@/hooks/useIdentityProviderQueries";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { handleError } from "@/lib/error";
 import { ROUTES } from "@/router/routes";
 import { User_Role, UserSchema } from "@/types/proto/api/v1/user_service_pb";
-import { AUTH_REDIRECT_PARAM, getSafeRedirectPath } from "@/utils/auth-redirect";
+import { AUTH_REDIRECT_PARAM, appendSearchParams, getSafeRedirectPath } from "@/utils/auth-redirect";
 import { useTranslate } from "@/utils/i18n";
 
 const SignUp = () => {
@@ -29,25 +31,18 @@ const SignUp = () => {
   const { generalSetting: instanceGeneralSetting, profile, initialize: initInstance } = useInstance();
   const [searchParams] = useSearchParams();
   const redirectTarget = getSafeRedirectPath(searchParams.get(AUTH_REDIRECT_PARAM));
-  const signInPath = searchParams.toString() ? `${ROUTES.AUTH}?${searchParams.toString()}` : ROUTES.AUTH;
-  const canUsePasswordSignUp = !instanceGeneralSetting.disallowUserRegistration && !instanceGeneralSetting.disallowPasswordAuth;
+  const signInPath = appendSearchParams(ROUTES.AUTH, searchParams);
 
-  const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const text = e.target.value as string;
-    setUsername(text);
-  };
+  const passwordAuthAllowed = !instanceGeneralSetting.disallowPasswordAuth;
+  const registrationOpen = !instanceGeneralSetting.disallowUserRegistration;
+  const needsSetup = profile.needsSetup;
+  // Provider buttons only render on the SSO-provisioned branch below; skip the request elsewhere.
+  const identityProviderList = useIdentityProviderList(!needsSetup && registrationOpen && !passwordAuthAllowed);
+  const hasIdentityProviders = identityProviderList.length > 0;
 
-  const handlePasswordInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const text = e.target.value as string;
-    setPassword(text);
-  };
-
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    handleSignUpButtonClick();
-  };
 
-  const handleSignUpButtonClick = async () => {
     if (username === "" || password === "") {
       return;
     }
@@ -87,75 +82,87 @@ const SignUp = () => {
     actionBtnLoadingState.setFinish();
   };
 
-  return (
-    <div className="py-4 sm:py-8 w-80 max-w-full min-h-svh mx-auto flex flex-col justify-start items-center">
-      <div className="w-full py-4 grow flex flex-col justify-center items-center">
-        <div className="w-full flex flex-row justify-center items-center mb-6">
-          <img className="h-14 w-auto rounded-full shadow" src={instanceGeneralSetting.customProfile?.logoUrl || "/logo.webp"} alt="" />
-          <p className="ml-2 text-5xl text-foreground opacity-80">{instanceGeneralSetting.customProfile?.title || "Memos"}</p>
+  const signUpForm = (
+    <form className="flex w-full flex-col gap-4" onSubmit={handleFormSubmit}>
+      <CredentialFields
+        idPrefix="signup"
+        username={username}
+        password={password}
+        passwordAutoComplete="new-password"
+        readOnly={actionBtnLoadingState.isLoading}
+        onUsernameChange={setUsername}
+        onPasswordChange={setPassword}
+      />
+      <Button type="submit" disabled={actionBtnLoadingState.isLoading}>
+        {needsSetup ? t("auth.create-admin-account") : t("common.sign-up")}
+        {actionBtnLoadingState.isLoading && <LoaderIcon className="ml-1 h-4 w-auto animate-spin opacity-60" />}
+      </Button>
+    </form>
+  );
+
+  const signInPrompt = <AuthLinkPrompt prompt={t("auth.sign-in-tip")} to={signInPath} label={t("common.sign-in")} />;
+
+  // First run: create the instance owner account.
+  if (needsSetup) {
+    return (
+      <AuthPageLayout
+        chip={
+          <AuthChip>
+            <SparklesIcon className="h-3 w-3" />
+            {t("auth.first-run")}
+          </AuthChip>
+        }
+        title={t("auth.setup-title")}
+        subtitle={t("auth.setup-description")}
+        hideExplore
+      >
+        {signUpForm}
+        <div className="mt-4 flex items-start gap-2 rounded-lg border border-border bg-accent/50 px-3 py-2 text-[13px] leading-relaxed text-muted-foreground">
+          <InfoIcon className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+          {t("auth.setup-note")}
         </div>
-        {canUsePasswordSignUp ? (
-          <>
-            <p className="w-full text-2xl mt-2 text-muted-foreground">{t("auth.create-your-account")}</p>
-            <form className="w-full mt-2" onSubmit={handleFormSubmit}>
-              <div className="flex flex-col justify-start items-start w-full gap-4">
-                <div className="w-full flex flex-col justify-start items-start">
-                  <span className="leading-8 text-muted-foreground">{t("common.username")}</span>
-                  <Input
-                    className="w-full bg-background h-10"
-                    type="text"
-                    readOnly={actionBtnLoadingState.isLoading}
-                    placeholder={t("common.username")}
-                    value={username}
-                    autoComplete="username"
-                    autoCapitalize="off"
-                    spellCheck={false}
-                    onChange={handleUsernameInputChanged}
-                    required
-                  />
-                </div>
-                <div className="w-full flex flex-col justify-start items-start">
-                  <span className="leading-8 text-muted-foreground">{t("common.password")}</span>
-                  <Input
-                    className="w-full bg-background h-10"
-                    type="password"
-                    readOnly={actionBtnLoadingState.isLoading}
-                    placeholder={t("common.password")}
-                    value={password}
-                    autoComplete="new-password"
-                    autoCapitalize="off"
-                    spellCheck={false}
-                    onChange={handlePasswordInputChanged}
-                    required
-                  />
-                </div>
-              </div>
-              <div className="flex flex-row justify-end items-center w-full mt-6">
-                <Button type="submit" className="w-full h-10" disabled={actionBtnLoadingState.isLoading} onClick={handleSignUpButtonClick}>
-                  {t("common.sign-up")}
-                  {actionBtnLoadingState.isLoading && <LoaderIcon className="w-5 h-auto ml-2 animate-spin opacity-60" />}
-                </Button>
-              </div>
-            </form>
-          </>
-        ) : instanceGeneralSetting.disallowPasswordAuth ? (
-          <p className="w-full text-2xl mt-2 text-muted-foreground">Password sign up is not allowed.</p>
+      </AuthPageLayout>
+    );
+  }
+
+  // Registration closed.
+  if (!registrationOpen) {
+    return (
+      <AuthPageLayout title={t("auth.create-your-account")}>
+        <AuthEmptyState
+          icon={<UserRoundXIcon className="h-5 w-5" />}
+          title={t("auth.signups-closed-title")}
+          description={t("auth.signups-closed-description")}
+        />
+        {signInPrompt}
+      </AuthPageLayout>
+    );
+  }
+
+  // Password sign-up disallowed: accounts come from the identity provider.
+  if (!passwordAuthAllowed) {
+    return (
+      <AuthPageLayout title={t("auth.create-your-account")} subtitle={hasIdentityProviders ? t("auth.sso-signup-tip") : undefined}>
+        {hasIdentityProviders ? (
+          <IdentityProviderButtons identityProviderList={identityProviderList} redirectTarget={redirectTarget} />
         ) : (
-          <p className="w-full text-2xl mt-2 text-muted-foreground">Sign up is not allowed.</p>
+          <AuthEmptyState
+            icon={<LockIcon className="h-5 w-5" />}
+            title={t("auth.signup-unavailable-title")}
+            description={t("auth.signup-unavailable-description")}
+          />
         )}
-        {profile.needsSetup ? (
-          <p className="w-full mt-4 text-sm font-medium text-muted-foreground">{t("auth.host-tip")}</p>
-        ) : (
-          <p className="w-full mt-4 text-sm">
-            <span className="text-muted-foreground">{t("auth.sign-in-tip")}</span>
-            <Link to={signInPath} className="cursor-pointer ml-2 text-primary hover:underline" viewTransition>
-              {t("common.sign-in")}
-            </Link>
-          </p>
-        )}
-      </div>
-      <AuthFooter />
-    </div>
+        {signInPrompt}
+      </AuthPageLayout>
+    );
+  }
+
+  // Open registration.
+  return (
+    <AuthPageLayout title={t("auth.create-your-account")}>
+      {signUpForm}
+      {signInPrompt}
+    </AuthPageLayout>
   );
 };
 
