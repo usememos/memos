@@ -81,6 +81,7 @@ const SignUp = () => {
       navigateTo(redirectTarget || ROUTES.HOME, { replace: true });
     } catch (error: unknown) {
       if (isInvalidUsernameError(error)) {
+        console.error(error);
         toast.error(t("message.invalid-username"));
       } else {
         handleError(error, toast.error, {
