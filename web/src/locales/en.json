@@ -351,6 +351,7 @@
     "failed-to-embed-memo": "Failed to embed memo",
     "fill-all": "Please fill in all fields.",
     "fill-all-required-fields": "Please fill all required fields",
+    "invalid-username": "Username must be 1–36 characters, contain only letters, numbers, or hyphens, start and end with a letter or number, and not contain only numbers.",
     "maximum-upload-size-is": "Maximum allowed upload size is {{size}} MiB",
     "memo-not-found": "Memo not found.",
     "new-password-not-match": "New passwords do not match.",

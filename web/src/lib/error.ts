@@ -1,3 +1,9 @@
+import { Code, ConnectError } from "@connectrpc/connect";
+
+export function isInvalidUsernameError(error: unknown): boolean {
+  return error instanceof ConnectError && error.code === Code.InvalidArgument && error.rawMessage.startsWith("invalid username:");
+}
+
 export function getErrorMessage(error: unknown, fallback = "Unknown error"): string {
   if (error instanceof Error) {
     return error.message;

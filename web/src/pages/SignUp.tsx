@@ -13,7 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { handleError } from "@/lib/error";
+import { handleError, isInvalidUsernameError } from "@/lib/error";
 import { ROUTES } from "@/router/routes";
 import { User_Role, UserSchema } from "@/types/proto/api/v1/user_service_pb";
 import { AUTH_REDIRECT_PARAM, getSafeRedirectPath } from "@/utils/auth-redirect";
@@ -80,9 +80,13 @@ const SignUp = () => {
       await initInstance();
       navigateTo(redirectTarget || ROUTES.HOME, { replace: true });
     } catch (error: unknown) {
-      handleError(error, toast.error, {
-        fallbackMessage: "Sign up failed",
-      });
+      if (isInvalidUsernameError(error)) {
+        toast.error(t("message.invalid-username"));
+      } else {
+        handleError(error, toast.error, {
+          fallbackMessage: "Sign up failed",
+        });
+      }
     }
     actionBtnLoadingState.setFinish();
   };
