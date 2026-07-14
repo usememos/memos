@@ -16,19 +16,14 @@ import useMediaQuery from "@/hooks/useMediaQuery";
 import { User_Role } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
-const GITHUB_COMMIT_URL_PREFIX = "https://github.com/usememos/memos/commit/";
-
-const isCommitSha = (commit: string) => /^[0-9a-f]{7,40}$/i.test(commit);
-
 const Setting = () => {
   const t = useTranslate();
   const sm = useMediaQuery("sm");
   const location = useLocation();
   const user = useCurrentUser();
-  const { profile, fetchSettings } = useInstance();
+  const { fetchSettings } = useInstance();
   const [selectedSection, setSelectedSection] = useState<SettingSectionKey>(DEFAULT_SETTING_SECTION);
   const isHost = user?.role === User_Role.ADMIN;
-  const commitUrl = isCommitSha(profile.commit) ? `${GITHUB_COMMIT_URL_PREFIX}${profile.commit}` : "";
 
   const sectionGroups = useMemo(() => {
     const visibleSections = SETTINGS_SECTIONS.filter((section) => section.scope === "basic" || isHost);
@@ -93,24 +88,7 @@ const Setting = () => {
               {isHost && (
                 <>
                   <span className="text-sm mt-4 pl-3 font-mono select-none text-muted-foreground">{t("common.admin")}</span>
-                  <div className="w-full flex flex-col justify-start items-start mt-1">
-                    {renderSectionMenuItems(sectionGroups.admin)}
-                    <div className="px-3 mt-2 opacity-70 text-sm leading-5">
-                      {t("setting.version")}: {profile.version}
-                      {profile.commit && (
-                        <span className="block font-mono break-all">
-                          Commit:{" "}
-                          {commitUrl ? (
-                            <a className="underline hover:text-foreground" href={commitUrl} target="_blank" rel="noreferrer">
-                              {profile.commit}
-                            </a>
-                          ) : (
-                            profile.commit
-                          )}
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                  <div className="w-full flex flex-col justify-start items-start mt-1">{renderSectionMenuItems(sectionGroups.admin)}</div>
                 </>
               )}
             </div>

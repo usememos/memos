@@ -1,82 +1,100 @@
 import { ExternalLinkIcon } from "lucide-react";
-import TileSpriteStrip from "@/components/Placeholder/TileSpriteStrip";
-import { TILE_SPRITES, type TileSprite } from "@/components/Placeholder/tileSprites";
-import SettingGroup from "@/components/Settings/SettingGroup";
-import SettingSection from "@/components/Settings/SettingSection";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useInstance } from "@/contexts/InstanceContext";
+import { useTranslate } from "@/utils/i18n";
 
-const SPRITE_SCALE = 2;
+const GITHUB_COMMIT_URL_PREFIX = "https://github.com/usememos/memos/commit/";
+const GITHUB_RELEASE_URL_PREFIX = "https://github.com/usememos/memos/releases/tag/v";
 
-const PRODUCT_LINKS = [
-  { label: "Website", href: "https://usememos.com/" },
-  { label: "GitHub", href: "https://github.com/usememos/memos" },
-  { label: "Docs", href: "https://usememos.com/docs" },
-];
+const DEFAULT_TITLE = "Memos";
+const DEFAULT_TAGLINE = "Capture first. Keep it yours.";
+const DEFAULT_LOGO = "/logo.webp";
 
-const PRODUCT_POINTS = ["Open. Write. Done.", "Markdown-native.", "Fully yours."];
+const isCommitSha = (commit: string) => /^[0-9a-f]{7,40}$/i.test(commit);
+const isSemver = (version: string) => /^\d+\.\d+\.\d+/.test(version);
 
-const BirdSprite = ({ sprite }: { sprite: TileSprite }) => {
-  return (
-    <figure className="flex w-auto min-w-28 flex-none flex-col items-center gap-3 rounded-xl border border-border bg-muted/20 px-4 py-4 text-center">
-      <TileSpriteStrip sprite={sprite} scale={SPRITE_SCALE} className="size-16" testId="about-bird-sprite" />
-      <figcaption className="min-w-0">
-        <h3 className="font-mono text-sm text-foreground">{sprite.name}</h3>
-      </figcaption>
-    </figure>
-  );
+const Chip = ({ href, children }: { href?: string; children: React.ReactNode }) => {
+  const className = "inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 font-mono text-xs text-muted-foreground";
+  if (href) {
+    return (
+      <a className={`${className} hover:bg-accent hover:text-foreground`} href={href} target="_blank" rel="noreferrer">
+        {children}
+      </a>
+    );
+  }
+  return <span className={className}>{children}</span>;
 };
 
 const About = () => {
+  const t = useTranslate();
+  const { profile, generalSetting } = useInstance();
+
+  // Instance identity: custom branding when the admin has set it, Memos defaults otherwise.
+  const customProfile = generalSetting.customProfile;
+  const instanceTitle = customProfile?.title || DEFAULT_TITLE;
+  const instanceTagline = customProfile?.description || DEFAULT_TAGLINE;
+  const instanceLogo = customProfile?.logoUrl || DEFAULT_LOGO;
+  const isCustomBranded = instanceTitle !== DEFAULT_TITLE;
+
+  // Dev builds report version "dev" and commit "unknown"; show the raw version and skip the commit chip.
+  const hasSemver = isSemver(profile.version);
+  const releaseUrl = hasSemver ? `${GITHUB_RELEASE_URL_PREFIX}${profile.version}` : "";
+  const versionLabel = hasSemver ? `v${profile.version}` : profile.version;
+  const hasCommitSha = isCommitSha(profile.commit);
+  const commitUrl = hasCommitSha ? `${GITHUB_COMMIT_URL_PREFIX}${profile.commit}` : "";
+  const shortCommit = hasCommitSha ? profile.commit.slice(0, 7) : "";
+
+  const projectLinks = [
+    { label: t("about.official-website"), note: "the project homepage", href: "https://usememos.com/" },
+    { label: t("about.documents"), note: "deploy, configure, use", href: "https://usememos.com/docs" },
+    { label: "API Docs", note: "REST + gRPC reference", href: "https://usememos.com/docs/api" },
+    { label: t("about.github-repository"), note: "source, issues, releases", href: "https://github.com/usememos/memos" },
+  ];
+
   return (
     <section className="mx-auto w-full max-w-5xl min-h-full flex flex-col justify-start items-start sm:pt-3 md:pt-6 pb-8">
       <div className="w-full">
         <div className="w-full rounded-xl border border-border bg-background px-4 py-4 text-muted-foreground">
-          <SettingSection
-            title="About Memos"
-            description="Open-source, self-hosted note-taking built for quick capture: Markdown-native, lightweight, and fully yours."
-          >
-            <SettingGroup>
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex min-w-0 items-center gap-3">
-                  <img className="size-12 shrink-0 select-none rounded-md" src="/logo.webp" alt="" draggable={false} />
-                  <div className="min-w-0">
-                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">Memos</h1>
-                    <p className="mt-1 text-sm text-muted-foreground">Capture first. Keep it yours.</p>
-                  </div>
-                </div>
-                <div className="flex shrink-0 flex-wrap gap-2">
-                  {PRODUCT_LINKS.map((link) => (
-                    <Button key={link.href} render={<a href={link.href} target="_blank" rel="noreferrer" />} variant="outline" size="lg">
-                      {link.label}
-                      <ExternalLinkIcon className="size-3.5" />
-                    </Button>
-                  ))}
-                </div>
+          <div className="flex min-w-0 items-center gap-4">
+            <img className="size-16 shrink-0 select-none rounded-md" src={instanceLogo} alt="" draggable={false} />
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-2xl font-semibold tracking-tight text-foreground">{instanceTitle}</h1>
+                {profile.demo && <Badge variant="warning">Demo</Badge>}
               </div>
-            </SettingGroup>
-
-            <SettingGroup
-              showSeparator
-              title="Product"
-              description="A small timeline for notes that should be saved now and organized later."
-            >
-              <div className="grid gap-3 sm:grid-cols-3">
-                {PRODUCT_POINTS.map((item) => (
-                  <div key={item} className="rounded-lg bg-muted/40 px-3 py-2 text-sm text-foreground">
-                    {item}
-                  </div>
-                ))}
+              <p className="mt-1 text-sm text-muted-foreground">{instanceTagline}</p>
+              <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                {profile.version && <Chip href={releaseUrl || undefined}>{versionLabel}</Chip>}
+                {shortCommit && <Chip href={commitUrl}>{shortCommit}</Chip>}
+                {isCustomBranded && <Chip>Powered by Memos</Chip>}
               </div>
-            </SettingGroup>
+            </div>
+          </div>
 
-            <SettingGroup showSeparator title="Birds" description="Pixel tile strips used by empty states.">
-              <section aria-label="Birds" className="flex flex-row flex-wrap gap-3">
-                {TILE_SPRITES.map((sprite) => (
-                  <BirdSprite key={sprite.name} sprite={sprite} />
-                ))}
-              </section>
-            </SettingGroup>
-          </SettingSection>
+          <nav aria-label="Project links" className="mt-5">
+            {projectLinks.map((link) => (
+              <a
+                key={link.href}
+                className="group flex flex-col gap-0.5 border-t border-border py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
+                href={link.href}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span className="min-w-0">
+                  <span className="text-sm font-medium text-foreground group-hover:underline group-hover:underline-offset-2">
+                    {link.label}
+                  </span>
+                  <span className="ml-2 text-xs text-muted-foreground">{link.note}</span>
+                </span>
+                <span className="inline-flex shrink-0 items-center gap-1 font-mono text-xs text-muted-foreground group-hover:text-foreground">
+                  {link.href.replace("https://", "")}
+                  <ExternalLinkIcon className="size-3" />
+                </span>
+              </a>
+            ))}
+          </nav>
+
+          <p className="border-t border-border pt-3 text-xs text-muted-foreground">Free and open source under the MIT license.</p>
         </div>
       </div>
     </section>
