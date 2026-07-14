@@ -3,7 +3,7 @@ import { tags as t, tagHighlighter } from "@lezer/highlight";
 
 /**
  * Map markdown syntax tokens to stable class names. ALL visual styling lives in
- * plain CSS (the `.memo-editor-content` block in `src/index.css`) so the editor
+ * plain CSS (the `.memo-editor-content` block in `Editor/editor.css`) so the editor
  * is themed like the rest of the app — Tailwind/theme tokens in a stylesheet —
  * rather than a CodeMirror CSS-in-JS theme object. Headings (`.cm-md-h*`) and
  * `#tag`/`@mention` (`.cm-memo-*`) classes come from the decoration plugins;

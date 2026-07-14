@@ -2,7 +2,7 @@ import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirro
 import { markdown } from "@codemirror/lang-markdown";
 import { indentUnit } from "@codemirror/language";
 import { Compartment, type Extension } from "@codemirror/state";
-import { placeholder as cmPlaceholder, drawSelection, dropCursor, EditorView, type KeyBinding, keymap } from "@codemirror/view";
+import { placeholder as cmPlaceholder, dropCursor, EditorView, type KeyBinding, keymap } from "@codemirror/view";
 import { GFM } from "@lezer/markdown";
 import { headingDecorations } from "./headingDecorations";
 import { liftListItem, sinkListItem } from "./listIndent";
@@ -74,7 +74,6 @@ export function buildEditorExtensions({
     // Core editing behavior. These are the pieces from CM6 setup that this memo
     // editor uses, without enabling multi-cursor selection.
     history(),
-    drawSelection(),
     dropCursor(),
     // Indent with spaces (markdown), matching the 2-space bullet nesting.
     indentUnit.of("  "),

@@ -11,8 +11,8 @@
   --popover-foreground: oklch(0.92 0.006 255);
 
   /* Primary - readable blue for selected items, links, and focused controls */
-  --primary: oklch(0.62 0.11 250);
-  --primary-foreground: oklch(0.98 0.004 255);
+  --primary: oklch(0.66 0.11 250);
+  --primary-foreground: oklch(0.24 0.008 255);
 
   /* Secondary - elevated surface for secondary buttons */
   --secondary: oklch(0.33 0.011 255);

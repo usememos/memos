@@ -13,7 +13,7 @@ describe("MemoEditor CodeMirror extensions", () => {
     document.body.replaceChildren();
   });
 
-  it("uses CodeMirror's selection and placeholder extensions without enabling multi-cursor selection", () => {
+  it("uses the native selection and CodeMirror placeholder without enabling multi-cursor selection", () => {
     const parent = document.body.appendChild(document.createElement("div"));
     const state = EditorState.create({
       doc: "",
@@ -30,8 +30,8 @@ describe("MemoEditor CodeMirror extensions", () => {
     views.push(view);
 
     expect(view.state.facet(EditorState.allowMultipleSelections)).toBe(false);
-    expect(view.dom.querySelector(".cm-selectionLayer")).not.toBeNull();
-    expect(view.dom.querySelector(".cm-cursorLayer")).not.toBeNull();
+    expect(view.dom.querySelector(".cm-selectionLayer")).toBeNull();
+    expect(view.dom.querySelector(".cm-cursorLayer")).toBeNull();
     expect(view.contentDOM).toHaveAttribute("aria-placeholder", "Any thoughts...");
     expect(view.dom.querySelector(".cm-placeholder")).toHaveTextContent("Any thoughts...");
   });
