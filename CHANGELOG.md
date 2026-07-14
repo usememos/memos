@@ -1,5 +1,37 @@
 # Changelog
 
+## [0.30.0-rc.1](https://github.com/usememos/memos/compare/v0.29.1...v0.30.0-rc.1) (2026-07-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* **Access control:** Instances without `--instance-url` (or `MEMOS_INSTANCE_URL`) now run in private mode. Anonymous visitors are sent to sign-in and anonymous API access is limited to setup, authentication, and shared-memo routes. Set the instance URL to retain the previous public behavior. ([d1cef7a](https://github.com/usememos/memos/commit/d1cef7a9ab23e8c93f76b2f32661c720c733536d))
+* **Filters:** `now()` has been replaced by the `now` timestamp variable, and time fields now use CEL timestamps. Update saved shortcuts to use expressions such as `created_ts >= now - duration("24h")` or `timestamp(<epoch>)` instead of comparing time fields with bare epoch values. ([26f4b73](https://github.com/usememos/memos/commit/26f4b73cb9a996f9232daad2b5daa34360742697))
+* **MCP:** The MCP server is now a stateless, tools-only endpoint generated from the OpenAPI schema. The previous prompts, resources, tool-filtering headers and route aliases, and unprefixed tool names have been removed. Clients that used them must switch to `/mcp` and the new service-prefixed tool names. ([#6026](https://github.com/usememos/memos/issues/6026))
+
+### Highlights
+
+* **Markdown editor:** Rebuilt the editor as a single CodeMirror 6 decorated-source editor. Markdown is preserved verbatim while headings, formatting, tags, and mentions are styled in place. The editor also adds tag completion, list indentation, and a toggleable formatting toolbar with headings, lists, task lists, code blocks, bold, italic, strikethrough, and inline code. ([5a73d7d](https://github.com/usememos/memos/commit/5a73d7d3e56f853a965207ac709e8f5e84918959)) ([e3c231f](https://github.com/usememos/memos/commit/e3c231fcac5691f9590a5d685bdebec23b73be35))
+* **MCP:** Replaced the hand-written MCP implementation with a curated OpenAPI-driven tool surface that reuses the public API's authentication and authorization. The final toolset includes memo, comment, relation, reaction, shortcut, identity, and attachment operations, including attachment uploads. ([777d227](https://github.com/usememos/memos/commit/777d227eb992c4feccd5d78c781cf8e9094e38de)) ([0e1d821](https://github.com/usememos/memos/commit/0e1d821fb84310feff40b90d899403d45bced596))
+* **Deployment configuration:** Identity providers and supported instance settings can be supplied as validated JSON files under `/etc/secrets`. File-backed settings act as runtime overrides and cannot be changed through the UI or API until the files are removed. ([0038295](https://github.com/usememos/memos/commit/0038295bbc772b38425b6c7f9ca814e4d1e44260))
+* **Memo feeds:** Added persisted controls for one, two, three, or automatically fitted columns; compact mode; and link previews. Multi-column feeds stay balanced as cards resize, while newly created memos remain easy to find above pinned content. ([177d65a](https://github.com/usememos/memos/commit/177d65a90e321fa975a7cf19bd3c075143af5c10)) ([e3e4ae1](https://github.com/usememos/memos/commit/e3e4ae10512f514f71729779b5096d0d591c8cf4))
+* **Webhooks:** Added Standard Webhooks HMAC-SHA256 signing secrets, webhook editing, and a signing-status indicator. Secrets are generated server-side, shown after creation, and can be revealed later from the edit dialog; malformed secrets now fail validation. ([#6013](https://github.com/usememos/memos/issues/6013)) ([#6027](https://github.com/usememos/memos/issues/6027))
+* **Filters:** Expanded CEL shortcuts with string matching, regular expressions, collection predicates, timestamp accessors, set operations, and an untagged-memos example. ([f0e4a56](https://github.com/usememos/memos/commit/f0e4a5624f4371e08fb0c41510891c9f8cce6ba0)) ([b787bfa](https://github.com/usememos/memos/commit/b787bfa75f74d8ee5ec271bd308c2e5a0389ed35))
+* **Tag settings:** Tag colors and content-blur rules are now per-user. Existing instance tag settings are copied to current users during migration. ([#6017](https://github.com/usememos/memos/issues/6017))
+* **Internationalization:** Added a searchable locale picker, expanded European locale coverage, and completed missing Japanese and Simplified Chinese translations. ([4183985](https://github.com/usememos/memos/commit/418398587cef90151745ba0dbc51cef4762045ca)) ([a47d049](https://github.com/usememos/memos/commit/a47d04954e75c54491138601c72f1c0cbe140f3c))
+* **Interface:** Refreshed the sign-in, sign-up, and About pages and aligned common controls across the app. Compact rendering is now opt-in in single-column feeds, so full memo content is shown by default. ([564da94](https://github.com/usememos/memos/commit/564da949cb87491ca8e493d2f7aedcd2ef9545a1)) ([cafa56f](https://github.com/usememos/memos/commit/cafa56f1a8c9091062a4b220284e8ca697b050e8))
+* **Markdown and storage:** Added GFM footnote rendering and navigation, plus an `insecure_skip_tls_verify` option for S3-compatible storage with self-signed certificates. ([1020060](https://github.com/usememos/memos/commit/10200606db24e3d70fb8efefee99c7b0a369ddea)) ([#6039](https://github.com/usememos/memos/issues/6039))
+
+### Fixes and polish
+
+* **Authentication and setup:** Stabilized SSO option loading, added OAuth client-auth auto-detection, and distinguished fresh instances from populated instances that no longer have an admin. ([6c17e87](https://github.com/usememos/memos/commit/6c17e87cf61cd9c62ea4ef4e25d4adb5603ffc88)) ([96cb653](https://github.com/usememos/memos/commit/96cb65320b714ef8d7993ddb7c9182350ee9da4c))
+* **Editor:** Improved formatting toggles and keyboard shortcuts, file paste and drop handling, focus-mode layout, caret behavior in empty space, and CodeMirror spacing. ([c349c15](https://github.com/usememos/memos/commit/c349c1549e49950e3171b7de28faba5d89249cfa)) ([#6076](https://github.com/usememos/memos/issues/6076)) ([#6093](https://github.com/usememos/memos/issues/6093))
+* **Memos and comments:** Preserved expanded task-list state, loaded every comment page, and included the parent memo relation in comment webhook payloads. ([ecbe2ab](https://github.com/usememos/memos/commit/ecbe2ab7977fcd3521aeae1226e816a9dc2a6a40)) ([#6083](https://github.com/usememos/memos/issues/6083))
+* **Tags:** Tags inside links are no longer parsed as memo tags, literal tags can be escaped with a backslash, and tag names support Unicode combining marks. ([a50ce09](https://github.com/usememos/memos/commit/a50ce09e8159836aed1a97fa717488283378200f)) ([#6051](https://github.com/usememos/memos/issues/6051))
+* **API and security:** Cross-origin API requests now work with bearer tokens while cookie authentication remains same-origin, and `ListUsers` now returns consistent paginated results. ([385fa22](https://github.com/usememos/memos/commit/385fa22056c51a42a0eb99fd08a8876009c2c52d)) ([4bc3928](https://github.com/usememos/memos/commit/4bc39280290b0f2612ff52285689854b6cf1344b))
+* **Interface:** Replaced mismatched memo skeletons with a delayed spinner, improved mobile control spacing, and truncated long location labels without hiding the full address. ([#6047](https://github.com/usememos/memos/issues/6047)) ([3b601b8](https://github.com/usememos/memos/commit/3b601b841670ece4a2832341a99ccc74124a745e))
+* **Container:** Prevented the entrypoint from restarting indefinitely when `MEMOS_UID=0`. ([#6061](https://github.com/usememos/memos/issues/6061))
+
 ## [0.29.1](https://github.com/usememos/memos/compare/v0.29.0...v0.29.1) (2026-06-04)
 
 
