@@ -71,7 +71,7 @@ func isValidTagRune(r rune) bool {
 }
 
 func isTagBoundary(r rune) bool {
-	return unicode.IsSpace(r) || unicode.IsPunct(r) || unicode.IsSymbol(r)
+	return r != '#' && (unicode.IsSpace(r) || unicode.IsPunct(r) || unicode.IsSymbol(r))
 }
 
 // Parse parses #tag syntax using Unicode-aware validation.
