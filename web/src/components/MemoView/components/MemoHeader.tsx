@@ -93,10 +93,8 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
         {showPinned && memo.pinned && (
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="cursor-pointer">
-                  <BookmarkIcon className="w-4 h-auto text-primary" onClick={unpinMemo} />
-                </span>
+              <TooltipTrigger render={<span className="cursor-pointer" />}>
+                <BookmarkIcon className="w-4 h-auto text-primary" onClick={unpinMemo} />
               </TooltipTrigger>
               <TooltipContent>
                 <p>{t("common.unpin")}</p>
@@ -150,7 +148,7 @@ interface TimeTooltipContent {
 
 const TimeTooltip = ({ children, content }: { children: React.ReactElement; content: TimeTooltipContent }) => (
   <Tooltip>
-    <TooltipTrigger asChild>{children}</TooltipTrigger>
+    <TooltipTrigger render={children} />
     <TooltipContent align="start" className="flex flex-col items-start gap-0.5 whitespace-nowrap text-left">
       {content.createdAt && <span>{content.createdAt}</span>}
       {content.updatedAt && <span>{content.updatedAt}</span>}

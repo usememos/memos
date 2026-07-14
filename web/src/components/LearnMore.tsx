@@ -15,10 +15,8 @@ const LearnMore: React.FC<Props> = (props: Props) => {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger asChild>
-          <a className={`text-muted-foreground hover:text-primary ${className}`} href={url} target="_blank">
-            <ExternalLinkIcon className="w-4 h-auto" />
-          </a>
+        <TooltipTrigger render={<a className={`text-muted-foreground hover:text-primary ${className}`} href={url} target="_blank" />}>
+          <ExternalLinkIcon className="w-4 h-auto" />
         </TooltipTrigger>
         <TooltipContent>
           <p>{title ?? t("common.learn-more")}</p>

@@ -45,13 +45,15 @@ export const MonthNavigator = memo(({ visibleMonth, onMonthChange, activityStats
   return (
     <header className="w-full mb-2 flex items-center justify-between gap-2">
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
-          <button
-            type="button"
-            className="py-0.5 text-sm text-foreground font-medium transition-colors hover:text-foreground/80 select-none"
-          >
-            {monthLabel}
-          </button>
+        <DialogTrigger
+          render={
+            <button
+              type="button"
+              className="py-0.5 text-sm text-foreground font-medium transition-colors hover:text-foreground/80 select-none"
+            />
+          }
+        >
+          {monthLabel}
         </DialogTrigger>
         <DialogContent
           className="p-0 border border-border/20 bg-background md:max-w-6xl w-[min(100vw-24px,1200px)] max-h-[85vh] overflow-y-auto rounded-xl shadow-xl"

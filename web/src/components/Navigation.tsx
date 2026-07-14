@@ -107,9 +107,7 @@ const Navigation = (props: Props) => {
             >
               {props.collapsed ? (
                 <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div>{navLink.icon}</div>
-                  </TooltipTrigger>
+                  <TooltipTrigger render={<div />}>{navLink.icon}</TooltipTrigger>
                   <TooltipContent side="right">
                     <p>{navLink.title}</p>
                   </TooltipContent>

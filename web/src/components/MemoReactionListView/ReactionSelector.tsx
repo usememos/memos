@@ -29,15 +29,18 @@ const ReactionSelector = (props: Props) => {
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
-      <PopoverTrigger asChild>
-        <span
-          className={cn(
-            "h-7 w-7 flex justify-center items-center rounded-full border cursor-pointer transition-all hover:opacity-80",
-            className,
-          )}
-        >
-          <SmilePlusIcon className="w-4 h-4 mx-auto text-muted-foreground" />
-        </span>
+      <PopoverTrigger
+        nativeButton={false}
+        render={
+          <span
+            className={cn(
+              "h-7 w-7 flex justify-center items-center rounded-full border cursor-pointer transition-all hover:opacity-80",
+              className,
+            )}
+          />
+        }
+      >
+        <SmilePlusIcon className="w-4 h-4 mx-auto text-muted-foreground" />
       </PopoverTrigger>
       <PopoverContent align="center" className="max-w-[90vw] sm:max-w-md">
         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-1 max-h-64 overflow-y-auto">

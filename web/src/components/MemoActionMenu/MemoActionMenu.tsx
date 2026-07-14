@@ -65,10 +65,8 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="size-4">
-          <MoreVerticalIcon className="text-muted-foreground" />
-        </Button>
+      <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="size-4" />}>
+        <MoreVerticalIcon className="text-muted-foreground" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={2}>
         {/* Edit actions (non-readonly, non-archived) */}

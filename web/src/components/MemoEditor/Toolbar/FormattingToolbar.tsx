@@ -71,9 +71,9 @@ export function FormattingToolbar({ controllerRef, onExit, className }: Formatti
 
   // Menus grab focus while open and hand it back to their trigger on close; send
   // it to the editor instead so the user can keep typing after a pick.
-  const returnFocusToEditor = (event: Event) => {
-    event.preventDefault();
+  const returnFocusToEditor = () => {
     controllerRef.current?.focus();
+    return false;
   };
 
   // Map a catalog command to a toolbar button.
@@ -98,10 +98,8 @@ export function FormattingToolbar({ controllerRef, onExit, className }: Formatti
       aria-label={t("editor.format.heading")}
     >
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <SegmentButton Icon={HeadingGlyph} label={t("editor.format.heading")} />
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" onCloseAutoFocus={returnFocusToEditor}>
+        <DropdownMenuTrigger render={<SegmentButton Icon={HeadingGlyph} label={t("editor.format.heading")} />} />
+        <DropdownMenuContent align="start" finalFocus={returnFocusToEditor}>
           {HEADING_COMMANDS.map((command) => (
             <DropdownMenuItem key={command.id} onClick={() => run(command.id)}>
               {t(command.labelKey)}
@@ -120,10 +118,8 @@ export function FormattingToolbar({ controllerRef, onExit, className }: Formatti
 
       {compact ? (
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SegmentButton Icon={MoreHorizontalIcon} label={t("editor.format.more")} />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" onCloseAutoFocus={returnFocusToEditor}>
+          <DropdownMenuTrigger render={<SegmentButton Icon={MoreHorizontalIcon} label={t("editor.format.more")} />} />
+          <DropdownMenuContent align="start" finalFocus={returnFocusToEditor}>
             {blockButtons.map((button) => (
               <DropdownMenuItem key={button.label} onClick={button.onClick}>
                 {button.label}
@@ -160,7 +156,7 @@ interface SegmentButtonProps extends ComponentPropsWithoutRef<"button"> {
 }
 
 // The one segment element, shared by command toggles and dropdown triggers.
-// Forwards ref + rest props so it also works as a Radix `asChild` trigger
+// Forwards ref + rest props so it also works as a Base UI `render` trigger.
 // (which injects its own onClick/aria attributes).
 const SegmentButton = forwardRef<HTMLButtonElement, SegmentButtonProps>(({ Icon, label, active, className, ...rest }, ref) => (
   <button

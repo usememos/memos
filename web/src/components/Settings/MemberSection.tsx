@@ -168,10 +168,8 @@ const MemberSection = () => {
             render: (_, user: User) =>
               currentUser?.name === user.name ? null : (
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      <MoreVerticalIcon className="w-4 h-auto" />
-                    </Button>
+                  <DropdownMenuTrigger render={<Button variant="outline" size="sm" />}>
+                    <MoreVerticalIcon className="w-4 h-auto" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" sideOffset={2}>
                     <DropdownMenuItem onClick={() => handleEditUser(user)}>{t("common.update")}</DropdownMenuItem>

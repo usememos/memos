@@ -46,11 +46,9 @@ const About = () => {
                 </div>
                 <div className="flex shrink-0 flex-wrap gap-2">
                   {PRODUCT_LINKS.map((link) => (
-                    <Button key={link.href} asChild variant="outline" size="lg">
-                      <a href={link.href} target="_blank" rel="noreferrer">
-                        {link.label}
-                        <ExternalLinkIcon className="size-3.5" />
-                      </a>
+                    <Button key={link.href} render={<a href={link.href} target="_blank" rel="noreferrer" />} variant="outline" size="lg">
+                      {link.label}
+                      <ExternalLinkIcon className="size-3.5" />
                     </Button>
                   ))}
                 </div>

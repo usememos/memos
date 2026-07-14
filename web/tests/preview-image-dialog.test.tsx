@@ -8,7 +8,7 @@ vi.mock("@/hooks/useMediaQuery", () => ({
 }));
 
 describe("<PreviewImageDialog>", () => {
-  it("provides a dialog description without Radix accessibility warnings", async () => {
+  it("provides a dialog description without accessibility warnings", async () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     render(

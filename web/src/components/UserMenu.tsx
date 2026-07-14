@@ -104,34 +104,42 @@ const UserMenu = (props: Props) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild disabled={!currentUser}>
-        <div className={cn("w-auto flex flex-row justify-start items-center cursor-pointer text-foreground", collapsed ? "px-1" : "px-3")}>
-          <div className="relative shrink-0">
-            {currentUser?.avatarUrl ? (
-              <UserAvatar avatarUrl={currentUser?.avatarUrl} />
-            ) : (
-              <User2Icon className="w-6 mx-auto h-auto text-muted-foreground" />
-            )}
-            {sseStatus !== "connected" && (
-              <Tooltip>
-                <TooltipTrigger asChild>
+      <DropdownMenuTrigger
+        nativeButton={false}
+        disabled={!currentUser}
+        render={
+          <div
+            className={cn("w-auto flex flex-row justify-start items-center cursor-pointer text-foreground", collapsed ? "px-1" : "px-3")}
+          />
+        }
+      >
+        <div className="relative shrink-0">
+          {currentUser?.avatarUrl ? (
+            <UserAvatar avatarUrl={currentUser?.avatarUrl} />
+          ) : (
+            <User2Icon className="w-6 mx-auto h-auto text-muted-foreground" />
+          )}
+          {sseStatus !== "connected" && (
+            <Tooltip>
+              <TooltipTrigger
+                render={
                   <span
                     className={cn(
                       "absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-background",
                       sseStatus === "connecting" ? "bg-muted-foreground animate-pulse" : "bg-destructive",
                     )}
                   />
-                </TooltipTrigger>
-                <TooltipContent side="right">{t(`live-update.${sseStatus}` as Parameters<typeof t>[0])}</TooltipContent>
-              </Tooltip>
-            )}
-          </div>
-          {!collapsed && (
-            <span className="ml-2 text-lg font-medium text-foreground grow truncate">
-              {currentUser?.displayName || currentUser?.username}
-            </span>
+                }
+              />
+              <TooltipContent side="right">{t(`live-update.${sseStatus}` as Parameters<typeof t>[0])}</TooltipContent>
+            </Tooltip>
           )}
         </div>
+        {!collapsed && (
+          <span className="ml-2 text-lg font-medium text-foreground grow truncate">
+            {currentUser?.displayName || currentUser?.username}
+          </span>
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
         <DropdownMenuItem onClick={() => navigateTo(`/u/${encodeURIComponent(currentUser?.username ?? "")}`)}>
@@ -151,7 +159,7 @@ const UserMenu = (props: Props) => {
             <GlobeIcon className="size-4 text-muted-foreground" />
             {t("common.language")}
           </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="max-h-[min(24rem,var(--radix-dropdown-menu-content-available-height))] overflow-y-auto p-0">
+          <DropdownMenuSubContent className="max-h-[min(24rem,var(--available-height))] overflow-y-auto p-0">
             <LocaleSearchList value={currentLocale} onChange={handleLocaleChange} className="w-64" />
           </DropdownMenuSubContent>
         </DropdownMenuSub>

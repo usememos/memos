@@ -31,7 +31,7 @@ const ThemeSelect = ({ value, onValueChange, className, compact = false }: Theme
   };
 
   return (
-    <Select value={currentTheme} onValueChange={handleThemeChange}>
+    <Select value={currentTheme} items={THEME_OPTIONS} onValueChange={handleThemeChange}>
       <SelectTrigger className={className}>
         <div className="flex min-w-0 flex-1 items-center gap-2">
           {compact && THEME_ICONS[currentTheme]}

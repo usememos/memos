@@ -134,10 +134,8 @@ const InsertMenu = (props: InsertMenuProps) => {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="secondary" size="icon" disabled={isUploading}>
-            {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <PlusIcon className="size-4" />}
-          </Button>
+        <DropdownMenuTrigger render={<Button variant="secondary" size="icon" disabled={isUploading} />}>
+          {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <PlusIcon className="size-4" />}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
           {insertItems.map((item) => (

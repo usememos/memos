@@ -65,13 +65,15 @@ export const TimestampPopover: FC = () => {
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          className="w-auto text-sm text-muted-foreground text-left hover:text-foreground transition-colors cursor-pointer"
-        >
-          {formatDate(createTime)}
-        </button>
+      <PopoverTrigger
+        render={
+          <button
+            type="button"
+            className="w-auto text-sm text-muted-foreground text-left hover:text-foreground transition-colors cursor-pointer"
+          />
+        }
+      >
+        {formatDate(createTime)}
       </PopoverTrigger>
       <PopoverContent align="start" className="w-auto p-2 pt-1 space-y-1">
         <TimestampInput

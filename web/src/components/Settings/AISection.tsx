@@ -61,6 +61,8 @@ const getProviderTypeLabel = (type: InstanceSetting_AIProviderType) => {
   return InstanceSetting_AIProviderType[type] ?? "UNKNOWN";
 };
 
+const providerTypeSelectOptions = providerTypeOptions.map((type) => ({ value: String(type), label: getProviderTypeLabel(type) }));
+
 const toLocalProvider = (provider: InstanceSetting_AIProviderConfig): LocalAIProvider => ({
   id: provider.id,
   title: provider.title,
@@ -295,10 +297,8 @@ const AISection = () => {
               className: "text-right",
               render: (_, provider: LocalAIProvider) => (
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      <MoreVerticalIcon className="w-4 h-auto" />
-                    </Button>
+                  <DropdownMenuTrigger render={<Button variant="outline" size="sm" />}>
+                    <MoreVerticalIcon className="w-4 h-auto" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" sideOffset={2}>
                     <DropdownMenuItem onClick={() => handleEditProvider(provider)}>{t("common.edit")}</DropdownMenuItem>
@@ -364,6 +364,14 @@ const TranscriptionForm = ({ providers, transcription, referencedProvider, onCha
   const t = useTranslate();
   const noProviders = providers.length === 0;
 
+  const providerOptions = useMemo(
+    () => [
+      { value: "__none__", label: t("setting.ai.transcription-no-provider") },
+      ...providers.map((provider) => ({ value: provider.id, label: provider.title || provider.id })),
+    ],
+    [providers, t],
+  );
+
   const update = (partial: Partial<LocalTranscription>) => {
     onChange({ ...transcription, ...partial });
   };
@@ -381,6 +389,7 @@ const TranscriptionForm = ({ providers, transcription, referencedProvider, onCha
         <Label>{t("setting.ai.transcription-provider")}</Label>
         <Select
           value={transcription.providerId || "__none__"}
+          items={providerOptions}
           onValueChange={(value) => update({ providerId: value === "__none__" ? "" : value })}
           disabled={noProviders}
         >
@@ -388,10 +397,9 @@ const TranscriptionForm = ({ providers, transcription, referencedProvider, onCha
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="__none__">{t("setting.ai.transcription-no-provider")}</SelectItem>
-            {providers.map((provider) => (
-              <SelectItem key={provider.id} value={provider.id}>
-                {provider.title || provider.id}
+            {providerOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
               </SelectItem>
             ))}
           </SelectContent>
@@ -483,15 +491,16 @@ const AIProviderDialog = ({ provider, onOpenChange, onSave }: AIProviderDialogPr
             <Label>{t("setting.ai.provider-type")}</Label>
             <Select
               value={String(draft.type)}
+              items={providerTypeSelectOptions}
               onValueChange={(value) => updateDraft({ type: Number(value) as InstanceSetting_AIProviderType })}
             >
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {providerTypeOptions.map((type) => (
-                  <SelectItem key={type} value={String(type)}>
-                    {getProviderTypeLabel(type)}
+                {providerTypeSelectOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>

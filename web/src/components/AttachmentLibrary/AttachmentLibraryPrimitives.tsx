@@ -73,15 +73,13 @@ export const AttachmentOpenButton = ({ className, href }: AttachmentOpenButtonPr
 
   return (
     <Button
-      asChild
+      render={<a href={href} target="_blank" rel="noreferrer" />}
       variant="ghost"
       size="icon"
       className={cn("size-7 shrink-0 rounded-full text-muted-foreground hover:text-foreground", className)}
     >
-      <a href={href} target="_blank" rel="noreferrer">
-        <ExternalLinkIcon className="h-3.5 w-3.5" />
-        <span className="sr-only">{t("attachment-library.actions.open")}</span>
-      </a>
+      <ExternalLinkIcon className="h-3.5 w-3.5" />
+      <span className="sr-only">{t("attachment-library.actions.open")}</span>
     </Button>
   );
 };

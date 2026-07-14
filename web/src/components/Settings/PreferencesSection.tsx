@@ -1,4 +1,5 @@
 import { create } from "@bufbuild/protobuf";
+import { useMemo } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUpdateUserGeneralSetting } from "@/hooks/useUserQueries";
@@ -32,6 +33,15 @@ const PreferencesSection = () => {
       },
     );
   };
+
+  const visibilityOptions = useMemo(
+    () =>
+      [Visibility.PRIVATE, Visibility.PROTECTED, Visibility.PUBLIC].map((v) => {
+        const value = convertVisibilityToString(v);
+        return { value, label: t(`memo.visibility.${value.toLowerCase() as Lowercase<typeof value>}`) };
+      }),
+    [t],
+  );
 
   const handleDefaultMemoVisibilityChanged = (value: string) => {
     updateUserGeneralSetting(
@@ -91,7 +101,11 @@ const PreferencesSection = () => {
             label={t("setting.preference.default-memo-visibility")}
             description={t("setting.preference.default-memo-visibility-description")}
           >
-            <Select value={setting.memoVisibility || "PRIVATE"} onValueChange={handleDefaultMemoVisibilityChanged}>
+            <Select
+              value={setting.memoVisibility || "PRIVATE"}
+              items={visibilityOptions}
+              onValueChange={handleDefaultMemoVisibilityChanged}
+            >
               <SelectTrigger className="min-w-fit">
                 <div className="flex items-center gap-2">
                   <VisibilityIcon visibility={convertVisibilityFromString(setting.memoVisibility)} />
@@ -99,13 +113,11 @@ const PreferencesSection = () => {
                 </div>
               </SelectTrigger>
               <SelectContent>
-                {[Visibility.PRIVATE, Visibility.PROTECTED, Visibility.PUBLIC]
-                  .map((v) => convertVisibilityToString(v))
-                  .map((item) => (
-                    <SelectItem key={item} value={item} className="whitespace-nowrap">
-                      {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
-                    </SelectItem>
-                  ))}
+                {visibilityOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value} className="whitespace-nowrap">
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </SettingListItem>

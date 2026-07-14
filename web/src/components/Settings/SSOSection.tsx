@@ -161,10 +161,8 @@ const SSOSection = () => {
             className: "w-px text-right",
             render: (_, row: IdentityProviderRow) => (
               <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <MoreVerticalIcon className="w-4 h-auto" />
-                  </Button>
+                <DropdownMenuTrigger render={<Button variant="outline" size="sm" />}>
+                  <MoreVerticalIcon className="w-4 h-auto" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" sideOffset={2}>
                   <DropdownMenuItem onClick={() => handleEditIdentityProvider(row.provider)}>{t("common.edit")}</DropdownMenuItem>

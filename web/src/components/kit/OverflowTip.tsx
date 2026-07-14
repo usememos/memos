@@ -22,11 +22,7 @@ const OverflowTip = ({ children, className }: Props) => {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger asChild>
-          <div ref={textElementRef} className={cn("truncate", className)}>
-            {children}
-          </div>
-        </TooltipTrigger>
+        <TooltipTrigger render={<div ref={textElementRef} className={cn("truncate", className)} />}>{children}</TooltipTrigger>
         {isOverflowed && (
           <TooltipContent>
             <p>{children}</p>

@@ -41,6 +41,11 @@ const Setting = () => {
 
   const visibleSectionKeys = useMemo(() => new Set(sectionGroups.all.map((section) => section.key)), [sectionGroups.all]);
 
+  const sectionOptions = useMemo(
+    () => sectionGroups.all.map((section) => ({ value: section.key, label: t(section.labelKey) })),
+    [sectionGroups.all, t],
+  );
+
   useEffect(() => {
     const hash = location.hash.slice(1);
     const nextSection = isSettingSectionKey(hash) && visibleSectionKeys.has(hash) ? hash : DEFAULT_SETTING_SECTION;
@@ -113,14 +118,18 @@ const Setting = () => {
           <div className="w-full grow sm:pl-4 overflow-x-auto">
             {!sm && (
               <div className="w-auto inline-block my-2">
-                <Select value={selectedSection} onValueChange={(value) => handleSectionSelectorItemClick(value as SettingSectionKey)}>
+                <Select
+                  value={selectedSection}
+                  items={sectionOptions}
+                  onValueChange={(value) => handleSectionSelectorItemClick(value as SettingSectionKey)}
+                >
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder={t("setting.select-section")} />
                   </SelectTrigger>
                   <SelectContent>
-                    {sectionGroups.all.map((section) => (
-                      <SelectItem key={section.key} value={section.key}>
-                        {t(section.labelKey)}
+                    {sectionOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
                       </SelectItem>
                     ))}
                   </SelectContent>

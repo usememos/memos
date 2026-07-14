@@ -24,10 +24,8 @@ const MemoExplorerDrawer = (props: Props) => {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
-        <Button variant="ghost">
-          <MenuIcon className="size-5 text-foreground" />
-        </Button>
+      <SheetTrigger render={<Button variant="ghost" />}>
+        <MenuIcon className="size-5 text-foreground" />
       </SheetTrigger>
       <SheetContent side="right" className="w-80 max-w-full bg-background">
         <SheetHeader>

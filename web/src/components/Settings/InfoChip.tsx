@@ -27,11 +27,7 @@ const InfoChip = ({ label, value, tooltip, className }: Props) => {
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>
-        <span className="inline-flex" tabIndex={0} aria-label={tooltip}>
-          {chip}
-        </span>
-      </TooltipTrigger>
+      <TooltipTrigger render={<span className="inline-flex" tabIndex={0} aria-label={tooltip} />}>{chip}</TooltipTrigger>
       <TooltipContent className="max-w-xs whitespace-pre-wrap break-words">{tooltip}</TooltipContent>
     </Tooltip>
   );

@@ -27,9 +27,7 @@ const SettingRow: React.FC<SettingRowProps> = ({ label, description, tooltip, ch
           {tooltip && (
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger asChild>
-                  <HelpCircleIcon className="w-4 h-4 text-muted-foreground cursor-help" />
-                </TooltipTrigger>
+                <TooltipTrigger render={<HelpCircleIcon className="w-4 h-4 text-muted-foreground cursor-help" />} />
                 <TooltipContent>
                   <p className="max-w-xs">{tooltip}</p>
                 </TooltipContent>

@@ -1,6 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { isEqual } from "lodash-es";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -42,6 +42,15 @@ const InstanceSection = () => {
   useEffect(() => {
     fetchIdentityProviderList();
   }, []);
+
+  const weekStartDayOptions = useMemo(
+    () => [
+      { value: "-1", label: t("setting.instance.saturday") },
+      { value: "0", label: t("setting.instance.sunday") },
+      { value: "1", label: t("setting.instance.monday") },
+    ],
+    [t],
+  );
 
   const updatePartialSetting = (partial: Partial<InstanceSetting_GeneralSetting>) => {
     setInstanceGeneralSetting(
@@ -143,6 +152,7 @@ const InstanceSection = () => {
           <SettingListItem label={t("setting.instance.week-start-day")} description={t("setting.instance.week-start-day-description")}>
             <Select
               value={instanceGeneralSetting.weekStartDayOffset.toString()}
+              items={weekStartDayOptions}
               onValueChange={(value) => {
                 updatePartialSetting({ weekStartDayOffset: parseInt(value) || 0 });
               }}
@@ -151,9 +161,11 @@ const InstanceSection = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="-1">{t("setting.instance.saturday")}</SelectItem>
-                <SelectItem value="0">{t("setting.instance.sunday")}</SelectItem>
-                <SelectItem value="1">{t("setting.instance.monday")}</SelectItem>
+                {weekStartDayOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </SettingListItem>

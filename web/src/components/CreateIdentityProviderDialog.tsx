@@ -252,9 +252,14 @@ function FormField({
   );
 }
 
+const identityProviderTypeOptions = [...new Set(templateList.map((template) => template.type))].map((kind) => ({
+  value: String(kind),
+  label: IdentityProvider_Type[kind] || String(kind),
+}));
+const templateOptions = templateList.map((template) => ({ value: template.title, label: template.title }));
+
 function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, onSuccess }: Props) {
   const t = useTranslate();
-  const identityProviderTypes = [...new Set(templateList.map((template) => template.type))];
   const [basicInfo, setBasicInfo] = useState<BasicInfoState>(createEmptyBasicInfo);
   const [type, setType] = useState<IdentityProvider_Type>(IdentityProvider_Type.OAUTH2);
   const [oauth2Config, setOAuth2Config] = useState<OAuth2Config>(createEmptyOAuth2Config);
@@ -411,14 +416,18 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
             {isCreating ? (
               <div className="grid gap-4 md:grid-cols-2">
                 <FormField label={t("common.type")} required>
-                  <Select value={String(type)} onValueChange={(value) => setType(Number(value) as IdentityProvider_Type)}>
+                  <Select
+                    value={String(type)}
+                    items={identityProviderTypeOptions}
+                    onValueChange={(value) => setType(Number(value) as IdentityProvider_Type)}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {identityProviderTypes.map((kind) => (
-                        <SelectItem key={kind} value={String(kind)}>
-                          {IdentityProvider_Type[kind] || kind}
+                      {identityProviderTypeOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -426,14 +435,14 @@ function CreateIdentityProviderDialog({ open, onOpenChange, identityProvider, on
                 </FormField>
 
                 <FormField label={t("setting.sso.template")} required description={t("setting.sso.template-description")}>
-                  <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+                  <Select value={selectedTemplate} items={templateOptions} onValueChange={setSelectedTemplate}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      {templateList.map((template) => (
-                        <SelectItem key={template.title} value={template.title}>
-                          {template.title}
+                      {templateOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
                         </SelectItem>
                       ))}
                     </SelectContent>

@@ -30,22 +30,24 @@ const ReactionView = (props: Props) => {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger asChild>
-          <button
-            type="button"
-            className={cn(
-              "h-7 border px-2 py-0.5 rounded-full flex flex-row justify-center items-center gap-1",
-              "text-sm text-muted-foreground",
-              isClickable && "cursor-pointer",
-              !isClickable && "cursor-default",
-              hasReaction && "bg-accent border-border",
-            )}
-            onClick={handleClick}
-            disabled={!isClickable}
-          >
-            <span>{reactionType}</span>
-            <span className="opacity-60">{users.length}</span>
-          </button>
+        <TooltipTrigger
+          render={
+            <button
+              type="button"
+              className={cn(
+                "h-7 border px-2 py-0.5 rounded-full flex flex-row justify-center items-center gap-1",
+                "text-sm text-muted-foreground",
+                isClickable && "cursor-pointer",
+                !isClickable && "cursor-default",
+                hasReaction && "bg-accent border-border",
+              )}
+              onClick={handleClick}
+              disabled={!isClickable}
+            />
+          }
+        >
+          <span>{reactionType}</span>
+          <span className="opacity-60">{users.length}</span>
         </TooltipTrigger>
         <TooltipContent>
           <p>{formatReactionTooltip(users, reactionType)}</p>

@@ -9,7 +9,7 @@ import type { EditorController } from "@/components/MemoEditor/types/editorContr
 // so accessible names below are the keys themselves.
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 
-// Radix DropdownMenu reaches for layout/pointer APIs jsdom doesn't implement.
+// Base UI menus reach for layout/pointer APIs jsdom doesn't implement.
 beforeAll(() => {
   Element.prototype.scrollIntoView = vi.fn();
   Element.prototype.hasPointerCapture = vi.fn(() => false);
@@ -57,8 +57,7 @@ describe("FormattingToolbar", () => {
   it("runs the heading command when a heading level is chosen", () => {
     const { controller, run } = makeController();
     renderToolbar(controller);
-    // Keyboard open is the most reliable path for Radix menus in jsdom.
-    fireEvent.keyDown(screen.getByRole("button", { name: "editor.format.heading" }), { key: "Enter" });
+    fireEvent.click(screen.getByRole("button", { name: "editor.format.heading" }));
     fireEvent.click(screen.getByRole("menuitem", { name: "editor.format.heading-2" }));
     expect(run).toHaveBeenCalledWith("heading2");
   });

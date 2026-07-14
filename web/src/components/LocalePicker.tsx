@@ -30,7 +30,7 @@ export const LocaleSearchList = (props: LocaleSearchListProps) => {
   return (
     <div
       className={cn(
-        "flex max-h-[min(24rem,calc(100vh-2rem))] w-[var(--radix-popover-trigger-width)] min-w-48 max-w-[calc(100vw-2rem)] flex-col",
+        "flex max-h-[min(24rem,calc(100vh-2rem))] w-[var(--anchor-width)] min-w-48 max-w-[calc(100vw-2rem)] flex-col",
         className,
       )}
     >
@@ -98,14 +98,12 @@ const LocalePicker = (props: LocalePickerProps) => {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button type="button" variant="outline" className={cn("w-full justify-between", className)}>
-          <span className="flex min-w-0 flex-1 items-center gap-2">
-            <GlobeIcon className="size-4 shrink-0 text-muted-foreground" />
-            <span className="truncate">{getLocaleDisplayName(value)}</span>
-          </span>
-          <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground" />
-        </Button>
+      <PopoverTrigger render={<Button type="button" variant="outline" className={cn("w-full justify-between", className)} />}>
+        <span className="flex min-w-0 flex-1 items-center gap-2">
+          <GlobeIcon className="size-4 shrink-0 text-muted-foreground" />
+          <span className="truncate">{getLocaleDisplayName(value)}</span>
+        </span>
+        <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground" />
       </PopoverTrigger>
       <PopoverContent align="start" className="p-0">
         <LocaleSearchList value={value} onChange={handleChange} />

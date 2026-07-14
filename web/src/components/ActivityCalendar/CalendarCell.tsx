@@ -71,7 +71,7 @@ export const CalendarCell = memo((props: CalendarCellProps) => {
 
   return (
     <Tooltip>
-      <TooltipTrigger asChild>{button}</TooltipTrigger>
+      <TooltipTrigger render={button} />
       <TooltipContent side="top">
         <p>{tooltipText}</p>
       </TooltipContent>

@@ -1,4 +1,5 @@
 import { Columns2Icon, Columns3Icon, InfinityIcon, type LucideIcon, Rows3Icon, Settings2Icon } from "lucide-react";
+import { useMemo } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -39,6 +40,21 @@ function MemoDisplaySettingMenu({ className }: Props) {
   // there; it only becomes a real choice at a single column.
   const compactLocked = maxColumns !== 1;
 
+  const timeBasisOptions = useMemo(
+    () => [
+      { value: "create_time", label: t("common.created-at") },
+      { value: "update_time", label: t("common.last-updated-at") },
+    ],
+    [t],
+  );
+  const sortOrderOptions = useMemo(
+    () => [
+      { value: "false", label: t("memo.newest-first") },
+      { value: "true", label: t("memo.oldest-first") },
+    ],
+    [t],
+  );
+
   return (
     <Popover>
       <PopoverTrigger className={cn(className, "opacity-40 hover:opacity-100 transition-opacity")}>
@@ -48,13 +64,20 @@ function MemoDisplaySettingMenu({ className }: Props) {
         <div className="flex flex-col gap-2 p-1">
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.shown-time")}</span>
-            <Select value={timeBasis} onValueChange={(value) => setTimeBasis(value === "update_time" ? "update_time" : "create_time")}>
+            <Select
+              value={timeBasis}
+              items={timeBasisOptions}
+              onValueChange={(value) => setTimeBasis(value === "update_time" ? "update_time" : "create_time")}
+            >
               <SelectTrigger size="sm" className="w-32">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="create_time">{t("common.created-at")}</SelectItem>
-                <SelectItem value="update_time">{t("common.last-updated-at")}</SelectItem>
+                {timeBasisOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -62,6 +85,7 @@ function MemoDisplaySettingMenu({ className }: Props) {
             <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.order")}</span>
             <Select
               value={orderByTimeAsc.toString()}
+              items={sortOrderOptions}
               onValueChange={(value) => {
                 if ((value === "true") !== orderByTimeAsc) {
                   toggleSortOrder();
@@ -72,8 +96,11 @@ function MemoDisplaySettingMenu({ className }: Props) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="false">{t("memo.newest-first")}</SelectItem>
-                <SelectItem value="true">{t("memo.oldest-first")}</SelectItem>
+                {sortOrderOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -116,22 +143,26 @@ function MemoDisplaySettingMenu({ className }: Props) {
                 const active = maxColumns === value;
                 return (
                   <Tooltip key={value}>
-                    <TooltipTrigger asChild>
-                      <button
-                        type="button"
-                        role="radio"
-                        aria-checked={active}
-                        aria-label={label}
-                        tabIndex={active ? 0 : -1}
-                        data-value={value}
-                        onClick={() => setMaxColumns(value)}
-                        className={cn(
-                          "grid h-6 w-7 place-items-center rounded-md transition-colors",
-                          active ? "bg-accent text-accent-foreground" : "text-muted-foreground/70 hover:bg-accent/50 hover:text-foreground",
-                        )}
-                      >
-                        <Icon className="w-3.5 h-3.5" />
-                      </button>
+                    <TooltipTrigger
+                      render={
+                        <button
+                          type="button"
+                          role="radio"
+                          aria-checked={active}
+                          aria-label={label}
+                          tabIndex={active ? 0 : -1}
+                          data-value={value}
+                          onClick={() => setMaxColumns(value)}
+                          className={cn(
+                            "grid h-6 w-7 place-items-center rounded-md transition-colors",
+                            active
+                              ? "bg-accent text-accent-foreground"
+                              : "text-muted-foreground/70 hover:bg-accent/50 hover:text-foreground",
+                          )}
+                        />
+                      }
+                    >
+                      <Icon className="w-3.5 h-3.5" />
                     </TooltipTrigger>
                     <TooltipContent>
                       <p className="font-medium">{label}</p>
