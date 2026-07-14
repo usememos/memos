@@ -5,7 +5,7 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useSearchParams } from "react-router-dom";
 import { setAccessToken } from "@/auth-state";
-import AuthPageLayout, { AuthChip, AuthEmptyState, AuthLinkPrompt } from "@/components/AuthPageLayout";
+import AuthPageLayout, { AuthChip, AuthEmptyState, AuthLinkPrompt, AuthOptionsLoading } from "@/components/AuthPageLayout";
 import CredentialFields from "@/components/CredentialFields";
 import IdentityProviderButtons from "@/components/IdentityProviderButtons";
 import { Button } from "@/components/ui/button";
@@ -37,7 +37,9 @@ const SignUp = () => {
   const registrationOpen = !instanceGeneralSetting.disallowUserRegistration;
   const needsSetup = profile.needsSetup;
   // Provider buttons only render on the SSO-provisioned branch below; skip the request elsewhere.
-  const identityProviderList = useIdentityProviderList(!needsSetup && registrationOpen && !passwordAuthAllowed);
+  const { identityProviderList, isLoading: identityProvidersLoading } = useIdentityProviderList(
+    !needsSetup && registrationOpen && !passwordAuthAllowed,
+  );
   const hasIdentityProviders = identityProviderList.length > 0;
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -141,9 +143,13 @@ const SignUp = () => {
 
   // Password sign-up disallowed: accounts come from the identity provider.
   if (!passwordAuthAllowed) {
+    // Shared by the subtitle and the body branch so they can't disagree.
+    const showSsoOptions = identityProvidersLoading || hasIdentityProviders;
     return (
-      <AuthPageLayout title={t("auth.create-your-account")} subtitle={hasIdentityProviders ? t("auth.sso-signup-tip") : undefined}>
-        {hasIdentityProviders ? (
+      <AuthPageLayout title={t("auth.create-your-account")} subtitle={showSsoOptions ? t("auth.sso-signup-tip") : undefined}>
+        {identityProvidersLoading ? (
+          <AuthOptionsLoading />
+        ) : showSsoOptions ? (
           <IdentityProviderButtons identityProviderList={identityProviderList} redirectTarget={redirectTarget} />
         ) : (
           <AuthEmptyState

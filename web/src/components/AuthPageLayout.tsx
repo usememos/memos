@@ -50,6 +50,8 @@ export const AuthLinkPrompt = ({ prompt, to, label }: { prompt: string; to: stri
   </p>
 );
 
+export const AuthOptionsLoading = () => <div className="h-9 w-full animate-pulse rounded-md bg-muted/60" aria-hidden="true" />;
+
 const AuthPageLayout = ({ chip, title, subtitle, hideExplore, children }: Props) => {
   const t = useTranslate();
   const { generalSetting, profile } = useInstance();

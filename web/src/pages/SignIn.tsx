@@ -1,6 +1,6 @@
 import { ArrowRightIcon, LockIcon } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
-import AuthPageLayout, { AuthEmptyState, AuthLinkPrompt } from "@/components/AuthPageLayout";
+import AuthPageLayout, { AuthEmptyState, AuthLinkPrompt, AuthOptionsLoading } from "@/components/AuthPageLayout";
 import IdentityProviderButtons from "@/components/IdentityProviderButtons";
 import PasswordSignInForm from "@/components/PasswordSignInForm";
 import { Separator } from "@/components/ui/separator";
@@ -14,18 +14,21 @@ const SignIn = () => {
   const t = useTranslate();
   const { generalSetting: instanceGeneralSetting } = useInstance();
   const [searchParams] = useSearchParams();
-  const identityProviderList = useIdentityProviderList();
+  const { identityProviderList, isLoading: identityProvidersLoading } = useIdentityProviderList();
   const redirectTarget = getSafeRedirectPath(searchParams.get(AUTH_REDIRECT_PARAM));
   const signUpPath = appendSearchParams(ROUTES.AUTH_SIGNUP, searchParams);
 
   const passwordAuthAllowed = !instanceGeneralSetting.disallowPasswordAuth;
   const hasIdentityProviders = identityProviderList.length > 0;
 
-  const subtitle = passwordAuthAllowed || hasIdentityProviders ? t("auth.welcome-back") : undefined;
+  // Shared by the subtitle and the body branch so they can't disagree.
+  const showAuthOptions = identityProvidersLoading || passwordAuthAllowed || hasIdentityProviders;
 
   return (
-    <AuthPageLayout title={t("common.sign-in")} subtitle={subtitle}>
-      {passwordAuthAllowed || hasIdentityProviders ? (
+    <AuthPageLayout title={t("common.sign-in")} subtitle={showAuthOptions ? t("auth.welcome-back") : undefined}>
+      {identityProvidersLoading ? (
+        <AuthOptionsLoading />
+      ) : showAuthOptions ? (
         <>
           {hasIdentityProviders && <IdentityProviderButtons identityProviderList={identityProviderList} redirectTarget={redirectTarget} />}
           {hasIdentityProviders && passwordAuthAllowed && (
