@@ -44,7 +44,12 @@ const TooltipContent = React.forwardRef<
           {...props}
         >
           {children}
-          <TooltipPrimitive.Arrow className="bg-primary z-tooltip size-2.5 rotate-45 rounded-[2px]" />
+          <TooltipPrimitive.Arrow
+            className={cn(
+              "pointer-events-none bg-primary z-tooltip size-2.5 rotate-45 rounded-[2px]",
+              "data-[side=top]:bottom-[-5px] data-[side=bottom]:top-[-5px] data-[side=left]:right-[-5px] data-[side=right]:left-[-5px]",
+            )}
+          />
         </TooltipPrimitive.Popup>
       </TooltipPrimitive.Positioner>
     </TooltipPrimitive.Portal>
