@@ -39,7 +39,8 @@ const TooltipContent = React.forwardRef<
         {...props}
       >
         {children}
-        <TooltipPrimitive.Arrow className="bg-primary fill-primary z-tooltip size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-[2px]" />
+        {/* No translate-y override: Radix's PopperArrow already positions this per side. */}
+        <TooltipPrimitive.Arrow className="bg-primary fill-primary z-tooltip size-2.5 rotate-45 rounded-[2px]" />
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
   );
