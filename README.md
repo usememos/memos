@@ -48,7 +48,6 @@ Don't want to install yet? Try our [live demo](https://demo.usememos.com/) first
 ### Other Installation Methods
 
 - **Docker Compose** - Recommended for production deployments
-- **Pre-built Binaries** - Available for Linux, macOS, and Windows
 - **Kubernetes** - Helm charts and manifests available
 - **Build from Source** - For development and customization
 

@@ -46,20 +46,20 @@ func TestDemoSeedUsesDeploymentAuthenticationPolicy(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, provider)
 
-	demoUsername := "demo"
-	demoUser, err := stores.GetUser(ctx, &store.FindUser{Username: &demoUsername})
+	adminUsername := "steven"
+	adminUser, err := stores.GetUser(ctx, &store.FindUser{Username: &adminUsername})
 	require.NoError(t, err)
-	require.NotNil(t, demoUser)
-	require.Equal(t, store.RoleAdmin, demoUser.Role)
-	require.Error(t, bcrypt.CompareHashAndPassword([]byte(demoUser.PasswordHash), []byte("demo")))
-	demoCost, err := bcrypt.Cost([]byte(demoUser.PasswordHash))
+	require.NotNil(t, adminUser)
+	require.Equal(t, store.RoleAdmin, adminUser.Role)
+	require.Error(t, bcrypt.CompareHashAndPassword([]byte(adminUser.PasswordHash), []byte("demo")))
+	adminCost, err := bcrypt.Cost([]byte(adminUser.PasswordHash))
 	require.NoError(t, err)
-	require.GreaterOrEqual(t, demoCost, 12)
+	require.GreaterOrEqual(t, adminCost, 12)
 
 	aliceUsername := "alice"
 	aliceUser, err := stores.GetUser(ctx, &store.FindUser{Username: &aliceUsername})
 	require.NoError(t, err)
 	require.NotNil(t, aliceUser)
 	require.Error(t, bcrypt.CompareHashAndPassword([]byte(aliceUser.PasswordHash), []byte("demo")))
-	require.NotEqual(t, demoUser.PasswordHash, aliceUser.PasswordHash)
+	require.NotEqual(t, adminUser.PasswordHash, aliceUser.PasswordHash)
 }

@@ -50,13 +50,20 @@ export const MermaidBlock = ({ children, className }: MermaidBlockProps) => {
     const renderDiagram = async () => {
       try {
         const { default: mermaid } = await import("mermaid");
+        // Text is measured against the final glyphs, so webfonts must be loaded
+        // first. The Font Loading API is absent in some environments (jsdom).
+        await document.fonts?.ready;
         if (cancelled) return;
 
         mermaid.initialize({
           startOnLoad: false,
           theme: toMermaidTheme(currentTheme),
           securityLevel: "strict",
-          fontFamily: "inherit",
+          // Mermaid measures labels in a detached element at body level, but the
+          // rendered SVG lands inside a <pre> (monospace). "inherit" resolves to
+          // different fonts in those two places, sizing boxes too small for the
+          // final glyphs — pin the font so measurement and display agree.
+          fontFamily: getComputedStyle(document.body).fontFamily || "sans-serif",
           suppressErrorRendering: true,
         });
 
