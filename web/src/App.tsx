@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, ScrollRestoration } from "react-router-dom";
 import { useInstance } from "./contexts/InstanceContext";
 import { MemoFilterProvider } from "./contexts/MemoFilterContext";
 import useNavigateTo from "./hooks/useNavigateTo";
@@ -59,9 +59,12 @@ const App = () => {
   }, [instanceGeneralSetting.customProfile]);
 
   return (
-    <MemoFilterProvider>
-      <Outlet />
-    </MemoFilterProvider>
+    <>
+      <MemoFilterProvider>
+        <Outlet />
+      </MemoFilterProvider>
+      <ScrollRestoration />
+    </>
   );
 };
 
