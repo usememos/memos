@@ -94,8 +94,8 @@ const MemoDetail = () => {
         </MobileHeader>
       )}
       <MentionResolutionProvider contents={mentionResolutionContents}>
-        <div className={cn("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-4")}>
-          <div className={cn("w-full md:w-[calc(100%-15rem)]")}>
+        <div className={cn("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-6")}>
+          <div className={cn("w-full md:w-[calc(100%-16.5rem)]")}>
             {parentMemo && (
               <div className="w-auto inline-block mb-2">
                 <Link
@@ -130,7 +130,7 @@ const MemoDetail = () => {
             />
           </div>
           {md && (
-            <div className="sticky top-0 left-0 shrink-0 -mt-6 w-56 h-full">
+            <div className="sticky top-0 left-0 shrink-0 -mt-6 w-60 h-full">
               <MemoDetailSidebar className="py-6" memo={displayMemo} onShareImageOpen={() => setShareImageDialogOpen(true)} />
             </div>
           )}
