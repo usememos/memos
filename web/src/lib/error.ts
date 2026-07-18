@@ -1,4 +1,10 @@
+import { ConnectError } from "@connectrpc/connect";
+
 export function getErrorMessage(error: unknown, fallback = "Unknown error"): string {
+  if (error instanceof ConnectError) {
+    return error.rawMessage || fallback;
+  }
+
   if (error instanceof Error) {
     return error.message;
   }

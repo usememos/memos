@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"connectrpc.com/connect"
+	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -67,7 +68,7 @@ func convertGRPCError(err error) error {
 		return nil
 	}
 	if st, ok := status.FromError(err); ok {
-		return connect.NewError(grpcCodeToConnectCode(st.Code()), err)
+		return connect.NewError(grpcCodeToConnectCode(st.Code()), errors.New(st.Message()))
 	}
 	return connect.NewError(connect.CodeInternal, err)
 }

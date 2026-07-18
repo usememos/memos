@@ -74,7 +74,7 @@ function CreateUserDialog({ open, onOpenChange, user: initialUser, onSuccess }: 
       onOpenChange(false);
     } catch (error: unknown) {
       handleError(error, toast.error, {
-        context: user ? "Update user" : "Create user",
+        context: isCreating ? "Create user" : "Update user",
         onError: () => requestState.setError(),
       });
     }
