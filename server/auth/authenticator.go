@@ -145,7 +145,8 @@ type bearerAuth struct {
 //   - (nil, err)    on an unexpected store error;
 //   - (result, nil) on success.
 //
-// It performs no side effects; callers decide whether to record PAT usage.
+// Successful PAT resolution records the token's last-used time, so every entry
+// point that authenticates through here gets usage tracking for free.
 func (a *Authenticator) resolveBearer(ctx context.Context, token string) (*bearerAuth, error) {
 	if token == "" {
 		return nil, nil
@@ -169,6 +170,7 @@ func (a *Authenticator) resolveBearer(ctx context.Context, token string) (*beare
 
 	// Personal Access Token.
 	if user, pat, err := a.AuthenticateByPAT(ctx, token); err == nil && user != nil {
+		a.recordPATUsage(user.ID, pat.TokenId)
 		return &bearerAuth{user: user, pat: pat}, nil
 	}
 	return nil, nil
@@ -209,7 +211,7 @@ func (a *Authenticator) AuthenticateToUser(ctx context.Context, authHeader, cook
 
 // Authenticate resolves a Bearer token (Access Token V2 or PAT) into an AuthResult,
 // returning nil when no valid credentials are present. Unlike AuthenticateToUser it
-// ignores the refresh cookie, and it records PAT last-used on success.
+// ignores the refresh cookie.
 func (a *Authenticator) Authenticate(ctx context.Context, authHeader string) *AuthResult {
 	token := ExtractBearerToken(authHeader)
 	bearer, err := a.resolveBearer(ctx, token)
@@ -217,7 +219,6 @@ func (a *Authenticator) Authenticate(ctx context.Context, authHeader string) *Au
 		return nil
 	}
 	if bearer.pat != nil {
-		a.recordPATUsage(bearer.user.ID, bearer.pat.TokenId)
 		return &AuthResult{User: bearer.user, AccessToken: token}
 	}
 	return &AuthResult{Claims: bearer.claims, AccessToken: token}

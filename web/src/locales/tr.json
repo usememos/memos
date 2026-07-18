@@ -736,7 +736,6 @@
       "use-tls": "STARTTLS'i kullanın",
       "use-tls-description": "SMTP bağlantısını STARTTLS ile yükseltin. 587 bağlantı noktasına sahip Gmail için bunu açık tutun."
     },
-    "select-section": "Bölüm seç",
     "resource-stats": {
       "label": "Kaynaklar",
       "title": "Kaynak İstatistikleri",

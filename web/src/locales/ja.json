@@ -762,7 +762,6 @@
       "use-tls": "STARTTLSを使用する",
       "use-tls-description": "SMTP 接続を STARTTLS にアップグレードします。 ポート 587 の Gmail ではこれをオンのままにします。"
     },
-    "select-section": "セクションを選択",
     "resource-stats": {
       "label": "リソース",
       "title": "リソース統計",

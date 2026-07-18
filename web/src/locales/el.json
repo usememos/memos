@@ -733,7 +733,6 @@
       "server-name": "Όνομα διακομιστή",
       "title": "Γενικός"
     },
-    "select-section": "Επιλέξτε ενότητα",
     "version": "Εκδοχή",
     "webhook": {
       "create-dialog": {

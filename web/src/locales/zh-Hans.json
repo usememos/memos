@@ -636,7 +636,6 @@
       "title": "一般设置",
       "label": "系统"
     },
-    "select-section": "选择设置项",
     "version": "版本",
     "access-token": {
       "access-token-copied-to-clipboard": "访问令牌已复制到剪贴板",

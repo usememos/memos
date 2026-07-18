@@ -736,7 +736,6 @@
       "use-tls": "Použijte STARTTLS",
       "use-tls-description": "Upgradujte připojení SMTP pomocí STARTTLS. Nechte toto zapnuté pro Gmail s portem 587."
     },
-    "select-section": "Vyberte sekci",
     "resource-stats": {
       "label": "Zdroje",
       "title": "Statistika zdrojů",

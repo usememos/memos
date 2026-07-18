@@ -261,6 +261,35 @@ func TestAuthenticatorPAT(t *testing.T) {
 		assert.Equal(t, tokenID, pat.TokenId)
 	})
 
+	t.Run("records last used time for user authentication", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "pat-last-used")
+		require.NoError(t, err)
+
+		token := auth.GeneratePersonalAccessToken()
+		tokenID := util.GenUUID()
+		err = ts.Store.AddUserPersonalAccessToken(ctx, user.ID, &storepb.PersonalAccessTokensUserSetting_PersonalAccessToken{
+			TokenId:   tokenID,
+			TokenHash: auth.HashPersonalAccessToken(token),
+			CreatedAt: timestamppb.Now(),
+		})
+		require.NoError(t, err)
+
+		authenticatedAt := time.Now()
+		authenticator := auth.NewAuthenticator(ts.Store, ts.Secret)
+		authenticatedUser, err := authenticator.AuthenticateToUser(ctx, "Bearer "+token, "")
+		require.NoError(t, err)
+		require.NotNil(t, authenticatedUser)
+		require.Equal(t, user.ID, authenticatedUser.ID)
+
+		require.Eventually(t, func() bool {
+			pats, err := ts.Store.GetUserPersonalAccessTokens(ctx, user.ID)
+			return err == nil && len(pats) == 1 && pats[0].LastUsedAt != nil && !pats[0].LastUsedAt.AsTime().Before(authenticatedAt)
+		}, time.Second, 10*time.Millisecond)
+	})
+
 	t.Run("fails with invalid PAT format", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()

@@ -733,7 +733,6 @@
       "server-name": "Palvelimen nimi",
       "title": "Kenraali"
     },
-    "select-section": "Valitse osio",
     "version": "Versio",
     "webhook": {
       "create-dialog": {

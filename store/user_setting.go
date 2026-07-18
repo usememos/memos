@@ -5,6 +5,7 @@ import (
 
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -237,6 +238,9 @@ func (s *Store) GetUserPersonalAccessTokens(ctx context.Context, userID int32) (
 
 // AddUserPersonalAccessToken adds a new PAT for the user.
 func (s *Store) AddUserPersonalAccessToken(ctx context.Context, userID int32, token *storepb.PersonalAccessTokensUserSetting_PersonalAccessToken) error {
+	s.patMu.Lock()
+	defer s.patMu.Unlock()
+
 	tokens, err := s.GetUserPersonalAccessTokens(ctx, userID)
 	if err != nil {
 		return err
@@ -258,6 +262,9 @@ func (s *Store) AddUserPersonalAccessToken(ctx context.Context, userID int32, to
 
 // RemoveUserPersonalAccessToken removes a PAT from the user.
 func (s *Store) RemoveUserPersonalAccessToken(ctx context.Context, userID int32, tokenID string) error {
+	s.patMu.Lock()
+	defer s.patMu.Unlock()
+
 	existingTokens, err := s.GetUserPersonalAccessTokens(ctx, userID)
 	if err != nil {
 		return err
@@ -284,28 +291,45 @@ func (s *Store) RemoveUserPersonalAccessToken(ctx context.Context, userID int32,
 
 // UpdatePATLastUsed updates the last_used_at timestamp of a PAT.
 func (s *Store) UpdatePATLastUsed(ctx context.Context, userID int32, tokenID string, lastUsed *timestamppb.Timestamp) error {
+	s.patMu.Lock()
+	defer s.patMu.Unlock()
+
 	tokens, err := s.GetUserPersonalAccessTokens(ctx, userID)
 	if err != nil {
 		return err
 	}
 
-	for _, token := range tokens {
+	for i, token := range tokens {
 		if token.TokenId == tokenID {
-			token.LastUsedAt = lastUsed
-			break
+			// Concurrent requests can finish out of order. Never let an older usage
+			// timestamp overwrite a newer one.
+			if lastUsed != nil && token.LastUsedAt != nil && !token.LastUsedAt.AsTime().Before(lastUsed.AsTime()) {
+				return nil
+			}
+
+			updatedToken, ok := proto.Clone(token).(*storepb.PersonalAccessTokensUserSetting_PersonalAccessToken)
+			if !ok {
+				return errors.Errorf("failed to clone personal access token")
+			}
+			updatedToken.LastUsedAt = lastUsed
+			updatedTokens := make([]*storepb.PersonalAccessTokensUserSetting_PersonalAccessToken, len(tokens))
+			copy(updatedTokens, tokens)
+			updatedTokens[i] = updatedToken
+
+			_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
+				UserId: userID,
+				Key:    storepb.UserSetting_PERSONAL_ACCESS_TOKENS,
+				Value: &storepb.UserSetting_PersonalAccessTokens{
+					PersonalAccessTokens: &storepb.PersonalAccessTokensUserSetting{
+						Tokens: updatedTokens,
+					},
+				},
+			})
+			return err
 		}
 	}
 
-	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
-		UserId: userID,
-		Key:    storepb.UserSetting_PERSONAL_ACCESS_TOKENS,
-		Value: &storepb.UserSetting_PersonalAccessTokens{
-			PersonalAccessTokens: &storepb.PersonalAccessTokensUserSetting{
-				Tokens: tokens,
-			},
-		},
-	})
-	return err
+	return nil
 }
 
 // GetUserWebhooks returns the webhooks of the user.

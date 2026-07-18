@@ -42,7 +42,7 @@ function CreateAccessTokenDialog({ open, onOpenChange, onSuccess }: Props) {
       value: 30,
     },
     {
-      label: "90 Days",
+      label: t("setting.access-token.create-dialog.duration-90d"),
       value: 90,
     },
     {

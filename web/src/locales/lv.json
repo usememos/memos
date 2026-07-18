@@ -733,7 +733,6 @@
       "server-name": "Servera nosaukums",
       "title": "Ģenerālis"
     },
-    "select-section": "Izvēlieties sadaļu",
     "version": "Versija",
     "webhook": {
       "create-dialog": {

@@ -440,13 +440,25 @@
         "created-at": "Created At",
         "description": "Description",
         "duration-1m": "1 Month",
+        "duration-90d": "90 Days",
         "duration-8h": "8 Hours",
         "duration-never": "Never",
         "expiration": "Expiration",
         "expires-at": "Expires At",
         "some-description": "Some description..."
       },
-      "description": "A list of all access tokens for your account.",
+      "description": "Create and revoke the secret keys that let other apps use the Memos API as you.",
+      "about-title": "What is a personal access token?",
+      "about-description": "A personal access token (PAT) is a secret key that authenticates API requests as your account. Any app or script holding one — an MCP server, a CLI, a mobile client — can do everything you can do in Memos, until the token expires or you delete it. Send it as a Bearer credential in the Authorization header:",
+      "guidelines-title": "Keep your tokens safe",
+      "guideline-shown-once": "A token is shown only once, right after you create it (it is copied to your clipboard). Store it somewhere safe, like a password manager.",
+      "guideline-one-per-app": "Create a separate token for each app or script, so you can revoke one without breaking the others.",
+      "guideline-expiration": "Prefer tokens that expire. Long-lived tokens are a bigger risk if they leak.",
+      "guideline-review": "Check the Last used column from time to time, and delete tokens you no longer recognize or need.",
+      "your-tokens": "Your tokens",
+      "label": "Access Tokens",
+      "last-used-at": "Last Used",
+      "never-used": "Never used",
       "title": "Access Tokens",
       "token": "Token",
       "no-tokens-found": "No access tokens found"
@@ -785,7 +797,6 @@
       "server-name": "Server Name",
       "title": "General"
     },
-    "select-section": "Select section",
     "version": "Version",
     "webhook": {
       "create-dialog": {

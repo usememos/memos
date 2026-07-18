@@ -736,7 +736,6 @@
       "use-tls": "Koristite STARTTLS",
       "use-tls-description": "Nadogradite vezu SMTP s STARTTLS. Neka ovo bude uključeno za Gmail s priključkom 587."
     },
-    "select-section": "Odaberite odjeljak",
     "resource-stats": {
       "label": "Resursi",
       "title": "Statistika resursa",

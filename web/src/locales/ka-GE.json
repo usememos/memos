@@ -736,7 +736,6 @@
       "use-tls": "გამოიყენეთ STARTTLS",
       "use-tls-description": "განაახლეთ SMTP კავშირი STARTTLS-ით. შეინახეთ ეს Gmail-ისთვის 587 პორტით."
     },
-    "select-section": "აირჩიეთ განყოფილება",
     "resource-stats": {
       "label": "რესურსები",
       "title": "რესურსების სტატისტიკა",

@@ -733,7 +733,6 @@
       "server-name": "Име на сървъра",
       "title": "генерал"
     },
-    "select-section": "Изберете раздел",
     "version": "Версия",
     "webhook": {
       "create-dialog": {

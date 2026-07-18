@@ -14,7 +14,6 @@ import { useTranslate } from "@/utils/i18n";
 import ChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
 import UpdateAccountDialog from "../UpdateAccountDialog";
 import UserAvatar from "../UserAvatar";
-import AccessTokenSection from "./AccessTokenSection";
 import LinkedIdentitySection from "./LinkedIdentitySection";
 import SettingGroup from "./SettingGroup";
 import SettingSection from "./SettingSection";
@@ -46,9 +45,9 @@ const MyAccountSection = () => {
   return (
     <SettingSection title={t("setting.my-account.label")}>
       <SettingGroup title={t("setting.account.title")}>
-        <div className="w-full flex flex-row justify-start items-center gap-3">
+        <div className="w-full flex flex-row flex-wrap justify-start items-center gap-3">
           <UserAvatar className="shrink-0 w-12 h-12" avatarUrl={user?.avatarUrl} />
-          <div className="flex-1 min-w-0 flex flex-col justify-center items-start gap-1">
+          <div className="flex-1 min-w-40 flex flex-col justify-center items-start gap-1">
             <div className="w-full">
               <span className="text-lg font-semibold">{user?.displayName}</span>
               <span className="ml-2 text-sm text-muted-foreground">@{user?.username}</span>
@@ -69,8 +68,6 @@ const MyAccountSection = () => {
       </SettingGroup>
 
       <LinkedIdentitySection />
-
-      <AccessTokenSection />
 
       <SettingGroup showSeparator title={t("setting.account.danger-area")} description={t("setting.account.danger-area-description")}>
         <div className="flex flex-col gap-3 rounded-xl border border-destructive/30 bg-destructive/5 p-4">

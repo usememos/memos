@@ -736,7 +736,6 @@
       "use-tls": "Használja az STARTTLS-et",
       "use-tls-description": "Frissítse az SMTP kapcsolatot STARTTLS-szel. Tartsa bekapcsolva az Gmail esetében az 587 porttal."
     },
-    "select-section": "Válassza ki a szakaszt",
     "resource-stats": {
       "label": "Erőforrás",
       "title": "Erőforrás-statisztika",

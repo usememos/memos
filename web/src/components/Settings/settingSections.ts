@@ -4,6 +4,7 @@ import {
   DatabaseIcon,
   HeartHandshakeIcon,
   KeyIcon,
+  KeyRoundIcon,
   LibraryIcon,
   type LucideIcon,
   MailIcon,
@@ -14,6 +15,7 @@ import {
   WebhookIcon,
 } from "lucide-react";
 import { type ComponentType } from "react";
+import AccessTokenSection from "@/components/Settings/AccessTokenSection";
 import AISection from "@/components/Settings/AISection";
 import InstanceSection from "@/components/Settings/InstanceSection";
 import MemberSection from "@/components/Settings/MemberSection";
@@ -30,6 +32,7 @@ import { InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 
 export type SettingSectionKey =
   | "my-account"
+  | "access-token"
   | "preference"
   | "webhook"
   | "member"
@@ -60,6 +63,13 @@ export const SETTINGS_SECTIONS: SettingSectionDefinition[] = [
     labelKey: "setting.my-account.label",
     icon: UserIcon,
     component: MyAccountSection,
+  },
+  {
+    key: "access-token",
+    scope: "basic",
+    labelKey: "setting.access-token.label",
+    icon: KeyRoundIcon,
+    component: AccessTokenSection,
   },
   {
     key: "preference",

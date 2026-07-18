@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -587,6 +588,14 @@ func TestUserSettingUpdatePATLastUsed(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, pats, 1)
 	require.NotNil(t, pats[0].LastUsedAt)
+	require.Equal(t, now.AsTime(), pats[0].LastUsedAt.AsTime())
+
+	// An older asynchronous update must not make the last-used time regress.
+	err = ts.UpdatePATLastUsed(ctx, user.ID, "pat-update-test", timestamppb.New(now.AsTime().Add(-time.Hour)))
+	require.NoError(t, err)
+	pats, err = ts.GetUserPersonalAccessTokens(ctx, user.ID)
+	require.NoError(t, err)
+	require.Equal(t, now.AsTime(), pats[0].LastUsedAt.AsTime())
 
 	ts.Close()
 }

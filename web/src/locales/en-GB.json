@@ -736,7 +736,6 @@
       "use-tls": "Use STARTTLS",
       "use-tls-description": "Upgrade the SMTP connection with STARTTLS. Keep this on for Gmail with port 587."
     },
-    "select-section": "Select section",
     "resource-stats": {
       "label": "Resources",
       "title": "Resource Statistics",

@@ -733,7 +733,6 @@
       "server-name": "Име сервера",
       "title": "генерал"
     },
-    "select-section": "Изаберите одељак",
     "version": "Версион",
     "webhook": {
       "create-dialog": {

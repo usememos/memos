@@ -736,7 +736,6 @@
       "use-tls": "Gebruik STARTTLS",
       "use-tls-description": "Upgrade de SMTP-verbinding met STARTTLS. Houd dit ingeschakeld voor Gmail met poort 587."
     },
-    "select-section": "Selecteer sectie",
     "resource-stats": {
       "label": "Bronnen",
       "title": "Statistieken van hulpbronnen",

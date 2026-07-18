@@ -733,7 +733,6 @@
       "server-name": "Serverio pavadinimas",
       "title": "Generolas"
     },
-    "select-section": "Pasirinkite skyrių",
     "version": "Versija",
     "webhook": {
       "create-dialog": {

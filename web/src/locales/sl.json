@@ -736,7 +736,6 @@
       "use-tls": "Uporabite STARTTLS",
       "use-tls-description": "Nadgradite povezavo SMTP z STARTTLS. Naj bo to vključeno za Gmail z vrati 587."
     },
-    "select-section": "Izberite razdelek",
     "resource-stats": {
       "label": "Viri",
       "title": "Statistika virov",
