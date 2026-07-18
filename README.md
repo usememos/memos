@@ -4,7 +4,7 @@
 
 <img align="right" height="96px" src="https://raw.githubusercontent.com/usememos/.github/refs/heads/main/assets/logo-rounded.png" alt="Memos" />
 
-Open-source, self-hosted note-taking tool built for quick capture. Markdown-native, lightweight, and fully yours.
+Memos is an open-source, self-hosted note-taking app built for quick capture. It is Markdown-native, lightweight, and keeps your data under your control.
 
 [![Home](https://img.shields.io/badge/🏠-usememos.com-blue?style=flat-square)](https://usememos.com)
 [![Live Demo](https://img.shields.io/badge/✨-Try%20Demo-orange?style=flat-square)](https://demo.usememos.com/)
@@ -16,12 +16,14 @@ Open-source, self-hosted note-taking tool built for quick capture. Markdown-nati
 
 ## Features
 
-- **Instant Capture** — Timeline-first UI. Open, write, done — no folders to navigate.
-- **Total Data Ownership** — Self-hosted on your infrastructure. Notes stored in Markdown, always portable. Zero telemetry.
-- **Radical Simplicity** — Single Go binary, ~20MB Docker image. One command to deploy with SQLite, MySQL, or PostgreSQL.
-- **Open & Extensible** — MIT-licensed with full REST and gRPC APIs for integration.
+- **Capture quickly** — A timeline-first interface keeps note-taking simple: open, write, and move on.
+- **Own your data** — Self-host Memos on your infrastructure with no telemetry.
+- **Deploy anywhere** — Run a single Go binary or Docker container with SQLite, MySQL, or PostgreSQL.
+- **Integrate freely** — Build on the REST and gRPC APIs or adapt the MIT-licensed source to your needs.
 
 ## Quick Start
+
+Want to explore Memos first? Open the [live demo](https://demo.usememos.com/).
 
 ### Docker (Recommended)
 
@@ -33,7 +35,7 @@ docker run -d \
   neosmemo/memos:stable
 ```
 
-Open `http://localhost:5230` and start writing!
+Open `http://localhost:5230` and start writing.
 
 ### Native Binary
 
@@ -41,21 +43,21 @@ Open `http://localhost:5230` and start writing!
 curl -fsSL https://raw.githubusercontent.com/usememos/memos/main/scripts/install.sh | sh
 ```
 
-### Try the Live Demo
-
-Don't want to install yet? Try our [live demo](https://demo.usememos.com/) first!
-
 ### Other Installation Methods
 
-- **Docker Compose** - Recommended for production deployments
-- **Kubernetes** - Helm charts and manifests available
-- **Build from Source** - For development and customization
+- **Docker Compose** — Recommended for production deployments.
+- **Kubernetes** — Helm charts and manifests are available.
+- **Build from source** — Best for development and customization.
 
-See our [installation guide](https://usememos.com/docs/deploy) for detailed instructions.
+See the [deployment guide](https://usememos.com/docs/deploy) for detailed instructions.
+
+## Web Clipper
+
+Save pages, selected text, and images directly to your Memos instance with the official [Memos Web Clipper](https://github.com/usememos/web-clipper). The extension is available for [Chrome](https://chromewebstore.google.com/detail/memos-web-clipper/nebaoebnljalfegiidibihhkebeiklbl) and [Firefox](https://addons.mozilla.org/en-US/firefox/addon/memos-web-clipper/), and lets you review each clip, choose its visibility, and customize its Markdown format before saving.
 
 ## Contributing
 
-Contributions are welcome — bug reports, feature suggestions, pull requests, documentation, and translations.
+Contributions of all kinds are welcome, including bug reports, feature suggestions, pull requests, documentation, and translations.
 
 - [Report bugs](https://github.com/usememos/memos/issues/new?template=bug_report.md)
 - [Suggest features](https://github.com/usememos/memos/issues/new?template=feature_request.md)
@@ -64,15 +66,11 @@ Contributions are welcome — bug reports, feature suggestions, pull requests, d
 - [Help with translations](https://github.com/usememos/memos/tree/main/web/src/locales)
 
 ## Sponsors
-* [**CodeRabbit** - Cut code review time & bugs in half, instantly](https://coderabbit.link/usememos)
-* [**SSD Nodes** - Affordable VPS hosting for self-hosters](https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor)
-* [**InstaPods** - Get your app online in seconds](https://instapods.com/?utm_source=memos&utm_medium=sponsor) • [Deploy Memos in 30 Seconds](https://instapods.com/apps/memos/?utm_source=memos&utm_medium=sponsor)
+
+- [**CodeRabbit** — Cut code review time and bugs in half](https://coderabbit.link/usememos)
+- [**SSD Nodes** — Affordable VPS hosting for self-hosters](https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor)
 
 Love Memos? [Sponsor us on GitHub](https://github.com/sponsors/usememos) to help keep the project growing!
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=usememos/memos&type=Date)](https://star-history.com/#usememos/memos&Date)
 
 ## License
 
@@ -81,7 +79,3 @@ Memos is open-source software licensed under the [MIT License](LICENSE). See our
 ---
 
 **[Website](https://usememos.com)** • **[Documentation](https://usememos.com/docs)** • **[Demo](https://demo.usememos.com/)** • **[Discord](https://discord.gg/tfPJa4UmAv)** • **[X/Twitter](https://x.com/usememos)**
-
-<a href="https://vercel.com/oss">
-  <img alt="Vercel OSS Program" src="https://vercel.com/oss/program-badge.svg" />
-</a>
