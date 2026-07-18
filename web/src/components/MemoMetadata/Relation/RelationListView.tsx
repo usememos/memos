@@ -17,7 +17,6 @@ interface RelationListViewProps {
 function RelationListView({ relations, currentMemoName, parentPage, className }: RelationListViewProps) {
   const t = useTranslate();
   const [activeTab, setActiveTab] = useState<"referencing" | "referenced">("referencing");
-  const resolvedMemos = useResolvedRelationMemos(relations);
 
   const { referencing: referencingRelations, referenced: referencedRelations } = useMemo(
     () => getRelationBuckets(relations, currentMemoName),
@@ -33,6 +32,15 @@ function RelationListView({ relations, currentMemoName, parentPage, className }:
   const isReferencing = direction === "referencing";
   const icon = isReferencing ? LinkIcon : MilestoneIcon;
   const activeRelations = isReferencing ? referencingRelations : referencedRelations;
+  const activeMemoNames = useMemo(
+    () =>
+      activeRelations.flatMap((relation) => {
+        const memo = getRelationMemo(relation, direction);
+        return memo?.name && !memo.snippet ? [memo.name] : [];
+      }),
+    [activeRelations, direction],
+  );
+  const resolvedMemos = useResolvedRelationMemos(activeMemoNames);
 
   return (
     <MetadataSection

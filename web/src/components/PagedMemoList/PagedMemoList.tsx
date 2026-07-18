@@ -1,16 +1,13 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { ArrowUpIcon, LoaderCircleIcon } from "lucide-react";
 import { type ReactElement, type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
 import { Button } from "@/components/ui/button";
-import { userServiceClient } from "@/connect";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import { useView } from "@/contexts/ViewContext";
 import { useDelayedFlag } from "@/hooks/useDelayedFlag";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { hoistMemoToFront } from "@/hooks/useMemoSorting";
-import { userKeys } from "@/hooks/useUserQueries";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE, LOADING_INDICATOR_DELAY_MS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
@@ -101,7 +98,6 @@ function useAutoFetchWhenNotScrollable({
 
 const PagedMemoList = (props: Props) => {
   const t = useTranslate();
-  const queryClient = useQueryClient();
   const { filters } = useMemoFilterContext();
   const { maxColumns, compactMode } = useView();
   // maxColumns is a ceiling: 1 = single reading column, 0 = as many as fit. The single
@@ -153,26 +149,6 @@ const PagedMemoList = (props: Props) => {
     const sorted = props.listSort ? props.listSort(memos) : memos;
     return hoistMemoToFront(sorted, newMemoName);
   }, [memos, props.listSort, newMemoName]);
-
-  // Prefetch creators when new data arrives to improve performance
-  useEffect(() => {
-    if (!data?.pages || !props.showCreator) return;
-
-    const lastPage = data.pages[data.pages.length - 1];
-    if (!lastPage?.memos) return;
-
-    const uniqueCreators = Array.from(new Set(lastPage.memos.map((memo) => memo.creator)));
-    for (const creator of uniqueCreators) {
-      void queryClient.prefetchQuery({
-        queryKey: userKeys.detail(creator),
-        queryFn: async () => {
-          const user = await userServiceClient.getUser({ name: creator });
-          return user;
-        },
-        staleTime: 1000 * 60 * 5,
-      });
-    }
-  }, [data?.pages, props.showCreator, queryClient]);
 
   // Auto-fetch hook: fetches more content when page isn't scrollable
   useAutoFetchWhenNotScrollable({

@@ -141,7 +141,15 @@ const MemoDetailSidebar = ({ memo, className, onShareImageOpen }: Props) => {
   const { data: creator } = useUser(memo.creator, { enabled: !!memo.creator });
   const headings = useMemo(() => extractHeadings(memo.content), [memo.content]);
   const { referencing, referenced } = useMemo(() => getRelationBuckets(memo.relations, memo.name), [memo.relations, memo.name]);
-  const resolvedMemos = useResolvedRelationMemos(memo.relations);
+  const relationMemoNames = useMemo(
+    () =>
+      [
+        ...referencing.map((relation) => getRelationMemo(relation, "referencing")),
+        ...referenced.map((relation) => getRelationMemo(relation, "referenced")),
+      ].flatMap((relatedMemo) => (relatedMemo?.name && !relatedMemo.snippet ? [relatedMemo.name] : [])),
+    [referenced, referencing],
+  );
+  const resolvedMemos = useResolvedRelationMemos(relationMemoNames);
 
   const createTime = memo.createTime ? timestampDate(memo.createTime) : undefined;
   const updateTime = memo.updateTime ? timestampDate(memo.updateTime) : undefined;

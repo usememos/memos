@@ -1,7 +1,14 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
-import type { InfiniteData } from "@tanstack/react-query";
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  type InfiniteData,
+  type QueryClient,
+  queryOptions,
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { memoServiceClient } from "@/connect";
 import { userKeys } from "@/hooks/useUserQueries";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/lib/constants";
@@ -18,6 +25,13 @@ export const memoKeys = {
   comments: (name: string) => [...memoKeys.all, "comments", name] as const,
   linkMetadata: (url: string) => [...memoKeys.all, "linkMetadata", url] as const,
 };
+
+export const memoDetailQueryOptions = (name: string) =>
+  queryOptions({
+    queryKey: memoKeys.detail(name),
+    queryFn: () => memoServiceClient.getMemo({ name }),
+    staleTime: 1000 * 10,
+  });
 
 type MemoPatch = Partial<Memo> & Pick<Memo, "name">;
 type MemoCollectionQueryData = ListMemosResponse | InfiniteData<ListMemosResponse>;
@@ -94,7 +108,7 @@ function findMemoInQueryData(data: unknown, name: string): Memo | undefined {
   return undefined;
 }
 
-function findMemoInCollectionQueries(queryClient: ReturnType<typeof useQueryClient>, name: string): Memo | undefined {
+export function findMemoInCollectionQueries(queryClient: QueryClient, name: string): Memo | undefined {
   for (const [, data] of queryClient.getQueriesData<unknown>({ queryKey: memoKeys.all })) {
     const memo = findMemoInQueryData(data, name);
     if (memo) {
@@ -105,7 +119,7 @@ function findMemoInCollectionQueries(queryClient: ReturnType<typeof useQueryClie
   return undefined;
 }
 
-function patchMemoInCollectionQueries(queryClient: ReturnType<typeof useQueryClient>, update: MemoPatch) {
+function patchMemoInCollectionQueries(queryClient: QueryClient, update: MemoPatch) {
   queryClient.setQueriesData<MemoCollectionQueryData>({ queryKey: memoKeys.all }, (data) => patchMemoListQueryData(data, update));
 }
 
@@ -141,13 +155,8 @@ export function useInfiniteMemos(request: Partial<ListMemosRequest> = {}, option
 
 export function useMemo(name: string, options?: { enabled?: boolean }) {
   return useQuery({
-    queryKey: memoKeys.detail(name),
-    queryFn: async () => {
-      const memo = await memoServiceClient.getMemo({ name });
-      return memo;
-    },
+    ...memoDetailQueryOptions(name),
     enabled: options?.enabled ?? true,
-    staleTime: 1000 * 10, // 10 seconds - reduced to prevent stale data in collaborative editing
   });
 }
 

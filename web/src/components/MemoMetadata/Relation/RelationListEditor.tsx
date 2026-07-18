@@ -40,7 +40,14 @@ const RelationItemCard: FC<{
 
 const RelationListEditor: FC<RelationListEditorProps> = ({ relations, onRelationsChange, parentPage, memoName }) => {
   const referenceRelations = useMemo(() => getEditorReferenceRelations(relations, memoName), [relations, memoName]);
-  const resolvedMemos = useResolvedRelationMemos(referenceRelations);
+  const relatedMemoNames = useMemo(
+    () =>
+      referenceRelations.flatMap((relation) =>
+        relation.relatedMemo?.name && !relation.relatedMemo.snippet ? [relation.relatedMemo.name] : [],
+      ),
+    [referenceRelations],
+  );
+  const resolvedMemos = useResolvedRelationMemos(relatedMemoNames);
 
   const handleDeleteRelation = (memoName: string) => {
     if (onRelationsChange) {

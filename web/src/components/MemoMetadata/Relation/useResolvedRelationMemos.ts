@@ -1,25 +1,16 @@
 import { create } from "@bufbuild/protobuf";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { memoServiceClient } from "@/connect";
-import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
+import { findMemoInCollectionQueries, memoDetailQueryOptions } from "@/hooks/useMemoQueries";
 import { MemoRelation_Memo, MemoRelation_MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
-export const useResolvedRelationMemos = (relations: MemoRelation[]) => {
+export const useResolvedRelationMemos = (memoNames: string[]) => {
+  const queryClient = useQueryClient();
   const [resolvedMemos, setResolvedMemos] = useState<Record<string, MemoRelation_Memo>>({});
 
   const missingMemoNames = useMemo(() => {
-    const names = new Set<string>();
-
-    for (const relation of relations) {
-      for (const memo of [relation.memo, relation.relatedMemo]) {
-        if (memo?.name && !memo.snippet && !resolvedMemos[memo.name]) {
-          names.add(memo.name);
-        }
-      }
-    }
-
-    return [...names];
-  }, [relations, resolvedMemos]);
+    return Array.from(new Set(memoNames)).filter((name) => name && !resolvedMemos[name]);
+  }, [memoNames, resolvedMemos]);
 
   useEffect(() => {
     if (missingMemoNames.length === 0) {
@@ -32,7 +23,7 @@ export const useResolvedRelationMemos = (relations: MemoRelation[]) => {
       try {
         const memos = await Promise.all(
           missingMemoNames.map(async (name) => {
-            const memo = await memoServiceClient.getMemo({ name });
+            const memo = findMemoInCollectionQueries(queryClient, name) ?? (await queryClient.fetchQuery(memoDetailQueryOptions(name)));
             return create(MemoRelation_MemoSchema, { name: memo.name, snippet: memo.snippet });
           }),
         );
@@ -56,7 +47,7 @@ export const useResolvedRelationMemos = (relations: MemoRelation[]) => {
     return () => {
       cancelled = true;
     };
-  }, [missingMemoNames]);
+  }, [missingMemoNames, queryClient]);
 
   return resolvedMemos;
 };
