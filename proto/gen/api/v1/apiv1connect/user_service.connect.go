@@ -116,7 +116,7 @@ type UserServiceClient interface {
 	// BatchGetUsers returns active users by usernames.
 	BatchGetUsers(context.Context, *connect.Request[v1.BatchGetUsersRequest]) (*connect.Response[v1.BatchGetUsersResponse], error)
 	// GetUser gets a user by username.
-	// Format: users/{username} (e.g., users/steven)
+	// Format: users/{user} (e.g., users/steven)
 	GetUser(context.Context, *connect.Request[v1.GetUserRequest]) (*connect.Response[v1.User], error)
 	// CreateUser creates a new user.
 	CreateUser(context.Context, *connect.Request[v1.CreateUserRequest]) (*connect.Response[v1.User], error)
@@ -507,7 +507,7 @@ type UserServiceHandler interface {
 	// BatchGetUsers returns active users by usernames.
 	BatchGetUsers(context.Context, *connect.Request[v1.BatchGetUsersRequest]) (*connect.Response[v1.BatchGetUsersResponse], error)
 	// GetUser gets a user by username.
-	// Format: users/{username} (e.g., users/steven)
+	// Format: users/{user} (e.g., users/steven)
 	GetUser(context.Context, *connect.Request[v1.GetUserRequest]) (*connect.Response[v1.User], error)
 	// CreateUser creates a new user.
 	CreateUser(context.Context, *connect.Request[v1.CreateUserRequest]) (*connect.Response[v1.User], error)

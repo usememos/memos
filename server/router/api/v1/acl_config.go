@@ -19,7 +19,7 @@ var PublicMethods = map[string]struct{}{
 	"/memos.api.v1.InstanceService/BatchGetInstanceSettings": {},
 
 	// User Service - public user profiles and stats
-	"/memos.api.v1.UserService/CreateUser":       {}, // Allow first user registration
+	"/memos.api.v1.UserService/CreateUser":       {}, // Registration policy is enforced in UserService
 	"/memos.api.v1.UserService/GetUser":          {},
 	"/memos.api.v1.UserService/BatchGetUsers":    {},
 	"/memos.api.v1.UserService/GetUserAvatar":    {},
@@ -51,9 +51,8 @@ func IsPublicMethod(procedure string) bool {
 // anonymous callers even when the instance is private (no InstanceURL configured).
 //
 // It is the minimum required to render the sign-in page, authenticate, and follow
-// share links. Every entry here MUST also exist in PublicMethods. CreateUser is
-// intentionally excluded and handled separately (allowed only during first-run
-// setup, while the instance has no users yet).
+// share links, and register when instance settings permit it. Every entry here
+// MUST also exist in PublicMethods.
 var AuthBootstrapMethods = map[string]struct{}{
 	// Auth Service - sign-in and token refresh.
 	"/memos.api.v1.AuthService/SignIn":       {},
@@ -67,13 +66,12 @@ var AuthBootstrapMethods = map[string]struct{}{
 	// Identity Provider Service - SSO buttons on the sign-in page.
 	"/memos.api.v1.IdentityProviderService/ListIdentityProviders": {},
 
+	// User Service - CreateUser applies registration and password-auth settings.
+	"/memos.api.v1.UserService/CreateUser": {},
+
 	// Memo sharing - share-token access stays public even on a private instance.
 	"/memos.api.v1.MemoService/GetMemoByShare": {},
 }
-
-// createUserProcedure is the CreateUser endpoint. On a private instance it is
-// served to anonymous callers only while no user exists yet (initial admin setup).
-const createUserProcedure = "/memos.api.v1.UserService/CreateUser"
 
 // IsAuthBootstrapMethod reports whether an anonymous request to procedure is one
 // of the fixed endpoints allowed while the instance is private.

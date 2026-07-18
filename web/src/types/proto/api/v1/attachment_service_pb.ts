@@ -146,6 +146,7 @@ export type CreateAttachmentRequest = Message<"memos.api.v1.CreateAttachmentRequ
   /**
    * Optional. The attachment ID to use for this attachment.
    * If empty, a unique ID will be generated.
+   * Format: ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$
    *
    * @generated from field: string attachment_id = 2;
    */

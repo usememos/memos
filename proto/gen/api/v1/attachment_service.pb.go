@@ -327,6 +327,7 @@ type CreateAttachmentRequest struct {
 	Attachment *Attachment `protobuf:"bytes,1,opt,name=attachment,proto3" json:"attachment,omitempty"`
 	// Optional. The attachment ID to use for this attachment.
 	// If empty, a unique ID will be generated.
+	// Format: ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$
 	AttachmentId  string `protobuf:"bytes,2,opt,name=attachment_id,json=attachmentId,proto3" json:"attachment_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

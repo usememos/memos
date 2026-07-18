@@ -27,22 +27,10 @@ func parseUsernameFromName(name string) (string, error) {
 }
 
 func validateWritableUsername(username string) error {
-	if username == "" || isNumericUsername(username) || !base.UIDMatcher.MatchString(username) {
-		return errors.Errorf("invalid username %q", username)
+	if !base.ResourceIDMatcher.MatchString(username) {
+		return errors.New("invalid username: must be 1-63 characters, start with a lowercase letter, contain only lowercase letters, digits, or hyphens, and end with a letter or digit")
 	}
 	return nil
-}
-
-func isNumericUsername(username string) bool {
-	if username == "" {
-		return false
-	}
-	for _, char := range username {
-		if char < '0' || char > '9' {
-			return false
-		}
-	}
-	return true
 }
 
 // ResolveUserByName resolves a username-based user resource name to a store user.

@@ -125,6 +125,7 @@ message CreateIdentityProviderRequest {
 
   // Optional. The ID to use for the identity provider, which will become the final component of the resource name.
   // If not provided, the system will generate one.
+  // Format: ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$
   string identity_provider_id = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 

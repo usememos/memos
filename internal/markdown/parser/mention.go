@@ -13,7 +13,7 @@ import (
 
 const (
 	// MaxMentionLength matches the username token length accepted by the API.
-	MaxMentionLength = 32
+	MaxMentionLength = 63
 )
 
 type mentionParser struct{}
@@ -66,7 +66,7 @@ func (*mentionParser) Parse(_ gast.Node, block text.Reader, _ parser.Context) ga
 		}
 		runeCount++
 		if runeCount > MaxMentionLength {
-			break
+			return nil
 		}
 		pos += size
 	}

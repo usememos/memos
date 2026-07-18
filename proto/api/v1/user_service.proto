@@ -29,7 +29,7 @@ service UserService {
   }
 
   // GetUser gets a user by username.
-  // Format: users/{username} (e.g., users/steven)
+  // Format: users/{user} (e.g., users/steven)
   rpc GetUser(GetUserRequest) returns (User) {
     option (google.api.http) = {get: "/api/v1/{name=users/*}"};
     option (google.api.method_signature) = "name";
@@ -41,7 +41,7 @@ service UserService {
       post: "/api/v1/users"
       body: "user"
     };
-    option (google.api.method_signature) = "user";
+    option (google.api.method_signature) = "user,user_id";
   }
 
   // UpdateUser updates a user.
@@ -293,7 +293,7 @@ message BatchGetUsersResponse {
 
 message GetUserRequest {
   // Required. The resource name of the user.
-  // Format: users/{username}
+  // Format: users/{user}
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/User"}
@@ -311,9 +311,9 @@ message CreateUserRequest {
     (google.api.field_behavior) = INPUT_ONLY
   ];
 
-  // Optional. The user ID to use for this user.
-  // If empty, a unique ID will be generated.
-  // Must match the pattern [a-z0-9-]+
+  // Optional. The resource ID to use for this user. If set, it must equal
+  // user.username and follow the User resource ID format.
+  // Format: ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$
   string user_id = 2 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional. If set, validate the request but don't actually create the user.
@@ -351,13 +351,13 @@ message DeleteUserRequest {
 message UserStats {
   option (google.api.resource) = {
     type: "memos.api.v1/UserStats"
-    pattern: "users/{user}"
+    pattern: "users/{user}/stats"
     singular: "userStats"
     plural: "userStats"
   };
 
-  // The resource name of the user whose stats these are.
-  // Format: users/{user}
+  // The resource name of the user statistics singleton.
+  // Format: users/{user}/stats
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
   reserved 2;
@@ -378,7 +378,7 @@ message UserStats {
   repeated google.protobuf.Timestamp memo_updated_timestamps = 8;
 
   // The pinned memos of the user.
-  repeated string pinned_memos = 5;
+  repeated string pinned_memos = 5 [(google.api.resource_reference) = {type: "memos.api.v1/Memo"}];
 
   // Total memo count.
   int32 total_memo_count = 6;
@@ -419,13 +419,13 @@ message ListAllUserStatsResponse {
 message UserSetting {
   option (google.api.resource) = {
     type: "memos.api.v1/UserSetting"
-    pattern: "users/{username}/settings/{setting}"
+    pattern: "users/{user}/settings/{setting}"
     singular: "userSetting"
     plural: "userSettings"
   };
 
   // The name of the user setting.
-  // Format: users/{username}/settings/{setting}, {setting} is the key for the setting.
+  // Format: users/{user}/settings/{setting}, {setting} is the key for the setting.
   // For example, "users/steven/settings/GENERAL" for general settings.
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
@@ -542,7 +542,7 @@ message LinkedIdentity {
   string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
   // The resource name of the identity provider.
-  // Format: identity-providers/{uid}
+  // Format: identity-providers/{idp}
   string idp_name = 2 [
     (google.api.field_behavior) = OUTPUT_ONLY,
     (google.api.resource_reference) = {type: "memos.api.v1/IdentityProvider"}
@@ -575,7 +575,7 @@ message CreateLinkedIdentityRequest {
   ];
 
   // Required. The identity provider to link.
-  // Format: identity-providers/{uid}
+  // Format: identity-providers/{idp}
   string idp_name = 2 [
     (google.api.field_behavior) = REQUIRED,
     (google.api.resource_reference) = {type: "memos.api.v1/IdentityProvider"}
@@ -694,9 +694,16 @@ message DeletePersonalAccessTokenRequest {
 
 // UserWebhook represents a webhook owned by a user.
 message UserWebhook {
+  option (google.api.resource) = {
+    type: "memos.api.v1/UserWebhook"
+    pattern: "users/{user}/webhooks/{webhook}"
+    singular: "userWebhook"
+    plural: "userWebhooks"
+  };
+
   // The name of the webhook.
   // Format: users/{user}/webhooks/{webhook}
-  string name = 1;
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
 
   // The URL to send the webhook to.
   string url = 2;
@@ -721,7 +728,10 @@ message UserWebhook {
 message ListUserWebhooksRequest {
   // The parent user resource.
   // Format: users/{user}
-  string parent = 1 [(google.api.field_behavior) = REQUIRED];
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {child_type: "memos.api.v1/UserWebhook"}
+  ];
 }
 
 message ListUserWebhooksResponse {
@@ -732,7 +742,10 @@ message ListUserWebhooksResponse {
 message CreateUserWebhookRequest {
   // The parent user resource.
   // Format: users/{user}
-  string parent = 1 [(google.api.field_behavior) = REQUIRED];
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {child_type: "memos.api.v1/UserWebhook"}
+  ];
 
   // The webhook to create.
   UserWebhook webhook = 2 [(google.api.field_behavior) = REQUIRED];
@@ -749,13 +762,19 @@ message UpdateUserWebhookRequest {
 message DeleteUserWebhookRequest {
   // The name of the webhook to delete.
   // Format: users/{user}/webhooks/{webhook}
-  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/UserWebhook"}
+  ];
 }
 
 message GetUserWebhookSigningSecretRequest {
   // The name of the webhook whose signing secret to reveal.
   // Format: users/{user}/webhooks/{webhook}
-  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/UserWebhook"}
+  ];
 }
 
 message GetUserWebhookSigningSecretResponse {

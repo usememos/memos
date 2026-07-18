@@ -187,8 +187,11 @@ func (s *APIV1Service) CreateUser(ctx context.Context, request *v1pb.CreateUserR
 	if request.User == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "user is required")
 	}
+	if request.UserId != "" && request.UserId != request.User.Username {
+		return nil, status.Errorf(codes.InvalidArgument, "user_id must match user.username")
+	}
 	if err := validateWritableUsername(request.User.Username); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", request.User.Username)
+		return nil, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 	if err := validatePassword(request.User.Password); err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "%v", err)
@@ -322,7 +325,7 @@ func (s *APIV1Service) UpdateUser(ctx context.Context, request *v1pb.UpdateUserR
 				return nil, status.Errorf(codes.PermissionDenied, "permission denied: disallow change username")
 			}
 			if err := validateWritableUsername(request.User.Username); err != nil {
-				return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", request.User.Username)
+				return nil, status.Errorf(codes.InvalidArgument, "%v", err)
 			}
 			update.Username = &request.User.Username
 		case "display_name":

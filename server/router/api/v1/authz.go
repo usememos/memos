@@ -25,7 +25,6 @@ var ErrUnauthenticated = errors.New("authentication required")
 // governs only authentication and anonymous access.
 type Authorizer struct {
 	authenticator *auth.Authenticator
-	store         *store.Store
 	profile       *profile.Profile
 }
 
@@ -34,7 +33,6 @@ type Authorizer struct {
 func NewAuthorizer(store *store.Store, secret string, profile *profile.Profile) *Authorizer {
 	return &Authorizer{
 		authenticator: auth.NewAuthenticator(store, secret),
-		store:         store,
 		profile:       profile,
 	}
 }
@@ -54,7 +52,7 @@ func (a *Authorizer) Authenticate(ctx context.Context, authHeader string) *auth.
 //   - Anonymous + protected method: denied.
 //   - Anonymous + public method, open instance: permitted.
 //   - Anonymous + public method, private instance (no InstanceURL): permitted only
-//     for the auth-bootstrap set, plus CreateUser during first-run setup.
+//     for the auth-bootstrap set.
 func (a *Authorizer) CheckAccess(ctx context.Context, procedure string, result *auth.AuthResult) error {
 	if result != nil {
 		return nil
@@ -69,22 +67,7 @@ func (a *Authorizer) CheckAccess(ctx context.Context, procedure string, result *
 }
 
 // allowedOnPrivateInstance reports whether an anonymous request to a public
-// procedure is still permitted while the instance is private. It allows the
-// auth-bootstrap set, plus CreateUser while the instance has no users yet
-// (first-run admin setup).
-func (a *Authorizer) allowedOnPrivateInstance(ctx context.Context, procedure string) bool {
-	if IsAuthBootstrapMethod(procedure) {
-		return true
-	}
-	if procedure == createUserProcedure {
-		return a.noUsersExist(ctx)
-	}
-	return false
-}
-
-// noUsersExist reports whether the instance has no users yet (fresh install).
-func (a *Authorizer) noUsersExist(ctx context.Context) bool {
-	limitOne := 1
-	users, err := a.store.ListUsers(ctx, &store.FindUser{Limit: &limitOne})
-	return err == nil && len(users) == 0
+// procedure is still permitted while the instance is private.
+func (*Authorizer) allowedOnPrivateInstance(_ context.Context, procedure string) bool {
+	return IsAuthBootstrapMethod(procedure)
 }

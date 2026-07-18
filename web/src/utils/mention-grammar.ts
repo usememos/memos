@@ -10,17 +10,15 @@
  */
 export const MENTION_CHAR_CLASS = "[A-Za-z0-9-]";
 
-export const MAX_MENTION_LENGTH = 32;
+export const MAX_MENTION_LENGTH = 63;
 
 /**
  * Regex source for a username run: 1..MAX_MENTION_LENGTH mention characters that
- * include at least one letter or digit. Unlike TAG_RUN this does not refuse an
- * over-long run — a 33rd mention character simply falls outside the capture and
- * becomes ordinary text, mirroring the read-only parser's truncation. The
- * leading lookahead enforces the "must contain an alphanumeric" rule so `@---`
- * is left as plain text. Embed after an `@`, e.g. `^@(${MENTION_RUN})`.
+ * include at least one letter or digit. An over-long run is left as plain text.
+ * The leading lookahead enforces the "must contain an alphanumeric" rule so
+ * `@---` is left as plain text. Embed after an `@`, e.g. `^@(${MENTION_RUN})`.
  */
-export const MENTION_RUN = `(?=${MENTION_CHAR_CLASS}{0,${MAX_MENTION_LENGTH - 1}}[A-Za-z0-9])${MENTION_CHAR_CLASS}{1,${MAX_MENTION_LENGTH}}`;
+export const MENTION_RUN = `(?=${MENTION_CHAR_CLASS}{0,${MAX_MENTION_LENGTH - 1}}[A-Za-z0-9])${MENTION_CHAR_CLASS}{1,${MAX_MENTION_LENGTH}}(?!${MENTION_CHAR_CLASS})`;
 
 const SINGLE_MENTION_CHAR = /^[A-Za-z0-9-]$/;
 

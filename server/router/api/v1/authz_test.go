@@ -12,8 +12,7 @@ import (
 
 // TestAuthorizerCheckAccess exercises the method-level access policy matrix.
 //
-// The store-backed first-run CreateUser branch is covered by integration tests;
-// every case here is decided without touching the store, so a nil store is safe.
+// Every case here is decided without touching the store, so a nil store is safe.
 func TestAuthorizerCheckAccess(t *testing.T) {
 	ctx := context.Background()
 	authenticated := &auth.AuthResult{AccessToken: "token"}
@@ -25,6 +24,7 @@ func TestAuthorizerCheckAccess(t *testing.T) {
 		protectedMethod = "/memos.api.v1.MemoService/CreateMemo"
 		publicMethod    = "/memos.api.v1.MemoService/ListMemos"
 		bootstrapMethod = "/memos.api.v1.AuthService/SignIn"
+		createUser      = "/memos.api.v1.UserService/CreateUser"
 		shareMethod     = "/memos.api.v1.MemoService/GetMemoByShare"
 	)
 
@@ -41,6 +41,7 @@ func TestAuthorizerCheckAccess(t *testing.T) {
 		{"anonymous allowed on public method, open instance", openInstance, publicMethod, nil, false},
 		{"anonymous denied on public method, private instance", privateInstance, publicMethod, nil, true},
 		{"anonymous allowed on bootstrap method, private instance", privateInstance, bootstrapMethod, nil, false},
+		{"anonymous allowed to register on private instance", privateInstance, createUser, nil, false},
 		{"anonymous allowed on share access, private instance", privateInstance, shareMethod, nil, false},
 	}
 	for _, c := range cases {

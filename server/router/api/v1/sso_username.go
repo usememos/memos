@@ -8,13 +8,12 @@ import (
 
 // deriveSSOUsername produces the local username for a new SSO-created user.
 //
-// The current policy is to use a standard UUID string directly. This keeps the
-// username independent of IdP profile fields and avoids availability probes or
-// retry loops around concurrent first-time logins.
+// The current policy prefixes a UUID with a letter so the generated value
+// follows the same AIP-compatible format as user-selected usernames.
 func deriveSSOUsername() (string, error) {
-	username := util.GenUUID()
+	username := "user-" + util.GenUUID()
 	if err := validateWritableUsername(username); err != nil {
-		return "", errors.Wrap(err, "generated UUID did not satisfy username constraints")
+		return "", errors.Wrap(err, "generated username did not satisfy username constraints")
 	}
 	return username, nil
 }

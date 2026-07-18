@@ -14,10 +14,10 @@ import (
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 )
 
-// TestAuthorizerPrivateInstanceFirstRun verifies the private-instance access policy
-// against a real store: anonymous CreateUser is permitted only until the first user
-// exists, bootstrap methods stay open, and other public methods are gated.
-func TestAuthorizerPrivateInstanceFirstRun(t *testing.T) {
+// TestAuthorizerPrivateInstanceRegistration verifies that registration and other
+// bootstrap methods stay reachable anonymously while unrelated public methods are
+// gated. CreateUser enforces the instance registration settings in the service.
+func TestAuthorizerPrivateInstanceRegistration(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
@@ -35,17 +35,17 @@ func TestAuthorizerPrivateInstanceFirstRun(t *testing.T) {
 	// Anonymous request with no Authorization header resolves to no identity.
 	require.Nil(t, authorizer.Authenticate(ctx, ""))
 
-	// Fresh instance (no users): first-run CreateUser is allowed, and so are the
-	// bootstrap methods; browsing is still gated.
-	require.NoError(t, authorizer.CheckAccess(ctx, createUser, nil), "first-run CreateUser should be allowed")
+	// Registration and other bootstrap methods are allowed; browsing is still gated.
+	require.NoError(t, authorizer.CheckAccess(ctx, createUser, nil))
 	require.NoError(t, authorizer.CheckAccess(ctx, signIn, nil))
 	require.NoError(t, authorizer.CheckAccess(ctx, getMemoShare, nil))
 	require.ErrorIs(t, authorizer.CheckAccess(ctx, listMemos, nil), apiv1.ErrUnauthenticated)
 
-	// Once a user exists, anonymous CreateUser is denied while bootstrap stays open.
+	// Once a user exists, CreateUser remains reachable so UserService can enforce
+	// disallow_user_registration and disallow_password_auth.
 	_, err := ts.CreateHostUser(ctx, "host")
 	require.NoError(t, err)
-	require.ErrorIs(t, authorizer.CheckAccess(ctx, createUser, nil), apiv1.ErrUnauthenticated, "CreateUser must be denied once a user exists")
+	require.NoError(t, authorizer.CheckAccess(ctx, createUser, nil))
 	require.NoError(t, authorizer.CheckAccess(ctx, signIn, nil))
 }
 

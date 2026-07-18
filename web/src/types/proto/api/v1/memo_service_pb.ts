@@ -292,6 +292,7 @@ export type CreateMemoRequest = Message<"memos.api.v1.CreateMemoRequest"> & {
   /**
    * Optional. The memo ID to use for this memo.
    * If empty, a unique ID will be generated.
+   * Format: ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$
    *
    * @generated from field: string memo_id = 2;
    */

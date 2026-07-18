@@ -95,6 +95,7 @@ paths:
                   description: |-
                     Optional. The attachment ID to use for this attachment.
                      If empty, a unique ID will be generated.
+                     Format: ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$
                   schema:
                     type: string
             requestBody:
@@ -349,6 +350,7 @@ paths:
                   description: |-
                     Optional. The ID to use for the identity provider, which will become the final component of the resource name.
                      If not provided, the system will generate one.
+                     Format: ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$
                   schema:
                     type: string
             requestBody:
@@ -703,6 +705,7 @@ paths:
                   description: |-
                     Optional. The memo ID to use for this memo.
                      If empty, a unique ID will be generated.
+                     Format: ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$
                   schema:
                     type: string
             requestBody:
@@ -1351,9 +1354,9 @@ paths:
                 - name: userId
                   in: query
                   description: |-
-                    Optional. The user ID to use for this user.
-                     If empty, a unique ID will be generated.
-                     Must match the pattern [a-z0-9-]+
+                    Optional. The resource ID to use for this user. If set, it must equal
+                     user.username and follow the User resource ID format.
+                     Format: ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$
                   schema:
                     type: string
                 - name: validateOnly
@@ -1393,7 +1396,7 @@ paths:
                 - UserService
             description: |-
                 GetUser gets a user by username.
-                 Format: users/{username} (e.g., users/steven)
+                 Format: users/{user} (e.g., users/steven)
             operationId: UserService_GetUser
             parameters:
                 - name: user
@@ -2638,7 +2641,7 @@ components:
                     type: string
                     description: |-
                         Required. The identity provider to link.
-                         Format: identity-providers/{uid}
+                         Format: identity-providers/{idp}
                 code:
                     type: string
                     description: Required. The authorization code from the identity provider.
@@ -3031,7 +3034,7 @@ components:
                     type: string
                     description: |-
                         The resource name of the identity provider.
-                         Format: identity-providers/{uid}
+                         Format: identity-providers/{idp}
                 externUid:
                     readOnly: true
                     type: string
@@ -3568,7 +3571,7 @@ components:
                     type: string
                     description: |-
                         The resource name of the shortcut.
-                         Format: users/{username}/shortcuts/{shortcut}
+                         Format: users/{user}/shortcuts/{shortcut}
                 title:
                     type: string
                     description: The title of the shortcut.
@@ -3612,7 +3615,7 @@ components:
                     type: string
                     description: |-
                         The resource name of the SSO provider.
-                         Format: identity-providers/{uid}
+                         Format: identity-providers/{idp}
                 code:
                     type: string
                     description: The authorization code from the SSO provider.
@@ -3894,7 +3897,7 @@ components:
                     type: string
                     description: |-
                         The name of the user setting.
-                         Format: users/{username}/settings/{setting}, {setting} is the key for the setting.
+                         Format: users/{user}/settings/{setting}, {setting} is the key for the setting.
                          For example, "users/steven/settings/GENERAL" for general settings.
                 generalSetting:
                     $ref: '#/components/schemas/UserSetting_GeneralSetting'
@@ -3958,8 +3961,8 @@ components:
                 name:
                     type: string
                     description: |-
-                        The resource name of the user whose stats these are.
-                         Format: users/{user}
+                        The resource name of the user statistics singleton.
+                         Format: users/{user}/stats
                 memoTypeStats:
                     allOf:
                         - $ref: '#/components/schemas/UserStats_MemoTypeStats'

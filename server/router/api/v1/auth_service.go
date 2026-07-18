@@ -112,7 +112,7 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 //
 // Lookup goes through the user_identity table so that userInfo.Identifier is never used
 // as the local username key. On the miss path, a local user is created with a
-// UUID-based local username (see deriveSSOUsername) and the (provider, extern_uid)
+// UUID-backed local username (see deriveSSOUsername) and the (provider, extern_uid)
 // linkage is inserted in the same flow. When currentUser is provided by a caller
 // outside AuthService.SignIn, the lookup miss path binds the external identity to
 // that existing user instead. If the linkage insert loses a race on the unique

@@ -472,6 +472,7 @@ type CreateMemoRequest struct {
 	Memo *Memo `protobuf:"bytes,1,opt,name=memo,proto3" json:"memo,omitempty"`
 	// Optional. The memo ID to use for this memo.
 	// If empty, a unique ID will be generated.
+	// Format: ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$
 	MemoId        string `protobuf:"bytes,2,opt,name=memo_id,json=memoId,proto3" json:"memo_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

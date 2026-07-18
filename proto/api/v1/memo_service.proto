@@ -296,6 +296,7 @@ message CreateMemoRequest {
 
   // Optional. The memo ID to use for this memo.
   // If empty, a unique ID will be generated.
+  // Format: ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$
   string memo_id = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 

@@ -593,7 +593,7 @@ func (x *BatchGetUsersResponse) GetUsers() []*User {
 type GetUserRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The resource name of the user.
-	// Format: users/{username}
+	// Format: users/{user}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The fields to return in the response.
 	// If not specified, all fields are returned.
@@ -650,9 +650,9 @@ type CreateUserRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The user to create.
 	User *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
-	// Optional. The user ID to use for this user.
-	// If empty, a unique ID will be generated.
-	// Must match the pattern [a-z0-9-]+
+	// Optional. The resource ID to use for this user. If set, it must equal
+	// user.username and follow the User resource ID format.
+	// Format: ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$
 	UserId string `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	// Optional. If set, validate the request but don't actually create the user.
 	ValidateOnly bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
@@ -842,8 +842,8 @@ func (x *DeleteUserRequest) GetForce() bool {
 // User statistics messages
 type UserStats struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The resource name of the user whose stats these are.
-	// Format: users/{user}
+	// The resource name of the user statistics singleton.
+	// Format: users/{user}/stats
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The stats of memo types.
 	MemoTypeStats *UserStats_MemoTypeStats `protobuf:"bytes,3,opt,name=memo_type_stats,json=memoTypeStats,proto3" json:"memo_type_stats,omitempty"`
@@ -1092,7 +1092,7 @@ func (x *ListAllUserStatsResponse) GetStats() []*UserStats {
 type UserSetting struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The name of the user setting.
-	// Format: users/{username}/settings/{setting}, {setting} is the key for the setting.
+	// Format: users/{user}/settings/{setting}, {setting} is the key for the setting.
 	// For example, "users/steven/settings/GENERAL" for general settings.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Types that are valid to be assigned to Value:
@@ -1430,7 +1430,7 @@ type LinkedIdentity struct {
 	// Format: users/{user}/linkedIdentities/{linked_identity}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The resource name of the identity provider.
-	// Format: identity-providers/{uid}
+	// Format: identity-providers/{idp}
 	IdpName string `protobuf:"bytes,2,opt,name=idp_name,json=idpName,proto3" json:"idp_name,omitempty"`
 	// The external user identifier from the identity provider.
 	ExternUid     string `protobuf:"bytes,3,opt,name=extern_uid,json=externUid,proto3" json:"extern_uid,omitempty"`
@@ -1586,7 +1586,7 @@ type CreateLinkedIdentityRequest struct {
 	// Format: users/{user}
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The identity provider to link.
-	// Format: identity-providers/{uid}
+	// Format: identity-providers/{idp}
 	IdpName string `protobuf:"bytes,2,opt,name=idp_name,json=idpName,proto3" json:"idp_name,omitempty"`
 	// Required. The authorization code from the identity provider.
 	Code string `protobuf:"bytes,3,opt,name=code,proto3" json:"code,omitempty"`
@@ -3407,14 +3407,15 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\x11DeleteUserRequest\x12-\n" +
 	"\x04name\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
 	"\x11memos.api.v1/UserR\x04name\x12\x19\n" +
-	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\xd7\x05\n" +
+	"\x05force\x18\x02 \x01(\bB\x03\xe0A\x01R\x05force\"\xf5\x05\n" +
 	"\tUserStats\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12M\n" +
 	"\x0fmemo_type_stats\x18\x03 \x01(\v2%.memos.api.v1.UserStats.MemoTypeStatsR\rmemoTypeStats\x12B\n" +
 	"\ttag_count\x18\x04 \x03(\v2%.memos.api.v1.UserStats.TagCountEntryR\btagCount\x12R\n" +
 	"\x17memo_created_timestamps\x18\a \x03(\v2\x1a.google.protobuf.TimestampR\x15memoCreatedTimestamps\x12R\n" +
-	"\x17memo_updated_timestamps\x18\b \x03(\v2\x1a.google.protobuf.TimestampR\x15memoUpdatedTimestamps\x12!\n" +
-	"\fpinned_memos\x18\x05 \x03(\tR\vpinnedMemos\x12(\n" +
+	"\x17memo_updated_timestamps\x18\b \x03(\v2\x1a.google.protobuf.TimestampR\x15memoUpdatedTimestamps\x129\n" +
+	"\fpinned_memos\x18\x05 \x03(\tB\x16\xfaA\x13\n" +
+	"\x11memos.api.v1/MemoR\vpinnedMemos\x12(\n" +
 	"\x10total_memo_count\x18\x06 \x01(\x05R\x0etotalMemoCount\x1a;\n" +
 	"\rTagCountEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
@@ -3427,8 +3428,8 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\n" +
 	"todo_count\x18\x03 \x01(\x05R\ttodoCount\x12\x1d\n" +
 	"\n" +
-	"undo_count\x18\x04 \x01(\x05R\tundoCount:?\xeaA<\n" +
-	"\x16memos.api.v1/UserStats\x12\fusers/{user}*\tuserStats2\tuserStatsJ\x04\b\x02\x10\x03R\x17memo_display_timestamps\"D\n" +
+	"undo_count\x18\x04 \x01(\x05R\tundoCount:E\xeaAB\n" +
+	"\x16memos.api.v1/UserStats\x12\x12users/{user}/stats*\tuserStats2\tuserStatsJ\x04\b\x02\x10\x03R\x17memo_display_timestamps\"D\n" +
 	"\x13GetUserStatsRequest\x12-\n" +
 	"\x04name\x18\x01 \x01(\tB\x19\xe0A\x02\xfaA\x13\n" +
 	"\x11memos.api.v1/UserR\x04name\"f\n" +
@@ -3436,7 +3437,7 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\x05state\x18\x01 \x01(\x0e2\x13.memos.api.v1.StateB\x03\xe0A\x01R\x05state\x12\x1b\n" +
 	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\"I\n" +
 	"\x18ListAllUserStatsResponse\x12-\n" +
-	"\x05stats\x18\x01 \x03(\v2\x17.memos.api.v1.UserStatsR\x05stats\"\xbf\a\n" +
+	"\x05stats\x18\x01 \x03(\v2\x17.memos.api.v1.UserStatsR\x05stats\"\xbb\a\n" +
 	"\vUserSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12S\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2(.memos.api.v1.UserSetting.GeneralSettingH\x00R\x0egeneralSetting\x12V\n" +
@@ -3460,8 +3461,8 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\x0fKEY_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aGENERAL\x10\x01\x12\f\n" +
 	"\bWEBHOOKS\x10\x04\x12\b\n" +
-	"\x04TAGS\x10\x05:]\xeaAZ\n" +
-	"\x18memos.api.v1/UserSetting\x12#users/{username}/settings/{setting}*\fuserSettings2\vuserSettingB\a\n" +
+	"\x04TAGS\x10\x05:Y\xeaAV\n" +
+	"\x18memos.api.v1/UserSetting\x12\x1fusers/{user}/settings/{setting}*\fuserSettings2\vuserSettingB\a\n" +
 	"\x05value\"M\n" +
 	"\x15GetUserSettingRequest\x124\n" +
 	"\x04name\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\n" +
@@ -3534,9 +3535,9 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\x05token\x18\x02 \x01(\tR\x05token\"`\n" +
 	" DeletePersonalAccessTokenRequest\x12<\n" +
 	"\x04name\x18\x01 \x01(\tB(\xe0A\x02\xfaA\"\n" +
-	" memos.api.v1/PersonalAccessTokenR\x04name\"\xb9\x02\n" +
-	"\vUserWebhook\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x10\n" +
+	" memos.api.v1/PersonalAccessTokenR\x04name\"\x99\x03\n" +
+	"\vUserWebhook\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x10\n" +
 	"\x03url\x18\x02 \x01(\tR\x03url\x12!\n" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12@\n" +
 	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
@@ -3544,22 +3545,25 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"updateTime\x12*\n" +
 	"\x0esigning_secret\x18\x06 \x01(\tB\x03\xe0A\x04R\rsigningSecret\x121\n" +
-	"\x12signing_secret_set\x18\a \x01(\bB\x03\xe0A\x03R\x10signingSecretSet\"6\n" +
-	"\x17ListUserWebhooksRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\"Q\n" +
+	"\x12signing_secret_set\x18\a \x01(\bB\x03\xe0A\x03R\x10signingSecretSet:Y\xeaAV\n" +
+	"\x18memos.api.v1/UserWebhook\x12\x1fusers/{user}/webhooks/{webhook}*\fuserWebhooks2\vuserWebhook\"S\n" +
+	"\x17ListUserWebhooksRequest\x128\n" +
+	"\x06parent\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\x12\x18memos.api.v1/UserWebhookR\x06parent\"Q\n" +
 	"\x18ListUserWebhooksResponse\x125\n" +
-	"\bwebhooks\x18\x01 \x03(\v2\x19.memos.api.v1.UserWebhookR\bwebhooks\"q\n" +
-	"\x18CreateUserWebhookRequest\x12\x1b\n" +
-	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x128\n" +
+	"\bwebhooks\x18\x01 \x03(\v2\x19.memos.api.v1.UserWebhookR\bwebhooks\"\x8e\x01\n" +
+	"\x18CreateUserWebhookRequest\x128\n" +
+	"\x06parent\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\x12\x18memos.api.v1/UserWebhookR\x06parent\x128\n" +
 	"\awebhook\x18\x02 \x01(\v2\x19.memos.api.v1.UserWebhookB\x03\xe0A\x02R\awebhook\"\x91\x01\n" +
 	"\x18UpdateUserWebhookRequest\x128\n" +
 	"\awebhook\x18\x01 \x01(\v2\x19.memos.api.v1.UserWebhookB\x03\xe0A\x02R\awebhook\x12;\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
-	"updateMask\"3\n" +
-	"\x18DeleteUserWebhookRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"=\n" +
-	"\"GetUserWebhookSigningSecretRequest\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\"L\n" +
+	"updateMask\"P\n" +
+	"\x18DeleteUserWebhookRequest\x124\n" +
+	"\x04name\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\n" +
+	"\x18memos.api.v1/UserWebhookR\x04name\"Z\n" +
+	"\"GetUserWebhookSigningSecretRequest\x124\n" +
+	"\x04name\x18\x01 \x01(\tB \xe0A\x02\xfaA\x1a\n" +
+	"\x18memos.api.v1/UserWebhookR\x04name\"L\n" +
 	"#GetUserWebhookSigningSecretResponse\x12%\n" +
 	"\x0esigning_secret\x18\x01 \x01(\tR\rsigningSecret\"\xda\b\n" +
 	"\x10UserNotification\x12\x1a\n" +
@@ -3611,13 +3615,13 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"updateMask\"Z\n" +
 	"\x1dDeleteUserNotificationRequest\x129\n" +
 	"\x04name\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
-	"\x1dmemos.api.v1/UserNotificationR\x04name2\xca\x1e\n" +
+	"\x1dmemos.api.v1/UserNotificationR\x04name2\xd2\x1e\n" +
 	"\vUserService\x12c\n" +
 	"\tListUsers\x12\x1e.memos.api.v1.ListUsersRequest\x1a\x1f.memos.api.v1.ListUsersResponse\"\x15\x82\xd3\xe4\x93\x02\x0f\x12\r/api/v1/users\x12{\n" +
 	"\rBatchGetUsers\x12\".memos.api.v1.BatchGetUsersRequest\x1a#.memos.api.v1.BatchGetUsersResponse\"!\x82\xd3\xe4\x93\x02\x1b:\x01*\"\x16/api/v1/users:batchGet\x12b\n" +
-	"\aGetUser\x12\x1c.memos.api.v1.GetUserRequest\x1a\x12.memos.api.v1.User\"%\xdaA\x04name\x82\xd3\xe4\x93\x02\x18\x12\x16/api/v1/{name=users/*}\x12e\n" +
+	"\aGetUser\x12\x1c.memos.api.v1.GetUserRequest\x1a\x12.memos.api.v1.User\"%\xdaA\x04name\x82\xd3\xe4\x93\x02\x18\x12\x16/api/v1/{name=users/*}\x12m\n" +
 	"\n" +
-	"CreateUser\x12\x1f.memos.api.v1.CreateUserRequest\x1a\x12.memos.api.v1.User\"\"\xdaA\x04user\x82\xd3\xe4\x93\x02\x15:\x04user\"\r/api/v1/users\x12\x7f\n" +
+	"CreateUser\x12\x1f.memos.api.v1.CreateUserRequest\x1a\x12.memos.api.v1.User\"*\xdaA\fuser,user_id\x82\xd3\xe4\x93\x02\x15:\x04user\"\r/api/v1/users\x12\x7f\n" +
 	"\n" +
 	"UpdateUser\x12\x1f.memos.api.v1.UpdateUserRequest\x1a\x12.memos.api.v1.User\"<\xdaA\x10user,update_mask\x82\xd3\xe4\x93\x02#:\x04user2\x1b/api/v1/{user.name=users/*}\x12l\n" +
 	"\n" +

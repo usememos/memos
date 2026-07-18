@@ -92,7 +92,7 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, request *v1pb.ListA
 	}
 
 	userMemoStatMap := make(map[int32]*v1pb.UserStats)
-	pinnedMemoIDsByUserID := make(map[int32][]int32)
+	pinnedMemoUIDsByUserID := make(map[int32][]string)
 	limit := 1000
 	offset := 0
 	memoFind.Limit = &limit
@@ -156,7 +156,7 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, request *v1pb.ListA
 
 			// Track pinned memos
 			if memo.Pinned {
-				pinnedMemoIDsByUserID[memo.CreatorID] = append(pinnedMemoIDsByUserID[memo.CreatorID], memo.ID)
+				pinnedMemoUIDsByUserID[memo.CreatorID] = append(pinnedMemoUIDsByUserID[memo.CreatorID], memo.UID)
 			}
 		}
 
@@ -178,8 +178,8 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, request *v1pb.ListA
 			return nil, status.Errorf(codes.Internal, "failed to resolve user stats name")
 		}
 		userMemoStat.Name = fmt.Sprintf("%s/stats", BuildUserName(username))
-		for _, memoID := range pinnedMemoIDsByUserID[userID] {
-			userMemoStat.PinnedMemos = append(userMemoStat.PinnedMemos, fmt.Sprintf("%s/memos/%d", BuildUserName(username), memoID))
+		for _, memoUID := range pinnedMemoUIDsByUserID[userID] {
+			userMemoStat.PinnedMemos = append(userMemoStat.PinnedMemos, MemoNamePrefix+memoUID)
 		}
 		userMemoStats = append(userMemoStats, userMemoStat)
 	}
@@ -270,7 +270,7 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 				}
 			}
 			if memo.Pinned {
-				pinnedMemos = append(pinnedMemos, fmt.Sprintf("%s/memos/%d", BuildUserName(user.Username), memo.ID))
+				pinnedMemos = append(pinnedMemos, MemoNamePrefix+memo.UID)
 			}
 		}
 

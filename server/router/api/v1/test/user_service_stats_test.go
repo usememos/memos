@@ -159,6 +159,29 @@ func TestGetUserStats_MemoUpdatedTimestamps(t *testing.T) {
 	)
 }
 
+func TestGetUserStats_PinnedMemoUsesCanonicalResourceName(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateHostUser(ctx, "pinned-stats-user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+	memo, err := ts.Store.CreateMemo(ctx, &store.Memo{
+		UID:        "pinned-stats-memo",
+		CreatorID:  user.ID,
+		Content:    "pinned",
+		Visibility: store.Public,
+	})
+	require.NoError(t, err)
+	pinned := true
+	require.NoError(t, ts.Store.UpdateMemo(ctx, &store.UpdateMemo{ID: memo.ID, Pinned: &pinned}))
+
+	resp, err := ts.Service.GetUserStats(userCtx, &v1pb.GetUserStatsRequest{Name: fmt.Sprintf("users/%s", user.Username)})
+	require.NoError(t, err)
+	require.Equal(t, []string{"memos/pinned-stats-memo"}, resp.PinnedMemos)
+}
+
 func TestListAllUserStats_FilterExcludesPrivateMemos(t *testing.T) {
 	ctx := context.Background()
 

@@ -57,7 +57,7 @@ type UserServiceClient interface {
 	// BatchGetUsers returns active users by usernames.
 	BatchGetUsers(ctx context.Context, in *BatchGetUsersRequest, opts ...grpc.CallOption) (*BatchGetUsersResponse, error)
 	// GetUser gets a user by username.
-	// Format: users/{username} (e.g., users/steven)
+	// Format: users/{user} (e.g., users/steven)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...grpc.CallOption) (*User, error)
 	// CreateUser creates a new user.
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*User, error)
@@ -388,7 +388,7 @@ type UserServiceServer interface {
 	// BatchGetUsers returns active users by usernames.
 	BatchGetUsers(context.Context, *BatchGetUsersRequest) (*BatchGetUsersResponse, error)
 	// GetUser gets a user by username.
-	// Format: users/{username} (e.g., users/steven)
+	// Format: users/{user} (e.g., users/steven)
 	GetUser(context.Context, *GetUserRequest) (*User, error)
 	// CreateUser creates a new user.
 	CreateUser(context.Context, *CreateUserRequest) (*User, error)

@@ -65,7 +65,7 @@ message SignInRequest {
   // Nested message for SSO authentication credentials.
   message SSOCredentials {
     // The resource name of the SSO provider.
-    // Format: identity-providers/{uid}
+    // Format: identity-providers/{idp}
     string idp_name = 1 [(google.api.field_behavior) = REQUIRED];
 
     // The authorization code from the SSO provider.

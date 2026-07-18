@@ -256,6 +256,22 @@ func TestCreateUserRegistration(t *testing.T) {
 		require.Contains(t, err.Error(), "invalid username")
 	})
 
+	t.Run("CreateUser requires user_id to match username", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		_, err := ts.Service.CreateUser(ctx, &apiv1.CreateUserRequest{
+			User: &apiv1.User{
+				Username: "alice",
+				Email:    "alice@example.com",
+				Password: "password123",
+			},
+			UserId: "bob",
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "user_id must match user.username")
+	})
+
 	t.Run("UpdateUser rejects empty password", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()

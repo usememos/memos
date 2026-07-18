@@ -441,7 +441,7 @@ func (x *SignInRequest_PasswordCredentials) GetPassword() string {
 type SignInRequest_SSOCredentials struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The resource name of the SSO provider.
-	// Format: identity-providers/{uid}
+	// Format: identity-providers/{idp}
 	IdpName string `protobuf:"bytes,1,opt,name=idp_name,json=idpName,proto3" json:"idp_name,omitempty"`
 	// The authorization code from the SSO provider.
 	Code string `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`

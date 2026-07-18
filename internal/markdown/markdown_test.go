@@ -1,6 +1,7 @@
 package markdown
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -347,6 +348,15 @@ func TestExtractAllMentions(t *testing.T) {
 	require.NoError(t, err)
 	assert.ElementsMatch(t, []string{"alice", "bob"}, data.Mentions)
 	assert.ElementsMatch(t, []string{"tag"}, data.Tags)
+
+	maxLengthUsername := "a" + strings.Repeat("b", 62)
+	data, err = svc.ExtractAll([]byte("@" + maxLengthUsername))
+	require.NoError(t, err)
+	assert.Equal(t, []string{maxLengthUsername}, data.Mentions)
+
+	data, err = svc.ExtractAll([]byte("@" + maxLengthUsername + "c"))
+	require.NoError(t, err)
+	assert.Empty(t, data.Mentions)
 }
 
 func TestExtractAllSkipsTagsInsideLinks(t *testing.T) {

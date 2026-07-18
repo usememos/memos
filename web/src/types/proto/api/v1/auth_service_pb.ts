@@ -121,7 +121,7 @@ export const SignInRequest_PasswordCredentialsSchema: GenMessage<SignInRequest_P
 export type SignInRequest_SSOCredentials = Message<"memos.api.v1.SignInRequest.SSOCredentials"> & {
   /**
    * The resource name of the SSO provider.
-   * Format: identity-providers/{uid}
+   * Format: identity-providers/{idp}
    *
    * @generated from field: string idp_name = 1;
    */
