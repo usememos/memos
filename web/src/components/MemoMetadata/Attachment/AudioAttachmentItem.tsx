@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
-import { formatAudioTime } from "./attachmentHelpers";
+import { formatAudioTime, toggleAudioPlayback } from "./attachmentHelpers";
 
 const AUDIO_PLAYBACK_RATES = [1, 1.5, 2] as const;
 const UNKNOWN_DURATION_LABEL = "--:--";
@@ -91,16 +91,7 @@ const AudioAttachmentItem = ({ filename, sourceUrl, mimeType, size, title, compa
       return;
     }
 
-    if (audio.paused) {
-      try {
-        await audio.play();
-      } catch {
-        setIsPlaying(false);
-      }
-      return;
-    }
-
-    audio.pause();
+    await toggleAudioPlayback(audio, sourceUrl, () => setIsPlaying(false));
   };
 
   const handleSeek = (nextTime: number) => {
@@ -171,8 +162,7 @@ const AudioAttachmentItem = ({ filename, sourceUrl, mimeType, size, title, compa
 
       <audio
         ref={audioRef}
-        src={sourceUrl}
-        preload="metadata"
+        preload="none"
         className="hidden"
         onLoadedMetadata={(e) => handleDuration(e.currentTarget.duration)}
         onDurationChange={(e) => handleDuration(e.currentTarget.duration)}

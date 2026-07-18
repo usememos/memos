@@ -1,5 +1,6 @@
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
 import { cn } from "@/lib/utils";
+import { lazyWithReload } from "@/utils/lazy";
 import type { MapPoint } from "./types";
 
 interface LazyLocationPickerProps {
@@ -9,7 +10,7 @@ interface LazyLocationPickerProps {
   className?: string;
 }
 
-const LocationPicker = lazy(() => import("./LocationPicker"));
+const LocationPicker = lazyWithReload(() => import("./LocationPicker"));
 
 export const LazyLocationPicker = ({ className, ...props }: LazyLocationPickerProps) => {
   return (

@@ -37,19 +37,15 @@ vi.mock("@/components/MemoFilters", () => ({
   default: () => <div data-testid="memo-filters" />,
 }));
 
-vi.mock("@/components/MemoEditor", () => ({
-  default: () => <div data-testid="memo-editor" />,
-}));
-
 const memo = { name: "memos/1", content: "hello", updateTime: undefined } as unknown as Memo;
 
 const renderList = (
   renderer: (memo: Memo, options: { compact: boolean }) => React.ReactElement = () => <div />,
-  options: { showMemoEditor?: boolean } = {},
+  options: { leading?: React.ReactNode } = {},
 ) =>
   render(
     <QueryClientProvider client={new QueryClient()}>
-      <PagedMemoList renderer={renderer} showMemoEditor={options.showMemoEditor} />
+      <PagedMemoList renderer={renderer} renderLeading={options.leading ? () => options.leading : undefined} />
     </QueryClientProvider>,
   );
 
@@ -67,23 +63,23 @@ describe("<PagedMemoList>", () => {
     expect(screen.getByTestId("placeholder-sprite")).toBeInTheDocument();
   });
 
-  it("shows the empty state below the memo editor", () => {
-    renderList(undefined, { showMemoEditor: true });
+  it("shows the empty state below route-owned leading content", () => {
+    renderList(undefined, { leading: <div data-testid="leading-content" /> });
 
-    expect(screen.getByTestId("memo-editor")).toBeInTheDocument();
+    expect(screen.getByTestId("leading-content")).toBeInTheDocument();
     expect(screen.getByText("No data found.")).toBeInTheDocument();
     expect(screen.getByTestId("placeholder-sprite")).toBeInTheDocument();
   });
 
-  it("places the empty state in the first grid column", () => {
+  it("places leading content and the empty state in the first grid column", () => {
     view.maxColumns = 0;
     const widthSpy = vi.spyOn(Element.prototype, "clientWidth", "get").mockReturnValue(1200);
     try {
-      renderList(undefined, { showMemoEditor: true });
+      renderList(undefined, { leading: <div data-testid="leading-content" /> });
 
       const leadingTile = screen.getByText("No data found.").closest(".absolute");
       expect(leadingTile).not.toBeNull();
-      expect(leadingTile).toContainElement(screen.getByTestId("memo-editor"));
+      expect(leadingTile).toContainElement(screen.getByTestId("leading-content"));
     } finally {
       widthSpy.mockRestore();
     }

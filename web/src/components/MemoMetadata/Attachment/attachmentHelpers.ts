@@ -43,6 +43,26 @@ export const getAttachmentMetadata = (attachment: Attachment): AttachmentMetadat
   fileSizeLabel: attachment.size ? formatFileSize(Number(attachment.size)) : undefined,
 });
 
+// Audio elements render with preload="none" and no src so the feed fetches nothing;
+// the source is bound on first play. getAttribute is compared (not .src, which
+// reflects an absolute URL) so an already-bound source is not re-assigned.
+export const toggleAudioPlayback = async (audio: HTMLAudioElement, sourceUrl: string, onPlayFailure: () => void): Promise<void> => {
+  if (!audio.paused) {
+    audio.pause();
+    return;
+  }
+
+  if (audio.getAttribute("src") !== sourceUrl) {
+    audio.setAttribute("src", sourceUrl);
+  }
+
+  try {
+    await audio.play();
+  } catch {
+    onPlayFailure();
+  }
+};
+
 export const formatAudioTime = (seconds: number): string => {
   if (!Number.isFinite(seconds) || seconds < 0) {
     return "0:00";

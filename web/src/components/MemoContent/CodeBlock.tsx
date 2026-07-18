@@ -1,10 +1,11 @@
 import copy from "copy-to-clipboard";
-import hljs from "highlight.js";
+import { escape as escapeHTML } from "lodash-es";
 import { CheckIcon, CopyIcon } from "lucide-react";
-import { isValidElement, type ReactElement, type ReactNode, useEffect, useMemo, useState } from "react";
+import { isValidElement, type ReactElement, type ReactNode, useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import { getThemeWithFallback, resolveTheme } from "@/utils/theme";
+import { ensureHighlightTheme, highlightCode, isPlainTextLanguage } from "./highlight";
 import { MermaidBlock } from "./MermaidBlock";
 import type { ReactMarkdownProps } from "./markdown/types";
 import { extractCodeContent, extractLanguage } from "./utils";
@@ -15,9 +16,6 @@ interface CodeBlockProps extends ReactMarkdownProps {
 }
 
 export const CodeBlock = ({ children, className, node: _node, ...props }: CodeBlockProps) => {
-  const { userGeneralSetting } = useAuth();
-  const [copied, setCopied] = useState(false);
-
   const codeElement = isValidElement(children) ? (children as ReactElement<{ className?: string }>) : null;
   const codeClassName = codeElement?.props.className || "";
   const codeContent = extractCodeContent(children);
@@ -34,55 +32,56 @@ export const CodeBlock = ({ children, className, node: _node, ...props }: CodeBl
     );
   }
 
+  // Keying on the inputs remounts the block when they change, so highlight state
+  // can never be shown against a different code content.
+  return <HighlightedCodeBlock key={`${language}\u0000${codeContent}`} codeContent={codeContent} language={language} />;
+};
+
+interface HighlightedCodeBlockProps {
+  codeContent: string;
+  language: string;
+}
+
+const HighlightedCodeBlock = ({ codeContent, language }: HighlightedCodeBlockProps) => {
+  const { userGeneralSetting } = useAuth();
+  const [copied, setCopied] = useState(false);
+  const [highlightedCode, setHighlightedCode] = useState<string>();
+  const renderedCode = highlightedCode ?? escapeHTML(codeContent);
+
   const theme = getThemeWithFallback(userGeneralSetting?.theme);
   const resolvedTheme = resolveTheme(theme);
   const isDarkTheme = resolvedTheme.includes("dark");
 
-  // Dynamically load highlight.js theme based on app theme
   useEffect(() => {
-    const dynamicImportStyle = async () => {
-      // Remove any existing highlight.js style
-      const existingStyle = document.querySelector("style[data-hljs-theme]");
-      if (existingStyle) {
-        existingStyle.remove();
-      }
-
-      try {
-        const cssModule = isDarkTheme
-          ? await import("highlight.js/styles/github-dark-dimmed.css?inline")
-          : await import("highlight.js/styles/github.css?inline");
-
-        // Create and inject the style
-        const style = document.createElement("style");
-        style.textContent = cssModule.default;
-        style.setAttribute("data-hljs-theme", isDarkTheme ? "dark" : "light");
-        document.head.appendChild(style);
-      } catch (error) {
-        console.warn("Failed to load highlight.js theme:", error);
-      }
-    };
-
-    dynamicImportStyle();
-  }, [resolvedTheme, isDarkTheme]);
-
-  // Highlight code using highlight.js
-  const highlightedCode = useMemo(() => {
-    try {
-      const lang = hljs.getLanguage(language);
-      if (lang) {
-        return hljs.highlight(codeContent, {
-          language: language,
-        }).value;
-      }
-    } catch {
-      // Skip error and use default highlighted code.
+    if (isPlainTextLanguage(language)) {
+      return;
     }
 
-    // Escape any HTML entities when rendering original content.
-    return Object.assign(document.createElement("span"), {
-      textContent: codeContent,
-    }).innerHTML;
-  }, [language, codeContent]);
+    void ensureHighlightTheme(isDarkTheme);
+  }, [isDarkTheme, language]);
+
+  useEffect(() => {
+    if (isPlainTextLanguage(language)) {
+      // The escaped fallback already is the final output; skip the async round-trip.
+      return;
+    }
+
+    let cancelled = false;
+
+    void highlightCode(codeContent, language)
+      .then((value) => {
+        if (!cancelled) {
+          setHighlightedCode(value);
+        }
+      })
+      .catch(() => {
+        // Keep the escaped plain-text fallback when a language chunk cannot load.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [codeContent, language]);
 
   const handleCopy = async () => {
     try {
@@ -148,7 +147,7 @@ export const CodeBlock = ({ children, className, node: _node, ...props }: CodeBl
       <div className="overflow-x-auto">
         <code
           className={cn("block px-3 py-2 text-sm leading-relaxed", `language-${language}`)}
-          dangerouslySetInnerHTML={{ __html: highlightedCode }}
+          dangerouslySetInnerHTML={{ __html: renderedCode }}
         />
       </div>
     </pre>

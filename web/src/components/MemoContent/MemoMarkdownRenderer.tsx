@@ -1,14 +1,13 @@
 import type { Element } from "hast";
-import "katex/dist/katex.min.css";
+import { type ComponentProps, type ReactNode, Suspense } from "react";
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
-import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
 import { isMentionElement, isTagElement, isTaskListItemElement } from "@/types/markdown";
+import { lazyWithReload } from "@/utils/lazy";
 import { rehypeHeadingId } from "@/utils/rehype-plugins/rehype-heading-id";
 import { remarkDisableSetext } from "@/utils/remark-plugins/remark-disable-setext";
 import { remarkMention } from "@/utils/remark-plugins/remark-mention";
@@ -20,12 +19,13 @@ import { SANITIZE_SCHEMA } from "./constants";
 import { MarkdownRenderContext, rootMarkdownRenderContext } from "./MarkdownRenderContext";
 import { Mention } from "./Mention";
 import { AnchorLink, Blockquote, Heading, HorizontalRule, Image, InlineCode, Link, List, ListItem, Paragraph } from "./markdown";
+import { hasMathSyntax } from "./math";
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "./Table";
 import { Tag } from "./Tag";
 import { TaskListItem } from "./TaskListItem";
 import { TrustedIframe } from "./TrustedIframe";
 
-interface MemoMarkdownRendererProps {
+export interface MemoMarkdownRendererProps {
   content: string;
   resolvedMentionUsernames: Set<string>;
   /** Resource name of the memo (e.g. `memos/abc123`), used to target footnote links at the detail page. */
@@ -34,7 +34,18 @@ interface MemoMarkdownRendererProps {
   compact?: boolean;
 }
 
-function getMentionUsername(node: Element, children?: React.ReactNode): string {
+type RemarkPlugins = NonNullable<ComponentProps<typeof ReactMarkdown>["remarkPlugins"]>;
+type RehypePlugins = NonNullable<ComponentProps<typeof ReactMarkdown>["rehypePlugins"]>;
+
+interface MemoMarkdownRendererCoreProps extends MemoMarkdownRendererProps {
+  /** Math plugins injected by MathMarkdownRenderer; the remark ones must run before remarkGfm. */
+  mathRemarkPlugins?: RemarkPlugins;
+  mathRehypePlugins?: RehypePlugins;
+}
+
+const MathMarkdownRenderer = lazyWithReload(() => import("./MathMarkdownRenderer"));
+
+function getMentionUsername(node: Element, children?: ReactNode): string {
   const dataMention = node.properties?.["data-mention"];
   if (typeof dataMention === "string" && dataMention !== "") {
     return dataMention;
@@ -53,7 +64,14 @@ function getMentionUsername(node: Element, children?: React.ReactNode): string {
   return "";
 }
 
-export const MemoMarkdownRenderer = ({ content, resolvedMentionUsernames, memoName, compact }: MemoMarkdownRendererProps) => {
+export const MemoMarkdownRendererCore = ({
+  content,
+  resolvedMentionUsernames,
+  memoName,
+  compact,
+  mathRemarkPlugins = [],
+  mathRehypePlugins = [],
+}: MemoMarkdownRendererCoreProps) => {
   const markdownComponents: Components = {
     input: ({ node, ...inputProps }) => {
       if (node && isTaskListItemElement(node)) {
@@ -144,7 +162,7 @@ export const MemoMarkdownRenderer = ({ content, resolvedMentionUsernames, memoNa
       <ReactMarkdown
         remarkPlugins={[
           remarkDisableSetext,
-          remarkMath,
+          ...mathRemarkPlugins,
           remarkGfm,
           remarkSplitMixedTaskLists,
           remarkBreaks,
@@ -152,16 +170,23 @@ export const MemoMarkdownRenderer = ({ content, resolvedMentionUsernames, memoNa
           remarkTag,
           remarkPreserveType,
         ]}
-        rehypePlugins={[
-          rehypeRaw,
-          [rehypeSanitize, SANITIZE_SCHEMA],
-          rehypeHeadingId,
-          [rehypeKatex, { throwOnError: false, strict: false }],
-        ]}
+        rehypePlugins={[rehypeRaw, [rehypeSanitize, SANITIZE_SCHEMA], rehypeHeadingId, ...mathRehypePlugins]}
         components={markdownComponents}
       >
         {content}
       </ReactMarkdown>
     </MarkdownRenderContext.Provider>
+  );
+};
+
+export const MemoMarkdownRenderer = (props: MemoMarkdownRendererProps) => {
+  if (!hasMathSyntax(props.content)) {
+    return <MemoMarkdownRendererCore {...props} />;
+  }
+
+  return (
+    <Suspense fallback={<MemoMarkdownRendererCore {...props} />}>
+      <MathMarkdownRenderer {...props} />
+    </Suspense>
   );
 };

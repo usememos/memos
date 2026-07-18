@@ -28,6 +28,9 @@ const MotionPhotoPlayer = ({
 }: MotionPhotoPlayerProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  // Latched on first activation: the source stays bound afterwards so repeated
+  // hovers replay the already-buffered video instead of refetching it.
+  const [hasActivated, setHasActivated] = useState(false);
 
   const resetPlaybackPosition = useCallback(
     (video: HTMLVideoElement) => {
@@ -83,6 +86,7 @@ const MotionPhotoPlayer = ({
       return;
     }
 
+    setHasActivated(true);
     void startPlayback(loop);
   }, [active, loop, startPlayback, stopPlayback]);
 
@@ -98,7 +102,7 @@ const MotionPhotoPlayer = ({
       />
       <video
         ref={videoRef}
-        src={motionUrl}
+        src={active || hasActivated ? motionUrl : undefined}
         poster={posterUrl}
         className={cn(
           "pointer-events-none absolute inset-0 h-full w-full object-cover transition-opacity duration-200",
@@ -108,7 +112,7 @@ const MotionPhotoPlayer = ({
         )}
         muted
         playsInline
-        preload="metadata"
+        preload="none"
         disableRemotePlayback
         onLoadedMetadata={(event) => resetPlaybackPosition(event.currentTarget)}
         onEnded={() => stopPlayback()}

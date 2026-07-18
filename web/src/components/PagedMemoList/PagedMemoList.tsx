@@ -1,8 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowUpIcon, LoaderCircleIcon } from "lucide-react";
-import { type ReactElement, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { type ReactElement, type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
-import { deriveDefaultCreateTimeFromFilters } from "@/components/MemoEditor/utils/deriveDefaultCreateTime";
 import { Button } from "@/components/ui/button";
 import { userServiceClient } from "@/connect";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
@@ -18,7 +17,6 @@ import { State } from "@/types/proto/api/v1/common_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import ColumnGrid, { columnCountForWidth, GRID_GAP } from "../ColumnGrid";
-import MemoEditor from "../MemoEditor";
 import MemoFilters from "../MemoFilters";
 import Placeholder from "../Placeholder";
 import { estimateMemoCardHeight } from "./memoCardHeight";
@@ -46,8 +44,8 @@ interface Props {
   pageSize?: number;
   showCreator?: boolean;
   enabled?: boolean;
-  /** When true, render the inline MemoEditor above the list (e.g. on the Home page). */
-  showMemoEditor?: boolean;
+  /** Route-owned content rendered before the list and inside column one in grid mode. */
+  renderLeading?: (options: { useGrid: boolean }) => ReactNode;
 }
 
 function useAutoFetchWhenNotScrollable({
@@ -132,9 +130,6 @@ const PagedMemoList = (props: Props) => {
   // pages don't each repeat the policy.
   const effectiveCompact = compactMode || useGrid;
 
-  const showMemoEditor = props.showMemoEditor ?? false;
-  const defaultCreateTime = useMemo(() => deriveDefaultCreateTimeFromFilters(filters), [filters]);
-
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useInfiniteMemos(
     {
       state: props.state || State.NORMAL,
@@ -202,16 +197,7 @@ const PagedMemoList = (props: Props) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // In the grid the leading stack owns all spacing (GRID_GAP), so the composer carries
-  // its own bottom margin only in the flow layout.
-  const memoEditor = showMemoEditor ? (
-    <MemoEditor
-      className={useGrid ? undefined : "mb-2"}
-      cacheKey="home-memo-editor"
-      placeholder={t("editor.any-thoughts")}
-      defaultCreateTime={defaultCreateTime}
-    />
-  ) : null;
+  const leadingContent = props.renderLeading?.({ useGrid });
 
   // A freshly created memo is hoisted to the front; pin it to the top of column one so it
   // appears right under the composer instead of dropping into a random (shortest) column.
@@ -232,9 +218,9 @@ const PagedMemoList = (props: Props) => {
   // grid's x-spacing exactly.
   const hasFilters = filters.length > 0;
   const gridLeading =
-    memoEditor || hasFilters || emptyPlaceholder ? (
+    leadingContent || hasFilters || emptyPlaceholder ? (
       <div className="flex w-full flex-col" style={{ gap: GRID_GAP }}>
-        {memoEditor}
+        {leadingContent}
         <MemoFilters />
         {emptyPlaceholder}
       </div>
@@ -277,7 +263,7 @@ const PagedMemoList = (props: Props) => {
             </>
           ) : (
             <>
-              {memoEditor}
+              {leadingContent}
               <MemoFilters className="mb-2" />
               {sortedMemoList.map((memo) => props.renderer(memo, { compact: effectiveCompact }))}
               {emptyPlaceholder}

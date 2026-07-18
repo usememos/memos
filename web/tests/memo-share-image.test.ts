@@ -1,7 +1,9 @@
 import { create } from "@bufbuild/protobuf";
-import { describe, expect, it } from "vitest";
+import { toBlob } from "html-to-image";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   buildMemoShareImageFileName,
+  createMemoShareImageBlob,
   getMemoShareDialogWidth,
   getMemoSharePreviewAvatarUrl,
   getMemoSharePreviewWidth,
@@ -10,6 +12,10 @@ import {
 import { buildMemoShareImagePreviewModel } from "@/components/MemoActionMenu/memoShareImagePreviewModel";
 import { AttachmentSchema, type Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { MemoSchema, type Memo } from "@/types/proto/api/v1/memo_service_pb";
+
+vi.mock("html-to-image", () => ({
+  toBlob: vi.fn(),
+}));
 
 const buildMemo = (overrides: Partial<Memo> = {}) =>
   create(MemoSchema, {
@@ -106,6 +112,10 @@ describe("memo share image preview model", () => {
 });
 
 describe("memo share image utilities", () => {
+  beforeEach(() => {
+    vi.mocked(toBlob).mockResolvedValue(new Blob(["preview"], { type: "image/png" }));
+  });
+
   it("builds filenames from memo resource names", () => {
     expect(buildMemoShareImageFileName("memos/abc123")).toBe("memo-abc123.png");
     expect(buildMemoShareImageFileName("")).toBe("memo-memo.png");
@@ -130,5 +140,28 @@ describe("memo share image utilities", () => {
     expect(getMemoSharePreviewAvatarUrl("/avatars/a.png")).toBe("/avatars/a.png");
     expect(getMemoSharePreviewAvatarUrl("data:image/png;base64,abc")).toBe("data:image/png;base64,abc");
     expect(getMemoSharePreviewAvatarUrl("https://example.com/avatar.png")).toBeUndefined();
+  });
+
+  it("promotes lazy images and stops waiting after the asset timeout", async () => {
+    vi.useFakeTimers();
+    try {
+      const preview = document.createElement("div");
+      const image = document.createElement("img");
+      image.loading = "lazy";
+      Object.defineProperty(image, "complete", { configurable: true, value: false });
+      preview.appendChild(image);
+
+      const renderPromise = createMemoShareImageBlob(preview);
+      await vi.advanceTimersByTimeAsync(0);
+
+      expect(image.loading).toBe("eager");
+      expect(toBlob).not.toHaveBeenCalled();
+
+      await vi.advanceTimersByTimeAsync(5000);
+      await expect(renderPromise).resolves.toBeInstanceOf(Blob);
+      expect(toBlob).toHaveBeenCalledOnce();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

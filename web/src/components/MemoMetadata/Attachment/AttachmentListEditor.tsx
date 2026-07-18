@@ -10,7 +10,7 @@ import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
 import { useTranslate } from "@/utils/i18n";
 import type { PreviewMediaItem } from "@/utils/media-item";
-import { formatAudioTime } from "./attachmentHelpers";
+import { formatAudioTime, toggleAudioPlayback } from "./attachmentHelpers";
 
 interface AttachmentListEditorProps {
   attachments: Attachment[];
@@ -119,16 +119,7 @@ const AttachmentItemCard: FC<{
       return;
     }
 
-    if (audio.paused) {
-      try {
-        await audio.play();
-      } catch {
-        setIsPlaying(false);
-      }
-      return;
-    }
-
-    audio.pause();
+    await toggleAudioPlayback(audio, sourceUrl, () => setIsPlaying(false));
   };
 
   return (
@@ -144,7 +135,7 @@ const AttachmentItemCard: FC<{
               className={cn("h-full w-full overflow-hidden", isPreviewable ? "cursor-pointer" : "cursor-default")}
               aria-label={`Preview ${filename}`}
             >
-              <img src={thumbnailUrl} alt="" className="h-full w-full object-cover" />
+              <img src={thumbnailUrl} alt="" className="h-full w-full object-cover" loading="lazy" decoding="async" />
             </div>
           ) : isVoiceNote ? (
             <>
@@ -158,8 +149,7 @@ const AttachmentItemCard: FC<{
               </button>
               <audio
                 ref={audioRef}
-                src={sourceUrl}
-                preload="metadata"
+                preload="none"
                 className="hidden"
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}

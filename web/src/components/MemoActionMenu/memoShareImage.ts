@@ -3,6 +3,7 @@ import { toBlob } from "html-to-image";
 const WINDOW_HORIZONTAL_MARGIN = 32;
 const PREVIEW_HORIZONTAL_PADDING_IN_DIALOG = 40;
 const PREVIEW_WIDTH_BOOST_IN_DIALOG = 48;
+const PREVIEW_ASSET_TIMEOUT_MS = 5000;
 
 export const MEMO_SHARE_IMAGE_CONFIG = {
   dialogExtraWidth: 80,
@@ -42,13 +43,26 @@ const waitForPreviewAssets = async (node: HTMLElement) => {
     images.map(
       (image) =>
         new Promise<void>((resolve) => {
+          // Share previews may sit inside a scroll container. Promote their images
+          // so native lazy loading cannot leave the export waiting indefinitely.
+          image.loading = "eager";
+
           if (image.complete) {
             resolve();
             return;
           }
 
-          image.addEventListener("load", () => resolve(), { once: true });
-          image.addEventListener("error", () => resolve(), { once: true });
+          let timeoutId: number;
+          const finish = () => {
+            window.clearTimeout(timeoutId);
+            image.removeEventListener("load", finish);
+            image.removeEventListener("error", finish);
+            resolve();
+          };
+
+          image.addEventListener("load", finish, { once: true });
+          image.addEventListener("error", finish, { once: true });
+          timeoutId = window.setTimeout(finish, PREVIEW_ASSET_TIMEOUT_MS);
         }),
     ),
   );

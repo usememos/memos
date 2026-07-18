@@ -1,6 +1,6 @@
 import copy from "copy-to-clipboard";
 import { ExternalLinkIcon, LayoutListIcon, MapIcon } from "lucide-react";
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
 import { toast } from "react-hot-toast";
 import { useParams, useSearchParams } from "react-router-dom";
 import MemoView from "@/components/MemoView";
@@ -13,10 +13,11 @@ import { useUser } from "@/hooks/useUserQueries";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
+import { lazyWithReload } from "@/utils/lazy";
 
 type TabView = "memos" | "map";
 
-const UserMemoMap = lazy(() => import("@/components/UserMemoMap"));
+const UserMemoMap = lazyWithReload(() => import("@/components/UserMemoMap"));
 
 interface User {
   name: string;

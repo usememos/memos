@@ -55,6 +55,7 @@ const AttachmentThumbnails = ({ attachments }: { attachments: Attachment[] }) =>
             alt={item.filename}
             className="w-10 h-10 rounded border border-border object-cover bg-muted/40"
             loading="lazy"
+            decoding="async"
           />
           {item.kind === "motion" && (
             <span className="absolute left-1 top-1 rounded bg-black/70 px-1 py-0.5 text-[8px] font-semibold leading-none text-white">

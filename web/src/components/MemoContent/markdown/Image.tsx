@@ -14,6 +14,8 @@ export const Image = ({ className, alt, node: _node, height, width, style, ...pr
       alt={alt}
       style={{ height: height ? `${height}px` : undefined, width: width ? `${width}px` : undefined, ...style }}
       {...props}
+      loading="lazy"
+      decoding="async"
     />
   );
 };
