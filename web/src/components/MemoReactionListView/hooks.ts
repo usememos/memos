@@ -1,9 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { useResolvedUsersByNames } from "@/components/MemoContent/MentionResolutionContext";
 import { memoServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { memoKeys } from "@/hooks/useMemoQueries";
-import { useUsersByNames } from "@/hooks/useUserQueries";
 import type { Memo, Reaction } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
 
@@ -11,7 +11,7 @@ export type ReactionGroup = Map<string, User[]>;
 
 export const useReactionGroups = (reactions: Reaction[]): ReactionGroup => {
   const creatorNames = useMemo(() => reactions.map((r) => r.creator), [reactions]);
-  const { data: userMap } = useUsersByNames(creatorNames);
+  const userMap = useResolvedUsersByNames(creatorNames);
 
   return useMemo(() => {
     const reactionGroup = new Map<string, User[]>();

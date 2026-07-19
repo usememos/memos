@@ -27,7 +27,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { useTranslate } from "@/utils/i18n";
-import { countTasks } from "@/utils/markdown-manipulation";
 import { useMemoActionHandlers } from "./hooks";
 import type { MemoActionMenuProps } from "./types";
 
@@ -41,10 +40,8 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
   // Derived state
   const isComment = Boolean(memo.parent);
   const isArchived = memo.state === State.ARCHIVED;
-  const taskStats = countTasks(memo.content);
-  const canMutateTasks = !readonly && !isArchived && taskStats.total > 0;
-  const hasOpenTasks = taskStats.completed < taskStats.total;
-  const hasCompletedTasks = taskStats.completed > 0;
+  const canMutateTasks = !readonly && !isArchived && Boolean(memo.property?.hasTaskList);
+  const hasOpenTasks = Boolean(memo.property?.hasIncompleteTasks);
 
   // Action handlers
   const {
@@ -117,7 +114,7 @@ const MemoActionMenu = (props: MemoActionMenuProps) => {
                 <CheckCheckIcon className="w-4 h-auto" />
                 {t("memo.task-actions.check-all")}
               </DropdownMenuItem>
-              <DropdownMenuItem disabled={!hasCompletedTasks} onClick={handleUncheckAllTaskListItemsClick}>
+              <DropdownMenuItem onClick={handleUncheckAllTaskListItemsClick}>
                 <ListRestartIcon className="w-4 h-auto" />
                 {t("memo.task-actions.uncheck-all")}
               </DropdownMenuItem>

@@ -19,6 +19,7 @@ export interface FilteredMemoStats {
 export interface UseFilteredMemoStatsOptions {
   userName?: string;
   context?: MemoExplorerContext;
+  enabled?: boolean;
 }
 
 const toDateString = (date: Date) => dayjs(date).format("YYYY-MM-DD");
@@ -35,12 +36,12 @@ const timestampsForBasis = (stats: UserStats, basis: MemoTimeBasis) => {
 };
 
 export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}): FilteredMemoStats => {
-  const { userName, context } = options;
+  const { userName, context, enabled = true } = options;
   const currentUser = useCurrentUser();
   const { timeBasis } = useView();
 
   // home/profile: use backend per-user stats (full tag set, not page-limited)
-  const { data: userStats, isLoading: isLoadingUserStats } = useUserStats(userName);
+  const { data: userStats, isLoading: isLoadingUserStats } = useUserStats(userName, { enabled });
   // explore/archived: fetch backend grouped stats and aggregate them locally.
   // ListAllUserStats AND's the request filter with the server's auth filter, so
   // private memos are not included unless explicitly visible to the current user.
@@ -53,7 +54,7 @@ export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}):
         : {};
   const shouldFetchAllUserStats = context === "explore" || (context === "archived" && !!currentUser?.name);
   const { data: allUserStats = [], isLoading: isLoadingAllUserStats } = useAllUserStats(allUserStatsRequest, {
-    enabled: shouldFetchAllUserStats,
+    enabled: enabled && shouldFetchAllUserStats,
   });
 
   const data = useMemo(() => {

@@ -1,6 +1,7 @@
 import { LinkIcon, MilestoneIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import MetadataSection from "@/components/MemoMetadata/MetadataSection";
+import { useNearViewport } from "@/hooks/useNearViewport";
 import type { MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import RelationCard from "./RelationCard";
@@ -17,15 +18,12 @@ interface RelationListViewProps {
 function RelationListView({ relations, currentMemoName, parentPage, className }: RelationListViewProps) {
   const t = useTranslate();
   const [activeTab, setActiveTab] = useState<"referencing" | "referenced">("referencing");
+  const { ref: viewportRef, isNearViewport } = useNearViewport<HTMLDivElement>();
 
   const { referencing: referencingRelations, referenced: referencedRelations } = useMemo(
     () => getRelationBuckets(relations, currentMemoName),
     [relations, currentMemoName],
   );
-
-  if (referencingRelations.length === 0 && referencedRelations.length === 0) {
-    return null;
-  }
 
   const hasBothTabs = referencingRelations.length > 0 && referencedRelations.length > 0;
   const direction: RelationDirection = hasBothTabs ? activeTab : referencingRelations.length > 0 ? "referencing" : "referenced";
@@ -40,10 +38,15 @@ function RelationListView({ relations, currentMemoName, parentPage, className }:
       }),
     [activeRelations, direction],
   );
-  const resolvedMemos = useResolvedRelationMemos(activeMemoNames);
+  const resolvedMemos = useResolvedRelationMemos(activeMemoNames, { enabled: isNearViewport });
+
+  if (referencingRelations.length === 0 && referencedRelations.length === 0) {
+    return null;
+  }
 
   return (
     <MetadataSection
+      rootRef={viewportRef}
       className={className}
       icon={icon}
       title={isReferencing ? t("common.referencing") : t("common.referenced-by")}

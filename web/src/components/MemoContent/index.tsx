@@ -1,6 +1,5 @@
-import { memo, useMemo } from "react";
+import { memo } from "react";
 import { cn } from "@/lib/utils";
-import { extractMentionUsernames } from "@/utils/remark-plugins/remark-mention";
 import { MemoMarkdownRenderer } from "./MemoMarkdownRenderer";
 import { useResolvedMentionUsernames } from "./MentionResolutionContext";
 import type { MemoContentProps } from "./types";
@@ -11,8 +10,7 @@ import type { MemoContentProps } from "./types";
 // since a collapsed card may hide the target).
 const MemoContent = (props: MemoContentProps) => {
   const { className, contentClassName, content, onClick, onDoubleClick } = props;
-  const mentionUsernames = useMemo(() => extractMentionUsernames(content), [content]);
-  const resolvedMentionUsernames = useResolvedMentionUsernames(mentionUsernames);
+  const resolvedMentionUsernames = useResolvedMentionUsernames(content);
 
   return (
     <div className={`w-full flex flex-col justify-start items-start text-foreground ${className || ""}`}>

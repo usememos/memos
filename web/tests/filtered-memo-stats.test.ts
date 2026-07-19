@@ -106,4 +106,18 @@ describe("useFilteredMemoStats", () => {
     expect(warn).toHaveBeenCalled();
     warn.mockRestore();
   });
+
+  it("disables both statistics queries when deferred", () => {
+    mockUseView.mockReturnValue({
+      timeBasis: "create_time",
+      orderByTimeAsc: false,
+      toggleSortOrder: vi.fn(),
+      setTimeBasis: vi.fn(),
+    });
+
+    renderHook(() => useFilteredMemoStats({ userName: "users/test", context: "explore", enabled: false }), { wrapper });
+
+    expect(useUserStats).toHaveBeenCalledWith("users/test", { enabled: false });
+    expect(useAllUserStats).toHaveBeenCalledWith(expect.anything(), { enabled: false });
+  });
 });

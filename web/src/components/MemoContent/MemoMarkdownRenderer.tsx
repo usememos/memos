@@ -1,5 +1,5 @@
 import type { Element } from "hast";
-import { type ComponentProps, type ReactNode, Suspense } from "react";
+import { type ComponentProps, memo, type ReactNode, Suspense } from "react";
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -179,7 +179,7 @@ export const MemoMarkdownRendererCore = ({
   );
 };
 
-export const MemoMarkdownRenderer = (props: MemoMarkdownRendererProps) => {
+const MemoMarkdownRendererComponent = (props: MemoMarkdownRendererProps) => {
   if (!hasMathSyntax(props.content)) {
     return <MemoMarkdownRendererCore {...props} />;
   }
@@ -190,3 +190,18 @@ export const MemoMarkdownRenderer = (props: MemoMarkdownRendererProps) => {
     </Suspense>
   );
 };
+
+const haveEqualResolvedMentions = (left: Set<string>, right: Set<string>) => {
+  if (left === right) return true;
+  if (left.size !== right.size) return false;
+  return Array.from(left).every((username) => right.has(username));
+};
+
+export const MemoMarkdownRenderer = memo(
+  MemoMarkdownRendererComponent,
+  (previous, next) =>
+    previous.content === next.content &&
+    previous.memoName === next.memoName &&
+    previous.compact === next.compact &&
+    haveEqualResolvedMentions(previous.resolvedMentionUsernames, next.resolvedMentionUsernames),
+);

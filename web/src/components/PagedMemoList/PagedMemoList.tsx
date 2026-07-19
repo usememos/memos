@@ -2,6 +2,8 @@ import { ArrowUpIcon, LoaderCircleIcon } from "lucide-react";
 import { type ReactElement, type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { useInstance } from "@/contexts/InstanceContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import { useView } from "@/contexts/ViewContext";
@@ -46,17 +48,21 @@ interface Props {
 }
 
 function useAutoFetchWhenNotScrollable({
+  enabled,
   hasNextPage,
   isFetchingNextPage,
   memoCount,
   onFetchNext,
 }: {
+  enabled: boolean;
   hasNextPage: boolean | undefined;
   isFetchingNextPage: boolean;
   memoCount: number;
   onFetchNext: () => Promise<unknown>;
 }) {
   const autoFetchTimeoutRef = useRef<number | null>(null);
+  const enabledRef = useRef(enabled);
+  enabledRef.current = enabled;
 
   const isPageScrollable = useCallback(() => {
     const documentHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
@@ -70,22 +76,31 @@ function useAutoFetchWhenNotScrollable({
 
     await new Promise((resolve) => setTimeout(resolve, 200));
 
-    const shouldFetch = !isPageScrollable() && hasNextPage && !isFetchingNextPage && memoCount > 0;
+    const shouldFetch = enabledRef.current && !isPageScrollable() && hasNextPage && !isFetchingNextPage && memoCount > 0;
 
     if (shouldFetch) {
       await onFetchNext();
 
-      autoFetchTimeoutRef.current = window.setTimeout(() => {
-        void checkAndFetchIfNeeded();
-      }, 500);
+      if (enabledRef.current) {
+        autoFetchTimeoutRef.current = window.setTimeout(() => {
+          void checkAndFetchIfNeeded();
+        }, 500);
+      }
     }
-  }, [hasNextPage, isFetchingNextPage, memoCount, isPageScrollable, onFetchNext]);
+  }, [enabled, hasNextPage, isFetchingNextPage, memoCount, isPageScrollable, onFetchNext]);
 
   useEffect(() => {
-    if (!isFetchingNextPage && memoCount > 0) {
+    if (enabled && !isFetchingNextPage && memoCount > 0) {
       void checkAndFetchIfNeeded();
     }
-  }, [memoCount, isFetchingNextPage, checkAndFetchIfNeeded]);
+  }, [enabled, memoCount, isFetchingNextPage, checkAndFetchIfNeeded]);
+
+  useEffect(() => {
+    if (!enabled && autoFetchTimeoutRef.current) {
+      clearTimeout(autoFetchTimeoutRef.current);
+      autoFetchTimeoutRef.current = null;
+    }
+  }, [enabled]);
 
   useEffect(() => {
     return () => {
@@ -98,6 +113,8 @@ function useAutoFetchWhenNotScrollable({
 
 const PagedMemoList = (props: Props) => {
   const t = useTranslate();
+  const { isInitialized: authInitialized } = useAuth();
+  const { isInitialized: instanceInitialized } = useInstance();
   const { filters } = useMemoFilterContext();
   const { maxColumns, compactMode } = useView();
   // maxColumns is a ceiling: 1 = single reading column, 0 = as many as fit. The single
@@ -136,8 +153,11 @@ const PagedMemoList = (props: Props) => {
     { enabled: props.enabled ?? true },
   );
 
+  // Queries can start as soon as routing is unlocked, but memo content stays
+  // hidden until settings that control its presentation have settled.
+  const isDisplayPending = isLoading || !authInitialized || !instanceInitialized;
   // Only show the spinner once loading exceeds the delay, so fast loads don't flash it.
-  const showLoader = useDelayedFlag(isLoading, LOADING_INDICATOR_DELAY_MS);
+  const showLoader = useDelayedFlag(isDisplayPending, LOADING_INDICATOR_DELAY_MS);
 
   // Flatten pages into a single array of memos
   const memos = useMemo(() => data?.pages.flatMap((page) => page.memos) || [], [data]);
@@ -152,6 +172,7 @@ const PagedMemoList = (props: Props) => {
 
   // Auto-fetch hook: fetches more content when page isn't scrollable
   useAutoFetchWhenNotScrollable({
+    enabled: !isDisplayPending,
     hasNextPage,
     isFetchingNextPage,
     memoCount: sortedMemoList.length,
@@ -160,7 +181,7 @@ const PagedMemoList = (props: Props) => {
 
   // Infinite scroll: fetch more when user scrolls near bottom
   useEffect(() => {
-    if (!hasNextPage) return;
+    if (isDisplayPending || !hasNextPage) return;
 
     const handleScroll = () => {
       const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 300;
@@ -171,7 +192,7 @@ const PagedMemoList = (props: Props) => {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [isDisplayPending, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const leadingContent = props.renderLeading?.({ useGrid });
 
@@ -182,6 +203,18 @@ const PagedMemoList = (props: Props) => {
 
   // Stable reference so MentionResolutionProvider's memo (keyed on the array) actually holds.
   const contents = useMemo(() => sortedMemoList.map((memo) => memo.content), [sortedMemoList]);
+  const userNames = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          sortedMemoList.flatMap((memo) => [
+            ...(props.showCreator ? [memo.creator] : []),
+            ...(memo.reactions ?? []).map((reaction) => reaction.creator),
+          ]),
+        ),
+      ),
+    [props.showCreator, sortedMemoList],
+  );
 
   const emptyPlaceholder =
     !isFetchingNextPage && !hasNextPage && sortedMemoList.length === 0 ? (
@@ -215,11 +248,11 @@ const PagedMemoList = (props: Props) => {
   );
 
   const children = (
-    <MentionResolutionProvider contents={contents}>
+    <MentionResolutionProvider contents={contents} userNames={userNames}>
       <div ref={layoutMeasureRef} className="w-full">
         <div className={cn("flex flex-col justify-start w-full mx-auto", useGrid ? "max-w-none" : "max-w-2xl")}>
           {/* During initial load, show the spinner only after the delay; render nothing before then to avoid a flash. */}
-          {isLoading ? (
+          {isDisplayPending ? (
             showLoader ? (
               <Loader />
             ) : null

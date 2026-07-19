@@ -1,5 +1,6 @@
 import type { Element } from "hast";
 import { useLinkPreviewEnabled } from "@/contexts/ViewContext";
+import { useNearViewport } from "@/hooks/useNearViewport";
 import { markdownStyles } from "@/lib/markdownStyles";
 import { cn } from "@/lib/utils";
 import LinkMetadataCard from "../LinkMetadataCard";
@@ -8,6 +9,11 @@ import type { ReactMarkdownProps } from "./types";
 
 interface ParagraphProps extends React.HTMLAttributes<HTMLParagraphElement>, ReactMarkdownProps {
   children: React.ReactNode;
+}
+
+interface DeferredLinkPreviewProps extends React.HTMLAttributes<HTMLParagraphElement> {
+  children: React.ReactNode;
+  href: string;
 }
 
 export function getSingleLinkHref(node?: Element): string | undefined {
@@ -45,19 +51,33 @@ export function getSingleLinkHref(node?: Element): string | undefined {
   return onlyLinkChild.type === "text" && onlyLinkChild.value === href ? href : undefined;
 }
 
-export const Paragraph = ({ children, className, node, ...props }: ParagraphProps) => {
-  const { blockDepth } = useMarkdownRenderContext();
-  const linkPreviewEnabled = useLinkPreviewEnabled();
-  const href = blockDepth === 0 && linkPreviewEnabled ? getSingleLinkHref(node) : undefined;
-  const paragraph = (
-    <p className={cn(markdownStyles.paragraph, className)} {...props}>
+const DeferredLinkPreview = ({ children, className, href, ...props }: DeferredLinkPreviewProps) => {
+  const { ref: viewportRef, isNearViewport } = useNearViewport<HTMLParagraphElement>();
+  const fallback = (
+    <p ref={viewportRef} className={cn(markdownStyles.paragraph, className)} {...props}>
       {children}
     </p>
   );
 
+  return <LinkMetadataCard url={href} fallback={fallback} enabled={isNearViewport} />;
+};
+
+export const Paragraph = ({ children, className, node, ...props }: ParagraphProps) => {
+  const { blockDepth } = useMarkdownRenderContext();
+  const linkPreviewEnabled = useLinkPreviewEnabled();
+  const href = blockDepth === 0 && linkPreviewEnabled ? getSingleLinkHref(node) : undefined;
+
   if (href) {
-    return <LinkMetadataCard url={href} fallback={paragraph} />;
+    return (
+      <DeferredLinkPreview href={href} className={className} {...props}>
+        {children}
+      </DeferredLinkPreview>
+    );
   }
 
-  return paragraph;
+  return (
+    <p className={cn(markdownStyles.paragraph, className)} {...props}>
+      {children}
+    </p>
+  );
 };

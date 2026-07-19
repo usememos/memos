@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren, Ref } from "react";
 import { cn } from "@/lib/utils";
 import SectionHeader, { type SectionHeaderTab } from "./SectionHeader";
 
@@ -10,11 +10,12 @@ interface MetadataSectionProps extends PropsWithChildren {
   tabs?: SectionHeaderTab[];
   className?: string;
   contentClassName?: string;
+  rootRef?: Ref<HTMLDivElement>;
 }
 
-const MetadataSection = ({ icon, title, count, tabs, className, contentClassName, children }: MetadataSectionProps) => {
+const MetadataSection = ({ icon, title, count, tabs, className, contentClassName, rootRef, children }: MetadataSectionProps) => {
   return (
-    <div className={cn("w-full overflow-hidden rounded-lg border border-border bg-muted/20", className)}>
+    <div ref={rootRef} className={cn("w-full overflow-hidden rounded-lg border border-border bg-muted/20", className)}>
       <SectionHeader icon={icon} title={title} count={count} tabs={tabs} />
       <div className={contentClassName}>{children}</div>
     </div>

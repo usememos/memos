@@ -1,7 +1,22 @@
 import { Navigate, Outlet, useLocation, useSearchParams } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { AUTH_REDIRECT_PARAM, buildAuthRoute, getSafeRedirectPath } from "@/utils/auth-redirect";
 import { ROUTES } from "./routes";
+
+/** Waits for instance settings used by public/auth pages to settle. */
+export const RequireInstanceInitializationRoute = () => {
+  const { isInitialized } = useInstance();
+  return isInitialized ? <Outlet /> : null;
+};
+
+/** Keeps non-feed authenticated pages behind all display-sensitive settings. */
+export const RequireFullInitializationRoute = () => {
+  const { isInitialized: authInitialized } = useAuth();
+  const { isInitialized: instanceInitialized } = useInstance();
+  return authInitialized && instanceInitialized ? <Outlet /> : null;
+};
 
 /**
  * Index-route gate mounted at `/`. Authenticated visitors fall through to the

@@ -3,7 +3,7 @@ import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { shortcutServiceClient, userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { buildUserSettingName } from "@/lib/resource-names";
+import { buildUserSettingName, userNamePrefix } from "@/lib/resource-names";
 import {
   type ListAllUserStatsRequest,
   ListAllUserStatsRequestSchema,
@@ -34,7 +34,7 @@ export const userKeys = {
   byUsernames: (usernames: string[]) => [...userKeys.all, "byUsernames", ...[...usernames].sort()] as const,
 };
 
-const userDetailQueryOptions = (name: string) =>
+export const userDetailQueryOptions = (name: string) =>
   queryOptions({
     queryKey: userKeys.detail(name),
     queryFn: () => userServiceClient.getUser({ name }),
@@ -48,7 +48,7 @@ export function useUser(name: string, options?: { enabled?: boolean }) {
   });
 }
 
-export function useUserStats(username?: string) {
+export function useUserStats(username?: string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: username ? userKeys.userStats(username) : userKeys.stats(),
     queryFn: async () => {
@@ -58,7 +58,7 @@ export function useUserStats(username?: string) {
       const stats = await userServiceClient.getUserStats({ name: username });
       return stats;
     },
-    enabled: !!username,
+    enabled: !!username && (options?.enabled ?? true),
   });
 }
 
@@ -257,9 +257,9 @@ export function useUpdateUserGeneralSetting(currentUserName?: string) {
 }
 
 // Hook to fetch multiple users by names (returns Map<name, User>)
-export function useUsersByNames(names: string[]) {
+export function useUsersByNames(names: string[], options?: { enabled?: boolean }) {
   const queryClient = useQueryClient();
-  const enabled = names.length > 0;
+  const enabled = (options?.enabled ?? true) && names.length > 0;
   const uniqueNames = Array.from(new Set(names));
 
   return useQuery({
@@ -296,15 +296,29 @@ export function useUsersByUsernames(usernames: string[], options?: { enabled?: b
   return useQuery({
     queryKey: userKeys.byUsernames(uniqueUsernames),
     queryFn: async () => {
+      const usersByUsername = new Map<string, User>();
+      const missingUsernames: string[] = [];
+      for (const username of uniqueUsernames) {
+        const detailKey = userKeys.detail(`${userNamePrefix}${username}`);
+        const cachedUser = queryClient.getQueryData<User>(detailKey);
+        const cachedState = queryClient.getQueryState(detailKey);
+        const cacheIsFresh = cachedState ? Date.now() - cachedState.dataUpdatedAt < USER_PROFILE_STALE_TIME : false;
+        if (cachedUser && cacheIsFresh) {
+          usersByUsername.set(username, cachedUser);
+        } else {
+          missingUsernames.push(username);
+        }
+      }
+
       const batches = [];
-      for (let i = 0; i < uniqueUsernames.length; i += BATCH_GET_USERS_LIMIT) {
-        batches.push(uniqueUsernames.slice(i, i + BATCH_GET_USERS_LIMIT));
+      for (let i = 0; i < missingUsernames.length; i += BATCH_GET_USERS_LIMIT) {
+        batches.push(missingUsernames.slice(i, i + BATCH_GET_USERS_LIMIT));
       }
 
       const responses = await Promise.all(batches.map((batch) => userServiceClient.batchGetUsers({ usernames: batch })));
       const users = responses.flatMap((response) => response.users);
-      const usersByUsername = new Map(users.map((user) => [user.username, user] as const));
       for (const user of users) {
+        usersByUsername.set(user.username, user);
         queryClient.setQueryData(userKeys.detail(user.name), user);
       }
 

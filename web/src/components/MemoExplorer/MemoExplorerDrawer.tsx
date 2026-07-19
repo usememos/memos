@@ -11,19 +11,27 @@ interface Props {
   features?: MemoExplorerFeatures;
   statisticsData: StatisticsData;
   tagCount: Record<string, number>;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const MemoExplorerDrawer = (props: Props) => {
-  const { context, features, statisticsData, tagCount } = props;
+  const { context, features, statisticsData, tagCount, onOpenChange } = props;
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     setOpen(false);
-  }, [location.pathname]);
+    onOpenChange?.(false);
+  }, [location.pathname, onOpenChange]);
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet
+      open={open}
+      onOpenChange={(nextOpen) => {
+        setOpen(nextOpen);
+        onOpenChange?.(nextOpen);
+      }}
+    >
       <SheetTrigger render={<Button variant="ghost" />}>
         <MenuIcon className="size-5 text-foreground" />
       </SheetTrigger>

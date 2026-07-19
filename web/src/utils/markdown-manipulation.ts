@@ -70,23 +70,6 @@ export function toggleTaskAtIndex(markdown: string, taskIndex: number, checked: 
   return toggleTaskAtLine(markdown, task.lineNumber, checked);
 }
 
-export function countTasks(markdown: string): {
-  total: number;
-  completed: number;
-  incomplete: number;
-} {
-  const tasks = extractTasksFromAst(markdown);
-
-  const total = tasks.length;
-  const completed = tasks.filter((t) => t.checked).length;
-
-  return {
-    total,
-    completed,
-    incomplete: total - completed,
-  };
-}
-
 export function getTaskLineNumber(markdown: string, taskIndex: number): number {
   const tasks = extractTasksFromAst(markdown);
 

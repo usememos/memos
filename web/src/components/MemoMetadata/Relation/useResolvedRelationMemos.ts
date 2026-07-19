@@ -4,16 +4,17 @@ import { useEffect, useMemo, useState } from "react";
 import { findMemoInCollectionQueries, memoDetailQueryOptions } from "@/hooks/useMemoQueries";
 import { MemoRelation_Memo, MemoRelation_MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
-export const useResolvedRelationMemos = (memoNames: string[]) => {
+export const useResolvedRelationMemos = (memoNames: string[], options?: { enabled?: boolean }) => {
   const queryClient = useQueryClient();
   const [resolvedMemos, setResolvedMemos] = useState<Record<string, MemoRelation_Memo>>({});
+  const enabled = options?.enabled ?? true;
 
   const missingMemoNames = useMemo(() => {
     return Array.from(new Set(memoNames)).filter((name) => name && !resolvedMemos[name]);
   }, [memoNames, resolvedMemos]);
 
   useEffect(() => {
-    if (missingMemoNames.length === 0) {
+    if (!enabled || missingMemoNames.length === 0) {
       return;
     }
 
@@ -47,7 +48,7 @@ export const useResolvedRelationMemos = (memoNames: string[]) => {
     return () => {
       cancelled = true;
     };
-  }, [missingMemoNames, queryClient]);
+  }, [enabled, missingMemoNames, queryClient]);
 
   return resolvedMemos;
 };

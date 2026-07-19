@@ -2,7 +2,12 @@ import { isValidElement } from "react";
 import type { RouteObject } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import { routeConfig, ROUTES } from "@/router";
-import { RequireAuthRoute, RequireGuestRoute } from "@/router/guards";
+import {
+  RequireAuthRoute,
+  RequireFullInitializationRoute,
+  RequireGuestRoute,
+  RequireInstanceInitializationRoute,
+} from "@/router/guards";
 
 // Walk the nested route config and find the first route with the given path,
 // starting from the provided roots. Returns undefined if nothing matches.
@@ -48,12 +53,26 @@ describe("router configuration", () => {
   it("wraps the remaining /auth children in RequireGuestRoute", () => {
     for (const path of ["", "admin", "signup"]) {
       expect(hasAncestorOfType(routeConfig, path, RequireGuestRoute)).toBe(true);
+      expect(hasAncestorOfType(routeConfig, path, RequireInstanceInitializationRoute)).toBe(true);
     }
   });
 
   it("wraps authenticated-only pages in RequireAuthRoute", () => {
     for (const path of [ROUTES.ARCHIVED, ROUTES.ATTACHMENTS, ROUTES.INBOX, ROUTES.SETTING]) {
       expect(hasAncestorOfType(routeConfig, path, RequireAuthRoute)).toBe(true);
+    }
+  });
+
+  it("keeps non-feed pages behind their full initialization requirements", () => {
+    for (const path of [ROUTES.SHORTCUTS, ROUTES.ATTACHMENTS, ROUTES.INBOX, ROUTES.SETTING]) {
+      expect(hasAncestorOfType(routeConfig, path, RequireFullInitializationRoute)).toBe(true);
+    }
+    expect(hasAncestorOfType(routeConfig, ROUTES.ABOUT, RequireInstanceInitializationRoute)).toBe(true);
+  });
+
+  it("leaves memo feeds available for early queries", () => {
+    for (const path of [ROUTES.EXPLORE, ROUTES.ARCHIVED, "memos/:uid", "memos/shares/:token", "u/:username"]) {
+      expect(hasAncestorOfType(routeConfig, path, RequireFullInitializationRoute)).toBe(false);
     }
   });
 

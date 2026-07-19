@@ -4,6 +4,8 @@ import type { MemoExplorerContext } from "@/components/MemoExplorer";
 import { MemoExplorer, MemoExplorerDrawer } from "@/components/MemoExplorer";
 import MobileHeader from "@/components/MobileHeader";
 import { userServiceClient } from "@/connect";
+import { useAuth } from "@/contexts/AuthContext";
+import { useInstance } from "@/contexts/InstanceContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
 import useMediaQuery from "@/hooks/useMediaQuery";
@@ -18,9 +20,12 @@ const MAIN_CONTENT_CLASS_NAME = "w-full min-h-full min-w-0 flex-1";
 
 const MainLayout = () => {
   const md = useMediaQuery("md");
+  const { isInitialized: authInitialized } = useAuth();
+  const { isInitialized: instanceInitialized } = useInstance();
   const location = useLocation();
   const currentUser = useCurrentUser();
   const [profileUserName, setProfileUserName] = useState<string | undefined>();
+  const [mobileExplorerOpen, setMobileExplorerOpen] = useState(false);
   const showMemoExplorer = location.pathname !== Routes.ABOUT;
 
   // Determine context based on current route
@@ -65,12 +70,20 @@ const MainLayout = () => {
     return undefined;
   }, [context, currentUser, profileUserName]);
 
-  const { statistics, tags } = useFilteredMemoStats({ userName: statsUserName, context });
+  // The feed query starts as soon as identity/profile routing is ready. Keep
+  // auxiliary statistics behind full settings initialization, and do not fetch
+  // mobile drawer data until the user actually opens it.
+  const statsEnabled = showMemoExplorer && authInitialized && instanceInitialized && (md || mobileExplorerOpen);
+  const { statistics, tags } = useFilteredMemoStats({ userName: statsUserName, context, enabled: statsEnabled });
   const memoExplorerProps = { context, statisticsData: statistics, tagCount: tags };
 
   return (
     <section className="@container w-full min-h-full flex flex-col justify-start items-center md:flex-row md:items-start">
-      {!md && <MobileHeader>{showMemoExplorer && <MemoExplorerDrawer {...memoExplorerProps} />}</MobileHeader>}
+      {!md && (
+        <MobileHeader>
+          {showMemoExplorer && <MemoExplorerDrawer {...memoExplorerProps} onOpenChange={setMobileExplorerOpen} />}
+        </MobileHeader>
+      )}
       {md && showMemoExplorer && (
         <div className={DESKTOP_EXPLORER_CLASS_NAME}>
           <MemoExplorer className="px-3 py-6" {...memoExplorerProps} />

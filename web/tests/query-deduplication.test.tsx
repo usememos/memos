@@ -1,7 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  MentionResolutionProvider,
+  useResolvedMentionUsernames,
+  useResolvedUser,
+} from "@/components/MemoContent/MentionResolutionContext";
 import { useResolvedRelationMemos } from "@/components/MemoMetadata/Relation/useResolvedRelationMemos";
 import { memoKeys } from "@/hooks/useMemoQueries";
 import { useUser, userKeys, useUsersByNames, useUsersByUsernames } from "@/hooks/useUserQueries";
@@ -81,6 +86,49 @@ describe("query deduplication", () => {
 
     const detail = renderHook(() => useUser(alice.name), { wrapper });
     await waitFor(() => expect(detail.result.current.isSuccess).toBe(true));
+    expect(clients.getUser).not.toHaveBeenCalled();
+  });
+
+  it("reuses cached user details instead of issuing another username batch", async () => {
+    const alice = { name: "users/alice", username: "alice" } as User;
+    const queryClient = createQueryClient();
+    queryClient.setQueryData(userKeys.detail(alice.name), alice);
+
+    const batch = renderHook(() => useUsersByUsernames(["alice"]), { wrapper: createWrapper(queryClient) });
+    await waitFor(() => expect(batch.result.current.isSuccess).toBe(true));
+
+    expect(batch.result.current.data?.get("alice")).toBe(alice);
+    expect(clients.batchGetUsers).not.toHaveBeenCalled();
+  });
+
+  it("resolves feed creators and mentions through one shared username batch", async () => {
+    const alice = { name: "users/alice", username: "alice" } as User;
+    const bob = { name: "users/bob", username: "bob" } as User;
+    clients.batchGetUsers.mockResolvedValue({ users: [alice, bob] });
+    const queryClient = createQueryClient();
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <QueryClientProvider client={queryClient}>
+        <MentionResolutionProvider contents={["Hello @bob"]} userNames={[alice.name]}>
+          {children}
+        </MentionResolutionProvider>
+      </QueryClientProvider>
+    );
+
+    const { result } = renderHook(
+      () => ({
+        creator: useResolvedUser(alice.name),
+        mentions: useResolvedMentionUsernames("Hello @bob"),
+      }),
+      { wrapper },
+    );
+
+    await waitFor(() => {
+      expect(result.current.creator).toBe(alice);
+      expect(result.current.mentions.has("bob")).toBe(true);
+    });
+
+    expect(clients.batchGetUsers).toHaveBeenCalledTimes(1);
+    expect(clients.batchGetUsers).toHaveBeenCalledWith({ usernames: ["bob", "alice"] });
     expect(clients.getUser).not.toHaveBeenCalled();
   });
 

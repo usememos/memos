@@ -18,7 +18,13 @@ vi.mock("@/contexts/InstanceContext", () => ({
 }));
 
 vi.mock("@/utils/i18n", () => ({
-  useTranslate: () => (key: string) => (key === "common.version" ? "Version" : key),
+  useTranslate: () => (key: string) =>
+    (
+      {
+        "common.version": "Version",
+        "about.powered-by": "Powered by Memos",
+      } as Record<string, string>
+    )[key] ?? key,
 }));
 
 describe("<About>", () => {

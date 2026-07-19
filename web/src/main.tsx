@@ -25,8 +25,8 @@ applyLocaleEarly();
 
 // Inner component that initializes contexts
 function AppInitializer({ children }: { children: React.ReactNode }) {
-  const { isInitialized: authInitialized, initialize: initAuth, currentUser } = useAuth();
-  const { isInitialized: instanceInitialized, initialize: initInstance } = useInstance();
+  const { isIdentityInitialized, initialize: initAuth, currentUser } = useAuth();
+  const { isProfileInitialized, initialize: initInstance } = useInstance();
   const initStartedRef = useRef(false);
 
   // Initialize on mount - run in parallel for better performance
@@ -48,7 +48,10 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
   // Live refresh: listen for memo changes via SSE and invalidate caches.
   useLiveMemoRefresh();
 
-  if (!authInitialized || !instanceInitialized) {
+  // Route loading and feed requests only need the verified identity and the
+  // instance profile. Display-sensitive settings continue in the background;
+  // PagedMemoList keeps memo content hidden until they have settled.
+  if (!isIdentityInitialized || !isProfileInitialized) {
     return null;
   }
 

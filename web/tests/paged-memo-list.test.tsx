@@ -1,17 +1,22 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import PagedMemoList from "@/components/PagedMemoList";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 
 const view = vi.hoisted(() => ({ maxColumns: 1 as 0 | 1 | 2 | 3, compactMode: false }));
-const feed = vi.hoisted(() => ({ memos: [] as unknown[] }));
+const feed = vi.hoisted(() => ({
+  memos: [] as unknown[],
+  hasNextPage: false,
+  fetchNextPage: vi.fn(async () => undefined),
+}));
+const readiness = vi.hoisted(() => ({ auth: true, instance: true }));
 
 vi.mock("@/hooks/useMemoQueries", () => ({
   useInfiniteMemos: () => ({
     data: { pages: [{ memos: feed.memos, nextPageToken: "" }] },
-    fetchNextPage: vi.fn(async () => undefined),
-    hasNextPage: false,
+    fetchNextPage: feed.fetchNextPage,
+    hasNextPage: feed.hasNextPage,
     isFetchingNextPage: false,
     isLoading: false,
   }),
@@ -19,6 +24,14 @@ vi.mock("@/hooks/useMemoQueries", () => ({
 
 vi.mock("@/contexts/MemoFilterContext", () => ({
   useMemoFilterContext: () => ({ filters: [] }),
+}));
+
+vi.mock("@/contexts/AuthContext", () => ({
+  useAuth: () => ({ isInitialized: readiness.auth }),
+}));
+
+vi.mock("@/contexts/InstanceContext", () => ({
+  useInstance: () => ({ isInitialized: readiness.instance }),
 }));
 
 vi.mock("@/contexts/ViewContext", () => ({
@@ -54,6 +67,37 @@ describe("<PagedMemoList>", () => {
     view.maxColumns = 1;
     view.compactMode = false;
     feed.memos = [];
+    feed.hasNextPage = false;
+    feed.fetchNextPage.mockClear();
+    readiness.auth = true;
+    readiness.instance = true;
+  });
+
+  it("does not render fetched memo content before display settings settle", () => {
+    feed.memos = [memo];
+    readiness.auth = false;
+    const renderer = vi.fn((m: Memo) => <div key={m.name}>{m.content}</div>);
+
+    renderList(renderer);
+
+    expect(renderer).not.toHaveBeenCalled();
+    expect(screen.queryByText("hello")).not.toBeInTheDocument();
+  });
+
+  it("does not auto-fetch more pages while display settings are pending", async () => {
+    vi.useFakeTimers();
+    try {
+      feed.memos = [memo];
+      feed.hasNextPage = true;
+      readiness.auth = false;
+
+      renderList();
+      await act(async () => vi.advanceTimersByTimeAsync(1000));
+
+      expect(feed.fetchNextPage).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("uses the tile sprite Placeholder for the empty state", () => {

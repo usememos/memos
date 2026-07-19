@@ -3,7 +3,6 @@ import MemoEditor from "@/components/MemoEditor";
 import { deriveDefaultCreateTimeFromFilters } from "@/components/MemoEditor/utils/deriveDefaultCreateTime";
 import MemoView from "@/components/MemoView";
 import PagedMemoList, { getMemoKey } from "@/components/PagedMemoList";
-import { useInstance } from "@/contexts/InstanceContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { NewMemoProvider } from "@/contexts/NewMemoContext";
 import { useMemoFilters, useMemoSorting } from "@/hooks";
@@ -15,7 +14,6 @@ import { useTranslate } from "@/utils/i18n";
 const Home = () => {
   const user = useCurrentUser();
   const t = useTranslate();
-  const { isInitialized } = useInstance();
   const { filters } = useMemoFilterContext();
   const defaultCreateTime = useMemo(() => deriveDefaultCreateTimeFromFilters(filters), [filters]);
 
@@ -40,7 +38,6 @@ const Home = () => {
           listSort={listSort}
           orderBy={orderBy}
           filter={memoFilter}
-          enabled={isInitialized}
           renderLeading={({ useGrid }) => (
             <MemoEditor
               className={useGrid ? undefined : "mb-2"}

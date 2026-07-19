@@ -19,6 +19,10 @@ export const extractMemoIdFromName = (name: string) => {
   return name.split(memoNamePrefix).pop() || "";
 };
 
+export const extractUsernameFromName = (name: string) => {
+  return name.startsWith(userNamePrefix) ? name.slice(userNamePrefix.length) : name;
+};
+
 export const extractIdentityProviderUidFromName = (name: string) => {
   return name.split(identityProviderNamePrefix).pop() || "";
 };

@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 interface LinkMetadataCardProps {
   url: string;
   fallback: React.ReactNode;
+  enabled?: boolean;
 }
 
 function getHostname(url: string): string {
@@ -16,9 +17,9 @@ function getHostname(url: string): string {
   }
 }
 
-const LinkMetadataCard = ({ url, fallback }: LinkMetadataCardProps) => {
+const LinkMetadataCard = ({ url, fallback, enabled = true }: LinkMetadataCardProps) => {
   const [imageFailed, setImageFailed] = useState(false);
-  const { data: metadata, isSuccess } = useLinkMetadata(url);
+  const { data: metadata, isSuccess } = useLinkMetadata(url, { enabled });
 
   const title = metadata?.title.trim() ?? "";
   const description = metadata?.description.trim() ?? "";

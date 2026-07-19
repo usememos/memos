@@ -2,6 +2,7 @@ import { ArrowUpRightIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { MemoPreview } from "@/components/MemoPreview";
 import { useMemoComments } from "@/hooks/useMemoQueries";
+import { useNearViewport } from "@/hooks/useNearViewport";
 import { useUsersByNames } from "@/hooks/useUserQueries";
 import { extractMemoIdFromName } from "@/lib/resource-names";
 import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
@@ -9,8 +10,12 @@ import { useMemoViewContext, useMemoViewDerived } from "../MemoViewContext";
 const MemoCommentListView: React.FC = () => {
   const { memo } = useMemoViewContext();
   const { isInMemoDetailPage, commentAmount } = useMemoViewDerived();
+  const { ref: viewportRef, isNearViewport } = useNearViewport<HTMLDivElement>();
 
-  const { data } = useMemoComments(memo.name, { enabled: !isInMemoDetailPage && commentAmount > 0, pageSize: 3 });
+  const { data } = useMemoComments(memo.name, {
+    enabled: isNearViewport && !isInMemoDetailPage && commentAmount > 0,
+    pageSize: 3,
+  });
   const comments = data?.memos ?? [];
   const displayedComments = comments.slice(0, 3);
   const { data: commentCreators } = useUsersByNames(displayedComments.map((comment) => comment.creator));
@@ -20,7 +25,7 @@ const MemoCommentListView: React.FC = () => {
   }
 
   return (
-    <div className="border border-t-0 border-border rounded-b-lg px-4 pt-2 pb-3 flex flex-col gap-1">
+    <div ref={viewportRef} className="border border-t-0 border-border rounded-b-lg px-4 pt-2 pb-3 flex flex-col gap-1">
       <div className="flex items-center justify-between mb-1">
         <span className="text-xs text-muted-foreground">Comments{commentAmount > 1 ? ` (${commentAmount})` : ""}</span>
         <Link

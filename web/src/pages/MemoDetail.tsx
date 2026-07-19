@@ -7,6 +7,8 @@ import { MentionResolutionProvider } from "@/components/MemoContent/MentionResol
 import { MemoDetailSidebar, MemoDetailSidebarDrawer } from "@/components/MemoDetailSidebar";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
+import { useAuth } from "@/contexts/AuthContext";
+import { useInstance } from "@/contexts/InstanceContext";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import useMemoDetailError from "@/hooks/useMemoDetailError";
 import { useInfiniteMemoComments, useMemo } from "@/hooks/useMemoQueries";
@@ -17,6 +19,8 @@ import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 
 const MemoDetail = () => {
   const md = useMediaQuery("md");
+  const { isInitialized: authInitialized } = useAuth();
+  const { isInitialized: instanceInitialized } = useInstance();
   const [shareImageDialogOpen, setShareImageDialogOpen] = useState(false);
   const params = useParams();
   const location = useLocation();
@@ -76,7 +80,9 @@ const MemoDetail = () => {
     }
   }
 
-  if (isLoading || !memo) {
+  // Start the memo and comment requests as soon as routing is unlocked, but do
+  // not expose content before tag-blur and instance display settings settle.
+  if (isLoading || !memo || !authInitialized || !instanceInitialized) {
     return null;
   }
 
@@ -85,6 +91,9 @@ const MemoDetail = () => {
     ? { ...memo, attachments: withShareAttachmentLinks(memo.attachments as Attachment[], shareToken!) }
     : memo;
   const mentionResolutionContents = [displayMemo.content, ...comments.map((comment) => comment.content)];
+  const userResolutionNames = Array.from(
+    new Set([displayMemo, ...comments].flatMap((item) => [item.creator, ...(item.reactions ?? []).map((reaction) => reaction.creator)])),
+  );
 
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
@@ -93,7 +102,7 @@ const MemoDetail = () => {
           <MemoDetailSidebarDrawer memo={displayMemo} onShareImageOpen={() => setShareImageDialogOpen(true)} />
         </MobileHeader>
       )}
-      <MentionResolutionProvider contents={mentionResolutionContents}>
+      <MentionResolutionProvider contents={mentionResolutionContents} userNames={userResolutionNames}>
         <div className={cn("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-6")}>
           <div className={cn("w-full md:w-[calc(100%-16.5rem)]")}>
             {parentMemo && (

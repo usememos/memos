@@ -1,10 +1,10 @@
-import { type ComponentType, memo, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type ComponentType, memo, Suspense, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useResolvedUser } from "@/components/MemoContent/MentionResolutionContext";
 import { loadMemoEditor } from "@/components/MemoEditor/loader";
 import type { MemoEditorProps } from "@/components/MemoEditor/types";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useUser } from "@/hooks/useUserQueries";
 import { findTagMetadata } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
@@ -28,7 +28,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
 
   const currentUser = useCurrentUser();
   const { userTagsSetting } = useAuth();
-  const creator = useUser(memoData.creator).data;
+  const creator = useResolvedUser(memoData.creator, { enabled: Boolean(showCreator || props.shareImageDialogOpen) });
   const isArchived = memoData.state === State.ARCHIVED;
   const readonly = memoData.creator !== currentUser?.name && !isSuperUser(currentUser);
   const parentPage = parentPageProp || "/";
@@ -54,7 +54,13 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const isInMemoDetailPage = location.pathname.startsWith(`/${memoData.name}`) || location.pathname.startsWith("/memos/shares/");
   const showCommentPreview = !isInMemoDetailPage && computeCommentAmount(memoData) > 0;
 
-  useEffect(() => {
+  // The card width is only needed by the share-image dialog. Keep feed cards
+  // free of a permanent ResizeObserver and measure only while that dialog is open.
+  useLayoutEffect(() => {
+    if (!props.shareImageDialogOpen) {
+      return;
+    }
+
     const card = cardRef.current;
     if (!card) {
       return;
@@ -79,7 +85,7 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
 
     resizeObserver.observe(card);
     return () => resizeObserver.disconnect();
-  }, []);
+  }, [props.shareImageDialogOpen]);
 
   const contextValue = useMemo(
     () => ({
