@@ -1,6 +1,7 @@
 import { BookmarkIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
+import RelativeTime from "@/components/RelativeTime";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import useNavigateTo from "@/hooks/useNavigateTo";
@@ -36,7 +37,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
   const timeValue = isArchived ? (
     memoDisplayTime?.toLocaleString(i18n.language)
   ) : (
-    <relative-time datetime={memoDisplayTime?.toISOString()} lang={i18n.language} format={relativeTimeFormat} no-title=""></relative-time>
+    <RelativeTime date={memoDisplayTime} format={relativeTimeFormat} />
   );
   const displayTime = isDisplayingUpdatedTime ? (
     <>

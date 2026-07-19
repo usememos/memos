@@ -1,11 +1,18 @@
 {
   "about": {
     "blogs": "Blogs",
+    "build": "Build",
+    "commit": "Commit",
     "description": "A privacy-first, lightweight note-taking service. Easily capture and share your great thoughts.",
+    "distribution": "Distribution",
     "documents": "Documents",
+    "license": "License",
     "media": "Media",
     "github-repository": "GitHub Repo",
-    "official-website": "Official Website"
+    "official-website": "Official Website",
+    "powered-by": "Powered by Memos",
+    "project": "Project",
+    "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
     "admin-sign-in": "Administrator sign-in",
@@ -437,31 +444,32 @@
       "create-dialog": {
         "access-token-created": "Access token `{{description}}` created",
         "create-access-token": "Create Access Token",
-        "created-at": "Created At",
         "description": "Description",
         "duration-1m": "1 Month",
         "duration-90d": "90 Days",
         "duration-8h": "8 Hours",
         "duration-never": "Never",
         "expiration": "Expiration",
-        "expires-at": "Expires At",
         "some-description": "Some description..."
       },
+      "create-first": "Create your first token",
       "description": "Create and revoke the secret keys that let other apps use the Memos API as you.",
-      "about-title": "What is a personal access token?",
       "about-description": "A personal access token (PAT) is a secret key that authenticates API requests as your account. Any app or script holding one — an MCP server, a CLI, a mobile client — can do everything you can do in Memos, until the token expires or you delete it. Send it as a Bearer credential in the Authorization header:",
-      "guidelines-title": "Keep your tokens safe",
+      "empty-description": "A token lets a script or app call the API as you. It is shown once at creation, then listed here so you can revoke it.",
+      "empty-title": "No access tokens yet",
+      "expires": "Expires",
       "guideline-shown-once": "A token is shown only once, right after you create it (it is copied to your clipboard). Store it somewhere safe, like a password manager.",
       "guideline-one-per-app": "Create a separate token for each app or script, so you can revoke one without breaking the others.",
       "guideline-expiration": "Prefer tokens that expire. Long-lived tokens are a bigger risk if they leak.",
-      "guideline-review": "Check the Last used column from time to time, and delete tokens you no longer recognize or need.",
-      "your-tokens": "Your tokens",
+      "guideline-review": "Check the last-used time from time to time, and delete tokens you no longer recognize or need.",
+      "how-to-use": "How to use a token",
       "label": "Access Tokens",
-      "last-used-at": "Last Used",
+      "last-used": "Last used",
       "never-used": "Never used",
+      "no-expiration": "No expiration",
       "title": "Access Tokens",
       "token": "Token",
-      "no-tokens-found": "No access tokens found"
+      "web-clipper-title": "Use a token with Memos Web Clipper"
     },
     "account": {
       "change-password": "Change password",
