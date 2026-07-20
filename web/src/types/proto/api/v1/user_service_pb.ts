@@ -293,8 +293,8 @@ export type CreateUserRequest = Message<"memos.api.v1.CreateUserRequest"> & {
 
   /**
    * Optional. The resource ID to use for this user. If set, it must equal
-   * user.username and follow the User resource ID format.
-   * Format: ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$
+   * user.username, follow the UID format, and not consist entirely of digits.
+   * Format: ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,34}[a-zA-Z0-9])?$
    *
    * @generated from field: string user_id = 2;
    */

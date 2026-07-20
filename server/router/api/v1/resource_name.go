@@ -136,14 +136,14 @@ func ExtractIdentityProviderUIDFromName(name string) (string, error) {
 
 // ValidateAndGenerateUID validates a user-provided UID or generates a new one.
 // If provided is empty, a new shortuuid is generated.
-// If provided is non-empty, it is validated as a user-provided resource ID.
+// If provided is non-empty, it is validated against base.UIDMatcher.
 func ValidateAndGenerateUID(provided string) (string, error) {
 	uid := strings.TrimSpace(provided)
 	if uid == "" {
 		return shortuuid.New(), nil
 	}
-	if !base.ResourceIDMatcher.MatchString(uid) {
-		return "", status.Errorf(codes.InvalidArgument, "invalid resource ID: must be 1-63 characters, start with a lowercase letter, contain only lowercase letters, digits, or hyphens, and end with a letter or digit")
+	if !base.UIDMatcher.MatchString(uid) {
+		return "", status.Errorf(codes.InvalidArgument, "invalid UID: must be 1-36 characters, contain only letters, digits, or hyphens, and start and end with a letter or digit")
 	}
 	return uid, nil
 }

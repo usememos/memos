@@ -512,7 +512,7 @@ type CreateIdentityProviderRequest struct {
 	IdentityProvider *IdentityProvider `protobuf:"bytes,1,opt,name=identity_provider,json=identityProvider,proto3" json:"identity_provider,omitempty"`
 	// Optional. The ID to use for the identity provider, which will become the final component of the resource name.
 	// If not provided, the system will generate one.
-	// Format: ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$
+	// Format: ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,34}[a-zA-Z0-9])?$
 	IdentityProviderId string `protobuf:"bytes,2,opt,name=identity_provider_id,json=identityProviderId,proto3" json:"identity_provider_id,omitempty"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache

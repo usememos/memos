@@ -17,6 +17,27 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+func TestCreateMemoAcceptsUUID(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateRegularUser(ctx, "test-user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	const memoID = "21ec98aa-9a8f-458c-a2a3-c7dc69b6f591"
+	memo, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "Created with a UUID",
+			Visibility: apiv1.Visibility_PRIVATE,
+		},
+		MemoId: memoID,
+	})
+	require.NoError(t, err)
+	require.Equal(t, "memos/"+memoID, memo.Name)
+}
+
 func TestListMemos(t *testing.T) {
 	ctx := context.Background()
 

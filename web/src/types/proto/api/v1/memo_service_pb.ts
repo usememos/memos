@@ -79,7 +79,7 @@ export const ReactionSchema: GenMessage<Reaction> = /*@__PURE__*/
 export type Memo = Message<"memos.api.v1.Memo"> & {
   /**
    * The resource name of the memo.
-   * Format: memos/{memo}, memo is the user defined id or uuid.
+   * Format: memos/{memo}, where memo is the user-defined UID.
    *
    * @generated from field: string name = 1;
    */
@@ -292,7 +292,7 @@ export type CreateMemoRequest = Message<"memos.api.v1.CreateMemoRequest"> & {
   /**
    * Optional. The memo ID to use for this memo.
    * If empty, a unique ID will be generated.
-   * Format: ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$
+   * Format: ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,34}[a-zA-Z0-9])?$
    *
    * @generated from field: string memo_id = 2;
    */

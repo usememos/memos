@@ -257,7 +257,7 @@ export type CreateIdentityProviderRequest = Message<"memos.api.v1.CreateIdentity
   /**
    * Optional. The ID to use for the identity provider, which will become the final component of the resource name.
    * If not provided, the system will generate one.
-   * Format: ^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$
+   * Format: ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,34}[a-zA-Z0-9])?$
    *
    * @generated from field: string identity_provider_id = 2;
    */

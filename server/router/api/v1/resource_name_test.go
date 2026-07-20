@@ -12,10 +12,11 @@ func TestValidateAndGenerateUIDValidatesUserProvidedResourceIDs(t *testing.T) {
 		wantError bool
 	}{
 		{name: "lowercase", provided: "memo-1"},
-		{name: "maximum length", provided: "a" + strings.Repeat("b", 62)},
-		{name: "digit first", provided: "1-memo", wantError: true},
-		{name: "uppercase", provided: "Memo", wantError: true},
-		{name: "too long", provided: "a" + strings.Repeat("b", 63), wantError: true},
+		{name: "UUID", provided: "21ec98aa-9a8f-458c-a2a3-c7dc69b6f591"},
+		{name: "maximum length", provided: "a" + strings.Repeat("b", 35)},
+		{name: "digit first", provided: "1-memo"},
+		{name: "uppercase", provided: "Memo"},
+		{name: "too long", provided: "a" + strings.Repeat("b", 36), wantError: true},
 	}
 
 	for _, test := range tests {

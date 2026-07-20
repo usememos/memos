@@ -16,9 +16,8 @@ func TestValidateWritableUsername(t *testing.T) {
 			username: "alice",
 		},
 		{
-			name:      "mixed case",
-			username:  "Alice",
-			wantError: true,
+			name:     "mixed case",
+			username: "Alice",
 		},
 		{
 			name:     "hyphenated",
@@ -30,17 +29,16 @@ func TestValidateWritableUsername(t *testing.T) {
 		},
 		{
 			name:     "maximum length",
-			username: "a" + strings.Repeat("b", 62),
+			username: "a" + strings.Repeat("b", 35),
 		},
 		{
 			name:      "too long",
-			username:  "a" + strings.Repeat("b", 63),
+			username:  "a" + strings.Repeat("b", 36),
 			wantError: true,
 		},
 		{
-			name:      "digit first",
-			username:  "1alice",
-			wantError: true,
+			name:     "digit first",
+			username: "1alice",
 		},
 		{
 			name:      "hyphen last",
