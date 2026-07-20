@@ -186,6 +186,36 @@ func TestTagParser(t *testing.T) {
 			expectedTag: "family👨‍👩‍👧‍👦",
 			shouldParse: true,
 		},
+		{
+			name:        "apostrophe inside tag (ASCII ', Ukrainian сім'я)",
+			input:       "#сім'я",
+			expectedTag: "сім'я",
+			shouldParse: true,
+		},
+		{
+			name:        "apostrophe inside tag (curly ’, autocorrected)",
+			input:       "#сім’я",
+			expectedTag: "сім’я",
+			shouldParse: true,
+		},
+		{
+			name:        "apostrophe in name (O'Brien)",
+			input:       "#O'Brien",
+			expectedTag: "O'Brien",
+			shouldParse: true,
+		},
+		{
+			name:        "modifier letter apostrophe ʼ (U+02BC, regression guard)",
+			input:       "#сімʼя",
+			expectedTag: "сімʼя",
+			shouldParse: true,
+		},
+		{
+			name:        "apostrophe then space stops the tag",
+			input:       "#сім'я тест",
+			expectedTag: "сім'я",
+			shouldParse: true,
+		},
 	}
 
 	for _, tt := range tests {
