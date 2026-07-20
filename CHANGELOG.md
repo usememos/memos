@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.30.0-rc.2](https://github.com/usememos/memos/compare/v0.30.0-rc.1...v0.30.0-rc.2) (2026-07-20)
+
+
+### Highlights
+
+* **Memo detail and navigation:** Redesigned the memo detail sidebar as a property rail with quick actions, editable visibility, memo metadata, attachments, relations, and a scroll-aware outline. Feed scroll position is now restored when navigating back from another page. ([d4b5a16](https://github.com/usememos/memos/commit/d4b5a1695b9acf4da3ef72f600789a4a0f90e4d5)) ([e497895](https://github.com/usememos/memos/commit/e497895bf3b72cdae92e5bab6cd5b691c8eedc15))
+* **Settings and access tokens:** Refreshed settings navigation and expanded the access-token page with practical guidance, a copyable API example, safety notes, and last-used timestamps. The About page and project documentation now surface the Memos Web Clipper. ([715306e](https://github.com/usememos/memos/commit/715306ea66306a91765d3f7c3ede8bc815d2def5)) ([06ecef3](https://github.com/usememos/memos/commit/06ecef33bc7e6bafc263b2dee71ffd290ab3dc42)) ([f946974](https://github.com/usememos/memos/commit/f94697496b60f5fe590c2ffa19e3f0c93b749af4))
+* **Faster feeds and Explore:** Reduced initial work and bandwidth by caching fingerprinted assets, deferring media and rich renderers until needed, rendering feed content near the viewport, and sharing user and memo lookups across creators, reactions, comments, mentions, and relations. ([88c6ee8](https://github.com/usememos/memos/commit/88c6ee8ebcc341aa1d2e2ae38638a518f4745de1)) ([6c1055f](https://github.com/usememos/memos/commit/6c1055f483c92c2a95193bea07110b6775359651)) ([249b331](https://github.com/usememos/memos/commit/249b331596fd1c9ceceb4e72da8e422499be683f))
+* **Demo experience:** Rebuilt the demo data around representative public and protected memos that showcase nested tags, references, comments, mentions, reactions, locations, attachments, and rich Markdown. ([469c995](https://github.com/usememos/memos/commit/469c995cc04b5e7de259156d28c58b948e85d111))
+
+### Fixes and polish
+
+* **API compatibility and errors:** Aligned new resource IDs and annotations with AIP conventions while preserving legacy UUID-based identifiers, corrected canonical user-stat resource names, and removed internal RPC prefixes from user-facing error messages. ([84776cc](https://github.com/usememos/memos/commit/84776cc106745278371e5a8c8d43abca6d38e8b5)) ([b7d5d09](https://github.com/usememos/memos/commit/b7d5d09f8a7445076811d6f53b98d3445ce3afac)) ([0bfeb91](https://github.com/usememos/memos/commit/0bfeb91d50fdd4bafd15c13bb02b3e2810d4b2e4))
+* **Interface:** Corrected radio-group indicator alignment and positioned tooltip arrows outside their content panels. ([#6097](https://github.com/usememos/memos/issues/6097)) ([2d01420](https://github.com/usememos/memos/commit/2d01420c23372d5708904ec78e03485edb44d49b)) ([#6095](https://github.com/usememos/memos/issues/6095)) ([773e56e](https://github.com/usememos/memos/commit/773e56e537657508af4e357f9c8845af4d4f15e8))
+
 ## [0.30.0-rc.1](https://github.com/usememos/memos/compare/v0.29.1...v0.30.0-rc.1) (2026-07-14)
 
 
