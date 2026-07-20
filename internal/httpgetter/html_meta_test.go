@@ -148,6 +148,10 @@ func TestIsInternalIP(t *testing.T) {
 		"fd00::1",           // IPv6 unique local
 		"::ffff:127.0.0.1",  // IPv4-mapped loopback
 		"::ffff:100.64.0.1", // IPv4-mapped shared address space
+		"224.0.0.1",         // IPv4 link-local multicast
+		"ff02::1",           // IPv6 link-local multicast
+		"0.0.0.0",           // IPv4 unspecified
+		"::",                // IPv6 unspecified
 	}
 	for _, s := range internal {
 		require.Truef(t, isInternalIP(net.ParseIP(s)), "expected %s to be internal", s)
