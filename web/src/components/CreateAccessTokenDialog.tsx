@@ -30,7 +30,7 @@ function CreateAccessTokenDialog({ open, onOpenChange, onSuccess }: Props) {
   const currentUser = useCurrentUser();
   const [state, setState] = useState({
     description: "",
-    expiration: 30, // Default: 30 days
+    expiration: 0, // Default: never expires
   });
   const [createdToken, setCreatedToken] = useState<string | null>(null);
   const requestState = useLoading(false);
@@ -38,16 +38,16 @@ function CreateAccessTokenDialog({ open, onOpenChange, onSuccess }: Props) {
   // Expiration options in days (0 = never expires)
   const expirationOptions = [
     {
+      label: t("setting.access-token.create-dialog.duration-never"),
+      value: 0,
+    },
+    {
       label: t("setting.access-token.create-dialog.duration-1m"),
       value: 30,
     },
     {
       label: t("setting.access-token.create-dialog.duration-90d"),
       value: 90,
-    },
-    {
-      label: t("setting.access-token.create-dialog.duration-never"),
-      value: 0,
     },
   ];
 
@@ -109,7 +109,7 @@ function CreateAccessTokenDialog({ open, onOpenChange, onSuccess }: Props) {
     if (!open) return;
     setState({
       description: "",
-      expiration: 30,
+      expiration: 0,
     });
     setCreatedToken(null);
   }, [open]);
