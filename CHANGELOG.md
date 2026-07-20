@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.30.0-rc.2](https://github.com/usememos/memos/compare/v0.30.0-rc.1...v0.30.0-rc.2) (2026-07-20)
+
+
+### Features
+
+* **web:** redesign memo detail sidebar as property rail ([d4b5a16](https://github.com/usememos/memos/commit/d4b5a1695b9acf4da3ef72f600789a4a0f90e4d5))
+* **web:** restore scroll position across navigation ([e497895](https://github.com/usememos/memos/commit/e497895bf3b72cdae92e5bab6cd5b691c8eedc15))
+
+
+### Bug Fixes
+
+* **api:** align resource IDs with AIP conventions ([84776cc](https://github.com/usememos/memos/commit/84776cc106745278371e5a8c8d43abca6d38e8b5))
+* **api:** show clean RPC error messages ([0bfeb91](https://github.com/usememos/memos/commit/0bfeb91d50fdd4bafd15c13bb02b3e2810d4b2e4))
+* **api:** update UID compatibility ([b7d5d09](https://github.com/usememos/memos/commit/b7d5d09f8a7445076811d6f53b98d3445ce3afac))
+* **web:** align radio button group indicator ([#6097](https://github.com/usememos/memos/issues/6097)) ([2d01420](https://github.com/usememos/memos/commit/2d01420c23372d5708904ec78e03485edb44d49b))
+* **web:** position tooltip arrows outside content ([773e56e](https://github.com/usememos/memos/commit/773e56e537657508af4e357f9c8845af4d4f15e8)), closes [#6095](https://github.com/usememos/memos/issues/6095)
+
+
+### Performance Improvements
+
+* **web:** deduplicate explore data requests ([6c1055f](https://github.com/usememos/memos/commit/6c1055f483c92c2a95193bea07110b6775359651))
+* **web:** reduce demo bandwidth usage ([88c6ee8](https://github.com/usememos/memos/commit/88c6ee8ebcc341aa1d2e2ae38638a518f4745de1))
+* **web:** reduce memo feed startup and rendering work ([249b331](https://github.com/usememos/memos/commit/249b331596fd1c9ceceb4e72da8e422499be683f))
+
 ## [0.30.0-rc.1](https://github.com/usememos/memos/compare/v0.29.1...v0.30.0-rc.1) (2026-07-14)
 
 
