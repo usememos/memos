@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.30.0-rc.3](https://github.com/usememos/memos/compare/v0.30.0-rc.2...v0.30.0-rc.3) (2026-07-23)
+
+
+### Bug Fixes
+
+* **mcp:** accept canonical resource names in path params and keep error results schema-valid ([#6108](https://github.com/usememos/memos/issues/6108)) ([03e34bd](https://github.com/usememos/memos/commit/03e34bd0da2f225addbd00d6a7bb5a472c83aed8))
+
 ## [0.30.0-rc.2](https://github.com/usememos/memos/compare/v0.30.0-rc.1...v0.30.0-rc.2) (2026-07-20)
 
 
