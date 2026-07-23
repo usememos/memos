@@ -102,9 +102,34 @@ func substitutePathParameters(operation *openAPIOperation, arguments map[string]
 		if !ok || value == nil || valueToString(value) == "" {
 			return "", errors.Errorf(`missing required path parameter "%s"`, parameter.Name)
 		}
-		path = strings.ReplaceAll(path, "{"+parameter.Name+"}", url.PathEscape(valueToString(value)))
+		id := trimResourceNamePrefix(operation.Path, parameter.Name, valueToString(value))
+		path = strings.ReplaceAll(path, "{"+parameter.Name+"}", url.PathEscape(id))
 	}
 	return path, nil
+}
+
+// trimResourceNamePrefix accepts canonical resource names for path parameters.
+// The API returns names like "memos/abc123", but the REST paths take the bare
+// ID ("/api/v1/memos/{memo}"), so clients that round-trip a returned name
+// would otherwise request "/api/v1/memos/memos/abc123" and get a 404. When the
+// placeholder directly follows its collection segment and the value carries
+// that collection prefix, strip the prefix; bare IDs pass through unchanged.
+func trimResourceNamePrefix(path, parameterName, value string) string {
+	placeholder := "/{" + parameterName + "}"
+	index := strings.Index(path, placeholder)
+	if index < 0 {
+		return value
+	}
+	head := path[:index]
+	collection := head[strings.LastIndex(head, "/")+1:]
+	if collection == "" {
+		return value
+	}
+	id, ok := strings.CutPrefix(value, collection+"/")
+	if !ok || id == "" || strings.Contains(id, "/") {
+		return value
+	}
+	return id
 }
 
 func valueToString(value any) string {
