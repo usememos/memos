@@ -67,6 +67,14 @@ func isValidTagRune(r rune) bool {
 		return true
 	}
 
+	// Allow apostrophes, which occur inside words and names in many languages
+	// (e.g. Ukrainian сім'я, French aujourd'hui, names like O'Brien). Covers the
+	// ASCII apostrophe as well as the curly single quotes produced by autocorrect.
+	// The modifier-letter apostrophe (U+02BC) is already covered by unicode.IsLetter.
+	if r == '\'' || r == '‘' || r == '’' {
+		return true
+	}
+
 	return false
 }
 

@@ -87,4 +87,20 @@ describe("remarkTag", () => {
     expect(html).toContain('data-tag="cartoon"');
     expect(html).toContain("Tom &amp; Jerry");
   });
+
+  it("keeps an apostrophe inside a tag", () => {
+    // Ukrainian сім'я (family) and names like O'Brien contain an apostrophe
+    // between letters; the tag must not stop at the apostrophe. Covers the ASCII
+    // apostrophe and the curly quote (’, U+2019) autocorrect produces.
+    const html = renderMarkdown("#сім'я and #O'Brien and #сім’я");
+
+    // renderToStaticMarkup HTML-escapes the ASCII apostrophe to &#x27; (it
+    // renders as ' in the browser); the curly ’ is emitted as-is.
+    expect(html).toContain(`data-tag="сім&#x27;я"`);
+    expect(html).toContain(`data-tag="O&#x27;Brien"`);
+    expect(html).toContain(`data-tag="сім’я"`);
+    // The tag must not stop at the apostrophe.
+    expect(html).not.toContain('data-tag="сім"');
+    expect(html).not.toContain('data-tag="O"');
+  });
 });
