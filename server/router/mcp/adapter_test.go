@@ -48,11 +48,10 @@ func TestNewStructuredToolResultUsesObjectStructuredContent(t *testing.T) {
 func TestNewToolErrorResult(t *testing.T) {
 	result := newToolErrorResult("resource not found")
 	require.True(t, result.IsError)
-	require.Equal(t, map[string]any{
-		"error": map[string]any{
-			"message": "resource not found",
-		},
-	}, result.StructuredContent)
+	// Error results carry no structuredContent: tools declare an outputSchema
+	// for their success payload, and strict clients validate structuredContent
+	// against it — an error object would fail validation and mask the message.
+	require.Nil(t, result.StructuredContent)
 	require.NotEmpty(t, result.Content)
 	text, ok := result.Content[0].(*sdkmcp.TextContent)
 	require.True(t, ok)
@@ -231,11 +230,7 @@ func TestExecuteOperationConvertsAPIErrorsToToolErrors(t *testing.T) {
 	result, err := adapter.execute(context.Background(), operation, map[string]any{"memo": "missing"}, "")
 	require.NoError(t, err)
 	require.True(t, result.IsError)
-	require.Equal(t, map[string]any{
-		"error": map[string]any{
-			"message": "404 Not Found: missing memo",
-		},
-	}, result.StructuredContent)
+	require.Nil(t, result.StructuredContent)
 	text, ok := result.Content[0].(*sdkmcp.TextContent)
 	require.True(t, ok)
 	require.Contains(t, text.Text, "404")
