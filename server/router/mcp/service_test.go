@@ -237,11 +237,17 @@ func TestMCPToolCallRejectsInvalidArguments(t *testing.T) {
 			result, ok := response["result"].(map[string]any)
 			require.True(t, ok)
 			require.Equal(t, true, result["isError"])
-			structured, ok := result["structuredContent"].(map[string]any)
+			// Error results carry no structuredContent — it would fail
+			// validation against the tool's declared outputSchema in strict
+			// clients. The message travels in the text content instead.
+			_, hasStructured := result["structuredContent"]
+			require.False(t, hasStructured)
+			content, ok := result["content"].([]any)
 			require.True(t, ok)
-			errorObject, ok := structured["error"].(map[string]any)
+			require.NotEmpty(t, content)
+			textBlock, ok := content[0].(map[string]any)
 			require.True(t, ok)
-			require.Contains(t, errorObject["message"], test.wantError)
+			require.Contains(t, textBlock["text"], test.wantError)
 		})
 	}
 	require.Zero(t, routeHits)
