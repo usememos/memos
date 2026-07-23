@@ -79,6 +79,15 @@ describe("remarkTag", () => {
     expect(html).not.toContain('data-tag="കവ"');
   });
 
+  it("tags Ukrainian words containing apostrophes", () => {
+    const html = renderMarkdown("#сім'я #сім’я #сімʼя");
+
+    expect(html).toContain('data-tag="сім&#x27;я"');
+    expect(html).toContain('data-tag="сім’я"');
+    expect(html).toContain('data-tag="сімʼя"');
+    expect(html).not.toContain('data-tag="сім"');
+  });
+
   it("still tags a hash that shares a text node with an entity reference", () => {
     // The source slice ("...&amp;...") differs from the decoded value, so the
     // escape-aware path bows out and the tag is detected the original way.

@@ -151,6 +151,24 @@ func TestTagParser(t *testing.T) {
 			shouldParse: true,
 		},
 		{
+			name:        "Ukrainian tag with ASCII apostrophe",
+			input:       "#сім'я",
+			expectedTag: "сім'я",
+			shouldParse: true,
+		},
+		{
+			name:        "Ukrainian tag with right single quote",
+			input:       "#сім’я",
+			expectedTag: "сім’я",
+			shouldParse: true,
+		},
+		{
+			name:        "Ukrainian tag with modifier letter apostrophe",
+			input:       "#сімʼя",
+			expectedTag: "сімʼя",
+			shouldParse: true,
+		},
+		{
 			name:        "mixed Chinese and ASCII",
 			input:       "#测试test123",
 			expectedTag: "测试test123",
