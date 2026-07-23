@@ -393,6 +393,12 @@ func TestExtractTags(t *testing.T) {
 			expected: []string{"tag"},
 		},
 		{
+			name:     "tags require a boundary before the hash",
+			content:  "word#tag 1#numeric word##tag ##tag (#parentheses) [#brackets] \"#quotes\" +#symbol",
+			withExt:  true,
+			expected: []string{"parentheses", "brackets", "quotes", "symbol"},
+		},
+		{
 			name:     "multiple tags",
 			content:  "Text with #tag1 and #tag2",
 			withExt:  true,

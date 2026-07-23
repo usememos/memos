@@ -70,6 +70,10 @@ func isValidTagRune(r rune) bool {
 	return false
 }
 
+func isTagBoundary(r rune) bool {
+	return r != '#' && (unicode.IsSpace(r) || unicode.IsPunct(r) || unicode.IsSymbol(r))
+}
+
 // Parse parses #tag syntax using Unicode-aware validation.
 // Tags support international characters and follow these rules:
 //   - Must start with # followed by valid tag characters
@@ -81,6 +85,11 @@ func (*tagParser) Parse(_ gast.Node, block text.Reader, _ parser.Context) gast.N
 
 	// Must start with #
 	if len(line) == 0 || line[0] != '#' {
+		return nil
+	}
+
+	prev := block.PrecendingCharacter()
+	if prev != '\n' && !isTagBoundary(prev) {
 		return nil
 	}
 
