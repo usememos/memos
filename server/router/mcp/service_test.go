@@ -178,6 +178,143 @@ func TestMCPToolCallReturnsObjectStructuredContent(t *testing.T) {
 	}, result["structuredContent"])
 }
 
+func TestMCPToolCallAllowsGatewayToInferMemoUpdateMask(t *testing.T) {
+	echoServer := echo.New()
+	routeHits := 0
+	echoServer.PATCH("/api/v1/memos/:memo", func(c *echo.Context) error {
+		routeHits++
+		require.Equal(t, "abc123", c.Param("memo"))
+		require.Empty(t, c.QueryParam("updateMask"))
+
+		body := map[string]any{}
+		require.NoError(t, json.NewDecoder(c.Request().Body).Decode(&body))
+		require.Equal(t, map[string]any{"content": "updated"}, body)
+		return c.JSON(http.StatusOK, map[string]any{
+			"name":    "memos/abc123",
+			"content": "updated",
+		})
+	})
+
+	service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+	require.NoError(t, err)
+	service.RegisterRoutes(echoServer)
+
+	initializeMCP(t, echoServer)
+	response := postMCP(t, echoServer, map[string]any{
+		"jsonrpc": "2.0",
+		"id":      2,
+		"method":  "tools/call",
+		"params": map[string]any{
+			"name": "memo_update_memo",
+			"arguments": map[string]any{
+				"memo": "memos/abc123",
+				"body": map[string]any{"content": "updated"},
+			},
+		},
+	})
+
+	result, ok := response["result"].(map[string]any)
+	require.True(t, ok)
+	require.NotEqual(t, true, result["isError"])
+	require.Equal(t, map[string]any{
+		"name":    "memos/abc123",
+		"content": "updated",
+	}, result["structuredContent"])
+	require.Equal(t, 1, routeHits)
+}
+
+func TestMCPToolCallBindsMemoFromPathForBodyStarOperations(t *testing.T) {
+	register := func(e *echo.Echo, method, path string, handler func(*echo.Context) error) {
+		switch method {
+		case http.MethodPatch:
+			e.PATCH(path, handler)
+		case http.MethodPost:
+			e.POST(path, handler)
+		default:
+			t.Fatalf("unsupported method %q", method)
+		}
+	}
+
+	tests := []struct {
+		name     string
+		method   string
+		path     string
+		toolName string
+		body     map[string]any
+		response map[string]any
+	}{
+		{
+			name:     "set attachments",
+			method:   http.MethodPatch,
+			path:     "/api/v1/memos/:memo/attachments",
+			toolName: "memo_set_memo_attachments",
+			body:     map[string]any{"attachments": []any{}},
+			response: map[string]any{},
+		},
+		{
+			name:     "set relations",
+			method:   http.MethodPatch,
+			path:     "/api/v1/memos/:memo/relations",
+			toolName: "memo_set_memo_relations",
+			body:     map[string]any{"relations": []any{}},
+			response: map[string]any{},
+		},
+		{
+			name:     "upsert reaction",
+			method:   http.MethodPost,
+			path:     "/api/v1/memos/:memo/reactions",
+			toolName: "memo_upsert_memo_reaction",
+			body: map[string]any{
+				"reaction": map[string]any{
+					"contentId":    "memos/abc123",
+					"reactionType": "👍",
+				},
+			},
+			response: map[string]any{"reactionType": "👍"},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			echoServer := echo.New()
+			routeHits := 0
+			register(echoServer, test.method, test.path, func(c *echo.Context) error {
+				routeHits++
+				// The memo must be bound from the path, and the omitted "name"
+				// property must not reappear in the forwarded body.
+				require.Equal(t, "abc123", c.Param("memo"))
+				body := map[string]any{}
+				require.NoError(t, json.NewDecoder(c.Request().Body).Decode(&body))
+				require.NotContains(t, body, "name")
+				return c.JSON(http.StatusOK, test.response)
+			})
+
+			service, err := NewMCPService(&profile.Profile{Version: "test-version"}, echoServer)
+			require.NoError(t, err)
+			service.RegisterRoutes(echoServer)
+
+			initializeMCP(t, echoServer)
+			response := postMCP(t, echoServer, map[string]any{
+				"jsonrpc": "2.0",
+				"id":      2,
+				"method":  "tools/call",
+				"params": map[string]any{
+					"name": test.toolName,
+					"arguments": map[string]any{
+						"memo": "memos/abc123",
+						"body": test.body,
+					},
+				},
+			})
+
+			result, ok := response["result"].(map[string]any)
+			require.True(t, ok)
+			require.NotEqual(t, true, result["isError"], result)
+			require.Equal(t, 1, routeHits)
+		})
+	}
+}
+
 func TestMCPToolCallRejectsInvalidArguments(t *testing.T) {
 	echoServer := echo.New()
 	routeHits := 0

@@ -96,12 +96,112 @@ func TestBuildToolFromOperationIncludesRequestBodySchema(t *testing.T) {
 
 	err = validateToolArguments(input, map[string]any{
 		"body": map[string]any{
-			"state":      "NORMAL",
-			"content":    "hello",
-			"visibility": "PRIVATE",
+			"content": "hello",
 		},
 	})
 	require.NoError(t, err)
+}
+
+func TestBuildToolFromOperationTailorsRequestBodySchemas(t *testing.T) {
+	spec, err := loadOpenAPISpec("../../../proto/gen/openapi.yaml")
+	require.NoError(t, err)
+	registry, err := buildOperationRegistry(spec)
+	require.NoError(t, err)
+
+	tests := []struct {
+		name              string
+		operationID       string
+		arguments         map[string]any
+		omittedProperties []string
+	}{
+		{
+			name:        "partial memo update",
+			operationID: "MemoService_UpdateMemo",
+			arguments: map[string]any{
+				"memo": "memos/abc123",
+				"body": map[string]any{"content": "updated"},
+			},
+			omittedProperties: []string{"name"},
+		},
+		{
+			name:        "comment defaults state and visibility",
+			operationID: "MemoService_CreateMemoComment",
+			arguments: map[string]any{
+				"memo": "memos/abc123",
+				"body": map[string]any{"content": "comment"},
+			},
+		},
+		{
+			name:        "set attachments gets name from path",
+			operationID: "MemoService_SetMemoAttachments",
+			arguments: map[string]any{
+				"memo": "memos/abc123",
+				"body": map[string]any{"attachments": []any{}},
+			},
+			omittedProperties: []string{"name"},
+		},
+		{
+			name:        "set relations gets name from path",
+			operationID: "MemoService_SetMemoRelations",
+			arguments: map[string]any{
+				"memo": "memos/abc123",
+				"body": map[string]any{"relations": []any{}},
+			},
+			omittedProperties: []string{"name"},
+		},
+		{
+			name:        "upsert reaction gets name from path",
+			operationID: "MemoService_UpsertMemoReaction",
+			arguments: map[string]any{
+				"memo": "memos/abc123",
+				"body": map[string]any{
+					"reaction": map[string]any{
+						"contentId":    "memos/abc123",
+						"reactionType": "👍",
+					},
+				},
+			},
+			omittedProperties: []string{"name"},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			tool, _ := buildToolFromOperation(registry[test.operationID])
+			input, ok := tool.InputSchema.(jsonSchema)
+			require.True(t, ok)
+			require.NoError(t, validateToolArguments(input, test.arguments))
+
+			properties := schemaProperties(input["properties"])
+			body := schemaProperties(properties["body"])
+			bodyProperties := schemaProperties(body["properties"])
+			for _, property := range test.omittedProperties {
+				require.NotContains(t, bodyProperties, property)
+			}
+		})
+	}
+}
+
+func TestBuildToolFromOperationRejectsEmptyMemoUpdateBody(t *testing.T) {
+	spec, err := loadOpenAPISpec("../../../proto/gen/openapi.yaml")
+	require.NoError(t, err)
+	registry, err := buildOperationRegistry(spec)
+	require.NoError(t, err)
+
+	tool, _ := buildToolFromOperation(registry["MemoService_UpdateMemo"])
+	input, ok := tool.InputSchema.(jsonSchema)
+	require.True(t, ok)
+
+	// An empty body carries no fields to update; reject it at the schema instead of
+	// letting the gateway infer an empty field mask and fail late.
+	require.Error(t, validateToolArguments(input, map[string]any{
+		"memo": "memos/abc123",
+		"body": map[string]any{},
+	}))
+	require.NoError(t, validateToolArguments(input, map[string]any{
+		"memo": "memos/abc123",
+		"body": map[string]any{"content": "updated"},
+	}))
 }
 
 func TestBuildToolFromOperationExposesCreateAttachment(t *testing.T) {
@@ -183,8 +283,21 @@ func TestBuildToolFromOperationMarksSetOperationsIdempotent(t *testing.T) {
 		// override restores the declarative "set" semantics.
 		require.True(t, tool.Annotations.IdempotentHint, operationID)
 		require.False(t, tool.Annotations.ReadOnlyHint, operationID)
-		require.False(t, *tool.Annotations.DestructiveHint, operationID)
+		require.True(t, *tool.Annotations.DestructiveHint, operationID)
 	}
+}
+
+func TestBuildToolFromOperationMarksUpdateMemoDestructive(t *testing.T) {
+	spec, err := loadOpenAPISpec("../../../proto/gen/openapi.yaml")
+	require.NoError(t, err)
+	registry, err := buildOperationRegistry(spec)
+	require.NoError(t, err)
+
+	tool, operation := buildToolFromOperation(registry["MemoService_UpdateMemo"])
+	require.Equal(t, "PATCH", operation.Method)
+	require.False(t, tool.Annotations.ReadOnlyHint)
+	require.True(t, *tool.Annotations.DestructiveHint)
+	require.False(t, tool.Annotations.IdempotentHint)
 }
 
 func TestBuildCuratedToolsHasUniqueNames(t *testing.T) {
@@ -219,6 +332,19 @@ func TestBuildCuratedToolsRejectsMissingOperation(t *testing.T) {
 	_, _, err := buildCuratedTools(map[string]*openAPIOperation{})
 	require.ErrorContains(t, err, "curated OpenAPI operation")
 	require.ErrorContains(t, err, "not found")
+}
+
+func TestValidateOperationOverridesRejectsStaleKey(t *testing.T) {
+	spec, err := loadOpenAPISpec("../../../proto/gen/openapi.yaml")
+	require.NoError(t, err)
+	registry, err := buildOperationRegistry(spec)
+	require.NoError(t, err)
+	require.NoError(t, validateOperationOverrides(registry))
+
+	// A renamed/removed operation must be reported instead of silently losing its
+	// override.
+	delete(registry, "MemoService_UpdateMemo")
+	require.ErrorContains(t, validateOperationOverrides(registry), "MemoService_UpdateMemo")
 }
 
 func TestBuildCuratedToolsRejectsDuplicateToolNames(t *testing.T) {

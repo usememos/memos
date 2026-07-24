@@ -17,7 +17,10 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-const maxAPIRequestBytes = 256 << 20
+// MaxAPIRequestBytes caps the size of a request body accepted by the API. The
+// in-process MCP endpoint forwards every tool call through these same routes, so
+// it derives its own limit from this constant to keep the two gates in lockstep.
+const MaxAPIRequestBytes = 256 << 20
 
 type APIV1Service struct {
 	v1pb.UnimplementedInstanceServiceServer
@@ -123,7 +126,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	gwGroup := echoServer.Group("")
 	// Register SSE endpoint with same CORS as rest of /api/v1.
 	RegisterSSERoutes(gwGroup, s.SSEHub, s.Store, s.Secret)
-	handler := echo.WrapHandler(http.MaxBytesHandler(gwMux, maxAPIRequestBytes))
+	handler := echo.WrapHandler(http.MaxBytesHandler(gwMux, MaxAPIRequestBytes))
 
 	gwGroup.Any("/api/v1/*", handler)
 	gwGroup.Any("/file/*", handler)
@@ -138,10 +141,10 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	)
 	connectMux := http.NewServeMux()
 	connectHandler := NewConnectServiceHandler(s)
-	connectHandler.RegisterConnectHandlers(connectMux, connectInterceptors, connect.WithReadMaxBytes(maxAPIRequestBytes))
+	connectHandler.RegisterConnectHandlers(connectMux, connectInterceptors, connect.WithReadMaxBytes(MaxAPIRequestBytes))
 
 	connectGroup := echoServer.Group("")
-	connectGroup.Any("/memos.api.v1.*", echo.WrapHandler(http.MaxBytesHandler(connectMux, maxAPIRequestBytes)))
+	connectGroup.Any("/memos.api.v1.*", echo.WrapHandler(http.MaxBytesHandler(connectMux, MaxAPIRequestBytes)))
 
 	return nil
 }
