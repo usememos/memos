@@ -39,7 +39,11 @@ func TestSend(t *testing.T) {
 	// The local server closes before sending an SMTP greeting, proving Send made
 	// it through validation and attempted to create an SMTP client.
 	err = Send(config, message)
-	<-connectionClosed
+	select {
+	case <-connectionClosed:
+	case <-time.After(time.Second):
+		t.Fatal("SMTP listener did not accept a connection")
+	}
 	require.Error(t, err)
 	assert.Contains(t, err.Error(), "failed to create SMTP client")
 }
