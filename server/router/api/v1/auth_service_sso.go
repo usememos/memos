@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,6 +20,11 @@ import (
 func (s *APIV1Service) resolveSSOUser(ctx context.Context, currentUser *store.User, identityProvider *storepb.IdentityProvider, userInfo *idp.IdentityProviderUserInfo) (*store.User, error) {
 	provider := identityProvider.Uid
 	externUID := userInfo.Identifier
+	// Defense in depth: an empty subject must never key a lookup or provision an
+	// account, regardless of whether the IdP layer already rejected it.
+	if externUID == "" {
+		return nil, status.Errorf(codes.InvalidArgument, "identity provider returned an empty subject identifier")
+	}
 
 	user, err := s.getLinkedSSOUser(ctx, provider, externUID)
 	if err != nil {
@@ -52,53 +58,84 @@ func (s *APIV1Service) resolveSSOUser(ctx context.Context, currentUser *store.Us
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to generate password hash, error: %v", err)
 	}
-	username, err := deriveSSOUsername()
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to derive username, error: %v", err)
-	}
-	user, err = s.Store.CreateUser(ctx, &store.User{
-		Username:     username,
-		Role:         store.RoleUser,
-		Nickname:     userInfo.DisplayName,
-		Email:        userInfo.Email,
-		AvatarURL:    userInfo.AvatarURL,
-		PasswordHash: string(passwordHash),
-	})
+	user, err = s.createSSOUser(ctx, userInfo, string(passwordHash), provider, externUID)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create user, error: %v", err)
 	}
-
-	if _, err := s.Store.CreateUserIdentity(ctx, &store.UserIdentity{
-		UserID:    user.ID,
-		Provider:  provider,
-		ExternUID: externUID,
-	}); err != nil {
-		// Best-effort cleanup: the provisional user row has no linkage and should not remain.
-		_, _ = s.Store.DeleteUser(ctx, &store.DeleteUser{ID: user.ID})
-		if isUniqueConstraintViolation(err) {
-			// Concurrent first login won the race; load the winning linkage's user.
-			winner, getErr := s.Store.GetUserIdentity(ctx, &store.FindUserIdentity{
-				Provider:  &provider,
-				ExternUID: &externUID,
-			})
-			if getErr != nil {
-				return nil, status.Errorf(codes.Internal, "failed to reload user identity after race, error: %v", getErr)
-			}
-			if winner == nil {
-				return nil, status.Errorf(codes.Internal, "user identity conflict reported but no winning row found")
-			}
-			winnerUser, getErr := s.Store.GetUser(ctx, &store.FindUser{ID: &winner.UserID})
-			if getErr != nil {
-				return nil, status.Errorf(codes.Internal, "failed to get user after race, error: %v", getErr)
-			}
-			if winnerUser == nil {
-				return nil, status.Errorf(codes.Internal, "linked user %d not found after race", winner.UserID)
-			}
-			return winnerUser, nil
-		}
-		return nil, status.Errorf(codes.Internal, "failed to create user identity, error: %v", err)
-	}
 	return user, nil
+}
+
+// createSSOUser prefers the mapped external identifier as the initial local
+// username when it satisfies the local username rules and is not a reserved
+// name. A database uniqueness conflict falls back to a generated UUID instead of
+// linking the SSO identity to the existing same-named account. User and identity
+// creation are committed atomically so a concurrent UUID fallback cannot win
+// after another request has claimed the preferred username.
+//
+// tryUsername returns a non-nil user when the identity is resolved (either newly
+// created or reconciled to a concurrent winner) and (nil, nil) when the username
+// is already taken and the caller should retry with a different one.
+func (s *APIV1Service) createSSOUser(
+	ctx context.Context,
+	userInfo *idp.IdentityProviderUserInfo,
+	passwordHash string,
+	provider string,
+	externUID string,
+) (*store.User, error) {
+	tryUsername := func(username string) (*store.User, error) {
+		user, err := s.Store.CreateUserWithIdentity(ctx, &store.User{
+			Username:     username,
+			Role:         store.RoleUser,
+			Nickname:     userInfo.DisplayName,
+			Email:        userInfo.Email,
+			AvatarURL:    userInfo.AvatarURL,
+			PasswordHash: passwordHash,
+		}, &store.UserIdentity{
+			Provider:  provider,
+			ExternUID: externUID,
+		})
+		if err == nil {
+			return user, nil
+		}
+		if !isUniqueConstraintViolation(err) {
+			return nil, err
+		}
+
+		// A unique violation is either the (provider, extern_uid) linkage (a
+		// concurrent first login won — reconcile to its user) or the username (in
+		// use by another account — signal a retry with a fresh username).
+		return s.getLinkedSSOUser(ctx, provider, externUID)
+	}
+
+	// Only adopt the external identifier as the local username when it is a valid,
+	// non-reserved name; otherwise an attacker-influenceable identifier could
+	// squat a privileged or system handle. Reserved and invalid names fall back to
+	// an opaque UUID.
+	if err := validateWritableUsername(userInfo.Identifier); err == nil && !isReservedUsername(userInfo.Identifier) {
+		user, err := tryUsername(userInfo.Identifier)
+		if err != nil {
+			return nil, err
+		}
+		if user != nil {
+			return user, nil
+		}
+	}
+
+	for range ssoUsernameFallbackAttempts {
+		username, err := deriveSSOUsername()
+		if err != nil {
+			return nil, err
+		}
+		user, err := tryUsername(username)
+		if err != nil {
+			return nil, err
+		}
+		if user != nil {
+			return user, nil
+		}
+	}
+
+	return nil, errors.Errorf("exhausted %d UUID username attempts", ssoUsernameFallbackAttempts)
 }
 
 func (s *APIV1Service) resolveSSOIdentity(ctx context.Context, idpName, code, redirectURI, codeVerifier string) (*storepb.IdentityProvider, *idp.IdentityProviderUserInfo, error) {
@@ -225,8 +262,8 @@ func (s *APIV1Service) bindSSOIdentityToUser(ctx context.Context, currentUser *s
 // supported backend emits when any UNIQUE constraint rejects an insert. Callers
 // disambiguate which constraint was hit from the insertion context (e.g. inserting
 // a user_identity row can only violate UNIQUE(provider, extern_uid); inserting a
-// user row can only violate UNIQUE(username)). Matches the pattern used in
-// memo_service.go for the memo UID unique check.
+// user row can only violate UNIQUE(username)). Shared by the SSO create/link paths
+// and CreateMemo's UID uniqueness check.
 func isUniqueConstraintViolation(err error) bool {
 	if err == nil {
 		return false
