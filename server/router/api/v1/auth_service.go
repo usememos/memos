@@ -110,11 +110,11 @@ func (s *APIV1Service) SignIn(ctx context.Context, request *v1pb.SignInRequest) 
 // resolveSSOUser resolves a local user from an external-identity subject, creating the
 // linkage record (and a new local user if necessary) when first login is allowed.
 //
-// Lookup goes through the user_identity table so that userInfo.Identifier is never used
-// as the local username key. On the miss path, a local user is created with a
-// UUID-backed local username (see deriveSSOUsername) and the (provider, extern_uid)
-// linkage is inserted in the same flow. When currentUser is provided by a caller
-// outside AuthService.SignIn, the lookup miss path binds the external identity to
-// that existing user instead. If the linkage insert loses a race on the unique
-// (provider, extern_uid) constraint, the winning linkage's user is loaded and
-// checked against the current user.
+// Lookup goes through the user_identity table instead of using userInfo.Identifier
+// as the local lookup key. On the miss path, a local user is created with the
+// identifier as its username when valid and available, or a UUID fallback
+// otherwise, and the (provider, extern_uid) linkage is committed atomically with
+// the user. When currentUser is provided by a caller outside AuthService.SignIn,
+// the lookup miss path binds the external identity to that existing user instead.
+// Concurrent first logins reconcile uniqueness conflicts by loading the linkage
+// winner.

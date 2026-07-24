@@ -2,21 +2,78 @@ package sqlite
 
 import (
 	"context"
+	"database/sql"
 	"strings"
+
+	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/store"
 )
 
-func (d *DB) CreateUserIdentity(ctx context.Context, create *store.UserIdentity) (*store.UserIdentity, error) {
+// rowQuerier is satisfied by both *sql.DB and *sql.Tx so the insert statements
+// can be shared between the standalone and transactional creation paths.
+type rowQuerier interface {
+	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
+}
+
+func insertUser(ctx context.Context, q rowQuerier, create *store.User) error {
+	stmt := "INSERT INTO user (`username`, `role`, `email`, `nickname`, `password_hash`, `avatar_url`) VALUES (?, ?, ?, ?, ?, ?) RETURNING id, description, created_ts, updated_ts, row_status"
+	return q.QueryRowContext(
+		ctx,
+		stmt,
+		create.Username,
+		create.Role,
+		create.Email,
+		create.Nickname,
+		create.PasswordHash,
+		create.AvatarURL,
+	).Scan(
+		&create.ID,
+		&create.Description,
+		&create.CreatedTs,
+		&create.UpdatedTs,
+		&create.RowStatus,
+	)
+}
+
+func insertUserIdentity(ctx context.Context, q rowQuerier, create *store.UserIdentity) error {
 	stmt := "INSERT INTO `user_identity` (`user_id`, `provider`, `extern_uid`) VALUES (?, ?, ?) RETURNING `id`, `created_ts`, `updated_ts`"
-	if err := d.db.QueryRowContext(ctx, stmt, create.UserID, create.Provider, create.ExternUID).Scan(
+	return q.QueryRowContext(ctx, stmt, create.UserID, create.Provider, create.ExternUID).Scan(
 		&create.ID,
 		&create.CreatedTs,
 		&create.UpdatedTs,
-	); err != nil {
+	)
+}
+
+func (d *DB) CreateUserIdentity(ctx context.Context, create *store.UserIdentity) (*store.UserIdentity, error) {
+	if err := insertUserIdentity(ctx, d.db, create); err != nil {
 		return nil, err
 	}
 	return create, nil
+}
+
+func (d *DB) CreateUserWithIdentity(ctx context.Context, createUser *store.User, createIdentity *store.UserIdentity) (*store.User, error) {
+	tx, err := d.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to begin user identity transaction")
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	if err := insertUser(ctx, tx, createUser); err != nil {
+		return nil, errors.Wrap(err, "failed to create user")
+	}
+
+	createIdentity.UserID = createUser.ID
+	if err := insertUserIdentity(ctx, tx, createIdentity); err != nil {
+		return nil, errors.Wrap(err, "failed to create user identity")
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, errors.Wrap(err, "failed to commit user identity transaction")
+	}
+	return createUser, nil
 }
 
 func (d *DB) ListUserIdentities(ctx context.Context, find *store.FindUserIdentity) ([]*store.UserIdentity, error) {
