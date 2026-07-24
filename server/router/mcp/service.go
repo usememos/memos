@@ -6,13 +6,19 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v5/middleware"
 	sdkmcp "github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 
 	"github.com/usememos/memos/internal/profile"
 	memosproto "github.com/usememos/memos/proto"
+	apiv1 "github.com/usememos/memos/server/router/api/v1"
 )
+
+// maxMCPRequestBytes caps the /mcp request body. It tracks the API limit because
+// every tool call is forwarded in-process through the API routes.
+const maxMCPRequestBytes int64 = apiv1.MaxAPIRequestBytes
 
 // MCPService serves the OpenAPI-driven MCP endpoint.
 type MCPService struct {
@@ -52,7 +58,7 @@ func NewMCPService(profile *profile.Profile, echoServer *echo.Echo) (*MCPService
 		server.AddTool(tool, newMCPToolHandler(adapter, operation))
 	}
 
-	handler := sdkmcp.NewStreamableHTTPHandler(func(*http.Request) *sdkmcp.Server {
+	streamableHandler := sdkmcp.NewStreamableHTTPHandler(func(*http.Request) *sdkmcp.Server {
 		return server
 	}, &sdkmcp.StreamableHTTPOptions{
 		Stateless:    true,
@@ -65,11 +71,10 @@ func NewMCPService(profile *profile.Profile, echoServer *echo.Echo) (*MCPService
 		// CSRF / DNS-rebinding protection instead.
 		DisableLocalhostProtection: true,
 	})
-
 	return &MCPService{
 		profile:          profile,
 		operationsByTool: operationsByTool,
-		handler:          handler,
+		handler:          streamableHandler,
 	}, nil
 }
 
@@ -113,5 +118,5 @@ func (s *MCPService) RegisterRoutes(echoServer *echo.Echo) {
 		}
 		s.handler.ServeHTTP(c.Response(), request)
 		return nil
-	})
+	}, middleware.BodyLimit(maxMCPRequestBytes))
 }

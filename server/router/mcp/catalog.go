@@ -1,6 +1,7 @@
 package mcp
 
 import (
+	"maps"
 	"regexp"
 	"strings"
 
@@ -42,7 +43,77 @@ type registeredOperation struct {
 	InputSchema jsonSchema
 }
 
+type requestBodySchemaOverride struct {
+	required          []string
+	omittedProperties []string
+	// minProperties, when > 0, requires the body to carry at least that many
+	// properties. It replaces a cleared required list for partial updates so an
+	// empty body is rejected up front instead of failing later at the API.
+	minProperties int
+}
+
+// requestBodySchemaOverrides adjusts resource schemas to match how each HTTP
+// binding consumes its request body. Resource-level required fields are too
+// strict for partial updates, while body: "*" schemas include fields already
+// supplied by the path.
+var requestBodySchemaOverrides = map[string]requestBodySchemaOverride{
+	"MemoService_CreateMemo": {
+		required: []string{"content"},
+	},
+	"MemoService_UpdateMemo": {
+		required:          []string{},
+		omittedProperties: []string{"name"},
+		minProperties:     1,
+	},
+	"MemoService_CreateMemoComment": {
+		required: []string{"content"},
+	},
+	"MemoService_SetMemoAttachments": {
+		required:          []string{"attachments"},
+		omittedProperties: []string{"name"},
+	},
+	"MemoService_SetMemoRelations": {
+		required:          []string{"relations"},
+		omittedProperties: []string{"name"},
+	},
+	"MemoService_UpsertMemoReaction": {
+		required:          []string{"reaction"},
+		omittedProperties: []string{"name"},
+	},
+}
+
 var wordBoundary = regexp.MustCompile(`([a-z0-9])([A-Z])`)
+
+// validateOperationOverrides fails fast when a per-operation override table
+// references an operation that is not in the registry (e.g. after a proto RPC
+// rename). Without this, a stale key would silently miss and the renamed
+// operation would lose its schema/annotation override with no error.
+func validateOperationOverrides(registry map[string]*openAPIOperation) error {
+	tables := []struct {
+		name string
+		ids  []string
+	}{
+		{"requestBodySchemaOverrides", mapKeys(requestBodySchemaOverrides)},
+		{"idempotentOperationIDs", mapKeys(idempotentOperationIDs)},
+		{"destructiveOperationIDs", mapKeys(destructiveOperationIDs)},
+	}
+	for _, table := range tables {
+		for _, operationID := range table.ids {
+			if _, ok := registry[operationID]; !ok {
+				return errors.Errorf("%s references unknown operation %q", table.name, operationID)
+			}
+		}
+	}
+	return nil
+}
+
+func mapKeys[V any](m map[string]V) []string {
+	keys := make([]string, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+	return keys
+}
 
 func buildCuratedTools(registry map[string]*openAPIOperation) ([]*sdkmcp.Tool, map[string]*registeredOperation, error) {
 	tools := make([]*sdkmcp.Tool, 0, len(curatedOperationIDs))
@@ -60,6 +131,10 @@ func buildCuratedTools(registry map[string]*openAPIOperation) ([]*sdkmcp.Tool, m
 
 		tools = append(tools, tool)
 		operations[tool.Name] = registered
+	}
+
+	if err := validateOperationOverrides(registry); err != nil {
+		return nil, nil, err
 	}
 	return tools, operations, nil
 }
@@ -160,7 +235,30 @@ func requestBodySchema(operation *openAPIOperation) jsonSchema {
 	if operation.RequestBodySchema == nil {
 		return jsonSchema{"type": "object"}
 	}
-	return cloneSchema(operation.RequestBodySchema)
+	schema := cloneSchema(operation.RequestBodySchema)
+	override, ok := requestBodySchemaOverrides[operation.OperationID]
+	if !ok {
+		return schema
+	}
+
+	if len(override.required) == 0 {
+		delete(schema, "required")
+	} else {
+		schema["required"] = override.required
+	}
+
+	if len(override.omittedProperties) > 0 {
+		properties := maps.Clone(schemaProperties(schema["properties"]))
+		for _, name := range override.omittedProperties {
+			delete(properties, name)
+		}
+		schema["properties"] = properties
+	}
+
+	if override.minProperties > 0 {
+		schema["minProperties"] = override.minProperties
+	}
+	return schema
 }
 
 func outputSchemaForOperation(operation *openAPIOperation) jsonSchema {
@@ -197,12 +295,24 @@ var idempotentOperationIDs = map[string]bool{
 	"MemoService_SetMemoRelations":   true,
 }
 
+// destructiveOperationIDs lists mutating operations that can overwrite or
+// remove existing user data despite not using DELETE.
+var destructiveOperationIDs = map[string]bool{
+	"MemoService_UpdateMemo":         true,
+	"MemoService_SetMemoAttachments": true,
+	"MemoService_SetMemoRelations":   true,
+}
+
 // annotationsForOperation derives the method-based annotations and then applies
 // per-operation overrides that the HTTP method alone cannot express.
 func annotationsForOperation(operation *openAPIOperation, title string) *sdkmcp.ToolAnnotations {
 	annotations := annotationsForMethod(operation.Method, title)
 	if idempotentOperationIDs[operation.OperationID] {
 		annotations.IdempotentHint = true
+	}
+	if destructiveOperationIDs[operation.OperationID] {
+		destructive := true
+		annotations.DestructiveHint = &destructive
 	}
 	return annotations
 }
