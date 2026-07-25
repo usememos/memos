@@ -92,44 +92,109 @@ func buildAPIRequest(ctx context.Context, operation *openAPIOperation, arguments
 }
 
 func substitutePathParameters(operation *openAPIOperation, arguments map[string]any) (string, error) {
-	path := operation.Path
 	for _, parameter := range operation.Parameters {
 		if parameter.In != "path" {
 			continue
 		}
-
 		value, ok := arguments[parameter.Name]
 		if !ok || value == nil || valueToString(value) == "" {
 			return "", errors.Errorf(`missing required path parameter "%s"`, parameter.Name)
 		}
-		id := trimResourceNamePrefix(operation.Path, parameter.Name, valueToString(value))
-		path = strings.ReplaceAll(path, "{"+parameter.Name+"}", url.PathEscape(id))
+	}
+
+	// Resolve placeholders in the order they appear in the path so a nested
+	// resource name (e.g. "memos/abc123/reactions/reaction456") can be matched
+	// against its already-resolved parent segments. Each placeholder is resolved
+	// exactly once from the argument map and cached in resolved, so a value that
+	// itself contains a "{" can never be re-expanded into a longer prefix.
+	path := operation.Path
+	resolved := map[string]string{}
+	for _, name := range pathPlaceholderNames(operation.Path) {
+		value, ok := arguments[name]
+		if !ok {
+			continue
+		}
+		id := trimResourceNamePrefix(operation.Path, name, valueToString(value), resolved)
+		resolved[name] = id
+		path = strings.ReplaceAll(path, "{"+name+"}", url.PathEscape(id))
 	}
 	return path, nil
 }
 
+// pathPlaceholderNames returns the "{name}" placeholder names in the order they
+// appear in path.
+func pathPlaceholderNames(path string) []string {
+	var names []string
+	for {
+		start := strings.Index(path, "{")
+		if start < 0 {
+			break
+		}
+		endOffset := strings.Index(path[start:], "}")
+		if endOffset < 0 {
+			break
+		}
+		end := start + endOffset
+		names = append(names, path[start+1:end])
+		path = path[end+1:]
+	}
+	return names
+}
+
 // trimResourceNamePrefix accepts canonical resource names for path parameters.
-// The API returns names like "memos/abc123", but the REST paths take the bare
-// ID ("/api/v1/memos/{memo}"), so clients that round-trip a returned name
-// would otherwise request "/api/v1/memos/memos/abc123" and get a 404. When the
-// placeholder directly follows its collection segment and the value carries
-// that collection prefix, strip the prefix; bare IDs pass through unchanged.
-func trimResourceNamePrefix(path, parameterName, value string) string {
+// It uses the already-resolved parent segments so nested names such as
+// "memos/abc123/reactions/reaction456" are accepted only when their parent
+// segments match the other arguments. Bare IDs pass through unchanged.
+func trimResourceNamePrefix(path, parameterName, value string, resolved map[string]string) string {
 	placeholder := "/{" + parameterName + "}"
 	index := strings.Index(path, placeholder)
 	if index < 0 {
 		return value
 	}
-	head := path[:index]
-	collection := head[strings.LastIndex(head, "/")+1:]
-	if collection == "" {
+
+	prefix, ok := resolvedResourceNamePrefix(path[:index], resolved)
+	if !ok || prefix == "" {
 		return value
 	}
-	id, ok := strings.CutPrefix(value, collection+"/")
+
+	id, ok := strings.CutPrefix(value, prefix+"/")
 	if !ok || id == "" || strings.Contains(id, "/") {
 		return value
 	}
 	return id
+}
+
+// resolvedResourceNamePrefix rebuilds the collection prefix preceding a
+// placeholder by substituting each earlier placeholder with its already-resolved
+// bare id. It reads resolved ids from the map instead of recursing, and rejects
+// any id that is not a single bare segment, so every iteration removes one "{"
+// and the loop always terminates.
+func resolvedResourceNamePrefix(prefix string, resolved map[string]string) (string, bool) {
+	const apiPrefix = "/api/v1/"
+	prefix, ok := strings.CutPrefix(prefix, apiPrefix)
+	if !ok {
+		return "", false
+	}
+
+	for {
+		start := strings.Index(prefix, "{")
+		if start < 0 {
+			break
+		}
+		endOffset := strings.Index(prefix[start:], "}")
+		if endOffset < 0 {
+			return "", false
+		}
+		end := start + endOffset
+		parameterName := prefix[start+1 : end]
+		id, ok := resolved[parameterName]
+		if !ok || id == "" || strings.ContainsAny(id, "/{}") {
+			return "", false
+		}
+		prefix = prefix[:start] + id + prefix[end+1:]
+	}
+
+	return strings.Trim(prefix, "/"), true
 }
 
 func valueToString(value any) string {

@@ -147,6 +147,110 @@ func TestBuildAPIRequestAcceptsResourceNamesForPathParameters(t *testing.T) {
 	}
 }
 
+func TestBuildAPIRequestAcceptsHierarchicalResourceNamesForPathParameters(t *testing.T) {
+	tests := []struct {
+		name       string
+		path       string
+		parameters []string
+		arguments  map[string]any
+		wantPath   string
+	}{
+		{
+			name:       "canonical reaction name",
+			path:       "/api/v1/memos/{memo}/reactions/{reaction}",
+			parameters: []string{"memo", "reaction"},
+			arguments: map[string]any{
+				"memo":     "memos/abc123",
+				"reaction": "memos/abc123/reactions/reaction456",
+			},
+			wantPath: "/api/v1/memos/abc123/reactions/reaction456",
+		},
+		{
+			name:       "canonical nested name with bare parent id",
+			path:       "/api/v1/memos/{memo}/reactions/{reaction}",
+			parameters: []string{"memo", "reaction"},
+			arguments: map[string]any{
+				"memo":     "abc123",
+				"reaction": "memos/abc123/reactions/reaction456",
+			},
+			wantPath: "/api/v1/memos/abc123/reactions/reaction456",
+		},
+		{
+			name:       "parameter declaration order does not matter",
+			path:       "/api/v1/users/{user}/shortcuts/{shortcut}",
+			parameters: []string{"shortcut", "user"},
+			arguments: map[string]any{
+				"user":     "users/user123",
+				"shortcut": "users/user123/shortcuts/shortcut456",
+			},
+			wantPath: "/api/v1/users/user123/shortcuts/shortcut456",
+		},
+		{
+			name:       "canonical nested name on action route",
+			path:       "/api/v1/users/{user}/webhooks/{webhook}:getSigningSecret",
+			parameters: []string{"user", "webhook"},
+			arguments: map[string]any{
+				"user":    "users/user123",
+				"webhook": "users/user123/webhooks/webhook456",
+			},
+			wantPath: "/api/v1/users/user123/webhooks/webhook456:getSigningSecret",
+		},
+		{
+			name:       "mismatched parent is left untouched",
+			path:       "/api/v1/memos/{memo}/reactions/{reaction}",
+			parameters: []string{"memo", "reaction"},
+			arguments: map[string]any{
+				"memo":     "memos/abc123",
+				"reaction": "memos/other/reactions/reaction456",
+			},
+			wantPath: "/api/v1/memos/abc123/reactions/memos%2Fother%2Freactions%2Freaction456",
+		},
+		{
+			name:       "extra nested segment is left untouched",
+			path:       "/api/v1/memos/{memo}/reactions/{reaction}",
+			parameters: []string{"memo", "reaction"},
+			arguments: map[string]any{
+				"memo":     "memos/abc123",
+				"reaction": "memos/abc123/reactions/reaction456/extra",
+			},
+			wantPath: "/api/v1/memos/abc123/reactions/memos%2Fabc123%2Freactions%2Freaction456%2Fextra",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			parameters := make([]openAPIParameter, 0, len(test.parameters))
+			for _, name := range test.parameters {
+				parameters = append(parameters, openAPIParameter{Name: name, In: "path", Required: true, Schema: jsonSchema{"type": "string"}})
+			}
+			operation := &openAPIOperation{
+				Method:     "GET",
+				Path:       test.path,
+				Parameters: parameters,
+			}
+			req, err := buildAPIRequest(context.Background(), operation, test.arguments, "")
+			require.NoError(t, err)
+			require.Equal(t, test.wantPath, req.URL.EscapedPath())
+		})
+	}
+}
+
+func TestBuildAPIRequestAcceptsCanonicalReactionNameForCuratedOperation(t *testing.T) {
+	spec, err := loadMCPServiceOpenAPISpec()
+	require.NoError(t, err)
+	registry, err := buildOperationRegistry(spec)
+	require.NoError(t, err)
+	operation := registry["MemoService_DeleteMemoReaction"]
+	require.NotNil(t, operation)
+
+	req, err := buildAPIRequest(context.Background(), operation, map[string]any{
+		"memo":     "memos/abc123",
+		"reaction": "memos/abc123/reactions/reaction456",
+	}, "")
+	require.NoError(t, err)
+	require.Equal(t, "/api/v1/memos/abc123/reactions/reaction456", req.URL.EscapedPath())
+}
+
 func TestBuildAPIRequestRequiresPathParameters(t *testing.T) {
 	operation := &openAPIOperation{
 		Method:     "GET",

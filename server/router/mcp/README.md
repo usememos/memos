@@ -49,17 +49,18 @@ fast on any inconsistency:
 `RegisterRoutes` binds `echoServer.Any("/mcp", ...)`. Each request:
 
 1. `isAllowedMCPOrigin` (`origin.go`) rejects disallowed cross-origin browser requests with `403`.
-2. The SDK streamable handler dispatches the MCP message.
-3. On a `tools/call` request, `newMCPToolHandler` (`service.go`) decodes the JSON
+2. The request body is capped at 256 MiB before the SDK reads it.
+3. The SDK streamable handler dispatches the MCP message.
+4. On a `tools/call` request, `newMCPToolHandler` (`service.go`) decodes the JSON
    arguments into a map.
-4. `validateToolArguments` (`validation.go`) checks them against the tool's
+5. `validateToolArguments` (`validation.go`) checks them against the tool's
    input schema.
-5. The caller's `Authorization` header is read from the request (`request.Extra.Header` on the SDK's `*sdkmcp.CallToolRequest`).
-6. `apiAdapter.execute` (`adapter.go`) builds the API request
+6. The caller's `Authorization` header is read from the request (`request.Extra.Header` on the SDK's `*sdkmcp.CallToolRequest`).
+7. `apiAdapter.execute` (`adapter.go`) builds the API request
    (`buildAPIRequest`: path-parameter substitution, query encoding, JSON body),
    forwards the bearer token, and runs it against the Echo server through an
    `httptest.ResponseRecorder`.
-7. The recorder body is decoded; a non-2xx status becomes a tool error
+8. The recorder body is decoded; a non-2xx status becomes a tool error
    (`newToolErrorResult`), otherwise the value is wrapped by
    `newStructuredToolResult`.
 
@@ -86,6 +87,10 @@ use `$ref`. `openapi.go` resolves these into local definitions:
   parameter stays in `required`.
 - A request body becomes a single `body` property; a required body adds `body`
   to `required`. Body `$defs` are lifted to the schema's top-level `$defs`.
+- Per-operation overrides relax resource-level requirements for create and
+  partial-update bodies and remove fields already supplied by a path binding
+  from `body: "*"` schemas. Memo updates may omit `updateMask` so the REST
+  gateway can infer it from the fields present in the request body.
 - The schema sets `"additionalProperties": false`.
 
 The output schema is the operation's 200 `application/json` schema. When a 200
@@ -100,6 +105,7 @@ response has no JSON body, the fallback is:
 - **Endpoint:** `POST /mcp` (the SDK may also use `GET`/`DELETE` on the same
   path for the Streamable HTTP transport).
 - **Transport:** Streamable HTTP, **stateless**, JSON responses.
+- **Request size:** request bodies are limited to 256 MiB before SDK dispatch.
 - **Auth:** the caller's `Authorization: Bearer <token>` header is forwarded to
   the in-process API request. Mutating tools therefore require a valid token
   (personal access token or access token); public reads may work without one,
@@ -172,15 +178,16 @@ by `_`. So `MemoService_ListMemos → memo_list_memos`.
 | DELETE | false | true | true |
 | other (POST, PATCH, …) | false | false | false |
 
-A per-operation override (`idempotentOperationIDs`) then corrects cases the
-method heuristic gets wrong: `MemoService_SetMemoAttachments` and
-`MemoService_SetMemoRelations` are PATCH but declaratively replace the full set
-on a memo, so they report `IdempotentHint: true`.
+Per-operation overrides then correct cases the method heuristic gets wrong.
+`MemoService_SetMemoAttachments` and `MemoService_SetMemoRelations` are PATCH
+but declaratively replace the full set on a memo, so they report both
+`IdempotentHint: true` and `DestructiveHint: true`. `MemoService_UpdateMemo`
+also reports `DestructiveHint: true` because it can overwrite existing fields.
 
 `OpenWorldHint` is `false` for all tools. Annotations are client hints; they do
 not replace API authorization.
 
-**Result shape.** Every result carries object-shaped `structuredContent`
+**Result shape.** Every successful result carries object-shaped `structuredContent`
 (`normalizeStructuredContent` in `result.go`):
 
 - a JSON object is returned unchanged;
@@ -194,8 +201,9 @@ where collection tools returned a bare array that strict MCP clients reject.
 ## Error handling
 
 Failures are returned as MCP tool errors (`CallToolResult` with `IsError: true`
-and an `error.message` in `structuredContent`), not JSON-RPC protocol errors —
-the handler returns `(result, nil)`:
+and a text content block), not JSON-RPC protocol errors — the handler returns
+`(result, nil)`. Error results omit `structuredContent` so strict clients do not
+validate an error payload against the tool's success-only output schema:
 
 | Failure | Result |
 | --- | --- |
