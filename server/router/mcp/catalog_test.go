@@ -204,6 +204,31 @@ func TestBuildToolFromOperationRejectsEmptyMemoUpdateBody(t *testing.T) {
 	}))
 }
 
+func TestRequestBodySchemaOverridePreservesRequiredByDefault(t *testing.T) {
+	const operationID = "TestService_UpdateResource"
+	requestBodySchemaOverrides[operationID] = requestBodySchemaOverride{
+		omittedProperties: []string{"name"},
+	}
+	t.Cleanup(func() {
+		delete(requestBodySchemaOverrides, operationID)
+	})
+
+	schema := requestBodySchema(&openAPIOperation{
+		OperationID: operationID,
+		RequestBodySchema: jsonSchema{
+			"type":     "object",
+			"required": []string{"content"},
+			"properties": map[string]any{
+				"name":    jsonSchema{"type": "string"},
+				"content": jsonSchema{"type": "string"},
+			},
+		},
+	})
+
+	require.Equal(t, []string{"content"}, schema["required"])
+	require.NotContains(t, schemaProperties(schema["properties"]), "name")
+}
+
 func TestBuildToolFromOperationExposesCreateAttachment(t *testing.T) {
 	spec, err := loadOpenAPISpec("../../../proto/gen/openapi.yaml")
 	require.NoError(t, err)

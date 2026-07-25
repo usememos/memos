@@ -44,7 +44,10 @@ type registeredOperation struct {
 }
 
 type requestBodySchemaOverride struct {
-	required          []string
+	// required replaces the base schema's required list when non-empty.
+	required []string
+	// clearRequired explicitly removes the base schema's required list.
+	clearRequired     bool
 	omittedProperties []string
 	// minProperties, when > 0, requires the body to carry at least that many
 	// properties. It replaces a cleared required list for partial updates so an
@@ -61,7 +64,7 @@ var requestBodySchemaOverrides = map[string]requestBodySchemaOverride{
 		required: []string{"content"},
 	},
 	"MemoService_UpdateMemo": {
-		required:          []string{},
+		clearRequired:     true,
 		omittedProperties: []string{"name"},
 		minProperties:     1,
 	},
@@ -241,9 +244,9 @@ func requestBodySchema(operation *openAPIOperation) jsonSchema {
 		return schema
 	}
 
-	if len(override.required) == 0 {
+	if override.clearRequired {
 		delete(schema, "required")
-	} else {
+	} else if len(override.required) > 0 {
 		schema["required"] = override.required
 	}
 
