@@ -36,6 +36,17 @@ func (s *Store) CreateUserIdentity(ctx context.Context, create *UserIdentity) (*
 	return s.driver.CreateUserIdentity(ctx, create)
 }
 
+// CreateUserWithIdentity atomically creates a local user and its external identity
+// linkage, returning the created user.
+func (s *Store) CreateUserWithIdentity(ctx context.Context, createUser *User, createIdentity *UserIdentity) (*User, error) {
+	user, err := s.driver.CreateUserWithIdentity(ctx, createUser, createIdentity)
+	if err != nil {
+		return nil, err
+	}
+	s.userCache.Set(ctx, userCacheKey(user.ID), user)
+	return user, nil
+}
+
 // ListUserIdentities returns all linkage records matching the filter.
 func (s *Store) ListUserIdentities(ctx context.Context, find *FindUserIdentity) ([]*UserIdentity, error) {
 	return s.driver.ListUserIdentities(ctx, find)

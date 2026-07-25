@@ -161,6 +161,80 @@ func TestUserIdentitySameUserSameProviderConflicts(t *testing.T) {
 	require.Error(t, err)
 }
 
+func TestCreateUserWithIdentityIsAtomic(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	t.Run("creates both records", func(t *testing.T) {
+		provider := "atomic-provider"
+		externUID := "atomic-subject"
+		user, err := ts.CreateUserWithIdentity(ctx, &store.User{
+			Username: "atomic-user",
+			Role:     store.RoleUser,
+		}, &store.UserIdentity{
+			Provider:  provider,
+			ExternUID: externUID,
+		})
+		require.NoError(t, err)
+		require.NotZero(t, user.ID)
+
+		storedIdentity, err := ts.GetUserIdentity(ctx, &store.FindUserIdentity{Provider: &provider, ExternUID: &externUID})
+		require.NoError(t, err)
+		require.NotNil(t, storedIdentity)
+		require.Equal(t, user.ID, storedIdentity.UserID)
+	})
+
+	t.Run("rolls back user when identity conflicts", func(t *testing.T) {
+		owner, err := createTestingUserWithRole(ctx, ts, "identity-owner", store.RoleUser)
+		require.NoError(t, err)
+		_, err = ts.CreateUserIdentity(ctx, &store.UserIdentity{
+			UserID:    owner.ID,
+			Provider:  "conflict-provider",
+			ExternUID: "conflict-subject",
+		})
+		require.NoError(t, err)
+
+		_, err = ts.CreateUserWithIdentity(ctx, &store.User{
+			Username: "rolled-back-user",
+			Role:     store.RoleUser,
+		}, &store.UserIdentity{
+			Provider:  "conflict-provider",
+			ExternUID: "conflict-subject",
+		})
+		require.Error(t, err)
+
+		username := "rolled-back-user"
+		user, err := ts.GetUser(ctx, &store.FindUser{Username: &username})
+		require.NoError(t, err)
+		require.Nil(t, user)
+	})
+
+	t.Run("rolls back identity when username conflicts", func(t *testing.T) {
+		_, err := createTestingUserWithRole(ctx, ts, "taken-username", store.RoleUser)
+		require.NoError(t, err)
+
+		_, err = ts.CreateUserWithIdentity(ctx, &store.User{
+			Username: "taken-username",
+			Role:     store.RoleUser,
+		}, &store.UserIdentity{
+			Provider:  "unused-provider",
+			ExternUID: "unused-subject",
+		})
+		require.Error(t, err)
+
+		provider := "unused-provider"
+		externUID := "unused-subject"
+		identity, err := ts.GetUserIdentity(ctx, &store.FindUserIdentity{
+			Provider:  &provider,
+			ExternUID: &externUID,
+		})
+		require.NoError(t, err)
+		require.Nil(t, identity)
+	})
+}
+
 func TestUserIdentityDeleteByUserAndProvider(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
