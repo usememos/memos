@@ -103,7 +103,9 @@ func (s *APIV1Service) createSSOUser(
 
 		// A unique violation is either the (provider, extern_uid) linkage (a
 		// concurrent first login won — reconcile to its user) or the username (in
-		// use by another account — signal a retry with a fresh username).
+		// use by another account — signal a retry with a fresh username). Supported
+		// databases only report the competing unique-key violation after the winner
+		// commits, so its identity linkage is visible to this follow-up read.
 		return s.getLinkedSSOUser(ctx, provider, externUID)
 	}
 
@@ -262,8 +264,8 @@ func (s *APIV1Service) bindSSOIdentityToUser(ctx context.Context, currentUser *s
 // supported backend emits when any UNIQUE constraint rejects an insert. Callers
 // disambiguate which constraint was hit from the insertion context (e.g. inserting
 // a user_identity row can only violate UNIQUE(provider, extern_uid); inserting a
-// user row can only violate UNIQUE(username)). Shared by the SSO create/link paths
-// and CreateMemo's UID uniqueness check.
+// user row can only violate UNIQUE(username)). Matches the pattern used in
+// memo_service.go for the memo UID unique check.
 func isUniqueConstraintViolation(err error) bool {
 	if err == nil {
 		return false

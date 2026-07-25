@@ -29,7 +29,7 @@ func insertUserIdentity(ctx context.Context, e execer, create *store.UserIdentit
 func (d *DB) CreateUserIdentity(ctx context.Context, create *store.UserIdentity) (*store.UserIdentity, error) {
 	result, err := insertUserIdentity(ctx, d.db, create)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to create user identity")
 	}
 
 	rawID, err := result.LastInsertId()
@@ -65,13 +65,20 @@ func (d *DB) CreateUserWithIdentity(ctx context.Context, createUser *store.User,
 		return nil, errors.Wrap(err, "failed to read created user ID")
 	}
 	createUser.ID = int32(rawUserID)
-	// RETURNING is unavailable on MySQL, so read back the DB-populated columns the
-	// user cache needs within the same transaction.
+	// RETURNING is unavailable on MySQL, so read back the complete stored row
+	// within the same transaction before adding it to the user cache.
 	if err := tx.QueryRowContext(
 		ctx,
-		"SELECT `description`, UNIX_TIMESTAMP(`created_ts`), UNIX_TIMESTAMP(`updated_ts`), `row_status` FROM `user` WHERE `id` = ?",
+		"SELECT `id`, `username`, `role`, `email`, `nickname`, `password_hash`, `avatar_url`, `description`, UNIX_TIMESTAMP(`created_ts`), UNIX_TIMESTAMP(`updated_ts`), `row_status` FROM `user` WHERE `id` = ?",
 		createUser.ID,
 	).Scan(
+		&createUser.ID,
+		&createUser.Username,
+		&createUser.Role,
+		&createUser.Email,
+		&createUser.Nickname,
+		&createUser.PasswordHash,
+		&createUser.AvatarURL,
 		&createUser.Description,
 		&createUser.CreatedTs,
 		&createUser.UpdatedTs,

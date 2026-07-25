@@ -47,7 +47,7 @@ func insertUserIdentity(ctx context.Context, q rowQuerier, create *store.UserIde
 
 func (d *DB) CreateUserIdentity(ctx context.Context, create *store.UserIdentity) (*store.UserIdentity, error) {
 	if err := insertUserIdentity(ctx, d.db, create); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to create user identity")
 	}
 	return create, nil
 }
