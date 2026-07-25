@@ -1,17 +1,32 @@
 package email
 
 import (
+	"net"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"golang.org/x/sync/errgroup"
 )
 
 func TestSend(t *testing.T) {
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	require.NoError(t, err)
+	defer listener.Close()
+
+	connectionClosed := make(chan struct{})
+	go func() {
+		defer close(connectionClosed)
+		conn, err := listener.Accept()
+		if err == nil {
+			_ = conn.Close()
+		}
+	}()
+
 	config := &Config{
-		SMTPHost:  "smtp.example.com",
-		SMTPPort:  587,
+		SMTPHost:  "127.0.0.1",
+		SMTPPort:  listener.Addr().(*net.TCPAddr).Port,
 		FromEmail: "test@example.com",
 	}
 
@@ -21,12 +36,16 @@ func TestSend(t *testing.T) {
 		Body:    "Test body",
 	}
 
-	// This will fail to connect (no real server), but should validate inputs
-	err := Send(config, message)
-	// We expect an error because there's no real SMTP server
-	// But it should be a connection error, not a validation error
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "dial")
+	// The local server closes before sending an SMTP greeting, proving Send made
+	// it through validation and attempted to create an SMTP client.
+	err = Send(config, message)
+	select {
+	case <-connectionClosed:
+	case <-time.After(time.Second):
+		t.Fatal("SMTP listener did not accept a connection")
+	}
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "failed to create SMTP client")
 }
 
 func TestSendValidation(t *testing.T) {
