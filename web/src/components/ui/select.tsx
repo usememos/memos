@@ -66,11 +66,13 @@ function SelectContent({
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Positioner
+        data-slot="select-positioner"
         align={align}
         alignItemWithTrigger={alignItemWithTrigger}
         alignOffset={alignOffset}
         side={side}
         sideOffset={sideOffset}
+        className="isolate z-dropdown"
       >
         <SelectPrimitive.Popup
           data-slot="select-content"
