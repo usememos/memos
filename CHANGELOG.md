@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.30.0](https://github.com/usememos/memos/compare/v0.30.0-rc.2...v0.30.0) (2026-07-26)
+
+
+### Bug Fixes
+
+* **auth:** enforce private instance access boundaries ([415a3ec](https://github.com/usememos/memos/commit/415a3ec73d7abee4496eab39b4d135a89387cdc6))
+* **auth:** provision SSO users atomically ([#6114](https://github.com/usememos/memos/issues/6114)) ([019f4f9](https://github.com/usememos/memos/commit/019f4f9adcfcfca73fc9e2a966d0569fac888a2c))
+* **mcp:** accept canonical resource names in path params and keep error results schema-valid ([#6108](https://github.com/usememos/memos/issues/6108)) ([03e34bd](https://github.com/usememos/memos/commit/03e34bd0da2f225addbd00d6a7bb5a472c83aed8))
+* **mcp:** harden tool schemas and request routing ([#6115](https://github.com/usememos/memos/issues/6115)) ([390126f](https://github.com/usememos/memos/commit/390126f1cd5f6aca55a17faf031655da4354b60b))
+
 ## [0.30.0-rc.2](https://github.com/usememos/memos/compare/v0.30.0-rc.1...v0.30.0-rc.2) (2026-07-20)
 
 
