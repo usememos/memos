@@ -8,6 +8,7 @@ const view = vi.hoisted(() => ({ maxColumns: 1 as 0 | 1 | 2 | 3, compactMode: fa
 const feed = vi.hoisted(() => ({
   memos: [] as unknown[],
   hasNextPage: false,
+  isLoading: false,
   fetchNextPage: vi.fn(async () => undefined),
 }));
 const readiness = vi.hoisted(() => ({ auth: true, instance: true }));
@@ -18,7 +19,7 @@ vi.mock("@/hooks/useMemoQueries", () => ({
     fetchNextPage: feed.fetchNextPage,
     hasNextPage: feed.hasNextPage,
     isFetchingNextPage: false,
-    isLoading: false,
+    isLoading: feed.isLoading,
   }),
 }));
 
@@ -68,6 +69,7 @@ describe("<PagedMemoList>", () => {
     view.compactMode = false;
     feed.memos = [];
     feed.hasNextPage = false;
+    feed.isLoading = false;
     feed.fetchNextPage.mockClear();
     readiness.auth = true;
     readiness.instance = true;
@@ -95,6 +97,22 @@ describe("<PagedMemoList>", () => {
       await act(async () => vi.advanceTimersByTimeAsync(1000));
 
       expect(feed.fetchNextPage).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("delays the initial loading spinner to avoid flashing on fast loads", async () => {
+    vi.useFakeTimers();
+    try {
+      feed.isLoading = true;
+      const { container } = renderList();
+
+      expect(container.querySelector(".animate-spin")).not.toBeInTheDocument();
+      await act(async () => vi.advanceTimersByTimeAsync(249));
+      expect(container.querySelector(".animate-spin")).not.toBeInTheDocument();
+      await act(async () => vi.advanceTimersByTimeAsync(1));
+      expect(container.querySelector(".animate-spin")).toBeInTheDocument();
     } finally {
       vi.useRealTimers();
     }

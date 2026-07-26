@@ -62,6 +62,7 @@ describe("<About>", () => {
     expect(screen.getByRole("link", { name: /about\.official-website/ })).toHaveAttribute("href", "https://usememos.com/");
     expect(screen.getByRole("link", { name: /about\.documents/ })).toHaveAttribute("href", "https://usememos.com/docs");
     expect(screen.getByRole("link", { name: /API Docs/ })).toHaveAttribute("href", "https://usememos.com/docs/api");
+    expect(screen.getByRole("link", { name: /Web Clipper/ })).toHaveAttribute("href", "https://github.com/usememos/web-clipper");
     expect(screen.getByRole("link", { name: /about\.github-repository/ })).toHaveAttribute("href", "https://github.com/usememos/memos");
   });
 

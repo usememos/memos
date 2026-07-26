@@ -1,12 +1,13 @@
 import { markdown } from "@codemirror/lang-markdown";
 import { EditorSelection, EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
+import { GFM } from "@lezer/markdown";
 import { describe, expect, it } from "vitest";
 import { createFormattingController } from "@/components/MemoEditor/Editor/formatting";
 
 function setup(doc: string, from: number, to: number) {
   const view = new EditorView({
-    state: EditorState.create({ doc, extensions: [markdown()], selection: EditorSelection.range(from, to) }),
+    state: EditorState.create({ doc, extensions: [markdown({ extensions: [GFM] })], selection: EditorSelection.range(from, to) }),
   });
   return { view, f: createFormattingController(view, new Set()) };
 }
@@ -52,5 +53,29 @@ describe("formatting controller", () => {
     const { view, f } = setup("`code` here", 3, 3);
     f.run("code");
     expect(view.state.doc.toString()).toBe("code here");
+  });
+
+  it("toggles strikethrough and reports it active", () => {
+    const { view, f } = setup("obsolete text", 0, 8);
+
+    f.run("strikethrough");
+
+    expect(view.state.doc.toString()).toBe("~~obsolete~~ text");
+    expect(f.getActiveFormats().strikethrough).toBe(true);
+
+    f.run("strikethrough");
+    expect(view.state.doc.toString()).toBe("obsolete text");
+  });
+
+  it("toggles a fenced code block and reports it active", () => {
+    const { view, f } = setup("first\nsecond", 0, 12);
+
+    f.run("codeBlock");
+
+    expect(view.state.doc.toString()).toBe("```\nfirst\nsecond\n```");
+    expect(f.getActiveFormats().codeBlock).toBe(true);
+
+    f.run("codeBlock");
+    expect(view.state.doc.toString()).toBe("first\nsecond");
   });
 });

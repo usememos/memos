@@ -711,11 +711,12 @@ func TestUpdateInstanceSetting(t *testing.T) {
 				Value: &v1pb.InstanceSetting_StorageSetting_{
 					StorageSetting: &v1pb.InstanceSetting_StorageSetting{
 						S3Config: &v1pb.InstanceSetting_StorageSetting_S3Config{
-							AccessKeyId:     "AKID",
-							AccessKeySecret: "super-secret",
-							Endpoint:        "s3.example.com",
-							Region:          "us-east-1",
-							Bucket:          "memos",
+							AccessKeyId:           "AKID",
+							AccessKeySecret:       "super-secret",
+							Endpoint:              "s3.example.com",
+							Region:                "us-east-1",
+							Bucket:                "memos",
+							InsecureSkipTlsVerify: true,
 						},
 					},
 				},
@@ -730,6 +731,8 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		require.NoError(t, err)
 		require.Empty(t, resp.GetStorageSetting().GetS3Config().GetAccessKeySecret(),
 			"AccessKeySecret must never be returned in responses")
+		require.True(t, resp.GetStorageSetting().GetS3Config().GetInsecureSkipTlsVerify(),
+			"insecure_skip_tls_verify must round-trip through the API")
 
 		// Update with empty secret; original must be preserved in the store.
 		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
@@ -738,11 +741,12 @@ func TestUpdateInstanceSetting(t *testing.T) {
 				Value: &v1pb.InstanceSetting_StorageSetting_{
 					StorageSetting: &v1pb.InstanceSetting_StorageSetting{
 						S3Config: &v1pb.InstanceSetting_StorageSetting_S3Config{
-							AccessKeyId:     "AKID",
-							AccessKeySecret: "", // omitted / not changed
-							Endpoint:        "s3-v2.example.com",
-							Region:          "us-east-1",
-							Bucket:          "memos",
+							AccessKeyId:           "AKID",
+							AccessKeySecret:       "", // omitted / not changed
+							Endpoint:              "s3-v2.example.com",
+							Region:                "us-east-1",
+							Bucket:                "memos",
+							InsecureSkipTlsVerify: true,
 						},
 					},
 				},
@@ -755,6 +759,7 @@ func TestUpdateInstanceSetting(t *testing.T) {
 		require.Equal(t, "super-secret", stored.GetS3Config().GetAccessKeySecret(),
 			"existing AccessKeySecret must be preserved when an empty value is sent")
 		require.Equal(t, "s3-v2.example.com", stored.GetS3Config().GetEndpoint())
+		require.True(t, stored.GetS3Config().GetInsecureSkipTlsVerify())
 	})
 
 	t.Run("UpdateInstanceSetting - AI provider keys are write-only and preserved on empty", func(t *testing.T) {
