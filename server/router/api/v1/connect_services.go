@@ -439,8 +439,8 @@ func (s *ConnectServiceHandler) DeleteMemoShare(ctx context.Context, req *connec
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) GetMemoByShare(ctx context.Context, req *connect.Request[v1pb.GetMemoByShareRequest]) (*connect.Response[v1pb.Memo], error) {
-	resp, err := s.APIV1Service.GetMemoByShare(ctx, req.Msg)
+func (s *ConnectServiceHandler) GetSharedMemo(ctx context.Context, req *connect.Request[v1pb.GetSharedMemoRequest]) (*connect.Response[v1pb.Memo], error) {
+	resp, err := s.APIV1Service.GetSharedMemo(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}

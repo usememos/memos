@@ -128,10 +128,10 @@ service MemoService {
     option (google.api.http) = {delete: "/api/v1/{name=memos/*/shares/*}"};
     option (google.api.method_signature) = "name";
   }
-  // GetMemoByShare resolves a share token to its memo. No authentication required.
+  // GetSharedMemo resolves a share token to its memo. No authentication required.
   // Returns NOT_FOUND if the token is invalid or expired.
-  rpc GetMemoByShare(GetMemoByShareRequest) returns (Memo) {
-    option (google.api.http) = {get: "/api/v1/shares/{share_id}"};
+  rpc GetSharedMemo(GetSharedMemoRequest) returns (Memo) {
+    option (google.api.http) = {get: "/api/v1/shares/{share_token}/memo"};
   }
   // GetLinkMetadata gets metadata for a link.
   rpc GetLinkMetadata(GetLinkMetadataRequest) returns (LinkMetadata) {
@@ -622,9 +622,9 @@ message DeleteMemoShareRequest {
   ];
 }
 
-message GetMemoByShareRequest {
-  // Required. The share token extracted from the share URL (/s/{share_id}).
-  string share_id = 1 [(google.api.field_behavior) = REQUIRED];
+message GetSharedMemoRequest {
+  // Required. The opaque bearer token extracted from the share URL.
+  string share_token = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message GetLinkMetadataRequest {

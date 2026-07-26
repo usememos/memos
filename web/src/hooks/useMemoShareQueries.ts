@@ -7,7 +7,7 @@ import type { MemoShare } from "@/types/proto/api/v1/memo_service_pb";
 import {
   CreateMemoShareRequestSchema,
   DeleteMemoShareRequestSchema,
-  GetMemoByShareRequestSchema,
+  GetSharedMemoRequestSchema,
   ListMemoSharesRequestSchema,
   MemoShareSchema,
 } from "@/types/proto/api/v1/memo_service_pb";
@@ -16,7 +16,7 @@ import {
 export const memoShareKeys = {
   all: ["memo-shares"] as const,
   list: (memoName: string) => [...memoShareKeys.all, "list", memoName] as const,
-  byShare: (shareId: string) => [...memoShareKeys.all, "by-share", shareId] as const,
+  byShare: (shareToken: string) => [...memoShareKeys.all, "by-share", shareToken] as const,
 };
 
 /** Lists all active share links for a memo (creator-only). */
@@ -63,14 +63,14 @@ export function useDeleteMemoShare() {
 }
 
 /** Resolves a share token to its memo. Used by the public SharedMemo page. */
-export function useSharedMemo(shareId: string, options?: { enabled?: boolean }) {
+export function useSharedMemo(shareToken: string, options?: { enabled?: boolean }) {
   return useQuery({
-    queryKey: memoShareKeys.byShare(shareId),
+    queryKey: memoShareKeys.byShare(shareToken),
     queryFn: async () => {
-      const memo = await memoServiceClient.getMemoByShare(create(GetMemoByShareRequestSchema, { shareId }));
+      const memo = await memoServiceClient.getSharedMemo(create(GetSharedMemoRequestSchema, { shareToken }));
       return memo;
     },
-    enabled: options?.enabled ?? !!shareId,
+    enabled: options?.enabled ?? !!shareToken,
     retry: false, // Don't retry NOT_FOUND — the link is invalid or expired
   });
 }

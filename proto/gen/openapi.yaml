@@ -1266,18 +1266,18 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/shares/{shareId}:
+    /api/v1/shares/{shareToken}/memo:
         get:
             tags:
                 - MemoService
             description: |-
-                GetMemoByShare resolves a share token to its memo. No authentication required.
+                GetSharedMemo resolves a share token to its memo. No authentication required.
                  Returns NOT_FOUND if the token is invalid or expired.
-            operationId: MemoService_GetMemoByShare
+            operationId: MemoService_GetSharedMemo
             parameters:
-                - name: shareId
+                - name: shareToken
                   in: path
-                  description: Required. The share token extracted from the share URL (/s/{share_id}).
+                  description: Required. The opaque bearer token extracted from the share URL.
                   required: true
                   schema:
                     type: string

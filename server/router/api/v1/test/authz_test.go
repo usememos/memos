@@ -26,10 +26,10 @@ func TestAuthorizerPrivateInstanceRegistration(t *testing.T) {
 	authorizer := apiv1.NewAuthorizer(ts.Store, ts.Secret, &profile.Profile{InstanceURL: ""})
 
 	const (
-		createUser   = "/memos.api.v1.UserService/CreateUser"
-		signIn       = "/memos.api.v1.AuthService/SignIn"
-		listMemos    = "/memos.api.v1.MemoService/ListMemos"
-		getMemoShare = "/memos.api.v1.MemoService/GetMemoByShare"
+		createUser    = "/memos.api.v1.UserService/CreateUser"
+		signIn        = "/memos.api.v1.AuthService/SignIn"
+		listMemos     = "/memos.api.v1.MemoService/ListMemos"
+		getSharedMemo = "/memos.api.v1.MemoService/GetSharedMemo"
 	)
 
 	// Anonymous request with no Authorization header resolves to no identity.
@@ -38,7 +38,7 @@ func TestAuthorizerPrivateInstanceRegistration(t *testing.T) {
 	// Registration and other bootstrap methods are allowed; browsing is still gated.
 	require.NoError(t, authorizer.CheckAccess(ctx, createUser, nil))
 	require.NoError(t, authorizer.CheckAccess(ctx, signIn, nil))
-	require.NoError(t, authorizer.CheckAccess(ctx, getMemoShare, nil))
+	require.NoError(t, authorizer.CheckAccess(ctx, getSharedMemo, nil))
 	require.ErrorIs(t, authorizer.CheckAccess(ctx, listMemos, nil), apiv1.ErrUnauthenticated)
 
 	// Once a user exists, CreateUser remains reachable so UserService can enforce

@@ -148,10 +148,10 @@ func (s *APIV1Service) DeleteMemoShare(ctx context.Context, request *v1pb.Delete
 	return &emptypb.Empty{}, nil
 }
 
-// GetMemoByShare resolves a share token to its memo. No authentication required.
+// GetSharedMemo resolves a share token to its memo. No authentication required.
 // Returns NOT_FOUND for invalid or expired tokens (no information leakage).
-func (s *APIV1Service) GetMemoByShare(ctx context.Context, request *v1pb.GetMemoByShareRequest) (*v1pb.Memo, error) {
-	ms, err := s.getActiveMemoShare(ctx, request.ShareId)
+func (s *APIV1Service) GetSharedMemo(ctx context.Context, request *v1pb.GetSharedMemoRequest) (*v1pb.Memo, error) {
+	ms, err := s.getActiveMemoShare(ctx, request.ShareToken)
 	if err != nil {
 		return nil, err
 	}

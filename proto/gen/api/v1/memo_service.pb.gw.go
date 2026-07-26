@@ -852,42 +852,42 @@ func local_request_MemoService_DeleteMemoShare_0(ctx context.Context, marshaler 
 	return msg, metadata, err
 }
 
-func request_MemoService_GetMemoByShare_0(ctx context.Context, marshaler runtime.Marshaler, client MemoServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_MemoService_GetSharedMemo_0(ctx context.Context, marshaler runtime.Marshaler, client MemoServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq GetMemoByShareRequest
+		protoReq GetSharedMemoRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
 	if req.Body != nil {
 		_, _ = io.Copy(io.Discard, req.Body)
 	}
-	val, ok := pathParams["share_id"]
+	val, ok := pathParams["share_token"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "share_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "share_token")
 	}
-	protoReq.ShareId, err = runtime.String(val)
+	protoReq.ShareToken, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "share_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "share_token", err)
 	}
-	msg, err := client.GetMemoByShare(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.GetSharedMemo(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 }
 
-func local_request_MemoService_GetMemoByShare_0(ctx context.Context, marshaler runtime.Marshaler, server MemoServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_MemoService_GetSharedMemo_0(ctx context.Context, marshaler runtime.Marshaler, server MemoServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
-		protoReq GetMemoByShareRequest
+		protoReq GetSharedMemoRequest
 		metadata runtime.ServerMetadata
 		err      error
 	)
-	val, ok := pathParams["share_id"]
+	val, ok := pathParams["share_token"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "share_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "share_token")
 	}
-	protoReq.ShareId, err = runtime.String(val)
+	protoReq.ShareToken, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "share_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "share_token", err)
 	}
-	msg, err := server.GetMemoByShare(ctx, &protoReq)
+	msg, err := server.GetSharedMemo(ctx, &protoReq)
 	return msg, metadata, err
 }
 
@@ -1299,25 +1299,25 @@ func RegisterMemoServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		}
 		forward_MemoService_DeleteMemoShare_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodGet, pattern_MemoService_GetMemoByShare_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_MemoService_GetSharedMemo_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v1.MemoService/GetMemoByShare", runtime.WithHTTPPathPattern("/api/v1/shares/{share_id}"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/memos.api.v1.MemoService/GetSharedMemo", runtime.WithHTTPPathPattern("/api/v1/shares/{share_token}/memo"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_MemoService_GetMemoByShare_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_MemoService_GetSharedMemo_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_MemoService_GetMemoByShare_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_MemoService_GetSharedMemo_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	mux.Handle(http.MethodGet, pattern_MemoService_GetLinkMetadata_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
@@ -1688,22 +1688,22 @@ func RegisterMemoServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		}
 		forward_MemoService_DeleteMemoShare_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodGet, pattern_MemoService_GetMemoByShare_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodGet, pattern_MemoService_GetSharedMemo_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.v1.MemoService/GetMemoByShare", runtime.WithHTTPPathPattern("/api/v1/shares/{share_id}"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/memos.api.v1.MemoService/GetSharedMemo", runtime.WithHTTPPathPattern("/api/v1/shares/{share_token}/memo"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_MemoService_GetMemoByShare_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_MemoService_GetSharedMemo_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_MemoService_GetMemoByShare_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_MemoService_GetSharedMemo_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	mux.Handle(http.MethodGet, pattern_MemoService_GetLinkMetadata_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
@@ -1760,7 +1760,7 @@ var (
 	pattern_MemoService_CreateMemoShare_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "parent", "shares"}, ""))
 	pattern_MemoService_ListMemoShares_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 2, 5, 3, 2, 4}, []string{"api", "v1", "memos", "parent", "shares"}, ""))
 	pattern_MemoService_DeleteMemoShare_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 2, 3, 1, 0, 4, 4, 5, 4}, []string{"api", "v1", "memos", "shares", "name"}, ""))
-	pattern_MemoService_GetMemoByShare_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "shares", "share_id"}, ""))
+	pattern_MemoService_GetSharedMemo_0        = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"api", "v1", "shares", "share_token", "memo"}, ""))
 	pattern_MemoService_GetLinkMetadata_0      = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "memos", "-", "linkMetadata"}, ""))
 	pattern_MemoService_BatchGetLinkMetadata_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "memos", "-", "linkMetadata"}, "batchGet"))
 )
@@ -1783,7 +1783,7 @@ var (
 	forward_MemoService_CreateMemoShare_0      = runtime.ForwardResponseMessage
 	forward_MemoService_ListMemoShares_0       = runtime.ForwardResponseMessage
 	forward_MemoService_DeleteMemoShare_0      = runtime.ForwardResponseMessage
-	forward_MemoService_GetMemoByShare_0       = runtime.ForwardResponseMessage
+	forward_MemoService_GetSharedMemo_0        = runtime.ForwardResponseMessage
 	forward_MemoService_GetLinkMetadata_0      = runtime.ForwardResponseMessage
 	forward_MemoService_BatchGetLinkMetadata_0 = runtime.ForwardResponseMessage
 )

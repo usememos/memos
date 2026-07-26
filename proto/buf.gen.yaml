@@ -23,7 +23,7 @@ plugins:
   - remote: buf.build/community/google-gnostic-openapi
     out: gen
     opt: enum_type=string
-  - remote: buf.build/bufbuild/es
+  - remote: buf.build/bufbuild/es:v2.12.1
     out: ../web/src/types/proto
     opt:
       - target=ts

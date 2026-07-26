@@ -37,7 +37,7 @@ const (
 	MemoService_CreateMemoShare_FullMethodName      = "/memos.api.v1.MemoService/CreateMemoShare"
 	MemoService_ListMemoShares_FullMethodName       = "/memos.api.v1.MemoService/ListMemoShares"
 	MemoService_DeleteMemoShare_FullMethodName      = "/memos.api.v1.MemoService/DeleteMemoShare"
-	MemoService_GetMemoByShare_FullMethodName       = "/memos.api.v1.MemoService/GetMemoByShare"
+	MemoService_GetSharedMemo_FullMethodName        = "/memos.api.v1.MemoService/GetSharedMemo"
 	MemoService_GetLinkMetadata_FullMethodName      = "/memos.api.v1.MemoService/GetLinkMetadata"
 	MemoService_BatchGetLinkMetadata_FullMethodName = "/memos.api.v1.MemoService/BatchGetLinkMetadata"
 )
@@ -87,9 +87,9 @@ type MemoServiceClient interface {
 	ListMemoShares(ctx context.Context, in *ListMemoSharesRequest, opts ...grpc.CallOption) (*ListMemoSharesResponse, error)
 	// DeleteMemoShare revokes a share link. Requires authentication as the memo creator.
 	DeleteMemoShare(ctx context.Context, in *DeleteMemoShareRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// GetMemoByShare resolves a share token to its memo. No authentication required.
+	// GetSharedMemo resolves a share token to its memo. No authentication required.
 	// Returns NOT_FOUND if the token is invalid or expired.
-	GetMemoByShare(ctx context.Context, in *GetMemoByShareRequest, opts ...grpc.CallOption) (*Memo, error)
+	GetSharedMemo(ctx context.Context, in *GetSharedMemoRequest, opts ...grpc.CallOption) (*Memo, error)
 	// GetLinkMetadata gets metadata for a link.
 	GetLinkMetadata(ctx context.Context, in *GetLinkMetadataRequest, opts ...grpc.CallOption) (*LinkMetadata, error)
 	// BatchGetLinkMetadata gets metadata for links.
@@ -274,10 +274,10 @@ func (c *memoServiceClient) DeleteMemoShare(ctx context.Context, in *DeleteMemoS
 	return out, nil
 }
 
-func (c *memoServiceClient) GetMemoByShare(ctx context.Context, in *GetMemoByShareRequest, opts ...grpc.CallOption) (*Memo, error) {
+func (c *memoServiceClient) GetSharedMemo(ctx context.Context, in *GetSharedMemoRequest, opts ...grpc.CallOption) (*Memo, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Memo)
-	err := c.cc.Invoke(ctx, MemoService_GetMemoByShare_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, MemoService_GetSharedMemo_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -349,9 +349,9 @@ type MemoServiceServer interface {
 	ListMemoShares(context.Context, *ListMemoSharesRequest) (*ListMemoSharesResponse, error)
 	// DeleteMemoShare revokes a share link. Requires authentication as the memo creator.
 	DeleteMemoShare(context.Context, *DeleteMemoShareRequest) (*emptypb.Empty, error)
-	// GetMemoByShare resolves a share token to its memo. No authentication required.
+	// GetSharedMemo resolves a share token to its memo. No authentication required.
 	// Returns NOT_FOUND if the token is invalid or expired.
-	GetMemoByShare(context.Context, *GetMemoByShareRequest) (*Memo, error)
+	GetSharedMemo(context.Context, *GetSharedMemoRequest) (*Memo, error)
 	// GetLinkMetadata gets metadata for a link.
 	GetLinkMetadata(context.Context, *GetLinkMetadataRequest) (*LinkMetadata, error)
 	// BatchGetLinkMetadata gets metadata for links.
@@ -417,8 +417,8 @@ func (UnimplementedMemoServiceServer) ListMemoShares(context.Context, *ListMemoS
 func (UnimplementedMemoServiceServer) DeleteMemoShare(context.Context, *DeleteMemoShareRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteMemoShare not implemented")
 }
-func (UnimplementedMemoServiceServer) GetMemoByShare(context.Context, *GetMemoByShareRequest) (*Memo, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetMemoByShare not implemented")
+func (UnimplementedMemoServiceServer) GetSharedMemo(context.Context, *GetSharedMemoRequest) (*Memo, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetSharedMemo not implemented")
 }
 func (UnimplementedMemoServiceServer) GetLinkMetadata(context.Context, *GetLinkMetadataRequest) (*LinkMetadata, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetLinkMetadata not implemented")
@@ -753,20 +753,20 @@ func _MemoService_DeleteMemoShare_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _MemoService_GetMemoByShare_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetMemoByShareRequest)
+func _MemoService_GetSharedMemo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSharedMemoRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MemoServiceServer).GetMemoByShare(ctx, in)
+		return srv.(MemoServiceServer).GetSharedMemo(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: MemoService_GetMemoByShare_FullMethodName,
+		FullMethod: MemoService_GetSharedMemo_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MemoServiceServer).GetMemoByShare(ctx, req.(*GetMemoByShareRequest))
+		return srv.(MemoServiceServer).GetSharedMemo(ctx, req.(*GetSharedMemoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -883,8 +883,8 @@ var MemoService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MemoService_DeleteMemoShare_Handler,
 		},
 		{
-			MethodName: "GetMemoByShare",
-			Handler:    _MemoService_GetMemoByShare_Handler,
+			MethodName: "GetSharedMemo",
+			Handler:    _MemoService_GetSharedMemo_Handler,
 		},
 		{
 			MethodName: "GetLinkMetadata",

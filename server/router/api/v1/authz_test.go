@@ -25,7 +25,7 @@ func TestAuthorizerCheckAccess(t *testing.T) {
 		publicMethod    = "/memos.api.v1.MemoService/ListMemos"
 		bootstrapMethod = "/memos.api.v1.AuthService/SignIn"
 		createUser      = "/memos.api.v1.UserService/CreateUser"
-		shareMethod     = "/memos.api.v1.MemoService/GetMemoByShare"
+		shareMethod     = "/memos.api.v1.MemoService/GetSharedMemo"
 	)
 
 	cases := []struct {
