@@ -31,8 +31,13 @@ const (
 	testPassword = "test"
 
 	// Memos container settings for migration testing.
-	MemosDockerImage   = "neosmemo/memos"
-	StableMemosVersion = "stable" // Always points to the latest stable release
+	MemosDockerImage = "neosmemo/memos"
+	// StableMemosVersion is the previous stable release upgrades are tested from.
+	// Pinned rather than tracking the floating "stable" tag so a Docker Hub retag
+	// cannot change what CI verifies. Bump this when a new stable ships.
+	// scripts/release_smoke_test.sh detects the previous release from Git tags
+	// instead, so the black-box tier still follows "stable" automatically.
+	StableMemosVersion = "0.29.1"
 
 	mysqlNetworkAlias    = "memos-mysql"
 	postgresNetworkAlias = "memos-postgres"

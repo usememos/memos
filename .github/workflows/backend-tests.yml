@@ -69,6 +69,8 @@ jobs:
               go test -v -coverprofile=coverage.out -covermode=atomic ./store/...
               ;;
             server)
+              # Includes ./server/test, which boots the real server via
+              # server.NewServer and smokes every router it mounts.
               go test -v -race -coverprofile=coverage.out -covermode=atomic ./server/...
               ;;
             internal)

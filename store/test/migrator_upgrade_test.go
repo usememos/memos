@@ -119,8 +119,13 @@ func TestMigrationFromV0262PreservesLegacyData(t *testing.T) {
 
 func prepareV0262MigrationTest(t *testing.T, driver string) (MemosContainerConfig, string) {
 	t.Helper()
+	return prepareUpgradeFixture(t, driver, "0.26.2")
+}
 
-	const version = "0.26.2"
+// prepareUpgradeFixture returns the container config needed to bootstrap a real
+// schema for the given Memos version, plus the DSN the host uses to reach it.
+func prepareUpgradeFixture(t *testing.T, driver, version string) (MemosContainerConfig, string) {
+	t.Helper()
 
 	switch driver {
 	case "sqlite":

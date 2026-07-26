@@ -274,6 +274,7 @@ func splitGatewayPathSegments(path string) []string {
 				segments = append(segments, trimmed[start:index])
 				start = index + 1
 			}
+		default:
 		}
 	}
 	return append(segments, trimmed[start:])
@@ -291,6 +292,7 @@ func splitGatewayTemplateVerb(template string) (string, string) {
 			if depth == 0 {
 				return template[:index], template[index+1:]
 			}
+		default:
 		}
 	}
 	return template, ""

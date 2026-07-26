@@ -1,0 +1,107 @@
+name: Upgrade Smoke
+
+# Verifies that a Memos instance carrying real data upgrades cleanly from the
+# previous stable release to the current build, and that a fresh install still
+# starts. These tiers need Docker and take minutes, so they run for relevant
+# pull requests and before releases rather than on every backend change.
+#
+# Fast startup coverage (server.NewServer plus route smoke, SQLite only) lives in
+# the `server` group of backend-tests.yml and runs on every pull request.
+
+on:
+  workflow_call:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      # Anything that can change how an existing database is opened or upgraded.
+      - "store/migration/**"
+      - "store/migrator.go"
+      - "store/db/**"
+      - "store/test/containers.go"
+      - "store/test/migrator*_test.go"
+      - "store/test/store.go"
+      - "server/server.go"
+      - "scripts/Dockerfile"
+      - "scripts/entrypoint.sh"
+      - "scripts/release_smoke_test.sh"
+      - ".github/workflows/upgrade-smoke.yml"
+
+concurrency:
+  # Keep this distinct from a caller's concurrency group when the workflow is
+  # invoked from release.yml; sharing a group with cancel-in-progress would
+  # cancel the parent release workflow.
+  group: ${{ github.workflow }}-upgrade-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GO_VERSION: "1.26.2"
+  NODE_VERSION: "24"
+  PNPM_VERSION: "11.0.1"
+
+jobs:
+  migration-upgrade:
+    name: Upgrade from previous stable (${{ matrix.driver }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        driver: [sqlite, mysql, postgres]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+          cache-dependency-path: go.sum
+
+      # No -race here: testcontainers has known races in its reaper, which is why
+      # store/test/migrator_test.go documents skipping the race detector.
+      - name: Run migration and upgrade tests
+        run: |
+          go test -v -timeout 30m -run 'TestMigration|TestUpgrade|TestFreshInstall' ./store/test/...
+        env:
+          DRIVER: ${{ matrix.driver }}
+
+  release-smoke:
+    name: Fresh install and upgrade through the release image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          # release_smoke_test.sh resolves the previous stable release from Git
+          # tags, so it needs full history and tags.
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4.2.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - name: Install frontend dependencies
+        working-directory: web
+        run: pnpm install --frozen-lockfile
+
+      - name: Run release smoke test
+        run: ./scripts/release_smoke_test.sh
+
+  entrypoint:
+    name: Entrypoint secret handling
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Run entrypoint tests
+        run: ./scripts/entrypoint_test.sh

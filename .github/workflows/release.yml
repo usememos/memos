@@ -21,6 +21,10 @@ env:
   ARTIFACT_PREFIX: memos
 
 jobs:
+  upgrade-smoke:
+    name: Verify fresh install and stable upgrade
+    uses: ./.github/workflows/upgrade-smoke.yml
+
   prepare:
     name: Extract Version
     runs-on: ubuntu-latest
@@ -63,7 +67,7 @@ jobs:
 
   build-frontend:
     name: Build Frontend
-    needs: prepare
+    needs: [prepare, upgrade-smoke]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
