@@ -49,7 +49,7 @@ const MemoDetail = () => {
   });
 
   const { data: parentMemo } = useMemo(memo?.parent || "", {
-    enabled: !!memo?.parent,
+    enabled: !isShareMode && !!memo?.parent,
   });
 
   const {
@@ -58,7 +58,7 @@ const MemoDetail = () => {
     hasNextPage: hasNextComments,
     isFetchingNextPage: isFetchingNextComments,
   } = useInfiniteMemoComments(memoName, {
-    enabled: !!memo,
+    enabled: !isShareMode && !!memo,
   });
 
   // Scroll to the hash target once it's in the DOM. The effect re-runs as the memo loads (footnote
@@ -80,8 +80,8 @@ const MemoDetail = () => {
     }
   }
 
-  // Start the memo and comment requests as soon as routing is unlocked, but do
-  // not expose content before tag-blur and instance display settings settle.
+  // Start the permitted requests as soon as routing is unlocked, but do not
+  // expose content before tag-blur and instance display settings settle.
   if (isLoading || !memo || !authInitialized || !instanceInitialized) {
     return null;
   }
@@ -105,7 +105,7 @@ const MemoDetail = () => {
       <MentionResolutionProvider contents={mentionResolutionContents} userNames={userResolutionNames}>
         <div className={cn("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-6")}>
           <div className={cn("w-full md:w-[calc(100%-16.5rem)]")}>
-            {parentMemo && (
+            {!isShareMode && parentMemo && (
               <div className="w-auto inline-block mb-2">
                 <Link
                   className="px-3 py-1 border border-border rounded-lg max-w-xs w-auto text-sm flex flex-row justify-start items-center flex-nowrap text-muted-foreground hover:shadow hover:opacity-80"
@@ -129,14 +129,16 @@ const MemoDetail = () => {
               showPinned
               onShareImageDialogOpenChange={setShareImageDialogOpen}
             />
-            <MemoCommentSection
-              memo={displayMemo}
-              comments={comments}
-              parentPage={locationState?.from}
-              hasMoreComments={hasNextComments}
-              isFetchingMoreComments={isFetchingNextComments}
-              onLoadMoreComments={fetchNextComments}
-            />
+            {!isShareMode && (
+              <MemoCommentSection
+                memo={displayMemo}
+                comments={comments}
+                parentPage={locationState?.from}
+                hasMoreComments={hasNextComments}
+                isFetchingMoreComments={isFetchingNextComments}
+                onLoadMoreComments={fetchNextComments}
+              />
+            )}
           </div>
           {md && (
             <div className="sticky top-0 left-0 shrink-0 -mt-6 w-60 h-full">

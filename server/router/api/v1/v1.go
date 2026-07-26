@@ -7,6 +7,7 @@ import (
 	"connectrpc.com/connect"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/labstack/echo/v5"
+	"github.com/pkg/errors"
 	"golang.org/x/sync/semaphore"
 
 	"github.com/usememos/memos/internal/markdown"
@@ -69,21 +70,31 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	// Shared authorizer: one source of truth for authentication and anonymous-access
 	// policy, used by both the gRPC-Gateway middleware and the Connect interceptor.
 	authorizer := NewAuthorizer(s.Store, s.Secret, s.Profile)
+
+	// grpc-gateway does not hand the matched procedure to middleware:
+	// runtime.RPCMethod is only populated by the generated handler, which runs
+	// after middleware. Resolve the procedure from the proto HTTP bindings
+	// instead so the policy check actually runs on this transport.
+	routeResolver, err := newGatewayRouteResolver()
+	if err != nil {
+		return errors.Wrap(err, "failed to build gateway route resolver")
+	}
+
 	gatewayAuthMiddleware := func(next runtime.HandlerFunc) runtime.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 			ctx := r.Context()
 
-			// The RPC method name is set by grpc-gateway after routing. When it can't be
-			// determined, skip the policy check and let the service layer handle visibility.
-			rpcMethod, ok := runtime.RPCMethod(ctx)
 			authHeader := r.Header.Get("Authorization")
-
 			result := authorizer.Authenticate(ctx, authHeader)
-			if ok {
-				if err := authorizer.CheckAccess(ctx, rpcMethod, result); err != nil {
-					http.Error(w, `{"code": 16, "message": "authentication required"}`, http.StatusUnauthorized)
-					return
-				}
+
+			// An unresolved path yields an empty procedure, which CheckAccess
+			// treats as protected: authenticated callers pass and anonymous ones
+			// are refused. Failing closed keeps a routing gap from becoming an
+			// access-control gap.
+			procedure, _ := routeResolver.resolveRequest(r)
+			if err := authorizer.CheckAccess(ctx, procedure, result); err != nil {
+				http.Error(w, `{"code": 16, "message": "authentication required"}`, http.StatusUnauthorized)
+				return
 			}
 
 			// Apply the identity to the context (no-op for permitted anonymous requests).

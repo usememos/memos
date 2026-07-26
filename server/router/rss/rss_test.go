@@ -51,7 +51,7 @@ func TestPublicRSSExcludesComments(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	service := NewRSSService(&profile.Profile{}, stores, markdown.NewService())
+	service := NewRSSService(&profile.Profile{InstanceURL: "https://memos.example.com"}, stores, markdown.NewService())
 
 	exploreRSS := renderRSS(t, service, "/explore/rss.xml", "")
 	require.Contains(t, exploreRSS, "public parent should stay in rss")
@@ -60,6 +60,40 @@ func TestPublicRSSExcludesComments(t *testing.T) {
 	userRSS := renderRSS(t, service, "/u/rss-comment-owner/rss.xml", user.Username)
 	require.Contains(t, userRSS, "public parent should stay in rss")
 	require.NotContains(t, userRSS, "public comment should not be in rss")
+}
+
+func TestPrivateInstanceDisablesRSS(t *testing.T) {
+	service := NewRSSService(&profile.Profile{}, nil, nil)
+
+	for _, test := range []struct {
+		name     string
+		target   string
+		username string
+	}{
+		{name: "explore", target: "/explore/rss.xml"},
+		{name: "user", target: "/u/alice/rss.xml", username: "alice"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			e := echo.New()
+			req := httptest.NewRequest(http.MethodGet, test.target, strings.NewReader(""))
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+			if test.username != "" {
+				c.SetPathValues(echo.PathValues{{Name: "username", Value: test.username}})
+			}
+
+			var err error
+			if test.username == "" {
+				err = service.GetExploreRSS(c)
+			} else {
+				err = service.GetUserRSS(c)
+			}
+
+			var httpError *echo.HTTPError
+			require.ErrorAs(t, err, &httpError)
+			require.Equal(t, http.StatusNotFound, httpError.Code)
+		})
+	}
 }
 
 func renderRSS(t *testing.T, service *RSSService, target string, username string) string {
