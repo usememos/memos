@@ -4,7 +4,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import PagedMemoList from "@/components/PagedMemoList";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 
-const view = vi.hoisted(() => ({ maxColumns: 1 as 0 | 1 | 2 | 3, compactMode: false }));
+const view = vi.hoisted(() => ({
+  maxColumns: 1 as 0 | 1 | 2 | 3,
+  compactMode: false,
+  contentWidth: "standard" as "standard" | "wide",
+}));
 const feed = vi.hoisted(() => ({
   memos: [] as unknown[],
   hasNextPage: false,
@@ -66,6 +70,7 @@ describe("<PagedMemoList>", () => {
   beforeEach(() => {
     view.maxColumns = 1;
     view.compactMode = false;
+    view.contentWidth = "standard";
     feed.memos = [];
     feed.hasNextPage = false;
     feed.fetchNextPage.mockClear();
@@ -127,6 +132,24 @@ describe("<PagedMemoList>", () => {
     } finally {
       widthSpy.mockRestore();
     }
+  });
+
+  describe("single-column width", () => {
+    it("uses the reading width by default", () => {
+      const { container } = renderList();
+
+      expect(container.querySelector(".max-w-2xl")).toBeInTheDocument();
+      expect(container.querySelector(".max-w-5xl")).not.toBeInTheDocument();
+    });
+
+    it("uses the wider width when selected", () => {
+      view.contentWidth = "wide";
+
+      const { container } = renderList();
+
+      expect(container.querySelector(".max-w-5xl")).toBeInTheDocument();
+      expect(container.querySelector(".max-w-2xl")).not.toBeInTheDocument();
+    });
   });
 
   describe("compact policy", () => {

@@ -246,6 +246,9 @@
       "label": "过滤器"
     },
     "compact-mode": "紧凑模式",
+    "content-width": "内容宽度",
+    "content-width-standard": "标准",
+    "content-width-wide": "宽屏",
     "layout": "布局",
     "layout-auto": "自动",
     "layout-auto-description": "根据屏幕宽度显示尽可能多的列",
