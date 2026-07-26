@@ -4,7 +4,7 @@
   "include-component-in-tag": false,
   "bump-minor-pre-major": true,
   "versioning": "prerelease",
-  "prerelease": true,
+  "prerelease": false,
   "prerelease-type": "rc.1",
   "packages": {
     ".": {
