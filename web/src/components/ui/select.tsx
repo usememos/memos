@@ -71,6 +71,7 @@ function SelectContent({
         alignOffset={alignOffset}
         side={side}
         sideOffset={sideOffset}
+        className="isolate z-dropdown"
       >
         <SelectPrimitive.Popup
           data-slot="select-content"
