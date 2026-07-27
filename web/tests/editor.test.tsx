@@ -43,6 +43,20 @@ describe("Editor", () => {
     expect(onChange).toHaveBeenCalledWith("hello");
   });
 
+  it("keeps native autocorrection enabled for Windows text services", () => {
+    const props = {
+      className: "x",
+      initialContent: "",
+      placeholder: "memo",
+      onContentChange: vi.fn(),
+      onFiles: vi.fn(),
+      onSubmit: vi.fn(),
+    };
+    const { container } = render(<Editor {...props} />);
+
+    expect(container.querySelector(".cm-content")).toHaveAttribute("autocorrect", "on");
+  });
+
   it("reconfigures the placeholder when its translation changes", () => {
     const props = {
       className: "x",
