@@ -231,6 +231,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write # for build provenance signing
+      attestations: write # to record the attestation
     steps:
       - name: Download binary artifacts
         uses: actions/download-artifact@v4
@@ -244,6 +246,11 @@ jobs:
         with:
           name: checksums
           path: artifacts
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3.0.0
+        with:
+          subject-path: artifacts/*
 
       - name: Publish release assets
         uses: softprops/action-gh-release@v2
