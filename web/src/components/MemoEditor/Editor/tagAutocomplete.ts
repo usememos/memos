@@ -21,5 +21,8 @@ export function makeTagCompletionSource(getTags: () => string[]) {
 }
 
 export function tagAutocomplete(getTags: () => string[]): Extension {
-  return autocompletion({ override: [makeTagCompletionSource(getTags)] });
+  return autocompletion({
+    override: [makeTagCompletionSource(getTags)],
+    icons: false,
+  });
 }

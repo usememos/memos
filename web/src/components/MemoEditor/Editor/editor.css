@@ -22,7 +22,7 @@
     caret-color: var(--foreground);
   }
   & .cm-line {
-    padding: 0;
+    padding-inline: 0;
   }
   & .cm-scroller {
     font-family: inherit;
@@ -33,13 +33,11 @@
     opacity: 0.7;
   }
 
-  /* drawSelection() caret + selection (no base color theme is loaded). */
-  & .cm-cursor,
   & .cm-dropCursor {
     border-left-color: var(--foreground);
   }
-  & .cm-selectionBackground,
-  & .cm-focused .cm-selectionBackground {
+  & .cm-content::selection,
+  & .cm-content ::selection {
     background: var(--accent);
   }
 
@@ -112,18 +110,13 @@
   }
   & .cm-tooltip-autocomplete > ul {
     font-family: inherit;
-    color: var(--popover-foreground);
   }
   & .cm-tooltip-autocomplete > ul > li {
     padding: 0.25rem 0.5rem;
-    color: var(--popover-foreground);
   }
   & .cm-tooltip-autocomplete > ul > li[aria-selected] {
     background: var(--accent);
     color: var(--accent-foreground);
-  }
-  & .cm-completionIcon {
-    display: none;
   }
   & .cm-completionMatchedText {
     text-decoration: none;

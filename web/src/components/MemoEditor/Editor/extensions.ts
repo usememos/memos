@@ -2,7 +2,7 @@ import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirro
 import { markdown } from "@codemirror/lang-markdown";
 import { indentUnit } from "@codemirror/language";
 import { EditorState, type Extension } from "@codemirror/state";
-import { placeholder as cmPlaceholder, drawSelection, dropCursor, EditorView, type KeyBinding, keymap } from "@codemirror/view";
+import { placeholder as cmPlaceholder, dropCursor, EditorView, type KeyBinding, keymap } from "@codemirror/view";
 import { GFM } from "@lezer/markdown";
 import { headingDecorations } from "./headingDecorations";
 import { liftListItem, sinkListItem } from "./listIndent";
@@ -37,12 +37,14 @@ export interface EditorExtensionsOptions {
 export function buildEditorExtensions({ placeholder, onChange, onUpdate, getTags }: EditorExtensionsOptions): Extension[] {
   return [
     // Core editing behavior. Without these the editor relies on raw
-    // contenteditable: typing works but there is no visible caret on focus
-    // (drawSelection), no undo/redo (history), and Enter/selection/word-motion
-    // keys are unwired (defaultKeymap). They are NOT part of CodeMirror's
-    // minimal core — basicSetup bundles them, and we assemble them here.
+    // contenteditable: no undo/redo (history), no drag-and-drop caret
+    // indicator (dropCursor), and Enter/selection/word-motion keys are
+    // unwired (defaultKeymap). They are NOT part of CodeMirror's minimal
+    // core — basicSetup bundles them, and we assemble them here. The
+    // in-focus caret itself is the browser's native one (editor.css sets
+    // caret-color), not drawSelection() — CodeMirror's own line/selection
+    // spacing stays intact that way.
     history(),
-    drawSelection(),
     dropCursor(),
     EditorState.allowMultipleSelections.of(true),
     // Indent with spaces (markdown), matching the 2-space bullet nesting.
