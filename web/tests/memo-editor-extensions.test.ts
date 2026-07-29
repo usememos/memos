@@ -13,7 +13,7 @@ describe("MemoEditor CodeMirror extensions", () => {
     document.body.replaceChildren();
   });
 
-  it("uses CodeMirror's selection and placeholder extensions without enabling multi-cursor selection", () => {
+  it("disables multi-cursor selection and wires up the placeholder", () => {
     const parent = document.body.appendChild(document.createElement("div"));
     const state = EditorState.create({
       doc: "",
@@ -28,9 +28,10 @@ describe("MemoEditor CodeMirror extensions", () => {
     const view = new EditorView({ state, parent });
     views.push(view);
 
+    // No drawSelection(): the browser's native caret (editor.css sets
+    // caret-color) and ::selection own rendering, so there's no
+    // .cm-selectionLayer/.cm-cursorLayer to assert on here.
     expect(view.state.facet(EditorState.allowMultipleSelections)).toBe(false);
-    expect(view.dom.querySelector(".cm-selectionLayer")).not.toBeNull();
-    expect(view.dom.querySelector(".cm-cursorLayer")).not.toBeNull();
     expect(view.contentDOM).toHaveAttribute("aria-placeholder", "Any thoughts...");
     expect(view.dom.querySelector(".cm-placeholder")).toHaveTextContent("Any thoughts...");
   });
