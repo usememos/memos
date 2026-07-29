@@ -293,6 +293,9 @@
       "label": "Filters"
     },
     "compact-mode": "Compact mode",
+    "content-width": "Content width",
+    "content-width-standard": "Standard",
+    "content-width-wide": "Wide",
     "layout": "Layout",
     "layout-auto": "Auto",
     "layout-auto-description": "As many columns as fit the screen",

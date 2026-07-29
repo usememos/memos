@@ -6,7 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useNewMemo } from "@/contexts/NewMemoContext";
-import { useView } from "@/contexts/ViewContext";
+import { type MemoContentWidth, useView } from "@/contexts/ViewContext";
 import { useDelayedFlag } from "@/hooks/useDelayedFlag";
 import { useInfiniteMemos } from "@/hooks/useMemoQueries";
 import { hoistMemoToFront } from "@/hooks/useMemoSorting";
@@ -27,6 +27,11 @@ export const getMemoKey = (memo: Memo) => `${memo.name}-${memo.updateTime}`;
 // Columns never stretch past this, so 2 columns on a wide monitor stay readable and the
 // grid centers in the leftover space instead of filling it.
 const MAX_COLUMN_WIDTH = 420;
+
+const SINGLE_COLUMN_WIDTH_CLASSES = {
+  standard: "max-w-2xl",
+  wide: "max-w-5xl",
+} satisfies Record<MemoContentWidth, string>;
 
 const Loader = () => (
   <div className="w-full flex flex-row justify-center items-center py-8">
@@ -116,7 +121,7 @@ const PagedMemoList = (props: Props) => {
   const { isInitialized: authInitialized } = useAuth();
   const { isInitialized: instanceInitialized } = useInstance();
   const { filters } = useMemoFilterContext();
-  const { maxColumns, compactMode } = useView();
+  const { maxColumns, compactMode, contentWidth } = useView();
   // maxColumns is a ceiling: 1 = single reading column, 0 = as many as fit. The single
   // column renders in normal document flow; anything wider becomes the packed grid.
   const multiColumn = maxColumns !== 1;
@@ -250,7 +255,9 @@ const PagedMemoList = (props: Props) => {
   const children = (
     <MentionResolutionProvider contents={contents} userNames={userNames}>
       <div ref={layoutMeasureRef} className="w-full">
-        <div className={cn("flex flex-col justify-start w-full mx-auto", useGrid ? "max-w-none" : "max-w-2xl")}>
+        <div
+          className={cn("flex flex-col justify-start w-full mx-auto", useGrid ? "max-w-none" : SINGLE_COLUMN_WIDTH_CLASSES[contentWidth])}
+        >
           {/* During initial load, show the spinner only after the delay; render nothing before then to avoid a flash. */}
           {isDisplayPending ? (
             showLoader ? (

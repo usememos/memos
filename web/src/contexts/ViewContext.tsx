@@ -6,6 +6,9 @@ export type MemoTimeBasis = "create_time" | "update_time";
 export const MAX_COLUMNS_VALUES = [1, 2, 3, 0] as const;
 export type MemoMaxColumns = (typeof MAX_COLUMNS_VALUES)[number];
 
+export const CONTENT_WIDTH_VALUES = ["standard", "wide"] as const;
+export type MemoContentWidth = (typeof CONTENT_WIDTH_VALUES)[number];
+
 interface ViewState {
   orderByTimeAsc: boolean;
   timeBasis?: MemoTimeBasis;
@@ -13,6 +16,7 @@ interface ViewState {
   compactMode: boolean;
   linkPreview: boolean;
   maxColumns: MemoMaxColumns;
+  contentWidth: MemoContentWidth;
 }
 
 interface ViewContextValue {
@@ -21,18 +25,26 @@ interface ViewContextValue {
   compactMode: boolean;
   linkPreview: boolean;
   maxColumns: MemoMaxColumns;
+  contentWidth: MemoContentWidth;
   toggleSortOrder: () => void;
   setTimeBasis: (field: MemoTimeBasis) => void;
   setCompactMode: (value: boolean) => void;
   setLinkPreview: (value: boolean) => void;
   setMaxColumns: (value: MemoMaxColumns) => void;
+  setContentWidth: (value: MemoContentWidth) => void;
 }
 
 const ViewContext = createContext<ViewContextValue | null>(null);
 
 const LOCAL_STORAGE_KEY = "memos-view-setting";
 
-const DEFAULT_VIEW_STATE: ViewState = { orderByTimeAsc: false, compactMode: false, linkPreview: true, maxColumns: 1 };
+const DEFAULT_VIEW_STATE: ViewState = {
+  orderByTimeAsc: false,
+  compactMode: false,
+  linkPreview: true,
+  maxColumns: 1,
+  contentWidth: "standard",
+};
 
 export function ViewProvider({ children }: { children: ReactNode }) {
   const getInitialState = (): ViewState => {
@@ -45,12 +57,16 @@ export function ViewProvider({ children }: { children: ReactNode }) {
         const maxColumns = MAX_COLUMNS_VALUES.includes(data.maxColumns as MemoMaxColumns)
           ? (data.maxColumns as MemoMaxColumns)
           : DEFAULT_VIEW_STATE.maxColumns;
+        const contentWidth = CONTENT_WIDTH_VALUES.includes(data.contentWidth as MemoContentWidth)
+          ? (data.contentWidth as MemoContentWidth)
+          : DEFAULT_VIEW_STATE.contentWidth;
         return {
           orderByTimeAsc: Boolean(data.orderByTimeAsc ?? DEFAULT_VIEW_STATE.orderByTimeAsc),
           timeBasis,
           compactMode: Boolean(data.compactMode ?? DEFAULT_VIEW_STATE.compactMode),
           linkPreview: Boolean(data.linkPreview ?? DEFAULT_VIEW_STATE.linkPreview),
           maxColumns,
+          contentWidth,
         };
       }
     } catch (error) {
@@ -83,6 +99,7 @@ export function ViewProvider({ children }: { children: ReactNode }) {
   const setCompactMode = (value: boolean) => updateState({ compactMode: value });
   const setLinkPreview = (value: boolean) => updateState({ linkPreview: value });
   const setMaxColumns = (value: MemoMaxColumns) => updateState({ maxColumns: value });
+  const setContentWidth = (value: MemoContentWidth) => updateState({ contentWidth: value });
 
   return (
     <ViewContext.Provider
@@ -92,11 +109,13 @@ export function ViewProvider({ children }: { children: ReactNode }) {
         compactMode: viewState.compactMode,
         linkPreview: viewState.linkPreview,
         maxColumns: viewState.maxColumns,
+        contentWidth: viewState.contentWidth,
         toggleSortOrder,
         setTimeBasis,
         setCompactMode,
         setLinkPreview,
         setMaxColumns,
+        setContentWidth,
       }}
     >
       {children}

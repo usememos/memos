@@ -9,7 +9,7 @@ const wrapper = ({ children }: { children: ReactNode }) => <ViewProvider>{childr
 
 const persisted = () => JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) ?? "{}");
 
-describe("ViewContext maxColumns setting", () => {
+describe("ViewContext display settings", () => {
   beforeEach(() => {
     localStorage.clear();
   });
@@ -42,5 +42,35 @@ describe("ViewContext maxColumns setting", () => {
     const { result } = renderHook(() => useView(), { wrapper });
 
     expect(result.current.maxColumns).toBe(1);
+  });
+
+  it("defaults to the standard content width", () => {
+    const { result } = renderHook(() => useView(), { wrapper });
+    expect(result.current.contentWidth).toBe("standard");
+  });
+
+  it("updates and persists the content width", () => {
+    const { result } = renderHook(() => useView(), { wrapper });
+
+    act(() => result.current.setContentWidth("wide"));
+
+    expect(result.current.contentWidth).toBe("wide");
+    expect(persisted().contentWidth).toBe("wide");
+  });
+
+  it("restores a persisted content width on init", () => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ contentWidth: "wide" }));
+
+    const { result } = renderHook(() => useView(), { wrapper });
+
+    expect(result.current.contentWidth).toBe("wide");
+  });
+
+  it("falls back to the standard content width for an invalid persisted value", () => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ contentWidth: "full" }));
+
+    const { result } = renderHook(() => useView(), { wrapper });
+
+    expect(result.current.contentWidth).toBe("standard");
   });
 });

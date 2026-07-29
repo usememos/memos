@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { MAX_COLUMNS_VALUES, type MemoMaxColumns, useView } from "@/contexts/ViewContext";
+import { CONTENT_WIDTH_VALUES, MAX_COLUMNS_VALUES, type MemoContentWidth, type MemoMaxColumns, useView } from "@/contexts/ViewContext";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
@@ -30,15 +30,18 @@ function MemoDisplaySettingMenu({ className }: Props) {
     compactMode,
     linkPreview,
     maxColumns,
+    contentWidth,
     setTimeBasis,
     toggleSortOrder,
     setCompactMode,
     setLinkPreview,
     setMaxColumns,
+    setContentWidth,
   } = useView();
   // Multi-column grids always render compact tiles, so the toggle is shown as on and locked
   // there; it only becomes a real choice at a single column.
   const compactLocked = maxColumns !== 1;
+  const contentWidthLocked = maxColumns !== 1;
 
   const timeBasisOptions = useMemo(
     () => [
@@ -52,6 +55,14 @@ function MemoDisplaySettingMenu({ className }: Props) {
       { value: "false", label: t("memo.newest-first") },
       { value: "true", label: t("memo.oldest-first") },
     ],
+    [t],
+  );
+  const contentWidthOptions = useMemo(
+    () =>
+      CONTENT_WIDTH_VALUES.map((value) => ({
+        value,
+        label: t(`memo.content-width-${value}` as `memo.content-width-${MemoContentWidth}`),
+      })),
     [t],
   );
 
@@ -113,6 +124,28 @@ function MemoDisplaySettingMenu({ className }: Props) {
           <div className="w-full flex flex-row justify-between items-center">
             <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.link-preview")}</span>
             <Switch checked={linkPreview} onCheckedChange={setLinkPreview} />
+          </div>
+          <div className="w-full flex flex-row justify-between items-center">
+            <span className={cn("text-sm shrink-0 mr-3", contentWidthLocked ? "text-muted-foreground" : "text-foreground")}>
+              {t("memo.content-width")}
+            </span>
+            <Select
+              value={contentWidth}
+              items={contentWidthOptions}
+              onValueChange={(value) => setContentWidth(value === "wide" ? "wide" : "standard")}
+              disabled={contentWidthLocked}
+            >
+              <SelectTrigger size="sm" className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {contentWidthOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="w-full flex flex-row justify-between items-center border-t border-border/50 pt-2">
             <span className="text-sm shrink-0 mr-3 text-foreground">{t("memo.layout")}</span>
