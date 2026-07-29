@@ -31,4 +31,11 @@ describe("Editor", () => {
     ref.current?.setMarkdown("hello");
     expect(onChange).toHaveBeenCalledWith("hello");
   });
+
+  it("keeps native autocorrection enabled for Windows text services", () => {
+    const { container } = render(
+      <Editor className="x" initialContent="" placeholder="memo" onContentChange={vi.fn()} onPaste={vi.fn()} />,
+    );
+    expect(container.querySelector(".cm-content")).toHaveAttribute("autocorrect", "on");
+  });
 });

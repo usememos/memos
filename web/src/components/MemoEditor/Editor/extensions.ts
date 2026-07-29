@@ -52,6 +52,11 @@ export function buildEditorExtensions({ placeholder, onChange, onUpdate, getTags
     markdown({ extensions: [GFM] }),
     ...memoEditorTheme,
     EditorView.lineWrapping,
+    // CodeMirror defaults to autocorrect="off" because it is primarily a code
+    // editor. Memos is a prose editor, and leaving that default in place also
+    // routes Windows TSF input (including the Win+. emoji picker) through
+    // Chrome's autocorrect-suppression path, which has dropped committed text.
+    EditorView.contentAttributes.of({ autocorrect: "on" }),
     cmPlaceholder(placeholder),
     tagMentionDecorations,
     headingDecorations,
