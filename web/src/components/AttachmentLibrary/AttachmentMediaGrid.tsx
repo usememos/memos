@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import VideoPoster from "@/components/VideoPoster";
 import type { AttachmentLibraryMediaItem, AttachmentLibraryMonthGroup } from "@/hooks/useAttachmentLibrary";
 import { useTranslate } from "@/utils/i18n";
-import { AttachmentMetadataLine, AttachmentOpenButton } from "./AttachmentLibraryPrimitives";
+import { AttachmentMetadataLine, AttachmentOpenButton, AttachmentSourceChip } from "./AttachmentLibraryPrimitives";
 
 interface AttachmentMediaGridProps {
   groups: AttachmentLibraryMonthGroup[];
@@ -60,12 +60,12 @@ const AttachmentMediaCard = ({ item, onPreview }: { item: AttachmentLibraryMedia
           )}
         </div>
 
+        <AttachmentMetadataLine
+          className="min-w-0"
+          items={[item.fileTypeLabel, item.createdLabel !== "—" ? item.createdLabel : undefined]}
+        />
         <div className="flex items-center justify-between gap-2">
-          <AttachmentMetadataLine
-            className="min-w-0 flex-1"
-            items={[item.fileTypeLabel, item.createdLabel !== "—" ? item.createdLabel : undefined]}
-          />
-
+          <AttachmentSourceChip memoName={item.memoName} />
           <AttachmentOpenButton href={item.sourceUrl} />
         </div>
       </div>

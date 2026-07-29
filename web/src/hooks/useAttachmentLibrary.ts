@@ -37,6 +37,7 @@ export interface AttachmentLibraryMediaItem extends AttachmentVisualItem {
   createdAt?: Date;
   createdLabel: string;
   fileTypeLabel: string;
+  memoName?: string;
 }
 
 export interface AttachmentLibraryMonthGroup {
@@ -96,6 +97,7 @@ const toLibraryMediaItem = (item: AttachmentVisualItem, locale: string, livePhot
     createdAt,
     createdLabel: formatCreatedAt(createdAt, locale),
     fileTypeLabel: item.kind === "motion" ? livePhotoLabel : fileTypeLabel,
+    memoName: primaryAttachment.memo,
   };
 };
 
