@@ -76,13 +76,14 @@ export function useEditorSelector<T>(selector: (state: EditorState) => T): T {
 
 interface EditorProviderProps extends PropsWithChildren {
   initialEditorState?: EditorState;
+  initialFocusMode?: boolean;
 }
 
-export const EditorProvider: FC<EditorProviderProps> = ({ children, initialEditorState }) => {
+export const EditorProvider: FC<EditorProviderProps> = ({ children, initialEditorState, initialFocusMode }) => {
   // Created once; the store instance is stable across renders.
   const storeRef = useRef<EditorStore | null>(null);
   if (!storeRef.current) {
-    storeRef.current = createEditorStore(initialEditorState ?? createInitialState());
+    storeRef.current = createEditorStore(initialEditorState ?? createInitialState(initialFocusMode));
   }
   return <EditorStoreContext.Provider value={storeRef.current}>{children}</EditorStoreContext.Provider>;
 };

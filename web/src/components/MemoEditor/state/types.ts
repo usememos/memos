@@ -70,9 +70,9 @@ const defaultState: EditorState = {
 };
 
 /** Fresh initial state for a mounting editor. */
-export function createInitialState(): EditorState {
+export function createInitialState(initialFocusMode = false): EditorState {
   return {
     ...defaultState,
-    ui: { ...defaultState.ui },
+    ui: { ...defaultState.ui, isFocusMode: initialFocusMode },
   };
 }

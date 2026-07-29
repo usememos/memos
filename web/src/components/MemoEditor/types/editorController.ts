@@ -16,6 +16,8 @@ export interface EditorController {
   setMarkdown(markdown: string): void;
   /** Insert markdown at the cursor as its own block. */
   insertMarkdown(markdown: string): void;
+  getCursor(): number;
+  setCursor(position: number): void;
   scrollToCursor(): void;
   /** Select the entire document (used by tests and select-all flows). */
   selectAll(): void;

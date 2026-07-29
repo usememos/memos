@@ -49,11 +49,25 @@ export const useMemoInit = ({
       }
     }
 
-    if (autoFocus) {
-      setTimeout(() => editorRef.current?.focus(), 100);
+    const cachedCursor = cacheService.loadCursor(key);
+    let restoreCursorTimer: ReturnType<typeof setTimeout> | undefined;
+    if (autoFocus || cachedCursor !== undefined) {
+      restoreCursorTimer = setTimeout(() => {
+        if (cachedCursor !== undefined) {
+          editorRef.current?.setCursor(cachedCursor);
+        }
+        if (autoFocus) {
+          editorRef.current?.focus();
+        }
+      }, 100);
     }
 
     setIsInitialized(true);
+    return () => {
+      if (restoreCursorTimer) {
+        clearTimeout(restoreCursorTimer);
+      }
+    };
   }, [memo, cacheKey, username, autoFocus, defaultVisibility, defaultCreateTime, actions, dispatch, editorRef]);
 
   return { isInitialized };

@@ -1,6 +1,7 @@
 export const CACHE_DEBOUNCE_DELAY = 500;
 
 const pendingSaves = new Map<string, ReturnType<typeof window.setTimeout>>();
+const cursors = new Map<string, number>();
 const STRUCTURED_CACHE_ENTRY_KIND = "memos.editor-cache";
 const STRUCTURED_CACHE_ENTRY_VERSION = 1;
 
@@ -64,6 +65,14 @@ export const cacheService = {
     return raw ? deserializeContent(raw) : "";
   },
 
+  saveCursor(key: string, cursor: number): void {
+    cursors.set(key, cursor);
+  },
+
+  loadCursor(key: string): number | undefined {
+    return cursors.get(key);
+  },
+
   clear(key: string): void {
     const pendingSave = pendingSaves.get(key);
     if (pendingSave) {
@@ -72,6 +81,7 @@ export const cacheService = {
     }
 
     localStorage.removeItem(key);
+    cursors.delete(key);
   },
 
   clearAll(): void {
@@ -79,5 +89,6 @@ export const cacheService = {
       window.clearTimeout(timeoutId);
     }
     pendingSaves.clear();
+    cursors.clear();
   },
 };

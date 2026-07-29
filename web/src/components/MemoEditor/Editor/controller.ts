@@ -30,6 +30,14 @@ export function createController(view: EditorView, formatting: FormattingControl
       view.dispatch({ changes: { from, to, insert }, selection: { anchor: caret }, scrollIntoView: true });
       view.focus();
     },
+    getCursor: () => view.state.selection.main.head,
+    setCursor: (position: number) => {
+      const cursor = Math.min(Math.max(position, 0), view.state.doc.length);
+      view.dispatch({
+        selection: EditorSelection.cursor(cursor),
+        scrollIntoView: true,
+      });
+    },
     scrollToCursor: () => view.dispatch({ effects: EditorView.scrollIntoView(view.state.selection.main.head) }),
     selectAll: () => view.dispatch({ selection: EditorSelection.range(0, view.state.doc.length) }),
     formatting,
