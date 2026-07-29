@@ -11,7 +11,7 @@ import { convertVisibilityFromString } from "@/utils/memo";
 import { AudioRecorderPanel, EditorContent, EditorMetadata, FocusModeOverlay, TimestampPopover } from "./components";
 import { FOCUS_MODE_STYLES, FORMATTING_TOOLBAR_STORAGE_KEY } from "./constants";
 import { useAudioRecorder, useAutoSave, useFocusMode, useMemoInit, useMemoSave } from "./hooks";
-import { errorService, transcriptionService } from "./services";
+import { cacheService, errorService, transcriptionService } from "./services";
 import { EditorProvider, useEditorContext, useEditorSelector } from "./state";
 import { EditorToolbar, FormattingToolbar } from "./Toolbar";
 import type { MemoEditorProps } from "./types";
@@ -19,7 +19,7 @@ import type { LocalFile } from "./types/attachment";
 import type { EditorController } from "./types/editorController";
 
 const MemoEditor = (props: MemoEditorProps) => (
-  <EditorProvider>
+  <EditorProvider initialFocusMode={props.initialFocusMode}>
     <MemoEditorImpl {...props} />
   </EditorProvider>
 );
@@ -30,6 +30,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   memo,
   parentMemoName,
   autoFocus,
+  onFocusModeExit,
   placeholder,
   defaultCreateTime,
   onConfirm,
@@ -62,6 +63,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
   // Get default visibility from user settings
   const defaultVisibility = userGeneralSetting?.memoVisibility ? convertVisibilityFromString(userGeneralSetting.memoVisibility) : undefined;
+  const editorCacheKey = cacheService.key(currentUser?.name ?? "", cacheKey);
 
   const { isInitialized } = useMemoInit({
     editorRef,
@@ -180,9 +182,26 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     }
   }, [isAudioRecorderOpen, audioRecorder.error, audioRecorder.status, t]);
 
+  const rememberCursor = useCallback(() => {
+    const cursor = editorRef.current?.getCursor();
+    if (cursor !== undefined) {
+      cacheService.saveCursor(editorCacheKey, cursor);
+    }
+  }, [editorCacheKey]);
+
   const handleToggleFocusMode = () => {
+    if (isFocusMode && onFocusModeExit) {
+      rememberCursor();
+      onFocusModeExit();
+      return;
+    }
     dispatch(actions.toggleFocusMode());
   };
+
+  const handleCancel = useCallback(() => {
+    rememberCursor();
+    onCancel?.();
+  }, [onCancel, rememberCursor]);
 
   const handleToggleFormattingToolbar = useCallback(() => {
     setFormattingToolbarVisible((visible) => !visible);
@@ -226,7 +245,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     defaultCreateTime,
     discardDraft,
     onConfirm,
-    onCancel,
+    onCancel: onCancel ? handleCancel : undefined,
   });
 
   return (
@@ -285,7 +304,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
           <EditorMetadata memoName={memoName} />
           <EditorToolbar
             onSave={handleSave}
-            onCancel={onCancel}
+            onCancel={onCancel ? handleCancel : undefined}
             memoName={memoName}
             onAudioRecorderClick={handleAudioRecorderClick}
             isFormattingToolbarVisible={isFormattingToolbarVisible}

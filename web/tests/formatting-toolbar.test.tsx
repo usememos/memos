@@ -27,6 +27,8 @@ function makeController(opts: { active?: Partial<ActiveFormatState>; getSelected
     getMarkdown: () => "",
     setMarkdown: () => {},
     insertMarkdown: vi.fn(),
+    getCursor: () => 0,
+    setCursor: vi.fn(),
     scrollToCursor: () => {},
     selectAll: () => {},
     formatting: {

@@ -29,4 +29,15 @@ describe("source editor controller", () => {
     c.insertMarkdown("beta");
     expect(c.getMarkdown()).toBe("alpha\n\nbeta");
   });
+
+  it("captures and restores the cursor", () => {
+    const v = view("alpha beta");
+    const c = createController(v, {} as never);
+    v.dispatch({ selection: { anchor: 7 } });
+
+    expect(c.getCursor()).toBe(7);
+
+    c.setCursor(99);
+    expect(c.getCursor()).toBe(10);
+  });
 });

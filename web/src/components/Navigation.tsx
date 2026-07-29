@@ -1,6 +1,7 @@
 import { BellIcon, EarthIcon, InfoIcon, LibraryIcon, PaperclipIcon, UserCircleIcon } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useGlobalMemoEditor } from "@/contexts/GlobalMemoEditorContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useNotifications } from "@/hooks/useUserQueries";
 import { cn } from "@/lib/utils";
@@ -26,6 +27,7 @@ const Navigation = (props: Props) => {
   const { collapsed, className } = props;
   const t = useTranslate();
   const currentUser = useCurrentUser();
+  const { openEditor } = useGlobalMemoEditor();
   const { data: notifications = [] } = useNotifications();
 
   const homeNavLink: NavLinkItem = {
@@ -83,9 +85,20 @@ const Navigation = (props: Props) => {
   return (
     <header className={cn("w-full h-full overflow-auto flex flex-col justify-between items-start gap-4", className)}>
       <div className="w-full px-1 py-1 flex flex-col justify-start items-start space-y-2 overflow-auto overflow-x-hidden shrink">
-        <NavLink className="mb-3 cursor-default" to={currentUser ? Routes.HOME : Routes.EXPLORE}>
-          <MemosLogo collapsed={collapsed} />
-        </NavLink>
+        {currentUser ? (
+          <button
+            type="button"
+            className="mb-3 cursor-default"
+            aria-label={`${t("common.create")} ${t("common.memos")}`}
+            onClick={openEditor}
+          >
+            <MemosLogo collapsed={collapsed} />
+          </button>
+        ) : (
+          <NavLink className="mb-3 cursor-default" to={Routes.EXPLORE}>
+            <MemosLogo collapsed={collapsed} />
+          </NavLink>
+        )}
         <TooltipProvider>
           {primaryNavLinks.map((navLink) => (
             <NavLink

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { useGlobalMemoEditor } from "@/contexts/GlobalMemoEditorContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import Navigation from "./Navigation";
 import UserAvatar from "./UserAvatar";
@@ -9,13 +10,14 @@ import UserAvatar from "./UserAvatar";
 const NavigationDrawer = () => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const { isOpen: isGlobalMemoEditorOpen } = useGlobalMemoEditor();
   const { generalSetting } = useInstance();
   const title = generalSetting.customProfile?.title || "Memos";
   const avatarUrl = generalSetting.customProfile?.logoUrl || "/full-logo.webp";
 
   useEffect(() => {
     setOpen(false);
-  }, [location.key]);
+  }, [location.key, isGlobalMemoEditorOpen]);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>

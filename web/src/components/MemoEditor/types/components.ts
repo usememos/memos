@@ -9,6 +9,10 @@ export interface MemoEditorProps {
   memo?: Memo;
   parentMemoName?: string;
   autoFocus?: boolean;
+  /** Opens this editor instance directly in the existing focus-mode presentation. */
+  initialFocusMode?: boolean;
+  /** Closes an externally mounted editor when the user exits focus mode. */
+  onFocusModeExit?: () => void;
   /**
    * Default `createTime` for a *new* memo (create mode only). When set, the
    * editor seeds both `createTime` and `updateTime` to this value and renders

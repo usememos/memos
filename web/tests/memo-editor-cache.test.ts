@@ -54,4 +54,14 @@ describe("memo editor cache", () => {
 
     expect(cacheService.load(key)).toBe(jsonDraft);
   });
+
+  it("keeps the cursor for the next editor mount", () => {
+    const key = cacheService.key("users/steven", "global-memo-editor");
+
+    cacheService.saveCursor(key, 9);
+
+    expect(cacheService.loadCursor(key)).toBe(9);
+    cacheService.clear(key);
+    expect(cacheService.loadCursor(key)).toBeUndefined();
+  });
 });
