@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"fmt"
+	"sync"
 	"testing"
 	"time"
 
@@ -45,6 +47,8 @@ func TestSSEHub_SubscribeUnsubscribe(t *testing.T) {
 	// Channel should be closed.
 	_, ok := <-client.events
 	assert.False(t, ok, "channel should be closed after Unsubscribe")
+	_, ok = <-client.done
+	assert.False(t, ok, "done channel should be closed after Unsubscribe")
 }
 
 func TestSSEHub_Close(t *testing.T) {
@@ -58,6 +62,10 @@ func TestSSEHub_Close(t *testing.T) {
 	for _, ch := range []chan []byte{c1.events, c2.events} {
 		_, ok := <-ch
 		assert.False(t, ok, "channel should be closed after hub close")
+	}
+	for _, ch := range []chan struct{}{c1.done, c2.done} {
+		_, ok := <-ch
+		assert.False(t, ok, "done channel should be closed after hub close")
 	}
 
 	late := hub.Subscribe(3, store.RoleUser)
@@ -116,6 +124,11 @@ func TestSSEEvent_JSON(t *testing.T) {
 	assert.Contains(t, string(data), `"parent":"memos/123"`)
 }
 
+func TestSSEEvent_Frame(t *testing.T) {
+	e := &SSEEvent{Type: SSEEventMemoUpdated, Name: "memos/789"}
+	assert.Equal(t, "data: {\"type\":\"memo.updated\",\"name\":\"memos/789\"}\n\n", string(e.Frame()))
+}
+
 func TestSSEHub_PrivateEventsAreScoped(t *testing.T) {
 	hub := NewSSEHub()
 	owner := hub.Subscribe(1, store.RoleUser)
@@ -151,7 +164,7 @@ func TestSSEHub_PrivateEventsAreScoped(t *testing.T) {
 	}
 }
 
-func TestSSEClient_CanReceive_UnknownVisibility(t *testing.T) {
+func TestSSEHub_UnknownVisibilityDenied(t *testing.T) {
 	hub := NewSSEHub()
 	client := hub.Subscribe(1, store.RoleUser)
 	defer hub.Unsubscribe(client)
@@ -166,20 +179,113 @@ func TestSSEClient_CanReceive_UnknownVisibility(t *testing.T) {
 	mustNotReceive(t, client.events, 100*time.Millisecond)
 }
 
-func TestSSEHub_SlowClientEventsDropped(t *testing.T) {
+func TestSSEHub_SlowClientDisconnected(t *testing.T) {
 	hub := NewSSEHub()
 	// Subscribe but never read, so the channel fills up.
 	slow := hub.Subscribe(1, store.RoleUser)
 	defer hub.Unsubscribe(slow)
 
 	event := &SSEEvent{Type: SSEEventMemoCreated, Name: "memos/x"}
-	// Send more events than the buffer capacity (32).
-	for range 40 {
+	// Send more events than the buffer capacity.
+	for range sseClientEventBufferSize + 8 {
 		hub.Broadcast(event) // must not block
 	}
 
-	// At most 32 events should have been queued; the rest were silently dropped.
-	assert.LessOrEqual(t, len(slow.events), 32)
+	select {
+	case <-slow.done:
+	default:
+		t.Fatal("slow client should be disconnected after its event buffer fills")
+	}
+
+	received := 0
+	for range slow.events {
+		received++
+	}
+	assert.Equal(t, sseClientEventBufferSize, received)
+}
+
+func TestSSEHub_ConcurrentAccess(t *testing.T) {
+	hub := NewSSEHub()
+	const (
+		workers    = 16
+		iterations = 100
+	)
+
+	var wg sync.WaitGroup
+	for workerID := range workers {
+		wg.Go(func() {
+			for iteration := range iterations {
+				client := hub.Subscribe(int32(workerID+1), store.RoleUser)
+				hub.Broadcast(&SSEEvent{
+					Type:       SSEEventMemoUpdated,
+					Name:       fmt.Sprintf("memos/%d-%d", workerID, iteration),
+					Visibility: store.Private,
+					CreatorID:  int32(workerID + 1),
+				})
+				select {
+				case <-client.events:
+				default:
+				}
+				hub.Unsubscribe(client)
+			}
+		})
+	}
+	wg.Wait()
+
+	hub.mu.RLock()
+	defer hub.mu.RUnlock()
+	assert.Empty(t, hub.clients)
+}
+
+func BenchmarkSSEHubBroadcast(b *testing.B) {
+	for _, clientCount := range []int{100, 1_000, 10_000} {
+		b.Run(fmt.Sprintf("public/%d", clientCount), func(b *testing.B) {
+			hub, clients := newBenchmarkSSEHub(clientCount)
+			defer hub.Close()
+			event := &SSEEvent{Type: SSEEventMemoUpdated, Name: "memos/benchmark", Visibility: store.Public}
+
+			b.ReportAllocs()
+			b.ResetTimer()
+			for b.Loop() {
+				hub.Broadcast(event)
+				for _, client := range clients {
+					<-client.events
+				}
+			}
+		})
+
+		b.Run(fmt.Sprintf("private/%d", clientCount), func(b *testing.B) {
+			hub, clients := newBenchmarkSSEHub(clientCount)
+			defer hub.Close()
+			event := &SSEEvent{
+				Type:       SSEEventMemoUpdated,
+				Name:       "memos/benchmark",
+				Visibility: store.Private,
+				CreatorID:  1,
+			}
+
+			b.ReportAllocs()
+			b.ResetTimer()
+			for b.Loop() {
+				hub.Broadcast(event)
+				<-clients[0].events
+				<-clients[1].events
+			}
+		})
+	}
+}
+
+func newBenchmarkSSEHub(clientCount int) (*SSEHub, []*SSEClient) {
+	hub := NewSSEHub()
+	clients := make([]*SSEClient, 0, clientCount)
+	for i := range clientCount {
+		role := store.RoleUser
+		if i == 1 {
+			role = store.RoleAdmin
+		}
+		clients = append(clients, hub.Subscribe(int32(i+1), role))
+	}
+	return hub, clients
 }
 
 func TestResolveSSECreatorID(t *testing.T) {

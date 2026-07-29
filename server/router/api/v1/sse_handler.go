@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"time"
@@ -15,6 +15,8 @@ import (
 const (
 	// sseHeartbeatInterval is the interval between heartbeat pings to keep the connection alive.
 	sseHeartbeatInterval = 30 * time.Second
+	sseConnectedComment  = ": connected\n\n"
+	sseHeartbeatComment  = ": heartbeat\n\n"
 )
 
 type sseRouteRegistrar interface {
@@ -51,18 +53,19 @@ func handleSSE(c *echo.Context, hub *SSEHub, authenticator *auth.Authenticator) 
 	w.Header().Set("X-Accel-Buffering", "no") // Disable nginx buffering
 	w.WriteHeader(http.StatusOK)
 
-	// Flush headers immediately.
+	var flusher http.Flusher
 	if f, ok := w.(http.Flusher); ok {
-		f.Flush()
+		flusher = f
+	}
+
+	// Flush headers immediately.
+	if flusher != nil {
+		flusher.Flush()
 	}
 
 	// Subscribe to the hub.
 	client := hub.Subscribe(userID, role)
 	defer hub.Unsubscribe(client)
-
-	// Create a ticker for heartbeat pings.
-	heartbeat := time.NewTicker(sseHeartbeatInterval)
-	defer heartbeat.Stop()
 
 	ctx := c.Request().Context()
 
@@ -70,43 +73,68 @@ func handleSSE(c *echo.Context, hub *SSEHub, authenticator *auth.Authenticator) 
 
 	// Send an initial comment so clients and dev proxies observe the stream
 	// immediately instead of waiting for the first heartbeat or data event.
-	if _, err := fmt.Fprint(w, ": connected\n\n"); err != nil {
+	if _, err := io.WriteString(w, sseConnectedComment); err != nil {
 		return nil
 	}
-	if f, ok := w.(http.Flusher); ok {
-		f.Flush()
+	if flusher != nil {
+		flusher.Flush()
 	}
 
+	// Heartbeats are only needed after a period with no event data.
+	heartbeat := time.NewTimer(sseHeartbeatInterval)
+	defer heartbeat.Stop()
+
 	for {
+		// Prefer a hub-initiated disconnect over draining buffered events.
+		select {
+		case <-client.done:
+			return nil
+		default:
+		}
+
 		select {
 		case <-ctx.Done():
 			// Client disconnected.
 			slog.Debug("SSE client disconnected", "userID", userID)
 			return nil
 
-		case data, ok := <-client.events:
+		case <-client.done:
+			return nil
+
+		case frame, ok := <-client.events:
 			if !ok {
 				// Channel closed, client was unsubscribed.
 				return nil
 			}
-			// Write SSE event.
-			if _, err := fmt.Fprintf(w, "data: %s\n\n", data); err != nil {
+			if _, err := w.Write(frame); err != nil {
 				return nil
 			}
-			if f, ok := w.(http.Flusher); ok {
-				f.Flush()
+			if flusher != nil {
+				flusher.Flush()
 			}
+			resetSSETimer(heartbeat)
 
 		case <-heartbeat.C:
 			// Send a heartbeat comment to keep the connection alive.
-			if _, err := fmt.Fprint(w, ": heartbeat\n\n"); err != nil {
+			if _, err := io.WriteString(w, sseHeartbeatComment); err != nil {
 				return nil
 			}
-			if f, ok := w.(http.Flusher); ok {
-				f.Flush()
+			if flusher != nil {
+				flusher.Flush()
 			}
+			resetSSETimer(heartbeat)
 		}
 	}
+}
+
+func resetSSETimer(timer *time.Timer) {
+	if !timer.Stop() {
+		select {
+		case <-timer.C:
+		default:
+		}
+	}
+	timer.Reset(sseHeartbeatInterval)
 }
 
 func getSSEClientIdentity(result *auth.AuthResult) (int32, store.Role) {

@@ -8,6 +8,11 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+const (
+	sseDataPrefix            = "data: "
+	sseClientEventBufferSize = 32
+)
+
 // SSEEventType represents the type of change event.
 type SSEEventType string
 
@@ -44,9 +49,23 @@ func (e *SSEEvent) JSON() []byte {
 	return data
 }
 
+// Frame returns the event encoded as a complete SSE data frame.
+func (e *SSEEvent) Frame() []byte {
+	data := e.JSON()
+	if len(data) == 0 {
+		return nil
+	}
+	frame := make([]byte, 0, len(sseDataPrefix)+len(data)+2)
+	frame = append(frame, sseDataPrefix...)
+	frame = append(frame, data...)
+	frame = append(frame, '\n', '\n')
+	return frame
+}
+
 // SSEClient represents a single SSE connection.
 type SSEClient struct {
 	events chan []byte
+	done   chan struct{}
 	userID int32
 	role   store.Role
 }
@@ -71,12 +90,14 @@ func NewSSEHub() *SSEHub {
 func (h *SSEHub) Subscribe(userID int32, role store.Role) *SSEClient {
 	c := &SSEClient{
 		// Buffer a few events so a slow client doesn't block broadcasting.
-		events: make(chan []byte, 32),
+		events: make(chan []byte, sseClientEventBufferSize),
+		done:   make(chan struct{}),
 		userID: userID,
 		role:   role,
 	}
 	h.mu.Lock()
 	if h.closed {
+		close(c.done)
 		close(c.events)
 	} else {
 		h.clients[c] = struct{}{}
@@ -85,11 +106,12 @@ func (h *SSEHub) Subscribe(userID int32, role store.Role) *SSEClient {
 	return c
 }
 
-// Unsubscribe removes a client and closes its channel.
+// Unsubscribe removes a client and closes its channels.
 func (h *SSEHub) Unsubscribe(c *SSEClient) {
 	h.mu.Lock()
 	if _, ok := h.clients[c]; ok {
 		delete(h.clients, c)
+		close(c.done)
 		close(c.events)
 	}
 	h.mu.Unlock()
@@ -105,29 +127,49 @@ func (h *SSEHub) Close() {
 	h.closed = true
 	for c := range h.clients {
 		delete(h.clients, c)
+		close(c.done)
 		close(c.events)
 	}
 }
 
 // Broadcast sends an event to all connected clients.
-// Slow clients that have a full buffer will have the event dropped
-// to avoid blocking the broadcaster.
+// Slow clients with a full buffer are disconnected so they can reconnect and
+// resynchronize instead of silently missing an event.
 func (h *SSEHub) Broadcast(event *SSEEvent) {
-	data := event.JSON()
-	if len(data) == 0 {
+	if event == nil || !event.hasKnownVisibility() {
 		return
 	}
+	frame := event.Frame()
+	if len(frame) == 0 {
+		return
+	}
+
+	var slowClients []*SSEClient
 	h.mu.RLock()
-	defer h.mu.RUnlock()
 	for c := range h.clients {
 		if !c.canReceive(event) {
 			continue
 		}
 		select {
-		case c.events <- data:
+		case c.events <- frame:
 		default:
-			// Drop event for slow client to avoid blocking.
+			slowClients = append(slowClients, c)
 		}
+	}
+	h.mu.RUnlock()
+
+	for _, c := range slowClients {
+		h.Unsubscribe(c)
+	}
+}
+
+func (e *SSEEvent) hasKnownVisibility() bool {
+	switch e.Visibility {
+	case store.Private, store.Public, store.Protected, "":
+		return true
+	default:
+		slog.Warn("SSE event has unknown visibility; denying broadcast", "visibility", string(e.Visibility))
+		return false
 	}
 }
 
@@ -138,7 +180,6 @@ func (c *SSEClient) canReceive(event *SSEEvent) bool {
 	case store.Public, store.Protected, "":
 		return true
 	default:
-		slog.Warn("SSE canReceive: unknown visibility type, denying event", "visibility", event.Visibility)
 		return false
 	}
 }
