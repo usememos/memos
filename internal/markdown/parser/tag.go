@@ -67,6 +67,11 @@ func isValidTagRune(r rune) bool {
 		return true
 	}
 
+	// Allow apostrophes used inside words, without allowing all punctuation.
+	if r == '\'' || r == '\u2019' {
+		return true
+	}
+
 	return false
 }
 

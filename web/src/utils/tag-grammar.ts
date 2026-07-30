@@ -4,13 +4,14 @@
  * can't drift.
  *
  * A tag character is any Unicode letter, mark, number, or symbol, plus
- * `_ - / &`. The mark class (`\p{M}`) keeps combining marks — Indic vowel
+ * `_ - / &` and apostrophes used inside words. The mark class (`\p{M}`) keeps
+ * combining marks — Indic vowel
  * signs, Arabic harakat, Hebrew niqqud, decomposed accents — attached to the
  * base letters they belong to, so a tag like `#കവിത` isn't cut short at its
  * first vowel sign.
  * A tag run is capped at MAX_TAG_LENGTH characters.
  */
-export const TAG_CHAR_CLASS = "[\\p{L}\\p{M}\\p{N}\\p{S}_\\-/&]";
+export const TAG_CHAR_CLASS = "[\\p{L}\\p{M}\\p{N}\\p{S}_\\-/&\\u0027\\u2019]";
 
 export const MAX_TAG_LENGTH = 100;
 
