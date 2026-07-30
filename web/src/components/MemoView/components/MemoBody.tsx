@@ -1,6 +1,8 @@
+import { EyeIcon } from "lucide-react";
 import ClampedSection from "@/components/ClampedSection";
 import { AttachmentListView, LocationDisplayView, RelationListView } from "@/components/MemoMetadata";
 import { isReferenceRelation } from "@/components/MemoMetadata/Relation/relationHelpers";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import MemoContent from "../../MemoContent";
@@ -12,10 +14,17 @@ import type { MemoBodyProps } from "../types";
 const BlurOverlay: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
   const t = useTranslate();
   return (
-    <div className="absolute inset-0 z-10 pt-4 flex items-center justify-center" onClick={onClick}>
-      <div className="rounded-lg border border-border bg-card px-2 py-1 text-xs text-muted-foreground transition-colors hover:border-accent hover:bg-accent hover:text-foreground">
+    <div className="absolute inset-0 z-10 flex items-center justify-center pt-4">
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="cursor-pointer rounded-lg bg-card px-3 text-xs text-foreground shadow-sm hover:-translate-y-0.5 hover:border-ring/40 hover:bg-accent hover:text-accent-foreground hover:shadow-md active:translate-y-0 active:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+        onClick={onClick}
+      >
+        <EyeIcon className="h-3.5 w-3.5" />
         {t("memo.click-to-show-sensitive-content")}
-      </div>
+      </Button>
     </div>
   );
 };

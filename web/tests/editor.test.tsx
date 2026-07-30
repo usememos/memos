@@ -4,11 +4,30 @@ import { describe, expect, it, vi } from "vitest";
 import Editor from "@/components/MemoEditor/Editor";
 import type { EditorController } from "@/components/MemoEditor/types/editorController";
 
+const queries = vi.hoisted(() => ({
+  useTagCounts: vi.fn(() => ({ data: {} })),
+}));
+
 vi.mock("@/hooks/useUserQueries", () => ({
-  useTagCounts: () => ({ data: {} }),
+  useTagCounts: queries.useTagCounts,
 }));
 
 describe("Editor", () => {
+  it("scopes tag autocomplete stats to the current user", () => {
+    render(
+      <Editor
+        className="x"
+        initialContent=""
+        placeholder="memo"
+        onContentChange={vi.fn()}
+        onFiles={vi.fn()}
+        onSubmit={vi.fn()}
+      />,
+    );
+
+    expect(queries.useTagCounts).toHaveBeenCalledWith(true);
+  });
+
   it("loads markdown and serializes it back verbatim", () => {
     const ref = createRef<EditorController>();
     render(

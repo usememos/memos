@@ -32,10 +32,11 @@ vi.mock("@/connect", () => ({
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 
 const Probe = () => {
-  const { currentUser, initialize, isInitialized } = useAuth();
+  const { currentUser, initialize, isInitialized, isUserSettingsInitialized } = useAuth();
   return (
     <div>
       <span data-testid="initialized">{isInitialized ? "yes" : "no"}</span>
+      <span data-testid="user-settings-initialized">{isUserSettingsInitialized ? "yes" : "no"}</span>
       <span data-testid="user">{currentUser?.name ?? "none"}</span>
       <button type="button" onClick={() => void initialize()}>
         initialize
@@ -80,8 +81,12 @@ describe("AuthProvider initialization", () => {
     fireEvent.click(screen.getByRole("button", { name: "initialize" }));
     await waitFor(() => expect(screen.getByTestId("user")).toHaveTextContent("users/alice"));
     expect(screen.getByTestId("initialized")).toHaveTextContent("no");
+    expect(screen.getByTestId("user-settings-initialized")).toHaveTextContent("no");
 
     resolveSettings({ settings: [] });
+    await waitFor(() => expect(screen.getByTestId("user-settings-initialized")).toHaveTextContent("yes"));
+    expect(screen.getByTestId("initialized")).toHaveTextContent("no");
+
     resolveShortcuts({ shortcuts: [] });
     await waitFor(() => expect(screen.getByTestId("initialized")).toHaveTextContent("yes"));
   });

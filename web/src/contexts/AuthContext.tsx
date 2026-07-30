@@ -19,6 +19,8 @@ interface AuthState {
   shortcuts: Shortcut[];
   /** Authentication identity has settled, while user settings may still be loading. */
   isIdentityInitialized: boolean;
+  /** User settings that affect memo presentation are safe to consume. */
+  isUserSettingsInitialized: boolean;
   isInitialized: boolean;
   isLoading: boolean;
 }
@@ -40,6 +42,7 @@ const UNAUTHENTICATED_STATE: AuthState = {
   userTagsSetting: undefined,
   shortcuts: [],
   isIdentityInitialized: true,
+  isUserSettingsInitialized: true,
   isInitialized: true,
   isLoading: false,
 };
@@ -53,24 +56,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     userTagsSetting: undefined,
     shortcuts: [],
     isIdentityInitialized: false,
+    isUserSettingsInitialized: false,
     isInitialized: false,
     isLoading: true,
   });
 
   const fetchUserSettings = useCallback(async (userName: string) => {
-    const [{ settings }, { shortcuts }] = await Promise.all([
-      userServiceClient.listUserSettings({ parent: userName }),
+    const userSettingsPromise = userServiceClient.listUserSettings({ parent: userName }).then(({ settings }) => {
+      const generalSetting = settings.find((s) => s.value.case === "generalSetting");
+      const webhooksSetting = settings.find((s) => s.value.case === "webhooksSetting");
+      const tagsSetting = settings.find((s) => s.value.case === "tagsSetting");
+      const userSettings = {
+        userGeneralSetting: generalSetting?.value.case === "generalSetting" ? generalSetting.value.value : undefined,
+        userWebhooksSetting: webhooksSetting?.value.case === "webhooksSetting" ? webhooksSetting.value.value : undefined,
+        userTagsSetting: tagsSetting?.value.case === "tagsSetting" ? tagsSetting.value.value : undefined,
+      };
+
+      // Tag settings control sensitive-content blurring. Publish them as soon
+      // as this request settles instead of waiting for unrelated shortcuts.
+      setState((prev) =>
+        prev.currentUser?.name === userName
+          ? {
+              ...prev,
+              ...userSettings,
+              isUserSettingsInitialized: true,
+            }
+          : prev,
+      );
+
+      return userSettings;
+    });
+
+    const [userSettings, { shortcuts }] = await Promise.all([
+      userSettingsPromise,
       shortcutServiceClient.listShortcuts({ parent: userName }),
     ]);
 
-    const generalSetting = settings.find((s) => s.value.case === "generalSetting");
-    const webhooksSetting = settings.find((s) => s.value.case === "webhooksSetting");
-    const tagsSetting = settings.find((s) => s.value.case === "tagsSetting");
-
     return {
-      userGeneralSetting: generalSetting?.value.case === "generalSetting" ? generalSetting.value.value : undefined,
-      userWebhooksSetting: webhooksSetting?.value.case === "webhooksSetting" ? webhooksSetting.value.value : undefined,
-      userTagsSetting: tagsSetting?.value.case === "tagsSetting" ? tagsSetting.value.value : undefined,
+      ...userSettings,
       shortcuts,
     };
   }, []);
@@ -79,7 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // `initialize` also runs after sign-in, when the previous unauthenticated
     // state is already marked initialized. Reset the full-readiness flag so
     // consumers cannot render with the new identity and stale/default settings.
-    setState((prev) => ({ ...prev, isInitialized: false, isLoading: true }));
+    setState((prev) => ({ ...prev, isUserSettingsInitialized: false, isInitialized: false, isLoading: true }));
 
     // Try to get or refresh the access token.
     // This handles PWA isolated storage scenarios (e.g., iOS Safari) where localStorage
@@ -111,7 +134,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Publish the verified identity immediately so route modules and their
       // data queries can start while display-sensitive settings are loading.
-      // Memo rendering remains gated on the full `isInitialized` state.
       setState((prev) => ({
         ...prev,
         currentUser,
@@ -127,6 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         currentUser,
         ...settings,
         isIdentityInitialized: true,
+        isUserSettingsInitialized: true,
         isInitialized: true,
         isLoading: false,
       });

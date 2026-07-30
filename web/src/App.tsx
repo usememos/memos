@@ -1,8 +1,6 @@
 import { useEffect } from "react";
 import { Outlet, ScrollRestoration } from "react-router-dom";
-import { GlobalMemoEditorProvider } from "./contexts/GlobalMemoEditorContext";
 import { useInstance } from "./contexts/InstanceContext";
-import { MemoFilterProvider } from "./contexts/MemoFilterContext";
 import useNavigateTo from "./hooks/useNavigateTo";
 import { useUserLocale } from "./hooks/useUserLocale";
 import { useUserTheme } from "./hooks/useUserTheme";
@@ -61,11 +59,7 @@ const App = () => {
 
   return (
     <>
-      <MemoFilterProvider>
-        <GlobalMemoEditorProvider>
-          <Outlet />
-        </GlobalMemoEditorProvider>
-      </MemoFilterProvider>
+      <Outlet />
       <ScrollRestoration />
     </>
   );

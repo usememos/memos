@@ -3,7 +3,6 @@ import { type ReactElement, type ReactNode, useCallback, useEffect, useLayoutEff
 import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { useInstance } from "@/contexts/InstanceContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useNewMemo } from "@/contexts/NewMemoContext";
 import { useView } from "@/contexts/ViewContext";
@@ -113,8 +112,7 @@ function useAutoFetchWhenNotScrollable({
 
 const PagedMemoList = (props: Props) => {
   const t = useTranslate();
-  const { isInitialized: authInitialized } = useAuth();
-  const { isInitialized: instanceInitialized } = useInstance();
+  const { isUserSettingsInitialized } = useAuth();
   const { filters } = useMemoFilterContext();
   const { maxColumns, compactMode } = useView();
   // maxColumns is a ceiling: 1 = single reading column, 0 = as many as fit. The single
@@ -153,10 +151,9 @@ const PagedMemoList = (props: Props) => {
     { enabled: props.enabled ?? true },
   );
 
-  // Queries can start as soon as routing is unlocked, but memo content stays
-  // hidden until settings that control its presentation have settled.
-  const isDisplayPending = isLoading || !authInitialized || !instanceInitialized;
-  // Only show the spinner once loading exceeds the delay, so fast loads don't flash it.
+  // Tag settings decide whether sensitive memo content must be blurred. Keep that
+  // privacy boundary, but do not wait for unrelated shortcuts or instance settings.
+  const isDisplayPending = isLoading || !isUserSettingsInitialized;
   const showLoader = useDelayedFlag(isDisplayPending, LOADING_INDICATOR_DELAY_MS);
 
   // Flatten pages into a single array of memos
@@ -198,28 +195,30 @@ const PagedMemoList = (props: Props) => {
 
   // A freshly created memo is hoisted to the front; pin it to the top of column one so it
   // appears right under the composer instead of dropping into a random (shortest) column.
-  const firstMemo = sortedMemoList[0];
+  const displayMemoList = isDisplayPending ? [] : sortedMemoList;
+  const firstMemo = displayMemoList[0];
   const priorityKey = newMemoName && firstMemo?.name === newMemoName ? getMemoKey(firstMemo) : undefined;
 
   // Stable reference so MentionResolutionProvider's memo (keyed on the array) actually holds.
-  const contents = useMemo(() => sortedMemoList.map((memo) => memo.content), [sortedMemoList]);
+  const contents = useMemo(() => displayMemoList.map((memo) => memo.content), [displayMemoList]);
   const userNames = useMemo(
     () =>
       Array.from(
         new Set(
-          sortedMemoList.flatMap((memo) => [
+          displayMemoList.flatMap((memo) => [
             ...(props.showCreator ? [memo.creator] : []),
             ...(memo.reactions ?? []).map((reaction) => reaction.creator),
           ]),
         ),
       ),
-    [props.showCreator, sortedMemoList],
+    [props.showCreator, displayMemoList],
   );
 
   const emptyPlaceholder =
-    !isFetchingNextPage && !hasNextPage && sortedMemoList.length === 0 ? (
+    !isDisplayPending && !isFetchingNextPage && !hasNextPage && displayMemoList.length === 0 ? (
       <Placeholder variant="empty" message={t("message.no-data")} className="w-full" />
     ) : null;
+  const initialLoader = isDisplayPending && showLoader ? <Loader /> : null;
 
   // Column one is the action column: the composer and any active filters head it, and the
   // empty state follows them. The newest memo also lands directly beneath them (priorityKey
@@ -227,10 +226,11 @@ const PagedMemoList = (props: Props) => {
   // grid's x-spacing exactly.
   const hasFilters = filters.length > 0;
   const gridLeading =
-    leadingContent || hasFilters || emptyPlaceholder ? (
+    leadingContent || hasFilters || initialLoader || emptyPlaceholder ? (
       <div className="flex w-full flex-col" style={{ gap: GRID_GAP }}>
         {leadingContent}
         <MemoFilters />
+        {initialLoader}
         {emptyPlaceholder}
       </div>
     ) : undefined;
@@ -239,7 +239,7 @@ const PagedMemoList = (props: Props) => {
   const footer = (
     <>
       {isFetchingNextPage && <Loader />}
-      {!isFetchingNextPage && (hasNextPage || sortedMemoList.length > 0) && (
+      {!isFetchingNextPage && (hasNextPage || displayMemoList.length > 0) && (
         <div className="w-full opacity-70 flex flex-row justify-center items-center my-4">
           <BackToTop />
         </div>
@@ -251,15 +251,10 @@ const PagedMemoList = (props: Props) => {
     <MentionResolutionProvider contents={contents} userNames={userNames}>
       <div ref={layoutMeasureRef} className="w-full">
         <div className={cn("flex flex-col justify-start w-full mx-auto", useGrid ? "max-w-none" : "max-w-2xl")}>
-          {/* During initial load, show the spinner only after the delay; render nothing before then to avoid a flash. */}
-          {isDisplayPending ? (
-            showLoader ? (
-              <Loader />
-            ) : null
-          ) : useGrid ? (
+          {useGrid ? (
             <>
               <ColumnGrid
-                items={sortedMemoList}
+                items={displayMemoList}
                 getKey={getMemoKey}
                 renderItem={(memo) => props.renderer(memo, { compact: effectiveCompact })}
                 estimateHeight={estimateMemoCardHeight}
@@ -268,15 +263,16 @@ const PagedMemoList = (props: Props) => {
                 maxColumns={maxColumns}
                 maxColumnWidth={MAX_COLUMN_WIDTH}
               />
-              {footer}
+              {!isDisplayPending && footer}
             </>
           ) : (
             <>
               {leadingContent}
               <MemoFilters className="mb-2" />
-              {sortedMemoList.map((memo) => props.renderer(memo, { compact: effectiveCompact }))}
+              {initialLoader}
+              {displayMemoList.map((memo) => props.renderer(memo, { compact: effectiveCompact }))}
               {emptyPlaceholder}
-              {footer}
+              {!isDisplayPending && footer}
             </>
           )}
         </div>

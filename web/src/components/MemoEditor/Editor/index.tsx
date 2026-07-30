@@ -33,7 +33,9 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
   onSubmitRef.current = onSubmit;
   const placeholderRef = useRef(placeholder);
   const listenersRef = useRef(new Set<() => void>());
-  const { data: tagData } = useTagCounts();
+  // A user can only author their own memos. Reuse the current-user stats query
+  // instead of fetching and aggregating every user's tags for autocomplete.
+  const { data: tagData } = useTagCounts(true);
   const tags = useMemo(() => Object.keys(tagData ?? {}), [tagData]);
   const tagsRef = useRef(tags);
   tagsRef.current = tags;

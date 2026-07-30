@@ -3,6 +3,7 @@ import MemoEditor from "@/components/MemoEditor";
 import { deriveDefaultCreateTimeFromFilters } from "@/components/MemoEditor/utils/deriveDefaultCreateTime";
 import MemoView from "@/components/MemoView";
 import PagedMemoList, { getMemoKey } from "@/components/PagedMemoList";
+import { useAuth } from "@/contexts/AuthContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { NewMemoProvider } from "@/contexts/NewMemoContext";
 import { useMemoFilters, useMemoSorting } from "@/hooks";
@@ -14,6 +15,7 @@ import { useTranslate } from "@/utils/i18n";
 const Home = () => {
   const user = useCurrentUser();
   const t = useTranslate();
+  const { isUserSettingsInitialized } = useAuth();
   const { filters } = useMemoFilterContext();
   const defaultCreateTime = useMemo(() => deriveDefaultCreateTimeFromFilters(filters), [filters]);
 
@@ -38,14 +40,18 @@ const Home = () => {
           listSort={listSort}
           orderBy={orderBy}
           filter={memoFilter}
-          renderLeading={({ useGrid }) => (
-            <MemoEditor
-              className={useGrid ? undefined : "mb-2"}
-              cacheKey="home-memo-editor"
-              placeholder={t("editor.any-thoughts")}
-              defaultCreateTime={defaultCreateTime}
-            />
-          )}
+          renderLeading={({ useGrid }) => {
+            if (!isUserSettingsInitialized) return null;
+
+            return (
+              <MemoEditor
+                className={useGrid ? undefined : "mb-2"}
+                cacheKey="home-memo-editor"
+                placeholder={t("editor.any-thoughts")}
+                defaultCreateTime={defaultCreateTime}
+              />
+            );
+          }}
         />
       </NewMemoProvider>
     </div>

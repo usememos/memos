@@ -11,6 +11,9 @@ const mockState = vi.hoisted(() => ({
     attachments: [],
     reactions: [],
   },
+  blurred: false,
+  showBlurredContent: false,
+  toggleBlurVisibility: vi.fn(),
 }));
 
 vi.mock("@/utils/i18n", () => ({
@@ -46,12 +49,12 @@ vi.mock("@/components/MemoView/MemoViewContext", () => ({
   useMemoViewContext: () => ({
     memo: mockState.memo,
     parentPage: "",
-    showBlurredContent: false,
-    blurred: false,
+    showBlurredContent: mockState.showBlurredContent,
+    blurred: mockState.blurred,
     readonly: false,
     openEditor: vi.fn(),
     openPreview: vi.fn(),
-    toggleBlurVisibility: vi.fn(),
+    toggleBlurVisibility: mockState.toggleBlurVisibility,
   }),
 }));
 
@@ -64,6 +67,9 @@ const createMemo = (content: string) => ({
 });
 
 afterEach(() => {
+  mockState.blurred = false;
+  mockState.showBlurredContent = false;
+  mockState.toggleBlurVisibility.mockReset();
   vi.restoreAllMocks();
 });
 
@@ -96,5 +102,18 @@ describe("<MemoBody /> compact body clamp", () => {
     render(<MemoBody compact={false} />);
 
     expect(screen.queryByRole("button", { name: /memo\.show-more/ })).toBeNull();
+  });
+
+  it("renders the sensitive-content action as a button", () => {
+    mockState.blurred = true;
+    mockState.memo = createMemo("sensitive content");
+
+    render(<MemoBody compact={false} />);
+
+    const revealButton = screen.getByRole("button", { name: "memo.click-to-show-sensitive-content" });
+    expect(revealButton).toHaveClass("cursor-pointer");
+
+    fireEvent.click(revealButton);
+    expect(mockState.toggleBlurVisibility).toHaveBeenCalledOnce();
   });
 });

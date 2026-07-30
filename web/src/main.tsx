@@ -50,7 +50,7 @@ function AppInitializer({ children }: { children: React.ReactNode }) {
 
   // Route loading and feed requests only need the verified identity and the
   // instance profile. Display-sensitive settings continue in the background;
-  // PagedMemoList keeps memo content hidden until they have settled.
+  // PagedMemoList keeps memo content hidden until privacy settings have settled.
   if (!isIdentityInitialized || !isProfileInitialized) {
     return null;
   }

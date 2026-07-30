@@ -1,5 +1,4 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
-import type { ReactNode } from "react";
 import { createMemoryRouter, RouterProvider } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "@/App";
@@ -10,10 +9,6 @@ vi.mock("@/contexts/InstanceContext", () => ({
     profileLoaded: true,
     generalSetting: {},
   }),
-}));
-
-vi.mock("@/contexts/MemoFilterContext", () => ({
-  MemoFilterProvider: ({ children }: { children: ReactNode }) => children,
 }));
 
 vi.mock("@/hooks/useNavigateTo", () => ({ default: () => vi.fn() }));

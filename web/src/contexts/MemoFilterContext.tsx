@@ -1,5 +1,5 @@
 import { uniqBy } from "lodash-es";
-import { createContext, type ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export type FilterFactor =
@@ -126,26 +126,36 @@ export function MemoFilterProvider({ children }: { children: ReactNode }) {
   const hasFilter = useCallback((filter: MemoFilter) => filters.some((f) => getMemoFilterKey(f) === getMemoFilterKey(filter)), [filters]);
 
   const hasActiveFilters = filters.length > 0 || shortcut !== undefined;
-
-  return (
-    <MemoFilterContext.Provider
-      value={{
-        filters,
-        shortcut,
-        hasActiveFilters,
-        getFiltersByFactor,
-        setFilters,
-        addFilter,
-        removeFilter,
-        removeFiltersByFactor,
-        clearAllFilters,
-        setShortcut,
-        hasFilter,
-      }}
-    >
-      {children}
-    </MemoFilterContext.Provider>
+  const value = useMemo(
+    () => ({
+      filters,
+      shortcut,
+      hasActiveFilters,
+      getFiltersByFactor,
+      setFilters,
+      addFilter,
+      removeFilter,
+      removeFiltersByFactor,
+      clearAllFilters,
+      setShortcut,
+      hasFilter,
+    }),
+    [
+      filters,
+      shortcut,
+      hasActiveFilters,
+      getFiltersByFactor,
+      setFilters,
+      addFilter,
+      removeFilter,
+      removeFiltersByFactor,
+      clearAllFilters,
+      setShortcut,
+      hasFilter,
+    ],
   );
+
+  return <MemoFilterContext.Provider value={value}>{children}</MemoFilterContext.Provider>;
 }
 
 export function useMemoFilterContext() {
