@@ -20,6 +20,10 @@ function isAsciiPunctuation(char: string): boolean {
   );
 }
 
+function isTagBoundary(char: string): boolean {
+  return char === "" || /^(?:\p{White_Space}|\p{P}|\p{S})$/u.test(char);
+}
+
 /**
  * Apply CommonMark backslash-unescaping to a raw source slice, tracking which
  * resulting characters came from an escape. `\#` yields a `#` flagged escaped,
@@ -60,7 +64,7 @@ function parseSegments(chars: string[], escaped: boolean[]): Segment[] {
       const prevChar = i > 0 ? chars[i - 1] : "";
       const nextChar = chars[i + 1];
 
-      if (prevChar === "#" || nextChar === "#" || nextChar === " ") {
+      if (prevChar === "#" || !isTagBoundary(prevChar) || nextChar === "#" || nextChar === " ") {
         segments.push({ type: "text", value: chars[i] });
         i++;
         continue;

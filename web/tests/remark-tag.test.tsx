@@ -20,6 +20,18 @@ describe("remarkTag", () => {
     expect(html).toContain('data-tag="memo-tag"');
   });
 
+  it("requires a boundary before tags", () => {
+    const html = renderMarkdown('word#tag 1#numeric #standalone (#parentheses) [#brackets] "#quotes" +#symbol');
+
+    expect(html).not.toContain('data-tag="tag"');
+    expect(html).not.toContain('data-tag="numeric"');
+    expect(html).toContain('data-tag="standalone"');
+    expect(html).toContain('data-tag="parentheses"');
+    expect(html).toContain('data-tag="brackets"');
+    expect(html).toContain('data-tag="quotes"');
+    expect(html).toContain('data-tag="symbol"');
+  });
+
   it("does not turn link text or reference link fragments into tags", () => {
     const html = renderMarkdown(
       [
