@@ -41,9 +41,9 @@
     "welcome-back": "Welcome back."
   },
   "demo": {
-    "banner-description": "Changes are temporary and may be reset.",
+    "banner-description": "Feel free to explore! This demo is reset periodically.",
     "banner-title": "Memos demo",
-    "deploy-link": "Deploy your Memos"
+    "deploy-link": "Deploy your own Memos"
   },
   "attachment-library": {
     "actions": {
