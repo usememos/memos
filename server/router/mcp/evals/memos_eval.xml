@@ -49,7 +49,7 @@
   </qa_pair>
   <qa_pair>
     <question>Find the memo containing a movie watchlist. What is the username of the user who created it?</question>
-    <answer>alice</answer>
+    <answer>sam</answer>
   </qa_pair>
   <qa_pair>
     <question>Exactly one memo is a travel bucket list. It names a Nordic country the author plans to visit in winter to see the Northern Lights. Which country?</question>

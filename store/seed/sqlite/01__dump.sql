@@ -11,22 +11,22 @@
 --
 -- Cast (passwords were random and discarded — seed users are NPCs):
 --   1 steven (ADMIN) — Memos maintainer; welcome, sponsors, changelog, tips
---   2 alice (USER)  — backend dev & reader; TILs, cheat sheets, weekly review
---   3 ben   (USER)  — traveling photographer; locations, photo attachment
---   4 zoe   (USER)  — reader & cook; books, recipes, movie lists
+--   2 johnny (USER) — backend dev & reader; TILs, cheat sheets, weekly review
+--   3 bob    (USER) — traveling photographer; locations, photo attachment
+--   4 sam    (USER) — reader & cook; books, recipes, movie lists
 -- ============================================================================
 
 INSERT INTO user (id,username,role,nickname,description,password_hash) VALUES(1,'steven','ADMIN','Steven','Creator & maintainer of Memos. I water this demo instance daily 🪴','$2y$12$A/8h4XS6hQmRVVSRFQHsR.wWVJbSG40avhuphOBdK5ws99W1kunr6');
-INSERT INTO user (id,username,role,nickname,description,password_hash) VALUES(2,'alice','USER','Alice','Backend dev. Notes about Git, Go, and whatever I broke today 🔧','$2y$12$CaqLYlvpHjL1qbVNny0lre59ctT2doIvVLh4Pn1yipsDUtbcbeum6');
-INSERT INTO user (id,username,role,nickname,description,password_hash) VALUES(3,'ben','USER','Ben','Traveling photographer. Writing places down before I forget them 🌍','$2y$12$A/8h4XS6hQmRVVSRFQHsR.wWVJbSG40avhuphOBdK5ws99W1kunr6');
-INSERT INTO user (id,username,role,nickname,description,password_hash) VALUES(4,'zoe','USER','Zoe','Reader, cook, maker of lists 📚🍜','$2y$12$CaqLYlvpHjL1qbVNny0lre59ctT2doIvVLh4Pn1yipsDUtbcbeum6');
+INSERT INTO user (id,username,role,nickname,description,password_hash) VALUES(2,'johnny','USER','Johnny','Backend dev. Notes about Git, Go, and whatever I broke today 🔧','$2y$12$CaqLYlvpHjL1qbVNny0lre59ctT2doIvVLh4Pn1yipsDUtbcbeum6');
+INSERT INTO user (id,username,role,nickname,description,password_hash) VALUES(3,'bob','USER','Bob','Traveling photographer. Writing places down before I forget them 🌍','$2y$12$A/8h4XS6hQmRVVSRFQHsR.wWVJbSG40avhuphOBdK5ws99W1kunr6');
+INSERT INTO user (id,username,role,nickname,description,password_hash) VALUES(4,'sam','USER','Sam','Reader, cook, maker of lists 📚🍜','$2y$12$CaqLYlvpHjL1qbVNny0lre59ctT2doIvVLh4Pn1yipsDUtbcbeum6');
 
 -- ============================================================================
 -- Pinned memos (Welcome leads — newest created_ts in the pinned section)
 -- ============================================================================
 
 -- 1. Welcome (steven, pinned) — orientation + SSO call-to-action + protected teaser
-INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,pinned,payload) VALUES(1,'welcome0000001',1,strftime('%s','now','-2 days'),strftime('%s','now','-2 days'),replace('# Welcome to Memos 👋\n\nHi, I''m Steven — I build Memos. You''ve found the public demo: a real, living instance where you can poke at every feature before self-hosting your own.\n\nMemos is an open-source, self-hosted home for short-form thoughts. Capture quickly, organize lightly, own everything.\n\n> Most apps treat notes like documents. Memos treats them like thoughts — small, timestamped, searchable.\n\n## Make yourself at home\n\n- [ ] Scroll this Explore feed — everything here was written with Memos\n- [ ] React to a memo you like (🎉 works great on this one)\n- [ ] **Sign in** (top right) — SSO takes ten seconds and gives you your own space\n- [ ] Write your first memo. One sentence is plenty. That''s the point.\n- [ ] Like it? Star [the repo](https://github.com/usememos/memos) ⭐\n\n🔒 *Psst — a few memos on this instance are hidden until you sign in. Members only.*\n\n## What Memos can do\n\n| Feature | Where to see it |\n|---------|-----------------|\n| **Markdown** | Everywhere — tables, `code`, task lists, quotes |\n| **Tags** | `#dev/git` — nested tags grow a tree in the sidebar |\n| **Comments & reactions** | Right under this memo 👇 |\n| **Memo references** | Alice''s weekly review links back to her week |\n| **Attachments** | Ben''s golden-hour art from the coastal trail |\n| **Locations** | Look for the 📍 pins |\n| **Visibility** | Public, protected, or private — chosen per memo |\n\n## Take it home\n\n```bash\ndocker run -d -p 5230:5230 -v ~/.memos:/var/opt/memos neosmemo/memos:stable\n```\n\nYour data lives in one SQLite file, on your machine. #welcome #getting-started','\n',char(10)),'PUBLIC',1,'{"tags":["welcome","getting-started"],"property":{"hasLink":true,"hasCode":true,"hasTaskList":true,"hasIncompleteTasks":true}}');
+INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,pinned,payload) VALUES(1,'welcome0000001',1,strftime('%s','now','-2 days'),strftime('%s','now','-2 days'),replace('# Welcome to Memos 👋\n\nHi, I''m Steven — I build Memos. You''ve found the public demo: a real, living instance where you can poke at every feature before self-hosting your own.\n\nMemos is an open-source, self-hosted home for short-form thoughts. Capture quickly, organize lightly, own everything.\n\n> Most apps treat notes like documents. Memos treats them like thoughts — small, timestamped, searchable.\n\n## Make yourself at home\n\n- [ ] Scroll this Explore feed — everything here was written with Memos\n- [ ] React to a memo you like (🎉 works great on this one)\n- [ ] **Sign in** (top right) — SSO takes ten seconds and gives you your own space\n- [ ] Write your first memo. One sentence is plenty. That''s the point.\n- [ ] Like it? Star [the repo](https://github.com/usememos/memos) ⭐\n\n🔒 *Psst — a few memos on this instance are hidden until you sign in. Members only.*\n\n## What Memos can do\n\n| Feature | Where to see it |\n|---------|-----------------|\n| **Markdown** | Everywhere — tables, `code`, task lists, quotes |\n| **Tags** | `#dev/git` — nested tags grow a tree in the sidebar |\n| **Comments & reactions** | Right under this memo 👇 |\n| **Memo references** | Johnny''s weekly review links back to his week |\n| **Attachments** | Bob''s golden-hour art from the coastal trail |\n| **Locations** | Look for the 📍 pins |\n| **Visibility** | Public, protected, or private — chosen per memo |\n\n## Take it home\n\n```bash\ndocker run -d -p 5230:5230 -v ~/.memos:/var/opt/memos neosmemo/memos:stable\n```\n\nYour data lives in one SQLite file, on your machine. #welcome #getting-started','\n',char(10)),'PUBLIC',1,'{"tags":["welcome","getting-started"],"property":{"hasLink":true,"hasCode":true,"hasTaskList":true,"hasIncompleteTasks":true}}');
 
 -- 2. Sponsors (steven, pinned) — sits below Welcome (older created_ts)
 INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,pinned,payload) VALUES(2,'sponsors000001',1,strftime('%s','now','-6 days'),strftime('%s','now','-6 days'),replace('Memos is free and open source, kept independent by its sponsors — no ads, no telemetry, no paywalls. 🙏 If you build with Memos, please consider supporting them in return.\n\n## ⭐ Sponsors\n\n<a href="https://coderabbit.link/usememos" target="_blank" rel="noopener"><img src="https://victorious-bubble-f69a016683.media.strapiapp.com/Orange_Typemark_43bf516c9d.svg" alt="CodeRabbit" height="44" /></a>\n\nCut code review time & bugs in half, instantly. [coderabbit.link/usememos →](https://coderabbit.link/usememos)\n\n---\n\n**SSD Nodes** — Affordable VPS hosting for self-hosters. [ssdnodes.com →](https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor)\n\n---\n\nWant to see your company here? Reach out via [GitHub Sponsors](https://github.com/sponsors/usememos).\n\n#sponsors','\n',char(10)),'PUBLIC',1,'{"tags":["sponsors"],"property":{"hasLink":true}}');
@@ -39,50 +39,50 @@ INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,pin
 -- 10. Steven: official Chrome extension launch (featured first in Explore)
 INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(10,'webclipper0001',1,strftime('%s','now','-30 minutes'),strftime('%s','now','-30 minutes'),replace('# ✂️ Memos Web Clipper for Chrome\n\nThe ***official*** Memos Web Clipper turns the page you''re reading into a source-linked memo in under five seconds.\n\n[Add Memos Web Clipper to Chrome →](https://chromewebstore.google.com/detail/memos-web-clipper/nebaoebnljalfegiidibihhkebeiklbl)\n\n| Capture from Chrome | What lands in Memos |\n|---------------------|---------------------|\n| Current page | Title, summary, and source link |\n| Text selection | Quoted excerpt with its source |\n| Selected image | A real attachment on your instance |\n\nEdit the generated memo, choose its visibility, or customize the template and default tags before saving.\n\n### Private by design\n\nThe clipper sends captured content only to the self-hosted Memos instance you connect — and only when you save. No analytics, third-party servers, or tracking. #memos/extensions','\n',char(10)),'PUBLIC','{"tags":["memos","memos/extensions"],"property":{"hasLink":true}}');
 
--- 3. Ben: photo memo with an image attachment + location
+-- 3. Bob: photo memo with an image attachment + location
 INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(3,'goldenhour0001',3,strftime('%s','now','-3 hours'),strftime('%s','now','-3 hours'),'Golden hour on the coastal trail tonight. The camera couldn''t hold the colors, so here''s my minimal-art rendition instead 🎨 #travel/hikes','PUBLIC','{"tags":["travel","travel/hikes"],"property":{"hasLink":false},"location":{"placeholder":"Point Reyes, California, United States","latitude":37.9954,"longitude":-123.0204}}');
 
 -- 27. Steven: build-in-public changelog note (real v0.30 highlights)
 INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(27,'v030changelog1',1,strftime('%s','now','-6 hours'),strftime('%s','now','-6 hours'),replace('Rolled v0.30 out to this demo instance 🚀 The highlights:\n\n- Editor rebuilt on CodeMirror — your markdown stays plain text, but formatting renders as you type\n- Scroll position is restored when you navigate back to a long feed\n- Tooltip polish and a pile of small fixes\n\nFull notes: [github.com/usememos/memos/releases](https://github.com/usememos/memos/releases)\n\nDogfooding note: this memo was of course drafted in the new editor. #memos/changelog','\n',char(10)),'PUBLIC','{"tags":["memos","memos/changelog"],"property":{"hasLink":true}}');
 
--- 4. Zoe: one-line book quote
-INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(4,'zoequote000001',4,strftime('%s','now','-7 hours'),strftime('%s','now','-7 hours'),replace('> "We tell ourselves stories in order to live." — Joan Didion\n\nBeen thinking about this all morning. #books','\n',char(10)),'PUBLIC','{"tags":["books"],"property":{"hasLink":false}}');
+-- 4. Sam: one-line book quote
+INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(4,'samquote000001',4,strftime('%s','now','-7 hours'),strftime('%s','now','-7 hours'),replace('> "We tell ourselves stories in order to live." — Joan Didion\n\nBeen thinking about this all morning. #books','\n',char(10)),'PUBLIC','{"tags":["books"],"property":{"hasLink":false}}');
 
--- 5. Alice: weekly review — REFERENCES her memos from the past week (see memo_relation)
-INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(5,'aliceweekly001',2,strftime('%s','now','-22 hours'),strftime('%s','now','-22 hours'),replace('## 🗓️ Week 28 review\n\n**Shipped:** v0.2 of the side project finally went out.\n\n**Learned:** the single-file branch diff trick — small thing, saves me daily.\n\n**Reading:** still working through *Deep Work*. The no-Slack-before-11am rule survived its second week.\n\n**Next week:** actually write the digest CLI I keep talking about, or stop talking about it.\n\nLinked the memos below so future me can retrace the week. #weekly','\n',char(10)),'PUBLIC','{"tags":["weekly"],"property":{"hasLink":false}}');
+-- 5. Johnny: weekly review — REFERENCES his memos from the past week (see memo_relation)
+INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(5,'johnnyweekly001',2,strftime('%s','now','-22 hours'),strftime('%s','now','-22 hours'),replace('## 🗓️ Week 28 review\n\n**Shipped:** v0.2 of the side project finally went out.\n\n**Learned:** the single-file branch diff trick — small thing, saves me daily.\n\n**Reading:** still working through *Deep Work*. The no-Slack-before-11am rule survived its second week.\n\n**Next week:** actually write the digest CLI I keep talking about, or stop talking about it.\n\nLinked the memos below so future me can retrace the week. #weekly','\n',char(10)),'PUBLIC','{"tags":["weekly"],"property":{"hasLink":false}}');
 
 -- 6. Steven: short product tip
 INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(6,'tagtipmemo0001',1,strftime('%s','now','-26 hours'),strftime('%s','now','-26 hours'),'Tip: tags are just typed inline — `#like/this` — and nested ones grow a tree in the sidebar. No setup, no tag manager. #getting-started','PUBLIC','{"tags":["getting-started"],"property":{"hasLink":false}}');
 
--- 7. Alice: shipped-it note
-INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(7,'aliceshipped01',2,strftime('%s','now','-2 days','+3 hours'),strftime('%s','now','-2 days','+3 hours'),'Shipped v0.2 of my side project tonight 🚀 Rewrote the sync engine and cut startup time in half. Scrolling back through my own #dev/til memos made the changelog write itself.','PUBLIC','{"tags":["dev","dev/til"],"property":{"hasLink":false}}');
+-- 7. Johnny: shipped-it note
+INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(7,'johnnyshipped01',2,strftime('%s','now','-2 days','+3 hours'),strftime('%s','now','-2 days','+3 hours'),'Shipped v0.2 of my side project tonight 🚀 Rewrote the sync engine and cut startup time in half. Scrolling back through my own #dev/til memos made the changelog write itself.','PUBLIC','{"tags":["dev","dev/til"],"property":{"hasLink":false}}');
 
--- 8. Alice: short TIL with a code block (referenced by the weekly review)
-INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(8,'alicetilgit001',2,strftime('%s','now','-3 days'),strftime('%s','now','-3 days'),replace('TIL you can diff a single file between branches — no checkout, no stash dance:\n\n```bash\ngit diff main..feature -- path/to/file.go\n```\n\n#dev/til #dev/git','\n',char(10)),'PUBLIC','{"tags":["dev","dev/til","dev/git"],"property":{"hasLink":false,"hasCode":true}}');
+-- 8. Johnny: short TIL with a code block (referenced by the weekly review)
+INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(8,'johnnytilgit001',2,strftime('%s','now','-3 days'),strftime('%s','now','-3 days'),replace('TIL you can diff a single file between branches — no checkout, no stash dance:\n\n```bash\ngit diff main..feature -- path/to/file.go\n```\n\n#dev/til #dev/git','\n',char(10)),'PUBLIC','{"tags":["dev","dev/til","dev/git"],"property":{"hasLink":false,"hasCode":true}}');
 
--- 29. Alice: link/bookmark capture — a core Memos use case
-INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(29,'alicebookmark1',2,strftime('%s','now','-32 hours'),strftime('%s','now','-32 hours'),'Weekend read, bookmarking before I lose it: [SQLite: 35% faster than the filesystem](https://sqlite.org/fasterthanfs.html) — makes me feel better about my entire digital life being one .db file 😄 #dev/reading','PUBLIC','{"tags":["dev","dev/reading"],"property":{"hasLink":true}}');
+-- 29. Johnny: link/bookmark capture — a core Memos use case
+INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(29,'johnnybookmark1',2,strftime('%s','now','-32 hours'),strftime('%s','now','-32 hours'),'Weekend read, bookmarking before I lose it: [SQLite: 35% faster than the filesystem](https://sqlite.org/fasterthanfs.html) — makes me feel better about my entire digital life being one .db file 😄 #dev/reading','PUBLIC','{"tags":["dev","dev/reading"],"property":{"hasLink":true}}');
 
--- 9. Zoe: recipe with a task list
-INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(9,'zoeramen000001',4,strftime('%s','now','-4 days'),strftime('%s','now','-4 days'),replace('## 🍜 Midnight miso ramen (15 minutes)\n\nFor nights when the book was too good to stop reading.\n\n- [x] Dashi or veg stock, 500ml\n- [x] Miso paste, 2 big spoons\n- [x] Noodles, one nest\n- [x] Soft egg — 6½ minutes, exactly\n- [ ] Scallions (always forget the scallions)\n\nSteep the miso, don''t boil it. That''s the whole secret. #cooking','\n',char(10)),'PUBLIC','{"tags":["cooking"],"property":{"hasLink":false,"hasTaskList":true,"hasIncompleteTasks":true}}');
+-- 9. Sam: recipe with a task list
+INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(9,'samramen000001',4,strftime('%s','now','-4 days'),strftime('%s','now','-4 days'),replace('## 🍜 Midnight miso ramen (15 minutes)\n\nFor nights when the book was too good to stop reading.\n\n- [x] Dashi or veg stock, 500ml\n- [x] Miso paste, 2 big spoons\n- [x] Noodles, one nest\n- [x] Soft egg — 6½ minutes, exactly\n- [ ] Scallions (always forget the scallions)\n\nSteep the miso, don''t boil it. That''s the whole secret. #cooking','\n',char(10)),'PUBLIC','{"tags":["cooking"],"property":{"hasLink":false,"hasTaskList":true,"hasIncompleteTasks":true}}');
 
 -- 30. Steven: compact Markdown rendering check framed as maintainer dogfooding
 INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(30,'rendertest0001',1,strftime('%s','now','-10 days'),strftime('%s','now','-10 days'),replace('## 🧪 Markdown rendering check #memos/dev\n\nA quick smoke test I open after releases:\n\n**Bold**, *italic*, ~~strikethrough~~, `inline code`, and a [docs link](https://www.usememos.com/docs).\n\n> Simple notes should render beautifully.\n\n```go\nfmt.Println("syntax highlighting ✓")\n```\n\n| Check | Status |\n|-------|--------|\n| Text styles | ✅ |\n| Code blocks | ✅ |\n| Tables | ✅ |\n\n- [x] Check desktop\n- [x] Check mobile\n- [ ] Ship the next release','\n',char(10)),'PUBLIC','{"tags":["memos","memos/dev"],"property":{"hasLink":true,"hasCode":true,"hasTaskList":true,"hasIncompleteTasks":true}}');
 
--- 11. Zoe: movie watchlist with a table
-INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(11,'zoemovies00001',4,strftime('%s','now','-9 days'),strftime('%s','now','-9 days'),replace('## 🎬 Movie catch-up #movies\n\nWorking through films I''ve been meaning to watch for, uh, years.\n\n| Movie | Status | Rating |\n|-------|--------|--------|\n| The Grand Budapest Hotel | ✅ Watched | ⭐⭐⭐⭐⭐ |\n| Spirited Away | ✅ Watched | ⭐⭐⭐⭐⭐ |\n| Everything Everywhere All at Once | ✅ Watched | ⭐⭐⭐⭐⭐ |\n| Dune: Part Two | 📅 This weekend | — |\n| Oppenheimer | 📋 Queued | — |\n\n**Spirited Away**: cried twice, no regrets. **Everything Everywhere**: went in cold, did not expect the bagel.\n\nNext month: full Miyazaki marathon 🎨 Taking suggestions for where to start.','\n',char(10)),'PUBLIC','{"tags":["movies"],"property":{"hasLink":false}}');
+-- 11. Sam: movie watchlist with a table
+INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(11,'sammovies00001',4,strftime('%s','now','-9 days'),strftime('%s','now','-9 days'),replace('## 🎬 Movie catch-up #movies\n\nWorking through films I''ve been meaning to watch for, uh, years.\n\n| Movie | Status | Rating |\n|-------|--------|--------|\n| The Grand Budapest Hotel | ✅ Watched | ⭐⭐⭐⭐⭐ |\n| Spirited Away | ✅ Watched | ⭐⭐⭐⭐⭐ |\n| Everything Everywhere All at Once | ✅ Watched | ⭐⭐⭐⭐⭐ |\n| Dune: Part Two | 📅 This weekend | — |\n| Oppenheimer | 📋 Queued | — |\n\n**Spirited Away**: cried twice, no regrets. **Everything Everywhere**: went in cold, did not expect the bagel.\n\nNext month: full Miyazaki marathon 🎨 Taking suggestions for where to start.','\n',char(10)),'PUBLIC','{"tags":["movies"],"property":{"hasLink":false}}');
 
--- 12. Ben: short travel journal + location
-INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(12,'bennighttrain1',3,strftime('%s','now','-12 days'),strftime('%s','now','-12 days'),'Overnight train from Oslo to Bergen. Woke at 5am to fjords in fog and couldn''t go back to sleep. Some views are worth the bad coffee ☕ #travel','PUBLIC','{"tags":["travel"],"property":{"hasLink":false},"location":{"placeholder":"Bergen, Vestland, Norway","latitude":60.3913,"longitude":5.3221}}');
+-- 12. Bob: short travel journal + location
+INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(12,'bobnighttrain1',3,strftime('%s','now','-12 days'),strftime('%s','now','-12 days'),'Overnight train from Oslo to Bergen. Woke at 5am to fjords in fog and couldn''t go back to sleep. Some views are worth the bad coffee ☕ #travel','PUBLIC','{"tags":["travel"],"property":{"hasLink":false},"location":{"placeholder":"Bergen, Vestland, Norway","latitude":60.3913,"longitude":5.3221}}');
 
--- 13. Ben: travel bucket list + location
-INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(13,'benbucketlist1',3,strftime('%s','now','-13 days'),strftime('%s','now','-13 days'),replace('## 🌍 My travel bucket list #travel/bucketlist\n\n> Writing this from a tiny café near the Seine. Will keep updating after each trip. 📍\n\n### Been\n- [x] Paris, France — the croissants ruined every croissant after\n- [x] Shanghai, China — modern skyline next to thousand-year-old temples, somehow it works\n- [x] Grand Canyon, USA — photos do not do it justice, and I say that professionally\n- [x] Barcelona, Spain — Gaudí''s buildings look grown, not built\n\n### Next\n- [ ] Northern Lights in Iceland — booking for winter, *finally*\n- [ ] Safari in Tanzania\n- [ ] Great Barrier Reef, before it gets worse\n- [ ] New Zealand road trip — south island, two weeks minimum','\n',char(10)),'PUBLIC','{"tags":["travel","travel/bucketlist"],"property":{"hasTaskList":true,"hasIncompleteTasks":true},"location":{"placeholder":"Paris, Île-de-France, France","latitude":48.8566,"longitude":2.3522}}');
+-- 13. Bob: travel bucket list + location
+INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(13,'bobbucketlist1',3,strftime('%s','now','-13 days'),strftime('%s','now','-13 days'),replace('## 🌍 My travel bucket list #travel/bucketlist\n\n> Writing this from a tiny café near the Seine. Will keep updating after each trip. 📍\n\n### Been\n- [x] Paris, France — the croissants ruined every croissant after\n- [x] Shanghai, China — modern skyline next to thousand-year-old temples, somehow it works\n- [x] Grand Canyon, USA — photos do not do it justice, and I say that professionally\n- [x] Barcelona, Spain — Gaudí''s buildings look grown, not built\n\n### Next\n- [ ] Northern Lights in Iceland — booking for winter, *finally*\n- [ ] Safari in Tanzania\n- [ ] Great Barrier Reef, before it gets worse\n- [ ] New Zealand road trip — south island, two weeks minimum','\n',char(10)),'PUBLIC','{"tags":["travel","travel/bucketlist"],"property":{"hasTaskList":true,"hasIncompleteTasks":true},"location":{"placeholder":"Paris, Île-de-France, France","latitude":48.8566,"longitude":2.3522}}');
 
--- 14. Alice: git cheat sheet — long-form anchor with code blocks
-INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(14,'alicegitcheat1',2,strftime('%s','now','-17 days'),strftime('%s','now','-17 days'),replace('## ⚡ Git commands I keep forgetting #dev/git #dev/cheatsheet\n\nWriting these down so I stop googling the same things every week.\n\n```bash\n# Show the last commit in detail\ngit show --stat HEAD\n\n# Undo the last commit, keep changes staged\ngit reset --soft HEAD~1\n\n# Stash including untracked files\ngit stash push -u -m "wip: before refactor"\n\n# Find which commit introduced a string\ngit log -S "function_name" --source --all\n```\n\nThe `-S` one is gold for archaeology — way better than scrolling blame.','\n',char(10)),'PUBLIC','{"tags":["dev","dev/git","dev/cheatsheet"],"property":{"hasLink":false,"hasCode":true}}');
+-- 14. Johnny: git cheat sheet — long-form anchor with code blocks
+INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(14,'johnnygitcheat1',2,strftime('%s','now','-17 days'),strftime('%s','now','-17 days'),replace('## ⚡ Git commands I keep forgetting #dev/git #dev/cheatsheet\n\nWriting these down so I stop googling the same things every week.\n\n```bash\n# Show the last commit in detail\ngit show --stat HEAD\n\n# Undo the last commit, keep changes staged\ngit reset --soft HEAD~1\n\n# Stash including untracked files\ngit stash push -u -m "wip: before refactor"\n\n# Find which commit introduced a string\ngit log -S "function_name" --source --all\n```\n\nThe `-S` one is gold for archaeology — way better than scrolling blame.','\n',char(10)),'PUBLIC','{"tags":["dev","dev/git","dev/cheatsheet"],"property":{"hasLink":false,"hasCode":true}}');
 
--- 15. Alice: reading note + café location (oldest memo — the back of the feed)
-INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(15,'alicereading01',2,strftime('%s','now','-22 days'),strftime('%s','now','-22 days'),replace('## 📖 Reading: Deep Work #books\n\nStarted Cal Newport''s *Deep Work* this week. This passage stopped me:\n\n> "Human beings, it seems, are at their best when immersed deeply in something challenging."\n\nThat''s the whole pitch in one sentence. The rest of the book is evidence.\n\nExperiment for the next two weeks: no Slack or email before 11am. See what shifts when the morning is mine.','\n',char(10)),'PUBLIC','{"tags":["books"],"property":{"hasLink":false},"location":{"placeholder":"Sightglass Coffee, San Francisco, California, United States","latitude":37.7726,"longitude":-122.4099}}');
+-- 15. Johnny: reading note + café location (oldest memo — the back of the feed)
+INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(15,'johnnyreading01',2,strftime('%s','now','-22 days'),strftime('%s','now','-22 days'),replace('## 📖 Reading: Deep Work #books\n\nStarted Cal Newport''s *Deep Work* this week. This passage stopped me:\n\n> "Human beings, it seems, are at their best when immersed deeply in something challenging."\n\nThat''s the whole pitch in one sentence. The rest of the book is evidence.\n\nExperiment for the next two weeks: no Slack or email before 11am. See what shifts when the morning is mine.','\n',char(10)),'PUBLIC','{"tags":["books"],"property":{"hasLink":false},"location":{"placeholder":"Sightglass Coffee, San Francisco, California, United States","latitude":37.7726,"longitude":-122.4099}}');
 
 -- ============================================================================
 -- Protected memos — invisible when logged out; Explore gains these after SSO
@@ -92,40 +92,40 @@ INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,pay
 -- 16. Steven: self-referential visibility explainer
 INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(16,'protectedintro',1,strftime('%s','now','-20 hours'),strftime('%s','now','-20 hours'),replace('🔓 **If you can read this, you''re signed in.**\n\nThis memo''s visibility is **Protected** — every member of this instance can see it, but the logged-out public can''t. There''s a third level, **Private**, that only the author ever sees.\n\nEvery memo picks its own level: public for the world, protected for your team or community, private for your 3am thoughts. #getting-started','\n',char(10)),'PROTECTED','{"tags":["getting-started"],"property":{"hasLink":false}}');
 
--- 17. Alice: half-formed idea — protected memos are naturally rougher
-INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(17,'alicedigestcli',2,strftime('%s','now','-9 hours'),strftime('%s','now','-9 hours'),'Half-formed idea: a tiny CLI that collects my #dev/til memos into a weekly digest. Memos has a full API with access tokens, so this is one evening of work. Parking it here so future me has no excuses.','PROTECTED','{"tags":["dev","dev/til"],"property":{"hasLink":false}}');
+-- 17. Johnny: half-formed idea — protected memos are naturally rougher
+INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(17,'johnnydigestcli',2,strftime('%s','now','-9 hours'),strftime('%s','now','-9 hours'),'Half-formed idea: a tiny CLI that collects my #dev/til memos into a weekly digest. Memos has a full API with access tokens, so this is one evening of work. Parking it here so future me has no excuses.','PROTECTED','{"tags":["dev","dev/til"],"property":{"hasLink":false}}');
 
--- 18. Ben: members-only packing list
-INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(18,'benpacklist001',3,strftime('%s','now','-5 days'),strftime('%s','now','-5 days'),replace('Coast trip packing list — members-only edition, because nobody needs to know how much coffee gear I carry:\n\n- [x] Camera + the one lens I''ll actually use\n- [x] AeroPress, hand grinder, scale ☕\n- [x] Rain shell\n- [ ] The second lens I won''t use but will pack anyway\n\n#travel/hikes','\n',char(10)),'PROTECTED','{"tags":["travel","travel/hikes"],"property":{"hasLink":false,"hasTaskList":true,"hasIncompleteTasks":true}}');
+-- 18. Bob: members-only packing list
+INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(18,'bobpacklist001',3,strftime('%s','now','-5 days'),strftime('%s','now','-5 days'),replace('Coast trip packing list — members-only edition, because nobody needs to know how much coffee gear I carry:\n\n- [x] Camera + the one lens I''ll actually use\n- [x] AeroPress, hand grinder, scale ☕\n- [x] Rain shell\n- [ ] The second lens I won''t use but will pack anyway\n\n#travel/hikes','\n',char(10)),'PROTECTED','{"tags":["travel","travel/hikes"],"property":{"hasLink":false,"hasTaskList":true,"hasIncompleteTasks":true}}');
 
--- 19. Zoe: confession
-INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(19,'zoebookpile001',4,strftime('%s','now','-30 hours'),strftime('%s','now','-30 hours'),'Note to self: stop buying books faster than I read them. Current pile: 9. Keeping this memo protected so only fellow members witness my shame 📚 #books','PROTECTED','{"tags":["books"],"property":{"hasLink":false}}');
+-- 19. Sam: confession
+INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(19,'sambookpile001',4,strftime('%s','now','-30 hours'),strftime('%s','now','-30 hours'),'Note to self: stop buying books faster than I read them. Current pile: 9. Keeping this memo protected so only fellow members witness my shame 📚 #books','PROTECTED','{"tags":["books"],"property":{"hasLink":false}}');
 
 -- ============================================================================
 -- Comments (memos linked via memo_relation COMMENT)
 -- ============================================================================
 
--- 20. Zoe on Welcome
+-- 20. Sam on Welcome
 INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(20,'cmtwelcome0001',4,strftime('%s','now','-21 hours'),strftime('%s','now','-21 hours'),'Signed in with GitHub and posted my first memo inside a minute. Lowest-friction note app I''ve used 👏','PUBLIC','{"property":{"hasLink":false}}');
 
--- 21–22. Thread on Alice's git cheat sheet
+-- 21–22. Thread on Johnny's git cheat sheet
 INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(21,'cmtgitcheat001',3,strftime('%s','now','-17 days','+5 hours'),strftime('%s','now','-17 days','+5 hours'),'Saving the `git log -S` one. Code archaeology mode unlocked 🔥','PUBLIC','{"property":{"hasLink":false}}');
 INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(22,'cmtgitcheat002',2,strftime('%s','now','-17 days','+6 hours'),strftime('%s','now','-17 days','+6 hours'),'Also try `git log -p -- path/to/file` when you want the actual content changes for one file. Same archaeology vibe.','PUBLIC','{"property":{"hasLink":false}}');
 
--- 23–24. Thread on Ben's golden-hour memo
+-- 23–24. Thread on Bob's golden-hour memo
 INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(23,'cmtgolden00001',4,strftime('%s','now','-2 hours'),strftime('%s','now','-2 hours'),'Okay, the gradient sky is gorgeous. Which trail is this?','PUBLIC','{"property":{"hasLink":false}}');
 INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(24,'cmtgolden00002',3,strftime('%s','now','-1 hours'),strftime('%s','now','-1 hours'),'Point Reyes, the stretch north of the lighthouse — tap the 📍 on the memo. Golden hour there never misses.','PUBLIC','{"property":{"hasLink":false}}');
 
--- 25. Alice on Zoe's movie list
+-- 25. Johnny on Sam's movie list
 INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(25,'cmtmovies00001',2,strftime('%s','now','-8 days'),strftime('%s','now','-8 days'),'Start the Miyazaki marathon with *Porco Rosso*. Trust me.','PUBLIC','{"property":{"hasLink":false}}');
 
--- 28. Alice on Steven's changelog note
+-- 28. Johnny on Steven's changelog note
 INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(28,'cmtchangelog01',2,strftime('%s','now','-4 hours'),strftime('%s','now','-4 hours'),'Scroll restoration 🙏 Losing my place in a long feed was my one real gripe. The new editor feels noticeably snappier too.','PUBLIC','{"property":{"hasLink":false}}');
 
--- 31. Alice on the rendering test memo (includes an @mention)
+-- 31. Johnny on the rendering test memo (includes an @mention)
 INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(31,'cmtrendertest1',2,strftime('%s','now','-10 days','+4 hours'),strftime('%s','now','-10 days','+4 hours'),'The fact that the public demo doubles as your CI is very on brand, @steven 😄','PUBLIC','{"property":{"hasLink":false}}');
 
--- 26. Alice on the protected explainer (protected too — consistent visibility)
+-- 26. Johnny on the protected explainer (protected too — consistent visibility)
 INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,payload) VALUES(26,'cmtprotected01',2,strftime('%s','now','-18 hours'),strftime('%s','now','-18 hours'),'Can confirm: this memo did not exist for me until I signed in. Neat trick 👀','PROTECTED','{"property":{"hasLink":false}}');
 
 -- ============================================================================
@@ -133,17 +133,17 @@ INSERT INTO memo (id,uid,creator_id,created_ts,updated_ts,content,visibility,pay
 -- ============================================================================
 
 -- Comments
-INSERT INTO memo_relation VALUES(20,1,'COMMENT');    -- Zoe → Welcome
-INSERT INTO memo_relation VALUES(21,14,'COMMENT');   -- Ben → git cheat sheet
-INSERT INTO memo_relation VALUES(22,14,'COMMENT');   -- Alice → git cheat sheet
-INSERT INTO memo_relation VALUES(23,3,'COMMENT');    -- Zoe → golden hour
-INSERT INTO memo_relation VALUES(24,3,'COMMENT');    -- Ben → golden hour
-INSERT INTO memo_relation VALUES(25,11,'COMMENT');   -- Alice → movie list
-INSERT INTO memo_relation VALUES(26,16,'COMMENT');   -- Alice → protected explainer
-INSERT INTO memo_relation VALUES(28,27,'COMMENT');   -- Alice → v0.30 changelog
-INSERT INTO memo_relation VALUES(31,30,'COMMENT');   -- Alice → rendering test
+INSERT INTO memo_relation VALUES(20,1,'COMMENT');    -- Sam → Welcome
+INSERT INTO memo_relation VALUES(21,14,'COMMENT');   -- Bob → git cheat sheet
+INSERT INTO memo_relation VALUES(22,14,'COMMENT');   -- Johnny → git cheat sheet
+INSERT INTO memo_relation VALUES(23,3,'COMMENT');    -- Sam → golden hour
+INSERT INTO memo_relation VALUES(24,3,'COMMENT');    -- Bob → golden hour
+INSERT INTO memo_relation VALUES(25,11,'COMMENT');   -- Johnny → movie list
+INSERT INTO memo_relation VALUES(26,16,'COMMENT');   -- Johnny → protected explainer
+INSERT INTO memo_relation VALUES(28,27,'COMMENT');   -- Johnny → v0.30 changelog
+INSERT INTO memo_relation VALUES(31,30,'COMMENT');   -- Johnny → rendering test
 
--- References: Alice's weekly review links back to her week
+-- References: Johnny's weekly review links back to his week
 INSERT INTO memo_relation VALUES(5,7,'REFERENCE');   -- weekly review → shipped v0.2
 INSERT INTO memo_relation VALUES(5,8,'REFERENCE');   -- weekly review → git diff TIL
 INSERT INTO memo_relation VALUES(5,15,'REFERENCE');  -- weekly review → Deep Work note
@@ -160,36 +160,36 @@ INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(5,3,'memos/
 INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(6,2,'memos/goldenhour0001','🔥');
 INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(7,4,'memos/goldenhour0001','💛');
 INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(8,1,'memos/goldenhour0001','👏');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(9,2,'memos/zoequote000001','💛');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(10,3,'memos/zoequote000001','👀');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(11,1,'memos/aliceweekly001','👏');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(12,4,'memos/aliceweekly001','💡');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(13,1,'memos/aliceshipped01','🚀');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(14,4,'memos/aliceshipped01','🎉');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(15,3,'memos/aliceshipped01','🔥');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(16,3,'memos/alicetilgit001','💡');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(17,4,'memos/alicetilgit001','+1');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(18,3,'memos/zoeramen000001','👌');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(19,2,'memos/zoeramen000001','💛');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(20,1,'memos/zoemovies00001','👍');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(21,4,'memos/bennighttrain1','💛');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(22,3,'memos/alicegitcheat1','🔥');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(23,4,'memos/alicegitcheat1','💡');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(9,2,'memos/samquote000001','💛');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(10,3,'memos/samquote000001','👀');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(11,1,'memos/johnnyweekly001','👏');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(12,4,'memos/johnnyweekly001','💡');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(13,1,'memos/johnnyshipped01','🚀');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(14,4,'memos/johnnyshipped01','🎉');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(15,3,'memos/johnnyshipped01','🔥');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(16,3,'memos/johnnytilgit001','💡');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(17,4,'memos/johnnytilgit001','+1');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(18,3,'memos/samramen000001','👌');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(19,2,'memos/samramen000001','💛');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(20,1,'memos/sammovies00001','👍');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(21,4,'memos/bobnighttrain1','💛');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(22,3,'memos/johnnygitcheat1','🔥');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(23,4,'memos/johnnygitcheat1','💡');
 INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(24,4,'memos/webclipper0001','💡');
 INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(25,1,'memos/tagtipmemo0001','👍');
 INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(26,2,'memos/protectedintro','👀');
 INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(27,3,'memos/protectedintro','✅');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(28,4,'memos/benpacklist001','😂');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(29,3,'memos/zoebookpile001','😂');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(28,4,'memos/bobpacklist001','😂');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(29,3,'memos/sambookpile001','😂');
 INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(30,2,'memos/v030changelog1','🎉');
 INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(31,4,'memos/v030changelog1','🚀');
 INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(32,3,'memos/v030changelog1','🔥');
-INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(33,1,'memos/alicebookmark1','👀');
+INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(33,1,'memos/johnnybookmark1','👀');
 INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(34,2,'memos/rendertest0001','😂');
 INSERT INTO reaction (id,creator_id,content_id,reaction_type) VALUES(35,4,'memos/rendertest0001','💡');
 
 -- ============================================================================
--- Attachment: Ben's golden-hour art (stored in the database blob column;
+-- Attachment: Bob's golden-hour art (stored in the database blob column;
 -- empty storage_type = database storage). Size must match the blob length.
 -- ============================================================================
 

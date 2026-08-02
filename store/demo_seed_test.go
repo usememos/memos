@@ -57,12 +57,12 @@ func TestDemoSeedUsesDeploymentAuthenticationPolicy(t *testing.T) {
 	require.NoError(t, err)
 	require.GreaterOrEqual(t, adminCost, 12)
 
-	aliceUsername := "alice"
-	aliceUser, err := stores.GetUser(ctx, &store.FindUser{Username: &aliceUsername})
+	johnnyUsername := "johnny"
+	johnnyUser, err := stores.GetUser(ctx, &store.FindUser{Username: &johnnyUsername})
 	require.NoError(t, err)
-	require.NotNil(t, aliceUser)
-	require.Error(t, bcrypt.CompareHashAndPassword([]byte(aliceUser.PasswordHash), []byte("demo")))
-	require.NotEqual(t, adminUser.PasswordHash, aliceUser.PasswordHash)
+	require.NotNil(t, johnnyUser)
+	require.Error(t, bcrypt.CompareHashAndPassword([]byte(johnnyUser.PasswordHash), []byte("demo")))
+	require.NotEqual(t, adminUser.PasswordHash, johnnyUser.PasswordHash)
 
 	memos, err := stores.ListMemos(ctx, &store.FindMemo{})
 	require.NoError(t, err)
