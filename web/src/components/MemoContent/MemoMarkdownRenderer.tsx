@@ -10,10 +10,9 @@ import { isMentionElement, isTagElement, isTaskListItemElement } from "@/types/m
 import { lazyWithReload } from "@/utils/lazy";
 import { rehypeHeadingId } from "@/utils/rehype-plugins/rehype-heading-id";
 import { remarkDisableSetext } from "@/utils/remark-plugins/remark-disable-setext";
-import { remarkMention } from "@/utils/remark-plugins/remark-mention";
 import { remarkPreserveType } from "@/utils/remark-plugins/remark-preserve-type";
 import { remarkSplitMixedTaskLists } from "@/utils/remark-plugins/remark-split-mixed-task-lists";
-import { remarkTag } from "@/utils/remark-plugins/remark-tag";
+import { remarkMemoSyntax } from "@/utils/remark-plugins/remark-tag";
 import { CodeBlock } from "./CodeBlock";
 import { SANITIZE_SCHEMA } from "./constants";
 import { MarkdownRenderContext, rootMarkdownRenderContext } from "./MarkdownRenderContext";
@@ -58,7 +57,7 @@ function getMentionUsername(node: Element, children?: ReactNode): string {
 
   const text = Array.isArray(children) ? children.join("") : children;
   if (typeof text === "string" && text.startsWith("@")) {
-    return text.slice(1).toLowerCase();
+    return text.slice(1);
   }
 
   return "";
@@ -165,8 +164,7 @@ export const MemoMarkdownRendererCore = ({
           ...mathRemarkPlugins,
           remarkGfm,
           remarkSplitMixedTaskLists,
-          remarkTag,
-          remarkMention,
+          remarkMemoSyntax,
           remarkBreaks,
           remarkPreserveType,
         ]}

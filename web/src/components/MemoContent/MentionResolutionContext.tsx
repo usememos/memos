@@ -3,7 +3,7 @@ import { createContext, type ReactNode, useContext, useMemo } from "react";
 import { userDetailQueryOptions, useUsersByUsernames } from "@/hooks/useUserQueries";
 import { extractUsernameFromName } from "@/lib/resource-names";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
-import { extractMentionUsernames } from "@/utils/remark-plugins/remark-mention";
+import { extractMentionUsernames } from "@/utils/mention-extraction";
 
 interface UserResolutionContextValue {
   mentionUsernamesByContent: ReadonlyMap<string, string[]>;

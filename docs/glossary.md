@@ -3,6 +3,47 @@
 This glossary defines product and domain language shared across Memos design documents. Protocol, Unicode, and parser-specific terms remain in the ADRs
 that use them.
 
+## Users and usernames
+
+### User
+
+A durable Memos account. Its stable identity is an internal user ID, not its mutable username or display name.
+
+### Username
+
+A user-selected, case-sensitive public account identifier used for authentication, user resource names, lookup, and references. Username spelling is
+case-preserving, is not implicitly trimmed or normalized, and equality is exact ASCII byte equality, so `Alice` and `alice` are distinct usernames. A
+username is distinct from both a display name and the user's internal ID. Its spelling does not grant a role or establish that the user is trusted.
+
+### Writable username
+
+A username accepted for account creation, rename, or automatic provisioning. It is 1 through 36 ASCII letters, digits, or hyphens; begins and ends with an
+ASCII letter or digit; and may contain repeated interior hyphens without an additional restriction. Numeric spelling has no special meaning, so a value
+containing only digits is also a writable username. Internationalized human-readable naming belongs to the user's display name.
+
+### Legacy username
+
+A stored username that does not satisfy the writable format but remains readable and addressable for compatibility. Legacy usernames are not accepted by
+new write validation or added to new reference syntaxes.
+
+### Username reference
+
+Source text that names an exact, case-sensitive username so Memos can attempt to resolve it to a user ID. The source spelling alone is not a durable user
+binding. Stability across username rename and reuse requires additional persisted identity that the current username-reference specification does not
+define.
+
+### Mention candidate
+
+An eligible memo Markdown source span formed by an ASCII `@` followed by one complete writable username. Recognition also applies the boundary and opaque
+Markdown-context rules in the active username-reference specification. The same ASCII letters, digits, and hyphen admitted inside a username define the
+mention boundaries: they block a mention immediately to their right and are consumed as part of the complete candidate to their left. Other characters
+receive no special boundary handling.
+
+### Resolved mention
+
+A mention candidate whose exact username resolves to a user under the consuming operation's existing account-status and visibility policy. User-targeted
+effects apply to the resolved user ID, not to unresolved source text.
+
 ## Tags
 
 ### Tag

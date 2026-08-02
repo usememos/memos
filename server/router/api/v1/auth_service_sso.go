@@ -66,11 +66,11 @@ func (s *APIV1Service) resolveSSOUser(ctx context.Context, currentUser *store.Us
 }
 
 // createSSOUser prefers the mapped external identifier as the initial local
-// username when it satisfies the local username rules and is not a reserved
-// name. A database uniqueness conflict falls back to a generated UUID instead of
-// linking the SSO identity to the existing same-named account. User and identity
-// creation are committed atomically so a concurrent UUID fallback cannot win
-// after another request has claimed the preferred username.
+// username when it satisfies the local username rules. A database uniqueness
+// conflict falls back to a generated UUID instead of linking the SSO identity to
+// the existing same-named account. User and identity creation are committed
+// atomically so a concurrent UUID fallback cannot win after another request has
+// claimed the preferred username.
 //
 // tryUsername returns a non-nil user when the identity is resolved (either newly
 // created or reconciled to a concurrent winner) and (nil, nil) when the username
@@ -109,11 +109,8 @@ func (s *APIV1Service) createSSOUser(
 		return s.getLinkedSSOUser(ctx, provider, externUID)
 	}
 
-	// Only adopt the external identifier as the local username when it is a valid,
-	// non-reserved name; otherwise an attacker-influenceable identifier could
-	// squat a privileged or system handle. Reserved and invalid names fall back to
-	// an opaque UUID.
-	if err := validateWritableUsername(userInfo.Identifier); err == nil && !isReservedUsername(userInfo.Identifier) {
+	// Adopt any valid external identifier. Invalid names fall back to an opaque UUID.
+	if err := validateWritableUsername(userInfo.Identifier); err == nil {
 		user, err := tryUsername(userInfo.Identifier)
 		if err != nil {
 			return nil, err

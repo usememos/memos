@@ -4,18 +4,15 @@ import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import { describe, expect, it } from "vitest";
-import { remarkMention } from "@/utils/remark-plugins/remark-mention";
-import { remarkTag } from "@/utils/remark-plugins/remark-tag";
+import { remarkMemoSyntax } from "@/utils/remark-plugins/remark-tag";
 
 const renderMarkdown = (content: string): string =>
-  renderToStaticMarkup(
-    <ReactMarkdown remarkPlugins={[remarkMath, remarkGfm, remarkTag, remarkMention, remarkBreaks]}>{content}</ReactMarkdown>,
-  );
+  renderToStaticMarkup(<ReactMarkdown remarkPlugins={[remarkMath, remarkGfm, remarkMemoSyntax, remarkBreaks]}>{content}</ReactMarkdown>);
 
 const renderMarkdownWithoutMath = (content: string): string =>
-  renderToStaticMarkup(<ReactMarkdown remarkPlugins={[remarkGfm, remarkTag, remarkMention, remarkBreaks]}>{content}</ReactMarkdown>);
+  renderToStaticMarkup(<ReactMarkdown remarkPlugins={[remarkGfm, remarkMemoSyntax, remarkBreaks]}>{content}</ReactMarkdown>);
 
-describe("remarkTag", () => {
+describe("remarkMemoSyntax", () => {
   it("does not turn URL fragments inside autolinks into tags", () => {
     const html = renderMarkdown("https://github.com/dmtrKovalenko/fff#pi-agent-extension\n\nProject #memo-tag");
 
@@ -266,6 +263,28 @@ describe("remarkTag", () => {
     expect(html).toContain('<em><a href="mailto:foo@example.com">foo@example.com</a> <span class="tag" data-tag="tag">#tag</span></em>');
   });
 
+  it("renders only complete writable usernames and preserves their case", () => {
+    const maximum = `A${"b".repeat(35)}`;
+    const html = renderMarkdown(`@Alice-2 @1alice @123 @-alice @alice- @alice_smith @${maximum} @${maximum}c`);
+
+    expect(html).toContain('data-mention="Alice-2"');
+    expect(html).toContain('data-mention="1alice"');
+    expect(html).toContain(`data-mention="${maximum}"`);
+    expect(html).toContain('data-mention="123"');
+    expect(html).not.toContain('data-mention="-alice"');
+    expect(html).not.toContain('data-mention="alice-"');
+    expect(html).toContain('data-mention="alice"');
+    expect(html).not.toContain(`data-mention="${maximum}c"`);
+  });
+
+  it("uses Markdown structure for mention eligibility", () => {
+    const html = renderMarkdown("**@Alice** `@code` [@link](/x) https://example.com/@url $@math$ \\@escaped &#64;entity @ok");
+
+    expect(html).toContain('data-mention="Alice"');
+    expect(html).toContain('data-mention="ok"');
+    expect(html.match(/data-mention=/g)).toHaveLength(2);
+  });
+
   it.each([
     [
       "__foo@example.com #tag__ @carol",
@@ -331,7 +350,7 @@ describe("remarkTag", () => {
     expect(strongHTML).toContain('data-mention="alice"');
     expect(emphasisHTML).toContain('data-mention="alice"');
     expect(tagHTML).not.toContain('data-mention="alice"');
-    expect(adjacentMentionsHTML.match(/data-mention=/g)).toHaveLength(1);
+    expect(adjacentMentionsHTML).toContain('data-mention="alice"');
     expect(adjacentMentionsHTML).not.toContain('data-mention="bob"');
   });
 

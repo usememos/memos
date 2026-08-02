@@ -10,6 +10,8 @@ type MentionNode struct {
 
 	// Username without the @ prefix.
 	Username []byte
+	// Source is the exact recognized source spelling, including the @ prefix.
+	Source []byte
 }
 
 // KindMention is the NodeKind for MentionNode.
@@ -24,5 +26,6 @@ func (*MentionNode) Kind() gast.NodeKind {
 func (n *MentionNode) Dump(source []byte, level int) {
 	gast.DumpHelper(n, source, level, map[string]string{
 		"Username": string(n.Username),
+		"Source":   string(n.Source),
 	}, nil)
 }

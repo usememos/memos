@@ -6,6 +6,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/usememos/memos/internal/base"
 )
 
 func TestNewService(t *testing.T) {
@@ -346,10 +348,10 @@ func TestExtractAllMentions(t *testing.T) {
 
 	data, err := svc.ExtractAll([]byte("Hi @Alice and @bob. Email support@example.com should stay plain. #tag"))
 	require.NoError(t, err)
-	assert.ElementsMatch(t, []string{"alice", "bob"}, data.Mentions)
+	assert.ElementsMatch(t, []string{"Alice", "bob"}, data.Mentions)
 	assert.ElementsMatch(t, []string{"tag"}, data.Tags)
 
-	maxLengthUsername := "a" + strings.Repeat("b", 62)
+	maxLengthUsername := "a" + strings.Repeat("b", base.MaxUsernameLength-1)
 	data, err = svc.ExtractAll([]byte("@" + maxLengthUsername))
 	require.NoError(t, err)
 	assert.Equal(t, []string{maxLengthUsername}, data.Mentions)
@@ -357,6 +359,47 @@ func TestExtractAllMentions(t *testing.T) {
 	data, err = svc.ExtractAll([]byte("@" + maxLengthUsername + "c"))
 	require.NoError(t, err)
 	assert.Empty(t, data.Mentions)
+}
+
+func TestExtractAllMentionSyntaxAndContexts(t *testing.T) {
+	svc := NewService(WithTagExtension(), WithMentionExtension())
+	tests := []struct {
+		name     string
+		content  string
+		expected []string
+	}{
+		{name: "writable usernames", content: "@alice @Alice-2 @1alice @a--b @123 @123-456", expected: []string{"alice", "Alice-2", "1alice", "a--b", "123", "123-456"}},
+		{name: "invalid username shapes", content: "@-alice @alice- @álîçé"},
+		{name: "left boundaries", content: "hello@alice foo-@bob foo_@carol 中文@dave (@erin)", expected: []string{"carol", "dave", "erin"}},
+		{name: "non-username right boundaries", content: "@alice_smith @bob@carol", expected: []string{"alice", "bob"}},
+		{name: "formatted text", content: "**@Alice** ~~@bob~~ _@carol_", expected: []string{"Alice", "bob", "carol"}},
+		{name: "opaque Markdown", content: "`@code` [@link](/x) ![@image](/x) https://example.com/@url $@math$ @ok", expected: []string{"ok"}},
+		{name: "escapes and references", content: `\@escaped &#64;entity @ok`, expected: []string{"ok"}},
+		{name: "GFM email precedence", content: "@alice@example.com foo@bar.com@bob @ok", expected: []string{"ok"}},
+		{name: "padded blockquote", content: ">\t@alice", expected: []string{"alice"}},
+		{name: "padded list continuation", content: "- item\n \t@bob", expected: []string{"bob"}},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			data, err := svc.ExtractAll([]byte(test.content))
+			require.NoError(t, err)
+			assert.Equal(t, test.expected, data.Mentions)
+		})
+	}
+}
+
+func TestMentionSourceSpelling(t *testing.T) {
+	svc := NewService(WithTagExtension(), WithMentionExtension())
+	content := "Hello @Alice-2"
+
+	rendered, err := svc.RenderMarkdown([]byte(content))
+	require.NoError(t, err)
+	assert.Equal(t, content, rendered)
+
+	html, err := svc.RenderHTML([]byte(content))
+	require.NoError(t, err)
+	assert.Contains(t, html, "@Alice-2")
 }
 
 func TestExtractAllSkipsTagsInsideLinks(t *testing.T) {

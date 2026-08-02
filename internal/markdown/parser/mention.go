@@ -1,92 +1,59 @@
 package parser
 
 import (
-	"bytes"
-	"unicode"
-	"unicode/utf8"
+	"github.com/yuin/goldmark/util"
 
-	gast "github.com/yuin/goldmark/ast"
-	"github.com/yuin/goldmark/parser"
-	"github.com/yuin/goldmark/text"
-
-	mast "github.com/usememos/memos/internal/markdown/ast"
+	"github.com/usememos/memos/internal/base"
 )
 
-const (
-	// MaxMentionLength matches the username token length accepted by the API.
-	MaxMentionLength = 63
-)
-
-type mentionParser struct{}
-
-// NewMentionParser creates a new inline parser for @mention syntax.
-func NewMentionParser() parser.InlineParser {
-	return &mentionParser{}
+// MentionMatch is one username reference in an eligible literal-source run.
+type MentionMatch struct {
+	// Start is the byte offset of the @ introducer within the source run.
+	Start int
+	// End is the exclusive byte offset of the recognized source spelling.
+	End int
+	// Username is the exact username without the @ introducer.
+	Username []byte
 }
 
-// Trigger returns the characters that trigger this parser.
-func (*mentionParser) Trigger() []byte {
-	return []byte{'@'}
+func hasMentionLeftBoundary(source []byte, pos int, runHasLeftBoundary bool) bool {
+	if pos == 0 {
+		return runHasLeftBoundary
+	}
+	return !base.IsUsernameCharacter(source[pos-1])
 }
 
-func isValidMentionRune(r rune) bool {
-	return unicode.IsLetter(r) || unicode.IsNumber(r) || r == '-'
-}
-
-func isMentionBoundary(r rune) bool {
-	return unicode.IsSpace(r) || unicode.IsPunct(r) || unicode.IsSymbol(r)
-}
-
-// Parse parses @mention syntax while avoiding email-address matches.
-func (*mentionParser) Parse(_ gast.Node, block text.Reader, _ parser.Context) gast.Node {
-	line, segment := block.PeekLine()
-	if len(line) == 0 || line[0] != '@' {
-		return nil
-	}
-	lineStart := bytes.LastIndexByte(block.Source()[:segment.Start], '\n') + 1
-	if _, _, ok := MatchGFMEmailAt(block.Source(), segment.Start, lineStart, segment.Start+len(line)); ok {
-		return nil
-	}
-
-	prev := block.PrecendingCharacter()
-	if prev != '\n' && !isMentionBoundary(prev) {
-		return nil
-	}
-
-	start := 1
-	pos := start
-	runeCount := 0
-	hasLetterOrNumber := false
-
-	for pos < len(line) {
-		r, size := utf8.DecodeRune(line[pos:])
-		if r == utf8.RuneError && size == 1 {
-			break
+// FindMentionMatches enumerates username references in one eligible literal-source run.
+// Markdown structure and GFM email precedence must be resolved before calling it.
+func FindMentionMatches(source []byte, runHasLeftBoundary bool) []MentionMatch {
+	var matches []MentionMatch
+	for pos := 0; pos < len(source); {
+		if source[pos] == '\\' && pos+1 < len(source) && util.IsPunct(source[pos+1]) {
+			pos += 2
+			continue
 		}
-		if !isValidMentionRune(r) {
-			break
+		if source[pos] != '@' || !hasMentionLeftBoundary(source, pos, runHasLeftBoundary) {
+			pos++
+			continue
 		}
-		if unicode.IsLetter(r) || unicode.IsNumber(r) {
-			hasLetterOrNumber = true
+
+		end := pos + 1
+		for end < len(source) && base.IsUsernameCharacter(source[end]) {
+			end++
 		}
-		runeCount++
-		if runeCount > MaxMentionLength {
-			return nil
+		username := source[pos+1 : end]
+		if base.IsValidUsername(string(username)) {
+			matches = append(matches, MentionMatch{
+				Start:    pos,
+				End:      end,
+				Username: append([]byte(nil), username...),
+			})
 		}
-		pos += size
+		if end == pos+1 {
+			pos++
+		} else {
+			pos = end
+		}
 	}
-
-	if pos <= start || !hasLetterOrNumber {
-		return nil
-	}
-
-	username := line[start:pos]
-	usernameCopy := make([]byte, len(username))
-	copy(usernameCopy, username)
-
-	block.Advance(pos)
-
-	return &mast.MentionNode{
-		Username: usernameCopy,
-	}
+	return matches
 }

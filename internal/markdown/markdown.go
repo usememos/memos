@@ -418,7 +418,7 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 			data.Tags = appendTagHierarchy(data.Tags, string(tagNode.Tag))
 		}
 		if mentionNode, ok := n.(*mast.MentionNode); ok {
-			data.Mentions = append(data.Mentions, strings.ToLower(string(mentionNode.Username)))
+			data.Mentions = append(data.Mentions, string(mentionNode.Username))
 		}
 
 		// Check if the first block-level child of the document is an H1 heading.
