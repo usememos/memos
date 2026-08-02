@@ -84,7 +84,7 @@ Uses `useReducer` + Context for predictable state transitions. All state changes
 
 ### Tags and mentions
 
-`#tag` autocomplete, decoration, and read-only rendering all use the `memos-tag-v1` scanner in `@/utils/tag-grammar`. The scanner owns tag syntax and Unicode/emoji recognition; each surface supplies only its Markdown context:
+`#tag` autocomplete, decoration, and read-only rendering all use the shared scanner in `@/utils/tag-grammar`. The scanner owns tag syntax and Unicode/emoji recognition; each surface supplies only its Markdown context:
 
 - `Editor/markdownTagRanges.ts` adapts the CodeMirror syntax tree into literal-source ranges, excluding links, code, math, raw HTML syntax, escapes, and entities before calling the shared scanner.
 - `Editor/tagMentionDecorations.ts` decorates the tag matches returned by that adapter; mention recognition remains separate.

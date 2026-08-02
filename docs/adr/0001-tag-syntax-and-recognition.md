@@ -4,8 +4,6 @@ Status: Accepted
 
 Date: 2026-08-01
 
-Related: [GitHub issue #6087](https://github.com/usememos/memos/issues/6087)
-
 Domain glossary: [Memos domain glossary](../glossary.md)
 
 ## Context
@@ -23,15 +21,15 @@ Memos currently has four related but different implementations:
   raw text without consulting the editor's Markdown syntax tree.
 - Editor completion has no left boundary, no length limit, and no Markdown-context check.
 
-The related issue exposed this drift, but it does not define the desired language. This ADR starts from intended product semantics; current behavior is
-non-normative.
+These differences expose implementation drift but do not define the desired language. This ADR starts from intended product semantics; current behavior
+is non-normative.
 
-This ADR defines a profile named `memos-tag-v1` covering:
+This ADR defines the current Memos tag syntax and recognition rules, covering:
 
 - The lexical form of a tag identifier.
 - How a tag candidate is found in flowing Markdown text.
 - Which Markdown contexts can contain a tag occurrence.
-- Unicode and emoji versioning.
+- Pinned Unicode and emoji data.
 
 Existing-data migration, rollout, backfill, and metadata remapping are outside this ADR's scope.
 
@@ -107,7 +105,7 @@ changing metadata or a separate tag record. Renaming `#Work` to `#work` across 1
   points or ignored leading combining marks.
 
 **Comparison key**
-: The value used to compare two display values for tag identity. In `memos-tag-v1`, it is the exact display value without case folding or Unicode
+: The value used to compare two display values for tag identity. It is the exact display value without case folding or Unicode
   normalization.
 
 **Memo tag set**
@@ -132,10 +130,10 @@ There is no independently mutable tag resource in this domain model. In particul
 - Persisted payload tags are rebuildable indexes, not authoritative tag records.
 - Import and export preserve memo Markdown; they do not substitute a separate canonical tag label for the spelling in source.
 
-### Lexical profile
+### Lexical syntax
 
-`memos-tag-v1` is a custom profile based on Unicode UAX #31 and Unicode Emoji data. It is not an unchanged implementation of UAX31-R8 or the UAX #31
-Emoji Profile.
+Memos tag syntax is based on Unicode UAX #31 and Unicode Emoji data, with custom rules for Memos. It is not an unchanged implementation of UAX31-R8 or
+the UAX #31 Emoji Profile.
 
 The normative grammar is:
 
@@ -414,13 +412,13 @@ Hierarchy expansion has the following domain semantics:
 Every hierarchy segment is non-empty. A leading slash produces no candidate; a trailing or repeated slash terminates the identifier before that slash under
 the maximal-prefix rule.
 
-### Unicode and emoji version
+### Pinned Unicode and emoji data
 
-`memos-tag-v1` is pinned to Unicode 17.0 and Emoji 17.0. Go, browser, and Node runtime tables are not implicitly normative.
+Tag recognition is pinned to Unicode 17.0 and Emoji 17.0. Go, browser, and Node runtime tables are not implicitly normative.
 
-The versioned Unicode property assignments and Emoji data named by this profile are normative, rather than the tables supplied by a particular runtime. A
-future Unicode or Emoji upgrade is an explicit profile-version change because newly assigned `XID_Continue` characters and newly fully-qualified emoji
-sequences change what source text means. Effects on existing data between profile versions are outside scope.
+The pinned Unicode property assignments and Emoji data are normative, rather than the tables supplied by a particular runtime. Updating either data set
+requires an explicit specification change because newly assigned `XID_Continue` characters and newly fully-qualified emoji sequences change what source
+text means. Effects on existing data after such an update are outside scope.
 
 ## Conformance examples
 
@@ -500,12 +498,12 @@ The following examples are normative for the lexical and context decisions alrea
 - Keeping `-`, `+`, and `&` position-independent avoids a second connector-validation layer.
 - The memo-size limit provides the only length bound, avoiding tag-specific counting and overflow rules.
 - All consumers can implement the same language contract.
-- Unicode repertoire changes require an explicit new profile version rather than depending on runtime versions.
+- Unicode repertoire changes require an explicit specification update rather than depending on runtime tables.
 
 ### Negative
 
 - Fully-qualified emoji matching requires sequence-aware data, not a simple code-point character class.
-- Pinning Unicode data requires maintenance when Unicode and Emoji versions change.
+- Pinning Unicode data requires maintenance when Unicode and Emoji data are updated.
 - Visually indistinguishable or canonically equivalent source spellings whose emitted values differ remain separate tags unless the user edits their memo
   sources to make those values identical.
 - Source spellings that differ only by ignored default-ignorable code points intentionally collapse to the same emitted tag value.

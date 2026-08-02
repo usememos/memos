@@ -199,7 +199,7 @@ func characterReferenceLength(source []byte) int {
 	return pos + 1
 }
 
-// FindTagMatches enumerates memos-tag-v1 candidates in one eligible
+// FindTagMatches enumerates tag candidates in one eligible
 // literal-source run. Markdown structure must be resolved before calling it.
 func FindTagMatches(source []byte) []TagMatch {
 	var matches []TagMatch

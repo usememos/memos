@@ -3,7 +3,7 @@ import { findTagMatches } from "@/utils/tag-grammar";
 
 const values = (source: string) => findTagMatches(source).map((match) => match.value);
 
-describe("memos-tag-v1 scanner", () => {
+describe("tag scanner", () => {
   it.each([
     ["#tag", ["tag"]],
     ["hello#tag", ["tag"]],
