@@ -60,6 +60,21 @@ func isSegmentContinuation(r rune) bool {
 	return r == '-' || r == '+' || r == '&' || isXIDContinue(r) && !isDefaultIgnorable(r)
 }
 
+func isApostropheJoiner(r rune) bool {
+	return r == '\'' || r == '\u2019'
+}
+
+func startsNonCombiningXIDContinuation(source []byte) bool {
+	if len(source) == 0 || matchFullyQualifiedEmoji(source) > 0 {
+		return false
+	}
+	r, size := utf8.DecodeRune(source)
+	if r == utf8.RuneError && size == 1 {
+		return false
+	}
+	return isXIDContinue(r) && !isCombiningMark(r) && !isDefaultIgnorable(r)
+}
+
 func matchFullyQualifiedEmoji(source []byte) int {
 	limit := min(len(source), maxEmoji17SequenceBytes)
 	match := 0
@@ -82,6 +97,7 @@ func matchFullyQualifiedEmoji(source []byte) int {
 func scanTagSegment(source []byte) (int, []byte, bool) {
 	pos := 0
 	var value []byte
+	previousWasXIDContinuation := false
 
 starter:
 	for pos < len(source) {
@@ -91,6 +107,7 @@ starter:
 		if emojiLength := matchFullyQualifiedEmoji(source[pos:]); emojiLength > 0 {
 			value = append(value, source[pos:pos+emojiLength]...)
 			pos += emojiLength
+			previousWasXIDContinuation = false
 			break
 		}
 		r, size := utf8.DecodeRune(source[pos:])
@@ -105,6 +122,7 @@ starter:
 		case isSegmentStarter(r):
 			value = append(value, source[pos:pos+size]...)
 			pos += size
+			previousWasXIDContinuation = isXIDContinue(r) && !isDefaultIgnorable(r)
 			break starter
 		default:
 			return 0, nil, false
@@ -122,6 +140,7 @@ starter:
 		if emojiLength := matchFullyQualifiedEmoji(source[pos:]); emojiLength > 0 {
 			value = append(value, source[pos:pos+emojiLength]...)
 			pos += emojiLength
+			previousWasXIDContinuation = false
 			continue
 		}
 		r, size := utf8.DecodeRune(source[pos:])
@@ -131,9 +150,15 @@ starter:
 		switch {
 		case isDefaultIgnorable(r):
 			pos += size
+			previousWasXIDContinuation = false
+		case isApostropheJoiner(r) && previousWasXIDContinuation && startsNonCombiningXIDContinuation(source[pos+size:]):
+			value = append(value, source[pos:pos+size]...)
+			pos += size
+			previousWasXIDContinuation = false
 		case isSegmentContinuation(r):
 			value = append(value, source[pos:pos+size]...)
 			pos += size
+			previousWasXIDContinuation = isXIDContinue(r) && !isDefaultIgnorable(r)
 		default:
 			return pos, value, true
 		}

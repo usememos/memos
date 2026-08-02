@@ -38,6 +38,16 @@ describe("tag autocomplete", () => {
     expect(result?.options.map((option) => option.label)).toEqual(["AB"]);
   });
 
+  it("completes tags containing word-internal apostrophes", () => {
+    const ascii = complete("#O'Br", 5, ["O'Brien", "O’Connor"]);
+    expect(ascii?.from).toBe(1);
+    expect(ascii?.options.map((option) => option.label)).toEqual(["O'Brien"]);
+
+    const curly = complete("#O’Co", 5, ["O'Brien", "O’Connor"]);
+    expect(curly?.from).toBe(1);
+    expect(curly?.options.map((option) => option.label)).toEqual(["O’Connor"]);
+  });
+
   it("keeps unknown character-reference shapes in literal tag source", () => {
     const source = "#R&bogus;D";
     const position = source.indexOf(";");

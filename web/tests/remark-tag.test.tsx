@@ -534,6 +534,16 @@ describe("remarkMemoSyntax", () => {
     expect(html).toContain('data-tag="👩‍💻"');
   });
 
+  it("keeps word-internal apostrophes without absorbing quotation punctuation", () => {
+    const html = renderMarkdown("#tag's #сім'я #O’Brien '#quoted' #users'");
+
+    expect(html).toContain('<span class="tag" data-tag="tag&#x27;s">#tag&#x27;s</span>');
+    expect(html).toContain('<span class="tag" data-tag="сім&#x27;я">#сім&#x27;я</span>');
+    expect(html).toContain('<span class="tag" data-tag="O’Brien">#O’Brien</span>');
+    expect(html).toContain('&#x27;<span class="tag" data-tag="quoted">#quoted</span>&#x27;');
+    expect(html).toContain('<span class="tag" data-tag="users">#users</span>&#x27;');
+  });
+
   it("uses maximal-prefix hierarchy and adjacent-introducer rules", () => {
     const html = renderMarkdown("#book/ #book//fiction #first#second ##tag #️⃣ ##️⃣");
 

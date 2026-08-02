@@ -21,6 +21,17 @@ function countClass(doc: string, cls: string): number {
 describe("tag/mention decorations", () => {
   it("decorates #tags", () => expect(countClass("a #todo and #work/sub b", "cm-memo-tag")).toBe(2));
   it("does not require a left boundary", () => expect(countClass("hello#tag 中文#标签", "cm-memo-tag")).toBe(2));
+  it("keeps apostrophes only inside XID words", () => {
+    const source = "#tag's #сім'я #O’Brien '#quoted' #users' #'missing";
+    const state = EditorState.create({ doc: source, extensions: [markdown({ extensions: memoMarkdownExtensions })] });
+    expect(findMarkdownTagMatches(state, 0, source.length).map(({ source, value }) => ({ source, value }))).toEqual([
+      { source: "tag's", value: "tag's" },
+      { source: "сім'я", value: "сім'я" },
+      { source: "O’Brien", value: "O’Brien" },
+      { source: "quoted", value: "quoted" },
+      { source: "users", value: "users" },
+    ]);
+  });
   it("uses emitted spans for ignored characters and emoji", () =>
     expect(countClass("#A‍B #́foo #foo/́bar #👩‍💻 #️⃣ ##️⃣", "cm-memo-tag")).toBe(5));
   it("keeps maximal valid prefixes and adjacent tags", () =>
