@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -50,11 +51,12 @@ func TestFindGFMEmailMatches(t *testing.T) {
 }
 
 func TestMatchGFMEmailAtPreservesEscapedSourceRange(t *testing.T) {
-	source := []byte(`#foo\+bar@example.com`)
-	at := 9
-	start, end, ok := MatchGFMEmailAt(source, at, 0, len(source))
+	source := []byte("first@example.com\n#foo\\+bar@example.com")
+	lowerBound := bytes.IndexByte(source, '\n') + 1
+	at := bytes.LastIndexByte(source, '@')
+	start, end, ok := MatchGFMEmailAt(source, at, lowerBound, len(source))
 	require.True(t, ok)
-	assert.Equal(t, 1, start)
+	assert.Equal(t, lowerBound+1, start)
 	assert.Equal(t, len(source), end)
 	assert.Equal(t, `foo\+bar@example.com`, string(source[start:end]))
 }

@@ -116,6 +116,10 @@ func TestGetUserStats_TagCountPreservesExactIdentity(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
+	const (
+		composedTag   = "caf\u00e9"
+		decomposedTag = "cafe\u0301"
+	)
 
 	user, err := ts.CreateHostUser(ctx, "exact-tag-stats-user")
 	require.NoError(t, err)
@@ -127,7 +131,7 @@ func TestGetUserStats_TagCountPreservesExactIdentity(t *testing.T) {
 		Content:    "Exact tag membership fixture",
 		Visibility: store.Public,
 		Payload: &storepb.MemoPayload{
-			Tags: []string{"book", "book/fiction", "book", "Work", "work", "café", "cafe\u0301"},
+			Tags: []string{"book", "book/fiction", "book", "Work", "work", composedTag, decomposedTag},
 		},
 	})
 	require.NoError(t, err)
@@ -141,8 +145,8 @@ func TestGetUserStats_TagCountPreservesExactIdentity(t *testing.T) {
 		"book/fiction": 1,
 		"Work":         1,
 		"work":         1,
-		"café":         1,
-		"cafe\u0301":   1,
+		composedTag:    1,
+		decomposedTag:  1,
 	}, response.TagCount)
 }
 

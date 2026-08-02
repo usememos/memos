@@ -291,6 +291,7 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 	return userStats, nil
 }
 
+// incrementTagCounts counts each distinct tag at most once for one memo payload.
 func incrementTagCounts(counts map[string]int32, tags []string) {
 	seen := make(map[string]struct{}, len(tags))
 	for _, tag := range tags {

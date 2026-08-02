@@ -40,7 +40,7 @@ func projectGFMEmailText(source []byte) gfmEmailProjection {
 			end := cursor + referenceLength
 			decoded := util.ResolveEntityNames(util.ResolveNumericReferences(source[cursor:end]))
 			projection.value = append(projection.value, decoded...)
-			for range decoded {
+			for range len(decoded) {
 				projection.starts = append(projection.starts, cursor)
 				projection.ends = append(projection.ends, end)
 			}
@@ -85,14 +85,25 @@ func MatchGFMEmailAt(source []byte, at, lowerBound, upperBound int) (int, int, b
 	if lowerBound < 0 || at < lowerBound || at >= upperBound || upperBound > len(source) || source[at] != '@' {
 		return 0, 0, false
 	}
-	for _, match := range FindGFMEmailMatches(source[lowerBound:upperBound]) {
-		start := lowerBound + match.Start
-		end := lowerBound + match.End
-		if start <= at && at < end {
-			return start, end, true
+
+	projection := projectGFMEmailText(source[lowerBound:upperBound])
+	relativeAt := at - lowerBound
+	projectedAt := -1
+	for index, start := range projection.starts {
+		if start == relativeAt && projection.value[index] == '@' {
+			projectedAt = index
+			break
 		}
 	}
-	return 0, 0, false
+	if projectedAt < 0 {
+		return 0, 0, false
+	}
+
+	start, end, ok := matchProjectedGFMEmailAt(projection.value, projectedAt, 0, len(projection.value))
+	if !ok {
+		return 0, 0, false
+	}
+	return lowerBound + projection.starts[start], lowerBound + projection.ends[end-1], true
 }
 
 func matchProjectedGFMEmailAt(source []byte, at, lowerBound, upperBound int) (int, int, bool) {

@@ -661,9 +661,9 @@ func TestExtractTagsMemosTagV1(t *testing.T) {
 
 func TestExtractAllExpandsTagHierarchy(t *testing.T) {
 	svc := NewService(WithTagExtension())
-	data, err := svc.ExtractAll([]byte("#book/fiction #book"))
+	data, err := svc.ExtractAll([]byte("#book/fiction/history #book"))
 	require.NoError(t, err)
-	assert.Equal(t, []string{"book", "book/fiction"}, data.Tags)
+	assert.Equal(t, []string{"book", "book/fiction", "book/fiction/history"}, data.Tags)
 }
 
 func TestExtractAllResolvesGFMEmailBeforeMention(t *testing.T) {

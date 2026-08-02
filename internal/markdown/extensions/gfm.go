@@ -23,7 +23,8 @@ const gfmDomainPattern = `(?:[\p{L}\p{N}_-]+\.)*[\p{L}\p{N}-]+\.[\p{L}\p{N}-]+`
 var (
 	gfmURLPattern = regexp.MustCompile(`^https?://` + gfmDomainPattern + `[^<\x09-\x0d\p{Z}]*`)
 	gfmWWWPattern = regexp.MustCompile(`^www\.` + gfmDomainPattern + `[^<\x09-\x0d\p{Z}]*`)
-	gfmNoEmail    = regexp.MustCompile(`a^`)
+	// Extended emails are resolved after emphasis instead of by the linkify parser.
+	gfmNoEmail = regexp.MustCompile(`a^`)
 )
 
 type gfmLinkify struct{}

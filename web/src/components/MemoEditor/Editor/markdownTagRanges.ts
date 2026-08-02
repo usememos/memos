@@ -22,12 +22,45 @@ interface SourceRange {
 
 type MarkdownNode = MarkdownSourceNode;
 
+interface ParsedMarkdownContext {
+  parsedTo: number;
+  source: string;
+  root: MarkdownNode;
+  resolvedLinks: MarkdownSourceRange[];
+  writtenURLRanges: MarkdownSourceRange[];
+  emailRanges: GFMEmailSourceRange[];
+  allowUnresolvedLinks: boolean;
+}
+
 const sourceParser = markdownParser.configure(memoMarkdownExtensions);
 const REFERENCE_LABEL_PREFIX = "x ";
 const REJECTED_URL_PREFIX = "x";
+const parsedContextCache = new WeakMap<EditorState, ParsedMarkdownContext>();
+let canonicalCodeCache: { source: string; ranges: SourceRange[] } | undefined;
 
 function parsedMarkdownRoot(state: EditorState, to: number): MarkdownNode {
   return (ensureSyntaxTree(state, to) ?? syntaxTree(state)).topNode as MarkdownNode;
+}
+
+function parsedMarkdownContext(state: EditorState, to: number): ParsedMarkdownContext {
+  const cached = parsedContextCache.get(state);
+  if (cached && cached.parsedTo >= to) return cached;
+
+  const source = state.doc.toString();
+  const root = parsedMarkdownRoot(state, to);
+  const resolvedLinks = resolvedMarkdownLinkRanges(source, root);
+  const allowUnresolvedLinks = syntaxTreeAvailable(state);
+  const context = {
+    parsedTo: to,
+    source,
+    root,
+    resolvedLinks,
+    writtenURLRanges: findMarkdownGFMURLRanges(source, root, resolvedLinks),
+    emailRanges: findMarkdownGFMEmailRanges(source, root, resolvedLinks, allowUnresolvedLinks),
+    allowUnresolvedLinks,
+  };
+  parsedContextCache.set(state, context);
+  return context;
 }
 
 // Only these known textual containers expose their direct source gaps. Their
@@ -146,20 +179,25 @@ function collectRejectedURLLiteralRanges(
 }
 
 function canonicalSourceKeepsCodeOpaque(source: string, node: MarkdownNode): boolean {
-  const root = fromMarkdown(source);
-  const containsRange = (candidate: unknown): boolean => {
-    if (!candidate || typeof candidate !== "object") return false;
-    const value = candidate as {
-      type?: string;
-      position?: { start?: { offset?: number }; end?: { offset?: number } };
-      children?: unknown[];
+  if (canonicalCodeCache?.source !== source) {
+    const ranges: SourceRange[] = [];
+    const collectRanges = (candidate: unknown): void => {
+      if (!candidate || typeof candidate !== "object") return;
+      const value = candidate as {
+        type?: string;
+        position?: { start?: { offset?: number }; end?: { offset?: number } };
+        children?: unknown[];
+      };
+      const from = value.position?.start?.offset;
+      const to = value.position?.end?.offset;
+      if (value.type === "code" && from !== undefined && to !== undefined) ranges.push({ from, to });
+      value.children?.forEach(collectRanges);
     };
-    const start = value.position?.start?.offset;
-    const end = value.position?.end?.offset;
-    if (value.type === "code" && start !== undefined && end !== undefined && start <= node.from && end >= node.to) return true;
-    return value.children?.some(containsRange) ?? false;
-  };
-  return containsRange(root);
+    collectRanges(fromMarkdown(source));
+    canonicalCodeCache = { source, ranges };
+  }
+
+  return canonicalCodeCache.ranges.some((range) => range.from <= node.from && range.to >= node.to);
 }
 
 function collectReparsedLiteralRanges(node: MarkdownNode, from: number, to: number, source: string, ranges: SourceRange[]): void {
@@ -253,21 +291,25 @@ function mergeSourceRanges(ranges: SourceRange[]): SourceRange[] {
 }
 
 export function markdownGFMEmailSourceRanges(state: EditorState, to = state.doc.length): GFMEmailSourceRange[] {
-  const source = state.doc.toString();
-  const root = parsedMarkdownRoot(state, to);
-  return findMarkdownGFMEmailRanges(source, root, resolvedMarkdownLinkRanges(source, root), syntaxTreeAvailable(state));
+  return parsedMarkdownContext(state, to).emailRanges;
 }
 
 export function literalTagSourceRanges(state: EditorState, from: number, to: number): SourceRange[] {
   const ranges: SourceRange[] = [];
-  const source = state.doc.toString();
-  const root = parsedMarkdownRoot(state, to);
-  const resolvedLinks = resolvedMarkdownLinkRanges(source, root);
-  const writtenURLRanges = findMarkdownGFMURLRanges(source, root, resolvedLinks);
-  collectLiteralRanges(root, from, to, source, resolvedLinks, writtenURLRanges, syntaxTreeAvailable(state), ranges);
-  const decodedBoundaries = findDecodedMarkdownSourceBoundaries(source, from, to);
+  const context = parsedMarkdownContext(state, to);
+  collectLiteralRanges(
+    context.root,
+    from,
+    to,
+    context.source,
+    context.resolvedLinks,
+    context.writtenURLRanges,
+    context.allowUnresolvedLinks,
+    ranges,
+  );
+  const decodedBoundaries = findDecodedMarkdownSourceBoundaries(context.source, from, to);
   return mergeSourceRanges(
-    subtractRanges(subtractRanges(subtractRanges(ranges, decodedBoundaries), markdownGFMEmailSourceRanges(state, to)), writtenURLRanges),
+    subtractRanges(subtractRanges(subtractRanges(ranges, decodedBoundaries), context.emailRanges), context.writtenURLRanges),
   );
 }
 

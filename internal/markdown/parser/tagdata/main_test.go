@@ -13,7 +13,7 @@ func TestParseDerivedPropertyMergesMatchingRanges(t *testing.T) {
 }
 
 func TestParseCombiningMarksIncludesSinglesAndRanges(t *testing.T) {
-	data := []byte("0300;COMBINING GRAVE ACCENT;Mn\n0903;DEVANAGARI SIGN VISARGA;Mc\n1000;<TEST, First>;Mn\n1002;<TEST, Last>;Mn\n0041;LATIN CAPITAL LETTER A;Lu\n")
+	data := []byte("\n0300;COMBINING GRAVE ACCENT;Mn\n0903;DEVANAGARI SIGN VISARGA;Mc\n1000;<TEST, First>;Mn\n1002;<TEST, Last>;Mn\n0041;LATIN CAPITAL LETTER A;Lu\n\n")
 
 	require.Equal(t, []codePointRange{
 		{lo: 0x0300, hi: 0x0300},
@@ -23,9 +23,9 @@ func TestParseCombiningMarksIncludesSinglesAndRanges(t *testing.T) {
 }
 
 func TestParseFullyQualifiedEmojiIgnoresOtherStatuses(t *testing.T) {
-	data := []byte("1F600 ; fully-qualified # grinning face\n263A FE0F ; fully-qualified # smiling face\n263A ; unqualified\n1F3FB ; component\n")
+	data := []byte("1F600 ; fully-qualified # grinning face\n263A FE0F ; fully-qualified # smiling face\n1F3F4 E0067 E0062 E0073 E0063 E0074 E007F ; fully-qualified # flag: Scotland\n263A ; unqualified\n1F3FB ; component\n")
 
 	emojis, maxBytes := parseFullyQualifiedEmoji(data)
-	require.ElementsMatch(t, []string{"😀", "☺️"}, emojis)
-	require.Equal(t, len("☺️"), maxBytes)
+	require.ElementsMatch(t, []string{"😀", "☺️", "🏴󠁧󠁢󠁳󠁣󠁴󠁿"}, emojis)
+	require.Equal(t, len("🏴󠁧󠁢󠁳󠁣󠁴󠁿"), maxBytes)
 }

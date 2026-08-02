@@ -60,6 +60,8 @@ func (*inlineMathParser) Parse(_ gast.Node, reader text.Reader, _ parser.Context
 	}
 }
 
+// hasUnescapedPrecedingDollar prevents retrying within one dollar run while
+// allowing a new run after an escaped dollar.
 func hasUnescapedPrecedingDollar(reader text.Reader) bool {
 	if reader.PrecendingCharacter() != '$' {
 		return false

@@ -512,6 +512,10 @@ func TestMemoFilterTagMembershipIsExact(t *testing.T) {
 	t.Parallel()
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
+	const (
+		composedTag   = "caf\u00e9"
+		decomposedTag = "cafe\u0301"
+	)
 
 	tc.CreateMemo(NewMemoBuilder("memo-underscore", tc.User.ID).Tags("a_b"))
 	tc.CreateMemo(NewMemoBuilder("memo-letter", tc.User.ID).Tags("axb"))
@@ -519,8 +523,8 @@ func TestMemoFilterTagMembershipIsExact(t *testing.T) {
 	tc.CreateMemo(NewMemoBuilder("memo-letters", tc.User.ID).Tags("aZZb"))
 	tc.CreateMemo(NewMemoBuilder("memo-upper", tc.User.ID).Tags("Work"))
 	tc.CreateMemo(NewMemoBuilder("memo-lower", tc.User.ID).Tags("work"))
-	tc.CreateMemo(NewMemoBuilder("memo-composed", tc.User.ID).Tags("café"))
-	tc.CreateMemo(NewMemoBuilder("memo-decomposed", tc.User.ID).Tags("café"))
+	tc.CreateMemo(NewMemoBuilder("memo-composed", tc.User.ID).Tags(composedTag))
+	tc.CreateMemo(NewMemoBuilder("memo-decomposed", tc.User.ID).Tags(decomposedTag))
 	tc.CreateMemo(NewMemoBuilder("memo-book", tc.User.ID).Tags("book"))
 	tc.CreateMemo(NewMemoBuilder("memo-descendant-only", tc.User.ID).Tags("book/fiction"))
 
@@ -530,9 +534,10 @@ func TestMemoFilterTagMembershipIsExact(t *testing.T) {
 	}{
 		{filter: `tag in ["a_b"]`, want: "memo-underscore"},
 		{filter: `tag in ["a%b"]`, want: "memo-percent"},
+		{filter: `tag in ["Work"]`, want: "memo-upper"},
 		{filter: `tag in ["work"]`, want: "memo-lower"},
-		{filter: `tag in ["café"]`, want: "memo-composed"},
-		{filter: `tag in ["café"]`, want: "memo-decomposed"},
+		{filter: `tag in ["` + composedTag + `"]`, want: "memo-composed"},
+		{filter: `tag in ["` + decomposedTag + `"]`, want: "memo-decomposed"},
 		{filter: `tag in ["book"]`, want: "memo-book"},
 		{filter: `"work" in tags`, want: "memo-lower"},
 	} {

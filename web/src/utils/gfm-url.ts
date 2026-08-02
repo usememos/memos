@@ -9,6 +9,7 @@ export interface GFMURLSourceRange {
 
 const UNICODE_ALPHANUMERIC = /[\p{L}\p{N}]/u;
 const UNICODE_SEPARATOR = /\p{Z}/u;
+const TRAILING_PUNCTUATION = new Set(["!", '"', "'", "*", ",", ".", ":", ";", "?", "_", "~"]);
 
 function prefixEnd(source: string, from: number): number | undefined {
   if (source.startsWith("https://", from)) return from + "https://".length;
@@ -26,6 +27,37 @@ function hasValidDomain(source: string, from: number, to: number): boolean {
   while (to > from && source[to - 1] === ".") to--;
   const segments = source.slice(from, to).split(".");
   return segments.length >= 2 && segments.every(Boolean) && !segments.at(-2)?.includes("_") && !segments.at(-1)?.includes("_");
+}
+
+function trimGFMURLTail(source: string, from: number, to: number): number {
+  const path = source.slice(from, to);
+  let openParentheses = 0;
+  let closeParentheses = 0;
+  for (const character of path) {
+    if (character === "(") openParentheses++;
+    else if (character === ")") closeParentheses++;
+  }
+
+  while (to > from) {
+    const entity = source.slice(from, to).match(/&[A-Za-z]+;$/)?.[0];
+    if (entity) {
+      to -= entity.length;
+      continue;
+    }
+
+    const character = source[to - 1];
+    if (character === ")" && closeParentheses > openParentheses) {
+      closeParentheses--;
+      to--;
+      continue;
+    }
+    if (character === "]" || TRAILING_PUNCTUATION.has(character)) {
+      to--;
+      continue;
+    }
+    break;
+  }
+  return to;
 }
 
 /** Return the complete source range of a lowercase written GFM URL at `from`. */
@@ -48,7 +80,7 @@ export function writtenGFMURLSourceRange(source: string, from: number, upperBoun
     if (source[to] === "<" || (code >= 0x09 && code <= 0x0d) || UNICODE_SEPARATOR.test(character)) break;
     to += character.length;
   }
-  return { from, to };
+  return { from, to: trimGFMURLTail(source, from, to) };
 }
 
 /** Whether a complete source spelling is a written GFM URL. */
