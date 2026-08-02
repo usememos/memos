@@ -69,7 +69,10 @@ func startsNonCombiningXIDContinuation(source []byte) bool {
 		return false
 	}
 	r, size := utf8.DecodeRune(source)
-	return !(r == utf8.RuneError && size == 1) && isXIDContinue(r) && !isCombiningMark(r) && !isDefaultIgnorable(r)
+	if r == utf8.RuneError && size == 1 {
+		return false
+	}
+	return isXIDContinue(r) && !isCombiningMark(r) && !isDefaultIgnorable(r)
 }
 
 func matchFullyQualifiedEmoji(source []byte) int {
