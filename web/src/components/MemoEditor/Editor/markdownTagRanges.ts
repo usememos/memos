@@ -13,7 +13,9 @@ import {
 } from "@/utils/markdown-link";
 import { findDecodedMarkdownSourceBoundaries } from "@/utils/markdown-source-boundaries";
 import { memoMarkdownExtensions } from "@/utils/memo-markdown-extension";
+import { findMentionMatches, type MentionMatch } from "@/utils/mention-grammar";
 import { findTagMatches, type TagMatch } from "@/utils/tag-grammar";
+import { isUsernameCharacter } from "@/utils/username";
 
 interface SourceRange {
   from: number;
@@ -290,11 +292,7 @@ function mergeSourceRanges(ranges: SourceRange[]): SourceRange[] {
   return merged;
 }
 
-export function markdownGFMEmailSourceRanges(state: EditorState, to = state.doc.length): GFMEmailSourceRange[] {
-  return parsedMarkdownContext(state, to).emailRanges;
-}
-
-export function literalTagSourceRanges(state: EditorState, from: number, to: number): SourceRange[] {
+export function literalMarkdownSourceRanges(state: EditorState, from: number, to: number): SourceRange[] {
   const ranges: SourceRange[] = [];
   const context = parsedMarkdownContext(state, to);
   collectLiteralRanges(
@@ -316,9 +314,22 @@ export function literalTagSourceRanges(state: EditorState, from: number, to: num
 /** Find tags only in literal Markdown source exposed by the editor syntax tree. */
 export function findMarkdownTagMatches(state: EditorState, from: number, to: number): TagMatch[] {
   const matches: TagMatch[] = [];
-  for (const range of literalTagSourceRanges(state, from, to)) {
+  for (const range of literalMarkdownSourceRanges(state, from, to)) {
     const source = state.doc.sliceString(range.from, range.to);
     for (const match of findTagMatches(source)) {
+      matches.push({ ...match, from: range.from + match.from, to: range.from + match.to });
+    }
+  }
+  return matches;
+}
+
+/** Find username references only in literal Markdown source exposed by the editor syntax tree. */
+export function findMarkdownMentionMatches(state: EditorState, from: number, to: number): MentionMatch[] {
+  const matches: MentionMatch[] = [];
+  for (const range of literalMarkdownSourceRanges(state, from, to)) {
+    const source = state.doc.sliceString(range.from, range.to);
+    const runHasLeftBoundary = range.from === 0 || !isUsernameCharacter(state.doc.sliceString(range.from - 1, range.from));
+    for (const match of findMentionMatches(source, runHasLeftBoundary)) {
       matches.push({ ...match, from: range.from + match.from, to: range.from + match.to });
     }
   }
@@ -335,5 +346,5 @@ export function tagMatchBefore(state: EditorState, position: number): TagMatch |
 /** Whether an offset is in a literal-source run (used for explicit `#` completion). */
 export function isLiteralTagPosition(state: EditorState, position: number): boolean {
   const line = state.doc.lineAt(position);
-  return literalTagSourceRanges(state, line.from, position).some((range) => range.to === position);
+  return literalMarkdownSourceRanges(state, line.from, position).some((range) => range.to === position);
 }

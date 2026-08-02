@@ -651,7 +651,7 @@ type CreateUserRequest struct {
 	// Required. The user to create.
 	User *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
 	// Optional. The resource ID to use for this user. If set, it must equal
-	// user.username, follow the UID format, and not consist entirely of digits.
+	// user.username and follow the username format.
 	// Format: ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,34}[a-zA-Z0-9])?$
 	UserId string `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	// Optional. If set, validate the request but don't actually create the user.

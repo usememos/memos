@@ -116,12 +116,11 @@ func (s *APIV1Service) ListUsers(ctx context.Context, request *v1pb.ListUsersReq
 	return response, nil
 }
 
-func normalizeBatchUsernames(usernames []string) ([]string, int) {
+func uniqueBatchUsernames(usernames []string) ([]string, int) {
 	uniqueUsernames := make([]string, 0, len(usernames))
 	seen := make(map[string]struct{}, len(usernames))
 	nonEmptyCount := 0
 	for _, username := range usernames {
-		username = strings.TrimSpace(username)
 		if username == "" {
 			continue
 		}
@@ -140,7 +139,7 @@ func (s *APIV1Service) BatchGetUsers(ctx context.Context, request *v1pb.BatchGet
 		return &v1pb.BatchGetUsersResponse{Users: []*v1pb.User{}}, nil
 	}
 
-	uniqueUsernames, nonEmptyUsernameCount := normalizeBatchUsernames(request.Usernames)
+	uniqueUsernames, nonEmptyUsernameCount := uniqueBatchUsernames(request.Usernames)
 	if nonEmptyUsernameCount > maxBatchGetUsers {
 		return nil, status.Errorf(codes.InvalidArgument, "too many usernames (max %d)", maxBatchGetUsers)
 	}

@@ -88,22 +88,22 @@ func TestUserResourceName(t *testing.T) {
 		require.Equal(t, "users/Gnammi", resp.Users[0].Name)
 	})
 
-	t.Run("CreateUser rejects all-numeric usernames", func(t *testing.T) {
+	t.Run("CreateUser accepts all-numeric usernames", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
-		_, err := ts.Service.CreateUser(ctx, &apiv1.CreateUserRequest{
+		created, err := ts.Service.CreateUser(ctx, &apiv1.CreateUserRequest{
 			User: &apiv1.User{
 				Username: "123",
 				Email:    "123@example.com",
 				Password: "password123",
 			},
 		})
-		require.Error(t, err)
-		require.Contains(t, err.Error(), "invalid username")
+		require.NoError(t, err)
+		require.Equal(t, "users/123", created.Name)
 	})
 
-	t.Run("GetUser returns not found for numeric user resource names", func(t *testing.T) {
+	t.Run("GetUser does not interpret a numeric username as an internal ID", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 

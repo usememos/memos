@@ -51,9 +51,8 @@ func TestValidateWritableUsername(t *testing.T) {
 			wantError: true,
 		},
 		{
-			name:      "numeric",
-			username:  "123",
-			wantError: true,
+			name:     "numeric",
+			username: "123",
 		},
 		{
 			name:      "email",

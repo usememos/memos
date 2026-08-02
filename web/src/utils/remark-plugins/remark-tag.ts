@@ -1,16 +1,24 @@
 import { parser as markdownParser } from "@lezer/markdown";
 import type { Link, Root, Text } from "mdast";
+import { fromMarkdown } from "mdast-util-from-markdown";
+import { gfmFromMarkdown } from "mdast-util-gfm";
+import { gfm } from "micromark-extension-gfm";
 import { decodeString } from "micromark-util-decode-string";
 import type { Node as UnistNode } from "unist";
-import type { TagNode, TagNodeData } from "@/types/markdown";
+import type { MentionNode, MentionNodeData, TagNode, TagNodeData } from "@/types/markdown";
 import { findMarkdownGFMEmailRanges, type GFMEmailSourceRange, type MarkdownSourceNode } from "@/utils/gfm-email";
 import { findMarkdownGFMURLRanges } from "@/utils/gfm-url";
 import { hasExactMarkdownRange, resolvedMarkdownLinkRanges } from "@/utils/markdown-link";
 import { decodedMarkdownCharacterReferenceAt, findDecodedMarkdownSourceBoundaries } from "@/utils/markdown-source-boundaries";
 import { memoMarkdownExtensions } from "@/utils/memo-markdown-extension";
+import { findMentionMatches } from "@/utils/mention-grammar";
 import { findTagMatches } from "@/utils/tag-grammar";
+import { isUsernameCharacter } from "@/utils/username";
 
-type Segment = { type: "text"; value: string } | { type: "tag"; source: string; value: string };
+type Segment =
+  | { type: "text"; value: string }
+  | { type: "tag"; source: string; value: string }
+  | { type: "mention"; source: string; value: string };
 
 interface SourceRange {
   from: number;
@@ -336,22 +344,33 @@ function segmentsForTextNode(
   const runs = literalRunsForTextNode(value, span, source, boundaries);
   if (!runs) return undefined;
 
-  const tags = runs.flatMap((run) =>
-    findTagMatches(run.source).map((match) => ({
-      from: run.valueFrom + match.from,
-      to: run.valueFrom + match.to,
-      source: run.source.slice(match.from, match.to),
-      value: match.value,
-    })),
-  );
-  if (tags.length === 0) return [{ type: "text", value }];
+  const matches = runs
+    .flatMap((run) => [
+      ...findTagMatches(run.source).map((match) => ({
+        type: "tag" as const,
+        from: run.valueFrom + match.from,
+        to: run.valueFrom + match.to,
+        source: run.source.slice(match.from, match.to),
+        value: match.value,
+      })),
+      ...findMentionMatches(run.source, run.sourceFrom === 0 || !isUsernameCharacter(source[run.sourceFrom - 1])).map((match) => ({
+        type: "mention" as const,
+        from: run.valueFrom + match.from,
+        to: run.valueFrom + match.to,
+        source: run.source.slice(match.from, match.to),
+        value: match.username,
+      })),
+    ])
+    .sort((left, right) => left.from - right.from || left.to - right.to);
+  if (matches.length === 0) return [{ type: "text", value }];
 
   const segments: Segment[] = [];
   let cursor = 0;
-  for (const tag of tags) {
-    if (cursor < tag.from) segments.push({ type: "text", value: value.slice(cursor, tag.from) });
-    segments.push({ type: "tag", source: tag.source, value: tag.value });
-    cursor = tag.to;
+  for (const match of matches) {
+    if (match.from < cursor) continue;
+    if (cursor < match.from) segments.push({ type: "text", value: value.slice(cursor, match.from) });
+    segments.push({ type: match.type, source: match.source, value: match.value });
+    cursor = match.to;
   }
   if (cursor < value.length) segments.push({ type: "text", value: value.slice(cursor) });
   return segments;
@@ -372,6 +391,23 @@ function createTagNode(tagValue: string, source: string): TagNode {
     value: tagValue,
     data,
   } as TagNode;
+}
+
+function createMentionNode(username: string, source: string): MentionNode {
+  const data: MentionNodeData = {
+    hName: "span",
+    hProperties: {
+      className: "mention",
+      "data-mention": username,
+    },
+    hChildren: [{ type: "text", value: source }],
+  };
+
+  return {
+    type: "mentionNode",
+    value: username,
+    data,
+  } as MentionNode;
 }
 
 type ParentNode = UnistNode & { children: UnistNode[] };
@@ -680,7 +716,7 @@ function reconcileTextNodes(
   reconcileUnderscoreEmailEmphasis(parent, source, context, recoveredSpans);
 }
 
-function transformTagTextNodes(
+function transformMemoTextNodes(
   parent: ParentNode,
   source: string,
   context: MarkdownSourceContext,
@@ -694,29 +730,52 @@ function transformTagTextNodes(
       const segments = segmentsForTextNode(textNode.value, nodeSpan(textNode, recoveredSpans), source, context.boundaries);
       if (!segments || segments.every((segment) => segment.type === "text")) continue;
 
-      const newNodes = segments.map((segment) =>
-        segment.type === "tag" ? createTagNode(segment.value, segment.source) : ({ type: "text", value: segment.value } as Text),
-      );
+      const newNodes = segments.map((segment) => {
+        if (segment.type === "tag") return createTagNode(segment.value, segment.source);
+        if (segment.type === "mention") return createMentionNode(segment.value, segment.source);
+        return { type: "text", value: segment.value } as Text;
+      });
       parent.children.splice(index, 1, ...(newNodes as UnistNode[]));
       index += newNodes.length - 1;
       continue;
     }
 
     if (isParentNode(child) && TRANSPARENT_PARENT_TYPES.has(child.type)) {
-      transformTagTextNodes(child, source, context, recoveredSpans);
+      transformMemoTextNodes(child, source, context, recoveredSpans);
     }
   }
 }
 
 type VFileLike = { value?: string | Uint8Array };
 
-export const remarkTag = () => {
+function transformMemoSyntax(tree: Root, rawSource: string): void {
+  const source = rawSource.startsWith("\uFEFF") ? rawSource.slice(1) : rawSource;
+  const context = markdownSourceContext(source);
+  const recoveredSpans = new WeakMap<UnistNode, SourceSpan>();
+  reconcileTextNodes(tree as ParentNode, source, context, recoveredSpans);
+  transformMemoTextNodes(tree as ParentNode, source, context, recoveredSpans);
+}
+
+/** Transform Memos inline source syntaxes after GFM and math parsing. */
+export const remarkMemoSyntax = () => {
   return (tree: Root, file: VFileLike) => {
-    const rawSource = typeof file.value === "string" ? file.value : "";
-    const source = rawSource.startsWith("\uFEFF") ? rawSource.slice(1) : rawSource;
-    const context = markdownSourceContext(source);
-    const recoveredSpans = new WeakMap<UnistNode, SourceSpan>();
-    reconcileTextNodes(tree as ParentNode, source, context, recoveredSpans);
-    transformTagTextNodes(tree as ParentNode, source, context, recoveredSpans);
+    transformMemoSyntax(tree, typeof file.value === "string" ? file.value : "");
   };
 };
+
+/** Extract exact mention candidates with the same Markdown rules used for rendering. */
+export function extractMentionUsernames(source: string): string[] {
+  const tree = fromMarkdown(source, {
+    extensions: [gfm()],
+    mdastExtensions: [gfmFromMarkdown()],
+  });
+  transformMemoSyntax(tree, source);
+
+  const usernames: string[] = [];
+  const collect = (node: UnistNode): void => {
+    if (node.type === "mentionNode") usernames.push((node as MentionNode).value);
+    if (isParentNode(node)) node.children.forEach(collect);
+  };
+  collect(tree);
+  return Array.from(new Set(usernames));
+}

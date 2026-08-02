@@ -36,6 +36,21 @@ func TestBatchGetUsersReturnsExactUsernamesWithoutAuthentication(t *testing.T) {
 	require.True(t, ok)
 }
 
+func TestBatchGetUsersDoesNotNormalizeUsernames(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	_, err := ts.CreateRegularUser(ctx, "batch-alpha")
+	require.NoError(t, err)
+
+	resp, err := ts.Service.BatchGetUsers(ctx, &apiv1.BatchGetUsersRequest{
+		Usernames: []string{" batch-alpha "},
+	})
+	require.NoError(t, err)
+	require.Empty(t, resp.Users)
+}
+
 func TestBatchGetUsersRejectsTooManyUsernames(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)

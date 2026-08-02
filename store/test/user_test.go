@@ -117,6 +117,33 @@ func TestUserGetByUsername(t *testing.T) {
 	ts.Close()
 }
 
+func TestUsernameEqualityIsCaseSensitive(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	upper, err := createTestingUserWithRole(ctx, ts, "Alice", store.RoleUser)
+	require.NoError(t, err)
+	lower, err := createTestingUserWithRole(ctx, ts, "alice", store.RoleUser)
+	require.NoError(t, err)
+	require.NotEqual(t, upper.ID, lower.ID)
+
+	for username, wantID := range map[string]int32{
+		"Alice": upper.ID,
+		"alice": lower.ID,
+	} {
+		found, err := ts.GetUser(ctx, &store.FindUser{Username: &username})
+		require.NoError(t, err)
+		require.Equal(t, wantID, found.ID)
+
+		listed, err := ts.ListUsers(ctx, &store.FindUser{UsernameList: []string{username}})
+		require.NoError(t, err)
+		require.Len(t, listed, 1)
+		require.Equal(t, wantID, listed[0].ID)
+	}
+}
+
 func TestUserListByRole(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()

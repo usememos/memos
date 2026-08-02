@@ -1,10 +1,8 @@
 import { RangeSetBuilder } from "@codemirror/state";
 import { Decoration, type DecorationSet, EditorView } from "@codemirror/view";
-import { MENTION_RUN } from "@/utils/mention-grammar";
-import { findMarkdownTagMatches, markdownGFMEmailSourceRanges } from "./markdownTagRanges";
+import { findMarkdownMentionMatches, findMarkdownTagMatches } from "./markdownTagRanges";
 import { viewportDecorations } from "./viewportDecorations";
 
-const MENTION_RE = new RegExp(`(^|[^A-Za-z0-9])@(${MENTION_RUN})`, "gu");
 const tagMark = Decoration.mark({ class: "cm-memo-tag" });
 const mentionMark = Decoration.mark({ class: "cm-memo-mention" });
 
@@ -19,20 +17,13 @@ function build(view: EditorView): DecorationSet {
     if (previous && range.from <= previous.to) previous.to = Math.max(previous.to, range.to);
     else scanRanges.push({ ...range });
   }
-  const emailRanges = markdownGFMEmailSourceRanges(view.state, scanRanges.at(-1)?.to ?? view.viewport.to);
-
   for (const { from, to } of scanRanges) {
     for (const match of findMarkdownTagMatches(view.state, from, to)) {
       ranges.push({ from: match.from, to: match.to, deco: tagMark });
     }
 
-    const text = view.state.doc.sliceString(from, to);
-    MENTION_RE.lastIndex = 0;
-    let match: RegExpExecArray | null;
-    while ((match = MENTION_RE.exec(text)) !== null) {
-      const start = from + match.index + match[1].length; // skip the boundary char
-      if (emailRanges.some((range) => range.from <= start && start < range.to)) continue;
-      ranges.push({ from: start, to: start + 1 + match[2].length, deco: mentionMark });
+    for (const match of findMarkdownMentionMatches(view.state, from, to)) {
+      ranges.push({ from: match.from, to: match.to, deco: mentionMark });
     }
   }
   ranges.sort((a, b) => a.from - b.from || a.to - b.to);

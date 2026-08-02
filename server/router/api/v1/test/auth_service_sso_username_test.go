@@ -23,6 +23,7 @@ func TestSSOSignInUsesValidIdentifierAsUsername(t *testing.T) {
 		identifier string
 	}{
 		{name: "single character", identifier: "a"},
+		{name: "numeric", identifier: "12345"},
 		{name: "common username", identifier: "alice"},
 		{name: "uppercase and hyphens", identifier: "Alice-01"},
 		{name: "maximum length", identifier: strings.Repeat("a", 36)},
@@ -56,7 +57,6 @@ func TestSSOSignInFallsBackForInvalidIdentifier(t *testing.T) {
 		name       string
 		identifier string
 	}{
-		{name: "numeric", identifier: "12345"},
 		{name: "email", identifier: "alice@example.com"},
 		{name: "underscore", identifier: "alice_example"},
 		{name: "leading hyphen", identifier: "-alice"},
@@ -125,22 +125,20 @@ func TestSSOSignInDoesNotTakeOverExistingUsername(t *testing.T) {
 	assertSingleSSOLink(ctx, t, ts, "username-collision", "alice", response.User.Username)
 }
 
-func TestSSOSignInDoesNotAdoptReservedUsername(t *testing.T) {
+func TestSSOSignInAdoptsOrdinaryRoleLikeUsername(t *testing.T) {
 	for _, identifier := range []string{"admin", "Admin", "support", "root"} {
 		t.Run(identifier, func(t *testing.T) {
 			ts := NewTestService(t)
 			defer ts.Cleanup()
 
 			ctx := context.Background()
-			mockIDP := newMockOAuthServer(t, "reserved-code", "reserved-token", map[string]any{"sub": identifier})
+			mockIDP := newMockOAuthServer(t, "role-like-code", "role-like-token", map[string]any{"sub": identifier})
 			defer mockIDP.Close()
 
-			idpName := createTestingOAuthIdentityProvider(ctx, t, ts, mockIDP.URL, "reserved-provider")
-			response, err := signInWithTestingSSO(ctx, ts, idpName, "reserved-code")
+			idpName := createTestingOAuthIdentityProvider(ctx, t, ts, mockIDP.URL, "role-like-provider")
+			response, err := signInWithTestingSSO(ctx, ts, idpName, "role-like-code")
 			require.NoError(t, err)
-			require.NotEqual(t, identifier, response.User.Username)
-			_, err = uuid.Parse(response.User.Username)
-			require.NoError(t, err, "reserved identifier must fall back to a UUID")
+			require.Equal(t, identifier, response.User.Username)
 		})
 	}
 }

@@ -222,7 +222,7 @@ func TestCreateUserRegistration(t *testing.T) {
 	})
 
 	t.Run("CreateUser rejects invalid writable usernames", func(t *testing.T) {
-		for _, username := range []string{"alice@example.com", "legacy_user", "123"} {
+		for _, username := range []string{"alice@example.com", "legacy_user"} {
 			t.Run(username, func(t *testing.T) {
 				ts := NewTestService(t)
 				defer ts.Cleanup()

@@ -135,8 +135,16 @@ func TestMigrationCopiesInstanceTagsToUserSettings(t *testing.T) {
 		);
 		CREATE TABLE user (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+			updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+			row_status TEXT NOT NULL CHECK (row_status IN ('NORMAL', 'ARCHIVED')) DEFAULT 'NORMAL',
 			username TEXT NOT NULL UNIQUE,
-			role TEXT NOT NULL DEFAULT 'USER'
+			role TEXT NOT NULL DEFAULT 'USER',
+			email TEXT NOT NULL DEFAULT '',
+			nickname TEXT NOT NULL DEFAULT '',
+			password_hash TEXT NOT NULL,
+			avatar_url TEXT NOT NULL DEFAULT '',
+			description TEXT NOT NULL DEFAULT ''
 		);
 		CREATE TABLE user_setting (
 			user_id INTEGER NOT NULL,
@@ -174,7 +182,10 @@ func TestMigrationCopiesInstanceTagsToUserSettings(t *testing.T) {
 
 	_, err = db.ExecContext(ctx, "INSERT INTO system_setting (name, value) VALUES ('BASIC', ?), ('TAGS', ?)", string(basicSettingBytes), string(tagsSettingBytes))
 	require.NoError(t, err)
-	_, err = db.ExecContext(ctx, "INSERT INTO user (id, username, role) VALUES (1, 'tag-owner', 'USER'), (2, 'keeps-existing', 'USER')")
+	_, err = db.ExecContext(ctx, `
+		INSERT INTO user (id, username, role, password_hash, avatar_url)
+		VALUES (1, 'tag-owner', 'USER', 'legacy-hash', ''), (2, 'keeps-existing', 'USER', 'legacy-hash', '')
+	`)
 	require.NoError(t, err)
 	_, err = db.ExecContext(ctx, "INSERT INTO user_setting (user_id, key, value) VALUES (2, 'TAGS', ?)", string(existingUserTagsBytes))
 	require.NoError(t, err)
@@ -206,6 +217,133 @@ func TestMigrationCopiesInstanceTagsToUserSettings(t *testing.T) {
 	require.NoError(t, err)
 	require.Contains(t, existing.GetTags().GetTags(), "existing")
 	require.NotContains(t, existing.GetTags().GetTags(), "bug")
+}
+
+func TestCaseSensitiveUsernameMigration(t *testing.T) {
+	ctx := context.Background()
+	driver := getDriverFromEnv()
+	var dsn string
+	switch driver {
+	case "sqlite":
+		dsn = fmt.Sprintf("%s/memos_username_migration.db", t.TempDir())
+	case "mysql":
+		dsn = GetMySQLDSN(t)
+	case "postgres":
+		dsn = GetPostgresDSN(t)
+	default:
+		t.Fatalf("unsupported driver: %s", driver)
+	}
+
+	db, err := sql.Open(driver, dsn)
+	require.NoError(t, err)
+
+	_, err = db.ExecContext(ctx, caseSensitiveUsernameMigrationFixture(driver))
+	require.NoError(t, err)
+
+	basicSettingBytes, err := protojson.Marshal(&storepb.InstanceBasicSetting{SchemaVersion: "0.30.1"})
+	require.NoError(t, err)
+	insertBasicSetting := "INSERT INTO system_setting (name, value, description) VALUES ('BASIC', ?, '')"
+	if driver == "postgres" {
+		insertBasicSetting = "INSERT INTO system_setting (name, value, description) VALUES ('BASIC', $1, '')"
+	}
+	_, err = db.ExecContext(ctx, insertBasicSetting, string(basicSettingBytes))
+	require.NoError(t, err)
+	insertUser := "INSERT INTO user (username, role, password_hash, avatar_url) VALUES ('Alice', 'USER', 'legacy-hash', '')"
+	if driver == "mysql" {
+		insertUser = "INSERT INTO `user` (username, role, password_hash, avatar_url) VALUES ('Alice', 'USER', 'legacy-hash', '')"
+	} else if driver == "postgres" {
+		insertUser = `INSERT INTO "user" (username, role, password_hash, avatar_url) VALUES ('Alice', 'USER', 'legacy-hash', '')`
+	}
+	_, err = db.ExecContext(ctx, insertUser)
+	require.NoError(t, err)
+	require.NoError(t, db.Close())
+
+	ts := NewTestingStoreWithDSN(ctx, t, driver, dsn)
+	require.NoError(t, ts.Migrate(ctx))
+	defer ts.Close()
+
+	lower, err := createTestingUserWithRole(ctx, ts, "alice", store.RoleUser)
+	require.NoError(t, err)
+
+	upperUsername := "Alice"
+	upper, err := ts.GetUser(ctx, &store.FindUser{Username: &upperUsername})
+	require.NoError(t, err)
+	require.NotEqual(t, upper.ID, lower.ID)
+	require.Equal(t, "Alice", upper.Username)
+}
+
+func caseSensitiveUsernameMigrationFixture(driver string) string {
+	switch driver {
+	case "mysql":
+		return `
+			CREATE TABLE system_setting (
+				name VARCHAR(256) NOT NULL PRIMARY KEY,
+				value LONGTEXT NOT NULL,
+				description TEXT NOT NULL
+			);
+			CREATE TABLE ` + "`user`" + ` (
+				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				created_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				updated_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				row_status VARCHAR(256) NOT NULL DEFAULT 'NORMAL',
+				username VARCHAR(256) NOT NULL UNIQUE,
+				role VARCHAR(256) NOT NULL DEFAULT 'USER',
+				email VARCHAR(256) NOT NULL DEFAULT '',
+				nickname VARCHAR(256) NOT NULL DEFAULT '',
+				password_hash VARCHAR(256) NOT NULL,
+				avatar_url LONGTEXT NOT NULL,
+				description VARCHAR(256) NOT NULL DEFAULT ''
+			);
+			CREATE TABLE memo (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY);
+		`
+	case "postgres":
+		return `
+			CREATE TABLE system_setting (
+				name TEXT NOT NULL PRIMARY KEY,
+				value TEXT NOT NULL,
+				description TEXT NOT NULL
+			);
+			CREATE TABLE "user" (
+				id SERIAL PRIMARY KEY,
+				created_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+				updated_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+				row_status TEXT NOT NULL DEFAULT 'NORMAL',
+				username TEXT NOT NULL UNIQUE,
+				role TEXT NOT NULL DEFAULT 'USER',
+				email TEXT NOT NULL DEFAULT '',
+				nickname TEXT NOT NULL DEFAULT '',
+				password_hash TEXT NOT NULL,
+				avatar_url TEXT NOT NULL,
+				description TEXT NOT NULL DEFAULT ''
+			);
+			CREATE TABLE memo (id SERIAL PRIMARY KEY);
+		`
+	case "sqlite":
+		return `
+			CREATE TABLE system_setting (
+				name TEXT NOT NULL,
+				value TEXT NOT NULL,
+				description TEXT NOT NULL DEFAULT '',
+				UNIQUE(name)
+			);
+			CREATE TABLE user (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+				updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+				row_status TEXT NOT NULL CHECK (row_status IN ('NORMAL', 'ARCHIVED')) DEFAULT 'NORMAL',
+				username TEXT NOT NULL UNIQUE,
+				role TEXT NOT NULL DEFAULT 'USER',
+				email TEXT NOT NULL DEFAULT '',
+				nickname TEXT NOT NULL DEFAULT '',
+				password_hash TEXT NOT NULL,
+				avatar_url TEXT NOT NULL DEFAULT '',
+				description TEXT NOT NULL DEFAULT ''
+			);
+			CREATE TABLE memo (id INTEGER PRIMARY KEY AUTOINCREMENT);
+		`
+	default:
+		return ""
+	}
 }
 
 // TestMigrationFromStableVersion verifies that upgrading from a stable Memos version
