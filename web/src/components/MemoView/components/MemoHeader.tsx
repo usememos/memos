@@ -1,4 +1,4 @@
-import { BookmarkIcon } from "lucide-react";
+import { ArrowUpRightIcon, BookmarkIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import RelativeTime from "@/components/RelativeTime";
@@ -78,6 +78,8 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
           />
         )}
 
+        <MemoDetailLinkButton memoName={memo.name} />
+
         {showVisibility && memo.visibility !== Visibility.PRIVATE && (
           <Tooltip>
             <TooltipTrigger>
@@ -109,6 +111,17 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
     </div>
   );
 };
+
+export const MemoDetailLinkButton: React.FC<{ memoName: string }> = ({ memoName }) => (
+  <Link
+    aria-label="Open memo"
+    className="h-6 w-6 flex sm:hidden sm:group-hover:flex justify-center items-center cursor-pointer transition-colors text-muted-foreground hover:text-foreground"
+    to={`/${memoName}`}
+    viewTransition
+  >
+    <ArrowUpRightIcon className="w-4 h-4" />
+  </Link>
+);
 
 interface CreatorDisplayProps {
   creator: User;
