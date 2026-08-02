@@ -232,6 +232,7 @@ func TestFindTagMatchesMemosTagV1(t *testing.T) {
 		{name: "apostrophe cannot repeat", input: "#rock''roll", expectedTag: "rock", expectedSource: "#rock", expectedRest: "''roll", shouldParse: true},
 		{name: "left curly quote terminates", input: "#O‘Brien", expectedTag: "O", expectedSource: "#O", expectedRest: "‘Brien", shouldParse: true},
 		{name: "apostrophe does not adjoin extension", input: "#foo-'bar", expectedTag: "foo-", expectedSource: "#foo-", expectedRest: "'bar", shouldParse: true},
+		{name: "apostrophe does not adjoin fully qualified emoji", input: "#foo'1️⃣", expectedTag: "foo", expectedSource: "#foo", expectedRest: "'1️⃣", shouldParse: true},
 		{name: "apostrophe does not join across ignored code point", input: "#A\u200d'B", expectedTag: "A", expectedSource: "#A\u200d", expectedRest: "'B", shouldParse: true},
 		{name: "currency terminates", input: "#price€", expectedTag: "price", expectedSource: "#price", expectedRest: "€", shouldParse: true},
 		{name: "currency cannot start", input: "#€budget", shouldParse: false},

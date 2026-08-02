@@ -65,7 +65,7 @@ func isApostropheJoiner(r rune) bool {
 }
 
 func startsNonCombiningXIDContinuation(source []byte) bool {
-	if len(source) == 0 {
+	if len(source) == 0 || matchFullyQualifiedEmoji(source) > 0 {
 		return false
 	}
 	r, size := utf8.DecodeRune(source)

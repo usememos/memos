@@ -21,7 +21,7 @@ describe("tag scanner", () => {
     ["#tag's #сім'я #O'Brien #O’Brien #OʼBrien", ["tag's", "сім'я", "O'Brien", "O’Brien", "OʼBrien"]],
     ["#café's", ["café's"]],
     ["'#tag' #users' #'missing #rock''roll", ["tag", "users", "rock"]],
-    ["#O‘Brien #foo-'bar #A‍'B", ["O", "foo-", "A"]],
+    ["#O‘Brien #foo-'bar #foo'1️⃣ #A‍'B", ["O", "foo-", "foo", "A"]],
     ["#foo,bar #price€ #€budget #v²", ["foo", "price", "v"]],
     ["#first#second", ["first", "second"]],
     ["##tag", ["tag"]],

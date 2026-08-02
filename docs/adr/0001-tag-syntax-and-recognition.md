@@ -102,8 +102,9 @@ changing metadata or a separate tag record. Renaming `#Work` to `#work` across 1
 : A non-empty component of a hierarchical tag identifier. Slashes separate segments and are not part of any segment.
 
 **Apostrophe joiner**
-: U+0027 APOSTROPHE (`'`) or U+2019 RIGHT SINGLE QUOTATION MARK (`’`) emitted inside a tag segment only when the immediately preceding source code point
-  is an emitted `XID_Continue` code point and the immediately following source code point is an emitted non-combining `XID_Continue` code point.
+: U+0027 APOSTROPHE (`'`) or U+2019 RIGHT SINGLE QUOTATION MARK (`’`) emitted inside a tag segment only when, after emoji-first tokenization, the
+  immediately preceding source code point emits as an `XID_Continue` code point and the immediately following source code point emits as a non-combining
+  `XID_Continue` code point.
 
 **Display value**
 : The direct or implied value presented as a derived tag label. It preserves emitted code points exactly but does not contain ignored default-ignorable code
@@ -208,8 +209,9 @@ Rules:
 12. A non-default-ignorable `XID_Continue` code point whose General Category is `Mn` (Nonspacing Mark) or `Mc` (Spacing Combining Mark) is consumed but
     omitted while it precedes the starter of its segment. The same non-default-ignorable code point is preserved as a value unit after that segment's
     starter.
-13. U+0027 APOSTROPHE and U+2019 RIGHT SINGLE QUOTATION MARK are emitted as `ApostropheJoiner` only when the immediately preceding source code point in the
-    same segment was emitted as an `EmittedXIDContinueCodePoint` and the immediately following source code point is an
+13. After applying the longest-`FullyQualifiedEmoji` token priority, U+0027 APOSTROPHE and U+2019 RIGHT SINGLE QUOTATION MARK are emitted as
+    `ApostropheJoiner` only when the immediately preceding source code point in the same segment was emitted as an `EmittedXIDContinueCodePoint` and the
+    immediately following source code point can emit as an
     `EmittedXIDContinueCodePointExceptCombiningMark`. An apostrophe joiner therefore cannot start or end a segment, repeat without an intervening XID
     code point, adjoin a fully-qualified emoji or Memos extension unit, or join across an ignored code point.
 14. U+02BC MODIFIER LETTER APOSTROPHE (`ʼ`) is already an `XID_Continue` code point. It follows the ordinary XID rules rather than the contextual
@@ -231,8 +233,9 @@ After finding an introducer, the lexer consumes the longest valid `TagSourceSpel
 2. Emit a segment starter, trying the longest matching `FullyQualifiedEmoji` before any shorter unit.
 3. After the starter, preserve non-default-ignorable `XID_Continue` combining marks as ordinary value units; continue consuming default-ignorable code
    points without emitting them.
-4. Emit U+0027 or U+2019 as an apostrophe joiner only when the immediately preceding source code point emitted an XID continuation unit and the immediately
-   following source code point can emit a non-combining XID continuation unit. Otherwise stop before the apostrophe.
+4. Emit U+0027 or U+2019 as an apostrophe joiner only when, after emoji-first tokenization, the immediately preceding source code point emitted an XID
+   continuation unit and the immediately following source code point can emit a non-combining XID continuation unit. Otherwise stop before the
+   apostrophe.
 5. Consume `/` only when the following source, after any ignored prefix, can emit a segment starter; then consume that segment.
 6. Stop before a `/` that is leading, trailing, or followed only by an ignored prefix and then another `/`, a non-starter, or the end of the literal-source
    run, leaving that slash and the remaining source unconsumed.
@@ -278,6 +281,7 @@ Examples:
 | `#O’Brien` | `O’Brien` | empty |
 | `#café's` | `café's` | empty |
 | `#users'` | `users` | `'` |
+| `#foo'1️⃣` | `foo` | `'1️⃣` |
 | `#'tag` | none | `'tag` |
 | `#-foo` | `-foo` | empty |
 | `#foo-` | `foo-` | empty |
@@ -463,6 +467,7 @@ The following examples are normative for the lexical and context decisions alrea
 | `#O’Brien` | `O’Brien` | Right single quotation mark joins two XID code points |
 | `#café's` | `café's` | An emitted combining mark may precede an apostrophe joiner |
 | `#users'` | `users` | A trailing apostrophe is not a joiner |
+| `#foo'1️⃣` | `foo` | Emoji-first tokenization prevents an apostrophe from adjoining the keycap sequence |
 | `#'tag` | none | An apostrophe cannot start a segment |
 | `'#tag'` | `tag` | Surrounding quotation punctuation remains outside the occurrence |
 | `#rock’n’roll` | `rock’n’roll` | Multiple apostrophe joiners are valid when each independently satisfies the context rule |
@@ -526,8 +531,8 @@ The following examples are normative for the lexical and context decisions alrea
 - Hierarchical ancestors have one consistent meaning across API membership, exact filters, navigation, and counts.
 - `hello#tag` works consistently while actual Markdown links and URLs are excluded structurally.
 - Common word-internal apostrophes support multilingual words and names while surrounding quotation punctuation remains outside tag values.
-- Markdown punctuation and delimiters such as comma, backtick, currency, and mathematical operators stop an identifier predictably; apostrophes are the
-  explicitly constrained exception.
+- Unsupported Markdown punctuation, delimiters, currency symbols, and operators stop an identifier predictably; apostrophes are the explicitly
+  constrained exception.
 - Exact equality preserves every emitted code-point distinction and avoids locale-dependent identity rules.
 - Ignoring default-ignorable code points outside emoji avoids invisible tag distinctions while preserving matched fully-qualified emoji sequences.
 - Ignoring leading non-default-ignorable `Mn` and `Mc` code points only before each segment's visible starter avoids invisible-leading segments without

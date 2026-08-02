@@ -94,7 +94,7 @@ function isApostropheJoiner(value: string): boolean {
 }
 
 function isNonCombiningXIDContinuationAt(source: string, index: number, limit: number): boolean {
-  if (index >= limit) return false;
+  if (index >= limit || emojiAt(source, index, limit)) return false;
   const value = codePointAt(source, index);
   return index + value.length <= limit && isXIDContinue(value) && !isCombiningMark(value);
 }
