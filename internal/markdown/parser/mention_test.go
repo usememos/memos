@@ -25,6 +25,7 @@ func TestFindMentionMatches(t *testing.T) {
 		{name: "run starts after word", source: "@alice", runHasLeftBoundary: false},
 		{name: "non-username right boundaries", source: "@alice_smith @bob@carol", runHasLeftBoundary: true, want: []string{"alice", "bob"}},
 		{name: "punctuation", source: "(@alice), @bob.", runHasLeftBoundary: true, want: []string{"alice", "bob"}},
+		{name: "escaped introducer", source: `\@alice @bob`, runHasLeftBoundary: true, want: []string{"bob"}},
 	}
 
 	for _, test := range tests {

@@ -376,6 +376,8 @@ func TestExtractAllMentionSyntaxAndContexts(t *testing.T) {
 		{name: "opaque Markdown", content: "`@code` [@link](/x) ![@image](/x) https://example.com/@url $@math$ @ok", expected: []string{"ok"}},
 		{name: "escapes and references", content: `\@escaped &#64;entity @ok`, expected: []string{"ok"}},
 		{name: "GFM email precedence", content: "@alice@example.com foo@bar.com@bob @ok", expected: []string{"ok"}},
+		{name: "padded blockquote", content: ">\t@alice", expected: []string{"alice"}},
+		{name: "padded list continuation", content: "- item\n \t@bob", expected: []string{"bob"}},
 	}
 
 	for _, test := range tests {

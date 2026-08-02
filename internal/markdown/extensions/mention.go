@@ -49,8 +49,7 @@ func (*mentionASTTransformer) Transform(document *ast.Document, reader text.Read
 
 func replaceMentionsInText(textNode *ast.Text, source []byte) {
 	segment := textNode.Segment
-	sourceStart := segment.Start - segment.Padding
-	runHasLeftBoundary := sourceStart == 0 || !base.IsUsernameCharacter(source[sourceStart-1])
+	runHasLeftBoundary := segment.Padding > 0 || segment.Start == 0 || !base.IsUsernameCharacter(source[segment.Start-1])
 	matches := mparser.FindMentionMatches(segment.Value(source), runHasLeftBoundary)
 	if len(matches) == 0 {
 		return
