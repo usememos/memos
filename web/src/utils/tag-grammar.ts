@@ -89,6 +89,16 @@ function isExtensionUnit(value: string): boolean {
   return value === "-" || value === "+" || value === "&";
 }
 
+function isApostropheJoiner(value: string): boolean {
+  return value === "'" || value === "’";
+}
+
+function isNonCombiningXIDContinuationAt(source: string, index: number, limit: number): boolean {
+  if (index >= limit) return false;
+  const value = codePointAt(source, index);
+  return index + value.length <= limit && isXIDContinue(value) && !isCombiningMark(value);
+}
+
 interface SegmentMatch {
   to: number;
   value: string;
@@ -109,6 +119,7 @@ function scanSegment(source: string, from: number, limit: number): SegmentMatch 
   }
 
   let value = "";
+  let previousWasXIDContinuation = false;
   const starterEmoji = emojiAt(source, index, limit);
   if (starterEmoji) {
     value = starterEmoji;
@@ -118,6 +129,7 @@ function scanSegment(source: string, from: number, limit: number): SegmentMatch 
     if (!starter || (!(isXIDContinue(starter) && !isCombiningMark(starter)) && !isExtensionUnit(starter))) return undefined;
     value = starter;
     index += starter.length;
+    previousWasXIDContinuation = isXIDContinue(starter);
   }
 
   while (index < limit) {
@@ -125,17 +137,30 @@ function scanSegment(source: string, from: number, limit: number): SegmentMatch 
     if (emoji) {
       value += emoji;
       index += emoji.length;
+      previousWasXIDContinuation = false;
       continue;
     }
 
     const codePoint = codePointAt(source, index);
     if (isDefaultIgnorable(codePoint)) {
       index += codePoint.length;
+      previousWasXIDContinuation = false;
+      continue;
+    }
+    if (
+      isApostropheJoiner(codePoint) &&
+      previousWasXIDContinuation &&
+      isNonCombiningXIDContinuationAt(source, index + codePoint.length, limit)
+    ) {
+      value += codePoint;
+      index += codePoint.length;
+      previousWasXIDContinuation = false;
       continue;
     }
     if (isXIDContinue(codePoint) || isExtensionUnit(codePoint)) {
       value += codePoint;
       index += codePoint.length;
+      previousWasXIDContinuation = isXIDContinue(codePoint);
       continue;
     }
     break;

@@ -576,6 +576,16 @@ func TestExtractTagsMemosTagV1(t *testing.T) {
 		{name: "number sign keycap continuation", content: "#first#️⃣", expected: []string{"first#️⃣"}},
 		{name: "exact identity", content: "#Work #work", expected: []string{"Work", "work"}},
 		{name: "no normalization", content: "#café #cafe\u0301", expected: []string{"café", "cafe\u0301"}},
+		{
+			name:     "word internal apostrophes",
+			content:  "#tag's #сім'я #O'Brien #O’Brien #OʼBrien #cafe\u0301's",
+			expected: []string{"tag's", "сім'я", "O'Brien", "O’Brien", "OʼBrien", "cafe\u0301's"},
+		},
+		{
+			name:     "apostrophe boundaries",
+			content:  "'#tag' #users' #'missing #rock''roll #O‘Brien #A\u200d'B",
+			expected: []string{"tag", "users", "rock", "O", "A"},
+		},
 		{name: "ignored spellings deduplicate", content: "#AB #A\u200dB #\u0301AB", expected: []string{"AB"}},
 		{name: "hierarchy expansion", content: "#book/fiction/history", expected: []string{"book", "book/fiction", "book/fiction/history"}},
 		{name: "hierarchy exact dedupe", content: "#book/fiction #book", expected: []string{"book", "book/fiction"}},

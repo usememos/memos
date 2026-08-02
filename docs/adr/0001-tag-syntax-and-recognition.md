@@ -45,6 +45,7 @@ changing metadata or a separate tag record. Renaming `#Work` to `#work` across 1
 ## Decision drivers
 
 - Work naturally for multilingual personal notes, including numeric tags and emoji.
+- Preserve common word-internal apostrophes without absorbing surrounding quotation punctuation into tag values.
 - Recognize `hello#tag` intentionally without mistaking URL fragments for tags.
 - Give the backend, renderer, editor decoration, and completion the same values and source spans.
 - Use Markdown syntax rather than ad hoc URL or code regular expressions.
@@ -100,6 +101,10 @@ changing metadata or a separate tag record. Renaming `#Work` to `#work` across 1
 **Tag segment**
 : A non-empty component of a hierarchical tag identifier. Slashes separate segments and are not part of any segment.
 
+**Apostrophe joiner**
+: U+0027 APOSTROPHE (`'`) or U+2019 RIGHT SINGLE QUOTATION MARK (`’`) emitted inside a tag segment only when the immediately preceding source code point
+  is an emitted `XID_Continue` code point and the immediately following source code point is an emitted non-combining `XID_Continue` code point.
+
 **Display value**
 : The direct or implied value presented as a derived tag label. It preserves emitted code points exactly but does not contain ignored default-ignorable code
   points or ignored leading combining marks.
@@ -143,7 +148,7 @@ Introducer          := U+0023 NUMBER SIGN ("#") outside a FullyQualifiedEmoji
 TagSourceSpelling   := TagSegmentSpelling ("/" TagSegmentSpelling)*
 TagSegmentSpelling  := IgnoredPrefix* SegmentStarter SegmentContinuation*
 IgnoredPrefix       := IgnoredDefaultIgnorable | IgnoredLeadingCombiningMark
-SegmentContinuation := ValueUnit | IgnoredDefaultIgnorable
+SegmentContinuation := ValueUnit | ApostropheJoiner | IgnoredDefaultIgnorable
 
 SegmentStarter := EmittedXIDContinueCodePointExceptCombiningMark
                 | FullyQualifiedEmoji
@@ -157,6 +162,9 @@ ValueUnit := EmittedXIDContinueCodePoint
            | "+"
            | "&"
 
+ApostropheJoiner := U+0027 APOSTROPHE ("'")
+                  | U+2019 RIGHT SINGLE QUOTATION MARK ("’")
+
 IgnoredDefaultIgnorable := Default_Ignorable_Code_Point outside a FullyQualifiedEmoji
 IgnoredLeadingCombiningMark := XID_Continue with General_Category Mn or Mc,
                                minus Default_Ignorable_Code_Point, before SegmentStarter
@@ -164,13 +172,14 @@ IgnoredLeadingCombiningMark := XID_Continue with General_Category Mn or Mc,
 
 The grammar recognizes source spelling and emits a tag identifier as follows:
 
-- Each `SegmentStarter` and `ValueUnit` emits its exact source code-point sequence. A `FullyQualifiedEmoji` therefore emits its complete matched sequence.
+- Each `SegmentStarter`, `ValueUnit`, and contextually valid `ApostropheJoiner` emits its exact source code-point sequence. A `FullyQualifiedEmoji`
+  therefore emits its complete matched sequence.
 - Each consumed `/` emits one U+002F SOLIDUS into the identifier.
 - `Introducer`, `IgnoredDefaultIgnorable`, and `IgnoredLeadingCombiningMark` emit nothing.
 
 At every source position, the token priority is the longest `FullyQualifiedEmoji`, then `IgnoredDefaultIgnorable`, then `IgnoredLeadingCombiningMark`, then
-an emitted code point or Memos extension unit. This preserves default-ignorable code points inside matched fully-qualified emoji sequences while omitting
-them everywhere else.
+a contextually valid `ApostropheJoiner`, then an emitted code point or Memos extension unit. This preserves default-ignorable code points inside matched
+fully-qualified emoji sequences while omitting them everywhere else.
 
 The emitted tag identifier is the direct tag value.
 
@@ -199,12 +208,19 @@ Rules:
 12. A non-default-ignorable `XID_Continue` code point whose General Category is `Mn` (Nonspacing Mark) or `Mc` (Spacing Combining Mark) is consumed but
     omitted while it precedes the starter of its segment. The same non-default-ignorable code point is preserved as a value unit after that segment's
     starter.
-13. There is no tag-specific identifier length limit. The enclosing memo-size limit provides the resource bound.
+13. U+0027 APOSTROPHE and U+2019 RIGHT SINGLE QUOTATION MARK are emitted as `ApostropheJoiner` only when the immediately preceding source code point in the
+    same segment was emitted as an `EmittedXIDContinueCodePoint` and the immediately following source code point is an
+    `EmittedXIDContinueCodePointExceptCombiningMark`. An apostrophe joiner therefore cannot start or end a segment, repeat without an intervening XID
+    code point, adjoin a fully-qualified emoji or Memos extension unit, or join across an ignored code point.
+14. U+02BC MODIFIER LETTER APOSTROPHE (`ʼ`) is already an `XID_Continue` code point. It follows the ordinary XID rules rather than the contextual
+    apostrophe-joiner rule.
+15. There is no tag-specific identifier length limit. The enclosing memo-size limit provides the resource bound.
 
 The grammar is intentionally broader than a programming-language identifier grammar. It does not require the first emitted unit to be `XID_Start`:
 digits, `_`, `-`, `+`, `&`, and fully-qualified emoji can start a segment. Default-ignorable code points and non-default-ignorable `Mn` or `Mc` code points
 may occur before each segment's starter but are omitted from the value. After the starter, those non-default-ignorable `Mn` and `Mc` code points are
-preserved. A slash cannot begin a segment, and segments made only from `-`, `+`, and `&` are explicitly valid.
+preserved. ASCII and right-curly apostrophes are emitted only as contextual joiners between XID code points. A slash cannot begin a segment, and segments
+made only from `-`, `+`, and `&` are explicitly valid.
 
 ### Maximal-prefix scanning
 
@@ -215,12 +231,14 @@ After finding an introducer, the lexer consumes the longest valid `TagSourceSpel
 2. Emit a segment starter, trying the longest matching `FullyQualifiedEmoji` before any shorter unit.
 3. After the starter, preserve non-default-ignorable `XID_Continue` combining marks as ordinary value units; continue consuming default-ignorable code
    points without emitting them.
-4. Consume `/` only when the following source, after any ignored prefix, can emit a segment starter; then consume that segment.
-5. Stop before a `/` that is leading, trailing, or followed only by an ignored prefix and then another `/`, a non-starter, or the end of the literal-source
+4. Emit U+0027 or U+2019 as an apostrophe joiner only when the immediately preceding source code point emitted an XID continuation unit and the immediately
+   following source code point can emit a non-combining XID continuation unit. Otherwise stop before the apostrophe.
+5. Consume `/` only when the following source, after any ignored prefix, can emit a segment starter; then consume that segment.
+6. Stop before a `/` that is leading, trailing, or followed only by an ignored prefix and then another `/`, a non-starter, or the end of the literal-source
    run, leaving that slash and the remaining source unconsumed.
-6. Otherwise stop before the first code point that cannot begin a valid continuation unit.
-7. Keep the valid prefix already consumed; a later invalid character does not invalidate it.
-8. Produce no candidate if the first `TagSegmentSpelling` cannot match.
+7. Otherwise stop before the first code point that cannot begin a valid continuation unit.
+8. Keep the valid prefix already consumed; a later invalid character does not invalidate it.
+9. Produce no candidate if the first `TagSegmentSpelling` cannot match.
 
 ### Candidate enumeration
 
@@ -255,6 +273,12 @@ Examples:
 | `#price€` | `price` | `€` |
 | `#C++` | `C++` | empty |
 | `#R&D` | `R&D` | empty |
+| `#tag's` | `tag's` | empty |
+| `#сім'я` | `сім'я` | empty |
+| `#O’Brien` | `O’Brien` | empty |
+| `#café's` | `café's` | empty |
+| `#users'` | `users` | `'` |
+| `#'tag` | none | `'tag` |
 | `#-foo` | `-foo` | empty |
 | `#foo-` | `foo-` | empty |
 | `#---` | `---` | empty |
@@ -380,6 +404,8 @@ deduplicating, counting, filtering, navigating, or performing exact metadata loo
 #café       / #café
 #Ａ          / #A
 #straße     / #STRASSE
+#O'Brien    / #O’Brien
+#O’Brien    / #OʼBrien
 ```
 
 Multiple occurrences that emit exactly equal direct tag values in one memo produce one memo-tag membership. A tag metadata rule may deliberately match
@@ -432,6 +458,15 @@ The following examples are normative for the lexical and context decisions alrea
 | `#2026` | `2026` | Numeric-only identifiers are valid |
 | `#C++` | `C++` | Explicit `+` extension |
 | `#R&D` | `R&D` | Explicit `&` extension |
+| `#tag's` | `tag's` | ASCII apostrophe joins two XID code points |
+| `#сім'я` | `сім'я` | ASCII apostrophe preserves a Ukrainian word |
+| `#O’Brien` | `O’Brien` | Right single quotation mark joins two XID code points |
+| `#café's` | `café's` | An emitted combining mark may precede an apostrophe joiner |
+| `#users'` | `users` | A trailing apostrophe is not a joiner |
+| `#'tag` | none | An apostrophe cannot start a segment |
+| `'#tag'` | `tag` | Surrounding quotation punctuation remains outside the occurrence |
+| `#rock’n’roll` | `rock’n’roll` | Multiple apostrophe joiners are valid when each independently satisfies the context rule |
+| `#OʼBrien` | `OʼBrien` | U+02BC is an ordinary `XID_Continue` code point |
 | `#` followed by 101 `a` code points | all 101 `a` code points | There is no tag-specific length limit |
 | `#-foo` | `-foo` | Visible connector extensions may begin a segment |
 | `#foo-` | `foo-` | Visible connector extensions may end a segment |
@@ -490,7 +525,9 @@ The following examples are normative for the lexical and context decisions alrea
 - Common multilingual tags, numeric tags, hierarchy characters, and emoji remain expressive.
 - Hierarchical ancestors have one consistent meaning across API membership, exact filters, navigation, and counts.
 - `hello#tag` works consistently while actual Markdown links and URLs are excluded structurally.
-- Markdown punctuation and delimiters such as comma, backtick, currency, and mathematical operators stop an identifier predictably.
+- Common word-internal apostrophes support multilingual words and names while surrounding quotation punctuation remains outside tag values.
+- Markdown punctuation and delimiters such as comma, backtick, currency, and mathematical operators stop an identifier predictably; apostrophes are the
+  explicitly constrained exception.
 - Exact equality preserves every emitted code-point distinction and avoids locale-dependent identity rules.
 - Ignoring default-ignorable code points outside emoji avoids invisible tag distinctions while preserving matched fully-qualified emoji sequences.
 - Ignoring leading non-default-ignorable `Mn` and `Mc` code points only before each segment's visible starter avoids invisible-leading segments without
@@ -506,6 +543,8 @@ The following examples are normative for the lexical and context decisions alrea
 - Pinning Unicode data requires maintenance when Unicode and Emoji data are updated.
 - Visually indistinguishable or canonically equivalent source spellings whose emitted values differ remain separate tags unless the user edits their memo
   sources to make those values identical.
+- Visually similar apostrophe spellings such as U+0027, U+2019, and U+02BC remain distinct under exact tag identity.
+- English possessive-looking source such as `#tag's` denotes the complete tag value `tag's`, not `tag` followed by prose.
 - Source spellings that differ only by ignored default-ignorable code points intentionally collapse to the same emitted tag value.
 - Source spellings that differ only by ignored leading combining marks intentionally collapse to the same emitted tag value.
 
@@ -553,6 +592,12 @@ tag. The slash and remaining source stay ordinary Markdown.
 
 Rejected. Requiring `-`, `+`, or `&` to be medial, non-repeating, or accompanied by a letter would add validation rules without resolving a structural
 ambiguity. They remain ordinary segment units; only `/` has structural meaning.
+
+### Treat apostrophes as unrestricted value units
+
+Rejected. Allowing apostrophes as starters, trailing units, or repeatable ordinary units would absorb surrounding quotation punctuation into values such
+as `tag'` and make quoted source such as `'#tag'` ambiguous. The contextual joiner rule supports words and names while leaving punctuation at tag
+boundaries unconsumed.
 
 ### Recognize compatibility number signs
 

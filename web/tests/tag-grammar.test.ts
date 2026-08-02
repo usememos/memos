@@ -18,6 +18,10 @@ describe("tag scanner", () => {
     ["#book//fiction", ["book"]],
     ["#book/fiction/", ["book/fiction"]],
     ["#l·l #foo‿bar", ["l·l", "foo‿bar"]],
+    ["#tag's #сім'я #O'Brien #O’Brien #OʼBrien", ["tag's", "сім'я", "O'Brien", "O’Brien", "OʼBrien"]],
+    ["#café's", ["café's"]],
+    ["'#tag' #users' #'missing #rock''roll", ["tag", "users", "rock"]],
+    ["#O‘Brien #foo-'bar #A‍'B", ["O", "foo-", "A"]],
     ["#foo,bar #price€ #€budget #v²", ["foo", "price", "v"]],
     ["#first#second", ["first", "second"]],
     ["##tag", ["tag"]],
@@ -49,5 +53,9 @@ describe("tag scanner", () => {
 
   it("does not match an emoji across the requested source limit", () => {
     expect(findTagMatches("#😀", 0, 2)).toEqual([]);
+  });
+
+  it("does not join an apostrophe across the requested source limit", () => {
+    expect(findTagMatches("#O'B", 0, 3).map((match) => match.value)).toEqual(["O"]);
   });
 });
