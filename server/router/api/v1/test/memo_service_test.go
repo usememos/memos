@@ -38,6 +38,39 @@ func TestCreateMemoAcceptsUUID(t *testing.T) {
 	require.Equal(t, "memos/"+memoID, memo.Name)
 }
 
+func TestCreateAndUpdateMemoRebuildsTagPayload(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateRegularUser(ctx, "tag-payload-user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	memo, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:    "#book/fiction #Work #work #A\u200dB https://example.com/#hidden",
+			Visibility: apiv1.Visibility_PRIVATE,
+		},
+	})
+	require.NoError(t, err)
+	require.Equal(t, []string{"book", "book/fiction", "Work", "work", "AB"}, memo.Tags)
+
+	memo, err = ts.Service.UpdateMemo(userCtx, &apiv1.UpdateMemoRequest{
+		Memo: &apiv1.Memo{
+			Name:    memo.Name,
+			Content: "#next #A\u200dB",
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"content"}},
+	})
+	require.NoError(t, err)
+	require.Equal(t, []string{"next", "AB"}, memo.Tags)
+
+	stored, err := ts.Service.GetMemo(userCtx, &apiv1.GetMemoRequest{Name: memo.Name})
+	require.NoError(t, err)
+	require.Equal(t, []string{"next", "AB"}, stored.Tags)
+}
+
 func TestListMemos(t *testing.T) {
 	ctx := context.Background()
 

@@ -39,7 +39,15 @@ func (r *MarkdownRenderer) renderNode(node gast.Node, source []byte, depth int) 
 	case *gast.Paragraph:
 		r.renderChildren(n, source, depth)
 		if node.NextSibling() != nil {
-			r.buf.WriteString("\n\n")
+			separator := "\n\n"
+			if _, nextIsList := node.NextSibling().(*gast.List); nextIsList {
+				if item, ok := node.Parent().(*gast.ListItem); ok {
+					if list, ok := item.Parent().(*gast.List); ok && list.IsTight {
+						separator = "\n"
+					}
+				}
+			}
+			r.buf.WriteString(separator)
 		}
 
 	case *gast.Text:
@@ -79,11 +87,19 @@ func (r *MarkdownRenderer) renderNode(node gast.Node, source []byte, depth int) 
 		r.buf.WriteString(")")
 
 	case *gast.AutoLink:
+		if start, end, ok := autoLinkLabelRange(n, source); ok {
+			if start > 0 && end < len(source) && source[start-1] == '<' && source[end] == '>' {
+				r.buf.Write(source[start-1 : end+1])
+			} else {
+				r.buf.Write(source[start:end])
+			}
+			break
+		}
 		url := n.URL(source)
 		if n.AutoLinkType == gast.AutoLinkEmail {
-			r.buf.WriteString("<")
+			r.buf.WriteByte('<')
 			r.buf.Write(url)
-			r.buf.WriteString(">")
+			r.buf.WriteByte('>')
 		} else {
 			r.buf.Write(url)
 		}
@@ -119,6 +135,9 @@ func (r *MarkdownRenderer) renderNode(node gast.Node, source []byte, depth int) 
 		}
 
 	case *gast.List:
+		if node.PreviousSibling() != nil && !bytes.HasSuffix(r.buf.Bytes(), []byte{'\n'}) {
+			r.buf.WriteByte('\n')
+		}
 		r.renderChildren(n, source, depth)
 		if node.NextSibling() != nil {
 			r.buf.WriteString("\n\n")
@@ -153,8 +172,27 @@ func (r *MarkdownRenderer) renderNode(node gast.Node, source []byte, depth int) 
 
 	// Custom Memos nodes
 	case *mast.TagNode:
-		r.buf.WriteByte('#')
-		r.buf.Write(n.Tag)
+		if len(n.Source) > 0 {
+			r.buf.Write(n.Source)
+		} else {
+			r.buf.WriteByte('#')
+			r.buf.Write(n.Tag)
+		}
+
+	case *mast.GFMEmailNode:
+		r.buf.Write(n.Source)
+
+	case *mast.InlineMathNode:
+		r.buf.Write(n.Source)
+
+	case *mast.BlockMathNode:
+		r.buf.Write(n.Source)
+		if node.NextSibling() != nil {
+			if !bytes.HasSuffix(n.Source, []byte{'\n'}) {
+				r.buf.WriteByte('\n')
+			}
+			r.buf.WriteByte('\n')
+		}
 
 	case *mast.MentionNode:
 		r.buf.WriteByte('@')
@@ -164,6 +202,16 @@ func (r *MarkdownRenderer) renderNode(node gast.Node, source []byte, depth int) 
 		// For unknown nodes, try to render children
 		r.renderChildren(n, source, depth)
 	}
+}
+
+func autoLinkLabelRange(node *gast.AutoLink, source []byte) (int, int, bool) {
+	label := node.Label(source)
+	for _, start := range []int{node.Pos(), node.Pos() + 1} {
+		if start >= 0 && start <= len(source)-len(label) && bytes.HasPrefix(source[start:], label) {
+			return start, start + len(label), true
+		}
+	}
+	return 0, 0, false
 }
 
 // renderChildren renders all children of a node.
@@ -238,26 +286,41 @@ func (r *MarkdownRenderer) renderListItem(node *gast.ListItem, source []byte, de
 		return
 	}
 
-	// Add indentation only for nested lists
-	// Document=0, List=1, ListItem=2 (no indent), nested ListItem=3+ (indent)
+	// Document=0, List=1, ListItem=2 (no indent), nested ListItem=3+ (indent).
+	prefix := ""
 	if depth > 2 {
-		indent := strings.Repeat("  ", depth-2)
-		r.buf.WriteString(indent)
+		prefix = strings.Repeat("  ", (depth-2)/2)
 	}
 
-	// Add list marker
+	marker := "- "
 	if list.IsOrdered() {
-		fmt.Fprintf(r.buf, "%d. ", list.Start)
+		marker = fmt.Sprintf("%d. ", list.Start)
 		list.Start++ // Increment for next item
-	} else {
-		r.buf.WriteString("- ")
 	}
 
-	// Render content
-	r.renderChildren(node, source, depth)
+	contentBuffer := &bytes.Buffer{}
+	contentRenderer := &MarkdownRenderer{buf: contentBuffer}
+	contentRenderer.renderChildren(node, source, depth)
+	content := contentBuffer.String()
+	contentLines := strings.Split(content, "\n")
+
+	r.buf.WriteString(prefix)
+	r.buf.WriteString(marker)
+	r.buf.WriteString(contentLines[0])
+	continuationIndent := strings.Repeat(" ", len(prefix)+len(marker))
+	for index, line := range contentLines[1:] {
+		r.buf.WriteByte('\n')
+		if line != "" || index < len(contentLines)-2 {
+			lineIndent := len(line) - len(strings.TrimLeft(line, " "))
+			if lineIndent < len(continuationIndent) {
+				r.buf.WriteString(continuationIndent[:len(continuationIndent)-lineIndent])
+			}
+			r.buf.WriteString(line)
+		}
+	}
 
 	// Add newline if there's a next sibling
-	if node.NextSibling() != nil {
+	if node.NextSibling() != nil && !strings.HasSuffix(content, "\n") {
 		r.buf.WriteByte('\n')
 	}
 }

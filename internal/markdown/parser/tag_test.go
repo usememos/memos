@@ -1,17 +1,16 @@
 package parser
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/yuin/goldmark/parser"
-	"github.com/yuin/goldmark/text"
 
 	mast "github.com/usememos/memos/internal/markdown/ast"
 )
 
-func TestTagParser(t *testing.T) {
+func TestFindTagMatches(t *testing.T) {
 	tests := []struct {
 		name        string
 		input       string
@@ -190,57 +189,100 @@ func TestTagParser(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := NewTagParser()
-			reader := text.NewReader([]byte(tt.input))
-			ctx := parser.NewContext()
-
-			node := p.Parse(nil, reader, ctx)
-
+			matches := FindTagMatches([]byte(tt.input))
 			if tt.shouldParse {
-				require.NotNil(t, node, "Expected tag to be parsed")
-				require.IsType(t, &mast.TagNode{}, node)
-
-				tagNode, ok := node.(*mast.TagNode)
-				require.True(t, ok, "Expected node to be *mast.TagNode")
-				assert.Equal(t, tt.expectedTag, string(tagNode.Tag))
+				require.NotEmpty(t, matches, "Expected tag to be parsed")
+				assert.Equal(t, tt.expectedTag, string(matches[0].Value))
 			} else {
-				assert.Nil(t, node, "Expected tag NOT to be parsed")
+				assert.Empty(t, matches, "Expected tag NOT to be parsed")
 			}
 		})
 	}
 }
 
-func TestTagParser_Trigger(t *testing.T) {
-	p := NewTagParser()
-	triggers := p.Trigger()
-
-	assert.Equal(t, []byte{'#'}, triggers)
+func TestFindTagMatchesMultipleTags(t *testing.T) {
+	matches := FindTagMatches([]byte("#tag1 #tag2"))
+	require.Len(t, matches, 2)
+	assert.Equal(t, "tag1", string(matches[0].Value))
+	assert.Equal(t, "tag2", string(matches[1].Value))
 }
 
-func TestTagParser_MultipleTags(t *testing.T) {
-	// Test that parser correctly handles multiple tags in sequence
-	input := "#tag1 #tag2"
+func TestFindTagMatchesMemosTagV1(t *testing.T) {
+	tests := []struct {
+		name           string
+		input          string
+		expectedTag    string
+		expectedSource string
+		expectedRest   string
+		shouldParse    bool
+	}{
+		{name: "plus extension", input: "#C++", expectedTag: "C++", expectedSource: "#C++", shouldParse: true},
+		{name: "visible extensions form segment", input: "#---", expectedTag: "---", expectedSource: "#---", shouldParse: true},
+		{name: "ampersands form segment", input: "#&&", expectedTag: "&&", expectedSource: "#&&", shouldParse: true},
+		{name: "Unicode 16 XID character under Unicode 17 profile", input: "#\u1c89", expectedTag: "\u1c89", expectedSource: "#\u1c89", shouldParse: true},
+		{name: "middle dot XID continue", input: "#l·l", expectedTag: "l·l", expectedSource: "#l·l", shouldParse: true},
+		{name: "connector punctuation XID continue", input: "#foo‿bar", expectedTag: "foo‿bar", expectedSource: "#foo‿bar", shouldParse: true},
+		{name: "currency terminates", input: "#price€", expectedTag: "price", expectedSource: "#price", expectedRest: "€", shouldParse: true},
+		{name: "currency cannot start", input: "#€budget", shouldParse: false},
+		{name: "other number terminates", input: "#v²", expectedTag: "v", expectedSource: "#v", expectedRest: "²", shouldParse: true},
+		{name: "leading ZWJ omitted", input: "#\u200dfoo", expectedTag: "foo", expectedSource: "#\u200dfoo", shouldParse: true},
+		{name: "medial ZWJ omitted", input: "#A\u200dB", expectedTag: "AB", expectedSource: "#A\u200dB", shouldParse: true},
+		{name: "medial ZWNJ omitted", input: "#A\u200cB", expectedTag: "AB", expectedSource: "#A\u200cB", shouldParse: true},
+		{name: "variation selector omitted outside emoji", input: "#A\ufe0fB", expectedTag: "AB", expectedSource: "#A\ufe0fB", shouldParse: true},
+		{name: "ignored code points alone", input: "#\u200d\u200c", shouldParse: false},
+		{name: "leading combining mark omitted", input: "#\u0301foo", expectedTag: "foo", expectedSource: "#\u0301foo", shouldParse: true},
+		{name: "leading combining mark alone", input: "#\u0301", shouldParse: false},
+		{name: "combining mark preserved after starter", input: "#cafe\u0301", expectedTag: "cafe\u0301", expectedSource: "#cafe\u0301", shouldParse: true},
+		{name: "ignored prefix restarts after slash", input: "#foo/\u0301bar", expectedTag: "foo/bar", expectedSource: "#foo/\u0301bar", shouldParse: true},
+		{name: "trailing slash", input: "#book/", expectedTag: "book", expectedSource: "#book", expectedRest: "/", shouldParse: true},
+		{name: "leading slash", input: "#/book", shouldParse: false},
+		{name: "repeated slash", input: "#book//fiction", expectedTag: "book", expectedSource: "#book", expectedRest: "//fiction", shouldParse: true},
+		{name: "valid hierarchy before trailing slash", input: "#book/fiction/", expectedTag: "book/fiction", expectedSource: "#book/fiction", expectedRest: "/", shouldParse: true},
+		{name: "fully qualified keycap", input: "#*️⃣", expectedTag: "*️⃣", expectedSource: "#*️⃣", shouldParse: true},
+		{name: "fully qualified emoji", input: "#‼️", expectedTag: "‼️", expectedSource: "#‼️", shouldParse: true},
+		{name: "Emoji 17 sequence", input: "#🫯", expectedTag: "🫯", expectedSource: "#🫯", shouldParse: true},
+		{name: "bare text presentation symbol", input: "#♥", shouldParse: false},
+		{name: "fully qualified heart", input: "#♥️", expectedTag: "♥️", expectedSource: "#♥️", shouldParse: true},
+		{name: "standalone emoji component", input: "#🏻", shouldParse: false},
+		{name: "number sign keycap is not introducer", input: "#️⃣", shouldParse: false},
+		{name: "fullwidth number sign is not introducer", input: "＃tag", shouldParse: false},
+		{name: "small number sign is not introducer", input: "﹟tag", shouldParse: false},
+		{name: "keycap as identifier", input: "##️⃣", expectedTag: "#️⃣", expectedSource: "##️⃣", shouldParse: true},
+		{name: "keycap continues identifier", input: "#first#️⃣", expectedTag: "first#️⃣", expectedSource: "#first#️⃣", shouldParse: true},
+		{name: "character reference boundary", input: "#R&amp;D", expectedTag: "R", expectedSource: "#R", expectedRest: "&amp;D", shouldParse: true},
+		{name: "literal ampersand", input: "#R&D", expectedTag: "R&D", expectedSource: "#R&D", shouldParse: true},
+		{
+			name:           "no tag length limit",
+			input:          "#" + strings.Repeat("a", 101),
+			expectedTag:    strings.Repeat("a", 101),
+			expectedSource: "#" + strings.Repeat("a", 101),
+			shouldParse:    true,
+		},
+	}
 
-	p := NewTagParser()
-	reader := text.NewReader([]byte(input))
-	ctx := parser.NewContext()
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			matches := FindTagMatches([]byte(tt.input))
+			if !tt.shouldParse {
+				assert.Empty(t, matches)
+				return
+			}
 
-	// Parse first tag
-	node1 := p.Parse(nil, reader, ctx)
-	require.NotNil(t, node1)
-	tagNode1, ok := node1.(*mast.TagNode)
-	require.True(t, ok, "Expected node1 to be *mast.TagNode")
-	assert.Equal(t, "tag1", string(tagNode1.Tag))
+			require.NotEmpty(t, matches)
+			match := matches[0]
+			assert.Equal(t, tt.expectedTag, string(match.Value))
+			assert.Equal(t, tt.expectedSource, tt.input[match.Start:match.End])
+			assert.Equal(t, tt.expectedRest, tt.input[match.End:])
+		})
+	}
+}
 
-	// Advance past the space
-	reader.Advance(1)
-
-	// Parse second tag
-	node2 := p.Parse(nil, reader, ctx)
-	require.NotNil(t, node2)
-	tagNode2, ok := node2.(*mast.TagNode)
-	require.True(t, ok, "Expected node2 to be *mast.TagNode")
-	assert.Equal(t, "tag2", string(tagNode2.Tag))
+func TestFindTagMatchesRejectsNumericCharacterReference(t *testing.T) {
+	for _, input := range []string{"&#35;tag", "&#x23;tag"} {
+		t.Run(input, func(t *testing.T) {
+			assert.Empty(t, FindTagMatches([]byte(input)))
+		})
+	}
 }
 
 func TestTagNode_Kind(t *testing.T) {

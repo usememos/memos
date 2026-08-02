@@ -48,6 +48,8 @@
     "mdast-util-from-markdown": "^2.0.3",
     "mdast-util-gfm": "^3.1.0",
     "mermaid": "^11.14.0",
+    "micromark-util-decode-string": "^2.0.1",
+    "micromark-util-normalize-identifier": "^2.0.1",
     "micromark-extension-gfm": "^3.0.0",
     "mime": "^4.1.0",
     "react": "^19.2.6",

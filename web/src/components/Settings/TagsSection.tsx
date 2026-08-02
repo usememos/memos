@@ -80,7 +80,7 @@ const TagsSection = () => {
     () =>
       Object.keys(localTags)
         .sort()
-        .map((name) => ({ name, count: tagCounts[name] ?? 0 })),
+        .map((name) => ({ name, count: Object.hasOwn(tagCounts, name) ? tagCounts[name] : 0 })),
     [localTags, tagCounts],
   );
 
@@ -113,7 +113,7 @@ const TagsSection = () => {
   const handleAddTag = () => {
     const name = newTagName.trim();
     if (!name) return;
-    if (localTags[name] !== undefined) {
+    if (Object.hasOwn(localTags, name)) {
       toast.error(t("setting.tags.tag-already-exists"));
       return;
     }
@@ -183,7 +183,7 @@ const TagsSection = () => {
                 />
                 <datalist id="known-tags">
                   {allKnownTags
-                    .filter((tag) => !localTags[tag])
+                    .filter((tag) => !Object.hasOwn(localTags, tag))
                     .map((tag) => (
                       <option key={tag} value={tag} />
                     ))}

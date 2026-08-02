@@ -104,9 +104,9 @@ const shortcutExamples = [
     icon: FilterIcon,
   },
   {
-    title: "All tags match",
-    filter: 'tags.all(t, t.startsWith("work/"))',
-    description: "Every tag must satisfy the predicate (tagged memos only).",
+    title: "All tags complete",
+    filter: 'tags.all(t, t.endsWith("-done"))',
+    description: "Every tag ends in -done (tagged memos only).",
     icon: TagsIcon,
   },
   {

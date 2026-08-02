@@ -1,2 +1,4 @@
 allowBuilds:
   esbuild: true
+patchedDependencies:
+  "@bufbuild/protobuf@2.12.0": patches/@bufbuild__protobuf@2.12.0.patch

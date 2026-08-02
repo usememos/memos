@@ -11,4 +11,11 @@ describe("parseMentionsFromText", () => {
     const username = `a${"b".repeat(63)}`;
     expect(parseMentionsFromText(`@${username}`)).toEqual([{ type: "text", value: `@${username}` }]);
   });
+
+  it("keeps rejected adjacent mentions in the same literal text segment", () => {
+    expect(parseMentionsFromText("@example.com@alice", "_")).toEqual([
+      { type: "mention", value: "example" },
+      { type: "text", value: ".com@alice" },
+    ]);
+  });
 });

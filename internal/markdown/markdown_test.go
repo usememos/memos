@@ -498,7 +498,7 @@ func TestExtractTags(t *testing.T) {
 			name:     "hierarchical tag with Chinese",
 			content:  "#work/测试/项目",
 			withExt:  true,
-			expected: []string{"work/测试/项目"},
+			expected: []string{"work", "work/测试", "work/测试/项目"},
 		},
 	}
 
@@ -518,6 +518,327 @@ func TestExtractTags(t *testing.T) {
 	}
 }
 
+func TestExtractTagsMemosTagV1(t *testing.T) {
+	svc := NewService(WithTagExtension())
+	tests := []struct {
+		name     string
+		content  string
+		expected []string
+	}{
+		{name: "adjacent introducers", content: "#first#second", expected: []string{"first", "second"}},
+		{name: "failed introducer does not hide next", content: "##tag", expected: []string{"tag"}},
+		{name: "ATX heading marker", content: "## tag", expected: []string{}},
+		{name: "number sign keycap", content: "#️⃣", expected: []string{}},
+		{name: "number sign keycap value", content: "##️⃣", expected: []string{"#️⃣"}},
+		{name: "number sign keycap continuation", content: "#first#️⃣", expected: []string{"first#️⃣"}},
+		{name: "exact identity", content: "#Work #work", expected: []string{"Work", "work"}},
+		{name: "no normalization", content: "#café #cafe\u0301", expected: []string{"café", "cafe\u0301"}},
+		{name: "ignored spellings deduplicate", content: "#AB #A\u200dB #\u0301AB", expected: []string{"AB"}},
+		{name: "hierarchy expansion", content: "#book/fiction/history", expected: []string{"book", "book/fiction", "book/fiction/history"}},
+		{name: "hierarchy exact dedupe", content: "#book/fiction #book", expected: []string{"book", "book/fiction"}},
+		{name: "literal ampersand", content: "#R&D", expected: []string{"R&D"}},
+		{name: "named character reference boundary", content: "#R&amp;D", expected: []string{"R"}},
+		{name: "character reference requires a real opener", content: "~#a!&&amp;)*", expected: []string{"a"}},
+		{name: "unknown character reference stays literal", content: "#R&bogus;D #Q&amp;&bogus;D", expected: []string{"R&bogus", "Q"}},
+		{name: "numeric character reference introducer", content: "&#35;tag &#x23;other", expected: []string{}},
+		{name: "named character reference introducer", content: "&num;tag", expected: []string{}},
+		{name: "escaped introducer and body", content: "\\#tag #foo\\+bar", expected: []string{"foo"}},
+		{name: "code contexts", content: "`#inline`\n\n```text\n#fenced\n```\n\n    #indented", expected: []string{}},
+		{name: "blockquote tab paragraph", content: ">\t #tag", expected: []string{"tag"}},
+		{name: "trailing spaces before tag line", content: "before  \n#tag", expected: []string{"tag"}},
+		{name: "link and image contexts", content: "[#label](https://example.com/#destination) ![#alt](image#fragment)", expected: []string{}},
+		{name: "invalid link definition stays text", content: "[#use][bad]\n\n[bad]:(", expected: []string{"use"}},
+		{name: "invalid link definition label stays text", content: "[#label]:(", expected: []string{"label"}},
+		{name: "email in invalid link definition stays opaque", content: "[#foo@example.com]:(", expected: []string{}},
+		{name: "code in invalid link definition stays opaque", content: "[`#code`]:(", expected: []string{}},
+		{name: "URL in invalid link definition stays opaque", content: "[ https://example.com/#url]:(", expected: []string{}},
+		{name: "balanced bare reference remains a link", content: "[#hidden][valid]\n\n[valid]: path(foo)", expected: []string{}},
+		{name: "escaped bare destination parenthesis remains a link", content: "[#hidden][valid]\n\n[valid]: path\\(", expected: []string{}},
+		{name: "angle destination parenthesis remains a link", content: "[#hidden][valid]\n\n[valid]: <(>", expected: []string{}},
+		{
+			name:     "angle autolinks stay opaque",
+			content:  "<https://localhost/#local> <ftp://example.com/#ftp> <custom:foo#custom> <https://foo.example_/#underscore>",
+			expected: []string{},
+		},
+		{name: "literal URL context", content: "https://example.com/path#url /path#plain", expected: []string{"plain"}},
+		{
+			name:     "non GFM URL schemes and forms stay text",
+			content:  "ftp://example.com/#ftp HTTP://example.com/#upper https://localhost/#local",
+			expected: []string{"ftp", "upper", "local"},
+		},
+		{
+			name:     "written GFM URL domains and paths",
+			content:  "https://example.COM/#hidden www.example.123/#also-hidden https://a_b.foo.example/路径#still-hidden https://foo_bar.example/#visible",
+			expected: []string{"visible"},
+		},
+		{
+			name: "written GFM URL Unicode domains",
+			content: "https://點看.com/#hidden www.點看.com/#also-hidden https://a_b.點看.com/#still-hidden " +
+				"https://foo_bar.點看/#visible https://點看.com_/#suffix hellohttps://點看.com/#joined",
+			expected: []string{"visible", "suffix", "joined"},
+		},
+		{
+			name: "written GFM URL protocol and www boundaries",
+			content: "1https://點看.com/#digit .https://點看.com/#punctuation ]www.點看.com/#www " +
+				"中https://點看.com/#unicode hellohttps://點看.com/#joined " +
+				"[https://點看.com/#unbalanced\n\n[www.點看.com/#unbalanced-www\n\n" +
+				`\[https://點看.com/#escaped` + "\n\n" + `\[www.點看.com/#escaped-www`,
+			expected: []string{
+				"digit", "punctuation", "www", "unicode", "joined", "unbalanced", "unbalanced-www", "escaped", "escaped-www",
+			},
+		},
+		{
+			name: "written GFM URL domain validation",
+			content: "http://example.com#hidden http://example.com./#also-hidden https://foo.example_/#visible\n" +
+				"-\thttps://foo.example_/#padded\n\n(https://foo.example_/#parenthesized) *https://foo.example_/#emphasized*",
+			expected: []string{"visible", "padded", "parenthesized", "emphasized"},
+		},
+		{name: "initial BOM before written GFM URL", content: "\ufeffhttps://example.com/#hidden #shown", expected: []string{"shown"}},
+		{name: "second initial BOM is ordinary text", content: "\ufeff\ufeffhttps://example.com/#shown", expected: []string{"shown"}},
+		{name: "mid-document BOM does not start written GFM URL", content: "before\n\n\ufeffhttps://example.com/#shown", expected: []string{"shown"}},
+		{name: "written URL inside unresolved bracket text", content: "[text https://點看.com/#inside [more https://example.com/#ascii", expected: []string{}},
+		{
+			name:     "written URL inside closed unresolved bracket text",
+			content:  "[ https://example.com/#hidden] [x https://example.com/#also-hidden] ![ https://example.com/#image-hidden]",
+			expected: []string{},
+		},
+		{
+			name: "separator characters end written URL",
+			content: "https://點看.com/\u00a0#nbsp https://點看.com/\u2003#em-space https://點看.com/\u000b#vertical-tab " +
+				"https://點看.com/\u2028#line-separator https://點看.com/\u2029#paragraph-separator https://點看.com/\u0085#nel-hidden",
+			expected: []string{"nbsp", "em-space", "vertical-tab", "line-separator", "paragraph-separator"},
+		},
+		{
+			name:     "written GFM email boundaries",
+			content:  "foo#mail@example.com foo!#second@example.com <foo#hidden@example.com> foo@example.com/#after",
+			expected: []string{"after"},
+		},
+		{name: "invalid GFM email local part", content: "#foo!bar@example.com", expected: []string{"foo"}},
+		{name: "email after tag hierarchy separator", content: "#foo/bar@example.com", expected: []string{"foo"}},
+		{name: "GFM email after Unicode tag", content: "#中mail@example.com", expected: []string{"中"}},
+		{name: "email after padded list tag", content: "-\t#foo/bar@example.com", expected: []string{"foo"}},
+		{name: "invalid GFM email domain suffix", content: "#foo/bar@example.com_", expected: []string{"foo", "foo/bar"}},
+		{name: "escaped punctuation is decoded in GFM email autolinks", content: `#foo\+bar@example.com #next\_item@example.com`, expected: []string{}},
+		{name: "numeric entity joins GFM email", content: `#foo&#46;bar@example.com #foo&#64;example.com`, expected: []string{}},
+		{name: "named entity joins GFM email", content: `#foo&period;bar@example.com`, expected: []string{}},
+		{name: "unknown entity does not join GFM email", content: `#foo&bogus;bar@example.com`, expected: []string{"foo&bogus"}},
+		{name: "email inside emphasis", content: "_foo@example.com #tag_", expected: []string{"tag"}},
+		{name: "raw HTML syntax", content: "<span data-tag=\"#attribute\">#text</span>", expected: []string{"text"}},
+		{name: "inline math", content: "$#math$ #plain", expected: []string{"plain"}},
+		{name: "inline math exact closing run", content: "$#one$$ #two$ #plain", expected: []string{"plain"}},
+		{name: "inline math does not reopen within a dollar run", content: "$$#math$ #plain", expected: []string{"math", "plain"}},
+		{name: "inline math after escaped dollar", content: "\\$$#math$ #plain", expected: []string{"plain"}},
+		{name: "display math", content: "$$\n#math\n$$\n\n#plain", expected: []string{"plain"}},
+		{name: "unclosed math flow", content: "$$meta\n#math", expected: []string{}},
+		{name: "unclosed math flow across blocks", content: "$$meta\n\n#math", expected: []string{}},
+		{name: "unclosed math flow in quote", content: "> $$meta\n> #math", expected: []string{}},
+		{name: "flow math stays inside quote", content: "> $$\n> #math\noutside #plain", expected: []string{"plain"}},
+		{name: "flow math spans quote blocks", content: "> $$\n> #math\n>\n> #still-math\n> $$\noutside #plain", expected: []string{"plain"}},
+		{name: "flow math stays inside list item", content: "- $$\n  #math\n#outside", expected: []string{"outside"}},
+		{name: "flow math spans list item blank lines", content: "- $$\n  \n  #math\n  $$\n\n#outside", expected: []string{"outside"}},
+		{name: "dollar in flow metadata stays text", content: "$$meta$x\n#plain", expected: []string{"plain"}},
+		{name: "math fence inside code is inert", content: "```text\n$$\n```\n\n#plain", expected: []string{"plain"}},
+		{name: "unmatched inline dollar", content: "text $ #plain", expected: []string{"plain"}},
+		{name: "formatted text", content: "**#strong** ~~#strike~~", expected: []string{"strong", "strike"}},
+		{name: "emphasis is a hard boundary", content: "#_foo_", expected: []string{}},
+		{name: "unmatched underscore", content: "#_", expected: []string{"_"}},
+		{name: "intraword underscore", content: "#foo_bar", expected: []string{"foo_bar"}},
+		{name: "no length limit", content: "#" + strings.Repeat("a", 101), expected: []string{strings.Repeat("a", 101)}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tags, err := svc.ExtractTags([]byte(tt.content))
+			require.NoError(t, err)
+			if len(tt.expected) == 0 {
+				assert.Empty(t, tags)
+			} else {
+				assert.Equal(t, tt.expected, tags)
+			}
+		})
+	}
+}
+
+func TestExtractAllExpandsTagHierarchy(t *testing.T) {
+	svc := NewService(WithTagExtension())
+	data, err := svc.ExtractAll([]byte("#book/fiction #book"))
+	require.NoError(t, err)
+	assert.Equal(t, []string{"book", "book/fiction"}, data.Tags)
+}
+
+func TestExtractAllResolvesGFMEmailBeforeMention(t *testing.T) {
+	svc := NewService(WithTagExtension(), WithMentionExtension())
+	data, err := svc.ExtractAll([]byte("#foo/bar_baz@example.com #next/item_@example.com @alice"))
+	require.NoError(t, err)
+	assert.Equal(t, []string{"foo", "next"}, data.Tags)
+	assert.Equal(t, []string{"alice"}, data.Mentions)
+	assert.True(t, data.Property.HasLink)
+}
+
+func TestInvalidLinkDefinitionsRetainInlineContexts(t *testing.T) {
+	svc := NewService(WithTagExtension())
+	data, err := svc.ExtractAll([]byte("[#foo@example.com]:(\n\n[`#code`]:("))
+	require.NoError(t, err)
+	assert.Empty(t, data.Tags)
+	assert.True(t, data.Property.HasLink)
+	assert.True(t, data.Property.HasCode)
+}
+
+func TestTagSourceSpelling(t *testing.T) {
+	svc := NewService(WithTagExtension())
+	content := "#A\u200dB #\u0301foo"
+
+	rendered, err := svc.RenderMarkdown([]byte(content))
+	require.NoError(t, err)
+	assert.Equal(t, content, rendered)
+
+	snippet, err := svc.GenerateSnippet([]byte(content), 100)
+	require.NoError(t, err)
+	assert.Equal(t, content, snippet)
+
+	renamed, err := svc.RenameTag([]byte(content), "AB", "done")
+	require.NoError(t, err)
+	assert.Equal(t, "#done #\u0301foo", renamed)
+}
+
+func TestRenderHTMLPreservesTagSourceSpelling(t *testing.T) {
+	svc := NewService(WithTagExtension())
+	html, err := svc.RenderHTML([]byte("#R&D #A\u200dB"))
+	require.NoError(t, err)
+	assert.Equal(t, "<p>#R&amp;D #A\u200dB</p>\n", html)
+}
+
+func TestRenderHTMLRejectsUnclosedReferenceDestination(t *testing.T) {
+	svc := NewService(WithTagExtension())
+	html, err := svc.RenderHTML([]byte("[#use][bad]\n\n[bad]:("))
+	require.NoError(t, err)
+	assert.Equal(t, "<p>[#use][bad]</p>\n<p>[bad]:(</p>\n", html)
+}
+
+func TestRenderHTMLRecognizesGFMEmails(t *testing.T) {
+	svc := NewService(WithTagExtension())
+	tests := []struct {
+		content  string
+		expected string
+	}{
+		{
+			content:  "foo#mail@example.com",
+			expected: "<p>foo#<a href=\"mailto:mail@example.com\">mail@example.com</a></p>\n",
+		},
+		{
+			content:  "#foo/bar_baz@example.com",
+			expected: "<p>#foo/<a href=\"mailto:bar_baz@example.com\">bar_baz@example.com</a></p>\n",
+		},
+		{
+			content:  "_foo@example.com #tag_",
+			expected: "<p><em><a href=\"mailto:foo@example.com\">foo@example.com</a> #tag</em></p>\n",
+		},
+		{
+			content:  "foo@bar.com@baz.example",
+			expected: "<p><a href=\"mailto:foo@bar.com\">foo@bar.com</a>@baz.example</p>\n",
+		},
+		{
+			content:  "foo@bar.com+abc@def.com",
+			expected: "<p><a href=\"mailto:foo@bar.com\">foo@bar.com</a><a href=\"mailto:+abc@def.com\">+abc@def.com</a></p>\n",
+		},
+		{
+			content:  `#foo\+bar@example.com`,
+			expected: "<p>#<a href=\"mailto:foo+bar@example.com\">foo+bar@example.com</a></p>\n",
+		},
+		{
+			content:  `#foo\@example\.com`,
+			expected: "<p>#<a href=\"mailto:foo@example.com\">foo@example.com</a></p>\n",
+		},
+		{
+			content:  `#foo&#46;bar@example.com`,
+			expected: "<p>#<a href=\"mailto:foo.bar@example.com\">foo.bar@example.com</a></p>\n",
+		},
+		{
+			content:  `#foo&period;bar@example.com`,
+			expected: "<p>#<a href=\"mailto:foo.bar@example.com\">foo.bar@example.com</a></p>\n",
+		},
+		{
+			content:  `#foo&#64;example.com`,
+			expected: "<p>#<a href=\"mailto:foo@example.com\">foo@example.com</a></p>\n",
+		},
+	}
+	for _, test := range tests {
+		html, err := svc.RenderHTML([]byte(test.content))
+		require.NoError(t, err)
+		assert.Equal(t, test.expected, html)
+	}
+}
+
+func TestRenderHTMLRecognizesGFMEmailWithoutTagExtension(t *testing.T) {
+	svc := NewService()
+	html, err := svc.RenderHTML([]byte("mail@example.com"))
+	require.NoError(t, err)
+	assert.Equal(t, "<p><a href=\"mailto:mail@example.com\">mail@example.com</a></p>\n", html)
+}
+
+func TestRenderHTMLRecognizesGFMURLsInsideUnresolvedBracketText(t *testing.T) {
+	svc := NewService(WithTagExtension())
+	for _, content := range []string{
+		"[ https://example.com/#hidden]",
+		"[x https://example.com/#hidden]",
+		"![ https://example.com/#hidden]",
+		"[text https://example.com/#hidden",
+	} {
+		html, err := svc.RenderHTML([]byte(content))
+		require.NoError(t, err)
+		assert.Contains(t, html, "<a href=\"https://example.com/#hidden")
+
+		data, err := svc.ExtractAll([]byte(content))
+		require.NoError(t, err)
+		assert.Empty(t, data.Tags)
+		assert.True(t, data.Property.HasLink)
+	}
+}
+
+func TestEscapedGFMEmailPreservesSource(t *testing.T) {
+	svc := NewService(WithTagExtension(), WithMentionExtension())
+	content := `#foo\+bar@example.com #next\_item@example.com #foo\@example\.com`
+
+	rendered, err := svc.RenderMarkdown([]byte(content))
+	require.NoError(t, err)
+	assert.Equal(t, content, rendered)
+
+	data, err := svc.ExtractAll([]byte(content))
+	require.NoError(t, err)
+	assert.Empty(t, data.Tags)
+	assert.Empty(t, data.Mentions)
+	assert.True(t, data.Property.HasLink)
+}
+
+func TestMathRenderingPreservesLiteralSource(t *testing.T) {
+	svc := NewService(WithTagExtension())
+	for _, content := range []string{
+		"$x < y$\n\n$$meta\nx < y\n$$",
+		"> $$meta\n> x < y\n> $$",
+		"- $$meta\n  x < y\n  $$",
+		"- $$meta\n  \n  x < y\n  $$",
+		"- $$meta\n  x < y\n  $$\n- next",
+		"10. $$meta\n    x < y\n    $$",
+	} {
+		rendered, err := svc.RenderMarkdown([]byte(content))
+		require.NoError(t, err)
+		assert.Equal(t, content, rendered)
+	}
+
+	html, err := svc.RenderHTML([]byte("$x < y$\n\n$$meta\nx < y\n$$"))
+	require.NoError(t, err)
+	assert.Equal(t, "<p>$x &lt; y$</p>\n$$meta\nx &lt; y\n$$", html)
+}
+
+func TestRenderMarkdownPreservesLineBreakAfterTag(t *testing.T) {
+	svc := NewService(WithTagExtension())
+	for _, content := range []string{"#tag\nnext", "#tag  \nnext"} {
+		rendered, err := svc.RenderMarkdown([]byte(content))
+		require.NoError(t, err)
+		assert.Equal(t, content, rendered)
+	}
+}
+
 func TestRenameTagSkipsTagsInsideLinks(t *testing.T) {
 	svc := NewService(WithTagExtension())
 
@@ -529,6 +850,28 @@ func TestRenameTagSkipsTagsInsideLinks(t *testing.T) {
 	require.NoError(t, err)
 
 	assert.Equal(t, "[release #notes](https://example.com/releases#release-notes)\n\nOutside #done", result)
+}
+
+func TestRenameTagOnlyChangesRecognizedSourceSpans(t *testing.T) {
+	svc := NewService(WithTagExtension())
+	for _, content := range []string{
+		"<span>#old</span>",
+		"<https://example.com/#x> user@example.com #old",
+		"#old\n$$\nx\n$$\nnext",
+	} {
+		result, err := svc.RenameTag([]byte(content), "old", "new")
+		require.NoError(t, err)
+		assert.Equal(t, strings.ReplaceAll(content, "#old", "#new"), result)
+	}
+}
+
+func TestRenameTagReplacesEveryExactSourceSpan(t *testing.T) {
+	svc := NewService(WithTagExtension())
+	content := "#old #o\u200dld #old#old [#old](url) https://example.com/#old #Old"
+
+	result, err := svc.RenameTag([]byte(content), "old", "new")
+	require.NoError(t, err)
+	assert.Equal(t, "#new #new #new#new [#old](url) https://example.com/#old #Old", result)
 }
 
 func TestUniquePreserveCase(t *testing.T) {

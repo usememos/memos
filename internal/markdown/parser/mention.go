@@ -38,8 +38,11 @@ func isMentionBoundary(r rune) bool {
 
 // Parse parses @mention syntax while avoiding email-address matches.
 func (*mentionParser) Parse(_ gast.Node, block text.Reader, _ parser.Context) gast.Node {
-	line, _ := block.PeekLine()
+	line, segment := block.PeekLine()
 	if len(line) == 0 || line[0] != '@' {
+		return nil
+	}
+	if _, _, ok := MatchGFMEmailAt(block.Source(), segment.Start, 0, segment.Start+len(line)); ok {
 		return nil
 	}
 

@@ -3,6 +3,15 @@ import type { UserSetting_TagMetadata, UserSetting_TagsSetting } from "@/types/p
 // Cache compiled regexes to avoid re-compiling on every tag render.
 const compiledPatternCache = new Map<string, RegExp | null>();
 
+/** Merge exact tag counts without inheriting Object prototype keys. */
+export const mergeTagCounts = (...sources: Array<Record<string, number> | undefined>): Record<string, number> => {
+  const result = Object.create(null) as Record<string, number>;
+  for (const source of sources) {
+    for (const [tag, count] of Object.entries(source ?? {})) result[tag] = (result[tag] ?? 0) + count;
+  }
+  return result;
+};
+
 const getCompiledPattern = (pattern: string): RegExp | null => {
   if (compiledPatternCache.has(pattern)) {
     return compiledPatternCache.get(pattern)!;
@@ -27,7 +36,7 @@ const getCompiledPattern = (pattern: string): RegExp | null => {
  */
 export const findTagMetadata = (tag: string, tagsSetting: UserSetting_TagsSetting): UserSetting_TagMetadata | undefined => {
   // Fast path: exact match.
-  if (tagsSetting.tags[tag]) {
+  if (Object.hasOwn(tagsSetting.tags, tag)) {
     return tagsSetting.tags[tag];
   }
 
