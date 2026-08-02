@@ -54,9 +54,11 @@ stmt, _ := engine.CompileToStatement(ctx, `has_task_list && visibility == "PUBLI
   `timestamp("2006-01-02T15:04:05Z")` / `timestamp(<epoch-seconds>)`. These fold
   to epoch seconds at compile time — `now` is frozen once per compile (injectable
   for tests via the engine clock) — so the backing columns stay unchanged.
-- **Tag Operations** — `tag in [...]` and `"tag" in tags` become JSON array
-  predicates. SQLite uses `LIKE` patterns, MySQL uses `JSON_CONTAINS`, and
-  Postgres uses `@>`.
+- **Tag Operations** — `tag in [...]`, `"tag" in tags`, and tag comprehension
+  predicates evaluate individual JSON array elements. Equality and string
+  matching are case-sensitive, without Unicode normalization; `%` and `_` in
+  string operands are literal. Hierarchy works through implied ancestors already
+  present in the memo tag set, not through prefix matching.
 - **Boolean Flags** — Fields such as `has_task_list` render as `IS TRUE` equality
   checks, or comparisons against `CAST('true' AS JSON)` depending on the dialect.
 - **String Matching** — `content.contains(x)`, `content.startsWith(x)`, and

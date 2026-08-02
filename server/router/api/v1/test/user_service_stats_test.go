@@ -33,7 +33,7 @@ func TestGetUserStats_TagCount(t *testing.T) {
 		Content:    "This is a test memo with #test tag",
 		Visibility: store.Public,
 		Payload: &storepb.MemoPayload{
-			Tags: []string{"test"},
+			Tags: []string{"test", "test"},
 		},
 	})
 	require.NoError(t, err)
@@ -48,7 +48,8 @@ func TestGetUserStats_TagCount(t *testing.T) {
 	require.NotNil(t, response)
 	require.Equal(t, fmt.Sprintf("users/%s/stats", user.Username), response.Name)
 
-	// Check that the tag count is exactly 1, not 2
+	// A memo contributes at most once to an exact tag count, even if its payload
+	// accidentally contains the same derived membership more than once.
 	require.Contains(t, response.TagCount, "test")
 	require.Equal(t, int32(1), response.TagCount["test"], "Tag count should be 1 for a single occurrence")
 
@@ -109,6 +110,44 @@ func TestGetUserStats_TagCount(t *testing.T) {
 	})
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "user not found")
+}
+
+func TestGetUserStats_TagCountPreservesExactIdentity(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	const (
+		composedTag   = "caf\u00e9"
+		decomposedTag = "cafe\u0301"
+	)
+
+	user, err := ts.CreateHostUser(ctx, "exact-tag-stats-user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	_, err = ts.Store.CreateMemo(ctx, &store.Memo{
+		UID:        "exact-tag-stats-memo",
+		CreatorID:  user.ID,
+		Content:    "Exact tag membership fixture",
+		Visibility: store.Public,
+		Payload: &storepb.MemoPayload{
+			Tags: []string{"book", "book/fiction", "book", "Work", "work", composedTag, decomposedTag},
+		},
+	})
+	require.NoError(t, err)
+
+	response, err := ts.Service.GetUserStats(userCtx, &v1pb.GetUserStatsRequest{
+		Name: fmt.Sprintf("users/%s", user.Username),
+	})
+	require.NoError(t, err)
+	require.Equal(t, map[string]int32{
+		"book":         1,
+		"book/fiction": 1,
+		"Work":         1,
+		"work":         1,
+		composedTag:    1,
+		decomposedTag:  1,
+	}, response.TagCount)
 }
 
 func TestGetUserStats_MemoUpdatedTimestamps(t *testing.T) {
@@ -197,7 +236,7 @@ func TestListAllUserStats_FilterExcludesPrivateMemos(t *testing.T) {
 		CreatorID:  user.ID,
 		Content:    "public memo",
 		Visibility: store.Public,
-		Payload:    &storepb.MemoPayload{Tags: []string{"public"}},
+		Payload:    &storepb.MemoPayload{Tags: []string{"public", "public"}},
 	})
 	require.NoError(t, err)
 	_, err = ts.Store.CreateMemo(ctx, &store.Memo{
@@ -205,7 +244,7 @@ func TestListAllUserStats_FilterExcludesPrivateMemos(t *testing.T) {
 		CreatorID:  user.ID,
 		Content:    "private memo",
 		Visibility: store.Private,
-		Payload:    &storepb.MemoPayload{Tags: []string{"private"}},
+		Payload:    &storepb.MemoPayload{Tags: []string{"private", "private"}},
 	})
 	require.NoError(t, err)
 

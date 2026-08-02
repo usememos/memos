@@ -1,6 +1,7 @@
 package test
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -107,12 +108,12 @@ func TestMemoFilterTagsAll(t *testing.T) {
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
-	tc.CreateMemo(NewMemoBuilder("memo-all-work", tc.User.ID).Content("all work").Tags("work/a", "work/b"))
-	tc.CreateMemo(NewMemoBuilder("memo-mixed", tc.User.ID).Content("mixed").Tags("work/a", "home"))
+	tc.CreateMemo(NewMemoBuilder("memo-all-work", tc.User.ID).Content("all work").Tags("work", "work/a", "work/b"))
+	tc.CreateMemo(NewMemoBuilder("memo-mixed", tc.User.ID).Content("mixed").Tags("work", "work/a", "home"))
 	tc.CreateMemo(NewMemoBuilder("memo-untagged", tc.User.ID).Content("untagged"))
 
-	// Every tag starts with "work/": only the all-work memo qualifies.
-	memos := tc.ListWithFilter(`tags.all(t, t.startsWith("work/"))`)
+	// Every tag belongs to the work hierarchy: only the all-work memo qualifies.
+	memos := tc.ListWithFilter(`tags.all(t, t.startsWith("work"))`)
 	require.Len(t, memos, 1)
 	require.Equal(t, "memo-all-work", memos[0].UID)
 
@@ -125,12 +126,23 @@ func TestMemoFilterTagsAllEquals(t *testing.T) {
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
-	tc.CreateMemo(NewMemoBuilder("memo-only-x", tc.User.ID).Content("only x").Tags("x", "x"))
+	tc.CreateMemo(NewMemoBuilder("memo-only-x", tc.User.ID).Content("only x").Tags("x"))
 	tc.CreateMemo(NewMemoBuilder("memo-x-and-y", tc.User.ID).Content("x and y").Tags("x", "y"))
 
 	memos := tc.ListWithFilter(`tags.all(t, t == "x")`)
 	require.Len(t, memos, 1)
 	require.Equal(t, "memo-only-x", memos[0].UID)
+	tc.CreateMemo(NewMemoBuilder("memo-upper-work", tc.User.ID).Tags("Work"))
+	tc.CreateMemo(NewMemoBuilder("memo-lower-work", tc.User.ID).Tags("work"))
+	memos = tc.ListWithFilter(`tags.all(t, t == "work")`)
+	require.Len(t, memos, 1)
+	require.Equal(t, "memo-lower-work", memos[0].UID)
+
+	longTag := strings.Repeat("a", 513)
+	tc.CreateMemo(NewMemoBuilder("memo-long-tag", tc.User.ID).Tags(longTag))
+	memos = tc.ListWithFilter(`tags.all(t, t == "` + longTag + `")`)
+	require.Len(t, memos, 1)
+	require.Equal(t, "memo-long-tag", memos[0].UID)
 }
 
 func TestMemoFilterContentStartsWithEscaping(t *testing.T) {
@@ -199,16 +211,16 @@ func TestMemoFilterTagsAllMorePredicates(t *testing.T) {
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
-	tc.CreateMemo(NewMemoBuilder("memo-all-done", tc.User.ID).Tags("a/done", "b/done"))
-	tc.CreateMemo(NewMemoBuilder("memo-mixed", tc.User.ID).Tags("a/done", "b/todo"))
-	tc.CreateMemo(NewMemoBuilder("memo-single", tc.User.ID).Tags("solo/done"))
+	tc.CreateMemo(NewMemoBuilder("memo-all-done", tc.User.ID).Tags("done", "well-done"))
+	tc.CreateMemo(NewMemoBuilder("memo-mixed", tc.User.ID).Tags("done", "todo"))
+	tc.CreateMemo(NewMemoBuilder("memo-single", tc.User.ID).Tags("solo-done"))
 
 	// endsWith: every tag ends with "done".
 	memos := tc.ListWithFilter(`tags.all(t, t.endsWith("done"))`)
 	require.ElementsMatch(t, []string{"memo-all-done", "memo-single"}, uids(memos))
 
-	// contains: every tag contains "/".
-	memos = tc.ListWithFilter(`tags.all(t, t.contains("/"))`)
+	// contains: every tag contains "o".
+	memos = tc.ListWithFilter(`tags.all(t, t.contains("o"))`)
 	require.ElementsMatch(t, []string{"memo-all-done", "memo-mixed", "memo-single"}, uids(memos))
 }
 
@@ -217,17 +229,17 @@ func TestMemoFilterTagsAllNegatedAndCombined(t *testing.T) {
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
-	tc.CreateMemo(NewMemoBuilder("memo-work", tc.User.ID).Content("work memo").Tags("work/a", "work/b"))
-	tc.CreateMemo(NewMemoBuilder("memo-mixed", tc.User.ID).Content("mixed memo").Tags("work/a", "home"))
+	tc.CreateMemo(NewMemoBuilder("memo-work", tc.User.ID).Content("work memo").Tags("work", "work/a", "work/b"))
+	tc.CreateMemo(NewMemoBuilder("memo-mixed", tc.User.ID).Content("mixed memo").Tags("work", "work/a", "home"))
 	tc.CreateMemo(NewMemoBuilder("memo-untagged", tc.User.ID).Content("untagged memo"))
 
 	// Negation: NOT all-work. The untagged memo's all() is false (non-empty guard),
 	// so !all() is true and it is included.
-	memos := tc.ListWithFilter(`!tags.all(t, t.startsWith("work/"))`)
+	memos := tc.ListWithFilter(`!tags.all(t, t.startsWith("work"))`)
 	require.ElementsMatch(t, []string{"memo-mixed", "memo-untagged"}, uids(memos))
 
 	// Combined with a content filter.
-	memos = tc.ListWithFilter(`tags.all(t, t.startsWith("work/")) && content.contains("work")`)
+	memos = tc.ListWithFilter(`tags.all(t, t.startsWith("work")) && content.contains("work")`)
 	require.Len(t, memos, 1)
 	require.Equal(t, "memo-work", memos[0].UID)
 }
@@ -489,11 +501,67 @@ func TestMemoFilterHierarchicalTags(t *testing.T) {
 	defer tc.Close()
 
 	tc.CreateMemo(NewMemoBuilder("memo-book", tc.User.ID).Content("Book memo").Tags("book"))
-	tc.CreateMemo(NewMemoBuilder("memo-book-fiction", tc.User.ID).Content("Fiction book memo").Tags("book/fiction"))
+	tc.CreateMemo(NewMemoBuilder("memo-book-fiction", tc.User.ID).Content("Fiction book memo").Tags("book", "book/fiction"))
 
-	// Test: tag in ["book"] should match both (hierarchical matching)
+	// Implied ancestors are stored in the memo tag set, so exact membership matches both memos.
 	memos := tc.ListWithFilter(`tag in ["book"]`)
 	require.Len(t, memos, 2)
+}
+
+func TestMemoFilterTagMembershipIsExact(t *testing.T) {
+	t.Parallel()
+	tc := NewMemoFilterTestContext(t)
+	defer tc.Close()
+	const (
+		composedTag   = "caf\u00e9"
+		decomposedTag = "cafe\u0301"
+	)
+
+	tc.CreateMemo(NewMemoBuilder("memo-underscore", tc.User.ID).Tags("a_b"))
+	tc.CreateMemo(NewMemoBuilder("memo-letter", tc.User.ID).Tags("axb"))
+	tc.CreateMemo(NewMemoBuilder("memo-percent", tc.User.ID).Tags("a%b"))
+	tc.CreateMemo(NewMemoBuilder("memo-letters", tc.User.ID).Tags("aZZb"))
+	tc.CreateMemo(NewMemoBuilder("memo-upper", tc.User.ID).Tags("Work"))
+	tc.CreateMemo(NewMemoBuilder("memo-lower", tc.User.ID).Tags("work"))
+	tc.CreateMemo(NewMemoBuilder("memo-composed", tc.User.ID).Tags(composedTag))
+	tc.CreateMemo(NewMemoBuilder("memo-decomposed", tc.User.ID).Tags(decomposedTag))
+	tc.CreateMemo(NewMemoBuilder("memo-book", tc.User.ID).Tags("book"))
+	tc.CreateMemo(NewMemoBuilder("memo-descendant-only", tc.User.ID).Tags("book/fiction"))
+
+	for _, test := range []struct {
+		filter string
+		want   string
+	}{
+		{filter: `tag in ["a_b"]`, want: "memo-underscore"},
+		{filter: `tag in ["a%b"]`, want: "memo-percent"},
+		{filter: `tag in ["Work"]`, want: "memo-upper"},
+		{filter: `tag in ["work"]`, want: "memo-lower"},
+		{filter: `tag in ["` + composedTag + `"]`, want: "memo-composed"},
+		{filter: `tag in ["` + decomposedTag + `"]`, want: "memo-decomposed"},
+		{filter: `tag in ["book"]`, want: "memo-book"},
+		{filter: `"work" in tags`, want: "memo-lower"},
+	} {
+		memos := tc.ListWithFilter(test.filter)
+		require.Len(t, memos, 1, test.filter)
+		require.Equal(t, test.want, memos[0].UID, test.filter)
+	}
+
+	for _, test := range []struct {
+		filter string
+		want   string
+	}{
+		{filter: `tags.exists(t, t.startsWith("a_"))`, want: "memo-underscore"},
+		{filter: `tags.exists(t, t.endsWith("%b"))`, want: "memo-percent"},
+		{filter: `tags.exists(t, t.contains("a%b"))`, want: "memo-percent"},
+		{filter: `tags.all(t, t.startsWith("a_"))`, want: "memo-underscore"},
+		{filter: `tags.exists_one(t, t.contains("a%b"))`, want: "memo-percent"},
+	} {
+		memos := tc.ListWithFilter(test.filter)
+		require.Len(t, memos, 1, test.filter)
+		require.Equal(t, test.want, memos[0].UID, test.filter)
+	}
+
+	require.Empty(t, tc.ListWithFilter(`tags.exists(t, t.contains("A_"))`))
 }
 
 func TestMemoFilterEmptyTags(t *testing.T) {

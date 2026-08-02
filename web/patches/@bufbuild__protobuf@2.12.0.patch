@@ -1,0 +1,92 @@
+diff --git a/dist/cjs/reflect/reflect.js b/dist/cjs/reflect/reflect.js
+--- a/dist/cjs/reflect/reflect.js
++++ b/dist/cjs/reflect/reflect.js
+@@ -236,7 +236,19 @@ class ReflectMapImpl {
+                 throw err;
+             }
+         }
+-        this.obj[mapKeyToLocal(key)] = mapValueToLocal(this._field, value);
++        const localKey = mapKeyToLocal(key);
++        const localValue = mapValueToLocal(this._field, value);
++        if (localKey === "__proto__") {
++            Object.defineProperty(this.obj, localKey, {
++                value: localValue,
++                writable: true,
++                enumerable: true,
++                configurable: true,
++            });
++        }
++        else {
++            this.obj[localKey] = localValue;
++        }
+         return this;
+     }
+     delete(key) {
+diff --git a/dist/cjs/create.js b/dist/cjs/create.js
+--- a/dist/cjs/create.js
++++ b/dist/cjs/create.js
+@@ -138,6 +138,17 @@ function convertObjectValues(obj, fn) {
+     const ret = {};
+     for (const entry of Object.entries(obj)) {
+-        ret[entry[0]] = fn(entry[1]);
++        const value = fn(entry[1]);
++        if (entry[0] === "__proto__") {
++            Object.defineProperty(ret, entry[0], {
++                value,
++                writable: true,
++                enumerable: true,
++                configurable: true,
++            });
++        }
++        else {
++            ret[entry[0]] = value;
++        }
+     }
+     return ret;
+ }
+diff --git a/dist/esm/create.js b/dist/esm/create.js
+--- a/dist/esm/create.js
++++ b/dist/esm/create.js
+@@ -135,6 +135,17 @@ function convertObjectValues(obj, fn) {
+     const ret = {};
+     for (const entry of Object.entries(obj)) {
+-        ret[entry[0]] = fn(entry[1]);
++        const value = fn(entry[1]);
++        if (entry[0] === "__proto__") {
++            Object.defineProperty(ret, entry[0], {
++                value,
++                writable: true,
++                enumerable: true,
++                configurable: true,
++            });
++        }
++        else {
++            ret[entry[0]] = value;
++        }
+     }
+     return ret;
+ }
+diff --git a/dist/esm/reflect/reflect.js b/dist/esm/reflect/reflect.js
+--- a/dist/esm/reflect/reflect.js
++++ b/dist/esm/reflect/reflect.js
+@@ -229,7 +229,19 @@ class ReflectMapImpl {
+                 throw err;
+             }
+         }
+-        this.obj[mapKeyToLocal(key)] = mapValueToLocal(this._field, value);
++        const localKey = mapKeyToLocal(key);
++        const localValue = mapValueToLocal(this._field, value);
++        if (localKey === "__proto__") {
++            Object.defineProperty(this.obj, localKey, {
++                value: localValue,
++                writable: true,
++                enumerable: true,
++                configurable: true,
++            });
++        }
++        else {
++            this.obj[localKey] = localValue;
++        }
+         return this;
+     }
+     delete(key) {

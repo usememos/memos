@@ -81,6 +81,16 @@ func TestMarkdownRenderer(t *testing.T) {
 			expected: "1. First\n2. Second\n3. Third",
 		},
 		{
+			name:     "nested unordered list",
+			input:    "- Parent\n  - Child\n  - Second child\n- Sibling",
+			expected: "- Parent\n  - Child\n  - Second child\n- Sibling",
+		},
+		{
+			name:     "nested ordered list",
+			input:    "1. Parent\n   1. Child\n2. Sibling",
+			expected: "1. Parent\n   1. Child\n2. Sibling",
+		},
+		{
 			name:     "blockquote",
 			input:    "> This is a quote\n> Second line",
 			expected: "> This is a quote\n> Second line",

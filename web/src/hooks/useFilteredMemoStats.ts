@@ -6,6 +6,7 @@ import type { MemoExplorerContext } from "@/components/MemoExplorer";
 import { type MemoTimeBasis, useView } from "@/contexts/ViewContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useAllUserStats, useUserStats } from "@/hooks/useUserQueries";
+import { mergeTagCounts } from "@/lib/tag";
 import { State } from "@/types/proto/api/v1/common_pb";
 import type { UserStats } from "@/types/proto/api/v1/user_service_pb";
 import type { StatisticsData } from "@/types/statistics";
@@ -60,14 +61,12 @@ export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}):
   const data = useMemo(() => {
     const loading = isLoadingUserStats || isLoadingAllUserStats;
     let activityStats: Record<string, number> = {};
-    let tagCount: Record<string, number> = {};
+    let tagCount: Record<string, number> = mergeTagCounts();
 
     if (context === "explore" || context === "archived") {
       const displayDates: string[] = [];
+      tagCount = mergeTagCounts(...allUserStats.map((stats) => stats.tagCount));
       for (const stats of allUserStats) {
-        for (const [tag, count] of Object.entries(stats.tagCount ?? {})) {
-          tagCount[tag] = (tagCount[tag] ?? 0) + count;
-        }
         displayDates.push(
           ...timestampsForBasis(stats, timeBasis)
             .map((ts) => (ts ? timestampDate(ts) : undefined))
@@ -88,7 +87,7 @@ export const useFilteredMemoStats = (options: UseFilteredMemoStatsOptions = {}):
         );
       }
       if (userStats.tagCount) {
-        tagCount = userStats.tagCount;
+        tagCount = mergeTagCounts(userStats.tagCount);
       }
     }
 

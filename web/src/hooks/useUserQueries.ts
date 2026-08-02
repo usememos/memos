@@ -4,6 +4,7 @@ import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/r
 import { shortcutServiceClient, userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { buildUserSettingName, userNamePrefix } from "@/lib/resource-names";
+import { mergeTagCounts } from "@/lib/tag";
 import {
   type ListAllUserStatsRequest,
   ListAllUserStatsRequestSchema,
@@ -119,20 +120,12 @@ export function useTagCounts(forCurrentUser = false) {
         const { stats } = await userServiceClient.listAllUserStats({});
 
         // Aggregate tag counts from all users
-        const tagCount: Record<string, number> = {};
-        for (const userStats of stats) {
-          if (userStats.tagCount) {
-            for (const [tag, count] of Object.entries(userStats.tagCount)) {
-              tagCount[tag] = (tagCount[tag] || 0) + count;
-            }
-          }
-        }
-        return tagCount;
+        return mergeTagCounts(...stats.map((userStats) => userStats.tagCount));
       }
     },
     select: (data) => {
       if (forCurrentUser) {
-        return (data as UserStats).tagCount || {};
+        return mergeTagCounts((data as UserStats).tagCount);
       }
       return data as Record<string, number>;
     },

@@ -135,9 +135,7 @@ func (s *APIV1Service) ListAllUserStats(ctx context.Context, request *v1pb.ListA
 
 			// Count tags and other properties
 			if memo.Payload != nil {
-				for _, tag := range memo.Payload.Tags {
-					stats.TagCount[tag]++
-				}
+				incrementTagCounts(stats.TagCount, memo.Payload.Tags)
 				if memo.Payload.Property != nil {
 					if memo.Payload.Property.HasLink {
 						stats.MemoTypeStats.LinkCount++
@@ -251,9 +249,7 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 			updatedTimestamps = append(updatedTimestamps, timestamppb.New(time.Unix(memo.UpdatedTs, 0)))
 			// Count different memo types based on content.
 			if memo.Payload != nil {
-				for _, tag := range memo.Payload.Tags {
-					tagCount[tag]++
-				}
+				incrementTagCounts(tagCount, memo.Payload.Tags)
 				if memo.Payload.Property != nil {
 					if memo.Payload.Property.HasLink {
 						linkCount++
@@ -293,4 +289,16 @@ func (s *APIV1Service) GetUserStats(ctx context.Context, request *v1pb.GetUserSt
 	}
 
 	return userStats, nil
+}
+
+// incrementTagCounts counts each distinct tag at most once for one memo payload.
+func incrementTagCounts(counts map[string]int32, tags []string) {
+	seen := make(map[string]struct{}, len(tags))
+	for _, tag := range tags {
+		if _, ok := seen[tag]; ok {
+			continue
+		}
+		seen[tag] = struct{}{}
+		counts[tag]++
+	}
 }

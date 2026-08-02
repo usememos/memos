@@ -3,7 +3,7 @@ import { markdown } from "@codemirror/lang-markdown";
 import { indentUnit } from "@codemirror/language";
 import { Compartment, type Extension } from "@codemirror/state";
 import { placeholder as cmPlaceholder, dropCursor, EditorView, type KeyBinding, keymap } from "@codemirror/view";
-import { GFM } from "@lezer/markdown";
+import { memoMarkdownExtensions } from "@/utils/memo-markdown-extension";
 import { headingDecorations } from "./headingDecorations";
 import { liftListItem, sinkListItem } from "./listIndent";
 import { tagAutocomplete } from "./tagAutocomplete";
@@ -77,7 +77,7 @@ export function buildEditorExtensions({
     dropCursor(),
     // Indent with spaces (markdown), matching the 2-space bullet nesting.
     indentUnit.of("  "),
-    markdown({ extensions: [GFM] }),
+    markdown({ extensions: memoMarkdownExtensions }),
     ...memoEditorTheme,
     EditorView.lineWrapping,
     // CodeMirror defaults to autocorrect="off" because it is primarily a code

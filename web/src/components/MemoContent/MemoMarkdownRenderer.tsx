@@ -165,9 +165,9 @@ export const MemoMarkdownRendererCore = ({
           ...mathRemarkPlugins,
           remarkGfm,
           remarkSplitMixedTaskLists,
-          remarkBreaks,
-          remarkMention,
           remarkTag,
+          remarkMention,
+          remarkBreaks,
           remarkPreserveType,
         ]}
         rehypePlugins={[rehypeRaw, [rehypeSanitize, SANITIZE_SCHEMA], rehypeHeadingId, ...mathRehypePlugins]}

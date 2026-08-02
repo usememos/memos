@@ -1,150 +1,235 @@
 package parser
 
 import (
-	"unicode"
 	"unicode/utf8"
 
-	gast "github.com/yuin/goldmark/ast"
-	"github.com/yuin/goldmark/parser"
-	"github.com/yuin/goldmark/text"
-
-	mast "github.com/usememos/memos/internal/markdown/ast"
+	"github.com/yuin/goldmark/util"
 )
 
-const (
-	// MaxTagLength defines the maximum number of runes allowed in a tag.
-	MaxTagLength = 100
-)
+//go:generate go run ./tagdata -output tag_unicode_tables.go
 
-type tagParser struct{}
-
-// NewTagParser creates a new inline parser for #tag syntax.
-func NewTagParser() parser.InlineParser {
-	return &tagParser{}
+type codePointRange struct {
+	lo rune
+	hi rune
 }
 
-// Trigger returns the characters that trigger this parser.
-func (*tagParser) Trigger() []byte {
-	return []byte{'#'}
+// TagMatch is one lexical tag match within an eligible literal-source run.
+type TagMatch struct {
+	// Start is the byte offset of the introducer within the source run.
+	Start int
+	// End is the exclusive byte offset of the recognized source spelling.
+	End int
+	// Value is the emitted direct tag value without the introducer.
+	Value []byte
 }
 
-// isValidTagRune checks if a Unicode rune is valid in a tag.
-// Uses Unicode categories for proper international character support.
-func isValidTagRune(r rune) bool {
-	// Allow Unicode letters (any script: Latin, CJK, Arabic, Cyrillic, etc.)
-	if unicode.IsLetter(r) {
-		return true
+func containsCodePoint(ranges []codePointRange, r rune) bool {
+	low, high := 0, len(ranges)
+	for low < high {
+		middle := low + (high-low)/2
+		current := ranges[middle]
+		switch {
+		case r < current.lo:
+			high = middle
+		case r > current.hi:
+			low = middle + 1
+		default:
+			return true
+		}
 	}
-
-	// Allow Unicode digits
-	if unicode.IsNumber(r) {
-		return true
-	}
-
-	// Allow emoji and symbols (So category: Symbol, Other)
-	// This includes emoji, which are essential for social media-style tagging
-	if unicode.IsSymbol(r) {
-		return true
-	}
-
-	// Allow marks (non-spacing, spacing combining, enclosing)
-	// This covers variation selectors (e.g. VS16 \uFE0F) and combining marks (e.g. Keycap \u20E3, accents)
-	if unicode.IsMark(r) {
-		return true
-	}
-
-	// Allow Zero Width Joiner (ZWJ) for emoji sequences
-	if r == '\u200D' {
-		return true
-	}
-
-	// Allow specific ASCII symbols for tag structure
-	// Underscore: word separation (snake_case)
-	// Hyphen: word separation (kebab-case)
-	// Forward slash: hierarchical tags (category/subcategory)
-	// Ampersand: compound tags (science&tech)
-	if r == '_' || r == '-' || r == '/' || r == '&' {
-		return true
-	}
-
 	return false
 }
 
-// Parse parses #tag syntax using Unicode-aware validation.
-// Tags support international characters and follow these rules:
-//   - Must start with # followed by valid tag characters
-//   - Valid characters: Unicode letters, Unicode digits, underscore (_), hyphen (-), forward slash (/)
-//   - Maximum length: 100 runes (Unicode characters)
-//   - Stops at: whitespace, punctuation, or other invalid characters
-func (*tagParser) Parse(_ gast.Node, block text.Reader, _ parser.Context) gast.Node {
-	line, _ := block.PeekLine()
+func isXIDContinue(r rune) bool {
+	return containsCodePoint(unicode17XIDContinue[:], r)
+}
 
-	// Must start with #
-	if len(line) == 0 || line[0] != '#' {
-		return nil
-	}
+func isDefaultIgnorable(r rune) bool {
+	return containsCodePoint(unicode17DefaultIgnorable[:], r)
+}
 
-	// Check if it's a heading (## or space after #)
-	if len(line) > 1 {
-		if line[1] == '#' {
-			// It's a heading (##), not a tag
-			return nil
-		}
-		if line[1] == ' ' {
-			// Space after # - heading or just a hash
-			return nil
-		}
-	} else {
-		// Just a lone #
-		return nil
-	}
+func isCombiningMark(r rune) bool {
+	return containsCodePoint(unicode17CombiningMarks[:], r)
+}
 
-	// Parse tag using UTF-8 aware rune iteration
-	tagStart := 1
-	pos := tagStart
-	runeCount := 0
+func isSegmentStarter(r rune) bool {
+	return r == '-' || r == '+' || r == '&' || isXIDContinue(r) && !isCombiningMark(r) && !isDefaultIgnorable(r)
+}
 
-	for pos < len(line) {
-		r, size := utf8.DecodeRune(line[pos:])
+func isSegmentContinuation(r rune) bool {
+	return r == '-' || r == '+' || r == '&' || isXIDContinue(r) && !isDefaultIgnorable(r)
+}
 
-		// Stop at invalid UTF-8
+func matchFullyQualifiedEmoji(source []byte) int {
+	limit := min(len(source), maxEmoji17SequenceBytes)
+	match := 0
+	for pos := 0; pos < limit; {
+		r, size := utf8.DecodeRune(source[pos:])
 		if r == utf8.RuneError && size == 1 {
 			break
 		}
-
-		// Validate character using Unicode categories
-		if !isValidTagRune(r) {
-			break
-		}
-
-		// Enforce max length (by rune count, not byte count)
-		runeCount++
-		if runeCount > MaxTagLength {
-			break
-		}
-
 		pos += size
+		if pos > limit {
+			break
+		}
+		if _, ok := emoji17FullyQualified[string(source[:pos])]; ok {
+			match = pos
+		}
+	}
+	return match
+}
+
+func scanTagSegment(source []byte) (int, []byte, bool) {
+	pos := 0
+	var value []byte
+
+starter:
+	for pos < len(source) {
+		if source[pos] == '&' && characterReferenceLength(source[pos:]) > 0 {
+			return 0, nil, false
+		}
+		if emojiLength := matchFullyQualifiedEmoji(source[pos:]); emojiLength > 0 {
+			value = append(value, source[pos:pos+emojiLength]...)
+			pos += emojiLength
+			break
+		}
+		r, size := utf8.DecodeRune(source[pos:])
+		if r == utf8.RuneError && size == 1 {
+			return 0, nil, false
+		}
+		switch {
+		case isDefaultIgnorable(r):
+			pos += size
+		case isXIDContinue(r) && isCombiningMark(r):
+			pos += size
+		case isSegmentStarter(r):
+			value = append(value, source[pos:pos+size]...)
+			pos += size
+			break starter
+		default:
+			return 0, nil, false
+		}
 	}
 
-	// Must have at least one character after #
-	if pos <= tagStart {
-		return nil
+	if len(value) == 0 {
+		return 0, nil, false
 	}
 
-	// Extract tag (without #)
-	tagName := line[tagStart:pos]
-
-	// Make a copy of the tag name
-	tagCopy := make([]byte, len(tagName))
-	copy(tagCopy, tagName)
-
-	// Advance reader
-	block.Advance(pos)
-
-	// Create node
-	node := &mast.TagNode{
-		Tag: tagCopy,
+	for pos < len(source) {
+		if source[pos] == '&' && characterReferenceLength(source[pos:]) > 0 {
+			break
+		}
+		if emojiLength := matchFullyQualifiedEmoji(source[pos:]); emojiLength > 0 {
+			value = append(value, source[pos:pos+emojiLength]...)
+			pos += emojiLength
+			continue
+		}
+		r, size := utf8.DecodeRune(source[pos:])
+		if r == utf8.RuneError && size == 1 {
+			break
+		}
+		switch {
+		case isDefaultIgnorable(r):
+			pos += size
+		case isSegmentContinuation(r):
+			value = append(value, source[pos:pos+size]...)
+			pos += size
+		default:
+			return pos, value, true
+		}
 	}
 
-	return node
+	return pos, value, true
+}
+
+func scanTagIdentifier(source []byte) (int, []byte, bool) {
+	consumed, value, ok := scanTagSegment(source)
+	if !ok {
+		return 0, nil, false
+	}
+
+	for consumed < len(source) && source[consumed] == '/' {
+		segmentLength, segmentValue, segmentOK := scanTagSegment(source[consumed+1:])
+		if !segmentOK {
+			break
+		}
+		value = append(value, '/')
+		value = append(value, segmentValue...)
+		consumed += 1 + segmentLength
+	}
+
+	return consumed, value, true
+}
+
+func characterReferenceLength(source []byte) int {
+	if len(source) < 3 || source[0] != '&' {
+		return 0
+	}
+
+	if source[1] == '#' {
+		pos, maxDigits := 2, 7
+		isDigit := func(value byte) bool { return value >= '0' && value <= '9' }
+		if pos < len(source) && (source[pos] == 'x' || source[pos] == 'X') {
+			pos++
+			maxDigits = 6
+			isDigit = func(value byte) bool {
+				return value >= '0' && value <= '9' || value >= 'a' && value <= 'f' || value >= 'A' && value <= 'F'
+			}
+		}
+		start := pos
+		for pos < len(source) && pos-start < maxDigits && isDigit(source[pos]) {
+			pos++
+		}
+		if pos > start && pos < len(source) && source[pos] == ';' {
+			return pos + 1
+		}
+		return 0
+	}
+
+	pos := 1
+	for pos < len(source) && pos <= 32 && util.IsAlphaNumeric(source[pos]) {
+		pos++
+	}
+	if pos == 1 || pos >= len(source) || source[pos] != ';' {
+		return 0
+	}
+	if _, ok := util.LookUpHTML5EntityByName(string(source[1:pos])); !ok {
+		return 0
+	}
+	return pos + 1
+}
+
+// FindTagMatches enumerates tag candidates in one eligible
+// literal-source run. Markdown structure must be resolved before calling it.
+func FindTagMatches(source []byte) []TagMatch {
+	var matches []TagMatch
+	for pos := 0; pos < len(source); {
+		if emojiLength := matchFullyQualifiedEmoji(source[pos:]); emojiLength > 0 {
+			pos += emojiLength
+			continue
+		}
+		if referenceLength := characterReferenceLength(source[pos:]); referenceLength > 0 {
+			pos += referenceLength
+			continue
+		}
+		if source[pos] == '\\' && pos+1 < len(source) && util.IsPunct(source[pos+1]) {
+			pos += 2
+			continue
+		}
+		if source[pos] != '#' {
+			_, size := utf8.DecodeRune(source[pos:])
+			pos += size
+			continue
+		}
+
+		consumed, value, ok := scanTagIdentifier(source[pos+1:])
+		if !ok {
+			pos++
+			continue
+		}
+		end := pos + consumed + 1
+		matches = append(matches, TagMatch{Start: pos, End: end, Value: value})
+		pos = end
+	}
+	return matches
 }

@@ -448,30 +448,16 @@ func (r *renderer) renderTagInList(values []ValueExpr) (renderResult, error) {
 			return renderResult{}, errors.New("tags must be compared with string literals")
 		}
 
-		switch r.dialect {
-		case DialectSQLite:
-			// Support hierarchical tags: match exact tag OR tags with this prefix (e.g., "book" matches "book" and "book/something")
-			exactMatch := fmt.Sprintf("%s LIKE %s", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`%%"%s"%%`, str)))
-			prefixMatch := fmt.Sprintf("%s LIKE %s", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`%%"%s/%%`, str)))
-			expr := fmt.Sprintf("(%s OR %s)", exactMatch, prefixMatch)
-			conditions = append(conditions, expr)
-		case DialectMySQL:
-			// Support hierarchical tags: match exact tag OR tags with this prefix
-			exactMatch := fmt.Sprintf("JSON_CONTAINS(%s, %s)", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`"%s"`, str)))
-			prefixMatch := fmt.Sprintf("%s LIKE %s", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`%%"%s/%%`, str)))
-			expr := fmt.Sprintf("(%s OR %s)", exactMatch, prefixMatch)
-			conditions = append(conditions, expr)
-		case DialectPostgres:
-			// Support hierarchical tags: match exact tag OR tags with this prefix
-			exactMatch := fmt.Sprintf("%s @> jsonb_build_array(%s::json)", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`"%s"`, str)))
-			prefixMatch := fmt.Sprintf("(%s)::text LIKE %s", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`%%"%s/%%`, str)))
-			expr := fmt.Sprintf("(%s OR %s)", exactMatch, prefixMatch)
-			conditions = append(conditions, expr)
-		default:
-			return renderResult{}, errors.Errorf("unsupported dialect %s", r.dialect)
+		condition, err := r.renderJSONListContains(field, str)
+		if err != nil {
+			return renderResult{}, err
 		}
+		conditions = append(conditions, condition.sql)
 	}
 
+	if len(conditions) == 0 {
+		return renderResult{sql: "1 = 0"}, nil
+	}
 	if len(conditions) == 1 {
 		return renderResult{sql: conditions[0]}, nil
 	}
@@ -498,19 +484,11 @@ func (r *renderer) renderElementInCondition(cond *ElementInCondition) (renderRes
 		return renderResult{}, errors.New("tags membership requires string literal")
 	}
 
-	switch r.dialect {
-	case DialectSQLite:
-		sql := fmt.Sprintf("%s LIKE %s", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`%%"%s"%%`, str)))
-		return renderResult{sql: sql}, nil
-	case DialectMySQL:
-		sql := fmt.Sprintf("JSON_CONTAINS(%s, %s)", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`"%s"`, str)))
-		return renderResult{sql: sql}, nil
-	case DialectPostgres:
-		sql := fmt.Sprintf("%s @> jsonb_build_array(%s::json)", jsonArrayExpr(r.dialect, field), r.addArg(fmt.Sprintf(`"%s"`, str)))
-		return renderResult{sql: sql}, nil
-	default:
-		return renderResult{}, errors.Errorf("unsupported dialect %s", r.dialect)
-	}
+	return r.renderJSONListContains(field, str)
+}
+
+func (r *renderer) renderJSONListContains(field Field, value string) (renderResult, error) {
+	return r.renderTagComprehension(field, &EqualsPredicate{Value: value}, ComprehensionExists)
 }
 
 func (r *renderer) renderScalarInCondition(field Field, values []ValueExpr) (renderResult, error) {
@@ -618,181 +596,116 @@ func (r *renderer) renderListComprehension(cond *ListComprehensionCondition) (re
 		return renderResult{}, errors.Errorf("field %q is not a JSON list", cond.Field)
 	}
 
-	if cond.Kind == ComprehensionAll {
-		return r.renderTagAll(field, cond.Predicate)
-	}
-
-	if cond.Kind == ComprehensionExistsOne {
-		return r.renderTagExistsOne(field, cond.Predicate)
-	}
-
-	// Render based on predicate type
-	switch pred := cond.Predicate.(type) {
-	case *EqualsPredicate:
-		return r.renderTagEquals(field, pred.Value, cond.Kind)
-	case *StartsWithPredicate:
-		return r.renderTagStartsWith(field, pred.Prefix, cond.Kind)
-	case *EndsWithPredicate:
-		return r.renderTagEndsWith(field, pred.Suffix, cond.Kind)
-	case *ContainsPredicate:
-		return r.renderTagContains(field, pred.Substring, cond.Kind)
-	default:
-		return renderResult{}, errors.Errorf("unsupported predicate type %T in comprehension", pred)
-	}
+	return r.renderTagComprehension(field, cond.Predicate, cond.Kind)
 }
 
-// renderTagAll renders tags.all(t, <pred>): the array is non-empty AND no element
-// fails the predicate. Element predicates use plain CEL semantics (case-insensitive
-// for startsWith/endsWith/contains, case-sensitive for ==), evaluated per element.
-func (r *renderer) renderTagAll(field Field, pred PredicateExpr) (renderResult, error) {
+// renderTagComprehension evaluates every tag predicate against individual JSON
+// string elements. This avoids JSON text matching and gives all comprehension
+// kinds the same exact, case-sensitive semantics.
+func (r *renderer) renderTagComprehension(field Field, pred PredicateExpr, kind ComprehensionKind) (renderResult, error) {
 	arrayExpr := jsonArrayExpr(r.dialect, field)
-	elemCond, err := r.elementPredicateSQL(pred)
+	elemCond, err := r.tagElementPredicateSQL("tag_item.value", pred)
 	if err != nil {
 		return renderResult{}, err
 	}
+
+	var elements, length string
 	switch r.dialect {
 	case DialectSQLite:
-		nonEmpty := fmt.Sprintf("%s IS NOT NULL AND %s != '[]'", arrayExpr, arrayExpr)
-		sub := fmt.Sprintf("NOT EXISTS (SELECT 1 FROM json_each(%s) WHERE NOT (%s))", arrayExpr, elemCond)
-		return renderResult{sql: fmt.Sprintf("(%s AND %s)", nonEmpty, sub)}, nil
+		arrayExpr = fmt.Sprintf("COALESCE(%s, JSON_ARRAY())", arrayExpr)
+		elements = fmt.Sprintf("json_each(%s) AS tag_item", arrayExpr)
+		length = fmt.Sprintf("json_array_length(%s)", arrayExpr)
 	case DialectMySQL:
-		nonEmpty := fmt.Sprintf("%s IS NOT NULL AND JSON_LENGTH(%s) > 0", arrayExpr, arrayExpr)
-		sub := fmt.Sprintf("NOT EXISTS (SELECT 1 FROM JSON_TABLE(%s, '$[*]' COLUMNS (value VARCHAR(512) PATH '$')) AS elem WHERE NOT (%s))", arrayExpr, elemCond)
-		return renderResult{sql: fmt.Sprintf("(%s AND %s)", nonEmpty, sub)}, nil
+		arrayExpr = fmt.Sprintf("COALESCE(%s, JSON_ARRAY())", arrayExpr)
+		elements = fmt.Sprintf("JSON_TABLE(%s, '$[*]' COLUMNS (value LONGTEXT PATH '$')) AS tag_item", arrayExpr)
+		length = fmt.Sprintf("JSON_LENGTH(%s)", arrayExpr)
 	case DialectPostgres:
-		nonEmpty := fmt.Sprintf("%s IS NOT NULL AND jsonb_array_length(%s) > 0", arrayExpr, arrayExpr)
-		sub := fmt.Sprintf("NOT EXISTS (SELECT 1 FROM jsonb_array_elements_text(%s) AS elem(value) WHERE NOT (%s))", arrayExpr, elemCond)
-		return renderResult{sql: fmt.Sprintf("(%s AND %s)", nonEmpty, sub)}, nil
+		arrayExpr = fmt.Sprintf("COALESCE(%s, '[]'::jsonb)", arrayExpr)
+		elements = fmt.Sprintf("jsonb_array_elements_text(%s) AS tag_item(value)", arrayExpr)
+		length = fmt.Sprintf("jsonb_array_length(%s)", arrayExpr)
 	default:
 		return renderResult{}, errors.Errorf("unsupported dialect %s", r.dialect)
 	}
-}
 
-// renderTagExistsOne renders tags.exists_one(t, <pred>): exactly one element
-// satisfies the predicate, via a COUNT(...) = 1 subquery. A null or empty array
-// yields COUNT 0, which is correctly not equal to 1.
-func (r *renderer) renderTagExistsOne(field Field, pred PredicateExpr) (renderResult, error) {
-	arrayExpr := jsonArrayExpr(r.dialect, field)
-	elemCond, err := r.elementPredicateSQL(pred)
-	if err != nil {
-		return renderResult{}, err
-	}
-	switch r.dialect {
-	case DialectSQLite:
-		return renderResult{sql: fmt.Sprintf("(SELECT COUNT(*) FROM json_each(%s) WHERE %s) = 1", arrayExpr, elemCond)}, nil
-	case DialectMySQL:
-		return renderResult{sql: fmt.Sprintf("(SELECT COUNT(*) FROM JSON_TABLE(%s, '$[*]' COLUMNS (value VARCHAR(512) PATH '$')) AS elem WHERE %s) = 1", arrayExpr, elemCond)}, nil
-	case DialectPostgres:
-		return renderResult{sql: fmt.Sprintf("(SELECT COUNT(*) FROM jsonb_array_elements_text(%s) AS elem(value) WHERE %s) = 1", arrayExpr, elemCond)}, nil
+	switch kind {
+	case ComprehensionExists:
+		return renderResult{sql: fmt.Sprintf("EXISTS (SELECT 1 FROM %s WHERE %s)", elements, elemCond)}, nil
+	case ComprehensionAll:
+		return renderResult{sql: fmt.Sprintf("(%s > 0 AND NOT EXISTS (SELECT 1 FROM %s WHERE NOT (%s)))", length, elements, elemCond)}, nil
+	case ComprehensionExistsOne:
+		return renderResult{sql: fmt.Sprintf("(SELECT COUNT(*) FROM %s WHERE %s) = 1", elements, elemCond)}, nil
 	default:
-		return renderResult{}, errors.Errorf("unsupported dialect %s", r.dialect)
+		return renderResult{}, errors.Errorf("unsupported comprehension kind %s", kind)
 	}
 }
 
-// elementPredicateSQL builds the per-element SQL condition for an all() predicate.
-// The iterated element is exposed as the unqualified column `value` on all dialects
-// (json_each.value / JSON_TABLE column / elem(value)).
-func (r *renderer) elementPredicateSQL(pred PredicateExpr) (string, error) {
+// tagElementPredicateSQL renders an exact, case-sensitive predicate for one tag.
+// SQLite's LIKE is case-insensitive for ASCII, so it uses string functions;
+// MySQL and Postgres use binary/C-collated LIKE with an explicit escape byte.
+func (r *renderer) tagElementPredicateSQL(element string, pred PredicateExpr) (string, error) {
 	switch p := pred.(type) {
 	case *EqualsPredicate:
-		return fmt.Sprintf("value = %s", r.addArg(p.Value)), nil
+		placeholder := r.addArg(p.Value)
+		switch r.dialect {
+		case DialectSQLite:
+			return fmt.Sprintf("(%s COLLATE BINARY) = (%s COLLATE BINARY)", element, placeholder), nil
+		case DialectMySQL:
+			return fmt.Sprintf("CAST(%s AS BINARY) = CAST(%s AS BINARY)", element, placeholder), nil
+		case DialectPostgres:
+			return fmt.Sprintf("(%s COLLATE \"C\") = (%s::text COLLATE \"C\")", element, placeholder), nil
+		}
 	case *StartsWithPredicate:
-		return r.foldedLike("value", likePattern(TextMatchPrefix, p.Prefix)), nil
+		return r.tagElementTextMatch(element, TextMatchPrefix, p.Prefix)
 	case *EndsWithPredicate:
-		return r.foldedLike("value", likePattern(TextMatchSuffix, p.Suffix)), nil
+		return r.tagElementTextMatch(element, TextMatchSuffix, p.Suffix)
 	case *ContainsPredicate:
-		return r.foldedLike("value", likePattern(TextMatchContains, p.Substring)), nil
+		return r.tagElementTextMatch(element, TextMatchContains, p.Substring)
 	default:
-		return "", errors.Errorf("unsupported predicate %T in all()", pred)
+		return "", errors.Errorf("unsupported tag predicate %T", pred)
 	}
+	return "", errors.Errorf("unsupported dialect %s", r.dialect)
 }
 
-// renderTagEquals generates SQL for tags.exists(t, t == "value").
-func (r *renderer) renderTagEquals(field Field, value string, _ ComprehensionKind) (renderResult, error) {
-	arrayExpr := jsonArrayExpr(r.dialect, field)
-
-	switch r.dialect {
-	case DialectSQLite, DialectMySQL:
-		exactMatch := r.buildJSONArrayLike(arrayExpr, fmt.Sprintf(`%%"%s"%%`, value))
-		return renderResult{sql: r.wrapWithNullCheck(arrayExpr, exactMatch)}, nil
-	case DialectPostgres:
-		exactMatch := fmt.Sprintf("%s @> jsonb_build_array(%s::json)", arrayExpr, r.addArg(fmt.Sprintf(`"%s"`, value)))
-		return renderResult{sql: r.wrapWithNullCheck(arrayExpr, exactMatch)}, nil
-	default:
-		return renderResult{}, errors.Errorf("unsupported dialect %s", r.dialect)
+func (r *renderer) tagElementTextMatch(element string, mode TextMatchMode, value string) (string, error) {
+	if value == "" {
+		return "1 = 1", nil
 	}
-}
 
-// renderTagStartsWith generates SQL for tags.exists(t, t.startsWith("prefix")).
-func (r *renderer) renderTagStartsWith(field Field, prefix string, _ ComprehensionKind) (renderResult, error) {
-	arrayExpr := jsonArrayExpr(r.dialect, field)
-
-	switch r.dialect {
-	case DialectSQLite, DialectMySQL:
-		// Match exact tag or tags with this prefix (hierarchical support)
-		exactMatch := r.buildJSONArrayLike(arrayExpr, fmt.Sprintf(`%%"%s"%%`, prefix))
-		prefixMatch := r.buildJSONArrayLike(arrayExpr, fmt.Sprintf(`%%"%s%%`, prefix))
-		condition := fmt.Sprintf("(%s OR %s)", exactMatch, prefixMatch)
-		return renderResult{sql: r.wrapWithNullCheck(arrayExpr, condition)}, nil
-
-	case DialectPostgres:
-		// Use PostgreSQL's powerful JSON operators
-		exactMatch := fmt.Sprintf("%s @> jsonb_build_array(%s::json)", arrayExpr, r.addArg(fmt.Sprintf(`"%s"`, prefix)))
-		prefixMatch := fmt.Sprintf("(%s)::text LIKE %s", arrayExpr, r.addArg(fmt.Sprintf(`%%"%s%%`, prefix)))
-		condition := fmt.Sprintf("(%s OR %s)", exactMatch, prefixMatch)
-		return renderResult{sql: r.wrapWithNullCheck(arrayExpr, condition)}, nil
-
-	default:
-		return renderResult{}, errors.Errorf("unsupported dialect %s", r.dialect)
-	}
-}
-
-// renderTagEndsWith generates SQL for tags.exists(t, t.endsWith("suffix")).
-func (r *renderer) renderTagEndsWith(field Field, suffix string, _ ComprehensionKind) (renderResult, error) {
-	arrayExpr := jsonArrayExpr(r.dialect, field)
-	pattern := fmt.Sprintf(`%%%s"%%`, suffix)
-
-	likeExpr := r.buildJSONArrayLike(arrayExpr, pattern)
-	return renderResult{sql: r.wrapWithNullCheck(arrayExpr, likeExpr)}, nil
-}
-
-// renderTagContains generates SQL for tags.exists(t, t.contains("substring")).
-func (r *renderer) renderTagContains(field Field, substring string, _ ComprehensionKind) (renderResult, error) {
-	arrayExpr := jsonArrayExpr(r.dialect, field)
-	pattern := fmt.Sprintf(`%%%s%%`, substring)
-
-	likeExpr := r.buildJSONArrayLike(arrayExpr, pattern)
-	return renderResult{sql: r.wrapWithNullCheck(arrayExpr, likeExpr)}, nil
-}
-
-// buildJSONArrayLike builds a LIKE expression for matching within a JSON array.
-// Returns the LIKE clause without NULL/empty checks.
-func (r *renderer) buildJSONArrayLike(arrayExpr, pattern string) string {
-	switch r.dialect {
-	case DialectSQLite, DialectMySQL:
-		return fmt.Sprintf("%s LIKE %s", arrayExpr, r.addArg(pattern))
-	case DialectPostgres:
-		return fmt.Sprintf("(%s)::text LIKE %s", arrayExpr, r.addArg(pattern))
-	default:
-		return ""
-	}
-}
-
-// wrapWithNullCheck wraps a condition with NULL and empty array checks.
-// This ensures we don't match against NULL or empty JSON arrays.
-func (r *renderer) wrapWithNullCheck(arrayExpr, condition string) string {
-	var nullCheck string
 	switch r.dialect {
 	case DialectSQLite:
-		nullCheck = fmt.Sprintf("%s IS NOT NULL AND %s != '[]'", arrayExpr, arrayExpr)
+		switch mode {
+		case TextMatchPrefix:
+			return fmt.Sprintf("instr(%s, %s) = 1", element, r.addArg(value)), nil
+		case TextMatchSuffix:
+			lengthValue := r.addArg(value)
+			compareValue := r.addArg(value)
+			return fmt.Sprintf("(substr(%s, -length(%s)) COLLATE BINARY) = (%s COLLATE BINARY)", element, lengthValue, compareValue), nil
+		case TextMatchContains:
+			return fmt.Sprintf("instr(%s, %s) > 0", element, r.addArg(value)), nil
+		default:
+			return "", errors.Errorf("unsupported tag text match mode %s", mode)
+		}
 	case DialectMySQL:
-		nullCheck = fmt.Sprintf("%s IS NOT NULL AND JSON_LENGTH(%s) > 0", arrayExpr, arrayExpr)
+		pattern := tagLikePattern(mode, value)
+		return fmt.Sprintf("CAST(%s AS BINARY) LIKE CAST(%s AS BINARY) ESCAPE '!'", element, r.addArg(pattern)), nil
 	case DialectPostgres:
-		nullCheck = fmt.Sprintf("%s IS NOT NULL AND jsonb_array_length(%s) > 0", arrayExpr, arrayExpr)
+		pattern := tagLikePattern(mode, value)
+		return fmt.Sprintf("(%s COLLATE \"C\") LIKE (%s::text COLLATE \"C\") ESCAPE '!'", element, r.addArg(pattern)), nil
 	default:
-		return condition
+		return "", errors.Errorf("unsupported dialect %s", r.dialect)
 	}
-	return fmt.Sprintf("(%s AND %s)", condition, nullCheck)
+}
+
+func tagLikePattern(mode TextMatchMode, value string) string {
+	escaped := strings.NewReplacer("!", "!!", "%", "!%", "_", "!_").Replace(value)
+	switch mode {
+	case TextMatchPrefix:
+		return escaped + "%"
+	case TextMatchSuffix:
+		return "%" + escaped
+	default:
+		return "%" + escaped + "%"
+	}
 }
 
 func (r *renderer) jsonBoolPredicate(field Field) (string, error) {

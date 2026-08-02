@@ -1,3 +1,4 @@
+import { syntaxTree } from "@codemirror/language";
 import { type DecorationSet, EditorView, ViewPlugin, type ViewUpdate } from "@codemirror/view";
 
 /**
@@ -13,7 +14,7 @@ export function viewportDecorations(build: (view: EditorView) => DecorationSet) 
         this.decorations = build(view);
       }
       update(u: ViewUpdate) {
-        if (u.docChanged || u.viewportChanged) {
+        if (u.docChanged || u.viewportChanged || syntaxTree(u.startState) !== syntaxTree(u.state)) {
           this.decorations = build(u.view);
         }
       }

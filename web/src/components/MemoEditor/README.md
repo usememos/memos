@@ -44,6 +44,7 @@ MemoEditor/
 │   ├── extensions.ts           # buildEditorExtensions(): assembles the CM extension set
 │   ├── theme.ts                # Syntax-highlight style + editor theme (CSS-var colors)
 │   ├── tagMentionDecorations.ts# ViewPlugin that decorates #tag / @mention spans
+│   ├── markdownTagRanges.ts    # Markdown syntax-tree adapter for the shared tag scanner
 │   ├── tagAutocomplete.ts      # CM autocompletion source for #tag
 │   ├── formatting.ts           # FormattingController impl (toggle marks, headings, lists)
 │   └── controller.ts           # EditorController impl over an EditorView
@@ -83,10 +84,12 @@ Uses `useReducer` + Context for predictable state transitions. All state changes
 
 ### Tags and mentions
 
-`#tag` autocomplete and `#tag`/`@mention` decoration both reuse the shared grammar so the editor can't drift from the rest of the app:
+`#tag` autocomplete, decoration, and read-only rendering all use the shared scanner in `@/utils/tag-grammar`. The scanner owns tag syntax and Unicode/emoji recognition; each surface supplies only its Markdown context:
 
-- `Editor/tagMentionDecorations.ts` is a `ViewPlugin` that scans the visible ranges and adds `cm-memo-tag` / `cm-memo-mention` marks, matching against `TAG_RUN` (`@/utils/tag-grammar`) and `MENTION_RUN` (`@/utils/mention-grammar`).
-- `Editor/tagAutocomplete.ts` is a CodeMirror autocompletion source for `#tag`, matching the in-progress token with `TAG_CHAR_CLASS` (`@/utils/tag-grammar`) and offering known tags (from `useTagCounts`).
+- `Editor/markdownTagRanges.ts` adapts the CodeMirror syntax tree into literal-source ranges, excluding links, code, math, raw HTML syntax, escapes, and entities before calling the shared scanner.
+- `Editor/tagMentionDecorations.ts` decorates the tag matches returned by that adapter; mention recognition remains separate.
+- `Editor/tagAutocomplete.ts` reuses the same adapter for the tag ending at the cursor and offers known tags from `useTagCounts`.
+- `@/utils/remark-plugins/remark-tag` is the read-only renderer's Markdown AST adapter to the same scanner.
 
 ### Services
 
