@@ -2,7 +2,6 @@ import dayjs from "dayjs";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import type { MemoTimeBasis } from "@/contexts/ViewContext";
-import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import { CELL_STYLES, INTENSITY_THRESHOLDS, MIN_COUNT, MONTHS_IN_YEAR } from "./constants";
 import type { CalendarData, CalendarDayCell } from "./types";
@@ -24,9 +23,8 @@ export const getCellIntensityClass = (day: CalendarDayCell, maxCount: number): s
   return CELL_STYLES.MINIMAL;
 };
 
-export const getCalendarCellStateClass = (day: Pick<CalendarDayCell, "isToday" | "isSelected">): string => {
-  return cn(day.isToday && "font-semibold z-10", day.isSelected && "font-bold z-10");
-};
+export const getCalendarCellStateClass = (day: Pick<CalendarDayCell, "isSelected">): string =>
+  day.isSelected ? "z-10 ring-2 ring-blue-500/70 ring-inset" : "";
 
 export const generateMonthsForYear = (year: number): string[] => {
   return Array.from({ length: MONTHS_IN_YEAR }, (_, i) => dayjs(`${year}-01-01`).add(i, "month").format("YYYY-MM"));

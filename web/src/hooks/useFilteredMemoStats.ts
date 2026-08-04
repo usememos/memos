@@ -2,7 +2,6 @@ import { timestampDate } from "@bufbuild/protobuf/wkt";
 import dayjs from "dayjs";
 import { countBy } from "lodash-es";
 import { useMemo } from "react";
-import type { MemoExplorerContext } from "@/components/MemoExplorer";
 import { type MemoTimeBasis, useView } from "@/contexts/ViewContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useAllUserStats, useUserStats } from "@/hooks/useUserQueries";
@@ -17,9 +16,11 @@ export interface FilteredMemoStats {
   loading: boolean;
 }
 
+export type MemoStatsContext = "home" | "explore" | "archived" | "profile";
+
 export interface UseFilteredMemoStatsOptions {
   userName?: string;
-  context?: MemoExplorerContext;
+  context?: MemoStatsContext;
   enabled?: boolean;
 }
 

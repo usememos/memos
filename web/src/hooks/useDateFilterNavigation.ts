@@ -1,18 +1,21 @@
 import { useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { stringifyFilters } from "@/contexts/MemoFilterContext";
+import { replaceFiltersByFactor, stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 
 export const useDateFilterNavigation = (targetPath?: string) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { filters, setFilters } = useMemoFilterContext();
 
   const navigateToDateFilter = useCallback(
     (date: string) => {
-      const filterQuery = stringifyFilters([{ factor: "displayTime", value: date }]);
+      const nextFilters = replaceFiltersByFactor(filters, "displayTime", [{ factor: "displayTime", value: date }]);
+      const filterQuery = stringifyFilters(nextFilters);
       const basePath = targetPath ?? location.pathname;
+      setFilters(nextFilters);
       navigate(`${basePath}?filter=${filterQuery}`);
     },
-    [navigate, location.pathname, targetPath],
+    [filters, location.pathname, navigate, setFilters, targetPath],
   );
 
   return navigateToDateFilter;

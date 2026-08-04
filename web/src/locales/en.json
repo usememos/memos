@@ -51,6 +51,7 @@
       "retry": "Retry"
     },
     "empty": {
+      "all": "No attachments yet.",
       "audio": "No audio attachments yet.",
       "documents": "No document attachments yet.",
       "media": "No media attachments yet."
@@ -79,6 +80,7 @@
   },
   "common": {
     "about": "About",
+    "actions": "Actions",
     "add": "Add",
     "admin": "Admin",
     "all": "All",
@@ -163,10 +165,12 @@
     "shortcut-filter": "Shortcut filter",
     "shortcuts": "Shortcuts",
     "sign-in": "Sign in",
+    "sign-in-to-memos": "Sign in to Memos",
     "sign-out": "Sign out",
     "sign-up": "Sign up",
     "statistics": "Statistics",
     "tags": "Tags",
+    "tasks": "Tasks",
     "title": "Title",
     "today": "Today",
     "tree-mode": "Tree mode",
@@ -179,6 +183,7 @@
     "username": "Username",
     "version": "Version",
     "visibility": "Visibility",
+    "views": "Views",
     "yourself": "Yourself"
   },
   "locale-picker": {
