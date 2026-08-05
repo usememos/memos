@@ -69,16 +69,20 @@ const AboutDialog = ({ open, onOpenChange }: Props) => {
   }
 
   const projectLinks = [
-    { label: t("about.official-website"), note: "the project homepage", href: "https://usememos.com/" },
-    { label: t("about.documents"), note: "deploy, configure, use", href: "https://usememos.com/docs" },
-    { label: "API Docs", note: "REST + gRPC reference", href: "https://usememos.com/docs/api" },
-    { label: t("about.github-repository"), note: "source, issues, releases", href: "https://github.com/usememos/memos" },
-    { label: "Web Clipper", note: t("about.web-clipper-platforms"), href: WEB_CLIPPER_URL, icon: ScissorsIcon },
+    { label: t("about.official-website"), note: t("about.official-website-note"), href: "https://usememos.com/" },
+    { label: t("about.documents"), note: t("about.documents-note"), href: "https://usememos.com/docs" },
+    { label: t("about.api-docs"), note: t("about.api-docs-note"), href: "https://usememos.com/docs/api" },
+    {
+      label: t("about.github-repository"),
+      note: t("about.github-repository-note"),
+      href: "https://github.com/usememos/memos",
+    },
+    { label: t("about.web-clipper"), note: t("about.web-clipper-platforms"), href: WEB_CLIPPER_URL, icon: ScissorsIcon },
   ];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent size="xl" className="overflow-hidden border-border/70 !p-0 shadow-xl">
+      <DialogContent size="xl" className="overflow-hidden border-border/70 p-0! shadow-xl">
         <DialogTitle className="sr-only">{t("common.about")}</DialogTitle>
         <div className="px-5 pb-5 pt-5 sm:px-6 sm:pb-6 sm:pt-6">
           <header className="flex items-start gap-3 pr-8">
@@ -86,7 +90,7 @@ const AboutDialog = ({ open, onOpenChange }: Props) => {
             <div className="min-w-0 pt-0.5">
               <div className="flex flex-wrap items-center gap-2">
                 <h2 className="truncate text-[16px] font-semibold tracking-[-0.01em] text-foreground">{instanceTitle}</h2>
-                {profile.demo && <Badge variant="warning">Demo</Badge>}
+                {profile.demo && <Badge variant="warning">{t("about.demo")}</Badge>}
               </div>
               <p className="mt-0.5 text-[13px] leading-5 text-muted-foreground">{instanceTagline}</p>
             </div>
@@ -106,7 +110,7 @@ const AboutDialog = ({ open, onOpenChange }: Props) => {
 
           <section className="mt-6">
             <SectionLabel>{t("about.project")}</SectionLabel>
-            <nav aria-label="Project links" className="mt-2 border-t border-border/70">
+            <nav aria-label={t("about.project-links")} className="mt-2 border-t border-border/70">
               {projectLinks.map((link) => (
                 <a
                   key={link.href}

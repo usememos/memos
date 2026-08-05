@@ -7,7 +7,7 @@ import { addMonths } from "@/lib/calendar-utils";
 import type { MonthNavigatorProps } from "@/types/statistics";
 
 export const MonthNavigator = memo(({ visibleMonth, onMonthChange }: MonthNavigatorProps) => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const monthLabel = dayjs(visibleMonth).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" });
   const handlePrevMonth = () => onMonthChange(addMonths(visibleMonth, -1));
   const handleNextMonth = () => onMonthChange(addMonths(visibleMonth, 1));
@@ -18,12 +18,12 @@ export const MonthNavigator = memo(({ visibleMonth, onMonthChange }: MonthNaviga
         {monthLabel}
       </h2>
 
-      <nav className="flex shrink-0 items-center gap-1" aria-label="Month navigation">
+      <nav className="flex shrink-0 items-center gap-1" aria-label={t("common.month-navigation")}>
         <Button
           variant="ghost"
           size="icon-sm"
           onClick={handlePrevMonth}
-          aria-label="Previous month"
+          aria-label={t("common.previous-month")}
           className="size-7 rounded-md text-muted-foreground/65 hover:bg-muted/50 hover:text-foreground/90"
         >
           <ChevronLeftIcon className="size-[15px]" strokeWidth={1.75} />
@@ -33,7 +33,7 @@ export const MonthNavigator = memo(({ visibleMonth, onMonthChange }: MonthNaviga
           variant="ghost"
           size="icon-sm"
           onClick={handleNextMonth}
-          aria-label="Next month"
+          aria-label={t("common.next-month")}
           className="size-7 rounded-md text-muted-foreground/65 hover:bg-muted/50 hover:text-foreground/90"
         >
           <ChevronRightIcon className="size-[15px]" strokeWidth={1.75} />

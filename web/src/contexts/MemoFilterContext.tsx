@@ -23,7 +23,9 @@ export const parseFilterQuery = (query: string | null): MemoFilter[] => {
   if (!query) return [];
   try {
     return query.split(",").map((filterStr) => {
-      const [factor, value] = filterStr.split(":");
+      const separatorIndex = filterStr.indexOf(":");
+      const factor = separatorIndex === -1 ? filterStr : filterStr.slice(0, separatorIndex);
+      const value = separatorIndex === -1 ? "" : filterStr.slice(separatorIndex + 1);
       return {
         factor: factor as FilterFactor,
         value: decodeURIComponent(value || ""),

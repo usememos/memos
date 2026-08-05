@@ -16,7 +16,7 @@ import PreviewImageDialog from "@/components/PreviewImageDialog";
 import { Button } from "@/components/ui/button";
 import { attachmentServiceClient } from "@/connect";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
-import { useAttachmentLibrary } from "@/hooks/useAttachmentLibrary";
+import { useAttachmentLibrary, useUnusedAttachmentLibrary } from "@/hooks/useAttachmentLibrary";
 import { useBatchDeleteAttachments } from "@/hooks/useAttachmentQueries";
 import useDialog from "@/hooks/useDialog";
 import i18n from "@/i18n";
@@ -77,8 +77,15 @@ const Attachments = () => {
     mediaPreviewItems,
     refetch,
     stats,
-    unusedItems,
   } = useAttachmentLibrary(i18n.language);
+  const {
+    error: unusedError,
+    isComplete: unusedIsComplete,
+    isError: unusedIsError,
+    isLoading: unusedIsLoading,
+    refetch: refetchUnused,
+    unusedItems: completeUnusedItems,
+  } = useUnusedAttachmentLibrary(i18n.language, attachmentSection === "unused");
 
   const handlePreview = (itemId: string) => {
     const initialIndex = mediaPreviewItems.findIndex((item) => item.id === itemId);
@@ -90,7 +97,7 @@ const Attachments = () => {
       const names = await listUnusedAttachmentNames();
 
       if (names.length === 0) {
-        await refetch();
+        await Promise.all([refetch(), refetchUnused()]);
         return;
       }
 
@@ -99,7 +106,7 @@ const Attachments = () => {
       }
 
       toast.success(t("resource.delete-all-unused-success"));
-      await refetch();
+      await Promise.all([refetch(), refetchUnused()]);
     } catch (deleteError) {
       handleError(deleteError, toast.error, {
         context: "Failed to delete unused attachments",
@@ -109,16 +116,18 @@ const Attachments = () => {
   };
 
   const renderContent = () => {
-    if (isLoading) {
-      return <AttachmentLibrarySkeletonGrid />;
-    }
-
-    if (isError) {
-      return <AttachmentLibraryErrorState error={error instanceof Error ? error : undefined} onRetry={() => refetch()} />;
-    }
-
     if (attachmentSection === "unused") {
-      return stats.unused === 0 ? (
+      if (unusedIsError) {
+        return (
+          <AttachmentLibraryErrorState error={unusedError instanceof Error ? unusedError : undefined} onRetry={() => refetchUnused()} />
+        );
+      }
+
+      if (unusedIsLoading || !unusedIsComplete) {
+        return <AttachmentLibrarySkeletonGrid />;
+      }
+
+      return completeUnusedItems.length === 0 ? (
         <div className="py-12 text-center text-sm text-muted-foreground">{t("message.no-data")}</div>
       ) : (
         <div className="space-y-4">
@@ -137,9 +146,17 @@ const Attachments = () => {
               {t("resource.delete-all-unused")}
             </Button>
           </div>
-          <AttachmentUnusedRows items={unusedItems} />
+          <AttachmentUnusedRows items={completeUnusedItems} />
         </div>
       );
+    }
+
+    if (isLoading) {
+      return <AttachmentLibrarySkeletonGrid />;
+    }
+
+    if (isError) {
+      return <AttachmentLibraryErrorState error={error instanceof Error ? error : undefined} onRetry={() => refetch()} />;
     }
 
     if (attachmentSection === "all") {

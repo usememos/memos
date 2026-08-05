@@ -86,7 +86,7 @@ const QuickFindDialog = () => {
     <Dialog open={quickFindOpen} onOpenChange={setQuickFindOpen}>
       <DialogContent
         size="lg"
-        className="!top-[12vh] !translate-y-0 overflow-hidden border-border/70 !p-0 shadow-xl sm:!top-[16vh] [&>div:first-child]:!gap-0"
+        className="top-[12vh]! translate-y-0! overflow-hidden border-border/70 p-0! shadow-xl sm:top-[16vh]! [&>div:first-child]:gap-0!"
         showCloseButton={false}
       >
         <DialogTitle className="sr-only">{t("common.search")}</DialogTitle>

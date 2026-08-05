@@ -1,6 +1,6 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import dayjs from "dayjs";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import {
   getAttachmentMetadata,
   isAudioAttachment,
@@ -8,7 +8,7 @@ import {
   isVideoAttachment,
 } from "@/components/MemoMetadata/Attachment/attachmentHelpers";
 import { useInfiniteAttachments } from "@/hooks/useAttachmentQueries";
-import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
+import type { Attachment, ListAttachmentsRequest } from "@/types/proto/api/v1/attachment_service_pb";
 import { isMotionAttachment } from "@/utils/attachment";
 import { useTranslate } from "@/utils/i18n";
 import { type AttachmentVisualItem, buildAttachmentVisualItems, countLogicalAttachmentItems } from "@/utils/media-item";
@@ -50,6 +50,30 @@ const PAGE_SIZE = 50;
 const ATTACHMENT_LIBRARY_REQUEST = {
   pageSize: PAGE_SIZE,
   orderBy: "create_time desc",
+};
+const COMPLETE_ATTACHMENT_LIBRARY_REQUEST = {
+  pageSize: 1000,
+  orderBy: "create_time desc",
+};
+const UNUSED_ATTACHMENT_LIBRARY_REQUEST = {
+  filter: "memo_id == null",
+  pageSize: 1000,
+  orderBy: "create_time desc",
+};
+
+const useCompleteAttachments = (request: Partial<ListAttachmentsRequest>, enabled = true) => {
+  const query = useInfiniteAttachments(request, { enabled });
+
+  useEffect(() => {
+    if (enabled && query.isSuccess && query.hasNextPage && !query.isFetchingNextPage) {
+      void query.fetchNextPage();
+    }
+  }, [enabled, query.fetchNextPage, query.hasNextPage, query.isFetchingNextPage, query.isSuccess]);
+
+  return {
+    ...query,
+    isComplete: enabled && query.isSuccess && !query.hasNextPage && !query.isFetchingNextPage,
+  };
 };
 
 const sortByNewest = (a?: Date, b?: Date) => (b?.getTime() ?? 0) - (a?.getTime() ?? 0);
@@ -218,9 +242,23 @@ export function useAttachmentLibrary(locale: string) {
 }
 
 export function useAttachmentLibraryStats() {
-  const query = useInfiniteAttachments(ATTACHMENT_LIBRARY_REQUEST);
+  const query = useCompleteAttachments(COMPLETE_ATTACHMENT_LIBRARY_REQUEST);
   const attachments = useMemo(() => (query.data?.pages ?? []).flatMap((page) => page.attachments), [query.data?.pages]);
   const stats = useMemo(() => buildAttachmentLibraryStats(attachments), [attachments]);
 
   return { ...query, stats };
+}
+
+export function useUnusedAttachmentLibrary(locale: string, enabled = true) {
+  const query = useCompleteAttachments(UNUSED_ATTACHMENT_LIBRARY_REQUEST, enabled);
+  const attachments = useMemo(() => (query.data?.pages ?? []).flatMap((page) => page.attachments), [query.data?.pages]);
+  const unusedItems = useMemo(
+    () => attachments.map((attachment) => toLibraryListItem(attachment, locale)).sort((a, b) => sortByNewest(a.createdAt, b.createdAt)),
+    [attachments, locale],
+  );
+
+  return {
+    ...query,
+    unusedItems,
+  };
 }

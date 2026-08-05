@@ -133,4 +133,23 @@ describe("MemoDetailSidebar", () => {
     expect(screen.queryByText("common.referenced-by")).not.toBeInTheDocument();
     expect(screen.queryByText("Private backlink")).not.toBeInTheDocument();
   });
+
+  it("keeps the outline available for readonly memos with multiple headings", () => {
+    const memo = create(MemoSchema, {
+      name: "memos/readonly-outline",
+      creator: "users/alice",
+      state: State.NORMAL,
+      visibility: Visibility.PUBLIC,
+      content: "# Overview\n\nBody\n\n## Details\n\nMore",
+    });
+
+    render(
+      <MemoryRouter>
+        <MemoDetailSidebar memo={memo} forceReadonly />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("memo.outline")).toBeInTheDocument();
+    expect(screen.getByTestId("outline")).toHaveTextContent("2");
+  });
 });

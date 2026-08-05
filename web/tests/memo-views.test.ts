@@ -66,4 +66,28 @@ describe("memo views", () => {
       }),
     ).toBe('tag in ["work"]');
   });
+
+  it("builds display-time filters from valid local calendar-day boundaries", () => {
+    const start = new Date(2026, 7, 2);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+
+    expect(
+      buildMemoFilter({
+        filters: [{ factor: "displayTime", value: "2026-08-02" }],
+        includePinned: false,
+      }),
+    ).toBe(
+      `created_ts >= timestamp(${Math.floor(start.getTime() / 1000)}) && created_ts < timestamp(${Math.floor(end.getTime() / 1000)})`,
+    );
+  });
+
+  it("ignores invalid display-time filter values", () => {
+    expect(
+      buildMemoFilter({
+        filters: [{ factor: "displayTime", value: "2026-02-30" }],
+        includePinned: false,
+      }),
+    ).toBeUndefined();
+  });
 });

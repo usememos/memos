@@ -160,7 +160,12 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
                   <MoreHorizontalIcon className="size-3.5" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => navigate(ROUTES.SHORTCUTS, { state: { shortcut } })}>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      navigate(ROUTES.SHORTCUTS, { state: { shortcut } });
+                      setMobileOpen(false);
+                    }}
+                  >
                     {t("common.edit")}
                   </DropdownMenuItem>
                   <DropdownMenuItem variant="destructive" onClick={() => setDeleteTarget(shortcut)}>
@@ -243,14 +248,19 @@ const CollectionSidebarContent = ({ context }: { context: MemoStatsContext }) =>
 const AttachmentsSidebarContent = () => {
   const t = useTranslate();
   const { attachmentSection, setAttachmentSection, setMobileOpen } = useAppSidebar();
-  const { stats } = useAttachmentLibraryStats();
+  const { isComplete, stats } = useAttachmentLibraryStats();
   const total = stats.media + stats.documents + stats.audio;
-  const rows: Array<{ value: AttachmentSection; icon: LucideIcon; label: string; count: number }> = [
-    { value: "all", icon: ListIcon, label: t("common.all"), count: total },
-    { value: "media", icon: ImageIcon, label: t("attachment-library.tabs.media"), count: stats.media },
-    { value: "audio", icon: FileAudioIcon, label: t("attachment-library.tabs.audio"), count: stats.audio },
-    { value: "documents", icon: FileTextIcon, label: t("attachment-library.tabs.documents"), count: stats.documents },
-    { value: "unused", icon: Trash2Icon, label: t("attachment-library.labels.unused"), count: stats.unused },
+  const rows: Array<{ value: AttachmentSection; icon: LucideIcon; label: string; count?: number }> = [
+    { value: "all", icon: ListIcon, label: t("common.all"), count: isComplete ? total : undefined },
+    { value: "media", icon: ImageIcon, label: t("attachment-library.tabs.media"), count: isComplete ? stats.media : undefined },
+    { value: "audio", icon: FileAudioIcon, label: t("attachment-library.tabs.audio"), count: isComplete ? stats.audio : undefined },
+    {
+      value: "documents",
+      icon: FileTextIcon,
+      label: t("attachment-library.tabs.documents"),
+      count: isComplete ? stats.documents : undefined,
+    },
+    { value: "unused", icon: Trash2Icon, label: t("attachment-library.labels.unused"), count: isComplete ? stats.unused : undefined },
   ];
   return (
     <div className="space-y-0.5">

@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
-import { MemoFilterProvider, useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { MemoFilterProvider, parseFilterQuery, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { BUILTIN_TASKS_VIEW_ID } from "@/lib/memo-views";
 
 const Harness = () => {
@@ -21,6 +21,12 @@ const Harness = () => {
 };
 
 describe("MemoFilterProvider", () => {
+  it("keeps encoded values containing colons intact", () => {
+    expect(parseFilterQuery("contentSearch:https://example.com:8080/path")).toEqual([
+      { factor: "contentSearch", value: "https://example.com:8080/path" },
+    ]);
+  });
+
   it("keeps search filters when selecting a view", () => {
     render(
       <MemoryRouter>

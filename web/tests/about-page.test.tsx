@@ -1,6 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AboutDialog from "@/components/AboutDialog";
+import About from "@/pages/About";
 
 const mockInstance = {
   profile: {
@@ -12,9 +14,26 @@ const mockInstance = {
   },
   generalSetting: {} as { customProfile?: { title: string; description: string; logoUrl: string } },
 };
+const pageState = vi.hoisted(() => ({
+  authInitialized: false,
+  currentUser: { name: "users/test" } as { name: string } | undefined,
+  setAboutOpen: vi.fn(),
+}));
 
 vi.mock("@/contexts/InstanceContext", () => ({
   useInstance: () => mockInstance,
+}));
+
+vi.mock("@/contexts/AppSidebarContext", () => ({
+  useAppSidebar: () => ({ setAboutOpen: pageState.setAboutOpen }),
+}));
+
+vi.mock("@/contexts/AuthContext", () => ({
+  useAuth: () => ({ isInitialized: pageState.authInitialized }),
+}));
+
+vi.mock("@/hooks/useCurrentUser", () => ({
+  default: () => pageState.currentUser,
 }));
 
 vi.mock("@/utils/i18n", () => ({
@@ -31,6 +50,9 @@ const renderAbout = () => render(<AboutDialog open onOpenChange={vi.fn()} />);
 
 describe("<AboutDialog>", () => {
   beforeEach(() => {
+    pageState.authInitialized = false;
+    pageState.currentUser = { name: "users/test" };
+    pageState.setAboutOpen.mockReset();
     mockInstance.profile = {
       version: "0.25.0",
       commit: "0123456789abcdef0123456789abcdef01234567",
@@ -63,8 +85,8 @@ describe("<AboutDialog>", () => {
 
     expect(screen.getByRole("link", { name: /about\.official-website/ })).toHaveAttribute("href", "https://usememos.com/");
     expect(screen.getByRole("link", { name: /about\.documents/ })).toHaveAttribute("href", "https://usememos.com/docs");
-    expect(screen.getByRole("link", { name: /API Docs/ })).toHaveAttribute("href", "https://usememos.com/docs/api");
-    expect(screen.getByRole("link", { name: /Web Clipper/ })).toHaveAttribute("href", "https://github.com/usememos/web-clipper");
+    expect(screen.getByRole("link", { name: /about\.api-docs/ })).toHaveAttribute("href", "https://usememos.com/docs/api");
+    expect(screen.getByRole("link", { name: /about\.web-clipper/ })).toHaveAttribute("href", "https://github.com/usememos/web-clipper");
     expect(screen.getByRole("link", { name: /about\.github-repository/ })).toHaveAttribute("href", "https://github.com/usememos/memos");
   });
 
@@ -94,7 +116,7 @@ describe("<AboutDialog>", () => {
 
     renderAbout();
 
-    expect(screen.getByText("Demo")).toBeInTheDocument();
+    expect(screen.getByText("about.demo")).toBeInTheDocument();
   });
 
   it("uses custom branding for the identity hero and credits Memos", () => {
@@ -112,7 +134,37 @@ describe("<AboutDialog>", () => {
   it("renders in a compact dialog instead of a page surface", () => {
     renderAbout();
 
-    expect(screen.getByRole("dialog")).toHaveClass("!p-0");
+    expect(screen.getByRole("dialog")).toHaveClass("p-0!");
     expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
+  });
+
+  it("waits for auth initialization before redirecting the compatibility route", async () => {
+    const view = render(
+      <MemoryRouter initialEntries={["/about"]}>
+        <Routes>
+          <Route path="/about" element={<About />} />
+          <Route path="/" element={<div>Home route</div>} />
+          <Route path="/explore" element={<div>Explore route</div>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.queryByText("Home route")).not.toBeInTheDocument();
+    expect(screen.queryByText("Explore route")).not.toBeInTheDocument();
+    expect(pageState.setAboutOpen).not.toHaveBeenCalled();
+
+    pageState.authInitialized = true;
+    view.rerender(
+      <MemoryRouter initialEntries={["/about"]}>
+        <Routes>
+          <Route path="/about" element={<About />} />
+          <Route path="/" element={<div>Home route</div>} />
+          <Route path="/explore" element={<div>Explore route</div>} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    await waitFor(() => expect(screen.getByText("Home route")).toBeInTheDocument());
+    expect(pageState.setAboutOpen).toHaveBeenCalledWith(true);
   });
 });

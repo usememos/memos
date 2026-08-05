@@ -12,10 +12,12 @@ export const useDateFilterNavigation = (targetPath?: string) => {
       const nextFilters = replaceFiltersByFactor(filters, "displayTime", [{ factor: "displayTime", value: date }]);
       const filterQuery = stringifyFilters(nextFilters);
       const basePath = targetPath ?? location.pathname;
+      const nextSearchParams = targetPath ? new URLSearchParams() : new URLSearchParams(location.search);
+      nextSearchParams.set("filter", filterQuery);
       setFilters(nextFilters);
-      navigate(`${basePath}?filter=${filterQuery}`);
+      navigate({ pathname: basePath, search: nextSearchParams.toString() });
     },
-    [filters, location.pathname, navigate, setFilters, targetPath],
+    [filters, location.pathname, location.search, navigate, setFilters, targetPath],
   );
 
   return navigateToDateFilter;

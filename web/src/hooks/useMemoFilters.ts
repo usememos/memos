@@ -20,6 +20,24 @@ const getVisibilityName = (visibility: Visibility): string => {
 
 const escapeFilterValue = (value: string): string => JSON.stringify(value);
 
+const getLocalDayTimestampRange = (value: string): { startTimestamp: number; endTimestamp: number } | undefined => {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return undefined;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const startDate = new Date(year, month - 1, day);
+  if (startDate.getFullYear() !== year || startDate.getMonth() !== month - 1 || startDate.getDate() !== day) return undefined;
+
+  const endDate = new Date(startDate);
+  endDate.setDate(endDate.getDate() + 1);
+  return {
+    startTimestamp: Math.floor(startDate.getTime() / 1000),
+    endTimestamp: Math.floor(endDate.getTime() / 1000),
+  };
+};
+
 export interface UseMemoFiltersOptions {
   creatorName?: string;
   includeShortcuts?: boolean;
@@ -75,12 +93,10 @@ export const buildMemoFilter = ({
     } else if (filter.factor === "property.hasCode") {
       conditions.push(`has_code`);
     } else if (filter.factor === "displayTime") {
-      const filterDate = new Date(filter.value);
-      const filterUtcTimestamp = filterDate.getTime() + filterDate.getTimezoneOffset() * 60 * 1000;
-      const startTimestamp = Math.floor(filterUtcTimestamp / 1000);
-      const endTimestamp = startTimestamp + 60 * 60 * 24;
-
-      conditions.push(`created_ts >= timestamp(${startTimestamp}) && created_ts < timestamp(${endTimestamp})`);
+      const range = getLocalDayTimestampRange(filter.value);
+      if (range) {
+        conditions.push(`created_ts >= timestamp(${range.startTimestamp}) && created_ts < timestamp(${range.endTimestamp})`);
+      }
     }
   }
 

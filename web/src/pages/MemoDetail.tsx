@@ -1,6 +1,6 @@
 import { Code, ConnectError } from "@connectrpc/connect";
 import { ArrowUpLeftFromCircleIcon } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo as useReactMemo, useRef, useState } from "react";
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import MemoCommentSection from "@/components/MemoCommentSection";
 import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
@@ -30,8 +30,9 @@ const MemoSidebarRegistration = ({
 
   useEffect(() => {
     setMemoDetail({ memo, from, readonly, onShareImageOpen });
-    return () => setMemoDetail(undefined);
   }, [from, memo, onShareImageOpen, readonly, setMemoDetail]);
+
+  useEffect(() => () => setMemoDetail(undefined), [setMemoDetail]);
 
   return null;
 };
@@ -63,6 +64,11 @@ const MemoDetail = () => {
   const error = isShareMode ? shareError : directError;
   const isLoading = isShareMode ? shareLoading : directLoading;
   const memoName = memo?.name ?? memoNameFromParams;
+  const displayMemo = useReactMemo(() => {
+    if (!memo) return undefined;
+    if (!isShareMode) return memo;
+    return { ...memo, attachments: withShareAttachmentLinks(memo.attachments as Attachment[], shareToken!) };
+  }, [isShareMode, memo, shareToken]);
 
   useMemoDetailError({
     error: error as Error | null,
@@ -102,14 +108,9 @@ const MemoDetail = () => {
 
   // Start the permitted requests as soon as routing is unlocked, but do not
   // expose content before tag-blur and instance display settings settle.
-  if (isLoading || !memo || !authInitialized || !instanceInitialized) {
+  if (isLoading || !memo || !displayMemo || !authInitialized || !instanceInitialized) {
     return null;
   }
-
-  // In share mode, rewrite attachment URLs to include the share token for unauthenticated access.
-  const displayMemo = isShareMode
-    ? { ...memo, attachments: withShareAttachmentLinks(memo.attachments as Attachment[], shareToken!) }
-    : memo;
   const mentionResolutionContents = [displayMemo.content, ...comments.map((comment) => comment.content)];
   const userResolutionNames = Array.from(
     new Set([displayMemo, ...comments].flatMap((item) => [item.creator, ...(item.reactions ?? []).map((reaction) => reaction.creator)])),

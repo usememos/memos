@@ -40,7 +40,7 @@ const UserMenu = (props: Props) => {
   const { collapsed } = props;
   const t = useTranslate();
   const navigateTo = useNavigateTo();
-  const { setAboutOpen } = useAppSidebar();
+  const { setAboutOpen, setMobileOpen } = useAppSidebar();
   const currentUser = useCurrentUser();
   const { userGeneralSetting, refetchSettings, logout } = useAuth();
   const { mutate: updateUserGeneralSetting } = useUpdateUserGeneralSetting(currentUser?.name);
@@ -104,6 +104,16 @@ const UserMenu = (props: Props) => {
     window.location.replace(Routes.AUTH);
   };
 
+  const navigateFromMenu = (path: string) => {
+    setMobileOpen(false);
+    navigateTo(path);
+  };
+
+  const handleAboutOpen = () => {
+    setMobileOpen(false);
+    setAboutOpen(true);
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -145,7 +155,7 @@ const UserMenu = (props: Props) => {
         {!collapsed && <ChevronsUpDownIcon className="size-3.5 shrink-0 text-muted-foreground/70" strokeWidth={1.8} />}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
-        <DropdownMenuItem onClick={() => navigateTo(`/u/${encodeURIComponent(currentUser?.username ?? "")}`)}>
+        <DropdownMenuItem onClick={() => navigateFromMenu(`/u/${encodeURIComponent(currentUser?.username ?? "")}`)}>
           <SquareUserIcon className="size-4 text-muted-foreground" />
           {t("common.profile")}
         </DropdownMenuItem>
@@ -173,11 +183,11 @@ const UserMenu = (props: Props) => {
             ))}
           </DropdownMenuSubContent>
         </DropdownMenuSub>
-        <DropdownMenuItem onClick={() => setAboutOpen(true)}>
+        <DropdownMenuItem onClick={handleAboutOpen}>
           <InfoIcon className="size-4 text-muted-foreground" />
           {t("common.about")}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigateTo(Routes.SETTING)}>
+        <DropdownMenuItem onClick={() => navigateFromMenu(Routes.SETTING)}>
           <SettingsIcon className="size-4 text-muted-foreground" />
           {t("common.settings")}
         </DropdownMenuItem>
