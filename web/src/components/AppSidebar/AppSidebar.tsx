@@ -522,15 +522,15 @@ const GlobalNavigation = () => {
                   render={
                     <button
                       type="button"
-                      aria-label={scopeItems[0].label}
+                      aria-label={activeScopeItem.label}
                       className="flex size-[30px] items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-sidebar-accent/65 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-                      onClick={() => navigateToScope("home")}
+                      onClick={() => navigateToScope(resolvedScope)}
                     />
                   }
                 >
-                  <HouseIcon className="size-4" strokeWidth={1.8} />
+                  <ActiveScopeIcon className="size-4" strokeWidth={1.8} />
                 </TooltipTrigger>
-                <TooltipContent side="bottom">{scopeItems[0].label}</TooltipContent>
+                <TooltipContent side="bottom">{activeScopeItem.label}</TooltipContent>
               </Tooltip>
             )}
           </>

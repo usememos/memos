@@ -4,7 +4,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import AppSidebar, { MobileAppHeader } from "@/components/AppSidebar";
 
 const authState = vi.hoisted(() => ({ currentUser: { name: "users/test" } as { name: string } | undefined }));
-const sidebarState = vi.hoisted(() => ({ setAboutOpen: vi.fn() }));
+const sidebarState = vi.hoisted(() => ({
+  memoScope: "home" as "home" | "explore" | "archived",
+  setAboutOpen: vi.fn(),
+}));
 
 vi.mock("@/components/MemosLogo", () => ({
   default: () => <span>Memos logo</span>,
@@ -36,7 +39,7 @@ vi.mock("@/contexts/AppSidebarContext", () => ({
     setMobileOpen: vi.fn(),
     quickFindOpen: false,
     setQuickFindOpen: vi.fn(),
-    memoScope: "home",
+    memoScope: sidebarState.memoScope,
     setMemoScope: vi.fn(),
   }),
 }));
@@ -90,6 +93,7 @@ vi.mock("@/utils/i18n", () => ({
 describe("App sidebar logo", () => {
   beforeEach(() => {
     authState.currentUser = { name: "users/test" };
+    sidebarState.memoScope = "home";
     sidebarState.setAboutOpen.mockReset();
   });
 
@@ -141,7 +145,7 @@ describe("App sidebar logo", () => {
     expect(screen.getByRole("menuitem", { name: "common.archived" })).toBeInTheDocument();
   });
 
-  it("collapses inactive global destinations and sends the scope icon to Home", async () => {
+  it("collapses inactive global destinations and defaults the scope icon to Home", async () => {
     render(
       <MemoryRouter initialEntries={["/attachments"]}>
         <AppSidebar />
@@ -164,6 +168,25 @@ describe("App sidebar logo", () => {
     expect(await screen.findByText("Calendar")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "common.home" })).toHaveTextContent("common.home");
     expect(screen.queryByRole("menuitem", { name: "common.explore" })).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ["explore", "common.explore", "/inbox"],
+    ["archived", "common.archived", "/attachments"],
+  ] as const)("keeps the %s scope available from a global destination", async (scope, label, destination) => {
+    sidebarState.memoScope = scope;
+    render(
+      <MemoryRouter initialEntries={[destination]}>
+        <AppSidebar />
+      </MemoryRouter>,
+    );
+
+    const scopeTrigger = screen.getByRole("button", { name: label });
+    expect(scopeTrigger).toHaveClass("size-[30px]");
+    expect(scopeTrigger).not.toHaveTextContent(label);
+
+    fireEvent.click(scopeTrigger);
+    expect(await screen.findByRole("button", { name: label })).toHaveTextContent(label);
   });
 
   it("keeps the mobile brand beside navigation without a duplicate search action", () => {
