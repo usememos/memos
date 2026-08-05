@@ -1,5 +1,5 @@
 import copy from "copy-to-clipboard";
-import { ExternalLinkIcon, LayoutListIcon, MapIcon } from "lucide-react";
+import { ExternalLinkIcon } from "lucide-react";
 import { Suspense } from "react";
 import { toast } from "react-hot-toast";
 import { useParams, useSearchParams } from "react-router-dom";
@@ -7,7 +7,6 @@ import MemoView from "@/components/MemoView";
 import PagedMemoList, { getMemoKey } from "@/components/PagedMemoList";
 import UserAvatar from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMemoFilters, useMemoSorting } from "@/hooks";
 import { useUser } from "@/hooks/useUserQueries";
 import { State } from "@/types/proto/api/v1/common_pb";
@@ -49,7 +48,7 @@ const ProfileHeader = ({ user, onCopyProfileLink, shareLabel }: { user: User; on
 const UserProfile = () => {
   const t = useTranslate();
   const username = useParams().username;
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const activeTab = (searchParams.get("view") === "map" ? "map" : "memos") as TabView;
 
   const { data: user, isLoading, error } = useUser(`users/${username}`, { enabled: !!username });
@@ -75,13 +74,6 @@ const UserProfile = () => {
     toast.success(t("message.copied"));
   };
 
-  const toggleTab = (view: TabView) => {
-    setSearchParams((prev) => {
-      view === "map" ? prev.set("view", "map") : prev.delete("view");
-      return prev;
-    });
-  };
-
   if (isLoading) return null;
 
   return (
@@ -90,24 +82,7 @@ const UserProfile = () => {
         <>
           <ProfileHeader user={user} onCopyProfileLink={handleCopyProfileLink} shareLabel={t("common.share")} />
 
-          <div className="border-b border-border/10 mb-4">
-            <div className="mx-auto flex max-w-2xl">
-              <Tabs value={activeTab} onValueChange={(value) => toggleTab(value as TabView)} variant="underline">
-                <TabsList>
-                  <TabsTrigger value="memos">
-                    <LayoutListIcon className="h-4 w-4" />
-                    {t("common.memos")}
-                  </TabsTrigger>
-                  <TabsTrigger value="map">
-                    <MapIcon className="h-4 w-4" />
-                    {t("common.map")}
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
-          </div>
-
-          <div className="flex-1">
+          <div className="mt-4 flex-1">
             <div className="mx-auto w-full max-w-2xl">
               {activeTab === "memos" ? (
                 <PagedMemoList

@@ -1,6 +1,6 @@
 import {
-  ArchiveIcon,
   CheckIcon,
+  ChevronsUpDownIcon,
   GlobeIcon,
   InfoIcon,
   LogOutIcon,
@@ -9,6 +9,7 @@ import {
   SquareUserIcon,
   User2Icon,
 } from "lucide-react";
+import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useSSEConnectionStatus } from "@/hooks/useLiveMemoRefresh";
@@ -39,6 +40,7 @@ const UserMenu = (props: Props) => {
   const { collapsed } = props;
   const t = useTranslate();
   const navigateTo = useNavigateTo();
+  const { setAboutOpen, setMobileOpen } = useAppSidebar();
   const currentUser = useCurrentUser();
   const { userGeneralSetting, refetchSettings, logout } = useAuth();
   const { mutate: updateUserGeneralSetting } = useUpdateUserGeneralSetting(currentUser?.name);
@@ -102,57 +104,60 @@ const UserMenu = (props: Props) => {
     window.location.replace(Routes.AUTH);
   };
 
+  const navigateFromMenu = (path: string) => {
+    setMobileOpen(false);
+    navigateTo(path);
+  };
+
+  const handleAboutOpen = () => {
+    setMobileOpen(false);
+    setAboutOpen(true);
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        nativeButton={false}
         disabled={!currentUser}
-        render={
-          <div
-            className={cn("w-auto flex flex-row justify-start items-center cursor-pointer text-foreground", collapsed ? "px-1" : "px-3")}
-          />
-        }
+        className={cn(
+          "flex h-10 w-full min-w-0 cursor-pointer items-center justify-between gap-2 px-3 text-left text-foreground transition-colors hover:bg-sidebar-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring/50 data-popup-open:bg-sidebar-accent",
+          collapsed && "w-auto px-2",
+        )}
       >
-        <div className="relative shrink-0">
-          {currentUser?.avatarUrl ? (
-            <UserAvatar avatarUrl={currentUser?.avatarUrl} />
-          ) : (
-            <User2Icon className="w-6 mx-auto h-auto text-muted-foreground" />
-          )}
-          {sseStatus !== "connected" && (
-            <Tooltip>
-              <TooltipTrigger
-                render={
-                  <span
-                    className={cn(
-                      "absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-background",
-                      sseStatus === "connecting" ? "bg-muted-foreground animate-pulse" : "bg-destructive",
-                    )}
-                  />
-                }
-              />
-              <TooltipContent side="right">{t(`live-update.${sseStatus}` as Parameters<typeof t>[0])}</TooltipContent>
-            </Tooltip>
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <div className="relative shrink-0">
+            {currentUser?.avatarUrl ? (
+              <UserAvatar className="size-6 rounded-md" avatarUrl={currentUser?.avatarUrl} />
+            ) : (
+              <User2Icon className="mx-auto size-5 text-muted-foreground" />
+            )}
+            {sseStatus !== "connected" && (
+              <Tooltip>
+                <TooltipTrigger
+                  render={
+                    <span
+                      className={cn(
+                        "absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-background",
+                        sseStatus === "connecting" ? "bg-muted-foreground animate-pulse" : "bg-destructive",
+                      )}
+                    />
+                  }
+                />
+                <TooltipContent side="right">{t(`live-update.${sseStatus}` as Parameters<typeof t>[0])}</TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+          {!collapsed && (
+            <span className="min-w-0 flex-1 truncate text-left text-[13px] font-medium text-foreground">
+              {currentUser?.displayName || currentUser?.username}
+            </span>
           )}
         </div>
-        {!collapsed && (
-          <span className="ml-2 text-lg font-medium text-foreground grow truncate">
-            {currentUser?.displayName || currentUser?.username}
-          </span>
-        )}
+        {!collapsed && <ChevronsUpDownIcon className="size-3.5 shrink-0 text-muted-foreground/70" strokeWidth={1.8} />}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start">
-        <DropdownMenuItem onClick={() => navigateTo(`/u/${encodeURIComponent(currentUser?.username ?? "")}`)}>
+        <DropdownMenuItem onClick={() => navigateFromMenu(`/u/${encodeURIComponent(currentUser?.username ?? "")}`)}>
           <SquareUserIcon className="size-4 text-muted-foreground" />
           {t("common.profile")}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigateTo(Routes.ARCHIVED)}>
-          <ArchiveIcon className="size-4 text-muted-foreground" />
-          {t("common.archived")}
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigateTo(Routes.ABOUT)}>
-          <InfoIcon className="size-4 text-muted-foreground" />
-          {t("common.about")}
         </DropdownMenuItem>
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
@@ -178,7 +183,11 @@ const UserMenu = (props: Props) => {
             ))}
           </DropdownMenuSubContent>
         </DropdownMenuSub>
-        <DropdownMenuItem onClick={() => navigateTo(Routes.SETTING)}>
+        <DropdownMenuItem onClick={handleAboutOpen}>
+          <InfoIcon className="size-4 text-muted-foreground" />
+          {t("common.about")}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigateFromMenu(Routes.SETTING)}>
           <SettingsIcon className="size-4 text-muted-foreground" />
           {t("common.settings")}
         </DropdownMenuItem>

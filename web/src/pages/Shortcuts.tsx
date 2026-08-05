@@ -32,6 +32,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import { handleError } from "@/lib/error";
+import { getShortcutId } from "@/lib/memo-views";
 import { cn } from "@/lib/utils";
 import { Shortcut, ShortcutSchema } from "@/types/proto/api/v1/shortcut_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -175,11 +176,6 @@ const filterFields = [
   "now",
   'timestamp("2025-01-01T00:00:00Z")',
 ];
-
-const getShortcutId = (name: string): string => {
-  const parts = name.split("/");
-  return parts.length === 4 ? parts[3] : name;
-};
 
 const createEmptyShortcut = () =>
   create(ShortcutSchema, {

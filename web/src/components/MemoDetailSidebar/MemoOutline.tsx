@@ -67,19 +67,19 @@ const MemoOutline = ({ headings }: MemoOutlineProps) => {
             onClick={(e) => handleClick(e, heading.slug)}
             aria-current={active ? "location" : undefined}
             className={cn(
-              "relative block truncate rounded-md py-[3px] pr-1.5 -mx-1.5 text-[13px] leading-5 transition-colors",
+              "relative flex h-[30px] min-w-0 items-center rounded-md pr-2 text-[13px] leading-none transition-colors",
               heading.level === minLevel && "font-medium",
-              active ? "text-foreground" : "text-muted-foreground/70 hover:bg-accent hover:text-foreground",
+              active ? "text-foreground" : "text-muted-foreground/70 hover:bg-sidebar-accent/65 hover:text-foreground",
             )}
-            style={{ paddingLeft: 14 + (heading.level - minLevel) * 12 }}
+            style={{ paddingLeft: 8 + (heading.level - minLevel) * 12 }}
           >
             <span
               className={cn(
-                "absolute left-1.5 top-1/2 h-[13px] w-[2px] -translate-y-1/2 rounded-full transition-colors",
+                "absolute left-0.5 top-1/2 h-[13px] w-[2px] -translate-y-1/2 rounded-full transition-colors",
                 active ? "bg-primary" : "bg-border",
               )}
             />
-            {heading.text}
+            <span className="min-w-0 flex-1 truncate">{heading.text}</span>
           </a>
         );
       })}

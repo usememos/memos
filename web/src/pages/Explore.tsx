@@ -14,9 +14,8 @@ const Explore = () => {
   // Note: The backend is responsible for filtering stats based on visibility permissions.
   const visibilities = currentUser ? [Visibility.PUBLIC, Visibility.PROTECTED] : [Visibility.PUBLIC];
 
-  // Build filter using unified hook (no creator scoping for Explore)
   const memoFilter = useMemoFilters({
-    includeShortcuts: false,
+    includeShortcuts: true,
     includePinned: false,
     visibilities,
   });

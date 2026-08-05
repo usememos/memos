@@ -23,7 +23,9 @@ export const parseFilterQuery = (query: string | null): MemoFilter[] => {
   if (!query) return [];
   try {
     return query.split(",").map((filterStr) => {
-      const [factor, value] = filterStr.split(":");
+      const separatorIndex = filterStr.indexOf(":");
+      const factor = separatorIndex === -1 ? filterStr : filterStr.slice(0, separatorIndex);
+      const value = separatorIndex === -1 ? "" : filterStr.slice(separatorIndex + 1);
       return {
         factor: factor as FilterFactor,
         value: decodeURIComponent(value || ""),
@@ -37,6 +39,11 @@ export const parseFilterQuery = (query: string | null): MemoFilter[] => {
 export const stringifyFilters = (filters: MemoFilter[]): string => {
   return filters.map((filter) => `${filter.factor}:${encodeURIComponent(filter.value)}`).join(",");
 };
+
+export const replaceFiltersByFactor = (filters: MemoFilter[], factor: FilterFactor, replacements: MemoFilter[]): MemoFilter[] => [
+  ...filters.filter((filter) => filter.factor !== factor),
+  ...replacements,
+];
 
 interface MemoFilterContextValue {
   filters: MemoFilter[];
@@ -117,10 +124,6 @@ export function MemoFilterProvider({ children }: { children: ReactNode }) {
 
   const setShortcut = useCallback((newShortcut?: string) => {
     setShortcutState(newShortcut);
-    // Clear content search filter when selecting a shortcut (issue #5462)
-    if (newShortcut !== undefined) {
-      setFiltersState((prev) => prev.filter((f) => f.factor !== "contentSearch"));
-    }
   }, []);
 
   const hasFilter = useCallback((filter: MemoFilter) => filters.some((f) => getMemoFilterKey(f) === getMemoFilterKey(filter)), [filters]);

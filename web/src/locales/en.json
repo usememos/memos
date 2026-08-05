@@ -1,17 +1,25 @@
 {
   "about": {
+    "api-docs": "API Docs",
+    "api-docs-note": "REST and gRPC reference",
     "blogs": "Blogs",
     "build": "Build",
     "commit": "Commit",
+    "demo": "Demo",
     "description": "A privacy-first, lightweight note-taking service. Easily capture and share your great thoughts.",
     "distribution": "Distribution",
     "documents": "Documents",
+    "documents-note": "Deploy, configure, and use Memos",
+    "github-repository": "GitHub Repo",
+    "github-repository-note": "Source, issues, and releases",
     "license": "License",
     "media": "Media",
-    "github-repository": "GitHub Repo",
     "official-website": "Official Website",
+    "official-website-note": "The project homepage",
     "powered-by": "Powered by Memos",
     "project": "Project",
+    "project-links": "Project links",
+    "web-clipper": "Web Clipper",
     "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
@@ -51,6 +59,7 @@
       "retry": "Retry"
     },
     "empty": {
+      "all": "No attachments yet.",
       "audio": "No audio attachments yet.",
       "documents": "No document attachments yet.",
       "media": "No media attachments yet."
@@ -79,6 +88,7 @@
   },
   "common": {
     "about": "About",
+    "actions": "Actions",
     "add": "Add",
     "admin": "Admin",
     "all": "All",
@@ -134,15 +144,18 @@
     "mark": "Mark",
     "memo": "Memo",
     "memos": "Memos",
+    "month-navigation": "Month navigation",
     "more": "More",
     "name": "Name",
     "new": "New",
+    "next-month": "Next month",
     "nickname": "Nickname",
     "null": "Null",
     "or": "or",
     "password": "Password",
     "pin": "Pin",
     "pinned": "Pinned",
+    "previous-month": "Previous month",
     "preview": "Preview",
     "profile": "Profile",
     "properties": "Properties",
@@ -163,10 +176,12 @@
     "shortcut-filter": "Shortcut filter",
     "shortcuts": "Shortcuts",
     "sign-in": "Sign in",
+    "sign-in-to-memos": "Sign in to Memos",
     "sign-out": "Sign out",
     "sign-up": "Sign up",
     "statistics": "Statistics",
     "tags": "Tags",
+    "tasks": "Tasks",
     "title": "Title",
     "today": "Today",
     "tree-mode": "Tree mode",
@@ -179,6 +194,7 @@
     "username": "Username",
     "version": "Version",
     "visibility": "Visibility",
+    "views": "Views",
     "yourself": "Yourself"
   },
   "locale-picker": {

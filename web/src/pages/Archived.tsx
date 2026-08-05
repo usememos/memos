@@ -8,10 +8,9 @@ import { Memo } from "@/types/proto/api/v1/memo_service_pb";
 const Archived = () => {
   const user = useCurrentUser();
 
-  // Build filter using unified hook (no shortcuts or pinned filter)
   const memoFilter = useMemoFilters({
     creatorName: user?.name,
-    includeShortcuts: false,
+    includeShortcuts: true,
     includePinned: false,
   });
 

@@ -1,12 +1,12 @@
 import { useEffect, useRef } from "react";
 import { Navigate, Outlet, useLocation, useSearchParams } from "react-router-dom";
-import Navigation from "@/components/Navigation";
-import { GlobalMemoEditorProvider } from "@/contexts/GlobalMemoEditorContext";
+import AboutDialog from "@/components/AboutDialog";
+import AppSidebar, { MobileAppHeader, MobileAppSidebar, QuickFindDialog } from "@/components/AppSidebar";
+import { AppSidebarProvider, useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import { MemoFilterProvider, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
-import { cn } from "@/lib/utils";
 import { buildAuthRoute, shouldGatePrivateInstance } from "@/utils/auth-redirect";
 import { useTranslate } from "@/utils/i18n";
 
@@ -28,11 +28,21 @@ const DemoBanner = () => {
   );
 };
 
+const AppDialogs = () => {
+  const { aboutOpen, setAboutOpen } = useAppSidebar();
+  return (
+    <>
+      <QuickFindDialog />
+      <AboutDialog open={aboutOpen} onOpenChange={setAboutOpen} />
+    </>
+  );
+};
+
 const RootLayoutContent = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const sm = useMediaQuery("sm");
   const currentUser = useCurrentUser();
+  const md = useMediaQuery("md");
   const { profile } = useInstance();
   const { removeFilter } = useMemoFilterContext();
   const { pathname } = location;
@@ -58,25 +68,22 @@ const RootLayoutContent = () => {
   }
 
   return (
-    <GlobalMemoEditorProvider>
-      <div className="w-full min-h-full flex flex-row justify-center items-start sm:pl-16">
-        {sm && (
-          <div
-            className={cn(
-              "group flex flex-col justify-start items-start fixed top-0 left-0 select-none h-full bg-sidebar",
-              "w-16 px-2",
-              "border-r border-border",
-            )}
-          >
-            <Navigation className="py-4 md:pt-6" collapsed={true} />
+    <AppSidebarProvider>
+      <div className="min-h-full w-full bg-background">
+        {md && (
+          <div className="fixed inset-y-0 left-0 z-30 w-64 border-r border-border/70">
+            <AppSidebar />
           </div>
         )}
-        <main className="w-full h-auto grow shrink flex flex-col justify-start items-center">
+        <MobileAppSidebar />
+        <main className="flex min-h-full w-full min-w-0 flex-col items-center md:pl-64">
+          <MobileAppHeader />
           {profile.demo && <DemoBanner />}
           <Outlet />
         </main>
+        <AppDialogs />
       </div>
-    </GlobalMemoEditorProvider>
+    </AppSidebarProvider>
   );
 };
 

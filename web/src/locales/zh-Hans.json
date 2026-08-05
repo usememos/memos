@@ -1,11 +1,26 @@
 {
   "about": {
+    "api-docs": "API 文档",
+    "api-docs-note": "REST 与 gRPC 参考",
     "blogs": "博客",
+    "build": "构建信息",
+    "commit": "提交",
+    "demo": "演示",
     "description": "Memos 是一个隐私优先、轻量级的笔记解决方案，可以轻松捕捉和分享您的想法。",
+    "distribution": "发行版本",
     "documents": "文档",
+    "documents-note": "部署、配置和使用 Memos",
     "github-repository": "GitHub 仓库",
+    "github-repository-note": "源代码、问题与版本发布",
+    "license": "许可证",
     "official-website": "官网",
-    "media": "媒体"
+    "official-website-note": "项目主页",
+    "media": "媒体",
+    "powered-by": "由 Memos 提供支持",
+    "project": "项目",
+    "project-links": "项目链接",
+    "web-clipper": "网页剪藏器",
+    "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
     "admin-sign-in": "管理员登录",
@@ -40,6 +55,7 @@
   },
   "common": {
     "about": "关于",
+    "actions": "操作",
     "add": "增加",
     "admin": "管理",
     "all": "全部",
@@ -93,15 +109,18 @@
     "mark": "引用",
     "memo": "备忘录",
     "memos": "备忘录",
+    "month-navigation": "月份导航",
     "more": "更多",
     "name": "名称",
     "new": "新建",
+    "next-month": "下个月",
     "nickname": "昵称",
     "null": "空",
     "or": "或者",
     "password": "密码",
     "pin": "置顶",
     "pinned": "已置顶",
+    "previous-month": "上个月",
     "preview": "预览",
     "profile": "个人资料",
     "properties": "属性",
@@ -122,10 +141,12 @@
     "shortcut-filter": "捷径过滤器",
     "shortcuts": "捷径",
     "sign-in": "登录",
+    "sign-in-to-memos": "登录 Memos",
     "sign-out": "退出登录",
     "sign-up": "注册",
     "statistics": "统计",
     "tags": "标签",
+    "tasks": "任务",
     "title": "标题",
     "today": "今天",
     "tree-mode": "树模式",
@@ -138,6 +159,7 @@
     "username": "用户名",
     "version": "版本",
     "visibility": "可见性",
+    "views": "视图",
     "yourself": "您自己"
   },
   "locale-picker": {
@@ -849,6 +871,7 @@
       "retry": "重试"
     },
     "empty": {
+      "all": "暂无附件",
       "audio": "暂无音频附件",
       "documents": "暂无文档附件",
       "media": "暂无媒体附件"

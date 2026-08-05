@@ -30,6 +30,7 @@ describe("CalendarCell empty-day clickability", () => {
     const button = screen.getByRole("button", { name: /May 1, 2025/ });
     expect(button).toHaveAttribute("tabindex", "0");
     expect(button).toHaveAttribute("aria-disabled", "false");
+    expect(button).toHaveClass("bg-transparent");
   });
 
   it("still renders a populated in-month day as interactive", () => {
@@ -38,6 +39,22 @@ describe("CalendarCell empty-day clickability", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /May 1, 2025/ }));
     expect(onClick).toHaveBeenCalledWith("2025-05-01");
+  });
+
+  it("marks today with a dot without changing the numeral weight", () => {
+    render(<CalendarCell day={makeDay({ isToday: true })} maxCount={5} tooltipText="May 1, 2025" onClick={() => {}} />);
+
+    const button = screen.getByRole("button", { name: /May 1, 2025/ });
+    expect(button).not.toHaveClass("font-semibold", "font-bold");
+    expect(button.querySelector('[aria-hidden="true"]')).toHaveClass("rounded-full");
+  });
+
+  it("uses an inset ring for selection without changing the numeral weight", () => {
+    render(<CalendarCell day={makeDay({ isSelected: true })} maxCount={5} tooltipText="May 1, 2025" onClick={() => {}} />);
+
+    const button = screen.getByRole("button", { name: /selected/ });
+    expect(button).toHaveClass("ring-2", "ring-inset");
+    expect(button).not.toHaveClass("font-semibold", "font-bold");
   });
 
   it("does not render out-of-month days as interactive (no role=button)", () => {

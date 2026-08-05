@@ -1,82 +1,42 @@
 import dayjs from "dayjs";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo } from "react";
 import { useTranslation } from "react-i18next";
-import { YearCalendar } from "@/components/ActivityCalendar";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { addMonths, formatMonth, getMonthFromDate, getYearFromDate, setYearAndMonth } from "@/lib/calendar-utils";
+import { addMonths } from "@/lib/calendar-utils";
 import type { MonthNavigatorProps } from "@/types/statistics";
 
-export const MonthNavigator = memo(({ visibleMonth, onMonthChange, activityStats, timeBasis }: MonthNavigatorProps) => {
-  const { i18n } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false);
-
-  const { currentMonth, currentYear, currentMonthNum } = useMemo(
-    () => ({
-      currentMonth: dayjs(visibleMonth).toDate(),
-      currentYear: getYearFromDate(visibleMonth),
-      currentMonthNum: getMonthFromDate(visibleMonth),
-    }),
-    [visibleMonth],
-  );
-
-  const monthLabel = useMemo(
-    () => currentMonth.toLocaleString(i18n.language, { year: "numeric", month: "long" }),
-    [currentMonth, i18n.language],
-  );
-
-  const handlePrevMonth = useCallback(() => onMonthChange(addMonths(visibleMonth, -1)), [visibleMonth, onMonthChange]);
-  const handleNextMonth = useCallback(() => onMonthChange(addMonths(visibleMonth, 1)), [visibleMonth, onMonthChange]);
-
-  const handleDateClick = useCallback(
-    (date: string) => {
-      onMonthChange(formatMonth(date));
-      setIsOpen(false);
-    },
-    [onMonthChange],
-  );
-
-  const handleYearChange = useCallback(
-    (year: number) => onMonthChange(setYearAndMonth(year, currentMonthNum)),
-    [currentMonthNum, onMonthChange],
-  );
+export const MonthNavigator = memo(({ visibleMonth, onMonthChange }: MonthNavigatorProps) => {
+  const { i18n, t } = useTranslation();
+  const monthLabel = dayjs(visibleMonth).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" });
+  const handlePrevMonth = () => onMonthChange(addMonths(visibleMonth, -1));
+  const handleNextMonth = () => onMonthChange(addMonths(visibleMonth, 1));
 
   return (
-    <header className="w-full mb-2 flex items-center justify-between gap-2">
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger
-          render={
-            <button
-              type="button"
-              className="py-0.5 text-sm text-foreground font-medium transition-colors hover:text-foreground/80 select-none"
-            />
-          }
-        >
-          {monthLabel}
-        </DialogTrigger>
-        <DialogContent
-          className="p-0 border border-border/20 bg-background md:max-w-6xl w-[min(100vw-24px,1200px)] max-h-[85vh] overflow-y-auto rounded-xl shadow-xl"
-          size="2xl"
-          showCloseButton={false}
-        >
-          <DialogTitle className="sr-only">Select Month</DialogTitle>
-          <YearCalendar
-            selectedYear={currentYear}
-            data={activityStats}
-            onYearChange={handleYearChange}
-            onDateClick={handleDateClick}
-            timeBasis={timeBasis}
-          />
-        </DialogContent>
-      </Dialog>
+    <header className="mb-1.5 flex w-full items-center justify-between gap-3">
+      <h2 className="min-w-0 truncate text-[15px] font-semibold leading-7 tracking-[-0.015em] text-foreground/90 select-none">
+        {monthLabel}
+      </h2>
 
-      <nav className="flex items-center shrink-0" aria-label="Month navigation">
-        <Button variant="ghost" size="icon-sm" onClick={handlePrevMonth} aria-label="Previous month">
-          <ChevronLeftIcon className="w-4 h-4" />
+      <nav className="flex shrink-0 items-center gap-1" aria-label={t("common.month-navigation")}>
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          onClick={handlePrevMonth}
+          aria-label={t("common.previous-month")}
+          className="size-7 rounded-md text-muted-foreground/65 hover:bg-muted/50 hover:text-foreground/90"
+        >
+          <ChevronLeftIcon className="size-[15px]" strokeWidth={1.75} />
         </Button>
-        <Button variant="ghost" size="icon-sm" onClick={handleNextMonth} aria-label="Next month">
-          <ChevronRightIcon className="w-4 h-4" />
+
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          onClick={handleNextMonth}
+          aria-label={t("common.next-month")}
+          className="size-7 rounded-md text-muted-foreground/65 hover:bg-muted/50 hover:text-foreground/90"
+        >
+          <ChevronRightIcon className="size-[15px]" strokeWidth={1.75} />
         </Button>
       </nav>
     </header>

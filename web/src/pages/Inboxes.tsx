@@ -1,21 +1,17 @@
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { sortBy } from "lodash-es";
-import { ArchiveIcon, BellIcon, InboxIcon } from "lucide-react";
-import { useState } from "react";
+import { BellIcon } from "lucide-react";
 import MemoCommentMessage from "@/components/Inbox/MemoCommentMessage";
 import MemoMentionMessage from "@/components/Inbox/MemoMentionMessage";
-import MobileHeader from "@/components/MobileHeader";
 import Placeholder from "@/components/Placeholder";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import useMediaQuery from "@/hooks/useMediaQuery";
+import { useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useNotifications } from "@/hooks/useUserQueries";
 import { UserNotification, UserNotification_Status, UserNotification_Type } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
 const Inboxes = () => {
   const t = useTranslate();
-  const md = useMediaQuery("md");
-  const [filter, setFilter] = useState<"all" | "unread" | "archived">("all");
+  const { inboxFilter: filter } = useAppSidebar();
 
   // Fetch notifications with React Query
   const { data: fetchedNotifications = [] } = useNotifications();
@@ -31,11 +27,8 @@ const Inboxes = () => {
   });
 
   const unreadCount = allNotifications.filter((n) => n.status === UserNotification_Status.UNREAD).length;
-  const archivedCount = allNotifications.filter((n) => n.status === UserNotification_Status.ARCHIVED).length;
-
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
-      {!md && <MobileHeader />}
       <div className="w-full px-4 sm:px-6">
         <div className="w-full border border-border flex flex-col justify-start items-start rounded-xl bg-background text-foreground overflow-hidden">
           {/* Header */}
@@ -51,25 +44,6 @@ const Inboxes = () => {
                 )}
               </div>
             </div>
-          </div>
-
-          {/* Filter Tabs */}
-          <div className="w-full px-4 py-2 border-b border-border bg-muted/30">
-            <Tabs value={filter} onValueChange={(value) => setFilter(value as typeof filter)} variant="segmented">
-              <TabsList>
-                <TabsTrigger value="all">
-                  {t("common.all")} ({allNotifications.length})
-                </TabsTrigger>
-                <TabsTrigger value="unread">
-                  <InboxIcon className="w-3.5 h-auto" />
-                  {t("inbox.unread")} ({unreadCount})
-                </TabsTrigger>
-                <TabsTrigger value="archived">
-                  <ArchiveIcon className="w-3.5 h-auto" />
-                  {t("common.archived")} ({archivedCount})
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
           </div>
 
           {/* Notifications List */}

@@ -1,11 +1,26 @@
 {
   "about": {
+    "api-docs": "API 文件",
+    "api-docs-note": "REST 與 gRPC 參考",
     "blogs": "部落格",
+    "build": "建置資訊",
+    "commit": "提交",
+    "demo": "示範",
     "description": "以隱私為核心的輕量化筆記服務，輕鬆記錄並分享您的好點子。",
+    "distribution": "發行版本",
     "documents": "文件",
-    "media": "媒體",
+    "documents-note": "部署、設定及使用 Memos",
     "github-repository": "GitHub 儲存庫",
-    "official-website": "官方網站"
+    "github-repository-note": "原始碼、問題與版本發佈",
+    "license": "授權條款",
+    "media": "媒體",
+    "official-website": "官方網站",
+    "official-website-note": "專案首頁",
+    "powered-by": "由 Memos 提供支援",
+    "project": "專案",
+    "project-links": "專案連結",
+    "web-clipper": "網頁剪藏器",
+    "web-clipper-platforms": "Chrome + Firefox"
   },
   "auth": {
     "create-your-account": "建立您的帳號",
@@ -27,6 +42,7 @@
       "retry": "重試"
     },
     "empty": {
+      "all": "尚無附件。",
       "audio": "尚無音訊附件。",
       "documents": "尚無文件附件。",
       "media": "尚無媒體附件。"
@@ -55,6 +71,7 @@
   },
   "common": {
     "about": "關於",
+    "actions": "操作",
     "add": "新增",
     "admin": "管理",
     "all": "所有",
@@ -108,15 +125,18 @@
     "mark": "標記",
     "memo": "備忘錄",
     "memos": "備忘錄",
+    "month-navigation": "月份導覽",
     "more": "更多",
     "name": "名稱",
     "new": "新增",
+    "next-month": "下個月",
     "nickname": "暱稱",
     "null": "空",
     "or": "或",
     "password": "密碼",
     "pin": "置頂",
     "pinned": "已置頂",
+    "previous-month": "上個月",
     "preview": "預覽",
     "profile": "個人檔案",
     "properties": "屬性",
@@ -137,11 +157,13 @@
     "shortcut-filter": "篩選條件表達式",
     "shortcuts": "快捷篩選",
     "sign-in": "登入",
+    "sign-in-to-memos": "登入 Memos",
     "sign-in-with": "使用 {{provider}} 登入",
     "sign-out": "登出",
     "sign-up": "註冊",
     "statistics": "統計",
     "tags": "標籤",
+    "tasks": "任務",
     "title": "標題",
     "today": "今天",
     "tree-mode": "樹狀顯示",
@@ -154,6 +176,7 @@
     "username": "帳號",
     "version": "版本",
     "visibility": "瀏覽權限",
+    "views": "檢視",
     "yourself": "您自己"
   },
   "locale-picker": {
