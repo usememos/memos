@@ -9,6 +9,7 @@ import { getRelationBuckets, getRelationMemo } from "@/components/MemoMetadata/R
 import { useResolvedRelationMemos } from "@/components/MemoMetadata/Relation/useResolvedRelationMemos";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useInstance } from "@/contexts/InstanceContext";
+import { useOverflowTitle } from "@/hooks";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useUpdateMemo } from "@/hooks/useMemoQueries";
 import { cn } from "@/lib/utils";
@@ -35,6 +36,7 @@ const Section = ({ label, children }: { label: string; children: React.ReactNode
 );
 
 const BacklinkRow = ({ relation, snippet }: { relation: MemoRelation; snippet: string }) => {
+  const { ref, title } = useOverflowTitle<HTMLSpanElement>(snippet);
   const relatedMemo = getRelationMemo(relation, "referenced");
   if (!relatedMemo) {
     return null;
@@ -44,11 +46,13 @@ const BacklinkRow = ({ relation, snippet }: { relation: MemoRelation; snippet: s
     <Link
       className={cn(SIDEBAR_ROW_CLASSES, "text-muted-foreground hover:bg-sidebar-accent/65 hover:text-foreground")}
       to={`/${relatedMemo.name}`}
-      title={snippet}
+      title={title}
       viewTransition
     >
       <LinkIcon className={SIDEBAR_ROW_ICON_CLASSES} strokeWidth={1.8} />
-      <span className="min-w-0 flex-1 truncate text-left">{snippet}</span>
+      <span ref={ref} className="min-w-0 flex-1 truncate text-left">
+        {snippet}
+      </span>
     </Link>
   );
 };

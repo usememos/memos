@@ -8,6 +8,7 @@ import { RouterProvider } from "react-router-dom";
 import "./i18n";
 import "./index.css";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { refreshAccessToken } from "@/connect";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { InstanceProvider, useInstance } from "@/contexts/InstanceContext";
@@ -64,12 +65,14 @@ function Main() {
       <QueryClientProvider client={queryClient}>
         <InstanceProvider>
           <AuthProvider>
-            <ViewProvider>
-              <AppInitializer>
-                <RouterProvider router={router} />
-                <Toaster position="top-right" />
-              </AppInitializer>
-            </ViewProvider>
+            <TooltipProvider>
+              <ViewProvider>
+                <AppInitializer>
+                  <RouterProvider router={router} />
+                  <Toaster position="top-right" />
+                </AppInitializer>
+              </ViewProvider>
+            </TooltipProvider>
           </AuthProvider>
         </InstanceProvider>
         <ReactQueryDevtools initialIsOpen={false} />

@@ -3,16 +3,12 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 import { popupMotionClasses } from "./popup";
 
-const TooltipProvider = ({ delay = 0, ...props }: TooltipPrimitive.Provider.Props) => {
-  return <TooltipPrimitive.Provider delay={delay} {...props} />;
+const TooltipProvider = ({ delay = 600, timeout = 400, ...props }: TooltipPrimitive.Provider.Props) => {
+  return <TooltipPrimitive.Provider delay={delay} timeout={timeout} {...props} />;
 };
 
 const Tooltip = ({ ...props }: TooltipPrimitive.Root.Props) => {
-  return (
-    <TooltipProvider>
-      <TooltipPrimitive.Root data-slot="tooltip" {...props} />
-    </TooltipProvider>
-  );
+  return <TooltipPrimitive.Root data-slot="tooltip" {...props} />;
 };
 
 const TooltipTrigger = React.forwardRef<HTMLButtonElement, TooltipPrimitive.Trigger.Props>(({ ...props }, ref) => {

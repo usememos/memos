@@ -30,6 +30,7 @@ describe("CalendarCell empty-day clickability", () => {
     const button = screen.getByRole("button", { name: /May 1, 2025/ });
     expect(button).toHaveAttribute("tabindex", "0");
     expect(button).toHaveAttribute("aria-disabled", "false");
+    expect(button).not.toHaveAttribute("data-slot", "tooltip-trigger");
     expect(button).toHaveClass("bg-transparent");
   });
 
@@ -37,7 +38,9 @@ describe("CalendarCell empty-day clickability", () => {
     const onClick = vi.fn();
     render(<CalendarCell day={makeDay({ count: 3 })} maxCount={5} tooltipText="May 1, 2025" onClick={onClick} />);
 
-    fireEvent.click(screen.getByRole("button", { name: /May 1, 2025/ }));
+    const button = screen.getByRole("button", { name: /May 1, 2025/ });
+    expect(button).toHaveAttribute("data-slot", "tooltip-trigger");
+    fireEvent.click(button);
     expect(onClick).toHaveBeenCalledWith("2025-05-01");
   });
 
@@ -58,9 +61,7 @@ describe("CalendarCell empty-day clickability", () => {
   });
 
   it("does not render out-of-month days as interactive (no role=button)", () => {
-    render(
-      <CalendarCell day={makeDay({ isCurrentMonth: false })} maxCount={5} tooltipText="May 1, 2025" onClick={() => {}} />,
-    );
+    render(<CalendarCell day={makeDay({ isCurrentMonth: false })} maxCount={5} tooltipText="May 1, 2025" onClick={() => {}} />);
 
     expect(screen.queryByRole("button")).toBeNull();
   });

@@ -71,7 +71,7 @@ export const CalendarCell = memo((props: CalendarCellProps) => {
     </button>
   );
 
-  const shouldShowTooltip = tooltipText && !disableTooltip;
+  const shouldShowTooltip = day.count > 0 && tooltipText && !disableTooltip;
 
   if (!shouldShowTooltip) {
     return button;
