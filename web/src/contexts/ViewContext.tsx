@@ -21,7 +21,7 @@ interface ViewContextValue {
   compactMode: boolean;
   linkPreview: boolean;
   maxColumns: MemoMaxColumns;
-  toggleSortOrder: () => void;
+  setOrderByTimeAsc: (value: boolean) => void;
   setTimeBasis: (field: MemoTimeBasis) => void;
   setCompactMode: (value: boolean) => void;
   setLinkPreview: (value: boolean) => void;
@@ -78,7 +78,7 @@ export function ViewProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const toggleSortOrder = () => updateState((prev) => ({ orderByTimeAsc: !prev.orderByTimeAsc }));
+  const setOrderByTimeAsc = (value: boolean) => updateState({ orderByTimeAsc: value });
   const setTimeBasis = (field: MemoTimeBasis) => updateState({ timeBasis: field });
   const setCompactMode = (value: boolean) => updateState({ compactMode: value });
   const setLinkPreview = (value: boolean) => updateState({ linkPreview: value });
@@ -92,7 +92,7 @@ export function ViewProvider({ children }: { children: ReactNode }) {
         compactMode: viewState.compactMode,
         linkPreview: viewState.linkPreview,
         maxColumns: viewState.maxColumns,
-        toggleSortOrder,
+        setOrderByTimeAsc,
         setTimeBasis,
         setCompactMode,
         setLinkPreview,

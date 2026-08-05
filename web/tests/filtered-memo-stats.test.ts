@@ -23,8 +23,8 @@ vi.mock("@/contexts/ViewContext", async () => {
   };
 });
 
-import { useAllUserStats, useUserStats } from "@/hooks/useUserQueries";
 import { useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
+import { useAllUserStats, useUserStats } from "@/hooks/useUserQueries";
 
 const wrapper = ({ children }: { children: ReactNode }) => children as never;
 
@@ -57,7 +57,7 @@ describe("useFilteredMemoStats", () => {
     mockUseView.mockReturnValue({
       timeBasis: "create_time",
       orderByTimeAsc: false,
-      toggleSortOrder: vi.fn(),
+      setOrderByTimeAsc: vi.fn(),
       setTimeBasis: vi.fn(),
     });
 
@@ -71,7 +71,7 @@ describe("useFilteredMemoStats", () => {
     mockUseView.mockReturnValue({
       timeBasis: "update_time",
       orderByTimeAsc: false,
-      toggleSortOrder: vi.fn(),
+      setOrderByTimeAsc: vi.fn(),
       setTimeBasis: vi.fn(),
     });
 
@@ -95,7 +95,7 @@ describe("useFilteredMemoStats", () => {
     mockUseView.mockReturnValue({
       timeBasis: "update_time",
       orderByTimeAsc: false,
-      toggleSortOrder: vi.fn(),
+      setOrderByTimeAsc: vi.fn(),
       setTimeBasis: vi.fn(),
     });
 
@@ -111,7 +111,7 @@ describe("useFilteredMemoStats", () => {
     mockUseView.mockReturnValue({
       timeBasis: "create_time",
       orderByTimeAsc: false,
-      toggleSortOrder: vi.fn(),
+      setOrderByTimeAsc: vi.fn(),
       setTimeBasis: vi.fn(),
     });
 

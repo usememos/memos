@@ -309,6 +309,7 @@
       "label": "Filters"
     },
     "compact-mode": "Compact mode",
+    "grid-compact-hint": "Grid layouts always use compact cards.",
     "layout": "Layout",
     "layout-auto": "Auto",
     "layout-auto-description": "As many columns as fit the screen",
@@ -373,6 +374,7 @@
       "updated": "Tasks updated"
     },
     "view-detail": "View Detail",
+    "view-options": "View options",
     "visibility": {
       "disabled": "Public memos are disabled",
       "private": "Private",

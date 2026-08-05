@@ -28,6 +28,7 @@ import toast from "react-hot-toast";
 import { Link, matchPath, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { MemoDetailSidebar } from "@/components/MemoDetailSidebar";
+import MemoDisplaySettingMenu from "@/components/MemoDisplaySettingMenu";
 import { SETTINGS_SECTIONS } from "@/components/Settings/settingSections";
 import StatisticsView from "@/components/StatisticsView";
 import UserMenu from "@/components/UserMenu";
@@ -101,15 +102,18 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
       <SidebarSectionHeader
         action={
           !manageActive && (
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className="size-5 rounded text-muted-foreground"
-              onClick={handleCreate}
-              aria-label={t("common.create")}
-            >
-              <PlusIcon className="size-3.5" />
-            </Button>
+            <div className="flex items-center gap-0.5">
+              <MemoDisplaySettingMenu />
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="size-5 rounded text-muted-foreground"
+                onClick={handleCreate}
+                aria-label={t("common.create")}
+              >
+                <PlusIcon className="size-3.5" />
+              </Button>
+            </div>
           )
         }
       >

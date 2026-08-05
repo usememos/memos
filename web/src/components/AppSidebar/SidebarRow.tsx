@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export const SIDEBAR_ROW_CLASSES =
-  "group flex h-[30px] w-full min-w-0 items-center gap-2 rounded-md px-2 text-[13px] leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50";
+  "group flex h-[30px] w-full min-w-0 items-center gap-2 rounded-md px-2 text-[13px] leading-[18px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50";
 
 export const SIDEBAR_ROW_ICON_CLASSES = "size-[15px] shrink-0 opacity-75";
 export const SIDEBAR_ROW_COUNT_CLASSES = "text-[11px] tabular-nums text-muted-foreground/60";

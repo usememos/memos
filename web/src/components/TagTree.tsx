@@ -1,171 +1,175 @@
-import { ChevronRightIcon, HashIcon } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_COUNT_CLASSES, SIDEBAR_ROW_ICON_CLASSES } from "@/components/AppSidebar/SidebarRow";
-import { type MemoFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { ChevronRightIcon } from "lucide-react";
+import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 
-interface Tag {
+interface TagTreeNode {
   key: string;
   text: string;
-  amount: number;
-  subTags: Tag[];
+  amount?: number;
+  subTags: TagTreeNode[];
 }
 
 interface Props {
   tagAmounts: [tag: string, amount: number][];
-  expandSubTags: boolean;
+  activeTag?: string;
+  expandedTagPaths: ReadonlySet<string>;
+  onTagClick: (tag: string) => void;
+  onToggleBranch: (tag: string) => void;
 }
 
-const TagTree = ({ tagAmounts: rawTagAmounts, expandSubTags }: Props) => {
-  const [tags, setTags] = useState<Tag[]>([]);
-
-  useEffect(() => {
-    const sortedTagAmounts = Array.from(rawTagAmounts).sort();
-    const root: Tag = {
-      key: "",
-      text: "",
-      amount: 0,
-      subTags: [],
-    };
-
-    for (const tagAmount of sortedTagAmounts) {
-      const subtags = tagAmount[0].split("/");
-      let tempObj = root;
-      let tagText = "";
-
-      for (let i = 0; i < subtags.length; i++) {
-        const key = subtags[i];
-        let amount: number = 0;
-
-        if (i === 0) {
-          tagText += key;
-        } else {
-          tagText += "/" + key;
-        }
-        if (sortedTagAmounts.some(([tag, amount]) => tag === tagText && amount > 1)) {
-          amount = tagAmount[1];
-        }
-
-        let obj = null;
-
-        for (const t of tempObj.subTags) {
-          if (t.text === tagText) {
-            obj = t;
-            break;
-          }
-        }
-
-        if (!obj) {
-          obj = {
-            key,
-            text: tagText,
-            amount: amount,
-            subTags: [],
-          };
-          tempObj.subTags.push(obj);
-        }
-
-        tempObj = obj;
-      }
-    }
-
-    setTags(root.subTags as Tag[]);
-  }, [rawTagAmounts]);
-
-  return (
-    <div className="relative flex h-auto w-full flex-col flex-nowrap items-start justify-start gap-0.5">
-      {tags.map((t, idx) => (
-        <TagItemContainer key={t.text + "-" + idx} tag={t} expandSubTags={expandSubTags} />
-      ))}
-    </div>
-  );
-};
-
-interface TagItemContainerProps {
-  tag: Tag;
-  expandSubTags: boolean;
-}
-
-const TagItemContainer = (props: TagItemContainerProps) => {
-  const { tag, expandSubTags } = props;
-  const t = useTranslate();
-  const { getFiltersByFactor, addFilter, removeFilter } = useMemoFilterContext();
-  const tagFilters = getFiltersByFactor("tagSearch");
-  const isActive = tagFilters.some((f: MemoFilter) => f.value === tag.text);
-  const hasSubTags = tag.subTags.length > 0;
-  const [showSubTags, setShowSubTags] = useState(false);
-
-  useEffect(() => {
-    setShowSubTags(expandSubTags);
-  }, [expandSubTags]);
-
-  const handleTagClick = () => {
-    if (isActive) {
-      removeFilter((f: MemoFilter) => f.factor === "tagSearch" && f.value === tag.text);
-    } else {
-      // Remove all existing tag filters first, then add the new one
-      removeFilter((f: MemoFilter) => f.factor === "tagSearch");
-      addFilter({
-        factor: "tagSearch",
-        value: tag.text,
-      });
-    }
+export const buildTagTree = (tagAmounts: [tag: string, amount: number][]) => {
+  const root: TagTreeNode = {
+    key: "",
+    text: "",
+    subTags: [],
   };
 
-  const handleToggleBtnClick = useCallback((event: React.MouseEvent) => {
-    event.stopPropagation();
-    setShowSubTags((current) => !current);
-  }, []);
+  for (const [tag, amount] of [...tagAmounts].sort(([left], [right]) => left.localeCompare(right))) {
+    const segments = tag.split("/");
+    let parent = root;
+    let path = "";
+
+    segments.forEach((segment, index) => {
+      path = path ? `${path}/${segment}` : segment;
+      let node = parent.subTags.find((item) => item.key === segment);
+
+      if (!node) {
+        node = {
+          key: segment,
+          text: path,
+          subTags: [],
+        };
+        parent.subTags.push(node);
+      }
+
+      if (index === segments.length - 1) {
+        node.amount = amount;
+      }
+      parent = node;
+    });
+  }
+
+  return root.subTags;
+};
+
+const TagMark = () => (
+  <span aria-hidden="true" className="w-3 shrink-0 text-center font-mono text-[11px] font-medium text-muted-foreground/70">
+    #
+  </span>
+);
+
+interface TagItemProps {
+  tag: TagTreeNode;
+  depth: number;
+  activeTag?: string;
+  expandedTagPaths: ReadonlySet<string>;
+  onTagClick: (tag: string) => void;
+  onToggleBranch: (tag: string) => void;
+}
+
+const TagItem = ({ tag, depth, activeTag, expandedTagPaths, onTagClick, onToggleBranch }: TagItemProps) => {
+  const t = useTranslate();
+  const isTag = tag.amount !== undefined;
+  const isActive = activeTag === tag.text;
+  const isAncestorOfActiveTag = activeTag?.startsWith(`${tag.text}/`) ?? false;
+  const hasSubTags = tag.subTags.length > 0;
+  const showSubTags = expandedTagPaths.has(tag.text);
 
   return (
-    <>
+    <div className="w-full min-w-0">
       <div
+        role="treeitem"
+        aria-expanded={hasSubTags ? showSubTags : undefined}
+        aria-selected={isActive || undefined}
         className={cn(
-          SIDEBAR_ROW_CLASSES,
-          "shrink-0 select-none",
-          isActive
-            ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-            : "text-muted-foreground hover:bg-sidebar-accent/65 hover:text-foreground",
+          "relative flex h-7 w-full min-w-0 items-center rounded-[5px] pr-2 text-[13px] leading-[18px] text-muted-foreground transition-colors hover:bg-sidebar-accent/65 hover:text-foreground",
+          isActive && "bg-sidebar-accent font-medium text-sidebar-accent-foreground hover:bg-sidebar-accent",
+          isAncestorOfActiveTag && !isActive && "text-foreground/75",
+          !isTag && "text-[12.5px] text-muted-foreground/75",
         )}
+        style={{ paddingInlineStart: 4 + depth * 14 }}
       >
-        <button
-          type="button"
-          aria-pressed={isActive || undefined}
-          className="flex h-full min-w-0 flex-1 items-center gap-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-          onClick={handleTagClick}
-        >
-          <HashIcon className={SIDEBAR_ROW_ICON_CLASSES} strokeWidth={1.8} />
-          <span className="min-w-0 flex-1 truncate">{tag.key}</span>
-        </button>
-        {tag.amount > 1 && <span className={SIDEBAR_ROW_COUNT_CLASSES}>{tag.amount}</span>}
-        {hasSubTags && (
+        {hasSubTags ? (
           <button
             type="button"
             aria-label={`${showSubTags ? t("common.collapse") : t("common.expand")} ${tag.key}`}
             aria-expanded={showSubTags}
-            className={cn(
-              "-mr-1 flex size-6 shrink-0 items-center justify-center rounded transition-colors hover:bg-background/70",
-              showSubTags && "[&>svg]:rotate-90",
-            )}
-            onClick={handleToggleBtnClick}
+            className="mr-0.5 flex size-5 shrink-0 items-center justify-center rounded-[4px] text-muted-foreground/75 transition-colors hover:bg-background/70 hover:text-foreground focus-visible:bg-background/70 focus-visible:text-foreground focus-visible:outline-none"
+            onClick={() => onToggleBranch(tag.text)}
           >
-            <ChevronRightIcon className="size-3.5 transition-transform" />
+            <ChevronRightIcon className={cn("size-3 transition-transform duration-150", showSubTags && "rotate-90")} strokeWidth={1.8} />
           </button>
+        ) : (
+          <span className="mr-0.5 size-5 shrink-0" />
+        )}
+
+        {isTag ? (
+          <button
+            type="button"
+            aria-pressed={isActive || undefined}
+            title={`#${tag.text}`}
+            className="flex h-full min-w-0 flex-1 items-center gap-1.5 rounded-sm text-left focus-visible:text-foreground focus-visible:underline focus-visible:decoration-muted-foreground focus-visible:underline-offset-2 focus-visible:outline-none"
+            onClick={() => onTagClick(tag.text)}
+          >
+            <TagMark />
+            <span className="min-w-0 flex-1 truncate">{tag.key}</span>
+          </button>
+        ) : (
+          <span className="min-w-0 flex-1 truncate" title={tag.text}>
+            {tag.key}
+          </span>
+        )}
+
+        {isTag && (
+          <span
+            className={cn(
+              "ml-1.5 shrink-0 font-mono text-[10.5px] tabular-nums text-muted-foreground/55",
+              isActive && "text-sidebar-accent-foreground/65",
+            )}
+          >
+            {tag.amount}
+          </span>
         )}
       </div>
-      {hasSubTags ? (
-        <div
-          className={`w-[calc(100%-0.5rem)] flex flex-col justify-start items-start h-auto ml-2 pl-2 border-l-2 border-l-border ${
-            !showSubTags && "hidden"
-          }`}
-        >
-          {tag.subTags.map((st, idx) => (
-            <TagItemContainer key={st.text + "-" + idx} tag={st} expandSubTags={expandSubTags} />
+
+      {hasSubTags && showSubTags && (
+        <div className="w-full min-w-0" role="group">
+          {tag.subTags.map((subTag) => (
+            <TagItem
+              key={subTag.text}
+              tag={subTag}
+              depth={depth + 1}
+              activeTag={activeTag}
+              expandedTagPaths={expandedTagPaths}
+              onTagClick={onTagClick}
+              onToggleBranch={onToggleBranch}
+            />
           ))}
         </div>
-      ) : null}
-    </>
+      )}
+    </div>
+  );
+};
+
+const TagTree = ({ tagAmounts, activeTag, expandedTagPaths, onTagClick, onToggleBranch }: Props) => {
+  const t = useTranslate();
+  const tags = useMemo(() => buildTagTree(tagAmounts), [tagAmounts]);
+
+  return (
+    <div className="relative flex h-auto w-full flex-col items-stretch gap-px" role="tree" aria-label={t("common.tags")}>
+      {tags.map((tag) => (
+        <TagItem
+          key={tag.text}
+          tag={tag}
+          depth={0}
+          activeTag={activeTag}
+          expandedTagPaths={expandedTagPaths}
+          onTagClick={onTagClick}
+          onToggleBranch={onToggleBranch}
+        />
+      ))}
+    </div>
   );
 };
 

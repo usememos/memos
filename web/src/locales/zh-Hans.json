@@ -268,6 +268,7 @@
       "label": "过滤器"
     },
     "compact-mode": "紧凑模式",
+    "grid-compact-hint": "网格布局始终使用紧凑卡片。",
     "layout": "布局",
     "layout-auto": "自动",
     "layout-auto-description": "根据屏幕宽度显示尽可能多的列",
@@ -291,6 +292,7 @@
     "show-more": "查看更多",
     "to-do": "待办",
     "view-detail": "查看详情",
+    "view-options": "视图选项",
     "visibility": {
       "disabled": "已禁用公开备忘录",
       "private": "私有",

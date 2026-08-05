@@ -67,7 +67,7 @@ const MemoOutline = ({ headings }: MemoOutlineProps) => {
             onClick={(e) => handleClick(e, heading.slug)}
             aria-current={active ? "location" : undefined}
             className={cn(
-              "relative flex h-[30px] min-w-0 items-center rounded-md pr-2 text-[13px] leading-none transition-colors",
+              "relative flex h-[30px] min-w-0 items-center rounded-md pr-2 text-[13px] leading-[18px] transition-colors",
               heading.level === minLevel && "font-medium",
               active ? "text-foreground" : "text-muted-foreground/70 hover:bg-sidebar-accent/65 hover:text-foreground",
             )}

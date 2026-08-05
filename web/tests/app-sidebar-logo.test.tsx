@@ -12,6 +12,10 @@ vi.mock("@/components/MemosLogo", () => ({
   default: () => <span>Memos logo</span>,
 }));
 
+vi.mock("@/components/MemoDisplaySettingMenu", () => ({
+  default: () => <button type="button">memo.view-options</button>,
+}));
+
 vi.mock("@/components/UserMenu", () => ({
   default: () => <div>User menu</div>,
 }));
@@ -172,6 +176,9 @@ describe("App sidebar logo", () => {
     const calendar = screen.getByText("Calendar");
     const views = screen.getByText("common.views");
     expect(calendar.compareDocumentPosition(views) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    const viewOptions = screen.getByRole("button", { name: "memo.view-options" });
+    const createView = screen.getByRole("button", { name: "common.create" });
+    expect(viewOptions.compareDocumentPosition(createView) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(screen.getByRole("button", { name: "common.tasks" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "common.all" })).not.toBeInTheDocument();
 

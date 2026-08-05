@@ -28,6 +28,15 @@ describe("ViewContext maxColumns setting", () => {
     expect(persisted().maxColumns).toBe(0);
   });
 
+  it("sets and persists the sort direction explicitly", () => {
+    const { result } = renderHook(() => useView(), { wrapper });
+
+    act(() => result.current.setOrderByTimeAsc(true));
+
+    expect(result.current.orderByTimeAsc).toBe(true);
+    expect(persisted().orderByTimeAsc).toBe(true);
+  });
+
   it("restores a persisted column count on init", () => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ maxColumns: 2 }));
 
