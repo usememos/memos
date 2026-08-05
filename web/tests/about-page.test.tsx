@@ -1,7 +1,5 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import AboutDialog from "@/components/AboutDialog";
 import About from "@/pages/About";
 
 const mockInstance = {
@@ -14,26 +12,9 @@ const mockInstance = {
   },
   generalSetting: {} as { customProfile?: { title: string; description: string; logoUrl: string } },
 };
-const pageState = vi.hoisted(() => ({
-  authInitialized: false,
-  currentUser: { name: "users/test" } as { name: string } | undefined,
-  setAboutOpen: vi.fn(),
-}));
 
 vi.mock("@/contexts/InstanceContext", () => ({
   useInstance: () => mockInstance,
-}));
-
-vi.mock("@/contexts/AppSidebarContext", () => ({
-  useAppSidebar: () => ({ setAboutOpen: pageState.setAboutOpen }),
-}));
-
-vi.mock("@/contexts/AuthContext", () => ({
-  useAuth: () => ({ isInitialized: pageState.authInitialized }),
-}));
-
-vi.mock("@/hooks/useCurrentUser", () => ({
-  default: () => pageState.currentUser,
 }));
 
 vi.mock("@/utils/i18n", () => ({
@@ -46,13 +27,10 @@ vi.mock("@/utils/i18n", () => ({
     )[key] ?? key,
 }));
 
-const renderAbout = () => render(<AboutDialog open onOpenChange={vi.fn()} />);
+const renderAbout = () => render(<About />);
 
-describe("<AboutDialog>", () => {
+describe("<About>", () => {
   beforeEach(() => {
-    pageState.authInitialized = false;
-    pageState.currentUser = { name: "users/test" };
-    pageState.setAboutOpen.mockReset();
     mockInstance.profile = {
       version: "0.25.0",
       commit: "0123456789abcdef0123456789abcdef01234567",
@@ -67,7 +45,7 @@ describe("<AboutDialog>", () => {
     document.documentElement.removeAttribute("data-theme");
   });
 
-  it("renders the identity hero with linked version and commit chips", () => {
+  it("renders the identity hero with linked version, commit, and license chips", () => {
     renderAbout();
 
     expect(screen.getByRole("heading", { name: "Memos" })).toBeInTheDocument();
@@ -80,7 +58,7 @@ describe("<AboutDialog>", () => {
     expect(screen.getByRole("link", { name: "MIT" })).toHaveAttribute("href", "https://github.com/usememos/memos/blob/main/LICENSE");
   });
 
-  it("links to the usememos.com homepage, docs, API docs, and GitHub repo", () => {
+  it("links to the project homepage, docs, API docs, GitHub, and Web Clipper", () => {
     renderAbout();
 
     expect(screen.getByRole("link", { name: /about\.official-website/ })).toHaveAttribute("href", "https://usememos.com/");
@@ -131,40 +109,12 @@ describe("<AboutDialog>", () => {
     expect(screen.getByText("Powered by Memos")).toBeInTheDocument();
   });
 
-  it("renders in a compact dialog instead of a page surface", () => {
-    renderAbout();
+  it("renders as a page without nested mobile padding", () => {
+    const { container } = renderAbout();
 
-    expect(screen.getByRole("dialog")).toHaveClass("p-0!");
-    expect(screen.getByRole("button", { name: "Close" })).toBeInTheDocument();
-  });
-
-  it("waits for auth initialization before redirecting the compatibility route", async () => {
-    const view = render(
-      <MemoryRouter initialEntries={["/about"]}>
-        <Routes>
-          <Route path="/about" element={<About />} />
-          <Route path="/" element={<div>Home route</div>} />
-          <Route path="/explore" element={<div>Explore route</div>} />
-        </Routes>
-      </MemoryRouter>,
-    );
-
-    expect(screen.queryByText("Home route")).not.toBeInTheDocument();
-    expect(screen.queryByText("Explore route")).not.toBeInTheDocument();
-    expect(pageState.setAboutOpen).not.toHaveBeenCalled();
-
-    pageState.authInitialized = true;
-    view.rerender(
-      <MemoryRouter initialEntries={["/about"]}>
-        <Routes>
-          <Route path="/about" element={<About />} />
-          <Route path="/" element={<div>Home route</div>} />
-          <Route path="/explore" element={<div>Explore route</div>} />
-        </Routes>
-      </MemoryRouter>,
-    );
-
-    await waitFor(() => expect(screen.getByText("Home route")).toBeInTheDocument());
-    expect(pageState.setAboutOpen).toHaveBeenCalledWith(true);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    const contentWrapper = container.querySelector("section > div");
+    expect(contentWrapper).toHaveClass("w-full");
+    expect(contentWrapper).not.toHaveClass("px-4");
   });
 });

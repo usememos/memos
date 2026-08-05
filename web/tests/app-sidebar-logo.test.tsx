@@ -6,7 +6,6 @@ import AppSidebar, { MobileAppHeader } from "@/components/AppSidebar";
 const authState = vi.hoisted(() => ({ currentUser: { name: "users/test" } as { name: string } | undefined }));
 const sidebarState = vi.hoisted(() => ({
   memoScope: "home" as "home" | "explore" | "archived",
-  setAboutOpen: vi.fn(),
 }));
 
 vi.mock("@/components/MemosLogo", () => ({
@@ -27,8 +26,6 @@ vi.mock("@/components/AppSidebar/TagsSection", () => ({
 
 vi.mock("@/contexts/AppSidebarContext", () => ({
   useAppSidebar: () => ({
-    aboutOpen: false,
-    setAboutOpen: sidebarState.setAboutOpen,
     attachmentSection: "all",
     setAttachmentSection: vi.fn(),
     inboxFilter: "all",
@@ -94,7 +91,6 @@ describe("App sidebar logo", () => {
   beforeEach(() => {
     authState.currentUser = { name: "users/test" };
     sidebarState.memoScope = "home";
-    sidebarState.setAboutOpen.mockReset();
   });
 
   it("navigates home instead of opening a global editor", () => {
@@ -119,10 +115,51 @@ describe("App sidebar logo", () => {
     );
 
     expect(screen.getByRole("link", { name: "common.explore" })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "common.about" }));
-    expect(sidebarState.setAboutOpen).toHaveBeenCalledWith(true);
+    expect(screen.getByRole("link", { name: "common.about" })).toHaveAttribute("href", "/about");
     expect(screen.getByRole("link", { name: "common.sign-in-to-memos" }).closest("footer")).not.toBeNull();
     expect(screen.queryByRole("link", { name: "common.home" })).not.toBeInTheDocument();
+  });
+
+  it("shows common destinations instead of empty route content for an authenticated user", () => {
+    render(
+      <MemoryRouter initialEntries={["/404"]}>
+        <AppSidebar />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole("link", { name: "common.home" })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: "common.explore" })).toHaveAttribute("href", "/explore");
+    expect(screen.getByRole("link", { name: "common.attachments" })).toHaveAttribute("href", "/attachments");
+    expect(screen.getByRole("link", { name: "common.inbox" })).toHaveAttribute("href", "/inbox");
+    expect(screen.getByRole("link", { name: "common.about" })).toHaveAttribute("href", "/about");
+    expect(screen.getByText("User menu").closest("footer")).not.toBeNull();
+    expect(screen.queryByText("Calendar")).not.toBeInTheDocument();
+  });
+
+  it("uses a visitor sidebar for a guest on a route without contextual content", () => {
+    authState.currentUser = undefined;
+    render(
+      <MemoryRouter initialEntries={["/404"]}>
+        <AppSidebar />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole("link", { name: "common.explore" })).toHaveAttribute("href", "/explore");
+    expect(screen.queryByRole("link", { name: "common.home" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "common.attachments" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "common.inbox" })).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "common.about" })).toHaveAttribute("href", "/about");
+    expect(screen.getByRole("link", { name: "common.sign-in-to-memos" }).closest("footer")).not.toBeNull();
+  });
+
+  it("marks About active on the About page", () => {
+    render(
+      <MemoryRouter initialEntries={["/about"]}>
+        <AppSidebar />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole("link", { name: "common.about" })).toHaveAttribute("aria-current", "page");
   });
 
   it("uses a compact scope menu and places views below the calendar", async () => {

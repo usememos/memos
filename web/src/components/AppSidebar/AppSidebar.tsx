@@ -61,7 +61,7 @@ import { User_Role, UserNotification_Status } from "@/types/proto/api/v1/user_se
 import { useTranslate } from "@/utils/i18n";
 import MemosLogo from "../MemosLogo";
 import { getSidebarRouteKind } from "./routes";
-import SidebarRow, { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_ICON_CLASSES } from "./SidebarRow";
+import SidebarRow, { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_COUNT_CLASSES, SIDEBAR_ROW_ICON_CLASSES } from "./SidebarRow";
 import SidebarSectionHeader from "./SidebarSectionHeader";
 import TagsSection from "./TagsSection";
 
@@ -395,7 +395,6 @@ interface GlobalNavItem {
   icon: LucideIcon;
   active: boolean;
   count?: number;
-  opensDialog?: boolean;
 }
 
 const GlobalNavigation = () => {
@@ -404,7 +403,7 @@ const GlobalNavigation = () => {
   const navigate = useNavigate();
   const currentUser = useCurrentUser();
   const { data: notifications = [] } = useNotifications();
-  const { memoDetail, memoScope, setAboutOpen, setMemoScope, setMobileOpen } = useAppSidebar();
+  const { memoDetail, memoScope, setMemoScope, setMobileOpen } = useAppSidebar();
   const { filters } = useMemoFilterContext();
   const unreadCount = notifications.filter((notification) => notification.status === UserNotification_Status.UNREAD).length;
   const routeKind = getSidebarRouteKind(location.pathname);
@@ -464,7 +463,7 @@ const GlobalNavigation = () => {
           icon: EarthIcon,
           active: routeKind === "explore" || routeKind === "profile" || routeKind === "memo",
         },
-        { id: "about", label: t("common.about"), path: ROUTES.ABOUT, icon: InfoIcon, active: false, opensDialog: true },
+        { id: "about", label: t("common.about"), path: ROUTES.ABOUT, icon: InfoIcon, active: false },
       ];
 
   const scopeTrigger = (
@@ -556,20 +555,7 @@ const GlobalNavigation = () => {
               )}
             </>
           );
-          const content = item.opensDialog ? (
-            <button
-              key={item.id}
-              type="button"
-              aria-label={item.label}
-              className={itemClassName}
-              onClick={() => {
-                setMobileOpen(false);
-                setAboutOpen(true);
-              }}
-            >
-              {itemContent}
-            </button>
-          ) : (
+          const content = (
             <Link
               key={item.id}
               to={item.path}
@@ -594,10 +580,80 @@ const GlobalNavigation = () => {
   );
 };
 
+const StaticNavigation = () => {
+  const t = useTranslate();
+  const location = useLocation();
+  const currentUser = useCurrentUser();
+  const { data: notifications = [] } = useNotifications();
+  const { setMobileOpen } = useAppSidebar();
+  const unreadCount = notifications.filter((notification) => notification.status === UserNotification_Status.UNREAD).length;
+  const primaryItems: Array<{ id: string; label: string; path: string; icon: LucideIcon }> = currentUser
+    ? [
+        { id: "home", label: t("common.home"), path: ROUTES.HOME, icon: HouseIcon },
+        { id: "explore", label: t("common.explore"), path: ROUTES.EXPLORE, icon: EarthIcon },
+      ]
+    : [{ id: "explore", label: t("common.explore"), path: ROUTES.EXPLORE, icon: EarthIcon }];
+  const personalItems: Array<{ id: string; label: string; path: string; icon: LucideIcon; count?: number }> = currentUser
+    ? [
+        { id: "attachments", label: t("common.attachments"), path: ROUTES.ATTACHMENTS, icon: PaperclipIcon },
+        { id: "inbox", label: t("common.inbox"), path: ROUTES.INBOX, icon: BellIcon, count: unreadCount },
+      ]
+    : [];
+
+  const renderLink = (item: (typeof primaryItems)[number] | (typeof personalItems)[number]) => {
+    const Icon = item.icon;
+    const count = "count" in item ? item.count : undefined;
+    return (
+      <Link
+        key={item.id}
+        to={item.path}
+        onClick={() => setMobileOpen(false)}
+        className={cn(SIDEBAR_ROW_CLASSES, "text-muted-foreground hover:bg-sidebar-accent/65 hover:text-foreground")}
+      >
+        <Icon className={SIDEBAR_ROW_ICON_CLASSES} strokeWidth={1.8} />
+        <span className="min-w-0 flex-1 truncate">{item.label}</span>
+        {count != null && count > 0 && <span className={SIDEBAR_ROW_COUNT_CLASSES}>{count}</span>}
+      </Link>
+    );
+  };
+
+  return (
+    <div className="flex min-h-0 flex-1 flex-col">
+      <nav className={cn("pt-1", SIDEBAR_HORIZONTAL_PADDING)} aria-label="Primary">
+        <div className="space-y-0.5">{primaryItems.map(renderLink)}</div>
+        {personalItems.length > 0 && (
+          <>
+            <div className="mx-2 my-2 border-t border-border/70" />
+            <div className="space-y-0.5">{personalItems.map(renderLink)}</div>
+          </>
+        )}
+      </nav>
+      <nav className={cn("mt-auto pb-2", SIDEBAR_HORIZONTAL_PADDING)} aria-label="Utility">
+        <Link
+          to={ROUTES.ABOUT}
+          onClick={() => setMobileOpen(false)}
+          aria-current={location.pathname === ROUTES.ABOUT ? "page" : undefined}
+          className={cn(
+            SIDEBAR_ROW_CLASSES,
+            location.pathname === ROUTES.ABOUT
+              ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
+              : "text-muted-foreground hover:bg-sidebar-accent/65 hover:text-foreground",
+          )}
+        >
+          <InfoIcon className={SIDEBAR_ROW_ICON_CLASSES} strokeWidth={1.8} />
+          <span className="min-w-0 flex-1 truncate">{t("common.about")}</span>
+        </Link>
+      </nav>
+    </div>
+  );
+};
+
 const AppSidebar = ({ className }: { className?: string }) => {
   const t = useTranslate();
+  const location = useLocation();
   const currentUser = useCurrentUser();
   const { setMobileOpen, setQuickFindOpen } = useAppSidebar();
+  const staticMode = getSidebarRouteKind(location.pathname) === "empty";
   return (
     <aside className={cn("flex h-full w-full select-none flex-col bg-sidebar text-sidebar-foreground", className)}>
       <div className={cn("flex h-13 shrink-0 items-center justify-between gap-2", SIDEBAR_HORIZONTAL_PADDING)}>
@@ -620,14 +676,22 @@ const AppSidebar = ({ className }: { className?: string }) => {
           <SearchIcon className="size-4" strokeWidth={1.8} />
         </Button>
       </div>
-      <GlobalNavigation />
-      <div className="mx-3 mt-2 border-t border-border/70" />
-      <div className={cn("min-h-0 flex-1 overflow-y-auto overflow-x-hidden pt-2 pb-3 [scrollbar-width:thin]", SIDEBAR_HORIZONTAL_PADDING)}>
-        <RouteSidebarContent />
-      </div>
+      {staticMode ? (
+        <StaticNavigation />
+      ) : (
+        <>
+          <GlobalNavigation />
+          <div className="mx-3 mt-2 border-t border-border/70" />
+          <div
+            className={cn("min-h-0 flex-1 overflow-y-auto overflow-x-hidden pt-2 pb-3 [scrollbar-width:thin]", SIDEBAR_HORIZONTAL_PADDING)}
+          >
+            <RouteSidebarContent />
+          </div>
+        </>
+      )}
       <footer className="shrink-0 border-t border-border/70">
         {currentUser ? (
-          <UserMenu />
+          <UserMenu showAbout={!staticMode} />
         ) : (
           <Link
             to={ROUTES.AUTH}

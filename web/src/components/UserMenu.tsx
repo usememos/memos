@@ -34,13 +34,14 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 interface Props {
   collapsed?: boolean;
+  showAbout?: boolean;
 }
 
 const UserMenu = (props: Props) => {
-  const { collapsed } = props;
+  const { collapsed, showAbout = true } = props;
   const t = useTranslate();
   const navigateTo = useNavigateTo();
-  const { setAboutOpen, setMobileOpen } = useAppSidebar();
+  const { setMobileOpen } = useAppSidebar();
   const currentUser = useCurrentUser();
   const { userGeneralSetting, refetchSettings, logout } = useAuth();
   const { mutate: updateUserGeneralSetting } = useUpdateUserGeneralSetting(currentUser?.name);
@@ -107,11 +108,6 @@ const UserMenu = (props: Props) => {
   const navigateFromMenu = (path: string) => {
     setMobileOpen(false);
     navigateTo(path);
-  };
-
-  const handleAboutOpen = () => {
-    setMobileOpen(false);
-    setAboutOpen(true);
   };
 
   return (
@@ -183,10 +179,12 @@ const UserMenu = (props: Props) => {
             ))}
           </DropdownMenuSubContent>
         </DropdownMenuSub>
-        <DropdownMenuItem onClick={handleAboutOpen}>
-          <InfoIcon className="size-4 text-muted-foreground" />
-          {t("common.about")}
-        </DropdownMenuItem>
+        {showAbout && (
+          <DropdownMenuItem onClick={() => navigateFromMenu(Routes.ABOUT)}>
+            <InfoIcon className="size-4 text-muted-foreground" />
+            {t("common.about")}
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem onClick={() => navigateFromMenu(Routes.SETTING)}>
           <SettingsIcon className="size-4 text-muted-foreground" />
           {t("common.settings")}

@@ -1,8 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Navigate, Outlet, useLocation, useSearchParams } from "react-router-dom";
-import AboutDialog from "@/components/AboutDialog";
 import AppSidebar, { MobileAppHeader, MobileAppSidebar, QuickFindDialog } from "@/components/AppSidebar";
-import { AppSidebarProvider, useAppSidebar } from "@/contexts/AppSidebarContext";
+import { AppSidebarProvider } from "@/contexts/AppSidebarContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import { MemoFilterProvider, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -25,16 +24,6 @@ const DemoBanner = () => {
         </a>
       </div>
     </div>
-  );
-};
-
-const AppDialogs = () => {
-  const { aboutOpen, setAboutOpen } = useAppSidebar();
-  return (
-    <>
-      <QuickFindDialog />
-      <AboutDialog open={aboutOpen} onOpenChange={setAboutOpen} />
-    </>
   );
 };
 
@@ -81,7 +70,7 @@ const RootLayoutContent = () => {
           {profile.demo && <DemoBanner />}
           <Outlet />
         </main>
-        <AppDialogs />
+        <QuickFindDialog />
       </div>
     </AppSidebarProvider>
   );

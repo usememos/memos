@@ -14,8 +14,6 @@ export interface MemoDetailSidebarDescriptor {
 }
 
 interface AppSidebarContextValue {
-  aboutOpen: boolean;
-  setAboutOpen: (open: boolean) => void;
   attachmentSection: AttachmentSection;
   setAttachmentSection: (section: AttachmentSection) => void;
   inboxFilter: InboxFilter;
@@ -34,7 +32,6 @@ const AppSidebarContext = createContext<AppSidebarContextValue | null>(null);
 
 export const AppSidebarProvider = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
-  const [aboutOpen, setAboutOpen] = useState(false);
   const [attachmentSection, setAttachmentSection] = useState<AttachmentSection>("all");
   const [inboxFilter, setInboxFilter] = useState<InboxFilter>("all");
   const [memoDetail, setMemoDetailState] = useState<MemoDetailSidebarDescriptor>();
@@ -54,8 +51,6 @@ export const AppSidebarProvider = ({ children }: { children: ReactNode }) => {
 
   const value = useMemo(
     () => ({
-      aboutOpen,
-      setAboutOpen,
       attachmentSection,
       setAttachmentSection,
       inboxFilter,
@@ -69,7 +64,7 @@ export const AppSidebarProvider = ({ children }: { children: ReactNode }) => {
       memoScope,
       setMemoScope,
     }),
-    [aboutOpen, attachmentSection, inboxFilter, memoDetail, setMemoDetail, mobileOpen, quickFindOpen, memoScope],
+    [attachmentSection, inboxFilter, memoDetail, setMemoDetail, mobileOpen, quickFindOpen, memoScope],
   );
 
   return <AppSidebarContext.Provider value={value}>{children}</AppSidebarContext.Provider>;
