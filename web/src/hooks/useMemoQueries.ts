@@ -1,5 +1,5 @@
 import { create } from "@bufbuild/protobuf";
-import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
+import { FieldMaskSchema, timestampFromDate } from "@bufbuild/protobuf/wkt";
 import {
   type InfiniteData,
   type QueryClient,
@@ -214,7 +214,7 @@ export function useUpdateMemo() {
       });
       return memo;
     },
-    onMutate: async ({ update }) => {
+    onMutate: async ({ update, updateMask }) => {
       if (!update.name) {
         return { previousMemo: undefined };
       }
@@ -226,6 +226,12 @@ export function useUpdateMemo() {
       const previousMemo =
         queryClient.getQueryData<Memo>(memoKeys.detail(update.name)) || findMemoInCollectionQueries(queryClient, update.name);
       const memoPatch: MemoPatch = { ...update, name: update.name };
+
+      // If updateMask includes update_time, set it to current time for optimistic update
+      // This ensures React keys (which depend on updateTime) change and components re-render
+      if (updateMask?.includes("update_time") && !update.updateTime) {
+        memoPatch.updateTime = timestampFromDate(new Date());
+      }
 
       // Optimistically update the cache
       if (previousMemo) {
