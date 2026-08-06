@@ -2,13 +2,10 @@ package s3
 
 import (
 	"context"
-	"crypto/tls"
 	"io"
-	"net/http"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	awshttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -26,14 +23,6 @@ func NewClient(ctx context.Context, s3Config *storepb.StorageS3Config) (*Client,
 	loadOptions := []func(*config.LoadOptions) error{
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(s3Config.AccessKeyId, s3Config.AccessKeySecret, "")),
 		config.WithRegion(s3Config.Region),
-	}
-	if s3Config.InsecureSkipTlsVerify {
-		// Skip TLS certificate verification for endpoints using self-signed certificates.
-		// This is opt-in and removes protection against man-in-the-middle attacks.
-		httpClient := awshttp.NewBuildableClient().WithTransportOptions(func(tr *http.Transport) {
-			tr.TLSClientConfig = &tls.Config{InsecureSkipVerify: true} // #nosec G402 -- opt-in for self-signed S3 endpoints
-		})
-		loadOptions = append(loadOptions, config.WithHTTPClient(httpClient))
 	}
 
 	cfg, err := config.LoadDefaultConfig(ctx, loadOptions...)
