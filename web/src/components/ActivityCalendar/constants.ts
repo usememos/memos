@@ -17,18 +17,26 @@ export const CELL_STYLES = {
   MEDIUM: "bg-blue-400/45 text-foreground/80",
   LOW: "bg-blue-400/30 text-foreground/80",
   MINIMAL: "bg-blue-400/18 text-foreground/75",
-  EMPTY: "bg-transparent text-foreground/75 hover:bg-muted/40",
+  // Hover reads off the cell, not the chip, so the whole column responds to the pointer.
+  EMPTY: "bg-transparent text-foreground/75 group-hover/day:bg-muted/40",
 } as const;
 
+/**
+ * `maxSize` caps the square chip that carries a day's fill, so a chip measures
+ * `min(column, maxSize)`. Narrow containers are untouched — the 224px rail's ~25px columns
+ * stay below the cap — while wider ones spend the surplus on hit area rather than height,
+ * which is what stops a widened sidebar from doubling the calendar's height.
+ */
 export const SMALL_CELL_SIZE = {
   font: "text-[10px] font-normal leading-none tracking-[-0.01em] tabular-nums",
-  dimensions: "w-full h-full",
+  maxSize: "max-w-[24px]",
   borderRadius: "rounded-md",
   gap: "gap-1",
 } as const;
 
 export const DEFAULT_CELL_SIZE = {
   font: "text-xs font-normal leading-none tracking-[-0.01em] tabular-nums",
+  maxSize: "max-w-[30px]",
   borderRadius: "rounded-md",
   gap: "gap-1",
 } as const;

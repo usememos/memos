@@ -13,6 +13,9 @@ const makeDay = (overrides: Partial<CalendarDayCell> = {}): CalendarDayCell => (
   ...overrides,
 });
 
+/** The button spans its column; the square chip inside it carries every visual. */
+const chipOf = (button: HTMLElement) => button.firstElementChild as HTMLElement;
+
 describe("CalendarCell empty-day clickability", () => {
   it("fires onClick for an in-month day with count=0", () => {
     const onClick = vi.fn();
@@ -31,7 +34,7 @@ describe("CalendarCell empty-day clickability", () => {
     expect(button).toHaveAttribute("tabindex", "0");
     expect(button).toHaveAttribute("aria-disabled", "false");
     expect(button).not.toHaveAttribute("data-slot", "tooltip-trigger");
-    expect(button).toHaveClass("bg-transparent");
+    expect(chipOf(button)).toHaveClass("bg-transparent");
   });
 
   it("still renders a populated in-month day as interactive", () => {
@@ -56,8 +59,18 @@ describe("CalendarCell empty-day clickability", () => {
     render(<CalendarCell day={makeDay({ isSelected: true })} maxCount={5} tooltipText="May 1, 2025" onClick={() => {}} />);
 
     const button = screen.getByRole("button", { name: /selected/ });
-    expect(button).toHaveClass("ring-2", "ring-inset");
-    expect(button).not.toHaveClass("font-semibold", "font-bold");
+    expect(chipOf(button)).toHaveClass("ring-2", "ring-inset");
+    expect(chipOf(button)).not.toHaveClass("font-semibold", "font-bold");
+  });
+
+  it("caps the chip so a wider container buys hit area, not calendar height", () => {
+    render(<CalendarCell day={makeDay()} maxCount={5} tooltipText="May 1, 2025" onClick={() => {}} />);
+
+    const button = screen.getByRole("button", { name: /May 1, 2025/ });
+    // The square lives on the capped chip. Putting it back on the button would make row
+    // height track the column width again, which is what made a widened rail so tall.
+    expect(button).not.toHaveClass("aspect-square");
+    expect(chipOf(button)).toHaveClass("aspect-square", "max-w-[30px]");
   });
 
   it("does not render out-of-month days as interactive (no role=button)", () => {

@@ -24,31 +24,47 @@ export const CalendarCell = memo((props: CalendarCellProps) => {
   };
 
   const sizeConfig = size === "small" ? SMALL_CELL_SIZE : DEFAULT_CELL_SIZE;
-  const smallExtraClasses = size === "small" ? `${SMALL_CELL_SIZE.dimensions} min-h-0` : "";
 
-  const baseClasses = cn(
-    "relative aspect-square w-full flex items-center justify-center text-center transition-[background-color,color,filter,box-shadow] duration-150 ease-out select-none",
+  // Two elements with two jobs: the cell spans its whole column and takes the pointer, the
+  // chip inside it is the square that carries the fill and sets the row's height.
+  const cellClasses = "group/day flex w-full items-center justify-center select-none";
+  const chipClasses = cn(
+    "relative flex aspect-square w-full items-center justify-center text-center transition-[background-color,color,filter,box-shadow] duration-150 ease-out",
     sizeConfig.font,
     sizeConfig.borderRadius,
-    smallExtraClasses,
+    sizeConfig.maxSize,
   );
   const isInteractive = Boolean(onClick);
   const ariaLabel = day.isSelected ? `${tooltipText} (selected)` : tooltipText;
 
   if (!day.isCurrentMonth) {
-    return <div className={cn(baseClasses, "text-muted-foreground/25 bg-transparent cursor-default")}>{day.label}</div>;
+    return (
+      <div className={cn(cellClasses, "cursor-default")}>
+        <span className={cn(chipClasses, "bg-transparent text-muted-foreground/25")}>{day.label}</span>
+      </div>
+    );
   }
 
   const intensityClass = getCellIntensityClass(day, maxCount);
 
-  const buttonClasses = cn(
-    "h-auto p-0",
-    baseClasses,
-    intensityClass,
-    getCalendarCellStateClass(day),
-    isInteractive
-      ? "cursor-pointer hover:brightness-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-inset"
-      : "cursor-default",
+  const chip = (
+    <span
+      className={cn(
+        chipClasses,
+        intensityClass,
+        getCalendarCellStateClass(day),
+        isInteractive &&
+          "group-hover/day:brightness-[0.97] group-focus-visible/day:ring-2 group-focus-visible/day:ring-ring/40 group-focus-visible/day:ring-inset",
+      )}
+    >
+      {day.label}
+      {day.isToday && (
+        <span
+          aria-hidden="true"
+          className="absolute bottom-[3px] left-1/2 size-[3px] -translate-x-1/2 rounded-full bg-blue-600/80 dark:bg-blue-300/80"
+        />
+      )}
+    </span>
   );
 
   const button = (
@@ -59,15 +75,9 @@ export const CalendarCell = memo((props: CalendarCellProps) => {
       aria-label={ariaLabel}
       aria-current={day.isToday ? "date" : undefined}
       aria-disabled={!isInteractive}
-      className={buttonClasses}
+      className={cn(cellClasses, "p-0 focus-visible:outline-none", isInteractive ? "cursor-pointer" : "cursor-default")}
     >
-      {day.label}
-      {day.isToday && (
-        <span
-          aria-hidden="true"
-          className="absolute bottom-[3px] left-1/2 size-[3px] -translate-x-1/2 rounded-full bg-blue-600/80 dark:bg-blue-300/80"
-        />
-      )}
+      {chip}
     </button>
   );
 

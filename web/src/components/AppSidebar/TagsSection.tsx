@@ -1,10 +1,12 @@
 import { HashIcon, ListIcon, ListTreeIcon } from "lucide-react";
 import { forwardRef, useMemo } from "react";
+import { Button } from "@/components/ui/button";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useLocalStorage, useOverflowTitle } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import TagTree from "../TagTree";
+import { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_COUNT_CLASSES, SIDEBAR_ROW_ICON_CLASSES, sidebarRowStateClasses } from "./SidebarRow";
 import SidebarSectionHeader from "./SidebarSectionHeader";
 
 interface Props {
@@ -16,7 +18,7 @@ const TagPath = forwardRef<HTMLSpanElement, { tag: string }>(({ tag }, ref) => {
   const segments = tag.split("/");
 
   return (
-    <span ref={ref} className="min-w-0 truncate text-left">
+    <span ref={ref} className="min-w-0 flex-1 truncate text-left">
       {segments.map((segment, index) => (
         <span key={`${segment}-${index}`}>
           {index > 0 && <span className="px-0.5 text-muted-foreground/40">/</span>}
@@ -43,17 +45,12 @@ const FlatTagRow = ({ tag, amount, active, onClick }: FlatTagRowProps) => {
       type="button"
       aria-pressed={active || undefined}
       title={title}
-      className={cn(
-        "group grid h-[26px] w-full min-w-0 grid-cols-[12px_minmax(0,1fr)_auto] items-center gap-x-1.5 rounded-[5px] px-2 text-xs leading-4 text-muted-foreground transition-colors hover:bg-sidebar-accent/65 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-ring/40",
-        active && "bg-sidebar-accent font-medium text-sidebar-accent-foreground hover:bg-sidebar-accent",
-      )}
+      className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(active))}
       onClick={onClick}
     >
-      <HashIcon aria-hidden="true" className="size-3 text-muted-foreground/65" strokeWidth={1.75} />
+      <HashIcon aria-hidden="true" className={SIDEBAR_ROW_ICON_CLASSES} strokeWidth={1.8} />
       <TagPath ref={ref} tag={tag} />
-      <span className={cn("shrink-0 leading-none tabular-nums text-muted-foreground/50", active && "text-sidebar-accent-foreground/65")}>
-        {amount}
-      </span>
+      <span className={SIDEBAR_ROW_COUNT_CLASSES}>{amount}</span>
     </button>
   );
 };
@@ -86,30 +83,26 @@ const TagsSection = ({ tagCount, onSelect }: Props) => {
       <SidebarSectionHeader
         action={
           <div className="flex items-center gap-0.5" role="group" aria-label={t("common.tags")}>
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon-sm"
               aria-label={t("common.tags")}
               aria-pressed={!treeMode}
-              className={cn(
-                "flex size-[22px] items-center justify-center rounded-md text-muted-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40",
-                !treeMode && "bg-sidebar-accent text-foreground",
-              )}
+              className={cn("size-5 rounded text-muted-foreground", !treeMode && "bg-accent text-foreground")}
               onClick={() => setTreeMode(false)}
             >
-              <ListIcon className="size-3.5" strokeWidth={1.7} />
-            </button>
-            <button
-              type="button"
+              <ListIcon className="size-3.5" strokeWidth={1.8} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon-sm"
               aria-label={`${t("common.tags")}: ${t("common.tree-mode")}`}
               aria-pressed={treeMode}
-              className={cn(
-                "flex size-[22px] items-center justify-center rounded-md text-muted-foreground/60 transition-colors hover:bg-sidebar-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/40",
-                treeMode && "bg-sidebar-accent text-foreground",
-              )}
+              className={cn("size-5 rounded text-muted-foreground", treeMode && "bg-accent text-foreground")}
               onClick={() => setTreeMode(true)}
             >
-              <ListTreeIcon className="size-3.5" strokeWidth={1.7} />
-            </button>
+              <ListTreeIcon className="size-3.5" strokeWidth={1.8} />
+            </Button>
           </div>
         }
       >
@@ -121,7 +114,7 @@ const TagsSection = ({ tagCount, onSelect }: Props) => {
       {treeMode ? (
         <TagTree tagAmounts={tags} activeTag={activeTag} onTagClick={handleTagClick} />
       ) : (
-        <div className="space-y-px">
+        <div className="space-y-0.5">
           {tags.map(([tag, amount]) => (
             <FlatTagRow key={tag} tag={tag} amount={amount} active={activeTags.has(tag)} onClick={() => handleTagClick(tag)} />
           ))}
