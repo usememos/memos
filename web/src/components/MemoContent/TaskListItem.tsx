@@ -65,6 +65,10 @@ export const TaskListItem: React.FC<TaskListItemProps> = ({ checked, node: _node
     });
   };
 
-  // Override the disabled prop from remark-gfm (which defaults to true)
-  return <Checkbox ref={checkboxRef} checked={checked} disabled={readonly} onCheckedChange={handleChange} className={props.className} />;
+  // Override the disabled prop from remark-gfm (which defaults to true).
+  // `checked` is undefined for unchecked tasks; Base UI locks controlled/uncontrolled
+  // mode at mount, so coerce to boolean to keep the checkbox always controlled.
+  return (
+    <Checkbox ref={checkboxRef} checked={Boolean(checked)} disabled={readonly} onCheckedChange={handleChange} className={props.className} />
+  );
 };

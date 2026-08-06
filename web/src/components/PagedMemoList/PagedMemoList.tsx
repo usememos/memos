@@ -20,8 +20,9 @@ import Placeholder from "../Placeholder";
 import { estimateMemoCardHeight } from "./memoCardHeight";
 
 // Memo identity for React keys and grid planning. The pages use it for their renderer keys too,
-// so flow-list and grid identity can never drift apart.
-export const getMemoKey = (memo: Memo) => `${memo.name}-${memo.updateTime}`;
+// so flow-list and grid identity can never drift apart. Deliberately name-only: content updates
+// reconcile in place (updateTime is a protobuf Timestamp object, not usable in a template string).
+export const getMemoKey = (memo: Memo) => memo.name;
 
 // Columns never stretch past this, so 2 columns on a wide monitor stay readable and the
 // grid centers in the leftover space instead of filling it.

@@ -102,7 +102,7 @@ const MemoCommentSection = ({ memo, comments, parentPage, hasMoreComments, isFet
         {showEditor && EditorComponent && (
           <div className="w-full mb-2">
             <EditorComponent
-              cacheKey={`${memo.name}-${memo.updateTime}-comment`}
+              cacheKey={`${memo.name}-comment`}
               placeholder={t("editor.add-your-comment-here")}
               parentMemoName={memo.name}
               autoFocus
@@ -112,7 +112,7 @@ const MemoCommentSection = ({ memo, comments, parentPage, hasMoreComments, isFet
           </div>
         )}
         {comments.map((comment) => (
-          <div className="w-full" key={`${comment.name}-${comment.updateTime}`} id={extractMemoIdFromName(comment.name)}>
+          <div className="w-full" key={comment.name} id={extractMemoIdFromName(comment.name)}>
             <MemoView memo={comment} parentPage={parentPage} showCreator compact />
           </div>
         ))}
