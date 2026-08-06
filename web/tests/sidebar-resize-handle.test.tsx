@@ -14,24 +14,28 @@ vi.mock("@/utils/i18n", () => ({
   useTranslate: () => (key: string) => key,
 }));
 
-// Mirrors how RootLayout wires the handle: the shell owns the custom property, the rail's
-// handle writes to it.
-const Harness = ({ onWidthChange = vi.fn() }: { onWidthChange?: (width: number) => void }) => {
+// Mirrors how RootLayout wires the handle: the shell owns the custom property and the rail's
+// handle writes to it. `railMounted` stands in for RootLayout's `md &&` gate, which unmounts the
+// rail — and with it the handle — when the window drops below the desktop breakpoint, while the
+// shell itself stays mounted.
+const Harness = ({ onWidthChange = vi.fn(), railMounted = true }: { onWidthChange?: (width: number) => void; railMounted?: boolean }) => {
   const targetRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(SIDEBAR_DEFAULT_WIDTH);
 
   return (
     <div ref={targetRef} data-testid="shell" style={{ [SIDEBAR_WIDTH_VAR]: `${width}px` } as CSSProperties}>
-      <SidebarResizeHandle
-        width={width}
-        minWidth={SIDEBAR_MIN_WIDTH}
-        maxWidth={SIDEBAR_MAX_WIDTH}
-        onWidthChange={(next) => {
-          setWidth(next);
-          onWidthChange(next);
-        }}
-        targetRef={targetRef}
-      />
+      {railMounted && (
+        <SidebarResizeHandle
+          width={width}
+          minWidth={SIDEBAR_MIN_WIDTH}
+          maxWidth={SIDEBAR_MAX_WIDTH}
+          onWidthChange={(next) => {
+            setWidth(next);
+            onWidthChange(next);
+          }}
+          targetRef={targetRef}
+        />
+      )}
     </div>
   );
 };
@@ -63,7 +67,8 @@ const drag = (from: number, to: number) => {
 
 describe("<SidebarResizeHandle />", () => {
   beforeEach(() => {
-    // jsdom ships PointerEvent but not pointer capture.
+    // jsdom ships PointerEvent but not pointer capture. `vi.spyOn` cannot stand in for a method
+    // that does not exist at all, so these are plain assignments — undone in afterEach.
     Element.prototype.setPointerCapture = vi.fn();
     Element.prototype.hasPointerCapture = vi.fn(() => true);
     Element.prototype.releasePointerCapture = vi.fn();
@@ -76,6 +81,11 @@ describe("<SidebarResizeHandle />", () => {
 
   afterEach(() => {
     vi.unstubAllGlobals();
+    // Prototype assignments outlive `restoreMocks`, so drop them rather than leaning on
+    // Vitest's per-file isolation to hide the leak.
+    for (const method of ["setPointerCapture", "hasPointerCapture", "releasePointerCapture"]) {
+      Reflect.deleteProperty(Element.prototype, method);
+    }
   });
 
   it("exposes splitter semantics with the current width and its bounds", () => {
@@ -215,6 +225,32 @@ describe("<SidebarResizeHandle />", () => {
 
     expect(onWidthChange).toHaveBeenCalledWith(SIDEBAR_DEFAULT_WIDTH + 24);
     expect(document.body.style.cursor).toBe("");
+  });
+
+  it("reverts the preview when a drag is interrupted by the rail unmounting", () => {
+    const onWidthChange = vi.fn();
+    const { rerender } = render(<Harness onWidthChange={onWidthChange} />);
+
+    drag(SIDEBAR_DEFAULT_WIDTH, SIDEBAR_DEFAULT_WIDTH + 60);
+    expect(shellWidthVar()).toBe(`${SIDEBAR_DEFAULT_WIDTH + 60}px`);
+
+    // The window crosses below the desktop breakpoint mid-drag, so no pointerup ever arrives.
+    rerender(<Harness onWidthChange={onWidthChange} railMounted={false} />);
+
+    // Nothing was committed, so the shell must not keep displaying the previewed width.
+    expect(onWidthChange).not.toHaveBeenCalled();
+    expect(shellWidthVar()).toBe(`${SIDEBAR_DEFAULT_WIDTH}px`);
+  });
+
+  it("leaves the committed width alone when the rail unmounts outside a drag", () => {
+    const onWidthChange = vi.fn();
+    const { rerender } = render(<Harness onWidthChange={onWidthChange} />);
+
+    const handle = drag(SIDEBAR_DEFAULT_WIDTH, SIDEBAR_DEFAULT_WIDTH + 60);
+    fireEvent.pointerUp(handle, { pointerId: 1, clientX: SIDEBAR_DEFAULT_WIDTH + 60 });
+    rerender(<Harness onWidthChange={onWidthChange} railMounted={false} />);
+
+    expect(shellWidthVar()).toBe(`${SIDEBAR_DEFAULT_WIDTH + 60}px`);
   });
 
   it("ignores pointer movement that did not start on the handle", () => {

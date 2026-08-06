@@ -25,7 +25,10 @@ interface Props {
 
 const SidebarResizeHandle = ({ width, minWidth, maxWidth, onWidthChange, targetRef }: Props) => {
   const t = useTranslate();
+  // `dragging` drives the band's styling; `draggingRef` is what the handlers and the unmount
+  // cleanup read, so neither depends on a state update having been flushed first.
   const [dragging, setDragging] = useState(false);
+  const draggingRef = useRef(false);
   const frameRef = useRef<number | null>(null);
   const pendingRef = useRef(width);
   const originRef = useRef({ x: 0, width });
@@ -52,7 +55,20 @@ const SidebarResizeHandle = ({ width, minWidth, maxWidth, onWidthChange, targetR
     frameRef.current = null;
   }, []);
 
-  useEffect(() => stopPreview, [stopPreview]);
+  // Unmounting can interrupt a drag: the window crossing the desktop breakpoint takes the whole
+  // rail with it, so `endDrag` never runs. The shell outlives the rail and React will not rewrite
+  // a style property whose value it thinks is unchanged, so the previewed width would otherwise
+  // survive as layout that disagrees with both state and storage. Put the committed width back —
+  // it is the width the drag started from, since a drag commits nothing until release.
+  useEffect(
+    () => () => {
+      stopPreview();
+      if (draggingRef.current) {
+        targetRef.current?.style.setProperty(SIDEBAR_WIDTH_VAR, `${originRef.current.width}px`);
+      }
+    },
+    [stopPreview, targetRef],
+  );
 
   // Hold the resize cursor for the whole gesture, so it does not flicker into a text caret
   // whenever the pointer outruns the handle and crosses the memo list.
@@ -75,22 +91,24 @@ const SidebarResizeHandle = ({ width, minWidth, maxWidth, onWidthChange, targetR
     event.currentTarget.setPointerCapture(event.pointerId);
     originRef.current = { x: event.clientX, width };
     pendingRef.current = width;
+    draggingRef.current = true;
     setDragging(true);
   };
 
   const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!dragging) return;
+    if (!draggingRef.current) return;
     // Track the delta rather than the raw cursor x, so grabbing anywhere in the strip
     // does not snap the rail's edge to the pointer.
     previewWidth(clamp(originRef.current.width + event.clientX - originRef.current.x));
   };
 
   const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!dragging) return;
+    if (!draggingRef.current) return;
     if (event.currentTarget.hasPointerCapture(event.pointerId)) {
       event.currentTarget.releasePointerCapture(event.pointerId);
     }
     stopPreview();
+    draggingRef.current = false;
     setDragging(false);
     onWidthChange(pendingRef.current);
   };
