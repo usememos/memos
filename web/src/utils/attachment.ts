@@ -8,11 +8,34 @@ export const getAttachmentUrl = (attachment: Attachment) => {
   return `${window.location.origin}/file/${attachment.name}/${attachment.filename}`;
 };
 
+// Appends a flag param to share-mode links so anonymous viewers stay authorized; S3 presigned URLs are left untouched.
+const withShareTokenParam = (externalLink: string | undefined, key: string): string | undefined => {
+  if (!externalLink) {
+    return undefined;
+  }
+  const url = new URL(externalLink, window.location.origin);
+  if (!url.searchParams.has("share_token")) {
+    return undefined;
+  }
+  url.searchParams.set(key, "true");
+  return url.toString();
+};
+
 export const getAttachmentThumbnailUrl = (attachment: Attachment) => {
+  const shareUrl = withShareTokenParam(attachment.externalLink, "thumbnail");
+  if (shareUrl) {
+    return shareUrl;
+  }
+
   return `${window.location.origin}/file/${attachment.name}/${attachment.filename}?thumbnail=true`;
 };
 
 export const getAttachmentMotionClipUrl = (attachment: Attachment) => {
+  const shareUrl = withShareTokenParam(attachment.externalLink, "motion");
+  if (shareUrl) {
+    return shareUrl;
+  }
+
   return `${window.location.origin}/file/${attachment.name}/${attachment.filename}?motion=true`;
 };
 
