@@ -1,6 +1,14 @@
+import type { CSSProperties } from "react";
 import { useEffect, useRef } from "react";
 import { Navigate, Outlet, useLocation, useSearchParams } from "react-router-dom";
-import AppSidebar, { MobileAppHeader, MobileAppSidebar, QuickFindDialog } from "@/components/AppSidebar";
+import AppSidebar, {
+  MobileAppHeader,
+  MobileAppSidebar,
+  QuickFindDialog,
+  SIDEBAR_WIDTH_VAR,
+  SidebarResizeHandle,
+  useSidebarWidth,
+} from "@/components/AppSidebar";
 import { AppSidebarProvider } from "@/contexts/AppSidebarContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import { MemoFilterProvider, useMemoFilterContext } from "@/contexts/MemoFilterContext";
@@ -36,6 +44,8 @@ const RootLayoutContent = () => {
   const { removeFilter } = useMemoFilterContext();
   const { pathname } = location;
   const prevPathnameRef = useRef<string | undefined>(undefined);
+  const shellRef = useRef<HTMLDivElement>(null);
+  const { width: sidebarWidth, minWidth, maxWidth, setWidth: setSidebarWidth } = useSidebarWidth();
 
   useEffect(() => {
     const prevPathname = prevPathnameRef.current;
@@ -58,14 +68,21 @@ const RootLayoutContent = () => {
 
   return (
     <AppSidebarProvider>
-      <div className="min-h-full w-full bg-background">
+      <div ref={shellRef} className="min-h-full w-full bg-background" style={{ [SIDEBAR_WIDTH_VAR]: `${sidebarWidth}px` } as CSSProperties}>
         {md && (
-          <div className="fixed inset-y-0 left-0 z-30 w-64 border-r border-border/70">
+          <div className="fixed inset-y-0 left-0 z-30 w-(--app-sidebar-width) border-r border-border/70">
             <AppSidebar />
+            <SidebarResizeHandle
+              width={sidebarWidth}
+              minWidth={minWidth}
+              maxWidth={maxWidth}
+              onWidthChange={setSidebarWidth}
+              targetRef={shellRef}
+            />
           </div>
         )}
         <MobileAppSidebar />
-        <main className="flex min-h-full w-full min-w-0 flex-col items-center md:pl-64">
+        <main className="flex min-h-full w-full min-w-0 flex-col items-center md:pl-(--app-sidebar-width)">
           <MobileAppHeader />
           {profile.demo && <DemoBanner />}
           <Outlet />
