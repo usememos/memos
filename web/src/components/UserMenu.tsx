@@ -34,11 +34,10 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 interface Props {
   collapsed?: boolean;
-  showAbout?: boolean;
 }
 
 const UserMenu = (props: Props) => {
-  const { collapsed, showAbout = true } = props;
+  const { collapsed } = props;
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const { setMobileOpen } = useAppSidebar();
@@ -179,12 +178,10 @@ const UserMenu = (props: Props) => {
             ))}
           </DropdownMenuSubContent>
         </DropdownMenuSub>
-        {showAbout && (
-          <DropdownMenuItem onClick={() => navigateFromMenu(Routes.ABOUT)}>
-            <InfoIcon className="size-4 text-muted-foreground" />
-            {t("common.about")}
-          </DropdownMenuItem>
-        )}
+        <DropdownMenuItem onClick={() => navigateFromMenu(Routes.ABOUT)}>
+          <InfoIcon className="size-4 text-muted-foreground" />
+          {t("common.about")}
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={() => navigateFromMenu(Routes.SETTING)}>
           <SettingsIcon className="size-4 text-muted-foreground" />
           {t("common.settings")}

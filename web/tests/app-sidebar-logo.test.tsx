@@ -124,20 +124,21 @@ describe("App sidebar logo", () => {
     expect(screen.queryByRole("link", { name: "common.home" })).not.toBeInTheDocument();
   });
 
-  it("shows common destinations instead of empty route content for an authenticated user", () => {
+  it("falls back to the library content on a route without a specific tenant", () => {
     render(
       <MemoryRouter initialEntries={["/404"]}>
         <AppSidebar />
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole("link", { name: "common.home" })).toHaveAttribute("href", "/");
-    expect(screen.getByRole("link", { name: "common.explore" })).toHaveAttribute("href", "/explore");
+    expect(screen.getByText("Calendar")).toBeInTheDocument();
+    expect(screen.getByText("common.views")).toBeInTheDocument();
+    expect(screen.getByText("Tags")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "common.attachments" })).toHaveAttribute("href", "/attachments");
     expect(screen.getByRole("link", { name: "common.inbox" })).toHaveAttribute("href", "/inbox");
-    expect(screen.getByRole("link", { name: "common.about" })).toHaveAttribute("href", "/about");
+    expect(screen.queryByRole("link", { name: "common.home" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "common.about" })).not.toBeInTheDocument();
     expect(screen.getByText("User menu").closest("footer")).not.toBeNull();
-    expect(screen.queryByText("Calendar")).not.toBeInTheDocument();
   });
 
   it("uses a visitor sidebar for a guest on a route without contextual content", () => {
@@ -156,7 +157,8 @@ describe("App sidebar logo", () => {
     expect(screen.getByRole("link", { name: "common.sign-in-to-memos" }).closest("footer")).not.toBeNull();
   });
 
-  it("marks About active on the About page", () => {
+  it("marks About active for a guest on the About page", () => {
+    authState.currentUser = undefined;
     render(
       <MemoryRouter initialEntries={["/about"]}>
         <AppSidebar />
@@ -164,6 +166,7 @@ describe("App sidebar logo", () => {
     );
 
     expect(screen.getByRole("link", { name: "common.about" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByText("Calendar")).toBeInTheDocument();
   });
 
   it("uses a compact scope menu and places views below the calendar", async () => {
