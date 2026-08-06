@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/pkg/errors"
 	"golang.org/x/sync/semaphore"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
@@ -65,6 +66,29 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 	}
 }
 
+// newGatewayMarshaler mirrors grpc-gateway's default JSON marshaler with one
+// change: EmitDefaultValues replaces EmitUnpopulated. Both keep proto3 scalar
+// defaults ("" / 0 / false) and empty lists in the payload — the generated
+// OpenAPI schema declares several of them required — but EmitUnpopulated also
+// writes `null` for every unset message field (e.g. Attachment.motion_media on
+// a plain image). No schema marks those fields nullable, so a client that
+// validates responses against the spec rejects them; the MCP tools serve the
+// same schema as their outputSchema, and strict MCP clients fail every call
+// that returns an attachment. EmitDefaultValues omits unset message fields
+// instead, which the schema already allows.
+func newGatewayMarshaler() *runtime.HTTPBodyMarshaler {
+	return &runtime.HTTPBodyMarshaler{
+		Marshaler: &runtime.JSONPb{
+			MarshalOptions: protojson.MarshalOptions{
+				EmitDefaultValues: true,
+			},
+			UnmarshalOptions: protojson.UnmarshalOptions{
+				DiscardUnknown: true,
+			},
+		},
+	}
+}
+
 // RegisterGateway registers the gRPC-Gateway and Connect handlers with the given Echo instance.
 func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Echo) error {
 	// Shared authorizer: one source of truth for authentication and anonymous-access
@@ -108,6 +132,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 
 	// Create gRPC-Gateway mux with auth middleware.
 	gwMux := runtime.NewServeMux(
+		runtime.WithMarshalerOption(runtime.MIMEWildcard, newGatewayMarshaler()),
 		runtime.WithMiddlewares(gatewayAuthMiddleware),
 	)
 	if err := v1pb.RegisterInstanceServiceHandlerServer(ctx, gwMux, s); err != nil {

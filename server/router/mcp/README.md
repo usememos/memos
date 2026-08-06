@@ -198,6 +198,15 @@ not replace API authorization.
 This is deliberate: it fixes [#6022](https://github.com/usememos/memos/issues/6022),
 where collection tools returned a bare array that strict MCP clients reject.
 
+Inside that envelope the API's JSON is passed through verbatim, so the gateway's
+own encoding is part of the tool contract: whatever it emits is validated against
+the output schema resolved from the same OpenAPI spec. grpc-gateway's stock
+marshaler emits `null` for unset message fields, which no schema declares as
+nullable — `RegisterGateway` therefore installs a marshaler that omits them
+(`newGatewayMarshaler` in `server/router/api/v1/v1.go`). That fixes
+[#6139](https://github.com/usememos/memos/issues/6139), where `"motionMedia": null`
+failed every tool call returning an attachment.
+
 ## Error handling
 
 Failures are returned as MCP tool errors (`CallToolResult` with `IsError: true`

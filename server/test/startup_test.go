@@ -415,6 +415,48 @@ func TestStartupPrivateInstanceGatewayPolicy(t *testing.T) {
 		"anonymous RSS should be unavailable on a private instance")
 }
 
+// TestStartupGatewayOmitsNullMessageFields checks the JSON the gateway actually
+// puts on the wire against the contract the generated OpenAPI schema publishes.
+// grpc-gateway's stock marshaler emits `"motionMedia": null` for a plain image
+// attachment; the schema types that field as an object, so clients validating
+// responses against it — MCP clients serve that schema as the tool outputSchema
+// — reject every memo carrying an attachment. The marshaler override lives in
+// RegisterGateway, so only a booted server proves it is wired in.
+func TestStartupGatewayOmitsNullMessageFields(t *testing.T) {
+	ctx := context.Background()
+	inst := bootInstance(ctx, t, instanceOptions{instanceURL: "http://localhost"})
+
+	inst.createAdmin(t)
+	token := inst.signIn(t)
+
+	// A 1x1 GIF: small enough to inline, real enough for the type sniffing the
+	// attachment service runs on upload.
+	const onePixelGIF = "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+	status, body := inst.do(t, http.MethodPost, "/api/v1/attachments", token, map[string]any{
+		"filename": "pixel.gif",
+		"type":     "image/gif",
+		"content":  onePixelGIF,
+	})
+	require.Equal(t, http.StatusOK, status, "creating an attachment should succeed: %s", body)
+
+	var created struct {
+		Name string `json:"name"`
+	}
+	require.NoError(t, json.Unmarshal(body, &created))
+	require.NotEmpty(t, created.Name, "the created attachment should carry a name: %s", body)
+
+	status, body = inst.do(t, http.MethodGet, "/api/v1/"+created.Name, token, nil)
+	require.Equal(t, http.StatusOK, status, "reading the attachment should succeed: %s", body)
+
+	fetched := map[string]any{}
+	require.NoError(t, json.Unmarshal(body, &fetched))
+	require.NotContains(t, fetched, "motionMedia", "an unset message field must be omitted, not null: %s", body)
+	// Scalar defaults still ship, so schema-required fields stay present.
+	require.Equal(t, "", fetched["externalLink"])
+	require.Equal(t, "pixel.gif", fetched["filename"])
+	require.Equal(t, "image/gif", fetched["type"])
+}
+
 // TestStartupDemoMode verifies demo mode boots, which exercises the seed path
 // in store.Migrate that prod-mode startups never touch.
 func TestStartupDemoMode(t *testing.T) {
