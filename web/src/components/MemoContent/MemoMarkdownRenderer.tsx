@@ -2,6 +2,7 @@ import type { Element } from "hast";
 import { type ComponentProps, memo, type ReactNode, Suspense } from "react";
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
+import { buildRehypePlugins, buildRemarkPlugins } from "@/components/MemoContent/pipeline";
 import { isMentionElement, isTagElement, isTaskListItemElement } from "@/types/markdown";
 import { lazyWithReload } from "@/utils/lazy";
 import { CodeBlock } from "./CodeBlock";
@@ -9,7 +10,6 @@ import { MarkdownRenderContext, rootMarkdownRenderContext } from "./MarkdownRend
 import { Mention } from "./Mention";
 import { AnchorLink, Blockquote, Heading, HorizontalRule, Image, InlineCode, Link, List, ListItem, Paragraph } from "./markdown";
 import { hasMathSyntax } from "./math";
-import { buildRehypePlugins, buildRemarkPlugins } from "./pipeline";
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "./Table";
 import { Tag } from "./Tag";
 import { TaskListItem } from "./TaskListItem";

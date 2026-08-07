@@ -27,9 +27,12 @@ describe("TagTree rendering", () => {
     expect(screen.getAllByRole("treeitem")).toHaveLength(2);
     expect(screen.queryByText("b")).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByLabelText("common.expand #a"));
+    const disclosure = screen.getByLabelText("common.expand #a");
+    expect(disclosure).toHaveAttribute("aria-expanded", "false");
+    fireEvent.click(disclosure);
     expect(screen.getByText("b")).toBeVisible();
     expect(storedExpansion().expanded).toEqual(["a"]);
+    expect(screen.getByLabelText("common.collapse #a")).toHaveAttribute("aria-expanded", "true");
 
     fireEvent.click(screen.getByLabelText("common.collapse #a"));
     expect(screen.queryByText("b")).not.toBeInTheDocument();
@@ -75,10 +78,12 @@ describe("TagTree rendering", () => {
     render(<TagTree tagAmounts={[["personal/travel/singapore", 1]]} scope="home" onTagClick={vi.fn()} />);
 
     // The row is the disclosure, so it is the only tab stop on that line.
-    expect(screen.getAllByLabelText(/common\.(expand|collapse) personal$/)).toHaveLength(1);
+    const personalDisclosure = screen.getByLabelText(/common\.(expand|collapse) personal$/);
+    expect(personalDisclosure).toHaveAttribute("aria-expanded", "false");
 
-    fireEvent.click(screen.getByText("personal").closest("button") as HTMLButtonElement);
+    fireEvent.click(personalDisclosure);
     expect(screen.getByText("travel")).toBeVisible();
+    expect(screen.getByLabelText("common.collapse personal")).toHaveAttribute("aria-expanded", "true");
 
     fireEvent.click(screen.getByText("travel").closest("button") as HTMLButtonElement);
     expect(screen.getByText("singapore")).toBeVisible();

@@ -142,6 +142,7 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
           <button
             type="button"
             aria-label={`${open ? t("common.collapse") : t("common.expand")} ${tag.text}`}
+            aria-expanded={open}
             className={cn("flex h-full min-w-0 flex-1 items-center gap-2 text-left", SIDEBAR_ROW_FOCUS_CLASSES)}
             onClick={() => onToggle(tag.text)}
           >
@@ -156,6 +157,7 @@ const TagItem = ({ tag, depth, activeTag, expanded, onTagClick, onToggle }: TagI
           <button
             type="button"
             aria-label={`${open ? t("common.collapse") : t("common.expand")} #${tag.text}`}
+            aria-expanded={open}
             className={cn(
               "-mr-1 flex size-6 shrink-0 items-center justify-center rounded text-muted-foreground/70 hover:bg-background/70 hover:text-foreground",
               SIDEBAR_ROW_FOCUS_CLASSES,

@@ -93,10 +93,12 @@ const MemoDetail = () => {
   // ref guards against re-scrolling the same hash on every later comments page-load.
   const scrolledHashRef = useRef("");
   useEffect(() => {
-    if (!hash || scrolledHashRef.current === hash) return;
+    if (!hash) return;
+    const scrollKey = `${memoName}\0${hash}`;
+    if (scrolledHashRef.current === scrollKey) return;
     const el = findMemoAnchorTarget(document, memoName, decodeURIComponent(hash.slice(1)));
     if (!el) return;
-    scrolledHashRef.current = hash;
+    scrolledHashRef.current = scrollKey;
     el.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [hash, memo, memoName, comments]);
 
