@@ -20,7 +20,17 @@ const MemoShareImageDialog = lazyWithReload(() => import("../MemoActionMenu/Memo
 const PreviewImageDialog = lazyWithReload(() => import("../PreviewImageDialog"));
 
 const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
-  const { memo: memoData, className, parentPage: parentPageProp, compact, showCreator, showVisibility, showPinned } = props;
+  const {
+    memo: memoData,
+    className,
+    parentPage: parentPageProp,
+    compact,
+    showCreator,
+    showVisibility,
+    showPinned,
+    showBlurredContent: controlledShowBlurredContent,
+    onBlurVisibilityChange,
+  } = props;
   const cardRef = useRef<HTMLDivElement>(null);
   const [showEditor, setShowEditor] = useState(false);
   const [EditorComponent, setEditorComponent] = useState<ComponentType<MemoEditorProps>>();
@@ -34,9 +44,17 @@ const MemoView: React.FC<MemoViewProps> = (props: MemoViewProps) => {
   const parentPage = parentPageProp || "/";
 
   // Blur content when any tag has blur_content enabled in the current user's tag settings.
-  const [showBlurredContent, setShowBlurredContent] = useState(false);
+  const [localShowBlurredContent, setLocalShowBlurredContent] = useState(false);
+  const showBlurredContent = controlledShowBlurredContent ?? localShowBlurredContent;
   const blurred = memoData.tags?.some((tag) => userTagsSetting && findTagMetadata(tag, userTagsSetting)?.blurContent) ?? false;
-  const toggleBlurVisibility = useCallback(() => setShowBlurredContent((prev) => !prev), []);
+  const toggleBlurVisibility = useCallback(() => {
+    const nextShowBlurredContent = !showBlurredContent;
+    if (onBlurVisibilityChange) {
+      onBlurVisibilityChange(nextShowBlurredContent);
+    } else {
+      setLocalShowBlurredContent((prev) => !prev);
+    }
+  }, [onBlurVisibilityChange, showBlurredContent]);
 
   const { previewState, openPreview, setPreviewOpen } = useImagePreview();
 

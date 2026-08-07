@@ -152,4 +152,32 @@ describe("MemoDetailSidebar", () => {
     expect(screen.getByText("memo.outline")).toBeInTheDocument();
     expect(screen.getByTestId("outline")).toHaveTextContent("2");
   });
+
+  it("hides the outline until blurred content is revealed", () => {
+    const memo = create(MemoSchema, {
+      name: "memos/blurred-outline",
+      creator: "users/alice",
+      state: State.NORMAL,
+      visibility: Visibility.PUBLIC,
+      content: "# Secret overview\n\n## Secret details",
+    });
+
+    const { rerender } = render(
+      <MemoryRouter>
+        <MemoDetailSidebar memo={memo} blurred />
+      </MemoryRouter>,
+    );
+
+    expect(screen.queryByText("memo.outline")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("outline")).not.toBeInTheDocument();
+
+    rerender(
+      <MemoryRouter>
+        <MemoDetailSidebar memo={memo} blurred showBlurredContent />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("memo.outline")).toBeInTheDocument();
+    expect(screen.getByTestId("outline")).toHaveTextContent("2");
+  });
 });

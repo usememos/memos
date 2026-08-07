@@ -26,6 +26,8 @@ interface Props {
   className?: string;
   onShareImageOpen?: () => void;
   forceReadonly?: boolean;
+  blurred?: boolean;
+  showBlurredContent?: boolean;
 }
 
 const Section = ({ label, children }: { label: string; children: React.ReactNode }) => (
@@ -57,7 +59,14 @@ const BacklinkRow = ({ relation, snippet }: { relation: MemoRelation; snippet: s
   );
 };
 
-const MemoDetailSidebar = ({ memo, className, onShareImageOpen, forceReadonly = false }: Props) => {
+const MemoDetailSidebar = ({
+  memo,
+  className,
+  onShareImageOpen,
+  forceReadonly = false,
+  blurred = false,
+  showBlurredContent = false,
+}: Props) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const { profile } = useInstance();
@@ -68,7 +77,10 @@ const MemoDetailSidebar = ({ memo, className, onShareImageOpen, forceReadonly = 
   const canPin = !readonly && !memo.parent && memo.state === State.NORMAL;
   const canManageShares = !forceReadonly && !memo.parent && (memo.creator === currentUser?.name || isSuperUser(currentUser));
 
-  const headings = useMemo(() => extractHeadings(memo.content), [memo.content]);
+  const headings = useMemo(
+    () => (blurred && !showBlurredContent ? [] : extractHeadings(memo.content)),
+    [blurred, memo.content, showBlurredContent],
+  );
   const { referenced } = useMemo(() => getRelationBuckets(memo.relations, memo.name), [memo.relations, memo.name]);
   const backlinkMemoNames = useMemo(
     () =>

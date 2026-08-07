@@ -373,6 +373,8 @@ const MemoDetailSidebarContent = () => {
       memo={memoDetail.memo}
       forceReadonly={memoDetail.readonly}
       onShareImageOpen={memoDetail.onShareImageOpen}
+      blurred={memoDetail.blurred}
+      showBlurredContent={memoDetail.showBlurredContent}
       className="pb-2"
     />
   );
