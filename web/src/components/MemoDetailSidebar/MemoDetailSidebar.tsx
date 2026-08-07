@@ -60,13 +60,7 @@ const BacklinkRow = ({ relation, snippet }: { relation: MemoRelation; snippet: s
   );
 };
 
-const MemoDetailSidebar = ({
-  memo,
-  className,
-  onShareImageOpen,
-  forceReadonly = false,
-  showBlurredContent = false,
-}: Props) => {
+const MemoDetailSidebar = ({ memo, className, onShareImageOpen, forceReadonly = false, showBlurredContent = false }: Props) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const { isUserSettingsInitialized, userTagsSetting } = useAuth();
