@@ -125,7 +125,7 @@ const TagsSection = ({ tagCount, onSelect, navigationTarget, scope }: Props) => 
         </span>
       </SidebarSectionHeader>
       {treeMode ? (
-        <TagTree tagAmounts={tags} activeTag={activeTag} scope={scope} onTagClick={handleTagClick} />
+        <TagTree key={scope} tagAmounts={tags} activeTag={activeTag} scope={scope} onTagClick={handleTagClick} />
       ) : (
         <div className="space-y-0.5">
           {tags.map(([tag, amount]) => (
