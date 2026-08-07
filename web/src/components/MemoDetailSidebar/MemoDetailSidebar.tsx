@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import SidebarRow, { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_ICON_CLASSES } from "@/components/AppSidebar/SidebarRow";
 import SidebarSectionHeader from "@/components/AppSidebar/SidebarSectionHeader";
+import { extractHeadings } from "@/components/MemoContent/pipeline";
 import { getRelationBuckets, getRelationMemo } from "@/components/MemoMetadata/Relation/relationHelpers";
 import { useResolvedRelationMemos } from "@/components/MemoMetadata/Relation/useResolvedRelationMemos";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -16,7 +17,6 @@ import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { Memo, type MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
 import { useTranslate } from "@/utils/i18n";
-import { extractHeadings } from "@/utils/markdown-manipulation";
 import { isSuperUser } from "@/utils/user";
 import MemoOutline from "./MemoOutline";
 import MemoSharePanel from "./MemoSharePanel";
@@ -31,7 +31,9 @@ interface Props {
 const Section = ({ label, children }: { label: string; children: React.ReactNode }) => (
   <section className="w-full">
     <SidebarSectionHeader>{label}</SidebarSectionHeader>
-    <div className="space-y-0.5">{children}</div>
+    {/* flex gap, not space-y: open popups insert fixed-position focus guards next to
+        their trigger, and space-y's :not(:last-child) margin would count them (#6154). */}
+    <div className="flex flex-col gap-0.5">{children}</div>
   </section>
 );
 
@@ -145,7 +147,7 @@ const MemoDetailSidebar = ({ memo, className, onShareImageOpen, forceReadonly = 
 
       {headings.length > 1 && (
         <Section label={t("memo.outline")}>
-          <MemoOutline headings={headings} />
+          <MemoOutline headings={headings} memoName={memo.name} />
         </Section>
       )}
 

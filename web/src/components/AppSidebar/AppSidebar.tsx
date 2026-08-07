@@ -249,7 +249,7 @@ const CollectionSidebarContent = ({ context }: { context: MemoStatsContext }) =>
         <StatisticsView statisticsData={statistics} navigationTarget={filterTarget} onDateSelect={() => setMobileOpen(false)} />
       </section>
       {showViews && <ViewsSection />}
-      <TagsSection tagCount={tags} navigationTarget={filterTarget} onSelect={() => setMobileOpen(false)} />
+      <TagsSection tagCount={tags} navigationTarget={filterTarget} scope={statsUserName ?? context} onSelect={() => setMobileOpen(false)} />
     </div>
   );
 };

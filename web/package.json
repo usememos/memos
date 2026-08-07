@@ -47,9 +47,9 @@
     "mdast-util-from-markdown": "^2.0.3",
     "mdast-util-gfm": "^3.1.0",
     "mermaid": "^11.14.0",
+    "micromark-extension-gfm": "^3.0.0",
     "micromark-util-decode-string": "^2.0.1",
     "micromark-util-normalize-identifier": "^2.0.1",
-    "micromark-extension-gfm": "^3.0.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-hot-toast": "^2.6.0",
@@ -64,8 +64,11 @@
     "remark-breaks": "^4.0.0",
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.4",
+    "unified": "^11.0.5",
     "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {

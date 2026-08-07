@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { markdownStyles } from "@/lib/markdownStyles";
 import { cn } from "@/lib/utils";
+import { findAnchorTarget } from "@/utils/markdown-manipulation";
 import type { ReactMarkdownProps } from "./types";
 
 interface AnchorLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement>, ReactMarkdownProps {
@@ -29,7 +30,7 @@ export const AnchorLink = ({ href, memoName, compact, children, className, node:
     // Scope the lookup to this memo's own container so duplicate footnote ids elsewhere in a feed
     // can't steal the scroll.
     const root = event.currentTarget.closest("[data-memo-content]");
-    const target = root?.querySelector(`#${CSS.escape(id)}`);
+    const target = root && findAnchorTarget(root, id);
     if (target) {
       event.preventDefault();
       target.scrollIntoView({ behavior: "smooth", block: "center" });

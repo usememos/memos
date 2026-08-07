@@ -26,6 +26,7 @@ describe("sidebar row grammar", () => {
           ["a", 2],
           ["a/b", 1],
         ]}
+        scope="home"
         onTagClick={vi.fn()}
       />,
     );
@@ -42,6 +43,9 @@ describe("sidebar row grammar", () => {
           ["a", 2],
           ["a/b", 1],
         ]}
+        // The active tag keeps the nested row expanded into view.
+        activeTag="a/b"
+        scope="home"
         onTagClick={vi.fn()}
       />,
     );

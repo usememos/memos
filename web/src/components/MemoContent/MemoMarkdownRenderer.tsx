@@ -2,23 +2,14 @@ import type { Element } from "hast";
 import { type ComponentProps, memo, type ReactNode, Suspense } from "react";
 import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
-import rehypeSanitize from "rehype-sanitize";
-import remarkBreaks from "remark-breaks";
-import remarkGfm from "remark-gfm";
 import { isMentionElement, isTagElement, isTaskListItemElement } from "@/types/markdown";
 import { lazyWithReload } from "@/utils/lazy";
-import { rehypeHeadingId } from "@/utils/rehype-plugins/rehype-heading-id";
-import { remarkDisableSetext } from "@/utils/remark-plugins/remark-disable-setext";
-import { remarkPreserveType } from "@/utils/remark-plugins/remark-preserve-type";
-import { remarkSplitMixedTaskLists } from "@/utils/remark-plugins/remark-split-mixed-task-lists";
-import { remarkMemoSyntax } from "@/utils/remark-plugins/remark-tag";
 import { CodeBlock } from "./CodeBlock";
-import { SANITIZE_SCHEMA } from "./constants";
 import { MarkdownRenderContext, rootMarkdownRenderContext } from "./MarkdownRenderContext";
 import { Mention } from "./Mention";
 import { AnchorLink, Blockquote, Heading, HorizontalRule, Image, InlineCode, Link, List, ListItem, Paragraph } from "./markdown";
 import { hasMathSyntax } from "./math";
+import { buildRehypePlugins, buildRemarkPlugins } from "./pipeline";
 import { Table, TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from "./Table";
 import { Tag } from "./Tag";
 import { TaskListItem } from "./TaskListItem";
@@ -159,16 +150,8 @@ export const MemoMarkdownRendererCore = ({
   return (
     <MarkdownRenderContext.Provider value={rootMarkdownRenderContext}>
       <ReactMarkdown
-        remarkPlugins={[
-          remarkDisableSetext,
-          ...mathRemarkPlugins,
-          remarkGfm,
-          remarkSplitMixedTaskLists,
-          remarkMemoSyntax,
-          remarkBreaks,
-          remarkPreserveType,
-        ]}
-        rehypePlugins={[rehypeRaw, [rehypeSanitize, SANITIZE_SCHEMA], rehypeHeadingId, ...mathRehypePlugins]}
+        remarkPlugins={buildRemarkPlugins(mathRemarkPlugins)}
+        rehypePlugins={buildRehypePlugins(mathRehypePlugins)}
         components={markdownComponents}
       >
         {content}

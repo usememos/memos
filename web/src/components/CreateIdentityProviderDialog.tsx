@@ -241,7 +241,9 @@ function FormField({
   children: ReactNode;
 }) {
   return (
-    <div className="space-y-2">
+    // flex gap, not space-y: fields wrap Select triggers, whose focus guards would otherwise
+    // pick up the stack's margin and shift the field while the popup is open (see ui/popup.ts).
+    <div className="flex flex-col gap-2">
       <Label>
         {label}
         {required ? <span className="text-destructive">*</span> : null}
