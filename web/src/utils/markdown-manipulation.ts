@@ -137,11 +137,13 @@ export function extractHeadings(markdown: string): HeadingItem[] {
 }
 
 interface MdastNode {
+  type?: string;
   value?: string;
   children?: MdastNode[];
 }
 
 function getNodeText(node: MdastNode): string {
+  if (node.type === "html") return "";
   if (node.value) return node.value;
   if (node.children) return node.children.map(getNodeText).join("");
   return "";
