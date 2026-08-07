@@ -1,6 +1,6 @@
 import { Code, ConnectError } from "@connectrpc/connect";
 import { ArrowUpLeftFromCircleIcon } from "lucide-react";
-import { useCallback, useEffect, useMemo as useReactMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo as useReactMemo, useRef, useState } from "react";
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import MemoCommentSection from "@/components/MemoCommentSection";
 import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
@@ -12,7 +12,6 @@ import useMemoDetailError from "@/hooks/useMemoDetailError";
 import { useInfiniteMemoComments, useMemo } from "@/hooks/useMemoQueries";
 import { useSharedMemo, withShareAttachmentLinks } from "@/hooks/useMemoShareQueries";
 import { memoNamePrefix } from "@/lib/resource-names";
-import { findTagMetadata } from "@/lib/tag";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 
@@ -21,29 +20,27 @@ const MemoSidebarRegistration = ({
   from,
   readonly,
   onShareImageOpen,
-  blurred,
   showBlurredContent,
 }: {
   memo: Memo;
   from?: string;
   readonly: boolean;
   onShareImageOpen: () => void;
-  blurred: boolean;
   showBlurredContent: boolean;
 }) => {
   const { setMemoDetail } = useAppSidebar();
 
-  useEffect(() => {
-    setMemoDetail({ memo, from, readonly, onShareImageOpen, blurred, showBlurredContent });
-  }, [blurred, from, memo, onShareImageOpen, readonly, setMemoDetail, showBlurredContent]);
+  useLayoutEffect(() => {
+    setMemoDetail({ memo, from, readonly, onShareImageOpen, showBlurredContent });
+  }, [from, memo, onShareImageOpen, readonly, setMemoDetail, showBlurredContent]);
 
-  useEffect(() => () => setMemoDetail(undefined), [setMemoDetail]);
+  useLayoutEffect(() => () => setMemoDetail(undefined), [setMemoDetail]);
 
   return null;
 };
 
 const MemoDetail = () => {
-  const { isInitialized: authInitialized, userTagsSetting } = useAuth();
+  const { isInitialized: authInitialized } = useAuth();
   const { isInitialized: instanceInitialized } = useInstance();
   const [shareImageDialogOpen, setShareImageDialogOpen] = useState(false);
   const params = useParams();
@@ -58,6 +55,7 @@ const MemoDetail = () => {
 
   // Primary memo fetch — share token or direct name.
   const memoNameFromParams = params.uid ? `${memoNamePrefix}${params.uid}` : "";
+  const memoNavigationKey = isShareMode ? `share:${shareToken}` : memoNameFromParams;
   const {
     data: memoFromDirect,
     error: directError,
@@ -74,13 +72,13 @@ const MemoDetail = () => {
     if (!isShareMode) return memo;
     return { ...memo, attachments: withShareAttachmentLinks(memo.attachments as Attachment[], shareToken!) };
   }, [isShareMode, memo, shareToken]);
-  const blurred = displayMemo?.tags?.some((tag) => userTagsSetting && findTagMetadata(tag, userTagsSetting)?.blurContent) ?? false;
   const [revealedMemoName, setRevealedMemoName] = useState<string>();
   const showBlurredContent = Boolean(displayMemo && displayMemo.name === revealedMemoName);
   const handleBlurVisibilityChange = useCallback(
     (show: boolean) => setRevealedMemoName(show ? displayMemo?.name : undefined),
     [displayMemo?.name],
   );
+  useLayoutEffect(() => setRevealedMemoName(undefined), [memoNavigationKey]);
 
   useMemoDetailError({
     error: error as Error | null,
@@ -135,7 +133,6 @@ const MemoDetail = () => {
           from={parentPage}
           readonly={isShareMode}
           onShareImageOpen={handleShareImageOpen}
-          blurred={blurred}
           showBlurredContent={showBlurredContent}
         />
         <div className="w-full max-w-2xl px-4 sm:px-6">

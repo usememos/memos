@@ -8,10 +8,12 @@ import SidebarSectionHeader from "@/components/AppSidebar/SidebarSectionHeader";
 import { getRelationBuckets, getRelationMemo } from "@/components/MemoMetadata/Relation/relationHelpers";
 import { useResolvedRelationMemos } from "@/components/MemoMetadata/Relation/useResolvedRelationMemos";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import { useOverflowTitle } from "@/hooks";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useUpdateMemo } from "@/hooks/useMemoQueries";
+import { findTagMetadata } from "@/lib/tag";
 import { cn } from "@/lib/utils";
 import { State } from "@/types/proto/api/v1/common_pb";
 import { Memo, type MemoRelation } from "@/types/proto/api/v1/memo_service_pb";
@@ -26,7 +28,6 @@ interface Props {
   className?: string;
   onShareImageOpen?: () => void;
   forceReadonly?: boolean;
-  blurred?: boolean;
   showBlurredContent?: boolean;
 }
 
@@ -64,11 +65,11 @@ const MemoDetailSidebar = ({
   className,
   onShareImageOpen,
   forceReadonly = false,
-  blurred = false,
   showBlurredContent = false,
 }: Props) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
+  const { isUserSettingsInitialized, userTagsSetting } = useAuth();
   const { profile } = useInstance();
   const { mutateAsync: updateMemo } = useUpdateMemo();
   const [sharePanelOpen, setSharePanelOpen] = useState(false);
@@ -77,10 +78,13 @@ const MemoDetailSidebar = ({
   const canPin = !readonly && !memo.parent && memo.state === State.NORMAL;
   const canManageShares = !forceReadonly && !memo.parent && (memo.creator === currentUser?.name || isSuperUser(currentUser));
 
-  const headings = useMemo(
-    () => (blurred && !showBlurredContent ? [] : extractHeadings(memo.content)),
-    [blurred, memo.content, showBlurredContent],
-  );
+  const blurred = memo.tags.some((tag) => userTagsSetting && findTagMetadata(tag, userTagsSetting)?.blurContent);
+  const headings = useMemo(() => {
+    if (!isUserSettingsInitialized || (blurred && !showBlurredContent)) {
+      return [];
+    }
+    return extractHeadings(memo.content);
+  }, [blurred, isUserSettingsInitialized, memo.content, showBlurredContent]);
   const { referenced } = useMemo(() => getRelationBuckets(memo.relations, memo.name), [memo.relations, memo.name]);
   const backlinkMemoNames = useMemo(
     () =>

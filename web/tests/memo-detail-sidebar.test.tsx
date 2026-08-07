@@ -16,6 +16,10 @@ import {
 
 const copyToClipboard = vi.hoisted(() => vi.fn());
 const updateMemo = vi.hoisted(() => vi.fn());
+const authState = vi.hoisted(() => ({
+  isUserSettingsInitialized: true,
+  userTagsSetting: { tags: { secret: { blurContent: true } } },
+}));
 
 vi.mock("copy-to-clipboard", () => ({ default: copyToClipboard }));
 vi.mock("react-hot-toast", () => ({ default: { success: vi.fn() } }));
@@ -24,6 +28,7 @@ vi.mock("@/components/MemoDetailSidebar/MemoOutline", () => ({
 }));
 vi.mock("@/components/MemoDetailSidebar/MemoSharePanel", () => ({ default: () => <div data-testid="share-panel" /> }));
 vi.mock("@/components/MemoMetadata/Relation/useResolvedRelationMemos", () => ({ useResolvedRelationMemos: () => ({}) }));
+vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => authState }));
 vi.mock("@/contexts/InstanceContext", () => ({ useInstance: () => ({ profile: { instanceUrl: "https://memos.example" } }) }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => ({ name: "users/alice" }) }));
 vi.mock("@/hooks/useMemoQueries", () => ({ useUpdateMemo: () => ({ mutateAsync: updateMemo }) }));
@@ -34,6 +39,8 @@ describe("MemoDetailSidebar", () => {
     copyToClipboard.mockReset();
     updateMemo.mockReset();
     updateMemo.mockResolvedValue(undefined);
+    authState.isUserSettingsInitialized = true;
+    authState.userTagsSetting = { tags: { secret: { blurContent: true } } };
   });
 
   it("renders concise actions, outline, and backlinks without repeating body metadata", async () => {
@@ -160,11 +167,12 @@ describe("MemoDetailSidebar", () => {
       state: State.NORMAL,
       visibility: Visibility.PUBLIC,
       content: "# Secret overview\n\n## Secret details",
+      tags: ["secret"],
     });
 
     const { rerender } = render(
       <MemoryRouter>
-        <MemoDetailSidebar memo={memo} blurred />
+        <MemoDetailSidebar memo={memo} />
       </MemoryRouter>,
     );
 
@@ -173,11 +181,32 @@ describe("MemoDetailSidebar", () => {
 
     rerender(
       <MemoryRouter>
-        <MemoDetailSidebar memo={memo} blurred showBlurredContent />
+        <MemoDetailSidebar memo={memo} showBlurredContent />
       </MemoryRouter>,
     );
 
     expect(screen.getByText("memo.outline")).toBeInTheDocument();
     expect(screen.getByTestId("outline")).toHaveTextContent("2");
+  });
+
+  it("does not expose headings while tag settings are loading", () => {
+    authState.isUserSettingsInitialized = false;
+    const memo = create(MemoSchema, {
+      name: "memos/loading-settings",
+      creator: "users/alice",
+      state: State.NORMAL,
+      visibility: Visibility.PUBLIC,
+      content: "# Private overview\n\n## Private details",
+      tags: ["secret"],
+    });
+
+    render(
+      <MemoryRouter>
+        <MemoDetailSidebar memo={memo} showBlurredContent />
+      </MemoryRouter>,
+    );
+
+    expect(screen.queryByText("memo.outline")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("outline")).not.toBeInTheDocument();
   });
 });
