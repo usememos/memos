@@ -1,16 +1,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { HeadingItem } from "@/components/MemoContent/pipeline";
 import { cn } from "@/lib/utils";
-import type { HeadingItem } from "@/utils/markdown-manipulation";
+import { findAnchorTarget, findMemoContentRoot } from "@/utils/markdown-manipulation";
 
 interface MemoOutlineProps {
   headings: HeadingItem[];
+  memoName: string;
 }
 
 /** Distance from the viewport top of the "reading line" used to decide the active section. */
 const READING_LINE_OFFSET = 100;
 
 /** Outline navigation for memo headings (h1–h4) with active-section tracking. */
-const MemoOutline = ({ headings }: MemoOutlineProps) => {
+const MemoOutline = ({ headings, memoName }: MemoOutlineProps) => {
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const rafRef = useRef(0);
 
@@ -20,8 +22,10 @@ const MemoOutline = ({ headings }: MemoOutlineProps) => {
     const update = () => {
       rafRef.current = 0;
       let current: string | null = null;
+      const memoContent = findMemoContentRoot(document, memoName);
+      if (!memoContent) return;
       for (const heading of headings) {
-        const el = document.getElementById(heading.slug);
+        const el = findAnchorTarget(memoContent, heading.slug);
         if (!el) continue;
         if (el.getBoundingClientRect().top > READING_LINE_OFFSET) break;
         current = heading.slug;
@@ -44,11 +48,12 @@ const MemoOutline = ({ headings }: MemoOutlineProps) => {
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [headings]);
+  }, [headings, memoName]);
 
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, slug: string) => {
     e.preventDefault();
-    const el = document.getElementById(slug);
+    const memoContent = findMemoContentRoot(document, memoName);
+    const el = memoContent && findAnchorTarget(memoContent, slug);
     if (el) {
       setActiveSlug(slug);
       el.scrollIntoView({ behavior: "smooth", block: "start" });

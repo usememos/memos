@@ -14,6 +14,7 @@ import { useSharedMemo, withShareAttachmentLinks } from "@/hooks/useMemoShareQue
 import { memoNamePrefix } from "@/lib/resource-names";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
+import { findMemoAnchorTarget } from "@/utils/markdown-manipulation";
 
 const MemoSidebarRegistration = ({
   memo,
@@ -92,12 +93,14 @@ const MemoDetail = () => {
   // ref guards against re-scrolling the same hash on every later comments page-load.
   const scrolledHashRef = useRef("");
   useEffect(() => {
-    if (!hash || scrolledHashRef.current === hash) return;
-    const el = document.getElementById(decodeURIComponent(hash.slice(1)));
+    if (!hash) return;
+    const scrollKey = `${memoName}\0${hash}`;
+    if (scrolledHashRef.current === scrollKey) return;
+    const el = findMemoAnchorTarget(document, memoName, decodeURIComponent(hash.slice(1)));
     if (!el) return;
-    scrolledHashRef.current = hash;
+    scrolledHashRef.current = scrollKey;
     el.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [hash, memo, comments]);
+  }, [hash, memo, memoName, comments]);
 
   if (isShareMode) {
     const isNotFound = error instanceof ConnectError && (error.code === Code.NotFound || error.code === Code.Unauthenticated);

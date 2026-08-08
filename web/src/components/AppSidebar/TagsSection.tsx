@@ -15,6 +15,8 @@ interface Props {
   onSelect?: () => void;
   /** When set, tag clicks land on this route with the tag filter instead of filtering the current one. */
   navigationTarget?: string;
+  /** Whose tags these are; keeps tree expansion state from bleeding between users and views. */
+  scope: string;
 }
 
 const TagPath = forwardRef<HTMLSpanElement, { tag: string }>(({ tag }, ref) => {
@@ -58,7 +60,7 @@ const FlatTagRow = ({ tag, amount, active, onClick }: FlatTagRowProps) => {
   );
 };
 
-const TagsSection = ({ tagCount, onSelect, navigationTarget }: Props) => {
+const TagsSection = ({ tagCount, onSelect, navigationTarget, scope }: Props) => {
   const t = useTranslate();
   const navigate = useNavigate();
   const { filters, setFilters, getFiltersByFactor, addFilter, removeFilter } = useMemoFilterContext();
@@ -123,7 +125,7 @@ const TagsSection = ({ tagCount, onSelect, navigationTarget }: Props) => {
         </span>
       </SidebarSectionHeader>
       {treeMode ? (
-        <TagTree tagAmounts={tags} activeTag={activeTag} onTagClick={handleTagClick} />
+        <TagTree key={scope} tagAmounts={tags} activeTag={activeTag} scope={scope} onTagClick={handleTagClick} />
       ) : (
         <div className="space-y-0.5">
           {tags.map(([tag, amount]) => (
