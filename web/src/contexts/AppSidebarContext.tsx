@@ -11,6 +11,7 @@ export interface MemoDetailSidebarDescriptor {
   from?: string;
   readonly?: boolean;
   onShareImageOpen?: () => void;
+  showBlurredContent?: boolean;
 }
 
 interface AppSidebarContextValue {

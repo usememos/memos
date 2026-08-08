@@ -10,6 +10,8 @@ export interface MemoViewProps {
   parentPage?: string;
   shareImageDialogOpen?: boolean;
   onShareImageDialogOpenChange?: (open: boolean) => void;
+  showBlurredContent?: boolean;
+  onBlurVisibilityChange?: (show: boolean) => void;
 }
 
 export interface MemoHeaderProps {
