@@ -1,4 +1,4 @@
-import { BookmarkIcon } from "lucide-react";
+import { ArrowUpRightIcon, BookmarkIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import RelativeTime from "@/components/RelativeTime";
@@ -24,7 +24,14 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
   const [reactionSelectorOpen, setReactionSelectorOpen] = useState(false);
 
   const { memo, creator, currentUser, parentPage, isArchived, readonly, openEditor } = useMemoViewContext();
-  const { createTime, updateTime, displayTime: memoDisplayTime, isDisplayingUpdatedTime, relativeTimeFormat } = useMemoViewDerived();
+  const {
+    createTime,
+    updateTime,
+    displayTime: memoDisplayTime,
+    isDisplayingUpdatedTime,
+    isInMemoDetailPage,
+    relativeTimeFormat,
+  } = useMemoViewDerived();
   const { newMemoName } = useNewMemo();
 
   const navigateTo = useNavigateTo();
@@ -78,6 +85,14 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
           />
         )}
 
+        {!isInMemoDetailPage && (
+          <MemoDetailLinkButton
+            ariaLabel={`${t("attachment-library.actions.open")} ${t("common.memo")}`}
+            memoName={memo.name}
+            parentPage={parentPage}
+          />
+        )}
+
         {showVisibility && memo.visibility !== Visibility.PRIVATE && (
           <Tooltip>
             <TooltipTrigger>
@@ -109,6 +124,25 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({ showCreator, showVisibility, sh
     </div>
   );
 };
+
+export const MemoDetailLinkButton: React.FC<{ ariaLabel: string; memoName: string; parentPage: string }> = ({
+  ariaLabel,
+  memoName,
+  parentPage,
+}) => (
+  <Link
+    aria-label={ariaLabel}
+    className={cn(
+      "h-6 w-6 flex justify-center items-center cursor-pointer transition-colors text-muted-foreground hover:text-foreground",
+      "sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100",
+    )}
+    state={{ from: parentPage }}
+    to={`/${memoName}`}
+    viewTransition
+  >
+    <ArrowUpRightIcon className="w-4 h-4" />
+  </Link>
+);
 
 interface CreatorDisplayProps {
   creator: User;
