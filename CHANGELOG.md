@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.31.0](https://github.com/usememos/memos/compare/v0.30.0...v0.31.0) (2026-08-08)
+
+
+### Features
+
+* **markdown:** unify tag syntax and recognition ([#6132](https://github.com/usememos/memos/issues/6132)) ([c68e3d5](https://github.com/usememos/memos/commit/c68e3d5bf98394d90c7137f29d0ae378de17e824))
+* **sidebar:** make the desktop rail resizable ([#6148](https://github.com/usememos/memos/issues/6148)) ([abe87d9](https://github.com/usememos/memos/commit/abe87d9440783cb43c433b6fa7d35f1cc2450b4b))
+* **user:** define username format and mention syntax ([#6134](https://github.com/usememos/memos/issues/6134)) ([8648b97](https://github.com/usememos/memos/commit/8648b97b9e0ba3fe0de16362d8f99a5ee7f167b0))
+* **web:** unify navigation in a route-aware sidebar ([#6144](https://github.com/usememos/memos/issues/6144)) ([4d26679](https://github.com/usememos/memos/commit/4d2667983fd3387e6db76fb05b51dfe376899161))
+
+
+### Bug Fixes
+
+* align memo outline links with rendered headings ([#6159](https://github.com/usememos/memos/issues/6159)) ([e5ed6e7](https://github.com/usememos/memos/commit/e5ed6e7ec60e141d6e354f3ab59906c2c47dccac))
+* **api:** omit unset message fields from gateway JSON ([#6156](https://github.com/usememos/memos/issues/6156)) ([bdf87e8](https://github.com/usememos/memos/commit/bdf87e8699a68f92a4f703ce365042b662f166d0))
+* **attachments:** link media to source memos ([c4221c6](https://github.com/usememos/memos/commit/c4221c6dfe51902d0c5f482802e670fda1b72751))
+* **editor:** restore Windows emoji input ([b4fefa9](https://github.com/usememos/memos/commit/b4fefa94d72cd381ccdd1dcb359ade0371203cce))
+* **markdown:** support word-internal apostrophes in tags ([#6135](https://github.com/usememos/memos/issues/6135)) ([d617f65](https://github.com/usememos/memos/commit/d617f652b01086b9619500a46dc1eb9b13e84046))
+* **sidebar:** stop the month calendar growing with the rail ([d722608](https://github.com/usememos/memos/commit/d7226089476e72e4329f29d3bbe3cb1243dcc19b))
+* **ui:** keep select menus above parent popovers ([9328413](https://github.com/usememos/memos/commit/93284137970d2ac1bda29f9a8feb6da9c69e3db8))
+* upgrade golang.org/x/crypto to 0.52.0 (CVE-2026-39829) ([#6152](https://github.com/usememos/memos/issues/6152)) ([3b8d255](https://github.com/usememos/memos/commit/3b8d2558edccaf194c06e5f34fff2f6681fcb76b))
+* **web:** keep share token on shared-memo attachment thumbnails ([#6155](https://github.com/usememos/memos/issues/6155)) ([3f567fd](https://github.com/usememos/memos/commit/3f567fda4592f9f552623bd0da0dec3c622c6359))
+* **web:** keep task checkboxes controlled so check-all updates render ([5192732](https://github.com/usememos/memos/commit/5192732cee40020f84c1e57dbcc53ea3d9eaa42f))
+* **web:** preserve memo scope across global navigation ([83eab44](https://github.com/usememos/memos/commit/83eab44695ec95205990e4e0c1045dbfa6caf4f3))
+* **web:** restore sidebar and outline behavior ([#6161](https://github.com/usememos/memos/issues/6161)) ([f75d49f](https://github.com/usememos/memos/commit/f75d49f9b617e1ac1370e36e71b1869d3c52e6ca))
+
+
+### Performance Improvements
+
+* **sse:** reduce redundant connections and fanout overhead ([dd18002](https://github.com/usememos/memos/commit/dd18002b12b8632d11b57fa3d33de244bba91476))
+
 ## [0.30.0](https://github.com/usememos/memos/compare/v0.29.1...v0.30.0) (2026-07-26)
 
 
