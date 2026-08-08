@@ -101,8 +101,15 @@ func resolveAllowedIPs(ctx context.Context, host string) ([]net.IP, error) {
 	return ips, nil
 }
 
+// sharedAddressSpace is RFC 6598 (100.64.0.0/10). It is not covered by
+// net.IP.IsPrivate, but it is unroutable on the public internet and some
+// clouds expose their instance-metadata service inside it (e.g. Alibaba
+// Cloud at 100.100.100.200), so it must be treated as internal.
+var sharedAddressSpace = &net.IPNet{IP: net.IPv4(100, 64, 0, 0), Mask: net.CIDRMask(10, 32)}
+
 func isInternalIP(ip net.IP) bool {
-	return ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() || ip.IsUnspecified()
+	return ip.IsLoopback() || ip.IsPrivate() || ip.IsLinkLocalUnicast() ||
+		ip.IsLinkLocalMulticast() || ip.IsUnspecified() || sharedAddressSpace.Contains(ip)
 }
 
 func validateURL(urlStr string) error {
