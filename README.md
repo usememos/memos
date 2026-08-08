@@ -69,6 +69,7 @@ Contributions of all kinds are welcome, including bug reports, feature suggestio
 
 - [**CodeRabbit** — Cut code review time and bugs in half](https://coderabbit.link/usememos)
 - [**SSD Nodes** — Affordable VPS hosting for self-hosters](https://ssdnodes.com/?utm_source=memos&utm_medium=sponsor)
+- [**TestMu AI** — The world’s first full-stack Agentic AI Quality Engineering platform](https://www.testmuai.com/?utm_medium=sponsor&utm_source=memos)
 
 Love Memos? [Sponsor us on GitHub](https://github.com/sponsors/usememos) to help keep the project growing!
 
