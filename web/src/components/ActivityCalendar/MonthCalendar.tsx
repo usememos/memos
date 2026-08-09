@@ -10,7 +10,7 @@ import { getTooltipText } from "./utils";
 
 const GRID_STYLES: Record<CalendarSize, { gap: string; headerText: string }> = {
   small: { gap: "gap-1", headerText: "text-[9px]" },
-  default: { gap: "gap-1", headerText: "text-[10px]" },
+  default: { gap: "gap-1", headerText: "text-2xs" },
 };
 
 interface WeekdayHeaderProps {

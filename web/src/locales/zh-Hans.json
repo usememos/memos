@@ -104,6 +104,7 @@
     "last-updated-at": "最后更新时间",
     "learn-more": "了解更多",
     "link": "链接",
+    "manage": "管理",
     "map": "地图",
     "mark": "引用",
     "memo": "备忘录",
@@ -137,8 +138,6 @@
     "select": "选择",
     "settings": "设置",
     "share": "分享",
-    "shortcut-filter": "捷径过滤器",
-    "shortcuts": "捷径",
     "sign-in": "登录",
     "sign-in-to-memos": "登录 Memos",
     "sign-out": "退出登录",
@@ -495,9 +494,9 @@
       "theme": "主题",
       "label": "偏好设置"
     },
-    "shortcut": {
-      "delete-confirm": "您确定要删除捷径 `{{title}}` 吗？",
-      "delete-success": "捷径 `{{title}}` 删除成功"
+    "memo-view": {
+      "delete-confirm": "您确定要删除视图 `{{title}}` 吗？",
+      "delete-success": "视图 `{{title}}` 删除成功"
     },
     "sso": {
       "account": "账户",

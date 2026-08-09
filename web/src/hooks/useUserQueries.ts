@@ -1,7 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { shortcutServiceClient, userServiceClient } from "@/connect";
+import { memoViewServiceClient, userServiceClient } from "@/connect";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { buildUserSettingName, userNamePrefix } from "@/lib/resource-names";
 import { mergeTagCounts } from "@/lib/tag";
@@ -29,7 +29,7 @@ export const userKeys = {
   userStats: (name: string) => [...userKeys.stats(), name] as const,
   allUserStats: (request: Partial<ListAllUserStatsQuery>) => [...userKeys.stats(), "all", request] as const,
   currentUser: () => [...userKeys.all, "current"] as const,
-  shortcuts: () => [...userKeys.all, "shortcuts"] as const,
+  memoViews: () => [...userKeys.all, "memoViews"] as const,
   notifications: () => [...userKeys.all, "notifications"] as const,
   byNames: (names: string[]) => [...userKeys.all, "byNames", ...[...names].sort()] as const,
   byUsernames: (usernames: string[]) => [...userKeys.all, "byUsernames", ...[...usernames].sort()] as const,
@@ -74,12 +74,12 @@ export function useAllUserStats(request: Partial<ListAllUserStatsQuery> = {}, op
   });
 }
 
-export function useShortcuts() {
+export function useMemoViews() {
   return useQuery({
-    queryKey: userKeys.shortcuts(),
+    queryKey: userKeys.memoViews(),
     queryFn: async () => {
-      const { shortcuts } = await shortcutServiceClient.listShortcuts({});
-      return shortcuts;
+      const { memoViews } = await memoViewServiceClient.listMemoViews({});
+      return memoViews;
     },
   });
 }
@@ -172,12 +172,12 @@ export function useUserSettings(parent?: string) {
   return useQuery({
     queryKey: [...userKeys.all, "settings", parent],
     queryFn: async () => {
-      if (!parent) return { settings: [], shortcuts: [] };
-      const [{ settings }, { shortcuts }] = await Promise.all([
+      if (!parent) return { settings: [], memoViews: [] };
+      const [{ settings }, { memoViews }] = await Promise.all([
         userServiceClient.listUserSettings({ parent }),
-        shortcutServiceClient.listShortcuts({ parent }),
+        memoViewServiceClient.listMemoViews({ parent }),
       ]);
-      return { settings, shortcuts };
+      return { settings, memoViews };
     },
     enabled: !!parent,
   });

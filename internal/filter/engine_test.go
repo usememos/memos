@@ -188,13 +188,17 @@ func TestRenderTagStringPredicatesAreExactPerDialect(t *testing.T) {
 		{name: "contains", expression: `t.contains("Work_%!")`, sqliteSQL: "instr(tag_item.value, ?) > 0", sqliteArgs: []any{"Work_%!"}, likePattern: "%Work!_!%!!%", usesLike: true},
 	}
 
+	// MySQL cannot use EXISTS here: its semi-join rewrite drops JSON_TABLE's lateral
+	// dependency on the outer row, so it counts rows instead. See
+	// TestTagComprehensionAvoidsMySQLExistsSemiJoin.
 	for _, comprehension := range []struct {
 		kind        string
 		sqlFragment string
+		mysqlSQL    string
 	}{
-		{kind: "exists", sqlFragment: "EXISTS (SELECT 1"},
-		{kind: "all", sqlFragment: "NOT EXISTS (SELECT 1"},
-		{kind: "exists_one", sqlFragment: "SELECT COUNT(*)"},
+		{kind: "exists", sqlFragment: "EXISTS (SELECT 1", mysqlSQL: "SELECT COUNT(*)"},
+		{kind: "all", sqlFragment: "NOT EXISTS (SELECT 1", mysqlSQL: "SELECT COUNT(*)"},
+		{kind: "exists_one", sqlFragment: "SELECT COUNT(*)", mysqlSQL: "SELECT COUNT(*)"},
 	} {
 		for _, predicate := range predicates {
 			expression := fmt.Sprintf("tags.%s(t, %s)", comprehension.kind, predicate.expression)
@@ -212,7 +216,8 @@ func TestRenderTagStringPredicatesAreExactPerDialect(t *testing.T) {
 				mysqlStmt, err := engine.CompileToStatement(context.Background(), expression, RenderOptions{Dialect: DialectMySQL})
 				require.NoError(t, err)
 				require.Contains(t, mysqlStmt.SQL, "JSON_TABLE(")
-				require.Contains(t, mysqlStmt.SQL, comprehension.sqlFragment)
+				require.Contains(t, mysqlStmt.SQL, comprehension.mysqlSQL)
+				require.NotContains(t, mysqlStmt.SQL, "EXISTS (SELECT 1")
 				require.Contains(t, mysqlStmt.SQL, "CAST(tag_item.value AS BINARY)")
 
 				postgresStmt, err := engine.CompileToStatement(context.Background(), expression, RenderOptions{Dialect: DialectPostgres})
@@ -434,7 +439,9 @@ func TestRenderTagsAllPerDialect(t *testing.T) {
 	}{
 		{DialectSQLite, []string{"NOT EXISTS", "json_each(", "json_array_length(", "instr(tag_item.value, ?) = 1"}, []any{"work/"}},
 		{DialectPostgres, []string{"NOT EXISTS", "jsonb_array_elements_text(", "jsonb_array_length(", `(tag_item.value COLLATE "C") LIKE`}, []any{"work/%"}},
-		{DialectMySQL, []string{"NOT EXISTS", "JSON_TABLE(", "JSON_LENGTH(", "CAST(tag_item.value AS BINARY) LIKE"}, []any{"work/%"}},
+		// MySQL counts non-matching rows instead of using NOT EXISTS; see
+		// TestTagComprehensionAvoidsMySQLExistsSemiJoin.
+		{DialectMySQL, []string{") = 0", "JSON_TABLE(", "JSON_LENGTH(", "CAST(tag_item.value AS BINARY) LIKE"}, []any{"work/%"}},
 	}
 	for _, tc := range cases {
 		stmt, err := engine.CompileToStatement(context.Background(), `tags.all(t, t.startsWith("work/"))`, RenderOptions{Dialect: tc.dialect})
@@ -467,4 +474,42 @@ func TestRenderAllRejectsUnsupportedPredicate(t *testing.T) {
 	// size() is not a valid per-element predicate inside all().
 	_, err = engine.CompileToStatement(context.Background(), `tags.all(t, size(t) > 2)`, RenderOptions{Dialect: DialectSQLite})
 	require.Error(t, err)
+}
+
+// TestTagComprehensionAvoidsMySQLExistsSemiJoin pins the reason MySQL renders tag
+// comprehensions as row counts rather than EXISTS.
+//
+// MySQL rewrites `EXISTS (SELECT ... FROM JSON_TABLE(<outer column>, ...))` into a
+// semi-join, and that rewrite drops JSON_TABLE's lateral dependency on the outer row:
+// the subquery evaluates as empty for every row, so the predicate is silently always
+// false and every tag filter returns nothing. It fails with no SQL error, which is why
+// this is guarded here rather than left to the container suite. `NOT EXISTS` happens to
+// take the anti-join path and works, but relying on that asymmetry is not worth it, so
+// both directions use counts.
+func TestTagComprehensionAvoidsMySQLExistsSemiJoin(t *testing.T) {
+	t.Parallel()
+
+	engine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+
+	for _, expression := range []string{
+		`tags.exists(t, t == "work")`,
+		`tags.exists(t, t.startsWith("work/"))`,
+		`tags.all(t, t == "work")`,
+		`tags.all(t, t.contains("work"))`,
+		`tags.exists_one(t, t == "work")`,
+	} {
+		stmt, err := engine.CompileToStatement(context.Background(), expression, RenderOptions{Dialect: DialectMySQL})
+		require.NoError(t, err, expression)
+		require.NotContains(t, stmt.SQL, "EXISTS", "%s must not use EXISTS on MySQL", expression)
+		require.Contains(t, stmt.SQL, "SELECT COUNT(*)", "%s should count JSON_TABLE rows on MySQL", expression)
+		require.Contains(t, stmt.SQL, "JSON_TABLE(", expression)
+	}
+
+	// The other dialects correlate EXISTS correctly and keep using it.
+	for _, dialect := range []DialectName{DialectSQLite, DialectPostgres} {
+		stmt, err := engine.CompileToStatement(context.Background(), `tags.exists(t, t == "work")`, RenderOptions{Dialect: dialect})
+		require.NoError(t, err, dialect)
+		require.Contains(t, stmt.SQL, "EXISTS (SELECT 1", "dialect %s", dialect)
+	}
 }

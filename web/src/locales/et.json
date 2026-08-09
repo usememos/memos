@@ -133,8 +133,6 @@
     "select": "Valige",
     "settings": "Seaded",
     "share": "Jaga",
-    "shortcut-filter": "Otsetee filter",
-    "shortcuts": "Otseteed",
     "sign-in": "Logi sisse",
     "sign-in-with": "Logige sisse {{provider}}-iga",
     "sign-out": "Logi välja",
@@ -153,6 +151,7 @@
     "username": "Kasutajanimi",
     "version": "Versioon",
     "visibility": "Nähtavus",
+    "views": "Vaated",
     "yourself": "iseennast"
   },
   "locale-picker": {
@@ -571,9 +570,9 @@
       "theme-description": "Rakendab valitud teema kohe selles seadmes.",
       "theme": "Teema"
     },
-    "shortcut": {
-      "delete-confirm": "Kas olete kindel, et soovite otsetee `{{title}}` kustutada?",
-      "delete-success": "Otsetee `{{title}}` kustutati edukalt"
+    "memo-view": {
+      "delete-confirm": "Kas olete kindel, et soovite vaate `{{title}}` kustutada?",
+      "delete-success": "Vaade `{{title}}` kustutati edukalt"
     },
     "sso": {
       "account": "konto",

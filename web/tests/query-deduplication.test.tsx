@@ -23,7 +23,7 @@ vi.mock("@/connect", () => ({
   memoServiceClient: {
     getMemo: clients.getMemo,
   },
-  shortcutServiceClient: {},
+  memoViewServiceClient: {},
   userServiceClient: {
     batchGetUsers: clients.batchGetUsers,
     getUser: clients.getUser,

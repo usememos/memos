@@ -9,8 +9,7 @@ import { cn } from "@/lib/utils";
  * rows that carry a trailing control put the box on a wrapper and focus on the button
  * inside it.
  */
-export const SIDEBAR_ROW_BOX_CLASSES =
-  "group flex h-[30px] w-full min-w-0 items-center gap-2 rounded-md px-2 text-[13px] leading-[18px] transition-colors";
+export const SIDEBAR_ROW_BOX_CLASSES = "group flex h-[30px] w-full min-w-0 items-center gap-2 rounded-md px-2 text-ui transition-colors";
 
 /** Goes on whichever element in a row actually takes focus. */
 export const SIDEBAR_ROW_FOCUS_CLASSES = "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50";
@@ -18,7 +17,7 @@ export const SIDEBAR_ROW_FOCUS_CLASSES = "focus-visible:outline-none focus-visib
 export const SIDEBAR_ROW_CLASSES = `${SIDEBAR_ROW_BOX_CLASSES} ${SIDEBAR_ROW_FOCUS_CLASSES}`;
 
 export const SIDEBAR_ROW_ICON_CLASSES = "size-[15px] shrink-0 opacity-75";
-export const SIDEBAR_ROW_COUNT_CLASSES = "text-[11px] tabular-nums text-muted-foreground/60";
+export const SIDEBAR_ROW_COUNT_CLASSES = "text-2xs tabular-nums text-muted-foreground/60";
 
 /** Idle and selected colouring for a row box, kept in one place so lists cannot drift apart. */
 export const sidebarRowStateClasses = (active?: boolean) =>
@@ -28,7 +27,7 @@ export const sidebarRowStateClasses = (active?: boolean) =>
 
 interface Props {
   active?: boolean;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   label: ReactNode;
   count?: number;
   onClick?: () => void;
@@ -42,7 +41,7 @@ const SidebarRow = ({ active, icon: Icon, label, count, onClick, trailing }: Pro
     aria-pressed={active || undefined}
     className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(active))}
   >
-    <Icon className={SIDEBAR_ROW_ICON_CLASSES} strokeWidth={1.8} />
+    {Icon && <Icon className={SIDEBAR_ROW_ICON_CLASSES} strokeWidth={1.8} />}
     <span className="min-w-0 flex-1 truncate text-left">{label}</span>
     {count != null && count > 0 && <span className={SIDEBAR_ROW_COUNT_CLASSES}>{count}</span>}
     {trailing}

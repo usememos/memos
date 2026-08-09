@@ -76,6 +76,12 @@
   --font-mono: var(--font-mono);
   --font-serif: var(--font-serif);
 
+  /* Compact application chrome: captions and dense navigation rows. */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --text-ui: 0.8125rem;
+  --text-ui--line-height: 1.125rem;
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);

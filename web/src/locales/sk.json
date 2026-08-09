@@ -133,8 +133,6 @@
     "select": "Vyberte",
     "settings": "Nastavenia",
     "share": "zdieľať",
-    "shortcut-filter": "Filter skratiek",
-    "shortcuts": "Skratky",
     "sign-in": "Prihláste sa",
     "sign-in-with": "Prihláste sa pomocou {{provider}}",
     "sign-out": "Odhláste sa",
@@ -153,6 +151,7 @@
     "username": "Používateľské meno",
     "version": "Verzia",
     "visibility": "Viditeľnosť",
+    "views": "Zobrazenia",
     "yourself": "seba"
   },
   "locale-picker": {
@@ -571,9 +570,9 @@
       "theme-description": "Ihneď použije vybratú tému na tomto zariadení.",
       "theme": "Téma"
     },
-    "shortcut": {
-      "delete-confirm": "Naozaj chcete odstrániť skratku `{{title}}`?",
-      "delete-success": "Skratka `{{title}}` bola úspešne odstránená"
+    "memo-view": {
+      "delete-confirm": "Naozaj chcete odstrániť zobrazenie `{{title}}`?",
+      "delete-success": "Zobrazenie `{{title}}` bolo úspešne odstránené"
     },
     "sso": {
       "account": "účtu",

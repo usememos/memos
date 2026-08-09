@@ -66,11 +66,11 @@ func TestUserResourceName(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, settings)
 
-		shortcuts, err := ts.Service.ListShortcuts(userCtx, &apiv1.ListShortcutsRequest{
+		memoViews, err := ts.Service.ListMemoViews(userCtx, &apiv1.ListMemoViewsRequest{
 			Parent: currentUser.GetUser().Name,
 		})
 		require.NoError(t, err)
-		require.NotNil(t, shortcuts)
+		require.NotNil(t, memoViews)
 	})
 
 	t.Run("BatchGetUsers preserves mixed-case usernames", func(t *testing.T) {

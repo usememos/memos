@@ -12,8 +12,8 @@ message UserSetting {
     KEY_UNSPECIFIED = 0;
     // General user settings.
     GENERAL = 1;
-    // The shortcuts of the user.
-    SHORTCUTS = 4;
+    // The memo views of the user.
+    MEMO_VIEWS = 4;
     // The webhooks of the user.
     WEBHOOKS = 5;
     // Refresh tokens for the user.
@@ -29,7 +29,7 @@ message UserSetting {
   Key key = 2;
   oneof value {
     GeneralUserSetting general = 3;
-    ShortcutsUserSetting shortcuts = 6;
+    MemoViewsUserSetting memo_views = 6;
     WebhooksUserSetting webhooks = 7;
     RefreshTokensUserSetting refresh_tokens = 8;
     PersonalAccessTokensUserSetting personal_access_tokens = 9;
@@ -111,13 +111,13 @@ message PersonalAccessTokensUserSetting {
   repeated PersonalAccessToken tokens = 1;
 }
 
-message ShortcutsUserSetting {
-  message Shortcut {
+message MemoViewsUserSetting {
+  message MemoView {
     string id = 1;
     string title = 2;
     string filter = 3;
   }
-  repeated Shortcut shortcuts = 1;
+  repeated MemoView memo_views = 1;
 }
 
 message WebhooksUserSetting {

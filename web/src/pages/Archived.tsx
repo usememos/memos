@@ -10,7 +10,7 @@ const Archived = () => {
 
   const memoFilter = useMemoFilters({
     creatorName: user?.name,
-    includeShortcuts: true,
+    includeMemoViews: true,
     includePinned: false,
   });
 

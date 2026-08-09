@@ -15,7 +15,7 @@ const Explore = () => {
   const visibilities = currentUser ? [Visibility.PUBLIC, Visibility.PROTECTED] : [Visibility.PUBLIC];
 
   const memoFilter = useMemoFilters({
-    includeShortcuts: true,
+    includeMemoViews: true,
     includePinned: false,
     visibilities,
   });

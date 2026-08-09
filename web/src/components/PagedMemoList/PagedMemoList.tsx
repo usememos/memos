@@ -153,7 +153,7 @@ const PagedMemoList = (props: Props) => {
   );
 
   // Tag settings decide whether sensitive memo content must be blurred. Keep that
-  // privacy boundary, but do not wait for unrelated shortcuts or instance settings.
+  // privacy boundary, but do not wait for unrelated memo views or instance settings.
   const isDisplayPending = isLoading || !isUserSettingsInitialized;
   const showLoader = useDelayedFlag(isDisplayPending, LOADING_INDICATOR_DELAY_MS);
 

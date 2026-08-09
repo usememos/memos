@@ -5,15 +5,15 @@ import { MemoFilterProvider, parseFilterQuery, useMemoFilterContext } from "@/co
 import { BUILTIN_TASKS_VIEW_ID } from "@/lib/memo-views";
 
 const Harness = () => {
-  const { filters, setFilters, setShortcut, shortcut } = useMemoFilterContext();
+  const { filters, setFilters, setMemoView, memoView } = useMemoFilterContext();
   return (
     <div>
       <output data-testid="filters">{JSON.stringify(filters)}</output>
-      <output data-testid="shortcut">{shortcut}</output>
+      <output data-testid="memoView">{memoView}</output>
       <button type="button" onClick={() => setFilters([{ factor: "contentSearch", value: "plan" }])}>
         Search plan
       </button>
-      <button type="button" onClick={() => setShortcut(BUILTIN_TASKS_VIEW_ID)}>
+      <button type="button" onClick={() => setMemoView(BUILTIN_TASKS_VIEW_ID)}>
         Select Tasks
       </button>
     </div>
@@ -40,6 +40,6 @@ describe("MemoFilterProvider", () => {
     fireEvent.click(screen.getByRole("button", { name: "Select Tasks" }));
 
     expect(screen.getByTestId("filters")).toHaveTextContent('[{"factor":"contentSearch","value":"plan"}]');
-    expect(screen.getByTestId("shortcut")).toHaveTextContent(BUILTIN_TASKS_VIEW_ID);
+    expect(screen.getByTestId("memoView")).toHaveTextContent(BUILTIN_TASKS_VIEW_ID);
   });
 });

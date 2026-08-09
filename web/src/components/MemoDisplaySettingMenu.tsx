@@ -1,5 +1,6 @@
 import { Columns2Icon, Columns3Icon, InfinityIcon, type LucideIcon, Rows3Icon, SlidersHorizontalIcon } from "lucide-react";
 import type { ReactNode } from "react";
+import { SIDEBAR_SECTION_ACTION_BUTTON_CLASSES, SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "@/components/AppSidebar/SidebarSection";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -181,11 +182,13 @@ function MemoDisplaySettingMenu({ className }: Props) {
           <PopoverTrigger
             aria-label={t("memo.view-options")}
             className={cn(
-              "flex size-5 items-center justify-center rounded-[4px] text-muted-foreground/65 transition-colors hover:bg-sidebar-accent hover:text-foreground focus-visible:outline-none focus-visible:bg-sidebar-accent focus-visible:text-foreground data-popup-open:bg-sidebar-accent data-popup-open:text-foreground",
+              "flex items-center justify-center",
+              SIDEBAR_SECTION_ACTION_BUTTON_CLASSES,
+              "data-popup-open:bg-sidebar-accent data-popup-open:text-foreground",
               className,
             )}
           >
-            <SlidersHorizontalIcon className="size-3" strokeWidth={1.8} />
+            <SlidersHorizontalIcon className={SIDEBAR_SECTION_ACTION_ICON_CLASSES} strokeWidth={1.8} />
           </PopoverTrigger>
         </TooltipTrigger>
         <TooltipContent side="top">{t("memo.view-options")}</TooltipContent>

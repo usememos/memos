@@ -1,9 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from "react";
 import { clearAccessToken, getAccessToken } from "@/auth-state";
-import { authServiceClient, refreshAccessToken, shortcutServiceClient, userServiceClient } from "@/connect";
+import { authServiceClient, memoViewServiceClient, refreshAccessToken, userServiceClient } from "@/connect";
 import { userKeys } from "@/hooks/useUserQueries";
-import type { Shortcut } from "@/types/proto/api/v1/shortcut_service_pb";
+import type { MemoView } from "@/types/proto/api/v1/memo_view_service_pb";
 import type {
   User,
   UserSetting_GeneralSetting,
@@ -16,7 +16,7 @@ interface AuthState {
   userGeneralSetting: UserSetting_GeneralSetting | undefined;
   userWebhooksSetting: UserSetting_WebhooksSetting | undefined;
   userTagsSetting: UserSetting_TagsSetting | undefined;
-  shortcuts: Shortcut[];
+  memoViews: MemoView[];
   /** Authentication identity has settled, while user settings may still be loading. */
   isIdentityInitialized: boolean;
   /** User settings that affect memo presentation are safe to consume. */
@@ -40,7 +40,7 @@ const UNAUTHENTICATED_STATE: AuthState = {
   userGeneralSetting: undefined,
   userWebhooksSetting: undefined,
   userTagsSetting: undefined,
-  shortcuts: [],
+  memoViews: [],
   isIdentityInitialized: true,
   isUserSettingsInitialized: true,
   isInitialized: true,
@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     userGeneralSetting: undefined,
     userWebhooksSetting: undefined,
     userTagsSetting: undefined,
-    shortcuts: [],
+    memoViews: [],
     isIdentityInitialized: false,
     isUserSettingsInitialized: false,
     isInitialized: false,
@@ -73,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
 
       // Tag settings control sensitive-content blurring. Publish them as soon
-      // as this request settles instead of waiting for unrelated shortcuts.
+      // as this request settles instead of waiting for unrelated memo views.
       setState((prev) =>
         prev.currentUser?.name === userName
           ? {
@@ -87,14 +87,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return userSettings;
     });
 
-    const [userSettings, { shortcuts }] = await Promise.all([
+    const [userSettings, { memoViews }] = await Promise.all([
       userSettingsPromise,
-      shortcutServiceClient.listShortcuts({ parent: userName }),
+      memoViewServiceClient.listMemoViews({ parent: userName }),
     ]);
 
     return {
       ...userSettings,
-      shortcuts,
+      memoViews,
     };
   }, []);
 

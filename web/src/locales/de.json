@@ -95,8 +95,6 @@
     "select": "Auswählen",
     "settings": "Einstellungen",
     "share": "Teilen",
-    "shortcut-filter": "Verknüpfungsfilter",
-    "shortcuts": "Verknüpfungen",
     "sign-in": "Anmelden",
     "sign-in-with": "Anmelden mit {{provider}}",
     "sign-out": "Abmelden",
@@ -114,6 +112,7 @@
     "username": "Benutzername",
     "version": "Version",
     "visibility": "Sichtbarkeit",
+    "views": "Ansichten",
     "yourself": "Du selbst",
     "empty-placeholder": "Leer",
     "unlink": "Verknüpfung aufheben"
@@ -454,9 +453,9 @@
       "memo-defaults-title": "Memo-Standardwerte",
       "theme-description": "Wendet das ausgewählte Thema sofort auf diesem Gerät an."
     },
-    "shortcut": {
-      "delete-confirm": "Bist du sicher, dass du die Verknüpfung `{{title}}` löschen möchtest?",
-      "delete-success": "Verknüpfung `{{title}}` erfolgreich gelöscht"
+    "memo-view": {
+      "delete-confirm": "Bist du sicher, dass du die Ansicht `{{title}}` löschen möchtest?",
+      "delete-success": "Ansicht `{{title}}` erfolgreich gelöscht"
     },
     "sso": {
       "authorization-endpoint": "Autorisierungsendpunkt",

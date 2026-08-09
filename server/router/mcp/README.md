@@ -139,7 +139,7 @@ a personal access token as a bearer credential. Example client config:
 
 The server exposes a curated allowlist (`curatedOperationIDs` in `catalog.go`),
 centered on memos and attachments, plus two read-only orientation tools:
-`shortcut_list_shortcuts` (surfaces a user's saved CEL filters for reuse with
+`memo_view_list_memo_views` (surfaces a user's named CEL filters for reuse with
 `memo_list_memos`) and `auth_get_current_user` (a "whoami" so an agent can
 resolve its own user — the single allowed auth/identity operation):
 
@@ -163,7 +163,7 @@ resolve its own user — the single allowed auth/identity operation):
 | `AttachmentService_CreateAttachment` | `attachment_create_attachment` |
 | `AttachmentService_GetAttachment` | `attachment_get_attachment` |
 | `AttachmentService_DeleteAttachment` | `attachment_delete_attachment` |
-| `ShortcutService_ListShortcuts` | `shortcut_list_shortcuts` |
+| `MemoViewService_ListMemoViews` | `memo_view_list_memo_views` |
 | `AuthService_GetCurrentUser` | `auth_get_current_user` |
 
 **Naming rule** (`toolNameFromOperationID`): drop the `Service` suffix from the

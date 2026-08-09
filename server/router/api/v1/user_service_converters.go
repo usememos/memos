@@ -100,8 +100,8 @@ func convertSettingKeyFromStore(key storepb.UserSetting_Key) string {
 	switch key {
 	case storepb.UserSetting_GENERAL:
 		return v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_GENERAL)]
-	case storepb.UserSetting_SHORTCUTS:
-		return "SHORTCUTS" // Not defined in API proto
+	case storepb.UserSetting_MEMO_VIEWS:
+		return "MEMO_VIEWS" // Not defined in API proto
 	case storepb.UserSetting_WEBHOOKS:
 		return v1pb.UserSetting_Key_name[int32(v1pb.UserSetting_WEBHOOKS)]
 	case storepb.UserSetting_TAGS:

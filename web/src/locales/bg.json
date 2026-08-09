@@ -133,8 +133,6 @@
     "select": "Изберете",
     "settings": "Настройки",
     "share": "Споделете",
-    "shortcut-filter": "Филтър за бърз достъп",
-    "shortcuts": "Преки пътища",
     "sign-in": "влезте",
     "sign-in-with": "Влезте с {{provider}}",
     "sign-out": "Излезте",
@@ -153,6 +151,7 @@
     "username": "Потребителско име",
     "version": "Версия",
     "visibility": "Видимост",
+    "views": "Изгледи",
     "yourself": "Себе си"
   },
   "locale-picker": {
@@ -571,9 +570,9 @@
       "theme-description": "Прилага избраната тема веднага на това устройство.",
       "theme": "Тема"
     },
-    "shortcut": {
-      "delete-confirm": "Сигурни ли сте, че искате да изтриете пряк път `{{title}}`?",
-      "delete-success": "Пряк път `{{title}}` изтрит успешно"
+    "memo-view": {
+      "delete-confirm": "Сигурни ли сте, че искате да изтриете изгледа `{{title}}`?",
+      "delete-success": "Изгледът `{{title}}` е изтрит успешно"
     },
     "sso": {
       "account": "акаунт",

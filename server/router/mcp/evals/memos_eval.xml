@@ -4,7 +4,7 @@
 
   These questions test whether an LLM can accomplish realistic tasks by
   composing the curated MCP tools (memo_list_memos with CEL filters,
-  memo_list_memo_comments, memo_list_memo_reactions, shortcut_list_shortcuts,
+  memo_list_memo_comments, memo_list_memo_reactions, memo_view_list_memo_views,
   auth_get_current_user, ...). They are NOT unit tests of the server plumbing —
   see *_test.go for that.
 

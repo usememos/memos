@@ -95,8 +95,6 @@
     "select": "Выбрать",
     "settings": "Настройки",
     "share": "Поделиться",
-    "shortcut-filter": "Условие отбора",
-    "shortcuts": "Ярлыки",
     "sign-in": "Войти",
     "sign-in-with": "Войти через {{provider}}",
     "sign-out": "Выйти",
@@ -114,6 +112,7 @@
     "username": "Имя пользователя",
     "version": "Версия",
     "visibility": "Видимость",
+    "views": "Представления",
     "yourself": "Вы",
     "empty-placeholder": "Пустой",
     "unlink": "Отсоединить"
@@ -454,9 +453,9 @@
       "memo-defaults-title": "Памятка по умолчанию",
       "theme-description": "Немедленно применяет выбранную тему на этом устройстве."
     },
-    "shortcut": {
-      "delete-confirm": "Вы уверены, что хотите удалить ярлык `{{title}}`?",
-      "delete-success": "Ярлык `{{title}}` успешно удален"
+    "memo-view": {
+      "delete-confirm": "Вы уверены, что хотите удалить представление `{{title}}`?",
+      "delete-success": "Представление `{{title}}` успешно удалено"
     },
     "sso": {
       "authorization-endpoint": "Конечная точка авторизации",

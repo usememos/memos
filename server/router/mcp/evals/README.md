@@ -16,7 +16,7 @@ tool calls, and has a single string-comparable answer.
 Answers are pinned to the deterministic seed in
 [`store/seed/sqlite/01__dump.sql`](../../../../store/seed/sqlite/01__dump.sql)
 (10 memos — 7 top-level + 3 comments — 2 users, 12 reactions, no attachments,
-no shortcuts).
+no memo views).
 
 The public demo (`demo.usememos.com`) signs everyone into the **same shared
 `demo` account**, so visitors continually add/edit/delete memos and reactions.
@@ -62,6 +62,6 @@ content, all of which are stable across re-seeds.
   `"work" in tags` (or `tags.exists(t, t == "work")`), not `tag == "work"`.
 - `memo_list_memos` returns only top-level memos; comments are reached via
   `memo_list_memo_comments`.
-- The seed defines no shortcuts and no attachments, so `shortcut_list_shortcuts`
+- The seed defines no memo views and no attachments, so `memo_view_list_memo_views`
   and the attachment tools return empty sets against a fresh seed. Add seed rows
   before writing questions that depend on them.

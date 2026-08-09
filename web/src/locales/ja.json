@@ -134,8 +134,6 @@
     "select": "選択",
     "settings": "設定",
     "share": "共有する",
-    "shortcut-filter": "ショートカットフィルター",
-    "shortcuts": "ショートカット",
     "sign-in": "サインイン",
     "sign-in-to-memos": "Memosにサインイン",
     "sign-out": "サインアウト",
@@ -542,9 +540,9 @@
       "memo-defaults-title": "メモのデフォルト",
       "theme-description": "選択したテーマをこのデバイスにすぐに適用します。"
     },
-    "shortcut": {
-      "delete-confirm": "ショートカット `{{title}}` を削除してもよろしいですか？",
-      "delete-success": "ショートカット `{{title}}` を削除しました"
+    "memo-view": {
+      "delete-confirm": "ビュー `{{title}}` を削除してもよろしいですか？",
+      "delete-success": "ビュー `{{title}}` を削除しました"
     },
     "sso": {
       "authorization-endpoint": "認証エンドポイント",

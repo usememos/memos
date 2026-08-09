@@ -523,42 +523,42 @@ func (s *ConnectServiceHandler) Transcribe(ctx context.Context, req *connect.Req
 	return connect.NewResponse(resp), nil
 }
 
-// ShortcutService
+// MemoViewService
 
-func (s *ConnectServiceHandler) ListShortcuts(ctx context.Context, req *connect.Request[v1pb.ListShortcutsRequest]) (*connect.Response[v1pb.ListShortcutsResponse], error) {
-	resp, err := s.APIV1Service.ListShortcuts(ctx, req.Msg)
+func (s *ConnectServiceHandler) ListMemoViews(ctx context.Context, req *connect.Request[v1pb.ListMemoViewsRequest]) (*connect.Response[v1pb.ListMemoViewsResponse], error) {
+	resp, err := s.APIV1Service.ListMemoViews(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) GetShortcut(ctx context.Context, req *connect.Request[v1pb.GetShortcutRequest]) (*connect.Response[v1pb.Shortcut], error) {
-	resp, err := s.APIV1Service.GetShortcut(ctx, req.Msg)
+func (s *ConnectServiceHandler) GetMemoView(ctx context.Context, req *connect.Request[v1pb.GetMemoViewRequest]) (*connect.Response[v1pb.MemoView], error) {
+	resp, err := s.APIV1Service.GetMemoView(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) CreateShortcut(ctx context.Context, req *connect.Request[v1pb.CreateShortcutRequest]) (*connect.Response[v1pb.Shortcut], error) {
-	resp, err := s.APIV1Service.CreateShortcut(ctx, req.Msg)
+func (s *ConnectServiceHandler) CreateMemoView(ctx context.Context, req *connect.Request[v1pb.CreateMemoViewRequest]) (*connect.Response[v1pb.MemoView], error) {
+	resp, err := s.APIV1Service.CreateMemoView(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) UpdateShortcut(ctx context.Context, req *connect.Request[v1pb.UpdateShortcutRequest]) (*connect.Response[v1pb.Shortcut], error) {
-	resp, err := s.APIV1Service.UpdateShortcut(ctx, req.Msg)
+func (s *ConnectServiceHandler) UpdateMemoView(ctx context.Context, req *connect.Request[v1pb.UpdateMemoViewRequest]) (*connect.Response[v1pb.MemoView], error) {
+	resp, err := s.APIV1Service.UpdateMemoView(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}
 	return connect.NewResponse(resp), nil
 }
 
-func (s *ConnectServiceHandler) DeleteShortcut(ctx context.Context, req *connect.Request[v1pb.DeleteShortcutRequest]) (*connect.Response[emptypb.Empty], error) {
-	resp, err := s.APIV1Service.DeleteShortcut(ctx, req.Msg)
+func (s *ConnectServiceHandler) DeleteMemoView(ctx context.Context, req *connect.Request[v1pb.DeleteMemoViewRequest]) (*connect.Response[emptypb.Empty], error) {
+	resp, err := s.APIV1Service.DeleteMemoView(ctx, req.Msg)
 	if err != nil {
 		return nil, convertGRPCError(err)
 	}

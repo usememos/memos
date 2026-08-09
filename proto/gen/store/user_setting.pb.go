@@ -29,8 +29,8 @@ const (
 	UserSetting_KEY_UNSPECIFIED UserSetting_Key = 0
 	// General user settings.
 	UserSetting_GENERAL UserSetting_Key = 1
-	// The shortcuts of the user.
-	UserSetting_SHORTCUTS UserSetting_Key = 4
+	// The memo views of the user.
+	UserSetting_MEMO_VIEWS UserSetting_Key = 4
 	// The webhooks of the user.
 	UserSetting_WEBHOOKS UserSetting_Key = 5
 	// Refresh tokens for the user.
@@ -46,7 +46,7 @@ var (
 	UserSetting_Key_name = map[int32]string{
 		0: "KEY_UNSPECIFIED",
 		1: "GENERAL",
-		4: "SHORTCUTS",
+		4: "MEMO_VIEWS",
 		5: "WEBHOOKS",
 		6: "REFRESH_TOKENS",
 		7: "PERSONAL_ACCESS_TOKENS",
@@ -55,7 +55,7 @@ var (
 	UserSetting_Key_value = map[string]int32{
 		"KEY_UNSPECIFIED":        0,
 		"GENERAL":                1,
-		"SHORTCUTS":              4,
+		"MEMO_VIEWS":             4,
 		"WEBHOOKS":               5,
 		"REFRESH_TOKENS":         6,
 		"PERSONAL_ACCESS_TOKENS": 7,
@@ -97,7 +97,7 @@ type UserSetting struct {
 	// Types that are valid to be assigned to Value:
 	//
 	//	*UserSetting_General
-	//	*UserSetting_Shortcuts
+	//	*UserSetting_MemoViews
 	//	*UserSetting_Webhooks
 	//	*UserSetting_RefreshTokens
 	//	*UserSetting_PersonalAccessTokens
@@ -167,10 +167,10 @@ func (x *UserSetting) GetGeneral() *GeneralUserSetting {
 	return nil
 }
 
-func (x *UserSetting) GetShortcuts() *ShortcutsUserSetting {
+func (x *UserSetting) GetMemoViews() *MemoViewsUserSetting {
 	if x != nil {
-		if x, ok := x.Value.(*UserSetting_Shortcuts); ok {
-			return x.Shortcuts
+		if x, ok := x.Value.(*UserSetting_MemoViews); ok {
+			return x.MemoViews
 		}
 	}
 	return nil
@@ -220,8 +220,8 @@ type UserSetting_General struct {
 	General *GeneralUserSetting `protobuf:"bytes,3,opt,name=general,proto3,oneof"`
 }
 
-type UserSetting_Shortcuts struct {
-	Shortcuts *ShortcutsUserSetting `protobuf:"bytes,6,opt,name=shortcuts,proto3,oneof"`
+type UserSetting_MemoViews struct {
+	MemoViews *MemoViewsUserSetting `protobuf:"bytes,6,opt,name=memo_views,json=memoViews,proto3,oneof"`
 }
 
 type UserSetting_Webhooks struct {
@@ -242,7 +242,7 @@ type UserSetting_Tags struct {
 
 func (*UserSetting_General) isUserSetting_Value() {}
 
-func (*UserSetting_Shortcuts) isUserSetting_Value() {}
+func (*UserSetting_MemoViews) isUserSetting_Value() {}
 
 func (*UserSetting_Webhooks) isUserSetting_Value() {}
 
@@ -507,27 +507,27 @@ func (x *PersonalAccessTokensUserSetting) GetTokens() []*PersonalAccessTokensUse
 	return nil
 }
 
-type ShortcutsUserSetting struct {
+type MemoViewsUserSetting struct {
 	state         protoimpl.MessageState           `protogen:"open.v1"`
-	Shortcuts     []*ShortcutsUserSetting_Shortcut `protobuf:"bytes,1,rep,name=shortcuts,proto3" json:"shortcuts,omitempty"`
+	MemoViews     []*MemoViewsUserSetting_MemoView `protobuf:"bytes,1,rep,name=memo_views,json=memoViews,proto3" json:"memo_views,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ShortcutsUserSetting) Reset() {
-	*x = ShortcutsUserSetting{}
+func (x *MemoViewsUserSetting) Reset() {
+	*x = MemoViewsUserSetting{}
 	mi := &file_store_user_setting_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ShortcutsUserSetting) String() string {
+func (x *MemoViewsUserSetting) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ShortcutsUserSetting) ProtoMessage() {}
+func (*MemoViewsUserSetting) ProtoMessage() {}
 
-func (x *ShortcutsUserSetting) ProtoReflect() protoreflect.Message {
+func (x *MemoViewsUserSetting) ProtoReflect() protoreflect.Message {
 	mi := &file_store_user_setting_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -539,14 +539,14 @@ func (x *ShortcutsUserSetting) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ShortcutsUserSetting.ProtoReflect.Descriptor instead.
-func (*ShortcutsUserSetting) Descriptor() ([]byte, []int) {
+// Deprecated: Use MemoViewsUserSetting.ProtoReflect.Descriptor instead.
+func (*MemoViewsUserSetting) Descriptor() ([]byte, []int) {
 	return file_store_user_setting_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *ShortcutsUserSetting) GetShortcuts() []*ShortcutsUserSetting_Shortcut {
+func (x *MemoViewsUserSetting) GetMemoViews() []*MemoViewsUserSetting_MemoView {
 	if x != nil {
-		return x.Shortcuts
+		return x.MemoViews
 	}
 	return nil
 }
@@ -847,7 +847,7 @@ func (x *PersonalAccessTokensUserSetting_PersonalAccessToken) GetLastUsedAt() *t
 	return nil
 }
 
-type ShortcutsUserSetting_Shortcut struct {
+type MemoViewsUserSetting_MemoView struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
@@ -856,20 +856,20 @@ type ShortcutsUserSetting_Shortcut struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ShortcutsUserSetting_Shortcut) Reset() {
-	*x = ShortcutsUserSetting_Shortcut{}
+func (x *MemoViewsUserSetting_MemoView) Reset() {
+	*x = MemoViewsUserSetting_MemoView{}
 	mi := &file_store_user_setting_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ShortcutsUserSetting_Shortcut) String() string {
+func (x *MemoViewsUserSetting_MemoView) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ShortcutsUserSetting_Shortcut) ProtoMessage() {}
+func (*MemoViewsUserSetting_MemoView) ProtoMessage() {}
 
-func (x *ShortcutsUserSetting_Shortcut) ProtoReflect() protoreflect.Message {
+func (x *MemoViewsUserSetting_MemoView) ProtoReflect() protoreflect.Message {
 	mi := &file_store_user_setting_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -881,26 +881,26 @@ func (x *ShortcutsUserSetting_Shortcut) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ShortcutsUserSetting_Shortcut.ProtoReflect.Descriptor instead.
-func (*ShortcutsUserSetting_Shortcut) Descriptor() ([]byte, []int) {
+// Deprecated: Use MemoViewsUserSetting_MemoView.ProtoReflect.Descriptor instead.
+func (*MemoViewsUserSetting_MemoView) Descriptor() ([]byte, []int) {
 	return file_store_user_setting_proto_rawDescGZIP(), []int{6, 0}
 }
 
-func (x *ShortcutsUserSetting_Shortcut) GetId() string {
+func (x *MemoViewsUserSetting_MemoView) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-func (x *ShortcutsUserSetting_Shortcut) GetTitle() string {
+func (x *MemoViewsUserSetting_MemoView) GetTitle() string {
 	if x != nil {
 		return x.Title
 	}
 	return ""
 }
 
-func (x *ShortcutsUserSetting_Shortcut) GetFilter() string {
+func (x *MemoViewsUserSetting_MemoView) GetFilter() string {
 	if x != nil {
 		return x.Filter
 	}
@@ -983,21 +983,23 @@ var File_store_user_setting_proto protoreflect.FileDescriptor
 
 const file_store_user_setting_proto_rawDesc = "" +
 	"\n" +
-	"\x18store/user_setting.proto\x12\vmemos.store\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/color.proto\"\x89\x05\n" +
+	"\x18store/user_setting.proto\x12\vmemos.store\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/color.proto\"\x8b\x05\n" +
 	"\vUserSetting\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\x05R\x06userId\x12.\n" +
 	"\x03key\x18\x02 \x01(\x0e2\x1c.memos.store.UserSetting.KeyR\x03key\x12;\n" +
-	"\ageneral\x18\x03 \x01(\v2\x1f.memos.store.GeneralUserSettingH\x00R\ageneral\x12A\n" +
-	"\tshortcuts\x18\x06 \x01(\v2!.memos.store.ShortcutsUserSettingH\x00R\tshortcuts\x12>\n" +
+	"\ageneral\x18\x03 \x01(\v2\x1f.memos.store.GeneralUserSettingH\x00R\ageneral\x12B\n" +
+	"\n" +
+	"memo_views\x18\x06 \x01(\v2!.memos.store.MemoViewsUserSettingH\x00R\tmemoViews\x12>\n" +
 	"\bwebhooks\x18\a \x01(\v2 .memos.store.WebhooksUserSettingH\x00R\bwebhooks\x12N\n" +
 	"\x0erefresh_tokens\x18\b \x01(\v2%.memos.store.RefreshTokensUserSettingH\x00R\rrefreshTokens\x12d\n" +
 	"\x16personal_access_tokens\x18\t \x01(\v2,.memos.store.PersonalAccessTokensUserSettingH\x00R\x14personalAccessTokens\x122\n" +
 	"\x04tags\x18\n" +
-	" \x01(\v2\x1c.memos.store.TagsUserSettingH\x00R\x04tags\"~\n" +
+	" \x01(\v2\x1c.memos.store.TagsUserSettingH\x00R\x04tags\"\x7f\n" +
 	"\x03Key\x12\x13\n" +
 	"\x0fKEY_UNSPECIFIED\x10\x00\x12\v\n" +
-	"\aGENERAL\x10\x01\x12\r\n" +
-	"\tSHORTCUTS\x10\x04\x12\f\n" +
+	"\aGENERAL\x10\x01\x12\x0e\n" +
+	"\n" +
+	"MEMO_VIEWS\x10\x04\x12\f\n" +
 	"\bWEBHOOKS\x10\x05\x12\x12\n" +
 	"\x0eREFRESH_TOKENS\x10\x06\x12\x1a\n" +
 	"\x16PERSONAL_ACCESS_TOKENS\x10\a\x12\b\n" +
@@ -1048,10 +1050,11 @@ const file_store_user_setting_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12<\n" +
 	"\flast_used_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"lastUsedAt\"\xaa\x01\n" +
-	"\x14ShortcutsUserSetting\x12H\n" +
-	"\tshortcuts\x18\x01 \x03(\v2*.memos.store.ShortcutsUserSetting.ShortcutR\tshortcuts\x1aH\n" +
-	"\bShortcut\x12\x0e\n" +
+	"lastUsedAt\"\xab\x01\n" +
+	"\x14MemoViewsUserSetting\x12I\n" +
+	"\n" +
+	"memo_views\x18\x01 \x03(\v2*.memos.store.MemoViewsUserSetting.MemoViewR\tmemoViews\x1aH\n" +
+	"\bMemoView\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x16\n" +
 	"\x06filter\x18\x03 \x01(\tR\x06filter\"\xc5\x01\n" +
@@ -1086,13 +1089,13 @@ var file_store_user_setting_proto_goTypes = []any{
 	(*TagsUserSetting)(nil),                       // 4: memos.store.TagsUserSetting
 	(*RefreshTokensUserSetting)(nil),              // 5: memos.store.RefreshTokensUserSetting
 	(*PersonalAccessTokensUserSetting)(nil),       // 6: memos.store.PersonalAccessTokensUserSetting
-	(*ShortcutsUserSetting)(nil),                  // 7: memos.store.ShortcutsUserSetting
+	(*MemoViewsUserSetting)(nil),                  // 7: memos.store.MemoViewsUserSetting
 	(*WebhooksUserSetting)(nil),                   // 8: memos.store.WebhooksUserSetting
 	nil,                                           // 9: memos.store.TagsUserSetting.TagsEntry
 	(*RefreshTokensUserSetting_RefreshToken)(nil), // 10: memos.store.RefreshTokensUserSetting.RefreshToken
 	(*RefreshTokensUserSetting_ClientInfo)(nil),   // 11: memos.store.RefreshTokensUserSetting.ClientInfo
 	(*PersonalAccessTokensUserSetting_PersonalAccessToken)(nil), // 12: memos.store.PersonalAccessTokensUserSetting.PersonalAccessToken
-	(*ShortcutsUserSetting_Shortcut)(nil),                       // 13: memos.store.ShortcutsUserSetting.Shortcut
+	(*MemoViewsUserSetting_MemoView)(nil),                       // 13: memos.store.MemoViewsUserSetting.MemoView
 	(*WebhooksUserSetting_Webhook)(nil),                         // 14: memos.store.WebhooksUserSetting.Webhook
 	(*color.Color)(nil),                                         // 15: google.type.Color
 	(*timestamppb.Timestamp)(nil),                               // 16: google.protobuf.Timestamp
@@ -1100,7 +1103,7 @@ var file_store_user_setting_proto_goTypes = []any{
 var file_store_user_setting_proto_depIdxs = []int32{
 	0,  // 0: memos.store.UserSetting.key:type_name -> memos.store.UserSetting.Key
 	2,  // 1: memos.store.UserSetting.general:type_name -> memos.store.GeneralUserSetting
-	7,  // 2: memos.store.UserSetting.shortcuts:type_name -> memos.store.ShortcutsUserSetting
+	7,  // 2: memos.store.UserSetting.memo_views:type_name -> memos.store.MemoViewsUserSetting
 	8,  // 3: memos.store.UserSetting.webhooks:type_name -> memos.store.WebhooksUserSetting
 	5,  // 4: memos.store.UserSetting.refresh_tokens:type_name -> memos.store.RefreshTokensUserSetting
 	6,  // 5: memos.store.UserSetting.personal_access_tokens:type_name -> memos.store.PersonalAccessTokensUserSetting
@@ -1109,7 +1112,7 @@ var file_store_user_setting_proto_depIdxs = []int32{
 	9,  // 8: memos.store.TagsUserSetting.tags:type_name -> memos.store.TagsUserSetting.TagsEntry
 	10, // 9: memos.store.RefreshTokensUserSetting.refresh_tokens:type_name -> memos.store.RefreshTokensUserSetting.RefreshToken
 	12, // 10: memos.store.PersonalAccessTokensUserSetting.tokens:type_name -> memos.store.PersonalAccessTokensUserSetting.PersonalAccessToken
-	13, // 11: memos.store.ShortcutsUserSetting.shortcuts:type_name -> memos.store.ShortcutsUserSetting.Shortcut
+	13, // 11: memos.store.MemoViewsUserSetting.memo_views:type_name -> memos.store.MemoViewsUserSetting.MemoView
 	14, // 12: memos.store.WebhooksUserSetting.webhooks:type_name -> memos.store.WebhooksUserSetting.Webhook
 	3,  // 13: memos.store.TagsUserSetting.TagsEntry.value:type_name -> memos.store.UserTagMetadata
 	16, // 14: memos.store.RefreshTokensUserSetting.RefreshToken.expires_at:type_name -> google.protobuf.Timestamp
@@ -1132,7 +1135,7 @@ func file_store_user_setting_proto_init() {
 	}
 	file_store_user_setting_proto_msgTypes[0].OneofWrappers = []any{
 		(*UserSetting_General)(nil),
-		(*UserSetting_Shortcuts)(nil),
+		(*UserSetting_MemoViews)(nil),
 		(*UserSetting_Webhooks)(nil),
 		(*UserSetting_RefreshTokens)(nil),
 		(*UserSetting_PersonalAccessTokens)(nil),

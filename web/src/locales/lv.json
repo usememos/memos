@@ -133,8 +133,6 @@
     "select": "Izvēlieties",
     "settings": "Iestatījumi",
     "share": "Dalīties",
-    "shortcut-filter": "Īsceļu filtrs",
-    "shortcuts": "Īsceļi",
     "sign-in": "Pierakstīties",
     "sign-in-with": "Pierakstieties ar {{provider}}",
     "sign-out": "Izrakstīties",
@@ -153,6 +151,7 @@
     "username": "Lietotājvārds",
     "version": "Versija",
     "visibility": "Redzamība",
+    "views": "Skati",
     "yourself": "sevi"
   },
   "locale-picker": {
@@ -571,9 +570,9 @@
       "theme-description": "Šajā ierīcē nekavējoties tiek lietots atlasītais motīvs.",
       "theme": "Tēma"
     },
-    "shortcut": {
-      "delete-confirm": "Vai tiešām vēlaties dzēst saīsni `{{title}}`?",
-      "delete-success": "Īsceļš `{{title}}` veiksmīgi izdzēsts"
+    "memo-view": {
+      "delete-confirm": "Vai tiešām vēlaties dzēst skatu `{{title}}`?",
+      "delete-success": "Skats `{{title}}` veiksmīgi izdzēsts"
     },
     "sso": {
       "account": "Konts",

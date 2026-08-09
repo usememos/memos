@@ -8,7 +8,11 @@ import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
 import TagTree from "../TagTree";
 import { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_COUNT_CLASSES, SIDEBAR_ROW_ICON_CLASSES, sidebarRowStateClasses } from "./SidebarRow";
-import SidebarSectionHeader from "./SidebarSectionHeader";
+import SidebarSection, {
+  SIDEBAR_SECTION_ACTION_ACTIVE_CLASSES,
+  SIDEBAR_SECTION_ACTION_BUTTON_CLASSES,
+  SIDEBAR_SECTION_ACTION_ICON_CLASSES,
+} from "./SidebarSection";
 
 interface Props {
   tagCount: Record<string, number>;
@@ -92,48 +96,43 @@ const TagsSection = ({ tagCount, onSelect, navigationTarget, scope }: Props) => 
   };
 
   return (
-    <section>
-      <SidebarSectionHeader
-        action={
-          <div className="flex items-center gap-0.5" role="group" aria-label={t("common.tags")}>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label={t("common.tags")}
-              aria-pressed={!treeMode}
-              className={cn("size-5 rounded text-muted-foreground", !treeMode && "bg-accent text-foreground")}
-              onClick={() => setTreeMode(false)}
-            >
-              <ListIcon className="size-3.5" strokeWidth={1.8} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label={`${t("common.tags")}: ${t("common.tree-mode")}`}
-              aria-pressed={treeMode}
-              className={cn("size-5 rounded text-muted-foreground", treeMode && "bg-accent text-foreground")}
-              onClick={() => setTreeMode(true)}
-            >
-              <ListTreeIcon className="size-3.5" strokeWidth={1.8} />
-            </Button>
-          </div>
-        }
-      >
-        <span className="inline-flex items-center gap-1.5 leading-none">
-          {t("common.tags")}
-          <span className="font-normal leading-none tracking-normal text-muted-foreground/45">{tags.length}</span>
-        </span>
-      </SidebarSectionHeader>
+    <SidebarSection
+      label={t("common.tags")}
+      action={
+        <div className="flex items-center gap-0.5" role="group" aria-label={t("common.tags")}>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label={`${t("common.tags")}: ${t("memo.layout-list")}`}
+            aria-pressed={!treeMode}
+            className={cn(SIDEBAR_SECTION_ACTION_BUTTON_CLASSES, !treeMode && SIDEBAR_SECTION_ACTION_ACTIVE_CLASSES)}
+            onClick={() => setTreeMode(false)}
+          >
+            <ListIcon className={SIDEBAR_SECTION_ACTION_ICON_CLASSES} strokeWidth={1.8} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label={`${t("common.tags")}: ${t("common.tree-mode")}`}
+            aria-pressed={treeMode}
+            className={cn(SIDEBAR_SECTION_ACTION_BUTTON_CLASSES, treeMode && SIDEBAR_SECTION_ACTION_ACTIVE_CLASSES)}
+            onClick={() => setTreeMode(true)}
+          >
+            <ListTreeIcon className={SIDEBAR_SECTION_ACTION_ICON_CLASSES} strokeWidth={1.8} />
+          </Button>
+        </div>
+      }
+    >
       {treeMode ? (
         <TagTree key={scope} tagAmounts={tags} activeTag={activeTag} scope={scope} onTagClick={handleTagClick} />
       ) : (
-        <div className="space-y-0.5">
+        <>
           {tags.map(([tag, amount]) => (
             <FlatTagRow key={tag} tag={tag} amount={amount} active={activeTags.has(tag)} onClick={() => handleTagClick(tag)} />
           ))}
-        </div>
+        </>
       )}
-    </section>
+    </SidebarSection>
   );
 };
 
