@@ -49,7 +49,7 @@ func (s *APIV1Service) SetMemoAttachments(ctx context.Context, request *v1pb.Set
 		return nil, err
 	}
 	updatedTs := time.Now().Unix()
-	if err := s.applyMemoAttachments(ctx, memo, prepared, &store.UpdateMemo{ID: memo.ID, UpdatedTs: &updatedTs}, requiredAttachmentIDs); err != nil {
+	if err := s.applyMemoMutation(ctx, memo, prepared, &store.UpdateMemo{ID: memo.ID, UpdatedTs: &updatedTs}, requiredAttachmentIDs, nil); err != nil {
 		return nil, err
 	}
 	updatedMemo, parentMemo, memoMessage, err := s.buildUpdatedMemoState(ctx, memo.ID)
@@ -110,12 +110,13 @@ func (s *APIV1Service) prepareMemoAttachments(
 	}, nil
 }
 
-func (s *APIV1Service) applyMemoAttachments(
+func (s *APIV1Service) applyMemoMutation(
 	ctx context.Context,
 	memo *store.Memo,
 	prepared *preparedMemoAttachments,
 	memoUpdate *store.UpdateMemo,
 	requiredAttachmentIDs []int32,
+	referenceRelations *[]*store.MemoRelation,
 ) error {
 	if prepared == nil {
 		prepared = &preparedMemoAttachments{}
@@ -151,20 +152,35 @@ func (s *APIV1Service) applyMemoAttachments(
 	for _, attachment := range prepared.removed {
 		removedAttachmentIDs = append(removedAttachmentIDs, attachment.ID)
 	}
-	mutation := &store.MemoAttachmentMutation{
-		MemoID:                memo.ID,
-		MemoCreatorID:         memo.CreatorID,
-		ExpectedMemoContent:   memo.Content,
-		MemoUpdate:            memoUpdate,
-		Bindings:              bindings,
-		RemovedAttachmentIDs:  removedAttachmentIDs,
-		RequiredAttachmentIDs: requiredAttachmentIDs,
-	}
-	if err := s.Store.ApplyMemoAttachmentMutation(ctx, mutation); err != nil {
-		if stderrors.Is(err, store.ErrMemoAttachmentConflict) {
-			return status.Errorf(codes.FailedPrecondition, "memo attachment state changed: %v", err)
+	if referenceRelations != nil {
+		relations := make([]*store.MemoRelation, 0, len(*referenceRelations))
+		for _, relation := range *referenceRelations {
+			relations = append(relations, &store.MemoRelation{
+				MemoID:        memo.ID,
+				RelatedMemoID: relation.RelatedMemoID,
+				Type:          relation.Type,
+			})
 		}
-		return status.Errorf(codes.Internal, "failed to apply memo attachment mutation: %v", err)
+		referenceRelations = &relations
+	}
+	mutation := &store.MemoMutation{
+		MemoID:                    memo.ID,
+		MemoCreatorID:             memo.CreatorID,
+		ExpectedMemoContent:       memo.Content,
+		MemoUpdate:                memoUpdate,
+		Bindings:                  bindings,
+		RemovedAttachmentIDs:      removedAttachmentIDs,
+		RequiredAttachmentIDs:     requiredAttachmentIDs,
+		ReplaceReferenceRelations: referenceRelations != nil,
+	}
+	if referenceRelations != nil {
+		mutation.ReferenceRelations = *referenceRelations
+	}
+	if err := s.Store.ApplyMemoMutation(ctx, mutation); err != nil {
+		if stderrors.Is(err, store.ErrMemoMutationConflict) {
+			return status.Errorf(codes.FailedPrecondition, "memo state changed: %v", err)
+		}
+		return status.Errorf(codes.Internal, "failed to apply memo mutation: %v", err)
 	}
 
 	// Rows are detached in the transaction above. Delete storage one at a time so
@@ -332,7 +348,7 @@ func (s *APIV1Service) extractManagedAttachmentReferences(content string) ([]mar
 			continue
 		}
 		if parsed.Scheme == "" && parsed.Host != "" {
-			if instanceURL == nil || strings.EqualFold(parsed.Host, instanceURL.Host) {
+			if instanceURL == nil || sameURLAuthority(parsed, instanceURL) {
 				return nil, status.Errorf(codes.InvalidArgument, "protocol-relative managed attachment image URLs are not allowed: %s", destination)
 			}
 			continue
@@ -340,7 +356,7 @@ func (s *APIV1Service) extractManagedAttachmentReferences(content string) ([]mar
 		if instanceURL == nil {
 			return nil, status.Errorf(codes.InvalidArgument, "absolute managed attachment image URLs require a configured instance URL")
 		}
-		if !strings.EqualFold(parsed.Scheme, instanceURL.Scheme) || !strings.EqualFold(parsed.Host, instanceURL.Host) {
+		if !sameURLOrigin(parsed, instanceURL) {
 			continue
 		}
 		relative := parsed.EscapedPath()
@@ -367,6 +383,32 @@ func (s *APIV1Service) extractManagedAttachmentReferences(content string) ([]mar
 		uniqueReferences = append(uniqueReferences, reference)
 	}
 	return uniqueReferences, nil
+}
+
+func sameURLAuthority(candidate, instance *url.URL) bool {
+	withScheme := *candidate
+	withScheme.Scheme = instance.Scheme
+	return sameURLOrigin(&withScheme, instance)
+}
+
+func sameURLOrigin(a, b *url.URL) bool {
+	return strings.EqualFold(a.Scheme, b.Scheme) &&
+		strings.EqualFold(a.Hostname(), b.Hostname()) &&
+		effectiveURLPort(a) == effectiveURLPort(b)
+}
+
+func effectiveURLPort(u *url.URL) string {
+	if port := u.Port(); port != "" {
+		return port
+	}
+	switch strings.ToLower(u.Scheme) {
+	case "http":
+		return "80"
+	case "https":
+		return "443"
+	default:
+		return ""
+	}
 }
 
 func allGroupMembersRequested(group []*store.Attachment, requestedNames map[string]bool) bool {

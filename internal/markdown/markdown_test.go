@@ -391,6 +391,66 @@ func TestExtractAllRejectsMalformedManagedAttachmentImages(t *testing.T) {
 	require.Len(t, data.InvalidManagedAttachmentReferences, 4)
 }
 
+func TestExtractAllRejectsManagedAttachmentReferencesInRawHTML(t *testing.T) {
+	svc := NewService()
+	tests := []struct {
+		name    string
+		content string
+	}{
+		{
+			name:    "inline HTML",
+			content: `before <img src="/file/attachments/inline-image"> after`,
+		},
+		{
+			name: "HTML block",
+			content: strings.Join([]string{
+				"<div>",
+				`  <img src="/file/attachments/block-image">`,
+				"</div>",
+			}, "\n"),
+		},
+		{
+			name: "self-closing HTML block",
+			content: strings.Join([]string{
+				`<img`,
+				`  src="/file/attachments/multiline-image"`,
+				`/>`,
+			}, "\n"),
+		},
+		{
+			name: "HTML block closure line",
+			content: strings.Join([]string{
+				"<pre>",
+				"content",
+				`</pre><img src="/file/attachments/closure-image">`,
+			}, "\n"),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			data, err := svc.ExtractAll([]byte(test.content))
+			require.NoError(t, err)
+			require.Empty(t, data.ManagedAttachmentReferences)
+			require.Len(t, data.InvalidManagedAttachmentReferences, 1)
+		})
+	}
+}
+
+func TestExtractAllIgnoresManagedAttachmentReferencesInCode(t *testing.T) {
+	svc := NewService()
+	data, err := svc.ExtractAll([]byte(strings.Join([]string{
+		"`<img src=\"/file/attachments/inline-code\">`",
+		"",
+		"```html",
+		`<img src="/file/attachments/fenced-code">`,
+		"```",
+	}, "\n")))
+	require.NoError(t, err)
+	require.Empty(t, data.ManagedAttachmentReferences)
+	require.Empty(t, data.InvalidManagedAttachmentReferences)
+}
+
 func TestExtractAllMentionSyntaxAndContexts(t *testing.T) {
 	svc := NewService(WithTagExtension(), WithMentionExtension())
 	tests := []struct {

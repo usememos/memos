@@ -38,11 +38,11 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	if relatedMemo.RowStatus != store.Normal {
-		return nil, status.Errorf(codes.FailedPrecondition, "cannot comment on an archived memo")
-	}
 	if err := s.checkMemoAndParentReadAccess(ctx, relatedMemo); err != nil {
 		return nil, err
+	}
+	if relatedMemo.RowStatus != store.Normal {
+		return nil, status.Errorf(codes.FailedPrecondition, "cannot comment on an archived memo")
 	}
 	if request.Comment == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "comment is required")

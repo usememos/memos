@@ -11,11 +11,11 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-// ApplyMemoAttachmentMutation atomically updates a memo and its attachment bindings.
-func (d *DB) ApplyMemoAttachmentMutation(ctx context.Context, mutation *store.MemoAttachmentMutation) error {
+// ApplyMemoMutation atomically updates a memo, attachment bindings, and reference relations.
+func (d *DB) ApplyMemoMutation(ctx context.Context, mutation *store.MemoMutation) error {
 	tx, err := d.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
 	if err != nil {
-		return errors.Wrap(err, "failed to begin memo attachment transaction")
+		return errors.Wrap(err, "failed to begin memo transaction")
 	}
 	defer func() {
 		_ = tx.Rollback()
@@ -25,12 +25,12 @@ func (d *DB) ApplyMemoAttachmentMutation(ctx context.Context, mutation *store.Me
 	var content string
 	if err := tx.QueryRowContext(ctx, "SELECT `creator_id`, `content` FROM `memo` WHERE `id` = ? FOR UPDATE", mutation.MemoID).Scan(&creatorID, &content); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return errors.Wrap(store.ErrMemoAttachmentConflict, "memo no longer exists")
+			return errors.Wrap(store.ErrMemoMutationConflict, "memo no longer exists")
 		}
 		return errors.Wrap(err, "failed to lock memo")
 	}
 	if creatorID != mutation.MemoCreatorID || content != mutation.ExpectedMemoContent {
-		return errors.Wrap(store.ErrMemoAttachmentConflict, "memo changed while updating attachments")
+		return errors.Wrap(store.ErrMemoMutationConflict, "memo changed while applying mutation")
 	}
 
 	for _, binding := range mutation.Bindings {
@@ -38,16 +38,16 @@ func (d *DB) ApplyMemoAttachmentMutation(ctx context.Context, mutation *store.Me
 		var memoID sql.NullInt32
 		if err := tx.QueryRowContext(ctx, "SELECT `creator_id`, `memo_id` FROM `attachment` WHERE `id` = ? FOR UPDATE", binding.ID).Scan(&attachmentCreatorID, &memoID); err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
-				return errors.Wrapf(store.ErrMemoAttachmentConflict, "attachment %s no longer exists", binding.UID)
+				return errors.Wrapf(store.ErrMemoMutationConflict, "attachment %s no longer exists", binding.UID)
 			}
 			return errors.Wrap(err, "failed to lock attachment")
 		}
 		if binding.WasBoundToMemo {
 			if !memoID.Valid || memoID.Int32 != mutation.MemoID {
-				return errors.Wrapf(store.ErrMemoAttachmentConflict, "attachment %s is no longer bound to the memo", binding.UID)
+				return errors.Wrapf(store.ErrMemoMutationConflict, "attachment %s is no longer bound to the memo", binding.UID)
 			}
 		} else if attachmentCreatorID != mutation.MemoCreatorID || memoID.Valid {
-			return errors.Wrapf(store.ErrMemoAttachmentConflict, "attachment %s is no longer available", binding.UID)
+			return errors.Wrapf(store.ErrMemoMutationConflict, "attachment %s is no longer available", binding.UID)
 		}
 		if _, err := tx.ExecContext(ctx, "UPDATE `attachment` SET `memo_id` = ?, `updated_ts` = FROM_UNIXTIME(?) WHERE `id` = ?", mutation.MemoID, binding.UpdatedTs, binding.ID); err != nil {
 			return errors.Wrap(err, "failed to bind attachment")
@@ -60,7 +60,7 @@ func (d *DB) ApplyMemoAttachmentMutation(ctx context.Context, mutation *store.Me
 			return errors.Wrap(err, "failed to detach attachment")
 		}
 		if rows, err := result.RowsAffected(); err != nil || rows != 1 {
-			return errors.Wrap(store.ErrMemoAttachmentConflict, "attachment is no longer bound to the memo")
+			return errors.Wrap(store.ErrMemoMutationConflict, "attachment is no longer bound to the memo")
 		}
 	}
 
@@ -68,7 +68,7 @@ func (d *DB) ApplyMemoAttachmentMutation(ctx context.Context, mutation *store.Me
 		var exists int
 		if err := tx.QueryRowContext(ctx, "SELECT 1 FROM `attachment` WHERE `id` = ? AND `memo_id` = ? FOR UPDATE", attachmentID, mutation.MemoID).Scan(&exists); err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
-				return errors.Wrap(store.ErrMemoAttachmentConflict, "a referenced attachment is no longer bound to the memo")
+				return errors.Wrap(store.ErrMemoMutationConflict, "a referenced attachment is no longer bound to the memo")
 			}
 			return errors.Wrap(err, "failed to verify referenced attachment")
 		}
@@ -82,8 +82,31 @@ func (d *DB) ApplyMemoAttachmentMutation(ctx context.Context, mutation *store.Me
 			return err
 		}
 	}
+	if mutation.ReplaceReferenceRelations {
+		if err := replaceMemoReferenceRelations(ctx, tx, mutation.MemoID, mutation.ReferenceRelations); err != nil {
+			return err
+		}
+	}
 	if err := tx.Commit(); err != nil {
-		return errors.Wrap(err, "failed to commit memo attachment transaction")
+		return errors.Wrap(err, "failed to commit memo transaction")
+	}
+	return nil
+}
+
+func replaceMemoReferenceRelations(ctx context.Context, tx *sql.Tx, memoID int32, relations []*store.MemoRelation) error {
+	if _, err := tx.ExecContext(ctx, "DELETE FROM `memo_relation` WHERE `memo_id` = ? AND `type` = ?", memoID, store.MemoRelationReference); err != nil {
+		return errors.Wrap(err, "failed to delete memo reference relations")
+	}
+	for _, relation := range relations {
+		if relation == nil || relation.MemoID != memoID || relation.Type != store.MemoRelationReference {
+			return errors.New("invalid memo reference relation mutation")
+		}
+		if _, err := tx.ExecContext(ctx,
+			"INSERT INTO `memo_relation` (`memo_id`, `related_memo_id`, `type`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `type` = `type`",
+			relation.MemoID, relation.RelatedMemoID, relation.Type,
+		); err != nil {
+			return errors.Wrap(err, "failed to insert memo reference relation")
+		}
 	}
 	return nil
 }

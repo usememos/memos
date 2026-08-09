@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -135,18 +136,57 @@ func TestMemoManagedAttachmentImages(t *testing.T) {
 	t.Run("same-origin absolute managed URL is verified and accepted", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
+		ts.Profile.InstanceURL = "http://localhost"
 		user, err := ts.CreateRegularUser(ctx, "managed-absolute")
 		require.NoError(t, err)
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 		image := createTestImageAttachment(userCtx, t, ts, "absolute.png")
 		uid := strings.TrimPrefix(image.Name, "attachments/")
 
+		content := fmt.Sprintf("![absolute](http://localhost:80/file/attachments/%s)", uid)
+		_, err = ts.Service.CreateMemo(userCtx, &v1pb.CreateMemoRequest{Memo: &v1pb.Memo{Content: content}})
+		require.Equal(t, codes.FailedPrecondition, status.Code(err))
+
 		memo, err := ts.Service.CreateMemo(userCtx, &v1pb.CreateMemoRequest{Memo: &v1pb.Memo{
-			Content:     fmt.Sprintf("![absolute](http://localhost:8080/file/attachments/%s)", uid),
+			Content:     content,
 			Attachments: []*v1pb.Attachment{{Name: image.Name}},
 		}})
 		require.NoError(t, err)
 		require.Len(t, memo.Attachments, 1)
+	})
+
+	t.Run("content validation sees attachments beyond the default page", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+		user, err := ts.CreateRegularUser(ctx, "managed-many-attachments")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+		memo, err := ts.Service.CreateMemo(userCtx, &v1pb.CreateMemoRequest{Memo: &v1pb.Memo{Content: "many attachments"}})
+		require.NoError(t, err)
+		memoID := memoIDFromName(ctx, t, ts, memo.Name)
+
+		referenced, err := ts.Store.CreateAttachment(ctx, &store.Attachment{
+			UID: shortuuid.New(), CreatorID: user.ID, Filename: "referenced.png", Type: "image/png", MemoID: &memoID,
+		})
+		require.NoError(t, err)
+		for i := 0; i < 100; i++ {
+			attachment, err := ts.Store.CreateAttachment(ctx, &store.Attachment{
+				UID: shortuuid.New(), CreatorID: user.ID, Filename: fmt.Sprintf("extra-%03d.png", i), Type: "image/png", MemoID: &memoID,
+			})
+			require.NoError(t, err)
+			updatedTs := referenced.UpdatedTs + int64(i) + 1
+			require.NoError(t, ts.Store.UpdateAttachment(ctx, &store.UpdateAttachment{ID: attachment.ID, UpdatedTs: &updatedTs}))
+		}
+
+		updated, err := ts.Service.UpdateMemo(userCtx, &v1pb.UpdateMemoRequest{
+			Memo: &v1pb.Memo{
+				Name:    memo.Name,
+				Content: fmt.Sprintf("![oldest](/file/attachments/%s)", referenced.UID),
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"content"}},
+		})
+		require.NoError(t, err)
+		require.Len(t, updated.Attachments, 101)
 	})
 
 	t.Run("set attachments cannot remove an image referenced by content", func(t *testing.T) {
@@ -211,6 +251,7 @@ func TestMemoManagedAttachmentImages(t *testing.T) {
 		require.NoError(t, err)
 		storedImage, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid})
 		require.NoError(t, err)
+		require.NotNil(t, storedImage)
 		localReference := "retry-delete.png"
 		localPath := filepath.Join(ts.Profile.Data, localReference)
 		require.NoError(t, os.WriteFile(localPath, []byte("local image"), 0o600))
@@ -304,6 +345,7 @@ func TestMemoAttachmentBindingDoesNotReparent(t *testing.T) {
 	require.NoError(t, err)
 	stored, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid})
 	require.NoError(t, err)
+	require.NotNil(t, stored)
 	require.NotNil(t, stored.MemoID)
 	require.Equal(t, memoIDFromName(ctx, t, ts, first.Name), *stored.MemoID)
 }

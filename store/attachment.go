@@ -41,19 +41,20 @@ type Attachment struct {
 }
 
 type FindAttachment struct {
-	GetBlob        bool
-	ID             *int32
-	UID            *string
-	CreatorID      *int32
-	Filename       *string
-	FilenameSearch *string
-	MemoID         *int32
-	MemoIDList     []int32
-	HasRelatedMemo bool
-	StorageType    *storepb.AttachmentStorageType
-	Filters        []string
-	Limit          *int
-	Offset         *int
+	GetBlob          bool
+	ID               *int32
+	UID              *string
+	CreatorID        *int32
+	Filename         *string
+	FilenameSearch   *string
+	MemoID           *int32
+	MemoIDList       []int32
+	HasRelatedMemo   bool
+	StorageType      *storepb.AttachmentStorageType
+	Filters          []string
+	Limit            *int
+	Offset           *int
+	SkipDefaultLimit bool
 }
 
 type UpdateAttachment struct {
@@ -95,7 +96,7 @@ func (s *Store) CreateAttachment(ctx context.Context, create *Attachment) (*Atta
 
 func (s *Store) ListAttachments(ctx context.Context, find *FindAttachment) ([]*Attachment, error) {
 	// Set default limits to prevent loading too many attachments at once
-	shouldApplyDefaultLimit := find.Limit == nil && len(find.MemoIDList) == 0
+	shouldApplyDefaultLimit := find.Limit == nil && find.MemoID == nil && len(find.MemoIDList) == 0 && !find.SkipDefaultLimit
 	if shouldApplyDefaultLimit && find.GetBlob {
 		// When fetching blobs, we should be especially careful with limits
 		defaultLimit := 10

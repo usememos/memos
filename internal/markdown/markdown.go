@@ -442,8 +442,7 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 				data.ManagedAttachmentReferences = append(data.ManagedAttachmentReferences, ManagedAttachmentReference{UID: uid})
 			}
 		}
-		if rawHTML, ok := n.(*gast.RawHTML); ok {
-			raw := string(rawHTML.Segments.Value(content))
+		if raw, ok := extractRawHTML(n, content); ok {
 			if strings.Contains(raw, "/file/attachments/") {
 				// Managed attachment URLs are deliberately supported only through
 				// Markdown image nodes. Raw HTML would require a second, security-
@@ -493,6 +492,21 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 	data.InvalidManagedAttachmentReferences = uniquePreserveCase(data.InvalidManagedAttachmentReferences)
 
 	return data, nil
+}
+
+func extractRawHTML(node gast.Node, source []byte) (string, bool) {
+	switch node := node.(type) {
+	case *gast.RawHTML:
+		return string(node.Segments.Value(source)), true
+	case *gast.HTMLBlock:
+		raw := append([]byte(nil), node.Lines().Value(source)...)
+		if node.HasClosure() {
+			raw = append(raw, node.ClosureLine.Value(source)...)
+		}
+		return string(raw), true
+	default:
+		return "", false
+	}
 }
 
 // ParseManagedAttachmentImageURL parses a same-origin relative managed image URL.

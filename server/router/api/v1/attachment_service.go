@@ -446,7 +446,7 @@ func (s *APIV1Service) validateAttachmentDeletions(ctx context.Context, attachme
 	}
 
 	for creatorID := range creatorIDs {
-		creatorAttachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{CreatorID: &creatorID})
+		creatorAttachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{CreatorID: &creatorID, SkipDefaultLimit: true})
 		if err != nil {
 			return status.Errorf(codes.Internal, "failed to list motion media group: %v", err)
 		}
@@ -507,14 +507,14 @@ func (s *APIV1Service) detachAttachmentsForDeletion(ctx context.Context, attachm
 		for _, attachment := range memoAttachments {
 			removedIDs = append(removedIDs, attachment.ID)
 		}
-		if err := s.Store.ApplyMemoAttachmentMutation(ctx, &store.MemoAttachmentMutation{
+		if err := s.Store.ApplyMemoMutation(ctx, &store.MemoMutation{
 			MemoID:               memo.ID,
 			MemoCreatorID:        memo.CreatorID,
 			ExpectedMemoContent:  memo.Content,
 			RemovedAttachmentIDs: removedIDs,
 		}); err != nil {
-			if errors.Is(err, store.ErrMemoAttachmentConflict) {
-				return status.Errorf(codes.FailedPrecondition, "memo attachment state changed: %v", err)
+			if errors.Is(err, store.ErrMemoMutationConflict) {
+				return status.Errorf(codes.FailedPrecondition, "memo state changed: %v", err)
 			}
 			return status.Errorf(codes.Internal, "failed to detach attachments: %v", err)
 		}

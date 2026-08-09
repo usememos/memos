@@ -3,26 +3,12 @@ package v1
 import (
 	"context"
 	"log/slog"
-	"time"
 
 	"github.com/pkg/errors"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
 )
-
-func (s *APIV1Service) touchMemoUpdatedTimestamp(ctx context.Context, memoID int32) error {
-	updatedTs := time.Now().Unix()
-	if err := s.Store.UpdateMemo(ctx, &store.UpdateMemo{
-		ID:        memoID,
-		UpdatedTs: &updatedTs,
-	}); err != nil {
-		return status.Errorf(codes.Internal, "failed to update memo timestamp")
-	}
-	return nil
-}
 
 func (s *APIV1Service) buildUpdatedMemoState(ctx context.Context, memoID int32) (*store.Memo, *store.Memo, *v1pb.Memo, error) {
 	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{ID: &memoID})
@@ -57,10 +43,14 @@ func (s *APIV1Service) buildUpdatedMemoState(ctx context.Context, memoID int32) 
 
 	var parentMemo *store.Memo
 	if memo.ParentUID != nil {
-		parentMemo, _ = s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
-		if parentMemo != nil {
-			memoMessage.Visibility = convertVisibilityFromStore(parentMemo.Visibility)
+		parentMemo, err = s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
+		if err != nil {
+			return nil, nil, nil, errors.Wrap(err, "failed to get parent memo")
 		}
+		if parentMemo == nil {
+			return nil, nil, nil, errors.New("parent memo not found")
+		}
+		memoMessage.Visibility = convertVisibilityFromStore(parentMemo.Visibility)
 	}
 
 	return memo, parentMemo, memoMessage, nil

@@ -667,6 +667,41 @@ func TestCreateMemoCommentInheritsParentVisibility(t *testing.T) {
 	require.Equal(t, codes.Unauthenticated, status.Code(err))
 }
 
+func TestCreateMemoCommentDoesNotRevealArchivedPrivateMemo(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	owner, err := ts.CreateRegularUser(ctx, "archived-comment-owner")
+	require.NoError(t, err)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+	other, err := ts.CreateRegularUser(ctx, "archived-comment-other")
+	require.NoError(t, err)
+	otherCtx := ts.CreateUserContext(ctx, other.ID)
+	parent, err := ts.Service.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
+		Content:    "archived private parent",
+		Visibility: apiv1.Visibility_PRIVATE,
+	}})
+	require.NoError(t, err)
+	_, err = ts.Service.UpdateMemo(ownerCtx, &apiv1.UpdateMemoRequest{
+		Memo:       &apiv1.Memo{Name: parent.Name, State: apiv1.State_ARCHIVED},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"state"}},
+	})
+	require.NoError(t, err)
+
+	_, err = ts.Service.CreateMemoComment(otherCtx, &apiv1.CreateMemoCommentRequest{
+		Name:    parent.Name,
+		Comment: &apiv1.Memo{Content: "should not reveal parent state"},
+	})
+	require.Equal(t, codes.NotFound, status.Code(err))
+
+	_, err = ts.Service.CreateMemoComment(ownerCtx, &apiv1.CreateMemoCommentRequest{
+		Name:    parent.Name,
+		Comment: &apiv1.Memo{Content: "owner still cannot comment"},
+	})
+	require.Equal(t, codes.FailedPrecondition, status.Code(err))
+}
+
 func TestGetMemoCommentRequiresParentReadAccess(t *testing.T) {
 	ctx := context.Background()
 

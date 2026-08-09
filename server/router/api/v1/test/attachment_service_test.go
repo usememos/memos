@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -511,4 +512,51 @@ func TestDeleteMotionMediaGroupRequiresWholeGroup(t *testing.T) {
 	require.Equal(t, codes.FailedPrecondition, status.Code(err))
 	_, err = ts.Service.BatchDeleteAttachments(userCtx, &v1pb.BatchDeleteAttachmentsRequest{Names: []string{still.Name, video.Name}})
 	require.NoError(t, err)
+}
+
+func TestDeleteMotionMediaGroupChecksBeyondDefaultAttachmentPage(t *testing.T) {
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	ctx := context.Background()
+	user, err := ts.CreateRegularUser(ctx, "delete-motion-group-many")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	still, err := ts.Store.CreateAttachment(ctx, &store.Attachment{
+		UID:       shortuuid.New(),
+		CreatorID: user.ID,
+		Filename:  "old-live.jpg",
+		Type:      "image/jpeg",
+		Payload: &storepb.AttachmentPayload{MotionMedia: &storepb.MotionMedia{
+			Family:  storepb.MotionMediaFamily_APPLE_LIVE_PHOTO,
+			Role:    storepb.MotionMediaRole_STILL,
+			GroupId: "delete-old-live-group",
+		}},
+	})
+	require.NoError(t, err)
+	for i := 0; i < 100; i++ {
+		attachment, err := ts.Store.CreateAttachment(ctx, &store.Attachment{
+			UID: shortuuid.New(), CreatorID: user.ID, Filename: "filler.txt", Type: "text/plain",
+		})
+		require.NoError(t, err)
+		updatedTs := still.UpdatedTs + int64(i) + 1
+		require.NoError(t, ts.Store.UpdateAttachment(ctx, &store.UpdateAttachment{ID: attachment.ID, UpdatedTs: &updatedTs}))
+	}
+	video, err := ts.Store.CreateAttachment(ctx, &store.Attachment{
+		UID:       shortuuid.New(),
+		CreatorID: user.ID,
+		Filename:  "new-live.mov",
+		Type:      "video/quicktime",
+		Payload: &storepb.AttachmentPayload{MotionMedia: &storepb.MotionMedia{
+			Family:  storepb.MotionMediaFamily_APPLE_LIVE_PHOTO,
+			Role:    storepb.MotionMediaRole_VIDEO,
+			GroupId: "delete-old-live-group",
+		}},
+	})
+	require.NoError(t, err)
+	updatedTs := still.UpdatedTs + 1000
+	require.NoError(t, ts.Store.UpdateAttachment(ctx, &store.UpdateAttachment{ID: video.ID, UpdatedTs: &updatedTs}))
+
+	_, err = ts.Service.DeleteAttachment(userCtx, &v1pb.DeleteAttachmentRequest{Name: "attachments/" + video.UID})
+	require.Equal(t, codes.FailedPrecondition, status.Code(err))
 }

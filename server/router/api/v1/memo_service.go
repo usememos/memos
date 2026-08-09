@@ -136,6 +136,10 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	if err != nil {
 		return nil, err
 	}
+	preparedRelations, err := s.prepareMemoRelations(ctx, create, request.Memo.Relations)
+	if err != nil {
+		return nil, err
+	}
 
 	memo, err := s.Store.CreateMemo(ctx, create)
 	if err != nil {
@@ -150,9 +154,13 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 	}
 
 	attachments := []*store.Attachment{}
-	if len(preparedAttachments.normalized) > 0 {
-		if err := s.applyMemoAttachments(ctx, memo, preparedAttachments, nil, requiredAttachmentIDs); err != nil {
-			return nil, errors.Wrap(err, "failed to set memo attachments")
+	if len(preparedAttachments.normalized) > 0 || len(preparedRelations) > 0 {
+		var relations *[]*store.MemoRelation
+		if len(preparedRelations) > 0 {
+			relations = &preparedRelations
+		}
+		if err := s.applyMemoMutation(ctx, memo, preparedAttachments, nil, requiredAttachmentIDs, relations); err != nil {
+			return nil, err
 		}
 		a, err := s.Store.ListAttachments(ctx, &store.FindAttachment{
 			MemoID: &memo.ID,
@@ -161,11 +169,6 @@ func (s *APIV1Service) CreateMemo(ctx context.Context, request *v1pb.CreateMemoR
 			return nil, errors.Wrap(err, "failed to get memo attachments")
 		}
 		attachments = a
-	}
-	if len(request.Memo.Relations) > 0 {
-		if err := s.setMemoRelationsInternal(ctx, memo, request.Memo.Relations); err != nil {
-			return nil, errors.Wrap(err, "failed to set memo relations")
-		}
 	}
 
 	relations, err := s.loadMemoRelations(ctx, memo)
@@ -529,7 +532,14 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	if attachmentsUpdated {
 		preparedAttachments, err = s.prepareMemoAttachments(ctx, user, memo, request.Memo.Attachments)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to prepare memo attachments")
+			return nil, err
+		}
+	}
+	var preparedRelations []*store.MemoRelation
+	if relationsUpdated {
+		preparedRelations, err = s.prepareMemoRelations(ctx, memo, request.Memo.Relations)
+		if err != nil {
+			return nil, err
 		}
 	}
 	var requiredAttachmentIDs []int32
@@ -549,17 +559,16 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 		}
 	}
 
-	if contentUpdated || attachmentsUpdated {
-		if err := s.applyMemoAttachments(ctx, memo, preparedAttachments, update, requiredAttachmentIDs); err != nil {
-			return nil, errors.Wrap(err, "failed to update memo and attachments")
+	if contentUpdated || attachmentsUpdated || relationsUpdated {
+		var relations *[]*store.MemoRelation
+		if relationsUpdated {
+			relations = &preparedRelations
+		}
+		if err := s.applyMemoMutation(ctx, memo, preparedAttachments, update, requiredAttachmentIDs, relations); err != nil {
+			return nil, err
 		}
 	} else if err = s.Store.UpdateMemo(ctx, update); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update memo")
-	}
-	if relationsUpdated {
-		if err := s.setMemoRelationsInternal(ctx, memo, request.Memo.Relations); err != nil {
-			return nil, errors.Wrap(err, "failed to set memo relations")
-		}
 	}
 
 	memo, err = s.Store.GetMemo(ctx, &store.FindMemo{
