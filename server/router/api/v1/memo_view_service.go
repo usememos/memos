@@ -70,6 +70,7 @@ func (s *APIV1Service) authorizeMemoViewAccess(ctx context.Context, user *store.
 	return nil
 }
 
+// ListMemoViews lists the saved memo views owned by a user.
 func (s *APIV1Service) ListMemoViews(ctx context.Context, request *v1pb.ListMemoViewsRequest) (*v1pb.ListMemoViewsResponse, error) {
 	user, err := ResolveUserByName(ctx, s.Store, request.Parent)
 	if err != nil {
@@ -97,6 +98,7 @@ func (s *APIV1Service) ListMemoViews(ctx context.Context, request *v1pb.ListMemo
 	}, nil
 }
 
+// GetMemoView returns a saved memo view by resource name.
 func (s *APIV1Service) GetMemoView(ctx context.Context, request *v1pb.GetMemoViewRequest) (*v1pb.MemoView, error) {
 	user, memoViewID, err := s.extractUserAndMemoViewIDFromName(ctx, request.Name)
 	if err != nil {
@@ -119,6 +121,7 @@ func (s *APIV1Service) GetMemoView(ctx context.Context, request *v1pb.GetMemoVie
 	return nil, status.Errorf(codes.NotFound, "memo view not found")
 }
 
+// CreateMemoView creates a saved memo view for a user.
 func (s *APIV1Service) CreateMemoView(ctx context.Context, request *v1pb.CreateMemoViewRequest) (*v1pb.MemoView, error) {
 	user, err := ResolveUserByName(ctx, s.Store, request.Parent)
 	if err != nil {
@@ -153,6 +156,7 @@ func (s *APIV1Service) CreateMemoView(ctx context.Context, request *v1pb.CreateM
 	return convertMemoViewFromStore(user.Username, newMemoView), nil
 }
 
+// UpdateMemoView updates the selected fields of a saved memo view.
 func (s *APIV1Service) UpdateMemoView(ctx context.Context, request *v1pb.UpdateMemoViewRequest) (*v1pb.MemoView, error) {
 	user, memoViewID, err := s.extractUserAndMemoViewIDFromName(ctx, request.GetMemoView().GetName())
 	if err != nil {
@@ -167,18 +171,21 @@ func (s *APIV1Service) UpdateMemoView(ctx context.Context, request *v1pb.UpdateM
 
 	var title, filterValue *string
 	for _, field := range request.UpdateMask.Paths {
-		if field == "title" {
+		switch field {
+		case "title":
 			if request.GetMemoView().GetTitle() == "" {
 				return nil, status.Errorf(codes.InvalidArgument, "title is required")
 			}
 			value := request.GetMemoView().GetTitle()
 			title = &value
-		} else if field == "filter" {
+		case "filter":
 			if err := s.validateFilter(ctx, request.GetMemoView().GetFilter()); err != nil {
 				return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
 			}
 			value := request.GetMemoView().GetFilter()
 			filterValue = &value
+		default:
+			return nil, status.Errorf(codes.InvalidArgument, "unsupported update mask path: %s", field)
 		}
 	}
 
@@ -193,6 +200,7 @@ func (s *APIV1Service) UpdateMemoView(ctx context.Context, request *v1pb.UpdateM
 	return convertMemoViewFromStore(user.Username, updatedMemoView), nil
 }
 
+// DeleteMemoView deletes a saved memo view by resource name.
 func (s *APIV1Service) DeleteMemoView(ctx context.Context, request *v1pb.DeleteMemoViewRequest) (*emptypb.Empty, error) {
 	user, memoViewID, err := s.extractUserAndMemoViewIDFromName(ctx, request.Name)
 	if err != nil {

@@ -1,9 +1,8 @@
 -- Renames the SHORTCUTS user setting to MEMO_VIEWS, rewriting the stored JSON
 -- object key from `shortcuts` to `memoViews` to match the renamed proto field.
 --
--- Application-written legacy values are JSON objects. The lightweight shape guard
--- skips empty and clearly non-object rows, while the conflict check preserves an
--- existing MEMO_VIEWS setting.
+-- Invalid or non-object JSON values are skipped rather than aborting the upgrade,
+-- while the conflict check preserves an existing MEMO_VIEWS setting.
 UPDATE user_setting AS legacy
 SET
   key = 'MEMO_VIEWS',
@@ -16,7 +15,11 @@ SET
     ELSE legacy.value
   END
 WHERE legacy.key = 'SHORTCUTS'
-  AND legacy.value LIKE '{%}'
+  AND CASE
+    WHEN pg_input_is_valid(legacy.value, 'jsonb')
+      THEN jsonb_typeof(legacy.value::jsonb) = 'object'
+    ELSE FALSE
+  END
   AND NOT EXISTS (
     SELECT 1
     FROM user_setting AS existing

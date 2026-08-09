@@ -3376,6 +3376,7 @@ components:
         MemoView:
             required:
                 - title
+                - filter
             type: object
             properties:
                 name:

@@ -165,7 +165,7 @@ func TestMigrationMemoViewSetting(t *testing.T) {
 		// A normal legacy row, must be renamed and rewritten.
 		{1, "SHORTCUTS", `{"shortcuts":[{"id":"work","title":"shortcuts","filter":"tag in [\"work\"]"}]}`},
 		// A corrupt value, must be left alone rather than aborting the upgrade.
-		{2, "SHORTCUTS", ""},
+		{2, "SHORTCUTS", `{oops}`},
 		// Already has a MEMO_VIEWS row, must not trip UNIQUE(user_id, key).
 		{3, "SHORTCUTS", `{"shortcuts":[{"id":"old","title":"old","filter":"tag in [\"old\"]"}]}`},
 		{3, "MEMO_VIEWS", `{"memoViews":[{"id":"new","title":"new","filter":"tag in [\"new\"]"}]}`},
@@ -191,6 +191,16 @@ func TestMigrationMemoViewSetting(t *testing.T) {
 	require.Equal(t, "work", setting.GetMemoViews().GetMemoViews()[0].GetId())
 	require.Equal(t, "shortcuts", setting.GetMemoViews().GetMemoViews()[0].GetTitle())
 	require.Equal(t, `tag in ["work"]`, setting.GetMemoViews().GetMemoViews()[0].GetFilter())
+
+	// Malformed object-like JSON must neither abort the migration nor be renamed.
+	findCorruptSetting := fmt.Sprintf("SELECT value FROM user_setting WHERE user_id = ? AND %s = ?", settingKeyColumn)
+	if driver == "postgres" {
+		findCorruptSetting = fmt.Sprintf("SELECT value FROM user_setting WHERE user_id = $1 AND %s = $2", settingKeyColumn)
+	}
+	var corruptValue string
+	err = ts.GetDriver().GetDB().QueryRowContext(ctx, findCorruptSetting, 2, "SHORTCUTS").Scan(&corruptValue)
+	require.NoError(t, err)
+	require.Equal(t, `{oops}`, corruptValue)
 
 	// The pre-existing MEMO_VIEWS row wins; the legacy row is left behind untouched.
 	conflictUserID := int32(3)

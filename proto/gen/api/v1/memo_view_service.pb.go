@@ -398,7 +398,7 @@ const file_api_v1_memo_view_service_proto_rawDesc = "" +
 	"\bMemoView\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
 	"\x05title\x18\x02 \x01(\tB\x03\xe0A\x02R\x05title\x12\x1b\n" +
-	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x01R\x06filter:B\xeaA?\n" +
+	"\x06filter\x18\x03 \x01(\tB\x03\xe0A\x02R\x06filter:B\xeaA?\n" +
 	"\x15memos.api.v1/MemoView\x12\x19users/{user}/views/{view}*\x05views2\x04view\"M\n" +
 	"\x14ListMemoViewsRequest\x125\n" +
 	"\x06parent\x18\x01 \x01(\tB\x1d\xe0A\x02\xfaA\x17\x12\x15memos.api.v1/MemoViewR\x06parent\"N\n" +

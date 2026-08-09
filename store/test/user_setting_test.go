@@ -931,6 +931,31 @@ func TestUserMemoViewConcurrentPartialUpdates(t *testing.T) {
 	require.Equal(t, updatedFilter, memoViews[0].GetFilter())
 }
 
+func TestGetUserMemoViewsReturnsCopies(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	require.NoError(t, ts.AddUserMemoView(ctx, user.ID, &storepb.MemoViewsUserSetting_MemoView{
+		Id:     "work",
+		Title:  "Original title",
+		Filter: `tag in ["original"]`,
+	}))
+
+	firstRead, err := ts.GetUserMemoViews(ctx, user.ID)
+	require.NoError(t, err)
+	require.Len(t, firstRead, 1)
+	firstRead[0].Title = "Mutated title"
+
+	secondRead, err := ts.GetUserMemoViews(ctx, user.ID)
+	require.NoError(t, err)
+	require.Len(t, secondRead, 1)
+	require.Equal(t, "Original title", secondRead[0].GetTitle())
+}
+
 func TestUserSettingMemoViewsPartialUpdate(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()

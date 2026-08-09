@@ -61,6 +61,7 @@ func TestProtectedMethodsRequireAuth(t *testing.T) {
 		"/memos.api.v1.AttachmentService/DeleteAttachment",
 		// Memo View Service
 		"/memos.api.v1.MemoViewService/CreateMemoView",
+		"/memos.api.v1.MemoViewService/GetMemoView",
 		"/memos.api.v1.MemoViewService/ListMemoViews",
 		"/memos.api.v1.MemoViewService/UpdateMemoView",
 		"/memos.api.v1.MemoViewService/DeleteMemoView",

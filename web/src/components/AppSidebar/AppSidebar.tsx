@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import {
   ArchiveIcon,
   ArrowRightIcon,
@@ -43,7 +44,7 @@ import { useAttachmentLibraryStats } from "@/hooks/useAttachmentLibrary";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { type MemoStatsContext, useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
 import useMediaQuery from "@/hooks/useMediaQuery";
-import { useNotifications, useUser } from "@/hooks/useUserQueries";
+import { useMemoViews, useNotifications, userKeys, useUser } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import {
   BUILTIN_TASKS_VIEW_ID,
@@ -74,7 +75,9 @@ const SIDEBAR_HORIZONTAL_PADDING = "px-3";
 const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
   const t = useTranslate();
   const navigate = useNavigate();
-  const { memoViews, refetchSettings } = useAuth();
+  const currentUser = useCurrentUser();
+  const queryClient = useQueryClient();
+  const { data: memoViews = [] } = useMemoViews(currentUser?.name);
   const { memoView: selectedMemoView, setMemoView } = useMemoFilterContext();
   const { setMobileOpen } = useAppSidebar();
   const [deleteTarget, setDeleteTarget] = useState<MemoView>();
@@ -95,7 +98,7 @@ const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
     if (!deleteTarget) return;
     try {
       await memoViewServiceClient.deleteMemoView({ name: deleteTarget.name });
-      await refetchSettings();
+      await queryClient.invalidateQueries({ queryKey: userKeys.memoViews(currentUser?.name) });
       if (selectedMemoView === getMemoViewId(deleteTarget.name)) setMemoView(undefined);
       toast.success(t("setting.memo-view.delete-success", { title: deleteTarget.title }));
     } catch (error: unknown) {

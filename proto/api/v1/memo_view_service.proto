@@ -68,7 +68,7 @@ message MemoView {
 
   // The CEL filter expression for the memo view, using the same grammar as the
   // ListMemos `filter` argument. Reuse it by passing this value to ListMemos.
-  string filter = 3 [(google.api.field_behavior) = OPTIONAL];
+  string filter = 3 [(google.api.field_behavior) = REQUIRED];
 }
 
 message ListMemoViewsRequest {

@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { fireEvent, render as testingLibraryRender, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AppSidebar, { MobileAppHeader } from "@/components/AppSidebar";
@@ -50,7 +51,7 @@ vi.mock("@/contexts/AppSidebarContext", () => ({
 }));
 
 vi.mock("@/contexts/AuthContext", () => ({
-  useAuth: () => ({ memoViews: authState.memoViews, refetchSettings: vi.fn(), isInitialized: true }),
+  useAuth: () => ({ isInitialized: true }),
 }));
 
 vi.mock("@/contexts/InstanceContext", () => ({
@@ -83,6 +84,10 @@ vi.mock("@/hooks/useMediaQuery", () => ({
 }));
 
 vi.mock("@/hooks/useUserQueries", () => ({
+  userKeys: {
+    memoViews: (parent?: string) => ["users", "memoViews", parent],
+  },
+  useMemoViews: () => ({ data: authState.memoViews }),
   useNotifications: () => ({ data: [] }),
   useUser: () => ({ data: undefined }),
 }));
@@ -94,6 +99,11 @@ vi.mock("@/i18n", () => ({
 vi.mock("@/utils/i18n", () => ({
   useTranslate: () => (key: string) => key,
 }));
+
+const render = (ui: Parameters<typeof testingLibraryRender>[0]) =>
+  testingLibraryRender(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>{ui}</QueryClientProvider>,
+  );
 
 describe("App sidebar logo", () => {
   beforeEach(() => {

@@ -29,7 +29,7 @@ export const userKeys = {
   userStats: (name: string) => [...userKeys.stats(), name] as const,
   allUserStats: (request: Partial<ListAllUserStatsQuery>) => [...userKeys.stats(), "all", request] as const,
   currentUser: () => [...userKeys.all, "current"] as const,
-  memoViews: () => [...userKeys.all, "memoViews"] as const,
+  memoViews: (parent?: string) => [...userKeys.all, "memoViews", parent] as const,
   notifications: () => [...userKeys.all, "notifications"] as const,
   byNames: (names: string[]) => [...userKeys.all, "byNames", ...[...names].sort()] as const,
   byUsernames: (usernames: string[]) => [...userKeys.all, "byUsernames", ...[...usernames].sort()] as const,
@@ -74,13 +74,15 @@ export function useAllUserStats(request: Partial<ListAllUserStatsQuery> = {}, op
   });
 }
 
-export function useMemoViews() {
+export function useMemoViews(parent?: string) {
   return useQuery({
-    queryKey: userKeys.memoViews(),
+    queryKey: userKeys.memoViews(parent),
     queryFn: async () => {
-      const { memoViews } = await memoViewServiceClient.listMemoViews({});
+      if (!parent) return [];
+      const { memoViews } = await memoViewServiceClient.listMemoViews({ parent });
       return memoViews;
     },
+    enabled: !!parent,
   });
 }
 
@@ -172,12 +174,9 @@ export function useUserSettings(parent?: string) {
   return useQuery({
     queryKey: [...userKeys.all, "settings", parent],
     queryFn: async () => {
-      if (!parent) return { settings: [], memoViews: [] };
-      const [{ settings }, { memoViews }] = await Promise.all([
-        userServiceClient.listUserSettings({ parent }),
-        memoViewServiceClient.listMemoViews({ parent }),
-      ]);
-      return { settings, memoViews };
+      if (!parent) return { settings: [] };
+      const { settings } = await userServiceClient.listUserSettings({ parent });
+      return { settings };
     },
     enabled: !!parent,
   });

@@ -1,6 +1,7 @@
 import { useMemo } from "react";
-import { useAuth } from "@/contexts/AuthContext";
 import { type MemoFilter, useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import useCurrentUser from "@/hooks/useCurrentUser";
+import { useMemoViews } from "@/hooks/useUserQueries";
 import { BUILTIN_TASKS_VIEW_FILTER, BUILTIN_TASKS_VIEW_ID, getMemoViewId } from "@/lib/memo-views";
 import { buildMemoCreatorFilter } from "@/lib/resource-names";
 import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
@@ -111,7 +112,8 @@ export const buildMemoFilter = ({
 export const useMemoFilters = (options: UseMemoFiltersOptions = {}): string | undefined => {
   const { creatorName, includeMemoViews = false, includePinned = false, visibilities } = options;
 
-  const { memoViews } = useAuth();
+  const currentUser = useCurrentUser();
+  const { data: memoViews = [] } = useMemoViews(includeMemoViews ? currentUser?.name : undefined);
   const { filters, memoView: currentMemoView } = useMemoFilterContext();
 
   // Get the selected memo view if needed.

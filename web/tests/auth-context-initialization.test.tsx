@@ -6,7 +6,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const authState = vi.hoisted(() => ({ hasToken: false }));
 const clients = vi.hoisted(() => ({
   getCurrentUser: vi.fn(),
-  listMemoViews: vi.fn(),
   listUserSettings: vi.fn(),
 }));
 
@@ -21,9 +20,6 @@ vi.mock("@/connect", () => ({
     signOut: vi.fn(),
   },
   refreshAccessToken: vi.fn(async () => undefined),
-  memoViewServiceClient: {
-    listMemoViews: clients.listMemoViews,
-  },
   userServiceClient: {
     listUserSettings: clients.listUserSettings,
   },
@@ -55,19 +51,14 @@ describe("AuthProvider initialization", () => {
   beforeEach(() => {
     authState.hasToken = false;
     clients.getCurrentUser.mockReset();
-    clients.listMemoViews.mockReset();
     clients.listUserSettings.mockReset();
   });
 
   it("resets full readiness while post-sign-in settings are pending", async () => {
     let resolveSettings!: (value: { settings: [] }) => void;
-    let resolveMemoViews!: (value: { memoViews: [] }) => void;
     clients.getCurrentUser.mockResolvedValue({ user: { name: "users/alice", username: "alice" } });
     clients.listUserSettings.mockImplementation(
       () => new Promise<{ settings: [] }>((resolve) => (resolveSettings = resolve)),
-    );
-    clients.listMemoViews.mockImplementation(
-      () => new Promise<{ memoViews: [] }>((resolve) => (resolveMemoViews = resolve)),
     );
 
     render(<Probe />, { wrapper });
@@ -85,9 +76,6 @@ describe("AuthProvider initialization", () => {
 
     resolveSettings({ settings: [] });
     await waitFor(() => expect(screen.getByTestId("user-settings-initialized")).toHaveTextContent("yes"));
-    expect(screen.getByTestId("initialized")).toHaveTextContent("no");
-
-    resolveMemoViews({ memoViews: [] });
-    await waitFor(() => expect(screen.getByTestId("initialized")).toHaveTextContent("yes"));
+    expect(screen.getByTestId("initialized")).toHaveTextContent("yes");
   });
 });

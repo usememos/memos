@@ -525,6 +525,7 @@ func (s *ConnectServiceHandler) Transcribe(ctx context.Context, req *connect.Req
 
 // MemoViewService
 
+// ListMemoViews lists the saved memo views owned by a user.
 func (s *ConnectServiceHandler) ListMemoViews(ctx context.Context, req *connect.Request[v1pb.ListMemoViewsRequest]) (*connect.Response[v1pb.ListMemoViewsResponse], error) {
 	resp, err := s.APIV1Service.ListMemoViews(ctx, req.Msg)
 	if err != nil {
@@ -533,6 +534,7 @@ func (s *ConnectServiceHandler) ListMemoViews(ctx context.Context, req *connect.
 	return connect.NewResponse(resp), nil
 }
 
+// GetMemoView returns a saved memo view by resource name.
 func (s *ConnectServiceHandler) GetMemoView(ctx context.Context, req *connect.Request[v1pb.GetMemoViewRequest]) (*connect.Response[v1pb.MemoView], error) {
 	resp, err := s.APIV1Service.GetMemoView(ctx, req.Msg)
 	if err != nil {
@@ -541,6 +543,7 @@ func (s *ConnectServiceHandler) GetMemoView(ctx context.Context, req *connect.Re
 	return connect.NewResponse(resp), nil
 }
 
+// CreateMemoView creates a saved memo view for a user.
 func (s *ConnectServiceHandler) CreateMemoView(ctx context.Context, req *connect.Request[v1pb.CreateMemoViewRequest]) (*connect.Response[v1pb.MemoView], error) {
 	resp, err := s.APIV1Service.CreateMemoView(ctx, req.Msg)
 	if err != nil {
@@ -549,6 +552,7 @@ func (s *ConnectServiceHandler) CreateMemoView(ctx context.Context, req *connect
 	return connect.NewResponse(resp), nil
 }
 
+// UpdateMemoView updates the selected fields of a saved memo view.
 func (s *ConnectServiceHandler) UpdateMemoView(ctx context.Context, req *connect.Request[v1pb.UpdateMemoViewRequest]) (*connect.Response[v1pb.MemoView], error) {
 	resp, err := s.APIV1Service.UpdateMemoView(ctx, req.Msg)
 	if err != nil {
@@ -557,6 +561,7 @@ func (s *ConnectServiceHandler) UpdateMemoView(ctx context.Context, req *connect
 	return connect.NewResponse(resp), nil
 }
 
+// DeleteMemoView deletes a saved memo view by resource name.
 func (s *ConnectServiceHandler) DeleteMemoView(ctx context.Context, req *connect.Request[v1pb.DeleteMemoViewRequest]) (*connect.Response[emptypb.Empty], error) {
 	resp, err := s.APIV1Service.DeleteMemoView(ctx, req.Msg)
 	if err != nil {

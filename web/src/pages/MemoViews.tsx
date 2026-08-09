@@ -1,5 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   CheckCircle2Icon,
   ClipboardCheckIcon,
@@ -28,10 +29,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { memoViewServiceClient } from "@/connect";
-import { useAuth } from "@/contexts/AuthContext";
 import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
+import { useMemoViews, userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
 import { getMemoViewId } from "@/lib/memo-views";
 import { cn } from "@/lib/utils";
@@ -239,7 +240,8 @@ const MemoViews = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const user = useCurrentUser();
-  const { memoViews, refetchSettings } = useAuth();
+  const queryClient = useQueryClient();
+  const { data: memoViews = [] } = useMemoViews(user?.name);
   const { memoView: selectedMemoView, setMemoView } = useMemoFilterContext();
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
   const [draft, setDraft] = useState<MemoView>(createEmptyMemoView());
@@ -352,7 +354,7 @@ const MemoViews = () => {
         parent: user.name,
         memoView: { name: "", title: draft.title, filter: draft.filter },
       });
-      await refetchSettings();
+      await queryClient.invalidateQueries({ queryKey: userKeys.memoViews(user.name) });
       createState.setFinish();
       setDraft(createEmptyMemoView());
       setIsCreateFormOpen(false);
@@ -377,7 +379,7 @@ const MemoViews = () => {
         memoView: draft,
         updateMask: create(FieldMaskSchema, { paths: ["title", "filter"] }),
       });
-      await refetchSettings();
+      await queryClient.invalidateQueries({ queryKey: userKeys.memoViews(user?.name) });
       updateState.setFinish();
       setDraft(createEmptyMemoView());
       setIsCreateFormOpen(false);
@@ -404,7 +406,7 @@ const MemoViews = () => {
 
     try {
       await memoViewServiceClient.deleteMemoView({ name: deleteTarget.name });
-      await refetchSettings();
+      await queryClient.invalidateQueries({ queryKey: userKeys.memoViews(user?.name) });
       if (selectedMemoView === getMemoViewId(deleteTarget.name)) setMemoView(undefined);
       toast.success(t("setting.memo-view.delete-success", { title: deleteTarget.title }));
     } catch (error: unknown) {

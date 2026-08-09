@@ -447,12 +447,20 @@ func (s *Store) GetUserMemoViews(ctx context.Context, userID int32) ([]*storepb.
 		Key:    storepb.UserSetting_MEMO_VIEWS,
 	})
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "get memo views user setting")
 	}
 	if userSetting == nil {
 		return []*storepb.MemoViewsUserSetting_MemoView{}, nil
 	}
-	return userSetting.GetMemoViews().GetMemoViews(), nil
+
+	memoViews := userSetting.GetMemoViews().GetMemoViews()
+	clonedMemoViews := make([]*storepb.MemoViewsUserSetting_MemoView, len(memoViews))
+	for i, memoView := range memoViews {
+		if memoView != nil {
+			clonedMemoViews[i] = proto.Clone(memoView).(*storepb.MemoViewsUserSetting_MemoView)
+		}
+	}
+	return clonedMemoViews, nil
 }
 
 // AddUserMemoView appends a new memo view for the user.
@@ -462,7 +470,7 @@ func (s *Store) AddUserMemoView(ctx context.Context, userID int32, memoView *sto
 
 	existing, err := s.GetUserMemoViews(ctx, userID)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "get existing memo views")
 	}
 
 	// Build a fresh slice so the cached setting is never mutated in place.
@@ -470,7 +478,10 @@ func (s *Store) AddUserMemoView(ctx context.Context, userID int32, memoView *sto
 	memoViews = append(memoViews, existing...)
 	memoViews = append(memoViews, memoView)
 
-	return s.upsertUserMemoViews(ctx, userID, memoViews)
+	if err := s.upsertUserMemoViews(ctx, userID, memoViews); err != nil {
+		return errors.Wrap(err, "add memo view")
+	}
+	return nil
 }
 
 // UpdateUserMemoView applies the non-nil field updates to the memo view carrying the same ID.
@@ -487,7 +498,7 @@ func (s *Store) UpdateUserMemoView(
 
 	existing, err := s.GetUserMemoViews(ctx, userID)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "get existing memo views")
 	}
 
 	var updatedMemoView *storepb.MemoViewsUserSetting_MemoView
@@ -516,7 +527,7 @@ func (s *Store) UpdateUserMemoView(
 	}
 
 	if err := s.upsertUserMemoViews(ctx, userID, memoViews); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "update memo view")
 	}
 	return updatedMemoView, nil
 }
@@ -529,7 +540,7 @@ func (s *Store) RemoveUserMemoView(ctx context.Context, userID int32, memoViewID
 
 	existing, err := s.GetUserMemoViews(ctx, userID)
 	if err != nil {
-		return false, err
+		return false, errors.Wrap(err, "get existing memo views")
 	}
 
 	found := false
@@ -545,7 +556,10 @@ func (s *Store) RemoveUserMemoView(ctx context.Context, userID int32, memoViewID
 		return false, nil
 	}
 
-	return true, s.upsertUserMemoViews(ctx, userID, memoViews)
+	if err := s.upsertUserMemoViews(ctx, userID, memoViews); err != nil {
+		return false, errors.Wrap(err, "remove memo view")
+	}
+	return true, nil
 }
 
 func (s *Store) upsertUserMemoViews(ctx context.Context, userID int32, memoViews []*storepb.MemoViewsUserSetting_MemoView) error {
@@ -558,7 +572,7 @@ func (s *Store) upsertUserMemoViews(ctx context.Context, userID int32, memoViews
 			},
 		},
 	})
-	return err
+	return errors.Wrap(err, "upsert memo views user setting")
 }
 
 func convertUserSettingFromRaw(raw *UserSetting) (*storepb.UserSetting, error) {

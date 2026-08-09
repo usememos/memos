@@ -74,6 +74,7 @@ const MemoOutline = ({ headings, memoName }: MemoOutlineProps) => {
             aria-current={active ? "location" : undefined}
             className={cn(
               SIDEBAR_ROW_BOX_CLASSES,
+              "relative",
               heading.level === minLevel && "font-medium",
               active ? "text-foreground" : "text-muted-foreground/70 hover:bg-sidebar-accent/65 hover:text-foreground",
             )}

@@ -472,6 +472,30 @@ func TestUpdateMemoView(t *testing.T) {
 		require.Contains(t, err.Error(), "update mask is required")
 	})
 
+	t.Run("UpdateMemoView rejects unsupported update mask paths", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "testuser")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+		created, err := ts.Service.CreateMemoView(userCtx, &v1pb.CreateMemoViewRequest{
+			Parent: fmt.Sprintf("users/%s", user.Username),
+			MemoView: &v1pb.MemoView{
+				Title:  "Original Title",
+				Filter: `tag in ["original"]`,
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.UpdateMemoView(userCtx, &v1pb.UpdateMemoViewRequest{
+			MemoView:   created,
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name"}},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "unsupported update mask path: name")
+	})
+
 	t.Run("UpdateMemoView invalid name format", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
@@ -682,7 +706,7 @@ func TestMemoViewFiltering(t *testing.T) {
 			req := &v1pb.CreateMemoViewRequest{
 				Parent: fmt.Sprintf("users/%s", user.Username),
 				MemoView: &v1pb.MemoView{
-					Title:  "Valid Filter " + string(rune(i)),
+					Title:  fmt.Sprintf("Valid Filter %d", i),
 					Filter: filter,
 				},
 			}
