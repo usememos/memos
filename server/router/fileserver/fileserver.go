@@ -23,6 +23,7 @@ import (
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/internal/storage/s3"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/server/access"
 	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
 )
@@ -47,6 +48,9 @@ const (
 
 	// cacheMaxAge is the max-age value for Cache-Control headers (1 hour).
 	cacheMaxAge = "public, max-age=3600"
+
+	publicAttachmentCacheControl  = "public, no-cache"
+	privateAttachmentCacheControl = "private, no-store"
 )
 
 // xssUnsafeTypes contains MIME types that could execute scripts if served directly.
@@ -120,6 +124,7 @@ func NewFileServerService(profile *profile.Profile, store *store.Store, secret s
 // RegisterRoutes registers HTTP file serving routes.
 func (s *FileServerService) RegisterRoutes(echoServer *echo.Echo) {
 	fileGroup := echoServer.Group("/file")
+	fileGroup.GET("/attachments/:uid", s.serveAttachmentFile)
 	fileGroup.GET("/attachments/:uid/:filename", s.serveAttachmentFile)
 	fileGroup.GET("/users/:identifier/avatar", s.serveUserAvatar)
 }
@@ -131,6 +136,7 @@ func (s *FileServerService) RegisterRoutes(echoServer *echo.Echo) {
 // serveAttachmentFile serves attachment binary content using native HTTP.
 func (s *FileServerService) serveAttachmentFile(c *echo.Context) error {
 	ctx := c.Request().Context()
+	c.Response().Header().Set(echo.HeaderCacheControl, privateAttachmentCacheControl)
 	uid := c.Param("uid")
 	wantThumbnail := c.QueryParam("thumbnail") == "true"
 	wantMotion := c.QueryParam("motion") == "true"
@@ -146,8 +152,12 @@ func (s *FileServerService) serveAttachmentFile(c *echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound, "attachment not found")
 	}
 
-	if err := s.checkAttachmentPermission(ctx, c, attachment); err != nil {
+	readClass, err := s.checkAttachmentPermission(ctx, c, attachment)
+	if err != nil {
 		return err
+	}
+	if readClass == access.MemoReadClassPublic {
+		c.Response().Header().Set(echo.HeaderCacheControl, publicAttachmentCacheControl)
 	}
 
 	if wantMotion {
@@ -647,60 +657,75 @@ func (s *FileServerService) getMotionPath(attachment *store.Attachment) (string,
 // =============================================================================
 
 // checkAttachmentPermission verifies the user has permission to access the attachment.
-func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c *echo.Context, attachment *store.Attachment) error {
+func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c *echo.Context, attachment *store.Attachment) (access.MemoReadClass, error) {
 	// For unlinked attachments, only the creator can access.
 	if attachment.MemoID == nil {
 		user, err := s.getCurrentUser(ctx, c)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").Wrap(err)
+			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").Wrap(err)
 		}
 		if user == nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized access")
+			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusUnauthorized, "unauthorized access")
 		}
 		if user.ID != attachment.CreatorID && user.Role != store.RoleAdmin {
-			return echo.NewHTTPError(http.StatusForbidden, "forbidden access")
+			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusForbidden, "forbidden access")
 		}
-		return nil
+		return access.MemoReadClassPrivate, nil
 	}
 
 	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{ID: attachment.MemoID})
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to find memo").Wrap(err)
+		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to find memo").Wrap(err)
 	}
 	if memo == nil {
-		return echo.NewHTTPError(http.StatusNotFound, "memo not found")
+		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusNotFound, "memo not found")
 	}
 
-	// Public-visibility attachments are served to anonymous visitors only when the
-	// instance allows anonymous access. On a private instance (no InstanceURL), the
-	// request must still resolve to an authenticated user or a valid share token below.
-	if memo.Visibility == store.Public && s.Profile.AllowAnonymous() {
-		return nil
+	var parent *store.Memo
+	if memo.ParentUID != nil {
+		parent, err = s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
+		if err != nil {
+			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to find parent memo").Wrap(err)
+		}
+		if parent == nil {
+			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusNotFound, "memo not found")
+		}
 	}
 
-	// Check share token fallback: allow access if request carries a valid, non-expired share token
-	// that was issued for this specific memo. This covers attachment requests made from the shared
-	// memo page for private or protected memos.
+	allowAnonymous := s.Profile != nil && s.Profile.AllowAnonymous()
+	if decision := access.CheckMemoRead(memo, parent, nil, allowAnonymous, nil); decision.Allowed() {
+		return decision.Class, nil
+	}
+
+	var sharedMemoID *int32
 	if shareToken := (*c).QueryParam("share_token"); shareToken != "" {
 		ms, err := s.Store.GetMemoShare(ctx, &store.FindMemoShare{UID: &shareToken})
-		if err == nil && ms != nil && !isMemoShareExpired(ms) && ms.MemoID == memo.ID {
-			return nil
+		if err != nil {
+			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to get memo share").Wrap(err)
+		}
+		if ms != nil && !isMemoShareExpired(ms) {
+			sharedMemoID = &ms.MemoID
+			if decision := access.CheckMemoRead(memo, parent, nil, allowAnonymous, sharedMemoID); decision.Allowed() {
+				return decision.Class, nil
+			}
 		}
 	}
 
 	user, err := s.getCurrentUser(ctx, c)
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").Wrap(err)
+		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").Wrap(err)
 	}
-	if user == nil {
-		return echo.NewHTTPError(http.StatusUnauthorized, "unauthorized access")
+	decision := access.CheckMemoRead(memo, parent, user, allowAnonymous, sharedMemoID)
+	switch decision.Denial {
+	case access.MemoReadDenialNone:
+		return decision.Class, nil
+	case access.MemoReadDenialNotFound:
+		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusNotFound, "memo not found")
+	case access.MemoReadDenialUnauthenticated:
+		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusUnauthorized, "unauthorized access")
+	default:
+		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusForbidden, "forbidden access")
 	}
-
-	if memo.Visibility == store.Private && user.ID != memo.CreatorID && user.Role != store.RoleAdmin {
-		return echo.NewHTTPError(http.StatusForbidden, "forbidden access")
-	}
-
-	return nil
 }
 
 // getCurrentUser retrieves the current authenticated user from the request.
@@ -766,7 +791,9 @@ func setSecurityHeaders(c *echo.Context) {
 func setMediaHeaders(c *echo.Context, contentType, originalType string) {
 	h := c.Response().Header()
 	h.Set(echo.HeaderContentType, contentType)
-	h.Set(echo.HeaderCacheControl, cacheMaxAge)
+	if h.Get(echo.HeaderCacheControl) == "" {
+		h.Set(echo.HeaderCacheControl, cacheMaxAge)
+	}
 
 	// Support HDR/wide color gamut for images and videos.
 	if strings.HasPrefix(originalType, "image/") || strings.HasPrefix(originalType, "video/") {

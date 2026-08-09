@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
@@ -35,10 +36,12 @@ func (s *APIV1Service) SetMemoRelations(ctx context.Context, request *v1pb.SetMe
 	if memo.CreatorID != user.ID && !isSuperUser(user) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
-	if err := s.setMemoRelationsInternal(ctx, memo, request.Relations); err != nil {
+	relations, err := s.prepareMemoRelations(ctx, memo, request.Relations)
+	if err != nil {
 		return nil, err
 	}
-	if err := s.touchMemoUpdatedTimestamp(ctx, memo.ID); err != nil {
+	updatedTs := time.Now().Unix()
+	if err := s.applyMemoMutation(ctx, memo, nil, &store.UpdateMemo{ID: memo.ID, UpdatedTs: &updatedTs}, nil, &relations); err != nil {
 		return nil, err
 	}
 	updatedMemo, parentMemo, memoMessage, err := s.buildUpdatedMemoState(ctx, memo.ID)
@@ -50,17 +53,13 @@ func (s *APIV1Service) SetMemoRelations(ctx context.Context, request *v1pb.SetMe
 	return &emptypb.Empty{}, nil
 }
 
-func (s *APIV1Service) setMemoRelationsInternal(ctx context.Context, memo *store.Memo, relations []*v1pb.MemoRelation) error {
-	referenceType := store.MemoRelationReference
-	// Delete all reference relations first.
-	if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelation{
-		MemoID: &memo.ID,
-		Type:   &referenceType,
-	}); err != nil {
-		return status.Errorf(codes.Internal, "failed to delete memo relation")
-	}
-
+func (s *APIV1Service) prepareMemoRelations(ctx context.Context, memo *store.Memo, relations []*v1pb.MemoRelation) ([]*store.MemoRelation, error) {
+	prepared := make([]*store.MemoRelation, 0, len(relations))
+	seenRelatedMemoIDs := make(map[int32]struct{}, len(relations))
 	for _, relation := range relations {
+		if relation == nil || relation.RelatedMemo == nil {
+			return nil, status.Errorf(codes.InvalidArgument, "related memo is required")
+		}
 		// Ignore reflexive relations.
 		if buildMemoName(memo.UID) == relation.RelatedMemo.Name {
 			continue
@@ -72,22 +71,26 @@ func (s *APIV1Service) setMemoRelationsInternal(ctx context.Context, memo *store
 		}
 		relatedMemoUID, err := ExtractMemoUIDFromName(relation.RelatedMemo.Name)
 		if err != nil {
-			return status.Errorf(codes.InvalidArgument, "invalid related memo name: %v", err)
+			return nil, status.Errorf(codes.InvalidArgument, "invalid related memo name: %v", err)
 		}
 		relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &relatedMemoUID})
 		if err != nil {
-			return status.Errorf(codes.Internal, "failed to get related memo")
+			return nil, status.Errorf(codes.Internal, "failed to get related memo")
 		}
-		if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelation{
+		if relatedMemo == nil {
+			return nil, status.Errorf(codes.NotFound, "related memo not found")
+		}
+		if _, ok := seenRelatedMemoIDs[relatedMemo.ID]; ok {
+			continue
+		}
+		seenRelatedMemoIDs[relatedMemo.ID] = struct{}{}
+		prepared = append(prepared, &store.MemoRelation{
 			MemoID:        memo.ID,
 			RelatedMemoID: relatedMemo.ID,
 			Type:          convertMemoRelationTypeToStore(relation.Type),
-		}); err != nil {
-			return status.Errorf(codes.Internal, "failed to upsert memo relation")
-		}
+		})
 	}
-
-	return nil
+	return prepared, nil
 }
 
 func (s *APIV1Service) ListMemoRelations(ctx context.Context, request *v1pb.ListMemoRelationsRequest) (*v1pb.ListMemoRelationsResponse, error) {

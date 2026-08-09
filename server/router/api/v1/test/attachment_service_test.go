@@ -2,9 +2,14 @@ package test
 
 import (
 	"context"
+	"os"
+	"path/filepath"
 	"testing"
 
+	"github.com/lithammer/shortuuid/v4"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/usememos/memos/internal/testutil"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -138,6 +143,46 @@ func TestCreateAttachment(t *testing.T) {
 	})
 }
 
+func TestAttachmentMetadataFollowsMemoVisibility(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	owner, err := ts.CreateRegularUser(ctx, "metadata-owner")
+	require.NoError(t, err)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+	attachment, err := ts.Service.CreateAttachment(ownerCtx, &v1pb.CreateAttachmentRequest{Attachment: &v1pb.Attachment{
+		Filename: "metadata.png",
+		Type:     "image/png",
+		Content:  []byte("metadata image"),
+	}})
+	require.NoError(t, err)
+	memo, err := ts.Service.CreateMemo(ownerCtx, &v1pb.CreateMemoRequest{Memo: &v1pb.Memo{
+		Content:     "public metadata",
+		Visibility:  v1pb.Visibility_PUBLIC,
+		Attachments: []*v1pb.Attachment{{Name: attachment.Name}},
+	}})
+	require.NoError(t, err)
+
+	_, err = ts.Service.GetAttachment(ctx, &v1pb.GetAttachmentRequest{Name: attachment.Name})
+	require.NoError(t, err)
+	listed, err := ts.Service.ListMemoAttachments(ctx, &v1pb.ListMemoAttachmentsRequest{Name: memo.Name})
+	require.NoError(t, err)
+	require.Len(t, listed.Attachments, 1)
+
+	protected := store.Protected
+	memoID := memoIDFromName(ctx, t, ts, memo.Name)
+	require.NoError(t, ts.Store.UpdateMemo(ctx, &store.UpdateMemo{ID: memoID, Visibility: &protected}))
+	_, err = ts.Service.GetAttachment(ctx, &v1pb.GetAttachmentRequest{Name: attachment.Name})
+	require.Equal(t, codes.Unauthenticated, status.Code(err))
+	_, err = ts.Service.ListMemoAttachments(ctx, &v1pb.ListMemoAttachmentsRequest{Name: memo.Name})
+	require.Equal(t, codes.Unauthenticated, status.Code(err))
+
+	archived := store.Archived
+	require.NoError(t, ts.Store.UpdateMemo(ctx, &store.UpdateMemo{ID: memoID, RowStatus: &archived}))
+	_, err = ts.Service.GetAttachment(ctx, &v1pb.GetAttachmentRequest{Name: attachment.Name})
+	require.Equal(t, codes.NotFound, status.Code(err))
+}
+
 func TestCreateAttachmentMemoPermission(t *testing.T) {
 	ctx := context.Background()
 
@@ -173,7 +218,7 @@ func TestCreateAttachmentMemoPermission(t *testing.T) {
 		require.Equal(t, memoIDFromName(ctx, t, ts, memo.Name), *stored.MemoID)
 	})
 
-	t.Run("admin can create attachment directly linked to memo", func(t *testing.T) {
+	t.Run("admin cannot create an admin-owned attachment linked to another user's memo", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -191,7 +236,7 @@ func TestCreateAttachmentMemoPermission(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		attachment, err := ts.Service.CreateAttachment(adminCtx, &v1pb.CreateAttachmentRequest{
+		_, err = ts.Service.CreateAttachment(adminCtx, &v1pb.CreateAttachmentRequest{
 			Attachment: &v1pb.Attachment{
 				Filename: "admin.txt",
 				Type:     "text/plain",
@@ -199,13 +244,10 @@ func TestCreateAttachmentMemoPermission(t *testing.T) {
 				Memo:     &memo.Name,
 			},
 		})
+		require.Equal(t, codes.PermissionDenied, status.Code(err))
+		attachments, err := ts.Store.ListAttachments(ctx, &store.FindAttachment{CreatorID: &admin.ID})
 		require.NoError(t, err)
-		attachmentUID, err := apiv1.ExtractAttachmentUIDFromName(attachment.Name)
-		require.NoError(t, err)
-		stored, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &attachmentUID})
-		require.NoError(t, err)
-		require.NotNil(t, stored.MemoID)
-		require.Equal(t, memoIDFromName(ctx, t, ts, memo.Name), *stored.MemoID)
+		require.Empty(t, attachments)
 	})
 
 	t.Run("non-owner cannot create attachment directly linked to memo", func(t *testing.T) {
@@ -368,4 +410,153 @@ func TestBatchDeleteAttachments(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "permission denied")
 	})
+}
+
+func TestBatchDeleteAttachmentsStorageFailureIsRetriable(t *testing.T) {
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	ctx := context.Background()
+	user, err := ts.CreateRegularUser(ctx, "delete_retry_user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	attachments := make([]*v1pb.Attachment, 0, 2)
+	for _, filename := range []string{"retry-one.png", "retry-two.png"} {
+		attachment, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{Attachment: &v1pb.Attachment{
+			Filename: filename,
+			Type:     "image/png",
+			Content:  []byte(filename),
+		}})
+		require.NoError(t, err)
+		attachments = append(attachments, attachment)
+	}
+	memo, err := ts.Service.CreateMemo(userCtx, &v1pb.CreateMemoRequest{Memo: &v1pb.Memo{
+		Content:     "batch deletion retry",
+		Attachments: []*v1pb.Attachment{{Name: attachments[0].Name}, {Name: attachments[1].Name}},
+	}})
+	require.NoError(t, err)
+
+	localPaths := make([]string, 0, len(attachments))
+	for index, attachment := range attachments {
+		uid, err := apiv1.ExtractAttachmentUIDFromName(attachment.Name)
+		require.NoError(t, err)
+		stored, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid})
+		require.NoError(t, err)
+		reference := filepath.Join("batch-delete-retry", attachment.Filename)
+		path := filepath.Join(ts.Profile.Data, reference)
+		require.NoError(t, os.MkdirAll(filepath.Dir(path), 0o700))
+		require.NoError(t, os.WriteFile(path, []byte(attachment.Filename), 0o600))
+		_, err = ts.Store.GetDriver().GetDB().ExecContext(ctx,
+			"UPDATE attachment SET storage_type = ?, reference = ? WHERE id = ?",
+			"LOCAL", reference, stored.ID,
+		)
+		require.NoError(t, err, "attachment %d", index)
+		localPaths = append(localPaths, path)
+	}
+
+	names := []string{attachments[0].Name, attachments[1].Name}
+	_, err = ts.Service.BatchDeleteAttachments(store.WithDeleteAttachmentStorageFailpoint(userCtx), &v1pb.BatchDeleteAttachmentsRequest{Names: names})
+	require.Equal(t, codes.Internal, status.Code(err))
+	for _, attachment := range attachments {
+		uid, err := apiv1.ExtractAttachmentUIDFromName(attachment.Name)
+		require.NoError(t, err)
+		stored, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &uid})
+		require.NoError(t, err)
+		require.NotNil(t, stored)
+		require.Nil(t, stored.MemoID)
+	}
+	listed, err := ts.Service.ListMemoAttachments(userCtx, &v1pb.ListMemoAttachmentsRequest{Name: memo.Name})
+	require.NoError(t, err)
+	require.Empty(t, listed.Attachments)
+
+	_, err = ts.Service.BatchDeleteAttachments(userCtx, &v1pb.BatchDeleteAttachmentsRequest{Names: names})
+	require.NoError(t, err)
+	for _, path := range localPaths {
+		_, err := os.Stat(path)
+		require.ErrorIs(t, err, os.ErrNotExist)
+	}
+}
+
+func TestDeleteMotionMediaGroupRequiresWholeGroup(t *testing.T) {
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	ctx := context.Background()
+	user, err := ts.CreateRegularUser(ctx, "delete-motion-group")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	still, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{Attachment: &v1pb.Attachment{
+		Filename: "live.jpg",
+		Type:     "image/jpeg",
+		Content:  []byte("still"),
+		MotionMedia: &v1pb.MotionMedia{
+			Family:  v1pb.MotionMediaFamily_APPLE_LIVE_PHOTO,
+			Role:    v1pb.MotionMediaRole_STILL,
+			GroupId: "delete-live-group",
+		},
+	}})
+	require.NoError(t, err)
+	video, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{Attachment: &v1pb.Attachment{
+		Filename: "live.mov",
+		Type:     "video/quicktime",
+		Content:  []byte("video"),
+		MotionMedia: &v1pb.MotionMedia{
+			Family:  v1pb.MotionMediaFamily_APPLE_LIVE_PHOTO,
+			Role:    v1pb.MotionMediaRole_VIDEO,
+			GroupId: "delete-live-group",
+		},
+	}})
+	require.NoError(t, err)
+
+	_, err = ts.Service.DeleteAttachment(userCtx, &v1pb.DeleteAttachmentRequest{Name: still.Name})
+	require.Equal(t, codes.FailedPrecondition, status.Code(err))
+	_, err = ts.Service.BatchDeleteAttachments(userCtx, &v1pb.BatchDeleteAttachmentsRequest{Names: []string{still.Name, video.Name}})
+	require.NoError(t, err)
+}
+
+func TestDeleteMotionMediaGroupChecksBeyondDefaultAttachmentPage(t *testing.T) {
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	ctx := context.Background()
+	user, err := ts.CreateRegularUser(ctx, "delete-motion-group-many")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	still, err := ts.Store.CreateAttachment(ctx, &store.Attachment{
+		UID:       shortuuid.New(),
+		CreatorID: user.ID,
+		Filename:  "old-live.jpg",
+		Type:      "image/jpeg",
+		Payload: &storepb.AttachmentPayload{MotionMedia: &storepb.MotionMedia{
+			Family:  storepb.MotionMediaFamily_APPLE_LIVE_PHOTO,
+			Role:    storepb.MotionMediaRole_STILL,
+			GroupId: "delete-old-live-group",
+		}},
+	})
+	require.NoError(t, err)
+	for i := 0; i < 100; i++ {
+		attachment, err := ts.Store.CreateAttachment(ctx, &store.Attachment{
+			UID: shortuuid.New(), CreatorID: user.ID, Filename: "filler.txt", Type: "text/plain",
+		})
+		require.NoError(t, err)
+		updatedTs := still.UpdatedTs + int64(i) + 1
+		require.NoError(t, ts.Store.UpdateAttachment(ctx, &store.UpdateAttachment{ID: attachment.ID, UpdatedTs: &updatedTs}))
+	}
+	video, err := ts.Store.CreateAttachment(ctx, &store.Attachment{
+		UID:       shortuuid.New(),
+		CreatorID: user.ID,
+		Filename:  "new-live.mov",
+		Type:      "video/quicktime",
+		Payload: &storepb.AttachmentPayload{MotionMedia: &storepb.MotionMedia{
+			Family:  storepb.MotionMediaFamily_APPLE_LIVE_PHOTO,
+			Role:    storepb.MotionMediaRole_VIDEO,
+			GroupId: "delete-old-live-group",
+		}},
+	})
+	require.NoError(t, err)
+	updatedTs := still.UpdatedTs + 1000
+	require.NoError(t, ts.Store.UpdateAttachment(ctx, &store.UpdateAttachment{ID: video.ID, UpdatedTs: &updatedTs}))
+
+	_, err = ts.Service.DeleteAttachment(userCtx, &v1pb.DeleteAttachmentRequest{Name: "attachments/" + video.UID})
+	require.Equal(t, codes.FailedPrecondition, status.Code(err))
 }

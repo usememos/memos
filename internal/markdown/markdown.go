@@ -3,6 +3,7 @@ package markdown
 import (
 	"bytes"
 	"cmp"
+	"net/url"
 	"slices"
 	"strings"
 
@@ -13,17 +14,26 @@ import (
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/text"
 
+	"github.com/usememos/memos/internal/base"
 	mast "github.com/usememos/memos/internal/markdown/ast"
 	"github.com/usememos/memos/internal/markdown/extensions"
 	"github.com/usememos/memos/internal/markdown/renderer"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
+// ManagedAttachmentReference is an attachment URL embedded using Markdown image syntax.
+type ManagedAttachmentReference struct {
+	UID string
+}
+
 // ExtractedData contains all metadata extracted from markdown in a single pass.
 type ExtractedData struct {
-	Tags     []string
-	Mentions []string
-	Property *storepb.MemoPayload_Property
+	Tags                               []string
+	Mentions                           []string
+	ImageDestinations                  []string
+	ManagedAttachmentReferences        []ManagedAttachmentReference
+	InvalidManagedAttachmentReferences []string
+	Property                           *storepb.MemoPayload_Property
 }
 
 // Service handles markdown metadata extraction.
@@ -402,9 +412,11 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 	}
 
 	data := &ExtractedData{
-		Tags:     []string{},
-		Mentions: []string{},
-		Property: &storepb.MemoPayload_Property{},
+		Tags:                        []string{},
+		Mentions:                    []string{},
+		ImageDestinations:           []string{},
+		ManagedAttachmentReferences: []ManagedAttachmentReference{},
+		Property:                    &storepb.MemoPayload_Property{},
 	}
 
 	firstBlockChecked := false
@@ -419,6 +431,24 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 		}
 		if mentionNode, ok := n.(*mast.MentionNode); ok {
 			data.Mentions = append(data.Mentions, string(mentionNode.Username))
+		}
+		if imageNode, ok := n.(*gast.Image); ok {
+			destination := string(imageNode.Destination)
+			data.ImageDestinations = append(data.ImageDestinations, destination)
+			uid, managed, valid := ParseManagedAttachmentImageURL(destination)
+			if managed && !valid {
+				data.InvalidManagedAttachmentReferences = append(data.InvalidManagedAttachmentReferences, string(imageNode.Destination))
+			} else if managed {
+				data.ManagedAttachmentReferences = append(data.ManagedAttachmentReferences, ManagedAttachmentReference{UID: uid})
+			}
+		}
+		if raw, ok := extractRawHTML(n, content); ok {
+			if strings.Contains(raw, "/file/attachments/") {
+				// Managed attachment URLs are deliberately supported only through
+				// Markdown image nodes. Raw HTML would require a second, security-
+				// sensitive HTML parser to enforce equivalent URL rules.
+				data.InvalidManagedAttachmentReferences = append(data.InvalidManagedAttachmentReferences, raw)
+			}
 		}
 
 		// Check if the first block-level child of the document is an H1 heading.
@@ -458,8 +488,63 @@ func (s *service) ExtractAll(content []byte) (*ExtractedData, error) {
 	// Deduplicate tags while preserving original case
 	data.Tags = uniquePreserveCase(data.Tags)
 	data.Mentions = uniquePreserveCase(data.Mentions)
+	data.ManagedAttachmentReferences = uniqueManagedAttachmentReferences(data.ManagedAttachmentReferences)
+	data.InvalidManagedAttachmentReferences = uniquePreserveCase(data.InvalidManagedAttachmentReferences)
 
 	return data, nil
+}
+
+func extractRawHTML(node gast.Node, source []byte) (string, bool) {
+	switch node := node.(type) {
+	case *gast.RawHTML:
+		return string(node.Segments.Value(source)), true
+	case *gast.HTMLBlock:
+		raw := append([]byte(nil), node.Lines().Value(source)...)
+		if node.HasClosure() {
+			raw = append(raw, node.ClosureLine.Value(source)...)
+		}
+		return string(raw), true
+	default:
+		return "", false
+	}
+}
+
+// ParseManagedAttachmentImageURL parses a same-origin relative managed image URL.
+// Absolute URL origin matching is intentionally left to callers that know the
+// configured instance URL.
+func ParseManagedAttachmentImageURL(raw string) (uid string, managed, valid bool) {
+	parsed, err := url.Parse(raw)
+	if err != nil || parsed.IsAbs() || parsed.Host != "" {
+		return "", false, false
+	}
+	if !strings.HasPrefix(parsed.Path, "/file/attachments/") {
+		return "", false, false
+	}
+	if parsed.RawQuery != "" || parsed.Fragment != "" || parsed.RawPath != "" || strings.Contains(parsed.EscapedPath(), "%") {
+		return "", true, false
+	}
+
+	parts := strings.Split(strings.TrimPrefix(parsed.Path, "/file/attachments/"), "/")
+	if (len(parts) != 1 && len(parts) != 2) || !base.UIDMatcher.MatchString(parts[0]) {
+		return "", true, false
+	}
+	if len(parts) == 2 && parts[1] == "" {
+		return "", true, false
+	}
+	return parts[0], true, true
+}
+
+func uniqueManagedAttachmentReferences(references []ManagedAttachmentReference) []ManagedAttachmentReference {
+	seen := make(map[string]struct{}, len(references))
+	result := make([]ManagedAttachmentReference, 0, len(references))
+	for _, reference := range references {
+		if _, ok := seen[reference.UID]; ok {
+			continue
+		}
+		seen[reference.UID] = struct{}{}
+		result = append(result, reference)
+	}
+	return result
 }
 
 // RenameTag renames all occurrences of oldTag to newTag in content.

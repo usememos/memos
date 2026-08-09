@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/stretchr/testify/require"
@@ -120,6 +121,198 @@ func TestAttachmentStore(t *testing.T) {
 	})
 	require.ErrorContains(t, err, "attachment not found")
 	ts.Close()
+}
+
+func TestMemoMutationRollsBackOnBindingConflict(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+	memo, err := ts.CreateMemo(ctx, &store.Memo{
+		UID:        shortuuid.New(),
+		CreatorID:  user.ID,
+		Content:    "original",
+		Visibility: store.Private,
+	})
+	require.NoError(t, err)
+	otherMemo, err := ts.CreateMemo(ctx, &store.Memo{
+		UID:        shortuuid.New(),
+		CreatorID:  user.ID,
+		Content:    "other",
+		Visibility: store.Private,
+	})
+	require.NoError(t, err)
+	available, err := ts.CreateAttachment(ctx, &store.Attachment{
+		UID:       shortuuid.New(),
+		CreatorID: user.ID,
+		Filename:  "available.png",
+		Type:      "image/png",
+	})
+	require.NoError(t, err)
+	conflicting, err := ts.CreateAttachment(ctx, &store.Attachment{
+		UID:       shortuuid.New(),
+		CreatorID: user.ID,
+		Filename:  "conflicting.png",
+		Type:      "image/png",
+		MemoID:    &otherMemo.ID,
+	})
+	require.NoError(t, err)
+
+	updatedContent := "updated"
+	err = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
+		MemoID:              memo.ID,
+		MemoCreatorID:       user.ID,
+		ExpectedMemoContent: memo.Content,
+		MemoUpdate:          &store.UpdateMemo{ID: memo.ID, Content: &updatedContent},
+		Bindings: []*store.MemoAttachmentBinding{
+			{ID: available.ID, UID: available.UID, UpdatedTs: time.Now().Unix()},
+			{ID: conflicting.ID, UID: conflicting.UID, UpdatedTs: time.Now().Unix() + 1},
+		},
+	})
+	require.ErrorIs(t, err, store.ErrMemoMutationConflict)
+
+	storedMemo, err := ts.GetMemo(ctx, &store.FindMemo{ID: &memo.ID})
+	require.NoError(t, err)
+	require.Equal(t, "original", storedMemo.Content)
+	storedAvailable, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &available.ID})
+	require.NoError(t, err)
+	require.Nil(t, storedAvailable.MemoID)
+	storedConflicting, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &conflicting.ID})
+	require.NoError(t, err)
+	require.NotNil(t, storedConflicting.MemoID)
+	require.Equal(t, otherMemo.ID, *storedConflicting.MemoID)
+}
+
+func TestMemoMutationUpdatesMemoAndBindingsTogether(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+	memo, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Content: "old", Visibility: store.Private})
+	require.NoError(t, err)
+	removed, err := ts.CreateAttachment(ctx, &store.Attachment{
+		UID: shortuuid.New(), CreatorID: user.ID, Filename: "removed.png", Type: "image/png", MemoID: &memo.ID,
+	})
+	require.NoError(t, err)
+	added, err := ts.CreateAttachment(ctx, &store.Attachment{
+		UID: shortuuid.New(), CreatorID: user.ID, Filename: "added.png", Type: "image/png",
+	})
+	require.NoError(t, err)
+
+	updatedContent := "new"
+	err = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
+		MemoID:              memo.ID,
+		MemoCreatorID:       user.ID,
+		ExpectedMemoContent: memo.Content,
+		MemoUpdate:          &store.UpdateMemo{ID: memo.ID, Content: &updatedContent},
+		Bindings: []*store.MemoAttachmentBinding{
+			{ID: added.ID, UID: added.UID, UpdatedTs: time.Now().Unix()},
+		},
+		RemovedAttachmentIDs:  []int32{removed.ID},
+		RequiredAttachmentIDs: []int32{added.ID},
+	})
+	require.NoError(t, err)
+
+	storedMemo, err := ts.GetMemo(ctx, &store.FindMemo{ID: &memo.ID})
+	require.NoError(t, err)
+	require.Equal(t, "new", storedMemo.Content)
+	storedAdded, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &added.ID})
+	require.NoError(t, err)
+	require.NotNil(t, storedAdded.MemoID)
+	require.Equal(t, memo.ID, *storedAdded.MemoID)
+	storedRemoved, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &removed.ID})
+	require.NoError(t, err)
+	require.Nil(t, storedRemoved.MemoID)
+}
+
+func TestMemoMutationRollsBackWhenRequiredAttachmentIsMissing(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+	memo, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Content: "old", Visibility: store.Private})
+	require.NoError(t, err)
+	removed, err := ts.CreateAttachment(ctx, &store.Attachment{
+		UID: shortuuid.New(), CreatorID: user.ID, Filename: "kept.png", Type: "image/png", MemoID: &memo.ID,
+	})
+	require.NoError(t, err)
+	added, err := ts.CreateAttachment(ctx, &store.Attachment{
+		UID: shortuuid.New(), CreatorID: user.ID, Filename: "rolled-back.png", Type: "image/png",
+	})
+	require.NoError(t, err)
+
+	updatedContent := "new"
+	err = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
+		MemoID:              memo.ID,
+		MemoCreatorID:       user.ID,
+		ExpectedMemoContent: memo.Content,
+		MemoUpdate:          &store.UpdateMemo{ID: memo.ID, Content: &updatedContent},
+		Bindings: []*store.MemoAttachmentBinding{
+			{ID: added.ID, UID: added.UID, UpdatedTs: time.Now().Unix()},
+		},
+		RemovedAttachmentIDs:  []int32{removed.ID},
+		RequiredAttachmentIDs: []int32{added.ID + removed.ID + 1000},
+	})
+	require.ErrorIs(t, err, store.ErrMemoMutationConflict)
+
+	storedMemo, err := ts.GetMemo(ctx, &store.FindMemo{ID: &memo.ID})
+	require.NoError(t, err)
+	require.Equal(t, "old", storedMemo.Content)
+	storedAdded, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &added.ID})
+	require.NoError(t, err)
+	require.Nil(t, storedAdded.MemoID)
+	storedRemoved, err := ts.GetAttachment(ctx, &store.FindAttachment{ID: &removed.ID})
+	require.NoError(t, err)
+	require.NotNil(t, storedRemoved.MemoID)
+	require.Equal(t, memo.ID, *storedRemoved.MemoID)
+}
+
+func TestMemoMutationRollsBackMemoAndRelationsTogether(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+	source, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Content: "original", Visibility: store.Private})
+	require.NoError(t, err)
+	originalTarget, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Content: "original target", Visibility: store.Private})
+	require.NoError(t, err)
+	replacementTarget, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Content: "replacement target", Visibility: store.Private})
+	require.NoError(t, err)
+	_, err = ts.UpsertMemoRelation(ctx, &store.MemoRelation{
+		MemoID: source.ID, RelatedMemoID: originalTarget.ID, Type: store.MemoRelationReference,
+	})
+	require.NoError(t, err)
+
+	updatedContent := "must roll back"
+	err = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
+		MemoID:                    source.ID,
+		MemoCreatorID:             user.ID,
+		ExpectedMemoContent:       source.Content,
+		MemoUpdate:                &store.UpdateMemo{ID: source.ID, Content: &updatedContent},
+		ReplaceReferenceRelations: true,
+		ReferenceRelations: []*store.MemoRelation{
+			{MemoID: source.ID, RelatedMemoID: replacementTarget.ID, Type: store.MemoRelationReference},
+			{MemoID: source.ID, RelatedMemoID: originalTarget.ID, Type: store.MemoRelationComment},
+		},
+	})
+	require.Error(t, err)
+
+	stored, err := ts.GetMemo(ctx, &store.FindMemo{ID: &source.ID})
+	require.NoError(t, err)
+	require.Equal(t, "original", stored.Content)
+	referenceType := store.MemoRelationReference
+	relations, err := ts.ListMemoRelations(ctx, &store.FindMemoRelation{MemoID: &source.ID, Type: &referenceType})
+	require.NoError(t, err)
+	require.Len(t, relations, 1)
+	require.Equal(t, originalTarget.ID, relations[0].RelatedMemoID)
 }
 
 func TestAttachmentStoreWithFilter(t *testing.T) {

@@ -38,8 +38,11 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	if relatedMemo.Visibility == store.Private && relatedMemo.CreatorID != user.ID && !isSuperUser(user) {
-		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	if err := s.checkMemoAndParentReadAccess(ctx, relatedMemo); err != nil {
+		return nil, err
+	}
+	if relatedMemo.RowStatus != store.Normal {
+		return nil, status.Errorf(codes.FailedPrecondition, "cannot comment on an archived memo")
 	}
 	if request.Comment == nil {
 		return nil, status.Errorf(codes.InvalidArgument, "comment is required")
@@ -149,16 +152,6 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 		return nil, err
 	}
 
-	currentUser, err := s.fetchCurrentUser(ctx)
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user")
-	}
-	var memoFilter string
-	if currentUser == nil {
-		memoFilter = `visibility == "PUBLIC"`
-	} else {
-		memoFilter = fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "PROTECTED"]`, currentUser.ID)
-	}
 	memoRelationComment := store.MemoRelationComment
 	var limit, offset int
 	if request.PageToken != "" {
@@ -172,12 +165,13 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 		limit = normalizePageSize(request.PageSize)
 	}
 	limitPlusOne := limit + 1
+	normal := store.Normal
 	memoRelations, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
-		RelatedMemoID: &memo.ID,
-		Type:          &memoRelationComment,
-		MemoFilter:    &memoFilter,
-		Limit:         &limitPlusOne,
-		Offset:        &offset,
+		RelatedMemoID:       &memo.ID,
+		Type:                &memoRelationComment,
+		SourceMemoRowStatus: &normal,
+		Limit:               &limitPlusOne,
+		Offset:              &offset,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memo relations")
@@ -204,7 +198,7 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 	for _, m := range memoRelations {
 		memoRelationIDs = append(memoRelationIDs, m.MemoID)
 	}
-	memos, err := s.Store.ListMemos(ctx, &store.FindMemo{IDList: memoRelationIDs})
+	memos, err := s.Store.ListMemos(ctx, &store.FindMemo{IDList: memoRelationIDs, RowStatus: &normal})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memos")
 	}
@@ -274,6 +268,7 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 			}
 			return nil, errors.Wrap(err, "failed to convert memo")
 		}
+		memoMessage.Visibility = convertVisibilityFromStore(memo.Visibility)
 		memosResponse = append(memosResponse, memoMessage)
 	}
 

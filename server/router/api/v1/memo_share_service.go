@@ -40,6 +40,12 @@ func (s *APIV1Service) CreateMemoShare(ctx context.Context, request *v1pb.Create
 	if memo == nil {
 		return nil, status.Errorf(codes.NotFound, "memo not found")
 	}
+	if memo.ParentUID != nil {
+		return nil, status.Errorf(codes.FailedPrecondition, "comments cannot be shared independently")
+	}
+	if memo.RowStatus != store.Normal {
+		return nil, status.Errorf(codes.FailedPrecondition, "only active memos can be shared")
+	}
 	if memo.CreatorID != user.ID && !isSuperUser(user) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
@@ -161,7 +167,7 @@ func (s *APIV1Service) GetSharedMemo(ctx context.Context, request *v1pb.GetShare
 		return nil, status.Errorf(codes.Internal, "failed to get memo")
 	}
 	// Treat archived or missing memos the same as an invalid token — no information leakage.
-	if memo == nil || memo.RowStatus == store.Archived {
+	if memo == nil || memo.RowStatus != store.Normal || memo.ParentUID != nil {
 		return nil, status.Errorf(codes.NotFound, "not found")
 	}
 

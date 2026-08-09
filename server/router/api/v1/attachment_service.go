@@ -142,6 +142,9 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 		if !canModifyMemo(user, memo) {
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 		}
+		if memo.CreatorID != user.ID {
+			return nil, status.Errorf(codes.PermissionDenied, "attachments linked at creation must be owned by the memo creator")
+		}
 		create.MemoID = &memo.ID
 	}
 
@@ -331,6 +334,12 @@ func (s *APIV1Service) DeleteAttachment(ctx context.Context, request *v1pb.Delet
 	if attachment == nil {
 		return nil, status.Errorf(codes.NotFound, "attachment not found")
 	}
+	if err := s.validateAttachmentDeletions(ctx, []*store.Attachment{attachment}); err != nil {
+		return nil, err
+	}
+	if err := s.detachAttachmentsForDeletion(ctx, []*store.Attachment{attachment}); err != nil {
+		return nil, err
+	}
 	// Delete the attachment from the database.
 	if err := s.Store.DeleteAttachment(ctx, &store.DeleteAttachment{
 		ID: attachment.ID,
@@ -382,12 +391,135 @@ func (s *APIV1Service) BatchDeleteAttachments(ctx context.Context, request *v1pb
 		}
 		attachments = append(attachments, attachment)
 	}
-
-	if err := s.Store.DeleteAttachments(ctx, attachments); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to delete attachments: %v", err)
+	if err := s.validateAttachmentDeletions(ctx, attachments); err != nil {
+		return nil, err
+	}
+	if err := s.detachAttachmentsForDeletion(ctx, attachments); err != nil {
+		return nil, err
+	}
+	for _, attachment := range attachments {
+		if err := s.Store.DeleteAttachment(ctx, &store.DeleteAttachment{ID: attachment.ID}); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to delete attachment: %v", err)
+		}
 	}
 
 	return &emptypb.Empty{}, nil
+}
+
+func (s *APIV1Service) validateAttachmentDeletions(ctx context.Context, attachments []*store.Attachment) error {
+	deletingUIDs := make(map[string]struct{}, len(attachments))
+	creatorIDs := make(map[int32]struct{})
+	for _, attachment := range attachments {
+		deletingUIDs[attachment.UID] = struct{}{}
+		if motion := getAttachmentMotionMedia(attachment); motion != nil && motion.GroupId != "" {
+			creatorIDs[attachment.CreatorID] = struct{}{}
+		}
+	}
+
+	memos := make(map[int32]*store.Memo)
+	for _, attachment := range attachments {
+		if attachment.MemoID == nil {
+			continue
+		}
+		memo := memos[*attachment.MemoID]
+		if memo == nil {
+			var err error
+			memo, err = s.Store.GetMemo(ctx, &store.FindMemo{ID: attachment.MemoID})
+			if err != nil {
+				return status.Errorf(codes.Internal, "failed to get attachment memo: %v", err)
+			}
+			if memo == nil {
+				return status.Errorf(codes.FailedPrecondition, "attachment memo no longer exists")
+			}
+			memos[memo.ID] = memo
+		}
+
+		references, err := s.extractManagedAttachmentReferences(memo.Content)
+		if err != nil {
+			return status.Errorf(codes.FailedPrecondition, "memo contains an invalid managed attachment reference: %v", err)
+		}
+		for _, reference := range references {
+			if _, ok := deletingUIDs[reference.UID]; ok {
+				return status.Errorf(codes.FailedPrecondition, "attachment %s is referenced by memo content", reference.UID)
+			}
+		}
+	}
+
+	for creatorID := range creatorIDs {
+		creatorAttachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{CreatorID: &creatorID, SkipDefaultLimit: true})
+		if err != nil {
+			return status.Errorf(codes.Internal, "failed to list motion media group: %v", err)
+		}
+		groups := make(map[string][]*store.Attachment)
+		for _, attachment := range creatorAttachments {
+			motion := getAttachmentMotionMedia(attachment)
+			if motion != nil && motion.GroupId != "" {
+				groups[motion.GroupId] = append(groups[motion.GroupId], attachment)
+			}
+		}
+		for _, attachment := range attachments {
+			if attachment.CreatorID != creatorID {
+				continue
+			}
+			motion := getAttachmentMotionMedia(attachment)
+			if motion == nil || motion.GroupId == "" || len(groups[motion.GroupId]) < 2 {
+				continue
+			}
+			for _, groupAttachment := range groups[motion.GroupId] {
+				if _, ok := deletingUIDs[groupAttachment.UID]; !ok {
+					return status.Errorf(codes.FailedPrecondition, "motion media group %s must be deleted together", motion.GroupId)
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+func (s *APIV1Service) detachAttachmentsForDeletion(ctx context.Context, attachments []*store.Attachment) error {
+	deletingUIDs := make(map[string]struct{}, len(attachments))
+	attachmentsByMemoID := make(map[int32][]*store.Attachment)
+	for _, attachment := range attachments {
+		deletingUIDs[attachment.UID] = struct{}{}
+		if attachment.MemoID != nil {
+			attachmentsByMemoID[*attachment.MemoID] = append(attachmentsByMemoID[*attachment.MemoID], attachment)
+		}
+	}
+
+	for memoID, memoAttachments := range attachmentsByMemoID {
+		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{ID: &memoID})
+		if err != nil {
+			return status.Errorf(codes.Internal, "failed to recheck attachment memo: %v", err)
+		}
+		if memo == nil {
+			return status.Errorf(codes.FailedPrecondition, "attachment memo no longer exists")
+		}
+		references, err := s.extractManagedAttachmentReferences(memo.Content)
+		if err != nil {
+			return status.Errorf(codes.FailedPrecondition, "memo contains an invalid managed attachment reference: %v", err)
+		}
+		for _, reference := range references {
+			if _, ok := deletingUIDs[reference.UID]; ok {
+				return status.Errorf(codes.FailedPrecondition, "attachment %s is referenced by memo content", reference.UID)
+			}
+		}
+		removedIDs := make([]int32, 0, len(memoAttachments))
+		for _, attachment := range memoAttachments {
+			removedIDs = append(removedIDs, attachment.ID)
+		}
+		if err := s.Store.ApplyMemoMutation(ctx, &store.MemoMutation{
+			MemoID:               memo.ID,
+			MemoCreatorID:        memo.CreatorID,
+			ExpectedMemoContent:  memo.Content,
+			RemovedAttachmentIDs: removedIDs,
+		}); err != nil {
+			if errors.Is(err, store.ErrMemoMutationConflict) {
+				return status.Errorf(codes.FailedPrecondition, "memo state changed: %v", err)
+			}
+			return status.Errorf(codes.Internal, "failed to detach attachments: %v", err)
+		}
+	}
+	return nil
 }
 
 func (s *APIV1Service) validateAttachmentFilter(ctx context.Context, filterStr string) error {
@@ -410,10 +542,12 @@ func (s *APIV1Service) validateAttachmentFilter(ctx context.Context, filterStr s
 // For unlinked attachments (no memo), only the creator can access.
 // For linked attachments, access follows the memo's visibility rules.
 func (s *APIV1Service) checkAttachmentAccess(ctx context.Context, attachment *store.Attachment) error {
-	user, _ := s.fetchCurrentUser(ctx)
-
 	// For unlinked attachments, only the creator can access.
 	if attachment.MemoID == nil {
+		user, err := s.fetchCurrentUser(ctx)
+		if err != nil {
+			return status.Errorf(codes.Internal, "failed to get current user")
+		}
 		if user == nil {
 			return status.Errorf(codes.Unauthenticated, "user not authenticated")
 		}
@@ -432,14 +566,5 @@ func (s *APIV1Service) checkAttachmentAccess(ctx context.Context, attachment *st
 		return status.Errorf(codes.NotFound, "memo not found")
 	}
 
-	if memo.Visibility == store.Public {
-		return nil
-	}
-	if user == nil {
-		return status.Errorf(codes.Unauthenticated, "user not authenticated")
-	}
-	if memo.Visibility == store.Private && memo.CreatorID != user.ID && !isSuperUser(user) {
-		return status.Errorf(codes.PermissionDenied, "permission denied")
-	}
-	return nil
+	return s.checkMemoAndParentReadAccess(ctx, memo)
 }

@@ -36,7 +36,10 @@ func convertAttachmentFromStore(attachment *store.Attachment) *v1pb.Attachment {
 		memoName := fmt.Sprintf("%s%s", MemoNamePrefix, *attachment.MemoUID)
 		attachmentMessage.Memo = &memoName
 	}
-	if attachment.StorageType == storepb.AttachmentStorageType_EXTERNAL || attachment.StorageType == storepb.AttachmentStorageType_S3 {
+	// Managed storage is always addressed through the authenticated file route.
+	// In particular, never expose an expiring S3 presigned URL as attachment API
+	// metadata because it can outlive a memo visibility change.
+	if attachment.StorageType == storepb.AttachmentStorageType_EXTERNAL {
 		attachmentMessage.ExternalLink = attachment.Reference
 	}
 

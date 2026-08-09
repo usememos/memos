@@ -77,6 +77,10 @@ func (d *DB) ListMemoRelations(ctx context.Context, find *store.FindMemoRelation
 		}
 		where = append(where, fmt.Sprintf("related_memo_id IN (%s)", strings.Join(placeholders, ", ")))
 	}
+	if find.SourceMemoRowStatus != nil {
+		where = append(where, "memo_id IN (SELECT id FROM memo WHERE row_status = ?)")
+		args = append(args, *find.SourceMemoRowStatus)
+	}
 	if find.MemoFilter != nil {
 		engine, err := filter.DefaultEngine()
 		if err != nil {

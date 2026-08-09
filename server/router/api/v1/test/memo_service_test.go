@@ -584,6 +584,47 @@ func TestListMemoCommentsPaginates(t *testing.T) {
 	require.Empty(t, secondPage.NextPageToken)
 }
 
+func TestListMemoCommentsFiltersArchivedBeforePagination(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	owner, err := ts.CreateRegularUser(ctx, "comment-archive-page-owner")
+	require.NoError(t, err)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+	memo, err := ts.Service.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
+		Content:    "memo with archived comments",
+		Visibility: apiv1.Visibility_PUBLIC,
+	}})
+	require.NoError(t, err)
+
+	comments := make([]*apiv1.Memo, 0, 5)
+	for i := 0; i < 5; i++ {
+		comment, err := ts.Service.CreateMemoComment(ownerCtx, &apiv1.CreateMemoCommentRequest{
+			Name:    memo.Name,
+			Comment: &apiv1.Memo{Content: fmt.Sprintf("comment %d", i)},
+		})
+		require.NoError(t, err)
+		comments = append(comments, comment)
+	}
+	for _, comment := range comments[3:] {
+		_, err := ts.Service.UpdateMemo(ownerCtx, &apiv1.UpdateMemoRequest{
+			Memo:       &apiv1.Memo{Name: comment.Name, State: apiv1.State_ARCHIVED},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"state"}},
+		})
+		require.NoError(t, err)
+	}
+
+	firstPage, err := ts.Service.ListMemoComments(ownerCtx, &apiv1.ListMemoCommentsRequest{Name: memo.Name, PageSize: 2})
+	require.NoError(t, err)
+	require.Len(t, firstPage.Memos, 2)
+	require.NotEmpty(t, firstPage.NextPageToken)
+	secondPage, err := ts.Service.ListMemoComments(ownerCtx, &apiv1.ListMemoCommentsRequest{Name: memo.Name, PageToken: firstPage.NextPageToken})
+	require.NoError(t, err)
+	require.Len(t, secondPage.Memos, 1)
+	require.Empty(t, secondPage.NextPageToken)
+}
+
 func TestCreateMemoCommentInheritsParentVisibility(t *testing.T) {
 	ctx := context.Background()
 
@@ -624,6 +665,41 @@ func TestCreateMemoCommentInheritsParentVisibility(t *testing.T) {
 
 	_, err = ts.Service.GetMemo(ctx, &apiv1.GetMemoRequest{Name: comment.Name})
 	require.Equal(t, codes.Unauthenticated, status.Code(err))
+}
+
+func TestCreateMemoCommentDoesNotRevealArchivedPrivateMemo(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	owner, err := ts.CreateRegularUser(ctx, "archived-comment-owner")
+	require.NoError(t, err)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+	other, err := ts.CreateRegularUser(ctx, "archived-comment-other")
+	require.NoError(t, err)
+	otherCtx := ts.CreateUserContext(ctx, other.ID)
+	parent, err := ts.Service.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
+		Content:    "archived private parent",
+		Visibility: apiv1.Visibility_PRIVATE,
+	}})
+	require.NoError(t, err)
+	_, err = ts.Service.UpdateMemo(ownerCtx, &apiv1.UpdateMemoRequest{
+		Memo:       &apiv1.Memo{Name: parent.Name, State: apiv1.State_ARCHIVED},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"state"}},
+	})
+	require.NoError(t, err)
+
+	_, err = ts.Service.CreateMemoComment(otherCtx, &apiv1.CreateMemoCommentRequest{
+		Name:    parent.Name,
+		Comment: &apiv1.Memo{Content: "should not reveal parent state"},
+	})
+	require.Equal(t, codes.NotFound, status.Code(err))
+
+	_, err = ts.Service.CreateMemoComment(ownerCtx, &apiv1.CreateMemoCommentRequest{
+		Name:    parent.Name,
+		Comment: &apiv1.Memo{Content: "owner still cannot comment"},
+	})
+	require.Equal(t, codes.FailedPrecondition, status.Code(err))
 }
 
 func TestGetMemoCommentRequiresParentReadAccess(t *testing.T) {
@@ -689,6 +765,41 @@ func TestGetMemoCommentRequiresParentReadAccess(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, comments.Memos, 1)
 	require.Equal(t, commentName, comments.Memos[0].Name)
+}
+
+func TestMemoCommentUsesCurrentParentVisibility(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	owner, err := ts.CreateRegularUser(ctx, "dynamic-comment-owner")
+	require.NoError(t, err)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+	parent, err := ts.Service.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
+		Content:    "initially private",
+		Visibility: apiv1.Visibility_PRIVATE,
+	}})
+	require.NoError(t, err)
+	comment, err := ts.Service.CreateMemoComment(ownerCtx, &apiv1.CreateMemoCommentRequest{
+		Name:    parent.Name,
+		Comment: &apiv1.Memo{Content: "inherits private"},
+	})
+	require.NoError(t, err)
+	require.Equal(t, apiv1.Visibility_PRIVATE, comment.Visibility)
+
+	_, err = ts.Service.UpdateMemo(ownerCtx, &apiv1.UpdateMemoRequest{
+		Memo:       &apiv1.Memo{Name: parent.Name, Visibility: apiv1.Visibility_PUBLIC},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"visibility"}},
+	})
+	require.NoError(t, err)
+
+	visibleComment, err := ts.Service.GetMemo(ctx, &apiv1.GetMemoRequest{Name: comment.Name})
+	require.NoError(t, err)
+	require.Equal(t, comment.Name, visibleComment.Name)
+	comments, err := ts.Service.ListMemoComments(ctx, &apiv1.ListMemoCommentsRequest{Name: parent.Name})
+	require.NoError(t, err)
+	require.Len(t, comments.Memos, 1)
+	require.Equal(t, comment.Name, comments.Memos[0].Name)
 }
 
 // TestCreateMemoWithCustomTimestamps tests that custom timestamps can be set when creating memos and comments.

@@ -215,45 +215,7 @@ func (d *DB) GetMemo(ctx context.Context, find *store.FindMemo) (*store.Memo, er
 }
 
 func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
-	set, args := []string{}, []any{}
-	if v := update.UID; v != nil {
-		set, args = append(set, "`uid` = ?"), append(args, *v)
-	}
-	if v := update.CreatedTs; v != nil {
-		set, args = append(set, "`created_ts` = FROM_UNIXTIME(?)"), append(args, *v)
-	}
-	if v := update.UpdatedTs; v != nil {
-		set, args = append(set, "`updated_ts` = FROM_UNIXTIME(?)"), append(args, *v)
-	}
-	if v := update.RowStatus; v != nil {
-		set, args = append(set, "`row_status` = ?"), append(args, *v)
-	}
-	if v := update.Content; v != nil {
-		set, args = append(set, "`content` = ?"), append(args, *v)
-	}
-	if v := update.Visibility; v != nil {
-		set, args = append(set, "`visibility` = ?"), append(args, *v)
-	}
-	if v := update.Pinned; v != nil {
-		set, args = append(set, "`pinned` = ?"), append(args, *v)
-	}
-	if v := update.Payload; v != nil {
-		payloadBytes, err := protojson.Marshal(v)
-		if err != nil {
-			return err
-		}
-		set, args = append(set, "`payload` = ?"), append(args, string(payloadBytes))
-	}
-	if len(set) == 0 {
-		return nil
-	}
-	args = append(args, update.ID)
-
-	stmt := "UPDATE `memo` SET " + strings.Join(set, ", ") + " WHERE `id` = ?"
-	if _, err := d.db.ExecContext(ctx, stmt, args...); err != nil {
-		return err
-	}
-	return nil
+	return applyMemoUpdate(ctx, d.db, update)
 }
 
 func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {

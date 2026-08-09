@@ -5,6 +5,9 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
 )
@@ -166,4 +169,45 @@ func TestSetMemoRelations(t *testing.T) {
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "not found")
 	})
+}
+
+func TestUpdateMemoValidatesAllRelationsBeforeMutation(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	user, err := ts.CreateRegularUser(ctx, "atomic-relation-update")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	target, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{Content: "target"}})
+	require.NoError(t, err)
+	replacement, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{Content: "replacement"}})
+	require.NoError(t, err)
+	source, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
+		Content: "original",
+		Relations: []*apiv1.MemoRelation{{
+			RelatedMemo: &apiv1.MemoRelation_Memo{Name: target.Name},
+			Type:        apiv1.MemoRelation_REFERENCE,
+		}},
+	}})
+	require.NoError(t, err)
+
+	_, err = ts.Service.UpdateMemo(userCtx, &apiv1.UpdateMemoRequest{
+		Memo: &apiv1.Memo{
+			Name:    source.Name,
+			Content: "must roll back",
+			Relations: []*apiv1.MemoRelation{
+				{RelatedMemo: &apiv1.MemoRelation_Memo{Name: replacement.Name}, Type: apiv1.MemoRelation_REFERENCE},
+				{RelatedMemo: &apiv1.MemoRelation_Memo{Name: "invalid-name"}, Type: apiv1.MemoRelation_REFERENCE},
+			},
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"content", "relations"}},
+	})
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
+
+	stored, err := ts.Service.GetMemo(userCtx, &apiv1.GetMemoRequest{Name: source.Name})
+	require.NoError(t, err)
+	require.Equal(t, "original", stored.Content)
+	require.Len(t, stored.Relations, 1)
+	require.Equal(t, target.Name, stored.Relations[0].RelatedMemo.Name)
 }

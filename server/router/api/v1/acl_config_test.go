@@ -28,8 +28,12 @@ func TestPublicMethodsArePublic(t *testing.T) {
 		// Memo Service
 		"/memos.api.v1.MemoService/GetMemo",
 		"/memos.api.v1.MemoService/ListMemos",
+		"/memos.api.v1.MemoService/ListMemoComments",
+		"/memos.api.v1.MemoService/ListMemoAttachments",
 		"/memos.api.v1.MemoService/GetLinkMetadata",
 		"/memos.api.v1.MemoService/BatchGetLinkMetadata",
+		// Attachment Service metadata follows linked memo visibility.
+		"/memos.api.v1.AttachmentService/GetAttachment",
 	}
 
 	for _, method := range publicMethods {
@@ -126,6 +130,8 @@ func TestAuthBootstrapClassification(t *testing.T) {
 		"/memos.api.v1.MemoService/ListMemos",
 		"/memos.api.v1.MemoService/GetMemo",
 		"/memos.api.v1.MemoService/ListMemoComments",
+		"/memos.api.v1.MemoService/ListMemoAttachments",
+		"/memos.api.v1.AttachmentService/GetAttachment",
 		"/memos.api.v1.UserService/GetUser",
 		"/memos.api.v1.UserService/ListAllUserStats",
 	}
