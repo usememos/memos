@@ -58,6 +58,9 @@ func (s *APIV1Service) buildUpdatedMemoState(ctx context.Context, memoID int32) 
 	var parentMemo *store.Memo
 	if memo.ParentUID != nil {
 		parentMemo, _ = s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
+		if parentMemo != nil {
+			memoMessage.Visibility = convertVisibilityFromStore(parentMemo.Visibility)
+		}
 	}
 
 	return memo, parentMemo, memoMessage, nil
@@ -68,11 +71,15 @@ func (s *APIV1Service) dispatchMemoUpdatedSideEffects(ctx context.Context, memo 
 		slog.Warn("Failed to dispatch memo updated webhook", slog.Any("err", err))
 	}
 
+	visibility := memo.Visibility
+	if parentMemo != nil {
+		visibility = parentMemo.Visibility
+	}
 	s.SSEHub.Broadcast(&SSEEvent{
 		Type:       SSEEventMemoUpdated,
 		Name:       memoMessage.Name,
 		Parent:     memoMessage.GetParent(),
-		Visibility: memo.Visibility,
+		Visibility: visibility,
 		CreatorID:  resolveSSECreatorID(memo, parentMemo),
 	})
 }

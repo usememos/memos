@@ -24,6 +24,8 @@ type FindMemoRelation struct {
 	RelatedMemoID *int32
 	Type          *MemoRelationType
 	MemoFilter    *string
+	// SourceMemoRowStatus filters the relation source memo before pagination.
+	SourceMemoRowStatus *RowStatus
 	// MemoIDList matches relations where memo_id OR related_memo_id is in the list.
 	MemoIDList []int32
 	// SourceMemoIDList matches relations where memo_id is in the list.

@@ -18,6 +18,7 @@ import (
 
 	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/usememos/memos/internal/markdown"
@@ -82,6 +83,97 @@ func TestServeAttachmentFile_ShareTokenAllowsDirectMemoAttachment(t *testing.T) 
 
 	require.Equal(t, http.StatusOK, rec.Code)
 	require.Equal(t, "memo attachment", rec.Body.String())
+}
+
+func TestServeAttachmentFile_CanonicalRouteAndVisibilityAwareCache(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	creator, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "canonical-route-owner",
+		Role:     store.RoleUser,
+		Email:    "canonical-route-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+	attachment, err := svc.CreateAttachment(creatorCtx, &apiv1.CreateAttachmentRequest{Attachment: &apiv1.Attachment{
+		Filename: "canonical.png",
+		Type:     "image/png",
+		Content:  []byte("canonical image"),
+	}})
+	require.NoError(t, err)
+	memo, err := svc.CreateMemo(creatorCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
+		Content:     "canonical route",
+		Visibility:  apiv1.Visibility_PUBLIC,
+		Attachments: []*apiv1.Attachment{{Name: attachment.Name}},
+	}})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	url := "/file/" + attachment.Name
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "canonical image", rec.Body.String())
+	require.Equal(t, publicAttachmentCacheControl, rec.Header().Get(echo.HeaderCacheControl))
+
+	_, err = svc.UpdateMemo(creatorCtx, &apiv1.UpdateMemoRequest{
+		Memo:       &apiv1.Memo{Name: memo.Name, Visibility: apiv1.Visibility_PROTECTED},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"visibility"}},
+	})
+	require.NoError(t, err)
+	rec = httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
+	require.Equal(t, http.StatusUnauthorized, rec.Code)
+	require.Equal(t, privateAttachmentCacheControl, rec.Header().Get(echo.HeaderCacheControl))
+}
+
+func TestServeAttachmentFile_CommentFollowsCurrentParentVisibility(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	owner, err := svc.Store.CreateUser(ctx, &store.User{Username: "comment-parent-owner", Role: store.RoleUser, Email: "parent@example.com"})
+	require.NoError(t, err)
+	commenter, err := svc.Store.CreateUser(ctx, &store.User{Username: "comment-file-owner", Role: store.RoleUser, Email: "commenter@example.com"})
+	require.NoError(t, err)
+	ownerCtx := context.WithValue(ctx, auth.UserIDContextKey, owner.ID)
+	commenterCtx := context.WithValue(ctx, auth.UserIDContextKey, commenter.ID)
+	parent, err := svc.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{Content: "parent", Visibility: apiv1.Visibility_PUBLIC}})
+	require.NoError(t, err)
+	attachment, err := svc.CreateAttachment(commenterCtx, &apiv1.CreateAttachmentRequest{Attachment: &apiv1.Attachment{
+		Filename: "comment.png",
+		Type:     "image/png",
+		Content:  []byte("comment image"),
+	}})
+	require.NoError(t, err)
+	_, err = svc.CreateMemoComment(commenterCtx, &apiv1.CreateMemoCommentRequest{
+		Name: parent.Name,
+		Comment: &apiv1.Memo{
+			Content:     "comment",
+			Attachments: []*apiv1.Attachment{{Name: attachment.Name}},
+		},
+	})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	url := "/file/" + attachment.Name
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
+	require.Equal(t, http.StatusOK, rec.Code)
+
+	_, err = svc.UpdateMemo(ownerCtx, &apiv1.UpdateMemoRequest{
+		Memo:       &apiv1.Memo{Name: parent.Name, Visibility: apiv1.Visibility_PRIVATE},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"visibility"}},
+	})
+	require.NoError(t, err)
+	rec = httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, url, nil))
+	require.Equal(t, http.StatusUnauthorized, rec.Code)
+	require.Equal(t, privateAttachmentCacheControl, rec.Header().Get(echo.HeaderCacheControl))
 }
 
 func TestServeAttachmentFile_LocalStaticFileSupportsRangeRequests(t *testing.T) {

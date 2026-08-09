@@ -287,10 +287,10 @@ func (s *RSSService) generateRSSFromMemoList(ctx context.Context, memoList []*st
 		if attachments, ok := attachmentsByMemoID[memo.ID]; ok && len(attachments) > 0 {
 			attachment := attachments[0]
 			enclosure := feeds.Enclosure{}
-			if attachment.StorageType == storepb.AttachmentStorageType_EXTERNAL || attachment.StorageType == storepb.AttachmentStorageType_S3 {
+			if attachment.StorageType == storepb.AttachmentStorageType_EXTERNAL {
 				enclosure.Url = attachment.Reference
 			} else {
-				enclosure.Url = fmt.Sprintf("%s/file/attachments/%s/%s", baseURL, attachment.UID, attachment.Filename)
+				enclosure.Url = fmt.Sprintf("%s/file/attachments/%s", baseURL, attachment.UID)
 			}
 			enclosure.Length = strconv.Itoa(int(attachment.Size))
 			enclosure.Type = attachment.Type

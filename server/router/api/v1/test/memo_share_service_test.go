@@ -110,7 +110,7 @@ func TestGetSharedMemo_IncludesReactions(t *testing.T) {
 	require.Equal(t, memo.Name, sharedMemo.Reactions[0].ContentId)
 }
 
-func TestGetSharedMemo_ExcludesParentAndRelations(t *testing.T) {
+func TestCreateMemoShare_RejectsComment(t *testing.T) {
 	ctx := context.Background()
 
 	ts := NewTestService(t)
@@ -143,19 +143,21 @@ func TestGetSharedMemo_ExcludesParentAndRelations(t *testing.T) {
 	require.NotEmpty(t, regularMemo.GetParent())
 	require.NotEmpty(t, regularMemo.Relations)
 
-	share, err := ts.Service.CreateMemoShare(userCtx, &apiv1.CreateMemoShareRequest{
+	_, err = ts.Service.CreateMemoShare(userCtx, &apiv1.CreateMemoShareRequest{
 		Parent:    comment.Name,
 		MemoShare: &apiv1.MemoShare{},
 	})
-	require.NoError(t, err)
+	require.Equal(t, codes.FailedPrecondition, status.Code(err))
 
-	shareToken := share.Name[strings.LastIndex(share.Name, "/")+1:]
-	sharedMemo, err := ts.Service.GetSharedMemo(ctx, &apiv1.GetSharedMemoRequest{
-		ShareToken: shareToken,
+	// Legacy rows created before this rule must not remain a bypass.
+	legacyShare, err := ts.Store.CreateMemoShare(ctx, &store.MemoShare{
+		UID:       "legacy-comment-share",
+		MemoID:    parseMemoIDFromNameForTest(t, ts, comment.Name),
+		CreatorID: user.ID,
 	})
 	require.NoError(t, err)
-	require.Empty(t, sharedMemo.GetParent())
-	require.Empty(t, sharedMemo.Relations)
+	_, err = ts.Service.GetSharedMemo(ctx, &apiv1.GetSharedMemoRequest{ShareToken: legacyShare.UID})
+	require.Equal(t, codes.NotFound, status.Code(err))
 }
 
 func TestGetSharedMemo_SkipsReactionsWithMissingCreators(t *testing.T) {

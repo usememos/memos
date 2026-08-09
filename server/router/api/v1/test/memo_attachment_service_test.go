@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
@@ -273,7 +275,7 @@ func TestSetMemoAttachments(t *testing.T) {
 			},
 		})
 		require.Error(t, err)
-		require.Contains(t, err.Error(), "cannot attach another user's attachment")
+		require.Equal(t, codes.NotFound, status.Code(err))
 
 		victimAttachments, err := ts.Service.ListMemoAttachments(victimCtx, &apiv1.ListMemoAttachmentsRequest{Name: victimMemo.Name})
 		require.NoError(t, err)

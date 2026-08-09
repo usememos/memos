@@ -361,6 +361,36 @@ func TestExtractAllMentions(t *testing.T) {
 	assert.Empty(t, data.Mentions)
 }
 
+func TestExtractAllManagedAttachmentImages(t *testing.T) {
+	svc := NewService()
+	data, err := svc.ExtractAll([]byte(strings.Join([]string{
+		"![canonical](/file/attachments/image-one)",
+		"![legacy](/file/attachments/image-two/photo.png)",
+		"![duplicate](/file/attachments/image-one)",
+		"![reference][managed-image]",
+		"",
+		"[managed-image]: /file/attachments/image-three",
+		"![external](https://example.com/file/attachments/external)",
+		"`![code](/file/attachments/code-image)`",
+	}, "\n")))
+	require.NoError(t, err)
+	require.Equal(t, []ManagedAttachmentReference{{UID: "image-one"}, {UID: "image-two"}, {UID: "image-three"}}, data.ManagedAttachmentReferences)
+	require.Empty(t, data.InvalidManagedAttachmentReferences)
+}
+
+func TestExtractAllRejectsMalformedManagedAttachmentImages(t *testing.T) {
+	svc := NewService()
+	data, err := svc.ExtractAll([]byte(strings.Join([]string{
+		"![query](/file/attachments/image-one?share_token=secret)",
+		"![encoded](/file/attachments/%69mage-two)",
+		"![extra](/file/attachments/image-three/file/extra)",
+		`<img src="/file/attachments/raw-html">`,
+	}, "\n")))
+	require.NoError(t, err)
+	require.Empty(t, data.ManagedAttachmentReferences)
+	require.Len(t, data.InvalidManagedAttachmentReferences, 4)
+}
+
 func TestExtractAllMentionSyntaxAndContexts(t *testing.T) {
 	svc := NewService(WithTagExtension(), WithMentionExtension())
 	tests := []struct {

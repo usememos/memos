@@ -33,8 +33,12 @@ var PublicMethods = map[string]struct{}{
 	"/memos.api.v1.MemoService/GetMemo":              {},
 	"/memos.api.v1.MemoService/ListMemos":            {},
 	"/memos.api.v1.MemoService/ListMemoComments":     {},
+	"/memos.api.v1.MemoService/ListMemoAttachments":  {},
 	"/memos.api.v1.MemoService/GetLinkMetadata":      {},
 	"/memos.api.v1.MemoService/BatchGetLinkMetadata": {},
+
+	// Attachment metadata follows the visibility of its linked memo.
+	"/memos.api.v1.AttachmentService/GetAttachment": {},
 
 	// Memo sharing - share-token endpoints require no authentication
 	"/memos.api.v1.MemoService/GetSharedMemo": {},
