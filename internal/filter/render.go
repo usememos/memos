@@ -627,11 +627,28 @@ func (r *renderer) renderTagComprehension(field Field, pred PredicateExpr, kind 
 		return renderResult{}, errors.Errorf("unsupported dialect %s", r.dialect)
 	}
 
+	// MySQL rewrites `EXISTS (SELECT ... FROM JSON_TABLE(<outer column>))` into a semi-join
+	// that drops the lateral dependency on the outer row, so the subquery silently evaluates
+	// as empty and the predicate is always false. Counting rows keeps the correlation intact.
+	// See TestTagComprehensionAvoidsMySQLExistsSemiJoin.
+	anyMatch := func(cond string) string {
+		if r.dialect == DialectMySQL {
+			return fmt.Sprintf("(SELECT COUNT(*) FROM %s WHERE %s) > 0", elements, cond)
+		}
+		return fmt.Sprintf("EXISTS (SELECT 1 FROM %s WHERE %s)", elements, cond)
+	}
+	noMatch := func(cond string) string {
+		if r.dialect == DialectMySQL {
+			return fmt.Sprintf("(SELECT COUNT(*) FROM %s WHERE %s) = 0", elements, cond)
+		}
+		return fmt.Sprintf("NOT EXISTS (SELECT 1 FROM %s WHERE %s)", elements, cond)
+	}
+
 	switch kind {
 	case ComprehensionExists:
-		return renderResult{sql: fmt.Sprintf("EXISTS (SELECT 1 FROM %s WHERE %s)", elements, elemCond)}, nil
+		return renderResult{sql: anyMatch(elemCond)}, nil
 	case ComprehensionAll:
-		return renderResult{sql: fmt.Sprintf("(%s > 0 AND NOT EXISTS (SELECT 1 FROM %s WHERE NOT (%s)))", length, elements, elemCond)}, nil
+		return renderResult{sql: fmt.Sprintf("(%s > 0 AND %s)", length, noMatch(fmt.Sprintf("NOT (%s)", elemCond)))}, nil
 	case ComprehensionExistsOne:
 		return renderResult{sql: fmt.Sprintf("(SELECT COUNT(*) FROM %s WHERE %s) = 1", elements, elemCond)}, nil
 	default:

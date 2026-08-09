@@ -1,9 +1,14 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { fireEvent, render as testingLibraryRender, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AppSidebar, { MobileAppHeader } from "@/components/AppSidebar";
+import { SIDEBAR_SECTION_ACTION_BUTTON_CLASSES, SIDEBAR_SECTION_ACTION_ICON_CLASSES } from "@/components/AppSidebar/SidebarSection";
 
-const authState = vi.hoisted(() => ({ currentUser: { name: "users/test" } as { name: string } | undefined }));
+const authState = vi.hoisted(() => ({
+  currentUser: { name: "users/test" } as { name: string } | undefined,
+  memoViews: [] as Array<{ name: string; title: string }>,
+}));
 const sidebarState = vi.hoisted(() => ({
   memoScope: "home" as "home" | "explore" | "archived",
 }));
@@ -46,7 +51,7 @@ vi.mock("@/contexts/AppSidebarContext", () => ({
 }));
 
 vi.mock("@/contexts/AuthContext", () => ({
-  useAuth: () => ({ shortcuts: [], refetchSettings: vi.fn(), isInitialized: true }),
+  useAuth: () => ({ isInitialized: true }),
 }));
 
 vi.mock("@/contexts/InstanceContext", () => ({
@@ -57,8 +62,8 @@ vi.mock("@/contexts/MemoFilterContext", () => ({
   stringifyFilters: () => "",
   useMemoFilterContext: () => ({
     filters: [],
-    shortcut: undefined,
-    setShortcut: vi.fn(),
+    memoView: undefined,
+    setMemoView: vi.fn(),
   }),
 }));
 
@@ -79,6 +84,10 @@ vi.mock("@/hooks/useMediaQuery", () => ({
 }));
 
 vi.mock("@/hooks/useUserQueries", () => ({
+  userKeys: {
+    memoViews: (parent?: string) => ["users", "memoViews", parent],
+  },
+  useMemoViews: () => ({ data: authState.memoViews }),
   useNotifications: () => ({ data: [] }),
   useUser: () => ({ data: undefined }),
 }));
@@ -91,9 +100,15 @@ vi.mock("@/utils/i18n", () => ({
   useTranslate: () => (key: string) => key,
 }));
 
+const render = (ui: Parameters<typeof testingLibraryRender>[0]) =>
+  testingLibraryRender(
+    <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>{ui}</QueryClientProvider>,
+  );
+
 describe("App sidebar logo", () => {
   beforeEach(() => {
     authState.currentUser = { name: "users/test" };
+    authState.memoViews = [];
     sidebarState.memoScope = "home";
   });
 
@@ -132,6 +147,8 @@ describe("App sidebar logo", () => {
     );
 
     expect(screen.getByText("Calendar")).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "common.statistics" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "common.statistics" })).not.toBeInTheDocument();
     expect(screen.getByText("common.views")).toBeInTheDocument();
     expect(screen.getByText("Tags")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "common.attachments" })).toHaveAttribute("href", "/attachments");
@@ -178,11 +195,17 @@ describe("App sidebar logo", () => {
 
     const calendar = screen.getByText("Calendar");
     const views = screen.getByText("common.views");
+    expect(screen.getByRole("region", { name: "common.statistics" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "common.views", level: 2 })).toBeInTheDocument();
     expect(calendar.compareDocumentPosition(views) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     const viewOptions = screen.getByRole("button", { name: "memo.view-options" });
     const createView = screen.getByRole("button", { name: "common.create" });
     expect(viewOptions.compareDocumentPosition(createView) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    expect(screen.getByRole("button", { name: "common.tasks" })).toBeInTheDocument();
+    expect(createView).toHaveClass(...SIDEBAR_SECTION_ACTION_BUTTON_CLASSES.split(" "));
+    expect(createView.querySelector("svg")).toHaveClass(SIDEBAR_SECTION_ACTION_ICON_CLASSES);
+    const tasksView = screen.getByRole("button", { name: "common.tasks" });
+    expect(tasksView).toHaveTextContent("common.tasks");
+    expect(tasksView).not.toHaveTextContent("☑️");
     expect(screen.queryByRole("button", { name: "common.all" })).not.toBeInTheDocument();
 
     const scopeTrigger = screen.getByRole("button", { name: "common.home" });
@@ -190,6 +213,26 @@ describe("App sidebar logo", () => {
     expect(await screen.findByRole("menuitem", { name: "common.home" })).toBeInTheDocument();
     expect(screen.getByRole("menuitem", { name: "common.explore" })).toBeInTheDocument();
     expect(screen.getByRole("menuitem", { name: "common.archived" })).toBeInTheDocument();
+  });
+
+  it("uses compact text-only actions for a saved view", async () => {
+    authState.memoViews = [{ name: "memoViews/1", title: "testgp" }];
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <AppSidebar />
+      </MemoryRouter>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "common.edit testgp" }));
+
+    const menu = await screen.findByRole("menu");
+    expect(menu).toHaveAttribute("data-size", "sm");
+    expect(menu).toHaveClass("min-w-24", "p-0.5");
+    const editItem = screen.getByRole("menuitem", { name: "common.edit" });
+    const deleteItem = screen.getByRole("menuitem", { name: "common.delete" });
+    expect(editItem.querySelector("svg")).toBeNull();
+    expect(deleteItem.querySelector("svg")).toBeNull();
+    expect(deleteItem).toHaveAttribute("data-variant", "destructive");
   });
 
   it("collapses inactive global destinations and defaults the scope icon to Home", async () => {
@@ -215,6 +258,21 @@ describe("App sidebar logo", () => {
     expect(await screen.findByText("Calendar")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "common.home" })).toHaveTextContent("common.home");
     expect(screen.queryByRole("menuitem", { name: "common.explore" })).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ["/attachments", "common.attachments"],
+    ["/inbox", "common.inbox"],
+    ["/setting", "common.basic"],
+    ["/u/test", "common.profile"],
+  ])("labels the sidebar content section on %s", (path, label) => {
+    render(
+      <MemoryRouter initialEntries={[path]}>
+        <AppSidebar />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByRole("heading", { name: label, level: 2 })).toBeInTheDocument();
   });
 
   it.each([

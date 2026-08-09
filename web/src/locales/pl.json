@@ -65,6 +65,7 @@
     "last-updated-at": "Ostatnia aktualizacja",
     "learn-more": "Dowiedz się więcej",
     "link": "Link",
+    "manage": "Zarządzaj",
     "map": "Mapa",
     "mark": "Oznacz",
     "memo": "Notatka",
@@ -95,8 +96,6 @@
     "select": "Wybierz",
     "settings": "Ustawienia",
     "share": "Udostępnij",
-    "shortcut-filter": "Filtr skrótów",
-    "shortcuts": "Skróty",
     "sign-in": "Zaloguj się",
     "sign-in-with": "Zaloguj się za pomocą {{provider}}",
     "sign-out": "Wyloguj się",
@@ -114,6 +113,7 @@
     "username": "Nazwa użytkownika",
     "version": "Wersja",
     "visibility": "Widoczność",
+    "views": "Widoki",
     "yourself": "Ty sam",
     "empty-placeholder": "Pusty",
     "unlink": "Odczepić"
@@ -473,9 +473,9 @@
       "memo-defaults-title": "Domyślne ustawienia notatki",
       "theme-description": "Natychmiast stosuje wybrany motyw na tym urządzeniu."
     },
-    "shortcut": {
-      "delete-confirm": "Czy na pewno chcesz usunąć skrót `{{title}}`?",
-      "delete-success": "Skrót `{{title}}` usunięty pomyślnie"
+    "memo-view": {
+      "delete-confirm": "Czy na pewno chcesz usunąć widok `{{title}}`?",
+      "delete-success": "Widok `{{title}}` usunięty pomyślnie"
     },
     "sso": {
       "authorization-endpoint": "Endpoint autoryzacji",

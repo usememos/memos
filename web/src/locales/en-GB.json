@@ -65,6 +65,7 @@
     "last-updated-at": "Last updated at",
     "learn-more": "Learn more",
     "link": "Link",
+    "manage": "Manage",
     "map": "Map",
     "mark": "Mark",
     "memo": "Memo",
@@ -95,8 +96,6 @@
     "select": "Select",
     "settings": "Settings",
     "share": "Share",
-    "shortcut-filter": "Shortcut filter",
-    "shortcuts": "Shortcuts",
     "sign-in": "Sign in",
     "sign-in-with": "Sign in with {{provider}}",
     "sign-out": "Sign out",
@@ -114,6 +113,7 @@
     "username": "Username",
     "version": "Version",
     "visibility": "Visibility",
+    "views": "Views",
     "yourself": "Yourself",
     "empty-placeholder": "Empty",
     "unlink": "Unlink"
@@ -454,9 +454,9 @@
       "memo-defaults-title": "Memo defaults",
       "theme-description": "Applies the selected theme immediately on this device."
     },
-    "shortcut": {
-      "delete-confirm": "Are you sure you want to delete shortcut `{{title}}`?",
-      "delete-success": "Shortcut `{{title}}` deleted successfully"
+    "memo-view": {
+      "delete-confirm": "Are you sure you want to delete view `{{title}}`?",
+      "delete-success": "View `{{title}}` deleted successfully"
     },
     "sso": {
       "authorization-endpoint": "Authorisation endpoint",

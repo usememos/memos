@@ -65,6 +65,7 @@
     "last-updated-at": "Ultimo aggiornamento",
     "learn-more": "Scopri di più",
     "link": "Link",
+    "manage": "Gestisci",
     "map": "Mappa",
     "mark": "Cita",
     "memo": "Memo",
@@ -95,8 +96,6 @@
     "select": "Seleziona",
     "settings": "Impostazioni",
     "share": "Condividi",
-    "shortcut-filter": "Filtro scorciatoie",
-    "shortcuts": "Scorciatoie",
     "sign-in": "Accedi",
     "sign-in-with": "Accedi con {{provider}}",
     "sign-out": "Esci",
@@ -114,6 +113,7 @@
     "username": "Nome utente",
     "version": "Versione",
     "visibility": "Visibilità",
+    "views": "Viste",
     "yourself": "Te stesso",
     "empty-placeholder": "Vuota",
     "unlink": "Scollega"
@@ -454,9 +454,9 @@
       "memo-defaults-title": "Impostazioni predefinite del promemoria",
       "theme-description": "Applica immediatamente il tema selezionato su questo dispositivo."
     },
-    "shortcut": {
-      "delete-confirm": "Confermi di voler eliminare la scorciatoia `{{title}}`?",
-      "delete-success": "Scorciatoia `{{title}}` eliminata con successo"
+    "memo-view": {
+      "delete-confirm": "Confermi di voler eliminare la vista `{{title}}`?",
+      "delete-success": "Vista `{{title}}` eliminata con successo"
     },
     "sso": {
       "authorization-endpoint": "Endpoint autorizzazione",

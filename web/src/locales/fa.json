@@ -64,6 +64,7 @@
     "last-updated-at": "آخرین بروزرسانی در",
     "learn-more": "اطلاعات بیشتر",
     "link": "پیوست",
+    "manage": "مدیریت",
     "map": "نقشه",
     "mark": "علامت‌گذاری",
     "memo": "یادداشت",
@@ -94,8 +95,6 @@
     "select": "انتخاب کردن",
     "settings": "تنظیمات",
     "share": "اشتراک",
-    "shortcut-filter": "فیلتر میانبر",
-    "shortcuts": "میانبرها",
     "sign-in": "ورود به حساب کاربری",
     "sign-in-with": "{{provider}} ورود با",
     "sign-out": "خروج از حساب کاربری",
@@ -113,6 +112,7 @@
     "username": "نام کاربری",
     "version": "نسخه",
     "visibility": "قابل مشاهده توسط",
+    "views": "نماها",
     "yourself": "خودتان"
   },
   "locale-picker": {
@@ -333,9 +333,9 @@
       "theme": "پوسته",
       "label": "ترجیحات"
     },
-    "shortcut": {
-      "delete-confirm": "آیا مطمئن هستید که می‌خواهید میانبر «{{title}}» را حذف کنید؟",
-      "delete-success": "میانبر «{{title}}» با موفقیت حذف شد"
+    "memo-view": {
+      "delete-confirm": "آیا مطمئن هستید که می‌خواهید نمای «{{title}}» را حذف کنید؟",
+      "delete-success": "نمای «{{title}}» با موفقیت حذف شد"
     },
     "sso": {
       "authorization-endpoint": "آدرس نقطه مجوز",

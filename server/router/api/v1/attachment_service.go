@@ -400,17 +400,7 @@ func (s *APIV1Service) validateAttachmentFilter(ctx context.Context, filterStr s
 		return err
 	}
 
-	var dialect filter.DialectName
-	switch s.Profile.Driver {
-	case "mysql":
-		dialect = filter.DialectMySQL
-	case "postgres":
-		dialect = filter.DialectPostgres
-	default:
-		dialect = filter.DialectSQLite
-	}
-
-	if _, err := engine.CompileToStatement(ctx, filterStr, filter.RenderOptions{Dialect: dialect}); err != nil {
+	if _, err := engine.CompileToStatement(ctx, filterStr, filter.RenderOptions{Dialect: s.filterDialect()}); err != nil {
 		return errors.Wrap(err, "failed to compile filter")
 	}
 	return nil

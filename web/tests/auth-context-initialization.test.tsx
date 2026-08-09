@@ -6,7 +6,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const authState = vi.hoisted(() => ({ hasToken: false }));
 const clients = vi.hoisted(() => ({
   getCurrentUser: vi.fn(),
-  listShortcuts: vi.fn(),
   listUserSettings: vi.fn(),
 }));
 
@@ -21,9 +20,6 @@ vi.mock("@/connect", () => ({
     signOut: vi.fn(),
   },
   refreshAccessToken: vi.fn(async () => undefined),
-  shortcutServiceClient: {
-    listShortcuts: clients.listShortcuts,
-  },
   userServiceClient: {
     listUserSettings: clients.listUserSettings,
   },
@@ -55,19 +51,14 @@ describe("AuthProvider initialization", () => {
   beforeEach(() => {
     authState.hasToken = false;
     clients.getCurrentUser.mockReset();
-    clients.listShortcuts.mockReset();
     clients.listUserSettings.mockReset();
   });
 
   it("resets full readiness while post-sign-in settings are pending", async () => {
     let resolveSettings!: (value: { settings: [] }) => void;
-    let resolveShortcuts!: (value: { shortcuts: [] }) => void;
     clients.getCurrentUser.mockResolvedValue({ user: { name: "users/alice", username: "alice" } });
     clients.listUserSettings.mockImplementation(
       () => new Promise<{ settings: [] }>((resolve) => (resolveSettings = resolve)),
-    );
-    clients.listShortcuts.mockImplementation(
-      () => new Promise<{ shortcuts: [] }>((resolve) => (resolveShortcuts = resolve)),
     );
 
     render(<Probe />, { wrapper });
@@ -85,9 +76,6 @@ describe("AuthProvider initialization", () => {
 
     resolveSettings({ settings: [] });
     await waitFor(() => expect(screen.getByTestId("user-settings-initialized")).toHaveTextContent("yes"));
-    expect(screen.getByTestId("initialized")).toHaveTextContent("no");
-
-    resolveShortcuts({ shortcuts: [] });
-    await waitFor(() => expect(screen.getByTestId("initialized")).toHaveTextContent("yes"));
+    expect(screen.getByTestId("initialized")).toHaveTextContent("yes");
   });
 });

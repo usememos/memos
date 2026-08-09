@@ -64,6 +64,7 @@
     "last-updated-at": "अंतिम अपडेट",
     "learn-more": "अधिक जानें",
     "link": "लिंक",
+    "manage": "प्रबंधित करें",
     "map": "नक्शा",
     "mark": "चिह्नित",
     "memo": "मेमो",
@@ -94,8 +95,6 @@
     "select": "चयन करें",
     "settings": "सेटिंग्स",
     "share": "साझा करें",
-    "shortcut-filter": "शॉर्टकट फ़िल्टर",
-    "shortcuts": "शॉर्टकट्स",
     "sign-in": "साइन इन करें",
     "sign-in-with": "{{provider}} के साथ साइन इन करें",
     "sign-out": "साइन आउट करें",
@@ -113,6 +112,7 @@
     "username": "उपयोगकर्ता नाम",
     "version": "संस्करण",
     "visibility": "दृश्यता",
+    "views": "दृश्य",
     "yourself": "खुद"
   },
   "locale-picker": {
@@ -333,9 +333,9 @@
       "theme": "थीम",
       "label": "प्राथमिकता"
     },
-    "shortcut": {
-      "delete-confirm": "क्या आप वाकई शॉर्टकट `{{title}}` हटाना चाहते हैं?",
-      "delete-success": "शॉर्टकट `{{title}}` सफलतापूर्वक हटाया गया"
+    "memo-view": {
+      "delete-confirm": "क्या आप वाकई दृश्य `{{title}}` हटाना चाहते हैं?",
+      "delete-success": "दृश्य `{{title}}` सफलतापूर्वक हटाया गया"
     },
     "sso": {
       "authorization-endpoint": "प्राधिकरण एंडपॉइंट",

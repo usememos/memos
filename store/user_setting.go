@@ -440,6 +440,145 @@ func (s *Store) UpdateUserWebhook(ctx context.Context, userID int32, webhook *st
 	return err
 }
 
+// GetUserMemoViews returns the memo views of the user.
+func (s *Store) GetUserMemoViews(ctx context.Context, userID int32) ([]*storepb.MemoViewsUserSetting_MemoView, error) {
+	userSetting, err := s.GetUserSetting(ctx, &FindUserSetting{
+		UserID: &userID,
+		Key:    storepb.UserSetting_MEMO_VIEWS,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "get memo views user setting")
+	}
+	if userSetting == nil {
+		return []*storepb.MemoViewsUserSetting_MemoView{}, nil
+	}
+
+	memoViews := userSetting.GetMemoViews().GetMemoViews()
+	clonedMemoViews := make([]*storepb.MemoViewsUserSetting_MemoView, len(memoViews))
+	for i, memoView := range memoViews {
+		if memoView != nil {
+			clonedMemoView, ok := proto.Clone(memoView).(*storepb.MemoViewsUserSetting_MemoView)
+			if !ok {
+				return nil, errors.New("failed to clone memo view")
+			}
+			clonedMemoViews[i] = clonedMemoView
+		}
+	}
+	return clonedMemoViews, nil
+}
+
+// AddUserMemoView appends a new memo view for the user.
+func (s *Store) AddUserMemoView(ctx context.Context, userID int32, memoView *storepb.MemoViewsUserSetting_MemoView) error {
+	s.memoViewMu.Lock()
+	defer s.memoViewMu.Unlock()
+
+	existing, err := s.GetUserMemoViews(ctx, userID)
+	if err != nil {
+		return errors.Wrap(err, "get existing memo views")
+	}
+
+	// Build a fresh slice so the cached setting is never mutated in place.
+	memoViews := make([]*storepb.MemoViewsUserSetting_MemoView, 0, len(existing)+1)
+	memoViews = append(memoViews, existing...)
+	memoViews = append(memoViews, memoView)
+
+	if err := s.upsertUserMemoViews(ctx, userID, memoViews); err != nil {
+		return errors.Wrap(err, "add memo view")
+	}
+	return nil
+}
+
+// UpdateUserMemoView applies the non-nil field updates to the memo view carrying the same ID.
+// It returns nil when no matching memo view is found.
+func (s *Store) UpdateUserMemoView(
+	ctx context.Context,
+	userID int32,
+	memoViewID string,
+	title *string,
+	filter *string,
+) (*storepb.MemoViewsUserSetting_MemoView, error) {
+	s.memoViewMu.Lock()
+	defer s.memoViewMu.Unlock()
+
+	existing, err := s.GetUserMemoViews(ctx, userID)
+	if err != nil {
+		return nil, errors.Wrap(err, "get existing memo views")
+	}
+
+	var updatedMemoView *storepb.MemoViewsUserSetting_MemoView
+	memoViews := make([]*storepb.MemoViewsUserSetting_MemoView, 0, len(existing))
+	for _, item := range existing {
+		if item.GetId() != memoViewID {
+			memoViews = append(memoViews, item)
+			continue
+		}
+
+		updatedMemoView = &storepb.MemoViewsUserSetting_MemoView{
+			Id:     item.GetId(),
+			Title:  item.GetTitle(),
+			Filter: item.GetFilter(),
+		}
+		if title != nil {
+			updatedMemoView.Title = *title
+		}
+		if filter != nil {
+			updatedMemoView.Filter = *filter
+		}
+		memoViews = append(memoViews, updatedMemoView)
+	}
+	if updatedMemoView == nil {
+		return nil, nil
+	}
+
+	if err := s.upsertUserMemoViews(ctx, userID, memoViews); err != nil {
+		return nil, errors.Wrap(err, "update memo view")
+	}
+	return updatedMemoView, nil
+}
+
+// RemoveUserMemoView removes the memo view of the user.
+// It reports whether a matching memo view was found.
+func (s *Store) RemoveUserMemoView(ctx context.Context, userID int32, memoViewID string) (bool, error) {
+	s.memoViewMu.Lock()
+	defer s.memoViewMu.Unlock()
+
+	existing, err := s.GetUserMemoViews(ctx, userID)
+	if err != nil {
+		return false, errors.Wrap(err, "get existing memo views")
+	}
+
+	found := false
+	memoViews := make([]*storepb.MemoViewsUserSetting_MemoView, 0, len(existing))
+	for _, item := range existing {
+		if item.GetId() == memoViewID {
+			found = true
+			continue
+		}
+		memoViews = append(memoViews, item)
+	}
+	if !found {
+		return false, nil
+	}
+
+	if err := s.upsertUserMemoViews(ctx, userID, memoViews); err != nil {
+		return false, errors.Wrap(err, "remove memo view")
+	}
+	return true, nil
+}
+
+func (s *Store) upsertUserMemoViews(ctx context.Context, userID int32, memoViews []*storepb.MemoViewsUserSetting_MemoView) error {
+	_, err := s.UpsertUserSetting(ctx, &storepb.UserSetting{
+		UserId: userID,
+		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Value: &storepb.UserSetting_MemoViews{
+			MemoViews: &storepb.MemoViewsUserSetting{
+				MemoViews: memoViews,
+			},
+		},
+	})
+	return errors.Wrap(err, "upsert memo views user setting")
+}
+
 func convertUserSettingFromRaw(raw *UserSetting) (*storepb.UserSetting, error) {
 	userSetting := &storepb.UserSetting{
 		UserId: raw.UserID,
@@ -447,12 +586,12 @@ func convertUserSettingFromRaw(raw *UserSetting) (*storepb.UserSetting, error) {
 	}
 
 	switch raw.Key {
-	case storepb.UserSetting_SHORTCUTS:
-		shortcutsUserSetting := &storepb.ShortcutsUserSetting{}
-		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), shortcutsUserSetting); err != nil {
+	case storepb.UserSetting_MEMO_VIEWS:
+		memoViewsUserSetting := &storepb.MemoViewsUserSetting{}
+		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), memoViewsUserSetting); err != nil {
 			return nil, err
 		}
-		userSetting.Value = &storepb.UserSetting_Shortcuts{Shortcuts: shortcutsUserSetting}
+		userSetting.Value = &storepb.UserSetting_MemoViews{MemoViews: memoViewsUserSetting}
 	case storepb.UserSetting_GENERAL:
 		generalUserSetting := &storepb.GeneralUserSetting{}
 		if err := protojsonUnmarshaler.Unmarshal([]byte(raw.Value), generalUserSetting); err != nil {
@@ -496,9 +635,9 @@ func convertUserSettingToRaw(userSetting *storepb.UserSetting) (*UserSetting, er
 	}
 
 	switch userSetting.Key {
-	case storepb.UserSetting_SHORTCUTS:
-		shortcutsUserSetting := userSetting.GetShortcuts()
-		value, err := protojson.Marshal(shortcutsUserSetting)
+	case storepb.UserSetting_MEMO_VIEWS:
+		memoViewsUserSetting := userSetting.GetMemoViews()
+		value, err := protojson.Marshal(memoViewsUserSetting)
 		if err != nil {
 			return nil, err
 		}

@@ -65,6 +65,7 @@
     "last-updated-at": "Laatst bijgewerkt op",
     "learn-more": "Meer informatie",
     "link": "Link",
+    "manage": "Beheren",
     "map": "Kaart",
     "mark": "Markeren",
     "memo": "Memo",
@@ -95,8 +96,6 @@
     "select": "Selecteren",
     "settings": "Instellingen",
     "share": "Delen",
-    "shortcut-filter": "Sneltoetsfilter",
-    "shortcuts": "Sneltoetsen",
     "sign-in": "Inloggen",
     "sign-in-with": "Inloggen met {{provider}}",
     "sign-out": "Uitloggen",
@@ -114,6 +113,7 @@
     "username": "Gebruikersnaam",
     "version": "Versie",
     "visibility": "Zichtbaarheid",
+    "views": "Weergaven",
     "yourself": "Jijzelf",
     "empty-placeholder": "Leeg",
     "unlink": "Ontkoppelen"
@@ -454,9 +454,9 @@
       "memo-defaults-title": "Standaardinstellingen voor memo's",
       "theme-description": "Past het geselecteerde thema onmiddellijk toe op dit apparaat."
     },
-    "shortcut": {
-      "delete-confirm": "Weet je zeker dat je sneltoets `{{title}}` wilt verwijderen?",
-      "delete-success": "Sneltoets `{{title}}` succesvol verwijderd"
+    "memo-view": {
+      "delete-confirm": "Weet je zeker dat je weergave `{{title}}` wilt verwijderen?",
+      "delete-success": "Weergave `{{title}}` succesvol verwijderd"
     },
     "sso": {
       "authorization-endpoint": "Autorisatie-eindpunt",

@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
-import { useAuth } from "@/contexts/AuthContext";
 import { type MemoFilter, replaceFiltersByFactor, stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
-import { BUILTIN_TASKS_VIEW_ID, getShortcutId, isMemoScopeRoute } from "@/lib/memo-views";
+import useCurrentUser from "@/hooks/useCurrentUser";
+import { useMemoViews } from "@/hooks/useUserQueries";
+import { BUILTIN_TASKS_VIEW_ID, getMemoViewId, isMemoScopeRoute } from "@/lib/memo-views";
 import { ROUTES } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
 
@@ -30,15 +31,16 @@ const QuickFindDialog = () => {
   const t = useTranslate();
   const location = useLocation();
   const navigate = useNavigate();
-  const { shortcuts } = useAuth();
-  const { filters, setFilters, setShortcut, shortcut } = useMemoFilterContext();
+  const currentUser = useCurrentUser();
+  const { data: memoViews = [] } = useMemoViews(currentUser?.name);
+  const { filters, setFilters, setMemoView, memoView } = useMemoFilterContext();
   const { quickFindOpen, setQuickFindOpen } = useAppSidebar();
   const [query, setQuery] = useState("");
   const collectionRoute = isQuickFindCollectionRoute(location.pathname);
   const viewApplies = isMemoScopeRoute(location.pathname);
-  const selectedShortcut = viewApplies ? shortcuts.find((item) => getShortcutId(item.name) === shortcut) : undefined;
+  const selectedMemoView = viewApplies ? memoViews.find((item) => getMemoViewId(item.name) === memoView) : undefined;
   const scopeLabel =
-    viewApplies && shortcut === BUILTIN_TASKS_VIEW_ID ? t("common.tasks") : selectedShortcut?.title || getScopeLabel(location.pathname, t);
+    viewApplies && memoView === BUILTIN_TASKS_VIEW_ID ? t("common.tasks") : selectedMemoView?.title || getScopeLabel(location.pathname, t);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -70,7 +72,7 @@ const QuickFindDialog = () => {
     } else {
       const filterQuery = stringifyFilters(nextFilters);
       setFilters(nextFilters);
-      setShortcut(undefined);
+      setMemoView(undefined);
       navigate(filterQuery ? `${ROUTES.HOME}?filter=${filterQuery}` : ROUTES.HOME);
     }
 

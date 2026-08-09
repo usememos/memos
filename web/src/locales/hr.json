@@ -65,6 +65,7 @@
     "last-updated-at": "Zadnje ažurirano",
     "learn-more": "Nauči više",
     "link": "Link",
+    "manage": "Upravljaj",
     "map": "Karta",
     "mark": "Označi",
     "memo": "Memo",
@@ -95,8 +96,6 @@
     "select": "Odaberi",
     "settings": "Postavke",
     "share": "Podijeli",
-    "shortcut-filter": "Filter prečaca",
-    "shortcuts": "Prečaci",
     "sign-in": "Prijavi se",
     "sign-in-with": "Prijavi se s {{provider}}",
     "sign-out": "Odjavi se",
@@ -114,6 +113,7 @@
     "username": "Korisničko ime",
     "version": "Verzija",
     "visibility": "Vidljivost",
+    "views": "Prikazi",
     "yourself": "Ti",
     "empty-placeholder": "Prazan",
     "unlink": "Prekini vezu"
@@ -454,9 +454,9 @@
       "memo-defaults-title": "Zadane postavke bilješke",
       "theme-description": "Odmah primjenjuje odabranu temu na ovom uređaju."
     },
-    "shortcut": {
-      "delete-confirm": "Jesi li siguran da želiš obrisati prečac `{{title}}`?",
-      "delete-success": "Prečac `{{title}}` uspješno obrisan"
+    "memo-view": {
+      "delete-confirm": "Jesi li siguran da želiš obrisati prikaz `{{title}}`?",
+      "delete-success": "Prikaz `{{title}}` uspješno obrisan"
     },
     "sso": {
       "authorization-endpoint": "Krajnja točka autorizacije",

@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+
+option go_package = "gen/api/v1";
+
+service MemoViewService {
+  // ListMemoViews returns a user's memo views. Each view is a named, reusable
+  // CEL filter (see MemoView.filter); pass its filter string directly to the
+  // ListMemos `filter` argument.
+  rpc ListMemoViews(ListMemoViewsRequest) returns (ListMemoViewsResponse) {
+    option (google.api.http) = {get: "/api/v1/{parent=users/*}/views"};
+    option (google.api.method_signature) = "parent";
+  }
+
+  // GetMemoView gets a memo view by name.
+  rpc GetMemoView(GetMemoViewRequest) returns (MemoView) {
+    option (google.api.http) = {get: "/api/v1/{name=users/*/views/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // CreateMemoView creates a new memo view for a user.
+  rpc CreateMemoView(CreateMemoViewRequest) returns (MemoView) {
+    option (google.api.http) = {
+      post: "/api/v1/{parent=users/*}/views"
+      body: "memo_view"
+    };
+    option (google.api.method_signature) = "parent,memo_view";
+  }
+
+  // UpdateMemoView updates a memo view for a user.
+  rpc UpdateMemoView(UpdateMemoViewRequest) returns (MemoView) {
+    option (google.api.http) = {
+      patch: "/api/v1/{memo_view.name=users/*/views/*}"
+      body: "memo_view"
+    };
+    option (google.api.method_signature) = "memo_view,update_mask";
+  }
+
+  // DeleteMemoView deletes a memo view for a user.
+  rpc DeleteMemoView(DeleteMemoViewRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{name=users/*/views/*}"};
+    option (google.api.method_signature) = "name";
+  }
+}
+
+message MemoView {
+  option (google.api.resource) = {
+    type: "memos.api.v1/MemoView"
+    pattern: "users/{user}/views/{view}"
+    singular: "view"
+    plural: "views"
+  };
+
+  // The resource name of the memo view.
+  // Format: users/{user}/views/{view}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // The title of the memo view.
+  string title = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The CEL filter expression for the memo view, using the same grammar as the
+  // ListMemos `filter` argument. Reuse it by passing this value to ListMemos.
+  string filter = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+message ListMemoViewsRequest {
+  // Required. The parent resource where memo views are listed.
+  // Format: users/{user}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {child_type: "memos.api.v1/MemoView"}
+  ];
+}
+
+message ListMemoViewsResponse {
+  // The list of memo views.
+  repeated MemoView memo_views = 1;
+}
+
+message GetMemoViewRequest {
+  // Required. The resource name of the memo view to retrieve.
+  // Format: users/{user}/views/{view}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/MemoView"}
+  ];
+}
+
+message CreateMemoViewRequest {
+  // Required. The parent resource where this memo view will be created.
+  // Format: users/{user}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {child_type: "memos.api.v1/MemoView"}
+  ];
+
+  // Required. The memo view to create.
+  MemoView memo_view = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. If set, validate the request, but do not actually create the memo view.
+  bool validate_only = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message UpdateMemoViewRequest {
+  // Required. The memo view resource which replaces the resource on the server.
+  MemoView memo_view = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The list of fields to update.
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message DeleteMemoViewRequest {
+  // Required. The resource name of the memo view to delete.
+  // Format: users/{user}/views/{view}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/MemoView"}
+  ];
+}

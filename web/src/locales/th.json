@@ -64,6 +64,7 @@
     "last-updated-at": "อัปเดตล่าสุดเมื่อ",
     "learn-more": "เรียนรู้เพิ่มเติม",
     "link": "ลิงก์",
+    "manage": "จัดการ",
     "map": "แผนที่",
     "mark": "ทำเครื่องหมาย",
     "memo": "บันทึกช่วยจำ",
@@ -94,8 +95,6 @@
     "select": "เลือก",
     "settings": "ตั้งค่า",
     "share": "แชร์",
-    "shortcut-filter": "ตัวกรองทางลัด",
-    "shortcuts": "ทางลัด",
     "sign-in": "เข้าระบบ",
     "sign-in-with": "เข้าระบบโดย {{provider}}",
     "sign-out": "ออกจากระบบ",
@@ -113,6 +112,7 @@
     "username": "ชื่อผู้ใช้",
     "version": "เวอร์ชั่น",
     "visibility": "การมองเห็น",
+    "views": "มุมมอง",
     "yourself": "ตัวคุณ"
   },
   "locale-picker": {
@@ -333,9 +333,9 @@
       "theme": "ธีม",
       "label": "การตั้งค่า"
     },
-    "shortcut": {
-      "delete-confirm": "คุณแน่ใจหรือไม่ที่จะลบทางลัด `{{title}}`?",
-      "delete-success": "ทางลัด `{{title}}` ลบเรียบร้อยแล้ว"
+    "memo-view": {
+      "delete-confirm": "คุณแน่ใจหรือไม่ว่าต้องการลบมุมมอง `{{title}}`?",
+      "delete-success": "ลบมุมมอง `{{title}}` เรียบร้อยแล้ว"
     },
     "sso": {
       "authorization-endpoint": "Endpoint การอนุญาต",

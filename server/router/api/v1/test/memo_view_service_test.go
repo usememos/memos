@@ -3,6 +3,7 @@ package test
 import (
 	"context"
 	"fmt"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -11,10 +12,10 @@ import (
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 )
 
-func TestListShortcuts(t *testing.T) {
+func TestListMemoViews(t *testing.T) {
 	ctx := context.Background()
 
-	t.Run("ListShortcuts success", func(t *testing.T) {
+	t.Run("ListMemoViews success", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -25,18 +26,18 @@ func TestListShortcuts(t *testing.T) {
 		// Set user context
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		// List shortcuts (should be empty initially)
-		req := &v1pb.ListShortcutsRequest{
+		// List memoViews (should be empty initially)
+		req := &v1pb.ListMemoViewsRequest{
 			Parent: fmt.Sprintf("users/%s", user.Username),
 		}
 
-		resp, err := ts.Service.ListShortcuts(userCtx, req)
+		resp, err := ts.Service.ListMemoViews(userCtx, req)
 		require.NoError(t, err)
 		require.NotNil(t, resp)
-		require.Empty(t, resp.Shortcuts)
+		require.Empty(t, resp.MemoViews)
 	})
 
-	t.Run("ListShortcuts permission denied for different user", func(t *testing.T) {
+	t.Run("ListMemoViews permission denied for different user", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -46,19 +47,19 @@ func TestListShortcuts(t *testing.T) {
 		user2, err := ts.CreateRegularUser(ctx, "user2")
 		require.NoError(t, err)
 
-		// Set user1 context but try to list user2's shortcuts
+		// Set user1 context but try to list user2's memoViews
 		userCtx := ts.CreateUserContext(ctx, user1.ID)
 
-		req := &v1pb.ListShortcutsRequest{
+		req := &v1pb.ListMemoViewsRequest{
 			Parent: fmt.Sprintf("users/%s", user2.Username),
 		}
 
-		_, err = ts.Service.ListShortcuts(userCtx, req)
+		_, err = ts.Service.ListMemoViews(userCtx, req)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "permission denied")
 	})
 
-	t.Run("ListShortcuts invalid parent format", func(t *testing.T) {
+	t.Run("ListMemoViews invalid parent format", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -69,32 +70,32 @@ func TestListShortcuts(t *testing.T) {
 		// Set user context
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		req := &v1pb.ListShortcutsRequest{
+		req := &v1pb.ListMemoViewsRequest{
 			Parent: "invalid-parent-format",
 		}
 
-		_, err = ts.Service.ListShortcuts(userCtx, req)
+		_, err = ts.Service.ListMemoViews(userCtx, req)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "invalid user name")
 	})
 
-	t.Run("ListShortcuts unauthenticated", func(t *testing.T) {
+	t.Run("ListMemoViews unauthenticated", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
 		_, err := ts.CreateRegularUser(ctx, "testuser")
 		require.NoError(t, err)
 
-		req := &v1pb.ListShortcutsRequest{
+		req := &v1pb.ListMemoViewsRequest{
 			Parent: "users/testuser",
 		}
 
-		_, err = ts.Service.ListShortcuts(ctx, req)
+		_, err = ts.Service.ListMemoViews(ctx, req)
 		require.Error(t, err)
-		require.Contains(t, err.Error(), "permission denied")
+		require.Contains(t, err.Error(), "user not authenticated")
 	})
 
-	t.Run("ListShortcuts returns not found for numeric parent", func(t *testing.T) {
+	t.Run("ListMemoViews returns not found for numeric parent", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -103,7 +104,7 @@ func TestListShortcuts(t *testing.T) {
 
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		_, err = ts.Service.ListShortcuts(userCtx, &v1pb.ListShortcutsRequest{
+		_, err = ts.Service.ListMemoViews(userCtx, &v1pb.ListMemoViewsRequest{
 			Parent: "users/1",
 		})
 		require.Error(t, err)
@@ -111,10 +112,10 @@ func TestListShortcuts(t *testing.T) {
 	})
 }
 
-func TestGetShortcut(t *testing.T) {
+func TestGetMemoView(t *testing.T) {
 	ctx := context.Background()
 
-	t.Run("GetShortcut success", func(t *testing.T) {
+	t.Run("GetMemoView success", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -125,32 +126,32 @@ func TestGetShortcut(t *testing.T) {
 		// Set user context
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		// First create a shortcut
-		createReq := &v1pb.CreateShortcutRequest{
+		// First create a memoView
+		createReq := &v1pb.CreateMemoViewRequest{
 			Parent: fmt.Sprintf("users/%s", user.Username),
-			Shortcut: &v1pb.Shortcut{
-				Title:  "Test Shortcut",
+			MemoView: &v1pb.MemoView{
+				Title:  "Test MemoView",
 				Filter: "tag in [\"test\"]",
 			},
 		}
 
-		created, err := ts.Service.CreateShortcut(userCtx, createReq)
+		created, err := ts.Service.CreateMemoView(userCtx, createReq)
 		require.NoError(t, err)
 
-		// Now get the shortcut
-		getReq := &v1pb.GetShortcutRequest{
+		// Now get the memoView
+		getReq := &v1pb.GetMemoViewRequest{
 			Name: created.Name,
 		}
 
-		resp, err := ts.Service.GetShortcut(userCtx, getReq)
+		resp, err := ts.Service.GetMemoView(userCtx, getReq)
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 		require.Equal(t, created.Name, resp.Name)
-		require.Equal(t, "Test Shortcut", resp.Title)
+		require.Equal(t, "Test MemoView", resp.Title)
 		require.Equal(t, "tag in [\"test\"]", resp.Filter)
 	})
 
-	t.Run("GetShortcut permission denied for different user", func(t *testing.T) {
+	t.Run("GetMemoView permission denied for different user", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -160,31 +161,31 @@ func TestGetShortcut(t *testing.T) {
 		user2, err := ts.CreateRegularUser(ctx, "user2")
 		require.NoError(t, err)
 
-		// Create shortcut as user1
+		// Create memoView as user1
 		user1Ctx := ts.CreateUserContext(ctx, user1.ID)
-		createReq := &v1pb.CreateShortcutRequest{
+		createReq := &v1pb.CreateMemoViewRequest{
 			Parent: fmt.Sprintf("users/%s", user1.Username),
-			Shortcut: &v1pb.Shortcut{
-				Title:  "User1 Shortcut",
+			MemoView: &v1pb.MemoView{
+				Title:  "User1 MemoView",
 				Filter: "tag in [\"user1\"]",
 			},
 		}
 
-		created, err := ts.Service.CreateShortcut(user1Ctx, createReq)
+		created, err := ts.Service.CreateMemoView(user1Ctx, createReq)
 		require.NoError(t, err)
 
-		// Try to get shortcut as user2
+		// Try to get memoView as user2
 		user2Ctx := ts.CreateUserContext(ctx, user2.ID)
-		getReq := &v1pb.GetShortcutRequest{
+		getReq := &v1pb.GetMemoViewRequest{
 			Name: created.Name,
 		}
 
-		_, err = ts.Service.GetShortcut(user2Ctx, getReq)
+		_, err = ts.Service.GetMemoView(user2Ctx, getReq)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "permission denied")
 	})
 
-	t.Run("GetShortcut invalid name format", func(t *testing.T) {
+	t.Run("GetMemoView invalid name format", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -195,16 +196,16 @@ func TestGetShortcut(t *testing.T) {
 		// Set user context
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		req := &v1pb.GetShortcutRequest{
-			Name: "invalid-shortcut-name",
+		req := &v1pb.GetMemoViewRequest{
+			Name: "invalid-memo-view-name",
 		}
 
-		_, err = ts.Service.GetShortcut(userCtx, req)
+		_, err = ts.Service.GetMemoView(userCtx, req)
 		require.Error(t, err)
-		require.Contains(t, err.Error(), "invalid shortcut name")
+		require.Contains(t, err.Error(), "invalid memo view name")
 	})
 
-	t.Run("GetShortcut not found", func(t *testing.T) {
+	t.Run("GetMemoView not found", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -215,20 +216,20 @@ func TestGetShortcut(t *testing.T) {
 		// Set user context
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		req := &v1pb.GetShortcutRequest{
-			Name: fmt.Sprintf("users/%s", user.Username) + "/shortcuts/nonexistent",
+		req := &v1pb.GetMemoViewRequest{
+			Name: fmt.Sprintf("users/%s", user.Username) + "/views/nonexistent",
 		}
 
-		_, err = ts.Service.GetShortcut(userCtx, req)
+		_, err = ts.Service.GetMemoView(userCtx, req)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "not found")
 	})
 }
 
-func TestCreateShortcut(t *testing.T) {
+func TestCreateMemoView(t *testing.T) {
 	ctx := context.Background()
 
-	t.Run("CreateShortcut success", func(t *testing.T) {
+	t.Run("CreateMemoView success", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -239,33 +240,33 @@ func TestCreateShortcut(t *testing.T) {
 		// Set user context
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		req := &v1pb.CreateShortcutRequest{
+		req := &v1pb.CreateMemoViewRequest{
 			Parent: fmt.Sprintf("users/%s", user.Username),
-			Shortcut: &v1pb.Shortcut{
-				Title:  "My Shortcut",
+			MemoView: &v1pb.MemoView{
+				Title:  "My MemoView",
 				Filter: "tag in [\"important\"]",
 			},
 		}
 
-		resp, err := ts.Service.CreateShortcut(userCtx, req)
+		resp, err := ts.Service.CreateMemoView(userCtx, req)
 		require.NoError(t, err)
 		require.NotNil(t, resp)
-		require.Equal(t, "My Shortcut", resp.Title)
+		require.Equal(t, "My MemoView", resp.Title)
 		require.Equal(t, "tag in [\"important\"]", resp.Filter)
-		require.Contains(t, resp.Name, fmt.Sprintf("users/%s/shortcuts/", user.Username))
+		require.Contains(t, resp.Name, fmt.Sprintf("users/%s/views/", user.Username))
 
-		// Verify the shortcut was created by listing
-		listReq := &v1pb.ListShortcutsRequest{
+		// Verify the memoView was created by listing
+		listReq := &v1pb.ListMemoViewsRequest{
 			Parent: fmt.Sprintf("users/%s", user.Username),
 		}
 
-		listResp, err := ts.Service.ListShortcuts(userCtx, listReq)
+		listResp, err := ts.Service.ListMemoViews(userCtx, listReq)
 		require.NoError(t, err)
-		require.Len(t, listResp.Shortcuts, 1)
-		require.Equal(t, "My Shortcut", listResp.Shortcuts[0].Title)
+		require.Len(t, listResp.MemoViews, 1)
+		require.Equal(t, "My MemoView", listResp.MemoViews[0].Title)
 	})
 
-	t.Run("CreateShortcut permission denied for different user", func(t *testing.T) {
+	t.Run("CreateMemoView permission denied for different user", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -275,23 +276,23 @@ func TestCreateShortcut(t *testing.T) {
 		user2, err := ts.CreateRegularUser(ctx, "user2")
 		require.NoError(t, err)
 
-		// Set user1 context but try to create shortcut for user2
+		// Set user1 context but try to create memoView for user2
 		userCtx := ts.CreateUserContext(ctx, user1.ID)
 
-		req := &v1pb.CreateShortcutRequest{
+		req := &v1pb.CreateMemoViewRequest{
 			Parent: fmt.Sprintf("users/%s", user2.Username),
-			Shortcut: &v1pb.Shortcut{
-				Title:  "Forbidden Shortcut",
+			MemoView: &v1pb.MemoView{
+				Title:  "Forbidden MemoView",
 				Filter: "tag in [\"forbidden\"]",
 			},
 		}
 
-		_, err = ts.Service.CreateShortcut(userCtx, req)
+		_, err = ts.Service.CreateMemoView(userCtx, req)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "permission denied")
 	})
 
-	t.Run("CreateShortcut invalid parent format", func(t *testing.T) {
+	t.Run("CreateMemoView invalid parent format", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -302,20 +303,20 @@ func TestCreateShortcut(t *testing.T) {
 		// Set user context
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		req := &v1pb.CreateShortcutRequest{
+		req := &v1pb.CreateMemoViewRequest{
 			Parent: "invalid-parent",
-			Shortcut: &v1pb.Shortcut{
-				Title:  "Test Shortcut",
+			MemoView: &v1pb.MemoView{
+				Title:  "Test MemoView",
 				Filter: "tag in [\"test\"]",
 			},
 		}
 
-		_, err = ts.Service.CreateShortcut(userCtx, req)
+		_, err = ts.Service.CreateMemoView(userCtx, req)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "invalid user name")
 	})
 
-	t.Run("CreateShortcut invalid filter", func(t *testing.T) {
+	t.Run("CreateMemoView invalid filter", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -326,20 +327,20 @@ func TestCreateShortcut(t *testing.T) {
 		// Set user context
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		req := &v1pb.CreateShortcutRequest{
+		req := &v1pb.CreateMemoViewRequest{
 			Parent: fmt.Sprintf("users/%s", user.Username),
-			Shortcut: &v1pb.Shortcut{
-				Title:  "Invalid Filter Shortcut",
+			MemoView: &v1pb.MemoView{
+				Title:  "Invalid Filter MemoView",
 				Filter: "invalid||filter))syntax",
 			},
 		}
 
-		_, err = ts.Service.CreateShortcut(userCtx, req)
+		_, err = ts.Service.CreateMemoView(userCtx, req)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "invalid filter")
 	})
 
-	t.Run("CreateShortcut missing title", func(t *testing.T) {
+	t.Run("CreateMemoView missing title", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -350,23 +351,23 @@ func TestCreateShortcut(t *testing.T) {
 		// Set user context
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		req := &v1pb.CreateShortcutRequest{
+		req := &v1pb.CreateMemoViewRequest{
 			Parent: fmt.Sprintf("users/%s", user.Username),
-			Shortcut: &v1pb.Shortcut{
+			MemoView: &v1pb.MemoView{
 				Filter: "tag in [\"test\"]",
 			},
 		}
 
-		_, err = ts.Service.CreateShortcut(userCtx, req)
+		_, err = ts.Service.CreateMemoView(userCtx, req)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "title is required")
 	})
 }
 
-func TestUpdateShortcut(t *testing.T) {
+func TestUpdateMemoView(t *testing.T) {
 	ctx := context.Background()
 
-	t.Run("UpdateShortcut success", func(t *testing.T) {
+	t.Run("UpdateMemoView success", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -377,21 +378,21 @@ func TestUpdateShortcut(t *testing.T) {
 		// Set user context
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		// Create a shortcut first
-		createReq := &v1pb.CreateShortcutRequest{
+		// Create a memoView first
+		createReq := &v1pb.CreateMemoViewRequest{
 			Parent: fmt.Sprintf("users/%s", user.Username),
-			Shortcut: &v1pb.Shortcut{
+			MemoView: &v1pb.MemoView{
 				Title:  "Original Title",
 				Filter: "tag in [\"original\"]",
 			},
 		}
 
-		created, err := ts.Service.CreateShortcut(userCtx, createReq)
+		created, err := ts.Service.CreateMemoView(userCtx, createReq)
 		require.NoError(t, err)
 
-		// Update the shortcut
-		updateReq := &v1pb.UpdateShortcutRequest{
-			Shortcut: &v1pb.Shortcut{
+		// Update the memoView
+		updateReq := &v1pb.UpdateMemoViewRequest{
+			MemoView: &v1pb.MemoView{
 				Name:   created.Name,
 				Title:  "Updated Title",
 				Filter: "tag in [\"updated\"]",
@@ -401,7 +402,7 @@ func TestUpdateShortcut(t *testing.T) {
 			},
 		}
 
-		updated, err := ts.Service.UpdateShortcut(userCtx, updateReq)
+		updated, err := ts.Service.UpdateMemoView(userCtx, updateReq)
 		require.NoError(t, err)
 		require.NotNil(t, updated)
 		require.Equal(t, "Updated Title", updated.Title)
@@ -409,7 +410,7 @@ func TestUpdateShortcut(t *testing.T) {
 		require.Equal(t, created.Name, updated.Name)
 	})
 
-	t.Run("UpdateShortcut permission denied for different user", func(t *testing.T) {
+	t.Run("UpdateMemoView permission denied for different user", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -419,23 +420,23 @@ func TestUpdateShortcut(t *testing.T) {
 		user2, err := ts.CreateRegularUser(ctx, "user2")
 		require.NoError(t, err)
 
-		// Create shortcut as user1
+		// Create memoView as user1
 		user1Ctx := ts.CreateUserContext(ctx, user1.ID)
-		createReq := &v1pb.CreateShortcutRequest{
+		createReq := &v1pb.CreateMemoViewRequest{
 			Parent: fmt.Sprintf("users/%s", user1.Username),
-			Shortcut: &v1pb.Shortcut{
-				Title:  "User1 Shortcut",
+			MemoView: &v1pb.MemoView{
+				Title:  "User1 MemoView",
 				Filter: "tag in [\"user1\"]",
 			},
 		}
 
-		created, err := ts.Service.CreateShortcut(user1Ctx, createReq)
+		created, err := ts.Service.CreateMemoView(user1Ctx, createReq)
 		require.NoError(t, err)
 
-		// Try to update shortcut as user2
+		// Try to update memoView as user2
 		user2Ctx := ts.CreateUserContext(ctx, user2.ID)
-		updateReq := &v1pb.UpdateShortcutRequest{
-			Shortcut: &v1pb.Shortcut{
+		updateReq := &v1pb.UpdateMemoViewRequest{
+			MemoView: &v1pb.MemoView{
 				Name:   created.Name,
 				Title:  "Hacked Title",
 				Filter: "tag in [\"hacked\"]",
@@ -445,12 +446,12 @@ func TestUpdateShortcut(t *testing.T) {
 			},
 		}
 
-		_, err = ts.Service.UpdateShortcut(user2Ctx, updateReq)
+		_, err = ts.Service.UpdateMemoView(user2Ctx, updateReq)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "permission denied")
 	})
 
-	t.Run("UpdateShortcut missing update mask", func(t *testing.T) {
+	t.Run("UpdateMemoView missing update mask", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -459,25 +460,49 @@ func TestUpdateShortcut(t *testing.T) {
 		require.NoError(t, err)
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		req := &v1pb.UpdateShortcutRequest{
-			Shortcut: &v1pb.Shortcut{
-				Name:  fmt.Sprintf("users/%s/shortcuts/test", user.Username),
+		req := &v1pb.UpdateMemoViewRequest{
+			MemoView: &v1pb.MemoView{
+				Name:  fmt.Sprintf("users/%s/views/test", user.Username),
 				Title: "Updated Title",
 			},
 		}
 
-		_, err = ts.Service.UpdateShortcut(userCtx, req)
+		_, err = ts.Service.UpdateMemoView(userCtx, req)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "update mask is required")
 	})
 
-	t.Run("UpdateShortcut invalid name format", func(t *testing.T) {
+	t.Run("UpdateMemoView rejects unsupported update mask paths", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
-		req := &v1pb.UpdateShortcutRequest{
-			Shortcut: &v1pb.Shortcut{
-				Name:  "invalid-shortcut-name",
+		user, err := ts.CreateRegularUser(ctx, "testuser")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+		created, err := ts.Service.CreateMemoView(userCtx, &v1pb.CreateMemoViewRequest{
+			Parent: fmt.Sprintf("users/%s", user.Username),
+			MemoView: &v1pb.MemoView{
+				Title:  "Original Title",
+				Filter: `tag in ["original"]`,
+			},
+		})
+		require.NoError(t, err)
+
+		_, err = ts.Service.UpdateMemoView(userCtx, &v1pb.UpdateMemoViewRequest{
+			MemoView:   created,
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name"}},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "unsupported update mask path: name")
+	})
+
+	t.Run("UpdateMemoView invalid name format", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		req := &v1pb.UpdateMemoViewRequest{
+			MemoView: &v1pb.MemoView{
+				Name:  "invalid-memo-view-name",
 				Title: "Updated Title",
 			},
 			UpdateMask: &fieldmaskpb.FieldMask{
@@ -485,12 +510,12 @@ func TestUpdateShortcut(t *testing.T) {
 			},
 		}
 
-		_, err := ts.Service.UpdateShortcut(ctx, req)
+		_, err := ts.Service.UpdateMemoView(ctx, req)
 		require.Error(t, err)
-		require.Contains(t, err.Error(), "invalid shortcut name")
+		require.Contains(t, err.Error(), "invalid memo view name")
 	})
 
-	t.Run("UpdateShortcut invalid filter", func(t *testing.T) {
+	t.Run("UpdateMemoView invalid filter", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -501,21 +526,21 @@ func TestUpdateShortcut(t *testing.T) {
 		// Set user context
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		// Create a shortcut first
-		createReq := &v1pb.CreateShortcutRequest{
+		// Create a memoView first
+		createReq := &v1pb.CreateMemoViewRequest{
 			Parent: fmt.Sprintf("users/%s", user.Username),
-			Shortcut: &v1pb.Shortcut{
-				Title:  "Test Shortcut",
+			MemoView: &v1pb.MemoView{
+				Title:  "Test MemoView",
 				Filter: "tag in [\"test\"]",
 			},
 		}
 
-		created, err := ts.Service.CreateShortcut(userCtx, createReq)
+		created, err := ts.Service.CreateMemoView(userCtx, createReq)
 		require.NoError(t, err)
 
 		// Try to update with invalid filter
-		updateReq := &v1pb.UpdateShortcutRequest{
-			Shortcut: &v1pb.Shortcut{
+		updateReq := &v1pb.UpdateMemoViewRequest{
+			MemoView: &v1pb.MemoView{
 				Name:   created.Name,
 				Filter: "invalid||filter))syntax",
 			},
@@ -524,16 +549,16 @@ func TestUpdateShortcut(t *testing.T) {
 			},
 		}
 
-		_, err = ts.Service.UpdateShortcut(userCtx, updateReq)
+		_, err = ts.Service.UpdateMemoView(userCtx, updateReq)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "invalid filter")
 	})
 }
 
-func TestDeleteShortcut(t *testing.T) {
+func TestDeleteMemoView(t *testing.T) {
 	ctx := context.Background()
 
-	t.Run("DeleteShortcut success", func(t *testing.T) {
+	t.Run("DeleteMemoView success", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -544,46 +569,46 @@ func TestDeleteShortcut(t *testing.T) {
 		// Set user context
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		// Create a shortcut first
-		createReq := &v1pb.CreateShortcutRequest{
+		// Create a memoView first
+		createReq := &v1pb.CreateMemoViewRequest{
 			Parent: fmt.Sprintf("users/%s", user.Username),
-			Shortcut: &v1pb.Shortcut{
-				Title:  "Shortcut to Delete",
+			MemoView: &v1pb.MemoView{
+				Title:  "MemoView to Delete",
 				Filter: "tag in [\"delete\"]",
 			},
 		}
 
-		created, err := ts.Service.CreateShortcut(userCtx, createReq)
+		created, err := ts.Service.CreateMemoView(userCtx, createReq)
 		require.NoError(t, err)
 
-		// Delete the shortcut
-		deleteReq := &v1pb.DeleteShortcutRequest{
+		// Delete the memoView
+		deleteReq := &v1pb.DeleteMemoViewRequest{
 			Name: created.Name,
 		}
 
-		_, err = ts.Service.DeleteShortcut(userCtx, deleteReq)
+		_, err = ts.Service.DeleteMemoView(userCtx, deleteReq)
 		require.NoError(t, err)
 
-		// Verify deletion by listing shortcuts
-		listReq := &v1pb.ListShortcutsRequest{
+		// Verify deletion by listing memoViews
+		listReq := &v1pb.ListMemoViewsRequest{
 			Parent: fmt.Sprintf("users/%s", user.Username),
 		}
 
-		listResp, err := ts.Service.ListShortcuts(userCtx, listReq)
+		listResp, err := ts.Service.ListMemoViews(userCtx, listReq)
 		require.NoError(t, err)
-		require.Empty(t, listResp.Shortcuts)
+		require.Empty(t, listResp.MemoViews)
 
-		// Also verify by trying to get the deleted shortcut
-		getReq := &v1pb.GetShortcutRequest{
+		// Also verify by trying to get the deleted memoView
+		getReq := &v1pb.GetMemoViewRequest{
 			Name: created.Name,
 		}
 
-		_, err = ts.Service.GetShortcut(userCtx, getReq)
+		_, err = ts.Service.GetMemoView(userCtx, getReq)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "not found")
 	})
 
-	t.Run("DeleteShortcut permission denied for different user", func(t *testing.T) {
+	t.Run("DeleteMemoView permission denied for different user", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -593,44 +618,44 @@ func TestDeleteShortcut(t *testing.T) {
 		user2, err := ts.CreateRegularUser(ctx, "user2")
 		require.NoError(t, err)
 
-		// Create shortcut as user1
+		// Create memoView as user1
 		user1Ctx := ts.CreateUserContext(ctx, user1.ID)
-		createReq := &v1pb.CreateShortcutRequest{
+		createReq := &v1pb.CreateMemoViewRequest{
 			Parent: fmt.Sprintf("users/%s", user1.Username),
-			Shortcut: &v1pb.Shortcut{
-				Title:  "User1 Shortcut",
+			MemoView: &v1pb.MemoView{
+				Title:  "User1 MemoView",
 				Filter: "tag in [\"user1\"]",
 			},
 		}
 
-		created, err := ts.Service.CreateShortcut(user1Ctx, createReq)
+		created, err := ts.Service.CreateMemoView(user1Ctx, createReq)
 		require.NoError(t, err)
 
-		// Try to delete shortcut as user2
+		// Try to delete memoView as user2
 		user2Ctx := ts.CreateUserContext(ctx, user2.ID)
-		deleteReq := &v1pb.DeleteShortcutRequest{
+		deleteReq := &v1pb.DeleteMemoViewRequest{
 			Name: created.Name,
 		}
 
-		_, err = ts.Service.DeleteShortcut(user2Ctx, deleteReq)
+		_, err = ts.Service.DeleteMemoView(user2Ctx, deleteReq)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "permission denied")
 	})
 
-	t.Run("DeleteShortcut invalid name format", func(t *testing.T) {
+	t.Run("DeleteMemoView invalid name format", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
-		req := &v1pb.DeleteShortcutRequest{
-			Name: "invalid-shortcut-name",
+		req := &v1pb.DeleteMemoViewRequest{
+			Name: "invalid-memo-view-name",
 		}
 
-		_, err := ts.Service.DeleteShortcut(ctx, req)
+		_, err := ts.Service.DeleteMemoView(ctx, req)
 		require.Error(t, err)
-		require.Contains(t, err.Error(), "invalid shortcut name")
+		require.Contains(t, err.Error(), "invalid memo view name")
 	})
 
-	t.Run("DeleteShortcut not found", func(t *testing.T) {
+	t.Run("DeleteMemoView not found", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -641,20 +666,20 @@ func TestDeleteShortcut(t *testing.T) {
 		// Set user context
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		req := &v1pb.DeleteShortcutRequest{
-			Name: fmt.Sprintf("users/%s", user.Username) + "/shortcuts/nonexistent",
+		req := &v1pb.DeleteMemoViewRequest{
+			Name: fmt.Sprintf("users/%s", user.Username) + "/views/nonexistent",
 		}
 
-		_, err = ts.Service.DeleteShortcut(userCtx, req)
+		_, err = ts.Service.DeleteMemoView(userCtx, req)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "not found")
 	})
 }
 
-func TestShortcutFiltering(t *testing.T) {
+func TestMemoViewFiltering(t *testing.T) {
 	ctx := context.Background()
 
-	t.Run("CreateShortcut with valid filters", func(t *testing.T) {
+	t.Run("CreateMemoView with valid filters", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -678,20 +703,20 @@ func TestShortcutFiltering(t *testing.T) {
 		}
 
 		for i, filter := range validFilters {
-			req := &v1pb.CreateShortcutRequest{
+			req := &v1pb.CreateMemoViewRequest{
 				Parent: fmt.Sprintf("users/%s", user.Username),
-				Shortcut: &v1pb.Shortcut{
-					Title:  "Valid Filter " + string(rune(i)),
+				MemoView: &v1pb.MemoView{
+					Title:  fmt.Sprintf("Valid Filter %d", i),
 					Filter: filter,
 				},
 			}
 
-			_, err = ts.Service.CreateShortcut(userCtx, req)
+			_, err = ts.Service.CreateMemoView(userCtx, req)
 			require.NoError(t, err, "Filter should be valid: %s", filter)
 		}
 	})
 
-	t.Run("CreateShortcut with invalid filters", func(t *testing.T) {
+	t.Run("CreateMemoView with invalid filters", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -715,22 +740,22 @@ func TestShortcutFiltering(t *testing.T) {
 		}
 
 		for _, filter := range invalidFilters {
-			req := &v1pb.CreateShortcutRequest{
+			req := &v1pb.CreateMemoViewRequest{
 				Parent: fmt.Sprintf("users/%s", user.Username),
-				Shortcut: &v1pb.Shortcut{
+				MemoView: &v1pb.MemoView{
 					Title:  "Invalid Filter Test",
 					Filter: filter,
 				},
 			}
 
-			_, err = ts.Service.CreateShortcut(userCtx, req)
+			_, err = ts.Service.CreateMemoView(userCtx, req)
 			require.Error(t, err, "Filter should be invalid: %s", filter)
 			require.Contains(t, err.Error(), "invalid filter", "Error should mention invalid filter for: %s", filter)
 		}
 	})
 }
 
-func TestShortcutCRUDComplete(t *testing.T) {
+func TestMemoViewCRUDComplete(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Complete CRUD lifecycle", func(t *testing.T) {
@@ -744,56 +769,56 @@ func TestShortcutCRUDComplete(t *testing.T) {
 		// Set user context
 		userCtx := ts.CreateUserContext(ctx, user.ID)
 
-		// 1. Create multiple shortcuts
-		shortcut1Req := &v1pb.CreateShortcutRequest{
+		// 1. Create multiple memoViews
+		memoView1Req := &v1pb.CreateMemoViewRequest{
 			Parent: fmt.Sprintf("users/%s", user.Username),
-			Shortcut: &v1pb.Shortcut{
+			MemoView: &v1pb.MemoView{
 				Title:  "Work Notes",
 				Filter: "tag in [\"work\"]",
 			},
 		}
 
-		shortcut2Req := &v1pb.CreateShortcutRequest{
+		memoView2Req := &v1pb.CreateMemoViewRequest{
 			Parent: fmt.Sprintf("users/%s", user.Username),
-			Shortcut: &v1pb.Shortcut{
+			MemoView: &v1pb.MemoView{
 				Title:  "Personal Notes",
 				Filter: "tag in [\"personal\"]",
 			},
 		}
 
-		created1, err := ts.Service.CreateShortcut(userCtx, shortcut1Req)
+		created1, err := ts.Service.CreateMemoView(userCtx, memoView1Req)
 		require.NoError(t, err)
 		require.Equal(t, "Work Notes", created1.Title)
 
-		created2, err := ts.Service.CreateShortcut(userCtx, shortcut2Req)
+		created2, err := ts.Service.CreateMemoView(userCtx, memoView2Req)
 		require.NoError(t, err)
 		require.Equal(t, "Personal Notes", created2.Title)
 
-		// 2. List shortcuts and verify both exist
-		listReq := &v1pb.ListShortcutsRequest{
+		// 2. List memoViews and verify both exist
+		listReq := &v1pb.ListMemoViewsRequest{
 			Parent: fmt.Sprintf("users/%s", user.Username),
 		}
 
-		listResp, err := ts.Service.ListShortcuts(userCtx, listReq)
+		listResp, err := ts.Service.ListMemoViews(userCtx, listReq)
 		require.NoError(t, err)
-		require.Len(t, listResp.Shortcuts, 2)
+		require.Len(t, listResp.MemoViews, 2)
 
-		// 3. Get individual shortcuts
-		getReq1 := &v1pb.GetShortcutRequest{Name: created1.Name}
-		getResp1, err := ts.Service.GetShortcut(userCtx, getReq1)
+		// 3. Get individual memoViews
+		getReq1 := &v1pb.GetMemoViewRequest{Name: created1.Name}
+		getResp1, err := ts.Service.GetMemoView(userCtx, getReq1)
 		require.NoError(t, err)
 		require.Equal(t, created1.Name, getResp1.Name)
 		require.Equal(t, "Work Notes", getResp1.Title)
 
-		getReq2 := &v1pb.GetShortcutRequest{Name: created2.Name}
-		getResp2, err := ts.Service.GetShortcut(userCtx, getReq2)
+		getReq2 := &v1pb.GetMemoViewRequest{Name: created2.Name}
+		getResp2, err := ts.Service.GetMemoView(userCtx, getReq2)
 		require.NoError(t, err)
 		require.Equal(t, created2.Name, getResp2.Name)
 		require.Equal(t, "Personal Notes", getResp2.Title)
 
-		// 4. Update one shortcut
-		updateReq := &v1pb.UpdateShortcutRequest{
-			Shortcut: &v1pb.Shortcut{
+		// 4. Update one memoView
+		updateReq := &v1pb.UpdateMemoViewRequest{
+			MemoView: &v1pb.MemoView{
 				Name:   created1.Name,
 				Title:  "Work & Meeting Notes",
 				Filter: "tag in [\"work\"] || tag in [\"meeting\"]",
@@ -803,36 +828,127 @@ func TestShortcutCRUDComplete(t *testing.T) {
 			},
 		}
 
-		updated, err := ts.Service.UpdateShortcut(userCtx, updateReq)
+		updated, err := ts.Service.UpdateMemoView(userCtx, updateReq)
 		require.NoError(t, err)
 		require.Equal(t, "Work & Meeting Notes", updated.Title)
 		require.Equal(t, "tag in [\"work\"] || tag in [\"meeting\"]", updated.Filter)
 
 		// 5. Verify update by getting it again
-		getUpdatedReq := &v1pb.GetShortcutRequest{Name: created1.Name}
-		getUpdatedResp, err := ts.Service.GetShortcut(userCtx, getUpdatedReq)
+		getUpdatedReq := &v1pb.GetMemoViewRequest{Name: created1.Name}
+		getUpdatedResp, err := ts.Service.GetMemoView(userCtx, getUpdatedReq)
 		require.NoError(t, err)
 		require.Equal(t, "Work & Meeting Notes", getUpdatedResp.Title)
 		require.Equal(t, "tag in [\"work\"] || tag in [\"meeting\"]", getUpdatedResp.Filter)
 
-		// 6. Delete one shortcut
-		deleteReq := &v1pb.DeleteShortcutRequest{
+		// 6. Delete one memoView
+		deleteReq := &v1pb.DeleteMemoViewRequest{
 			Name: created2.Name,
 		}
 
-		_, err = ts.Service.DeleteShortcut(userCtx, deleteReq)
+		_, err = ts.Service.DeleteMemoView(userCtx, deleteReq)
 		require.NoError(t, err)
 
 		// 7. Verify deletion by listing (should only have 1 left)
-		finalListResp, err := ts.Service.ListShortcuts(userCtx, listReq)
+		finalListResp, err := ts.Service.ListMemoViews(userCtx, listReq)
 		require.NoError(t, err)
-		require.Len(t, finalListResp.Shortcuts, 1)
-		require.Equal(t, "Work & Meeting Notes", finalListResp.Shortcuts[0].Title)
+		require.Len(t, finalListResp.MemoViews, 1)
+		require.Equal(t, "Work & Meeting Notes", finalListResp.MemoViews[0].Title)
 
-		// 8. Verify deleted shortcut can't be accessed
-		getDeletedReq := &v1pb.GetShortcutRequest{Name: created2.Name}
-		_, err = ts.Service.GetShortcut(userCtx, getDeletedReq)
+		// 8. Verify deleted memoView can't be accessed
+		getDeletedReq := &v1pb.GetMemoViewRequest{Name: created2.Name}
+		_, err = ts.Service.GetMemoView(userCtx, getDeletedReq)
 		require.Error(t, err)
 		require.Contains(t, err.Error(), "not found")
+	})
+}
+
+func TestMemoViewRegressions(t *testing.T) {
+	ctx := context.Background()
+
+	t.Run("UpdateMemoView rejects a missing memo view instead of panicking", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "testuser")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+
+		req := &v1pb.UpdateMemoViewRequest{
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"title"}},
+		}
+
+		_, err = ts.Service.UpdateMemoView(userCtx, req)
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "invalid memo view name")
+	})
+
+	t.Run("UpdateMemoView leaves the stored view untouched when validation fails", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "testuser")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+
+		created, err := ts.Service.CreateMemoView(userCtx, &v1pb.CreateMemoViewRequest{
+			Parent: fmt.Sprintf("users/%s", user.Username),
+			MemoView: &v1pb.MemoView{
+				Title:  "Original Title",
+				Filter: `tag in ["work"]`,
+			},
+		})
+		require.NoError(t, err)
+
+		// The title path is applied before the filter path is validated. A rejected
+		// filter must not leave the new title behind.
+		_, err = ts.Service.UpdateMemoView(userCtx, &v1pb.UpdateMemoViewRequest{
+			MemoView: &v1pb.MemoView{
+				Name:   created.Name,
+				Title:  "Phantom Title",
+				Filter: "this is not (((a valid filter",
+			},
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"title", "filter"}},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "invalid filter")
+
+		got, err := ts.Service.GetMemoView(userCtx, &v1pb.GetMemoViewRequest{Name: created.Name})
+		require.NoError(t, err)
+		require.Equal(t, "Original Title", got.Title)
+		require.Equal(t, `tag in ["work"]`, got.Filter)
+	})
+
+	t.Run("CreateMemoView keeps every view under concurrent creates", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "testuser")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+
+		const concurrency = 8
+		var wg sync.WaitGroup
+		errs := make([]error, concurrency)
+		for i := range concurrency {
+			wg.Go(func() {
+				_, errs[i] = ts.Service.CreateMemoView(userCtx, &v1pb.CreateMemoViewRequest{
+					Parent: fmt.Sprintf("users/%s", user.Username),
+					MemoView: &v1pb.MemoView{
+						Title:  fmt.Sprintf("View %d", i),
+						Filter: `tag in ["work"]`,
+					},
+				})
+			})
+		}
+		wg.Wait()
+		for _, err := range errs {
+			require.NoError(t, err)
+		}
+
+		resp, err := ts.Service.ListMemoViews(userCtx, &v1pb.ListMemoViewsRequest{
+			Parent: fmt.Sprintf("users/%s", user.Username),
+		})
+		require.NoError(t, err)
+		require.Len(t, resp.MemoViews, concurrency)
 	})
 }

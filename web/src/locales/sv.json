@@ -65,6 +65,7 @@
     "last-updated-at": "Senast uppdaterad",
     "learn-more": "Läs mer",
     "link": "Länk",
+    "manage": "Hantera",
     "map": "Karta",
     "mark": "Markera",
     "memo": "Anteckning",
@@ -95,8 +96,6 @@
     "select": "Välj",
     "settings": "Inställningar",
     "share": "Dela",
-    "shortcut-filter": "Genvägsfilter",
-    "shortcuts": "Genvägar",
     "sign-in": "Logga in",
     "sign-in-with": "Logga in med {{provider}}",
     "sign-out": "Logga ut",
@@ -114,6 +113,7 @@
     "username": "Användarnamn",
     "version": "Version",
     "visibility": "Synlighet",
+    "views": "Vyer",
     "yourself": "Själv",
     "empty-placeholder": "Tömma",
     "unlink": "Ta bort länken"
@@ -454,9 +454,9 @@
       "memo-defaults-title": "Memo standardinställningar",
       "theme-description": "Tillämpar det valda temat direkt på den här enheten."
     },
-    "shortcut": {
-      "delete-confirm": "Är du säker på att du vill ta bort genvägen `{{title}}`?",
-      "delete-success": "Genväg `{{title}}` raderades framgångsrikt"
+    "memo-view": {
+      "delete-confirm": "Är du säker på att du vill ta bort vyn `{{title}}`?",
+      "delete-success": "Vyn `{{title}}` raderades framgångsrikt"
     },
     "sso": {
       "authorization-endpoint": "Auktoriseringsendpoint",

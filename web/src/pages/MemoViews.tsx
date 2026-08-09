@@ -1,5 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { FieldMaskSchema } from "@bufbuild/protobuf/wkt";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   CheckCircle2Icon,
   ClipboardCheckIcon,
@@ -27,17 +28,18 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { shortcutServiceClient } from "@/connect";
-import { useAuth } from "@/contexts/AuthContext";
+import { memoViewServiceClient } from "@/connect";
+import { useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
+import { useMemoViews, userKeys } from "@/hooks/useUserQueries";
 import { handleError } from "@/lib/error";
-import { getShortcutId } from "@/lib/memo-views";
+import { getMemoViewId } from "@/lib/memo-views";
 import { cn } from "@/lib/utils";
-import { Shortcut, ShortcutSchema } from "@/types/proto/api/v1/shortcut_service_pb";
+import { MemoView, MemoViewSchema } from "@/types/proto/api/v1/memo_view_service_pb";
 import { useTranslate } from "@/utils/i18n";
 
-const shortcutExamples = [
+const memoViewExamples = [
   {
     title: "Pinned",
     filter: "pinned",
@@ -177,29 +179,29 @@ const filterFields = [
   'timestamp("2025-01-01T00:00:00Z")',
 ];
 
-const createEmptyShortcut = () =>
-  create(ShortcutSchema, {
+const createEmptyMemoView = () =>
+  create(MemoViewSchema, {
     name: "",
     title: "",
     filter: "",
   });
 
-interface ShortcutGuideProps {
-  onUseExample: (example: (typeof shortcutExamples)[number]) => void;
+interface MemoViewGuideProps {
+  onUseExample: (example: (typeof memoViewExamples)[number]) => void;
 }
 
-interface ShortcutsRouteState {
+interface MemoViewsRouteState {
   openCreate?: boolean;
-  shortcut?: Shortcut;
+  memoView?: MemoView;
 }
 
-const ShortcutGuide = ({ onUseExample }: ShortcutGuideProps) => {
+const MemoViewGuide = ({ onUseExample }: MemoViewGuideProps) => {
   return (
     <aside className="flex flex-col gap-5">
       <div className="rounded-lg border border-border p-4">
         <h2 className="text-sm font-semibold text-foreground">Expression examples</h2>
         <div className="mt-3 flex flex-col gap-2">
-          {shortcutExamples.map((example) => {
+          {memoViewExamples.map((example) => {
             const Icon = example.icon;
             return (
               <div
@@ -233,15 +235,17 @@ const ShortcutGuide = ({ onUseExample }: ShortcutGuideProps) => {
   );
 };
 
-const Shortcuts = () => {
+const MemoViews = () => {
   const t = useTranslate();
   const location = useLocation();
   const navigate = useNavigate();
   const user = useCurrentUser();
-  const { shortcuts, refetchSettings } = useAuth();
+  const queryClient = useQueryClient();
+  const { data: memoViews = [] } = useMemoViews(user?.name);
+  const { memoView: selectedMemoView, setMemoView } = useMemoFilterContext();
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
-  const [draft, setDraft] = useState<Shortcut>(createEmptyShortcut());
-  const [deleteTarget, setDeleteTarget] = useState<Shortcut | undefined>();
+  const [draft, setDraft] = useState<MemoView>(createEmptyMemoView());
+  const [deleteTarget, setDeleteTarget] = useState<MemoView | undefined>();
   const createState = useLoading(false);
   const validateState = useLoading(false);
   const updateState = useLoading(false);
@@ -249,33 +253,33 @@ const Shortcuts = () => {
   const isSaving = createState.isLoading || updateState.isLoading;
 
   useEffect(() => {
-    const state = location.state as ShortcutsRouteState | null;
+    const state = location.state as MemoViewsRouteState | null;
     if (!state) return;
 
-    if (state.shortcut) {
+    if (state.memoView) {
       setDraft(
-        create(ShortcutSchema, {
-          name: state.shortcut.name,
-          title: state.shortcut.title,
-          filter: state.shortcut.filter,
+        create(MemoViewSchema, {
+          name: state.memoView.name,
+          title: state.memoView.title,
+          filter: state.memoView.filter,
         }),
       );
       setIsCreateFormOpen(true);
     } else if (state.openCreate) {
-      setDraft(createEmptyShortcut());
+      setDraft(createEmptyMemoView());
       setIsCreateFormOpen(true);
     }
 
     navigate(location.pathname, { replace: true, state: null });
   }, [location.key, location.pathname, location.state, navigate]);
 
-  const setDraftState = (state: Partial<Shortcut>) => {
+  const setDraftState = (state: Partial<MemoView>) => {
     setDraft((current) => ({ ...current, ...state }));
   };
 
-  const handleUseExample = (example: (typeof shortcutExamples)[number]) => {
+  const handleUseExample = (example: (typeof memoViewExamples)[number]) => {
     setDraft(
-      create(ShortcutSchema, {
+      create(MemoViewSchema, {
         name: draft.name,
         title: draft.title || example.title,
         filter: example.filter,
@@ -285,21 +289,21 @@ const Shortcuts = () => {
   };
 
   const handleOpenCreateForm = () => {
-    setDraft(createEmptyShortcut());
+    setDraft(createEmptyMemoView());
     setIsCreateFormOpen(true);
   };
 
   const handleCloseForm = () => {
-    setDraft(createEmptyShortcut());
+    setDraft(createEmptyMemoView());
     setIsCreateFormOpen(false);
   };
 
-  const handleEditShortcut = (shortcut: Shortcut) => {
+  const handleEditMemoView = (memoView: MemoView) => {
     setDraft(
-      create(ShortcutSchema, {
-        name: shortcut.name,
-        title: shortcut.title,
-        filter: shortcut.filter,
+      create(MemoViewSchema, {
+        name: memoView.name,
+        title: memoView.title,
+        filter: memoView.filter,
       }),
     );
     setIsCreateFormOpen(true);
@@ -317,9 +321,9 @@ const Shortcuts = () => {
 
     try {
       validateState.setLoading();
-      await shortcutServiceClient.createShortcut({
+      await memoViewServiceClient.createMemoView({
         parent: user.name,
-        shortcut: { name: "", title: draft.title, filter: draft.filter },
+        memoView: { name: "", title: draft.title, filter: draft.filter },
         validateOnly: true,
       });
       validateState.setFinish();
@@ -327,14 +331,14 @@ const Shortcuts = () => {
       return true;
     } catch (error: unknown) {
       await handleError(error, toast.error, {
-        context: "Validate shortcut filter",
+        context: "Validate memo view filter",
         onError: () => validateState.setError(),
       });
       return false;
     }
   };
 
-  const handleCreateShortcut = async () => {
+  const handleCreateMemoView = async () => {
     if (!draft.title || !draft.filter) {
       toast.error("Title and filter cannot be empty");
       return;
@@ -346,24 +350,24 @@ const Shortcuts = () => {
 
     try {
       createState.setLoading();
-      await shortcutServiceClient.createShortcut({
+      await memoViewServiceClient.createMemoView({
         parent: user.name,
-        shortcut: { name: "", title: draft.title, filter: draft.filter },
+        memoView: { name: "", title: draft.title, filter: draft.filter },
       });
-      await refetchSettings();
+      await queryClient.invalidateQueries({ queryKey: userKeys.memoViews(user.name) });
       createState.setFinish();
-      setDraft(createEmptyShortcut());
+      setDraft(createEmptyMemoView());
       setIsCreateFormOpen(false);
-      toast.success("Create shortcut successfully");
+      toast.success("View created successfully");
     } catch (error: unknown) {
       await handleError(error, toast.error, {
-        context: "Create shortcut",
+        context: "Create memo view",
         onError: () => createState.setError(),
       });
     }
   };
 
-  const handleUpdateShortcut = async () => {
+  const handleUpdateMemoView = async () => {
     if (!draft.title || !draft.filter) {
       toast.error("Title and filter cannot be empty");
       return;
@@ -371,44 +375,46 @@ const Shortcuts = () => {
 
     try {
       updateState.setLoading();
-      await shortcutServiceClient.updateShortcut({
-        shortcut: draft,
+      await memoViewServiceClient.updateMemoView({
+        memoView: draft,
         updateMask: create(FieldMaskSchema, { paths: ["title", "filter"] }),
       });
-      await refetchSettings();
+      await queryClient.invalidateQueries({ queryKey: userKeys.memoViews(user?.name) });
       updateState.setFinish();
-      setDraft(createEmptyShortcut());
+      setDraft(createEmptyMemoView());
       setIsCreateFormOpen(false);
-      toast.success("Update shortcut successfully");
+      toast.success("View updated successfully");
     } catch (error: unknown) {
       await handleError(error, toast.error, {
-        context: "Update shortcut",
+        context: "Update memo view",
         onError: () => updateState.setError(),
       });
     }
   };
 
-  const handleSaveShortcut = async () => {
+  const handleSaveMemoView = async () => {
     if (isEditing) {
-      await handleUpdateShortcut();
+      await handleUpdateMemoView();
       return;
     }
 
-    await handleCreateShortcut();
+    await handleCreateMemoView();
   };
 
-  const confirmDeleteShortcut = async () => {
+  const confirmDeleteMemoView = async () => {
     if (!deleteTarget) return;
 
     try {
-      await shortcutServiceClient.deleteShortcut({ name: deleteTarget.name });
-      await refetchSettings();
-      toast.success(t("setting.shortcut.delete-success", { title: deleteTarget.title }));
-      setDeleteTarget(undefined);
+      await memoViewServiceClient.deleteMemoView({ name: deleteTarget.name });
+      await queryClient.invalidateQueries({ queryKey: userKeys.memoViews(user?.name) });
+      if (selectedMemoView === getMemoViewId(deleteTarget.name)) setMemoView(undefined);
+      toast.success(t("setting.memo-view.delete-success", { title: deleteTarget.title }));
     } catch (error: unknown) {
       await handleError(error, toast.error, {
-        context: "Delete shortcut",
+        context: "Delete memo view",
       });
+    } finally {
+      setDeleteTarget(undefined);
     }
   };
 
@@ -418,17 +424,17 @@ const Shortcuts = () => {
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-muted-foreground">
             <FilterIcon className="h-4 w-4" />
-            <span className="text-sm font-medium">{t("common.shortcuts")}</span>
+            <span className="text-sm font-medium">{t("common.views")}</span>
           </div>
-          <h1 className="text-2xl font-semibold tracking-normal text-foreground">Shortcut filters</h1>
+          <h1 className="text-2xl font-semibold tracking-normal text-foreground">Views</h1>
           <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-            Create reusable memo filters with fields, operators, time helpers, and tag matching. Use examples as starting points, then
-            validate before saving.
+            Create reusable views with fields, operators, time helpers, and tag matching. Use examples as starting points, then validate
+            before saving.
           </p>
         </div>
         <Button onClick={isCreateFormOpen ? handleCloseForm : handleOpenCreateForm}>
           {isCreateFormOpen ? <XIcon className="h-4 w-4" /> : <PlusIcon className="h-4 w-4" />}
-          {isCreateFormOpen ? t("common.cancel") : `${t("common.create")} ${t("common.shortcuts")}`}
+          {isCreateFormOpen ? t("common.cancel") : t("common.create")}
         </Button>
       </div>
 
@@ -443,14 +449,12 @@ const Shortcuts = () => {
             <div className="grid gap-5 p-4 sm:p-5">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h2 className="text-base font-semibold text-foreground">{isEditing ? "Edit shortcut" : "Create shortcut"}</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Name the shortcut and define the memo filter expression it should apply.
-                  </p>
+                  <h2 className="text-base font-semibold text-foreground">{isEditing ? "Edit view" : "Create view"}</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">Name the view and define the memo filter expression it should apply.</p>
                 </div>
                 <a
                   className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
-                  href="https://www.usememos.com/docs/usage/shortcuts"
+                  href="https://www.usememos.com/docs"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -461,9 +465,9 @@ const Shortcuts = () => {
 
               <div className="grid gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="shortcut-title">{t("common.title")}</Label>
+                  <Label htmlFor="view-title">{t("common.title")}</Label>
                   <Input
-                    id="shortcut-title"
+                    id="view-title"
                     value={draft.title}
                     placeholder="Pinned, Recent notes, Work"
                     onChange={(event) => setDraftState({ title: event.target.value })}
@@ -473,9 +477,9 @@ const Shortcuts = () => {
                   </p>
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="shortcut-filter">{t("common.filter")}</Label>
+                  <Label htmlFor="view-filter">{t("common.filter")}</Label>
                   <Textarea
-                    id="shortcut-filter"
+                    id="view-filter"
                     rows={5}
                     className="font-mono text-sm"
                     value={draft.filter}
@@ -498,7 +502,7 @@ const Shortcuts = () => {
                   <CheckCircle2Icon className="h-4 w-4" />
                   Validate
                 </Button>
-                <Button disabled={isSaving || validateState.isLoading} onClick={handleSaveShortcut}>
+                <Button disabled={isSaving || validateState.isLoading} onClick={handleSaveMemoView}>
                   <SaveIcon className="h-4 w-4" />
                   {t("common.save")}
                 </Button>
@@ -508,39 +512,39 @@ const Shortcuts = () => {
 
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-base font-semibold text-foreground">All shortcuts</h2>
-              <Badge variant="outline">{shortcuts.length}</Badge>
+              <h2 className="text-base font-semibold text-foreground">All views</h2>
+              <Badge variant="outline">{memoViews.length}</Badge>
             </div>
 
-            {shortcuts.length === 0 ? (
+            {memoViews.length === 0 ? (
               <div className="rounded-lg border border-dashed border-border px-4 py-10 text-center">
-                <p className="text-sm font-medium text-foreground">No shortcuts yet</p>
-                <p className="mt-1 text-sm text-muted-foreground">Open the create form to choose an example and add your first filter.</p>
+                <p className="text-sm font-medium text-foreground">No views yet</p>
+                <p className="mt-1 text-sm text-muted-foreground">Open the create form to choose an example and add your first view.</p>
               </div>
             ) : (
               <div className="divide-y divide-border overflow-hidden rounded-lg border border-border">
-                {shortcuts.map((shortcut) => (
+                {memoViews.map((memoView) => (
                   <div
-                    key={shortcut.name}
+                    key={memoView.name}
                     className="grid gap-3 bg-background px-4 py-3 sm:grid-cols-[minmax(10rem,14rem)_minmax(0,1fr)_2rem]"
                   >
                     <div className="min-w-0">
-                      <div className="truncate text-sm font-medium text-foreground">{shortcut.title}</div>
-                      <div className="mt-1 font-mono text-xs text-muted-foreground">{getShortcutId(shortcut.name)}</div>
+                      <div className="truncate text-sm font-medium text-foreground">{memoView.title}</div>
+                      <div className="mt-1 font-mono text-xs text-muted-foreground">{getMemoViewId(memoView.name)}</div>
                     </div>
                     <pre className="min-w-0 overflow-x-auto rounded-md bg-muted/50 px-3 py-2 font-mono text-xs leading-5 text-muted-foreground">
-                      {shortcut.filter}
+                      {memoView.filter}
                     </pre>
                     <DropdownMenu>
                       <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="justify-self-end" />}>
                         <MoreVerticalIcon className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEditShortcut(shortcut)}>
+                        <DropdownMenuItem onClick={() => handleEditMemoView(memoView)}>
                           <PencilIcon className="h-4 w-4" />
                           {t("common.edit")}
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setDeleteTarget(shortcut)}>
+                        <DropdownMenuItem onClick={() => setDeleteTarget(memoView)}>
                           <Trash2Icon className="h-4 w-4" />
                           {t("common.delete")}
                         </DropdownMenuItem>
@@ -553,20 +557,20 @@ const Shortcuts = () => {
           </div>
         </div>
 
-        {isCreateFormOpen ? <ShortcutGuide onUseExample={handleUseExample} /> : null}
+        {isCreateFormOpen ? <MemoViewGuide onUseExample={handleUseExample} /> : null}
       </div>
 
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(undefined)}
-        title={t("setting.shortcut.delete-confirm", { title: deleteTarget?.title ?? "" })}
+        title={t("setting.memo-view.delete-confirm", { title: deleteTarget?.title ?? "" })}
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
-        onConfirm={confirmDeleteShortcut}
+        onConfirm={confirmDeleteMemoView}
         confirmVariant="destructive"
       />
     </section>
   );
 };
 
-export default Shortcuts;
+export default MemoViews;

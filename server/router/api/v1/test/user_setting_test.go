@@ -32,9 +32,9 @@ func TestListUserSettingsOmitsInternalStoreSettings(t *testing.T) {
 
 	_, err = ts.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSetting_SHORTCUTS,
-		Value: &storepb.UserSetting_Shortcuts{
-			Shortcuts: &storepb.ShortcutsUserSetting{},
+		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Value: &storepb.UserSetting_MemoViews{
+			MemoViews: &storepb.MemoViewsUserSetting{},
 		},
 	})
 	require.NoError(t, err)

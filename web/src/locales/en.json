@@ -139,6 +139,7 @@
     "learn-more": "Learn more",
     "link": "Link",
     "location": "Location",
+    "manage": "Manage",
     "map": "Map",
     "mark": "Mark",
     "memo": "Memo",
@@ -173,8 +174,6 @@
     "select": "Select",
     "settings": "Settings",
     "share": "Share",
-    "shortcut-filter": "Shortcut filter",
-    "shortcuts": "Shortcuts",
     "sign-in": "Sign in",
     "sign-in-to-memos": "Sign in to Memos",
     "sign-out": "Sign out",
@@ -660,9 +659,9 @@
       "theme-description": "Applies the selected theme immediately on this device.",
       "theme": "Theme"
     },
-    "shortcut": {
-      "delete-confirm": "Are you sure you want to delete shortcut `{{title}}`?",
-      "delete-success": "Shortcut `{{title}}` deleted successfully"
+    "memo-view": {
+      "delete-confirm": "Are you sure you want to delete view `{{title}}`?",
+      "delete-success": "View `{{title}}` deleted successfully"
     },
     "sso": {
       "account": "Account",

@@ -65,6 +65,7 @@
     "last-updated-at": "Son güncelleme",
     "learn-more": "Daha fazla bilgi",
     "link": "Bağlantı",
+    "manage": "Yönet",
     "map": "Harita",
     "mark": "İşaretle",
     "memo": "Not",
@@ -95,8 +96,6 @@
     "select": "Seç",
     "settings": "Ayarlar",
     "share": "Paylaş",
-    "shortcut-filter": "Kısayol filtresi",
-    "shortcuts": "Kısayollar",
     "sign-in": "Giriş yap",
     "sign-in-with": "{{provider}} ile giriş yap",
     "sign-out": "Çıkış yap",
@@ -114,6 +113,7 @@
     "username": "Kullanıcı adı",
     "version": "Sürüm",
     "visibility": "Görünürlük",
+    "views": "Görünümler",
     "yourself": "Kendiniz",
     "empty-placeholder": "Boş",
     "unlink": "Bağlantıyı kaldır"
@@ -454,9 +454,9 @@
       "memo-defaults-title": "Not varsayılanları",
       "theme-description": "Seçilen temayı bu cihaza hemen uygular."
     },
-    "shortcut": {
-      "delete-confirm": "`{{title}}` kısayolunu silmek istediğinizden emin misiniz?",
-      "delete-success": "`{{title}}` kısayolu başarıyla silindi"
+    "memo-view": {
+      "delete-confirm": "`{{title}}` görünümünü silmek istediğinizden emin misiniz?",
+      "delete-success": "`{{title}}` görünümü başarıyla silindi"
     },
     "sso": {
       "authorization-endpoint": "Yetkilendirme uç noktası",

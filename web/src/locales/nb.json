@@ -65,6 +65,7 @@
     "last-updated-at": "Sist oppdatert",
     "learn-more": "Lær mer",
     "link": "Link",
+    "manage": "Administrer",
     "map": "Kart",
     "mark": "Merk",
     "memo": "Memo",
@@ -95,8 +96,6 @@
     "select": "Velg",
     "settings": "Innstillinger",
     "share": "Del",
-    "shortcut-filter": "Snarveifilter",
-    "shortcuts": "Snarveier",
     "sign-in": "Logg inn",
     "sign-in-with": "Logg inn med {{provider}}",
     "sign-out": "Logg ut",
@@ -114,6 +113,7 @@
     "username": "Brukernavn",
     "version": "Versjon",
     "visibility": "Synlighet",
+    "views": "Visninger",
     "yourself": "Deg selv",
     "empty-placeholder": "Tømme",
     "unlink": "Fjern tilknytningen"
@@ -454,9 +454,9 @@
       "memo-defaults-title": "Memo standarder",
       "theme-description": "Bruker det valgte temaet umiddelbart på denne enheten."
     },
-    "shortcut": {
-      "delete-confirm": "Er du sikker på at du vil slette snarveien `{{title}}`?",
-      "delete-success": "Snarvei `{{title}}` slettet vellykket"
+    "memo-view": {
+      "delete-confirm": "Er du sikker på at du vil slette visningen `{{title}}`?",
+      "delete-success": "Visning `{{title}}` slettet vellykket"
     },
     "sso": {
       "authorization-endpoint": "Autorisasjon endepunkt",

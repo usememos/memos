@@ -103,6 +103,7 @@
     "last-updated-at": "Последњи пут ажурирано у",
     "learn-more": "Сазнајте више",
     "link": "Линк",
+    "manage": "Управљај",
     "map": "Мапа",
     "mark": "Марк",
     "memo": "Мемо",
@@ -133,8 +134,6 @@
     "select": "Изаберите",
     "settings": "Подешавања",
     "share": "Схаре",
-    "shortcut-filter": "Филтер пречица",
-    "shortcuts": "Пречице",
     "sign-in": "Пријавите се",
     "sign-in-with": "Пријавите се са {{provider}}",
     "sign-out": "Одјави се",
@@ -153,6 +152,7 @@
     "username": "Корисничко име",
     "version": "Версион",
     "visibility": "Видљивост",
+    "views": "Прикази",
     "yourself": "Себе"
   },
   "locale-picker": {
@@ -571,9 +571,9 @@
       "theme-description": "Одмах примењује изабрану тему на овом уређају.",
       "theme": "Тема"
     },
-    "shortcut": {
-      "delete-confirm": "Да ли сте сигурни да желите да избришете пречицу `{{title}}`?",
-      "delete-success": "Пречица `{{title}}` је успешно избрисана"
+    "memo-view": {
+      "delete-confirm": "Да ли сте сигурни да желите да избришете приказ `{{title}}`?",
+      "delete-success": "Приказ `{{title}}` је успешно избрисан"
     },
     "sso": {
       "account": "Рачун",

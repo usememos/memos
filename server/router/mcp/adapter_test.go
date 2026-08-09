@@ -177,13 +177,13 @@ func TestBuildAPIRequestAcceptsHierarchicalResourceNamesForPathParameters(t *tes
 		},
 		{
 			name:       "parameter declaration order does not matter",
-			path:       "/api/v1/users/{user}/shortcuts/{shortcut}",
-			parameters: []string{"shortcut", "user"},
+			path:       "/api/v1/users/{user}/views/{view}",
+			parameters: []string{"view", "user"},
 			arguments: map[string]any{
-				"user":     "users/user123",
-				"shortcut": "users/user123/shortcuts/shortcut456",
+				"user": "users/user123",
+				"view": "users/user123/views/view456",
 			},
-			wantPath: "/api/v1/users/user123/shortcuts/shortcut456",
+			wantPath: "/api/v1/users/user123/views/view456",
 		},
 		{
 			name:       "canonical nested name on action route",

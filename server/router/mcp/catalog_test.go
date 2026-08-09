@@ -277,14 +277,14 @@ func TestBuildToolFromOperationExposesCurrentUser(t *testing.T) {
 	require.True(t, tool.Annotations.ReadOnlyHint)
 }
 
-func TestBuildToolFromOperationExposesListShortcuts(t *testing.T) {
+func TestBuildToolFromOperationExposesListMemoViews(t *testing.T) {
 	spec, err := loadOpenAPISpec("../../../proto/gen/openapi.yaml")
 	require.NoError(t, err)
 	registry, err := buildOperationRegistry(spec)
 	require.NoError(t, err)
 
-	tool, operation := buildToolFromOperation(registry["ShortcutService_ListShortcuts"])
-	require.Equal(t, "shortcut_list_shortcuts", tool.Name)
+	tool, operation := buildToolFromOperation(registry["MemoViewService_ListMemoViews"])
+	require.Equal(t, "memo_view_list_memo_views", tool.Name)
 	require.Equal(t, "GET", operation.Method)
 	require.True(t, tool.Annotations.ReadOnlyHint)
 

@@ -64,6 +64,7 @@
     "last-updated-at": "آخر تحديث في",
     "learn-more": "تعلم المزيد",
     "link": "الرابط",
+    "manage": "إدارة",
     "map": "خريطة",
     "mark": "تعليم",
     "memo": "مذكرة",
@@ -94,8 +95,6 @@
     "select": "تحديد",
     "settings": "الإعدادات",
     "share": "مشاركة",
-    "shortcut-filter": "تصفية الاختصارات",
-    "shortcuts": "اختصارات",
     "sign-in": "تسجيل الدخول",
     "sign-in-with": "تسجيل دخول بواسطة {{provider}}",
     "sign-out": "تسجيل خروج",
@@ -113,6 +112,7 @@
     "username": "اسم المستخدم",
     "version": "الإصدار",
     "visibility": "الرؤية",
+    "views": "طرق العرض",
     "yourself": "نفسك"
   },
   "locale-picker": {
@@ -333,9 +333,9 @@
       "theme": "السمة",
       "label": "التفضيلات"
     },
-    "shortcut": {
-      "delete-confirm": "هل أنت متأكد من حذف الاختصار `{{title}}`؟",
-      "delete-success": "تم حذف الاختصار `{{title}}` بنجاح"
+    "memo-view": {
+      "delete-confirm": "هل أنت متأكد من حذف طريقة العرض `{{title}}`؟",
+      "delete-success": "تم حذف طريقة العرض `{{title}}` بنجاح"
     },
     "sso": {
       "authorization-endpoint": "نقطة نهاية التفويض",

@@ -103,6 +103,7 @@
     "last-updated-at": "Ultima actualizare la",
     "learn-more": "Află mai multe",
     "link": "Legătură",
+    "manage": "Gestionează",
     "map": "Hartă",
     "mark": "Marca",
     "memo": "Notă",
@@ -133,8 +134,6 @@
     "select": "Selecta",
     "settings": "Setări",
     "share": "Distribuie",
-    "shortcut-filter": "Filtru de comenzi rapide",
-    "shortcuts": "Comenzi rapide",
     "sign-in": "Conectare",
     "sign-in-with": "Conectați-vă cu {{provider}}",
     "sign-out": "Sign out",
@@ -153,6 +152,7 @@
     "username": "Nume de utilizator",
     "version": "Versiune",
     "visibility": "Vizibilitate",
+    "views": "Vizualizări",
     "yourself": "Te"
   },
   "locale-picker": {
@@ -571,9 +571,9 @@
       "theme-description": "Aplică tema selectată imediat pe acest dispozitiv.",
       "theme": "Temă"
     },
-    "shortcut": {
-      "delete-confirm": "Sigur doriți să ștergeți comanda rapidă `{{title}}`?",
-      "delete-success": "Comanda rapidă `{{title}}` a fost ștearsă cu succes"
+    "memo-view": {
+      "delete-confirm": "Sigur doriți să ștergeți vizualizarea `{{title}}`?",
+      "delete-success": "Vizualizarea `{{title}}` a fost ștearsă cu succes"
     },
     "sso": {
       "account": "Cont",

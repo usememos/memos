@@ -103,6 +103,7 @@
     "last-updated-at": "Sidst opdateret kl",
     "learn-more": "Få flere oplysninger",
     "link": "Forbindelse",
+    "manage": "Administrer",
     "map": "Kort",
     "mark": "Mærke",
     "memo": "Memo",
@@ -133,8 +134,6 @@
     "select": "Vælge",
     "settings": "Indstillinger",
     "share": "Dele",
-    "shortcut-filter": "Genvejsfilter",
-    "shortcuts": "Genveje",
     "sign-in": "Log ind",
     "sign-in-with": "Log ind med {{provider}}",
     "sign-out": "Log ud",
@@ -153,6 +152,7 @@
     "username": "Brugernavn",
     "version": "Version",
     "visibility": "Sigtbarhed",
+    "views": "Visninger",
     "yourself": "Dig selv"
   },
   "locale-picker": {
@@ -571,9 +571,9 @@
       "theme-description": "Anvender det valgte tema med det samme på denne enhed.",
       "theme": "Tema"
     },
-    "shortcut": {
-      "delete-confirm": "Er du sikker på, at du vil slette genvejen `{{title}}`?",
-      "delete-success": "Genvejen `{{title}}` blev slettet"
+    "memo-view": {
+      "delete-confirm": "Er du sikker på, at du vil slette visningen `{{title}}`?",
+      "delete-success": "Visningen `{{title}}` blev slettet"
     },
     "sso": {
       "account": "Konto",

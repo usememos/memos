@@ -64,6 +64,7 @@
     "last-updated-at": "Cập nhật lần cuối",
     "learn-more": "Tìm hiểu thêm",
     "link": "Liên kết",
+    "manage": "Quản lý",
     "map": "Bản đồ",
     "mark": "Đánh dấu",
     "memo": "Ghi chú",
@@ -94,8 +95,6 @@
     "select": "Chọn",
     "settings": "Cài đặt",
     "share": "Chia sẻ",
-    "shortcut-filter": "Bộ lọc phím tắt",
-    "shortcuts": "Phím tắt",
     "sign-in": "Đăng nhập",
     "sign-in-with": "Đăng nhập bằng {{provider}}",
     "sign-out": "Đăng xuất",
@@ -113,6 +112,7 @@
     "username": "Tên người dùng",
     "version": "Phiên bản",
     "visibility": "Quyền xem",
+    "views": "Các chế độ xem",
     "yourself": "Bản thân"
   },
   "locale-picker": {
@@ -333,9 +333,9 @@
       "theme": "Giao diện",
       "label": "Tùy chỉnh"
     },
-    "shortcut": {
-      "delete-confirm": "Bạn có chắc chắn muốn xóa phím tắt `{{title}}`?",
-      "delete-success": "Đã xóa phím tắt `{{title}}` thành công"
+    "memo-view": {
+      "delete-confirm": "Bạn có chắc chắn muốn xóa chế độ xem `{{title}}`?",
+      "delete-success": "Đã xóa chế độ xem `{{title}}` thành công"
     },
     "sso": {
       "authorization-endpoint": "Điểm cuối xác thực",

@@ -65,6 +65,7 @@
     "last-updated-at": "Změněno",
     "learn-more": "Více informací",
     "link": "Odkaz",
+    "manage": "Spravovat",
     "map": "Mapa",
     "mark": "Značka",
     "memo": "Poznámka",
@@ -95,8 +96,6 @@
     "select": "Vybrat",
     "settings": "Nastavení",
     "share": "Sdílet",
-    "shortcut-filter": "Filtr zkratek",
-    "shortcuts": "Zkratky",
     "sign-in": "Přihlásit se",
     "sign-in-with": "Přihlásit se pomocí {{provider}}",
     "sign-out": "Odhlásit se",
@@ -114,6 +113,7 @@
     "username": "Uživatelské jméno",
     "version": "Verze",
     "visibility": "Viditelnost",
+    "views": "Zobrazení",
     "yourself": "Vy sami",
     "empty-placeholder": "Prázdný",
     "unlink": "Odpojit"
@@ -454,9 +454,9 @@
       "memo-defaults-title": "Výchozí nastavení poznámek",
       "theme-description": "Okamžitě použije vybraný motiv na tomto zařízení."
     },
-    "shortcut": {
-      "delete-confirm": "Jste si jisti, že chcete odstranit zkratku `{{title}}`?",
-      "delete-success": "Zkratka `{{title}}` úspěšně odstraněna"
+    "memo-view": {
+      "delete-confirm": "Jste si jisti, že chcete odstranit zobrazení `{{title}}`?",
+      "delete-success": "Zobrazení `{{title}}` bylo úspěšně odstraněno"
     },
     "sso": {
       "authorization-endpoint": "Autorizační koncový bod",

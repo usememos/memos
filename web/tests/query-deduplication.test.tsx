@@ -9,7 +9,7 @@ import {
 } from "@/components/MemoContent/MentionResolutionContext";
 import { useResolvedRelationMemos } from "@/components/MemoMetadata/Relation/useResolvedRelationMemos";
 import { memoKeys } from "@/hooks/useMemoQueries";
-import { useUser, userKeys, useUsersByNames, useUsersByUsernames } from "@/hooks/useUserQueries";
+import { useMemoViews, useUser, userKeys, useUsersByNames, useUsersByUsernames } from "@/hooks/useUserQueries";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
 
@@ -17,13 +17,16 @@ const clients = vi.hoisted(() => ({
   batchGetUsers: vi.fn(),
   getMemo: vi.fn(),
   getUser: vi.fn(),
+  listMemoViews: vi.fn(),
 }));
 
 vi.mock("@/connect", () => ({
   memoServiceClient: {
     getMemo: clients.getMemo,
   },
-  shortcutServiceClient: {},
+  memoViewServiceClient: {
+    listMemoViews: clients.listMemoViews,
+  },
   userServiceClient: {
     batchGetUsers: clients.batchGetUsers,
     getUser: clients.getUser,
@@ -49,6 +52,29 @@ describe("query deduplication", () => {
     clients.batchGetUsers.mockReset();
     clients.getMemo.mockReset();
     clients.getUser.mockReset();
+    clients.listMemoViews.mockReset();
+  });
+
+  it("scopes memo-view queries by parent and skips requests without one", async () => {
+    clients.listMemoViews.mockImplementation(async ({ parent }: { parent: string }) => ({
+      memoViews: [{ name: `${parent}/views/work`, title: parent, filter: "pinned" }],
+    }));
+    const queryClient = createQueryClient();
+    const wrapper = createWrapper(queryClient);
+
+    const disabled = renderHook(() => useMemoViews(undefined), { wrapper });
+    expect(disabled.result.current.fetchStatus).toBe("idle");
+
+    const alice = renderHook(() => useMemoViews("users/alice"), { wrapper });
+    const bob = renderHook(() => useMemoViews("users/bob"), { wrapper });
+    await waitFor(() => {
+      expect(alice.result.current.isSuccess).toBe(true);
+      expect(bob.result.current.isSuccess).toBe(true);
+    });
+
+    expect(clients.listMemoViews.mock.calls.map(([request]) => request.parent)).toEqual(["users/alice", "users/bob"]);
+    expect(queryClient.getQueryData(userKeys.memoViews("users/alice"))).toEqual(alice.result.current.data);
+    expect(queryClient.getQueryData(userKeys.memoViews("users/bob"))).toEqual(bob.result.current.data);
   });
 
   it("fetches each user name once across individual and overlapping group queries", async () => {

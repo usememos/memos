@@ -1941,15 +1941,15 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/users/{user}/shortcuts:
+    /api/v1/users/{user}/views:
         get:
             tags:
-                - ShortcutService
+                - MemoViewService
             description: |-
-                ListShortcuts returns a user's saved shortcuts. Each shortcut is a named,
-                 reusable CEL filter (see Shortcut.filter); pass its filter string directly
-                 to the ListMemos `filter` argument to reuse a saved view.
-            operationId: ShortcutService_ListShortcuts
+                ListMemoViews returns a user's memo views. Each view is a named, reusable
+                 CEL filter (see MemoView.filter); pass its filter string directly to the
+                 ListMemos `filter` argument.
+            operationId: MemoViewService_ListMemoViews
             parameters:
                 - name: user
                   in: path
@@ -1963,7 +1963,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/ListShortcutsResponse'
+                                $ref: '#/components/schemas/ListMemoViewsResponse'
                 default:
                     description: Default error response
                     content:
@@ -1972,9 +1972,9 @@ paths:
                                 $ref: '#/components/schemas/Status'
         post:
             tags:
-                - ShortcutService
-            description: CreateShortcut creates a new shortcut for a user.
-            operationId: ShortcutService_CreateShortcut
+                - MemoViewService
+            description: CreateMemoView creates a new memo view for a user.
+            operationId: MemoViewService_CreateMemoView
             parameters:
                 - name: user
                   in: path
@@ -1984,14 +1984,14 @@ paths:
                     type: string
                 - name: validateOnly
                   in: query
-                  description: Optional. If set, validate the request, but do not actually create the shortcut.
+                  description: Optional. If set, validate the request, but do not actually create the memo view.
                   schema:
                     type: boolean
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/Shortcut'
+                            $ref: '#/components/schemas/MemoView'
                 required: true
             responses:
                 "200":
@@ -1999,19 +1999,19 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/Shortcut'
+                                $ref: '#/components/schemas/MemoView'
                 default:
                     description: Default error response
                     content:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/v1/users/{user}/shortcuts/{shortcut}:
+    /api/v1/users/{user}/views/{view}:
         get:
             tags:
-                - ShortcutService
-            description: GetShortcut gets a shortcut by name.
-            operationId: ShortcutService_GetShortcut
+                - MemoViewService
+            description: GetMemoView gets a memo view by name.
+            operationId: MemoViewService_GetMemoView
             parameters:
                 - name: user
                   in: path
@@ -2019,9 +2019,9 @@ paths:
                   required: true
                   schema:
                     type: string
-                - name: shortcut
+                - name: view
                   in: path
-                  description: The shortcut id.
+                  description: The view id.
                   required: true
                   schema:
                     type: string
@@ -2031,7 +2031,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/Shortcut'
+                                $ref: '#/components/schemas/MemoView'
                 default:
                     description: Default error response
                     content:
@@ -2040,9 +2040,9 @@ paths:
                                 $ref: '#/components/schemas/Status'
         delete:
             tags:
-                - ShortcutService
-            description: DeleteShortcut deletes a shortcut for a user.
-            operationId: ShortcutService_DeleteShortcut
+                - MemoViewService
+            description: DeleteMemoView deletes a memo view for a user.
+            operationId: MemoViewService_DeleteMemoView
             parameters:
                 - name: user
                   in: path
@@ -2050,9 +2050,9 @@ paths:
                   required: true
                   schema:
                     type: string
-                - name: shortcut
+                - name: view
                   in: path
-                  description: The shortcut id.
+                  description: The view id.
                   required: true
                   schema:
                     type: string
@@ -2068,9 +2068,9 @@ paths:
                                 $ref: '#/components/schemas/Status'
         patch:
             tags:
-                - ShortcutService
-            description: UpdateShortcut updates a shortcut for a user.
-            operationId: ShortcutService_UpdateShortcut
+                - MemoViewService
+            description: UpdateMemoView updates a memo view for a user.
+            operationId: MemoViewService_UpdateMemoView
             parameters:
                 - name: user
                   in: path
@@ -2078,9 +2078,9 @@ paths:
                   required: true
                   schema:
                     type: string
-                - name: shortcut
+                - name: view
                   in: path
-                  description: The shortcut id.
+                  description: The view id.
                   required: true
                   schema:
                     type: string
@@ -2094,7 +2094,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/Shortcut'
+                            $ref: '#/components/schemas/MemoView'
                 required: true
             responses:
                 "200":
@@ -2102,7 +2102,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/Shortcut'
+                                $ref: '#/components/schemas/MemoView'
                 default:
                     description: Default error response
                     content:
@@ -3129,6 +3129,14 @@ components:
                     items:
                         $ref: '#/components/schemas/MemoShare'
                     description: The list of share links.
+        ListMemoViewsResponse:
+            type: object
+            properties:
+                memoViews:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MemoView'
+                    description: The list of memo views.
         ListMemosResponse:
             type: object
             properties:
@@ -3153,14 +3161,6 @@ components:
                 nextPageToken:
                     type: string
                     description: A token for the next page of results.
-        ListShortcutsResponse:
-            type: object
-            properties:
-                shortcuts:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Shortcut'
-                    description: The list of shortcuts.
         ListUserNotificationsResponse:
             type: object
             properties:
@@ -3373,6 +3373,25 @@ components:
                          If unset, the link never expires.
                     format: date-time
             description: MemoShare is an access grant that permits read-only access to a memo via an opaque bearer token.
+        MemoView:
+            required:
+                - title
+                - filter
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: |-
+                        The resource name of the memo view.
+                         Format: users/{user}/views/{view}
+                title:
+                    type: string
+                    description: The title of the memo view.
+                filter:
+                    type: string
+                    description: |-
+                        The CEL filter expression for the memo view, using the same grammar as the
+                         ListMemos `filter` argument. Reuse it by passing this value to ListMemos.
         Memo_Property:
             type: object
             properties:
@@ -3562,24 +3581,6 @@ components:
                     items:
                         $ref: '#/components/schemas/MemoRelation'
                     description: Required. The relations to set for the memo.
-        Shortcut:
-            required:
-                - title
-            type: object
-            properties:
-                name:
-                    type: string
-                    description: |-
-                        The resource name of the shortcut.
-                         Format: users/{user}/shortcuts/{shortcut}
-                title:
-                    type: string
-                    description: The title of the shortcut.
-                filter:
-                    type: string
-                    description: |-
-                        The CEL filter expression for the shortcut, using the same grammar as the
-                         ListMemos `filter` argument. Reuse it by passing this value to ListMemos.
         SignInRequest:
             type: object
             properties:
@@ -4056,5 +4057,5 @@ tags:
     - name: IdentityProviderService
     - name: InstanceService
     - name: MemoService
-    - name: ShortcutService
+    - name: MemoViewService
     - name: UserService

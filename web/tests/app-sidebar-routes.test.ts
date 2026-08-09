@@ -7,7 +7,7 @@ describe("sidebar route content", () => {
     ["/archived", "archived"],
     ["/explore", "explore"],
     ["/u/steven", "profile"],
-    ["/shortcuts", "shortcuts"],
+    ["/views", "views"],
     ["/attachments", "attachments"],
     ["/inbox", "inbox"],
     ["/setting", "settings"],

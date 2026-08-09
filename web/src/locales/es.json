@@ -65,6 +65,7 @@
     "last-updated-at": "Última actualización en",
     "learn-more": "Saber más",
     "link": "Enlace",
+    "manage": "Gestionar",
     "map": "Mapa",
     "mark": "Marcar",
     "memo": "Memo",
@@ -95,8 +96,6 @@
     "select": "Seleccionar",
     "settings": "Configuración",
     "share": "Compartir",
-    "shortcut-filter": "Filtro de atajos",
-    "shortcuts": "Atajos",
     "sign-in": "Iniciar sesión",
     "sign-in-with": "Iniciar sesión con {{provider}}",
     "sign-out": "Cerrar sesión",
@@ -114,6 +113,7 @@
     "username": "Usuario",
     "version": "Versión",
     "visibility": "Visibilidad",
+    "views": "Vistas",
     "yourself": "Tú mismo",
     "empty-placeholder": "Vacía",
     "unlink": "Desconectar"
@@ -454,9 +454,9 @@
       "memo-defaults-title": "Valores predeterminados de notas",
       "theme-description": "Aplica el tema seleccionado inmediatamente en este dispositivo."
     },
-    "shortcut": {
-      "delete-confirm": "¿Estás seguro de que quieres eliminar el atajo `{{title}}`?",
-      "delete-success": "Atajo `{{title}}` eliminado correctamente"
+    "memo-view": {
+      "delete-confirm": "¿Estás seguro de que quieres eliminar la vista `{{title}}`?",
+      "delete-success": "Vista `{{title}}` eliminada correctamente"
     },
     "sso": {
       "authorization-endpoint": "Punto final de autorización",

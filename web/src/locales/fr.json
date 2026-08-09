@@ -65,6 +65,7 @@
     "last-updated-at": "Dernière mise à jour le",
     "learn-more": "En savoir plus",
     "link": "Lien",
+    "manage": "Gérer",
     "map": "Carte",
     "mark": "Marquer",
     "memo": "Memo",
@@ -95,8 +96,6 @@
     "select": "Sélectionner",
     "settings": "Paramètres",
     "share": "Partager",
-    "shortcut-filter": "Filtre de raccourcis",
-    "shortcuts": "Raccourcis",
     "sign-in": "Connexion",
     "sign-in-with": "Se connecter avec {{provider}}",
     "sign-out": "Déconnexion",
@@ -114,6 +113,7 @@
     "username": "Nom d'utilisateur",
     "version": "Version",
     "visibility": "Visibilité",
+    "views": "Vues",
     "yourself": "Vous-même",
     "empty-placeholder": "Vide",
     "unlink": "Dissocier"
@@ -454,9 +454,9 @@
       "memo-defaults-title": "Valeurs par défaut du mémo",
       "theme-description": "Applique immédiatement le thème sélectionné sur cet appareil."
     },
-    "shortcut": {
-      "delete-confirm": "Êtes-vous sûr de vouloir supprimer le raccourci `{{title}}` ?",
-      "delete-success": "Raccourci `{{title}}` supprimé avec succès"
+    "memo-view": {
+      "delete-confirm": "Êtes-vous sûr de vouloir supprimer la vue `{{title}}` ?",
+      "delete-success": "Vue `{{title}}` supprimée avec succès"
     },
     "sso": {
       "authorization-endpoint": "Point de terminaison d'autorisation",

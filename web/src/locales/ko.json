@@ -64,6 +64,7 @@
     "last-updated-at": "마지막 수정일",
     "learn-more": "더 보기",
     "link": "링크",
+    "manage": "관리",
     "map": "지도",
     "mark": "연결",
     "memo": "메모",
@@ -94,8 +95,6 @@
     "select": "선택",
     "settings": "설정",
     "share": "공유",
-    "shortcut-filter": "단축키 필터",
-    "shortcuts": "단축키",
     "sign-in": "로그인",
     "sign-in-with": "{{provider}}(으)로 로그인",
     "sign-out": "로그아웃",
@@ -113,6 +112,7 @@
     "username": "유저네임",
     "version": "버전",
     "visibility": "공개 범위",
+    "views": "보기",
     "yourself": "자기 자신"
   },
   "locale-picker": {
@@ -333,9 +333,9 @@
       "theme": "테마",
       "label": "개인 설정"
     },
-    "shortcut": {
-      "delete-confirm": "바로가기 `{{title}}`를 정말로 삭제하시겠습니까?",
-      "delete-success": "바로가기 `{{title}}`가 성공적으로 삭제되었습니다"
+    "memo-view": {
+      "delete-confirm": "보기 `{{title}}`를 정말로 삭제하시겠습니까?",
+      "delete-success": "보기 `{{title}}`가 성공적으로 삭제되었습니다"
     },
     "sso": {
       "authorization-endpoint": "인증 엔드포인트",

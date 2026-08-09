@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import {
   ArchiveIcon,
   ArrowRightIcon,
@@ -11,7 +12,6 @@ import {
   InfoIcon,
   LayoutListIcon,
   ListIcon,
-  ListTodoIcon,
   type LucideIcon,
   MapIcon,
   MenuIcon,
@@ -19,7 +19,6 @@ import {
   PaperclipIcon,
   PlusIcon,
   SearchIcon,
-  SparklesIcon,
   Trash2Icon,
   UserRoundIcon,
 } from "lucide-react";
@@ -36,7 +35,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { shortcutServiceClient } from "@/connect";
+import { memoViewServiceClient } from "@/connect";
 import { type AttachmentSection, type InboxFilter, useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useInstance } from "@/contexts/InstanceContext";
@@ -45,11 +44,12 @@ import { useAttachmentLibraryStats } from "@/hooks/useAttachmentLibrary";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { type MemoStatsContext, useFilteredMemoStats } from "@/hooks/useFilteredMemoStats";
 import useMediaQuery from "@/hooks/useMediaQuery";
-import { useNotifications, useUser } from "@/hooks/useUserQueries";
+import { useMemoViews, useNotifications, userKeys, useUser } from "@/hooks/useUserQueries";
+import { handleError } from "@/lib/error";
 import {
   BUILTIN_TASKS_VIEW_ID,
   getMemoScopePath,
-  getShortcutId,
+  getMemoViewId,
   isMemoScopeRoute,
   type MemoScope,
   resolveMemoScope,
@@ -57,13 +57,17 @@ import {
 import { cn } from "@/lib/utils";
 import { ROUTES } from "@/router/routes";
 import { State } from "@/types/proto/api/v1/common_pb";
-import type { Shortcut } from "@/types/proto/api/v1/shortcut_service_pb";
+import type { MemoView } from "@/types/proto/api/v1/memo_view_service_pb";
 import { User_Role, UserNotification_Status } from "@/types/proto/api/v1/user_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import MemosLogo from "../MemosLogo";
 import { getSidebarRouteKind } from "./routes";
-import SidebarRow, { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_ICON_CLASSES } from "./SidebarRow";
-import SidebarSectionHeader from "./SidebarSectionHeader";
+import SidebarRow, { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_ICON_CLASSES, sidebarRowStateClasses } from "./SidebarRow";
+import SidebarSection, {
+  SIDEBAR_SECTION_ACTION_BUTTON_CLASSES,
+  SIDEBAR_SECTION_ACTION_ICON_CLASSES,
+  SIDEBAR_SECTION_STACK_CLASSES,
+} from "./SidebarSection";
 import TagsSection from "./TagsSection";
 
 const SIDEBAR_HORIZONTAL_PADDING = "px-3";
@@ -71,128 +75,119 @@ const SIDEBAR_HORIZONTAL_PADDING = "px-3";
 const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
   const t = useTranslate();
   const navigate = useNavigate();
-  const { shortcuts, refetchSettings } = useAuth();
-  const { shortcut: selectedShortcut, setShortcut } = useMemoFilterContext();
+  const currentUser = useCurrentUser();
+  const queryClient = useQueryClient();
+  const { data: memoViews = [] } = useMemoViews(currentUser?.name);
+  const { memoView: selectedMemoView, setMemoView } = useMemoFilterContext();
   const { setMobileOpen } = useAppSidebar();
-  const [deleteTarget, setDeleteTarget] = useState<Shortcut>();
+  const [deleteTarget, setDeleteTarget] = useState<MemoView>();
   const location = useLocation();
 
   const handleView = (viewId: string) => {
-    setShortcut(selectedShortcut === viewId ? undefined : viewId);
+    setMemoView(selectedMemoView === viewId ? undefined : viewId);
     if (!isMemoScopeRoute(location.pathname)) navigate(ROUTES.HOME);
     setMobileOpen(false);
   };
 
   const handleCreate = () => {
-    navigate(ROUTES.SHORTCUTS, { state: { openCreate: true } });
+    navigate(ROUTES.VIEWS, { state: { openCreate: true } });
     setMobileOpen(false);
   };
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
-    await shortcutServiceClient.deleteShortcut({ name: deleteTarget.name });
-    await refetchSettings();
-    if (selectedShortcut === getShortcutId(deleteTarget.name)) setShortcut(undefined);
-    toast.success(t("setting.shortcut.delete-success", { title: deleteTarget.title }));
-    setDeleteTarget(undefined);
+    try {
+      await memoViewServiceClient.deleteMemoView({ name: deleteTarget.name });
+      await queryClient.invalidateQueries({ queryKey: userKeys.memoViews(currentUser?.name) });
+      if (selectedMemoView === getMemoViewId(deleteTarget.name)) setMemoView(undefined);
+      toast.success(t("setting.memo-view.delete-success", { title: deleteTarget.title }));
+    } catch (error: unknown) {
+      handleError(error, toast.error, { context: "Delete memo view" });
+    } finally {
+      setDeleteTarget(undefined);
+    }
   };
 
   return (
-    <section>
-      <SidebarSectionHeader
-        action={
-          !manageActive && (
-            <div className="flex items-center gap-0.5">
-              <MemoDisplaySettingMenu />
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                className="size-5 rounded text-muted-foreground"
-                onClick={handleCreate}
-                aria-label={t("common.create")}
-              >
-                <PlusIcon className="size-3.5" />
-              </Button>
-            </div>
-          )
-        }
-      >
-        {t("common.views")}
-      </SidebarSectionHeader>
-      <div className="space-y-0.5">
-        <SidebarRow
-          active={!manageActive && selectedShortcut === BUILTIN_TASKS_VIEW_ID}
-          icon={ListTodoIcon}
-          label={t("common.tasks")}
-          onClick={() => handleView(BUILTIN_TASKS_VIEW_ID)}
-        />
-        {shortcuts.map((shortcut) => {
-          const id = getShortcutId(shortcut.name);
-          const active = !manageActive && selectedShortcut === id;
-          return (
-            <div
-              key={shortcut.name}
-              className={cn(
-                SIDEBAR_ROW_CLASSES,
-                "group/view",
-                active
-                  ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-                  : "text-muted-foreground hover:bg-sidebar-accent/65 hover:text-foreground",
-              )}
+    <SidebarSection
+      label={t("common.views")}
+      action={
+        !manageActive && (
+          <div className="flex items-center gap-0.5">
+            <MemoDisplaySettingMenu />
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              className={SIDEBAR_SECTION_ACTION_BUTTON_CLASSES}
+              onClick={handleCreate}
+              aria-label={t("common.create")}
             >
-              <button
-                type="button"
-                onClick={() => handleView(id)}
-                aria-pressed={active || undefined}
-                className="flex h-full min-w-0 flex-1 items-center gap-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+              <PlusIcon className={SIDEBAR_SECTION_ACTION_ICON_CLASSES} strokeWidth={1.8} />
+            </Button>
+          </div>
+        )
+      }
+    >
+      <SidebarRow
+        active={!manageActive && selectedMemoView === BUILTIN_TASKS_VIEW_ID}
+        label={t("common.tasks")}
+        onClick={() => handleView(BUILTIN_TASKS_VIEW_ID)}
+      />
+      {memoViews.map((memoView) => {
+        const id = getMemoViewId(memoView.name);
+        const active = !manageActive && selectedMemoView === id;
+        return (
+          <div key={memoView.name} className={cn(SIDEBAR_ROW_CLASSES, "group/view", sidebarRowStateClasses(active))}>
+            <button
+              type="button"
+              onClick={() => handleView(id)}
+              aria-pressed={active || undefined}
+              className="flex h-full min-w-0 flex-1 items-center gap-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+            >
+              <span className="min-w-0 flex-1 truncate">{memoView.title}</span>
+            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                nativeButton={false}
+                render={
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`${t("common.edit")} ${memoView.title}`}
+                    className="-mr-1 flex size-6 shrink-0 items-center justify-center rounded text-muted-foreground transition-opacity hover:bg-background/70 md:opacity-0 md:group-hover/view:opacity-100 md:focus-visible:opacity-100 data-popup-open:opacity-100"
+                  />
+                }
               >
-                <SparklesIcon className={SIDEBAR_ROW_ICON_CLASSES} strokeWidth={1.8} />
-                <span className="min-w-0 flex-1 truncate">{shortcut.title}</span>
-              </button>
-              <DropdownMenu>
-                <DropdownMenuTrigger
-                  nativeButton={false}
-                  render={
-                    <span
-                      role="button"
-                      tabIndex={0}
-                      aria-label={`${t("common.edit")} ${shortcut.title}`}
-                      className="-mr-1 flex size-6 shrink-0 items-center justify-center rounded text-muted-foreground transition-opacity hover:bg-background/70 md:opacity-0 md:group-hover/view:opacity-100 md:focus-visible:opacity-100 data-popup-open:opacity-100"
-                    />
-                  }
+                <MoreHorizontalIcon className="size-3.5" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" sideOffset={2} size="sm">
+                <DropdownMenuItem
+                  onClick={() => {
+                    navigate(ROUTES.VIEWS, { state: { memoView } });
+                    setMobileOpen(false);
+                  }}
                 >
-                  <MoreHorizontalIcon className="size-3.5" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    onClick={() => {
-                      navigate(ROUTES.SHORTCUTS, { state: { shortcut } });
-                      setMobileOpen(false);
-                    }}
-                  >
-                    {t("common.edit")}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem variant="destructive" onClick={() => setDeleteTarget(shortcut)}>
-                    <Trash2Icon className="size-4" />
-                    {t("common.delete")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          );
-        })}
-        {manageActive && <SidebarRow active icon={MoreHorizontalIcon} label={t("common.shortcuts")} />}
-      </div>
+                  {t("common.edit")}
+                </DropdownMenuItem>
+                <DropdownMenuItem variant="destructive" onClick={() => setDeleteTarget(memoView)}>
+                  {t("common.delete")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        );
+      })}
+      {manageActive && <SidebarRow active icon={MoreHorizontalIcon} label={t("common.manage")} />}
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(open) => !open && setDeleteTarget(undefined)}
-        title={t("setting.shortcut.delete-confirm", { title: deleteTarget?.title ?? "" })}
+        title={t("setting.memo-view.delete-confirm", { title: deleteTarget?.title ?? "" })}
         confirmLabel={t("common.delete")}
         cancelLabel={t("common.cancel")}
         onConfirm={handleDelete}
         confirmVariant="destructive"
       />
-    </section>
+    </SidebarSection>
   );
 };
 
@@ -210,14 +205,15 @@ const ProfileMode = () => {
   };
 
   return (
-    <div className="space-y-0.5">
+    <SidebarSection label={t("common.profile")}>
       <SidebarRow active={active === "memos"} icon={LayoutListIcon} label={t("common.memos")} onClick={() => setMode("memos")} />
       <SidebarRow active={active === "map"} icon={MapIcon} label={t("common.map")} onClick={() => setMode("map")} />
-    </div>
+    </SidebarSection>
   );
 };
 
 const CollectionSidebarContent = ({ context }: { context: MemoStatsContext }) => {
+  const t = useTranslate();
   const location = useLocation();
   const currentUser = useCurrentUser();
   const md = useMediaQuery("md");
@@ -243,11 +239,11 @@ const CollectionSidebarContent = ({ context }: { context: MemoStatsContext }) =>
   const filterTarget = onCollectionRoute ? undefined : context === "explore" ? ROUTES.EXPLORE : ROUTES.HOME;
 
   return (
-    <div className="space-y-3.5">
+    <div className={SIDEBAR_SECTION_STACK_CLASSES}>
       {context === "profile" && <ProfileMode />}
-      <section>
+      <SidebarSection ariaLabel={t("common.statistics")}>
         <StatisticsView statisticsData={statistics} navigationTarget={filterTarget} onDateSelect={() => setMobileOpen(false)} />
-      </section>
+      </SidebarSection>
       {showViews && <ViewsSection />}
       <TagsSection tagCount={tags} navigationTarget={filterTarget} scope={statsUserName ?? context} onSelect={() => setMobileOpen(false)} />
     </div>
@@ -272,7 +268,7 @@ const AttachmentsSidebarContent = () => {
     { value: "unused", icon: Trash2Icon, label: t("attachment-library.labels.unused"), count: isComplete ? stats.unused : undefined },
   ];
   return (
-    <div className="space-y-0.5">
+    <SidebarSection label={t("common.attachments")}>
       {rows.map((row) => (
         <SidebarRow
           key={row.value}
@@ -286,7 +282,7 @@ const AttachmentsSidebarContent = () => {
           }}
         />
       ))}
-    </div>
+    </SidebarSection>
   );
 };
 
@@ -310,7 +306,7 @@ const InboxSidebarContent = () => {
     },
   ];
   return (
-    <div className="space-y-0.5">
+    <SidebarSection label={t("common.inbox")}>
       {rows.map((row) => (
         <SidebarRow
           key={row.value}
@@ -324,7 +320,7 @@ const InboxSidebarContent = () => {
           }}
         />
       ))}
-    </div>
+    </SidebarSection>
   );
 };
 
@@ -343,29 +339,16 @@ const SettingsSidebarContent = () => {
         key={section.key}
         to={`${ROUTES.SETTING}#${section.key}`}
         onClick={() => setMobileOpen(false)}
-        className={cn(
-          SIDEBAR_ROW_CLASSES,
-          currentSection === section.key
-            ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-            : "text-muted-foreground hover:bg-sidebar-accent/65 hover:text-foreground",
-        )}
+        className={cn(SIDEBAR_ROW_CLASSES, sidebarRowStateClasses(currentSection === section.key))}
       >
         <section.icon className={SIDEBAR_ROW_ICON_CLASSES} strokeWidth={1.8} />
         <span className="truncate">{t(section.labelKey)}</span>
       </Link>
     ));
   return (
-    <div className="space-y-3.5">
-      <section>
-        <SidebarSectionHeader>{t("common.basic")}</SidebarSectionHeader>
-        <div className="space-y-0.5">{renderSections(basic)}</div>
-      </section>
-      {isHost && (
-        <section>
-          <SidebarSectionHeader>{t("common.admin")}</SidebarSectionHeader>
-          <div className="space-y-0.5">{renderSections(admin)}</div>
-        </section>
-      )}
+    <div className={SIDEBAR_SECTION_STACK_CLASSES}>
+      <SidebarSection label={t("common.basic")}>{renderSections(basic)}</SidebarSection>
+      {isHost && <SidebarSection label={t("common.admin")}>{renderSections(admin)}</SidebarSection>}
     </div>
   );
 };
@@ -391,7 +374,7 @@ const RouteSidebarContent = () => {
   if (kind === "home" || kind === "archived" || kind === "explore" || kind === "profile") {
     return <CollectionSidebarContent context={kind} />;
   }
-  if (kind === "shortcuts") return <ViewsSection manageActive />;
+  if (kind === "views") return <ViewsSection manageActive />;
   if (kind === "attachments") return <AttachmentsSidebarContent />;
   if (kind === "inbox") return <InboxSidebarContent />;
   if (kind === "settings") return <SettingsSidebarContent />;

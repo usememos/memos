@@ -64,6 +64,7 @@
     "last-updated-at": "Atualizado em",
     "learn-more": "Saiba mais",
     "link": "Link",
+    "manage": "Gerenciar",
     "map": "Mapa",
     "mark": "Vincular",
     "memo": "Memo",
@@ -94,8 +95,6 @@
     "select": "Selecionar",
     "settings": "Ajustes",
     "share": "Compartilhar",
-    "shortcut-filter": "Filtro de atalhos",
-    "shortcuts": "Atalhos",
     "sign-in": "Entrar",
     "sign-in-with": "Entrar com {{provider}}",
     "sign-out": "Sair",
@@ -113,6 +112,7 @@
     "username": "Nome de usuário",
     "version": "Versão",
     "visibility": "Visibilidade",
+    "views": "Vistas",
     "yourself": "Você mesmo"
   },
   "locale-picker": {
@@ -333,9 +333,9 @@
       "theme": "Tema",
       "label": "Preferências"
     },
-    "shortcut": {
-      "delete-confirm": "Tem certeza de que deseja deletar o atalho `{{title}}`?",
-      "delete-success": "Atalho `{{title}}` deletado com êxito"
+    "memo-view": {
+      "delete-confirm": "Tem certeza de que deseja excluir a vista `{{title}}`?",
+      "delete-success": "Vista `{{title}}` excluída com sucesso"
     },
     "sso": {
       "authorization-endpoint": "Endpoint de autenticação",

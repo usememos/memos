@@ -120,6 +120,7 @@
     "last-updated-at": "最後更新於",
     "learn-more": "了解更多",
     "link": "連結",
+    "manage": "管理",
     "map": "地圖",
     "mark": "標記",
     "memo": "備忘錄",
@@ -153,8 +154,6 @@
     "select": "選擇",
     "settings": "設定",
     "share": "分享",
-    "shortcut-filter": "篩選條件表達式",
-    "shortcuts": "快捷篩選",
     "sign-in": "登入",
     "sign-in-to-memos": "登入 Memos",
     "sign-in-with": "使用 {{provider}} 登入",
@@ -588,9 +587,9 @@
       "theme-description": "立即在此裝置上套入選定的主題。",
       "theme": "主題"
     },
-    "shortcut": {
-      "delete-confirm": "您確定要刪除快捷篩選 `{{title}}` 嗎？",
-      "delete-success": "快捷篩選 `{{title}}` 刪除成功"
+    "memo-view": {
+      "delete-confirm": "您確定要刪除檢視 `{{title}}` 嗎？",
+      "delete-success": "檢視 `{{title}}` 刪除成功"
     },
     "sso": {
       "account": "帳號",

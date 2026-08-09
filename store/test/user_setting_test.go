@@ -3,6 +3,7 @@ package test
 import (
 	"context"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -58,7 +59,7 @@ func TestUserSettingGetByUserID(t *testing.T) {
 	// Get non-existent key
 	nonExistentSetting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &user.ID,
-		Key:    storepb.UserSetting_SHORTCUTS,
+		Key:    storepb.UserSetting_MEMO_VIEWS,
 	})
 	require.NoError(t, err)
 	require.Nil(t, nonExistentSetting)
@@ -285,36 +286,36 @@ func TestUserSettingWebhooks(t *testing.T) {
 	ts.Close()
 }
 
-func TestUserSettingShortcuts(t *testing.T) {
+func TestUserSettingMemoViews(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
 
-	// Create shortcuts setting
-	shortcuts := &storepb.ShortcutsUserSetting{
-		Shortcuts: []*storepb.ShortcutsUserSetting_Shortcut{
-			{Id: "shortcut-1", Title: "Work Notes", Filter: "tag:work"},
-			{Id: "shortcut-2", Title: "Personal", Filter: "tag:personal"},
+	// Create memoViews setting
+	memoViews := &storepb.MemoViewsUserSetting{
+		MemoViews: []*storepb.MemoViewsUserSetting_MemoView{
+			{Id: "memoView-1", Title: "Work Notes", Filter: "tag:work"},
+			{Id: "memoView-2", Title: "Personal", Filter: "tag:personal"},
 		},
 	}
 	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSetting_SHORTCUTS,
-		Value:  &storepb.UserSetting_Shortcuts{Shortcuts: shortcuts},
+		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Value:  &storepb.UserSetting_MemoViews{MemoViews: memoViews},
 	})
 	require.NoError(t, err)
 
 	// Retrieve and verify
 	setting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &user.ID,
-		Key:    storepb.UserSetting_SHORTCUTS,
+		Key:    storepb.UserSetting_MEMO_VIEWS,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, setting)
-	require.Len(t, setting.GetShortcuts().Shortcuts, 2)
-	require.Equal(t, "Work Notes", setting.GetShortcuts().Shortcuts[0].Title)
+	require.Len(t, setting.GetMemoViews().MemoViews, 2)
+	require.Equal(t, "Work Notes", setting.GetMemoViews().MemoViews[0].Title)
 
 	ts.Close()
 }
@@ -744,13 +745,13 @@ func TestUserSettingMultipleSettingTypes(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	// Create SHORTCUTS setting
+	// Create MEMO_VIEWS setting
 	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSetting_SHORTCUTS,
-		Value: &storepb.UserSetting_Shortcuts{Shortcuts: &storepb.ShortcutsUserSetting{
-			Shortcuts: []*storepb.ShortcutsUserSetting_Shortcut{
-				{Id: "s1", Title: "Shortcut 1"},
+		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Value: &storepb.UserSetting_MemoViews{MemoViews: &storepb.MemoViewsUserSetting{
+			MemoViews: []*storepb.MemoViewsUserSetting_MemoView{
+				{Id: "s1", Title: "MemoView 1"},
 			},
 		}},
 	})
@@ -773,9 +774,9 @@ func TestUserSettingMultipleSettingTypes(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "ja", generalSetting.GetGeneral().Locale)
 
-	shortcutsSetting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{UserID: &user.ID, Key: storepb.UserSetting_SHORTCUTS})
+	memoViewsSetting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{UserID: &user.ID, Key: storepb.UserSetting_MEMO_VIEWS})
 	require.NoError(t, err)
-	require.Len(t, shortcutsSetting.GetShortcuts().Shortcuts, 1)
+	require.Len(t, memoViewsSetting.GetMemoViews().MemoViews, 1)
 
 	patsSetting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{UserID: &user.ID, Key: storepb.UserSetting_PERSONAL_ACCESS_TOKENS})
 	require.NoError(t, err)
@@ -784,7 +785,7 @@ func TestUserSettingMultipleSettingTypes(t *testing.T) {
 	ts.Close()
 }
 
-func TestUserSettingShortcutsEdgeCases(t *testing.T) {
+func TestUserSettingMemoViewsEdgeCases(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
@@ -795,101 +796,167 @@ func TestUserSettingShortcutsEdgeCases(t *testing.T) {
 	// Includes quotes, backslashes, newlines, and other JSON-sensitive characters
 	specialCharsFilter := `tag in ["work", "project"] && content.contains("urgent")`
 	specialCharsTitle := `Work "Urgent" \ Notes`
-	shortcuts := &storepb.ShortcutsUserSetting{
-		Shortcuts: []*storepb.ShortcutsUserSetting_Shortcut{
+	memoViews := &storepb.MemoViewsUserSetting{
+		MemoViews: []*storepb.MemoViewsUserSetting_MemoView{
 			{Id: "s1", Title: specialCharsTitle, Filter: specialCharsFilter},
 		},
 	}
 	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSetting_SHORTCUTS,
-		Value:  &storepb.UserSetting_Shortcuts{Shortcuts: shortcuts},
+		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Value:  &storepb.UserSetting_MemoViews{MemoViews: memoViews},
 	})
 	require.NoError(t, err)
 
 	setting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &user.ID,
-		Key:    storepb.UserSetting_SHORTCUTS,
+		Key:    storepb.UserSetting_MEMO_VIEWS,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, setting)
-	require.Len(t, setting.GetShortcuts().Shortcuts, 1)
-	require.Equal(t, specialCharsTitle, setting.GetShortcuts().Shortcuts[0].Title)
-	require.Equal(t, specialCharsFilter, setting.GetShortcuts().Shortcuts[0].Filter)
+	require.Len(t, setting.GetMemoViews().MemoViews, 1)
+	require.Equal(t, specialCharsTitle, setting.GetMemoViews().MemoViews[0].Title)
+	require.Equal(t, specialCharsFilter, setting.GetMemoViews().MemoViews[0].Filter)
 
 	// Case 2: Unicode characters
 	unicodeFilter := `tag in ["你好", "世界"]`
-	unicodeTitle := `My 🚀 Shortcuts`
-	shortcuts = &storepb.ShortcutsUserSetting{
-		Shortcuts: []*storepb.ShortcutsUserSetting_Shortcut{
+	unicodeTitle := `My 🚀 MemoViews`
+	memoViews = &storepb.MemoViewsUserSetting{
+		MemoViews: []*storepb.MemoViewsUserSetting_MemoView{
 			{Id: "s2", Title: unicodeTitle, Filter: unicodeFilter},
 		},
 	}
 	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSetting_SHORTCUTS,
-		Value:  &storepb.UserSetting_Shortcuts{Shortcuts: shortcuts},
+		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Value:  &storepb.UserSetting_MemoViews{MemoViews: memoViews},
 	})
 	require.NoError(t, err)
 
 	setting, err = ts.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &user.ID,
-		Key:    storepb.UserSetting_SHORTCUTS,
+		Key:    storepb.UserSetting_MEMO_VIEWS,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, setting)
-	require.Len(t, setting.GetShortcuts().Shortcuts, 1)
-	require.Equal(t, unicodeTitle, setting.GetShortcuts().Shortcuts[0].Title)
-	require.Equal(t, unicodeFilter, setting.GetShortcuts().Shortcuts[0].Filter)
+	require.Len(t, setting.GetMemoViews().MemoViews, 1)
+	require.Equal(t, unicodeTitle, setting.GetMemoViews().MemoViews[0].Title)
+	require.Equal(t, unicodeFilter, setting.GetMemoViews().MemoViews[0].Filter)
 
-	// Case 3: Empty shortcuts list
-	// Should allow saving an empty list (clearing shortcuts)
-	shortcuts = &storepb.ShortcutsUserSetting{
-		Shortcuts: []*storepb.ShortcutsUserSetting_Shortcut{},
+	// Case 3: Empty memoViews list
+	// Should allow saving an empty list (clearing memoViews)
+	memoViews = &storepb.MemoViewsUserSetting{
+		MemoViews: []*storepb.MemoViewsUserSetting_MemoView{},
 	}
 	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSetting_SHORTCUTS,
-		Value:  &storepb.UserSetting_Shortcuts{Shortcuts: shortcuts},
+		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Value:  &storepb.UserSetting_MemoViews{MemoViews: memoViews},
 	})
 	require.NoError(t, err)
 
 	setting, err = ts.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &user.ID,
-		Key:    storepb.UserSetting_SHORTCUTS,
+		Key:    storepb.UserSetting_MEMO_VIEWS,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, setting)
-	require.NotNil(t, setting.GetShortcuts())
-	require.Len(t, setting.GetShortcuts().Shortcuts, 0)
+	require.NotNil(t, setting.GetMemoViews())
+	require.Len(t, setting.GetMemoViews().MemoViews, 0)
 
 	// Case 4: Large filter string
 	// Test reasonable large string handling (e.g. 4KB)
 	largeFilter := strings.Repeat("tag:long_tag_name ", 200)
-	shortcuts = &storepb.ShortcutsUserSetting{
-		Shortcuts: []*storepb.ShortcutsUserSetting_Shortcut{
+	memoViews = &storepb.MemoViewsUserSetting{
+		MemoViews: []*storepb.MemoViewsUserSetting_MemoView{
 			{Id: "s3", Title: "Large Filter", Filter: largeFilter},
 		},
 	}
 	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSetting_SHORTCUTS,
-		Value:  &storepb.UserSetting_Shortcuts{Shortcuts: shortcuts},
+		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Value:  &storepb.UserSetting_MemoViews{MemoViews: memoViews},
 	})
 	require.NoError(t, err)
 
 	setting, err = ts.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &user.ID,
-		Key:    storepb.UserSetting_SHORTCUTS,
+		Key:    storepb.UserSetting_MEMO_VIEWS,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, setting)
-	require.Equal(t, largeFilter, setting.GetShortcuts().Shortcuts[0].Filter)
+	require.Equal(t, largeFilter, setting.GetMemoViews().MemoViews[0].Filter)
 
 	ts.Close()
 }
 
-func TestUserSettingShortcutsPartialUpdate(t *testing.T) {
+func TestUserMemoViewConcurrentPartialUpdates(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+	require.NoError(t, ts.AddUserMemoView(ctx, user.ID, &storepb.MemoViewsUserSetting_MemoView{
+		Id:     "work",
+		Title:  "Original title",
+		Filter: `tag in ["original"]`,
+	}))
+
+	updatedTitle := "Updated title"
+	updatedFilter := `tag in ["updated"]`
+	var wg sync.WaitGroup
+	errs := make([]error, 2)
+	start := make(chan struct{})
+
+	wg.Go(func() {
+		<-start
+		_, errs[0] = ts.UpdateUserMemoView(ctx, user.ID, "work", &updatedTitle, nil)
+	})
+	wg.Go(func() {
+		<-start
+		_, errs[1] = ts.UpdateUserMemoView(ctx, user.ID, "work", nil, &updatedFilter)
+	})
+	close(start)
+	wg.Wait()
+	for _, err := range errs {
+		require.NoError(t, err)
+	}
+
+	memoViews, err := ts.GetUserMemoViews(ctx, user.ID)
+	require.NoError(t, err)
+	require.Len(t, memoViews, 1)
+	require.Equal(t, updatedTitle, memoViews[0].GetTitle())
+	require.Equal(t, updatedFilter, memoViews[0].GetFilter())
+}
+
+func TestGetUserMemoViewsReturnsCopies(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	require.NoError(t, ts.AddUserMemoView(ctx, user.ID, &storepb.MemoViewsUserSetting_MemoView{
+		Id:     "work",
+		Title:  "Original title",
+		Filter: `tag in ["original"]`,
+	}))
+
+	firstRead, err := ts.GetUserMemoViews(ctx, user.ID)
+	require.NoError(t, err)
+	require.Len(t, firstRead, 1)
+	firstRead[0].Title = "Mutated title"
+
+	secondRead, err := ts.GetUserMemoViews(ctx, user.ID)
+	require.NoError(t, err)
+	require.Len(t, secondRead, 1)
+	require.Equal(t, "Original title", secondRead[0].GetTitle())
+}
+
+func TestUserSettingMemoViewsPartialUpdate(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
@@ -897,23 +964,23 @@ func TestUserSettingShortcutsPartialUpdate(t *testing.T) {
 	require.NoError(t, err)
 
 	// Initial set
-	shortcuts := &storepb.ShortcutsUserSetting{
-		Shortcuts: []*storepb.ShortcutsUserSetting_Shortcut{
+	memoViews := &storepb.MemoViewsUserSetting{
+		MemoViews: []*storepb.MemoViewsUserSetting_MemoView{
 			{Id: "s1", Title: "Note 1", Filter: "tag:1"},
 			{Id: "s2", Title: "Note 2", Filter: "tag:2"},
 		},
 	}
 	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSetting_SHORTCUTS,
-		Value:  &storepb.UserSetting_Shortcuts{Shortcuts: shortcuts},
+		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Value:  &storepb.UserSetting_MemoViews{MemoViews: memoViews},
 	})
 	require.NoError(t, err)
 
 	// Update by replacing the whole list (Store Upsert replaces the value for the key)
 	// We want to verify that we can "update" a single item by sending the modified list
-	updatedShortcuts := &storepb.ShortcutsUserSetting{
-		Shortcuts: []*storepb.ShortcutsUserSetting_Shortcut{
+	updatedMemoViews := &storepb.MemoViewsUserSetting{
+		MemoViews: []*storepb.MemoViewsUserSetting_MemoView{
 			{Id: "s1", Title: "Note 1 Updated", Filter: "tag:1_updated"},
 			{Id: "s2", Title: "Note 2", Filter: "tag:2"},
 			{Id: "s3", Title: "Note 3", Filter: "tag:3"}, // Add new one
@@ -921,21 +988,21 @@ func TestUserSettingShortcutsPartialUpdate(t *testing.T) {
 	}
 	_, err = ts.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
-		Key:    storepb.UserSetting_SHORTCUTS,
-		Value:  &storepb.UserSetting_Shortcuts{Shortcuts: updatedShortcuts},
+		Key:    storepb.UserSetting_MEMO_VIEWS,
+		Value:  &storepb.UserSetting_MemoViews{MemoViews: updatedMemoViews},
 	})
 	require.NoError(t, err)
 
 	setting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{
 		UserID: &user.ID,
-		Key:    storepb.UserSetting_SHORTCUTS,
+		Key:    storepb.UserSetting_MEMO_VIEWS,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, setting)
-	require.Len(t, setting.GetShortcuts().Shortcuts, 3)
+	require.Len(t, setting.GetMemoViews().MemoViews, 3)
 
 	// Verify updates
-	for _, s := range setting.GetShortcuts().Shortcuts {
+	for _, s := range setting.GetMemoViews().MemoViews {
 		if s.Id == "s1" {
 			require.Equal(t, "Note 1 Updated", s.Title)
 			require.Equal(t, "tag:1_updated", s.Filter)

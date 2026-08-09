@@ -64,6 +64,7 @@
     "last-updated-at": "Terakhir diperbarui pada",
     "learn-more": "Pelajari lebih lanjut",
     "link": "Tautan",
+    "manage": "Kelola",
     "map": "Peta",
     "mark": "Tandai",
     "memo": "Memo",
@@ -94,8 +95,6 @@
     "select": "Pilih",
     "settings": "Pengaturan",
     "share": "Bagikan",
-    "shortcut-filter": "Saring pintasan",
-    "shortcuts": "Pintasan",
     "sign-in": "Masuk",
     "sign-in-with": "Masuk dengan {{provider}}",
     "sign-out": "Keluar",
@@ -113,6 +112,7 @@
     "username": "Nama pengguna",
     "version": "Versi",
     "visibility": "Visibilitas",
+    "views": "Tampilan",
     "yourself": "Anda sendiri"
   },
   "locale-picker": {
@@ -333,9 +333,9 @@
       "theme": "Tema",
       "label": "Preferensi"
     },
-    "shortcut": {
-      "delete-confirm": "Apakah Anda yakin ingin menghapus pintasan `{{title}}`?",
-      "delete-success": "Pintasan `{{title}}` berhasil dihapus"
+    "memo-view": {
+      "delete-confirm": "Apakah Anda yakin ingin menghapus tampilan `{{title}}`?",
+      "delete-success": "Tampilan `{{title}}` berhasil dihapus"
     },
     "sso": {
       "authorization-endpoint": "Akhir Otorisasi",

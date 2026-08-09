@@ -114,6 +114,106 @@ func TestMigrationMultipleReRuns(t *testing.T) {
 	require.Equal(t, initialVersion, finalVersion, "version should remain unchanged after multiple re-runs")
 }
 
+// TestMigrationMemoViewSetting verifies the 0.31 rename of the SHORTCUTS user setting
+// to MEMO_VIEWS on every driver, since each one rewrites the stored JSON with its own
+// dialect-specific functions.
+func TestMigrationMemoViewSetting(t *testing.T) {
+	ctx := context.Background()
+	driver := getDriverFromEnv()
+	var dsn string
+	switch driver {
+	case "sqlite":
+		dsn = fmt.Sprintf("%s/memos_memo_view_migration.db", t.TempDir())
+	case "mysql":
+		dsn = GetMySQLDSN(t)
+	case "postgres":
+		dsn = GetPostgresDSN(t)
+	default:
+		t.Fatalf("unsupported driver: %s", driver)
+	}
+
+	db, err := sql.Open(driver, dsn)
+	require.NoError(t, err)
+
+	_, err = db.ExecContext(ctx, legacySchemaFixture(driver))
+	require.NoError(t, err)
+
+	basicSettingBytes, err := protojson.Marshal(&storepb.InstanceBasicSetting{SchemaVersion: "0.30.2"})
+	require.NoError(t, err)
+	insertBasicSetting := "INSERT INTO system_setting (name, value, description) VALUES ('BASIC', ?, '')"
+	if driver == "postgres" {
+		insertBasicSetting = "INSERT INTO system_setting (name, value, description) VALUES ('BASIC', $1, '')"
+	}
+	_, err = db.ExecContext(ctx, insertBasicSetting, string(basicSettingBytes))
+	require.NoError(t, err)
+
+	settingKeyColumn := "key"
+	if driver == "mysql" {
+		settingKeyColumn = "`key`"
+	}
+	// Bound rather than inlined: MySQL treats backslash as an escape character inside
+	// string literals, so an inlined \" would collapse and corrupt the fixture's JSON.
+	insertSetting := fmt.Sprintf("INSERT INTO user_setting (user_id, %[1]s, value) VALUES (?, ?, ?)", settingKeyColumn)
+	if driver == "postgres" {
+		insertSetting = fmt.Sprintf("INSERT INTO user_setting (user_id, %[1]s, value) VALUES ($1, $2, $3)", settingKeyColumn)
+	}
+	settingRows := []struct {
+		userID int
+		key    string
+		value  string
+	}{
+		// A normal legacy row, must be renamed and rewritten.
+		{1, "SHORTCUTS", `{"shortcuts":[{"id":"work","title":"shortcuts","filter":"tag in [\"work\"]"}]}`},
+		// A corrupt value, must be left alone rather than aborting the upgrade.
+		{2, "SHORTCUTS", `{oops}`},
+		// Already has a MEMO_VIEWS row, must not trip UNIQUE(user_id, key).
+		{3, "SHORTCUTS", `{"shortcuts":[{"id":"old","title":"old","filter":"tag in [\"old\"]"}]}`},
+		{3, "MEMO_VIEWS", `{"memoViews":[{"id":"new","title":"new","filter":"tag in [\"new\"]"}]}`},
+	}
+	for _, row := range settingRows {
+		_, err = db.ExecContext(ctx, insertSetting, row.userID, row.key, row.value)
+		require.NoError(t, err)
+	}
+	require.NoError(t, db.Close())
+
+	ts := NewTestingStoreWithDSN(ctx, t, driver, dsn)
+	require.NoError(t, ts.Migrate(ctx))
+	defer ts.Close()
+
+	migratedUserID := int32(1)
+	setting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{
+		UserID: &migratedUserID,
+		Key:    storepb.UserSetting_MEMO_VIEWS,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, setting)
+	require.Len(t, setting.GetMemoViews().GetMemoViews(), 1)
+	require.Equal(t, "work", setting.GetMemoViews().GetMemoViews()[0].GetId())
+	require.Equal(t, "shortcuts", setting.GetMemoViews().GetMemoViews()[0].GetTitle())
+	require.Equal(t, `tag in ["work"]`, setting.GetMemoViews().GetMemoViews()[0].GetFilter())
+
+	// Malformed object-like JSON must neither abort the migration nor be renamed.
+	findCorruptSetting := fmt.Sprintf("SELECT value FROM user_setting WHERE user_id = ? AND %s = ?", settingKeyColumn)
+	if driver == "postgres" {
+		findCorruptSetting = fmt.Sprintf("SELECT value FROM user_setting WHERE user_id = $1 AND %s = $2", settingKeyColumn)
+	}
+	var corruptValue string
+	err = ts.GetDriver().GetDB().QueryRowContext(ctx, findCorruptSetting, 2, "SHORTCUTS").Scan(&corruptValue)
+	require.NoError(t, err)
+	require.Equal(t, `{oops}`, corruptValue)
+
+	// The pre-existing MEMO_VIEWS row wins; the legacy row is left behind untouched.
+	conflictUserID := int32(3)
+	conflicting, err := ts.GetUserSetting(ctx, &store.FindUserSetting{
+		UserID: &conflictUserID,
+		Key:    storepb.UserSetting_MEMO_VIEWS,
+	})
+	require.NoError(t, err)
+	require.NotNil(t, conflicting)
+	require.Len(t, conflicting.GetMemoViews().GetMemoViews(), 1)
+	require.Equal(t, "new", conflicting.GetMemoViews().GetMemoViews()[0].GetId())
+}
+
 // TestMigrationCopiesInstanceTagsToUserSettings verifies instance tag metadata is copied into user settings.
 func TestMigrationCopiesInstanceTagsToUserSettings(t *testing.T) {
 	if getDriverFromEnv() != "sqlite" {
@@ -237,7 +337,7 @@ func TestCaseSensitiveUsernameMigration(t *testing.T) {
 	db, err := sql.Open(driver, dsn)
 	require.NoError(t, err)
 
-	_, err = db.ExecContext(ctx, caseSensitiveUsernameMigrationFixture(driver))
+	_, err = db.ExecContext(ctx, legacySchemaFixture(driver))
 	require.NoError(t, err)
 
 	basicSettingBytes, err := protojson.Marshal(&storepb.InstanceBasicSetting{SchemaVersion: "0.30.1"})
@@ -272,7 +372,7 @@ func TestCaseSensitiveUsernameMigration(t *testing.T) {
 	require.Equal(t, "Alice", upper.Username)
 }
 
-func caseSensitiveUsernameMigrationFixture(driver string) string {
+func legacySchemaFixture(driver string) string {
 	switch driver {
 	case "mysql":
 		return `
@@ -293,6 +393,12 @@ func caseSensitiveUsernameMigrationFixture(driver string) string {
 				password_hash VARCHAR(256) NOT NULL,
 				avatar_url LONGTEXT NOT NULL,
 				description VARCHAR(256) NOT NULL DEFAULT ''
+			);
+			CREATE TABLE user_setting (
+				user_id INT NOT NULL,
+				` + "`key`" + ` VARCHAR(256) NOT NULL,
+				value LONGTEXT NOT NULL,
+				UNIQUE(user_id, ` + "`key`" + `)
 			);
 			CREATE TABLE memo (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY);
 		`
@@ -316,6 +422,12 @@ func caseSensitiveUsernameMigrationFixture(driver string) string {
 				avatar_url TEXT NOT NULL,
 				description TEXT NOT NULL DEFAULT ''
 			);
+			CREATE TABLE user_setting (
+				user_id INTEGER NOT NULL,
+				key TEXT NOT NULL,
+				value TEXT NOT NULL,
+				UNIQUE(user_id, key)
+			);
 			CREATE TABLE memo (id SERIAL PRIMARY KEY);
 		`
 	case "sqlite":
@@ -338,6 +450,12 @@ func caseSensitiveUsernameMigrationFixture(driver string) string {
 				password_hash TEXT NOT NULL,
 				avatar_url TEXT NOT NULL DEFAULT '',
 				description TEXT NOT NULL DEFAULT ''
+			);
+			CREATE TABLE user_setting (
+				user_id INTEGER NOT NULL,
+				key TEXT NOT NULL,
+				value TEXT NOT NULL,
+				UNIQUE(user_id, key)
 			);
 			CREATE TABLE memo (id INTEGER PRIMARY KEY AUTOINCREMENT);
 		`

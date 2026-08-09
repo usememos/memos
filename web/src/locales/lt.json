@@ -103,6 +103,7 @@
     "last-updated-at": "Paskutinį kartą atnaujinta",
     "learn-more": "Sužinokite daugiau",
     "link": "Nuoroda",
+    "manage": "Tvarkyti",
     "map": "Žemėlapis",
     "mark": "Pažymėti",
     "memo": "Atmintinė",
@@ -133,8 +134,6 @@
     "select": "Pasirinkite",
     "settings": "Nustatymai",
     "share": "Dalintis",
-    "shortcut-filter": "Nuorodų filtras",
-    "shortcuts": "Spartieji klavišai",
     "sign-in": "Prisijunkite",
     "sign-in-with": "Prisijunkite naudodami {{provider}}",
     "sign-out": "Atsijungti",
@@ -153,6 +152,7 @@
     "username": "Vartotojo vardas",
     "version": "Versija",
     "visibility": "Matomumas",
+    "views": "Rodiniai",
     "yourself": "save"
   },
   "locale-picker": {
@@ -571,9 +571,9 @@
       "theme-description": "Šiame įrenginyje iš karto pritaiko pasirinktą temą.",
       "theme": "tema"
     },
-    "shortcut": {
-      "delete-confirm": "Ar tikrai norite ištrinti spartųjį klavišą `{{title}}`?",
-      "delete-success": "Spartusis klavišas `{{title}}` sėkmingai ištrintas"
+    "memo-view": {
+      "delete-confirm": "Ar tikrai norite ištrinti rodinį `{{title}}`?",
+      "delete-success": "Rodinys `{{title}}` sėkmingai ištrintas"
     },
     "sso": {
       "account": "sąskaita",

@@ -103,6 +103,7 @@
     "last-updated-at": "Viimeksi päivitetty klo",
     "learn-more": "Lue lisää",
     "link": "Linkki",
+    "manage": "Hallinnoi",
     "map": "Kartta",
     "mark": "Mark",
     "memo": "Muistio",
@@ -133,8 +134,6 @@
     "select": "Valitse",
     "settings": "Asetukset",
     "share": "Jakaa",
-    "shortcut-filter": "Pikakuvakesuodatin",
-    "shortcuts": "Pikanäppäimet",
     "sign-in": "Kirjaudu sisään",
     "sign-in-with": "Kirjaudu sisään {{provider}}:llä",
     "sign-out": "Kirjaudu ulos",
@@ -153,6 +152,7 @@
     "username": "Käyttäjätunnus",
     "version": "Versio",
     "visibility": "Näkyvyys",
+    "views": "Näkymät",
     "yourself": "itseäsi"
   },
   "locale-picker": {
@@ -571,9 +571,9 @@
       "theme-description": "Ottaa valitun teeman käyttöön välittömästi tässä laitteessa.",
       "theme": "Teema"
     },
-    "shortcut": {
-      "delete-confirm": "Haluatko varmasti poistaa pikakuvakkeen `{{title}}`?",
-      "delete-success": "Pikakuvake `{{title}}` poistettu onnistuneesti"
+    "memo-view": {
+      "delete-confirm": "Haluatko varmasti poistaa näkymän `{{title}}`?",
+      "delete-success": "Näkymä `{{title}}` poistettu onnistuneesti"
     },
     "sso": {
       "account": "Tili",

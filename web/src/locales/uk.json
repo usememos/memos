@@ -65,6 +65,7 @@
     "last-updated-at": "Останнє оновлення",
     "learn-more": "Дізнатися більше",
     "link": "Посилання",
+    "manage": "Керувати",
     "map": "Мапа",
     "mark": "Позначити",
     "memo": "Нотатка",
@@ -95,8 +96,6 @@
     "select": "Вибрати",
     "settings": "Налаштування",
     "share": "Поділитися",
-    "shortcut-filter": "Фільтр ярликів",
-    "shortcuts": "Ярлики",
     "sign-in": "Увійти",
     "sign-in-with": "Увійти через {{provider}}",
     "sign-out": "Вийти",
@@ -114,6 +113,7 @@
     "username": "Ім'я користувача",
     "version": "Версія",
     "visibility": "Видимість",
+    "views": "Подання",
     "yourself": "Ви",
     "empty-placeholder": "Порожній",
     "unlink": "Від’єднати"
@@ -454,9 +454,9 @@
       "memo-defaults-title": "Пам'ятки за замовчуванням",
       "theme-description": "Вибрану тему негайно застосовує на цьому пристрої."
     },
-    "shortcut": {
-      "delete-confirm": "Ви впевнені, що хочете видалити ярлик `{{title}}`?",
-      "delete-success": "Ярлик `{{title}}` успішно видалено"
+    "memo-view": {
+      "delete-confirm": "Ви впевнені, що хочете видалити подання `{{title}}`?",
+      "delete-success": "Подання `{{title}}` успішно видалено"
     },
     "sso": {
       "authorization-endpoint": "Точка авторизації",

@@ -4,7 +4,7 @@ import {
   BUILTIN_TASKS_VIEW_FILTER,
   BUILTIN_TASKS_VIEW_ID,
   getMemoScopePath,
-  getShortcutId,
+  getMemoViewId,
   isMemoScopeRoute,
   resolveMemoScope,
 } from "@/lib/memo-views";
@@ -36,14 +36,14 @@ describe("memo views", () => {
   it("uses a collision-safe built-in Tasks view", () => {
     expect(BUILTIN_TASKS_VIEW_ID).not.toBe("tasks");
     expect(BUILTIN_TASKS_VIEW_FILTER).toBe("has_task_list && has_incomplete_tasks");
-    expect(getShortcutId("users/steven/shortcuts/work")).toBe("work");
+    expect(getMemoViewId("users/steven/views/work")).toBe("work");
   });
 
   it("composes Tasks with search, tags, creator, and visibility", () => {
     expect(
       buildMemoFilter({
         creatorName: "users/steven",
-        currentShortcut: BUILTIN_TASKS_VIEW_ID,
+        currentMemoView: BUILTIN_TASKS_VIEW_ID,
         filters: [
           { factor: "contentSearch", value: "plan" },
           { factor: "tagSearch", value: "work" },
@@ -56,13 +56,13 @@ describe("memo views", () => {
     );
   });
 
-  it("uses a custom shortcut filter when Tasks is not selected", () => {
+  it("uses a custom memo view filter when Tasks is not selected", () => {
     expect(
       buildMemoFilter({
-        currentShortcut: "work",
+        currentMemoView: "work",
         filters: [],
         includePinned: false,
-        selectedShortcutFilter: 'tag in ["work"]',
+        selectedMemoViewFilter: 'tag in ["work"]',
       }),
     ).toBe('tag in ["work"]');
   });

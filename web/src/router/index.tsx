@@ -25,7 +25,7 @@ const NotFound = lazyWithReload(() => import("@/pages/NotFound"));
 const PermissionDenied = lazyWithReload(() => import("@/pages/PermissionDenied"));
 const Attachments = lazyWithReload(() => import("@/pages/Attachments"));
 const Setting = lazyWithReload(() => import("@/pages/Setting"));
-const Shortcuts = lazyWithReload(() => import("@/pages/Shortcuts"));
+const MemoViews = lazyWithReload(() => import("@/pages/MemoViews"));
 const SignIn = lazyWithReload(() => import("@/pages/SignIn"));
 const SignUp = lazyWithReload(() => import("@/pages/SignUp"));
 const UserProfile = lazyWithReload(() => import("@/pages/UserProfile"));
@@ -91,7 +91,7 @@ export const routeConfig: RouteObject[] = [
                   { path: Routes.ARCHIVED, element: <Archived /> },
                   {
                     element: <RequireFullInitializationRoute />,
-                    children: [{ path: Routes.SHORTCUTS, element: <Shortcuts /> }],
+                    children: [{ path: Routes.VIEWS, element: <MemoViews /> }],
                   },
                 ],
               },

@@ -21,7 +21,7 @@ const Home = () => {
 
   const memoFilter = useMemoFilters({
     creatorName: user?.name,
-    includeShortcuts: true,
+    includeMemoViews: true,
     includePinned: true,
   });
 

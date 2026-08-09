@@ -59,7 +59,7 @@ const UserProfile = () => {
 
   const memoFilter = useMemoFilters({
     creatorName: user?.name,
-    includeShortcuts: false,
+    includeMemoViews: false,
     includePinned: true,
   });
 

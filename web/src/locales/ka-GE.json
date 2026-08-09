@@ -65,6 +65,7 @@
     "last-updated-at": "ბოლო განახლება",
     "learn-more": "გაიგეთ მეტი",
     "link": "ლინკი",
+    "manage": "მართვა",
     "map": "რუკა",
     "mark": "მონიშვნა",
     "memo": "მემო",
@@ -95,8 +96,6 @@
     "select": "არჩევა",
     "settings": "პარამეტრები",
     "share": "გაზიარება",
-    "shortcut-filter": "მოკლე გზების ფილტრი",
-    "shortcuts": "მოკლე გზები",
     "sign-in": "შესვლა",
     "sign-in-with": "შედით {{provider}}-ით",
     "sign-out": "გამოსვლა",
@@ -114,6 +113,7 @@
     "username": "მომხმარებლის სახელი",
     "version": "ვერსია",
     "visibility": "ხილვადობა",
+    "views": "ხედები",
     "yourself": "თქვენ",
     "empty-placeholder": "ცარიელი",
     "unlink": "გაუქმება"
@@ -454,9 +454,9 @@
       "memo-defaults-title": "Memo ნაგულისხმევი",
       "theme-description": "არჩეულ თემას დაუყოვნებლივ იყენებს ამ მოწყობილობაზე."
     },
-    "shortcut": {
-      "delete-confirm": "დარწმუნებული ხართ, რომ გინდათ მოკლე გზის `{{title}}` წაშლა?",
-      "delete-success": "მოკლე გზა `{{title}}` წარმატებით წაიშალა"
+    "memo-view": {
+      "delete-confirm": "დარწმუნებული ხართ, რომ გინდათ ხედის `{{title}}` წაშლა?",
+      "delete-success": "ხედი `{{title}}` წარმატებით წაიშალა"
     },
     "sso": {
       "authorization-endpoint": "ავტორიზაციის წერტილი",

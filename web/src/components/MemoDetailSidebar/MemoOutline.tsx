@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { SIDEBAR_ROW_BOX_CLASSES } from "@/components/AppSidebar/SidebarRow";
 import type { HeadingItem } from "@/components/MemoContent/pipeline";
 import { cn } from "@/lib/utils";
 import { findAnchorTarget, findMemoContentRoot } from "@/utils/markdown-manipulation";
@@ -62,7 +63,7 @@ const MemoOutline = ({ headings, memoName }: MemoOutlineProps) => {
   };
 
   return (
-    <nav className="relative flex flex-col">
+    <nav className="relative flex flex-col gap-0.5">
       {headings.map((heading, index) => {
         const active = heading.slug === activeSlug;
         return (
@@ -72,7 +73,8 @@ const MemoOutline = ({ headings, memoName }: MemoOutlineProps) => {
             onClick={(e) => handleClick(e, heading.slug)}
             aria-current={active ? "location" : undefined}
             className={cn(
-              "relative flex h-[30px] min-w-0 items-center rounded-md pr-2 text-[13px] leading-[18px] transition-colors",
+              SIDEBAR_ROW_BOX_CLASSES,
+              "relative",
               heading.level === minLevel && "font-medium",
               active ? "text-foreground" : "text-muted-foreground/70 hover:bg-sidebar-accent/65 hover:text-foreground",
             )}
