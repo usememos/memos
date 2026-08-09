@@ -457,7 +457,11 @@ func (s *Store) GetUserMemoViews(ctx context.Context, userID int32) ([]*storepb.
 	clonedMemoViews := make([]*storepb.MemoViewsUserSetting_MemoView, len(memoViews))
 	for i, memoView := range memoViews {
 		if memoView != nil {
-			clonedMemoViews[i] = proto.Clone(memoView).(*storepb.MemoViewsUserSetting_MemoView)
+			clonedMemoView, ok := proto.Clone(memoView).(*storepb.MemoViewsUserSetting_MemoView)
+			if !ok {
+				return nil, errors.New("failed to clone memo view")
+			}
+			clonedMemoViews[i] = clonedMemoView
 		}
 	}
 	return clonedMemoViews, nil
