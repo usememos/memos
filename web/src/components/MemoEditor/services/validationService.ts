@@ -1,3 +1,4 @@
+import { findInvalidManagedAttachmentReferences } from "@/utils/managed-attachment";
 import type { EditorState } from "../state";
 
 export interface ValidationResult {
@@ -20,6 +21,17 @@ export const validationService = {
     // Cannot save while uploading
     if (state.ui.isLoading.uploading) {
       return { valid: false, reason: "Wait for upload to complete" };
+    }
+
+    if (state.ui.pendingInlineImageInsertions > 0) {
+      return { valid: false, reason: "Resolve image uploads before saving" };
+    }
+
+    // The API rejects these outright, so catch them here rather than letting the
+    // save fail with an opaque error that doesn't say which URL is at fault.
+    const [invalidReference] = findInvalidManagedAttachmentReferences(state.content);
+    if (invalidReference) {
+      return { valid: false, reason: `Unsupported attachment image URL: ${invalidReference}` };
     }
 
     // Cannot save while audio recorder is active

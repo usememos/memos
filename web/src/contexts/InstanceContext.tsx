@@ -17,6 +17,7 @@ import {
   InstanceSetting_StorageSetting,
   InstanceSetting_StorageSettingSchema,
 } from "@/types/proto/api/v1/instance_service_pb";
+import { setManagedAttachmentInstanceUrl } from "@/utils/managed-attachment";
 
 const instanceSettingNamePrefix = "instance/settings/";
 
@@ -111,6 +112,10 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
     const profileRequest = instanceServiceClient
       .getInstanceProfile({})
       .then((profile) => {
+        // Managed attachment URLs are resolved against the instance URL, and the
+        // parser runs outside React (card layout estimation), so it reads the
+        // value from module scope rather than from this context.
+        setManagedAttachmentInstanceUrl(profile.instanceUrl);
         setState((prev) => ({
           ...prev,
           profile,

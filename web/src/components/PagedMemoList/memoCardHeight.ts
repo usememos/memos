@@ -3,6 +3,7 @@ import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import { MemoRelation_Type } from "@/types/proto/api/v1/memo_service_pb";
 import { getAttachmentType, isMotionAttachment } from "@/utils/attachment";
+import { filterInlineManagedAttachments } from "@/utils/managed-attachment";
 import { buildAttachmentVisualItems } from "@/utils/media-item";
 
 interface EstimateMemoCardHeightOptions {
@@ -99,7 +100,7 @@ const estimateCommentPreviewHeight = (memo: Memo): number => {
 export const estimateMemoCardHeight = (memo: Memo, { columnWidth }: EstimateMemoCardHeightOptions): number => {
   const content = memo.content ?? "";
   const contentHeight = estimateWrappedTextHeight(content, columnWidth) + countMarkdownImages(content) * MARKDOWN_IMAGE_HEIGHT;
-  const attachmentHeight = estimateAttachmentSectionHeight(memo.attachments ?? [], columnWidth);
+  const attachmentHeight = estimateAttachmentSectionHeight(filterInlineManagedAttachments(content, memo.attachments ?? []), columnWidth);
   const bodyHeight = contentHeight + attachmentHeight + (contentHeight > 0 && attachmentHeight > 0 ? CARD_SECTION_GAP : 0);
   const compactBodyHeight = bodyHeight > CLAMP_TRIGGER_HEIGHT_PX ? CLAMP_PREVIEW_HEIGHT_PX + SHOW_MORE_BUTTON_HEIGHT : bodyHeight;
   const reactionHeight = (memo.reactions ?? []).length > 0 ? CARD_SECTION_GAP + REACTION_ROW_HEIGHT : 0;

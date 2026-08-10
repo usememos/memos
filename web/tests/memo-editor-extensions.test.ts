@@ -57,17 +57,16 @@ describe("MemoEditor CodeMirror extensions", () => {
       parent,
     });
     views.push(view);
+    view.dispatch({ selection: { anchor: 2 } });
     const file = new File(["must not become memo content"], "attachment.txt", { type: "text/plain" });
     const transfer =
-      eventType === "paste"
-        ? { items: [{ kind: "file", getAsFile: () => file }], files: [file] }
-        : { files: [file], types: ["Files"] };
+      eventType === "paste" ? { items: [{ kind: "file", getAsFile: () => file }], files: [file] } : { files: [file], types: ["Files"] };
     const event = new Event(eventType, { bubbles: true, cancelable: true });
     Object.defineProperty(event, transferProperty, { value: transfer });
 
     view.contentDOM.dispatchEvent(event);
 
-    expect(onFiles).toHaveBeenCalledWith([file]);
+    expect(onFiles).toHaveBeenCalledWith([file], eventType === "paste" ? 2 : 0);
     expect(event.defaultPrevented).toBe(true);
     expect(view.state.doc.toString()).toBe("memo");
   });

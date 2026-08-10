@@ -191,8 +191,16 @@
     "save": "保存",
     "saving": "保存中...",
     "insert-menu": {
+      "add-attachment": "添加附件",
       "add-location": "添加位置",
+      "image-upload-failed": "部分图片上传失败，请重试或将已上传文件保留为附件。",
+      "image-upload-stopped": "图片上传已暂停 {{completed}}/{{total}}",
+      "insert-image": "插入图片",
+      "keep-as-attachments": "保留为附件",
       "link-memo": "链接备忘录",
+      "retry-image-upload": "重试",
+      "uploading-inline-image": "正在上传到正文",
+      "uploading-images": "正在上传图片 {{completed}}/{{total}}",
       "upload-file": "上传文件"
     },
     "audio-recorder": {

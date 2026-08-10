@@ -186,8 +186,16 @@
     "exit-focus-mode": "退出專注模式",
     "focus-mode": "專注模式",
     "insert-menu": {
+      "add-attachment": "新增附件",
       "add-location": "新增位置",
+      "image-upload-failed": "部分圖片上傳失敗，請重試或將已上傳檔案保留為附件。",
+      "image-upload-stopped": "圖片上傳已暫停 {{completed}}/{{total}}",
+      "insert-image": "插入圖片",
+      "keep-as-attachments": "保留為附件",
       "link-memo": "連結備忘錄",
+      "retry-image-upload": "重試",
+      "uploading-inline-image": "正在上傳到正文",
+      "uploading-images": "正在上傳圖片 {{completed}}/{{total}}",
       "upload-file": "上傳文件"
     },
     "no-changes-detected": "未發現變更",

@@ -1,5 +1,7 @@
+import { create } from "@bufbuild/protobuf";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cacheService } from "@/components/MemoEditor/services/cacheService";
+import { AttachmentSchema, MotionMediaFamily, MotionMediaRole, MotionMediaSchema } from "@/types/proto/api/v1/attachment_service_pb";
 
 describe("memo editor cache", () => {
   beforeEach(() => {
@@ -37,6 +39,40 @@ describe("memo editor cache", () => {
     localStorage.setItem(key, JSON.stringify({ kind: "memos.editor-cache", version: 1, content: "- [ ] migrated task" }));
 
     expect(cacheService.load(key)).toBe("- [ ] migrated task");
+  });
+
+  it("round-trips uploaded attachment metadata with a structured draft", () => {
+    const key = cacheService.key("users/steven", "home-memo-editor");
+    const attachment = create(AttachmentSchema, {
+      name: "attachments/image-one",
+      filename: "garden.png",
+      externalLink: "https://cdn.example.com/garden.png",
+      type: "image/png",
+      size: 42n,
+      motionMedia: create(MotionMediaSchema, {
+        family: MotionMediaFamily.APPLE_LIVE_PHOTO,
+        role: MotionMediaRole.STILL,
+        groupId: "live-one",
+      }),
+    });
+
+    cacheService.saveNow(key, "![garden](/file/attachments/image-one)", [attachment]);
+
+    const restored = cacheService.loadDraft(key);
+    expect(restored.content).toBe("![garden](/file/attachments/image-one)");
+    expect(restored.attachments).toHaveLength(1);
+    expect(restored.attachments[0]).toMatchObject({
+      name: "attachments/image-one",
+      filename: "garden.png",
+      externalLink: "https://cdn.example.com/garden.png",
+      type: "image/png",
+      size: 42n,
+      motionMedia: {
+        family: MotionMediaFamily.APPLE_LIVE_PHOTO,
+        role: MotionMediaRole.STILL,
+        groupId: "live-one",
+      },
+    });
   });
 
   it("keeps raw JSON markdown drafts intact", () => {

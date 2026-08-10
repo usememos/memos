@@ -1,6 +1,17 @@
 import { uniqBy } from "lodash-es";
-import { CheckIcon, FileIcon, ImageIcon, LinkIcon, LoaderIcon, MapPinIcon, Maximize2Icon, MicIcon, PlusIcon, TypeIcon } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import {
+  CheckIcon,
+  ImageIcon,
+  LinkIcon,
+  LoaderIcon,
+  MapPinIcon,
+  Maximize2Icon,
+  MicIcon,
+  PaperclipIcon,
+  PlusIcon,
+  TypeIcon,
+} from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { LinkMemoDialog, LocationDialog } from "@/components/MemoMetadata";
 import type { MapPoint } from "@/components/map/types";
 import { useReverseGeocoding } from "@/components/map/useReverseGeocoding";
@@ -35,6 +46,7 @@ const InsertMenu = (props: InsertMenuProps) => {
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
+  const inlineImageInputRef = useRef<HTMLInputElement>(null);
 
   const { fileInputRef, selectingFlag, handleFileInputChange, handleUploadClick } = useFileUpload((newFiles: LocalFile[]) => {
     newFiles.forEach((file) => dispatch(actions.addLocalFile(file)));
@@ -114,19 +126,28 @@ const InsertMenu = (props: InsertMenuProps) => {
     setLocationDialogOpen(false);
   }, [locationReset]);
 
-  const handleMediaUploadClick = useCallback(() => {
-    handleUploadClick("image/*,video/*");
-  }, [handleUploadClick]);
-
-  const handleFileUploadClick = useCallback(() => {
+  const handleAttachmentUploadClick = useCallback(() => {
     handleUploadClick();
   }, [handleUploadClick]);
 
+  const handleInlineImageUploadClick = useCallback(() => {
+    inlineImageInputRef.current?.click();
+  }, []);
+
+  const handleInlineImageInputChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(event.target.files ?? []);
+      if (files.length > 0) props.onInsertImages(files);
+      event.target.value = "";
+    },
+    [props.onInsertImages],
+  );
+
   // Insert actions (add content).
   const insertItems = [
-    { key: "media", label: t("attachment-library.tabs.media"), icon: ImageIcon, onClick: handleMediaUploadClick },
+    { key: "attachment", label: t("editor.insert-menu.add-attachment"), icon: PaperclipIcon, onClick: handleAttachmentUploadClick },
+    { key: "inline-image", label: t("editor.insert-menu.insert-image"), icon: ImageIcon, onClick: handleInlineImageUploadClick },
     { key: "audio", label: t("editor.audio-recorder.trigger"), icon: MicIcon, onClick: props.onAudioRecorderClick },
-    { key: "file", label: t("common.file"), icon: FileIcon, onClick: handleFileUploadClick },
     { key: "link", label: t("editor.insert-menu.link-memo"), icon: LinkIcon, onClick: handleOpenLinkDialog },
     { key: "location", label: t("editor.insert-menu.add-location"), icon: MapPinIcon, onClick: handleLocationClick },
   ];
@@ -134,7 +155,7 @@ const InsertMenu = (props: InsertMenuProps) => {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger render={<Button variant="secondary" size="icon" disabled={isUploading} />}>
+        <DropdownMenuTrigger render={<Button variant="secondary" size="icon" disabled={isUploading} aria-label={t("common.add")} />}>
           {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <PlusIcon className="size-4" />}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
@@ -166,7 +187,17 @@ const InsertMenu = (props: InsertMenuProps) => {
         onChange={handleFileInputChange}
         type="file"
         multiple={true}
-        accept="*"
+        accept=""
+      />
+
+      <input
+        className="hidden"
+        ref={inlineImageInputRef}
+        disabled={isUploading}
+        onChange={handleInlineImageInputChange}
+        type="file"
+        multiple={true}
+        accept="image/*"
       />
 
       <LinkMemoDialog

@@ -224,8 +224,16 @@
       "more": "More formatting"
     },
     "insert-menu": {
+      "add-attachment": "Add attachment",
       "add-location": "Add location",
+      "image-upload-failed": "Some images could not be uploaded. Retry or keep the uploaded files as attachments.",
+      "image-upload-stopped": "Image upload stopped {{completed}}/{{total}}",
+      "insert-image": "Insert image",
+      "keep-as-attachments": "Keep as attachments",
       "link-memo": "Link memo",
+      "retry-image-upload": "Retry",
+      "uploading-inline-image": "Uploading to content",
+      "uploading-images": "Uploading images {{completed}}/{{total}}",
       "upload-file": "Upload file"
     },
     "no-changes-detected": "No changes detected",

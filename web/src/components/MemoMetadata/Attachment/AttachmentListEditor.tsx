@@ -1,4 +1,14 @@
-import { ChevronDownIcon, ChevronUpIcon, FileAudioIcon, FileIcon, PaperclipIcon, PauseIcon, PlayIcon, XIcon } from "lucide-react";
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  FileAudioIcon,
+  FileIcon,
+  ImagePlusIcon,
+  PaperclipIcon,
+  PauseIcon,
+  PlayIcon,
+  XIcon,
+} from "lucide-react";
 import { type FC, type MouseEvent, useMemo, useRef, useState } from "react";
 import type { AttachmentItem, LocalFile } from "@/components/MemoEditor/types/attachment";
 import { getAudioRecordingTimeLabel, toAttachmentItems } from "@/components/MemoEditor/types/attachment";
@@ -9,8 +19,12 @@ import { cn } from "@/lib/utils";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { formatFileSize, getFileTypeLabel } from "@/utils/format";
 import { useTranslate } from "@/utils/i18n";
+import { canInlineAttachment, extractAttachmentUIDFromName } from "@/utils/managed-attachment";
 import type { PreviewMediaItem } from "@/utils/media-item";
 import { formatAudioTime, toggleAudioPlayback } from "./attachmentHelpers";
+
+const collectMembers = <T,>(byId: ReadonlyMap<string, T>, memberIds: string[]): T[] =>
+  memberIds.map((memberId) => byId.get(memberId)).filter((member): member is T => member !== undefined);
 
 interface AttachmentListEditorProps {
   attachments: Attachment[];
@@ -18,21 +32,42 @@ interface AttachmentListEditorProps {
   onAttachmentsChange?: (attachments: Attachment[]) => void;
   onLocalFilesChange?: (localFiles: LocalFile[]) => void;
   onRemoveLocalFile?: (previewUrl: string) => void;
+  inlineAttachmentUIDs?: ReadonlySet<string>;
+  onInsertAttachments?: (attachments: Attachment[]) => void;
+  onInsertLocalFiles?: (localFiles: LocalFile[]) => void;
+  placementActionsDisabled?: boolean;
+  uploadingLocalFileURLs?: ReadonlySet<string>;
 }
 
 const AttachmentItemActions: FC<{
+  placementAction?: { label: string; onClick: () => void; disabled?: boolean };
   onRemove?: () => void;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
   canMoveUp?: boolean;
   canMoveDown?: boolean;
-}> = ({ onRemove, onMoveUp, onMoveDown, canMoveUp = true, canMoveDown = true }) => {
+}> = ({ placementAction, onRemove, onMoveUp, onMoveDown, canMoveUp = true, canMoveDown = true }) => {
   const stopPropagation = (event: MouseEvent) => {
     event.stopPropagation();
   };
 
   return (
     <div className="shrink-0 flex items-center gap-0.5">
+      {placementAction && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={(event) => {
+            stopPropagation(event);
+            placementAction.onClick();
+          }}
+          className="h-6 gap-1 px-1.5 text-[10px] text-muted-foreground"
+          disabled={placementAction.disabled}
+        >
+          <ImagePlusIcon className="size-3" />
+          {placementAction.label}
+        </Button>
+      )}
       {onMoveUp && (
         <Button
           variant="ghost"
@@ -91,7 +126,9 @@ const AttachmentItemCard: FC<{
   onMoveDown?: () => void;
   canMoveUp?: boolean;
   canMoveDown?: boolean;
-}> = ({ item, onPreview, onRemove, onMoveUp, onMoveDown, canMoveUp = true, canMoveDown = true }) => {
+  isUploadingInline?: boolean;
+  placementAction?: { label: string; onClick: () => void; disabled?: boolean };
+}> = ({ item, onPreview, onRemove, onMoveUp, onMoveDown, canMoveUp = true, canMoveDown = true, isUploadingInline, placementAction }) => {
   const t = useTranslate();
   const { category, filename, thumbnailUrl, mimeType, size, sourceUrl, isVoiceNote, audioMeta } = item;
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -106,6 +143,7 @@ const AttachmentItemCard: FC<{
         ? t("editor.audio-recorder.attachment-label")
         : filename;
   const detailParts = [
+    isUploadingInline ? t("editor.insert-menu.uploading-inline-image") : undefined,
     audioMeta?.durationSeconds ? formatAudioTime(audioMeta.durationSeconds) : undefined,
     fileTypeLabel,
     size ? formatFileSize(size) : undefined,
@@ -123,7 +161,10 @@ const AttachmentItemCard: FC<{
   };
 
   return (
-    <div className="relative rounded border border-transparent px-1.5 py-1 transition-all hover:border-border hover:bg-accent/20">
+    <div
+      className="relative rounded border border-transparent px-1.5 py-1 transition-all hover:border-border hover:bg-accent/20"
+      aria-busy={isUploadingInline || undefined}
+    >
       <div className="flex items-center gap-1.5">
         <div className="relative flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded bg-muted/40">
           {(category === "image" || category === "motion") && thumbnailUrl ? (
@@ -196,6 +237,7 @@ const AttachmentItemCard: FC<{
         </div>
 
         <AttachmentItemActions
+          placementAction={placementAction}
           onRemove={onRemove}
           onMoveUp={onMoveUp}
           onMoveDown={onMoveDown}
@@ -213,9 +255,28 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
   onAttachmentsChange,
   onLocalFilesChange,
   onRemoveLocalFile,
+  inlineAttachmentUIDs = new Set(),
+  onInsertAttachments,
+  onInsertLocalFiles,
+  placementActionsDisabled = false,
+  uploadingLocalFileURLs = new Set(),
 }) => {
+  const t = useTranslate();
   const [previewState, setPreviewState] = useState<{ open: boolean; initialIndex: number }>({ open: false, initialIndex: 0 });
-  const items = toAttachmentItems(attachments, localFiles);
+  const attachmentsByName = useMemo(() => new Map(attachments.map((attachment) => [attachment.name, attachment])), [attachments]);
+  const allItems = toAttachmentItems(attachments, localFiles);
+  const isInlineItem = (item: AttachmentItem) =>
+    !item.isLocal &&
+    collectMembers(attachmentsByName, item.memberIds).some((attachment) => {
+      const uid = extractAttachmentUIDFromName(attachment.name);
+      return uid ? inlineAttachmentUIDs.has(uid) : false;
+    });
+  // A managed image already has its placement represented in Markdown. Keep
+  // the attachment bound to the memo, but do not repeat its logical media group
+  // in the attachment section. Removing the Markdown reference makes it
+  // visible here again on the next render.
+  const items = allItems.filter((item) => !isInlineItem(item));
+  const allAttachmentItems = allItems.filter((item) => !item.isLocal);
   const attachmentItems = items.filter((item) => !item.isLocal);
   const localItems = items.filter((item) => item.isLocal);
   const previewItems = useMemo<PreviewMediaItem[]>(
@@ -241,6 +302,10 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
     [items],
   );
 
+  // Items address their members by id, so index once instead of re-scanning both
+  // source arrays for every item on every render.
+  const localFilesByPreviewUrl = useMemo(() => new Map(localFiles.map((localFile) => [localFile.previewUrl, localFile])), [localFiles]);
+
   const handleMoveAttachments = (itemId: string, direction: -1 | 1) => {
     if (!onAttachmentsChange) return;
 
@@ -253,10 +318,9 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
     const reorderedItems = [...attachmentItems];
     [reorderedItems[itemIndex], reorderedItems[targetIndex]] = [reorderedItems[targetIndex], reorderedItems[itemIndex]];
 
-    const attachmentMap = new Map(attachments.map((attachment) => [attachment.name, attachment]));
-    onAttachmentsChange(
-      reorderedItems.flatMap((item) => item.memberIds.map((memberId) => attachmentMap.get(memberId)).filter(Boolean) as Attachment[]),
-    );
+    let visibleIndex = 0;
+    const mergedItems = allAttachmentItems.map((item) => (isInlineItem(item) ? item : reorderedItems[visibleIndex++]!));
+    onAttachmentsChange(mergedItems.flatMap((item) => collectMembers(attachmentsByName, item.memberIds)));
   };
 
   const handleMoveLocalFiles = (itemId: string, direction: -1 | 1) => {
@@ -271,10 +335,7 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
     const reorderedItems = [...localItems];
     [reorderedItems[itemIndex], reorderedItems[targetIndex]] = [reorderedItems[targetIndex], reorderedItems[itemIndex]];
 
-    const localFileMap = new Map(localFiles.map((localFile) => [localFile.previewUrl, localFile]));
-    onLocalFilesChange(
-      reorderedItems.flatMap((item) => item.memberIds.map((memberId) => localFileMap.get(memberId)).filter(Boolean) as LocalFile[]),
-    );
+    onLocalFilesChange(reorderedItems.flatMap((item) => collectMembers(localFilesByPreviewUrl, item.memberIds)));
   };
 
   const handleRemoveItem = (item: AttachmentItem) => {
@@ -311,17 +372,32 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
         {items.map((item) => {
           const itemList = item.isLocal ? localItems : attachmentItems;
           const itemIndex = itemList.findIndex((entry) => entry.id === item.id);
+          const itemAttachments = collectMembers(attachmentsByName, item.memberIds);
+          const itemLocalFiles = collectMembers(localFilesByPreviewUrl, item.memberIds);
+          const isUploadingInline = item.isLocal && item.memberIds.some((memberID) => uploadingLocalFileURLs.has(memberID));
+          const canInsert =
+            (item.category === "image" || item.category === "motion") && (item.isLocal || itemAttachments.some(canInlineAttachment));
+          const placementAction = canInsert
+            ? {
+                label: t("editor.insert-menu.insert-image"),
+                onClick: () =>
+                  item.isLocal ? onInsertLocalFiles?.(itemLocalFiles) : onInsertAttachments?.(itemAttachments.filter(canInlineAttachment)),
+                disabled: placementActionsDisabled,
+              }
+            : undefined;
 
           return (
             <AttachmentItemCard
               key={item.id}
               item={item}
+              isUploadingInline={isUploadingInline}
+              placementAction={placementAction}
               onPreview={
                 item.category === "image" || item.category === "video" || item.category === "motion"
                   ? () => handlePreviewItem(item)
                   : undefined
               }
-              onRemove={() => handleRemoveItem(item)}
+              onRemove={isUploadingInline ? undefined : () => handleRemoveItem(item)}
               onMoveUp={item.isLocal ? () => handleMoveLocalFiles(item.id, -1) : () => handleMoveAttachments(item.id, -1)}
               onMoveDown={item.isLocal ? () => handleMoveLocalFiles(item.id, 1) : () => handleMoveAttachments(item.id, 1)}
               canMoveUp={itemIndex > 0}

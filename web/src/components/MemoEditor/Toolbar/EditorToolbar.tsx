@@ -15,6 +15,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   onAudioRecorderClick,
   isFormattingToolbarVisible,
   onToggleFormattingToolbar,
+  onInsertImages,
 }) => {
   const t = useTranslate();
   const { actions, dispatch } = useEditorContext();
@@ -22,6 +23,8 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
   // doesn't re-render the toolbar or the heavy InsertMenu it hosts. `valid`
   // flips only on empty↔non-empty / loading transitions, not per keystroke.
   const valid = useEditorSelector((s) => validationService.canSave(s).valid);
+  // Surfaced on the disabled Save button so the blocking reason is discoverable.
+  const blockedReason = useEditorSelector((s) => validationService.canSave(s).reason);
   const isSaving = useEditorSelector((s) => s.ui.isLoading.saving);
   const isUploading = useEditorSelector((s) => s.ui.isLoading.uploading);
   const location = useEditorSelector((s) => s.metadata.location);
@@ -51,6 +54,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
           onAudioRecorderClick={onAudioRecorderClick}
           isFormattingToolbarVisible={isFormattingToolbarVisible}
           onToggleFormattingToolbar={onToggleFormattingToolbar}
+          onInsertImages={onInsertImages}
         />
         <VisibilitySelector value={visibility} onChange={handleVisibilityChange} />
       </div>
@@ -62,7 +66,7 @@ export const EditorToolbar: FC<EditorToolbarProps> = ({
           </Button>
         )}
 
-        <Button onClick={onSave} disabled={!valid || isSaving}>
+        <Button onClick={onSave} disabled={!valid || isSaving} title={!valid && !isSaving ? blockedReason : undefined}>
           {isSaving ? t("editor.saving") : t("editor.save")}
         </Button>
       </div>

@@ -10,8 +10,8 @@ import {
   getMemoShareRenderWidth,
 } from "@/components/MemoActionMenu/memoShareImage";
 import { buildMemoShareImagePreviewModel } from "@/components/MemoActionMenu/memoShareImagePreviewModel";
-import { AttachmentSchema, type Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import { MemoSchema, type Memo } from "@/types/proto/api/v1/memo_service_pb";
+import { type Attachment, AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { type Memo, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
 vi.mock("html-to-image", () => ({
   toBlob: vi.fn(),
@@ -85,6 +85,18 @@ describe("memo share image preview model", () => {
 
     expect(model.visualItems).toHaveLength(1);
     expect(model.visualItems[0]?.posterUrl).toContain("/file/attachments/image/image.png?thumbnail=true");
+    expect(model.footerBadges).toEqual([]);
+  });
+
+  it("does not repeat a managed inline image in the media grid", () => {
+    const memo = buildMemo({
+      content: "![image](/file/attachments/image)",
+      attachments: [buildAttachment({ name: "attachments/image", filename: "image.png", type: "image/png" })],
+    });
+
+    const model = buildPreviewModel(memo);
+
+    expect(model.visualItems).toEqual([]);
     expect(model.footerBadges).toEqual([]);
   });
 

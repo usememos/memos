@@ -9,6 +9,7 @@ import { liftListItem, sinkListItem } from "./listIndent";
 import { tagAutocomplete } from "./tagAutocomplete";
 import { tagMentionDecorations } from "./tagMentionDecorations";
 import { memoEditorTheme } from "./theme";
+import { uploadAnchorField } from "./uploadAnchors";
 
 // Key bindings layered below the autocomplete keymap so the completion popup's
 // own Tab/Escape win while it is open. On a list item, Tab/Shift-Tab nest /
@@ -30,7 +31,7 @@ const editorKeys: KeyBinding[] = [
 export interface EditorExtensionsOptions {
   placeholder: string;
   onChange: (markdown: string) => void;
-  onFiles: (files: File[]) => void;
+  onFiles: (files: File[], position: number) => void;
   onUpdate: () => void;
   onSubmit: () => void;
   getTags: () => string[];
@@ -88,21 +89,23 @@ export function buildEditorExtensions({
     EditorView.contentAttributes.of({ autocorrect: "on" }),
     placeholderCompartment.of(cmPlaceholder(placeholder)),
     EditorView.domEventHandlers({
-      paste: (event) => {
+      paste: (event, view) => {
         const files = clipboardFiles(event);
         if (files.length === 0) return false;
-        onFiles(files);
+        onFiles(files, view.state.selection.main.head);
         return true;
       },
-      drop: (event) => {
+      drop: (event, view) => {
         const files = Array.from(event.dataTransfer?.files ?? []);
         if (files.length === 0) return false;
-        onFiles(files);
+        const position = view.posAtCoords({ x: event.clientX, y: event.clientY }) ?? view.state.selection.main.head;
+        onFiles(files, position);
         return true;
       },
     }),
     tagMentionDecorations,
     headingDecorations,
+    uploadAnchorField,
     // tagAutocomplete must precede the editing keymap so the completion popup's
     // Enter/Tab/arrow bindings win while it is open.
     tagAutocomplete(getTags),

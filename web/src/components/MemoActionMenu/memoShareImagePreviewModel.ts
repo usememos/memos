@@ -2,6 +2,7 @@ import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { separateAttachments } from "@/components/MemoMetadata/Attachment/attachmentHelpers";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
+import { filterInlineManagedAttachments } from "@/utils/managed-attachment";
 import { type AttachmentVisualItem, buildAttachmentVisualItems, countLogicalAttachmentItems } from "@/utils/media-item";
 import { getMemoSharePreviewAvatarUrl } from "./memoShareImage";
 
@@ -41,9 +42,10 @@ export const buildMemoShareImagePreviewModel = ({
     timeStyle: "short",
   });
 
-  const attachmentGroups = separateAttachments(memo.attachments);
+  const attachmentOnlyItems = filterInlineManagedAttachments(memo.content, memo.attachments);
+  const attachmentGroups = separateAttachments(attachmentOnlyItems);
   const visualItems = buildAttachmentVisualItems(attachmentGroups.visual);
-  const attachmentCount = countLogicalAttachmentItems(memo.attachments);
+  const attachmentCount = countLogicalAttachmentItems(attachmentOnlyItems);
   const nonVisualAttachmentCount = Math.max(attachmentCount - visualItems.length, 0);
   const footerBadges: MemoShareImageFooterBadge[] =
     nonVisualAttachmentCount > 0 ? [{ type: "attachment-summary", count: attachmentCount }] : [];

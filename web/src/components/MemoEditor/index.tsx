@@ -10,7 +10,17 @@ import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityFromString } from "@/utils/memo";
 import { AudioRecorderPanel, EditorContent, EditorMetadata, FocusModeOverlay, TimestampPopover } from "./components";
 import { FOCUS_MODE_STYLES, FORMATTING_TOOLBAR_STORAGE_KEY } from "./constants";
-import { useAudioRecorder, useAutoSave, useFocusMode, useMemoInit, useMemoSave } from "./hooks";
+import {
+  pairAppleLivePhotoFiles,
+  splitInlineLocalFiles,
+  useAudioRecorder,
+  useAutoSave,
+  useBlobUrls,
+  useFocusMode,
+  useInlineImageUpload,
+  useMemoInit,
+  useMemoSave,
+} from "./hooks";
 import { cacheService, errorService, transcriptionService } from "./services";
 import { EditorProvider, useEditorContext, useEditorSelector } from "./state";
 import { EditorToolbar, FormattingToolbar } from "./Toolbar";
@@ -49,6 +59,8 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const { aiSetting, fetchSetting } = useInstance();
   const [isAudioRecorderOpen, setIsAudioRecorderOpen] = useState(false);
   const [isTranscribingAudio, setIsTranscribingAudio] = useState(false);
+  const { createBlobUrl } = useBlobUrls();
+  const inlineImageUpload = useInlineImageUpload(editorRef);
   // Persisted preference: also show the formatting toolbar in normal mode. Focus
   // mode always shows it regardless; this only governs the non-focus layout.
   const [isFormattingToolbarVisible, setFormattingToolbarVisible] = useLocalStorage(FORMATTING_TOOLBAR_STORAGE_KEY, false);
@@ -220,6 +232,28 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     void handleStartAudioRecording();
   };
 
+  const toLocalFiles = useCallback(
+    (files: File[]): LocalFile[] =>
+      pairAppleLivePhotoFiles(
+        files.map((file) => ({
+          file,
+          previewUrl: createBlobUrl(file),
+          origin: "upload",
+        })),
+      ),
+    [createBlobUrl],
+  );
+
+  /** Shared by the ＋ menu (no position) and by editor paste/drop (drop position). */
+  const handleInsertImages = useCallback(
+    (files: File[], position?: number) => {
+      const { inline, attachments } = splitInlineLocalFiles(toLocalFiles(files));
+      attachments.forEach((file) => dispatch(actions.addLocalFile(file)));
+      inlineImageUpload.insertLocalImages(inline, position);
+    },
+    [actions, dispatch, inlineImageUpload.insertLocalImages, toLocalFiles],
+  );
+
   const handleCancelAudioRecording = () => {
     setIsTranscribingAudio(false);
     audioRecorder.resetRecording();
@@ -285,7 +319,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
         )}
 
         {/* Editor content grows to fill available space in focus mode */}
-        <EditorContent ref={editorRef} placeholder={placeholder} onSubmit={handleSave} />
+        <EditorContent ref={editorRef} placeholder={placeholder} onSubmit={handleSave} onFiles={handleInsertImages} />
 
         {isAudioRecorderOpen && (audioRecorder.isBusy || isTranscribingAudio) && (
           <AudioRecorderPanel
@@ -301,7 +335,12 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
 
         {/* Metadata and toolbar grouped together at bottom */}
         <div className="w-full flex flex-col gap-2">
-          <EditorMetadata memoName={memoName} />
+          <EditorMetadata
+            memoName={memoName}
+            uploadingLocalFileURLs={inlineImageUpload.uploadingLocalFileURLs}
+            onInsertAttachments={inlineImageUpload.insertRemoteImages}
+            onInsertLocalFiles={inlineImageUpload.insertLocalImages}
+          />
           <EditorToolbar
             onSave={handleSave}
             onCancel={onCancel ? handleCancel : undefined}
@@ -309,6 +348,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
             onAudioRecorderClick={handleAudioRecorderClick}
             isFormattingToolbarVisible={isFormattingToolbarVisible}
             onToggleFormattingToolbar={handleToggleFormattingToolbar}
+            onInsertImages={handleInsertImages}
           />
         </div>
       </div>

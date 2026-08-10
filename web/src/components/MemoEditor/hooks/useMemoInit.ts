@@ -37,9 +37,12 @@ export const useMemoInit = ({
       cacheService.clear(key);
       dispatch(actions.initMemo(initialState));
     } else {
-      const cachedContent = cacheService.load(key);
-      if (cachedContent) {
-        dispatch(actions.updateContent(cachedContent));
+      const cachedDraft = cacheService.loadDraft(key);
+      if (cachedDraft.content) {
+        dispatch(actions.updateContent(cachedDraft.content));
+      }
+      if (cachedDraft.attachments.length > 0) {
+        dispatch(actions.setMetadata({ attachments: cachedDraft.attachments }));
       }
       if (defaultVisibility !== undefined) {
         dispatch(actions.setMetadata({ visibility: defaultVisibility }));
