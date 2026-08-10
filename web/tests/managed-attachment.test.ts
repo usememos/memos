@@ -48,6 +48,14 @@ describe("managed attachment Markdown", () => {
     expect(Array.from(extractManagedAttachmentUIDs(content))).toEqual(["first-image"]);
   });
 
+  it("does not normalize path-relative images into managed attachment URLs", () => {
+    const source = "file/attachments/image-one";
+
+    expect(parseManagedAttachmentImageURL(source)).toBeUndefined();
+    expect(extractManagedAttachmentUIDs(`![image](${source})`)).toEqual(new Set());
+    expect(resolveManagedAttachmentImageSource(source, [attachment("attachments/image-one")])).toBe(source);
+  });
+
   // The API matches absolute URLs against the configured instance URL, not the
   // browsing origin, and rejects them outright when no instance URL is set.
   it("resolves absolute images against the configured instance URL", () => {

@@ -11,7 +11,9 @@ export const EditorMetadata: FC<EditorMetadataProps> = ({ memoName, uploadingLoc
   const relations = useEditorSelector((s) => s.metadata.relations);
   const location = useEditorSelector((s) => s.metadata.location);
   const content = useEditorSelector((s) => s.content);
-  const placementActionsDisabled = useEditorSelector((s) => s.ui.isLoading.uploading || s.ui.pendingInlineImageInsertions > 0);
+  const placementActionsDisabled = useEditorSelector(
+    (s) => s.ui.isLoading.saving || s.ui.isLoading.uploading || s.ui.pendingInlineImageInsertions > 0,
+  );
   const inlineAttachmentUIDs = extractManagedAttachmentUIDs(content);
 
   return (

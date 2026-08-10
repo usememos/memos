@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeAll, describe, expect, test, vi } from "vitest";
-import { EditorProvider } from "@/components/MemoEditor/state";
+import { createInitialState, EditorProvider } from "@/components/MemoEditor/state";
+import { EditorToolbar } from "@/components/MemoEditor/Toolbar/EditorToolbar";
 import InsertMenu from "@/components/MemoEditor/Toolbar/InsertMenu";
 
 vi.mock("@/utils/i18n", async (importOriginal) => ({
@@ -17,10 +18,11 @@ beforeAll(() => {
   Element.prototype.releasePointerCapture = vi.fn();
 });
 
-const renderMenu = (onInsertImages = vi.fn()) =>
+const renderMenu = (onInsertImages = vi.fn(), isSaving = false) =>
   render(
     <EditorProvider>
       <InsertMenu
+        isSaving={isSaving}
         onLocationChange={vi.fn()}
         onInsertImages={onInsertImages}
         onAudioRecorderClick={vi.fn()}
@@ -63,5 +65,35 @@ describe("InsertMenu", () => {
     const image = new File(["image"], "photo.png", { type: "image/png" });
     fireEvent.change(inlineImageInput!, { target: { files: [image] } });
     expect(onInsertImages).toHaveBeenCalledWith([image]);
+  });
+
+  test("disables insertion controls while saving", () => {
+    const { container } = renderMenu(vi.fn(), true);
+
+    expect(screen.getByRole("button", { name: "common.add" })).toBeDisabled();
+    for (const input of container.querySelectorAll('input[type="file"]')) {
+      expect(input).toBeDisabled();
+    }
+  });
+
+  test("exposes a localized save-blocking reason from a focusable wrapper", () => {
+    const state = createInitialState();
+    state.content = "memo";
+    state.ui.pendingInlineImageInsertions = 1;
+
+    render(
+      <EditorProvider initialEditorState={state}>
+        <EditorToolbar
+          onSave={vi.fn()}
+          onAudioRecorderClick={vi.fn()}
+          isFormattingToolbarVisible={false}
+          onToggleFormattingToolbar={vi.fn()}
+          onInsertImages={vi.fn()}
+        />
+      </EditorProvider>,
+    );
+
+    expect(screen.getByRole("button", { name: "editor.save" })).toBeDisabled();
+    expect(screen.getByLabelText("editor.validation.resolve-image-uploads")).toHaveAttribute("tabindex", "0");
   });
 });

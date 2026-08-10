@@ -1,11 +1,16 @@
+import { equals } from "@bufbuild/protobuf";
 import { useCallback, useEffect, useRef } from "react";
+import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
 import { cacheService, type EditorDraft } from "../services";
 import { useEditorStore } from "../state";
 
 const sameDraft = (left: EditorDraft, right: EditorDraft): boolean =>
   left.content === right.content &&
   left.attachments.length === right.attachments.length &&
-  left.attachments.every((attachment, index) => attachment.name === right.attachments[index]?.name);
+  left.attachments.every((attachment, index) => {
+    const other = right.attachments[index];
+    return other !== undefined && equals(AttachmentSchema, attachment, other);
+  });
 
 /**
  * Persists the editor's content and already-uploaded attachments to localStorage

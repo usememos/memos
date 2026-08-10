@@ -76,6 +76,7 @@ export interface FocusModeExitButtonProps {
 
 export interface InsertMenuProps {
   isUploading?: boolean;
+  isSaving?: boolean;
   location?: Location;
   onLocationChange: (location?: Location) => void;
   onToggleFocusMode?: () => void;

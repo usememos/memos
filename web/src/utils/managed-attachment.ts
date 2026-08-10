@@ -81,6 +81,10 @@ const hasScheme = (raw: string): boolean => /^[a-z][a-z0-9+.-]*:/i.test(raw);
  * instance URL is configured.
  */
 export const classifyManagedAttachmentImageURL = (raw: string): ManagedImageURL => {
+  // The API accepts only root-relative managed paths. Do not let URL
+  // normalization turn `file/attachments/...` into a different contract.
+  if (!raw.startsWith("/") && !hasScheme(raw)) return UNMANAGED;
+
   let parsed: URL;
   try {
     parsed = new URL(raw, window.location.origin);

@@ -202,6 +202,7 @@ export const useInlineImageUpload = (editorRef: RefObject<EditorController | nul
 
   const insertLocalImages = useCallback(
     (localFiles: LocalFile[], position?: number) => {
+      if (getState().ui.isLoading.saving) return;
       const editor = editorRef.current;
       const job = createJob(localFiles);
       if (!editor || !job) return;
@@ -210,15 +211,16 @@ export const useInlineImageUpload = (editorRef: RefObject<EditorController | nul
       editor.createUploadAnchor(descriptorFor(job, "uploading"), position);
       void runJob(job.id);
     },
-    [descriptorFor, editorRef, runJob, syncJobState],
+    [descriptorFor, editorRef, getState, runJob, syncJobState],
   );
 
   const insertRemoteImages = useCallback(
     (attachments: Attachment[]) => {
+      if (getState().ui.isLoading.saving) return;
       const markdown = attachments.filter(canInlineAttachment).map(buildManagedAttachmentMarkdown).join("\n\n");
       editorRef.current?.insertMarkdown(markdown);
     },
-    [editorRef],
+    [editorRef, getState],
   );
 
   useEffect(() => {

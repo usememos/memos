@@ -33,7 +33,7 @@ import type { LocalFile } from "../types/attachment";
 
 const InsertMenu = (props: InsertMenuProps) => {
   const t = useTranslate();
-  const { actions, dispatch } = useEditorContext();
+  const { actions, dispatch, getState } = useEditorContext();
   const relations = useEditorSelector((s) => s.metadata.relations);
   const {
     location: initialLocation,
@@ -49,6 +49,7 @@ const InsertMenu = (props: InsertMenuProps) => {
   const inlineImageInputRef = useRef<HTMLInputElement>(null);
 
   const { fileInputRef, selectingFlag, handleFileInputChange, handleUploadClick } = useFileUpload((newFiles: LocalFile[]) => {
+    if (getState().ui.isLoading.saving) return;
     newFiles.forEach((file) => dispatch(actions.addLocalFile(file)));
   });
 
@@ -92,6 +93,7 @@ const InsertMenu = (props: InsertMenuProps) => {
   }, [displayName, setPlaceholder]);
 
   const isUploading = selectingFlag || isUploadingProp;
+  const insertionDisabled = isUploading || props.isSaving;
 
   const handleOpenLinkDialog = useCallback(() => {
     setLinkDialogOpen(true);
@@ -127,12 +129,14 @@ const InsertMenu = (props: InsertMenuProps) => {
   }, [locationReset]);
 
   const handleAttachmentUploadClick = useCallback(() => {
+    if (getState().ui.isLoading.saving) return;
     handleUploadClick();
-  }, [handleUploadClick]);
+  }, [getState, handleUploadClick]);
 
   const handleInlineImageUploadClick = useCallback(() => {
+    if (getState().ui.isLoading.saving) return;
     inlineImageInputRef.current?.click();
-  }, []);
+  }, [getState]);
 
   const handleInlineImageInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -155,12 +159,12 @@ const InsertMenu = (props: InsertMenuProps) => {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger render={<Button variant="secondary" size="icon" disabled={isUploading} aria-label={t("common.add")} />}>
+        <DropdownMenuTrigger render={<Button variant="secondary" size="icon" disabled={insertionDisabled} aria-label={t("common.add")} />}>
           {isUploading ? <LoaderIcon className="size-4 animate-spin" /> : <PlusIcon className="size-4" />}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
           {insertItems.map((item) => (
-            <DropdownMenuItem key={item.key} onClick={item.onClick}>
+            <DropdownMenuItem key={item.key} onClick={item.onClick} disabled={props.isSaving}>
               <item.icon className="w-4 h-4" />
               {item.label}
             </DropdownMenuItem>
@@ -183,7 +187,7 @@ const InsertMenu = (props: InsertMenuProps) => {
       <input
         className="hidden"
         ref={fileInputRef}
-        disabled={isUploading}
+        disabled={insertionDisabled}
         onChange={handleFileInputChange}
         type="file"
         multiple={true}
@@ -193,7 +197,7 @@ const InsertMenu = (props: InsertMenuProps) => {
       <input
         className="hidden"
         ref={inlineImageInputRef}
-        disabled={isUploading}
+        disabled={insertionDisabled}
         onChange={handleInlineImageInputChange}
         type="file"
         multiple={true}

@@ -201,6 +201,16 @@
     "no-changes-detected": "未發現變更",
     "save": "儲存",
     "saving": "儲存中...",
+    "validation": {
+      "cannot-save": "無法儲存",
+      "content-required": "需要填寫正文或新增附件",
+      "finish-audio-recording": "請先完成錄音再儲存",
+      "loading-content": "正在載入備忘錄內容",
+      "resolve-image-uploads": "請先處理未完成的圖片上傳",
+      "save-in-progress": "正在儲存",
+      "unsupported-attachment-image-url": "不支援的附件圖片網址：{{url}}",
+      "wait-for-upload": "請等待上傳完成"
+    },
     "audio-recorder": {
       "attachment-label": "錄音",
       "attachment-label-with-time": "錄音 {{time}}",

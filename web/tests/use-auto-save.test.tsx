@@ -71,6 +71,36 @@ describe("useAutoSave (store-subscribed)", () => {
     expect(saveSpy).toHaveBeenCalledWith(key, "", [image]);
   });
 
+  it("persists metadata changes for an attachment with the same name", () => {
+    render(
+      <EditorProvider>
+        <Probe username="users/steven" cacheKey="attachment-update" enabled />
+      </EditorProvider>,
+    );
+    const key = cacheService.key("users/steven", "attachment-update");
+    const initial = create(AttachmentSchema, {
+      name: "attachments/image-one",
+      filename: "image.png",
+      type: "image/png",
+    });
+    const updated = create(AttachmentSchema, {
+      name: "attachments/image-one",
+      filename: "image.png",
+      type: "image/png",
+      externalLink: "https://cdn.example.com/image.png",
+    });
+
+    act(() => {
+      api.dispatch(api.actions.setMetadata({ attachments: [initial] }));
+    });
+    saveSpy.mockClear();
+    act(() => {
+      api.dispatch(api.actions.setMetadata({ attachments: [updated] }));
+    });
+
+    expect(saveSpy).toHaveBeenCalledWith(key, "", [updated]);
+  });
+
   it("does not persist when disabled", () => {
     render(
       <EditorProvider>

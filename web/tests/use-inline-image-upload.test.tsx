@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import type { UploadAnchorDescriptor } from "@/components/MemoEditor/Editor/uploadAnchors";
 import { useInlineImageUpload } from "@/components/MemoEditor/hooks/useInlineImageUpload";
 import { uploadService } from "@/components/MemoEditor/services";
-import { EditorProvider } from "@/components/MemoEditor/state";
+import { EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
 import type { LocalFile } from "@/components/MemoEditor/types/attachment";
 import type { EditorController } from "@/components/MemoEditor/types/editorController";
 import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
@@ -92,5 +92,29 @@ describe("useInlineImageUpload", () => {
       expect.any(String),
       "![first](/file/attachments/first)\n\n![second](/file/attachments/second)",
     );
+  });
+
+  test("does not start local or remote insertion while a save is in progress", () => {
+    const upload = vi.spyOn(uploadService, "uploadFile");
+    const { controller } = makeController();
+    const editorRef = { current: controller } as RefObject<EditorController>;
+    const { result } = renderHook(
+      () => {
+        const inlineUpload = useInlineImageUpload(editorRef);
+        const editor = useEditorContext();
+        return { inlineUpload, editor };
+      },
+      { wrapper },
+    );
+
+    act(() => result.current.editor.dispatch(result.current.editor.actions.setLoading("saving", true)));
+    act(() => {
+      result.current.inlineUpload.insertLocalImages([localImage("late.png")]);
+      result.current.inlineUpload.insertRemoteImages([remoteImage("late", "late.png")]);
+    });
+
+    expect(upload).not.toHaveBeenCalled();
+    expect(controller.createUploadAnchor).not.toHaveBeenCalled();
+    expect(controller.insertMarkdown).not.toHaveBeenCalled();
   });
 });

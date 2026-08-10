@@ -10,7 +10,7 @@ describe("inline image editor validation", () => {
 
     expect(validationService.canSave(state)).toEqual({
       valid: false,
-      reason: "Resolve image uploads before saving",
+      reason: "editor.validation.resolve-image-uploads",
     });
   });
 

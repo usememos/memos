@@ -49,7 +49,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const editorRef = useRef<EditorController>(null);
-  const { actions, dispatch } = useEditorContext();
+  const { actions, dispatch, getState } = useEditorContext();
   // Subscribe only to the low-frequency slices this component renders from, so
   // typing (which changes content) does not re-render the editor shell and its
   // toolbar/metadata children.
@@ -247,11 +247,12 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   /** Shared by the ＋ menu (no position) and by editor paste/drop (drop position). */
   const handleInsertImages = useCallback(
     (files: File[], position?: number) => {
+      if (getState().ui.isLoading.saving) return;
       const { inline, attachments } = splitInlineLocalFiles(toLocalFiles(files));
       attachments.forEach((file) => dispatch(actions.addLocalFile(file)));
       inlineImageUpload.insertLocalImages(inline, position);
     },
-    [actions, dispatch, inlineImageUpload.insertLocalImages, toLocalFiles],
+    [actions, dispatch, getState, inlineImageUpload.insertLocalImages, toLocalFiles],
   );
 
   const handleCancelAudioRecording = () => {
