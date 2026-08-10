@@ -14,7 +14,7 @@ interface EditorProps {
   initialContent: string;
   placeholder: string;
   onContentChange: (content: string) => void;
-  onFiles: (files: File[]) => void;
+  onFiles: (files: File[], position: number) => void;
   /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
   onSubmit: () => void;
   isFocusMode?: boolean;
@@ -51,7 +51,7 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
         extensions: buildEditorExtensions({
           placeholder,
           onChange: (md) => onChangeRef.current(md),
-          onFiles: (files) => onFilesRef.current(files),
+          onFiles: (files, position) => onFilesRef.current(files, position),
           onUpdate: () => listenersRef.current.forEach((l) => l()),
           onSubmit: () => onSubmitRef.current(),
           getTags: () => tagsRef.current,

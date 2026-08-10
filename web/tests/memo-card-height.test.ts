@@ -1,8 +1,14 @@
 import { create } from "@bufbuild/protobuf";
 import { describe, expect, it } from "vitest";
 import { estimateMemoCardHeight } from "@/components/PagedMemoList/memoCardHeight";
-import { AttachmentSchema, type Attachment } from "@/types/proto/api/v1/attachment_service_pb";
-import { MemoRelation_MemoSchema, MemoRelation_Type, MemoRelationSchema, MemoSchema, type Memo } from "@/types/proto/api/v1/memo_service_pb";
+import { type Attachment, AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import {
+  type Memo,
+  MemoRelation_MemoSchema,
+  MemoRelation_Type,
+  MemoRelationSchema,
+  MemoSchema,
+} from "@/types/proto/api/v1/memo_service_pb";
 
 const buildAttachment = (overrides: Partial<Attachment>) =>
   create(AttachmentSchema, {
@@ -44,6 +50,14 @@ describe("estimateMemoCardHeight", () => {
     expect(estimateMemoCardHeight(withImage, { columnWidth: 320 })).toBeGreaterThan(
       estimateMemoCardHeight(plain, { columnWidth: 320 }) + 100,
     );
+  });
+
+  it("does not count an inline managed image again as an attachment gallery", () => {
+    const image = buildAttachment({ name: "attachments/image", filename: "image.png", type: "image/png" });
+    const inline = buildMemo({ content: "![image](/file/attachments/image)", attachments: [image] });
+    const external = buildMemo({ content: "![image](https://example.com/image.png)", attachments: [image] });
+
+    expect(estimateMemoCardHeight(inline, { columnWidth: 320 })).toBeLessThan(estimateMemoCardHeight(external, { columnWidth: 320 }));
   });
 
   it("estimates the visible comment preview height and caps it at three comments", () => {

@@ -186,13 +186,31 @@
     "exit-focus-mode": "退出專注模式",
     "focus-mode": "專注模式",
     "insert-menu": {
+      "add-attachment": "新增附件",
       "add-location": "新增位置",
+      "image-upload-failed": "部分圖片上傳失敗，請重試或將已上傳檔案保留為附件。",
+      "image-upload-stopped": "圖片上傳已暫停 {{completed}}/{{total}}",
+      "insert-image": "插入圖片",
+      "keep-as-attachments": "保留為附件",
       "link-memo": "連結備忘錄",
+      "retry-image-upload": "重試",
+      "uploading-inline-image": "正在上傳到正文",
+      "uploading-images": "正在上傳圖片 {{completed}}/{{total}}",
       "upload-file": "上傳文件"
     },
     "no-changes-detected": "未發現變更",
     "save": "儲存",
     "saving": "儲存中...",
+    "validation": {
+      "cannot-save": "無法儲存",
+      "content-required": "需要填寫正文或新增附件",
+      "finish-audio-recording": "請先完成錄音再儲存",
+      "loading-content": "正在載入備忘錄內容",
+      "resolve-image-uploads": "請先處理未完成的圖片上傳",
+      "save-in-progress": "正在儲存",
+      "unsupported-attachment-image-url": "不支援的附件圖片網址：{{url}}",
+      "wait-for-upload": "請等待上傳完成"
+    },
     "audio-recorder": {
       "attachment-label": "錄音",
       "attachment-label-with-time": "錄音 {{time}}",

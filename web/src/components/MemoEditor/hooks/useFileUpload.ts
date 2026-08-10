@@ -30,7 +30,7 @@ export const useFileUpload = (onFilesSelected: (localFiles: LocalFile[]) => void
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleUploadClick = (accept = "*") => {
+  const handleUploadClick = (accept = "") => {
     if (!fileInputRef.current) {
       return;
     }
@@ -47,7 +47,7 @@ export const useFileUpload = (onFilesSelected: (localFiles: LocalFile[]) => void
   };
 };
 
-const pairAppleLivePhotoFiles = (localFiles: LocalFile[]): LocalFile[] => {
+export const pairAppleLivePhotoFiles = (localFiles: LocalFile[]): LocalFile[] => {
   const stemMap = new Map<string, LocalFile[]>();
   for (const localFile of localFiles) {
     const stem = normalizeFilenameStem(localFile.file.name);

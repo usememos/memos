@@ -127,3 +127,86 @@
     color: inherit;
   }
 }
+.cm-upload-anchor {
+  position: relative;
+  display: flex;
+  min-height: 2.25rem;
+  align-items: center;
+  gap: 0.375rem;
+  margin: 0.375rem 0;
+  padding-left: 1rem;
+  font-family: inherit;
+  font-size: 0.6875rem;
+}
+
+.cm-upload-anchor-rail {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 2px;
+  border-radius: 999px;
+  background: var(--primary);
+}
+
+.cm-upload-anchor-rail::after {
+  position: absolute;
+  top: 50%;
+  left: -3px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid var(--card);
+  border-radius: 999px;
+  background: var(--primary);
+  content: "";
+  transform: translateY(-50%);
+}
+
+.cm-upload-anchor-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: calc(var(--radius) - 2px);
+  background: color-mix(in oklab, var(--primary) 8%, transparent);
+  padding: 0.25rem 0.5rem;
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.cm-upload-anchor[data-status="failed"] .cm-upload-anchor-badge {
+  background: color-mix(in oklab, var(--destructive) 8%, transparent);
+  color: var(--destructive);
+}
+
+.cm-upload-anchor-spinner {
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 1.5px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  animation: spin 1s linear infinite;
+}
+
+.cm-upload-anchor-actions {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.cm-upload-anchor-action {
+  border-radius: calc(var(--radius) - 2px);
+  padding: 0.25rem 0.5rem;
+  color: var(--muted-foreground);
+  font-weight: 500;
+}
+
+.cm-upload-anchor-action:hover,
+.cm-upload-anchor-action:focus-visible {
+  background: var(--accent);
+  color: var(--accent-foreground);
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cm-upload-anchor-spinner {
+    animation: none;
+  }
+}

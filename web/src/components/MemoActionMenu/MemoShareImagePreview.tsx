@@ -39,7 +39,12 @@ const MemoShareImagePreview = forwardRef<HTMLDivElement, { width: number }>(({ w
 
         <div className="mt-4">
           <div className={cn("pointer-events-none", blurred && !showBlurredContent && "blur-lg")}>
-            <MemoContent content={memo.content} compact={false} contentClassName="text-[14px] leading-6.5 sm:text-[15px]" />
+            <MemoContent
+              content={memo.content}
+              attachments={memo.attachments}
+              compact={false}
+              contentClassName="text-[14px] leading-6.5 sm:text-[15px]"
+            />
           </div>
         </div>
 

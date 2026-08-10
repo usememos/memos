@@ -65,6 +65,15 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         },
       };
 
+    case "SET_PENDING_INLINE_IMAGE_INSERTIONS":
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          pendingInlineImageInsertions: action.payload,
+        },
+      };
+
     case "SET_TIMESTAMPS":
       return {
         ...state,

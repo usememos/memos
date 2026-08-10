@@ -1,10 +1,12 @@
 import { EyeIcon } from "lucide-react";
+import { useMemo } from "react";
 import ClampedSection from "@/components/ClampedSection";
 import { AttachmentListView, LocationDisplayView, RelationListView } from "@/components/MemoMetadata";
 import { isReferenceRelation } from "@/components/MemoMetadata/Relation/relationHelpers";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
+import { filterInlineManagedAttachments } from "@/utils/managed-attachment";
 import MemoContent from "../../MemoContent";
 import { MemoReactionListView } from "../../MemoReactionListView";
 import { useMemoHandlers } from "../hooks";
@@ -35,6 +37,11 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
   const { handleMemoContentClick, handleMemoContentDoubleClick } = useMemoHandlers({ readonly, openEditor, openPreview });
 
   const referencedMemos = memo.relations.filter(isReferenceRelation);
+  // Memoized so AttachmentListView's own useMemo chain keeps its cache across body renders.
+  const attachmentOnlyItems = useMemo(
+    () => filterInlineManagedAttachments(memo.content, memo.attachments),
+    [memo.content, memo.attachments],
+  );
 
   return (
     <>
@@ -50,11 +57,12 @@ const MemoBody: React.FC<MemoBodyProps> = ({ compact }) => {
           <MemoContent
             memoName={memo.name}
             content={memo.content}
+            attachments={memo.attachments}
             onClick={handleMemoContentClick}
             onDoubleClick={handleMemoContentDoubleClick}
             compact={Boolean(compact)}
           />
-          <AttachmentListView attachments={memo.attachments} onImagePreview={openPreview} />
+          <AttachmentListView attachments={attachmentOnlyItems} onImagePreview={openPreview} />
           <RelationListView relations={referencedMemos} currentMemoName={memo.name} parentPage={parentPage} />
           {memo.location && <LocationDisplayView location={memo.location} />}
         </ClampedSection>

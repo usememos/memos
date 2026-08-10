@@ -190,9 +190,27 @@
     "no-changes-detected": "未检测到更改",
     "save": "保存",
     "saving": "保存中...",
+    "validation": {
+      "cannot-save": "无法保存",
+      "content-required": "需要填写正文或添加附件",
+      "finish-audio-recording": "请先完成录音再保存",
+      "loading-content": "正在加载备忘录内容",
+      "resolve-image-uploads": "请先处理未完成的图片上传",
+      "save-in-progress": "正在保存",
+      "unsupported-attachment-image-url": "不支持的附件图片地址：{{url}}",
+      "wait-for-upload": "请等待上传完成"
+    },
     "insert-menu": {
+      "add-attachment": "添加附件",
       "add-location": "添加位置",
+      "image-upload-failed": "部分图片上传失败，请重试或将已上传文件保留为附件。",
+      "image-upload-stopped": "图片上传已暂停 {{completed}}/{{total}}",
+      "insert-image": "插入图片",
+      "keep-as-attachments": "保留为附件",
       "link-memo": "链接备忘录",
+      "retry-image-upload": "重试",
+      "uploading-inline-image": "正在上传到正文",
+      "uploading-images": "正在上传图片 {{completed}}/{{total}}",
       "upload-file": "上传文件"
     },
     "audio-recorder": {

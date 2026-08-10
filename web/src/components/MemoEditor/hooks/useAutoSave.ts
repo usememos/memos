@@ -1,35 +1,49 @@
+import { equals } from "@bufbuild/protobuf";
 import { useCallback, useEffect, useRef } from "react";
-import { cacheService } from "../services";
+import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { cacheService, type EditorDraft } from "../services";
 import { useEditorStore } from "../state";
 
+const sameDraft = (left: EditorDraft, right: EditorDraft): boolean =>
+  left.content === right.content &&
+  left.attachments.length === right.attachments.length &&
+  left.attachments.every((attachment, index) => {
+    const other = right.attachments[index];
+    return other !== undefined && equals(AttachmentSchema, attachment, other);
+  });
+
 /**
- * Persists the editor's content to localStorage as a draft. Subscribes to the
- * editor store directly for content rather than taking it as a prop, so the
- * component that mounts this hook does not re-render on every keystroke.
+ * Persists the editor's content and already-uploaded attachments to localStorage
+ * as a draft. Subscribes to the editor store directly rather than taking draft
+ * state as props, so the component that mounts this hook does not re-render on
+ * every keystroke.
  */
 export const useAutoSave = (username: string, cacheKey: string | undefined, enabled = true) => {
   const store = useEditorStore();
-  const latestContentRef = useRef(store.getState().content);
-  const discardedContentRef = useRef<string | undefined>(undefined);
+  const initialState = store.getState();
+  const latestDraftRef = useRef<EditorDraft>({ content: initialState.content, attachments: initialState.metadata.attachments });
+  const discardedDraftRef = useRef<EditorDraft | undefined>(undefined);
 
   useEffect(() => {
     if (!enabled) return;
 
     const key = cacheService.key(username, cacheKey);
-    const persist = (content: string) => {
-      latestContentRef.current = content;
-      if (discardedContentRef.current !== undefined && discardedContentRef.current !== content) {
-        discardedContentRef.current = undefined;
+    const persist = (draft: EditorDraft) => {
+      latestDraftRef.current = draft;
+      if (discardedDraftRef.current !== undefined && !sameDraft(discardedDraftRef.current, draft)) {
+        discardedDraftRef.current = undefined;
       }
-      cacheService.save(key, content);
+      cacheService.save(key, draft.content, draft.attachments);
     };
 
-    // Persist the current content on mount/enable, then on every change.
-    persist(store.getState().content);
+    // Persist the current draft on mount/enable, then on every relevant change.
+    const state = store.getState();
+    persist({ content: state.content, attachments: state.metadata.attachments });
     return store.subscribe(() => {
-      const content = store.getState().content;
-      if (content !== latestContentRef.current) {
-        persist(content);
+      const nextState = store.getState();
+      const draft = { content: nextState.content, attachments: nextState.metadata.attachments };
+      if (!sameDraft(draft, latestDraftRef.current)) {
+        persist(draft);
       }
     });
   }, [store, username, cacheKey, enabled]);
@@ -39,11 +53,11 @@ export const useAutoSave = (username: string, cacheKey: string | undefined, enab
 
     const key = cacheService.key(username, cacheKey);
     const flushDraft = () => {
-      if (discardedContentRef.current === latestContentRef.current) {
+      if (discardedDraftRef.current && sameDraft(discardedDraftRef.current, latestDraftRef.current)) {
         return;
       }
 
-      cacheService.saveNow(key, latestContentRef.current);
+      cacheService.saveNow(key, latestDraftRef.current.content, latestDraftRef.current.attachments);
     };
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") {
@@ -65,7 +79,7 @@ export const useAutoSave = (username: string, cacheKey: string | undefined, enab
 
   const discardDraft = useCallback(() => {
     const key = cacheService.key(username, cacheKey);
-    discardedContentRef.current = latestContentRef.current;
+    discardedDraftRef.current = latestDraftRef.current;
     cacheService.clear(key);
   }, [username, cacheKey]);
 

@@ -1,8 +1,10 @@
+import { create } from "@bufbuild/protobuf";
 import { act, render } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useAutoSave } from "@/components/MemoEditor/hooks/useAutoSave";
 import { cacheService } from "@/components/MemoEditor/services/cacheService";
 import { EditorProvider, useEditorContext } from "@/components/MemoEditor/state";
+import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
 
 // Probe surfaces the store's dispatch/actions plus the autosave API so tests can
 // drive content changes the way the editor does and assert on cache writes.
@@ -45,7 +47,58 @@ describe("useAutoSave (store-subscribed)", () => {
     act(() => {
       api.dispatch(api.actions.updateContent("hello world"));
     });
-    expect(saveSpy).toHaveBeenCalledWith(key, "hello world");
+    expect(saveSpy).toHaveBeenCalledWith(key, "hello world", []);
+  });
+
+  it("persists uploaded attachments when editor metadata changes", () => {
+    render(
+      <EditorProvider>
+        <Probe username="users/steven" cacheKey="attachment-draft" enabled />
+      </EditorProvider>,
+    );
+    const key = cacheService.key("users/steven", "attachment-draft");
+    const image = create(AttachmentSchema, {
+      name: "attachments/image-one",
+      filename: "image.png",
+      type: "image/png",
+    });
+    saveSpy.mockClear();
+
+    act(() => {
+      api.dispatch(api.actions.setMetadata({ attachments: [image] }));
+    });
+
+    expect(saveSpy).toHaveBeenCalledWith(key, "", [image]);
+  });
+
+  it("persists metadata changes for an attachment with the same name", () => {
+    render(
+      <EditorProvider>
+        <Probe username="users/steven" cacheKey="attachment-update" enabled />
+      </EditorProvider>,
+    );
+    const key = cacheService.key("users/steven", "attachment-update");
+    const initial = create(AttachmentSchema, {
+      name: "attachments/image-one",
+      filename: "image.png",
+      type: "image/png",
+    });
+    const updated = create(AttachmentSchema, {
+      name: "attachments/image-one",
+      filename: "image.png",
+      type: "image/png",
+      externalLink: "https://cdn.example.com/image.png",
+    });
+
+    act(() => {
+      api.dispatch(api.actions.setMetadata({ attachments: [initial] }));
+    });
+    saveSpy.mockClear();
+    act(() => {
+      api.dispatch(api.actions.setMetadata({ attachments: [updated] }));
+    });
+
+    expect(saveSpy).toHaveBeenCalledWith(key, "", [updated]);
   });
 
   it("does not persist when disabled", () => {

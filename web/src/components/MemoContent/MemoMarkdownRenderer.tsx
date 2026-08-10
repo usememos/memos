@@ -4,7 +4,9 @@ import type { Components } from "react-markdown";
 import ReactMarkdown from "react-markdown";
 import { buildRehypePlugins, buildRemarkPlugins } from "@/components/MemoContent/pipeline";
 import { isMentionElement, isTagElement, isTaskListItemElement } from "@/types/markdown";
+import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { lazyWithReload } from "@/utils/lazy";
+import { resolveManagedAttachmentImageSource } from "@/utils/managed-attachment";
 import { CodeBlock } from "./CodeBlock";
 import { MarkdownRenderContext, rootMarkdownRenderContext } from "./MarkdownRenderContext";
 import { Mention } from "./Mention";
@@ -17,6 +19,7 @@ import { TrustedIframe } from "./TrustedIframe";
 
 export interface MemoMarkdownRendererProps {
   content: string;
+  attachments?: Attachment[];
   resolvedMentionUsernames: Set<string>;
   /** Resource name of the memo (e.g. `memos/abc123`), used to target footnote links at the detail page. */
   memoName?: string;
@@ -56,6 +59,7 @@ function getMentionUsername(node: Element, children?: ReactNode): string {
 
 export const MemoMarkdownRendererCore = ({
   content,
+  attachments = [],
   resolvedMentionUsernames,
   memoName,
   compact,
@@ -137,7 +141,7 @@ export const MemoMarkdownRendererCore = ({
     },
     code: ({ children, ...props }) => <InlineCode {...props}>{children}</InlineCode>,
     iframe: TrustedIframe,
-    img: (props) => <Image {...props} />,
+    img: ({ src, ...props }) => <Image {...props} src={resolveManagedAttachmentImageSource(src, attachments)} />,
     pre: CodeBlock,
     table: ({ children, ...props }) => <Table {...props}>{children}</Table>,
     thead: ({ children, ...props }) => <TableHead {...props}>{children}</TableHead>,
@@ -182,6 +186,7 @@ export const MemoMarkdownRenderer = memo(
   MemoMarkdownRendererComponent,
   (previous, next) =>
     previous.content === next.content &&
+    previous.attachments === next.attachments &&
     previous.memoName === next.memoName &&
     previous.compact === next.compact &&
     haveEqualResolvedMentions(previous.resolvedMentionUsernames, next.resolvedMentionUsernames),

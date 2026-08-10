@@ -9,7 +9,7 @@ import type { MemoContentProps } from "./types";
 // the renderer (e.g. footnote links navigate to the detail page instead of scrolling,
 // since a collapsed card may hide the target).
 const MemoContent = (props: MemoContentProps) => {
-  const { className, contentClassName, content, onClick, onDoubleClick } = props;
+  const { className, contentClassName, content, attachments, onClick, onDoubleClick } = props;
   const resolvedMentionUsernames = useResolvedMentionUsernames(content);
 
   return (
@@ -36,6 +36,7 @@ const MemoContent = (props: MemoContentProps) => {
       >
         <MemoMarkdownRenderer
           content={content}
+          attachments={attachments}
           resolvedMentionUsernames={resolvedMentionUsernames}
           memoName={props.memoName}
           compact={Boolean(props.compact)}

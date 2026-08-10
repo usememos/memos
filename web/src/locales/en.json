@@ -224,13 +224,31 @@
       "more": "More formatting"
     },
     "insert-menu": {
+      "add-attachment": "Add attachment",
       "add-location": "Add location",
+      "image-upload-failed": "Some images could not be uploaded. Retry or keep the uploaded files as attachments.",
+      "image-upload-stopped": "Image upload stopped {{completed}}/{{total}}",
+      "insert-image": "Insert image",
+      "keep-as-attachments": "Keep as attachments",
       "link-memo": "Link memo",
+      "retry-image-upload": "Retry",
+      "uploading-inline-image": "Uploading to content",
+      "uploading-images": "Uploading images {{completed}}/{{total}}",
       "upload-file": "Upload file"
     },
     "no-changes-detected": "No changes detected",
     "save": "Save",
     "saving": "Saving...",
+    "validation": {
+      "cannot-save": "Cannot save",
+      "content-required": "Content, attachment, or file required",
+      "finish-audio-recording": "Finish audio recording before saving",
+      "loading-content": "Loading memo content",
+      "resolve-image-uploads": "Resolve image uploads before saving",
+      "save-in-progress": "Save in progress",
+      "unsupported-attachment-image-url": "Unsupported attachment image URL: {{url}}",
+      "wait-for-upload": "Wait for upload to complete"
+    },
     "unsupported-syntax-raw-mode": "This memo contains syntax the rich-text editor can't safely edit, so it opened in raw Markdown mode.",
     "wysiwyg-editor": "WYSIWYG Editor",
     "audio-recorder": {

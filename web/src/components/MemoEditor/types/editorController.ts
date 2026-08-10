@@ -1,3 +1,4 @@
+import type { UploadAnchorDescriptor } from "../Editor/uploadAnchors";
 import type { ActiveFormatState, EditorCommandContext, EditorCommandId } from "../formatting/commands";
 
 /**
@@ -16,6 +17,10 @@ export interface EditorController {
   setMarkdown(markdown: string): void;
   /** Insert markdown at the cursor as its own block. */
   insertMarkdown(markdown: string): void;
+  createUploadAnchor(descriptor: UploadAnchorDescriptor, position?: number): void;
+  updateUploadAnchor(descriptor: UploadAnchorDescriptor): void;
+  resolveUploadAnchor(id: string, markdown: string): void;
+  cancelUploadAnchor(id: string): void;
   getCursor(): number;
   setCursor(position: number): void;
   scrollToCursor(): void;

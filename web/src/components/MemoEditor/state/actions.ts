@@ -41,6 +41,11 @@ export const editorActions = {
     payload: { key, value },
   }),
 
+  setPendingInlineImageInsertions: (value: number): EditorAction => ({
+    type: "SET_PENDING_INLINE_IMAGE_INSERTIONS",
+    payload: value,
+  }),
+
   setTimestamps: (timestamps: Partial<EditorState["timestamps"]>): EditorAction => ({
     type: "SET_TIMESTAMPS",
     payload: timestamps,

@@ -15,6 +15,7 @@ export interface EditorState {
   };
   ui: {
     isFocusMode: boolean;
+    pendingInlineImageInsertions: number;
     isLoading: {
       saving: boolean;
       uploading: boolean;
@@ -40,6 +41,7 @@ export type EditorAction =
   | { type: "SET_LOCAL_FILES"; payload: LocalFile[] }
   | { type: "TOGGLE_FOCUS_MODE" }
   | { type: "SET_LOADING"; payload: { key: LoadingKey; value: boolean } }
+  | { type: "SET_PENDING_INLINE_IMAGE_INSERTIONS"; payload: number }
   | { type: "SET_TIMESTAMPS"; payload: Partial<EditorState["timestamps"]> }
   | { type: "SET_RECORDER_BUSY"; payload: boolean }
   | { type: "RESET" };
@@ -55,6 +57,7 @@ const defaultState: EditorState = {
   },
   ui: {
     isFocusMode: false,
+    pendingInlineImageInsertions: 0,
     isLoading: {
       saving: false,
       uploading: false,

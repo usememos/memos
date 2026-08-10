@@ -1,5 +1,7 @@
+import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import type { Location, Memo, Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { AudioRecorderStatus } from "../hooks/useAudioRecorder";
+import type { LocalFile } from "./attachment";
 
 export interface MemoEditorProps {
   className?: string;
@@ -29,6 +31,7 @@ export interface EditorContentProps {
   placeholder?: string;
   /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
   onSubmit: () => void;
+  onFiles: (files: File[], position: number) => void;
 }
 
 export interface EditorToolbarProps {
@@ -39,10 +42,14 @@ export interface EditorToolbarProps {
   /** Whether the formatting toolbar is shown in normal mode (persisted preference). */
   isFormattingToolbarVisible: boolean;
   onToggleFormattingToolbar: () => void;
+  onInsertImages: (files: File[]) => void;
 }
 
 export interface EditorMetadataProps {
   memoName?: string;
+  uploadingLocalFileURLs: ReadonlySet<string>;
+  onInsertAttachments: (attachments: Attachment[]) => void;
+  onInsertLocalFiles: (localFiles: LocalFile[]) => void;
 }
 
 export interface AudioRecorderPanelProps {
@@ -69,6 +76,7 @@ export interface FocusModeExitButtonProps {
 
 export interface InsertMenuProps {
   isUploading?: boolean;
+  isSaving?: boolean;
   location?: Location;
   onLocationChange: (location?: Location) => void;
   onToggleFocusMode?: () => void;
@@ -77,6 +85,7 @@ export interface InsertMenuProps {
   /** Persisted toggle for the normal-mode formatting toolbar. */
   isFormattingToolbarVisible?: boolean;
   onToggleFormattingToolbar?: () => void;
+  onInsertImages: (files: File[]) => void;
 }
 
 export interface VisibilitySelectorProps {

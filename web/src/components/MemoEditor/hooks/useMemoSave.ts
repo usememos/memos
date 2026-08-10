@@ -41,9 +41,9 @@ export function useMemoSave({
 
   return useCallback(async () => {
     const state = getState();
-    const { valid, reason } = validationService.canSave(state);
+    const { valid, reason, detail } = validationService.canSave(state);
     if (!valid) {
-      toast.error(reason || "Cannot save");
+      toast.error(reason ? t(reason, detail ? { url: detail } : undefined) : t("editor.validation.cannot-save"));
       return;
     }
 
