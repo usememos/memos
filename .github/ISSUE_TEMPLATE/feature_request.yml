@@ -1,109 +1,42 @@
 name: Feature Request
-description: Propose a product improvement with a clear use case
+description: Suggest an improvement to Memos
 type: Feature
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for suggesting an improvement. Please describe the problem and workflow first so maintainers can evaluate the request.
+        Thanks for suggesting an improvement. Please keep the request focused on one problem.
 
-        Before submitting:
-        - Search [existing feature requests](https://github.com/usememos/memos/issues?q=label%3Aenhancement) to avoid duplicates.
-        - Use [Discussions](https://github.com/usememos/memos/discussions) for broad ideas, setup help, or questions.
-        - Keep one feature request focused on one user problem.
+        Before submitting, search [existing issues](https://github.com/usememos/memos/issues) to avoid duplicates. For broad ideas and questions, use [Discussions](https://github.com/usememos/memos/discussions).
 
   - type: checkboxes
     id: pre-check
     attributes:
-      label: Pre-submission Checklist
+      label: Check before submitting
       options:
-        - label: I have searched existing issues and confirmed this has not already been requested
+        - label: I searched existing issues and did not find a duplicate
           required: true
-        - label: This is a feature request, not a bug report or support question
-          required: true
-
-  - type: dropdown
-    id: area
-    attributes:
-      label: Area
-      description: Choose the main area this request affects.
-      multiple: true
-      options:
-        - Web UI
-        - Mobile / responsive experience
-        - API
-        - Authentication / SSO
-        - Administration
-        - Memo editor
-        - Search / filters
-        - Tags / organization
-        - Resources / attachments
-        - Import / export
-        - Deployment / operations
-        - Other
-    validations:
-      required: true
 
   - type: textarea
     id: problem
     attributes:
-      label: Problem or Use Case
-      description: What problem does this solve? Describe the user need, not just the proposed UI or API.
-      placeholder: |
-        I often need to ...
-        Today, this is difficult because ...
-    validations:
-      required: true
-
-  - type: textarea
-    id: users
-    attributes:
-      label: Who Would Use This?
-      description: Describe the user, role, team, or workflow that would benefit.
-      placeholder: |
-        This helps ...
-        They currently ...
+      label: What problem would this solve?
+      description: Briefly describe what you are trying to do and why it is difficult today.
+      placeholder: I want to ... but currently ...
     validations:
       required: true
 
   - type: textarea
     id: solution
     attributes:
-      label: Proposed Solution
-      description: Describe the behavior you would like Memos to support. Include UI, API, or configuration details if relevant.
-      placeholder: |
-        Memos should ...
+      label: What would you like to happen?
+      description: Describe the behavior you would like Memos to support.
+      placeholder: It would be helpful if Memos could ...
     validations:
       required: true
 
   - type: textarea
-    id: alternatives
-    attributes:
-      label: Alternatives Considered
-      description: Existing workarounds, related tools, or simpler alternatives you considered.
-      placeholder: |
-        I tried ...
-        It does not work well because ...
-
-  - type: textarea
-    id: compatibility
-    attributes:
-      label: Compatibility and Migration
-      description: Note any expected impact on existing users, APIs, storage, permissions, or deployments.
-      placeholder: |
-        This should not affect existing memos because ...
-        Existing API clients may need ...
-
-  - type: textarea
-    id: examples
-    attributes:
-      label: Examples
-      description: Link to screenshots, mockups, API sketches, related apps, or existing issues that show the desired behavior.
-      placeholder: Drag and drop files here or add links/examples.
-
-  - type: textarea
     id: additional-context
     attributes:
-      label: Additional Context
-      description: Add any extra context that does not fit above.
-      placeholder: Any other details.
+      label: Additional context
+      description: Add workarounds, examples, screenshots, mockups, or related links if useful.
