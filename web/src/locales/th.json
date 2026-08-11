@@ -190,6 +190,7 @@
     "filters": {
       "has-code": "มีโค้ด",
       "has-link": "มีลิงก์",
+      "has-location": "มีตำแหน่ง",
       "has-task-list": "มีรายการที่ต้องทำ",
       "label": "ตัวกรอง"
     },

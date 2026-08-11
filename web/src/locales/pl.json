@@ -222,6 +222,7 @@
     "filters": {
       "has-code": "ma kod",
       "has-link": "ma link",
+      "has-location": "ma lokalizację",
       "has-task-list": "ma listę zadań",
       "label": "Filtry"
     },

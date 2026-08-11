@@ -204,6 +204,7 @@
     "filters": {
       "has-code": "hatCode",
       "has-link": "hatLink",
+      "has-location": "hat Standort",
       "has-task-list": "hatAufgabenliste",
       "label": "Filter"
     },

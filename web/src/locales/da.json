@@ -242,6 +242,7 @@
     "filters": {
       "has-code": "hasCode",
       "has-link": "harLink",
+      "has-location": "har placering",
       "has-task-list": "har Opgaveliste",
       "label": "Filtre"
     },

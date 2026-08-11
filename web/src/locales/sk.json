@@ -242,6 +242,7 @@
     "filters": {
       "has-code": "hasCode",
       "has-link": "hasLink",
+      "has-location": "má polohu",
       "has-task-list": "hasTaskList",
       "label": "Filtre"
     },

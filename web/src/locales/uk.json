@@ -204,6 +204,7 @@
     "filters": {
       "has-code": "єКод",
       "has-link": "єПосилання",
+      "has-location": "є розташування",
       "has-task-list": "єСписокЗавдань",
       "label": "Фільтри"
     },

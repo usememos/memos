@@ -190,6 +190,7 @@
     "filters": {
       "has-code": "cóMã",
       "has-link": "cóLiênKết",
+      "has-location": "có vị trí",
       "has-task-list": "cóDanhSáchViệc",
       "label": "Bộ lọc"
     },

@@ -204,6 +204,7 @@
     "filters": {
       "has-code": "კოდიარის",
       "has-link": "ლინკიარის",
+      "has-location": "აქვს მდებარეობა",
       "has-task-list": "სიისამოცანებია",
       "label": "ფილტრები"
     },

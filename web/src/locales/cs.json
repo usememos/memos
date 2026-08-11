@@ -204,6 +204,7 @@
     "filters": {
       "has-code": "maKod",
       "has-link": "maOdkaz",
+      "has-location": "má polohu",
       "has-task-list": "maSeznamUkolu",
       "label": "Filtry"
     },

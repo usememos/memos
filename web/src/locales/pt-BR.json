@@ -190,6 +190,7 @@
     "filters": {
       "has-code": "temCódigo",
       "has-link": "temLink",
+      "has-location": "tem localização",
       "has-task-list": "temListaDeTarefas",
       "label": "Filtros"
     },

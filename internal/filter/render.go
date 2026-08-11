@@ -143,6 +143,12 @@ func (r *renderer) renderFieldPredicate(cond *FieldPredicateCondition) (renderRe
 			return renderResult{}, err
 		}
 		return renderResult{sql: sql}, nil
+	case FieldKindJSONExists:
+		sql, err := r.jsonExistsSQL(field)
+		if err != nil {
+			return renderResult{}, errors.Wrap(err, "failed to render JSON existence predicate")
+		}
+		return renderResult{sql: sql}, nil
 	default:
 		return renderResult{}, errors.Errorf("field %q cannot be used as a predicate", cond.Field)
 	}
@@ -160,6 +166,8 @@ func (r *renderer) renderComparison(cond *ComparisonCondition) (renderResult, er
 			return r.renderBoolColumnComparison(field, cond.Operator, cond.Right)
 		case FieldKindJSONBool:
 			return r.renderJSONBoolComparison(field, cond.Operator, cond.Right)
+		case FieldKindJSONExists:
+			return r.renderJSONExistsComparison(field, cond.Operator, cond.Right)
 		case FieldKindScalar:
 			return r.renderScalarComparison(field, cond.Operator, cond.Right)
 		default:
@@ -723,6 +731,49 @@ func tagLikePattern(mode TextMatchMode, value string) string {
 	default:
 		return "%" + escaped + "%"
 	}
+}
+
+// jsonExistsSQL renders a predicate that is true when the JSON key at the
+// field's path holds a non-null value. A missing key and an explicit JSON null
+// both count as absent on every dialect.
+func (r *renderer) jsonExistsSQL(field Field) (string, error) {
+	expr := jsonExtractExpr(r.dialect, field)
+	switch r.dialect {
+	case DialectSQLite, DialectPostgres:
+		// SQLite's JSON_EXTRACT and Postgres' terminal ->> fold both a missing
+		// key and a JSON null to SQL NULL.
+		return fmt.Sprintf("%s IS NOT NULL", expr), nil
+	case DialectMySQL:
+		// MySQL's JSON_EXTRACT returns SQL NULL for a missing key but a JSON
+		// null literal for an explicit null; JSON_TYPE reports 'NULL' only for
+		// the latter, so both collapse to 'NULL' here.
+		return fmt.Sprintf("COALESCE(JSON_TYPE(%s), 'NULL') != 'NULL'", expr), nil
+	default:
+		return "", errors.Errorf("unsupported dialect %s", r.dialect)
+	}
+}
+
+func (r *renderer) renderJSONExistsComparison(field Field, op ComparisonOperator, right ValueExpr) (renderResult, error) {
+	value, err := expectBool(right)
+	if err != nil {
+		return renderResult{}, errors.Wrap(err, "json existence comparison requires a boolean value")
+	}
+	existsSQL, err := r.jsonExistsSQL(field)
+	if err != nil {
+		return renderResult{}, errors.Wrap(err, "failed to render JSON existence comparison")
+	}
+	want := value
+	switch op {
+	case CompareEq:
+	case CompareNeq:
+		want = !want
+	default:
+		return renderResult{}, errors.Errorf("operator %s not supported for field %q", op, field.Name)
+	}
+	if want {
+		return renderResult{sql: existsSQL}, nil
+	}
+	return renderResult{sql: fmt.Sprintf("NOT (%s)", existsSQL)}, nil
 }
 
 func (r *renderer) jsonBoolPredicate(field Field) (string, error) {

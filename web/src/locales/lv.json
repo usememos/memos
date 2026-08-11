@@ -242,6 +242,7 @@
     "filters": {
       "has-code": "hasCode",
       "has-link": "hasLink",
+      "has-location": "ir atrašanās vieta",
       "has-task-list": "hasTaskList",
       "label": "Filtri"
     },

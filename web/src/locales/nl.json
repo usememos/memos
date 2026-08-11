@@ -204,6 +204,7 @@
     "filters": {
       "has-code": "heeftCode",
       "has-link": "heeftLink",
+      "has-location": "heeft locatie",
       "has-task-list": "heeftTakenlijst",
       "label": "Filters"
     },

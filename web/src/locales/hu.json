@@ -204,6 +204,7 @@
     "filters": {
       "has-code": "vanKód",
       "has-link": "vanLink",
+      "has-location": "van helyadat",
       "has-task-list": "vanFeladatLista",
       "label": "Szűrők"
     },

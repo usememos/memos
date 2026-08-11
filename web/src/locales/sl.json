@@ -204,6 +204,7 @@
     "filters": {
       "has-code": "imaKodo",
       "has-link": "imaPovezavo",
+      "has-location": "imaLokacijo",
       "has-task-list": "imaSeznamOpravil",
       "label": "Filtri"
     },

@@ -357,6 +357,7 @@
     "filters": {
       "has-code": "有程式碼",
       "has-link": "有連結",
+      "has-location": "有位置",
       "has-task-list": "有待辦事項",
       "label": "過濾器"
     },

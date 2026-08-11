@@ -61,6 +61,11 @@ stmt, _ := engine.CompileToStatement(ctx, `has_task_list && visibility == "PUBLI
   present in the memo tag set, not through prefix matching.
 - **Boolean Flags** — Fields such as `has_task_list` render as `IS TRUE` equality
   checks, or comparisons against `CAST('true' AS JSON)` depending on the dialect.
+- **Presence Flags** — `has_location` renders as a JSON key-existence check on
+  `memo.payload` (`$.location`). A missing key and an explicit JSON null both
+  count as absent on every dialect; any other value — including an empty object —
+  counts as present. Only `==`/`!=` against a boolean literal (or bare/negated
+  use) is allowed.
 - **String Matching** — `content.contains(x)`, `content.startsWith(x)`, and
   `content.endsWith(x)` render as case-insensitive `LIKE`/`ILIKE` with LIKE
   metacharacters (`%`, `_`, `\`) escaped. Available on scalar string fields whose

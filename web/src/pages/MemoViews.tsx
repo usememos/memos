@@ -7,6 +7,7 @@ import {
   Clock3Icon,
   ExternalLinkIcon,
   FilterIcon,
+  MapPinIcon,
   MoreVerticalIcon,
   PencilIcon,
   PinIcon,
@@ -87,6 +88,12 @@ const memoViewExamples = [
     filter: "has_link || has_code",
     description: "Memos containing links or code blocks.",
     icon: FilterIcon,
+  },
+  {
+    title: "No location",
+    filter: "!has_location",
+    description: "Memos without an attached location.",
+    icon: MapPinIcon,
   },
   {
     title: "Content search",
@@ -170,6 +177,7 @@ const filterFields = [
   "has_incomplete_tasks",
   "has_link",
   "has_code",
+  "has_location",
   'created_ts >= now - duration("24h")',
   "created_ts.getFullYear() == ...",
   "created_ts.getMonth() == ... (0 = Jan)",
@@ -204,9 +212,10 @@ const MemoViewGuide = ({ onUseExample }: MemoViewGuideProps) => {
           {memoViewExamples.map((example) => {
             const Icon = example.icon;
             return (
-              <div
+              <button
+                type="button"
                 key={example.filter}
-                className="group cursor-pointer rounded-md border border-transparent p-2 text-left transition-colors hover:border-border hover:bg-muted/50"
+                className="group w-full cursor-pointer rounded-md border border-transparent p-2 text-left transition-colors hover:border-border hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
                 onClick={() => onUseExample(example)}
               >
                 <span className="flex items-center gap-2 text-sm font-medium text-foreground">
@@ -215,7 +224,7 @@ const MemoViewGuide = ({ onUseExample }: MemoViewGuideProps) => {
                 </span>
                 <span className="mt-1 block font-mono text-xs leading-5 text-muted-foreground">{example.filter}</span>
                 <span className="mt-1 block text-xs leading-5 text-muted-foreground">{example.description}</span>
-              </div>
+              </button>
             );
           })}
         </div>

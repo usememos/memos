@@ -10,7 +10,8 @@ export type FilterFactor =
   | "pinned"
   | "property.hasLink"
   | "property.hasTaskList"
-  | "property.hasCode";
+  | "property.hasCode"
+  | "property.hasLocation";
 
 export interface MemoFilter {
   factor: FilterFactor;

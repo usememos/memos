@@ -242,6 +242,7 @@
     "filters": {
       "has-code": "hasCode",
       "has-link": "hasLink",
+      "has-location": "on asukoht",
       "has-task-list": "hasTaskList",
       "label": "Filtrid"
     },

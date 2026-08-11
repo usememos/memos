@@ -204,6 +204,7 @@
     "filters": {
       "has-code": "téCodi",
       "has-link": "téEnllaç",
+      "has-location": "té ubicació",
       "has-task-list": "téLlistaTasques",
       "label": "Filtres"
     },

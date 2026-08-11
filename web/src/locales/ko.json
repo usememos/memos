@@ -190,6 +190,7 @@
     "filters": {
       "has-code": "코드있음",
       "has-link": "링크있음",
+      "has-location": "위치 있음",
       "has-task-list": "할일목록있음",
       "label": "필터"
     },

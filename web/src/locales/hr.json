@@ -204,6 +204,7 @@
     "filters": {
       "has-code": "imaKod",
       "has-link": "imaLink",
+      "has-location": "ima lokaciju",
       "has-task-list": "imaZadatke",
       "label": "Filteri"
     },

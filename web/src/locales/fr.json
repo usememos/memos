@@ -204,6 +204,7 @@
     "filters": {
       "has-code": "aCode",
       "has-link": "aLien",
+      "has-location": "a une localisation",
       "has-task-list": "aListeTâches",
       "label": "Filtres"
     },

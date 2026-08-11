@@ -204,6 +204,7 @@
     "filters": {
       "has-code": "hasCode",
       "has-link": "hasLink",
+      "has-location": "есть местоположение",
       "has-task-list": "hasTaskList",
       "label": "Фильтры"
     },
