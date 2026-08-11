@@ -25,12 +25,13 @@ import (
 
 func convertAttachmentFromStore(attachment *store.Attachment) *v1pb.Attachment {
 	attachmentMessage := &v1pb.Attachment{
-		Name:        fmt.Sprintf("%s%s", AttachmentNamePrefix, attachment.UID),
-		CreateTime:  timestamppb.New(time.Unix(attachment.CreatedTs, 0)),
-		Filename:    attachment.Filename,
-		Type:        attachment.Type,
-		Size:        attachment.Size,
-		MotionMedia: convertMotionMediaFromStore(getAttachmentMotionMedia(attachment)),
+		Name:          fmt.Sprintf("%s%s", AttachmentNamePrefix, attachment.UID),
+		CreateTime:    timestamppb.New(time.Unix(attachment.CreatedTs, 0)),
+		Filename:      attachment.Filename,
+		Type:          attachment.Type,
+		Size:          attachment.Size,
+		MotionMedia:   convertMotionMediaFromStore(getAttachmentMotionMedia(attachment)),
+		MediaMetadata: convertMediaMetadataFromStore(attachment.Payload.GetMediaMetadata()),
 	}
 	if attachment.MemoUID != nil && *attachment.MemoUID != "" {
 		memoName := fmt.Sprintf("%s%s", MemoNamePrefix, *attachment.MemoUID)

@@ -38,12 +38,51 @@ message MotionMedia {
   bool has_embedded_video = 5;
 }
 
+message MediaMetadata {
+  optional int32 width = 1;
+  optional int32 height = 2;
+
+  oneof details {
+    PhotoMetadata photo = 3;
+    VideoMetadata video = 4;
+  }
+}
+
+message PhotoMetadata {
+  MediaCaptureTime capture_time = 1;
+  MediaLocation location = 2;
+  optional int32 source_exif_orientation = 3;
+  string camera_make = 4;
+  string camera_model = 5;
+  string lens_model = 6;
+  optional double f_number = 7;
+  optional double exposure_time_seconds = 8;
+  optional int32 iso = 9;
+  optional double focal_length_mm = 10;
+}
+
+message MediaCaptureTime {
+  string local_date_time = 1;
+  optional string utc_offset = 2;
+}
+
+message MediaLocation {
+  optional double latitude = 1;
+  optional double longitude = 2;
+  optional double altitude_meters = 3;
+}
+
+message VideoMetadata {
+  optional double duration_seconds = 1;
+}
+
 message AttachmentPayload {
   oneof payload {
     S3Object s3_object = 1;
   }
 
   MotionMedia motion_media = 10;
+  MediaMetadata media_metadata = 11;
 
   message S3Object {
     StorageS3Config s3_config = 1;

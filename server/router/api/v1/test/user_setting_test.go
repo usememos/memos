@@ -59,6 +59,60 @@ func TestListUserSettingsOmitsInternalStoreSettings(t *testing.T) {
 	require.Equal(t, "ja", resp.Settings[0].GetGeneralSetting().Locale)
 }
 
+func TestGeneralUserSettingSaveMediaMetadata(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateRegularUser(ctx, "media-setting-user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+	settingName := "users/media-setting-user/settings/GENERAL"
+
+	defaultSetting, err := ts.Service.GetUserSetting(userCtx, &apiv1.GetUserSettingRequest{Name: settingName})
+	require.NoError(t, err)
+	require.False(t, defaultSetting.GetGeneralSetting().GetSaveMediaMetadata())
+
+	updated, err := ts.Service.UpdateUserSetting(userCtx, &apiv1.UpdateUserSettingRequest{
+		Setting: &apiv1.UserSetting{
+			Name: settingName,
+			Value: &apiv1.UserSetting_GeneralSetting_{
+				GeneralSetting: &apiv1.UserSetting_GeneralSetting{SaveMediaMetadata: true},
+			},
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"save_media_metadata"}},
+	})
+	require.NoError(t, err)
+	require.True(t, updated.GetGeneralSetting().GetSaveMediaMetadata())
+	require.Equal(t, "en", updated.GetGeneralSetting().GetLocale())
+	require.Equal(t, "PRIVATE", updated.GetGeneralSetting().GetMemoVisibility())
+
+	updated, err = ts.Service.UpdateUserSetting(userCtx, &apiv1.UpdateUserSettingRequest{
+		Setting: &apiv1.UserSetting{
+			Name: settingName,
+			Value: &apiv1.UserSetting_GeneralSetting_{
+				GeneralSetting: &apiv1.UserSetting_GeneralSetting{Locale: "ja"},
+			},
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"locale"}},
+	})
+	require.NoError(t, err)
+	require.Equal(t, "ja", updated.GetGeneralSetting().GetLocale())
+	require.True(t, updated.GetGeneralSetting().GetSaveMediaMetadata())
+
+	updated, err = ts.Service.UpdateUserSetting(userCtx, &apiv1.UpdateUserSettingRequest{
+		Setting: &apiv1.UserSetting{
+			Name: settingName,
+			Value: &apiv1.UserSetting_GeneralSetting_{
+				GeneralSetting: &apiv1.UserSetting_GeneralSetting{SaveMediaMetadata: false},
+			},
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"save_media_metadata"}},
+	})
+	require.NoError(t, err)
+	require.False(t, updated.GetGeneralSetting().GetSaveMediaMetadata())
+}
+
 func TestUserTagSettings(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)

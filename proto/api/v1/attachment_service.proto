@@ -73,6 +73,58 @@ message MotionMedia {
   bool has_embedded_video = 5;
 }
 
+// MediaMetadata contains normalized metadata explicitly supplied by a client.
+// The server validates and stores this data but does not extract it from the media file.
+message MediaMetadata {
+  // Optional. Display-oriented width in pixels.
+  optional int32 width = 1;
+  // Optional. Display-oriented height in pixels.
+  optional int32 height = 2;
+
+  oneof details {
+    PhotoMetadata photo = 3;
+    VideoMetadata video = 4;
+  }
+}
+
+message PhotoMetadata {
+  // Optional. Capture time as recorded by the source media.
+  MediaCaptureTime capture_time = 1;
+  // Optional. Geographic location recorded by the source media.
+  MediaLocation location = 2;
+  // Optional. EXIF orientation value from 1 through 8 as recorded by the source file.
+  // This value is informational and must not be reapplied to the stored attachment;
+  // width and height already describe its display-oriented dimensions.
+  optional int32 source_exif_orientation = 3;
+  string camera_make = 4;
+  string camera_model = 5;
+  string lens_model = 6;
+  optional double f_number = 7;
+  optional double exposure_time_seconds = 8;
+  optional int32 iso = 9;
+  optional double focal_length_mm = 10;
+}
+
+message MediaCaptureTime {
+  // Local date and time without a time zone, formatted as YYYY-MM-DDTHH:mm:ss[.fraction].
+  string local_date_time = 1;
+  // Optional. UTC offset formatted as Z or +/-HH:MM.
+  optional string utc_offset = 2;
+}
+
+message MediaLocation {
+  // Optional. WGS84 latitude in decimal degrees. Must be provided with longitude.
+  optional double latitude = 1;
+  // Optional. WGS84 longitude in decimal degrees. Must be provided with latitude.
+  optional double longitude = 2;
+  // Optional. Signed altitude in meters relative to sea level.
+  optional double altitude_meters = 3;
+}
+
+message VideoMetadata {
+  optional double duration_seconds = 1;
+}
+
 message Attachment {
   option (google.api.resource) = {
     type: "memos.api.v1/Attachment"
@@ -109,6 +161,12 @@ message Attachment {
 
   // Optional. Motion media metadata.
   MotionMedia motion_media = 9 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Immutable normalized media metadata explicitly supplied by the client at creation time.
+  MediaMetadata media_metadata = 10 [
+    (google.api.field_behavior) = OPTIONAL,
+    (google.api.field_behavior) = IMMUTABLE
+  ];
 }
 
 message CreateAttachmentRequest {

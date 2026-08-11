@@ -4,7 +4,7 @@ import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
 
 export const CACHE_DEBOUNCE_DELAY = 500;
 
-const pendingSaves = new Map<string, ReturnType<typeof window.setTimeout>>();
+const pendingSaves = new Map<string, number>();
 const cursors = new Map<string, number>();
 const STRUCTURED_CACHE_ENTRY_KIND = "memos.editor-cache";
 const STRUCTURED_CACHE_ENTRY_VERSION = 2;

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -28,12 +29,59 @@ func TestGatewayMarshalerOmitsUnsetMessageFields(t *testing.T) {
 	payload := marshalThroughGateway(t, attachment)
 
 	require.NotContains(t, payload, "motionMedia", "an unset message field must be omitted, not emitted as null")
+	require.NotContains(t, payload, "mediaMetadata", "an unset message field must be omitted, not emitted as null")
 	// Scalar defaults stay in the payload: the schema lists filename and type as
 	// required, so dropping unpopulated scalars would break validation instead.
 	require.Equal(t, "", payload["externalLink"])
 	require.Equal(t, "sunset.png", payload["filename"])
 	require.Equal(t, "image/png", payload["type"])
 	require.Equal(t, "0", payload["size"])
+}
+
+func TestGatewayMarshalerKeepsMediaMetadataFieldNames(t *testing.T) {
+	attachment := &v1pb.Attachment{
+		Name:     "attachments/video1",
+		Filename: "clip.mp4",
+		Type:     "video/mp4",
+		MediaMetadata: &v1pb.MediaMetadata{
+			Width:  proto.Int32(1920),
+			Height: proto.Int32(1080),
+			Details: &v1pb.MediaMetadata_Video{Video: &v1pb.VideoMetadata{
+				DurationSeconds: proto.Float64(12.5),
+			}},
+		},
+	}
+
+	payload := marshalThroughGateway(t, attachment)
+
+	metadata, ok := payload["mediaMetadata"].(map[string]any)
+	require.True(t, ok)
+	require.Equal(t, float64(1920), metadata["width"])
+	video, ok := metadata["video"].(map[string]any)
+	require.True(t, ok)
+	require.Equal(t, 12.5, video["durationSeconds"])
+}
+
+func TestGatewayMarshalerNamesSourceExifOrientationExplicitly(t *testing.T) {
+	attachment := &v1pb.Attachment{
+		Name:     "attachments/photo1",
+		Filename: "photo.jpg",
+		Type:     "image/jpeg",
+		MediaMetadata: &v1pb.MediaMetadata{
+			Details: &v1pb.MediaMetadata_Photo{Photo: &v1pb.PhotoMetadata{
+				SourceExifOrientation: proto.Int32(6),
+			}},
+		},
+	}
+
+	payload := marshalThroughGateway(t, attachment)
+
+	metadata, ok := payload["mediaMetadata"].(map[string]any)
+	require.True(t, ok)
+	photo, ok := metadata["photo"].(map[string]any)
+	require.True(t, ok)
+	require.Equal(t, float64(6), photo["sourceExifOrientation"])
+	require.NotContains(t, photo, "orientation")
 }
 
 func TestGatewayMarshalerKeepsPopulatedMessageFields(t *testing.T) {

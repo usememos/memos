@@ -45,6 +45,8 @@ message GeneralUserSetting {
   // The user's theme preference.
   // This references a CSS file in the web/public/themes/ directory.
   string theme = 3;
+  // Whether the official client should save metadata from future media uploads.
+  bool save_media_metadata = 4;
 }
 
 message UserTagMetadata {

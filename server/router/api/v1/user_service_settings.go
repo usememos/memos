@@ -84,22 +84,17 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 	var updatedSetting *v1pb.UserSetting
 	switch storeKey {
 	case storepb.UserSetting_GENERAL:
-		existingUserSetting, _ := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
+		existingUserSetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
 			UserID: &userID,
 			Key:    storeKey,
 		})
-
-		generalSetting := &storepb.GeneralUserSetting{}
-		if existingUserSetting != nil {
-			// Start with existing general setting values.
-			generalSetting = existingUserSetting.GetGeneral()
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get existing general setting: %v", err)
 		}
 
-		updatedGeneral := &v1pb.UserSetting_GeneralSetting{
-			MemoVisibility: generalSetting.GetMemoVisibility(),
-			Locale:         generalSetting.GetLocale(),
-			Theme:          generalSetting.GetTheme(),
-		}
+		// Seed the merge from the shared store→API converter, which already falls
+		// back to defaults when the setting (or its general value) is missing.
+		updatedGeneral := convertUserSettingFromStore(existingUserSetting, user, storeKey).GetGeneralSetting()
 
 		incomingGeneral := request.Setting.GetGeneralSetting()
 		if incomingGeneral == nil {
@@ -113,6 +108,8 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 				updatedGeneral.Theme = incomingGeneral.Theme
 			case "locale":
 				updatedGeneral.Locale = incomingGeneral.Locale
+			case "save_media_metadata":
+				updatedGeneral.SaveMediaMetadata = incomingGeneral.SaveMediaMetadata
 			default:
 				// Ignore unsupported fields.
 			}

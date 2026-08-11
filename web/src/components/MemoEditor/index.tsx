@@ -11,8 +11,8 @@ import { convertVisibilityFromString } from "@/utils/memo";
 import { AudioRecorderPanel, EditorContent, EditorMetadata, FocusModeOverlay, TimestampPopover } from "./components";
 import { FOCUS_MODE_STYLES, FORMATTING_TOOLBAR_STORAGE_KEY } from "./constants";
 import {
-  pairAppleLivePhotoFiles,
   splitInlineLocalFiles,
+  toLocalFiles,
   useAudioRecorder,
   useAutoSave,
   useBlobUrls,
@@ -60,6 +60,7 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
   const [isAudioRecorderOpen, setIsAudioRecorderOpen] = useState(false);
   const [isTranscribingAudio, setIsTranscribingAudio] = useState(false);
   const { createBlobUrl } = useBlobUrls();
+  const saveMediaMetadata = userGeneralSetting?.saveMediaMetadata ?? false;
   const inlineImageUpload = useInlineImageUpload(editorRef);
   // Persisted preference: also show the formatting toolbar in normal mode. Focus
   // mode always shows it regardless; this only governs the non-focus layout.
@@ -232,27 +233,15 @@ const MemoEditorImpl: React.FC<MemoEditorProps> = ({
     void handleStartAudioRecording();
   };
 
-  const toLocalFiles = useCallback(
-    (files: File[]): LocalFile[] =>
-      pairAppleLivePhotoFiles(
-        files.map((file) => ({
-          file,
-          previewUrl: createBlobUrl(file),
-          origin: "upload",
-        })),
-      ),
-    [createBlobUrl],
-  );
-
   /** Shared by the ＋ menu (no position) and by editor paste/drop (drop position). */
   const handleInsertImages = useCallback(
     (files: File[], position?: number) => {
       if (getState().ui.isLoading.saving) return;
-      const { inline, attachments } = splitInlineLocalFiles(toLocalFiles(files));
+      const { inline, attachments } = splitInlineLocalFiles(toLocalFiles(files, { createBlobUrl, saveMediaMetadata }));
       attachments.forEach((file) => dispatch(actions.addLocalFile(file)));
       inlineImageUpload.insertLocalImages(inline, position);
     },
-    [actions, dispatch, getState, inlineImageUpload.insertLocalImages, toLocalFiles],
+    [actions, createBlobUrl, dispatch, getState, inlineImageUpload.insertLocalImages, saveMediaMetadata],
   );
 
   const handleCancelAudioRecording = () => {

@@ -6,7 +6,7 @@ export { useAutoSave } from "./useAutoSave";
 export { useBlobUrls } from "./useBlobUrls";
 export { useEditorActiveState } from "./useEditorActiveState";
 export { COMPACT_TOOLBAR_WIDTH, isCompactWidth, useElementWidth } from "./useElementWidth";
-export { pairAppleLivePhotoFiles, useFileUpload } from "./useFileUpload";
+export { pairAppleLivePhotoFiles, toLocalFiles, useFileUpload } from "./useFileUpload";
 export { useFocusMode } from "./useFocusMode";
 export { splitInlineLocalFiles, useInlineImageUpload } from "./useInlineImageUpload";
 export { useLinkMemo } from "./useLinkMemo";
