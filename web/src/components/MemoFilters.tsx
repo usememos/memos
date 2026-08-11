@@ -8,6 +8,7 @@ import {
   HashIcon,
   LinkIcon,
   LucideIcon,
+  MapPinIcon,
   SearchIcon,
   XIcon,
 } from "lucide-react";
@@ -53,6 +54,10 @@ const FILTER_CONFIGS: Record<FilterFactor, FilterConfig> = {
   "property.hasCode": {
     icon: CodeIcon,
     getLabel: (_, t) => t("memo.filters.has-code"),
+  },
+  "property.hasLocation": {
+    icon: MapPinIcon,
+    getLabel: (_, t) => t("memo.filters.has-location"),
   },
 };
 

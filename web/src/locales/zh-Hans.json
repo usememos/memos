@@ -280,6 +280,7 @@
     "filters": {
       "has-code": "有代码",
       "has-link": "有链接",
+      "has-location": "有位置",
       "has-task-list": "有待办",
       "label": "过滤器"
     },

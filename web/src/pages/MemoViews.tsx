@@ -7,6 +7,7 @@ import {
   Clock3Icon,
   ExternalLinkIcon,
   FilterIcon,
+  MapPinIcon,
   MoreVerticalIcon,
   PencilIcon,
   PinIcon,
@@ -87,6 +88,12 @@ const memoViewExamples = [
     filter: "has_link || has_code",
     description: "Memos containing links or code blocks.",
     icon: FilterIcon,
+  },
+  {
+    title: "No location",
+    filter: "!has_location",
+    description: "Memos without an attached location.",
+    icon: MapPinIcon,
   },
   {
     title: "Content search",
@@ -170,6 +177,7 @@ const filterFields = [
   "has_incomplete_tasks",
   "has_link",
   "has_code",
+  "has_location",
   'created_ts >= now - duration("24h")',
   "created_ts.getFullYear() == ...",
   "created_ts.getMonth() == ... (0 = Jan)",

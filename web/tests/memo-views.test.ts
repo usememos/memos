@@ -56,6 +56,20 @@ describe("memo views", () => {
     );
   });
 
+  it("maps property filter factors to their CEL flags", () => {
+    expect(
+      buildMemoFilter({
+        filters: [
+          { factor: "property.hasLink", value: "" },
+          { factor: "property.hasTaskList", value: "" },
+          { factor: "property.hasCode", value: "" },
+          { factor: "property.hasLocation", value: "" },
+        ],
+        includePinned: false,
+      }),
+    ).toBe("has_link && has_task_list && has_code && has_location");
+  });
+
   it("uses a custom memo view filter when Tasks is not selected", () => {
     expect(
       buildMemoFilter({

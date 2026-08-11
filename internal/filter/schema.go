@@ -33,6 +33,7 @@ const (
 	FieldKindScalar       FieldKind = "scalar"
 	FieldKindBoolColumn   FieldKind = "bool_column"
 	FieldKindJSONBool     FieldKind = "json_bool"
+	FieldKindJSONExists   FieldKind = "json_exists"
 	FieldKindJSONList     FieldKind = "json_list"
 	FieldKindVirtualAlias FieldKind = "virtual_alias"
 )
@@ -227,6 +228,17 @@ func NewSchema() Schema {
 				CompareNeq: true,
 			},
 		},
+		"has_location": {
+			Name:     "has_location",
+			Kind:     FieldKindJSONExists,
+			Type:     FieldTypeBool,
+			Column:   Column{Table: "memo", Name: "payload"},
+			JSONPath: []string{"location"},
+			AllowedComparisonOps: map[ComparisonOperator]bool{
+				CompareEq:  true,
+				CompareNeq: true,
+			},
+		},
 	}
 
 	envOptions := []cel.EnvOption{
@@ -243,6 +255,7 @@ func NewSchema() Schema {
 		cel.Variable("has_link", cel.BoolType),
 		cel.Variable("has_code", cel.BoolType),
 		cel.Variable("has_incomplete_tasks", cel.BoolType),
+		cel.Variable("has_location", cel.BoolType),
 		cel.Variable("now", cel.TimestampType),
 		ext.Sets(),
 		cel.ASTValidators(cel.ValidateRegexLiterals()),

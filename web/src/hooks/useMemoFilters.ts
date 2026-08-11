@@ -93,6 +93,8 @@ export const buildMemoFilter = ({
       conditions.push(`has_task_list`);
     } else if (filter.factor === "property.hasCode") {
       conditions.push(`has_code`);
+    } else if (filter.factor === "property.hasLocation") {
+      conditions.push(`has_location`);
     } else if (filter.factor === "displayTime") {
       const range = getLocalDayTimestampRange(filter.value);
       if (range) {

@@ -550,7 +550,8 @@ type ListMemosRequest struct {
 	//	created_ts / updated_ts (timestamp), pinned (bool),
 	//	visibility (string: PRIVATE | PROTECTED | PUBLIC),
 	//	tags (list<string>; match with `"work" in tags`, not `tag == "work"`),
-	//	has_task_list / has_link / has_code / has_incomplete_tasks (bool).
+	//	has_task_list / has_link / has_code / has_incomplete_tasks (bool),
+	//	has_location (bool; true when the memo has a location attached).
 	//
 	// Note: the time fields here are created_ts / updated_ts, which differ from
 	// the create_time / update_time names used by order_by.

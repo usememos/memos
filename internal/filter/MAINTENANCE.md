@@ -16,9 +16,8 @@ extending or debugging the package.
      `parser.go` or extend the renderer helpers.  
    - Keep validation in the parser (e.g., reject unsupported operators).
 3. **Write a golden test**  
-   - Extend the dialect-specific memo filter tests under
-     `store/db/{sqlite,mysql,postgres}/memo_filter_test.go` with a case that
-     exercises the new field.
+   - Extend `engine_test.go` with per-dialect rendering assertions for the new
+     field, and a SQLite behavioral test when the semantics warrant it.
 4. **Run `go test ./...`** to ensure the SQL output matches expectations across
    all dialects.
 

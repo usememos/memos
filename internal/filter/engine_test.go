@@ -513,3 +513,106 @@ func TestTagComprehensionAvoidsMySQLExistsSemiJoin(t *testing.T) {
 		require.Contains(t, stmt.SQL, "EXISTS (SELECT 1", "dialect %s", dialect)
 	}
 }
+
+func TestRenderHasLocationPerDialect(t *testing.T) {
+	t.Parallel()
+
+	engine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+
+	cases := []struct {
+		dialect DialectName
+		sql     string
+	}{
+		{DialectSQLite, "JSON_EXTRACT(`memo`.`payload`, '$.location') IS NOT NULL"},
+		{DialectMySQL, "COALESCE(JSON_TYPE(JSON_EXTRACT(`memo`.`payload`, '$.location')), 'NULL') != 'NULL'"},
+		{DialectPostgres, "memo.payload->>'location' IS NOT NULL"},
+	}
+	for _, tc := range cases {
+		stmt, err := engine.CompileToStatement(context.Background(), `has_location`, RenderOptions{Dialect: tc.dialect})
+		require.NoError(t, err, tc.dialect)
+		require.Equal(t, tc.sql, stmt.SQL, tc.dialect)
+		require.Empty(t, stmt.Args, tc.dialect)
+	}
+}
+
+func TestRenderHasLocationNegationAndComparisons(t *testing.T) {
+	t.Parallel()
+
+	engine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+
+	const exists = "JSON_EXTRACT(`memo`.`payload`, '$.location') IS NOT NULL"
+	cases := []struct {
+		expr string
+		sql  string
+	}{
+		{`has_location`, exists},
+		{`!has_location`, "NOT (" + exists + ")"},
+		{`has_location == true`, exists},
+		{`has_location == false`, "NOT (" + exists + ")"},
+		{`has_location != true`, "NOT (" + exists + ")"},
+		{`has_location != false`, exists},
+	}
+	for _, tc := range cases {
+		stmt, err := engine.CompileToStatement(context.Background(), tc.expr, RenderOptions{Dialect: DialectSQLite})
+		require.NoError(t, err, tc.expr)
+		require.Equal(t, tc.sql, stmt.SQL, tc.expr)
+		require.Empty(t, stmt.Args, tc.expr)
+	}
+}
+
+func TestCompileRejectsOrderingOnHasLocation(t *testing.T) {
+	t.Parallel()
+
+	engine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+
+	// Only ==/!= are meaningful for a presence flag.
+	_, err = engine.Compile(context.Background(), `has_location < true`)
+	require.Error(t, err)
+}
+
+// TestHasLocationSQLiteBehavior pins the presence semantics against a real
+// database: a missing key, an explicit JSON null, and a NULL payload all count
+// as absent, while any location object — even an empty one — counts as present.
+func TestHasLocationSQLiteBehavior(t *testing.T) {
+	db, err := sql.Open("sqlite", ":memory:")
+	require.NoError(t, err)
+	db.SetMaxOpenConns(1)
+	t.Cleanup(func() { require.NoError(t, db.Close()) })
+
+	_, err = db.Exec(`CREATE TABLE memo (id INTEGER PRIMARY KEY, payload TEXT)`)
+	require.NoError(t, err)
+	for _, fixture := range []struct {
+		id      int
+		payload any
+	}{
+		{1, `{}`},
+		{2, `{"location":{"placeholder":"Tokyo","latitude":35.6,"longitude":139.7}}`},
+		{3, `{"location":{}}`},
+		{4, `{"location":null}`},
+		{5, nil},
+	} {
+		_, err = db.Exec(`INSERT INTO memo (id, payload) VALUES (?, ?)`, fixture.id, fixture.payload)
+		require.NoError(t, err)
+	}
+
+	engine, err := NewEngine(NewSchema())
+	require.NoError(t, err)
+
+	cases := []struct {
+		expr string
+		want []int
+	}{
+		{`has_location`, []int{2, 3}},
+		{`!has_location`, []int{1, 4, 5}},
+		{`has_location == false`, []int{1, 4, 5}},
+		{`has_location != false`, []int{2, 3}},
+	}
+	for _, tc := range cases {
+		stmt, err := engine.CompileToStatement(context.Background(), tc.expr, RenderOptions{Dialect: DialectSQLite})
+		require.NoError(t, err, tc.expr)
+		require.Equal(t, tc.want, selectMemoIDs(t, db, stmt), tc.expr)
+	}
+}
