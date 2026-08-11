@@ -204,6 +204,7 @@
     "filters": {
       "has-code": "haCodice",
       "has-link": "haLink",
+      "has-location": "haPosizione",
       "has-task-list": "haListaCompiti",
       "label": "Filtri"
     },

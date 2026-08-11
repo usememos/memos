@@ -204,6 +204,7 @@
     "filters": {
       "has-code": "tieneCódigo",
       "has-link": "tieneEnlace",
+      "has-location": "tieneUbicación",
       "has-task-list": "tieneListaTareas",
       "label": "Filtros"
     },

@@ -190,6 +190,7 @@
     "filters": {
       "has-code": "कोड है",
       "has-link": "लिंक है",
+      "has-location": "स्थान है",
       "has-task-list": "टास्क लिस्ट है",
       "label": "फिल्टर"
     },

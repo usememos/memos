@@ -212,9 +212,10 @@ const MemoViewGuide = ({ onUseExample }: MemoViewGuideProps) => {
           {memoViewExamples.map((example) => {
             const Icon = example.icon;
             return (
-              <div
+              <button
+                type="button"
                 key={example.filter}
-                className="group cursor-pointer rounded-md border border-transparent p-2 text-left transition-colors hover:border-border hover:bg-muted/50"
+                className="group w-full cursor-pointer rounded-md border border-transparent p-2 text-left transition-colors hover:border-border hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
                 onClick={() => onUseExample(example)}
               >
                 <span className="flex items-center gap-2 text-sm font-medium text-foreground">
@@ -223,7 +224,7 @@ const MemoViewGuide = ({ onUseExample }: MemoViewGuideProps) => {
                 </span>
                 <span className="mt-1 block font-mono text-xs leading-5 text-muted-foreground">{example.filter}</span>
                 <span className="mt-1 block text-xs leading-5 text-muted-foreground">{example.description}</span>
-              </div>
+              </button>
             );
           })}
         </div>

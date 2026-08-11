@@ -204,6 +204,7 @@
     "filters": {
       "has-code": "harKod",
       "has-link": "harLänk",
+      "has-location": "harPlats",
       "has-task-list": "harAttGöraLista",
       "label": "Filter"
     },

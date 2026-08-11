@@ -190,6 +190,7 @@
     "filters": {
       "has-code": "Memiliki kode",
       "has-link": "Memiliki tautan",
+      "has-location": "Memiliki lokasi",
       "has-task-list": "Memiliki daftar tugas",
       "label": "Filter"
     },

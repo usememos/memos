@@ -30,9 +30,10 @@ const (
 type FieldKind string
 
 const (
-	FieldKindScalar       FieldKind = "scalar"
-	FieldKindBoolColumn   FieldKind = "bool_column"
-	FieldKindJSONBool     FieldKind = "json_bool"
+	FieldKindScalar     FieldKind = "scalar"
+	FieldKindBoolColumn FieldKind = "bool_column"
+	FieldKindJSONBool   FieldKind = "json_bool"
+	// FieldKindJSONExists represents a boolean derived from the presence of a non-null JSON value.
 	FieldKindJSONExists   FieldKind = "json_exists"
 	FieldKindJSONList     FieldKind = "json_list"
 	FieldKindVirtualAlias FieldKind = "virtual_alias"

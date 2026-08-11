@@ -146,7 +146,7 @@ func (r *renderer) renderFieldPredicate(cond *FieldPredicateCondition) (renderRe
 	case FieldKindJSONExists:
 		sql, err := r.jsonExistsSQL(field)
 		if err != nil {
-			return renderResult{}, err
+			return renderResult{}, errors.Wrap(err, "failed to render JSON existence predicate")
 		}
 		return renderResult{sql: sql}, nil
 	default:
@@ -756,11 +756,11 @@ func (r *renderer) jsonExistsSQL(field Field) (string, error) {
 func (r *renderer) renderJSONExistsComparison(field Field, op ComparisonOperator, right ValueExpr) (renderResult, error) {
 	value, err := expectBool(right)
 	if err != nil {
-		return renderResult{}, err
+		return renderResult{}, errors.Wrap(err, "json existence comparison requires a boolean value")
 	}
 	existsSQL, err := r.jsonExistsSQL(field)
 	if err != nil {
-		return renderResult{}, err
+		return renderResult{}, errors.Wrap(err, "failed to render JSON existence comparison")
 	}
 	want := value
 	switch op {

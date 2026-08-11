@@ -190,6 +190,7 @@
     "filters": {
       "has-code": "دارای کد",
       "has-link": "دارای پیوند",
+      "has-location": "دارای موقعیت",
       "has-task-list": "دارای لیست کارها",
       "label": "فیلترها"
     },
