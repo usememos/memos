@@ -1,11 +1,13 @@
-import { ChevronLeft, ChevronRight, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
+import { ChevronLeft, ChevronRight, InfoIcon, RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
+import MediaMetadataDetails from "@/components/MediaMetadataDetails";
 import MotionPhotoPreview from "@/components/MotionPhotoPreview";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
 import useMediaQuery from "@/hooks/useMediaQuery";
 import { cn } from "@/lib/utils";
+import { useTranslate } from "@/utils/i18n";
 import type { PreviewMediaItem } from "@/utils/media-item";
 
 interface Props {
@@ -24,9 +26,11 @@ const DOUBLE_TAP_ZOOM = 2;
 const clampZoom = (scale: number) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, scale));
 
 function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIndex = 0 }: Props) {
+  const t = useTranslate();
   const sm = useMediaQuery("sm");
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [zoomScale, setZoomScale] = useState(MIN_ZOOM);
+  const [showDetails, setShowDetails] = useState(false);
   const previewItems = useMemo(
     () => items ?? imgUrls.map((url) => ({ id: url, kind: "image" as const, sourceUrl: url, posterUrl: url, filename: "Image" })),
     [imgUrls, items],
@@ -35,6 +39,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
   useEffect(() => {
     if (open) {
       setCurrentIndex(initialIndex);
+      setShowDetails(false);
     }
   }, [initialIndex, open]);
 
@@ -54,11 +59,6 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
         return;
       }
 
-      if (event.key === "Escape") {
-        onOpenChange(false);
-        return;
-      }
-
       if (event.key === "ArrowLeft") {
         setCurrentIndex((prev) => Math.max(prev - 1, 0));
         return;
@@ -71,7 +71,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [itemCount, onOpenChange, open]);
+  }, [itemCount, open]);
 
   useEffect(() => {
     setZoomScale(MIN_ZOOM);
@@ -104,7 +104,17 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen, eventDetails) => {
+        if (!nextOpen && showDetails && eventDetails.reason === "escape-key") {
+          eventDetails.cancel();
+          setShowDetails(false);
+          return;
+        }
+        onOpenChange(nextOpen);
+      }}
+    >
       <DialogContent
         showCloseButton={false}
         className="!h-[100vh] !w-[100vw] !max-h-[100vh] !max-w-[100vw] overflow-hidden border-0 bg-black/92 p-0 shadow-none"
@@ -117,7 +127,12 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
           </DialogDescription>
         </VisuallyHidden>
 
-        <div className="absolute inset-x-0 top-0 z-20 bg-linear-to-b from-black/70 via-black/35 to-transparent px-3 pb-6 pt-3 sm:px-5 sm:pt-4">
+        <div
+          className={cn(
+            "absolute inset-x-0 top-0 z-50 bg-linear-to-b from-black/70 via-black/35 to-transparent px-3 pb-6 pt-3 sm:px-5 sm:pt-4",
+            showDetails && "lg:pr-[23rem]",
+          )}
+        >
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 text-white">
               <div className="truncate text-sm font-medium">{currentItem.filename || "Attachment"}</div>
@@ -128,16 +143,30 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
               )}
             </div>
 
-            <Button
-              type="button"
-              onClick={handleClose}
-              variant="ghost"
-              size="icon"
-              className="shrink-0 rounded-full bg-white/10 text-white hover:bg-white/16 hover:text-white"
-              aria-label="Close preview"
-            >
-              <X className="h-4 w-4" />
-            </Button>
+            <div className="flex shrink-0 items-center gap-1.5">
+              <Button
+                type="button"
+                onClick={() => setShowDetails((visible) => !visible)}
+                variant="ghost"
+                size="icon"
+                className={cn("rounded-full text-white hover:bg-white/16 hover:text-white", showDetails ? "bg-white/18" : "bg-white/10")}
+                aria-label={showDetails ? t("attachment-details.actions.hide") : t("attachment-details.actions.show")}
+                aria-expanded={showDetails}
+                aria-controls="attachment-media-details"
+              >
+                <InfoIcon className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                onClick={handleClose}
+                variant="ghost"
+                size="icon"
+                className="rounded-full bg-white/10 text-white hover:bg-white/16 hover:text-white"
+                aria-label="Close preview"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -146,11 +175,16 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
           className={cn(
             "flex h-full w-full items-center justify-center px-3 pb-20 pt-16 sm:px-16 sm:pb-8 sm:pt-20",
             isImagePreview && "cursor-zoom-in",
+            showDetails && "lg:pr-[26rem]",
           )}
           onWheel={handleWheel}
           onClick={(event) => {
             if (event.target === event.currentTarget && !isZoomed) {
-              handleClose();
+              if (showDetails) {
+                setShowDetails(false);
+              } else {
+                handleClose();
+              }
             }
           }}
         >
@@ -160,7 +194,10 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
                 key={currentItem.id}
                 src={currentItem.sourceUrl}
                 poster={currentItem.posterUrl}
-                className="max-h-[calc(100vh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain sm:max-h-[calc(100vh-7rem)] sm:max-w-[calc(100vw-8rem)]"
+                className={cn(
+                  "max-h-[calc(100vh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain sm:max-h-[calc(100vh-7rem)] sm:max-w-[calc(100vw-8rem)]",
+                  showDetails && "lg:max-w-[calc(100vw-30rem)]",
+                )}
                 controls
                 autoPlay
                 playsInline
@@ -173,13 +210,19 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
                 alt={`Preview live photo ${safeIndex + 1} of ${itemCount}`}
                 presentationTimestampUs={currentItem.presentationTimestampUs}
                 badgeClassName="left-3 top-3 sm:left-4 sm:top-4"
-                mediaClassName="max-h-[calc(100vh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain sm:max-h-[calc(100vh-7rem)] sm:max-w-[calc(100vw-8rem)]"
+                mediaClassName={cn(
+                  "max-h-[calc(100vh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain sm:max-h-[calc(100vh-7rem)] sm:max-w-[calc(100vw-8rem)]",
+                  showDetails && "lg:max-w-[calc(100vw-30rem)]",
+                )}
               />
             ) : (
               <img
                 src={currentItem.sourceUrl}
                 alt={`Preview image ${safeIndex + 1} of ${itemCount}`}
-                className="max-h-[calc(100vh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain select-none sm:max-h-[calc(100vh-7rem)] sm:max-w-[calc(100vw-8rem)]"
+                className={cn(
+                  "max-h-[calc(100vh-8rem)] max-w-[calc(100vw-1.5rem)] rounded-md object-contain select-none sm:max-h-[calc(100vh-7rem)] sm:max-w-[calc(100vw-8rem)]",
+                  showDetails && "lg:max-w-[calc(100vw-30rem)]",
+                )}
                 style={{
                   transform: `translate3d(0px, 0px, 0) scale(${zoomScale})`,
                   transition: "transform 120ms ease-out",
@@ -195,7 +238,7 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
         </div>
 
         {isImagePreview && (
-          <div className="absolute inset-x-0 bottom-0 z-30 px-3 pb-3 pt-6">
+          <div className={cn("absolute inset-x-0 bottom-0 z-30 px-3 pb-3 pt-6", showDetails && "hidden lg:block lg:pr-[22rem]")}>
             <div className="mx-auto flex w-fit items-center gap-1 rounded-full bg-black/60 px-2 py-2 text-white shadow-lg backdrop-blur-sm">
               {hasMultiple && !sm && (
                 <>
@@ -241,11 +284,12 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
               label="Next item"
               onClick={handleNext}
               icon={<ChevronRight className="h-5 w-5" />}
+              detailsOpen={showDetails}
             />
           </>
         )}
 
-        {hasMultiple && !sm && !isImagePreview && (
+        {hasMultiple && !sm && !isImagePreview && !showDetails && (
           <div className="absolute inset-x-0 bottom-0 z-20 px-3 pb-3 pt-6">
             <div className="mx-auto flex max-w-xs items-center justify-between rounded-full bg-black/55 px-2 py-2 backdrop-blur-sm">
               <Button
@@ -274,6 +318,8 @@ function PreviewImageDialog({ open, onOpenChange, imgUrls = [], items, initialIn
             </div>
           </div>
         )}
+
+        {showDetails && <MediaMetadataDetails id="attachment-media-details" item={currentItem} onClose={() => setShowDetails(false)} />}
       </DialogContent>
     </Dialog>
   );
@@ -285,9 +331,10 @@ interface NavButtonProps {
   label: string;
   onClick: () => void;
   icon: React.ReactNode;
+  detailsOpen?: boolean;
 }
 
-const NavButton = ({ side, disabled, label, onClick, icon }: NavButtonProps) => (
+const NavButton = ({ side, disabled, label, onClick, icon, detailsOpen = false }: NavButtonProps) => (
   <Button
     type="button"
     variant="ghost"
@@ -297,7 +344,7 @@ const NavButton = ({ side, disabled, label, onClick, icon }: NavButtonProps) => 
     aria-label={label}
     className={cn(
       "absolute top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 rounded-full bg-white/10 text-white backdrop-blur-sm hover:bg-white/16 hover:text-white disabled:opacity-25 sm:flex",
-      side === "left" ? "left-4" : "right-4",
+      side === "left" ? "left-4" : detailsOpen ? "right-4 lg:right-[23rem]" : "right-4",
     )}
   >
     {icon}

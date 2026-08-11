@@ -9,6 +9,7 @@ vi.mock("@/utils/i18n", async (importOriginal) => ({
   useTranslate: () => (key: string) => key,
 }));
 vi.mock("@/hooks/useCurrentUser", () => ({ default: () => undefined }));
+vi.mock("@/contexts/AuthContext", () => ({ useAuth: () => ({ userGeneralSetting: undefined }) }));
 vi.mock("@/components/map/useReverseGeocoding", () => ({ useReverseGeocoding: () => ({ data: undefined }) }));
 
 beforeAll(() => {

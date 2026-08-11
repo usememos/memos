@@ -66,6 +66,19 @@ describe("useInlineImageUpload", () => {
     );
   });
 
+  test("passes the ingested local file, with its media metadata, straight to uploads", async () => {
+    const upload = vi.spyOn(uploadService, "uploadFile").mockResolvedValue(remoteImage("first", "first.png"));
+    const { controller } = makeController();
+    const editorRef = { current: controller } as RefObject<EditorController>;
+    const { result } = renderHook(() => useInlineImageUpload(editorRef), { wrapper });
+    const localFile: LocalFile = { ...localImage("first.png"), mediaMetadata: Promise.resolve(undefined) };
+
+    act(() => result.current.insertLocalImages([localFile]));
+
+    await waitFor(() => expect(upload).toHaveBeenCalledTimes(1));
+    expect(upload).toHaveBeenCalledWith(localFile);
+  });
+
   test("retries only failed files and preserves their original placement", async () => {
     const first = remoteImage("first", "first.png");
     const second = remoteImage("second", "second.png");

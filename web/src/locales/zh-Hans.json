@@ -508,9 +508,13 @@
       "language-description": "立即更新界面语言，并保存到当前账号。",
       "memo-defaults-description": "设置创建新备忘录时使用的默认值。",
       "memo-defaults-title": "备忘录默认值",
+      "save-media-metadata": "保存媒体元数据",
+      "save-media-metadata-description": "为之后上传的文件保存可用的相机型号、拍摄时间、位置、图片尺寸和基础视频信息。任何能查看附件的人都可能获取这些元数据。已有附件不受影响。",
       "theme-description": "立即在当前设备上应用所选主题。",
       "theme": "主题",
-      "label": "偏好设置"
+      "label": "偏好设置",
+      "uploads-privacy-description": "控制上传媒体时提交的隐私敏感信息。",
+      "uploads-privacy-title": "上传与隐私"
     },
     "memo-view": {
       "delete-confirm": "您确定要删除视图 `{{title}}` 吗？",
@@ -882,6 +886,39 @@
     "connected": "已连接",
     "connecting": "正在连接",
     "disconnected": "已断开"
+  },
+  "attachment-details": {
+    "actions": {
+      "copied": "已复制坐标",
+      "copy-coordinates": "复制坐标",
+      "hide": "隐藏附件详情",
+      "hide-map": "隐藏地图",
+      "show": "显示附件详情",
+      "show-map": "显示地图"
+    },
+    "empty": "没有保存的拍摄信息。",
+    "fields": {
+      "altitude": "海拔",
+      "camera": "相机",
+      "captured": "拍摄时间",
+      "dimensions": "尺寸",
+      "duration": "时长",
+      "exposure": "曝光",
+      "file": "文件",
+      "lens": "镜头",
+      "location": "坐标",
+      "source-orientation": "源 EXIF 方向",
+      "uploaded": "上传时间"
+    },
+    "sections": {
+      "camera": "相机",
+      "capture": "拍摄",
+      "file": "文件",
+      "location": "位置",
+      "technical": "技术信息"
+    },
+    "timezone-unknown": "未知时区",
+    "title": "详情"
   },
   "attachment-library": {
     "actions": {

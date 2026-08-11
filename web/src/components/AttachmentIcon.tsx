@@ -24,9 +24,8 @@ interface Props {
 
 const AttachmentIcon = (props: Props) => {
   const { attachment } = props;
-  const [previewImage, setPreviewImage] = useState<{ open: boolean; urls: string[]; index: number }>({
+  const [previewImage, setPreviewImage] = useState<{ open: boolean; index: number }>({
     open: false,
-    urls: [],
     index: 0,
   });
   const resourceType = getAttachmentType(attachment);
@@ -39,7 +38,7 @@ const AttachmentIcon = (props: Props) => {
   };
 
   const handleImageClick = () => {
-    setPreviewImage({ open: true, urls: [attachmentUrl], index: 0 });
+    setPreviewImage({ open: true, index: 0 });
   };
 
   if (resourceType === "image/*") {
@@ -66,7 +65,16 @@ const AttachmentIcon = (props: Props) => {
         <PreviewImageDialog
           open={previewImage.open}
           onOpenChange={(open) => setPreviewImage((prev) => ({ ...prev, open }))}
-          imgUrls={previewImage.urls}
+          items={[
+            {
+              id: attachment.name,
+              kind: "image",
+              sourceUrl: attachmentUrl,
+              posterUrl: getAttachmentThumbnailUrl(attachment),
+              filename: attachment.filename,
+              attachments: [attachment],
+            },
+          ]}
           initialIndex={previewImage.index}
         />
       </>

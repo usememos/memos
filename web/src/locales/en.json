@@ -53,6 +53,39 @@
     "banner-title": "Memos demo",
     "deploy-link": "Deploy your own Memos"
   },
+  "attachment-details": {
+    "actions": {
+      "copied": "Coordinates copied",
+      "copy-coordinates": "Copy coordinates",
+      "hide": "Hide attachment details",
+      "hide-map": "Hide map",
+      "show": "Show attachment details",
+      "show-map": "Show map"
+    },
+    "empty": "No saved capture metadata.",
+    "fields": {
+      "altitude": "Altitude",
+      "camera": "Camera",
+      "captured": "Captured",
+      "dimensions": "Dimensions",
+      "duration": "Duration",
+      "exposure": "Exposure",
+      "file": "File",
+      "lens": "Lens",
+      "location": "Coordinates",
+      "source-orientation": "Source EXIF orientation",
+      "uploaded": "Uploaded"
+    },
+    "sections": {
+      "camera": "Camera",
+      "capture": "Capture",
+      "file": "File",
+      "location": "Location",
+      "technical": "Technical details"
+    },
+    "timezone-unknown": "Time zone unknown",
+    "title": "Details"
+  },
   "attachment-library": {
     "actions": {
       "open": "Open",
@@ -674,8 +707,12 @@
       "language-description": "Updates the interface language immediately and saves it to your account.",
       "memo-defaults-description": "Set the defaults used when composing new memos.",
       "memo-defaults-title": "Memo defaults",
+      "save-media-metadata": "Save media metadata",
+      "save-media-metadata-description": "For future uploads, save available camera, capture time, location, image dimensions, and basic video details. Anyone who can view the attachment can receive this metadata. Existing attachments are unchanged.",
       "theme-description": "Applies the selected theme immediately on this device.",
-      "theme": "Theme"
+      "theme": "Theme",
+      "uploads-privacy-description": "Control privacy-sensitive information submitted with uploaded media.",
+      "uploads-privacy-title": "Uploads & privacy"
     },
     "memo-view": {
       "delete-confirm": "Are you sure you want to delete view `{{title}}`?",

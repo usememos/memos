@@ -8,6 +8,7 @@ import (
 
 	"github.com/lithammer/shortuuid/v4"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -81,6 +82,24 @@ func TestAttachmentStore(t *testing.T) {
 		Blob:      []byte("test"),
 		Type:      "application/epub+zip",
 		Size:      637607,
+		Payload: &storepb.AttachmentPayload{
+			Payload: &storepb.AttachmentPayload_S3Object_{
+				S3Object: &storepb.AttachmentPayload_S3Object{Key: "attachments/test.jpg"},
+			},
+			MotionMedia: &storepb.MotionMedia{
+				Family:  storepb.MotionMediaFamily_APPLE_LIVE_PHOTO,
+				Role:    storepb.MotionMediaRole_STILL,
+				GroupId: "live-photo-pair",
+			},
+			MediaMetadata: &storepb.MediaMetadata{
+				Width:  proto.Int32(1200),
+				Height: proto.Int32(800),
+				Details: &storepb.MediaMetadata_Photo{Photo: &storepb.PhotoMetadata{
+					CameraMake:            "Test Camera",
+					SourceExifOrientation: proto.Int32(6),
+				}},
+			},
+		},
 	})
 	require.NoError(t, err)
 
@@ -92,6 +111,11 @@ func TestAttachmentStore(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, correctFilename, attachment.Filename)
 	require.Equal(t, int32(1), attachment.ID)
+	require.Equal(t, int32(1200), attachment.Payload.GetMediaMetadata().GetWidth())
+	require.Equal(t, "Test Camera", attachment.Payload.GetMediaMetadata().GetPhoto().GetCameraMake())
+	require.Equal(t, int32(6), attachment.Payload.GetMediaMetadata().GetPhoto().GetSourceExifOrientation())
+	require.Equal(t, "attachments/test.jpg", attachment.Payload.GetS3Object().GetKey())
+	require.Equal(t, "live-photo-pair", attachment.Payload.GetMotionMedia().GetGroupId())
 
 	notFoundAttachment, err := ts.GetAttachment(ctx, &store.FindAttachment{
 		Filename: &incorrectFilename,

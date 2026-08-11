@@ -282,24 +282,46 @@ const AttachmentListEditor: FC<AttachmentListEditorProps> = ({
   const previewItems = useMemo<PreviewMediaItem[]>(
     () =>
       items.reduce<PreviewMediaItem[]>((acc, item) => {
+        const itemAttachments = item.isLocal ? undefined : collectMembers(attachmentsByName, item.memberIds);
         if (item.category === "image") {
-          acc.push({ id: item.id, kind: "image", sourceUrl: item.sourceUrl, posterUrl: item.thumbnailUrl, filename: item.filename });
+          acc.push({
+            id: item.id,
+            kind: "image",
+            sourceUrl: item.sourceUrl,
+            posterUrl: item.thumbnailUrl,
+            filename: item.filename,
+            attachments: itemAttachments,
+          });
           return acc;
         }
 
         if (item.category === "video") {
-          acc.push({ id: item.id, kind: "video", sourceUrl: item.sourceUrl, posterUrl: item.thumbnailUrl, filename: item.filename });
+          acc.push({
+            id: item.id,
+            kind: "video",
+            sourceUrl: item.sourceUrl,
+            posterUrl: item.thumbnailUrl,
+            filename: item.filename,
+            attachments: itemAttachments,
+          });
           return acc;
         }
 
         if (item.category === "motion") {
-          acc.push({ id: item.id, kind: "motion", motionUrl: item.sourceUrl, posterUrl: item.thumbnailUrl, filename: item.filename });
+          acc.push({
+            id: item.id,
+            kind: "motion",
+            motionUrl: item.sourceUrl,
+            posterUrl: item.thumbnailUrl,
+            filename: item.filename,
+            attachments: itemAttachments,
+          });
           return acc;
         }
 
         return acc;
       }, []),
-    [items],
+    [attachmentsByName, items],
   );
 
   // Items address their members by id, so index once instead of re-scanning both

@@ -54,6 +54,39 @@
     "banner-title": "Memos demo",
     "deploy-link": "部署您的 Memos"
   },
+  "attachment-details": {
+    "actions": {
+      "copied": "已複製座標",
+      "copy-coordinates": "複製座標",
+      "hide": "隱藏附件詳細資訊",
+      "hide-map": "隱藏地圖",
+      "show": "顯示附件詳細資訊",
+      "show-map": "顯示地圖"
+    },
+    "empty": "沒有儲存的拍攝資訊。",
+    "fields": {
+      "altitude": "海拔",
+      "camera": "相機",
+      "captured": "拍攝時間",
+      "dimensions": "尺寸",
+      "duration": "時長",
+      "exposure": "曝光",
+      "file": "檔案",
+      "lens": "鏡頭",
+      "location": "座標",
+      "source-orientation": "來源 EXIF 方向",
+      "uploaded": "上傳時間"
+    },
+    "sections": {
+      "camera": "相機",
+      "capture": "拍攝",
+      "file": "檔案",
+      "location": "位置",
+      "technical": "技術資訊"
+    },
+    "timezone-unknown": "未知時區",
+    "title": "詳細資訊"
+  },
   "attachment-library": {
     "actions": {
       "open": "開啟",
@@ -679,8 +712,12 @@
       "language-description": "立即更新介面語言並儲存至您的帳號。",
       "memo-defaults-description": "設定撰寫新備忘錄時使用的預設值。",
       "memo-defaults-title": "備忘錄預設值",
+      "save-media-metadata": "儲存媒體中繼資料",
+      "save-media-metadata-description": "為之後上傳的檔案儲存可用的相機型號、拍攝時間、位置、圖片尺寸和基本影片資訊。任何能檢視附件的人都可能取得這些中繼資料。現有附件不受影響。",
       "theme-description": "立即在此裝置上套入選定的主題。",
-      "theme": "主題"
+      "theme": "主題",
+      "uploads-privacy-description": "控制上傳媒體時提交的隱私敏感資訊。",
+      "uploads-privacy-title": "上傳與隱私"
     },
     "memo-view": {
       "delete-confirm": "您確定要刪除檢視 `{{title}}` 嗎？",

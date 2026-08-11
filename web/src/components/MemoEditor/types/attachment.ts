@@ -1,4 +1,4 @@
-import type { Attachment, MotionMedia } from "@/types/proto/api/v1/attachment_service_pb";
+import type { Attachment, MediaMetadata, MotionMedia } from "@/types/proto/api/v1/attachment_service_pb";
 import { MotionMediaFamily, MotionMediaRole } from "@/types/proto/api/v1/attachment_service_pb";
 import { getAttachmentThumbnailUrl, getAttachmentType, getAttachmentUrl } from "@/utils/attachment";
 import { buildAttachmentVisualItems } from "@/utils/media-item";
@@ -27,6 +27,12 @@ export interface LocalFile {
     readonly durationSeconds: number;
   };
   readonly motionMedia?: MotionMedia;
+  /**
+   * Extraction started at file ingest when the user's save-media-metadata
+   * preference was on; absent means the preference was off (or the file came
+   * from a source with nothing to extract). The promise never rejects.
+   */
+  readonly mediaMetadata?: Promise<MediaMetadata | undefined>;
 }
 
 const AUDIO_RECORDING_FILENAME_RE = /^(?:voice-(?:recording|note)|audio-recording)-(\d{8})-(\d{4,6})/i;

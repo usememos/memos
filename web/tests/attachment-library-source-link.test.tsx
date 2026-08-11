@@ -4,7 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import AttachmentMediaGrid from "@/components/AttachmentLibrary/AttachmentMediaGrid";
 import type { AttachmentLibraryMonthGroup } from "@/hooks/useAttachmentLibrary";
-import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { AttachmentSchema, MediaMetadataSchema, VideoMetadataSchema } from "@/types/proto/api/v1/attachment_service_pb";
 
 vi.mock("@/utils/i18n", () => ({ useTranslate: () => (key: string) => key }));
 
@@ -61,5 +61,57 @@ describe("<AttachmentMediaGrid>", () => {
 
     fireEvent.click(memoLink);
     expect(onPreview).not.toHaveBeenCalled();
+  });
+
+  it("keeps video duration inside the existing play badge", () => {
+    const attachment = create(AttachmentSchema, {
+      name: "attachments/video",
+      filename: "clip.mp4",
+      type: "video/mp4",
+      memo: "memos/source-memo",
+      mediaMetadata: create(MediaMetadataSchema, {
+        details: {
+          case: "video",
+          value: create(VideoMetadataSchema, { durationSeconds: 12.5 }),
+        },
+      }),
+    });
+    const groups: AttachmentLibraryMonthGroup[] = [
+      {
+        key: "2026-07",
+        label: "Jul 2026",
+        items: [
+          {
+            id: attachment.name,
+            kind: "video",
+            filename: attachment.filename,
+            posterUrl: "/poster.jpg",
+            sourceUrl: "/clip.mp4",
+            attachmentNames: [attachment.name],
+            attachments: [attachment],
+            previewItem: {
+              id: attachment.name,
+              kind: "video",
+              filename: attachment.filename,
+              sourceUrl: "/clip.mp4",
+              attachments: [attachment],
+            },
+            mimeType: attachment.type,
+            primaryAttachment: attachment,
+            createdLabel: "Jul 29, 2026",
+            fileTypeLabel: "MP4",
+            memoName: attachment.memo,
+          },
+        ],
+      },
+    ];
+
+    render(
+      <MemoryRouter>
+        <AttachmentMediaGrid groups={groups} onPreview={vi.fn()} />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("0:13")).toBeInTheDocument();
   });
 });

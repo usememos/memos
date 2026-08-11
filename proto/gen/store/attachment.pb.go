@@ -254,6 +254,376 @@ func (x *MotionMedia) GetHasEmbeddedVideo() bool {
 	return false
 }
 
+type MediaMetadata struct {
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	Width  *int32                 `protobuf:"varint,1,opt,name=width,proto3,oneof" json:"width,omitempty"`
+	Height *int32                 `protobuf:"varint,2,opt,name=height,proto3,oneof" json:"height,omitempty"`
+	// Types that are valid to be assigned to Details:
+	//
+	//	*MediaMetadata_Photo
+	//	*MediaMetadata_Video
+	Details       isMediaMetadata_Details `protobuf_oneof:"details"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MediaMetadata) Reset() {
+	*x = MediaMetadata{}
+	mi := &file_store_attachment_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MediaMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MediaMetadata) ProtoMessage() {}
+
+func (x *MediaMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_store_attachment_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MediaMetadata.ProtoReflect.Descriptor instead.
+func (*MediaMetadata) Descriptor() ([]byte, []int) {
+	return file_store_attachment_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *MediaMetadata) GetWidth() int32 {
+	if x != nil && x.Width != nil {
+		return *x.Width
+	}
+	return 0
+}
+
+func (x *MediaMetadata) GetHeight() int32 {
+	if x != nil && x.Height != nil {
+		return *x.Height
+	}
+	return 0
+}
+
+func (x *MediaMetadata) GetDetails() isMediaMetadata_Details {
+	if x != nil {
+		return x.Details
+	}
+	return nil
+}
+
+func (x *MediaMetadata) GetPhoto() *PhotoMetadata {
+	if x != nil {
+		if x, ok := x.Details.(*MediaMetadata_Photo); ok {
+			return x.Photo
+		}
+	}
+	return nil
+}
+
+func (x *MediaMetadata) GetVideo() *VideoMetadata {
+	if x != nil {
+		if x, ok := x.Details.(*MediaMetadata_Video); ok {
+			return x.Video
+		}
+	}
+	return nil
+}
+
+type isMediaMetadata_Details interface {
+	isMediaMetadata_Details()
+}
+
+type MediaMetadata_Photo struct {
+	Photo *PhotoMetadata `protobuf:"bytes,3,opt,name=photo,proto3,oneof"`
+}
+
+type MediaMetadata_Video struct {
+	Video *VideoMetadata `protobuf:"bytes,4,opt,name=video,proto3,oneof"`
+}
+
+func (*MediaMetadata_Photo) isMediaMetadata_Details() {}
+
+func (*MediaMetadata_Video) isMediaMetadata_Details() {}
+
+type PhotoMetadata struct {
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	CaptureTime           *MediaCaptureTime      `protobuf:"bytes,1,opt,name=capture_time,json=captureTime,proto3" json:"capture_time,omitempty"`
+	Location              *MediaLocation         `protobuf:"bytes,2,opt,name=location,proto3" json:"location,omitempty"`
+	SourceExifOrientation *int32                 `protobuf:"varint,3,opt,name=source_exif_orientation,json=sourceExifOrientation,proto3,oneof" json:"source_exif_orientation,omitempty"`
+	CameraMake            string                 `protobuf:"bytes,4,opt,name=camera_make,json=cameraMake,proto3" json:"camera_make,omitempty"`
+	CameraModel           string                 `protobuf:"bytes,5,opt,name=camera_model,json=cameraModel,proto3" json:"camera_model,omitempty"`
+	LensModel             string                 `protobuf:"bytes,6,opt,name=lens_model,json=lensModel,proto3" json:"lens_model,omitempty"`
+	FNumber               *float64               `protobuf:"fixed64,7,opt,name=f_number,json=fNumber,proto3,oneof" json:"f_number,omitempty"`
+	ExposureTimeSeconds   *float64               `protobuf:"fixed64,8,opt,name=exposure_time_seconds,json=exposureTimeSeconds,proto3,oneof" json:"exposure_time_seconds,omitempty"`
+	Iso                   *int32                 `protobuf:"varint,9,opt,name=iso,proto3,oneof" json:"iso,omitempty"`
+	FocalLengthMm         *float64               `protobuf:"fixed64,10,opt,name=focal_length_mm,json=focalLengthMm,proto3,oneof" json:"focal_length_mm,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *PhotoMetadata) Reset() {
+	*x = PhotoMetadata{}
+	mi := &file_store_attachment_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PhotoMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PhotoMetadata) ProtoMessage() {}
+
+func (x *PhotoMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_store_attachment_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PhotoMetadata.ProtoReflect.Descriptor instead.
+func (*PhotoMetadata) Descriptor() ([]byte, []int) {
+	return file_store_attachment_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *PhotoMetadata) GetCaptureTime() *MediaCaptureTime {
+	if x != nil {
+		return x.CaptureTime
+	}
+	return nil
+}
+
+func (x *PhotoMetadata) GetLocation() *MediaLocation {
+	if x != nil {
+		return x.Location
+	}
+	return nil
+}
+
+func (x *PhotoMetadata) GetSourceExifOrientation() int32 {
+	if x != nil && x.SourceExifOrientation != nil {
+		return *x.SourceExifOrientation
+	}
+	return 0
+}
+
+func (x *PhotoMetadata) GetCameraMake() string {
+	if x != nil {
+		return x.CameraMake
+	}
+	return ""
+}
+
+func (x *PhotoMetadata) GetCameraModel() string {
+	if x != nil {
+		return x.CameraModel
+	}
+	return ""
+}
+
+func (x *PhotoMetadata) GetLensModel() string {
+	if x != nil {
+		return x.LensModel
+	}
+	return ""
+}
+
+func (x *PhotoMetadata) GetFNumber() float64 {
+	if x != nil && x.FNumber != nil {
+		return *x.FNumber
+	}
+	return 0
+}
+
+func (x *PhotoMetadata) GetExposureTimeSeconds() float64 {
+	if x != nil && x.ExposureTimeSeconds != nil {
+		return *x.ExposureTimeSeconds
+	}
+	return 0
+}
+
+func (x *PhotoMetadata) GetIso() int32 {
+	if x != nil && x.Iso != nil {
+		return *x.Iso
+	}
+	return 0
+}
+
+func (x *PhotoMetadata) GetFocalLengthMm() float64 {
+	if x != nil && x.FocalLengthMm != nil {
+		return *x.FocalLengthMm
+	}
+	return 0
+}
+
+type MediaCaptureTime struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	LocalDateTime string                 `protobuf:"bytes,1,opt,name=local_date_time,json=localDateTime,proto3" json:"local_date_time,omitempty"`
+	UtcOffset     *string                `protobuf:"bytes,2,opt,name=utc_offset,json=utcOffset,proto3,oneof" json:"utc_offset,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MediaCaptureTime) Reset() {
+	*x = MediaCaptureTime{}
+	mi := &file_store_attachment_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MediaCaptureTime) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MediaCaptureTime) ProtoMessage() {}
+
+func (x *MediaCaptureTime) ProtoReflect() protoreflect.Message {
+	mi := &file_store_attachment_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MediaCaptureTime.ProtoReflect.Descriptor instead.
+func (*MediaCaptureTime) Descriptor() ([]byte, []int) {
+	return file_store_attachment_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *MediaCaptureTime) GetLocalDateTime() string {
+	if x != nil {
+		return x.LocalDateTime
+	}
+	return ""
+}
+
+func (x *MediaCaptureTime) GetUtcOffset() string {
+	if x != nil && x.UtcOffset != nil {
+		return *x.UtcOffset
+	}
+	return ""
+}
+
+type MediaLocation struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Latitude       *float64               `protobuf:"fixed64,1,opt,name=latitude,proto3,oneof" json:"latitude,omitempty"`
+	Longitude      *float64               `protobuf:"fixed64,2,opt,name=longitude,proto3,oneof" json:"longitude,omitempty"`
+	AltitudeMeters *float64               `protobuf:"fixed64,3,opt,name=altitude_meters,json=altitudeMeters,proto3,oneof" json:"altitude_meters,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *MediaLocation) Reset() {
+	*x = MediaLocation{}
+	mi := &file_store_attachment_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MediaLocation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MediaLocation) ProtoMessage() {}
+
+func (x *MediaLocation) ProtoReflect() protoreflect.Message {
+	mi := &file_store_attachment_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MediaLocation.ProtoReflect.Descriptor instead.
+func (*MediaLocation) Descriptor() ([]byte, []int) {
+	return file_store_attachment_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *MediaLocation) GetLatitude() float64 {
+	if x != nil && x.Latitude != nil {
+		return *x.Latitude
+	}
+	return 0
+}
+
+func (x *MediaLocation) GetLongitude() float64 {
+	if x != nil && x.Longitude != nil {
+		return *x.Longitude
+	}
+	return 0
+}
+
+func (x *MediaLocation) GetAltitudeMeters() float64 {
+	if x != nil && x.AltitudeMeters != nil {
+		return *x.AltitudeMeters
+	}
+	return 0
+}
+
+type VideoMetadata struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	DurationSeconds *float64               `protobuf:"fixed64,1,opt,name=duration_seconds,json=durationSeconds,proto3,oneof" json:"duration_seconds,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *VideoMetadata) Reset() {
+	*x = VideoMetadata{}
+	mi := &file_store_attachment_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *VideoMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VideoMetadata) ProtoMessage() {}
+
+func (x *VideoMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_store_attachment_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VideoMetadata.ProtoReflect.Descriptor instead.
+func (*VideoMetadata) Descriptor() ([]byte, []int) {
+	return file_store_attachment_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *VideoMetadata) GetDurationSeconds() float64 {
+	if x != nil && x.DurationSeconds != nil {
+		return *x.DurationSeconds
+	}
+	return 0
+}
+
 type AttachmentPayload struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Payload:
@@ -261,13 +631,14 @@ type AttachmentPayload struct {
 	//	*AttachmentPayload_S3Object_
 	Payload       isAttachmentPayload_Payload `protobuf_oneof:"payload"`
 	MotionMedia   *MotionMedia                `protobuf:"bytes,10,opt,name=motion_media,json=motionMedia,proto3" json:"motion_media,omitempty"`
+	MediaMetadata *MediaMetadata              `protobuf:"bytes,11,opt,name=media_metadata,json=mediaMetadata,proto3" json:"media_metadata,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AttachmentPayload) Reset() {
 	*x = AttachmentPayload{}
-	mi := &file_store_attachment_proto_msgTypes[1]
+	mi := &file_store_attachment_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -279,7 +650,7 @@ func (x *AttachmentPayload) String() string {
 func (*AttachmentPayload) ProtoMessage() {}
 
 func (x *AttachmentPayload) ProtoReflect() protoreflect.Message {
-	mi := &file_store_attachment_proto_msgTypes[1]
+	mi := &file_store_attachment_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -292,7 +663,7 @@ func (x *AttachmentPayload) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AttachmentPayload.ProtoReflect.Descriptor instead.
 func (*AttachmentPayload) Descriptor() ([]byte, []int) {
-	return file_store_attachment_proto_rawDescGZIP(), []int{1}
+	return file_store_attachment_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *AttachmentPayload) GetPayload() isAttachmentPayload_Payload {
@@ -314,6 +685,13 @@ func (x *AttachmentPayload) GetS3Object() *AttachmentPayload_S3Object {
 func (x *AttachmentPayload) GetMotionMedia() *MotionMedia {
 	if x != nil {
 		return x.MotionMedia
+	}
+	return nil
+}
+
+func (x *AttachmentPayload) GetMediaMetadata() *MediaMetadata {
+	if x != nil {
+		return x.MediaMetadata
 	}
 	return nil
 }
@@ -342,7 +720,7 @@ type AttachmentPayload_S3Object struct {
 
 func (x *AttachmentPayload_S3Object) Reset() {
 	*x = AttachmentPayload_S3Object{}
-	mi := &file_store_attachment_proto_msgTypes[2]
+	mi := &file_store_attachment_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -354,7 +732,7 @@ func (x *AttachmentPayload_S3Object) String() string {
 func (*AttachmentPayload_S3Object) ProtoMessage() {}
 
 func (x *AttachmentPayload_S3Object) ProtoReflect() protoreflect.Message {
-	mi := &file_store_attachment_proto_msgTypes[2]
+	mi := &file_store_attachment_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -367,7 +745,7 @@ func (x *AttachmentPayload_S3Object) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AttachmentPayload_S3Object.ProtoReflect.Descriptor instead.
 func (*AttachmentPayload_S3Object) Descriptor() ([]byte, []int) {
-	return file_store_attachment_proto_rawDescGZIP(), []int{1, 0}
+	return file_store_attachment_proto_rawDescGZIP(), []int{6, 0}
 }
 
 func (x *AttachmentPayload_S3Object) GetS3Config() *StorageS3Config {
@@ -401,11 +779,55 @@ const file_store_attachment_proto_rawDesc = "" +
 	"\x04role\x18\x02 \x01(\x0e2\x1c.memos.store.MotionMediaRoleR\x04role\x12\x19\n" +
 	"\bgroup_id\x18\x03 \x01(\tR\agroupId\x12:\n" +
 	"\x19presentation_timestamp_us\x18\x04 \x01(\x03R\x17presentationTimestampUs\x12,\n" +
-	"\x12has_embedded_video\x18\x05 \x01(\bR\x10hasEmbeddedVideo\"\xc9\x02\n" +
+	"\x12has_embedded_video\x18\x05 \x01(\bR\x10hasEmbeddedVideo\"\xcf\x01\n" +
+	"\rMediaMetadata\x12\x19\n" +
+	"\x05width\x18\x01 \x01(\x05H\x01R\x05width\x88\x01\x01\x12\x1b\n" +
+	"\x06height\x18\x02 \x01(\x05H\x02R\x06height\x88\x01\x01\x122\n" +
+	"\x05photo\x18\x03 \x01(\v2\x1a.memos.store.PhotoMetadataH\x00R\x05photo\x122\n" +
+	"\x05video\x18\x04 \x01(\v2\x1a.memos.store.VideoMetadataH\x00R\x05videoB\t\n" +
+	"\adetailsB\b\n" +
+	"\x06_widthB\t\n" +
+	"\a_height\"\xa5\x04\n" +
+	"\rPhotoMetadata\x12@\n" +
+	"\fcapture_time\x18\x01 \x01(\v2\x1d.memos.store.MediaCaptureTimeR\vcaptureTime\x126\n" +
+	"\blocation\x18\x02 \x01(\v2\x1a.memos.store.MediaLocationR\blocation\x12;\n" +
+	"\x17source_exif_orientation\x18\x03 \x01(\x05H\x00R\x15sourceExifOrientation\x88\x01\x01\x12\x1f\n" +
+	"\vcamera_make\x18\x04 \x01(\tR\n" +
+	"cameraMake\x12!\n" +
+	"\fcamera_model\x18\x05 \x01(\tR\vcameraModel\x12\x1d\n" +
+	"\n" +
+	"lens_model\x18\x06 \x01(\tR\tlensModel\x12\x1e\n" +
+	"\bf_number\x18\a \x01(\x01H\x01R\afNumber\x88\x01\x01\x127\n" +
+	"\x15exposure_time_seconds\x18\b \x01(\x01H\x02R\x13exposureTimeSeconds\x88\x01\x01\x12\x15\n" +
+	"\x03iso\x18\t \x01(\x05H\x03R\x03iso\x88\x01\x01\x12+\n" +
+	"\x0ffocal_length_mm\x18\n" +
+	" \x01(\x01H\x04R\rfocalLengthMm\x88\x01\x01B\x1a\n" +
+	"\x18_source_exif_orientationB\v\n" +
+	"\t_f_numberB\x18\n" +
+	"\x16_exposure_time_secondsB\x06\n" +
+	"\x04_isoB\x12\n" +
+	"\x10_focal_length_mm\"m\n" +
+	"\x10MediaCaptureTime\x12&\n" +
+	"\x0flocal_date_time\x18\x01 \x01(\tR\rlocalDateTime\x12\"\n" +
+	"\n" +
+	"utc_offset\x18\x02 \x01(\tH\x00R\tutcOffset\x88\x01\x01B\r\n" +
+	"\v_utc_offset\"\xb0\x01\n" +
+	"\rMediaLocation\x12\x1f\n" +
+	"\blatitude\x18\x01 \x01(\x01H\x00R\blatitude\x88\x01\x01\x12!\n" +
+	"\tlongitude\x18\x02 \x01(\x01H\x01R\tlongitude\x88\x01\x01\x12,\n" +
+	"\x0faltitude_meters\x18\x03 \x01(\x01H\x02R\x0ealtitudeMeters\x88\x01\x01B\v\n" +
+	"\t_latitudeB\f\n" +
+	"\n" +
+	"_longitudeB\x12\n" +
+	"\x10_altitude_meters\"T\n" +
+	"\rVideoMetadata\x12.\n" +
+	"\x10duration_seconds\x18\x01 \x01(\x01H\x00R\x0fdurationSeconds\x88\x01\x01B\x13\n" +
+	"\x11_duration_seconds\"\x8c\x03\n" +
 	"\x11AttachmentPayload\x12F\n" +
 	"\ts3_object\x18\x01 \x01(\v2'.memos.store.AttachmentPayload.S3ObjectH\x00R\bs3Object\x12;\n" +
 	"\fmotion_media\x18\n" +
-	" \x01(\v2\x18.memos.store.MotionMediaR\vmotionMedia\x1a\xa3\x01\n" +
+	" \x01(\v2\x18.memos.store.MotionMediaR\vmotionMedia\x12A\n" +
+	"\x0emedia_metadata\x18\v \x01(\v2\x1a.memos.store.MediaMetadataR\rmediaMetadata\x1a\xa3\x01\n" +
 	"\bS3Object\x129\n" +
 	"\ts3_config\x18\x01 \x01(\v2\x1c.memos.store.StorageS3ConfigR\bs3Config\x12\x10\n" +
 	"\x03key\x18\x02 \x01(\tR\x03key\x12J\n" +
@@ -440,29 +862,39 @@ func file_store_attachment_proto_rawDescGZIP() []byte {
 }
 
 var file_store_attachment_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_store_attachment_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_store_attachment_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_store_attachment_proto_goTypes = []any{
 	(AttachmentStorageType)(0),         // 0: memos.store.AttachmentStorageType
 	(MotionMediaFamily)(0),             // 1: memos.store.MotionMediaFamily
 	(MotionMediaRole)(0),               // 2: memos.store.MotionMediaRole
 	(*MotionMedia)(nil),                // 3: memos.store.MotionMedia
-	(*AttachmentPayload)(nil),          // 4: memos.store.AttachmentPayload
-	(*AttachmentPayload_S3Object)(nil), // 5: memos.store.AttachmentPayload.S3Object
-	(*StorageS3Config)(nil),            // 6: memos.store.StorageS3Config
-	(*timestamppb.Timestamp)(nil),      // 7: google.protobuf.Timestamp
+	(*MediaMetadata)(nil),              // 4: memos.store.MediaMetadata
+	(*PhotoMetadata)(nil),              // 5: memos.store.PhotoMetadata
+	(*MediaCaptureTime)(nil),           // 6: memos.store.MediaCaptureTime
+	(*MediaLocation)(nil),              // 7: memos.store.MediaLocation
+	(*VideoMetadata)(nil),              // 8: memos.store.VideoMetadata
+	(*AttachmentPayload)(nil),          // 9: memos.store.AttachmentPayload
+	(*AttachmentPayload_S3Object)(nil), // 10: memos.store.AttachmentPayload.S3Object
+	(*StorageS3Config)(nil),            // 11: memos.store.StorageS3Config
+	(*timestamppb.Timestamp)(nil),      // 12: google.protobuf.Timestamp
 }
 var file_store_attachment_proto_depIdxs = []int32{
-	1, // 0: memos.store.MotionMedia.family:type_name -> memos.store.MotionMediaFamily
-	2, // 1: memos.store.MotionMedia.role:type_name -> memos.store.MotionMediaRole
-	5, // 2: memos.store.AttachmentPayload.s3_object:type_name -> memos.store.AttachmentPayload.S3Object
-	3, // 3: memos.store.AttachmentPayload.motion_media:type_name -> memos.store.MotionMedia
-	6, // 4: memos.store.AttachmentPayload.S3Object.s3_config:type_name -> memos.store.StorageS3Config
-	7, // 5: memos.store.AttachmentPayload.S3Object.last_presigned_time:type_name -> google.protobuf.Timestamp
-	6, // [6:6] is the sub-list for method output_type
-	6, // [6:6] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	1,  // 0: memos.store.MotionMedia.family:type_name -> memos.store.MotionMediaFamily
+	2,  // 1: memos.store.MotionMedia.role:type_name -> memos.store.MotionMediaRole
+	5,  // 2: memos.store.MediaMetadata.photo:type_name -> memos.store.PhotoMetadata
+	8,  // 3: memos.store.MediaMetadata.video:type_name -> memos.store.VideoMetadata
+	6,  // 4: memos.store.PhotoMetadata.capture_time:type_name -> memos.store.MediaCaptureTime
+	7,  // 5: memos.store.PhotoMetadata.location:type_name -> memos.store.MediaLocation
+	10, // 6: memos.store.AttachmentPayload.s3_object:type_name -> memos.store.AttachmentPayload.S3Object
+	3,  // 7: memos.store.AttachmentPayload.motion_media:type_name -> memos.store.MotionMedia
+	4,  // 8: memos.store.AttachmentPayload.media_metadata:type_name -> memos.store.MediaMetadata
+	11, // 9: memos.store.AttachmentPayload.S3Object.s3_config:type_name -> memos.store.StorageS3Config
+	12, // 10: memos.store.AttachmentPayload.S3Object.last_presigned_time:type_name -> google.protobuf.Timestamp
+	11, // [11:11] is the sub-list for method output_type
+	11, // [11:11] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_store_attachment_proto_init() }
@@ -472,6 +904,14 @@ func file_store_attachment_proto_init() {
 	}
 	file_store_instance_setting_proto_init()
 	file_store_attachment_proto_msgTypes[1].OneofWrappers = []any{
+		(*MediaMetadata_Photo)(nil),
+		(*MediaMetadata_Video)(nil),
+	}
+	file_store_attachment_proto_msgTypes[2].OneofWrappers = []any{}
+	file_store_attachment_proto_msgTypes[3].OneofWrappers = []any{}
+	file_store_attachment_proto_msgTypes[4].OneofWrappers = []any{}
+	file_store_attachment_proto_msgTypes[5].OneofWrappers = []any{}
+	file_store_attachment_proto_msgTypes[6].OneofWrappers = []any{
 		(*AttachmentPayload_S3Object_)(nil),
 	}
 	type x struct{}
@@ -480,7 +920,7 @@ func file_store_attachment_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_store_attachment_proto_rawDesc), len(file_store_attachment_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   3,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

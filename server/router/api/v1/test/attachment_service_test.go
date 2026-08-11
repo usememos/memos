@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/usememos/memos/internal/testutil"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -340,6 +341,112 @@ func TestCreateAttachmentMotionMedia(t *testing.T) {
 		require.Equal(t, v1pb.MotionMediaRole_CONTAINER, attachment.MotionMedia.Role)
 		require.True(t, attachment.MotionMedia.HasEmbeddedVideo)
 	})
+}
+
+func TestCreateAttachmentMediaMetadata(t *testing.T) {
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+	ctx := context.Background()
+
+	user, err := ts.CreateRegularUser(ctx, "media_metadata_user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	photoMetadata := &v1pb.MediaMetadata{
+		Width:  proto.Int32(20),
+		Height: proto.Int32(10),
+		Details: &v1pb.MediaMetadata_Photo{Photo: &v1pb.PhotoMetadata{
+			CaptureTime: &v1pb.MediaCaptureTime{
+				LocalDateTime: "2026-08-10T14:32:18.123",
+				UtcOffset:     proto.String("+08:00"),
+			},
+			Location: &v1pb.MediaLocation{
+				Latitude:       proto.Float64(1.3521),
+				Longitude:      proto.Float64(103.8198),
+				AltitudeMeters: proto.Float64(18.4),
+			},
+			SourceExifOrientation: proto.Int32(6),
+			CameraMake:            "Apple",
+			CameraModel:           "iPhone",
+			LensModel:             "Main Camera",
+			FNumber:               proto.Float64(1.78),
+			ExposureTimeSeconds:   proto.Float64(1.0 / 120.0),
+			Iso:                   proto.Int32(64),
+			FocalLengthMm:         proto.Float64(6.86),
+		}},
+	}
+
+	photo, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{
+		Attachment: &v1pb.Attachment{
+			Filename:      "photo.jpg",
+			Type:          "image/jpeg",
+			Content:       testutil.BuildJPEG(20, 10),
+			MediaMetadata: photoMetadata,
+		},
+	})
+	require.NoError(t, err)
+	require.True(t, proto.Equal(photoMetadata, photo.MediaMetadata))
+
+	photoUID, err := apiv1.ExtractAttachmentUIDFromName(photo.Name)
+	require.NoError(t, err)
+	storedPhoto, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &photoUID})
+	require.NoError(t, err)
+	require.NotNil(t, storedPhoto.Payload.GetMediaMetadata())
+	require.Equal(t, "Apple", storedPhoto.Payload.GetMediaMetadata().GetPhoto().GetCameraMake())
+	require.Equal(t, int32(6), storedPhoto.Payload.GetMediaMetadata().GetPhoto().GetSourceExifOrientation())
+
+	gotPhoto, err := ts.Service.GetAttachment(userCtx, &v1pb.GetAttachmentRequest{Name: photo.Name})
+	require.NoError(t, err)
+	require.True(t, proto.Equal(photoMetadata, gotPhoto.MediaMetadata))
+
+	listed, err := ts.Service.ListAttachments(userCtx, &v1pb.ListAttachmentsRequest{PageSize: 100})
+	require.NoError(t, err)
+	var listedPhoto *v1pb.Attachment
+	for _, attachment := range listed.Attachments {
+		if attachment.Name == photo.Name {
+			listedPhoto = attachment
+			break
+		}
+	}
+	require.NotNil(t, listedPhoto)
+	require.True(t, proto.Equal(photoMetadata, listedPhoto.MediaMetadata))
+
+	memo, err := ts.Service.CreateMemo(userCtx, &v1pb.CreateMemoRequest{Memo: &v1pb.Memo{
+		Content:     "memo with metadata",
+		Visibility:  v1pb.Visibility_PRIVATE,
+		Attachments: []*v1pb.Attachment{{Name: photo.Name}},
+	}})
+	require.NoError(t, err)
+	require.Len(t, memo.Attachments, 1)
+	require.True(t, proto.Equal(photoMetadata, memo.Attachments[0].MediaMetadata))
+
+	video, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{
+		Attachment: &v1pb.Attachment{
+			Filename: "clip.mp4",
+			Type:     "video/mp4",
+			Content:  []byte("fake-video"),
+			MediaMetadata: &v1pb.MediaMetadata{
+				Width:  proto.Int32(1920),
+				Height: proto.Int32(1080),
+				Details: &v1pb.MediaMetadata_Video{Video: &v1pb.VideoMetadata{
+					DurationSeconds: proto.Float64(12.5),
+				}},
+			},
+		},
+	})
+	require.NoError(t, err)
+	require.Equal(t, 12.5, video.MediaMetadata.GetVideo().GetDurationSeconds())
+
+	withoutMetadata, err := ts.Service.CreateAttachment(userCtx, &v1pb.CreateAttachmentRequest{
+		Attachment: &v1pb.Attachment{Filename: "plain.png", Type: "image/png", Content: []byte("fake-png")},
+	})
+	require.NoError(t, err)
+	require.Nil(t, withoutMetadata.MediaMetadata)
+	plainUID, err := apiv1.ExtractAttachmentUIDFromName(withoutMetadata.Name)
+	require.NoError(t, err)
+	storedPlain, err := ts.Store.GetAttachment(ctx, &store.FindAttachment{UID: &plainUID})
+	require.NoError(t, err)
+	require.Nil(t, storedPlain.Payload.GetMediaMetadata())
 }
 
 func TestBatchDeleteAttachments(t *testing.T) {

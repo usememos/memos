@@ -111,6 +111,14 @@ func (s *APIV1Service) CreateAttachment(ctx context.Context, request *v1pb.Creat
 		create.Payload = ensureAttachmentPayload(create.Payload)
 		create.Payload.MotionMedia = inputMotionMedia
 	}
+	inputMediaMetadata, err := validateClientMediaMetadata(request.Attachment.MediaMetadata, request.Attachment.Type)
+	if err != nil {
+		return nil, err
+	}
+	if inputMediaMetadata != nil {
+		create.Payload = ensureAttachmentPayload(create.Payload)
+		create.Payload.MediaMetadata = inputMediaMetadata
+	}
 
 	instanceStorageSetting, err := s.Store.GetInstanceStorageSetting(ctx)
 	if err != nil {

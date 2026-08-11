@@ -456,6 +456,8 @@ message UserSetting {
     // This references a CSS file in the web/public/themes/ directory.
     // If not set, the default theme will be used.
     string theme = 4 [(google.api.field_behavior) = OPTIONAL];
+    // Whether the official client should save metadata from future media uploads.
+    bool save_media_metadata = 5 [(google.api.field_behavior) = OPTIONAL];
   }
 
   // Tag metadata for user-specific display rules.

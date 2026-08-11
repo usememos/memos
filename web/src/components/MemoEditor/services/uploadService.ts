@@ -7,7 +7,8 @@ import type { LocalFile } from "../types/attachment";
 export const uploadService = {
   async uploadFile(localFile: LocalFile): Promise<Attachment> {
     const { file, motionMedia } = localFile;
-    const buffer = new Uint8Array(await file.arrayBuffer());
+    const [mediaMetadata, arrayBuffer] = await Promise.all([localFile.mediaMetadata, file.arrayBuffer()]);
+    const buffer = new Uint8Array(arrayBuffer);
     return attachmentServiceClient.createAttachment({
       attachment: create(AttachmentSchema, {
         filename: file.name,
@@ -15,6 +16,7 @@ export const uploadService = {
         type: file.type,
         content: buffer,
         motionMedia: motionMedia ? create(MotionMediaSchema, motionMedia) : undefined,
+        mediaMetadata,
       }),
     });
   },

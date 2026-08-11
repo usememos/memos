@@ -2997,9 +2997,11 @@ type UserSetting_GeneralSetting struct {
 	// The preferred theme of the user.
 	// This references a CSS file in the web/public/themes/ directory.
 	// If not set, the default theme will be used.
-	Theme         string `protobuf:"bytes,4,opt,name=theme,proto3" json:"theme,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Theme string `protobuf:"bytes,4,opt,name=theme,proto3" json:"theme,omitempty"`
+	// Whether the official client should save metadata from future media uploads.
+	SaveMediaMetadata bool `protobuf:"varint,5,opt,name=save_media_metadata,json=saveMediaMetadata,proto3" json:"save_media_metadata,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *UserSetting_GeneralSetting) Reset() {
@@ -3051,6 +3053,13 @@ func (x *UserSetting_GeneralSetting) GetTheme() string {
 		return x.Theme
 	}
 	return ""
+}
+
+func (x *UserSetting_GeneralSetting) GetSaveMediaMetadata() bool {
+	if x != nil {
+		return x.SaveMediaMetadata
+	}
+	return false
 }
 
 // Tag metadata for user-specific display rules.
@@ -3437,16 +3446,17 @@ const file_api_v1_user_service_proto_rawDesc = "" +
 	"\x05state\x18\x01 \x01(\x0e2\x13.memos.api.v1.StateB\x03\xe0A\x01R\x05state\x12\x1b\n" +
 	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\"I\n" +
 	"\x18ListAllUserStatsResponse\x12-\n" +
-	"\x05stats\x18\x01 \x03(\v2\x17.memos.api.v1.UserStatsR\x05stats\"\xbb\a\n" +
+	"\x05stats\x18\x01 \x03(\v2\x17.memos.api.v1.UserStatsR\x05stats\"\xf1\a\n" +
 	"\vUserSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12S\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2(.memos.api.v1.UserSetting.GeneralSettingH\x00R\x0egeneralSetting\x12V\n" +
 	"\x10webhooks_setting\x18\x05 \x01(\v2).memos.api.v1.UserSetting.WebhooksSettingH\x00R\x0fwebhooksSetting\x12J\n" +
-	"\ftags_setting\x18\x06 \x01(\v2%.memos.api.v1.UserSetting.TagsSettingH\x00R\vtagsSetting\x1av\n" +
+	"\ftags_setting\x18\x06 \x01(\v2%.memos.api.v1.UserSetting.TagsSettingH\x00R\vtagsSetting\x1a\xab\x01\n" +
 	"\x0eGeneralSetting\x12\x1b\n" +
 	"\x06locale\x18\x01 \x01(\tB\x03\xe0A\x01R\x06locale\x12,\n" +
 	"\x0fmemo_visibility\x18\x03 \x01(\tB\x03\xe0A\x01R\x0ememoVisibility\x12\x19\n" +
-	"\x05theme\x18\x04 \x01(\tB\x03\xe0A\x01R\x05theme\x1ay\n" +
+	"\x05theme\x18\x04 \x01(\tB\x03\xe0A\x01R\x05theme\x123\n" +
+	"\x13save_media_metadata\x18\x05 \x01(\bB\x03\xe0A\x01R\x11saveMediaMetadata\x1ay\n" +
 	"\vTagMetadata\x12B\n" +
 	"\x10background_color\x18\x01 \x01(\v2\x12.google.type.ColorB\x03\xe0A\x01R\x0fbackgroundColor\x12&\n" +
 	"\fblur_content\x18\x02 \x01(\bB\x03\xe0A\x01R\vblurContent\x1a\xb7\x01\n" +
