@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { LazyLocationPicker } from "@/components/map/LazyLocationPicker";
+import { Button } from "@/components/ui/button";
 import i18n from "@/i18n";
 import { cn } from "@/lib/utils";
 import { useTranslate } from "@/utils/i18n";
@@ -58,15 +59,17 @@ const DetailSection = ({ title, children }: { title: string; children: ReactNode
 );
 
 const IconAction = ({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) => (
-  <button
+  <Button
     type="button"
+    variant="ghost"
+    size="icon"
     title={label}
     aria-label={label}
     onClick={onClick}
     className="inline-flex size-7 items-center justify-center rounded-full text-white/48 transition-colors hover:bg-white/[0.08] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/45"
   >
     {children}
-  </button>
+  </Button>
 );
 
 const MediaMetadataDetails = ({ id, item, onClose, className }: MediaMetadataDetailsProps) => {

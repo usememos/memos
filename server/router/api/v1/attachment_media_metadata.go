@@ -8,6 +8,7 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -183,9 +184,12 @@ func isFinite(value float64) bool {
 func transcodeProto(src, dst proto.Message) error {
 	data, err := proto.Marshal(src)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to marshal source protobuf")
 	}
-	return proto.UnmarshalOptions{DiscardUnknown: true}.Unmarshal(data, dst)
+	if err := (proto.UnmarshalOptions{DiscardUnknown: true}).Unmarshal(data, dst); err != nil {
+		return errors.Wrap(err, "failed to unmarshal destination protobuf")
+	}
+	return nil
 }
 
 func convertMediaMetadataFromStore(metadata *storepb.MediaMetadata) *v1pb.MediaMetadata {
