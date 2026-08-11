@@ -42,7 +42,7 @@
     "sign-up-tip": "還沒有帳戶嗎？",
     "signin-unavailable-description": "已停用密碼登入，且尚未設定任何身分識別提供者。請要求管理員啟用登入方式。",
     "signin-unavailable-title": "無法登入",
-    "signup-unavailable-description": "已停用密碼帳號，且尚未設定任何身分識別提供者。請聯絡管理員以取得存取權限。",
+    "signup-unavailable-description": "已停用使用密碼註冊，且尚未設定任何身分識別提供者。請聯絡管理員以取得存取權限。",
     "signup-unavailable-title": "無法註冊",
     "signups-closed-description": "此實例已停用新帳號註冊。如需存取權限，請聯絡管理員。",
     "signups-closed-title": "已關閉註冊",
@@ -398,7 +398,7 @@
       "disabled": "已停用公開備忘錄",
       "private": "私人",
       "private-description": "僅您可見",
-      "protected": "成員",
+      "protected": "受保護",
       "protected-description": "已登入的使用者可見",
       "public": "公開",
       "public-description": "所有人皆可見"
