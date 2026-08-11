@@ -242,7 +242,7 @@
     "filters": {
       "has-code": "hasCode",
       "has-link": "hasLink",
-      "has-location": "turiVietą",
+      "has-location": "turi vietą",
       "has-task-list": "turiTaskList",
       "label": "Filtrai"
     },

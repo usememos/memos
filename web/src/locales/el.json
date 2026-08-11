@@ -242,7 +242,7 @@
     "filters": {
       "has-code": "έχει Κώδικα",
       "has-link": "έχει Σύνδεσμο",
-      "has-location": "έχει Τοποθεσία",
+      "has-location": "έχει τοποθεσία",
       "has-task-list": "hasTaskList",
       "label": "Φίλτρα"
     },

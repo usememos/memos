@@ -242,7 +242,7 @@
     "filters": {
       "has-code": "хасЦоде",
       "has-link": "хасЛинк",
-      "has-location": "имаЛокацију",
+      "has-location": "има локацију",
       "has-task-list": "хасТаскЛист",
       "label": "Филтери"
     },

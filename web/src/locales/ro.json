@@ -242,7 +242,7 @@
     "filters": {
       "has-code": "areCode",
       "has-link": "areLink",
-      "has-location": "areLocație",
+      "has-location": "are locație",
       "has-task-list": "areTaskList",
       "label": "Filtre"
     },

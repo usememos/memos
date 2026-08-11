@@ -204,7 +204,7 @@
     "filters": {
       "has-code": "hasCode",
       "has-link": "hasLink",
-      "has-location": "tenLocalización",
+      "has-location": "ten localización",
       "has-task-list": "hasTaskList",
       "label": "Filtros"
     },
