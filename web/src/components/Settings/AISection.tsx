@@ -3,6 +3,7 @@ import { isEqual } from "lodash-es";
 import { MoreVerticalIcon, PlusIcon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
+import { v4 as uuidv4 } from "uuid";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -50,13 +51,6 @@ const providerTypeOptions = [InstanceSetting_AIProviderType.OPENAI, InstanceSett
 
 const byokNotes = ["setting.ai.byok-key-note", "setting.ai.byok-storage-note", "setting.ai.byok-model-note"] as const;
 
-const createProviderID = () => {
-  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
-    return crypto.randomUUID();
-  }
-  return `ai-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-};
-
 const getProviderTypeLabel = (type: InstanceSetting_AIProviderType) => {
   return InstanceSetting_AIProviderType[type] ?? "UNKNOWN";
 };
@@ -81,7 +75,7 @@ const toLocalTranscription = (config: InstanceSetting_TranscriptionConfig | unde
 });
 
 const newProvider = (): LocalAIProvider => ({
-  id: createProviderID(),
+  id: uuidv4(),
   title: "",
   type: InstanceSetting_AIProviderType.OPENAI,
   endpoint: "",

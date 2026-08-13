@@ -1,6 +1,7 @@
 import { uniqBy } from "lodash-es";
 import { type RefObject, useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
+import { v4 as uuidv4 } from "uuid";
 import type { Attachment } from "@/types/proto/api/v1/attachment_service_pb";
 import { isImage } from "@/utils/attachment";
 import { useTranslate } from "@/utils/i18n";
@@ -69,7 +70,7 @@ const createJob = (localFiles: LocalFile[]): UploadJob | undefined => {
   const { inline, representativeIndexes } = splitInlineLocalFiles(localFiles);
   if (inline.length === 0) return undefined;
   return {
-    id: crypto.randomUUID(),
+    id: uuidv4(),
     entries: inline.map((localFile) => ({ localFile })),
     representativeIndexes,
     active: false,

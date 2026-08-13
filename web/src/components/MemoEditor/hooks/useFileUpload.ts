@@ -1,5 +1,6 @@
 import { create } from "@bufbuild/protobuf";
 import { useRef } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "@/contexts/AuthContext";
 import { type MotionMedia, MotionMediaFamily, MotionMediaRole, MotionMediaSchema } from "@/types/proto/api/v1/attachment_service_pb";
 import { mediaMetadataService } from "../services/mediaMetadataService";
@@ -81,7 +82,7 @@ export const pairAppleLivePhotoFiles = (localFiles: LocalFile[]): LocalFile[] =>
 
     const image = images[0];
     const video = videos[0];
-    const groupId = groupIds.get(stem) ?? `${stem}-${crypto.randomUUID()}`;
+    const groupId = groupIds.get(stem) ?? `${stem}-${uuidv4()}`;
     groupIds.set(stem, groupId);
     if (localFile.previewUrl === image.previewUrl) {
       return { ...localFile, motionMedia: buildLocalMotionMedia(groupId, MotionMediaRole.STILL) };
