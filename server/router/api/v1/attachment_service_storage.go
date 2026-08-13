@@ -162,7 +162,7 @@ func (s *APIV1Service) GetAttachmentBlob(ctx context.Context, attachment *store.
 	if attachment.StorageType == storepb.AttachmentStorageType_S3 {
 		driver, s3Object, err := s.Store.ResolveAttachmentS3Driver(ctx, attachment)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "failed to resolve S3 attachment driver")
 		}
 
 		blob, err := driver.GetObject(ctx, s3Object.Key)
