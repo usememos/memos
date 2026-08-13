@@ -13,7 +13,12 @@ import { memoServiceClient } from "@/connect";
 import { userKeys } from "@/hooks/useUserQueries";
 import { DEFAULT_LIST_MEMOS_PAGE_SIZE } from "@/lib/constants";
 import type { ListMemosRequest, ListMemosResponse, Memo } from "@/types/proto/api/v1/memo_service_pb";
-import { ListMemoCommentsRequestSchema, ListMemosRequestSchema, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
+import {
+  ListMemoCommentsRequestSchema,
+  ListMemosRequestSchema,
+  MemoSchema,
+  RenameMemoTagRequestSchema,
+} from "@/types/proto/api/v1/memo_service_pb";
 
 // Query keys factory for consistent cache management
 export const memoKeys = {
@@ -316,5 +321,30 @@ export function useInfiniteMemoComments(name: string, options?: { enabled?: bool
     select: (data) => data.pages.flatMap((page) => page.memos),
     enabled: options?.enabled ?? true,
     staleTime: 1000 * 60, // 1 minute
+  });
+}
+
+export function useRenameMemoTag() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ oldTag, newTag }: { oldTag: string; newTag: string }) => {
+      const response = await memoServiceClient.renameMemoTag(
+        create(RenameMemoTagRequestSchema, {
+          oldTag,
+          newTag,
+        }),
+      );
+      return response;
+    },
+    onSuccess: async () => {
+      // Tag renames touch memo content and derived tags everywhere, so drop the
+      // memo caches entirely and let views refetch. User stats carry the tag
+      // counts used by the explorer/sidebar and editor autocomplete.
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: memoKeys.all }),
+        queryClient.invalidateQueries({ queryKey: userKeys.stats() }),
+      ]);
+    },
   });
 }

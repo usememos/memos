@@ -197,6 +197,7 @@
     "relations": "Relations",
     "remember-me": "Remember me",
     "rename": "Rename",
+    "renaming": "Renaming…",
     "reset": "Reset",
     "resize-sidebar": "Resize sidebar",
     "resources": "Resources",
@@ -923,7 +924,17 @@
       "tag-pattern-hint": "Tag name or regex pattern (e.g. project/.* matches all project/ tags)",
       "invalid-regex": "Invalid or unsafe regex pattern.",
       "used-count": "{{count}} memos",
-      "using-default-color": "Using default color."
+      "using-default-color": "Using default color.",
+      "rename-title": "Rename tag",
+      "rename-description": "Rename exact matches across all your memos, including archived memos and comments. This tag is listed in {{count}} active memos.",
+      "rename-current-tag": "Current tag",
+      "rename-new-tag": "New tag name",
+      "rename-new-tag-placeholder": "Enter the new tag name",
+      "rename-submit": "Rename tag",
+      "rename-success": "Renamed tag in {{count}} memos.",
+      "used-tags-title": "Tags in use",
+      "used-tags-description": "Tags found in your active memos. Rename one to update exact matches across all your memos.",
+      "no-tags-used": "No tags used in your memos yet."
     },
     "resource-stats": {
       "label": "Resources",

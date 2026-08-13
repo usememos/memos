@@ -133,6 +133,16 @@ service MemoService {
   rpc GetSharedMemo(GetSharedMemoRequest) returns (Memo) {
     option (google.api.http) = {get: "/api/v1/shares/{share_token}/memo"};
   }
+  // RenameMemoTag renames a tag across all memos owned by the authenticated
+  // user, including archived memos and comments. Tag names do not include the
+  // leading '#'. Returns the number of memos that were changed.
+  rpc RenameMemoTag(RenameMemoTagRequest) returns (RenameMemoTagResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/memos:renameTag"
+      body: "*"
+    };
+    option (google.api.method_signature) = "old_tag,new_tag";
+  }
   // GetLinkMetadata gets metadata for a link.
   rpc GetLinkMetadata(GetLinkMetadataRequest) returns (LinkMetadata) {
     option (google.api.http) = {get: "/api/v1/memos/-/linkMetadata"};
@@ -626,6 +636,19 @@ message DeleteMemoShareRequest {
 message GetSharedMemoRequest {
   // Required. The opaque bearer token extracted from the share URL.
   string share_token = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message RenameMemoTagRequest {
+  // Required. The current tag name to rename, without the leading '#'.
+  string old_tag = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Required. The new tag name, without the leading '#'.
+  string new_tag = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message RenameMemoTagResponse {
+  // The number of memos owned by the authenticated user that were updated.
+  int32 updated_memo_count = 1;
 }
 
 message GetLinkMetadataRequest {

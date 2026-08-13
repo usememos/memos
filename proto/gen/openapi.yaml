@@ -1267,6 +1267,34 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
+    /api/v1/memos:renameTag:
+        post:
+            tags:
+                - MemoService
+            description: |-
+                RenameMemoTag renames a tag across all memos owned by the authenticated
+                 user, including archived memos and comments. Tag names do not include the
+                 leading '#'. Returns the number of memos that were changed.
+            operationId: MemoService_RenameMemoTag
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RenameMemoTagRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RenameMemoTagResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /api/v1/shares/{shareToken}/memo:
         get:
             tags:
@@ -3642,6 +3670,25 @@ components:
                     type: string
                     description: When the access token expires.
                     format: date-time
+        RenameMemoTagRequest:
+            required:
+                - oldTag
+                - newTag
+            type: object
+            properties:
+                oldTag:
+                    type: string
+                    description: Required. The current tag name to rename, without the leading '#'.
+                newTag:
+                    type: string
+                    description: Required. The new tag name, without the leading '#'.
+        RenameMemoTagResponse:
+            type: object
+            properties:
+                updatedMemoCount:
+                    type: integer
+                    description: The number of memos owned by the authenticated user that were updated.
+                    format: int32
         SetMemoAttachmentsRequest:
             required:
                 - name

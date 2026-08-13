@@ -447,6 +447,14 @@ func (s *ConnectServiceHandler) GetSharedMemo(ctx context.Context, req *connect.
 	return connect.NewResponse(resp), nil
 }
 
+func (s *ConnectServiceHandler) RenameMemoTag(ctx context.Context, req *connect.Request[v1pb.RenameMemoTagRequest]) (*connect.Response[v1pb.RenameMemoTagResponse], error) {
+	resp, err := s.APIV1Service.RenameMemoTag(ctx, req.Msg)
+	if err != nil {
+		return nil, convertGRPCError(err)
+	}
+	return connect.NewResponse(resp), nil
+}
+
 func (s *ConnectServiceHandler) GetLinkMetadata(ctx context.Context, req *connect.Request[v1pb.GetLinkMetadataRequest]) (*connect.Response[v1pb.LinkMetadata], error) {
 	resp, err := s.APIV1Service.GetLinkMetadata(ctx, req.Msg)
 	if err != nil {
