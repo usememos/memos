@@ -4,9 +4,11 @@ import { Visibility } from "@/types/proto/api/v1/memo_service_pb";
 import type { LocalFile } from "../types/attachment";
 
 export type LoadingKey = "saving" | "uploading" | "loading";
+export type ContentSource = "editor" | "external";
 
 export interface EditorState {
   content: string;
+  contentSource: ContentSource;
   metadata: {
     visibility: Visibility;
     attachments: Attachment[];
@@ -34,7 +36,7 @@ export interface EditorState {
 
 export type EditorAction =
   | { type: "INIT_MEMO"; payload: { content: string; metadata: EditorState["metadata"]; timestamps: EditorState["timestamps"] } }
-  | { type: "UPDATE_CONTENT"; payload: string }
+  | { type: "UPDATE_CONTENT"; payload: { content: string; source: ContentSource } }
   | { type: "SET_METADATA"; payload: Partial<EditorState["metadata"]> }
   | { type: "ADD_LOCAL_FILE"; payload: LocalFile }
   | { type: "REMOVE_LOCAL_FILE"; payload: string }
@@ -49,6 +51,7 @@ export type EditorAction =
 // Module-private template for createInitialState.
 const defaultState: EditorState = {
   content: "",
+  contentSource: "external",
   metadata: {
     visibility: Visibility.PRIVATE,
     attachments: [],

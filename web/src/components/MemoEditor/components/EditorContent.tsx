@@ -17,10 +17,15 @@ import type { EditorController } from "../types/editorController";
 export const EditorContent = forwardRef<EditorController, EditorContentProps>(({ placeholder, onSubmit, onFiles }, ref) => {
   const { actions, dispatch } = useEditorContext();
   const content = useEditorSelector((s) => s.content);
+  const contentSource = useEditorSelector((s) => s.contentSource);
   const isFocusMode = useEditorSelector((s) => s.ui.isFocusMode);
 
   const handleContentChange = (content: string) => {
     dispatch(actions.updateContent(content));
+  };
+
+  const handleExternalContentApplied = (content: string) => {
+    dispatch(actions.setContent(content));
   };
 
   return (
@@ -29,9 +34,11 @@ export const EditorContent = forwardRef<EditorController, EditorContentProps>(({
         ref={ref}
         className="memo-editor-content"
         initialContent={content}
+        contentIsExternal={contentSource === "external"}
         placeholder={placeholder || ""}
         isFocusMode={isFocusMode}
         onContentChange={handleContentChange}
+        onExternalContentApplied={handleExternalContentApplied}
         onFiles={onFiles}
         onSubmit={onSubmit}
       />

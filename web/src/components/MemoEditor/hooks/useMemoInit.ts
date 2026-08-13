@@ -39,7 +39,7 @@ export const useMemoInit = ({
     } else {
       const cachedDraft = cacheService.loadDraft(key);
       if (cachedDraft.content) {
-        dispatch(actions.updateContent(cachedDraft.content));
+        dispatch(actions.setContent(cachedDraft.content));
       }
       if (cachedDraft.attachments.length > 0) {
         dispatch(actions.setMetadata({ attachments: cachedDraft.attachments }));

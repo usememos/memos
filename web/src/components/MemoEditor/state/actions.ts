@@ -9,7 +9,12 @@ export const editorActions = {
 
   updateContent: (content: string): EditorAction => ({
     type: "UPDATE_CONTENT",
-    payload: content,
+    payload: { content, source: "editor" },
+  }),
+
+  setContent: (content: string): EditorAction => ({
+    type: "UPDATE_CONTENT",
+    payload: { content, source: "external" },
   }),
 
   setMetadata: (metadata: Partial<EditorState["metadata"]>): EditorAction => ({
