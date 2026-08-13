@@ -2,6 +2,7 @@ import { create } from "@bufbuild/protobuf";
 import { isEqual } from "lodash-es";
 import { CloudIcon, DatabaseIcon, FolderIcon, LucideIcon } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -98,8 +99,7 @@ const findStorageForType = (
 ): InstanceSetting_Storage | undefined => setting.storages.find((storage) => storage.type === storageType);
 
 const createStorage = (storageType: InstanceSetting_StorageType): InstanceSetting_Storage => {
-  const id =
-    storageType === InstanceSetting_StorageType.S3 ? `s3-${crypto.randomUUID()}` : InstanceSetting_StorageType[storageType].toLowerCase();
+  const id = storageType === InstanceSetting_StorageType.S3 ? `s3-${uuidv4()}` : InstanceSetting_StorageType[storageType].toLowerCase();
   return create(InstanceSetting_StorageSchema, {
     id,
     name: storageType === InstanceSetting_StorageType.S3 ? "S3" : InstanceSetting_StorageType[storageType],
