@@ -198,7 +198,7 @@ func isSecureRequest(ctx context.Context) bool {
 	}
 
 	for _, value := range md.Get("x-forwarded-proto") {
-		for _, proto := range strings.Split(value, ",") {
+		for proto := range strings.SplitSeq(value, ",") {
 			if strings.EqualFold(strings.TrimSpace(proto), "https") {
 				return true
 			}
