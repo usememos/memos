@@ -155,27 +155,29 @@ message InstanceSetting {
     }
   }
 
-  // Storage configuration settings for instance attachments.
-  message StorageSetting {
-    // Storage type enumeration for different storage backends.
-    enum StorageType {
-      STORAGE_TYPE_UNSPECIFIED = 0;
-      // DATABASE is the database storage type.
-      DATABASE = 1;
-      // LOCAL is the local storage type.
-      LOCAL = 2;
-      // S3 is the S3 storage type.
-      S3 = 3;
-    }
-    // storage_type is the storage type.
-    StorageType storage_type = 1;
-    // The template of file path.
-    // e.g. assets/{timestamp}_{filename}
-    string filepath_template = 2;
-    // The max upload size in megabytes.
-    int64 upload_size_limit_mb = 3;
+  enum StorageType {
+    STORAGE_TYPE_UNSPECIFIED = 0;
+    // DATABASE stores attachment content in the application database.
+    DATABASE = 1;
+    // LOCAL stores attachment content on the local filesystem.
+    LOCAL = 2;
+    // S3 stores attachment content in an S3-compatible object store.
+    S3 = 3;
+  }
 
-    // S3 configuration for cloud storage backend.
+  // Storage is a configured attachment storage instance.
+  message Storage {
+    // id is the stable identifier referenced by attachments.
+    string id = 1;
+    // name is the human-readable storage name.
+    string name = 2;
+    StorageType type = 3;
+
+    oneof config {
+      S3Config s3_config = 10;
+    }
+
+    // S3 configuration for an S3-compatible object store.
     // Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
     message S3Config {
       string access_key_id = 1;
@@ -189,8 +191,48 @@ message InstanceSetting {
       // certificate; it removes protection against man-in-the-middle attacks.
       bool insecure_skip_tls_verify = 7;
     }
-    // The S3 config.
+  }
+
+  // Storage configuration settings for instance attachments.
+  message StorageSetting {
+    // Legacy storage type enum retained for compatibility with existing clients.
+    enum StorageType {
+      STORAGE_TYPE_UNSPECIFIED = 0;
+      // DATABASE is the database storage type.
+      DATABASE = 1;
+      // LOCAL is the local storage type.
+      LOCAL = 2;
+      // S3 is the S3 storage type.
+      S3 = 3;
+    }
+    // Legacy compatibility field. New clients use default_storage_id.
+    StorageType storage_type = 1;
+    // The template of file path.
+    // e.g. assets/{timestamp}_{filename}
+    string filepath_template = 2;
+    // The max upload size in megabytes.
+    int64 upload_size_limit_mb = 3;
+
+    // Legacy S3 configuration retained for compatibility with existing clients.
+    // Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
+    message S3Config {
+      string access_key_id = 1;
+      string access_key_secret = 2 [(google.api.field_behavior) = INPUT_ONLY];
+      string endpoint = 3;
+      string region = 4;
+      string bucket = 5;
+      bool use_path_style = 6;
+      // insecure_skip_tls_verify disables TLS certificate verification when connecting
+      // to the S3 endpoint. Only enable this for trusted endpoints that use a self-signed
+      // certificate; it removes protection against man-in-the-middle attacks.
+      bool insecure_skip_tls_verify = 7;
+    }
+    // Legacy compatibility field. New clients use storages.
     S3Config s3_config = 4;
+    // Configured storage instances, including inactive instances referenced by attachments.
+    repeated Storage storages = 5;
+    // Storage used for new attachments.
+    string default_storage_id = 6;
   }
 
   // Memo-related instance settings and policies.

@@ -21,7 +21,6 @@ import (
 
 	"github.com/usememos/memos/internal/motionphoto"
 	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/internal/storage/s3"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/access"
 	"github.com/usememos/memos/server/auth"
@@ -331,11 +330,11 @@ func (s *FileServerService) getAttachmentReader(ctx context.Context, attachment 
 		return file, nil
 
 	case storepb.AttachmentStorageType_S3:
-		s3Client, s3Object, err := s.createS3Client(attachment)
+		driver, s3Object, err := s.Store.ResolveAttachmentS3Driver(ctx, attachment)
 		if err != nil {
 			return nil, err
 		}
-		reader, err := s3Client.GetObjectStream(ctx, s3Object.Key)
+		reader, err := driver.GetObjectStream(ctx, s3Object.Key)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to stream from S3")
 		}
@@ -378,37 +377,14 @@ func (s *FileServerService) readLocalFile(reference string) ([]byte, error) {
 	return blob, nil
 }
 
-// createS3Client creates an S3 client from attachment payload.
-func (*FileServerService) createS3Client(attachment *store.Attachment) (*s3.Client, *storepb.AttachmentPayload_S3Object, error) {
-	if attachment.Payload == nil {
-		return nil, nil, errors.New("attachment payload is missing")
-	}
-	s3Object := attachment.Payload.GetS3Object()
-	if s3Object == nil {
-		return nil, nil, errors.New("S3 object payload is missing")
-	}
-	if s3Object.S3Config == nil {
-		return nil, nil, errors.New("S3 config is missing")
-	}
-	if s3Object.Key == "" {
-		return nil, nil, errors.New("S3 object key is missing")
-	}
-
-	client, err := s3.NewClient(context.Background(), s3Object.S3Config)
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "failed to create S3 client")
-	}
-	return client, s3Object, nil
-}
-
 // downloadFromS3 downloads the entire object from S3.
 func (s *FileServerService) downloadFromS3(ctx context.Context, attachment *store.Attachment) ([]byte, error) {
-	client, s3Object, err := s.createS3Client(attachment)
+	driver, s3Object, err := s.Store.ResolveAttachmentS3Driver(ctx, attachment)
 	if err != nil {
 		return nil, err
 	}
 
-	blob, err := client.GetObject(ctx, s3Object.Key)
+	blob, err := driver.GetObject(ctx, s3Object.Key)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to download from S3")
 	}
@@ -417,12 +393,12 @@ func (s *FileServerService) downloadFromS3(ctx context.Context, attachment *stor
 
 // getS3PresignedURL generates a presigned URL for direct S3 access.
 func (s *FileServerService) getS3PresignedURL(ctx context.Context, attachment *store.Attachment) (string, error) {
-	client, s3Object, err := s.createS3Client(attachment)
+	driver, s3Object, err := s.Store.ResolveAttachmentS3Driver(ctx, attachment)
 	if err != nil {
 		return "", err
 	}
 
-	url, err := client.PresignGetObject(ctx, s3Object.Key)
+	url, err := driver.PresignGetObject(ctx, s3Object.Key)
 	if err != nil {
 		return "", errors.Wrap(err, "failed to presign URL")
 	}

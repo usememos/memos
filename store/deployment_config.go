@@ -233,25 +233,33 @@ func validateAndNormalizeDeploymentInstanceSetting(setting *storepb.InstanceSett
 		if storage == nil {
 			return errors.New("storageSetting must be populated for key STORAGE")
 		}
+		// Normalization would silently self-heal this misconfiguration to LOCAL;
+		// a deployment file declaring S3 without a config should fail loudly.
+		if storage.StorageType == storepb.InstanceStorageSetting_S3 && storage.S3Config == nil && len(storage.Storages) == 0 {
+			return errors.New("storageSetting.s3Config is required for S3")
+		}
+		NormalizeInstanceStorageSetting(storage)
 		if storage.UploadSizeLimitMb < 0 {
 			return errors.New("storageSetting.uploadSizeLimitMb must not be negative")
 		}
-		if storage.StorageType == storepb.InstanceStorageSetting_S3 {
-			if storage.S3Config == nil {
-				return errors.New("storageSetting.s3Config is required for S3")
+		defaultStorage := GetDefaultStorage(storage)
+		if defaultStorage != nil && defaultStorage.Type == storepb.StorageType_STORAGE_TYPE_S3 {
+			s3Config := defaultStorage.GetS3Config()
+			if s3Config == nil {
+				return errors.New("storageSetting default storage S3 config is required")
 			}
 			for _, field := range []struct {
 				name  string
 				value string
 			}{
-				{name: "accessKeyId", value: storage.S3Config.AccessKeyId},
-				{name: "accessKeySecret", value: storage.S3Config.AccessKeySecret},
-				{name: "endpoint", value: storage.S3Config.Endpoint},
-				{name: "region", value: storage.S3Config.Region},
-				{name: "bucket", value: storage.S3Config.Bucket},
+				{name: "accessKeyId", value: s3Config.AccessKeyId},
+				{name: "accessKeySecret", value: s3Config.AccessKeySecret},
+				{name: "endpoint", value: s3Config.Endpoint},
+				{name: "region", value: s3Config.Region},
+				{name: "bucket", value: s3Config.Bucket},
 			} {
 				if strings.TrimSpace(field.value) == "" {
-					return errors.Errorf("storageSetting.s3Config.%s is required", field.name)
+					return errors.Errorf("storageSetting default S3 config.%s is required", field.name)
 				}
 			}
 		}

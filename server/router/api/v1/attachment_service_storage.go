@@ -16,7 +16,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/internal/storage/s3"
+	"github.com/usememos/memos/internal/storage"
 	"github.com/usememos/memos/internal/util"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -54,7 +54,12 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 		return errors.Wrap(err, "Failed to find instance storage setting")
 	}
 
-	if instanceStorageSetting.StorageType == storepb.InstanceStorageSetting_LOCAL {
+	defaultStorage := store.GetDefaultStorage(instanceStorageSetting)
+	if defaultStorage == nil {
+		return errors.New("default storage is not configured")
+	}
+
+	if defaultStorage.Type == storepb.StorageType_STORAGE_TYPE_LOCAL {
 		filepathTemplate := "assets/{timestamp}_{uuid}_{filename}"
 		if instanceStorageSetting.FilepathTemplate != "" {
 			filepathTemplate = instanceStorageSetting.FilepathTemplate
@@ -93,14 +98,10 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 		create.Reference = internalPath
 		create.Blob = nil
 		create.StorageType = storepb.AttachmentStorageType_LOCAL
-	} else if instanceStorageSetting.StorageType == storepb.InstanceStorageSetting_S3 {
-		s3Config := instanceStorageSetting.S3Config
-		if s3Config == nil {
-			return errors.Errorf("No activated external storage found")
-		}
-		s3Client, err := s3.NewClient(ctx, s3Config)
+	} else if defaultStorage.Type == storepb.StorageType_STORAGE_TYPE_S3 {
+		driver, err := storage.NewDriver(ctx, defaultStorage)
 		if err != nil {
-			return errors.Wrap(err, "Failed to create s3 client")
+			return errors.Wrap(err, "failed to create storage driver")
 		}
 
 		filepathTemplate := instanceStorageSetting.FilepathTemplate
@@ -108,13 +109,13 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 			filepathTemplate = filepath.Join(filepathTemplate, "{filename}")
 		}
 		filepathTemplate = replaceFilenameWithPathTemplate(filepathTemplate, create.Filename)
-		key, err := s3Client.UploadObject(ctx, filepathTemplate, create.Type, bytes.NewReader(create.Blob))
+		key, err := driver.UploadObject(ctx, filepathTemplate, create.Type, bytes.NewReader(create.Blob))
 		if err != nil {
-			return errors.Wrap(err, "Failed to upload via s3 client")
+			return errors.Wrap(err, "failed to upload via storage driver")
 		}
-		presignURL, err := s3Client.PresignGetObject(ctx, key)
+		presignURL, err := driver.PresignGetObject(ctx, key)
 		if err != nil {
-			return errors.Wrap(err, "Failed to presign via s3 client")
+			return errors.Wrap(err, "failed to presign via storage driver")
 		}
 
 		create.Reference = presignURL
@@ -123,9 +124,9 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 		payload := ensureAttachmentPayload(create.Payload)
 		payload.Payload = &storepb.AttachmentPayload_S3Object_{
 			S3Object: &storepb.AttachmentPayload_S3Object{
-				S3Config:          s3Config,
 				Key:               key,
 				LastPresignedTime: timestamppb.New(time.Now()),
+				StorageId:         defaultStorage.Id,
 			},
 		}
 		create.Payload = payload
@@ -134,7 +135,8 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 	return nil
 }
 
-func (s *APIV1Service) GetAttachmentBlob(attachment *store.Attachment) ([]byte, error) {
+// GetAttachmentBlob reads an attachment from its configured storage.
+func (s *APIV1Service) GetAttachmentBlob(ctx context.Context, attachment *store.Attachment) ([]byte, error) {
 	// For local storage, read the file from the local disk.
 	if attachment.StorageType == storepb.AttachmentStorageType_LOCAL {
 		attachmentPath := filepath.FromSlash(attachment.Reference)
@@ -158,26 +160,12 @@ func (s *APIV1Service) GetAttachmentBlob(attachment *store.Attachment) ([]byte, 
 	}
 	// For S3 storage, download the file from S3.
 	if attachment.StorageType == storepb.AttachmentStorageType_S3 {
-		if attachment.Payload == nil {
-			return nil, errors.New("attachment payload is missing")
-		}
-		s3Object := attachment.Payload.GetS3Object()
-		if s3Object == nil {
-			return nil, errors.New("S3 object payload is missing")
-		}
-		if s3Object.S3Config == nil {
-			return nil, errors.New("S3 config is missing")
-		}
-		if s3Object.Key == "" {
-			return nil, errors.New("S3 object key is missing")
-		}
-
-		s3Client, err := s3.NewClient(context.Background(), s3Object.S3Config)
+		driver, s3Object, err := s.Store.ResolveAttachmentS3Driver(ctx, attachment)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to create S3 client")
+			return nil, errors.Wrap(err, "failed to resolve S3 attachment driver")
 		}
 
-		blob, err := s3Client.GetObject(context.Background(), s3Object.Key)
+		blob, err := driver.GetObject(ctx, s3Object.Key)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to get object from S3")
 		}

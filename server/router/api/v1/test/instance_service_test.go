@@ -733,6 +733,15 @@ func TestUpdateInstanceSetting(t *testing.T) {
 			"AccessKeySecret must never be returned in responses")
 		require.True(t, resp.GetStorageSetting().GetS3Config().GetInsecureSkipTlsVerify(),
 			"insecure_skip_tls_verify must round-trip through the API")
+		var defaultStorage *v1pb.InstanceSetting_Storage
+		for _, configuredStorage := range resp.GetStorageSetting().GetStorages() {
+			if configuredStorage.GetId() == resp.GetStorageSetting().GetDefaultStorageId() {
+				defaultStorage = configuredStorage
+			}
+		}
+		require.NotNil(t, defaultStorage)
+		require.Empty(t, defaultStorage.GetS3Config().GetAccessKeySecret(),
+			"AccessKeySecret must be write-only in named storage responses")
 
 		// Update with empty secret; original must be preserved in the store.
 		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
@@ -760,6 +769,18 @@ func TestUpdateInstanceSetting(t *testing.T) {
 			"existing AccessKeySecret must be preserved when an empty value is sent")
 		require.Equal(t, "s3-v2.example.com", stored.GetS3Config().GetEndpoint())
 		require.True(t, stored.GetS3Config().GetInsecureSkipTlsVerify())
+		var s3StorageCount int
+		var previousStorageFound bool
+		for _, configuredStorage := range stored.GetStorages() {
+			if configuredStorage.GetType() == storepb.StorageType_STORAGE_TYPE_S3 {
+				s3StorageCount++
+			}
+			if configuredStorage.GetS3Config().GetEndpoint() == "s3.example.com" {
+				previousStorageFound = true
+			}
+		}
+		require.Equal(t, 2, s3StorageCount, "changing the S3 namespace must preserve the previous storage")
+		require.True(t, previousStorageFound)
 	})
 
 	t.Run("UpdateInstanceSetting - AI provider keys are write-only and preserved on empty", func(t *testing.T) {

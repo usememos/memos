@@ -10,6 +10,7 @@ import (
 	"image"
 	"image/color"
 	"image/png"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -24,6 +25,8 @@ import (
 	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/internal/testutil"
+	"github.com/usememos/memos/internal/testutil/fakes3"
+	testminio "github.com/usememos/memos/internal/testutil/minio"
 	"github.com/usememos/memos/internal/util"
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -32,6 +35,169 @@ import (
 	"github.com/usememos/memos/store"
 	teststore "github.com/usememos/memos/store/test"
 )
+
+func TestServeAttachmentFile_S3(t *testing.T) {
+	ctx := context.Background()
+	fake := fakes3.New(t, "file-server-attachments")
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	configuredStorage := &storepb.Storage{
+		Id:     "s3-files",
+		Name:   "File server S3",
+		Type:   storepb.StorageType_STORAGE_TYPE_S3,
+		Config: &storepb.Storage_S3Config{S3Config: fake.Config("file-server-attachments")},
+	}
+	_, err := stores.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_STORAGE,
+		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{
+			FilepathTemplate:  "files/{uuid}_{filename}",
+			UploadSizeLimitMb: 30,
+			Storages:          []*storepb.Storage{configuredStorage},
+			DefaultStorageId:  configuredStorage.Id,
+		}},
+	})
+	require.NoError(t, err)
+
+	creator, err := stores.CreateUser(ctx, &store.User{
+		Username: "s3-file-owner",
+		Role:     store.RoleUser,
+		Email:    "s3-file-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+	content := []byte("content streamed from S3")
+	attachment, err := svc.CreateAttachment(creatorCtx, &apiv1.CreateAttachmentRequest{Attachment: &apiv1.Attachment{
+		Filename: "document.txt",
+		Type:     "text/plain",
+		Content:  content,
+	}})
+	require.NoError(t, err)
+	_, err = svc.CreateMemo(creatorCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
+		Content:     "public S3 attachment",
+		Visibility:  apiv1.Visibility_PUBLIC,
+		Attachments: []*apiv1.Attachment{{Name: attachment.Name}},
+	}})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	recorder := httptest.NewRecorder()
+	e.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename), nil))
+
+	require.Equal(t, http.StatusOK, recorder.Code)
+	require.Equal(t, content, recorder.Body.Bytes())
+	require.Equal(t, "text/plain; charset=utf-8", recorder.Header().Get(echo.HeaderContentType))
+}
+
+func TestServeAttachmentFile_S3MinIO(t *testing.T) {
+	ctx := context.Background()
+	server := testminio.New(t, "file-server-attachments")
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	configuredStorage := &storepb.Storage{
+		Id:     "s3-minio-files",
+		Name:   "MinIO files",
+		Type:   storepb.StorageType_STORAGE_TYPE_S3,
+		Config: &storepb.Storage_S3Config{S3Config: server.Config("file-server-attachments")},
+	}
+	_, err := stores.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_STORAGE,
+		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{
+			FilepathTemplate:  "files/{uuid}_{filename}",
+			UploadSizeLimitMb: 30,
+			Storages:          []*storepb.Storage{configuredStorage},
+			DefaultStorageId:  configuredStorage.Id,
+		}},
+	})
+	require.NoError(t, err)
+
+	creator, err := stores.CreateUser(ctx, &store.User{
+		Username: "s3-minio-file-owner",
+		Role:     store.RoleUser,
+		Email:    "s3-minio-file-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+	textContent := []byte("content streamed through Memos from MinIO")
+	textAttachment, err := svc.CreateAttachment(creatorCtx, &apiv1.CreateAttachmentRequest{Attachment: &apiv1.Attachment{
+		Filename: "document.txt",
+		Type:     "text/plain",
+		Content:  textContent,
+	}})
+	require.NoError(t, err)
+	videoContent := []byte("0123456789abcdef")
+	videoAttachment, err := svc.CreateAttachment(creatorCtx, &apiv1.CreateAttachmentRequest{Attachment: &apiv1.Attachment{
+		Filename: "clip.mp4",
+		Type:     "video/mp4",
+		Content:  videoContent,
+	}})
+	require.NoError(t, err)
+	_, err = svc.CreateMemo(creatorCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
+		Content:    "public MinIO attachments",
+		Visibility: apiv1.Visibility_PUBLIC,
+		Attachments: []*apiv1.Attachment{
+			{Name: textAttachment.Name},
+			{Name: videoAttachment.Name},
+		},
+	}})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	textURL := fmt.Sprintf("/file/%s/%s", textAttachment.Name, textAttachment.Filename)
+
+	// Authorization happens before storage resolution, so a private instance
+	// must not expose either object bytes or a presigned URL.
+	fs.Profile.InstanceURL = ""
+	privateRecorder := httptest.NewRecorder()
+	e.ServeHTTP(privateRecorder, httptest.NewRequest(http.MethodGet, textURL, nil))
+	require.Equal(t, http.StatusUnauthorized, privateRecorder.Code)
+	require.Empty(t, privateRecorder.Header().Get(echo.HeaderLocation))
+
+	fs.Profile.InstanceURL = "http://localhost:8080"
+	textRecorder := httptest.NewRecorder()
+	e.ServeHTTP(textRecorder, httptest.NewRequest(http.MethodGet, textURL, nil))
+	require.Equal(t, http.StatusOK, textRecorder.Code)
+	require.Equal(t, textContent, textRecorder.Body.Bytes())
+
+	// A migrated key-only attachment carries the legacy "s3" ID. If the
+	// registry was rebuilt with a different ID, the resolver must still fall
+	// back to the migrated singleton configuration and serve the original key.
+	textUID, err := apiv1service.ExtractAttachmentUIDFromName(textAttachment.Name)
+	require.NoError(t, err)
+	storedTextAttachment, err := stores.GetAttachment(ctx, &store.FindAttachment{UID: &textUID})
+	require.NoError(t, err)
+	require.NotNil(t, storedTextAttachment)
+	storedTextAttachment.Payload.GetS3Object().StorageId = "s3"
+	require.NoError(t, stores.UpdateAttachment(ctx, &store.UpdateAttachment{
+		ID:      storedTextAttachment.ID,
+		Payload: storedTextAttachment.Payload,
+	}))
+	legacyRecorder := httptest.NewRecorder()
+	e.ServeHTTP(legacyRecorder, httptest.NewRequest(http.MethodGet, textURL, nil))
+	require.Equal(t, http.StatusOK, legacyRecorder.Code)
+	require.Equal(t, textContent, legacyRecorder.Body.Bytes())
+
+	videoURL := fmt.Sprintf("/file/%s/%s", videoAttachment.Name, videoAttachment.Filename)
+	videoRecorder := httptest.NewRecorder()
+	e.ServeHTTP(videoRecorder, httptest.NewRequest(http.MethodGet, videoURL, nil))
+	require.Equal(t, http.StatusTemporaryRedirect, videoRecorder.Code)
+	presignedURL := videoRecorder.Header().Get(echo.HeaderLocation)
+	require.Contains(t, presignedURL, "X-Amz-Signature=")
+
+	rangeRequest, err := http.NewRequestWithContext(ctx, http.MethodGet, presignedURL, nil)
+	require.NoError(t, err)
+	rangeRequest.Header.Set("Range", "bytes=4-7")
+	rangeResponse, err := http.DefaultClient.Do(rangeRequest)
+	require.NoError(t, err)
+	defer rangeResponse.Body.Close()
+	require.Equal(t, http.StatusPartialContent, rangeResponse.StatusCode)
+	rangeContent, err := io.ReadAll(rangeResponse.Body)
+	require.NoError(t, err)
+	require.Equal(t, []byte("4567"), rangeContent)
+}
 
 func TestServeAttachmentFile_ShareTokenAllowsDirectMemoAttachment(t *testing.T) {
 	ctx := context.Background()

@@ -11,6 +11,7 @@ import (
 	colorpb "google.golang.org/genproto/googleapis/type/color"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"github.com/usememos/memos/internal/testutil/minio"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -112,6 +113,329 @@ func TestMigrationMultipleReRuns(t *testing.T) {
 	finalVersion, err := ts.GetCurrentSchemaVersion()
 	require.NoError(t, err)
 	require.Equal(t, initialVersion, finalVersion, "version should remain unchanged after multiple re-runs")
+}
+
+// TestMigrationStorageSetting verifies that the legacy singleton storage
+// configuration is expanded into a named storage without removing fields used
+// by older clients and rollback versions.
+func TestMigrationStorageSetting(t *testing.T) {
+	ctx := context.Background()
+	driver := getDriverFromEnv()
+
+	legacyDatabase, err := protojson.Marshal(&storepb.InstanceStorageSetting{
+		StorageType: storepb.InstanceStorageSetting_DATABASE,
+	})
+	require.NoError(t, err)
+	legacyLocal, err := protojson.Marshal(&storepb.InstanceStorageSetting{
+		StorageType:      storepb.InstanceStorageSetting_LOCAL,
+		FilepathTemplate: "assets/{filename}",
+	})
+	require.NoError(t, err)
+	legacyS3, err := protojson.Marshal(&storepb.InstanceStorageSetting{
+		StorageType: storepb.InstanceStorageSetting_S3,
+		S3Config: &storepb.StorageS3Config{
+			AccessKeyId:     "access-key",
+			AccessKeySecret: "secret",
+			Endpoint:        "https://s3.example.com",
+			Region:          "us-east-1",
+			Bucket:          "memos",
+		},
+	})
+	require.NoError(t, err)
+	alreadyNamed, err := protojson.Marshal(&storepb.InstanceStorageSetting{
+		StorageType:      storepb.InstanceStorageSetting_S3,
+		DefaultStorageId: "custom-s3",
+		S3Config: &storepb.StorageS3Config{
+			AccessKeyId:     "access-key",
+			AccessKeySecret: "secret",
+			Endpoint:        "https://s3.example.com",
+			Region:          "us-east-1",
+			Bucket:          "memos",
+		},
+		Storages: []*storepb.Storage{
+			{
+				Id:   "custom-s3",
+				Name: "Primary",
+				Type: storepb.StorageType_STORAGE_TYPE_S3,
+				Config: &storepb.Storage_S3Config{S3Config: &storepb.StorageS3Config{
+					AccessKeyId:     "access-key",
+					AccessKeySecret: "secret",
+					Endpoint:        "https://s3.example.com",
+					Region:          "us-east-1",
+					Bucket:          "memos",
+				}},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	tests := []struct {
+		name             string
+		value            string
+		wantStorageID    string
+		wantStorageType  storepb.StorageType
+		wantLegacyType   storepb.InstanceStorageSetting_StorageType
+		wantName         string
+		wantRawUnchanged bool
+	}{
+		{
+			name:            "database",
+			value:           string(legacyDatabase),
+			wantStorageID:   "database",
+			wantStorageType: storepb.StorageType_STORAGE_TYPE_DATABASE,
+			wantLegacyType:  storepb.InstanceStorageSetting_DATABASE,
+			wantName:        "Database",
+		},
+		{
+			name:            "local",
+			value:           string(legacyLocal),
+			wantStorageID:   "local",
+			wantStorageType: storepb.StorageType_STORAGE_TYPE_LOCAL,
+			wantLegacyType:  storepb.InstanceStorageSetting_LOCAL,
+			wantName:        "Local",
+		},
+		{
+			name:            "s3",
+			value:           string(legacyS3),
+			wantStorageID:   "s3",
+			wantStorageType: storepb.StorageType_STORAGE_TYPE_S3,
+			wantLegacyType:  storepb.InstanceStorageSetting_S3,
+			wantName:        "S3",
+		},
+		{
+			name:            "already named",
+			value:           string(alreadyNamed),
+			wantStorageID:   "custom-s3",
+			wantStorageType: storepb.StorageType_STORAGE_TYPE_S3,
+			wantLegacyType:  storepb.InstanceStorageSetting_S3,
+			wantName:        "Primary",
+		},
+		{
+			name:             "invalid JSON",
+			value:            `{oops}`,
+			wantRawUnchanged: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			dsn := getTestingProfileForDriver(t, driver).DSN
+			db, err := sql.Open(driver, dsn)
+			require.NoError(t, err)
+			_, err = db.ExecContext(ctx, legacySchemaFixture(driver))
+			require.NoError(t, err)
+
+			basicSettingBytes, err := protojson.Marshal(&storepb.InstanceBasicSetting{SchemaVersion: "0.31.1"})
+			require.NoError(t, err)
+			insertSetting := "INSERT INTO system_setting (name, value, description) VALUES (?, ?, '')"
+			if driver == "postgres" {
+				insertSetting = "INSERT INTO system_setting (name, value, description) VALUES ($1, $2, '')"
+			}
+			_, err = db.ExecContext(ctx, insertSetting, "BASIC", string(basicSettingBytes))
+			require.NoError(t, err)
+			_, err = db.ExecContext(ctx, insertSetting, "STORAGE", test.value)
+			require.NoError(t, err)
+			if test.name == "s3" {
+				insertStorageMigrationAttachments(ctx, t, db, driver)
+			}
+			require.NoError(t, db.Close())
+
+			ts := NewTestingStoreWithDSN(ctx, t, driver, dsn)
+			require.NoError(t, ts.Migrate(ctx))
+			defer ts.Close()
+			if test.wantRawUnchanged {
+				query := "SELECT value FROM system_setting WHERE name = ?"
+				if driver == "postgres" {
+					query = "SELECT value FROM system_setting WHERE name = $1"
+				}
+				var raw string
+				require.NoError(t, ts.GetDriver().GetDB().QueryRowContext(ctx, query, "STORAGE").Scan(&raw))
+				require.Equal(t, test.value, raw)
+				return
+			}
+
+			stored, err := ts.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_STORAGE.String()})
+			require.NoError(t, err)
+			require.NotNil(t, stored)
+			setting := stored.GetStorageSetting()
+			require.Equal(t, test.wantLegacyType, setting.GetStorageType(), "legacy storage type must be preserved")
+			require.Equal(t, test.wantStorageID, setting.GetDefaultStorageId())
+			require.Len(t, setting.GetStorages(), 1)
+			require.Equal(t, test.wantStorageID, setting.GetStorages()[0].GetId())
+			require.Equal(t, test.wantName, setting.GetStorages()[0].GetName())
+			require.Equal(t, test.wantStorageType, setting.GetStorages()[0].GetType())
+			if test.wantStorageType == storepb.StorageType_STORAGE_TYPE_S3 {
+				require.Equal(t, "secret", setting.GetS3Config().GetAccessKeySecret(), "legacy S3 config must be preserved")
+				require.Equal(t, "secret", setting.GetStorages()[0].GetS3Config().GetAccessKeySecret())
+			}
+			if test.name == "s3" {
+				assertStorageMigrationAttachments(ctx, t, ts)
+			}
+		})
+	}
+}
+
+func insertStorageMigrationAttachments(ctx context.Context, t *testing.T, db *sql.DB, driver string) {
+	t.Helper()
+	legacyPayload, err := protojson.Marshal(&storepb.AttachmentPayload{
+		Payload: &storepb.AttachmentPayload_S3Object_{
+			S3Object: &storepb.AttachmentPayload_S3Object{Key: "legacy/no-config.txt"},
+		},
+	})
+	require.NoError(t, err)
+	embeddedPayload, err := protojson.Marshal(&storepb.AttachmentPayload{
+		Payload: &storepb.AttachmentPayload_S3Object_{
+			S3Object: &storepb.AttachmentPayload_S3Object{
+				Key: "legacy/embedded-config.txt",
+				S3Config: &storepb.StorageS3Config{
+					Endpoint: "https://old-s3.example.com",
+					Region:   "us-east-1",
+					Bucket:   "old-bucket",
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+	namedPayload, err := protojson.Marshal(&storepb.AttachmentPayload{
+		Payload: &storepb.AttachmentPayload_S3Object_{
+			S3Object: &storepb.AttachmentPayload_S3Object{Key: "named/object.txt", StorageId: "existing-s3"},
+		},
+	})
+	require.NoError(t, err)
+
+	insertAttachment := "INSERT INTO attachment (uid, creator_id, filename, type, size, storage_type, reference, payload) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+	if driver == "postgres" {
+		insertAttachment = "INSERT INTO attachment (uid, creator_id, filename, type, size, storage_type, reference, payload) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)"
+	}
+	for _, attachment := range []struct {
+		uid     string
+		payload []byte
+	}{
+		{uid: "legacy-s3-no-config", payload: legacyPayload},
+		{uid: "legacy-s3-embedded-config", payload: embeddedPayload},
+		{uid: "legacy-s3-existing-id", payload: namedPayload},
+	} {
+		_, err := db.ExecContext(ctx, insertAttachment, attachment.uid, 1, attachment.uid+".txt", "text/plain", 1, "S3", "", string(attachment.payload))
+		require.NoError(t, err)
+	}
+}
+
+func assertStorageMigrationAttachments(ctx context.Context, t *testing.T, ts *store.Store) {
+	t.Helper()
+	find := func(uid string) *storepb.AttachmentPayload_S3Object {
+		query := "SELECT payload FROM attachment WHERE uid = ?"
+		if getDriverFromEnv() == "postgres" {
+			query = "SELECT payload FROM attachment WHERE uid = $1"
+		}
+		var rawPayload []byte
+		err := ts.GetDriver().GetDB().QueryRowContext(ctx, query, uid).Scan(&rawPayload)
+		require.NoError(t, err)
+		payload := &storepb.AttachmentPayload{}
+		require.NoError(t, protojson.Unmarshal(rawPayload, payload))
+		require.NotNil(t, payload.GetS3Object())
+		return payload.GetS3Object()
+	}
+
+	legacy := find("legacy-s3-no-config")
+	require.Equal(t, "s3", legacy.GetStorageId())
+	require.Nil(t, legacy.GetS3Config())
+
+	embedded := find("legacy-s3-embedded-config")
+	require.Empty(t, embedded.GetStorageId(), "embedded namespace must not be rebound to the current storage")
+	require.Equal(t, "old-bucket", embedded.GetS3Config().GetBucket())
+
+	named := find("legacy-s3-existing-id")
+	require.Equal(t, "existing-s3", named.GetStorageId())
+}
+
+// TestMigrationLegacyS3AttachmentMinIO verifies the storage upgrade path for an
+// attachment created before storage IDs existed. The migration must bind the
+// payload to the migrated registry entry, after which the production resolver
+// and driver must read and delete it using the real S3 protocol.
+func TestMigrationLegacyS3AttachmentMinIO(t *testing.T) {
+	ctx := context.Background()
+	driver := getDriverFromEnv()
+	server := minio.New(t, "legacy-attachments")
+	config := server.Config("legacy-attachments")
+	content := []byte("attachment uploaded before named storage migration")
+	const objectKey = "legacy/no-storage-id.txt"
+	require.NoError(t, server.PutObject(config.Bucket, objectKey, "text/plain", content))
+
+	storageSetting, err := protojson.Marshal(&storepb.InstanceStorageSetting{
+		StorageType: storepb.InstanceStorageSetting_S3,
+		S3Config:    config,
+	})
+	require.NoError(t, err)
+	attachmentPayload, err := protojson.Marshal(&storepb.AttachmentPayload{
+		Payload: &storepb.AttachmentPayload_S3Object_{
+			S3Object: &storepb.AttachmentPayload_S3Object{Key: objectKey},
+		},
+	})
+	require.NoError(t, err)
+
+	dsn := getTestingProfileForDriver(t, driver).DSN
+	db, err := sql.Open(driver, dsn)
+	require.NoError(t, err)
+	_, err = db.ExecContext(ctx, legacySchemaFixture(driver))
+	require.NoError(t, err)
+
+	basicSetting, err := protojson.Marshal(&storepb.InstanceBasicSetting{SchemaVersion: "0.31.1"})
+	require.NoError(t, err)
+	insertSetting := "INSERT INTO system_setting (name, value, description) VALUES (?, ?, '')"
+	insertAttachment := "INSERT INTO attachment (uid, creator_id, filename, type, size, storage_type, reference, payload) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+	if driver == "postgres" {
+		insertSetting = "INSERT INTO system_setting (name, value, description) VALUES ($1, $2, '')"
+		insertAttachment = "INSERT INTO attachment (uid, creator_id, filename, type, size, storage_type, reference, payload) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)"
+	}
+	_, err = db.ExecContext(ctx, insertSetting, "BASIC", string(basicSetting))
+	require.NoError(t, err)
+	_, err = db.ExecContext(ctx, insertSetting, "STORAGE", string(storageSetting))
+	require.NoError(t, err)
+	_, err = db.ExecContext(
+		ctx,
+		insertAttachment,
+		"legacy-s3-minio",
+		1,
+		"legacy.txt",
+		"text/plain",
+		len(content),
+		"S3",
+		"",
+		string(attachmentPayload),
+	)
+	require.NoError(t, err)
+	require.NoError(t, db.Close())
+
+	ts := NewTestingStoreWithDSN(ctx, t, driver, dsn)
+	require.NoError(t, ts.Migrate(ctx))
+	defer ts.Close()
+
+	query := "SELECT payload FROM attachment WHERE uid = ?"
+	if driver == "postgres" {
+		query = "SELECT payload FROM attachment WHERE uid = $1"
+	}
+	var rawPayload []byte
+	err = ts.GetDriver().GetDB().QueryRowContext(ctx, query, "legacy-s3-minio").Scan(&rawPayload)
+	require.NoError(t, err)
+	migratedPayload := &storepb.AttachmentPayload{}
+	require.NoError(t, protojson.Unmarshal(rawPayload, migratedPayload))
+	s3Object := migratedPayload.GetS3Object()
+	require.NotNil(t, s3Object)
+	require.Equal(t, "s3", s3Object.GetStorageId())
+	require.Nil(t, s3Object.GetS3Config())
+
+	storedSetting, err := ts.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_STORAGE.String()})
+	require.NoError(t, err)
+	require.NotNil(t, storedSetting)
+	storageDriver, err := store.ResolveStorageDriver(ctx, storedSetting.GetStorageSetting(), s3Object.StorageId, s3Object.S3Config)
+	require.NoError(t, err)
+	downloaded, err := storageDriver.GetObject(ctx, s3Object.Key)
+	require.NoError(t, err)
+	require.Equal(t, content, downloaded)
+
+	require.NoError(t, storageDriver.DeleteObject(ctx, s3Object.Key))
+	_, err = server.GetObject(config.Bucket, objectKey)
+	require.Error(t, err, "deleting the migrated attachment must remove its MinIO object")
 }
 
 // TestMigrationMemoViewSetting verifies the 0.31 rename of the SHORTCUTS user setting
@@ -254,6 +578,11 @@ func TestMigrationCopiesInstanceTagsToUserSettings(t *testing.T) {
 		);
 		CREATE TABLE memo (
 			id INTEGER PRIMARY KEY AUTOINCREMENT
+		);
+		CREATE TABLE attachment (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			storage_type TEXT NOT NULL DEFAULT '',
+			payload TEXT NOT NULL DEFAULT '{}'
 		);
 	`)
 	require.NoError(t, err)
@@ -401,6 +730,20 @@ func legacySchemaFixture(driver string) string {
 				UNIQUE(user_id, ` + "`key`" + `)
 			);
 			CREATE TABLE memo (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY);
+			CREATE TABLE attachment (
+				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				uid VARCHAR(256) NOT NULL UNIQUE,
+				creator_id INT NOT NULL,
+				created_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				updated_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				filename TEXT NOT NULL,
+				type VARCHAR(256) NOT NULL DEFAULT '',
+				size INT NOT NULL DEFAULT 0,
+				memo_id INT DEFAULT NULL,
+				storage_type VARCHAR(256) NOT NULL DEFAULT '',
+				reference TEXT NOT NULL,
+				payload TEXT NOT NULL
+			);
 		`
 	case "postgres":
 		return `
@@ -429,6 +772,21 @@ func legacySchemaFixture(driver string) string {
 				UNIQUE(user_id, key)
 			);
 			CREATE TABLE memo (id SERIAL PRIMARY KEY);
+			CREATE TABLE attachment (
+				id SERIAL PRIMARY KEY,
+				uid TEXT NOT NULL UNIQUE,
+				creator_id INTEGER NOT NULL,
+				created_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+				updated_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+				filename TEXT NOT NULL,
+				blob BYTEA,
+				type TEXT NOT NULL DEFAULT '',
+				size INTEGER NOT NULL DEFAULT 0,
+				memo_id INTEGER DEFAULT NULL,
+				storage_type TEXT NOT NULL DEFAULT '',
+				reference TEXT NOT NULL DEFAULT '',
+				payload TEXT NOT NULL DEFAULT '{}'
+			);
 		`
 	case "sqlite":
 		return `
@@ -458,6 +816,21 @@ func legacySchemaFixture(driver string) string {
 				UNIQUE(user_id, key)
 			);
 			CREATE TABLE memo (id INTEGER PRIMARY KEY AUTOINCREMENT);
+			CREATE TABLE attachment (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				uid TEXT NOT NULL UNIQUE,
+				creator_id INTEGER NOT NULL,
+				created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+				updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+				filename TEXT NOT NULL DEFAULT '',
+				blob BLOB DEFAULT NULL,
+				type TEXT NOT NULL DEFAULT '',
+				size INTEGER NOT NULL DEFAULT 0,
+				memo_id INTEGER,
+				storage_type TEXT NOT NULL DEFAULT '',
+				reference TEXT NOT NULL DEFAULT '',
+				payload TEXT NOT NULL DEFAULT '{}'
+			);
 		`
 	default:
 		return ""

@@ -17,12 +17,14 @@ import (
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
-type Client struct {
+// Driver stores attachment objects in an S3-compatible object store.
+type Driver struct {
 	Client *s3.Client
 	Bucket *string
 }
 
-func NewClient(ctx context.Context, s3Config *storepb.StorageS3Config) (*Client, error) {
+// NewDriver creates an S3 storage driver from the supplied configuration.
+func NewDriver(ctx context.Context, s3Config *storepb.StorageS3Config) (*Driver, error) {
 	loadOptions := []func(*config.LoadOptions) error{
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(s3Config.AccessKeyId, s3Config.AccessKeySecret, "")),
 		config.WithRegion(s3Config.Region),
@@ -47,14 +49,14 @@ func NewClient(ctx context.Context, s3Config *storepb.StorageS3Config) (*Client,
 		o.RequestChecksumCalculation = aws.RequestChecksumCalculationWhenRequired
 		o.ResponseChecksumValidation = aws.ResponseChecksumValidationWhenRequired
 	})
-	return &Client{
+	return &Driver{
 		Client: client,
 		Bucket: aws.String(s3Config.Bucket),
 	}, nil
 }
 
 // UploadObject uploads an object to S3.
-func (c *Client) UploadObject(ctx context.Context, key string, fileType string, content io.Reader) (string, error) {
+func (c *Driver) UploadObject(ctx context.Context, key string, fileType string, content io.Reader) (string, error) {
 	putInput := s3.PutObjectInput{
 		Bucket:      c.Bucket,
 		Key:         aws.String(key),
@@ -62,13 +64,13 @@ func (c *Client) UploadObject(ctx context.Context, key string, fileType string, 
 		Body:        content,
 	}
 	if _, err := c.Client.PutObject(ctx, &putInput); err != nil {
-		return "", err
+		return "", errors.Wrap(err, "failed to upload object")
 	}
 	return key, nil
 }
 
 // PresignGetObject presigns an object in S3.
-func (c *Client) PresignGetObject(ctx context.Context, key string) (string, error) {
+func (c *Driver) PresignGetObject(ctx context.Context, key string) (string, error) {
 	presignClient := s3.NewPresignClient(c.Client)
 	presignResult, err := presignClient.PresignGetObject(ctx, &s3.GetObjectInput{
 		Bucket: aws.String(*c.Bucket),
@@ -85,7 +87,7 @@ func (c *Client) PresignGetObject(ctx context.Context, key string) (string, erro
 }
 
 // GetObject retrieves an object from S3.
-func (c *Client) GetObject(ctx context.Context, key string) ([]byte, error) {
+func (c *Driver) GetObject(ctx context.Context, key string) ([]byte, error) {
 	output, err := c.Client.GetObject(ctx, &s3.GetObjectInput{
 		Bucket: c.Bucket,
 		Key:    aws.String(key),
@@ -102,7 +104,7 @@ func (c *Client) GetObject(ctx context.Context, key string) ([]byte, error) {
 }
 
 // GetObjectStream retrieves an object from S3 as a stream.
-func (c *Client) GetObjectStream(ctx context.Context, key string) (io.ReadCloser, error) {
+func (c *Driver) GetObjectStream(ctx context.Context, key string) (io.ReadCloser, error) {
 	output, err := c.Client.GetObject(ctx, &s3.GetObjectInput{
 		Bucket: c.Bucket,
 		Key:    aws.String(key),
@@ -114,7 +116,7 @@ func (c *Client) GetObjectStream(ctx context.Context, key string) (io.ReadCloser
 }
 
 // DeleteObject deletes an object in S3.
-func (c *Client) DeleteObject(ctx context.Context, key string) error {
+func (c *Driver) DeleteObject(ctx context.Context, key string) error {
 	_, err := c.Client.DeleteObject(ctx, &s3.DeleteObjectInput{
 		Bucket: c.Bucket,
 		Key:    aws.String(key),

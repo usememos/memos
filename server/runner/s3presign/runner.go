@@ -8,7 +8,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/internal/storage/s3"
+	"github.com/usememos/memos/internal/storage"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -51,6 +51,9 @@ func (r *Runner) CheckAndPresign(ctx context.Context) {
 	}
 
 	s3StorageType := storepb.AttachmentStorageType_S3
+	// Most attachments reference the same configured storage, so reuse drivers
+	// instead of building an S3 client per attachment.
+	driversByStorageID := map[string]storage.Driver{}
 	// Limit attachments to a reasonable batch size
 	const batchSize = 100
 	offset := 0
@@ -90,28 +93,35 @@ func (r *Runner) CheckAndPresign(ctx context.Context) {
 				}
 			}
 
-			s3Config := instanceStorageSetting.GetS3Config()
-			if s3ObjectPayload.S3Config != nil {
-				s3Config = s3ObjectPayload.S3Config
-			}
-			if s3Config == nil {
-				slog.Error("S3 config is not found")
-				continue
-			}
-
-			s3Client, err := s3.NewClient(ctx, s3Config)
+			resolvedStorage, err := store.ResolveStorage(instanceStorageSetting, s3ObjectPayload.StorageId, s3ObjectPayload.S3Config)
 			if err != nil {
-				slog.Error("Failed to create S3 client", "error", err)
+				slog.Error("Failed to resolve storage", "error", err, "attachmentID", attachment.ID, "storageID", s3ObjectPayload.StorageId)
 				continue
 			}
+			driver := driversByStorageID[resolvedStorage.Id]
+			if driver == nil {
+				driver, err = storage.NewDriver(ctx, resolvedStorage)
+				if err != nil {
+					slog.Error("Failed to create storage driver", "error", err, "attachmentID", attachment.ID, "storageID", resolvedStorage.Id)
+					continue
+				}
+				if resolvedStorage.Id != "" {
+					driversByStorageID[resolvedStorage.Id] = driver
+				}
+			}
 
-			presignURL, err := s3Client.PresignGetObject(ctx, s3ObjectPayload.Key)
+			presignURL, err := driver.PresignGetObject(ctx, s3ObjectPayload.Key)
 			if err != nil {
 				slog.Error("Failed to presign URL", "error", err, "attachmentID", attachment.ID)
 				continue
 			}
 
-			s3ObjectPayload.S3Config = s3Config
+			// Pin attachments that predate storage IDs to the registry entry that
+			// served this presign, so a later default-storage change cannot rebind
+			// them to a different namespace.
+			if s3ObjectPayload.StorageId == "" && resolvedStorage.Id != "" {
+				s3ObjectPayload.StorageId = resolvedStorage.Id
+			}
 			s3ObjectPayload.LastPresignedTime = timestamppb.New(time.Now())
 			if err := r.Store.UpdateAttachment(ctx, &store.UpdateAttachment{
 				ID:        attachment.ID,

@@ -47,6 +47,7 @@ func TestAttachmentNeedsInstanceStorageSetting(t *testing.T) {
 					},
 				},
 			},
+			want: true,
 		},
 		{
 			name: "s3 attachment without embedded config",
@@ -55,6 +56,18 @@ func TestAttachmentNeedsInstanceStorageSetting(t *testing.T) {
 				Payload: &storepb.AttachmentPayload{
 					Payload: &storepb.AttachmentPayload_S3Object_{
 						S3Object: &storepb.AttachmentPayload_S3Object{},
+					},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "s3 attachment with storage ID",
+			attachment: &store.Attachment{
+				StorageType: storepb.AttachmentStorageType_S3,
+				Payload: &storepb.AttachmentPayload{
+					Payload: &storepb.AttachmentPayload_S3Object_{
+						S3Object: &storepb.AttachmentPayload_S3Object{StorageId: "s3-primary"},
 					},
 				},
 			},
@@ -84,7 +97,7 @@ func TestAttachmentStore(t *testing.T) {
 		Size:      637607,
 		Payload: &storepb.AttachmentPayload{
 			Payload: &storepb.AttachmentPayload_S3Object_{
-				S3Object: &storepb.AttachmentPayload_S3Object{Key: "attachments/test.jpg"},
+				S3Object: &storepb.AttachmentPayload_S3Object{Key: "attachments/test.jpg", StorageId: "s3-primary"},
 			},
 			MotionMedia: &storepb.MotionMedia{
 				Family:  storepb.MotionMediaFamily_APPLE_LIVE_PHOTO,
@@ -115,6 +128,7 @@ func TestAttachmentStore(t *testing.T) {
 	require.Equal(t, "Test Camera", attachment.Payload.GetMediaMetadata().GetPhoto().GetCameraMake())
 	require.Equal(t, int32(6), attachment.Payload.GetMediaMetadata().GetPhoto().GetSourceExifOrientation())
 	require.Equal(t, "attachments/test.jpg", attachment.Payload.GetS3Object().GetKey())
+	require.Equal(t, "s3-primary", attachment.Payload.GetS3Object().GetStorageId())
 	require.Equal(t, "live-photo-pair", attachment.Payload.GetMotionMedia().GetGroupId())
 
 	notFoundAttachment, err := ts.GetAttachment(ctx, &store.FindAttachment{

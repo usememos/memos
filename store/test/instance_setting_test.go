@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -219,6 +220,51 @@ func TestInstanceSettingStorageSetting(t *testing.T) {
 	require.Equal(t, "uploads/{date}/{filename}", storageSetting.FilepathTemplate)
 
 	ts.Close()
+}
+
+func TestInstanceStorageSettingCacheIsolation(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	_, err := ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_STORAGE,
+		Value: &storepb.InstanceSetting_StorageSetting{
+			StorageSetting: &storepb.InstanceStorageSetting{StorageType: storepb.InstanceStorageSetting_LOCAL},
+		},
+	})
+	require.NoError(t, err)
+
+	first, err := ts.GetInstanceStorageSetting(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, first.Storages)
+	first.Storages[0].Name = "caller mutation"
+
+	second, err := ts.GetInstanceStorageSetting(ctx)
+	require.NoError(t, err)
+	require.Equal(t, "Local", second.Storages[0].Name)
+
+	start := make(chan struct{})
+	errCh := make(chan error, 16)
+	var wg sync.WaitGroup
+	for range 16 {
+		wg.Go(func() {
+			<-start
+			for range 50 {
+				if _, err := ts.GetInstanceStorageSetting(ctx); err != nil {
+					errCh <- err
+					return
+				}
+			}
+		})
+	}
+	close(start)
+	wg.Wait()
+	close(errCh)
+	for err := range errCh {
+		require.NoError(t, err)
+	}
 }
 
 func TestInstanceSettingTagsSetting(t *testing.T) {

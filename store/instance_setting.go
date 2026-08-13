@@ -7,6 +7,7 @@ import (
 
 	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
@@ -36,6 +37,7 @@ func (s *Store) UpsertInstanceSetting(ctx context.Context, upsert *storepb.Insta
 	} else if upsert.Key == storepb.InstanceSettingKey_GENERAL {
 		valueBytes, err = protojson.Marshal(upsert.GetGeneralSetting())
 	} else if upsert.Key == storepb.InstanceSettingKey_STORAGE {
+		NormalizeInstanceStorageSetting(upsert.GetStorageSetting())
 		valueBytes, err = protojson.Marshal(upsert.GetStorageSetting())
 	} else if upsert.Key == storepb.InstanceSettingKey_MEMO_RELATED {
 		valueBytes, err = protojson.Marshal(upsert.GetMemoRelatedSetting())
@@ -317,10 +319,12 @@ func (s *Store) GetInstanceStorageSetting(ctx context.Context) (*storepb.Instanc
 		return nil, errors.Wrap(err, "failed to get instance storage setting")
 	}
 
+	stored := instanceSetting.GetStorageSetting()
 	instanceStorageSetting := &storepb.InstanceStorageSetting{}
-	if instanceSetting != nil {
-		instanceStorageSetting = instanceSetting.GetStorageSetting()
+	if stored != nil {
+		instanceStorageSetting = proto.CloneOf(stored)
 	}
+	NormalizeInstanceStorageSetting(instanceStorageSetting)
 	if instanceStorageSetting.StorageType == storepb.InstanceStorageSetting_STORAGE_TYPE_UNSPECIFIED {
 		instanceStorageSetting.StorageType = defaultInstanceStorageType
 	}
@@ -330,10 +334,16 @@ func (s *Store) GetInstanceStorageSetting(ctx context.Context) (*storepb.Instanc
 	if instanceStorageSetting.FilepathTemplate == "" {
 		instanceStorageSetting.FilepathTemplate = defaultInstanceFilepathTemplate
 	}
-	s.cacheInstanceSetting(ctx, &storepb.InstanceSetting{
-		Key:   storepb.InstanceSettingKey_STORAGE,
-		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: instanceStorageSetting},
-	})
+	// Only write back when normalization changed the cached value; on the common
+	// path the cache already holds the normalized setting.
+	if !proto.Equal(stored, instanceStorageSetting) {
+		s.cacheInstanceSetting(ctx, &storepb.InstanceSetting{
+			Key: storepb.InstanceSettingKey_STORAGE,
+			Value: &storepb.InstanceSetting_StorageSetting{
+				StorageSetting: proto.CloneOf(instanceStorageSetting),
+			},
+		})
+	}
 	return instanceStorageSetting, nil
 }
 
