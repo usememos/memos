@@ -6,17 +6,12 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
-	"time"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	awss3 "github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/stretchr/testify/require"
-	"github.com/testcontainers/testcontainers-go"
-	tcminio "github.com/testcontainers/testcontainers-go/modules/minio"
 
 	"github.com/usememos/memos/internal/testutil/fakes3"
+	testminio "github.com/usememos/memos/internal/testutil/minio"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
@@ -68,38 +63,10 @@ func TestDriverObjectLifecycle(t *testing.T) {
 }
 
 func TestDriverMinIOCompatibility(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping MinIO compatibility test in short mode")
-	}
-	if os.Getenv("SKIP_CONTAINER_TESTS") == "1" {
-		t.Skip("skipping MinIO compatibility test (SKIP_CONTAINER_TESTS=1)")
-	}
-	testcontainers.SkipIfProviderIsNotHealthy(t)
-
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
-	defer cancel()
-	container, err := tcminio.Run(
-		ctx,
-		"minio/minio:RELEASE.2024-01-16T16-07-38Z",
-		tcminio.WithUsername("memos-test-access"),
-		tcminio.WithPassword("memos-test-secret"),
-	)
-	testcontainers.CleanupContainer(t, container)
-	require.NoError(t, err)
-
-	connection, err := container.ConnectionString(ctx)
-	require.NoError(t, err)
-	config := &storepb.StorageS3Config{
-		AccessKeyId:     container.Username,
-		AccessKeySecret: container.Password,
-		Endpoint:        "http://" + connection,
-		Region:          "us-east-1",
-		Bucket:          "attachments",
-		UsePathStyle:    true,
-	}
+	ctx := context.Background()
+	server := testminio.New(t, "attachments")
+	config := server.Config("attachments")
 	driver, err := NewDriver(ctx, config)
-	require.NoError(t, err)
-	_, err = driver.Client.CreateBucket(ctx, &awss3.CreateBucketInput{Bucket: aws.String(config.Bucket)})
 	require.NoError(t, err)
 
 	assertObjectLifecycle(ctx, t, driver, "compatibility/test.txt", []byte("attachment stored in MinIO"))

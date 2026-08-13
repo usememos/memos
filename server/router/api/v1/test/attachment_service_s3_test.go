@@ -9,6 +9,7 @@ import (
 
 	"github.com/usememos/memos/internal/storage/s3"
 	"github.com/usememos/memos/internal/testutil/fakes3"
+	testminio "github.com/usememos/memos/internal/testutil/minio"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
@@ -16,8 +17,23 @@ import (
 )
 
 func TestS3AttachmentLifecycleAcrossStorageChange(t *testing.T) {
-	ctx := context.Background()
 	fake := fakes3.New(t, "attachments-old", "attachments-new")
+	runS3AttachmentLifecycleAcrossStorageChange(t, fake)
+}
+
+func TestS3AttachmentLifecycleAcrossStorageChangeMinIO(t *testing.T) {
+	server := testminio.New(t, "attachments-old", "attachments-new")
+	runS3AttachmentLifecycleAcrossStorageChange(t, server)
+}
+
+type s3ObjectStore interface {
+	Config(bucket string) *storepb.StorageS3Config
+	GetObject(bucket, key string) ([]byte, error)
+}
+
+func runS3AttachmentLifecycleAcrossStorageChange(t *testing.T, objectStore s3ObjectStore) {
+	t.Helper()
+	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
 
@@ -25,7 +41,7 @@ func TestS3AttachmentLifecycleAcrossStorageChange(t *testing.T) {
 	require.NoError(t, err)
 	userCtx := ts.CreateUserContext(ctx, user.ID)
 
-	oldStorage := fakeStorage("s3-old", "Old S3", fake.Config("attachments-old"))
+	oldStorage := fakeStorage("s3-old", "Old S3", objectStore.Config("attachments-old"))
 	upsertS3StorageSetting(ctx, t, ts, oldStorage.Id, oldStorage)
 
 	firstContent := []byte("first attachment in old storage")
@@ -50,7 +66,7 @@ func TestS3AttachmentLifecycleAcrossStorageChange(t *testing.T) {
 	require.Nil(t, storedFirst.Payload.GetS3Object().GetS3Config(), "new attachments must not embed S3 credentials")
 
 	oldKey := storedFirst.Payload.GetS3Object().GetKey()
-	storedInOldBucket, err := fake.GetObject("attachments-old", oldKey)
+	storedInOldBucket, err := objectStore.GetObject("attachments-old", oldKey)
 	require.NoError(t, err)
 	require.Equal(t, firstContent, storedInOldBucket)
 	firstDownloaded, err := ts.Service.GetAttachmentBlob(ctx, storedFirst)
@@ -61,7 +77,7 @@ func TestS3AttachmentLifecycleAcrossStorageChange(t *testing.T) {
 	require.Equal(t, first.Name, firstMetadata.Name)
 	require.Empty(t, firstMetadata.ExternalLink)
 
-	newStorage := fakeStorage("s3-new", "New S3", fake.Config("attachments-new"))
+	newStorage := fakeStorage("s3-new", "New S3", objectStore.Config("attachments-new"))
 	upsertS3StorageSetting(ctx, t, ts, newStorage.Id, oldStorage, newStorage)
 
 	secondContent := []byte("second attachment in new storage")
@@ -79,7 +95,7 @@ func TestS3AttachmentLifecycleAcrossStorageChange(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, newStorage.Id, storedSecond.Payload.GetS3Object().GetStorageId())
 	newKey := storedSecond.Payload.GetS3Object().GetKey()
-	storedInNewBucket, err := fake.GetObject("attachments-new", newKey)
+	storedInNewBucket, err := objectStore.GetObject("attachments-new", newKey)
 	require.NoError(t, err)
 	require.Equal(t, secondContent, storedInNewBucket)
 
@@ -94,9 +110,9 @@ func TestS3AttachmentLifecycleAcrossStorageChange(t *testing.T) {
 
 	_, err = ts.Service.DeleteAttachment(userCtx, &v1pb.DeleteAttachmentRequest{Name: first.Name})
 	require.NoError(t, err)
-	_, err = fake.GetObject("attachments-old", oldKey)
+	_, err = objectStore.GetObject("attachments-old", oldKey)
 	require.Error(t, err, "deleting an attachment must delete its S3 object")
-	remaining, err := fake.GetObject("attachments-new", newKey)
+	remaining, err := objectStore.GetObject("attachments-new", newKey)
 	require.NoError(t, err)
 	require.Equal(t, secondContent, remaining)
 }

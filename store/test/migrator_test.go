@@ -11,6 +11,7 @@ import (
 	colorpb "google.golang.org/genproto/googleapis/type/color"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"github.com/usememos/memos/internal/testutil/minio"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -345,6 +346,96 @@ func assertStorageMigrationAttachments(ctx context.Context, t *testing.T, ts *st
 
 	named := find("legacy-s3-existing-id")
 	require.Equal(t, "existing-s3", named.GetStorageId())
+}
+
+// TestMigrationLegacyS3AttachmentMinIO verifies the storage upgrade path for an
+// attachment created before storage IDs existed. The migration must bind the
+// payload to the migrated registry entry, after which the production resolver
+// and driver must read and delete it using the real S3 protocol.
+func TestMigrationLegacyS3AttachmentMinIO(t *testing.T) {
+	ctx := context.Background()
+	driver := getDriverFromEnv()
+	server := minio.New(t, "legacy-attachments")
+	config := server.Config("legacy-attachments")
+	content := []byte("attachment uploaded before named storage migration")
+	const objectKey = "legacy/no-storage-id.txt"
+	require.NoError(t, server.PutObject(config.Bucket, objectKey, "text/plain", content))
+
+	storageSetting, err := protojson.Marshal(&storepb.InstanceStorageSetting{
+		StorageType: storepb.InstanceStorageSetting_S3,
+		S3Config:    config,
+	})
+	require.NoError(t, err)
+	attachmentPayload, err := protojson.Marshal(&storepb.AttachmentPayload{
+		Payload: &storepb.AttachmentPayload_S3Object_{
+			S3Object: &storepb.AttachmentPayload_S3Object{Key: objectKey},
+		},
+	})
+	require.NoError(t, err)
+
+	dsn := getTestingProfileForDriver(t, driver).DSN
+	db, err := sql.Open(driver, dsn)
+	require.NoError(t, err)
+	_, err = db.ExecContext(ctx, legacySchemaFixture(driver))
+	require.NoError(t, err)
+
+	basicSetting, err := protojson.Marshal(&storepb.InstanceBasicSetting{SchemaVersion: "0.31.1"})
+	require.NoError(t, err)
+	insertSetting := "INSERT INTO system_setting (name, value, description) VALUES (?, ?, '')"
+	insertAttachment := "INSERT INTO attachment (uid, creator_id, filename, type, size, storage_type, reference, payload) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+	if driver == "postgres" {
+		insertSetting = "INSERT INTO system_setting (name, value, description) VALUES ($1, $2, '')"
+		insertAttachment = "INSERT INTO attachment (uid, creator_id, filename, type, size, storage_type, reference, payload) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)"
+	}
+	_, err = db.ExecContext(ctx, insertSetting, "BASIC", string(basicSetting))
+	require.NoError(t, err)
+	_, err = db.ExecContext(ctx, insertSetting, "STORAGE", string(storageSetting))
+	require.NoError(t, err)
+	_, err = db.ExecContext(
+		ctx,
+		insertAttachment,
+		"legacy-s3-minio",
+		1,
+		"legacy.txt",
+		"text/plain",
+		len(content),
+		"S3",
+		"",
+		string(attachmentPayload),
+	)
+	require.NoError(t, err)
+	require.NoError(t, db.Close())
+
+	ts := NewTestingStoreWithDSN(ctx, t, driver, dsn)
+	require.NoError(t, ts.Migrate(ctx))
+	defer ts.Close()
+
+	query := "SELECT payload FROM attachment WHERE uid = ?"
+	if driver == "postgres" {
+		query = "SELECT payload FROM attachment WHERE uid = $1"
+	}
+	var rawPayload []byte
+	err = ts.GetDriver().GetDB().QueryRowContext(ctx, query, "legacy-s3-minio").Scan(&rawPayload)
+	require.NoError(t, err)
+	migratedPayload := &storepb.AttachmentPayload{}
+	require.NoError(t, protojson.Unmarshal(rawPayload, migratedPayload))
+	s3Object := migratedPayload.GetS3Object()
+	require.NotNil(t, s3Object)
+	require.Equal(t, "s3", s3Object.GetStorageId())
+	require.Nil(t, s3Object.GetS3Config())
+
+	storedSetting, err := ts.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_STORAGE.String()})
+	require.NoError(t, err)
+	require.NotNil(t, storedSetting)
+	storageDriver, err := store.ResolveStorageDriver(ctx, storedSetting.GetStorageSetting(), s3Object.StorageId, s3Object.S3Config)
+	require.NoError(t, err)
+	downloaded, err := storageDriver.GetObject(ctx, s3Object.Key)
+	require.NoError(t, err)
+	require.Equal(t, content, downloaded)
+
+	require.NoError(t, storageDriver.DeleteObject(ctx, s3Object.Key))
+	_, err = server.GetObject(config.Bucket, objectKey)
+	require.Error(t, err, "deleting the migrated attachment must remove its MinIO object")
 }
 
 // TestMigrationMemoViewSetting verifies the 0.31 rename of the SHORTCUTS user setting
