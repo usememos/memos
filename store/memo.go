@@ -102,6 +102,18 @@ type UpdateMemo struct {
 	Payload    *storepb.MemoPayload
 }
 
+// MemoContentTransform updates content-derived fields on a memo and reports
+// whether the memo should be persisted.
+type MemoContentTransform func(memo *Memo) (changed bool, err error)
+
+// TransformMemoContentsRequest describes an atomic, creator-scoped bulk memo
+// content transformation. Only content and payload changes are persisted.
+type TransformMemoContentsRequest struct {
+	CreatorID int32
+	BatchSize int
+	Transform MemoContentTransform
+}
+
 type DeleteMemo struct {
 	ID int32
 }
@@ -115,6 +127,24 @@ func (s *Store) CreateMemo(ctx context.Context, create *Memo) (*Memo, error) {
 
 func (s *Store) ListMemos(ctx context.Context, find *FindMemo) ([]*Memo, error) {
 	return s.driver.ListMemos(ctx, find)
+}
+
+// TransformMemoContents atomically transforms one creator's memos while
+// loading content in bounded batches.
+func (s *Store) TransformMemoContents(ctx context.Context, request *TransformMemoContentsRequest) ([]int32, error) {
+	if request == nil {
+		return nil, errors.New("memo content transform request is required")
+	}
+	if request.CreatorID <= 0 {
+		return nil, errors.New("memo creator is required")
+	}
+	if request.BatchSize <= 0 {
+		return nil, errors.New("memo content transform batch size must be positive")
+	}
+	if request.Transform == nil {
+		return nil, errors.New("memo content transform is required")
+	}
+	return s.driver.TransformMemoContents(ctx, request)
 }
 
 func (s *Store) GetMemo(ctx context.Context, find *FindMemo) (*Memo, error) {

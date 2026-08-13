@@ -2,8 +2,10 @@ package test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -475,4 +477,194 @@ func TestMemoWithPayload(t *testing.T) {
 	require.Equal(t, tags, found.Payload.Tags)
 
 	ts.Close()
+}
+
+func TestTransformMemoContentsIsAtomic(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	t.Run("persists all batches and scopes by creator", func(t *testing.T) {
+		user, err := createTestingHostUser(ctx, ts)
+		require.NoError(t, err)
+		otherUser, err := ts.CreateUser(ctx, &store.User{
+			Username: "transform-other-user",
+			Role:     store.RoleUser,
+		})
+		require.NoError(t, err)
+
+		first, err := ts.CreateMemo(ctx, &store.Memo{
+			UID:        "transform-first",
+			CreatorID:  user.ID,
+			Content:    "first",
+			Visibility: store.Private,
+			Payload:    &storepb.MemoPayload{Tags: []string{"old"}},
+			CreatedTs:  1,
+		})
+		require.NoError(t, err)
+		second, err := ts.CreateMemo(ctx, &store.Memo{
+			UID:        "transform-second",
+			CreatorID:  user.ID,
+			Content:    "second",
+			Visibility: store.Private,
+			Payload:    &storepb.MemoPayload{Tags: []string{"old"}},
+			CreatedTs:  2,
+		})
+		require.NoError(t, err)
+		otherMemo, err := ts.CreateMemo(ctx, &store.Memo{
+			UID:        "transform-other-memo",
+			CreatorID:  otherUser.ID,
+			Content:    "other",
+			Visibility: store.Private,
+			Payload:    &storepb.MemoPayload{Tags: []string{"old"}},
+		})
+		require.NoError(t, err)
+
+		updatedIDs, err := ts.TransformMemoContents(ctx, &store.TransformMemoContentsRequest{
+			CreatorID: user.ID,
+			BatchSize: 1,
+			Transform: func(memo *store.Memo) (bool, error) {
+				memo.Content += " updated"
+				memo.Payload.Tags = []string{"new"}
+				return true, nil
+			},
+		})
+		require.NoError(t, err)
+		require.ElementsMatch(t, []int32{first.ID, second.ID}, updatedIDs)
+
+		for _, memoID := range []int32{first.ID, second.ID} {
+			memo, err := ts.GetMemo(ctx, &store.FindMemo{ID: &memoID})
+			require.NoError(t, err)
+			require.Contains(t, memo.Content, " updated")
+			require.Equal(t, []string{"new"}, memo.Payload.Tags)
+		}
+		unchanged, err := ts.GetMemo(ctx, &store.FindMemo{ID: &otherMemo.ID})
+		require.NoError(t, err)
+		require.Equal(t, "other", unchanged.Content)
+		require.Equal(t, []string{"old"}, unchanged.Payload.Tags)
+	})
+
+	t.Run("rolls back earlier batches when a later transform fails", func(t *testing.T) {
+		user, err := ts.CreateUser(ctx, &store.User{
+			Username: "transform-rollback-user",
+			Role:     store.RoleUser,
+		})
+		require.NoError(t, err)
+
+		first, err := ts.CreateMemo(ctx, &store.Memo{
+			UID:        "rollback-first",
+			CreatorID:  user.ID,
+			Content:    "first original",
+			Visibility: store.Private,
+			CreatedTs:  1,
+		})
+		require.NoError(t, err)
+		second, err := ts.CreateMemo(ctx, &store.Memo{
+			UID:        "rollback-second",
+			CreatorID:  user.ID,
+			Content:    "second original",
+			Visibility: store.Private,
+			CreatedTs:  2,
+		})
+		require.NoError(t, err)
+
+		transformErr := errors.New("transform failed")
+		callCount := 0
+		updatedIDs, err := ts.TransformMemoContents(ctx, &store.TransformMemoContentsRequest{
+			CreatorID: user.ID,
+			BatchSize: 1,
+			Transform: func(memo *store.Memo) (bool, error) {
+				callCount++
+				if callCount == 2 {
+					return false, transformErr
+				}
+				memo.Content = "partially updated"
+				return true, nil
+			},
+		})
+		require.ErrorIs(t, err, transformErr)
+		require.Nil(t, updatedIDs)
+
+		for memoID, wantContent := range map[int32]string{
+			first.ID:  "first original",
+			second.ID: "second original",
+		} {
+			memo, err := ts.GetMemo(ctx, &store.FindMemo{ID: &memoID})
+			require.NoError(t, err)
+			require.Equal(t, wantContent, memo.Content)
+		}
+	})
+
+	t.Run("does not overwrite a concurrent edit from a stale snapshot", func(t *testing.T) {
+		user, err := ts.CreateUser(ctx, &store.User{
+			Username: "transform-concurrent-user",
+			Role:     store.RoleUser,
+		})
+		require.NoError(t, err)
+		memo, err := ts.CreateMemo(ctx, &store.Memo{
+			UID:        "transform-concurrent-memo",
+			CreatorID:  user.ID,
+			Content:    "original",
+			Visibility: store.Private,
+		})
+		require.NoError(t, err)
+
+		operationCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+		transformRead := make(chan struct{})
+		continueTransform := make(chan struct{})
+		type result struct {
+			updatedIDs []int32
+			err        error
+		}
+		transformDone := make(chan result, 1)
+		go func() {
+			updatedIDs, err := ts.TransformMemoContents(operationCtx, &store.TransformMemoContentsRequest{
+				CreatorID: user.ID,
+				BatchSize: 1,
+				Transform: func(current *store.Memo) (bool, error) {
+					close(transformRead)
+					<-continueTransform
+					current.Content = "renamed stale snapshot"
+					return true, nil
+				},
+			})
+			transformDone <- result{updatedIDs: updatedIDs, err: err}
+		}()
+
+		<-transformRead
+		concurrentContent := "concurrent edit"
+		updateDone := make(chan error, 1)
+		go func() {
+			updateDone <- ts.UpdateMemo(operationCtx, &store.UpdateMemo{ID: memo.ID, Content: &concurrentContent})
+		}()
+
+		// SQLite can let the writer commit against the transform's read snapshot,
+		// while row-locking databases block it. Both outcomes are safe: the
+		// transform must either conflict or commit before the newer edit.
+		var updateErr error
+		updateCompletedBeforeRelease := false
+		select {
+		case updateErr = <-updateDone:
+			updateCompletedBeforeRelease = true
+		case <-time.After(100 * time.Millisecond):
+		}
+		close(continueTransform)
+
+		transformResult := <-transformDone
+		if !updateCompletedBeforeRelease {
+			updateErr = <-updateDone
+		}
+		require.NoError(t, updateErr)
+		if updateCompletedBeforeRelease {
+			require.Error(t, transformResult.err, "a transform based on an older snapshot must not overwrite the committed edit")
+		} else if transformResult.err == nil {
+			require.Equal(t, []int32{memo.ID}, transformResult.updatedIDs)
+		}
+
+		stored, err := ts.GetMemo(ctx, &store.FindMemo{ID: &memo.ID})
+		require.NoError(t, err)
+		require.Equal(t, concurrentContent, stored.Content)
+	})
 }

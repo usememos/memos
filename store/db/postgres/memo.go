@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strings"
 
@@ -197,6 +198,85 @@ func (d *DB) GetMemo(ctx context.Context, find *store.FindMemo) (*store.Memo, er
 
 	memo := list[0]
 	return memo, nil
+}
+
+// TransformMemoContents atomically transforms creator-scoped memo content in
+// bounded batches. Locked reads prevent concurrent edits from being lost.
+func (d *DB) TransformMemoContents(ctx context.Context, request *store.TransformMemoContentsRequest) ([]int32, error) {
+	tx, err := d.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to begin memo content transform")
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	updatedMemoIDs := []int32{}
+	offset := 0
+	for {
+		memos, err := func() ([]*store.Memo, error) {
+			rows, err := tx.QueryContext(ctx, `
+				SELECT id, uid, creator_id, content, payload
+				FROM memo
+				WHERE creator_id = $1
+				ORDER BY created_ts DESC, id DESC
+				LIMIT $2 OFFSET $3
+				FOR UPDATE`, request.CreatorID, request.BatchSize, offset)
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to list memos for content transform")
+			}
+			defer func() {
+				_ = rows.Close()
+			}()
+
+			memos := make([]*store.Memo, 0, request.BatchSize)
+			for rows.Next() {
+				memo := &store.Memo{}
+				var payloadBytes []byte
+				if err := rows.Scan(&memo.ID, &memo.UID, &memo.CreatorID, &memo.Content, &payloadBytes); err != nil {
+					return nil, errors.Wrap(err, "failed to scan memo for content transform")
+				}
+				memo.Payload = &storepb.MemoPayload{}
+				if len(payloadBytes) > 0 {
+					if err := protojson.Unmarshal(payloadBytes, memo.Payload); err != nil {
+						return nil, errors.Wrap(err, "failed to unmarshal memo payload")
+					}
+				}
+				memos = append(memos, memo)
+			}
+			if err := rows.Err(); err != nil {
+				return nil, errors.Wrap(err, "failed to iterate memos for content transform")
+			}
+			return memos, nil
+		}()
+		if err != nil {
+			return nil, err
+		}
+
+		for _, memo := range memos {
+			changed, err := request.Transform(memo)
+			if err != nil {
+				return nil, err
+			}
+			if !changed {
+				continue
+			}
+			if err := applyMemoUpdate(ctx, tx, &store.UpdateMemo{ID: memo.ID, Content: &memo.Content, Payload: memo.Payload}); err != nil {
+				return nil, errors.Wrap(err, "failed to persist memo content transform")
+			}
+			updatedMemoIDs = append(updatedMemoIDs, memo.ID)
+		}
+
+		offset += len(memos)
+		if len(memos) < request.BatchSize {
+			break
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, errors.Wrap(err, "failed to commit memo content transform")
+	}
+	return updatedMemoIDs, nil
 }
 
 func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {

@@ -134,6 +134,43 @@ func TestRenameMemoTagHonorsContentLimit(t *testing.T) {
 	require.Equal(t, original, stored.Content)
 }
 
+func TestRenameMemoTagRollsBackEarlierUpdates(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateRegularUser(ctx, "test-user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+
+	// Create the oversized memo first so the later valid memo is processed first
+	// by the stable created_ts/id descending scan. The second transform then
+	// fails after an update has already been issued inside the transaction.
+	oversizedOriginal := strings.Repeat("x", store.DefaultContentLengthLimit-2) + "#a"
+	oversized, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{Content: oversizedOriginal, Visibility: apiv1.Visibility_PRIVATE},
+	})
+	require.NoError(t, err)
+	validOriginal := "valid #a memo"
+	valid, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{Content: validOriginal, Visibility: apiv1.Visibility_PRIVATE},
+	})
+	require.NoError(t, err)
+
+	resp, err := ts.Service.RenameMemoTag(userCtx, &apiv1.RenameMemoTagRequest{OldTag: "a", NewTag: "longer"})
+	require.Nil(t, resp)
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
+
+	for name, wantContent := range map[string]string{
+		oversized.Name: oversizedOriginal,
+		valid.Name:     validOriginal,
+	} {
+		memo, err := ts.Service.GetMemo(userCtx, &apiv1.GetMemoRequest{Name: name})
+		require.NoError(t, err)
+		require.Equal(t, wantContent, memo.Content)
+	}
+}
+
 func TestRenameMemoTagExactMatching(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)

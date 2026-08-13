@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"log/slog"
 	"strings"
 
 	"google.golang.org/grpc/codes"
@@ -46,68 +47,57 @@ func (s *APIV1Service) RenameMemoTag(ctx context.Context, request *v1pb.RenameMe
 		return nil, status.Errorf(codes.Internal, "failed to get content length limit")
 	}
 
-	updatedCount := int32(0)
-	offset := 0
-	for {
-		if err := ctx.Err(); err != nil {
-			return nil, status.FromContextError(err).Err()
-		}
-
-		limit := renameMemoTagBatchSize
-		currentOffset := offset
-		// Order the scan by stable columns (created_ts, id) that this rename
-		// never modifies, so offset pagination cannot skip rows as matching
-		// memos are updated.
-		memos, err := s.Store.ListMemos(ctx, &store.FindMemo{
-			CreatorID: &user.ID,
-			Limit:     &limit,
-			Offset:    &currentOffset,
-		})
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to list memos: %v", err)
-		}
-		if len(memos) == 0 {
-			break
-		}
-
-		for _, memo := range memos {
+	updatedMemoIDs, err := s.Store.TransformMemoContents(ctx, &store.TransformMemoContentsRequest{
+		CreatorID: user.ID,
+		BatchSize: renameMemoTagBatchSize,
+		Transform: func(memo *store.Memo) (bool, error) {
 			if err := ctx.Err(); err != nil {
-				return nil, status.FromContextError(err).Err()
+				return false, status.FromContextError(err).Err()
 			}
 
 			newContent, err := s.MarkdownService.RenameTag([]byte(memo.Content), oldTag, newTag)
 			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to rename tag in memo %q: %v", memo.UID, err)
+				return false, status.Errorf(codes.Internal, "failed to rename tag in memo %q: %v", memo.UID, err)
 			}
 			if newContent == memo.Content {
-				continue
+				return false, nil
 			}
 			if len(newContent) > contentLengthLimit {
-				return nil, status.Errorf(codes.InvalidArgument,
+				return false, status.Errorf(codes.InvalidArgument,
 					"renaming tag in memo %q would exceed the content length limit (%d characters)", memo.UID, contentLengthLimit)
 			}
 
 			memo.Content = newContent
 			if err := memopayload.RebuildMemoPayload(ctx, memo, s.MarkdownService); err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to rebuild memo payload: %v", err)
+				return false, status.Errorf(codes.Internal, "failed to rebuild memo payload: %v", err)
 			}
-			if err := s.Store.UpdateMemo(ctx, &store.UpdateMemo{
-				ID:      memo.ID,
-				Content: &memo.Content,
-				Payload: memo.Payload,
-			}); err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to update memo: %v", err)
-			}
-			updatedCount++
+			return true, nil
+		},
+	})
+	if err != nil {
+		if ctxErr := ctx.Err(); ctxErr != nil {
+			return nil, status.FromContextError(ctxErr).Err()
 		}
-
-		offset += len(memos)
-		if len(memos) < limit {
-			break
+		if grpcStatus, ok := status.FromError(err); ok {
+			return nil, grpcStatus.Err()
 		}
+		return nil, status.Errorf(codes.Internal, "failed to rename memo tags: %v", err)
 	}
 
-	return &v1pb.RenameMemoTagResponse{UpdatedMemoCount: updatedCount}, nil
+	// The content transaction has committed. Dispatch standard update side
+	// effects afterwards so subscribers and integrations converge without
+	// risking external work inside the database transaction.
+	sideEffectCtx := context.WithoutCancel(ctx)
+	for _, memoID := range updatedMemoIDs {
+		memo, parentMemo, memoMessage, err := s.buildUpdatedMemoState(sideEffectCtx, memoID)
+		if err != nil {
+			slog.Warn("Failed to build renamed memo state", slog.Any("err", err), slog.Int("memoID", int(memoID)))
+			continue
+		}
+		s.dispatchMemoUpdatedSideEffects(sideEffectCtx, memo, parentMemo, memoMessage)
+	}
+
+	return &v1pb.RenameMemoTagResponse{UpdatedMemoCount: int32(len(updatedMemoIDs))}, nil
 }
 
 // validateMemoTagName validates a tag name provided without the leading '#'.
