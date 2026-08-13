@@ -136,6 +136,10 @@ func convertInstanceStorageSettingFromStore(settingpb *storepb.InstanceStorageSe
 		StorageType:       v1pb.InstanceSetting_StorageSetting_StorageType(settingpb.StorageType),
 		FilepathTemplate:  settingpb.FilepathTemplate,
 		UploadSizeLimitMb: settingpb.UploadSizeLimitMb,
+		DefaultStorageId:  settingpb.DefaultStorageId,
+	}
+	for _, storagepb := range settingpb.Storages {
+		setting.Storages = append(setting.Storages, convertStorageFromStore(storagepb))
 	}
 	if settingpb.S3Config != nil {
 		setting.S3Config = &v1pb.InstanceSetting_StorageSetting_S3Config{
@@ -159,6 +163,10 @@ func convertInstanceStorageSettingToStore(setting *v1pb.InstanceSetting_StorageS
 		StorageType:       storepb.InstanceStorageSetting_StorageType(setting.StorageType),
 		FilepathTemplate:  setting.FilepathTemplate,
 		UploadSizeLimitMb: setting.UploadSizeLimitMb,
+		DefaultStorageId:  setting.DefaultStorageId,
+	}
+	for _, storage := range setting.Storages {
+		settingpb.Storages = append(settingpb.Storages, convertStorageToStore(storage))
 	}
 	if setting.S3Config != nil {
 		settingpb.S3Config = &storepb.StorageS3Config{
@@ -172,6 +180,56 @@ func convertInstanceStorageSettingToStore(setting *v1pb.InstanceSetting_StorageS
 		}
 	}
 	return settingpb
+}
+
+func convertStorageFromStore(storagepb *storepb.Storage) *v1pb.InstanceSetting_Storage {
+	if storagepb == nil {
+		return nil
+	}
+	storage := &v1pb.InstanceSetting_Storage{
+		Id:   storagepb.Id,
+		Name: storagepb.Name,
+		Type: v1pb.InstanceSetting_StorageType(storagepb.Type),
+	}
+	if s3Config := storagepb.GetS3Config(); s3Config != nil {
+		storage.Config = &v1pb.InstanceSetting_Storage_S3Config_{
+			S3Config: &v1pb.InstanceSetting_Storage_S3Config{
+				AccessKeyId: s3Config.AccessKeyId,
+				// AccessKeySecret is write-only: never returned in responses.
+				Endpoint:              s3Config.Endpoint,
+				Region:                s3Config.Region,
+				Bucket:                s3Config.Bucket,
+				UsePathStyle:          s3Config.UsePathStyle,
+				InsecureSkipTlsVerify: s3Config.InsecureSkipTlsVerify,
+			},
+		}
+	}
+	return storage
+}
+
+func convertStorageToStore(storage *v1pb.InstanceSetting_Storage) *storepb.Storage {
+	if storage == nil {
+		return nil
+	}
+	storagepb := &storepb.Storage{
+		Id:   storage.Id,
+		Name: storage.Name,
+		Type: storepb.StorageType(storage.Type),
+	}
+	if s3Config := storage.GetS3Config(); s3Config != nil {
+		storagepb.Config = &storepb.Storage_S3Config{
+			S3Config: &storepb.StorageS3Config{
+				AccessKeyId:           s3Config.AccessKeyId,
+				AccessKeySecret:       s3Config.AccessKeySecret,
+				Endpoint:              s3Config.Endpoint,
+				Region:                s3Config.Region,
+				Bucket:                s3Config.Bucket,
+				UsePathStyle:          s3Config.UsePathStyle,
+				InsecureSkipTlsVerify: s3Config.InsecureSkipTlsVerify,
+			},
+		}
+	}
+	return storagepb
 }
 
 func convertInstanceMemoRelatedSettingFromStore(setting *storepb.InstanceMemoRelatedSetting) *v1pb.InstanceSetting_MemoRelatedSetting {

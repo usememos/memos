@@ -24,6 +24,7 @@ import (
 	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/internal/testutil"
+	"github.com/usememos/memos/internal/testutil/fakes3"
 	"github.com/usememos/memos/internal/util"
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -32,6 +33,60 @@ import (
 	"github.com/usememos/memos/store"
 	teststore "github.com/usememos/memos/store/test"
 )
+
+func TestServeAttachmentFile_S3(t *testing.T) {
+	ctx := context.Background()
+	fake := fakes3.New(t, "file-server-attachments")
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	configuredStorage := &storepb.Storage{
+		Id:     "s3-files",
+		Name:   "File server S3",
+		Type:   storepb.StorageType_STORAGE_TYPE_S3,
+		Config: &storepb.Storage_S3Config{S3Config: fake.Config("file-server-attachments")},
+	}
+	_, err := stores.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_STORAGE,
+		Value: &storepb.InstanceSetting_StorageSetting{StorageSetting: &storepb.InstanceStorageSetting{
+			FilepathTemplate:  "files/{uuid}_{filename}",
+			UploadSizeLimitMb: 30,
+			Storages:          []*storepb.Storage{configuredStorage},
+			DefaultStorageId:  configuredStorage.Id,
+		}},
+	})
+	require.NoError(t, err)
+
+	creator, err := stores.CreateUser(ctx, &store.User{
+		Username: "s3-file-owner",
+		Role:     store.RoleUser,
+		Email:    "s3-file-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+	content := []byte("content streamed from S3")
+	attachment, err := svc.CreateAttachment(creatorCtx, &apiv1.CreateAttachmentRequest{Attachment: &apiv1.Attachment{
+		Filename: "document.txt",
+		Type:     "text/plain",
+		Content:  content,
+	}})
+	require.NoError(t, err)
+	_, err = svc.CreateMemo(creatorCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
+		Content:     "public S3 attachment",
+		Visibility:  apiv1.Visibility_PUBLIC,
+		Attachments: []*apiv1.Attachment{{Name: attachment.Name}},
+	}})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	recorder := httptest.NewRecorder()
+	e.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename), nil))
+
+	require.Equal(t, http.StatusOK, recorder.Code)
+	require.Equal(t, content, recorder.Body.Bytes())
+	require.Equal(t, "text/plain; charset=utf-8", recorder.Header().Get(echo.HeaderContentType))
+}
 
 func TestServeAttachmentFile_ShareTokenAllowsDirectMemoAttachment(t *testing.T) {
 	ctx := context.Background()

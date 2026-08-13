@@ -71,7 +71,31 @@ message InstanceCustomProfile {
   string logo_url = 3;
 }
 
+enum StorageType {
+  STORAGE_TYPE_UNSPECIFIED = 0;
+  // DATABASE stores attachment content in the application database.
+  STORAGE_TYPE_DATABASE = 1;
+  // LOCAL stores attachment content on the local filesystem.
+  STORAGE_TYPE_LOCAL = 2;
+  // S3 stores attachment content in an S3-compatible object store.
+  STORAGE_TYPE_S3 = 3;
+}
+
+// Storage is a configured attachment storage instance.
+message Storage {
+  // id is the stable identifier referenced by attachments.
+  string id = 1;
+  // name is the human-readable storage name.
+  string name = 2;
+  StorageType type = 3;
+
+  oneof config {
+    StorageS3Config s3_config = 10;
+  }
+}
+
 message InstanceStorageSetting {
+  // Legacy storage type enum retained for compatibility with existing settings.
   enum StorageType {
     STORAGE_TYPE_UNSPECIFIED = 0;
     // STORAGE_TYPE_DATABASE is the database storage type.
@@ -81,15 +105,20 @@ message InstanceStorageSetting {
     // STORAGE_TYPE_S3 is the S3 storage type.
     S3 = 3;
   }
-  // storage_type is the storage type.
+  // Legacy compatibility field. New code uses default_storage_id.
   StorageType storage_type = 1;
   // The template of file path.
   // e.g. assets/{timestamp}_{filename}
   string filepath_template = 2;
   // The max upload size in megabytes.
   int64 upload_size_limit_mb = 3;
-  // The S3 config.
+  // Legacy compatibility field. New code uses storages.
   StorageS3Config s3_config = 4;
+  // storages contains configured storage instances, including inactive instances
+  // that may still be referenced by existing attachments.
+  repeated Storage storages = 5;
+  // default_storage_id identifies the storage used for new attachments.
+  string default_storage_id = 6;
 }
 
 // Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/

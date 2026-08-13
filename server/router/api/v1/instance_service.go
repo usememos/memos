@@ -223,11 +223,12 @@ func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.
 			}
 		}
 	case storepb.InstanceSettingKey_STORAGE:
-		if storage := updateSetting.GetStorageSetting(); storage != nil && storage.S3Config != nil && storage.S3Config.AccessKeySecret == "" {
-			existing, err := s.Store.GetInstanceStorageSetting(ctx)
-			if err == nil && existing != nil && existing.S3Config != nil {
-				storage.S3Config.AccessKeySecret = existing.S3Config.AccessKeySecret
-			}
+		existing, err := s.Store.GetInstanceStorageSetting(ctx)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get existing storage setting: %v", err)
+		}
+		if err := store.PrepareInstanceStorageSettingUpdate(updateSetting.GetStorageSetting(), existing); err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid storage setting: %v", err)
 		}
 	case storepb.InstanceSettingKey_AI:
 		if err := s.prepareInstanceAISettingForUpdate(ctx, updateSetting.GetAiSetting()); err != nil {

@@ -2911,6 +2911,26 @@ components:
                 email:
                     $ref: '#/components/schemas/NotificationSetting_EmailSetting'
             description: Notification transport configuration.
+        InstanceSetting_Storage:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: id is the stable identifier referenced by attachments.
+                name:
+                    type: string
+                    description: name is the human-readable storage name.
+                type:
+                    enum:
+                        - STORAGE_TYPE_UNSPECIFIED
+                        - DATABASE
+                        - LOCAL
+                        - S3
+                    type: string
+                    format: enum
+                s3Config:
+                    $ref: '#/components/schemas/Storage_S3Config'
+            description: Storage is a configured attachment storage instance.
         InstanceSetting_StorageSetting:
             type: object
             properties:
@@ -2921,7 +2941,7 @@ components:
                         - LOCAL
                         - S3
                     type: string
-                    description: storage_type is the storage type.
+                    description: Legacy compatibility field. New clients use default_storage_id.
                     format: enum
                 filepathTemplate:
                     type: string
@@ -2934,7 +2954,15 @@ components:
                 s3Config:
                     allOf:
                         - $ref: '#/components/schemas/StorageSetting_S3Config'
-                    description: The S3 config.
+                    description: Legacy compatibility field. New clients use storages.
+                storages:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/InstanceSetting_Storage'
+                    description: Configured storage instances, including inactive instances referenced by attachments.
+                defaultStorageId:
+                    type: string
+                    description: Storage used for new attachments.
             description: Storage configuration settings for instance attachments.
         InstanceSetting_TagMetadata:
             type: object
@@ -3751,7 +3779,32 @@ components:
                          to the S3 endpoint. Only enable this for trusted endpoints that use a self-signed
                          certificate; it removes protection against man-in-the-middle attacks.
             description: |-
-                S3 configuration for cloud storage backend.
+                Legacy S3 configuration retained for compatibility with existing clients.
+                 Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
+        Storage_S3Config:
+            type: object
+            properties:
+                accessKeyId:
+                    type: string
+                accessKeySecret:
+                    writeOnly: true
+                    type: string
+                endpoint:
+                    type: string
+                region:
+                    type: string
+                bucket:
+                    type: string
+                usePathStyle:
+                    type: boolean
+                insecureSkipTlsVerify:
+                    type: boolean
+                    description: |-
+                        insecure_skip_tls_verify disables TLS certificate verification when connecting
+                         to the S3 endpoint. Only enable this for trusted endpoints that use a self-signed
+                         certificate; it removes protection against man-in-the-middle attacks.
+            description: |-
+                S3 configuration for an S3-compatible object store.
                  Reference: https://developers.cloudflare.com/r2/examples/aws/aws-sdk-go/
         TestInstanceEmailSettingRequest:
             type: object

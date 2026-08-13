@@ -12,11 +12,16 @@ import { useInstance } from "@/contexts/InstanceContext";
 import { cn } from "@/lib/utils";
 import {
   InstanceSetting_Key,
+  InstanceSetting_Storage,
+  InstanceSetting_Storage_S3Config,
+  InstanceSetting_Storage_S3ConfigSchema,
+  InstanceSetting_StorageSchema,
   InstanceSetting_StorageSetting,
   InstanceSetting_StorageSetting_S3Config,
   InstanceSetting_StorageSetting_S3ConfigSchema,
   InstanceSetting_StorageSetting_StorageType,
   InstanceSetting_StorageSettingSchema,
+  InstanceSetting_StorageType,
   InstanceSettingSchema,
 } from "@/types/proto/api/v1/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
@@ -29,7 +34,7 @@ import useInstanceSettingUpdater, { buildInstanceSettingName } from "./useInstan
 const DEFAULT_FILEPATH_TEMPLATE = "assets/{timestamp}_{uuid}_{filename}";
 
 type StorageTypeOption = {
-  storageType: InstanceSetting_StorageSetting_StorageType;
+  storageType: InstanceSetting_StorageType;
   id: string;
   titleKey: "setting.storage.type-database" | "setting.storage.type-local" | "setting.storage.type-s3";
   descriptionKey: "setting.storage.database-description" | "setting.storage.local-description" | "setting.storage.s3-description";
@@ -43,7 +48,7 @@ type StorageTypeOption = {
 
 const storageTypeOptions: StorageTypeOption[] = [
   {
-    storageType: InstanceSetting_StorageSetting_StorageType.LOCAL,
+    storageType: InstanceSetting_StorageType.LOCAL,
     id: "storage-type-local",
     titleKey: "setting.storage.type-local",
     descriptionKey: "setting.storage.local-description",
@@ -52,7 +57,7 @@ const storageTypeOptions: StorageTypeOption[] = [
     badges: ["setting.storage.badge-default", "setting.storage.badge-recommended"],
   },
   {
-    storageType: InstanceSetting_StorageSetting_StorageType.DATABASE,
+    storageType: InstanceSetting_StorageType.DATABASE,
     id: "storage-type-database",
     titleKey: "setting.storage.type-database",
     descriptionKey: "setting.storage.database-description",
@@ -60,7 +65,7 @@ const storageTypeOptions: StorageTypeOption[] = [
     icon: DatabaseIcon,
   },
   {
-    storageType: InstanceSetting_StorageSetting_StorageType.S3,
+    storageType: InstanceSetting_StorageType.S3,
     id: "storage-type-s3",
     titleKey: "setting.storage.type-s3",
     descriptionKey: "setting.storage.s3-description",
@@ -69,15 +74,55 @@ const storageTypeOptions: StorageTypeOption[] = [
   },
 ];
 
+const getDefaultStorage = (setting: InstanceSetting_StorageSetting): InstanceSetting_Storage | undefined =>
+  setting.storages.find((storage) => storage.id === setting.defaultStorageId);
+
+const getSelectedStorageType = (setting: InstanceSetting_StorageSetting): InstanceSetting_StorageType =>
+  getDefaultStorage(setting)?.type ?? (setting.storageType as number as InstanceSetting_StorageType);
+
+const getS3Config = (
+  setting: InstanceSetting_StorageSetting,
+): InstanceSetting_Storage_S3Config | InstanceSetting_StorageSetting_S3Config | undefined => {
+  const storage = getDefaultStorage(setting);
+  if (storage?.config.case === "s3Config") {
+    return storage.config.value;
+  }
+  return setting.s3Config;
+};
+
+// The server keeps the storage registry ordered by most recent activation, so
+// the first storage of a type is the most recently used one.
+const findStorageForType = (
+  setting: InstanceSetting_StorageSetting,
+  storageType: InstanceSetting_StorageType,
+): InstanceSetting_Storage | undefined => setting.storages.find((storage) => storage.type === storageType);
+
+const createStorage = (storageType: InstanceSetting_StorageType): InstanceSetting_Storage => {
+  const id =
+    storageType === InstanceSetting_StorageType.S3 ? `s3-${crypto.randomUUID()}` : InstanceSetting_StorageType[storageType].toLowerCase();
+  return create(InstanceSetting_StorageSchema, {
+    id,
+    name: storageType === InstanceSetting_StorageType.S3 ? "S3" : InstanceSetting_StorageType[storageType],
+    type: storageType,
+    config:
+      storageType === InstanceSetting_StorageType.S3
+        ? { case: "s3Config", value: create(InstanceSetting_Storage_S3ConfigSchema, {}) }
+        : { case: undefined },
+  });
+};
+
 const StorageSection = () => {
   const t = useTranslate();
   const saveInstanceSetting = useInstanceSettingUpdater();
   const { storageSetting: originalSetting } = useInstance();
   const [instanceStorageSetting, setInstanceStorageSetting] = useState<InstanceSetting_StorageSetting>(originalSetting);
 
+  const selectedStorageType = getSelectedStorageType(instanceStorageSetting);
+  const selectedS3Config = getS3Config(instanceStorageSetting);
+
   const selectedStorageOption = useMemo(
-    () => storageTypeOptions.find((option) => option.storageType === instanceStorageSetting.storageType) ?? storageTypeOptions[0],
-    [instanceStorageSetting.storageType],
+    () => storageTypeOptions.find((option) => option.storageType === selectedStorageType) ?? storageTypeOptions[0],
+    [selectedStorageType],
   );
   const SelectedStorageIcon = selectedStorageOption.icon;
 
@@ -90,25 +135,25 @@ const StorageSection = () => {
       return false;
     }
 
-    if (instanceStorageSetting.storageType === InstanceSetting_StorageSetting_StorageType.LOCAL) {
+    if (selectedStorageType === InstanceSetting_StorageType.LOCAL) {
       if (instanceStorageSetting.filepathTemplate.length === 0) {
         return false;
       }
-    } else if (instanceStorageSetting.storageType === InstanceSetting_StorageSetting_StorageType.S3) {
-      const hasExistingS3Config = originalSetting.s3Config !== undefined;
+    } else if (selectedStorageType === InstanceSetting_StorageType.S3) {
+      const hasExistingS3Config = getS3Config(originalSetting) !== undefined;
       if (
         !instanceStorageSetting.filepathTemplate ||
-        !instanceStorageSetting.s3Config?.accessKeyId ||
-        (!hasExistingS3Config && !instanceStorageSetting.s3Config?.accessKeySecret) ||
-        !instanceStorageSetting.s3Config?.endpoint ||
-        !instanceStorageSetting.s3Config?.region ||
-        !instanceStorageSetting.s3Config?.bucket
+        !selectedS3Config?.accessKeyId ||
+        (!hasExistingS3Config && !selectedS3Config?.accessKeySecret) ||
+        !selectedS3Config?.endpoint ||
+        !selectedS3Config?.region ||
+        !selectedS3Config?.bucket
       ) {
         return false;
       }
     }
     return !isEqual(originalSetting, instanceStorageSetting);
-  }, [instanceStorageSetting, originalSetting]);
+  }, [instanceStorageSetting, originalSetting, selectedS3Config, selectedStorageType]);
 
   const handleMaxUploadSizeChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     let num = parseInt(event.target.value);
@@ -133,31 +178,52 @@ const StorageSection = () => {
   };
 
   const handleS3FieldChange = (field: keyof InstanceSetting_StorageSetting_S3Config, value: string | boolean) => {
-    const existing = instanceStorageSetting.s3Config;
+    const existing = getS3Config(instanceStorageSetting);
+    // One field list feeds both the named storage config and its legacy mirror.
+    const s3ConfigFields = {
+      accessKeyId: existing?.accessKeyId ?? "",
+      accessKeySecret: existing?.accessKeySecret ?? "",
+      endpoint: existing?.endpoint ?? "",
+      region: existing?.region ?? "",
+      bucket: existing?.bucket ?? "",
+      usePathStyle: existing?.usePathStyle ?? false,
+      insecureSkipTlsVerify: existing?.insecureSkipTlsVerify ?? false,
+      [field]: value,
+    };
+    let configuredStorage = getDefaultStorage(instanceStorageSetting);
+    if (configuredStorage?.type !== InstanceSetting_StorageType.S3) {
+      configuredStorage = createStorage(InstanceSetting_StorageType.S3);
+    }
+    const updatedStorage = create(InstanceSetting_StorageSchema, {
+      ...configuredStorage,
+      config: { case: "s3Config", value: create(InstanceSetting_Storage_S3ConfigSchema, s3ConfigFields) },
+    });
+    // Replace in place to preserve the registry order the server maintains.
+    const storages = instanceStorageSetting.storages.some((storage) => storage.id === updatedStorage.id)
+      ? instanceStorageSetting.storages.map((storage) => (storage.id === updatedStorage.id ? updatedStorage : storage))
+      : [updatedStorage, ...instanceStorageSetting.storages];
     setInstanceStorageSetting(
       create(InstanceSetting_StorageSettingSchema, {
-        storageType: instanceStorageSetting.storageType,
-        filepathTemplate: instanceStorageSetting.filepathTemplate,
-        uploadSizeLimitMb: instanceStorageSetting.uploadSizeLimitMb,
-        s3Config: create(InstanceSetting_StorageSetting_S3ConfigSchema, {
-          accessKeyId: existing?.accessKeyId ?? "",
-          accessKeySecret: existing?.accessKeySecret ?? "",
-          endpoint: existing?.endpoint ?? "",
-          region: existing?.region ?? "",
-          bucket: existing?.bucket ?? "",
-          usePathStyle: existing?.usePathStyle ?? false,
-          insecureSkipTlsVerify: existing?.insecureSkipTlsVerify ?? false,
-          [field]: value,
-        }),
+        ...instanceStorageSetting,
+        storages,
+        defaultStorageId: updatedStorage.id,
+        storageType: InstanceSetting_StorageSetting_StorageType.S3,
+        s3Config: create(InstanceSetting_StorageSetting_S3ConfigSchema, s3ConfigFields),
       }),
     );
   };
 
-  const handleStorageTypeChanged = (storageType: InstanceSetting_StorageSetting_StorageType) => {
+  const handleStorageTypeChanged = (storageType: InstanceSetting_StorageType) => {
+    const configuredStorage = findStorageForType(instanceStorageSetting, storageType) ?? createStorage(storageType);
+    const storages = instanceStorageSetting.storages.some((storage) => storage.id === configuredStorage.id)
+      ? instanceStorageSetting.storages
+      : [...instanceStorageSetting.storages, configuredStorage];
     setInstanceStorageSetting(
       create(InstanceSetting_StorageSettingSchema, {
         ...instanceStorageSetting,
-        storageType,
+        storages,
+        defaultStorageId: configuredStorage.id,
+        storageType: storageType as number as InstanceSetting_StorageSetting_StorageType,
         filepathTemplate: instanceStorageSetting.filepathTemplate || DEFAULT_FILEPATH_TEMPLATE,
       }),
     );
@@ -181,15 +247,15 @@ const StorageSection = () => {
     <SettingSection title={t("setting.storage.label")}>
       <SettingGroup title={t("setting.storage.current-storage")} description={t("setting.storage.current-storage-description")}>
         <RadioGroup
-          value={String(instanceStorageSetting.storageType)}
+          value={String(selectedStorageType)}
           onValueChange={(value) => {
-            handleStorageTypeChanged(Number(value) as InstanceSetting_StorageSetting_StorageType);
+            handleStorageTypeChanged(Number(value) as InstanceSetting_StorageType);
           }}
           className="overflow-hidden rounded-lg border border-border bg-background divide-y divide-border gap-0"
         >
           {storageTypeOptions.map((option) => {
             const Icon = option.icon;
-            const selected = instanceStorageSetting.storageType === option.storageType;
+            const selected = selectedStorageType === option.storageType;
             return (
               <div
                 key={option.id}
@@ -238,7 +304,7 @@ const StorageSection = () => {
         <SettingPanel className="rounded-md bg-muted/20 px-3 py-2.5">
           <div className="mb-2 flex items-center gap-2 text-xs font-medium text-muted-foreground">
             <SelectedStorageIcon className="size-3.5" />
-            <span>{t("setting.storage.selected-backend")}</span>
+            <span>{t("setting.storage.current-storage")}</span>
             <span className="text-foreground">{t(selectedStorageOption.titleKey)}</span>
           </div>
           <ul className="flex flex-col gap-1.5 text-xs leading-5 text-muted-foreground">
@@ -259,7 +325,7 @@ const StorageSection = () => {
           />
         </SettingRow>
 
-        {instanceStorageSetting.storageType !== InstanceSetting_StorageSetting_StorageType.DATABASE && (
+        {selectedStorageType !== InstanceSetting_StorageType.DATABASE && (
           <SettingRow
             label={t("setting.storage.filepath-template")}
             description={t("setting.storage.filepath-template-description")}
@@ -275,7 +341,7 @@ const StorageSection = () => {
         )}
       </SettingGroup>
 
-      {instanceStorageSetting.storageType === InstanceSetting_StorageSetting_StorageType.S3 && (
+      {selectedStorageType === InstanceSetting_StorageType.S3 && (
         <SettingGroup
           title={t("setting.storage.s3-configuration")}
           description={t("setting.storage.s3-configuration-description")}
@@ -284,7 +350,7 @@ const StorageSection = () => {
           <SettingRow label={t("setting.storage.accesskey")} description={t("setting.storage.accesskey-description")}>
             <Input
               className="w-64"
-              value={instanceStorageSetting.s3Config?.accessKeyId ?? ""}
+              value={selectedS3Config?.accessKeyId ?? ""}
               onChange={(e) => handleS3FieldChange("accessKeyId", e.target.value)}
             />
           </SettingRow>
@@ -292,13 +358,15 @@ const StorageSection = () => {
           <SettingRow
             label={t("setting.storage.secretkey")}
             description={
-              originalSetting.s3Config ? t("setting.storage.secretkey-preserve-description") : t("setting.storage.secretkey-description")
+              getS3Config(originalSetting)
+                ? t("setting.storage.secretkey-preserve-description")
+                : t("setting.storage.secretkey-description")
             }
           >
             <Input
               className="w-64"
               type="password"
-              value={instanceStorageSetting.s3Config?.accessKeySecret ?? ""}
+              value={selectedS3Config?.accessKeySecret ?? ""}
               onChange={(e) => handleS3FieldChange("accessKeySecret", e.target.value)}
             />
           </SettingRow>
@@ -306,7 +374,7 @@ const StorageSection = () => {
           <SettingRow label={t("setting.storage.endpoint")} description={t("setting.storage.endpoint-description")}>
             <Input
               className="w-64"
-              value={instanceStorageSetting.s3Config?.endpoint ?? ""}
+              value={selectedS3Config?.endpoint ?? ""}
               onChange={(e) => handleS3FieldChange("endpoint", e.target.value)}
             />
           </SettingRow>
@@ -314,7 +382,7 @@ const StorageSection = () => {
           <SettingRow label={t("setting.storage.region")} description={t("setting.storage.region-description")}>
             <Input
               className="w-64"
-              value={instanceStorageSetting.s3Config?.region ?? ""}
+              value={selectedS3Config?.region ?? ""}
               onChange={(e) => handleS3FieldChange("region", e.target.value)}
             />
           </SettingRow>
@@ -322,14 +390,14 @@ const StorageSection = () => {
           <SettingRow label={t("setting.storage.bucket")} description={t("setting.storage.bucket-description")}>
             <Input
               className="w-64"
-              value={instanceStorageSetting.s3Config?.bucket ?? ""}
+              value={selectedS3Config?.bucket ?? ""}
               onChange={(e) => handleS3FieldChange("bucket", e.target.value)}
             />
           </SettingRow>
 
           <SettingRow label={t("setting.storage.use-path-style")} description={t("setting.storage.use-path-style-description")}>
             <Switch
-              checked={instanceStorageSetting.s3Config?.usePathStyle ?? false}
+              checked={selectedS3Config?.usePathStyle ?? false}
               onCheckedChange={(checked) => handleS3FieldChange("usePathStyle", checked)}
             />
           </SettingRow>
@@ -339,7 +407,7 @@ const StorageSection = () => {
             description={t("setting.storage.insecure-skip-tls-verify-description")}
           >
             <Switch
-              checked={instanceStorageSetting.s3Config?.insecureSkipTlsVerify ?? false}
+              checked={selectedS3Config?.insecureSkipTlsVerify ?? false}
               onCheckedChange={(checked) => handleS3FieldChange("insecureSkipTlsVerify", checked)}
             />
           </SettingRow>

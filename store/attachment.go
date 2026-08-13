@@ -9,7 +9,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/internal/base"
-	"github.com/usememos/memos/internal/storage/s3"
+	"github.com/usememos/memos/internal/storage"
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
@@ -228,8 +228,7 @@ func (s *Store) deleteAttachmentStorageImpl(ctx context.Context, attachment *Att
 			if s3ObjectPayload == nil {
 				return errors.Errorf("No s3 object found")
 			}
-			s3Config := s3ObjectPayload.S3Config
-			if s3Config == nil {
+			if AttachmentNeedsInstanceStorageSetting(attachment) {
 				if instanceStorageSetting == nil {
 					var err error
 					instanceStorageSetting, err = s.GetInstanceStorageSetting(ctx)
@@ -237,17 +236,13 @@ func (s *Store) deleteAttachmentStorageImpl(ctx context.Context, attachment *Att
 						return errors.Wrap(err, "failed to get instance storage setting")
 					}
 				}
-				if instanceStorageSetting.S3Config == nil {
-					return errors.Errorf("S3 config is not found")
-				}
-				s3Config = instanceStorageSetting.S3Config
 			}
 
-			s3Client, err := s3.NewClient(ctx, s3Config)
+			driver, err := ResolveStorageDriver(ctx, instanceStorageSetting, s3ObjectPayload.StorageId, s3ObjectPayload.S3Config)
 			if err != nil {
-				return errors.Wrap(err, "Failed to create s3 client")
+				return errors.Wrap(err, "failed to resolve storage driver")
 			}
-			if err := s3Client.DeleteObject(ctx, s3ObjectPayload.Key); err != nil {
+			if err := driver.DeleteObject(ctx, s3ObjectPayload.Key); err != nil {
 				return errors.Wrap(err, "Failed to delete s3 object")
 			}
 			return nil
@@ -273,13 +268,39 @@ func (s *Store) getAttachmentStorageCleanupInstanceSetting(ctx context.Context, 
 	return nil, nil
 }
 
-// AttachmentNeedsInstanceStorageSetting reports whether S3 cleanup needs the instance fallback storage setting.
+// ResolveAttachmentS3Driver resolves the storage driver referenced by an S3
+// attachment payload, validating the payload and supplying the instance setting.
+func (s *Store) ResolveAttachmentS3Driver(ctx context.Context, attachment *Attachment) (storage.Driver, *storepb.AttachmentPayload_S3Object, error) {
+	if attachment.Payload == nil {
+		return nil, nil, errors.New("attachment payload is missing")
+	}
+	s3Object := attachment.Payload.GetS3Object()
+	if s3Object == nil {
+		return nil, nil, errors.New("S3 object payload is missing")
+	}
+	if s3Object.Key == "" {
+		return nil, nil, errors.New("S3 object key is missing")
+	}
+
+	instanceStorageSetting, err := s.GetInstanceStorageSetting(ctx)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "failed to get instance storage setting")
+	}
+	driver, err := ResolveStorageDriver(ctx, instanceStorageSetting, s3Object.StorageId, s3Object.S3Config)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "failed to resolve storage driver")
+	}
+	return driver, s3Object, nil
+}
+
+// AttachmentNeedsInstanceStorageSetting reports whether S3 cleanup needs the
+// configured storage registry or the legacy default S3 setting.
 func AttachmentNeedsInstanceStorageSetting(attachment *Attachment) bool {
 	if attachment == nil || attachment.StorageType != storepb.AttachmentStorageType_S3 {
 		return false
 	}
 	s3ObjectPayload := attachment.Payload.GetS3Object()
-	return s3ObjectPayload != nil && s3ObjectPayload.S3Config == nil
+	return s3ObjectPayload != nil && (s3ObjectPayload.StorageId != "" || s3ObjectPayload.S3Config == nil)
 }
 
 func (s *Store) deleteAttachmentDerivedCaches(attachment *Attachment) {

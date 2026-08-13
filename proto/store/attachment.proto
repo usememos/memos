@@ -85,11 +85,15 @@ message AttachmentPayload {
   MediaMetadata media_metadata = 11;
 
   message S3Object {
+    // Legacy attachments embedded their complete S3 configuration.
+    // New attachments resolve storage through storage_id.
     StorageS3Config s3_config = 1;
     // key is the S3 object key.
     string key = 2;
     // last_presigned_time is the last time the object was presigned.
     // This is used to determine if the presigned URL is still valid.
     google.protobuf.Timestamp last_presigned_time = 3;
+    // storage_id identifies the configured storage containing this object.
+    string storage_id = 4;
   }
 }

@@ -8,7 +8,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/internal/storage/s3"
+	"github.com/usememos/memos/internal/storage"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -51,6 +51,9 @@ func (r *Runner) CheckAndPresign(ctx context.Context) {
 	}
 
 	s3StorageType := storepb.AttachmentStorageType_S3
+	// Most attachments reference the same configured storage, so reuse drivers
+	// instead of building an S3 client per attachment.
+	driversByStorageID := map[string]storage.Driver{}
 	// Limit attachments to a reasonable batch size
 	const batchSize = 100
 	offset := 0
@@ -90,28 +93,24 @@ func (r *Runner) CheckAndPresign(ctx context.Context) {
 				}
 			}
 
-			s3Config := instanceStorageSetting.GetS3Config()
-			if s3ObjectPayload.S3Config != nil {
-				s3Config = s3ObjectPayload.S3Config
-			}
-			if s3Config == nil {
-				slog.Error("S3 config is not found")
-				continue
-			}
-
-			s3Client, err := s3.NewClient(ctx, s3Config)
-			if err != nil {
-				slog.Error("Failed to create S3 client", "error", err)
-				continue
+			driver := driversByStorageID[s3ObjectPayload.StorageId]
+			if driver == nil || s3ObjectPayload.StorageId == "" {
+				driver, err = store.ResolveStorageDriver(ctx, instanceStorageSetting, s3ObjectPayload.StorageId, s3ObjectPayload.S3Config)
+				if err != nil {
+					slog.Error("Failed to resolve storage driver", "error", err)
+					continue
+				}
+				if s3ObjectPayload.StorageId != "" {
+					driversByStorageID[s3ObjectPayload.StorageId] = driver
+				}
 			}
 
-			presignURL, err := s3Client.PresignGetObject(ctx, s3ObjectPayload.Key)
+			presignURL, err := driver.PresignGetObject(ctx, s3ObjectPayload.Key)
 			if err != nil {
 				slog.Error("Failed to presign URL", "error", err, "attachmentID", attachment.ID)
 				continue
 			}
 
-			s3ObjectPayload.S3Config = s3Config
 			s3ObjectPayload.LastPresignedTime = timestamppb.New(time.Now())
 			if err := r.Store.UpdateAttachment(ctx, &store.UpdateAttachment{
 				ID:        attachment.ID,
