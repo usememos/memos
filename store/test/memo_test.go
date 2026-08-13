@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync"
 	"testing"
 	"time"
 
@@ -524,6 +525,7 @@ func TestTransformMemoContentsIsAtomic(t *testing.T) {
 		updatedIDs, err := ts.TransformMemoContents(ctx, &store.TransformMemoContentsRequest{
 			CreatorID: user.ID,
 			BatchSize: 1,
+			UpdatedTs: 100,
 			Transform: func(memo *store.Memo) (bool, error) {
 				memo.Content += " updated"
 				memo.Payload.Tags = []string{"new"}
@@ -538,6 +540,7 @@ func TestTransformMemoContentsIsAtomic(t *testing.T) {
 			require.NoError(t, err)
 			require.Contains(t, memo.Content, " updated")
 			require.Equal(t, []string{"new"}, memo.Payload.Tags)
+			require.Equal(t, int64(100), memo.UpdatedTs)
 		}
 		unchanged, err := ts.GetMemo(ctx, &store.FindMemo{ID: &otherMemo.ID})
 		require.NoError(t, err)
@@ -574,6 +577,7 @@ func TestTransformMemoContentsIsAtomic(t *testing.T) {
 		updatedIDs, err := ts.TransformMemoContents(ctx, &store.TransformMemoContentsRequest{
 			CreatorID: user.ID,
 			BatchSize: 1,
+			UpdatedTs: 200,
 			Transform: func(memo *store.Memo) (bool, error) {
 				callCount++
 				if callCount == 2 {
@@ -614,6 +618,7 @@ func TestTransformMemoContentsIsAtomic(t *testing.T) {
 		defer cancel()
 		transformRead := make(chan struct{})
 		continueTransform := make(chan struct{})
+		var transformReadOnce sync.Once
 		type result struct {
 			updatedIDs []int32
 			err        error
@@ -623,8 +628,9 @@ func TestTransformMemoContentsIsAtomic(t *testing.T) {
 			updatedIDs, err := ts.TransformMemoContents(operationCtx, &store.TransformMemoContentsRequest{
 				CreatorID: user.ID,
 				BatchSize: 1,
+				UpdatedTs: 300,
 				Transform: func(current *store.Memo) (bool, error) {
-					close(transformRead)
+					transformReadOnce.Do(func() { close(transformRead) })
 					<-continueTransform
 					current.Content = "renamed stale snapshot"
 					return true, nil
@@ -648,7 +654,9 @@ func TestTransformMemoContentsIsAtomic(t *testing.T) {
 		select {
 		case updateErr = <-updateDone:
 			updateCompletedBeforeRelease = true
+			t.Log("concurrent update completed before releasing the transform")
 		case <-time.After(100 * time.Millisecond):
+			t.Log("concurrent update remained pending until the transform was released")
 		}
 		close(continueTransform)
 

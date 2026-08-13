@@ -4,6 +4,7 @@ import (
 	"context"
 	"log/slog"
 	"strings"
+	"time"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -48,8 +49,10 @@ func (s *APIV1Service) RenameMemoTag(ctx context.Context, request *v1pb.RenameMe
 	}
 
 	updatedMemoIDs, err := s.Store.TransformMemoContents(ctx, &store.TransformMemoContentsRequest{
-		CreatorID: user.ID,
-		BatchSize: renameMemoTagBatchSize,
+		CreatorID:        user.ID,
+		BatchSize:        renameMemoTagBatchSize,
+		ContentSubstring: "#" + oldTag,
+		UpdatedTs:        time.Now().Unix(),
 		Transform: func(memo *store.Memo) (bool, error) {
 			if err := ctx.Err(); err != nil {
 				return false, status.FromContextError(err).Err()
@@ -84,20 +87,26 @@ func (s *APIV1Service) RenameMemoTag(ctx context.Context, request *v1pb.RenameMe
 		return nil, status.Errorf(codes.Internal, "failed to rename memo tags: %v", err)
 	}
 
-	// The content transaction has committed. Dispatch standard update side
-	// effects afterwards so subscribers and integrations converge without
-	// risking external work inside the database transaction.
+	// The content transaction has committed. A single background worker keeps
+	// the RPC latency bounded while dispatching each standard update event in
+	// order, without doing external work inside the database transaction.
 	sideEffectCtx := context.WithoutCancel(ctx)
-	for _, memoID := range updatedMemoIDs {
-		memo, parentMemo, memoMessage, err := s.buildUpdatedMemoState(sideEffectCtx, memoID)
+	s.runBackgroundTask(func() {
+		s.dispatchRenamedMemoUpdatedSideEffects(sideEffectCtx, append([]int32(nil), updatedMemoIDs...))
+	})
+
+	return &v1pb.RenameMemoTagResponse{UpdatedMemoCount: int32(len(updatedMemoIDs))}, nil
+}
+
+func (s *APIV1Service) dispatchRenamedMemoUpdatedSideEffects(ctx context.Context, memoIDs []int32) {
+	for _, memoID := range memoIDs {
+		memo, parentMemo, memoMessage, err := s.buildUpdatedMemoState(ctx, memoID)
 		if err != nil {
 			slog.Warn("Failed to build renamed memo state", slog.Any("err", err), slog.Int("memoID", int(memoID)))
 			continue
 		}
-		s.dispatchMemoUpdatedSideEffects(sideEffectCtx, memo, parentMemo, memoMessage)
+		s.dispatchMemoUpdatedSideEffects(ctx, memo, parentMemo, memoMessage)
 	}
-
-	return &v1pb.RenameMemoTagResponse{UpdatedMemoCount: int32(len(updatedMemoIDs))}, nil
 }
 
 // validateMemoTagName validates a tag name provided without the leading '#'.

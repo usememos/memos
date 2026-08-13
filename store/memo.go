@@ -103,15 +103,20 @@ type UpdateMemo struct {
 }
 
 // MemoContentTransform updates content-derived fields on a memo and reports
-// whether the memo should be persisted.
+// whether the memo should be persisted. Drivers invoke it inside the database
+// transaction, so it must not perform slow or external work.
 type MemoContentTransform func(memo *Memo) (changed bool, err error)
 
 // TransformMemoContentsRequest describes an atomic, creator-scoped bulk memo
-// content transformation. Only content and payload changes are persisted.
+// content transformation. ContentSubstring is an optional coarse candidate
+// filter; Transform must still decide whether an exact change is needed. Only
+// content, payload, and the shared updated timestamp are persisted.
 type TransformMemoContentsRequest struct {
-	CreatorID int32
-	BatchSize int
-	Transform MemoContentTransform
+	CreatorID        int32
+	BatchSize        int
+	ContentSubstring string
+	UpdatedTs        int64
+	Transform        MemoContentTransform
 }
 
 type DeleteMemo struct {
@@ -140,6 +145,9 @@ func (s *Store) TransformMemoContents(ctx context.Context, request *TransformMem
 	}
 	if request.BatchSize <= 0 {
 		return nil, errors.New("memo content transform batch size must be positive")
+	}
+	if request.UpdatedTs <= 0 {
+		return nil, errors.New("memo content transform updated timestamp is required")
 	}
 	if request.Transform == nil {
 		return nil, errors.New("memo content transform is required")

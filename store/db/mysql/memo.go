@@ -227,16 +227,29 @@ func (d *DB) TransformMemoContents(ctx context.Context, request *store.Transform
 	}()
 
 	updatedMemoIDs := []int32{}
-	offset := 0
+	var cursorCreatedTs int64
+	var cursorID int32
+	hasCursor := false
 	for {
 		memos, err := func() ([]*store.Memo, error) {
+			where := []string{"creator_id = ?"}
+			args := []any{request.CreatorID}
+			if request.ContentSubstring != "" {
+				where = append(where, "INSTR(content, ?) > 0")
+				args = append(args, request.ContentSubstring)
+			}
+			if hasCursor {
+				where = append(where, "(created_ts < FROM_UNIXTIME(?) OR (created_ts = FROM_UNIXTIME(?) AND id < ?))")
+				args = append(args, cursorCreatedTs, cursorCreatedTs, cursorID)
+			}
+			args = append(args, request.BatchSize)
 			rows, err := tx.QueryContext(ctx, `
-				SELECT id, uid, creator_id, content, payload
+				SELECT id, uid, creator_id, UNIX_TIMESTAMP(created_ts), content, payload
 				FROM memo
-				WHERE creator_id = ?
+				WHERE `+strings.Join(where, " AND ")+`
 				ORDER BY created_ts DESC, id DESC
-				LIMIT ? OFFSET ?
-				FOR UPDATE`, request.CreatorID, request.BatchSize, offset)
+				LIMIT ?
+				FOR UPDATE`, args...)
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to list memos for content transform")
 			}
@@ -248,7 +261,7 @@ func (d *DB) TransformMemoContents(ctx context.Context, request *store.Transform
 			for rows.Next() {
 				memo := &store.Memo{}
 				var payloadBytes []byte
-				if err := rows.Scan(&memo.ID, &memo.UID, &memo.CreatorID, &memo.Content, &payloadBytes); err != nil {
+				if err := rows.Scan(&memo.ID, &memo.UID, &memo.CreatorID, &memo.CreatedTs, &memo.Content, &payloadBytes); err != nil {
 					return nil, errors.Wrap(err, "failed to scan memo for content transform")
 				}
 				memo.Payload = &storepb.MemoPayload{}
@@ -276,16 +289,23 @@ func (d *DB) TransformMemoContents(ctx context.Context, request *store.Transform
 			if !changed {
 				continue
 			}
-			if err := applyMemoUpdate(ctx, tx, &store.UpdateMemo{ID: memo.ID, Content: &memo.Content, Payload: memo.Payload}); err != nil {
+			if err := applyMemoUpdate(ctx, tx, &store.UpdateMemo{
+				ID:        memo.ID,
+				UpdatedTs: &request.UpdatedTs,
+				Content:   &memo.Content,
+				Payload:   memo.Payload,
+			}); err != nil {
 				return nil, errors.Wrap(err, "failed to persist memo content transform")
 			}
 			updatedMemoIDs = append(updatedMemoIDs, memo.ID)
 		}
 
-		offset += len(memos)
 		if len(memos) < request.BatchSize {
 			break
 		}
+		lastMemo := memos[len(memos)-1]
+		cursorCreatedTs, cursorID = lastMemo.CreatedTs, lastMemo.ID
+		hasCursor = true
 	}
 
 	if err := tx.Commit(); err != nil {

@@ -63,6 +63,7 @@ func NewTestService(t *testing.T) *TestService {
 
 // Cleanup closes resources after test.
 func (ts *TestService) Cleanup() {
+	_ = ts.Service.WaitForBackgroundTasks(context.Background())
 	ts.Store.Close()
 }
 
