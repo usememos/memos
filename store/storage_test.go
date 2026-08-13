@@ -68,9 +68,69 @@ func TestPrepareInstanceStorageSettingUpdateDoesNotReuseCredentialsAcrossEndpoin
 		DefaultStorageId: incomingStorage.Id,
 		Storages:         []*storepb.Storage{incomingStorage},
 	}
+
+	// The stored secret must not leak to a different endpoint, and a storage
+	// without any recoverable secret must fail loudly instead of persisting
+	// empty credentials that break uploads at runtime.
+	err := store.PrepareInstanceStorageSettingUpdate(incoming, existing)
+	require.ErrorContains(t, err, "access key secret is required")
+}
+
+func TestPrepareInstanceStorageSettingUpdateKeepsReferencedDefault(t *testing.T) {
+	existing := legacyS3StorageSetting("https://s3.example.com", "memos", "secret")
+	store.NormalizeInstanceStorageSetting(existing)
+	existingID := existing.DefaultStorageId
+
+	// A default-only request references a storage the server preserves without
+	// resending it; the requested default must survive, not reset to local.
+	incoming := &storepb.InstanceStorageSetting{DefaultStorageId: existingID}
 	require.NoError(t, store.PrepareInstanceStorageSettingUpdate(incoming, existing))
 
-	require.Empty(t, store.GetDefaultStorage(incoming).GetS3Config().AccessKeySecret)
+	require.Equal(t, existingID, incoming.DefaultStorageId)
+	require.Equal(t, storepb.StorageType_STORAGE_TYPE_S3, store.GetDefaultStorage(incoming).GetType())
+	require.Equal(t, "secret", store.GetDefaultStorage(incoming).GetS3Config().AccessKeySecret)
+
+	unknown := &storepb.InstanceStorageSetting{DefaultStorageId: "unknown"}
+	err := store.PrepareInstanceStorageSettingUpdate(unknown, existing)
+	require.ErrorContains(t, err, `default storage "unknown" is not configured`)
+}
+
+func TestPrepareInstanceStorageSettingUpdateKeepsEditedStorageOnIdentityCollision(t *testing.T) {
+	existing := legacyS3StorageSetting("https://s3.example.com", "memos", "secret-a")
+	store.NormalizeInstanceStorageSetting(existing)
+	hashID := existing.DefaultStorageId
+	otherStorage := s3Storage("custom-b", "other-bucket")
+	otherStorage.GetS3Config().AccessKeyId = "key-b"
+	otherStorage.GetS3Config().AccessKeySecret = "secret-b"
+	existing.Storages = append(existing.Storages, otherStorage)
+
+	// Editing custom-b onto the first storage's namespace re-identifies it onto
+	// the same hash ID; the edited entry must win, not be silently dropped.
+	incoming := &storepb.InstanceStorageSetting{
+		DefaultStorageId: "custom-b",
+		Storages: []*storepb.Storage{
+			proto.CloneOf(store.FindStorage(existing, hashID)),
+			{
+				Id:   "custom-b",
+				Name: "Rotated",
+				Type: storepb.StorageType_STORAGE_TYPE_S3,
+				Config: &storepb.Storage_S3Config{S3Config: &storepb.StorageS3Config{
+					AccessKeyId:     "key-b-new",
+					AccessKeySecret: "secret-b-new",
+					Endpoint:        "https://s3.example.com",
+					Region:          "us-east-1",
+					Bucket:          "memos",
+				}},
+			},
+		},
+	}
+	require.NoError(t, store.PrepareInstanceStorageSettingUpdate(incoming, existing))
+
+	require.Equal(t, hashID, incoming.DefaultStorageId)
+	require.Equal(t, "key-b-new", store.GetDefaultStorage(incoming).GetS3Config().AccessKeyId)
+	require.Equal(t, "secret-b-new", store.GetDefaultStorage(incoming).GetS3Config().AccessKeySecret)
+	// The other storage's previous identity stays available to attachments.
+	require.Equal(t, "other-bucket", store.FindStorage(incoming, "custom-b").GetS3Config().Bucket)
 }
 
 func TestPrepareInstanceStorageSettingUpdateDoesNotMutateExistingStorageIdentity(t *testing.T) {
@@ -144,6 +204,69 @@ func TestNormalizeInstanceStorageSettingKeepsMostRecentlyActivatedStorageFirst(t
 	store.NormalizeInstanceStorageSetting(setting)
 	require.Equal(t, []string{"local", "recent", "old"}, storageIDs(setting.Storages))
 	require.Equal(t, "recent-bucket", setting.S3Config.GetBucket())
+}
+
+func TestNormalizeInstanceStorageSettingSelfHealsS3WithoutConfig(t *testing.T) {
+	setting := &storepb.InstanceStorageSetting{StorageType: storepb.InstanceStorageSetting_S3}
+
+	store.NormalizeInstanceStorageSetting(setting)
+
+	require.Equal(t, "local", setting.DefaultStorageId)
+	require.Equal(t, storepb.StorageType_STORAGE_TYPE_LOCAL, store.GetDefaultStorage(setting).GetType())
+	for _, configuredStorage := range setting.Storages {
+		require.NotEmpty(t, configuredStorage.Id)
+	}
+}
+
+func TestNormalizeInstanceStorageSettingUnspecifiedTypeDefaultsToLocal(t *testing.T) {
+	// Matches the 0.31 migration and the pre-registry runtime default: a setting
+	// that never chose a type stays LOCAL even when an S3 config is present.
+	setting := &storepb.InstanceStorageSetting{
+		S3Config: &storepb.StorageS3Config{
+			AccessKeyId:     "access-key",
+			AccessKeySecret: "secret",
+			Endpoint:        "https://s3.example.com",
+			Region:          "us-east-1",
+			Bucket:          "memos",
+		},
+	}
+
+	store.NormalizeInstanceStorageSetting(setting)
+
+	require.Equal(t, storepb.StorageType_STORAGE_TYPE_LOCAL, store.GetDefaultStorage(setting).GetType())
+	var s3Count int
+	for _, configuredStorage := range setting.Storages {
+		if configuredStorage.GetType() == storepb.StorageType_STORAGE_TYPE_S3 {
+			s3Count++
+		}
+	}
+	require.Equal(t, 1, s3Count, "the legacy S3 config must stay registered as a selectable storage")
+}
+
+func TestResolveStorageFallsBackWhenStorageIDMissing(t *testing.T) {
+	setting := legacyS3StorageSetting("https://s3.example.com", "memos", "secret")
+	store.NormalizeInstanceStorageSetting(setting)
+
+	// The registry may be rebuilt without preserving IDs (deployment file,
+	// restored backup); a dangling reference must fall back to the namespace
+	// chain instead of permanently orphaning the attachment.
+	resolved, err := store.ResolveStorage(setting, "s3-dangling", nil)
+	require.NoError(t, err)
+	require.Equal(t, setting.DefaultStorageId, resolved.Id)
+
+	embedded := &storepb.StorageS3Config{
+		AccessKeyId:     "old-access-key",
+		AccessKeySecret: "old-secret",
+		Endpoint:        "https://s3.example.com/",
+		Region:          "us-east-1",
+		Bucket:          "memos",
+	}
+	resolved, err = store.ResolveStorage(setting, "s3-dangling", embedded)
+	require.NoError(t, err)
+	require.Equal(t, setting.DefaultStorageId, resolved.Id)
+
+	_, err = store.ResolveStorage(&storepb.InstanceStorageSetting{}, "s3-dangling", nil)
+	require.ErrorContains(t, err, `storage "s3-dangling" is not configured`)
 }
 
 func TestResolveStorageDriverByStorageID(t *testing.T) {

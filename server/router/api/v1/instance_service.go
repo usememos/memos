@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"log/slog"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -225,7 +226,10 @@ func (s *APIV1Service) UpdateInstanceSetting(ctx context.Context, request *v1pb.
 	case storepb.InstanceSettingKey_STORAGE:
 		existing, err := s.Store.GetInstanceStorageSetting(ctx)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get existing storage setting: %v", err)
+			// A corrupt stored setting must not block repair: treat it as unset so
+			// a valid update can overwrite it.
+			slog.Warn("failed to load existing storage setting; treating it as unset", "error", err)
+			existing = nil
 		}
 		if err := store.PrepareInstanceStorageSettingUpdate(updateSetting.GetStorageSetting(), existing); err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid storage setting: %v", err)

@@ -233,6 +233,11 @@ func validateAndNormalizeDeploymentInstanceSetting(setting *storepb.InstanceSett
 		if storage == nil {
 			return errors.New("storageSetting must be populated for key STORAGE")
 		}
+		// Normalization would silently self-heal this misconfiguration to LOCAL;
+		// a deployment file declaring S3 without a config should fail loudly.
+		if storage.StorageType == storepb.InstanceStorageSetting_S3 && storage.S3Config == nil && len(storage.Storages) == 0 {
+			return errors.New("storageSetting.s3Config is required for S3")
+		}
 		NormalizeInstanceStorageSetting(storage)
 		if storage.UploadSizeLimitMb < 0 {
 			return errors.New("storageSetting.uploadSizeLimitMb must not be negative")

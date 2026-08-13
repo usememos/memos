@@ -19,8 +19,6 @@ import {
   InstanceSetting_StorageSchema,
   InstanceSetting_StorageSetting,
   InstanceSetting_StorageSetting_S3Config,
-  InstanceSetting_StorageSetting_S3ConfigSchema,
-  InstanceSetting_StorageSetting_StorageType,
   InstanceSetting_StorageSettingSchema,
   InstanceSetting_StorageType,
   InstanceSettingSchema,
@@ -137,6 +135,20 @@ const createStorage = (storageType: InstanceSetting_StorageType): InstanceSettin
   });
 };
 
+// Browsing the storage-type options creates placeholder entries so the form has
+// something to select and edit. Only the selected storage and entries the server
+// already knows deserve to be persisted; abandoned placeholders are dropped.
+const canonicalizeStorageSetting = (
+  setting: InstanceSetting_StorageSetting,
+  original: InstanceSetting_StorageSetting,
+): InstanceSetting_StorageSetting => {
+  const originalIds = new Set(original.storages.map((storage) => storage.id));
+  return create(InstanceSetting_StorageSettingSchema, {
+    ...setting,
+    storages: setting.storages.filter((storage) => storage.id === setting.defaultStorageId || originalIds.has(storage.id)),
+  });
+};
+
 const StorageSection = () => {
   const t = useTranslate();
   const saveInstanceSetting = useInstanceSettingUpdater();
@@ -178,7 +190,7 @@ const StorageSection = () => {
         return false;
       }
     }
-    return !isEqual(originalSetting, instanceStorageSetting);
+    return !isEqual(originalSetting, canonicalizeStorageSetting(instanceStorageSetting, originalSetting));
   }, [canReuseSelectedS3Secret, instanceStorageSetting, originalSetting, selectedS3Config, selectedStorageType]);
 
   const handleMaxUploadSizeChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,74 +198,75 @@ const StorageSection = () => {
     if (Number.isNaN(num)) {
       num = 0;
     }
-    setInstanceStorageSetting(
+    setInstanceStorageSetting((current) =>
       create(InstanceSetting_StorageSettingSchema, {
-        ...instanceStorageSetting,
+        ...current,
         uploadSizeLimitMb: BigInt(num),
       }),
     );
   };
 
   const handleFilepathTemplateChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInstanceStorageSetting(
+    setInstanceStorageSetting((current) =>
       create(InstanceSetting_StorageSettingSchema, {
-        ...instanceStorageSetting,
+        ...current,
         filepathTemplate: event.target.value,
       }),
     );
   };
 
   const handleS3FieldChange = (field: keyof InstanceSetting_StorageSetting_S3Config, value: string | boolean) => {
-    const existing = getS3Config(instanceStorageSetting);
-    // One field list feeds both the named storage config and its legacy mirror.
-    const s3ConfigFields = {
-      accessKeyId: existing?.accessKeyId ?? "",
-      accessKeySecret: existing?.accessKeySecret ?? "",
-      endpoint: existing?.endpoint ?? "",
-      region: existing?.region ?? "",
-      bucket: existing?.bucket ?? "",
-      usePathStyle: existing?.usePathStyle ?? false,
-      insecureSkipTlsVerify: existing?.insecureSkipTlsVerify ?? false,
-      [field]: value,
-    };
-    let configuredStorage = getDefaultStorage(instanceStorageSetting);
-    if (configuredStorage?.type !== InstanceSetting_StorageType.S3) {
-      configuredStorage =
-        findStorageForType(instanceStorageSetting, InstanceSetting_StorageType.S3) ?? createStorage(InstanceSetting_StorageType.S3);
-    }
-    const updatedStorage = create(InstanceSetting_StorageSchema, {
-      ...configuredStorage,
-      config: { case: "s3Config", value: create(InstanceSetting_Storage_S3ConfigSchema, s3ConfigFields) },
-    });
-    // Replace in place to preserve the registry order the server maintains.
-    const storages = instanceStorageSetting.storages.some((storage) => storage.id === updatedStorage.id)
-      ? instanceStorageSetting.storages.map((storage) => (storage.id === updatedStorage.id ? updatedStorage : storage))
-      : [updatedStorage, ...instanceStorageSetting.storages];
-    setInstanceStorageSetting(
-      create(InstanceSetting_StorageSettingSchema, {
-        ...instanceStorageSetting,
+    // Functional update: batched events (e.g. password-manager autofill firing
+    // several inputs in one task) must not overwrite one another.
+    setInstanceStorageSetting((current) => {
+      const existing = getS3Config(current);
+      let configuredStorage = getDefaultStorage(current);
+      if (configuredStorage?.type !== InstanceSetting_StorageType.S3) {
+        configuredStorage = findStorageForType(current, InstanceSetting_StorageType.S3) ?? createStorage(InstanceSetting_StorageType.S3);
+      }
+      const updatedStorage = create(InstanceSetting_StorageSchema, {
+        ...configuredStorage,
+        config: {
+          case: "s3Config",
+          value: create(InstanceSetting_Storage_S3ConfigSchema, {
+            accessKeyId: existing?.accessKeyId ?? "",
+            accessKeySecret: existing?.accessKeySecret ?? "",
+            endpoint: existing?.endpoint ?? "",
+            region: existing?.region ?? "",
+            bucket: existing?.bucket ?? "",
+            usePathStyle: existing?.usePathStyle ?? false,
+            insecureSkipTlsVerify: existing?.insecureSkipTlsVerify ?? false,
+            [field]: value,
+          }),
+        },
+      });
+      // Replace in place to preserve the registry order the server maintains.
+      // The legacy storageType/s3Config mirror fields are left untouched: the
+      // server re-derives them from the named model on every update.
+      const storages = current.storages.some((storage) => storage.id === updatedStorage.id)
+        ? current.storages.map((storage) => (storage.id === updatedStorage.id ? updatedStorage : storage))
+        : [updatedStorage, ...current.storages];
+      return create(InstanceSetting_StorageSettingSchema, {
+        ...current,
         storages,
         defaultStorageId: updatedStorage.id,
-        storageType: InstanceSetting_StorageSetting_StorageType.S3,
-        s3Config: create(InstanceSetting_StorageSetting_S3ConfigSchema, s3ConfigFields),
-      }),
-    );
+      });
+    });
   };
 
   const handleStorageTypeChanged = (storageType: InstanceSetting_StorageType) => {
-    const configuredStorage = findStorageForType(instanceStorageSetting, storageType) ?? createStorage(storageType);
-    const storages = instanceStorageSetting.storages.some((storage) => storage.id === configuredStorage.id)
-      ? instanceStorageSetting.storages
-      : [...instanceStorageSetting.storages, configuredStorage];
-    setInstanceStorageSetting(
-      create(InstanceSetting_StorageSettingSchema, {
-        ...instanceStorageSetting,
+    setInstanceStorageSetting((current) => {
+      const configuredStorage = findStorageForType(current, storageType) ?? createStorage(storageType);
+      const storages = current.storages.some((storage) => storage.id === configuredStorage.id)
+        ? current.storages
+        : [...current.storages, configuredStorage];
+      return create(InstanceSetting_StorageSettingSchema, {
+        ...current,
         storages,
         defaultStorageId: configuredStorage.id,
-        storageType: storageType as number as InstanceSetting_StorageSetting_StorageType,
-        filepathTemplate: instanceStorageSetting.filepathTemplate || DEFAULT_FILEPATH_TEMPLATE,
-      }),
-    );
+        filepathTemplate: current.filepathTemplate || DEFAULT_FILEPATH_TEMPLATE,
+      });
+    });
   };
 
   const saveInstanceStorageSetting = async () => {
@@ -263,7 +276,7 @@ const StorageSection = () => {
         name: buildInstanceSettingName(InstanceSetting_Key.STORAGE),
         value: {
           case: "storageSetting",
-          value: instanceStorageSetting,
+          value: canonicalizeStorageSetting(instanceStorageSetting, originalSetting),
         },
       }),
       errorContext: "Update storage settings",

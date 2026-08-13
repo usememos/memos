@@ -93,15 +93,20 @@ func (r *Runner) CheckAndPresign(ctx context.Context) {
 				}
 			}
 
-			driver := driversByStorageID[s3ObjectPayload.StorageId]
-			if driver == nil || s3ObjectPayload.StorageId == "" {
-				driver, err = store.ResolveStorageDriver(ctx, instanceStorageSetting, s3ObjectPayload.StorageId, s3ObjectPayload.S3Config)
+			resolvedStorage, err := store.ResolveStorage(instanceStorageSetting, s3ObjectPayload.StorageId, s3ObjectPayload.S3Config)
+			if err != nil {
+				slog.Error("Failed to resolve storage", "error", err, "attachmentID", attachment.ID, "storageID", s3ObjectPayload.StorageId)
+				continue
+			}
+			driver := driversByStorageID[resolvedStorage.Id]
+			if driver == nil {
+				driver, err = storage.NewDriver(ctx, resolvedStorage)
 				if err != nil {
-					slog.Error("Failed to resolve storage driver", "error", err, "attachmentID", attachment.ID, "storageID", s3ObjectPayload.StorageId)
+					slog.Error("Failed to create storage driver", "error", err, "attachmentID", attachment.ID, "storageID", resolvedStorage.Id)
 					continue
 				}
-				if s3ObjectPayload.StorageId != "" {
-					driversByStorageID[s3ObjectPayload.StorageId] = driver
+				if resolvedStorage.Id != "" {
+					driversByStorageID[resolvedStorage.Id] = driver
 				}
 			}
 
@@ -111,6 +116,12 @@ func (r *Runner) CheckAndPresign(ctx context.Context) {
 				continue
 			}
 
+			// Pin attachments that predate storage IDs to the registry entry that
+			// served this presign, so a later default-storage change cannot rebind
+			// them to a different namespace.
+			if s3ObjectPayload.StorageId == "" && resolvedStorage.Id != "" {
+				s3ObjectPayload.StorageId = resolvedStorage.Id
+			}
 			s3ObjectPayload.LastPresignedTime = timestamppb.New(time.Now())
 			if err := r.Store.UpdateAttachment(ctx, &store.UpdateAttachment{
 				ID:        attachment.ID,

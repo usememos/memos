@@ -59,7 +59,10 @@ func NormalizeInstanceStorageSetting(setting *storepb.InstanceStorageSetting) {
 		if legacyStorage != nil {
 			if existing := findEquivalentStorage(setting.Storages, legacyStorage); existing != nil {
 				setting.DefaultStorageId = existing.Id
-			} else {
+			} else if legacyStorage.Id != "" {
+				// An ID-less storage (S3 declared without a config) would wedge the
+				// fallback below into selecting it forever; let the LOCAL fallback
+				// self-heal instead.
 				setting.Storages = append(setting.Storages, legacyStorage)
 				setting.DefaultStorageId = legacyStorage.Id
 			}
@@ -87,6 +90,20 @@ func PrepareInstanceStorageSettingUpdate(incoming, existing *storepb.InstanceSto
 		return errors.New("storage setting is required")
 	}
 
+	if existing != nil {
+		NormalizeInstanceStorageSetting(existing)
+	}
+	// A request may reference a storage the server preserves without resending
+	// it; adopt the stored entry so the reference survives validation and
+	// normalization instead of being silently replaced by a fallback default.
+	if incoming.DefaultStorageId != "" && FindStorage(incoming, incoming.DefaultStorageId) == nil {
+		preserved := FindStorage(existing, incoming.DefaultStorageId)
+		if preserved == nil {
+			return errors.Errorf("default storage %q is not configured", incoming.DefaultStorageId)
+		}
+		incoming.Storages = append(incoming.Storages, proto.CloneOf(preserved))
+	}
+
 	legacyRequest := len(incoming.Storages) == 0
 	if !legacyRequest {
 		if err := validateInstanceStorages(incoming); err != nil {
@@ -99,7 +116,6 @@ func PrepareInstanceStorageSettingUpdate(incoming, existing *storepb.InstanceSto
 	if existing == nil {
 		return nil
 	}
-	NormalizeInstanceStorageSetting(existing)
 
 	existingByID := make(map[string]*storepb.Storage, len(existing.Storages))
 	for _, storage := range existing.Storages {
@@ -117,11 +133,13 @@ func PrepareInstanceStorageSettingUpdate(incoming, existing *storepb.InstanceSto
 		}
 	}
 
+	reidentifiedStorages := map[*storepb.Storage]bool{}
 	for _, storage := range incoming.Storages {
 		previous := existingByID[storage.Id]
 		if previous != nil && !StorageNamespaceEqual(previous, storage) {
 			oldID := storage.Id
 			storage.Id = storageID(storage)
+			reidentifiedStorages[storage] = true
 			if incoming.DefaultStorageId == oldID {
 				incoming.DefaultStorageId = storage.Id
 			}
@@ -146,6 +164,33 @@ func PrepareInstanceStorageSettingUpdate(incoming, existing *storepb.InstanceSto
 		}
 	}
 
+	// A namespace edit can move a storage onto an identity already present in
+	// the request. Resolve the duplicate here in favor of the re-identified
+	// entry — it carries the admin's latest input — instead of letting the
+	// normalization dedupe silently discard it.
+	dedupedStorages := make([]*storepb.Storage, 0, len(incoming.Storages))
+	indexByID := make(map[string]int, len(incoming.Storages))
+	for _, storage := range incoming.Storages {
+		if i, ok := indexByID[storage.Id]; ok {
+			if reidentifiedStorages[storage] && !reidentifiedStorages[dedupedStorages[i]] {
+				dedupedStorages[i] = storage
+			}
+			continue
+		}
+		indexByID[storage.Id] = len(dedupedStorages)
+		dedupedStorages = append(dedupedStorages, storage)
+	}
+	incoming.Storages = dedupedStorages
+
+	// Secrets are backfilled from stored credentials above; a storage that still
+	// has none would fail at runtime with an opaque S3 auth error, so reject it
+	// at save time instead.
+	for _, storage := range incoming.Storages {
+		if s3Config := storage.GetS3Config(); s3Config != nil && s3Config.AccessKeyId != "" && s3Config.AccessKeySecret == "" {
+			return errors.Errorf("storage %q access key secret is required", storage.Id)
+		}
+	}
+
 	incomingIDs := make(map[string]bool, len(incoming.Storages))
 	for _, storage := range incoming.Storages {
 		incomingIDs[storage.Id] = true
@@ -160,6 +205,47 @@ func PrepareInstanceStorageSettingUpdate(incoming, existing *storepb.InstanceSto
 	return nil
 }
 
+// ResolveStorage resolves the configured storage referenced by an attachment.
+// It returns a registry entry when one matches — its Id is the stable identity —
+// or a synthesized storage wrapping the legacy config otherwise (empty Id).
+// legacyS3Config supports attachments written before storage IDs were introduced.
+func ResolveStorage(
+	setting *storepb.InstanceStorageSetting,
+	storageID string,
+	legacyS3Config *storepb.StorageS3Config,
+) (*storepb.Storage, error) {
+	if storageID != "" {
+		if configuredStorage := FindStorage(setting, storageID); configuredStorage != nil {
+			return configuredStorage, nil
+		}
+		// The registry may have been rebuilt without preserving IDs (deployment
+		// config file, restored backup, rollback round-trip); fall through to the
+		// legacy chain rather than permanently orphaning the attachment.
+	}
+
+	s3Config := legacyS3Config
+	if s3Config == nil {
+		s3Config = setting.GetS3Config()
+	}
+	if s3Config != nil {
+		// Prefer the configured storage addressing the same namespace so legacy
+		// attachments pick up rotated credentials and transport options.
+		legacyStorage := &storepb.Storage{
+			Type:   storepb.StorageType_STORAGE_TYPE_S3,
+			Config: &storepb.Storage_S3Config{S3Config: s3Config},
+		}
+		if configuredStorage := findEquivalentStorage(setting.GetStorages(), legacyStorage); configuredStorage != nil {
+			return configuredStorage, nil
+		}
+		return legacyStorage, nil
+	}
+
+	if storageID != "" {
+		return nil, errors.Errorf("storage %q is not configured", storageID)
+	}
+	return nil, errors.New("attachment storage is not configured")
+}
+
 // ResolveStorageDriver resolves the configured storage referenced by an attachment
 // and returns its driver. legacyS3Config supports attachments written before
 // storage IDs were introduced.
@@ -169,34 +255,11 @@ func ResolveStorageDriver(
 	storageID string,
 	legacyS3Config *storepb.StorageS3Config,
 ) (storage.Driver, error) {
-	if storageID != "" {
-		configuredStorage := FindStorage(setting, storageID)
-		if configuredStorage == nil {
-			return nil, errors.Errorf("storage %q is not configured", storageID)
-		}
-		return storage.NewDriver(ctx, configuredStorage)
+	resolvedStorage, err := ResolveStorage(setting, storageID, legacyS3Config)
+	if err != nil {
+		return nil, err
 	}
-
-	if legacyS3Config != nil {
-		// Prefer the configured storage addressing the same namespace so legacy
-		// attachments pick up rotated credentials and transport options.
-		legacyStorage := &storepb.Storage{
-			Type:   storepb.StorageType_STORAGE_TYPE_S3,
-			Config: &storepb.Storage_S3Config{S3Config: legacyS3Config},
-		}
-		if configuredStorage := findEquivalentStorage(setting.GetStorages(), legacyStorage); configuredStorage != nil {
-			return storage.NewDriver(ctx, configuredStorage)
-		}
-		return storage.NewDriver(ctx, legacyStorage)
-	}
-
-	if setting.GetS3Config() != nil {
-		return storage.NewDriver(ctx, &storepb.Storage{
-			Type:   storepb.StorageType_STORAGE_TYPE_S3,
-			Config: &storepb.Storage_S3Config{S3Config: setting.GetS3Config()},
-		})
-	}
-	return nil, errors.New("attachment storage is not configured")
+	return storage.NewDriver(ctx, resolvedStorage)
 }
 
 // FindStorage returns the configured storage with the given stable identifier.
@@ -242,11 +305,10 @@ func StorageNamespaceEqual(a, b *storepb.Storage) bool {
 func storageFromLegacySetting(setting *storepb.InstanceStorageSetting) *storepb.Storage {
 	storageType := storepb.StorageType(setting.StorageType)
 	if storageType == storepb.StorageType_STORAGE_TYPE_UNSPECIFIED {
-		if setting.S3Config != nil {
-			storageType = storepb.StorageType_STORAGE_TYPE_S3
-		} else {
-			storageType = storepb.StorageType_STORAGE_TYPE_LOCAL
-		}
+		// Match the 0.31 migration and the pre-registry runtime default: an
+		// unspecified type is LOCAL even when a legacy S3 config is present
+		// (the config is still registered as a selectable storage above).
+		storageType = storepb.StorageType_STORAGE_TYPE_LOCAL
 	}
 	storage := builtinStorage(storageType)
 	if storageType == storepb.StorageType_STORAGE_TYPE_S3 {

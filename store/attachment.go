@@ -228,13 +228,19 @@ func (s *Store) deleteAttachmentStorageImpl(ctx context.Context, attachment *Att
 			if s3ObjectPayload == nil {
 				return errors.Errorf("No s3 object found")
 			}
-			if AttachmentNeedsInstanceStorageSetting(attachment) {
-				if instanceStorageSetting == nil {
-					var err error
-					instanceStorageSetting, err = s.GetInstanceStorageSetting(ctx)
-					if err != nil {
+			// Deletes resolve with the registry like reads do, so a legacy
+			// attachment picks up rotated credentials for its namespace instead
+			// of deleting with the stale embedded config.
+			if instanceStorageSetting == nil {
+				var err error
+				instanceStorageSetting, err = s.GetInstanceStorageSetting(ctx)
+				if err != nil {
+					if AttachmentNeedsInstanceStorageSetting(attachment) {
 						return errors.Wrap(err, "failed to get instance storage setting")
 					}
+					// The embedded config is sufficient on its own; keep the
+					// delete best-effort when the settings read fails.
+					instanceStorageSetting = nil
 				}
 			}
 
