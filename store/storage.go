@@ -131,8 +131,17 @@ func PrepareInstanceStorageSettingUpdate(incoming, existing *storepb.InstanceSto
 		if storage.GetS3Config() != nil && storage.GetS3Config().AccessKeySecret == "" {
 			if previous != nil && previous.GetS3Config() != nil {
 				storage.GetS3Config().AccessKeySecret = previous.GetS3Config().AccessKeySecret
-			} else if candidate := findStorageCredentialSource(existing.Storages, storage.GetS3Config().AccessKeyId); candidate != nil {
-				storage.GetS3Config().AccessKeySecret = candidate.GetS3Config().AccessKeySecret
+			} else {
+				candidate := findStorageCredentialSource(existing.Storages, storage)
+				// Legacy clients have always used an empty secret to preserve the
+				// current credential while editing any S3 field. Keep that contract,
+				// while canonical named-storage requests use the scoped lookup above.
+				if candidate == nil && legacyRequest {
+					candidate = findLegacyStorageCredentialSource(existing.Storages, storage.GetS3Config().AccessKeyId)
+				}
+				if candidate != nil {
+					storage.GetS3Config().AccessKeySecret = candidate.GetS3Config().AccessKeySecret
+				}
 			}
 		}
 	}
@@ -322,7 +331,27 @@ func findEquivalentStorage(storages []*storepb.Storage, target *storepb.Storage)
 	return nil
 }
 
-func findStorageCredentialSource(storages []*storepb.Storage, accessKeyID string) *storepb.Storage {
+func findStorageCredentialSource(storages []*storepb.Storage, target *storepb.Storage) *storepb.Storage {
+	targetConfig := target.GetS3Config()
+	if targetConfig == nil {
+		return nil
+	}
+	// Credentials may authorize multiple buckets, but must not cross S3
+	// providers that happen to use the same access key ID.
+	for _, storage := range storages {
+		config := storage.GetS3Config()
+		if config != nil &&
+			config.AccessKeyId == targetConfig.AccessKeyId &&
+			config.AccessKeySecret != "" &&
+			normalizeEndpoint(config.Endpoint) == normalizeEndpoint(targetConfig.Endpoint) &&
+			strings.TrimSpace(config.Region) == strings.TrimSpace(targetConfig.Region) {
+			return storage
+		}
+	}
+	return nil
+}
+
+func findLegacyStorageCredentialSource(storages []*storepb.Storage, accessKeyID string) *storepb.Storage {
 	for _, storage := range storages {
 		config := storage.GetS3Config()
 		if config != nil && config.AccessKeyId == accessKeyID && config.AccessKeySecret != "" {
@@ -353,14 +382,14 @@ func synchronizeLegacyStorageFields(setting *storepb.InstanceStorageSetting) {
 	}
 	setting.StorageType = storepb.InstanceStorageSetting_StorageType(storage.Type)
 	if storage.GetS3Config() != nil {
-		setting.S3Config = storage.GetS3Config()
+		setting.S3Config = proto.CloneOf(storage.GetS3Config())
 		return
 	}
 	// Keep the most recently configured S3 storage available to legacy
 	// attachments that predate both storage IDs and embedded configurations.
 	for _, configuredStorage := range setting.Storages {
 		if configuredStorage.GetS3Config() != nil {
-			setting.S3Config = configuredStorage.GetS3Config()
+			setting.S3Config = proto.CloneOf(configuredStorage.GetS3Config())
 			return
 		}
 	}

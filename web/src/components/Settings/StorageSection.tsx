@@ -98,11 +98,37 @@ const findStorageForType = (
   storageType: InstanceSetting_StorageType,
 ): InstanceSetting_Storage | undefined => setting.storages.find((storage) => storage.type === storageType);
 
+const normalizeEndpoint = (endpoint: string): string => endpoint.trim().replace(/\/+$/, "");
+
+const hasReusableS3Credential = (
+  setting: InstanceSetting_StorageSetting,
+  target: InstanceSetting_Storage_S3Config | InstanceSetting_StorageSetting_S3Config | undefined,
+): boolean => {
+  if (!target) {
+    return false;
+  }
+  // A credential can authorize multiple buckets, so match its provider scope
+  // rather than requiring the exact storage namespace.
+  const existingConfigs: (InstanceSetting_Storage_S3Config | InstanceSetting_StorageSetting_S3Config)[] = setting.storages
+    .map((storage) => (storage.config.case === "s3Config" ? storage.config.value : undefined))
+    .filter((config): config is InstanceSetting_Storage_S3Config => config !== undefined);
+  if (setting.s3Config) {
+    existingConfigs.push(setting.s3Config);
+  }
+  return existingConfigs.some(
+    (config) =>
+      config.accessKeyId === target.accessKeyId &&
+      normalizeEndpoint(config.endpoint) === normalizeEndpoint(target.endpoint) &&
+      config.region.trim() === target.region.trim(),
+  );
+};
+
 const createStorage = (storageType: InstanceSetting_StorageType): InstanceSetting_Storage => {
-  const id = storageType === InstanceSetting_StorageType.S3 ? `s3-${uuidv4()}` : InstanceSetting_StorageType[storageType].toLowerCase();
+  const storageTypeName = InstanceSetting_StorageType[storageType];
+  const id = storageType === InstanceSetting_StorageType.S3 ? `s3-${uuidv4()}` : storageTypeName.toLowerCase();
   return create(InstanceSetting_StorageSchema, {
     id,
-    name: storageType === InstanceSetting_StorageType.S3 ? "S3" : InstanceSetting_StorageType[storageType],
+    name: storageType === InstanceSetting_StorageType.S3 ? "S3" : `${storageTypeName[0]}${storageTypeName.slice(1).toLowerCase()}`,
     type: storageType,
     config:
       storageType === InstanceSetting_StorageType.S3
@@ -119,6 +145,7 @@ const StorageSection = () => {
 
   const selectedStorageType = getSelectedStorageType(instanceStorageSetting);
   const selectedS3Config = getS3Config(instanceStorageSetting);
+  const canReuseSelectedS3Secret = hasReusableS3Credential(originalSetting, selectedS3Config);
 
   const selectedStorageOption = useMemo(
     () => storageTypeOptions.find((option) => option.storageType === selectedStorageType) ?? storageTypeOptions[0],
@@ -140,11 +167,10 @@ const StorageSection = () => {
         return false;
       }
     } else if (selectedStorageType === InstanceSetting_StorageType.S3) {
-      const hasExistingS3Config = getS3Config(originalSetting) !== undefined;
       if (
         !instanceStorageSetting.filepathTemplate ||
         !selectedS3Config?.accessKeyId ||
-        (!hasExistingS3Config && !selectedS3Config?.accessKeySecret) ||
+        (!canReuseSelectedS3Secret && !selectedS3Config?.accessKeySecret) ||
         !selectedS3Config?.endpoint ||
         !selectedS3Config?.region ||
         !selectedS3Config?.bucket
@@ -153,7 +179,7 @@ const StorageSection = () => {
       }
     }
     return !isEqual(originalSetting, instanceStorageSetting);
-  }, [instanceStorageSetting, originalSetting, selectedS3Config, selectedStorageType]);
+  }, [canReuseSelectedS3Secret, instanceStorageSetting, originalSetting, selectedS3Config, selectedStorageType]);
 
   const handleMaxUploadSizeChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     let num = parseInt(event.target.value);
@@ -192,7 +218,8 @@ const StorageSection = () => {
     };
     let configuredStorage = getDefaultStorage(instanceStorageSetting);
     if (configuredStorage?.type !== InstanceSetting_StorageType.S3) {
-      configuredStorage = createStorage(InstanceSetting_StorageType.S3);
+      configuredStorage =
+        findStorageForType(instanceStorageSetting, InstanceSetting_StorageType.S3) ?? createStorage(InstanceSetting_StorageType.S3);
     }
     const updatedStorage = create(InstanceSetting_StorageSchema, {
       ...configuredStorage,
@@ -358,9 +385,7 @@ const StorageSection = () => {
           <SettingRow
             label={t("setting.storage.secretkey")}
             description={
-              getS3Config(originalSetting)
-                ? t("setting.storage.secretkey-preserve-description")
-                : t("setting.storage.secretkey-description")
+              canReuseSelectedS3Secret ? t("setting.storage.secretkey-preserve-description") : t("setting.storage.secretkey-description")
             }
           >
             <Input

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/usememos/memos/internal/storage/s3"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -22,7 +23,8 @@ func TestNormalizeInstanceStorageSettingMigratesLegacyS3Config(t *testing.T) {
 	require.Equal(t, storepb.StorageType_STORAGE_TYPE_S3, configuredStorage.Type)
 	require.Equal(t, setting.DefaultStorageId, configuredStorage.Id)
 	require.Equal(t, "secret", configuredStorage.GetS3Config().AccessKeySecret)
-	require.Same(t, configuredStorage.GetS3Config(), setting.S3Config)
+	require.NotSame(t, configuredStorage.GetS3Config(), setting.S3Config)
+	require.True(t, proto.Equal(configuredStorage.GetS3Config(), setting.S3Config))
 }
 
 func TestPrepareInstanceStorageSettingUpdateRotatesCredentialsInPlace(t *testing.T) {
@@ -53,6 +55,22 @@ func TestPrepareInstanceStorageSettingUpdatePreservesPreviousNamespace(t *testin
 	require.Equal(t, "old-bucket", store.FindStorage(incoming, previousID).GetS3Config().Bucket)
 	require.Equal(t, "new-bucket", store.GetDefaultStorage(incoming).GetS3Config().Bucket)
 	require.Equal(t, "secret", store.GetDefaultStorage(incoming).GetS3Config().AccessKeySecret)
+}
+
+func TestPrepareInstanceStorageSettingUpdateDoesNotReuseCredentialsAcrossEndpoints(t *testing.T) {
+	existing := legacyS3StorageSetting("https://s3.example.com", "old-bucket", "secret")
+	store.NormalizeInstanceStorageSetting(existing)
+
+	incomingStorage := s3Storage("new-storage", "new-bucket")
+	incomingStorage.GetS3Config().AccessKeyId = "access-key"
+	incomingStorage.GetS3Config().Endpoint = "https://other-s3.example.com"
+	incoming := &storepb.InstanceStorageSetting{
+		DefaultStorageId: incomingStorage.Id,
+		Storages:         []*storepb.Storage{incomingStorage},
+	}
+	require.NoError(t, store.PrepareInstanceStorageSettingUpdate(incoming, existing))
+
+	require.Empty(t, store.GetDefaultStorage(incoming).GetS3Config().AccessKeySecret)
 }
 
 func TestPrepareInstanceStorageSettingUpdateDoesNotMutateExistingStorageIdentity(t *testing.T) {

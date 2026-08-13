@@ -97,7 +97,7 @@ func (r *Runner) CheckAndPresign(ctx context.Context) {
 			if driver == nil || s3ObjectPayload.StorageId == "" {
 				driver, err = store.ResolveStorageDriver(ctx, instanceStorageSetting, s3ObjectPayload.StorageId, s3ObjectPayload.S3Config)
 				if err != nil {
-					slog.Error("Failed to resolve storage driver", "error", err)
+					slog.Error("Failed to resolve storage driver", "error", err, "attachmentID", attachment.ID, "storageID", s3ObjectPayload.StorageId)
 					continue
 				}
 				if s3ObjectPayload.StorageId != "" {

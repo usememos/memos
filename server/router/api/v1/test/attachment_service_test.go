@@ -135,9 +135,9 @@ func TestCreateAttachment(t *testing.T) {
 
 		require.NotEqual(t, firstStoreAttachment.Reference, secondStoreAttachment.Reference)
 
-		firstBlob, err := ts.Service.GetAttachmentBlob(firstStoreAttachment)
+		firstBlob, err := ts.Service.GetAttachmentBlob(ctx, firstStoreAttachment)
 		require.NoError(t, err)
-		secondBlob, err := ts.Service.GetAttachmentBlob(secondStoreAttachment)
+		secondBlob, err := ts.Service.GetAttachmentBlob(ctx, secondStoreAttachment)
 		require.NoError(t, err)
 		require.Equal(t, []byte("first-image"), firstBlob)
 		require.Equal(t, []byte("second-image"), secondBlob)

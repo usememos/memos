@@ -135,7 +135,8 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 	return nil
 }
 
-func (s *APIV1Service) GetAttachmentBlob(attachment *store.Attachment) ([]byte, error) {
+// GetAttachmentBlob reads an attachment from its configured storage.
+func (s *APIV1Service) GetAttachmentBlob(ctx context.Context, attachment *store.Attachment) ([]byte, error) {
 	// For local storage, read the file from the local disk.
 	if attachment.StorageType == storepb.AttachmentStorageType_LOCAL {
 		attachmentPath := filepath.FromSlash(attachment.Reference)
@@ -159,12 +160,12 @@ func (s *APIV1Service) GetAttachmentBlob(attachment *store.Attachment) ([]byte, 
 	}
 	// For S3 storage, download the file from S3.
 	if attachment.StorageType == storepb.AttachmentStorageType_S3 {
-		driver, s3Object, err := s.Store.ResolveAttachmentS3Driver(context.Background(), attachment)
+		driver, s3Object, err := s.Store.ResolveAttachmentS3Driver(ctx, attachment)
 		if err != nil {
 			return nil, err
 		}
 
-		blob, err := driver.GetObject(context.Background(), s3Object.Key)
+		blob, err := driver.GetObject(ctx, s3Object.Key)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to get object from S3")
 		}

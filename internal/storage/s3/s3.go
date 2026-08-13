@@ -64,7 +64,7 @@ func (c *Driver) UploadObject(ctx context.Context, key string, fileType string, 
 		Body:        content,
 	}
 	if _, err := c.Client.PutObject(ctx, &putInput); err != nil {
-		return "", err
+		return "", errors.Wrap(err, "failed to upload object")
 	}
 	return key, nil
 }

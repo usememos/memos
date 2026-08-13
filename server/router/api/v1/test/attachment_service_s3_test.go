@@ -53,7 +53,7 @@ func TestS3AttachmentLifecycleAcrossStorageChange(t *testing.T) {
 	storedInOldBucket, err := fake.GetObject("attachments-old", oldKey)
 	require.NoError(t, err)
 	require.Equal(t, firstContent, storedInOldBucket)
-	firstDownloaded, err := ts.Service.GetAttachmentBlob(storedFirst)
+	firstDownloaded, err := ts.Service.GetAttachmentBlob(ctx, storedFirst)
 	require.NoError(t, err)
 	require.Equal(t, firstContent, firstDownloaded)
 	firstMetadata, err := ts.Service.GetAttachment(userCtx, &v1pb.GetAttachmentRequest{Name: first.Name})
@@ -85,10 +85,10 @@ func TestS3AttachmentLifecycleAcrossStorageChange(t *testing.T) {
 
 	// Changing the default storage only affects new uploads. The first attachment
 	// must continue to resolve its original storage by ID.
-	firstDownloaded, err = ts.Service.GetAttachmentBlob(storedFirst)
+	firstDownloaded, err = ts.Service.GetAttachmentBlob(ctx, storedFirst)
 	require.NoError(t, err)
 	require.Equal(t, firstContent, firstDownloaded)
-	secondDownloaded, err := ts.Service.GetAttachmentBlob(storedSecond)
+	secondDownloaded, err := ts.Service.GetAttachmentBlob(ctx, storedSecond)
 	require.NoError(t, err)
 	require.Equal(t, secondContent, secondDownloaded)
 
@@ -109,6 +109,7 @@ func TestGetLegacyS3AttachmentBlob(t *testing.T) {
 
 	user, err := ts.CreateRegularUser(ctx, "legacy-s3-user")
 	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
 
 	t.Run("falls back to embedded config when storage is not registered", func(t *testing.T) {
 		legacyConfig := fake.Config("legacy-fallback")
@@ -136,7 +137,7 @@ func TestGetLegacyS3AttachmentBlob(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		downloaded, err := ts.Service.GetAttachmentBlob(legacyAttachment)
+		downloaded, err := ts.Service.GetAttachmentBlob(ctx, legacyAttachment)
 		require.NoError(t, err)
 		require.Equal(t, content, downloaded)
 	})
@@ -180,9 +181,14 @@ func TestGetLegacyS3AttachmentBlob(t *testing.T) {
 		})
 		require.NoError(t, err)
 
-		downloaded, err := ts.Service.GetAttachmentBlob(legacyAttachment)
+		downloaded, err := ts.Service.GetAttachmentBlob(ctx, legacyAttachment)
 		require.NoError(t, err)
 		require.Equal(t, content, downloaded)
+
+		_, err = ts.Service.DeleteAttachment(userCtx, &v1pb.DeleteAttachmentRequest{Name: apiv1.AttachmentNamePrefix + legacyAttachment.UID})
+		require.NoError(t, err)
+		_, err = fake.GetObject(currentConfig.Bucket, key)
+		require.Error(t, err, "deleting a legacy attachment must use the current matching storage configuration")
 	})
 }
 

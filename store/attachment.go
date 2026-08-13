@@ -271,6 +271,9 @@ func (s *Store) getAttachmentStorageCleanupInstanceSetting(ctx context.Context, 
 // ResolveAttachmentS3Driver resolves the storage driver referenced by an S3
 // attachment payload, validating the payload and supplying the instance setting.
 func (s *Store) ResolveAttachmentS3Driver(ctx context.Context, attachment *Attachment) (storage.Driver, *storepb.AttachmentPayload_S3Object, error) {
+	if attachment == nil {
+		return nil, nil, errors.New("attachment is missing")
+	}
 	if attachment.Payload == nil {
 		return nil, nil, errors.New("attachment payload is missing")
 	}
@@ -293,14 +296,13 @@ func (s *Store) ResolveAttachmentS3Driver(ctx context.Context, attachment *Attac
 	return driver, s3Object, nil
 }
 
-// AttachmentNeedsInstanceStorageSetting reports whether S3 cleanup needs the
-// configured storage registry or the legacy default S3 setting.
+// AttachmentNeedsInstanceStorageSetting reports whether cleanup should load
+// the configured storage registry for an S3 attachment.
 func AttachmentNeedsInstanceStorageSetting(attachment *Attachment) bool {
 	if attachment == nil || attachment.StorageType != storepb.AttachmentStorageType_S3 {
 		return false
 	}
-	s3ObjectPayload := attachment.Payload.GetS3Object()
-	return s3ObjectPayload != nil && (s3ObjectPayload.StorageId != "" || s3ObjectPayload.S3Config == nil)
+	return attachment.Payload.GetS3Object() != nil
 }
 
 func (s *Store) deleteAttachmentDerivedCaches(attachment *Attachment) {
