@@ -143,7 +143,7 @@ func PrepareInstanceStorageSettingUpdate(incoming, existing *storepb.InstanceSto
 	}
 	for _, storage := range existing.Storages {
 		if !incomingIDs[storage.Id] {
-			incoming.Storages = append(incoming.Storages, proto.Clone(storage).(*storepb.Storage))
+			incoming.Storages = append(incoming.Storages, proto.CloneOf(storage))
 		}
 	}
 

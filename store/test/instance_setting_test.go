@@ -249,9 +249,7 @@ func TestInstanceStorageSettingCacheIsolation(t *testing.T) {
 	errCh := make(chan error, 16)
 	var wg sync.WaitGroup
 	for range 16 {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			<-start
 			for range 50 {
 				if _, err := ts.GetInstanceStorageSetting(ctx); err != nil {
@@ -259,7 +257,7 @@ func TestInstanceStorageSettingCacheIsolation(t *testing.T) {
 					return
 				}
 			}
-		}()
+		})
 	}
 	close(start)
 	wg.Wait()

@@ -322,7 +322,7 @@ func (s *Store) GetInstanceStorageSetting(ctx context.Context) (*storepb.Instanc
 	stored := instanceSetting.GetStorageSetting()
 	instanceStorageSetting := &storepb.InstanceStorageSetting{}
 	if stored != nil {
-		instanceStorageSetting = proto.Clone(stored).(*storepb.InstanceStorageSetting)
+		instanceStorageSetting = proto.CloneOf(stored)
 	}
 	NormalizeInstanceStorageSetting(instanceStorageSetting)
 	if instanceStorageSetting.StorageType == storepb.InstanceStorageSetting_STORAGE_TYPE_UNSPECIFIED {
@@ -340,7 +340,7 @@ func (s *Store) GetInstanceStorageSetting(ctx context.Context) (*storepb.Instanc
 		s.cacheInstanceSetting(ctx, &storepb.InstanceSetting{
 			Key: storepb.InstanceSettingKey_STORAGE,
 			Value: &storepb.InstanceSetting_StorageSetting{
-				StorageSetting: proto.Clone(instanceStorageSetting).(*storepb.InstanceStorageSetting),
+				StorageSetting: proto.CloneOf(instanceStorageSetting),
 			},
 		})
 	}
