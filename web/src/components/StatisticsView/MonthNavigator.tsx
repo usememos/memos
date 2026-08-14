@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import { SIDEBAR_ROW_BOX_CLASSES } from "@/components/AppSidebar/SidebarRow";
@@ -8,37 +8,55 @@ import { addMonths } from "@/lib/calendar-utils";
 import { cn } from "@/lib/utils";
 import type { MonthNavigatorProps } from "@/types/statistics";
 
-export const MonthNavigator = memo(({ visibleMonth, onMonthChange }: MonthNavigatorProps) => {
+interface Props extends MonthNavigatorProps {
+  collapsed: boolean;
+  onToggleCollapsed: () => void;
+}
+
+export const MonthNavigator = memo(({ visibleMonth, onMonthChange, collapsed, onToggleCollapsed }: Props) => {
   const { i18n, t } = useTranslation();
   const monthLabel = dayjs(visibleMonth).toDate().toLocaleString(i18n.language, { year: "numeric", month: "long" });
   const handlePrevMonth = () => onMonthChange(addMonths(visibleMonth, -1));
   const handleNextMonth = () => onMonthChange(addMonths(visibleMonth, 1));
 
   return (
-    <header className={cn(SIDEBAR_ROW_BOX_CLASSES, "mb-1.5 justify-between")}>
-      <h2 className="min-w-0 truncate font-medium tracking-[-0.015em] text-foreground/90 select-none">{monthLabel}</h2>
+    <header className={cn(SIDEBAR_ROW_BOX_CLASSES, "mb-1.5 justify-between px-0")}>
+      <button
+        type="button"
+        onClick={onToggleCollapsed}
+        aria-expanded={!collapsed}
+        className="flex min-w-0 items-center gap-1 rounded-md py-0.5 pr-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+      >
+        <ChevronDownIcon
+          className={cn("size-3.5 shrink-0 text-muted-foreground/60 transition-transform duration-200", collapsed && "-rotate-90")}
+          strokeWidth={1.8}
+        />
+        <h2 className="min-w-0 truncate font-medium tracking-[-0.015em] text-foreground/90 select-none">{monthLabel}</h2>
+      </button>
 
-      <nav className="flex shrink-0 items-center gap-0.5" aria-label={t("common.month-navigation")}>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={handlePrevMonth}
-          aria-label={t("common.previous-month")}
-          className="size-6 rounded text-muted-foreground/65 hover:bg-muted/50 hover:text-foreground/90"
-        >
-          <ChevronLeftIcon className="size-4" strokeWidth={1.75} />
-        </Button>
+      {!collapsed && (
+        <nav className="flex shrink-0 items-center gap-0.5" aria-label={t("common.month-navigation")}>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={handlePrevMonth}
+            aria-label={t("common.previous-month")}
+            className="size-6 rounded text-muted-foreground/65 hover:bg-muted/50 hover:text-foreground/90"
+          >
+            <ChevronLeftIcon className="size-4" strokeWidth={1.75} />
+          </Button>
 
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={handleNextMonth}
-          aria-label={t("common.next-month")}
-          className="size-6 rounded text-muted-foreground/65 hover:bg-muted/50 hover:text-foreground/90"
-        >
-          <ChevronRightIcon className="size-4" strokeWidth={1.75} />
-        </Button>
-      </nav>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={handleNextMonth}
+            aria-label={t("common.next-month")}
+            className="size-6 rounded text-muted-foreground/65 hover:bg-muted/50 hover:text-foreground/90"
+          >
+            <ChevronRightIcon className="size-4" strokeWidth={1.75} />
+          </Button>
+        </nav>
+      )}
     </header>
   );
 });
