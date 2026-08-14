@@ -3,6 +3,7 @@ package test
 import (
 	"context"
 	"fmt"
+	"sync"
 	"testing"
 	"time"
 
@@ -533,4 +534,91 @@ func TestAttachmentInvalidUID(t *testing.T) {
 	require.Contains(t, err.Error(), "invalid uid")
 
 	ts.Close()
+}
+
+// TestMemoMutationConcurrentUpdatesNoSQLiteBusy: concurrent distinct-memo mutations all succeed (issue #6186).
+func TestMemoMutationConcurrentUpdatesNoSQLiteBusy(t *testing.T) {
+	if getDriverFromEnv() != "sqlite" {
+		t.Skip("skipping sqlite lock regression test for non-sqlite driver")
+	}
+	t.Parallel()
+
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	// One memo per goroutine: writers don't share rows, so all must succeed.
+	const workers = 10
+	memos := make([]*store.Memo, workers)
+	for i := range memos {
+		memo, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Content: "original", Visibility: store.Private})
+		require.NoError(t, err)
+		memos[i] = memo
+	}
+
+	start := make(chan struct{})
+	errs := make([]error, workers)
+	var wg sync.WaitGroup
+	content := "updated"
+	for i := 0; i < workers; i++ {
+		wg.Go(func() {
+			<-start
+			errs[i] = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
+				MemoID:              memos[i].ID,
+				MemoCreatorID:       user.ID,
+				ExpectedMemoContent: memos[i].Content,
+				MemoUpdate:          &store.UpdateMemo{ID: memos[i].ID, Content: &content},
+			})
+		})
+	}
+	close(start)
+	wg.Wait()
+
+	for _, err := range errs {
+		require.NoError(t, err)
+	}
+}
+
+// TestMemoMutationConcurrentUpdatesSameMemoNoSQLiteBusy: same-memo races only yield success or ErrMemoMutationConflict.
+func TestMemoMutationConcurrentUpdatesSameMemoNoSQLiteBusy(t *testing.T) {
+	if getDriverFromEnv() != "sqlite" {
+		t.Skip("skipping sqlite lock regression test for non-sqlite driver")
+	}
+	t.Parallel()
+
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+	memo, err := ts.CreateMemo(ctx, &store.Memo{UID: shortuuid.New(), CreatorID: user.ID, Content: "original", Visibility: store.Private})
+	require.NoError(t, err)
+
+	const workers = 10
+	start := make(chan struct{})
+	errs := make([]error, workers)
+	var wg sync.WaitGroup
+	content := "updated"
+	for i := 0; i < workers; i++ {
+		wg.Go(func() {
+			<-start
+			errs[i] = ts.ApplyMemoMutation(ctx, &store.MemoMutation{
+				MemoID:              memo.ID,
+				MemoCreatorID:       user.ID,
+				ExpectedMemoContent: memo.Content,
+				MemoUpdate:          &store.UpdateMemo{ID: memo.ID, Content: &content},
+			})
+		})
+	}
+	close(start)
+	wg.Wait()
+
+	for _, err := range errs {
+		if err == nil {
+			continue
+		}
+		require.ErrorIs(t, err, store.ErrMemoMutationConflict)
+	}
 }
