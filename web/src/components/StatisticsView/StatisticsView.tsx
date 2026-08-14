@@ -36,7 +36,15 @@ const StatisticsView = (props: Props) => {
 
       {/* Grid-rows trick: animates height without measuring it, and collapses to zero
           without unmounting the calendar (keeps its internal state across toggles). */}
-      <div className={cn("grid transition-[grid-template-rows] duration-200 ease-out", collapsed ? "grid-rows-[0fr]" : "grid-rows-[1fr]")}>
+      <div
+        className={cn(
+          "grid transition-[grid-template-rows] duration-200 ease-out",
+          collapsed ? "grid-rows-[0fr]" : "grid-rows-[1fr]",
+        )}
+        aria-hidden={collapsed}
+        // @ts-expect-error inert is a valid HTML attribute but not yet in all React types
+        inert={collapsed ? "" : undefined}
+      >
         <div className="overflow-hidden">
           <div className="w-full animate-scale-in">
             <MonthCalendar
