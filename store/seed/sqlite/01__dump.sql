@@ -205,3 +205,8 @@ INSERT INTO attachment (id,uid,creator_id,created_ts,updated_ts,filename,type,si
 INSERT INTO user_setting (user_id,key,value) VALUES(1,'PERSONAL_ACCESS_TOKENS','{"tokens":[{"tokenId":"demo-access-token","tokenHash":"7631cdaa5b56a39371dab01d5d186fd73f05602cc8ad29bf72ffef3713badd9d","description":"Demo access token","createdAt":"2024-01-01T00:00:00Z"}]}');
 
 INSERT INTO system_setting VALUES ('MEMO_RELATED', '{"contentLengthLimit":8192,"enableAutoCompact":true,"enableComment":true,"enableLocation":true,"defaultVisibility":"PUBLIC","reactions":["👍","💛","🔥","👏","😂","👌","🚀","👀","🤔","🤡","❓","+1","🎉","💡","✅"]}', '');
+
+-- The demo instance is a public showcase, so anonymous browsing is part of the
+-- demo contract; the seeded explicit policy replaces the old "instance URL is
+-- configured" public-mode trigger.
+INSERT INTO system_setting VALUES ('GENERAL', '{"disallowUserRegistration":false,"disallowPasswordAuth":false,"allowPublicAccess":true}', '');

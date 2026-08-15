@@ -50,9 +50,9 @@ func (a *Authorizer) Authenticate(ctx context.Context, authHeader string) *auth.
 // Policy:
 //   - Authenticated caller (access token or PAT): always permitted here.
 //   - Anonymous + protected method: denied.
-//   - Anonymous + public method, open instance: permitted.
-//   - Anonymous + public method, private instance (no InstanceURL): permitted only
-//     for the auth-bootstrap set.
+//   - Anonymous + public method, public instance: permitted.
+//   - Anonymous + public method, private instance: permitted only for the
+//     auth-bootstrap set.
 func (a *Authorizer) CheckAccess(ctx context.Context, procedure string, result *auth.AuthResult) error {
 	if result != nil {
 		return nil

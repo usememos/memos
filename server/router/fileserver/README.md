@@ -28,6 +28,8 @@ Attachment access follows memo visibility, evaluated by `server/access.CheckMemo
 
 Avatars are public on instances that allow anonymous access; private instances require authentication.
 
+"Allows anonymous access" is the explicit `Allow public access` instance setting, read through `Store.AllowPublicAccess`. It is no longer inferred from whether an instance URL happens to be configured, so an instance can be reachable at a public address and still stay private.
+
 ## Serving behavior
 
 - **Video/audio** are streamed with range-request support (`http.ServeFile` / `http.ServeContent` for local and database storage); S3-backed media is proxied with ranged `GetObject` requests.

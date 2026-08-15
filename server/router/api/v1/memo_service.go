@@ -60,7 +60,7 @@ func (s *APIV1Service) checkMemoReadAccessWithParent(ctx context.Context, memo, 
 	if err != nil {
 		return status.Errorf(codes.Internal, "failed to get user")
 	}
-	allowAnonymous := s.Profile != nil && s.Profile.AllowAnonymous()
+	allowAnonymous := s.Store.AllowPublicAccess(ctx)
 	return memoAccessDecisionError(access.CheckMemoRead(memo, parent, user, allowAnonymous, nil))
 }
 

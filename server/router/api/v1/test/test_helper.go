@@ -6,6 +6,7 @@ import (
 
 	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/auth"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/store"
@@ -88,4 +89,16 @@ func (ts *TestService) CreateRegularUser(ctx context.Context, username string) (
 func (*TestService) CreateUserContext(ctx context.Context, userID int32) context.Context {
 	// Use the context key from the auth package
 	return context.WithValue(ctx, auth.UserIDContextKey, userID)
+}
+
+// SetPublicAccess persists the explicit public-access policy for tests that
+// model a public instance. The production default remains private.
+func (ts *TestService) SetPublicAccess(ctx context.Context, allow bool) error {
+	_, err := ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_GENERAL,
+		Value: &storepb.InstanceSetting_GeneralSetting{
+			GeneralSetting: &storepb.InstanceGeneralSetting{AllowPublicAccess: allow},
+		},
+	})
+	return err
 }

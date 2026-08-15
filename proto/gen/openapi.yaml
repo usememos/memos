@@ -2790,6 +2790,11 @@ components:
                          setup (creating the first admin account). Unlike a null admin, this stays
                          false once any user exists, so an instance that has lost its admins is not
                          mistaken for a fresh install.
+                allowPublicAccess:
+                    type: boolean
+                    description: |-
+                        Whether anonymous visitors may access public instance content.
+                         Absent or false means the instance is private.
             description: Instance profile message containing basic instance information.
         InstanceSetting:
             type: object
@@ -2888,6 +2893,11 @@ components:
                 disallowChangeNickname:
                     type: boolean
                     description: disallow_change_nickname disallows changing nickname.
+                allowPublicAccess:
+                    type: boolean
+                    description: |-
+                        allow_public_access controls whether anonymous visitors may access public
+                         instance content. Absent or false means the instance is private.
             description: General instance settings configuration.
         InstanceSetting_MemoRelatedSetting:
             type: object

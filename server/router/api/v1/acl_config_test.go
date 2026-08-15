@@ -106,7 +106,7 @@ func TestAuthBootstrapMethodsAreSubsetOfPublic(t *testing.T) {
 }
 
 // TestAuthBootstrapClassification verifies which endpoints remain reachable by
-// anonymous callers on a private instance (no InstanceURL configured).
+// anonymous callers on a private instance (public access disabled).
 func TestAuthBootstrapClassification(t *testing.T) {
 	// Reachable while private: sign-in flow, registration, instance metadata, SSO, share links.
 	bootstrap := []string{

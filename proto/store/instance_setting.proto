@@ -63,6 +63,9 @@ message InstanceGeneralSetting {
   bool disallow_change_username = 8;
   // disallow_change_nickname disallows changing nickname.
   bool disallow_change_nickname = 9;
+  // allow_public_access controls whether anonymous visitors may access public
+  // instance content. Absent or false means the instance is private.
+  bool allow_public_access = 10;
 }
 
 message InstanceCustomProfile {

@@ -58,6 +58,13 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	}
 	s.Secret = secret
 
+	// Eagerly load the persisted public-access policy so the instance enforces
+	// the administrator's choice from the first request. A load failure keeps
+	// the instance private.
+	if !s.Store.AllowPublicAccess(ctx) {
+		slog.Info("instance is private; anonymous access is disabled")
+	}
+
 	// Register healthz endpoint.
 	echoServer.GET("/healthz", func(c *echo.Context) error {
 		return c.String(http.StatusOK, "Service ready.")

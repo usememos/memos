@@ -67,6 +67,9 @@ func (s *Store) UpsertInstanceSetting(ctx context.Context, upsert *storepb.Insta
 	if upsert.Key == storepb.InstanceSettingKey_STORAGE {
 		s.resetStorageDriverCache()
 	}
+	if upsert.Key == storepb.InstanceSettingKey_GENERAL {
+		s.syncPublicAccessPolicy(instanceSetting.GetGeneralSetting())
+	}
 	return instanceSetting, nil
 }
 
@@ -224,6 +227,7 @@ func (s *Store) GetInstanceGeneralSetting(ctx context.Context) (*storepb.Instanc
 		Key:   storepb.InstanceSettingKey_GENERAL,
 		Value: &storepb.InstanceSetting_GeneralSetting{GeneralSetting: instanceGeneralSetting},
 	})
+	s.syncPublicAccessPolicy(instanceGeneralSetting)
 	return instanceGeneralSetting, nil
 }
 

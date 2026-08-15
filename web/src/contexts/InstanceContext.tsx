@@ -200,6 +200,12 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({
       ...prev,
       settings: [...prev.settings.filter((s) => s.name !== updatedSetting.name), updatedSetting],
+      // Keep the profile's public-access flag in sync with the effective policy so
+      // routing reacts immediately instead of waiting for the next profile fetch.
+      profile:
+        updatedSetting.value.case === "generalSetting"
+          ? { ...prev.profile, allowPublicAccess: updatedSetting.value.value.allowPublicAccess }
+          : prev.profile,
     }));
   }, []);
 

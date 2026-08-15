@@ -17,8 +17,10 @@ func TestAuthorizerCheckAccess(t *testing.T) {
 	ctx := context.Background()
 	authenticated := &auth.AuthResult{AccessToken: "token"}
 
-	openInstance := &Authorizer{profile: &profile.Profile{InstanceURL: "https://memos.example.com"}}
-	privateInstance := &Authorizer{profile: &profile.Profile{InstanceURL: ""}}
+	openProfile := &profile.Profile{InstanceURL: "https://memos.example.com"}
+	openProfile.SetAllowAnonymous(true)
+	privateInstance := &Authorizer{profile: &profile.Profile{InstanceURL: "https://memos.example.com"}}
+	openInstance := &Authorizer{profile: openProfile}
 
 	const (
 		protectedMethod = "/memos.api.v1.MemoService/CreateMemo"
@@ -40,6 +42,9 @@ func TestAuthorizerCheckAccess(t *testing.T) {
 		{"anonymous denied on protected method", openInstance, protectedMethod, nil, true},
 		{"anonymous allowed on public method, open instance", openInstance, publicMethod, nil, false},
 		{"anonymous denied on public method, private instance", privateInstance, publicMethod, nil, true},
+		// A non-empty InstanceURL alone does not open the instance; only the
+		// explicit policy does.
+		{"anonymous denied on private instance with URL configured", privateInstance, publicMethod, nil, true},
 		{"anonymous allowed on bootstrap method, private instance", privateInstance, bootstrapMethod, nil, false},
 		{"anonymous allowed to register on private instance", privateInstance, createUser, nil, false},
 		{"anonymous allowed on share access, private instance", privateInstance, shareMethod, nil, false},
@@ -54,4 +59,31 @@ func TestAuthorizerCheckAccess(t *testing.T) {
 			}
 		})
 	}
+}
+
+// TestAuthorizerPublicAccessTogglesWithoutRestart verifies that flipping the
+// effective policy is honored by the very next CheckAccess call, that a
+// configured InstanceURL alone stays private, and that authenticated callers and
+// private-instance bootstrap routes are unaffected.
+func TestAuthorizerPublicAccessTogglesWithoutRestart(t *testing.T) {
+	ctx := context.Background()
+	profileInstance := &profile.Profile{InstanceURL: "https://memos.example.com"}
+	authorizer := &Authorizer{profile: profileInstance}
+	authenticated := &auth.AuthResult{AccessToken: "token"}
+
+	// Default policy is private even with a non-empty InstanceURL.
+	assert.ErrorIs(t, authorizer.CheckAccess(ctx, "/memos.api.v1.MemoService/ListMemos", nil), ErrUnauthenticated)
+
+	// Enabling public access takes effect immediately.
+	profileInstance.SetAllowAnonymous(true)
+	assert.NoError(t, authorizer.CheckAccess(ctx, "/memos.api.v1.MemoService/ListMemos", nil))
+
+	// Disabling it again closes anonymous access on the next request.
+	profileInstance.SetAllowAnonymous(false)
+	assert.ErrorIs(t, authorizer.CheckAccess(ctx, "/memos.api.v1.MemoService/ListMemos", nil), ErrUnauthenticated)
+
+	// Authenticated callers and bootstrap routes remain valid either way.
+	assert.NoError(t, authorizer.CheckAccess(ctx, "/memos.api.v1.MemoService/CreateMemo", authenticated))
+	assert.NoError(t, authorizer.CheckAccess(ctx, "/memos.api.v1.AuthService/SignIn", nil))
+	assert.NoError(t, authorizer.CheckAccess(ctx, "/memos.api.v1.MemoService/GetSharedMemo", nil))
 }
