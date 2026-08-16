@@ -13,17 +13,25 @@ import (
 
 // ApplyMemoMutation atomically updates a memo, attachment bindings, and reference relations.
 func (d *DB) ApplyMemoMutation(ctx context.Context, mutation *store.MemoMutation) error {
-	tx, err := d.db.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelSerializable})
+	// BEGIN IMMEDIATE avoids SQLITE_BUSY on deferred write upgrades (issue #6186).
+	conn, err := d.db.Conn(ctx)
 	if err != nil {
+		return errors.Wrap(err, "failed to get database connection")
+	}
+	defer conn.Close()
+	if _, err := conn.ExecContext(ctx, "BEGIN IMMEDIATE"); err != nil {
 		return errors.Wrap(err, "failed to begin memo transaction")
 	}
+	committed := false
 	defer func() {
-		_ = tx.Rollback()
+		if !committed {
+			_, _ = conn.ExecContext(context.WithoutCancel(ctx), "ROLLBACK")
+		}
 	}()
 
 	var creatorID int32
 	var content string
-	if err := tx.QueryRowContext(ctx, `SELECT creator_id, content FROM memo WHERE id = ?`, mutation.MemoID).Scan(&creatorID, &content); err != nil {
+	if err := conn.QueryRowContext(ctx, `SELECT creator_id, content FROM memo WHERE id = ?`, mutation.MemoID).Scan(&creatorID, &content); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return errors.Wrap(store.ErrMemoMutationConflict, "memo no longer exists")
 		}
@@ -36,7 +44,7 @@ func (d *DB) ApplyMemoMutation(ctx context.Context, mutation *store.MemoMutation
 	for _, binding := range mutation.Bindings {
 		var attachmentCreatorID int32
 		var memoID sql.NullInt32
-		if err := tx.QueryRowContext(ctx, `SELECT creator_id, memo_id FROM attachment WHERE id = ?`, binding.ID).Scan(&attachmentCreatorID, &memoID); err != nil {
+		if err := conn.QueryRowContext(ctx, `SELECT creator_id, memo_id FROM attachment WHERE id = ?`, binding.ID).Scan(&attachmentCreatorID, &memoID); err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return errors.Wrapf(store.ErrMemoMutationConflict, "attachment %s no longer exists", binding.UID)
 			}
@@ -49,13 +57,13 @@ func (d *DB) ApplyMemoMutation(ctx context.Context, mutation *store.MemoMutation
 		} else if attachmentCreatorID != mutation.MemoCreatorID || memoID.Valid {
 			return errors.Wrapf(store.ErrMemoMutationConflict, "attachment %s is no longer available", binding.UID)
 		}
-		if _, err := tx.ExecContext(ctx, `UPDATE attachment SET memo_id = ?, updated_ts = ? WHERE id = ?`, mutation.MemoID, binding.UpdatedTs, binding.ID); err != nil {
+		if _, err := conn.ExecContext(ctx, `UPDATE attachment SET memo_id = ?, updated_ts = ? WHERE id = ?`, mutation.MemoID, binding.UpdatedTs, binding.ID); err != nil {
 			return errors.Wrap(err, "failed to bind attachment")
 		}
 	}
 
 	for _, attachmentID := range mutation.RemovedAttachmentIDs {
-		result, err := tx.ExecContext(ctx, `UPDATE attachment SET memo_id = NULL WHERE id = ? AND memo_id = ?`, attachmentID, mutation.MemoID)
+		result, err := conn.ExecContext(ctx, `UPDATE attachment SET memo_id = NULL WHERE id = ? AND memo_id = ?`, attachmentID, mutation.MemoID)
 		if err != nil {
 			return errors.Wrap(err, "failed to detach attachment")
 		}
@@ -66,7 +74,7 @@ func (d *DB) ApplyMemoMutation(ctx context.Context, mutation *store.MemoMutation
 
 	for _, attachmentID := range mutation.RequiredAttachmentIDs {
 		var exists int
-		if err := tx.QueryRowContext(ctx, `SELECT 1 FROM attachment WHERE id = ? AND memo_id = ?`, attachmentID, mutation.MemoID).Scan(&exists); err != nil {
+		if err := conn.QueryRowContext(ctx, `SELECT 1 FROM attachment WHERE id = ? AND memo_id = ?`, attachmentID, mutation.MemoID).Scan(&exists); err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				return errors.Wrap(store.ErrMemoMutationConflict, "a referenced attachment is no longer bound to the memo")
 			}
@@ -78,30 +86,31 @@ func (d *DB) ApplyMemoMutation(ctx context.Context, mutation *store.MemoMutation
 		if mutation.MemoUpdate.ID != mutation.MemoID {
 			return errors.New("memo update target does not match attachment mutation")
 		}
-		if err := applyMemoUpdate(ctx, tx, mutation.MemoUpdate); err != nil {
+		if err := applyMemoUpdate(ctx, conn, mutation.MemoUpdate); err != nil {
 			return err
 		}
 	}
 	if mutation.ReplaceReferenceRelations {
-		if err := replaceMemoReferenceRelations(ctx, tx, mutation.MemoID, mutation.ReferenceRelations); err != nil {
+		if err := replaceMemoReferenceRelations(ctx, conn, mutation.MemoID, mutation.ReferenceRelations); err != nil {
 			return err
 		}
 	}
-	if err := tx.Commit(); err != nil {
+	if _, err := conn.ExecContext(ctx, "COMMIT"); err != nil {
 		return errors.Wrap(err, "failed to commit memo transaction")
 	}
+	committed = true
 	return nil
 }
 
-func replaceMemoReferenceRelations(ctx context.Context, tx *sql.Tx, memoID int32, relations []*store.MemoRelation) error {
-	if _, err := tx.ExecContext(ctx, `DELETE FROM memo_relation WHERE memo_id = ? AND type = ?`, memoID, store.MemoRelationReference); err != nil {
+func replaceMemoReferenceRelations(ctx context.Context, executor memoUpdateExecer, memoID int32, relations []*store.MemoRelation) error {
+	if _, err := executor.ExecContext(ctx, `DELETE FROM memo_relation WHERE memo_id = ? AND type = ?`, memoID, store.MemoRelationReference); err != nil {
 		return errors.Wrap(err, "failed to delete memo reference relations")
 	}
 	for _, relation := range relations {
 		if relation == nil || relation.MemoID != memoID || relation.Type != store.MemoRelationReference {
 			return errors.New("invalid memo reference relation mutation")
 		}
-		if _, err := tx.ExecContext(ctx, `
+		if _, err := executor.ExecContext(ctx, `
 			INSERT INTO memo_relation (memo_id, related_memo_id, type)
 			VALUES (?, ?, ?)
 			ON CONFLICT(memo_id, related_memo_id, type) DO UPDATE SET type = excluded.type
