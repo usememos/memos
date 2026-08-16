@@ -306,7 +306,7 @@ func synthesizeGatewayVariable(segment string) []string {
 	}
 
 	var built []string
-	for _, part := range strings.Split(subtemplate, "/") {
+	for part := range strings.SplitSeq(subtemplate, "/") {
 		switch part {
 		case "*":
 			built = append(built, "one")

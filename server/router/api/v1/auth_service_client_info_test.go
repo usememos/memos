@@ -219,7 +219,7 @@ func testCookieExpiry() time.Time {
 }
 
 func containsCookieAttribute(cookie, attr string) bool {
-	for _, part := range strings.Split(cookie, ";") {
+	for part := range strings.SplitSeq(cookie, ";") {
 		if strings.EqualFold(strings.TrimSpace(part), attr) {
 			return true
 		}

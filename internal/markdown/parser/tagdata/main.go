@@ -206,7 +206,7 @@ func parseFullyQualifiedEmoji(data []byte) ([]string, int) {
 			continue
 		}
 		var sequence strings.Builder
-		for _, field := range strings.Fields(fields[0]) {
+		for field := range strings.FieldsSeq(fields[0]) {
 			sequence.WriteRune(parseCodePoint(field))
 		}
 		emoji := sequence.String()
