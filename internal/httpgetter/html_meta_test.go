@@ -135,6 +135,39 @@ func TestGetHTMLMetaForInternal(t *testing.T) {
 	}
 }
 
+func TestIsInternalIP(t *testing.T) {
+	internal := []string{
+		"127.0.0.1",         // loopback
+		"10.0.0.1",          // RFC 1918
+		"192.168.1.1",       // RFC 1918
+		"169.254.169.254",   // link-local (cloud metadata)
+		"100.64.0.1",        // RFC 6598 lower bound
+		"100.100.100.200",   // Alibaba Cloud instance metadata
+		"100.127.255.255",   // RFC 6598 upper bound
+		"::1",               // IPv6 loopback
+		"fd00::1",           // IPv6 unique local
+		"::ffff:127.0.0.1",  // IPv4-mapped loopback
+		"::ffff:100.64.0.1", // IPv4-mapped shared address space
+		"224.0.0.1",         // IPv4 link-local multicast
+		"ff02::1",           // IPv6 link-local multicast
+		"0.0.0.0",           // IPv4 unspecified
+		"::",                // IPv6 unspecified
+	}
+	for _, s := range internal {
+		require.Truef(t, isInternalIP(net.ParseIP(s)), "expected %s to be internal", s)
+	}
+
+	external := []string{
+		"93.184.216.34",  // example.com
+		"8.8.8.8",        // public DNS
+		"100.63.255.255", // just below RFC 6598
+		"100.128.0.0",    // just above RFC 6598
+	}
+	for _, s := range external {
+		require.Falsef(t, isInternalIP(net.ParseIP(s)), "expected %s to be external", s)
+	}
+}
+
 func TestHTTPClientHasTimeout(t *testing.T) {
 	require.NotZero(t, httpClient.Timeout)
 }
