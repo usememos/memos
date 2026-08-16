@@ -17,6 +17,19 @@ describe("tag autocomplete", () => {
     expect(result?.options.map((o) => o.label)).toEqual(["todo", "today"]);
   });
 
+  it("matches a segment of a nested tag path", () => {
+    expect(complete("hello #Mem", 10, ["software/hosted/Memos"])?.options.map((o) => o.label)).toEqual(["software/hosted/Memos"]);
+  });
+
+  it("ranks full-path prefixes above segment starts above loose substrings", () => {
+    const result = complete("#work", 5, ["home/paperwork", "team/work-log", "work/project"]);
+    expect(result?.options.map((o) => o.label)).toEqual(["work/project", "team/work-log", "home/paperwork"]);
+  });
+
+  it("keeps its own ranking instead of CodeMirror's fuzzy filter", () => {
+    expect(complete("#work", 5, ["work"])?.filter).toBe(false);
+  });
+
   it("returns null on a bare # with nothing typed", () => {
     expect(complete("hello #", 7, ["todo"])).toBeNull();
   });
