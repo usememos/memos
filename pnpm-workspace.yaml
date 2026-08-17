@@ -1,0 +1,6 @@
+packages:
+  - 'web'
+
+pnpm:
+  overrides:
+    postcss: "8.5.26"

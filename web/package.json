@@ -97,9 +97,4 @@
     "vite": "^8.0.11",
     "vitest": "^4.1.5"
   },
-  "pnpm": {
-    "overrides": {
-      "postcss": "8.5.23"
-    }
-  }
 }
