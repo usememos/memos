@@ -1,6 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { locales } from "@/i18n";
+import enTranslation from "@/locales/en.json";
+import heTranslation from "@/locales/he.json";
 import { getLocaleSearchLabels, localeMatchesSearch, normalizeLocaleSearchText } from "@/utils/i18n";
+
+const flattenTranslationKeys = (value: unknown, prefix = ""): string[] => {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return Object.entries(value).flatMap(([key, child]) => flattenTranslationKeys(child, prefix ? `${prefix}.${key}` : key));
+  }
+
+  return [prefix];
+};
 
 describe("locale search helpers", () => {
   it("normalizes case and diacritics for locale search", () => {
@@ -26,5 +36,12 @@ describe("locale search helpers", () => {
   it("includes Hebrew in the supported locale list", () => {
     expect(locales).toContain("he");
     expect(localeMatchesSearch("he", "hebrew", "en")).toBe(true);
+  });
+
+  it("keeps Hebrew keys aligned with the current English catalog", () => {
+    expect(flattenTranslationKeys(heTranslation).sort()).toEqual(flattenTranslationKeys(enTranslation).sort());
+    expect(heTranslation.setting).toHaveProperty("ai");
+    expect(heTranslation.setting).toHaveProperty("notification");
+    expect(heTranslation.auth).not.toHaveProperty("host-tip");
   });
 });
