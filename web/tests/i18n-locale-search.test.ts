@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { locales } from "@/i18n";
 import { getLocaleSearchLabels, localeMatchesSearch, normalizeLocaleSearchText } from "@/utils/i18n";
 
 describe("locale search helpers", () => {
@@ -20,5 +21,10 @@ describe("locale search helpers", () => {
     expect(localeMatchesSearch("de", "german", "en")).toBe(true);
     expect(localeMatchesSearch("pt-PT", "portugues", "en")).toBe(true);
     expect(localeMatchesSearch("ja", "romanian", "en")).toBe(false);
+  });
+
+  it("includes Hebrew in the supported locale list", () => {
+    expect(locales).toContain("he");
+    expect(localeMatchesSearch("he", "hebrew", "en")).toBe(true);
   });
 });
