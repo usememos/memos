@@ -5,6 +5,7 @@ import {
   CheckCircleIcon,
   CodeIcon,
   EyeIcon,
+  FilterIcon,
   HashIcon,
   LinkIcon,
   LucideIcon,
@@ -33,6 +34,10 @@ const FILTER_CONFIGS: Record<FilterFactor, FilterConfig> = {
   },
   contentSearch: {
     icon: SearchIcon,
+    getLabel: (value) => value,
+  },
+  celSearch: {
+    icon: FilterIcon,
     getLabel: (value) => value,
   },
   displayTime: {

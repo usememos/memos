@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
-import { type MemoFilter, replaceFiltersByFactor, stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { type MemoFilter, stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoViews } from "@/hooks/useUserQueries";
 import { BUILTIN_TASKS_VIEW_ID, getMemoViewId, isMemoScopeRoute } from "@/lib/memo-views";
@@ -14,10 +14,50 @@ import { useTranslate } from "@/utils/i18n";
 
 export const isQuickFindCollectionRoute = (pathname: string) => isMemoScopeRoute(pathname) || pathname.startsWith("/u/");
 
+const CEL_FIELDS = [
+  "content",
+  "creator",
+  "creator_id",
+  "created_ts",
+  "updated_ts",
+  "pinned",
+  "visibility",
+  "tag",
+  "tags",
+  "has_task_list",
+  "has_link",
+  "has_code",
+  "has_incomplete_tasks",
+  "has_location",
+];
+const CEL_BOOLEAN_FIELDS = ["pinned", "has_task_list", "has_link", "has_code", "has_incomplete_tasks", "has_location"];
+
+const CEL_FIELD_PATTERN = new RegExp(`\\b(?:${CEL_FIELDS.join("|")})\\b`);
+const CEL_BOOLEAN_PATTERN = new RegExp(`^!?\\s*(?:${CEL_BOOLEAN_FIELDS.join("|")})\\s*$`);
+const CEL_OPERATOR_PATTERN = /&&|\|\||==|!=|<=|>=|\bin\b|(?:^|[^<>=!])<|(?:^|[^<>=!])>/;
+const CEL_METHOD_PATTERN =
+  /\b(?:content|tags|created_ts|updated_ts)\s*\.\s*[a-zA-Z_][a-zA-Z0-9_]*\s*\(|\bsets\s*\.\s*(?:contains|intersects|equivalent)\s*\(/;
+
+/** Returns whether a quick-find query uses the memo CEL filter syntax. */
+export const isCELQuery = (query: string): boolean => {
+  const trimmedQuery = query.trim();
+  if (!trimmedQuery) return false;
+  if (CEL_BOOLEAN_PATTERN.test(trimmedQuery)) return true;
+  if (!CEL_FIELD_PATTERN.test(trimmedQuery)) return false;
+  return CEL_OPERATOR_PATTERN.test(trimmedQuery) || CEL_METHOD_PATTERN.test(trimmedQuery);
+};
+
+const replaceQuickFindSearchFilters = (currentFilters: MemoFilter[], replacements: MemoFilter[]): MemoFilter[] => [
+  ...currentFilters.filter((filter) => filter.factor !== "contentSearch" && filter.factor !== "celSearch"),
+  ...replacements,
+];
+
 export const buildQuickFindFilters = (query: string, currentFilters: MemoFilter[], preserveCurrentScope: boolean): MemoFilter[] => {
-  const words = Array.from(new Set(query.trim().split(/\s+/).filter(Boolean)));
-  const contentFilters: MemoFilter[] = words.map((value) => ({ factor: "contentSearch", value }));
-  return preserveCurrentScope ? replaceFiltersByFactor(currentFilters, "contentSearch", contentFilters) : contentFilters;
+  const trimmedQuery = query.trim();
+  const nextFilters: MemoFilter[] = isCELQuery(trimmedQuery)
+    ? [{ factor: "celSearch", value: trimmedQuery }]
+    : Array.from(new Set(trimmedQuery.split(/\s+/).filter(Boolean))).map((value) => ({ factor: "contentSearch", value }));
+  return preserveCurrentScope ? replaceQuickFindSearchFilters(currentFilters, nextFilters) : nextFilters;
 };
 
 const getScopeLabel = (pathname: string, t: ReturnType<typeof useTranslate>) => {
@@ -56,12 +96,12 @@ const QuickFindDialog = () => {
 
   useEffect(() => {
     if (!quickFindOpen) return;
-    setQuery(
-      filters
-        .filter((filter) => filter.factor === "contentSearch")
-        .map((filter) => filter.value)
-        .join(" "),
-    );
+    const celFilter = filters.find((filter) => filter.factor === "celSearch");
+    if (celFilter) {
+      setQuery(celFilter.value);
+      return;
+    }
+    setQuery(filters.filter((filter) => filter.factor === "contentSearch").map((filter) => filter.value).join(" "));
   }, [filters, quickFindOpen]);
 
   const submitQuery = () => {

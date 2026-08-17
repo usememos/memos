@@ -70,6 +70,18 @@ describe("memo views", () => {
     ).toBe("has_link && has_task_list && has_code && has_location");
   });
 
+  it("groups a raw CEL search with other active filters", () => {
+    expect(
+      buildMemoFilter({
+        filters: [
+          { factor: "contentSearch", value: "plan" },
+          { factor: "celSearch", value: 'pinned || visibility == "PUBLIC"' },
+        ],
+        includePinned: false,
+      }),
+    ).toBe('content.contains("plan") && (pinned || visibility == "PUBLIC")');
+  });
+
   it("uses a custom memo view filter when Tasks is not selected", () => {
     expect(
       buildMemoFilter({

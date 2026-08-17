@@ -81,6 +81,10 @@ export const buildMemoFilter = ({
   for (const filter of filters) {
     if (filter.factor === "contentSearch") {
       conditions.push(`content.contains(${escapeFilterValue(filter.value)})`);
+    } else if (filter.factor === "celSearch") {
+      // Keep the raw expression grouped so an OR in the search does not escape
+      // the other active memo scopes or filters.
+      conditions.push(`(${filter.value})`);
     } else if (filter.factor === "tagSearch") {
       conditions.push(`tag in [${escapeFilterValue(filter.value)}]`);
     } else if (filter.factor === "pinned") {
