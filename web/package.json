@@ -96,5 +96,10 @@
     "typescript": "^7.0.2",
     "vite": "^8.0.11",
     "vitest": "^4.1.5"
+  },
+  "pnpm": {
+    "overrides": {
+      "nanoid": "3.3.18"
+    }
   }
 }
