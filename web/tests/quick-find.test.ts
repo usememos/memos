@@ -53,7 +53,30 @@ describe("Quick Find", () => {
     expect(isCELQuery('content.contains("urgent")')).toBe(true);
     expect(isCELQuery('tags.exists(t, t.startsWith("work/"))')).toBe(true);
     expect(isCELQuery("created_ts.getFullYear() == 2026")).toBe(true);
+    expect(isCELQuery('created_ts > now - duration("168h")')).toBe(true);
+    expect(isCELQuery('"work" in tags')).toBe(true);
     expect(isCELQuery('sets.intersects(tags, ["work"])')).toBe(true);
+  });
+
+  it("keeps server-rejected expressions out of CEL search filters", () => {
+    const serverRejectedExpressions = [
+      'tag == "work"',
+      'tags.exists(t, t.matches("work"))',
+      "tags.all(t, size(t) > 2)",
+      "has_location < true",
+      "content.contains(content)",
+      'sets.contains(content, ["work"])',
+      'created_ts.getMonth("UTC") == 5',
+      'content.matches("(")',
+    ];
+
+    for (const expression of serverRejectedExpressions) {
+      expect(isCELQuery(expression), expression).toBe(false);
+      expect(
+        buildQuickFindFilters(expression, [], false).every(({ factor }) => factor === "contentSearch"),
+        expression,
+      ).toBe(true);
+    }
   });
 
   it("clears a previous CEL search when the query becomes plain text", () => {
