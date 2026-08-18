@@ -87,6 +87,17 @@ func TestServeAttachmentFile_S3(t *testing.T) {
 	require.Equal(t, http.StatusOK, recorder.Code)
 	require.Equal(t, content, recorder.Body.Bytes())
 	require.Equal(t, "text/plain; charset=utf-8", recorder.Header().Get(echo.HeaderContentType))
+
+	// S3 cannot produce multipart range responses. The fileserver may ignore a
+	// Range request and send the complete representation instead of forwarding
+	// a request the backend rejects.
+	multiRangeRequest := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename), nil)
+	multiRangeRequest.Header.Set("Range", "bytes=0-2,5-7")
+	multiRangeRecorder := httptest.NewRecorder()
+	e.ServeHTTP(multiRangeRecorder, multiRangeRequest)
+	require.Equal(t, http.StatusOK, multiRangeRecorder.Code)
+	require.Equal(t, content, multiRangeRecorder.Body.Bytes())
+	require.Empty(t, multiRangeRecorder.Header().Get("Content-Range"))
 }
 
 func TestServeAttachmentFile_S3MinIO(t *testing.T) {

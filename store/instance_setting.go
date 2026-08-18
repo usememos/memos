@@ -70,6 +70,20 @@ func (s *Store) UpsertInstanceSetting(ctx context.Context, upsert *storepb.Insta
 	return instanceSetting, nil
 }
 
+// DeleteInstanceSetting deletes a database-backed instance setting and clears
+// cached state derived from it.
+func (s *Store) DeleteInstanceSetting(ctx context.Context, delete *DeleteInstanceSetting) error {
+	if err := s.driver.DeleteInstanceSetting(ctx, delete); err != nil {
+		return errors.Wrap(err, "failed to delete instance setting")
+	}
+
+	s.instanceSettingCache.Delete(ctx, delete.Name)
+	if delete.Name == storepb.InstanceSettingKey_STORAGE.String() {
+		s.resetStorageDriverCache()
+	}
+	return nil
+}
+
 func (s *Store) ListInstanceSettings(ctx context.Context, find *FindInstanceSetting) ([]*storepb.InstanceSetting, error) {
 	stored, err := s.listStoredInstanceSettings(ctx, find)
 	if err != nil {

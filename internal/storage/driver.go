@@ -26,7 +26,8 @@ type Driver interface {
 	UploadObject(ctx context.Context, key string, fileType string, content io.Reader) (string, error)
 	GetObject(ctx context.Context, key string) ([]byte, error)
 	// GetObjectStream streams an object; a non-empty byteRange is forwarded as
-	// an HTTP Range header and yields a partial object.
+	// an HTTP Range header and yields a partial object. byteRange must request at
+	// most one range because S3 does not support multipart range responses.
 	GetObjectStream(ctx context.Context, key string, byteRange string) (*ObjectStream, error)
 	DeleteObject(ctx context.Context, key string) error
 }

@@ -325,9 +325,10 @@ func (s *FileServerService) resolveLocalPath(reference string) string {
 	return filePath
 }
 
-// streamS3Object streams S3 content through the server, forwarding the
-// client's Range header so media players and document viewers can seek
-// without a direct S3 URL.
+// streamS3Object streams S3 content through the server, forwarding a supported
+// single Range so media players and document viewers can seek without a direct
+// S3 URL. Multipart ranges are ignored and served as a complete response
+// because S3 does not support multipart range responses.
 func (s *FileServerService) streamS3Object(c *echo.Context, attachment *store.Attachment, contentType string) error {
 	ctx := c.Request().Context()
 	driver, s3Object, err := s.Store.ResolveAttachmentS3Driver(ctx, attachment)
@@ -335,7 +336,7 @@ func (s *FileServerService) streamS3Object(c *echo.Context, attachment *store.At
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to resolve S3 attachment driver").Wrap(err)
 	}
 
-	object, err := driver.GetObjectStream(ctx, s3Object.Key, c.Request().Header.Get("Range"))
+	object, err := driver.GetObjectStream(ctx, s3Object.Key, singleRangeHeader(c.Request().Header))
 	if err != nil {
 		if errors.Is(err, storage.ErrRangeNotSatisfiable) {
 			h := c.Response().Header()
@@ -361,6 +362,21 @@ func (s *FileServerService) streamS3Object(c *echo.Context, attachment *store.At
 		status = http.StatusPartialContent
 	}
 	return c.Stream(status, contentType, object.Body)
+}
+
+// singleRangeHeader returns a Range value only when it contains one range.
+// Ignoring unsupported Range requests is permitted by HTTP and lets the caller
+// send the complete representation instead of relaying a request S3 rejects.
+func singleRangeHeader(header http.Header) string {
+	values := header.Values("Range")
+	if len(values) != 1 || strings.Contains(values[0], ",") {
+		return ""
+	}
+	unit, ranges, ok := strings.Cut(values[0], "=")
+	if !ok || !strings.EqualFold(strings.TrimSpace(unit), "bytes") || strings.TrimSpace(ranges) == "" {
+		return ""
+	}
+	return values[0]
 }
 
 // =============================================================================

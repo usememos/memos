@@ -270,6 +270,7 @@ func TestResolveStorageFallsBackWhenStorageIDMissing(t *testing.T) {
 }
 
 func TestResolveStorageDriverByStorageID(t *testing.T) {
+	stores := &store.Store{}
 	setting := &storepb.InstanceStorageSetting{
 		DefaultStorageId: "primary",
 		Storages: []*storepb.Storage{
@@ -287,15 +288,19 @@ func TestResolveStorageDriverByStorageID(t *testing.T) {
 		},
 	}
 
-	driver, err := store.ResolveStorageDriver(context.Background(), setting, "primary", nil)
+	driver, err := stores.ResolveStorageDriver(context.Background(), setting, "primary", nil)
 	require.NoError(t, err)
 	require.IsType(t, &s3.Driver{}, driver)
+	repeatedDriver, err := stores.ResolveStorageDriver(context.Background(), setting, "primary", nil)
+	require.NoError(t, err)
+	require.Same(t, driver, repeatedDriver)
 
-	_, err = store.ResolveStorageDriver(context.Background(), setting, "missing", nil)
+	_, err = stores.ResolveStorageDriver(context.Background(), setting, "missing", nil)
 	require.ErrorContains(t, err, `storage "missing" is not configured`)
 }
 
 func TestResolveStorageDriverSupportsLegacyEmbeddedConfig(t *testing.T) {
+	stores := &store.Store{}
 	legacyConfig := &storepb.StorageS3Config{
 		AccessKeyId:     "access-key",
 		AccessKeySecret: "secret",
@@ -304,7 +309,7 @@ func TestResolveStorageDriverSupportsLegacyEmbeddedConfig(t *testing.T) {
 		Bucket:          "legacy",
 	}
 
-	driver, err := store.ResolveStorageDriver(context.Background(), nil, "", legacyConfig)
+	driver, err := stores.ResolveStorageDriver(context.Background(), nil, "", legacyConfig)
 	require.NoError(t, err)
 	require.IsType(t, &s3.Driver{}, driver)
 }
@@ -346,6 +351,7 @@ func TestStorageDriverCacheIncludesResolvedConfiguration(t *testing.T) {
 }
 
 func TestResolveStorageDriverUsesCurrentCredentialsForLegacyAttachment(t *testing.T) {
+	stores := &store.Store{}
 	legacyConfig := &storepb.StorageS3Config{
 		AccessKeyId:     "old-access-key",
 		AccessKeySecret: "old-secret",
@@ -371,7 +377,7 @@ func TestResolveStorageDriverUsesCurrentCredentialsForLegacyAttachment(t *testin
 		},
 	}
 
-	driver, err := store.ResolveStorageDriver(context.Background(), setting, "", legacyConfig)
+	driver, err := stores.ResolveStorageDriver(context.Background(), setting, "", legacyConfig)
 	require.NoError(t, err)
 	s3Driver, ok := driver.(*s3.Driver)
 	require.True(t, ok)

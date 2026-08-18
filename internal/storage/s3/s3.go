@@ -169,7 +169,8 @@ func (c *Driver) GetObject(ctx context.Context, key string) ([]byte, error) {
 
 // GetObjectStream retrieves an object from S3 as a stream. A non-empty
 // byteRange is forwarded as an HTTP Range header (e.g. "bytes=0-1023") and
-// yields a partial object with ContentRange set.
+// yields a partial object with ContentRange set. Callers must supply at most
+// one range because S3 does not support multipart range responses.
 func (c *Driver) GetObjectStream(ctx context.Context, key string, byteRange string) (*ObjectStream, error) {
 	input := &s3.GetObjectInput{
 		Bucket: c.Bucket,

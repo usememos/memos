@@ -34,8 +34,9 @@ type Store struct {
 
 	// storageDriverCache reuses object-storage clients across requests, keyed
 	// by the resolved configuration. Reset whenever the STORAGE setting changes.
-	storageDriverMu    sync.Mutex
-	storageDriverCache map[storageDriverCacheKey]storage.Driver
+	storageDriverMu         sync.Mutex
+	storageDriverGeneration uint64
+	storageDriverCache      map[storageDriverCacheKey]storage.Driver
 }
 
 type deploymentConfiguration struct {

@@ -222,6 +222,58 @@ func TestInstanceSettingStorageSetting(t *testing.T) {
 	ts.Close()
 }
 
+func TestDeleteInstanceStorageSettingInvalidatesCaches(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	upserted, err := ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_STORAGE,
+		Value: &storepb.InstanceSetting_StorageSetting{
+			StorageSetting: &storepb.InstanceStorageSetting{
+				DefaultStorageId: "primary",
+				Storages: []*storepb.Storage{
+					{
+						Id:   "primary",
+						Type: storepb.StorageType_STORAGE_TYPE_S3,
+						Config: &storepb.Storage_S3Config{S3Config: &storepb.StorageS3Config{
+							AccessKeyId:     "access-key",
+							AccessKeySecret: "secret",
+							Endpoint:        "https://s3.example.com",
+							Region:          "us-east-1",
+							Bucket:          "memos",
+						}},
+					},
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+	configuredStorage := store.GetDefaultStorage(upserted.GetStorageSetting())
+	require.NotNil(t, configuredStorage)
+
+	cachedDriver, err := ts.StorageDriver(ctx, configuredStorage)
+	require.NoError(t, err)
+	_, err = ts.GetInstanceStorageSetting(ctx)
+	require.NoError(t, err)
+
+	err = ts.DeleteInstanceSetting(ctx, &store.DeleteInstanceSetting{Name: storepb.InstanceSettingKey_STORAGE.String()})
+	require.NoError(t, err)
+
+	stored, err := ts.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_STORAGE.String()})
+	require.NoError(t, err)
+	require.Nil(t, stored)
+	defaultSetting, err := ts.GetInstanceStorageSetting(ctx)
+	require.NoError(t, err)
+	require.Equal(t, storepb.InstanceStorageSetting_LOCAL, defaultSetting.StorageType)
+	require.Nil(t, defaultSetting.S3Config)
+
+	rebuiltDriver, err := ts.StorageDriver(ctx, configuredStorage)
+	require.NoError(t, err)
+	require.NotSame(t, cachedDriver, rebuiltDriver)
+}
+
 func TestInstanceStorageSettingCacheIsolation(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
