@@ -597,46 +597,35 @@ func TestServeAttachmentFile_ThumbnailWithSensitiveMetadataServesOriginal(t *tes
 
 func TestHasThumbnailSensitiveMetadata(t *testing.T) {
 	tests := []struct {
-		name     string
-		mimeType string
-		data     []byte
-		want     bool
+		name string
+		data []byte
+		want bool
 	}{
 		{
-			name:     "jpeg hdr gain map",
-			mimeType: "image/jpeg",
-			data:     []byte("xmp hdrgm:Version=\"1.0\""),
-			want:     true,
+			name: "jpeg hdr gain map",
+			data: []byte("xmp hdrgm:Version=\"1.0\""),
+			want: true,
 		},
 		{
-			name:     "jpeg icc profile",
-			mimeType: "image/jpeg",
-			data:     []byte("ICC_PROFILE"),
-			want:     true,
+			name: "jpeg icc profile",
+			data: []byte("ICC_PROFILE"),
+			want: true,
 		},
 		{
-			name:     "png cicp chunk",
-			mimeType: "image/png",
-			data:     []byte("cICP"),
-			want:     true,
+			name: "png cicp chunk",
+			data: []byte("cICP"),
+			want: true,
 		},
 		{
-			name:     "heic",
-			mimeType: "image/heic",
-			data:     nil,
-			want:     true,
-		},
-		{
-			name:     "plain jpeg",
-			mimeType: "image/jpeg",
-			data:     []byte("plain image data"),
-			want:     false,
+			name: "plain jpeg",
+			data: []byte("plain image data"),
+			want: false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			require.Equal(t, tt.want, hasThumbnailSensitiveMetadata(tt.mimeType, tt.data))
+			require.Equal(t, tt.want, hasThumbnailSensitiveMetadata(tt.data))
 		})
 	}
 }
