@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import { MemoMarkdownRenderer } from "@/components/MemoContent/MemoMarkdownRenderer";
 import { buildEditorExtensions } from "@/components/MemoEditor/Editor/extensions";
 
-function makeView(doc: string, onSubmit: () => void = () => {}) {
+function makeView(doc: string, onSubmit: () => void = () => {}, onToggleFocusMode: () => void = () => {}) {
   return new EditorView({
     state: EditorState.create({
       doc,
@@ -16,6 +16,7 @@ function makeView(doc: string, onSubmit: () => void = () => {}) {
         onFiles: () => {},
         onUpdate: () => {},
         onSubmit,
+        onToggleFocusMode,
         getTags: () => [],
       }),
     }),
@@ -55,6 +56,30 @@ describe("editor key bindings", () => {
     });
     press(view, "Enter", { ctrlKey: true });
     expect(submitted).toBe(1);
+    expect(view.state.doc.toString()).toBe("hello");
+    view.destroy();
+  });
+
+  it("Cmd+Shift+F toggles focus mode without editing the document", () => {
+    let toggled = 0;
+    const view = makeView("hello", () => {}, () => {
+      toggled += 1;
+    });
+    // On macOS, Cmd suppresses Shift's uppercase effect, so event.key is "f".
+    // CodeMirror resolves the Shift-Meta-f binding via the lowercase lookup.
+    press(view, "f", { metaKey: true, shiftKey: true });
+    expect(toggled).toBe(1);
+    expect(view.state.doc.toString()).toBe("hello");
+    view.destroy();
+  });
+
+  it("Ctrl+Shift+F toggles focus mode without editing the document", () => {
+    let toggled = 0;
+    const view = makeView("hello", () => {}, () => {
+      toggled += 1;
+    });
+    press(view, "f", { ctrlKey: true, shiftKey: true });
+    expect(toggled).toBe(1);
     expect(view.state.doc.toString()).toBe("hello");
     view.destroy();
   });

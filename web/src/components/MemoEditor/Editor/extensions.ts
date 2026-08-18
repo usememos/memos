@@ -34,6 +34,7 @@ export interface EditorExtensionsOptions {
   onFiles: (files: File[], position: number) => void;
   onUpdate: () => void;
   onSubmit: () => void;
+  onToggleFocusMode: () => void;
   getTags: () => string[];
 }
 
@@ -56,6 +57,7 @@ export function buildEditorExtensions({
   onFiles,
   onUpdate,
   onSubmit,
+  onToggleFocusMode,
   getTags,
 }: EditorExtensionsOptions): Extension[] {
   // Submitting must outrank defaultKeymap's own Mod-Enter (insertBlankLine): the save
@@ -69,6 +71,15 @@ export function buildEditorExtensions({
   const submitKeys: KeyBinding[] = [
     { key: "Meta-Enter", run: submit },
     { key: "Ctrl-Enter", run: submit },
+  ];
+
+  const toggleFocusMode = () => {
+    onToggleFocusMode();
+    return true;
+  };
+  const focusModeKeys: KeyBinding[] = [
+    { key: "Meta-Shift-f", run: toggleFocusMode },
+    { key: "Ctrl-Shift-f", run: toggleFocusMode },
   ];
 
   return [
@@ -109,7 +120,14 @@ export function buildEditorExtensions({
     // tagAutocomplete must precede the editing keymap so the completion popup's
     // Enter/Tab/arrow bindings win while it is open.
     tagAutocomplete(getTags),
-    keymap.of([...submitKeys, ...editorKeys, indentWithTab, ...defaultKeymap, ...historyKeymap]),
+    keymap.of([
+      ...submitKeys,
+      ...focusModeKeys,
+      ...editorKeys,
+      indentWithTab,
+      ...defaultKeymap,
+      ...historyKeymap,
+    ]),
     EditorView.updateListener.of((u) => {
       if (u.docChanged) onChange(u.state.doc.toString());
       // Toolbar active-state depends only on the doc and selection; skip the
