@@ -1,10 +1,10 @@
 # Fileserver Package
 
-The `fileserver` package serves binary content (attachments, avatars) over plain HTTP instead of gRPC, so that HTTP range requests work — required for Safari video/audio playback ([RFC 7233](https://tools.ietf.org/html/rfc7233)). Metadata stays on the gRPC API; only bytes are served here.
+The `fileserver` package serves binary content (attachments, avatars) over plain HTTP instead of gRPC, so that HTTP range requests work — required for Safari video/audio playback ([RFC 9110 §14](https://www.rfc-editor.org/rfc/rfc9110#section-14)). Metadata stays on the gRPC API; only bytes are served here.
 
 ## Endpoints
 
-```
+```text
 GET /file/attachments/:uid[/:filename]   # attachment binary
     ?thumbnail=true                      # JPEG thumbnail for supported image types
     ?motion=true                         # embedded motion-photo video clip
