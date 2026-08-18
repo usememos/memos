@@ -14,7 +14,6 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	"github.com/usememos/memos/internal/httpgetter"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/access"
@@ -27,8 +26,6 @@ import (
 type suppressSSEKey struct{}
 
 const maxBatchGetLinkMetadata = 10
-
-var fetchHTMLMeta = httpgetter.GetHTMLMeta
 
 func withSuppressSSE(ctx context.Context) context.Context {
 	return context.WithValue(ctx, suppressSSEKey{}, true)
