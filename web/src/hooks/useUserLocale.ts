@@ -26,7 +26,7 @@ export const useUserLocale = () => {
     document.documentElement.setAttribute("lang", currentLocale);
 
     // RTL languages
-    if (["ar", "fa"].includes(currentLocale)) {
+    if (["ar", "fa", "he"].includes(currentLocale)) {
       document.documentElement.setAttribute("dir", "rtl");
     } else {
       document.documentElement.setAttribute("dir", "ltr");
