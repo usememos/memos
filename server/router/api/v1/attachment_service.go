@@ -26,8 +26,6 @@ const (
 	// This is unrelated to maximum upload size limit, which is now set through system setting.
 	MaxUploadBufferSizeBytes = 32 << 20
 	MebiByte                 = 1024 * 1024
-	// ThumbnailCacheFolder is the folder name where the thumbnail images are stored.
-	ThumbnailCacheFolder = ".thumbnail_cache"
 
 	// defaultJPEGQuality is the JPEG quality used when re-encoding images for EXIF stripping.
 	// Quality 95 maintains visual quality while ensuring metadata is removed.
@@ -35,11 +33,6 @@ const (
 	maxBatchDeleteAttachments = 100
 	maxImagePixels            = 50_000_000
 )
-
-var SupportedThumbnailMimeTypes = []string{
-	"image/png",
-	"image/jpeg",
-}
 
 // exifCapableImageTypes defines image formats that may contain EXIF metadata.
 // These formats will have their EXIF metadata stripped on upload for privacy.
