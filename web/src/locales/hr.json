@@ -540,7 +540,6 @@
       "path": "Putanja skladišta",
       "path-description": "Možeš koristiti iste dinamičke varijable kao i lokalno skladište, npr. {filename}",
       "path-placeholder": "prilagođena/putanja",
-      "presign-placeholder": "Pre-sign URL, opcionalno",
       "region": "Regija",
       "region-placeholder": "Naziv regije",
       "s3-compatible-url": "S3 kompatibilan URL",

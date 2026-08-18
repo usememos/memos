@@ -96,7 +96,7 @@ func bootInstance(ctx context.Context, t *testing.T, opts instanceOptions) *inst
 
 	s, err := server.NewServer(ctx, instanceProfile, storeInstance)
 	require.NoError(t, err, "should construct server")
-	require.NoError(t, s.Start(ctx), "should start server")
+	require.NoError(t, s.Start(), "should start server")
 
 	inst := &instance{
 		server:  s,

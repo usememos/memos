@@ -7,7 +7,6 @@ import (
 	"net"
 	"net/http"
 	"os"
-	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -22,7 +21,6 @@ import (
 	"github.com/usememos/memos/server/router/frontend"
 	"github.com/usememos/memos/server/router/mcp"
 	"github.com/usememos/memos/server/router/rss"
-	"github.com/usememos/memos/server/runner/s3presign"
 	"github.com/usememos/memos/store"
 )
 
@@ -36,9 +34,6 @@ type Server struct {
 	echoServer *echo.Echo
 	httpServer *http.Server
 	sseHub     *apiv1.SSEHub
-
-	backgroundRunnerCancels []context.CancelFunc
-	backgroundRunnerWG      sync.WaitGroup
 }
 
 func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store) (*Server, error) {
@@ -98,7 +93,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	return s, nil
 }
 
-func (s *Server) Start(ctx context.Context) error {
+func (s *Server) Start() error {
 	var address, network string
 	if len(s.Profile.UNIXSock) == 0 {
 		address = fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port)
@@ -126,7 +121,6 @@ func (s *Server) Start(ctx context.Context) error {
 			slog.Error("failed to start echo server", "error", err)
 		}
 	}()
-	s.startBackgroundRunners(ctx)
 
 	return nil
 }
@@ -137,10 +131,8 @@ func (s *Server) Shutdown(ctx context.Context) {
 
 	slog.Info("server shutting down")
 
-	s.stopBackgroundRunners()
 	s.closeLongLivedConnections()
 	s.shutdownHTTPServer(ctx)
-	s.waitBackgroundRunners(ctx)
 
 	// Close database connection.
 	if err := s.Store.Close(); err != nil {
@@ -148,56 +140,6 @@ func (s *Server) Shutdown(ctx context.Context) {
 	}
 
 	slog.Info("memos stopped properly")
-}
-
-func (s *Server) startBackgroundRunners(ctx context.Context) {
-	// Create a separate context for each background runner
-	// This allows us to control cancellation for each runner independently
-	s3Context, s3Cancel := context.WithCancel(ctx)
-
-	// Store the cancel function so we can properly shut down runners
-	s.backgroundRunnerCancels = append(s.backgroundRunnerCancels, s3Cancel)
-
-	// Create and start S3 presign runner
-	s3presignRunner := s3presign.NewRunner(s.Store)
-	s3presignRunner.RunOnce(ctx)
-
-	// Start continuous S3 presign runner
-	s.backgroundRunnerWG.Add(1)
-	go func() {
-		defer s.backgroundRunnerWG.Done()
-		s3presignRunner.Run(s3Context)
-		slog.Info("s3presign runner stopped")
-	}()
-
-	slog.Info("background runners started")
-}
-
-func (s *Server) stopBackgroundRunners() {
-	for _, cancelFunc := range s.backgroundRunnerCancels {
-		if cancelFunc != nil {
-			cancelFunc()
-		}
-	}
-}
-
-func (s *Server) waitBackgroundRunners(ctx context.Context) {
-	done := make(chan struct{})
-	go func() {
-		s.backgroundRunnerWG.Wait()
-		close(done)
-	}()
-
-	select {
-	case <-done:
-	case <-ctx.Done():
-		select {
-		case <-done:
-			return
-		default:
-		}
-		slog.Error("failed to stop background runners", slog.String("error", ctx.Err().Error()))
-	}
 }
 
 func (s *Server) closeLongLivedConnections() {

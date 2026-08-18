@@ -270,6 +270,7 @@ func TestResolveStorageFallsBackWhenStorageIDMissing(t *testing.T) {
 }
 
 func TestResolveStorageDriverByStorageID(t *testing.T) {
+	stores := &store.Store{}
 	setting := &storepb.InstanceStorageSetting{
 		DefaultStorageId: "primary",
 		Storages: []*storepb.Storage{
@@ -287,15 +288,19 @@ func TestResolveStorageDriverByStorageID(t *testing.T) {
 		},
 	}
 
-	driver, err := store.ResolveStorageDriver(context.Background(), setting, "primary", nil)
+	driver, err := stores.ResolveStorageDriver(context.Background(), setting, "primary", nil)
 	require.NoError(t, err)
 	require.IsType(t, &s3.Driver{}, driver)
+	repeatedDriver, err := stores.ResolveStorageDriver(context.Background(), setting, "primary", nil)
+	require.NoError(t, err)
+	require.Same(t, driver, repeatedDriver)
 
-	_, err = store.ResolveStorageDriver(context.Background(), setting, "missing", nil)
+	_, err = stores.ResolveStorageDriver(context.Background(), setting, "missing", nil)
 	require.ErrorContains(t, err, `storage "missing" is not configured`)
 }
 
 func TestResolveStorageDriverSupportsLegacyEmbeddedConfig(t *testing.T) {
+	stores := &store.Store{}
 	legacyConfig := &storepb.StorageS3Config{
 		AccessKeyId:     "access-key",
 		AccessKeySecret: "secret",
@@ -304,12 +309,49 @@ func TestResolveStorageDriverSupportsLegacyEmbeddedConfig(t *testing.T) {
 		Bucket:          "legacy",
 	}
 
-	driver, err := store.ResolveStorageDriver(context.Background(), nil, "", legacyConfig)
+	driver, err := stores.ResolveStorageDriver(context.Background(), nil, "", legacyConfig)
 	require.NoError(t, err)
 	require.IsType(t, &s3.Driver{}, driver)
 }
 
+func TestStorageDriverCacheIncludesResolvedConfiguration(t *testing.T) {
+	ctx := context.Background()
+	stores := &store.Store{}
+
+	retainedOldStorage := s3Storage("stable", "memos")
+	retainedOldStorage.GetS3Config().AccessKeyId = "old-access-key"
+	retainedOldStorage.GetS3Config().AccessKeySecret = "old-secret"
+	currentStorage := proto.CloneOf(retainedOldStorage)
+	currentStorage.GetS3Config().AccessKeyId = "new-access-key"
+	currentStorage.GetS3Config().AccessKeySecret = "new-secret"
+
+	// Model an in-flight request repopulating an empty cache after credential
+	// rotation, then a current request resolving the same stable storage ID.
+	staleDriver, err := stores.StorageDriver(ctx, retainedOldStorage)
+	require.NoError(t, err)
+	currentDriver, err := stores.StorageDriver(ctx, currentStorage)
+	require.NoError(t, err)
+	require.NotSame(t, staleDriver, currentDriver)
+
+	staleS3Driver, ok := staleDriver.(*s3.Driver)
+	require.True(t, ok)
+	staleCredentials, err := staleS3Driver.Client.Options().Credentials.Retrieve(ctx)
+	require.NoError(t, err)
+	require.Equal(t, "old-access-key", staleCredentials.AccessKeyID)
+
+	currentS3Driver, ok := currentDriver.(*s3.Driver)
+	require.True(t, ok)
+	currentCredentials, err := currentS3Driver.Client.Options().Credentials.Retrieve(ctx)
+	require.NoError(t, err)
+	require.Equal(t, "new-access-key", currentCredentials.AccessKeyID)
+
+	repeatedDriver, err := stores.StorageDriver(ctx, currentStorage)
+	require.NoError(t, err)
+	require.Same(t, currentDriver, repeatedDriver)
+}
+
 func TestResolveStorageDriverUsesCurrentCredentialsForLegacyAttachment(t *testing.T) {
+	stores := &store.Store{}
 	legacyConfig := &storepb.StorageS3Config{
 		AccessKeyId:     "old-access-key",
 		AccessKeySecret: "old-secret",
@@ -335,7 +377,7 @@ func TestResolveStorageDriverUsesCurrentCredentialsForLegacyAttachment(t *testin
 		},
 	}
 
-	driver, err := store.ResolveStorageDriver(context.Background(), setting, "", legacyConfig)
+	driver, err := stores.ResolveStorageDriver(context.Background(), setting, "", legacyConfig)
 	require.NoError(t, err)
 	s3Driver, ok := driver.(*s3.Driver)
 	require.True(t, ok)

@@ -627,7 +627,6 @@
       "path": "ストレージパス",
       "path-description": "ローカルストレージと同じ動的変数（例: {filename}）が使えます",
       "path-placeholder": "カスタム/パス",
-      "presign-placeholder": "署名付きURL（任意）",
       "region": "リージョン",
       "region-placeholder": "リージョン名",
       "s3-compatible-url": "S3互換URL",

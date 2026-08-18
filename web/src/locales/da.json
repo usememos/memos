@@ -670,7 +670,6 @@
       "path": "Opbevaringssti",
       "path-description": "Du kan bruge de samme dynamiske variabler fra lokal lagring, som {filename}",
       "path-placeholder": "brugerdefineret/sti",
-      "presign-placeholder": "Fortegn URL, valgfrit",
       "region": "Område",
       "region-description": "Region krævet af udbyderen. For nogle kompatible tjenester er enhver udbyder-accepteret regionsstreng nok.",
       "region-placeholder": "Regionsnavn",

@@ -540,7 +540,6 @@
       "path": "Cesta k úložišti",
       "path-description": "Můžete použít stejné dynamické proměnné z místního úložiště, například {filename}",
       "path-placeholder": "vlastní/cesta",
-      "presign-placeholder": "Předběžná adresa URL, nepovinná",
       "region": "Region",
       "region-placeholder": "Název regionu",
       "s3-compatible-url": "URL adresa kompatibilní se S3",

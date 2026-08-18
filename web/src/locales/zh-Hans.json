@@ -617,7 +617,6 @@
       "path": "存储路径",
       "path-description": "您可以使用本地存储中的相同动态变量，例如 {filename}",
       "path-placeholder": "自定义路径",
-      "presign-placeholder": "预签名链接（可选）",
       "region": "地区",
       "region-description": "服务商要求的区域。部分兼容服务只需要填写服务商接受的区域字符串。",
       "region-placeholder": "区域名称",

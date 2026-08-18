@@ -414,6 +414,8 @@ func (s *Store) setDeploymentConfiguration(config *deploymentConfiguration) {
 	s.deploymentConfigMu.Lock()
 	s.deploymentConfig = copy
 	s.deploymentConfigMu.Unlock()
+	// A deployment configuration can supply the STORAGE setting.
+	s.resetStorageDriverCache()
 }
 
 // IsIdentityProviderDeploymentConfigured reports whether uid is file-backed.

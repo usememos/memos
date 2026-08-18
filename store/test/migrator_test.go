@@ -427,7 +427,7 @@ func TestMigrationLegacyS3AttachmentMinIO(t *testing.T) {
 	storedSetting, err := ts.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_STORAGE.String()})
 	require.NoError(t, err)
 	require.NotNil(t, storedSetting)
-	storageDriver, err := store.ResolveStorageDriver(ctx, storedSetting.GetStorageSetting(), s3Object.StorageId, s3Object.S3Config)
+	storageDriver, err := ts.ResolveStorageDriver(ctx, storedSetting.GetStorageSetting(), s3Object.StorageId, s3Object.S3Config)
 	require.NoError(t, err)
 	downloaded, err := storageDriver.GetObject(ctx, s3Object.Key)
 	require.NoError(t, err)

@@ -540,7 +540,6 @@
       "path": "Chemin de stockage",
       "path-description": "Vous pouvez utiliser les mêmes variables dynamiques que pour le stockage local, comme {filename}",
       "path-placeholder": "chemin/personnalisé",
-      "presign-placeholder": "URL pré-signée, optionnel",
       "region": "Région",
       "region-placeholder": "Nom de la région",
       "s3-compatible-url": "URL compatible S3",

@@ -378,7 +378,6 @@
       "path": "Đường dẫn lưu trữ",
       "path-description": "Bạn có thể sử dụng các biến động như trong lưu trữ cục bộ, ví dụ {filename}",
       "path-placeholder": "đường/dẫn/tùy-chỉnh",
-      "presign-placeholder": "URL ký trước, tùy chọn",
       "region": "Khu vực",
       "region-placeholder": "Tên khu vực",
       "s3-compatible-url": "URL tương thích S3",

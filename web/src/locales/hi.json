@@ -378,7 +378,6 @@
       "path": "संग्रहण पथ",
       "path-description": "आप स्थानीय संग्रहण की वही डायनामिक वेरिएबल्स उपयोग कर सकते हैं, जैसे {filename}",
       "path-placeholder": "कस्टम/पथ",
-      "presign-placeholder": "प्री-साइन URL, वैकल्पिक",
       "region": "क्षेत्र",
       "region-placeholder": "क्षेत्र का नाम",
       "s3-compatible-url": "S3 संगत URL",

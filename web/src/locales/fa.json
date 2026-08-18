@@ -378,7 +378,6 @@
       "path": "مسیر ذخیره‌سازی",
       "path-description": "می‌توانید از همان متغیرهای پویا ذخیره‌سازی محلی مانند {filename} استفاده کنید",
       "path-placeholder": "مسیر/سفارشی",
-      "presign-placeholder": "آدرس پیش‌امضا شده، اختیاری",
       "region": "منطقه",
       "region-placeholder": "نام منطقه",
       "s3-compatible-url": "آدرس سازگار با S3",

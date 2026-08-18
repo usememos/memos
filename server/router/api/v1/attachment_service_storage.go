@@ -16,7 +16,6 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"github.com/usememos/memos/internal/profile"
-	"github.com/usememos/memos/internal/storage"
 	"github.com/usememos/memos/internal/util"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -99,7 +98,7 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 		create.Blob = nil
 		create.StorageType = storepb.AttachmentStorageType_LOCAL
 	} else if defaultStorage.Type == storepb.StorageType_STORAGE_TYPE_S3 {
-		driver, err := storage.NewDriver(ctx, defaultStorage)
+		driver, err := stores.StorageDriver(ctx, defaultStorage)
 		if err != nil {
 			return errors.Wrap(err, "failed to create storage driver")
 		}
@@ -113,20 +112,15 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 		if err != nil {
 			return errors.Wrap(err, "failed to upload via storage driver")
 		}
-		presignURL, err := driver.PresignGetObject(ctx, key)
-		if err != nil {
-			return errors.Wrap(err, "failed to presign via storage driver")
-		}
 
-		create.Reference = presignURL
+		// S3 attachments carry no reference; they are served via the authenticated file route.
 		create.Blob = nil
 		create.StorageType = storepb.AttachmentStorageType_S3
 		payload := ensureAttachmentPayload(create.Payload)
 		payload.Payload = &storepb.AttachmentPayload_S3Object_{
 			S3Object: &storepb.AttachmentPayload_S3Object{
-				Key:               key,
-				LastPresignedTime: timestamppb.New(time.Now()),
-				StorageId:         defaultStorage.Id,
+				Key:       key,
+				StorageId: defaultStorage.Id,
 			},
 		}
 		create.Payload = payload

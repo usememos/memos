@@ -540,7 +540,6 @@
       "path": "Ruta de almacenaxe",
       "path-description": "Podes usar as mesmas variables dinámicas do almacenaxe local, como {filename}",
       "path-placeholder": "persoal/ruta",
-      "presign-placeholder": "URL pre-acceso, optativo",
       "region": "Rexión",
       "region-placeholder": "Nome da rexión",
       "s3-compatible-url": "URL S3 compatible",

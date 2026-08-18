@@ -540,7 +540,6 @@
       "path": "Lagringsväg",
       "path-description": "Du kan använda samma dynamiska variabler som i lokal lagring, t.ex. {filename}",
       "path-placeholder": "anpassad/väg",
-      "presign-placeholder": "Försignerad URL, valfritt",
       "region": "Region",
       "region-placeholder": "Regionsnamn",
       "s3-compatible-url": "S3-kompatibel URL",
