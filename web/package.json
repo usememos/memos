@@ -4,7 +4,7 @@
   "packageManager": "pnpm@11.0.1",
   "engines": {
     "node": ">=24"
-  },
+  }
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -15,7 +15,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
-  },
+  }
   "dependencies": {
     "@base-ui/react": "^1.7.0",
     "@codemirror/autocomplete": "^6.20.3",
@@ -72,7 +72,7 @@
     "unified": "^11.0.5",
     "unist-util-visit": "^5.1.0",
     "uuid": "^11.1.0"
-  },
+  }
   "devDependencies": {
     "@babel/core": "7.29.0",
     "@biomejs/biome": "^2.4.14",
@@ -96,5 +96,5 @@
     "typescript": "^7.0.2",
     "vite": "^8.0.11",
     "vitest": "^4.1.5"
-  },
+  }
 }
