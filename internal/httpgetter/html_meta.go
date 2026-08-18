@@ -17,6 +17,7 @@ import (
 	"golang.org/x/sync/singleflight"
 )
 
+// ErrInternalIP indicates that a link preview target resolves to a disallowed internal address.
 var ErrInternalIP = errors.New("internal IP addresses are not allowed")
 
 const (
@@ -231,7 +232,7 @@ func (f *HTMLMetaFetcher) fetch(ctx context.Context, urlStr string) (*HTMLMeta, 
 
 	response, err := f.client.Do(request)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to fetch link preview")
 	}
 	defer response.Body.Close()
 	if response.StatusCode < http.StatusOK || response.StatusCode >= http.StatusMultipleChoices {
@@ -259,12 +260,9 @@ func (f *HTMLMetaFetcher) fetch(ctx context.Context, urlStr string) (*HTMLMeta, 
 	baseURL := resolveDocumentBase(pageURL, sources.baseHref)
 	var oEmbed metadataSource
 	if endpoint := resolveHTTPURL(baseURL, oEmbedEndpoint); endpoint != "" {
-		// A timed-out oEmbed enrichment must not discard the metadata already
-		// extracted from the HTML; only caller cancellation propagates.
-		oEmbed, err = f.fetchOEmbed(ctx, endpoint)
-		if err != nil && errors.Is(err, context.Canceled) {
-			return nil, err
-		}
+		// oEmbed is optional enrichment, so its failure must not discard the
+		// metadata already extracted from the HTML document.
+		oEmbed, _ = f.fetchOEmbed(ctx, endpoint)
 	}
 
 	meta := mergeMetadata(baseURL, oEmbed, sources.openGraph, sources.twitter, sources.jsonLD, sources.standard, siteImageSource(pageURL), sources.semantic)
@@ -283,7 +281,7 @@ func (f *HTMLMetaFetcher) fetchOEmbed(ctx context.Context, endpoint string) (met
 
 	response, err := f.client.Do(request)
 	if err != nil {
-		return metadataSource{}, err
+		return metadataSource{}, errors.Wrap(err, "failed to fetch oEmbed endpoint")
 	}
 	defer response.Body.Close()
 	if response.StatusCode < http.StatusOK || response.StatusCode >= http.StatusMultipleChoices {
@@ -405,7 +403,7 @@ func cloneHTMLMeta(meta *HTMLMeta) *HTMLMeta {
 func siteImageSource(pageURL *url.URL) metadataSource {
 	if pageURL.Hostname() == "www.youtube.com" && pageURL.Path == "/watch" {
 		if videoID := pageURL.Query().Get("v"); videoID != "" {
-			return metadataSource{image: fmt.Sprintf("https://img.youtube.com/vi/%s/mqdefault.jpg", videoID)}
+			return metadataSource{image: fmt.Sprintf("https://img.youtube.com/vi/%s/mqdefault.jpg", url.PathEscape(videoID))}
 		}
 	}
 	return metadataSource{}

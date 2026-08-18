@@ -191,8 +191,8 @@ func walkJSONLD(value any, visit func(map[string]any)) {
 		}
 	case map[string]any:
 		visit(typed)
-		if graph, ok := typed["@graph"]; ok {
-			walkJSONLD(graph, visit)
+		for _, nested := range typed {
+			walkJSONLD(nested, visit)
 		}
 	default:
 	}

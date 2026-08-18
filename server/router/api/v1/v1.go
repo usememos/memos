@@ -52,6 +52,7 @@ type APIV1Service struct {
 	linkMetadataFetcher linkMetadataFetcher
 }
 
+// NewAPIV1Service creates an API v1 service with its shared dependencies.
 func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store) *APIV1Service {
 	markdownService := markdown.NewService(
 		markdown.WithTagExtension(),

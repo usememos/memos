@@ -14,6 +14,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/net/html"
 )
@@ -58,6 +59,23 @@ func TestExtractDocumentMetadataPrecedenceAndFallbacks(t *testing.T) {
 				Title:       "JSON-LD title",
 				Description: "JSON-LD description",
 				Image:       "https://example.com/posts/images/cover.jpg",
+			},
+		},
+		{
+			name: "nested JSON-LD main entity",
+			markup: `<html><head><script type="application/ld+json">{
+				"@type":"WebPage",
+				"mainEntity":{
+					"@type":"Article",
+					"headline":"Nested article title",
+					"description":"Nested article description",
+					"image":"/nested.png"
+				}
+			}</script></head></html>`,
+			expected: HTMLMeta{
+				Title:       "Nested article title",
+				Description: "Nested article description",
+				Image:       "https://example.com/nested.png",
 			},
 		},
 		{
@@ -150,14 +168,13 @@ func TestHTMLMetaFetcherOEmbed(t *testing.T) {
 				<meta property="og:image" content="/og.png">
 			</head></html>`), nil
 		case "/oembed":
-			require.Contains(t, req.Header.Get("Accept"), "application/json+oembed")
+			assert.Contains(t, req.Header.Get("Accept"), "application/json+oembed")
 			return response(req, http.StatusOK, "application/json+oembed", `{
 				"type":"rich","title":"oEmbed title","description":"oEmbed description",
 				"thumbnail_url":"/oembed.png","html":"<script>must not be returned</script>"
 			}`), nil
 		default:
-			t.Fatalf("unexpected request path %q", req.URL.Path)
-			return nil, nil
+			return nil, errors.New("unexpected request path: " + req.URL.Path)
 		}
 	}))
 
@@ -211,7 +228,7 @@ func TestHTMLMetaFetcherIgnoresInvalidOEmbed(t *testing.T) {
 
 func TestHTMLMetaFetcherBotAwareSPA(t *testing.T) {
 	transport := roundTripFunc(func(req *http.Request) (*http.Response, error) {
-		require.Contains(t, req.Header.Get("Accept"), "text/html")
+		assert.Contains(t, req.Header.Get("Accept"), "text/html")
 		if req.Header.Get("User-Agent") == defaultLinkPreviewUserAgent {
 			return htmlResponse(req, `<meta property="og:title" content="Rich SPA title">
 				<meta property="og:description" content="Prerendered for MemosBot">`), nil
@@ -228,16 +245,24 @@ func TestHTMLMetaFetcherBotAwareSPA(t *testing.T) {
 
 func TestHTMLMetaFetcherDefaultHeadersAndDeadline(t *testing.T) {
 	fetcher := newTestFetcher(roundTripFunc(func(req *http.Request) (*http.Response, error) {
-		require.Equal(t, defaultLinkPreviewUserAgent, req.Header.Get("User-Agent"))
+		assert.Equal(t, defaultLinkPreviewUserAgent, req.Header.Get("User-Agent"))
 		deadline, ok := req.Context().Deadline()
-		require.True(t, ok)
-		require.LessOrEqual(t, time.Until(deadline), fetchTimeout)
+		assert.True(t, ok)
+		assert.LessOrEqual(t, time.Until(deadline), fetchTimeout)
 		return htmlResponse(req, `<title>Title</title>`), nil
 	}))
 
 	_, err := fetcher.Get(context.Background(), "http://93.184.216.34/page")
 	require.NoError(t, err)
 	require.Equal(t, fetchTimeout, newHTTPClient().Timeout)
+}
+
+func TestSiteImageSourceEscapesYouTubeVideoID(t *testing.T) {
+	pageURL, err := url.Parse("https://www.youtube.com/watch?v=video%2Fsegment%3Fvariant")
+	require.NoError(t, err)
+
+	source := siteImageSource(pageURL)
+	require.Equal(t, "https://img.youtube.com/vi/video%2Fsegment%3Fvariant/mqdefault.jpg", source.image)
 }
 
 func TestHTMLMetaFetcherResolvesAgainstFinalResponseURL(t *testing.T) {
