@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -165,6 +166,42 @@ func TestUserSettingRefreshTokens(t *testing.T) {
 	require.Equal(t, "token-2", tokens[0].TokenId)
 
 	ts.Close()
+}
+
+func TestUserSettingRefreshTokensConcurrentAdds(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+
+	const tokenCount = 16
+	start := make(chan struct{})
+	errCh := make(chan error, tokenCount)
+	var wg sync.WaitGroup
+	for i := range tokenCount {
+		tokenID := strconv.Itoa(i)
+		wg.Go(func() {
+			<-start
+			errCh <- ts.AddUserRefreshToken(ctx, user.ID, &storepb.RefreshTokensUserSetting_RefreshToken{TokenId: tokenID})
+		})
+	}
+	close(start)
+	wg.Wait()
+	close(errCh)
+	for err := range errCh {
+		require.NoError(t, err)
+	}
+
+	tokens, err := ts.GetUserRefreshTokens(ctx, user.ID)
+	require.NoError(t, err)
+	require.Len(t, tokens, tokenCount)
+	seen := make(map[string]bool, tokenCount)
+	for _, token := range tokens {
+		require.False(t, seen[token.TokenId], "duplicate token %q", token.TokenId)
+		seen[token.TokenId] = true
+	}
 }
 
 func TestUserSettingPersonalAccessTokens(t *testing.T) {

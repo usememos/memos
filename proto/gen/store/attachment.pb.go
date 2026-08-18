@@ -9,7 +9,6 @@ package store
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -774,7 +773,7 @@ var File_store_attachment_proto protoreflect.FileDescriptor
 
 const file_store_attachment_proto_rawDesc = "" +
 	"\n" +
-	"\x16store/attachment.proto\x12\vmemos.store\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cstore/instance_setting.proto\"\xfc\x01\n" +
+	"\x16store/attachment.proto\x12\vmemos.store\x1a\x1cstore/instance_setting.proto\"\xfc\x01\n" +
 	"\vMotionMedia\x126\n" +
 	"\x06family\x18\x01 \x01(\x0e2\x1e.memos.store.MotionMediaFamilyR\x06family\x120\n" +
 	"\x04role\x18\x02 \x01(\x0e2\x1c.memos.store.MotionMediaRoleR\x04role\x12\x19\n" +
