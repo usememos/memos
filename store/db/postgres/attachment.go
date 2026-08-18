@@ -69,10 +69,6 @@ func (d *DB) ListAttachments(ctx context.Context, find *store.FindAttachment) ([
 	if find.HasRelatedMemo {
 		where = append(where, "attachment.memo_id IS NOT NULL")
 	}
-	if v := find.StorageType; v != nil {
-		where, args = append(where, "attachment.storage_type = "+placeholder(len(args)+1)), append(args, v.String())
-	}
-
 	if len(find.Filters) > 0 {
 		engine, err := filter.DefaultAttachmentEngine()
 		if err != nil {
@@ -184,9 +180,6 @@ func (d *DB) UpdateAttachment(ctx context.Context, update *store.UpdateAttachmen
 	}
 	if v := update.MemoID; v != nil {
 		set, args = append(set, "memo_id = "+placeholder(len(args)+1)), append(args, *v)
-	}
-	if v := update.Reference; v != nil {
-		set, args = append(set, "reference = "+placeholder(len(args)+1)), append(args, *v)
 	}
 	if v := update.Payload; v != nil {
 		bytes, err := protojson.Marshal(v)

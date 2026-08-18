@@ -34,10 +34,10 @@ describe("attachment URL builders in share mode", () => {
     expect(url.searchParams.get("share_token")).toBe("abc123");
   });
 
-  it("keeps the server thumbnail URL when externalLink has no share token (e.g. S3 presigned)", () => {
+  it("keeps the server thumbnail URL when externalLink has no share token", () => {
     const attachment = {
       ...baseAttachment,
-      externalLink: "https://s3.example.com/bucket/photo.png?X-Amz-Signature=xyz",
+      externalLink: "https://cdn.example.com/photo.png?version=xyz",
     } as Attachment;
 
     expect(getAttachmentThumbnailUrl(attachment)).toBe(`${origin}/file/attachments/test-uid/photo.png?thumbnail=true`);

@@ -378,7 +378,6 @@
       "path": "Jalur Penyimpanan",
       "path-description": "Anda dapat menggunakan variabel dinamis yang sama dari penyimpanan lokal, seperti {filename}",
       "path-placeholder": "custom/path",
-      "presign-placeholder": "URL pra-tanda tangan, opsional",
       "region": "Wilayah",
       "region-placeholder": "Nama Wilayah",
       "s3-compatible-url": "URL Kompatibel S3",

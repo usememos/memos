@@ -50,7 +50,6 @@ type FindAttachment struct {
 	MemoID           *int32
 	MemoIDList       []int32
 	HasRelatedMemo   bool
-	StorageType      *storepb.AttachmentStorageType
 	Filters          []string
 	Limit            *int
 	Offset           *int
@@ -63,7 +62,6 @@ type UpdateAttachment struct {
 	UpdatedTs *int64
 	Filename  *string
 	MemoID    *int32
-	Reference *string
 	Payload   *storepb.AttachmentPayload
 }
 
@@ -244,9 +242,13 @@ func (s *Store) deleteAttachmentStorageImpl(ctx context.Context, attachment *Att
 				}
 			}
 
-			driver, err := ResolveStorageDriver(ctx, instanceStorageSetting, s3ObjectPayload.StorageId, s3ObjectPayload.S3Config)
+			resolvedStorage, err := ResolveStorage(instanceStorageSetting, s3ObjectPayload.StorageId, s3ObjectPayload.S3Config)
 			if err != nil {
-				return errors.Wrap(err, "failed to resolve storage driver")
+				return errors.Wrap(err, "failed to resolve storage")
+			}
+			driver, err := s.StorageDriver(ctx, resolvedStorage)
+			if err != nil {
+				return errors.Wrap(err, "failed to create storage driver")
 			}
 			if err := driver.DeleteObject(ctx, s3ObjectPayload.Key); err != nil {
 				return errors.Wrap(err, "Failed to delete s3 object")
@@ -295,9 +297,13 @@ func (s *Store) ResolveAttachmentS3Driver(ctx context.Context, attachment *Attac
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "failed to get instance storage setting")
 	}
-	driver, err := ResolveStorageDriver(ctx, instanceStorageSetting, s3Object.StorageId, s3Object.S3Config)
+	resolvedStorage, err := ResolveStorage(instanceStorageSetting, s3Object.StorageId, s3Object.S3Config)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "failed to resolve storage driver")
+		return nil, nil, errors.Wrap(err, "failed to resolve storage")
+	}
+	driver, err := s.StorageDriver(ctx, resolvedStorage)
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "failed to create storage driver")
 	}
 	return driver, s3Object, nil
 }

@@ -540,7 +540,6 @@
       "path": "Opslagpad",
       "path-description": "Je kan dezelfde dynamische variabelen gebruiken, zoals {filename}",
       "path-placeholder": "eigen/pad",
-      "presign-placeholder": "Pre-sign URL, optioneel",
       "region": "Regio",
       "region-placeholder": "Regionaam",
       "s3-compatible-url": "S3 compatibele URL",

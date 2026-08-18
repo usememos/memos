@@ -56,12 +56,12 @@ cd proto && buf format -w          # Format proto files
 | Path | Purpose |
 | --- | --- |
 | `cmd/memos/main.go` | Cobra/Viper CLI setup and server startup |
-| `server/server.go` | Echo HTTP server and background runner wiring |
+| `server/server.go` | Echo HTTP server, router wiring, and graceful shutdown |
 | `server/auth/` | JWT access tokens, refresh tokens, PAT handling |
 | `server/router/api/v1/` | Connect/gRPC-Gateway services, ACL config, SSE hub |
 | `server/router/frontend/` | Static SPA serving |
 | `server/router/fileserver/` | Native HTTP file serving, thumbnails, range requests |
-| `server/runner/` | Background memo processing and S3 presign refresh |
+| `server/runner/` | Memo payload rebuilding |
 | `store/` | Store facade, cache, migrations, driver interface |
 | `store/db/{sqlite,mysql,postgres}/` | Database-specific drivers and SQL |
 | `proto/api/v1/` | Public API service definitions |

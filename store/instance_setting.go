@@ -64,6 +64,9 @@ func (s *Store) UpsertInstanceSetting(ctx context.Context, upsert *storepb.Insta
 		return nil, errors.Wrap(err, "Failed to convert instance setting")
 	}
 	s.cacheInstanceSetting(ctx, instanceSetting)
+	if upsert.Key == storepb.InstanceSettingKey_STORAGE {
+		s.resetStorageDriverCache()
+	}
 	return instanceSetting, nil
 }
 

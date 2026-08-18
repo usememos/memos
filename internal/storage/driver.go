@@ -10,12 +10,24 @@ import (
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
+// ErrRangeNotSatisfiable reports a ranged read whose byte range falls outside
+// the object, so HTTP handlers can answer 416 instead of 500.
+var ErrRangeNotSatisfiable = s3.ErrRangeNotSatisfiable
+
+// RangeNotSatisfiableError carries response metadata for an unsatisfied range.
+type RangeNotSatisfiableError = s3.RangeNotSatisfiableError
+
+// ObjectStream is object content with the metadata needed to answer HTTP
+// range requests. Aliased so driver consumers never import a concrete backend.
+type ObjectStream = s3.ObjectStream
+
 // Driver provides object operations for a configured attachment storage.
 type Driver interface {
 	UploadObject(ctx context.Context, key string, fileType string, content io.Reader) (string, error)
-	PresignGetObject(ctx context.Context, key string) (string, error)
 	GetObject(ctx context.Context, key string) ([]byte, error)
-	GetObjectStream(ctx context.Context, key string) (io.ReadCloser, error)
+	// GetObjectStream streams an object; a non-empty byteRange is forwarded as
+	// an HTTP Range header and yields a partial object.
+	GetObjectStream(ctx context.Context, key string, byteRange string) (*ObjectStream, error)
 	DeleteObject(ctx context.Context, key string) error
 }
 

@@ -670,7 +670,6 @@
       "path": "Salvestustee",
       "path-description": "Saate kasutada samu dünaamilisi muutujaid kohalikust mälust, näiteks {filename}",
       "path-placeholder": "kohandatud/tee",
-      "presign-placeholder": "Eelmärk URL, valikuline",
       "region": "Piirkond",
       "region-description": "Pakkuja nõutav piirkond. Mõne ühilduva teenuse jaoks piisab mis tahes teenusepakkuja poolt aktsepteeritud piirkonna stringist.",
       "region-placeholder": "Piirkonna nimi",

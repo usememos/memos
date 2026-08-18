@@ -540,7 +540,6 @@
       "path": "შენახვის გზა",
       "path-description": "შეგიძლიათ გამოიყენოთ იგივე დინამიური ცვლადები, როგორც ლოკალური შენახვისთვის, როგორიცაა {filename}",
       "path-placeholder": "მორგებული/გზა",
-      "presign-placeholder": "წინასწარი ხელმოწერის URL, არასავალდებულო",
       "region": "რეგიონი",
       "region-placeholder": "რეგიონის სახელი",
       "s3-compatible-url": "S3 თავსებადი URL",

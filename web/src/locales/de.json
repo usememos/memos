@@ -540,7 +540,6 @@
       "path": "Speicherpfad",
       "path-description": "Du kannst dieselben dynamischen Variablen wie im lokalen Speicher verwenden, z.B. {filename}",
       "path-placeholder": "benutzerdefinierter/pfad",
-      "presign-placeholder": "Vorab signierte URL, optional",
       "region": "Region",
       "region-placeholder": "Regionsname",
       "s3-compatible-url": "S3-kompatible URL",

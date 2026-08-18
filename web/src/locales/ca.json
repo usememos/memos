@@ -540,7 +540,6 @@
       "path": "Ruta d'emmagatzematge",
       "path-description": "Pots utilitzar les mateixes variables dinàmiques que a l'emmagatzematge local, com {filename}",
       "path-placeholder": "ruta/personalitzada",
-      "presign-placeholder": "URL pre-signada, opcional",
       "region": "Regió",
       "region-placeholder": "Nom de la regió",
       "s3-compatible-url": "URL compatible amb S3",

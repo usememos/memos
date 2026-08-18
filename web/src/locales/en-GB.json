@@ -540,7 +540,6 @@
       "path": "Storage Path",
       "path-description": "You can use the same dynamic variables from local storage, like {filename}",
       "path-placeholder": "custom/path",
-      "presign-placeholder": "Pre-sign URL, optional",
       "region": "Region",
       "region-placeholder": "Region name",
       "s3-compatible-url": "S3 Compatible URL",

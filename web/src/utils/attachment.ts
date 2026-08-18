@@ -8,7 +8,7 @@ export const getAttachmentUrl = (attachment: Attachment) => {
   return `${window.location.origin}/file/${attachment.name}/${attachment.filename}`;
 };
 
-// Appends a flag param to share-mode links so anonymous viewers stay authorized; S3 presigned URLs are left untouched.
+// Appends a flag param to share-mode links so anonymous viewers stay authorized; external links without a share token are left untouched.
 const withShareTokenParam = (externalLink: string | undefined, key: string): string | undefined => {
   if (!externalLink) {
     return undefined;

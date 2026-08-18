@@ -540,7 +540,6 @@
       "path": "Lagringssti",
       "path-description": "Du kan bruke de samme dynamiske variablene fra lokal lagring, som {filename}",
       "path-placeholder": "egen/sti",
-      "presign-placeholder": "Pre-sign URL, valgfritt",
       "region": "Region",
       "region-placeholder": "Navn på region",
       "s3-compatible-url": "S3-kompatibel URL",

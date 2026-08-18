@@ -86,7 +86,7 @@ var (
 			// which is taken as the graceful shutdown signal for many systems, eg., Kubernetes, Gunicorn.
 			signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 
-			if err := s.Start(ctx); err != nil {
+			if err := s.Start(); err != nil {
 				if err != http.ErrServerClosed {
 					slog.Error("failed to start server", "error", err)
 					cancel()

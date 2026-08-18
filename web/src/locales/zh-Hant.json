@@ -820,7 +820,6 @@
       "path": "儲存空間路徑",
       "path-description": "您可以使用與本機儲存空間相同的動態變數，如 {filename}",
       "path-placeholder": "自訂路徑",
-      "presign-placeholder": "Pre-sign URL（選填）",
       "region": "地區",
       "region-description": "Provider 所需的地區。對於某些相容服務，任何 provider 接受的地區字串即可。",
       "region-placeholder": "地區名稱",

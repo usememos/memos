@@ -3,6 +3,7 @@ package s3
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -16,7 +17,7 @@ import (
 )
 
 // assertObjectLifecycle exercises the full driver contract — upload, download,
-// stream, presign + fetch, delete — against whichever backend the driver targets.
+// stream (full and ranged), delete — against whichever backend the driver targets.
 func assertObjectLifecycle(ctx context.Context, t *testing.T, driver *Driver, key string, content []byte) {
 	t.Helper()
 
@@ -28,25 +29,29 @@ func assertObjectLifecycle(ctx context.Context, t *testing.T, driver *Driver, ke
 	require.NoError(t, err)
 	require.Equal(t, content, downloaded)
 
-	stream, err := driver.GetObjectStream(ctx, key)
+	stream, err := driver.GetObjectStream(ctx, key, "")
 	require.NoError(t, err)
-	streamed, err := io.ReadAll(stream)
+	streamed, err := io.ReadAll(stream.Body)
 	require.NoError(t, err)
-	require.NoError(t, stream.Close())
+	require.NoError(t, stream.Body.Close())
 	require.Equal(t, content, streamed)
+	require.Equal(t, int64(len(content)), stream.ContentLength)
+	require.Empty(t, stream.ContentRange)
 
-	presignedURL, err := driver.PresignGetObject(ctx, key)
+	partial, err := driver.GetObjectStream(ctx, key, "bytes=4-9")
 	require.NoError(t, err)
-	require.Contains(t, presignedURL, "X-Amz-Signature=")
-	request, err := http.NewRequestWithContext(ctx, http.MethodGet, presignedURL, nil)
+	partialContent, err := io.ReadAll(partial.Body)
 	require.NoError(t, err)
-	response, err := http.DefaultClient.Do(request)
-	require.NoError(t, err)
-	defer response.Body.Close()
-	require.Equal(t, http.StatusOK, response.StatusCode)
-	presignedContent, err := io.ReadAll(response.Body)
-	require.NoError(t, err)
-	require.Equal(t, content, presignedContent)
+	require.NoError(t, partial.Body.Close())
+	require.Equal(t, content[4:10], partialContent)
+	require.Equal(t, int64(len(partialContent)), partial.ContentLength)
+	require.Equal(t, fmt.Sprintf("bytes 4-9/%d", len(content)), partial.ContentRange)
+
+	_, err = driver.GetObjectStream(ctx, key, fmt.Sprintf("bytes=%d-", len(content)*2))
+	require.ErrorIs(t, err, ErrRangeNotSatisfiable)
+	var rangeErr *RangeNotSatisfiableError
+	require.ErrorAs(t, err, &rangeErr)
+	require.Equal(t, fmt.Sprintf("bytes */%d", len(content)), rangeErr.ContentRange)
 
 	require.NoError(t, driver.DeleteObject(ctx, key))
 	_, err = driver.GetObject(ctx, key)

@@ -18,6 +18,8 @@ const (
 	localStorageID    = "local"
 )
 
+type storageDriverCacheKey [sha256.Size]byte
+
 // NormalizeInstanceStorageSetting populates the named storage model from legacy
 // fields and keeps the legacy fields synchronized for older clients.
 func NormalizeInstanceStorageSetting(setting *storepb.InstanceStorageSetting) {
@@ -260,6 +262,52 @@ func ResolveStorageDriver(
 		return nil, err
 	}
 	return storage.NewDriver(ctx, resolvedStorage)
+}
+
+// StorageDriver returns the driver for a resolved storage, reusing cached
+// clients so request paths do not rebuild an S3 client (config load, HTTP
+// transport) per call. ID-less legacy storages are not cached.
+func (s *Store) StorageDriver(ctx context.Context, resolvedStorage *storepb.Storage) (storage.Driver, error) {
+	if resolvedStorage.GetId() == "" {
+		return storage.NewDriver(ctx, resolvedStorage)
+	}
+	cacheKey, err := newStorageDriverCacheKey(resolvedStorage)
+	if err != nil {
+		return nil, err
+	}
+
+	s.storageDriverMu.Lock()
+	defer s.storageDriverMu.Unlock()
+	if driver, ok := s.storageDriverCache[cacheKey]; ok {
+		return driver, nil
+	}
+	driver, err := storage.NewDriver(ctx, resolvedStorage)
+	if err != nil {
+		return nil, err
+	}
+	if s.storageDriverCache == nil {
+		s.storageDriverCache = map[storageDriverCacheKey]storage.Driver{}
+	}
+	s.storageDriverCache[cacheKey] = driver
+	return driver, nil
+}
+
+func newStorageDriverCacheKey(resolvedStorage *storepb.Storage) (storageDriverCacheKey, error) {
+	marshalOptions := proto.MarshalOptions{Deterministic: true}
+	data, err := marshalOptions.Marshal(resolvedStorage)
+	if err != nil {
+		return storageDriverCacheKey{}, errors.Wrap(err, "failed to fingerprint storage configuration")
+	}
+	return storageDriverCacheKey(sha256.Sum256(data)), nil
+}
+
+// resetStorageDriverCache drops cached storage drivers; call whenever the
+// STORAGE setting may have changed (credentials or transport options can
+// rotate under an unchanged storage ID).
+func (s *Store) resetStorageDriverCache() {
+	s.storageDriverMu.Lock()
+	defer s.storageDriverMu.Unlock()
+	s.storageDriverCache = nil
 }
 
 // FindStorage returns the configured storage with the given stable identifier.

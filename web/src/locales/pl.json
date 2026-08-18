@@ -559,7 +559,6 @@
       "path": "Ścieżka przechowywania",
       "path-description": "Możesz użyć tych samych dynamicznych zmiennych jak w lokalnym magazynie, takich jak {filename}",
       "path-placeholder": "niestandardowa/ścieżka",
-      "presign-placeholder": "Wstępnie podpisany URL, opcjonalnie",
       "region": "Region",
       "region-placeholder": "Nazwa regionu",
       "s3-compatible-url": "URL zgodny z S3",

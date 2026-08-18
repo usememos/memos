@@ -540,7 +540,6 @@
       "path": "Pot shrambe",
       "path-description": "Uporabite lahko iste dinamične spremenljivke iz lokalne shrambe, kot je {filename}",
       "path-placeholder": "pot/po/meri",
-      "presign-placeholder": "URL pred-prijave, opcijsko",
       "region": "Regija",
       "region-placeholder": "Ime regije",
       "s3-compatible-url": "S3 združljiv URL",
