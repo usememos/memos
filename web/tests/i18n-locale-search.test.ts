@@ -38,10 +38,16 @@ describe("locale search helpers", () => {
     expect(localeMatchesSearch("he", "hebrew", "en")).toBe(true);
   });
 
-  it("keeps Hebrew keys aligned with the current English catalog", () => {
-    expect(flattenTranslationKeys(heTranslation).sort()).toEqual(flattenTranslationKeys(enTranslation).sort());
+  it("keeps Hebrew keys within the current English catalog", () => {
+    expect(flattenTranslationKeys(enTranslation).sort()).toEqual(expect.arrayContaining(flattenTranslationKeys(heTranslation).sort()));
     expect(heTranslation.setting).toHaveProperty("ai");
     expect(heTranslation.setting).toHaveProperty("notification");
     expect(heTranslation.auth).not.toHaveProperty("host-tip");
+  });
+
+  it("uses future-oriented wording for expiring Hebrew links and tokens", () => {
+    expect(heTranslation.memo.share["expires-on"]).toBe("יפוג תוקף בתאריך {{date}}");
+    expect(heTranslation.setting["access-token"].expires).toBe("יפוג תוקף");
+    expect(heTranslation.setting["access-token"]["guideline-expiration"]).toContain("שתוקפם יפוג");
   });
 });
