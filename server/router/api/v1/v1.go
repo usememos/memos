@@ -11,6 +11,7 @@ import (
 	"golang.org/x/sync/semaphore"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"github.com/usememos/memos/internal/httpgetter"
 	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -47,14 +48,17 @@ type APIV1Service struct {
 
 	// instanceStatsCache memoizes GetInstanceStats results for instanceStatsCacheTTL.
 	instanceStatsCache instanceStatsCache
+
+	linkMetadataFetcher linkMetadataFetcher
 }
 
+// NewAPIV1Service creates an API v1 service with its shared dependencies.
 func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store) *APIV1Service {
 	markdownService := markdown.NewService(
 		markdown.WithTagExtension(),
 		markdown.WithMentionExtension(),
 	)
-	return &APIV1Service{
+	service := &APIV1Service{
 		Secret:                   secret,
 		Profile:                  profile,
 		Store:                    store,
@@ -64,6 +68,8 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 		thumbnailSemaphore:       semaphore.NewWeighted(3), // Limit to 3 concurrent thumbnail generations
 		imageProcessingSemaphore: semaphore.NewWeighted(2),
 	}
+	service.linkMetadataFetcher = httpgetter.NewHTMLMetaFetcher()
+	return service
 }
 
 // newGatewayMarshaler mirrors grpc-gateway's default JSON marshaler with one

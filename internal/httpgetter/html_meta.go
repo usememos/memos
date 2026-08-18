@@ -8,16 +8,29 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/pkg/errors"
 	"golang.org/x/net/html"
-	"golang.org/x/net/html/atom"
+	"golang.org/x/sync/semaphore"
+	"golang.org/x/sync/singleflight"
 )
 
+// ErrInternalIP indicates that a link preview target resolves to a disallowed internal address.
 var ErrInternalIP = errors.New("internal IP addresses are not allowed")
 
-const maxHTMLMetaBytes = 512 * 1024
+const (
+	defaultLinkPreviewUserAgent = "MemosBot/1.0 (+https://usememos.com)"
+
+	maxHTMLMetaBytes     = 512 * 1024
+	maxOEmbedBytes       = 128 * 1024
+	maxCacheEntries      = 1000
+	maxConcurrentFetches = 8
+	fetchTimeout         = 5 * time.Second
+	successCacheTTL      = 24 * time.Hour
+	failureCacheTTL      = time.Minute
+)
 
 var (
 	lookupIPAddr = net.DefaultResolver.LookupIPAddr
@@ -25,7 +38,6 @@ var (
 		Timeout:   30 * time.Second,
 		KeepAlive: 30 * time.Second,
 	}).DialContext
-	httpClient = newHTTPClient()
 )
 
 func newHTTPClient() *http.Client {
@@ -35,7 +47,7 @@ func newHTTPClient() *http.Client {
 
 	return &http.Client{
 		Transport: transport,
-		Timeout:   5 * time.Second,
+		Timeout:   fetchTimeout,
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			if err := validateURL(req.URL.String()); err != nil {
 				return errors.Wrap(err, "redirect to internal IP")
@@ -127,101 +139,272 @@ func validateURL(urlStr string) error {
 	return nil
 }
 
+// HTMLMeta contains metadata used to build a link preview.
 type HTMLMeta struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Image       string `json:"image"`
 }
 
-func GetHTMLMeta(urlStr string) (*HTMLMeta, error) {
-	if err := validateURL(urlStr); err != nil {
-		return nil, err
-	}
+type cacheEntry struct {
+	meta      *HTMLMeta
+	err       error
+	expiresAt time.Time
+	storedAt  time.Time
+}
 
-	response, err := httpClient.Get(urlStr)
+// HTMLMetaFetcher fetches and caches standards-based link preview metadata.
+type HTMLMetaFetcher struct {
+	client    *http.Client
+	semaphore *semaphore.Weighted
+	group     singleflight.Group
+	now       func() time.Time
+
+	cacheMu sync.Mutex
+	cache   map[string]cacheEntry
+}
+
+// NewHTMLMetaFetcher creates a link preview fetcher with an SSRF-safe HTTP client.
+func NewHTMLMetaFetcher() *HTMLMetaFetcher {
+	return &HTMLMetaFetcher{
+		client:    newHTTPClient(),
+		semaphore: semaphore.NewWeighted(maxConcurrentFetches),
+		now:       time.Now,
+		cache:     make(map[string]cacheEntry),
+	}
+}
+
+// Get fetches metadata for a URL.
+func (f *HTMLMetaFetcher) Get(ctx context.Context, urlStr string) (*HTMLMeta, error) {
+	key, err := normalizeURL(urlStr)
 	if err != nil {
 		return nil, err
+	}
+	if meta, ok, err := f.getCached(key); ok {
+		return meta, err
+	}
+
+	resultChannel := f.group.DoChan(key, func() (any, error) {
+		if meta, ok, err := f.getCached(key); ok {
+			return meta, err
+		}
+
+		// The flight is shared by every coalesced waiter, so one caller's
+		// cancellation must not abort it for the remaining waiters. The single
+		// deadline covers both queueing and outbound requests.
+		flightContext, cancel := context.WithTimeout(context.WithoutCancel(ctx), fetchTimeout)
+		defer cancel()
+		if err := f.semaphore.Acquire(flightContext, 1); err != nil {
+			return nil, err
+		}
+		defer f.semaphore.Release(1)
+
+		meta, err := f.fetch(flightContext, key)
+		if err == nil {
+			f.setCached(key, meta, nil, successCacheTTL)
+		} else {
+			f.setCached(key, nil, err, failureCacheTTL)
+		}
+		return meta, err
+	})
+
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	case result := <-resultChannel:
+		if result.Err != nil {
+			return nil, result.Err
+		}
+		meta, ok := result.Val.(*HTMLMeta)
+		if !ok {
+			return nil, errors.New("invalid link metadata result")
+		}
+		return cloneHTMLMeta(meta), nil
+	}
+}
+
+func (f *HTMLMetaFetcher) fetch(ctx context.Context, urlStr string) (*HTMLMeta, error) {
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, urlStr, nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create link preview request")
+	}
+	setRequestHeaders(request, "text/html, application/xhtml+xml;q=0.9, */*;q=0.1")
+
+	response, err := f.client.Do(request)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to fetch link preview")
 	}
 	defer response.Body.Close()
+	if response.StatusCode < http.StatusOK || response.StatusCode >= http.StatusMultipleChoices {
+		return nil, errors.Errorf("unexpected HTTP status: %s", response.Status)
+	}
 
-	mediatype, err := getMediatype(response)
+	mediaType, err := getMediatype(response)
 	if err != nil {
 		return nil, err
 	}
-	if mediatype != "text/html" {
+	if mediaType != "text/html" && mediaType != "application/xhtml+xml" {
 		return nil, errors.New("not a HTML page")
 	}
 
-	htmlMeta := extractHTMLMeta(io.LimitReader(response.Body, maxHTMLMetaBytes))
-	enrichSiteMeta(response.Request.URL, htmlMeta)
-	return htmlMeta, nil
-}
-
-func extractHTMLMeta(resp io.Reader) *HTMLMeta {
-	tokenizer := html.NewTokenizer(resp)
-	htmlMeta := new(HTMLMeta)
-
-	for {
-		tokenType := tokenizer.Next()
-		if tokenType == html.ErrorToken {
-			break
-		} else if tokenType == html.StartTagToken || tokenType == html.SelfClosingTagToken {
-			token := tokenizer.Token()
-			if token.DataAtom == atom.Body {
-				break
-			}
-
-			if token.DataAtom == atom.Title {
-				tokenizer.Next()
-				token := tokenizer.Token()
-				htmlMeta.Title = token.Data
-			} else if token.DataAtom == atom.Meta {
-				ogTitle, ok := extractMetaProperty(token, "og:title")
-				if ok {
-					htmlMeta.Title = ogTitle
-				}
-
-				ogDescription, ok := extractMetaProperty(token, "og:description")
-				if ok {
-					htmlMeta.Description = ogDescription
-				}
-
-				ogImage, ok := extractMetaProperty(token, "og:image")
-				if ok {
-					htmlMeta.Image = ogImage
-				}
-
-				description, ok := extractMetaProperty(token, "description")
-				if ok && htmlMeta.Description == "" {
-					htmlMeta.Description = description
-				}
-			}
-		}
+	document, err := html.Parse(io.LimitReader(response.Body, maxHTMLMetaBytes))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse HTML")
+	}
+	pageURL, err := finalResponseURL(response, urlStr)
+	if err != nil {
+		return nil, err
 	}
 
-	return htmlMeta
-}
-
-func extractMetaProperty(token html.Token, prop string) (content string, ok bool) {
-	content, ok = "", false
-	for _, attr := range token.Attr {
-		if (attr.Key == "property" || attr.Key == "name") && strings.EqualFold(attr.Val, prop) {
-			ok = true
-		}
-		if attr.Key == "content" {
-			content = attr.Val
-		}
+	sources, oEmbedEndpoint := extractDocumentMetadata(document)
+	baseURL := resolveDocumentBase(pageURL, sources.baseHref)
+	var oEmbed metadataSource
+	if endpoint := resolveHTTPURL(baseURL, oEmbedEndpoint); endpoint != "" {
+		// oEmbed is optional enrichment, so its failure must not discard the
+		// metadata already extracted from the HTML document.
+		oEmbed, _ = f.fetchOEmbed(ctx, endpoint)
 	}
-	return content, ok
+
+	meta := mergeMetadata(baseURL, oEmbed, sources.openGraph, sources.twitter, sources.jsonLD, sources.standard, siteImageSource(pageURL), sources.semantic)
+	return meta, nil
 }
 
-func enrichSiteMeta(url *url.URL, meta *HTMLMeta) {
-	if url.Hostname() == "www.youtube.com" {
-		if url.Path == "/watch" {
-			vid := url.Query().Get("v")
-			if vid != "" {
-				meta.Image = fmt.Sprintf("https://img.youtube.com/vi/%s/mqdefault.jpg", vid)
+func (f *HTMLMetaFetcher) fetchOEmbed(ctx context.Context, endpoint string) (metadataSource, error) {
+	if err := validateURL(endpoint); err != nil {
+		return metadataSource{}, err
+	}
+	request, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, nil)
+	if err != nil {
+		return metadataSource{}, errors.Wrap(err, "failed to create oEmbed request")
+	}
+	setRequestHeaders(request, "application/json+oembed, application/json;q=0.9")
+
+	response, err := f.client.Do(request)
+	if err != nil {
+		return metadataSource{}, errors.Wrap(err, "failed to fetch oEmbed endpoint")
+	}
+	defer response.Body.Close()
+	if response.StatusCode < http.StatusOK || response.StatusCode >= http.StatusMultipleChoices {
+		return metadataSource{}, errors.Errorf("unexpected oEmbed HTTP status: %s", response.Status)
+	}
+
+	mediaType, err := getMediatype(response)
+	if err != nil {
+		return metadataSource{}, err
+	}
+	if mediaType != "application/json" && mediaType != "application/json+oembed" && !strings.HasSuffix(mediaType, "+json") {
+		return metadataSource{}, errors.New("oEmbed response is not JSON")
+	}
+
+	data, err := io.ReadAll(io.LimitReader(response.Body, maxOEmbedBytes+1))
+	if err != nil {
+		return metadataSource{}, errors.Wrap(err, "failed to read oEmbed response")
+	}
+	if len(data) > maxOEmbedBytes {
+		return metadataSource{}, errors.New("oEmbed response exceeds size limit")
+	}
+
+	baseURL, err := finalResponseURL(response, endpoint)
+	if err != nil {
+		return metadataSource{}, err
+	}
+	return extractOEmbedMetadata(data, baseURL)
+}
+
+func setRequestHeaders(request *http.Request, accept string) {
+	request.Header.Set("User-Agent", defaultLinkPreviewUserAgent)
+	request.Header.Set("Accept", accept)
+}
+
+func (f *HTMLMetaFetcher) getCached(key string) (*HTMLMeta, bool, error) {
+	f.cacheMu.Lock()
+	defer f.cacheMu.Unlock()
+
+	entry, ok := f.cache[key]
+	if !ok {
+		return nil, false, nil
+	}
+	if !f.now().Before(entry.expiresAt) {
+		delete(f.cache, key)
+		return nil, false, nil
+	}
+	return cloneHTMLMeta(entry.meta), true, entry.err
+}
+
+func (f *HTMLMetaFetcher) setCached(key string, meta *HTMLMeta, err error, ttl time.Duration) {
+	f.cacheMu.Lock()
+	defer f.cacheMu.Unlock()
+
+	now := f.now()
+	if _, exists := f.cache[key]; !exists && len(f.cache) >= maxCacheEntries {
+		var oldestKey string
+		var oldestTime time.Time
+		for candidateKey, entry := range f.cache {
+			if oldestKey == "" || entry.storedAt.Before(oldestTime) {
+				oldestKey = candidateKey
+				oldestTime = entry.storedAt
 			}
 		}
+		delete(f.cache, oldestKey)
 	}
+	f.cache[key] = cacheEntry{
+		meta:      cloneHTMLMeta(meta),
+		err:       err,
+		expiresAt: now.Add(ttl),
+		storedAt:  now,
+	}
+}
+
+func normalizeURL(urlStr string) (string, error) {
+	parsed, err := url.Parse(strings.TrimSpace(urlStr))
+	if err != nil {
+		return "", errors.New("invalid URL format")
+	}
+	parsed.Scheme = strings.ToLower(parsed.Scheme)
+	parsed.Host = strings.ToLower(parsed.Host)
+	parsed.Fragment = ""
+	if parsed.Path == "" {
+		parsed.Path = "/"
+	}
+	if (parsed.Scheme == "http" && parsed.Port() == "80") || (parsed.Scheme == "https" && parsed.Port() == "443") {
+		parsed.Host = parsed.Hostname()
+		if strings.Contains(parsed.Host, ":") {
+			parsed.Host = "[" + parsed.Host + "]"
+		}
+	}
+	if err := validateURL(parsed.String()); err != nil {
+		return "", err
+	}
+	return parsed.String(), nil
+}
+
+func finalResponseURL(response *http.Response, fallback string) (*url.URL, error) {
+	if response.Request != nil && response.Request.URL != nil {
+		return response.Request.URL, nil
+	}
+	parsed, err := url.Parse(fallback)
+	if err != nil {
+		return nil, errors.Wrap(err, "invalid response URL")
+	}
+	return parsed, nil
+}
+
+func cloneHTMLMeta(meta *HTMLMeta) *HTMLMeta {
+	if meta == nil {
+		return nil
+	}
+	copy := *meta
+	return &copy
+}
+
+// siteImageSource supplies deterministic site-specific thumbnails that outrank
+// the low-confidence semantic <img> fallback but lose to metadata the site
+// itself declares.
+func siteImageSource(pageURL *url.URL) metadataSource {
+	if pageURL.Hostname() == "www.youtube.com" && pageURL.Path == "/watch" {
+		if videoID := pageURL.Query().Get("v"); videoID != "" {
+			return metadataSource{image: fmt.Sprintf("https://img.youtube.com/vi/%s/mqdefault.jpg", url.PathEscape(videoID))}
+		}
+	}
+	return metadataSource{}
 }
