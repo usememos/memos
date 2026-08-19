@@ -1,3 +1,4 @@
+import { useDirection } from "@base-ui/react/direction-provider";
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 interface ColumnGridProps<T> {
@@ -79,6 +80,7 @@ function ColumnGrid<T>({
   maxColumns,
   maxColumnWidth,
 }: ColumnGridProps<T>) {
+  const direction = useDirection();
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const refCallbacks = useRef<Map<string, (el: HTMLDivElement | null) => void>>(new Map());
@@ -156,7 +158,8 @@ function ColumnGrid<T>({
     const pos = new Map<string, { x: number; y: number }>();
     for (const { key } of ordered) {
       const col = columnOf.get(key) ?? 0;
-      const x = offsetX + col * (columnWidth + GRID_GAP);
+      const inlineOffset = offsetX + col * (columnWidth + GRID_GAP);
+      const x = direction === "rtl" ? width - columnWidth - inlineOffset : inlineOffset;
       const y = columnY[col];
       pos.set(key, { x, y });
       columnY[col] = y + heightOf(key) + GRID_GAP;
@@ -185,7 +188,7 @@ function ColumnGrid<T>({
     }
 
     setContainerHeight(Math.max(0, ...columnY.map((h) => h - GRID_GAP)));
-  }, [items, getKey, estimateHeight, priorityKey, maxColumns, maxColumnWidth]);
+  }, [items, getKey, estimateHeight, priorityKey, maxColumns, maxColumnWidth, direction]);
 
   // Keep a stable reference so observer callbacks always run the latest layout.
   const relayoutRef = useRef(relayout);

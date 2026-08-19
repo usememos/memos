@@ -28,5 +28,9 @@ describe("Select", () => {
     const popup = document.querySelector('[data-slot="select-content"]');
     expect(popup).not.toBeNull();
     expect(popup?.parentElement).toHaveClass("isolate", "z-dropdown");
+
+    const selectedOption = screen.getByRole("option", { name: "Last updated" });
+    expect(selectedOption).toHaveClass("pe-8", "ps-2");
+    expect(selectedOption.querySelector('[data-slot="select-item-indicator"]')).toHaveClass("end-2");
   });
 });

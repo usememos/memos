@@ -1,3 +1,4 @@
+import { DirectionProvider } from "@base-ui/react/direction-provider";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { type CSSProperties, useRef, useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -18,25 +19,35 @@ vi.mock("@/utils/i18n", () => ({
 // handle writes to it. `railMounted` stands in for RootLayout's `md &&` gate, which unmounts the
 // rail — and with it the handle — when the window drops below the desktop breakpoint, while the
 // shell itself stays mounted.
-const Harness = ({ onWidthChange = vi.fn(), railMounted = true }: { onWidthChange?: (width: number) => void; railMounted?: boolean }) => {
+const Harness = ({
+  onWidthChange = vi.fn(),
+  railMounted = true,
+  direction = "ltr",
+}: {
+  onWidthChange?: (width: number) => void;
+  railMounted?: boolean;
+  direction?: "ltr" | "rtl";
+}) => {
   const targetRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(SIDEBAR_DEFAULT_WIDTH);
 
   return (
-    <div ref={targetRef} data-testid="shell" style={{ [SIDEBAR_WIDTH_VAR]: `${width}px` } as CSSProperties}>
-      {railMounted && (
-        <SidebarResizeHandle
-          width={width}
-          minWidth={SIDEBAR_MIN_WIDTH}
-          maxWidth={SIDEBAR_MAX_WIDTH}
-          onWidthChange={(next) => {
-            setWidth(next);
-            onWidthChange(next);
-          }}
-          targetRef={targetRef}
-        />
-      )}
-    </div>
+    <DirectionProvider direction={direction}>
+      <div ref={targetRef} data-testid="shell" style={{ [SIDEBAR_WIDTH_VAR]: `${width}px` } as CSSProperties}>
+        {railMounted && (
+          <SidebarResizeHandle
+            width={width}
+            minWidth={SIDEBAR_MIN_WIDTH}
+            maxWidth={SIDEBAR_MAX_WIDTH}
+            onWidthChange={(next) => {
+              setWidth(next);
+              onWidthChange(next);
+            }}
+            targetRef={targetRef}
+          />
+        )}
+      </div>
+    </DirectionProvider>
   );
 };
 
@@ -109,6 +120,21 @@ describe("<SidebarResizeHandle />", () => {
 
     fireEvent.keyDown(handle, { key: "ArrowLeft" });
     expect(onWidthChange).toHaveBeenLastCalledWith(SIDEBAR_DEFAULT_WIDTH);
+  });
+
+  it("mirrors keyboard and pointer resizing for a right-hand RTL sidebar", () => {
+    const onWidthChange = vi.fn();
+    render(<Harness direction="rtl" onWidthChange={onWidthChange} />);
+    const handle = screen.getByRole("separator");
+
+    expect(handle).toHaveClass("-end-1");
+    fireEvent.keyDown(handle, { key: "ArrowLeft" });
+    expect(onWidthChange).toHaveBeenLastCalledWith(SIDEBAR_DEFAULT_WIDTH + 16);
+    fireEvent.keyDown(handle, { key: "ArrowRight" });
+    expect(onWidthChange).toHaveBeenLastCalledWith(SIDEBAR_DEFAULT_WIDTH);
+
+    drag(SIDEBAR_DEFAULT_WIDTH, SIDEBAR_DEFAULT_WIDTH - 40);
+    expect(shellWidthVar()).toBe(`${SIDEBAR_DEFAULT_WIDTH + 40}px`);
   });
 
   it("jumps to each bound with Home and End", () => {

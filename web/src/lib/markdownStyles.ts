@@ -40,9 +40,9 @@ const headingClasses: Record<HeadingLevel, string> = {
  */
 export const markdownStyles = {
   paragraph: "my-0 mb-2 leading-6",
-  blockquote: "my-0 mb-2 border-l-4 border-primary/30 pl-3 text-muted-foreground italic",
-  bulletList: "my-0 mb-2 list-outside pl-6 list-disc",
-  orderedList: "my-0 mb-2 list-outside pl-6 list-decimal",
+  blockquote: "my-0 mb-2 border-s-4 border-primary/30 ps-3 text-muted-foreground italic",
+  bulletList: "my-0 mb-2 list-outside ps-6 list-disc",
+  orderedList: "my-0 mb-2 list-outside ps-6 list-decimal",
   listItem: "mt-0.5 leading-6",
   // Shared by the read-only task item (MemoContent/markdown/List.tsx) and the
   // editor so the checkbox + text grid stays identical in both.

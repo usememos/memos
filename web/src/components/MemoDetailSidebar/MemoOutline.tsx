@@ -78,11 +78,11 @@ const MemoOutline = ({ headings, memoName }: MemoOutlineProps) => {
               heading.level === minLevel && "font-medium",
               active ? "text-foreground" : "text-muted-foreground/70 hover:bg-sidebar-accent/65 hover:text-foreground",
             )}
-            style={{ paddingLeft: 8 + (heading.level - minLevel) * 12 }}
+            style={{ paddingInlineStart: 8 + (heading.level - minLevel) * 12 }}
           >
             <span
               className={cn(
-                "absolute left-0.5 top-1/2 h-[13px] w-[2px] -translate-y-1/2 rounded-full transition-colors",
+                "absolute start-0.5 top-1/2 h-[13px] w-[2px] -translate-y-1/2 rounded-full transition-colors",
                 active ? "bg-primary" : "bg-border",
               )}
             />

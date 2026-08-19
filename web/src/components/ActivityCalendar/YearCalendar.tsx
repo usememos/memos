@@ -36,7 +36,7 @@ const YearNavigation = memo(({ selectedYear, currentYear, onPrev, onNext, onToda
           aria-label="Previous year"
           className="size-7 rounded-md text-muted-foreground/65 hover:bg-muted/50 hover:text-foreground/90"
         >
-          <ChevronLeftIcon className="size-[15px]" strokeWidth={1.75} />
+          <ChevronLeftIcon className="size-[15px] rtl:rotate-180" strokeWidth={1.75} />
         </Button>
 
         <Button
@@ -63,7 +63,7 @@ const YearNavigation = memo(({ selectedYear, currentYear, onPrev, onNext, onToda
           aria-label="Next year"
           className="size-7 rounded-md text-muted-foreground/65 hover:bg-muted/50 hover:text-foreground/90"
         >
-          <ChevronRightIcon className="size-[15px]" strokeWidth={1.75} />
+          <ChevronRightIcon className="size-[15px] rtl:rotate-180" strokeWidth={1.75} />
         </Button>
       </nav>
     </div>

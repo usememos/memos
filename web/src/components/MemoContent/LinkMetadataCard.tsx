@@ -51,7 +51,7 @@ const LinkMetadataCard = ({ url, fallback, enabled = true }: LinkMetadataCardPro
         {description && <span className="line-clamp-1 text-xs leading-4 text-muted-foreground sm:line-clamp-2">{description}</span>}
       </span>
       {image && !imageFailed && (
-        <span className="flex w-24 shrink-0 items-center border-l border-border/70 bg-muted/40 sm:w-40">
+        <span className="flex w-24 shrink-0 items-center border-s border-border/70 bg-muted/40 sm:w-40">
           <span className="aspect-[1.91/1] w-full overflow-hidden">
             <img
               src={image}

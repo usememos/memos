@@ -1,3 +1,4 @@
+import { useDirection } from "@base-ui/react/direction-provider";
 import {
   type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
@@ -25,6 +26,7 @@ interface Props {
 
 const SidebarResizeHandle = ({ width, minWidth, maxWidth, onWidthChange, targetRef }: Props) => {
   const t = useTranslate();
+  const direction = useDirection();
   // `dragging` drives the band's styling; `draggingRef` is what the handlers and the unmount
   // cleanup read, so neither depends on a state update having been flushed first.
   const [dragging, setDragging] = useState(false);
@@ -99,7 +101,8 @@ const SidebarResizeHandle = ({ width, minWidth, maxWidth, onWidthChange, targetR
     if (!draggingRef.current) return;
     // Track the delta rather than the raw cursor x, so grabbing anywhere in the strip
     // does not snap the rail's edge to the pointer.
-    previewWidth(clamp(originRef.current.width + event.clientX - originRef.current.x));
+    const pointerDelta = event.clientX - originRef.current.x;
+    previewWidth(clamp(originRef.current.width + (direction === "rtl" ? -pointerDelta : pointerDelta)));
   };
 
   const endDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -114,11 +117,12 @@ const SidebarResizeHandle = ({ width, minWidth, maxWidth, onWidthChange, targetR
   };
 
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    const horizontalStep = direction === "rtl" ? -KEYBOARD_STEP : KEYBOARD_STEP;
     const next =
       event.key === "ArrowLeft"
-        ? width - KEYBOARD_STEP
+        ? width - horizontalStep
         : event.key === "ArrowRight"
-          ? width + KEYBOARD_STEP
+          ? width + horizontalStep
           : event.key === "Home"
             ? minWidth
             : event.key === "End"
@@ -144,7 +148,7 @@ const SidebarResizeHandle = ({ width, minWidth, maxWidth, onWidthChange, targetR
       onPointerCancel={endDrag}
       onDoubleClick={() => onWidthChange(SIDEBAR_DEFAULT_WIDTH)}
       onKeyDown={handleKeyDown}
-      className="group absolute inset-y-0 -right-1 z-10 flex w-2 cursor-col-resize touch-none justify-center focus-visible:outline-none"
+      className="group absolute inset-y-0 -end-1 z-10 flex w-2 cursor-col-resize touch-none justify-center focus-visible:outline-none"
     >
       {/* A 2px band centering to whole pixels inside the 8px strip, so it covers the rail's
           border and stays crisp at 1x instead of antialiasing across a half-pixel seam. */}

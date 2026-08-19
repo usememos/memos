@@ -82,7 +82,7 @@ const TagMark = () => <HashIcon aria-hidden="true" className={SIDEBAR_ROW_ICON_C
 const Chevron = ({ open }: { open: boolean }) => (
   <ChevronRightIcon
     aria-hidden="true"
-    className={cn("size-3.5 shrink-0 text-muted-foreground/70 transition-transform", open && "rotate-90")}
+    className={cn("size-3.5 shrink-0 text-muted-foreground/70 transition-transform", open ? "rotate-90" : "rtl:rotate-180")}
     strokeWidth={1.8}
   />
 );

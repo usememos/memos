@@ -1,3 +1,4 @@
+import { useDirection } from "@base-ui/react/direction-provider";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   ArchiveIcon,
@@ -644,7 +645,7 @@ const AppSidebar = ({ className }: { className?: string }) => {
               <span className="truncate">{t("common.sign-in-to-memos")}</span>
             </span>
             <ArrowRightIcon
-              className="size-3.5 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5"
+              className="size-3.5 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5"
               strokeWidth={1.8}
             />
           </Link>
@@ -673,10 +674,14 @@ export const MobileAppHeader = () => {
 };
 
 export const MobileAppSidebar = () => {
+  const direction = useDirection();
   const { mobileOpen, setMobileOpen } = useAppSidebar();
   return (
     <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-      <SheetContent side="left" className="w-[min(18rem,calc(100vw-2rem))] gap-0 border-border p-0 shadow-2xl [&>button]:hidden">
+      <SheetContent
+        side={direction === "rtl" ? "right" : "left"}
+        className="w-[min(18rem,calc(100vw-2rem))] gap-0 border-border p-0 shadow-2xl [&>button]:hidden"
+      >
         <SheetTitle className="sr-only">Navigation</SheetTitle>
         <AppSidebar />
       </SheetContent>

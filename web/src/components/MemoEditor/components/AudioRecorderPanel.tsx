@@ -49,7 +49,7 @@ export const AudioRecorderPanel: FC<AudioRecorderPanelProps> = ({
         </span>
       </div>
 
-      <div className="flex shrink-0 items-center gap-1 border-l border-border/60 pl-2">
+      <div className="flex shrink-0 items-center gap-1 border-s border-border/60 ps-2">
         <Button
           type="button"
           variant="ghost"
@@ -63,7 +63,7 @@ export const AudioRecorderPanel: FC<AudioRecorderPanelProps> = ({
         </Button>
         {canTranscribe && (
           <Tooltip>
-            <TooltipTrigger render={<span className="-ml-2 inline-flex" />}>
+            <TooltipTrigger render={<span className="-ms-2 inline-flex" />}>
               <Button
                 type="button"
                 variant="ghost"

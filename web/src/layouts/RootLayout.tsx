@@ -70,7 +70,7 @@ const RootLayoutContent = () => {
     <AppSidebarProvider>
       <div ref={shellRef} className="min-h-full w-full bg-background" style={{ [SIDEBAR_WIDTH_VAR]: `${sidebarWidth}px` } as CSSProperties}>
         {md && (
-          <div className="fixed inset-y-0 left-0 z-30 w-(--app-sidebar-width) border-r border-border/70">
+          <div className="fixed inset-y-0 start-0 z-30 w-(--app-sidebar-width) border-e border-border/70">
             <AppSidebar />
             <SidebarResizeHandle
               width={sidebarWidth}
@@ -82,7 +82,7 @@ const RootLayoutContent = () => {
           </div>
         )}
         <MobileAppSidebar />
-        <main className="flex min-h-full w-full min-w-0 flex-col items-center md:pl-(--app-sidebar-width)">
+        <main className="flex min-h-full w-full min-w-0 flex-col items-center md:ps-(--app-sidebar-width)">
           <MobileAppHeader />
           {profile.demo && <DemoBanner />}
           <Outlet />
