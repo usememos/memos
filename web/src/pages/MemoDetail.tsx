@@ -1,6 +1,6 @@
 import { Code, ConnectError } from "@connectrpc/connect";
 import { ArrowUpLeftFromCircleIcon } from "lucide-react";
-import { useCallback, useEffect, useMemo as useReactMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo as useReactMemo, useRef, useState } from "react";
 import { Link, Navigate, useLocation, useParams } from "react-router-dom";
 import MemoCommentSection from "@/components/MemoCommentSection";
 import { MentionResolutionProvider } from "@/components/MemoContent/MentionResolutionContext";
@@ -21,19 +21,21 @@ const MemoSidebarRegistration = ({
   from,
   readonly,
   onShareImageOpen,
+  showBlurredContent,
 }: {
   memo: Memo;
   from?: string;
   readonly: boolean;
   onShareImageOpen: () => void;
+  showBlurredContent: boolean;
 }) => {
   const { setMemoDetail } = useAppSidebar();
 
-  useEffect(() => {
-    setMemoDetail({ memo, from, readonly, onShareImageOpen });
-  }, [from, memo, onShareImageOpen, readonly, setMemoDetail]);
+  useLayoutEffect(() => {
+    setMemoDetail({ memo, from, readonly, onShareImageOpen, showBlurredContent });
+  }, [from, memo, onShareImageOpen, readonly, setMemoDetail, showBlurredContent]);
 
-  useEffect(() => () => setMemoDetail(undefined), [setMemoDetail]);
+  useLayoutEffect(() => () => setMemoDetail(undefined), [setMemoDetail]);
 
   return null;
 };
@@ -54,6 +56,7 @@ const MemoDetail = () => {
 
   // Primary memo fetch — share token or direct name.
   const memoNameFromParams = params.uid ? `${memoNamePrefix}${params.uid}` : "";
+  const memoNavigationKey = isShareMode ? `share:${shareToken}` : memoNameFromParams;
   const {
     data: memoFromDirect,
     error: directError,
@@ -70,6 +73,13 @@ const MemoDetail = () => {
     if (!isShareMode) return memo;
     return { ...memo, attachments: withShareAttachmentLinks(memo.attachments as Attachment[], shareToken!) };
   }, [isShareMode, memo, shareToken]);
+  const [revealedMemoName, setRevealedMemoName] = useState<string>();
+  const showBlurredContent = Boolean(displayMemo && displayMemo.name === revealedMemoName);
+  const handleBlurVisibilityChange = useCallback(
+    (show: boolean) => setRevealedMemoName(show ? displayMemo?.name : undefined),
+    [displayMemo?.name],
+  );
+  useLayoutEffect(() => setRevealedMemoName(undefined), [memoNavigationKey]);
 
   useMemoDetailError({
     error: error as Error | null,
@@ -121,7 +131,13 @@ const MemoDetail = () => {
   return (
     <section className="@container flex min-h-full w-full flex-col items-center pb-8 pt-3 md:pt-6">
       <MentionResolutionProvider contents={mentionResolutionContents} userNames={userResolutionNames}>
-        <MemoSidebarRegistration memo={displayMemo} from={parentPage} readonly={isShareMode} onShareImageOpen={handleShareImageOpen} />
+        <MemoSidebarRegistration
+          memo={displayMemo}
+          from={parentPage}
+          readonly={isShareMode}
+          onShareImageOpen={handleShareImageOpen}
+          showBlurredContent={showBlurredContent}
+        />
         <div className="w-full max-w-2xl px-4 sm:px-6">
           <div className="w-full">
             {!isShareMode && parentMemo && (
@@ -146,6 +162,8 @@ const MemoDetail = () => {
               showCreator
               showVisibility
               showPinned
+              showBlurredContent={showBlurredContent}
+              onBlurVisibilityChange={handleBlurVisibilityChange}
               onShareImageDialogOpenChange={setShareImageDialogOpen}
             />
             {!isShareMode && (
