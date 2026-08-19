@@ -105,6 +105,19 @@ const render = (ui: Parameters<typeof testingLibraryRender>[0]) =>
     <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>{ui}</QueryClientProvider>,
   );
 
+const expectCollapsedNavPill = (pill: HTMLElement, label: string) => {
+  expect(pill).toHaveClass("h-[30px]", "px-[7px]");
+  const labelTrack = pill.querySelector('span[aria-hidden="true"]');
+  expect(labelTrack).toHaveClass("grid-cols-[0fr]", "pl-0");
+  expect(labelTrack).toHaveTextContent(label);
+};
+
+const expectActiveNavPill = (pill: HTMLElement, label: string) => {
+  expect(pill).toHaveAttribute("aria-current", "page");
+  expect(pill.querySelector('span[aria-hidden="true"]')).toBeNull();
+  expect(pill).toHaveTextContent(label);
+};
+
 describe("App sidebar logo", () => {
   beforeEach(() => {
     authState.currentUser = { name: "users/test" };
@@ -243,20 +256,17 @@ describe("App sidebar logo", () => {
     );
 
     const scopeTrigger = screen.getByRole("button", { name: "common.home" });
-    expect(scopeTrigger).toHaveClass("size-[30px]");
-    expect(scopeTrigger).not.toHaveTextContent("common.home");
+    expectCollapsedNavPill(scopeTrigger, "common.home");
 
     const inbox = screen.getByRole("link", { name: "common.inbox" });
-    expect(inbox).toHaveClass("size-[30px]");
-    expect(inbox).not.toHaveTextContent("common.inbox");
+    expectCollapsedNavPill(inbox, "common.inbox");
 
     const attachments = screen.getByRole("link", { name: "common.attachments" });
-    expect(attachments).toHaveAttribute("aria-current", "page");
-    expect(attachments).toHaveTextContent("common.attachments");
+    expectActiveNavPill(attachments, "common.attachments");
 
     fireEvent.click(scopeTrigger);
     expect(await screen.findByText("Calendar")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "common.home" })).toHaveTextContent("common.home");
+    expectActiveNavPill(screen.getByRole("button", { name: "common.home" }), "common.home");
     expect(screen.queryByRole("menuitem", { name: "common.explore" })).not.toBeInTheDocument();
   });
 
@@ -287,11 +297,10 @@ describe("App sidebar logo", () => {
     );
 
     const scopeTrigger = screen.getByRole("button", { name: label });
-    expect(scopeTrigger).toHaveClass("size-[30px]");
-    expect(scopeTrigger).not.toHaveTextContent(label);
+    expectCollapsedNavPill(scopeTrigger, label);
 
     fireEvent.click(scopeTrigger);
-    expect(await screen.findByRole("button", { name: label })).toHaveTextContent(label);
+    expectActiveNavPill(await screen.findByRole("button", { name: label, current: "page" }), label);
   });
 
   it("keeps the mobile brand beside navigation without a duplicate search action", () => {

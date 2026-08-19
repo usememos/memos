@@ -22,7 +22,7 @@ import {
   Trash2Icon,
   UserRoundIcon,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Link, matchPath, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -62,7 +62,7 @@ import { User_Role, UserNotification_Status } from "@/types/proto/api/v1/user_se
 import { useTranslate } from "@/utils/i18n";
 import MemosLogo from "../MemosLogo";
 import { getSidebarRouteKind } from "./routes";
-import SidebarRow, { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_ICON_CLASSES, sidebarRowStateClasses } from "./SidebarRow";
+import SidebarRow, { SIDEBAR_ROW_CLASSES, SIDEBAR_ROW_FOCUS_CLASSES, SIDEBAR_ROW_ICON_CLASSES, sidebarRowStateClasses } from "./SidebarRow";
 import SidebarSection, {
   SIDEBAR_SECTION_ACTION_BUTTON_CLASSES,
   SIDEBAR_SECTION_ACTION_ICON_CLASSES,
@@ -391,7 +391,40 @@ interface GlobalNavItem {
   icon: LucideIcon;
   active: boolean;
   count?: number;
+  alwaysExpanded?: boolean;
 }
+
+/**
+ * Pills keep a constant px so the icon sits exactly where it does in the collapsed 30px
+ * square; all width change comes from the label column, which animates 0fr -> 1fr. That
+ * keeps the expand/collapse a single smooth motion with no padding jump.
+ */
+const navPillClasses = (active: boolean) =>
+  cn(
+    "relative flex h-[30px] min-w-0 items-center rounded-md px-[7px] transition-colors",
+    SIDEBAR_ROW_FOCUS_CLASSES,
+    sidebarRowStateClasses(active),
+  );
+
+const NavPillLabel = ({ expanded, label, children }: { expanded: boolean; label: ReactNode; children?: ReactNode }) => (
+  <span
+    aria-hidden={!expanded || undefined}
+    className={cn(
+      // The icon-label gap is padding on this element because overflow-hidden clips
+      // content but never padding — it must animate to zero with the track, or collapsed
+      // pills keep an 8px tail.
+      "grid min-w-0 transition-[grid-template-columns,padding] duration-200 ease-out motion-reduce:transition-none",
+      expanded ? "grid-cols-[1fr] pl-2" : "grid-cols-[0fr] pl-0",
+    )}
+  >
+    {/* Content is shrink-0 so the collapsing track clips it in place — a plain
+        left-to-right reveal instead of re-truncating the label on every frame. */}
+    <span className="flex min-w-0 items-center gap-2 overflow-hidden">
+      <span className="max-w-[5.5rem] shrink-0 truncate text-[12px]">{label}</span>
+      {children}
+    </span>
+  </span>
+);
 
 const GlobalNavigation = () => {
   const t = useTranslate();
@@ -458,26 +491,10 @@ const GlobalNavigation = () => {
           path: ROUTES.EXPLORE,
           icon: EarthIcon,
           active: routeKind === "explore" || routeKind === "profile" || routeKind === "memo",
+          alwaysExpanded: true,
         },
         { id: "about", label: t("common.about"), path: ROUTES.ABOUT, icon: InfoIcon, active: location.pathname === ROUTES.ABOUT },
       ];
-
-  const scopeTrigger = (
-    <DropdownMenuTrigger
-      render={
-        <button
-          type="button"
-          aria-label={activeScopeItem.label}
-          aria-current="page"
-          className="flex h-[30px] min-w-0 items-center gap-2 rounded-md bg-sidebar-accent px-2 font-medium text-sidebar-accent-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-        />
-      }
-    >
-      <ActiveScopeIcon className="size-4 shrink-0" strokeWidth={1.8} />
-      <span className="max-w-[5.5rem] truncate text-[12px]">{activeScopeItem.label}</span>
-      <ChevronDownIcon className="size-3 shrink-0 opacity-55" strokeWidth={1.8} />
-    </DropdownMenuTrigger>
-  );
 
   const scopeMenuContent = (
     <DropdownMenuContent align="start" sideOffset={4} className="flex w-36 flex-col gap-0.5">
@@ -505,68 +522,74 @@ const GlobalNavigation = () => {
     <TooltipProvider>
       <nav className={cn("flex h-9 items-center gap-1", SIDEBAR_HORIZONTAL_PADDING)} aria-label="Primary">
         {currentUser && (
-          <>
-            {scopeRouteActive ? (
-              <DropdownMenu>
-                {scopeTrigger}
-                {scopeMenuContent}
-              </DropdownMenu>
-            ) : (
-              <Tooltip>
-                <TooltipTrigger
+          <DropdownMenu
+            onOpenChange={(open, eventDetails) => {
+              // Off the scope routes the pill is a plain navigation button: veto the
+              // menu and navigate to the scope instead.
+              if (open && !scopeRouteActive) {
+                eventDetails.cancel();
+                navigateToScope(resolvedScope);
+              }
+            }}
+          >
+            <Tooltip disabled={scopeRouteActive}>
+              {/* The tooltip anchors to a wrapper span rather than the button: a disabled
+                  tooltip stamps data-trigger-disabled on its trigger element, and Base UI's
+                  shared floating logic would read that as the MENU trigger being disabled. */}
+              <TooltipTrigger render={<span className="flex min-w-0" />}>
+                <DropdownMenuTrigger
                   render={
                     <button
                       type="button"
                       aria-label={activeScopeItem.label}
-                      className="flex size-[30px] items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-sidebar-accent/65 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
-                      onClick={() => navigateToScope(resolvedScope)}
+                      aria-current={scopeRouteActive ? "page" : undefined}
+                      className={cn("group/scope", navPillClasses(scopeRouteActive))}
                     />
                   }
                 >
-                  <ActiveScopeIcon className="size-4" strokeWidth={1.8} />
-                </TooltipTrigger>
-                <TooltipContent side="bottom">{activeScopeItem.label}</TooltipContent>
-              </Tooltip>
-            )}
-          </>
+                  <ActiveScopeIcon className="size-4 shrink-0" strokeWidth={1.8} />
+                  <NavPillLabel expanded={scopeRouteActive} label={activeScopeItem.label}>
+                    <ChevronDownIcon
+                      className="-mr-0.5 size-3 shrink-0 opacity-55 transition-transform duration-200 ease-out group-data-[popup-open]/scope:rotate-180 motion-reduce:transition-none"
+                      strokeWidth={1.8}
+                    />
+                  </NavPillLabel>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">{activeScopeItem.label}</TooltipContent>
+            </Tooltip>
+            {scopeMenuContent}
+          </DropdownMenu>
         )}
         {items.map((item) => {
           const Icon = item.icon;
-          const alwaysShowLabel = !currentUser && item.id === "explore";
-          const itemClassName = cn(
-            "relative flex min-w-0 items-center justify-center gap-2 rounded-md text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
-            item.active || alwaysShowLabel ? "h-[30px] px-2" : "size-[30px] px-0",
-            item.active
-              ? "bg-sidebar-accent font-medium text-sidebar-accent-foreground"
-              : "hover:bg-sidebar-accent/65 hover:text-foreground",
-          );
-          const itemContent = (
-            <>
-              <Icon className="size-4 shrink-0" strokeWidth={1.8} />
-              {(item.active || alwaysShowLabel) && <span className="max-w-[5.5rem] truncate text-[12px]">{item.label}</span>}
-              {!!item.count && item.count > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-semibold leading-4 text-primary-foreground">
-                  {item.count > 99 ? "99+" : item.count}
-                </span>
-              )}
-            </>
-          );
-          const content = (
-            <Link
-              key={item.id}
-              to={item.path}
-              onClick={() => setMobileOpen(false)}
-              aria-label={item.label}
-              aria-current={item.active ? "page" : undefined}
-              className={itemClassName}
-            >
-              {itemContent}
-            </Link>
-          );
-          if (item.active) return content;
+          const expanded = item.active || !!item.alwaysExpanded;
           return (
-            <Tooltip key={item.id}>
-              <TooltipTrigger render={<span />}>{content}</TooltipTrigger>
+            <Tooltip key={item.id} disabled={expanded}>
+              <TooltipTrigger
+                render={
+                  <Link
+                    to={item.path}
+                    onClick={() => setMobileOpen(false)}
+                    aria-label={item.label}
+                    aria-current={item.active ? "page" : undefined}
+                    className={navPillClasses(item.active)}
+                  />
+                }
+              >
+                <Icon className="size-4 shrink-0" strokeWidth={1.8} />
+                <NavPillLabel expanded={expanded} label={item.label} />
+                {item.count != null && (
+                  <span
+                    className={cn(
+                      "absolute -right-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-semibold leading-4 text-primary-foreground transition-[opacity,scale] duration-200 ease-out motion-reduce:transition-none",
+                      item.count > 0 ? "scale-100 opacity-100" : "scale-50 opacity-0",
+                    )}
+                  >
+                    {item.count > 0 && (item.count > 99 ? "99+" : item.count)}
+                  </span>
+                )}
+              </TooltipTrigger>
               <TooltipContent side="bottom">{item.label}</TooltipContent>
             </Tooltip>
           );
