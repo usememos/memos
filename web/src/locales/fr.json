@@ -451,6 +451,7 @@
       "appearance-title": "Apparence",
       "default-memo-visibility-description": "Visibilité appliquée aux mémos nouvellement créés, sauf modification dans l'éditeur.",
       "language-description": "Met à jour immédiatement la langue de l'interface et l'enregistre sur votre compte.",
+      "link-preview-description": "Afficher des cartes d'aperçu riches pour les liens nus dans les mémos.",
       "memo-defaults-description": "Définissez les valeurs par défaut utilisées lors de la rédaction de nouveaux mémos.",
       "memo-defaults-title": "Valeurs par défaut du mémo",
       "theme-description": "Applique immédiatement le thème sélectionné sur cet appareil."
