@@ -1,10 +1,10 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { List, ListItem } from "@/components/MemoContent/markdown";
-import { TASK_LIST_CLASS, TASK_LIST_ITEM_CLASS } from "@/components/MemoContent/constants";
-import { remarkSplitMixedTaskLists } from "@/utils/remark-plugins/remark-split-mixed-task-lists";
 import { describe, expect, it } from "vitest";
+import { TASK_LIST_CLASS, TASK_LIST_ITEM_CLASS } from "@/components/MemoContent/constants";
+import { List, ListItem } from "@/components/MemoContent/markdown";
+import { remarkSplitMixedTaskLists } from "@/utils/remark-plugins/remark-split-mixed-task-lists";
 
 const renderListContent = (content: string): string =>
   renderToStaticMarkup(
@@ -27,9 +27,9 @@ describe("memo content lists", () => {
     expect(listOpenTags).toHaveLength(2);
     expect(listOpenTags[0]).toContain(TASK_LIST_CLASS);
     expect(listOpenTags[0]).toContain("list-none");
-    expect(listOpenTags[0]).not.toContain("pl-6");
+    expect(listOpenTags[0]).not.toContain("ps-6");
     expect(listOpenTags[1]).not.toContain(TASK_LIST_CLASS);
-    expect(listOpenTags[1]).toContain("pl-6");
+    expect(listOpenTags[1]).toContain("ps-6");
     expect(listOpenTags[1]).toContain("list-disc");
     expect(html).toContain('<li class="mt-0.5 leading-6">milk</li>');
     expect(html).not.toContain('<li class="mt-0.5 leading-6">\n<p>milk</p>');

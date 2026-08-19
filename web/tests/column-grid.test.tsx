@@ -1,5 +1,6 @@
+import { DirectionProvider } from "@base-ui/react/direction-provider";
 import { render } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import ColumnGrid from "@/components/ColumnGrid";
 
 // jsdom has no layout engine (offsetHeight/clientWidth are 0) and no ResizeObserver,
@@ -40,5 +41,22 @@ describe("<ColumnGrid>", () => {
     const { container } = render(<ColumnGrid items={[]} getKey={getKey} renderItem={() => <div data-testid="card" />} />);
 
     expect(container.querySelectorAll('[data-testid="card"]')).toHaveLength(0);
+  });
+
+  it("places the first packed column at inline start in RTL", () => {
+    const clientWidth = vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockReturnValue(532);
+    const offsetHeight = vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockReturnValue(100);
+
+    const { getByTestId } = render(
+      <DirectionProvider direction="rtl">
+        <ColumnGrid items={[item("a"), item("b")]} getKey={getKey} renderItem={(i) => <div data-testid={`card-${i.id}`}>{i.id}</div>} />
+      </DirectionProvider>,
+    );
+
+    expect(getByTestId("card-a").parentElement?.style.transform).toContain("translate3d(272px");
+    expect(getByTestId("card-b").parentElement?.style.transform).toContain("translate3d(0px");
+
+    clientWidth.mockRestore();
+    offsetHeight.mockRestore();
   });
 });

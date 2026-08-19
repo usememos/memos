@@ -78,7 +78,7 @@ const AuthPageLayout = ({ chip, title, subtitle, hideExplore, children }: Props)
               >
                 <CompassIcon className="h-3.5 w-3.5" />
                 {t("auth.explore-public-memos")}
-                <ArrowRightIcon className="-ml-1 h-3.5 w-3.5 opacity-0 transition-all group-hover:ml-0 group-hover:opacity-100" />
+                <ArrowRightIcon className="-ms-1 h-3.5 w-3.5 opacity-0 transition-all group-hover:ms-0 group-hover:opacity-100 rtl:rotate-180" />
               </Link>
             </div>
           )}

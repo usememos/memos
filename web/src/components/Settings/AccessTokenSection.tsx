@@ -29,10 +29,10 @@ const ApiUsageExample = () => {
 
   return (
     <div className="relative w-full min-w-0 rounded-lg border border-border/60 bg-muted/30">
-      <pre className="overflow-x-auto p-3 pr-12 font-mono text-xs leading-5 text-foreground/85">
+      <pre className="overflow-x-auto p-3 pe-12 font-mono text-xs leading-5 text-foreground/85">
         <code>{example}</code>
       </pre>
-      <Button variant="ghost" size="icon" className="absolute top-1.5 right-1.5" aria-label={t("common.copy")} onClick={handleCopy}>
+      <Button variant="ghost" size="icon" className="absolute top-1.5 end-1.5" aria-label={t("common.copy")} onClick={handleCopy}>
         <CopyIcon className="w-3.5 h-auto" />
       </Button>
     </div>
@@ -78,7 +78,7 @@ const HowToUseDisclosure = () => {
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
       >
-        <ChevronRightIcon className={`size-3.5 transition-transform ${open ? "rotate-90" : ""}`} />
+        <ChevronRightIcon className={`size-3.5 transition-transform ${open ? "rotate-90" : "rtl:rotate-180"}`} />
         {t("setting.access-token.how-to-use")}
       </button>
       {open && (
