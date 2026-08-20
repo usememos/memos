@@ -39,6 +39,8 @@ Open `http://localhost:5230` and start writing.
 
 ### Native Binary
 
+Native macOS binaries require macOS 13 Ventura or later.
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/usememos/memos/main/scripts/install.sh | sh
 ```

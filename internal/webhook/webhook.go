@@ -15,8 +15,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/pkg/errors"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
@@ -136,7 +136,7 @@ func Post(requestPayload *WebhookRequestPayload) error {
 			return errors.Wrapf(err, "failed to derive signing key for webhook to %s", requestPayload.URL)
 		}
 
-		msgID := "msg_" + uuid.New().String()
+		msgID := "msg_" + uuid.NewV4().String()
 		timestamp := strconv.FormatInt(time.Now().Unix(), 10)
 
 		mac := hmac.New(sha256.New, key)

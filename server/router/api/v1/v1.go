@@ -9,7 +9,6 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/pkg/errors"
 	"golang.org/x/sync/semaphore"
-	"google.golang.org/protobuf/encoding/protojson"
 
 	"github.com/usememos/memos/internal/httpgetter"
 	"github.com/usememos/memos/internal/markdown"
@@ -85,12 +84,8 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 func newGatewayMarshaler() *runtime.HTTPBodyMarshaler {
 	return &runtime.HTTPBodyMarshaler{
 		Marshaler: &runtime.JSONPb{
-			MarshalOptions: protojson.MarshalOptions{
-				EmitDefaultValues: true,
-			},
-			UnmarshalOptions: protojson.UnmarshalOptions{
-				DiscardUnknown: true,
-			},
+			EmitDefaultValues: true,
+			DiscardUnknown:    true,
 		},
 	}
 }

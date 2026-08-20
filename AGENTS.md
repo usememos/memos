@@ -7,7 +7,7 @@ repo. If a fact here conflicts with source files or CI config, trust the source 
 
 Memos is a self-hosted note-taking app.
 
-- Backend: Go 1.26.2, Echo v5, Connect RPC, gRPC-Gateway, Protocol Buffers.
+- Backend: Go 1.27.0, Echo v5, Connect RPC, gRPC-Gateway, Protocol Buffers.
 - Frontend: React 19, TypeScript 6, Vite 8, Tailwind CSS v4, React Query v5.
 - Storage: SQLite, MySQL, PostgreSQL.
 - Generated API outputs: `proto/gen/` for Go/OpenAPI, `web/src/types/proto/` for TypeScript.
@@ -33,7 +33,7 @@ go test -v ./store/...             # Store tests, including DB drivers via TestC
 go test -v -race ./server/...      # Server tests with race detector
 go test -v -race ./internal/...    # Internal package tests with race detector
 go test -v -run TestFoo ./pkg/...  # Run matching Go tests
-go mod tidy -go=1.26.2             # Match CI tidy check
+go mod tidy -go=1.27.0             # Match CI tidy check
 golangci-lint run                  # Go lint, config: .golangci.yaml
 golangci-lint run --fix            # Auto-fix lint, including goimports
 
@@ -119,7 +119,7 @@ cd proto && buf format -w          # Format proto files
 
 ## CI Reference
 
-- Backend CI: Go 1.26.2, `go mod tidy -go=1.26.2`, golangci-lint v2.11.3, test groups `store`, `server`, `internal`, `other`.
+- Backend CI: Go 1.27.0, `go mod tidy -go=1.27.0`, golangci-lint v2.13.1, test groups `store`, `server`, `internal`, `other`.
 - Frontend CI: Node 24, pnpm 11.0.1, `pnpm lint`, `pnpm test`, `pnpm build`.
 - Proto CI: `buf lint` and `buf format` check.
 - Docker: `scripts/Dockerfile`, Alpine 3.21 runtime, non-root user, port 5230, multi-arch amd64/arm64/arm/v7.

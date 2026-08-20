@@ -410,7 +410,7 @@ email.SendAsync(config, message)
 
 ### Required
 
-- **Go 1.25+**
+- **Go 1.27+**
 - Standard library: `net/smtp`, `crypto/tls`
 - `github.com/pkg/errors` - Error wrapping with context
 

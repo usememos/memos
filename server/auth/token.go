@@ -135,17 +135,15 @@ func GenerateAccessTokenV2(userID int32, username, role, status string, secret [
 	expiresAt := time.Now().Add(AccessTokenDuration)
 
 	claims := &AccessTokenClaims{
-		Type:     "access",
-		Role:     role,
-		Status:   status,
-		Username: username,
-		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    Issuer,
-			Audience:  jwt.ClaimStrings{AccessTokenAudienceName},
-			Subject:   fmt.Sprint(userID),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			ExpiresAt: jwt.NewNumericDate(expiresAt),
-		},
+		Type:      "access",
+		Role:      role,
+		Status:    status,
+		Username:  username,
+		Issuer:    Issuer,
+		Audience:  jwt.ClaimStrings{AccessTokenAudienceName},
+		Subject:   fmt.Sprint(userID),
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		ExpiresAt: jwt.NewNumericDate(expiresAt),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -164,15 +162,13 @@ func GenerateRefreshToken(userID int32, tokenID string, secret []byte) (string, 
 	expiresAt := time.Now().Add(RefreshTokenDuration)
 
 	claims := &RefreshTokenClaims{
-		Type:    "refresh",
-		TokenID: tokenID,
-		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    Issuer,
-			Audience:  jwt.ClaimStrings{RefreshTokenAudienceName},
-			Subject:   fmt.Sprint(userID),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			ExpiresAt: jwt.NewNumericDate(expiresAt),
-		},
+		Type:      "refresh",
+		TokenID:   tokenID,
+		Issuer:    Issuer,
+		Audience:  jwt.ClaimStrings{RefreshTokenAudienceName},
+		Subject:   fmt.Sprint(userID),
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		ExpiresAt: jwt.NewNumericDate(expiresAt),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
