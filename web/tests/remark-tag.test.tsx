@@ -2,12 +2,14 @@ import { renderToStaticMarkup } from "react-dom/server";
 import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
 import { describe, expect, it } from "vitest";
+import { remarkCurrencySafeMath } from "@/utils/remark-plugins/remark-currency-safe-math";
 import { remarkMemoSyntax } from "@/utils/remark-plugins/remark-tag";
 
 const renderMarkdown = (content: string): string =>
-  renderToStaticMarkup(<ReactMarkdown remarkPlugins={[remarkMath, remarkGfm, remarkMemoSyntax, remarkBreaks]}>{content}</ReactMarkdown>);
+  renderToStaticMarkup(
+    <ReactMarkdown remarkPlugins={[remarkCurrencySafeMath, remarkGfm, remarkMemoSyntax, remarkBreaks]}>{content}</ReactMarkdown>,
+  );
 
 const renderMarkdownWithoutMath = (content: string): string =>
   renderToStaticMarkup(<ReactMarkdown remarkPlugins={[remarkGfm, remarkMemoSyntax, remarkBreaks]}>{content}</ReactMarkdown>);
@@ -631,6 +633,13 @@ describe("remarkMemoSyntax", () => {
     expect(html).not.toContain('data-tag="math"');
     expect(html).not.toContain('data-tag="link"');
     expect(html).toContain('data-tag="ok"');
+  });
+
+  it("keeps tags between currency dollars visible", () => {
+    const html = renderMarkdown("$20,000 #budget and $30,000");
+
+    expect(html).toContain('data-tag="budget"');
+    expect(html).not.toContain("math-inline");
   });
 
   it("keeps math opaque while the math renderer is loading", () => {

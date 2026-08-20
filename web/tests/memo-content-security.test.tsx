@@ -5,9 +5,9 @@ import rehypeKatex from "rehype-katex";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
-import remarkMath from "remark-math";
 import { describe, expect, it } from "vitest";
-import { SANITIZE_SCHEMA, isTrustedIframeSrc } from "@/components/MemoContent/constants";
+import { isTrustedIframeSrc, SANITIZE_SCHEMA } from "@/components/MemoContent/constants";
+import { remarkCurrencySafeMath } from "@/utils/remark-plugins/remark-currency-safe-math";
 
 type IframeProps = React.ComponentProps<"iframe">;
 
@@ -21,7 +21,7 @@ const TrustedIframe = (props: IframeProps) => {
 const renderMemoContent = (content: string): string =>
   renderToStaticMarkup(
     <ReactMarkdown
-      remarkPlugins={[remarkMath]}
+      remarkPlugins={[remarkCurrencySafeMath]}
       rehypePlugins={[rehypeRaw, [rehypeSanitize, SANITIZE_SCHEMA], [rehypeKatex, { throwOnError: false, strict: false }]]}
       components={{ iframe: TrustedIframe }}
     >

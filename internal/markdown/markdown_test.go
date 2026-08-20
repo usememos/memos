@@ -768,6 +768,7 @@ func TestExtractTagsMemosTagV1(t *testing.T) {
 		{name: "email inside emphasis", content: "_foo@example.com #tag_", expected: []string{"tag"}},
 		{name: "raw HTML syntax", content: "<span data-tag=\"#attribute\">#text</span>", expected: []string{"text"}},
 		{name: "inline math", content: "$#math$ #plain", expected: []string{"plain"}},
+		{name: "currency dollars leave tags visible", content: "$20,000 #budget and $30,000", expected: []string{"budget"}},
 		{name: "inline math exact closing run", content: "$#one$$ #two$ #plain", expected: []string{"plain"}},
 		{name: "inline math does not reopen within a dollar run", content: "$$#math$ #plain", expected: []string{"math", "plain"}},
 		{name: "inline math after escaped dollar", content: "\\$$#math$ #plain", expected: []string{"plain"}},
