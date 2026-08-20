@@ -94,6 +94,7 @@ func convertInstanceGeneralSettingFromStore(setting *storepb.InstanceGeneralSett
 		WeekStartDayOffset:       setting.WeekStartDayOffset,
 		DisallowChangeUsername:   setting.DisallowChangeUsername,
 		DisallowChangeNickname:   setting.DisallowChangeNickname,
+		AllowPublicAccess:        setting.AllowPublicAccess,
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &v1pb.InstanceSetting_GeneralSetting_CustomProfile{
@@ -117,6 +118,7 @@ func convertInstanceGeneralSettingToStore(setting *v1pb.InstanceSetting_GeneralS
 		WeekStartDayOffset:       setting.WeekStartDayOffset,
 		DisallowChangeUsername:   setting.DisallowChangeUsername,
 		DisallowChangeNickname:   setting.DisallowChangeNickname,
+		AllowPublicAccess:        setting.AllowPublicAccess,
 	}
 	if setting.CustomProfile != nil {
 		generalSetting.CustomProfile = &storepb.InstanceCustomProfile{

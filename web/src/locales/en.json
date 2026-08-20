@@ -603,8 +603,10 @@
       "transcription-warning-no-key": "The selected provider has no API key set. Edit the integration above to add one."
     },
     "instance": {
-      "access-description": "Control sign-up, authentication, profile editing, and calendar defaults for this instance.",
+      "access-description": "Control public access, sign-up, authentication, profile editing, and calendar defaults for this instance.",
       "access-title": "Access and policies",
+      "allow-public-access-description": "Let signed-out visitors browse public memos, profiles, avatars, attachments, and RSS. Turn this off to keep the instance private.",
+      "allow-public-access": "Allow public access",
       "disallow-change-nickname-description": "Prevent users from changing their display name.",
       "disallow-change-nickname": "Disallow changing nickname",
       "disallow-change-username-description": "Prevent users from changing their login username.",

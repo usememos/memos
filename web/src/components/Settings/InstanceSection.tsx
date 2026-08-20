@@ -108,6 +108,18 @@ const InstanceSection = () => {
       <SettingGroup title={t("setting.instance.access-title")} description={t("setting.instance.access-description")} showSeparator>
         <SettingList>
           <SettingListItem
+            label={t("setting.instance.allow-public-access")}
+            description={t("setting.instance.allow-public-access-description")}
+          >
+            <Switch
+              aria-label={t("setting.instance.allow-public-access")}
+              disabled={profile.demo}
+              checked={instanceGeneralSetting.allowPublicAccess}
+              onCheckedChange={(checked) => updatePartialSetting({ allowPublicAccess: checked })}
+            />
+          </SettingListItem>
+
+          <SettingListItem
             label={t("setting.instance.disallow-user-registration")}
             description={t("setting.instance.disallow-user-registration-description")}
           >

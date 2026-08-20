@@ -12,9 +12,22 @@ import (
 
 	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 	teststore "github.com/usememos/memos/store/test"
 )
+
+// setRSSPublicAccess persists the explicit public-access policy.
+func setRSSPublicAccess(ctx context.Context, t *testing.T, stores *store.Store, allow bool) {
+	t.Helper()
+	_, err := stores.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_GENERAL,
+		Value: &storepb.InstanceSetting_GeneralSetting{
+			GeneralSetting: &storepb.InstanceGeneralSetting{AllowPublicAccess: allow},
+		},
+	})
+	require.NoError(t, err)
+}
 
 func TestPublicRSSExcludesComments(t *testing.T) {
 	ctx := context.Background()
@@ -52,6 +65,7 @@ func TestPublicRSSExcludesComments(t *testing.T) {
 	require.NoError(t, err)
 
 	service := NewRSSService(&profile.Profile{InstanceURL: "https://memos.example.com"}, stores, markdown.NewService())
+	setRSSPublicAccess(ctx, t, stores, true)
 
 	exploreRSS := renderRSS(t, service, "/explore/rss.xml", "")
 	require.Contains(t, exploreRSS, "public parent should stay in rss")
@@ -117,4 +131,49 @@ func renderRSS(t *testing.T, service *RSSService, target string, username string
 	require.NoError(t, err)
 	require.Equal(t, http.StatusOK, rec.Code)
 	return rec.Body.String()
+}
+
+// TestRSSPublicAccessPolicy verifies that a configured instance URL alone does
+// not enable RSS, that explicit public access works with an empty instance URL,
+// and that toggling the policy takes effect immediately without a restart.
+func TestRSSPublicAccessPolicy(t *testing.T) {
+	ctx := context.Background()
+	stores := teststore.NewTestingStore(ctx, t)
+	defer stores.Close()
+
+	user, err := stores.CreateUser(ctx, &store.User{
+		Username: "rss-policy-owner",
+		Role:     store.RoleUser,
+		Email:    "rss-policy-owner@example.com",
+	})
+	require.NoError(t, err)
+	_, err = stores.CreateMemo(ctx, &store.Memo{
+		UID:        "rss-policy-public",
+		CreatorID:  user.ID,
+		Content:    "policy-gated memo",
+		Visibility: store.Public,
+	})
+	require.NoError(t, err)
+
+	// Canonical URL configured, but the explicit policy is absent: private.
+	service := NewRSSService(&profile.Profile{InstanceURL: "https://memos.example.com"}, stores, markdown.NewService())
+	assertRSSUnavailable := func() {
+		e := echo.New()
+		req := httptest.NewRequest(http.MethodGet, "/explore/rss.xml", strings.NewReader(""))
+		rec := httptest.NewRecorder()
+		var httpError *echo.HTTPError
+		require.ErrorAs(t, service.GetExploreRSS(e.NewContext(req, rec)), &httpError)
+		require.Equal(t, http.StatusNotFound, httpError.Code)
+	}
+	assertRSSUnavailable()
+
+	// Public access works even with an empty canonical URL, and the cached
+	// private feed does not leak after the policy flips off.
+	service = NewRSSService(&profile.Profile{}, stores, markdown.NewService())
+	setRSSPublicAccess(ctx, t, stores, true)
+	rss := renderRSS(t, service, "/explore/rss.xml", "")
+	require.Contains(t, rss, "policy-gated memo")
+
+	setRSSPublicAccess(ctx, t, stores, false)
+	assertRSSUnavailable()
 }

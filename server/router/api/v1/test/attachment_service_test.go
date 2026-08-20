@@ -148,6 +148,9 @@ func TestAttachmentMetadataFollowsMemoVisibility(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
+	// The anonymous reads below model a public instance, so persist the explicit
+	// policy rather than relying on the (private) default.
+	require.NoError(t, ts.SetPublicAccess(ctx, true))
 	owner, err := ts.CreateRegularUser(ctx, "metadata-owner")
 	require.NoError(t, err)
 	ownerCtx := ts.CreateUserContext(ctx, owner.ID)

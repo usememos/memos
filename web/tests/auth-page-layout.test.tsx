@@ -3,7 +3,7 @@ import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import AuthPageLayout from "@/components/AuthPageLayout";
 
-const instance = vi.hoisted(() => ({ instanceUrl: "" }));
+const instance = vi.hoisted(() => ({ instanceUrl: "", allowPublicAccess: false }));
 
 vi.mock("@/contexts/InstanceContext", () => ({
   useInstance: () => ({ profile: instance, generalSetting: {} }),
@@ -28,16 +28,20 @@ const renderLayout = (props?: { hideExplore?: boolean }) =>
 describe("<AuthPageLayout> explore band", () => {
   beforeEach(() => {
     instance.instanceUrl = "";
+    instance.allowPublicAccess = false;
   });
 
-  it("links to Explore on public instances", () => {
-    instance.instanceUrl = "https://demo.example.com";
+  it("links to Explore when public access is enabled, even without an instance URL", () => {
+    instance.instanceUrl = "";
+    instance.allowPublicAccess = true;
     renderLayout();
 
     expect(screen.getByRole("link", { name: /auth\.explore-public-memos/ })).toHaveAttribute("href", "/explore");
   });
 
-  it("omits the band on private instances", () => {
+  it("omits the band when the policy is private even though an instance URL is configured", () => {
+    instance.instanceUrl = "https://demo.example.com";
+    instance.allowPublicAccess = false;
     renderLayout();
 
     expect(screen.queryByRole("link", { name: /auth\.explore-public-memos/ })).not.toBeInTheDocument();
@@ -45,6 +49,7 @@ describe("<AuthPageLayout> explore band", () => {
 
   it("omits the band when hideExplore is set (first-run setup)", () => {
     instance.instanceUrl = "https://demo.example.com";
+    instance.allowPublicAccess = true;
     renderLayout({ hideExplore: true });
 
     expect(screen.queryByRole("link", { name: /auth\.explore-public-memos/ })).not.toBeInTheDocument();

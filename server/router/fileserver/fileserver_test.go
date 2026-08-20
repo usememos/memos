@@ -160,13 +160,13 @@ func TestServeAttachmentFile_S3MinIO(t *testing.T) {
 
 	// Authorization happens before storage resolution, so a private instance
 	// must not expose object bytes.
-	fs.Profile.InstanceURL = ""
+	setFileServerPublicAccess(ctx, t, stores, false)
 	privateRecorder := httptest.NewRecorder()
 	e.ServeHTTP(privateRecorder, httptest.NewRequest(http.MethodGet, textURL, nil))
 	require.Equal(t, http.StatusUnauthorized, privateRecorder.Code)
 	require.Empty(t, privateRecorder.Header().Get(echo.HeaderLocation))
 
-	fs.Profile.InstanceURL = "http://localhost:8080"
+	setFileServerPublicAccess(ctx, t, stores, true)
 	textRecorder := httptest.NewRecorder()
 	e.ServeHTTP(textRecorder, httptest.NewRequest(http.MethodGet, textURL, nil))
 	require.Equal(t, http.StatusOK, textRecorder.Code)
@@ -698,9 +698,28 @@ func newShareAttachmentTestServices(ctx context.Context, t *testing.T) (*apiv1se
 	}
 	fileService := NewFileServerService(testProfile, testStore, secret)
 
+	// Most fileserver tests exercise the public-access path, mirroring the
+	// previous "InstanceURL configured" default. Tests that need a private
+	// instance toggle the policy off explicitly.
+	setFileServerPublicAccess(ctx, t, testStore, true)
+
 	return apiService, fileService, testStore, func() {
 		testStore.Close()
 	}
+}
+
+// setFileServerPublicAccess persists the explicit public-access policy and
+// verifies that it took effect in memory immediately, without a restart.
+func setFileServerPublicAccess(ctx context.Context, t *testing.T, stores *store.Store, allow bool) {
+	t.Helper()
+	_, err := stores.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_GENERAL,
+		Value: &storepb.InstanceSetting_GeneralSetting{
+			GeneralSetting: &storepb.InstanceGeneralSetting{AllowPublicAccess: allow},
+		},
+	})
+	require.NoError(t, err)
+	require.Equal(t, allow, stores.AllowPublicAccess(ctx), "public-access policy must take effect immediately")
 }
 
 // makePNGDataURI returns a minimal valid PNG encoded as a data URI, suitable for a
@@ -715,8 +734,8 @@ func makePNGDataURI(t *testing.T) string {
 }
 
 // TestServeAttachmentFile_PrivateInstanceDeniesAnonymous verifies that a public
-// memo's attachment is served to anonymous visitors on an open instance but denied
-// on a private instance (no InstanceURL configured).
+// memo's attachment is served to anonymous visitors when public access is enabled
+// but denied when the explicit policy marks the instance private.
 func TestServeAttachmentFile_PrivateInstanceDeniesAnonymous(t *testing.T) {
 	ctx := context.Background()
 	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
@@ -759,23 +778,113 @@ func TestServeAttachmentFile_PrivateInstanceDeniesAnonymous(t *testing.T) {
 	}
 
 	// Open instance: anonymous access to a public memo's attachment is allowed.
-	fs.Profile.InstanceURL = "http://localhost:8080"
+	setFileServerPublicAccess(ctx, t, svc.Store, true)
 	require.Equal(t, http.StatusOK, anonymousGet())
 
 	// Private instance: the same anonymous request is denied.
-	fs.Profile.InstanceURL = ""
+	setFileServerPublicAccess(ctx, t, svc.Store, false)
 	require.Equal(t, http.StatusUnauthorized, anonymousGet())
+}
+
+// TestServeAttachmentFile_DefaultPolicyIsPrivateWithURLConfigured verifies that
+// a configured canonical InstanceURL alone does not grant anonymous access: the
+// default explicit policy is private.
+func TestServeAttachmentFile_DefaultPolicyIsPrivateWithURLConfigured(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
+	// Undo the public default installed by the test constructor; a fresh store
+	// with no GENERAL setting behaves the same way.
+	setFileServerPublicAccess(ctx, t, stores, false)
+	defer cleanup()
+
+	require.NotEmpty(t, fs.Profile.InstanceURL, "canonical instance URL is configured")
+	require.False(t, stores.AllowPublicAccess(ctx), "default policy must be private even with an instance URL")
+
+	creator, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "default-private-owner",
+		Role:     store.RoleUser,
+		Email:    "default-private-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+
+	attachment, err := svc.CreateAttachment(creatorCtx, &apiv1.CreateAttachmentRequest{
+		Attachment: &apiv1.Attachment{
+			Filename: "default-private.txt",
+			Type:     "text/plain",
+			Content:  []byte("public memo content"),
+		},
+	})
+	require.NoError(t, err)
+	_, err = svc.CreateMemo(creatorCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:     "public memo",
+			Visibility:  apiv1.Visibility_PUBLIC,
+			Attachments: []*apiv1.Attachment{{Name: attachment.Name}},
+		},
+	})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename), nil))
+	require.Equal(t, http.StatusUnauthorized, rec.Code)
+}
+
+// TestServeAttachmentFile_PublicPolicyWorksWithoutURL verifies that explicit
+// public access serves anonymous requests even with an empty instance URL.
+func TestServeAttachmentFile_PublicPolicyWorksWithoutURL(t *testing.T) {
+	ctx := context.Background()
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
+	defer cleanup()
+
+	fs.Profile.InstanceURL = ""
+	setFileServerPublicAccess(ctx, t, stores, true)
+
+	creator, err := svc.Store.CreateUser(ctx, &store.User{
+		Username: "empty-url-owner",
+		Role:     store.RoleUser,
+		Email:    "empty-url-owner@example.com",
+	})
+	require.NoError(t, err)
+	creatorCtx := context.WithValue(ctx, auth.UserIDContextKey, creator.ID)
+
+	attachment, err := svc.CreateAttachment(creatorCtx, &apiv1.CreateAttachmentRequest{
+		Attachment: &apiv1.Attachment{
+			Filename: "empty-url.txt",
+			Type:     "text/plain",
+			Content:  []byte("public content"),
+		},
+	})
+	require.NoError(t, err)
+	_, err = svc.CreateMemo(creatorCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{
+			Content:     "public memo",
+			Visibility:  apiv1.Visibility_PUBLIC,
+			Attachments: []*apiv1.Attachment{{Name: attachment.Name}},
+		},
+	})
+	require.NoError(t, err)
+
+	e := echo.New()
+	fs.RegisterRoutes(e)
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s", attachment.Name, attachment.Filename), nil))
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "public content", rec.Body.String())
 }
 
 // TestServeUserAvatar_PrivateInstanceRequiresAuth verifies that avatars are exposed
 // to anonymous visitors on an open instance but require authentication on a private
-// instance.
+// instance, and that a response only a private instance authenticated is not
+// offered to shared caches.
 func TestServeUserAvatar_PrivateInstanceRequiresAuth(t *testing.T) {
 	ctx := context.Background()
 	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
 	defer cleanup()
 
-	_, err := svc.Store.CreateUser(ctx, &store.User{
+	owner, err := svc.Store.CreateUser(ctx, &store.User{
 		Username:  "avatar-owner",
 		Role:      store.RoleUser,
 		Email:     "avatar-owner@example.com",
@@ -785,20 +894,43 @@ func TestServeUserAvatar_PrivateInstanceRequiresAuth(t *testing.T) {
 
 	e := echo.New()
 	fs.RegisterRoutes(e)
+	const avatarURL = "/file/users/avatar-owner/avatar"
 
-	anonymousGet := func() int {
+	anonymousGet := func() *httptest.ResponseRecorder {
 		rec := httptest.NewRecorder()
-		e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/file/users/avatar-owner/avatar", nil))
-		return rec.Code
+		e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, avatarURL, nil))
+		return rec
 	}
 
-	// Open instance: anonymous avatar access is allowed.
-	fs.Profile.InstanceURL = "http://localhost:8080"
-	require.Equal(t, http.StatusOK, anonymousGet())
+	// Open instance: anonymous avatar access is allowed and shared caches may
+	// keep it, because an anonymous client could have fetched it anyway.
+	setFileServerPublicAccess(ctx, t, svc.Store, true)
+	openRec := anonymousGet()
+	require.Equal(t, http.StatusOK, openRec.Code)
+	require.Equal(t, cacheMaxAge, openRec.Header().Get(echo.HeaderCacheControl))
 
 	// Private instance: anonymous avatar access is denied.
-	fs.Profile.InstanceURL = ""
-	require.Equal(t, http.StatusUnauthorized, anonymousGet())
+	setFileServerPublicAccess(ctx, t, svc.Store, false)
+	require.Equal(t, http.StatusUnauthorized, anonymousGet().Code)
+
+	// The owner still gets their avatar, but the response carries credentials'
+	// worth of access, so it must not sit in a shared cache where an anonymous
+	// client could be handed it — nor outlive public access being switched off.
+	tokenID := util.GenUUID()
+	require.NoError(t, svc.Store.AddUserRefreshToken(ctx, owner.ID, &storepb.RefreshTokensUserSetting_RefreshToken{
+		TokenId:   tokenID,
+		ExpiresAt: timestamppb.New(time.Now().Add(auth.RefreshTokenDuration)),
+		CreatedAt: timestamppb.Now(),
+	}))
+	refreshToken, _, err := auth.GenerateRefreshToken(owner.ID, tokenID, []byte(svc.Secret))
+	require.NoError(t, err)
+
+	req := httptest.NewRequest(http.MethodGet, avatarURL, nil)
+	req.AddCookie(&http.Cookie{Name: auth.RefreshTokenCookieName, Value: refreshToken})
+	privateRec := httptest.NewRecorder()
+	e.ServeHTTP(privateRec, req)
+	require.Equal(t, http.StatusOK, privateRec.Code)
+	require.Equal(t, privateAttachmentCacheControl, privateRec.Header().Get(echo.HeaderCacheControl))
 }
 
 // TestServeAttachmentFile_RefreshCookieAuthenticatesOwner verifies that the file

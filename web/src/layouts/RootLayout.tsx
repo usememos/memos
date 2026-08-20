@@ -58,10 +58,10 @@ const RootLayoutContent = () => {
     prevPathnameRef.current = pathname;
   }, [pathname, searchParams, removeFilter]);
 
-  // Private instance (no InstanceURL configured): anonymous visitors may only reach
+  // Private instance (public access disabled): anonymous visitors may only reach
   // share links; everything else redirects to the sign-in page, preserving the intended
   // destination. Public instances keep the open Explore behavior for logged-out users.
-  if (shouldGatePrivateInstance({ isPrivateInstance: !profile.instanceUrl, isAuthenticated: !!currentUser, pathname })) {
+  if (shouldGatePrivateInstance({ isPrivateInstance: !profile.allowPublicAccess, isAuthenticated: !!currentUser, pathname })) {
     const redirect = `${pathname}${location.search}${location.hash}`;
     return <Navigate to={buildAuthRoute({ redirect })} replace />;
   }

@@ -771,6 +771,8 @@ func TestMemoCommentUsesCurrentParentVisibility(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
 	defer ts.Cleanup()
+	// The anonymous reads at the end model a public instance.
+	require.NoError(t, ts.SetPublicAccess(ctx, true))
 
 	owner, err := ts.CreateRegularUser(ctx, "dynamic-comment-owner")
 	require.NoError(t, err)

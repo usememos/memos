@@ -70,11 +70,11 @@ func (s *RSSService) RegisterRoutes(g *echo.Group) {
 }
 
 func (s *RSSService) GetExploreRSS(c *echo.Context) error {
-	if s.Profile == nil || !s.Profile.AllowAnonymous() {
+	ctx := c.Request().Context()
+	if s.Store == nil || !s.Store.AllowPublicAccess(ctx) {
 		return echo.NewHTTPError(http.StatusNotFound, "RSS is unavailable")
 	}
 
-	ctx := c.Request().Context()
 	cacheKey := "explore"
 
 	// Check cache first
@@ -113,11 +113,11 @@ func (s *RSSService) GetExploreRSS(c *echo.Context) error {
 }
 
 func (s *RSSService) GetUserRSS(c *echo.Context) error {
-	if s.Profile == nil || !s.Profile.AllowAnonymous() {
+	ctx := c.Request().Context()
+	if s.Store == nil || !s.Store.AllowPublicAccess(ctx) {
 		return echo.NewHTTPError(http.StatusNotFound, "RSS is unavailable")
 	}
 
-	ctx := c.Request().Context()
 	username := c.Param("username")
 	cacheKey := "user:" + username
 

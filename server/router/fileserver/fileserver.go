@@ -169,9 +169,10 @@ func (s *FileServerService) serveAttachmentFile(c *echo.Context) error {
 func (s *FileServerService) serveUserAvatar(c *echo.Context) error {
 	ctx := c.Request().Context()
 
-	// On a private instance (no InstanceURL), avatars are not exposed to anonymous
-	// visitors; a valid session, access token, or PAT is required.
-	if !s.Profile.AllowAnonymous() {
+	// On a private instance, avatars are not exposed to anonymous visitors;
+	// a valid session, access token, or PAT is required.
+	allowPublicAccess := s.Store.AllowPublicAccess(ctx)
+	if !allowPublicAccess {
 		viewer, err := s.getCurrentUser(ctx, c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").Wrap(err)
@@ -204,7 +205,14 @@ func (s *FileServerService) serveUserAvatar(c *echo.Context) error {
 	}
 
 	setSecurityHeaders(c)
-	c.Response().Header().Set(echo.HeaderCacheControl, cacheMaxAge)
+	// A private instance authenticated this response, so it must not sit in a
+	// shared cache where an anonymous client could be handed it — nor outlive
+	// the moment public access is turned off.
+	cacheControl := cacheMaxAge
+	if !allowPublicAccess {
+		cacheControl = privateAttachmentCacheControl
+	}
+	c.Response().Header().Set(echo.HeaderCacheControl, cacheControl)
 
 	return c.Blob(http.StatusOK, imageType, imageData)
 }
@@ -626,7 +634,7 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c *ec
 		}
 	}
 
-	allowAnonymous := s.Profile != nil && s.Profile.AllowAnonymous()
+	allowAnonymous := s.Store.AllowPublicAccess(ctx)
 	if decision := access.CheckMemoRead(memo, parent, nil, allowAnonymous, nil); decision.Allowed() {
 		return decision.Class, nil
 	}

@@ -55,7 +55,7 @@ export const AuthOptionsLoading = () => <div className="h-9 w-full animate-pulse
 const AuthPageLayout = ({ chip, title, subtitle, hideExplore, children }: Props) => {
   const t = useTranslate();
   const { generalSetting, profile } = useInstance();
-  const showExplore = Boolean(profile.instanceUrl) && !hideExplore;
+  const showExplore = profile.allowPublicAccess && !hideExplore;
 
   return (
     <div className="min-h-svh w-full flex flex-col items-center px-4 py-4 sm:py-8">

@@ -8,10 +8,8 @@ func TestAllowAnonymous(t *testing.T) {
 		url  string
 		want bool
 	}{
-		{"empty is private", "", false},
-		{"whitespace only is private", "   ", false},
-		{"configured url is public", "https://memos.example.com", true},
-		{"configured url with padding is public", "  https://memos.example.com  ", true},
+		{"empty url stays private", "", false},
+		{"configured url alone is private", "https://memos.example.com", false},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -20,5 +18,20 @@ func TestAllowAnonymous(t *testing.T) {
 				t.Fatalf("AllowAnonymous() with InstanceURL=%q = %v, want %v", c.url, got, c.want)
 			}
 		})
+	}
+}
+
+func TestAllowAnonymousExplicitPolicy(t *testing.T) {
+	p := &Profile{}
+	if p.AllowAnonymous() {
+		t.Fatal("fresh profile must default to private")
+	}
+	p.SetAllowAnonymous(true)
+	if !p.AllowAnonymous() {
+		t.Fatal("explicit public policy must be reported")
+	}
+	p.SetAllowAnonymous(false)
+	if p.AllowAnonymous() {
+		t.Fatal("explicit private policy must be reported")
 	}
 }

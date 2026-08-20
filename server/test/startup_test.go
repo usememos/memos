@@ -26,6 +26,7 @@ import (
 
 	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/internal/version"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
@@ -40,8 +41,9 @@ const (
 type instanceOptions struct {
 	// demo enables demo mode, which seeds the database during migration.
 	demo bool
-	// instanceURL is the public instance URL. An empty value makes the
-	// instance private, which restricts anonymous access to bootstrap methods.
+	// instanceURL is the public canonical instance URL. It is used only for
+	// link generation; anonymous availability is decided by the persisted
+	// public-access setting (see setPublicAccess).
 	instanceURL string
 	// dataDir reuses an existing data directory instead of a fresh one, which
 	// is how a restart against an already-migrated database is simulated.
@@ -51,6 +53,7 @@ type instanceOptions struct {
 // instance is a booted server plus the HTTP plumbing needed to talk to it.
 type instance struct {
 	server  *server.Server
+	store   *store.Store
 	profile *profile.Profile
 	baseURL string
 	client  *http.Client
@@ -100,6 +103,7 @@ func bootInstance(ctx context.Context, t *testing.T, opts instanceOptions) *inst
 
 	inst := &instance{
 		server:  s,
+		store:   storeInstance,
 		profile: instanceProfile,
 		baseURL: fmt.Sprintf("http://127.0.0.1:%d", instanceProfile.Port),
 		client:  &http.Client{Timeout: 10 * time.Second},
@@ -288,6 +292,9 @@ func TestStartupServesEveryRegisteredRouter(t *testing.T) {
 	})
 
 	t.Run("rss", func(t *testing.T) {
+		// The route-mouting assertion models a public instance; the default
+		// policy is private and legitimately returns 404 for RSS.
+		require.NoError(t, inst.setPublicAccess(ctx, true))
 		status, body := inst.do(t, http.MethodGet, "/explore/rss.xml", "", nil)
 		require.Equal(t, http.StatusOK, status, "rss route should be mounted: %s", body)
 		require.Contains(t, string(body), "<?xml")
@@ -349,14 +356,14 @@ func TestStartupRestartPreservesData(t *testing.T) {
 	second.requireMemo(t, restartToken, "startup-after-restart", "written after restart")
 }
 
-// TestStartupPrivateInstance verifies an instance with no InstanceURL boots,
-// still exposes the auth bootstrap surface, and refuses anonymous callers on
-// non-bootstrap procedures.
+// TestStartupPrivateInstance verifies an unconfigured instance boots private by
+// default, still exposes the auth bootstrap surface, and refuses anonymous
+// callers on non-bootstrap procedures.
 func TestStartupPrivateInstance(t *testing.T) {
 	ctx := context.Background()
 	inst := bootInstance(ctx, t, instanceOptions{instanceURL: ""})
 
-	require.False(t, inst.profile.AllowAnonymous(), "an instance without InstanceURL should be private")
+	require.False(t, inst.profile.AllowAnonymous(), "default policy must be private")
 
 	// Bootstrap methods stay reachable so the sign-in page can render.
 	status, body := inst.do(t, http.MethodGet, "/api/v1/instance/profile", "", nil)
@@ -377,6 +384,33 @@ func TestStartupPrivateInstance(t *testing.T) {
 	token := inst.signIn(t)
 	inst.createMemo(t, token, "startup-private", "private instance sentinel")
 	inst.requireMemo(t, token, "startup-private", "private instance sentinel")
+}
+
+// TestStartupPublicURLDoesNotGrantAnonymousAccess pins the decoupling this
+// change introduces: a reachable public address is a link-generation concern,
+// not an authorization one. Configuring InstanceURL alone used to make an
+// instance anonymous-readable, so booting with one configured and no GENERAL
+// setting is the case that separates the old behavior from the new — the
+// existing private-instance test leaves InstanceURL empty, where both the old
+// and the new rule agree.
+func TestStartupPublicURLDoesNotGrantAnonymousAccess(t *testing.T) {
+	ctx := context.Background()
+	inst := bootInstance(ctx, t, instanceOptions{instanceURL: "http://localhost:8080"})
+
+	require.False(t, inst.profile.AllowAnonymous(),
+		"a configured InstanceURL must not grant anonymous access while the setting is absent")
+
+	status, _ := inst.do(t, http.MethodPost, "/memos.api.v1.MemoService/ListMemos", "", map[string]any{})
+	require.Equal(t, http.StatusUnauthorized, status,
+		"anonymous ListMemos should be refused while public access is unset")
+
+	// The same instance opens up once an administrator persists the choice.
+	require.NoError(t, inst.setPublicAccess(ctx, true))
+	require.True(t, inst.profile.AllowAnonymous(), "enabling the setting must take effect immediately")
+
+	status, _ = inst.do(t, http.MethodPost, "/memos.api.v1.MemoService/ListMemos", "", map[string]any{})
+	require.Equal(t, http.StatusOK, status,
+		"anonymous ListMemos should be allowed once public access is enabled")
 }
 
 // TestStartupPrivateInstanceGatewayPolicy asserts the private-instance policy is
@@ -476,4 +510,17 @@ func TestStartupDemoMode(t *testing.T) {
 	}
 	require.NoError(t, json.Unmarshal(body, &listed))
 	require.NotEmpty(t, listed.Memos, "demo mode should seed memos")
+}
+
+// setPublicAccess persists the explicit public-access policy on a booted
+// instance. Server startup has already synchronized the in-memory policy, and
+// the upsert re-synchronizes it, so the change applies without a restart.
+func (i *instance) setPublicAccess(ctx context.Context, allow bool) error {
+	_, err := i.store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_GENERAL,
+		Value: &storepb.InstanceSetting_GeneralSetting{
+			GeneralSetting: &storepb.InstanceGeneralSetting{AllowPublicAccess: allow},
+		},
+	})
+	return err
 }

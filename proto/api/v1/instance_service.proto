@@ -81,6 +81,10 @@ message InstanceProfile {
   // false once any user exists, so an instance that has lost its admins is not
   // mistaken for a fresh install.
   bool needs_setup = 9;
+
+  // Whether anonymous visitors may access public instance content.
+  // Absent or false means the instance is private.
+  bool allow_public_access = 10;
 }
 
 // Request for instance profile.
@@ -146,6 +150,9 @@ message InstanceSetting {
     bool disallow_change_username = 8;
     // disallow_change_nickname disallows changing nickname.
     bool disallow_change_nickname = 9;
+    // allow_public_access controls whether anonymous visitors may access public
+    // instance content. Absent or false means the instance is private.
+    bool allow_public_access = 10;
 
     // Custom profile configuration for instance branding.
     message CustomProfile {

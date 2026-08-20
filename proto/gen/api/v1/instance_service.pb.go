@@ -274,9 +274,12 @@ type InstanceProfile struct {
 	// setup (creating the first admin account). Unlike a null admin, this stays
 	// false once any user exists, so an instance that has lost its admins is not
 	// mistaken for a fresh install.
-	NeedsSetup    bool `protobuf:"varint,9,opt,name=needs_setup,json=needsSetup,proto3" json:"needs_setup,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	NeedsSetup bool `protobuf:"varint,9,opt,name=needs_setup,json=needsSetup,proto3" json:"needs_setup,omitempty"`
+	// Whether anonymous visitors may access public instance content.
+	// Absent or false means the instance is private.
+	AllowPublicAccess bool `protobuf:"varint,10,opt,name=allow_public_access,json=allowPublicAccess,proto3" json:"allow_public_access,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *InstanceProfile) Reset() {
@@ -347,6 +350,13 @@ func (x *InstanceProfile) GetCommit() string {
 func (x *InstanceProfile) GetNeedsSetup() bool {
 	if x != nil {
 		return x.NeedsSetup
+	}
+	return false
+}
+
+func (x *InstanceProfile) GetAllowPublicAccess() bool {
+	if x != nil {
+		return x.AllowPublicAccess
 	}
 	return false
 }
@@ -916,8 +926,11 @@ type InstanceSetting_GeneralSetting struct {
 	DisallowChangeUsername bool `protobuf:"varint,8,opt,name=disallow_change_username,json=disallowChangeUsername,proto3" json:"disallow_change_username,omitempty"`
 	// disallow_change_nickname disallows changing nickname.
 	DisallowChangeNickname bool `protobuf:"varint,9,opt,name=disallow_change_nickname,json=disallowChangeNickname,proto3" json:"disallow_change_nickname,omitempty"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	// allow_public_access controls whether anonymous visitors may access public
+	// instance content. Absent or false means the instance is private.
+	AllowPublicAccess bool `protobuf:"varint,10,opt,name=allow_public_access,json=allowPublicAccess,proto3" json:"allow_public_access,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *InstanceSetting_GeneralSetting) Reset() {
@@ -1002,6 +1015,13 @@ func (x *InstanceSetting_GeneralSetting) GetDisallowChangeUsername() bool {
 func (x *InstanceSetting_GeneralSetting) GetDisallowChangeNickname() bool {
 	if x != nil {
 		return x.DisallowChangeNickname
+	}
+	return false
+}
+
+func (x *InstanceSetting_GeneralSetting) GetAllowPublicAccess() bool {
+	if x != nil {
+		return x.AllowPublicAccess
 	}
 	return false
 }
@@ -2067,7 +2087,7 @@ var File_api_v1_instance_service_proto protoreflect.FileDescriptor
 
 const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1dapi/v1/instance_service.proto\x12\fmemos.api.v1\x1a\x19api/v1/user_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/color.proto\"\xc5\x01\n" +
+	"\x1dapi/v1/instance_service.proto\x12\fmemos.api.v1\x1a\x19api/v1/user_service.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/type/color.proto\"\xf5\x01\n" +
 	"\x0fInstanceProfile\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x12\n" +
 	"\x04demo\x18\x03 \x01(\bR\x04demo\x12!\n" +
@@ -2075,8 +2095,10 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\x05admin\x18\a \x01(\v2\x12.memos.api.v1.UserR\x05admin\x12\x16\n" +
 	"\x06commit\x18\b \x01(\tR\x06commit\x12\x1f\n" +
 	"\vneeds_setup\x18\t \x01(\bR\n" +
-	"needsSetup\"\x1b\n" +
-	"\x19GetInstanceProfileRequest\"\x9a!\n" +
+	"needsSetup\x12.\n" +
+	"\x13allow_public_access\x18\n" +
+	" \x01(\bR\x11allowPublicAccess\"\x1b\n" +
+	"\x19GetInstanceProfileRequest\"\xca!\n" +
 	"\x0fInstanceSetting\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12W\n" +
 	"\x0fgeneral_setting\x18\x02 \x01(\v2,.memos.api.v1.InstanceSetting.GeneralSettingH\x00R\x0egeneralSetting\x12W\n" +
@@ -2085,7 +2107,7 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\ftags_setting\x18\x05 \x01(\v2).memos.api.v1.InstanceSetting.TagsSettingH\x00R\vtagsSetting\x12f\n" +
 	"\x14notification_setting\x18\x06 \x01(\v21.memos.api.v1.InstanceSetting.NotificationSettingH\x00R\x13notificationSetting\x12H\n" +
 	"\n" +
-	"ai_setting\x18\a \x01(\v2'.memos.api.v1.InstanceSetting.AISettingH\x00R\taiSetting\x1a\xca\x04\n" +
+	"ai_setting\x18\a \x01(\v2'.memos.api.v1.InstanceSetting.AISettingH\x00R\taiSetting\x1a\xfa\x04\n" +
 	"\x0eGeneralSetting\x12<\n" +
 	"\x1adisallow_user_registration\x18\x02 \x01(\bR\x18disallowUserRegistration\x124\n" +
 	"\x16disallow_password_auth\x18\x03 \x01(\bR\x14disallowPasswordAuth\x12+\n" +
@@ -2094,7 +2116,9 @@ const file_api_v1_instance_service_proto_rawDesc = "" +
 	"\x0ecustom_profile\x18\x06 \x01(\v2:.memos.api.v1.InstanceSetting.GeneralSetting.CustomProfileR\rcustomProfile\x121\n" +
 	"\x15week_start_day_offset\x18\a \x01(\x05R\x12weekStartDayOffset\x128\n" +
 	"\x18disallow_change_username\x18\b \x01(\bR\x16disallowChangeUsername\x128\n" +
-	"\x18disallow_change_nickname\x18\t \x01(\bR\x16disallowChangeNickname\x1ab\n" +
+	"\x18disallow_change_nickname\x18\t \x01(\bR\x16disallowChangeNickname\x12.\n" +
+	"\x13allow_public_access\x18\n" +
+	" \x01(\bR\x11allowPublicAccess\x1ab\n" +
 	"\rCustomProfile\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x19\n" +
