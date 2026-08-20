@@ -386,6 +386,33 @@ func TestStartupPrivateInstance(t *testing.T) {
 	inst.requireMemo(t, token, "startup-private", "private instance sentinel")
 }
 
+// TestStartupPublicURLDoesNotGrantAnonymousAccess pins the decoupling this
+// change introduces: a reachable public address is a link-generation concern,
+// not an authorization one. Configuring InstanceURL alone used to make an
+// instance anonymous-readable, so booting with one configured and no GENERAL
+// setting is the case that separates the old behavior from the new — the
+// existing private-instance test leaves InstanceURL empty, where both the old
+// and the new rule agree.
+func TestStartupPublicURLDoesNotGrantAnonymousAccess(t *testing.T) {
+	ctx := context.Background()
+	inst := bootInstance(ctx, t, instanceOptions{instanceURL: "http://localhost:8080"})
+
+	require.False(t, inst.profile.AllowAnonymous(),
+		"a configured InstanceURL must not grant anonymous access while the setting is absent")
+
+	status, _ := inst.do(t, http.MethodPost, "/memos.api.v1.MemoService/ListMemos", "", map[string]any{})
+	require.Equal(t, http.StatusUnauthorized, status,
+		"anonymous ListMemos should be refused while public access is unset")
+
+	// The same instance opens up once an administrator persists the choice.
+	require.NoError(t, inst.setPublicAccess(ctx, true))
+	require.True(t, inst.profile.AllowAnonymous(), "enabling the setting must take effect immediately")
+
+	status, _ = inst.do(t, http.MethodPost, "/memos.api.v1.MemoService/ListMemos", "", map[string]any{})
+	require.Equal(t, http.StatusOK, status,
+		"anonymous ListMemos should be allowed once public access is enabled")
+}
+
 // TestStartupPrivateInstanceGatewayPolicy asserts the private-instance policy is
 // enforced on the gRPC-Gateway transport, not just on Connect.
 //

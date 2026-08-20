@@ -84,6 +84,13 @@ func (s *Store) DeleteInstanceSetting(ctx context.Context, delete *DeleteInstanc
 	if delete.Name == storepb.InstanceSettingKey_STORAGE.String() {
 		s.resetStorageDriverCache()
 	}
+	if delete.Name == storepb.InstanceSettingKey_GENERAL.String() {
+		// No persisted setting means no granted public access. Without this the
+		// in-memory policy would keep allowing anonymous visitors after the
+		// setting that permitted them was deleted. A nil setting reads as false,
+		// matching the fail-closed default elsewhere.
+		s.syncPublicAccessPolicy(nil)
+	}
 	return nil
 }
 

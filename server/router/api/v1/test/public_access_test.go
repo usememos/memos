@@ -7,6 +7,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
+	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/store"
 )
 
 // TestPublicAccessPolicy verifies that the persisted allow_public_access policy,
@@ -64,4 +66,32 @@ func TestPublicAccessPolicy(t *testing.T) {
 	profile, err = ts.Service.GetInstanceProfile(ctx, &v1pb.GetInstanceProfileRequest{})
 	require.NoError(t, err)
 	require.False(t, profile.GetAllowPublicAccess())
+}
+
+// TestPublicAccessPolicyResetsWhenSettingDeleted covers the deletion path. The
+// policy is cached in memory so it survives without a per-request query, which
+// means removing the setting that granted public access must also withdraw it —
+// otherwise anonymous visitors keep the access the deleted setting gave them.
+func TestPublicAccessPolicyResetsWhenSettingDeleted(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	_, err := ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_GENERAL,
+		Value: &storepb.InstanceSetting_GeneralSetting{
+			GeneralSetting: &storepb.InstanceGeneralSetting{AllowPublicAccess: true},
+		},
+	})
+	require.NoError(t, err)
+	require.True(t, ts.Store.AllowPublicAccess(ctx))
+
+	require.NoError(t, ts.Store.DeleteInstanceSetting(ctx, &store.DeleteInstanceSetting{
+		Name: storepb.InstanceSettingKey_GENERAL.String(),
+	}))
+
+	require.False(t, ts.Profile.AllowAnonymous(),
+		"deleting the GENERAL setting must withdraw the in-memory public-access policy")
+	require.False(t, ts.Store.AllowPublicAccess(ctx),
+		"an absent setting means no granted public access")
 }

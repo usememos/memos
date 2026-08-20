@@ -112,6 +112,7 @@ const InstanceSection = () => {
             description={t("setting.instance.allow-public-access-description")}
           >
             <Switch
+              aria-label={t("setting.instance.allow-public-access")}
               disabled={profile.demo}
               checked={instanceGeneralSetting.allowPublicAccess}
               onCheckedChange={(checked) => updatePartialSetting({ allowPublicAccess: checked })}

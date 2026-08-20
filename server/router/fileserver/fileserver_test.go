@@ -877,13 +877,14 @@ func TestServeAttachmentFile_PublicPolicyWorksWithoutURL(t *testing.T) {
 
 // TestServeUserAvatar_PrivateInstanceRequiresAuth verifies that avatars are exposed
 // to anonymous visitors on an open instance but require authentication on a private
-// instance.
+// instance, and that a response only a private instance authenticated is not
+// offered to shared caches.
 func TestServeUserAvatar_PrivateInstanceRequiresAuth(t *testing.T) {
 	ctx := context.Background()
 	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
 	defer cleanup()
 
-	_, err := svc.Store.CreateUser(ctx, &store.User{
+	owner, err := svc.Store.CreateUser(ctx, &store.User{
 		Username:  "avatar-owner",
 		Role:      store.RoleUser,
 		Email:     "avatar-owner@example.com",
@@ -893,20 +894,43 @@ func TestServeUserAvatar_PrivateInstanceRequiresAuth(t *testing.T) {
 
 	e := echo.New()
 	fs.RegisterRoutes(e)
+	const avatarURL = "/file/users/avatar-owner/avatar"
 
-	anonymousGet := func() int {
+	anonymousGet := func() *httptest.ResponseRecorder {
 		rec := httptest.NewRecorder()
-		e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/file/users/avatar-owner/avatar", nil))
-		return rec.Code
+		e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, avatarURL, nil))
+		return rec
 	}
 
-	// Open instance: anonymous avatar access is allowed.
+	// Open instance: anonymous avatar access is allowed and shared caches may
+	// keep it, because an anonymous client could have fetched it anyway.
 	setFileServerPublicAccess(ctx, t, svc.Store, true)
-	require.Equal(t, http.StatusOK, anonymousGet())
+	openRec := anonymousGet()
+	require.Equal(t, http.StatusOK, openRec.Code)
+	require.Equal(t, cacheMaxAge, openRec.Header().Get(echo.HeaderCacheControl))
 
 	// Private instance: anonymous avatar access is denied.
 	setFileServerPublicAccess(ctx, t, svc.Store, false)
-	require.Equal(t, http.StatusUnauthorized, anonymousGet())
+	require.Equal(t, http.StatusUnauthorized, anonymousGet().Code)
+
+	// The owner still gets their avatar, but the response carries credentials'
+	// worth of access, so it must not sit in a shared cache where an anonymous
+	// client could be handed it — nor outlive public access being switched off.
+	tokenID := util.GenUUID()
+	require.NoError(t, svc.Store.AddUserRefreshToken(ctx, owner.ID, &storepb.RefreshTokensUserSetting_RefreshToken{
+		TokenId:   tokenID,
+		ExpiresAt: timestamppb.New(time.Now().Add(auth.RefreshTokenDuration)),
+		CreatedAt: timestamppb.Now(),
+	}))
+	refreshToken, _, err := auth.GenerateRefreshToken(owner.ID, tokenID, []byte(svc.Secret))
+	require.NoError(t, err)
+
+	req := httptest.NewRequest(http.MethodGet, avatarURL, nil)
+	req.AddCookie(&http.Cookie{Name: auth.RefreshTokenCookieName, Value: refreshToken})
+	privateRec := httptest.NewRecorder()
+	e.ServeHTTP(privateRec, req)
+	require.Equal(t, http.StatusOK, privateRec.Code)
+	require.Equal(t, privateAttachmentCacheControl, privateRec.Header().Get(echo.HeaderCacheControl))
 }
 
 // TestServeAttachmentFile_RefreshCookieAuthenticatesOwner verifies that the file
