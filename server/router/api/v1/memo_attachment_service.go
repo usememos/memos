@@ -386,9 +386,9 @@ func (s *APIV1Service) extractManagedAttachmentReferences(content string) ([]mar
 }
 
 func sameURLAuthority(candidate, instance *url.URL) bool {
-	withScheme := *candidate
+	withScheme := candidate.Clone()
 	withScheme.Scheme = instance.Scheme
-	return sameURLOrigin(&withScheme, instance)
+	return sameURLOrigin(withScheme, instance)
 }
 
 func sameURLOrigin(a, b *url.URL) bool {

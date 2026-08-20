@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"os"
 	"time"
+	"uuid"
 
-	"github.com/google/uuid"
 	"github.com/labstack/echo/v5"
 	"github.com/labstack/echo/v5/middleware"
 	"github.com/pkg/errors"
@@ -168,7 +168,7 @@ func (s *Server) getOrUpsertInstanceBasicSetting(ctx context.Context) (*storepb.
 	}
 	modified := false
 	if instanceBasicSetting.SecretKey == "" {
-		instanceBasicSetting.SecretKey = uuid.NewString()
+		instanceBasicSetting.SecretKey = uuid.NewV4().String()
 		modified = true
 	}
 	if modified {

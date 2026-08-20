@@ -6,8 +6,7 @@ import (
 	"net/mail"
 	"strconv"
 	"strings"
-
-	"github.com/google/uuid"
+	"uuid"
 )
 
 // ConvertStringToInt32 converts a string to int32.
@@ -38,7 +37,7 @@ func ValidateEmail(email string) bool {
 }
 
 func GenUUID() string {
-	return uuid.New().String()
+	return uuid.NewV4().String()
 }
 
 var letters = []rune("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
