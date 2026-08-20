@@ -14,6 +14,14 @@ function isClosingMathFence(line: { text: string; pos: number; skipSpace(from: n
   return end - line.pos >= openingSize && line.skipSpace(end) === line.text.length;
 }
 
+function isWhitespace(character: number): boolean {
+  return character < 0 || /\p{White_Space}/u.test(String.fromCharCode(character));
+}
+
+function isDigit(character: number): boolean {
+  return character >= 0x30 && character <= 0x39;
+}
+
 const mathExtension: MarkdownConfig = {
   defineNodes: ["InlineMath", "MathMark", { name: "BlockMath", block: true }],
   parseBlock: [
@@ -51,6 +59,8 @@ const mathExtension: MarkdownConfig = {
         let openingEnd = position + 1;
         while (context.char(openingEnd) === 0x24) openingEnd++;
         const openingSize = openingEnd - position;
+        if (openingSize === 1 && isWhitespace(context.char(openingEnd))) return openingEnd;
+
         for (let cursor = openingEnd; cursor < context.end; ) {
           if (context.char(cursor) !== 0x24) {
             cursor++;
@@ -58,7 +68,9 @@ const mathExtension: MarkdownConfig = {
           }
           let closingEnd = cursor + 1;
           while (context.char(closingEnd) === 0x24) closingEnd++;
-          if (closingEnd - cursor === openingSize) {
+          const closingSize = closingEnd - cursor;
+          if (closingSize === openingSize) {
+            if (openingSize === 1 && (isWhitespace(context.char(cursor - 1)) || isDigit(context.char(closingEnd)))) return openingEnd;
             return context.addElement(
               context.elt("InlineMath", position, closingEnd, [
                 context.elt("MathMark", position, openingEnd),
