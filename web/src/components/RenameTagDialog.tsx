@@ -66,9 +66,9 @@ function RenameTagDialog({ open, onOpenChange, tag, usedCount, onSuccess }: Prop
         <DialogHeader>
           <DialogTitle>{t("setting.tags.rename-title")}</DialogTitle>
           <DialogDescription>
-            {t("setting.tags.rename-description", {
-              count: usedCount,
-            })}
+            {usedCount === 1
+              ? t("setting.tags.rename-description_one", { count: usedCount })
+              : t("setting.tags.rename-description_other", { count: usedCount })}
           </DialogDescription>
         </DialogHeader>
 

@@ -329,7 +329,13 @@ const TagsSection = () => {
         }}
         tag={renamingTag?.name ?? ""}
         usedCount={renamingTag?.count ?? 0}
-        onSuccess={(updatedMemoCount) => toast.success(t("setting.tags.rename-success", { count: updatedMemoCount }))}
+        onSuccess={(updatedMemoCount) =>
+          toast.success(
+            updatedMemoCount === 1
+              ? t("setting.tags.rename-success_one", { count: updatedMemoCount })
+              : t("setting.tags.rename-success_other", { count: updatedMemoCount }),
+          )
+        }
       />
     </SettingSection>
   );

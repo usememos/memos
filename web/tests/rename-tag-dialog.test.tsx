@@ -47,7 +47,13 @@ describe("RenameTagDialog", () => {
     renderDialog(createQueryClient());
 
     expect(screen.getByText("#todo")).toBeInTheDocument();
-    expect(screen.getByText("setting.tags.rename-description:" + '{"count":5}')).toBeInTheDocument();
+    expect(screen.getByText("setting.tags.rename-description_other:" + '{"count":5}')).toBeInTheDocument();
+  });
+
+  it("uses the singular description when a single memo carries the tag", () => {
+    renderDialog(createQueryClient(), { usedCount: 1 });
+
+    expect(screen.getByText("setting.tags.rename-description_one:" + '{"count":1}')).toBeInTheDocument();
   });
 
   it("disables submission for empty and unchanged names", () => {
