@@ -62,3 +62,22 @@ describe("exact tag keys", () => {
     expect(findTagMetadata("toString", setting)).toBe(metadata);
   });
 });
+
+describe("hierarchical tag rules", () => {
+  it("matches the hierarchy prefix as well as its descendants", () => {
+    const metadata = { blurContent: true } as UserSetting_TagMetadata;
+    const setting = { tags: { "tagA/.*": metadata } } as UserSetting_TagsSetting;
+
+    expect(findTagMetadata("tagA", setting)).toBe(metadata);
+    expect(findTagMetadata("tagA/child", setting)).toBe(metadata);
+    expect(findTagMetadata("tagAB", setting)).toBeUndefined();
+  });
+
+  it("keeps ordinary exact patterns from matching descendants", () => {
+    const metadata = { blurContent: true } as UserSetting_TagMetadata;
+    const setting = { tags: { tagA: metadata } } as UserSetting_TagsSetting;
+
+    expect(findTagMetadata("tagA", setting)).toBe(metadata);
+    expect(findTagMetadata("tagA/child", setting)).toBeUndefined();
+  });
+});
