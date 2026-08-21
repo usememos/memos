@@ -10,28 +10,46 @@ import (
 )
 
 func (d *DB) UpsertReaction(ctx context.Context, upsert *store.Reaction) (*store.Reaction, error) {
-	fields := []string{"`creator_id`", "`content_id`", "`reaction_type`"}
-	placeholder := []string{"?", "?", "?"}
-	args := []interface{}{upsert.CreatorID, upsert.ContentID, upsert.ReactionType}
-	stmt := "INSERT INTO `reaction` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
-	result, err := d.db.ExecContext(ctx, stmt, args...)
+	// MySQL has no INSERT ... RETURNING, so keep the insert and readback in one
+	// transaction to match the other drivers' atomic operation.
+	tx, err := d.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to start reaction upsert transaction")
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	result, err := tx.ExecContext(ctx, `
+		INSERT INTO reaction (creator_id, memo_id, reaction_type)
+		SELECT ?, memo.id, ?
+		FROM memo
+		WHERE memo.id = ?
+		FOR SHARE
+	`, upsert.CreatorID, upsert.ReactionType, upsert.MemoID)
 	if err != nil {
 		return nil, err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return nil, err
+	}
+	if rowsAffected == 0 {
+		return nil, errors.Wrap(store.ErrReactionMemoNotFound, "failed to create reaction")
 	}
 
 	rawID, err := result.LastInsertId()
 	if err != nil {
 		return nil, err
 	}
-	id := int32(rawID)
-	reaction, err := d.GetReaction(ctx, &store.FindReaction{ID: &id})
-	if err != nil {
-		return nil, err
+	upsert.ID = int32(rawID)
+	if err := tx.QueryRowContext(ctx, "SELECT UNIX_TIMESTAMP(created_ts) FROM reaction WHERE id = ?", upsert.ID).Scan(&upsert.CreatedTs); err != nil {
+		return nil, errors.Wrap(err, "failed to read created reaction")
 	}
-	if reaction == nil {
-		return nil, errors.Errorf("failed to create reaction")
+	if err := tx.Commit(); err != nil {
+		return nil, errors.Wrap(err, "failed to commit reaction upsert transaction")
 	}
-	return reaction, nil
+	return upsert, nil
 }
 
 func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*store.Reaction, error) {
@@ -43,16 +61,16 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 	if find.CreatorID != nil {
 		where, args = append(where, "`creator_id` = ?"), append(args, *find.CreatorID)
 	}
-	if find.ContentID != nil {
-		where, args = append(where, "`content_id` = ?"), append(args, *find.ContentID)
+	if find.MemoID != nil {
+		where, args = append(where, "`memo_id` = ?"), append(args, *find.MemoID)
 	}
-	if len(find.ContentIDList) > 0 {
-		placeholders := make([]string, 0, len(find.ContentIDList))
-		for _, id := range find.ContentIDList {
+	if len(find.MemoIDList) > 0 {
+		placeholders := make([]string, 0, len(find.MemoIDList))
+		for _, id := range find.MemoIDList {
 			placeholders = append(placeholders, "?")
 			args = append(args, id)
 		}
-		where = append(where, "`content_id` IN ("+strings.Join(placeholders, ",")+")")
+		where = append(where, "`memo_id` IN ("+strings.Join(placeholders, ",")+")")
 	}
 
 	rows, err := d.db.QueryContext(ctx, `
@@ -60,7 +78,7 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 			id,
 			UNIX_TIMESTAMP(created_ts) AS created_ts,
 			creator_id,
-			content_id,
+			memo_id,
 			reaction_type
 		FROM reaction
 		WHERE `+strings.Join(where, " AND ")+`
@@ -79,7 +97,7 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 			&reaction.ID,
 			&reaction.CreatedTs,
 			&reaction.CreatorID,
-			&reaction.ContentID,
+			&reaction.MemoID,
 			&reaction.ReactionType,
 		); err != nil {
 			return nil, err
@@ -108,6 +126,17 @@ func (d *DB) GetReaction(ctx context.Context, find *store.FindReaction) (*store.
 }
 
 func (d *DB) DeleteReaction(ctx context.Context, delete *store.DeleteReaction) error {
-	_, err := d.db.ExecContext(ctx, "DELETE FROM `reaction` WHERE `id` = ?", delete.ID)
+	where, args := []string{}, []any{}
+	if delete.ID != nil {
+		where, args = append(where, "`id` = ?"), append(args, *delete.ID)
+	}
+	if delete.MemoID != nil {
+		where, args = append(where, "`memo_id` = ?"), append(args, *delete.MemoID)
+	}
+	if len(where) == 0 {
+		return nil
+	}
+
+	_, err := d.db.ExecContext(ctx, "DELETE FROM `reaction` WHERE "+strings.Join(where, " AND "), args...)
 	return err
 }

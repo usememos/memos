@@ -87,15 +87,17 @@ CREATE TABLE inbox (
   message TEXT NOT NULL
 );
 
--- reaction
+-- memo reaction
 CREATE TABLE reaction (
   id SERIAL PRIMARY KEY,
   created_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
   creator_id INTEGER NOT NULL,
-  content_id TEXT NOT NULL,
+  memo_id INTEGER NOT NULL,
   reaction_type TEXT NOT NULL,
-  UNIQUE(creator_id, content_id, reaction_type)
+  UNIQUE(creator_id, memo_id, reaction_type)
 );
+
+CREATE INDEX idx_reaction_memo_id ON reaction(memo_id, id);
 
 -- memo_share
 CREATE TABLE memo_share (

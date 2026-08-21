@@ -266,7 +266,6 @@ func TestMCPToolCallBindsMemoFromPathForBodyStarOperations(t *testing.T) {
 			toolName: "memo_upsert_memo_reaction",
 			body: map[string]any{
 				"reaction": map[string]any{
-					"contentId":    "memos/abc123",
 					"reactionType": "👍",
 				},
 			},

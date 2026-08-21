@@ -29,7 +29,7 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 }
 
 func (s *APIV1Service) convertMemoFromStoreWithCreators(ctx context.Context, memo *store.Memo, reactions []*store.Reaction, attachments []*store.Attachment, relations []*v1pb.MemoRelation, creatorMap map[int32]*store.User) (*v1pb.Memo, error) {
-	name := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
+	name := buildMemoName(memo.UID)
 	creator := creatorMap[memo.CreatorID]
 	if creator == nil {
 		return nil, errMemoCreatorNotFound
@@ -51,11 +51,11 @@ func (s *APIV1Service) convertMemoFromStoreWithCreators(ctx context.Context, mem
 	}
 
 	if memo.ParentUID != nil {
-		parentName := fmt.Sprintf("%s%s", MemoNamePrefix, *memo.ParentUID)
+		parentName := buildMemoName(*memo.ParentUID)
 		memoMessage.Parent = &parentName
 	}
 
-	reactionMessages, err := s.convertReactionsFromStoreWithCreators(ctx, reactions, creatorMap)
+	reactionMessages, err := s.convertReactionsFromStoreWithCreators(ctx, reactions, creatorMap, name)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert reactions")
 	}
@@ -119,7 +119,7 @@ func (s *APIV1Service) listUsersByIDWithExisting(ctx context.Context, userIDs []
 	return usersByID, nil
 }
 
-func (s *APIV1Service) convertReactionsFromStoreWithCreators(ctx context.Context, reactions []*store.Reaction, creatorMap map[int32]*store.User) ([]*v1pb.Reaction, error) {
+func (s *APIV1Service) convertReactionsFromStoreWithCreators(ctx context.Context, reactions []*store.Reaction, creatorMap map[int32]*store.User, memoName string) ([]*v1pb.Reaction, error) {
 	if len(reactions) == 0 {
 		return []*v1pb.Reaction{}, nil
 	}
@@ -135,13 +135,13 @@ func (s *APIV1Service) convertReactionsFromStoreWithCreators(ctx context.Context
 
 	reactionMessages := make([]*v1pb.Reaction, 0, len(reactions))
 	for _, reaction := range reactions {
-		reactionMessage, err := convertReactionFromStoreWithCreators(reaction, creatorsByID)
+		reactionMessage, err := convertReactionFromStoreWithCreators(reaction, creatorsByID, memoName)
 		if err != nil {
 			if stderrors.Is(err, errReactionCreatorNotFound) {
 				slog.Warn("Skipping reaction with missing creator",
 					slog.Int64("reaction_id", int64(reaction.ID)),
 					slog.Int64("creator_id", int64(reaction.CreatorID)),
-					slog.String("content_id", reaction.ContentID),
+					slog.Int64("memo_id", int64(reaction.MemoID)),
 				)
 				continue
 			}
@@ -152,7 +152,7 @@ func (s *APIV1Service) convertReactionsFromStoreWithCreators(ctx context.Context
 	return reactionMessages, nil
 }
 
-func convertReactionFromStoreWithCreators(reaction *store.Reaction, creatorsByID map[int32]*store.User) (*v1pb.Reaction, error) {
+func convertReactionFromStoreWithCreators(reaction *store.Reaction, creatorsByID map[int32]*store.User, memoName string) (*v1pb.Reaction, error) {
 	creator := creatorsByID[reaction.CreatorID]
 	if creator == nil {
 		return nil, errReactionCreatorNotFound
@@ -160,9 +160,8 @@ func convertReactionFromStoreWithCreators(reaction *store.Reaction, creatorsByID
 
 	reactionUID := fmt.Sprintf("%d", reaction.ID)
 	return &v1pb.Reaction{
-		Name:         fmt.Sprintf("%s/%s%s", reaction.ContentID, ReactionNamePrefix, reactionUID),
+		Name:         fmt.Sprintf("%s/%s%s", memoName, ReactionNamePrefix, reactionUID),
 		Creator:      BuildUserName(creator.Username),
-		ContentId:    reaction.ContentID,
 		ReactionType: reaction.ReactionType,
 		CreateTime:   timestamppb.New(time.Unix(reaction.CreatedTs, 0)),
 	}, nil

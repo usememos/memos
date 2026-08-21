@@ -13,13 +13,8 @@ import (
 
 const deleteUserBatchSize = 500
 
-type deleteUserMemoRef struct {
-	ID  int32
-	UID string
-}
-
 type deleteUserTargetSet struct {
-	memos           []deleteUserMemoRef
+	memoIDs         []int32
 	attachments     []*store.Attachment
 	attachmentIDs   []int32
 	userSettingKeys []storepb.UserSetting_Key
@@ -61,13 +56,13 @@ func (d *DB) DeleteUser(ctx context.Context, delete *store.DeleteUser) (*store.D
 func collectDeleteUserTargets(ctx context.Context, tx *sql.Tx, userID int32) (*deleteUserTargetSet, error) {
 	targets := &deleteUserTargetSet{}
 
-	memos, err := listDeleteUserMemoTree(ctx, tx, userID)
+	memoIDs, err := listDeleteUserMemoTree(ctx, tx, userID)
 	if err != nil {
 		return nil, err
 	}
-	targets.memos = memos
+	targets.memoIDs = memoIDs
 
-	attachments, err := listDeleteUserAttachments(ctx, tx, userID, memoIDsFromRefs(memos))
+	attachments, err := listDeleteUserAttachments(ctx, tx, userID, memoIDs)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +75,7 @@ func collectDeleteUserTargets(ctx context.Context, tx *sql.Tx, userID int32) (*d
 	}
 	targets.userSettingKeys = userSettingKeys
 
-	inboxIDs, err := listDeleteUserInboxIDs(ctx, tx, userID, memoIDSetFromRefs(memos))
+	inboxIDs, err := listDeleteUserInboxIDs(ctx, tx, userID, memoIDSet(memoIDs))
 	if err != nil {
 		return nil, err
 	}
@@ -90,10 +85,15 @@ func collectDeleteUserTargets(ctx context.Context, tx *sql.Tx, userID int32) (*d
 }
 
 func deleteUserTargetsTx(ctx context.Context, tx *sql.Tx, userID int32, targets *deleteUserTargetSet) error {
-	memoIDs := memoIDsFromRefs(targets.memos)
-	contentIDs := memoContentIDsFromRefs(targets.memos)
+	memoIDs := targets.memoIDs
 
-	if err := deleteReactionsByContentIDsTx(ctx, tx, contentIDs); err != nil {
+	// Delete the memo rows before their reactions: a concurrent UpsertReaction
+	// then blocks on the uncommitted parent delete instead of inserting a row
+	// behind the reaction sweep. Do not reorder these two.
+	if err := deleteMemosTx(ctx, tx, memoIDs); err != nil {
+		return err
+	}
+	if err := deleteReactionsByMemoIDsTx(ctx, tx, memoIDs); err != nil {
 		return err
 	}
 	if err := deleteAttachmentsByIDsTx(ctx, tx, targets.attachmentIDs); err != nil {
@@ -117,38 +117,35 @@ func deleteUserTargetsTx(ctx context.Context, tx *sql.Tx, userID int32, targets 
 	if err := deleteMemoRelationsTx(ctx, tx, memoIDs); err != nil {
 		return err
 	}
-	if err := deleteMemosTx(ctx, tx, memoIDs); err != nil {
-		return err
-	}
 	if err := deleteUserRowTx(ctx, tx, userID); err != nil {
 		return err
 	}
 	return nil
 }
 
-func listDeleteUserMemoTree(ctx context.Context, tx *sql.Tx, userID int32) ([]deleteUserMemoRef, error) {
+func listDeleteUserMemoTree(ctx context.Context, tx *sql.Tx, userID int32) ([]int32, error) {
 	return listDeleteUserMemoTreeIterative(ctx, tx, userID)
 }
 
-func listDeleteUserMemoTreeIterative(ctx context.Context, tx *sql.Tx, userID int32) ([]deleteUserMemoRef, error) {
-	roots, err := queryDeleteUserMemoRefs(ctx, tx, `
-		SELECT id, uid
+func listDeleteUserMemoTreeIterative(ctx context.Context, tx *sql.Tx, userID int32) ([]int32, error) {
+	roots, err := queryDeleteUserMemoIDs(ctx, tx, `
+		SELECT id
 		FROM memo
 		WHERE creator_id = `+deleteUserPlaceholder(1), userID)
 	if err != nil {
 		return nil, err
 	}
 
-	memos := make([]deleteUserMemoRef, 0, len(roots))
+	memoIDs := make([]int32, 0, len(roots))
 	seen := make(map[int32]struct{})
 	frontier := make([]int32, 0, len(roots))
-	for _, memo := range roots {
-		if _, exists := seen[memo.ID]; exists {
+	for _, id := range roots {
+		if _, exists := seen[id]; exists {
 			continue
 		}
-		seen[memo.ID] = struct{}{}
-		memos = append(memos, memo)
-		frontier = append(frontier, memo.ID)
+		seen[id] = struct{}{}
+		memoIDs = append(memoIDs, id)
+		frontier = append(frontier, id)
 	}
 
 	for len(frontier) > 0 {
@@ -156,8 +153,8 @@ func listDeleteUserMemoTreeIterative(ctx context.Context, tx *sql.Tx, userID int
 		nextFrontier := make([]int32, 0)
 		for _, batch := range deleteUserBatches(currentFrontier, deleteUserBatchSize) {
 			clause, args := deleteUserInClause(1, batch)
-			children, err := queryDeleteUserMemoRefs(ctx, tx, `
-				SELECT child.id, child.uid
+			children, err := queryDeleteUserMemoIDs(ctx, tx, `
+				SELECT child.id
 				FROM memo child
 				JOIN memo_relation rel ON rel.memo_id = child.id AND rel.type = 'COMMENT'
 				WHERE rel.related_memo_id IN `+clause, args...)
@@ -165,41 +162,41 @@ func listDeleteUserMemoTreeIterative(ctx context.Context, tx *sql.Tx, userID int
 				return nil, err
 			}
 
-			for _, child := range children {
-				if _, exists := seen[child.ID]; exists {
+			for _, id := range children {
+				if _, exists := seen[id]; exists {
 					continue
 				}
-				seen[child.ID] = struct{}{}
-				memos = append(memos, child)
-				nextFrontier = append(nextFrontier, child.ID)
+				seen[id] = struct{}{}
+				memoIDs = append(memoIDs, id)
+				nextFrontier = append(nextFrontier, id)
 			}
 		}
 		frontier = nextFrontier
 	}
 
-	return memos, nil
+	return memoIDs, nil
 }
 
-func queryDeleteUserMemoRefs(ctx context.Context, tx *sql.Tx, query string, args ...any) ([]deleteUserMemoRef, error) {
+func queryDeleteUserMemoIDs(ctx context.Context, tx *sql.Tx, query string, args ...any) ([]int32, error) {
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	memos := make([]deleteUserMemoRef, 0)
+	memoIDs := make([]int32, 0)
 	for rows.Next() {
-		var memo deleteUserMemoRef
-		if err := rows.Scan(&memo.ID, &memo.UID); err != nil {
+		var id int32
+		if err := rows.Scan(&id); err != nil {
 			return nil, err
 		}
-		memos = append(memos, memo)
+		memoIDs = append(memoIDs, id)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return memos, nil
+	return memoIDs, nil
 }
 
 func listDeleteUserAttachments(ctx context.Context, tx *sql.Tx, userID int32, memoIDs []int32) ([]*store.Attachment, error) {
@@ -414,10 +411,10 @@ func memoIDInSet(id int32, memoIDSet map[int32]struct{}) bool {
 	return exists
 }
 
-func deleteReactionsByContentIDsTx(ctx context.Context, tx *sql.Tx, contentIDs []string) error {
-	for _, batch := range deleteUserBatches(contentIDs, deleteUserBatchSize) {
+func deleteReactionsByMemoIDsTx(ctx context.Context, tx *sql.Tx, memoIDs []int32) error {
+	for _, batch := range deleteUserBatches(memoIDs, deleteUserBatchSize) {
 		clause, args := deleteUserInClause(1, batch)
-		if _, err := tx.ExecContext(ctx, `DELETE FROM reaction WHERE content_id IN `+clause, args...); err != nil {
+		if _, err := tx.ExecContext(ctx, `DELETE FROM reaction WHERE memo_id IN `+clause, args...); err != nil {
 			return err
 		}
 	}
@@ -530,28 +527,12 @@ func deleteUserBatches[T any](values []T, size int) [][]T {
 	return batches
 }
 
-func memoIDsFromRefs(memos []deleteUserMemoRef) []int32 {
-	ids := make([]int32, 0, len(memos))
-	for _, memo := range memos {
-		ids = append(ids, memo.ID)
-	}
-	return ids
-}
-
-func memoIDSetFromRefs(memos []deleteUserMemoRef) map[int32]struct{} {
-	idSet := make(map[int32]struct{}, len(memos))
-	for _, memo := range memos {
-		idSet[memo.ID] = struct{}{}
+func memoIDSet(memoIDs []int32) map[int32]struct{} {
+	idSet := make(map[int32]struct{}, len(memoIDs))
+	for _, id := range memoIDs {
+		idSet[id] = struct{}{}
 	}
 	return idSet
-}
-
-func memoContentIDsFromRefs(memos []deleteUserMemoRef) []string {
-	contentIDs := make([]string, 0, len(memos))
-	for _, memo := range memos {
-		contentIDs = append(contentIDs, "memos/"+memo.UID)
-	}
-	return contentIDs
 }
 
 func attachmentIDsFromList(attachments []*store.Attachment) []int32 {

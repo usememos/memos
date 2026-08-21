@@ -156,7 +156,6 @@ func TestBuildToolFromOperationTailorsRequestBodySchemas(t *testing.T) {
 				"memo": "memos/abc123",
 				"body": map[string]any{
 					"reaction": map[string]any{
-						"contentId":    "memos/abc123",
 						"reactionType": "👍",
 					},
 				},

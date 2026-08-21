@@ -287,24 +287,22 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		return response, nil
 	}
 
-	reactionMap := make(map[string][]*store.Reaction)
-	contentIDs := make([]string, 0, len(memos))
+	reactionMap := make(map[int32][]*store.Reaction)
 
 	attachmentMap := make(map[int32][]*store.Attachment)
 	memoIDs := make([]int32, 0, len(memos))
 
 	for _, m := range memos {
-		contentIDs = append(contentIDs, fmt.Sprintf("%s%s", MemoNamePrefix, m.UID))
 		memoIDs = append(memoIDs, m.ID)
 	}
 
 	// REACTIONS
-	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{ContentIDList: contentIDs})
+	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{MemoIDList: memoIDs})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list reactions")
 	}
 	for _, reaction := range reactions {
-		reactionMap[reaction.ContentID] = append(reactionMap[reaction.ContentID], reaction)
+		reactionMap[reaction.MemoID] = append(reactionMap[reaction.MemoID], reaction)
 	}
 
 	// ATTACHMENTS
@@ -333,8 +331,7 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 		return nil, status.Errorf(codes.Internal, "failed to list memo creators: %v", err)
 	}
 	for _, memo := range memos {
-		memoName := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
-		reactions := reactionMap[memoName]
+		reactions := reactionMap[memo.ID]
 		attachments := attachmentMap[memo.ID]
 		relations := relationMap[memo.ID]
 
@@ -381,7 +378,7 @@ func (s *APIV1Service) GetMemo(ctx context.Context, request *v1pb.GetMemoRequest
 	}
 
 	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
-		ContentID: &request.Name,
+		MemoID: &memo.ID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list reactions")
@@ -614,7 +611,7 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 	}
 
 	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
-		ContentID: &request.Name,
+		MemoID: &memo.ID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list reactions")
@@ -635,7 +632,7 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 		}
 	}
 
-	// Delete memo comments first (store.DeleteMemo handles their relations and attachments)
+	// Delete memo comments first (store.DeleteMemo handles their reactions, relations and attachments)
 	commentType := store.MemoRelationComment
 	relations, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{RelatedMemoID: &memo.ID, Type: &commentType})
 	if err != nil {
@@ -647,7 +644,7 @@ func (s *APIV1Service) DeleteMemo(ctx context.Context, request *v1pb.DeleteMemoR
 		}
 	}
 
-	// Delete the memo (store.DeleteMemo handles relation and attachment cleanup)
+	// Delete the memo (store.DeleteMemo handles reaction, relation and attachment cleanup)
 	if err = s.Store.DeleteMemo(ctx, &store.DeleteMemo{ID: memo.ID}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete memo")
 	}

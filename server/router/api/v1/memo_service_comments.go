@@ -3,7 +3,6 @@ package v1
 import (
 	"context"
 	stderrors "errors"
-	"fmt"
 	"log/slog"
 
 	"github.com/pkg/errors"
@@ -203,27 +202,22 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 		return nil, status.Errorf(codes.Internal, "failed to list memos")
 	}
 
-	memoIDToNameMap := make(map[int32]string)
-	contentIDs := make([]string, 0, len(memos))
-	memoIDsForAttachments := make([]int32, 0, len(memos))
+	memoIDs := make([]int32, 0, len(memos))
 
 	for _, memo := range memos {
-		memoName := fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)
-		memoIDToNameMap[memo.ID] = memoName
-		contentIDs = append(contentIDs, memoName)
-		memoIDsForAttachments = append(memoIDsForAttachments, memo.ID)
+		memoIDs = append(memoIDs, memo.ID)
 	}
-	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{ContentIDList: contentIDs})
+	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{MemoIDList: memoIDs})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list reactions")
 	}
 
-	memoReactionsMap := make(map[string][]*store.Reaction)
+	memoReactionsMap := make(map[int32][]*store.Reaction)
 	for _, reaction := range reactions {
-		memoReactionsMap[reaction.ContentID] = append(memoReactionsMap[reaction.ContentID], reaction)
+		memoReactionsMap[reaction.MemoID] = append(memoReactionsMap[reaction.MemoID], reaction)
 	}
 
-	attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{MemoIDList: memoIDsForAttachments})
+	attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{MemoIDList: memoIDs})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list attachments")
 	}
@@ -250,8 +244,7 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 	}
 	var memosResponse []*v1pb.Memo
 	for _, m := range memos {
-		memoName := memoIDToNameMap[m.ID]
-		reactions := memoReactionsMap[memoName]
+		reactions := memoReactionsMap[m.ID]
 		attachments := attachmentMap[m.ID]
 		relations := relationMap[m.ID]
 

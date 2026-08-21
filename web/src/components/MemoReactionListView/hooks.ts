@@ -52,7 +52,7 @@ export const useReactionActions = ({ memo, onComplete }: UseReactionActionsOptio
       } else {
         await memoServiceClient.upsertMemoReaction({
           name: memo.name,
-          reaction: { contentId: memo.name, reactionType },
+          reaction: { reactionType },
         });
       }
       // Refetch the memo to get updated reactions and invalidate cache

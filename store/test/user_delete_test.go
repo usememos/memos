@@ -96,19 +96,19 @@ func TestDeleteUserCleansRelatedData(t *testing.T) {
 
 	_, err = ts.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    peer.ID,
-		ContentID:    "memos/" + ownMemo.UID,
+		MemoID:       ownMemo.ID,
 		ReactionType: "thumbs-up",
 	})
 	require.NoError(t, err)
 	_, err = ts.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
-		ContentID:    "memos/" + peerMemo.UID,
+		MemoID:       peerMemo.ID,
 		ReactionType: "heart",
 	})
 	require.NoError(t, err)
 	peerReactionToKeep, err := ts.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    peer.ID,
-		ContentID:    "memos/" + peerMemo.UID,
+		MemoID:       peerMemo.ID,
 		ReactionType: "sparkle",
 	})
 	require.NoError(t, err)
@@ -213,8 +213,7 @@ func TestDeleteUserCleansRelatedData(t *testing.T) {
 	require.NoError(t, err)
 	require.Empty(t, deletedMemoRelations)
 
-	peerMemoContentID := "memos/" + peerMemo.UID
-	keptReactions, err := ts.ListReactions(ctx, &store.FindReaction{ContentID: &peerMemoContentID})
+	keptReactions, err := ts.ListReactions(ctx, &store.FindReaction{MemoID: &peerMemo.ID})
 	require.NoError(t, err)
 	require.Len(t, keptReactions, 1)
 	require.Equal(t, peerReactionToKeep.ID, keptReactions[0].ID)
