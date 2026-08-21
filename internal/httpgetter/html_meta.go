@@ -2,7 +2,6 @@ package httpgetter
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -265,7 +264,7 @@ func (f *HTMLMetaFetcher) fetch(ctx context.Context, urlStr string) (*HTMLMeta, 
 		oEmbed, _ = f.fetchOEmbed(ctx, endpoint)
 	}
 
-	meta := mergeMetadata(baseURL, oEmbed, sources.openGraph, sources.twitter, sources.jsonLD, sources.standard, siteImageSource(pageURL), sources.semantic)
+	meta := mergeMetadata(baseURL, oEmbed, sources.openGraph, sources.twitter, sources.jsonLD, sources.standard, sources.semantic)
 	return meta, nil
 }
 
@@ -395,16 +394,4 @@ func cloneHTMLMeta(meta *HTMLMeta) *HTMLMeta {
 	}
 	copy := *meta
 	return &copy
-}
-
-// siteImageSource supplies deterministic site-specific thumbnails that outrank
-// the low-confidence semantic <img> fallback but lose to metadata the site
-// itself declares.
-func siteImageSource(pageURL *url.URL) metadataSource {
-	if pageURL.Hostname() == "www.youtube.com" && pageURL.Path == "/watch" {
-		if videoID := pageURL.Query().Get("v"); videoID != "" {
-			return metadataSource{image: fmt.Sprintf("https://img.youtube.com/vi/%s/mqdefault.jpg", url.PathEscape(videoID))}
-		}
-	}
-	return metadataSource{}
 }
