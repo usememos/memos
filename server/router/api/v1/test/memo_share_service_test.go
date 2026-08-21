@@ -87,7 +87,6 @@ func TestGetSharedMemo_IncludesReactions(t *testing.T) {
 	reaction, err := ts.Service.UpsertMemoReaction(userCtx, &apiv1.UpsertMemoReactionRequest{
 		Name: memo.Name,
 		Reaction: &apiv1.Reaction{
-			ContentId:    memo.Name,
 			ReactionType: "👍",
 		},
 	})
@@ -107,7 +106,7 @@ func TestGetSharedMemo_IncludesReactions(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, sharedMemo.Reactions, 1)
 	require.Equal(t, "👍", sharedMemo.Reactions[0].ReactionType)
-	require.Equal(t, memo.Name, sharedMemo.Reactions[0].ContentId)
+	require.Equal(t, reaction.Name, sharedMemo.Reactions[0].Name)
 }
 
 func TestCreateMemoShare_RejectsComment(t *testing.T) {
@@ -185,7 +184,6 @@ func TestGetSharedMemo_SkipsReactionsWithMissingCreators(t *testing.T) {
 	_, err = ts.Service.UpsertMemoReaction(reactorCtx, &apiv1.UpsertMemoReactionRequest{
 		Name: memo.Name,
 		Reaction: &apiv1.Reaction{
-			ContentId:    memo.Name,
 			ReactionType: "👍",
 		},
 	})

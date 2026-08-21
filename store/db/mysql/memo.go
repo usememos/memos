@@ -219,14 +219,22 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 }
 
 func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
-	where, args := []string{"`id` = ?"}, []any{delete.ID}
-	stmt := "DELETE FROM `memo` WHERE " + strings.Join(where, " AND ")
-	result, err := d.db.ExecContext(ctx, stmt, args...)
+	tx, err := d.db.BeginTx(ctx, nil)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to start memo delete transaction")
 	}
-	if _, err := result.RowsAffected(); err != nil {
-		return err
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	if _, err := tx.ExecContext(ctx, "DELETE FROM `memo` WHERE `id` = ?", delete.ID); err != nil {
+		return errors.Wrap(err, "failed to delete memo")
+	}
+	if _, err := tx.ExecContext(ctx, "DELETE FROM `reaction` WHERE `memo_id` = ?", delete.ID); err != nil {
+		return errors.Wrap(err, "failed to delete memo reactions")
+	}
+	if err := tx.Commit(); err != nil {
+		return errors.Wrap(err, "failed to commit memo delete transaction")
 	}
 	return nil
 }

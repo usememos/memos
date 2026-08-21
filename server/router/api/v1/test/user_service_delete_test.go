@@ -146,6 +146,7 @@ func TestDeleteUserSelfDeleteRemovesOwnedResourcesAndMemoSubtrees(t *testing.T) 
 	foreignMemoStore, err := ts.Store.GetMemo(ctx, &store.FindMemo{UID: &foreignMemoUID})
 	require.NoError(t, err)
 	require.NotNil(t, foreignMemoStore)
+	userCommentOnForeignMemoID := parseMemoIDFromNameForTest(t, ts, userCommentOnForeignMemo.Name)
 
 	attachedAttachment, err := ts.Store.CreateAttachment(ctx, &store.Attachment{
 		UID:       "attach-owner-memo",
@@ -187,25 +188,25 @@ func TestDeleteUserSelfDeleteRemovesOwnedResourcesAndMemoSubtrees(t *testing.T) 
 
 	_, err = ts.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    peer.ID,
-		ContentID:    ownMemo.Name,
+		MemoID:       ownMemoStore.ID,
 		ReactionType: "👍",
 	})
 	require.NoError(t, err)
 	_, err = ts.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    peer.ID,
-		ContentID:    userCommentOnForeignMemo.Name,
+		MemoID:       userCommentOnForeignMemoID,
 		ReactionType: "🔥",
 	})
 	require.NoError(t, err)
 	_, err = ts.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
-		ContentID:    foreignMemo.Name,
+		MemoID:       foreignMemoStore.ID,
 		ReactionType: "👋",
 	})
 	require.NoError(t, err)
 	peerReactionOnForeignMemo, err := ts.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    peer.ID,
-		ContentID:    foreignMemo.Name,
+		MemoID:       foreignMemoStore.ID,
 		ReactionType: "✅",
 	})
 	require.NoError(t, err)
@@ -284,15 +285,15 @@ func TestDeleteUserSelfDeleteRemovesOwnedResourcesAndMemoSubtrees(t *testing.T) 
 	_, err = os.Stat(motionCachePath)
 	require.ErrorIs(t, err, os.ErrNotExist)
 
-	ownMemoReactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{ContentID: &ownMemo.Name})
+	ownMemoReactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{MemoID: &ownMemoStore.ID})
 	require.NoError(t, err)
 	require.Empty(t, ownMemoReactions)
 
-	userCommentReactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{ContentID: &userCommentOnForeignMemo.Name})
+	userCommentReactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{MemoID: &userCommentOnForeignMemoID})
 	require.NoError(t, err)
 	require.Empty(t, userCommentReactions)
 
-	foreignMemoReactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{ContentID: &foreignMemo.Name})
+	foreignMemoReactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{MemoID: &foreignMemoStore.ID})
 	require.NoError(t, err)
 	require.Len(t, foreignMemoReactions, 1)
 	require.Equal(t, peerReactionOnForeignMemo.ID, foreignMemoReactions[0].ID)
@@ -365,7 +366,7 @@ func TestDeleteUserRollbackPreservesAllResources(t *testing.T) {
 
 	reaction, err := ts.Store.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
-		ContentID:    ownMemo.Name,
+		MemoID:       ownMemoStore.ID,
 		ReactionType: "💥",
 	})
 	require.NoError(t, err)

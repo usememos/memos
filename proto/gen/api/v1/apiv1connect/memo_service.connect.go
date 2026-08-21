@@ -123,8 +123,7 @@ type MemoServiceClient interface {
 	ListMemoComments(context.Context, *connect.Request[v1.ListMemoCommentsRequest]) (*connect.Response[v1.ListMemoCommentsResponse], error)
 	// ListMemoReactions lists reactions for a memo.
 	ListMemoReactions(context.Context, *connect.Request[v1.ListMemoReactionsRequest]) (*connect.Response[v1.ListMemoReactionsResponse], error)
-	// UpsertMemoReaction adds or updates the authenticated user's reaction on a
-	// memo. The reaction's content_id is the memo's resource name (memos/{memo}).
+	// UpsertMemoReaction adds or updates the authenticated user's reaction on a memo.
 	UpsertMemoReaction(context.Context, *connect.Request[v1.UpsertMemoReactionRequest]) (*connect.Response[v1.Reaction], error)
 	// DeleteMemoReaction deletes a reaction for a memo.
 	DeleteMemoReaction(context.Context, *connect.Request[v1.DeleteMemoReactionRequest]) (*connect.Response[emptypb.Empty], error)
@@ -433,8 +432,7 @@ type MemoServiceHandler interface {
 	ListMemoComments(context.Context, *connect.Request[v1.ListMemoCommentsRequest]) (*connect.Response[v1.ListMemoCommentsResponse], error)
 	// ListMemoReactions lists reactions for a memo.
 	ListMemoReactions(context.Context, *connect.Request[v1.ListMemoReactionsRequest]) (*connect.Response[v1.ListMemoReactionsResponse], error)
-	// UpsertMemoReaction adds or updates the authenticated user's reaction on a
-	// memo. The reaction's content_id is the memo's resource name (memos/{memo}).
+	// UpsertMemoReaction adds or updates the authenticated user's reaction on a memo.
 	UpsertMemoReaction(context.Context, *connect.Request[v1.UpsertMemoReactionRequest]) (*connect.Response[v1.Reaction], error)
 	// DeleteMemoReaction deletes a reaction for a memo.
 	DeleteMemoReaction(context.Context, *connect.Request[v1.DeleteMemoReactionRequest]) (*connect.Response[emptypb.Empty], error)

@@ -3,21 +3,27 @@ package sqlite
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"strings"
+
+	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/store"
 )
 
 func (d *DB) UpsertReaction(ctx context.Context, upsert *store.Reaction) (*store.Reaction, error) {
-	fields := []string{"`creator_id`", "`content_id`", "`reaction_type`"}
-	placeholder := []string{"?", "?", "?"}
-	args := []interface{}{upsert.CreatorID, upsert.ContentID, upsert.ReactionType}
-	stmt := "INSERT INTO `reaction` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING `id`, `created_ts`"
-	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
+	if err := d.db.QueryRowContext(ctx, `
+		INSERT INTO reaction (creator_id, memo_id, reaction_type)
+		SELECT ?, memo.id, ?
+		FROM memo
+		WHERE memo.id = ?
+		RETURNING id, created_ts
+	`, upsert.CreatorID, upsert.ReactionType, upsert.MemoID).Scan(
 		&upsert.ID,
 		&upsert.CreatedTs,
 	); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.Wrap(store.ErrReactionMemoNotFound, "failed to create reaction")
+		}
 		return nil, err
 	}
 
@@ -34,20 +40,16 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 	if find.CreatorID != nil {
 		where, args = append(where, "creator_id = ?"), append(args, *find.CreatorID)
 	}
-	if find.ContentID != nil {
-		where, args = append(where, "content_id = ?"), append(args, *find.ContentID)
+	if find.MemoID != nil {
+		where, args = append(where, "memo_id = ?"), append(args, *find.MemoID)
 	}
-	if len(find.ContentIDList) > 0 {
-		placeholders := make([]string, 0, len(find.ContentIDList))
-		for range find.ContentIDList {
+	if len(find.MemoIDList) > 0 {
+		placeholders := make([]string, 0, len(find.MemoIDList))
+		for _, id := range find.MemoIDList {
 			placeholders = append(placeholders, "?")
+			args = append(args, id)
 		}
-		if len(placeholders) > 0 {
-			where = append(where, "content_id IN ("+strings.Join(placeholders, ",")+")")
-			for _, id := range find.ContentIDList {
-				args = append(args, id)
-			}
-		}
+		where = append(where, "memo_id IN ("+strings.Join(placeholders, ",")+")")
 	}
 
 	rows, err := d.db.QueryContext(ctx, `
@@ -55,7 +57,7 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 			id,
 			created_ts,
 			creator_id,
-			content_id,
+			memo_id,
 			reaction_type
 		FROM reaction
 		WHERE `+strings.Join(where, " AND ")+`
@@ -74,7 +76,7 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 			&reaction.ID,
 			&reaction.CreatedTs,
 			&reaction.CreatorID,
-			&reaction.ContentID,
+			&reaction.MemoID,
 			&reaction.ReactionType,
 		); err != nil {
 			return nil, err
@@ -90,47 +92,29 @@ func (d *DB) ListReactions(ctx context.Context, find *store.FindReaction) ([]*st
 }
 
 func (d *DB) GetReaction(ctx context.Context, find *store.FindReaction) (*store.Reaction, error) {
-	where, args := []string{"1 = 1"}, []any{}
-
-	if find.ID != nil {
-		where, args = append(where, "id = ?"), append(args, *find.ID)
-	}
-	if find.CreatorID != nil {
-		where, args = append(where, "creator_id = ?"), append(args, *find.CreatorID)
-	}
-	if find.ContentID != nil {
-		where, args = append(where, "content_id = ?"), append(args, *find.ContentID)
-	}
-
-	reaction := &store.Reaction{}
-	if err := d.db.QueryRowContext(ctx, `
-		SELECT
-			id,
-			created_ts,
-			creator_id,
-			content_id,
-			reaction_type
-		FROM reaction
-		WHERE `+strings.Join(where, " AND ")+`
-		LIMIT 1`,
-		args...,
-	).Scan(
-		&reaction.ID,
-		&reaction.CreatedTs,
-		&reaction.CreatorID,
-		&reaction.ContentID,
-		&reaction.ReactionType,
-	); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
+	list, err := d.ListReactions(ctx, find)
+	if err != nil {
 		return nil, err
 	}
+	if len(list) == 0 {
+		return nil, nil
+	}
 
-	return reaction, nil
+	return list[0], nil
 }
 
 func (d *DB) DeleteReaction(ctx context.Context, delete *store.DeleteReaction) error {
-	_, err := d.db.ExecContext(ctx, "DELETE FROM `reaction` WHERE `id` = ?", delete.ID)
+	where, args := []string{}, []any{}
+	if delete.ID != nil {
+		where, args = append(where, "`id` = ?"), append(args, *delete.ID)
+	}
+	if delete.MemoID != nil {
+		where, args = append(where, "`memo_id` = ?"), append(args, *delete.MemoID)
+	}
+	if len(where) == 0 {
+		return nil
+	}
+
+	_, err := d.db.ExecContext(ctx, "DELETE FROM `reaction` WHERE "+strings.Join(where, " AND "), args...)
 	return err
 }

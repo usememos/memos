@@ -178,7 +178,6 @@ func TestUpsertMemoReaction_SSEEvent(t *testing.T) {
 	_, err = svc.UpsertMemoReaction(uctx, &v1pb.UpsertMemoReactionRequest{
 		Name: memo.Name,
 		Reaction: &v1pb.Reaction{
-			ContentId:    memo.Name,
 			ReactionType: "👍",
 		},
 	})
@@ -209,7 +208,6 @@ func TestDeleteMemoReaction_SSEEvent(t *testing.T) {
 	reaction, err := svc.UpsertMemoReaction(uctx, &v1pb.UpsertMemoReactionRequest{
 		Name: memo.Name,
 		Reaction: &v1pb.Reaction{
-			ContentId:    memo.Name,
 			ReactionType: "❤️",
 		},
 	})

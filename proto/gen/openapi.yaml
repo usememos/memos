@@ -1054,9 +1054,7 @@ paths:
         post:
             tags:
                 - MemoService
-            description: |-
-                UpsertMemoReaction adds or updates the authenticated user's reaction on a
-                 memo. The reaction's content_id is the memo's resource name (memos/{memo}).
+            description: UpsertMemoReaction adds or updates the authenticated user's reaction on a memo.
             operationId: MemoService_UpsertMemoReaction
             parameters:
                 - name: memo
@@ -3599,7 +3597,6 @@ components:
                     format: double
         Reaction:
             required:
-                - contentId
                 - reactionType
             type: object
             properties:
@@ -3615,12 +3612,6 @@ components:
                     description: |-
                         The resource name of the creator.
                          Format: users/{user}
-                contentId:
-                    type: string
-                    description: |-
-                        The resource name of the content.
-                         For memo reactions, this should be the memo's resource name.
-                         Format: memos/{memo}
                 reactionType:
                     type: string
                     description: "Required. The type of reaction (e.g., \"\U0001F44D\", \"❤️\", \"\U0001F604\")."
@@ -3629,6 +3620,7 @@ components:
                     type: string
                     description: Output only. The creation timestamp.
                     format: date-time
+            description: Reaction is a reaction attached to a memo.
         RefreshTokenRequest:
             type: object
             properties: {}

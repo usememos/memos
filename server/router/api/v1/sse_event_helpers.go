@@ -21,7 +21,7 @@ func resolveSSECreatorID(memo *store.Memo, parentMemo *store.Memo) int32 {
 
 // buildMemoReactionSSEEvent constructs an SSEEvent for a reaction on a memo.
 // Pass parentMemo when the memo is a comment (memo.ParentUID != nil).
-func buildMemoReactionSSEEvent(eventType SSEEventType, contentID string, memo *store.Memo, parentMemo *store.Memo) *SSEEvent {
+func buildMemoReactionSSEEvent(eventType SSEEventType, memoName string, memo *store.Memo, parentMemo *store.Memo) *SSEEvent {
 	parent := ""
 	if memo != nil && memo.ParentUID != nil {
 		parent = buildMemoName(*memo.ParentUID)
@@ -32,7 +32,7 @@ func buildMemoReactionSSEEvent(eventType SSEEventType, contentID string, memo *s
 	}
 	return &SSEEvent{
 		Type:       eventType,
-		Name:       contentID,
+		Name:       memoName,
 		Parent:     parent,
 		Visibility: visibility,
 		CreatorID:  resolveSSECreatorID(memo, parentMemo),

@@ -348,6 +348,60 @@ func assertStorageMigrationAttachments(ctx context.Context, t *testing.T, ts *st
 	require.Equal(t, "existing-s3", named.GetStorageId())
 }
 
+// TestMigrationReactionMemoID verifies that the reaction migration resolves
+// legacy memo resource names to internal memo IDs and discards orphaned rows.
+func TestMigrationReactionMemoID(t *testing.T) {
+	ctx := context.Background()
+	driver := getDriverFromEnv()
+	dsn := getTestingProfileForDriver(t, driver).DSN
+
+	db, err := sql.Open(driver, dsn)
+	require.NoError(t, err)
+	_, err = db.ExecContext(ctx, legacySchemaFixture(driver))
+	require.NoError(t, err)
+
+	basicSetting, err := protojson.Marshal(&storepb.InstanceBasicSetting{SchemaVersion: "0.31.2"})
+	require.NoError(t, err)
+	insertSetting := "INSERT INTO system_setting (name, value, description) VALUES (?, ?, '')"
+	insertMemo := "INSERT INTO memo (id, uid) VALUES (?, ?)"
+	insertReaction := "INSERT INTO reaction (id, creator_id, content_id, reaction_type) VALUES (?, ?, ?, ?)"
+	if driver == "postgres" {
+		insertSetting = "INSERT INTO system_setting (name, value, description) VALUES ($1, $2, '')"
+		insertMemo = "INSERT INTO memo (id, uid) VALUES ($1, $2)"
+		insertReaction = "INSERT INTO reaction (id, creator_id, content_id, reaction_type) VALUES ($1, $2, $3, $4)"
+	}
+	_, err = db.ExecContext(ctx, insertSetting, "BASIC", string(basicSetting))
+	require.NoError(t, err)
+	_, err = db.ExecContext(ctx, insertMemo, 42, "reaction-migration-target")
+	require.NoError(t, err)
+	_, err = db.ExecContext(ctx, insertReaction, 100, 7, "memos/reaction-migration-target", "valid")
+	require.NoError(t, err)
+	_, err = db.ExecContext(ctx, insertReaction, 101, 7, "memos/missing-target", "orphan")
+	require.NoError(t, err)
+	require.NoError(t, db.Close())
+
+	ts := NewTestingStoreWithDSN(ctx, t, driver, dsn)
+	require.NoError(t, ts.Migrate(ctx))
+	defer ts.Close()
+
+	var reactionID, creatorID, memoID int32
+	var reactionType string
+	err = ts.GetDriver().GetDB().QueryRowContext(
+		ctx,
+		"SELECT id, creator_id, memo_id, reaction_type FROM reaction",
+	).Scan(&reactionID, &creatorID, &memoID, &reactionType)
+	require.NoError(t, err)
+	require.Equal(t, int32(100), reactionID)
+	require.Equal(t, int32(7), creatorID)
+	require.Equal(t, int32(42), memoID)
+	require.Equal(t, "valid", reactionType)
+
+	var reactionCount int
+	err = ts.GetDriver().GetDB().QueryRowContext(ctx, "SELECT COUNT(*) FROM reaction").Scan(&reactionCount)
+	require.NoError(t, err)
+	require.Equal(t, 1, reactionCount, "orphaned reactions must be discarded")
+}
+
 // TestMigrationLegacyS3AttachmentMinIO verifies the storage upgrade path for an
 // attachment created before storage IDs existed. The migration must bind the
 // payload to the migrated registry entry, after which the production resolver
@@ -550,41 +604,7 @@ func TestMigrationCopiesInstanceTagsToUserSettings(t *testing.T) {
 	db, err := sql.Open("sqlite", dsn)
 	require.NoError(t, err)
 
-	_, err = db.ExecContext(ctx, `
-		CREATE TABLE system_setting (
-			name TEXT NOT NULL,
-			value TEXT NOT NULL,
-			description TEXT NOT NULL DEFAULT '',
-			UNIQUE(name)
-		);
-		CREATE TABLE user (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-			updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-			row_status TEXT NOT NULL CHECK (row_status IN ('NORMAL', 'ARCHIVED')) DEFAULT 'NORMAL',
-			username TEXT NOT NULL UNIQUE,
-			role TEXT NOT NULL DEFAULT 'USER',
-			email TEXT NOT NULL DEFAULT '',
-			nickname TEXT NOT NULL DEFAULT '',
-			password_hash TEXT NOT NULL,
-			avatar_url TEXT NOT NULL DEFAULT '',
-			description TEXT NOT NULL DEFAULT ''
-		);
-		CREATE TABLE user_setting (
-			user_id INTEGER NOT NULL,
-			key TEXT NOT NULL,
-			value TEXT NOT NULL,
-			UNIQUE(user_id, key)
-		);
-		CREATE TABLE memo (
-			id INTEGER PRIMARY KEY AUTOINCREMENT
-		);
-		CREATE TABLE attachment (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			storage_type TEXT NOT NULL DEFAULT '',
-			payload TEXT NOT NULL DEFAULT '{}'
-		);
-	`)
+	_, err = db.ExecContext(ctx, legacySchemaFixture("sqlite"))
 	require.NoError(t, err)
 
 	basicSettingBytes, err := protojson.Marshal(&storepb.InstanceBasicSetting{SchemaVersion: "0.29.1"})
@@ -729,7 +749,18 @@ func legacySchemaFixture(driver string) string {
 				value LONGTEXT NOT NULL,
 				UNIQUE(user_id, ` + "`key`" + `)
 			);
-			CREATE TABLE memo (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY);
+			CREATE TABLE memo (
+				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				uid VARCHAR(256) NOT NULL UNIQUE
+			);
+			CREATE TABLE reaction (
+				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+				created_ts TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				creator_id INT NOT NULL,
+				content_id VARCHAR(256) NOT NULL,
+				reaction_type VARCHAR(256) NOT NULL,
+				UNIQUE(creator_id, content_id, reaction_type)
+			);
 			CREATE TABLE attachment (
 				id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 				uid VARCHAR(256) NOT NULL UNIQUE,
@@ -771,7 +802,18 @@ func legacySchemaFixture(driver string) string {
 				value TEXT NOT NULL,
 				UNIQUE(user_id, key)
 			);
-			CREATE TABLE memo (id SERIAL PRIMARY KEY);
+			CREATE TABLE memo (
+				id SERIAL PRIMARY KEY,
+				uid TEXT NOT NULL UNIQUE
+			);
+			CREATE TABLE reaction (
+				id SERIAL PRIMARY KEY,
+				created_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+				creator_id INTEGER NOT NULL,
+				content_id TEXT NOT NULL,
+				reaction_type TEXT NOT NULL,
+				UNIQUE(creator_id, content_id, reaction_type)
+			);
 			CREATE TABLE attachment (
 				id SERIAL PRIMARY KEY,
 				uid TEXT NOT NULL UNIQUE,
@@ -815,7 +857,18 @@ func legacySchemaFixture(driver string) string {
 				value TEXT NOT NULL,
 				UNIQUE(user_id, key)
 			);
-			CREATE TABLE memo (id INTEGER PRIMARY KEY AUTOINCREMENT);
+			CREATE TABLE memo (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				uid TEXT NOT NULL UNIQUE
+			);
+			CREATE TABLE reaction (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+				creator_id INTEGER NOT NULL,
+				content_id TEXT NOT NULL,
+				reaction_type TEXT NOT NULL,
+				UNIQUE(creator_id, content_id, reaction_type)
+			);
 			CREATE TABLE attachment (
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
 				uid TEXT NOT NULL UNIQUE,

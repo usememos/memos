@@ -141,7 +141,7 @@ func seedListMemosBenchmarkData(ctx context.Context, stores *store.Store, hostUs
 		if i%5 == 0 {
 			if _, err := stores.UpsertReaction(ctx, &store.Reaction{
 				CreatorID:    hostUser.ID,
-				ContentID:    "memos/" + memo.UID,
+				MemoID:       memo.ID,
 				ReactionType: "thumbs-up",
 			}); err != nil {
 				return "", err

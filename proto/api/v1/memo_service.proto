@@ -96,8 +96,7 @@ service MemoService {
     option (google.api.http) = {get: "/api/v1/{name=memos/*}/reactions"};
     option (google.api.method_signature) = "name";
   }
-  // UpsertMemoReaction adds or updates the authenticated user's reaction on a
-  // memo. The reaction's content_id is the memo's resource name (memos/{memo}).
+  // UpsertMemoReaction adds or updates the authenticated user's reaction on a memo.
   rpc UpsertMemoReaction(UpsertMemoReactionRequest) returns (Reaction) {
     option (google.api.http) = {
       post: "/api/v1/{name=memos/*}/reactions"
@@ -157,6 +156,7 @@ enum Visibility {
   PUBLIC = 3;
 }
 
+// Reaction is a reaction attached to a memo.
 message Reaction {
   option (google.api.resource) = {
     type: "memos.api.v1/Reaction"
@@ -180,13 +180,8 @@ message Reaction {
     (google.api.resource_reference) = {type: "memos.api.v1/User"}
   ];
 
-  // The resource name of the content.
-  // For memo reactions, this should be the memo's resource name.
-  // Format: memos/{memo}
-  string content_id = 3 [
-    (google.api.field_behavior) = REQUIRED,
-    (google.api.resource_reference) = {type: "memos.api.v1/Memo"}
-  ];
+  reserved 3;
+  reserved "content_id";
 
   // Required. The type of reaction (e.g., "👍", "❤️", "😄").
   string reaction_type = 4 [(google.api.field_behavior) = REQUIRED];

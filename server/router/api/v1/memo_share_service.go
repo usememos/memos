@@ -172,7 +172,7 @@ func (s *APIV1Service) GetSharedMemo(ctx context.Context, request *v1pb.GetShare
 	}
 
 	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
-		ContentID: stringPointer(fmt.Sprintf("%s%s", MemoNamePrefix, memo.UID)),
+		MemoID: &memo.ID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list reactions")
@@ -210,10 +210,6 @@ func (s *APIV1Service) getActiveMemoShare(ctx context.Context, shareID string) (
 		return nil, status.Errorf(codes.NotFound, "not found")
 	}
 	return ms, nil
-}
-
-func stringPointer(s string) *string {
-	return &s
 }
 
 // convertMemoShareFromStore converts a store MemoShare to the proto MemoShare message.

@@ -2,26 +2,32 @@ package store
 
 import (
 	"context"
+	"errors"
 )
 
+// ErrReactionMemoNotFound indicates that a reaction's memo no longer exists.
+var ErrReactionMemoNotFound = errors.New("reaction memo not found")
+
+// Reaction is a reaction attached to a memo.
 type Reaction struct {
 	ID        int32
 	CreatedTs int64
 	CreatorID int32
-	// ContentID is the id of the content that the reaction is for.
-	ContentID    string
+	// MemoID is the ID of the memo that the reaction is for.
+	MemoID       int32
 	ReactionType string
 }
 
 type FindReaction struct {
-	ID            *int32
-	CreatorID     *int32
-	ContentID     *string
-	ContentIDList []string
+	ID         *int32
+	CreatorID  *int32
+	MemoID     *int32
+	MemoIDList []int32
 }
 
 type DeleteReaction struct {
-	ID int32
+	ID     *int32
+	MemoID *int32
 }
 
 func (s *Store) UpsertReaction(ctx context.Context, upsert *Reaction) (*Reaction, error) {

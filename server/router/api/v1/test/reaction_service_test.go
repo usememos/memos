@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -9,6 +10,82 @@ import (
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
 )
+
+func TestMemoReactionResourceNames(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateRegularUser(ctx, "reaction-resource-user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+	memo, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		MemoId: "reaction-resource-memo",
+		Memo: &apiv1.Memo{
+			Content:    "reaction resource names",
+			Visibility: apiv1.Visibility_PUBLIC,
+		},
+	})
+	require.NoError(t, err)
+
+	reaction, err := ts.Service.UpsertMemoReaction(userCtx, &apiv1.UpsertMemoReactionRequest{
+		Name: memo.Name,
+		Reaction: &apiv1.Reaction{
+			ReactionType: "👍",
+		},
+	})
+	require.NoError(t, err)
+	require.True(t, strings.HasPrefix(reaction.Name, memo.Name+"/reactions/"))
+
+	memoID := parseMemoIDFromNameForTest(t, ts, memo.Name)
+	storedReaction, err := ts.Store.GetReaction(ctx, &store.FindReaction{MemoID: &memoID, CreatorID: &user.ID})
+	require.NoError(t, err)
+	require.NotNil(t, storedReaction)
+	require.Equal(t, memoID, storedReaction.MemoID)
+
+	listed, err := ts.Service.ListMemoReactions(ctx, &apiv1.ListMemoReactionsRequest{Name: memo.Name})
+	require.NoError(t, err)
+	require.Len(t, listed.Reactions, 1)
+	require.Equal(t, reaction.Name, listed.Reactions[0].Name)
+
+	fetchedMemo, err := ts.Service.GetMemo(ctx, &apiv1.GetMemoRequest{Name: memo.Name})
+	require.NoError(t, err)
+	require.Len(t, fetchedMemo.Reactions, 1)
+	require.Equal(t, reaction.Name, fetchedMemo.Reactions[0].Name)
+}
+
+func TestListMemoCommentsIncludesReactionResourceNames(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateRegularUser(ctx, "comment-reaction-user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+	parent, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+		Memo: &apiv1.Memo{Content: "parent", Visibility: apiv1.Visibility_PUBLIC},
+	})
+	require.NoError(t, err)
+	comment, err := ts.Service.CreateMemoComment(userCtx, &apiv1.CreateMemoCommentRequest{
+		Name:    parent.Name,
+		Comment: &apiv1.Memo{Content: "comment", Visibility: apiv1.Visibility_PUBLIC},
+	})
+	require.NoError(t, err)
+
+	_, err = ts.Service.UpsertMemoReaction(userCtx, &apiv1.UpsertMemoReactionRequest{
+		Name: comment.Name,
+		Reaction: &apiv1.Reaction{
+			ReactionType: "🔥",
+		},
+	})
+	require.NoError(t, err)
+
+	comments, err := ts.Service.ListMemoComments(userCtx, &apiv1.ListMemoCommentsRequest{Name: parent.Name})
+	require.NoError(t, err)
+	require.Len(t, comments.Memos, 1)
+	require.Len(t, comments.Memos[0].Reactions, 1)
+	require.True(t, strings.HasPrefix(comments.Memos[0].Reactions[0].Name, comment.Name+"/reactions/"))
+}
 
 func TestDeleteMemoReaction(t *testing.T) {
 	ctx := context.Background()
@@ -36,7 +113,6 @@ func TestDeleteMemoReaction(t *testing.T) {
 		reaction, err := ts.Service.UpsertMemoReaction(userCtx, &apiv1.UpsertMemoReactionRequest{
 			Name: memo.Name,
 			Reaction: &apiv1.Reaction{
-				ContentId:    memo.Name,
 				ReactionType: "👍",
 			},
 		})
@@ -49,6 +125,41 @@ func TestDeleteMemoReaction(t *testing.T) {
 			Name: reaction.Name,
 		})
 		require.NoError(t, err)
+	})
+
+	t.Run("DeleteMemoReaction succeeds when memo was concurrently deleted", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		user, err := ts.CreateRegularUser(ctx, "concurrent-delete-user")
+		require.NoError(t, err)
+		userCtx := ts.CreateUserContext(ctx, user.ID)
+		memo, err := ts.Service.CreateMemo(userCtx, &apiv1.CreateMemoRequest{
+			Memo: &apiv1.Memo{Content: "concurrent delete", Visibility: apiv1.Visibility_PUBLIC},
+		})
+		require.NoError(t, err)
+		reaction, err := ts.Service.UpsertMemoReaction(userCtx, &apiv1.UpsertMemoReactionRequest{
+			Name: memo.Name,
+			Reaction: &apiv1.Reaction{
+				ReactionType: "👍",
+			},
+		})
+		require.NoError(t, err)
+
+		memoID := parseMemoIDFromNameForTest(t, ts, memo.Name)
+		storedReaction, err := ts.Store.GetReaction(ctx, &store.FindReaction{MemoID: &memoID, CreatorID: &user.ID})
+		require.NoError(t, err)
+		require.NotNil(t, storedReaction)
+		// Simulate the state visible between DeleteMemoReaction's reaction and
+		// memo reads after a concurrent memo deletion commits.
+		_, err = ts.Store.GetDriver().GetDB().ExecContext(ctx, "DELETE FROM memo WHERE id = ?", memoID)
+		require.NoError(t, err)
+
+		_, err = ts.Service.DeleteMemoReaction(userCtx, &apiv1.DeleteMemoReactionRequest{Name: reaction.Name})
+		require.NoError(t, err)
+		deletedReaction, err := ts.Store.GetReaction(ctx, &store.FindReaction{ID: &storedReaction.ID})
+		require.NoError(t, err)
+		require.Nil(t, deletedReaction)
 	})
 
 	t.Run("DeleteMemoReaction success by host user", func(t *testing.T) {
@@ -79,7 +190,6 @@ func TestDeleteMemoReaction(t *testing.T) {
 		reaction, err := ts.Service.UpsertMemoReaction(regularUserCtx, &apiv1.UpsertMemoReactionRequest{
 			Name: memo.Name,
 			Reaction: &apiv1.Reaction{
-				ContentId:    memo.Name,
 				ReactionType: "👍",
 			},
 		})
@@ -121,7 +231,6 @@ func TestDeleteMemoReaction(t *testing.T) {
 		reaction, err := ts.Service.UpsertMemoReaction(user1Ctx, &apiv1.UpsertMemoReactionRequest{
 			Name: memo.Name,
 			Reaction: &apiv1.Reaction{
-				ContentId:    memo.Name,
 				ReactionType: "👍",
 			},
 		})
@@ -159,7 +268,6 @@ func TestDeleteMemoReaction(t *testing.T) {
 		reaction, err := ts.Service.UpsertMemoReaction(userCtx, &apiv1.UpsertMemoReactionRequest{
 			Name: memo.Name,
 			Reaction: &apiv1.Reaction{
-				ContentId:    memo.Name,
 				ReactionType: "👍",
 			},
 		})
@@ -220,7 +328,6 @@ func TestListMemoReactionsSkipsMissingCreators(t *testing.T) {
 	_, err = ts.Service.UpsertMemoReaction(reactorCtx, &apiv1.UpsertMemoReactionRequest{
 		Name: memo.Name,
 		Reaction: &apiv1.Reaction{
-			ContentId:    memo.Name,
 			ReactionType: "🔥",
 		},
 	})

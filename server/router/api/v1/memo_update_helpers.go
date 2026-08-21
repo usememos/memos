@@ -19,9 +19,8 @@ func (s *APIV1Service) buildUpdatedMemoState(ctx context.Context, memoID int32) 
 		return nil, nil, nil, errors.New("memo not found")
 	}
 
-	memoName := buildMemoName(memo.UID)
 	reactions, err := s.Store.ListReactions(ctx, &store.FindReaction{
-		ContentID: &memoName,
+		MemoID: &memo.ID,
 	})
 	if err != nil {
 		return nil, nil, nil, errors.Wrap(err, "failed to list reactions")
