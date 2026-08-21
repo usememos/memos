@@ -451,6 +451,7 @@
       "appearance-title": "Appearance",
       "default-memo-visibility-description": "Visibility applied to newly created memos unless changed in the editor.",
       "language-description": "Updates the interface language immediately and saves it to your account.",
+      "link-preview-description": "Show rich link preview cards for bare URLs in memos.",
       "memo-defaults-description": "Set the defaults used when composing new memos.",
       "memo-defaults-title": "Memo defaults",
       "theme-description": "Applies the selected theme immediately on this device."
