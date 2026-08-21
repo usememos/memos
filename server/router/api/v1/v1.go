@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 	"net/http"
+	"sync"
 
 	"connectrpc.com/connect"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -49,6 +50,10 @@ type APIV1Service struct {
 	instanceStatsCache instanceStatsCache
 
 	linkMetadataFetcher linkMetadataFetcher
+
+	// backgroundTaskWG tracks follow-up work a request spawned, so shutdown can
+	// wait for it instead of cutting it off mid-write.
+	backgroundTaskWG sync.WaitGroup
 }
 
 // NewAPIV1Service creates an API v1 service with its shared dependencies.
@@ -69,6 +74,30 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 	}
 	service.linkMetadataFetcher = httpgetter.NewHTMLMetaFetcher()
 	return service
+}
+
+func (s *APIV1Service) runBackgroundTask(task func()) {
+	s.backgroundTaskWG.Add(1)
+	go func() {
+		defer s.backgroundTaskWG.Done()
+		task()
+	}()
+}
+
+// WaitForBackgroundTasks waits for service-owned post-commit work to finish or
+// for the supplied context to expire.
+func (s *APIV1Service) WaitForBackgroundTasks(ctx context.Context) error {
+	done := make(chan struct{})
+	go func() {
+		s.backgroundTaskWG.Wait()
+		close(done)
+	}()
+	select {
+	case <-done:
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	}
 }
 
 // newGatewayMarshaler mirrors grpc-gateway's default JSON marshaler with one

@@ -60,6 +60,7 @@ func TestProtectedMethodsRequireAuth(t *testing.T) {
 		"/memos.api.v1.MemoService/CreateMemo",
 		"/memos.api.v1.MemoService/UpdateMemo",
 		"/memos.api.v1.MemoService/DeleteMemo",
+		"/memos.api.v1.MemoService/RenameMemoTag",
 		// Attachment Service - write operations
 		"/memos.api.v1.AttachmentService/CreateAttachment",
 		"/memos.api.v1.AttachmentService/DeleteAttachment",

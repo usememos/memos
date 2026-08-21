@@ -38,6 +38,7 @@ const (
 	MemoService_ListMemoShares_FullMethodName       = "/memos.api.v1.MemoService/ListMemoShares"
 	MemoService_DeleteMemoShare_FullMethodName      = "/memos.api.v1.MemoService/DeleteMemoShare"
 	MemoService_GetSharedMemo_FullMethodName        = "/memos.api.v1.MemoService/GetSharedMemo"
+	MemoService_RenameMemoTag_FullMethodName        = "/memos.api.v1.MemoService/RenameMemoTag"
 	MemoService_GetLinkMetadata_FullMethodName      = "/memos.api.v1.MemoService/GetLinkMetadata"
 	MemoService_BatchGetLinkMetadata_FullMethodName = "/memos.api.v1.MemoService/BatchGetLinkMetadata"
 )
@@ -90,6 +91,10 @@ type MemoServiceClient interface {
 	// GetSharedMemo resolves a share token to its memo. No authentication required.
 	// Returns NOT_FOUND if the token is invalid or expired.
 	GetSharedMemo(ctx context.Context, in *GetSharedMemoRequest, opts ...grpc.CallOption) (*Memo, error)
+	// RenameMemoTag renames a tag across all memos owned by the authenticated
+	// user, including archived memos and comments. Tag names do not include the
+	// leading '#'. Returns the number of memos that were changed.
+	RenameMemoTag(ctx context.Context, in *RenameMemoTagRequest, opts ...grpc.CallOption) (*RenameMemoTagResponse, error)
 	// GetLinkMetadata gets metadata for a link.
 	GetLinkMetadata(ctx context.Context, in *GetLinkMetadataRequest, opts ...grpc.CallOption) (*LinkMetadata, error)
 	// BatchGetLinkMetadata gets metadata for links.
@@ -284,6 +289,16 @@ func (c *memoServiceClient) GetSharedMemo(ctx context.Context, in *GetSharedMemo
 	return out, nil
 }
 
+func (c *memoServiceClient) RenameMemoTag(ctx context.Context, in *RenameMemoTagRequest, opts ...grpc.CallOption) (*RenameMemoTagResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RenameMemoTagResponse)
+	err := c.cc.Invoke(ctx, MemoService_RenameMemoTag_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *memoServiceClient) GetLinkMetadata(ctx context.Context, in *GetLinkMetadataRequest, opts ...grpc.CallOption) (*LinkMetadata, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(LinkMetadata)
@@ -352,6 +367,10 @@ type MemoServiceServer interface {
 	// GetSharedMemo resolves a share token to its memo. No authentication required.
 	// Returns NOT_FOUND if the token is invalid or expired.
 	GetSharedMemo(context.Context, *GetSharedMemoRequest) (*Memo, error)
+	// RenameMemoTag renames a tag across all memos owned by the authenticated
+	// user, including archived memos and comments. Tag names do not include the
+	// leading '#'. Returns the number of memos that were changed.
+	RenameMemoTag(context.Context, *RenameMemoTagRequest) (*RenameMemoTagResponse, error)
 	// GetLinkMetadata gets metadata for a link.
 	GetLinkMetadata(context.Context, *GetLinkMetadataRequest) (*LinkMetadata, error)
 	// BatchGetLinkMetadata gets metadata for links.
@@ -419,6 +438,9 @@ func (UnimplementedMemoServiceServer) DeleteMemoShare(context.Context, *DeleteMe
 }
 func (UnimplementedMemoServiceServer) GetSharedMemo(context.Context, *GetSharedMemoRequest) (*Memo, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetSharedMemo not implemented")
+}
+func (UnimplementedMemoServiceServer) RenameMemoTag(context.Context, *RenameMemoTagRequest) (*RenameMemoTagResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method RenameMemoTag not implemented")
 }
 func (UnimplementedMemoServiceServer) GetLinkMetadata(context.Context, *GetLinkMetadataRequest) (*LinkMetadata, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetLinkMetadata not implemented")
@@ -771,6 +793,24 @@ func _MemoService_GetSharedMemo_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MemoService_RenameMemoTag_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RenameMemoTagRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoServiceServer).RenameMemoTag(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoService_RenameMemoTag_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoServiceServer).RenameMemoTag(ctx, req.(*RenameMemoTagRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MemoService_GetLinkMetadata_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetLinkMetadataRequest)
 	if err := dec(in); err != nil {
@@ -885,6 +925,10 @@ var MemoService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetSharedMemo",
 			Handler:    _MemoService_GetSharedMemo_Handler,
+		},
+		{
+			MethodName: "RenameMemoTag",
+			Handler:    _MemoService_RenameMemoTag_Handler,
 		},
 		{
 			MethodName: "GetLinkMetadata",

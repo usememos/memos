@@ -83,6 +83,9 @@ const (
 	// MemoServiceGetSharedMemoProcedure is the fully-qualified name of the MemoService's GetSharedMemo
 	// RPC.
 	MemoServiceGetSharedMemoProcedure = "/memos.api.v1.MemoService/GetSharedMemo"
+	// MemoServiceRenameMemoTagProcedure is the fully-qualified name of the MemoService's RenameMemoTag
+	// RPC.
+	MemoServiceRenameMemoTagProcedure = "/memos.api.v1.MemoService/RenameMemoTag"
 	// MemoServiceGetLinkMetadataProcedure is the fully-qualified name of the MemoService's
 	// GetLinkMetadata RPC.
 	MemoServiceGetLinkMetadataProcedure = "/memos.api.v1.MemoService/GetLinkMetadata"
@@ -137,6 +140,10 @@ type MemoServiceClient interface {
 	// GetSharedMemo resolves a share token to its memo. No authentication required.
 	// Returns NOT_FOUND if the token is invalid or expired.
 	GetSharedMemo(context.Context, *connect.Request[v1.GetSharedMemoRequest]) (*connect.Response[v1.Memo], error)
+	// RenameMemoTag renames a tag across all memos owned by the authenticated
+	// user, including archived memos and comments. Tag names do not include the
+	// leading '#'. Returns the number of memos that were changed.
+	RenameMemoTag(context.Context, *connect.Request[v1.RenameMemoTagRequest]) (*connect.Response[v1.RenameMemoTagResponse], error)
 	// GetLinkMetadata gets metadata for a link.
 	GetLinkMetadata(context.Context, *connect.Request[v1.GetLinkMetadataRequest]) (*connect.Response[v1.LinkMetadata], error)
 	// BatchGetLinkMetadata gets metadata for links.
@@ -262,6 +269,12 @@ func NewMemoServiceClient(httpClient connect.HTTPClient, baseURL string, opts ..
 			connect.WithSchema(memoServiceMethods.ByName("GetSharedMemo")),
 			connect.WithClientOptions(opts...),
 		),
+		renameMemoTag: connect.NewClient[v1.RenameMemoTagRequest, v1.RenameMemoTagResponse](
+			httpClient,
+			baseURL+MemoServiceRenameMemoTagProcedure,
+			connect.WithSchema(memoServiceMethods.ByName("RenameMemoTag")),
+			connect.WithClientOptions(opts...),
+		),
 		getLinkMetadata: connect.NewClient[v1.GetLinkMetadataRequest, v1.LinkMetadata](
 			httpClient,
 			baseURL+MemoServiceGetLinkMetadataProcedure,
@@ -297,6 +310,7 @@ type memoServiceClient struct {
 	listMemoShares       *connect.Client[v1.ListMemoSharesRequest, v1.ListMemoSharesResponse]
 	deleteMemoShare      *connect.Client[v1.DeleteMemoShareRequest, emptypb.Empty]
 	getSharedMemo        *connect.Client[v1.GetSharedMemoRequest, v1.Memo]
+	renameMemoTag        *connect.Client[v1.RenameMemoTagRequest, v1.RenameMemoTagResponse]
 	getLinkMetadata      *connect.Client[v1.GetLinkMetadataRequest, v1.LinkMetadata]
 	batchGetLinkMetadata *connect.Client[v1.BatchGetLinkMetadataRequest, v1.BatchGetLinkMetadataResponse]
 }
@@ -391,6 +405,11 @@ func (c *memoServiceClient) GetSharedMemo(ctx context.Context, req *connect.Requ
 	return c.getSharedMemo.CallUnary(ctx, req)
 }
 
+// RenameMemoTag calls memos.api.v1.MemoService.RenameMemoTag.
+func (c *memoServiceClient) RenameMemoTag(ctx context.Context, req *connect.Request[v1.RenameMemoTagRequest]) (*connect.Response[v1.RenameMemoTagResponse], error) {
+	return c.renameMemoTag.CallUnary(ctx, req)
+}
+
 // GetLinkMetadata calls memos.api.v1.MemoService.GetLinkMetadata.
 func (c *memoServiceClient) GetLinkMetadata(ctx context.Context, req *connect.Request[v1.GetLinkMetadataRequest]) (*connect.Response[v1.LinkMetadata], error) {
 	return c.getLinkMetadata.CallUnary(ctx, req)
@@ -447,6 +466,10 @@ type MemoServiceHandler interface {
 	// GetSharedMemo resolves a share token to its memo. No authentication required.
 	// Returns NOT_FOUND if the token is invalid or expired.
 	GetSharedMemo(context.Context, *connect.Request[v1.GetSharedMemoRequest]) (*connect.Response[v1.Memo], error)
+	// RenameMemoTag renames a tag across all memos owned by the authenticated
+	// user, including archived memos and comments. Tag names do not include the
+	// leading '#'. Returns the number of memos that were changed.
+	RenameMemoTag(context.Context, *connect.Request[v1.RenameMemoTagRequest]) (*connect.Response[v1.RenameMemoTagResponse], error)
 	// GetLinkMetadata gets metadata for a link.
 	GetLinkMetadata(context.Context, *connect.Request[v1.GetLinkMetadataRequest]) (*connect.Response[v1.LinkMetadata], error)
 	// BatchGetLinkMetadata gets metadata for links.
@@ -568,6 +591,12 @@ func NewMemoServiceHandler(svc MemoServiceHandler, opts ...connect.HandlerOption
 		connect.WithSchema(memoServiceMethods.ByName("GetSharedMemo")),
 		connect.WithHandlerOptions(opts...),
 	)
+	memoServiceRenameMemoTagHandler := connect.NewUnaryHandler(
+		MemoServiceRenameMemoTagProcedure,
+		svc.RenameMemoTag,
+		connect.WithSchema(memoServiceMethods.ByName("RenameMemoTag")),
+		connect.WithHandlerOptions(opts...),
+	)
 	memoServiceGetLinkMetadataHandler := connect.NewUnaryHandler(
 		MemoServiceGetLinkMetadataProcedure,
 		svc.GetLinkMetadata,
@@ -618,6 +647,8 @@ func NewMemoServiceHandler(svc MemoServiceHandler, opts ...connect.HandlerOption
 			memoServiceDeleteMemoShareHandler.ServeHTTP(w, r)
 		case MemoServiceGetSharedMemoProcedure:
 			memoServiceGetSharedMemoHandler.ServeHTTP(w, r)
+		case MemoServiceRenameMemoTagProcedure:
+			memoServiceRenameMemoTagHandler.ServeHTTP(w, r)
 		case MemoServiceGetLinkMetadataProcedure:
 			memoServiceGetLinkMetadataHandler.ServeHTTP(w, r)
 		case MemoServiceBatchGetLinkMetadataProcedure:
@@ -701,6 +732,10 @@ func (UnimplementedMemoServiceHandler) DeleteMemoShare(context.Context, *connect
 
 func (UnimplementedMemoServiceHandler) GetSharedMemo(context.Context, *connect.Request[v1.GetSharedMemoRequest]) (*connect.Response[v1.Memo], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.MemoService.GetSharedMemo is not implemented"))
+}
+
+func (UnimplementedMemoServiceHandler) RenameMemoTag(context.Context, *connect.Request[v1.RenameMemoTagRequest]) (*connect.Response[v1.RenameMemoTagResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("memos.api.v1.MemoService.RenameMemoTag is not implemented"))
 }
 
 func (UnimplementedMemoServiceHandler) GetLinkMetadata(context.Context, *connect.Request[v1.GetLinkMetadataRequest]) (*connect.Response[v1.LinkMetadata], error) {

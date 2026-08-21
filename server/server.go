@@ -34,6 +34,7 @@ type Server struct {
 	echoServer *echo.Echo
 	httpServer *http.Server
 	sseHub     *apiv1.SSEHub
+	apiService *apiv1.APIV1Service
 }
 
 func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store) (*Server, error) {
@@ -69,6 +70,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	rootGroup := echoServer.Group("")
 
 	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store)
+	s.apiService = apiV1Service
 	s.sseHub = apiV1Service.SSEHub
 
 	// Register HTTP file server routes BEFORE gRPC-Gateway to ensure proper range request handling for Safari.
@@ -133,6 +135,7 @@ func (s *Server) Shutdown(ctx context.Context) {
 
 	s.closeLongLivedConnections()
 	s.shutdownHTTPServer(ctx)
+	s.waitAPIBackgroundTasks(ctx)
 
 	// Close database connection.
 	if err := s.Store.Close(); err != nil {
@@ -140,6 +143,15 @@ func (s *Server) Shutdown(ctx context.Context) {
 	}
 
 	slog.Info("memos stopped properly")
+}
+
+func (s *Server) waitAPIBackgroundTasks(ctx context.Context) {
+	if s.apiService == nil {
+		return
+	}
+	if err := s.apiService.WaitForBackgroundTasks(ctx); err != nil {
+		slog.Error("failed to finish API background tasks", slog.String("error", err.Error()))
+	}
 }
 
 func (s *Server) closeLongLivedConnections() {

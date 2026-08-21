@@ -102,6 +102,23 @@ type UpdateMemo struct {
 	Payload    *storepb.MemoPayload
 }
 
+// MemoContentTransform updates content-derived fields on a memo and reports
+// whether the memo should be persisted. Drivers invoke it inside the database
+// transaction, so it must not perform slow or external work.
+type MemoContentTransform func(memo *Memo) (changed bool, err error)
+
+// TransformMemoContentsRequest describes an atomic, creator-scoped bulk memo
+// content transformation. ContentSubstring is an optional coarse candidate
+// filter; Transform must still decide whether an exact change is needed. Only
+// content, payload, and the shared updated timestamp are persisted.
+type TransformMemoContentsRequest struct {
+	CreatorID        int32
+	BatchSize        int
+	ContentSubstring string
+	UpdatedTs        int64
+	Transform        MemoContentTransform
+}
+
 type DeleteMemo struct {
 	ID int32
 }
@@ -115,6 +132,27 @@ func (s *Store) CreateMemo(ctx context.Context, create *Memo) (*Memo, error) {
 
 func (s *Store) ListMemos(ctx context.Context, find *FindMemo) ([]*Memo, error) {
 	return s.driver.ListMemos(ctx, find)
+}
+
+// TransformMemoContents atomically transforms one creator's memos while
+// loading content in bounded batches.
+func (s *Store) TransformMemoContents(ctx context.Context, request *TransformMemoContentsRequest) ([]int32, error) {
+	if request == nil {
+		return nil, errors.New("memo content transform request is required")
+	}
+	if request.CreatorID <= 0 {
+		return nil, errors.New("memo creator is required")
+	}
+	if request.BatchSize <= 0 {
+		return nil, errors.New("memo content transform batch size must be positive")
+	}
+	if request.UpdatedTs <= 0 {
+		return nil, errors.New("memo content transform updated timestamp is required")
+	}
+	if request.Transform == nil {
+		return nil, errors.New("memo content transform is required")
+	}
+	return s.driver.TransformMemoContents(ctx, request)
 }
 
 func (s *Store) GetMemo(ctx context.Context, find *FindMemo) (*Memo, error) {

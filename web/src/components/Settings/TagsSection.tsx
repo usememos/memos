@@ -1,8 +1,9 @@
 import { create } from "@bufbuild/protobuf";
 import { isEqual } from "lodash-es";
-import { EyeOffIcon, PaletteIcon, PlusIcon, TagIcon, TrashIcon } from "lucide-react";
+import { EyeOffIcon, PaletteIcon, PencilIcon, PlusIcon, TagIcon, TrashIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
+import RenameTagDialog from "@/components/RenameTagDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -89,6 +90,18 @@ const TagsSection = () => {
     [originalSetting.tags],
   );
   const hasChanges = !isEqual(localTags, originalMetaMap);
+
+  // Tag identities reported by the current user's memo stats, in usage-descending
+  // order. Regex metadata keys are not shown here.
+  const usedTagEntries = useMemo(
+    () =>
+      Object.entries(tagCounts)
+        .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+        .map(([name, count]) => ({ name, count })),
+    [tagCounts],
+  );
+
+  const [renamingTag, setRenamingTag] = useState<{ name: string; count: number } | null>(null);
 
   const handleColorChange = (tagName: string, hex: string) => {
     setLocalTags((prev) => ({ ...prev, [tagName]: { ...prev[tagName], color: hex } }));
@@ -277,11 +290,53 @@ const TagsSection = () => {
         </SettingList>
       </SettingGroup>
 
+      <SettingGroup title={t("setting.tags.used-tags-title")} description={t("setting.tags.used-tags-description")}>
+        <SettingList>
+          {usedTagEntries.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-2 px-4 py-8 text-center">
+              <TagIcon className="size-5 text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">{t("setting.tags.no-tags-used")}</p>
+            </div>
+          ) : (
+            usedTagEntries.map((row) => (
+              <div key={row.name} className="flex items-center justify-between gap-3 px-3 py-3">
+                <div className="flex min-w-0 flex-col gap-1">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <TagIcon className="size-4 shrink-0 text-muted-foreground" />
+                    <span className="truncate font-mono text-sm text-foreground">{row.name}</span>
+                  </div>
+                  <span className="pl-6 text-xs text-muted-foreground">{t("setting.tags.used-count", { count: row.count })}</span>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => setRenamingTag(row)} aria-label={`${t("common.rename")} ${row.name}`}>
+                  <PencilIcon className="size-4" />
+                </Button>
+              </div>
+            ))
+          )}
+        </SettingList>
+      </SettingGroup>
+
       <div className="w-full flex justify-end">
         <Button disabled={!hasChanges || !currentUser} onClick={handleSave}>
           {t("common.save")}
         </Button>
       </div>
+
+      <RenameTagDialog
+        open={renamingTag !== null}
+        onOpenChange={(open) => {
+          if (!open) setRenamingTag(null);
+        }}
+        tag={renamingTag?.name ?? ""}
+        usedCount={renamingTag?.count ?? 0}
+        onSuccess={(updatedMemoCount) =>
+          toast.success(
+            updatedMemoCount === 1
+              ? t("setting.tags.rename-success_one", { count: updatedMemoCount })
+              : t("setting.tags.rename-success_other", { count: updatedMemoCount }),
+          )
+        }
+      />
     </SettingSection>
   );
 };

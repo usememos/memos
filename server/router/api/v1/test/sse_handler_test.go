@@ -12,6 +12,7 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/stretchr/testify/require"
 
+	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/server/auth"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 )
@@ -148,4 +149,61 @@ func TestSSEHandler_Authentication(t *testing.T) {
 			t.Fatal("SSE stream did not close after hub close")
 		}
 	})
+}
+
+func TestRenameMemoTagStreamsMemoUpdatedEvent(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateRegularUser(ctx, "rename-sse-user")
+	require.NoError(t, err)
+	userCtx := ts.CreateUserContext(ctx, user.ID)
+	memo, err := ts.Service.CreateMemo(userCtx, &v1pb.CreateMemoRequest{
+		Memo: &v1pb.Memo{Content: "stream #old", Visibility: v1pb.Visibility_PRIVATE},
+	})
+	require.NoError(t, err)
+
+	token, _, err := auth.GenerateAccessTokenV2(
+		user.ID,
+		user.Username,
+		string(user.Role),
+		string(user.RowStatus),
+		[]byte(ts.Secret),
+	)
+	require.NoError(t, err)
+
+	e := echo.New()
+	apiv1.RegisterSSERoutes(e, ts.Service.SSEHub, ts.Store, ts.Secret)
+	server := httptest.NewServer(e)
+	defer server.Close()
+
+	streamCtx, cancel := context.WithTimeout(ctx, 2*time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(streamCtx, http.MethodGet, server.URL+"/api/v1/sse", nil)
+	require.NoError(t, err)
+	req.Header.Set("Authorization", "Bearer "+token)
+	resp, err := server.Client().Do(req)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	require.Equal(t, http.StatusOK, resp.StatusCode)
+
+	reader := bufio.NewReader(resp.Body)
+	line, err := reader.ReadString('\n')
+	require.NoError(t, err)
+	require.Equal(t, ": connected\n", line)
+	line, err = reader.ReadString('\n')
+	require.NoError(t, err)
+	require.Equal(t, "\n", line)
+
+	renameResp, err := ts.Service.RenameMemoTag(userCtx, &v1pb.RenameMemoTagRequest{OldTag: "old", NewTag: "new"})
+	require.NoError(t, err)
+	require.Equal(t, int32(1), renameResp.UpdatedMemoCount)
+
+	line, err = reader.ReadString('\n')
+	require.NoError(t, err)
+	require.Equal(t, "data: {\"type\":\"memo.updated\",\"name\":\""+memo.Name+"\"}\n", line)
+	line, err = reader.ReadString('\n')
+	require.NoError(t, err)
+	require.Equal(t, "\n", line)
 }
