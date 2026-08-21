@@ -33,6 +33,8 @@ export interface EditorContentProps {
   placeholder?: string;
   /** Invoked by the in-editor save shortcut (Cmd/Ctrl+Enter). */
   onSubmit: () => void;
+  /** Invoked by the in-editor focus-mode shortcut. */
+  onToggleFocusMode?: () => void;
   onFiles: (files: File[], position: number) => void;
 }
 

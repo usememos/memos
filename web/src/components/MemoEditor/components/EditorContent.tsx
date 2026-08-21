@@ -14,36 +14,39 @@ import type { EditorController } from "../types/editorController";
  * editor serializes into state.content on every change and exposes its
  * formatting capability for the focus-mode toolbar.
  */
-export const EditorContent = forwardRef<EditorController, EditorContentProps>(({ placeholder, onSubmit, onFiles }, ref) => {
-  const { actions, dispatch } = useEditorContext();
-  const content = useEditorSelector((s) => s.content);
-  const contentSource = useEditorSelector((s) => s.contentSource);
-  const isFocusMode = useEditorSelector((s) => s.ui.isFocusMode);
+export const EditorContent = forwardRef<EditorController, EditorContentProps>(
+  ({ placeholder, onSubmit, onToggleFocusMode, onFiles }, ref) => {
+    const { actions, dispatch } = useEditorContext();
+    const content = useEditorSelector((s) => s.content);
+    const contentSource = useEditorSelector((s) => s.contentSource);
+    const isFocusMode = useEditorSelector((s) => s.ui.isFocusMode);
 
-  const handleContentChange = (content: string) => {
-    dispatch(actions.updateContent(content));
-  };
+    const handleContentChange = (content: string) => {
+      dispatch(actions.updateContent(content));
+    };
 
-  const handleExternalContentApplied = (content: string) => {
-    dispatch(actions.setContent(content));
-  };
+    const handleExternalContentApplied = (content: string) => {
+      dispatch(actions.setContent(content));
+    };
 
-  return (
-    <div className="w-full flex flex-col flex-1">
-      <Editor
-        ref={ref}
-        className="memo-editor-content"
-        initialContent={content}
-        contentIsExternal={contentSource === "external"}
-        placeholder={placeholder || ""}
-        isFocusMode={isFocusMode}
-        onContentChange={handleContentChange}
-        onExternalContentApplied={handleExternalContentApplied}
-        onFiles={onFiles}
-        onSubmit={onSubmit}
-      />
-    </div>
-  );
-});
+    return (
+      <div className="w-full flex flex-col flex-1">
+        <Editor
+          ref={ref}
+          className="memo-editor-content"
+          initialContent={content}
+          contentIsExternal={contentSource === "external"}
+          placeholder={placeholder || ""}
+          isFocusMode={isFocusMode}
+          onContentChange={handleContentChange}
+          onExternalContentApplied={handleExternalContentApplied}
+          onFiles={onFiles}
+          onSubmit={onSubmit}
+          onToggleFocusMode={onToggleFocusMode}
+        />
+      </div>
+    );
+  },
+);
 
 EditorContent.displayName = "EditorContent";
