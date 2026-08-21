@@ -5,11 +5,11 @@ import { createElement, type PropsWithChildren } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { buildAttachmentLibraryStats, useAttachmentLibraryStats } from "@/hooks/useAttachmentLibrary";
 import {
+  type Attachment,
   AttachmentSchema,
   MotionMediaFamily,
   MotionMediaRole,
   MotionMediaSchema,
-  type Attachment,
 } from "@/types/proto/api/v1/attachment_service_pb";
 
 const clients = vi.hoisted(() => ({ listAttachments: vi.fn() }));

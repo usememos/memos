@@ -25,6 +25,8 @@ export interface MemoEditorProps {
   defaultCreateTime?: Date;
   onConfirm?: (memoName: string) => void;
   onCancel?: () => void;
+  /** Reports save activity so external presentations can prevent dismissal mid-transaction. */
+  onSavingChange?: (isSaving: boolean) => void;
 }
 
 export interface EditorContentProps {

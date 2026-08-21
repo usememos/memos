@@ -271,6 +271,7 @@
       "uploading-images": "正在上傳圖片 {{completed}}/{{total}}",
       "upload-file": "上傳文件"
     },
+    "new-memo": "新增備忘錄",
     "no-changes-detected": "未發現變更",
     "save": "儲存",
     "saving": "儲存中...",

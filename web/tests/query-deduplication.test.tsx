@@ -2,14 +2,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import type { PropsWithChildren, ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  MentionResolutionProvider,
-  useResolvedMentionUsernames,
-  useResolvedUser,
-} from "@/components/MemoContent/MentionResolutionContext";
+import { MentionResolutionProvider, useResolvedMentionUsernames, useResolvedUser } from "@/components/MemoContent/MentionResolutionContext";
 import { useResolvedRelationMemos } from "@/components/MemoMetadata/Relation/useResolvedRelationMemos";
 import { memoKeys } from "@/hooks/useMemoQueries";
-import { useMemoViews, useUser, userKeys, useUsersByNames, useUsersByUsernames } from "@/hooks/useUserQueries";
+import { useMemoViews, userKeys, useUser, useUsersByNames, useUsersByUsernames } from "@/hooks/useUserQueries";
 import type { Memo } from "@/types/proto/api/v1/memo_service_pb";
 import type { User } from "@/types/proto/api/v1/user_service_pb";
 

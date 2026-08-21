@@ -42,11 +42,7 @@ describe("useMemoInit", () => {
       filename: "image.png",
       type: "image/png",
     });
-    cacheService.saveNow(
-      cacheService.key("users/steven", "restored-draft"),
-      "![image](/file/attachments/image-one)",
-      [attachment],
-    );
+    cacheService.saveNow(cacheService.key("users/steven", "restored-draft"), "![image](/file/attachments/image-one)", [attachment]);
 
     render(
       <EditorProvider>

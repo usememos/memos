@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { TILE_SPRITES, pickTileSprite } from "@/components/Placeholder/tileSprites";
 import { DEFAULT_MESSAGES, type PlaceholderVariant } from "@/components/Placeholder/messages";
+import { pickTileSprite, TILE_SPRITES } from "@/components/Placeholder/tileSprites";
 
 describe("TILE_SPRITES integrity", () => {
   it("registers 32px by 32px sprite strips with animation-specific frame counts", () => {

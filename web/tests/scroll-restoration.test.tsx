@@ -50,9 +50,9 @@ describe("scroll restoration", () => {
   });
 
   it("resets new routes and restores history entries", async () => {
-    const scrollTo = vi.spyOn(window, "scrollTo").mockImplementation((xOrOptions, y) => {
-      scrollY = typeof xOrOptions === "number" ? (y ?? 0) : (xOrOptions.top ?? 0);
-    });
+    const scrollTo = vi.spyOn(window, "scrollTo").mockImplementation(((xOrOptions?: number | ScrollToOptions, y?: number) => {
+      scrollY = typeof xOrOptions === "number" ? (y ?? 0) : (xOrOptions?.top ?? 0);
+    }) as typeof window.scrollTo);
     const router = createMemoryRouter(
       [
         {

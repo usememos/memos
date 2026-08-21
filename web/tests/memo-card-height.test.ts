@@ -1,16 +1,10 @@
-import { create } from "@bufbuild/protobuf";
+import { create, type MessageInitShape } from "@bufbuild/protobuf";
 import { describe, expect, it } from "vitest";
 import { estimateMemoCardHeight } from "@/components/PagedMemoList/memoCardHeight";
-import { type Attachment, AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
-import {
-  type Memo,
-  MemoRelation_MemoSchema,
-  MemoRelation_Type,
-  MemoRelationSchema,
-  MemoSchema,
-} from "@/types/proto/api/v1/memo_service_pb";
+import { AttachmentSchema } from "@/types/proto/api/v1/attachment_service_pb";
+import { MemoRelation_MemoSchema, MemoRelation_Type, MemoRelationSchema, MemoSchema } from "@/types/proto/api/v1/memo_service_pb";
 
-const buildAttachment = (overrides: Partial<Attachment>) =>
+const buildAttachment = (overrides: MessageInitShape<typeof AttachmentSchema>) =>
   create(AttachmentSchema, {
     name: "attachments/test",
     filename: "test.bin",
@@ -25,7 +19,7 @@ const buildCommentRelation = (memoName: string, index: number) =>
     relatedMemo: create(MemoRelation_MemoSchema, { name: memoName }),
   });
 
-const buildMemo = (overrides: Partial<Memo> = {}) =>
+const buildMemo = (overrides: MessageInitShape<typeof MemoSchema> = {}) =>
   create(MemoSchema, {
     name: "memos/main",
     content: "hello",
