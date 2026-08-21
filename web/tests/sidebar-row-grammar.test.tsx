@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { HashIcon } from "lucide-react";
 import { describe, expect, it, vi } from "vitest";
 import SidebarRow, { SIDEBAR_ROW_BOX_CLASSES } from "@/components/AppSidebar/SidebarRow";
 import SidebarSection, { SIDEBAR_SECTION_CONTENT_CLASSES } from "@/components/AppSidebar/SidebarSection";
@@ -26,7 +27,7 @@ describe("sidebar row grammar", () => {
   });
 
   it("gives a nav row the shared row box", () => {
-    render(<SidebarRow icon={() => null} label="Tasks" />);
+    render(<SidebarRow icon={HashIcon} label="Tasks" />);
 
     expect(screen.getByRole("button", { name: "Tasks" })).toHaveClass(...boxClasses);
   });

@@ -36,10 +36,7 @@ describe("useInfiniteMemoComments", () => {
     const { result } = renderHook(() => useInfiniteMemoComments("memos/parent", { pageSize: 2 }), { wrapper });
 
     await waitFor(() => expect(result.current.data?.map((memo) => memo.name)).toEqual(["memos/comment-1", "memos/comment-2"]));
-    expect(listMemoComments).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({ name: "memos/parent", pageSize: 2, pageToken: "" }),
-    );
+    expect(listMemoComments).toHaveBeenNthCalledWith(1, expect.objectContaining({ name: "memos/parent", pageSize: 2, pageToken: "" }));
     expect(result.current.hasNextPage).toBe(true);
 
     await act(async () => {

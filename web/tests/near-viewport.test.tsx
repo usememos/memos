@@ -9,6 +9,7 @@ class IntersectionObserverMock implements IntersectionObserver {
   readonly root = null;
   readonly rootMargin = "";
   readonly thresholds = [];
+  readonly scrollMargin = "";
 
   constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
     intersectionCallback = callback;

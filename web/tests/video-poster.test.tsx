@@ -10,6 +10,7 @@ describe("<VideoPoster>", () => {
       readonly root = null;
       readonly rootMargin = "200px 0px";
       readonly thresholds = [0];
+      readonly scrollMargin = "";
 
       constructor(callback: IntersectionObserverCallback) {
         intersectionCallback = callback;
@@ -84,13 +85,7 @@ describe("<VideoPoster>", () => {
   });
 
   it("uses an available poster without loading the video fallback", () => {
-    render(
-      <VideoPoster
-        sourceUrl="/file/attachments/video/video.mp4"
-        posterUrl="/file/attachments/video/poster.webp"
-        alt="clip.mp4"
-      />,
-    );
+    render(<VideoPoster sourceUrl="/file/attachments/video/video.mp4" posterUrl="/file/attachments/video/poster.webp" alt="clip.mp4" />);
 
     expect(screen.getByRole("img", { name: "clip.mp4" })).toHaveAttribute("src", "/file/attachments/video/poster.webp");
     expect(screen.queryByTestId("video-poster-fallback")).not.toBeInTheDocument();

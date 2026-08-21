@@ -91,9 +91,7 @@ describe("memo views", () => {
         filters: [{ factor: "displayTime", value: "2026-08-02" }],
         includePinned: false,
       }),
-    ).toBe(
-      `created_ts >= timestamp(${Math.floor(start.getTime() / 1000)}) && created_ts < timestamp(${Math.floor(end.getTime() / 1000)})`,
-    );
+    ).toBe(`created_ts >= timestamp(${Math.floor(start.getTime() / 1000)}) && created_ts < timestamp(${Math.floor(end.getTime() / 1000)})`);
   });
 
   it("ignores invalid display-time filter values", () => {

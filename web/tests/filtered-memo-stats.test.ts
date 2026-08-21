@@ -38,7 +38,7 @@ describe("useFilteredMemoStats", () => {
     vi.mocked(useAllUserStats).mockReturnValue({
       data: [],
       isLoading: false,
-    } as ReturnType<typeof useAllUserStats>);
+    } as unknown as ReturnType<typeof useAllUserStats>);
     vi.mocked(useUserStats).mockReturnValue({
       data: {
         memoCreatedTimestamps: [ts(2026, 5, 1), ts(2026, 5, 1), ts(2026, 5, 2)],
@@ -46,7 +46,7 @@ describe("useFilteredMemoStats", () => {
         tagCount: {},
       },
       isLoading: false,
-    } as ReturnType<typeof useUserStats>);
+    } as unknown as ReturnType<typeof useUserStats>);
   });
 
   afterEach(() => {
@@ -91,7 +91,7 @@ describe("useFilteredMemoStats", () => {
         tagCount: {},
       },
       isLoading: false,
-    } as ReturnType<typeof useUserStats>);
+    } as unknown as ReturnType<typeof useUserStats>);
     mockUseView.mockReturnValue({
       timeBasis: "update_time",
       orderByTimeAsc: false,

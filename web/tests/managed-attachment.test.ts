@@ -39,11 +39,7 @@ describe("managed attachment Markdown", () => {
   });
 
   it("uses the first duplicate reference definition like Goldmark", () => {
-    const content = [
-      "![photo][asset]",
-      "[asset]: /file/attachments/first-image",
-      "[asset]: /file/attachments/second-image",
-    ].join("\n\n");
+    const content = ["![photo][asset]", "[asset]: /file/attachments/first-image", "[asset]: /file/attachments/second-image"].join("\n\n");
 
     expect(Array.from(extractManagedAttachmentUIDs(content))).toEqual(["first-image"]);
   });

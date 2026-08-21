@@ -1,4 +1,3 @@
-import { create } from "@bufbuild/protobuf";
 import { describe, expect, it } from "vitest";
 import { pairAppleLivePhotoFiles } from "@/components/MemoEditor/hooks";
 import { splitInlineLocalFiles } from "@/components/MemoEditor/hooks/useInlineImageUpload";

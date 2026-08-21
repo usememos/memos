@@ -15,9 +15,7 @@ describe("media loading", () => {
 
   it("does not bind an audio source until playback is requested", async () => {
     const play = vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue();
-    const { container } = render(
-      <AudioAttachmentItem filename="recording.mp3" sourceUrl="/recording.mp3" mimeType="audio/mpeg" />,
-    );
+    const { container } = render(<AudioAttachmentItem filename="recording.mp3" sourceUrl="/recording.mp3" mimeType="audio/mpeg" />);
     const audio = container.querySelector("audio");
 
     expect(audio).not.toHaveAttribute("src");

@@ -17,7 +17,7 @@ beforeAll(() => {
   Element.prototype.releasePointerCapture = vi.fn();
 });
 
-function makeController(opts: { active?: Partial<ActiveFormatState>; getSelectedText?: () => string } = {}) {
+function makeController(opts: { active?: Partial<ActiveFormatState> } = {}) {
   const run = vi.fn();
   const activeFormats: ActiveFormatState = { ...EMPTY_ACTIVE_FORMATS, ...opts.active };
   const controller: EditorController = {
@@ -31,10 +31,13 @@ function makeController(opts: { active?: Partial<ActiveFormatState>; getSelected
     setCursor: vi.fn(),
     scrollToCursor: () => {},
     selectAll: () => {},
+    createUploadAnchor: vi.fn(),
+    updateUploadAnchor: vi.fn(),
+    resolveUploadAnchor: vi.fn(),
+    cancelUploadAnchor: vi.fn(),
     formatting: {
       run,
       getActiveFormats: () => activeFormats,
-      getSelectedText: opts.getSelectedText ?? (() => ""),
       subscribe: () => () => {},
     },
   };

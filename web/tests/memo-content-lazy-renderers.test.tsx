@@ -90,9 +90,7 @@ describe("memo content lazy renderers", () => {
   });
 
   it("escapes plain code and highlights common languages", async () => {
-    expect(await highlightCode('<script data-test="x">&</script>', "")).toBe(
-      "&lt;script data-test=&quot;x&quot;&gt;&amp;&lt;/script&gt;",
-    );
+    expect(await highlightCode('<script data-test="x">&</script>', "")).toBe("&lt;script data-test=&quot;x&quot;&gt;&amp;&lt;/script&gt;");
     expect(await highlightCode("echo hello", "bash")).toContain("hljs-built_in");
     expect(await highlightCode("const value = 1;", "js")).toContain("hljs-keyword");
   });

@@ -14,16 +14,7 @@ vi.mock("@/hooks/useUserQueries", () => ({
 
 describe("Editor", () => {
   it("scopes tag autocomplete stats to the current user", () => {
-    render(
-      <Editor
-        className="x"
-        initialContent=""
-        placeholder="memo"
-        onContentChange={vi.fn()}
-        onFiles={vi.fn()}
-        onSubmit={vi.fn()}
-      />,
-    );
+    render(<Editor className="x" initialContent="" placeholder="memo" onContentChange={vi.fn()} onFiles={vi.fn()} onSubmit={vi.fn()} />);
 
     expect(queries.useTagCounts).toHaveBeenCalledWith(true);
   });

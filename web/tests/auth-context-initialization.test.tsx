@@ -57,9 +57,7 @@ describe("AuthProvider initialization", () => {
   it("resets full readiness while post-sign-in settings are pending", async () => {
     let resolveSettings!: (value: { settings: [] }) => void;
     clients.getCurrentUser.mockResolvedValue({ user: { name: "users/alice", username: "alice" } });
-    clients.listUserSettings.mockImplementation(
-      () => new Promise<{ settings: [] }>((resolve) => (resolveSettings = resolve)),
-    );
+    clients.listUserSettings.mockImplementation(() => new Promise<{ settings: [] }>((resolve) => (resolveSettings = resolve)));
 
     render(<Probe />, { wrapper });
 
