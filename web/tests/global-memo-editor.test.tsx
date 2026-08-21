@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useState } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { MemoEditorProps } from "@/components/MemoEditor/types";
@@ -188,6 +188,61 @@ describe("GlobalMemoEditorProvider", () => {
 
     expect(mocks.loadMemoEditor).not.toHaveBeenCalled();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("invalidates a pending open request across sign-out and same-user sign-in", async () => {
+    let resolveEditorLoad!: (module: { default: typeof MockMemoEditor }) => void;
+    mocks.loadMemoEditor.mockReturnValue(
+      new Promise((resolve) => {
+        resolveEditorLoad = resolve;
+      }),
+    );
+    const view = renderProvider();
+
+    fireEvent.click(screen.getByRole("button", { name: "Open editor" }));
+    expect(mocks.loadMemoEditor).toHaveBeenCalledOnce();
+
+    mocks.currentUser = undefined;
+    view.rerender(
+      <GlobalMemoEditorProvider>
+        <Trigger />
+      </GlobalMemoEditorProvider>,
+    );
+    mocks.currentUser = { name: "users/test" };
+    view.rerender(
+      <GlobalMemoEditorProvider>
+        <Trigger />
+      </GlobalMemoEditorProvider>,
+    );
+
+    await act(async () => {
+      resolveEditorLoad({ default: MockMemoEditor });
+    });
+
+    expect(screen.queryByRole("dialog", DIALOG)).not.toBeInTheDocument();
+  });
+
+  it("does not resurrect an open composer after the same user signs out and back in", async () => {
+    const view = renderProvider();
+    fireEvent.click(screen.getByRole("button", { name: "Open editor" }));
+    await screen.findByRole("dialog", DIALOG);
+
+    mocks.currentUser = undefined;
+    view.rerender(
+      <GlobalMemoEditorProvider>
+        <Trigger />
+      </GlobalMemoEditorProvider>,
+    );
+    await expectClosed();
+
+    mocks.currentUser = { name: "users/test" };
+    view.rerender(
+      <GlobalMemoEditorProvider>
+        <Trigger />
+      </GlobalMemoEditorProvider>,
+    );
+
+    expect(screen.queryByRole("dialog", DIALOG)).not.toBeInTheDocument();
   });
 
   it("does not assign a global Compose shortcut", () => {

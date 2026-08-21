@@ -78,7 +78,7 @@ A reducer (`state/reducer.ts`) drives an **external store**, not a `useReducer` 
 
 `createUploadAnchor`/`updateUploadAnchor`/`resolveUploadAnchor`/`cancelUploadAnchor` drive `Editor/uploadAnchors.ts`, a `StateField` of widget decorations that hold a place in the document while an attachment uploads and carry its progress, failure message, and retry/keep affordances. `resolveUploadAnchor` replaces the anchor with the finished markdown (block-padded the same way `insertMarkdown` is); resolving with empty markdown cancels instead, as does `cancelUploadAnchor`.
 
-`FormattingController` (same file in `types/`) is the rich-formatting surface the focus-mode `FormattingToolbar` drives: `run(commandId, ctx?)`, `getActiveFormats()`, and `subscribe(listener)`. `Editor/formatting.ts` implements it by editing the markdown source directly — toggling inline marks (`**`/`*`/`` ` ``), line prefixes (`- `, `1. `, `- [ ] `), and ATX heading prefixes (`#`…) — and by reading active state from the Lezer syntax tree at the caret.
+`FormattingController` (same file in `types/`) is the rich-formatting surface the focus-mode `FormattingToolbar` drives: `run(commandId, ctx?)`, `getActiveFormats()`, and `subscribe(listener)`. `Editor/formatting.ts` implements it by editing the markdown source directly — toggling inline marks (`**` and `*`) and single-backtick code delimiters, line prefixes (`-`, `1.`, and `- [ ]`, each followed by a space), and ATX heading prefixes (`#`…) — and by reading active state from the Lezer syntax tree at the caret.
 
 ### Formatting command catalog
 

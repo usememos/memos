@@ -1,5 +1,5 @@
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
-import { type ComponentType, createContext, type ReactNode, useCallback, useContext, useMemo, useRef, useState } from "react";
+import { type ComponentType, createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { loadMemoEditor } from "@/components/MemoEditor/loader";
 import type { MemoEditorProps } from "@/components/MemoEditor/types";
 import { VisuallyHidden } from "@/components/ui/visually-hidden";
@@ -45,8 +45,10 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
   // re-rendering the provider and the whole editor tree it hosts.
   const isSavingRef = useRef(false);
   const returnFocusRef = useRef<HTMLElement | null>(null);
+  const openRequestVersionRef = useRef(0);
 
   const closeEditor = useCallback(() => {
+    openRequestVersionRef.current += 1;
     isSavingRef.current = false;
     setOpenedFor(undefined);
   }, []);
@@ -62,23 +64,33 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
   const canOpen = Boolean(currentUserName) && isUserSettingsInitialized;
 
   const openEditor = useCallback(() => {
-    if (!canOpen) return;
+    if (!canOpen || !currentUserName) return;
 
     // Owned here so no caller can leave a sidebar surface open underneath.
     setMobileOpen(false);
     setQuickFindOpen(false);
 
+    const requestVersion = ++openRequestVersionRef.current;
     isSavingRef.current = false;
     const activeElement = document.activeElement;
     returnFocusRef.current = activeElement instanceof HTMLElement && activeElement !== document.body ? activeElement : null;
 
     void loadMemoEditor()
       .then(({ default: MemoEditor }) => {
+        if (openRequestVersionRef.current !== requestVersion) return;
         setEditorComponent(() => MemoEditor);
         setOpenedFor(currentUserName);
       })
       .catch(() => undefined);
   }, [canOpen, currentUserName, setMobileOpen, setQuickFindOpen]);
+
+  useEffect(() => {
+    // RootLayout remains mounted when a public instance moves from Home to
+    // Explore on sign-out. Treat every auth/readiness transition as a session
+    // boundary so an open composer—or a pending lazy import—cannot survive it.
+    closeEditor();
+    returnFocusRef.current = null;
+  }, [closeEditor, currentUserName, isUserSettingsInitialized]);
 
   const resolveFinalFocus = useCallback(() => {
     // Release the remembered node here rather than in closeEditor: base-ui asks
@@ -103,7 +115,11 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
             eventDetails.cancel();
             return;
           }
-          setOpenedFor(open ? currentUserName : undefined);
+          if (open) {
+            setOpenedFor(currentUserName);
+          } else {
+            closeEditor();
+          }
         }}
       >
         {EditorComponent && (
