@@ -22,5 +22,3 @@ JOIN memo ON reaction.content_id = 'memos/' || memo.uid;
 
 DROP TABLE reaction;
 ALTER TABLE reaction_new RENAME TO reaction;
-
-CREATE INDEX idx_reaction_memo_id ON reaction(memo_id, id);

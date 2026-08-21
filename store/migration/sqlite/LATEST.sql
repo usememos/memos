@@ -98,8 +98,6 @@ CREATE TABLE reaction (
   UNIQUE(creator_id, memo_id, reaction_type)
 );
 
-CREATE INDEX idx_reaction_memo_id ON reaction(memo_id, id);
-
 -- memo_share
 CREATE TABLE memo_share (
   id         INTEGER PRIMARY KEY AUTOINCREMENT,

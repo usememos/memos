@@ -15,5 +15,3 @@ ALTER TABLE reaction
   DROP COLUMN content_id,
   ALTER COLUMN memo_id SET NOT NULL,
   ADD UNIQUE (creator_id, memo_id, reaction_type);
-
-CREATE INDEX idx_reaction_memo_id ON reaction(memo_id, id);

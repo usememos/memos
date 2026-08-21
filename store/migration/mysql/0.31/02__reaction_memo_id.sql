@@ -7,8 +7,7 @@ CREATE TABLE `reaction_new` (
   `creator_id` INT NOT NULL,
   `memo_id` INT NOT NULL,
   `reaction_type` VARCHAR(256) NOT NULL,
-  UNIQUE(`creator_id`, `memo_id`, `reaction_type`),
-  INDEX `idx_reaction_memo_id` (`memo_id`, `id`)
+  UNIQUE(`creator_id`, `memo_id`, `reaction_type`)
 );
 
 INSERT INTO `reaction_new` (`id`, `created_ts`, `creator_id`, `memo_id`, `reaction_type`)
