@@ -20,6 +20,7 @@ import {
   PaperclipIcon,
   PlusIcon,
   SearchIcon,
+  SquarePenIcon,
   Trash2Icon,
   UserRoundIcon,
 } from "lucide-react";
@@ -39,6 +40,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { memoViewServiceClient } from "@/connect";
 import { type AttachmentSection, type InboxFilter, useAppSidebar } from "@/contexts/AppSidebarContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useGlobalMemoEditor } from "@/contexts/GlobalMemoEditorContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import { stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import { useAttachmentLibraryStats } from "@/hooks/useAttachmentLibrary";
@@ -72,6 +74,32 @@ import SidebarSection, {
 import TagsSection from "./TagsSection";
 
 const SIDEBAR_HORIZONTAL_PADDING = "px-3";
+const SIDEBAR_HEADER_ACTION_CLASSES = "size-7 shrink-0 rounded-md text-muted-foreground hover:text-foreground";
+
+const NewMemoAction = ({ onClick }: { onClick: () => void }) => {
+  const t = useTranslate();
+  const label = t("editor.new-memo");
+
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className={SIDEBAR_HEADER_ACTION_CLASSES}
+            onClick={onClick}
+            aria-label={label}
+            data-new-memo-trigger
+          />
+        }
+      >
+        <SquarePenIcon className="size-4" strokeWidth={1.8} />
+      </TooltipTrigger>
+      <TooltipContent side="bottom">{label}</TooltipContent>
+    </Tooltip>
+  );
+};
 
 const ViewsSection = ({ manageActive = false }: { manageActive?: boolean }) => {
   const t = useTranslate();
@@ -604,6 +632,7 @@ const AppSidebar = ({ className }: { className?: string }) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const { setMobileOpen, setQuickFindOpen } = useAppSidebar();
+  const { canOpen: canCompose, openEditor } = useGlobalMemoEditor();
   return (
     <aside className={cn("flex h-full w-full select-none flex-col bg-sidebar text-sidebar-foreground", className)}>
       <div className={cn("flex h-13 shrink-0 items-center justify-between gap-2", SIDEBAR_HORIZONTAL_PADDING)}>
@@ -613,18 +642,21 @@ const AppSidebar = ({ className }: { className?: string }) => {
         >
           <MemosLogo compact />
         </Link>
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          className="size-7 shrink-0 rounded-md text-muted-foreground hover:text-foreground"
-          onClick={() => {
-            setMobileOpen(false);
-            setQuickFindOpen(true);
-          }}
-          aria-label={t("common.search")}
-        >
-          <SearchIcon className="size-4" strokeWidth={1.8} />
-        </Button>
+        <div className="flex shrink-0 items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            className={SIDEBAR_HEADER_ACTION_CLASSES}
+            onClick={() => {
+              setMobileOpen(false);
+              setQuickFindOpen(true);
+            }}
+            aria-label={t("common.search")}
+          >
+            <SearchIcon className="size-4" strokeWidth={1.8} />
+          </Button>
+          {canCompose && <NewMemoAction onClick={openEditor} />}
+        </div>
       </div>
       <GlobalNavigation />
       <div className="mx-3 mt-2 border-t border-border/70" />
@@ -660,7 +692,14 @@ export const MobileAppHeader = () => {
   const { setMobileOpen } = useAppSidebar();
   return (
     <header className="sticky top-0 z-20 flex h-12 w-full items-center justify-start gap-1 border-b border-border/70 bg-background/90 px-2 backdrop-blur-md md:hidden">
-      <Button variant="ghost" size="icon-sm" className="size-8" onClick={() => setMobileOpen(true)} aria-label="Open navigation">
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        className="size-8"
+        onClick={() => setMobileOpen(true)}
+        aria-label="Open navigation"
+        data-mobile-navigation-trigger
+      >
         <MenuIcon className="size-[18px]" />
       </Button>
       <Link

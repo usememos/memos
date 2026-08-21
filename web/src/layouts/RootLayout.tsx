@@ -10,6 +10,7 @@ import AppSidebar, {
   useSidebarWidth,
 } from "@/components/AppSidebar";
 import { AppSidebarProvider } from "@/contexts/AppSidebarContext";
+import { GlobalMemoEditorProvider } from "@/contexts/GlobalMemoEditorContext";
 import { useInstance } from "@/contexts/InstanceContext";
 import { MemoFilterProvider, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -67,35 +68,37 @@ const RootLayoutContent = () => {
   }
 
   return (
-    <AppSidebarProvider>
-      <div ref={shellRef} className="min-h-full w-full bg-background" style={{ [SIDEBAR_WIDTH_VAR]: `${sidebarWidth}px` } as CSSProperties}>
-        {md && (
-          <div className="fixed inset-y-0 start-0 z-30 w-(--app-sidebar-width) border-e border-border/70">
-            <AppSidebar />
-            <SidebarResizeHandle
-              width={sidebarWidth}
-              minWidth={minWidth}
-              maxWidth={maxWidth}
-              onWidthChange={setSidebarWidth}
-              targetRef={shellRef}
-            />
-          </div>
-        )}
-        <MobileAppSidebar />
-        <main className="flex min-h-full w-full min-w-0 flex-col items-center md:ps-(--app-sidebar-width)">
-          <MobileAppHeader />
-          {profile.demo && <DemoBanner />}
-          <Outlet />
-        </main>
-        <QuickFindDialog />
-      </div>
-    </AppSidebarProvider>
+    <div ref={shellRef} className="min-h-full w-full bg-background" style={{ [SIDEBAR_WIDTH_VAR]: `${sidebarWidth}px` } as CSSProperties}>
+      {md && (
+        <div className="fixed inset-y-0 start-0 z-30 w-(--app-sidebar-width) border-e border-border/70">
+          <AppSidebar />
+          <SidebarResizeHandle
+            width={sidebarWidth}
+            minWidth={minWidth}
+            maxWidth={maxWidth}
+            onWidthChange={setSidebarWidth}
+            targetRef={shellRef}
+          />
+        </div>
+      )}
+      <MobileAppSidebar />
+      <main className="flex min-h-full w-full min-w-0 flex-col items-center md:ps-(--app-sidebar-width)">
+        <MobileAppHeader />
+        {profile.demo && <DemoBanner />}
+        <Outlet />
+      </main>
+      <QuickFindDialog />
+    </div>
   );
 };
 
 const RootLayout = () => (
   <MemoFilterProvider>
-    <RootLayoutContent />
+    <AppSidebarProvider>
+      <GlobalMemoEditorProvider>
+        <RootLayoutContent />
+      </GlobalMemoEditorProvider>
+    </AppSidebarProvider>
   </MemoFilterProvider>
 );
 

@@ -269,6 +269,7 @@
       "uploading-images": "Uploading images {{completed}}/{{total}}",
       "upload-file": "Upload file"
     },
+    "new-memo": "New memo",
     "no-changes-detected": "No changes detected",
     "save": "Save",
     "saving": "Saving...",
