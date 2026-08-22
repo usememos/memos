@@ -458,6 +458,12 @@ A rolling deployment can temporarily run old and new configuration generations a
 cache invalidation for this process-local configuration. Deployments changing authentication or storage configuration should use a rollout strategy that
 does not route traffic to replicas with different file generations, and readiness must be reported only after the new snapshot validates successfully.
 
+Crossing the version boundary that introduced `ACCESS` requires a coordinated rollout. Older replicas ignore `ACCESS` and continue using the legacy
+rule in which a nonempty instance URL permits anonymous access. Drain all older replicas before changing `ACCESS` or routing traffic to replicas whose
+policy differs from that legacy rule; do not serve traffic from old and new replicas with different effective access policies. Before rolling back,
+make the legacy instance URL rule match the intended policy—nonempty for public or empty for private—then drain the newer replicas and complete the
+rollback. Otherwise, an older replica can expose an instance whose stored `ACCESS` policy is `PRIVATE` but whose instance URL is nonempty.
+
 Because file-backed settings bypass the database setting cache, a replica cannot replace a deployment value with a stale cached database value.
 
 ## Database and migration impact

@@ -7,6 +7,25 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+func (d *DB) CreateInstanceSettingIfNotExists(ctx context.Context, create *store.InstanceSetting) (bool, error) {
+	stmt := `
+		INSERT INTO system_setting (
+			name, value, description
+		)
+		VALUES (?, ?, ?)
+		ON CONFLICT(name) DO NOTHING
+	`
+	result, err := d.db.ExecContext(ctx, stmt, create.Name, create.Value, create.Description)
+	if err != nil {
+		return false, err
+	}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+	return rowsAffected == 1, nil
+}
+
 func (d *DB) UpsertInstanceSetting(ctx context.Context, upsert *store.InstanceSetting) (*store.InstanceSetting, error) {
 	stmt := `
 		INSERT INTO system_setting (

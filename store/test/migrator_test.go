@@ -14,7 +14,20 @@ import (
 	"github.com/usememos/memos/internal/testutil/minio"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
+	storedb "github.com/usememos/memos/store/db"
 )
+
+type delayedInstanceSettingCreateDriver struct {
+	store.Driver
+	entered chan<- struct{}
+	release <-chan struct{}
+}
+
+func (d *delayedInstanceSettingCreateDriver) CreateInstanceSettingIfNotExists(ctx context.Context, create *store.InstanceSetting) (bool, error) {
+	d.entered <- struct{}{}
+	<-d.release
+	return d.Driver.CreateInstanceSettingIfNotExists(ctx, create)
+}
 
 // TestFreshInstall verifies that LATEST.sql applies correctly on a fresh database.
 // This is essentially what NewTestingStore already does, but we make it explicit.
@@ -113,6 +126,76 @@ func TestMigrationMultipleReRuns(t *testing.T) {
 	finalVersion, err := ts.GetCurrentSchemaVersion()
 	require.NoError(t, err)
 	require.Equal(t, initialVersion, finalVersion, "version should remain unchanged after multiple re-runs")
+}
+
+func TestConcurrentInstanceAccessInitializationKeepsFirstInsert(t *testing.T) {
+	ctx := context.Background()
+	driverName := getDriverFromEnv()
+	baseProfile := getTestingProfileForDriver(t, driverName)
+
+	baseDriver, err := storedb.NewDBDriver(baseProfile)
+	require.NoError(t, err)
+	baseStore := store.New(baseDriver, baseProfile)
+	require.NoError(t, baseStore.Migrate(ctx))
+	require.NoError(t, baseStore.DeleteInstanceSetting(ctx, &store.DeleteInstanceSetting{
+		Name: storepb.InstanceSettingKey_ACCESS.String(),
+	}))
+	require.NoError(t, baseStore.Close())
+
+	publicProfile := *baseProfile
+	publicProfile.InstanceURL = "https://public.example.com"
+	publicDriver, err := storedb.NewDBDriver(&publicProfile)
+	require.NoError(t, err)
+	entered := make(chan struct{}, 1)
+	release := make(chan struct{})
+	delayedPublicDriver := &delayedInstanceSettingCreateDriver{
+		Driver:  publicDriver,
+		entered: entered,
+		release: release,
+	}
+	publicStore := store.New(delayedPublicDriver, &publicProfile)
+	defer publicStore.Close()
+
+	privateProfile := *baseProfile
+	privateProfile.InstanceURL = ""
+	privateDriver, err := storedb.NewDBDriver(&privateProfile)
+	require.NoError(t, err)
+	privateStore := store.New(privateDriver, &privateProfile)
+	defer privateStore.Close()
+
+	publicMigration := make(chan error, 1)
+	go func() {
+		publicMigration <- publicStore.Migrate(ctx)
+	}()
+	<-entered
+	released := false
+	defer func() {
+		if !released {
+			close(release)
+		}
+	}()
+
+	// The private instance reaches the database first. The delayed public
+	// initializer must lose the unique-key race without overwriting it.
+	require.NoError(t, privateStore.Migrate(ctx))
+	close(release)
+	released = true
+	require.NoError(t, <-publicMigration)
+
+	setting, err := privateStore.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{
+		Name: storepb.InstanceSettingKey_ACCESS.String(),
+	})
+	require.NoError(t, err)
+	require.NotNil(t, setting)
+	require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, setting.GetAccessSetting().AccessMode)
+
+	// Re-running either initializer is also a no-op once ACCESS is persisted.
+	require.NoError(t, publicStore.Migrate(ctx))
+	setting, err = publicStore.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{
+		Name: storepb.InstanceSettingKey_ACCESS.String(),
+	})
+	require.NoError(t, err)
+	require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, setting.GetAccessSetting().AccessMode)
 }
 
 // TestMigrationStorageSetting verifies that the legacy singleton storage

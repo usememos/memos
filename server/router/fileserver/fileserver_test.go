@@ -808,15 +808,17 @@ func TestServeUserAvatar_PrivateInstanceRequiresAuth(t *testing.T) {
 	e := echo.New()
 	fs.RegisterRoutes(e)
 
-	anonymousGet := func() int {
+	anonymousGet := func() *httptest.ResponseRecorder {
 		rec := httptest.NewRecorder()
 		e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/file/users/avatar-owner/avatar", nil))
-		return rec.Code
+		return rec
 	}
 
 	// Open instance: anonymous avatar access is allowed.
 	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
-	require.Equal(t, http.StatusOK, anonymousGet())
+	publicRec := anonymousGet()
+	require.Equal(t, http.StatusOK, publicRec.Code)
+	require.Equal(t, cacheMaxAge, publicRec.Header().Get(echo.HeaderCacheControl))
 
 	// A stale browser session must not turn a public avatar request into an
 	// authentication error.
@@ -829,7 +831,24 @@ func TestServeUserAvatar_PrivateInstanceRequiresAuth(t *testing.T) {
 
 	// Private instance: anonymous avatar access is denied.
 	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE)
-	require.Equal(t, http.StatusUnauthorized, anonymousGet())
+	require.Equal(t, http.StatusUnauthorized, anonymousGet().Code)
+
+	// An authenticated private-instance response must not be stored by shared
+	// or browser caches.
+	tokenID := util.GenUUID()
+	require.NoError(t, stores.AddUserRefreshToken(ctx, owner.ID, &storepb.RefreshTokensUserSetting_RefreshToken{
+		TokenId:   tokenID,
+		ExpiresAt: timestamppb.New(time.Now().Add(auth.RefreshTokenDuration)),
+		CreatedAt: timestamppb.Now(),
+	}))
+	refreshToken, _, err := auth.GenerateRefreshToken(owner.ID, tokenID, []byte(svc.Secret))
+	require.NoError(t, err)
+	privateReq := httptest.NewRequest(http.MethodGet, "/file/users/avatar-owner/avatar", nil)
+	privateReq.AddCookie(&http.Cookie{Name: auth.RefreshTokenCookieName, Value: refreshToken})
+	privateRec := httptest.NewRecorder()
+	e.ServeHTTP(privateRec, privateReq)
+	require.Equal(t, http.StatusOK, privateRec.Code)
+	require.Equal(t, privateAttachmentCacheControl, privateRec.Header().Get(echo.HeaderCacheControl))
 }
 
 // TestServeAttachmentFile_RefreshCookieAuthenticatesOwner verifies that the file

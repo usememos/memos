@@ -173,9 +173,11 @@ func (s *FileServerService) serveUserAvatar(c *echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get instance access policy").Wrap(err)
 	}
+	cacheControl := cacheMaxAge
 	// On a private instance, avatars are not exposed to anonymous visitors; a
 	// valid session, access token, or PAT is required.
 	if !allowAnonymous {
+		cacheControl = privateAttachmentCacheControl
 		viewer, err := s.getCurrentUser(ctx, c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").Wrap(err)
@@ -208,7 +210,7 @@ func (s *FileServerService) serveUserAvatar(c *echo.Context) error {
 	}
 
 	setSecurityHeaders(c)
-	c.Response().Header().Set(echo.HeaderCacheControl, cacheMaxAge)
+	c.Response().Header().Set(echo.HeaderCacheControl, cacheControl)
 
 	return c.Blob(http.StatusOK, imageType, imageData)
 }

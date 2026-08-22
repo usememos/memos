@@ -53,6 +53,7 @@ type RSSHeading struct {
 	Language    string
 }
 
+// NewRSSService creates an RSS service backed by the store and markdown renderer.
 func NewRSSService(store *store.Store, markdownService markdown.Service) *RSSService {
 	return &RSSService{
 		Store:           store,

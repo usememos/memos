@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"testing"
 
@@ -183,6 +184,61 @@ func TestInstanceAccessSetting(t *testing.T) {
 	allowsAnonymous, err = ts.AllowsAnonymousAccess(ctx)
 	require.NoError(t, err)
 	require.True(t, allowsAnonymous)
+}
+
+func TestCreateInstanceSettingIfNotExistsIsFirstWriterWins(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	const candidateCount = 16
+	type result struct {
+		value   string
+		created bool
+		err     error
+	}
+	start := make(chan struct{})
+	results := make(chan result, candidateCount)
+	for i := 0; i < candidateCount; i++ {
+		value := fmt.Sprintf("candidate-%02d", i)
+		go func() {
+			<-start
+			created, err := ts.GetDriver().CreateInstanceSettingIfNotExists(ctx, &store.InstanceSetting{
+				Name:  "ATOMIC_CREATE_TEST",
+				Value: value,
+			})
+			results <- result{value: value, created: created, err: err}
+		}()
+	}
+	close(start)
+
+	winner := ""
+	for range candidateCount {
+		result := <-results
+		require.NoError(t, result.err)
+		if result.created {
+			require.Empty(t, winner, "only one concurrent insert may create the setting")
+			winner = result.value
+		}
+	}
+	require.NotEmpty(t, winner, "one concurrent insert must create the setting")
+
+	settings, err := ts.GetDriver().ListInstanceSettings(ctx, &store.FindInstanceSetting{Name: "ATOMIC_CREATE_TEST"})
+	require.NoError(t, err)
+	require.Len(t, settings, 1)
+	require.Equal(t, winner, settings[0].Value, "the database must retain the first inserted value")
+
+	created, err := ts.GetDriver().CreateInstanceSettingIfNotExists(ctx, &store.InstanceSetting{
+		Name:  "ATOMIC_CREATE_TEST",
+		Value: "must-not-overwrite",
+	})
+	require.NoError(t, err)
+	require.False(t, created)
+	settings, err = ts.GetDriver().ListInstanceSettings(ctx, &store.FindInstanceSetting{Name: "ATOMIC_CREATE_TEST"})
+	require.NoError(t, err)
+	require.Len(t, settings, 1)
+	require.Equal(t, winner, settings[0].Value, "a later insert attempt must not overwrite the persisted value")
 }
 
 func TestInstanceSettingMemoRelatedSetting(t *testing.T) {

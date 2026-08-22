@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import InstanceSection from "@/components/Settings/InstanceSection";
-import { InstanceAccessMode, InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
+import { InstanceAccessMode } from "@/types/proto/api/v1/instance_service_pb";
 
 const instance = vi.hoisted(() => ({
   accessSetting: { accessMode: 1 },
@@ -56,6 +56,6 @@ describe("<InstanceSection> access setting", () => {
     expect(setting.name).toBe("instance/settings/ACCESS");
     expect(setting.value.case).toBe("accessSetting");
     expect(setting.value.value.accessMode).toBe(InstanceAccessMode.PUBLIC);
-    expect(instance.fetchSetting).toHaveBeenCalledWith(InstanceSetting_Key.ACCESS);
+    expect(instance.fetchSetting).not.toHaveBeenCalled();
   });
 });

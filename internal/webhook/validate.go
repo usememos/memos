@@ -12,9 +12,10 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// reservedNetworks lists IP ranges that must never be targeted by outbound webhook requests.
-// Covers loopback, RFC-1918 private, link-local (including cloud IMDS at 169.254.169.254),
-// and their IPv6 equivalents.
+// reservedNetworks lists IP ranges blocked by default for outbound webhook requests.
+// Explicit allowlist entries or the deprecated blanket override may permit them. The
+// ranges cover loopback, RFC-1918 private, link-local (including cloud IMDS at
+// 169.254.169.254), and their IPv6 equivalents.
 var reservedNetworks = []netip.Prefix{
 	netip.MustParsePrefix("127.0.0.0/8"),    // IPv4 loopback
 	netip.MustParsePrefix("10.0.0.0/8"),     // RFC-1918 class A

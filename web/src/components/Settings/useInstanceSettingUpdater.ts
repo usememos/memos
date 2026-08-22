@@ -22,7 +22,11 @@ const useInstanceSettingUpdater = () => {
     async ({ key, setting, errorContext, showSuccessToast = true }: SaveInstanceSettingOptions) => {
       try {
         await updateSetting(setting);
-        await fetchSetting(key);
+        // ACCESS is updated in the React Query cache from the mutation response.
+        // Refetching it here would duplicate the request after every save.
+        if (key !== InstanceSetting_Key.ACCESS) {
+          await fetchSetting(key);
+        }
         if (showSuccessToast) {
           toast.success(t("message.update-succeed"));
         }

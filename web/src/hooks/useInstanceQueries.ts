@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { instanceServiceClient } from "@/connect";
-import { InstanceSetting, InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
+import { InstanceSetting, InstanceSetting_AccessSetting, InstanceSetting_Key } from "@/types/proto/api/v1/instance_service_pb";
 
 // Query keys factory
 export const instanceKeys = {
@@ -72,26 +72,36 @@ export function useUpdateInstanceSetting() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (setting: InstanceSetting) => {
-      await instanceServiceClient.updateInstanceSetting({ setting });
-      return setting;
-    },
-    onSuccess: (setting) => {
-      // Extract key from setting name and invalidate
+    mutationFn: async (setting: InstanceSetting) => instanceServiceClient.updateInstanceSetting({ setting }),
+    onSuccess: async (setting) => {
+      // Update the exact setting cache from the server response. Batch caches
+      // are marked stale without refetching so an active setting query does not
+      // issue a duplicate request immediately after a successful mutation.
       const keyMatch = setting.name.match(/instance\/settings\/(\w+)/);
       if (keyMatch) {
         const keyName = keyMatch[1] as keyof typeof InstanceSetting_Key;
         const key = InstanceSetting_Key[keyName];
         if (key !== undefined) {
+          await queryClient.cancelQueries({ queryKey: instanceKeys.setting(key), exact: true });
           queryClient.setQueryData(instanceKeys.setting(key), setting);
         }
       }
-      queryClient.invalidateQueries({ queryKey: instanceKeys.settings() });
+      void queryClient.invalidateQueries({
+        predicate: (query) => query.queryKey[0] === "instance" && query.queryKey[1] === "settings" && query.queryKey[2] === "batch",
+        refetchType: "none",
+      });
     },
   });
 }
 
 // Derived hooks for common settings
+export function useAccessSetting() {
+  const { data: setting, ...rest } = useInstanceSetting(InstanceSetting_Key.ACCESS);
+  const accessSetting: InstanceSetting_AccessSetting | undefined =
+    setting?.value.case === "accessSetting" ? setting.value.value : undefined;
+  return { data: accessSetting, ...rest };
+}
+
 export function useGeneralSetting() {
   const { data: setting, ...rest } = useInstanceSetting(InstanceSetting_Key.GENERAL);
   const generalSetting = setting?.value.case === "generalSetting" ? setting.value.value : undefined;
