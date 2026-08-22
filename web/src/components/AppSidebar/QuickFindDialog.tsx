@@ -5,19 +5,28 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useAppSidebar } from "@/contexts/AppSidebarContext";
-import { type MemoFilter, replaceFiltersByFactor, stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
+import { type MemoFilter, stringifyFilters, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoViews } from "@/hooks/useUserQueries";
+import { isCELQuery } from "@/lib/cel-filter";
 import { BUILTIN_TASKS_VIEW_ID, getMemoViewId, isMemoScopeRoute } from "@/lib/memo-views";
 import { ROUTES } from "@/router/routes";
 import { useTranslate } from "@/utils/i18n";
 
 export const isQuickFindCollectionRoute = (pathname: string) => isMemoScopeRoute(pathname) || pathname.startsWith("/u/");
+export { isCELQuery };
+
+const replaceQuickFindSearchFilters = (currentFilters: MemoFilter[], replacements: MemoFilter[]): MemoFilter[] => [
+  ...currentFilters.filter((filter) => filter.factor !== "contentSearch" && filter.factor !== "celSearch"),
+  ...replacements,
+];
 
 export const buildQuickFindFilters = (query: string, currentFilters: MemoFilter[], preserveCurrentScope: boolean): MemoFilter[] => {
-  const words = Array.from(new Set(query.trim().split(/\s+/).filter(Boolean)));
-  const contentFilters: MemoFilter[] = words.map((value) => ({ factor: "contentSearch", value }));
-  return preserveCurrentScope ? replaceFiltersByFactor(currentFilters, "contentSearch", contentFilters) : contentFilters;
+  const trimmedQuery = query.trim();
+  const nextFilters: MemoFilter[] = isCELQuery(trimmedQuery)
+    ? [{ factor: "celSearch", value: trimmedQuery }]
+    : Array.from(new Set(trimmedQuery.split(/\s+/).filter(Boolean))).map((value) => ({ factor: "contentSearch", value }));
+  return preserveCurrentScope ? replaceQuickFindSearchFilters(currentFilters, nextFilters) : nextFilters;
 };
 
 const getScopeLabel = (pathname: string, t: ReturnType<typeof useTranslate>) => {
@@ -44,6 +53,11 @@ const QuickFindDialog = () => {
 
   useEffect(() => {
     if (!quickFindOpen) return;
+    const celFilter = filters.find((filter) => filter.factor === "celSearch");
+    if (celFilter) {
+      setQuery(celFilter.value);
+      return;
+    }
     setQuery(
       filters
         .filter((filter) => filter.factor === "contentSearch")

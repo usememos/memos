@@ -6,6 +6,7 @@ export type FilterFactor =
   | "tagSearch"
   | "visibility"
   | "contentSearch"
+  | "celSearch"
   | "displayTime"
   | "pinned"
   | "property.hasLink"
