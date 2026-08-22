@@ -221,13 +221,21 @@ func (in *AuthInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
 
 		result := in.authorizer.Authenticate(ctx, authHeader)
 		if err := in.authorizer.CheckAccess(ctx, req.Spec().Procedure, result); err != nil {
-			return nil, connect.NewError(connect.CodeUnauthenticated, err)
+			return nil, newAuthorizationConnectError(err)
 		}
 
 		ctx = auth.ApplyToContext(ctx, result)
 
 		return next(ctx, req)
 	}
+}
+
+func newAuthorizationConnectError(err error) *connect.Error {
+	if pkgerrors.Is(err, ErrUnauthenticated) {
+		return connect.NewError(connect.CodeUnauthenticated, ErrUnauthenticated)
+	}
+	slog.Error("failed to resolve API access policy", "error", err)
+	return connect.NewError(connect.CodeInternal, pkgerrors.New("failed to resolve API access policy"))
 }
 
 func (*AuthInterceptor) WrapStreamingClient(next connect.StreamingClientFunc) connect.StreamingClientFunc {

@@ -132,7 +132,35 @@ func (s *Store) Migrate(ctx context.Context) error {
 			return errors.Wrap(err, "failed to seed")
 		}
 	}
+	if err := s.initializeInstanceAccessSetting(ctx); err != nil {
+		return errors.Wrap(err, "failed to initialize instance access setting")
+	}
 	return nil
+}
+
+// initializeInstanceAccessSetting captures the pre-ACCESS behavior exactly once.
+// Existing installations that configured an external URL were public; all others
+// were private. Once persisted, later URL changes do not alter the access policy.
+func (s *Store) initializeInstanceAccessSetting(ctx context.Context) error {
+	setting, err := s.getRawInstanceSetting(ctx, storepb.InstanceSettingKey_ACCESS.String())
+	if err != nil {
+		return err
+	}
+	if setting != nil {
+		return nil
+	}
+
+	accessMode := storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE
+	if strings.TrimSpace(s.profile.InstanceURL) != "" {
+		accessMode = storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC
+	}
+	_, err = s.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_ACCESS,
+		Value: &storepb.InstanceSetting_AccessSetting{AccessSetting: &storepb.InstanceAccessSetting{
+			AccessMode: accessMode,
+		}},
+	})
+	return err
 }
 
 // applyMigrations applies all necessary migration files between current and target schema versions.

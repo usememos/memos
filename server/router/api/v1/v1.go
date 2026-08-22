@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
 
 	"connectrpc.com/connect"
@@ -94,7 +95,7 @@ func newGatewayMarshaler() *runtime.HTTPBodyMarshaler {
 func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Echo) error {
 	// Shared authorizer: one source of truth for authentication and anonymous-access
 	// policy, used by both the gRPC-Gateway middleware and the Connect interceptor.
-	authorizer := NewAuthorizer(s.Store, s.Secret, s.Profile)
+	authorizer := NewAuthorizer(s.Store, s.Secret)
 
 	// grpc-gateway does not hand the matched procedure to middleware:
 	// runtime.RPCMethod is only populated by the generated handler, which runs
@@ -118,7 +119,7 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 			// access-control gap.
 			procedure, _ := routeResolver.resolveRequest(r)
 			if err := authorizer.CheckAccess(ctx, procedure, result); err != nil {
-				http.Error(w, `{"code": 16, "message": "authentication required"}`, http.StatusUnauthorized)
+				writeGatewayAuthorizationError(w, err)
 				return
 			}
 
@@ -184,4 +185,13 @@ func (s *APIV1Service) RegisterGateway(ctx context.Context, echoServer *echo.Ech
 	connectGroup.Any("/memos.api.v1.*", echo.WrapHandler(http.MaxBytesHandler(connectMux, MaxAPIRequestBytes)))
 
 	return nil
+}
+
+func writeGatewayAuthorizationError(w http.ResponseWriter, err error) {
+	if errors.Is(err, ErrUnauthenticated) {
+		http.Error(w, `{"code": 16, "message": "authentication required"}`, http.StatusUnauthorized)
+		return
+	}
+	slog.Error("failed to resolve API access policy", "error", err)
+	http.Error(w, `{"code": 13, "message": "failed to resolve API access policy"}`, http.StatusInternalServerError)
 }

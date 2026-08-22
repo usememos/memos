@@ -169,9 +169,13 @@ func (s *FileServerService) serveAttachmentFile(c *echo.Context) error {
 func (s *FileServerService) serveUserAvatar(c *echo.Context) error {
 	ctx := c.Request().Context()
 
-	// On a private instance (no InstanceURL), avatars are not exposed to anonymous
-	// visitors; a valid session, access token, or PAT is required.
-	if !s.Profile.AllowAnonymous() {
+	allowAnonymous, err := s.Store.AllowsAnonymousAccess(ctx)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get instance access policy").Wrap(err)
+	}
+	// On a private instance, avatars are not exposed to anonymous visitors; a
+	// valid session, access token, or PAT is required.
+	if !allowAnonymous {
 		viewer, err := s.getCurrentUser(ctx, c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").Wrap(err)
@@ -626,7 +630,10 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c *ec
 		}
 	}
 
-	allowAnonymous := s.Profile != nil && s.Profile.AllowAnonymous()
+	allowAnonymous, err := s.Store.AllowsAnonymousAccess(ctx)
+	if err != nil {
+		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to get instance access policy").Wrap(err)
+	}
 	if decision := access.CheckMemoRead(memo, parent, nil, allowAnonymous, nil); decision.Allowed() {
 		return decision.Class, nil
 	}

@@ -10,6 +10,9 @@ import { useInstance } from "@/contexts/InstanceContext";
 import useDialog from "@/hooks/useDialog";
 import { IdentityProvider } from "@/types/proto/api/v1/idp_service_pb";
 import {
+  InstanceAccessMode,
+  InstanceSetting_AccessSetting,
+  InstanceSetting_AccessSettingSchema,
   InstanceSetting_GeneralSetting,
   InstanceSetting_GeneralSettingSchema,
   InstanceSetting_Key,
@@ -26,13 +29,18 @@ const InstanceSection = () => {
   const t = useTranslate();
   const customizeDialog = useDialog();
   const saveInstanceSetting = useInstanceSettingUpdater();
-  const { generalSetting: originalSetting, profile } = useInstance();
-  const [instanceGeneralSetting, setInstanceGeneralSetting] = useState<InstanceSetting_GeneralSetting>(originalSetting);
+  const { accessSetting: originalAccessSetting, generalSetting: originalGeneralSetting, profile } = useInstance();
+  const [instanceAccessSetting, setInstanceAccessSetting] = useState<InstanceSetting_AccessSetting>(originalAccessSetting);
+  const [instanceGeneralSetting, setInstanceGeneralSetting] = useState<InstanceSetting_GeneralSetting>(originalGeneralSetting);
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
 
   useEffect(() => {
-    setInstanceGeneralSetting(originalSetting);
-  }, [originalSetting]);
+    setInstanceAccessSetting(originalAccessSetting);
+  }, [originalAccessSetting]);
+
+  useEffect(() => {
+    setInstanceGeneralSetting(originalGeneralSetting);
+  }, [originalGeneralSetting]);
 
   const fetchIdentityProviderList = async () => {
     const { identityProviders } = await identityProviderServiceClient.listIdentityProviders({});
@@ -61,19 +69,49 @@ const InstanceSection = () => {
     );
   };
 
-  const handleSaveGeneralSetting = async () => {
-    await saveInstanceSetting({
-      key: InstanceSetting_Key.GENERAL,
-      setting: create(InstanceSettingSchema, {
-        name: buildInstanceSettingName(InstanceSetting_Key.GENERAL),
-        value: {
-          case: "generalSetting",
-          value: instanceGeneralSetting,
-        },
-      }),
-      errorContext: "Update general settings",
-    });
+  const updateAccessMode = (accessMode: InstanceAccessMode) => {
+    setInstanceAccessSetting(create(InstanceSetting_AccessSettingSchema, { accessMode }));
   };
+
+  const handleSaveSettings = async () => {
+    const generalSettingChanged = !isEqual(instanceGeneralSetting, originalGeneralSetting);
+    const accessSettingChanged = !isEqual(instanceAccessSetting, originalAccessSetting);
+
+    if (generalSettingChanged) {
+      const generalSettingSaved = await saveInstanceSetting({
+        key: InstanceSetting_Key.GENERAL,
+        setting: create(InstanceSettingSchema, {
+          name: buildInstanceSettingName(InstanceSetting_Key.GENERAL),
+          value: {
+            case: "generalSetting",
+            value: instanceGeneralSetting,
+          },
+        }),
+        errorContext: "Update general settings",
+        showSuccessToast: !accessSettingChanged,
+      });
+      if (!generalSettingSaved) {
+        return;
+      }
+    }
+
+    if (accessSettingChanged) {
+      await saveInstanceSetting({
+        key: InstanceSetting_Key.ACCESS,
+        setting: create(InstanceSettingSchema, {
+          name: buildInstanceSettingName(InstanceSetting_Key.ACCESS),
+          value: {
+            case: "accessSetting",
+            value: instanceAccessSetting,
+          },
+        }),
+        errorContext: "Update access settings",
+      });
+    }
+  };
+
+  const hasUnsavedChanges =
+    !isEqual(instanceGeneralSetting, originalGeneralSetting) || !isEqual(instanceAccessSetting, originalAccessSetting);
 
   return (
     <SettingSection title={t("setting.system.label")}>
@@ -107,6 +145,17 @@ const InstanceSection = () => {
 
       <SettingGroup title={t("setting.instance.access-title")} description={t("setting.instance.access-description")} showSeparator>
         <SettingList>
+          <SettingListItem
+            label={t("setting.instance.allow-public-access")}
+            description={t("setting.instance.allow-public-access-description")}
+          >
+            <Switch
+              disabled={profile.demo}
+              checked={instanceAccessSetting.accessMode === InstanceAccessMode.PUBLIC}
+              onCheckedChange={(checked) => updateAccessMode(checked ? InstanceAccessMode.PUBLIC : InstanceAccessMode.PRIVATE)}
+            />
+          </SettingListItem>
+
           <SettingListItem
             label={t("setting.instance.disallow-user-registration")}
             description={t("setting.instance.disallow-user-registration-description")}
@@ -173,7 +222,7 @@ const InstanceSection = () => {
       </SettingGroup>
 
       <div className="w-full flex justify-end">
-        <Button disabled={isEqual(instanceGeneralSetting, originalSetting)} onClick={handleSaveGeneralSetting}>
+        <Button disabled={!hasUnsavedChanges} onClick={handleSaveSettings}>
           {t("common.save")}
         </Button>
       </div>

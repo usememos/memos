@@ -152,6 +152,39 @@ func TestInstanceSettingGeneralSetting(t *testing.T) {
 	ts.Close()
 }
 
+func TestInstanceAccessSetting(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	accessSetting, err := ts.GetInstanceAccessSetting(ctx)
+	require.NoError(t, err)
+	require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, accessSetting.AccessMode)
+	allowsAnonymous, err := ts.AllowsAnonymousAccess(ctx)
+	require.NoError(t, err)
+	require.False(t, allowsAnonymous)
+
+	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_ACCESS,
+		Value: &storepb.InstanceSetting_AccessSetting{AccessSetting: &storepb.InstanceAccessSetting{
+			AccessMode: storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC,
+		}},
+	})
+	require.NoError(t, err)
+
+	stored, err := ts.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_ACCESS.String()})
+	require.NoError(t, err)
+	require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC, stored.GetAccessSetting().AccessMode)
+
+	accessSetting, err = ts.GetInstanceAccessSetting(ctx)
+	require.NoError(t, err)
+	require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC, accessSetting.AccessMode)
+	allowsAnonymous, err = ts.AllowsAnonymousAccess(ctx)
+	require.NoError(t, err)
+	require.True(t, allowsAnonymous)
+}
+
 func TestInstanceSettingMemoRelatedSetting(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()

@@ -287,6 +287,16 @@ func validateAndNormalizeDeploymentInstanceSetting(setting *storepb.InstanceSett
 		if err := normalizeDeploymentAISetting(setting.GetAiSetting()); err != nil {
 			return err
 		}
+	case storepb.InstanceSettingKey_ACCESS:
+		access := setting.GetAccessSetting()
+		if access == nil {
+			return errors.New("accessSetting must be populated for key ACCESS")
+		}
+		switch access.AccessMode {
+		case storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC:
+		default:
+			return errors.New("accessSetting.accessMode must be PRIVATE or PUBLIC")
+		}
 	case storepb.InstanceSettingKey_BASIC, storepb.InstanceSettingKey_TAGS:
 		return errors.Errorf("key %s cannot be deployment configured", setting.Key)
 	default:

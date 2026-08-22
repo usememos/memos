@@ -1,7 +1,10 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import RootLayout from "@/layouts/RootLayout";
+
+const authState = vi.hoisted(() => ({ currentUser: { name: "users/test" } as { name: string } | undefined }));
+const instanceState = vi.hoisted(() => ({ accessMode: 2, instanceUrl: "https://example.com", demo: true }));
 
 vi.mock("@/components/AppSidebar", () => ({
   default: () => <aside data-testid="desktop-sidebar">Desktop sidebar</aside>,
@@ -21,11 +24,11 @@ vi.mock("@/contexts/AuthContext", () => ({
 }));
 
 vi.mock("@/contexts/InstanceContext", () => ({
-  useInstance: () => ({ profile: { instanceUrl: "https://example.com", demo: true } }),
+  useInstance: () => ({ profile: instanceState }),
 }));
 
 vi.mock("@/hooks/useCurrentUser", () => ({
-  default: () => ({ name: "users/test" }),
+  default: () => authState.currentUser,
 }));
 
 vi.mock("@/hooks/useMediaQuery", () => ({
@@ -52,6 +55,11 @@ const RouteState = () => {
 };
 
 describe("RootLayout global editor shell", () => {
+  beforeEach(() => {
+    authState.currentUser = { name: "users/test" };
+    instanceState.accessMode = 2;
+  });
+
   it("mounts the composer provider inside the sidebar provider and keeps the shell across routes", () => {
     render(
       <MemoryRouter initialEntries={["/attachments"]}>
@@ -76,5 +84,23 @@ describe("RootLayout global editor shell", () => {
     for (const testId of SHELL_TEST_IDS) {
       expect(screen.getByTestId(testId)).toBeInTheDocument();
     }
+  });
+
+  it("gates anonymous visitors by access mode even when an instance URL is configured", () => {
+    authState.currentUser = undefined;
+    instanceState.accessMode = 1;
+
+    render(
+      <MemoryRouter initialEntries={["/explore"]}>
+        <Routes>
+          <Route element={<RootLayout />}>
+            <Route path="explore" element={<div>Explore</div>} />
+          </Route>
+          <Route path="auth" element={<RouteState />} />
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByTestId("route")).toHaveTextContent("/auth");
   });
 });

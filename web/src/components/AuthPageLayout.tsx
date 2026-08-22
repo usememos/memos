@@ -2,6 +2,7 @@ import { ArrowRightIcon, CompassIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useInstance } from "@/contexts/InstanceContext";
 import { ROUTES } from "@/router/routes";
+import { InstanceAccessMode } from "@/types/proto/api/v1/instance_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import AuthFooter from "./AuthFooter";
 
@@ -55,7 +56,7 @@ export const AuthOptionsLoading = () => <div className="h-9 w-full animate-pulse
 const AuthPageLayout = ({ chip, title, subtitle, hideExplore, children }: Props) => {
   const t = useTranslate();
   const { generalSetting, profile } = useInstance();
-  const showExplore = Boolean(profile.instanceUrl) && !hideExplore;
+  const showExplore = profile.accessMode === InstanceAccessMode.PUBLIC && !hideExplore;
 
   return (
     <div className="min-h-svh w-full flex flex-col items-center px-4 py-4 sm:py-8">

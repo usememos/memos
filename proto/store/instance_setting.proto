@@ -22,6 +22,8 @@ enum InstanceSettingKey {
   NOTIFICATION = 6;
   // AI is the key for AI provider settings.
   AI = 7;
+  // ACCESS is the key for instance access policy settings.
+  ACCESS = 8;
 }
 
 message InstanceSetting {
@@ -34,6 +36,7 @@ message InstanceSetting {
     InstanceTagsSetting tags_setting = 6;
     InstanceNotificationSetting notification_setting = 7;
     InstanceAISetting ai_setting = 8;
+    InstanceAccessSetting access_setting = 9;
   }
 }
 
@@ -231,4 +234,14 @@ message TranscriptionConfig {
   // may ignore) and folded into the Gemini generation prompt as a "Context and
   // spelling hints" block (which the LLM will treat more literally).
   string prompt = 4;
+}
+
+enum InstanceAccessMode {
+  INSTANCE_ACCESS_MODE_UNSPECIFIED = 0;
+  INSTANCE_ACCESS_MODE_PRIVATE = 1;
+  INSTANCE_ACCESS_MODE_PUBLIC = 2;
+}
+
+message InstanceAccessSetting {
+  InstanceAccessMode access_mode = 1;
 }

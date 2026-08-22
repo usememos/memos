@@ -60,7 +60,13 @@ func (s *APIV1Service) checkMemoReadAccessWithParent(ctx context.Context, memo, 
 	if err != nil {
 		return status.Errorf(codes.Internal, "failed to get user")
 	}
-	allowAnonymous := s.Profile != nil && s.Profile.AllowAnonymous()
+	allowAnonymous := false
+	if user == nil {
+		allowAnonymous, err = s.Store.AllowsAnonymousAccess(ctx)
+		if err != nil {
+			return status.Errorf(codes.Internal, "failed to resolve instance access policy")
+		}
+	}
 	return memoAccessDecisionError(access.CheckMemoRead(memo, parent, user, allowAnonymous, nil))
 }
 
@@ -206,6 +212,15 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 	currentUser, err := s.fetchCurrentUser(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user")
+	}
+	if currentUser == nil {
+		allowAnonymous, err := s.Store.AllowsAnonymousAccess(ctx)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to resolve instance access policy")
+		}
+		if !allowAnonymous {
+			return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+		}
 	}
 
 	if request.State == v1pb.State_ARCHIVED {

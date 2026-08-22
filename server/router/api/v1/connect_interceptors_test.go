@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"connectrpc.com/connect"
@@ -35,5 +36,20 @@ func TestMetadataInterceptorForwardsSecurityHeaders(t *testing.T) {
 
 	if _, err := handler(context.Background(), req); err != nil {
 		t.Fatalf("metadata interceptor returned error: %v", err)
+	}
+}
+
+func TestNewAuthorizationConnectErrorMapsFailureClass(t *testing.T) {
+	unauthenticated := newAuthorizationConnectError(ErrUnauthenticated)
+	if got := unauthenticated.Code(); got != connect.CodeUnauthenticated {
+		t.Fatalf("unauthenticated error code = %v, want %v", got, connect.CodeUnauthenticated)
+	}
+
+	internal := newAuthorizationConnectError(errors.New("database unavailable"))
+	if got := internal.Code(); got != connect.CodeInternal {
+		t.Fatalf("internal error code = %v, want %v", got, connect.CodeInternal)
+	}
+	if got := internal.Message(); got != "failed to resolve API access policy" {
+		t.Fatalf("internal error message = %q", got)
 	}
 }

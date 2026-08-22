@@ -6,6 +6,7 @@ import (
 
 	"github.com/usememos/memos/internal/markdown"
 	"github.com/usememos/memos/internal/profile"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/auth"
 	apiv1 "github.com/usememos/memos/server/router/api/v1"
 	"github.com/usememos/memos/store"
@@ -26,6 +27,14 @@ func NewTestService(t *testing.T) *TestService {
 
 	// Create a test store with SQLite
 	testStore := teststore.NewTestingStore(ctx, t)
+	if _, err := testStore.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_ACCESS,
+		Value: &storepb.InstanceSetting_AccessSetting{AccessSetting: &storepb.InstanceAccessSetting{
+			AccessMode: storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC,
+		}},
+	}); err != nil {
+		t.Fatalf("failed to configure public access for API test service: %v", err)
+	}
 
 	// Align the profile data directory with the test store so attachment files and
 	// derived caches resolve against the same location as DeleteAttachmentStorage.
@@ -59,6 +68,17 @@ func NewTestService(t *testing.T) *TestService {
 		Profile: testProfile,
 		Secret:  secret,
 	}
+}
+
+// SetInstanceAccessMode updates the instance access policy for a test.
+func (ts *TestService) SetInstanceAccessMode(ctx context.Context, mode storepb.InstanceAccessMode) error {
+	_, err := ts.Store.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_ACCESS,
+		Value: &storepb.InstanceSetting_AccessSetting{AccessSetting: &storepb.InstanceAccessSetting{
+			AccessMode: mode,
+		}},
+	})
+	return err
 }
 
 // Cleanup closes resources after test.
