@@ -2788,6 +2788,14 @@ components:
                          setup (creating the first admin account). Unlike a null admin, this stays
                          false once any user exists, so an instance that has lost its admins is not
                          mistaken for a fresh install.
+                accessMode:
+                    enum:
+                        - INSTANCE_ACCESS_MODE_UNSPECIFIED
+                        - INSTANCE_ACCESS_MODE_PRIVATE
+                        - INSTANCE_ACCESS_MODE_PUBLIC
+                    type: string
+                    description: Access mode controls whether unauthenticated users may access instance content.
+                    format: enum
             description: Instance profile message containing basic instance information.
         InstanceSetting:
             type: object
@@ -2809,6 +2817,8 @@ components:
                     $ref: '#/components/schemas/InstanceSetting_NotificationSetting'
                 aiSetting:
                     $ref: '#/components/schemas/InstanceSetting_AISetting'
+                accessSetting:
+                    $ref: '#/components/schemas/InstanceSetting_AccessSetting'
             description: An instance setting resource.
         InstanceSetting_AIProviderConfig:
             type: object
@@ -2854,6 +2864,17 @@ components:
                         transcription is the speech-to-text feature configuration.
                          When unset or transcription.provider_id is empty, transcription is disabled.
             description: AI provider configuration settings.
+        InstanceSetting_AccessSetting:
+            type: object
+            properties:
+                accessMode:
+                    enum:
+                        - INSTANCE_ACCESS_MODE_UNSPECIFIED
+                        - INSTANCE_ACCESS_MODE_PRIVATE
+                        - INSTANCE_ACCESS_MODE_PUBLIC
+                    type: string
+                    format: enum
+            description: Access policy configuration for the instance.
         InstanceSetting_GeneralSetting:
             type: object
             properties:

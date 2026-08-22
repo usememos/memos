@@ -15,6 +15,7 @@ import { useInstance } from "@/contexts/InstanceContext";
 import { MemoFilterProvider, useMemoFilterContext } from "@/contexts/MemoFilterContext";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useMediaQuery from "@/hooks/useMediaQuery";
+import { InstanceAccessMode } from "@/types/proto/api/v1/instance_service_pb";
 import { buildAuthRoute, shouldGatePrivateInstance } from "@/utils/auth-redirect";
 import { useTranslate } from "@/utils/i18n";
 
@@ -59,10 +60,15 @@ const RootLayoutContent = () => {
     prevPathnameRef.current = pathname;
   }, [pathname, searchParams, removeFilter]);
 
-  // Private instance (no InstanceURL configured): anonymous visitors may only reach
-  // share links; everything else redirects to the sign-in page, preserving the intended
-  // destination. Public instances keep the open Explore behavior for logged-out users.
-  if (shouldGatePrivateInstance({ isPrivateInstance: !profile.instanceUrl, isAuthenticated: !!currentUser, pathname })) {
+  // Anonymous visitors to private instances may only reach share links. Treat an
+  // unspecified mode as private so a partial or older response cannot expose content.
+  if (
+    shouldGatePrivateInstance({
+      isPrivateInstance: profile.accessMode !== InstanceAccessMode.PUBLIC,
+      isAuthenticated: !!currentUser,
+      pathname,
+    })
+  ) {
     const redirect = `${pathname}${location.search}${location.hash}`;
     return <Navigate to={buildAuthRoute({ redirect })} replace />;
   }

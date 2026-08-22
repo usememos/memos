@@ -106,7 +106,7 @@ func TestAuthBootstrapMethodsAreSubsetOfPublic(t *testing.T) {
 }
 
 // TestAuthBootstrapClassification verifies which endpoints remain reachable by
-// anonymous callers on a private instance (no InstanceURL configured).
+// anonymous callers when the instance access mode is PRIVATE.
 func TestAuthBootstrapClassification(t *testing.T) {
 	// Reachable while private: sign-in flow, registration, instance metadata, SSO, share links.
 	bootstrap := []string{
@@ -125,7 +125,7 @@ func TestAuthBootstrapClassification(t *testing.T) {
 		})
 	}
 
-	// Public on an open instance, but gated on a private one: browsing and profiles.
+	// Public in PUBLIC mode, but gated in PRIVATE mode: browsing and profiles.
 	gatedWhilePrivate := []string{
 		"/memos.api.v1.MemoService/ListMemos",
 		"/memos.api.v1.MemoService/GetMemo",

@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/usememos/memos/internal/profile"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 	teststore "github.com/usememos/memos/store/test"
 )
@@ -157,6 +158,7 @@ func TestFrontendService_SkipsDynamicRoutes(t *testing.T) {
 func TestFrontendService_RobotsTXT(t *testing.T) {
 	ctx := context.Background()
 	testStore := teststore.NewTestingStore(ctx, t)
+	setFrontendAccessMode(ctx, t, testStore, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
 	profile := &profile.Profile{
 		InstanceURL: "https://demo.usememos.com/",
 	}
@@ -176,6 +178,7 @@ func TestFrontendService_RobotsTXT(t *testing.T) {
 func TestFrontendService_SitemapXML(t *testing.T) {
 	ctx := context.Background()
 	testStore := teststore.NewTestingStore(ctx, t)
+	setFrontendAccessMode(ctx, t, testStore, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
 	profile := &profile.Profile{
 		InstanceURL: "https://demo.usememos.com",
 	}
@@ -219,6 +222,7 @@ func TestFrontendService_SitemapXML(t *testing.T) {
 func TestFrontendService_SitemapRoutesRequireInstanceURL(t *testing.T) {
 	ctx := context.Background()
 	testStore := teststore.NewTestingStore(ctx, t)
+	setFrontendAccessMode(ctx, t, testStore, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
 
 	e := echo.New()
 	NewFrontendService(&profile.Profile{}, testStore).Serve(ctx, e)
@@ -230,4 +234,32 @@ func TestFrontendService_SitemapRoutesRequireInstanceURL(t *testing.T) {
 
 		require.Equal(t, http.StatusNotFound, rec.Code)
 	}
+}
+
+func TestFrontendService_SitemapRoutesRequirePublicAccess(t *testing.T) {
+	ctx := context.Background()
+	testStore := teststore.NewTestingStore(ctx, t)
+	setFrontendAccessMode(ctx, t, testStore, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE)
+
+	e := echo.New()
+	NewFrontendService(&profile.Profile{InstanceURL: "https://private.example.com"}, testStore).Serve(ctx, e)
+
+	for _, path := range []string{"/robots.txt", "/sitemap.xml"} {
+		req := httptest.NewRequest(http.MethodGet, path, nil)
+		rec := httptest.NewRecorder()
+		e.ServeHTTP(rec, req)
+
+		require.Equal(t, http.StatusNotFound, rec.Code)
+	}
+}
+
+func setFrontendAccessMode(ctx context.Context, t *testing.T, stores *store.Store, mode storepb.InstanceAccessMode) {
+	t.Helper()
+	_, err := stores.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_ACCESS,
+		Value: &storepb.InstanceSetting_AccessSetting{AccessSetting: &storepb.InstanceAccessSetting{
+			AccessMode: mode,
+		}},
+	})
+	require.NoError(t, err)
 }

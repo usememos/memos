@@ -2,23 +2,45 @@ package v1
 
 import (
 	"context"
+	"errors"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/server/auth"
 )
 
+type stubAnonymousAccessStore struct {
+	allowsAnonymous bool
+	err             error
+}
+
+func (s stubAnonymousAccessStore) AllowsAnonymousAccess(context.Context) (bool, error) {
+	return s.allowsAnonymous, s.err
+}
+
+func TestWriteGatewayAuthorizationErrorMapsFailureClass(t *testing.T) {
+	unauthenticated := httptest.NewRecorder()
+	writeGatewayAuthorizationError(unauthenticated, ErrUnauthenticated)
+	assert.Equal(t, http.StatusUnauthorized, unauthenticated.Code)
+
+	internal := httptest.NewRecorder()
+	writeGatewayAuthorizationError(internal, errors.New("database unavailable"))
+	assert.Equal(t, http.StatusInternalServerError, internal.Code)
+	assert.NotContains(t, internal.Body.String(), "database unavailable")
+}
+
 // TestAuthorizerCheckAccess exercises the method-level access policy matrix.
-//
-// Every case here is decided without touching the store, so a nil store is safe.
 func TestAuthorizerCheckAccess(t *testing.T) {
 	ctx := context.Background()
 	authenticated := &auth.AuthResult{AccessToken: "token"}
+	accessStoreError := errors.New("store unavailable")
 
-	openInstance := &Authorizer{profile: &profile.Profile{InstanceURL: "https://memos.example.com"}}
-	privateInstance := &Authorizer{profile: &profile.Profile{InstanceURL: ""}}
+	publicInstance := &Authorizer{accessStore: stubAnonymousAccessStore{allowsAnonymous: true}}
+	privateInstance := &Authorizer{accessStore: stubAnonymousAccessStore{allowsAnonymous: false}}
+	unavailableInstance := &Authorizer{accessStore: stubAnonymousAccessStore{err: accessStoreError}}
 
 	const (
 		protectedMethod = "/memos.api.v1.MemoService/CreateMemo"
@@ -33,22 +55,23 @@ func TestAuthorizerCheckAccess(t *testing.T) {
 		az        *Authorizer
 		procedure string
 		result    *auth.AuthResult
-		wantErr   bool
+		wantErr   error
 	}{
-		{"authenticated reaches protected method", privateInstance, protectedMethod, authenticated, false},
-		{"authenticated reaches public method on private instance", privateInstance, publicMethod, authenticated, false},
-		{"anonymous denied on protected method", openInstance, protectedMethod, nil, true},
-		{"anonymous allowed on public method, open instance", openInstance, publicMethod, nil, false},
-		{"anonymous denied on public method, private instance", privateInstance, publicMethod, nil, true},
-		{"anonymous allowed on bootstrap method, private instance", privateInstance, bootstrapMethod, nil, false},
-		{"anonymous allowed to register on private instance", privateInstance, createUser, nil, false},
-		{"anonymous allowed on share access, private instance", privateInstance, shareMethod, nil, false},
+		{"authenticated reaches protected method", privateInstance, protectedMethod, authenticated, nil},
+		{"authenticated reaches public method on private instance", privateInstance, publicMethod, authenticated, nil},
+		{"anonymous denied on protected method", publicInstance, protectedMethod, nil, ErrUnauthenticated},
+		{"anonymous allowed on public method, public instance", publicInstance, publicMethod, nil, nil},
+		{"anonymous denied on public method, private instance", privateInstance, publicMethod, nil, ErrUnauthenticated},
+		{"anonymous allowed on bootstrap method, private instance", privateInstance, bootstrapMethod, nil, nil},
+		{"anonymous allowed to register on private instance", privateInstance, createUser, nil, nil},
+		{"anonymous allowed on share access, private instance", privateInstance, shareMethod, nil, nil},
+		{"access-store failure is not authentication failure", unavailableInstance, publicMethod, nil, accessStoreError},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			err := c.az.CheckAccess(ctx, c.procedure, c.result)
-			if c.wantErr {
-				assert.ErrorIs(t, err, ErrUnauthenticated)
+			if c.wantErr != nil {
+				assert.ErrorIs(t, err, c.wantErr)
 			} else {
 				assert.NoError(t, err)
 			}

@@ -3,6 +3,7 @@ package profile
 import (
 	"fmt"
 	"log/slog"
+	"net/url"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -32,19 +33,8 @@ type Profile struct {
 	Version string
 	// Commit is the current build commit of server
 	Commit string
-	// InstanceURL is the url of your memos instance.
+	// InstanceURL is the canonical external URL of the Memos instance.
 	InstanceURL string
-}
-
-// AllowAnonymous reports whether unauthenticated visitors may access the instance.
-//
-// Anonymous access is enabled only when an InstanceURL is configured. An instance
-// with no InstanceURL set is treated as private: anonymous callers are limited to
-// the auth-bootstrap endpoints (sign-in, share links, etc.) and the web UI redirects
-// them to the sign-in page instead of the public Explore view. Authenticated callers
-// (session, access token, or personal access token) are never affected.
-func (p *Profile) AllowAnonymous() bool {
-	return strings.TrimSpace(p.InstanceURL) != ""
 }
 
 func checkDataDir(dataDir string) (string, error) {
@@ -68,6 +58,16 @@ func checkDataDir(dataDir string) (string, error) {
 }
 
 func (p *Profile) Validate() error {
+	if p.Demo && p.Driver != "sqlite" {
+		return errors.Errorf("demo mode requires the sqlite database driver, got %q", p.Driver)
+	}
+
+	instanceURL, err := normalizeInstanceURL(p.InstanceURL)
+	if err != nil {
+		return err
+	}
+	p.InstanceURL = instanceURL
+
 	// Set default data directory if not specified
 	if p.Data == "" {
 		if runtime.GOOS == "windows" {
@@ -117,4 +117,32 @@ func (p *Profile) Validate() error {
 	}
 
 	return nil
+}
+
+func normalizeInstanceURL(rawURL string) (string, error) {
+	rawURL = strings.TrimSpace(rawURL)
+	if rawURL == "" {
+		return "", nil
+	}
+
+	instanceURL, err := url.Parse(rawURL)
+	if err != nil {
+		return "", errors.Wrap(err, "failed to parse instance URL")
+	}
+	if instanceURL.Scheme != "http" && instanceURL.Scheme != "https" {
+		return "", errors.Errorf("instance URL must use http or https, got %q", instanceURL.Scheme)
+	}
+	if instanceURL.Host == "" {
+		return "", errors.New("instance URL must include a host")
+	}
+	if instanceURL.User != nil {
+		return "", errors.New("instance URL must not include user credentials")
+	}
+	if instanceURL.RawQuery != "" || instanceURL.Fragment != "" {
+		return "", errors.New("instance URL must not include a query or fragment")
+	}
+
+	instanceURL.Path = strings.TrimRight(instanceURL.Path, "/")
+	instanceURL.RawPath = strings.TrimRight(instanceURL.RawPath, "/")
+	return instanceURL.String(), nil
 }

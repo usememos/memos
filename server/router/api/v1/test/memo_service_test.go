@@ -14,8 +14,42 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
+
+func TestAnonymousMemoAccessFollowsInstanceAccessSetting(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	owner, err := ts.CreateRegularUser(ctx, "access-mode-owner")
+	require.NoError(t, err)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+	memo, err := ts.Service.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
+		Content:    "public memo",
+		Visibility: apiv1.Visibility_PUBLIC,
+	}})
+	require.NoError(t, err)
+
+	_, err = ts.Service.GetMemo(ctx, &apiv1.GetMemoRequest{Name: memo.Name})
+	require.NoError(t, err)
+	_, err = ts.Service.ListMemos(ctx, &apiv1.ListMemosRequest{})
+	require.NoError(t, err)
+
+	require.NoError(t, ts.SetInstanceAccessMode(ctx, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE))
+	_, err = ts.Service.GetMemo(ctx, &apiv1.GetMemoRequest{Name: memo.Name})
+	require.Equal(t, codes.Unauthenticated, status.Code(err))
+	_, err = ts.Service.ListMemos(ctx, &apiv1.ListMemosRequest{})
+	require.Equal(t, codes.Unauthenticated, status.Code(err))
+
+	_, err = ts.Service.GetMemo(ownerCtx, &apiv1.GetMemoRequest{Name: memo.Name})
+	require.NoError(t, err)
+
+	require.NoError(t, ts.SetInstanceAccessMode(ctx, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC))
+	_, err = ts.Service.GetMemo(ctx, &apiv1.GetMemoRequest{Name: memo.Name})
+	require.NoError(t, err)
+}
 
 func TestCreateMemoAcceptsUUID(t *testing.T) {
 	ctx := context.Background()

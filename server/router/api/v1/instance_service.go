@@ -57,6 +57,10 @@ func (s *APIV1Service) GetInstanceProfile(ctx context.Context, _ *v1pb.GetInstan
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list users: %v", err)
 	}
+	accessSetting, err := s.Store.GetInstanceAccessSetting(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get instance access setting: %v", err)
+	}
 
 	instanceProfile := &v1pb.InstanceProfile{
 		Version:     s.Profile.Version,
@@ -65,6 +69,7 @@ func (s *APIV1Service) GetInstanceProfile(ctx context.Context, _ *v1pb.GetInstan
 		Admin:       admin, // for display only; may be nil even on a populated instance
 		Commit:      s.Profile.Commit,
 		NeedsSetup:  len(users) == 0,
+		AccessMode:  convertInstanceAccessModeFromStore(accessSetting.AccessMode),
 	}
 	return instanceProfile, nil
 }
@@ -130,6 +135,10 @@ func (s *APIV1Service) getInstanceSettingByName(ctx context.Context, name string
 		var setting *storepb.InstanceAISetting
 		setting, err = s.Store.GetInstanceAISetting(ctx)
 		instanceSetting = &storepb.InstanceSetting{Key: instanceSettingKey, Value: &storepb.InstanceSetting_AiSetting{AiSetting: setting}}
+	case storepb.InstanceSettingKey_ACCESS:
+		var setting *storepb.InstanceAccessSetting
+		setting, err = s.Store.GetInstanceAccessSetting(ctx)
+		instanceSetting = &storepb.InstanceSetting{Key: instanceSettingKey, Value: &storepb.InstanceSetting_AccessSetting{AccessSetting: setting}}
 	default:
 		return nil, status.Errorf(codes.InvalidArgument, "unsupported instance setting key: %v", instanceSettingKey)
 	}

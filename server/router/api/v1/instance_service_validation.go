@@ -19,10 +19,26 @@ func validateInstanceSetting(setting *v1pb.InstanceSetting) error {
 	if err != nil {
 		return err
 	}
-	if key != storepb.InstanceSettingKey_TAGS.String() {
+	switch key {
+	case storepb.InstanceSettingKey_TAGS.String():
+		return validateInstanceTagsSetting(setting.GetTagsSetting())
+	case storepb.InstanceSettingKey_ACCESS.String():
+		return validateInstanceAccessSetting(setting.GetAccessSetting())
+	default:
 		return nil
 	}
-	return validateInstanceTagsSetting(setting.GetTagsSetting())
+}
+
+func validateInstanceAccessSetting(setting *v1pb.InstanceSetting_AccessSetting) error {
+	if setting == nil {
+		return errors.New("access setting is required")
+	}
+	switch setting.AccessMode {
+	case v1pb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, v1pb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC:
+		return nil
+	default:
+		return errors.New("access_mode must be PRIVATE or PUBLIC")
+	}
 }
 
 func (s *APIV1Service) prepareInstanceAISettingForUpdate(ctx context.Context, setting *storepb.InstanceAISetting) error {

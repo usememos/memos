@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"testing"
 
@@ -150,6 +151,94 @@ func TestInstanceSettingGeneralSetting(t *testing.T) {
 	require.Equal(t, "body { color: red; }", generalSetting.AdditionalStyle)
 
 	ts.Close()
+}
+
+func TestInstanceAccessSetting(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	accessSetting, err := ts.GetInstanceAccessSetting(ctx)
+	require.NoError(t, err)
+	require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, accessSetting.AccessMode)
+	allowsAnonymous, err := ts.AllowsAnonymousAccess(ctx)
+	require.NoError(t, err)
+	require.False(t, allowsAnonymous)
+
+	_, err = ts.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_ACCESS,
+		Value: &storepb.InstanceSetting_AccessSetting{AccessSetting: &storepb.InstanceAccessSetting{
+			AccessMode: storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC,
+		}},
+	})
+	require.NoError(t, err)
+
+	stored, err := ts.GetStoredInstanceSetting(ctx, &store.FindInstanceSetting{Name: storepb.InstanceSettingKey_ACCESS.String()})
+	require.NoError(t, err)
+	require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC, stored.GetAccessSetting().AccessMode)
+
+	accessSetting, err = ts.GetInstanceAccessSetting(ctx)
+	require.NoError(t, err)
+	require.Equal(t, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC, accessSetting.AccessMode)
+	allowsAnonymous, err = ts.AllowsAnonymousAccess(ctx)
+	require.NoError(t, err)
+	require.True(t, allowsAnonymous)
+}
+
+func TestCreateInstanceSettingIfNotExistsIsFirstWriterWins(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	defer ts.Close()
+
+	const candidateCount = 16
+	type result struct {
+		value   string
+		created bool
+		err     error
+	}
+	start := make(chan struct{})
+	results := make(chan result, candidateCount)
+	for i := 0; i < candidateCount; i++ {
+		value := fmt.Sprintf("candidate-%02d", i)
+		go func() {
+			<-start
+			created, err := ts.GetDriver().CreateInstanceSettingIfNotExists(ctx, &store.InstanceSetting{
+				Name:  "ATOMIC_CREATE_TEST",
+				Value: value,
+			})
+			results <- result{value: value, created: created, err: err}
+		}()
+	}
+	close(start)
+
+	winner := ""
+	for range candidateCount {
+		result := <-results
+		require.NoError(t, result.err)
+		if result.created {
+			require.Empty(t, winner, "only one concurrent insert may create the setting")
+			winner = result.value
+		}
+	}
+	require.NotEmpty(t, winner, "one concurrent insert must create the setting")
+
+	settings, err := ts.GetDriver().ListInstanceSettings(ctx, &store.FindInstanceSetting{Name: "ATOMIC_CREATE_TEST"})
+	require.NoError(t, err)
+	require.Len(t, settings, 1)
+	require.Equal(t, winner, settings[0].Value, "the database must retain the first inserted value")
+
+	created, err := ts.GetDriver().CreateInstanceSettingIfNotExists(ctx, &store.InstanceSetting{
+		Name:  "ATOMIC_CREATE_TEST",
+		Value: "must-not-overwrite",
+	})
+	require.NoError(t, err)
+	require.False(t, created)
+	settings, err = ts.GetDriver().ListInstanceSettings(ctx, &store.FindInstanceSetting{Name: "ATOMIC_CREATE_TEST"})
+	require.NoError(t, err)
+	require.Len(t, settings, 1)
+	require.Equal(t, winner, settings[0].Value, "a later insert attempt must not overwrite the persisted value")
 }
 
 func TestInstanceSettingMemoRelatedSetting(t *testing.T) {

@@ -12,6 +12,7 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
+	"net/netip"
 	"strconv"
 	"strings"
 	"time"
@@ -55,25 +56,47 @@ func init() {
 }
 
 // safeDialContext is a net.Dialer.DialContext replacement that resolves the target
-// hostname and rejects any address that falls within a reserved/private IP range.
+// hostname, rejects disallowed reserved/private addresses, and dials an already
+// checked IP address so DNS cannot be rebound between validation and connection.
 func safeDialContext(ctx context.Context, network, addr string) (net.Conn, error) {
 	host, port, err := net.SplitHostPort(addr)
 	if err != nil {
 		return nil, errors.Errorf("webhook: invalid address %q", addr)
 	}
 
-	ips, err := net.DefaultResolver.LookupHost(ctx, host)
+	ips, err := net.DefaultResolver.LookupIPAddr(ctx, host)
 	if err != nil {
 		return nil, errors.Wrapf(err, "webhook: failed to resolve host %q", host)
 	}
 
-	for _, ipStr := range ips {
-		if ip := net.ParseIP(ipStr); ip != nil && isReservedIP(ip) {
+	validIPs := make([]net.IPAddr, 0, len(ips))
+	for _, ip := range ips {
+		if parsed, ok := netip.AddrFromSlice(ip.IP); !ok || !parsed.IsValid() {
+			continue
+		}
+		if isBlockedDestination(host, ip.IP) {
 			return nil, errors.Errorf("webhook: connection to reserved/private IP address is not allowed")
 		}
+		validIPs = append(validIPs, ip)
 	}
 
-	return (&net.Dialer{}).DialContext(ctx, network, net.JoinHostPort(host, port))
+	var dialErr error
+	dialer := &net.Dialer{}
+	for _, ip := range validIPs {
+		dialHost := ip.IP.String()
+		if ip.Zone != "" {
+			dialHost += "%" + ip.Zone
+		}
+		conn, err := dialer.DialContext(ctx, network, net.JoinHostPort(dialHost, port))
+		if err == nil {
+			return conn, nil
+		}
+		dialErr = err
+	}
+	if dialErr != nil {
+		return nil, errors.Wrapf(dialErr, "webhook: failed to connect to host %q", host)
+	}
+	return nil, errors.Errorf("webhook: host %q resolved to no IP addresses", host)
 }
 
 type WebhookRequestPayload struct {

@@ -1,10 +1,13 @@
 import { create } from "@bufbuild/protobuf";
 import { createContext, type ReactNode, useCallback, useContext, useMemo, useRef, useState } from "react";
 import { instanceServiceClient } from "@/connect";
+import { useAccessSetting, useUpdateInstanceSetting } from "@/hooks/useInstanceQueries";
 import {
   InstanceProfile,
   InstanceProfileSchema,
   InstanceSetting,
+  InstanceSetting_AccessSetting,
+  InstanceSetting_AccessSettingSchema,
   InstanceSetting_AISetting,
   InstanceSetting_AISettingSchema,
   InstanceSetting_GeneralSetting,
@@ -40,6 +43,7 @@ interface InstanceState {
 }
 
 interface InstanceContextValue extends InstanceState {
+  accessSetting: InstanceSetting_AccessSetting;
   generalSetting: InstanceSetting_GeneralSetting;
   memoRelatedSetting: InstanceSetting_MemoRelatedSetting;
   storageSetting: InstanceSetting_StorageSetting;
@@ -64,8 +68,17 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
   });
 
   const fetchedSettingsRef = useRef<Set<string>>(new Set());
+  const { data: queriedAccessSetting } = useAccessSetting();
+  const { mutateAsync: updateAccessSetting } = useUpdateInstanceSetting();
 
   // Memoize derived settings to prevent unnecessary recalculations
+  const accessSetting = useMemo((): InstanceSetting_AccessSetting => {
+    if (queriedAccessSetting) {
+      return queriedAccessSetting;
+    }
+    return create(InstanceSetting_AccessSettingSchema, { accessMode: state.profile.accessMode });
+  }, [queriedAccessSetting, state.profile.accessMode]);
+
   const generalSetting = useMemo((): InstanceSetting_GeneralSetting => {
     const setting = state.settings.find((s) => s.name === `${instanceSettingNamePrefix}GENERAL`);
     if (setting?.value.case === "generalSetting") {
@@ -153,7 +166,10 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const fetchSettings = useCallback(async (keys: InstanceSetting_Key[]) => {
-    const names = keys.map(buildInstanceSettingName).filter((name) => !fetchedSettingsRef.current.has(name));
+    const names = keys
+      .filter((key) => key !== InstanceSetting_Key.ACCESS)
+      .map(buildInstanceSettingName)
+      .filter((name) => !fetchedSettingsRef.current.has(name));
     if (names.length === 0) {
       return;
     }
@@ -178,6 +194,11 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const fetchSetting = useCallback(async (key: InstanceSetting_Key) => {
+    // ACCESS is always fetched and cached by useAccessSetting.
+    if (key === InstanceSetting_Key.ACCESS) {
+      return;
+    }
+
     const name = buildInstanceSettingName(key);
     if (fetchedSettingsRef.current.has(name)) {
       return;
@@ -195,18 +216,32 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const updateSetting = useCallback(async (setting: InstanceSetting) => {
-    const updatedSetting = await instanceServiceClient.updateInstanceSetting({ setting });
-    setState((prev) => ({
-      ...prev,
-      settings: [...prev.settings.filter((s) => s.name !== updatedSetting.name), updatedSetting],
-    }));
-  }, []);
+  const updateSetting = useCallback(
+    async (setting: InstanceSetting) => {
+      const isAccessSetting = setting.value.case === "accessSetting";
+      const updatedSetting = isAccessSetting
+        ? await updateAccessSetting(setting)
+        : await instanceServiceClient.updateInstanceSetting({ setting });
+      setState((prev) => ({
+        ...prev,
+        profile:
+          updatedSetting.value.case === "accessSetting"
+            ? {
+                ...prev.profile,
+                accessMode: updatedSetting.value.value.accessMode,
+              }
+            : prev.profile,
+        settings: isAccessSetting ? prev.settings : [...prev.settings.filter((s) => s.name !== updatedSetting.name), updatedSetting],
+      }));
+    },
+    [updateAccessSetting],
+  );
 
   // Memoize context value to prevent unnecessary re-renders of consumers
   const value = useMemo(
     () => ({
       ...state,
+      accessSetting,
       generalSetting,
       memoRelatedSetting,
       storageSetting,
@@ -219,6 +254,7 @@ export function InstanceProvider({ children }: { children: ReactNode }) {
     }),
     [
       state,
+      accessSetting,
       generalSetting,
       memoRelatedSetting,
       storageSetting,

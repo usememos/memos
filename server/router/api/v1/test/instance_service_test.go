@@ -34,6 +34,7 @@ func TestGetInstanceProfile(t *testing.T) {
 		require.Equal(t, "test-commit", resp.Commit)
 		require.True(t, resp.Demo)
 		require.Equal(t, "http://localhost:8080", resp.InstanceUrl)
+		require.Equal(t, v1pb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC, resp.AccessMode)
 
 		// Instance should not be initialized since no users exist at all.
 		require.Nil(t, resp.Admin)
@@ -231,6 +232,19 @@ func TestGetInstanceSetting(t *testing.T) {
 		require.Equal(t, "instance/settings/TAGS", resp.Name)
 		require.NotNil(t, resp.GetTagsSetting())
 		require.Empty(t, resp.GetTagsSetting().GetTags())
+	})
+
+	t.Run("GetInstanceSetting - access setting", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		resp, err := ts.Service.GetInstanceSetting(ctx, &v1pb.GetInstanceSettingRequest{
+			Name: "instance/settings/ACCESS",
+		})
+
+		require.NoError(t, err)
+		require.Equal(t, "instance/settings/ACCESS", resp.Name)
+		require.Equal(t, v1pb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC, resp.GetAccessSetting().GetAccessMode())
 	})
 
 	t.Run("GetInstanceSetting - notification setting requires admin", func(t *testing.T) {
@@ -451,6 +465,54 @@ func TestTestInstanceEmailSettingRequiresPasswordWhenSMTPIdentityChanges(t *test
 
 func TestUpdateInstanceSetting(t *testing.T) {
 	ctx := context.Background()
+
+	t.Run("UpdateInstanceSetting - access setting", func(t *testing.T) {
+		ts := NewTestService(t)
+		defer ts.Cleanup()
+
+		admin, err := ts.CreateHostUser(ctx, "access-admin")
+		require.NoError(t, err)
+		adminCtx := ts.CreateUserContext(ctx, admin.ID)
+
+		resp, err := ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/ACCESS",
+				Value: &v1pb.InstanceSetting_AccessSetting_{
+					AccessSetting: &v1pb.InstanceSetting_AccessSetting{
+						AccessMode: v1pb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE,
+					},
+				},
+			},
+		})
+		require.NoError(t, err)
+		require.Equal(t, v1pb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, resp.GetAccessSetting().GetAccessMode())
+
+		profile, err := ts.Service.GetInstanceProfile(ctx, &v1pb.GetInstanceProfileRequest{})
+		require.NoError(t, err)
+		require.Equal(t, v1pb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE, profile.AccessMode)
+
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/ACCESS",
+				Value: &v1pb.InstanceSetting_AccessSetting_{
+					AccessSetting: &v1pb.InstanceSetting_AccessSetting{},
+				},
+			},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "access_mode must be PRIVATE or PUBLIC")
+
+		_, err = ts.Service.UpdateInstanceSetting(adminCtx, &v1pb.UpdateInstanceSettingRequest{
+			Setting: &v1pb.InstanceSetting{
+				Name: "instance/settings/ACCESS",
+				Value: &v1pb.InstanceSetting_GeneralSetting_{
+					GeneralSetting: &v1pb.InstanceSetting_GeneralSetting{},
+				},
+			},
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "access setting is required")
+	})
 
 	t.Run("UpdateInstanceSetting - AI setting requires admin", func(t *testing.T) {
 		ts := NewTestService(t)

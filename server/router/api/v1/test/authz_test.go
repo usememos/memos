@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/internal/profile"
 	"github.com/usememos/memos/internal/util"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/auth"
@@ -22,8 +21,8 @@ func TestAuthorizerPrivateInstanceRegistration(t *testing.T) {
 	ts := NewTestService(t)
 	defer ts.Cleanup()
 
-	// InstanceURL empty => private instance.
-	authorizer := apiv1.NewAuthorizer(ts.Store, ts.Secret, &profile.Profile{InstanceURL: ""})
+	require.NoError(t, ts.SetInstanceAccessMode(ctx, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE))
+	authorizer := apiv1.NewAuthorizer(ts.Store, ts.Secret)
 
 	const (
 		createUser    = "/memos.api.v1.UserService/CreateUser"
@@ -40,6 +39,10 @@ func TestAuthorizerPrivateInstanceRegistration(t *testing.T) {
 	require.NoError(t, authorizer.CheckAccess(ctx, signIn, nil))
 	require.NoError(t, authorizer.CheckAccess(ctx, getSharedMemo, nil))
 	require.ErrorIs(t, authorizer.CheckAccess(ctx, listMemos, nil), apiv1.ErrUnauthenticated)
+
+	// Policy reads are fresh: changing to PUBLIC immediately opens browsing.
+	require.NoError(t, ts.SetInstanceAccessMode(ctx, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC))
+	require.NoError(t, authorizer.CheckAccess(ctx, listMemos, nil))
 
 	// Once a user exists, CreateUser remains reachable so UserService can enforce
 	// disallow_user_registration and disallow_password_auth.
@@ -68,8 +71,8 @@ func TestAuthorizerAccessTokenAlwaysWorksOnPrivateInstance(t *testing.T) {
 		CreatedAt:   timestamppb.Now(),
 	}))
 
-	// InstanceURL empty => private instance; the PAT must still authenticate.
-	authorizer := apiv1.NewAuthorizer(ts.Store, ts.Secret, &profile.Profile{InstanceURL: ""})
+	require.NoError(t, ts.SetInstanceAccessMode(ctx, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE))
+	authorizer := apiv1.NewAuthorizer(ts.Store, ts.Secret)
 
 	result := authorizer.Authenticate(ctx, "Bearer "+token)
 	require.NotNil(t, result)

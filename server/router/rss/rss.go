@@ -15,7 +15,6 @@ import (
 	"github.com/labstack/echo/v5"
 
 	"github.com/usememos/memos/internal/markdown"
-	"github.com/usememos/memos/internal/profile"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -40,7 +39,6 @@ type cacheEntry struct {
 }
 
 type RSSService struct {
-	Profile         *profile.Profile
 	Store           *store.Store
 	MarkdownService markdown.Service
 
@@ -55,9 +53,9 @@ type RSSHeading struct {
 	Language    string
 }
 
-func NewRSSService(profile *profile.Profile, store *store.Store, markdownService markdown.Service) *RSSService {
+// NewRSSService creates an RSS service backed by the store and markdown renderer.
+func NewRSSService(store *store.Store, markdownService markdown.Service) *RSSService {
 	return &RSSService{
-		Profile:         profile,
 		Store:           store,
 		MarkdownService: markdownService,
 		cache:           make(map[string]*cacheEntry),
@@ -70,11 +68,15 @@ func (s *RSSService) RegisterRoutes(g *echo.Group) {
 }
 
 func (s *RSSService) GetExploreRSS(c *echo.Context) error {
-	if s.Profile == nil || !s.Profile.AllowAnonymous() {
+	ctx := c.Request().Context()
+	allowAnonymous, err := s.Store.AllowsAnonymousAccess(ctx)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get instance access policy").Wrap(err)
+	}
+	if !allowAnonymous {
 		return echo.NewHTTPError(http.StatusNotFound, "RSS is unavailable")
 	}
 
-	ctx := c.Request().Context()
 	cacheKey := "explore"
 
 	// Check cache first
@@ -113,11 +115,15 @@ func (s *RSSService) GetExploreRSS(c *echo.Context) error {
 }
 
 func (s *RSSService) GetUserRSS(c *echo.Context) error {
-	if s.Profile == nil || !s.Profile.AllowAnonymous() {
+	ctx := c.Request().Context()
+	allowAnonymous, err := s.Store.AllowsAnonymousAccess(ctx)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "failed to get instance access policy").Wrap(err)
+	}
+	if !allowAnonymous {
 		return echo.NewHTTPError(http.StatusNotFound, "RSS is unavailable")
 	}
 
-	ctx := c.Request().Context()
 	username := c.Param("username")
 	cacheKey := "user:" + username
 

@@ -160,13 +160,13 @@ func TestServeAttachmentFile_S3MinIO(t *testing.T) {
 
 	// Authorization happens before storage resolution, so a private instance
 	// must not expose object bytes.
-	fs.Profile.InstanceURL = ""
+	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE)
 	privateRecorder := httptest.NewRecorder()
 	e.ServeHTTP(privateRecorder, httptest.NewRequest(http.MethodGet, textURL, nil))
 	require.Equal(t, http.StatusUnauthorized, privateRecorder.Code)
 	require.Empty(t, privateRecorder.Header().Get(echo.HeaderLocation))
 
-	fs.Profile.InstanceURL = "http://localhost:8080"
+	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
 	textRecorder := httptest.NewRecorder()
 	e.ServeHTTP(textRecorder, httptest.NewRequest(http.MethodGet, textURL, nil))
 	require.Equal(t, http.StatusOK, textRecorder.Code)
@@ -218,7 +218,7 @@ func TestServeAttachmentFile_S3MinIO(t *testing.T) {
 
 func TestServeAttachmentFile_ShareTokenAllowsDirectMemoAttachment(t *testing.T) {
 	ctx := context.Background()
-	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
 	defer cleanup()
 
 	creator, err := svc.Store.CreateUser(ctx, &store.User{
@@ -261,6 +261,7 @@ func TestServeAttachmentFile_ShareTokenAllowsDirectMemoAttachment(t *testing.T) 
 	fs.RegisterRoutes(e)
 
 	req := httptest.NewRequest(http.MethodGet, fmt.Sprintf("/file/%s/%s?share_token=%s", attachment.Name, attachment.Filename, shareToken), nil)
+	req.AddCookie(newExpiredRefreshTokenCookie(ctx, t, stores, creator.ID, svc.Secret))
 	rec := httptest.NewRecorder()
 	e.ServeHTTP(rec, req)
 
@@ -679,6 +680,7 @@ func newShareAttachmentTestServices(ctx context.Context, t *testing.T) (*apiv1se
 	t.Helper()
 
 	testStore := teststore.NewTestingStore(ctx, t)
+	setInstanceAccessMode(ctx, t, testStore, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
 	testProfile := &profile.Profile{
 		Demo:        true,
 		Version:     "test-1.0.0",
@@ -703,6 +705,17 @@ func newShareAttachmentTestServices(ctx context.Context, t *testing.T) (*apiv1se
 	}
 }
 
+func setInstanceAccessMode(ctx context.Context, t *testing.T, stores *store.Store, mode storepb.InstanceAccessMode) {
+	t.Helper()
+	_, err := stores.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_ACCESS,
+		Value: &storepb.InstanceSetting_AccessSetting{AccessSetting: &storepb.InstanceAccessSetting{
+			AccessMode: mode,
+		}},
+	})
+	require.NoError(t, err)
+}
+
 // makePNGDataURI returns a minimal valid PNG encoded as a data URI, suitable for a
 // user avatar.
 func makePNGDataURI(t *testing.T) string {
@@ -716,10 +729,10 @@ func makePNGDataURI(t *testing.T) string {
 
 // TestServeAttachmentFile_PrivateInstanceDeniesAnonymous verifies that a public
 // memo's attachment is served to anonymous visitors on an open instance but denied
-// on a private instance (no InstanceURL configured).
+// when the instance access policy is private.
 func TestServeAttachmentFile_PrivateInstanceDeniesAnonymous(t *testing.T) {
 	ctx := context.Background()
-	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
 	defer cleanup()
 
 	creator, err := svc.Store.CreateUser(ctx, &store.User{
@@ -759,11 +772,20 @@ func TestServeAttachmentFile_PrivateInstanceDeniesAnonymous(t *testing.T) {
 	}
 
 	// Open instance: anonymous access to a public memo's attachment is allowed.
-	fs.Profile.InstanceURL = "http://localhost:8080"
+	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
 	require.Equal(t, http.StatusOK, anonymousGet())
 
+	// A stale browser session must not prevent access to an otherwise public
+	// attachment. Public authorization is independent of invalid credentials.
+	req := httptest.NewRequest(http.MethodGet, url, nil)
+	req.AddCookie(newExpiredRefreshTokenCookie(ctx, t, stores, creator.ID, svc.Secret))
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "public content", rec.Body.String())
+
 	// Private instance: the same anonymous request is denied.
-	fs.Profile.InstanceURL = ""
+	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE)
 	require.Equal(t, http.StatusUnauthorized, anonymousGet())
 }
 
@@ -772,10 +794,10 @@ func TestServeAttachmentFile_PrivateInstanceDeniesAnonymous(t *testing.T) {
 // instance.
 func TestServeUserAvatar_PrivateInstanceRequiresAuth(t *testing.T) {
 	ctx := context.Background()
-	svc, fs, _, cleanup := newShareAttachmentTestServices(ctx, t)
+	svc, fs, stores, cleanup := newShareAttachmentTestServices(ctx, t)
 	defer cleanup()
 
-	_, err := svc.Store.CreateUser(ctx, &store.User{
+	owner, err := svc.Store.CreateUser(ctx, &store.User{
 		Username:  "avatar-owner",
 		Role:      store.RoleUser,
 		Email:     "avatar-owner@example.com",
@@ -786,19 +808,47 @@ func TestServeUserAvatar_PrivateInstanceRequiresAuth(t *testing.T) {
 	e := echo.New()
 	fs.RegisterRoutes(e)
 
-	anonymousGet := func() int {
+	anonymousGet := func() *httptest.ResponseRecorder {
 		rec := httptest.NewRecorder()
 		e.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/file/users/avatar-owner/avatar", nil))
-		return rec.Code
+		return rec
 	}
 
 	// Open instance: anonymous avatar access is allowed.
-	fs.Profile.InstanceURL = "http://localhost:8080"
-	require.Equal(t, http.StatusOK, anonymousGet())
+	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
+	publicRec := anonymousGet()
+	require.Equal(t, http.StatusOK, publicRec.Code)
+	require.Equal(t, cacheMaxAge, publicRec.Header().Get(echo.HeaderCacheControl))
+
+	// A stale browser session must not turn a public avatar request into an
+	// authentication error.
+	req := httptest.NewRequest(http.MethodGet, "/file/users/avatar-owner/avatar", nil)
+	req.AddCookie(newExpiredRefreshTokenCookie(ctx, t, stores, owner.ID, svc.Secret))
+	rec := httptest.NewRecorder()
+	e.ServeHTTP(rec, req)
+	require.Equal(t, http.StatusOK, rec.Code)
+	require.Equal(t, "image/png", rec.Header().Get(echo.HeaderContentType))
 
 	// Private instance: anonymous avatar access is denied.
-	fs.Profile.InstanceURL = ""
-	require.Equal(t, http.StatusUnauthorized, anonymousGet())
+	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE)
+	require.Equal(t, http.StatusUnauthorized, anonymousGet().Code)
+
+	// An authenticated private-instance response must not be stored by shared
+	// or browser caches.
+	tokenID := util.GenUUID()
+	require.NoError(t, stores.AddUserRefreshToken(ctx, owner.ID, &storepb.RefreshTokensUserSetting_RefreshToken{
+		TokenId:   tokenID,
+		ExpiresAt: timestamppb.New(time.Now().Add(auth.RefreshTokenDuration)),
+		CreatedAt: timestamppb.Now(),
+	}))
+	refreshToken, _, err := auth.GenerateRefreshToken(owner.ID, tokenID, []byte(svc.Secret))
+	require.NoError(t, err)
+	privateReq := httptest.NewRequest(http.MethodGet, "/file/users/avatar-owner/avatar", nil)
+	privateReq.AddCookie(&http.Cookie{Name: auth.RefreshTokenCookieName, Value: refreshToken})
+	privateRec := httptest.NewRecorder()
+	e.ServeHTTP(privateRec, privateReq)
+	require.Equal(t, http.StatusOK, privateRec.Code)
+	require.Equal(t, privateAttachmentCacheControl, privateRec.Header().Get(echo.HeaderCacheControl))
 }
 
 // TestServeAttachmentFile_RefreshCookieAuthenticatesOwner verifies that the file
@@ -862,4 +912,17 @@ func TestServeAttachmentFile_RefreshCookieAuthenticatesOwner(t *testing.T) {
 	e.ServeHTTP(rec, req)
 	require.Equal(t, http.StatusOK, rec.Code)
 	require.Equal(t, "secret content", rec.Body.String())
+}
+
+func newExpiredRefreshTokenCookie(ctx context.Context, t *testing.T, stores *store.Store, userID int32, secret string) *http.Cookie {
+	t.Helper()
+	tokenID := util.GenUUID()
+	require.NoError(t, stores.AddUserRefreshToken(ctx, userID, &storepb.RefreshTokensUserSetting_RefreshToken{
+		TokenId:   tokenID,
+		ExpiresAt: timestamppb.New(time.Now().Add(-time.Hour)),
+		CreatedAt: timestamppb.New(time.Now().Add(-2 * time.Hour)),
+	}))
+	refreshToken, _, err := auth.GenerateRefreshToken(userID, tokenID, []byte(secret))
+	require.NoError(t, err)
+	return &http.Cookie{Name: auth.RefreshTokenCookieName, Value: refreshToken}
 }

@@ -382,6 +382,8 @@
       "delete-account-description": "Permanently remove this account and all associated access from this instance. This action cannot be undone."
     },
     "instance": {
+      "allow-public-access": "Allow public access",
+      "allow-public-access-description": "Allow signed-out visitors to browse public memos. Shared memo links remain available when this is disabled.",
       "disallow-change-nickname": "Disallow changing nickname",
       "disallow-change-username": "Disallow changing username",
       "disallow-password-auth": "Disallow password auth",
@@ -390,7 +392,7 @@
       "saturday": "Saturday",
       "sunday": "Sunday",
       "week-start-day": "Week start day",
-      "access-description": "Control sign-up, authentication, profile editing, and calendar defaults for this instance.",
+      "access-description": "Control anonymous browsing, sign-up, authentication, profile editing, and calendar defaults for this instance.",
       "access-title": "Access and policies",
       "disallow-change-nickname-description": "Prevent users from changing their display name.",
       "disallow-change-username-description": "Prevent users from changing their login username.",

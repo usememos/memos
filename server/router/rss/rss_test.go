@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/usememos/memos/internal/markdown"
-	"github.com/usememos/memos/internal/profile"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 	teststore "github.com/usememos/memos/store/test"
 )
@@ -20,6 +20,7 @@ func TestPublicRSSExcludesComments(t *testing.T) {
 	ctx := context.Background()
 	stores := teststore.NewTestingStore(ctx, t)
 	defer stores.Close()
+	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PUBLIC)
 
 	user, err := stores.CreateUser(ctx, &store.User{
 		Username: "rss-comment-owner",
@@ -51,7 +52,7 @@ func TestPublicRSSExcludesComments(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	service := NewRSSService(&profile.Profile{InstanceURL: "https://memos.example.com"}, stores, markdown.NewService())
+	service := NewRSSService(stores, markdown.NewService())
 
 	exploreRSS := renderRSS(t, service, "/explore/rss.xml", "")
 	require.Contains(t, exploreRSS, "public parent should stay in rss")
@@ -63,7 +64,11 @@ func TestPublicRSSExcludesComments(t *testing.T) {
 }
 
 func TestPrivateInstanceDisablesRSS(t *testing.T) {
-	service := NewRSSService(&profile.Profile{}, nil, nil)
+	ctx := context.Background()
+	stores := teststore.NewTestingStore(ctx, t)
+	defer stores.Close()
+	setInstanceAccessMode(ctx, t, stores, storepb.InstanceAccessMode_INSTANCE_ACCESS_MODE_PRIVATE)
+	service := NewRSSService(stores, nil)
 
 	for _, test := range []struct {
 		name     string
@@ -94,6 +99,17 @@ func TestPrivateInstanceDisablesRSS(t *testing.T) {
 			require.Equal(t, http.StatusNotFound, httpError.Code)
 		})
 	}
+}
+
+func setInstanceAccessMode(ctx context.Context, t *testing.T, stores *store.Store, mode storepb.InstanceAccessMode) {
+	t.Helper()
+	_, err := stores.UpsertInstanceSetting(ctx, &storepb.InstanceSetting{
+		Key: storepb.InstanceSettingKey_ACCESS,
+		Value: &storepb.InstanceSetting_AccessSetting{AccessSetting: &storepb.InstanceAccessSetting{
+			AccessMode: mode,
+		}},
+	})
+	require.NoError(t, err)
 }
 
 func renderRSS(t *testing.T, service *RSSService, target string, username string) string {

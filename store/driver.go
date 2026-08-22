@@ -38,6 +38,8 @@ type Driver interface {
 	DeleteMemoRelation(ctx context.Context, delete *DeleteMemoRelation) error
 
 	// InstanceSetting model related methods.
+	// CreateInstanceSettingIfNotExists atomically creates the setting when its name is absent and reports whether it inserted the row.
+	CreateInstanceSettingIfNotExists(ctx context.Context, create *InstanceSetting) (bool, error)
 	UpsertInstanceSetting(ctx context.Context, upsert *InstanceSetting) (*InstanceSetting, error)
 	ListInstanceSettings(ctx context.Context, find *FindInstanceSetting) ([]*InstanceSetting, error)
 	DeleteInstanceSetting(ctx context.Context, delete *DeleteInstanceSetting) error

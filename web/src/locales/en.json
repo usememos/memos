@@ -604,8 +604,10 @@
       "transcription-warning-no-key": "The selected provider has no API key set. Edit the integration above to add one."
     },
     "instance": {
-      "access-description": "Control sign-up, authentication, profile editing, and calendar defaults for this instance.",
+      "access-description": "Control anonymous browsing, sign-up, authentication, profile editing, and calendar defaults for this instance.",
       "access-title": "Access and policies",
+      "allow-public-access-description": "Allow signed-out visitors to browse public memos. Shared memo links remain available when this is disabled.",
+      "allow-public-access": "Allow public access",
       "disallow-change-nickname-description": "Prevent users from changing their display name.",
       "disallow-change-nickname": "Disallow changing nickname",
       "disallow-change-username-description": "Prevent users from changing their login username.",
