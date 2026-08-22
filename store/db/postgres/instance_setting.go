@@ -4,9 +4,12 @@ import (
 	"context"
 	"strings"
 
+	"github.com/pkg/errors"
+
 	"github.com/usememos/memos/store"
 )
 
+// CreateInstanceSettingIfNotExists atomically creates the setting when its name is absent and reports whether it inserted the row.
 func (d *DB) CreateInstanceSettingIfNotExists(ctx context.Context, create *store.InstanceSetting) (bool, error) {
 	stmt := `
 		INSERT INTO system_setting (
@@ -17,11 +20,11 @@ func (d *DB) CreateInstanceSettingIfNotExists(ctx context.Context, create *store
 	`
 	result, err := d.db.ExecContext(ctx, stmt, create.Name, create.Value, create.Description)
 	if err != nil {
-		return false, err
+		return false, errors.Wrap(err, "failed to conditionally create instance setting")
 	}
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return false, err
+		return false, errors.Wrap(err, "failed to inspect conditional instance setting insert")
 	}
 	return rowsAffected == 1, nil
 }

@@ -155,7 +155,10 @@ func (s *Store) initializeInstanceAccessSetting(ctx context.Context) error {
 		Name:  storepb.InstanceSettingKey_ACCESS.String(),
 		Value: string(value),
 	})
-	return err
+	if err != nil {
+		return errors.Wrap(err, "failed to conditionally create initial instance access setting")
+	}
+	return nil
 }
 
 // applyMigrations applies all necessary migration files between current and target schema versions.
