@@ -76,16 +76,22 @@ const Editor = forwardRef(function Editor(props: EditorProps, ref: React.Forward
     const view = new EditorView({
       state: EditorState.create({
         doc: initialContent,
-        extensions: buildEditorExtensions({
-          placeholder,
-          onChange: (md) => {
-            if (!applyingExternalContentRef.current) onChangeRef.current(md);
-          },
-          onFiles: (files, position) => onFilesRef.current(files, position),
-          onUpdate: () => listenersRef.current.forEach((l) => l()),
-          onSubmit: () => onSubmitRef.current(),
-          getTags: () => tagsRef.current,
-        }),
+        extensions: [
+          buildEditorExtensions({
+            placeholder,
+            onChange: (md) => {
+              if (!applyingExternalContentRef.current) onChangeRef.current(md);
+            },
+            onFiles: (files, position) => onFilesRef.current(files, position),
+            onUpdate: () => listenersRef.current.forEach((l) => l()),
+            onSubmit: () => onSubmitRef.current(),
+            getTags: () => tagsRef.current,
+          }),
+          EditorView.contentAttributes.of({
+            autocorrect: "on",
+            autocapitalize: "on",
+          }),
+        ],
       }),
       parent: hostRef.current,
     });
