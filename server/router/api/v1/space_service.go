@@ -255,9 +255,13 @@ func (s *APIV1Service) CreateSpaceMember(ctx context.Context, request *v1pb.Crea
 	if err := requireSpaceAdministrator(callerMembership); err != nil {
 		return nil, err
 	}
-	targetUser, err := ResolveUserByName(ctx, s.Store, request.SpaceMember.User)
+	targetUsername, err := parseUsernameFromName(request.SpaceMember.User)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid member user: %v", err)
+	}
+	targetUser, err := s.Store.GetUser(ctx, &store.FindUser{Username: &targetUsername})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get member user: %v", err)
 	}
 	if targetUser == nil {
 		return nil, status.Error(codes.NotFound, "user not found")
@@ -401,14 +405,35 @@ func (s *APIV1Service) UpdateSpaceMember(ctx context.Context, request *v1pb.Upda
 	if request.GetSpaceMember() == nil {
 		return nil, status.Error(codes.InvalidArgument, "space member is required")
 	}
-	if request.UpdateMask == nil || len(request.UpdateMask.Paths) != 1 || request.UpdateMask.Paths[0] != "role" {
-		return nil, status.Error(codes.InvalidArgument, "update mask must contain only role")
+	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
+		return nil, status.Error(codes.InvalidArgument, "update mask must include role")
+	}
+	roleIncluded := false
+	userIncluded := false
+	for _, path := range request.UpdateMask.Paths {
+		switch path {
+		case "role":
+			roleIncluded = true
+		case "user":
+			// grpc-gateway infers user from the schema-required REST body. It is
+			// accepted as immutable identity context, never as a mutable field.
+			userIncluded = true
+		default:
+			return nil, status.Errorf(codes.InvalidArgument, "unsupported update mask path: %s", path)
+		}
+	}
+	if !roleIncluded {
+		return nil, status.Error(codes.InvalidArgument, "update mask must include role")
 	}
 	space, targetUser, callerMembership, targetMembership, err := s.resolveSpaceMemberResource(ctx, request.SpaceMember.Name, currentUser)
 	if err != nil {
 		return nil, err
 	}
-	if request.SpaceMember.User != "" && request.SpaceMember.User != BuildUserName(targetUser.Username) {
+	expectedUser := BuildUserName(targetUser.Username)
+	if userIncluded && request.SpaceMember.User == "" {
+		return nil, status.Error(codes.InvalidArgument, "space member user is required when included in the update mask")
+	}
+	if request.SpaceMember.User != "" && request.SpaceMember.User != expectedUser {
 		return nil, status.Error(codes.InvalidArgument, "space member user does not match name")
 	}
 	if err := requireSpaceAdministrator(callerMembership); err != nil {

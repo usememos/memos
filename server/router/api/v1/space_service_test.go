@@ -2,10 +2,14 @@ package v1
 
 import (
 	"context"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -183,4 +187,86 @@ func TestSpaceServiceHidesMembershipForInactiveUser(t *testing.T) {
 		Name: buildSpaceMemberName("inactive-member-space", member.Username),
 	})
 	require.Equal(t, codes.NotFound, status.Code(err))
+}
+
+func TestUpdateSpaceMemberAcceptsGatewayInferredIdentityMask(t *testing.T) {
+	ctx := context.Background()
+	service := newIntegrationService(t)
+	owner := createSpaceTestUser(ctx, t, service, "gateway-owner", store.RoleUser)
+	member := createSpaceTestUser(ctx, t, service, "gateway-member", store.RoleUser)
+
+	space, err := service.CreateSpace(userCtx(ctx, owner.ID), &v1pb.CreateSpaceRequest{
+		SpaceId: "gateway-space",
+		Space:   &v1pb.Space{Title: "Gateway Space"},
+	})
+	require.NoError(t, err)
+	createdMember, err := service.CreateSpaceMember(userCtx(ctx, owner.ID), &v1pb.CreateSpaceMemberRequest{
+		Parent: space.Name,
+		SpaceMember: &v1pb.SpaceMember{
+			User: BuildUserName(member.Username),
+			Role: v1pb.SpaceMember_USER,
+		},
+	})
+	require.NoError(t, err)
+
+	mux := runtime.NewServeMux()
+	require.NoError(t, v1pb.RegisterSpaceServiceHandlerServer(ctx, mux, service))
+	patchMember := func(body string) *httptest.ResponseRecorder {
+		t.Helper()
+		request := httptest.NewRequest(http.MethodPatch, "/api/v1/"+createdMember.Name, strings.NewReader(body))
+		request.Header.Set("Content-Type", "application/json")
+		request = request.WithContext(userCtx(request.Context(), owner.ID))
+		response := httptest.NewRecorder()
+		mux.ServeHTTP(response, request)
+		return response
+	}
+
+	response := patchMember(`{"user":"users/gateway-member","role":"ADMIN"}`)
+	require.Equal(t, http.StatusOK, response.Code, response.Body.String())
+
+	spaceUID, err := ExtractSpaceUIDFromName(space.Name)
+	require.NoError(t, err)
+	storedSpace, err := service.Store.GetSpace(ctx, &store.FindSpace{UID: &spaceUID})
+	require.NoError(t, err)
+	require.NotNil(t, storedSpace)
+	storedMember, err := service.Store.GetSpaceMember(ctx, &store.FindSpaceMember{SpaceID: &storedSpace.ID, UserID: &member.ID})
+	require.NoError(t, err)
+	require.NotNil(t, storedMember)
+	require.Equal(t, store.SpaceMemberRoleAdmin, storedMember.Role)
+
+	response = patchMember(`{"user":"users/gateway-owner","role":"USER"}`)
+	require.Equal(t, http.StatusBadRequest, response.Code, response.Body.String())
+	storedMember, err = service.Store.GetSpaceMember(ctx, &store.FindSpaceMember{SpaceID: &storedSpace.ID, UserID: &member.ID})
+	require.NoError(t, err)
+	require.NotNil(t, storedMember)
+	require.Equal(t, store.SpaceMemberRoleAdmin, storedMember.Role, "a mismatched immutable user must not update the membership")
+}
+
+func TestCreateSpaceMemberClassifiesTargetUserErrors(t *testing.T) {
+	ctx := context.Background()
+	service := newIntegrationService(t)
+	owner := createSpaceTestUser(ctx, t, service, "lookup-owner", store.RoleUser)
+	target := createSpaceTestUser(ctx, t, service, "lookup-target", store.RoleUser)
+	space, err := service.CreateSpace(userCtx(ctx, owner.ID), &v1pb.CreateSpaceRequest{
+		SpaceId: "lookup-space",
+		Space:   &v1pb.Space{Title: "Lookup Space"},
+	})
+	require.NoError(t, err)
+
+	_, err = service.CreateSpaceMember(userCtx(ctx, owner.ID), &v1pb.CreateSpaceMemberRequest{
+		Parent:      space.Name,
+		SpaceMember: &v1pb.SpaceMember{User: "invalid-user-name", Role: v1pb.SpaceMember_USER},
+	})
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
+
+	// SQLite permits a text value in this integer column. Corrupt only the
+	// target row so authentication and Space authorization still succeed, then
+	// require the target lookup failure to remain a server error.
+	_, err = service.Store.GetDriver().GetDB().ExecContext(ctx, "UPDATE user SET created_ts = ? WHERE id = ?", "not-an-integer", target.ID)
+	require.NoError(t, err)
+	_, err = service.CreateSpaceMember(userCtx(ctx, owner.ID), &v1pb.CreateSpaceMemberRequest{
+		Parent:      space.Name,
+		SpaceMember: &v1pb.SpaceMember{User: BuildUserName(target.Username), Role: v1pb.SpaceMember_USER},
+	})
+	require.Equal(t, codes.Internal, status.Code(err))
 }
