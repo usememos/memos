@@ -35,22 +35,29 @@ type Attachment struct {
 
 	// The related memo ID.
 	MemoID *int32
+	// Policy is present for transport-facing direct-link mutations. Drivers
+	// revalidate it in the same transaction as the attachment insert.
+	Policy *MemoWritePolicy
 
 	// Composed field
 	MemoUID *string
 }
 
 type FindAttachment struct {
-	GetBlob          bool
-	ID               *int32
-	UID              *string
-	CreatorID        *int32
-	Filename         *string
-	FilenameSearch   *string
-	MemoID           *int32
-	MemoIDList       []int32
-	HasRelatedMemo   bool
-	Filters          []string
+	GetBlob        bool
+	ID             *int32
+	UID            *string
+	CreatorID      *int32
+	Filename       *string
+	FilenameSearch *string
+	MemoID         *int32
+	MemoIDList     []int32
+	HasRelatedMemo bool
+	Filters        []string
+	// Access applies memo-local authorization to linked attachments
+	// before pagination. Unlinked attachments are visible only to the active
+	// matching creator. Nil is reserved for trusted internal callers.
+	Access           *MemoAccessScope
 	Limit            *int
 	Offset           *int
 	SkipDefaultLimit bool
@@ -63,6 +70,10 @@ type UpdateAttachment struct {
 	Filename  *string
 	MemoID    *int32
 	Payload   *storepb.AttachmentPayload
+	// Policy is present for transport-facing updates. Drivers discover the
+	// current attachment binding and authorize any linked memo in the same
+	// transaction as the update.
+	Policy *MemoWritePolicy
 }
 
 type DeleteAttachment struct {
@@ -76,20 +87,62 @@ const (
 )
 
 type deleteAttachmentStorageFailpointKey struct{}
+type createAttachmentPolicyFailpointKey struct{}
+type createAttachmentPostCommitFailpointKey struct{}
 
 // ErrDeleteAttachmentStorageFailpoint is returned by the test-only attachment storage failpoint.
 var ErrDeleteAttachmentStorageFailpoint = errors.New("delete attachment storage failpoint")
+
+// ErrCreateAttachmentPostCommitFailpoint is returned after the test-only attachment create failpoint persists a row.
+var ErrCreateAttachmentPostCommitFailpoint = errors.New("create attachment post-commit failpoint")
 
 // WithDeleteAttachmentStorageFailpoint forces DeleteAttachmentStorage to return a failpoint error.
 func WithDeleteAttachmentStorageFailpoint(ctx context.Context) context.Context {
 	return context.WithValue(ctx, deleteAttachmentStorageFailpointKey{}, true)
 }
 
+// WithCreateAttachmentPolicyFailpoint forces a policy-bearing attachment create to fail before its database insert.
+func WithCreateAttachmentPolicyFailpoint(ctx context.Context) context.Context {
+	return context.WithValue(ctx, createAttachmentPolicyFailpointKey{}, true)
+}
+
+// WithCreateAttachmentPostCommitFailpoint forces CreateAttachment to return an error after its database insert succeeds.
+func WithCreateAttachmentPostCommitFailpoint(ctx context.Context) context.Context {
+	return context.WithValue(ctx, createAttachmentPostCommitFailpointKey{}, true)
+}
+
 func (s *Store) CreateAttachment(ctx context.Context, create *Attachment) (*Attachment, error) {
 	if !base.UIDMatcher.MatchString(create.UID) {
 		return nil, errors.New("invalid uid")
 	}
-	return s.driver.CreateAttachment(ctx, create)
+	if err := validateMemoWritePolicy(create.Policy); err != nil {
+		return nil, err
+	}
+	var (
+		attachment *Attachment
+		err        error
+	)
+	if create.Policy != nil {
+		if create.MemoID == nil {
+			return nil, errors.New("attachment write policy requires a memo")
+		}
+		if create.CreatorID != create.Policy.ActorUserID {
+			return nil, ErrMemoPermissionDenied
+		}
+		if shouldFailCreateAttachmentPolicy(ctx) {
+			return nil, ErrMemoSpaceMembershipRequired
+		}
+		attachment, err = s.driver.CreateAttachment(ctx, create)
+	} else {
+		attachment, err = s.driver.CreateAttachment(ctx, create)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if shouldFailCreateAttachmentPostCommit(ctx) {
+		return nil, ErrCreateAttachmentPostCommitFailpoint
+	}
+	return attachment, nil
 }
 
 func (s *Store) ListAttachments(ctx context.Context, find *FindAttachment) ([]*Attachment, error) {
@@ -124,6 +177,15 @@ func (s *Store) GetAttachment(ctx context.Context, find *FindAttachment) (*Attac
 func (s *Store) UpdateAttachment(ctx context.Context, update *UpdateAttachment) error {
 	if update.UID != nil && !base.UIDMatcher.MatchString(*update.UID) {
 		return errors.New("invalid uid")
+	}
+	if err := validateMemoWritePolicy(update.Policy); err != nil {
+		return err
+	}
+	if update.Policy != nil {
+		if update.MemoID != nil {
+			return errors.New("policy-bearing attachment updates cannot change memo binding")
+		}
+		return s.driver.UpdateAttachment(ctx, update)
 	}
 	return s.driver.UpdateAttachment(ctx, update)
 }
@@ -166,7 +228,10 @@ func (s *Store) DeleteAttachments(ctx context.Context, attachments []*Attachment
 	if err := s.driver.DeleteAttachments(ctx, deletes); err != nil {
 		return err
 	}
+	return s.deleteAttachmentStorageSnapshots(ctx, attachments)
+}
 
+func (s *Store) deleteAttachmentStorageSnapshots(ctx context.Context, attachments []*Attachment) error {
 	instanceStorageSetting, instanceStorageSettingErr := s.getAttachmentStorageCleanupInstanceSetting(ctx, attachments)
 	for _, attachment := range attachments {
 		if attachment == nil {
@@ -185,7 +250,6 @@ func (s *Store) DeleteAttachments(ctx context.Context, attachments []*Attachment
 			slog.Warn("Failed to delete attachment storage", slog.Any("err", err))
 		}
 	}
-
 	return nil
 }
 
@@ -330,5 +394,15 @@ func (s *Store) deleteAttachmentDerivedCaches(attachment *Attachment) {
 
 func shouldFailDeleteAttachmentStorage(ctx context.Context) bool {
 	failpoint, ok := ctx.Value(deleteAttachmentStorageFailpointKey{}).(bool)
+	return ok && failpoint
+}
+
+func shouldFailCreateAttachmentPolicy(ctx context.Context) bool {
+	failpoint, ok := ctx.Value(createAttachmentPolicyFailpointKey{}).(bool)
+	return ok && failpoint
+}
+
+func shouldFailCreateAttachmentPostCommit(ctx context.Context) bool {
+	failpoint, ok := ctx.Value(createAttachmentPostCommitFailpointKey{}).(bool)
 	return ok && failpoint
 }

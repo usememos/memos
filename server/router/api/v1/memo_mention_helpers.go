@@ -7,21 +7,9 @@ import (
 	"github.com/pkg/errors"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/server/access"
 	"github.com/usememos/memos/store"
 )
-
-// suppressMentionKey is a context key used to suppress mention notification side effects
-// when CreateMemo is called internally from CreateMemoComment.
-type suppressMentionKey struct{}
-
-func withSuppressMentionNotifications(ctx context.Context) context.Context {
-	return context.WithValue(ctx, suppressMentionKey{}, true)
-}
-
-func isMentionNotificationSuppressed(ctx context.Context) bool {
-	v, ok := ctx.Value(suppressMentionKey{}).(bool)
-	return ok && v
-}
 
 func (s *APIV1Service) resolveMentionTargets(ctx context.Context, content string) (map[int32]*store.User, error) {
 	targets := make(map[int32]*store.User)
@@ -53,25 +41,59 @@ func (s *APIV1Service) resolveMentionTargets(ctx context.Context, content string
 	return targets, nil
 }
 
-func canUserAccessMentionContext(target *store.User, memo *store.Memo, relatedMemo *store.Memo) bool {
-	if target == nil || memo == nil {
-		return false
-	}
-
-	if relatedMemo != nil {
-		if relatedMemo.Visibility == store.Private && target.ID != relatedMemo.CreatorID {
-			return false
-		}
-	}
-
-	if memo.Visibility == store.Private && target.ID != memo.CreatorID {
-		return false
-	}
-
-	return true
+// mentionContextFacts holds the viewer-independent authorization facts for a
+// mention's memo and its optional context memo. They are resolved once per
+// dispatch and reused for every mentioned user.
+type mentionContextFacts struct {
+	memo    access.MemoReadFacts
+	related *access.MemoReadFacts
 }
 
-func shouldSkipMentionInbox(target *store.User, memo *store.Memo, relatedMemo *store.Memo) bool {
+func (s *APIV1Service) resolveMentionContextFacts(ctx context.Context, memo *store.Memo, relatedMemo *store.Memo) (*mentionContextFacts, error) {
+	memoFacts, err := access.ResolveMemoReadFacts(ctx, s.Store, memo)
+	if err != nil {
+		return nil, err
+	}
+	facts := &mentionContextFacts{memo: memoFacts}
+	if relatedMemo != nil {
+		relatedFacts, err := access.ResolveMemoReadFacts(ctx, s.Store, relatedMemo)
+		if err != nil {
+			return nil, err
+		}
+		facts.related = &relatedFacts
+	}
+	return facts, nil
+}
+
+func (s *APIV1Service) canUserAccessMentionContext(ctx context.Context, facts *mentionContextFacts, target *store.User) bool {
+	if target == nil || facts == nil || facts.memo.Memo == nil {
+		return false
+	}
+	readContext, err := facts.memo.WithViewer(ctx, s.Store, target, false, nil)
+	if err != nil || !access.CheckMemoReadContext(readContext).Allowed() {
+		return false
+	}
+	if facts.related == nil {
+		return true
+	}
+	relatedContext, err := facts.related.WithViewer(ctx, s.Store, target, false, nil)
+	if err != nil {
+		return false
+	}
+	return access.CheckMemoReadContext(relatedContext).Allowed()
+}
+
+// canUserAccessMentionMemos is the one-shot form for a single target, where
+// there is no fan-out to amortize the fact resolution over.
+func (s *APIV1Service) canUserAccessMentionMemos(ctx context.Context, target *store.User, memo *store.Memo, relatedMemo *store.Memo) bool {
+	facts, err := s.resolveMentionContextFacts(ctx, memo, relatedMemo)
+	if err != nil {
+		return false
+	}
+	return s.canUserAccessMentionContext(ctx, facts, target)
+}
+
+func (s *APIV1Service) shouldSkipMentionInbox(ctx context.Context, facts *mentionContextFacts, target *store.User, memo *store.Memo, relatedMemo *store.Memo) bool {
 	if target == nil || memo == nil {
 		return true
 	}
@@ -81,11 +103,11 @@ func shouldSkipMentionInbox(target *store.User, memo *store.Memo, relatedMemo *s
 	}
 
 	// Comment creation already generates a memo-comment inbox item for the parent creator.
-	if relatedMemo != nil && target.ID == relatedMemo.CreatorID && memo.Visibility != store.Private && memo.CreatorID != relatedMemo.CreatorID {
+	if relatedMemo != nil && target.ID == relatedMemo.CreatorID && memo.CreatorID != relatedMemo.CreatorID {
 		return true
 	}
 
-	return !canUserAccessMentionContext(target, memo, relatedMemo)
+	return !s.canUserAccessMentionContext(ctx, facts, target)
 }
 
 func (s *APIV1Service) dispatchMemoMentionNotifications(ctx context.Context, memo *store.Memo, relatedMemo *store.Memo, previousContent string) error {
@@ -106,11 +128,16 @@ func (s *APIV1Service) dispatchMemoMentionNotifications(ctx context.Context, mem
 		return err
 	}
 
+	facts, err := s.resolveMentionContextFacts(ctx, memo, relatedMemo)
+	if err != nil {
+		return errors.Wrap(err, "failed to resolve mention context")
+	}
+
 	for userID, target := range currentTargets {
 		if _, exists := previousTargets[userID]; exists {
 			continue
 		}
-		if shouldSkipMentionInbox(target, memo, relatedMemo) {
+		if s.shouldSkipMentionInbox(ctx, facts, target, memo, relatedMemo) {
 			continue
 		}
 

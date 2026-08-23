@@ -1,73 +1,16 @@
 package v1
 
-import (
-	"encoding/json"
-	"log/slog"
-	"sync"
-
-	"github.com/usememos/memos/store"
-)
+import "sync"
 
 const (
-	sseDataPrefix            = "data: "
 	sseClientEventBufferSize = 32
+	memoChangedSSEFrame      = "data: {\"type\":\"memo.changed\"}\n\n"
 )
-
-// SSEEventType represents the type of change event.
-type SSEEventType string
-
-const (
-	SSEEventMemoCreated        SSEEventType = "memo.created"
-	SSEEventMemoUpdated        SSEEventType = "memo.updated"
-	SSEEventMemoDeleted        SSEEventType = "memo.deleted"
-	SSEEventMemoCommentCreated SSEEventType = "memo.comment.created"
-	SSEEventReactionUpserted   SSEEventType = "reaction.upserted"
-	SSEEventReactionDeleted    SSEEventType = "reaction.deleted"
-)
-
-// SSEEvent represents a change event sent to SSE clients.
-type SSEEvent struct {
-	Type SSEEventType `json:"type"`
-	// Name is the affected resource name (e.g., "memos/xxxx").
-	// For reaction events, this is the memo resource name that the reaction belongs to.
-	Name string `json:"name"`
-	// Parent is the parent memo resource name when the affected resource is a comment.
-	Parent string `json:"parent,omitempty"`
-	// Visibility and CreatorID are used only for server-side delivery filtering.
-	Visibility store.Visibility `json:"-"`
-	CreatorID  int32            `json:"-"`
-}
-
-// JSON returns the JSON representation of the event.
-// Returns nil if marshaling fails (error is logged).
-func (e *SSEEvent) JSON() []byte {
-	data, err := json.Marshal(e)
-	if err != nil {
-		slog.Error("failed to marshal SSE event", "err", err, "event", e)
-		return nil
-	}
-	return data
-}
-
-// Frame returns the event encoded as a complete SSE data frame.
-func (e *SSEEvent) Frame() []byte {
-	data := e.JSON()
-	if len(data) == 0 {
-		return nil
-	}
-	frame := make([]byte, 0, len(sseDataPrefix)+len(data)+2)
-	frame = append(frame, sseDataPrefix...)
-	frame = append(frame, data...)
-	frame = append(frame, '\n', '\n')
-	return frame
-}
 
 // SSEClient represents a single SSE connection.
 type SSEClient struct {
 	events chan []byte
 	done   chan struct{}
-	userID int32
-	role   store.Role
 }
 
 // SSEHub manages SSE client connections and broadcasts events.
@@ -87,13 +30,11 @@ func NewSSEHub() *SSEHub {
 
 // Subscribe registers a new client and returns it.
 // The caller must call Unsubscribe when done.
-func (h *SSEHub) Subscribe(userID int32, role store.Role) *SSEClient {
+func (h *SSEHub) Subscribe() *SSEClient {
 	c := &SSEClient{
 		// Buffer a few events so a slow client doesn't block broadcasting.
 		events: make(chan []byte, sseClientEventBufferSize),
 		done:   make(chan struct{}),
-		userID: userID,
-		role:   role,
 	}
 	h.mu.Lock()
 	if h.closed {
@@ -132,24 +73,16 @@ func (h *SSEHub) Close() {
 	}
 }
 
-// Broadcast sends an event to all connected clients.
+// publishMemoChanged tells connected clients to refresh memo-backed caches.
+// The event deliberately carries no subject or authorization-sensitive data.
 // Slow clients with a full buffer are disconnected so they can reconnect and
 // resynchronize instead of silently missing an event.
-func (h *SSEHub) Broadcast(event *SSEEvent) {
-	if event == nil || !event.hasKnownVisibility() {
-		return
-	}
-	frame := event.Frame()
-	if len(frame) == 0 {
-		return
-	}
+func (h *SSEHub) publishMemoChanged() {
+	frame := []byte(memoChangedSSEFrame)
 
 	var slowClients []*SSEClient
 	h.mu.RLock()
 	for c := range h.clients {
-		if !c.canReceive(event) {
-			continue
-		}
 		select {
 		case c.events <- frame:
 		default:
@@ -160,26 +93,5 @@ func (h *SSEHub) Broadcast(event *SSEEvent) {
 
 	for _, c := range slowClients {
 		h.Unsubscribe(c)
-	}
-}
-
-func (e *SSEEvent) hasKnownVisibility() bool {
-	switch e.Visibility {
-	case store.Private, store.Public, store.Protected, "":
-		return true
-	default:
-		slog.Warn("SSE event has unknown visibility; denying broadcast", "visibility", string(e.Visibility))
-		return false
-	}
-}
-
-func (c *SSEClient) canReceive(event *SSEEvent) bool {
-	switch event.Visibility {
-	case store.Private:
-		return c.userID == event.CreatorID || c.role == store.RoleAdmin
-	case store.Public, store.Protected, "":
-		return true
-	default:
-		return false
 	}
 }

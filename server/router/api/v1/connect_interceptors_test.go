@@ -34,8 +34,18 @@ func TestMetadataInterceptorForwardsSecurityHeaders(t *testing.T) {
 		return connect.NewResponse(&emptypb.Empty{}), nil
 	})
 
-	if _, err := handler(context.Background(), req); err != nil {
+	response, err := handler(context.Background(), req)
+	if err != nil {
 		t.Fatalf("metadata interceptor returned error: %v", err)
+	}
+	if got := response.Header().Get("Cache-Control"); got != "no-cache, no-store, must-revalidate" {
+		t.Fatalf("unexpected Cache-Control header: %q", got)
+	}
+	if got := response.Header().Get("Pragma"); got != "no-cache" {
+		t.Fatalf("unexpected Pragma header: %q", got)
+	}
+	if got := response.Header().Get("Expires"); got != "0" {
+		t.Fatalf("unexpected Expires header: %q", got)
 	}
 }
 

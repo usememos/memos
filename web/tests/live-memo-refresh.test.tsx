@@ -20,9 +20,6 @@ vi.mock("@/contexts/AuthContext", () => ({
 vi.mock("@/hooks/useMemoQueries", () => ({
   memoKeys: {
     all: ["memos"],
-    lists: () => ["memos", "list"],
-    detail: (name: string) => ["memos", "detail", name],
-    comments: (name: string) => ["memos", "comments", name],
   },
 }));
 
@@ -225,12 +222,14 @@ describe("useLiveMemoRefresh", () => {
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
 
     act(() => {
-      streamControllers[0].enqueue(new TextEncoder().encode('data: {"type":"memo.created","name":"memos/1"}\n\n'));
+      streamControllers[0].enqueue(new TextEncoder().encode('data: {"type":"memo.changed"}\n\n'));
     });
 
     await waitFor(() => {
-      expect(firstInvalidate).toHaveBeenCalledWith({ queryKey: ["memos", "list"] });
-      expect(secondInvalidate).toHaveBeenCalledWith({ queryKey: ["memos", "list"] });
+      expect(firstInvalidate).toHaveBeenCalledWith({ queryKey: ["memos"], refetchType: "active" });
+      expect(secondInvalidate).toHaveBeenCalledWith({ queryKey: ["memos"], refetchType: "active" });
+      expect(firstInvalidate).toHaveBeenCalledWith({ queryKey: ["users", "stats"], refetchType: "active" });
+      expect(secondInvalidate).toHaveBeenCalledWith({ queryKey: ["users", "stats"], refetchType: "active" });
     });
 
     first.unmount();

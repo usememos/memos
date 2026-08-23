@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"context"
+	"database/sql"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -19,6 +20,11 @@ func (d *DB) UpsertReaction(ctx context.Context, upsert *store.Reaction) (*store
 	defer func() {
 		_ = tx.Rollback()
 	}()
+	if upsert.Policy != nil {
+		if err := validateMySQLReactionWritePolicy(ctx, tx, upsert); err != nil {
+			return nil, err
+		}
+	}
 
 	result, err := tx.ExecContext(ctx, `
 		INSERT INTO reaction (creator_id, memo_id, reaction_type)
@@ -126,6 +132,9 @@ func (d *DB) GetReaction(ctx context.Context, find *store.FindReaction) (*store.
 }
 
 func (d *DB) DeleteReaction(ctx context.Context, delete *store.DeleteReaction) error {
+	if delete.ActorUserID != nil {
+		return d.deleteReactionAsCreator(ctx, delete)
+	}
 	where, args := []string{}, []any{}
 	if delete.ID != nil {
 		where, args = append(where, "`id` = ?"), append(args, *delete.ID)
@@ -139,4 +148,39 @@ func (d *DB) DeleteReaction(ctx context.Context, delete *store.DeleteReaction) e
 
 	_, err := d.db.ExecContext(ctx, "DELETE FROM `reaction` WHERE "+strings.Join(where, " AND "), args...)
 	return err
+}
+
+func (d *DB) deleteReactionAsCreator(ctx context.Context, delete *store.DeleteReaction) error {
+	tx, err := d.db.BeginTx(ctx, nil)
+	if err != nil {
+		return errors.Wrap(err, "failed to begin authorized reaction delete transaction")
+	}
+	defer func() { _ = tx.Rollback() }()
+	if delete.Policy != nil {
+		if err := validateMySQLReactionWritePolicy(ctx, tx, &store.Reaction{
+			CreatorID: *delete.ActorUserID,
+			MemoID:    *delete.MemoID,
+			Policy:    delete.Policy,
+		}); err != nil {
+			return err
+		}
+	}
+
+	var creatorID, memoID int32
+	if err := tx.QueryRowContext(ctx, "SELECT creator_id, memo_id FROM reaction WHERE id = ?", *delete.ID).Scan(&creatorID, &memoID); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil
+		}
+		return errors.Wrap(err, "failed to read reaction for deletion")
+	}
+	if creatorID != *delete.ActorUserID || (delete.MemoID != nil && memoID != *delete.MemoID) {
+		return store.ErrReactionPermissionDenied
+	}
+	if _, err := tx.ExecContext(ctx, "DELETE FROM reaction WHERE id = ?", *delete.ID); err != nil {
+		return errors.Wrap(err, "failed to delete reaction")
+	}
+	if err := tx.Commit(); err != nil {
+		return errors.Wrap(err, "failed to commit authorized reaction delete transaction")
+	}
+	return nil
 }

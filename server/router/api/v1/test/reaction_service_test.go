@@ -6,6 +6,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	apiv1 "github.com/usememos/memos/proto/gen/api/v1"
 	"github.com/usememos/memos/store"
@@ -54,6 +56,19 @@ func TestMemoReactionResourceNames(t *testing.T) {
 	require.Equal(t, reaction.Name, fetchedMemo.Reactions[0].Name)
 }
 
+func TestUpsertMemoReactionRequiresReaction(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	user, err := ts.CreateRegularUser(ctx, "reaction-required-user")
+	require.NoError(t, err)
+	_, err = ts.Service.UpsertMemoReaction(ts.CreateUserContext(ctx, user.ID), &apiv1.UpsertMemoReactionRequest{
+		Name: "memos/missing",
+	})
+	require.Equal(t, codes.InvalidArgument, status.Code(err))
+}
+
 func TestListMemoCommentsIncludesReactionResourceNames(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestService(t)
@@ -85,6 +100,151 @@ func TestListMemoCommentsIncludesReactionResourceNames(t *testing.T) {
 	require.Len(t, comments.Memos, 1)
 	require.Len(t, comments.Memos[0].Reactions, 1)
 	require.True(t, strings.HasPrefix(comments.Memos[0].Reactions[0].Name, comment.Name+"/reactions/"))
+}
+
+func TestUpsertMemoReactionRevalidatesSpaceParticipation(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	owner, err := ts.CreateRegularUser(ctx, "reaction-space-owner")
+	require.NoError(t, err)
+	member, err := ts.CreateRegularUser(ctx, "reaction-space-member")
+	require.NoError(t, err)
+	applicationAdmin, err := ts.CreateHostUser(ctx, "reaction-space-application-admin")
+	require.NoError(t, err)
+	memberCtx := ts.CreateUserContext(ctx, member.ID)
+	adminCtx := ts.CreateUserContext(ctx, applicationAdmin.ID)
+
+	space, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "reaction-space", Title: "Reaction Space"}, owner.ID)
+	require.NoError(t, err)
+	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+		SpaceID: space.ID,
+		UserID:  member.ID,
+		Role:    store.SpaceMemberRoleUser,
+	}, owner.ID)
+	require.NoError(t, err)
+	root, err := ts.Store.CreateMemo(ctx, &store.Memo{
+		UID:        "reaction-space-root",
+		CreatorID:  owner.ID,
+		Content:    "assigned public memo",
+		Visibility: store.Public,
+		SpaceID:    &space.ID,
+	})
+	require.NoError(t, err)
+	memoName := "memos/" + root.UID
+
+	memberReaction, err := ts.Service.UpsertMemoReaction(memberCtx, &apiv1.UpsertMemoReactionRequest{
+		Name:     memoName,
+		Reaction: &apiv1.Reaction{ReactionType: "👍"},
+	})
+	require.NoError(t, err)
+
+	// An application ADMIN has no Space participation bypass.
+	_, err = ts.Service.UpsertMemoReaction(adminCtx, &apiv1.UpsertMemoReactionRequest{
+		Name:     memoName,
+		Reaction: &apiv1.Reaction{ReactionType: "🔥"},
+	})
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
+
+	require.NoError(t, ts.Store.DeleteSpaceMember(ctx, &store.DeleteSpaceMember{SpaceID: space.ID, UserID: member.ID}, owner.ID))
+	_, err = ts.Service.DeleteMemoReaction(memberCtx, &apiv1.DeleteMemoReactionRequest{Name: memberReaction.Name})
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
+	_, err = ts.Service.UpsertMemoReaction(memberCtx, &apiv1.UpsertMemoReactionRequest{
+		Name:     memoName,
+		Reaction: &apiv1.Reaction{ReactionType: "🔥"},
+	})
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
+
+	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+		SpaceID: space.ID,
+		UserID:  member.ID,
+		Role:    store.SpaceMemberRoleUser,
+	}, owner.ID)
+	require.NoError(t, err)
+	_, err = ts.Service.DeleteMemoReaction(memberCtx, &apiv1.DeleteMemoReactionRequest{Name: memberReaction.Name})
+	require.NoError(t, err)
+	_, err = ts.Service.UpsertMemoReaction(memberCtx, &apiv1.UpsertMemoReactionRequest{
+		Name:     memoName,
+		Reaction: &apiv1.Reaction{ReactionType: "🔥"},
+	})
+	require.NoError(t, err)
+
+	reactions, err := ts.Store.ListReactions(ctx, &store.FindReaction{MemoID: &root.ID})
+	require.NoError(t, err)
+	require.Len(t, reactions, 1)
+}
+
+func TestAssignedMemoReactionsFollowMemoReadAccess(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestService(t)
+	defer ts.Cleanup()
+
+	owner, err := ts.CreateRegularUser(ctx, "assigned-reaction-owner")
+	require.NoError(t, err)
+	member, err := ts.CreateRegularUser(ctx, "assigned-reaction-member")
+	require.NoError(t, err)
+	outsider, err := ts.CreateHostUser(ctx, "assigned-reaction-app-admin")
+	require.NoError(t, err)
+	ownerCtx := ts.CreateUserContext(ctx, owner.ID)
+	memberCtx := ts.CreateUserContext(ctx, member.ID)
+	outsiderCtx := ts.CreateUserContext(ctx, outsider.ID)
+
+	space, err := ts.Store.CreateSpace(ctx, &store.Space{UID: "assigned-reaction-space", Title: "Assigned reactions"}, owner.ID)
+	require.NoError(t, err)
+	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
+		SpaceID: space.ID,
+		UserID:  member.ID,
+		Role:    store.SpaceMemberRoleAdmin,
+	}, owner.ID)
+	require.NoError(t, err)
+	memo, err := ts.Service.CreateMemo(ownerCtx, &apiv1.CreateMemoRequest{Memo: &apiv1.Memo{
+		Content:    "assigned public memo with reactions",
+		Visibility: apiv1.Visibility_PUBLIC,
+		Space:      ptr("spaces/" + space.UID),
+	}})
+	require.NoError(t, err)
+	_, err = ts.Service.UpsertMemoReaction(ownerCtx, &apiv1.UpsertMemoReactionRequest{
+		Name:     memo.Name,
+		Reaction: &apiv1.Reaction{ReactionType: "👍"},
+	})
+	require.NoError(t, err)
+
+	listed, err := ts.Service.ListMemoReactions(memberCtx, &apiv1.ListMemoReactionsRequest{Name: memo.Name})
+	require.NoError(t, err)
+	require.Len(t, listed.Reactions, 1)
+
+	listed, err = ts.Service.ListMemoReactions(ctx, &apiv1.ListMemoReactionsRequest{Name: memo.Name})
+	require.NoError(t, err)
+	require.Len(t, listed.Reactions, 1, "anonymous reaction reads follow the PUBLIC memo audience")
+	listed, err = ts.Service.ListMemoReactions(outsiderCtx, &apiv1.ListMemoReactionsRequest{Name: memo.Name})
+	require.NoError(t, err)
+	require.Len(t, listed.Reactions, 1, "Space placement adds no reaction read gate")
+
+	got, err := ts.Service.GetMemo(outsiderCtx, &apiv1.GetMemoRequest{Name: memo.Name})
+	require.NoError(t, err, "a non-member may still read an assigned PUBLIC memo")
+	require.Empty(t, got.GetSpace())
+	require.Len(t, got.Reactions, 1, "embedded reactions follow the readable memo")
+	feed, err := ts.Service.ListMemos(outsiderCtx, &apiv1.ListMemosRequest{PageSize: 20})
+	require.NoError(t, err)
+	var listedMemo *apiv1.Memo
+	for _, candidate := range feed.Memos {
+		if candidate.Name == memo.Name {
+			listedMemo = candidate
+			break
+		}
+	}
+	require.NotNil(t, listedMemo)
+	require.Len(t, listedMemo.Reactions, 1)
+
+	require.NoError(t, ts.Store.DeleteSpaceMember(ctx, &store.DeleteSpaceMember{SpaceID: space.ID, UserID: owner.ID}, owner.ID))
+	listed, err = ts.Service.ListMemoReactions(ownerCtx, &apiv1.ListMemoReactionsRequest{Name: memo.Name})
+	require.NoError(t, err)
+	require.Len(t, listed.Reactions, 1, "the removed author still reads a PUBLIC memo and its reactions")
+	got, err = ts.Service.GetMemo(ownerCtx, &apiv1.GetMemoRequest{Name: memo.Name})
+	require.NoError(t, err)
+	require.Equal(t, "spaces/"+space.UID, got.GetSpace(), "the author may still see placement")
+	require.Len(t, got.Reactions, 1)
 }
 
 func TestDeleteMemoReaction(t *testing.T) {
@@ -127,7 +287,7 @@ func TestDeleteMemoReaction(t *testing.T) {
 		require.NoError(t, err)
 	})
 
-	t.Run("DeleteMemoReaction succeeds when memo was concurrently deleted", func(t *testing.T) {
+	t.Run("DeleteMemoReaction fails closed when memo was concurrently deleted", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -156,13 +316,13 @@ func TestDeleteMemoReaction(t *testing.T) {
 		require.NoError(t, err)
 
 		_, err = ts.Service.DeleteMemoReaction(userCtx, &apiv1.DeleteMemoReactionRequest{Name: reaction.Name})
+		require.Equal(t, codes.PermissionDenied, status.Code(err))
+		remainingReaction, err := ts.Store.GetReaction(ctx, &store.FindReaction{ID: &storedReaction.ID})
 		require.NoError(t, err)
-		deletedReaction, err := ts.Store.GetReaction(ctx, &store.FindReaction{ID: &storedReaction.ID})
-		require.NoError(t, err)
-		require.Nil(t, deletedReaction)
+		require.NotNil(t, remainingReaction, "a missing direct memo must not authorize a reaction mutation")
 	})
 
-	t.Run("DeleteMemoReaction success by host user", func(t *testing.T) {
+	t.Run("DeleteMemoReaction host user has no ownership bypass", func(t *testing.T) {
 		ts := NewTestService(t)
 		defer ts.Cleanup()
 
@@ -196,11 +356,15 @@ func TestDeleteMemoReaction(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, reaction)
 
-		// Host user can delete reaction - should succeed
+		// Application ADMIN is an instance role, not reaction ownership.
 		_, err = ts.Service.DeleteMemoReaction(hostCtx, &apiv1.DeleteMemoReactionRequest{
 			Name: reaction.Name,
 		})
+		require.Equal(t, codes.PermissionDenied, status.Code(err))
+		memoID := parseMemoIDFromNameForTest(t, ts, memo.Name)
+		remainingReaction, err := ts.Store.GetReaction(ctx, &store.FindReaction{MemoID: &memoID, CreatorID: &regularUser.ID})
 		require.NoError(t, err)
+		require.NotNil(t, remainingReaction)
 	})
 
 	t.Run("DeleteMemoReaction permission denied for non-owner", func(t *testing.T) {

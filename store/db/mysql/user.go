@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strings"
 
@@ -34,6 +35,16 @@ func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, e
 }
 
 func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.User, error) {
+	tx, err := d.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = tx.Rollback() }()
+	if update.RowStatus != nil && *update.RowStatus == store.Archived {
+		if err := validateMySQLUserArchive(ctx, tx, update.ID); err != nil {
+			return nil, err
+		}
+	}
 	set, args := []string{}, []any{}
 	if v := update.UpdatedTs; v != nil {
 		set, args = append(set, "`updated_ts` = FROM_UNIXTIME(?)"), append(args, *v)
@@ -65,15 +76,47 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 	args = append(args, update.ID)
 
 	query := "UPDATE `user` SET " + strings.Join(set, ", ") + " WHERE `id` = ?"
-	if _, err := d.db.ExecContext(ctx, query, args...); err != nil {
+	if _, err := tx.ExecContext(ctx, query, args...); err != nil {
 		return nil, err
 	}
-
-	user, err := d.GetUser(ctx, &store.FindUser{ID: &update.ID})
-	if err != nil {
+	user := &store.User{}
+	if err := tx.QueryRowContext(ctx, `SELECT id, username, role, email, nickname, password_hash, avatar_url, description,
+		UNIX_TIMESTAMP(created_ts), UNIX_TIMESTAMP(updated_ts), row_status FROM user WHERE id = ?`, update.ID).Scan(
+		&user.ID, &user.Username, &user.Role, &user.Email, &user.Nickname, &user.PasswordHash, &user.AvatarURL,
+		&user.Description, &user.CreatedTs, &user.UpdatedTs, &user.RowStatus,
+	); err != nil {
+		return nil, err
+	}
+	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 	return user, nil
+}
+
+func validateMySQLUserArchive(ctx context.Context, tx *sql.Tx, userID int32) error {
+	var current store.RowStatus
+	if err := tx.QueryRowContext(ctx, "SELECT row_status FROM user WHERE id = ?", userID).Scan(&current); err != nil {
+		return err
+	}
+	if current != store.Normal {
+		return nil
+	}
+	var wouldLoseAdmin bool
+	if err := tx.QueryRowContext(ctx, `SELECT EXISTS(
+		SELECT 1 FROM space_member target
+		JOIN space s ON s.id = target.space_id
+		WHERE target.user_id = ? AND target.role = 'ADMIN'
+		AND NOT EXISTS (
+			SELECT 1 FROM space_member other JOIN user u ON u.id = other.user_id
+			WHERE other.space_id = target.space_id AND other.user_id <> ?
+			AND other.role = 'ADMIN' AND u.row_status = 'NORMAL'
+		))`, userID, userID).Scan(&wouldLoseAdmin); err != nil {
+		return err
+	}
+	if wouldLoseAdmin {
+		return store.ErrLastSpaceAdmin
+	}
+	return nil
 }
 
 func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User, error) {

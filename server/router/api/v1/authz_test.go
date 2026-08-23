@@ -45,6 +45,8 @@ func TestAuthorizerCheckAccess(t *testing.T) {
 	const (
 		protectedMethod = "/memos.api.v1.MemoService/CreateMemo"
 		publicMethod    = "/memos.api.v1.MemoService/ListMemos"
+		listReactions   = "/memos.api.v1.MemoService/ListMemoReactions"
+		listRelations   = "/memos.api.v1.MemoService/ListMemoRelations"
 		bootstrapMethod = "/memos.api.v1.AuthService/SignIn"
 		createUser      = "/memos.api.v1.UserService/CreateUser"
 		shareMethod     = "/memos.api.v1.MemoService/GetSharedMemo"
@@ -61,7 +63,11 @@ func TestAuthorizerCheckAccess(t *testing.T) {
 		{"authenticated reaches public method on private instance", privateInstance, publicMethod, authenticated, nil},
 		{"anonymous denied on protected method", publicInstance, protectedMethod, nil, ErrUnauthenticated},
 		{"anonymous allowed on public method, public instance", publicInstance, publicMethod, nil, nil},
+		{"anonymous allowed to list public memo reactions", publicInstance, listReactions, nil, nil},
+		{"anonymous allowed to list public memo relations", publicInstance, listRelations, nil, nil},
 		{"anonymous denied on public method, private instance", privateInstance, publicMethod, nil, ErrUnauthenticated},
+		{"anonymous denied memo reactions on private instance", privateInstance, listReactions, nil, ErrUnauthenticated},
+		{"anonymous denied memo relations on private instance", privateInstance, listRelations, nil, ErrUnauthenticated},
 		{"anonymous allowed on bootstrap method, private instance", privateInstance, bootstrapMethod, nil, nil},
 		{"anonymous allowed to register on private instance", privateInstance, createUser, nil, nil},
 		{"anonymous allowed on share access, private instance", privateInstance, shareMethod, nil, nil},

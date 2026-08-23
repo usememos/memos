@@ -607,7 +607,7 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c *ec
 		if user == nil {
 			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusUnauthorized, "unauthorized access")
 		}
-		if user.ID != attachment.CreatorID && user.Role != store.RoleAdmin {
+		if user.ID != attachment.CreatorID {
 			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusForbidden, "forbidden access")
 		}
 		return access.MemoReadClassPrivate, nil
@@ -621,25 +621,10 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c *ec
 		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusNotFound, "memo not found")
 	}
 
-	var parent *store.Memo
-	if memo.ParentUID != nil {
-		parent, err = s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
-		if err != nil {
-			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to find parent memo").Wrap(err)
-		}
-		if parent == nil {
-			return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusNotFound, "memo not found")
-		}
-	}
-
 	allowAnonymous, err := s.Store.AllowsAnonymousAccess(ctx)
 	if err != nil {
 		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to get instance access policy").Wrap(err)
 	}
-	if decision := access.CheckMemoRead(memo, parent, nil, allowAnonymous, nil); decision.Allowed() {
-		return decision.Class, nil
-	}
-
 	var sharedMemoID *int32
 	if shareToken := (*c).QueryParam("share_token"); shareToken != "" {
 		ms, err := s.Store.GetMemoShare(ctx, &store.FindMemoShare{UID: &shareToken})
@@ -648,17 +633,33 @@ func (s *FileServerService) checkAttachmentPermission(ctx context.Context, c *ec
 		}
 		if ms != nil && !isMemoShareExpired(ms) {
 			sharedMemoID = &ms.MemoID
-			if decision := access.CheckMemoRead(memo, parent, nil, allowAnonymous, sharedMemoID); decision.Allowed() {
-				return decision.Class, nil
-			}
 		}
+	}
+
+	facts, err := access.ResolveMemoReadFacts(ctx, s.Store, memo)
+	if err != nil {
+		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to resolve memo access").Wrap(err)
+	}
+	// Public and exact share-token reads do not depend on browser credentials.
+	// Decide those first so an expired cookie cannot turn an otherwise valid
+	// anonymous file request into a server error.
+	anonymousContext, err := facts.WithViewer(ctx, s.Store, nil, allowAnonymous, sharedMemoID)
+	if err != nil {
+		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to resolve memo access").Wrap(err)
+	}
+	if anonymousDecision := access.CheckMemoReadContext(anonymousContext); anonymousDecision.Allowed() {
+		return anonymousDecision.Class, nil
 	}
 
 	user, err := s.getCurrentUser(ctx, c)
 	if err != nil {
 		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to get current user").Wrap(err)
 	}
-	decision := access.CheckMemoRead(memo, parent, user, allowAnonymous, sharedMemoID)
+	readContext, err := facts.WithViewer(ctx, s.Store, user, allowAnonymous, sharedMemoID)
+	if err != nil {
+		return access.MemoReadClassPrivate, echo.NewHTTPError(http.StatusInternalServerError, "failed to find space membership").Wrap(err)
+	}
+	decision := access.CheckMemoReadContext(readContext)
 	switch decision.Denial {
 	case access.MemoReadDenialNone:
 		return decision.Class, nil

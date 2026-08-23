@@ -103,6 +103,11 @@ func (s *APIV1Service) UpdateUserSetting(ctx context.Context, request *v1pb.Upda
 		for _, field := range request.UpdateMask.Paths {
 			switch field {
 			case "memo_visibility":
+				switch incomingGeneral.MemoVisibility {
+				case store.Private.String(), store.Protected.String(), store.Public.String():
+				default:
+					return nil, status.Errorf(codes.InvalidArgument, "memo_visibility must be PRIVATE, PROTECTED, or PUBLIC")
+				}
 				updatedGeneral.MemoVisibility = incomingGeneral.MemoVisibility
 			case "theme":
 				updatedGeneral.Theme = incomingGeneral.Theme

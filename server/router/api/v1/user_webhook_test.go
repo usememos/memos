@@ -42,7 +42,7 @@ func TestUserWebhookSigningSecretLifecycle(t *testing.T) {
 	ctx := context.Background()
 
 	// First user initializes the store as host/admin; the test actors are regular users.
-	_, err := svc.Store.CreateUser(ctx, &store.User{Username: "host", Role: store.RoleAdmin, Email: "host@example.com"})
+	host, err := svc.Store.CreateUser(ctx, &store.User{Username: "host", Role: store.RoleAdmin, Email: "host@example.com"})
 	require.NoError(t, err)
 	owner, err := svc.Store.CreateUser(ctx, &store.User{Username: "owner", Role: store.RoleUser, Email: "owner@example.com"})
 	require.NoError(t, err)
@@ -51,6 +51,7 @@ func TestUserWebhookSigningSecretLifecycle(t *testing.T) {
 
 	ownerCtx := userCtx(ctx, owner.ID)
 	otherCtx := userCtx(ctx, other.ID)
+	hostCtx := userCtx(ctx, host.ID)
 
 	// Create without supplying a secret -> the server generates one.
 	created, err := svc.CreateUserWebhook(ownerCtx, &v1pb.CreateUserWebhookRequest{
@@ -70,4 +71,20 @@ func TestUserWebhookSigningSecretLifecycle(t *testing.T) {
 	_, err = svc.GetUserWebhookSigningSecret(otherCtx, &v1pb.GetUserWebhookSigningSecretRequest{Name: created.Name})
 	require.Error(t, err)
 	require.Equal(t, codes.PermissionDenied, status.Code(err), "non-owner must be denied")
+
+	// Application administration is a control-plane role, not an implicit way
+	// to install an exfiltration endpoint or reveal another user's webhook secret.
+	_, err = svc.ListUserWebhooks(hostCtx, &v1pb.ListUserWebhooksRequest{Parent: "users/owner"})
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
+	_, err = svc.CreateUserWebhook(hostCtx, &v1pb.CreateUserWebhookRequest{
+		Parent:  "users/owner",
+		Webhook: &v1pb.UserWebhook{DisplayName: "admin-installed", Url: "https://example.com/exfiltrate"},
+	})
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
+	_, err = svc.UpdateUserWebhook(hostCtx, &v1pb.UpdateUserWebhookRequest{Webhook: &v1pb.UserWebhook{Name: created.Name}})
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
+	_, err = svc.DeleteUserWebhook(hostCtx, &v1pb.DeleteUserWebhookRequest{Name: created.Name})
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
+	_, err = svc.GetUserWebhookSigningSecret(hostCtx, &v1pb.GetUserWebhookSigningSecretRequest{Name: created.Name})
+	require.Equal(t, codes.PermissionDenied, status.Code(err))
 }

@@ -23,6 +23,8 @@ const (
 	InboxNamePrefix            = "inboxes/"
 	IdentityProviderNamePrefix = "identity-providers/"
 	WebhookNamePrefix          = "webhooks/"
+	SpaceNamePrefix            = "spaces/"
+	SpaceMemberNamePrefix      = "members/"
 )
 
 // GetNameParentTokens returns the tokens from a resource name.
@@ -86,6 +88,29 @@ func ExtractMemoUIDFromName(name string) (string, error) {
 	}
 	id := tokens[0]
 	return id, nil
+}
+
+func buildMemoName(uid string) string {
+	return MemoNamePrefix + uid
+}
+
+// ExtractSpaceUIDFromName returns the UID from a Space resource name.
+func ExtractSpaceUIDFromName(name string) (string, error) {
+	tokens, err := GetNameParentTokens(name, SpaceNamePrefix)
+	if err != nil {
+		return "", err
+	}
+	return tokens[0], nil
+}
+
+// ExtractSpaceMemberTokensFromName returns the Space UID and username from a
+// SpaceMember resource name.
+func ExtractSpaceMemberTokensFromName(name string) (string, string, error) {
+	tokens, err := GetNameParentTokens(name, SpaceNamePrefix, SpaceMemberNamePrefix)
+	if err != nil {
+		return "", "", err
+	}
+	return tokens[0], tokens[1], nil
 }
 
 // ExtractAttachmentUIDFromName returns the attachment UID from a resource name.

@@ -52,7 +52,16 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 	if err != nil {
 		return errors.Wrap(err, "Failed to find instance storage setting")
 	}
+	return saveAttachmentBlobWithInstanceStorageSetting(ctx, profile, stores, create, instanceStorageSetting)
+}
 
+func saveAttachmentBlobWithInstanceStorageSetting(
+	ctx context.Context,
+	profile *profile.Profile,
+	stores *store.Store,
+	create *store.Attachment,
+	instanceStorageSetting *storepb.InstanceStorageSetting,
+) error {
 	defaultStorage := store.GetDefaultStorage(instanceStorageSetting)
 	if defaultStorage == nil {
 		return errors.New("default storage is not configured")
@@ -79,14 +88,14 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 		osPath = ensureUniqueLocalAttachmentPath(osPath, create.UID)
 		internalPath = filepath.ToSlash(osPath)
 		if !filepath.IsAbs(filepath.FromSlash(internalPath)) {
-			internalPath, err = filepath.Rel(profile.Data, osPath)
+			relativePath, err := filepath.Rel(profile.Data, osPath)
 			if err != nil {
 				return errors.Wrap(err, "Failed to get relative path")
 			}
-			internalPath = filepath.ToSlash(internalPath)
+			internalPath = filepath.ToSlash(relativePath)
 		}
 		dir := filepath.Dir(osPath)
-		if err = os.MkdirAll(dir, os.ModePerm); err != nil {
+		if err := os.MkdirAll(dir, os.ModePerm); err != nil {
 			return errors.Wrap(err, "Failed to create directory")
 		}
 
@@ -127,6 +136,71 @@ func SaveAttachmentBlob(ctx context.Context, profile *profile.Profile, stores *s
 	}
 
 	return nil
+}
+
+func cleanupSavedAttachmentBlob(
+	ctx context.Context,
+	stores *store.Store,
+	attachment *store.Attachment,
+	instanceStorageSetting *storepb.InstanceStorageSetting,
+) (bool, error) {
+	if attachment == nil || (attachment.StorageType != storepb.AttachmentStorageType_LOCAL && attachment.StorageType != storepb.AttachmentStorageType_S3) {
+		return false, nil
+	}
+
+	cleanupCtx, cancelCleanup := context.WithTimeout(context.WithoutCancel(ctx), 30*time.Second)
+	defer cancelCleanup()
+	persisted, err := stores.GetAttachment(cleanupCtx, &store.FindAttachment{UID: &attachment.UID})
+	if err != nil {
+		return false, errors.Wrap(err, "failed to verify attachment create outcome")
+	}
+	if hasSameManagedStorageObject(persisted, attachment) {
+		return true, nil
+	}
+	return false, stores.DeleteAttachmentStorageWithInstanceSetting(cleanupCtx, attachment, instanceStorageSetting)
+}
+
+func hasSameManagedStorageObject(left, right *store.Attachment) bool {
+	if left == nil || right == nil || left.StorageType != right.StorageType {
+		return false
+	}
+	switch left.StorageType {
+	case storepb.AttachmentStorageType_LOCAL:
+		return left.Reference != "" && left.Reference == right.Reference
+	case storepb.AttachmentStorageType_S3:
+		leftObject, rightObject := left.Payload.GetS3Object(), right.Payload.GetS3Object()
+		return leftObject != nil && rightObject != nil && leftObject.Key != "" && leftObject.Key == rightObject.Key && leftObject.StorageId == rightObject.StorageId
+	default:
+		return false
+	}
+}
+
+func (s *APIV1Service) cleanupDeletedAttachmentStorage(ctx context.Context, attachments []*store.Attachment) error {
+	var instanceStorageSetting *storepb.InstanceStorageSetting
+	var instanceStorageSettingErr error
+	for _, attachment := range attachments {
+		if store.AttachmentNeedsInstanceStorageSetting(attachment) {
+			instanceStorageSetting, instanceStorageSettingErr = s.Store.GetInstanceStorageSetting(ctx)
+			break
+		}
+	}
+
+	var firstErr error
+	for _, attachment := range attachments {
+		if attachment == nil {
+			continue
+		}
+		var err error
+		if instanceStorageSettingErr != nil && store.AttachmentNeedsInstanceStorageSetting(attachment) {
+			err = errors.Wrap(instanceStorageSettingErr, "failed to get instance storage setting")
+		} else {
+			err = s.Store.DeleteAttachmentStorageWithInstanceSetting(ctx, attachment, instanceStorageSetting)
+		}
+		if err != nil && firstErr == nil {
+			firstErr = errors.Wrapf(err, "attachment %d", attachment.ID)
+		}
+	}
+	return firstErr
 }
 
 // GetAttachmentBlob reads an attachment from its configured storage.

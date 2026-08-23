@@ -92,6 +92,10 @@ func TestGatewayRouteResolverResolvesKnownRoutes(t *testing.T) {
 		{http.MethodGet, "/api/v1/memos", "/api/v1/memos", "/memos.api.v1.MemoService/ListMemos"},
 		{http.MethodGet, "/api/v1/{name=memos/*}", "/api/v1/memos/abc", "/memos.api.v1.MemoService/GetMemo"},
 		{http.MethodPost, "/api/v1/memos", "/api/v1/memos", "/memos.api.v1.MemoService/CreateMemo"},
+		{http.MethodPost, "/api/v1/spaces", "/api/v1/spaces", "/memos.api.v1.SpaceService/CreateSpace"},
+		{http.MethodGet, "/api/v1/{name=spaces/*}", "/api/v1/spaces/team", "/memos.api.v1.SpaceService/GetSpace"},
+		{http.MethodDelete, "/api/v1/{name=spaces/*}", "/api/v1/spaces/team", "/memos.api.v1.SpaceService/DeleteSpace"},
+		{http.MethodGet, "/api/v1/{name=spaces/*/members/*}", "/api/v1/spaces/team/members/alice", "/memos.api.v1.SpaceService/GetSpaceMember"},
 		{
 			http.MethodGet,
 			"/api/v1/shares/{share_token}/memo",

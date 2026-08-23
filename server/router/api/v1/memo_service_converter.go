@@ -8,10 +8,13 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/server/access"
 	"github.com/usememos/memos/store"
 )
 
@@ -44,6 +47,19 @@ func (s *APIV1Service) convertMemoFromStoreWithCreators(ctx context.Context, mem
 		Visibility: convertVisibilityFromStore(memo.Visibility),
 		Pinned:     memo.Pinned,
 	}
+	// An assigned memo needs a read context for its placement projection; an
+	// unassigned memo needs none.
+	var readContext access.MemoReadContext
+	if memo.SpaceID != nil {
+		resolved, err := s.buildMemoReadContext(ctx, memo, nil)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to resolve memo access")
+		}
+		readContext = resolved
+	}
+	if err := s.projectMemoCollaborationContext(ctx, memo, memoMessage, readContext); err != nil {
+		return nil, errors.Wrap(err, "failed to project memo collaboration context")
+	}
 	if memo.Payload != nil {
 		memoMessage.Tags = memo.Payload.Tags
 		memoMessage.Property = convertMemoPropertyFromStore(memo.Payload.Property)
@@ -51,10 +67,18 @@ func (s *APIV1Service) convertMemoFromStoreWithCreators(ctx context.Context, mem
 	}
 
 	if memo.ParentUID != nil {
-		parentName := buildMemoName(*memo.ParentUID)
-		memoMessage.Parent = &parentName
+		contextMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: memo.ParentUID})
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to resolve comment context")
+		}
+		if contextMemo != nil && s.checkMemoReadAccess(ctx, contextMemo) == nil {
+			parentName := buildMemoName(*memo.ParentUID)
+			memoMessage.Parent = &parentName
+		}
 	}
 
+	// Reactions have no independent audience and are readable whenever this
+	// memo is readable. Conversion is reached only after memo authorization.
 	reactionMessages, err := s.convertReactionsFromStoreWithCreators(ctx, reactions, creatorMap, name)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert reactions")
@@ -80,6 +104,40 @@ func (s *APIV1Service) convertMemoFromStoreWithCreators(ctx context.Context, mem
 	memoMessage.Snippet = snippet
 
 	return memoMessage, nil
+}
+
+func (s *APIV1Service) projectMemoCollaborationContext(ctx context.Context, memo *store.Memo, message *v1pb.Memo, readContext access.MemoReadContext) error {
+	if memo.SpaceID == nil {
+		return nil
+	}
+	if !readContext.SpaceValid {
+		// Placement is not an additional read gate for PRIVATE, PROTECTED, or
+		// PUBLIC. Omit a dangling placement rather than turning it into a second
+		// audience restriction. SPACE already failed closed in the read policy.
+		if memo.Visibility == store.SpaceAudience {
+			return errors.New("memo has invalid space placement")
+		}
+		return nil
+	}
+	// Placement is visible to the author and to active members only; a
+	// non-member reading an assigned PUBLIC memo learns nothing about its Space.
+	viewer := readContext.Viewer
+	if viewer == nil || (viewer.ID != memo.CreatorID && !readContext.ViewerSpaceMember) {
+		return nil
+	}
+	space, err := s.Store.GetSpace(ctx, &store.FindSpace{ID: memo.SpaceID})
+	if err != nil {
+		return err
+	}
+	if space == nil {
+		if memo.Visibility == store.SpaceAudience {
+			return errors.New("memo has invalid space placement")
+		}
+		return nil
+	}
+	spaceName := buildSpaceName(space.UID)
+	message.Space = &spaceName
+	return nil
 }
 
 func (s *APIV1Service) listUsersByIDWithExisting(ctx context.Context, userIDs []int32, existing map[int32]*store.User) (map[int32]*store.User, error) {
@@ -174,15 +232,9 @@ func (s *APIV1Service) batchConvertMemoRelations(ctx context.Context, memos []*s
 		return map[int32][]*v1pb.MemoRelation{}, nil
 	}
 
-	currentUser, err := s.fetchCurrentUser(ctx)
+	accessScope, _, err := s.resolveMemoAccessScope(ctx)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get user")
-	}
-	var memoFilter string
-	if currentUser == nil {
-		memoFilter = `visibility == "PUBLIC"`
-	} else {
-		memoFilter = fmt.Sprintf(`creator_id == %d || visibility in ["PUBLIC", "PROTECTED"]`, currentUser.ID)
+		return nil, err
 	}
 
 	memoIDs := make([]int32, len(memos))
@@ -194,14 +246,12 @@ func (s *APIV1Service) batchConvertMemoRelations(ctx context.Context, memos []*s
 
 	outgoingRelations, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
 		SourceMemoIDList: memoIDs,
-		MemoFilter:       &memoFilter,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to batch list outgoing memo relations")
 	}
 	incomingRelations, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
 		RelatedMemoIDList: memoIDs,
-		MemoFilter:        &memoFilter,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to batch list incoming memo relations")
@@ -236,7 +286,7 @@ func (s *APIV1Service) batchConvertMemoRelations(ctx context.Context, memos []*s
 		for id := range neededIDs {
 			extraIDs = append(extraIDs, id)
 		}
-		extraFind := &store.FindMemo{IDList: extraIDs, ExcludeContent: !includeSnippets}
+		extraFind := &store.FindMemo{IDList: extraIDs, ExcludeContent: !includeSnippets, Access: accessScope}
 		extraMemos, err := s.Store.ListMemos(ctx, extraFind)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to batch fetch related memos")
@@ -354,18 +404,31 @@ func convertVisibilityFromStore(visibility store.Visibility) v1pb.Visibility {
 		return v1pb.Visibility_PROTECTED
 	case store.Public:
 		return v1pb.Visibility_PUBLIC
+	case store.SpaceAudience:
+		return v1pb.Visibility_SPACE
 	default:
 		return v1pb.Visibility_VISIBILITY_UNSPECIFIED
 	}
 }
 
-func convertVisibilityToStore(visibility v1pb.Visibility) store.Visibility {
+func validateCreateMemoVisibility(visibility v1pb.Visibility) (store.Visibility, error) {
 	switch visibility {
+	case v1pb.Visibility_VISIBILITY_UNSPECIFIED, v1pb.Visibility_PRIVATE:
+		return store.Private, nil
 	case v1pb.Visibility_PROTECTED:
-		return store.Protected
+		return store.Protected, nil
 	case v1pb.Visibility_PUBLIC:
-		return store.Public
+		return store.Public, nil
+	case v1pb.Visibility_SPACE:
+		return store.SpaceAudience, nil
 	default:
-		return store.Private
+		return "", status.Errorf(codes.InvalidArgument, "invalid memo visibility")
 	}
+}
+
+func validateUpdateMemoVisibility(visibility v1pb.Visibility) (store.Visibility, error) {
+	if visibility == v1pb.Visibility_VISIBILITY_UNSPECIFIED {
+		return "", status.Errorf(codes.InvalidArgument, "visibility must be specified")
+	}
+	return validateCreateMemoVisibility(visibility)
 }

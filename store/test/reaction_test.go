@@ -328,9 +328,8 @@ func TestReactionInsertedAfterMemoCleanupStartsIsRemoved(t *testing.T) {
 		require.FailNow(t, "timed out waiting for memo delete barrier")
 	}
 
-	// Store.DeleteMemo has completed its application-managed relation and
-	// attachment cleanup, but the physical memo delete has not started. This
-	// recreates the old window where a prior reaction cleanup could be bypassed.
+	// The deletion transaction has not started yet. A reaction created in this
+	// window must still be removed by the compound memo deletion.
 	reaction, err := ts.UpsertReaction(ctx, &store.Reaction{
 		CreatorID:    user.ID,
 		MemoID:       memo.ID,
@@ -456,14 +455,14 @@ type memoDeleteBarrierDriver struct {
 	continueDelete chan struct{}
 }
 
-func (d *memoDeleteBarrierDriver) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
+func (d *memoDeleteBarrierDriver) DeleteMemoWithPolicy(ctx context.Context, delete *store.DeleteMemoWithPolicy) (*store.DeleteMemoWithPolicyResult, error) {
 	close(d.deleteStarted)
 	select {
 	case <-d.continueDelete:
 	case <-ctx.Done():
-		return ctx.Err()
+		return nil, ctx.Err()
 	}
-	return d.Driver.DeleteMemo(ctx, delete)
+	return d.Driver.DeleteMemoWithPolicy(ctx, delete)
 }
 
 func newReactionTestingStoreWithDriver(ctx context.Context, t *testing.T, wrap func(store.Driver) store.Driver) *store.Store {

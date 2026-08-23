@@ -31,7 +31,7 @@ func (s *APIV1Service) ListUserWebhooks(ctx context.Context, request *v1pb.ListU
 	if currentUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin {
+	if currentUser.ID != userID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -64,7 +64,7 @@ func (s *APIV1Service) CreateUserWebhook(ctx context.Context, request *v1pb.Crea
 	if currentUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin {
+	if currentUser.ID != userID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -121,7 +121,7 @@ func (s *APIV1Service) UpdateUserWebhook(ctx context.Context, request *v1pb.Upda
 	if currentUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin {
+	if currentUser.ID != userID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -216,7 +216,7 @@ func (s *APIV1Service) DeleteUserWebhook(ctx context.Context, request *v1pb.Dele
 	if currentUser == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	if currentUser.ID != userID && currentUser.Role != store.RoleAdmin {
+	if currentUser.ID != userID {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
@@ -249,7 +249,7 @@ func (s *APIV1Service) DeleteUserWebhook(ctx context.Context, request *v1pb.Dele
 
 // GetUserWebhookSigningSecret reveals the signing secret for a single webhook.
 // This is the only endpoint that returns the secret value; it is gated to the
-// webhook owner (or an admin) and the secret is never included in list/create/update responses.
+// webhook owner and the secret is never included in list/create/update responses.
 func (s *APIV1Service) GetUserWebhookSigningSecret(ctx context.Context, request *v1pb.GetUserWebhookSigningSecretRequest) (*v1pb.GetUserWebhookSigningSecretResponse, error) {
 	user, webhookID, err := s.resolveUserAndWebhookIDFromName(ctx, request.Name)
 	if err != nil {
@@ -257,7 +257,7 @@ func (s *APIV1Service) GetUserWebhookSigningSecret(ctx context.Context, request 
 	}
 	userID := user.ID
 
-	if _, err := s.authorizeUserResourceAccess(ctx, userID, true); err != nil {
+	if _, err := s.authorizeUserResourceAccess(ctx, userID, false); err != nil {
 		return nil, err
 	}
 

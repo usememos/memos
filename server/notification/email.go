@@ -73,7 +73,7 @@ func (d *EmailDispatcher) DispatchInboxEmail(ctx context.Context, inbox *store.I
 		return nil
 	}
 
-	memosByID, err := d.listMemosByID(ctx, collectInboxMemoIDs([]*store.Inbox{inbox}))
+	memosByID, err := d.listMemosByID(ctx, collectInboxMemoIDs([]*store.Inbox{inbox}), receiver.ID)
 	if err != nil {
 		return errors.Wrap(err, "failed to get notification memos")
 	}
@@ -187,6 +187,14 @@ func (d *EmailDispatcher) buildMemoMentionEmailMessage(message *storepb.InboxMes
 	if !canViewerAccessMemo(receiver, memo) {
 		return nil, nil
 	}
+	// A mention created from a comment carries its conversational context in
+	// RelatedMemoId. The notification represents that relation, so suppress the
+	// complete email unless the receiver can still read both endpoints.
+	if payload.RelatedMemoId > 0 {
+		if !canViewerAccessMemo(receiver, memosByID[payload.RelatedMemoId]) {
+			return nil, nil
+		}
+	}
 	url := d.memoURL(memo)
 	if url == "" {
 		return nil, nil
@@ -210,7 +218,7 @@ func (d *EmailDispatcher) buildMemoMentionEmailMessage(message *storepb.InboxMes
 	}, nil
 }
 
-func (d *EmailDispatcher) listMemosByID(ctx context.Context, memoIDs []int32) (map[int32]*store.Memo, error) {
+func (d *EmailDispatcher) listMemosByID(ctx context.Context, memoIDs []int32, viewerID int32) (map[int32]*store.Memo, error) {
 	if len(memoIDs) == 0 {
 		return map[int32]*store.Memo{}, nil
 	}
@@ -231,7 +239,10 @@ func (d *EmailDispatcher) listMemosByID(ctx context.Context, memoIDs []int32) (m
 		return map[int32]*store.Memo{}, nil
 	}
 
-	memos, err := d.store.ListMemos(ctx, &store.FindMemo{IDList: uniqueMemoIDs})
+	memos, err := d.store.ListMemos(ctx, &store.FindMemo{
+		IDList: uniqueMemoIDs,
+		Access: &store.MemoAccessScope{UserID: &viewerID, AllowPublic: true, AllowProtected: true},
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -307,14 +318,8 @@ func canViewerAccessMemo(viewer *store.User, memo *store.Memo) bool {
 	if memo == nil {
 		return false
 	}
-	if viewer != nil && viewer.Role == store.RoleAdmin {
-		return true
-	}
 	if memo.Visibility == store.Private {
 		return viewer != nil && viewer.ID == memo.CreatorID
-	}
-	if memo.Visibility == store.Protected {
-		return viewer != nil
 	}
 	return true
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 
 	v1pb "github.com/usememos/memos/proto/gen/api/v1"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -37,7 +36,7 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 	if user == nil {
 		return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
 	}
-	if err := s.checkMemoAndParentReadAccess(ctx, relatedMemo); err != nil {
+	if err := s.checkMemoReadAccess(ctx, relatedMemo); err != nil {
 		return nil, err
 	}
 	if relatedMemo.RowStatus != store.Normal {
@@ -47,59 +46,41 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 		return nil, status.Errorf(codes.InvalidArgument, "comment is required")
 	}
 
-	comment, ok := proto.Clone(request.Comment).(*v1pb.Memo)
-	if !ok {
-		return nil, status.Errorf(codes.Internal, "failed to clone memo comment")
-	}
-	comment.Visibility = convertVisibilityFromStore(relatedMemo.Visibility)
-
-	// Create the memo comment first; suppress the generic memo.created SSE event
-	// since CreateMemoComment broadcasts memo.comment.created for the parent instead.
-	memoComment, err := s.CreateMemo(withSuppressMentionNotifications(withSuppressSSE(ctx)), &v1pb.CreateMemoRequest{
-		Memo:   comment,
-		MemoId: request.CommentId,
-	})
+	memoUID, err = ValidateAndGenerateUID(request.CommentId)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to create memo")
+		return nil, err
 	}
-	memoUID, err = ExtractMemoUIDFromName(memoComment.Name)
+	if memoUID == relatedMemo.UID {
+		return nil, status.Error(codes.InvalidArgument, "a memo cannot comment on itself")
+	}
+	prepared, err := s.prepareMemoCreate(ctx, user, request.Comment, memoUID)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid memo name: %v", err)
+		return nil, err
 	}
-	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{UID: &memoUID})
+	if err := s.createMemoWithMutation(ctx, user, prepared.memo, &relatedMemo.ID, prepared.attachments, prepared.requiredAttachmentIDs, prepared.referenceRelations); err != nil {
+		return nil, mapMemoCreateError(err, memoUID, "failed to create memo comment")
+	}
+	memo := prepared.memo
+	attachments, err := s.Store.ListAttachments(ctx, &store.FindAttachment{MemoID: &memo.ID})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get memo")
+		return nil, status.Errorf(codes.Internal, "failed to load memo comment attachments")
 	}
-
-	// Build the relation between the comment memo and the original memo.
-	_, err = s.Store.UpsertMemoRelation(ctx, &store.MemoRelation{
-		MemoID:        memo.ID,
-		RelatedMemoID: relatedMemo.ID,
-		Type:          store.MemoRelationComment,
-	})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to create memo relation")
-	}
-
-	// The comment memo was converted before the relation above existed, so its
-	// Relations slice is empty. Reload the relations now so that both the API
-	// response and the memo.comment.created webhook payload carry the relation
-	// to the parent memo.
 	relations, err := s.loadMemoRelations(ctx, memo)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to load memo relations")
 	}
-	memoComment.Relations = relations
-
-	creator, err := ResolveUserByName(ctx, s.Store, memoComment.Creator)
+	memoComment, err := s.convertMemoFromStore(ctx, memo, nil, attachments, relations)
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid memo creator")
+		return nil, status.Errorf(codes.Internal, "failed to convert memo comment")
 	}
-	if creator == nil {
-		return nil, status.Errorf(codes.NotFound, "memo creator not found")
+
+	creatorID := user.ID
+	relatedCreator, err := s.Store.GetUser(ctx, &store.FindUser{ID: &relatedMemo.CreatorID})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get related memo creator")
 	}
-	creatorID := creator.ID
-	if memoComment.Visibility != v1pb.Visibility_PRIVATE && creatorID != relatedMemo.CreatorID {
+	if creatorID != relatedMemo.CreatorID &&
+		s.canUserAccessMentionMemos(ctx, relatedCreator, memo, relatedMemo) {
 		if _, err := s.createInboxWithEmailNotification(ctx, &store.Inbox{
 			SenderID:   creatorID,
 			ReceiverID: relatedMemo.CreatorID,
@@ -118,19 +99,13 @@ func (s *APIV1Service) CreateMemoComment(ctx context.Context, request *v1pb.Crea
 		}
 	}
 
-	if err := s.DispatchMemoCommentCreatedWebhook(ctx, memoComment, relatedMemo.CreatorID); err != nil {
+	if err := s.DispatchMemoCommentCreatedWebhook(ctx, memo, relatedMemo, relatedMemo.CreatorID); err != nil {
 		slog.Warn("Failed to dispatch memo comment created webhook", slog.Any("err", err))
 	}
 
 	s.dispatchMemoMentionNotificationsBestEffort(ctx, memo, relatedMemo, "")
 
-	// Broadcast live refresh event for the parent memo so subscribers see the new comment.
-	s.SSEHub.Broadcast(&SSEEvent{
-		Type:       SSEEventMemoCommentCreated,
-		Name:       request.Name,
-		Visibility: relatedMemo.Visibility,
-		CreatorID:  relatedMemo.CreatorID,
-	})
+	s.SSEHub.publishMemoChanged()
 
 	return memoComment, nil
 }
@@ -150,8 +125,11 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 	if err := s.checkMemoReadAccess(ctx, memo); err != nil {
 		return nil, err
 	}
+	accessScope, _, err := s.resolveMemoAccessScope(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "%v", err)
+	}
 
-	memoRelationComment := store.MemoRelationComment
 	var limit, offset int
 	if request.PageToken != "" {
 		var pageToken v1pb.PageToken
@@ -165,41 +143,32 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 	}
 	limitPlusOne := limit + 1
 	normal := store.Normal
-	memoRelations, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
-		RelatedMemoID:       &memo.ID,
-		Type:                &memoRelationComment,
-		SourceMemoRowStatus: &normal,
-		Limit:               &limitPlusOne,
-		Offset:              &offset,
+	memos, err := s.Store.ListMemos(ctx, &store.FindMemo{
+		CommentContextMemoID: &memo.ID,
+		RowStatus:            &normal,
+		Access:               accessScope,
+		Limit:                &limitPlusOne,
+		Offset:               &offset,
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memo relations")
+		return nil, status.Errorf(codes.Internal, "failed to list memo comments")
 	}
 
 	nextPageToken := ""
-	if len(memoRelations) == limitPlusOne {
-		memoRelations = memoRelations[:limit]
+	if len(memos) == limitPlusOne {
+		memos = memos[:limit]
 		nextPageToken, err = getPageToken(limit, offset+limit)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get next page token, error: %v", err)
 		}
 	}
 
-	if len(memoRelations) == 0 {
+	if len(memos) == 0 {
 		response := &v1pb.ListMemoCommentsResponse{
 			Memos:         []*v1pb.Memo{},
 			NextPageToken: nextPageToken,
 		}
 		return response, nil
-	}
-
-	memoRelationIDs := make([]int32, 0, len(memoRelations))
-	for _, m := range memoRelations {
-		memoRelationIDs = append(memoRelationIDs, m.MemoID)
-	}
-	memos, err := s.Store.ListMemos(ctx, &store.FindMemo{IDList: memoRelationIDs, RowStatus: &normal})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list memos")
 	}
 
 	memoIDs := make([]int32, 0, len(memos))
@@ -261,7 +230,6 @@ func (s *APIV1Service) ListMemoComments(ctx context.Context, request *v1pb.ListM
 			}
 			return nil, errors.Wrap(err, "failed to convert memo")
 		}
-		memoMessage.Visibility = convertVisibilityFromStore(memo.Visibility)
 		memosResponse = append(memosResponse, memoMessage)
 	}
 
