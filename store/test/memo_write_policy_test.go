@@ -87,9 +87,9 @@ func TestMemoWritePolicyIgnoresExpiredSharesWhenNarrowingAudience(t *testing.T) 
 		UID: "memo-expired-share-root", CreatorID: owner.ID, Content: "memo", Visibility: store.Public, SpaceID: &space.ID,
 	})
 	require.NoError(t, err)
-	expiredTs := time.Now().Add(-time.Hour).Unix()
+	expiredTsSec := time.Now().Add(-time.Hour).Unix()
 	_, err = ts.CreateMemoShare(ctx, &store.MemoShare{
-		UID: "memo-expired-share-token", MemoID: memo.ID, CreatorID: owner.ID, ExpiresTs: &expiredTs,
+		UID: "memo-expired-share-token", MemoID: memo.ID, CreatorID: owner.ID, ExpiresTs: &expiredTsSec,
 	})
 	require.NoError(t, err)
 

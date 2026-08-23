@@ -19,7 +19,7 @@ import (
 func TestMemoCreateSharedPreparationPreservesFields(t *testing.T) {
 	ctx := context.Background()
 	service := newIntegrationService(t)
-	user := createSpaceTestUser(t, ctx, service, "memo-create-fields", store.RoleUser)
+	user := createSpaceTestUser(ctx, t, service, "memo-create-fields", store.RoleUser)
 	userCtx := userCtx(ctx, user.ID)
 
 	referenceTarget, err := service.CreateMemo(userCtx, &v1pb.CreateMemoRequest{
@@ -109,7 +109,7 @@ func TestMemoCreateSharedPreparationPreservesFields(t *testing.T) {
 func TestMemoCreateDuplicateIDsUseAlreadyExists(t *testing.T) {
 	ctx := context.Background()
 	service := newIntegrationService(t)
-	user := createSpaceTestUser(t, ctx, service, "memo-create-duplicates", store.RoleUser)
+	user := createSpaceTestUser(ctx, t, service, "memo-create-duplicates", store.RoleUser)
 	userCtx := userCtx(ctx, user.ID)
 
 	parent, err := service.CreateMemo(userCtx, &v1pb.CreateMemoRequest{

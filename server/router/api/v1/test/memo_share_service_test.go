@@ -93,7 +93,7 @@ func TestDeleteMemoShare_RevalidatesSpaceWriteAuthority(t *testing.T) {
 	require.NoError(t, ts.Store.DeleteSpaceMember(ctx, &store.DeleteSpaceMember{SpaceID: space.ID, UserID: owner.ID}, admin.ID))
 	_, err = ts.Service.DeleteMemoShare(ownerCtx, &apiv1.DeleteMemoShareRequest{Name: share.Name})
 	require.Equal(t, codes.PermissionDenied, status.Code(err))
-	requireSharePresent(t, ctx, ts, shareToken)
+	requireSharePresent(ctx, t, ts, shareToken)
 
 	_, err = ts.Store.CreateSpaceMember(ctx, &store.SpaceMember{
 		SpaceID: space.ID, UserID: owner.ID, Role: store.SpaceMemberRoleUser,
@@ -315,12 +315,12 @@ func TestGetSharedMemo_ReturnsNotFoundForExpiredShare(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	expiredTs := time.Now().Add(-time.Hour).Unix()
+	expiredTsSec := time.Now().Add(-time.Hour).Unix()
 	expiredShare, err := ts.Store.CreateMemoShare(ctx, &store.MemoShare{
 		UID:       "expired-share-token",
 		MemoID:    parseMemoIDFromNameForTest(t, ts, memo.Name),
 		CreatorID: user.ID,
-		ExpiresTs: &expiredTs,
+		ExpiresTs: &expiredTsSec,
 	})
 	require.NoError(t, err)
 
@@ -388,7 +388,7 @@ func parseMemoIDFromNameForTest(t *testing.T, ts *TestService, memoName string) 
 	return memo.ID
 }
 
-func requireSharePresent(t *testing.T, ctx context.Context, ts *TestService, token string) {
+func requireSharePresent(ctx context.Context, t *testing.T, ts *TestService, token string) {
 	t.Helper()
 	share, err := ts.Store.GetMemoShare(ctx, &store.FindMemoShare{UID: &token})
 	require.NoError(t, err)

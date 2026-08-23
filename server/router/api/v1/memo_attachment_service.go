@@ -47,8 +47,8 @@ func (s *APIV1Service) SetMemoAttachments(ctx context.Context, request *v1pb.Set
 	if err != nil {
 		return nil, err
 	}
-	updatedTs := time.Now().Unix()
-	if err := s.applyMemoMutation(ctx, memo, prepared, &store.UpdateMemo{ID: memo.ID, UpdatedTs: &updatedTs}, requiredAttachmentIDs, nil); err != nil {
+	updatedTsSec := time.Now().Unix()
+	if err := s.applyMemoMutation(ctx, memo, prepared, &store.UpdateMemo{ID: memo.ID, UpdatedTs: &updatedTsSec}, requiredAttachmentIDs, nil); err != nil {
 		return nil, err
 	}
 	_, _, memoMessage, err := s.buildUpdatedMemoState(ctx, memo.ID)

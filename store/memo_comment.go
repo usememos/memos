@@ -46,11 +46,9 @@ func ValidateMemoCommentAuthorization(snapshot *MemoCommentAuthorizationSnapshot
 		if snapshot.ContextCreatorID != snapshot.ActorUserID {
 			return ErrMemoPermissionDenied
 		}
-	case Protected, Public:
-		// Any active user may participate when the memo is Unassigned. Assigned
-		// memos have already required active membership above.
-	case SpaceAudience:
-		// A valid placement and active membership were required above.
+	case Protected, Public, SpaceAudience:
+		// Any audience-specific placement and membership requirements were
+		// validated above.
 	default:
 		return ErrMemoSpaceNotWritable
 	}

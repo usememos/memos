@@ -89,21 +89,25 @@ func (s *APIV1Service) ListMemos(ctx context.Context, request *v1pb.ListMemosReq
 	}
 	memoFind.Access = accessScope
 
-	switch scope := request.Scope.(type) {
-	case *v1pb.ListMemosRequest_Space:
-		if currentUser == nil {
-			return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+	if request.Scope != nil {
+		switch scope := request.Scope.(type) {
+		case *v1pb.ListMemosRequest_Space:
+			if currentUser == nil {
+				return nil, status.Errorf(codes.Unauthenticated, "user not authenticated")
+			}
+			space, err := s.resolveWritableSpaceByName(ctx, scope.Space, currentUser.ID)
+			if err != nil {
+				return nil, err
+			}
+			memoFind.SpaceID = &space.ID
+		case *v1pb.ListMemosRequest_Unassigned:
+			if !scope.Unassigned {
+				return nil, status.Errorf(codes.InvalidArgument, "unassigned scope must be true")
+			}
+			memoFind.Unassigned = true
+		default:
+			return nil, status.Errorf(codes.InvalidArgument, "unsupported memo scope")
 		}
-		space, err := s.resolveWritableSpaceByName(ctx, scope.Space, currentUser.ID)
-		if err != nil {
-			return nil, err
-		}
-		memoFind.SpaceID = &space.ID
-	case *v1pb.ListMemosRequest_Unassigned:
-		if !scope.Unassigned {
-			return nil, status.Errorf(codes.InvalidArgument, "unassigned scope must be true")
-		}
-		memoFind.Unassigned = true
 	}
 
 	if request.State == v1pb.State_ARCHIVED {
@@ -389,6 +393,11 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 	}
 
 	for _, path := range request.UpdateMask.Paths {
+		// Collaboration fields were validated together above so placement and
+		// audience transitions cannot be observed independently.
+		if path == "visibility" || path == "space" {
+			continue
+		}
 		if path == "content" {
 			contentUpdated = true
 			contentLengthLimit, err := s.getContentLengthLimit(ctx)
@@ -404,9 +413,6 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			}
 			update.Content = &nextMemo.Content
 			update.Payload = nextMemo.Payload
-		} else if path == "visibility" || path == "space" {
-			// Collaboration fields were validated together above so placement and
-			// audience transitions cannot be observed independently.
 		} else if path == "pinned" {
 			update.Pinned = &request.Memo.Pinned
 		} else if path == "state" {
@@ -419,11 +425,11 @@ func (s *APIV1Service) UpdateMemo(ctx context.Context, request *v1pb.UpdateMemoR
 			createdTs := request.Memo.CreateTime.AsTime().Unix()
 			update.CreatedTs = &createdTs
 		} else if path == "update_time" {
-			updatedTs := time.Now().Unix()
+			updatedTsSec := time.Now().Unix()
 			if request.Memo.UpdateTime != nil {
-				updatedTs = request.Memo.UpdateTime.AsTime().Unix()
+				updatedTsSec = request.Memo.UpdateTime.AsTime().Unix()
 			}
-			update.UpdatedTs = &updatedTs
+			update.UpdatedTs = &updatedTsSec
 		} else if path == "display_time" {
 			return nil, status.Errorf(codes.InvalidArgument, "display_time is not supported")
 		} else if path == "location" {

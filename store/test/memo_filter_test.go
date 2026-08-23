@@ -701,19 +701,19 @@ func TestMemoFilterCreatedTsComparison(t *testing.T) {
 	tc := NewMemoFilterTestContext(t)
 	defer tc.Close()
 
-	now := time.Now().Unix()
+	nowSec := time.Now().Unix()
 	tc.CreateMemo(NewMemoBuilder("memo-ts", tc.User.ID).Content("Timestamp test"))
 
 	// Test: created_ts < future (should match)
-	memos := tc.ListWithFilter(`created_ts < timestamp(` + formatInt64(now+3600) + `)`)
+	memos := tc.ListWithFilter(`created_ts < timestamp(` + formatInt64(nowSec+3600) + `)`)
 	require.Len(t, memos, 1)
 
 	// Test: created_ts > past (should match)
-	memos = tc.ListWithFilter(`created_ts > timestamp(` + formatInt64(now-3600) + `)`)
+	memos = tc.ListWithFilter(`created_ts > timestamp(` + formatInt64(nowSec-3600) + `)`)
 	require.Len(t, memos, 1)
 
 	// Test: created_ts > future (should not match)
-	memos = tc.ListWithFilter(`created_ts > timestamp(` + formatInt64(now+3600) + `)`)
+	memos = tc.ListWithFilter(`created_ts > timestamp(` + formatInt64(nowSec+3600) + `)`)
 	require.Len(t, memos, 0)
 }
 

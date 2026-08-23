@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -21,8 +22,8 @@ import (
 func TestDeleteMemoWebhooksRespectCurrentReadAccess(t *testing.T) {
 	ctx := context.Background()
 	service := newIntegrationService(t)
-	owner := createSpaceTestUser(t, ctx, service, "delete-webhook-owner", store.RoleUser)
-	successor := createSpaceTestUser(t, ctx, service, "delete-webhook-successor", store.RoleUser)
+	owner := createSpaceTestUser(ctx, t, service, "delete-webhook-owner", store.RoleUser)
+	successor := createSpaceTestUser(ctx, t, service, "delete-webhook-successor", store.RoleUser)
 	ownerCtx := userCtx(ctx, owner.ID)
 	successorCtx := userCtx(ctx, successor.ID)
 
@@ -77,9 +78,12 @@ func TestDeleteMemoWebhooksRespectCurrentReadAccess(t *testing.T) {
 	}))
 	defer receiver.Close()
 
-	previousAllowPrivateIPs := webhook.AllowPrivateIPs
-	webhook.AllowPrivateIPs = true
-	defer func() { webhook.AllowPrivateIPs = previousAllowPrivateIPs }()
+	receiverHost, _, err := net.SplitHostPort(receiver.Listener.Addr().String())
+	require.NoError(t, err)
+	require.NoError(t, webhook.ConfigurePrivateDestinationAllowlist([]string{receiverHost}))
+	defer func() {
+		require.NoError(t, webhook.ConfigurePrivateDestinationAllowlist(nil))
+	}()
 	_, err = service.CreateUserWebhook(ownerCtx, &v1pb.CreateUserWebhookRequest{
 		Parent: BuildUserName(owner.Username),
 		Webhook: &v1pb.UserWebhook{

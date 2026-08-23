@@ -29,6 +29,16 @@ func (d *delayedInstanceSettingCreateDriver) CreateInstanceSettingIfNotExists(ct
 	return d.Driver.CreateInstanceSettingIfNotExists(ctx, create)
 }
 
+func requireQueryError(ctx context.Context, t *testing.T, db *sql.DB, query, message string) {
+	t.Helper()
+	rows, err := db.QueryContext(ctx, query)
+	if rows != nil {
+		defer rows.Close()
+		require.NoError(t, rows.Err())
+	}
+	require.Error(t, err, message)
+}
+
 // TestFreshInstall verifies that LATEST.sql applies correctly on a fresh database.
 // This is essentially what NewTestingStore already does, but we make it explicit.
 func TestFreshInstall(t *testing.T) {
@@ -75,10 +85,8 @@ func TestFreshInstall(t *testing.T) {
 	).Scan(&relationCount))
 	require.Equal(t, 1, relationCount)
 
-	_, err = ts.GetDriver().GetDB().QueryContext(ctx, "SELECT parent_memo_id, root_memo_id FROM memo LIMIT 0")
-	require.Error(t, err, "fresh memo schema must not contain canonical-root columns")
-	_, err = ts.GetDriver().GetDB().QueryContext(ctx, "SELECT row_status FROM space LIMIT 0")
-	require.Error(t, err, "fresh Space schema has no archived state")
+	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT parent_memo_id, root_memo_id FROM memo LIMIT 0", "fresh memo schema must not contain canonical-root columns")
+	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT row_status FROM space LIMIT 0", "fresh Space schema has no archived state")
 	if driver == "sqlite" {
 		var indexName string
 		require.NoError(t, ts.GetDriver().GetDB().QueryRowContext(ctx,
@@ -234,6 +242,7 @@ func TestMigrationMultiSpacesPreservesMemosAndRelations(t *testing.T) {
 	}
 	rows, err := ts.GetDriver().GetDB().QueryContext(ctx, "SELECT memo_id, related_memo_id, type FROM memo_relation ORDER BY memo_id, related_memo_id, type")
 	require.NoError(t, err)
+	defer rows.Close()
 	var relations []relationRow
 	for rows.Next() {
 		var relation relationRow
@@ -241,17 +250,14 @@ func TestMigrationMultiSpacesPreservesMemosAndRelations(t *testing.T) {
 		relations = append(relations, relation)
 	}
 	require.NoError(t, rows.Err())
-	require.NoError(t, rows.Close())
 	require.Equal(t, []relationRow{
 		{memoID: 1, relatedMemoID: 4, typeName: store.MemoRelationReference},
 		{memoID: 2, relatedMemoID: 1, typeName: store.MemoRelationComment},
 		{memoID: 3, relatedMemoID: 2, typeName: store.MemoRelationComment},
 	}, relations)
 
-	_, err = ts.GetDriver().GetDB().QueryContext(ctx, "SELECT parent_memo_id, root_memo_id FROM memo LIMIT 0")
-	require.Error(t, err, "memo-local schema must not add canonical-root columns")
-	_, err = ts.GetDriver().GetDB().QueryContext(ctx, "SELECT row_status FROM space LIMIT 0")
-	require.Error(t, err, "Space has no archived state")
+	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT parent_memo_id, root_memo_id FROM memo LIMIT 0", "memo-local schema must not add canonical-root columns")
+	requireQueryError(ctx, t, ts.GetDriver().GetDB(), "SELECT row_status FROM space LIMIT 0", "Space has no archived state")
 	if driver == "sqlite" {
 		var indexName string
 		require.NoError(t, ts.GetDriver().GetDB().QueryRowContext(ctx,

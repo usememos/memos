@@ -26,19 +26,17 @@ func TestCheckMemoReadMemoLocalAudiences(t *testing.T) {
 }
 
 func TestCheckMemoReadCommentDoesNotInheritContext(t *testing.T) {
-	owner := &store.User{ID: 1, RowStatus: store.Normal}
-	contextMemo := &store.Memo{ID: 1, CreatorID: owner.ID, RowStatus: store.Normal, Visibility: store.Private}
-	parentUID := contextMemo.UID
+	const ownerID int32 = 1
+	parentUID := "context-memo"
 	comment := &store.Memo{
 		ID:         2,
-		CreatorID:  owner.ID,
+		CreatorID:  ownerID,
 		RowStatus:  store.Normal,
 		Visibility: store.Public,
 		ParentUID:  &parentUID,
 	}
 
 	require.Equal(t, MemoReadDecision{Class: MemoReadClassPublic}, CheckMemoReadContext(MemoReadContext{Memo: comment, AllowAnonymous: true, CreatorValid: true, SpaceValid: true}))
-	contextMemo.Visibility = store.Public
 	comment.Visibility = store.Private
 	require.Equal(t, MemoReadDenialUnauthenticated, CheckMemoReadContext(MemoReadContext{Memo: comment, AllowAnonymous: true, CreatorValid: true, SpaceValid: true}).Denial)
 
@@ -134,7 +132,7 @@ func TestCheckMemoReadInvalidStateFailsClosed(t *testing.T) {
 }
 
 func TestCheckMemoReadAssignedPublicHasNoMembershipGate(t *testing.T) {
-	owner := &store.User{ID: 1, RowStatus: store.Normal}
+	owner := &store.User{ID: 1}
 	other := &store.User{ID: 2, RowStatus: store.Normal}
 	spaceID := int32(7)
 	assigned := &store.Memo{ID: 10, CreatorID: owner.ID, RowStatus: store.Normal, Visibility: store.Public, SpaceID: &spaceID}

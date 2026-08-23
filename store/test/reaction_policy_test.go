@@ -162,35 +162,35 @@ func TestDeleteReactionAtomicallyEnforcesCreatorAndParticipation(t *testing.T) {
 		ID: &reaction.ID, MemoID: &memo.ID, ActorUserID: &owner.ID, Policy: reactionWritePolicy(owner.ID),
 	})
 	require.ErrorIs(t, err, store.ErrReactionPermissionDenied)
-	requireReactionPresent(t, ctx, ts, reaction.ID)
+	requireReactionPresent(ctx, t, ts, reaction.ID)
 
 	require.NoError(t, ts.DeleteSpaceMember(ctx, &store.DeleteSpaceMember{SpaceID: space.ID, UserID: member.ID}, owner.ID))
 	err = ts.DeleteReaction(ctx, &store.DeleteReaction{
 		ID: &reaction.ID, MemoID: &memo.ID, ActorUserID: &member.ID, Policy: reactionWritePolicy(member.ID),
 	})
 	require.ErrorIs(t, err, store.ErrMemoSpaceMembershipRequired)
-	requireReactionPresent(t, ctx, ts, reaction.ID)
+	requireReactionPresent(ctx, t, ts, reaction.ID)
 
 	_, err = ts.CreateSpaceMember(ctx, &store.SpaceMember{SpaceID: space.ID, UserID: member.ID, Role: store.SpaceMemberRoleUser}, owner.ID)
 	require.NoError(t, err)
 	require.NoError(t, ts.DeleteReaction(ctx, &store.DeleteReaction{
 		ID: &reaction.ID, MemoID: &memo.ID, ActorUserID: &member.ID, Policy: reactionWritePolicy(member.ID),
 	}))
-	requireReactionMissing(t, ctx, ts, reaction.ID)
+	requireReactionMissing(ctx, t, ts, reaction.ID)
 }
 
 func reactionWritePolicy(actorUserID int32) *store.ReactionWritePolicy {
 	return &store.ReactionWritePolicy{ActorUserID: actorUserID}
 }
 
-func requireReactionPresent(t *testing.T, ctx context.Context, ts *store.Store, reactionID int32) {
+func requireReactionPresent(ctx context.Context, t *testing.T, ts *store.Store, reactionID int32) {
 	t.Helper()
 	reaction, err := ts.GetReaction(ctx, &store.FindReaction{ID: &reactionID})
 	require.NoError(t, err)
 	require.NotNil(t, reaction)
 }
 
-func requireReactionMissing(t *testing.T, ctx context.Context, ts *store.Store, reactionID int32) {
+func requireReactionMissing(ctx context.Context, t *testing.T, ts *store.Store, reactionID int32) {
 	t.Helper()
 	reaction, err := ts.GetReaction(ctx, &store.FindReaction{ID: &reactionID})
 	require.NoError(t, err)

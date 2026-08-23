@@ -38,8 +38,8 @@ func (s *APIV1Service) SetMemoRelations(ctx context.Context, request *v1pb.SetMe
 	if err != nil {
 		return nil, err
 	}
-	updatedTs := time.Now().Unix()
-	if err := s.applyMemoMutation(ctx, memo, nil, &store.UpdateMemo{ID: memo.ID, UpdatedTs: &updatedTs}, nil, &relations); err != nil {
+	updatedTsSec := time.Now().Unix()
+	if err := s.applyMemoMutation(ctx, memo, nil, &store.UpdateMemo{ID: memo.ID, UpdatedTs: &updatedTsSec}, nil, &relations); err != nil {
 		return nil, err
 	}
 	_, _, memoMessage, err := s.buildUpdatedMemoState(ctx, memo.ID)

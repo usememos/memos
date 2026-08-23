@@ -16,7 +16,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func createSpaceTestUser(t *testing.T, ctx context.Context, service *APIV1Service, username string, role store.Role) *store.User {
+func createSpaceTestUser(ctx context.Context, t *testing.T, service *APIV1Service, username string, role store.Role) *store.User {
 	t.Helper()
 	user, err := service.Store.CreateUser(ctx, &store.User{
 		Username: username,
@@ -30,9 +30,9 @@ func createSpaceTestUser(t *testing.T, ctx context.Context, service *APIV1Servic
 func TestSpaceServiceMembershipVisibilityAndGovernance(t *testing.T) {
 	ctx := context.Background()
 	service := newIntegrationService(t)
-	owner := createSpaceTestUser(t, ctx, service, "space-owner", store.RoleUser)
-	member := createSpaceTestUser(t, ctx, service, "space-member", store.RoleUser)
-	applicationAdmin := createSpaceTestUser(t, ctx, service, "application-admin", store.RoleAdmin)
+	owner := createSpaceTestUser(ctx, t, service, "space-owner", store.RoleUser)
+	member := createSpaceTestUser(ctx, t, service, "space-member", store.RoleUser)
+	applicationAdmin := createSpaceTestUser(ctx, t, service, "application-admin", store.RoleAdmin)
 
 	space, err := service.CreateSpace(userCtx(ctx, owner.ID), &v1pb.CreateSpaceRequest{
 		SpaceId: "team-notes",
@@ -91,9 +91,9 @@ func TestSpaceServiceMembershipVisibilityAndGovernance(t *testing.T) {
 func TestSpaceServiceHardDeleteLifecycle(t *testing.T) {
 	ctx := context.Background()
 	service := newIntegrationService(t)
-	owner := createSpaceTestUser(t, ctx, service, "delete-owner", store.RoleUser)
-	target := createSpaceTestUser(t, ctx, service, "delete-target", store.RoleUser)
-	applicationAdmin := createSpaceTestUser(t, ctx, service, "delete-application-admin", store.RoleAdmin)
+	owner := createSpaceTestUser(ctx, t, service, "delete-owner", store.RoleUser)
+	target := createSpaceTestUser(ctx, t, service, "delete-target", store.RoleUser)
+	applicationAdmin := createSpaceTestUser(ctx, t, service, "delete-application-admin", store.RoleAdmin)
 
 	space, err := service.CreateSpace(userCtx(ctx, owner.ID), &v1pb.CreateSpaceRequest{
 		SpaceId: "delete-space",
@@ -155,8 +155,8 @@ func TestSpaceServiceHardDeleteLifecycle(t *testing.T) {
 func TestSpaceServiceHidesMembershipForInactiveUser(t *testing.T) {
 	ctx := context.Background()
 	service := newIntegrationService(t)
-	owner := createSpaceTestUser(t, ctx, service, "inactive-member-owner", store.RoleUser)
-	member := createSpaceTestUser(t, ctx, service, "inactive-member", store.RoleUser)
+	owner := createSpaceTestUser(ctx, t, service, "inactive-member-owner", store.RoleUser)
+	member := createSpaceTestUser(ctx, t, service, "inactive-member", store.RoleUser)
 
 	space, err := service.CreateSpace(userCtx(ctx, owner.ID), &v1pb.CreateSpaceRequest{
 		SpaceId: "inactive-member-space",

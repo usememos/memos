@@ -66,7 +66,7 @@ func requireNoMemoChanged(t *testing.T, ch <-chan []byte) {
 func TestAttachmentMutationsPublishMemoChangedOnlyWhenBound(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
-	owner := createSpaceTestUser(t, ctx, svc, "sse-attachment-owner", store.RoleUser)
+	owner := createSpaceTestUser(ctx, t, svc, "sse-attachment-owner", store.RoleUser)
 	ownerCtx := userCtx(ctx, owner.ID)
 	memo, err := svc.CreateMemo(ownerCtx, &v1pb.CreateMemoRequest{
 		Memo: &v1pb.Memo{Content: "attachment event memo", Visibility: v1pb.Visibility_PRIVATE},
@@ -133,8 +133,8 @@ func TestAttachmentMutationsPublishMemoChangedOnlyWhenBound(t *testing.T) {
 func TestSpaceMutationsPublishMemoChanged(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
-	owner := createSpaceTestUser(t, ctx, svc, "sse-space-owner", store.RoleAdmin)
-	member := createSpaceTestUser(t, ctx, svc, "sse-space-member", store.RoleUser)
+	owner := createSpaceTestUser(ctx, t, svc, "sse-space-owner", store.RoleAdmin)
+	member := createSpaceTestUser(ctx, t, svc, "sse-space-member", store.RoleUser)
 	ownerCtx := userCtx(ctx, owner.ID)
 	client := svc.SSEHub.Subscribe()
 	defer svc.SSEHub.Unsubscribe(client)
@@ -219,9 +219,9 @@ func TestUpdateMemoSSEBroadcastsToAllSubscribers(t *testing.T) {
 func TestMoveSpaceAudienceMemoSSEBroadcastsWithoutAudienceCalculation(t *testing.T) {
 	ctx := context.Background()
 	svc := newIntegrationService(t)
-	owner := createSpaceTestUser(t, ctx, svc, "move-audience-owner", store.RoleAdmin)
-	sourceMember := createSpaceTestUser(t, ctx, svc, "move-source-member", store.RoleUser)
-	targetMember := createSpaceTestUser(t, ctx, svc, "move-target-member", store.RoleUser)
+	owner := createSpaceTestUser(ctx, t, svc, "move-audience-owner", store.RoleAdmin)
+	sourceMember := createSpaceTestUser(ctx, t, svc, "move-source-member", store.RoleUser)
+	targetMember := createSpaceTestUser(ctx, t, svc, "move-target-member", store.RoleUser)
 	ownerCtx := userCtx(ctx, owner.ID)
 
 	source, err := svc.CreateSpace(ownerCtx, &v1pb.CreateSpaceRequest{

@@ -310,10 +310,10 @@ func (s *APIV1Service) UpdateAttachment(ctx context.Context, request *v1pb.Updat
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	currentTs := time.Now().Unix()
+	currentTsSec := time.Now().Unix()
 	update := &store.UpdateAttachment{
 		ID:        attachment.ID,
-		UpdatedTs: &currentTs,
+		UpdatedTs: &currentTsSec,
 		Policy:    memoWritePolicy(user.ID, false),
 	}
 	for _, field := range request.UpdateMask.Paths {
