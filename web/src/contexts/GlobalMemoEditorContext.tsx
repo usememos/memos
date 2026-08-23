@@ -136,11 +136,12 @@ export function GlobalMemoEditorProvider({ children }: { children: ReactNode }) 
               </VisuallyHidden>
               <EditorComponent
                 autoFocus
-                initialFocusMode
                 cacheKey="global-memo-editor"
                 placeholder={t("editor.any-thoughts")}
                 onConfirm={closeEditor}
                 onCancel={closeEditor}
+                // Hosts the editor's focus-mode presentation: it mounts in focus
+                // mode and dismisses this dialog instead of collapsing inline.
                 onFocusModeExit={requestCloseEditor}
                 onSavingChange={reportSaving}
               />

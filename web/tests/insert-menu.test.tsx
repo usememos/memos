@@ -19,7 +19,14 @@ beforeAll(() => {
   Element.prototype.releasePointerCapture = vi.fn();
 });
 
-const renderMenu = (onInsertImages = vi.fn(), isSaving = false) =>
+const viewToggles = {
+  onToggleFocusMode: vi.fn(),
+  isFormattingToolbarVisible: false,
+  onToggleFormattingToolbar: vi.fn(),
+};
+
+/** `hosted` mirrors an editor whose presentation belongs to a host (the global composer). */
+const renderMenu = (onInsertImages = vi.fn(), isSaving = false, hosted = false) =>
   render(
     <EditorProvider>
       <InsertMenu
@@ -27,7 +34,7 @@ const renderMenu = (onInsertImages = vi.fn(), isSaving = false) =>
         onLocationChange={vi.fn()}
         onInsertImages={onInsertImages}
         onAudioRecorderClick={vi.fn()}
-        isFormattingToolbarVisible={false}
+        viewToggles={hosted ? undefined : viewToggles}
       />
     </EditorProvider>,
   );
@@ -49,6 +56,17 @@ describe("InsertMenu", () => {
       "editor.focus-mode",
       "editor.formatting-toolbar",
     ]);
+  });
+
+  test("drops the view toggles when a host owns the editor's presentation", () => {
+    renderMenu(vi.fn(), false, true);
+
+    fireEvent.click(screen.getByRole("button", { name: "common.add" }));
+
+    const labels = screen.getAllByRole("menuitem").map((item) => item.textContent);
+    expect(labels).not.toContain("editor.focus-mode");
+    expect(labels).not.toContain("editor.formatting-toolbar");
+    expect(screen.queryByRole("separator")).not.toBeInTheDocument();
   });
 
   test("uses separate unrestricted and multi-image file inputs", () => {
@@ -84,13 +102,7 @@ describe("InsertMenu", () => {
 
     render(
       <EditorProvider initialEditorState={state}>
-        <EditorToolbar
-          onSave={vi.fn()}
-          onAudioRecorderClick={vi.fn()}
-          isFormattingToolbarVisible={false}
-          onToggleFormattingToolbar={vi.fn()}
-          onInsertImages={vi.fn()}
-        />
+        <EditorToolbar onSave={vi.fn()} onAudioRecorderClick={vi.fn()} viewToggles={viewToggles} onInsertImages={vi.fn()} />
       </EditorProvider>,
     );
 

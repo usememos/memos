@@ -120,10 +120,12 @@ describe("GlobalMemoEditorProvider", () => {
     expect(dialog).toHaveAttribute("aria-modal", "true");
     expect(mocks.setMobileOpen).toHaveBeenCalledWith(false);
     expect(mocks.setQuickFindOpen).toHaveBeenCalledWith(false);
+    // `onFocusModeExit` is the hosted marker: the editor mounts in focus mode and
+    // exits by dismissing this dialog rather than collapsing inline.
     expect(mocks.editorProps).toMatchObject({
       autoFocus: true,
-      initialFocusMode: true,
       cacheKey: "global-memo-editor",
+      onFocusModeExit: expect.any(Function),
     });
     await waitFor(() => expect(dialog).toContainElement(document.activeElement as HTMLElement | null));
 

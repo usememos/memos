@@ -44,10 +44,11 @@ function makeController(opts: { active?: Partial<ActiveFormatState> } = {}) {
   return { controller, run };
 }
 
-function renderToolbar(controller: EditorController, onExit = vi.fn()) {
+function renderToolbar(controller: EditorController, action: "minimize" | "close" = "minimize") {
   const ref = createRef<EditorController>();
   ref.current = controller;
-  render(<FormattingToolbar controllerRef={ref} onExit={onExit} />);
+  const onExit = vi.fn();
+  render(<FormattingToolbar controllerRef={ref} exit={{ action, onExit }} />);
   return { onExit };
 }
 
@@ -78,6 +79,15 @@ describe("FormattingToolbar", () => {
     const { controller } = makeController();
     const { onExit } = renderToolbar(controller);
     fireEvent.click(screen.getByRole("button", { name: "editor.exit-focus-mode" }));
+    expect(onExit).toHaveBeenCalledTimes(1);
+  });
+
+  it("labels the exit button as close when a host owns the frame", () => {
+    const { controller } = makeController();
+    const { onExit } = renderToolbar(controller, "close");
+
+    expect(screen.queryByRole("button", { name: "editor.exit-focus-mode" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "common.close" }));
     expect(onExit).toHaveBeenCalledTimes(1);
   });
 });
