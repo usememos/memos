@@ -1,4 +1,13 @@
-import { Heading1Icon, Heading2Icon, Heading3Icon, type LucideIcon, Minimize2Icon, MoreHorizontalIcon, TypeIcon } from "lucide-react";
+import {
+  Heading1Icon,
+  Heading2Icon,
+  Heading3Icon,
+  type LucideIcon,
+  Minimize2Icon,
+  MoreHorizontalIcon,
+  TypeIcon,
+  XIcon,
+} from "lucide-react";
 import { type ComponentPropsWithoutRef, forwardRef, type MouseEventHandler, type RefObject, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -16,8 +25,12 @@ import type { EditorController } from "../types";
 
 interface FormattingToolbarProps {
   controllerRef: RefObject<EditorController | null>;
-  /** Called by the exit button; when omitted (normal-mode toolbar) the button is hidden. */
-  onExit?: () => void;
+  /**
+   * Trailing dismiss button for the frame the editor sits in: "minimize" collapses
+   * focus mode back into the page, "close" dismisses a host-owned frame. Omitted on
+   * the inline normal-mode toolbar, which has no frame to leave.
+   */
+  exit?: { action: "minimize" | "close"; onExit: () => void };
   /** Extra classes for the host to frame the toolbar row. */
   className?: string;
 }
@@ -58,9 +71,10 @@ const preventFocusSteal: MouseEventHandler<HTMLButtonElement> = (event) => event
  * (formatting/commands.ts), so adding a verb there surfaces it here automatically.
  * Groups are separated by thin vertical dividers. Responsive: below
  * COMPACT_TOOLBAR_WIDTH the block controls fold into a "more" menu while marks
- * stay inline. In focus mode an exit button is pushed to the far edge.
+ * stay inline. When the editor sits in a frame, the button that dismisses it is
+ * pushed to the far edge.
  */
-export function FormattingToolbar({ controllerRef, onExit, className }: FormattingToolbarProps) {
+export function FormattingToolbar({ controllerRef, exit, className }: FormattingToolbarProps) {
   const t = useTranslate();
   const rootRef = useRef<HTMLDivElement>(null);
   const width = useElementWidth(rootRef);
@@ -87,6 +101,8 @@ export function FormattingToolbar({ controllerRef, onExit, className }: Formatti
   // Type glyph for paragraph, else the matching Hn glyph. Deeper levels (H4–H6)
   // aren't toolbar-addressable and report as null, i.e. the Type glyph.
   const HeadingGlyph = active.headingLevel === null ? TypeIcon : HEADING_LEVEL_ICONS[active.headingLevel];
+  const ExitIcon = exit?.action === "close" ? XIcon : Minimize2Icon;
+  const exitLabel = exit && t(exit.action === "close" ? "common.close" : "editor.exit-focus-mode");
   const markButtons = MARK_COMMANDS.map(toButton);
   const blockButtons = BLOCK_COMMANDS.map(toButton);
 
@@ -131,11 +147,11 @@ export function FormattingToolbar({ controllerRef, onExit, className }: Formatti
         blockButtons.map((button) => <SegmentButton key={button.label} {...button} onMouseDown={preventFocusSteal} />)
       )}
 
-      {onExit && (
+      {exit && (
         <>
           <div className="flex-1" />
-          <Button variant="ghost" size="icon" aria-label={t("editor.exit-focus-mode")} title={t("editor.exit-focus-mode")} onClick={onExit}>
-            <Minimize2Icon className="w-4 h-4" />
+          <Button variant="ghost" size="icon" aria-label={exitLabel} title={exitLabel} onClick={exit.onExit}>
+            <ExitIcon className="w-4 h-4" />
           </Button>
         </>
       )}

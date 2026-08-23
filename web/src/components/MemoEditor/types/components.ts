@@ -11,9 +11,12 @@ export interface MemoEditorProps {
   memo?: Memo;
   parentMemoName?: string;
   autoFocus?: boolean;
-  /** Opens this editor instance directly in the existing focus-mode presentation. */
-  initialFocusMode?: boolean;
-  /** Closes an externally mounted editor when the user exits focus mode. */
+  /**
+   * Marks the instance as *hosted*: a host (the global composer dialog) presents
+   * the editor in the focus-mode layout and owns that frame. The editor mounts
+   * straight into focus mode, drops the view toggles that only make sense inline,
+   * and exits by calling this to dismiss the host rather than collapsing in place.
+   */
   onFocusModeExit?: () => void;
   /**
    * Default `createTime` for a *new* memo (create mode only). When set, the
@@ -36,14 +39,24 @@ export interface EditorContentProps {
   onFiles: (files: File[], position: number) => void;
 }
 
+/**
+ * The ＋ menu's view toggles. They change how the editor presents itself
+ * inline, so a hosted editor omits the whole group and both items disappear
+ * together — there is no way to offer one without the other.
+ */
+export interface EditorViewToggles {
+  onToggleFocusMode: () => void;
+  /** Whether the formatting toolbar is shown in normal mode (persisted preference). */
+  isFormattingToolbarVisible: boolean;
+  onToggleFormattingToolbar: () => void;
+}
+
 export interface EditorToolbarProps {
   onSave: () => void;
   onCancel?: () => void;
   memoName?: string;
   onAudioRecorderClick: () => void;
-  /** Whether the formatting toolbar is shown in normal mode (persisted preference). */
-  isFormattingToolbarVisible: boolean;
-  onToggleFormattingToolbar: () => void;
+  viewToggles?: EditorViewToggles;
   onInsertImages: (files: File[]) => void;
 }
 
@@ -81,12 +94,9 @@ export interface InsertMenuProps {
   isSaving?: boolean;
   location?: Location;
   onLocationChange: (location?: Location) => void;
-  onToggleFocusMode?: () => void;
   memoName?: string;
   onAudioRecorderClick?: () => void;
-  /** Persisted toggle for the normal-mode formatting toolbar. */
-  isFormattingToolbarVisible?: boolean;
-  onToggleFormattingToolbar?: () => void;
+  viewToggles?: EditorViewToggles;
   onInsertImages: (files: File[]) => void;
 }
 

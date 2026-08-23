@@ -5,6 +5,7 @@ export type {
   EditorContentProps,
   EditorMetadataProps,
   EditorToolbarProps,
+  EditorViewToggles,
   FocusModeExitButtonProps,
   FocusModeOverlayProps,
   InsertMenuProps,
